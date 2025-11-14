@@ -10,23 +10,23 @@ networks:
     external: true # 이미 존재하는 docker 네트워크(이름: kind)에 부착
 
 include:
-  - docker-airflow.yml
-  - docker-elasticsearch.yml
+  # - docker-airflow.yml
+  # - docker-elasticsearch.yml
   #- docker-harbor.yml
   #- docker-influxdb.yml
   #- docker-kafka.yml
   #- docker-keycloak.yml
   #- docker-ksql.yml
   #- docker-locust.yml
-  - docker-loki.yml
-  - docker-minio.yml
+  # - docker-loki.yml
+  # - docker-minio.yml
   #- docker-monogodb.yml
   #- docker-Ollama.yml
-  - docker-postgres.yml
-  - docker-prometheus.yml
-  - docker-redis.yml
+  # - docker-postgres.yml
+  # - docker-prometheus.yml
+  # - docker-redis.yml
   #- docker-sonarqube.yml
   #- docker-supabase.yml
-  - docker-tempo.yml
-  - docker-traefik.yml
-  - docker-wiki.js.yml
+  # - docker-tempo.yml
+  # - docker-traefik.yml
+  # - docker-wiki.js.yml
