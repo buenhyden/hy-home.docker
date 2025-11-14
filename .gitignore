@@ -1,8 +1,8 @@
 .history/
 Infisical Emergency Kit.pdf
 .vscode/
-Docker/.env
-_Builds/
+Docker_Compose/Docker_Files/.env
+Docker_Compose/Docker_Files/.env.supabase
 _Tool-Settings/
 _Roadmaps/
 _Example/

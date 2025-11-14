@@ -1,0 +1,46 @@
+x-default-logging: &logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+
+services:
+  default-spring-maven:
+    build:
+      context: .
+      dockerfile: Default-Spring-Maven/Dockerfile
+      target: dev_spring_maven
+    image: spring-maven:latest
+    hostname: default-spring-maven
+    container_name: default-spring-maven
+    restart: unless-stopped
+    working_dir: /project
+    expose:
+      - ${DEFAULT_SPRING_PORT}
+    ports:
+      - ${DEFAULT_SPRING_MAVEN_HOST_PORT}:${DEFAULT_SPRING_PORT}
+    networks:
+      - nt-private
+      - nt-databases
+      - nt-message-broker
+      - nt-searchengine
+    stdin_open: true #docker run -i
+    tty: true #docker run -t
+    volumes:
+      - default-spring-maven-volume:/project:rw
+      - resource-volume:/resources:rw
+    logging: *logging
+
+volumes:
+  default-spring-maven-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SOURCECODE_DIR}/default-Spring-Maven
+  resource-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_RESOURCES_DIR}/Contents

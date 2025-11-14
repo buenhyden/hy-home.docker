@@ -1,0 +1,58 @@
+# Use root/example as user/password credentials
+x-default-logging: &logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
+networks:
+  nt-projects:
+    name: nt-projects
+    driver: bridge
+  nt-databases:
+    external: true
+  nt-message-broker:
+    external: true
+  nt-searchengine:
+    external: true
+
+services:
+  default-nestjs:
+    build:
+      context: .
+      dockerfile: Default-NestJS/Dockerfile
+      target: dev_nestjs
+    image: node.nestjs:latest
+    hostname: default-nestjs
+    container_name: default-nestjs
+    restart: unless-stopped
+    working_dir: /project
+    expose:
+      - ${DEFAULT_NESTJS_PORT}
+    ports:
+      - ${DEFAULT_NESTJS_HOST_PORT}:${DEFAULT_NESTJS_PORT}
+    networks:
+      - nt-private
+      - nt-databases
+      - nt-message-broker
+      - nt-searchengine
+    stdin_open: true #docker run -i
+    tty: true #docker run -t
+    volumes:
+      - default-nestjs-volume:/project:rw
+      - resource-volume:/resources:rw
+    logging: *logging
+
+volumes:
+  default-nestjs-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SOURCECODE_DIR}/default-NestJS
+  resource-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_RESOURCES_DIR}/Contents

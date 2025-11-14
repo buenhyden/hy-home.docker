@@ -1,0 +1,59 @@
+x-default-logging: &logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+    
+networks:
+  nt-projects:
+    name: nt-projects
+    driver: bridge
+  nt-databases:
+    external: true
+  nt-message-broker:
+    external: true
+  nt-searchengine:
+    external: true
+ 
+services:
+  default-reactjs:
+    build:
+      context: .
+      dockerfile: Default-ReactJS/Dockerfile
+      target: dev_reactjs
+    image: javascript.reactjs:latest
+    hostname: default-reactjs
+    container_name: default-reactjs
+    restart: unless-stopped
+    working_dir: /project
+    expose:
+      - ${DEFAULT_REACTJS_PORT}
+      - ${DEFAULT_VITE_PORT}
+    ports:
+      - ${DEFAULT_REACTJS_HOST_PORT}:${DEFAULT_REACTJS_PORT}
+      - ${DEFAULT_VITE_HOST_PORT}:${DEFAULT_VITE_PORT}
+    networks:
+      - nt-private
+      - nt-databases
+      - nt-message-broker
+      - nt-searchengine
+    stdin_open: true #docker run -i
+    tty: true #docker run -t
+    volumes:
+      - default-reactjs-volume:/project:rw
+      - resource-volume:/resources:rw
+    logging: *logging
+
+volumes:
+  default-reactjs-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SOURCECODE_DIR}/default-ReactJS
+  resource-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_RESOURCES_DIR}/Contents

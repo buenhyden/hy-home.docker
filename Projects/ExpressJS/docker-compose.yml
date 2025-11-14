@@ -1,0 +1,58 @@
+# Use root/example as user/password credentials
+x-default-logging: &logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+    
+networks:
+  nt-projects:
+    name: nt-projects
+    driver: bridge
+  nt-databases:
+    external: true
+  nt-message-broker:
+    external: true
+  nt-searchengine:
+    external: true
+
+services:
+  default-express:
+    build:
+      context: .
+      dockerfile: Default-Express/Dockerfile
+      target: dev_express
+    image: node.express:latest
+    hostname: default-express
+    container_name: default-express
+    restart: unless-stopped
+    working_dir: /project
+    expose:
+      - ${DEFAULT_NODE_EXPRESS_PORT}
+    ports:
+      - ${DEFAULT_NODE_EXPRESS_HOST_PORT}:${DEFAULT_NODE_EXPRESS_PORT}
+    networks:
+      - nt-private
+      - nt-databases
+      - nt-message-broker
+      - nt-searchengine
+    stdin_open: true #docker run -i
+    tty: true #docker run -t
+    volumes:
+      - default-express-volume:/project:rw
+      - resource-volume:/resources:rw
+    logging: *logging
+
+volumes:
+  default-express-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SOURCECODE_DIR}/default-Express
+  resource-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_RESOURCES_DIR}/Contents

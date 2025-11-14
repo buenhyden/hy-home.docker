@@ -1,0 +1,38 @@
+repos:  
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-json
+        stages: [commit]
+      - id: pretty-format-json
+        args: [--autofix, --indent=2, --no-ensure-ascii, --no-sort-keys]
+        stages: [commit]
+      - id: check-added-large-files
+        args: [--maxkb=500000]
+        stages: [commit]
+      - id: check-case-conflict
+        stages: [commit]
+      - id: check-merge-conflict
+        stages: [commit]
+      - id: check-yaml
+        stages: [commit]
+      - id: end-of-file-fixer
+        stages: [commit]
+      - id: mixed-line-ending
+        stages: [commit]
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+        stages: [commit]
+      - id: debug-statements
+        stages: [commit]
+      - id: double-quote-string-fixer
+        stages: [commit]
+      - id: name-tests-test
+        stages: [commit]
+      - id: requirements-txt-fixer
+        stages: [commit]
+        
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.10.0
+    hooks:
+      - id: yamlfmt 

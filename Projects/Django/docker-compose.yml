@@ -1,0 +1,37 @@
+x-default-logging: &logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
+services:
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    image: python.django:latest
+    hostname: djagno
+    container_name: djagno
+    restart: unless-stopped
+    working_dir: /app
+    expose:
+      - ${DEFAULT_PYTHON_DJANGO_PORT}
+    ports:
+      - ${DEFAULT_PYTHON_DJANGO_HOST_PORT}:${DEFAULT_PYTHON_DJANGO_PORT}
+    networks:
+      - project_net
+      - infra_net
+    stdin_open: true #docker run -i
+    tty: true #docker run -t
+    volumes:
+      - django-volume:/app:rw
+    logging: *logging
+
+volumes:
+  django-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SOURCECODE_DIR}/Django
