@@ -1,64 +1,33 @@
-# redis-1 컨테이너 내부로 접속
+# Redis Cluster
+
+**Redis Cluster**는 데이터를 여러 노드에 자동으로 분산(Sharding)하여 저장하는 고가용성 인메모리 데이터 구조 저장소입니다.
+이 구성은 **3 Master + 3 Replica** 총 6개의 노드로 구성됩니다.
+
+## 🚀 서비스 구성
+
+| 서비스명 | 역할 | 포트 |
+| --- | --- | --- |
+| **redis-node-0 ~ 5** | Redis 클러스터 노드 | `6379` (Node 0만 호스트 노출) |
+| **redis-cluster-init** | 클러스터 초기화 스크립트 (1회성) | - |
+| **redis-exporter** | Prometheus용 메트릭 Exporter | `9121` |
+| **redisinsight** | Redis 관리 GUI | `8001` |
+
+## 🛠 설정 및 환경 변수
+
+- **비밀번호**: Docker Secret(`redis_password`)을 통해 관리됩니다.
+- **RedisInsight**: `http://localhost:8001` 접속.
+
+## 📦 볼륨 마운트
+
+- `redis-data-0` ~ `redis-data-5`: 각 노드의 데이터 저장소
+
+## 🏃‍♂️ 실행 방법
 
 ```bash
-docker exec -it redis-1 sh
-
-# redis-cli를 사용하여 클러스터 생성 (컨테이너 이름 사용)
-
-# (주의: 이 명령어는 컨테이너 내부에서 실행합니다)
-
-# (IP 대신 컨테이너 이름을 사용하려면 --cluster-announce-ip 옵션 등이 필요할 수 있습니다)
-
-#
-
-# [수정] 가장 간단한 방법은 호스트에서 `redis-cli`를 사용하는 것입니다
-
-# 또는, `redis-cli`가 있는 `redis-1` 컨테이너에서 다른 노드를 IP로 참조해야 합니다
-
-#
-
-# [권장] `docker inspect`로 6개 컨테이너의 `hy-home-net` IP를 확인한 후 실행합니다
-
-# 예: 172.19.0.5 ~ 172.19.0.10
-
-# redis-1 컨테이너에서 redis-cli 실행 (비밀번호 포함)
-# 2. redis-cli로 클러스터 생성 (모든 포트를 6379로 지정)
-docker exec -it redis-1 redis-cli \
-  -a "$REDIS_PASSWORD" \
-  --cluster create \
-  redis-1:6379 redis-2:6379 redis-3:6379 \
-  redis-4:6379 redis-5:6379 redis-6:6379 \
-  --cluster-replicas 1 \
-  --cluster-yes
+docker compose up -d
 ```
+- `redis-cluster-init` 컨테이너가 자동으로 클러스터를 구성합니다 (`cluster create`).
 
-# Redis
-
-## Redis Cluster 설정
-
-```
-redis-cli --pass $PASSWORD --cluster call redis-node-1:6379 flushall
-redis-cli --pass $PASSWORD --cluster call redis-node-1:6379 cluster reset
-redis-cli --pass $PASSWORD --cluster call redis-node-2:6379 cluster reset
-redis-cli --pass $PASSWORD --cluster call redis-node-3:6379 cluster reset
-```
-
-```
-redis-cli --pass $PASSWORD --cluster create redis-node-1:6379 redis-node-2:6379 redis-node-3:6379
-```
-
-```
-redis-cli --pass $PASSWORD --cluster add-node redis-node-0-slave:6380 redis-node-0:6379 --cluster-slave
-redis-cli --pass $PASSWORD --cluster add-node redis-node-1-slave:6382 redis-node-1:6381 --cluster-slave
-redis-cli --pass $PASSWORD --cluster add-node redis-node-2-slave:6384 redis-node-2:6383 --cluster-slave
-
-redis-cli --pass $PASSWORD --cluster create redis-node-0:6379 redis-node-1:6381 redis-node-2:6383 redis-node-0-slave:6380 redis-node-1-slave:6382 redis-node-2-slave:6384 --cluster-replicas 1
-
-redis-cli --pass $PASSWORD --cluster check redis-node-0:6379
-
-redis-cli --pass $PASSWORD -h predixy -p 7617 info
-redis-cli --pass $PASSWORD -h predixy -p 7617 info
-
-redis-cli --pass $PASSWORD -h predixy -p 7617 set test success
-redis-cli --pass $PASSWORD -p 7617 -h predixy get **hello**
-```
+## ⚠️ 주의사항
+- **접속**: 클러스터 모드이므로 클라이언트는 클러스터 모드를 지원해야 합니다.
+- **포트**: 호스트에서는 `localhost:6379`로 Node 0에만 접근 가능합니다.

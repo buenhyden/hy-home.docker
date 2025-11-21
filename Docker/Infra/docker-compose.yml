@@ -37,7 +37,7 @@ include:
   #- elasticsearch/docker-compose.yml
 
 volumes:
-  qdrant-data:
+  qdrant-data: {}
   #   driver: local
   #   driver_opts:
   #     o: bind
@@ -49,7 +49,7 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_AI_MODEL_DIR}/ollama
-  ollama-webui:
+  ollama-webui: {}
   #   driver: local
   #   driver_opts:
   #     o: bind
