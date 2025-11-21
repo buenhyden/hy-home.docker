@@ -1,4 +1,4 @@
-# --- PostgreSQL (Write) ---
+# --- PostgreSQL ---
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,7 +7,7 @@ metadata:
 spec:
   ports:
     - port: 5432
-      targetPort: 5000
+      targetPort: 15432
   clusterIP: None
 ---
 apiVersion: v1
@@ -17,33 +17,10 @@ metadata:
   namespace: default
 subsets:
   - addresses:
-      - ip: 172.19.0.20 # pg-router
+      - ip: 172.19.0.60
     ports:
-      - port: 5000
-
-# --- PostgreSQL (Read) ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgres-read
-  namespace: default
-spec:
-  ports:
-    - port: 5432
-      targetPort: 5001
-  clusterIP: None
+      - port: 15432
 ---
-apiVersion: v1
-kind: Endpoints
-metadata:
-  name: postgres-read
-  namespace: default
-subsets:
-  - addresses:
-      - ip: 172.19.0.20
-    ports:
-      - port: 5001
-
 # --- Redis ---
 apiVersion: v1
 kind: Service
@@ -63,10 +40,10 @@ metadata:
   namespace: default
 subsets:
   - addresses:
-      - ip: 172.19.0.30 # redis-node-0
+      - ip: 172.19.0.30
     ports:
       - port: 6379
-
+---
 # --- Kafka ---
 apiVersion: v1
 kind: Service
@@ -86,10 +63,10 @@ metadata:
   namespace: default
 subsets:
   - addresses:
-      - ip: 172.19.0.11 # kafka-1
+      - ip: 172.19.0.11
     ports:
       - port: 9092
-
+---
 # --- OpenSearch ---
 apiVersion: v1
 kind: Service
@@ -109,6 +86,6 @@ metadata:
   namespace: default
 subsets:
   - addresses:
-      - ip: 172.19.0.40 # opensearch-node1
+      - ip: 172.19.0.40
     ports:
       - port: 9200

@@ -1,0 +1,52 @@
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+ingester:
+  max_block_duration: 5m # 개발용이므로 짧게
+  trace_idle_period: 10s
+
+compactor:
+  compaction:
+    compaction_window: 1h
+    max_block_bytes: 100_000_000
+    block_retention: 24h # 하루치 데이터 보관
+    compacted_block_retention: 1h
+
+# [핵심 수정] 메트릭 생성기 설정 추가
+metrics_generator:
+  ring:
+    kvstore:
+      store: inmemory # 단일 노드 구성이므로 인메모리 사용 (Empty ring 오류 해결)
+  processor:
+    span_metrics:
+      dimensions:
+        - service.name
+        - http.method
+        - http.status_code
+    service_graphs:
+      max_items: 10000
+  storage:
+    path: /var/tempo/generator/wal
+    remote_write:
+      - url: http://prometheus:9090/api/v1/write # 메트릭을 Prometheus로 전송
+        send_exemplars: true
+        
+storage:
+  trace:
+    backend: local
+    wal:
+      path: /var/tempo/wal
+    local:
+      path: /var/tempo/blocks
+
+overrides:
+  metrics_generator_processors: [service-graphs, span-metrics]

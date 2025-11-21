@@ -21,11 +21,7 @@ services:
       # 노드 역할: 클러스터 매니저 + 데이터 + 인제스트 + 원격 클러스터 클라이언트
       - node.roles=cluster_manager,data,ingest,remote_cluster_client
       # 2.12+ 기준 보안 데모 구성에서 admin 패스워드 설정 (env 파일에서 가져옴)
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ELASTIC_PASSWORD}
-      - "plugins.metrics.enabled=true"
-      - "plugins.metrics.prometheus.enabled=true"
-      - "plugins.metrics.prometheus.exporter.port=9600"
-      - "plugins.metrics.prometheus.exporter.use_insecure=true"
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ELASTIC_PASSWORD}      
     ulimits:
       # 스왑 방지를 위해 memlock 무제한
       memlock:
@@ -46,7 +42,8 @@ services:
       # Performance Analyzer / 메트릭 포트
       - "${ES_PERFORMANCE_ANALYZER_HOST_PORT}:${ES_PERFORMANCE_ANALYZER_PORT}"
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.30
     logging:
       driver: "json-file"
       options:
@@ -69,10 +66,6 @@ services:
       - node.roles=cluster_manager,data,ingest,remote_cluster_client
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ELASTIC_PASSWORD}
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
-      - "plugins.metrics.enabled=true"
-      - "plugins.metrics.prometheus.enabled=true"
-      - "plugins.metrics.prometheus.exporter.port=9600"
-      - "plugins.metrics.prometheus.exporter.use_insecure=true"
     ulimits:
       memlock:
         soft: -1
@@ -87,7 +80,8 @@ services:
       - "${ES_PORT}"
       - "${ES_PERFORMANCE_ANALYZER_PORT}"
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.31
     logging:
       driver: "json-file"
       options:
@@ -110,10 +104,6 @@ services:
       - node.roles=cluster_manager,data,ingest,remote_cluster_client
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ELASTIC_PASSWORD}
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
-      - "plugins.metrics.enabled=true"
-      - "plugins.metrics.prometheus.enabled=true"
-      - "plugins.metrics.prometheus.exporter.port=9600"
-      - "plugins.metrics.prometheus.exporter.use_insecure=true"
     ulimits:
       memlock:
         soft: -1
@@ -128,7 +118,8 @@ services:
       - "${ES_PORT}"
       - "${ES_PERFORMANCE_ANALYZER_PORT}"
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.32
     logging:
       driver: "json-file"
       options:
@@ -140,7 +131,8 @@ services:
     container_name: opensearch-dashboards
     restart: unless-stopped
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.33
     expose:
       - "${KIBANA_PORT}" # Expose port 5601 for web access to OpenSearch Dashboards
     ports:
@@ -149,6 +141,7 @@ services:
       - 'OPENSEARCH_HOSTS=["https://opensearch-node1:9200","https://opensearch-node2:9200","https://opensearch-node3:9200"]'
       - OPENSEARCH_USERNAME=${ELASTIC_USERNAME}
       - OPENSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      
     depends_on:
       opensearch-node1: { condition: service_started }
       opensearch-node2: { condition: service_started }
@@ -158,3 +151,29 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
+        
+  opensearch-exporter:
+    image: prometheuscommunity/elasticsearch-exporter:v1.7.0
+    container_name: opensearch-exporter
+    restart: unless-stopped
+    command:
+      - '--es.uri=https://opensearch-node1:9200' # 노드1을 바라봄
+      - '--es.all'
+      - '--es.indices'
+      - '--es.ssl-skip-verify' # OpenSearch 기본 TLS 인증서 검증 건너뛰기
+    environment:
+      - ES_USERNAME=${ELASTIC_USERNAME}
+      - ES_PASSWORD=${ELASTIC_PASSWORD}
+    ports:
+      - "${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}" # 9114
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.34
+    depends_on:
+      - opensearch-node1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+  

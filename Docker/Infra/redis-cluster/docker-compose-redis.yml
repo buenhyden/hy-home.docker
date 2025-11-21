@@ -8,7 +8,8 @@ services:
     secrets:
       - redis_password
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.30
     restart: unless-stopped
     environment:
       NODE_NAME: redis-node-0

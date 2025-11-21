@@ -8,7 +8,8 @@ services:
     secrets:
       - redis_password
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.50
     restart: unless-stopped
     environment:
       NODE_NAME: redis-node-0
@@ -49,7 +50,8 @@ services:
     secrets:
       - redis_password
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.51
     restart: unless-stopped
     environment:
       NODE_NAME: redis-node-1
@@ -83,7 +85,8 @@ services:
     secrets:
       - redis_password
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.52
     restart: unless-stopped
     environment:
       NODE_NAME: redis-node-2
@@ -117,7 +120,8 @@ services:
     secrets:
       - redis_password
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.53
     restart: unless-stopped
     environment:
       NODE_NAME: redis-node-3
@@ -151,7 +155,8 @@ services:
     secrets:
       - redis_password
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.54
     restart: unless-stopped
     environment:
       NODE_NAME: redis-node-4
@@ -185,7 +190,8 @@ services:
     secrets:
       - redis_password
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.55
     restart: unless-stopped
     environment:
       NODE_NAME: redis-node-5
@@ -224,7 +230,8 @@ services:
     secrets:
       - redis_password
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.56
     restart: "no"
     depends_on:
       - redis-node-0
@@ -246,23 +253,31 @@ services:
   ###############################################################
 
   redis-exporter:
-    image: oliver006/redis_exporter:v1.80.0
+    image: oliver006/redis_exporter:v1.80.0-alpine
     container_name: redis-exporter
     ports:
       - "${REDIS_EXPORTER_HOST_PORT}:${REDIS_EXPORTER_PORT}"
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.57
     restart: unless-stopped
     secrets:
-      - redis_password
-    environment:
-      - REDIS_ADDR="redis-node-0:6379"
-    command: >
-      sh -c "
-        REDIS_PASSWORD=$(cat /run/secrets/redis_password);
-        exec redis_exporter \
-          --redis.password=$REDIS_PASSWORD
-      "
+      - redis_password    
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        echo "Reading password from secret..."
+        export REDIS_PASSWORD=$(cat /run/secrets/redis_password | tr -d '\n')
+        
+        echo "Starting Redis Exporter..."
+        # -redis.password-file 대신 -redis.password 사용
+        exec /redis_exporter \
+          -redis.addr=redis://redis-node-0:6379,redis://redis-node-1:6379,redis://redis-node-2:6379,redis://redis-node-3:6379,redis://redis-node-4:6379,redis://redis-node-5:6379 \
+          -redis.password="$REDIS_PASSWORD" \
+          -web.listen-address=:${REDIS_EXPORTER_PORT} \
+          -debug
     depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       redis-node-0: { condition: service_healthy }
       redis-node-1: { condition: service_healthy }
@@ -280,7 +295,8 @@ services:
     image: redis/redisinsight:latest
     container_name: redisinsight
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.58
     ports:
       - "${REDIS_INSIGHT_HOST_PORT}:${REDIS_INSIGHT_PORT}" # 호스트에서 GUI 웹페이지에 접근할 포트
     volumes:

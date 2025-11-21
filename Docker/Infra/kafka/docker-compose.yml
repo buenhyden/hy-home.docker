@@ -42,11 +42,11 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       # JVM 옵션 (필요하면 조절)
       KAFKA_HEAP_OPTS: "-Xms512m -Xmx512m"
-
     volumes:
       - kafka-1-data:/var/lib/kafka/data
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.11
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -87,7 +87,8 @@ services:
     volumes:
       - kafka-2-data:/var/lib/kafka/data
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.12
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -128,7 +129,8 @@ services:
     volumes:
       - kafka-3-data:/var/lib/kafka/data
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.13
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -144,7 +146,8 @@ services:
     container_name: schema-registry
     restart: unless-stopped
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.14
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:${SCHEMA_REGISTRY_PORT}"
@@ -177,7 +180,8 @@ services:
       - kafka-3
       - schema-registry
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.15
     ports:
       - "${KAFKA_CONNECT_HOST_PORT}:${KAFKA_CONNECT_PORT}"
     environment:
@@ -235,7 +239,8 @@ services:
     container_name: kafka-rest-proxy
     restart: unless-stopped
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.16
     ports:
       - "${KAFKA_REST_PROXY_HOST_PORT}:${KAFKA_REST_PROXY_PORT}"
     environment:
@@ -261,7 +266,8 @@ services:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.17
     environment:
       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLSUTER_NAME}
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
@@ -290,12 +296,15 @@ services:
     image: danielqsj/kafka-exporter:v1.7.0
     container_name: kafka-exporter
     restart: unless-stopped
-    environment:
-      KAFKA_SERVER: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+    command:
+      - --kafka.server=kafka-1:9092
+      - --kafka.server=kafka-2:9092
+      - --kafka.server=kafka-3:9092
     ports:
       - "${KAFKA_EXPORTER_HOST_PORT}:${KAFKA_EXPORTER_PORT}"
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.18
     depends_on:
       - kafka-1
       - kafka-2

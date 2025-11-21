@@ -22,7 +22,8 @@ services:
     expose:
       - ${ETCD_CLIENT_PORT}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.40
     restart: unless-stopped
 
   etcd-2:
@@ -45,7 +46,8 @@ services:
     expose:
       - ${ETCD_CLIENT_PORT}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.41
     restart: unless-stopped
 
   etcd-3:
@@ -68,7 +70,8 @@ services:
     expose:
       - ${ETCD_CLIENT_PORT}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.42
     restart: unless-stopped
 
   ###############################################################
@@ -115,7 +118,8 @@ services:
     expose:
       - ${POSTGRES_PORT}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.43
     depends_on:
       - etcd-1
       - etcd-2
@@ -149,19 +153,17 @@ services:
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:${POSTGRES_PORT}
       
       # ★ pg_hba 설정: HAProxy 포함 모든 컨테이너에서 md5 접속 허용
-      PATRONI_POSTGRESQL_PGHBA: |
-        # 로컬 소켓
-        local   all             all                                     trust
-        # 로컬 루프백
+      PATRONI_POSTGRESQL_PGHBA: |        
+        local   all             all                                     trust        
         host    all             all             127.0.0.1/32            trust
-        host    all             all             ::1/128                 trust
-        # Docker 브리지/infra_net에서의 일반 접근 (비밀번호 필수)
+        host    all             all             ::1/128                 trust        
         host    all             all             0.0.0.0/0               md5
         host    replication     all             0.0.0.0/0               md5
     volumes:
       - pg1-data:/home/postgres/pgdata
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.44
     expose:
       - ${POSTGRES_PORT}
     depends_on:
@@ -197,19 +199,17 @@ services:
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-2:${POSTGRES_PORT}
       
       # ★ pg_hba 설정: HAProxy 포함 모든 컨테이너에서 md5 접속 허용
-      PATRONI_POSTGRESQL_PGHBA: |
-        # 로컬 소켓
-        local   all             all                                     trust
-        # 로컬 루프백
+      PATRONI_POSTGRESQL_PGHBA: |        
+        local   all             all                                     trust        
         host    all             all             127.0.0.1/32            trust
-        host    all             all             ::1/128                 trust
-        # Docker 브리지/infra_net에서의 일반 접근 (비밀번호 필수)
+        host    all             all             ::1/128                 trust        
         host    all             all             0.0.0.0/0               md5
         host    replication     all             0.0.0.0/0               md5
     volumes:
       - pg2-data:/home/postgres/pgdata
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.45
     expose:
       - ${POSTGRES_PORT}
     depends_on:
@@ -223,9 +223,7 @@ services:
   ###############################################################
   pg-router:
     image: haproxy:2.9
-    container_name: pg-router
-    env_file:
-      - .env.postgres_exporter
+    container_name: pg-router    
     volumes:
       - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     ports:
@@ -233,7 +231,8 @@ services:
       - "${POSTGRES_READ_HOST_PORT}:${POSTGRES_READ_PORT}" # Read endpoint
       - "${HAPROXY_HOST_PORT}:${HAPROXY_PORT}" # Stats (옵션)
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.46
     depends_on:
       - pg-0
       - pg-1
@@ -243,27 +242,70 @@ services:
   ###############################################################
   # postgres-exporter (Prometheus / Alloy용 메트릭)
   ###############################################################
-  postgres-exporter:
+  pg-0-exporter:
     image: prometheuscommunity/postgres-exporter
-    container_name: postgres-exporter
-    env_file:
-      - .env.postgres_exporter
-    ports:
-      - "${POSTGRES_EXPORTER_HOST_PORT}:${POSTGRES_EXPORTER_PORT}"
-    depends_on:
-      - pg-router
+    container_name: pg-0-exporter
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.47
+    expose:
+      - "${POSTGRES_EXPORTER_PORT}"
+    depends_on:
+      - pg-0    
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        export PGPASSWORD=$(cat /run/secrets/postgres_password | tr -d '\n')
+        # pg-0에 직접 접속
+        export DATA_SOURCE_NAME="postgresql://postgres:$PGPASSWORD@pg-0:5432/postgres?sslmode=disable"
+        exec /bin/postgres_exporter
     restart: unless-stopped
-    labels:
-      org.hy.home.telemetry: "enabled"
-      org.hy.home.stack: "postgres"
-      org.hy.home.role: "exporter"
-      org.hy.home.env: "dev"
-      org.hy.home.logs.enabled: "true"
-      org.hy.home.metrics.enabled: "true"
-      org.hy.home.metrics.port: "${POSTGRES_EXPORTER_PORT}"
-      org.hy.home.metrics.path: "/metrics"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+  pg-1-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: pg-1-exporter
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.48
+    expose:
+      - "${POSTGRES_EXPORTER_PORT}"
+    depends_on:
+      - pg-1  
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        export PGPASSWORD=$(cat /run/secrets/postgres_password | tr -d '\n')
+        # pg-0에 직접 접속
+        export DATA_SOURCE_NAME="postgresql://postgres:$PGPASSWORD@pg-1:5432/postgres?sslmode=disable"
+        exec /bin/postgres_exporter
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+  pg-2-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: pg-2-exporter
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.49
+    expose:
+      - "${POSTGRES_EXPORTER_PORT}"
+    depends_on:
+      - pg-2  
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        export PGPASSWORD=$(cat /run/secrets/postgres_password | tr -d '\n')
+        # pg-0에 직접 접속
+        export DATA_SOURCE_NAME="postgresql://postgres:$PGPASSWORD@pg-2:5432/postgres?sslmode=disable"
+        exec /bin/postgres_exporter
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1"]
       interval: 30s

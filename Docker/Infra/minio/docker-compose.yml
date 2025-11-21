@@ -7,7 +7,8 @@ services:
       - "${MINIO_HOST_PORT}:${MINIO_PORT}" # S3 API
       - "${MINIO_CONSOLE_HOST_PORT}:${MINIO_CONSOLE_PORT}" # Console
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.20
     volumes:
       - minio-data:/data
     healthcheck:
@@ -18,6 +19,7 @@ services:
     environment:
       MINIO_ROOT_USER_FILE: /run/secrets/minio_root_user
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_password
+      MINIO_PROMETHEUS_AUTH_TYPE: "public"
     secrets:
       - minio_root_password
       - minio_root_user

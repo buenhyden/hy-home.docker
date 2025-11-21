@@ -6,6 +6,7 @@ k8s/.env
 Docker/secrets/
 Docker/.env*
 Docker/Infra/.env
+Docker/Infra/observability/alertmanager/config.yml
 Docker/Projects/.env
 Docker/Infra/**/.env
 Docker/Infra/**/.env.*

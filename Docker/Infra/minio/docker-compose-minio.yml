@@ -1,13 +1,14 @@
 services:
-  minio:
-    image: coollabsio/minio:latest
+  minio:    
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio
     command: server /data --console-address ":${MINIO_CONSOLE_HOST_PORT}"
     ports:
       - "${MINIO_HOST_PORT}:${MINIO_PORT}" # S3 API
       - "${MINIO_CONSOLE_HOST_PORT}:${MINIO_CONSOLE_PORT}" # Console
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.50
     volumes:
       - minio-data:/data
     healthcheck:

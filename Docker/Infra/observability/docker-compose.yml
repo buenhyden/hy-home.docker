@@ -1,0 +1,151 @@
+services:
+  # -------------------------------------------------------
+  # 1. Metrics Storage (Prometheus)
+  # -------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v3.0.0
+    container_name: infra-prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle' # 설정 리로드 허용
+      - '--web.enable-remote-write-receiver'
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "${PROMETHEUS_HOST_PORT}:${PROMETHEUS_PORT}"
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.21
+    restart: unless-stopped
+  # -------------------------------------------------------
+  # 2. Log Storage (Loki)
+  # -------------------------------------------------------
+  loki:
+    image: grafana/loki:3.2.1
+    container_name: infra-loki
+    command: -config.file=/etc/loki/loki-config.yaml
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.22
+    expose:
+      - ${LOKI_PORT}
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/loki-config.yaml:ro
+      - loki-data:/loki
+    restart: unless-stopped
+  # -------------------------------------------------------
+  # 3. Trace Storage (Tempo)
+  # -------------------------------------------------------
+  tempo:
+    image: grafana/tempo:latest
+    container_name: infra-tempo
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo/tempo.yaml:/etc/tempo.yaml:ro
+      - tempo-data:/var/tempo
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.23
+    ports:
+      - "${TEMPO_HOST_PORT}:${TEMPO_PORT}" # Tempo HTTP API (Grafana 연결용)
+      # 4317 포트는 Alloy가 받아서 Tempo로 넘기므로 여기선 호스트에 노출 안 해도 됨 (내부 통신)
+    restart: unless-stopped
+  # -------------------------------------------------------
+  # 4. Visualization (Grafana)
+  # -------------------------------------------------------
+  grafana:
+    image: grafana/grafana:12.3.0
+    container_name: infra-grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USERNAME}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}   
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - grafana-data:/var/lib/grafana
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.24
+    ports:
+      - "${GRAFANA_HOST_PORT}:${GRAFANA_PORT}"
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+    restart: unless-stopped
+  # -------------------------------------------------------
+  # 5. Telemetry Collector (Alloy)
+  # -------------------------------------------------------
+  alloy:
+    image: grafana/alloy:v1.11.3
+    container_name: infra-alloy
+    restart: unless-stopped
+    user: "0:0"
+    command: ["run", "--server.http.listen-addr=0.0.0.0:12345","/etc/alloy/config.alloy"]
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro # 도커 로그 접근
+      - /var/run/docker.sock:/var/run/docker.sock:ro # 도커 메타데이터 접근    
+    ports:
+      - "${ALLOY_HOST_PORT}:${ALLOY_PORT}"
+      - "${ALLOY_OTLP_GRPC_HOST_PORT}:${ALLOY_OTLP_GRPC_PORT}" # OTLP gRPC Receiver
+      - "${ALLOY_OTLP_HTTP_HOST_PORT}:${ALLOY_OTLP_HTTP_PORT}" # OTLP HTTP Receiver
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.25
+    depends_on:
+      - loki
+      - prometheus
+      - tempo
+  # -------------------------------------------------------
+  # 6. Container Metrics (cAdvisor)
+  # -------------------------------------------------------
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: cadvisor
+    hostname: cadvisor
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/kmsg
+    expose:
+      - ${CADVISOR_PORT}    
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.26
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: infra-alertmanager
+    environment:
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SLACK_ALERTMANAGER_WEBHOOK_URL=${SLACK_ALERTMANAGER_WEBHOOK_URL}
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'      
+    volumes:
+      - ./alertmanager/config.yml:/etc/alertmanager/config.yml
+      - alertmanager-data:/alertmanager
+    networks:
+      - infra_net
+    ports:
+      - "${ALERTMANAGER_HOST_PORT}:${ALERTMANAGER_PORT}"
+    restart: unless-stopped
+  
