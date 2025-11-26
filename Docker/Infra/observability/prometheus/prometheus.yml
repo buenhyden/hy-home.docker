@@ -28,6 +28,9 @@ scrape_configs:
     static_configs:
       - targets: ["alertmanager:9093"]
 
+  - job_name: "traefik"
+    static_configs:
+      - targets: ["traefik:8082"] # 도커 서비스명:메트릭포트
   # -----------------------------------------------
   # Infra Components (별도 Docker Compose 파일에 정의된 서비스들)
   # infra_net 네트워크를 통해 이름으로 접근

@@ -34,8 +34,8 @@ include:
   - ollama/docker-compose.yml  
   - opensearch/docker-compose.yml  
   - postgresql/docker-compose.yml    
-  - redis-cluster/docker-compose.yml
-  - nginx/docker-compose.yml
+  - redis-cluster/docker-compose.yml  
+  - traefik/docker-compose.yml
   # - locust/docker-compose.yml
   # - wikijs/docker-compose.yml
   # - airflow/docker-compose.yml

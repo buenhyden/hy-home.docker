@@ -299,10 +299,20 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.68
-    ports:
-      - "${REDIS_INSIGHT_HOST_PORT}:${REDIS_INSIGHT_PORT}" # 호스트에서 GUI 웹페이지에 접근할 포트
+    # ports:
+    #   - "${REDIS_INSIGHT_HOST_PORT}:${REDIS_INSIGHT_PORT}" # 호스트에서 GUI 웹페이지에 접근할 포트
     volumes:
       - redisinsight-data:/db
+    labels:
+      - "traefik.enable=true"
+      # 도메인: redisinsight.hy-home.local
+      - "traefik.http.routers.redisinsight.rule=Host(`redisinsight.${DEFAULT_URL}`)"
+      - "traefik.http.routers.redisinsight.entrypoints=websecure"
+      - "traefik.http.routers.redisinsight.tls=true"
+      
+      # [중요] RedisInsight 기본 포트 5540 (또는 8001) 확인 필요
+      # 최신 이미지는 보통 5540을 사용합니다.
+      - "traefik.http.services.redisinsight.loadbalancer.server.port=${REDIS_INSIGHT_PORT}"
     logging:
       driver: "json-file"
       options:

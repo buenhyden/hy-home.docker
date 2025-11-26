@@ -3,22 +3,25 @@ services:
     image: n8nio/n8n:latest
     container_name: n8n
     restart: unless-stopped    
-    ports:
-      - ${N8N_HOST_PORT}:${N8N_PORT}
+    # ports:
+    #   - ${N8N_HOST_PORT}:${N8N_PORT}
     expose:
       - ${N8N_PORT}
     environment:
       - GENERIC_TIMEZONE=${DEFAULT_TIMEZONE:-Asia/Seoul}
       - TZ=${DEFAULT_TIMEZONE:-Asia/Seoul}      
       # 1. 기본 설정
-      - N8N_HOST=${N8N_HOST:-localhost}
-      - N8N_PORT=${N8N_PORT}
-      - N8N_PROTOCOL=http
-      - WEBHOOK_URL=http://${N8N_HOST:-localhost}:${N8N_HOST_PORT}/
-      
+      # [중요] Traefik 도메인 설정 반영
+      - N8N_PROTOCOL=https
+      - N8N_HOST=n8n.${DEFAULT_URL}      
+      - N8N_PORT=${N8N_PORT}      
+      - WEBHOOK_URL=https://n8n.${DEFAULT_URL}/
+      - N8N_PUSH_BACKEND=websocket
       # 2. 보안 설정 (암호화 키는 한 번 설정하면 바꾸면 안 됨)
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_EDITOR_BASE_URL=https://n8n.${DEFAULT_URL}
+      - N8N_PUBLIC_API_BASE_URL=https://n8n.${DEFAULT_URL}
       # 3. PostgreSQL 연결 (기존 HA 클러스터 활용)
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=${POSTGRES_HOSTNAME}
@@ -35,6 +38,16 @@ services:
       - N8N_METRICS_PREFIX=n8n_  # 메트릭 이름 앞에 붙을 접두사 (관리하기 편함)
       - N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL=true # 어떤 워크플로우가 부하를 주는지 식별 가능
       - N8N_METRICS_INCLUDE_NODE_TYPE_LABEL=true   # 어떤 노드(HTTP, Cron 등)가 많이 쓰이는지 확인
+    labels:
+      - "traefik.enable=true"
+      
+      # n8n UI & Webhook 라우터 (https://n8n.hy-home.local)
+      - "traefik.http.routers.n8n.rule=Host(`n8n.${DEFAULT_URL}`)"
+      - "traefik.http.routers.n8n.entrypoints=websecure"
+      - "traefik.http.routers.n8n.tls=true"
+      - "traefik.http.routers.n8n.service=n8n"
+      # [중요] n8n 내부 포트 (5678) 연결
+      - "traefik.http.services.n8n.loadbalancer.server.port=${N8N_PORT}"      
     volumes:
       - n8n-data:/home/node/.n8n
     networks:
@@ -56,6 +69,10 @@ services:
       infra_net:
         ipv4_address: 172.19.0.15
     restart: unless-stopped    
+    environment:
+      - QUEUE_BULL_REDIS_HOST=n8n-redis
+      - QUEUE_BULL_REDIS_PORT=6379
+      - QUEUE_BULL_REDIS_PASSWORD_FILE=/run/secrets/redis_password
     volumes:
       # 공통 redis.conf
       - n8n-redis-data:/data

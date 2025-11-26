@@ -176,8 +176,15 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092"
     expose:
       - ${SCHEMA_REGISTRY_PORT}
-    ports:
-      - "${SCHEMA_REGISTRY_HOST_PORT}:${SCHEMA_REGISTRY_PORT}"
+    # ports:
+    #   - "${SCHEMA_REGISTRY_HOST_PORT}:${SCHEMA_REGISTRY_PORT}"
+    labels:
+      - "traefik.enable=true"
+      # 도메인: schema-registry.hy-home.local
+      - "traefik.http.routers.schema-registry.rule=Host(`schema-registry.${DEFAULT_URL}`)"
+      - "traefik.http.routers.schema-registry.entrypoints=websecure"
+      - "traefik.http.routers.schema-registry.tls=true"
+      - "traefik.http.services.schema-registry.loadbalancer.server.port=${SCHEMA_REGISTRY_PORT}"
     depends_on:
       - kafka-1
       - kafka-2
@@ -203,8 +210,8 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.24
-    ports:
-      - "${KAFKA_CONNECT_HOST_PORT}:${KAFKA_CONNECT_PORT}"
+    # ports:
+    #   - "${KAFKA_CONNECT_HOST_PORT}:${KAFKA_CONNECT_PORT}"
     environment:
       # 내부 리스너 포트(19092) 사용
       CONNECT_BOOTSTRAP_SERVERS: "kafka-1:19092,kafka-2:19092,kafka-3:19092"
@@ -247,6 +254,13 @@ services:
       # 커스텀 커넥터가 있다면 여기에 마운트 (예: ./connect-plugins:/usr/share/confluent-hub-components)
       # - ./connect-plugins:/usr/share/confluent-hub-components
       - kafka-connect-data:/var/lib/kafka-connect
+    labels:
+      - "traefik.enable=true"
+      # 도메인: connect.hy-home.local
+      - "traefik.http.routers.kafka-connect.rule=Host(`kafka-connect.${DEFAULT_URL}`)"
+      - "traefik.http.routers.kafka-connect.entrypoints=websecure"
+      - "traefik.http.routers.kafka-connect.tls=true"
+      - "traefik.http.services.kafka-connect.loadbalancer.server.port=${KAFKA_CONNECT_PORT}"
     logging:
       driver: "json-file"
       options:
@@ -263,8 +277,16 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.25
-    ports:
-      - "${KAFKA_REST_PROXY_HOST_PORT}:${KAFKA_REST_PROXY_PORT}"
+    # ports:
+    #   - "${KAFKA_REST_PROXY_HOST_PORT}:${KAFKA_REST_PROXY_PORT}"
+    labels:
+      - "traefik.enable=true"
+      # 도메인: kafka-rest.hy-home.local
+      - "traefik.http.routers.kafka-rest.rule=Host(`kafka-rest.${DEFAULT_URL}`)"
+      - "traefik.http.routers.kafka-rest.entrypoints=websecure"
+      - "traefik.http.routers.kafka-rest.tls=true"
+      - "traefik.http.services.kafka-rest.loadbalancer.server.port=${KAFKA_REST_PROXY_PORT}"
+
     environment:
       KAFKA_REST_HOST_NAME: kafka-rest-proxy
       KAFKA_REST_LISTENERS: "http://0.0.0.0:${KAFKA_REST_PROXY_PORT}"
@@ -302,8 +324,15 @@ services:
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: "http://kafka-connect:${KAFKA_CONNECT_PORT}"
     expose:
       - ${KAFKA_UI_PORT}
-    ports:
-      - "${KAFKA_UI_HOST_PORT}:${KAFKA_UI_PORT}" # Host -> Container
+    # ports:
+    #   - "${KAFKA_UI_HOST_PORT}:${KAFKA_UI_PORT}" # Host -> Container
+    labels:
+      - "traefik.enable=true"
+      # 도메인: kafka-ui.hy-home.local
+      - "traefik.http.routers.kafka-ui.rule=Host(`kafka-ui.${DEFAULT_URL}`)"
+      - "traefik.http.routers.kafka-ui.entrypoints=websecure"
+      - "traefik.http.routers.kafka-ui.tls=true"
+      - "traefik.http.services.kafka-ui.loadbalancer.server.port=${KAFKA_UI_PORT}"
     depends_on:
       - kafka-1
       - kafka-2
@@ -325,8 +354,8 @@ services:
       - --kafka.server=kafka-1:19092
       - --kafka.server=kafka-2:19092
       - --kafka.server=kafka-3:19092
-    ports:
-      - "${KAFKA_EXPORTER_HOST_PORT}:${KAFKA_EXPORTER_PORT}"
+    # ports:
+    #   - "${KAFKA_EXPORTER_HOST_PORT}:${KAFKA_EXPORTER_PORT}"
     networks:
       infra_net:
         ipv4_address: 172.19.0.27

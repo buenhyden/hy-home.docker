@@ -6,6 +6,7 @@ k8s/.env
 Docker/secrets/
 Docker/.env*
 Docker/Infra/.env
+Docker/Infra/traefik/certs/
 Docker/Infra/observability/alertmanager/config.yml
 Docker/Infra/observability/tempo/tempo.yaml
 Docker/Infra/observability/loki/loki-config.yaml

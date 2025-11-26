@@ -12,9 +12,9 @@ services:
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_password
       MINIO_PROMETHEUS_AUTH_TYPE: "public"
       MINIO_API_ROOT_ACCESS: "on"    
-    ports:
-      - "${MINIO_HOST_PORT}:${MINIO_PORT}" # S3 API
-      - "${MINIO_CONSOLE_HOST_PORT}:${MINIO_CONSOLE_PORT}" # Console
+    # ports:
+    #   - "${MINIO_HOST_PORT}:${MINIO_PORT}" # S3 API
+    #   - "${MINIO_CONSOLE_HOST_PORT}:${MINIO_CONSOLE_PORT}" # Console
     networks:      
       infra_net:
         ipv4_address: 172.19.0.12
@@ -25,6 +25,30 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3    
+    labels:
+      - "traefik.enable=true"
+      
+      # ---------------------------------------------------------
+      # 1. MinIO API 라우터 (S3 호환 프로그램용 - 포트 9000)
+      # ---------------------------------------------------------
+      # 접속 주소: https://minio.hy-home.local
+      - "traefik.http.routers.minio-api.rule=Host(`minio.${DEFAULT_URL}`)"
+      - "traefik.http.routers.minio-api.entrypoints=websecure"
+      - "traefik.http.routers.minio-api.tls=true"
+      - "traefik.http.routers.minio-api.service=minio-api"
+      # [중요] 내부 포트 9000번과 연결
+      - "traefik.http.services.minio-api.loadbalancer.server.port=9000"
+
+      # ---------------------------------------------------------
+      # 2. MinIO Console 라우터 (웹 브라우저용 - 포트 9001)
+      # ---------------------------------------------------------
+      # 접속 주소: https://console.minio.hy-home.local
+      - "traefik.http.routers.minio-console.rule=Host(`minio-console.${DEFAULT_URL}`)"
+      - "traefik.http.routers.minio-console.entrypoints=websecure"
+      - "traefik.http.routers.minio-console.tls=true"
+      - "traefik.http.routers.minio-console.service=minio-console"
+      # [중요] 내부 포트 9001번과 연결
+      - "traefik.http.services.minio-console.loadbalancer.server.port=9001"
     logging:
       driver: "json-file"
       options:
