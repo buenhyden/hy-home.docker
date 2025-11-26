@@ -20,6 +20,10 @@ secrets:
     file: ../secrets/minio_root_password.txt
   minio_root_user:
     file: ../secrets/minio_root_user.txt
+  minio_app_user_password:
+    file: ../secrets/minio_app_user_password.txt
+  minio_app_user:
+    file: ../secrets/minio_app_user.txt
 
 include:    
   - influxdb/docker-compose.yml

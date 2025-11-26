@@ -4,10 +4,18 @@ services:
     container_name: minio
     restart: unless-stopped
     command: server /data --console-address ":${MINIO_CONSOLE_HOST_PORT}"
+    secrets:
+      - minio_root_user
+      - minio_root_password
+    environment:
+      MINIO_ROOT_USER_FILE: /run/secrets/minio_root_user
+      MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_password
+      MINIO_PROMETHEUS_AUTH_TYPE: "public"
+      MINIO_API_ROOT_ACCESS: "on"    
     ports:
-      # - "${MINIO_HOST_PORT}:${MINIO_PORT}" # S3 API
+      - "${MINIO_HOST_PORT}:${MINIO_PORT}" # S3 API
       - "${MINIO_CONSOLE_HOST_PORT}:${MINIO_CONSOLE_PORT}" # Console
-    networks:
+    networks:      
       infra_net:
         ipv4_address: 172.19.0.12
     volumes:
@@ -16,17 +24,68 @@ services:
       test: ["CMD", "curl", "-f", "http://minio:9000/minio/health/live"]
       interval: 30s
       timeout: 20s
-      retries: 3
-    environment:
-      MINIO_ROOT_USER_FILE: /run/secrets/minio_root_user
-      MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_password
-      MINIO_PROMETHEUS_AUTH_TYPE: "public"
-    secrets:
-      - minio_root_password
-      - minio_root_user
+      retries: 3    
     logging:
       driver: "json-file"
       options:
         max-size: "5m"
         max-file: "2"
   
+  minio-create-buckets:
+    image: minio/mc:latest
+    container_name: minio-create-buckets
+    restart: "no" 
+    networks:
+      - infra_net
+    secrets:
+      - minio_root_user
+      - minio_root_password      
+      - minio_app_user
+      - minio_app_user_password          
+    depends_on:
+      minio:
+        condition: service_healthy # MinIO가 헬스체크 통과할 때까지 대기 (필수)   
+    entrypoint: ["/bin/sh"]
+    command:
+      - -c
+      - |
+        set -e        
+
+        echo "[1] root 크레덴셜 로딩..."        
+        ROOT_USER=$$(cat /run/secrets/minio_root_user)
+        ROOT_PASS=$$(cat /run/secrets/minio_root_password)
+        APP_USER=$$(cat /run/secrets/minio_app_user)
+        APP_PASS=$$(cat /run/secrets/minio_app_user_password)
+
+        export MC_CONFIG_DIR=/tmp/.mc
+
+        echo "[2] root alias 설정..."
+        mc  alias set root http://minio:9000 "$$ROOT_USER" "$$ROOT_PASS"
+
+        echo "[3] 버킷용 유저 생성 (있으면 무시)..."
+        # 이미 존재하면 에러 날 수 있으니 || true
+        mc  admin user add root "$$APP_USER" "$$APP_PASS" || true
+
+        echo "[4] readwrite 정책 부여..."
+        mc  admin policy attach root readwrite --user="$$APP_USER"
+
+        echo "[5] 버킷용 유저 alias 생성..."
+        mc  alias set myminio http://minio:9000 "$$APP_USER" "$$APP_PASS"
+
+        echo "[6] 버킷 생성..."
+        mc  mb myminio/tempo-bucket --ignore-existing
+        mc  mb myminio/loki-bucket --ignore-existing
+        mc  mb myminio/cdn-bucket --ignore-existing
+
+        echo "[7] cdn-bucket public 설정 (선택)..."
+        mc  anonymous set public myminio/cdn-bucket || true
+
+        echo "----------------------------------"
+        echo "버킷 및 계정 초기화 완료"
+        mc  ls myminio
+        echo "----------------------------------"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
