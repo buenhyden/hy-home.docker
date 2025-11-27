@@ -3,7 +3,6 @@ Infisical Emergency Kit.pdf
 .vscode/
 Doc/클라우드_취약점_점검_가이드.pdf
 secrets/
-.env*
 Infra/.env
 Infra/traefik/certs/
 Infra/traefik/oauth2-proxy.cfg
@@ -15,11 +14,12 @@ Infra/observability/loki/loki-config.yaml
 Projects/.env
 Infra/**/.env
 Infra/**/.env.*
-**/.env
+
 Projects/**/.ssh
 hosts.txt
 Setting_Database.txt
 Certs/
+Example/.env
 Example/harbor
 Example/keycloak
 Example/Observability
