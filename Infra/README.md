@@ -22,7 +22,9 @@
 | 서비스 | 설명 |
 | :--- | :--- |
 | [airflow](./airflow) | 워크플로우 오케스트레이션을 위한 Apache Airflow. |
+| [arangodb](./arangodb) | (준비 중) ArangoDB 멀티 모델 데이터베이스. |
 | [cassandra](./cassandra) | Apache Cassandra NoSQL 데이터베이스. |
+| [couchdb](./couchdb) | Apache CouchDB 클러스터 (3 노드). |
 | [harbor](./harbor) | Harbor 컨테이너 레지스트리. |
 | [influxdb](./influxdb) | 시계열 데이터베이스 InfluxDB. |
 | [kafka](./kafka) | 스키마 레지스트리, 커넥트, UI를 포함한 Apache Kafka (KRaft 모드). |
