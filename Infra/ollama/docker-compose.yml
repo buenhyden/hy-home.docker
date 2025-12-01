@@ -81,7 +81,7 @@ services:
       - VECTOR_DB_URL=http://qdrant:${QDRANT_PORT}
       # 임베딩(텍스트를 숫자로 변환) 작업을 Ollama에게 맡김
       - RAG_EMBEDDING_ENGINE=ollama
-      - RAG_EMBEDDING_MODEL=mxbai-embed-large
+      - RAG_EMBEDDING_MODEL=qwen3-embedding:0.6b
     volumes:
       - ollama-webui:/app/backend/data
     depends_on:

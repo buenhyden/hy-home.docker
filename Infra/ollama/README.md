@@ -41,10 +41,9 @@ docker-compose up -d
 #### LLM
 
 ```bash
-docker exec -it ollama ollama pull qwen3:latest
-docker exec -it ollama ollama pull exaone3.5:latest
-docker exec -it ollama ollama pull llama3.1:latest
-
+docker exec -it ollama ollama pull qwen3:4b
+docker exec -it ollama ollama pull exaone3.5:7.8b
+docker exec -it ollama ollama pull llama3.2:3b
 ```
 
 #### Embedding
@@ -52,6 +51,8 @@ docker exec -it ollama ollama pull llama3.1:latest
 ```bash
 docker exec -it ollama ollama pull nomic-embed-text:latest
 docker exec -it ollama ollama pull mxbai-embed-large:latest
+docker exec -it ollama ollama pull qwen3-embedding:0.6b
+docker exec -it ollama ollama pull embeddinggemma:300m
 ```
 
 #### VLM
@@ -59,7 +60,7 @@ docker exec -it ollama ollama pull mxbai-embed-large:latest
 ```bash
 docker exec -it ollama ollama pull Moondream:latest
 docker exec -it ollama ollama pull minicpm-v:8b 
-docker exec -it ollama ollama pull qwen3-vl:8b
+docker exec -it ollama ollama pull qwen3-vl:4b
 ```
 
 ### List

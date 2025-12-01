@@ -2,27 +2,26 @@
 set -eu
 
 REDIS_PASSWORD=$(cat /run/secrets/redis_password)
+echo "Waiting for Cluster nodes..."
+sleep 5
 
-echo "Waiting for Redis nodes to be healthy..."
-sleep 10
-
-# 이미 클러스터가 구성되어 있으면 skip
-if redis-cli -a "$REDIS_PASSWORD" -h redis-node-0 -p 6379 cluster info 2>/dev/null | grep -q "cluster_state:ok"; then
-  echo "Cluster already configured. Skipping cluster creation."
+# Node 0(6370)을 기준으로 상태 확인
+if redis-cli -a "$REDIS_PASSWORD" -h redis-node-0 -p 6370 cluster info 2>/dev/null | grep -q "cluster_state:ok"; then
+  echo "✅ Cluster already configured."
   exit 0
 fi
 
-echo "Creating Redis Cluster (3 masters, 3 replicas)..."
+echo "🚧 Creating Redis Cluster..."
 
-# 비대화형 클러스터 생성 (--cluster-yes)
+# 변경된 포트(6370~6375)로 클러스터 생성
 redis-cli -a "$REDIS_PASSWORD" --cluster create \
   redis-node-0:6379 \
-  redis-node-1:6379 \
-  redis-node-2:6379 \
-  redis-node-3:6379 \
-  redis-node-4:6379 \
-  redis-node-5:6379 \
+  redis-node-1:6380 \
+  redis-node-2:6381 \
+  redis-node-3:6382 \
+  redis-node-4:6383 \
+  redis-node-5:6384 \
   --cluster-replicas 1 \
   --cluster-yes
 
-echo "Cluster creation completed."
+echo "🎉 Cluster creation completed!"

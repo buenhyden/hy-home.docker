@@ -31,16 +31,17 @@ include:
   - minio/docker-compose.yml
   - n8n/docker-compose.yml
   - observability/docker-compose.yml
-  - ollama/docker-compose.yml  
-  - opensearch/docker-compose.yml  
-  - postgresql/docker-compose.yml    
+  - ollama/docker-compose.yml    
+  - postgresql-cluster/docker-compose.yml    
   - redis-cluster/docker-compose.yml  
   - traefik/docker-compose.yml
   # - nginx/docker-compose.yml
   - oauth2-proxy/docker-compose.yml
   - keycloak/docker-compose.yml  
-  - airflow/docker-compose.yml 
-  - couchdb/docker-compose.yml
+  - mng-db/docker-compose.yml
+  # - opensearch/docker-compose.yml  
+  # - airflow/docker-compose.yml 
+  # - couchdb/docker-compose.yml
   # - arangodb/docker-compose.yml
   # - mongodb/docker-compose.yml
   # - locust/docker-compose.yml
@@ -130,6 +131,12 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_OBSERVABILITY_DIR}/grafana
+  mng-pg-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/mng-pg
   pg0-data:
     # driver: local
     # driver_opts:
@@ -190,7 +197,7 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_REDIS_DATA_DIR}/node5
-  n8n-redis-data:
+  mng-redis-data:
     # driver: local
     # driver_opts:
     #   o: bind

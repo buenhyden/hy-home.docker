@@ -8,8 +8,6 @@
 
 - **n8n**: n8n 워크플로우 자동화 서버 (메인).
 - **n8n-worker**: 워크플로우 실행을 담당하는 워커 노드.
-- **n8n-redis**: n8n 내부 큐 관리를 위한 Redis.
-- **n8n-redis-exporter**: Redis 메트릭을 위한 Prometheus Exporter.
 
 ## 필수 조건
 
@@ -23,7 +21,7 @@
 
 - `N8N_HOST_PORT`: n8n 호스트 포트.
 - `N8N_ENCRYPTION_KEY`: 자격 증명 암호화 키.
-- `POSTGRES_HOSTNAME`, `POSTGRES_WRITE_PORT`, `N8N_DB_USER`, `N8N_DB_PASSWORD`: 데이터베이스 연결 정보.
+- `POSTGRES_HOSTNAME`, `POSTGRES_PORT`, `N8N_DB_USER`, `N8N_DB_PASSWORD`: 데이터베이스 연결 정보.
 - `REDIS_PASSWORD`: 내부 Redis 인스턴스 비밀번호.
 - `DEFAULT_URL`: 기본 도메인 URL.
 
@@ -42,4 +40,3 @@ docker-compose up -d
 ## 볼륨
 
 - `n8n-data`: n8n 데이터의 영구 저장소.
-- `n8n-redis-data`: Redis 데이터의 영구 저장소.

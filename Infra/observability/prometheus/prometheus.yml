@@ -43,6 +43,11 @@ scrape_configs:
         labels:
           cluster: "pg-ha-cluster"
 
+  - job_name: "manage postgres"
+    static_configs:
+      # Docker 네트워크 내부 포트(9187) 사용
+      - targets: ["mng-pg-exporter:9187"]
+
   - job_name: "redis-cluster"
     static_configs:
       - targets:
@@ -65,9 +70,9 @@ scrape_configs:
         # Docker Compose에서 실행 중인 Exporter의 서비스명:포트
         replacement: redis-exporter:9121
 
-  - job_name: "n8n-redis-exporter"
+  - job_name: "mng-redis-exporter"
     static_configs:
-      - targets: ["n8n-redis-exporter:9121"]
+      - targets: ["mng-redis-exporter:9121"]
 
   - job_name: "kafka-exporter"
     static_configs:
@@ -78,12 +83,6 @@ scrape_configs:
     scheme: http
     static_configs:
       - targets: ["minio:9000"]
-
-  - job_name: "opensearch-exporter"
-    metrics_path: /metrics
-    static_configs:
-      # Docker 네트워크 내부 통신이므로 서비스 이름 사용
-      - targets: ["opensearch-exporter:9114"]
 
   - job_name: "n8n-monitor"
     metrics_path: "/metrics"
@@ -102,22 +101,28 @@ scrape_configs:
   - job_name: "haproxy"
     static_configs:
       - targets: ["pg-router:8404"] # 도커 내부 통신
-  
-  - job_name: 'keycloak'    
+
+  - job_name: "keycloak"
     metrics_path: /metrics
     scheme: http
-    static_configs:      
-      - targets: ['keycloak:9000']
+    static_configs:
+      - targets: ["keycloak:9000"]
 
-  - job_name: 'airflow'
-    static_configs:
-      - targets: ['airflow-statsd-exporter:9102']
-        
-  - job_name: 'couchdb'
-    metrics_path: /_node/_local/_prometheus
-    static_configs:
-      - targets: ['couchdb:5984']
-    # CouchDB는 메트릭 접근 시에도 인증이 필요합니다.
-    basic_auth:
-      username: 'admin' # .env의 COUCHDB_USER
-      password: 'uZFst8vzfwxsbTz' # .env의 COUCHDB_PASSWORD
+  # - job_name: "opensearch-exporter"
+  #   metrics_path: /metrics
+  #   static_configs:
+  #     # Docker 네트워크 내부 통신이므로 서비스 이름 사용
+  #     - targets: ["opensearch-exporter:9114"]
+
+  # - job_name: 'airflow'
+  #   static_configs:
+  #     - targets: ['airflow-statsd-exporter:9102']
+
+  # - job_name: 'couchdb'
+  #   metrics_path: /_node/_local/_prometheus
+  #   static_configs:
+  #     - targets: ['couchdb:5984']
+  #   # CouchDB는 메트릭 접근 시에도 인증이 필요합니다.
+  #   basic_auth:
+  #     username: 'admin' # .env의 COUCHDB_USER
+  #     password: 'uZFst8vzfwxsbTz' # .env의 COUCHDB_PASSWORD

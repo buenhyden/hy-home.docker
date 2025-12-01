@@ -39,8 +39,8 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.31
-    # ports:
-    #   - "${LOKI_HOST_PORT}:${LOKI_PORT}"
+    ports:
+      - "${LOKI_HOST_PORT}:${LOKI_PORT}"
     volumes:
       - ./loki/loki-config.yaml:/etc/loki/loki-config.yaml:ro
       - loki-data:/loki
@@ -58,8 +58,8 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.32
-    # ports:
-    #   - "${TEMPO_HOST_PORT}:${TEMPO_PORT}"      
+    ports:
+      - "${TEMPO_HOST_PORT}:${TEMPO_PORT}"      
     restart: unless-stopped
   # -------------------------------------------------------
   # 4. Visualization (Grafana)
@@ -114,12 +114,12 @@ services:
       
       # 권한 매핑 (Role Mapping) - 핵심
       # Keycloak의 'groups' 정보를 읽어서 Grafana 권한(Admin/Editor/Viewer)으로 변환
-      # 로직: groups 배열에 '/admin'이 있으면 'Admin', 아니면 'Viewer' 부여
-      - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups[*], '/admin') && 'Admin' || 'Viewer'
-
+      # 로직: groups 배열에 '/admins'이 있으면 'Admin', 아니면 'Viewer' 부여
+      - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH="contains(groups[*], '/admins') && 'Admin' || contains(groups[*], '/editors') && 'Editor' || 'Viewer'"
+      - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT=true
       # (옵션) '/admin' 그룹 유저에게 Grafana 전체 서버 관리자(Super Admin) 권한까지 부여하려면 true
       - GF_AUTH_GENERIC_OAUTH_ALLOW_ASSIGN_GRAFANA_ADMIN=true
-      - GF_AUTH_GENERIC_OAUTH_GRAFANA_ADMIN_ATTRIBUTE_PATH=contains(groups[*], '/admin')
+      - GF_AUTH_GENERIC_OAUTH_GRAFANA_ADMIN_ATTRIBUTE_PATH=contains(groups[*], '/admins')
       # [5] 기타 기능 설정
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
     volumes:
@@ -157,10 +157,10 @@ services:
       - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro # 도커 로그 접근
       - /var/run/docker.sock:/var/run/docker.sock:ro # 도커 메타데이터 접근    
-    # ports:
+    ports:
     #   - "${ALLOY_HOST_PORT}:${ALLOY_PORT}"
-    #   - "${ALLOY_OTLP_GRPC_HOST_PORT}:${ALLOY_OTLP_GRPC_PORT}" # OTLP gRPC Receiver
-    #   - "${ALLOY_OTLP_HTTP_HOST_PORT}:${ALLOY_OTLP_HTTP_PORT}" # OTLP HTTP Receiver
+      - "${ALLOY_OTLP_GRPC_HOST_PORT}:${ALLOY_OTLP_GRPC_PORT}" # OTLP gRPC Receiver
+      - "${ALLOY_OTLP_HTTP_HOST_PORT}:${ALLOY_OTLP_HTTP_PORT}" # OTLP HTTP Receiver
     networks:
       infra_net:
         ipv4_address: 172.19.0.34
