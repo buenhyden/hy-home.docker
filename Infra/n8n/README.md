@@ -27,12 +27,16 @@ flowchart TB
         WORKER[n8n Worker<br/>Execution Engine]
     end
     
-    subgraph "메시지 큐"
-        REDIS[n8n-redis<br/>Bull Queue]
+    subgraph "Queue Backend"
+        MNGREDIS[mng-redis<br/>Bull Queue<br/>공유 Redis]
+    end
+    
+    subgraph "Internal Cache"
+        N8NREDIS[n8n-redis<br/>내부 캐시<br/>메모리 전용]
     end
     
     subgraph "데이터베이스"
-        PG[PostgreSQL<br/>워크플로우 저장]
+        MNGPG[mng-pg<br/>PostgreSQL<br/>워크플로우 저장]
     end
     
     subgraph "모니터링"
@@ -51,18 +55,20 @@ flowchart TB
     CRON -->|Schedule| N8N
     MANUAL -->|Start| N8N
     
-    N8N -->|Enqueue Job| REDIS
-    REDIS -->|Dequeue| WORKER
+    N8N -->|Enqueue Job| MNGREDIS
+    MNGREDIS -->|Dequeue| WORKER
     
-    N8N <-->|Workflows| PG
-    WORKER <-->|Workflows| PG
+    N8N -->|Internal Cache| N8NREDIS
+    
+    N8N <-->|Workflows| MNGPG
+    WORKER <-->|Workflows| MNGPG
     
     WORKER -->|Actions| SLACK
     WORKER -->|Actions| EMAIL
     WORKER -->|Actions| API
     WORKER -->|Actions| DB
     
-    REDIS -->|메트릭| REXP
+    MNGREDIS -->|메트릭| REXP
     REXP -->|수집| PROM
 ```
 
@@ -85,17 +91,24 @@ flowchart TB
 - `WEBHOOK_URL=https://n8n.${DEFAULT_URL}/`
 - `N8N_PUSH_BACKEND=websocket`: 실시간 UI 업데이트
 
-**데이터베이스 연결:**
+**데이터베이스 연결 (mng-pg):**
 
 - `DB_TYPE=postgresdb`
-- `DB_POSTGRESDB_HOST=${POSTGRES_HOSTNAME}`
+- `DB_POSTGRESDB_HOST=${POSTGRES_HOSTNAME}` (mng-pg)
 - `DB_POSTGRESDB_DATABASE=n8n`
+- **Note**: PostgreSQL HA Cluster가 아닌 mng-pg 사용
 
-**Redis 큐:**
+**Queue Redis (mng-redis):**
 
-- `QUEUE_BULL_REDIS_HOST=${MNG_REDIS_HOST}`
+- `QUEUE_BULL_REDIS_HOST=${MNG_REDIS_HOST}` (mng-redis)
 - `QUEUE_BULL_PREFIX=n8n`
 - `QUEUE_HEALTH_CHECK_ACTIVE=true`
+- **Note**: Bull Queue 백엔드로 mng-redis 공유 사용
+
+**내부 캐시 (n8n-redis):**
+
+- n8n 내부 메모리 캐시 전용
+- 워크플로우 임시 데이터 저장
 
 **메트릭:**
 
@@ -116,13 +129,19 @@ flowchart TB
 - Main과 동일한 DB, Redis, 암호화 키 사용
 - 여러 Worker 인스턴스 확장 가능 (수평 확장)
 
-### 3. n8n Redis (메시지 큐)
+### 3. n8n-redis (내부 캐시)
 
 - **컨테이너**: `n8n-redis`
 - **이미지**: `redis:8.2.3-bookworm`
-- **역할**: Bull Queue 백엔드
+- **역할**: n8n 내부 메모리 캐시 전용 (Bull Queue 아님)
 - **포트**: 6379 (내부)
 - **IP**: 172.19.0.15
+
+**용도:**
+
+- 워크플로우 임시 데이터 캐싱
+- 세션 데이터 저장
+- **Note**: Bull Queue는 mng-redis를 사용, 이 Redis는 내부 캐시 전용
 
 **설정:**
 
@@ -148,14 +167,14 @@ N8N_PORT=5678
 N8N_HOST_PORT=5678
 N8N_ENCRYPTION_KEY=<random_32_char_string>
 
-# 데이터베이스 (PostgreSQL)
-POSTGRES_HOSTNAME=pg-router
-POSTGRES_PORT=5000
+# 데이터베이스 (mng-pg, PostgreSQL HA Cluster 아님)
+POSTGRES_HOSTNAME=mng-pg
+POSTGRES_PORT=5432
 N8N_DB_USER=n8n_user
 N8N_DB_PASSWORD=<secure_password>
 
-# Redis
-MNG_REDIS_HOST=n8n-redis
+# Queue Redis (mng-redis, Redis Cluster 아님)
+MNG_REDIS_HOST=mng-redis
 REDIS_PORT=6379
 
 # 타임존
@@ -180,11 +199,11 @@ DEFAULT_URL=hy-home.local
 
 ## 시작 방법
 
-### 1. PostgreSQL 데이터베이스 생성
+### 1. PostgreSQL 데이터베이스 생성 (mng-pg)
 
 ```bash
-# PostgreSQL에 접속
-docker exec -it pg-0 psql -U postgres
+# mng-pg에 접속
+docker exec -it mng-pg psql -U postgres
 
 # 데이터베이스 및 사용자 생성
 CREATE DATABASE n8n;
@@ -298,8 +317,8 @@ Kafka Consumer → Transform → PostgreSQL Insert
 ### 백업
 
 ```bash
-# PostgreSQL 백업
-docker exec pg-0 pg_dump -U postgres n8n > n8n_backup.sql
+# PostgreSQL 백업 (mng-pg)
+docker exec mng-pg pg_dump -U postgres n8n > n8n_backup.sql
 
 # n8n 데이터 볼륨 백업
 docker run --rm -v n8n-data:/data -v $(pwd):/backup busybox tar czf /backup/n8n-data.tar.gz /data
@@ -356,9 +375,12 @@ docker exec n8n psql -h pg-router -p 5000 -U n8n_user -d n8n -c "SELECT 1"
 
 ### 의존하는 서비스
 
-- **PostgreSQL Cluster**: 워크플로우 저장
-- **Redis**: 큐 백엔드
+- **mng-pg (PostgreSQL)**: 워크플로우 및 실행 이력 저장
+- **mng-redis**: Bull Queue 백엔드 (공유 Redis)
+- **n8n-redis**: 내부 캐시 전용 (메모리)
 - **Traefik**: HTTPS 라우팅
+
+**Note**: n8n은 PostgreSQL HA Cluster나 Redis Cluster를 사용하지 않고, 관리용 mng-db 서비스를 사용합니다.
 
 ### 이 서비스와 연동 가능한 시스템
 
