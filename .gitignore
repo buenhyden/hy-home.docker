@@ -6,8 +6,9 @@ secrets/
 Infra/.env
 Infra/postgresql/init_users_dbs.sql
 Infra/oauth2-proxy/certs/
+Infra/mail/certs/
+Infra/oauth2-proxy/oauth2-proxy.cfg
 Infra/traefik/certs/
-Infra/traefik/oauth2-proxy.cfg
 Infra/traefik/dynamic/
 Infra/opensearch/certs/
 Infra/observability/alertmanager/config.yml

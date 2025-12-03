@@ -1,90 +1,301 @@
-# Docker Infrastructure & Projects
+# Docker Infrastructure  
 
 ## 개요
 
-이 저장소는 전체 인프라 및 개발 프로젝트를 위한 Docker Compose 구성을 포함합니다. 크게 두 가지 섹션으로 구성됩니다:
+이 저장소는 전체 인프라 서비스를 위한 Docker Compose 구성을 포함합니다. **13개 활성화된 핵심 서비스**와 17개 추가 서비스로 구성된 완전한 On-Premise 인프라 스택을 제공합니다.
 
-- **Docker/Infra**: 인프라 서비스 (데이터베이스, 메시지 브로커, 관측성 도구 등).
-- **Docker/Projects**: 개발 프로젝트 템플릿 및 환경.
+## 전체 시스템 아키텍처
+
+```mermaid
+flowchart TB
+    subgraph "외부 접근"
+        USER[사용자]
+    end
+    
+    subgraph "Ingress 계층"
+        TRAEFIK[Traefik<br/>HTTPS Routing]
+        OAUTH[OAuth2-Proxy<br/>Auth Gateway]
+    end
+    
+    subgraph "인증 계층"
+        KC[Keycloak<br/>SSO/IAM]
+    end
+    
+    subgraph "애플리케이션 계층"
+        N8N[n8n<br/>Workflow]
+        OLLAMA[Ollama<br/>LLM]
+        GRAFANA[Grafana<br/>Dashboards]
+    end
+    
+    subgraph "데이터 계층"
+        PG[(PostgreSQL<br/>Cluster)]
+        REDIS[(Redis<br/>Cluster)]
+        MONGO[(MongoDB<br/>ReplicaSet)]
+        OS[(OpenSearch<br/>Search)]
+    end
+    
+    subgraph "메시징 계층"
+        KAFKA[Kafka<br/>Streaming]
+    end
+    
+    subgraph "스토리지 계층"
+        MINIO[MinIO<br/>S3 Storage]
+        INFLUX[InfluxDB<br/>TimeSeries]
+    end
+    
+    subgraph "관측성 계층"
+        PROM[Prometheus]
+        LOKI[Loki]
+        TEMPO[Tempo]
+        ALLOY[Alloy]
+    end
+    
+    USER --> TRAEFIK
+    TRAEFIK --> OAUTH
+    OAUTH --> KC
+    OAUTH --> GRAFANA
+    OAUTH --> N8N
+    
+    GRAFANA --> PROM
+    GRAFANA --> LOKI
+    GRAFANA --> TEMPO
+    
+    N8N --> PG
+    N8N --> REDIS
+    N8N --> KAFKA
+    
+    OLLAMA --> MINIO
+    
+    ALLOY --> PROM
+    ALLOY --> LOKI
+    ALLOY --> TEMPO
+    
+    LOKI --> MINIO
+    TEMPO --> MINIO
+    
+    KC --> PG
+```
+
+## 활성화된 서비스 (13개) ✅
+
+### 1. 리버스 프록시 및 인증
+
+| 서비스 | 설명 | 접속 URL |
+| :--- | :--- | :--- |
+| [traefik](./traefik) | 동적 리버스 프록시, HTTPS 라우팅 | `https://dashboard.hy-home.local` |
+| [oauth2-proxy](./oauth2-proxy) | Forward Auth 인증 미들웨어 | `https://auth.hy-home.local` |
+| [keycloak](./keycloak) | SSO/IAM, 통합 인증 시스템 | `https://keycloak.hy-home.local` |
+
+### 2. 핵심 데이터베이스
+
+| 서비스 | 설명 | 시스템 역할 |
+| :--- | :--- | :--- |
+| [postgresql-cluster](./postgresql-cluster) | 고가용성 PostgreSQL (3노드 + etcd + HAProxy) | 관계형 데이터 주 저장소 |
+| [redis-cluster](./redis-cluster) | Redis 클러스터 (6노드: 3M + 3R) | 캐시, 세션, Pub/Sub |
+| [mongodb](./mongodb) | MongoDB 레플리카 셋 (2노드 + Arbiter) | 문서 기반 NoSQL |
+| [opensearch](./opensearch) | OpenSearch + 대시보드 | 전문 검색, 로그 집계 |
+| [mng-db](./mng-db) | 관리용 PostgreSQL + Redis | 인프라 메타데이터 |
+
+### 3. 메시징 및 스트리밍
+
+| 서비스 | 설명 | 시스템 역할 |
+| :--- | :--- | :--- |
+| [kafka](./kafka) | Kafka 클러스터 (KRaft, 3노드) + Schema Registry + Connect + UI | 이벤트 스트리밍, 메시지 브로커 |
+
+### 4. 스토리지
+
+| 서비스 | 설명 | 시스템 역할 |
+| :--- | :--- | :--- |
+| [minio](./minio) | S3 호환 객체 스토리지 | 파일 저장, Loki/Tempo 백엔드 |
+| [influxdb](./influxdb) | 시계열 데이터베이스 | IoT, 메트릭 저장 |
+
+### 5. 관측성 (Full Stack)
+
+| 서비스 | 설명 | 구성 요소 |
+| :--- | :--- | :--- |
+| [observability](./observability) | 통합 모니터링 스택 | Prometheus + Grafana + Loki + Tempo + Alloy + cAdvisor + Alertmanager |
+
+### 6. 애플리케이션 서비스
+
+| 서비스 | 설명 | 시스템 역할 |
+| :--- | :--- | :--- |
+| [n8n](./n8n) | 워크플로우 자동화 (Main + Worker + Redis) | 노코드 자동화, 시스템 통합 |
+| [ollama](./ollama) | 로컬 LLM (Ollama + Qdrant + Open WebUI) | AI 챗봇, RAG 시스템 |
+
+### 7. 기타
+
+| 서비스 | 설명 | 용도 |
+| :--- | :--- | :--- |
+| [mail](./mail) | MailHog (테스트 SMTP) | 개발용 메일 테스트 |
+
+---
+
+## 비활성화된 서비스 (17개)
+
+다음 서비스들은 `docker-compose.yml`에서 주석 처리되어 있습니다:
+
+**데이터베이스:**
+
+- [nginx](./nginx), [supabase](./supabase), [neo4j](./neo4j)
+- [arangodb](./arangodb), [cassandra](./cassandra), [couchdb](./couchdb)
+- [valkey](./valkey)
+
+**개발 도구:**
+
+- [airflow](./airflow), [harbor](./harbor), [sonarqube](./sonarqube)
+- [locust](./locust), [storybook](./storybook)
+
+**기타:**
+
+- [ksql](./ksql), [syncthing](./syncthing), [Terrakube](./Terrakube)
+
+---
 
 ## 필수 조건
 
-- **Docker**: Docker Engine이 설치되어 있어야 합니다.
-- **Docker Compose**: Docker Compose가 설치되어 있어야 합니다.
-- **환경 변수**: `Docker/Infra` 위치에 `.env` 파일이 **필수**입니다. 이 파일은 서비스 실행에 필요한 모든 환경 변수(포트, 비밀번호, 경로 등)를 포함합니다.
+- **Docker**: Docker Engine 24.0+
+- **Docker Compose**: v2.20+
+- **환경 변수**: `Infra/.env` 파일 (필수)
+- **Secrets**: `../secrets/` 디렉토리 (비밀번호 파일)
 
-## 디렉토리 구조
+## 빠른 시작
 
-### Docker/Infra
+### 1. Secrets 준비
 
-인프라 서비스는 기능별로 분류되어 있습니다. 각 디렉토리는 `docker-compose.yml`과 구체적인 지침이 담긴 `README.md`를 포함합니다.
+```bash
+cd d:\hy-home.docker
+mkdir -p secrets
 
-| 서비스 | 설명 |
-| :--- | :--- |
-| [airflow](./airflow) | 워크플로우 오케스트레이션을 위한 Apache Airflow. |
-| [arangodb](./arangodb) | (준비 중) ArangoDB 멀티 모델 데이터베이스. |
-| [cassandra](./cassandra) | Apache Cassandra NoSQL 데이터베이스. |
-| [couchdb](./couchdb) | Apache CouchDB 클러스터 (3 노드). |
-| [harbor](./harbor) | Harbor 컨테이너 레지스트리. |
-| [influxdb](./influxdb) | 시계열 데이터베이스 InfluxDB. |
-| [kafka](./kafka) | 스키마 레지스트리, 커넥트, UI를 포함한 Apache Kafka (KRaft 모드). |
-| [keycloak](./keycloak) | Keycloak 자격 증명 및 액세스 관리. |
-| [ksql](./ksql) | 스트림 처리를 위한 ksqlDB. |
-| [locust](./locust) | 부하 테스트를 위한 Locust. |
-| [minio](./minio) | MinIO 객체 스토리지 (S3 호환). |
-| [mongodb](./mongodb) | Mongo Express를 포함한 MongoDB 레플리카 셋. |
-| [n8n](./n8n) | n8n 워크플로우 자동화 도구. |
-| [neo4j](./neo4j) | Neo4j 그래프 데이터베이스. |
-| [nginx](./nginx) | Nginx 웹 서버 및 리버스 프록시. |
-| [oauth2-proxy](./oauth2-proxy) | OAuth2 인증을 위한 프록시 서비스. |
-| [observability](./observability) | 풀 스택 관측성: Prometheus, Loki, Tempo, Grafana, Alloy. |
-| [ollama](./ollama) | Qdrant 및 Open WebUI를 포함한 로컬 LLM 실행기. |
-| [opensearch](./opensearch) | OpenSearch 제품군 (검색 + 대시보드). |
-| [postgresql](./postgresql) | PostgreSQL 고가용성 클러스터 (Patroni + Etcd + HAProxy). |
-| [redis-cluster](./redis-cluster) | RedisInsight를 포함한 Redis 클러스터 (6 노드). |
-| [sonarqube](./sonarqube) | 코드 품질 검사를 위한 SonarQube. |
-| [storybook](./storybook) | UI 개발을 위한 Storybook 설정. |
-| [supabase](./supabase) | 셀프 호스팅 Supabase 스택. |
-| [syncthing](./syncthing) | 파일 동기화를 위한 Syncthing. |
-| [traefik](./traefik) | Traefik 리버스 프록시 및 로드 밸런서. |
-| [valkey](./valkey) | Valkey (Redis 포크) 클러스터 및 단독형. |
+# 비밀번호 파일 생성
+echo "your_postgres_password" > secrets/postgres_password.txt
+echo "your_redis_password" > secrets/redis_password.txt
+echo "minio_user" > secrets/minio_root_user.txt
+echo "minio_password" > secrets/minio_root_password.txt
+```
 
-### Docker/Projects
+### 2. 환경 변수 설정
 
-다양한 언어와 프레임워크를 위한 개발 환경입니다.
+```bash
+cd Infra
+cp .env.example .env
+# .env 파일 수정
+```
 
-| 프로젝트 | 설명 |
-| :--- | :--- |
-| [Django](../Projects/Django) | Python Django 개발 환경. |
-| [ExpressJS](../Projects/ExpressJS) | Node.js Express 개발 환경. |
-| [FastAPI](../Projects/FastAPI) | Python FastAPI 개발 환경. |
-| [Gradle](../Projects/Gradle) | Java Spring Boot (Gradle) 환경. |
-| [Maven](../Projects/Maven) | Java Spring Boot (Maven) 환경. |
-| [NestJS](../Projects/NestJS) | Node.js NestJS 개발 환경. |
-| [NextJS](../Projects/NextJS) | Node.js NextJS 개발 환경. |
-| [ReactJS](../Projects/ReactJS) | ReactJS (Vite) 개발 환경. |
+### 3. 전체 스택 시작
 
-## 시작하기
+```bash
+cd Infra
+docker-compose up -d
+```
 
-1. **환경 설정**:
-   예제 환경 파일(있는 경우)을 복사하거나 `Docker/Infra`에 필요한 변수가 포함된 `.env` 파일을 생성합니다.
+### 4. 개별 서비스 시작
 
-2. **서비스 실행**:
-   해당 서비스 디렉토리로 이동하여 다음을 실행합니다:
+```bash
+# PostgreSQL만 시작
+cd postgresql-cluster
+docker-compose up -d
 
-   ```bash
-   cd Docker/Infra/redis-cluster
-   docker-compose up -d
-   ```
+# Observability만 시작
+cd observability
+docker-compose up -d
+```
 
-3. **프로젝트 실행**:
-   해당 프로젝트 디렉토리로 이동하여 다음을 실행합니다:
+## 주요 접속 정보
 
-   ```bash
-   cd Docker/Projects/ReactJS
-   docker-compose up -d
-   ```
+### 관측성
+
+- **Grafana**: `https://grafana.hy-home.local` (Keycloak SSO)
+- **Prometheus**: `https://prometheus.hy-home.local`
+- **Alertmanager**: `https://alertmanager.hy-home.local`
+
+### 데이터베이스 UI
+
+- **RedisInsight**: `https://redisinsight.hy-home.local`
+- **Mongo Express**: `https://mongo-express.hy-home.local`
+- **Kafka UI**: `https://kafka-ui.hy-home.local`
+- **MinIO Console**: `https://minio-console.hy-home.local`
+
+### 애플리케이션
+
+- **n8n**: `https://n8n.hy-home.local`
+- **Ollama WebUI**: `https://chat.hy-home.local`
+- **Keycloak Admin**: `https://keycloak.hy-home.local/admin`
+
+### 인프라 관리
+
+- **Traefik Dashboard**: `https://dashboard.hy-home.local`
+- **MailHog**: `https://mail.hy-home.local`
 
 ## 네트워크
 
-대부분의 서비스는 공유 Docker 네트워크(예: `infra_net`, `nt-databases`, `nt-webserver`)를 통해 연결되어 컨테이너 간 통신이 가능합니다. `docker-compose.yml` 파일의 네트워크 설정이 요구 사항과 일치하는지 확인하십시오.
+모든 서비스는 `infra_net` (172.19.0.0/16) 네트워크를 공유합니다:
+
+- **고정 IP**: 안정적인 서비스 간 통신
+- **DNS**: Docker 내부 DNS를 통한 서비스 디스커버리
+- **격리**: 외부 네트워크와 격리된 안전한 통신
+
+## 시스템 요구사항
+
+### 최소 사양
+
+- **CPU**: 8 코어
+- **RAM**: 16GB
+- **Disk**: 100GB SSD
+
+### 권장 사양
+
+- **CPU**: 16 코어
+- **RAM**: 32GB
+- **Disk**: 500GB NVMe SSD
+- **GPU**: NVIDIA GPU (Ollama 사용 시)
+
+## 트러블슈팅
+
+### 공통 문제
+
+**1. 포트 충돌**
+
+```bash
+# 사용 중인 포트 확인
+netstat -an | findstr "5432"
+```
+
+**2. 볼륨 권한 문제**
+
+```bash
+# WSL2/Linux
+sudo chown -R 1000:1000 /path/to/volume
+```
+
+**3. DNS 해석 실패**
+
+```bash
+# hosts 파일에 추가 (C:\Windows\System32\drivers\etc\hosts)
+127.0.0.1 grafana.hy-home.local
+127.0.0.1 keycloak.hy-home.local
+```
+
+### 로그 확인
+
+```bash
+# 특정 서비스 로그
+docker logs <container-name>
+
+# 전체 스택 로그
+docker-compose logs -f
+```
+
+## 보안 권장사항
+
+1. **비밀번호 변경**: 모든 기본 비밀번호를 강력한 비밀번호로 변경
+2. **SSL 인증서**: 프로덕션에서는 Let's Encrypt 사용
+3. **방화벽**: 불필요한 포트 차단
+4. **정기 업데이트**: 컨테이너 이미지 정기 업데이트
+5. **백업**: 중요 데이터 정기 백업
+
+## 참고 자료
+
+- [Docker 공식 문서](https://docs.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Traefik](https://doc.traefik.io/traefik/)
+- [Grafana Stack](https://grafana.com/docs/)

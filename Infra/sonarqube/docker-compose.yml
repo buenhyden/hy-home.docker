@@ -14,9 +14,7 @@ services:
       - sonarqube-extensions-volume:/opt/sonarqube/extensions
       - sonarqube-logs-volume:/opt/sonarqube/logs
     networks:
-      - nt-qa
-      - nt-webserver
-      - nt-databases
+      - infra_net
     logging:
       driver: "json-file"
       options:

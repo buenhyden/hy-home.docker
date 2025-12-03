@@ -1,0 +1,127 @@
+services:
+  # ----------------------------------------------------------------
+  # 5. Terrakube API (백엔드)
+  # ----------------------------------------------------------------
+  terrakube-api:
+    image: azbuilder/api-server:2.28.0
+    container_name: terrakube-api
+    restart: unless-stopped          
+    environment:      
+      ApiDataSourceType: POSTGRESQL
+      DatasourceHostname: ${POSTGRES_HOSTNAME}
+      DatasourceDatabase: terrakube
+      DatasourceUser: ${TERRAKUBE_DB_USERNAME}
+      DatasourcePassword: ${TERRAKUBE_DB_PASSWORD}
+
+      GroupValidationType: "DEX"
+      UserValidationType: "DEX"
+      AuthenticationValidationType: "DEX"
+      TerrakubeHostname: terrakube-api.${DEFAULT_URL}
+      AzBuilderExecutorUrl: http://terrakube-executor:8090/api/v1/terraform-rs
+      PatSecret: ${TERRAKUBE_PAT_SECRET}
+      InternalSecret: ${TERRAKUBE_INTERNAL_SECRET}
+      DexClientId: ${OAUTH2_PROXY_CLIENT_ID}
+      
+      StorageType: AWS
+      AwsStorageAccessKey: ${MINIO_APP_USERNAME}
+      AwsStorageSecretKey: ${MINIO_APP_USER_PASSWORD}
+      AwsStorageBucketName: tfstate
+      AwsStorageRegion: ap-northeast-2
+      AwsEndpoint: http://minio:9000
+
+      TerrakubeUiURL: https://terrakube-ui.${DEFAULT_URL}
+      DexIssuerUri: "https://keycloak.hy-home.local/realms/hy-home.realm"
+      
+      TerrakubeRedisHostname:  ${MNG_REDIS_HOST}
+      TerrakubeRedisPassword: ${REDIS_PASSWORD}
+      TerrakubeRedisPort: ${REDIS_PORT}      
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.terrakube-api.rule=Host(`terrakube-api.${DEFAULT_URL}`)"
+      - "traefik.http.services.terrakube-api.loadbalancer.server.port=8080"
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+      mng-redis:
+        condition: service_started
+      keycloak:
+        condition: service_started
+      minio:
+        condition: service_started
+    networks:
+      - infra_net
+
+  # ----------------------------------------------------------------
+  # 6. Terrakube UI (프론트엔드)
+  # ----------------------------------------------------------------
+  terrakube-ui:
+    image: azbuilder/terrakube-ui:2.28.0
+    container_name: terrakube-ui
+    restart: unless-stopped          
+    environment:
+      REACT_APP_TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}/api/v1/
+      REACT_APP_AUTHORITY: https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
+      REACT_APP_CLIENT_ID: proxy-client
+      REACT_APP_REDIRECT_URI: https://terrakube-ui.${DEFAULT_URL}
+      REACT_APP_SCOPE: openid profile email groups
+      JAVA_TOOL_OPTIONS: -Dcom.sun.security.enableAIAcaIssuers=true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.terrakube-ui.rule=Host(`terrakube-ui.${DEFAULT_URL}`)"
+      - "traefik.http.services.terrakube-ui.loadbalancer.server.port=${TERRAKUBE_UI_PORT}"
+    depends_on:
+      - terrakube-api
+    networks:
+      - infra_net
+
+  # ----------------------------------------------------------------
+  # 7. 인프라 (DB, Redis, Executor)
+  # ----------------------------------------------------------------
+  terrakube-executor:
+    image: azbuilder/executor:2.28.0
+    container_name: terrakube-executor
+    restart: unless-stopped          
+    environment:
+      TerrakubeEnableSecurity: "true"
+      InternalSecret: ${TERRAKUBE_INTERNAL_SECRET}
+      TerraformStateType: AwsTerraformStateImpl
+
+      AwsTerraformStateAccessKey: ${MINIO_APP_USERNAME}
+      AwsTerraformStateSecretKey: ${MINIO_APP_USER_PASSWORD}
+      AwsTerraformStateBucketName: tfstate
+      AwsTerraformStateRegion: ap-northeast-2
+      AwsEndpoint: http://minio:9000
+
+      TerraformOutputType: AwsTerraformOutputImpl
+      AwsTerraformOutputAccessKey: ${MINIO_APP_USERNAME}
+      AwsTerraformOutputSecretKey: ${MINIO_APP_USER_PASSWORD}
+      AwsTerraformOutputBucketName: tfstate
+      AwsTerraformOutputRegion: ap-northeast-2
+      AzBuilderApiUrl: https://terrakube-api.${DEFAULT_URL}
+      ExecutorFlagBatch: "false"
+      ExecutorFlagDisableAcknowledge: "false"
+      TerrakubeToolsRepository: https://github.com/terrakube-io/terrakube-extensions.git
+      TerrakubeToolsBranch: main
+      TerrakubeRegistryDomain: terrakube-api.${DEFAULT_URL}
+      TerrakubeApiUrl: https://terrakube-api.${DEFAULT_URL}
+      CustomTerraformReleasesUrl: "https://releases.hashicorp.com/terraform/index.json"
+
+
+      TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}
+      EXECUTOR_NAME: local-executor
+      TerrakubeRedisHostname:  ${MNG_REDIS_HOST}
+      TerrakubeRedisPassword: ${REDIS_PASSWORD}
+      TerrakubeRedisPort: ${REDIS_PORT}  
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - terrakube-api
+    networks:
+      - infra_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.terrakube-executor.rule=Host(`terrakube-executor.${DEFAULT_URL}`)"
+      - "traefik.http.services.terrakube-executor.loadbalancer.server.port=${TERRAKUBE_EXECUTOR_PORT}"
+

@@ -1,42 +1,402 @@
-# n8n
+# n8n (워크플로우 자동화 플랫폼)
 
-## 개요
+## 시스템 아키텍처에서의 역할
 
-이 디렉토리는 워크플로우 자동화 도구인 n8n을 실행하기 위한 Docker Compose 구성을 포함합니다. PostgreSQL을 데이터베이스로 사용하며, 큐 관리를 위해 전용 Redis 인스턴스를 사용합니다.
+n8n은 **노코드/로우코드 워크플로우 자동화 플랫폼**으로서 다양한 서비스와 API를 연결하여 비즈니스 프로세스를 자동화합니다. 이벤트 기반 워크플로우, 데이터 파이프라인, 통합 자동화의 중심 허브 역할을 합니다.
 
-## 서비스
+**핵심 역할:**
 
-- **n8n**: n8n 워크플로우 자동화 서버 (메인).
-- **n8n-worker**: 워크플로우 실행을 담당하는 워커 노드.
+- 🔄 **워크플로우 자동화**: 노드 기반 시각적 프로세스 구성
+- 🔗 **시스템 통합**: 400+ 서비스 연동 (Zapier 대체)
+- ⏰ **스케줄링**: Cron 기반 작업 스케줄링
+- 📨 **이벤트 처리**: Webhook 기반 실시간 이벤트 처리
+- 🚀 **확장성**: Worker 기반 분산 실행
 
-## 필수 조건
+## 아키텍처 구성
 
-- Docker 및 Docker Compose 설치.
-- `Docker/Infra` 루트 디렉토리에 `.env` 파일.
-- 외부 PostgreSQL 서비스 실행 필요 (`.env`에 설정됨).
+```mermaid
+flowchart TB
+    subgraph "외부 트리거"
+        WEBHOOK[Webhook]
+        CRON[Cron Schedule]
+        MANUAL[수동 실행]
+    end
+    
+    subgraph "n8n 플랫폼"
+        N8N[n8n Main<br/>Web UI + API]
+        WORKER[n8n Worker<br/>Execution Engine]
+    end
+    
+    subgraph "메시지 큐"
+        REDIS[n8n-redis<br/>Bull Queue]
+    end
+    
+    subgraph "데이터베이스"
+        PG[PostgreSQL<br/>워크플로우 저장]
+    end
+    
+    subgraph "모니터링"
+        REXP[redis-exporter]
+        PROM[Prometheus]
+    end
+    
+    subgraph "외부 서비스"
+        SLACK[Slack]
+        EMAIL[Email]
+        API[REST APIs]
+        DB[Databases]
+    end
+    
+    WEBHOOK -->|Trigger| N8N
+    CRON -->|Schedule| N8N
+    MANUAL -->|Start| N8N
+    
+    N8N -->|Enqueue Job| REDIS
+    REDIS -->|Dequeue| WORKER
+    
+    N8N <-->|Workflows| PG
+    WORKER <-->|Workflows| PG
+    
+    WORKER -->|Actions| SLACK
+    WORKER -->|Actions| EMAIL
+    WORKER -->|Actions| API
+    WORKER -->|Actions| DB
+    
+    REDIS -->|메트릭| REXP
+    REXP -->|수집| PROM
+```
 
-## 설정
+## 주요 구성 요소
 
-이 서비스는 다음 환경 변수(`.env`에 정의됨)를 사용합니다:
+### 1. n8n Main (웹 UI + API 서버)
 
-- `N8N_HOST_PORT`: n8n 호스트 포트.
-- `N8N_ENCRYPTION_KEY`: 자격 증명 암호화 키.
-- `POSTGRES_HOSTNAME`, `POSTGRES_PORT`, `N8N_DB_USER`, `N8N_DB_PASSWORD`: 데이터베이스 연결 정보.
-- `REDIS_PASSWORD`: 내부 Redis 인스턴스 비밀번호.
-- `DEFAULT_URL`: 기본 도메인 URL.
+- **컨테이너**: `n8n`
+- **이미지**: `n8nio/n8n:latest`
+- **역할**: 워크플로우 편집 UI, REST API, Webhook 수신
+- **포트**: `${N8N_PORT}` (기본 5678)
+- **Traefik**: `https://n8n.${DEFAULT_URL}`
+- **IP**: 172.19.0.14
 
-## 사용법
+**주요 설정:**
 
-서비스 시작:
+- `EXECUTIONS_MODE=queue`: Worker 기반 실행
+- `N8N_PROTOCOL=https`
+- `N8N_HOST=n8n.${DEFAULT_URL}`
+- `WEBHOOK_URL=https://n8n.${DEFAULT_URL}/`
+- `N8N_PUSH_BACKEND=websocket`: 실시간 UI 업데이트
+
+**데이터베이스 연결:**
+
+- `DB_TYPE=postgresdb`
+- `DB_POSTGRESDB_HOST=${POSTGRES_HOSTNAME}`
+- `DB_POSTGRESDB_DATABASE=n8n`
+
+**Redis 큐:**
+
+- `QUEUE_BULL_REDIS_HOST=${MNG_REDIS_HOST}`
+- `QUEUE_BULL_PREFIX=n8n`
+- `QUEUE_HEALTH_CHECK_ACTIVE=true`
+
+**메트릭:**
+
+- `N8N_METRICS=true`
+- `N8N_METRICS_PREFIX=n8n_`
+- `N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL=true`
+
+### 2. n8n Worker (실행 엔진)
+
+- **컨테이너**: `n8n-worker`
+- **이미지**: `n8nio/n8n:latest`
+- **역할**: 큐에서 작업을 가져와 워크플로우 실행
+- **Command**: `worker`
+- **IP**: 172.19.0.17
+
+**설정:**
+
+- Main과 동일한 DB, Redis, 암호화 키 사용
+- 여러 Worker 인스턴스 확장 가능 (수평 확장)
+
+### 3. n8n Redis (메시지 큐)
+
+- **컨테이너**: `n8n-redis`
+- **이미지**: `redis:8.2.3-bookworm`
+- **역할**: Bull Queue 백엔드
+- **포트**: 6379 (내부)
+- **IP**: 172.19.0.15
+
+**설정:**
+
+- `--requirepass`: 비밀번호 인증
+- `--appendonly yes`: AOF 영속성
+- Docker Secrets 사용
+
+### 4. Redis Exporter (모니터링)
+
+- **컨테이너**: `n8n-redis-exporter`
+- **이미지**: `oliver006/redis_exporter:v1.80.0-alpine`
+- **역할**: n8n Redis 메트릭 수집
+- **포트**: `${REDIS_EXPORTER_PORT}` (9121)
+- **IP**: 172.19.0.16
+
+## 환경 변수
+
+### .env 파일
 
 ```bash
+# n8n 기본 설정
+N8N_PORT=5678
+N8N_HOST_PORT=5678
+N8N_ENCRYPTION_KEY=<random_32_char_string>
+
+# 데이터베이스 (PostgreSQL)
+POSTGRES_HOSTNAME=pg-router
+POSTGRES_PORT=5000
+N8N_DB_USER=n8n_user
+N8N_DB_PASSWORD=<secure_password>
+
+# Redis
+MNG_REDIS_HOST=n8n-redis
+REDIS_PORT=6379
+
+# 타임존
+DEFAULT_TIMEZONE=Asia/Seoul
+
+# Exporter
+REDIS_EXPORTER_PORT=9121
+
+# 도메인
+DEFAULT_URL=hy-home.local
+```
+
+### Docker Secrets
+
+- `redis_password`: Redis 인증 비밀번호
+
+## 네트워크
+
+- **네트워크**: `infra_net`
+- **서브넷**: 172.19.0.0/16
+- **고정 IP**: 172.19.0.14-17
+
+## 시작 방법
+
+### 1. PostgreSQL 데이터베이스 생성
+
+```bash
+# PostgreSQL에 접속
+docker exec -it pg-0 psql -U postgres
+
+# 데이터베이스 및 사용자 생성
+CREATE DATABASE n8n;
+CREATE USER n8n_user WITH ENCRYPTED PASSWORD '<password>';
+GRANT ALL PRIVILEGES ON DATABASE n8n TO n8n_user;
+\q
+```
+
+### 2. 환경 설정
+
+`.env` 파일에 암호화 키 생성:
+
+```bash
+# 32자 랜덤 키 생성
+openssl rand -base64 32
+```
+
+### 3. 서비스 시작
+
+```bash
+cd d:\hy-home.docker\Infra\n8n
 docker-compose up -d
 ```
 
-## 접속
+### 4. 초기 설정
 
-- **n8n UI**: `https://n8n.${DEFAULT_URL}` (Traefik을 통해 접근) 또는 `http://localhost:${N8N_HOST_PORT}`
+```bash
+# n8n UI 접속
+# https://n8n.hy-home.local
 
-## 볼륨
+# 초기 관리자 계정 생성
+```
 
-- `n8n-data`: n8n 데이터의 영구 저장소.
+## 접속 정보
+
+### n8n Web UI
+
+- **URL**: `https://n8n.hy-home.local`
+- **초기 접속**: 관리자 계정 생성 필요
+
+### Webhook URL 패턴
+
+- **Production**: `https://n8n.hy-home.local/webhook/<webhook-path>`
+- **Test**: `https://n8n.hy-home.local/webhook-test/<webhook-path>`
+
+## 유용한 명령어
+
+### n8n 관리
+
+```bash
+# n8n 버전 확인
+docker exec n8n n8n --version
+
+# 워크플로우 CLI
+docker exec n8n n8n export:workflow --all --output=/tmp/workflows.json
+docker exec n8n n8n import:workflow --input=/tmp/workflow.json
+
+# 메트릭 확인
+curl http://localhost:5678/metrics
+```
+
+### Worker 확장
+
+```bash
+# docker-compose.yml에서 worker를 복제하여 확장
+# worker-2, worker-3 추가 가능
+```
+
+### Redis 큐 확인
+
+```bash
+# Redis CLI 접속
+docker exec -it n8n-redis redis-cli -a <password>
+
+# 큐 키 확인
+KEYS n8n:*
+
+# 큐 길이 확인
+LLEN n8n:waiting
+LLEN n8n:active
+LLEN n8n:completed
+```
+
+## 워크플로우 예제
+
+### 1. Webhook 트리거
+
+```
+Webhook → HTTP Request → Slack 알림
+```
+
+### 2. 스케줄링
+
+```
+Cron (매일 9AM) → PostgreSQL Query → Email 전송
+```
+
+### 3. 데이터 파이프라인
+
+```
+Kafka Consumer → Transform → PostgreSQL Insert
+```
+
+## 데이터 영속성
+
+### 볼륨
+
+- `n8n-data`: 워크플로우 파일, 자격증명 (`/home/node/.n8n`)
+- `n8n-redis-data`: Redis AOF 파일 (`/data`)
+
+### 백업
+
+```bash
+# PostgreSQL 백업
+docker exec pg-0 pg_dump -U postgres n8n > n8n_backup.sql
+
+# n8n 데이터 볼륨 백업
+docker run --rm -v n8n-data:/data -v $(pwd):/backup busybox tar czf /backup/n8n-data.tar.gz /data
+```
+
+## 모니터링 및 경고
+
+### Prometheus 메트릭
+
+- `n8n_workflow_executions_total`: 워크플로우 실행 횟수
+- `n8n_workflow_execution_duration_seconds`: 실행 시간
+- `n8n_workflow_errors_total`: 에러 발생 횟수
+- `redis_connected_clients`: Redis 연결 수
+- `redis_used_memory_bytes`: Redis 메모리 사용량
+
+### Grafana 대시보드
+
+- n8n 전용 대시보드 생성 권장
+- Bull Queue 메트릭 모니터링
+
+## 문제 해결
+
+### 워크플로우 실행 실패
+
+```bash
+# n8n 로그 확인
+docker logs n8n
+
+# Worker 로그 확인
+docker logs n8n-worker
+
+# Redis 연결 확인
+docker exec n8n nc -zv n8n-redis 6379
+```
+
+### Webhook 수신 안됨
+
+```bash
+# Traefik 라우팅 확인
+curl -I https://n8n.hy-home.local/webhook/test
+
+# n8n Webhook 설정 확인
+# UI에서 Webhook 노드의 URL 복사 후 테스트
+```
+
+### PostgreSQL 연결 실패
+
+```bash
+# DB 연결 테스트
+docker exec n8n psql -h pg-router -p 5000 -U n8n_user -d n8n -c "SELECT 1"
+```
+
+## 시스템 통합
+
+### 의존하는 서비스
+
+- **PostgreSQL Cluster**: 워크플로우 저장
+- **Redis**: 큐 백엔드
+- **Traefik**: HTTPS 라우팅
+
+### 이 서비스와 연동 가능한 시스템
+
+- **Kafka**: 이벤트 스트림 소비/발행
+- **Slack/Discord**: 알림 전송
+- **PostgreSQL/MongoDB**: 데이터 CRUD
+- **REST APIs**: 외부 서비스 통합
+- **Email**: 이메일 자동화
+
+## 고급 설정
+
+### 환경별 설정
+
+```bash
+# Production 환경
+N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+
+# 실행 타임아웃
+N8N_TIMEOUT_WORKFLOW_EXECUTION=3600
+
+# Worker 동시 실행 수
+EXECUTIONS_PROCESS_MAX_CONCURRENT=10
+```
+
+### 보안 강화
+
+```bash
+# IP 화이트리스트
+N8N_SECURITY_ALLOWED_ORIGINS='https://trusted-domain.com'
+
+# Basic Auth (추가 보안)
+N8N_BASIC_AUTH_USER=admin
+N8N_BASIC_AUTH_PASSWORD=<password>
+```
+
+## 참고 자료
+
+- [n8n 공식 문서](https://docs.n8n.io/)
+- [n8n Community](https://community.n8n.io/)
+- [Workflow Templates](https://n8n.io/workflows/)
+- [Node 레퍼런스](https://docs.n8n.io/integrations/builtin/app-nodes/)

@@ -39,6 +39,8 @@ include:
   - oauth2-proxy/docker-compose.yml
   - keycloak/docker-compose.yml  
   - mng-db/docker-compose.yml
+  - mail/docker-compose.yml
+  # - terrakube/docker-compose.yml
   # - opensearch/docker-compose.yml  
   # - airflow/docker-compose.yml 
   # - couchdb/docker-compose.yml
@@ -49,6 +51,7 @@ include:
   #- elasticsearch/docker-compose.yml
 
 volumes:
+  stalwart-data:
   couchdb1-data:
   couchdb2-data:
   couchdb3-data:
@@ -197,12 +200,18 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_REDIS_DATA_DIR}/node5
-  mng-redis-data:
+  n8n-redis-data:
     # driver: local
     # driver_opts:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_REDIS_DATA_DIR}/n8n-node
+  mng-redis-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_REDIS_DATA_DIR}/mng-node
   minio-data:
     # driver: local
     # driver_opts:

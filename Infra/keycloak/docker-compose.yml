@@ -2,6 +2,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.4.6
     container_name: keycloak
+    hostname: keycloak
     restart: unless-stopped
     command: start-dev
     expose:

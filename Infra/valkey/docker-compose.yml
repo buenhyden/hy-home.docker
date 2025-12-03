@@ -17,7 +17,7 @@ services:
       - valkey-node-2
       - valkey-node-3
     networks:
-      - nt-databases
+      - infra_net
     logging: 
       driver: "json-file"
       options:
@@ -40,8 +40,7 @@ services:
       - valkey-node-2
       - valkey-node-3
     networks:
-      - nt-databases
-      - nt-observability
+      - infra_net
     logging:
       driver: "json-file"
       options:
@@ -68,8 +67,7 @@ services:
       - VALKEY_CLUSTER_REPLICAS=1
       - VALKEY_CLUSTER_CREATOR=yes
     networks:
-      - nt-databases
-      - nt-webserver
+      - infra_net
     depends_on:
       - valkey-node-2
       - valkey-node-3
@@ -92,8 +90,7 @@ services:
       - VALKEY_PASSWORD=${VALKEY_PASSWORD}
       - "VALKEY_NODES=valkey-node-1 valkey-node-2 valkey-node-3"
     networks:
-      - nt-databases
-      - nt-webserver
+      - infra_net
     logging:
       driver: "json-file"
       options:
@@ -113,8 +110,7 @@ services:
       - VALKEY_PASSWORD=${VALKEY_PASSWORD}
       - "VALKEY_NODES=valkey-node-1 valkey-node-2 valkey-node-3"
     networks:
-      - nt-databases
-      - nt-webserver
+      - infra_net
     logging:
       driver: "json-file"
       options:
@@ -131,8 +127,7 @@ services:
     expose:
       - ${VALKEY_PORT}
     networks:
-      - nt-databases
-      - nt-webserver
+      - infra_net
     logging:
       driver: "json-file"
       options:
@@ -155,8 +150,7 @@ services:
     depends_on:
       - valkey-standalone
     networks:
-      - nt-databases
-      - nt-observability
+      - infra_net
     logging:
       driver: "json-file"
       options:

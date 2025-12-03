@@ -1,53 +1,534 @@
-# Observability Stack
+# Observability 스택 (Prometheus + Grafana + Loki + Tempo + Alloy)
 
-## 개요
+## 시스템 아키텍처에서의 역할
 
-이 디렉토리는 메트릭, 로그, 트레이스를 포함한 포괄적인 관측 가능성(Observability) 스택을 위한 Docker Compose 구성을 포함합니다.
+Observability 스택은 **전체 인프라 및 애플리케이션 모니터링**을 담당하는 핵심 관측 계층입니다. 메트릭(Metrics), 로그(Logs), 트레이스(Traces)의 3대 관측 데이터를 수집, 저장, 시각화하여 시스템 건강성과 성능을 실시간으로 모니터링합니다.
 
-## 서비스
+**핵심 역할:**
 
-- **prometheus**: 메트릭 저장 및 쿼리 시스템.
-- **loki**: 로그 집계 시스템.
-- **tempo**: 분산 트레이싱 백엔드.
-- **grafana**: 시각화 및 분석 플랫폼.
-- **alloy**: OpenTelemetry 수집기 (Grafana Alloy).
-- **cadvisor**: 컨테이너 메트릭 수집기.
-- **alertmanager**: Prometheus 경고 처리기.
+- 📊 **메트릭 수집**: Prometheus를 통한 시계열 데이터 수집
+- 📜 **로그 집계**: Loki를 통한 중앙화된 로그 관리
+- 🔍 **분산 추적**: Tempo를 통한 마이크로서비스 트랜잭션 추적
+- 📈 **시각화**: Grafana 대시보드를 통한 데이터 시각화
+- 🚨 **경고**: Alertmanager를 통한 장애 알림
 
-## 필수 조건
+## 아키텍처 구성
 
-- Docker 및 Docker Compose 설치.
-- `Docker/Infra` 루트 디렉토리에 `.env` 파일.
+```mermaid
+flowchart TB
+    subgraph "데이터 소스"
+        APP[애플리케이션<br/>OTLP]
+        DOCKER[Docker 컨테이너]
+        INFRA[인프라 서비스<br/>Exporters]
+    end
+    
+    subgraph "수집 계층"
+        ALLOY[Alloy<br/>Telemetry Collector]
+        CADV[cAdvisor<br/>Container Metrics]
+    end
+    
+    subgraph "저장 계층"
+        PROM[Prometheus<br/>Metrics DB]
+        LOKI[Loki<br/>Logs DB]
+        TEMPO[Tempo<br/>Traces DB]
+    end
+    
+    subgraph "경고 계층"
+        ALERT[Alertmanager<br/>Alert Routing]
+    end
+    
+    subgraph "시각화"
+        GRAF[Grafana<br/>Dashboards]
+    end
+    
+    subgraph "알림 채널"
+        EMAIL[Email]
+        SLACK[Slack]
+    end
+    
+    APP -->|OTLP gRPC/HTTP| ALLOY
+    DOCKER -->|Container Logs| ALLOY
+    DOCKER -->|Container Metrics| CADV
+    INFRA -->|/metrics| PROM
+    
+    ALLOY -->|Remote Write append| PROM
+    ALLOY -->|Push| LOKI
+    ALLOY -->|OTLP| TEMPO
+    CADV -->|Scrape| PROM
+    
+    PROM -->|Alerts| ALERT
+    PROM -->|Query| GRAF
+    LOKI -->|LogQL| GRAF
+    TEMPO -->|TraceQL| GRAF
+    
+    ALERT -->|Notifications| EMAIL
+    ALERT -->|Notifications| SLACK
+```
 
-## 설정
+## 주요 구성 요소
 
-이 스택은 다음 환경 변수(`.env`에 정의됨)를 사용합니다:
+### 1. Prometheus (메트릭 저장소)
 
-- **포트**: `PROMETHEUS_HOST_PORT`, `LOKI_HOST_PORT`, `TEMPO_HOST_PORT`, `GRAFANA_HOST_PORT`, `ALLOY_HOST_PORT`, `ALERTMANAGER_HOST_PORT`.
-- **자격 증명**: `GRAFANA_ADMIN_USERNAME`, `GRAFANA_ADMIN_PASSWORD`.
-- **경고**: `SMTP_USERNAME`, `SMTP_PASSWORD`, `SLACK_ALERTMANAGER_WEBHOOK_URL`.
+- **컨테이너**: `infra-prometheus`
+- **이미지**: `prom/prometheus:v3.0.0`
+- **역할**: 시계열 메트릭 데이터 수집 및 저장
+- **포트**: `${PROMETHEUS_PORT}` (기본 9090)
+- **Traefik**: `https://prometheus.${DEFAULT_URL}`
+- **IP**: 172.19.0.30
 
-## 사용법
+**주요 기능:**
 
-서비스 시작:
+- Pull 기반 메트릭 스크래핑
+- Remote Write Receiver (Alloy 연동)
+- PromQL 쿼리 언어
+- Alert Rules 평가
+- 설정 Hot-Reload (`--web.enable-lifecycle`)
+
+**설정 파일:**
+
+- `./prometheus/prometheus.yml`: 스크래핑 타겟 및 규칙
+- `./prometheus/alert_rules.yml`: 경고 규칙
+
+### 2. Loki (로그 저장소)
+
+- **컨테이너**: `infra-loki`
+- **이미지**: `grafana/loki:3.2.1`
+- **역할**: 로그 집계 및 인덱싱
+- **포트**: `${LOKI_HOST_PORT}:${LOKI_PORT}` (기본 3100)
+- **IP**: 172.19.0.31
+
+**주요 기능:**
+
+- 로그 압축 및 저장
+- 라벨 기반 인덱싱
+- LogQL 쿼리 언어
+- Grafana 네이티브 통합
+
+**설정 파일:**
+
+- `./loki/loki-config.yaml`
+
+### 3. Tempo (트레이스 저장소)
+
+- **컨테이너**: `infra-tempo`
+- **이미지**: `grafana/tempo:latest`
+- **역할**: 분산 추적 데이터 저장
+- **포트**: `${TEMPO_HOST_PORT}:${TEMPO_PORT}` (기본 3200)
+- **IP**: 172.19.0.32
+
+**주요 기능:**
+
+- OTLP, Jaeger, Zipkin 프로토콜 지원
+- TraceQL 쿼리
+- 트레이스 샘플링
+- Grafana 통합
+
+**설정 파일:**
+
+- `./tempo/tempo.yaml`
+
+### 4. Grafana (시각화 플랫폼)
+
+- **컨테이너**: `infra-grafana`
+- **이미지**: `grafana/grafana:12.3.0`
+- **역할**: 메트릭/로그/트레이스 통합 시각화
+- **포트**: `${GRAFANA_PORT}` (기본 3000)
+- **Traefik**: `https://grafana.${DEFAULT_URL}`
+- **IP**: 172.19.0.33
+
+**주요 기능:**
+
+- 멀티 데이터소스 대시보드
+- Keycloak OAuth2 SSO 연동
+- Alert 시각화
+- 역할 기반 접근 제어 (RBAC)
+
+**Keycloak SSO 설정:**
+
+- Auto Login: 활성화
+- Role Mapping: `/admins` → Admin, `/editors` → Editor
+- Logout URL: Keycloak 연동
+
+**Provisioning:**
+
+- `./grafana/provisioning`: 데이터소스 자동 설정
+- `./grafana/dashboards`: 대시보드 자동 로드
+
+### 5. Alloy (Telemetry Collector)
+
+- **컨테이너**: `infra-alloy`
+- **이미지**: `grafana/alloy:v1.11.3`
+- **역할**: 통합 텔레메트리 수집 에이전트
+- **포트**:
+  - UI: `${ALLOY_PORT}` (기본 12345)
+  - OTLP gRPC: `${ALLOY_OTLP_GRPC_HOST_PORT}:${ALLOY_OTLP_GRPC_PORT}` (4317)
+  - OTLP HTTP: `${ALLOY_OTLP_HTTP_HOST_PORT}:${ALLOY_OTLP_HTTP_PORT}` (4318)
+- **Traefik**: `https://alloy.${DEFAULT_URL}`
+- **IP**: 172.19.0.34
+
+**주요 기능:**
+
+- Docker 컨테이너 로그 수집
+- OTLP Receiver (애플리케이션 트레이스/메트릭)
+- Prometheus Remote Write
+- Loki Push
+- Tempo OTLP
+
+**볼륨:**
+
+- `/var/lib/docker/containers:ro`: Docker 로그
+- `/var/run/docker.sock:ro`: Docker API
+
+**설정 파일:**
+
+- `./alloy/config.alloy`
+
+### 6. cAdvisor (컨테이너 메트릭)
+
+- **컨테이너**: `cadvisor`
+- **이미지**: `gcr.io/cadvisor/cadvisor:v0.52.0`
+- **역할**: Docker 컨테이너 리소스 사용량 수집
+- **포트**: `${CADVISOR_PORT}` (기본 8080)
+- **IP**: 172.19.0.35
+
+**수집 메트릭:**
+
+- CPU 사용량
+- 메모리 사용량
+- 네트워크 I/O
+- 디스크 I/O
+
+**볼륨:**
+
+- `/:/rootfs:ro`
+- `/var/run:/var/run:ro`
+- `/sys:/sys:ro`
+- `/var/lib/docker/:/var/lib/docker:ro`
+
+### 7. Alertmanager (경고 관리)
+
+- **컨테이너**: `infra-alertmanager`
+- **이미지**: `prom/alertmanager:v0.27.0`
+- **역할**: Prometheus 경고 라우팅 및 알림
+- **포트**: `${ALERTMANAGER_PORT}` (기본 9093)
+- **Traefik**: `https://alertmanager.${DEFAULT_URL}`
+- **IP**: 172.19.0.36
+
+**알림 채널:**
+
+- **Email**: SMTP 설정 (`$SMTP_USERNAME`, `$SMTP_PASSWORD`)
+- **Slack**: Webhook URL (`$SLACK_ALERTMANAGER_WEBHOOK_URL`)
+
+**설정 파일:**
+
+- `./alertmanager/config.yml`
+
+## 환경 변수
+
+### .env 파일
+
+```bash
+# Prometheus
+PROMETHEUS_PORT=9090
+PROMETHEUS_HOST_PORT=9090
+
+# Loki
+LOKI_PORT=3100
+LOKI_HOST_PORT=3100
+
+# Tempo
+TEMPO_PORT=3200
+TEMPO_HOST_PORT=3200
+
+# Grafana
+GRAFANA_PORT=3000
+GRAFANA_HOST_PORT=3000
+GRAFANA_ADMIN_USERNAME=admin
+GRAFANA_ADMIN_PASSWORD=<secure_password>
+
+# Alloy
+ALLOY_PORT=12345
+ALLOY_HOST_PORT=12345
+ALLOY_OTLP_GRPC_PORT=4317
+ALLOY_OTLP_GRPC_HOST_PORT=4317
+ALLOY_OTLP_HTTP_PORT=4318
+ALLOY_OTLP_HTTP_HOST_PORT=4318
+
+# cAdvisor
+CADVISOR_PORT=8080
+
+# Alertmanager
+ALERTMANAGER_PORT=9093
+ALERTMANAGER_HOST_PORT=9093
+SMTP_USERNAME=<email>
+SMTP_PASSWORD=<password>
+SLACK_ALERTMANAGER_WEBHOOK_URL=<slack_webhook>
+
+# OAuth2  
+OAUTH2_PROXY_CLIENT_ID=<client_id>
+OAUTH2_PROXY_CLIENT_SECRET=<client_secret>
+
+# 도메인
+DEFAULT_URL=hy-home.local
+```
+
+## 네트워크
+
+- **네트워크**: `infra_net`
+- **서브넷**: 172.19.0.0/16
+- **고정 IP**: 172.19.0.30-36
+
+## 시작 방법
+
+### 1. 설정 파일 준비
+
+```bash
+cd d:\hy-home.docker\Infra\observability
+
+# Prometheus 설정
+vim prometheus/prometheus.yml
+vim prometheus/alert_rules.yml
+
+# Loki 설정
+vim loki/loki-config.yaml
+
+# Tempo 설정
+vim tempo/tempo.yaml
+
+# Alloy 설정
+vim alloy/config.alloy
+
+# Alertmanager 설정
+vim alertmanager/config.yml
+```
+
+### 2. 서비스 시작
 
 ```bash
 docker-compose up -d
 ```
 
-## 접속
+### 3. 상태 확인
 
-Traefik을 통해 다음 도메인으로 접근 가능합니다 (`.env`의 `DEFAULT_URL` 설정에 따라 다름):
+```bash
+# Prometheus 타겟
+curl https://prometheus.hy-home.local/api/v1/targets
 
-- **Grafana**: `https://grafana.${DEFAULT_URL}` (설정된 관리자 계정 또는 Keycloak OAuth로 로그인)
-- **Prometheus**: `https://prometheus.${DEFAULT_URL}`
-- **Alertmanager**: `https://alertmanager.${DEFAULT_URL}`
-- **Alloy UI**: `https://alloy.${DEFAULT_URL}`
+# Grafana 접속
+# https://grafana.hy-home.local (Keycloak SSO)
+```
 
-로컬 포트 포워딩을 사용하는 경우 (활성화된 경우):
+## 접속 정보
 
-- **Grafana**: `http://localhost:${GRAFANA_HOST_PORT}`
+### Grafana
 
-## 볼륨
+- **URL**: `https://grafana.hy-home.local`
+- **인증**: Keycloak SSO (자동 로그인)
+- **기본 계정** (비상 접근): admin / <설정한  비밀번호>
 
-- Prometheus, Loki, Tempo, Grafana, Alertmanager 데이터에 대한 영구 볼륨이 구성되어 있습니다.
+### Prometheus
+
+- **URL**: `https://prometheus.hy-home.local`
+- **UI**: Prometheus Expression Browser
+
+### Alloy
+
+- **URL**: `https://alloy.hy-home.local`
+- **UI**: Alloy Configuration UI
+
+### Alertmanager
+
+- **URL**: `https://alertmanager.hy-home.local`
+- **UI**: Alert 상태 및 Silence 관리
+
+## 유용한 명령어
+
+### Prometheus
+
+```bash
+# 설정 리로드
+curl -X POST https://prometheus.hy-home.local/-/reload
+
+# 타겟 확인
+curl https://prometheus.hy-home.local/api/v1/targets | jq
+
+# PromQL 쿼리
+curl 'https://prometheus.hy-home.local/api/v1/query?query=up'
+```
+
+### Loki
+
+```bash
+# 로그 쿼리 (LogQL)
+curl -G -s "http://localhost:3100/loki/api/v1/query_range" \
+  --data-urlencode 'query={container_name="kafka-1"}' \
+  --data-urlencode 'limit=10' | jq
+
+# 라벨 확인
+curl http://localhost:3100/loki/api/v1/labels | jq
+```
+
+### Grafana API
+
+```bash
+# 대시보드 목록
+curl -u admin:<password> https://grafana.hy-home.local/api/search
+
+# 데이터소스 목록
+curl -u admin:<password> https://grafana.hy-home.local/api/datasources
+```
+
+## 데이터 영속성
+
+### 볼륨
+
+- `prometheus-data`: Prometheus TSDB (`/prometheus`)
+- `loki-data`: Loki 인덱스 및 청크 (`/loki`)
+- `tempo-data`: Tempo 트레이스 (`/var/tempo`)
+- `grafana-data`: Grafana 대시보드 및 설정 (`/var/lib/grafana`)
+- `alertmanager-data`: Alertmanager 상태 (`/alertmanager`)
+
+### 보존 정책
+
+**Prometheus:**
+
+```yaml
+# prometheus.yml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# 데이터 보존 기간 (기본15일, --storage.tsdb.retention.time 플래그로 변경)
+```
+
+**Loki:**
+
+```yaml
+# loki-config.yaml
+limits_config:
+  retention_period: 744h  # 31일
+```
+
+## 대시보드 및 시각화
+
+### Grafana 대시보드
+
+**자동 Provisioning:**
+
+- `./grafana/dashboards/`: 대시보드 JSON 파일 배치
+- 재시작 시 자동 로드
+
+**추천 대시보드:**
+
+- [Node Exporter Full (ID: 1860)](https://grafana.com/grafana/dashboards/1860)
+- [Docker Container \u0026 Host Metrics (ID: 179)](https://grafana.com/grafana/dashboards/179)
+- [Loki Dashboard (ID: 13639)](https://grafana.com/grafana/dashboards/13639)
+
+## 모니터링 쿼리 예제
+
+### PromQL
+
+```promql
+# CPU 사용률 (컨테이너별)
+rate(container_cpu_usage_seconds_total[5m]) * 100
+
+# 메모리 사용량
+container_memory_usage_bytes
+
+# 요청 처리율
+rate(http_requests_total[5m])
+
+# 에러율
+rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m])
+```
+
+### LogQL
+
+```logql
+# 특정 컨테이너 로그
+{container_name="kafka-1"} |= "error"
+
+# JSON 파싱
+{job="docker"} | json | level="error"
+
+# 집계
+sum by (container_name) (rate({job="docker"}[5m]))
+```
+
+## 경고 규칙 예제
+
+### prometheus/alert_rules.yml
+
+```yaml
+groups:
+  - name: infrastructure
+    rules:
+      - alert: HighCPUUsage
+        expr: rate(container_cpu_usage_seconds_total[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "Container {{ $labels.container_name }} CPU usage is above 80%"
+
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+```
+
+## 문제 해결
+
+### Prometheus 스크래핑 실패
+
+```bash
+# 타겟 상태 확인
+curl https://prometheus.hy-home.local/api/v1/targets | jq '.data.activeTargets[] | select(.health != "up")'
+
+# 네트워크 연결 테스트
+docker exec infra-prometheus wget -O- http://redis-exporter:9121/metrics
+```
+
+### Grafana 데이터소스 연결 실패
+
+```bash
+# 데이터소스 테스트
+curl -u admin:<password> -X POST \
+  https://grafana.hy-home.local/api/datasources/1/health
+```
+
+### Loki 로그 수집 안됨
+
+```bash
+# Alloy 로그 확인
+docker logs infra-alloy
+
+# Loki 상태
+curl http://localhost:3100/ready
+```
+
+## 시스템 통합
+
+### 의존하는 서비스
+
+- **Traefik**: HTTPS 라우팅
+- **Keycloak**: Grafana SSO 인증
+
+### 이 서비스를 사용하는 시스템
+
+- **모든 인프라 서비스**: Exporter를 통한 메트릭 노출
+- **애플리케이션**: OTLP를 통한 트레이스/메트릭 전송
+- **운영팀**: 대시보드 및 경고 모니터링
+
+## 참고 자료
+
+- [Prometheus 공식 문서](https://prometheus.io/docs/)
+- [Grafana 문서](https://grafana.com/docs/grafana/latest/)
+- [Loki 문서](https://grafana.com/docs/loki/latest/)
+- [Tempo 문서](https://grafana.com/docs/tempo/latest/)
+- [Alloy 문서](https://grafana.com/docs/alloy/latest/)
+- [Alertmanager 문서](https://prometheus.io/docs/alerting/latest/alertmanager/)

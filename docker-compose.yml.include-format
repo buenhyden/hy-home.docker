@@ -3,10 +3,10 @@ version: '3.9'
 name:
 
 networks:
-  nt-workflow:
-    name: nt-workflow
+  infra_net:
+    name: infra_net
     driver: bridge
-  nt-databases:
+  infra_net:
     external: true
 
 include:

@@ -11,9 +11,7 @@ services:
       - cassandra-node1
       # - cassandra-node2
     networks:
-      - nt-databases
-      - nt-observability
-      - nt-webserver
+      - infra_net
     logging:
       driver: "json-file"
       options:
@@ -35,7 +33,7 @@ services:
       - ${CASSANDRA_INTER_NODE_PORT}
       - ${CASSANDRA_CLIENT_PORT}
     networks:
-      - nt-databases
+      - infra_net
     logging:
       driver: "json-file"
       options:
@@ -66,7 +64,7 @@ services:
   #     - ${CASSANDRA_INTER_NODE_PORT}
   #     - ${CASSANDRA_CLIENT_PORT}
   #   networks:
-  #     - nt-databases  
+  #     - infra_net  
   #   environment:
   #     
   #     - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2

@@ -17,8 +17,7 @@ services:
     volumes:
       - "neo4j-volume:/bitnami/neo4j"
     networks:
-      - nt-databases
-      - nt-webserver
+      - infra_net
     # The ports that will be accessible from outside the container - HTTP (7474) and Bolt (7687).
     logging:
       driver: "json-file"
@@ -36,7 +35,7 @@ services:
   #   # Service-level network, which specifies the networks, from the list of the top-level networks (in this case only neo4j-internal), that the server will connect to.
   #   # Adds a network alias (used in neo4j.conf when configuring the discovery members)
   #   networks:
-  #     - nt-databases
+  #     - infra_net
   #   # The ports that will be accessible from outside the container - HTTP (7474) and Bolt (7687).  
   #   expose:
   #     - 7687

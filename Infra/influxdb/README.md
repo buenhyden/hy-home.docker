@@ -1,43 +1,87 @@
-# InfluxDB
+# InfluxDB (시계열 데이터베이스)
 
-## 개요
+## 시스템 아키텍처에서의 역할
 
-이 디렉토리는 시계열 데이터베이스인 InfluxDB v2.7을 실행하기 위한 Docker Compose 구성을 포함합니다.
+InfluxDB는 **시계열 데이터 저장 전문 데이터베이스**로 IoT 센서, 메트릭, 이벤트 데이터를 효율적으로 저장하고 쿼리합니다.
 
-## 서비스
+**핵심 역할:**
 
-- **influxdb**: InfluxDB 서버.
+- ⏱️ **시계열 데이터**: 시간 기반 메트릭 저장
+- 📊 **고성능 쿼리**: Flux 쿼리 언어
+- 📈 **다운샘플링**: 자동 데이터 집계
+- 🔌 **Telegraf 통합**: 데이터 수집
 
-## 필수 조건
+## 주요 구성 요소
 
-- Docker 및 Docker Compose 설치.
-- `Docker/Infra` 루트 디렉토리에 `.env` 파일.
+### InfluxDB 2.7
 
-## 설정
+- **컨테이너**: `influxdb`
+- **이미지**: `influxdb:2.7`
+- **포트**: `${INFLUXDB_PORT}` (기본 8086)
+- **Traefik**: `https://influxdb.${DEFAULT_URL}`
+- **IP**: 172.19.0.11
 
-이 서비스는 다음 환경 변수(`.env`에 정의됨)를 사용합니다:
+**초기 설정:**
 
-- `INFLUXDB_HOST_PORT`: InfluxDB 호스트 포트 (주석 처리됨, Traefik 사용).
-- `INFLUXDB_PORT`: 컨테이너 포트 (기본값 8086).
-- `INFLUXDB_DB_NAME`: 데이터베이스 이름.
-- `INFLUXDB_USERNAME`, `INFLUXDB_PASSWORD`: 관리자 자격 증명.
-- `INFLUXDB_ORG`: 조직 이름.
-- `INFLUXDB_BUCKET`: 기본 버킷 이름.
-- `INFLUXDB_API_TOKEN`: 관리자 API 토큰.
+- Username: `${INFLUXDB_USERNAME}`
+- Organization: `${INFLUXDB_ORG}`
+- Bucket: `${INFLUXDB_BUCKET}`
+- Token: `${INFLUXDB_API_TOKEN}`
 
-## 사용법
-
-서비스 시작:
+## 환경 변수
 
 ```bash
-docker-compose up -d
+INFLUXDB_PORT=8086
+INFLUXDB_HOST_PORT=8086
+INFLUXDB_USERNAME=admin
+INFLUXDB_PASSWORD=<password>
+INFLUXDB_ORG=myorg
+INFLUXDB_BUCKET=mybucket
+INFLUXDB_API_TOKEN=<token>
+INFLUXDB_DB_NAME=mydb
+DEFAULT_URL=hy-home.local
 ```
 
-## 접속
+## 접속 정보
 
-- **InfluxDB UI**: `https://influxdb.${DEFAULT_URL}` (Traefik을 통해 접근)
-- **Localhost**: 포트 매핑을 활성화한 경우 `http://localhost:${INFLUXDB_HOST_PORT}`
+### Web UI
 
-## 볼륨
+- **URL**: `https://influxdb.hy-home.local`
+- **계정**: admin / password
 
-- `influxdb-data`: InfluxDB 데이터의 영구 저장소.
+### CLI
+
+```bash
+# InfluxDB CLI
+docker exec -it influxdb influx
+
+# 쿼리
+influx query 'from(bucket:"mybucket") |> range(start: -1h)'
+```
+
+## 사용 방법
+
+### 데이터 쓰기 (Line Protocol)
+
+```bash
+curl -X POST "https://influxdb.hy-home.local/api/v2/write?org=myorg&bucket=mybucket
+
+" \
+  -H "Authorization: Token <token>" \
+  -H "Content-Type: text/plain; charset=utf-8" \
+  --data-binary "measurement,tag1=value1 field1=100 $(date +%s)000000000"
+```
+
+### Flux 쿼리
+
+```flux
+from(bucket: "mybucket")
+  |> range(start: -1h)
+  |> filter(fn: (r) => r._measurement == "cpu")
+  |> mean()
+```
+
+## 참고 자료
+
+- [InfluxDB 문서](https://docs.influxdata.com/influxdb/v2/)
+- [Flux 언어](https://docs.influxdata.com/flux/v0/)

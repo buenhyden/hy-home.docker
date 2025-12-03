@@ -25,10 +25,8 @@ services:
     ports:
       - ${DEFAULT_NESTJS_HOST_PORT}:${DEFAULT_NESTJS_PORT}
     networks:
-      - nt-private
-      - nt-databases
-      - nt-message-broker
-      - nt-searchengine
+      - project_net
+      - infra_net
     stdin_open: true #docker run -i
     tty: true #docker run -t
     volumes:

@@ -1,14 +1,3 @@
-networks:
-  nt-projects:
-    name: nt-projects
-    driver: bridge
-  nt-databases:
-    external: true
-  nt-message-broker:
-    external: true
-  nt-searchengine:
-    external: true
-
 services:
   default-express:
     build:
@@ -25,10 +14,8 @@ services:
     ports:
       - ${DEFAULT_NODE_EXPRESS_HOST_PORT}:${DEFAULT_NODE_EXPRESS_PORT}
     networks:
-      - nt-private
-      - nt-databases
-      - nt-message-broker
-      - nt-searchengine
+      - project_net
+      - infra_net
     stdin_open: true #docker run -i
     tty: true #docker run -t
     volumes:

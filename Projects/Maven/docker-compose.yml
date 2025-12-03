@@ -14,10 +14,8 @@ services:
     ports:
       - ${DEFAULT_SPRING_MAVEN_HOST_PORT}:${DEFAULT_SPRING_PORT}
     networks:
-      - nt-private
-      - nt-databases
-      - nt-message-broker
-      - nt-searchengine
+      - project_net
+      - infra_net
     stdin_open: true #docker run -i
     tty: true #docker run -t
     volumes:

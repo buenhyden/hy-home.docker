@@ -11,9 +11,7 @@ services:
     volumes:
       - ksqldb-node-1-data-volume:/bitnami/ksql
     networks:
-      - nt-databases
-      - nt-message-broker
-      - nt-webserver
+      - infra_net
     logging:
       driver: "json-file"
       options:

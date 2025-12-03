@@ -13,8 +13,7 @@ services:
     expose:
       - ${HARBOR_PORT}
     networks:
-      - nt-devops
-      - nt-databases
+      - infra_net
     volumes:
       - harbor-registry-data-volume:/storage
       - harbor-registry-conf-volume:/etc/registry:rw
@@ -30,8 +29,7 @@ services:
     expose:
       - ${HARBOR_PORT}
     networks:
-      - nt-devops
-      - nt-databases
+      - infra_net
     volumes:
       - harbor-registry-data-volume:/storage
       - harbor-registry-conf-volume:/etc/registry:rw
@@ -47,8 +45,7 @@ services:
     expose:
       - ${HARBOR_PORT}
     networks:
-      - nt-devops
-      - nt-databases
+      - infra_net
     environment:
       - CORE_KEY=${HARBOR_CORE_KEY}
       - _REDIS_URL_CORE=redis://:${VALKEY_PASSWORD}@${VALKEY_STANDALONE_HOSTNAME}:${VALKEY_PORT}/0
@@ -91,9 +88,7 @@ services:
     expose:
       - ${HARBOR_PORT}
     networks:
-      - nt-devops
-      - nt-webserver
-      - nt-databases
+      - infra_net
     depends_on:
       - harbor-core
   harbor-jobservice:
@@ -105,8 +100,7 @@ services:
     depends_on:
       - harbor-core
     networks:
-      - nt-devops
-      - nt-databases
+      - infra_net
     environment:
       - CORE_SECRET=${HARBOR_CORE_SECRET}
       - JOBSERVICE_SECRET=${HARBOR_JOBSERVICE_SECRET}

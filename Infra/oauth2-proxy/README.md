@@ -1,43 +1,83 @@
-# OAuth2 Proxy
+# OAuth2-Proxy (인증 프록시)
 
-## 개요
+## 시스템 아키텍처에서의 역할
 
-이 디렉토리는 OAuth2 Proxy를 실행하기 위한 Docker Compose 구성을 포함합니다. 이는 Keycloak과 같은 ID 공급자(IdP)와 통합하여 애플리케이션에 대한 인증을 제공합니다.
+OAuth2-Proxy는 **Forward Auth 미들웨어**로 Traefik과 통합되어 서비스에 Keycloak SSO 인증을 적용합니다.
 
-## 서비스
+**핵심 역할:**
 
-- **oauth2-proxy**: OAuth2 인증 프록시.
+- 🔐 **인증 게이트웨이**: 서비스 앞단 인증
+- 🎫 **토큰 검증**: OIDC 토큰 유효성 확인
+- 🔄 **세션 관리**: 쿠키 기반 세션
+- 🚪 **리다이렉트**: 로그인/로그아웃 흐름
 
-## 필수 조건
+## 주요 구성 요소
 
-- Docker 및 Docker Compose 설치.
-- `Docker/Infra` 루트 디렉토리에 `.env` 파일.
-- Keycloak과 같은 외부 IdP 설정.
-- `oauth2-proxy.cfg` 설정 파일.
-- SSL 인증서 (`certs/rootCA.pem`).
+### OAuth2-Proxy
 
-## 설정
+- **컨테이너**: `oauth2-proxy`
+- **이미지**: `quay.io/oauth2-proxy/oauth2-proxy:v7.13.0`
+- **포트**: `${OAUTH2_PROXY_PORT}` (기본 4180)
+- **Traefik**: `https://auth.${DEFAULT_URL}`
 
-이 서비스는 주로 `oauth2-proxy.cfg` 파일과 환경 변수를 통해 구성됩니다.
+**설정 파일:**
 
-- `SSL_CERT_FILE`: 루트 CA 인증서 경로.
-- `OAUTH2_PROXY_PORT`: 서비스 포트.
+- `./oauth2-proxy.cfg`: 메인 설정
 
-## 사용법
-
-서비스 시작:
+## 환경 변수
 
 ```bash
-docker-compose up -d
+OAUTH2_PROXY_PORT=4180
+OAUTH2_PROXY_CLIENT_ID=nginx-client
+OAUTH2_PROXY_CLIENT_SECRET=<keycloak_secret>
+OAUTH2_PROXY_PROVIDER=keycloak-oidc
+OAUTH2_PROXY_OIDC_ISSUER_URL=https://keycloak.hy-home.local/realms/hy-home.realm
+DEFAULT_URL=hy-home.local
 ```
 
-## 접속
+## 설정 파일
 
-Traefik을 통해 다음 도메인으로 접근 가능합니다:
+### oauth2-proxy.cfg
 
-- **Auth Endpoint**: `https://auth.${DEFAULT_URL}`
+```ini
+http_address = "0.0.0.0:4180"
+upstreams = [ "static://200" ]
+email_domains = [ "*" ]
+cookie_secret = "<random_32_bytes>"
+cookie_secure = true
+cookie_domains = [ ".hy-home.local" ]
 
-## 볼륨
+provider = "keycloak-oidc"
+client_id = "nginx-client"
+client_secret = "<secret>"
+oidc_issuer_url = "https://keycloak.hy-home.local/realms/hy-home.realm"
+redirect_url = "https://auth.hy-home.local/oauth2/callback"
+```
 
-- `./oauth2-proxy.cfg`: 설정 파일.
-- `./certs/rootCA.pem`: SSL 루트 인증서.
+## Traefik 통합
+
+### 미들웨어 정의 (dynamic/middlewares.yml)
+
+```yaml
+http:
+  middlewares:
+    sso-auth:
+      forwardAuth:
+        address: "http://oauth2-proxy:4180"
+        trustForwardHeader: true
+        authResponseHeaders:
+          - "X-Auth-Request-User"
+          - "X-Auth-Request-Email"
+```
+
+### 서비스에 적용
+
+```yaml
+labels:
+  - "traefik.http.routers.myapp.middlewares=sso-auth@file"
+```
+
+## 참고 자료
+
+- [OAuth2-Proxy 문서](https://oauth2-proxy.github.io/oauth2-proxy/)
+- [Keycloak 통합](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)
