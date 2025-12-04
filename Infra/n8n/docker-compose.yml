@@ -1,6 +1,6 @@
 services:
   n8n:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:1.123.1
     container_name: n8n
     restart: unless-stopped    
     # ports:
@@ -20,6 +20,10 @@ services:
       - N8N_PORT=${N8N_PORT}      
       - WEBHOOK_URL=https://n8n.${DEFAULT_URL}/
       - N8N_PUSH_BACKEND=websocket
+      # n8n Public API 활성화 (필수)
+      - N8N_PUBLIC_API_DISABLED=false
+      # API Key 생성을 위한 설정 (필수는 아니지만 보안 권장)
+      - N8N_API_KEY_GENERATED_ENABLED=true
       # 2. 보안 설정 (암호화 키는 한 번 설정하면 바꾸면 안 됨)
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
@@ -71,7 +75,7 @@ services:
         max-size: "5m"
         max-file: "2"
   n8n-worker:
-    image: n8nio/n8n:latest
+    image: n8nio/n8n:1.123.1
     container_name: n8n-worker
     restart: unless-stopped
     depends_on:

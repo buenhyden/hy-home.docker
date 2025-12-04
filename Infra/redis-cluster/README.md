@@ -135,7 +135,7 @@ redis-node-5: ${REDIS5_PORT}:${REDIS5_PORT} + ${REDIS5_BUS_PORT}:${REDIS5_BUS_PO
 ### 4. RedisInsight (GUI)
 
 - **컨테이너**: `redisinsight`
-- **이미지**: `redis/redisinsight:latest`
+- **이미지**: `redis/redisinsight:2.70`
 - **역할**: Redis 클러스터 관리 및 모니터링 GUI
 - **포트**: `${REDIS_INSIGHT_PORT}` (기본 5540)
 - **Traefik 통합**: `https://redisinsight.${DEFAULT_URL}`

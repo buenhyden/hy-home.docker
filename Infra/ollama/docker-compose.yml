@@ -1,6 +1,6 @@
 services:
   ollama:
-    image: ollama/ollama:latest
+    image: ollama/ollama:0.13.1
     container_name: ollama
     # ports:
     #   - "${OLLAMA_HOST_PORT}:${OLLAMA_PORT}"    
@@ -43,7 +43,7 @@ services:
         max-file: "2"
 
   qdrant:
-    image: qdrant/qdrant:latest
+    image: qdrant/qdrant:v1.16.1
     container_name: qdrant
     ports:
       - "${QDRANT_HOST_PORT}:${QDRANT_PORT}"

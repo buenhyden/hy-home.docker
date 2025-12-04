@@ -58,7 +58,7 @@ flowchart TB
 ### 1. KeyFile 생성기
 
 - **컨테이너**: `mongo-key-generator`
-- **이미지**: `alpine:latest`
+- **이미지**: `alpine:3.23.0`
 - **역할**: 레플리카 셋 인증용 KeyFile 자동 생성 (one-shot)
 - **동작**:
   1. `/data/configdb/mongodb.key` 존재 확인
@@ -70,7 +70,7 @@ flowchart TB
 **Primary + Secondary (2개):**
 
 - **컨테이너**: `mongodb-rep1`, `mongodb-rep2`
-- **이미지**: `mongo:latest`
+- **이미지**: `mongo:8.2.2-noble`
 - **역할**: 데이터 저장 노드 (Priority 2, 1)
 - **볼륨**: `mongodb1-data`, `mongodb2-data` (`/data/db`)
 - **환경 변수**:
@@ -80,7 +80,7 @@ flowchart TB
 **Arbiter (투표 전용):**
 
 - **컨테이너**: `mongodb-arbiter`
-- **이미지**: `mongo:latest`
+- **이미지**: `mongo:8.2.2-noble`
 - **역할**: 투표권만 가진 가벼운 노드 (데이터 저장 없음)
 - **목적**: 홀수 노드로 split-brain 방지
 
@@ -94,7 +94,7 @@ flowchart TB
 ### 3. ReplicaSet 초기화
 
 - **컨테이너**: `mongo-init`
-- **이미지**: `mongo:latest`
+- **이미지**: `mongo:8.2.2-noble`
 - **역할**: 레플리카 셋 자동 구성 (one-shot)
 - **재시작 정책**: `no`
 
@@ -114,7 +114,7 @@ flowchart TB
 ### 4. Mongo Express (Web UI)
 
 - **컨테이너**: `mongo-express`
-- **이미지**: `mongo-express:latest`
+- **이미지**: `mongo-express:1.0.2-20-alpine3.19`
 - **역할**: MongoDB 관리 웹 인터페이스
 - **포트**: `${MONGO_EXPRESS_PORT}` (기본 8081)
 - **Traefik**: `https://mongo-express.${DEFAULT_URL}`

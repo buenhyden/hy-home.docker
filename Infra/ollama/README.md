@@ -59,7 +59,7 @@ flowchart TB
 ### 1. Ollama (LLM 서버)
 
 - **컨테이너**: `ollama`
-- **이미지**: `ollama/ollama:latest`
+- **이미지**: `ollama/ollama:0.13.1`
 - **역할**: 대규모 언어 모델 실행 엔진
 - **포트**: `${OLLAMA_PORT}` (기본 11434)
 - **Traefik**: `https://ollama.${DEFAULT_URL}`

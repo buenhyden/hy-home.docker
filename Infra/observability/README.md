@@ -111,7 +111,7 @@ flowchart TB
 ### 3. Tempo (트레이스 저장소)
 
 - **컨테이너**: `infra-tempo`
-- **이미지**: `grafana/tempo:latest`
+- **이미지**: `grafana/tempo:main-b4d6e55`
 - **역할**: 분산 추적 데이터 저장
 - **포트**: `${TEMPO_HOST_PORT}:${TEMPO_PORT}` (기본 3200)
 - **IP**: 172.19.0.32

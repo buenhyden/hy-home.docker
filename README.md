@@ -370,3 +370,41 @@ docker logs <container-name> -f
 - [Docker 공식 문서](https://docs.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
 - [Infra 상세 가이드](./Infra/README.md)
+
+## Docker에서 `latest` 태그를 사용하는 컨테이너를 최신 버전으로 업데이트
+
+단순히 컨테이너를 재시작(`restart`)하는 것만으로는 부족하다. 
+Docker는 **로컬에 이미 `latest`라는 이름의 이미지가 있다면, 레지스트리(Docker Hub 등)에서 새로 다운로드하지 않고 로컬 캐시를 사용**하기 때문이다. 
+
+`docker-compose` 환경에서 이를 업데이트하는 가장 정석적인 방법
+
+-----
+
+### 방법 1. 수동 업데이트 (Docker Compose 사용 시) - 권장
+
+명시적으로 이미지를 당겨오고(Pull), 변경 사항을 적용한다. 
+
+**1. 최신 이미지 다운로드**
+
+```bash
+docker-compose pull
+```
+
+- 이 명령어를 실행하면 `docker-compose.yml`에 명시된 모든 서비스의 `latest` 이미지를 레지스트리에서 새로 받아온다. 
+
+**2. 컨테이너 재생성**
+
+```bash
+docker-compose up -d
+```
+
+- `up` 명령어는 이미지가 변경된 것을 감지하고, **변경된 컨테이너만** 자동으로 지우고 새로 생성(Recreate)한다. 변경되지 않은 컨테이너는 건드리지 않는다.
+
+**3. (선택) 이전 이미지 정리**
+업데이트 후에는 이름 없는(dangling) 이전 버전의 이미지가 남게 된다 (`<none>:<none>`). 디스크 공간 확보를 위해 지워주는 것이 좋다.
+
+```bash
+docker image prune -f
+```
+
+-----

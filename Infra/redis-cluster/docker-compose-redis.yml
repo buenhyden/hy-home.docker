@@ -278,7 +278,7 @@ services:
         max-file: "2"
 
   redisinsight:
-    image: redis/redisinsight:latest
+    image: redis/redisinsight:2.70
     container_name: redisinsight
     networks:
       - infra_net

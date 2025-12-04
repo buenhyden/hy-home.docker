@@ -77,7 +77,7 @@ flowchart TB
 ### 1. n8n Main (웹 UI + API 서버)
 
 - **컨테이너**: `n8n`
-- **이미지**: `n8nio/n8n:latest`
+- **이미지**: `n8nio/n8n:1.123.1`
 - **역할**: 워크플로우 편집 UI, REST API, Webhook 수신
 - **포트**: `${N8N_PORT}` (기본 5678)
 - **Traefik**: `https://n8n.${DEFAULT_URL}`
@@ -119,7 +119,7 @@ flowchart TB
 ### 2. n8n Worker (실행 엔진)
 
 - **컨테이너**: `n8n-worker`
-- **이미지**: `n8nio/n8n:latest`
+- **이미지**: `n8nio/n8n:1.123.1`
 - **역할**: 큐에서 작업을 가져와 워크플로우 실행
 - **Command**: `worker`
 - **IP**: 172.19.0.17

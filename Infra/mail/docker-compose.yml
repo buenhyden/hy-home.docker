@@ -3,7 +3,7 @@ services:
   # Stalwart Mail Server (올인원 메일 서버)
   # ----------------------------------------------------------------
   # stalwart:
-  #   image: stalwartlabs/stalwart:latest
+  #   image: stalwartlabs/stalwart:v0.14
   #   container_name: stalwart
   #   restart: always
   #   # [포트 설정]

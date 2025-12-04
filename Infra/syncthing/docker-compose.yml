@@ -1,6 +1,6 @@
 services:
   syncthing:
-    image: syncthing/syncthing:latest
+    image: syncthing/syncthing:2.0.12
     restart: unless-stopped
     container_name: syncthing
     ports:

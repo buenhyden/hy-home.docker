@@ -25,7 +25,7 @@ services:
         max-file: "2"
 
   valkey-cluster-exporter:
-    image: oliver006/redis_exporter:latest
+    image: oliver006/redis_exporter:v1.80.1
     container_name: valkey-cluster-exporter
     hostname: valkey-cluster-exporter
     expose:
@@ -138,7 +138,7 @@ services:
     volumes:
       - valkey-standalone-data-volume:/bitnami/valkey/data
   valkey-standalone-exporter:
-    image: oliver006/redis_exporter:latest
+    image: oliver006/redis_exporter:v1.80.1
     container_name: valkey-standalone-exporter
     hostname: valkey-standalone-exporter
     expose:

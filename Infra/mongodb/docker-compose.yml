@@ -1,6 +1,6 @@
 services:
   mongo-key-generator:
-    image: alpine:latest
+    image: alpine:3.23.0
     container_name: mongo-key-generator
     restart: "no" # 한 번 실행하고 종료됨
     volumes:
@@ -22,7 +22,7 @@ services:
         ls -l /data/configdb/mongodb.key;
       "
   mongodb-rep1:
-    image: mongo:latest
+    image: mongo:8.2.2-noble
     restart: unless-stopped
     container_name: mongodb-rep1
     hostname: mongodb-rep1    
@@ -51,7 +51,7 @@ services:
       - mongo-key-generator
 
   mongodb-rep2:
-    image: mongo:latest
+    image: mongo:8.2.2-noble
     restart: unless-stopped
     container_name: mongodb-rep2
     hostname: mongodb-rep2    
@@ -81,7 +81,7 @@ services:
   
   # [추가] MongoDB Arbiter (투표권만 가진 가벼운 노드, 데이터 저장 안 함)
   mongodb-arbiter:
-    image: mongo:latest
+    image: mongo:8.2.2-noble
     container_name: mongodb-arbiter
     hostname: mongodb-arbiter
     restart: unless-stopped
@@ -100,7 +100,7 @@ services:
       - mongo-key-generator
   # [추가] Replica Set 초기화 (한 번만 실행되고 죽음)
   mongo-init:
-    image: mongo:latest
+    image: mongo:8.2.2-noble
     container_name: mongo-init
     restart: "no"
     networks:
@@ -136,7 +136,7 @@ services:
   # Mongo Express (Admin UI)
   # ============================================================================
   mongo-express:
-    image: mongo-express:latest
+    image: mongo-express:1.0.2-20-alpine3.19
     container_name: mongo-express
     hostname: mongo-express
     restart: unless-stopped

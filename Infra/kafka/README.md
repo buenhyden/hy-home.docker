@@ -163,7 +163,7 @@ flowchart TB
 ### 5. Kafka UI (Provectus)
 
 - **컨테이너**: `kafka-ui`
-- **이미지**: `provectuslabs/kafka-ui:latest`
+- **이미지**: `provectuslabs/kafka-ui:v0.7.2`
 - **역할**: Kafka 클러스터 관리 웹 UI
 - **포트**: `${KAFKA_UI_PORT}` (기본 8080)
 - **Traefik**: `https://kafka-ui.${DEFAULT_URL}`

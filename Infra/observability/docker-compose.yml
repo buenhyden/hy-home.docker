@@ -49,7 +49,7 @@ services:
   # 3. Trace Storage (Tempo)
   # -------------------------------------------------------
   tempo:
-    image: grafana/tempo:latest
+    image: grafana/tempo:main-b4d6e55
     container_name: infra-tempo
     command: [ "-config.file=/etc/tempo.yaml" ] 
     volumes:

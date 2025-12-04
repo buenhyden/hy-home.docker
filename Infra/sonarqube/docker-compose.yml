@@ -1,6 +1,5 @@
 services:
-  sonarqube:
-    #image: docker.io/bitnami/sonarqube:latest
+  sonarqube:    
     image: sonarqube:lts-community
     container_name: sonarqube
     hostname: sonarqube
