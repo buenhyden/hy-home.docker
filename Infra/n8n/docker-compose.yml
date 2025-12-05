@@ -17,8 +17,8 @@ services:
       # [중요] Traefik 도메인 설정 반영
       - N8N_PROTOCOL=https
       - N8N_HOST=n8n.${DEFAULT_URL}      
-      - N8N_PORT=${N8N_PORT}      
-      - WEBHOOK_URL=https://n8n.${DEFAULT_URL}/
+      - N8N_PORT=${N8N_PORT}            
+      - WEBHOOK_URL=https://n8n.${DEFAULT_URL}      
       - N8N_PUSH_BACKEND=websocket
       # n8n Public API 활성화 (필수)
       - N8N_PUBLIC_API_DISABLED=false
@@ -28,7 +28,7 @@ services:
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
       - N8N_EDITOR_BASE_URL=https://n8n.${DEFAULT_URL}
-      - N8N_PUBLIC_API_BASE_URL=https://n8n.${DEFAULT_URL}
+      - N8N_PUBLIC_API_BASE_URL=https://n8n.${DEFAULT_URL}      
       
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=${POSTGRES_HOSTNAME}
@@ -55,7 +55,7 @@ services:
       - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true  # 수동 실행도 워커로 보내기 (선택)
     labels:
       - "traefik.enable=true"      
-      # n8n UI & Webhook 라우터 (https://n8n.hy-home.local)
+      # n8n UI & Webhook 라우터 (https://n8n.${DEFAULT_URL})
       - "traefik.http.routers.n8n.rule=Host(`n8n.${DEFAULT_URL}`)"
       - "traefik.http.routers.n8n.entrypoints=websecure"
       - "traefik.http.routers.n8n.tls=true"
@@ -66,9 +66,7 @@ services:
       - n8n-data:/home/node/.n8n
     networks:
       infra_net:
-        ipv4_address: 172.19.0.14
-    depends_on:
-      - pg-router # 루트 docker-compose에서 include 시 유효
+        ipv4_address: 172.19.0.14    
     logging:
       driver: "json-file"
       options:
@@ -79,8 +77,8 @@ services:
     container_name: n8n-worker
     restart: unless-stopped
     depends_on:
+      - n8n
       - n8n-redis
-      - pg-router
     environment:
       # 타임존
       - GENERIC_TIMEZONE=${DEFAULT_TIMEZONE:-Asia/Seoul}
@@ -165,7 +163,7 @@ services:
         ipv4_address: 172.19.0.16
     restart: unless-stopped
     secrets:
-      - redis_password    
+      - redis_password        
     entrypoint:
       - /bin/sh
       - -c

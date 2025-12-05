@@ -204,7 +204,7 @@ services:
       - "traefik.enable=true"
       
       # HAProxy Stats UI 라우터
-      # 도메인: haproxy.pg.hy-home.local
+      # 도메인: haproxy.pg.${DEFAULT_URL}
       - "traefik.http.routers.haproxy-stats.rule=Host(`pg-haproxy.${DEFAULT_URL}`)"
       - "traefik.http.routers.haproxy-stats.entrypoints=websecure"
       - "traefik.http.routers.haproxy-stats.tls=true"

@@ -327,7 +327,7 @@ services:
       - redisinsight-data:/db
     labels:
       - "traefik.enable=true"
-      # 도메인: redisinsight.hy-home.local
+      # 도메인: redisinsight.${DEFAULT_URL}
       - "traefik.http.routers.redisinsight.rule=Host(`redisinsight.${DEFAULT_URL}`)"
       - "traefik.http.routers.redisinsight.entrypoints=websecure"
       - "traefik.http.routers.redisinsight.tls=true"

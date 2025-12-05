@@ -126,9 +126,9 @@ flowchart TB
 
 | 서비스 | 설명 | 접속 URL |
 | :--- | :--- | :--- |
-| [Traefik](./Infra/traefik) | 동적 리버스 프록시, HTTPS 라우팅 | `https://dashboard.hy-home.local` |
-| [OAuth2-Proxy](./Infra/oauth2-proxy) | Forward Auth 인증 미들웨어 | `https://auth.hy-home.local` |
-| [Keycloak](./Infra/keycloak) | SSO/IAM, 통합 인증 시스템 | `https://keycloak.hy-home.local` |
+| [Traefik](./Infra/traefik) | 동적 리버스 프록시, HTTPS 라우팅 | `https://dashboard.127.0.0.1.nip.io` |
+| [OAuth2-Proxy](./Infra/oauth2-proxy) | Forward Auth 인증 미들웨어 | `https://auth.127.0.0.1.nip.io` |
+| [Keycloak](./Infra/keycloak) | SSO/IAM, 통합 인증 시스템 | `https://keycloak.127.0.0.1.nip.io` |
 
 ### 2. 핵심 데이터베이스
 
@@ -237,25 +237,25 @@ docker-compose up -d
 
 ### 관측성
 
-- **Grafana**: `https://grafana.hy-home.local` (Keycloak SSO)
-- **Prometheus**: `https://prometheus.hy-home.local`
-- **Alloy**: `https://alloy.hy-home.local`
-- **Alertmanager**: `https://alertmanager.hy-home.local`
+- **Grafana**: `https://grafana.127.0.0.1.nip.io` (Keycloak SSO)
+- **Prometheus**: `https://prometheus.127.0.0.1.nip.io`
+- **Alloy**: `https://alloy.127.0.0.1.nip.io`
+- **Alertmanager**: `https://alertmanager.127.0.0.1.nip.io`
 
 ### 데이터베이스 UI
 
-- **RedisInsight**: `https://redisinsight.hy-home.local`
-- **Kafka UI**: `https://kafka-ui.hy-home.local`
-- **MinIO Console**: `https://minio-console.hy-home.local`
-- **InfluxDB**: `https://influxdb.hy-home.local`
+- **RedisInsight**: `https://redisinsight.127.0.0.1.nip.io`
+- **Kafka UI**: `https://kafka-ui.127.0.0.1.nip.io`
+- **MinIO Console**: `https://minio-console.127.0.0.1.nip.io`
+- **InfluxDB**: `https://influxdb.127.0.0.1.nip.io`
 
 ### 애플리케이션
 
-- **n8n**: `https://n8n.hy-home.local`
-- **Ollama WebUI**: `https://chat.hy-home.local`
-- **Keycloak Admin**: `https://keycloak.hy-home.local/admin`
-- **Traefik Dashboard**: `https://dashboard.hy-home.local`
-- **MailHog**: `https://mail.hy-home.local`
+- **n8n**: `https://n8n.127.0.0.1.nip.io`
+- **Ollama WebUI**: `https://chat.127.0.0.1.nip.io`
+- **Keycloak Admin**: `https://keycloak.127.0.0.1.nip.io/admin`
+- **Traefik Dashboard**: `https://dashboard.127.0.0.1.nip.io`
+- **MailHog**: `https://mail.127.0.0.1.nip.io`
 
 ### 데이터베이스 연결
 
@@ -334,9 +334,9 @@ lsof -i :5432                 # Linux/Mac
 
 ```
 # C:\Windows\System32\drivers\etc\hosts 또는 /etc/hosts에 추가
-127.0.0.1 grafana.hy-home.local
-127.0.0.1 keycloak.hy-home.local
-127.0.0.1 kafka-ui.hy-home.local
+127.0.0.1 grafana.127.0.0.1.nip.io
+127.0.0.1 keycloak.127.0.0.1.nip.io
+127.0.0.1 kafka-ui.127.0.0.1.nip.io
 ```
 
 **3. 볼륨 권한 문제**
@@ -373,8 +373,8 @@ docker logs <container-name> -f
 
 ## Docker에서 `latest` 태그를 사용하는 컨테이너를 최신 버전으로 업데이트
 
-단순히 컨테이너를 재시작(`restart`)하는 것만으로는 부족하다. 
-Docker는 **로컬에 이미 `latest`라는 이름의 이미지가 있다면, 레지스트리(Docker Hub 등)에서 새로 다운로드하지 않고 로컬 캐시를 사용**하기 때문이다. 
+단순히 컨테이너를 재시작(`restart`)하는 것만으로는 부족하다.
+Docker는 **로컬에 이미 `latest`라는 이름의 이미지가 있다면, 레지스트리(Docker Hub 등)에서 새로 다운로드하지 않고 로컬 캐시를 사용**하기 때문이다.
 
 `docker-compose` 환경에서 이를 업데이트하는 가장 정석적인 방법
 
@@ -382,7 +382,7 @@ Docker는 **로컬에 이미 `latest`라는 이름의 이미지가 있다면, �
 
 ### 방법 1. 수동 업데이트 (Docker Compose 사용 시) - 권장
 
-명시적으로 이미지를 당겨오고(Pull), 변경 사항을 적용한다. 
+명시적으로 이미지를 당겨오고(Pull), 변경 사항을 적용한다.
 
 **1. 최신 이미지 다운로드**
 
@@ -390,7 +390,7 @@ Docker는 **로컬에 이미 `latest`라는 이름의 이미지가 있다면, �
 docker-compose pull
 ```
 
-- 이 명령어를 실행하면 `docker-compose.yml`에 명시된 모든 서비스의 `latest` 이미지를 레지스트리에서 새로 받아온다. 
+- 이 명령어를 실행하면 `docker-compose.yml`에 명시된 모든 서비스의 `latest` 이미지를 레지스트리에서 새로 받아온다.
 
 **2. 컨테이너 재생성**
 
@@ -408,3 +408,16 @@ docker image prune -f
 ```
 
 -----
+
+## 개발용 인증서
+
+```bash
+# 1. (혹시 없다면) certs 폴더 생성
+mkdir -p certs
+
+# 2. 기존 도메인 인증서 발급 (이미 하셨다면 생략 가능)
+mkcert -key-file certs/local-key.pem -cert-file certs/local-cert.pem "localhost" "127.0.0.1" "127.0.0.1.nip.io" "*.127.0.0.1.nip.io" "127.0.0.1.nip.io" "*.127.0.0.1.nip.io"
+
+# 3. [핵심] Root CA 인증서를 certs 폴더로 복사
+cp "$(mkcert -CAROOT)/rootCA.pem" ./certs/rootCA.pem
+```

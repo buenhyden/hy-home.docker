@@ -21,7 +21,7 @@ services:
         ipv4_address: 172.19.0.11    
     labels:
       - "traefik.enable=true"
-      # 도메인: influxdb.hy-home.local
+      # 도메인: influxdb.${DEFAULT_URL}
       - "traefik.http.routers.influxdb.rule=Host(`influxdb.${DEFAULT_URL}`)"
       - "traefik.http.routers.influxdb.entrypoints=websecure"
       - "traefik.http.routers.influxdb.tls=true"

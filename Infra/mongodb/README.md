@@ -155,7 +155,7 @@ MONGO_EXPRESS_CONFIG_BASICAUTH_PASSWORD=<password>
 MONGO_EXPORTER_PORT=9216
 
 # 도메인
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ## 네트워크
@@ -196,7 +196,7 @@ docker logs mongo-init
 
 ### Mongo Express (Web UI)
 
-- **URL**: `https://mongo-express.hy-home.local`
+- **URL**: `https://mongo-express.127.0.0.1.nip.io`
 - **인증**: Basic Auth (설정한 사용자명/비밀번호)
 
 ### CLI 연결

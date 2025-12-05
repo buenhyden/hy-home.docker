@@ -269,7 +269,7 @@ OAUTH2_PROXY_CLIENT_ID=<client_id>
 OAUTH2_PROXY_CLIENT_SECRET=<client_secret>
 
 # 도메인
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ## 네트워크
@@ -312,33 +312,33 @@ docker-compose up -d
 
 ```bash
 # Prometheus 타겟
-curl https://prometheus.hy-home.local/api/v1/targets
+curl https://prometheus.127.0.0.1.nip.io/api/v1/targets
 
 # Grafana 접속
-# https://grafana.hy-home.local (Keycloak SSO)
+# https://grafana.127.0.0.1.nip.io (Keycloak SSO)
 ```
 
 ## 접속 정보
 
 ### Grafana
 
-- **URL**: `https://grafana.hy-home.local`
+- **URL**: `https://grafana.127.0.0.1.nip.io`
 - **인증**: Keycloak SSO (자동 로그인)
 - **기본 계정** (비상 접근): admin / <설정한  비밀번호>
 
 ### Prometheus
 
-- **URL**: `https://prometheus.hy-home.local`
+- **URL**: `https://prometheus.127.0.0.1.nip.io`
 - **UI**: Prometheus Expression Browser
 
 ### Alloy
 
-- **URL**: `https://alloy.hy-home.local`
+- **URL**: `https://alloy.127.0.0.1.nip.io`
 - **UI**: Alloy Configuration UI
 
 ### Alertmanager
 
-- **URL**: `https://alertmanager.hy-home.local`
+- **URL**: `https://alertmanager.127.0.0.1.nip.io`
 - **UI**: Alert 상태 및 Silence 관리
 
 ## 유용한 명령어
@@ -347,13 +347,13 @@ curl https://prometheus.hy-home.local/api/v1/targets
 
 ```bash
 # 설정 리로드
-curl -X POST https://prometheus.hy-home.local/-/reload
+curl -X POST https://prometheus.127.0.0.1.nip.io/-/reload
 
 # 타겟 확인
-curl https://prometheus.hy-home.local/api/v1/targets | jq
+curl https://prometheus.127.0.0.1.nip.io/api/v1/targets | jq
 
 # PromQL 쿼리
-curl 'https://prometheus.hy-home.local/api/v1/query?query=up'
+curl 'https://prometheus.127.0.0.1.nip.io/api/v1/query?query=up'
 ```
 
 ### Loki
@@ -372,10 +372,10 @@ curl http://localhost:3100/loki/api/v1/labels | jq
 
 ```bash
 # 대시보드 목록
-curl -u admin:<password> https://grafana.hy-home.local/api/search
+curl -u admin:<password> https://grafana.127.0.0.1.nip.io/api/search
 
 # 데이터소스 목록
-curl -u admin:<password> https://grafana.hy-home.local/api/datasources
+curl -u admin:<password> https://grafana.127.0.0.1.nip.io/api/datasources
 ```
 
 ## 데이터 영속성
@@ -487,7 +487,7 @@ groups:
 
 ```bash
 # 타겟 상태 확인
-curl https://prometheus.hy-home.local/api/v1/targets | jq '.data.activeTargets[] | select(.health != "up")'
+curl https://prometheus.127.0.0.1.nip.io/api/v1/targets | jq '.data.activeTargets[] | select(.health != "up")'
 
 # 네트워크 연결 테스트
 docker exec infra-prometheus wget -O- http://redis-exporter:9121/metrics
@@ -498,7 +498,7 @@ docker exec infra-prometheus wget -O- http://redis-exporter:9121/metrics
 ```bash
 # 데이터소스 테스트
 curl -u admin:<password> -X POST \
-  https://grafana.hy-home.local/api/datasources/1/health
+  https://grafana.127.0.0.1.nip.io/api/datasources/1/health
 ```
 
 ### Loki 로그 수집 안됨

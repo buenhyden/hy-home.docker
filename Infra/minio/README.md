@@ -43,7 +43,7 @@ MINIO_PORT=9000
 MINIO_HOST_PORT=9000
 MINIO_CONSOLE_PORT=9001
 MINIO_CONSOLE_HOST_PORT=9001
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ### Docker Secrets
@@ -57,12 +57,12 @@ DEFAULT_URL=hy-home.local
 
 ### MinIO Console (Web UI)
 
-- **URL**: `https://minio-console.hy-home.local`
+- **URL**: `https://minio-console.127.0.0.1.nip.io`
 - **계정**: root user / password
 
 ### S3 API
 
-- **Endpoint**: `https://minio.hy-home.local`
+- **Endpoint**: `https://minio.127.0.0.1.nip.io`
 - **Region**: `us-east-1` (기본)
 
 ## 사용 방법
@@ -76,14 +76,14 @@ aws configure set default.region us-east-1
 aws configure set default.s3.signature_version s3v4
 
 # 파일 업로드
-aws --endpoint-url https://minio.hy-home.local s3 cp file.txt s3://cdn-bucket/
+aws --endpoint-url https://minio.127.0.0.1.nip.io s3 cp file.txt s3://cdn-bucket/
 ```
 
 ### mc CLI
 
 ```bash
 # Alias 설정
-mc alias set myminio https://minio.hy-home.local <user> <password>
+mc alias set myminio https://minio.127.0.0.1.nip.io <user> <password>
 
 # 파일 업로드
 mc cp file.txt myminio/cdn-bucket/

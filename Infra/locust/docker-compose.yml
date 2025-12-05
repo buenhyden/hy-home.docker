@@ -18,7 +18,7 @@ services:
     depends_on:
       - influxdb
     extra_hosts:
-      - "hy-home.local:host-gateway"
+      - "${DEFAULT_URL}:host-gateway"
   
   locust-worker:
     build: .
@@ -39,4 +39,4 @@ services:
     deploy:
       replicas: 2  # 워커를 2개로 늘려서 부하 분산 (필요시 조절)
     extra_hosts:
-      - "hy-home.local:host-gateway"
+      - "${DEFAULT_URL}:host-gateway"

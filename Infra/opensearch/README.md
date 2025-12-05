@@ -144,7 +144,7 @@ ES_EXPORTER_PORT=9114
 ES_EXPORTER_HOST_PORT=9114
 
 # 도메인
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ## 네트워크
@@ -202,12 +202,12 @@ curl -k -u admin:<password> https://localhost:9200/_cat/nodes?v
 
 ### OpenSearch Dashboards
 
-- **URL**: `https://opensearch-dashboard.hy-home.local`
+- **URL**: `https://opensearch-dashboard.127.0.0.1.nip.io`
 - **인증**: admin / <설정한 비밀번호>
 
 ### OpenSearch API
 
-- **URL**: `https://opensearch.hy-home.local`
+- **URL**: `https://opensearch.127.0.0.1.nip.io`
 - **Basic Auth**: admin / <비밀번호>
 
 ### CLI 접근

@@ -39,14 +39,14 @@ INFLUXDB_ORG=myorg
 INFLUXDB_BUCKET=mybucket
 INFLUXDB_API_TOKEN=<token>
 INFLUXDB_DB_NAME=mydb
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ## 접속 정보
 
 ### Web UI
 
-- **URL**: `https://influxdb.hy-home.local`
+- **URL**: `https://influxdb.127.0.0.1.nip.io`
 - **계정**: admin / password
 
 ### CLI
@@ -64,7 +64,7 @@ influx query 'from(bucket:"mybucket") |> range(start: -1h)'
 ### 데이터 쓰기 (Line Protocol)
 
 ```bash
-curl -X POST "https://influxdb.hy-home.local/api/v2/write?org=myorg&bucket=mybucket
+curl -X POST "https://influxdb.127.0.0.1.nip.io/api/v2/write?org=myorg&bucket=mybucket
 
 " \
   -H "Authorization: Token <token>" \

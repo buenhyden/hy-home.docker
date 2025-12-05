@@ -155,7 +155,7 @@ services:
     labels:
       - "traefik.enable=true"      
       # mongo-express 라우터
-      # 도메인: mongo-express.pg.hy-home.local
+      # 도메인: mongo-express.pg.${DEFAULT_URL}
       - "traefik.http.routers.mongo-express.rule=Host(`mongo-express.${DEFAULT_URL}`)"
       - "traefik.http.routers.mongo-express.entrypoints=websecure"
       - "traefik.http.routers.mongo-express.tls=true"

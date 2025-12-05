@@ -67,7 +67,7 @@ services:
         condition: service_completed_successfully
     labels:
       - "traefik.enable=true"
-      # 도메인: airflow.hy-home.local
+      # 도메인: airflow.${DEFAULT_URL}
       - "traefik.http.routers.airflow.rule=Host(`airflow.${DEFAULT_URL}`)"
       - "traefik.http.routers.airflow.entrypoints=websecure"
       - "traefik.http.routers.airflow.tls=true"
@@ -281,7 +281,7 @@ services:
         condition: service_completed_successfully
     labels:
       - "traefik.enable=true"
-      # 도메인: flower.hy-home.local
+      # 도메인: flower.${DEFAULT_URL}
       - "traefik.http.routers.flower.rule=Host(`flower.${DEFAULT_URL}`)"
       - "traefik.http.routers.flower.entrypoints=websecure"
       - "traefik.http.routers.flower.tls=true"

@@ -180,7 +180,7 @@ services:
     #   - "${SCHEMA_REGISTRY_HOST_PORT}:${SCHEMA_REGISTRY_PORT}"
     labels:
       - "traefik.enable=true"
-      # 도메인: schema-registry.hy-home.local
+      # 도메인: schema-registry.${DEFAULT_URL}
       - "traefik.http.routers.schema-registry.rule=Host(`schema-registry.${DEFAULT_URL}`)"
       - "traefik.http.routers.schema-registry.entrypoints=websecure"
       - "traefik.http.routers.schema-registry.tls=true"
@@ -256,7 +256,7 @@ services:
       - kafka-connect-data:/var/lib/kafka-connect
     labels:
       - "traefik.enable=true"
-      # 도메인: connect.hy-home.local
+      # 도메인: connect.${DEFAULT_URL}
       - "traefik.http.routers.kafka-connect.rule=Host(`kafka-connect.${DEFAULT_URL}`)"
       - "traefik.http.routers.kafka-connect.entrypoints=websecure"
       - "traefik.http.routers.kafka-connect.tls=true"
@@ -281,7 +281,7 @@ services:
     #   - "${KAFKA_REST_PROXY_HOST_PORT}:${KAFKA_REST_PROXY_PORT}"
     labels:
       - "traefik.enable=true"
-      # 도메인: kafka-rest.hy-home.local
+      # 도메인: kafka-rest.${DEFAULT_URL}
       - "traefik.http.routers.kafka-rest.rule=Host(`kafka-rest.${DEFAULT_URL}`)"
       - "traefik.http.routers.kafka-rest.entrypoints=websecure"
       - "traefik.http.routers.kafka-rest.tls=true"
@@ -328,7 +328,7 @@ services:
     #   - "${KAFKA_UI_HOST_PORT}:${KAFKA_UI_PORT}" # Host -> Container
     labels:
       - "traefik.enable=true"
-      # 도메인: kafka-ui.hy-home.local
+      # 도메인: kafka-ui.${DEFAULT_URL}
       - "traefik.http.routers.kafka-ui.rule=Host(`kafka-ui.${DEFAULT_URL}`)"
       - "traefik.http.routers.kafka-ui.entrypoints=websecure"
       - "traefik.http.routers.kafka-ui.tls=true"

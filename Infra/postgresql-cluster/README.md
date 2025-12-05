@@ -146,7 +146,7 @@ HAPROXY_METRICS_HOST_PORT=8484
 POSTGRES_EXPORTER_PORT=9187
 
 # 도메인
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ### .env.postgres 파일
@@ -220,7 +220,7 @@ docker exec -it pg-0 psql -U postgres
 ### 관리 UI
 
 - **HAProxy Stats**:
-  - Traefik: `https://pg-haproxy.hy-home.local`
+  - Traefik: `https://pg-haproxy.127.0.0.1.nip.io`
   - 직접: `http://localhost:8484`
 - **Patroni API**: `http://<pg-node>:8008` (내부 네트워크)
 

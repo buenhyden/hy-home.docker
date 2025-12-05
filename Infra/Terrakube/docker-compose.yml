@@ -30,7 +30,7 @@ services:
       AwsEndpoint: http://minio:9000
 
       TerrakubeUiURL: https://terrakube-ui.${DEFAULT_URL}
-      DexIssuerUri: "https://keycloak.hy-home.local/realms/hy-home.realm"
+      DexIssuerUri: "https://keycloak.${DEFAULT_URL}/realms/hy-home.realm"
       
       TerrakubeRedisHostname:  ${MNG_REDIS_HOST}
       TerrakubeRedisPassword: ${REDIS_PASSWORD}

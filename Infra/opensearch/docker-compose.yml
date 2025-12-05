@@ -49,7 +49,7 @@ services:
       - "${ES_PERFORMANCE_ANALYZER_HOST_PORT}:${ES_PERFORMANCE_ANALYZER_PORT}"
     labels:
       - "traefik.enable=true"
-      # 1. OpenSearch API 라우터 (https://opensearch.hy-home.local)
+      # 1. OpenSearch API 라우터 (https://opensearch.${DEFAULT_URL})
       - "traefik.http.routers.opensearch.rule=Host(`opensearch.${DEFAULT_URL}`)"
       - "traefik.http.routers.opensearch.entrypoints=websecure"
       - "traefik.http.routers.opensearch.tls=true"
@@ -167,7 +167,7 @@ services:
       - OPENSEARCH_SSL_CERTIFICATEAUTHORITIES=["/usr/share/opensearch-dashboards/config/rootCA.pem"]
     labels:
       - "traefik.enable=true"
-      # 2. Dashboards 라우터 (https://dashboards.opensearch.hy-home.local)
+      # 2. Dashboards 라우터 (https://dashboards.opensearch.${DEFAULT_URL})
       # (서브 도메인을 분리하여 라우팅)
       - "traefik.http.routers.opensearch-dashboards.rule=Host(`opensearch-dashboard.${DEFAULT_URL}`)"
       - "traefik.http.routers.opensearch-dashboards.entrypoints=websecure"

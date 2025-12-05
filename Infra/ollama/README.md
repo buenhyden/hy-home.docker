@@ -165,7 +165,7 @@ OLLAMA_EXPORTER_PORT=9090
 OLLAMA_EXPORTER_HOST_PORT=9090
 
 # 도메인
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ## 네트워크
@@ -216,7 +216,7 @@ docker exec ollama ollama list
 
 ### Open WebUI (Chat Interface)
 
-- **URL**: `https://chat.hy-home.local`
+- **URL**: `https://chat.127.0.0.1.nip.io`
 - **초기 접속**: 사용자 계정 생성 필요
 - **기능**: 채팅, 문서 업로드, RAG 검색
 
@@ -262,14 +262,14 @@ docker exec ollama ollama run llama3.2:3b "What is Docker?"
 
 ```bash
 # Generate 엔드포인트
-curl https://ollama.hy-home.local/api/generate -d '{
+curl https://ollama.127.0.0.1.nip.io/api/generate -d '{
   "model": "llama3.2:3b",
   "prompt": "Why is the sky blue?",
   "stream": false
 }'
 
 # 임베딩 생성
-curl https://ollama.hy-home.local/api/embeddings -d '{
+curl https://ollama.127.0.0.1.nip.io/api/embeddings -d '{
   "model": "qwen3-embedding:0.6b",
   "prompt": "Hello World"
 }'
@@ -279,7 +279,7 @@ curl https://ollama.hy-home.local/api/embeddings -d '{
 
 ```bash
 # 컬렉션 생성
-curl -X PUT https://qdrant.hy-home.local/collections/documents \
+curl -X PUT https://qdrant.127.0.0.1.nip.io/collections/documents \
   -H "Content-Type: application/json" \
   -d '{
     "vectors": {
@@ -289,7 +289,7 @@ curl -X PUT https://qdrant.hy-home.local/collections/documents \
   }'
 
 # 벡터 삽입
-curl -X PUT https://qdrant.hy-home.local/collections/documents/points \
+curl -X PUT https://qdrant.127.0.0.1.nip.io/collections/documents/points \
   -H "Content-Type: application/json" \
   -d '{
     "points": [
@@ -302,7 +302,7 @@ curl -X PUT https://qdrant.hy-home.local/collections/documents/points \
   }'
 
 # 유사도 검색
-curl -X POST https://qdrant.hy-home.local/collections/documents/points/search \
+curl -X POST https://qdrant.127.0.0.1.nip.io/collections/documents/points/search \
   -H "Content-Type: application/json" \
   -d '{"vector": [0.05, 0.61, ...], "limit": 5}'
 ```

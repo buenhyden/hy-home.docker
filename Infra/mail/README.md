@@ -24,7 +24,7 @@ MailHog는 **개발/테스트용 SMTP 서버 및 메일함**으로 실제 이메
 
 ```bash
 MAILHOG_UI_PORT=8025
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ## 사용 방법
@@ -40,7 +40,7 @@ SMTP_PASSWORD: (none)
 
 ### 메일 확인
 
-- **URL**: `https://mail.hy-home.local`
+- **URL**: `https://mail.127.0.0.1.nip.io`
 
 ## 참고 자료
 

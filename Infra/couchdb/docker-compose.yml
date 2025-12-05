@@ -27,7 +27,7 @@ services:
       retries: 5
     labels:
       - "traefik.enable=true"      
-      # [Router] 도메인 설정: couchdb.hy-home.local
+      # [Router] 도메인 설정: couchdb.${DEFAULT_URL}
       - "traefik.http.routers.couchdb.rule=Host(`couchdb.${DEFAULT_URL}`)"
       - "traefik.http.routers.couchdb.entrypoints=websecure"
       - "traefik.http.routers.couchdb.tls=true"      

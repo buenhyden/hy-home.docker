@@ -82,9 +82,9 @@ flowchart TB
 
 | 서비스 | 설명 | 접속 URL |
 | :--- | :--- | :--- |
-| [traefik](./traefik) | 동적 리버스 프록시, HTTPS 라우팅 | `https://dashboard.hy-home.local` |
-| [oauth2-proxy](./oauth2-proxy) | Forward Auth 인증 미들웨어 | `https://auth.hy-home.local` |
-| [keycloak](./keycloak) | SSO/IAM, 통합 인증 시스템 | `https://keycloak.hy-home.local` |
+| [traefik](./traefik) | 동적 리버스 프록시, HTTPS 라우팅 | `https://dashboard.127.0.0.1.nip.io` |
+| [oauth2-proxy](./oauth2-proxy) | Forward Auth 인증 미들웨어 | `https://auth.127.0.0.1.nip.io` |
+| [keycloak](./keycloak) | SSO/IAM, 통합 인증 시스템 | `https://keycloak.127.0.0.1.nip.io` |
 
 ### 2. 핵심 데이터베이스
 
@@ -204,27 +204,27 @@ docker-compose up -d
 
 ### 관측성
 
-- **Grafana**: `https://grafana.hy-home.local` (Keycloak SSO)
-- **Prometheus**: `https://prometheus.hy-home.local`
-- **Alertmanager**: `https://alertmanager.hy-home.local`
+- **Grafana**: `https://grafana.127.0.0.1.nip.io` (Keycloak SSO)
+- **Prometheus**: `https://prometheus.127.0.0.1.nip.io`
+- **Alertmanager**: `https://alertmanager.127.0.0.1.nip.io`
 
 ### 데이터베이스 UI
 
-- **RedisInsight**: `https://redisinsight.hy-home.local`
-- **Mongo Express**: `https://mongo-express.hy-home.local`
-- **Kafka UI**: `https://kafka-ui.hy-home.local`
-- **MinIO Console**: `https://minio-console.hy-home.local`
+- **RedisInsight**: `https://redisinsight.127.0.0.1.nip.io`
+- **Mongo Express**: `https://mongo-express.127.0.0.1.nip.io`
+- **Kafka UI**: `https://kafka-ui.127.0.0.1.nip.io`
+- **MinIO Console**: `https://minio-console.127.0.0.1.nip.io`
 
 ### 애플리케이션
 
-- **n8n**: `https://n8n.hy-home.local`
-- **Ollama WebUI**: `https://chat.hy-home.local`
-- **Keycloak Admin**: `https://keycloak.hy-home.local/admin`
+- **n8n**: `https://n8n.127.0.0.1.nip.io`
+- **Ollama WebUI**: `https://chat.127.0.0.1.nip.io`
+- **Keycloak Admin**: `https://keycloak.127.0.0.1.nip.io/admin`
 
 ### 인프라 관리
 
-- **Traefik Dashboard**: `https://dashboard.hy-home.local`
-- **MailHog**: `https://mail.hy-home.local`
+- **Traefik Dashboard**: `https://dashboard.127.0.0.1.nip.io`
+- **MailHog**: `https://mail.127.0.0.1.nip.io`
 
 ## 네트워크
 
@@ -271,8 +271,8 @@ sudo chown -R 1000:1000 /path/to/volume
 
 ```bash
 # hosts 파일에 추가 (C:\Windows\System32\drivers\etc\hosts)
-127.0.0.1 grafana.hy-home.local
-127.0.0.1 keycloak.hy-home.local
+127.0.0.1 grafana.127.0.0.1.nip.io
+127.0.0.1 keycloak.127.0.0.1.nip.io
 ```
 
 ### 로그 확인

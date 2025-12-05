@@ -179,7 +179,7 @@ REDIS_EXPORTER_PORT=9121
 REDIS_EXPORTER_HOST_PORT=9121
 
 # 도메인
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ### Docker Secrets
@@ -230,7 +230,7 @@ docker exec redis-node-0 redis-cli -a $(cat ../redis_password.txt) cluster nodes
 
 ### RedisInsight GUI
 
-- **URL**: `https://redisinsight.hy-home.local`
+- **URL**: `https://redisinsight.127.0.0.1.nip.io`
 - **인증**: Keycloak SSO 필요
 
 ### CLI 연결

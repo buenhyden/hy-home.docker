@@ -42,7 +42,7 @@ KEYCLOAK_DB_USER=keycloak
 KEYCLOAK_DB_PASSWORD=<password>
 KEYCLOAK_ADMIN_USER=admin
 KEYCLOAK_ADMIN_PASSWORD=<password>
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 MAILHOG_UI_PORT=8025
 ```
 
@@ -50,7 +50,7 @@ MAILHOG_UI_PORT=8025
 
 ### Admin Console
 
-- **URL**: `https://keycloak.hy-home.local/admin`
+- **URL**: `https://keycloak.127.0.0.1.nip.io/admin`
 - **계정**: admin / password
 
 ## 주요 설정
@@ -67,7 +67,7 @@ MAILHOG_UI_PORT=8025
 Client ID: nginx-client
 Client Protocol: openid-connect
 Access Type: confidential
-Valid Redirect URIs: https://auth.hy-home.local/oauth2/callback
+Valid Redirect URIs: https://auth.127.0.0.1.nip.io/oauth2/callback
 ```
 
 ### 3. 사용자 생성
@@ -90,14 +90,14 @@ Groups → Create Group:
 GF_AUTH_GENERIC_OAUTH_ENABLED=true
 GF_AUTH_GENERIC_OAUTH_CLIENT_ID=nginx-client
 GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=<secret>
-GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://keycloak.hy-home.local/realms/hy-home.realm/protocol/openid-connect/auth
+GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/protocol/openid-connect/auth
 ```
 
 ### OAuth2-Proxy 연동
 
 ```bash
 OAUTH2_PROXY_PROVIDER=keycloak-oidc
-OAUTH2_PROXY_OIDC_ISSUER_URL=https://keycloak.hy-home.local/realms/hy-home.realm
+OAUTH2_PROXY_OIDC_ISSUER_URL=https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm
 ```
 
 ## 참고 자료

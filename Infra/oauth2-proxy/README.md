@@ -31,8 +31,8 @@ OAUTH2_PROXY_PORT=4180
 OAUTH2_PROXY_CLIENT_ID=nginx-client
 OAUTH2_PROXY_CLIENT_SECRET=<keycloak_secret>
 OAUTH2_PROXY_PROVIDER=keycloak-oidc
-OAUTH2_PROXY_OIDC_ISSUER_URL=https://keycloak.hy-home.local/realms/hy-home.realm
-DEFAULT_URL=hy-home.local
+OAUTH2_PROXY_OIDC_ISSUER_URL=https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ## 설정 파일
@@ -45,13 +45,13 @@ upstreams = [ "static://200" ]
 email_domains = [ "*" ]
 cookie_secret = "<random_32_bytes>"
 cookie_secure = true
-cookie_domains = [ ".hy-home.local" ]
+cookie_domains = [ ".127.0.0.1.nip.io" ]
 
 provider = "keycloak-oidc"
 client_id = "nginx-client"
 client_secret = "<secret>"
-oidc_issuer_url = "https://keycloak.hy-home.local/realms/hy-home.realm"
-redirect_url = "https://auth.hy-home.local/oauth2/callback"
+oidc_issuer_url = "https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm"
+redirect_url = "https://auth.127.0.0.1.nip.io/oauth2/callback"
 ```
 
 ## Traefik 통합

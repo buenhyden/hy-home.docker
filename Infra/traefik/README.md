@@ -42,14 +42,14 @@ TRAEFIK_DASHBOARD_PORT=8080
 TRAEFIK_DASHBOARD_HOST_PORT=8080
 TRAEFIK_METRICS_PORT=8082
 TRAEFIK_METRICS_HOST_PORT=8082
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ## 접속 정보
 
 ### Dashboard
 
-- **URL**: `https://dashboard.hy-home.local`
+- **URL**: `https://dashboard.127.0.0.1.nip.io`
 - **인증**: BasicAuth (dynamic 설정)
 
 ## 주요 기능
@@ -59,7 +59,7 @@ DEFAULT_URL=hy-home.local
 ```yaml
 labels:
   - "traefik.enable=true"
-  - "traefik.http.routers.myapp.rule=Host(`myapp.hy-home.local`)"
+  - "traefik.http.routers.myapp.rule=Host(`myapp.127.0.0.1.nip.io`)"
   - "traefik.http.routers.myapp.entrypoints=websecure"
   - "traefik.http.routers.myapp.tls=true"
   - "traefik.http.services.myapp.loadbalancer.server.port=8080"
@@ -133,7 +133,7 @@ docker logs traefik -f
 
 ### 라우터 목록
 
-- Dashboard에서 확인: `https://dashboard.hy-home.local`
+- Dashboard에서 확인: `https://dashboard.127.0.0.1.nip.io`
 
 ## 참고 자료
 

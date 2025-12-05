@@ -184,7 +184,7 @@ DEFAULT_TIMEZONE=Asia/Seoul
 REDIS_EXPORTER_PORT=9121
 
 # 도메인
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ### Docker Secrets
@@ -232,7 +232,7 @@ docker-compose up -d
 
 ```bash
 # n8n UI 접속
-# https://n8n.hy-home.local
+# https://n8n.127.0.0.1.nip.io
 
 # 초기 관리자 계정 생성
 ```
@@ -241,13 +241,13 @@ docker-compose up -d
 
 ### n8n Web UI
 
-- **URL**: `https://n8n.hy-home.local`
+- **URL**: `https://n8n.127.0.0.1.nip.io`
 - **초기 접속**: 관리자 계정 생성 필요
 
 ### Webhook URL 패턴
 
-- **Production**: `https://n8n.hy-home.local/webhook/<webhook-path>`
-- **Test**: `https://n8n.hy-home.local/webhook-test/<webhook-path>`
+- **Production**: `https://n8n.127.0.0.1.nip.io/webhook/<webhook-path>`
+- **Test**: `https://n8n.127.0.0.1.nip.io/webhook-test/<webhook-path>`
 
 ## 유용한 명령어
 
@@ -358,7 +358,7 @@ docker exec n8n nc -zv n8n-redis 6379
 
 ```bash
 # Traefik 라우팅 확인
-curl -I https://n8n.hy-home.local/webhook/test
+curl -I https://n8n.127.0.0.1.nip.io/webhook/test
 
 # n8n Webhook 설정 확인
 # UI에서 Webhook 노드의 URL 복사 후 테스트

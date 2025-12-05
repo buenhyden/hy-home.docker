@@ -28,7 +28,7 @@ services:
     labels:
       - "traefik.enable=true"
       
-      # Ollama API 라우터 (https://ollama.hy-home.local)
+      # Ollama API 라우터 (https://ollama.${DEFAULT_URL})
       - "traefik.http.routers.ollama.rule=Host(`ollama.${DEFAULT_URL}`)"
       - "traefik.http.routers.ollama.entrypoints=websecure"
       - "traefik.http.routers.ollama.tls=true"
@@ -94,7 +94,7 @@ services:
     labels:
       - "traefik.enable=true"
       
-      # 챗봇 UI 라우터 (https://chat.hy-home.local)
+      # 챗봇 UI 라우터 (https://chat.${DEFAULT_URL})
       - "traefik.http.routers.open-webui.rule=Host(`chat.${DEFAULT_URL}`)"
       - "traefik.http.routers.open-webui.entrypoints=websecure"
       - "traefik.http.routers.open-webui.tls=true"

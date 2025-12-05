@@ -229,7 +229,7 @@ KAFKA_EXPORTER_PORT=9308
 KAFKA_EXPORTER_HOST_PORT=9308
 
 # 도메인
-DEFAULT_URL=hy-home.local
+DEFAULT_URL=127.0.0.1.nip.io
 ```
 
 ## 네트워크
@@ -271,21 +271,21 @@ docker exec kafka-1 kafka-topics --bootstrap-server kafka-1:19092 --list
 
 ### Kafka UI
 
-- **URL**: `https://kafka-ui.hy-home.local`
+- **URL**: `https://kafka-ui.127.0.0.1.nip.io`
 - **인증**: Keycloak SSO
 
 ### Kafka REST API
 
-- **URL**: `https://kafka-rest.hy-home.local`
+- **URL**: `https://kafka-rest.127.0.0.1.nip.io`
 - **문서**: [Confluent REST Proxy API](https://docs.confluent.io/platform/current/kafka-rest/api.html)
 
 ### Schema Registry
 
-- **URL**: `https://schema-registry.hy-home.local`
+- **URL**: `https://schema-registry.127.0.0.1.nip.io`
 
 ### Kafka Connect
 
-- **URL**: `https://kafka-connect.hy-home.local`
+- **URL**: `https://kafka-connect.127.0.0.1.nip.io`
 
 ### CLI 연결
 
@@ -375,31 +375,31 @@ docker exec kafka-1 kafka-consumer-groups \
 
 ```bash
 # 커넥터 목록
-curl https://kafka-connect.hy-home.local/connectors
+curl https://kafka-connect.127.0.0.1.nip.io/connectors
 
 # 커넥터 상태
-curl https://kafka-connect.hy-home.local/connectors/my-connector/status
+curl https://kafka-connect.127.0.0.1.nip.io/connectors/my-connector/status
 
 # 커넥터 생성
-curl -X POST https://kafka-connect.hy-home.local/connectors \
+curl -X POST https://kafka-connect.127.0.0.1.nip.io/connectors \
   -H "Content-Type: application/json" \
   -d @connector-config.json
 
 # 커넥터 삭제
-curl -X DELETE https://kafka-connect.hy-home.local/connectors/my-connector
+curl -X DELETE https://kafka-connect.127.0.0.1.nip.io/connectors/my-connector
 ```
 
 ### Schema Registry
 
 ```bash
 # 스키마 목록
-curl https://schema-registry.hy-home.local/subjects
+curl https://schema-registry.127.0.0.1.nip.io/subjects
 
 # 스키마 조회
-curl https://schema-registry.hy-home.local/subjects/my-topic-value/versions/latest
+curl https://schema-registry.127.0.0.1.nip.io/subjects/my-topic-value/versions/latest
 
 # 스키마 등록
-curl -X POST https://schema-registry.hy-home.local/subjects/my-topic-value/versions \
+curl -X POST https://schema-registry.127.0.0.1.nip.io/subjects/my-topic-value/versions \
   -H "Content-Type: application/vnd.schemaregistry.v1+json" \
   -d '{"schema":"{\"type\":\"string\"}"}'
 ```

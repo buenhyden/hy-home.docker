@@ -24,7 +24,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      # 도메인: prometheus.hy-home.local
+      # 도메인: prometheus.${DEFAULT_URL}
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.${DEFAULT_URL}`)"
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls=true"
@@ -138,7 +138,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      # 도메인: grafana.hy-home.local
+      # 도메인: grafana.${DEFAULT_URL}
       - "traefik.http.routers.grafana.rule=Host(`grafana.${DEFAULT_URL}`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls=true"
@@ -170,7 +170,7 @@ services:
       - tempo
     labels:
       - "traefik.enable=true"
-      # Alloy UI: alloy.hy-home.local
+      # Alloy UI: alloy.${DEFAULT_URL}
       - "traefik.http.routers.alloy.rule=Host(`alloy.${DEFAULT_URL}`)"
       - "traefik.http.routers.alloy.entrypoints=websecure"
       - "traefik.http.routers.alloy.tls=true"
@@ -235,7 +235,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      # Alertmanager UI: alertmanager.hy-home.local
+      # Alertmanager UI: alertmanager.${DEFAULT_URL}
       - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.${DEFAULT_URL}`)"
       - "traefik.http.routers.alertmanager.entrypoints=websecure"
       - "traefik.http.routers.alertmanager.tls=true"
