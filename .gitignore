@@ -5,6 +5,7 @@ Doc/클라우드_취약점_점검_가이드.pdf
 secrets/
 Infra/.env
 Infra/postgresql/init_users_dbs.sql
+Infra/Terrakube/certs/
 Infra/oauth2-proxy/certs/
 Infra/mail/certs/
 Infra/oauth2-proxy/oauth2-proxy.cfg
