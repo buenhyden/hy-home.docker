@@ -40,6 +40,7 @@ include:
   - keycloak/docker-compose.yml  
   - mng-db/docker-compose.yml
   - mail/docker-compose.yml
+  # - seaweedfs/docker-compose.yml
   # - terrakube/docker-compose.yml
   # - opensearch/docker-compose.yml  
   # - airflow/docker-compose.yml 
@@ -51,6 +52,8 @@ include:
   #- elasticsearch/docker-compose.yml
 
 volumes:
+  seaweedfs-master-data:
+  seaweedfs-volume-data:
   stalwart-data:
   couchdb1-data:
   couchdb2-data:

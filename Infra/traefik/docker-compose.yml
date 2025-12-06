@@ -29,6 +29,9 @@ services:
       - "traefik.http.routers.dashboard.tls=true"
       # Basic‑auth middleware      
       - "traefik.http.routers.dashboard.middlewares=dashboard-auth@file"
+      # - "traefik.http.routers.cdn.middlewares=cdn-cache"
+      # 브라우저에게 1주일간 캐시하도록 지시
+      # - "traefik.http.middlewares.cdn-cache.headers.customResponseHeaders.Cache-Control=public, max-age=604800"
     # healthcheck:
     #   test: ['CMD', 'traefik', 'healthcheck', '--ping']
     #   interval: 10s

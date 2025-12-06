@@ -532,3 +532,100 @@ curl http://localhost:3100/ready
 - [Tempo 문서](https://grafana.com/docs/tempo/latest/)
 - [Alloy 문서](https://grafana.com/docs/alloy/latest/)
 - [Alertmanager 문서](https://prometheus.io/docs/alerting/latest/alertmanager/)
+
+## Grafana와 Keycloak 연동
+
+Keycloak의 그룹(Group) 정보를 Grafana의 권한(Admin, Editor, Viewer)으로 자동 매핑하는 설정 방법입니다.
+
+이 과정을 통해 Keycloak에서 사용자를 `admins` 그룹에 넣으면 Grafana에서도 자동으로 `Admin` 권한을 갖게 됩니다.
+
+-----
+
+### 1단계: Keycloak 설정 (그룹 정보 내보내기)
+
+Keycloak은 기본적으로 토큰에 그룹 정보를 포함하지 않으므로, **Mapper** 설정을 통해 이를 추가해야 합니다.
+
+1. **Realm 선택:** 본인이 생성한 Realm(예: `myrealm`)을 선택합니다.
+2. **Client Scopes 설정:**
+      - 왼쪽 메뉴 **Client scopes** -\> `roles` (또는 `profile`) 클릭.
+      - **Mappers** 탭 -\> **Add mapper** -\> **By configuration** 선택.
+      - **Group Membership** 선택.
+3. **Mapper 세부 설정:**
+      - **Name:** `groups`
+      - **Token Claim Name:** `groups` (중요: Grafana가 이 이름으로 찾습니다)
+      - **Full group path:** `On` (켜기) -\> 그래야 `/admin` 처럼 경로로 나옵니다.
+      - **Add to ID token:** `On` (켜기)
+      - **Add to access token:** `On` (켜기)
+      - **Save** 클릭.
+
+-----
+
+### 2단계: Keycloak 그룹 생성
+
+테스트를 위해 Keycloak에서 그룹을 만들고 사용자를 추가합니다.
+
+1. **Groups** 메뉴 -\> **Create group** 클릭.
+2. 그룹 이름 입력 (예: `admins`, `editors`).
+3. **Users** 메뉴 -\> 사용자 선택 -\> **Groups** 탭 -\> `Join Group`으로 해당 그룹에 추가.
+
+-----
+
+### 3단계: Grafana 설정 (`docker-compose.yml`)
+
+Grafana가 Keycloak 토큰의 `groups` 클레임을 읽어서 권한으로 변환하도록 **JMESPath** 설정을 추가합니다.
+
+`docker-compose.yml`의 `grafana` 서비스 환경 변수를 아래와 같이 수정하세요.
+
+```yaml
+services:
+  grafana:
+    image: grafana/grafana:12.3.0
+    container_name: infra-grafana
+    environment:
+      # ... 기존 기본 설정 ...
+      - GF_SERVER_ROOT_URL=https://grafana.${DEFAULT_URL}
+      
+      # [Keycloak OAuth 설정]
+      - GF_AUTH_GENERIC_OAUTH_ENABLED=true
+      - GF_AUTH_GENERIC_OAUTH_NAME=Keycloak
+      - GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP=true
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
+      
+      # [중요] Scopes에 'groups'가 포함되어야 함 (roles 스코프에 매퍼를 넣었다면 생략 가능하지만 명시 권장)
+      - GF_AUTH_GENERIC_OAUTH_SCOPES=openid profile email
+      
+      - GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://${DEFAULT_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/auth
+      - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://${DEFAULT_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token
+      - GF_AUTH_GENERIC_OAUTH_API_URL=https://${DEFAULT_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/userinfo
+      
+      # [핵심] 그룹 매핑 로직 (JMESPath)
+      # 1. groups 배열에 '/grafana-admin'이 있으면 -> 'Admin' 권한
+      # 2. groups 배열에 '/grafana-editor'가 있으면 -> 'Editor' 권한
+      # 3. 그 외에는 -> 'Viewer' 권한
+      - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups[*], '/grafana-admin') && 'Admin' || contains(groups[*], '/grafana-editor') && 'Editor' || 'Viewer'
+      
+      # (옵션) '/grafana-server-admin' 그룹에게 Grafana 서버 전체 관리자(Super Admin) 권한 부여
+      - GF_AUTH_GENERIC_OAUTH_ALLOW_ASSIGN_GRAFANA_ADMIN=true
+      - GF_AUTH_GENERIC_OAUTH_GRAFANA_ADMIN_ATTRIBUTE_PATH=contains(groups[*], '/grafana-server-admin')
+
+      # [보안] 매핑되지 않은 신규 유저는 기본적으로 Viewer 권한 부여
+      - GF_USERS_AUTO_ASSIGN_ORG_ROLE=Viewer
+```
+
+-----
+
+### 4단계: 적용 및 확인
+
+1. **재배포:**
+
+    ```bash
+    docker-compose up -d grafana
+    ```
+
+2. **로그인:**
+      - Keycloak에서 `grafana-admin` 그룹에 속한 사용자로 로그인합니다.
+3. **권한 확인:**
+      - Grafana 좌측 하단 프로필 아이콘 -\> **Preferences** 또는 **Configuration** 메뉴가 보이는지 확인합니다. (Admin 권한이 있어야 설정 메뉴가 보입니다.)
+
+이제 Keycloak에서 사용자의 그룹만 변경하면, 다음 로그인 시 Grafana 권한이 자동으로 업데이트됩니다.

@@ -1,0 +1,16 @@
+# [1] 내부 통신 보안 (JWT)
+# Master, Volume, Filer, S3 간의 통신을 암호화하기 위한 키입니다.
+# 이 파일이 마운트된 모든 노드는 서로를 신뢰하게 됩니다.
+[jwt.signing]
+key = "AnyRandomSecretKeyForInternalCommunication"
+read.key = "AnyRandomSecretKeyForInternalCommunication"
+
+# [2] S3 API 사용자 계정 정의
+# MinIO의 Root User / Password와 같은 역할을 합니다.
+# 여러 사용자를 추가할 수 있습니다.
+[aws.access]
+    # 'admin' 사용자 정의
+    [aws.access.admin]
+        key = "minioadmin"          # Access Key ID (아이디)
+        secret = "minioadminpassword" # Secret Access Key (비밀번호)
+        actions = ["Admin", "Read", "Write", "List", "Tagging"]
