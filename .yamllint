@@ -1,0 +1,29 @@
+extends: default
+rules:
+  line-length:
+    max: 120
+    level: error
+  indentation:
+    spaces: 2
+    indent-sequences: false
+    level: error
+  trailing-spaces:
+    level: error
+  truthy:
+    level: error
+  document-start:
+    present: false
+    level: error
+  new-line-at-end-of-file:
+    level: error
+  comments-indentation:
+    level: error
+  key-duplicates:
+    level: error
+  empty-lines:
+    max: 2
+    level: error
+  quoted-strings:
+    quote-type: any
+    required: only-when-needed
+    level: warning
