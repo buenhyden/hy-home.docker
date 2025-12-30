@@ -220,7 +220,7 @@ services:
   # postgres-exporter (Prometheus / Alloy용 메트릭)
   ###############################################################
   pg-0-exporter:
-    image: prometheuscommunity/postgres-exporter
+    image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-0-exporter
     networks:
       infra_net:
@@ -245,7 +245,7 @@ services:
       timeout: 5s
       retries: 5
   pg-1-exporter:
-    image: prometheuscommunity/postgres-exporter
+    image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-1-exporter
     networks:
       infra_net:
@@ -270,7 +270,7 @@ services:
       timeout: 5s
       retries: 5
   pg-2-exporter:
-    image: prometheuscommunity/postgres-exporter
+    image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-2-exporter
     networks:
       infra_net:

@@ -75,7 +75,7 @@ flowchart TB
 ### 1. Kafka 브로커 (KRaft 모드, 3개)
 
 - **컨테이너**: `kafka-1`, `kafka-2`, `kafka-3`
-- **이미지**: `confluentinc/cp-kafka:7.7.0`
+- **이미지**: `confluentinc/cp-kafka:7.7.7`
 - **모드**: KRaft (Zookeeper 불필요)
 - **역할**: Broker + Controller (통합 모드)
 
@@ -244,7 +244,7 @@ DEFAULT_URL=127.0.0.1.nip.io
 
 ```bash
 # 클러스터 ID 생성
-CLUSTER_ID=$(docker run --rm confluentinc/cp-kafka:7.7.0 kafka-storage random-uuid)
+CLUSTER_ID=$(docker run --rm confluentinc/cp-kafka:7.7.7 kafka-storage random-uuid)
 echo "KAFKA_CLSUTER_ID=$CLUSTER_ID"
 
 # .env 파일에 추가

@@ -18,18 +18,37 @@ mng-db는 **관리 및 메타데이터용 단일 PostgreSQL + Redis**로 구성�
 ### 1. mng-postgres
 
 - **컨테이너**: `mng-pg`
-- **이미지**: `postgres:17`
+- **이미지**: `postgres:17-bookworm`
 - **포트**: `${POSTGRES_HOST_PORT}:${POSTGRES_PORT}` (기본 5433:5432)
 - **IP**: 172.19.0.72
 
 ### 2. mng-redis  
 
 - **컨테이너**: `mng-redis`
-- **이미지**: `redis:8.2.3-bookworm`
+- **이미지**: `redis:8.4.0-bookworm`
 - **포트**: 6379 (내부)
 - **IP**: 172.19.0.70
 
-### 3. Exporters
+### 3. RedisInsight (GUI)
+
+- **컨테이너**: `redisinsight`
+- **이미지**: `redis/redisinsight:2.70`
+- **역할**: Redis 클러스터 관리 및 모니터링 GUI
+- **포트**: `${REDIS_INSIGHT_PORT}` (기본 5540)
+- **Traefik 통합**: `https://redisinsight.${DEFAULT_URL}`
+- **인증**: Keycloak SSO (`sso-auth@file` 미들웨어)
+- **볼륨**: `redisinsight-data:/db`
+- **IP**: 172.19.0.68
+
+**기능:**
+
+- 클러스터 토폴로지 시각화
+- 키 브라우저 및 검색
+- CLI 인터페이스
+- 쿼리 프로파일러
+- Pub/Sub 모니터링
+
+### 4. Exporters
 
 - **pg-exporter**: 172.19.0.73
 - **redis-exporter**: 172.19.0.71

@@ -132,7 +132,7 @@ flowchart TB
 ### 3. n8n-redis (내부 캐시)
 
 - **컨테이너**: `n8n-redis`
-- **이미지**: `redis:8.2.3-bookworm`
+- **이미지**: `redis:8.4.0-bookworm`
 - **역할**: n8n 내부 메모리 캐시 전용 (Bull Queue 아님)
 - **포트**: 6379 (내부)
 - **IP**: 172.19.0.15
@@ -152,7 +152,7 @@ flowchart TB
 ### 4. Redis Exporter (모니터링)
 
 - **컨테이너**: `n8n-redis-exporter`
-- **이미지**: `oliver006/redis_exporter:v1.80.0-alpine`
+- **이미지**: `oliver006/redis_exporter:v1.80.1-alpine`
 - **역할**: n8n Redis 메트릭 수집
 - **포트**: `${REDIS_EXPORTER_PORT}` (9121)
 - **IP**: 172.19.0.16

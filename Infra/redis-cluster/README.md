@@ -72,7 +72,7 @@ flowchart TB
 ### 1. Redis Cluster 노드 (6개)
 
 - **컨테이너**: `redis-node-0` ~ `redis-node-5`
-- **이미지**: `redis:8.2.3-bookworm` (Redis 8.2.x)
+- **이미지**: `redis:8.4.0-bookworm` (Redis 8.2.x)
 - **구성**: 3 Master + 3 Replica
 - **Sharding**: 16,384 슬롯을 3개 마스터에 균등 분배
   - `redis-node-0`: Slot 0-5460
@@ -118,7 +118,7 @@ redis-node-5: ${REDIS5_PORT}:${REDIS5_PORT} + ${REDIS5_BUS_PORT}:${REDIS5_BUS_PO
 ### 3. Redis Exporter
 
 - **컨테이너**: `redis-exporter`
-- **이미지**: `oliver006/redis_exporter:v1.80.0-alpine`
+- **이미지**: `oliver006/redis_exporter:v1.80.1-alpine`
 - **역할**: Prometheus용 메트릭 수집
 - **포트**: `${REDIS_EXPORTER_HOST_PORT}:${REDIS_EXPORTER_PORT}`
 - **연결**: `redis-node-0:6379` (대표 노드)

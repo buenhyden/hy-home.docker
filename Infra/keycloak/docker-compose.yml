@@ -34,7 +34,8 @@ services:
       - "traefik.http.routers.keycloak.tls=true"
       - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.29
     logging:
       driver: "json-file"
       options:

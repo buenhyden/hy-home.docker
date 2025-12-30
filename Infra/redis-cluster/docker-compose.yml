@@ -3,7 +3,7 @@ services:
   # Redis Cluster Nodes (6개: 3 master + 3 replica)
   ###############################################################
   redis-node-0:
-    image: redis:8.2.3-bookworm # Redis 8.2.x
+    image: redis:8.4.0-bookworm # Redis 8.4.x
     container_name: redis-node-0
     secrets:
       - redis_password
@@ -47,7 +47,7 @@ services:
         max-file: "2"
 
   redis-node-1:
-    image: redis:8.2.3-bookworm
+    image: redis:8.4.0-bookworm
     container_name: redis-node-1
     secrets:
       - redis_password
@@ -86,7 +86,7 @@ services:
         max-file: "2"
 
   redis-node-2:
-    image: redis:8.2.3-bookworm
+    image: redis:8.4.0-bookworm
     container_name: redis-node-2
     secrets:
       - redis_password
@@ -125,7 +125,7 @@ services:
         max-file: "2"
 
   redis-node-3:
-    image: redis:8.2.3-bookworm
+    image: redis:8.4.0-bookworm
     container_name: redis-node-3
     secrets:
       - redis_password
@@ -164,7 +164,7 @@ services:
         max-file: "2"
 
   redis-node-4:
-    image: redis:8.2.3-bookworm
+    image: redis:8.4.0-bookworm
     container_name: redis-node-4
     secrets:
       - redis_password
@@ -203,7 +203,7 @@ services:
         max-file: "2"
 
   redis-node-5:
-    image: redis:8.2.3-bookworm
+    image: redis:8.4.0-bookworm
     container_name: redis-node-5
     secrets:
       - redis_password
@@ -275,7 +275,7 @@ services:
   ###############################################################
 
   redis-exporter:
-    image: oliver006/redis_exporter:v1.80.0-alpine
+    image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: redis-exporter
     ports:
       - "${REDIS_EXPORTER_HOST_PORT}:${REDIS_EXPORTER_PORT}"
@@ -314,30 +314,4 @@ services:
         max-size: "5m"
         max-file: "2"
 
-  redisinsight:
-    image: redis/redisinsight:2.70
-    container_name: redisinsight
-    restart: unless-stopped
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.68
-    # ports:
-    #   - "${REDIS_INSIGHT_HOST_PORT}:${REDIS_INSIGHT_PORT}" # 호스트에서 GUI 웹페이지에 접근할 포트
-    volumes:
-      - redisinsight-data:/db
-    labels:
-      - "traefik.enable=true"
-      # 도메인: redisinsight.${DEFAULT_URL}
-      - "traefik.http.routers.redisinsight.rule=Host(`redisinsight.${DEFAULT_URL}`)"
-      - "traefik.http.routers.redisinsight.entrypoints=websecure"
-      - "traefik.http.routers.redisinsight.tls=true"
-      # Keycloak 인증 미들웨어 적용 (이 한 줄로 보안 적용 끝)
-      - "traefik.http.routers.redisinsight.middlewares=sso-auth@file"
-      # [중요] RedisInsight 기본 포트 5540 (또는 8001) 확인 필요
-      # 최신 이미지는 보통 5540을 사용합니다.
-      - "traefik.http.services.redisinsight.loadbalancer.server.port=${REDIS_INSIGHT_PORT}"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+  

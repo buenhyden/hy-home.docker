@@ -1,6 +1,6 @@
 services:
   n8n:
-    image: n8nio/n8n:1.123.1
+    image: n8nio/n8n:2.1.4
     container_name: n8n
     restart: unless-stopped    
     # ports:
@@ -73,7 +73,7 @@ services:
         max-size: "5m"
         max-file: "2"
   n8n-worker:
-    image: n8nio/n8n:1.123.1
+    image: n8nio/n8n:2.1.4
     container_name: n8n-worker
     restart: unless-stopped
     depends_on:
@@ -116,7 +116,7 @@ services:
         max-size: "5m"
         max-file: "2"
   n8n-redis:
-    image: redis:8.2.3-bookworm # Redis 8.2.x
+    image: redis:8.4.0-bookworm # Redis 8.4.x
     container_name: n8n-redis
     secrets:
       - redis_password
@@ -154,7 +154,7 @@ services:
         max-file: "2"
         
   n8n-redis-exporter:
-    image: oliver006/redis_exporter:v1.80.0-alpine
+    image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: n8n-redis-exporter
     expose:
       - "${REDIS_EXPORTER_PORT}"

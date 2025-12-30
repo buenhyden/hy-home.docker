@@ -3,7 +3,7 @@ services:
   # 1. Metrics Storage (Prometheus)
   # -------------------------------------------------------
   prometheus:
-    image: prom/prometheus:v3.0.0
+    image: prom/prometheus:v3.8.1
     container_name: infra-prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -33,7 +33,7 @@ services:
   # 2. Log Storage (Loki)
   # -------------------------------------------------------
   loki:
-    image: grafana/loki:3.2.1
+    image: grafana/loki:3.5.9
     container_name: infra-loki
     command: -config.file=/etc/loki/loki-config.yaml
     networks:
@@ -49,7 +49,7 @@ services:
   # 3. Trace Storage (Tempo)
   # -------------------------------------------------------
   tempo:
-    image: grafana/tempo:main-b4d6e55
+    image: grafana/tempo:main-cb4c73e
     container_name: infra-tempo
     command: [ "-config.file=/etc/tempo.yaml" ] 
     volumes:
@@ -65,7 +65,7 @@ services:
   # 4. Visualization (Grafana)
   # -------------------------------------------------------
   grafana:
-    image: grafana/grafana:12.3.0
+    image: grafana/grafana:12.3.1
     container_name: infra-grafana
     environment:      
       - GF_SERVER_ROOT_URL=https://grafana.${DEFAULT_URL}
@@ -150,7 +150,7 @@ services:
   # 5. Telemetry Collector (Alloy)
   # -------------------------------------------------------
   alloy:
-    image: grafana/alloy:v1.11.3
+    image: grafana/alloy:v1.12.1
     container_name: infra-alloy
     restart: unless-stopped
     user: "0:0"      
@@ -181,7 +181,7 @@ services:
   # 6. Container Metrics (cAdvisor)
   # -------------------------------------------------------
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.52.0
+    image: gcr.io/cadvisor/cadvisor:v0.54.1
     container_name: cadvisor
     hostname: cadvisor
     restart: unless-stopped
@@ -217,7 +217,7 @@ services:
         max-size: "5m"
         max-file: "2"
   alertmanager:
-    image: prom/alertmanager:v0.27.0
+    image: prom/alertmanager:v0.30.0
     container_name: infra-alertmanager
     environment:      
       - SMTP_USERNAME=${SMTP_USERNAME}
@@ -243,7 +243,7 @@ services:
       - "traefik.http.routers.alertmanager.tls=true"
       - "traefik.http.services.alertmanager.loadbalancer.server.port=${ALERTMANAGER_PORT}"
   pushgateway:
-    image: prom/pushgateway
+    image: prom/pushgateway:v1.11.2
     container_name: pushgateway
     restart: unless-stopped
     expose:

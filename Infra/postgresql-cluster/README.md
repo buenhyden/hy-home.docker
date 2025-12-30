@@ -112,7 +112,7 @@ flowchart TB
 ### 4. Postgres Exporter (메트릭)
 
 - **컨테이너**: `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`
-- **이미지**: `prometheuscommunity/postgres-exporter`
+- **이미지**: `prometheuscommunity/postgres-exporter:v0.18.1`
 - **역할**: 각 PostgreSQL 노드의 메트릭 수집 및 노출
 - **포트**: `${POSTGRES_EXPORTER_PORT}` (기본 9187)
 - **메트릭 엔드포인트**: `http://<exporter>:9187/metrics`
