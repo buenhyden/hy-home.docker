@@ -1,3 +1,15 @@
+name:
+
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+  infra_net:
+    external: true
+
+include:
+  - 
+
 services:
   sample:
     image: 

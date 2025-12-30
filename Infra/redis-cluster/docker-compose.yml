@@ -16,7 +16,7 @@ services:
       PORT: ${REDIS0_PORT}
     volumes:
       # 공통 redis.conf
-      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./scripts/redis-start.sh:/usr/local/bin/redis-start.sh:ro
       # 데이터 영속화
       - redis-data-0:/data
@@ -59,7 +59,7 @@ services:
       NODE_NAME: redis-node-1
       PORT: ${REDIS1_PORT}
     volumes:
-      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./scripts/redis-start.sh:/usr/local/bin/redis-start.sh:ro
       - redis-data-1:/data
     command: ["sh", "/usr/local/bin/redis-start.sh"]
@@ -98,7 +98,7 @@ services:
       NODE_NAME: redis-node-2
       PORT: ${REDIS2_PORT}
     volumes:
-      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./scripts/redis-start.sh:/usr/local/bin/redis-start.sh:ro
       - redis-data-2:/data
     command: ["sh", "/usr/local/bin/redis-start.sh"]
@@ -137,7 +137,7 @@ services:
       NODE_NAME: redis-node-3
       PORT: ${REDIS3_PORT}
     volumes:
-      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./scripts/redis-start.sh:/usr/local/bin/redis-start.sh:ro
       - redis-data-3:/data
     command: ["sh", "/usr/local/bin/redis-start.sh"]
@@ -176,7 +176,7 @@ services:
       NODE_NAME: redis-node-4
       PORT: ${REDIS4_PORT}
     volumes:
-      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./scripts/redis-start.sh:/usr/local/bin/redis-start.sh:ro
       - redis-data-4:/data
     command: ["sh", "/usr/local/bin/redis-start.sh"]
@@ -215,7 +215,7 @@ services:
       NODE_NAME: redis-node-5
       PORT: ${REDIS5_PORT}
     volumes:
-      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./scripts/redis-start.sh:/usr/local/bin/redis-start.sh:ro
       - redis-data-5:/data
     command: ["sh", "/usr/local/bin/redis-start.sh"]

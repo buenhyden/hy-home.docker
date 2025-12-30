@@ -1,0 +1,113 @@
+db.createUser({
+  user: 'root',
+  pwd: '7agUa4oShiYuXqY',
+  roles: [ { role: 'root', db: 'admin' } ]
+});
+db.createUser({
+  user: 'root',
+  pwd: '7agUa4oShiYuXqY',
+  roles: [ { role: 'root', db: 'local' } ]
+});
+
+db.createRole(
+{
+role: "customRoleConfig",
+privileges: [
+{
+actions: [ "collStats", "indexStats" ],
+resource: { db: "config", collection: "system.indexBuilds" }
+},
+{
+actions: [ "collStats", "indexStats" ],
+resource: { db: "local", collection: "replset.election" }
+},
+{
+actions: [ "collStats", "indexStats" ],
+resource: { db: "local", collection: "replset.initialSyncId" }
+},
+{
+actions: [ "collStats", "indexStats" ],
+resource: { db: "local", collection: "replset.minvalid" }
+},
+{
+actions: [ "collStats", "indexStats" ],
+resource: { db: "local", collection: "replset.oplogTruncateAfterPoint" }
+}],
+roles: [] })
+
+db.grantRolesToUser( "root", [ {role: "customRoleConfig", db: "admin" }])
+
+db.grantRolesToUser('root', [{ role: 'root', db: 'local' }])
+
+
+CREATE USER 'replication'@'%' IDENTIFIED BY 'yBGygjV6PmxJGuM';
+GRANT REPLICATION SLAVE ON *.* TO 'replication'@'%';
+FLUSH PRIVILEGES;
+RESET MASTER;
+
+STOP SLAVE;
+RESET SLAVE;
+CHANGE MASTER TO MASTER_HOST='mysql-rep1', \
+        MASTER_USER='replication', MASTER_PASSWORD='yBGygjV6PmxJGuM',  \
+		MASTER_PORT=3306
+CHANGE MASTER TO MASTER_HOST='mysql-rep1', \
+        MASTER_USER='replication', MASTER_PASSWORD='yBGygjV6PmxJGuM',  \
+		MASTER_PORT=3306, MASTER_AUTO_POSITION=1;
+start SLAVE;		
+
+
+CREATE USER orc_client_user@'172.%' IDENTIFIED BY 'yBGygjV6PmxJGuM';
+GRANT SUPER, PROCESS, REPLICATION SLAVE, RELOAD ON *.* TO orc_client_user@'172.%';
+GRANT SELECT ON mysql.slave_master_info TO orc_client_user@'172.%';
+FLUSH PRIVILEGES;
+
+CREATE USER 'monitor'@'%' IDENTIFIED BY 'yBGygjV6PmxJGuM';
+grant REPLICATION CLIENT on *.* to 'monitor'@'%';
+FLUSH PRIVILEGES;
+
+mysql -P6032 -uadmin -padmin --prompt "ProxySQL Admin>"
+# proxy에서 hostgroup에 db 서버 정보 입력
+# 쓰기 그룹(10)
+INSERT INTO mysql_servers(hostgroup_id, hostname, port) VALUES(10, 'mysql-rep1', 3306);
+# 읽기 그룹(20)
+INSERT INTO mysql_servers(hostgroup_id, hostname, port) VALUES(20, 'mysql-rep1', 3306);
+INSERT INTO mysql_servers(hostgroup_id, hostname, port) VALUES(20, 'mysql-rep2', 3306);
+# 호스트 그룹 설정
+# VALUES(쓰기,읽기,쓰기/읽기 구분 기준, '') 
+INSERT INTO mysql_replication_hostgroups VALUES(10, 20, 'read_only', '');
+# 로드
+LOAD MYSQL SERVERS TO RUNTIME;
+# 설정 영구적인 저장
+SAVE MYSQL SERVERS TO DISK;
+# proxy에서 어플리케이션 user 정보 입력
+INSERT INTO mysql_users(username, password, default_hostgroup, transaction_persistent) VALUES('hyden', 'pbM5UUTVao4S9Hr', 10, 0);
+LOAD MYSQL USERS TO RUNTIME;
+SAVE MYSQL USERS TO DISK;
+
+# proxy에서 쿼리 룰 정보 입력 
+INSERT INTO mysql_query_rules(rule_id, active, match_pattern, destination_hostgroup) VALUES(1, 1, '^SELECT.*FOR UPDATE$', 10);
+INSERT INTO mysql_query_rules(rule_id, active, match_pattern, destination_hostgroup) VALUES(2, 1, '^SELECT', 20);
+LOAD MYSQL QUERY RULES TO RUNTIME;
+SAVE MYSQL QUERY RULES TO DISK;
+
+# Redis Cluster 설정
+redis-cli --pass xtM6wEiKg6J4Rdc --cluster call redis-node-1:6379 flushall
+redis-cli --pass xtM6wEiKg6J4Rdc --cluster call redis-node-1:6379 cluster reset
+redis-cli --pass xtM6wEiKg6J4Rdc --cluster call redis-node-2:6379 cluster reset
+redis-cli --pass xtM6wEiKg6J4Rdc --cluster call redis-node-3:6379 cluster reset
+
+redis-cli --pass xtM6wEiKg6J4Rdc --cluster create redis-node-1:6379 redis-node-2:6379 redis-node-3:6379
+
+redis-cli --pass xtM6wEiKg6J4Rdc --cluster add-node redis-node-0-slave:6380 redis-node-0:6379 --cluster-slave
+redis-cli --pass xtM6wEiKg6J4Rdc --cluster add-node redis-node-1-slave:6382 redis-node-1:6381 --cluster-slave
+redis-cli --pass xtM6wEiKg6J4Rdc --cluster add-node redis-node-2-slave:6384 redis-node-2:6383 --cluster-slave
+
+redis-cli --pass xtM6wEiKg6J4Rdc --cluster create redis-node-0:6379 redis-node-1:6381 redis-node-2:6383 redis-node-0-slave:6380 redis-node-1-slave:6382 redis-node-2-slave:6384 --cluster-replicas 1
+
+redis-cli --pass xtM6wEiKg6J4Rdc --cluster check redis-node-0:6379
+
+redis-cli --pass xtM6wEiKg6J4Rdc -h predixy -p 7617 info
+redis-cli --pass ZwgH9A4b5HCbGFbq -h predixy -p 7617 info
+
+redis-cli --pass xtM6wEiKg6J4Rdc -h predixy -p 7617 set test success
+redis-cli --pass xtM6wEiKg6J4Rdc -p 7617 -h predixy get hello

@@ -1,0 +1,22 @@
+-- 1. n8n
+CREATE USER n8n WITH PASSWORD '<password>';
+CREATE DATABASE n8n OWNER n8n;
+GRANT ALL PRIVILEGES ON DATABASE n8n TO n8n;
+\connect n8n
+GRANT ALL ON SCHEMA public TO n8n;
+
+
+-- 3. keycloak
+CREATE USER keycloak WITH PASSWORD '<password>';
+CREATE DATABASE keycloak OWNER keycloak;
+GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak;
+\connect keycloak
+GRANT ALL ON SCHEMA public TO keycloak;
+
+
+-- 3. airflow
+CREATE USER airflow WITH PASSWORD '<password>';
+CREATE DATABASE airflow OWNER airflow;
+GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
+\connect airflow
+GRANT ALL ON SCHEMA public TO airflow;

@@ -1,0 +1,6 @@
+-- 1. app_user
+CREATE USER app_user WITH PASSWORD '<password>';
+CREATE DATABASE app_db OWNER app_user;
+GRANT ALL PRIVILEGES ON DATABASE app_db TO app_user;
+\connect app_db
+GRANT ALL ON SCHEMA public TO app_user;

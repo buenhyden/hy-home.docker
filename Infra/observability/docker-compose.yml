@@ -13,8 +13,8 @@ services:
       - '--web.enable-lifecycle' # 설정 리로드 허용
       - '--web.enable-remote-write-receiver'
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+      - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/config/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
       - prometheus-data:/prometheus
     # ports:
     #   - "${PROMETHEUS_HOST_PORT}:${PROMETHEUS_PORT}"
@@ -42,7 +42,7 @@ services:
     ports:
       - "${LOKI_HOST_PORT}:${LOKI_PORT}"
     volumes:
-      - ./loki/loki-config.yaml:/etc/loki/loki-config.yaml:ro
+      - ./loki/config/loki-config.yaml:/etc/loki/loki-config.yaml:ro
       - loki-data:/loki
     restart: unless-stopped
   # -------------------------------------------------------
@@ -53,7 +53,7 @@ services:
     container_name: infra-tempo
     command: [ "-config.file=/etc/tempo.yaml" ] 
     volumes:
-      - ./tempo/tempo.yaml:/etc/tempo.yaml:ro
+      - ./tempo/config/tempo.yaml:/etc/tempo.yaml:ro
       - tempo-data:/var/tempo
     networks:
       infra_net:
@@ -156,7 +156,7 @@ services:
     user: "0:0"      
     command: ["run", "--server.http.listen-addr=0.0.0.0:${ALLOY_PORT}","/etc/alloy/config.alloy"]
     volumes:
-      - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - ./alloy/config/config.alloy:/etc/alloy/config.alloy:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro # 도커 로그 접근
       - /var/run/docker.sock:/var/run/docker.sock:ro # 도커 메타데이터 접근    
     ports:
@@ -227,7 +227,7 @@ services:
       - '--config.file=/etc/alertmanager/config.yml'
       - '--storage.path=/alertmanager'      
     volumes:
-      - ./alertmanager/config.yml:/etc/alertmanager/config.yml
+      - ./alertmanager/config/config.yml:/etc/alertmanager/config.yml
       - alertmanager-data:/alertmanager
     networks:
       infra_net:

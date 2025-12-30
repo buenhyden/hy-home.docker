@@ -1,0 +1,31 @@
+# dynamic/middleware.yml
+http:
+  serversTransports:
+    # 'opensearch-transport'라는 이름의 규칙 생성
+    opensearch-transport:
+      serverName: "hy-home.local" # [핵심] 인증서 검사 시 이 도메인으로 검증하라!
+      rootCAs:
+        - "/certs/rootCA.pem" # 검증에 사용할 신뢰하는 뿌리 인증서
+  middlewares:
+    # 1. 기존 SSO 인증 (앱 보호용)
+    sso-auth:
+      forwardAuth:
+        address: "http://oauth2-proxy:4180/auth"
+        trustForwardHeader: true
+        authResponseHeaders:
+          - "X-Auth-Request-User"
+          - "X-Auth-Request-Email"
+
+    # 2. [NEW] 대시보드용 Basic Auth
+    dashboard-auth:
+      basicAuth:
+        users:
+          # 위에서 생성한 '사용자:해시' 문자열을 여기에 붙여넣으세요.
+          # $ 기호가 포함되므로 반드시 작은따옴표('')로 감싸야 안전합니다.
+          - "admin:<hashed_password>"
+    req-rate-limit:
+      rateLimit:
+        average: 100 # 초당 평균 100개 요청
+        burst: 50 # 최대 50개까지 버스트 허용
+        sourceCriterion:
+          requestHost: true

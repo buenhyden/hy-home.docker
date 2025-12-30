@@ -15,7 +15,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./certs:/certs:ro
       - ./dynamic:/dynamic:ro
-      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
     command:
       # 이제 모든 설정은 파일로 → configFile 한 줄만
       - "--configFile=/etc/traefik/traefik.yml"

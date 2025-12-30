@@ -26,20 +26,20 @@ secrets:
     file: ../secrets/minio_app_user.txt
 
 include:    
-  - influxdb/docker-compose.yml
-  - kafka/docker-compose.yml
-  - minio/docker-compose.yml
-  - n8n/docker-compose.yml
-  - observability/docker-compose.yml
-  - ollama/docker-compose.yml    
-  - postgresql-cluster/docker-compose.yml    
-  - redis-cluster/docker-compose.yml  
   - traefik/docker-compose.yml
+  # - mng-db/docker-compose.yml
+  # - influxdb/docker-compose.yml  
+  # - minio/docker-compose.yml  
+  # - observability/docker-compose.yml
+  # - n8n/docker-compose.yml
+  # - kafka/docker-compose.yml
+  # - ollama/docker-compose.yml    
+  # - postgresql-cluster/docker-compose.yml    
+  # - redis-cluster/docker-compose.yml    
   # - nginx/docker-compose.yml
-  - oauth2-proxy/docker-compose.yml
-  - keycloak/docker-compose.yml  
-  - mng-db/docker-compose.yml
-  - mail/docker-compose.yml
+  # - oauth2-proxy/docker-compose.yml
+  # - keycloak/docker-compose.yml    
+  # - mail/docker-compose.yml
   # - seaweedfs/docker-compose.yml
   # - terrakube/docker-compose.yml
   # - opensearch/docker-compose.yml  
@@ -51,26 +51,7 @@ include:
   # - wikijs/docker-compose.yml 
   #- elasticsearch/docker-compose.yml
 
-volumes:
-  seaweedfs-master-data:
-  seaweedfs-volume-data:
-  stalwart-data:
-  couchdb1-data:
-  couchdb2-data:
-  couchdb3-data:
-  mongo-key:  # <--- [추가] 외부에서 생성한 볼륨임    
-  mongodb1-data:
-  #   driver: local
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: ${DEFAULT_MONGODB_DIR}/mongodb/rep1
-  mongodb2-data:
-  #   driver: local
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: ${DEFAULT_MONGODB_DIR}/mongodb/rep2
+volumes:  
   qdrant-data: 
   #   driver: local
   #   driver_opts:
@@ -102,11 +83,11 @@ volumes:
     #   type: none
     #   device: ${DEFAULT_INFLUXDB_DIR}/data  
   n8n-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_N8N_DIR}
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_N8N_DIR}
   tempo-data:
     # driver: local
     # driver_opts:
@@ -270,11 +251,11 @@ volumes:
     #   type: none
     #   device: ${DEFAULT_KAFKA_DATA_DIR}/kafka-connect
   airflow-dags:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_AIRFLOW_DIR}/dags
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_AIRFLOW_DIR}/dags
   airflow-logs:
     # driver: local
     # driver_opts:
@@ -288,11 +269,11 @@ volumes:
     #   type: none
     #   device: ${DEFAULT_AIRFLOW_DIR}/config
   airflow-plugins:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_AIRFLOW_DIR}/plugins
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_AIRFLOW_DIR}/plugins
   etcd1-data:
     # driver: local
     # driver_opts:
@@ -311,3 +292,22 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_ETCD_DATA_DIR}/etcd3
+  seaweedfs-master-data:
+  seaweedfs-volume-data:
+  stalwart-data:
+  couchdb1-data:
+  couchdb2-data:
+  couchdb3-data:
+  mongo-key:  
+  mongodb1-data:
+  #   driver: local
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: ${DEFAULT_MONGODB_DIR}/mongodb/rep1
+  mongodb2-data:
+  #   driver: local
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: ${DEFAULT_MONGODB_DIR}/mongodb/rep2

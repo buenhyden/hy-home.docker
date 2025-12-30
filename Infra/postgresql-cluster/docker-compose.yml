@@ -191,7 +191,7 @@ services:
     image: haproxy:3.2
     container_name: pg-router    
     volumes:
-      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     ports:
       - "${POSTGRES_WRITE_HOST_PORT}:${POSTGRES_WRITE_PORT}" # Write endpoint
       - "${POSTGRES_READ_HOST_PORT}:${POSTGRES_READ_PORT}" # Read endpoint

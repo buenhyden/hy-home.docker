@@ -12,7 +12,7 @@ services:
       
     volumes:
       # 호스트의 mkcert RootCA를 컨테이너 내부로 주입
-      - ./oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
+      - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ./certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
     extra_hosts:
       - "keycloak.${DEFAULT_URL}:host-gateway"

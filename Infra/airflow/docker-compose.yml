@@ -296,7 +296,7 @@ services:
     command: "--statsd.listen-udp=:${STATSD_AIRFLOW_PORT} --web.listen-address=:${STATSD_PROMETHEUS_PORT} --statsd.mapping-config=/tmp/mappings.yml"
     volumes:
       # 매핑 파일 (아래 3번 단계에서 생성)
-      - ./statsd_mapping.yml:/tmp/mappings.yml:ro
+      - ./config/statsd_mapping.yml:/tmp/mappings.yml:ro
     networks:
       - infra_net
     expose:
