@@ -64,7 +64,7 @@ MAILHOG_UI_PORT=8025
 ### 2. Client 생성 (OAuth2)
 
 ```
-Client ID: nginx-client
+Client ID: proxy-client
 Client Protocol: openid-connect
 Access Type: confidential
 Valid Redirect URIs: https://auth.127.0.0.1.nip.io/oauth2/callback
@@ -88,7 +88,7 @@ Groups → Create Group:
 
 ```bash
 GF_AUTH_GENERIC_OAUTH_ENABLED=true
-GF_AUTH_GENERIC_OAUTH_CLIENT_ID=nginx-client
+GF_AUTH_GENERIC_OAUTH_CLIENT_ID=proxy-client
 GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=<secret>
 GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/protocol/openid-connect/auth
 ```

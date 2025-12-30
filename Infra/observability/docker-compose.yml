@@ -91,6 +91,9 @@ services:
       - GF_AUTH_GENERIC_OAUTH_ENABLED=true
       - GF_AUTH_GENERIC_OAUTH_NAME=Keycloak
       - GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP=true  # Keycloak 인증 성공 시 Grafana 유저 자동 생성
+      - GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH=preferred_username
+      - GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_PATH=email
+      - GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH=name
 
       # Keycloak 클라이언트 정보 (.env 파일에 변수 정의 필요)
       - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}      # 예: nginx-client
@@ -124,6 +127,10 @@ services:
       - GF_AUTH_GENERIC_OAUTH_GRAFANA_ADMIN_ATTRIBUTE_PATH=contains(groups[*], '/admins')
       # [5] 기타 기능 설정
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+      # [추가] PKCE 활성화: Keycloak의 보안 요구 사항을 충족시킵니다.
+      - GF_AUTH_GENERIC_OAUTH_USE_PKCE=true
+      # S256 방식을 명시적으로 지정 (필요 시)
+      - GF_AUTH_GENERIC_OAUTH_CODE_CHALLENGE_METHOD=S256
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/etc/grafana/dashboards

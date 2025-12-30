@@ -69,7 +69,7 @@ flowchart TB
 ### 1. Etcd 클러스터 (분산 조정 서비스)
 
 - **컨테이너**: `etcd-1`, `etcd-2`, `etcd-3`
-- **이미지**: `quay.io/coreos/etcd:v3.5.15`
+- **이미지**: `quay.io/coreos/etcd:v3.6.7`
 - **역할**: Patroni의 분산 설정 저장소 (DCS)로 클러스터 리더 선출 및 상태 관리
 - **포트**:
   - `${ETCD_CLIENT_PORT}` (기본 2379): 클라이언트 통신

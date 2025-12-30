@@ -163,7 +163,7 @@ services:
   # 2. Schema Registry (스키마 레지스트리)
   # -------------------------------------------
   schema-registry:
-    image: confluentinc/cp-schema-registry:7.7.0
+    image: confluentinc/cp-schema-registry:7.7.7
     container_name: schema-registry
     restart: unless-stopped
     networks:
@@ -199,7 +199,7 @@ services:
   # Kafka Connect (Distributed)
   ###############################################################
   kafka-connect:
-    image: confluentinc/cp-kafka-connect:7.7.0
+    image: confluentinc/cp-kafka-connect:7.7.7
     container_name: kafka-connect
     restart: unless-stopped
     depends_on:
@@ -271,7 +271,7 @@ services:
   # 4. Kafka REST Proxy (레스트 프록시)
   # -------------------------------------------
   kafka-rest-proxy:
-    image: confluentinc/cp-kafka-rest:7.7.0
+    image: confluentinc/cp-kafka-rest:7.7.7
     container_name: kafka-rest-proxy
     restart: unless-stopped
     networks:
@@ -348,7 +348,7 @@ services:
         max-file: "2"
 
   kafka-exporter:
-    image: danielqsj/kafka-exporter:v1.7.0
+    image: danielqsj/kafka-exporter:v1.9.0
     container_name: kafka-exporter
     restart: unless-stopped
     command:
