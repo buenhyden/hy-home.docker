@@ -1,5 +1,9 @@
 .history/
 .vscode/
+# Archive
+Archive/seaweedfs/config/security.toml
+Archive/Terrakube/certs/*.pem
+Archive/supabase/.env
 # Cert
 Certs/*.pem
 # Document
@@ -27,8 +31,6 @@ Infra/opensearch/certs/*.pem
 Infra/postgresql-cluster/init/init_users_dbs.sql
 Infra/postgresql-cluster/config/haproxy.cfg
 Infra/redis-cluster/config/redis.conf
-Infra/seaweedfs/config/security.toml
-Infra/Terrakube/certs/*.pem
 Infra/traefik/certs/*.pem
 Infra/traefik/config/traefik.yml
 Infra/traefik/dynamic/middleware.yml

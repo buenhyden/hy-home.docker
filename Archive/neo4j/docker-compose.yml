@@ -1,6 +1,6 @@
 services:
   neo4j:
-    image: neo4j:neo4j:5.26.17-ubi9
+    image: neo4j:5.26.19
     container_name: neo4j
     hostname: neo4j
     restart: unless-stopped
@@ -153,48 +153,3 @@ services:
   #   # This status can be checked using the "docker ps" command.
   #   healthcheck:
   #     test: ['CMD-SHELL', 'wget --no-verbose --tries=1 --spider localhost:7474 || exit 1']
-
-volumes:
-  neo4j-volume:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_DATABASE_DIR}/neo4j/node1
-  # ######################################################################################
-  # neo4j-conf-volume:
-  #   driver: local
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: ${DEFAULT_DATABASE_DIR}/neo4j/node1/conf
-  # neo4j-data-volume:
-  #   driver: local
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: ${DEFAULT_DATABASE_DIR}/neo4j/node1/data
-  # neo4j-logs-volume:
-  #   driver: local
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: ${DEFAULT_DATABASE_DIR}/neo4j/node1/logs
-  # neo4j-import-volume:
-  #   driver: local
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: ${DEFAULT_DATABASE_DIR}/neo4j/node1/import
-  # neo4j-plugins-volume:
-  #   driver: local
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: ${DEFAULT_DATABASE_DIR}/neo4j/node1/plugins
-  # neo4j-metrics-volume:
-  #   driver: local
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: ${DEFAULT_DATABASE_DIR}/neo4j/node1/metrics

@@ -419,19 +419,34 @@ ollama stop llama3.2:8b
 
 ### 대화형
 
-- `llama3.2:3b` - 빠른 응답, 중간 품질
-- `qwen2.5:14b` - 고품질 한국어 지원
-- `gemma2:9b` - Google 모델, 우수한 성능
+- `exaone3.5:7.8b`
+- `qwen3:8b` 
+- `deepseek-r1:8b` 
 
 ### 임베딩
 
-- `qwen3-embedding:0.6b` - 빠르고 가벼움
-- `nomic-embed-text` - 영어 최적화
+- `qwen3-embedding:0.6b` 
+- `nomic-embed-text-v2-moe:latest` 
 
-### 코드 생성
+### 비전
 
-- `codellama:7b` - 코드 생성 전문
-- `qwen2.5-coder:7b` - 다국어 코드 지원
+- `qwen3-vl:8b` 
+- `ministral-3:8b` 
+- `deepseek-ocr:3b`
+
+### 모델 리스트(2025.12.30)
+
+```text
+deepseek-r1:8b                    6995872bfe4c    5.2 GB    About an hour ago    
+qwen3:8b                          500a1f067a9f    5.2 GB    About an hour ago    
+deepseek-ocr:3b                   0e7b018b8a22    6.7 GB    About an hour ago    
+ministral-3:8b                    1922accd5827    6.0 GB    About an hour ago    
+qwen3-vl:8b                       901cae732162    6.1 GB    2 hours ago
+nomic-embed-text-v2-moe:latest    ff9c2f10ef5e    957 MB    2 hours ago
+exaone3.5:7.8b                    c7c4e3d1ca22    4.8 GB    2 hours ago
+qwen3-embedding:0.6b              ac6da0dfba84    639 MB    2 hours ago
+```
+
 
 ## 참고 자료
 

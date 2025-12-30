@@ -37,19 +37,14 @@ include:
   - kafka/docker-compose.yml
   - ollama/docker-compose.yml
   - postgresql-cluster/docker-compose.yml    
-  - redis-cluster/docker-compose.yml
+  - redis-cluster/docker-compose.yml  
   # - opensearch/docker-compose.yml  
   # - airflow/docker-compose.yml      
   # - nginx/docker-compose.yml
-  # - mail/docker-compose.yml
-  # - seaweedfs/docker-compose.yml
+  # - mail/docker-compose.yml  
   # - terrakube/docker-compose.yml  
   # - couchdb/docker-compose.yml
-  # - arangodb/docker-compose.yml
-  # - mongodb/docker-compose.yml
-  # - locust/docker-compose.yml
-  # - wikijs/docker-compose.yml 
-  #- elasticsearch/docker-compose.yml
+  # - arangodb/docker-compose.yml  
 
 volumes:  
   qdrant-data: 
