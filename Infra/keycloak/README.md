@@ -1,106 +1,29 @@
-# Keycloak (통합 인증 시스템)
+# Keycloak Identity Access Management
 
-## 시스템 아키텍처에서의 역할
+## 1. 개요 (Overview)
+이 디렉토리는 통합 인증 접근 관리(IAM) 솔루션인 Keycloak을 정의합니다. 사용자 인증, 인가, SSO(Single Sign-On)를 처리하며, 외부 PostgreSQL 데이터베이스를 사용합니다.
 
-Keycloak은 **SSO(Single Sign-On) 및 신원/접근 관리(IAM)** 플랫폼으로 모든 인프라 서비스의 중앙 인증을 담당합니다.
+## 2. 포함된 도구 (Tools Included)
 
-**핵심 역할:**
+| 서비스명 | 역할 | 설명 |
+|---|---|---|
+| **keycloak** | IAM Server | OpenID Connect, SAML, OAuth2 등을 지원하는 인증 서버입니다. |
 
-- 🔐 **SSO**: 단일 로그인으로 모든 서비스 접근
-- 👤 **사용자 관리**: 중앙화된 계정 관리
-- 🎫 **OAuth2/OIDC**: 표준 프로토콜 지원
-- 👥 **RBAC**: 역할 기반 접근 제어
+## 3. 구성 및 설정 (Configuration)
 
-## 주요 구성 요소
+### 데이터베이스 연결
+외부 PostgreSQL 데이터베이스(`POSTGRES_HOSTNAME`)에 접속하여 사용자 및 설정 데이터를 저장합니다.
+- `KC_DB`: Database vendor (postgres)
+- `KC_DB_URL`: JDBC 연결 URL
+- Quarkus 기반의 Agroal 커넥션 풀 설정을 통해 DB 연결 유효성을 주기적으로 검사합니다(`idle-removal-interval`, `background-validation-interval`).
 
-### 1. Keycloak
+### 모니터링
+- `KC_METRICS_ENABLED`: 메트릭 활성화
+- `KC_HEALTH_ENABLED`: 헬스 체크 활성화
 
-- **컨테이너**: `keycloak`
-- **이미지**: `quay.io/keycloak/keycloak:26.4.6`
-- **포트**: 8080 (내부)
-- **Traefik**: `https://keycloak.${DEFAULT_URL}`
-- **모드**: `start-dev` (개발 모드)
+### 로드밸런싱 (Traefik)
+- **URL**: `https://keycloak.${DEFAULT_URL}`
+- `manage` 포트가 노출되어 있으며 프록시 헤더 처리가 설정되어 있습니다.
 
-**데이터베이스:**
-
-- PostgreSQL (mng-pg)
-- Database: `${KEYCLOAK_DBNAME}`
-
-### 2. MailHog (개발용)
-
-- 이메일 인증 테스트용
-- `https://mail.${DEFAULT_URL}`
-
-## 환경 변수
-
-```bash
-KEYCLOAK_DATABASE=postgres
-POSTGRES_HOSTNAME=mng-pg
-POSTGRES_PORT=5432
-KEYCLOAK_DBNAME=keycloak
-KEYCLOAK_DB_USER=keycloak
-KEYCLOAK_DB_PASSWORD=<password>
-KEYCLOAK_ADMIN_USER=admin
-KEYCLOAK_ADMIN_PASSWORD=<password>
-DEFAULT_URL=127.0.0.1.nip.io
-MAILHOG_UI_PORT=8025
-```
-
-## 접속 정보
-
-### Admin Console
-
-- **URL**: `https://keycloak.127.0.0.1.nip.io/admin`
-- **계정**: admin / password
-
-## 주요 설정
-
-### 1. Realm 생성
-
-1. Admin Console 접속
-2. Realms → Create Realm
-3. Name: `hy-home.realm`
-
-### 2. Client 생성 (OAuth2)
-
-```
-Client ID: proxy-client
-Client Protocol: openid-connect
-Access Type: confidential
-Valid Redirect URIs: https://auth.127.0.0.1.nip.io/oauth2/callback
-```
-
-### 3. 사용자 생성
-
-Users → Add User → Set Password
-
-### 4. 그룹 및 역할
-
-Groups → Create Group:
-
-- `/admins`: 관리자
-- `/editors`: 편집자
-- `/viewers`: 뷰어
-
-## 서비스 통합
-
-### Grafana 연동
-
-```bash
-GF_AUTH_GENERIC_OAUTH_ENABLED=true
-GF_AUTH_GENERIC_OAUTH_CLIENT_ID=proxy-client
-GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=<secret>
-GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/protocol/openid-connect/auth
-```
-
-### OAuth2-Proxy 연동
-
-```bash
-OAUTH2_PROXY_PROVIDER=keycloak-oidc
-OAUTH2_PROXY_OIDC_ISSUER_URL=https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm
-```
-
-## 참고 자료
-
-- [Keycloak 문서](https://www.keycloak.org/documentation)
-- [Admin Guide](https://www.keycloak.org/docs/latest/server_admin/)
+### 환경 변수
+관리자 계정(`KEYCLOAK_ADMIN`)과 DB 접근 정보는 환경 변수를 통해 주입됩니다.

@@ -1,75 +1,31 @@
-# 관리용 데이터베이스 (mng-db)
+# Management Database Infrastructure
 
-## 시스템 아키텍처에서의 역할
+## 1. 개요 (Overview)
+이 디렉토리는 다른 인프라 서비스들이 공통으로 사용하거나 관리 목적으로 필요한 데이터베이스(PostgreSQL, Redis)를 정의합니다. 또한 Redis 데이터를 시각적으로 관리하기 위한 RedisInsight를 포함합니다.
 
-mng-db는 **관리 및 메타데이터용 단일 PostgreSQL + Redis**로 구성된 경량 데이터베이스 스택입니다. 주로 Keycloak, n8n 등 인프라 서비스의 메타데이터와 상태 정보를 저장하는 전용 데이터베이스
+## 2. 포함된 도구 (Tools Included)
 
-입니다.
+| 서비스명 | 역할 | 설명 |
+|---|---|---|
+| **mng-pg** | PostgreSQL Database | n8n, Keycloak 등 관리형 서비스들이 사용하는 메타데이터 저장소입니다. |
+| **mng-pg-exporter**| Metrics Exporter | PostgreSQL의 상태와 성능 메트릭을 수집하여 Prometheus에 제공합니다. |
+| **mng-redis** | In-Memory Store | n8n 큐 관리 등 빠른 데이터 처리가 필요한 서비스들이 사용하는 공용 Redis입니다. |
+| **mng-redis-exporter**| Metrics Exporter | Redis 메트릭을 수집합니다. |
+| **redisinsight** | Redis GUI | Redis 데이터를 웹 브라우저에서 조회하고 관리할 수 있는 도구입니다. SSO 인증이 적용되어 있습니다. |
 
-**핵심 역할:**
+## 3. 구성 및 설정 (Configuration)
 
-- 🗄️ **메타데이터 저장**: 인프라 서비스 설정 및 상태
-- 🔐 **인증 데이터**: Keycloak 사용자/세션 정보
-- 📊 **단순성**: 클러스터 불필요한 관리용 단일 인스턴스
-- 📈 **모니터링**: Exporter를 통한 메트릭 수집
+### PostgreSQL (`mng-pg`)
+- **초기화**: `./init/init_users_dbs.sql` 스크립트를 통해 초기 데이터베이스와 유저를 생성합니다.
+- **포트**: 호스트 포트매핑을 통해 외부 접근이 가능합니다. (`POSTGRES_HOST_PORT`)
 
-## 구성 요소
+### Redis (`mng-redis`)
+- **보안**: Docker Secret(`redis_password`)을 통해 비밀번호를 안전하게 관리합니다.
+- **설정**: AOF(Append Only File)가 활성화되어 데이터 내구성을 높였습니다.
 
-### 1. mng-postgres
+### RedisInsight
+- **접속**: `https://redisinsight.${DEFAULT_URL}`
+- **보안**: `sso-auth` 미들웨어가 적용되어 있어 로그인 후 접근 가능합니다.
 
-- **컨테이너**: `mng-pg`
-- **이미지**: `postgres:17-bookworm`
-- **포트**: `${POSTGRES_HOST_PORT}:${POSTGRES_PORT}` (기본 5433:5432)
-- **IP**: 172.19.0.72
-
-### 2. mng-redis  
-
-- **컨테이너**: `mng-redis`
-- **이미지**: `redis:8.4.0-bookworm`
-- **포트**: 6379 (내부)
-- **IP**: 172.19.0.70
-
-### 3. RedisInsight (GUI)
-
-- **컨테이너**: `redisinsight`
-- **이미지**: `redis/redisinsight:2.70`
-- **역할**: Redis 클러스터 관리 및 모니터링 GUI
-- **포트**: `${REDIS_INSIGHT_PORT}` (기본 5540)
-- **Traefik 통합**: `https://redisinsight.${DEFAULT_URL}`
-- **인증**: Keycloak SSO (`sso-auth@file` 미들웨어)
-- **볼륨**: `redisinsight-data:/db`
-- **IP**: 172.19.0.68
-
-**기능:**
-
-- 클러스터 토폴로지 시각화
-- 키 브라우저 및 검색
-- CLI 인터페이스
-- 쿼리 프로파일러
-- Pub/Sub 모니터링
-
-### 4. Exporters
-
-- **pg-exporter**: 172.19.0.73
-- **redis-exporter**: 172.19.0.71
-
-## 환경 변수
-
-```bash
-POSTGRES_HOST_PORT=5433
-POSTGRES_PORT=5432
-POSTGRES_USER=postgres
-POSTGRES_DB=postgres
-PGPASSWORD_SUPERUSER=<password>
-REDIS_PORT=6379
-```
-
-## 사용하는 서비스
-
-- Keycloak
-- 기타 관리 서비스
-
-## 참고 자료
-
-- [PostgreSQL 문서](https://www.postgresql.org/docs/17/)
-- [Redis 문서](https://redis.io/documentation)
+### 네트워크
+- `infra_net`을 통해 다른 서비스들과 통신합니다.

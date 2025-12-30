@@ -1,47 +1,22 @@
-# 메일 서버 (MailHog)
+# Mail Infrastructure
 
-## 시스템 아키텍처에서의 역할
+## 1. 개요 (Overview)
+이 디렉토리는 메일 관련 서비스를 정의합니다. 현재 개발 및 테스트 환경을 위한 SMTP 테스트 도구인 MailHog가 활성화되어 있으며, 운영용 메일 서버인 Stalwart Mail Server는 비활성화(주석 처리)되어 있습니다.
 
-MailHog는 **개발/테스트용 SMTP 서버 및 메일함**으로 실제 이메일을 발송하지 않고 테스트할 수 있는 환경을 제공합니다.
+## 2. 포함된 도구 (Tools Included)
 
-**핵심 역할:**
+| 서비스명 | 역할 | 설명 |
+|---|---|---|
+| **mailhog** | SMTP Web Client | 개발용 가상 SMTP 서버입니다. 발송된 메일을 실제로 전송하지 않고 웹 UI에서 가로채 확인할 수 있습니다. |
+| **stalwart** | Mail Server | (현재 비활성) 완전한 기능을 갖춘 Mail Server(SMTP, IMAP, JMAP 등) 솔루션입니다. |
 
-- 📧 **테스트 메일 수신**: 개발 중 이메일 테스트
-- 🔍 **메일함 UI**: 웹 기반 메일 뷰어
-- 🚫 **실제 발송 방지**: 안전한 테스트 환경
+## 3. 구성 및 설정 (Configuration)
 
-## 주요 구성 요소
+### MailHog (Active)
+- **SMTP Port**: 내부적으로 1025 포트를 사용하여 애플리케이션의 메일 발송 요청을 수신합니다.
+- **Web UI**: Traefik을 통해 `https://mail.${DEFAULT_URL}` (또는 `mailhog` 라우터 규칙)로 접속하여 수신된 메일을 확인할 수 있습니다.
+- **Access Control**: SSO 미들웨어(`sso-auth`)가 적용될 수 있도록 라벨이 설정되어 있습니다.
 
-### MailHog
-
-- **컨테이너**: `mailhog`
-- **이미지**: `mailhog/mailhog`
-- **SMTP**: 1025 (내부)
-- **WebUI**: `${MAILHOG_UI_PORT}` (기본 8025)
-- **Traefik**: `https://mail.${DEFAULT_URL}`
-
-## 환경 변수
-
-```bash
-MAILHOG_UI_PORT=8025
-DEFAULT_URL=127.0.0.1.nip.io
-```
-
-## 사용 방법
-
-### 애플리케이션 설정
-
-```yaml
-SMTP_HOST: mailhog
-SMTP_PORT: 1025
-SMTP_USER: (none)
-SMTP_PASSWORD: (none)
-```
-
-### 메일 확인
-
-- **URL**: `https://mail.127.0.0.1.nip.io`
-
-## 참고 자료
-
-- [MailHog GitHub](https://github.com/mailhog/MailHog)
+### Stalwart (Inactive)
+- 활성화 시 SMTP, Submission, SMTPS, IMAPS 등 다양한 보안 메일 포트를 호스트에 직접 노출하도록 설정되어 있습니다.
+- 관리자 UI는 Traefik을 통해 접속 가능합니다.

@@ -1,87 +1,27 @@
-# InfluxDB (시계열 데이터베이스)
+# InfluxDB Infrastructure
 
-## 시스템 아키텍처에서의 역할
+## 1. 개요 (Overview)
+이 디렉토리는 시계열 데이터베이스인 InfluxDB(v2.7)를 정의합니다. 메트릭 데이터 수집 및 모니터링 용도로 사용됩니다.
 
-InfluxDB는 **시계열 데이터 저장 전문 데이터베이스**로 IoT 센서, 메트릭, 이벤트 데이터를 효율적으로 저장하고 쿼리합니다.
+## 2. 포함된 도구 (Tools Included)
 
-**핵심 역할:**
+| 서비스명 | 역할 | 설명 |
+|---|---|---|
+| **influxdb** | Time Series DB | 시계열 데이터 저장소입니다. 초기 실행 시 지정된 버킷과 조직, 사용자를 자동 설정합니다. |
 
-- ⏱️ **시계열 데이터**: 시간 기반 메트릭 저장
-- 📊 **고성능 쿼리**: Flux 쿼리 언어
-- 📈 **다운샘플링**: 자동 데이터 집계
-- 🔌 **Telegraf 통합**: 데이터 수집
+## 3. 구성 및 설정 (Configuration)
 
-## 주요 구성 요소
+### 초기 설정 (Initialization)
+컨테이너 최초 실행 시 환경 변수를 통해 자동 설정(`setup` 모드)이 수행됩니다.
+- `DOCKER_INFLUXDB_INIT_MODE`: setup
+- `DOCKER_INFLUXDB_INIT_USERNAME`: 초기 관리자 ID
+- `DOCKER_INFLUXDB_INIT_PASSWORD`: 초기 관리자 PW
+- `DOCKER_INFLUXDB_INIT_ORG`: 초기 조직(Org) 이름
+- `DOCKER_INFLUXDB_INIT_BUCKET`: 기본 버킷 이름
 
-### InfluxDB 2.7
+### 데이터 볼륨
+- `influxdb-data`: `/var/lib/influxdb2` 경로에 매핑되어 데이터 영속성을 보장합니다.
 
-- **컨테이너**: `influxdb`
-- **이미지**: `influxdb:2.7`
-- **포트**: `${INFLUXDB_PORT}` (기본 8086)
-- **Traefik**: `https://influxdb.${DEFAULT_URL}`
-- **IP**: 172.19.0.11
-
-**초기 설정:**
-
-- Username: `${INFLUXDB_USERNAME}`
-- Organization: `${INFLUXDB_ORG}`
-- Bucket: `${INFLUXDB_BUCKET}`
-- Token: `${INFLUXDB_API_TOKEN}`
-
-## 환경 변수
-
-```bash
-INFLUXDB_PORT=8086
-INFLUXDB_HOST_PORT=8086
-INFLUXDB_USERNAME=admin
-INFLUXDB_PASSWORD=<password>
-INFLUXDB_ORG=myorg
-INFLUXDB_BUCKET=mybucket
-INFLUXDB_API_TOKEN=<token>
-INFLUXDB_DB_NAME=mydb
-DEFAULT_URL=127.0.0.1.nip.io
-```
-
-## 접속 정보
-
-### Web UI
-
-- **URL**: `https://influxdb.127.0.0.1.nip.io`
-- **계정**: admin / password
-
-### CLI
-
-```bash
-# InfluxDB CLI
-docker exec -it influxdb influx
-
-# 쿼리
-influx query 'from(bucket:"mybucket") |> range(start: -1h)'
-```
-
-## 사용 방법
-
-### 데이터 쓰기 (Line Protocol)
-
-```bash
-curl -X POST "https://influxdb.127.0.0.1.nip.io/api/v2/write?org=myorg&bucket=mybucket
-
-" \
-  -H "Authorization: Token <token>" \
-  -H "Content-Type: text/plain; charset=utf-8" \
-  --data-binary "measurement,tag1=value1 field1=100 $(date +%s)000000000"
-```
-
-### Flux 쿼리
-
-```flux
-from(bucket: "mybucket")
-  |> range(start: -1h)
-  |> filter(fn: (r) => r._measurement == "cpu")
-  |> mean()
-```
-
-## 참고 자료
-
-- [InfluxDB 문서](https://docs.influxdata.com/influxdb/v2/)
-- [Flux 언어](https://docs.influxdata.com/flux/v0/)
+### 로드밸런싱 (Traefik)
+- **URL**: `https://influxdb.${DEFAULT_URL}`
+- Traefik을 통해 외부에서 HTTPS로 접근 가능합니다.

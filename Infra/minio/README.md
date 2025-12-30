@@ -1,121 +1,29 @@
-# MinIO (S3 호환 객체 스토리지)
+# MinIO Object Storage Infrastructure
 
-## 시스템 아키텍처에서의 역할
+## 1. 개요 (Overview)
+이 디렉토리는 AI/ML 및 클라우드 네이티브 애플리케이션을 위한 고성능 객체 스토리지인 MinIO를 정의합니다. Docker Secrets를 통해 보안 자격 증명을 관리하며, 초기 버킷 자동 생성을 위한 스크립트 컨테이너를 포함합니다.
 
-MinIO는 **S3 호환 객체 스토리지**로 대용량 파일, 백업, 미디어 저장을 담당합니다. Loki/Tempo의 스토리지 백엔드, CDN 파일 서빙 등에 사용됩니다.
+## 2. 포함된 도구 (Tools Included)
 
-**핵심 역할:**
+| 서비스명 | 역할 | 설명 |
+|---|---|---|
+| **minio** | Object Storage | S3 호환 API를 제공하는 스토리지 서버입니다. (`:9000` API, `:9001` Console) |
+| **minio-create-buckets**| Initializer | `mc` (MinIO Client)를 사용하여 시작 시 필요한 버킷과 정책을 자동으로 생성합니다. |
 
-- 🗄️ **객체 스토리지**: S3 API 호환 파일 저장
-- 📦 **백엔드 스토리지**: Loki/Tempo 데이터 저장
-- 🌐 **CDN**: 정적 파일 서빙
-- 🔐 **접근 제어**: 버킷 정책 및 IAM
+## 3. 구성 및 설정 (Configuration)
 
-## 주요 구성 요소
+### 보안 (Security)
+- **Docker Secrets**: `minio_root_user`, `minio_root_password` 등을 통해 관리자 계정과 애플리케이션 계정을 안전하게 주입합니다.
+- **API Access**: `MINIO_API_ROOT_ACCESS`가 활성화되어 있습니다.
 
-### 1. MinIO Server
+### 초기화 (Initialization)
+`minio-create-buckets` 컨테이너가 `minio` 서비스가 헬스체크를 통과하면 실행됩니다.
+- **Buckets Created**: `tempo-bucket`, `loki-bucket`, `cdn-bucket`
+- **Policy**: 애플리케이션 유저에게 `readwrite` 권한 부여 및 `cdn-bucket`에 대한 퍼블릭 접근 권한 설정.
 
-- **컨테이너**: `minio`
-- **이미지**: `minio/minio:RELEASE.2025-09-07T16-13-09Z`
-- **API 포트**: 9000
-- **Console 포트**: 9001
-- **Traefik**:
-  - API: `https://minio.${DEFAULT_URL}`
-  - Console: `https://minio-console.${DEFAULT_URL}`
-- **IP**: 172.19.0.12
+### 로드밸런싱 (Traefik)
+- **API Endpoint**: `https://minio.${DEFAULT_URL}` (S3 API Endpoint)
+- **Console UI**: `https://minio-console.${DEFAULT_URL}` (Web Management Console)
 
-**자동 생성 버킷:**
-
-- `tempo-bucket`: Tempo 트레이스
-- `loki-bucket`: Loki 로그
-- `cdn-bucket`: CDN 파일 (public)
-
-### 2. 버킷 초기화
-
-- **컨테이너**: `minio-create-buckets` (one-shot)
-- **이미지**: `minio/mc:RELEASE.2025-08-13T08-35-41Z`
-- **역할**: 초기 버킷 및 사용자 자동 생성
-
-## 환경 변수
-
-```bash
-MINIO_PORT=9000
-MINIO_HOST_PORT=9000
-MINIO_CONSOLE_PORT=9001
-MINIO_CONSOLE_HOST_PORT=9001
-DEFAULT_URL=127.0.0.1.nip.io
-```
-
-### Docker Secrets
-
-- `minio_root_user`: 루트 사용자
-- `minio_root_password`: 루트 비밀번호
-- `minio_app_user`: 애플리케이션 사용자
-- `minio_app_user_password`: 앱 사용자 비밀번호
-
-## 접속 정보
-
-### MinIO Console (Web UI)
-
-- **URL**: `https://minio-console.127.0.0.1.nip.io`
-- **계정**: root user / password
-
-### S3 API
-
-- **Endpoint**: `https://minio.127.0.0.1.nip.io`
-- **Region**: `us-east-1` (기본)
-
-## 사용 방법
-
-### AWS CLI 설정
-
-```bash
-aws configure set aws_access_key_id <app_user>
-aws configure set aws_secret_access_key <app_password>
-aws configure set default.region us-east-1
-aws configure set default.s3.signature_version s3v4
-
-# 파일 업로드
-aws --endpoint-url https://minio.127.0.0.1.nip.io s3 cp file.txt s3://cdn-bucket/
-```
-
-### mc CLI
-
-```bash
-# Alias 설정
-mc alias set myminio https://minio.127.0.0.1.nip.io <user> <password>
-
-# 파일 업로드
-mc cp file.txt myminio/cdn-bucket/
-
-# 버킷 목록
-mc ls myminio
-```
-
-## Loki/Tempo 연동
-
-### Loki 설정 (loki-config.yaml)
-
-```yaml
-storage_config:
-  aws:
-    s3: s3://<user>:<password>@minio:9000/loki-bucket
-    s3forcepathstyle: true
-```
-
-### Tempo 설정 (tempo.yaml)
-
-```yaml
-storage:
-  trace:
-    backend: s3
-    s3:
-      bucket: tempo-bucket
-      endpoint: minio:9000
-      insecure: true
-```
-
-## 참고 자료
-
-- [MinIO 문서](https://min.io/docs/)
-- [S3 API](https://docs.aws.amazon.com/s3/)
+### 데이터 볼륨
+- `minio-data`: `/data` 경로에 매핑되어 객체 데이터를 영구 저장합니다.

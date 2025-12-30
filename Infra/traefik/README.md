@@ -1,142 +1,32 @@
-# Traefik (리버스 프록시)
+# Traefik Edge Router
 
-## 시스템 아키텍처에서의 역할
+## 1. 개요 (Overview)
+이 디렉토리는 시스템의 진입점(Gateway) 역할을 하는 Traefik 리버스 프록시를 정의합니다. 모든 HTTP/HTTPS 트래픽을 받아 Docker 라벨 기반으로 적절한 서비스로 라우팅하며, SSL 인증서 관리와 미들웨어(인증, 헤더 조작 등)를 처리합니다.
 
-Traefik은 **동적 리버스 프록시 및 로드 밸런서**로 모든 인프라 서비스의 HTTPS 라우팅을 담당합니다. Docker 레이블 기반 자동 설정으로 서비스 디스커버리를 제공합니다.
+## 2. 포함된 도구 (Tools Included)
 
-**핵심 역할:**
+| 서비스명 | 역할 | 설명 |
+|---|---|---|
+| **traefik** | Edge Router / Proxy | 클라우드 네이티브 엣지 라우터입니다. `infra_net` 네트워크의 관문 역할을 합니다. |
 
-- 🌐 **리버스 프록시**: HTTPS 라우팅 및 SSL/TLS 종료
-- 🏷️ **동적 설정**: Docker 레이블 기반 자동 라우팅
-- 🔒 **인증서 관리**: Let's Encrypt 또는 mkcert
-- 🔐 **미들웨어**: OAuth2, BasicAuth, RateLimit
+## 3. 구성 및 설정 (Configuration)
 
-## 주요 구성 요소
+### 진입점 (Entrypoints)
+`ports` 설정을 통해 호스트의 포트를 수신합니다.
+- **HTTP**: 80 (`web`) -> HTTPS로 리다이렉트 (설정 파일에 정의됨)
+- **HTTPS**: 443 (`websecure`) -> TLS 적용
+- **Dashboard**: 별도 포트 할당
+- **Metrics**: 프로메테우스 수집용 포트
 
-### Traefik v3.6
+### 설정 파일 (`/etc/traefik/traefik.yml`)
+정적 설정은 파일을 통해 관리되며, 동적 설정(라우터, 서비스)은 주로 Docker Label과 `./dynamic` 디렉토리의 파일을 통해 관리됩니다.
+- `./certs`: 사설/공인 인증서 저장소
+- `./dynamic`: 동적 설정 파일 (미들웨어 정의 등)
 
-- **컨테이너**: `traefik`
-- **이미지**: `traefik:v3.6.2`
-- **포트**:
-  - HTTP: `${HTTP_HOST_PORT}:${HTTP_PORT}` (80)
-  - HTTPS: `${HTTPS_HOST_PORT}:${HTTPS_PORT}` (443)
-  - Dashboard: `${TRAEFIK_DASHBOARD_HOST_PORT}:${TRAEFIK_DASHBOARD_PORT}` (8080)
-  - Metrics: `${TRAEFIK_METRICS_HOST_PORT}:${TRAEFIK_METRICS_PORT}` (8082)
-- **Dashboard**: `https://dashboard.${DEFAULT_URL}`
-- **IP**: 172.19.0.13
+### 대시보드
+- **URL**: `https://dashboard.${DEFAULT_URL}`
+- **보안**: Basic Auth(`dashboard-auth`) 미들웨어가 파일로 정의되어 있어 접근을 제한합니다.
 
-**설정 파일:**
-
-- `./traefik.yml`: 메인 설정
-- `./dynamic/*.yml`: 동적 라우팅, 미들웨어
-- `./certs/`: TLS 인증서
-
-## 환경 변수
-
-```bash
-HTTP_PORT=80
-HTTP_HOST_PORT=80
-HTTPS_PORT=443
-HTTPS_HOST_PORT=443
-TRAEFIK_DASHBOARD_PORT=8080
-TRAEFIK_DASHBOARD_HOST_PORT=8080
-TRAEFIK_METRICS_PORT=8082
-TRAEFIK_METRICS_HOST_PORT=8082
-DEFAULT_URL=127.0.0.1.nip.io
-```
-
-## 접속 정보
-
-### Dashboard
-
-- **URL**: `https://dashboard.127.0.0.1.nip.io`
-- **인증**: BasicAuth (dynamic 설정)
-
-## 주요 기능
-
-### 1. 자동 라우팅 (Docker 레이블)
-
-```yaml
-labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.myapp.rule=Host(`myapp.127.0.0.1.nip.io`)"
-  - "traefik.http.routers.myapp.entrypoints=websecure"
-  - "traefik.http.routers.myapp.tls=true"
-  - "traefik.http.services.myapp.loadbalancer.server.port=8080"
-```
-
-### 2. 미들웨어
-
-**OAuth2 인증 (sso-auth):**
-
-```yaml
-- "traefik.http.routers.myapp.middlewares=sso-auth@file"
-```
-
-**BasicAuth:**
-
-```yaml
-- "traefik.http.routers.myapp.middlewares=dashboard-auth@file"
-```
-
-### 3. SSL/TLS
-
-- **mkcert**: 로컬 개발용 self-signed 인증서
-- **Let's Encrypt**: 프로덕션용 자동 인증서
-
-## 설정 파일
-
-### traefik.yml
-
-```yaml
-entryPoints:
-  web:
-    address: ":80"
-  websecure:
-    address: ":443"
-
-providers:
-  docker:
-    exposedByDefault: false
-  file:
-    directory: "/dynamic"
-    watch: true
-
-api:
-  dashboard: true
-```
-
-### dynamic/middlewares.yml
-
-```yaml
-http:
-  middlewares:
-    sso-auth:
-      forwardAuth:
-        address: "http://oauth2-proxy:4180"
-        trustForwardHeader: true
-```
-
-## 유용한 명령어
-
-### 설정 검증
-
-```bash
-docker exec traefik traefik healthcheck
-```
-
-### 로그 확인
-
-```bash
-docker logs traefik -f
-```
-
-### 라우터 목록
-
-- Dashboard에서 확인: `https://dashboard.127.0.0.1.nip.io`
-
-## 참고 자료
-
-- [Traefik 문서](https://doc.traefik.io/traefik/)
-- [Docker Provider](https://doc.traefik.io/traefik/providers/docker/)
-- [미들웨어](https://doc.traefik.io/traefik/middlewares/overview/)
+### 주요 기능
+- **Service Discovery**: Docker 소켓(`/var/run/docker.sock`)을 감시하여 컨테이너가 뜨고 질 때 자동으로 라우팅 규칙을 갱신합니다.
+- **Middleware**: SSO, Rate Limit, Header 수정 등의 미들웨어를 중앙에서 관리합니다.

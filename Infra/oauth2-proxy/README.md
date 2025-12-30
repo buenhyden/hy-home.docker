@@ -1,83 +1,29 @@
-# OAuth2-Proxy (인증 프록시)
+# OAuth2 Proxy Infrastructure
 
-## 시스템 아키텍처에서의 역할
+## 1. 개요 (Overview)
+이 디렉토리는 Traefik의 ForwardAuth 미들웨어로 사용되는 OAuth2 Proxy를 정의합니다. Keycloak(OIDC)과 연동하여 통합 인증을 수행하며, 인증된 세션 정보를 Redis에 저장하여 관리합니다.
 
-OAuth2-Proxy는 **Forward Auth 미들웨어**로 Traefik과 통합되어 서비스에 Keycloak SSO 인증을 적용합니다.
+## 2. 포함된 도구 (Tools Included)
 
-**핵심 역할:**
+| 서비스명 | 역할 | 설명 |
+|---|---|---|
+| **oauth2-proxy** | Auth Middleware | HTTP 요청을 가로채 인증 여부를 확인하고, 인증되지 않은 경우 Keycloak 로그인 페이지로 리다이렉트합니다. |
+| **oauth2-proxy-redis** | Session Store | 사용자 세션 쿠키 및 토큰 정보를 저장하는 Redis입니다. |
+| **oauth2-proxy-redis-exporter** | Metrics Exporter | Redis 메트릭을 수집합니다. |
 
-- 🔐 **인증 게이트웨이**: 서비스 앞단 인증
-- 🎫 **토큰 검증**: OIDC 토큰 유효성 확인
-- 🔄 **세션 관리**: 쿠키 기반 세션
-- 🚪 **리다이렉트**: 로그인/로그아웃 흐름
+## 3. 구성 및 설정 (Configuration)
 
-## 주요 구성 요소
+### 인증 흐름
+1. 사용자가 보호된 서비스(예: `redisinsight.${DEFAULT_URL}`)에 접근
+2. Traefik이 `sso-auth` 미들웨어를 통해 OAuth2 Proxy로 요청 전달
+3. OAuth2 Proxy는 세션이 없으면 Keycloak으로 리다이렉트
+4. 로그인 성공 후 OAuth2 Proxy가 세션을 Redis에 생성하고 원래 요청을 통과시킴
 
-### OAuth2-Proxy
+### 주요 설정
+- **설정 파일**: `/etc/oauth2-proxy.cfg` (마운트됨)
+- **Secrets**: `OAUTH2_PROXY_CLIENT_SECRET`, `OAUTH2_PROXY_COOKIE_SECRET`
+- **SSL**: 사설 인증서(`rootCA.pem`)를 신뢰하도록 설정됨.
 
-- **컨테이너**: `oauth2-proxy`
-- **이미지**: `quay.io/oauth2-proxy/oauth2-proxy:v7.13.0`
-- **포트**: `${OAUTH2_PROXY_PORT}` (기본 4180)
-- **Traefik**: `https://auth.${DEFAULT_URL}`
-
-**설정 파일:**
-
-- `./oauth2-proxy.cfg`: 메인 설정
-
-## 환경 변수
-
-```bash
-OAUTH2_PROXY_PORT=4180
-OAUTH2_PROXY_CLIENT_ID=nginx-client
-OAUTH2_PROXY_CLIENT_SECRET=<keycloak_secret>
-OAUTH2_PROXY_PROVIDER=keycloak-oidc
-OAUTH2_PROXY_OIDC_ISSUER_URL=https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm
-DEFAULT_URL=127.0.0.1.nip.io
-```
-
-## 설정 파일
-
-### oauth2-proxy.cfg
-
-```ini
-http_address = "0.0.0.0:4180"
-upstreams = [ "static://200" ]
-email_domains = [ "*" ]
-cookie_secret = "<random_32_bytes>"
-cookie_secure = true
-cookie_domains = [ ".127.0.0.1.nip.io" ]
-
-provider = "keycloak-oidc"
-client_id = "nginx-client"
-client_secret = "<secret>"
-oidc_issuer_url = "https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm"
-redirect_url = "https://auth.127.0.0.1.nip.io/oauth2/callback"
-```
-
-## Traefik 통합
-
-### 미들웨어 정의 (dynamic/middlewares.yml)
-
-```yaml
-http:
-  middlewares:
-    sso-auth:
-      forwardAuth:
-        address: "http://oauth2-proxy:4180"
-        trustForwardHeader: true
-        authResponseHeaders:
-          - "X-Auth-Request-User"
-          - "X-Auth-Request-Email"
-```
-
-### 서비스에 적용
-
-```yaml
-labels:
-  - "traefik.http.routers.myapp.middlewares=sso-auth@file"
-```
-
-## 참고 자료
-
-- [OAuth2-Proxy 문서](https://oauth2-proxy.github.io/oauth2-proxy/)
-- [Keycloak 통합](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)
+### 로드밸런싱 (Traefik)
+- **Callback URL**: `https://auth.${DEFAULT_URL}`
+- 이 라우터는 OAuth2 콜백(`redirect_url`)을 처리하는 엔드포인트입니다.
