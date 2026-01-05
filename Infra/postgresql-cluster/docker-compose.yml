@@ -3,6 +3,12 @@ services:
   # etcd 3노드 (Patroni DCS)
   ###############################################################
   etcd-1:
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-1
     command:
@@ -16,7 +22,12 @@ services:
       - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT},etcd-2=http://etcd-2:${ETCD_PEER_PORT},etcd-3=http://etcd-3:${ETCD_PEER_PORT}
       - --initial-cluster-state=new
       - --initial-cluster-token=pg-ha-etcd
-      
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health", "--endpoints=http://localhost:2379"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s # 초기 클러스터 구성 시간을 벌어줍니다.
     volumes:
       - etcd1-data:/etcd-data
     expose:
@@ -27,6 +38,12 @@ services:
     restart: unless-stopped
 
   etcd-2:
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-2
     command:
@@ -40,7 +57,12 @@ services:
       - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT},etcd-2=http://etcd-2:${ETCD_PEER_PORT},etcd-3=http://etcd-3:${ETCD_PEER_PORT}
       - --initial-cluster-state=new
       - --initial-cluster-token=pg-ha-etcd
-      
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health", "--endpoints=http://localhost:2379"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s # 초기 클러스터 구성 시간을 벌어줍니다.  
     volumes:
       - etcd2-data:/etcd-data
     expose:
@@ -51,6 +73,12 @@ services:
     restart: unless-stopped
 
   etcd-3:
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-3
     command:
@@ -64,7 +92,12 @@ services:
       - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT},etcd-2=http://etcd-2:${ETCD_PEER_PORT},etcd-3=http://etcd-3:${ETCD_PEER_PORT}
       - --initial-cluster-state=new
       - --initial-cluster-token=pg-ha-etcd
-      
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health", "--endpoints=http://localhost:2379"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s # 초기 클러스터 구성 시간을 벌어줍니다.
     volumes:
       - etcd3-data:/etcd-data
     expose:
@@ -78,6 +111,13 @@ services:
   # Patroni + PostgreSQL 17 노드 3개
   ###############################################################
   pg-0:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          memory: 1G
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-0
     hostname: pg-0
@@ -103,16 +143,31 @@ services:
       - pg0-data:/home/postgres/pgdata      
     expose:
       - ${POSTGRES_PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       infra_net:
         ipv4_address: 172.19.0.53
     depends_on:
-      - etcd-1
-      - etcd-2
-      - etcd-3
+      etcd-1:
+        condition: service_healthy
+      etcd-2:
+        condition: service_healthy
+      etcd-3:
+        condition: service_healthy
     restart: unless-stopped
 
   pg-1:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          memory: 1G
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-1
     hostname: pg-1
@@ -139,15 +194,30 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.54
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     expose:
       - ${POSTGRES_PORT}
     depends_on:
-      - etcd-1
-      - etcd-2
-      - etcd-3
+      etcd-1:
+        condition: service_healthy
+      etcd-2:
+        condition: service_healthy
+      etcd-3:
+        condition: service_healthy
     restart: unless-stopped
 
   pg-2:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          memory: 1G
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-2
     hostname: pg-2
@@ -178,16 +248,29 @@ services:
         ipv4_address: 172.19.0.55
     expose:
       - ${POSTGRES_PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     depends_on:
-      - etcd-1
-      - etcd-2
-      - etcd-3
+      etcd-1:
+        condition: service_healthy
+      etcd-2:
+        condition: service_healthy
+      etcd-3:
+        condition: service_healthy
     restart: unless-stopped
 
   ###############################################################
   # HAProxy 라우터 (Writer/Reader 분리)
   ###############################################################
   pg-router:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     image: haproxy:3.3.1
     container_name: pg-router    
     volumes:
@@ -211,15 +294,23 @@ services:
       # [중요] HAProxy 설정 파일(haproxy.cfg)에 정의된 Stats 포트(보통 8404)와 일치해야 함
       - "traefik.http.services.haproxy-stats.loadbalancer.server.port=${HAPROXY_PORT}"
     depends_on:
-      - pg-0
-      - pg-1
-      - pg-2
+      pg-0:
+        condition: service_healthy
+      pg-1:
+        condition: service_healthy
+      pg-2:
+        condition: service_healthy
     restart: unless-stopped
 
   ###############################################################
   # postgres-exporter (Prometheus / Alloy용 메트릭)
   ###############################################################
   pg-0-exporter:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-0-exporter
     networks:
@@ -230,7 +321,8 @@ services:
     secrets:
       - postgres_password
     depends_on:
-      - pg-0    
+      pg-0:
+        condition: service_healthy    
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
@@ -245,6 +337,11 @@ services:
       timeout: 5s
       retries: 5
   pg-1-exporter:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-1-exporter
     networks:
@@ -255,7 +352,8 @@ services:
     secrets:
       - postgres_password
     depends_on:
-      - pg-1  
+      pg-1:
+        condition: service_healthy  
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
@@ -270,6 +368,11 @@ services:
       timeout: 5s
       retries: 5
   pg-2-exporter:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-2-exporter
     networks:
@@ -280,7 +383,8 @@ services:
     secrets:
       - postgres_password
     depends_on:
-      - pg-2  
+      pg-2:
+        condition: service_healthy  
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |

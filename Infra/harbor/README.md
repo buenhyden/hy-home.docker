@@ -1,32 +1,64 @@
-# Harbor Container Registry Infrastructure
+# Harbor Container Registry
 
-## 1. 개요 (Overview)
-이 디렉토리는 오픈소스 컨테이너 레지스트리인 Harbor를 구성합니다. Docker 이미지 및 Helm 차트 등을 저장하고 관리하는 역할을 합니다. Redis와 PostgreSQL을 외부 서비스로 사용하며, 여러 컴포넌트로 나뉘어 실행됩니다.
+## 1. 서비스 개요 (Service Overview)
+**서비스 정의**: 오픈소스 클라우드 네이티브 컨테이너 레지스트리입니다. 컨테이너 이미지의 저장, 서명, 취약점 스캔 기능을 제공합니다.
 
-## 2. 포함된 도구 (Tools Included)
+**주요 기능 (Key Features)**:
+- **Role-Based Access Control**: 프로젝트 단위의 사용자 권한 관리.
+- **Image Replication**: 다른 레지스트리(Docker Hub, GCR 등)와의 이미지 복제.
+- **Vulnerability Scanning**: 이미지 취약점 자동 스캔 (Trivy 등 연동 가능).
 
-| 서비스명 | 역할 | 설명 |
-|---|---|---|
-| **harbor-core** | Core Service | Harbor의 핵심 기능을 담당(인증, 프로젝트 관리 등)하며 API를 제공합니다. |
-| **harbor-portal** | Web UI | 사용자 관리를 위한 웹 프론트엔드입니다. |
-| **harbor-registry** | Image Registry | 실제 Docker 이미지를 저장하고 배포하는 레지스트리 엔진입니다. |
-| **harbor-registryctl**| Controller | 레지스트리 제어 및 이미지 가비지 컬렉션 등을 담당합니다. |
-| **harbor-jobservice**| Job Queue | 이미지 복제, 가비지 컬렉션 등 비동기 작업을 처리합니다. |
+**기술 스택 (Tech Stack)**:
+- **Image**: Bitnami Harbor 2.x Series
+- **Database**: PostgreSQL (External)
+- **Cache**: Redis (External)
 
-## 3. 구성 및 설정 (Configuration)
+## 2. 아키텍처 및 워크플로우 (Architecture & Workflow)
+**컴포넌트**:
+- **Core**: API 처리, 인증, 권한 관리.
+- **Registry**: 실제 이미지 데이터(레이어) 저장 및 배포.
+- **JobService**: 비동기 작업(복제, 가비지 컬렉션 등) 처리.
+- **Portal**: 웹 UI 프론트엔드.
 
-### 의존성 (Dependencies)
-- **Redis**: 캐싱 및 작업 큐 관리를 위해 외부 Redis 사용 (`VALKEY_STANDALONE_HOSTNAME` 등 참조)
-- **PostgreSQL**: 메타데이터 저장을 위해 외부 PostgreSQL 사용 (`POSTGRES_HOSTNAME` 등 참조)
+## 3. 시작 가이드 (Getting Started)
+**실행 방법**:
+```bash
+docker compose up -d
+```
 
-### 스토리지 (Storage)
-호스트의 파일 시스템을 바인드 마운트하여 데이터를 저장합니다. `${DEFAULT_CICD_DIR}/harbor/...` 경로를 사용합니다.
-- `harbor-registry-data-volume`: 이미지 데이터
-- `harbor-core-data-volume`: 코어 데이터
-- `harbor-*conf-volume`: 각 서비스 설정 파일
+## 4. 환경 설정 명세 (Configuration Reference)
+**환경 변수**:
+- `HARBOR_ADMIN_PASSWORD`: 초기 관리자 비밀번호.
+- `REGISTRY_STORAGE_PROVIDER_NAME`: 스토리지 백엔드 (현재 `filesystem` 사용).
 
-### 환경 변수
-`.env` 파일 및 `docker-compose.yml`의 환경 변수를 통해 비밀 키(`CORE_SECRET`, `REGISTRY_HTTP_SECRET` 등)와 DB/Redis 연결 정보를 설정합니다.
+**네트워크 포트**:
+- **UI**: 443 (`https://harbor.${DEFAULT_URL}`) via Traefik.
+- **Core API**: 내부 포트 사용.
 
-### 네트워크
-- `infra_net`을 통해 다른 인프라 서비스와 격리된 통신을 수행합니다.
+## 5. 통합 및 API 가이드 (Integration Guide)
+**Docker Login**:
+```bash
+docker login harbor.${DEFAULT_URL}
+```
+- Username: `admin` (또는 생성한 사용자)
+- Password: 설정한 비밀번호
+
+**엔드포인트 명세**:
+- Base URL: `https://harbor.${DEFAULT_URL}/api/v2.0`
+
+## 6. 가용성 및 관측성 (Availability & Observability)
+**상태 확인**: `harbor-core`가 `harbor-registry`의 상태를 의존적으로 확인하며 시작됩니다.
+
+## 7. 백업 및 복구 (Backup & Disaster Recovery)
+**데이터 백업**:
+- `registry/data`: 이미지 바이너리 저장소 (가장 큼).
+- `postgresql`: 메타데이터 (프로젝트, 유저, 태그 정보).
+- **중요**: `HARBOR_CORE_SECRET` 등의 시크릿 키를 분실하면 암호화된 데이터를 복구할 수 없습니다.
+
+## 8. 보안 및 강화 (Security Hardening)
+- HTTPS 설정이 필수적이며(Traefik 처리), Docker 클라이언트는 공인 인증서 또는 신뢰된 CA를 요구합니다.
+
+## 9. 트러블슈팅 (Troubleshooting)
+**자주 발생하는 문제**:
+- **502 Bad Gateway**: Core 서비스가 완전히 로딩되기 전 Traefik이 요청을 받을 때 발생. 잠시 대기 후 재시도.
+- **Login Fail**: 패스워드 또는 시크릿 키 불일치.

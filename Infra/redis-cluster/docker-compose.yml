@@ -3,6 +3,13 @@ services:
   # Redis Cluster Nodes (6개: 3 master + 3 replica)
   ###############################################################
   redis-node-0:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
     image: redis:8.4.0-bookworm # Redis 8.4.x
     container_name: redis-node-0
     secrets:
@@ -47,6 +54,13 @@ services:
         max-file: "2"
 
   redis-node-1:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
     image: redis:8.4.0-bookworm
     container_name: redis-node-1
     secrets:
@@ -86,6 +100,13 @@ services:
         max-file: "2"
 
   redis-node-2:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
     image: redis:8.4.0-bookworm
     container_name: redis-node-2
     secrets:
@@ -125,6 +146,13 @@ services:
         max-file: "2"
 
   redis-node-3:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
     image: redis:8.4.0-bookworm
     container_name: redis-node-3
     secrets:
@@ -164,6 +192,13 @@ services:
         max-file: "2"
 
   redis-node-4:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
     image: redis:8.4.0-bookworm
     container_name: redis-node-4
     secrets:
@@ -203,6 +238,13 @@ services:
         max-file: "2"
 
   redis-node-5:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
     image: redis:8.4.0-bookworm
     container_name: redis-node-5
     secrets:
@@ -256,12 +298,18 @@ services:
         ipv4_address: 172.19.0.66
     restart: "no"
     depends_on:
-      - redis-node-0
-      - redis-node-1
-      - redis-node-2
-      - redis-node-3
-      - redis-node-4
-      - redis-node-5
+      redis-node-0:
+        condition: service_healthy
+      redis-node-1:
+        condition: service_healthy
+      redis-node-2:
+        condition: service_healthy
+      redis-node-3:
+        condition: service_healthy
+      redis-node-4:
+        condition: service_healthy
+      redis-node-5:
+        condition: service_healthy
     volumes:
       - ./scripts/redis-cluster-init.sh:/usr/local/bin/redis-cluster-init.sh:ro
     command: ["sh", "/usr/local/bin/redis-cluster-init.sh"]
@@ -275,6 +323,11 @@ services:
   ###############################################################
 
   redis-exporter:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: redis-exporter
     ports:
@@ -301,13 +354,19 @@ services:
           -redis.addr="redis://redis-node-0:6379" \
           -redis.password="$$R_PWD" \
           -web.listen-address=:${REDIS_EXPORTER_PORT}          
-    depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
-      redis-node-0: { condition: service_healthy }
-      redis-node-1: { condition: service_healthy }
-      redis-node-2: { condition: service_healthy }
-      redis-node-3: { condition: service_healthy }
-      redis-node-4: { condition: service_healthy }
-      redis-node-5: { condition: service_healthy }
+    depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)    
+      redis-node-0:
+        condition: service_healthy
+      redis-node-1:
+        condition: service_healthy
+      redis-node-2:
+        condition: service_healthy
+      redis-node-3:
+        condition: service_healthy
+      redis-node-4:
+        condition: service_healthy
+      redis-node-5:
+        condition: service_healthy
     logging:
       driver: "json-file"
       options:

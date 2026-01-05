@@ -120,9 +120,12 @@ services:
     container_name: couchdb-cluster-init
     restart: "no"
     depends_on:
-      - couchdb-1
-      - couchdb-2
-      - couchdb-3
+      couchdb-1:
+        condition: service_healthy
+      couchdb-2:
+        condition: service_healthy
+      couchdb-3:
+        condition: service_healthy
     networks:
       - infra_net
     # 클러스터 조인 명령을 실행합니다.

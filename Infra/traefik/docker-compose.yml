@@ -1,5 +1,12 @@
 services:
   traefik:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
     image: traefik:v3.6.2
     container_name: traefik
     hostname: traefik

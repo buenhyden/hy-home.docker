@@ -1,27 +1,53 @@
-# InfluxDB Infrastructure
+# InfluxDB
 
-## 1. 개요 (Overview)
-이 디렉토리는 시계열 데이터베이스인 InfluxDB(v2.7)를 정의합니다. 메트릭 데이터 수집 및 모니터링 용도로 사용됩니다.
+## 1. 서비스 개요 (Service Overview)
+**서비스 정의**: 고속 시계열 데이터베이스(TSDB)입니다. 메트릭, 이벤트 로그 등 시간 순서대로 데이터를 저장하고 조회하는 데 최적화되어 있습니다.
 
-## 2. 포함된 도구 (Tools Included)
+**주요 기능 (Key Features)**:
+- **Time Series Optimized**: 시간 기반 쿼리 및 데이터 압축.
+- **Flux Query Language**: 강력한 데이터 처리 스크립트 언어.
 
-| 서비스명 | 역할 | 설명 |
-|---|---|---|
-| **influxdb** | Time Series DB | 시계열 데이터 저장소입니다. 초기 실행 시 지정된 버킷과 조직, 사용자를 자동 설정합니다. |
+**기술 스택 (Tech Stack)**:
+- **Image**: `influxdb:2.7`
 
-## 3. 구성 및 설정 (Configuration)
+## 2. 아키텍처 및 워크플로우 (Architecture & Workflow)
+**데이터 흐름**:
+- 수집기(Telegraf 등) -> InfluxDB Write API -> 버킷 저장.
 
-### 초기 설정 (Initialization)
-컨테이너 최초 실행 시 환경 변수를 통해 자동 설정(`setup` 모드)이 수행됩니다.
-- `DOCKER_INFLUXDB_INIT_MODE`: setup
-- `DOCKER_INFLUXDB_INIT_USERNAME`: 초기 관리자 ID
-- `DOCKER_INFLUXDB_INIT_PASSWORD`: 초기 관리자 PW
-- `DOCKER_INFLUXDB_INIT_ORG`: 초기 조직(Org) 이름
-- `DOCKER_INFLUXDB_INIT_BUCKET`: 기본 버킷 이름
+## 3. 시작 가이드 (Getting Started)
+**실행 방법**:
+```bash
+docker compose up -d
+```
 
-### 데이터 볼륨
-- `influxdb-data`: `/var/lib/influxdb2` 경로에 매핑되어 데이터 영속성을 보장합니다.
+**초기 설정**:
+- `DOCKER_INFLUXDB_INIT_MODE=setup`을 통해 최초 실행 시 Organization, Bucket, User, Token을 자동 생성합니다.
 
-### 로드밸런싱 (Traefik)
-- **URL**: `https://influxdb.${DEFAULT_URL}`
-- Traefik을 통해 외부에서 HTTPS로 접근 가능합니다.
+## 4. 환경 설정 명세 (Configuration Reference)
+**환경 변수**:
+- `DOCKER_INFLUXDB_INIT_ORG`: 초기 조직명.
+- `DOCKER_INFLUXDB_INIT_BUCKET`: 초기 버킷명.
+- `DOCKER_INFLUXDB_INIT_ADMIN_TOKEN`: 관리자 토큰.
+
+**네트워크 포트**:
+- **HTTP**: 8086 (Traefik을 통해 `influxdb.${DEFAULT_URL}` 노출)
+
+## 5. 통합 및 API 가이드 (Integration Guide)
+**엔드포인트**: `https://influxdb.${DEFAULT_URL}`
+**인증**: 헤더에 `Authorization: Token <Your-Token>` 포함.
+
+## 6. 가용성 및 관측성 (Availability & Observability)
+**상태 확인**: `/health`
+
+## 7. 백업 및 복구 (Backup & Disaster Recovery)
+**데이터 백업**:
+- `influx backup` 명령어를 사용하여 데이터를 스냅샷 형태로 백업해야 합니다.
+
+## 8. 보안 및 강화 (Security Hardening)
+- API Token 관리가 중요합니다. 최소 권한의 토큰을 발급하여 사용하십시오.
+
+## 9. 트러블슈팅 (Troubleshooting)
+**진단 명령어**:
+```bash
+docker logs influxdb
+```

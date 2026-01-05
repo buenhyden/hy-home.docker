@@ -1,30 +1,62 @@
-# OpenSearch Infrastructure
+# OpenSearch
 
-## 1. 개요 (Overview)
-이 디렉토리는 검색 및 데이터 분석 엔진인 OpenSearch를 정의합니다. 현재는 단일 노드(`opensearch-node1`) 구성이 활성화되어 있으나, 설정상 3-Node 클러스터 확장이 가능하도록 준비되어 있습니다.
+## 1. 서비스 개요 (Service Overview)
+**서비스 정의**: Elasticsearch에서 파생된 분산형 검색 및 분석 엔진입니다. 텍스트 검색, 로그 분석, 보안 모니터링 등에 활용됩니다.
 
-## 2. 포함된 도구 (Tools Included)
+**주요 기능 (Key Features)**:
+- **Search Engine**: 강력한 전문 검색 기능.
+- **Analytics**: 대시보드(OpenSearch Dashboards)를 통한 데이터 시각화.
+- **Security**: 플러그인을 통한 세분화된 보안 제어 (Role, User, SSL).
 
-| 서비스명 | 역할 | 설명 |
-|---|---|---|
-| **opensearch-node1** | Search Engine | 데이터 저장, 검색, 인덱싱을 담당하는 메인 노드입니다. 현재 Master, Data, Ingest 역할을 모두 수행합니다. |
-| **opensearch-dashboards**| Visualization | OpenSearch에 저장된 데이터를 시각화하고 대시보드를 제공하는 웹 UI(Kibana Fork)입니다. |
-| **opensearch-exporter** | Metrics Exporter | OpenSearch 클러스터의 메트릭을 수집하여 Prometheus에 제공합니다. |
+**기술 스택 (Tech Stack)**:
+- **Core**: OpenSearch 3.3.2
+- **UI**: OpenSearch Dashboards 3.3.0
+- **Exporter**: Prometheus Elasticsearch Exporter
 
-## 3. 구성 및 설정 (Configuration)
+## 2. 아키텍처 및 워크플로우 (Architecture & Workflow)
+**구성**:
+- **Node 1**: Cluster Manager, Data, Ingest 역할을 모두 수행하는 단일 노드로 구성됨 (설정상 클러스터 확장은 가능하나 현재 노드 2, 3은 비활성화 상태).
+- **Communication**: Traefik -> OpenSearch (HTTPS). OpenSearch는 자체 서명 인증서(SSL)를 기본적으로 활성화하고 있습니다.
 
-### 보안 (Security)
-OpenSearch Security Plugin이 활성화되어 있으며 HTTPS(TLS) 통신을 강제합니다.
-- **인증서**: `./certs` 디렉토리의 사설 인증서를 사용합니다.
-- **통신**: 노드 간 통신 및 REST API 모두 암호화됩니다.
+## 3. 시작 가이드 (Getting Started)
+**실행 방법**:
+```bash
+docker compose up -d
+```
+> **주의**: 메모리 설정을 위해 호스트의 `vm.max_map_count`가 262144 이상이어야 합니다.
 
-### 시스템 설정 (System)
-- **ulimits**: `memlock`, `nofile` 설정이 최적화되어 있습니다.
-- **Java Heap**: `OPENSEARCH_JAVA_OPTS` 환경 변수로 힙 메모리를 제어합니다.
+## 4. 환경 설정 명세 (Configuration Reference)
+**환경 변수**:
+- `OPENSEARCH_INITIAL_ADMIN_PASSWORD`: 초기 `admin` 계정 비밀번호.
+- `OPENSEARCH_JAVA_OPTS`: JVM 힙 크기 설정 (예: `-Xms1g -Xmx1g`).
 
-### 로드밸런싱 (Traefik)
-- **API**: `https://opensearch.${DEFAULT_URL}` (백엔드 통신 시 HTTPS 스킴 사용하도록 설정됨)
-- **Dashboards**: `https://opensearch-dashboard.${DEFAULT_URL}`
+**네트워크 포트**:
+- **API**: 9200 (`https://opensearch.${DEFAULT_URL}`)
+- **Dashboard**: 5601 (`https://opensearch-dashboard.${DEFAULT_URL}`)
+- **Perf**: 9600 (Performance Analyzer)
 
-### 참고 사항
-- `opensearch-node2`, `node3`는 주석 처리되어 있어 필요 시 주석 해제로 클러스터를 확장할 수 있습니다.
+## 5. 통합 및 API 가이드 (Integration Guide)
+**엔드포인트**:
+- Base: `https://opensearch.${DEFAULT_URL}`
+- 인증: Basic Auth (`admin` / 설정된 암호) 혹은 Traefik 레벨 인증.
+
+**Dashboards 접속**:
+- URL: `https://opensearch-dashboard.${DEFAULT_URL}`
+
+## 6. 가용성 및 관측성 (Availability & Observability)
+**상태 확인**: `/_cluster/health`
+**모니터링**: `opensearch-exporter`가 Prometheus 메트릭을 `9114` 포트로 노출합니다.
+
+## 7. 백업 및 복구 (Backup & Disaster Recovery)
+**데이터 백업**:
+- `opensearch-data1` 볼륨에 인덱스 데이터가 저장됩니다.
+- 스냅샷 기능을 이용해 S3 또는 로컬 스토리지로 백업을 구성할 수 있습니다.
+
+## 8. 보안 및 강화 (Security Hardening)
+- OpenSearch Security Plugin이 활성화되어 있으며, HTTPS 통신을 강제합니다.
+- 운영 환경에서는 정식 인증서를 발급받아 교체하는 것을 권장합니다.
+
+## 9. 트러블슈팅 (Troubleshooting)
+**자주 발생하는 문제**:
+- **Bootstrap check failed**: `vm.max_map_count` 설정 확인.
+- **SSL Handshake Error**: 클라이언트가 자체 서명 인증서를 신뢰하지 않을 때 발생 (`insecure-skip-verify` 옵션 필요).

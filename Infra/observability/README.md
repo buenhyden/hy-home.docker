@@ -1,41 +1,68 @@
-# Observability Infrastructure (LGTM Stack)
+# LGTM Observability Stack
 
-## 1. 개요 (Overview)
-이 디렉토리는 시스템의 모니터링, 로깅, 트레이싱을 담당하는 통합 관제 스택(LGTM: Loki, Grafana, Tempo, Mimir/Prometheus)을 정의합니다. 시스템의 상태를 가시화하고 문제를 진단하는 핵심 인프라입니다.
+## 1. 서비스 개요 (Service Overview)
+**서비스 정의**: 시스템의 모든 영역을 모니터링하기 위한 풀스택 관측성 플랫폼입니다. Grafana Labs의 LGTM(Loki, Grafana, Tempo, Mimir/Prometheus) 스택을 기반으로 합니다.
 
-## 2. 포함된 도구 (Tools Included)
+**주요 기능 (Key Features)**:
+- **Metrics**: Prometheus가 수치 데이터 수집 및 쿼리.
+- **Logs**: Loki가 로그 데이터 집계 및 인덱싱.
+- **Traces**: Tempo가 분산 트레이싱 데이터 저장.
+- **Visualization**: Grafana를 통해 통합 대시보드 제공.
+- **Collector**: Alloy(구 Agent)가 OTel 데이터 수집 및 전송.
 
-| 서비스명 | 역할 | 설명 |
-|---|---|---|
-| **prometheus** | Metrics Storage | 서비스들로부터 메트릭을 수집(Pull)하고 저장하는 시계열 데이터베이스입니다. |
-| **loki** | Log Aggregation | 애플리케이션 및 시스템 로그를 수집하고 쿼리할 수 있게 해주는 로그 시스템입니다. |
-| **tempo** | Distributed Tracing | 마이크로서비스 간의 요청 흐름(Trace)을 추적하고 시각화하는 백엔드입니다. |
-| **grafana** | Visualization | 모든 데이터(Metrics, Logs, Traces)를 하나의 대시보드에서 시각화하는 UI 도구입니다. |
-| **alloy** | Telemetry Collector | OpenTelemetry 등을 통해 데이터를 수집하여 각 backend(Prometheus, Loki, Tempo)로 전송하는 수집기입니다. |
-| **cadvisor** | Container Metrics | 실행 중인 Docker 컨테이너의 리소스 사용량(CPU, RAM 등) 메트릭을 제공합니다. |
-| **alertmanager** | Alerting | Prometheus 등에서 감지된 경보를 라우팅하고 알림(Slack, Email 등)을 발송합니다. |
-| **pushgateway** | Push Metrics | 배치 작업 등 짧은 수명 주기를 가진 작업이 메트릭을 Push 할 수 있도록 돕는 게이트웨이입니다. |
+**기술 스택 (Tech Stack)**:
+- **Viz**: Grafana 12.3.1
+- **Metrics**: Prometheus v3.8.1, cAdvisor v0.54.1, Pushgateway
+- **Logs**: Loki 3.5.9
+- **Traces**: Tempo 2.9.0
+- **Alerting**: Alertmanager v0.30.0
 
-## 3. 구성 및 설정 (Configuration)
+## 2. 아키텍처 및 워크플로우 (Architecture & Workflow)
+**데이터 흐름**:
+1. **수집**: cAdvisor(컨테이너), Alloy(OTel), Exporters -> Prometheus/Loki/Tempo.
+2. **저장**: 각 전용 저장소(TSDB, Log store 등)에 저장.
+3. **시각화**: Grafana가 각 데이터 소스를 쿼리하여 대시보드에 표출.
 
-### Grafana & Keycloak 연동
-Grafana는 Keycloak과 OAuth2로 연동되어 있습니다.
-- **Auto Login**: `GF_AUTH_OAUTH_AUTO_LOGIN=true` (로그인 화면 스킵)
-- **Role Mapping**: Keycloak의 그룹 정보(`/admins`, `/editors`)를 기반으로 Grafana의 Admin/Editor 권한을 자동 부여합니다.
+## 3. 시작 가이드 (Getting Started)
+**실행 방법**:
+```bash
+docker compose up -d
+```
 
-### 수집 파이프라인
-- **Logs**: Alloy 또는 Docker Logging Driver -> Loki
-- **Metrics**: Exporters -> Prometheus (Scraping)
-- **Traces**: App(OTel SDK) -> Alloy -> Tempo
+## 4. 환경 설정 명세 (Configuration Reference)
+**볼륨 마운트**:
+- `prometheus-data`, `loki-data`, `tempo-data`, `grafana-data`: 각 서비스의 데이터 영속화.
+- `./grafana/provisioning`: 대시보드 및 데이터소스 자동 프로비저닝 설정.
 
-### 로드밸런싱 (Traefik)
-각 서비스는 Traefik을 통해 서브도메인으로 노출됩니다.
-- `grafana.${DEFAULT_URL}`
-- `prometheus.${DEFAULT_URL}`
-- `alertmanager.${DEFAULT_URL}`
-- `alloy.${DEFAULT_URL}`
-- `pushgateway.${DEFAULT_URL}`
+**주요 계정 설정 (Grafana)**:
+- 관리자 계정: `${GRAFANA_ADMIN_USERNAME}` / `${GRAFANA_ADMIN_PASSWORD}`
+- **SSO**: Keycloak 연동이 설정되어 있어 `Sign in with Keycloak` 버튼을 통해 로그인합니다.
 
-### 데이터 볼륨
-각 스토리지 서비스는 영구 볼륨을 사용하여 데이터를 보존합니다.
-- `prometheus-data`, `loki-data`, `tempo-data`, `grafana-data`, `alertmanager-data`
+## 5. 통합 및 API 가이드 (Integration Guide)
+**엔드포인트 명세**:
+- **Grafana**: `https://grafana.${DEFAULT_URL}`
+- **Prometheus**: `https://prometheus.${DEFAULT_URL}`
+- **Alertmanager**: `https://alertmanager.${DEFAULT_URL}`
+- **Alloy UI**: `https://alloy.${DEFAULT_URL}`
+
+**SSO 통합**:
+- Grafana는 `GF_AUTH_GENERIC_OAUTH_...` 환경 변수를 통해 Keycloak과 연동됩니다.
+- Keycloak의 `groups` 클레임을 읽어 Grafana의 `Admin`/`Editor`/`Viewer` 권한을 자동으로 매핑합니다.
+
+## 6. 가용성 및 관측성 (Availability & Observability)
+**상태 확인**:
+- 각 서비스별 `/ready`, `/-/healthy`, `/api/health` 등 헬스체크 엔드포인트 존재.
+
+## 7. 백업 및 복구 (Backup & Disaster Recovery)
+**데이터 백업**:
+- 중요 데이터(Prometheus TSDB, Grafana DB)는 볼륨 백업 필요.
+- Grafana 대시보드는 Git(`provisioning` 폴더)으로 관리하여 코드 기반 복구 가능.
+
+## 8. 보안 및 강화 (Security Hardening)
+- Grafana 로그인 폼(`GF_AUTH_DISABLE_LOGIN_FORM=true`)을 비활성화하여 SSO를 강제합니다.
+- 익명 사용자 접근은 차단되어 있습니다.
+
+## 9. 트러블슈팅 (Troubleshooting)
+**자주 발생하는 문제**:
+- **OOM Killed**: Loki나 Prometheus는 메모리 사용량이 높으므로 리소스 제한 확인 필요.
+- **cAdvisor Error**: 윈도우 환경에서 `kmsg` 또는 `machine-id` 마운트 에러 발생 시 docker-compose 파일 수정.

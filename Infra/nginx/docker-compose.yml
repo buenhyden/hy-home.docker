@@ -12,5 +12,6 @@ services:
       infra_net:
         ipv4_address: 172.19.0.13  
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy
   

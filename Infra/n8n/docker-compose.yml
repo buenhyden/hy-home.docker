@@ -1,5 +1,12 @@
 services:
   n8n:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G           # 대규모 워크플로우 대비
+        reservations:
+          memory: 1G
     image: n8nio/n8n:2.1.4
     container_name: n8n
     restart: unless-stopped    
@@ -64,6 +71,15 @@ services:
       - "traefik.http.services.n8n.loadbalancer.server.port=${N8N_PORT}"      
     volumes:
       - n8n-data:/home/node/.n8n
+    depends_on:
+      n8n-redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost ${N8N_PORT} || exit 1"] # 간단한 포트 체크 방식
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     networks:
       infra_net:
         ipv4_address: 172.19.0.14    
@@ -73,12 +89,19 @@ services:
         max-size: "5m"
         max-file: "2"
   n8n-worker:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
     image: n8nio/n8n:2.1.4
     container_name: n8n-worker
     restart: unless-stopped
     depends_on:
-      - n8n
-      - n8n-redis
+      n8n:
+        condition: service_healthy
+      n8n-redis:
+        condition: service_healthy
     environment:
       # 타임존
       - GENERIC_TIMEZONE=${DEFAULT_TIMEZONE:-Asia/Seoul}
@@ -116,6 +139,11 @@ services:
         max-size: "5m"
         max-file: "2"
   n8n-redis:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     image: redis:8.4.0-bookworm # Redis 8.4.x
     container_name: n8n-redis
     secrets:
@@ -154,6 +182,11 @@ services:
         max-file: "2"
         
   n8n-redis-exporter:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: n8n-redis-exporter
     expose:
@@ -179,7 +212,8 @@ services:
           -redis.password="$REDIS_PASSWORD" \
           -web.listen-address=:${REDIS_EXPORTER_PORT} 
     depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
-      n8n-redis: { condition: service_healthy }
+      n8n-redis:
+        condition: service_healthy
     logging:
       driver: "json-file"
       options:

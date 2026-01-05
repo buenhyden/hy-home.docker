@@ -227,18 +227,21 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_OPENSEARCH_DATA_DIR}/snapshots
+  
   kafka-1-data:
     # driver: local
     # driver_opts:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_KAFKA_DATA_DIR}/node1
+  
   kafka-2-data:
     # driver: local
     # driver_opts:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_KAFKA_DATA_DIR}/node2
+  
   kafka-3-data:
     # driver: local
     # driver_opts:

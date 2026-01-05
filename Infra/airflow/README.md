@@ -1,41 +1,68 @@
-# Airflow Infrastructure
+# Apache Airflow
 
-## 1. 개요 (Overview)
-이 디렉토리는 Apache Airflow를 Docker 환경에서 실행하기 위한 설정을 담고 있습니다. CeleryExecutor를 사용하여 분산 처리 환경을 구성하며, PostgreSQL(메타데이터 DB)과 Redis(Celery Broker)를 외부 서비스로 연동합니다. 또한 Traefik을 통해 외부 접근을 관리합니다.
+## 1. 서비스 개요 (Service Overview)
+**서비스 정의**: 워크플로우를 프로그래밍 방식으로 작성, 예약 및 모니터링하는 플랫폼입니다 (Workflow as Code).
 
-## 2. 포함된 도구 (Tools Included)
+**주요 기능 (Key Features)**:
+- **Celery Executor**: 분산 작업 처리를 위해 Redis와 Worker 노드 사용.
+- **DAG Processor**: DAG 파일 파싱 및 스케줄링 최적화.
+- **Flower UI**: Celery 워커 상태 모니터링.
 
-| 서비스명 | 역할 | 설명 |
-|---|---|---|
-| **airflow-apiserver** | Webserver & API | Airflow UI 및 REST API를 제공합니다. Traefik을 통해 `airflow.${DEFAULT_URL}`로 접근 가능합니다. |
-| **airflow-scheduler** | Scheduler | DAG 스케줄링 및 태스크 실행을 담당합니다. |
-| **airflow-dag-processor** | DAG Processor | DAG 파일을 파싱하여 메타데이터 DB에 업데이트합니다. |
-| **airflow-worker** | Worker | 실제 태스크를 실행하는 작업자입니다. CeleryExecutor를 사용합니다. |
-| **airflow-triggerer** | Triggerer | 비동기 태스크(Deferrable Operators)를 관리합니다. |
-| **flower** | Celery Monitor | Celery 워커 및 태스크 상태를 모니터링하는 웹 UI입니다. `flower.${DEFAULT_URL}`로 접근 가능합니다. |
-| **airflow-statsd-exporter**| Metrics Exporter | Airflow 메트릭을 수집하여 Prometheus가 긁어갈 수 있는 형식으로 변환합니다. |
-| **airflow-init** | Initialization | Airflow 실행 전 필요한 디렉토리 생성 및 DB 마이그레이션 등을 수행하는 초기화 컨테이너입니다. |
+**기술 스택 (Tech Stack)**:
+- **Image**: `apache/airflow:3.1.3`
+- **Executor**: CeleryExecutor
+- **Backend**: PostgreSQL (`airflow` DB) + Redis (`celery` Broker)
 
-## 3. 구성 및 설정 (Configuration)
+## 2. 아키텍처 및 워크플로우 (Architecture & Workflow)
+**컴포넌트**:
+- **Scheduler**: 작업 예약 및 트리거.
+- **Webserver (API Server)**: UI 및 API 제공.
+- **Worker**: 실제 Task 실행.
+- **Triggerer**: Async 작업(Deferred Operator) 처리.
+- **StatsD Exporter**: 메트릭 변환 (StatsD -> Prometheus).
 
-### 네트워크 및 의존성
-- **Network**: `infra_net` (PostgreSQL, Redis 등 다른 인프라 서비스와 통신)
-- **Database**: 외부 PostgreSQL 사용 (`POSTGRES_HOSTNAME`, `AIRFLOW_DB_USER` 등 환경변수 참조)
-- **Broker**: 외부 Redis 사용 (`REDIS_NODE_NAME`, `REDIS_PASSWORD` 등 환경변수 참조)
+## 3. 시작 가이드 (Getting Started)
+**실행 방법**:
+```bash
+docker compose up -d
+```
+(`airflow-init` 서비스가 DB 마이그레이션과 초기 계정 생성을 수행합니다.)
 
-### 환경 변수 (주요 설정)
-`docker-compose.yml` 내 `x-airflow-common` 및 각 서비스에 정의되어 있습니다.
-- `AIRFLOW__CORE__EXECUTOR`: CeleryExecutor
-- `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN`: DB 연결 문자열
-- `AIRFLOW__CELERY__BROKER_URL`: Celery Broker 연결 문자열
-- `AIRFLOW_UID`: 호스트 사용자와의 권한 매핑을 위한 UID
+## 4. 환경 설정 명세 (Configuration Reference)
+**볼륨 마운트**:
+- `airflow-dags`: DAG 파일 저장소.
+- `airflow-plugins`: 커스텀 플러그인.
 
-### 볼륨 (Volumes)
-- `airflow-dags`: DAG 파일 저장소 (`/opt/airflow/dags`)
-- `airflow-plugins`: 플러그인 저장소 (`/opt/airflow/plugins`)
-- `./config/statsd_mapping.yml`: StatsD 매핑 설정 파일
+**네트워크 포트**:
+- **UI**: 8080 (`https://airflow.${DEFAULT_URL}`)
+- **Flower**: 5555 (`https://flower.${DEFAULT_URL}`)
 
-### 로드밸런싱 (Traefik)
-- **Airflow UI**: `https://airflow.${DEFAULT_URL}`
-- **Flower UI**: `https://flower.${DEFAULT_URL}`
-- 선택적으로 Keycloak SSO 미들웨어 적용 가능 (`traefik.http.routers.airflow.middlewares=sso-auth@file` 주석 해제 시)
+## 5. 통합 및 API 가이드 (Integration Guide)
+**API 명세**:
+- Base URL: `/api/v1`
+- 인증: Basic Auth (초기 계정: `airflow` / `airflow`)
+
+## 6. 가용성 및 관측성 (Availability & Observability)
+**상태 확인**:
+- 각 컴포넌트(`scheduler`, `webserver` 등)별 전용 Health Check 명령 수행.
+
+**모니터링**:
+- StatsD 메트릭이 활성화되어 `airflow-statsd-exporter`로 전송됩니다.
+
+## 7. 백업 및 복구 (Backup & Disaster Recovery)
+**데이터 백업**:
+- PostgreSQL의 `airflow` 데이터베이스 백업 필수.
+- DAG 파일과 플러그인 소스 코드(Git 관리) 백업.
+
+## 8. 보안 및 강화 (Security Hardening)
+- **Webserver Proxy Fix**: `AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX=true`를 통해 역방향 프록시 환경의 IP/Scheme 인식.
+
+## 9. 트러블슈팅 (Troubleshooting)
+**자주 발생하는 문제**:
+- **Task Stuck**: Celery Worker 리소스 부족 확인 또는 Flower에서 상태 확인.
+- **DAG Not Found**: `airflow-dags` 볼륨 마운트 경로 및 권한 확인.
+
+**진단 명령어**:
+```bash
+docker exec -it airflow-scheduler airflow dags list
+```

@@ -297,6 +297,9 @@ services:
     volumes:
       # 매핑 파일 (아래 3번 단계에서 생성)
       - ./config/statsd_mapping.yml:/tmp/mappings.yml:ro
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
     networks:
       - infra_net
     expose:

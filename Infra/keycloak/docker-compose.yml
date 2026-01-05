@@ -1,5 +1,12 @@
 services:
   keycloak:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
     image: quay.io/keycloak/keycloak:26.4.6
     container_name: keycloak
     hostname: keycloak

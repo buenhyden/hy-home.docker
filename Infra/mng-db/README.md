@@ -1,31 +1,88 @@
-# Management Database Infrastructure
+# Management DB (Mng-DB)
 
-## 1. 개요 (Overview)
-이 디렉토리는 다른 인프라 서비스들이 공통으로 사용하거나 관리 목적으로 필요한 데이터베이스(PostgreSQL, Redis)를 정의합니다. 또한 Redis 데이터를 시각적으로 관리하기 위한 RedisInsight를 포함합니다.
+## 1. 서비스 개요 (Service Overview)
+**서비스 정의**: 시스템 관리 및 중요 데이터 저장을 위한 공용 데이터베이스 세트입니다. Redis(캐싱/세션)와 PostgreSQL(관계형 데이터) 인스턴스를 포함합니다.
 
-## 2. 포함된 도구 (Tools Included)
+**주요 기능 (Key Features)**:
+- **Redis Cache**: 인증 세션, 임시 데이터 저장을 위한 인메모리 스토어.
+- **Relational DB**: 서비스 설정, 사용자 정보 등을 위한 안정적인 RDBMS.
+- **RedisInsight**: Redis 데이터를 시각적으로 관리할 수 있는 GUI 제공.
 
-| 서비스명 | 역할 | 설명 |
-|---|---|---|
-| **mng-pg** | PostgreSQL Database | n8n, Keycloak 등 관리형 서비스들이 사용하는 메타데이터 저장소입니다. |
-| **mng-pg-exporter**| Metrics Exporter | PostgreSQL의 상태와 성능 메트릭을 수집하여 Prometheus에 제공합니다. |
-| **mng-redis** | In-Memory Store | n8n 큐 관리 등 빠른 데이터 처리가 필요한 서비스들이 사용하는 공용 Redis입니다. |
-| **mng-redis-exporter**| Metrics Exporter | Redis 메트릭을 수집합니다. |
-| **redisinsight** | Redis GUI | Redis 데이터를 웹 브라우저에서 조회하고 관리할 수 있는 도구입니다. SSO 인증이 적용되어 있습니다. |
+**기술 스택 (Tech Stack)**:
+- **Redis**: 8.4.0 (Bookworm)
+- **PostgreSQL**: 17 (Bookworm)
+- **RedisInsight**: 2.70.1
 
-## 3. 구성 및 설정 (Configuration)
+## 2. 아키텍처 및 워크플로우 (Architecture & Workflow)
+**시스템 구조도**:
+```mermaid
+graph TD
+    App[애플리케이션] -->|Session| MngRedis
+    App[애플리케이션] -->|Data| MngPg
+    Admin[관리자] -->|GUI| RedisInsight
+    RedisInsight -->|Monitor| MngRedis
+```
 
-### PostgreSQL (`mng-pg`)
-- **초기화**: `./init/init_users_dbs.sql` 스크립트를 통해 초기 데이터베이스와 유저를 생성합니다.
-- **포트**: 호스트 포트매핑을 통해 외부 접근이 가능합니다. (`POSTGRES_HOST_PORT`)
+## 3. 시작 가이드 (Getting Started)
+**사전 요구사항 (Prerequisites)**:
+- `infra_net` 외부 네트워크
 
-### Redis (`mng-redis`)
-- **보안**: Docker Secret(`redis_password`)을 통해 비밀번호를 안전하게 관리합니다.
-- **설정**: AOF(Append Only File)가 활성화되어 데이터 내구성을 높였습니다.
+**실행 방법 (Deployment)**:
+```bash
+docker compose up -d
+```
 
-### RedisInsight
-- **접속**: `https://redisinsight.${DEFAULT_URL}`
-- **보안**: `sso-auth` 미들웨어가 적용되어 있어 로그인 후 접근 가능합니다.
+## 4. 환경 설정 명세 (Configuration Reference)
+**환경 변수 (Environment Variables)**:
+| 변수명 | 설명 |
+|---|---|
+| `REDIS_PASSWORD` | Redis 접속 비밀번호 (Secret 사용) |
+| `POSTGRES_USER` | PG 사용자명 |
+| `POSTGRES_PASSWORD` | PG 비밀번호 |
+| `POSTGRES_DB` | 초기 생성 DB명 |
 
-### 네트워크
-- `infra_net`을 통해 다른 서비스들과 통신합니다.
+**볼륨 마운트 (Volume Mapping)**:
+- `mng-redis-data`: Redis 데이터 영속화
+- `mng-pg-data`: PostgreSQL 데이터 영속화
+- `redisinsight-data`: RedisInsight 설정 저장
+- `./init/init_users_dbs.sql`: DB 초기화 스크립트
+
+**네트워크 포트 (Network Ports)**:
+- **Mng-Redis**: 6379 (Internal)
+- **Mng-Pg**: 5432 (Internal)
+- **RedisInsight**: 5540 (Internal, Traefik 노출)
+
+## 5. 통합 및 API 가이드 (Integration Guide)
+**엔드포인트 명세**:
+- Redis Connection: `redis://:${REDIS_PASSWORD}@mng-redis:6379`
+- Postgres Connection: `postgres://${USER}:${PASS}@mng-pg:5432/${DB}`
+- RedisInsight UI: `https://redisinsight.${DEFAULT_URL}`
+
+## 6. 가용성 및 관측성 (Availability & Observability)
+**상태 확인 (Health Check)**:
+- Redis: `redis-cli ping`
+- Postgres: `pg_isready`
+
+**모니터링 (Monitoring)**:
+- `mng-redis-exporter`: Redis 메트릭 수집
+- `mng-pg-exporter`: Postgres 메트릭 수집
+
+## 7. 백업 및 복구 (Backup & Disaster Recovery)
+**데이터 백업**:
+- Redis: AOF(Append Only File) 활성화됨.
+- Postgres: `pg_dump`를 통한 정기 백업 권장.
+
+## 8. 보안 및 강화 (Security Hardening)
+**보안 가이드라인**:
+- RedisInsight는 `sso-auth` 미들웨어를 통해 Keycloak 인증 후 접근하도록 설정되어 있습니다.
+
+## 9. 트러블슈팅 (Troubleshooting)
+**자주 발생하는 문제**:
+- **Connection Refused**: 포트 및 네트워크 확인.
+- **Auth Error**: 비밀번호 환경 변수 일치 여부 확인.
+
+**진단 명령어**:
+```bash
+docker exec -it mng-redis redis-cli -a $REDIS_PASSWORD ping
+docker exec -it mng-pg psql -U postgres
+```

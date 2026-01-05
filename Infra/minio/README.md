@@ -1,29 +1,58 @@
-# MinIO Object Storage Infrastructure
+# MinIO (Object Storage)
 
-## 1. 개요 (Overview)
-이 디렉토리는 AI/ML 및 클라우드 네이티브 애플리케이션을 위한 고성능 객체 스토리지인 MinIO를 정의합니다. Docker Secrets를 통해 보안 자격 증명을 관리하며, 초기 버킷 자동 생성을 위한 스크립트 컨테이너를 포함합니다.
+## 1. 서비스 개요 (Service Overview)
+**서비스 정의**: AWS S3 호환 고성능 오브젝트 스토리지입니다. 로그, 백업 파일, 정적 에셋 등을 저장하는 데 사용됩니다.
 
-## 2. 포함된 도구 (Tools Included)
+**주요 기능 (Key Features)**:
+- **S3 Compatible**: AWS S3 API와 완벽 호환.
+- **Web Console**: 직관적인 버킷 및 파일 관리 UI.
+- **Auto Buckets**: 시작 시 `tempo`, `loki` 등 주요 버킷 자동 생성.
 
-| 서비스명 | 역할 | 설명 |
-|---|---|---|
-| **minio** | Object Storage | S3 호환 API를 제공하는 스토리지 서버입니다. (`:9000` API, `:9001` Console) |
-| **minio-create-buckets**| Initializer | `mc` (MinIO Client)를 사용하여 시작 시 필요한 버킷과 정책을 자동으로 생성합니다. |
+**기술 스택 (Tech Stack)**:
+- **Image**: `minio/minio:RELEASE.2025-09-07...`
 
-## 3. 구성 및 설정 (Configuration)
+## 2. 아키텍처 및 워크플로우 (Architecture & Workflow)
+**구조**:
+- **MinIO Server**: 데이터 저장 및 API 제공.
+- **MinIO Client (mc)**: 초기 버킷 생성 스크립트 실행.
 
-### 보안 (Security)
-- **Docker Secrets**: `minio_root_user`, `minio_root_password` 등을 통해 관리자 계정과 애플리케이션 계정을 안전하게 주입합니다.
-- **API Access**: `MINIO_API_ROOT_ACCESS`가 활성화되어 있습니다.
+## 3. 시작 가이드 (Getting Started)
+**실행 방법**:
+```bash
+docker compose up -d
+```
 
-### 초기화 (Initialization)
-`minio-create-buckets` 컨테이너가 `minio` 서비스가 헬스체크를 통과하면 실행됩니다.
-- **Buckets Created**: `tempo-bucket`, `loki-bucket`, `cdn-bucket`
-- **Policy**: 애플리케이션 유저에게 `readwrite` 권한 부여 및 `cdn-bucket`에 대한 퍼블릭 접근 권한 설정.
+## 4. 환경 설정 명세 (Configuration Reference)
+**환경 변수**:
+- `MINIO_ROOT_USER`: 루트 관리자 ID.
+- `MINIO_ROOT_PASSWORD`: 루트 관리자 암호.
 
-### 로드밸런싱 (Traefik)
-- **API Endpoint**: `https://minio.${DEFAULT_URL}` (S3 API Endpoint)
-- **Console UI**: `https://minio-console.${DEFAULT_URL}` (Web Management Console)
+**네트워크 포트**:
+- **API**: 9000 (`minio.${DEFAULT_URL}`)
+- **Console**: 9001 (`minio-console.${DEFAULT_URL}`)
 
-### 데이터 볼륨
-- `minio-data`: `/data` 경로에 매핑되어 객체 데이터를 영구 저장합니다.
+## 5. 통합 및 API 가이드 (Integration Guide)
+**Endpoint**: `https://minio.${DEFAULT_URL}`
+**Access Key**: `minio_app_user` Secret 값 참조.
+
+## 6. 가용성 및 관측성 (Availability & Observability)
+**상태 확인**: `/minio/health/live`
+**모니터링**: Prometheus Metrics 내장 (`public` 모드 설정됨).
+
+## 7. 백업 및 복구 (Backup & Disaster Recovery)
+**데이터 백업**:
+- `/data` 볼륨을 주기적으로 백업해야 합니다.
+- `mc mirror` 명령어로 타 MinIO 또는 S3로 복제 가능.
+
+## 8. 보안 및 강화 (Security Hardening)
+- Root 계정 사용을 지양하고 용도별 부계정(Policy)을 생성하여 사용 중(`minio-create-buckets`).
+
+## 9. 트러블슈팅 (Troubleshooting)
+**자주 발생하는 문제**:
+- **Bucket Not Found**: 초기화 스크립트가 실패했는지 확인.
+
+**진단 명령어**:
+```bash
+docker logs minio
+docker logs minio-create-buckets
+```

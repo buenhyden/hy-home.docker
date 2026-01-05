@@ -41,7 +41,8 @@ services:
     container_name: harbor-core
     hostname: harbor-core
     depends_on:
-      - harbor-registry
+      harbor-registry:
+        condition: service_healthy
     expose:
       - ${HARBOR_PORT}
     networks:
@@ -90,7 +91,8 @@ services:
     networks:
       - infra_net
     depends_on:
-      - harbor-core
+      harbor-core:
+        condition: service_healthy
   harbor-jobservice:
     image: docker.io/bitnami/harbor-jobservice:2
     container_name: harbor-jobservice
@@ -98,7 +100,8 @@ services:
     expose:
       - ${HARBOR_PORT}
     depends_on:
-      - harbor-core
+      harbor-core:
+        condition: service_healthy
     networks:
       - infra_net
     environment:

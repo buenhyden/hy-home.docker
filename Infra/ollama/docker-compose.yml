@@ -11,23 +11,31 @@ services:
     environment:
       # [필수 추가] Ollama가 모든 네트워크 인터페이스(Docker 내부)에서 수신하도록 설정
       # 기본 포트가 11434라면 ${OLLAMA_PORT}는 11434와 일치해야 합니다.
-      - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT}
-      
+      - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT}      
       # [GPU 필수] 컨테이너가 할당된 GPU를 사용하도록 명시
       - NVIDIA_VISIBLE_DEVICES=all
     networks:
       infra_net:
         ipv4_address: 172.19.0.40
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s # 모델 로드 시간을 고려하여 여유 있게 설정
     deploy:
       resources:
+        limits:
+          cpus: '4.0'
+          memory: 8G
         reservations:
+          memory: 4G
           devices:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
     labels:
-      - "traefik.enable=true"
-      
+      - "traefik.enable=true"      
       # Ollama API 라우터 (https://ollama.${DEFAULT_URL})
       - "traefik.http.routers.ollama.rule=Host(`ollama.${DEFAULT_URL}`)"
       - "traefik.http.routers.ollama.entrypoints=websecure"
@@ -43,6 +51,11 @@ services:
         max-file: "2"
 
   qdrant:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
     image: qdrant/qdrant:v1.16.1
     container_name: qdrant
     ports:
@@ -55,6 +68,11 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.41
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/6333 && echo -e 'GET /readyz HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q 'HTTP/1.1 200' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     # Qdrant 대시보드(Web UI)를 보고 싶다면 아래 라벨 주석 해제
     labels:
       - "traefik.enable=true"
@@ -70,6 +88,11 @@ services:
 
   # 2. Open WebUI 서비스 (선택 사항: ChatGPT 같은 웹 인터페이스)
   open-webui:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
     # ports:
@@ -85,8 +108,10 @@ services:
     volumes:
       - ollama-webui:/app/backend/data
     depends_on:
-      - ollama
-      - qdrant
+      ollama:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       infra_net:
@@ -108,6 +133,11 @@ services:
         max-file: "2"
   
   ollama-exporter:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     image: lucabecker42/ollama-exporter:latest
     container_name: ollama-exporter
     environment:
@@ -118,6 +148,11 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.43
+    depends_on:
+      ollama:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
     logging:
       driver: "json-file"
       options:

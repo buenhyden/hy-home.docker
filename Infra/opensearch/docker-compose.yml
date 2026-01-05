@@ -174,7 +174,8 @@ services:
       - "traefik.http.routers.opensearch-dashboards.tls=true"
       - "traefik.http.services.opensearch-dashboards.loadbalancer.server.port=5601"
     depends_on:
-      opensearch-node1: { condition: service_started }
+      opensearch-node1:
+        condition: service_healthy
       # opensearch-node2: { condition: service_started }
       # opensearch-node3: { condition: service_started }
     logging:
@@ -201,7 +202,8 @@ services:
       infra_net:
         ipv4_address: 172.19.0.48
     depends_on:
-      - opensearch-node1
+      opensearch-node1:
+        condition: service_healthy
     logging:
       driver: "json-file"
       options:

@@ -1,34 +1,56 @@
-# n8n Workflow Automation Infrastructure
+# n8n Workflow Automation
 
-## 1. 개요 (Overview)
-이 디렉토리는 워크플로우 자동화 도구인 n8n을 정의합니다. 대규모 처리를 위해 Queue 모드로 구성되어 있으며, 메인 서버와 워커 노드로 분리되어 있습니다. 작업 큐 관리를 위해 전용 Redis를 사용합니다.
+## 1. 서비스 개요 (Service Overview)
+**서비스 정의**: 노드 기반의 워크플로우 자동화 도구입니다. 다양한 앱과 서비스를 시각적으로 연결하여 자동화 파이프라인을 구축합니다.
 
-## 2. 포함된 도구 (Tools Included)
+**주요 기능 (Key Features)**:
+- **Queue Mode**: 메인 인스턴스와 별도의 워커 인스턴스로 분리하여 대용량 처리 지원.
+- **Webhook**: 외부 트리거 수신을 위한 웹훅 기능.
 
-| 서비스명 | 역할 | 설명 |
-|---|---|---|
-| **n8n** | Main Server (Webhook/Editor) | 워크플로우 편집기 UI를 제공하고 웹훅 요청을 수신하여 큐에 적재합니다. |
-| **n8n-worker** | Worker Node | 큐에 쌓인 작업을 실제로 수행하는 워커입니다. |
-| **n8n-redis** | Job Queue | n8n의 작업 큐(Queue)로 사용되는 전용 Redis입니다. |
-| **n8n-redis-exporter**| Metrics Exporter | n8n Redis의 메트릭을 수집합니다. |
+**기술 스택 (Tech Stack)**:
+- **Image**: `n8nio/n8n:2.1.4`
+- **DB**: PostgreSQL (`n8n` DB)
+- **Queue**: Redis (Job 관리)
 
-## 3. 구성 및 설정 (Configuration)
+## 2. 아키텍처 및 워크플로우 (Architecture & Workflow)
+**구조**:
+- **Editor/Webhook (Main)**: UI 제공 및 웹훅 수신, 작업을 Redis 큐에 적재.
+- **Worker**: Redis 큐에서 작업을 가져와 실제 실행.
+- **Redis**: 작업 큐 저장소.
 
-### 실행 모드 (Queue Mode)
-`EXECUTIONS_MODE=queue` 설정을 통해 메인 서버와 워커가 역할을 분담합니다.
-- 메인 서버: Editor, Webhook 수신 -> Redis Queue 적재
-- 워커: Redis Queue -> 작업 수행
+## 3. 시작 가이드 (Getting Started)
+**실행 방법**:
+```bash
+docker compose up -d
+```
 
-### 데이터베이스
-외부 PostgreSQL(`mng-pg`)과 연결하여 워크플로우 저장 및 실행 이력을 관리합니다.
+## 4. 환경 설정 명세 (Configuration Reference)
+**환경 변수**:
+- `N8N_ENCRYPTION_KEY`: 민감 정보 암호화 키 (분실 시 복구 불가).
+- `EXECUTIONS_MODE`: `queue` 모드로 설정됨.
+- `WEBHOOK_URL`: 외부에서 접근 가능한 URL (`https://n8n.${DEFAULT_URL}`).
 
-### 보안
-- **암호화 키**: `N8N_ENCRYPTION_KEY`를 사용하여 자격 증명(Credential)을 암호화합니다.
-- **SSO 연동**: 별도의 설정이 없으면 n8n 자체 로그인 또는 Basic Auth를 사용하나, Traefik 레벨에서 도메인 라우팅이 설정되어 있습니다.
+**네트워크 포트**:
+- **Internal**: 5678
+- **External**: `https://n8n.${DEFAULT_URL}` via Traefik.
 
-### 로드밸런싱 (Traefik)
-- **URL**: `https://n8n.${DEFAULT_URL}`
-- **Websocket**: 편집기와의 실시간 통신을 위해 `N8N_PUSH_BACKEND=websocket` 설정이 되어 있습니다.
+## 5. 통합 및 API 가이드 (Integration Guide)
+**API**: `N8N_PUBLIC_API_DISABLED=false`로 설정되어 REST API 사용 가능.
 
-### 모니터링
-- `N8N_METRICS=true` 설정으로 자체 메트릭을 노출합니다. (`n8n_` prefix)
+## 6. 가용성 및 관측성 (Availability & Observability)
+**모니터링**:
+- `N8N_METRICS=true` 설정으로 메트릭 수집 활성화.
+- `n8n-redis-exporter`를 통해 큐 상태 모니터링 가능.
+
+## 7. 백업 및 복구 (Backup & Disaster Recovery)
+**데이터 백업**:
+- PostgreSQL 데이터 백업.
+- `n8n-data` 볼륨(설정 파일 등) 백업.
+- **중요**: 암호화 키(`N8N_ENCRYPTION_KEY`) 별도 보관 필수.
+
+## 8. 보안 및 강화 (Security Hardening)
+- 워크플로우 내 Credential 정보는 암호화되어 DB에 저장됩니다.
+
+## 9. 트러블슈팅 (Troubleshooting)
+**자주 발생하는 문제**:
+- **Webhook Error 404**: `WEBHOOK_URL` 환경 변수가 실제 프록시 도메인과 일치하는지 확인.

@@ -1,32 +1,78 @@
-# PostgreSQL High Availability Cluster (Patroni)
+# PostgreSQL Cluster (HA)
 
-## 1. 개요 (Overview)
-이 디렉토리는 **Patroni**를 사용하여 고가용성(HA)을 보장하는 PostgreSQL 클러스터를 정의합니다. **Etcd**를 분산 코디네이터(DCS)로 사용하며, 3개의 PostgreSQL 노드가 클러스터를 이룹니다. **HAProxy**가 앞단에서 리더(Leader)와 레플리카(Replica)를 구분하여 트래픽을 라우팅합니다.
+## 1. 서비스 개요 (Service Overview)
+**서비스 정의**: Patroni, Etcd, HAProxy를 기반으로 한 고가용성(High Availability) PostgreSQL 클러스터입니다. 자동 장애 조치(Failover)와 리더 선출 기능을 제공합니다.
 
-## 2. 포함된 도구 (Tools Included)
+**주요 기능 (Key Features)**:
+- **Automatic Failover**: Primary 노드 장애 시 Standby가 즉시 승격됨.
+- **Etcd DCS**: 분산 합의 시스템을 통한 클러스터 상태 관리.
+- **RW/RO Routing**: HAProxy가 Write 요청은 Primary로, Read 요청은 Replica로 분산.
 
-| 서비스명 | 역할 | 설명 |
-|---|---|---|
-| **etcd-1, 2, 3** | DCS (Distributed Consensus) | 클러스터의 상태 정보와 리더 선출(Leader Election)을 관리하는 분산 키-값 저장소입니다. |
-| **pg-0, 1, 2** | PostgreSQL Nodes | Zalando spilo 이미지를 사용하는 실제 DB 노드입니다. Patroni 에이전트가 내장되어 있습니다. |
-| **pg-router** | Load Balancer (HAProxy) | DB 요청을 받아 현재 리더 노드(Write) 또는 레플리카 노드(Read)로 라우팅합니다. |
-| **pg-*-exporter** | Metrics Exporter | 각 DB 노드의 메트릭을 수집합니다. |
+**기술 스택 (Tech Stack)**:
+- **Engine**: PostgreSQL 17 (Spilo Image)
+- **HA**: Patroni
+- **DCS**: Etcd v3.6.7
+- **Proxy**: HAProxy 3.3.1
 
-## 3. 구성 및 설정 (Configuration)
+## 2. 아키텍처 및 워크플로우 (Architecture & Workflow)
+**시스템 구조도**:
+```mermaid
+graph TD
+    Client -->|Write 5000| HAProxy
+    Client -->|Read 5001| HAProxy
+    HAProxy -->|Primary| PG0[(PG-0)]
+    HAProxy -->|Replica| PG1[(PG-1)]
+    HAProxy -->|Replica| PG2[(PG-2)]
+    PG0 --- Etcd[Etcd Cluster]
+    PG1 --- Etcd
+    PG2 --- Etcd
+```
 
-### 아키텍처
-1. **Etcd Cluster**: 3개의 노드로 쿼럼을 형성하여 클러스터 상태를 저장합니다.
-2. **Patroni**: 각 `pg-*` 컨테이너 내부에서 실행되며 Etcd와 통신하여 리더를 선출하고 복제를 관리합니다.
-3. **Routing (HAProxy)**:
-    - **Write Port** (Primary): `${POSTGRES_WRITE_HOST_PORT}` -> 리더 노드로 연결
-    - **Read Port** (Replica): `${POSTGRES_READ_HOST_PORT}` -> 복제본 노드로 로드밸런싱
+## 3. 시작 가이드 (Getting Started)
+**실행 방법 (Deployment)**:
+```bash
+docker compose up -d
+```
+> **주의**: 전체 클러스터가 정상 궤도에 오르기까지 약 1~2분이 소요될 수 있습니다.
 
-### 로드밸런싱 (Traefik) (Stats)
-- **HAProxy Stats**: `https://pg-haproxy.${DEFAULT_URL}` 주소로 HAProxy 상태 페이지(Stat)에 접근할 수 있습니다.
+## 4. 환경 설정 명세 (Configuration Reference)
+**환경 변수 (Environment Variables)**:
+- `SCOPE`: 클러스터 이름 (`pg-ha`)
+- `ETCD3_HOSTS`: Etcd 노드 목록
+- `PATRONI_Name`: 각 노드 식별자
 
-### 데이터 볼륨
-- `pg*-data`: 각 DB 노드의 데이터
-- `etcd*-data`: Etcd 상태 데이터
+**네트워크 포트 (Network Ports)**:
+- **Write (Master)**: 5000 (HAProxy)
+- **Read (Replica)**: 5001 (HAProxy)
+- **Stats**: 8404 (Traefik 통해 노출)
 
-### 주의 사항
-- 애플리케이션에서는 개별 DB 노드(`pg-0` 등)에 직접 붙지 않고, 반드시 `pg-router`가 제공하는 포트를 통해 접속해야 HA 기능이 동작합니다.
+## 5. 통합 및 API 가이드 (Integration Guide)
+**클라이언트 설정**:
+- **Write Connection**: `host=pg-router port=5000`
+- **Read Connection**: `host=pg-router port=5001`
+
+**엔드포인트 명세**:
+- HAProxy Stats: `https://pg-haproxy.${DEFAULT_URL}`
+
+## 6. 가용성 및 관측성 (Availability & Observability)
+**상태 확인 (Health Check)**:
+- `etcdctl endpoint health`
+- `pg_isready`
+
+**모니터링 (Monitoring)**:
+- 각 노드별 `postgres-exporter` 사이드카 배포.
+
+## 7. 백업 및 복구 (Backup & Disaster Recovery)
+**복구 절차**:
+- 노드 장애 시 Patroni가 자동 복구 시도.
+- 영구 손상 시 데이터 볼륨 초기화 후 재참여(Reinitialize) 시도.
+
+## 8. 보안 및 강화 (Security Hardening)
+- Etcd 통신은 현재 HTTP로 구성되어 있으므로 신뢰할 수 있는 내부 네트워크(`infra_net`)에서만 접근해야 합니다.
+
+## 9. 트러블슈팅 (Troubleshooting)
+**진단 명령어**:
+```bash
+# 클러스터 상태 확인 (리더 확인)
+docker exec -it pg-0 patronictl -c /etc/patroni/patroni.yml list
+```

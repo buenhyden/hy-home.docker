@@ -3,8 +3,16 @@ services:
   # 1. Metrics Storage (Prometheus)
   # -------------------------------------------------------
   prometheus:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
     image: prom/prometheus:v3.8.1
     container_name: infra-prometheus
+    restart: unless-stopped
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
@@ -21,7 +29,12 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.30
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--tries=1", "--spider", "http://localhost:${PROMETHEUS_PORT}/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s    
     labels:
       - "traefik.enable=true"
       # 도메인: prometheus.${DEFAULT_URL}
@@ -33,12 +46,22 @@ services:
   # 2. Log Storage (Loki)
   # -------------------------------------------------------
   loki:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
     image: grafana/loki:3.5.9
     container_name: infra-loki
     command: -config.file=/etc/loki/loki-config.yaml
     networks:
       infra_net:
         ipv4_address: 172.19.0.31
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --tries=1 --spider http://localhost:${LOKI_PORT}/ready || exit 1"]
+      interval: 10s
+      retries: 5
+      start_period: 60s
     ports:
       - "${LOKI_HOST_PORT}:${LOKI_PORT}"
     volumes:
@@ -49,7 +72,14 @@ services:
   # 3. Trace Storage (Tempo)
   # -------------------------------------------------------
   tempo:
-    image: grafana/tempo:main-cb4c73e
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
+    image: grafana/tempo:2.9.0
     container_name: infra-tempo
     command: [ "-config.file=/etc/tempo.yaml" ] 
     volumes:
@@ -65,6 +95,11 @@ services:
   # 4. Visualization (Grafana)
   # -------------------------------------------------------
   grafana:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     image: grafana/grafana:12.3.1
     container_name: infra-grafana
     environment:      
@@ -140,10 +175,20 @@ services:
         ipv4_address: 172.19.0.33
     # ports:
     #   - "${GRAFANA_HOST_PORT}:${GRAFANA_PORT}"
+    healthcheck:
+      # Grafana 내부의 전용 상태 확인 API (Application Programming Interface) 사용
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:${GRAFANA_PORT}/api/health || exit 1"]
+      interval: 10s      # 상태 확인 주기
+      timeout: 5s       # 응답 대기 시간
+      retries: 3        # 실패 시 재시도 횟수
+      start_period: 30s # 초기 JVM 기동 및 DB 연결 대기 시간
     depends_on:
-      - prometheus
-      - loki
-      - tempo
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_started
+      tempo:
+        condition: service_started
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
@@ -157,6 +202,11 @@ services:
   # 5. Telemetry Collector (Alloy)
   # -------------------------------------------------------
   alloy:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     image: grafana/alloy:v1.12.1
     container_name: infra-alloy
     restart: unless-stopped
@@ -174,9 +224,12 @@ services:
       infra_net:
         ipv4_address: 172.19.0.34
     depends_on:
-      - loki
-      - prometheus
-      - tempo
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_started
+      tempo:
+        condition: service_started
     labels:
       - "traefik.enable=true"
       # Alloy UI: alloy.${DEFAULT_URL}
@@ -188,6 +241,11 @@ services:
   # 6. Container Metrics (cAdvisor)
   # -------------------------------------------------------
   cadvisor:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
     image: gcr.io/cadvisor/cadvisor:v0.54.1
     container_name: cadvisor
     hostname: cadvisor
@@ -224,6 +282,11 @@ services:
         max-size: "5m"
         max-file: "2"
   alertmanager:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     image: prom/alertmanager:v0.30.0
     container_name: infra-alertmanager
     environment:      
@@ -236,6 +299,11 @@ services:
     volumes:
       - ./alertmanager/config/config.yml:/etc/alertmanager/config.yml
       - alertmanager-data:/alertmanager
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
     networks:
       infra_net:
         ipv4_address: 172.19.0.36
@@ -250,6 +318,11 @@ services:
       - "traefik.http.routers.alertmanager.tls=true"
       - "traefik.http.services.alertmanager.loadbalancer.server.port=${ALERTMANAGER_PORT}"
   pushgateway:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128M
     image: prom/pushgateway:v1.11.2
     container_name: pushgateway
     restart: unless-stopped
@@ -257,6 +330,11 @@ services:
       - ${PUSHGATEWAY_PORT}
     # ports:
     #   - "${PUSHGATEWAY_HOST_PORT}:${PUSHGATEWAY_PORT}"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
     networks:
       infra_net:
         ipv4_address: 172.19.0.37

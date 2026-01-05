@@ -1,21 +1,45 @@
-# KSQL (KsqlDB) Infrastructure
+# ksqlDB
 
-## 1. 개요 (Overview)
-이 디렉토리는 Kafka 스트림 처리를 위한 KsqlDB 구성을 담고 있습니다. 현재는 단일 노드(`ksqldb-node1`) 구성이 활성화되어 있으며, Server/CLI 모드는 주석 처리되어 있습니다.
+## 1. 서비스 개요 (Service Overview)
+**서비스 정의**: Apache Kafka를 위한 이벤트 스트리밍 데이터베이스입니다. SQL 구문을 사용하여 실시간 스트림 처리를 수행할 수 있습니다.
 
-## 2. 포함된 도구 (Tools Included)
+**주요 기능 (Key Features)**:
+- **Stream Processing**: Kafka 토픽 데이터를 테이블처럼 쿼리 및 조인.
+- **Push Queries**: 데이터 변경 시 실시간으로 클라이언트에 결과 전송.
 
-| 서비스명 | 역할 | 설명 |
-|---|---|---|
-| **ksqldb-node1** | Stream Processing Node| Kafka 클러스터와 연동하여 실시간 스트림 처리를 수행하는 KsqlDB 노드입니다. |
+**기술 스택 (Tech Stack)**:
+- **Image**: `bitnami/ksql:latest`
 
-## 3. 구성 및 설정 (Configuration)
+## 2. 아키텍처 및 워크플로우 (Architecture & Workflow)
+- **Dependency**: Kafka 클러스터에 강하게 의존합니다. `kafka-0` 브로커를 부트스트랩 서버로 참조합니다.
 
-### 연결
-- **Kafka**: `kafka-0` 브로커를 부트스트랩 서버로 사용하도록 설정되어 있습니다 (`KSQL_BOOTSTRAP_SERVERS`). (참고: 실제 Kafka 클러스터 서비스명은 `kafka-1` 등이므로 연결 테스트가 필요할 수 있습니다.)
+## 3. 시작 가이드 (Getting Started)
+**실행 방법**:
+```bash
+docker compose up -d
+```
 
-### 데이터 볼륨
-- `ksqldb-node-1-data-volume`: 호스트의 `${DEFAULT_DATABASE_DIR}/ksqldb/node1` 경로에 바인드 마운트되어 데이터를 저장합니다.
+## 4. 환경 설정 명세 (Configuration Reference)
+**환경 변수**:
+- `KSQL_BOOTSTRAP_SERVERS`: Kafka 브로커 주소 (예: `kafka-0:9092`).
 
-### 참고 사항
-- 현재 `docker-compose.yml`에는 `ksqldb-server`와 `ksqldb-cli` 서비스가 정의되어 있으나 주석 처리된 상태입니다. 필요 시 활성화하여 사용할 수 있습니다.
+**볼륨 마운트**:
+- `ksqldb-node-1-data-volume`: 데이터 저장소.
+
+## 5. 통합 및 API 가이드 (Integration Guide)
+**클라이언트 접속**:
+- ksqlDB CLI 또는 REST API를 통해 쿼리를 제출합니다.
+
+## 6. 가용성 및 관측성 (Availability & Observability)
+- 로그(`docker logs ksqldb-node1`)를 통해 연결 상태를 모니터링하십시오.
+
+## 7. 백업 및 복구 (Backup & Disaster Recovery)
+- ksqlDB의 상태는 Kafka 토픽(Command Topic)에도 저장되므로, Kafka 데이터가 안전하다면 복구 가능합니다.
+- 로컬 볼륨 백업도 권장됩니다.
+
+## 8. 보안 및 강화 (Security Hardening)
+- 8088 포트가 기본 HTTP 프로토콜을 사용하므로, 외부 노출 시 보안 설정(Traefik, TLS 등)이 필요합니다.
+
+## 9. 트러블슈팅 (Troubleshooting)
+**이슈**: `kafka-0` 호스트를 찾을 수 없음.
+**해결**: Kafka 서비스 이름이 `kafka-0`, `kafka-1` 등으로 정확한지, 그리고 동일 네트워크(`infra_net`)에 있는지 확인하십시오.

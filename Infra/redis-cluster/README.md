@@ -1,25 +1,55 @@
-# Redis Cluster (Sharded) Infrastructure
+# Redis Cluster
 
-## 1. 개요 (Overview)
-이 디렉토리는 데이터 샤딩(Sharding)과 고가용성을 제공하는 Redis Cluster 모드를 정의합니다. 총 6개의 노드(3 Master + 3 Replica)로 구성되며, 클러스터 생성을 자동화하는 초기화 스크립트를 포함합니다.
+## 1. 서비스 개요 (Service Overview)
+**서비스 정의**: 6개의 노드(3 Master + 3 Replica)로 구성된 Redis Cluster입니다. 데이터 샤딩(Sharding)과 고가용성을 제공합니다.
 
-## 2. 포함된 도구 (Tools Included)
+**주요 기능 (Key Features)**:
+- **Sharding**: 데이터를 여러 노드에 분산 저장하여 메모리 한계 극복.
+- **High Availability**: 마스터 장애 시 레플리카가 승격.
 
-| 서비스명 | 역할 | 설명 |
-|---|---|---|
-| **redis-node-0 ~ 5** | Cluster Nodes | Redis 인스턴스입니다. 각 노드는 서로 통신하며 데이터 슬롯을 분배합니다. |
-| **redis-cluster-init** | Cluster Creator | 컨테이너 시작 시 한 번 실행되어 노드들을 메쉬로 묶고 클러스터(`cluster create`)를 구성합니다. |
-| **redis-exporter** | Metrics Exporter | Prometheus 메트릭 수집기입니다. `redis-node-0`을 타겟으로 설정하여 클러스터 상태를 모니터링합니다. |
+**기술 스택 (Tech Stack)**:
+- **Image**: `redis:8.4.0-bookworm`
+- **Architecture**: Redis Cluster (Non-Sentinel)
 
-## 3. 구성 및 설정 (Configuration)
+## 2. 아키텍처 및 워크플로우 (Architecture & Workflow)
+- **Nodes**: `redis-node-0` ~ `redis-node-5`
+- **Init**: `redis-cluster-init` 컨테이너가 최초 실행 시 클러스터 결성(`--cluster create`).
 
-### 네트워크
-- **Port Mapping**: 각 노드는 서비스 포트(e.g., 6379)와 버스 포트(e.g., 16379)를 호스트 또는 네트워크에 노출합니다. 클러스터 모드에서는 클라이언트가 리다이렉션을 따라가야 하므로 네트워크 구성에 주의해야 합니다.
-- **Redis Conf**: `./config/redis.conf` 파일을 모든 노드가 공유합니다.
+## 3. 시작 가이드 (Getting Started)
+**실행 방법 (Deployment)**:
+```bash
+docker compose up -d
+```
+(초기화 스크립트가 자동으로 클러스터를 구성합니다.)
 
-### 초기화
-`redis-cluster-init.sh` 스크립트는 모든 노드가 준비될 때까지 대기한 후, `redis-cli --cluster create ...` 명령을 실행하여 3 Master, 1 Replica/Master 구성을 완료합니다.
+## 4. 환경 설정 명세 (Configuration Reference)
+**환경 변수 (Environment Variables)**:
+- `REDIS_PASSWORD`: 클러스터 노드 간 인증 암호.
 
-### 보안
-- **Password**: Docker Secret(`redis_password`)을 통해 모든 노드 접근 시 인증을 요구합니다.
-- **Healthcheck**: 헬스 체크 명령에서도 비밀번호를 사용하여 상태를 확인합니다.
+**네트워크 포트 (Network Ports)**:
+- **Client Port**: 6379 (각 노드별 포트 매핑 상이, 내부 통신은 컨테이너명 사용)
+- **Bus Port**: 16379
+
+## 5. 통합 및 API 가이드 (Integration Guide)
+**클라이언트 설정**:
+Redis Cluster 모드를 지원하는 클라이언트를 사용해야 합니다.
+- **Seed Nodes**: `redis-node-0:6379`, `redis-node-1:6379`, ...
+
+## 6. 가용성 및 관측성 (Availability & Observability)
+**모니터링 (Monitoring)**:
+- `redis-exporter`가 클러스터 상태를 수집합니다.
+
+## 7. 백업 및 복구 (Backup & Disaster Recovery)
+**데이터 백업**:
+- AOF(`appendonly yes`) 설정됨.
+
+## 8. 보안 및 강화 (Security Hardening)
+- `requirepass`를 통해 비밀번호 인증 강제.
+
+## 9. 트러블슈팅 (Troubleshooting)
+**진단 명령어**:
+```bash
+# 클러스터 상태 정보 확인
+docker exec -it redis-node-0 redis-cli -a $PASS cluster info
+docker exec -it redis-node-0 redis-cli -a $PASS cluster nodes
+```
