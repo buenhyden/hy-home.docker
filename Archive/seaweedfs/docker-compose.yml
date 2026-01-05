@@ -37,7 +37,8 @@ services:
     volumes:
       - seaweedfs-volume-data:/data
     depends_on:
-      - seaweedfs-master
+      seaweedfs-master:
+        condition: service_healthy
     networks:
       - infra_net
 
@@ -52,8 +53,10 @@ services:
       - ${SEAWEEDFS_FILER_GRPC_PORT}
     command: "-v=1 filer -ip.bind=0.0.0.0 -master=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT}"
     depends_on:
-      - seaweedfs-master
-      - seaweedfs-volume
+      seaweedfs-master:
+        condition: service_healthy
+      seaweedfs-volume:
+        condition: service_healthy
     labels:
       - "traefik.enable=true"
       # [CDN 용도] Filer는 파일 시스템처럼 접근 가능하므로 정적 에셋 제공에 최적화됨
@@ -81,7 +84,8 @@ services:
       - "traefik.http.routers.s3.tls=true"
       - "traefik.http.services.s3.loadbalancer.server.port=${SEAWEEDFS_S3_HTTP_PORT}"
     depends_on:
-      - seaweedfs-filer
+      seaweedfs-filer:
+        condition: service_healthy
     networks:
       - infra_net
   seaweedfs-mount:
@@ -94,6 +98,9 @@ services:
     networks:
       - infra_net    
     depends_on:
-      - seaweedfs-master
-      - seaweedfs-volume
-      - seaweedfs-filer
+      seaweedfs-master:
+        condition: service_healthy
+      seaweedfs-volume:
+        condition: service_healthy
+      seaweedfs-filer:
+        condition: service_healthy

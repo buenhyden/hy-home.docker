@@ -13,9 +13,12 @@ services:
     ports:
       - "${VALKEY_PREDIXY_HOST_PORT}:${VALKEY_PREDIXY_PORT}"
     depends_on:
-      - valkey-node-1
-      - valkey-node-2
-      - valkey-node-3
+      valkey-node-1:
+        condition: service_healthy
+      valkey-node-2:
+        condition: service_healthy
+      valkey-node-3:
+        condition: service_healthy
     networks:
       - infra_net
     logging: 
@@ -36,9 +39,12 @@ services:
       - "--is-cluster"
     # command: /bin/mysqld_exporter collect.binlog_size=true collect.info_schema.processlist=true
     depends_on:
-      - valkey-node-1
-      - valkey-node-2
-      - valkey-node-3
+      valkey-node-1:
+        condition: service_healthy
+      valkey-node-2:
+        condition: service_healthy
+      valkey-node-3:
+        condition: service_healthy
     networks:
       - infra_net
     logging:
@@ -69,8 +75,10 @@ services:
     networks:
       - infra_net
     depends_on:
-      - valkey-node-2
-      - valkey-node-3
+      valkey-node-2:
+        condition: service_healthy
+      valkey-node-3:
+        condition: service_healthy
     logging:
       driver: "json-file"
       options:
@@ -148,7 +156,8 @@ services:
       - "--redis.password=${VALKEY_PASSWORD}"
     # command: /bin/mysqld_exporter collect.binlog_size=true collect.info_schema.processlist=true
     depends_on:
-      - valkey-standalone
+      valkey-standalone:
+        condition: service_healthy
     networks:
       - infra_net
     logging:

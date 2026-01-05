@@ -7,8 +7,9 @@ services:
     expose:
       - ${CASSANDRA_EXPORTER_PORT}
       - ${CASSANDRA_EXPORTER_LISTEN_PORT}
-    depends_on:
-      - cassandra-node1
+    depends_on:      
+      cassandra-node1:
+        condition: service_healthy
       # - cassandra-node2
     networks:
       - infra_net

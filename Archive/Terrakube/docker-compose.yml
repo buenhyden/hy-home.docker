@@ -71,7 +71,8 @@ services:
       - "traefik.http.routers.terrakube-ui.rule=Host(`terrakube-ui.${DEFAULT_URL}`)"
       - "traefik.http.services.terrakube-ui.loadbalancer.server.port=${TERRAKUBE_UI_PORT}"
     depends_on:
-      - terrakube-api
+      terrakube-api:
+        condition: service_healthy
     networks:
       - infra_net
 
@@ -117,7 +118,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
-      - terrakube-api
+      terrakube-api:
+        condition: service_healthy
     networks:
       - infra_net
     labels:

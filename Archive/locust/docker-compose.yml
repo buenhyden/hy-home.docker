@@ -16,7 +16,8 @@ services:
       - infra_net
     command: -f /mnt/locust/locustfile.py --master
     depends_on:
-      - influxdb
+      influxdb:
+        condition: service_healthy
     extra_hosts:
       - "${DEFAULT_URL}:host-gateway"
   
@@ -35,7 +36,8 @@ services:
       - infra_net
     command: -f /mnt/locust/locustfile.py --worker --master-host locust-master
     depends_on:
-      - locust-master
+      locust-master:
+        condition: service_healthy
     deploy:
       replicas: 2  # 워커를 2개로 늘려서 부하 분산 (필요시 조절)
     extra_hosts:

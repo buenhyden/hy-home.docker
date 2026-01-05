@@ -27,8 +27,12 @@ hy-home.docker/
 │   ├── oauth2-proxy/           # ✅ OAuth2 인증 게이트웨이
 │   ├── mng-db/                 # ✅ 관리용 PostgreSQL + Redis
 │   ├── mail/                   # ✅ MailHog (테스트 SMTP)
+│   ├── harbor/                 # ✅ Harbor (컨테이너 레지스트리)
+│   ├── nginx/                  # ✅ Nginx (정적 웹 서버)
+│   ├── opensearch/             # ✅ OpenSearch (검색 엔진)
+│   ├── ksql/                   # ✅ ksqlDB (스트림 DB)
 │   │
-│   └── (비활성화 17개)         # mongodb, opensearch, airflow, nginx 등
+│   └── (비활성화)              # terrakube, arangodb 등
 │
 ├── Projects/                   # 개발 프로젝트 템플릿
 │   ├── docker-compose.yml
@@ -169,6 +173,10 @@ flowchart TB
 | 서비스 | 설명 | 용도 |
 | :--- | :--- | :--- |
 | [mail](./Infra/mail) | MailHog | 개발용 SMTP 테스트 |
+| [Harbor](./Infra/harbor) | Harbor Registry | 프라이빗 컨테이너 이미지 저장소 |
+| [Nginx](./Infra/nginx) | Nginx | 정적 웹 서버 및 유틸리티 |
+| [OpenSearch](./Infra/opensearch) | OpenSearch + Dashboards | 검색 및 대용량 데이터 분석 |
+| [ksqlDB](./Infra/ksql) | ksqlDB | Kafka 기반 스트림 처리 데이터베이스 |
 
 ## 📦 개발 프로젝트 템플릿 (8개)
 
