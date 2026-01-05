@@ -12,7 +12,7 @@ services:
     environment:
       # --- KRaft 공통 ---      
       # 클러스터 ID (3개 브로커 모두 동일해야 함)
-      CLUSTER_ID: ${KAFKA_CLSUTER_ID}
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID}
       # 이 노드의 고유 ID (브로커/컨트롤러 구분)
       KAFKA_NODE_ID: 1
       # 이 프로세스가 맡을 역할 (KRaft)
@@ -40,6 +40,10 @@ services:
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       # 로그 디렉터리
       KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+      KAFKA_METADATA_LOG_DIR: "/var/lib/kafka/metadata" # 로그 분리
+      # 리밸런싱 안정성 강화
+      KAFKA_GROUP_MAX_SESSION_TIMEOUT_MS: 45000
+      KAFKA_CONTROLLER_QUORUM_FETCH_TIMEOUT_MS: 3000
       # 다양한 운영 기본값들
       KAFKA_NUM_PARTITIONS: 3
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
@@ -51,10 +55,11 @@ services:
       infra_net:
         ipv4_address: 172.19.0.20    
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server kafka-1:9092 --list"]
+      test: ["CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server kafka-1:19092 --version || exit 1"]
       interval: 10s
-      timeout: 5s
-      retries: 5
+      timeout: 10s
+      retries: 5      
+      start_period: 60s
     logging:
       driver: "json-file"
       options:
@@ -71,7 +76,7 @@ services:
     ports:
       - "${KAFKA_CONTROLLER_2_HOST_PORT}:${KAFKA_CONTROLLER_PORT}"
     environment:
-      CLUSTER_ID: ${KAFKA_CLSUTER_ID}
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID}
       KAFKA_NODE_ID: 2
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka-1:9093,2@kafka-2:9093,3@kafka-3:9093"
@@ -89,6 +94,10 @@ services:
       KAFKA_MIN_INSYNC_REPLICAS: 2
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+      KAFKA_METADATA_LOG_DIR: "/var/lib/kafka/metadata" # 로그 분리
+      # 리밸런싱 안정성 강화
+      KAFKA_GROUP_MAX_SESSION_TIMEOUT_MS: 45000
+      KAFKA_CONTROLLER_QUORUM_FETCH_TIMEOUT_MS: 3000
       KAFKA_NUM_PARTITIONS: 3
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
@@ -100,10 +109,11 @@ services:
         ipv4_address: 172.19.0.21
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server kafka-2:9092 --list"]
+      test: ["CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server kafka-2:19092 --version || exit 1"]
       interval: 10s
-      timeout: 5s
-      retries: 5  
+      timeout: 10s
+      retries: 5      
+      start_period: 60s
     logging:
       driver: "json-file"
       options:
@@ -120,7 +130,7 @@ services:
     ports:
       - "${KAFKA_CONTROLLER_3_HOST_PORT}:${KAFKA_CONTROLLER_PORT}"
     environment:
-      CLUSTER_ID: ${KAFKA_CLSUTER_ID}
+      CLUSTER_ID: ${KAFKA_CLUSTER_ID}
       KAFKA_NODE_ID: 3
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka-1:9093,2@kafka-2:9093,3@kafka-3:9093"
@@ -138,6 +148,10 @@ services:
       KAFKA_MIN_INSYNC_REPLICAS: 2
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+      KAFKA_METADATA_LOG_DIR: "/var/lib/kafka/metadata" # 로그 분리
+      # 리밸런싱 안정성 강화
+      KAFKA_GROUP_MAX_SESSION_TIMEOUT_MS: 45000
+      KAFKA_CONTROLLER_QUORUM_FETCH_TIMEOUT_MS: 3000
       KAFKA_NUM_PARTITIONS: 3
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
@@ -149,10 +163,11 @@ services:
         ipv4_address: 172.19.0.22
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server kafka-3:9092 --list"]
+      test: ["CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server kafka-3:19092 --version || exit 1"]
       interval: 10s
-      timeout: 5s
-      retries: 5
+      timeout: 10s
+      retries: 5      
+      start_period: 60s
     logging:
       driver: "json-file"
       options:
@@ -315,7 +330,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.26
     environment:
-      KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLSUTER_NAME}
+      KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_NAME}
       # 내부 리스너 사용
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-1:19092,kafka-2:19092,kafka-3:19092"
       # UI가 Schema Registry에 접속하는 주소 (컨테이너 내부 통신)
@@ -362,12 +377,9 @@ services:
       infra_net:
         ipv4_address: 172.19.0.27
     depends_on:
-      kafka-1:
-        condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-      kafka-3:
-        condition: service_healthy
+      - kafka-1
+      - kafka-2
+      - kafka-3
     logging:
       driver: "json-file"
       options:
