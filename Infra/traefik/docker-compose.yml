@@ -7,7 +7,7 @@ services:
           memory: 1G
         reservations:
           memory: 512M
-    image: traefik:v3.6.2
+    image: traefik:v3.6.6
     container_name: traefik
     hostname: traefik
     security_opt:
