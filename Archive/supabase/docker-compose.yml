@@ -327,7 +327,7 @@ services:
 
   functions:
     container_name: supabase-edge-functions
-    image: supabase/edge-runtime:v1.69.23
+    image: supabase/edge-runtime:v1.70.0
     restart: unless-stopped
     volumes:
       - ./volumes/functions:/home/deno/functions:Z
