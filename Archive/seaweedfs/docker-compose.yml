@@ -3,7 +3,7 @@ services:
   # SeaweedFS (스토리지 클러스터)
   # ----------------------------------------------------------------
   seaweedfs-master:
-    image: chrislusf/seaweedfs:4.01
+    image: chrislusf/seaweedfs:4.05
     container_name: seaweedfs-master
     # ports:
     #   - "9333:${SEAWEEDFS_MASTER_PORT}"
@@ -25,7 +25,7 @@ services:
       - "traefik.http.services.seaweedfs-master.loadbalancer.server.port=${SEAWEEDFS_MASTER_HTTP_PORT}"
 
   seaweedfs-volume:
-    image: chrislusf/seaweedfs:4.01
+    image: chrislusf/seaweedfs:4.05
     container_name: seaweedfs-volume
     # ports:
     #   - "8085:${SEAWEEDFS_VOLUME_PORT}" # Host port changed to avoid conflict
@@ -43,7 +43,7 @@ services:
       - infra_net
 
   seaweedfs-filer:
-    image: chrislusf/seaweedfs:4.01
+    image: chrislusf/seaweedfs:4.05
     container_name: seaweedfs-filer
     # ports:
     #   - "8888:${SEAWEEDFS_FILER_PORT}"
@@ -68,7 +68,7 @@ services:
       - infra_net
 
   seaweedfs-s3:
-    image: chrislusf/seaweedfs:4.01
+    image: chrislusf/seaweedfs:4.05
     container_name: seaweedfs-s3
     # ports:
     #   - "8333:${SEAWEEDFS_S3_HTTP_PORT}"
@@ -89,7 +89,7 @@ services:
     networks:
       - infra_net
   seaweedfs-mount:
-    image: chrislusf/seaweedfs:4.01
+    image: chrislusf/seaweedfs:4.05
     privileged: true
     cap_add:
       - SYS_ADMIN
