@@ -22,7 +22,7 @@ services:
         ls -l /data/configdb/mongodb.key;
       "
   mongodb-rep1:
-    image: mongo:8.2.2-noble
+    image: mongo:8.2.3-noble
     restart: unless-stopped
     container_name: mongodb-rep1
     hostname: mongodb-rep1    
@@ -52,7 +52,7 @@ services:
         condition: service_completed_successfully
 
   mongodb-rep2:
-    image: mongo:8.2.2-noble
+    image: mongo:8.2.3-noble
     restart: unless-stopped
     container_name: mongodb-rep2
     hostname: mongodb-rep2    
@@ -83,7 +83,7 @@ services:
   
   # [추가] MongoDB Arbiter (투표권만 가진 가벼운 노드, 데이터 저장 안 함)
   mongodb-arbiter:
-    image: mongo:8.2.2-noble
+    image: mongo:8.2.3-noble
     container_name: mongodb-arbiter
     hostname: mongodb-arbiter
     restart: unless-stopped
@@ -103,7 +103,7 @@ services:
         condition: service_completed_successfully
   # [추가] Replica Set 초기화 (한 번만 실행되고 죽음)
   mongo-init:
-    image: mongo:8.2.2-noble
+    image: mongo:8.2.3-noble
     container_name: mongo-init
     restart: "no"
     networks:
