@@ -3,7 +3,7 @@ services:
   # OpenSearch 노드 1 (cluster_manager + data + ingest)
   # ######################################################
   opensearch-node1:
-    image: opensearchproject/opensearch:3.3.2  # 2025-11 기준 최신 3.x 안정 버전
+    image: opensearchproject/opensearch:3.4.0  # 2025-11 기준 최신 3.x 안정 버전
     container_name: opensearch-node1
     restart: unless-stopped
     # 비밀번호, 클러스터 이름, JVM 옵션 등은 env 파일에서 주입
