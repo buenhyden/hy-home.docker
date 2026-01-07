@@ -11,7 +11,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 512M
-    image: confluentinc/cp-kafka:7.9.5
+    image: confluentinc/cp-kafka:8.1.1
     container_name: kafka-1
     hostname: kafka-1
     restart: unless-stopped
@@ -85,7 +85,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 512M
-    image: confluentinc/cp-kafka:7.9.5
+    image: confluentinc/cp-kafka:8.1.1
     container_name: kafka-2
     hostname: kafka-2
     ports:
@@ -146,7 +146,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 512M
-    image: confluentinc/cp-kafka:7.9.5
+    image: confluentinc/cp-kafka:8.1.1
     container_name: kafka-3
     hostname: kafka-3
     ports:
