@@ -7,7 +7,7 @@ services:
           memory: 1G
         reservations:
           memory: 512M
-    image: influxdb:2.7
+    image: influxdb:2.8
     container_name: influxdb
     restart: unless-stopped
     hostname: influxdb
