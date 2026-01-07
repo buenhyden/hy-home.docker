@@ -289,7 +289,7 @@ services:
   #   - 이미 클러스터 구성돼 있으면 noop로 끝나도록 스크립트 작성
   # ##############################################################
   redis-cluster-init:
-    image: redis:8.2
+    image: redis:8.4
     container_name: redis-cluster-init
     secrets:
       - redis_password
