@@ -51,7 +51,7 @@ services:
         limits:
           cpus: '1.0'
           memory: 1G
-    image: grafana/loki:3.5.9
+    image: grafana/loki:3.6.3
     container_name: infra-loki
     command: -config.file=/etc/loki/loki-config.yaml
     networks:
