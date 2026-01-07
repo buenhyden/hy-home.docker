@@ -14,14 +14,14 @@
   "devDependencies": {
     "@chromatic-com/storybook": "^1.9.0",
     "@storybook/addon-essentials": "^8.3.2",
-    "@storybook/addon-links": "^8.3.2",
+    "@storybook/addon-links": "^10.0.0",
     "@storybook/addon-webpack5-compiler-swc": "^1.0.5",
     "@storybook/blocks": "^8.3.2",
     "@storybook/test": "^8.3.2",
-    "@storybook/web-components": "^8.3.2",
+    "@storybook/web-components": "^10.0.0",
     "@storybook/web-components-webpack5": "^8.3.2",
     "lit": "^3.2.0",
-    "storybook": "^8.3.2"
+    "storybook": "^10.0.0"
   },
   "dependencies": {
     "webcomponents-webpack": "file:"
