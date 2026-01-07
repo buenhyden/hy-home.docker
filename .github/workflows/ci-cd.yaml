@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python (for yamllint)
         uses: actions/setup-python@v5
@@ -54,7 +54,7 @@ jobs:
       services_json: ${{ steps.changed.outputs.services_json }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -187,7 +187,7 @@ jobs:
         service: ${{ fromJson(needs.validate.outputs.services_json) }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Docker Compose
         run: |
@@ -229,7 +229,7 @@ jobs:
     if: always()
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download failure artifacts
         uses: actions/download-artifact@v4
@@ -283,7 +283,7 @@ jobs:
     needs: lint
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install PSScriptAnalyzer
         shell: pwsh
