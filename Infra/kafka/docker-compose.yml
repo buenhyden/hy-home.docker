@@ -203,7 +203,7 @@ services:
       resources:
         limits:
           memory: 512M
-    image: confluentinc/cp-schema-registry:7.9.5
+    image: confluentinc/cp-schema-registry:8.1.1
     container_name: schema-registry
     restart: unless-stopped
     networks:
