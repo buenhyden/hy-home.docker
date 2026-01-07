@@ -172,7 +172,7 @@ services:
   # MongoDB Exporter (Prometheus)
   # ============================================================================
   mongodb-exporter:
-    image: percona/mongodb_exporter:0.40
+    image: percona/mongodb_exporter:0.47
     container_name: mongodb-exporter
     expose:
       - ${MONGO_EXPORTER_PORT}
