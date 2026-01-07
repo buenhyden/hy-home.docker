@@ -185,7 +185,7 @@ services:
         max-file: "2"
 
   opensearch-exporter:
-    image: prometheuscommunity/elasticsearch-exporter:v1.7.0
+    image: prometheuscommunity/elasticsearch-exporter:v1.10.0
     container_name: opensearch-exporter
     restart: unless-stopped
     command:
