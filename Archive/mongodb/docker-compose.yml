@@ -1,6 +1,6 @@
 services:
   mongo-key-generator:
-    image: alpine:3.23.0
+    image: alpine:3.23.2
     container_name: mongo-key-generator
     restart: "no" # 한 번 실행하고 종료됨
     volumes:
