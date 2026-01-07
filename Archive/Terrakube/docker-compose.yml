@@ -3,7 +3,7 @@ services:
   # 5. Terrakube API (백엔드)
   # ----------------------------------------------------------------
   terrakube-api:
-    image: azbuilder/api-server:2.28.0
+    image: azbuilder/api-server:2.29.0
     container_name: terrakube-api
     restart: unless-stopped          
     environment:      
