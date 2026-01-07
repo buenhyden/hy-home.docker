@@ -7,7 +7,7 @@ services:
           memory: 2G           # 대규모 워크플로우 대비
         reservations:
           memory: 1G
-    image: n8nio/n8n:2.1.4
+    image: n8nio/n8n:2.3.0
     container_name: n8n
     restart: unless-stopped
     # ports:
@@ -94,7 +94,7 @@ services:
         limits:
           cpus: '1.0'
           memory: 2G
-    image: n8nio/n8n:2.1.4
+    image: n8nio/n8n:2.3.0
     container_name: n8n-worker
     restart: unless-stopped
     depends_on:
