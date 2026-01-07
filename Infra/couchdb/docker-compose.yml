@@ -1,6 +1,6 @@
 services:
   couchdb-1:
-    image: couchdb:3.4.2
+    image: couchdb:3.5.1
     container_name: couchdb-1
     restart: unless-stopped
     environment:
@@ -43,7 +43,7 @@ services:
       - "traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie=true"
       - "traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name=couchdb_sticky"
   couchdb-2:
-    image: couchdb:3.4.2
+    image: couchdb:3.5.1
     container_name: couchdb-2
     restart: unless-stopped
     environment:
@@ -80,7 +80,7 @@ services:
       - "traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie=true"
       - "traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name=couchdb_sticky"
   couchdb-3:
-    image: couchdb:3.4.2
+    image: couchdb:3.5.1
     container_name: couchdb-3
     restart: unless-stopped
     environment:
