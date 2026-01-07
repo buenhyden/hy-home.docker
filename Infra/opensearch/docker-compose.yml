@@ -146,7 +146,7 @@ services:
   #       max-file: "2"
 
   opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:3.3.0
+    image: opensearchproject/opensearch-dashboards:3.4.0
     container_name: opensearch-dashboards
     restart: unless-stopped
     networks:
