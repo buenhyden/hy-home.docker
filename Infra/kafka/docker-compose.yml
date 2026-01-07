@@ -249,7 +249,7 @@ services:
           memory: 1.5G         # 커넥터 실행 시 메모리 소모가 큼
         reservations:
           memory: 1G
-    image: confluentinc/cp-kafka-connect:7.9.5
+    image: confluentinc/cp-kafka-connect:8.1.1
     container_name: kafka-connect
     restart: unless-stopped
     depends_on:
