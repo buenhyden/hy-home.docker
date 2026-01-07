@@ -330,7 +330,7 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
-    image: confluentinc/cp-kafka-rest:7.9.5
+    image: confluentinc/cp-kafka-rest:8.1.1
     container_name: kafka-rest-proxy
     restart: unless-stopped
     networks:
