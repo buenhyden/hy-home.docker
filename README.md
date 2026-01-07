@@ -182,8 +182,8 @@ flowchart TB
 
 | 프로젝트 | 설명 | 주요 기술 |
 | :--- | :--- | :--- |
-| [Django](./Projects/Django) | Python Django 개발 환경 | Python 3.12, Django 5.x |
-| [FastAPI](./Projects/FastAPI) | Python FastAPI 개발 환경 | Python 3.12, FastAPI, Uvicorn |
+| [Django](./Projects/Django) | Python Django 개발 환경 | Python 3.13, Django 5.x |
+| [FastAPI](./Projects/FastAPI) | Python FastAPI 개발 환경 | Python 3.13, FastAPI, Uvicorn |
 | [NestJS](./Projects/NestJS) | Node.js NestJS 개발 환경 | Node.js 20, NestJS, TypeScript |
 | [NextJS](./Projects/NextJS) | Node.js NextJS 개발 환경 | Node.js 20, Next.js, React |
 | [ReactJS](./Projects/ReactJS) | ReactJS (Vite) 개발 환경 | Vite, React, TypeScript |

@@ -11,7 +11,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 512M
-    image: confluentinc/cp-kafka:7.7.7
+    image: confluentinc/cp-kafka:7.9.5
     container_name: kafka-1
     hostname: kafka-1
     restart: unless-stopped
@@ -85,7 +85,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 512M
-    image: confluentinc/cp-kafka:7.7.7
+    image: confluentinc/cp-kafka:7.9.5
     container_name: kafka-2
     hostname: kafka-2
     ports:
@@ -146,7 +146,7 @@ services:
         reservations:
           cpus: '0.25'
           memory: 512M
-    image: confluentinc/cp-kafka:7.7.7
+    image: confluentinc/cp-kafka:7.9.5
     container_name: kafka-3
     hostname: kafka-3
     ports:
@@ -203,7 +203,7 @@ services:
       resources:
         limits:
           memory: 512M
-    image: confluentinc/cp-schema-registry:7.7.7
+    image: confluentinc/cp-schema-registry:7.9.5
     container_name: schema-registry
     restart: unless-stopped
     networks:
@@ -249,7 +249,7 @@ services:
           memory: 1.5G         # 커넥터 실행 시 메모리 소모가 큼
         reservations:
           memory: 1G
-    image: confluentinc/cp-kafka-connect:7.7.7
+    image: confluentinc/cp-kafka-connect:7.9.5
     container_name: kafka-connect
     restart: unless-stopped
     depends_on:
@@ -330,7 +330,7 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
-    image: confluentinc/cp-kafka-rest:7.7.7
+    image: confluentinc/cp-kafka-rest:7.9.5
     container_name: kafka-rest-proxy
     restart: unless-stopped
     networks:

@@ -39,8 +39,7 @@ Infra/traefik/dynamic/tls.yaml
 Infra/**/.env
 Infra/**/.env.*
 # SSH
-Projects/**/.ssh
-Projects/.env
+Projects/.ssh
 # secrets
 secrets/*.txt
 
