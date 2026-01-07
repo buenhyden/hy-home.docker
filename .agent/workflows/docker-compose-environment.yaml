@@ -1,0 +1,52 @@
+name: Multi-Service Docker Compose Environment
+description: >
+  Detect or create a Docker Compose configuration that can run the application
+  and its dependencies without hard-coded host paths.
+
+triggers:
+  - user_request: "set up docker compose"
+  - user_request: "run all services in docker"
+
+assumptions:
+  - The repository may already include a `docker-compose.yml` or similar file.
+  - The user wants a reproducible, multi-service environment.
+
+steps:
+  - name: Discover compose files
+    action: analyze_repository
+    description: >
+      Search for existing `docker-compose.yml`, `compose.yaml`, or
+      `compose.*.yml` files within the workspace. If multiple files exist,
+      ask the user which one should be treated as primary.
+
+  - name: Validate volume and path usage
+    action: review_compose
+    description: >
+      Check that volume mounts use relative paths or named volumes instead of
+      host-specific absolute paths. Suggest corrections if needed.
+
+  - name: Adjust environment configuration
+    action: modify_compose
+    description: >
+      Ensure environment variables, ports, and volumes are defined in a way
+      that can work on any machine. Move secrets to `.env` or external secret
+      stores if appropriate.
+
+  - name: Define startup command
+    action: plan_runtime
+    description: >
+      Define a standard command for starting the environment, such as:
+      `docker compose up --build` at the workspace root.
+
+  - name: Run services
+    action: shell_command
+    command_template: >
+      docker compose up --build
+    notes: >
+      Optionally support `-d` (detached) mode based on user preference.
+
+  - name: Provide operational guide
+    action: summarize
+    description: >
+      Explain how to start, stop, and rebuild the compose environment, and how
+      to extend it with new services while remaining path-agnostic.
