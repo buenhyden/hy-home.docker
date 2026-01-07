@@ -10,7 +10,7 @@ services:
           memory: 1G
         reservations:
           memory: 512M
-    image: prom/prometheus:v3.8.1
+    image: prom/prometheus:v3.9.0
     container_name: infra-prometheus
     restart: unless-stopped
     command:
