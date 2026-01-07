@@ -1,6 +1,34 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ]
+  "extends": ["config:recommended", ":rebaseStalePrs"],
+  // [Step 1] 기본 원칙: 모든 자동 병합을 전역적으로 비활성화합니다.
+  "automerge": false,
+  "automergeStrategy": "squash",
+
+  "packageRules": [
+    {
+      // [Step 2] 예외 규칙: patch, pin, digest 업데이트만 자동 병합을 허용합니다.
+      // 기존의 'minor'를 제외하여 위험 요소를 제거했습니다.
+      "matchUpdateTypes": ["patch", "pin", "digest"],
+      "automerge": true,
+      // 안정성을 위해 출시 후 3일이 지난 패키지만 처리합니다.
+      "minimumReleaseAge": "3 days",
+      "labels": ["dependencies", "auto-merge"]
+    },
+    {
+      // [Step 3] 메이저 업데이트: 명시적으로 수동 검토 대상으로 분류합니다.
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["dependencies", "major-update"]
+    },
+    {
+      // [Step 4] 마이너 업데이트: 별도 설정이 없으므로 전역 설정(false)을 따르지만,
+      // 명확한 관리를 위해 라벨을 부여할 수 있습니다.
+      "matchUpdateTypes": ["minor"],
+      "automerge": false,
+      "labels": ["dependencies", "minor-update"]
+    }
+  ],
+  // GitHub의 Native Auto-merge 기능을 사용하여 안정적으로 병합합니다.
+  "platformAutomerge": true
 }
