@@ -16,18 +16,18 @@ services:
   #     - "${MANAGESIEVE_PORT}:${MANAGESIEVE_PORT}"   # ManageSieve (메일 필터링 규칙 관리)
   #     # 8080 포트는 Traefik을 통해 라우팅하므로 주석 처리 (직접 접속 필요 시 해제)
   #     # - "8080:8080"
-    
+
   #   # [데이터 영구 저장]
   #   volumes:
   #     - stalwart-data:/opt/stalwart
   #     - ./certs:/opt/stalwart/certs:ro
   #   networks:
-  #     - infra_net    
+  #     - infra_net
   #   # [환경 변수] - 초기 관리자 계정 설정
   #   environment:
   #     - STALWART_ADMIN_USER=admin
   #     - STALWART_ADMIN_PASSWORD=${STALWART_PASSWORD} # [중요] 최초 실행 후 반드시 변경하세요.
-    
+
   #   # [Traefik 연동] - 관리자 웹 UI 라우팅
   #   labels:
   #     - "traefik.enable=true"
@@ -45,7 +45,7 @@ services:
       - infra_net
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mailhog.rule=Host(`mail.${DEFAULT_URL}`)" # 메일함 접속 주소
+      - "traefik.http.routers.mailhog.rule=Host(`mail.${DEFAULT_URL}`)"  # 메일함 접속 주소
       - "traefik.http.routers.mailhog.entrypoints=websecure"
       - "traefik.http.routers.mailhog.tls=true"
       - "traefik.http.services.mailhog.loadbalancer.server.port=${MAILHOG_UI_PORT}"

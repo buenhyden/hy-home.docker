@@ -12,12 +12,12 @@ services:
     hostname: traefik
     security_opt:
       - no-new-privileges:true
-    restart: unless-stopped    
+    restart: unless-stopped
     ports:
       - ${HTTP_HOST_PORT}:${HTTP_PORT}
       - ${HTTPS_HOST_PORT}:${HTTPS_PORT}
       - ${TRAEFIK_DASHBOARD_HOST_PORT}:${TRAEFIK_DASHBOARD_PORT}
-      - ${TRAEFIK_METRICS_HOST_PORT}:${TRAEFIK_METRICS_PORT}    
+      - ${TRAEFIK_METRICS_HOST_PORT}:${TRAEFIK_METRICS_PORT}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./certs:/certs:ro
@@ -28,13 +28,13 @@ services:
       - "--configFile=/etc/traefik/traefik.yml"
     labels:
       # Enable self‑routing
-      - "traefik.enable=true"      
+      - "traefik.enable=true"
       # Dashboard router
       - "traefik.http.routers.dashboard.rule=Host(`dashboard.${DEFAULT_URL}`)"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.tls=true"
-      # Basic‑auth middleware      
+      # Basic‑auth middleware
       - "traefik.http.routers.dashboard.middlewares=dashboard-auth@file"
       # - "traefik.http.routers.cdn.middlewares=cdn-cache"
       # 브라우저에게 1주일간 캐시하도록 지시
@@ -51,11 +51,11 @@ services:
           - keycloak.${DEFAULT_URL}
           - auth.${DEFAULT_URL}
           - whoami.${DEFAULT_URL}
-    logging: 
+    logging:
       driver: 'json-file'
       options:
         max-size: '5m'
-        max-file: '2'  
+        max-file: '2'
   # whoami:
   #   image: traefik/whoami
   #   container_name: whoami

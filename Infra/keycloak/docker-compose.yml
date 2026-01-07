@@ -14,7 +14,7 @@ services:
     command: start-dev
     expose:
       - ${KEYCLOAK_MANAGEMENT_PORT}
-    environment:      
+    environment:
       KC_DB: ${KEYCLOAK_DATABASE}
       KC_DB_URL: jdbc:postgresql://${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${KEYCLOAK_DBNAME}
       KC_DB_USERNAME: ${KEYCLOAK_DB_USER}

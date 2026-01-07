@@ -9,23 +9,23 @@ services:
           memory: 1G
     image: n8nio/n8n:2.1.4
     container_name: n8n
-    restart: unless-stopped    
+    restart: unless-stopped
     # ports:
     #   - ${N8N_HOST_PORT}:${N8N_PORT}
     expose:
       - ${N8N_PORT}
     secrets:
-      - redis_password    
+      - redis_password
     environment:
       - GENERIC_TIMEZONE=${DEFAULT_TIMEZONE:-Asia/Seoul}
-      - TZ=${DEFAULT_TIMEZONE:-Asia/Seoul}      
+      - TZ=${DEFAULT_TIMEZONE:-Asia/Seoul}
       # 1. 기본 설정
       - N8N_PROXY_HOPS=1
       # [중요] Traefik 도메인 설정 반영
       - N8N_PROTOCOL=https
-      - N8N_HOST=n8n.${DEFAULT_URL}      
-      - N8N_PORT=${N8N_PORT}            
-      - WEBHOOK_URL=https://n8n.${DEFAULT_URL}      
+      - N8N_HOST=n8n.${DEFAULT_URL}
+      - N8N_PORT=${N8N_PORT}
+      - WEBHOOK_URL=https://n8n.${DEFAULT_URL}
       - N8N_PUSH_BACKEND=websocket
       # n8n Public API 활성화 (필수)
       - N8N_PUBLIC_API_DISABLED=false
@@ -35,8 +35,8 @@ services:
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
       - N8N_EDITOR_BASE_URL=https://n8n.${DEFAULT_URL}
-      - N8N_PUBLIC_API_BASE_URL=https://n8n.${DEFAULT_URL}      
-      
+      - N8N_PUBLIC_API_BASE_URL=https://n8n.${DEFAULT_URL}
+
       - DB_TYPE=postgresdb
       - DB_POSTGRESDB_HOST=${POSTGRES_HOSTNAME}
       - DB_POSTGRESDB_PORT=${POSTGRES_PORT}
@@ -48,9 +48,9 @@ services:
       # 4. 실행 모드 (자체 실행)
       - EXECUTIONS_MODE=queue
       # --- [모니터링 설정 추가] ---
-      - N8N_METRICS=true      
+      - N8N_METRICS=true
       - N8N_METRICS_PREFIX=n8n_  # 메트릭 이름 앞에 붙을 접두사 (관리하기 편함)
-      - N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL=true # 어떤 워크플로우가 부하를 주는지 식별 가능
+      - N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL=true  # 어떤 워크플로우가 부하를 주는지 식별 가능
       - N8N_METRICS_INCLUDE_NODE_TYPE_LABEL=true   # 어떤 노드(HTTP, Cron 등)가 많이 쓰이는지 확인
       - N8N_METRICS_INCLUDE_QUEUE_METRICS=true
       # --- Queue mode / Redis 연결 ---
@@ -61,28 +61,28 @@ services:
       - QUEUE_HEALTH_CHECK_ACTIVE=true     # Redis 연결 상태 내부 헬스체크 활성화
       - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true  # 수동 실행도 워커로 보내기 (선택)
     labels:
-      - "traefik.enable=true"      
+      - "traefik.enable=true"
       # n8n UI & Webhook 라우터 (https://n8n.${DEFAULT_URL})
       - "traefik.http.routers.n8n.rule=Host(`n8n.${DEFAULT_URL}`)"
       - "traefik.http.routers.n8n.entrypoints=websecure"
       - "traefik.http.routers.n8n.tls=true"
       - "traefik.http.routers.n8n.service=n8n"
       # [중요] n8n 내부 포트 (5678) 연결
-      - "traefik.http.services.n8n.loadbalancer.server.port=${N8N_PORT}"      
+      - "traefik.http.services.n8n.loadbalancer.server.port=${N8N_PORT}"
     volumes:
       - n8n-data:/home/node/.n8n
     depends_on:
       n8n-redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost ${N8N_PORT} || exit 1"] # 간단한 포트 체크 방식
+      test: ["CMD-SHELL", "nc -z localhost ${N8N_PORT} || exit 1"]  # 간단한 포트 체크 방식
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
     networks:
       infra_net:
-        ipv4_address: 172.19.0.14    
+        ipv4_address: 172.19.0.14
     logging:
       driver: "json-file"
       options:
@@ -144,28 +144,28 @@ services:
         limits:
           cpus: '0.5'
           memory: 256M
-    image: redis:8.4.0-bookworm # Redis 8.4.x
+    image: redis:8.4.0-bookworm  # Redis 8.4.x
     container_name: n8n-redis
     secrets:
       - redis_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.15
-    restart: unless-stopped          
+    restart: unless-stopped
     volumes:
       # 공통 redis.conf
       - n8n-redis-data:/data
     command: >
       sh -c '
-      redis-server 
-      --requirepass "$(cat /run/secrets/redis_password)" 
-      --appendonly yes 
+      redis-server
+      --requirepass "$(cat /run/secrets/redis_password)"
+      --appendonly yes
       --port 6379
       '
     # 클러스터 내부 통신 포트는 expose
     expose:
       - "${REDIS_PORT}"
-      - "${REDIS_BUS_PORT}"        
+      - "${REDIS_BUS_PORT}"
     healthcheck:
       test:
         [
@@ -180,7 +180,7 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
-        
+
   n8n-redis-exporter:
     deploy:
       resources:
@@ -196,7 +196,7 @@ services:
         ipv4_address: 172.19.0.16
     restart: unless-stopped
     secrets:
-      - redis_password        
+      - redis_password
     entrypoint:
       - /bin/sh
       - -c
@@ -204,14 +204,14 @@ services:
       - |
         echo "Reading password from secret..."
         export REDIS_PASSWORD=$(cat /run/secrets/redis_password | tr -d '\n')
-        
+
         echo "Starting Redis Exporter..."
         # -redis.password-file 대신 -redis.password 사용
         exec /redis_exporter \
           -redis.addr=redis://n8n-redis:6379 \
           -redis.password="$REDIS_PASSWORD" \
-          -web.listen-address=:${REDIS_EXPORTER_PORT} 
-    depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
+          -web.listen-address=:${REDIS_EXPORTER_PORT}
+    depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       n8n-redis:
         condition: service_healthy
     logging:

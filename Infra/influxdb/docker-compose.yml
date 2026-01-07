@@ -20,12 +20,12 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_API_TOKEN}
     # ports:
-    #   - ${INFLUXDB_HOST_PORT}:${INFLUXDB_PORT}    
-    volumes:      
+    #   - ${INFLUXDB_HOST_PORT}:${INFLUXDB_PORT}
+    volumes:
       - influxdb-data:/var/lib/influxdb2:rw
     networks:
       infra_net:
-        ipv4_address: 172.19.0.11    
+        ipv4_address: 172.19.0.11
     labels:
       - "traefik.enable=true"
       # 도메인: influxdb.${DEFAULT_URL}
@@ -33,7 +33,7 @@ services:
       - "traefik.http.routers.influxdb.entrypoints=websecure"
       - "traefik.http.routers.influxdb.tls=true"
       - "traefik.http.services.influxdb.loadbalancer.server.port=${INFLUXDB_PORT}"
-    logging: 
+    logging:
       driver: "json-file"
       options:
         max-size: "5m"

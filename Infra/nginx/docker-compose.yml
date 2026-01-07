@@ -10,8 +10,8 @@ services:
       - ./certs:/etc/nginx/certs:ro
     networks:
       infra_net:
-        ipv4_address: 172.19.0.13  
+        ipv4_address: 172.19.0.13
     depends_on:
       minio:
         condition: service_healthy
-  
+

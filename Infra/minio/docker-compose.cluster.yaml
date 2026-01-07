@@ -16,12 +16,12 @@ x-minio-common: &minio-common
     - nt-webserver
     - nt-observability
   logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2" 
+    driver: "json-file"
+    options:
+      max-size: "5m"
+      max-file: "2"
   environment:
-    
+
     - MINIO_ROOT_USER=${DEFAULT_USERNAME}
     - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
 
@@ -72,11 +72,11 @@ services:
   #     - minio3
   #     - minio4
   #   environment:
-  #     
+  #
   # ######################################################################################
 
-## By default this config uses default local driver,
-## For custom volumes replace with volume driver configuration.
+# # By default this config uses default local driver,
+# # For custom volumes replace with volume driver configuration.
 volumes:
   # minio-nginx-volume:
   #   driver: local

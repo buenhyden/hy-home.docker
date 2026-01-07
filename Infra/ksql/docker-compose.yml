@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     ports:
       - "${KSQLDB_HOST_PORT}:${KSQLDB_PORT}"
-    environment:      
+    environment:
       - KSQL_BOOTSTRAP_SERVERS=kafka-0:${KAFKA_PORT}
     volumes:
       - ksqldb-node-1-data-volume:/bitnami/ksql
@@ -16,7 +16,7 @@ services:
       driver: "json-file"
       options:
         max-size: "5m"
-        max-file: "2" 
+        max-file: "2"
   # ######################################################################################
   # ksqldb-server:
   #   image: confluentinc/cp-ksqldb-server:latest

@@ -1,7 +1,7 @@
 services:
-  ###############################################################
+  # ##############################################################
   # Redis Cluster Nodes (6개: 3 master + 3 replica)
-  ###############################################################
+  # ##############################################################
   redis-node-0:
     deploy:
       resources:
@@ -10,7 +10,7 @@ services:
           memory: 512M
         reservations:
           memory: 256M
-    image: redis:8.4.0-bookworm # Redis 8.4.x
+    image: redis:8.4.0-bookworm  # Redis 8.4.x
     container_name: redis-node-0
     secrets:
       - redis_password
@@ -283,11 +283,11 @@ services:
         max-size: "5m"
         max-file: "2"
 
-  ###############################################################
+  # ##############################################################
   # Redis Cluster 초기화용 one-shot 컨테이너
   #   - 처음 한 번 실행해서 cluster create
   #   - 이미 클러스터 구성돼 있으면 noop로 끝나도록 스크립트 작성
-  ###############################################################
+  # ##############################################################
   redis-cluster-init:
     image: redis:8.2
     container_name: redis-cluster-init
@@ -318,9 +318,9 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
-  ###############################################################
+  # ##############################################################
   # Redis Exporter – Prometheus용 메트릭
-  ###############################################################
+  # ##############################################################
 
   redis-exporter:
     deploy:
@@ -337,7 +337,7 @@ services:
         ipv4_address: 172.19.0.67
     restart: unless-stopped
     secrets:
-      - redis_password    
+      - redis_password
     entrypoint:
       - /bin/sh
       - -c
@@ -345,7 +345,7 @@ services:
       - |
         echo "Loading Redis password..."
         export R_PWD=$$(cat /run/secrets/redis_password | tr -d '\n')
-        
+
         echo "Starting Exporter (Stateless Mode)..."
         # [수정] -redis.addr 옵션을 제거하거나 비워둡니다.
         # 이렇게 하면 Exporter는 단순히 대기 상태로 시작되며,
@@ -353,8 +353,8 @@ services:
         exec /redis_exporter \
           -redis.addr="redis://redis-node-0:6379" \
           -redis.password="$$R_PWD" \
-          -web.listen-address=:${REDIS_EXPORTER_PORT}          
-    depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)    
+          -web.listen-address=:${REDIS_EXPORTER_PORT}
+    depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       redis-node-0:
         condition: service_healthy
       redis-node-1:
@@ -373,4 +373,4 @@ services:
         max-size: "5m"
         max-file: "2"
 
-  
+

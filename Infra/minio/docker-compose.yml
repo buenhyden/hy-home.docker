@@ -1,5 +1,5 @@
 services:
-  minio:    
+  minio:
     deploy:
       resources:
         limits:
@@ -16,12 +16,12 @@ services:
       MINIO_ROOT_USER_FILE: /run/secrets/minio_root_user
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_password
       MINIO_PROMETHEUS_AUTH_TYPE: "public"
-      MINIO_API_ROOT_ACCESS: "on"    
-      #MINIO_BROWSER_REDIRECT_URL: "https://${DEFAULT_URL}/minio-console/"
+      MINIO_API_ROOT_ACCESS: "on"
+      # MINIO_BROWSER_REDIRECT_URL: "https://${DEFAULT_URL}/minio-console/"
     # ports:
     #   - "${MINIO_HOST_PORT}:${MINIO_PORT}" # S3 API
     #   - "${MINIO_CONSOLE_HOST_PORT}:${MINIO_CONSOLE_PORT}" # Console
-    networks:      
+    networks:
       infra_net:
         ipv4_address: 172.19.0.12
     volumes:
@@ -30,10 +30,10 @@ services:
       test: ["CMD", "curl", "-f", "http://minio:9000/minio/health/live"]
       interval: 30s
       timeout: 20s
-      retries: 3    
+      retries: 3
     labels:
       - "traefik.enable=true"
-      
+
       # ---------------------------------------------------------
       # 1. MinIO API 라우터 (S3 호환 프로그램용 - 포트 9000)
       # ---------------------------------------------------------
@@ -60,28 +60,28 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
-  
+
   minio-create-buckets:
     image: minio/mc:RELEASE.2025-08-13T08-35-41Z
     container_name: minio-create-buckets
-    restart: "no" 
+    restart: "no"
     networks:
       - infra_net
     secrets:
       - minio_root_user
-      - minio_root_password      
+      - minio_root_password
       - minio_app_user
-      - minio_app_user_password          
+      - minio_app_user_password
     depends_on:
       minio:
-        condition: service_healthy # MinIO가 헬스체크 통과할 때까지 대기 (필수)   
+        condition: service_healthy  # MinIO가 헬스체크 통과할 때까지 대기 (필수)
     entrypoint: ["/bin/sh"]
     command:
       - -c
       - |
-        set -e        
+        set -e
 
-        echo "[1] root 크레덴셜 로딩..."        
+        echo "[1] root 크레덴셜 로딩..."
         ROOT_USER=$$(cat /run/secrets/minio_root_user)
         ROOT_PASS=$$(cat /run/secrets/minio_root_password)
         APP_USER=$$(cat /run/secrets/minio_app_user)

@@ -1,9 +1,9 @@
 services:
-  #######################################################
+  # ######################################################
   # OpenSearch 노드 1 (cluster_manager + data + ingest)
-  #######################################################
+  # ######################################################
   opensearch-node1:
-    image: opensearchproject/opensearch:3.3.2 # 2025-11 기준 최신 3.x 안정 버전
+    image: opensearchproject/opensearch:3.3.2  # 2025-11 기준 최신 3.x 안정 버전
     container_name: opensearch-node1
     restart: unless-stopped
     # 비밀번호, 클러스터 이름, JVM 옵션 등은 env 파일에서 주입
@@ -12,8 +12,8 @@ services:
       # - node.name=opensearch-node1
       - discovery.type=single-node
       # - cluster.name=${OPENSEARCH_CLUSTER_NAME}
-      # 클러스터 디스커버리 설정 (3노드 모두 동일하게 설정)      
-      # - discovery.seed_hosts=opensearch-node1,opensearch-node2,opensearch-node3      
+      # 클러스터 디스커버리 설정 (3노드 모두 동일하게 설정)
+      # - discovery.seed_hosts=opensearch-node1,opensearch-node2,opensearch-node3
       # - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2,opensearch-node3
       # JVM Heap 설정 (env에서 값 가져옴)
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
@@ -22,7 +22,7 @@ services:
       # 노드 역할: 클러스터 매니저 + 데이터 + 인제스트 + 원격 클러스터 클라이언트
       # - node.roles=cluster_manager,data,ingest,remote_cluster_client
       # 2.12+ 기준 보안 데모 구성에서 admin 패스워드 설정 (env 파일에서 가져옴)
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ELASTIC_PASSWORD}      
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ELASTIC_PASSWORD}
       - plugins.security.ssl.http.enabled=true
       - plugins.security.ssl.http.pemcert_filepath=/usr/share/opensearch/config/certs/cert.pem
       - plugins.security.ssl.http.pemkey_filepath=/usr/share/opensearch/config/certs/key.pem
@@ -54,12 +54,12 @@ services:
       - "traefik.http.routers.opensearch.entrypoints=websecure"
       - "traefik.http.routers.opensearch.tls=true"
       - "traefik.http.services.opensearch.loadbalancer.serversTransport=opensearch-transport@file"
-      
+
       # [중요] OpenSearch는 기본적으로 HTTPS(Self-signed)를 사용하므로
       # Traefik이 백엔드(OpenSearch)와 통신할 때도 HTTPS를 써야 함.
       # serversTransport 설정을 통해 인증서 검증을 스킵해야 할 수 있음.
       - "traefik.http.services.opensearch.loadbalancer.server.port=9200"
-      - "traefik.http.services.opensearch.loadbalancer.server.scheme=https" # 백엔드 통신 스킴 지정
+      - "traefik.http.services.opensearch.loadbalancer.server.scheme=https"  # 백엔드 통신 스킴 지정
     networks:
       infra_net:
         ipv4_address: 172.19.0.44
@@ -153,10 +153,10 @@ services:
       infra_net:
         ipv4_address: 172.19.0.47
     expose:
-      - "${KIBANA_PORT}" # Expose port 5601 for web access to OpenSearch Dashboards
+      - "${KIBANA_PORT}"  # Expose port 5601 for web access to OpenSearch Dashboards
     # ports:
     #   - "${KIBANA_HOST_PORT}:${KIBANA_PORT}"
-    volumes:      
+    volumes:
       - ./certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro
     environment:
       - 'OPENSEARCH_HOSTS=["https://opensearch-node1:9200"]'
@@ -183,21 +183,21 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
-        
+
   opensearch-exporter:
     image: prometheuscommunity/elasticsearch-exporter:v1.7.0
     container_name: opensearch-exporter
     restart: unless-stopped
     command:
-      - '--es.uri=https://opensearch-node1:9200' # 노드1을 바라봄
+      - '--es.uri=https://opensearch-node1:9200'  # 노드1을 바라봄
       - '--es.all'
       - '--es.indices'
-      - '--es.ssl-skip-verify' # OpenSearch 기본 TLS 인증서 검증 건너뛰기
+      - '--es.ssl-skip-verify'  # OpenSearch 기본 TLS 인증서 검증 건너뛰기
     environment:
       - ES_USERNAME=${ELASTIC_USERNAME}
       - ES_PASSWORD=${ELASTIC_PASSWORD}
     ports:
-      - "${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}" # 9114
+      - "${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}"  # 9114
     networks:
       infra_net:
         ipv4_address: 172.19.0.48
@@ -209,4 +209,4 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
-  
+

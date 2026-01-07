@@ -25,29 +25,29 @@ secrets:
   minio_app_user:
     file: ../secrets/minio_app_user.txt
 
-include:    
+include:
   - traefik/docker-compose.yml
   - mng-db/docker-compose.yml
   - oauth2-proxy/docker-compose.yml
-  - keycloak/docker-compose.yml    
+  - keycloak/docker-compose.yml
   - observability/docker-compose.yml
-  - influxdb/docker-compose.yml  
+  - influxdb/docker-compose.yml
   - minio/docker-compose.yml
   - n8n/docker-compose.yml
   - kafka/docker-compose.yml
   - ollama/docker-compose.yml
-  - postgresql-cluster/docker-compose.yml    
-  - redis-cluster/docker-compose.yml  
-  # - opensearch/docker-compose.yml  
-  # - airflow/docker-compose.yml      
+  - postgresql-cluster/docker-compose.yml
+  - redis-cluster/docker-compose.yml
+  # - opensearch/docker-compose.yml
+  # - airflow/docker-compose.yml
   # - nginx/docker-compose.yml
-  # - mail/docker-compose.yml  
-  # - terrakube/docker-compose.yml  
+  # - mail/docker-compose.yml
+  # - terrakube/docker-compose.yml
   # - couchdb/docker-compose.yml
-  # - arangodb/docker-compose.yml  
+  # - arangodb/docker-compose.yml
 
-volumes:  
-  qdrant-data: 
+volumes:
+  qdrant-data:
   #   driver: local
   #   driver_opts:
   #     o: bind
@@ -59,7 +59,7 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_AI_MODEL_DIR}/ollama
-  ollama-webui: 
+  ollama-webui:
   #   driver: local
   #   driver_opts:
   #     o: bind
@@ -76,7 +76,7 @@ volumes:
     # driver_opts:
     #   o: bind
     #   type: none
-    #   device: ${DEFAULT_INFLUXDB_DIR}/data  
+    #   device: ${DEFAULT_INFLUXDB_DIR}/data
   n8n-data:
     driver: local
     driver_opts:
@@ -227,21 +227,21 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_OPENSEARCH_DATA_DIR}/snapshots
-  
+
   kafka-1-data:
     # driver: local
     # driver_opts:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_KAFKA_DATA_DIR}/node1
-  
+
   kafka-2-data:
     # driver: local
     # driver_opts:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_KAFKA_DATA_DIR}/node2
-  
+
   kafka-3-data:
     # driver: local
     # driver_opts:
@@ -302,7 +302,7 @@ volumes:
   couchdb1-data:
   couchdb2-data:
   couchdb3-data:
-  mongo-key:  
+  mongo-key:
   mongodb1-data:
   #   driver: local
   #   driver_opts:

@@ -6,7 +6,7 @@ x-airflow-common: &airflow-common
   networks:
     - infra_net
   # build: .
-  environment: &airflow-common-env    
+  environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: "postgresql+psycopg2://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/airflow"
@@ -30,9 +30,9 @@ x-airflow-common: &airflow-common
     AIRFLOW__WEBSERVER__BASE_URL: "https://airflow.${DEFAULT_URL}"
     # StatsD 메트릭 활성화
     AIRFLOW__METRICS__STATSD_ON: "true"
-    AIRFLOW__METRICS__STATSD_HOST: "airflow-statsd-exporter" # 위에서 만든 컨테이너 이름
+    AIRFLOW__METRICS__STATSD_HOST: "airflow-statsd-exporter"  # 위에서 만든 컨테이너 이름
     AIRFLOW__METRICS__STATSD_PORT: "${STATSD_AIRFLOW_PORT}"
-    AIRFLOW__METRICS__STATSD_PREFIX: "airflow" # 메트릭 접두사
+    AIRFLOW__METRICS__STATSD_PREFIX: "airflow"  # 메트릭 접두사
   volumes:
     - airflow-dags:/opt/airflow/dags
     - airflow-plugins:/opt/airflow/plugins
@@ -71,8 +71,8 @@ services:
       - "traefik.http.routers.airflow.rule=Host(`airflow.${DEFAULT_URL}`)"
       - "traefik.http.routers.airflow.entrypoints=websecure"
       - "traefik.http.routers.airflow.tls=true"
-      - "traefik.http.services.airflow.loadbalancer.server.port=${AIRFLOW_PORT}" # Airflow UI 기본 포트
-      
+      - "traefik.http.services.airflow.loadbalancer.server.port=${AIRFLOW_PORT}"  # Airflow UI 기본 포트
+
       # (선택 사항) Keycloak SSO를 적용하려면 아래 주석 해제
       # - "traefik.http.routers.airflow.middlewares=sso-auth@file"
 
@@ -167,7 +167,7 @@ services:
           echo "If you are on Linux, you SHOULD follow the instructions below to set "
           echo "AIRFLOW_UID environment variable, otherwise files will be owned by root."
           echo "For other operating systems you can get rid of the warning with manually created .env file:"
-          echo "    See: https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#setting-the-right-airflow-user"
+          echo "    See: https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html  # setting-the-right-airflow-user"
           echo
           export AIRFLOW_UID=$$(id -u)
         fi
@@ -201,7 +201,7 @@ services:
           echo
           echo -e "\033[1;33mWARNING!!!: You have not enough resources to run Airflow (see above)!\e[0m"
           echo "Please follow the instructions to increase amount of resources available:"
-          echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin"
+          echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html  # before-you-begin"
           echo
         fi
         echo
@@ -286,7 +286,7 @@ services:
       - "traefik.http.routers.flower.entrypoints=websecure"
       - "traefik.http.routers.flower.tls=true"
       - "traefik.http.services.flower.loadbalancer.server.port=${FLOWER_PORT}"
-      
+
       # [보안 권장] Flower는 기본 로그인 보안이 취약하므로 SSO 미들웨어를 붙이는 것이 좋습니다.
       - "traefik.http.routers.flower.middlewares=sso-auth@file"
   airflow-statsd-exporter:
@@ -303,5 +303,5 @@ services:
     networks:
       - infra_net
     expose:
-      - "${STATSD_PROMETHEUS_PORT}" # Prometheus가 긁어갈 포트
-      - "${STATSD_AIRFLOW_PORT}" # Airflow가 보낼 포트
+      - "${STATSD_PROMETHEUS_PORT}"  # Prometheus가 긁어갈 포트
+      - "${STATSD_AIRFLOW_PORT}"  # Airflow가 보낼 포트

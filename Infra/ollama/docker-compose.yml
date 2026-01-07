@@ -3,7 +3,7 @@ services:
     image: ollama/ollama:0.13.5
     container_name: ollama
     # ports:
-    #   - "${OLLAMA_HOST_PORT}:${OLLAMA_PORT}"    
+    #   - "${OLLAMA_HOST_PORT}:${OLLAMA_PORT}"
     expose:
       - ${OLLAMA_PORT}
     volumes:
@@ -11,7 +11,7 @@ services:
     environment:
       # [필수 추가] Ollama가 모든 네트워크 인터페이스(Docker 내부)에서 수신하도록 설정
       # 기본 포트가 11434라면 ${OLLAMA_PORT}는 11434와 일치해야 합니다.
-      - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT}      
+      - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT}
       # [GPU 필수] 컨테이너가 할당된 GPU를 사용하도록 명시
       - NVIDIA_VISIBLE_DEVICES=all
     networks:
@@ -22,7 +22,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 60s # 모델 로드 시간을 고려하여 여유 있게 설정
+      start_period: 60s  # 모델 로드 시간을 고려하여 여유 있게 설정
     deploy:
       resources:
         limits:
@@ -35,12 +35,12 @@ services:
               count: 1
               capabilities: [gpu]
     labels:
-      - "traefik.enable=true"      
+      - "traefik.enable=true"
       # Ollama API 라우터 (https://ollama.${DEFAULT_URL})
       - "traefik.http.routers.ollama.rule=Host(`ollama.${DEFAULT_URL}`)"
       - "traefik.http.routers.ollama.entrypoints=websecure"
       - "traefik.http.routers.ollama.tls=true"
-      
+
       # [중요] 내부 포트 11434 연결
       - "traefik.http.services.ollama.loadbalancer.server.port=${OLLAMA_PORT}"
     restart: unless-stopped
@@ -61,7 +61,7 @@ services:
     ports:
       - "${QDRANT_HOST_PORT}:${QDRANT_PORT}"
     environment:
-      - QDRANT__TELEMETRY_DISABLED=false # 메트릭 수집 활성화
+      - QDRANT__TELEMETRY_DISABLED=false  # 메트릭 수집 활성화
     volumes:
       - qdrant-data:/qdrant/storage
     restart: unless-stopped
@@ -98,7 +98,7 @@ services:
     # ports:
     #   - "${OLLAMA_WEBUI_HOST_PORT}:${OLLAMA_WEBUI_PORT}" # 브라우저에서 localhost:3000 으로 접속
     environment:
-      - OLLAMA_BASE_URL=http://ollama:${OLLAMA_PORT} # 도커 네트워크 내부 통신
+      - OLLAMA_BASE_URL=http://ollama:${OLLAMA_PORT}  # 도커 네트워크 내부 통신
       # --- RAG 설정 추가 ---
       # 벡터 DB 연결 설정
       - VECTOR_DB_URL=http://qdrant:${QDRANT_PORT}
@@ -118,12 +118,12 @@ services:
         ipv4_address: 172.19.0.42
     labels:
       - "traefik.enable=true"
-      
+
       # 챗봇 UI 라우터 (https://chat.${DEFAULT_URL})
       - "traefik.http.routers.open-webui.rule=Host(`chat.${DEFAULT_URL}`)"
       - "traefik.http.routers.open-webui.entrypoints=websecure"
       - "traefik.http.routers.open-webui.tls=true"
-      
+
       # [중요] 내부 포트 8080 연결 (Open WebUI 기본 포트)
       - "traefik.http.services.open-webui.loadbalancer.server.port=8080"
     logging:
@@ -131,7 +131,7 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
-  
+
   ollama-exporter:
     deploy:
       resources:

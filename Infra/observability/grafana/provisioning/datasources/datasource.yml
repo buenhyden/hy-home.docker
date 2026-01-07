@@ -32,10 +32,10 @@ datasources:
       # Trace에서 Log로 바로 가기 위한 설정
       tracesToLogsV2:
         datasourceUid: "Loki"
-        spanStartTimeShift: "30m" # Span 시작 시간 기준 전후 30분 검색
+        spanStartTimeShift: "30m"  # Span 시작 시간 기준 전후 30분 검색
         simpleTimeRange: true
-        tags: ["job", "instance", "container_name"] # 매칭할 태그
-        filterByTraceID: true # 로그에 traceID가 있다면 정확히 매칭
+        tags: ["job", "instance", "container_name"]  # 매칭할 태그
+        filterByTraceID: true  # 로그에 traceID가 있다면 정확히 매칭
         filterBySpanID: true
       # Service Graph (노드 간 연결 관계 시각화)
       serviceMap:
@@ -53,5 +53,5 @@ datasources:
     # Docker Network 내부 통신이므로 서비스명(alertmanager) 사용
     url: http://alertmanager:9093
     jsonData:
-      implementation: prometheus # Prometheus와 함께 사용하는 표준 Alertmanager
-      handleGrafanaManagedAlerts: false # 외부(Prometheus) 알람만 처리할 경우 false
+      implementation: prometheus  # Prometheus와 함께 사용하는 표준 Alertmanager
+      handleGrafanaManagedAlerts: false  # 외부(Prometheus) 알람만 처리할 경우 false

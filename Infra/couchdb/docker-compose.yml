@@ -26,19 +26,19 @@ services:
       timeout: 5s
       retries: 5
     labels:
-      - "traefik.enable=true"      
+      - "traefik.enable=true"
       # [Router] 도메인 설정: couchdb.${DEFAULT_URL}
       - "traefik.http.routers.couchdb.rule=Host(`couchdb.${DEFAULT_URL}`)"
       - "traefik.http.routers.couchdb.entrypoints=websecure"
-      - "traefik.http.routers.couchdb.tls=true"      
-            
+      - "traefik.http.routers.couchdb.tls=true"
+
       # 이 라우터는 'couchdb-cluster'라는 서비스로 트래픽을 보낸다.
       - "traefik.http.routers.couchdb.service=couchdb-cluster"
-      
+
       # [3] 서비스 정의 (Load Balancer)
       # 내(Node 1)가 'couchdb-cluster' 서비스의 일원임을 알림
       - "traefik.http.services.couchdb-cluster.loadbalancer.server.port=${COUCHDB_PORT}"
-      
+
       # [4] Sticky Session (중요)
       - "traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie=true"
       - "traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name=couchdb_sticky"
@@ -71,11 +71,11 @@ services:
     labels:
       - "traefik.enable=true"
       # [중요] 라우터(Host 규칙) 설정은 제거함 (충돌 방지)
-      
+
       # [서비스 합류]
       # Node 1과 같은 서비스 이름('couchdb-cluster')을 사용하여 로드밸런싱 그룹에 들어감
       - "traefik.http.services.couchdb-cluster.loadbalancer.server.port=${COUCHDB_PORT}"
-      
+
       # Sticky Session 설정은 서비스 레벨이므로 여기도 적어주는 것이 안전함 (병합됨)
       - "traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie=true"
       - "traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name=couchdb_sticky"
@@ -133,7 +133,7 @@ services:
       /bin/sh -c "
         echo 'Waiting for nodes to start...';
         sleep 10;
-        
+
         # 1. 노드 2를 클러스터(노드 1)에 조인
         echo 'Joining Node 2...';
         curl -X POST -H 'Content-Type: application/json' \
@@ -159,7 +159,7 @@ services:
         curl -X POST -H 'Content-Type: application/json' \
           http://${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}@couchdb-1:5984/_cluster_setup \
           -d '{\"action\": \"finish_cluster\"}';
-        
+
         # 4. 시스템 DB 생성 (단일 노드때와 동일하게 필요함)
         curl -X PUT http://${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}@couchdb-1:5984/_users;
         curl -X PUT http://${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}@couchdb-1:5984/_replicator;
