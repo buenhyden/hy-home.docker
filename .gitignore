@@ -1,5 +1,6 @@
 .history/
 .vscode/
+.mypy_cache/
 # Archive
 Archive/seaweedfs/config/security.toml
 Archive/Terrakube/certs/*.pem
