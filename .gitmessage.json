@@ -1,0 +1,157 @@
+{
+  "$schema": "https://bendera.github.io/vscode-commit-message-editor/schemas/config-v1.schema.json",
+  "configVersion": "1",
+  "staticTemplate": [
+    "################",
+    "# <type>(<scope>): <subject> 의 형식으로 제목을 아래 공백줄에 작성",
+    "# 제목은 50자 이내 / 변경사항이 \"무엇\"인지 명확히 작성 / 끝에 마침표 X",
+    "# 타입과 제목은 필수 / 범위(scope)는 선택",
+    "# 예) feat(auth): 로그인 기능 추가",
+    "<type>(<scope>): <subject>",
+    "# 바로 아래 공백은 지우지 마세요 (제목과 본문의 분리를 위함)",
+    "",
+    "################",
+    "# Body Message (선택사항)",
+    "# 본문(구체적인 내용)을 아랫줄에 작성",
+    "# 여러 줄의 메시지를 작성할 땐 \"-\"로 구분 (한 줄은 72자 이내)",
+    "- <Message>",
+    "",
+    "################",
+    "# 꼬릿말(footer)을 아랫줄에 작성 (현재 커밋과 관련된 이슈 번호 추가 등)",
+    "# 예) Close #7",
+    "",
+    "# Issue Tracker Number or URL",
+    "",
+    "# --- COMMIT END ---",
+    "# <type> list",
+    "#   feat    : 새로운 기능",
+    "#   fix     : 버그 수정",
+    "#   refactor: 코드 리팩토링 (기능 변화 없음)",
+    "#   style   : 코드 의미에 영향을 주지 않는 변경사항 (포맷팅, 세미콜론 누락 등)",
+    "#   docs    : 문서 수정 (README.md, 주석 등)",
+    "#   test    : 테스트 추가, 수정, 삭제",
+    "#   build   : 빌드 시스템 또는 외부 종속성 수정 (npm, gradle, maven 등)",
+    "#   ci      : CI 설정 파일 및 스크립트 수정 (GitHub Actions, Jenkins 등)",
+    "#   perf    : 성능 개선을 위한 코드 수정",
+    "#   revert  : 이전 커밋 되돌리기",
+    "#   chore   : 기타 변경사항 (생산 코드 수정 없음)",
+    "#   release : 버전 릴리즈",
+    "# ------------------",
+    "# Remember me ~",
+    "#   Capitalize the subject line",
+    "#     제목 첫 글자를 대문자로",
+    "#   Use the imperative mood in the subject line",
+    "#     제목은 명령문 사용 (과거형 X)",
+    "#   Do not end the subject line with a period",
+    "#     제목 끝에 마침표(.) 금지",
+    "#   Separate subject from body with a blank line",
+    "#     제목과 본문을 한 줄 띄워 분리하기 (빈 행으로 구분)",
+    "#   Use the body to explain what and why vs. how",
+    "#     본문은 \"어떻게\" 보다 \"무엇을\", \"왜\"를 설명한다.",
+    "#   Can use multiple lines with \"-\" for bullet points in body",
+    "#     본문에 여러줄의 메시지(목록)를 작성할 땐 \"-\"로 구분",
+    "# ------------------"
+  ],
+  "dynamicTemplate": ["{type}{scope}: {subject}", "", "{body}", "", "{breaking_change}{footer}"],
+  "tokens": [
+    {
+      "label": "Type",
+      "name": "type",
+      "type": "enum",
+      "options": [
+        {
+          "label": "---",
+          "value": ""
+        },
+        {
+          "label": "feat",
+          "description": "A new feature"
+        },
+        {
+          "label": "fix",
+          "description": "A bug fix"
+        },
+        {
+          "label": "refactor",
+          "description": "A code change that neither fixes a bug nor adds a feature"
+        },
+        {
+          "label": "style",
+          "description": "Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)"
+        },
+        {
+          "label": "docs",
+          "description": "Documentation only changes"
+        },
+        {
+          "label": "test",
+          "description": "Adding missing tests or correcting existing tests"
+        },
+        {
+          "label": "build",
+          "description": "Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)"
+        },
+        {
+          "label": "ci",
+          "description": "Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)"
+        },
+        {
+          "label": "perf",
+          "description": "A code change that improves performance"
+        },
+        {
+          "label": "revert",
+          "description": "Reverts a previous commit"
+        },
+        {
+          "label": "chore",
+          "description": "Updating grunt tasks etc; no production code change"
+        },
+        {
+          "label": "release",
+          "description": "Version release"
+        }
+      ],
+      "description": "Type of changes"
+    },
+    {
+      "label": "Scope",
+      "name": "scope",
+      "description": "A scope may be provided to a commit’s type, to provide additional contextual information and is contained within parenthesis, e.g., \"feat(parser): add ability to parse arrays\".",
+      "type": "text",
+      "multiline": false,
+      "prefix": "(",
+      "suffix": ")"
+    },
+    {
+      "label": "Subject",
+      "name": "subject",
+      "description": "Short description in the subject line.",
+      "type": "text",
+      "multiline": false
+    },
+    {
+      "label": "Body",
+      "name": "body",
+      "description": "Optional body",
+      "type": "text",
+      "multiline": true,
+      "lines": 5,
+      "maxLines": 10
+    },
+    {
+      "label": "Breaking change",
+      "name": "breaking_change",
+      "type": "boolean",
+      "value": "BREAKING CHANGE: ",
+      "default": false
+    },
+    {
+      "label": "Footer",
+      "name": "footer",
+      "description": "Optional footer",
+      "type": "text",
+      "multiline": true
+    }
+  ]
+}
