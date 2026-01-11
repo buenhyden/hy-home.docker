@@ -6,41 +6,41 @@ Archive/seaweedfs/config/security.toml
 Archive/Terrakube/certs/*.pem
 Archive/supabase/.env
 # Cert
-Certs/*.pem
+certs/*.pem
 # Document
-Doc/클라우드_취약점_점검_가이드.pdf
-Doc/Infisical Emergency Kit.pdf
+docs/클라우드_취약점_점검_가이드.pdf
+docs/Infisical Emergency Kit.pdf
 # Example
-Example/.env
-Example/harbor
-Example/keycloak
-Example/hosts.txt
+examples/.env
+examples/harbor
+examples/keycloak
+examples/hosts.txt
 # Infra Configure Files related to secrets
-Infra/.env
-Infra/mail/certs/*.pem
-Infra/mng-db/init/init_users_dbs.sql
-Infra/nginx/certs/*.pem
-Infra/oauth2-proxy/certs/*.pem
-Infra/oauth2-proxy/config/oauth2-proxy.cfg
-Infra/observability/alertmanager/config/config.yml
-Infra/observability/alloy/config/config.alloy
-Infra/observability/loki/config/loki-config.yaml
-Infra/observability/prometheus/config/alert_rules.yml
-Infra/observability/prometheus/config/prometheus.yml
-Infra/observability/tempo/config/tempo.yaml
-Infra/opensearch/certs/*.pem
-Infra/postgresql-cluster/init/init_users_dbs.sql
-Infra/postgresql-cluster/config/haproxy.cfg
-Infra/redis-cluster/config/redis.conf
-Infra/traefik/certs/*.pem
-Infra/traefik/config/traefik.yml
-Infra/traefik/dynamic/middleware.yml
-Infra/traefik/dynamic/tls.yaml
+infra/.env
+infra/mail/certs/*.pem
+infra/mng-db/init/init_users_dbs.sql
+infra/nginx/certs/*.pem
+infra/oauth2-proxy/certs/*.pem
+infra/oauth2-proxy/config/oauth2-proxy.cfg
+infra/observability/alertmanager/config/config.yml
+infra/observability/alloy/config/config.alloy
+infra/observability/loki/config/loki-config.yaml
+infra/observability/prometheus/config/alert_rules.yml
+infra/observability/prometheus/config/prometheus.yml
+infra/observability/tempo/config/tempo.yaml
+infra/opensearch/certs/*.pem
+infra/postgresql-cluster/init/init_users_dbs.sql
+infra/postgresql-cluster/config/haproxy.cfg
+infra/redis-cluster/config/redis.conf
+infra/traefik/certs/*.pem
+infra/traefik/config/traefik.yml
+infra/traefik/dynamic/middleware.yml
+infra/traefik/dynamic/tls.yaml
 
-Infra/**/.env
-Infra/**/.env.*
+infra/**/.env
+infra/**/.env.*
 # SSH
-Projects/.ssh
+projects/.ssh
 # secrets
 secrets/*.txt
 

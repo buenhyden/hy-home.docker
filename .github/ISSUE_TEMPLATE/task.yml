@@ -1,0 +1,51 @@
+name: ✅ 작업 (Task)
+description:
+  개발 작업이나 리팩토링 등을 위한 템플릿입니다. (Template for dev tasks or
+  refactoring.)
+title: "[Task]: "
+labels: ["task", "triage"]
+body:
+  # [설명/Description] : Markdown 인사말
+  - type: markdown
+    attributes:
+      value: |
+        작업을 생성해주셔서 감사합니다! (Thank you for creating a task!)
+        작업의 목표와 범위를 명확히 해주세요. (Clarify the goal and scope of the task.)
+
+  # [설명/Description] : 작업 내용
+  - type: textarea
+    id: description
+    attributes:
+      label: 📋 작업 설명 (Task Description)
+      description:
+        수행해야 할 작업의 내용을 간략하게 설명해주세요. (Briefly describe the
+        task to be performed.)
+      placeholder:
+        데이터베이스 스키마 마이그레이션 스크립트를 작성해야 합니다. (Need to
+        write DB schema migration scripts.)
+    validations:
+      required: true
+
+  # [설명/Description] : 할 일 목록
+  - type: textarea
+    id: todos
+    attributes:
+      label: ✅ 할 일 목록 (Todo List)
+      description:
+        구체적인 작업 항목을 체크리스트로 작성해주세요. (Write specific items as
+        a checklist.)
+      placeholder: |
+        - [ ] 사용자 테이블 스키마 변경 (User table schema change)
+        - [ ] 데이터 마이그레이션 테스트 (Data migration test)
+    validations:
+      required: true
+
+  # [설명/Description] : 추가 정보
+  - type: textarea
+    id: context
+    attributes:
+      label: 📝 참고 자료 (References)
+      description:
+        참고할 문서나 링크가 있다면 남겨주세요. (Leave links or docs if any.)
+    validations:
+      required: false

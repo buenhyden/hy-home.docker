@@ -1,0 +1,65 @@
+name: 🚀 기능 요청 (Feature Request)
+description:
+  새로운 기능이나 개선사항을 제안해주세요. (Suggest a new feature or
+  improvement.)
+title: "[Feat]: "
+labels: ["enhancement", "triage"]
+body:
+  # [설명/Description] : Markdown 인사말
+  - type: markdown
+    attributes:
+      value: |
+        새로운 아이디어를 제안해주셔서 감사합니다! (Thank you for suggesting a new idea!)
+        이 제안이 어떻게 프로젝트에 도움이 될지 자세히 설명해주세요. (Please explain in detail how this proposal will help the project.)
+
+  # [설명/Description] : 기능의 목적
+  - type: textarea
+    id: problem
+    attributes:
+      label:
+        🤔 어떤 문제를 해결하고 싶나요? (What problem do you want to solve?)
+      description:
+        이 기능이 필요한 이유나 배경을 설명해주세요. (Explain the reason or
+        context for this feature.)
+      # [예시/Example] : "현재 ... 기능이 없어서 불편합니다."
+      placeholder:
+        현재 로그 파일 분석이 너무 느립니다. (Current log file analysis is too
+        slow.)
+    validations:
+      required: true
+
+  # [설명/Description] : 제안하는 해결책
+  - type: textarea
+    id: solution
+    attributes:
+      label: 💡 제안하는 해결책 (Proposed Solution)
+      description:
+        원하는 기능의 동작 방식이나 구현 아이디어를 설명해주세요. (Describe how
+        the feature should work or implementation ideas.)
+      placeholder:
+        멀티스레딩을 도입하여 병렬 처리를 구현하면 좋을 것 같습니다. (It would
+        be good to implement parallel processing using multithreading.)
+    validations:
+      required: true
+
+  # [설명/Description] : 대안
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🔄 고려한 대안 (Alternatives Considered)
+      description:
+        다른 방법이 있다면 함께 적어주세요. (List any other alternatives you've
+        considered.)
+    validations:
+      required: false
+
+  # [설명/Description] : 추가 정보
+  - type: textarea
+    id: context
+    attributes:
+      label: 📝 추가 정보 (Additional Context)
+      description:
+        스크린샷이나 관련 링크 등 도움이 될 만한 정보를 추가해주세요. (Add
+        screenshots, links, or valid info.)
+    validations:
+      required: false
