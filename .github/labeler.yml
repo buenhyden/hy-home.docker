@@ -1,0 +1,36 @@
+# ============================================================================
+# Labeler 설정 (Labeler Configuration)
+#
+# 목적 (Purpose):
+# - PR의 변경된 파일에 따라 자동 라벨 추가 (Auto-label PRs based on changed files)
+#
+# [CUSTOMIZE] 프로젝트 구조에 맞게 수정하세요. (Customize for your project structure.)
+# ============================================================================
+
+# Frontend
+"frontend":
+  - "frontend/**/*"
+  - "src/**/*"
+  - "**/*.tsx"
+  - "**/*.jsx"
+
+# Backend
+"backend":
+  - "backend/**/*"
+  - "server/**/*"
+  - "**/*.py"
+  - "**/*.go"
+
+# Documentation
+"documentation":
+  - "**/*.md"
+  - "docs/**/*"
+
+# CI/CD
+"ci/cd":
+  - ".github/**/*"
+
+# Security
+"security":
+  - "**/security/**/*"
+  - ".github/SECURITY.md"

@@ -1,0 +1,36 @@
+# ============================================================================
+# Dependabot Configuration
+#
+# 의존성을 자동으로 최신 상태로 유지합니다. (Automatically keep dependencies up to date.)
+#
+# [CUSTOMIZE] 리뷰어 설정 (Reviewer Setup)
+# 기본값으로 buenhyden이 설정되어 있습니다. (buenhyden is set as default.)
+# 본인의 GitHub 사용자명으로 변경하세요. (Change to your GitHub username.)
+# ============================================================================
+
+version: 2
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # reviewers:
+    #   - "buenhyden"
+
+  # npm (Node.js)
+  # - package-ecosystem: "npm"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #   open-pull-requests-limit: 10
+  #   reviewers:
+  #     - "buenhyden"
+
+  # pip (Python)
+  # - package-ecosystem: "pip"
+  #   directory: "/"
+  #   schedule:
+  #     interval: "weekly"
+  #   reviewers:
+  #     - "buenhyden"
