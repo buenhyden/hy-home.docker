@@ -24,20 +24,23 @@ secrets:
     file: ../secrets/minio_app_user_password.txt
   minio_app_user:
     file: ../secrets/minio_app_user.txt
+  valkey_password:
+    file: ../secrets/valkey_password.txt
 
 include:
   - traefik/docker-compose.yml
-  - mng-db/docker-compose.yml
-  - oauth2-proxy/docker-compose.yml
-  - keycloak/docker-compose.yml
-  - observability/docker-compose.yml
-  - influxdb/docker-compose.yml
-  - minio/docker-compose.yml
-  - n8n/docker-compose.yml
-  - kafka/docker-compose.yml
-  - ollama/docker-compose.yml
-  - postgresql-cluster/docker-compose.yml
-  - redis-cluster/docker-compose.yml
+  # - mng-db/docker-compose.yml
+  # - oauth2-proxy/docker-compose.yml
+  # - keycloak/docker-compose.yml
+  # - observability/docker-compose.yml
+  # - influxdb/docker-compose.yml
+  # - minio/docker-compose.yml
+  # - n8n/docker-compose.yml
+  # - kafka/docker-compose.yml
+  # - ollama/docker-compose.yml
+  # - postgresql-cluster/docker-compose.yml  
+  # - valkey-cluster/docker-compose.yml
+  # - redis-cluster/docker-compose.yml
   # - opensearch/docker-compose.yml
   # - airflow/docker-compose.yml
   # - nginx/docker-compose.yml
@@ -179,6 +182,42 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_REDIS_DATA_DIR}/node5
+  valkey-data-0:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/node0
+  valkey-data-1:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/node1
+  valkey-data-2:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/node2
+  valkey-data-3:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/node3
+  valkey-data-4:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/node4
+  valkey-data-5:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/node5
   n8n-redis-data:
     # driver: local
     # driver_opts:
@@ -197,6 +236,24 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_REDIS_DATA_DIR}/mng-node
+  n8n-valkey-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/n8n-node
+  oauth2-proxy-valkey-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/oauth2-proxy-node
+  mng-valkey-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/mng-node
   minio-data:
     # driver: local
     # driver_opts:

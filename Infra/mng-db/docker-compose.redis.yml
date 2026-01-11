@@ -1,32 +1,32 @@
 services:
-  mng-valkey:
+  mng-redis:
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: 512M
-    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
-    container_name: mng-valkey
+    image: redis:8.4.0-bookworm  # Redis 8.4.x
+    container_name: mng-redis
     secrets:
-      - valkey_password
+      - redis_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.70
     restart: unless-stopped
     volumes:
-      # 공통 valkey.conf
-      - mng-valkey-data:/data
+      # 공통 redis.conf
+      - mng-redis-data:/data
     command: >
       sh -c '
       redis-server
-      --requirepass "$(cat /run/secrets/valkey_password)"
+      --requirepass "$(cat /run/secrets/redis_password)"
       --appendonly yes
       --port 6379
       '
     # 클러스터 내부 통신 포트는 expose
     expose:
-      - "${VALKEY_PORT}"
-      - "${VALKEY_BUS_PORT}"
+      - "${REDIS_PORT}"
+      - "${REDIS_BUS_PORT}"
     healthcheck:
       test:
         [
@@ -42,14 +42,14 @@ services:
         max-size: "5m"
         max-file: "2"
 
-  mng-valkey-exporter:
+  mng-redis-exporter:
     deploy:
       resources:
         limits:
           cpus: '0.1'
           memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
-    container_name: mng-valkey-exporter
+    container_name: mng-redis-exporter
     expose:
       - "${REDIS_EXPORTER_PORT}"
     networks:
@@ -57,14 +57,14 @@ services:
         ipv4_address: 172.19.0.71
     restart: unless-stopped
     secrets:
-      - valkey_password
+      - redis_password
     entrypoint:
       - /bin/sh
       - -c
     command:
       - |
         echo "Reading password from secret..."
-        export REDIS_PASSWORD=$(cat /run/secrets/valkey_password | tr -d '\n')
+        export REDIS_PASSWORD=$(cat /run/secrets/redis_password | tr -d '\n')
 
         echo "Starting Redis Exporter..."
         # -redis.password-file 대신 -redis.password 사용
@@ -73,7 +73,7 @@ services:
           -redis.password="$REDIS_PASSWORD" \
           -web.listen-address=:${REDIS_EXPORTER_PORT}
     depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
-      mng-valkey:
+      mng-redis:
         condition: service_healthy
     logging:
       driver: "json-file"

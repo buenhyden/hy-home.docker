@@ -1,0 +1,376 @@
+services:
+  # ##############################################################
+  # Redis Cluster Nodes (6개: 3 master + 3 replica)
+  # ##############################################################
+  valkey-node-0:  
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    container_name: valkey-node-0
+    secrets:
+      - valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.60
+    restart: unless-stopped
+    environment:
+      NODE_NAME: valkey-node-0
+      PORT: ${REDIS0_PORT}
+    volumes:
+      # 공통 valkey.conf
+      - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+      # 데이터 영속화
+      - valkey-data-0:/data
+    command: ["sh", "/usr/local/bin/valkey-start.sh"]
+    # 클러스터 내부 통신 포트는 expose
+    # expose:
+    #   - "${REDIS_PORT}"
+    #   - "${REDIS_BUS_PORT}"
+    # 호스트에서 디버깅/개발용으로 6379는 0번 노드만 오픈
+    ports:
+      - "${REDIS0_PORT}:${REDIS0_PORT}"
+      - "${REDIS0_BUS_PORT}:${REDIS0_BUS_PORT}"
+    healthcheck:
+      # secret 파일에서 비밀번호 읽어서 PING 체크
+      test:
+        [
+          "CMD-SHELL",
+          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS0_PORT} ping | grep PONG",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  valkey-node-1:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    container_name: valkey-node-1
+    secrets:
+      - valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.61
+    restart: unless-stopped
+    environment:
+      NODE_NAME: valkey-node-1
+      PORT: ${REDIS1_PORT}
+    volumes:
+      - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+      - valkey-data-1:/data
+    command: ["sh", "/usr/local/bin/valkey-start.sh"]
+    # expose:
+    #   - "${REDIS_PORT}"
+    #   - "${REDIS_BUS_PORT}"
+    ports:
+      - "${REDIS1_PORT}:${REDIS1_PORT}"
+      - "${REDIS1_BUS_PORT}:${REDIS1_BUS_PORT}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS1_PORT} ping | grep PONG",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  valkey-node-2:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    container_name: valkey-node-2
+    secrets:
+      - valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.62
+    restart: unless-stopped
+    environment:
+      NODE_NAME: valkey-node-2
+      PORT: ${REDIS2_PORT}
+    volumes:
+      - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+      - valkey-data-2:/data
+    command: ["sh", "/usr/local/bin/valkey-start.sh"]
+    # expose:
+    #   - "${REDIS_PORT}"
+    #   - "${REDIS_BUS_PORT}"
+    ports:
+      - "${REDIS2_PORT}:${REDIS2_PORT}"
+      - "${REDIS2_BUS_PORT}:${REDIS2_BUS_PORT}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS2_PORT} ping | grep PONG",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  valkey-node-3:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    container_name: valkey-node-3
+    secrets:
+      - valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.63
+    restart: unless-stopped
+    environment:
+      NODE_NAME: valkey-node-3
+      PORT: ${REDIS3_PORT}
+    volumes:
+      - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+      - valkey-data-3:/data
+    command: ["sh", "/usr/local/bin/valkey-start.sh"]
+    # expose:
+    #   - "${REDIS_PORT}"
+    #   - "${REDIS_BUS_PORT}"
+    ports:
+      - "${REDIS3_PORT}:${REDIS3_PORT}"
+      - "${REDIS3_BUS_PORT}:${REDIS3_BUS_PORT}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS3_PORT} ping | grep PONG",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  valkey-node-4:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    container_name: valkey-node-4
+    secrets:
+      - valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.64
+    restart: unless-stopped
+    environment:
+      NODE_NAME: valkey-node-4
+      PORT: ${REDIS4_PORT}
+    volumes:
+      - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+      - valkey-data-4:/data
+    command: ["sh", "/usr/local/bin/valkey-start.sh"]
+    # expose:
+    #   - "${REDIS_PORT}"
+    #   - "${REDIS_BUS_PORT}"
+    ports:
+      - "${REDIS4_PORT}:${REDIS4_PORT}"
+      - "${REDIS4_BUS_PORT}:${REDIS4_BUS_PORT}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS4_PORT} ping | grep PONG",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  valkey-node-5:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
+    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    container_name: valkey-node-5
+    secrets:
+      - valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.65
+    restart: unless-stopped
+    environment:
+      NODE_NAME: valkey-node-5
+      PORT: ${REDIS5_PORT}
+    volumes:
+      - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+      - valkey-data-5:/data
+    command: ["sh", "/usr/local/bin/valkey-start.sh"]
+    # expose:
+    #   - "${REDIS_PORT}"
+    #   - "${REDIS_BUS_PORT}"
+    ports:
+      - "${REDIS5_PORT}:${REDIS5_PORT}"
+      - "${REDIS5_BUS_PORT}:${REDIS5_BUS_PORT}"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS5_PORT} ping | grep PONG",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # ##############################################################
+  # Redis Cluster 초기화용 one-shot 컨테이너
+  #   - 처음 한 번 실행해서 cluster create
+  #   - 이미 클러스터 구성돼 있으면 noop로 끝나도록 스크립트 작성
+  # ##############################################################
+  valkey-cluster-init:
+    image: valkey:8.4
+    container_name: valkey-cluster-init
+    secrets:
+      - valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.66
+    restart: "no"
+    depends_on:
+      valkey-node-0:
+        condition: service_healthy
+      valkey-node-1:
+        condition: service_healthy
+      valkey-node-2:
+        condition: service_healthy
+      valkey-node-3:
+        condition: service_healthy
+      valkey-node-4:
+        condition: service_healthy
+      valkey-node-5:
+        condition: service_healthy
+    volumes:
+      - ./scripts/valkey-cluster-init.sh:/usr/local/bin/valkey-cluster-init.sh:ro
+    command: ["sh", "/usr/local/bin/valkey-cluster-init.sh"]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+  # ##############################################################
+  # Redis Exporter – Prometheus용 메트릭
+  # ##############################################################
+
+  valkey-exporter:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
+    image: oliver006/valkey_exporter:v1.80.1-alpine
+    container_name: valkey-exporter
+    ports:
+      - "${REDIS_EXPORTER_HOST_PORT}:${REDIS_EXPORTER_PORT}"
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.67
+    restart: unless-stopped
+    secrets:
+      - valkey_password
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        echo "Loading Redis password..."
+        export R_PWD=$$(cat /run/secrets/valkey_password | tr -d '\n')
+
+        echo "Starting Exporter (Stateless Mode)..."
+        # [수정] -valkey.addr 옵션을 제거하거나 비워둡니다.
+        # 이렇게 하면 Exporter는 단순히 대기 상태로 시작되며,
+        # Prometheus가 "어디를 긁어오라(Scrape)"고 시킬 때 작동합니다.
+        exec /valkey_exporter \
+          -valkey.addr="valkey://valkey-node-0:6379" \
+          -valkey.password="$$R_PWD" \
+          -web.listen-address=:${REDIS_EXPORTER_PORT}
+    depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
+      valkey-node-0:
+        condition: service_healthy
+      valkey-node-1:
+        condition: service_healthy
+      valkey-node-2:
+        condition: service_healthy
+      valkey-node-3:
+        condition: service_healthy
+      valkey-node-4:
+        condition: service_healthy
+      valkey-node-5:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+
