@@ -2,14 +2,15 @@
 .vscode/
 .mypy_cache/
 # Archive
-Archive/seaweedfs/config/security.toml
-Archive/Terrakube/certs/*.pem
-Archive/supabase/.env
+archive/seaweedfs/config/security.toml
+archive/Terrakube/certs/*.pem
+archive/supabase/.env
+archive/클라우드_취약점_점검_가이드.pdf
+archive/Infisical Emergency Kit.pdf
 # Cert
 certs/*.pem
 # Document
-docs/클라우드_취약점_점검_가이드.pdf
-docs/Infisical Emergency Kit.pdf
+
 # Example
 examples/.env
 examples/harbor

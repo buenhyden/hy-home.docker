@@ -1,13 +1,26 @@
-# Storybook Projects
+# Design System Storybook
 
 ## Overview
-This directory contains Storybook configurations for various frontend frameworks and build tools.
 
-## Contents
-- **react-vite**: Storybook for React with Vite.
-- **react-webpack**: Storybook for React with Webpack.
-- **webcomponents-vite**: Storybook for Web Components with Vite.
-- **webcomponents-webpack**: Storybook for Web Components with Webpack.
+A UI component explorer for the Design System, built with Storybook (React).
 
-## Usage
-Navigate to each subdirectory to find specific instructions for running Storybook for that environment.
+## Services
+
+- **storybook**: Storybook server.
+  - Internal Port: 80
+  - URL: `https://design.${DEFAULT_URL}`
+
+## Configuration
+
+### Environment Variables
+
+- `DEFAULT_URL`: Domain handling.
+
+## Networks
+
+- `infra_net`
+
+## Traefik Routing
+
+- **Domain**: `design.${DEFAULT_URL}`
+- **Auth**: Protected by SSO (Keycloak).
