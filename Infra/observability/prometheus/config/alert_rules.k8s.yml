@@ -1,6 +1,8 @@
 groups:
+  # ============================================================================
   # [Optional] Kubernetes Cluster Monitoring
-  # [Why] Detection of crash looping pods and API latency issues.
+  # [Why] Detection of crash looping pods, resource issues, and API latency.
+  # ============================================================================
   - name: kubernetes_alerts
     rules:
       # [What] Pod CrashLooping / 파드 크래시 루프
@@ -12,18 +14,19 @@ groups:
           severity: warning
         annotations:
           summary:
-            "Kubernetes pod crash looping (instance {{ $labels.instance }})"
+            "Kubernetes pod crash looping ({{ $labels.namespace }}/{{
+            $labels.pod }})"
           description:
-            "Pod {{ $labels.pod }} is crash looping\n  VALUE = {{ $value
-            }}\n  LABELS = {{ $labels }}"
+            "파드 {{ $labels.pod }}가 크래시 루프 상태입니다.\n  VALUE = {{
+            $value }}\n  LABELS = {{ $labels }}"
 
       # [What] API Server Latency High / API 서버 지연 높음
       # [Why] Control plane is slow, affecting cluster operations. / 컨트롤 플레인 응답이 느려 클러스터 작업에 영향을 줍니다.
       - alert: KubernetesApiServerLatencyHigh
         expr:
           histogram_quantile(0.99,
-          sum(rate(apiserver_request_duration_seconds_bucket{verb!~"(?:CONNECT|WATCHLIST|WATCH|PROXY)"}
-          [10m])) WITHOUT (subresource)) > 1
+          sum(rate(apiserver_request_duration_seconds_bucket{verb!~"(?:CONNECT|WATCHLIST|WATCH|PROXY)"}[10m]))
+          WITHOUT (subresource)) > 1
         for: 2m
         labels:
           severity: warning
@@ -32,11 +35,156 @@ groups:
             "Kubernetes API server latency high (instance {{ $labels.instance
             }})"
           description:
-            "Kubernetes API Server 99th percentile latency is > 1s\n  VALUE = {{
-            $value }}\n  LABELS = {{ $labels }}"
+            "Kubernetes API Server 99th 퍼센타일 지연시간이 1초를
+            초과했습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
+      # [What] Pod Not Healthy / 파드 비정상
+      # [Why] Pod has been in non-ready state for too long. / 파드가 오랜 시간 Ready 상태가 아닙니다.
+      - alert: KubernetesPodNotHealthy
+        expr:
+          sum by (namespace, pod)
+          (kube_pod_status_phase{phase=~"Pending|Unknown|Failed"}) > 0
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kubernetes 파드 비정상: {{ $labels.pod }}"
+          description:
+            "파드 {{ $labels.namespace }}/{{ $labels.pod }}가 15분 이상 비정상
+            상태입니다."
+
+      # [What] Deployment Generation Mismatch / 디플로이먼트 세대 불일치
+      # [Why] Deployment has not matched its generation for too long. / 디플로이먼트가 업데이트 상태를 반영하지 못하고 있습니다.
+      - alert: KubernetesDeploymentGenerationMismatch
+        expr:
+          kube_deployment_status_observed_generation !=
+          kube_deployment_metadata_generation
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary:
+            "Kubernetes 디플로이먼트 세대 불일치: {{ $labels.deployment }}"
+          description:
+            "디플로이먼트 {{ $labels.deployment }}가 업데이트 상태를 반영하지
+            못하고 있습니다."
+
+      # [What] Deployment Replicas Mismatch / 디플로이먼트 복제본 불일치
+      # [Why] Desired replicas don't match available replicas. / 원하는 복제본 수와 사용 가능한 복제본 수가 일치하지 않습니다.
+      - alert: KubernetesDeploymentReplicasMismatch
+        expr:
+          kube_deployment_spec_replicas !=
+          kube_deployment_status_replicas_available
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary:
+            "Kubernetes 디플로이먼트 복제본 불일치: {{ $labels.deployment }}"
+          description:
+            "디플로이먼트 {{ $labels.deployment }}의 복제본이 불일치합니다."
+
+      # [What] StatefulSet Down / StatefulSet 다운
+      # [Why] Not all replicas are ready. / 모든 복제본이 준비되지 않았습니다.
+      - alert: KubernetesStatefulSetDown
+        expr:
+          kube_statefulset_replicas != kube_statefulset_status_replicas_ready
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kubernetes StatefulSet 다운: {{ $labels.statefulset }}"
+          description:
+            "StatefulSet {{ $labels.statefulset }}의 일부 복제본이 준비되지
+            않았습니다."
+
+      # [What] PersistentVolumeClaim Pending / PVC 대기 중
+      # [Why] PVC has been pending for too long. / PVC가 오랜 시간 대기 중입니다.
+      - alert: KubernetesPersistentVolumeClaimPending
+        expr: kube_persistentvolumeclaim_status_phase{phase="Pending"} == 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kubernetes PVC 대기 중: {{ $labels.persistentvolumeclaim }}"
+          description:
+            "PVC {{ $labels.persistentvolumeclaim }}가 2분 이상 대기 중입니다."
+
+      # [What] Volume Full Prediction / 볼륨 예측 가득 참
+      # [Why] Volume is predicted to be full in 4 days. / 현재 추세로 볼륨이 4일 내 가득 찰 것으로 예상됩니다.
+      - alert: KubernetesVolumeFullInFourDays
+        expr:
+          predict_linear(kubelet_volume_stats_available_bytes[6h], 4 * 24 *
+          3600) < 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kubernetes 볼륨 예측 가득 참"
+          description: "현재 추세로 볼륨이 4일 내 가득 찰 것으로 예상됩니다."
+
+      # [What] Container OOMKilled / 컨테이너 OOMKilled
+      # [Why] Container was killed due to OOM. / 컨테이너가 OOM으로 종료되었습니다.
+      - alert: KubernetesContainerOomKiller
+        expr:
+          (kube_pod_container_status_restarts_total -
+          kube_pod_container_status_restarts_total offset 10m >= 1) and ignoring
+          (reason)
+          min_over_time(kube_pod_container_status_last_terminated_reason{reason="OOMKilled"}[10m])
+          == 1
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kubernetes 컨테이너 OOMKilled: {{ $labels.container }}"
+          description:
+            "컨테이너 {{ $labels.container }}가 OOM으로 종료되었습니다."
+
+      # [What] Job Failed / Job 실패
+      # [Why] Kubernetes Job failed. / Kubernetes Job이 실패했습니다.
+      - alert: KubernetesJobFailed
+        expr: kube_job_status_failed > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kubernetes Job 실패: {{ $labels.job_name }}"
+          description:
+            "Job {{ $labels.namespace }}/{{ $labels.job_name }}이 실패했습니다."
+
+      # [What] CronJob Suspended / CronJob 중지됨
+      # [Why] CronJob has been suspended. / CronJob이 중지되었습니다.
+      - alert: KubernetesCronjobSuspended
+        expr: kube_cronjob_spec_suspend != 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kubernetes CronJob 중지됨: {{ $labels.cronjob }}"
+          description:
+            "CronJob {{ $labels.namespace }}/{{ $labels.cronjob }}이
+            중지되었습니다."
+
+      # [What] HPA Scaling Issues / HPA 스케일링 문제
+      # [Why] HPA is not working correctly. / HPA가 제대로 작동하지 않습니다.
+      - alert: KubernetesHpaScalingIssue
+        expr:
+          kube_horizontalpodautoscaler_status_current_replicas !=
+          kube_horizontalpodautoscaler_status_desired_replicas
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary:
+            "Kubernetes HPA 스케일링 문제: {{ $labels.horizontalpodautoscaler }}"
+          description:
+            "HPA {{ $labels.horizontalpodautoscaler }}가 원하는 복제본 수에
+            도달하지 못했습니다."
+
+  # ============================================================================
   # [Optional] Etcd Monitoring
   # [Why] Etcd is the brain of Kubernetes; its failure stops the cluster.
+  # ============================================================================
   - name: etcd_alerts
     rules:
       # [What] Etcd No Leader / Etcd 리더 없음
@@ -49,7 +197,7 @@ groups:
         annotations:
           summary: "Etcd no leader (instance {{ $labels.instance }})"
           description:
-            "Etcd member likely lost leader\n  VALUE = {{ $value }}\n  LABELS =
+            "Etcd 멤버가 리더를 잃었습니다.\n  VALUE = {{ $value }}\n  LABELS =
             {{ $labels }}"
 
       # [What] Etcd High Commit Duration / Etcd 커밋 지연 높음
@@ -64,11 +212,77 @@ groups:
         annotations:
           summary: "Etcd high commit duration (instance {{ $labels.instance }})"
           description:
-            "Etcd 99th percentile commit duration is > 0.5s\n  VALUE = {{ $value
-            }}\n  LABELS = {{ $labels }}"
+            "Etcd 99th 퍼센타일 커밋 지연이 0.5초를 초과했습니다.\n  VALUE = {{
+            $value }}\n  LABELS = {{ $labels }}"
 
+      # [What] Etcd Insufficient Members / Etcd 멤버 부족
+      # [Why] Not enough members for quorum. / 쿼럼을 위한 멤버가 부족합니다.
+      - alert: EtcdInsufficientMembers
+        expr: count(etcd_server_id) < 3
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Etcd 멤버 부족"
+          description: "Etcd 클러스터 멤버가 3개 미만입니다."
+
+      # [What] Etcd High WAL Fsync Duration / Etcd WAL fsync 지연 높음
+      # [Why] WAL fsync is taking too long. / WAL fsync에 시간이 오래 걸립니다.
+      - alert: EtcdHighFsyncDurations
+        expr:
+          histogram_quantile(0.99,
+          rate(etcd_disk_wal_fsync_duration_seconds_bucket[5m])) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Etcd WAL fsync 지연 높음"
+          description: "Etcd 99 퍼센타일 WAL fsync 지연이 0.5초를 초과했습니다."
+
+      # [What] Etcd Member Communication Slow / Etcd 멤버 통신 느림
+      # [Why] Communication between members is slow. / 멤버 간 통신이 느립니다.
+      - alert: EtcdMemberCommunicationSlow
+        expr:
+          histogram_quantile(0.99,
+          rate(etcd_network_peer_round_trip_time_seconds_bucket[5m])) > 0.15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Etcd 멤버 통신 느림"
+          description: "Etcd 멤버 간 99 퍼센타일 RTT가 150ms를 초과했습니다."
+
+      # [What] Etcd High Number of Failed GRPC Requests / Etcd gRPC 요청 실패 높음
+      # [Why] Too many gRPC requests are failing. / gRPC 요청 실패가 너무 많습니다.
+      - alert: EtcdHighNumberOfFailedGrpcRequests
+        expr:
+          100 *
+          sum(rate(grpc_server_handled_total{grpc_code=~"Unknown|FailedPrecondition|ResourceExhausted|Internal|Unavailable|DataLoss|DeadlineExceeded"}[5m]))
+          BY (grpc_service, grpc_method) /
+          sum(rate(grpc_server_handled_total[5m])) BY (grpc_service,
+          grpc_method) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Etcd gRPC 요청 실패율 높음"
+          description: "Etcd gRPC 요청 실패율이 1%를 초과했습니다."
+
+      # [What] Etcd High Number of Leader Changes / Etcd 리더 변경 빈번
+      # [Why] Leader changes frequently, indicating cluster instability. / 리더가 자주 변경되어 클러스터 불안정을 나타냅니다.
+      - alert: EtcdHighNumberOfLeaderChanges
+        expr: increase(etcd_server_leader_changes_seen_total[10m]) > 2
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Etcd 리더 변경 빈번"
+          description: "10분 내 Etcd 리더가 2회 이상 변경되었습니다."
+
+  # ============================================================================
   # [Optional] Istio Service Mesh
-  # [Why] Monitoring mesh traffic health.
+  # [Why] Monitoring mesh traffic health and service mesh operations.
+  # ============================================================================
   - name: istio_alerts
     rules:
       # [What] Istio High 5xx Error Rate / Istio 5xx 에러율 높음
@@ -84,11 +298,83 @@ groups:
         annotations:
           summary: "Istio high 5xx error rate"
           description:
-            "Istio 5xx error rate is > 5%\n  VALUE = {{ $value }}\n  LABELS = {{
-            $labels }}"
+            "Istio 5xx 에러율이 5%를 초과했습니다.\n  VALUE = {{ $value
+            }}\n  LABELS = {{ $labels }}"
 
+      # [What] Istio High 4xx Error Rate / Istio 4xx 에러율 높음
+      # [Why] Too many 4xx errors in the mesh. / 메쉬에서 4xx 에러가 너무 많습니다.
+      - alert: IstioHigh4xxErrorRate
+        expr:
+          sum(rate(istio_requests_total{reporter="destination",
+          response_code=~"4.*"}[5m])) /
+          sum(rate(istio_requests_total{reporter="destination"}[5m])) * 100 > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Istio 4xx 에러율 높음"
+          description: "Istio 4xx 에러율이 5%를 초과했습니다."
+
+      # [What] Istio High Request Latency / Istio 요청 지연 높음
+      # [Why] Request latency is too high. / 요청 지연이 너무 높습니다.
+      - alert: IstioHighRequestLatency
+        expr:
+          sum(rate(istio_request_duration_milliseconds_sum{reporter="destination"}[1m]))
+          by (destination_workload, destination_service_name) /
+          sum(rate(istio_request_duration_milliseconds_count{reporter="destination"}[1m]))
+          by (destination_workload, destination_service_name) > 100
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary:
+            "Istio 요청 지연 높음: {{ $labels.destination_service_name }}"
+          description:
+            "Istio 서비스 {{ $labels.destination_service_name }}의 평균 요청
+            지연이 100ms를 초과했습니다."
+
+      # [What] Istio Pilot High Push Errors / Pilot 푸시 에러율 높음
+      # [Why] Pilot is having issues pushing config to proxies. / Pilot이 프록시에 설정을 푸시하는데 문제가 있습니다.
+      - alert: IstioPilotHighPushErrors
+        expr:
+          sum(rate(pilot_xds_push_errors[1m])) / sum(rate(pilot_xds_pushes[1m]))
+          * 100 > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Istio Pilot 푸시 에러율 높음"
+          description: "Istio Pilot XDS 푸시 에러율이 5%를 초과했습니다."
+
+      # [What] Istio Gateway Availability Drop / 게이트웨이 가용성 저하
+      # [Why] Gateway is experiencing availability issues. / 게이트웨이 가용성에 문제가 있습니다.
+      - alert: IstioKubernetesGatewayAvailabilityDrop
+        expr:
+          min(kube_deployment_status_replicas_available{deployment=~"istio.*"})
+          by (deployment) == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Istio 게이트웨이 가용성 저하: {{ $labels.deployment }}"
+          description:
+            "Istio 게이트웨이 {{ $labels.deployment }}의 가용 복제본이 없습니다."
+
+      # [What] Istio Sidecar Injection Failed / 사이드카 인젝션 실패
+      # [Why] Sidecar injection is failing. / 사이드카 인젝션이 실패하고 있습니다.
+      - alert: IstioSidecarInjectionFailed
+        expr: sum(rate(sidecar_injection_failure_total[1m])) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Istio 사이드카 인젝션 실패"
+          description: "Istio 사이드카 인젝션이 실패하고 있습니다."
+
+  # ============================================================================
   # [Optional] ArgoCD GitOps
-  # [Why] Measuring application deployment health.
+  # [Why] Measuring application deployment health and GitOps sync status.
+  # ============================================================================
   - name: argocd_alerts
     rules:
       # [What] Application Not Synced / 애플리케이션 동기화 실패
@@ -99,11 +385,10 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary:
-            "ArgoCD application not synced (instance {{ $labels.instance }})"
+          summary: "ArgoCD application not synced ({{ $labels.name }})"
           description:
-            "Application {{ $labels.name }} is not synced\n  VALUE = {{ $value
-            }}\n  LABELS = {{ $labels }}"
+            "애플리케이션 {{ $labels.name }}이 동기화되지 않았습니다.\n  VALUE =
+            {{ $value }}\n  LABELS = {{ $labels }}"
 
       # [What] Application Unhealthy / 애플리케이션 비정상
       # [Why] Application health check failed. / 애플리케이션 상태 검사에 실패했습니다.
@@ -113,8 +398,31 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary:
-            "ArgoCD application unhealthy (instance {{ $labels.instance }})"
+          summary: "ArgoCD application unhealthy ({{ $labels.name }})"
           description:
-            "Application {{ $labels.name }} is unhealthy\n  VALUE = {{ $value
-            }}\n  LABELS = {{ $labels }}"
+            "애플리케이션 {{ $labels.name }}이 비정상 상태입니다.\n  VALUE = {{
+            $value }}\n  LABELS = {{ $labels }}"
+
+      # [What] ArgoCD Sync Failed / ArgoCD 동기화 실패
+      # [Why] Sync operation failed. / 동기화 작업이 실패했습니다.
+      - alert: ArgoAppSyncFailed
+        expr: argocd_app_sync_status{sync_status="Failed"} == 1
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ArgoCD 동기화 실패: {{ $labels.name }}"
+          description:
+            "애플리케이션 {{ $labels.name }}의 동기화가 실패했습니다."
+
+      # [What] ArgoCD Out of Sync / ArgoCD 동기화 안됨
+      # [Why] Application is out of sync for too long. / 애플리케이션이 오랜 시간 동기화되지 않았습니다.
+      - alert: ArgoAppOutOfSync
+        expr: argocd_app_info{sync_status="OutOfSync"} == 1
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "ArgoCD 동기화 안됨: {{ $labels.name }}"
+          description:
+            "애플리케이션 {{ $labels.name }}이 30분 이상 OutOfSync 상태입니다."

@@ -28,6 +28,7 @@ infra/observability/alertmanager/config/config.yml
 infra/observability/alloy/config/config.alloy
 infra/observability/loki/config/loki-config.yaml
 infra/observability/prometheus/config/alert_rules.yml
+infra/observability/prometheus/config/alert_rules.k8s.yml
 infra/observability/prometheus/config/prometheus.yml
 infra/observability/tempo/config/tempo.yaml
 infra/opensearch/certs/*.pem
