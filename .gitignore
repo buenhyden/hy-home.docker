@@ -16,6 +16,7 @@ examples/.env
 examples/harbor
 examples/keycloak
 examples/hosts.txt
+
 # Infra Configure Files related to secrets
 infra/.env
 infra/mail/certs/*.pem
