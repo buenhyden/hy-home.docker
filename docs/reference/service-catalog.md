@@ -7,7 +7,7 @@ Complete reference of all infrastructure services with access details.
 ### Observability & Monitoring
 
 | Service | URL | Port | Purpose |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | **Grafana** | <https://grafana.127.0.0.1.nip.io> | - | Unified observability dashboard |
 | **Prometheus** | <https://prometheus.127.0.0.1.nip.io> | - | Metrics collection |
 | **Alertmanager** | <https://alertmanager.127.0.0.1.nip.io> | - | Alert management |
@@ -16,7 +16,7 @@ Complete reference of all infrastructure services with access details.
 ### Database Management UIs
 
 | Service | URL | Port | Purpose |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | **RedisInsight** | <https://redisinsight.127.0.0.1.nip.io> | - | Valkey cluster management (Redis-compatible) |
 | **Kafka UI** | <https://kafka-ui.127.0.0.1.nip.io> | - | Kafka cluster management |
 | **MinIO Console** | <https://minio-console.127.0.0.1.nip.io> | - | S3 storage management |
@@ -25,7 +25,7 @@ Complete reference of all infrastructure services with access details.
 ### Applications
 
 | Service | URL | Port | Purpose |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | **n8n** | <https://n8n.127.0.0.1.nip.io> | - | Workflow automation |
 | **Ollama WebUI** | <https://chat.127.0.0.1.nip.io> | - | LLM chat interface |
 | **Keycloak Admin** | <https://keycloak.127.0.0.1.nip.io/admin> | - | IAM administration |
@@ -96,15 +96,15 @@ http://localhost:8081
 ### Reverse Proxy & Security
 
 | Component | Image | Version | Notes |
-|:---|:---|:---|:---|
-| Traefik | `traefik` | 3.3 | Dynamic routing |
+| :--- | :--- | :--- | :--- |
+| Traefik | `traefik` | v3.6.6 | Dynamic routing |
 | OAuth2 Proxy | `quay.io/oauth2-proxy/oauth2-proxy` | v7.8.1 | Forward auth |
 | Keycloak | `quay.io/keycloak/keycloak` | 26.5.0 | SSO/IAM |
 
 ### Data Storage
 
 | Component | Image | Version | Type |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | PostgreSQL | `bitnami/postgresql` | 17 | Relational DB (HA) |
 | Valkey | `valkey/valkey` | 9.0.1 | Distributed Cache (Redis Fork) |
 | InfluxDB | `influxdb` | 2.8 | Time-series |
@@ -114,7 +114,7 @@ http://localhost:8081
 ### Messaging & Streaming
 
 | Component | Image | Version | Notes |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | Kafka | `confluentinc/cp-kafka` | 8.1.1 | KRaft mode |
 | Schema Registry | `confluentinc/cp-schema-registry` | 8.1.1 | Schema management |
 | Kafka Connect | `confluentinc/cp-kafka-connect` | 8.1.1 | Integrations |
@@ -123,7 +123,7 @@ http://localhost:8081
 ### Observability Stack
 
 | Component | Image | Version | Notes |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | Prometheus | `prom/prometheus` | latest | Metrics DB |
 | Grafana | `grafana/grafana` | latest | Dashboards |
 | Loki | `grafana/loki` | latest | Log aggregation |
@@ -134,7 +134,7 @@ http://localhost:8081
 ### Applications
 
 | Component | Image | Version | Purpose |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | n8n | `n8nio/n8n` | latest | Workflow automation |
 | Ollama | `ollama/ollama` | latest | LLM inference |
 | Open WebUI | `ghcr.io/open-webui/open-webui` | main | LLM chat UI |
@@ -156,7 +156,7 @@ These services are available in the `infra/` directory but are commented out in 
 ## Port Mappings
 
 | Service | Host Port | Container Port | Protocol |
-|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- |
 | Traefik HTTP | 80 | 80 | HTTP |
 | Traefik HTTPS | 443 | 443 | HTTPS |
 | PostgreSQL Write | 5000 | 5000 | TCP |

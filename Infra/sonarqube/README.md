@@ -10,11 +10,19 @@ Automated code review and code quality analysis tool.
 - **Database**: Connects to the main `postgresql-cluster` or a dedicated DB (Env: `SONAR_JDBC_URL`).
 - **Port**: `${SONARQUBE_PORT}` (9000).
 
+## Network
+
+Unlike other services in this infrastructure, SonarQube is configured with **Dynamic IP** assignment on the `infra_net` network.
+
+| Service | IP Address |
+| :--- | :--- |
+| `sonarqube` | Dynamic (DHCP) |
+
 ## Environment Variables
 
-- `SONAR_JDBC_URL`
-- `SONAR_JDBC_USERNAME`
-- `SONAR_JDBC_PASSWORD`
+- `SONAR_JDBC_URL`: Connection string for the database.
+- `SONAR_JDBC_USERNAME`: Database user.
+- `SONAR_JDBC_PASSWORD`: Database password.
 
 ## Traefik Configuration
 

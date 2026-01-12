@@ -10,6 +10,14 @@ A Vector Database for AI applications, used here primarily for RAG (Retrieval-Au
 - **Port**: `${QDRANT_PORT}` (6333)
 - **Volumes**: Data persisted in `qdrant-data`.
 
+## Network
+
+Configured with a static IP on `infra_net`.
+
+| Service | IP Address |
+| :--- | :--- |
+| `qdrant` | `172.19.0.41` |
+
 ## Traefik Configuration
 
 - **Domain**: `qdrant.${DEFAULT_URL}`

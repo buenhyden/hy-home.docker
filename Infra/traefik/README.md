@@ -21,5 +21,8 @@ The main Reverse Proxy and Load Balancer for the infrastructure. It manages rout
 
 ## Network
 
-- **IP**: `172.19.0.13` (Static) on `infra_net`.
-- **Aliases**: `keycloak.${DEFAULT_URL}`, `auth.${DEFAULT_URL}`, `whoami.${DEFAULT_URL}`.
+Configured with a static IP and crucial aliases on `infra_net`.
+
+| Service | IP Address | Aliases |
+| :--- | :--- | :--- |
+| `traefik` | `172.19.0.13` | `keycloak.*`, `auth.*`, `whoami.*` |

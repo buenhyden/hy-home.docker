@@ -23,6 +23,16 @@ Terrakube is an open-source alternative to Terraform Cloud/Enterprise. It allows
 - **Internal Port**: `${TERRAKUBE_EXECUTOR_PORT}`
 - **Volumes**: `/var/run/docker.sock:/var/run/docker.sock`
 
+## Network
+
+All Terrakube components are configured with **Dynamic IP** assignment on the `infra_net` network.
+
+| Service | IP Address |
+| :--- | :--- |
+| `terrakube-api` | Dynamic (DHCP) |
+| `terrakube-ui` | Dynamic (DHCP) |
+| `terrakube-executor` | Dynamic (DHCP) |
+
 ## Environment Variables
 
 ### Common

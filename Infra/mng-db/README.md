@@ -1,31 +1,66 @@
-# Management Databases
+# Management Databases Infrastructure
 
 ## Overview
 
-Shared database infrastructure for management tools, including **Valkey** (Redis fork) and **PostgreSQL**.
+This directory contains the configuration for shared management databases used by various platform services. Despite the folder name `mng-db` (historically "Management DB"), it currently hosts **Valkey** (Redis alternative) and **PostgreSQL**.
 
-## Service Details
+## Services
 
-### Valkey (`mng-valkey`)
+### 1. Valkey (`mng-valkey`)
+
+A high-performance key-value store (fork of Redis).
 
 - **Image**: `valkey/valkey:9.0.1-alpine`
-- **Port**: `${VALKEY_PORT}` (Internal)
-- **Secrets**: `valkey_password`
-- **Exporter**: `mng-valkey-exporter` (Port `${VALKEY_EXPORTER_PORT}`)
+- **Port**: `${VALKEY_PORT}` (Exposed to Infra settings)
+- **Security**: Password protected via Docker Secret `valkey_password`.
+- **Exporter**: `mng-valkey-exporter` exposed on `${VALKEY_EXPORTER_PORT}`.
 
-### PostgreSQL (`mng-pg`)
+### 2. PostgreSQL (`mng-pg`)
+
+A powerful, open-source object-relational database system.
 
 - **Image**: `postgres:17-bookworm`
-- **Port**: `${POSTGRES_PORT}` (Internal)
-- **Init**: Uses `mng-pg-init` to run `init_users_dbs.sql`.
-- **Exporter**: `mng-pg-exporter` (Port `${POSTGRES_EXPORTER_PORT}`)
+- **Port**: `${POSTGRES_PORT}`
+- **Security**: Superuser password set via `${PGPASSWORD_SUPERUSER}`.
+- **Initialization**: A dedicated sidecar container `mng-pg-init` waits for the DB to be ready and runs `init_users_dbs.sql` to provision users and databases.
+- **Exporter**: `mng-pg-exporter` exposed on `${POSTGRES_EXPORTER_PORT}`.
 
-### RedisInsight (`redisinsight`)
+### 3. RedisInsight (`redisinsight`)
+
+A GUI for managing and visualizing data in Valkey/Redis.
 
 - **Image**: `redis/redisinsight:3.0.1`
-- **Purpose**: GUI for managing Redis/Valkey.
-- **Traefik**: `redisinsight.${DEFAULT_URL}` (with SSO).
+- **Network**: `infra_net`
+- **Traefik**: Exposed at `redisinsight.${DEFAULT_URL}` with **SSO Authentication**.
 
-## Networks
+## Networking
 
-- Static IPs assigned in `infra_net` (e.g., `172.19.0.70`, `172.19.0.72`).
+All services are assigned **Static IPs** in the `infra_net` network for reliable discovery:
+
+| Service | Static IPv4 |
+| :--- | :--- |
+| **Valkey** | `172.19.0.70` |
+| **Valkey Exporter** | `172.19.0.71` |
+| **PostgreSQL** | `172.19.0.72` |
+| **PostgreSQL Exporter** | `172.19.0.73` |
+| **RedisInsight** | `172.19.0.68` |
+
+## Data Persistence
+
+- **Valkey**: `mng-valkey-data` (Mapped to `/data`)
+- **PostgreSQL**: `mng-pg-data` (Mapped to `/var/lib/postgresql/data`)
+- **RedisInsight**: `redisinsight-data` (Mapped to `/db`)
+
+## Usage
+
+### Connecting to Valkey (Internal)
+
+```bash
+valkey-cli -h mng-valkey -p 6379 -a <server_password>
+```
+
+### Connecting to PostgreSQL (Internal)
+
+```bash
+psql -h mng-pg -U postgres
+```

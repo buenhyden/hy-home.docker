@@ -30,6 +30,23 @@ A High Availability (HA) PostgreSQL cluster using **Patroni**, **etcd**, and **H
 - **Init**: `pg-cluster-init` runs `init_users_dbs.sql` via the Write endpoint.
 - **Exporters**: Sidecar exporters for each PG node.
 
+## Network
+
+Services are assigned static IPs in the `172.19.0.5X` range on `infra_net`.
+
+| Service | IP Address |
+| :--- | :--- |
+| `etcd-1` | `172.19.0.50` |
+| `etcd-2` | `172.19.0.51` |
+| `etcd-3` | `172.19.0.52` |
+| `pg-0` | `172.19.0.53` |
+| `pg-1` | `172.19.0.54` |
+| `pg-2` | `172.19.0.55` |
+| `pg-router` | `172.19.0.56` |
+| `pg-0-exporter` | `172.19.0.57` |
+| `pg-1-exporter` | `172.19.0.58` |
+| `pg-2-exporter` | `172.19.0.59` |
+
 ## Usage
 
 Connect applications to the **HAProxy** ports, not individual nodes, to ensure HA routing work correctly.

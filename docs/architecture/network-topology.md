@@ -33,14 +33,18 @@ All infrastructure services communicate via a dedicated Docker bridge network wi
 
 Services with static IPs for stable internal communication:
 
-| Service | Static IP | Purpose |
-|:---|:---|:---|
-| Traefik | `172.19.0.2` | Ingress controller |
-| Keycloak | `172.19.0.10` | IAM |
-| PostgreSQL HAProxy | `172.19.0.20` | DB load balancer |
-| Kafka Brokers | `172.19.0.31-33` | Event streaming |
-| Redis Cluster Nodes | Assigned by Docker | Cache cluster |
-| Grafana | `172.19.0.50` | Observability dashboard |
+### Service Groups
+
+Services are assigned static IPs in logical blocks within the `172.19.0.0/16` subnet to facilitate management and firewall rules.
+
+| IP Block | Service Group | Services |
+| :--- | :--- | :--- |
+| `172.19.0.10-19` | **Core Infrastructure** | Keycloak (`.10`), MinIO (`.12`), Traefik (`.13`), OAuth2 Proxy (`.14`), MailHog (`.15`) |
+| `172.19.0.20-29` | **Kafka Cluster** | Brokers (`.20` - `.22`), Schema Registry (`.23`), Connect (`.24`), REST Proxy (`.25`), UI (`.26`), Exporter (`.27`) |
+| `172.19.0.30-39` | **Observability** | Prometheus (`.30`), Loki (`.31`), Tempo (`.32`), Grafana (`.33`), Alloy (`.34`), cAdvisor (`.35`), Alertmanager (`.36`), Pushgateway (`.37`) |
+| `172.19.0.40-49` | **AI & ML** | Ollama (`.40`), Qdrant (`.41`), Open WebUI (`.42`), Export (`.43`) |
+| `172.19.0.50-59` | **PostgreSQL HA** | etcd (`.50` - `.52`), Postgres (`.53` - `.55`), HAProxy (`.56`), Exporters (`.57` - `.59`) |
+| `172.19.0.60-69` | **Cache (Valkey/Redis)** | Nodes (`.60` - `.65`), Init (`.66`), Exporter (`.67`) |
 
 > **Note**: Most services use Docker's automatic IP assignment within the subnet range.
 
@@ -50,7 +54,7 @@ Services with static IPs for stable internal communication:
 
 Services are accessible via container names within the `infra_net`:
 
-```
+```text
 kafka-1.infra_net
 postgresql-haproxy.infra_net
 grafana.infra_net
@@ -60,7 +64,7 @@ grafana.infra_net
 
 Services exposed via Traefik use wildcard DNS with `.nip.io`:
 
-```
+```text
 https://grafana.127.0.0.1.nip.io
 https://kafka-ui.127.0.0.1.nip.io
 https://keycloak.127.0.0.1.nip.io
@@ -103,12 +107,12 @@ Common middleware applied:
 ### Exposed Ports (Host → Container)
 
 | Service | Host Port | Container Port | Protocol | Purpose |
-|:---|:---|:---|:---|:---|
+| :--- | :--- | :--- | :--- | :--- |
 | Traefik | `80` | `80` | HTTP | HTTP redirect |
 | Traefik | `443` | `443` | HTTPS | Main entry |
 | PostgreSQL (Write) | `5000` | `5000` | TCP | DB writes |
 | PostgreSQL (Read) | `5001` | `5001` | TCP | DB reads |
-| Redis Cluster | `6379` | `6379` | TCP | Cache |
+| Valkey/Redis Cluster | `6379` | `6379` | TCP | Cache |
 | Kafka Brokers | `9092-9094` | `9092` | TCP | Event streaming |
 | InfluxDB | Via Traefik | `8086` | HTTP | Time-series DB |
 | MinIO API | Via Traefik | `9000` | HTTP | S3 API |
@@ -148,7 +152,7 @@ lsof -i :5432
 
 If `.nip.io` fails, add to `/etc/hosts`:
 
-```
+```properties
 127.0.0.1 grafana.127.0.0.1.nip.io
 127.0.0.1 keycloak.127.0.0.1.nip.io
 ```

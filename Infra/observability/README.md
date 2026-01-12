@@ -60,3 +60,14 @@ A comprehensive observability stack based on the LGTM (Loki, Grafana, Tempo, Mim
 ## Network
 
 All services are assigned static IPs in the `172.19.0.3X` range on `infra_net`.
+
+| Service | IP Address |
+| :--- | :--- |
+| **Prometheus** | `172.19.0.30` |
+| **Loki** | `172.19.0.31` |
+| **Tempo** | `172.19.0.32` |
+| **Grafana** | `172.19.0.33` |
+| **Alloy** | `172.19.0.34` |
+| **cAdvisor** | `172.19.0.35` |
+| **Alertmanager** | `172.19.0.36` |
+| **Pushgateway** | `172.19.0.37` |

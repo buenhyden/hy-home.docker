@@ -2,31 +2,82 @@
 
 ## Overview
 
-A 3-node CouchDB cluster configuration. It uses a setup helper container (`couchdb-cluster-init`) to automatically join nodes into a cluster.
+High-Availability 3-node CouchDB cluster. This setup automatically configures a distributed database cluster using a dedicated initialization container.
 
-## Service Details
+## Architecture & Services
 
-- **Image**: `couchdb:3.5.1`
-- **Nodes**: `couchdb-1`, `couchdb-2`, `couchdb-3`
-- **Helper**: `couchdb-cluster-init` (Exits after setup)
-- **Volumes**:
-  - `couchdb1-data`, `couchdb2-data`, `couchdb3-data`: Persistent storage for each node.
+| Service | Description | Role |
+| :--- | :--- | :--- |
+| `couchdb-1` | Database Node 1 | Seed Node / Coordinator |
+| `couchdb-2` | Database Node 2 | Cluster Member |
+| `couchdb-3` | Database Node 3 | Cluster Member |
+| `couchdb-cluster-init`| Initialization Script | Configuring the cluster (Ephemeral) |
+
+### Initialization Process
+
+The `couchdb-cluster-init` container waits for all nodes to be healthy, then:
+
+1. **Joins** `couchdb-2` and `couchdb-3` to `couchdb-1`.
+2. **Finishes** the cluster setup.
+3. **Creates** system databases (`_users`, `_replicator`, `_global_changes`).
+4. Exits successfully (restart policy: `no`).
 
 ## Environment Variables
 
-- `COUCHDB_USER`: Admin username.
-- `COUCHDB_PASSWORD`: Admin password.
-- `COUCHDB_COOKIE`: Erlang magic cookie for cluster sync.
-- `NODENAME`: Node identifier (e.g., `couchdb-1.infra_net`).
+| Variable | Description |
+| :--- | :--- |
+| `COUCHDB_USER` | Admin username |
+| `COUCHDB_PASSWORD` | Admin password |
+| `COUCHDB_COOKIE` | Erlang magic cookie for inter-node authentication |
+| `NODENAME` | Unique Erlang node name (e.g., `couchdb-1.infra_net`) |
 
-## Traefik Configuration
+## Volumes
 
-The cluster uses **Sticky Sessions** to ensure consistency directly from the load balancer.
+Each node has its own persistent storage:
 
-- **Domain**: `couchdb.${DEFAULT_URL}`
-- **Service Name**: `couchdb-cluster`
-- **Load Balancing**:
-  - Sticky Cookie Name: `couchdb_sticky`
-  - Sticky Cookie Enabled: `true`
+- `couchdb1-data` → `/opt/couchdb/data`
+- `couchdb2-data` → `/opt/couchdb/data`
+- `couchdb3-data` → `/opt/couchdb/data`
 
-All nodes (`couchdb-1`, `couchdb-2`, `couchdb-3`) register themselves to the `couchdb-cluster` Traefik service.
+## Networking & Ports
+
+Nodes communicate via the internal `infra_net` network using DNS aliases (`couchdb-1.infra_net`, etc.).
+
+### Exposed Ports (Internal)
+
+- **5984**: HTTP API (Database commands)
+- **4369**: Erlang Port Mapper Daemon (EPMD)
+- **9100-9200**: Erlang Distribution (Cluster communication)
+
+> **Note**: Ports are exposed to the internal network but not published to the host by default for security. Access is managed via Traefik.
+
+## Traefik Configuration (Sticky Sessions)
+
+To ensure Read-Your-Own-Writes consistency behind a load balancer, **Sticky Sessions** are enabled.
+
+- **Host**: `couchdb.${DEFAULT_URL}`
+- **Entrypoint**: `websecure` (TLS Enabled)
+- **Service**: `couchdb-cluster`
+- **Sticky Cookie**: `couchdb_sticky`
+
+All three nodes register to the same `couchdb-cluster` service in Traefik, distributing traffic while maintaining session affinity.
+
+## Usage
+
+### Start Cluster
+
+```bash
+docker-compose up -d
+```
+
+### Verify Status
+
+Check the status of the setup container or query the cluster endpoint:
+
+```bash
+# Check setup logs
+docker logs couchdb-cluster-init
+
+# Use the API (via Traefik or locally)
+curl https://couchdb.<your-domain>/_up
+```

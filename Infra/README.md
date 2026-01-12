@@ -12,7 +12,7 @@ This directory contains the Docker Compose configurations for the project's infr
 | **InfluxDB** | Time-series database. | [Active](./influxdb) |
 | **Kafka** | Event streaming platform (KRaft mode). | [Active](./kafka) |
 | **Keycloak** | Identity and Access Management (IAM). | [Active](./keycloak) |
-| **ksqlDB** | Database purpose-built for stream processing applications. | [Active](./ksql) |
+| **ksqlDB** | Database purpose-built for stream processing applications. | [Optional](./ksql) |
 | **MailHog** | Email testing tool (`infra/mail`). | [Optional](./mail) |
 | **MinIO** | High-performance, S3 compatible object storage. | [Active](./minio) |
 | **Management DB** | Shared Valkey and PostgreSQL for management tools. | [Active](./mng-db) |

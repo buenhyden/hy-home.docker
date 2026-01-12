@@ -26,6 +26,16 @@ A local LLM (Large Language Model) inference stack with a ChatGPT-like web inter
 - **Image**: `lucabecker42/ollama-exporter`
 - **Port**: `${OLLAMA_EXPORTER_PORT}`
 
+## Network
+
+Services are assigned static IPs in the `172.19.0.4X` range on `infra_net`.
+
+| Service | IP Address |
+| :--- | :--- |
+| `ollama` | `172.19.0.40` |
+| `open-webui` | `172.19.0.42` |
+| `ollama-exporter` | `172.19.0.43` |
+
 ## Traefik Configuration
 
 - **Ollama API**: `ollama.${DEFAULT_URL}`

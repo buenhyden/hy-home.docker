@@ -24,6 +24,18 @@ A search and analytics suite. Current configuration is set for a **Single Node**
 - **Service**: `opensearch-exporter`
 - **Port**: `${ES_EXPORTER_PORT}`
 
+## Network
+
+Services are assigned static IPs in the `172.19.0.4X` range on `infra_net`.
+
+| Service | IP Address | Notes |
+| :--- | :--- | :--- |
+| `opensearch-node1` | `172.19.0.44` | Active |
+| `opensearch-node2` | `172.19.0.45` | Commmented Out |
+| `opensearch-node3` | `172.19.0.46` | Commmented Out |
+| `opensearch-dashboards` | `172.19.0.47` | |
+| `opensearch-exporter` | `172.19.0.48` | |
+
 ## Traefik Configuration
 
 - **OpenSearch API**: `opensearch.${DEFAULT_URL}`
