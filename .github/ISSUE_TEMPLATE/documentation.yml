@@ -1,0 +1,107 @@
+name: 📚 문서 개선 (Documentation Improvement)
+description:
+  문서 개선이나 수정을 제안해주세요. (Suggest documentation improvements or
+  corrections.)
+title: "[Docs]: "
+labels: ["documentation", "enhancement"]
+body:
+  # [설명/Description]: 사용자에게 인사말과 안내를 표시합니다.
+  - type: markdown
+    attributes:
+      value: |
+        문서 개선 제안에 감사드립니다! (Thank you for suggesting documentation improvements!)
+        명확하고 정확한 문서는 프로젝트의 성공에 필수적입니다. (Clear and accurate documentation is essential for project success.)
+
+  # [설명/Description]: 문서 유형을 선택하도록 합니다.
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: 📖 문서 유형 (Document Type)
+      description:
+        개선이 필요한 문서의 유형을 선택해주세요. (Select the type of document.)
+      # [옵션/Options]: 프로젝트에 맞게 옵션을 수정하세요.
+      options:
+        - README.md
+        - API 문서 (API Documentation)
+        - 가이드/튜토리얼 (Guide/Tutorial)
+        - CONTRIBUTING.md
+        - 기술 사양서 (Technical Specification)
+        - 주석/인라인 문서 (Comments/Inline Docs)
+        - 기타 (Other)
+    validations:
+      required: true
+
+  # [설명/Description]: 문서의 위치를 명시하도록 합니다.
+  - type: input
+    id: doc-location
+    attributes:
+      label: 📍 문서 위치 (Document Location)
+      description: 파일 경로나 URL을 입력해주세요. (Enter file path or URL.)
+      # [예시/Example]: docs/api/authentication.md
+      placeholder: "예: docs/getting-started.md 또는 https://..."
+    validations:
+      required: true
+
+  # [설명/Description]: 현재 문서의 문제점을 설명하도록 합니다.
+  - type: textarea
+    id: current-issue
+    attributes:
+      label: ❌ 현재 문제점 (Current Issue)
+      description:
+        문서의 어떤 부분이 불명확하거나 부정확한가요? (What part is unclear or
+        incorrect?)
+      # [예시/Example]: "인증 섹션에 필수 파라미터 설명이 누락되어 있습니다."
+      placeholder: |
+        - 불명확한 설명 (Unclear explanation)
+        - 오타나 문법 오류 (Typos or grammar errors)
+        - 누락된 정보 (Missing information)
+        - 오래된 정보 (Outdated information)
+    validations:
+      required: true
+
+  # [설명/Description]: 제안하는 개선 내용을 작성하도록 합니다.
+  - type: textarea
+    id: proposed-improvement
+    attributes:
+      label: ✅ 제안 내용 (Proposed Improvement)
+      description:
+        어떻게 개선되어야 하는지 구체적으로 설명해주세요. (Describe how it
+        should be improved.)
+      # [가이드/Guide]: 가능하면 수정된 텍스트나 예시를 포함하세요.
+      placeholder: |
+        개선 방향을 구체적으로 작성해주세요:
+        - 추가되어야 할 내용 (Content to add)
+        - 수정되어야 할 부분 (Parts to modify)
+        - 예시 코드나 스크린샷 (Example code or screenshots)
+    validations:
+      required: true
+
+  # [설명/Description]: 관련 컨텍스트나 추가 정보를 입력받습니다.
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📝 추가 정보 (Additional Context)
+      description:
+        도움이 될 만한 추가 정보가 있다면 작성해주세요. (Add any helpful
+        additional information.)
+      # [옵션/Option]: 선택 사항입니다.
+      placeholder: |
+        - 관련 이슈나 PR 링크 (Related issues or PRs)
+        - 참고 문서 (Reference documentation)
+        - 사용자 피드백 (User feedback)
+    validations:
+      required: false
+
+  # [설명/Description]: 기여 의향을 확인합니다.
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: 🤝 기여 의향 (Contribution)
+      description:
+        직접 문서를 수정하여 PR을 제출할 의향이 있으신가요? (Would you like to
+        submit a PR?)
+      options:
+        - label: 네, PR을 제출할 수 있습니다. (Yes, I can submit a PR.)
+          required: false
+        - label: 아니요, 제안만 하겠습니다. (No, just suggesting.)
+          required: false

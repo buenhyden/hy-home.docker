@@ -1,7 +1,6 @@
 # Copyright Broadcom, Inc. All Rights Reserved.
 # SPDX-License-Identifier: APACHE-2.0
-
-version: "2"
+name: harbor
 
 services:
   harbor-registry:
@@ -18,6 +17,18 @@ services:
       - harbor-registry-data-volume:/storage
       - harbor-registry-conf-volume:/etc/registry:rw
       # - ./config/registry/:/etc/registry/:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
   harbor-registryctl:
     image: docker.io/bitnami/harbor-registryctl:2
     container_name: harbor-registryctl
@@ -36,6 +47,18 @@ services:
       - harbor-registryctl-conf-volume:/etc/registryctl:rw
       # - ./config/registry/:/etc/registry/:ro
       # - ./config/registryctl/config.yml:/etc/registryctl/config.yml:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
   harbor-core:
     image: docker.io/bitnami/harbor-core:2
     container_name: harbor-core
@@ -82,6 +105,18 @@ services:
       - harbor-core-conf-volume:/etc/core/:rw
       # - ./config/core/app.conf:/etc/core/app.conf:ro
       # - ./config/core/private_key.pem:/etc/core/private_key.pem:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
   harbor-portal:
     image: docker.io/bitnami/harbor-portal:2
     container_name: harbor-portal
@@ -115,6 +150,18 @@ services:
       - harbor-jobservice-logs-volume:/var/log/jobs
       - harbor-jobservice-conf-volume:/etc/jobservice:rw
       # - ./config/jobservice/config.yml:/etc/jobservice/config.yml:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
 volumes:
   harbor-registry-data-volume:
     driver: local

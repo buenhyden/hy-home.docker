@@ -28,7 +28,7 @@
 ```bash
 docker compose up -d
 ```
-> **초기화**: `mng-pg` 실행 시 `./init/init_users_dbs.sql` 스크립트가 실행되어 필요한 데이터베이스와 사용자를 자동으로 생성합니다.
+> **초기화**: `mng-pg` 실행 시 `./init-scripts/init_users_dbs.sql` 스크립트가 실행되어 필요한 데이터베이스와 사용자를 자동으로 생성합니다.
 
 ## 6. 상세 사용 가이드 (Detailed Usage Guide)
 ### 6.1 RedisInsight 활용

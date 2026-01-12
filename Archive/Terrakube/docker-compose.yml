@@ -32,9 +32,9 @@ services:
       TerrakubeUiURL: https://terrakube-ui.${DEFAULT_URL}
       DexIssuerUri: "https://keycloak.${DEFAULT_URL}/realms/hy-home.realm"
       
-      TerrakubeRedisHostname:  ${MNG_REDIS_HOST}
-      TerrakubeRedisPassword: ${REDIS_PASSWORD}
-      TerrakubeRedisPort: ${REDIS_PORT}      
+      TerrakubeRedisHostname:  ${MNG_VALKEY_HOST}
+      TerrakubeRedisPassword: ${VALKEY_PASSWORD}
+      TerrakubeRedisPort: ${VALKEY_PORT}      
 
     labels:
       - "traefik.enable=true"
@@ -111,9 +111,9 @@ services:
 
       TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}
       EXECUTOR_NAME: local-executor
-      TerrakubeRedisHostname:  ${MNG_REDIS_HOST}
-      TerrakubeRedisPassword: ${REDIS_PASSWORD}
-      TerrakubeRedisPort: ${REDIS_PORT}  
+      TerrakubeRedisHostname:  ${MNG_VALKEY_HOST}
+      TerrakubeRedisPassword: ${VALKEY_PASSWORD}
+      TerrakubeRedisPort: ${VALKEY_PORT}  
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

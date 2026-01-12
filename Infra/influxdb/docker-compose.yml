@@ -1,3 +1,4 @@
+name: influxdb
 services:
   influxdb:
     deploy:

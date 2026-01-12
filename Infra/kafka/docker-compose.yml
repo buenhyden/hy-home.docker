@@ -1,3 +1,4 @@
+name: kafka
 services:
   # ##############################################################
   # Kafka Broker 1 (KRaft Controller + Broker)

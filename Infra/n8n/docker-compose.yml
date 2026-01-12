@@ -1,3 +1,4 @@
+name: n8n
 services:
   n8n:
     deploy:
@@ -54,8 +55,8 @@ services:
       - N8N_METRICS_INCLUDE_NODE_TYPE_LABEL=true   # 어떤 노드(HTTP, Cron 등)가 많이 쓰이는지 확인
       - N8N_METRICS_INCLUDE_QUEUE_METRICS=true
       # --- Queue mode / Redis 연결 ---
-      - QUEUE_BULL_REDIS_HOST=${MNG_REDIS_HOST}    # 같은 docker 네트워크 이름
-      - QUEUE_BULL_REDIS_PORT=${REDIS_PORT}
+      - QUEUE_BULL_REDIS_HOST=${MNG_VALKEY_HOST}    # 같은 docker 네트워크 이름
+      - QUEUE_BULL_REDIS_PORT=${VALKEY_PORT}
       - QUEUE_BULL_PREFIX=n8n              # Redis key prefix (선택)
       - QUEUE_BULL_REDIS_PASSWORD_FILE=/run/secrets/valkey_password
       - QUEUE_HEALTH_CHECK_ACTIVE=true     # Redis 연결 상태 내부 헬스체크 활성화
@@ -109,7 +110,7 @@ services:
 
       # 실행 모드 & Redis 큐 설정 (main과 동일하게)
       - EXECUTIONS_MODE=queue
-      - QUEUE_BULL_REDIS_HOST=${MNG_REDIS_HOST}
+      - QUEUE_BULL_REDIS_HOST=${MNG_VALKEY_HOST}
       - QUEUE_BULL_REDIS_PORT=${REDIS_PORT}
       - QUEUE_BULL_PREFIX=n8n
       - QUEUE_BULL_REDIS_PASSWORD_FILE=/run/secrets/valkey_password
@@ -144,7 +145,7 @@ services:
         limits:
           cpus: '0.5'
           memory: 256M
-    image: redis:8.4.0-bookworm  # Redis 8.4.x
+    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
     container_name: n8n-valkey
     secrets:
       - valkey_password
@@ -157,20 +158,20 @@ services:
       - n8n-valkey-data:/data
     command: >
       sh -c '
-      redis-server
-      --requirepass "$(cat /run/secrets/valkey_password)"
+      valkey-server
+      --requirepass "$$(cat /run/secrets/valkey_password)"
       --appendonly yes
       --port 6379
       '
     # 클러스터 내부 통신 포트는 expose
     expose:
-      - "${REDIS_PORT}"
-      - "${REDIS_BUS_PORT}"
+      - "${VALKEY_PORT}"
+      - "${VALKEY_BUS_PORT}"
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); redis-cli -a $REDIS_PASSWORD -h 127.0.0.1 -p 6379 ping | grep PONG",
+          "V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG",
         ]
       interval: 10s
       timeout: 3s
@@ -190,7 +191,7 @@ services:
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: n8n-valkey-exporter
     expose:
-      - "${REDIS_EXPORTER_PORT}"
+      - "${VALKEY_EXPORTER_PORT}"
     networks:
       infra_net:
         ipv4_address: 172.19.0.16
@@ -203,14 +204,14 @@ services:
     command:
       - |
         echo "Reading password from secret..."
-        export REDIS_PASSWORD=$(cat /run/secrets/valkey_password | tr -d '\n')
+        export VALKEY_PASSWORD=$(cat /run/secrets/valkey_password | tr -d '\n')
 
-        echo "Starting Redis Exporter..."
+        echo "Starting Valkey Exporter..."
         # -redis.password-file 대신 -redis.password 사용
         exec /redis_exporter \
-          -redis.addr=redis://n8n-valkey:6379 \
-          -redis.password="$REDIS_PASSWORD" \
-          -web.listen-address=:${REDIS_EXPORTER_PORT}
+          -redis.addr=redis://mng-valkey:6379 \
+          -redis.password="$VALKEY_PASSWORD" \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT}
     depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       n8n-valkey:
         condition: service_healthy

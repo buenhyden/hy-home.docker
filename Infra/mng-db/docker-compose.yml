@@ -1,3 +1,4 @@
+name: mng-db
 services:
   mng-valkey:
     deploy:
@@ -18,8 +19,8 @@ services:
       - mng-valkey-data:/data
     command: >
       sh -c '
-      redis-server
-      --requirepass "$(cat /run/secrets/valkey_password)"
+      valkey-server
+      --requirepass "$$(cat /run/secrets/valkey_password)"
       --appendonly yes
       --port 6379
       '
@@ -31,7 +32,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a $REDIS_PASSWORD -h 127.0.0.1 -p 6379 ping | grep PONG",
+          "V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG",
         ]
       interval: 10s
       timeout: 3s
@@ -51,7 +52,7 @@ services:
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: mng-valkey-exporter
     expose:
-      - "${REDIS_EXPORTER_PORT}"
+      - "${VALKEY_EXPORTER_PORT}"
     networks:
       infra_net:
         ipv4_address: 172.19.0.71
@@ -64,14 +65,14 @@ services:
     command:
       - |
         echo "Reading password from secret..."
-        export REDIS_PASSWORD=$(cat /run/secrets/valkey_password | tr -d '\n')
+        export VALKEY_PASSWORD=$(cat /run/secrets/valkey_password | tr -d '\n')
 
         echo "Starting Redis Exporter..."
         # -redis.password-file 대신 -redis.password 사용
         exec /redis_exporter \
-          -redis.addr=redis://mng-redis:6379 \
-          -redis.password="$REDIS_PASSWORD" \
-          -web.listen-address=:${REDIS_EXPORTER_PORT}
+          -redis.addr=redis://mng-valkey:6379 \
+          -redis.password="$VALKEY_PASSWORD" \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT}
     depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       mng-valkey:
         condition: service_healthy
@@ -144,7 +145,50 @@ services:
       - "${POSTGRES_PORT}"
     volumes:
       - mng-pg-data:/var/lib/postgresql/data
-      - ./init/init_users_dbs.sql:/docker-entrypoint-initdb.d/init_users_dbs.sql
+      - ./init-scripts/init_users_dbs.sql:/docker-entrypoint-initdb.d/init_users_dbs.sql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+  mng-pg-init:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+    image: postgres:17-alpine
+    container_name: mng-pg-init
+    restart: "no"
+    networks:      
+      - infra_net    
+    environment:
+      PGPASSWORD_SUPERUSER: ${PGPASSWORD_SUPERUSER}
+      POSTGRES_HOSTNAME: ${POSTGRES_HOSTNAME}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}              
+    command: >
+      sh -c "
+      echo 'DB 연결 대기 중...';
+      until pg_isready -h $$POSTGRES_HOSTNAME -p $$POSTGRES_PORT -U $$POSTGRES_USER; do
+        sleep 2;
+      done;
+      echo 'SQL 스크립트 실행 시작...';
+      export PGPASSWORD="$$PGPASSWORD_SUPERUSER";
+      psql -h "$$POSTGRES_HOSTNAME" -p "$$POSTGRES_PORT" -U "$$POSTGRES_USER" -d "$${POSTGRES_DB}" -f /home/postgres/init-scripts/init_users_dbs.sql;
+      unset PGPASSWORD;
+      echo 'SQL 스크립트 실행 완료.';"
+    volumes:      
+      - ./init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql
+    depends_on:
+      mng-pg:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s

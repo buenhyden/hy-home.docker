@@ -1,3 +1,4 @@
+name: valkey-cluster
 services:
   # ##############################################################
   # Redis Cluster Nodes (6개: 3 master + 3 replica)
@@ -20,7 +21,7 @@ services:
     restart: unless-stopped
     environment:
       NODE_NAME: valkey-node-0
-      PORT: ${REDIS0_PORT}
+      PORT: ${VALKEY0_PORT}
     volumes:
       # 공통 valkey.conf
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
@@ -30,19 +31,19 @@ services:
     command: ["sh", "/usr/local/bin/valkey-start.sh"]
     # 클러스터 내부 통신 포트는 expose
     # expose:
-    #   - "${REDIS_PORT}"
-    #   - "${REDIS_BUS_PORT}"
+    #   - "${VALKEY_PORT}"
+    #   - "${VALKEY_BUS_PORT}"
     # 호스트에서 디버깅/개발용으로 6379는 0번 노드만 오픈
     ports:
-      - "${REDIS0_PORT}:${REDIS0_PORT}"
-      - "${REDIS0_BUS_PORT}:${REDIS0_BUS_PORT}"
+      - "${VALKEY0_PORT}:${VALKEY0_PORT}"
+      - "${VALKEY0_BUS_PORT}:${VALKEY0_BUS_PORT}"
     healthcheck:
       # secret 파일에서 비밀번호 읽어서 PING 체크
       test:
         [
           "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
-          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS0_PORT} ping | grep PONG",
+          "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY0_PORT} ping | grep PONG",
         ]
       interval: 10s
       timeout: 3s
@@ -71,24 +72,24 @@ services:
     restart: unless-stopped
     environment:
       NODE_NAME: valkey-node-1
-      PORT: ${REDIS1_PORT}
+      PORT: ${VALKEY1_PORT}
     volumes:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-1:/data
     command: ["sh", "/usr/local/bin/valkey-start.sh"]
     # expose:
-    #   - "${REDIS_PORT}"
-    #   - "${REDIS_BUS_PORT}"
+    #   - "${VALKEY_PORT}"
+    #   - "${VALKEY_BUS_PORT}"
     ports:
-      - "${REDIS1_PORT}:${REDIS1_PORT}"
-      - "${REDIS1_BUS_PORT}:${REDIS1_BUS_PORT}"
+      - "${VALKEY1_PORT}:${VALKEY1_PORT}"
+      - "${VALKEY1_BUS_PORT}:${VALKEY1_BUS_PORT}"
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
-          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS1_PORT} ping | grep PONG",
+          "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY1_PORT} ping | grep PONG",
         ]
       interval: 10s
       timeout: 3s
@@ -117,24 +118,24 @@ services:
     restart: unless-stopped
     environment:
       NODE_NAME: valkey-node-2
-      PORT: ${REDIS2_PORT}
+      PORT: ${VALKEY2_PORT}
     volumes:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-2:/data
     command: ["sh", "/usr/local/bin/valkey-start.sh"]
     # expose:
-    #   - "${REDIS_PORT}"
-    #   - "${REDIS_BUS_PORT}"
+    #   - "${VALKEY_PORT}"
+    #   - "${VALKEY_BUS_PORT}"
     ports:
-      - "${REDIS2_PORT}:${REDIS2_PORT}"
-      - "${REDIS2_BUS_PORT}:${REDIS2_BUS_PORT}"
+      - "${VALKEY2_PORT}:${VALKEY2_PORT}"
+      - "${VALKEY2_BUS_PORT}:${VALKEY2_BUS_PORT}"
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
-          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS2_PORT} ping | grep PONG",
+          "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY2_PORT} ping | grep PONG",
         ]
       interval: 10s
       timeout: 3s
@@ -163,24 +164,24 @@ services:
     restart: unless-stopped
     environment:
       NODE_NAME: valkey-node-3
-      PORT: ${REDIS3_PORT}
+      PORT: ${VALKEY3_PORT}
     volumes:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-3:/data
     command: ["sh", "/usr/local/bin/valkey-start.sh"]
     # expose:
-    #   - "${REDIS_PORT}"
-    #   - "${REDIS_BUS_PORT}"
+    #   - "${VALKEY_PORT}"
+    #   - "${VALKEY_BUS_PORT}"
     ports:
-      - "${REDIS3_PORT}:${REDIS3_PORT}"
-      - "${REDIS3_BUS_PORT}:${REDIS3_BUS_PORT}"
+      - "${VALKEY3_PORT}:${VALKEY3_PORT}"
+      - "${VALKEY3_BUS_PORT}:${VALKEY3_BUS_PORT}"
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
-          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS3_PORT} ping | grep PONG",
+          "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY3_PORT} ping | grep PONG",
         ]
       interval: 10s
       timeout: 3s
@@ -209,24 +210,24 @@ services:
     restart: unless-stopped
     environment:
       NODE_NAME: valkey-node-4
-      PORT: ${REDIS4_PORT}
+      PORT: ${VALKEY4_PORT}
     volumes:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-4:/data
     command: ["sh", "/usr/local/bin/valkey-start.sh"]
     # expose:
-    #   - "${REDIS_PORT}"
-    #   - "${REDIS_BUS_PORT}"
+    #   - "${VALKEY_PORT}"
+    #   - "${VALKEY_BUS_PORT}"
     ports:
-      - "${REDIS4_PORT}:${REDIS4_PORT}"
-      - "${REDIS4_BUS_PORT}:${REDIS4_BUS_PORT}"
+      - "${VALKEY4_PORT}:${VALKEY4_PORT}"
+      - "${VALKEY4_BUS_PORT}:${VALKEY4_BUS_PORT}"
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
-          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS4_PORT} ping | grep PONG",
+          "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY4_PORT} ping | grep PONG",
         ]
       interval: 10s
       timeout: 3s
@@ -255,24 +256,24 @@ services:
     restart: unless-stopped
     environment:
       NODE_NAME: valkey-node-5
-      PORT: ${REDIS5_PORT}
+      PORT: ${VALKEY5_PORT}
     volumes:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-5:/data
     command: ["sh", "/usr/local/bin/valkey-start.sh"]
     # expose:
-    #   - "${REDIS_PORT}"
-    #   - "${REDIS_BUS_PORT}"
+    #   - "${VALKEY_PORT}"
+    #   - "${VALKEY_BUS_PORT}"
     ports:
-      - "${REDIS5_PORT}:${REDIS5_PORT}"
-      - "${REDIS5_BUS_PORT}:${REDIS5_BUS_PORT}"
+      - "${VALKEY5_PORT}:${VALKEY5_PORT}"
+      - "${VALKEY5_BUS_PORT}:${VALKEY5_BUS_PORT}"
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
-          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS5_PORT} ping | grep PONG",
+          "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY5_PORT} ping | grep PONG",
         ]
       interval: 10s
       timeout: 3s
@@ -289,7 +290,7 @@ services:
   #   - 이미 클러스터 구성돼 있으면 noop로 끝나도록 스크립트 작성
   # ##############################################################
   valkey-cluster-init:
-    image: valkey:8.4
+    image: valkey/valkey:9.0.1
     container_name: valkey-cluster-init
     secrets:
       - valkey_password
@@ -297,6 +298,11 @@ services:
       infra_net:
         ipv4_address: 172.19.0.66
     restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     depends_on:
       valkey-node-0:
         condition: service_healthy
@@ -328,10 +334,10 @@ services:
         limits:
           cpus: '0.1'
           memory: 128M
-    image: oliver006/valkey_exporter:v1.80.1-alpine
+    image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: valkey-exporter
     ports:
-      - "${REDIS_EXPORTER_HOST_PORT}:${REDIS_EXPORTER_PORT}"
+      - "${VALKEY_EXPORTER_HOST_PORT}:${VALKEY_EXPORTER_PORT}"
     networks:
       infra_net:
         ipv4_address: 172.19.0.67
@@ -343,17 +349,17 @@ services:
       - -c
     command:
       - |
-        echo "Loading Redis password..."
+        echo "Loading Valkey password..."
         export R_PWD=$$(cat /run/secrets/valkey_password | tr -d '\n')
 
         echo "Starting Exporter (Stateless Mode)..."
-        # [수정] -valkey.addr 옵션을 제거하거나 비워둡니다.
+        # [수정] -redis.addr 옵션을 제거하거나 비워둡니다.
         # 이렇게 하면 Exporter는 단순히 대기 상태로 시작되며,
         # Prometheus가 "어디를 긁어오라(Scrape)"고 시킬 때 작동합니다.
-        exec /valkey_exporter \
-          -valkey.addr="valkey://valkey-node-0:6379" \
-          -valkey.password="$$R_PWD" \
-          -web.listen-address=:${REDIS_EXPORTER_PORT}
+        exec /redis_exporter \
+          -redis.addr="redis://valkey-node-0:6379" \
+          -redis.password="$$R_PWD" \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT}
     depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       valkey-node-0:
         condition: service_healthy

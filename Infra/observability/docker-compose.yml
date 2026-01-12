@@ -1,3 +1,4 @@
+name: observability
 services:
   # -------------------------------------------------------
   # 1. Metrics Storage (Prometheus)
@@ -42,6 +43,11 @@ services:
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls=true"
       - "traefik.http.services.prometheus.loadbalancer.server.port=${PROMETHEUS_PORT}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
   # -------------------------------------------------------
   # 2. Log Storage (Loki)
   # -------------------------------------------------------
@@ -57,6 +63,11 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.31
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
     healthcheck:
       test: ["CMD-SHELL", "wget -q --tries=1 --spider http://localhost:${LOKI_PORT}/ready || exit 1"]
       interval: 10s
@@ -88,6 +99,11 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.32
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
     ports:
       - "${TEMPO_HOST_PORT}:${TEMPO_PORT}"
     restart: unless-stopped
@@ -198,6 +214,11 @@ services:
       - "traefik.http.routers.grafana.tls=true"
       - "traefik.http.services.grafana.loadbalancer.server.port=${GRAFANA_PORT}"
       - "traefik.http.routers.grafana.middlewares=sso-auth@file"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
   # -------------------------------------------------------
   # 5. Telemetry Collector (Alloy)
   # -------------------------------------------------------
@@ -237,6 +258,11 @@ services:
       - "traefik.http.routers.alloy.entrypoints=websecure"
       - "traefik.http.routers.alloy.tls=true"
       - "traefik.http.services.alloy.loadbalancer.server.port=${ALLOY_PORT}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
   # -------------------------------------------------------
   # 6. Container Metrics (cAdvisor)
   # -------------------------------------------------------
@@ -317,6 +343,11 @@ services:
       - "traefik.http.routers.alertmanager.entrypoints=websecure"
       - "traefik.http.routers.alertmanager.tls=true"
       - "traefik.http.services.alertmanager.loadbalancer.server.port=${ALERTMANAGER_PORT}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
   pushgateway:
     deploy:
       resources:
@@ -345,3 +376,8 @@ services:
       - "traefik.http.routers.pushgateway.entrypoints=websecure"
       - "traefik.http.routers.pushgateway.tls=true"
       - "traefik.http.services.pushgateway.loadbalancer.server.port=${PUSHGATEWAY_PORT}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"

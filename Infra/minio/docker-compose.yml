@@ -1,3 +1,4 @@
+name: minio
 services:
   minio:
     deploy:
@@ -119,3 +120,8 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M

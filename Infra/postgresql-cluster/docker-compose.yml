@@ -1,3 +1,4 @@
+name: postgresql-cluster
 services:
   # ##############################################################
   # etcd 3노드 (Patroni DCS)
@@ -34,7 +35,12 @@ services:
       - ${ETCD_CLIENT_PORT}
     networks:
       infra_net:
-        ipv4_address: 172.19.0.50
+        ipv4_address: 172.19.0.50    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
     restart: unless-stopped
 
   etcd-2:
@@ -70,6 +76,11 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.51
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
     restart: unless-stopped
 
   etcd-3:
@@ -105,6 +116,11 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.52
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
     restart: unless-stopped
 
   # ##############################################################
@@ -138,9 +154,9 @@ services:
       PATRONI_RESTAPI_CONNECT_ADDRESS: pg-0:${PATRONI_RESTAPI_PORT}
       # PostgreSQL listen / connect
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT}
-      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:${POSTGRES_PORT}
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:${POSTGRES_PORT}      
     volumes:
-      - pg0-data:/home/postgres/pgdata
+      - pg0-data:/home/postgres/pgdata      
     expose:
       - ${POSTGRES_PORT}
     healthcheck:
@@ -151,6 +167,11 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.53
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
     depends_on:
       etcd-1:
         condition: service_healthy
@@ -188,12 +209,17 @@ services:
       PATRONI_RESTAPI_CONNECT_ADDRESS: pg-1:${PATRONI_RESTAPI_PORT}
       # PostgreSQL listen / connect
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT}
-      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:${POSTGRES_PORT}
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:${POSTGRES_PORT}      
     volumes:
       - pg1-data:/home/postgres/pgdata
     networks:
       infra_net:
         ipv4_address: 172.19.0.54
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -240,12 +266,16 @@ services:
       # PostgreSQL listen / connect
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT}
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-2:${POSTGRES_PORT}
-
     volumes:
       - pg2-data:/home/postgres/pgdata
     networks:
       infra_net:
         ipv4_address: 172.19.0.55
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
     expose:
       - ${POSTGRES_PORT}
     healthcheck:
@@ -261,7 +291,7 @@ services:
       etcd-3:
         condition: service_healthy
     restart: unless-stopped
-
+  
   # ##############################################################
   # HAProxy 라우터 (Writer/Reader 분리)
   # ##############################################################
@@ -285,7 +315,6 @@ services:
         ipv4_address: 172.19.0.56
     labels:
       - "traefik.enable=true"
-
       # HAProxy Stats UI 라우터
       # 도메인: haproxy.pg.${DEFAULT_URL}
       - "traefik.http.routers.haproxy-stats.rule=Host(`pg-haproxy.${DEFAULT_URL}`)"
@@ -301,7 +330,53 @@ services:
       pg-2:
         condition: service_healthy
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
 
+  pg-cluster-init:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+    image: postgres:17-alpine
+    container_name: pg-cluster-init
+    env_file:
+      - .env.postgres
+    environment:
+      - POSTGRES_ROUTER_HOSTNAME=${POSTGRES_ROUTER_HOSTNAME}
+      - POSTGRES_WRITE_PORT=${POSTGRES_WRITE_PORT}
+      - POSTGRES_READ_PORT=${POSTGRES_READ_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - PGPASSWORD_SUPERUSER=${PGPASSWORD_SUPERUSER}
+      - POSTGRES_DB=${POSTGRES_DB}              
+    depends_on:      
+      pg-router:
+        condition: service_started
+    command: >
+      sh -c "
+      echo 'DB 연결 대기 중...';
+      until pg_isready -h $$POSTGRES_ROUTER_HOSTNAME -p $$POSTGRES_WRITE_PORT -U $$POSTGRES_USER; do
+        sleep 2;
+      done;
+      echo 'SQL 스크립트 실행 시작...';
+      export PGPASSWORD="$$PGPASSWORD_SUPERUSER";
+      psql -h "$$POSTGRES_ROUTER_HOSTNAME" -p "$$POSTGRES_WRITE_PORT" -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -f /home/postgres/init-scripts/init_users_dbs.sql;
+      unset PGPASSWORD;
+      echo 'SQL 스크립트 실행 완료.';"
+    volumes:
+      - "./init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql"                
+    networks:
+      - infra_net
+    restart: "no"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
   # ##############################################################
   # postgres-exporter (Prometheus / Alloy용 메트릭)
   # ##############################################################
@@ -316,6 +391,11 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.57
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
     expose:
       - "${POSTGRES_EXPORTER_PORT}"
     secrets:
@@ -347,6 +427,11 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.58
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
     expose:
       - "${POSTGRES_EXPORTER_PORT}"
     secrets:
@@ -378,6 +463,11 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.59
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
     expose:
       - "${POSTGRES_EXPORTER_PORT}"
     secrets:

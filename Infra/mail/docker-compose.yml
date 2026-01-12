@@ -1,3 +1,4 @@
+name: mail
 services:
   # ----------------------------------------------------------------
   # Stalwart Mail Server (올인원 메일 서버)
@@ -50,3 +51,15 @@ services:
       - "traefik.http.routers.mailhog.tls=true"
       - "traefik.http.services.mailhog.loadbalancer.server.port=${MAILHOG_UI_PORT}"
       - "traefik.http.routers.stalwart-ui.middlewares=sso-auth@file"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M

@@ -1,3 +1,4 @@
+name: oauth2-proxy
 services:
   oauth2-proxy:
     deploy:
@@ -59,20 +60,20 @@ services:
       - oauth2-proxy-valkey-data:/data
     command: >
       sh -c '
-      redis-server
+      valkey-server
       --requirepass "$(cat /run/secrets/valkey_password)"
       --appendonly yes
       --port 6379
       '
     # 클러스터 내부 통신 포트는 expose
     expose:
-      - "${REDIS_PORT}"
-      - "${REDIS_BUS_PORT}"
+      - "${VALKEY_PORT}"
+      - "${VALKEY_BUS_PORT}"
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/valkey_password); redis-cli -a $REDIS_PASSWORD -h 127.0.0.1 -p 6379 ping | grep PONG",
+          "V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG",
         ]
       interval: 10s
       timeout: 3s
@@ -92,7 +93,7 @@ services:
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: oauth2-proxy-redis-exporter
     expose:
-      - "${REDIS_EXPORTER_PORT}"
+      - "${VALKEY_EXPORTER_PORT}"
     networks:
       infra_net:
         ipv4_address: 172.19.0.19
@@ -105,14 +106,14 @@ services:
     command:
       - |
         echo "Reading password from secret..."
-        export REDIS_PASSWORD=$(cat /run/secrets/valkey_password | tr -d '\n')
+        export VALKEY_PASSWORD=$(cat /run/secrets/valkey_password | tr -d '\n')
 
-        echo "Starting Redis Exporter..."
+        echo "Starting Valkey Exporter..."
         # -redis.password-file 대신 -redis.password 사용
         exec /redis_exporter \
-          -redis.addr=redis://oauth2-proxy-redis:6379 \
-          -redis.password="$REDIS_PASSWORD" \
-          -web.listen-address=:${REDIS_EXPORTER_PORT}
+          -redis.addr=redis://mng-valkey:6379 \
+          -redis.password="$VALKEY_PASSWORD" \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT}
     depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       oauth2-proxy-valkey:
         condition: service_healthy

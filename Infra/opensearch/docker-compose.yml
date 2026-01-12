@@ -1,3 +1,4 @@
+name: opensearch
 services:
   # ######################################################
   # OpenSearch 노드 1 (cluster_manager + data + ingest)

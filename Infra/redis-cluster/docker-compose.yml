@@ -1,3 +1,4 @@
+name: redic-cluster
 services:
   # ##############################################################
   # Redis Cluster Nodes (6개: 3 master + 3 replica)
@@ -297,6 +298,11 @@ services:
       infra_net:
         ipv4_address: 172.19.0.66
     restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     depends_on:
       redis-node-0:
         condition: service_healthy

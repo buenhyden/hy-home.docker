@@ -1,9 +1,17 @@
+name: ksql
 services:
   ksqldb-node1:
     image: bitnami/ksql:latest
     hostname: ksqldb-node1
     container_name: ksqldb-node1
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          memory: 512M
     ports:
       - "${KSQLDB_HOST_PORT}:${KSQLDB_PORT}"
     environment:

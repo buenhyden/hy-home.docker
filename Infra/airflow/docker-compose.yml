@@ -1,3 +1,4 @@
+name: airflow
 x-airflow-common: &airflow-common
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
@@ -42,6 +43,13 @@ x-airflow-common: &airflow-common
     options:
       max-size: "5m"
       max-file: "2"
+  deploy:
+    resources:
+      limits:
+        cpus: '1.0'
+        memory: 1G
+      reservations:
+          memory: 512M
 
 services:
   airflow-apiserver:
@@ -305,3 +313,13 @@ services:
     expose:
       - "${STATSD_PROMETHEUS_PORT}"  # Prometheus가 긁어갈 포트
       - "${STATSD_AIRFLOW_PORT}"  # Airflow가 보낼 포트
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M

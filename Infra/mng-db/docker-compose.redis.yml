@@ -144,7 +144,7 @@ services:
       - "${POSTGRES_PORT}"
     volumes:
       - mng-pg-data:/var/lib/postgresql/data
-      - ./init/init_users_dbs.sql:/docker-entrypoint-initdb.d/init_users_dbs.sql
+      - ./init-scripts/init_users_dbs.sql:/docker-entrypoint-initdb.d/init_users_dbs.sql
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s

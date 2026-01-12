@@ -1,0 +1,37 @@
+name: qdrant
+services:  
+  qdrant:
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    image: qdrant/qdrant:v1.16.3
+    container_name: qdrant
+    ports:
+      - "${QDRANT_HOST_PORT}:${QDRANT_PORT}"
+    environment:
+      - QDRANT__TELEMETRY_DISABLED=false  # 메트릭 수집 활성화
+    volumes:
+      - qdrant-data:/qdrant/storage
+    restart: unless-stopped
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.41
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/6333 && echo -e 'GET /readyz HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q 'HTTP/1.1 200' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    # Qdrant 대시보드(Web UI)를 보고 싶다면 아래 라벨 주석 해제
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.qdrant.rule=Host(`qdrant.${DEFAULT_URL}`)"
+      - "traefik.http.routers.qdrant.entrypoints=websecure"
+      - "traefik.http.routers.qdrant.tls=true"
+      - "traefik.http.services.qdrant.loadbalancer.server.port=${QDRANT_PORT}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
