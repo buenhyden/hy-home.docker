@@ -27,6 +27,13 @@ A 6-node **Valkey** (Redis fork) Cluster configured for sharding and high availa
 - **Service**: `valkey-exporter`
 - **Details**: Runs in "Stateless Mode" using `r_pwd` and probing specific nodes when scraped.
 
+## Environment Variables
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `NODE_NAME` | Unique Node Name (custom env) | `valkey-node-X` |
+| `PORT` | Service Port (custom env) | `${VALKEYX_PORT}` |
+
 ## Network
 
 Services are assigned static IPs in the `172.19.0.6X` range on `infra_net`.

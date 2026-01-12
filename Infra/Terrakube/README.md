@@ -35,24 +35,36 @@ All Terrakube components are configured with **Dynamic IP** assignment on the `i
 
 ## Environment Variables
 
-### Common
+### Common Configuration
 
-- `InternalSecret`: Shared secret for internal communication.
-- `TerrakubeRedisHostname`, `TerrakubeRedisPassword`, `TerrakubeRedisPort`: Connection to Valkey/Redis.
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `InternalSecret` | Shared Secret | `${TERRAKUBE_INTERNAL_SECRET}` |
+| `TerrakubeRedisHostname` | Redis Host | `${MNG_VALKEY_HOST}` |
+| `TerrakubeRedisPassword` | Redis Password | `${VALKEY_PASSWORD}` |
+| `TerrakubeRedisPort` | Redis Port | `${VALKEY_PORT}` |
 
 ### API Specific
 
-- `Datasource*`: PostgreSQL connection details.
-- `GroupValidationType`, `UserValidationType`, `AuthenticationValidationType`: set to "DEX" (using Keycloak).
-- `PatSecret`: Personal Access Token secret.
-- `StorageType`: AWS (MinIO).
-- `AwsStorage*`: MinIO credentials and bucket config.
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `ApiDataSourceType` | DB Type | `POSTGRESQL` |
+| `DatasourceHostname` | DB Host | `${POSTGRES_HOSTNAME}` |
+| `DatasourceUser` | DB User | `${TERRAKUBE_DB_USERNAME}` |
+| `DatasourcePassword` | DB Password | `${TERRAKUBE_DB_PASSWORD}` |
+| `GroupValidationType` | Auth Provider | `DEX` |
+| `StorageType` | Storage Provider | `AWS` |
+| `AwsStorageAccessKey` | S3 Access Key | `${MINIO_APP_USERNAME}` |
+| `AwsStorageSecretKey` | S3 Secret Key | `${MINIO_APP_USER_PASSWORD}` |
+| `AwsEndpoint` | S3 Endpoint | `http://minio:9000` |
 
 ### UI Specific
 
-- `REACT_APP_TERRAKUBE_API_URL`: URL for the API.
-- `REACT_APP_AUTHORITY`: Keycloak realm URL.
-- `REACT_APP_CLIENT_ID`: OAuth client ID.
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `REACT_APP_TERRAKUBE_API_URL` | API URL | `https://terrakube-api...` |
+| `REACT_APP_AUTHORITY` | Auth Authority | `https://keycloak...` |
+| `REACT_APP_CLIENT_ID` | OAuth Client ID | `proxy-client` |
 
 ## Traefik Configuration
 

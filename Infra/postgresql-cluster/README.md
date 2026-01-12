@@ -30,6 +30,20 @@ A High Availability (HA) PostgreSQL cluster using **Patroni**, **etcd**, and **H
 - **Init**: `pg-cluster-init` runs `init_users_dbs.sql` via the Write endpoint.
 - **Exporters**: Sidecar exporters for each PG node.
 
+## Environment Variables
+
+Major configuration is loaded from `.env.postgres`. Key variables managed in `docker-compose.yml`:
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `SCOPE` | Patroni Cluster Scope Name | `pg-ha` |
+| `ETCD3_HOSTS` | etcd Cluster Endpoints | `etcd-1:2379,etcd-2...` |
+| `PATRONI_NAME` | Unique Node Name | `pg-0`, `pg-1`... |
+| `PATRONI_NAMESPACE` | etcd Key Namespace | `/service/` |
+| `PATRONI_*_LISTEN` | Network Binding Addresses | `0.0.0.0:...` |
+| `POSTGRES_USER` | Init User Name | `${POSTGRES_USER}` |
+| `POSTGRES_DB` | Init Database Name | `${POSTGRES_DB}` |
+
 ## Network
 
 Services are assigned static IPs in the `172.19.0.5X` range on `infra_net`.

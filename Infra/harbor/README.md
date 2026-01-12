@@ -23,30 +23,30 @@ This setup relies on the following external services within the `infra_net` netw
 
 ## Environment Variables
 
-Key configuration variables defined in `docker-compose.yml`:
+### General Configuration
 
-### General
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `EXT_ENDPOINT` | External URL | `https://harbor.${DEFAULT_URL}` |
+| `HARBOR_ADMIN_PASSWORD` | Admin Password | `${HARBOR_PASSWORD}` |
+| `HARBOR_PORT` | Internal Port | `${HARBOR_PORT}` |
 
-- `HARBOR_ADMIN_PASSWORD`: Admin password.
-- `EXT_ENDPOINT`: External access URL (`https://harbor.${DEFAULT_URL}`).
-- `HARBOR_PORT`: Internal service port.
+### Database & Redis
 
-### Secrets (Internal)
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `POSTGRESQL_HOST` | DB Host | `${POSTGRES_HOSTNAME}` |
+| `POSTGRESQL_DATABASE` | DB Name | `${HARBOR_POSTGRE_DBNAME}` |
+| `_REDIS_URL_CORE` | Core Cache URL | `redis://.../0` |
+| `_REDIS_URL_REG` | Registry Cache URL | `redis://.../1` |
 
-- `CORE_SECRET`, `JOBSERVICE_SECRET`, `REGISTRY_HTTP_SECRET`: Keys for inter-service communication.
+### Internal Secrets
 
-### Database Connection
-
-- `POSTGRESQL_HOST`: `${POSTGRES_HOSTNAME}`
-- `POSTGRESQL_PORT`: `${POSTGRES_PORT}`
-- `POSTGRESQL_DATABASE`: `${HARBOR_POSTGRE_DBNAME}`
-- `POSTGRESQL_USERNAME`: `${DEFAULT_USERNAME}`
-- `POSTGRESQL_PASSWORD`: `${POSTGRES_PASSWORD}`
-
-### Redis Connection
-
-- `_REDIS_URL_CORE`: Core cache (`db 0`).
-- `_REDIS_URL_REG`: Registry cache (`db 1`).
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `CORE_SECRET` | Core Service Secret | `${HARBOR_CORE_SECRET}` |
+| `JOBSERVICE_SECRET` | Job Service Secret | `${HARBOR_JOBSERVICE_SECRET}` |
+| `REGISTRY_HTTP_SECRET` | Registry Secret | `${HARBOR_REGISTRY_HTTP_SECRET}` |
 
 ## Volumes
 

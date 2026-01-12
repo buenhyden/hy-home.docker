@@ -20,9 +20,11 @@ Unlike other services in this infrastructure, SonarQube is configured with **Dyn
 
 ## Environment Variables
 
-- `SONAR_JDBC_URL`: Connection string for the database.
-- `SONAR_JDBC_USERNAME`: Database user.
-- `SONAR_JDBC_PASSWORD`: Database password.
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `SONAR_JDBC_URL` | JDBC Connection String | `jdbc:postgresql://...` |
+| `SONAR_JDBC_USERNAME` | Database Username | `${SONARQUBE_DB_USER}` |
+| `SONAR_JDBC_PASSWORD` | Database Password | `${SONARQUBE_DB_PASSWORD}` |
 
 ## Traefik Configuration
 

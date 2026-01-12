@@ -24,12 +24,12 @@ The `couchdb-cluster-init` container waits for all nodes to be healthy, then:
 
 ## Environment Variables
 
-| Variable | Description |
-| :--- | :--- |
-| `COUCHDB_USER` | Admin username |
-| `COUCHDB_PASSWORD` | Admin password |
-| `COUCHDB_COOKIE` | Erlang magic cookie for inter-node authentication |
-| `NODENAME` | Unique Erlang node name (e.g., `couchdb-1.infra_net`) |
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `COUCHDB_USER` | Admin username | `${COUCHDB_USERNAME}` |
+| `COUCHDB_PASSWORD` | Admin password | `${COUCHDB_PASSWORD}` |
+| `COUCHDB_COOKIE` | Erlang magic cookie | `${COUCHDB_COOKIE}` |
+| `NODENAME` | Unique Erlang node name | `couchdb-X.infra_net` |
 
 ## Volumes
 

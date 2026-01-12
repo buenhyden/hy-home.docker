@@ -40,6 +40,16 @@ The Web UI is exposed with security enabled:
   - `8080`: Web Admin UI
 - **Storage**: Persistent volume `stalwart-data`.
 
+- **Storage**: Persistent volume `stalwart-data`.
+
+## Environment Variables
+
+**Active Service (MailHog)**:
+MailHog is configured primarily via command flags and does not require complex environment variables for this setup.
+
+**Inactive Service (Stalwart)**:
+See `docker-compose.yml` comments for `STALWART_ADMIN_USER` and `STALWART_ADMIN_PASSWORD` usage if enabling.
+
 ## Usage
 
 ### Configuring Applications (Internal)

@@ -57,6 +57,31 @@ A comprehensive observability stack based on the LGTM (Loki, Grafana, Tempo, Mim
 - **Image**: `prom/pushgateway:v1.11.2`
 - **Traefik**: `pushgateway.${DEFAULT_URL}`
 
+## Environment Variables
+
+Most services (Prometheus, Loki, Tempo, Alloy) are configured via mounted configuration files in matching subdirectories.
+
+### Grafana Variables
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `GF_SERVER_ROOT_URL` | Root URL | `https://grafana.${DEFAULT_URL}` |
+| `GF_AUTH_OAUTH_AUTO_LOGIN` | Auto-login via OAuth | `true` |
+| `GF_AUTH_DISABLE_LOGIN_FORM` | Hide local login | `true` |
+| `GF_SECURITY_ADMIN_USER` | Admin Username | `${GRAFANA_ADMIN_USERNAME}` |
+| `GF_SECURITY_ADMIN_PASSWORD` | Admin Password | `${GRAFANA_ADMIN_PASSWORD}` |
+| `GF_AUTH_GENERIC_OAUTH_ENABLED` | Enable OAuth | `true` |
+| `GF_AUTH_GENERIC_OAUTH_CLIENT_ID`| OAuth Client ID | `${OAUTH2_PROXY_CLIENT_ID}` |
+| `GF_AUTH_GENERIC_OAUTH_SCOPES` | Requested Scopes | `openid profile email...` |
+
+### Alertmanager Variables
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `SMTP_USERNAME` | SMTP Sender User | `${SMTP_USERNAME}` |
+| `SMTP_PASSWORD` | SMTP Sender Password | `${SMTP_PASSWORD}` |
+| `SLACK_ALERTMANAGER_WEBHOOK_URL`| Slack Webhook URL | `${SLACK_ALERTMANAGER_WEBHOOK_URL}`|
+
 ## Network
 
 All services are assigned static IPs in the `172.19.0.3X` range on `infra_net`.

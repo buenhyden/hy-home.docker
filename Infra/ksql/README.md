@@ -18,9 +18,9 @@ ksqlDB is a database purpose-built for stream processing applications. It allows
 
 ## Environment Variables
 
-### Core Configuration
-
-- `KSQL_BOOTSTRAP_SERVERS`: `kafka-0:${KAFKA_PORT}`
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `KSQL_BOOTSTRAP_SERVERS` | Kafka Brokers | `kafka-0:${KAFKA_PORT}` |
 
 > [!WARNING]
 > **Configuration Mismatch**: The current configuration points to `kafka-0`. However, the main Kafka stack (in `infra/kafka`) uses `kafka-1`, `kafka-2`, and `kafka-3`.

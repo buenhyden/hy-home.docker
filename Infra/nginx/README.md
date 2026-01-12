@@ -17,6 +17,12 @@ This is a standalone **Nginx** instance configured to serve as an entry point or
   - **HTTP**: `${HTTP_HOST_PORT}` -> `80` (Internal)
   - **HTTPS**: `${HTTPS_HOST_PORT}` -> `443` (Internal)
 
+  - **HTTPS**: `${HTTPS_HOST_PORT}` -> `443` (Internal)
+
+## Environment Variables
+
+This service relies on mounted configuration files (`nginx.conf`) rather than environment variables.
+
 ## Networking
 
 - **Network**: `infra_net`

@@ -28,6 +28,16 @@ A 6-node Redis Cluster configured for sharding and high availability.
 - **Service**: `redis-exporter`
 - **Mode**: Scrapes `redis-node-0` (or cluster-aware) for Prometheus metrics.
 
+- **Mode**: Scrapes `redis-node-0` (or cluster-aware) for Prometheus metrics.
+
+## Environment Variables
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `NODE_NAME` | Node Identity | `redis-node-X` |
+| `PORT` | Node Port | `${REDISX_PORT}` |
+| `redis_password` | Docker Secret | via file |
+
 ## Network
 
 Services are assigned static IPs in the `172.19.0.6X` range on `infra_net`.

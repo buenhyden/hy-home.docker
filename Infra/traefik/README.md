@@ -26,3 +26,9 @@ Configured with a static IP and crucial aliases on `infra_net`.
 | Service | IP Address | Aliases |
 | :--- | :--- | :--- |
 | `traefik` | `172.19.0.13` | `keycloak.*`, `auth.*`, `whoami.*` |
+
+## Environment Variables
+
+This service primarily uses **Command Line Arguments** (`--configFile=...`) and **Docker Labels** for configuration. No significant environment variables are defined in `docker-compose.yml`.
+
+See `traefik.yml` for detailed static configuration.

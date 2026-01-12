@@ -2,7 +2,9 @@
 
 ## Overview
 
-Keycloak is an open-source Identity and Access Management (IAM) solution. This deployment runs in **Development Mode** (`start-dev`) but is configured with production-grade database settings.
+Keycloak is an open-source Identity and Access Management (IAM) solution. This
+deployment runs in **Development Mode** (`start-dev`) but is configured with
+production-grade database settings.
 
 ## Service Details
 
@@ -10,6 +12,31 @@ Keycloak is an open-source Identity and Access Management (IAM) solution. This d
 - **Image**: `quay.io/keycloak/keycloak:26.5.0`
 - **Command**: `start-dev`
 - **Exposed Port**: `${KEYCLOAK_MANAGEMENT_PORT}` (Management)
+
+## Custom Build
+
+This directory contains a `Dockerfile` that allows for a custom Keycloak build. This is useful for:
+
+- Pre-building Keycloak to reduce startup time (optimizing for specific providers).
+- Adding custom themes or SPIs (Service Provider Interfaces).
+- Embedding self-signed certificates for development (as demonstrated in the Dockerfile).
+
+### How to use
+
+1. Open `docker-compose.yml`.
+2. Comment out the `image` instruction.
+3. Add/Uncomment the `build` instruction:
+
+```yaml
+services:
+  keycloak:
+    # image: quay.io/keycloak/keycloak:26.5.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+```
+
+1. Rebuild the container: `docker-compose up -d --build keycloak`.
 
 ## Networking
 
@@ -52,7 +79,27 @@ Additional JVM options are set to enforce strict connection validation:
 -Dquarkus.datasource.jdbc.background-validation-interval=1M
 ```
 
-*checks connections strictly to avoid "Connection is closed" errors during idle periods.*
+## Environment Variables
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `KC_DB` | Database vendor | `postgres` |
+| `KC_DB_URL` | JDBC Connection URL | `jdbc:postgresql://...` |
+| `KC_DB_USERNAME` | Database username | `${KEYCLOAK_DB_USER}` |
+| `KC_DB_PASSWORD` | Database password | `${KEYCLOAK_DB_PASSWORD}` |
+| `KEYCLOAK_ADMIN` | Admin username | `${KEYCLOAK_ADMIN_USER}` |
+| `KEYCLOAK_ADMIN_PASSWORD` | Admin password | `${KEYCLOAK_ADMIN_PASSWORD}` |
+| `KC_HOSTNAME` | Public hostname | `https://keycloak.${DEFAULT_URL}` |
+| `KC_PROXY_HEADERS` | Reverse proxy header mode | `xforwarded` |
+| `KC_DB_POOL_INITIAL_SIZE` | Initial DB pool size | `1` |
+| `KC_DB_POOL_MIN_SIZE` | Min DB pool size | `1` |
+| `KC_DB_POOL_MAX_SIZE` | Max DB pool size | `10` |
+| `KC_METRICS_ENABLED` | Enable metrics endpoint | `true` |
+| `KC_HEALTH_ENABLED` | Enable health endpoint | `true` |
+| `JAVA_OPTS_APPEND` | Extra JVM options | *See above* |
+
+*Checks connections strictly to avoid "Connection is closed" errors during
+idle periods.*
 
 ## Traefik Configuration
 
@@ -74,3 +121,71 @@ On first login, you should:
 1. Create a new **Realm**.
 2. Configure **Clients** (for your applications).
 3. Set up **Users** and **Roles**.
+
+## Advanced Configuration
+
+### 1. Group Membership Mapping
+
+To include user groups in the JWT token (e.g., for RBAC in applications):
+
+1. Go to **Client Scopes** > **Create client scope**.
+   - Name: `groups`
+   - Protocol: `OpenID Connect`
+   - Include in Token Scope: `On`
+2. Configure **Mappers** for the new scope:
+   - Add Mapper > **By Configuration** > **Group Membership**.
+   - Name: `group-mapper`
+   - **Token Claim Name**: `groups` (or `realm_access.roles` depending on app need).
+   - Full group path: `Off` (optional, for simple names).
+   - Add to ID/Access Token: `On`.
+3. Assign to Client:
+   - Go to **Clients** > Select your client > **Client Scopes**.
+   - **Add client scope** > Select `groups` > Add as **Default** or **Optional**.
+
+### 2. Social Login Integration
+
+Configure external Identity Providers (IdP) for SSO.
+
+#### Google (Standard OIDC)
+
+1. **GCP Console**: Create OAuth2 Credentials.
+   - Redirect URI: `https://keycloak.${DEFAULT_URL}/broker/google/endpoint`
+2. **Keycloak**: Identity Providers > **Google**.
+   - Client ID: `[From GCP]`
+   - Client Secret: `[From GCP]`
+
+#### Naver (Community OIDC)
+
+Naver does not strictly follow standard OIDC discovery, so manual configuration
+is needed using the "User-defined" provider.
+
+1. **Naver Developers**: Create Application.
+   - Callback URL: `https://keycloak.${DEFAULT_URL}/broker/naver/endpoint`
+2. **Keycloak**: Identity Providers > **User-defined**.
+   - **Alias**: `naver`
+   - **Display Name**: `Naver Login`
+   - **Endpoints**:
+     - Authorization URL: `https://nid.naver.com/oauth2.0/authorize`
+     - Token URL: `https://nid.naver.com/oauth2.0/token`
+     - User Info URL: `https://openapi.naver.com/v1/nid/me`
+   - **Client Config**:
+     - Client ID: `[Client ID]`
+     - Client Secret: `[Client Secret]`
+     - Client Authentication: `Client secret sent as post`
+   - **Scopes**: `profile email` (ensure these match Naver app permissions).
+
+#### Kakao (Community OIDC)
+
+1. **Kakao Developers**: Create App > Kakao Login.
+   - Redirect URI: `https://keycloak.${DEFAULT_URL}/broker/kakao/endpoint`
+2. **Keycloak**: Identity Providers > **User-defined**.
+   - **Alias**: `kakao`
+   - **Display Name**: `Kakao Login`
+   - **Endpoints**:
+     - Authorization URL: `https://kauth.kakao.com/oauth/authorize`
+     - Token URL: `https://kauth.kakao.com/oauth/token`
+     - User Info URL: `https://kapi.kakao.com/v2/user/me`
+   - **Client Config**:
+     - Client ID: `[REST API Key]`
+     - Client Secret: `[Client Secret]` (if enabled in Kakao)
+     - Client Authentication: `Client secret sent as post` (if secret enabled)

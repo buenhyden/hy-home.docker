@@ -27,34 +27,19 @@ This setup relies on the following external services within the `infra_net` netw
 - **PostgreSQL**: Used as the Airflow Metadata Database.
 - **Redis**: Used as the Celery Broker.
 
-## environment Variables
+## Environment Variables
 
-Key environment variables configured in `docker-compose.yml`:
-
-### Core & Executor
-
-- `AIRFLOW__CORE__EXECUTOR`: `CeleryExecutor`
-- `AIRFLOW__CORE__AUTH_MANAGER`: `airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager`
-- `AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION`: `true`
-- `AIRFLOW__CORE__LOAD_EXAMPLES`: `true`
-
-### Database & Broker
-
-- `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN`: `postgresql+psycopg2://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/airflow`
-- `AIRFLOW__CELERY__RESULT_BACKEND`: `db+postgresql://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/airflow`
-- `AIRFLOW__CELERY__BROKER_URL`: `redis://:${REDIS_PASSWORD}@${REDIS_NODE_NAME}:${REDIS_PORT}/0`
-
-### Webserver & Networking
-
-- `AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX`: `true` (Trust X-Forwarded-* headers)
-- `AIRFLOW__WEBSERVER__BASE_URL`: `https://airflow.${DEFAULT_URL}`
-
-### Metrics (StatsD)
-
-- `AIRFLOW__METRICS__STATSD_ON`: `true`
-- `AIRFLOW__METRICS__STATSD_HOST`: `airflow-statsd-exporter`
-- `AIRFLOW__METRICS__STATSD_PORT`: `${STATSD_AIRFLOW_PORT}` (UDP 8125)
-- `AIRFLOW__METRICS__STATSD_PREFIX`: `airflow`
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `AIRFLOW__CORE__EXECUTOR` | Executor Type | `CeleryExecutor` |
+| `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN` | Metadata DB Connection | `postgresql+psycopg2://...` |
+| `AIRFLOW__CELERY__RESULT_BACKEND` | Celery Backend | `db+postgresql://...` |
+| `AIRFLOW__CELERY__BROKER_URL` | Celery Broker (Redis) | `redis://...` |
+| `AIRFLOW__WEBSERVER__BASE_URL` | External URL | `https://airflow.${DEFAULT_URL}` |
+| `AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX`| Trust Proxy Headers | `true` |
+| `_AIRFLOW_WWW_USER_USERNAME` | Admin Username | `${_AIRFLOW_WWW_USER_USERNAME}` |
+| `_AIRFLOW_WWW_USER_PASSWORD` | Admin Password | `${_AIRFLOW_WWW_USER_PASSWORD}` |
+| `AIRFLOW__METRICS__STATSD_ON` | Enable StatsD | `true` |
 
 ## Configuration Files
 

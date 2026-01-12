@@ -41,22 +41,19 @@ Data is persisted in named volumes mapped to `/var/lib/kafka/data`:
 - `kafka-3-data`
 - `kafka-connect-data` (for Connect specific data)
 
-## Environment Variables (Highlights)
+## Environment Variables
 
-### Brokers (KRaft)
-
-- `KAFKA_PROCESS_ROLES`: `broker,controller` (Combined mode)
-- `KAFKA_CONTROLLER_QUORUM_VOTERS`: Defines the KRaft quorum (`1@kafka-1...`).
-- `KAFKA_ADVERTISED_LISTENERS`:
-  - **Internal**: `PLAINTEXT://kafka-X:19092`
-  - **External**: `EXTERNAL://localhost:<HostPort>`
-
-### Kafka Connect
-
-- `CONNECT_GROUP_ID`: `kafka-connect-cluster`
-- `CONNECT_BOOTSTRAP_SERVERS`: `kafka-1:19092,kafka-2:19092,kafka-3:19092`
-- `CONNECT_KEY/VALUE_CONVERTER`: `JsonConverter` (Schema-less by default)
-- `CONNECT_PLUGIN_PATH`: `/usr/share/java,/usr/share/confluent-hub-components`
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `CLUSTER_ID` | KRaft Cluster ID | `${KAFKA_CLUSTER_ID}` |
+| `KAFKA_NODE_ID` | Unique Node identifier | `1`, `2`, `3` |
+| `KAFKA_PROCESS_ROLES` | Server Role | `broker,controller` |
+| `KAFKA_CONTROLLER_QUORUM_VOTERS`| KRaft Quorum Configuration | `1@kafka-1...` |
+| `KAFKA_LISTENERS` | Listener URIs | `PLAINTEXT,CONTROLLER,EXTERNAL` |
+| `KAFKA_ADVERTISED_LISTENERS` | Advertised URIs | `kafka-x,localhost` |
+| `KAFKA_AUTO_CREATE_TOPICS_ENABLE`| Enable auto topic creation | `true` |
+| `CONNECT_GROUP_ID` | Connect Cluster Group ID | `kafka-connect-cluster` |
+| `CONNECT_BOOTSTRAP_SERVERS` | Kafka Bootstrap Servers | `kafka-1:19092...` |
 
 ## Traefik Configuration
 

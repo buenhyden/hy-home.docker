@@ -10,6 +10,22 @@ n8n is an extendable workflow automation tool. This deployment is configured in 
 - **Worker Node (`n8n-worker`)**: Picks up jobs from Redis and executes them. Can be scaled horizontally.
 - **Queue (`n8n-valkey`)**: A dedicated Valkey (Redis) instance acting as the job broker.
 
+## Custom Build
+
+This directory contains a `Dockerfile` intended for building n8n from source (requires a `./compiled` directory).
+
+> [!NOTE]
+> **Advanced Usage Only**: This Dockerfile is not for simple extensions (like adding Python packages). It expects pre-compiled n8n source code. For standard deployments, use the official image defined in `docker-compose.yml`.
+
+### How to use (Advanced)
+
+1. Ensure you have compiled n8n source code in `./compiled`.
+2. Uncomment the `build` section in `docker-compose.yml` (if added) or run:
+
+   ```bash
+   docker build -t custom-n8n .
+   ```
+
 ## Services & Networking
 
 All services run on the `infra_net` network with **Static IPs**:
@@ -23,18 +39,32 @@ All services run on the `infra_net` network with **Static IPs**:
 
 ## Key Configuration
 
-### Environment Variables
+## Environment Variables
 
-- **Execution Mode**: `EXECUTIONS_MODE=queue`
-- **Database**: External PostgreSQL (`mng-pg`) via `DB_TYPE=postgresdb`.
-- **Encryption**: `N8N_ENCRYPTION_KEY` (Must remain consistent).
-- **Public URL**: `WEBHOOK_URL=https://n8n.${DEFAULT_URL}` (Critical for OAuth/Webhooks).
+### Core & Security
 
-### Performance & Metrics
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `EXECUTIONS_MODE` | Execution Mode | `queue` |
+| `N8N_ENCRYPTION_KEY` | Encryption Key | `${N8N_ENCRYPTION_KEY}` |
+| `WEBHOOK_URL` | Public URL | `https://n8n.${DEFAULT_URL}` |
+| `GENERIC_TIMEZONE` | Timezone | `${DEFAULT_TIMEZONE}` |
 
-- `N8N_METRICS`: `true` (Prometheus metrics enabled).
-- `N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL`: `true`.
-- `QUEUE_BULL_PREFIX`: `n8n`.
+### Database & Queue
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `DB_TYPE` | Database Type | `postgresdb` |
+| `DB_POSTGRESDB_HOST` | DB Host | `${POSTGRES_HOSTNAME}` |
+| `QUEUE_BULL_REDIS_HOST`| Redis/Valkey Host | `${MNG_VALKEY_HOST}` |
+| `QUEUE_BULL_PREFIX` | Redis Key Prefix | `n8n` |
+
+### Metrics
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `N8N_METRICS` | Enable Metrics | `true` |
+| `N8N_METRICS_PREFIX` | Metric Prefix | `n8n_` |
 
 ## Traefik Configuration
 

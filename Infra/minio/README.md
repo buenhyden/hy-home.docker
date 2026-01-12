@@ -46,9 +46,12 @@ Credentials are strictly managed via Docker Secrets located in `/run/secrets/`:
 
 Environment variables map these secrets to the MinIO configuration:
 
-- `MINIO_ROOT_USER_FILE`
-- `MINIO_ROOT_PASSWORD_FILE`
-- `MINIO_PROMETHEUS_AUTH_TYPE`: `public` (For monitoring)
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `MINIO_ROOT_USER_FILE` | Path to root user secret | `/run/secrets/minio_root_user` |
+| `MINIO_ROOT_PASSWORD_FILE` | Path to root password secret | `/run/secrets/minio_root_password` |
+| `MINIO_PROMETHEUS_AUTH_TYPE` | Prometheus scraping auth type | `public` |
+| `MINIO_API_ROOT_ACCESS` | Enable root access via API | `on` |
 
 ## Traefik Configuration
 

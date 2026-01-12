@@ -27,11 +27,12 @@ The service is configured primarily via the configuration file mounted at `/etc/
 
 ### Environment Variables
 
-| Variable | Description |
-| :--- | :--- |
-| `OAUTH2_PROXY_CLIENT_ID` | The OAuth2 Client ID (from `.env`). |
-| `OAUTH2_PROXY_CLIENT_SECRET` | The OAuth2 Client Secret (from `.env`). |
-| `OAUTH2_PROXY_REDIS_CONNECTION_URL` | Connection string for the Valkey session store (e.g., `redis://oauth2-proxy-valkey:6379`). |
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `SSL_CERT_FILE` | Trusted Root CA for internal requests | `/etc/ssl/certs/rootCA.pem` |
+| `OAUTH2_PROXY_CLIENT_SECRET` | OAuth2 Client Secret | `${OAUTH2_PROXY_CLIENT_SECRET}` |
+| `OAUTH2_PROXY_COOKIE_SECRET` | Cookie encryption secret | `${OAUTH2_PROXY_COOKIE_SECRET}` |
+| `OAUTH2_PROXY_REDIS_CONNECTION_URL` | Redis session store URL | `redis://...` |
 
 ### Valkey Configuration
 

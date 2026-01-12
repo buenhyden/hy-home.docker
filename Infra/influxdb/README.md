@@ -23,19 +23,17 @@ This service is key infrastructure and has a fixed configuration within the `inf
 
 - **`influxdb-data`** → `/var/lib/influxdb2`: Persistent storage for time-series data and configuration.
 
-## Environment Variables (Initialization)
+## Environment Variables
 
-The container is configured to automatically initialize on the first run (`DOCKER_INFLUXDB_INIT_MODE=setup`).
-
-| Variable | Description |
-| :--- | :--- |
-| `INFLUXDB_DB` | Database Name |
-| `DOCKER_INFLUXDB_INIT_MODE` | Set to `setup` for auto-init |
-| `DOCKER_INFLUXDB_INIT_USERNAME` | Initial Admin Username |
-| `DOCKER_INFLUXDB_INIT_PASSWORD` | Initial Admin Password |
-| `DOCKER_INFLUXDB_INIT_ORG` | Default Organization Name |
-| `DOCKER_INFLUXDB_INIT_BUCKET` | Default Bucket Name |
-| `DOCKER_INFLUXDB_INIT_ADMIN_TOKEN`| Admin API Token (Important for clients) |
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `INFLUXDB_DB` | Database Name | `${INFLUXDB_DB_NAME}` |
+| `DOCKER_INFLUXDB_INIT_MODE` | Set to `setup` for auto-init | `setup` |
+| `DOCKER_INFLUXDB_INIT_USERNAME` | Initial Admin Username | `${INFLUXDB_USERNAME}` |
+| `DOCKER_INFLUXDB_INIT_PASSWORD` | Initial Admin Password | `${INFLUXDB_PASSWORD}` |
+| `DOCKER_INFLUXDB_INIT_ORG` | Default Organization Name | `${INFLUXDB_ORG}` |
+| `DOCKER_INFLUXDB_INIT_BUCKET` | Default Bucket Name | `${INFLUXDB_BUCKET}` |
+| `DOCKER_INFLUXDB_INIT_ADMIN_TOKEN`| Admin API Token | `${INFLUXDB_API_TOKEN}` |
 
 ## Traefik Configuration
 

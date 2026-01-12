@@ -33,6 +33,18 @@ A GUI for managing and visualizing data in Valkey/Redis.
 - **Network**: `infra_net`
 - **Traefik**: Exposed at `redisinsight.${DEFAULT_URL}` with **SSO Authentication**.
 
+- **Traefik**: Exposed at `redisinsight.${DEFAULT_URL}` with **SSO Authentication**.
+
+## Environment Variables
+
+| Service | Variable | Description | Default |
+| :--- | :--- | :--- | :--- |
+| **Valkey** | Secret `valkey_password` | Master/Replica Password | via Docker Secret |
+| **PostgreSQL**| `POSTGRES_USER` | Valid User | `${POSTGRES_USER}` |
+| **PostgreSQL**| `POSTGRES_PASSWORD` | Superuser Password | `${PGPASSWORD_SUPERUSER}` |
+| **PostgreSQL**| `POSTGRES_DB` | Init Database | `${POSTGRES_DB}` |
+| **Init** | `PGPASSWORD_SUPERUSER` | Auth for Script | `${PGPASSWORD_SUPERUSER}` |
+
 ## Networking
 
 All services are assigned **Static IPs** in the `infra_net` network for reliable discovery:

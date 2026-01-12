@@ -26,6 +26,18 @@ A local LLM (Large Language Model) inference stack with a ChatGPT-like web inter
 - **Image**: `lucabecker42/ollama-exporter`
 - **Port**: `${OLLAMA_EXPORTER_PORT}`
 
+## Environment Variables
+
+| Service | Variable | Description | Default |
+| :--- | :--- | :--- | :--- |
+| **Ollama** | `OLLAMA_HOST` | Binding Address | `0.0.0.0:${OLLAMA_PORT}` |
+| **Ollama** | `NVIDIA_VISIBLE_DEVICES` | GPU Isolation | `all` |
+| **WebUI** | `OLLAMA_BASE_URL` | Connection to Ollama | `http://ollama:${OLLAMA_PORT}` |
+| **WebUI** | `VECTOR_DB_URL` | Connection to Qdrant | `http://qdrant:${QDRANT_PORT}` |
+| **WebUI** | `RAG_EMBEDDING_ENGINE` | Embedding Provider | `ollama` |
+| **WebUI** | `RAG_EMBEDDING_MODEL` | Embedding Model | `qwen3-embedding:0.6b` |
+| **Exporter** | `OLLAMA_HOST` | Target to scrape | `ollama:${OLLAMA_PORT}` |
+
 ## Network
 
 Services are assigned static IPs in the `172.19.0.4X` range on `infra_net`.
