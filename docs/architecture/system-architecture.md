@@ -89,8 +89,9 @@ flowchart TB
   - Dynamic routing based on Host rules
   - TLS certificate management
 - **OAuth2 Proxy**: Authentication gateway implementing forward auth pattern
-  - Protects services via middleware
+  - Protects selective services (Grafana, RedisInsight, Kafka UI)
   - Integrates with Keycloak for SSO
+  - Other services (n8n, Ollama, SonarQube) use built-in authentication
 
 ### Authentication Layer
 

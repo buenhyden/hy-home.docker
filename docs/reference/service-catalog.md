@@ -17,7 +17,7 @@ Complete reference of all infrastructure services with access details.
 
 | Service | URL | Port | Purpose |
 |:---|:---|:---|:---|
-| **Valkey** | - | 6379 | Distributed in-memory store |
+| **RedisInsight** | <https://redisinsight.127.0.0.1.nip.io> | - | Valkey cluster management (Redis-compatible) |
 | **Kafka UI** | <https://kafka-ui.127.0.0.1.nip.io> | - | Kafka cluster management |
 | **MinIO Console** | <https://minio-console.127.0.0.1.nip.io> | - | S3 storage management |
 | **InfluxDB UI** | <https://influxdb.127.0.0.1.nip.io> | - | Time-series DB UI |
@@ -30,7 +30,7 @@ Complete reference of all infrastructure services with access details.
 | **Ollama WebUI** | <https://chat.127.0.0.1.nip.io> | - | LLM chat interface |
 | **Keycloak Admin** | <https://keycloak.127.0.0.1.nip.io/admin> | - | IAM administration |
 | **Traefik Dashboard** | <https://dashboard.127.0.0.1.nip.io> | - | Reverse proxy dashboard |
-| **SonarQube** | <https://sonar.127.0.0.1.nip.io> | - | Code quality |
+| **SonarQube** | <https://sonarqube.127.0.0.1.nip.io> | - | Code quality |
 
 ## Direct Database Access
 
@@ -170,20 +170,32 @@ These services are available in the `infra/` directory but are commented out in 
 
 ### Protected Services (SSO via OAuth2 Proxy)
 
+**Active Services:**
+
 - Grafana
-- n8n
-- Kafka UI
 - RedisInsight
-- MailHog
-- Flower (Airflow)
+- Kafka UI
+
+**Optional/Disabled Services:**
+
 - Storybook
+- Stalwart (MailHog replacement)
+- Flower (Airflow UI)
 
 Login via Keycloak when accessing these services.
 
+### Self-Authenticated Services
+
+These services have their own authentication systems:
+
+- Keycloak (IAM with own login)
+- n8n (built-in authentication)
+- Ollama WebUI (built-in authentication)
+- SonarQube (built-in authentication)
+
 ### Public Services
 
-- Traefik Dashboard
-- Keycloak (has own auth)
+- Traefik Dashboard (accessible without authentication)
 
 ## Resource Requirements
 
