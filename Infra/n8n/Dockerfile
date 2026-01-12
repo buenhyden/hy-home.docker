@@ -1,36 +1,55 @@
-ARG NODE_VERSION=20
-FROM node:${NODE_VERSION}-alpine
+# syntax=docker/dockerfile:1
+# -----------------------------------------------------------
+# Custom n8n Dockerfile - Multi-stage Build
+# -----------------------------------------------------------
+# The official n8n image is distroless (no package manager).
+# This multi-stage build installs fonts in Alpine stage,
+# then copies them to the final n8n image.
+# -----------------------------------------------------------
 
 ARG N8N_VERSION=2.3.0
 
-# 1. Update everything and install needed dependencies
-RUN apk add --update graphicsmagick tzdata git tini su-exec
+# ===========================================
+# Stage 1: Font Builder (Alpine)
+# ===========================================
+FROM alpine:3.21 AS font-builder
 
-# 2. Set a custom user to not have n8n run as root
+# Install fonts
+RUN apk add --no-cache \
+    fontconfig \
+    font-noto \
+    font-noto-cjk \
+    ttf-dejavu \
+    ttf-liberation \
+    font-noto-emoji
+
+# Build font cache
+RUN fc-cache -f -v
+
+# ===========================================
+# Stage 2: Final n8n Image
+# ===========================================
+FROM n8nio/n8n:${N8N_VERSION}
+
+# Switch to root to copy files
 USER root
 
-# 3. Install n8n and the packages it needs to build it correctly.
-RUN apk --update add --virtual build-dependencies python3 build-base ca-certificates && \
-    npm config set python "$(which python3)" && \
-    npm_config_user=root npm install -g full-icu n8n@${N8N_VERSION} && \
-    apk del build-dependencies \
-    && rm -rf /root /tmp/* /var/cache/apk/* && mkdir /root;
+# Copy fonts from builder stage
+COPY --from=font-builder /usr/share/fonts /usr/share/fonts
+COPY --from=font-builder /var/cache/fontconfig /var/cache/fontconfig
+COPY --from=font-builder /etc/fonts /etc/fonts
 
-# 4. Install fonts
-RUN apk --no-cache add --virtual fonts msttcorefonts-installer fontconfig && \
-    update-ms-fonts && \
-    fc-cache -f && \
-    apk del fonts && \
-    find  /usr/share/fonts/truetype/msttcorefonts/ -type l -exec unlink {} \; \
-    && rm -rf /root /tmp/* /var/cache/apk/* && mkdir /root
+# Create fontconfig cache directory and refresh
+RUN mkdir -p /var/cache/fontconfig && \
+    if command -v fc-cache >/dev/null 2>&1; then fc-cache -f; fi || true
 
-ENV NODE_ICU_DATA /usr/local/lib/node_modules/full-icu
+# Switch back to node user for security
+USER node
 
-WORKDIR /data
+# Environment defaults
+ENV NODE_ENV=production
+ENV GENERIC_TIMEZONE=Asia/Seoul
 
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+WORKDIR /home/node
 
-ENTRYPOINT ["tini", "--", "/docker-entrypoint.sh"]
-
-EXPOSE 5678/tcp
+# The official n8n image already has proper ENTRYPOINT configured
