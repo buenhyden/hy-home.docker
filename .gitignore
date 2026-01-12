@@ -1,6 +1,8 @@
 .history/
 .vscode/
 .mypy_cache/
+.pytest_cache/
+.agnet/rules/
 # Archive
 archive/seaweedfs/config/security.toml
 archive/Terrakube/certs/*.pem
