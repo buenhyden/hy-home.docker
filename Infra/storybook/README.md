@@ -1,46 +1,80 @@
-# Design System Storybook
+# Design System Infrastructure (Storybook)
 
-## Overview
+This directory hosts the **Design System** and **Storybook** environment, providing ready-to-use templates for React library development.
 
-Hosts the static build of the Design System's Storybook documentation. This service is a **Custom Build** requiring source code (provided in `react-ts` or `react-js` examples).
+## 📂 Templates
 
-## Services
+Two fully configured templates are provided for immediate use:
 
-| Service | Image | Role |
+| Directory | Stack | Description |
 | :--- | :--- | :--- |
-| `storybook` | `design-system-storybook:latest` (Local Build) | Documentation Host (Nginx) |
+| **`react-ts/`** | **TypeScript** + React 19 + Vite | **(Recommended)** Type-safe development with automated `.d.ts` generation. |
+| **`react-js/`** | JavaScript + React 19 + Vite | Standard JavaScript setup for legacy compatibility or rapid prototyping. |
 
-## Networking
+## 🚀 Key Features
 
-Service runs on `infra_net` using **Dynamic** IP assignment.
+Both templates share a robust, "Ultra-Lean" configuration:
 
-| Service | IP Address | Internal Port | Traefik Domain |
-| :--- | :--- | :--- | :--- |
-| `storybook` | *(Dynamic)* | `80` | `design.${DEFAULT_URL}` |
+* **⚡ Build System**: **Vite** Library Mode for high-performance builds and easy bundling.
+* **🧩 Component Library**: Configured to export as `ESM` and `UMD` modules for consumption in other apps.
+* **🧪 Interaction Testing**: Pre-configured with `@storybook/addon-interactions` and `play` functions to test component logic within the browser.
+* **♿ Accessibility**: Automated A11y checks via `@storybook/addon-a11y` (WCAG compliance).
+* **🎨 Theming**: Native support for Light/Dark mode toggles in Storybook toolbar.
+* **🤝 Figma Integration**: `@storybook/addon-designs` installed for embedding Figma frames directly in documentation.
+* **🚢 CI/CD**: GitHub Actions pipelines for:
+  * **CI**: Linting, Building, Unit Testing, and Interaction Testing.
+  * **Release**: Automated Semantic Versioning and NPM publishing via `semantic-release`.
+* **🐋 Dockerized**: Multi-stage Dockerfile for optimizing static asset generation and serving via Nginx.
+* **👀 Visual Regression**: Readiness for visual testing tools like **Chromatic** or **Loki** (see `VISUAL_REGRESSION.md`).
 
-## Persistence
+## 🛠 Infrastructure & Networking
 
-This service is stateless. Documentation is baked into the Docker image during build.
+The Docker container runs a static Nginx server hosting the build artifacts.
 
-## Configuration
+| Service | Image | Internal Port | Traefik Domain | Authentication |
+| :--- | :--- | :--- | :--- | :--- |
+| `storybook` | `design-system-storybook:latest` | `80` | `design.${DEFAULT_URL}` | SSO (Keycloak) |
 
-Configuration is primarily handled via `docker-compose.yml` labels and the `Dockerfile` build process.
+### Networking
 
-## Traefik Integration
+* **Network**: `infra_net`
+* **IP Assignment**: Dynamic
 
-Services are exposed via Traefik with TLS and SSO authentication.
+## 📖 Usage Guide
 
-- **Domain**: `design.${DEFAULT_URL}`
-- **Middleware**: `sso-auth@file` (Keycloak Protected)
+### 1. Local Development
 
-## Usage
+Choose your preferred flavor (`react-ts` recommended):
 
-1. **Select Context**: Navigate to `react-ts` (recommended) or `react-js`.
-2. **Build & Run**:
+```bash
+cd react-ts
+npm install
+npm run storybook
+```
 
-   ```bash
-   cd react-ts
-   docker-compose up -d --build
-   ```
+Access at `http://localhost:6006`.
 
-3. **Access**: Navigate to `https://design.${DEFAULT_URL}`.
+### 2. Building for Production
+
+To build the static Storybook site and the component library:
+
+```bash
+npm run build            # Builds library (dist/)
+npm run build-storybook  # Builds documentation (storybook-static/)
+```
+
+### 3. Running with Docker
+
+Deploy the selected template using Docker Compose:
+
+```bash
+cd react-ts
+docker-compose up -d --build
+```
+
+This enables the Nginx server on port `6006`.
+
+## 🔗 Reference Documentation
+
+* [Figma Integration](./react-ts/FIGMA_INTEGRATION.md)
+* [Visual Regression Testing](./react-ts/VISUAL_REGRESSION.md)

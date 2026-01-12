@@ -1,0 +1,50 @@
+name: CI (React TS)
+
+on:
+    push:
+        branches: ["main"]
+        paths:
+            - "infra/storybook/react-ts/**"
+    pull_request:
+        branches: ["main"]
+        paths:
+            - "infra/storybook/react-ts/**"
+
+defaults:
+    run:
+        working-directory: infra/storybook/react-ts
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "23.x"
+                  cache: "npm"
+                  cache-dependency-path: infra/storybook/react-ts/package-lock.json
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Run Lint
+              run: npm run lint
+
+            - name: Build Library
+              run: npm run build
+
+            - name: Install Playwright Browsers
+              run: npx playwright install --with-deps
+
+            - name: Build Storybook
+              run: npm run build-storybook
+
+            - name: Run Interaction Tests
+              run:
+                  npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue"
+                  "npx http-server storybook-static --port 6006 --silent" "npx
+                  wait-on tcp:6006 && npm run test-storybook"

@@ -1,16 +1,84 @@
-# React + Vite
+# React + Storybook Design System Infrastructure
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This directory contains a complete **React Design System** environment powered by **Storybook**, **Vite**, and **Docker**. It is configured for library interaction testing, visual regression readiness, and automated CI/CD.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19 + Vite**: Fast development and optimized library build.
+- **Storybook 8**: Component isolation, documentation, and testing.
+- **Interaction Testing**: Play functions and testing-library integration.
+- **Accessibility (A11y)**: Automated WCAG compliance checks.
+- **Theming**: Built-in support for Dark/Light mode visualization.
+- **Figma Integration**: Design-to-code syncing via addons.
+- **CI/CD**: GitHub Actions for testing, linting, and semantic releases.
+- **Dockerized**: Run the documentation site anywhere with Docker Compose.
 
-## React Compiler
+## 🛠 Setup & Installation
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Install dependencies
+npm install
 
-## Expanding the ESLint configuration
+# Start development server
+npm run storybook
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Storybook will open at `http://localhost:6006`.
+
+## 📦 Building the Library
+
+To package the components as a distributable library (UMD/ESM):
+
+```bash
+npm run build
+```
+
+Output will be in `dist/`.
+
+## 🧪 Testing
+
+### Interaction Tests
+
+Run interaction tests via the test runner:
+
+```bash
+npm run test-storybook
+```
+
+### Visual Regression Testing
+
+See [VISUAL_REGRESSION.md](./VISUAL_REGRESSION.md) for setup instructions (Chromatic or Loki).
+
+## 🐋 Docker Usage
+
+To run the static Storybook documentation in a container:
+
+```bash
+# Build and Start
+docker-compose up --build
+```
+
+Access at `http://localhost:6006`.
+
+## 🎨 Integrations
+
+- **Figma**: See [FIGMA_INTEGRATION.md](./FIGMA_INTEGRATION.md) for linking designs.
+- **Theming**: Toggle background colors in the Storybook toolbar to test Light/Dark modes.
+
+## 🔄 CI/CD & Release
+
+- **CI**: Runs on Pull Request. Checks Lint, Build, and Tests.
+- **Release**: Runs on push to `main`. Uses **Semantic Release** to determine version bump and publish.
+
+## 📂 Project Structure
+
+```text
+.
+├── .github/              # CI/CD Workflows
+├── .storybook/           # Storybook Config (Addons, Preview)
+├── src/                  # Component Source Code
+│   ├── stories/          # Story Files (*.stories.js)
+├── vite.config.js        # Vite & Library Config
+├── docker-compose.yml    # Docker Services
+└── package.json          # Dependencies & Scripts
+```
