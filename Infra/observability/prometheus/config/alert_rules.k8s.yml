@@ -1,0 +1,120 @@
+groups:
+  # [Optional] Kubernetes Cluster Monitoring
+  # [Why] Detection of crash looping pods and API latency issues.
+  - name: kubernetes_alerts
+    rules:
+      # [What] Pod CrashLooping / 파드 크래시 루프
+      # [Why] Pods are restarting frequently, indicating application instability. / 파드가 빈번하게 재시작되고 있어 불안정함을 나타냅니다.
+      - alert: KubernetesPodCrashLooping
+        expr: increase(kube_pod_container_status_restarts_total[1m]) > 3
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary:
+            "Kubernetes pod crash looping (instance {{ $labels.instance }})"
+          description:
+            "Pod {{ $labels.pod }} is crash looping\n  VALUE = {{ $value
+            }}\n  LABELS = {{ $labels }}"
+
+      # [What] API Server Latency High / API 서버 지연 높음
+      # [Why] Control plane is slow, affecting cluster operations. / 컨트롤 플레인 응답이 느려 클러스터 작업에 영향을 줍니다.
+      - alert: KubernetesApiServerLatencyHigh
+        expr:
+          histogram_quantile(0.99,
+          sum(rate(apiserver_request_duration_seconds_bucket{verb!~"(?:CONNECT|WATCHLIST|WATCH|PROXY)"}
+          [10m])) WITHOUT (subresource)) > 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary:
+            "Kubernetes API server latency high (instance {{ $labels.instance
+            }})"
+          description:
+            "Kubernetes API Server 99th percentile latency is > 1s\n  VALUE = {{
+            $value }}\n  LABELS = {{ $labels }}"
+
+  # [Optional] Etcd Monitoring
+  # [Why] Etcd is the brain of Kubernetes; its failure stops the cluster.
+  - name: etcd_alerts
+    rules:
+      # [What] Etcd No Leader / Etcd 리더 없음
+      # [Why] Cluster lost consensus; read/writes will fail. / 클러스터 합의가 깨져 읽기/쓰기가 실패합니다.
+      - alert: EtcdNoLeader
+        expr: etcd_server_has_leader == 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Etcd no leader (instance {{ $labels.instance }})"
+          description:
+            "Etcd member likely lost leader\n  VALUE = {{ $value }}\n  LABELS =
+            {{ $labels }}"
+
+      # [What] Etcd High Commit Duration / Etcd 커밋 지연 높음
+      # [Why] Disk performance is bottling etcd performance. / 디스크 성능 문제로 etcd 성능이 저하되고 있습니다.
+      - alert: EtcdHighCommitDuration
+        expr:
+          histogram_quantile(0.99,
+          rate(etcd_disk_backend_commit_duration_seconds_bucket[5m])) > 0.5
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Etcd high commit duration (instance {{ $labels.instance }})"
+          description:
+            "Etcd 99th percentile commit duration is > 0.5s\n  VALUE = {{ $value
+            }}\n  LABELS = {{ $labels }}"
+
+  # [Optional] Istio Service Mesh
+  # [Why] Monitoring mesh traffic health.
+  - name: istio_alerts
+    rules:
+      # [What] Istio High 5xx Error Rate / Istio 5xx 에러율 높음
+      # [Why] Mesh-wide error rate is high. / 서비스 메쉬 전체 에러율이 높습니다.
+      - alert: IstioHigh5xxErrorRate
+        expr:
+          sum(rate(istio_requests_total{reporter="destination",
+          response_code=~"5.*"}[5m])) /
+          sum(rate(istio_requests_total{reporter="destination"}[5m])) * 100 > 5
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Istio high 5xx error rate"
+          description:
+            "Istio 5xx error rate is > 5%\n  VALUE = {{ $value }}\n  LABELS = {{
+            $labels }}"
+
+  # [Optional] ArgoCD GitOps
+  # [Why] Measuring application deployment health.
+  - name: argocd_alerts
+    rules:
+      # [What] Application Not Synced / 애플리케이션 동기화 실패
+      # [Why] Application configuration differs from Git. / 애플리케이션 설정이 Git과 일치하지 않습니다.
+      - alert: ArgoAppNotSynced
+        expr: argocd_app_info{sync_status!="Synced"} != 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary:
+            "ArgoCD application not synced (instance {{ $labels.instance }})"
+          description:
+            "Application {{ $labels.name }} is not synced\n  VALUE = {{ $value
+            }}\n  LABELS = {{ $labels }}"
+
+      # [What] Application Unhealthy / 애플리케이션 비정상
+      # [Why] Application health check failed. / 애플리케이션 상태 검사에 실패했습니다.
+      - alert: ArgoAppUnhealthy
+        expr: argocd_app_info{health_status!="Healthy"} != 0
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary:
+            "ArgoCD application unhealthy (instance {{ $labels.instance }})"
+          description:
+            "Application {{ $labels.name }} is unhealthy\n  VALUE = {{ $value
+            }}\n  LABELS = {{ $labels }}"
