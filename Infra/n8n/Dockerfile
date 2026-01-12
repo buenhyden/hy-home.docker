@@ -1,33 +1,36 @@
-ARG NODE_VERSION=22.21.1
-ARG N8N_VERSION=snapshot
+ARG NODE_VERSION=20
+FROM node:${NODE_VERSION}-alpine
 
-FROM n8nio/base:${NODE_VERSION}
+ARG N8N_VERSION=2.3.0
 
-ARG N8N_VERSION
-ARG N8N_RELEASE_TYPE=dev
-ENV NODE_ENV=production
-ENV N8N_RELEASE_TYPE=${N8N_RELEASE_TYPE}
-ENV NODE_ICU_DATA=/usr/local/lib/node_modules/full-icu
-ENV SHELL=/bin/sh
+# 1. Update everything and install needed dependencies
+RUN apk add --update graphicsmagick tzdata git tini su-exec
 
-WORKDIR /home/node
+# 2. Set a custom user to not have n8n run as root
+USER root
 
-COPY ./compiled /usr/local/lib/node_modules/n8n
-COPY docker/images/n8n/docker-entrypoint.sh /
+# 3. Install n8n and the packages it needs to build it correctly.
+RUN apk --update add --virtual build-dependencies python3 build-base ca-certificates && \
+    npm config set python "$(which python3)" && \
+    npm_config_user=root npm install -g full-icu n8n@${N8N_VERSION} && \
+    apk del build-dependencies \
+    && rm -rf /root /tmp/* /var/cache/apk/* && mkdir /root;
 
-RUN cd /usr/local/lib/node_modules/n8n && \
-    npm rebuild sqlite3 && \
-    ln -s /usr/local/lib/node_modules/n8n/bin/n8n /usr/local/bin/n8n && \
-    mkdir -p /home/node/.n8n && \
-    chown -R node:node /home/node && \
-    rm -rf /root/.npm /tmp/*
+# 4. Install fonts
+RUN apk --no-cache add --virtual fonts msttcorefonts-installer fontconfig && \
+    update-ms-fonts && \
+    fc-cache -f && \
+    apk del fonts && \
+    find  /usr/share/fonts/truetype/msttcorefonts/ -type l -exec unlink {} \; \
+    && rm -rf /root /tmp/* /var/cache/apk/* && mkdir /root
 
-EXPOSE 5678/tcp
-USER node
+ENV NODE_ICU_DATA /usr/local/lib/node_modules/full-icu
+
+WORKDIR /data
+
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
 ENTRYPOINT ["tini", "--", "/docker-entrypoint.sh"]
 
-LABEL org.opencontainers.image.title="n8n" \
-    org.opencontainers.image.description="Workflow Automation Tool" \
-    org.opencontainers.image.source="https://github.com/n8n-io/n8n" \
-    org.opencontainers.image.url="https://n8n.io" \
-    org.opencontainers.image.version=${N8N_VERSION}
+EXPOSE 5678/tcp

@@ -1,5 +1,6 @@
 # Stage 1: Build
 FROM node:20-alpine AS build-stage
+LABEL maintainer="Design System Team"
 
 # 작업 디렉토리 설정
 WORKDIR /app

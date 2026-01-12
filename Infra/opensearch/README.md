@@ -15,7 +15,9 @@ A search and analytics suite. Current configuration is set for a **Single Node**
 
 ## Custom Build (Plugins)
 
-This directory contains a `Dockerfile` that builds a custom OpenSearch image with additional plugins pre-installed.
+This directory contains a `Dockerfile` that builds a custom OpenSearch image with additional plugins pre-installed, following the [official Docker installation guide][opensearch-docker].
+
+[opensearch-docker]: https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/
 
 **Installed Plugins:**
 

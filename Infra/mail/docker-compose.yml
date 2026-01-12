@@ -50,7 +50,7 @@ services:
       - "traefik.http.routers.mailhog.entrypoints=websecure"
       - "traefik.http.routers.mailhog.tls=true"
       - "traefik.http.services.mailhog.loadbalancer.server.port=${MAILHOG_UI_PORT}"
-      - "traefik.http.routers.stalwart-ui.middlewares=sso-auth@file"
+      - "traefik.http.routers.mailhog.middlewares=sso-auth@file"
     logging:
       driver: "json-file"
       options:

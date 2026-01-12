@@ -15,11 +15,22 @@ production-grade database settings.
 
 ## Custom Build
 
-This directory contains a `Dockerfile` that allows for a custom Keycloak build. This is useful for:
+This directory contains a `Dockerfile` that allows for a custom Keycloak build, following the [official Container guide](https://www.keycloak.org/server/containers). This is useful for:
 
-- Pre-building Keycloak to reduce startup time (optimizing for specific providers).
-- Adding custom themes or SPIs (Service Provider Interfaces).
-- Embedding self-signed certificates for development (as demonstrated in the Dockerfile).
+- **Optimization**: Pre-building Keycloak to reduce startup time (optimizing for specific providers).
+- **Customization**: Adding custom themes, SPIs (Service Provider Interfaces), or scripts.
+- **Development**: Embedding self-signed certificates for development (as demonstrated in the Dockerfile).
+
+### Customization Examples
+
+1. **Adding a Custom Theme**:
+    - Place your theme directory in logical folder (e.g., `themes/my-theme`).
+    - Add `COPY themes/my-theme /opt/keycloak/themes/my-theme` to the `Dockerfile`.
+
+2. **Adding a Provider (SPI)**:
+    - Place your jar file in `providers/`.
+    - Add `COPY providers/my-provider.jar /opt/keycloak/providers/` to the `Dockerfile`.
+    - Run `RUN /opt/keycloak/bin/kc.sh build` to optimize.
 
 ### How to use
 
@@ -79,7 +90,7 @@ Additional JVM options are set to enforce strict connection validation:
 -Dquarkus.datasource.jdbc.background-validation-interval=1M
 ```
 
-## Environment Variables
+## Configuration Reference
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |

@@ -8,7 +8,7 @@ In this infrastructure, it serves as the central **Single Sign-On (SSO)** provid
 
 | Service | Image | Description |
 | :--- | :--- | :--- |
-| `oauth2-proxy` | `quay.io/oauth2-proxy/oauth2-proxy:v7.8.1-amd64` | The core authentication proxy. |
+| `oauth2-proxy` | `quay.io/oauth2-proxy/oauth2-proxy:v7.13.0` | The core authentication proxy. |
 | `oauth2-proxy-valkey` | `bitnami/valkey:8.0` | Redis-compatible session store for OAuth2 Proxy. |
 | `oauth2-proxy-valkey-exporter` | `bitnami/redis-exporter:latest` | Prometheus exporter for Valkey metrics. |
 

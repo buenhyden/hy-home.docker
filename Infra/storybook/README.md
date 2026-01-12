@@ -7,7 +7,7 @@ Hosts the static build of the Design System's Storybook documentation.
 ## Service Details
 
 - **Image**: `storybook:latest` (Local build)
-- **Container Name**: `mng-storybook`
+- **Container Name**: `design-system-storybook`
 
 ## Custom Build
 
@@ -21,7 +21,7 @@ The `Dockerfile` performs a multi-stage build:
 ### How to use
 
 1. Ensure your Design System source code is in this directory (or update the build context).
-2. The `docker-compose.yml` is already configured to build from the local directory:
+2. The `docker-compose.yml` includes a `build` section (commented out by default):
 
 ```yaml
 services:

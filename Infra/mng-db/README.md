@@ -33,8 +33,6 @@ A GUI for managing and visualizing data in Valkey/Redis.
 - **Network**: `infra_net`
 - **Traefik**: Exposed at `redisinsight.${DEFAULT_URL}` with **SSO Authentication**.
 
-- **Traefik**: Exposed at `redisinsight.${DEFAULT_URL}` with **SSO Authentication**.
-
 ## Environment Variables
 
 | Service | Variable | Description | Default |

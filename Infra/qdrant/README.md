@@ -10,8 +10,6 @@ A Vector Database for AI applications, used here primarily for RAG (Retrieval-Au
 - **Port**: `${QDRANT_PORT}` (6333)
 - **Volumes**: Data persisted in `qdrant-data`.
 
-- **Volumes**: Data persisted in `qdrant-data`.
-
 ## Environment Variables
 
 | Variable | Description | Default |

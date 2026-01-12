@@ -1,8 +1,11 @@
 name: design-system-storybook
 services:
   storybook:
-    image: your-registry/design-system-storybook:latest
-    container_name: mng-storybook
+    # image: your-registry/design-system-storybook:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: design-system-storybook
     restart: unless-stopped
     networks:
       infra_net: # 기존 인프라 네트워크 사용

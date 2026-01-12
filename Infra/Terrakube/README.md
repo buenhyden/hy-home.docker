@@ -65,6 +65,18 @@ All Terrakube components are configured with **Dynamic IP** assignment on the `i
 | `REACT_APP_TERRAKUBE_API_URL` | API URL | `https://terrakube-api...` |
 | `REACT_APP_AUTHORITY` | Auth Authority | `https://keycloak...` |
 | `REACT_APP_CLIENT_ID` | OAuth Client ID | `proxy-client` |
+| `REACT_APP_REDIRECT_URI` | Redirect URI | `https://terrakube-ui...` |
+| `REACT_APP_SCOPE` | OAuth Scope | `openid profile email...` |
+
+### Executor Specific
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `TerrakubeEnableSecurity` | Enable Security | `true` |
+| `TerraformStateType` | State Backend | `AwsTerraformStateImpl` |
+| `ExecutorFlagBatch` | Batch Mode | `false` |
+| `ExecutorFlagDisableAcknowledge` | Disable Ack | `false` |
+| `TerrakubeToolsRepository` | Tools Repo | `.../terrakube-extensions.git` |
 
 ## Traefik Configuration
 

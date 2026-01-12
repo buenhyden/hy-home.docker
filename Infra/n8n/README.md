@@ -12,19 +12,31 @@ n8n is an extendable workflow automation tool. This deployment is configured in 
 
 ## Custom Build
 
-This directory contains a `Dockerfile` intended for building n8n from source (requires a `./compiled` directory).
+This directory contains a `Dockerfile` that allows building n8n from source/npm directly, enabling:
 
-> [!NOTE]
-> **Advanced Usage Only**: This Dockerfile is not for simple extensions (like adding Python packages). It expects pre-compiled n8n source code. For standard deployments, use the official image defined in `docker-compose.yml`.
+- **Private Nodes**: Installing custom nodes during the build process.
+- **System Dependencies**: Adding tools like `pandoc`, `ffmpeg`, or `python3`.
+- **Custom Fonts**: Installing Microsoft fonts for better PDF/Image generation.
+- **Architecture Control**: Building specifically for the target architecture.
 
-### How to use (Advanced)
+### How to use
 
-1. Ensure you have compiled n8n source code in `./compiled`.
-2. Uncomment the `build` section in `docker-compose.yml` (if added) or run:
+1. Open `docker-compose.yml`.
+2. Comment out the `image` instruction.
+3. Add/Uncomment the `build` instruction:
 
-   ```bash
-   docker build -t custom-n8n .
-   ```
+```yaml
+services:
+  n8n:
+    # image: n8nio/n8n:2.3.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - N8N_VERSION=2.3.0
+```
+
+1. Rebuild: `docker-compose up -d --build n8n`.
 
 ## Services & Networking
 

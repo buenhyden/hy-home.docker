@@ -1,9 +1,10 @@
-FROM opensearchproject/opensearch:latest
+# Reference: https://docs.opensearch.org/1.0/opensearch/install/docker/#working-with-plugins
 
-LABEL version="0.1" creator="chochyjj@gmail.com" description="Opensearch add plugins"
+FROM opensearchproject/opensearch:3.4.0
 
-WORKDIR /usr/share/opensearch/
+LABEL version="0.1" description="OpenSearch with custom plugins"
 
-RUN /usr/share/opensearch/bin/opensearch-plugin install --batch ingest-attachment analysis-nori mapper-annotated-text mapper-murmur3 mapper-size repository-azure discovery-azure-classic
+SHELL ["/bin/bash", "-c"]
 
-RUN /usr/share/opensearch/bin/opensearch-plugin install https://github.com/aiven/prometheus-exporter-plugin-for-opensearch/releases/download/2.16.0.0/prometheus-exporter-2.16.0.0.zip
+RUN /usr/share/opensearch/bin/opensearch-plugin install --batch ingest-attachment analysis-nori mapper-annotated-text mapper-murmur3 mapper-size repository-azure discovery-azure-classic && \
+    /usr/share/opensearch/bin/opensearch-plugin install --batch https://github.com/opensearch-project/opensearch-prometheus-exporter/releases/download/3.4.0.0/prometheus-exporter-3.4.0.0.zip
