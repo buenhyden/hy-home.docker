@@ -2,30 +2,21 @@
 
 ## Overview
 
-SonarQube is a self-managed, automatic code review tool that systematically helps you deliver clean code.
+Automated code review and code quality analysis tool.
 
-## Services
+## Service Details
 
-- **sonarqube**: SonarQube Server.
-  - URL: `https://sonarqube.${DEFAULT_URL}`
+- **Image**: `sonarqube:26.1.0.118079-community`
+- **Database**: Connects to the main `postgresql-cluster` or a dedicated DB (Env: `SONAR_JDBC_URL`).
+- **Port**: `${SONARQUBE_PORT}` (9000).
 
-## Configuration
+## Environment Variables
 
-### Environment Variables
+- `SONAR_JDBC_URL`
+- `SONAR_JDBC_USERNAME`
+- `SONAR_JDBC_PASSWORD`
 
-- `SONAR_JDBC_URL`: Postgres JDBC URL.
-- `SONAR_JDBC_USERNAME`: DB User.
-- `SONAR_JDBC_PASSWORD`: DB Password.
-
-### Volumes
-
-- `sonarqube-data-volume`: `/opt/sonarqube/data`
-- `sonarqube-logs-volume`: `/opt/sonarqube/logs`
-
-## Networks
-
-- `infra_net`
-
-## Traefik Routing
+## Traefik Configuration
 
 - **Domain**: `sonarqube.${DEFAULT_URL}`
+- **Entrypoint**: `websecure` (TLS enabled)

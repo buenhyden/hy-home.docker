@@ -1,43 +1,31 @@
-# Management Database Stack
+# Management Databases
 
 ## Overview
 
-Centralized management databases (PostgreSQL & Valkey) used by various services like n8n and others.
+Shared database infrastructure for management tools, including **Valkey** (Redis fork) and **PostgreSQL**.
 
-## Services
+## Service Details
 
-- **mng-valkey**: Valkey (Redis compatible) server.
-  - Port: `6379`
-- **mng-valkey-exporter**: Prometheus exporter for Valkey metrics.
-- **redisinsight**: GUI for Redis/Valkey.
-  - URL: `https://redisinsight.${DEFAULT_URL}`
-- **mng-pg**: PostgreSQL server.
-  - Port: `${POSTGRES_PORT}`
-- **mng-pg-init**: Initialization container for Postgres users/DBs.
-- **mng-pg-exporter**: Prometheus exporter for Postgres metrics.
+### Valkey (`mng-valkey`)
 
-## Configuration
+- **Image**: `valkey/valkey:9.0.1-alpine`
+- **Port**: `${VALKEY_PORT}` (Internal)
+- **Secrets**: `valkey_password`
+- **Exporter**: `mng-valkey-exporter` (Port `${VALKEY_EXPORTER_PORT}`)
 
-### Environment Variables
+### PostgreSQL (`mng-pg`)
 
-- `POSTGRES_PASSWORD`: Superuser password.
-- `POSTGRES_USER`: Default user.
-- `POSTGRES_DB`: Default DB.
+- **Image**: `postgres:17-bookworm`
+- **Port**: `${POSTGRES_PORT}` (Internal)
+- **Init**: Uses `mng-pg-init` to run `init_users_dbs.sql`.
+- **Exporter**: `mng-pg-exporter` (Port `${POSTGRES_EXPORTER_PORT}`)
 
-### Volumes
+### RedisInsight (`redisinsight`)
 
-- `mng-valkey-data`: `/data`
-- `redisinsight-data`: `/db`
-- `mng-pg-data`: `/var/lib/postgresql/data`
-- `./init-scripts/init_users_dbs.sql`: Initialization script.
+- **Image**: `redis/redisinsight:3.0.1`
+- **Purpose**: GUI for managing Redis/Valkey.
+- **Traefik**: `redisinsight.${DEFAULT_URL}` (with SSO).
 
 ## Networks
 
-- `infra_net`
-  - mng-valkey: `172.19.0.70`
-  - mng-pg: `172.19.0.72`
-  - redisinsight: `172.19.0.68`
-
-## Traefik Routing
-
-- **RedisInsight**: `redisinsight.${DEFAULT_URL}` (SSO Enabled)
+- Static IPs assigned in `infra_net` (e.g., `172.19.0.70`, `172.19.0.72`).

@@ -1,36 +1,36 @@
-# OpenSearch
+# OpenSearch Cluster
 
 ## Overview
 
-Distributed search and analytics suite.
+A search and analytics suite. Current configuration is set for a **Single Node** (Dev/Test) environment, though config exists for a 3-node cluster.
 
-## Services
+## Service Details
 
-- **opensearch-node1**: Single-node cluster (configurable for multi-node).
-  - URL: `https://opensearch.${DEFAULT_URL}`
-- **opensearch-dashboards**: Visualization tool (Kibana fork).
-  - URL: `https://opensearch-dashboard.${DEFAULT_URL}`
-- **opensearch-exporter**: Prometheus metrics.
+### Nodes
 
-## Configuration
+- **Active**: `opensearch-node1`
+- **Image**: `opensearchproject/opensearch:3.4.0`
+- **Roles**: `cluster_manager`, `data`, `ingest`
+- **Security**: HTTPS enabled (plugins.security.ssl).
 
-### Environment Variables
+### Dashboards
 
-- `OPENSEARCH_INITIAL_ADMIN_PASSWORD`: Admin password.
-- `OPENSEARCH_JAVA_OPTS`: JVM Heap settings.
-- `plugins.security.ssl.http.enabled`: `true`
+- **Service**: `opensearch-dashboards`
+- **Image**: `opensearchproject/opensearch-dashboards:3.4.0`
+- **Port**: `5601` (Internal)
 
-### Volumes
+### Exporter
 
-- `opensearch-data1`: `/usr/share/opensearch/data`
-- `./certs`: SSL Certificates.
+- **Service**: `opensearch-exporter`
+- **Port**: `${ES_EXPORTER_PORT}`
 
-## Networks
+## Traefik Configuration
 
-- `infra_net`
-  - opensearch-node1: `172.19.0.44`
+- **OpenSearch API**: `opensearch.${DEFAULT_URL}`
+  - **Note**: Traefik communicates with backend via **HTTPS**.
+- **Dashboards**: `opensearch-dashboard.${DEFAULT_URL}`
 
-## Traefik Routing
+## Environment Variables
 
-- **API Domain**: `opensearch.${DEFAULT_URL}`
-- **Dashboards Domain**: `opensearch-dashboard.${DEFAULT_URL}`
+- `${OPENSEARCH_INITIAL_ADMIN_PASSWORD}` / `${ELASTIC_PASSWORD}`
+- `${OPENSEARCH_JAVA_OPTS}`

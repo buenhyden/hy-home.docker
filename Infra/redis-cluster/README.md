@@ -2,33 +2,32 @@
 
 ## Overview
 
-A 6-node (3 Master, 3 Replica) Redis Cluster for high availability and sharding.
+A 6-node Redis Cluster configured for sharding and high availability.
 
-## Services
+## Architecture
 
-- **redis-node-0 ~ 5**: Redis Cluster nodes.
-  - Internal Port: `6379`, `16379` (Bus)
-  - External Ports (Node 0-5): `${REDIS0_PORT}` ~ `${REDIS5_PORT}`
-- **redis-cluster-init**: Cluster create script runner (one-shot).
-- **redis-exporter**: Prometheus metrics exporter.
+### Nodes
 
-## Configuration
+- **Masters**: 3 Nodes
+- **Replicas**: 3 Nodes
+- **Services**: `redis-node-0` through `redis-node-5`
+- **Image**: `redis:8.4.0-bookworm`
 
-### Environment Variables
+### Initialization
 
-- `REDIS_PASSWORD`: Secret loaded from file.
+- **Service**: `redis-cluster-init`
+- **Logic**: Runs `redis-cluster-init.sh` to form the cluster once nodes are healthy.
 
-### Volumes
+### Networking
 
-- `redis-data-N`: `/data`
-- `redis.conf`: `/usr/local/etc/redis/redis.conf`
+- **Discovery**: Relies on static IPs or Docker network DNS (`infra_net`).
+- **Ports**: Each node listens on its respective port (`${REDIS0_PORT}`, etc.) and Bus port.
 
-## Networks
+### Exporter
 
-- `infra_net`
-  - Fixed IPs (`172.19.0.60-67`) for reliable cluster announce.
+- **Service**: `redis-exporter`
+- **Mode**: Scrapes `redis-node-0` (or cluster-aware) for Prometheus metrics.
 
 ## Note
 
-- This is a 'Cluster Mode' setup, different from Standalone or Sentinel.
-- Clients must support Redis Cluster protocol.
+This cluster is primarily for internal infrastructure usage (`infra_net`). No external Traefik routes are configured by default.

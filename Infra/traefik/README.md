@@ -1,33 +1,25 @@
-# Traefik Edge Router
+# Traefik (Edge Router)
 
 ## Overview
 
-The main entry point (Reverse Proxy & Load Balancer) for the entire infrastructure. It handles automatic SSL (via external tools/certs), routing, and middlewares.
+The main Reverse Proxy and Load Balancer for the infrastructure. It manages routing, SSL termination (Let's Encrypt), and Authentication middlewares.
 
-## Services
+## Service Details
 
-- **traefik**: Traefik v3 Server.
-  - HTTP Port: `${HTTP_PORT}` (80)
-  - HTTPS Port: `${HTTPS_PORT}` (443)
-  - Dashboard Port: `${TRAEFIK_DASHBOARD_PORT}` (8080)
-  - Metrics Port: `${TRAEFIK_METRICS_PORT}` (8082)
-  - URL: `https://dashboard.${DEFAULT_URL}`
+- **Image**: `traefik:v3.6.6`
+- **Configuration**: `/etc/traefik/traefik.yml` (Static) and `/dynamic` (Dynamic).
+- **Ports**:
+  - `80` (HTTP) redirect to HTTPS
+  - `443` (HTTPS)
+  - `8080` (Dashboard)
+  - `8082` (Metrics)
 
-## Configuration
+## Dashboard
 
-### Volumes
+- **Domain**: `dashboard.${DEFAULT_URL}`
+- **Auth**: Protected by `dashboard-auth@file` (Basic Auth).
 
-- `/var/run/docker.sock`: For Docker provider auto-discovery.
-- `./certs`: SSL Certificates location.
-- `./dynamic`: Dynamic configuration files (middlewares, routers).
-- `./config/traefik.yml`: Static configuration.
+## Network
 
-## Networks
-
-- `infra_net`
-  - Fixed IP: `172.19.0.13`
-  - Aliases: `auth`, `keycloak`, `whoami` domain placeholders.
-
-## Traefik Routing
-
-- **Dashboard**: `dashboard.${DEFAULT_URL}` (Protected by Basic Auth).
+- **IP**: `172.19.0.13` (Static) on `infra_net`.
+- **Aliases**: `keycloak.${DEFAULT_URL}`, `auth.${DEFAULT_URL}`, `whoami.${DEFAULT_URL}`.

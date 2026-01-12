@@ -1,37 +1,27 @@
-# n8n - Workflow Automation
+# n8n (Workflow Automation)
 
 ## Overview
 
-n8n is an extendable workflow automation tool. This setup uses a Queue mode with dedicated main node and workers.
+n8n is an extendable workflow automation tool. This deployment runs in **Queue Mode** for scalability.
 
-## Services
+## Service Details
 
-- **n8n**: Main server (Editor, Webhook handler).
-  - URL: `https://n8n.${DEFAULT_URL}`
-- **n8n-worker**: Worker node for executing workflows.
-- **n8n-valkey**: Dedicated Redis/Valkey for job queue.
-- **n8n-valkey-exporter**: Exporter for queue metrics.
+### Components
 
-## Configuration
+- **Main**: `n8n` (Editor & Webhook handler)
+- **Worker**: `n8n-worker` (Job processor)
+- **Queue**: `n8n-valkey` (Redis for job queue)
 
-### Environment Variables
+### Configuration
 
-- `EXECUTIONS_MODE`: `queue`
-- `N8N_ENCRYPTION_KEY`: Encryption key for credentials.
-- `DB_TYPE`: `postgresdb` (Connects to `mng-pg`)
-- `QUEUE_BULL_REDIS_HOST`: `mng-valkey` (or local `n8n-valkey` depending on config)
+- **Image**: `n8nio/n8n:2.3.0`
+- **Database**: Connects to `mng-pg` (PostgreSQL).
+- **Encryption Key**: Managed via `${N8N_ENCRYPTION_KEY}`. Do not change once set.
+- **Metrics**: Enabled (`N8N_METRICS=true`).
 
-### Volumes
-
-- `n8n-data`: `/home/node/.n8n`
-- `n8n-valkey-data`: `/data`
-
-## Networks
-
-- `infra_net`
-  - n8n: `172.19.0.14`
-  - n8n-valkey: `172.19.0.15`
-
-## Traefik Routing
+## Traefik Configuration
 
 - **Domain**: `n8n.${DEFAULT_URL}`
+- **Entrypoint**: `websecure`
+- **TLS**: Enabled
+- **Port**: `${N8N_PORT}` (5678)

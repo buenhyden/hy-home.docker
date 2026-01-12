@@ -1,42 +1,35 @@
-# PostgreSQL High Availability Cluster
+# PostgreSQL HA Cluster
 
 ## Overview
 
-A 3-node PostgreSQL 17 cluster managed by Patroni, dealing with failover and high availability using Etcd as the DCS (Distributed Configuration Store) and HAProxy for request routing.
+A High Availability (HA) PostgreSQL cluster using **Patroni**, **etcd**, and **HAProxy**.
 
-## Services
+## Architecture
 
-- **etcd-1, etcd-2, etcd-3**: Distributed Configuration Store (DCS).
-  - Client Port: `${ETCD_CLIENT_PORT}` (2379)
-- **pg-0, pg-1, pg-2**: PostgreSQL nodes running Patroni.
-  - Port: `${POSTGRES_PORT}` (5432)
-- **pg-router**: HAProxy load balancer.
-  - Write: `${POSTGRES_WRITE_PORT}` (5000)
-  - Read: `${POSTGRES_READ_PORT}` (5001)
-  - Stats: `http://pg-haproxy.${DEFAULT_URL}`
-- **pg-cluster-init**: Initialization job.
-- **pg-N-exporter**: Metrics exporters.
+### 1. Distributed Configuration Store (DCS)
 
-## Configuration
+- **Services**: `etcd-1`, `etcd-2`, `etcd-3`
+- **Purpose**: Main settings and leader election consensus.
 
-### Environment Variables
+### 2. PostgreSQL Nodes (Patroni)
 
-- `POSTGRES_PASSWORD`: Superuser password.
-- `POSTGRES_USER`: Application user.
-- `SCOPE`: Cluster name (`pg-ha`).
-- `ETCD3_HOSTS`: Connection string for Etcd.
+- **Services**: `pg-0`, `pg-1`, `pg-2`
+- **Image**: `ghcr.io/zalando/spilo-17:4.0-p3`
+- **Mechanism**: Patroni manages replication and failover automatically.
 
-### Volumes
+### 3. Routing (HAProxy)
 
-- `etcdN-data`: `/etcd-data`
-- `pgN-data`: `/home/postgres/pgdata`
-- `haproxy.cfg`: `/usr/local/etc/haproxy/haproxy.cfg` (Config map)
+- **Service**: `pg-router`
+- **Endpoints**:
+  - **Write**: `${POSTGRES_WRITE_PORT}` (Directs to Leader)
+  - **Read**: `${POSTGRES_READ_PORT}` (Directs to Replicas)
+- **Traefik**: `pg-haproxy.${DEFAULT_URL}` exposes the HAProxy Stats UI.
 
-## Networks
+### 4. Initialization & Metrics
 
-- `infra_net`
-  - Fixed IPs assigned to all nodes (`172.19.0.50-58`).
+- **Init**: `pg-cluster-init` runs `init_users_dbs.sql` via the Write endpoint.
+- **Exporters**: Sidecar exporters for each PG node.
 
-## Traefik Routing
+## Usage
 
-- **HAProxy Stats**: `pg-haproxy.${DEFAULT_URL}`
+Connect applications to the **HAProxy** ports, not individual nodes, to ensure HA routing work correctly.

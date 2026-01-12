@@ -2,38 +2,32 @@
 
 ## Overview
 
-Local LLM runner with a ChatGPT-style web interface.
+A local LLM (Large Language Model) inference stack with a ChatGPT-like web interface. Supports RAG (Retrieval-Augmented Generation) via Qdrant.
 
-## Services
+## Service Details
 
-- **ollama**: LLM Runner.
-  - Port: `${OLLAMA_PORT}` (11434)
-  - URL: `https://ollama.${DEFAULT_URL}` (API)
-- **open-webui**: Web Interface for Ollama.
-  - URL: `https://chat.${DEFAULT_URL}`
-- **ollama-exporter**: Prometheus metrics.
+### 1. Ollama (`ollama`)
 
-## Configuration
+- **Image**: `ollama/ollama:0.13.5`
+- **Purpose**: LLM Inference Engine.
+- **Hardware**: configured for NVIDIA GPU (`metrics` mapped to `nvidia`).
+- **Dependencies**: None.
 
-### Environment Variables
+### 2. Open WebUI (`open-webui`)
 
-- `OLLAMA_HOST`: `0.0.0.0:${OLLAMA_PORT}`
-- `NVIDIA_VISIBLE_DEVICES`: `all` (GPU support).
-- `OLLAMA_BASE_URL`: Connection from WebUI to Ollama.
-- `VECTOR_DB_URL`: Connection to Qdrant (for RAG).
+- **Image**: `ghcr.io/open-webui/open-webui:main`
+- **Purpose**: Web interface for Ollama.
+- **RAG Integration**:
+  - Connected to `qdrant` (Vector DB).
+  - Embedding Engine: `ollama` (using `qwen3-embedding:0.6b`).
 
-### Volumes
+### 3. Exporter
 
-- `ollama-data`: `/root/.ollama` (Model storage)
-- `ollama-webui`: `/app/backend/data` (User data)
+- **Image**: `lucabecker42/ollama-exporter`
+- **Port**: `${OLLAMA_EXPORTER_PORT}`
 
-## Networks
-
-- `infra_net`
-  - ollama: `172.19.0.40`
-  - open-webui: `172.19.0.42`
-
-## Traefik Routing
+## Traefik Configuration
 
 - **Ollama API**: `ollama.${DEFAULT_URL}`
-- **Chat UI**: `chat.${DEFAULT_URL}`
+- **Web UI**: `chat.${DEFAULT_URL}`
+- **Entrypoints**: `websecure` (TLS enabled)

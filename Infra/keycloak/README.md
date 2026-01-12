@@ -2,31 +2,31 @@
 
 ## Overview
 
-Open Source Identity and Access Management.
+Keycloak is an open-source Identity and Access Management (IAM) solution. This deployment runs in dev mode (`start-dev`) and uses PostgreSQL as the database.
 
-## Services
+## Service Details
 
-- **keycloak**: Keycloak Server.
-  - URL: `https://keycloak.${DEFAULT_URL}`
+- **Image**: `quay.io/keycloak/keycloak:26.5.0`
+- **Command**: `start-dev`
+- **Exposed Port**: `${KEYCLOAK_MANAGEMENT_PORT}`
+- **Network**: `infra_net` (Static IP: `172.19.0.29`)
 
-## Configuration
+## Environment Variables
 
-### Environment Variables
+- **Database**:
+  - `KC_DB`: Database vendor (e.g., `postgres`).
+  - `KC_DB_URL`: JDBC connection URL.
+  - `KC_DB_USERNAME` / `KC_DB_PASSWORD`: Capabilities.
+- **Admin**:
+  - `KEYCLOAK_ADMIN`: Admin username.
+  - `KEYCLOAK_ADMIN_PASSWORD`: Admin password.
+- **Hostname**:
+  - `KC_HOSTNAME`: `https://keycloak.${DEFAULT_URL}`
+  - `KC_PROXY_HEADERS`: `xforwarded`
 
-- `KC_DB`: Database vendor (`postgres`).
-- `KC_DB_URL`: JDBC URL.
-- `KC_DB_USERNAME`: Database user.
-- `KC_DB_PASSWORD`: Database password.
-- `KEYCLOAK_ADMIN`: Admin username.
-- `KEYCLOAK_ADMIN_PASSWORD`: Admin password.
-- `KC_HOSTNAME`: Public facing URL (`https://keycloak.${DEFAULT_URL}`).
-- `KC_PROXY_HEADERS`: `xforwarded` (for Traefik).
-
-## Networks
-
-- `infra_net`
-  - IP: `172.19.0.29`
-
-## Traefik Routing
+## Traefik Configuration
 
 - **Domain**: `keycloak.${DEFAULT_URL}`
+- **Port**: `8080` (Internal)
+- **Entrypoint**: `websecure`
+- **TLS**: Enabled

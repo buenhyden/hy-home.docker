@@ -1,25 +1,18 @@
-# KSQLDB
+# ksqlDB
 
 ## Overview
 
-Streaming SQL Engine for Apache Kafka.
+ksqlDB is a database purpose-built for stream processing applications.
 
-## Services
+## Service Details
 
-- **ksqldb-node1**: KSQLDB Server node.
-  - Port: `${KSQLDB_PORT}`
-  - Depends on: `kafka-0` (from Kafka cluster)
+- **Service**: `ksqldb-node1`
+- **Image**: `bitnami/ksql:latest`
+- **Port**: `${KSQLDB_HOST_PORT}:${KSQLDB_PORT}`
+- **Volume**: `ksqldb-node-1-data-volume`
 
-## Configuration
+## Environment Variables
 
-### Environment Variables
+- `KSQL_BOOTSTRAP_SERVERS`: Kafka Connection string (e.g., `kafka-0:${KAFKA_PORT}`).
 
-- `KSQL_BOOTSTRAP_SERVERS`: Kafka broker connection (`kafka-0:${KAFKA_PORT}`).
-
-### Volumes
-
-- `ksqldb-node-1-data-volume`: `/bitnami/ksql`
-
-## Networks
-
-- `infra_net`
+> **Note**: The current configuration refers to `kafka-0`, whereas the Kafka stack uses `kafka-1`, `2`, `3`. Verify connection settings if connectivity issues arise.

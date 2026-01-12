@@ -2,33 +2,31 @@
 
 ## Overview
 
-A 6-node (3 Master, 3 Replica) Valkey (Redis fork) Cluster for high availability and sharding.
+A 6-node **Valkey** (Redis fork) Cluster configured for sharding and high availability.
 
-## Services
+## Architecture
 
-- **valkey-node-0 ~ 5**: Valkey Cluster nodes.
-  - Internal Port: `6379`, `16379` (Bus)
-  - External Ports (Node 0-5): `${VALKEY0_PORT}` ~ `${VALKEY5_PORT}`
-- **valkey-cluster-init**: Cluster create script runner (one-shot).
-- **valkey-exporter**: Prometheus metrics exporter.
+### Nodes
 
-## Configuration
+- **Services**: `valkey-node-0` through `valkey-node-5`
+- **Image**: `valkey/valkey:9.0.1-alpine`
+- **Configuration**: Mapped from `./config/valkey.conf`.
 
-### Environment Variables
+### Initialization
 
-- `VALKEY_PASSWORD`: Secret loaded from file.
+- **Service**: `valkey-cluster-init`
+- **Logic**: Runs `valkey-cluster-init.sh` to form the cluster automatically.
 
-### Volumes
+### Networking
 
-- `valkey-data-N`: `/data`
-- `valkey.conf`: `/usr/local/etc/valkey/valkey.conf`
+- **Discovery**: Static IPs (`172.19.0.60` - `.65`).
+- **Ports**: Exposes Cluster Bus ports.
 
-## Networks
+### Exporter
 
-- `infra_net`
-  - Fixed IPs (`172.19.0.60-67`) for reliable cluster announce.
+- **Service**: `valkey-exporter`
+- **Details**: Runs in "Stateless Mode" using `r_pwd` and probing specific nodes when scraped.
 
 ## Note
 
-- This is a 'Cluster Mode' setup.
-- Valkey is fully compatible with Redis clients.
+Primary caching layer for `n8n` and other high-throughput services.

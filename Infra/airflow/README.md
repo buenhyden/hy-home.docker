@@ -2,44 +2,39 @@
 
 ## Overview
 
-Apache Airflow is a platform to programmatically author, schedule, and monitor workflows.
+Apache Airflow is a platform to programmatically author, schedule, and monitor workflows. This deployment includes the Webserver, Scheduler, Triggerer, Worker, and Flower for monitoring Celery.
 
-## Services
+## Service Details
 
-- **airflow-apiserver**: Airflow API Server and Web Interface.
-  - Port: `${AIRFLOW_PORT}` (Internal)
-  - URL: `https://airflow.${DEFAULT_URL}`
-- **airflow-scheduler**: Monitors all tasks and DAGs, then triggers task instances once their dependencies are complete.
-- **airflow-dag-processor**: Parses DAG files and writes them to the database.
-- **airflow-worker**: Executes the tasks given by the scheduler.
-- **airflow-triggerer**: Runs an event loop for deferrable operators.
-- **airflow-init**: Initialization service (sets up DB, users).
-- **flower**: Celery Flower for monitoring distributed workers.
-  - URL: `https://flower.${DEFAULT_URL}`
-- **airflow-statsd-exporter**: Exports StatsD metrics to Prometheus.
-
-## Configuration
-
-### Environment Variables
-
-- `AIRFLOW__CORE__EXECUTOR`: `CeleryExecutor`
-- `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN`: Postgres connection string.
-- `AIRFLOW__CELERY__RESULT_BACKEND`: Postgres connection string (for Celery results).
-- `AIRFLOW__CELERY__BROKER_URL`: Redis connection string.
-- `AIRFLOW__WEBSERVER__BASE_URL`: External URL for the webserver.
-- `AIRFLOW_UID`: User ID for Airflow processes.
+- **Image**: `${AIRFLOW_IMAGE_NAME:-apache/airflow:3.1.5}`
+- **Components**:
+  - `airflow-apiserver`: Webserver and API.
+  - `airflow-scheduler`: Scheduler.
+  - `airflow-worker`: Celery worker.
+  - `airflow-triggerer`: Triggerer for deferrable operators.
+  - `airflow-cli`: Helper for CLI commands.
+  - `flower`: Celery monitoring tool.
+  - `airflow-statsd-exporter`: Metrics exporter.
 
 ### Volumes
 
 - `airflow-dags`: `/opt/airflow/dags`
 - `airflow-plugins`: `/opt/airflow/plugins`
-- `./config/statsd_mapping.yml`: `/tmp/mappings.yml` (Read-only)
+- `./config/statsd_mapping.yml`: `/tmp/mappings.yml` (for StatsD)
 
-## Networks
+## Environment Variables (Key Highlights)
 
-- `infra_net`
+- `AIRFLOW__CORE__EXECUTOR`: `CeleryExecutor`
+- `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN`: PostgreSQL connection string.
+- `AIRFLOW__CELERY__RESULT_BACKEND`: Celery result backend (PostgreSQL).
+- `AIRFLOW__CELERY__BROKER_URL`: Redis broker URL.
+- `AIRFLOW__WEBSERVER__BASE_URL`: `https://airflow.${DEFAULT_URL}`
 
-## Traefik Routing
+## Traefik Configuration
 
-- **Airflow**: `airflow.${DEFAULT_URL}`
-- **Flower**: `flower.${DEFAULT_URL}`
+| Service | Host Rule | Entrypoint | TLS |
+| :--- | :--- | :--- | :--- |
+| **Airflow** | `airflow.${DEFAULT_URL}` | `websecure` | True |
+| **Flower** | `flower.${DEFAULT_URL}` | `websecure` | True |
+
+> **Note**: Flower is configured with `sso-auth` middleware for security.

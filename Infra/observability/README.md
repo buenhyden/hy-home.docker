@@ -1,47 +1,62 @@
-# Observability Stack
+# Observability Stack (LGTM + Alloy)
 
 ## Overview
 
-A comprehensive observability stack including Prometheus, Grafana, Loki, Tempo, Alloy, and Alertmanager.
+A comprehensive observability stack based on the LGTM (Loki, Grafana, Tempo, Mimir-like Prometheus) pattern, with Grafana Alloy as the collector.
 
-## Services
+## Service Details
 
-- **prometheus**: Metrics storage and querying.
-  - URL: `https://prometheus.${DEFAULT_URL}`
-- **loki**: Log aggregation system.
-- **tempo**: Distributed tracing backend.
-- **grafana**: Visualization and analytics software.
-  - URL: `https://grafana.${DEFAULT_URL}`
-- **alloy**: OpenTelemetry Collector & Prometheus Agent.
-  - URL: `https://alloy.${DEFAULT_URL}`
-- **cadvisor**: Container metrics collector.
-- **alertmanager**: Alert handling.
-  - URL: `https://alertmanager.${DEFAULT_URL}`
+### 1. Prometheus (Metrics)
 
-## Configuration
+- **Image**: `prom/prometheus:v3.9.0`
+- **Port**: `${PROMETHEUS_PORT}` (9090)
+- **Traefik**: `prometheus.${DEFAULT_URL}`
 
-### Environment Variables
+### 2. Loki (Logs)
 
-- `GF_SERVER_ROOT_URL`: Grafana root URL.
-- `GF_AUTH_GENERIC_OAUTH_ENABLED`: `true` (Keycloak integration).
-- `SMTP_USERNAME`/`PASSWORD`: Alerting email credentials.
+- **Image**: `grafana/loki:3.6.3`
+- **Port**: `${LOKI_PORT}` (3100)
+- **Traefik**: Not exposed directly (internal use by Alloy/Grafana).
 
-### Volumes
+### 3. Tempo (Traces)
 
-- `prometheus-data`: `/prometheus`
-- `loki-data`: `/loki`
-- `tempo-data`: `/var/tempo`
-- `grafana-data`: `/var/lib/grafana`
-- `alertmanager-data`: `/alertmanager`
-- `./**/config/*`: Configuration files for each service.
+- **Image**: `grafana/tempo:2.9.0`
+- **Port**: `${TEMPO_PORT}` (3200)
 
-## Networks
+### 4. Grafana (Visualization)
 
-- `infra_net`
-  - Fixed IPs assigned for component communication (`172.19.0.30-36`).
+- **Image**: `grafana/grafana:12.3.1`
+- **Port**: `${GRAFANA_PORT}` (3000)
+- **Traefik**: `grafana.${DEFAULT_URL}` (with SSO)
+- **Auth**: Integrated with Keycloak via Generic OAuth.
+  - `GF_AUTH_OAUTH_AUTO_LOGIN=true`
+  - `GF_AUTH_DISABLE_LOGIN_FORM=true`
 
-## Traefik Routing
+### 5. Alloy (Collector)
 
-- Each service has its own subdomain (prometheus, grafana, alloy, alertmanager) under `${DEFAULT_URL}`.
-- All use `infra_net` and are protected by TLS.
-- Grafana and Alloy configured with SSO.
+- **Image**: `grafana/alloy:v1.12.1`
+- **Purpose**: OpenTelemetry Collector & Prometheus Scraper.
+- **Ports**:
+  - `${ALLOY_PORT}` (12345): UI/internal
+  - `${ALLOY_OTLP_GRPC_PORT}` (4317): OTLP gRPC
+  - `${ALLOY_OTLP_HTTP_PORT}` (4318): OTLP HTTP
+- **Traefik**: `alloy.${DEFAULT_URL}`
+
+### 6. cAdvisor (Container Metrics)
+
+- **Image**: `gcr.io/cadvisor/cadvisor:v0.55.1`
+- **Purpose**: Exposes low-level container metrics.
+
+### 7. Alertmanager
+
+- **Image**: `prom/alertmanager:v0.30.0`
+- **Traefik**: `alertmanager.${DEFAULT_URL}`
+
+### 8. Pushgateway
+
+- **Image**: `prom/pushgateway:v1.11.2`
+- **Traefik**: `pushgateway.${DEFAULT_URL}`
+
+## Network
+
+All services are assigned static IPs in the `172.19.0.3X` range on `infra_net`.

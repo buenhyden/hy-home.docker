@@ -2,34 +2,29 @@
 
 ## Overview
 
-InfluxDB is an open-source time series database.
+InfluxDB is an open-source time series database. This deployment uses InfluxDB v2.
 
-## Services
+## Service Details
 
-- **influxdb**: InfluxDB Server.
-  - URL: `https://influxdb.${DEFAULT_URL}`
+- **Image**: `influxdb:2.8`
+- **Container Name**: `influxdb`
+- **Volumes**:
+  - `influxdb-data`: `/var/lib/influxdb2` (Read/Write)
+- **Network**: `infra_net` (Static IP: `172.19.0.11`)
 
-## Configuration
-
-### Environment Variables
+## Environment Variables
 
 - `INFLUXDB_DB`: Database name.
 - `DOCKER_INFLUXDB_INIT_MODE`: `setup`
-- `DOCKER_INFLUXDB_INIT_USERNAME`: Initial admin username.
-- `DOCKER_INFLUXDB_INIT_PASSWORD`: Initial admin password.
-- `DOCKER_INFLUXDB_INIT_ORG`: Initial organization.
-- `DOCKER_INFLUXDB_INIT_BUCKET`: Initial bucket.
-- `DOCKER_INFLUXDB_INIT_ADMIN_TOKEN`: Initial admin token.
+- `DOCKER_INFLUXDB_INIT_USERNAME`: Admin username.
+- `DOCKER_INFLUXDB_INIT_PASSWORD`: Admin password.
+- `DOCKER_INFLUXDB_INIT_ORG`: Organization name.
+- `DOCKER_INFLUXDB_INIT_BUCKET`: Initial bucket name.
+- `DOCKER_INFLUXDB_INIT_ADMIN_TOKEN`: Admin API token.
 
-### Volumes
-
-- `influxdb-data`: `/var/lib/influxdb2`
-
-## Networks
-
-- `infra_net`
-  - IP: `172.19.0.11`
-
-## Traefik Routing
+## Traefik Configuration
 
 - **Domain**: `influxdb.${DEFAULT_URL}`
+- **Port**: `${INFLUXDB_PORT}`
+- **Entrypoint**: `websecure`
+- **TLS**: Enabled

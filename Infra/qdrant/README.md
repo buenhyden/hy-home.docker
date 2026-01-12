@@ -2,25 +2,16 @@
 
 ## Overview
 
-Qdrant is a vector similarity search engine and vector database.
+A Vector Database for AI applications, used here primarily for RAG (Retrieval-Augmented Generation) with Ollama.
 
-## Services
+## Service Details
 
-- **qdrant**: Qdrant server.
-  - API Port: `${QDRANT_PORT}` (6333)
-  - URL: `https://qdrant.${DEFAULT_URL}`
+- **Image**: `qdrant/qdrant:v1.16.3`
+- **Port**: `${QDRANT_PORT}` (6333)
+- **Volumes**: Data persisted in `qdrant-data`.
 
-## Configuration
-
-### Volumes
-
-- `qdrant-data`: `/qdrant/storage`
-
-## Networks
-
-- `infra_net`
-  - IP: `172.19.0.41`
-
-## Traefik Routing
+## Traefik Configuration
 
 - **Domain**: `qdrant.${DEFAULT_URL}`
+- **Entrypoint**: `websecure` (TLS enabled)
+- **Use**: Exposes the Qdrant Web UI (Dashboard).

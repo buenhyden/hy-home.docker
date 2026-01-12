@@ -2,33 +2,33 @@
 
 ## Overview
 
-High Performance Object Storage compatible with Amazon S3 API.
+MinIO is a high-performance, S3 compatible object storage. This setup includes the MinIO server and a helper container for automatic bucket creation.
 
-## Services
+## Service Details
 
-- **minio**: MinIO Server.
-  - S3 API: `https://minio.${DEFAULT_URL}`
-  - Console: `https://console.minio.${DEFAULT_URL}`
-- **minio-create-buckets**: Initialization container to create buckets and users.
+### Server (`minio`)
 
-## Configuration
+- **Image**: `minio/minio:RELEASE.2025-09-07T16-13-09Z`
+- **Console Address**: `:${MINIO_CONSOLE_HOST_PORT}`
+- **Network**: `infra_net` (Static IP: `172.19.0.12`)
+- **Volume**: `minio-data` (Mapped to `/data`)
 
-### Environment Variables
+### Bucket Creator (`minio-create-buckets`)
 
-- `MINIO_ROOT_USER_FILE`: Root username file location.
-- `MINIO_ROOT_PASSWORD_FILE`: Root password file location.
-- `MINIO_PROMETHEUS_AUTH_TYPE`: `public` (for metrics).
+- **Purpose**: Automatically creates buckets (`tempo-bucket`, `loki-bucket`, `cdn-bucket`) and sets policies on startup.
+- **Image**: `minio/mc:RELEASE.2025-08-13T08-35-41Z`
+- **Exits**: After completion (`restart: "no"`)
 
-### Volumes
+## Environment Variables & Secrets
 
-- `minio-data`: `/data`
+- **Secrets**: `minio_root_user`, `minio_root_password`, `minio_app_user`, `minio_app_user_password`.
+- **Environment**:
+  - `MINIO_ROOT_USER_FILE`, `MINIO_ROOT_PASSWORD_FILE`: Paths to secrets.
+  - `MINIO_PROMETHEUS_AUTH_TYPE`: `public`.
 
-## Networks
+## Traefik Configuration
 
-- `infra_net`
-  - IP: `172.19.0.12`
-
-## Traefik Routing
-
-- **API Domain**: `minio.${DEFAULT_URL}` (Port 9000)
-- **Console Domain**: `minio-console.${DEFAULT_URL}` (Port 9001)
+| Service | Host Rule | Internal Port | Description |
+| :--- | :--- | :--- | :--- |
+| **API** (S3) | `minio.${DEFAULT_URL}` | `${MINIO_PORT}` (9000) | S3 API Endpoint |
+| **Console** | `minio-console.${DEFAULT_URL}` | `${MINIO_CONSOLE_PORT}` (9001) | Web Admin UI |

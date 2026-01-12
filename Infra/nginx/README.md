@@ -1,22 +1,15 @@
-# Nginx / Proxy Manager
+# Nginx
 
 ## Overview
 
-A lightweight Nginx service acting as a reverse proxy or static file server.
+A standalone Nginx instance, possibly serving as an entry point for specific static assets or legacy configurations.
 
-## Services
+## Service Details
 
-- **nginx**: Nginx Web Server.
-  - Ports: 80, 443
-
-## Configuration
-
-### Volumes
-
-- `./config/nginx.conf`: Nginx configuration.
-- `./certs`: SSL Certificates.
-
-## Networks
-
-- `infra_net`
-  - IP: `172.19.0.13`
+- **Image**: `nginx:alpine`
+- **Ports**:
+  - HTTP: `${HTTP_HOST_PORT}:${HTTP_PORT}`
+  - HTTPS: `${HTTPS_HOST_PORT}:${HTTPS_PORT}`
+- **Configuration**: Mapped from `./config/nginx.conf`.
+- **Network**: `infra_net` (Static IP: `172.19.0.13`)
+- **Dependencies**: Waits for `minio` (suggests it might be proxying S3 content).

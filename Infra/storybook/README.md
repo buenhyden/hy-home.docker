@@ -2,25 +2,15 @@
 
 ## Overview
 
-A UI component explorer for the Design System, built with Storybook (React).
+Hosts the static build of the Design System's Storybook documentation.
 
-## Services
+## Service Details
 
-- **storybook**: Storybook server.
-  - Internal Port: 80
-  - URL: `https://design.${DEFAULT_URL}`
+- **Image**: `your-registry/design-system-storybook:latest` (Custom image)
+- **Container Name**: `mng-storybook`
 
-## Configuration
-
-### Environment Variables
-
-- `DEFAULT_URL`: Domain handling.
-
-## Networks
-
-- `infra_net`
-
-## Traefik Routing
+## Traefik Configuration
 
 - **Domain**: `design.${DEFAULT_URL}`
-- **Auth**: Protected by SSO (Keycloak).
+- **Entrypoint**: `websecure` (TLS enabled)
+- **Middleware**: `sso-auth@file` (Protected by Keycloak)

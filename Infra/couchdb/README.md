@@ -1,40 +1,32 @@
-# Apache CouchDB Cluster
+# CouchDB Cluster
 
 ## Overview
 
-A clustered Apache CouchDB installation with 3 nodes and an auto-initialization service.
+A 3-node CouchDB cluster configuration. It uses a setup helper container (`couchdb-cluster-init`) to automatically join nodes into a cluster.
 
-## Services
+## Service Details
 
-- **couchdb-1**: Node 1 (Seed Node)
-  - Port: `${COUCHDB_PORT}` (Exposed), `${COUCHDB_ERLANG_MAPPER_PORT}`, `${COUCHDB_ERLANG_DISTRIBUTION_PORT}`
-  - URL: `https://couchdb.${DEFAULT_URL}` (Load Balanced)
-- **couchdb-2**: Node 2
-- **couchdb-3**: Node 3
-- **couchdb-cluster-init**: One-shot service to join nodes into a cluster.
+- **Image**: `couchdb:3.5.1`
+- **Nodes**: `couchdb-1`, `couchdb-2`, `couchdb-3`
+- **Helper**: `couchdb-cluster-init` (Exits after setup)
+- **Volumes**:
+  - `couchdb1-data`, `couchdb2-data`, `couchdb3-data`: Persistent storage for each node.
 
-## Configuration
-
-### Environment Variables
+## Environment Variables
 
 - `COUCHDB_USER`: Admin username.
 - `COUCHDB_PASSWORD`: Admin password.
-- `COUCHDB_COOKIE`: Erlang cookie for cluster communication.
-- `NODENAME`: Unique node identifier (e.g., `couchdb-1.infra_net`).
+- `COUCHDB_COOKIE`: Erlang magic cookie for cluster sync.
+- `NODENAME`: Node identifier (e.g., `couchdb-1.infra_net`).
 
-### Volumes
+## Traefik Configuration
 
-- `couchdb1-data`: `/opt/couchdb/data` (Node 1)
-- `couchdb2-data`: `/opt/couchdb/data` (Node 2)
-- `couchdb3-data`: `/opt/couchdb/data` (Node 3)
-
-## Networks
-
-- `infra_net`
-  - Aliases: `couchdb-N.infra_net`
-
-## Traefik Routing
+The cluster uses **Sticky Sessions** to ensure consistency directly from the load balancer.
 
 - **Domain**: `couchdb.${DEFAULT_URL}`
-- **Service**: `couchdb-cluster` (Load balancing across all 3 nodes)
-- **Sticky Session**: Enabled (cookie: `couchdb_sticky`)
+- **Service Name**: `couchdb-cluster`
+- **Load Balancing**:
+  - Sticky Cookie Name: `couchdb_sticky`
+  - Sticky Cookie Enabled: `true`
+
+All nodes (`couchdb-1`, `couchdb-2`, `couchdb-3`) register themselves to the `couchdb-cluster` Traefik service.

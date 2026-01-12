@@ -1,51 +1,37 @@
-# Apache Kafka (KRaft Mode)
+# Kafka Cluster (KRaft)
 
 ## Overview
 
-A 3-node Kafka cluster running in KRaft mode (no Zookeeper), along with Schema Registry, Kafka Connect, REST Proxy, and Kafka UI.
+A 3-node Kafka cluster running in KRaft mode (ZooKeeper-less), accompanied by Schema Registry, Kafka Connect, REST Proxy, and Kafka UI.
 
-## Services
+## Service Details
 
-- **kafka-1, kafka-2, kafka-3**: Kafka Brokers acting as both Controller and Broker.
-  - Ports:
-    - `9093`: Controller
-    - `19092`: Internal PLAINTEXT
-    - External Port: `${KAFKA_CONTROLLER_PORT}`
-- **schema-registry**: Confluent Schema Registry.
-  - URL: `https://schema-registry.${DEFAULT_URL}`
-- **kafka-connect**: Distributed Kafka Connect.
-  - URL: `https://kafka-connect.${DEFAULT_URL}`
-- **kafka-rest-proxy**: Kafka REST Proxy.
-  - URL: `https://kafka-rest.${DEFAULT_URL}`
-- **kafka-ui**: Web UI for managing Kafka clusters.
-  - URL: `https://kafka-ui.${DEFAULT_URL}`
-- **kafka-exporter**: Prometheus exporter for Kafka metrics.
+### Brokers
 
-## Configuration
+- **Nodes**: `kafka-1`, `kafka-2`, `kafka-3` (`confluentinc/cp-kafka:8.1.1`)
+- **Mode**: Broker + Controller (Combined)
+- **Data Persistence**: `kafka-1-data`, `kafka-2-data`, `kafka-3-data`
 
-### Environment Variables
+### Components
 
-- `KAFKA_PROCESS_ROLES`: `broker,controller`
-- `KAFKA_CONTROLLER_QUORUM_VOTERS`: Defines the voting members for KRaft.
-- `CLUSTER_ID`: Unique Cluster ID.
-- `KAFKA_ADVERTISED_LISTENERS`: Critical for client connectivity.
-- `SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS`: Connection to Kafka cluster.
+- **Schema Registry**: `schema-registry` (Port `${SCHEMA_REGISTRY_PORT}`)
+- **Kafka Connect**: `kafka-connect` (Port `${KAFKA_CONNECT_PORT}`)
+- **REST Proxy**: `kafka-rest-proxy` (Port `${KAFKA_REST_PROXY_PORT}`)
+- **Kafka UI**: `kafka-ui` (Provectus)
+- **Kafka Exporter**: `kafka-exporter` (For Prometheus metrics)
 
-### Volumes
+## Environment Variables
 
-- `kafka-1-data`: `/var/lib/kafka/data`
-- `kafka-2-data`: `/var/lib/kafka/data`
-- `kafka-3-data`: `/var/lib/kafka/data`
-- `kafka-connect-data`: `/var/lib/kafka-connect`
+- `CLUSTER_ID`: Unique Kafka Cluster ID.
+- `KAFKA_NODE_ID`: 1, 2, or 3.
+- `KAFKA_CONTROLLER_QUORUM_VOTERS`: `1@kafka-1:9093,2@kafka-2:9093,3@kafka-3:9093`
+- `KAFKA_ADVERTISED_LISTENERS`: Configured for both internal (Docker network) and external (Host) access.
 
-## Networks
+## Traefik Configuration
 
-- `infra_net`
-  - Fixed IPs assigned for stable inter-node communication (`172.19.0.20-27`).
-
-## Traefik Routing
-
-- **Schema Registry**: `schema-registry.${DEFAULT_URL}`
-- **Kafka Connect**: `kafka-connect.${DEFAULT_URL}`
-- **REST Proxy**: `kafka-rest.${DEFAULT_URL}`
-- **Kafka UI**: `kafka-ui.${DEFAULT_URL}`
+| Service | Host Rule | Entrypoint | TLS | Middleware |
+| :--- | :--- | :--- | :--- | :--- |
+| **Schema Registry** | `schema-registry.${DEFAULT_URL}` | `websecure` | True | - |
+| **Kafka Connect** | `kafka-connect.${DEFAULT_URL}` | `websecure` | True | - |
+| **REST Proxy** | `kafka-rest.${DEFAULT_URL}` | `websecure` | True | - |
+| **Kafka UI** | `kafka-ui.${DEFAULT_URL}` | `websecure` | True | `sso-auth` |

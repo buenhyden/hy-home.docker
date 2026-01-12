@@ -1,32 +1,23 @@
-# Mail Services
+# Mail Server / MailHog
 
 ## Overview
 
-Mail infrastructure including MailHog for testing and Stalwart for production.
+Currently configured to run **MailHog**, an email testing tool for developers.
 
-## Services
+> **Note**: A configuration for **Stalwart Mail Server** is present but commented out in the `docker-compose.yml`.
 
-- **mailhog**: Web-based SMTP testing tool.
-  - UI URL: `https://mail.${DEFAULT_URL}`
-  - SMTP Port: `1025` (Internal)
-  - HTTP Port: `8025` (Internal)
+## Service Details
 
-## Configuration
+### MailHog (`mailhog`)
 
-### Environment Variables
+- **Image**: `mailhog/mailhog`
+- **Purpose**: Catching emails sent by applications during development.
+- **Network**: `infra_net`
 
-- `STALWART_ADMIN_USER`: Admin user (for Stalwart, commented out by default).
-- `STALWART_ADMIN_PASSWORD`: Admin password.
-
-### Volumes
-
-- `stalwart-data`: `/opt/stalwart` (for Stalwart)
-
-## Networks
-
-- `infra_net`
-
-## Traefik Routing
+## Traefik Configuration
 
 - **Domain**: `mail.${DEFAULT_URL}`
-- **SSO**: Recommended for Stalwart UI.
+- **Port**: `${MAILHOG_UI_PORT}`
+- **Entrypoint**: `websecure`
+- **TLS**: Enabled
+- **Middleware**: `sso-auth` (Protected access)
