@@ -17,7 +17,7 @@ Complete reference of all infrastructure services with access details.
 
 | Service | URL | Port | Purpose |
 |:---|:---|:---|:---|
-| **RedisInsight** | <https://redisinsight.127.0.0.1.nip.io> | - | Redis cluster management |
+| **Valkey** | - | 6379 | Distributed in-memory store |
 | **Kafka UI** | <https://kafka-ui.127.0.0.1.nip.io> | - | Kafka cluster management |
 | **MinIO Console** | <https://minio-console.127.0.0.1.nip.io> | - | S3 storage management |
 | **InfluxDB UI** | <https://influxdb.127.0.0.1.nip.io> | - | Time-series DB UI |
@@ -30,9 +30,7 @@ Complete reference of all infrastructure services with access details.
 | **Ollama WebUI** | <https://chat.127.0.0.1.nip.io> | - | LLM chat interface |
 | **Keycloak Admin** | <https://keycloak.127.0.0.1.nip.io/admin> | - | IAM administration |
 | **Traefik Dashboard** | <https://dashboard.127.0.0.1.nip.io> | - | Reverse proxy dashboard |
-| **MailHog** | <https://mail.127.0.0.1.nip.io> | - | Email testing |
 | **SonarQube** | <https://sonar.127.0.0.1.nip.io> | - | Code quality |
-| **Storybook** | <https://storybook.127.0.0.1.nip.io> | - | UI component docs |
 
 ## Direct Database Access
 
@@ -63,20 +61,20 @@ Password: <secrets/postgres_password.txt>
 psql -h localhost -p 5000 -U postgres
 ```
 
-### Redis Cluster
+### Valkey Cluster (Redis Compatible)
 
 **Connection**:
 
 ```
 Host: localhost
-Port: 6379
-Password: <secrets/redis_password.txt>
+Port: 6379, 6380, 6381, 6382, 6383, 6384 (Cluster Nodes)
+Password: <secrets/valkey_password.txt>
 ```
 
 **CLI Access**:
 
 ```bash
-redis-cli -h localhost -p 6379 -a $(cat secrets/redis_password.txt)
+docker exec -it valkey-node-0 valkey-cli -p 6379 -a $(cat secrets/valkey_password.txt)
 ```
 
 ### Kafka Cluster
@@ -108,12 +106,9 @@ http://localhost:8081
 | Component | Image | Version | Type |
 |:---|:---|:---|:---|
 | PostgreSQL | `bitnami/postgresql` | 17 | Relational DB (HA) |
-| Redis | `redis` | 7-alpine | Cache/KV store |
-| Valkey | `valkey/valkey` | 8-alpine | Redis fork |
+| Valkey | `valkey/valkey` | 9.0.1 | Distributed Cache (Redis Fork) |
 | InfluxDB | `influxdb` | 2.8 | Time-series |
 | MinIO | `minio/minio` | latest | Object storage |
-| CouchDB | `couchdb` | 3.5.1 | Document DB |
-| OpenSearch | `opensearchproject/opensearch` | 2 | Search engine |
 | Qdrant | `qdrant/qdrant` | latest | Vector DB |
 
 ### Messaging & Streaming
@@ -145,7 +140,18 @@ http://localhost:8081
 | Open WebUI | `ghcr.io/open-webui/open-webui` | main | LLM chat UI |
 | SonarQube | `sonarqube` | community | Code quality |
 | Harbor | `bitnami/harbor-*` | 2 | Registry |
-| MailHog | `mailhog/mailhog` | latest | SMTP testing |
+
+## Optional / Disabled Services
+
+These services are available in the `infra/` directory but are commented out in the main `docker-compose.yml` by default to save resources.
+
+- **MailHog**: Email testing (`infra/mail`)
+- **Airflow**: Workflow orchestration (`infra/airflow`)
+- **OpenSearch**: Search engine (`infra/opensearch`)
+- **CouchDB**: NoSQL DB (`infra/couchdb`)
+- **Redis Cluster**: Legacy Redis implementation (replaced by Valkey) (`infra/redis-cluster`)
+- **Nginx**: Web server (`infra/nginx`)
+- **Storybook**: Component testing (`infra/storybook`)
 
 ## Port Mappings
 
@@ -155,7 +161,7 @@ http://localhost:8081
 | Traefik HTTPS | 443 | 443 | HTTPS |
 | PostgreSQL Write | 5000 | 5000 | TCP |
 | PostgreSQL Read | 5001 | 5001 | TCP |
-| Redis | 6379 | 6379 | TCP |
+| Valkey Node 0 | 6379 | 6379 | TCP |
 | Kafka Broker 1 | 9092 | 9092 | TCP |
 | Kafka Broker 2 | 9093 | 9092 | TCP |
 | Kafka Broker 3 | 9094 | 9092 | TCP |

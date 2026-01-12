@@ -6,30 +6,30 @@ This directory contains the Docker Compose configurations for the project's infr
 
 | Service | Description | Status |
 | :--- | :--- | :--- |
-| **Airflow** | Workflow orchestration for data engineering pipelines. | [View Details](./airflow) |
-| **CouchDB** | NoSQL database cluster. | [View Details](./couchdb) |
-| **Harbor** | Private container registry. | [View Details](./harbor) |
-| **InfluxDB** | Time-series database. | [View Details](./influxdb) |
-| **Kafka** | Event streaming platform (KRaft mode). | [View Details](./kafka) |
-| **Keycloak** | Identity and Access Management (IAM). | [View Details](./keycloak) |
-| **ksqlDB** | Database purpose-built for stream processing applications. | [View Details](./ksql) |
-| **MailHog** | Email testing tool (`infra/mail`). | [View Details](./mail) |
-| **MinIO** | High-performance, S3 compatible object storage. | [View Details](./minio) |
-| **Management DB** | Shared Valkey and PostgreSQL for management tools. | [View Details](./mng-db) |
-| **n8n** | Workflow automation tool. | [View Details](./n8n) |
-| **Nginx** | Web server and reverse proxy. | [View Details](./nginx) |
-| **OAuth2 Proxy** | Authentication proxy for services. | [View Details](./oauth2-proxy) |
-| **Observability** | LGTM stack (Loki, Grafana, Tempo, Mimir/Prometheus) + Alloy. | [View Details](./observability) |
-| **Ollama** | Local LLM inference engine. | [View Details](./ollama) |
-| **OpenSearch** | Search and analytics engine. | [View Details](./opensearch) |
-| **PostgreSQL HA** | High Availability PostgreSQL cluster (Patroni). | [View Details](./postgresql-cluster) |
-| **Qdrant** | Vector database for AI applications. | [View Details](./qdrant) |
-| **Redis Cluster** | Distributed Redis cache/store. | [View Details](./redis-cluster) |
-| **SonarQube** | Code quality and security scanning. | [View Details](./sonarqube) |
-| **Storybook** | UI component documentation and testing. | [View Details](./storybook) |
-| **Terrakube** | Infrastructure as Code (IaC) platform (Terraform alternative). | [View Details](./Terrakube) |
-| **Traefik** | Cloud-native application proxy and edge router. | [View Details](./traefik) |
-| **Valkey Cluster** | Distributed Valkey (Redis fork) cluster. | [View Details](./valkey-cluster) |
+| **Airflow** | Workflow orchestration for data engineering pipelines. | [Optional](./airflow) |
+| **CouchDB** | NoSQL database cluster. | [Optional](./couchdb) |
+| **Harbor** | Private container registry. | [Optional](./harbor) |
+| **InfluxDB** | Time-series database. | [Active](./influxdb) |
+| **Kafka** | Event streaming platform (KRaft mode). | [Active](./kafka) |
+| **Keycloak** | Identity and Access Management (IAM). | [Active](./keycloak) |
+| **ksqlDB** | Database purpose-built for stream processing applications. | [Active](./ksql) |
+| **MailHog** | Email testing tool (`infra/mail`). | [Optional](./mail) |
+| **MinIO** | High-performance, S3 compatible object storage. | [Active](./minio) |
+| **Management DB** | Shared Valkey and PostgreSQL for management tools. | [Active](./mng-db) |
+| **n8n** | Workflow automation tool. | [Active](./n8n) |
+| **Nginx** | Web server and reverse proxy. | [Optional](./nginx) |
+| **OAuth2 Proxy** | Authentication proxy for services. | [Active](./oauth2-proxy) |
+| **Observability** | LGTM stack (Loki, Grafana, Tempo, Mimir/Prometheus) + Alloy. | [Active](./observability) |
+| **Ollama** | Local LLM inference engine. | [Active](./ollama) |
+| **OpenSearch** | Search and analytics engine. | [Optional](./opensearch) |
+| **PostgreSQL HA** | High Availability PostgreSQL cluster (Patroni). | [Active](./postgresql-cluster) |
+| **Qdrant** | Vector database for AI applications. | [Active](./qdrant) |
+| **Redis Cluster** | Distributed Redis cache/store (Legacy). | [Optional](./redis-cluster) |
+| **SonarQube** | Code quality and security scanning. | [Active](./sonarqube) |
+| **Storybook** | UI component documentation and testing. | [Optional](./storybook) |
+| **Terrakube** | Infrastructure as Code (IaC) platform (Terraform alternative). | [Optional](./Terrakube) |
+| **Traefik** | Cloud-native application proxy and edge router. | [Active](./traefik) |
+| **Valkey Cluster** | Distributed Valkey (Redis fork) cluster. | [Active](./valkey-cluster) |
 
 For complete service details including images, versions, and port mappings, see the [Service Catalog](../docs/reference/service-catalog.md).
 

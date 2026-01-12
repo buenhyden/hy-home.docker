@@ -22,7 +22,7 @@ secrets/        # Docker Secrets (git-ignored)
 - **인증**: Keycloak (SSO/IAM)
 - **애플리케이션**: n8n, Ollama
 - **관측성**: Prometheus, Grafana, Loki, Tempo
-- **데이터**: PostgreSQL HA, Redis Cluster, InfluxDB
+- **데이터**: PostgreSQL HA, Valkey Cluster (Redis Compatible), InfluxDB
 - **메시징**: Kafka (KRaft)
 - **스토리지**: MinIO (S3)
 - **관리 DB**: 인프라 메타데이터
@@ -63,12 +63,12 @@ docker-compose ps  # 모든 서비스 Up (healthy) 확인
 **활성화된 26개 서비스**:
 
 - **리버스 프록시 & 인증**: Traefik, OAuth2 Proxy, Keycloak
-- **데이터베이스**: PostgreSQL HA, Redis Cluster, InfluxDB, CouchDB, OpenSearch
+- **데이터베이스**: PostgreSQL HA, Valkey Cluster, InfluxDB
 - **메시징**: Kafka, ksqlDB
 - **스토리지**: MinIO
 - **관측성**: Prometheus, Grafana, Loki, Tempo, Alloy
-- **애플리케이션**: n8n, Ollama, SonarQube, Harbor
-- **기타**: MailHog, Nginx, Storybook
+- **애플리케이션**: n8n, Ollama, SonarQube
+- **기타**: Storybook (Optional)
 
 > 🔗 **전체 서비스 목록, 접속 URL, 포트, 연결 정보**: [서비스 카탈로그](./docs/reference/service-catalog.md)
 

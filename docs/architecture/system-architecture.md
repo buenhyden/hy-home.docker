@@ -36,7 +36,7 @@ flowchart TB
     
     subgraph "데이터 계층"
         PG[(PostgreSQL<br/>HA Cluster)]
-        REDIS[(Redis<br/>Cluster)]
+        VALKEY[(Valkey<br/>Cluster)]
         INFLUX[(InfluxDB<br/>TimeSeries)]
     end
     
@@ -50,7 +50,7 @@ flowchart TB
     
     subgraph "관리 DB"
         MNGPG[(mng-pg<br/>PostgreSQL)]
-        MNGREDIS[(mng-redis)]
+        MNGVALKEY[(mng-valkey)]
     end
     
     USER --> TRAEFIK
@@ -70,7 +70,7 @@ flowchart TB
     ALLOY --> TEMPO
     
     N8N --> PG
-    N8N --> REDIS
+    N8N --> VALKEY
     N8N --> KAFKA
     
     LOKI --> MINIO
@@ -125,7 +125,7 @@ flowchart TB
 - **PostgreSQL HA**: High-availability cluster (Patroni + etcd + HAProxy)
   - Automatic failover
   - Read/write separation
-- **Redis Cluster**: Distributed caching and session store
+- **Valkey Cluster**: Distributed caching and session store (Redis-compatible)
 - **InfluxDB**: Time-series data for IoT and metrics
 
 ### Messaging Layer
