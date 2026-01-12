@@ -2,47 +2,45 @@
 
 ## Overview
 
-Hosts the static build of the Design System's Storybook documentation.
+Hosts the static build of the Design System's Storybook documentation. This service is a **Custom Build** requiring source code (provided in `react-ts` or `react-js` examples).
 
-## Service Details
+## Services
 
-- **Image**: `storybook:latest` (Local build)
-- **Container Name**: `design-system-storybook`
+| Service | Image | Role |
+| :--- | :--- | :--- |
+| `storybook` | `design-system-storybook:latest` (Local Build) | Documentation Host (Nginx) |
 
-## Custom Build
+## Networking
 
-This service is intended to be built from the local source code, as it hosts the documentation for *your* specific Design System.
+Service runs on `infra_net` using **Dynamic** IP assignment.
 
-The `Dockerfile` performs a multi-stage build:
+| Service | IP Address | Internal Port | Traefik Domain |
+| :--- | :--- | :--- | :--- |
+| `storybook` | *(Dynamic)* | `80` | `design.${DEFAULT_URL}` |
 
-1. **Build Stage**: Installs dependencies and runs `npm run build-storybook`.
-2. **Production Stage**: Serves the static files using Nginx.
+## Persistence
 
-### How to use
+This service is stateless. Documentation is baked into the Docker image during build.
 
-1. Ensure your Design System source code is in this directory (or update the build context).
-2. The `docker-compose.yml` includes a `build` section (commented out by default):
+## Configuration
 
-```yaml
-services:
-  storybook:
-    build:
-      context: .
-      dockerfile: Dockerfile
-```
+Configuration is primarily handled via `docker-compose.yml` labels and the `Dockerfile` build process.
 
-1. Start the service: `docker-compose up -d --build storybook`.
+## Traefik Integration
 
-## Network
-
-Configured with **Dynamic IP** assignment on the `infra_net` network.
-
-| Service | IP Address |
-| :--- | :--- |
-| `storybook` | Dynamic (DHCP) |
-
-## Traefik Configuration
+Services are exposed via Traefik with TLS and SSO authentication.
 
 - **Domain**: `design.${DEFAULT_URL}`
-- **Entrypoint**: `websecure` (TLS enabled)
-- **Middleware**: `sso-auth@file` (Protected by Keycloak)
+- **Middleware**: `sso-auth@file` (Keycloak Protected)
+
+## Usage
+
+1. **Select Context**: Navigate to `react-ts` (recommended) or `react-js`.
+2. **Build & Run**:
+
+   ```bash
+   cd react-ts
+   docker-compose up -d --build
+   ```
+
+3. **Access**: Navigate to `https://design.${DEFAULT_URL}`.

@@ -4,75 +4,46 @@
 
 A search and analytics suite. Current configuration is set for a **Single Node** (Dev/Test) environment, though config exists for a 3-node cluster.
 
-## Service Details
+## Services
 
-### Nodes
-
-- **Active**: `opensearch-node1`
-- **Image**: `opensearchproject/opensearch:3.4.0`
-- **Roles**: `cluster_manager`, `data`, `ingest`
-- **Security**: HTTPS enabled (plugins.security.ssl).
+| Service | Image | Role |
+| :--- | :--- | :--- |
+| `opensearch-node1` | `opensearchproject/opensearch:3.4.0` | Cluster Manager, Data, Ingest Node |
+| `opensearch-dashboards` | `opensearchproject/opensearch-dashboards:3.4.0` | Visualization Dashboard |
+| `opensearch-exporter` | `prometheuscommunity/elasticsearch-exporter:v1.10.0` | Prometheus Metrics Exporter |
 
 ## Custom Build (Plugins)
 
-This directory contains a `Dockerfile` that builds a custom OpenSearch image with additional plugins pre-installed, following the [official Docker installation guide][opensearch-docker].
-
-[opensearch-docker]: https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/
+A `Dockerfile` is provided to build a custom OpenSearch image with pre-installed plugins.
 
 **Installed Plugins:**
 
-- `analysis-nori`: Korean (nori) analysis plugin.
-- `ingest-attachment`: Ingest Processor Attachment plugin.
-- `prometheus-exporter`: Prometheus Exporter for OpenSearch.
-- `mapper-annotated-text`, `mapper-murmur3`, `mapper-size`, `discovery-azure-classic`, `repository-azure`.
+- `analysis-nori` (Korean Analysis)
+- `ingest-attachment` (File Processing)
+- `prometheus-exporter` (Native Metrics)
+- `mapper-annotated-text`, `mapper-murmur3`, `mapper-size`
+- `discovery-azure-classic`, `repository-azure`
 
-### How to use
+To use the custom build, uncomment the `build` section in `docker-compose.yml`.
 
-1. Open `docker-compose.yml`.
-2. Comment out the `image` instruction.
-3. Add/Uncomment the `build` instruction:
+## Networking
 
-```yaml
-services:
-  opensearch-node1:
-    # image: opensearchproject/opensearch:3.4.0
-    build:
-      context: .
-      dockerfile: Dockerfile
-```
+Services run on `infra_net` with static IPs (172.19.0.4X).
 
-1. Rebuild: `docker-compose up -d --build opensearch-node1`.
+| Service | Static IP | Internal Port | Host Port | Traefik Domain |
+| :--- | :--- | :--- | :--- | :--- |
+| `opensearch-node1` | `172.19.0.44` | `9200` | - | `opensearch.${DEFAULT_URL}` |
+| `opensearch-dashboards` | `172.19.0.47` | `5601` | - | `opensearch-dashboard.${DEFAULT_URL}` |
+| `opensearch-exporter` | `172.19.0.48` | `${ES_EXPORTER_PORT}` | `${ES_EXPORTER_HOST_PORT}` | - |
 
-### Dashboards
+## Persistence
 
-- **Service**: `opensearch-dashboards`
-- **Image**: `opensearchproject/opensearch-dashboards:3.4.0`
-- **Port**: `5601` (Internal)
+- **Data**: `opensearch-data1` → `/usr/share/opensearch/data`
+- **Certificates**: `./certs` → `/usr/share/opensearch/config/certs` (Read-only)
 
-### Exporter
+## Configuration
 
-- **Service**: `opensearch-exporter`
-- **Port**: `${ES_EXPORTER_PORT}`
-
-## Network
-
-Services are assigned static IPs in the `172.19.0.4X` range on `infra_net`.
-
-| Service | IP Address | Notes |
-| :--- | :--- | :--- |
-| `opensearch-node1` | `172.19.0.44` | Active |
-| `opensearch-node2` | `172.19.0.45` | Commmented Out |
-| `opensearch-node3` | `172.19.0.46` | Commmented Out |
-| `opensearch-dashboards` | `172.19.0.47` | |
-| `opensearch-exporter` | `172.19.0.48` | |
-
-## Traefik Configuration
-
-- **OpenSearch API**: `opensearch.${DEFAULT_URL}`
-  - **Note**: Traefik communicates with backend via **HTTPS**.
-- **Dashboards**: `opensearch-dashboard.${DEFAULT_URL}`
-
-## Environment Variables
+### Environment Variables
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
@@ -83,3 +54,16 @@ Services are assigned static IPs in the `172.19.0.4X` range on `infra_net`.
 | `OPENSEARCH_PASSWORD` | Dashboards Password | `${ELASTIC_PASSWORD}` |
 | `ES_USERNAME` | Exporter User | `${ELASTIC_USERNAME}` |
 | `ES_PASSWORD` | Exporter Password | `${ELASTIC_PASSWORD}` |
+
+## Traefik Integration
+
+Services are exposed via Traefik with TLS enabled (`websecure`). Note that backend communication uses **HTTPS** (self-signed certs).
+
+- **OpenSearch API**: `opensearch.${DEFAULT_URL}`
+- **Dashboards**: `opensearch-dashboard.${DEFAULT_URL}`
+
+## Usage
+
+1. **Dashboards**: Access `https://opensearch-dashboard.${DEFAULT_URL}` (Login via `${ELASTIC_USERNAME}`).
+2. **API**: Access `https://opensearch.${DEFAULT_URL}`.
+3. **Rebuild**: If adding plugins, run `docker-compose up -d --build opensearch-node1`.

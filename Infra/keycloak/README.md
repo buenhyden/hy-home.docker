@@ -6,7 +6,7 @@ Keycloak is an open-source Identity and Access Management (IAM) solution. This
 deployment runs in **Development Mode** (`start-dev`) but is configured with
 production-grade database settings.
 
-## Service Details
+## Services
 
 - **Service Name**: `keycloak`
 - **Image**: `quay.io/keycloak/keycloak:26.5.0`
@@ -51,68 +51,39 @@ services:
 
 ## Networking
 
+This service is part of the `infra_net` network:
+
 - **Network**: `infra_net`
 - **Static IPv4**: `172.19.0.29`
 - **Hostname**: `keycloak`
 
-## Environment Variables
+## Configuration
 
-### Core Configuration
-
-- `KC_HOSTNAME`: `https://keycloak.${DEFAULT_URL}`
-- `KC_PROXY_HEADERS`: `xforwarded` (Trusts reverse proxy headers)
-- `KEYCLOAK_ADMIN`: Admin username.
-- `KEYCLOAK_ADMIN_PASSWORD`: Admin password.
-
-### Database (PostgreSQL)
-
-- `KC_DB`: `postgres` (implied by connection)
-- `KC_DB_URL`: `jdbc:postgresql://${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${KEYCLOAK_DBNAME}`
-- `KC_DB_USERNAME`: `${KEYCLOAK_DB_USER}`
-- `KC_DB_PASSWORD`: `${KEYCLOAK_DB_PASSWORD}`
-
-### Connection Pooling (Performance & Stability)
-
-To prevent stale connections and manage load:
-
-- `KC_DB_POOL_INITIAL_SIZE`: `1`
-- `KC_DB_POOL_MIN_SIZE`: `1`
-- `KC_DB_POOL_MAX_SIZE`: `10`
-- `KC_METRICS_ENABLED`: `true`
-- `KC_HEALTH_ENABLED`: `true`
-
-### Java Options (Agroal / Quarkus)
-
-Additional JVM options are set to enforce strict connection validation:
-
-```bash
--Dquarkus.datasource.jdbc.idle-removal-interval=5M 
--Dquarkus.datasource.jdbc.background-validation-interval=1M
-```
-
-## Configuration Reference
+### Core & Database
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
 | `KC_DB` | Database vendor | `postgres` |
-| `KC_DB_URL` | JDBC Connection URL | `jdbc:postgresql://...` |
+| `KC_DB_URL` | JDBC Connection URL | `jdbc:postgresql://${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${KEYCLOAK_DBNAME}` |
 | `KC_DB_USERNAME` | Database username | `${KEYCLOAK_DB_USER}` |
 | `KC_DB_PASSWORD` | Database password | `${KEYCLOAK_DB_PASSWORD}` |
 | `KEYCLOAK_ADMIN` | Admin username | `${KEYCLOAK_ADMIN_USER}` |
 | `KEYCLOAK_ADMIN_PASSWORD` | Admin password | `${KEYCLOAK_ADMIN_PASSWORD}` |
 | `KC_HOSTNAME` | Public hostname | `https://keycloak.${DEFAULT_URL}` |
 | `KC_PROXY_HEADERS` | Reverse proxy header mode | `xforwarded` |
+
+### Connection Pooling & JVM
+
+| Variable | Description | Default |
+| :--- | :--- | :--- |
 | `KC_DB_POOL_INITIAL_SIZE` | Initial DB pool size | `1` |
 | `KC_DB_POOL_MIN_SIZE` | Min DB pool size | `1` |
 | `KC_DB_POOL_MAX_SIZE` | Max DB pool size | `10` |
 | `KC_METRICS_ENABLED` | Enable metrics endpoint | `true` |
 | `KC_HEALTH_ENABLED` | Enable health endpoint | `true` |
-| `JAVA_OPTS_APPEND` | Extra JVM options | *See above* |
+| `JAVA_OPTS_APPEND` | Extra JVM options for Agroal/Quarkus validation | See `docker-compose.yml` |
 
-*Checks connections strictly to avoid "Connection is closed" errors during
-idle periods.*
-
-## Traefik Configuration
+## Traefik Integration
 
 - **Domain**: `keycloak.${DEFAULT_URL}`
 - **Entrypoint**: `websecure` (TLS Enabled)

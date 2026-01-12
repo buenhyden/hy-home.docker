@@ -10,14 +10,28 @@ A robust 3-node **Kafka Cluster** running in **KRaft mode** (ZooKeeper-less), in
 - **Interface**: REST Proxy & Kafka UI (Provectus)
 - **Observability**: Kafka Exporter (Prometheus)
 
-## Use Cases
+## Services
 
-- Event Streaming Platform
-- Log Aggregation
-- Metrics Collection
-- Stream Processing
+- **Kafka Brokers** (`kafka-1`, `kafka-2`, `kafka-3`)
+  - **Image**: `confluentinc/cp-kafka:8.1.1`
+  - **Role**: KRaft Controller + Broker
+- **Schema Registry** (`schema-registry`)
+  - **Image**: `confluentinc/cp-schema-registry:8.1.1`
+  - **Role**: Avro/Protobuf/JSON Schema management
+- **Kafka Connect** (`kafka-connect`)
+  - **Image**: `confluentinc/cp-kafka-connect:8.1.1`
+  - **Role**: Distributed Connect Worker
+- **REST Proxy** (`kafka-rest-proxy`)
+  - **Image**: `confluentinc/cp-kafka-rest:8.1.1`
+  - **Role**: HTTP Interface for Kafka
+- **Kafka UI** (`kafka-ui`)
+  - **Image**: `provectuslabs/kafka-ui:v0.7.2`
+  - **Role**: Web Management Interface
+- **Kafka Exporter** (`kafka-exporter`)
+  - **Image**: `danielqsj/kafka-exporter:v1.9.0`
+  - **Role**: Prometheus Metrics Exporter
 
-## Architecture & Networking
+## Networking
 
 All components are assigned **Static IPs** within the `infra_net` network to ensure stable internal communication.
 
@@ -32,7 +46,7 @@ All components are assigned **Static IPs** within the `infra_net` network to ens
 | `kafka-ui` | Web Management UI | `172.19.0.26` | 8080 | `${KAFKA_UI_PORT}` |
 | `kafka-exporter` | Metrics Exporter | `172.19.0.27` | 9308 | - |
 
-## Volume Persistence
+## Persistence
 
 Data is persisted in named volumes mapped to `/var/lib/kafka/data`:
 
@@ -41,7 +55,7 @@ Data is persisted in named volumes mapped to `/var/lib/kafka/data`:
 - `kafka-3-data`
 - `kafka-connect-data` (for Connect specific data)
 
-## Environment Variables
+## Configuration
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
@@ -55,7 +69,7 @@ Data is persisted in named volumes mapped to `/var/lib/kafka/data`:
 | `CONNECT_GROUP_ID` | Connect Cluster Group ID | `kafka-connect-cluster` |
 | `CONNECT_BOOTSTRAP_SERVERS` | Kafka Bootstrap Servers | `kafka-1:19092...` |
 
-## Traefik Configuration
+## Traefik Integration
 
 Services are exposed via Traefik with TLS enabled.
 

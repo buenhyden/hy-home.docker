@@ -4,7 +4,7 @@
 
 ksqlDB is a database purpose-built for stream processing applications. It allows you to build event streaming applications using a familiar SQL syntax.
 
-## Service Details
+## Services
 
 - **Service Name**: `ksqldb-node1`
 - **Image**: `bitnami/ksql:latest`
@@ -16,7 +16,7 @@ ksqlDB is a database purpose-built for stream processing applications. It allows
 - **Static IP**: *None assigned* (Dynamic IP allocation)
 - **Traefik**: **Not Configured**. This service is currently **internal only** within the docker network, or accessible via the exposed host port.
 
-## Environment Variables
+## Configuration
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
@@ -26,7 +26,7 @@ ksqlDB is a database purpose-built for stream processing applications. It allows
 > **Configuration Mismatch**: The current configuration points to `kafka-0`. However, the main Kafka stack (in `infra/kafka`) uses `kafka-1`, `kafka-2`, and `kafka-3`.
 > Verify if `kafka-0` exists in another context or if this needs to be updated to `kafka-1:${KAFKA_PORT}`.
 
-## Volumes
+## Persistence
 
 - **Data Persistence**: `ksqldb-node-1-data-volume` matches `/bitnami/ksql` inside the container.
 - **Host Path**: Mapped to `${DEFAULT_DATABASE_DIR}/ksqldb/node1`

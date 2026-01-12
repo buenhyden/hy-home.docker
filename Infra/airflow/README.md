@@ -4,7 +4,7 @@
 
 Apache Airflow is a platform to programmatically author, schedule, and monitor workflows. This deployment includes the full Airflow stack (Webserver, Scheduler, DAG Processor, Triggerer, Worker) along with Flower for monitoring Celery workers and StatsD export for metrics.
 
-## Architecture & Services
+## Services
 
 The stack consists of the following services:
 
@@ -27,7 +27,13 @@ This setup relies on the following external services within the `infra_net` netw
 - **PostgreSQL**: Used as the Airflow Metadata Database.
 - **Redis**: Used as the Celery Broker.
 
-## Environment Variables
+## Networking
+
+All services are attached to the **`infra_net`** network to communicate with shared infrastructure (Traefik, Postgres, Redis, Prometheus).
+
+## Configuration
+
+### Environment Variables
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
@@ -41,7 +47,7 @@ This setup relies on the following external services within the `infra_net` netw
 | `_AIRFLOW_WWW_USER_PASSWORD` | Admin Password | `${_AIRFLOW_WWW_USER_PASSWORD}` |
 | `AIRFLOW__METRICS__STATSD_ON` | Enable StatsD | `true` |
 
-## Configuration Files
+### Configuration Files
 
 The `config/` directory contains configuration files mapped into the containers:
 
@@ -53,7 +59,7 @@ The `config/` directory contains configuration files mapped into the containers:
     - `airflow.executor.*` → `airflow_executor_*`
     - `airflow.dag.*.*.duration` → `airflow_dag_task_duration` (with `dag_id` and `task_id` labels)
 
-## Volumes
+## Persistence
 
 | Host Path | Container Path | Description |
 | :--- | :--- | :--- |
@@ -61,11 +67,7 @@ The `config/` directory contains configuration files mapped into the containers:
 | `airflow-plugins` | `/opt/airflow/plugins` | Stores Airflow plugins |
 | `./config/statsd_mapping.yml` | `/tmp/mappings.yml` | StatsD Exporter mapping config |
 
-## Network
-
-All services are attached to the **`infra_net`** network to communicate with shared infrastructure (Traefik, Postgres, Redis, Prometheus).
-
-## Traefik Configuration
+## Traefik Integration
 
 Services are exposed via Traefik with the following configuration:
 

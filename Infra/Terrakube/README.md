@@ -4,7 +4,7 @@
 
 Terrakube is an open-source alternative to Terraform Cloud/Enterprise. It allows you to manage Terraform operations, including remote state management and execution. This setup includes the API, UI, and Executor components.
 
-## Service Details
+## Services
 
 ### 1. Terrakube API (`terrakube-api`)
 
@@ -23,7 +23,7 @@ Terrakube is an open-source alternative to Terraform Cloud/Enterprise. It allows
 - **Internal Port**: `${TERRAKUBE_EXECUTOR_PORT}`
 - **Volumes**: `/var/run/docker.sock:/var/run/docker.sock`
 
-## Network
+## Networking
 
 All Terrakube components are configured with **Dynamic IP** assignment on the `infra_net` network.
 
@@ -33,7 +33,7 @@ All Terrakube components are configured with **Dynamic IP** assignment on the `i
 | `terrakube-ui` | Dynamic (DHCP) |
 | `terrakube-executor` | Dynamic (DHCP) |
 
-## Environment Variables
+## Configuration
 
 ### Common Configuration
 
@@ -78,7 +78,7 @@ All Terrakube components are configured with **Dynamic IP** assignment on the `i
 | `ExecutorFlagDisableAcknowledge` | Disable Ack | `false` |
 | `TerrakubeToolsRepository` | Tools Repo | `.../terrakube-extensions.git` |
 
-## Traefik Configuration
+## Traefik Integration
 
 | Service | Host Rule | Port |
 | :--- | :--- | :--- |
@@ -87,3 +87,9 @@ All Terrakube components are configured with **Dynamic IP** assignment on the `i
 | **Executor** | `terrakube-executor.${DEFAULT_URL}` | `${TERRAKUBE_EXECUTOR_PORT}` |
 
 All services use the `infra_net` network and have `traefik.enable=true`.
+
+## Usage
+
+1. Access the Terrakube UI at `https://terrakube-ui.${DEFAULT_URL}`.
+2. Login is handled via Keycloak (DEX). Ensure your user has the necessary groups/roles if configured.
+3. The API is available at `https://terrakube-api.${DEFAULT_URL}`.

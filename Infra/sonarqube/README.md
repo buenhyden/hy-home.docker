@@ -4,21 +4,26 @@
 
 Automated code review and code quality analysis tool.
 
-## Service Details
+## Services
 
-- **Image**: `sonarqube:26.1.0.118079-community`
-- **Database**: Connects to the main `postgresql-cluster` or a dedicated DB (Env: `SONAR_JDBC_URL`).
-- **Port**: `${SONARQUBE_PORT}` (9000).
+| Service | Image | Role |
+| :--- | :--- | :--- |
+| `sonarqube` | `sonarqube:26.1.0.118079-community` | Code Quality Server |
 
-## Network
+## Networking
 
-Unlike other services in this infrastructure, SonarQube is configured with **Dynamic IP** assignment on the `infra_net` network.
+Service runs on `infra_net` using **Dynamic** IP assignment (DHCP), unlike most other services in this stack.
 
-| Service | IP Address |
-| :--- | :--- |
-| `sonarqube` | Dynamic (DHCP) |
+| Service | IP Address | Internal Port | Traefik Domain |
+| :--- | :--- | :--- | :--- |
+| `sonarqube` | *(Dynamic)* | `${SONARQUBE_PORT}` | `sonarqube.${DEFAULT_URL}` |
 
-## Environment Variables
+## Persistence
+
+- **Data**: `sonarqube-data-volume` → `/opt/sonarqube/data`
+- **Logs**: `sonarqube-logs-volume` → `/opt/sonarqube/logs`
+
+## Configuration
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
@@ -26,7 +31,13 @@ Unlike other services in this infrastructure, SonarQube is configured with **Dyn
 | `SONAR_JDBC_USERNAME` | Database Username | `${SONARQUBE_DB_USER}` |
 | `SONAR_JDBC_PASSWORD` | Database Password | `${SONARQUBE_DB_PASSWORD}` |
 
-## Traefik Configuration
+## Traefik Integration
 
-- **Domain**: `sonarqube.${DEFAULT_URL}`
-- **Entrypoint**: `websecure` (TLS enabled)
+Services are exposed via Traefik with TLS enabled (`websecure`).
+
+- **Dashboard**: `sonarqube.${DEFAULT_URL}`
+
+## Usage
+
+1. **Dashboard**: Access `https://sonarqube.${DEFAULT_URL}`.
+2. **First Login**: Default credentials `admin` / `admin`. You will be prompted to change these immediately.

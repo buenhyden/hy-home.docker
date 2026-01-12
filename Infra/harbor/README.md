@@ -4,7 +4,7 @@
 
 Harbor is an open-source trusted cloud native registry project that stores, signs, and scans content. This deployment uses external databases (PostgreSQL, Redis) and binds to host directories for persistence.
 
-## Architecture & Services
+## Services
 
 | Service | Description | Port (Internal) |
 | :--- | :--- | :--- |
@@ -21,7 +21,11 @@ This setup relies on the following external services within the `infra_net` netw
 - **PostgreSQL**: Used for metadata storage (`harbor_db` database).
 - **Redis (Valkey)**: Used for caching and job queues (Indices 0 and 1).
 
-## Environment Variables
+## Networking
+
+All services are connected to the **`infra_net`** network.
+
+## Configuration
 
 ### General Configuration
 
@@ -48,7 +52,7 @@ This setup relies on the following external services within the `infra_net` netw
 | `JOBSERVICE_SECRET` | Job Service Secret | `${HARBOR_JOBSERVICE_SECRET}` |
 | `REGISTRY_HTTP_SECRET` | Registry Secret | `${HARBOR_REGISTRY_HTTP_SECRET}` |
 
-## Volumes
+## Persistence
 
 Persistence is handled via bind mounts to the host file system:
 
@@ -62,11 +66,7 @@ Persistence is handled via bind mounts to the host file system:
 | `harbor-jobservice-logs-volume` | `${DEFAULT_CICD_DIR}/harbor/jobservice/logs` | `/var/log/jobs` | Job logs |
 | `harbor-jobservice-conf-volume` | `${DEFAULT_CICD_DIR}/harbor/jobservice/conf` | `/etc/jobservice` | JobService config |
 
-## Network
-
-All services are connected to the **`infra_net`** network.
-
-## Traefik & Access
+## Traefik Integration
 
 > **Note**: This `docker-compose.yml` does **not** include explicit Traefik labels.
 > Routing must be handled by an external Traefik configuration or an override file that adds the necessary labels to the `harbor-portal` (for UI) and `harbor-core` (for API) services.

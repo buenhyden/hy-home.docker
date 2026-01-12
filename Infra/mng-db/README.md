@@ -6,42 +6,24 @@ This directory contains the configuration for shared management databases used b
 
 ## Services
 
-### 1. Valkey (`mng-valkey`)
-
-A high-performance key-value store (fork of Redis).
+### Valkey (`mng-valkey`)
 
 - **Image**: `valkey/valkey:9.0.1-alpine`
-- **Port**: `${VALKEY_PORT}` (Exposed to Infra settings)
-- **Security**: Password protected via Docker Secret `valkey_password`.
-- **Exporter**: `mng-valkey-exporter` exposed on `${VALKEY_EXPORTER_PORT}`.
+- **Role**: High-performance key-value store (Redis fork)
+- **Port**: `${VALKEY_PORT}`
+- **Exports**: `${VALKEY_EXPORTER_PORT}` (Metrics)
 
-### 2. PostgreSQL (`mng-pg`)
-
-A powerful, open-source object-relational database system.
+### PostgreSQL (`mng-pg`)
 
 - **Image**: `postgres:17-bookworm`
+- **Role**: Relational Database
 - **Port**: `${POSTGRES_PORT}`
-- **Security**: Superuser password set via `${PGPASSWORD_SUPERUSER}`.
-- **Initialization**: A dedicated sidecar container `mng-pg-init` waits for the DB to be ready and runs `init_users_dbs.sql` to provision users and databases.
-- **Exporter**: `mng-pg-exporter` exposed on `${POSTGRES_EXPORTER_PORT}`.
+- **Exports**: `${POSTGRES_EXPORTER_PORT}` (Metrics)
 
-### 3. RedisInsight (`redisinsight`)
-
-A GUI for managing and visualizing data in Valkey/Redis.
+### RedisInsight (`redisinsight`)
 
 - **Image**: `redis/redisinsight:3.0.1`
-- **Network**: `infra_net`
-- **Traefik**: Exposed at `redisinsight.${DEFAULT_URL}` with **SSO Authentication**.
-
-## Environment Variables
-
-| Service | Variable | Description | Default |
-| :--- | :--- | :--- | :--- |
-| **Valkey** | Secret `valkey_password` | Master/Replica Password | via Docker Secret |
-| **PostgreSQL**| `POSTGRES_USER` | Valid User | `${POSTGRES_USER}` |
-| **PostgreSQL**| `POSTGRES_PASSWORD` | Superuser Password | `${PGPASSWORD_SUPERUSER}` |
-| **PostgreSQL**| `POSTGRES_DB` | Init Database | `${POSTGRES_DB}` |
-| **Init** | `PGPASSWORD_SUPERUSER` | Auth for Script | `${PGPASSWORD_SUPERUSER}` |
+- **Role**: GUI for Valkey/Redis management
 
 ## Networking
 
@@ -55,11 +37,31 @@ All services are assigned **Static IPs** in the `infra_net` network for reliable
 | **PostgreSQL Exporter** | `172.19.0.73` |
 | **RedisInsight** | `172.19.0.68` |
 
-## Data Persistence
+## Persistence
 
 - **Valkey**: `mng-valkey-data` (Mapped to `/data`)
 - **PostgreSQL**: `mng-pg-data` (Mapped to `/var/lib/postgresql/data`)
 - **RedisInsight**: `redisinsight-data` (Mapped to `/db`)
+
+## Configuration
+
+### Secrets & Environment
+
+| Service | Variable | Description | Default |
+| :--- | :--- | :--- | :--- |
+| **Valkey** | Secret `valkey_password` | Master/Replica Password | via Docker Secret |
+| **PostgreSQL**| `POSTGRES_USER` | Valid User | `${POSTGRES_USER}` |
+| **PostgreSQL**| `POSTGRES_PASSWORD` | Superuser Password | `${PGPASSWORD_SUPERUSER}` |
+| **PostgreSQL**| `POSTGRES_DB` | Init Database | `${POSTGRES_DB}` |
+| **Init** | `PGPASSWORD_SUPERUSER` | Auth for Script | `${PGPASSWORD_SUPERUSER}` |
+
+## Traefik Integration
+
+### RedisInsight
+
+- **Domain**: `redisinsight.${DEFAULT_URL}`
+- **Entrypoint**: `websecure` (TLS Enabled)
+- **Authentication**: **SSO Enabled** (via `sso-auth` middleware)
 
 ## Usage
 

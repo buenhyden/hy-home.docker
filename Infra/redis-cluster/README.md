@@ -2,35 +2,46 @@
 
 ## Overview
 
-A 6-node Redis Cluster configured for sharding and high availability.
+A 6-node Redis Cluster configured for sharding and high availability (3 Masters, 3 Replicas).
 
 ## Architecture
 
-### Nodes
+- **Topology**: 3 Primary Nodes + 3 Replica Nodes.
+- **Failover**: Automatic failover via Redis Sentinel logic embedded in Cluster mode.
+- **Initialization**: `redis-cluster-init` container creates the cluster after nodes are up.
 
-- **Masters**: 3 Nodes
-- **Replicas**: 3 Nodes
-- **Services**: `redis-node-0` through `redis-node-5`
-- **Image**: `redis:8.4.0-bookworm`
+## Services
 
-### Initialization
+| Service | Image | Role |
+| :--- | :--- | :--- |
+| `redis-node-0..5`| `redis:8.4.0-bookworm` | Redis Data Nodes |
+| `redis-cluster-init` | `redis:8.4` | Cluster Formation Script |
+| `redis-exporter` | `oliver006/redis_exporter:v1.80.1-alpine` | Prometheus Metrics |
 
-- **Service**: `redis-cluster-init`
-- **Logic**: Runs `redis-cluster-init.sh` to form the cluster once nodes are healthy.
+## Networking
 
-### Networking
+Services run on `infra_net` with static IPs (172.19.0.6X).
 
-- **Discovery**: Relies on static IPs or Docker network DNS (`infra_net`).
-- **Ports**: Each node listens on its respective port (`${REDIS0_PORT}`, etc.) and Bus port.
+| Service | Static IP | Internal Port | Host Port |
+| :--- | :--- | :--- | :--- |
+| `redis-node-0` | `172.19.0.60` | `${REDIS0_PORT}` | `${REDIS0_PORT}` |
+| `redis-node-1` | `172.19.0.61` | `${REDIS1_PORT}` | `${REDIS1_PORT}` |
+| `redis-node-2` | `172.19.0.62` | `${REDIS2_PORT}` | `${REDIS2_PORT}` |
+| `redis-node-3` | `172.19.0.63` | `${REDIS3_PORT}` | `${REDIS3_PORT}` |
+| `redis-node-4` | `172.19.0.64` | `${REDIS4_PORT}` | `${REDIS4_PORT}` |
+| `redis-node-5` | `172.19.0.65` | `${REDIS5_PORT}` | `${REDIS5_PORT}` |
+| `redis-cluster-init` | `172.19.0.66` | - | - |
+| `redis-exporter` | `172.19.0.67` | `${REDIS_EXPORTER_PORT}` | `${REDIS_EXPORTER_HOST_PORT}` |
 
-### Exporter
+## Persistence
 
-- **Service**: `redis-exporter`
-- **Mode**: Scrapes `redis-node-0` (or cluster-aware) for Prometheus metrics.
+Data is persisted in named volumes and configuration via bind mounts:
 
-- **Mode**: Scrapes `redis-node-0` (or cluster-aware) for Prometheus metrics.
+- **Data**: `redis-data-0` ... `redis-data-5` -> `/data`
+- **Config**: `./config/redis.conf` -> `/usr/local/etc/redis/redis.conf`
+- **Scripts**: `./scripts/` -> `/usr/local/bin/`
 
-## Environment Variables
+## Configuration
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
@@ -38,21 +49,16 @@ A 6-node Redis Cluster configured for sharding and high availability.
 | `PORT` | Node Port | `${REDISX_PORT}` |
 | `redis_password` | Docker Secret | via file |
 
-## Network
+## Traefik Integration
 
-Services are assigned static IPs in the `172.19.0.6X` range on `infra_net`.
+This cluster is purely internal for infrastructure. No Traefik routes are exposed.
 
-| Service | IP Address | Role |
-| :--- | :--- | :--- |
-| `redis-node-0` | `172.19.0.60` | Master/Replica |
-| `redis-node-1` | `172.19.0.61` | Master/Replica |
-| `redis-node-2` | `172.19.0.62` | Master/Replica |
-| `redis-node-3` | `172.19.0.63` | Master/Replica |
-| `redis-node-4` | `172.19.0.64` | Master/Replica |
-| `redis-node-5` | `172.19.0.65` | Master/Replica |
-| `redis-cluster-init` | `172.19.0.66` | Init Script |
-| `redis-exporter` | `172.19.0.67` | Metrics |
+## Usage
 
-## Note
+Applications on `infra_net` should connect using a Cluster-aware client with seed nodes:
 
-This cluster is primarily for internal infrastructure usage (`infra_net`). No external Traefik routes are configured by default.
+- `redis-node-0:6379`
+- `redis-node-1:6380`...
+
+**Debug**:
+Host ports are exposed (e.g., `localhost:6379`) for debugging, but cluster redirection might fail if client cannot reach container IPs from host.

@@ -4,47 +4,35 @@
 
 MinIO is a high-performance, S3-compatible object storage server. This deployment is configured as a standalone node with initialization automation to ensure required buckets are created on startup.
 
-## Architecture
+## Services
 
-- **Mode**: Standalone (Single Node)
-- **Initialization**: Dedicated `minio-create-buckets` container runs at startup to provision buckets and users using the `mc` (MinIO Client) tool.
-- **Security**: Root and App credentials are managed securely via **Docker Secrets**.
-
-## Service Details
-
-### 1. Server (`minio`)
+### Server (`minio`)
 
 - **Image**: `minio/minio:RELEASE.2025-09-07T16-13-09Z`
+- **Role**: S3-compatible Object Storage
 - **Console Port**: `${MINIO_CONSOLE_HOST_PORT}`
 - **API Port**: `${MINIO_HOST_PORT}`
-- **Volume**: `minio-data` (Mapped to `/data`)
 
-### 2. Initialization Job (`minio-create-buckets`)
+### Initialization (`minio-create-buckets`)
 
 - **Image**: `minio/mc:RELEASE.2025-08-13T08-35-41Z`
-- **Behavior**: Waits for MinIO to be healthy, then executes a script to:
-    1. Authenticate as Root.
-    2. Create App User (`$$APP_USER`).
-    3. Grant `readwrite` policy.
-    4. Create Buckets: `tempo-bucket`, `loki-bucket`, `cdn-bucket`.
-    5. Set `cdn-bucket` to Public (Anonymous Read).
-- **Lifecycle**: Exits after completion (`restart: "no"`).
+- **Role**: Provisioning buckets on startup
+- **Buckets Created**: `tempo-bucket`, `loki-bucket`, `cdn-bucket` (Public)
 
 ## Networking
+
+This service is part of the `infra_net` network:
 
 - **Network**: `infra_net`
 - **Static IPv4**: `172.19.0.12`
 
-## Secrets & Environment
+## Persistence
 
-Credentials are strictly managed via Docker Secrets located in `/run/secrets/`:
+- **`minio-data`** → `/data`: Persistent storage for objects.
 
-- `minio_root_user`
-- `minio_root_password`
-- `minio_app_user`
-- `minio_app_user_password`
+## Configuration
 
-Environment variables map these secrets to the MinIO configuration:
+Credentials are managed via Docker Secrets (`/run/secrets/`) mapped to environment variables.
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
@@ -53,7 +41,7 @@ Environment variables map these secrets to the MinIO configuration:
 | `MINIO_PROMETHEUS_AUTH_TYPE` | Prometheus scraping auth type | `public` |
 | `MINIO_API_ROOT_ACCESS` | Enable root access via API | `on` |
 
-## Traefik Configuration
+## Traefik Integration
 
 Two separate routers are configured:
 

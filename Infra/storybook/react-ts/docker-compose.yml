@@ -1,0 +1,21 @@
+name: design-system-storybook
+services:
+  storybook:
+    # image: your-registry/design-system-storybook:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: design-system-storybook
+    restart: unless-stopped
+    networks:
+      infra_net: # 기존 인프라 네트워크 사용
+    labels:
+      - "traefik.enable=true"
+      # 도메인 설정: design.example.com 형태
+      - "traefik.http.routers.storybook.rule=Host(`design.${DEFAULT_URL}`)"
+      - "traefik.http.routers.storybook.entrypoints=websecure"
+      - "traefik.http.routers.storybook.tls=true"
+      # 인증 미들웨어 적용 (Keycloak 연동 시 필요)
+      - "traefik.http.routers.storybook.middlewares=sso-auth@file"
+      # 컨테이너 내부 Nginx 포트 (Dockerfile에서 EXPOSE한 포트)
+      - "traefik.http.services.storybook.loadbalancer.server.port=80"

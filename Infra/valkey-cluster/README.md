@@ -2,53 +2,52 @@
 
 ## Overview
 
-A 6-node **Valkey** (Redis fork) Cluster configured for sharding and high availability.
+A 6-node **Valkey** (Redis fork) Cluster configured for sharding and high availability (3 Masters, 3 Replicas).
 
-## Architecture
+## Services
 
-### Nodes
+| Service | Image | Role |
+| :--- | :--- | :--- |
+| `valkey-node-0..5`| `valkey/valkey:9.0.1-alpine` | Valkey Data Nodes |
+| `valkey-cluster-init` | `valkey/valkey:9.0.1` | Cluster Formation Script |
+| `valkey-exporter` | `oliver006/redis_exporter:v1.80.1-alpine` | Prometheus Metrics |
 
-- **Services**: `valkey-node-0` through `valkey-node-5`
-- **Image**: `valkey/valkey:9.0.1-alpine`
-- **Configuration**: Mapped from `./config/valkey.conf`.
+## Networking
 
-### Initialization
+Services run on `infra_net` with static IPs (172.19.0.6X).
 
-- **Service**: `valkey-cluster-init`
-- **Logic**: Runs `valkey-cluster-init.sh` to form the cluster automatically.
+| Service | Static IP | Internal Port | Host Port |
+| :--- | :--- | :--- | :--- |
+| `valkey-node-0` | `172.19.0.60` | `${VALKEY0_PORT}` | `${VALKEY0_PORT}` |
+| `valkey-node-1` | `172.19.0.61` | `${VALKEY1_PORT}` | `${VALKEY1_PORT}` |
+| `valkey-node-2` | `172.19.0.62` | `${VALKEY2_PORT}` | `${VALKEY2_PORT}` |
+| `valkey-node-3` | `172.19.0.63` | `${VALKEY3_PORT}` | `${VALKEY3_PORT}` |
+| `valkey-node-4` | `172.19.0.64` | `${VALKEY4_PORT}` | `${VALKEY4_PORT}` |
+| `valkey-node-5` | `172.19.0.65` | `${VALKEY5_PORT}` | `${VALKEY5_PORT}` |
+| `valkey-cluster-init` | `172.19.0.66` | - | - |
+| `valkey-exporter` | `172.19.0.67` | `${VALKEY_EXPORTER_PORT}` | `${VALKEY_EXPORTER_HOST_PORT}` |
 
-### Networking
+## Persistence
 
-- **Discovery**: Static IPs (`172.19.0.60` - `.65`).
-- **Ports**: Exposes Cluster Bus ports.
+Data is persisted in named volumes and configuration via bind mounts:
 
-### Exporter
+- **Data**: `valkey-data-0` ... `valkey-data-5` → `/data`
+- **Config**: `./config/valkey.conf` → `/usr/local/etc/valkey/valkey.conf`
+- **Scripts**: `./scripts/` → `/usr/local/bin/`
 
-- **Service**: `valkey-exporter`
-- **Details**: Runs in "Stateless Mode" using `r_pwd` and probing specific nodes when scraped.
-
-## Environment Variables
+## Configuration
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
-| `NODE_NAME` | Unique Node Name (custom env) | `valkey-node-X` |
-| `PORT` | Service Port (custom env) | `${VALKEYX_PORT}` |
+| `NODE_NAME` | Node Identity | `valkey-node-X` |
+| `PORT` | Node Port | `${VALKEYX_PORT}` |
+| `valkey_password` | Docker Secret | via file |
 
-## Network
+## Traefik Integration
 
-Services are assigned static IPs in the `172.19.0.6X` range on `infra_net`.
+The cluster is purely internal. No Traefik routes are exposed.
 
-| Service | IP Address | Role |
-| :--- | :--- | :--- |
-| `valkey-node-0` | `172.19.0.60` | Master/Replica |
-| `valkey-node-1` | `172.19.0.61` | Master/Replica |
-| `valkey-node-2` | `172.19.0.62` | Master/Replica |
-| `valkey-node-3` | `172.19.0.63` | Master/Replica |
-| `valkey-node-4` | `172.19.0.64` | Master/Replica |
-| `valkey-node-5` | `172.19.0.65` | Master/Replica |
-| `valkey-cluster-init` | `172.19.0.66` | Init Script |
-| `valkey-exporter` | `172.19.0.67` | Metrics |
+## Usage
 
-## Note
-
-Primary caching layer for `n8n` and other high-throughput services.
+1. **Internal**: Applications connect via the cluster protocol. Seed nodes: `valkey-node-0:6379`, etc.
+2. **Primary Use**: Caching layer for `n8n` and other high-throughput services.

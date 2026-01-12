@@ -4,11 +4,27 @@
 
 n8n is an extendable workflow automation tool. This deployment is configured in **Queue Mode** (Scalable Architecture) to handle high-volume workloads by separating the Editor/Webhook handling from the actual execution processing.
 
-## Architecture
+## Services
 
-- **Main Node (`n8n`)**: Handles the Web Editor, API, and incoming Webhooks. Delegates execution to the queue.
-- **Worker Node (`n8n-worker`)**: Picks up jobs from Redis and executes them. Can be scaled horizontally.
-- **Queue (`n8n-valkey`)**: A dedicated Valkey (Redis) instance acting as the job broker.
+- **Service Name**: `n8n`
+- **Image**: `n8nio/n8n:2.3.0`
+- **Role**: Main Node (Editor/Webhook Receiver/Coordinator)
+- **Restart Policy**: `unless-stopped`
+
+- **Service Name**: `n8n-worker`
+- **Image**: `n8nio/n8n:2.3.0`
+- **Role**: Worker Node (Job Executor)
+- **Restart Policy**: `unless-stopped`
+
+- **Service Name**: `n8n-valkey`
+- **Image**: `valkey/valkey:9.0.1-alpine`
+- **Role**: Job Queue (Redis)
+- **Restart Policy**: `unless-stopped`
+
+- **Service Name**: `n8n-valkey-exporter`
+- **Image**: `oliver006/redis_exporter:v1.80.1-alpine`
+- **Role**: Prometheus Metrics Exporter for Queue
+- **Restart Policy**: `unless-stopped`
 
 ## Custom Build
 
@@ -38,20 +54,23 @@ services:
 
 1. Rebuild: `docker-compose up -d --build n8n`.
 
-## Services & Networking
+## Networking
 
 All services run on the `infra_net` network with **Static IPs**:
 
 | Service | Role | Static IPv4 | Port |
 | :--- | :--- | :--- | :--- |
-| `n8n` | Editor / Webhooks | `172.19.0.14` | `${N8N_PORT}` (5678) |
+| `n8n` | Editor / Webhooks | `172.19.0.14` | `${N8N_PORT}` |
 | `n8n-worker` | Job Executor | `172.19.0.17` | - |
 | `n8n-valkey` | Job Queue | `172.19.0.15` | `${VALKEY_PORT}` |
 | `n8n-valkey-exporter` | Queue Metrics | `172.19.0.16` | `${VALKEY_EXPORTER_PORT}` |
 
-## Key Configuration
+## Persistence
 
-## Environment Variables
+- **`n8n-data`** → `/home/node/.n8n`: Persistent storage for n8n user data, workflows, and configuration.
+- **`n8n-valkey-data`** → `/data`: Persistent storage for the Valkey queue.
+
+## Configuration
 
 ### Core & Security
 
@@ -78,22 +97,17 @@ All services run on the `infra_net` network with **Static IPs**:
 | `N8N_METRICS` | Enable Metrics | `true` |
 | `N8N_METRICS_PREFIX` | Metric Prefix | `n8n_` |
 
-## Traefik Configuration
+## Traefik Integration
 
 - **Domain**: `n8n.${DEFAULT_URL}`
-- **Entrpoint**: `websecure` (TLS Enabled)
-- **Service**: Points to the Main Node (`n8n`) on port `${N8N_PORT}`.
-
-## Data Persistence
-
-- **n8n Data**: `n8n-data` (Mapped to `/home/node/.n8n`)
-- **Queue Data**: `n8n-valkey-data` (Mapped to `/data`)
+- **Entrypoint**: `websecure` (TLS Enabled)
+- **Service Port**: `${N8N_PORT}`
 
 ## Usage
 
 ### Web Editor
 
-- **URL**: `https://n8n.<your-domain>`
+- **URL**: `https://n8n.${DEFAULT_URL}`
 - **Login**: Setup your admin account on first access.
 
 ### Worker Scaling
