@@ -2,78 +2,146 @@
 
 ## Overview
 
-A High Availability (HA) PostgreSQL cluster using **Patroni**, **etcd**, and **HAProxy**. It provides automatic failover, leader election, and read/write splitting.
+A robust **High Availability (HA) PostgreSQL Cluster** designed for mission-critical data. It utilizes **Patroni** for automated failover, **etcd** as the distributed consensus store, and **HAProxy** for intelligent read/write routing.
 
-## Architecture
+```mermaid
+graph TB
+    subgraph "Clients"
+        App[Application]
+        Init[Init Service]
+    end
+    
+    subgraph "Routing Layer"
+        LB[HAProxy<br/>Write: 5432 / Read: 5433]
+    end
+    
+    subgraph "Data Layer (Patroni Cluster)"
+        P1[PG-0<br/>(Leader?)]
+        P2[PG-1<br/>(Replica?)]
+        P3[PG-2<br/>(Replica?)]
+    end
+    
+    subgraph "Consensus (DCS)"
+        E1[etcd-1]
+        E2[etcd-2]
+        E3[etcd-3]
+    end
 
-1. **Distributed Configuration Store (DCS)**: 3-node **etcd** cluster for consensus.
-2. **PostgreSQL Nodes**: 3-node **Patroni** cluster (1 Leader, 2 Replicas).
-3. **Routing**: **HAProxy** splits traffic (Write → Leader, Read → Replicas).
-4. **Monitoring**: Sidecar exporters for Prometheus metrics.
+    App --> LB
+    Init --> LB
+    
+    LB -->|Write| P1
+    LB -->|Read Round-Robin| P2
+    LB -->|Read Round-Robin| P3
+    
+    P1 <--> E1
+    P1 <--> E2
+    P1 <--> E3
+    P2 <--> E1
+    P3 <--> E1
+    
+    P1 -.->|Replication| P2
+    P1 -.->|Replication| P3
+```
 
 ## Services
 
-| Service | Image | Role |
-| :--- | :--- | :--- |
-| `etcd-1/2/3` | `quay.io/coreos/etcd:v3.6.7` | DCS Cluster |
-| `pg-0/1/2` | `ghcr.io/zalando/spilo-17:4.0-p3` | PostgreSQL 17 + Patroni |
-| `pg-router` | `haproxy:3.3.1` | Load Balancer (Write/Read split) |
-| `pg-cluster-init`| `postgres:17-alpine` | Initialization Script Runner |
-| `pg-*-exporter` | `prometheuscommunity/postgres-exporter:v0.18.1`| Metrics Exporter |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `etcd-{1,2,3}` | `coreos/etcd:v3.6.7` | DCS (Distributed Config Store) | 256MB RAM |
+| `pg-{0,1,2}` | `zalando/spilo-17:4.0-p3` | PostgreSQL 17 + Patroni Agent | 1 CPU / 2GB |
+| `pg-router` | `haproxy:3.3.1` | SQL Traffic Router | 0.5 CPU / 256MB |
+| `pg-cluster-init` | `postgres:17-alpine` | Schema Initializer (One-off) | 0.5 CPU / 128MB |
+| `pg-*-exporter` | `postgres-exporter` | Metrics Sidecar | 0.1 CPU / 128MB |
 
 ## Networking
 
-Services run on `infra_net` with static IPs (172.19.0.5X).
+Services run on `infra_net` with static IPs (`172.19.0.5X`).
 
-| Service | Static IP | Internal Port | Host Port | Traefik Domain |
+| Service | Static IP | Port (Internal) | Host Port | Traefik Domain |
 | :--- | :--- | :--- | :--- | :--- |
 | `etcd-1` | `172.19.0.50` | `2379` | `${ETCD_CLIENT_PORT}` | - |
 | `etcd-2` | `172.19.0.51` | `2379` | `${ETCD_CLIENT_PORT}` | - |
 | `etcd-3` | `172.19.0.52` | `2379` | `${ETCD_CLIENT_PORT}` | - |
-| `pg-0` | `172.19.0.53` | `${POSTGRES_PORT}` | `${POSTGRES_PORT}` | - |
-| `pg-1` | `172.19.0.54` | `${POSTGRES_PORT}` | `${POSTGRES_PORT}` | - |
-| `pg-2` | `172.19.0.55` | `${POSTGRES_PORT}` | `${POSTGRES_PORT}` | - |
-| `pg-router` | `172.19.0.56` | Write: `${POSTGRES_WRITE_PORT}`<br>Read: `${POSTGRES_READ_PORT}` | `${POSTGRES_WRITE_HOST_PORT}`<br>${POSTGRES_READ_HOST_PORT}` | `pg-haproxy.${DEFAULT_URL}` (Stats) |
-| `pg-0-exporter` | `172.19.0.57` | `${POSTGRES_EXPORTER_PORT}` | - | - |
-| `pg-1-exporter` | `172.19.0.58` | `${POSTGRES_EXPORTER_PORT}` | - | - |
-| `pg-2-exporter` | `172.19.0.59` | `${POSTGRES_EXPORTER_PORT}` | - | - |
+| `pg-0` | `172.19.0.53` | `5432` | `${POSTGRES_PORT}` | - |
+| `pg-1` | `172.19.0.54` | `5432` | `${POSTGRES_PORT}` | - |
+| `pg-2` | `172.19.0.55` | `5432` | `${POSTGRES_PORT}` | - |
+| `pg-router` | `172.19.0.56` | W: `5432`, R: `5433` | W: `${POSTGRES_WRITE_HOST_PORT}`<br>R: `${POSTGRES_READ_HOST_PORT}` | `pg-haproxy.${DEFAULT_URL}` |
 
 ## Persistence
 
-Data is persisted in named volumes:
+Data is isolated in named volumes for each node.
 
-- **etcd**: `etcd1-data`, `etcd2-data`, `etcd3-data`
-- **Postgres**: `pg0-data`, `pg1-data`, `pg2-data` (Mapped to `/home/postgres/pgdata`)
-- **HAProxy**: `./config/haproxy.cfg` (Bind mount configuration)
+| Volume | Description |
+| :--- | :--- |
+| `etcd1-data`, `etcd2...` | Consensus state data |
+| `pg0-data`, `pg1...` | PostgreSQL data files (mapped to `/home/postgres/pgdata`) |
+| `haproxy.cfg` | Configuration bind mount |
 
 ## Configuration
 
-Configuration is managed via `.env.postgres` and `docker-compose.yml`.
+### Patroni & Spilo
 
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `SCOPE` | Patroni Cluster Scope Name | `pg-ha` |
-| `ETCD3_HOSTS` | etcd Cluster Endpoints | `etcd-1:2379,etcd-2...` |
-| `PATRONI_NAME` | Unique Node Name | `pg-0`, `pg-1`... |
-| `POSTGRES_USER` | Init User Name | `${POSTGRES_USER}` |
-| `POSTGRES_DB` | Init Database Name | `${POSTGRES_DB}` |
-| `POSTGRES_WRITE_PORT`| Router Write Port | `5432` |
-| `POSTGRES_READ_PORT` | Router Read Port | `5433` |
+The `zalando/spilo` image encapsulates Postgres and Patroni. Key configuration via environment variables:
+
+- `SCOPE`: Cluster name (`pg-ha`). All nodes with the same scope form a cluster.
+- `ETCD3_HOSTS`: Connection string for the DCS.
+- `PATRONI_NAME`: Unique identifier for the instance.
+
+### Initialization (`pg-cluster-init`)
+
+This container creates users and databases *after* the cluster is healthy.
+
+- **Wait Logic**: Polls `pg_router` until it accepts connections.
+- **Execution**: Runs `./init-scripts/init_users_dbs.sql`.
+- **Target**: Connects to the **Cluster/Router**, not an individual node, ensuring metadata is replicated.
 
 ## Traefik Integration
 
-The **PG Router** (HAProxy) exposes a statistics dashboard via Traefik.
+The HAProxy Stats dashboard is exposed via Traefik.
 
-- **Stats UI**: `pg-haproxy.${DEFAULT_URL}`
-- **Auth**: None (Dashboard authentication handled by HAProxy config if set).
+- **URL**: `https://pg-haproxy.${DEFAULT_URL}`
+- **Metrics**: Allows verifying which node is currently the Leader.
 
 ## Usage
 
-Applications should connect to the **PG Router** ports to ensure proper failover and load balancing.
+### Connecting to the Cluster
 
-| Connection Type | Host | Port | Description |
-| :--- | :--- | :--- | :--- |
-| **Write (Leader)** | `localhost` | `${POSTGRES_WRITE_HOST_PORT}` | DML/DDL Operations |
-| **Read (Replica)** | `localhost` | `${POSTGRES_READ_HOST_PORT}` | Read-Only Queries |
+Always connect via the **Router** to respect Leader/Replica roles.
 
-> **Note**: Do not connect directly to `pg-0/1/2` unless for debugging, as roles (Leader/Replica) can change dynamically.
+**Write Operations (Leader):**
+
+```bash
+psql -h localhost -p ${POSTGRES_WRITE_HOST_PORT} -U postgres
+```
+
+**Read Operations (Replica):**
+
+```bash
+psql -h localhost -p ${POSTGRES_READ_HOST_PORT} -U postgres
+```
+
+### Checking Cluster Health
+
+You can check the Patroni API on any node:
+
+```bash
+curl http://localhost:8008/cluster
+```
+
+## Troubleshooting
+
+### Split Brain / No Leader
+
+If `etcd` quorum is lost (e.g., 2 nodes down), the cluster becomes Read-Only.
+
+- Check etcd health: `docker compose logs etcd-1`
+- Ensure at least 2 etcd nodes are healthy.
+
+### Node Flapping
+
+If a PG node keeps restarting:
+
+1. Check logs: `docker compose logs pg-0`
+2. Look for "WalSender" or "Replication" errors.
+3. Verify `etcd` connectivity from the PG container.
