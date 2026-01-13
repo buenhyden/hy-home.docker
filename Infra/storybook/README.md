@@ -1,80 +1,94 @@
 # Design System Infrastructure (Storybook)
 
-This directory hosts the **Design System** and **Storybook** environment, providing ready-to-use templates for React library development.
+## Overview
 
-## 📂 Templates
+This directory acts as the **Design System Monorepo** foundation, providing standardized templates for building, documenting, and testing React 19 component libraries. It uses **Storybook 8+** for UI development and **Vite** for high-performance builds.
 
-Two fully configured templates are provided for immediate use:
+```mermaid
+graph LR
+    subgraph "Design"
+        Figma[Figma Assets]
+    end
+    
+    subgraph "Development (Storybook)"
+        Code[React Components]
+        Docs[Documentation.mdx]
+        Test[Interaction Tests]
+    end
+    
+    subgraph "Output"
+        Static[Static Site<br/>(Nginx)]
+        Lib[NPM Package<br/>(ESM/UMD)]
+    end
+    
+    subgraph "Production"
+        App[Consumer App]
+        GW[Traefik<br/>(design.${DEFAULT_URL})]
+    end
+    
+    Figma -.-> Code
+    Code --> Docs
+    Code --> Test
+    
+    Docs --> Static
+    Test --> Static
+    
+    Code --> Lib
+    Lib --> App
+    
+    Static --> GW
+```
 
-| Directory | Stack | Description |
-| :--- | :--- | :--- |
-| **`react-ts/`** | **TypeScript** + React 19 + Vite | **(Recommended)** Type-safe development with automated `.d.ts` generation. |
-| **`react-js/`** | JavaScript + React 19 + Vite | Standard JavaScript setup for legacy compatibility or rapid prototyping. |
+## 📂 Project Templates
+
+| Directory | Stack | Features | Recommended For |
+| :--- | :--- | :--- | :--- |
+| **[`react-ts/`](./react-ts)** | **TypeScript** + React 19 + Vite | Type generation (`d.ts`), Strict Mode | **New Projects** & Enterprise Apps |
+| **`react-js/`** | JavaScript + React 19 + Vite | Babel setup, Loose typing | Rapid prototyping / Legacy migration |
 
 ## 🚀 Key Features
 
-Both templates share a robust, "Ultra-Lean" configuration:
+- **⚡ Vite Build**: Instant dev server start and optimized library bundling (ESM/CJS).
+- **🧪 Interaction Testing**: Run user simulation tests (`play` function) directly in the browser via Storybook.
+- **♿ Accessibility (A11y)**: integrated `addon-a11y` for strict WCAG compliance checks.
+- **🎨 Theming**: Native Dark/Light mode support compatible with Tailwind or CSS Modules.
+- **🤝 Figma Integration**: Embed live Figma design frames into component docs.
+- **📦 Dual Export**: Builds both an interactive Documentation Site (`storybook-static/`) and a consumable Library (`dist/`).
 
-* **⚡ Build System**: **Vite** Library Mode for high-performance builds and easy bundling.
-* **🧩 Component Library**: Configured to export as `ESM` and `UMD` modules for consumption in other apps.
-* **🧪 Interaction Testing**: Pre-configured with `@storybook/addon-interactions` and `play` functions to test component logic within the browser.
-* **♿ Accessibility**: Automated A11y checks via `@storybook/addon-a11y` (WCAG compliance).
-* **🎨 Theming**: Native support for Light/Dark mode toggles in Storybook toolbar.
-* **🤝 Figma Integration**: `@storybook/addon-designs` installed for embedding Figma frames directly in documentation.
-* **🚢 CI/CD**: GitHub Actions pipelines for:
-  * **CI**: Linting, Building, Unit Testing, and Interaction Testing.
-  * **Release**: Automated Semantic Versioning and NPM publishing via `semantic-release`.
-* **🐋 Dockerized**: Multi-stage Dockerfile for optimizing static asset generation and serving via Nginx.
-* **👀 Visual Regression**: Readiness for visual testing tools like **Chromatic** or **Loki** (see `VISUAL_REGRESSION.md`).
+## 🛠 Local Development via Docker
 
-## 🛠 Infrastructure & Networking
-
-The Docker container runs a static Nginx server hosting the build artifacts.
-
-| Service | Image | Internal Port | Traefik Domain | Authentication |
-| :--- | :--- | :--- | :--- | :--- |
-| `storybook` | `design-system-storybook:latest` | `80` | `design.${DEFAULT_URL}` | SSO (Keycloak) |
-
-### Networking
-
-* **Network**: `infra_net`
-* **IP Assignment**: Dynamic
-
-## 📖 Usage Guide
-
-### 1. Local Development
-
-Choose your preferred flavor (`react-ts` recommended):
+Each template includes a `docker-compose.yml` for isolated development.
 
 ```bash
 cd react-ts
-npm install
-npm run storybook
-```
 
-Access at `http://localhost:6006`.
-
-### 2. Building for Production
-
-To build the static Storybook site and the component library:
-
-```bash
-npm run build            # Builds library (dist/)
-npm run build-storybook  # Builds documentation (storybook-static/)
-```
-
-### 3. Running with Docker
-
-Deploy the selected template using Docker Compose:
-
-```bash
-cd react-ts
+# Start Storybook on http://localhost:6006
 docker-compose up -d --build
 ```
 
-This enables the Nginx server on port `6006`.
+### Docker Services
+
+| Service | Context | Internal Port | Host Port | Role |
+| :--- | :--- | :--- | :--- | :--- |
+| `storybook` | `./react-ts` | `80` (Nginx) | `6006` | Serves static build |
+
+## 🚢 Production Deployment
+
+To expose the Design System via the infrastructure's Traefik gateway (e.g., `https://design.${DEFAULT_URL}`):
+
+1. **Build**: `npm run build-storybook` inside the container.
+2. **Serve**: The Dockerfile uses Nginx to serve the `storybook-static` folder.
+3. **Traefik Config**: Add the following labels to `docker-compose.yml`:
+
+```yaml
+labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.storybook.rule=Host(`design.${DEFAULT_URL}`)"
+  - "traefik.http.routers.storybook.tls=true"
+  - "traefik.http.routers.storybook.middlewares=sso-auth@file" # Optional: Protect with Keycloak
+```
 
 ## 🔗 Reference Documentation
 
-* [Figma Integration](./react-ts/FIGMA_INTEGRATION.md)
-* [Visual Regression Testing](./react-ts/VISUAL_REGRESSION.md)
+- [Figma Integration Guide](./react-ts/FIGMA_INTEGRATION.md)
+- [Visual Regression Testing](./react-ts/VISUAL_REGRESSION.md)
