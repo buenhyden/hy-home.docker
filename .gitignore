@@ -2,7 +2,10 @@
 .vscode/
 .mypy_cache/
 .pytest_cache/
-.agnet/rules/
+.agent/rules/
+.github/instructions/
+.github/agents/
+.github/prompts/
 # Archive
 archive/seaweedfs/config/security.toml
 archive/Terrakube/certs/*.pem
