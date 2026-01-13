@@ -56,6 +56,26 @@ REDIS_PORT=6379
 
 > **Note**: No modification needed for local development with defaults.
 
+## Automation & Tools
+
+We provide helper scripts to simplify common operational tasks.
+
+### Create New Service
+
+Scaffold a new infrastructure service complete with README, Dockerfile, and Compose config.
+
+```bash
+./scripts/new_infra_service.sh <service_name>
+```
+
+### Validate Configuration
+
+Check your `docker-compose.yml` files for syntax errors before deploying.
+
+```bash
+./scripts/validate_compose_change.sh
+```
+
 ## Deployment Options
 
 ### Option 1: Full Infrastructure Deployment

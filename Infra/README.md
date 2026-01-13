@@ -103,17 +103,15 @@ Additional data storage and processing engines.
 
 ## Network Topology
 
-The infrastructure operates on a dedicated `172.19.0.0/16` subnet (`infra-net`).
+The infrastructure operates on a dedicated `172.19.0.0/16` subnet (`infra_net`). For detailed IP assignments and routing rules, see the [Network Topology Documentation](../docs/architecture/network-topology.md).
 
-| IP Range | Group | Services |
+| IP Range | Group | Description |
 | :--- | :--- | :--- |
-| `172.19.0.2-9` | **Core** | Traefik, Keycloak, OAuth2 Proxy |
-| `172.19.0.10-19`| **Storage/AI** | MinIO, InfluxDB, Ollama, Qdrant |
-| `172.19.0.20-29`| **Databases** | PostgreSQL Patroni, Etcd |
-| `172.19.0.30-39`| **Observability** | LGTM Stack |
-| `172.19.0.40-49`| **Messaging** | Kafka |
-| `172.19.0.50-59`| **Cache** | Valkey |
-| `172.19.0.60+` | **Apps** | Automation & Other Apps |
+| `172.19.0.10-19` | **Core & Storage** | Traefik, MinIO, OAuth Proxy support |
+| `172.19.0.20-29` | **Kafka & Security** | Kafka Cluster, Keycloak, OAuth Proxy |
+| `172.19.0.30-39` | **Observability** | LGTM Stack (Grafana, Loki, etc.) |
+| `172.19.0.50-59` | **Databases (HA)** | PostgreSQL HA Cluster (Patroni) |
+| `172.19.0.60-79` | **Apps & Mng DBs** | Valkey, RedisInsight, Management DBs |
 
 ## Secrets Management
 

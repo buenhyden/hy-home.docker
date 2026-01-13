@@ -1,41 +1,25 @@
-# Project Documentation
+# Documentation Library
 
-## 📚 Overview
+Welcome to the `hy-home.docker` documentation.
 
-Welcome to the project documentation. This directory contains detailed guides, architecture decisions, and references.
+## 🏗️ Architecture
 
-## 📂 Structure
+- [**System Architecture**](./architecture/system-architecture.md): Overview of layers, diagrams, and design principles.
+- [**Network Topology**](./architecture/network-topology.md): IP addressing, subnets, and routing rules.
 
-### Architecture
+## 📘 Guides
 
-Detailed system design and infrastructure layout.
+- [**Deployment Guide**](./guides/deployment-guide.md): How to start, stop, and configure the stack.
+- [**Maintenance**](./guides/maintenance.md): Backup, restore, and update procedures.
+- [**Security**](./guides/security.md): Secrets management and authentication flows.
+- [**Troubleshooting**](./guides/troubleshooting.md): Common issues and resolution steps.
 
-- [System Architecture](./architecture/system-architecture.md) - Layered architecture, service interactions
-- [Network Topology](./architecture/network-topology.md) - Network configuration, routing, DNS
+## 📚 References
 
-### Guides
+- [**Service Catalog**](./reference/service-catalog.md): Complete list of services, ports, and URLs.
+- [**Environment Variables**](./reference/environment-variables.md): Reference for `.env` configuration.
 
-Operational guides and how-to documentation.
+## 🧩 Templates
 
-- [Deployment Guide](./guides/deployment-guide.md) - Installation, setup, deployment scenarios
-- [Troubleshooting Guide](./guides/troubleshooting.md) - Common issues and solutions
-- [Security Guide](./guides/security.md) - Secrets, certificates, authentication
-- [Maintenance Guide](./guides/maintenance.md) - Updates, backups, monitoring
-
-### Reference
-
-Complete technical reference.
-
-- [Service Catalog](./reference/service-catalog.md) - All services with URLs, ports, credentials
-- Environment Variables Reference - Coming soon
-
-### Templates
-
-Standard templates for documentation.
-
-- [Service README Template](./templates/service-readme.md)
-- [ADR Template](./templates/adr-template.md)
-
-## 🚀 Getting Started
-
-Check the [Root README](../README.md) for quick start instructions.
+- [**ADR Template**](./templates/adr-template.md): Architecture Decision Record template.
+- [**Service README**](./templates/service-readme.md): Template for new infrastructure services.

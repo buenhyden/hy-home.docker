@@ -81,10 +81,9 @@ This project allows you to pair program with AI Agents effectively.
 
 ## 📚 Documentation Index
 
-- **Architecture**: [System Architecture](./docs/architecture/system-architecture.md)
-- **Networking**: [Network Topology](./docs/architecture/network-topology.md)
-- **Operations**: [Maintenance Guide](./docs/guides/maintenance.md)
-- **Services**: [Service Catalog](./docs/reference/service-catalog.md)
+- **Architecture**: [System Architecture](./docs/architecture/system-architecture.md) & [Network Topology](./docs/architecture/network-topology.md)
+- **Guides**: [Deployment](./docs/guides/deployment-guide.md), [Maintenance](./docs/guides/maintenance.md), [Security](./docs/guides/security.md) & [Troubleshooting](./docs/guides/troubleshooting.md)
+- **Reference**: [Service Catalog](./docs/reference/service-catalog.md) & [Env Variables](./docs/reference/environment-variables.md)
 
 ## 📄 License
 

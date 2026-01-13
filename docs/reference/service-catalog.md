@@ -2,207 +2,68 @@
 
 Complete reference of all infrastructure services with access details.
 
-## Active Services
-
-### Observability & Monitoring
+## Core Infrastructure
 
 | Service | URL | Port | Purpose |
 | :--- | :--- | :--- | :--- |
-| **Grafana** | <https://grafana.127.0.0.1.nip.io> | - | Unified observability dashboard |
-| **Prometheus** | <https://prometheus.127.0.0.1.nip.io> | - | Metrics collection |
-| **Alertmanager** | <https://alertmanager.127.0.0.1.nip.io> | - | Alert management |
-| **Alloy** | <https://alloy.127.0.0.1.nip.io> | - | Telemetry collector |
+| **Traefik** | <https://dashboard.127.0.0.1.nip.io> | 80/443 | Edge Router & Ingress |
+| **Keycloak** | <https://keycloak.127.0.0.1.nip.io> | - | Identity Provider (IAM) |
+| **OAuth2 Proxy** | - | 4180 | Auth Gateway |
 
-### Database Management UIs
-
-| Service | URL | Port | Purpose |
-| :--- | :--- | :--- | :--- |
-| **RedisInsight** | <https://redisinsight.127.0.0.1.nip.io> | - | Valkey cluster management (Redis-compatible) |
-| **Kafka UI** | <https://kafka-ui.127.0.0.1.nip.io> | - | Kafka cluster management |
-| **MinIO Console** | <https://minio-console.127.0.0.1.nip.io> | - | S3 storage management |
-| **InfluxDB UI** | <https://influxdb.127.0.0.1.nip.io> | - | Time-series DB UI |
-
-### Applications
+## Observability (LGTM Stack)
 
 | Service | URL | Port | Purpose |
 | :--- | :--- | :--- | :--- |
-| **n8n** | <https://n8n.127.0.0.1.nip.io> | - | Workflow automation |
-| **Ollama WebUI** | <https://chat.127.0.0.1.nip.io> | - | LLM chat interface |
-| **Keycloak Admin** | <https://keycloak.127.0.0.1.nip.io/admin> | - | IAM administration |
-| **Traefik Dashboard** | <https://dashboard.127.0.0.1.nip.io> | - | Reverse proxy dashboard |
-| **SonarQube** | <https://sonarqube.127.0.0.1.nip.io> | - | Code quality |
+| **Grafana** | <https://grafana.127.0.0.1.nip.io> | 3000 | Visualization Dashboard |
+| **Prometheus** | <https://prometheus.127.0.0.1.nip.io> | 9090 | Metrics Database |
+| **Alertmanager** | <https://alertmanager.127.0.0.1.nip.io> | 9093 | Alerting |
+| **Loki** | - | 3100 | Log Aggregation |
+| **Tempo** | - | 3200 | Distributed Tracing |
+| **Alloy** | <https://alloy.127.0.0.1.nip.io> | 12345 | OTel Collector |
 
-## Direct Database Access
+## Data & Persistence
 
-### PostgreSQL (HA Cluster)
-
-**Write Connection (HAProxy)**:
-
-```
-Host: localhost
-Port: 5000
-User: postgres
-Password: <secrets/postgres_password.txt>
-Database: postgres
-```
-
-**Read Connection (HAProxy)**:
-
-```
-Host: localhost
-Port: 5001
-User: postgres
-Password: <secrets/postgres_password.txt>
-```
-
-**CLI Access**:
-
-```bash
-psql -h localhost -p 5000 -U postgres
-```
-
-### Valkey Cluster (Redis Compatible)
-
-**Connection**:
-
-```
-Host: localhost
-Port: 6379, 6380, 6381, 6382, 6383, 6384 (Cluster Nodes)
-Password: <secrets/valkey_password.txt>
-```
-
-**CLI Access**:
-
-```bash
-docker exec -it valkey-node-0 valkey-cli -p 6379 -a $(cat secrets/valkey_password.txt)
-```
-
-### Kafka Cluster
-
-**Bootstrap Servers**:
-
-```
-localhost:9092,localhost:9093,localhost:9094
-```
-
-**Schema Registry**:
-
-```
-http://localhost:8081
-```
-
-## Service Details
-
-### Reverse Proxy & Security
-
-| Component | Image | Version | Notes |
+| Service | connection | Port | Purpose |
 | :--- | :--- | :--- | :--- |
-| Traefik | `traefik` | v3.6.6 | Dynamic routing |
-| OAuth2 Proxy | `quay.io/oauth2-proxy/oauth2-proxy` | v7.8.1 | Forward auth |
-| Keycloak | `quay.io/keycloak/keycloak` | 26.5.0 | SSO/IAM |
+| **PostgreSQL HA** | `localhost:5000` (Write), `5001` (Read) | 5432 | Relational Database |
+| **Valkey Cluster** | `localhost:6379-6384` | 6379+ | Distributed Cache |
+| **MinIO** | <https://minio-console.127.0.0.1.nip.io> | 9000/9001 | Object Storage (S3) |
+| **InfluxDB** | <https://influxdb.127.0.0.1.nip.io> | 8086 | Time Series Database |
+| **MongoDB** | `localhost:27017` | 27017 | NoSQL Database |
+| **CouchDB** | `localhost:5984` | 5984 | NoSQL Document Store |
+| **Qdrant** | `localhost:6333` | 6333 | Vector Database |
+| **OpenSearch** | <https://opensearch.127.0.0.1.nip.io> | 9200 | Search Engine |
 
-### Data Storage
+## Messaging & Streaming
 
-| Component | Image | Version | Type |
+| Service | Connection | Port | Purpose |
 | :--- | :--- | :--- | :--- |
-| PostgreSQL | `bitnami/postgresql` | 17 | Relational DB (HA) |
-| Valkey | `valkey/valkey` | 9.0.1 | Distributed Cache (Redis Fork) |
-| InfluxDB | `influxdb` | 2.8 | Time-series |
-| MinIO | `minio/minio` | latest | Object storage |
-| Qdrant | `qdrant/qdrant` | latest | Vector DB |
+| **Kafka** | `localhost:9092-9094` | 9092+ | Event Streaming |
+| **Kafka UI** | <https://kafka-ui.127.0.0.1.nip.io> | 8080 | Kafka Management UI |
+| **KSQL** | `localhost:8088` | 8088 | Streaming SQL |
 
-### Messaging & Streaming
+## Application & DevOps
 
-| Component | Image | Version | Notes |
+| Service | URL | Port | Purpose |
 | :--- | :--- | :--- | :--- |
-| Kafka | `confluentinc/cp-kafka` | 8.1.1 | KRaft mode |
-| Schema Registry | `confluentinc/cp-schema-registry` | 8.1.1 | Schema management |
-| Kafka Connect | `confluentinc/cp-kafka-connect` | 8.1.1 | Integrations |
-| ksqlDB | `confluentinc/ksqldb-server` | 0.29.0 | Stream processing |
+| **n8n** | <https://n8n.127.0.0.1.nip.io> | 5678 | Workflow Automation |
+| **Ollama** | `localhost:11434` | 11434 | LLM Inference API |
+| **Open WebUI** | <https://chat.127.0.0.1.nip.io> | 3000 | LLM Chat Interface |
+| **SonarQube** | <https://sonarqube.127.0.0.1.nip.io> | 9000 | Code Quality |
+| **Harbor** | <https://harbor.127.0.0.1.nip.io> | 80/443 | Container Registry |
+| **Terrakube** | <https://terrakube.127.0.0.1.nip.io> | 8080 | IaC Platform |
+| **Storybook** | <https://storybook.127.0.0.1.nip.io> | 6006 | Component Documentation |
+| **Airflow** | <https://airflow.127.0.0.1.nip.io> | 8080 | Data Orchestration |
 
-### Observability Stack
+## Utilities
 
-| Component | Image | Version | Notes |
+| Service | URL | Port | Purpose |
 | :--- | :--- | :--- | :--- |
-| Prometheus | `prom/prometheus` | latest | Metrics DB |
-| Grafana | `grafana/grafana` | latest | Dashboards |
-| Loki | `grafana/loki` | latest | Log aggregation |
-| Tempo | `grafana/tempo` | latest | Tracing |
-| Alloy | `grafana/alloy` | latest | OTel collector |
-| cAdvisor | `gcr.io/cadvisor/cadvisor` | latest | Container metrics |
+| **MailHog/Stalwart** | <https://mail.127.0.0.1.nip.io> | 8025 | Email Testing/Relay |
+| **Nginx** | `localhost:80` | 80 | Static Web Server |
 
-### Applications
+## Redis Cluster (Legacy)
 
-| Component | Image | Version | Purpose |
+| Service | Connection | Port | Purpose |
 | :--- | :--- | :--- | :--- |
-| n8n | `n8nio/n8n` | latest | Workflow automation |
-| Ollama | `ollama/ollama` | latest | LLM inference |
-| Open WebUI | `ghcr.io/open-webui/open-webui` | main | LLM chat UI |
-| SonarQube | `sonarqube` | community | Code quality |
-| Harbor | `bitnami/harbor-*` | 2 | Registry |
-
-## Optional / Disabled Services
-
-These services are available in the `infra/` directory but are commented out in the main `docker-compose.yml` by default to save resources.
-
-- **MailHog**: Email testing (`infra/mail`)
-- **Airflow**: Workflow orchestration (`infra/airflow`)
-- **OpenSearch**: Search engine (`infra/opensearch`)
-- **CouchDB**: NoSQL DB (`infra/couchdb`)
-- **Redis Cluster**: Legacy Redis implementation (replaced by Valkey) (`infra/redis-cluster`)
-- **Nginx**: Web server (`infra/nginx`)
-- **Storybook**: Component testing (`infra/storybook`)
-
-## Port Mappings
-
-| Service | Host Port | Container Port | Protocol |
-| :--- | :--- | :--- | :--- |
-| Traefik HTTP | 80 | 80 | HTTP |
-| Traefik HTTPS | 443 | 443 | HTTPS |
-| PostgreSQL Write | 5000 | 5000 | TCP |
-| PostgreSQL Read | 5001 | 5001 | TCP |
-| Valkey Node 0 | 6379 | 6379 | TCP |
-| Kafka Broker 1 | 9092 | 9092 | TCP |
-| Kafka Broker 2 | 9093 | 9092 | TCP |
-| Kafka Broker 3 | 9094 | 9092 | TCP |
-
-## Authentication
-
-### Protected Services (SSO via OAuth2 Proxy)
-
-**Active Services:**
-
-- Grafana
-- RedisInsight
-- Kafka UI
-
-**Optional/Disabled Services:**
-
-- Storybook
-- Stalwart (MailHog replacement)
-- Flower (Airflow UI)
-
-Login via Keycloak when accessing these services.
-
-### Self-Authenticated Services
-
-These services have their own authentication systems:
-
-- Keycloak (IAM with own login)
-- n8n (built-in authentication)
-- Ollama WebUI (built-in authentication)
-- SonarQube (built-in authentication)
-
-### Public Services
-
-- Traefik Dashboard (accessible without authentication)
-
-## Resource Requirements
-
-See [System Architecture](../architecture/system-architecture.md) for detailed resource requirements.
-
-## See Also
-
-- [Environment Variables Reference](./environment-variables.md)
-- [Network Topology](../architecture/network-topology.md)
-- [Deployment Guide](../guides/deployment-guide.md)
+| **Redis** | `localhost:7000-7005` | 7000+ | Legacy Redis Cluster |
