@@ -2,52 +2,95 @@
 
 ## Overview
 
-InfluxDB is an open-source time series database. This deployment uses **InfluxDB v2** and includes automated setup configuration.
+**InfluxDB** is a high-performance open-source time-series database (TSDB) optimized for fast, high-availability storage and retrieval of time-stamped data. This deployment uses **InfluxDB v2**, providing an integrated environment for data collection, visualization, and alerting.
+
+```mermaid
+graph TD
+    subgraph "Data Sources"
+        Tel[Telegraf]
+        Air[Airflow]
+        App[Applications]
+    end
+    
+    subgraph "Edge & Ingress"
+        GW[Traefik Router]
+    end
+    
+    subgraph "InfluxDB Core"
+        IDX[InfluxDB v2 Server]
+        Init[Auto-Init Process]
+    end
+    
+    subgraph "Persistence"
+        Vol[(influxdb-data)]
+    end
+    
+    Tel -->|Line Protocol| IDX
+    Air -->|API/Token| IDX
+    App -->|API/Token| IDX
+    
+    GW -->|HTTPS/UI| IDX
+    
+    IDX --- Vol
+    Init -.->|Configure| IDX
+```
 
 ## Services
 
-- **Service Name**: `influxdb`
-- **Image**: `influxdb:2.8`
-- **Container Name**: `influxdb`
-- **Restart Policy**: `unless-stopped`
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `influxdb` | `influxdb:2.8` | Time-Series Database / Dashboard | 1.0 CPU / 1GB |
 
 ## Networking
 
-This service is key infrastructure and has a fixed configuration within the `infra_net` network:
+This service is core monitoring infrastructure and uses a fixed IP for reliable internal telemetry collection without DNS dependency.
 
-- **Network**: `infra_net`
-- **Static IPv4**: `172.19.0.11`
-  - *Note*: This static IP is often used by other services (like Telegraf) to send metrics reliably without DNS lookups.
+| Service | Static IP | Internal Port | Traefik Domain |
+| :--- | :--- | :--- | :--- |
+| `influxdb` | `172.19.0.11` | `9999` | `influxdb.${DEFAULT_URL}` |
 
 ## Persistence
 
-- **`influxdb-data`** → `/var/lib/influxdb2`: Persistent storage for time-series data and configuration.
-
-## Configuration
-
-| Variable | Description | Default |
+| Volume | Mount Point | Description |
 | :--- | :--- | :--- |
-| `INFLUXDB_DB` | Database Name | `${INFLUXDB_DB_NAME}` |
-| `DOCKER_INFLUXDB_INIT_MODE` | Set to `setup` for auto-init | `setup` |
-| `DOCKER_INFLUXDB_INIT_USERNAME` | Initial Admin Username | `${INFLUXDB_USERNAME}` |
-| `DOCKER_INFLUXDB_INIT_PASSWORD` | Initial Admin Password | `${INFLUXDB_PASSWORD}` |
-| `DOCKER_INFLUXDB_INIT_ORG` | Default Organization Name | `${INFLUXDB_ORG}` |
-| `DOCKER_INFLUXDB_INIT_BUCKET` | Default Bucket Name | `${INFLUXDB_BUCKET}` |
-| `DOCKER_INFLUXDB_INIT_ADMIN_TOKEN`| Admin API Token | `${INFLUXDB_API_TOKEN}` |
+| `influxdb-data` | `/var/lib/influxdb2` | Stores TSM data, metadata, and engine configuration. |
 
-## Traefik Integration
+## Configuration (Auto-Initialization)
 
-- **Domain**: `influxdb.${DEFAULT_URL}`
-- **Entrypoint**: `websecure` (TLS Enabled)
-- **Service Port**: `${INFLUXDB_PORT}`
+The container is configured for automated setup on the first start using `DOCKER_INFLUXDB_INIT_MODE=setup`.
+
+| Variable | Description | Initial Value |
+| :--- | :--- | :--- |
+| `INFLUXDB_USERNAME` | Admin Username | `${INFLUXDB_USERNAME}` |
+| `INFLUXDB_PASSWORD` | Admin Password | `${INFLUXDB_PASSWORD}` |
+| `INFLUXDB_ORG` | Default Organization | `${INFLUXDB_ORG}` |
+| `INFLUXDB_BUCKET` | Default Data Bucket | `${INFLUXDB_BUCKET}` |
+| `INFLUXDB_API_TOKEN`| Initial Admin Token | `${INFLUXDB_API_TOKEN}` |
 
 ## Usage
 
-### Accessing the UI
+### 1. Web UI Dashboard
 
-- **URL**: `https://influxdb.<your-domain>`
-- **Login**: Use the `DOCKER_INFLUXDB_INIT_USERNAME` and `DOCKER_INFLUXDB_INIT_PASSWORD`.
+Access the integrated dashboard at `https://influxdb.${DEFAULT_URL}`.
 
-### Connecting Clients (Telegraf, Airflow)
+- Visualize data using Data Explorer (InfluxQL / Flux).
+- Manage Buckets, Tokens, and Scrapers.
+- Build and share multi-dimensional dashboards.
 
-Use the **Admin Token** (`DOCKER_INFLUXDB_INIT_ADMIN_TOKEN`) and the Organization name (`DOCKER_INFLUXDB_INIT_ORG`) for authentication.
+### 2. Client Connection (Python/Telegraf)
+
+Use the **Internal Address** `http://influxdb:9999` or the **Static IP** `http://172.19.0.11:9999` with the following credentials:
+
+- **Org**: `${INFLUXDB_ORG}`
+- **Bucket**: `${INFLUXDB_BUCKET}`
+- **Token**: Bearer or API Token authentication.
+
+## Troubleshooting
+
+### "Permission Denied on /var/lib/influxdb2"
+
+Ensure the host directory mapped to the volume has the correct permissions for the `influxdb` user (UID 1000).
+
+### "API Token Invalid"
+
+If you manually change the token in the UI or CLI, ensure all dependent services (Telegraf, Airflow) are updated with the new `INFLUXDB_API_TOKEN`.
