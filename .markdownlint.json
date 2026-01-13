@@ -1,4 +1,4 @@
 {
   "default": true,
-  "ignores": ["agent/workflows/**", "agent/rules/**", ".agent/workflows/**", ".agent/rules/**"]
+  "ignores": [".agent/workflows/**", ".agent/rules/**"]
 }

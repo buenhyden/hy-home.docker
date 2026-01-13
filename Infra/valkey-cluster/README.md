@@ -2,19 +2,45 @@
 
 ## Overview
 
-A 6-node **Valkey** (Redis fork) Cluster configured for sharding and high availability (3 Masters, 3 Replicas).
+**Valkey** is a high-performance open-source (Linux Foundation) alternative to Redis. This directory configures a distributed **6-node Cluster** (3 Masters, 3 Replicas) offering horizontal scalability and high availability.
+
+```mermaid
+graph TD
+    subgraph "Clients"
+        App[Application]
+        Init[Cluster Init]
+    end
+    
+    subgraph "Valkey Cluster (Mesh)"
+        M1[Master-0] <--> M2[Master-1]
+        M2 <--> M3[Master-2]
+        M1 <--> M3
+        
+        M1 -.- R1[Replica-3]
+        M2 -.- R2[Replica-4]
+        M3 -.- R3[Replica-5]
+    end
+    
+    subgraph "Observability"
+        Exp[Valkey Exporter]
+    end
+
+    App -->|Redis Protocol| M1
+    Init -.->|Create Cluster| M1
+    Exp -->|Scrape| M1
+```
 
 ## Services
 
-| Service | Image | Role |
-| :--- | :--- | :--- |
-| `valkey-node-0..5`| `valkey/valkey:9.0.1-alpine` | Valkey Data Nodes |
-| `valkey-cluster-init` | `valkey/valkey:9.0.1` | Cluster Formation Script |
-| `valkey-exporter` | `oliver006/redis_exporter:v1.80.1-alpine` | Prometheus Metrics |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `valkey-node-{0..5}` | `valkey/valkey:9.0.1-alpine` | Data Node (Sharded) | 0.5 CPU / 512MB |
+| `valkey-cluster-init` | `valkey/valkey:9.0.1` | Bootstrap Script | 0.1 CPU / 128MB |
+| `valkey-exporter` | `oliver006/redis_exporter` | Prometheus Metrics | 0.1 CPU / 128MB |
 
 ## Networking
 
-Services run on `infra_net` with static IPs (172.19.0.6X).
+Services run on `infra_net` with static IPs (`172.19.0.6X`).
 
 | Service | Static IP | Internal Port | Host Port |
 | :--- | :--- | :--- | :--- |
@@ -29,25 +55,48 @@ Services run on `infra_net` with static IPs (172.19.0.6X).
 
 ## Persistence
 
-Data is persisted in named volumes and configuration via bind mounts:
-
-- **Data**: `valkey-data-0` ... `valkey-data-5` → `/data`
-- **Config**: `./config/valkey.conf` → `/usr/local/etc/valkey/valkey.conf`
-- **Scripts**: `./scripts/` → `/usr/local/bin/`
+| Volume | Description |
+| :--- | :--- |
+| `valkey-data-{0..5}` | Persists AOF/RDB data mapped to `/data` |
+| `./config/valkey.conf` | Shared configuration file (Bind Mount) |
+| `./scripts/` | Startup and Init scripts (Bind Mount) |
 
 ## Configuration
 
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `NODE_NAME` | Node Identity | `valkey-node-X` |
-| `PORT` | Node Port | `${VALKEYX_PORT}` |
-| `valkey_password` | Docker Secret | via file |
-
-## Traefik Integration
-
-The cluster is purely internal. No Traefik routes are exposed.
+- **Compatibility**: Valkey maintains 100% wire compatibility with Redis 7.2.4+.
+- **Sharding**: Auto-provisioned by `valkey-cluster-init.sh` using `valkey-cli --cluster create`.
+- **Password**: Managed via Docker Secret `valkey_password`.
 
 ## Usage
 
-1. **Internal**: Applications connect via the cluster protocol. Seed nodes: `valkey-node-0:6379`, etc.
-2. **Primary Use**: Caching layer for `n8n` and other high-throughput services.
+### Connecting (Internal)
+
+Applications use standard Redis Cluster libraries.
+Seed nodes: `valkey-node-0:6379`, `valkey-node-1:6380`, etc.
+
+### Connecting (Debugging)
+
+To manually interact with the cluster from the specific node:
+
+```bash
+# Connect to node-0
+docker exec -it valkey-node-0 valkey-cli -c -a $(cat /run/secrets/valkey_password) -p 6379
+```
+
+*Note: The `-c` flag enables cluster mode redirection.*
+
+### Usage from Host
+
+Similar to the Redis Cluster, Host ports are for debugging specific nodes only. Cluster redirection (MOVED errors) will return internal `172.19.x.x` IPs which are unreachable from the host without VPN/Tunneling.
+
+## Troubleshooting
+
+### "Cluster Down"
+
+- Check `valkey-cluster-init` logs.
+- Verify node health checks (`valkey-cli ping`).
+
+### "MOVED Error"
+
+- Ensure your client is "Cluster Aware".
+- Do not use a standalone client for cluster operations.
