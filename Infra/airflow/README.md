@@ -2,94 +2,161 @@
 
 ## Overview
 
-Apache Airflow is a platform to programmatically author, schedule, and monitor workflows. This deployment includes the full Airflow stack (Webserver, Scheduler, DAG Processor, Triggerer, Worker) along with Flower for monitoring Celery workers and StatsD export for metrics.
+A platform to programmatically author, schedule, and monitor workflows. This deployment uses the **CeleryExecutor** architecture for distributed task execution, allowing for high availability and scalability.
+
+```mermaid
+graph TB
+    subgraph "Airflow Control Plane"
+        W[Webserver/API]
+        S[Scheduler]
+        DP[DAG Processor]
+        T[Triggerer]
+    end
+    
+    subgraph "Execution Plane"
+        WK[Celery Worker]
+        FL[Flower<br/>Monitoring]
+    end
+    
+    subgraph "Infrastructure"
+        DB[(PostgreSQL<br/>Metadata)]
+        RD[(Redis/Valkey<br/>Broker)]
+    end
+    
+    subgraph "Observability"
+        EXP[StatsD Exporter]
+    end
+
+    W --> DB
+    S --> DB
+    S --> RD
+    WK --> RD
+    WK --> DB
+    DP --> DB
+    T --> DB
+    FL --> RD
+    
+    S -.->|Metrics| EXP
+    WK -.->|Metrics| EXP
+```
 
 ## Services
 
-The stack consists of the following services:
-
-| Service | Description | Port (Internal) |
-| :--- | :--- | :--- |
-| `airflow-apiserver` | Airflow Webserver & API | `${AIRFLOW_PORT}` (8080) |
-| `airflow-scheduler` | Scheduler service | - |
-| `airflow-dag-processor`| Dedicated DAG processor | - |
-| `airflow-triggerer` | Triggerer for deferrable operators | - |
-| `airflow-worker` | Celery worker for executing tasks | - |
-| `airflow-init` | Initialization service (DB migrations, user creation) | - |
-| `airflow-cli` | Helper container for running CLI commands | - |
-| `flower` | Celery monitoring tool | `${FLOWER_PORT}` (5555) |
-| `airflow-statsd-exporter` | Prometheus StatsD Exporter | `${STATSD_PROMETHEUS_PORT}` (9102), `${STATSD_AIRFLOW_PORT}` (8125 UDP) |
-
-### External Dependencies
-
-This setup relies on the following external services within the `infra_net` network:
-
-- **PostgreSQL**: Used as the Airflow Metadata Database.
-- **Redis**: Used as the Celery Broker.
+| Service | Role | Resources | Port |
+| :--- | :--- | :--- | :--- |
+| `airflow-apiserver` | Web UI & API Server | 1 CPU / 1GB | `${AIRFLOW_PORT}` (8080) |
+| `airflow-scheduler` | Schedules tasks to be executed | 1 CPU / 1GB | - |
+| `airflow-worker` | Executes the tasks (Celery) | 1 CPU / 1GB | - |
+| `airflow-triggerer` | Async execution support | 1 CPU / 1GB | - |
+| `airflow-dag-processor`| Parses DAG files | 1 CPU / 1GB | - |
+| `flower` | Celery monitoring tool | 1 CPU / 1GB | `${FLOWER_PORT}` (5555) |
+| `airflow-statsd-exporter` | Metrics for Prometheus | 0.1 CPU / 128MB | 9102 (HTTP) |
 
 ## Networking
 
-All services are attached to the **`infra_net`** network to communicate with shared infrastructure (Traefik, Postgres, Redis, Prometheus).
+All services run on `infra_net` and rely on shared infrastructure.
 
-## Configuration
-
-### Environment Variables
-
-| Variable | Description | Default |
+| Service | Static IP | Traefik Domain |
 | :--- | :--- | :--- |
-| `AIRFLOW__CORE__EXECUTOR` | Executor Type | `CeleryExecutor` |
-| `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN` | Metadata DB Connection | `postgresql+psycopg2://...` |
-| `AIRFLOW__CELERY__RESULT_BACKEND` | Celery Backend | `db+postgresql://...` |
-| `AIRFLOW__CELERY__BROKER_URL` | Celery Broker (Redis) | `redis://...` |
-| `AIRFLOW__WEBSERVER__BASE_URL` | External URL | `https://airflow.${DEFAULT_URL}` |
-| `AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX`| Trust Proxy Headers | `true` |
-| `_AIRFLOW_WWW_USER_USERNAME` | Admin Username | `${_AIRFLOW_WWW_USER_USERNAME}` |
-| `_AIRFLOW_WWW_USER_PASSWORD` | Admin Password | `${_AIRFLOW_WWW_USER_PASSWORD}` |
-| `AIRFLOW__METRICS__STATSD_ON` | Enable StatsD | `true` |
+| `airflow-apiserver` | Dynamic | `airflow.${DEFAULT_URL}` |
+| `flower` | Dynamic | `flower.${DEFAULT_URL}` |
 
-### Configuration Files
+### External Dependencies
 
-The `config/` directory contains configuration files mapped into the containers:
-
-- **`config/statsd_mapping.yml`**: Mapped to `/tmp/mappings.yml` in the `airflow-statsd-exporter` container.
-  - **Purpose**: Defines mapping rules to convert Airflow's hierarchical StatsD metrics into labeled Prometheus metrics.
-  - **Key Mappings**:
-    - `airflow.dag_processing.*` → `airflow_dag_processing_*`
-    - `airflow.scheduler.*` → `airflow_scheduler_*`
-    - `airflow.executor.*` → `airflow_executor_*`
-    - `airflow.dag.*.*.duration` → `airflow_dag_task_duration` (with `dag_id` and `task_id` labels)
+- **PostgreSQL**: Metadata Database (via `postgresql-cluster` or `mng-db`)
+- **Redis/Valkey**: Celery Message Broker (via `valkey-cluster` or `mng-valkey`)
 
 ## Persistence
 
-| Host Path | Container Path | Description |
+| Volume | Mount Point | Description |
 | :--- | :--- | :--- |
-| `airflow-dags` | `/opt/airflow/dags` | Stores DAG files |
-| `airflow-plugins` | `/opt/airflow/plugins` | Stores Airflow plugins |
-| `./config/statsd_mapping.yml` | `/tmp/mappings.yml` | StatsD Exporter mapping config |
+| `airflow-dags` | `/opt/airflow/dags` | DAG definition files |
+| `airflow-plugins` | `/opt/airflow/plugins` | Custom plugins |
+| `./config/statsd_mapping.yml` | `/tmp/mappings.yml` | Metrics mapping config |
 
-## Traefik Integration
+## Configuration
 
-Services are exposed via Traefik with the following configuration:
+### Core Environment Variables
 
-| Service | Host Rule | Entrypoint | TLS | Middleware |
-| :--- | :--- | :--- | :--- | :--- |
-| **Airflow** | `airflow.${DEFAULT_URL}` | `websecure` | True | - |
-| **Flower** | `flower.${DEFAULT_URL}` | `websecure` | True | `sso-auth@file` |
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `AIRFLOW__CORE__EXECUTOR` | Execution Mode | `CeleryExecutor` |
+| `AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION` | Auto-pause DAGs | `true` |
+| `AIRFLOW__CORE__LOAD_EXAMPLES` | Load Example DAGs | `true` |
+| `AIRFLOW__WEBSERVER__BASE_URL` | Public URL | `https://airflow.${DEFAULT_URL}` |
+| `AIRFLOW_UID` | Process User ID | `50000` |
 
-> **Note**: Flower is protected by `sso-auth` middleware because it lacks robust built-in authentication.
+### Database & Broker
+
+| Variable | Description |
+| :--- | :--- |
+| `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN` | `postgresql+psycopg2://${USER}:${PASS}@${HOST}:${PORT}/airflow` |
+| `AIRFLOW__CELERY__BROKER_URL` | `redis://:${PASS}@${HOST}:${PORT}/0` |
+
+### Metrics (StatsD)
+
+Airflow pushes metrics to the local `airflow-statsd-exporter` via UDP, which exposes them for Prometheus.
+
+- `AIRFLOW__METRICS__STATSD_ON`: `true`
+- `AIRFLOW__METRICS__STATSD_HOST`: `airflow-statsd-exporter`
+- `AIRFLOW__METRICS__STATSD_PORT`: `8125`
 
 ## Usage
 
-### Starting Airflow
+### 1. Web Access
+
+- **Airflow UI**: `https://airflow.${DEFAULT_URL}`
+  - Credentials: `${_AIRFLOW_WWW_USER_USERNAME}` / `${_AIRFLOW_WWW_USER_PASSWORD}`
+- **Flower UI**: `https://flower.${DEFAULT_URL}`
+  - Protected by SSO (Traefik middleware) due to lack of built-in auth.
+
+### 2. CLI Commands
+
+Use the `airflow-cli` service or `exec` into `airflow-scheduler` to run commands.
 
 ```bash
-docker-compose up -d
+# List all DAGs
+docker compose run --rm airflow-cli airflow dags list
+
+# Trigger a DAG
+docker compose run --rm airflow-cli airflow dags trigger <dag_id>
+
+# Check config
+docker compose run --rm airflow-cli airflow config list
 ```
 
-The `airflow-init` service will automatically run first to migrate the database and create the default user.
+### 3. Adding DAGs
 
-### Accessing Interfaces
+Place your python DAG files in the global DAGs volume (or mapped host directory if configured).
+If using the default volume:
 
-- **Airflow UI**: `https://airflow.<your-domain>`
-  - Default Credentials: `${_AIRFLOW_WWW_USER_USERNAME}` / `${_AIRFLOW_WWW_USER_PASSWORD}` (default: `airflow` / `airflow`)
-- **Flower UI**: `https://flower.<your-domain>`
+```bash
+# Copy local DAG to container volume
+docker cp ./my_dag.py airflow-scheduler:/opt/airflow/dags/
+```
+
+## Troubleshooting
+
+### "Database is locked" or Migration Fails
+
+If `airflow-init` hangs or fails, ensure the PostgreSQL database is healthy and reachable.
+Check logs:
+
+```bash
+docker compose logs airflow-init
+```
+
+### Scheduler Not Warning Tasks
+
+Check if the Scheduler is running and healthy:
+
+```bash
+docker compose ps airflow-scheduler
+docker compose logs airflow-scheduler
+```
+
+### Worker Not Picking Up Tasks
+
+1. Check Celery connection to Redis.
+2. Verify `AIRFLOW__CELERY__BROKER_URL` matches the active Redis/Valkey service.
+3. Check Flower UI to see if workers are online.
