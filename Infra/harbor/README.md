@@ -2,95 +2,109 @@
 
 ## Overview
 
-Harbor is an open-source trusted cloud native registry project that stores, signs, and scans content. This deployment uses external databases (PostgreSQL, Redis) and binds to host directories for persistence.
+**Harbor** is an open-source trusted cloud native registry project that stores, signs, and scans content. This deployment features a multi-component architecture including a portal, core management, asynchronous job execution, and a Docker distribution registry, leveraging external high-performance databases for metadata and caching.
+
+```mermaid
+graph TD
+    User((User))
+    
+    subgraph "Ingress Layer"
+        GW[Traefik Proxy]
+    end
+    
+    subgraph "Harbor Components"
+        P[Harbor Portal<br/>Web UI]
+        C[Harbor Core<br/>API / Auth]
+        R[Harbor Registry<br/>Storage]
+        RC[Registry CTL]
+        JS[Job Service]
+    end
+    
+    subgraph "External Dependencies"
+        DB[(PostgreSQL)]
+        RED[(Valkey/Redis)]
+    end
+    
+    User -->|HTTPS| GW
+    GW --> P
+    GW --> C
+    
+    P <--> C
+    C <--> R
+    C <--> JS
+    R <--> RC
+    
+    C <--> DB
+    C <--> RED
+    JS <--> RED
+```
 
 ## Services
 
-| Service | Description | Port (Internal) |
-| :--- | :--- | :--- |
-| `harbor-core` | Core API and management service | `${HARBOR_PORT}` |
-| `harbor-registry` | Docker registry (distribution) | `${HARBOR_PORT}` |
-| `harbor-registryctl` | Registry controller | `${HARBOR_PORT}` |
-| `harbor-portal` | Web UI frontend | `${HARBOR_PORT}` |
-| `harbor-jobservice` | Asynchronous job execution | `${HARBOR_PORT}` |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `harbor-core` | `bitnami/harbor-core:2` | Management API & Authentication | 1.0 CPU / 1GB |
+| `harbor-portal` | `bitnami/harbor-portal:2` | Web UI Dashboard | *(Implicit)* |
+| `harbor-registry` | `bitnami/harbor-registry:2` | Docker Distribution Engine | 1.0 CPU / 1G |
+| `harbor-registryctl` | `bitnami/harbor-registryctl:2`| Registry Controller | 0.5 CPU / 512M |
+| `harbor-jobservice` | `bitnami/harbor-jobservice:2`| Async Repositories / Scanning Jobs | 1.0 CPU / 1G |
 
-### External Dependencies
+## External Dependencies
 
-This setup relies on the following external services within the `infra_net` network:
+Harbor relies on existing management services within the `infra_net` network:
 
-- **PostgreSQL**: Used for metadata storage (`harbor_db` database).
-- **Redis (Valkey)**: Used for caching and job queues (Indices 0 and 1).
+- **PostgreSQL (`mng-pg`)**: Persistent storage for projects, users, and repository metadata.
+- **Valkey (`mng-redis`)**: High-performance caching for sessions and job queues (Database indices 0 and 1).
 
 ## Networking
 
-All services are connected to the **`infra_net`** network.
+All components are connected via `infra_net` and exposed through Traefik.
 
-## Configuration
-
-### General Configuration
-
-| Variable | Description | Default |
+| Setting | Value | Description |
 | :--- | :--- | :--- |
-| `EXT_ENDPOINT` | External URL | `https://harbor.${DEFAULT_URL}` |
-| `HARBOR_ADMIN_PASSWORD` | Admin Password | `${HARBOR_PASSWORD}` |
-| `HARBOR_PORT` | Internal Port | `${HARBOR_PORT}` |
-
-### Database & Redis
-
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `POSTGRESQL_HOST` | DB Host | `${POSTGRES_HOSTNAME}` |
-| `POSTGRESQL_DATABASE` | DB Name | `${HARBOR_POSTGRE_DBNAME}` |
-| `_REDIS_URL_CORE` | Core Cache URL | `redis://.../0` |
-| `_REDIS_URL_REG` | Registry Cache URL | `redis://.../1` |
-
-### Internal Secrets
-
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `CORE_SECRET` | Core Service Secret | `${HARBOR_CORE_SECRET}` |
-| `JOBSERVICE_SECRET` | Job Service Secret | `${HARBOR_JOBSERVICE_SECRET}` |
-| `REGISTRY_HTTP_SECRET` | Registry Secret | `${HARBOR_REGISTRY_HTTP_SECRET}` |
+| **External Endpoint** | `https://harbor.${DEFAULT_URL}` | Public access URL |
+| **Internal Communication** | `harbor-core:8080`, `harbor-registry:5000` | Intra-service API calls |
 
 ## Persistence
 
-Persistence is handled via bind mounts to the host file system:
+Data is persisted using local bind mounts on the host system to ensure easy backups and maintenance.
 
-| Volume Name | Host Path | Container Path | Description |
-| :--- | :--- | :--- | :--- |
-| `harbor-registry-data-volume` | `${DEFAULT_CICD_DIR}/harbor/registry/data` | `/storage` | Docker images/layers |
-| `harbor-registry-conf-volume` | `${DEFAULT_CICD_DIR}/harbor/registry/conf` | `/etc/registry` | Registry config |
-| `harbor-registryctl-conf-volume`| `${DEFAULT_CICD_DIR}/harbor/registryctl/conf`| `/etc/registryctl` | Controller config |
-| `harbor-core-data-volume` | `${DEFAULT_CICD_DIR}/harbor/core/data` | `/data` | Core data |
-| `harbor-core-conf-volume` | `${DEFAULT_CICD_DIR}/harbor/core/conf` | `/etc/core` | Core config |
-| `harbor-jobservice-logs-volume` | `${DEFAULT_CICD_DIR}/harbor/jobservice/logs` | `/var/log/jobs` | Job logs |
-| `harbor-jobservice-conf-volume` | `${DEFAULT_CICD_DIR}/harbor/jobservice/conf` | `/etc/jobservice` | JobService config |
-
-## Traefik Integration
-
-> **Note**: This `docker-compose.yml` does **not** include explicit Traefik labels.
-> Routing must be handled by an external Traefik configuration or an override file that adds the necessary labels to the `harbor-portal` (for UI) and `harbor-core` (for API) services.
-
-Typical routing requirements:
-
-- **Host**: `harbor.${DEFAULT_URL}`
-- **Entrypoints**: `websecure` (UDP may be required for some features, though standard Harbor usage is HTTP/HTTPS).
+| Mount Point | Host Path | Description |
+| :--- | :--- | :--- |
+| `/storage` | `${DEFAULT_CICD_DIR}/harbor/registry/data` | Actual Docker image layers and blobs |
+| `/data` | `${DEFAULT_CICD_DIR}/harbor/core/data` | Core application state and certificates |
+| `/var/log/jobs` | `${DEFAULT_CICD_DIR}/harbor/jobservice/logs` | Task logs for vulnerability scans |
 
 ## Usage
 
-### Prerequisites
+### 1. Web Access
 
-Ensure the external **PostgreSQL** and **Redis** services are running and accessible on `infra_net` before starting Harbor.
+Navigate to `https://harbor.${DEFAULT_URL}` and log in with the admin credentials:
 
-### Start Harbor
+- **User**: `admin`
+- **Password**: `${HARBOR_PASSWORD}`
+
+### 2. Docker CLI Login
+
+To use Harbor as your primary registry:
 
 ```bash
-docker-compose up -d
+docker login harbor.${DEFAULT_URL}
 ```
 
-### Access
+### 3. Pushing an Image
 
-Once configured with a reverse proxy:
+```bash
+docker tag my-app:latest harbor.${DEFAULT_URL}/my-project/my-app:latest
+docker push harbor.${DEFAULT_URL}/my-project/my-app:latest
+```
 
-- **URL**: `https://harbor.<your-domain>`
-- **Default Admin**: `admin` / `${HARBOR_ADMIN_PASSWORD}`
+## Troubleshooting
+
+### "Service Unhealthy"
+
+Harbor components have strict dependency chains. If the Core service is unhealthy, check the logs of **PostgreSQL** or **Valkey** first.
+
+### "Token Mismatch"
+
+Ensure the `HARBOR_CORE_SECRET` and `HARBOR_REGISTRY_HTTP_SECRET` are consistent across all cluster components defined in the `docker-compose.yml`.
