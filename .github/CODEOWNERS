@@ -1,0 +1,13 @@
+# CODEOWNERS
+# https://help.github.com/articles/about-codeowners/
+
+# Global Owner
+# 모든 파일에 대한 기본 소유자 (Default owner for all files)
+*       @buenhyden
+
+# Backend
+/agent/rules/200-Backend/    @buenhyden
+/infra/                      @buenhyden
+
+# Frontend
+/agent/rules/100-Frontend/   @buenhyden

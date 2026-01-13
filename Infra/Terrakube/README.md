@@ -2,94 +2,107 @@
 
 ## Overview
 
-Terrakube is an open-source alternative to Terraform Cloud/Enterprise. It allows you to manage Terraform operations, including remote state management and execution. This setup includes the API, UI, and Executor components.
+**Terrakube** is an open-source Infrastructure as Code (IaC) management platform that serves as an alternative to Terraform Cloud/Enterprise. It orchestrates Terraform runs (Plan/Apply) and manages state files securely.
+
+```mermaid
+graph TB
+    subgraph "External"
+        User[User]
+        Repo[Git Repository]
+    end
+    
+    subgraph "Terrakube Stack"
+        GW[Traefik]
+        UI[Terrakube UI]
+        API[Terrakube API]
+        Exec[Terrakube Executor]
+    end
+    
+    subgraph "Infrastructure Services"
+        DB[(PostgreSQL)]
+        Cache[(Valkey/Redis)]
+        S3[(MinIO)]
+        Dex[Keycloak / Dex]
+    end
+    
+    User -->|HTTPS| GW
+    GW --> UI
+    GW --> API
+    
+    UI -->|React App| API
+    API -->|Auth| Dex
+    API -->|State/Logs| S3
+    API -->|Metadata| DB
+    API -->|Queue| Cache
+    
+    Exec -->|Poll Jobs| API
+    Exec -->|Terraform| Repo
+    Exec -->|State Backend| S3
+```
 
 ## Services
 
-### 1. Terrakube API (`terrakube-api`)
-
-- **Image**: `azbuilder/api-server:2.29.0`
-- **Internal Port**: `8080`
-- **Dependencies**: `mng-pg` (PostgreSQL), `mng-redis` (Redis), `keycloak`, `minio`.
-
-### 2. Terrakube UI (`terrakube-ui`)
-
-- **Image**: `azbuilder/terrakube-ui:2.29.0`
-- **Internal Port**: `${TERRAKUBE_UI_PORT}`
-
-### 3. Terrakube Executor (`terrakube-executor`)
-
-- **Image**: `azbuilder/executor:2.29.0`
-- **Internal Port**: `${TERRAKUBE_EXECUTOR_PORT}`
-- **Volumes**: `/var/run/docker.sock:/var/run/docker.sock`
+| Service | Image | Role | Port (Internal) |
+| :--- | :--- | :--- | :--- |
+| `terrakube-api` | `azbuilder/api-server:2.29.0` | Core Logic & State Management | `8080` |
+| `terrakube-ui` | `azbuilder/terrakube-ui:2.29.0` | Web Dashboard | `${TERRAKUBE_UI_PORT}` |
+| `terrakube-executor` | `azbuilder/executor:2.29.0` | Runner (Executes Terraform) | `${TERRAKUBE_EXECUTOR_PORT}` |
 
 ## Networking
 
-All Terrakube components are configured with **Dynamic IP** assignment on the `infra_net` network.
+All services run on `infra_net` with **Dynamic IPs**.
 
-| Service | IP Address |
-| :--- | :--- |
-| `terrakube-api` | Dynamic (DHCP) |
-| `terrakube-ui` | Dynamic (DHCP) |
-| `terrakube-executor` | Dynamic (DHCP) |
-
-## Configuration
-
-### Common Configuration
-
-| Variable | Description | Default |
+| Service | Host Rule | Internal Port |
 | :--- | :--- | :--- |
-| `InternalSecret` | Shared Secret | `${TERRAKUBE_INTERNAL_SECRET}` |
-| `TerrakubeRedisHostname` | Redis Host | `${MNG_VALKEY_HOST}` |
-| `TerrakubeRedisPassword` | Redis Password | `${VALKEY_PASSWORD}` |
-| `TerrakubeRedisPort` | Redis Port | `${VALKEY_PORT}` |
-
-### API Specific
-
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `ApiDataSourceType` | DB Type | `POSTGRESQL` |
-| `DatasourceHostname` | DB Host | `${POSTGRES_HOSTNAME}` |
-| `DatasourceUser` | DB User | `${TERRAKUBE_DB_USERNAME}` |
-| `DatasourcePassword` | DB Password | `${TERRAKUBE_DB_PASSWORD}` |
-| `GroupValidationType` | Auth Provider | `DEX` |
-| `StorageType` | Storage Provider | `AWS` |
-| `AwsStorageAccessKey` | S3 Access Key | `${MINIO_APP_USERNAME}` |
-| `AwsStorageSecretKey` | S3 Secret Key | `${MINIO_APP_USER_PASSWORD}` |
-| `AwsEndpoint` | S3 Endpoint | `http://minio:9000` |
-
-### UI Specific
-
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `REACT_APP_TERRAKUBE_API_URL` | API URL | `https://terrakube-api...` |
-| `REACT_APP_AUTHORITY` | Auth Authority | `https://keycloak...` |
-| `REACT_APP_CLIENT_ID` | OAuth Client ID | `proxy-client` |
-| `REACT_APP_REDIRECT_URI` | Redirect URI | `https://terrakube-ui...` |
-| `REACT_APP_SCOPE` | OAuth Scope | `openid profile email...` |
-
-### Executor Specific
-
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `TerrakubeEnableSecurity` | Enable Security | `true` |
-| `TerraformStateType` | State Backend | `AwsTerraformStateImpl` |
-| `ExecutorFlagBatch` | Batch Mode | `false` |
-| `ExecutorFlagDisableAcknowledge` | Disable Ack | `false` |
-| `TerrakubeToolsRepository` | Tools Repo | `.../terrakube-extensions.git` |
-
-## Traefik Integration
-
-| Service | Host Rule | Port |
-| :--- | :--- | :--- |
-| **API** | `terrakube-api.${DEFAULT_URL}` | 8080 |
+| **API** | `terrakube-api.${DEFAULT_URL}` | `8080` |
 | **UI** | `terrakube-ui.${DEFAULT_URL}` | `${TERRAKUBE_UI_PORT}` |
 | **Executor** | `terrakube-executor.${DEFAULT_URL}` | `${TERRAKUBE_EXECUTOR_PORT}` |
 
-All services use the `infra_net` network and have `traefik.enable=true`.
+## Dependencies (External)
+
+Terrakube relies heavily on shared infrastructure services:
+
+- **Database**: `mng-pg` (Shared PostgreSQL in `infra/mng-db`)
+- **Cache**: `mng-redis` (Shared Valkey in `infra/mng-db`)
+- **Storage**: `minio` (S3 Compatible Storage in `infra/minio`)
+- **Identity**: `keycloak` (via Dex protocols)
+
+## Configuration
+
+### Environment Variables
+
+| Component | Variable | Description |
+| :--- | :--- | :--- |
+| **Common** | `InternalSecret` | Shared secret for inter-service comms |
+| **API** | `ApiDataSourceType` | `POSTGRESQL` |
+| | `StorageType` | `AWS` (MinIO S3) |
+| | `GroupValidationType` | `DEX` (Identity Provider) |
+| **UI** | `REACT_APP_TERRAKUBE_API_URL` | Public Endpoint for API |
+| **Executor** | `ExecutorFlagBatch` | `false` (Run as daemon) |
+
+### Executor Privileges
+
+The Executor mounts `/var/run/docker.sock` to spawn ephemeral Terraform runner containers or to manage Docker resources directly.
 
 ## Usage
 
-1. Access the Terrakube UI at `https://terrakube-ui.${DEFAULT_URL}`.
-2. Login is handled via Keycloak (DEX). Ensure your user has the necessary groups/roles if configured.
-3. The API is available at `https://terrakube-api.${DEFAULT_URL}`.
+### 1. Web Dashboard
+
+- **URL**: `https://terrakube-ui.${DEFAULT_URL}`
+- **Login**: Redirects to Keycloak for authentication.
+
+### 2. CLI authentication
+
+You can use the output from the UI to configure your Terraform CLI backend or generate Personal Access Tokens (PAT).
+
+## Troubleshooting
+
+### "Executor not picking up jobs"
+
+- Check the `InternalSecret` matches between API and Executor.
+- Ensure `terrakube-executor` can resolve `terrakube-api` (Docker DNS).
+
+### "State Locking Issues"
+
+- Verify connection to `mng-redis` (Valkey).
+- Check `terrakube-api` logs for Redis connection errors.
