@@ -1,7 +1,7 @@
 # .github 폴더 가이드 (GitHub Folder Guide)
 
-이 폴더는 GitHub 저장소의 설정, 템플릿, 워크플로우를 관리합니다.
-(This folder manages GitHub repository settings, templates, and workflows.)
+이 폴더는 `hy-home.docker` 저장소의 설정, 템플릿, 워크플로우를 관리합니다.
+(This folder manages GitHub repository settings, templates, and workflows for `hy-home.docker`.)
 
 ## 📂 구조 (Structure)
 

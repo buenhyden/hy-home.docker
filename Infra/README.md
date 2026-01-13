@@ -13,14 +13,20 @@ graph TB
     end
 
     subgraph "Data & Persistence Layer"
-        PG[PostgreSQL Cluster<br/>Patroni HA]
-        VK[Valkey Cluster<br/>Cache / Queue]
+        PG[PostgreSQL<br/>Cluster]
+        VK[Valkey<br/>Cluster]
         MN[MinIO<br/>S3 Storage]
+        MNG[MongoDB]
+        CB[CouchDB]
     end
 
-    subgraph "Messaging & AI Layer"
-        KF[Kafka Cluster<br/>Event Streaming]
-        OL[Ollama<br/>LLM Inference]
+    subgraph "Messaging & Streaming"
+        KF[Kafka<br/>Cluster]
+        KSQL[KSQL<br/>Stream Processing]
+    end
+
+    subgraph "AI & Vector Ops"
+        OL[Ollama<br/>LLM]
         QD[Qdrant<br/>Vector DB]
     end
 
@@ -32,10 +38,12 @@ graph TB
         AL[Alloy]
     end
 
-    subgraph "Automation & Quality"
-        N8[n8n<br/>Workflow]
-        SQ[SonarQube<br/>Code Quality]
-        HB[Harbor<br/>Registry]
+    subgraph "DevOps & Automation"
+        N8[n8n]
+        SQ[SonarQube]
+        HB[Harbor]
+        TK[Terrakube]
+        MAIL[Mail Server]
     end
 
     T <--> O <--> K
@@ -45,91 +53,87 @@ graph TB
     
     N8 <--> PG
     N8 <--> VK
-    
-    OL <--> QD
-    App((Applications)) --> T
 ```
 
 ## Service Catalog
 
-### Core Infrastructure (Active)
+### Core Services (Active)
 
-These services are prioritized for development and operational core stability.
+These services are critical for the infrastructure's operation.
 
-| Service | Category | Image | Role |
-| :--- | :--- | :--- | :--- |
-| [**Traefik**](./traefik/README.md) | Ingress | `traefik:v3.5` | Dynamic reverse proxy & SSL termination. |
-| [**Keycloak**](./keycloak/README.md) | Identity | `keycloak:26` | Unified SSO and IAM provider. |
-| [**Observability**](./observability/README.md) | Monitoring | LGTM Stack | Full-stack metrics, logs, and traces. |
-| [**n8n**](./n8n/README.md) | Automation | `n8n:2.3` | Scalable workflow automation (Queue Mode). |
-| [**Ollama**](./ollama/README.md) | AI | `ollama:latest` | Local LLM inference engine. |
-| [**PostgreSQL HA**](./postgresql-cluster/README.md) | Database | `bitnami/pg:17` | High Availability relational data. |
-| [**Valkey Cluster**](./valkey-cluster/README.md) | Cache | `valkey:9` | Distributed Redis-compatible storage. |
-| [**MinIO**](./minio/README.md) | Storage | `minio:latest` | S3-compatible object storage. |
-| [**Kafka**](./kafka/README.md) | Streaming | `cp-kafka:8` | Event-driven architecture (KRaft). |
+| Service | Category | Description |
+| :--- | :--- | :--- |
+| [**Traefik**](./traefik/README.md) | Ingress | Dynamic reverse proxy & SSL termination. |
+| [**Keycloak**](./keycloak/README.md) | Identity | Unified SSO and IAM provider. |
+| [**Observability**](./observability/README.md) | Monitoring | LGTM Stack (Grafana, Prometheus, Loki, Tempo, Alloy). |
+| [**PostgreSQL Cluster**](./postgresql-cluster/README.md) | Database | HA PostgreSQL with Patroni (Bitnami). |
+| [**Valkey Cluster**](./valkey-cluster/README.md) | Cache | High-performance Redis-compatible key-value store. |
+| [**MinIO**](./minio/README.md) | Storage | S3-compatible object storage. |
+| [**Kafka**](./kafka/README.md) | Streaming | KRaft-based Event Streaming Platform. |
 
-### Specialized & Optional Services
+### Application & DevOps Services
 
-Can be enabled by uncommenting in the main `docker-compose.yml`.
+Services for development, automation, and specific application needs.
 
-| Service | Category | Image | Use Case |
-| :--- | :--- | :--- | :--- |
-| [**SonarQube**](./sonarqube/README.md) | Quality | `sonarqube:lts` | Static code analysis & security scanning. |
-| [**Harbor**](./harbor/README.md) | Registry | `harbor:2` | Enterprise-grade private image registry. |
-| [**InfluxDB**](./influxdb/README.md) | Time Series | `influxdb:2` | Dedicated telemetry & IoT data storage. |
-| [**OpenSearch**](./opensearch/README.md) | Search | `opensearch:2` | Distributed search and log analytics. |
-| [**CouchDB**](./couchdb/README.md) | NoSQL | `couchdb:3` | HA document store with sync capabilities. |
-| [**Airflow**](./airflow/README.md) | Data Ops | `airflow:2` | Complex data pipeline orchestration. |
+| Service | Category | Use Case |
+| :--- | :--- | :--- |
+| [**n8n**](./n8n/README.md) | Automation | Workflow automation tool. |
+| [**Ollama**](./ollama/README.md) | AI | Local LLM inference. |
+| [**Qdrant**](./qdrant/README.md) | Vector DB | Vector similarity search engine. |
+| [**SonarQube**](./sonarqube/README.md) | Quality | Code quality and security scanning. |
+| [**Harbor**](./harbor/README.md) | Registry | Cloud native registry project. |
+| [**Terrakube**](./terrakube/README.md) | IaC | Open Source Terraform Cloud alternative. |
+| [**Storybook**](./storybook/README.md) | Frontend | UI component explorer and documentation. |
+| [**Mail**](./mail/README.md) | Utility | Mail server/relay for notifications. |
+| [**Nginx**](./nginx/README.md) | Web Server | Static content serving / Additional proxy. |
+
+### Data & Specialized Stores
+
+Additional data storage and processing engines.
+
+| Service | Category | Use Case |
+| :--- | :--- | :--- |
+| [**MongoDB**](./mng-db/README.md) | NoSQL | Document-oriented database. |
+| [**CouchDB**](./couchdb/README.md) | NoSQL | JSON document database. |
+| [**InfluxDB**](./influxdb/README.md) | Time Series | Time series database. |
+| [**OpenSearch**](./opensearch/README.md) | Search | Distributed search and analytics suite. |
+| [**Redis Cluster**](./redis-cluster/README.md) | Cache | (Legacy/Alternative) Redis Cluster. |
+| [**KSQL**](./ksql/README.md) | Streaming | Streaming SQL engine for Kafka. |
+| [**Airflow**](./airflow/README.md) | Orchestration | Data pipeline management. |
 
 ## Network Topology
 
-The infrastructure operates on a dedicated `172.19.0.0/16` subnet to ensure deterministic routing and isolation.
+The infrastructure operates on a dedicated `172.19.0.0/16` subnet (`infra-net`).
 
-| IP Range | Layer / Group | Purpose |
+| IP Range | Group | Services |
 | :--- | :--- | :--- |
-| `172.19.0.2-9` | **Core & Identity** | Traefik, Keycloak, OAuth2 Proxy |
-| `172.19.0.10-19`| **Storage & AI** | MinIO, InfluxDB, Ollama, Qdrant |
-| `172.19.0.20-29`| **Databases** | PostgreSQL Cluster (Patroni), etcd |
-| `172.19.0.30-39`| **Observability** | LGTM Stack (Prometheus, Grafana, etc.) |
-| `172.19.0.40-49`| **Messaging** | Kafka Cluster |
-| `172.19.0.50-59`| **Caching** | Valkey/Redis Cluster |
+| `172.19.0.2-9` | **Core** | Traefik, Keycloak, OAuth2 Proxy |
+| `172.19.0.10-19`| **Storage/AI** | MinIO, InfluxDB, Ollama, Qdrant |
+| `172.19.0.20-29`| **Databases** | PostgreSQL Patroni, Etcd |
+| `172.19.0.30-39`| **Observability** | LGTM Stack |
+| `172.19.0.40-49`| **Messaging** | Kafka |
+| `172.19.0.50-59`| **Cache** | Valkey |
+| `172.19.0.60+` | **Apps** | Automation & Other Apps |
 
 ## Secrets Management
 
-Security is maintained through **Docker Secrets**, ensuring no sensitive data is present in the environment variables or logs.
+This project uses **Docker Secrets** for sensitive data. Do NOT hardcode passwords.
+Secrets are read from files in the `../secrets/` directory.
 
-| Secret | Mapping File | Description |
-| :--- | :--- | :--- |
-| `postgres_password` | `./secrets/postgres_password.txt` | Core DB root/user password |
-| `valkey_password` | `./secrets/valkey_password.txt` | Cluster authentication key |
-| `minio_root_*` | `./secrets/minio_root_*.txt` | S3 root credentials |
-| `harbor_*` | `./secrets/harbor_*.txt` | Registry secrets & database links |
+- `postgres_password`
+- `valkey_password`
+- `minio_root_user` / `minio_root_password`
+- `grafana_admin_password`
 
-## Maintenance & Operations
-
-### Standard Start/Stop
+## Maintenance
 
 ```bash
-# Start all active infrastructure nodes
+# Start Infrastructure
 docker compose up -d
 
-# Stop services and preserve data
-docker compose stop
-
-# Fully dismantle cluster (data on volumes is preserved)
-docker compose down
-```
-
-### Health & Status
-
-```bash
-# Check service health and static IP assignments
+# Check Status
 docker compose ps
 
-# View unified logs for a specific service
-docker compose logs -f <service_name>
+# View Logs
+docker compose logs -f [service]
 ```
-
-### Configuration Updates
-
-Most services (Prometheus, Traefik, Alloy) support dynamic reloads or have health-check-aware restart policies. Refer to the individual **README.md** in each subdirectory for specific maintenance procedures.

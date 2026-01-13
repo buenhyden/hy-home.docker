@@ -1,4 +1,4 @@
-## 🔍 개요 (Overview)
+# 🔍 개요 (Overview)
 <!--
 [설명/Description]
 이 변경사항의 목적과 배경을 설명해주세요. (Please explain the purpose and context of this change.)
@@ -39,7 +39,7 @@ PR 제출 전 확인해야 할 필수 항목들입니다. (Essential items to ch
 - [ ] 모든 테스트가 통과함 (All tests passed)
 - [ ] 문서(README 등)를 업데이트함 (Updated documentation)
 
-## 🤖 AI 도구 사용 (AI Tools Usage - 2025 Q4)
+## 🤖 AI 도구 사용 (AI Tools Usage - 2026 Q1)
 <!--
 [설명/Description]
 AI 도구 사용 여부를 투명하게 공개해주세요. (Please transparently disclose the use of AI tools.)

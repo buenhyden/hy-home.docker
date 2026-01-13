@@ -8,9 +8,9 @@
 (If you have questions or need help solving a problem, please use the following channels.)
 
 1. **GitHub Discussions**:
-   - 일반적인 질문이나 아이디어 공유는 [Discussions](https://github.com/buenhyden/[REPO]/discussions)를 이용해주세요. (Use Discussions for general questions or idea sharing.)
+   - 일반적인 질문이나 아이디어 공유는 [Discussions](https://github.com/buenhyden/hy-home.docker/discussions)를 이용해주세요. (Use Discussions for general questions or idea sharing.)
 2. **GitHub Issues**:
-   - 버그를 발견했거나 기능 요청이 있다면 [Issues](https://github.com/buenhyden/[REPO]/issues)를 이용해주세요. (Use Issues for bugs or feature requests.)
+   - 버그를 발견했거나 기능 요청이 있다면 [Issues](https://github.com/buenhyden/hy-home.docker/issues)를 이용해주세요. (Use Issues for bugs or feature requests.)
 
 ## 커뮤니티 가이드라인 (Community Guidelines)
 

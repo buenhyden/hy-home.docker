@@ -1,25 +1,20 @@
 # ============================================================================
-# Labeler 설정 (Labeler Configuration)
+# Labeler Configuration
 #
-# 목적 (Purpose):
-# - PR의 변경된 파일에 따라 자동 라벨 추가 (Auto-label PRs based on changed files)
-#
-# [CUSTOMIZE] 프로젝트 구조에 맞게 수정하세요. (Customize for your project structure.)
+# Auto-label PRs based on changed files for hy-home.docker
 # ============================================================================
 
-# Frontend
-"frontend":
-  - "frontend/**/*"
-  - "src/**/*"
-  - "**/*.tsx"
-  - "**/*.jsx"
+# Infrastructure
+"infrastructure":
+  - "infra/**/*"
+  - "docker-compose.yml"
+  - "Dockerfile"
 
-# Backend
-"backend":
-  - "backend/**/*"
-  - "server/**/*"
-  - "**/*.py"
-  - "**/*.go"
+# Scripts & Tooling
+"scripts":
+  - "scripts/**/*"
+  - ".agent/**/*"
+  - ".cursorrules"
 
 # Documentation
 "documentation":
@@ -33,4 +28,5 @@
 # Security
 "security":
   - "**/security/**/*"
+  - "secrets/**/*"
   - ".github/SECURITY.md"

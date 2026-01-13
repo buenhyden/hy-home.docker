@@ -1,107 +1,23 @@
 # ============================================================================
-# Dependabot Configuration (2025 Q4)
+# Dependabot Configuration (2026 Q1)
 #
-# 의존성을 자동으로 최신 상태로 유지합니다. (Automatically keep dependencies up to date.)
-#
-# [CUSTOMIZE] 리뷰어 설정 (Reviewer Setup)
-# 기본값으로 buenhyden이 설정되어 있습니다. (buenhyden is set as default.)
-# 본인의 GitHub 사용자명으로 변경하세요. (Change to your GitHub username.)\n#
-# [가이드/Guide]
-# - 사용하지 않는 생태계는 주석 처리하세요. (Comment out unused ecosystems.)
-# - interval: daily, weekly, monthly 중 선택 (Choose interval)
+# Automatically keep dependencies up to date.
 # ============================================================================
 
 version: 2
 updates:
   # GitHub Actions
-  # [설명] GitHub Actions 워크플로우의 의존성을 업데이트합니다.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    # [옵션] 리뷰어 설정 (Reviewer setup)
     reviewers:
       - "buenhyden"
 
-  # npm (Node.js/TypeScript)
-  # [설명] Next.js, React, NestJS, Express.js 등 Node.js 프로젝트용
-  # [활성화] package.json이 있으면 주석 해제 (Uncomment if package.json exists)
-  # - package-ecosystem: "npm"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "weekly"
-  #   open-pull-requests-limit: 10
-  #   reviewers:
-  #     - "buenhyden"
-  #   # [옵션] 보안 업데이트만 허용 (Security updates only)
-  #   # open-pull-requests-limit: 0
-
-  # pip (Python)
-  # [설명] FastAPI, Django, Flask 등 Python 프로젝트용
-  # [활성화] requirements.txt 또는 pyproject.toml이 있으면 주석 해제
-  # - package-ecosystem: "pip"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-  #     - "buenhyden"
-
-  # Maven (Java)
-  # [설명] Spring Boot 등 Java 프로젝트용
-  # [활성화] pom.xml이 있으면 주석 해제 (Uncomment if pom.xml exists)
-  # - package-ecosystem: "maven"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-  #     - "buenhyden"
-
-  # Gradle (Java/Kotlin)
-  # [설명] Spring Boot, Kotlin 프로젝트용
-  # [활성화] build.gradle 또는 build.gradle.kts가 있으면 주석 해제
-  # - package-ecosystem: "gradle"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-  #     - "buenhyden"
-
-  # Go Modules
-  # [설명] Go 프로젝트용 (Gin, Fiber 등)
-  # [활성화] go.mod가 있으면 주석 해제 (Uncomment if go.mod exists)
-  # - package-ecosystem: "gomod"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-  #     - "buenhyden"
-
-  # Cargo (Rust)
-  # [설명] Rust 프로젝트용 (Axum, Rocket 등)
-  # [활성화] Cargo.toml이 있으면 주석 해제 (Uncomment if Cargo.toml exists)
-  # - package-ecosystem: "cargo"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-  #     - "buenhyden"
-
-  # Docker
-  # [설명] Dockerfile의 base image를 업데이트합니다.
-  # [활성화] Dockerfile이 있으면 주석 해제 (Uncomment if Dockerfile exists)
-  # - package-ecosystem: "docker"
-  #   directory: "/"
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-  #     - "buenhyden"
-
-  # Terraform
-  # [설명] Infrastructure as Code 의존성 업데이트
-  # [활성화] Terraform 파일이 있으면 주석 해제
-  # - package-ecosystem: "terraform"
-  #   directory: "/infra"
-  #   schedule:
-  #     interval: "weekly"
-  #   reviewers:
-  #     - "buenhyden"
+  # Docker - Check Dockerfiles and docker-compose
+  - package-ecosystem: "docker"
+    directory: "/infra"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "buenhyden"
