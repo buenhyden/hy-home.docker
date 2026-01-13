@@ -1,0 +1,8 @@
+# AI Agent Rules & Context
+
+ALL AI Agents (Claude, Gemini, etc.) MUST read `.agent/rules/` for behavior standards and coding guidelines.
+
+- **Primary Rules**: `.agent/rules/000-core-*.md`
+- **Workflows**: `.agent/workflows/`
+
+This project is a Home Lab Infrastructure Monorepo.

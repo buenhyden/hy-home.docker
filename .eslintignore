@@ -1,2 +1,7 @@
 .agent/workflows/
 .agent/rules/
+node_modules/
+.git/
+dist/
+coverage/
+*.min.js
