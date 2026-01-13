@@ -1,53 +1,101 @@
-# Nginx (Standalone Proxy)
+# Nginx Standalone Proxy
 
 ## Overview
 
-This is a standalone **Nginx** instance configured to serve as an entry point or static asset server. Unlike most services in this infrastructure which are routed via Traefik, this Nginx instance **bypasses Traefik** and exposes ports directly to the host.
+A standalone **Nginx** reverse proxy and web server instance. While the primary gateway of this infrastructure is **Traefik**, this Nginx instance serves as an alternative ingress point, specifically optimized for path-based routing, advanced caching, and custom SSO integration.
+
+```mermaid
+graph TD
+    Client((Client))
+    
+    subgraph "Nginx Standalone"
+        NGX[Nginx Server]
+        Auth[OAuth2 Proxy]
+    end
+    
+    subgraph "Internal Infrastructure"
+        KC[Keycloak]
+        Min[MinIO]
+        App[Internal Application]
+    end
+    
+    Client -->|HTTPS| NGX
+    NGX <-->|Auth Request| Auth
+    Auth <-->|OIDC| KC
+    
+    NGX -->|/keycloak/| KC
+    NGX -->|/minio/| Min
+    NGX -->|/app/| App
+```
 
 ## Services
 
-- **Service Name**: `nginx`
-- **Image**: `nginx:alpine`
-- **Role**: Standalone Web Server / Reverse Proxy
-- **Restart Policy**: `(implied default)` (Configured with deploy limits)
-- **Dependency**: Waits for `minio` (likely for static bucket serving).
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `nginx` | `nginx:alpine` | Standalone Ingress / Reverse Proxy | 0.5 CPU / 512MB |
 
 ## Networking
 
-This service runs on the `infra_net` network and exposes ports directly to the host:
+This service runs on the `infra_net` network and exposes ports directly to the host to act as a standalone gateway.
 
-- **Network**: `infra_net`
-- **Static IPv4**: `172.19.0.13`
-- **Traefik**: **Not Configured**. This service handles its own ingress/routing via standard Nginx configuration.
-
-| Port Type | Internal | Host Port |
-| :--- | :--- | :--- |
-| **HTTP** | `80` | `${HTTP_HOST_PORT}` |
-| **HTTPS** | `443` | `${HTTPS_HOST_PORT}` |
+| Service | Static IP | Protocol | Internal Port | Host Port |
+| :--- | :--- | :--- | :--- | :--- |
+| `nginx` | `172.19.0.13` | HTTP | `80` | `${HTTP_HOST_PORT}` |
+| | | HTTPS | `443` | `${HTTPS_HOST_PORT}` |
 
 ## Persistence
 
-- **Config**: `./config/nginx.conf` → `/etc/nginx/nginx.conf` (Read-Only)
-- **Certificates**: `./certs` → `/etc/nginx/certs` (Read-Only)
+| Volume | Mount Point | Description |
+| :--- | :--- | :--- |
+| `./config/nginx.conf` | `/etc/nginx/nginx.conf` | **Main Config**: Server blocks, Upstreams, SSL, SSO Logic |
+| `./certs` | `/etc/nginx/certs` | **Certificates**: SSL/TLS certs and trusted CAs |
 
-## Configuration
+## Configuration & SSO Workflow
 
-This service relies primarily on mounted configuration files. However, ports are configured via environment variables.
+This Nginx instance is configured to support **Single Sign-On (SSO)** via **OAuth2 Proxy**.
 
-### Environment Variables
+### SSO Flow (Forward Auth)
 
-| Variable | Description |
-| :--- | :--- |
-| `HTTP_HOST_PORT` | Host port mapped to container port 80 |
-| `HTTPS_HOST_PORT`| Host port mapped to container port 443 |
-| `HTTP_PORT` | Container internal port usually 80 |
-| `HTTPS_PORT` | Container internal port usually 443 |
+1. **Request**: Client requests a protected path (e.g., `/app/`).
+2. **Auth Check**: Nginx uses the `auth_request` module to send a sub-request to the OAuth2 Proxy (`/_oauth2_auth_check`).
+3. **Result**:
+    - If `401 Unauthorized`, Nginx redirects the user to `/oauth2/sign_in`.
+    - If `200 OK`, Nginx proceeds to proxy the request to the upstream application, passing user information in headers (`X-User`, `X-Email`).
+
+### Routing Path Map
+
+| Path | Destination | Description |
+| :--- | :--- | :--- |
+| `/oauth2/` | `oauth2-proxy:4180` | Authentication endpoints (Login, Callback, etc.) |
+| `/keycloak/`| `keycloak:8080` | Identity Provider Admin Console |
+| `/minio/` | `minio:9000` | S3-Compatible Storage API |
+| `/minio-console/` | `minio:9001` | MinIO Management UI |
+| `/app/` | *(Internal App)* | Protected application path (SSO enforced) |
 
 ## Usage
 
-Access directly via the host's IP or DNS mapped to the exposed ports.
+### 1. Direct Access
+
+Access services via the host machine's IP or DNS mapping using path-based URLs:
+
+- `https://<host-ip>/keycloak/`
+- `https://<host-ip>/minio-console/`
+
+### 2. Monitoring Logs
 
 ```bash
-# Check logs
-docker logs nginx
+# Monitor access/error logs
+docker logs -f nginx
 ```
+
+## Troubleshooting
+
+### "Redirect Loop"
+
+- Ensure `proxy_set_header X-Forwarded-Proto https;` is set.
+- Verify Keycloak and Nginx agree on the scheme (HTTP vs HTTPS).
+
+### "401 Unauthorized" (SSO Path)
+
+- Check if you are correctly logged in via Keycloak.
+- Verify OAuth2 Proxy is receiving the sub-request and validating the session token.
