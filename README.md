@@ -5,30 +5,28 @@
 
 **Home Lab Infrastructure & Enterprise Playground**
 
-This repository is a comprehensive monorepo for hosting a local Home Lab environment using Docker Compose. It features a modern tech stack centered around High Availability, Observability, and Developer Experience.
+This repository is a comprehensive monorepo for hosting a local Home Lab environment using Docker Compose. It features a modern tech stack centered around **High Availability**, **Observability**, and **Developer Experience**.
 
 ## 🌟 Key Features
 
-- **Layered Infrastructure**: organized into Edge, Identity, Data, AI, and Observability layers.
+- **Layered Infrastructure**: Organized into Edge, Identity, Data, AI, and Observability layers.
 - **Enterprise-Grade**: Includes Patroni for PostgreSQL HA, Kafka for streaming, and Keycloak for IAM.
 - **AI-Ready**: Integrated Ollama and Qdrant for local LLM and RAG experiments.
-- **Full Observability**: Pre-configured LGTM stack (Loki, Grafana, Tempo, Mimir/Prometheus).
-- **Agent-Augmented**: Structured specifically for collaboration with AI Agents (Cursor, Windsurf).
+- **Full Observability**: Pre-configured **LGTM Stack** (Loki, Grafana, Tempo, Mimir/Prometheus) with Alloy.
+- **Agent-Augmented**: Structured specifically for collaboration with AI Agents (Cursor, Windsurf) using the Context-First approach.
 
 ## 📂 Repository Structure
 
-```text
-hy-home.docker/
-├── .agent/             # AI Agent Rules & Workflows (Brain)
-├── .github/            # GitHub Templates & CI/CD Config
-├── docs/               # Architecture & Operational Documentation
-├── infra/              # Core Infrastructure Services (Docker Compose)
-│   ├── observability/  # LGTM Stack
-│   ├── postgresql/     # DB Clusters
-│   └── ...             # 20+ other services
-├── scripts/            # Automation & Maintenance Scripts
-└── secrets/            # Docker Secrets (Git Ignored)
-```
+| Path | Description |
+| :--- | :--- |
+| **[.agent/](./.agent)** | **AI Brain**: Agent Rules, Workflows, and Memory. |
+| **[.github/](./.github)** | **CI/CD**: Workflows, Issue Templates, and Policy. |
+| **[docs/](./docs)** | **Knowledge Base**: Architecture diagrams, detailed guides, and API specs. |
+| **[examples/](./examples)** | **Samples**: Grafana dashboards, `.env` examples, and host configurations. |
+| **[infra/](./infra)** | **Core Infrastructure**: 26+ Docker Compose services (The heart of the repo). |
+| **[projects/](./projects)** | **Sub-Projects**: Independent modules (e.g., Terraform labs, specialized apps). |
+| **[scripts/](./scripts)** | **Automation**: PowerShell/Bash scripts for management and validation. |
+| **[secrets/](./secrets)** | **Security**: Local secrets storage (Git Ignored). |
 
 ## 🚀 Quick Start
 
@@ -36,7 +34,7 @@ hy-home.docker/
 
 - Docker Desktop (Windows/Mac) or Docker Engine (Linux)
 - Git
-- 16GB+ RAM recommended
+- 16GB+ RAM recommended (32GB for full stack)
 
 ### Setup
 
@@ -57,26 +55,36 @@ hy-home.docker/
    # See infra/README.md for full list
    ```
 
-3. **Launch**
+3. **Launch Infrastructure**
 
    ```bash
    cd infra
    docker compose up -d
    ```
 
+## 🛠️ Utilities & Scripts
+
+Automate common tasks using the provided scripts in `scripts/`.
+
+| Script | description | Usage |
+| :--- | :--- | :--- |
+| `new_infra_service` | Scaffolds a new Docker Compose service folder. | `./scripts/new_infra_service.sh <service_name>` |
+| `validate_compose_change` | Validates `docker-compose.yml` syntax. | `./scripts/validate_compose_change.sh` |
+| `fix_grafana_dashboards` | Normalizes Grafana dashboard JSONs. | `python scripts/fix_grafana_dashboards.py` |
+
 ## 🤖 AI Agent Collaboration
 
-This project follows the **Context-First** approach for AI Agents.
+This project allows you to pair program with AI Agents effectively.
 
 - **Rules**: See [.agent/rules](./.agent/rules) for coding standards.
 - **Workflows**: See [.agent/workflows](./.agent/workflows) for standard operating procedures.
 
-## 📚 Documentation
+## 📚 Documentation Index
 
-- [Infrastructure Details](./infra/README.md)
-- [System Architecture](./docs/architecture/system-architecture.md)
-- [Network Topology](./docs/architecture/network-topology.md)
-- [Service Catalog](./docs/reference/service-catalog.md)
+- **Architecture**: [System Architecture](./docs/architecture/system-architecture.md)
+- **Networking**: [Network Topology](./docs/architecture/network-topology.md)
+- **Operations**: [Maintenance Guide](./docs/guides/maintenance.md)
+- **Services**: [Service Catalog](./docs/reference/service-catalog.md)
 
 ## 📄 License
 
