@@ -2,44 +2,60 @@
 
 ## Overview
 
-A search and analytics suite. Current configuration is set for a **Single Node** (Dev/Test) environment, though config exists for a 3-node cluster.
+A scalable search and analytics suite derived from Elasticsearch. This deployment is configured as a **Single Node** cluster by default for development/testing, but includes configuration for a robust **3-Node High Availability Cluster**.
+
+```mermaid
+graph TB
+    subgraph "OpenSearch Cluster"
+        N1[Node 1<br/>Manager/Data]
+        N2[Node 2<br/>Manager/Data]:::inactive
+        N3[Node 3<br/>Manager/Data]:::inactive
+    end
+    
+    D[Dashboards<br/>Visualization]
+    E[Exporter<br/>Prometheus Metrics]
+    T[Traefik<br/>Ingress]
+    
+    T --> D
+    T --> N1
+    D --> N1
+    E --> N1
+    N1 -.-> N2
+    N1 -.-> N3
+    
+    classDef inactive stroke-dasharray: 5 5,opacity:0.5;
+```
 
 ## Services
 
-| Service | Image | Role |
-| :--- | :--- | :--- |
-| `opensearch-node1` | `opensearchproject/opensearch:3.4.0` | Cluster Manager, Data, Ingest Node |
-| `opensearch-dashboards` | `opensearchproject/opensearch-dashboards:3.4.0` | Visualization Dashboard |
-| `opensearch-exporter` | `prometheuscommunity/elasticsearch-exporter:v1.10.0` | Prometheus Metrics Exporter |
-
-## Custom Build (Plugins)
-
-A `Dockerfile` is provided to build a custom OpenSearch image with pre-installed plugins.
-
-**Installed Plugins:**
-
-- `analysis-nori` (Korean Analysis)
-- `ingest-attachment` (File Processing)
-- `prometheus-exporter` (Native Metrics)
-- `mapper-annotated-text`, `mapper-murmur3`, `mapper-size`
-- `discovery-azure-classic`, `repository-azure`
-
-To use the custom build, uncomment the `build` section in `docker-compose.yml`.
+| Service | Image | Role | Status | Resources |
+| :--- | :--- | :--- | :--- | :--- |
+| `opensearch-node1` | `opensearchproject/opensearch:3.4.0` | Cluster Manager, Data, Ingest | Active | 1 CPU / 1GB |
+| `opensearch-node2` | `opensearchproject/opensearch:3.4.0` | Cluster Manager, Data, Ingest | Optional | 1 CPU / 1GB |
+| `opensearch-node3` | `opensearchproject/opensearch:3.4.0` | Cluster Manager, Data, Ingest | Optional | 1 CPU / 1GB |
+| `opensearch-dashboards` | `opensearchproject/opensearch-dashboards:3.4.0` | Visualization UI (Kibana fork) | Active | 0.5 CPU / 512MB |
+| `opensearch-exporter` | `prometheuscommunity/elasticsearch-exporter:v1.10.0` | Prometheus Metrics | Active | 0.1 CPU / 128MB |
 
 ## Networking
 
-Services run on `infra_net` with static IPs (172.19.0.4X).
+All services run on `infra_net` with static IPs in the `172.19.0.4X` range.
 
-| Service | Static IP | Internal Port | Host Port | Traefik Domain |
+| Service | Static IP | Port | Host Port | Traefik Domain |
 | :--- | :--- | :--- | :--- | :--- |
 | `opensearch-node1` | `172.19.0.44` | `9200` | - | `opensearch.${DEFAULT_URL}` |
-| `opensearch-dashboards` | `172.19.0.47` | `5601` | - | `opensearch-dashboard.${DEFAULT_URL}` |
-| `opensearch-exporter` | `172.19.0.48` | `${ES_EXPORTER_PORT}` | `${ES_EXPORTER_HOST_PORT}` | - |
+| `opensearch-node2` | `172.19.0.45` | `9200` | - | - |
+| `opensearch-node3` | `172.19.0.46` | `9200` | - | - |
+| `opensearch-dashboards` | `172.19.0.47` | `5601` | `${KIBANA_HOST_PORT}` | `opensearch-dashboard.${DEFAULT_URL}` |
+| `opensearch-exporter` | `172.19.0.48` | `9114` | `${ES_EXPORTER_HOST_PORT}` | - |
 
 ## Persistence
 
-- **Data**: `opensearch-data1` → `/usr/share/opensearch/data`
-- **Certificates**: `./certs` → `/usr/share/opensearch/config/certs` (Read-only)
+| Volume | Mount Point | Description |
+| :--- | :--- | :--- |
+| `opensearch-data1` | `/usr/share/opensearch/data` | Node 1 Data |
+| `opensearch-data2` | `/usr/share/opensearch/data` | Node 2 Data (Optional) |
+| `opensearch-data3` | `/usr/share/opensearch/data` | Node 3 Data (Optional) |
+| `./certs` | `/usr/share/opensearch/config/certs` | SSL/TLS Certificates (Read-only) |
 
 ## Configuration
 
@@ -47,23 +63,75 @@ Services run on `infra_net` with static IPs (172.19.0.4X).
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
-| `OPENSEARCH_INITIAL_ADMIN_PASSWORD`| Admin Password | `${ELASTIC_PASSWORD}` |
-| `OPENSEARCH_JAVA_OPTS` | JVM Options | `-Xms1g -Xmx1g` |
-| `OPENSEARCH_HOSTS` | Dashboards target | `["https://opensearch-node1:9200"]` |
-| `OPENSEARCH_USERNAME` | Dashboards User | `${ELASTIC_USERNAME}` |
-| `OPENSEARCH_PASSWORD` | Dashboards Password | `${ELASTIC_PASSWORD}` |
-| `ES_USERNAME` | Exporter User | `${ELASTIC_USERNAME}` |
-| `ES_PASSWORD` | Exporter Password | `${ELASTIC_PASSWORD}` |
+| `ELASTIC_PASSWORD` | Admin Password | Provided via `.env` |
+| `OPENSEARCH_JAVA_OPTS` | JVM Heap Size | `-Xms1g -Xmx1g` |
+| `OPENSEARCH_CLUSTER_NAME` | Cluster Name | `docker-cluster` |
+| `discovery.type` | Discovery Mode | `single-node` (for 1 node) |
 
-## Traefik Integration
+### Performance Tuning
 
-Services are exposed via Traefik with TLS enabled (`websecure`). Note that backend communication uses **HTTPS** (self-signed certs).
+- **Memory Locking**: `bootstrap.memory_lock=true` is enabled to prevent swapping.
+- **Ulimits**: `nofile` (65536) and `memlock` (unlimited) are configured.
+- **SHM Size**: `1g` shared memory is allocated for Performance Analyzer.
 
-- **OpenSearch API**: `opensearch.${DEFAULT_URL}`
-- **Dashboards**: `opensearch-dashboard.${DEFAULT_URL}`
+## Custom Build (Plugins)
+
+A `Dockerfile` is provided to build a custom image with plugins pre-installed.
+
+**Included Plugins:**
+
+- `analysis-nori`: Korean morphological analyzer
+- `ingest-attachment`: Tika-based document processor
+- `mapper-annotated-text`: Indexing annotated text
+- `mapper-murmur3`: Murmur3 field mapper
+- `mapper-size`: _size field mapper
+
+**To use custom build:**
+Uncomment the `build` section in `docker-compose.yml` and comment out `image`.
 
 ## Usage
 
-1. **Dashboards**: Access `https://opensearch-dashboard.${DEFAULT_URL}` (Login via `${ELASTIC_USERNAME}`).
-2. **API**: Access `https://opensearch.${DEFAULT_URL}`.
-3. **Rebuild**: If adding plugins, run `docker-compose up -d --build opensearch-node1`.
+### 1. Accessing Dashboards
+
+- **URL**: `https://opensearch-dashboard.${DEFAULT_URL}`
+- **Credentials**: user: `${ELASTIC_USERNAME}` / pass: `${ELASTIC_PASSWORD}`
+
+### 2. Accessing API
+
+- **URL**: `https://opensearch.${DEFAULT_URL}`
+- **Note**: Self-signed certificate warning is expected.
+
+```bash
+curl -k -u admin:password https://opensearch.${DEFAULT_URL}/_cluster/health?pretty
+```
+
+### 3. Scaling to 3 Nodes
+
+1. Edit `docker-compose.yml`:
+   - Uncomment `opensearch-node2` and `opensearch-node3`.
+   - Comment out `discovery.type=single-node`.
+   - Uncomment `discovery.seed_hosts` and `cluster.initial_cluster_manager_nodes`.
+2. Deploy:
+
+   ```bash
+   docker compose up -d
+   ```
+
+## Troubleshooting
+
+### Node Not Joining
+
+Check logs for discovery errors. Ensure `discovery.seed_hosts` matches container names.
+
+### "max virtual memory areas vm.max_map_count is too low"
+
+Linux hosts require increasing the mmap count:
+
+```bash
+sysctl -w vm.max_map_count=262144
+```
+
+### Certificate Issues
+
+If Traefik returns "Bad Gateway", it might be due to SSL verification failure.
+Check `traefik.http.services.opensearch.loadbalancer.server.scheme=https`.
