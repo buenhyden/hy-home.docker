@@ -1,71 +1,112 @@
-# OAuth2 Proxy
+# OAuth2 Proxy (SSO)
 
 ## Overview
 
-**OAuth2 Proxy** is a reverse proxy and static file server that provides authentication using Providers (Google, GitHub, and others) to validate accounts by email, domain or group.
+A flexible authentication proxy that acts as the **Global SSO (Single Sign-On)** provider for the infrastructure. It authenticates users against an external Identity Provider (Keycloak, Google, GitHub) and protects downstream services via Traefik Middleware.
 
-In this infrastructure, it serves as the central **Single Sign-On (SSO)** provider, protecting other services (like MailHog, RedisInsight, etc.) via Traefik middleware.
+```mermaid
+graph TB
+    subgraph "Public"
+        User[User]
+    end
+    
+    subgraph "Edge"
+        Traefik[Traefik Gateway]
+    end
+    
+    subgraph "Auth Stack"
+        Proxy[OAuth2 Proxy]
+        V[Valkey<br/>Session Store]
+    end
+    
+    subgraph "Backend"
+        App[Protected Service]
+    end
+    
+    subgraph "Identity Provider"
+        KC[Keycloak / OIDC Provider]
+    end
+    
+    User -->|HTTPS| Traefik
+    
+    Traefik -->|Forward Auth| Proxy
+    Proxy -->|Validate Session| V
+    Proxy -->|Redirect Login| KC
+    
+    Traefik -->|Authorized| App
+```
 
 ## Services
 
-- **Service Name**: `oauth2-proxy`
-- **Image**: `quay.io/oauth2-proxy/oauth2-proxy:v7.13.0`
-- **Role**: Core Authentication Proxy
-- **Restart Policy**: `unless-stopped`
-
-- **Service Name**: `oauth2-proxy-valkey`
-- **Image**: `valkey/valkey:9.0.1-alpine`
-- **Role**: Redis-compatible session store
-- **Restart Policy**: `unless-stopped`
-
-- **Service Name**: `oauth2-proxy-valkey-exporter`
-- **Image**: `oliver006/redis_exporter:v1.80.1-alpine`
-- **Role**: Prometheus Metrics Exporter
-- **Restart Policy**: `unless-stopped`
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `oauth2-proxy` | `quay.io/oauth2-proxy/oauth2-proxy:v7.13.0` | Auth Gateway | 0.5 CPU / 256MB |
+| `oauth2-proxy-valkey` | `valkey/valkey:9.0.1` | Session Storage | 0.5 CPU / 256MB |
+| `oauth2-proxy-valkey-exporter` | `oliver006/redis_exporter` | Metrics | .1 CPU / 128MB |
 
 ## Networking
 
-Services are authorized to the `infra_net` network with **Static IPs**:
+Services run on `infra_net` with static IPs.
 
-| Service | Role | Static IPv4 | Port |
+| Service | Static IP | Port (Internal) | Endpoint |
 | :--- | :--- | :--- | :--- |
-| `oauth2-proxy` | Auth Proxy | `172.19.0.28` | `${OAUTH2_PROXY_PORT}` |
-| `oauth2-proxy-valkey` | Session Store | `172.19.0.18` | `${VALKEY_PORT}` |
-| `oauth2-proxy-valkey-exporter` | Metrics | `172.19.0.19` | `${VALKEY_EXPORTER_PORT}` |
-
-## Persistence
-
-- **Config**: `./config/oauth2-proxy.cfg` → `/etc/oauth2-proxy.cfg` (Read-Only)
-- **Certificates**: `./certs/rootCA.pem` → `/etc/ssl/certs/rootCA.pem` (Read-Only)
-- **Session Data**: `oauth2-proxy-valkey-data` → `/data` (Valkey Persistence)
+| `oauth2-proxy` | `172.19.0.28` | `${OAUTH2_PROXY_PORT}` (4180) | `auth.${DEFAULT_URL}` |
+| `oauth2-proxy-valkey` | `172.19.0.18` | `${VALKEY_PORT}` | - |
 
 ## Configuration
 
-The service is configured purely via environment variables and a mounted config file.
+### Config File (`config/oauth2-proxy.cfg`)
+
+Contains the core logic for OIDC integration. Key settings typically include:
+
+- `provider = "oidc"`
+- `oidc_issuer_url`: Pointing to Keycloak realm
+- `email_domains = "*"`: Allow any email (filtering handled by IdP)
+- `upstreams = "file:///dev/null"`: Acts as an auth-only server
 
 ### Environment Variables
 
-| Variable | Description | Default |
+| Variable | Description | Value |
 | :--- | :--- | :--- |
-| `SSL_CERT_FILE` | Trusted Root CA for internal requests | `/etc/ssl/certs/rootCA.pem` |
-| `OAUTH2_PROXY_CLIENT_SECRET` | OAuth2 Client Secret | `${OAUTH2_PROXY_CLIENT_SECRET}` |
-| `OAUTH2_PROXY_COOKIE_SECRET` | Cookie encryption secret | `${OAUTH2_PROXY_COOKIE_SECRET}` |
-| `OAUTH2_PROXY_REDIS_CONNECTION_URL` | Redis session store URL | `redis://...` |
+| `OAUTH2_PROXY_CLIENT_ID` | OIDC Client ID | (In .cfg or env) |
+| `OAUTH2_PROXY_CLIENT_SECRET` | OIDC Secret | `${OAUTH2_PROXY_CLIENT_SECRET}` |
+| `OAUTH2_PROXY_COOKIE_SECRET` | Cookie Config | `${OAUTH2_PROXY_COOKIE_SECRET}` |
+| `SSL_CERT_FILE` | Trusted CA | `/etc/ssl/certs/rootCA.pem` |
 
-### Valkey Configuration
+### SSL/TLS
 
-- **Password**: Managed via Docker Secrets (`valkey_password`).
-- **Persistence**: Append-only file enabled.
-
-## Traefik Integration
-
-The proxy is exposed as `auth.${DEFAULT_URL}` and is used as a middleware by other services.
-
-- **Router**: `oauth2-proxy`
-- **Url**: `https://auth.${DEFAULT_URL}`
-- **Entrypoint**: `websecure` (TLS Enabled)
-- **Middleware**: Services use `forward-auth` (or similar) pointing to this service.
+The proxy mounts `./certs/rootCA.pem` to trust internal HTTPS connections (e.g., to Keycloak) if self-signed certificates are used in development.
 
 ## Usage
 
-Access `https://auth.${DEFAULT_URL}` to sign in. Once authenticated, the session is stored in Valkey, and you can access other protected services transparently.
+### 1. Protecting a Service (Traefik Middleware)
+
+To protect any service with SSO, apply the following Traefik label in its `docker-compose.yml`:
+
+```yaml
+labels:
+  - "traefik.http.routers.my-app.middlewares=sso-auth@file"
+```
+
+The `sso-auth` middleware (defined in Traefik's dynamic config) forwards requests to `http://auth.${DEFAULT_URL}/oauth2/auth`.
+
+### 2. Manual Sign-In
+
+- **URL**: `https://auth.${DEFAULT_URL}`
+- **Action**: Redirects to the configured IdP (e.g., Keycloak).
+
+## Troubleshooting
+
+### "500 Internal Server Error"
+
+Usually indicates Redis connection failure or Misconfigured Secret.
+
+1. Check logs: `docker compose logs oauth2-proxy`
+2. Verify Redis connection URL in `docker-compose.yml`.
+
+### "x509: certificate signed by unknown authority"
+
+The OAuth2 Proxy container doesn't trust the IdP (Keycloak) certificate.
+
+- Ensure `rootCA.pem` is valid.
+- Verify `SSL_CERT_FILE` env var is set correctly.
