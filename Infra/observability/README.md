@@ -2,292 +2,116 @@
 
 ## Overview
 
-A comprehensive observability stack based on the **LGTM** (Loki, Grafana, Tempo, Mimir-like Prometheus) pattern, with **Grafana Alloy** as the central telemetry collector.
+A comprehensive, enterprise-grade observability stack based on the **LGTM** pattern (Loki, Grafana, Tempo, Mimir/Prometheus). This stack provides full-spectrum visibility into infrastructure and application health, utilizing **Grafana Alloy** as a unified telemetry collector for metrics, logs, and distributed traces.
 
 ```mermaid
 graph TB
-    subgraph "Telemetry Sources"
-        A[Applications] -->|OTLP| E
-        B[Containers] -->|cAdvisor| F
-        C[Node] -->|Node Exporter| P
+    subgraph "Telemetry Sources (Push/Pull)"
+        A[App Services] -->|OTLP Push| E[Grafana Alloy]
+        B[Docker Containers] -->|Scrape| F[cAdvisor]
+        C[Host Node] -->|Scrape| P[Node Exporter]
     end
 
-    subgraph "Collection Layer"
-        E[Alloy]
-        F[cAdvisor]
-    end
-
-    subgraph "Storage Layer"
-        P[Prometheus<br/>Metrics]
-        L[Loki<br/>Logs]
-        T[Tempo<br/>Traces]
+    subgraph "Logic & Collection Layer"
+        E -->|Remote Write| P[Prometheus<br/>Metrics]
+        E -->|Logs Push| L[Loki<br/>Logs]
+        E -->|Traces Push| T[Tempo<br/>Traces]
+        F -->|Scrape Pull| P
     end
 
     subgraph "Visualization & Alerting"
-        G[Grafana]
+        G[Grafana Dashboard]
         AM[Alertmanager]
+        
+        P -->|Query| G
+        L -->|Query| G
+        T -->|Query| G
+        
+        P -->|Alert Rules| AM
+        AM -->|Notify| Slack[Slack Webhook]
+        AM -->|Notify| Mail[SMTP Email]
     end
 
-    E -->|remote_write| P
-    E -->|logs| L
-    E -->|traces| T
-    F -->|scrape| P
-    P --> G
-    L --> G
-    T --> G
-    P -->|alerts| AM
+    subgraph "Identity"
+        KC[Keycloak SSO] <-->|OAuth2| G
+    end
 ```
 
 ## Services
 
 | Service | Image | Role | Resources |
 | :--- | :--- | :--- | :--- |
-| [`prometheus`](./prometheus/README.md) | `prom/prometheus:v3.9.0` | Metrics Database (Time Series) | 1 CPU / 1GB |
-| [`loki`](./loki/README.md) | `grafana/loki:3.6.3` | Logs Aggregation System | 1 CPU / 1GB |
-| [`tempo`](./tempo/README.md) | `grafana/tempo:2.9.0` | Distributed Tracing Backend | 1 CPU / 1GB |
-| [`grafana`](./grafana/README.md) | `grafana/grafana:12.3.1` | Visualization Dashboard & Alerting UI | 0.5 CPU / 512MB |
-| [`alloy`](./alloy/README.md) | `grafana/alloy:v1.12.1` | OpenTelemetry Collector & Scraper | 0.5 CPU / 512MB |
-| `cadvisor` | `gcr.io/cadvisor/cadvisor:v0.55.1` | Container Metrics Exporter | 0.5 CPU / 512MB |
-| [`alertmanager`](./alertmanager/README.md) | `prom/alertmanager:v0.30.0` | Alert Handling & Notification | 0.5 CPU / 256MB |
-| [`pushgateway`](./pushgateway/README.md) | `prom/pushgateway:v1.11.2` | Ephemeral Metrics Push Endpoint | 0.2 CPU / 128MB |
+| [`prometheus`](./prometheus/README.md) | `prom/prometheus:v3.9.0` | Metrics DB & Alerting Engine | 1.0 CPU / 1GB |
+| [`loki`](./loki/README.md) | `grafana/loki:3.6.3` | Scalable Log Aggregation | 1.0 CPU / 1GB |
+| [`tempo`](./tempo/README.md) | `grafana/tempo:2.9.0` | Distributed Tracing Backend | 1.0 CPU / 1GB |
+| [`grafana`](./grafana/README.md) | `grafana/grafana:12.3.1` | Unified Visualization & SSO Portal | 0.5 CPU / 512MB |
+| [`alloy`](./alloy/README.md) | `grafana/alloy:v1.12.1` | OTel Collector & Scraper (Unified Agent) | 0.5 CPU / 512MB |
+| `cadvisor` | `cadvisor:v0.55.1`| Real-time Container Resource Analysis | 0.5 CPU / 512MB |
+| [`alertmanager`](./alertmanager/README.md) | `prom/alertmanager:v0.30.0` | Notification Routing & Deduplication | 0.5 CPU / 256MB |
+| [`pushgateway`](./pushgateway/README.md) | `prom/pushgateway:v1.11.2` | Short-lived Job Metrics Endpoint | 0.2 CPU / 128MB |
 
-## Networking
+## Networking (Static IPs)
 
-All services run on `infra_net` with static IPs (`172.19.0.3X`).
+Services utilize the `172.19.0.3X` block on `infra_net` for deterministic internal routing.
 
-### IP & Port Mapping
-
-| Service | Static IP | Internal Port | Host Port | Traefik Domain |
-| :--- | :--- | :--- | :--- | :--- |
-| `prometheus` | `172.19.0.30` | `${PROMETHEUS_PORT}` | - | `prometheus.${DEFAULT_URL}` |
-| `loki` | `172.19.0.31` | `${LOKI_PORT}` | `${LOKI_HOST_PORT}` | - |
-| `tempo` | `172.19.0.32` | `${TEMPO_PORT}` | `${TEMPO_HOST_PORT}` | - |
-| `grafana` | `172.19.0.33` | `${GRAFANA_PORT}` | - | `grafana.${DEFAULT_URL}` |
-| `alloy` | `172.19.0.34` | `${ALLOY_PORT}` (UI) | `${ALLOY_OTLP_GRPC_HOST_PORT}` (gRPC)<br>`${ALLOY_OTLP_HTTP_HOST_PORT}` (HTTP) | `alloy.${DEFAULT_URL}` |
-| `cadvisor` | `172.19.0.35` | `${CADVISOR_PORT}` | - | - |
-| `alertmanager` | `172.19.0.36` | `${ALERTMANAGER_PORT}` | - | `alertmanager.${DEFAULT_URL}` |
-| `pushgateway` | `172.19.0.37` | `${PUSHGATEWAY_PORT}` | - | `pushgateway.${DEFAULT_URL}` |
-
-## Persistence
-
-Data is persisted in named volumes and configuration via bind mounts:
-
-| Type | Volume/Path | Mount Point | Mode |
+| Service | Static IP | Port | Traefik Domain |
 | :--- | :--- | :--- | :--- |
-| Metrics | `prometheus-data` | `/prometheus` | RW |
-| Logs | `loki-data` | `/loki` | RW |
-| Traces | `tempo-data` | `/var/tempo` | RW |
-| Dashboards | `grafana-data` | `/var/lib/grafana` | RW |
-| Alerts | `alertmanager-data` | `/alertmanager` | RW |
-| Prometheus Config | `./prometheus/config/` | `/etc/prometheus/` | RO |
-| Loki Config | `./loki/config/` | `/etc/loki/` | RO |
-| Tempo Config | `./tempo/config/` | `/etc/` | RO |
-| Alloy Config | `./alloy/config/` | `/etc/alloy/` | RO |
-| Grafana Dashboards | `./grafana/dashboards/` | `/etc/grafana/dashboards` | RO |
+| `prometheus` | `172.19.0.30` | `9090` | `prometheus.${DEFAULT_URL}` |
+| `loki` | `172.19.0.31` | `3100` | - |
+| `tempo` | `172.19.0.32` | `3200` | - |
+| `grafana` | `172.19.0.33` | `3000` | `grafana.${DEFAULT_URL}` |
+| `alloy` | `172.19.0.34` | `12345`| `alloy.${DEFAULT_URL}` |
+| `alertmanager`| `172.19.0.36` | `9093` | `alertmanager.${DEFAULT_URL}` |
+| `pushgateway` | `172.19.0.37` | `9091` | `pushgateway.${DEFAULT_URL}` |
 
-## Configuration
+## Authentication (Keycloak SSO)
 
-### Prometheus
+Grafana is integrated with **Keycloak** via Generic OAuth2 for secure, centralized access.
 
-- **Config**: [`prometheus/config/prometheus.yml`](./prometheus/config/prometheus.yml)
-- **Alert Rules**: [`prometheus/config/alert_rules.yml`](./prometheus/config/alert_rules.yml)
-- **K8s Alert Rules**: [`prometheus/config/alert_rules.k8s.yml`](./prometheus/config/alert_rules.k8s.yml) (optional)
+### Role Mapping Logic
 
-#### Alert Rule Groups
+Roles are dynamically assigned based on Keycloak groups (`groups` claim):
 
-| Group | Description | Count |
-| :--- | :--- | :--- |
-| `prometheus_alerts` | Prometheus self-monitoring | 9 |
-| `infrastructure_alerts` | Container CPU/Memory/Network | 7 |
-| `n8n_alerts` | n8n workflow automation | 2 |
-| `redis_alerts` | Redis cluster health | 7 |
-| `valkey_alerts` | Valkey (Redis-compatible) | 3 |
-| `kafka_alerts` | Kafka broker & consumer lag | 4 |
-| `postgres_alerts` | PostgreSQL connections, deadlocks | 8 |
-| `opensearch_alerts` | OpenSearch cluster health | 7 |
-| `minio_alerts` | MinIO storage | 3 |
-| `ollama_alerts` | Ollama LLM service | 1 |
-| `gateway_alerts` | HAProxy, Traefik, Nginx | 11 |
-| `observability_alerts` | Loki, Alloy, Tempo | 6 |
-| `keycloak_alerts` | Authentication failures | 3 |
+- **Grafana Admin**: Users in `/admins` group.
+- **Grafana Editor**: Users in `/editors` group.
+- **Grafana Viewer**: Default for all other authenticated users.
 
-### Grafana
-
-#### Pre-configured Dashboards (14)
-
-| Dashboard | Source | Description |
-| :--- | :--- | :--- |
-| Cadvisor exporter | Custom | Container CPU/Memory/Network |
-| Kafka Exporter Overview | Grafana Labs | Kafka broker metrics |
-| Keycloak Metrics | Grafana Labs | Keycloak authentication |
-| Loki Logs App | Grafana Labs (13639) | Log exploration |
-| MinIO Dashboard | Grafana Labs | Object storage |
-| Node Exporter Full | Grafana Labs | Host system metrics |
-| Ollama Exporter | Community | LLM inference metrics |
-| OpenSearch | Grafana Labs | Search cluster health |
-| PostgreSQL Database | Grafana Labs | Database performance |
-| Prometheus 2.0 Overview | Grafana Labs (3662) | Prometheus self-monitoring |
-| Qdrant Overview | Custom | Vector database |
-| Redis Overview | Grafana Labs | Redis cluster |
-| Traefik Official | Traefik Labs | Reverse proxy metrics |
-| n8n Health & Performance | Custom | Workflow automation |
-
-#### Authentication (Keycloak SSO)
-
-Grafana is configured with Keycloak OAuth2:
+### Config Snippet
 
 ```yaml
-GF_AUTH_GENERIC_OAUTH_ENABLED: true
-GF_AUTH_OAUTH_AUTO_LOGIN: true
-GF_AUTH_DISABLE_LOGIN_FORM: true
+GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: "contains(groups[*], '/admins') && 'Admin' || contains(groups[*], '/editors') && 'Editor' || 'Viewer'"
+GF_AUTH_GENERIC_OAUTH_STRICT: "true"
 ```
 
-Role mapping from Keycloak groups:
+## Alertmanager Integration
 
-- `/admins` → Grafana Admin
-- `/editors` → Grafana Editor
-- Default → Viewer
+Supports multi-channel notifications with deduplication and grouping logic.
 
-### Alertmanager
-
-Notification channels supported:
-
-- **Email**: SMTP via `${SMTP_USERNAME}` / `${SMTP_PASSWORD}`
-- **Slack**: Webhook via `${SLACK_ALERTMANAGER_WEBHOOK_URL}`
-
-## Environment Variables
-
-### Required Variables
-
-| Variable | Description | Service |
+| Channel | Requirement | Usage |
 | :--- | :--- | :--- |
-| `DEFAULT_URL` | Base domain | All |
-| `PROMETHEUS_PORT` | Prometheus port | Prometheus |
-| `LOKI_PORT`, `LOKI_HOST_PORT` | Loki ports | Loki |
-| `TEMPO_PORT`, `TEMPO_HOST_PORT` | Tempo ports | Tempo |
-| `GRAFANA_PORT` | Grafana port | Grafana |
-| `GRAFANA_ADMIN_USERNAME` | Admin user | Grafana |
-| `GRAFANA_ADMIN_PASSWORD` | Admin password | Grafana |
-| `OAUTH2_PROXY_CLIENT_ID` | Keycloak client ID | Grafana |
-| `OAUTH2_PROXY_CLIENT_SECRET` | Keycloak client secret | Grafana |
-| `ALLOY_PORT` | Alloy UI port | Alloy |
-| `ALLOY_OTLP_GRPC_PORT` / `HOST_PORT` | OTLP gRPC | Alloy |
-| `ALLOY_OTLP_HTTP_PORT` / `HOST_PORT` | OTLP HTTP | Alloy |
-| `CADVISOR_PORT` | cAdvisor port | cAdvisor |
-| `ALERTMANAGER_PORT` | Alertmanager port | Alertmanager |
-| `SMTP_USERNAME`, `SMTP_PASSWORD` | Email credentials | Alertmanager |
-| `SLACK_ALERTMANAGER_WEBHOOK_URL` | Slack webhook | Alertmanager |
-| `PUSHGATEWAY_PORT` | Pushgateway port | Pushgateway |
+| **Slack** | `SLACK_ALERTMANAGER_WEBHOOK_URL` | Critical/Warning alerts to OPS channels |
+| **Email** | `SMTP_USERNAME` / `SMTP_PASSWORD` | Daily summaries and high-priority outages |
 
-## Usage
+## Maintenance & Troubleshooting
 
-### Starting the Stack
+### Reloading Configurations
+
+Configurations can be reloaded without service restarts via HTTP POST:
 
 ```bash
-cd infra/observability
-docker compose up -d
+# Reload Prometheus configuration and alert rules
+curl -X POST https://prometheus.${DEFAULT_URL}/-/reload
+
+# Reload Alertmanager configuration
+curl -X POST https://alertmanager.${DEFAULT_URL}/-/reload
 ```
 
-### Accessing Services
+### Checking Scraping Status
 
-| Service | URL | Authentication |
-| :--- | :--- | :--- |
-| **Grafana** | `https://grafana.${DEFAULT_URL}` | Keycloak SSO |
-| **Prometheus** | `https://prometheus.${DEFAULT_URL}` | - |
-| **Alertmanager** | `https://alertmanager.${DEFAULT_URL}` | - |
-| **Alloy UI** | `https://alloy.${DEFAULT_URL}` | - |
-| **Pushgateway** | `https://pushgateway.${DEFAULT_URL}` | - |
-
-### Sending Telemetry
-
-#### OTLP (OpenTelemetry)
-
-```bash
-# gRPC
-export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:${ALLOY_OTLP_GRPC_HOST_PORT}"
-
-# HTTP
-export OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:${ALLOY_OTLP_HTTP_HOST_PORT}"
-```
-
-#### Pushgateway (Batch Jobs)
-
-```bash
-echo "my_batch_job_duration_seconds 42.5" | curl --data-binary @- \
-  http://localhost:${PUSHGATEWAY_HOST_PORT}/metrics/job/my_batch_job
-```
-
-## Directory Structure
-
-```
-observability/
-├── alertmanager/
-│   └── config/
-│       └── config.yml          # Alert routing & receivers
-├── alloy/
-│   └── config/
-│       └── config.alloy        # Alloy pipeline config
-├── grafana/
-│   ├── dashboards/             # JSON dashboard files (14)
-│   └── provisioning/
-│       ├── dashboards/         # Dashboard provisioning
-│       └── datasources/        # Datasource provisioning
-├── loki/
-│   └── config/
-│       └── loki-config.yaml    # Loki configuration
-├── prometheus/
-│   └── config/
-│       ├── prometheus.yml      # Prometheus config
-│       ├── alert_rules.yml     # Alert definitions
-│       └── alert_rules.k8s.yml # K8s-specific alerts
-├── pushgateway/
-│   └── README.md
-├── tempo/
-│   └── config/
-│       └── tempo.yaml          # Tempo configuration
-├── docker-compose.yml          # Main compose file
-└── README.md                   # This file
-```
-
-## Troubleshooting
-
-### Prometheus
-
-```bash
-# Check configuration
-docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml
-
-# Check alert rules
-docker exec infra-prometheus promtool check rules /etc/prometheus/alert_rules.yml
-
-# Reload configuration
-curl -X POST http://localhost:${PROMETHEUS_PORT}/-/reload
-```
-
-### Grafana
-
-```bash
-# Check logs
-docker logs infra-grafana
-
-# Reset admin password
-docker exec infra-grafana grafana-cli admin reset-admin-password newpassword
-```
-
-### Alloy
-
-```bash
-# Check pipeline status
-curl http://localhost:${ALLOY_PORT}/metrics
-
-# Debug config
-docker exec infra-alloy alloy fmt /etc/alloy/config.alloy
-```
+- **Metric Targets**: Navigate to `https://prometheus.${DEFAULT_URL}/targets`.
+- **Collector Status**: Navigate to `https://alloy.${DEFAULT_URL}` to view the internal component graph.
 
 ## See Also
 
-- [Prometheus Documentation](https://prometheus.io/docs/)
-- [Grafana Documentation](https://grafana.com/docs/)
-- [Loki Documentation](https://grafana.com/docs/loki/)
-- [Tempo Documentation](https://grafana.com/docs/tempo/)
-- [Grafana Alloy Documentation](https://grafana.com/docs/alloy/)
+- [Grafana Alloy Dashboard Guide](./alloy/README.md)
+- [Prometheus Alerting Rules Reference](./prometheus/README.md)
