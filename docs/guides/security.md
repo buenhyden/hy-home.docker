@@ -12,13 +12,13 @@ All sensitive credentials are stored in the `secrets/` directory as text files.
 
 ```
 secrets/
-â”œâ”€â”€ postgres_password.txt
-â”œâ”€â”€ redis_password.txt
-â”œâ”€â”€ valkey_password.txt
-â”œâ”€â”€ minio_root_user.txt
-â”œâ”€â”€ minio_root_password.txt
-â”œâ”€â”€ minio_app_user.txt
-â””â”€â”€ minio_app_user_password.txt
+?œâ??€ postgres_password.txt
+?œâ??€ redis_password.txt
+?œâ??€ valkey_password.txt
+?œâ??€ minio_root_user.txt
+?œâ??€ minio_root_password.txt
+?œâ??€ minio_app_user.txt
+?”â??€ minio_app_user_password.txt
 ```
 
 **Access Pattern**:
@@ -294,27 +294,27 @@ pg_dump -h localhost -p 5000 -U postgres dbname | \
 
 ### Development
 
-1. âœ… Change all default passwords
-2. âœ… Use mkcert for local HTTPS
-3. âœ… Keep secrets/ in `.gitignore`
-4. âœ… Regularly update images
+1. ??Change all default passwords
+2. ??Use mkcert for local HTTPS
+3. ??Keep secrets/ in `.gitignore`
+4. ??Regularly update images
 
 ### Production
 
-1. âœ… Use Let's Encrypt for TLS
-2. âœ… Enable Keycloak MFA
-3. âœ… Implement rate limiting (Traefik)
-4. âœ… Regular security audits
-5. âœ… Automated backup with encryption
-6. âœ… Monitor security logs
-7. âœ… Network segmentation (separate `project_net`)
-8. âœ… Container scanning (Trivy, Snyk)
+1. ??Use Let's Encrypt for TLS
+2. ??Enable Keycloak MFA
+3. ??Implement rate limiting (Traefik)
+4. ??Regular security audits
+5. ??Automated backup with encryption
+6. ??Monitor security logs
+7. ??Network segmentation (separate `project_net`)
+8. ??Container scanning (Trivy, Snyk)
 
 ## Incident Response
 
 **If Breach Suspected**:
 
-1. Isolate affected containers: `docker-compose stop <service>`
+1. Isolate affected containers: `docker compose stop <service>`
 2. Capture logs: `docker logs <container> > incident.log`
 3. Rotate all secrets immediately
 4. Audit access logs in Keycloak

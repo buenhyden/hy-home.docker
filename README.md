@@ -12,8 +12,8 @@ This repository is a comprehensive monorepo for hosting a local Home Lab environ
 - **Layered Infrastructure**: Organized into Edge, Identity, Data, AI, and Observability layers.
 - **Enterprise-Grade**: Includes Patroni for PostgreSQL HA, Kafka for streaming, and Keycloak for IAM.
 - **AI-Ready**: Integrated Ollama and Qdrant for local LLM and RAG experiments.
-- **Full Observability**: Pre-configured **LGTM Stack** (Loki, Grafana, Tempo, Mimir/Prometheus) with Alloy.
-- **Agent-Augmented**: Structured specifically for collaboration with AI Agents (Cursor, Windsurf) using the Context-First approach.
+- **Full Observability**: Pre-configured **LGTM Stack** (Loki, Grafana, Tempo, Mimir) with Alloy.
+- **Agent-Augmented**: Structured specifically for collaboration with AI Agents (Cursor, Windsurf, Claude, Gemini) using the Context-First approach.
 
 ## 📂 Repository Structure
 
@@ -23,8 +23,8 @@ This repository is a comprehensive monorepo for hosting a local Home Lab environ
 | **[.github/](./.github)** | **CI/CD**: Workflows, Issue Templates, and Policy. |
 | **[docs/](./docs)** | **Knowledge Base**: Architecture diagrams, detailed guides, and API specs. |
 | **[examples/](./examples)** | **Samples**: Grafana dashboards, `.env` examples, and host configurations. |
-| **[infra/](./infra)** | **Core Infrastructure**: 26+ Docker Compose services (The heart of the repo). |
-| **[projects/](./projects)** | **Sub-Projects**: Independent modules (e.g., Terraform labs, specialized apps). |
+| **[infra/](./infra)** | **Core Infrastructure**: 24+ Docker Compose service modules (The heart of the repo). |
+| **[projects/](./projects)** | **Sub-Projects**: Independent modules and experimental playgrounds. |
 | **[scripts/](./scripts)** | **Automation**: PowerShell/Bash scripts for management and validation. |
 | **[secrets/](./secrets)** | **Security**: Local secrets storage (Git Ignored). |
 
@@ -64,7 +64,7 @@ This repository is a comprehensive monorepo for hosting a local Home Lab environ
 
 ## 🛠️ Utilities & Scripts
 
-Automate common tasks using the provided scripts in `scripts/`.
+Automate common tasks using the provided scripts in `scripts/`. Tests are located in `scripts/tests/`.
 
 | Script | description | Usage |
 | :--- | :--- | :--- |
@@ -78,6 +78,11 @@ This project allows you to pair program with AI Agents effectively.
 
 - **Rules**: See [.agent/rules](./.agent/rules) for coding standards.
 - **Workflows**: See [.agent/workflows](./.agent/workflows) for standard operating procedures.
+- **Agent Guides**:
+  - [General Agents](./AGENTS.md)
+  - [Claude](./CLAUDE.md)
+  - [Gemini](./GEMINI.md)
+  - [Cursor Rules](./.cursorrules)
 
 ## 📚 Documentation Index
 

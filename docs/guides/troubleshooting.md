@@ -21,7 +21,7 @@ lsof -i :6379
 **Solution**:
 
 1. Stop the conflicting service
-2. Or change the port mapping in `docker-compose.yml`
+2. Or change the port mapping in `docker compose.yml`
 
 ```yaml
 ports:
@@ -63,7 +63,7 @@ Access via `https://localhost` and accept certificate warnings.
 **Diagnosis**:
 
 ```bash
-docker-compose logs <service-name>
+docker compose logs <service-name>
 ```
 
 Look for errors like:
@@ -76,14 +76,14 @@ Permission denied: /var/lib/postgresql/data
 
 ```bash
 # Stop services
-docker-compose down
+docker compose down
 
 # Option 1: Fix permissions (if using bind mounts)
 sudo chown -R $USER:$USER ./data
 
 # Option 2: Remove and recreate volumes (DESTRUCTIVE)
 docker volume prune
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 4. Container Health Check Failing
@@ -107,13 +107,13 @@ docker logs <container-name> --tail 100
 
 ```bash
 # Check dependency services first
-docker-compose ps
+docker compose ps
 
 # Restart the service
-docker-compose restart <service-name>
+docker compose restart <service-name>
 
 # If persistent, check logs
-docker-compose logs -f <service-name>
+docker compose logs -f <service-name>
 ```
 
 ### 5. Out of Memory (OOM)
@@ -128,9 +128,9 @@ docker stats
 
 **Solution**:
 
-- Increase Docker Desktop memory limit (Settings → Resources)
+- Increase Docker Desktop memory limit (Settings ??Resources)
 - Reduce running services
-- Add resource limits to `docker-compose.yml`:
+- Add resource limits to `docker compose.yml`:
 
 ```yaml
 deploy:
@@ -184,7 +184,7 @@ Use Let's Encrypt with Traefik's ACME resolver.
 
 ### 8. Image Pull Failures
 
-**Symptom**: `docker-compose pull` fails or times out.
+**Symptom**: `docker compose pull` fails or times out.
 
 **Common Causes**:
 
@@ -218,9 +218,9 @@ docker exec -it etcd1 etcdctl member list
 docker exec -it patroni1 patronictl -c /etc/patroni.yml list
 
 # Force reinitialize (DESTRUCTIVE)
-docker-compose down
+docker compose down
 docker volume rm postgres-data-*
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Kafka
@@ -247,12 +247,12 @@ docker logs kafka-1 --tail 100
 
 ```bash
 # Check mng-pg is healthy
-docker-compose ps mng-pg
+docker compose ps mng-pg
 
 # Force reinitialize Keycloak
-docker-compose down keycloak
+docker compose down keycloak
 docker volume rm keycloak-data
-docker-compose up -d keycloak
+docker compose up -d keycloak
 ```
 
 ## Debugging Tools
@@ -261,7 +261,7 @@ docker-compose up -d keycloak
 
 ```bash
 # All services
-docker-compose logs -f
+docker compose logs -f
 
 # Specific service
 docker logs <container-name> -f --tail=100
@@ -310,19 +310,19 @@ docker system info
 ```bash
 # Stop everything
 cd infra
-docker-compose down -v
+docker compose down -v
 
 # Remove all containers, networks, volumes
 docker system prune -a --volumes
 
 # Restart
-docker-compose up -d
+docker compose up -d
 ```
 
 ## Getting Help
 
 1. Check service-specific README: `infra/<service>/README.md`
-2. View logs: `docker-compose logs <service>`
+2. View logs: `docker compose logs <service>`
 3. Check [GitHub Issues](https://github.com/your-repo/issues)
 4. Consult official documentation for each service
 

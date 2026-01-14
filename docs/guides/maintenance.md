@@ -8,13 +8,13 @@
 
 ```bash
 cd infra
-docker-compose pull
+docker compose pull
 ```
 
 **Apply updates**:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 Docker Compose automatically recreates containers if image has changed.
@@ -54,7 +54,7 @@ docker exec postgresql-haproxy pg_dumpall -U postgres > backup_$(date +%Y%m%d).s
 docker exec postgresql-haproxy pg_dump -U postgres mydb > mydb_backup.sql
 ```
 
-**Automated backup script** (`scripts/backup-postgres.sh`):
+**Automated backup script** (create as `scripts/backup-postgres.sh`):
 
 ```bash
 #!/bin/bash
@@ -150,7 +150,7 @@ docker inspect -f '{{.LogPath}}' <container-name>
 ls -lh $(docker inspect -f '{{.LogPath}}' <container-name>)
 ```
 
-**Configure log rotation** in `docker-compose.yml`:
+**Configure log rotation** in `docker compose.yml`:
 
 ```yaml
 logging:
@@ -171,7 +171,7 @@ truncate -s 0 $(docker inspect -f '{{.LogPath}}' <container-name>)
 **Check service health**:
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 Look for `Up (healthy)` status.
@@ -196,9 +196,9 @@ Look for `Up (healthy)` status.
 
 ```bash
 # Update replica first
-docker-compose stop patroni2
-docker-compose pull patroni2
-docker-compose start patroni2
+docker compose stop patroni2
+docker compose pull patroni2
+docker compose start patroni2
 
 # Wait for sync
 docker exec patroni1 patronictl list
@@ -210,7 +210,7 @@ docker exec patroni1 patronictl list
 
 **Weekly**:
 
-- Update images: `docker-compose pull`
+- Update images: `docker compose pull`
 - Review logs for errors
 - Check backup success
 
@@ -233,7 +233,7 @@ docker exec patroni1 patronictl list
 
 1. **Restore from backups**
 2. **Recreate secrets**
-3. **Deploy infrastructure**: `docker-compose up -d`
+3. **Deploy infrastructure**: `docker compose up -d`
 4. **Restore data**:
    - PostgreSQL dumps
    - Redis RDB files
@@ -300,9 +300,9 @@ deploy:
 ```bash
 # Stop and remove
 cd infra/old-service
-docker-compose down -v
+docker compose down -v
 
-# Remove from include list in main docker-compose.yml
+# Remove from include list in main docker compose.yml
 ```
 
 ## See Also

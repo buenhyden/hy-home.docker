@@ -70,7 +70,7 @@ Scaffold a new infrastructure service complete with README, Dockerfile, and Comp
 
 ### Validate Configuration
 
-Check your `docker-compose.yml` files for syntax errors before deploying.
+Check your `docker compose.yml` files for syntax errors before deploying.
 
 ```bash
 ./scripts/validate_compose_change.sh
@@ -84,7 +84,7 @@ Deploy all active services:
 
 ```bash
 cd infra
-docker-compose up -d
+docker compose up -d
 ```
 
 **Wait Time**: 2-5 minutes for all services to start and become healthy.
@@ -92,7 +92,7 @@ docker-compose up -d
 **Verification**:
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 All services should show status `Up` or `Up (healthy)`.
@@ -104,26 +104,26 @@ Deploy specific services:
 ```bash
 # PostgreSQL cluster only
 cd infra/postgresql-cluster
-docker-compose up -d
+docker compose up -d
 
 # Observability stack only
 cd infra/observability
-docker-compose up -d
+docker compose up -d
 
 # Kafka cluster only
 cd infra/kafka
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Option 3: Selective Services via Include
 
-Edit `infra/docker-compose.yml` to comment/uncomment services in the `include` section:
+Edit `infra/docker compose.yml` to comment/uncomment services in the `include` section:
 
 ```yaml
 include:
-  - traefik/docker-compose.yml
-  - mng-db/docker-compose.yml
-  # - mail/docker-compose.yml  # Commented = disabled
+  - traefik/docker compose.yml
+  - mng-db/docker compose.yml
+  # - mail/docker compose.yml  # Commented = disabled
 ```
 
 ## Post-Deployment Verification
@@ -132,8 +132,8 @@ include:
 
 ```bash
 cd infra
-docker-compose ps
-docker-compose logs -f --tail=50
+docker compose ps
+docker compose logs -f --tail=50
 ```
 
 ### 2. Access Web UIs
@@ -171,7 +171,7 @@ redis-cli -h localhost -p 6379 -a $(cat ../secrets/redis_password.txt)
 
 ```bash
 cd infra
-docker-compose up -d postgresql-haproxy redis-cluster traefik
+docker compose up -d postgresql-haproxy redis-cluster traefik
 ```
 
 ### Scenario 2: Data Engineering Platform
@@ -185,7 +185,7 @@ docker-compose up -d postgresql-haproxy redis-cluster traefik
 
 ```bash
 cd infra
-docker-compose up -d kafka postgresql-cluster n8n observability
+docker compose up -d kafka postgresql-cluster n8n observability
 ```
 
 ### Scenario 3: AI/LLM Development
@@ -199,7 +199,7 @@ docker-compose up -d kafka postgresql-cluster n8n observability
 
 ```bash
 cd infra
-docker-compose up -d ollama qdrant minio postgresql-cluster
+docker compose up -d ollama qdrant minio postgresql-cluster
 ```
 
 ## Updating Services
@@ -208,8 +208,8 @@ docker-compose up -d ollama qdrant minio postgresql-cluster
 
 ```bash
 cd infra
-docker-compose pull
-docker-compose up -d
+docker compose pull
+docker compose up -d
 ```
 
 Docker Compose will automatically recreate containers with updated images.
@@ -218,8 +218,8 @@ Docker Compose will automatically recreate containers with updated images.
 
 ```bash
 cd infra/kafka
-docker-compose pull
-docker-compose up -d
+docker compose pull
+docker compose up -d
 ```
 
 ### Cleanup Old Images
@@ -234,21 +234,21 @@ docker image prune -f
 
 ```bash
 cd infra
-docker-compose down
+docker compose down
 ```
 
 ### Stop Specific Service
 
 ```bash
 cd infra/observability
-docker-compose down
+docker compose down
 ```
 
 ### Stop and Remove Volumes (DESTRUCTIVE)
 
 ```bash
 cd infra
-docker-compose down -v
+docker compose down -v
 ```
 
 > **Warning**: This deletes **all data**. Backup first!
