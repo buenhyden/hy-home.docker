@@ -41,7 +41,7 @@ include:
   - postgresql-cluster/docker-compose.yml  
   - kafka/docker-compose.yml
   - valkey-cluster/docker-compose.yml    
-  - sonarqube/docker-compose.yml  
+  # - sonarqube/docker-compose.yml  
   # - mail/docker-compose.yml  
   # - airflow/docker-compose.yml
   # - opensearch/docker-compose.yml
