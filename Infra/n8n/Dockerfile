@@ -8,7 +8,6 @@
 # -----------------------------------------------------------
 
 ARG N8N_VERSION=2.3.0
-
 # ===========================================
 # Stage 1: Font Builder (Alpine)
 # ===========================================
@@ -38,6 +37,20 @@ USER root
 COPY --from=font-builder /usr/share/fonts /usr/share/fonts
 COPY --from=font-builder /var/cache/fontconfig /var/cache/fontconfig
 COPY --from=font-builder /etc/fonts /etc/fonts
+
+# 1. 시스템 도구 및 Python 설치 (Execute Command 노드용)
+# Alpine 환경에서 python3와 빌드 도구를 설치하는 가장 표준적인 방법입니다.
+RUN /sbin/apk update && /sbin/apk add --no-cache \
+    python3 \
+    py3-pip \
+    python3-dev \
+    make \
+    g++ \
+    build-base
+
+# 2. n8n-cli 전역 설치
+# npx로 매번 받지 않도록 미리 설치합니다.
+RUN npm install -g n8n-cli
 
 # Create fontconfig cache directory and refresh
 RUN mkdir -p /var/cache/fontconfig && \

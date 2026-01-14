@@ -44,8 +44,8 @@ graph LR
 | :--- | :--- | :--- | :--- |
 | `n8n` | `n8nio/n8n:2.3.0` | Main Node (UI, API, Webhooks) | 1.0 CPU / 2GB |
 | `n8n-worker` | `n8nio/n8n:2.3.0` | Worker Node (Workflow Execution) | 1.0 CPU / 2GB |
-| `n8n-valkey` | `valkey/valkey:9.0.1-alpine`| High-Performance Job Queue | 0.5 CPU / 256MB |
-| `n8n-valkey-exporter`| `oliver006/redis_exporter` | Prometheus Metrics | 0.1 CPU / 128MB |
+| `n8n-valkey` | `valkey/valkey:9.0.1-alpine` | High-Performance Job Queue | 0.5 CPU / 256MB |
+| `n8n-valkey-exporter` | `oliver006/redis_exporter` | Prometheus Metrics | 0.1 CPU / 128MB |
 
 ## Networking
 
@@ -56,13 +56,14 @@ All services are connected to the `infra_net` network with static IPs for consis
 | `n8n` | `172.19.0.14` | `${N8N_PORT}` (5678) | `n8n.${DEFAULT_URL}` |
 | `n8n-worker` | `172.19.0.17` | - | - |
 | `n8n-valkey` | `172.19.0.15` | `6379` | - |
-| `n8n-valkey-exporter`| `172.19.0.16` | `9121` | - |
+| `n8n-valkey-exporter` | `172.19.0.16` | `9121` | - |
 
 ## Persistence
 
 | Volume | Mount Point | Description |
 | :--- | :--- | :--- |
 | `n8n-data` | `/home/node/.n8n` | Stores workflows, credentials, and binary files. |
+| `n8n-custom` | `/home/node/.n8n/custom` | (Bind Mount) Local `infra/n8n/custom` directory for developing Private Nodes. |
 | `n8n-valkey-data` | `/data` | Redis-compatible AOF persistence for the job queue. |
 
 ## Configuration
@@ -85,11 +86,16 @@ A dedicated `n8n` database on the management PostgreSQL instance is used for ope
 
 This directory features a custom **Multi-stage Dockerfile** designed to overcome the limitations of the official distroless image.
 
-### Multi-stage Build Workflow
-
-1. **Stage 1 (Builder)**: Uses `alpine:3.21` to install necessary TTF fonts (`font-noto`, `ttf-dejavu`, etc.) and system packages.
-2. **Stage 2 (Final)**: Copies the pre-compiled fonts and caches from the builder to the official `n8nio/n8n` image.
-3. **Result**: A secured, distroless production image that correctly renders Korean/CJK characters in PDFs and images.
+87:
+88: ### Multi-stage Build Workflow
+89:
+90: 1. **Stage 1 (Builder)**: Uses `alpine:3.21` to install necessary TTF fonts (`font-noto`, `ttf-dejavu`, etc.) and system packages.
+91: 2. **Stage 2 (Final)**:
+92:    - Copies pre-compiled fonts from the builder.
+93:    - Installs **Python 3** and build dependencies (`make`, `g++`, etc.) to support the `Execute Command` node and complex data processing.
+94:    - Installs `n8n-cli` globally for management tasks.
+95:    - Sets up the `custom/` directory for **Private Custom Nodes**.
+96: 3. **Result**: A secured, production-ready image capable of handling Korean fonts, Python scripts, and custom extensions.
 
 ### Build and Run
 
