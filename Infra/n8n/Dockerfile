@@ -52,4 +52,12 @@ ENV GENERIC_TIMEZONE=Asia/Seoul
 
 WORKDIR /home/node
 
+# Create custom node directory and ensure permissions
+RUN mkdir -p /home/node/.n8n/custom && \
+    chown -R node:node /home/node/.n8n
+
+# Copy custom nodes (if any) from local context
+COPY --chown=node:node ./custom /home/node/.n8n/custom
+
+
 # The official n8n image already has proper ENTRYPOINT configured

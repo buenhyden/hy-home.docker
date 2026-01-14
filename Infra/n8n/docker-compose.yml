@@ -1,6 +1,9 @@
 name: n8n
 services:
   n8n:
+    build:
+      context: . ## build Docker file location
+      dockerfile: Dockerfile ## build file name
     deploy:
       resources:
         limits:
@@ -8,7 +11,7 @@ services:
           memory: 2G           # 대규모 워크플로우 대비
         reservations:
           memory: 1G
-    image: n8nio/n8n:2.3.0
+    # image: n8nio/n8n:2.3.0
     container_name: n8n
     restart: unless-stopped    
     expose:
@@ -70,6 +73,7 @@ services:
       - "traefik.http.services.n8n.loadbalancer.server.port=${N8N_PORT}"
     volumes:
       - n8n-data:/home/node/.n8n
+      - ./custom:/home/node/.n8n/custom
     depends_on:
       n8n-valkey:
         condition: service_healthy
@@ -88,12 +92,15 @@ services:
         max-size: "5m"
         max-file: "2"
   n8n-worker:
+    build:
+      context: . ## build Docker file location
+      dockerfile: Dockerfile ## build file name
     deploy:
       resources:
         limits:
           cpus: '1.0'
           memory: 2G
-    image: n8nio/n8n:2.3.0
+    # image: n8nio/n8n:2.3.0
     container_name: n8n-worker
     restart: unless-stopped
     depends_on:
@@ -137,6 +144,10 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
+    volumes:
+      - n8n-data:/home/node/.n8n
+      - ./custom:/home/node/.n8n/custom
+
   n8n-valkey:
     deploy:
       resources:
