@@ -1,0 +1,19 @@
+name: vault
+services:
+  vault:
+    image: hashicorp/vault:1.21.2
+    container_name: vault
+    ports:
+      - "${VAULT_HOST_PORT}:${VAULT_PORT}"
+    environment:
+      VAULT_ADDR: 'http://0.0.0.0:${VAULT_PORT}'
+      VAULT_API_ADDR: 'http://0.0.0.0:${VAULT_PORT}'
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - vault-data:/vault/file
+      - ./config:/vault/config
+    command: server
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.65
