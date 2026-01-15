@@ -13,6 +13,7 @@ This repository is a comprehensive monorepo for hosting a local Home Lab environ
 - **Enterprise-Grade**: Includes Patroni for PostgreSQL HA, Kafka for streaming, and Keycloak for IAM.
 - **AI-Ready**: Integrated Ollama and Qdrant for local LLM and RAG experiments.
 - **Full Observability**: Pre-configured **LGTM Stack** (Loki, Grafana, Tempo, Mimir) with Alloy.
+- **Infrastructure as Code**: Managed via **Terraform** containerized environment.
 - **Agent-Augmented**: Structured specifically for collaboration with AI Agents (Cursor, Windsurf, Claude, Gemini) using the Context-First approach.
 
 ## 📂 Repository Structure

@@ -58,6 +58,7 @@ These services are critical for the infrastructure's operation.
 | Service | Category | Description |
 | :--- | :--- | :--- |
 | [**Traefik**](./traefik/README.md) | Ingress | Dynamic reverse proxy & SSL termination. |
+| [**Vault**](./vault/README.md) | Security | Secrets management & Encryption as a Service. |
 | [**Keycloak**](./keycloak/README.md) | Identity | Unified SSO and IAM provider. |
 | [**Observability**](./observability/README.md) | Monitoring | LGTM Stack (Grafana, Prometheus, Loki, Tempo, Alloy). |
 | [**PostgreSQL Cluster**](./postgresql-cluster/README.md) | Database | HA PostgreSQL with Patroni (Bitnami). |
@@ -75,6 +76,7 @@ Services for development, automation, and specific application needs.
 | [**Ollama**](./ollama/README.md) | AI | Local LLM inference. |
 | [**Qdrant**](./qdrant/README.md) | Vector DB | Vector similarity search engine. |
 | [**Storybook**](./storybook/README.md) | Frontend | UI component explorer and documentation. |
+| [**Terraform**](./terraform/README.md) | IaC | Infrastructure as Code management. |
 
 ### Data & Specialized Stores
 

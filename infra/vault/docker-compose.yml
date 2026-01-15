@@ -5,15 +5,36 @@ services:
     container_name: vault
     ports:
       - "${VAULT_HOST_PORT}:${VAULT_PORT}"
+    expose:
+      - ${VAULT_PORT}
     environment:
       VAULT_ADDR: 'http://0.0.0.0:${VAULT_PORT}'
       VAULT_API_ADDR: 'http://0.0.0.0:${VAULT_PORT}'
-    cap_add:
-      - IPC_LOCK
+      KEYCLOAK_URL: "${KEYCLOAK_URL}"
+      REALM_NAME: "${KEYCLOAK_REALM}"
+      CLIENT_ID: "${OAUTH2_PROXY_CLIENT_ID}"
+      CLIENT_SECRET: "${OAUTH2_PROXY_CLIENT_SECRET}"      
     volumes:
       - vault-data:/vault/file
-      - ./config:/vault/config
-    command: server
+      - ./config:/vault/config            
+    command: vault server -config=/vault/config/vault.hcl
+    cap_add:
+      - IPC_LOCK
     networks:
       infra_net:
-        ipv4_address: 172.19.0.65
+        ipv4_address: 172.19.0.75
+    labels:
+      # Enable self‑routing
+      - "traefik.enable=true"
+      # Dashboard router
+      - "traefik.http.routers.vault.rule=Host(`vault.${DEFAULT_URL}`)"
+      - "traefik.http.routers.vault.entrypoints=websecure"
+      - "traefik.http.routers.vault.tls=true"      
+      - "traefik.http.services.vault.loadbalancer.server.port=${VAULT_PORT}"
+
+networks:
+  infra_net:
+    external: true
+
+volumes:
+  vault-data:

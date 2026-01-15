@@ -50,6 +50,8 @@ infra/traefik/config/traefik.yml
 infra/traefik/dynamic/middleware.yml
 infra/traefik/dynamic/tls.yaml
 infra/valkey-cluster/config/valkey.conf
+infra/vault/config/vault.hcl
+infra/vault/config/certs/*.pem
 infra/**/.env
 infra/**/.env.*
 !infra/**/.env*.example

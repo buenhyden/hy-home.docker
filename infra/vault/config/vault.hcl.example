@@ -1,0 +1,57 @@
+# Vault Configuration File - Production Mode (Example)
+# This file serves as a template for `vault.hcl`.
+# Refer to the official documentation for more options:
+# https://developer.hashicorp.com/vault/docs/configuration
+
+# UI Configuration
+# Enable the web-based user interface.
+ui = true
+
+# Mlock Configuration
+# Disables the server from executing the "mlock" syscall to prevent memory from being swapped to disk.
+# Recommended 'true' for systems where swap is encrypted or disabled, or in containers.
+disable_mlock = true
+
+# Storage Configuration
+# Vault supports various storage backends. Raft (Integrated Storage) is the recommended
+# option for high availability and operational simplicity.
+storage "raft" {
+  # The directory where Vault data is stored.
+  # Ensure this path is mounted to a persistent volume in Docker.
+  path    = "/vault/file"
+  
+  # Unique identifier for this Vault node.
+  node_id = "node1"
+}
+
+# Listener Configuration
+# Defines how Vault listens for incoming API requests.
+listener "tcp" {
+  # Listen on all interfaces on port 8200.
+  address     = "0.0.0.0:8200"
+  
+  # TLS Configuration
+  # IMPORTANT: In a real production environment, `tls_disable` should be `0` (false),
+  # and valid certificate paths must be provided.
+  # For local testing or if SSL is terminated at a load balancer, you might leave it disabled.
+  tls_disable = 1
+
+  # TLS Certificate Paths (Uncomment if TLS is enabled)
+  # tls_cert_file = "/vault/config/certs/vault.crt"
+  # tls_key_file  = "/vault/config/certs/vault.key"
+}
+
+# API Address
+# The address clients (and other Vault nodes) should use to reach this Vault instance.
+api_addr = "http://127.0.0.1:8200"
+
+# Cluster Address
+# The address used for cluster replication traffic.
+cluster_addr = "https://127.0.0.1:8201"
+
+# Telemetry Configuration
+# Enable if you want to export metrics to Prometheus or Grafana Agent.
+telemetry {
+  disable_hostname = true
+  prometheus_retention_time = "30s"
+}

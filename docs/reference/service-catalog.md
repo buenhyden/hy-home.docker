@@ -7,6 +7,7 @@ Complete reference of all infrastructure services with access details.
 | Service | URL | Port | Purpose |
 | :--- | :--- | :--- | :--- |
 | **Traefik** | <https://dashboard.127.0.0.1.nip.io> | 80/443 | Edge Router & Ingress |
+| **Vault** | <https://vault.127.0.0.1.nip.io> | 8200 | Secrets Management |
 | **Keycloak** | <https://keycloak.127.0.0.1.nip.io> | - | Identity Provider (IAM) |
 | **OAuth2 Proxy** | - | 4180 | Auth Gateway |
 
@@ -53,6 +54,7 @@ Complete reference of all infrastructure services with access details.
 | **Harbor** | <https://harbor.127.0.0.1.nip.io> | 80/443 | Container Registry |
 | **Terrakube** | <https://terrakube.127.0.0.1.nip.io> | 8080 | IaC Platform |
 | **Storybook** | <https://storybook.127.0.0.1.nip.io> | 6006 | Component Documentation |
+| **Terraform** | Docker CLI | - | Infrastructure as Code |
 | **Airflow** | <https://airflow.127.0.0.1.nip.io> | 8080 | Data Orchestration |
 
 ## Utilities

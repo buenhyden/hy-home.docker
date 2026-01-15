@@ -35,6 +35,7 @@
 
 * **Storage Backend**: Raft (Integrated Storage) - 별도의 Consul 없이 Vault 자체적으로 고가용성 클러스터링 지원.
 * **Network**: `infra_net` (172.19.0.0/16) 내부에서 동작하며, 외부 노출은 Traefik을 통해 제어.
+* **URL**: `vault.${DEFAULT_URL}` (예: `vault.127.0.0.1.nip.io`)
 
 ### 3.2 연동 흐름 (Workflow)
 
@@ -53,36 +54,44 @@ graph TD
 
 ## 4. 상세 구성 가이드 (Configuration Guide)
 
-### 4.1 Docker Compose 정의 (권장)
+### 4.1 Docker Compose 정의
 
-`infra/vault/docker-compose.yml` (예시)
-
-```yaml
-services:
-  vault:
-    image: hashicorp/vault:1.15
-    container_name: vault
-    ports:
-      - "8200:8200"
-    environment:
-      VAULT_ADDR: 'http://0.0.0.0:8200'
-      VAULT_API_ADDR: 'http://0.0.0.0:8200'
-    cap_add:
-      - IPC_LOCK
-    volumes:
-      - vault-data:/vault/file
-      - ./config:/vault/config
-    command: server
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.xx
-```
+`infra/vault/docker-compose.yml` 참조.
+`hashicorp/vault` 최신 이미지를 사용하며, `IPC_LOCK` capability를 추가하여 메모리 스왑을 방지합니다.
 
 ### 4.2 초기 설정 프로세스 (Initialization)
 
-1. **Initialize**: `vault operator init` (Unseal Key 5개, Root Token 1개 생성)
-2. **Unseal**: `vault operator unseal <KEY>` (최소 3개 키 입력 필요)
-3. **Login**: `vault login <ROOT_TOKEN>`
+Vault는 처음 실행 시 **Sealed** 상태로 시작됩니다. 데이터를 읽고 쓰기 위해서는 **Unseal** 과정이 필요합니다.
+
+1. **Initialize**: 초기화 및 키 생성
+
+    ```bash
+    docker compose exec vault vault operator init
+    ```
+
+    * **출력된 Unseal Key 5개와 Root Token을 반드시 안전한 곳(`infra/.env` 등)에 저장하세요.**
+    * 예시:
+
+        ```
+        Unseal Key 1: UZ59...
+        Unseal Key 2: +jR3...
+        ...
+        Initial Root Token: hvs....
+        ```
+
+2. **Unseal**: 봉인 해제 (3개의 키 필요)
+
+    ```bash
+    docker compose exec vault vault operator unseal <Unseal Key 1>
+    docker compose exec vault vault operator unseal <Unseal Key 2>
+    docker compose exec vault vault operator unseal <Unseal Key 3>
+    ```
+
+3. **Login**: 루트 로그인
+
+    ```bash
+    docker compose exec vault vault login <Initial Root Token>
+    ```
 
 ### 4.3 권장 엔진 활성화
 
@@ -123,11 +132,6 @@ spring:
       app-role:
         role-id: ${VAULT_ROLE_ID}
         secret-id: ${VAULT_SECRET_ID}
-      kv:
-        enabled: true
-      database:
-        enabled: true
-        role: postgres-readonly
 ```
 
 ### 5.2 Go / Python / Node.js
@@ -140,94 +144,53 @@ spring:
 
 ### 6.1 보안 (Security)
 
-* **Production Hardening**: 프로덕션 환경에서는 반드시 **TLS**를 적용해야 합니다.
-* **Unseal Strategy**: 서버 재시작 시마다 수동 Unseal이 필요하므로, AWS KMS나 GCP KMS를 이용한 **Auto Unseal** 구성을 고려하거나, 자동화 스크립트를 주의해서 관리해야 합니다.
-* **Access Control**: Root Token은 초기 설정 외에는 사용하지 말고, 용도별 Policy가 적용된 Token이나 AppRole을 사용해야 합니다.
+* **Production Hardening**: 프로덕션 환경에서는 반드시 **TLS**를 적용해야 합니다. (Traefik이 TLS를 처리하더라도 내부 통신 암호화 권장)
+* **Auto Unseal**: 현재 구성은 수동 Unseal 방식입니다. 서버 재시작 시마다 수동으로 Unseal 해야 합니다. 프로덕션 레벨에서는 AWS KMS, GCP KMS 등을 이용한 Auto Unseal 구성을 권장합니다.
+  * *Local 개발 환경에서는 스크립트를 통해 자동화할 수 있으나, Unseal Key가 노출되지 않도록 주의해야 합니다.*
+* **Access Control**: Root Token은 초기 설정 및 비상용으로만 사용하고, 평소에는 정책(Policy)이 적용된 사용자 Token이나 AppRole을 사용하세요.
 
 ### 6.2 백업 (Backup)
 
 * Raft Storage의 스냅샷 기능을 이용하여 주기적으로 데이터를 백업해야 합니다.
 
     ```bash
-    vault operator raft snapshot save /vault/data/backup.snap
+    vault operator raft snapshot save /vault/file/backup.snap
     ```
 
 ---
 
 ## 7. Vault CLI & Docker 연동 가이드
 
-Vault를 Docker 컨테이너로 실행할 때 CLI를 사용하는 방법에는 크게 두 가지가 있습니다.
-
 ### 7.1 Docker 컨테이너 내부 실행 (권장)
-
-별도의 로컬 설치 없이, 실행 중인 Vault 컨테이너 내부의 CLI를 직접 사용하는 방법입니다. 호스트 환경에 영향을 주지 않아 가장 깔끔합니다.
-
-**기본 구문:**
 
 ```bash
 docker compose exec vault vault <command>
 ```
 
-**주요 명령어 예시:**
+주요 명령어:
 
-1. **상태 확인**:
-
-    ```bash
-    docker compose exec vault vault status
-    ```
-
-2. **로그인**:
-    (컨테이너 내부는 이미 `VAULT_ADDR=http://127.0.0.1:8200`으로 설정되어 있음)
-
-    ```bash
-    docker compose exec vault vault login
-    # Token 입력 프롬프트가 뜨면 입력
-    ```
-
-3. **시크릿 쓰기 (KV Engine)**:
-
-    ```bash
-    docker compose exec vault vault kv put secret/my-app/config apiKey="1234-abcd" dbPass="s3cr3t"
-    ```
-
-4. **시크릿 읽기**:
-
-    ```bash
-    docker compose exec vault vault kv get secret/my-app/config
-    ```
+* `vault status`: 상태 확인 (Sealed 여부 등)
+* `vault kv put secret/my-app/config key=value`: 시크릿 저장
+* `vault kv get secret/my-app/config`: 시크릿 조회
 
 ### 7.2 로컬 호스트(PC)에서 실행
 
-로컬 PC(Windows/Mac)에 Vault 바이너리를 설치하고, Docker로 실행 중인 Vault 서버에 원격 접속하는 방법입니다.
+로컬 PC에 Vault CLI가 설치된 경우:
 
-1. **Vault CLI 설치**:
-    * Windows (Scoop): `scoop install vault`
-    * MacOS (Brew): `brew install vault`
+1. 환경 변수 설정 (Windows PowerShell)
 
-2. **환경 변수 설정**:
-    로컬 CLI가 Docker 컨테이너의 포트(8200)를 바라보도록 설정합니다.
+    ```powershell
+    $env:VAULT_ADDR="http://127.0.0.1:8200"
+    ```
 
-    * **PowerShell (Windows)**:
-
-        ```powershell
-        $env:VAULT_ADDR="http://127.0.0.1:8200"
-        ```
-
-    * **Bash/Zsh (Mac/Linux)**:
-
-        ```bash
-        export VAULT_ADDR='http://127.0.0.1:8200'
-        ```
-
-3. **명령어 실행**:
-    이제 `docker compose exec` 없이 바로 `vault` 명령어를 사용할 수 있습니다.
+2. 명령어 실행
 
     ```bash
     vault status
-    vault login
     ```
 
 ### 7.3 문제 해결 (Troubleshooting)
 
-* **http vs https**: 현재 개발 환경 예시는 `http`를 사용합니다. CLI 접속 시 `Error checking seal status: Get "https://..."` 에러가 발생하면 `VAULT_ADDR`에 `http://` 스키마가 명시되었는지 확인하세요.
-* **Connection Refused**: `docker compose ps`로 `vault` 컨테이너가 정상 실행(Up) 중인지, 포트 8200이 바인딩되어 있는지 확인해야 합니다.
+* **Sealed Status**: 컨테이너 재시작 후 `Vault is sealed` 상태가 됩니다. 4.2절의 Unseal 과정을 다시 수행해야 합니다.
+* **Connection Refused**: 포트 8200이 열려있는지, 컨테이너가 정상 실행 중인지 확인하세요.
+* **Permission Denied**: 볼륨 마운트 경로(`.config`, `vault-data`)의 권한을 확인하세요.

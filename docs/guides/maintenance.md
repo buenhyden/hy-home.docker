@@ -86,6 +86,33 @@ docker exec redis-cluster-node-1 redis-cli -a $(cat ../secrets/redis_password.tx
 docker cp redis-cluster-node-1:/data/dump.rdb ./backups/redis/
 ```
 
+### Vault Backups & Maintenance
+
+**Backups (Snapshot)**:
+Vault's Raft storage allows for easy snapshots.
+
+```bash
+# Create a snapshot
+docker compose exec vault vault operator raft snapshot save /vault/file/backup_$(date +%Y%m%d).snap
+```
+
+**Unseal Process**:
+After a restart, Vault is **sealed**. You must manually unseal it using 3 of the 5 unseal keys generated during initialization.
+
+```bash
+cd infra/vault
+docker compose exec vault vault operator unseal <KEY1>
+docker compose exec vault vault operator unseal <KEY2>
+docker compose exec vault vault operator unseal <KEY3>
+```
+
+For more details, refer to `infra/vault/README.md`.
+
+### Terraform State
+
+If using local state (default), ensure `infra/terraform/*.tfstate` files are backed up or excluded from git if they contain sensitive data.
+It is highly recommended to use a remote backend (S3, GCS) for production workflows to manage state securely.
+
 ### MinIO Backups
 
 **Using MinIO Client (mc)**:
@@ -213,6 +240,8 @@ docker exec patroni1 patronictl list
 - Update images: `docker compose pull`
 - Review logs for errors
 - Check backup success
+- **Vault**: Check seal status (`vault status`)
+- **Terraform**: Review planned infrastructure changes
 
 **Monthly**:
 
@@ -226,6 +255,7 @@ docker exec patroni1 patronictl list
 - Full backup test (restore to test environment)
 - Security audit
 - Review and update access controls in Keycloak
+- Rotate Vault root token (if used) or check audit logs
 
 ## Disaster Recovery
 
@@ -238,6 +268,7 @@ docker exec patroni1 patronictl list
    - PostgreSQL dumps
    - Redis RDB files
    - MinIO buckets
+   - Vault snapshots (`vault operator raft snapshot restore`)
    - Volume tarballs
 5. **Verify services**
 6. **Update DNS/networking**

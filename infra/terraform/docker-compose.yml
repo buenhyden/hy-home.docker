@@ -1,0 +1,14 @@
+name: terraform
+services:
+  terraform:
+    image: hashicorp/terraform:latest
+    container_name: terraform
+    volumes:
+      - ./workspace:/workspace
+      # - $HOME/.config/gcloud:/root/.config/gcloud # Optional: For GCP Auth
+      - $HOME/.aws:/root/.aws # Optional: For AWS Auth
+      - $HOME/.azure:/root/.azure # Optional: For Azure Auth
+    working_dir: /workspace
+    entrypoint: ["terraform"]
+    networks:
+      - infra_net

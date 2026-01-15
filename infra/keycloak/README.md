@@ -117,3 +117,21 @@ To map Keycloak groups to OIDC token claims (useful for RBAC):
 - **Auth URL**: `https://kauth.kakao.com/oauth/authorize`
 - **Token URL**: `https://kauth.kakao.com/oauth/token`
 - **User Info**: `https://kapi.kakao.com/v2/user/me`
+
+### Redirect URI
+
+```text
+http://keycloak.${DEFAULT_URL}/auth/realms/hy-home.realm/protocol/openid-connect/auth
+https://vault.${DEFAULT_URL}/ui/vault/auth/oidc/oidc/callback
+https://vault.${DEFAULT_URL}/oidc/callback
+https://grafana.${DEFAULT_URL}/login/generic_oauth
+https://auth.${DEFAULT_URL}/oauth2/callback
+https://grafana.${DEFAULT_URL}/login
+```
+
+### Valid post logout redirect URIs
+
+```text
+https://keycloak.${DEFAULT_URL}/realms/hy-home.realm/protocol/openid-connect/logout?post_logout_redirect_uri=https://grafana.${DEFAULT_URL}/login
+https://grafana.${DEFAULT_URL}/login
+```
