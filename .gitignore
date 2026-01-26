@@ -57,6 +57,7 @@ infra/**/.env.*
 !infra/**/.env*.example
 # SSH
 projects/.ssh
+projects/.env
 # secrets
 secrets/*.txt
 
