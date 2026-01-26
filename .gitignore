@@ -13,16 +13,13 @@ archive/supabase/.env
 archive/harbor/
 archive/클라우드_취약점_점검_가이드.pdf
 archive/Infisical Emergency Kit.pdf
+archive/.env
+archive/hosts.txt
 # Cert
 certs/*.pem
-# Document
-
 # Example
-examples/.env
 examples/harbor
 examples/keycloak
-examples/hosts.txt
-
 # Infra Configure Files related to secrets
 infra/.env
 !infra/.env.example
