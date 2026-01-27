@@ -8,7 +8,7 @@ jobs:
     stale:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/stale@v9
+            - uses: actions/stale@v10
               with:
                   stale-issue-message:
                       "이 이슈는 소통이 없어 stale 상태로 표시되었습니다. 7일
