@@ -1,54 +1,72 @@
-# Hy-Home Docker Infrastructure
+# 🏠 Hy-Home Docker Infrastructure
 
-이 저장소는 확장 가능한 홈 서버 및 AI 최적화 개발 환경을 제공하기 위한 Docker 기반 인프라 프로젝트입니다. 고가용성 데이터베이스, 강력한 관측성(Observability) 스택, 그리고 로컬 LLM 환경을 포함한 현대적인 마이크로서비스 인프라를 지향합니다.
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
-## 🌟 주요 특징
+**Hy-Home Docker**는 확장 가능하고 안정적인 홈 서버 및 AI 최적화 개발 환경을 위한 **Docker 기반 인프라 프로젝트**입니다.
+복잡한 마이크로서비스 아키텍처를 로컬 환경에서 손쉽게 구축하고 관리할 수 있도록 설계되었습니다.
 
-- **Modular Architecture**: 서비스별 분리된 설정과 `include` 기반의 유연한 오케스트레이션.
-- **AI-Optimized**: 로컬 LLM(Ollama) 및 벡터 DB(Qdrant) 사전 구성.
-- **Enterprise Grade**: 고가용성 PG 클러스터 및 전용 관리 레이어 구축.
-- **Full Observability**: 지표, 로그, 트레이스를 아우르는 일관된 모니터링 체계.
-- **Standard Governance**: AI 에이전트 친화적인 규칙과 구조화된 설계 원칙 준수.
+> 📖 **자세한 문서는 [docs/README.md](docs/README.md)에서 확인하실 수 있습니다.**
 
-## 📂 저장소 구조
+---
 
-| 디렉토리 | 설명 |
-| --- | --- |
-| [**infra/**](file:///d:/hy-home.docker/infra/README.md) | Docker Compose 기반 인프라 서비스 설정 모음 |
-| **projects/** | 실제 구축될 웹 앱 및 개발 프로젝트 폴더 |
-| **scripts/** | 인프라 관리 및 자동화를 위한 전용 스크립트 |
-| **docs/** | ADR(Architectural Decision Records) 및 상세 가이드 |
+## 🚀 주요 특징
 
-## 📐 시스템 아키텍처
+- **Modular Architecture**: 서비스별로 독립된 설정(`infra/<service>`)과 Docker Compose의 `include`를 활용한 유연한 구성.
+- **AI-Ready Stack**: **Ollama** (LLM), **Qdrant** (Vector DB), **n8n** (Automation) 사전 통합.
+- **Enterprise Observability**: **Grafana, Prometheus, Loki, Tempo**를 통한 풀 스택 모니터링.
+- **Security First**: **Keycloak**(SSO), **Vault**, **OAuth2 Proxy**를 통한 철저한 보안/인증 레이어.
 
-상세한 설계 원칙과 기술 스택 구성은 [**ARCHITECTURE.md**](file:///d:/hy-home.docker/ARCHITECTURE.md)를 참조하십시오. 이 프로젝트는 C4 모델링을 활용하여 시스템 경계를 정의하며, Presentation -> Domain -> Data 계층의 단방향 의존성을 유지합니다.
+---
 
-## 🚀 시작하기
+## 📂 저장소 안내
 
-### 1. 사전 준비
+| 디렉토리 | 설명 | 상세 문서 |
+| --- | --- | --- |
+| [**`infra/`**](infra/) | Docker Compose 기반 인프라 서비스 | [Stack Details](docs/02-infrastructure-stack.md) |
+| [**`projects/`**](projects/) | 인프라 위에서 구동될 애플리케이션 | - |
+| [**`docs/`**](docs/) | 프로젝트 전체 상세 문서 및 가이드 | [Documentation Index](docs/README.md) |
+| [**`scripts/`**](scripts/) | 배포 및 관리 자동화 스크립트 | [Dev Guide](docs/03-development-and-contribution.md) |
 
-- Docker Desktop (Windows) 또는 Docker Engine (Linux) 설치
-- 호스트의 경로 설정 (`.env` 파일 수정 시 사용)
+---
 
-### 2. 환경 설정
+## 🏁 빠른 시작 (Quick Start)
 
-`infra` 폴더로 이동하여 공통 환경 변수를 설정합니다.
+자세한 설치 가이드는 [Development Guide](docs/03-development-and-contribution.md)를 참조하세요.
+
+### 1. 설정
 
 ```bash
 cd infra
 cp .env.example .env
-# .env 파일 내의 볼륨 경로 및 도메인 설정을 수정하세요.
+# .env 파일 내의 DOMAIN 및 DATA_PATH 설정 필수
 ```
 
-### 3. 인프라 가동
+### 2. 실행
 
 ```bash
 docker compose up -d
 ```
 
-## 🤝 기여 및 거버넌스
+### 3. 접속
 
-이 저장소는 [CONTRIBUTING.md](file:///d:/hy-home.docker/CONTRIBUTING.md)에 명시된 가이드라인을 따릅니다. 모든 아키텍처적 의사 결정은 ADR로 관리됩니다.
+- **Traefik Dashboard**: `http://traefik.localhost` (또는 설정한 도메인)
+- **Grafana**: `http://grafana.localhost`
 
 ---
-© 2026 Hy-Home. All Rights Reserved.
+
+## 🤝 기여 (Contributing)
+
+이 프로젝트는 오픈 소스 기여를 환영합니다.
+기여하기 전에 다음 문서들을 꼭 확인해 주세요.
+
+- [**CONTRIBUTING.md**](CONTRIBUTING.md): 기여 가이드라인
+- [**Code of Conduct**](.github/CODE_OF_CONDUCT.md): 행동 강령
+- [**Architecture Guide**](docs/01-repository-structure.md): 구조 이해
+
+## 📝 License
+
+이 프로젝트는 **Apache License 2.0** 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
+
+---
+© 2026 Hy-Home Infrastructure Project.

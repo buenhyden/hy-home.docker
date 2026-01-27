@@ -1,36 +1,40 @@
 ---
-name: Bug Report
-about: Create a report to help us improve
+name: 🐞 Bug Report
+about: Create a report to help us improve the infrastructure
 title: "[BUG] "
 labels: bug
 assignees: ''
 ---
 
-## 1. Description
+## 🛑 Description
 
 A clear and concise description of what the bug is.
 
-## 2. Reproduction Steps
-
-Please link to a minimal reproduction (see `workflow-bug-fix.md`) or list steps:
+## 🕹️ Reproduction Steps
 
 1. Go to '...'
-2. Click on '...'
-3. Scroll down to '...'
-4. See error
+2. Perform action '...'
+3. See error: '...'
 
-## 3. Expected Behavior
+## 📊 Expected Behavior
 
 A clear and concise description of what you expected to happen.
 
-## 4. Environment
+## 💻 Environment Details
 
-- **OS**: [e.g. Windows]
-- **Browser**: [e.g. Chrome, Safari]
-- **Version**: [e.g. 22]
+- **OS**: [e.g. Windows 11, Ubuntu 22.04]
+- **Docker Version**: [e.g. 24.0.x]
+- **Docker Compose Version**: [e.g. 2.20.x]
+- **Affected Service**: [e.g. pg-ha, traefik, grafana]
 
-## 5. Logs / Evidence
+## 📜 Logs & Context
+
+### Terminal/Container Logs
 
 ```text
-Paste logs here
+Paste your logs here (docker compose logs <service>)
 ```
+
+### Additional context
+
+Add any other context about the problem here.

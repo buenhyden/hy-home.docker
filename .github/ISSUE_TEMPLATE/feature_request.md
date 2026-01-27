@@ -1,25 +1,27 @@
 ---
-name: Feature Request
+name: ✨ Feature Request
 about: Suggest an idea for this project
 title: "[FEAT] "
 labels: enhancement
 assignees: ''
 ---
 
-## 1. Problem Statement
+## 🚀 Problem Statement
 
 Is your feature request related to a problem? Please describe.
 *Ex: I'm always frustrated when...*
 
-## 2. Proposed Solution
+## 💡 Proposed Solution
 
-Describe the solution you'd like.
-*Ref: See PRD Template [REQ-PRD-xxx]*
+Describe the solution you'd like. Explain how it fits into the current architecture.
 
-## 3. Alternatives Considered
+## 📐 Impact & Architecture
 
-Describe alternatives you've considered.
+- **Affected Layer**: [e.g. Ingress, Database, AI]
+- **New Dependencies**: [List any new Docker images or libraries]
 
-## 4. Success Metrics
+## 🎯 Success Metrics
 
-- **[REQ-MET-01]** ...
+- [ ] Successful deployment in local environment.
+- [ ] Integration with current Observability stack.
+- [ ] Documentation updated in `docs/`.

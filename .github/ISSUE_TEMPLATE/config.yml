@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Questions & Discussions
+    url: https://github.com/buenhyden/hy-home.docker/discussions
+    about: 질문이나 아이디어가 있으신가요? Discussion에서 먼저 논의해 보세요.
+  - name: 📖 Documentation
+    url: https://github.com/buenhyden/hy-home.docker/tree/main/docs
+    about: 문제 해결 전에 문서를 먼저 확인해 보세요.

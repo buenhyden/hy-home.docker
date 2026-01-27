@@ -1,0 +1,22 @@
+name: Validate Docker Compose
+
+on:
+    pull_request:
+        paths:
+            - "infra/**"
+            - ".env.example"
+
+jobs:
+    validate:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Create .env from example
+              run: cp infra/.env.example infra/.env
+
+            - name: Check Docker Compose Config
+              run: |
+                  cd infra
+                  docker compose config > /dev/null
