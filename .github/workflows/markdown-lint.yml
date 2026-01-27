@@ -16,6 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Lint Markdown
-        uses: davidanson/markdownlint-cli2-action@v16
+        uses: davidanson/markdownlint-cli2-action@v22
         with:
           globs: '**/*.md'
