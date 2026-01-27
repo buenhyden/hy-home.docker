@@ -13,7 +13,7 @@ In the `hy-home.docker` environment, we run Terraform within a Docker container 
 
 ### Project Structure
 
-```
+```text
 /infra/terraform/
 ├── docker-compose.yml  # Defines the Terraform container
 ├── README.md           # This documentation

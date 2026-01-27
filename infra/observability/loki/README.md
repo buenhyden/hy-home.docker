@@ -37,6 +37,7 @@ The configuration file is located at `config/loki-config.yaml`.
 ## 📦 Storage
 
 Loki requires an Object Store (like AWS S3 or MinIO).
+
 - **Bucket**: `loki-bucket` (must be created in MinIO).
 - **Volume**: `loki-data` (Docker volume).
 

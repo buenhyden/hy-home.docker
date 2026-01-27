@@ -34,6 +34,7 @@ The configuration file is located at `config/config.yml`.
 ## 🔐 Secrets Management
 
 **⚠️ CAUTION:** `config.yml` may contain sensitive information (SMTP passwords, Webhook URLs).
+
 - **Do not commit `config.yml` to Git.**
 - The `.gitignore` should already exclude `config.yml`.
 - Use environment variables if possible, or ensure the file is securely managed.

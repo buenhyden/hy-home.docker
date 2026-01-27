@@ -31,6 +31,7 @@ The configuration files are located in the `config/` directory.
 ### Scrape Jobs
 
 This configuration includes monitoring for various infrastructure components:
+
 - **Self**: Prometheus, Alertmanager, Cadvisor, Alloy.
 - **Databases**: PostgreSQL Cluster, Redis Cluster, MongoDB (Mng), CouchDB.
 - **Middleware**: Kafka, Traefik, HAProxy.

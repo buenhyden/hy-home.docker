@@ -16,6 +16,7 @@ Grafana is configured primarily through **Environment Variables** in `docker-com
 
 Authentication (Keycloak OAuth2) is configured via environment variables in `infra/observability/docker-compose.yml`.
 Key variables include:
+
 - `GF_AUTH_GENERIC_OAUTH_CLIENT_ID`: OAuth2 Client ID (from `.env`)
 - `GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET`: OAuth2 Client Secret (from `.env`)
 - `GF_SECURITY_ADMIN_USER` / `PASSWORD`: Initial admin credentials.
@@ -36,6 +37,7 @@ Grafana uses "Provisioning" to automatically configure datasources and dashboard
 ## 📊 Dashboards
 
 Pre-configured dashboards are stored in `dashboards/*.json`:
+
 - **Infrastructure**: Node Exporter, cAdvisor.
 - **Databases**: PostgreSQL, Redis, MongoDB.
 - **Apps**: Keycloak, MinIO, N8n, Traefik, etc.

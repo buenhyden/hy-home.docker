@@ -40,6 +40,7 @@ The configuration file is located at `config/tempo.yaml`.
 ## 📦 Storage
 
 Tempo requires an Object Store.
+
 - **Bucket**: `tempo-bucket` (must be created in MinIO).
 - **Volume**: `tempo-data` (Docker volume, mostly for WAL).
 
