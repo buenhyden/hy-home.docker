@@ -69,8 +69,8 @@ secrets/*.txt
 !.agent/workflows/.gitkeep
 
 # opencode Skills
-.opencode/skill/
-!.opencode/skill/.gitkeep
+.opencode/skills/
+!.opencode/skills/.gitkeep
 
 
 
