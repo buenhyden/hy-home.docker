@@ -1,7 +1,7 @@
 name: terraform
 services:
   terraform:
-    image: hashicorp/terraform:latest
+    image: hashicorp/terraform:1.14.4
     container_name: terraform
     volumes:
       - ./workspace:/workspace

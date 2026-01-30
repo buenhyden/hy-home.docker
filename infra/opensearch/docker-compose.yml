@@ -76,7 +76,7 @@ services:
       retries: 3
 
 
-  opensearch-dashboards:    
+  opensearch-dashboards:
     image: opensearchproject/opensearch-dashboards:3.4.0
     container_name: opensearch-dashboards
     restart: unless-stopped
@@ -107,13 +107,19 @@ services:
     depends_on:
       opensearch:
         condition: service_healthy      
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${KIBANA_PORT}/api/status || wget -q --spider http://localhost:${KIBANA_PORT}/api/status || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     logging:
       driver: "json-file"
       options:
         max-size: "5m"
         max-file: "2"
 
-  opensearch-exporter:    
+  opensearch-exporter:
     image: prometheuscommunity/elasticsearch-exporter:v1.10.0
     container_name: opensearch-exporter
     restart: unless-stopped
@@ -133,6 +139,12 @@ services:
     depends_on:
       opensearch:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${ES_EXPORTER_PORT}/metrics || wget -q --spider http://localhost:${ES_EXPORTER_PORT}/metrics || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     logging:
       driver: "json-file"
       options:

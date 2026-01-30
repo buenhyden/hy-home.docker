@@ -9,7 +9,7 @@ This directory contains configurations for mail services. Currently, **MailHog**
 ### Active: MailHog
 
 - **Service Name**: `mailhog`
-- **Image**: `mailhog/mailhog`
+- **Image**: `mailhog/mailhog:v1.0.1`
 - **Role**: Email testing tool for developers
 - **Internal SMTP Port**: `1025`
 - **Web UI Port**: `${MAILHOG_UI_PORT}`

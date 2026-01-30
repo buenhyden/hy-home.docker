@@ -25,8 +25,9 @@ The configuration file is located at `config/loki-config.yaml`.
 2. **Edit `loki-config.yaml`:**
     - **Storage (S3/MinIO)**: This setup uses MinIO for object storage.
         - `endpoint`: `http://minio:9000`
-        - `access_key_id`: Ensure this matches `MINIO_ROOT_USER` in `.env` (default: `minio_user`)
-        - `secret_access_key`: **Update this** to match `MINIO_ROOT_PASSWORD` in `.env`.
+        - `access_key_id`: `${MINIO_APP_USERNAME}` (환경변수로 주입)
+        - `secret_access_key`: `${MINIO_APP_USER_PASSWORD}` (환경변수로 주입)
+        - `-config.expand-env=true` 옵션으로 환경변수 치환이 활성화됩니다.
 
 ### Key Features
 
@@ -51,7 +52,7 @@ Loki requires an Object Store (like AWS S3 or MinIO).
 ```text
 loki/
 ├── config/
-│   ├── loki-config.yaml          # Actual configuration (Ignored by Git)
+│   ├── loki-config.yaml          # Environment variable 기반 설정
 │   └── loki-config.yaml.example  # Template configuration
 └── README.md
 ```

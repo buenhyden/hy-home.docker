@@ -125,7 +125,7 @@ services:
   couchdb-cluster-init:
     profiles:
       - couchdb
-    image: curlimages/curl
+    image: curlimages/curl:8.18.0
     container_name: couchdb-cluster-init
     restart: "no"
     depends_on:

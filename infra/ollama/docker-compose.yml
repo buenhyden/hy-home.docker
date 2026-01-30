@@ -62,7 +62,7 @@ services:
         limits:
           cpus: '1.0'
           memory: 1G
-    image: ghcr.io/open-webui/open-webui:main
+    image: ghcr.io/open-webui/open-webui:v0.7.2
     container_name: open-webui
     # ports:
     #   - "${OLLAMA_WEBUI_HOST_PORT}:${OLLAMA_WEBUI_PORT}" # 브라우저에서 localhost:3000 으로 접속
@@ -107,7 +107,7 @@ services:
         limits:
           cpus: '0.1'
           memory: 128M
-    image: lucabecker42/ollama-exporter:latest
+    image: lucabecker42/ollama-exporter:1.0.1
     container_name: ollama-exporter
     environment:
       - OLLAMA_HOST=ollama:${OLLAMA_PORT}

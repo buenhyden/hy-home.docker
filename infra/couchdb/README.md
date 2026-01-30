@@ -48,7 +48,7 @@ graph TB
 | :--- | :--- | :--- | :--- |
 | `couchdb-1` | `couchdb:3.5.1` | Seed & Management Node | *(Implicit)* |
 | `couchdb-2..3` | `couchdb:3.5.1` | Cluster Data Member | *(Implicit)* |
-| `couchdb-cluster-init`| `curlimages/curl`| Setup Assistant (One-shot) | 0.1 CPU / 128MB |
+| `couchdb-cluster-init`| `curlimages/curl:8.18.0`| Setup Assistant (One-shot) | 0.1 CPU / 128MB |
 
 ## Networking
 

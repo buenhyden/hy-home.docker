@@ -41,8 +41,8 @@ graph TB
 | Service | Image | Role | Resources |
 | :--- | :--- | :--- | :--- |
 | `ollama` | `ollama/ollama:0.13.5` | LLM Inference Server | 4 CPU / 8GB RAM / 1 GPU |
-| `open-webui` | `open-webui/open-webui:main` | Chat UI & RAG Orchestrator | 1 CPU / 1GB RAM |
-| `ollama-exporter` | `lucabecker42/ollama-exporter` | Metrics Exporter | 0.1 CPU / 128MB |
+| `open-webui` | `ghcr.io/open-webui/open-webui:v0.7.2` | Chat UI & RAG Orchestrator | 1 CPU / 1GB RAM |
+| `ollama-exporter` | `lucabecker42/ollama-exporter:1.0.1` | Metrics Exporter | 0.1 CPU / 128MB |
 
 ## Networking
 

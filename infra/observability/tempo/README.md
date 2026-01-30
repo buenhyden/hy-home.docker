@@ -26,8 +26,9 @@ The configuration file is located at `config/tempo.yaml`.
 2. **Edit `tempo.yaml`:**
     - **Storage (S3/MinIO)**: This setup uses MinIO for trace storage.
         - `endpoint`: `minio:9000`
-        - `access_key`: Ensure this matches `MINIO_ROOT_USER` in `.env` (default: `minio_user`)
-        - `secret_key`: **Update this** to match `MINIO_ROOT_PASSWORD` in `.env`.
+        - `access_key`: `${MINIO_APP_USERNAME}` (환경변수로 주입)
+        - `secret_key`: `${MINIO_APP_USER_PASSWORD}` (환경변수로 주입)
+        - `-config.expand-env=true` 옵션으로 환경변수 치환이 활성화됩니다.
     - **Remote Write**:
         - The `metrics_generator` sends metrics to `http://prometheus:9090/api/v1/write`. Ensure Prometheus is reachable.
 
@@ -54,7 +55,7 @@ Tempo requires an Object Store.
 ```text
 tempo/
 ├── config/
-│   ├── tempo.yaml          # Actual configuration (Ignored by Git)
+│   ├── tempo.yaml          # Environment variable 기반 설정
 │   └── tempo.yaml.example  # Template configuration
 └── README.md
 ```

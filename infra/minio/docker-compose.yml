@@ -107,6 +107,7 @@ services:
         mc  mb myminio/tempo-bucket --ignore-existing
         mc  mb myminio/loki-bucket --ignore-existing
         mc  mb myminio/cdn-bucket --ignore-existing
+        mc  mb myminio/doc-intel-assets --ignore-existing
 
         echo "[7] cdn-bucket public 설정 (선택)..."
         mc  anonymous set public myminio/cdn-bucket || true

@@ -22,7 +22,7 @@ The configuration file is located at `config/config.yml`.
 
 2. **Edit `config.yml`:**
     - Update email settings (`smtp_auth_username`, `smtp_auth_password`) if you want email notifications.
-    - Update Slack Webhook URL (`<webhook_url>`) if you want Slack notifications.
+    - Slack Webhook은 파일에 직접 넣지 않고 `SLACK_ALERTMANAGER_WEBHOOK_URL`로 주입합니다.
     - Ensure the `route.receiver` matches your desired default receiver.
 
 ### Key Settings
@@ -33,11 +33,11 @@ The configuration file is located at `config/config.yml`.
 
 ## 🔐 Secrets Management
 
-**⚠️ CAUTION:** `config.yml` may contain sensitive information (SMTP passwords, Webhook URLs).
+**⚠️ CAUTION:** `config.yml` may contain sensitive information (SMTP passwords).
 
 - **Do not commit `config.yml` to Git.**
 - The `.gitignore` should already exclude `config.yml`.
-- Use environment variables if possible, or ensure the file is securely managed.
+- Slack Webhook은 `SLACK_ALERTMANAGER_WEBHOOK_URL` 환경변수로 주입됩니다.
 
 ## 🔗 Integration
 
@@ -49,7 +49,7 @@ The configuration file is located at `config/config.yml`.
 ```text
 alertmanager/
 ├── config/
-│   ├── config.yml          # Actual configuration (Ignored by Git)
+│   ├── config.yml          # Template (SLACK_ALERTMANAGER_WEBHOOK_URL 치환)
 │   └── config.yml.example  # Template configuration
 └── README.md
 ```

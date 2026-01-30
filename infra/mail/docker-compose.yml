@@ -40,7 +40,7 @@ services:
   mailhog:
     profiles:
       - mail
-    image: mailhog/mailhog
+    image: mailhog/mailhog:v1.0.1
     container_name: mailhog
     restart: unless-stopped
     # SMTP 포트(1025)는 내부용, UI 포트(8025)는 Traefik으로 노출
