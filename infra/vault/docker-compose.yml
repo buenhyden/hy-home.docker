@@ -11,15 +11,15 @@ services:
     expose:
       - ${VAULT_PORT}
     environment:
-      VAULT_ADDR: 'http://0.0.0.0:${VAULT_PORT}'
-      VAULT_API_ADDR: 'http://0.0.0.0:${VAULT_PORT}'
+      VAULT_ADDR: "http://0.0.0.0:${VAULT_PORT}"
+      VAULT_API_ADDR: "http://0.0.0.0:${VAULT_PORT}"
       KEYCLOAK_URL: "${KEYCLOAK_URL}"
       REALM_NAME: "${KEYCLOAK_REALM}"
       CLIENT_ID: "${OAUTH2_PROXY_CLIENT_ID}"
-      CLIENT_SECRET: "${OAUTH2_PROXY_CLIENT_SECRET}"      
+      CLIENT_SECRET: "${OAUTH2_PROXY_CLIENT_SECRET}"
     volumes:
       - vault-data:/vault/file
-      - ./config:/vault/config            
+      - ./config:/vault/config
     command: vault server -config=/vault/config/vault.hcl
     cap_add:
       - IPC_LOCK
@@ -27,7 +27,11 @@ services:
       infra_net:
         ipv4_address: 172.19.0.75
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS \"http://localhost:${VAULT_PORT}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200\" || wget -q --spider \"http://localhost:${VAULT_PORT}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200\" || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          'curl -fsS "http://localhost:${VAULT_PORT}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || wget -q --spider "http://localhost:${VAULT_PORT}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -38,12 +42,22 @@ services:
       # Dashboard router
       - "traefik.http.routers.vault.rule=Host(`vault.${DEFAULT_URL}`)"
       - "traefik.http.routers.vault.entrypoints=websecure"
-      - "traefik.http.routers.vault.tls=true"      
+      - "traefik.http.routers.vault.tls=true"
       - "traefik.http.services.vault.loadbalancer.server.port=${VAULT_PORT}"
-
-networks:
-  infra_net:
-    external: true
 
 volumes:
   vault-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_SECRETS_DIR}/vault
+
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

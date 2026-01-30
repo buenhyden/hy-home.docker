@@ -305,3 +305,12 @@ services:
     expose:
       - "${STATSD_PROMETHEUS_PORT}"  # Prometheus가 긁어갈 포트
       - "${STATSD_AIRFLOW_PORT}"  # Airflow가 보낼 포트
+
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

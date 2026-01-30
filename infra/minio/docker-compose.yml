@@ -4,7 +4,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 1G
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio
@@ -75,7 +75,7 @@ services:
       - minio_app_user_password
     depends_on:
       minio:
-        condition: service_healthy  # MinIO가 헬스체크 통과할 때까지 대기 (필수)
+        condition: service_healthy # MinIO가 헬스체크 통과할 때까지 대기 (필수)
     entrypoint: ["/bin/sh"]
     command:
       - -c
@@ -124,5 +124,22 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
+
+volumes:
+  minio-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_MINIO_DATA_DIR}/data
+
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

@@ -125,3 +125,26 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
+
+volumes:
+  ollama-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_AI_MODEL_DIR}/ollama
+  ollama-webui:
+  #   driver: local
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: ${DEFAULT_AI_MODEL_DIR}/webui
+  
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

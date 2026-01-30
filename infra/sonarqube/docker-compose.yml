@@ -1,14 +1,13 @@
-
 name: sonarqube
 services:
-  sonarqube:        
+  sonarqube:
     profiles:
       - sonarqube
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 1G    
+          cpus: "1.0"
+          memory: 1G
     image: sonarqube:26.1.0.118079-community
     container_name: sonarqube
     hostname: sonarqube
@@ -21,7 +20,7 @@ services:
       timeout: 5s
       retries: 10
       start_period: 60s
-    volumes:      
+    volumes:
       - sonarqube-data-volume:/opt/sonarqube/data
       - sonarqube-logs-volume:/opt/sonarqube/logs
     networks:
@@ -30,8 +29,8 @@ services:
       driver: "json-file"
       options:
         max-size: "5m"
-        max-file: "2" 
-    environment:      
+        max-file: "2"
+    environment:
       - SONAR_JDBC_URL=jdbc:postgresql://${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${SONARQUBE_DBNAME}
       - SONAR_JDBC_USERNAME=${SONARQUBE_DB_USER}
       - SONAR_JDBC_PASSWORD=${SONARQUBE_DB_PASSWORD}
@@ -43,3 +42,26 @@ services:
       - "traefik.http.routers.sonarqube.entrypoints=websecure"
       - "traefik.http.routers.sonarqube.tls=true"
       - "traefik.http.services.sonarqube.loadbalancer.server.port=${SONARQUBE_PORT}"
+
+volumes:
+  sonarqube-data-volume:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${SONARQUBE_DEFAULT_DIR}/data
+  sonarqube-logs-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${SONARQUBE_DEFAULT_DIR}/logs
+
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

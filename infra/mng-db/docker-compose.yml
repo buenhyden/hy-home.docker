@@ -4,7 +4,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
     image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
     container_name: mng-valkey
@@ -29,11 +29,7 @@ services:
       - "${VALKEY_PORT}"
       - "${VALKEY_BUS_PORT}"
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG",
-        ]
+      test: ["CMD-SHELL", "V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG"]
       interval: 10s
       timeout: 3s
       retries: 5
@@ -47,7 +43,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: mng-valkey-exporter
@@ -73,7 +69,7 @@ services:
           -redis.addr=redis://mng-valkey:6379 \
           -redis.password="$VALKEY_PASSWORD" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT}
-    depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
+    depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       mng-valkey:
         condition: service_healthy
     logging:
@@ -86,7 +82,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
     image: redis/redisinsight:3.0.1
     container_name: redisinsight
@@ -119,7 +115,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 1G
     image: postgres:17-bookworm
     container_name: mng-pg
@@ -160,19 +156,19 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 128M
     image: postgres:17-alpine
     container_name: mng-pg-init
     restart: "no"
-    networks:      
-      - infra_net    
+    networks:
+      - infra_net
     environment:
       PGPASSWORD_SUPERUSER: ${PGPASSWORD_SUPERUSER}
       POSTGRES_HOSTNAME: ${POSTGRES_HOSTNAME}
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_DB: ${POSTGRES_DB}              
+      POSTGRES_DB: ${POSTGRES_DB}
     command: >
       sh -c "
       echo 'DB 연결 대기 중...';
@@ -184,7 +180,7 @@ services:
       psql -h "$$POSTGRES_HOSTNAME" -p "$$POSTGRES_PORT" -U "$$POSTGRES_USER" -d "$${POSTGRES_DB}" -f /home/postgres/init-scripts/init_users_dbs.sql;
       unset PGPASSWORD;
       echo 'SQL 스크립트 실행 완료.';"
-    volumes:      
+    volumes:
       - ./init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql
     depends_on:
       mng-pg:
@@ -204,7 +200,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: mng-pg-exporter
@@ -231,3 +227,32 @@ services:
       interval: 30s
       timeout: 5s
       retries: 5
+
+volumes:
+  mng-pg-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/mng-pg
+  mng-valkey-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/mng-node
+  redisinsight-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_REDIS_DATA_DIR}/redisinsight
+
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

@@ -3,8 +3,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 2G           # 대규모 워크플로우 대비
+          cpus: "1.0"
+          memory: 2G # 대규모 워크플로우 대비
         reservations:
           memory: 1G
     image: n8nio/n8n:2.3.0
@@ -49,17 +49,17 @@ services:
       - EXECUTIONS_MODE=queue
       # --- [모니터링 설정 추가] ---
       - N8N_METRICS=true
-      - N8N_METRICS_PREFIX=n8n_  # 메트릭 이름 앞에 붙을 접두사 (관리하기 편함)
-      - N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL=true  # 어떤 워크플로우가 부하를 주는지 식별 가능
-      - N8N_METRICS_INCLUDE_NODE_TYPE_LABEL=true   # 어떤 노드(HTTP, Cron 등)가 많이 쓰이는지 확인
+      - N8N_METRICS_PREFIX=n8n_ # 메트릭 이름 앞에 붙을 접두사 (관리하기 편함)
+      - N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL=true # 어떤 워크플로우가 부하를 주는지 식별 가능
+      - N8N_METRICS_INCLUDE_NODE_TYPE_LABEL=true # 어떤 노드(HTTP, Cron 등)가 많이 쓰이는지 확인
       - N8N_METRICS_INCLUDE_QUEUE_METRICS=true
       # --- Queue mode / Redis 연결 ---
-      - QUEUE_BULL_REDIS_HOST=${MNG_REDIS_HOST}    # 같은 docker 네트워크 이름
+      - QUEUE_BULL_REDIS_HOST=${MNG_REDIS_HOST} # 같은 docker 네트워크 이름
       - QUEUE_BULL_REDIS_PORT=${REDIS_PORT}
-      - QUEUE_BULL_PREFIX=n8n              # Redis key prefix (선택)
+      - QUEUE_BULL_PREFIX=n8n # Redis key prefix (선택)
       - QUEUE_BULL_REDIS_PASSWORD_FILE=/run/secrets/redis_password
-      - QUEUE_HEALTH_CHECK_ACTIVE=true     # Redis 연결 상태 내부 헬스체크 활성화
-      - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true  # 수동 실행도 워커로 보내기 (선택)
+      - QUEUE_HEALTH_CHECK_ACTIVE=true # Redis 연결 상태 내부 헬스체크 활성화
+      - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true # 수동 실행도 워커로 보내기 (선택)
     labels:
       - "traefik.enable=true"
       # n8n UI & Webhook 라우터 (https://n8n.${DEFAULT_URL})
@@ -75,7 +75,7 @@ services:
       n8n-redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost ${N8N_PORT} || exit 1"]  # 간단한 포트 체크 방식
+      test: ["CMD-SHELL", "nc -z localhost ${N8N_PORT} || exit 1"] # 간단한 포트 체크 방식
       interval: 10s
       timeout: 5s
       retries: 5
@@ -92,7 +92,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 2G
     image: n8nio/n8n:2.3.0
     container_name: n8n-worker
@@ -131,7 +131,7 @@ services:
       - redis_password
     networks:
       infra_net:
-        ipv4_address: 172.19.0.17   # 여유 IP 하나
+        ipv4_address: 172.19.0.17 # 여유 IP 하나
     command: worker
     logging:
       driver: "json-file"
@@ -142,9 +142,9 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 256M
-    image: redis:8.4.0-bookworm  # Redis 8.4.x
+    image: redis:8.4.0-bookworm # Redis 8.4.x
     container_name: n8n-redis
     secrets:
       - redis_password
@@ -167,11 +167,7 @@ services:
       - "${REDIS_PORT}"
       - "${REDIS_BUS_PORT}"
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a $REDIS_PASSWORD -h 127.0.0.1 -p 6379 ping | grep PONG",
-        ]
+      test: ["CMD-SHELL", "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a $REDIS_PASSWORD -h 127.0.0.1 -p 6379 ping | grep PONG"]
       interval: 10s
       timeout: 3s
       retries: 5
@@ -185,7 +181,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: n8n-redis-exporter
@@ -211,7 +207,7 @@ services:
           -redis.addr=redis://n8n-redis:6379 \
           -redis.password="$REDIS_PASSWORD" \
           -web.listen-address=:${REDIS_EXPORTER_PORT}
-    depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
+    depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       n8n-redis:
         condition: service_healthy
     logging:
@@ -219,3 +215,20 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
+
+volumes:
+  n8n-redis-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_REDIS_DATA_DIR}/n8n-node
+
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

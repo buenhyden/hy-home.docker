@@ -7,7 +7,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 1G
         reservations:
           memory: 512M
@@ -17,10 +17,10 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
-      - '--web.enable-lifecycle'  # 설정 리로드 허용
-      - '--web.enable-remote-write-receiver'
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+      - "--web.enable-lifecycle" # 설정 리로드 허용
+      - "--web.enable-remote-write-receiver"
     volumes:
       - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/config/alert_rules:/etc/prometheus/alert_rules
@@ -55,7 +55,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 1G
     image: grafana/loki:3.6.3
     container_name: infra-loki
@@ -91,7 +91,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 1G
         reservations:
           memory: 512M
@@ -130,7 +130,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
     image: grafana/grafana:12.3.1
     container_name: infra-grafana
@@ -149,7 +149,7 @@ services:
       # [2] 보안 및 기본 관리자 계정 (초기 세팅용)
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USERNAME}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
-      - GF_USERS_ALLOW_SIGN_UP=false          # 일반 회원가입 비활성화 (OAuth로만 가입)
+      - GF_USERS_ALLOW_SIGN_UP=false # 일반 회원가입 비활성화 (OAuth로만 가입)
       # (선택) 자동 생성된 유저의 기본 권한 (Viewer, Editor, Admin)
       - GF_USERS_AUTO_ASSIGN_ORG_ROLE=Editor
       - GF_LOG_LEVEL=debug
@@ -157,13 +157,13 @@ services:
       # [3] Keycloak OAuth2 연동 (Generic OAuth)
       - GF_AUTH_GENERIC_OAUTH_ENABLED=true
       - GF_AUTH_GENERIC_OAUTH_NAME=Keycloak
-      - GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP=true  # Keycloak 인증 성공 시 Grafana 유저 자동 생성
+      - GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP=true # Keycloak 인증 성공 시 Grafana 유저 자동 생성
       - GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH=preferred_username
       - GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_PATH=email
       - GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH=name
 
       # Keycloak 클라이언트 정보 (.env 파일에 변수 정의 필요)
-      - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}      # 예: nginx-client
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID} # 예: nginx-client
       - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${OAUTH2_PROXY_CLIENT_SECRET}
 
       # Scopes: 'groups'가 반드시 포함되어야 함 (Client Scope 설정 필요)
@@ -210,10 +210,10 @@ services:
     healthcheck:
       # Grafana 내부의 전용 상태 확인 API (Application Programming Interface) 사용
       test: ["CMD-SHELL", "wget -q --spider http://localhost:${GRAFANA_PORT}/api/health || exit 1"]
-      interval: 10s      # 상태 확인 주기
-      timeout: 5s       # 응답 대기 시간
-      retries: 3        # 실패 시 재시도 횟수
-      start_period: 30s  # 초기 JVM 기동 및 DB 연결 대기 시간
+      interval: 10s # 상태 확인 주기
+      timeout: 5s # 응답 대기 시간
+      retries: 3 # 실패 시 재시도 횟수
+      start_period: 30s # 초기 JVM 기동 및 DB 연결 대기 시간
     depends_on:
       prometheus:
         condition: service_healthy
@@ -242,7 +242,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
     image: grafana/alloy:v1.12.1
     container_name: infra-alloy
@@ -251,12 +251,12 @@ services:
     command: ["run", "--server.http.listen-addr=0.0.0.0:${ALLOY_PORT}", "/etc/alloy/config.alloy"]
     volumes:
       - ./alloy/config/config.alloy:/etc/alloy/config.alloy:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro  # 도커 로그 접근
-      - /var/run/docker.sock:/var/run/docker.sock:ro  # 도커 메타데이터 접근
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro # 도커 로그 접근
+      - /var/run/docker.sock:/var/run/docker.sock:ro # 도커 메타데이터 접근
     ports:
-    #   - "${ALLOY_HOST_PORT}:${ALLOY_PORT}"
-      - "${ALLOY_OTLP_GRPC_HOST_PORT}:${ALLOY_OTLP_GRPC_PORT}"  # OTLP gRPC Receiver
-      - "${ALLOY_OTLP_HTTP_HOST_PORT}:${ALLOY_OTLP_HTTP_PORT}"  # OTLP HTTP Receiver
+      #   - "${ALLOY_HOST_PORT}:${ALLOY_PORT}"
+      - "${ALLOY_OTLP_GRPC_HOST_PORT}:${ALLOY_OTLP_GRPC_PORT}" # OTLP gRPC Receiver
+      - "${ALLOY_OTLP_HTTP_HOST_PORT}:${ALLOY_OTLP_HTTP_PORT}" # OTLP HTTP Receiver
     networks:
       infra_net:
         ipv4_address: 172.19.0.34
@@ -292,7 +292,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
     image: gcr.io/cadvisor/cadvisor:v0.55.1
     container_name: cadvisor
@@ -339,7 +339,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 256M
     image: prom/alertmanager:v0.30.0
     container_name: infra-alertmanager
@@ -347,15 +347,13 @@ services:
       - SMTP_USERNAME=${SMTP_USERNAME}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SLACK_ALERTMANAGER_WEBHOOK_URL=${SLACK_ALERTMANAGER_WEBHOOK_URL}
-    command:
-      - /bin/sh
-      - -c
-      - |
-        if [ -z "$SLACK_ALERTMANAGER_WEBHOOK_URL" ]; then
-          echo "SLACK_ALERTMANAGER_WEBHOOK_URL is not set"; exit 1;
-        fi
-        sed "s|__SLACK_WEBHOOK_URL__|$SLACK_ALERTMANAGER_WEBHOOK_URL|g" /etc/alertmanager/config.yml.template > /etc/alertmanager/config.yml
-        exec /bin/alertmanager --config.file=/etc/alertmanager/config.yml --storage.path=/alertmanager
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      if [ -z "$SLACK_ALERTMANAGER_WEBHOOK_URL" ]; then
+        echo "SLACK_ALERTMANAGER_WEBHOOK_URL is not set"; exit 1;
+      fi
+      sed "s|__SLACK_WEBHOOK_URL__|$SLACK_ALERTMANAGER_WEBHOOK_URL|g" /etc/alertmanager/config.yml.template > /etc/alertmanager/config.yml
+      exec /bin/alertmanager --config.file=/etc/alertmanager/config.yml --storage.path=/alertmanager
     volumes:
       - ./alertmanager/config/config.yml:/etc/alertmanager/config.yml.template:ro
       - alertmanager-data:/alertmanager
@@ -392,7 +390,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.2'
+          cpus: "0.2"
           memory: 128M
     image: prom/pushgateway:v1.11.2
     container_name: pushgateway
@@ -427,3 +425,44 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
+
+volumes:
+  tempo-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_OBSERVABILITY_DIR}/tempo
+  loki-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_OBSERVABILITY_DIR}/loki
+  alertmanager-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_OBSERVABILITY_DIR}/alertmanager
+  prometheus-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_OBSERVABILITY_DIR}/prometheus
+  grafana-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_OBSERVABILITY_DIR}/grafana
+
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

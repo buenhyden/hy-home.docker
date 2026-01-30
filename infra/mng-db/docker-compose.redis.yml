@@ -187,3 +187,20 @@ services:
       interval: 30s
       timeout: 5s
       retries: 5
+
+volumes:  
+  mng-redis-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_REDIS_DATA_DIR}/mng-node
+    
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

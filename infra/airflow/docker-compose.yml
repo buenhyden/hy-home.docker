@@ -33,9 +33,9 @@ x-airflow-common: &airflow-common
     AIRFLOW__WEBSERVER__BASE_URL: "https://airflow.${DEFAULT_URL}"
     # StatsD 메트릭 활성화
     AIRFLOW__METRICS__STATSD_ON: "true"
-    AIRFLOW__METRICS__STATSD_HOST: "airflow-statsd-exporter"  # 위에서 만든 컨테이너 이름
+    AIRFLOW__METRICS__STATSD_HOST: "airflow-statsd-exporter" # 위에서 만든 컨테이너 이름
     AIRFLOW__METRICS__STATSD_PORT: "${STATSD_AIRFLOW_PORT}"
-    AIRFLOW__METRICS__STATSD_PREFIX: "airflow"  # 메트릭 접두사
+    AIRFLOW__METRICS__STATSD_PREFIX: "airflow" # 메트릭 접두사
   volumes:
     - airflow-dags:/opt/airflow/dags
     - airflow-plugins:/opt/airflow/plugins
@@ -48,10 +48,10 @@ x-airflow-common: &airflow-common
   deploy:
     resources:
       limits:
-        cpus: '1.0'
+        cpus: "1.0"
         memory: 1G
       reservations:
-          memory: 512M
+        memory: 512M
 
 services:
   airflow-apiserver:
@@ -60,13 +60,7 @@ services:
     # ports:
     #   - "${AIRFLOW_HOST_PORT}:${AIRFLOW_PORT}"
     healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "--fail",
-          "http://localhost:${AIRFLOW_PORT}/api/v2/version",
-        ]
+      test: ["CMD", "curl", "--fail", "http://localhost:${AIRFLOW_PORT}/api/v2/version"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -81,7 +75,7 @@ services:
       - "traefik.http.routers.airflow.rule=Host(`airflow.${DEFAULT_URL}`)"
       - "traefik.http.routers.airflow.entrypoints=websecure"
       - "traefik.http.routers.airflow.tls=true"
-      - "traefik.http.services.airflow.loadbalancer.server.port=${AIRFLOW_PORT}"  # Airflow UI 기본 포트
+      - "traefik.http.services.airflow.loadbalancer.server.port=${AIRFLOW_PORT}" # Airflow UI 기본 포트
 
       # (선택 사항) Keycloak SSO를 적용하려면 아래 주석 해제
       # - "traefik.http.routers.airflow.middlewares=sso-auth@file"
@@ -104,8 +98,7 @@ services:
     <<: *airflow-common
     command: dag-processor
     healthcheck:
-      test:
-        [
+      test: [
           "CMD-SHELL",
           'airflow jobs check --job-type DagProcessorJob --hostname
           "$${HOSTNAME}"',
@@ -150,11 +143,7 @@ services:
     <<: *airflow-common
     command: triggerer
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"',
-        ]
+      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -315,8 +304,8 @@ services:
     networks:
       - infra_net
     expose:
-      - "${STATSD_PROMETHEUS_PORT}"  # Prometheus가 긁어갈 포트
-      - "${STATSD_AIRFLOW_PORT}"  # Airflow가 보낼 포트
+      - "${STATSD_PROMETHEUS_PORT}" # Prometheus가 긁어갈 포트
+      - "${STATSD_AIRFLOW_PORT}" # Airflow가 보낼 포트
     logging:
       driver: "json-file"
       options:
@@ -325,5 +314,40 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
+
+volumes:
+  airflow-dags:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_AIRFLOW_DIR}/dags
+  airflow-logs:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AIRFLOW_DIR}/logs
+  airflow-config:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_AIRFLOW_DIR}/config
+  airflow-plugins:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_AIRFLOW_DIR}/plugins
+
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

@@ -4,7 +4,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 256M
     image: quay.io/oauth2-proxy/oauth2-proxy:v7.13.0
     container_name: oauth2-proxy
@@ -36,16 +36,16 @@ services:
       infra_net:
         ipv4_address: 172.19.0.28
     logging:
-      driver: 'json-file'
+      driver: "json-file"
       options:
-        max-size: '5m'
-        max-file: '2'
+        max-size: "5m"
+        max-file: "2"
 
   oauth2-proxy-valkey:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 256M
     image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
     container_name: oauth2-proxy-valkey
@@ -70,11 +70,7 @@ services:
       - "${VALKEY_PORT}"
       - "${VALKEY_BUS_PORT}"
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG",
-        ]
+      test: ["CMD-SHELL", "V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG"]
       interval: 10s
       timeout: 3s
       retries: 5
@@ -88,7 +84,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: oauth2-proxy-redis-exporter
@@ -114,7 +110,7 @@ services:
           -redis.addr=redis://oauth2-proxy-valkey:6379 \
           -redis.password="$VALKEY_PASSWORD" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT}
-    depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
+    depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       oauth2-proxy-valkey:
         condition: service_healthy
     logging:
@@ -122,3 +118,20 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
+
+volumes:
+  oauth2-proxy-valkey-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/oauth2-proxy-node
+
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

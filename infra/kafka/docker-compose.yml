@@ -401,3 +401,40 @@ services:
       options:
         max-size: "5m"
         max-file: "2"
+
+volumes:
+  kafka-1-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_KAFKA_DATA_DIR}/node1
+
+  kafka-2-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_KAFKA_DATA_DIR}/node2
+
+  kafka-3-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_KAFKA_DATA_DIR}/node3
+  kafka-connect-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_KAFKA_DATA_DIR}/kafka-connect
+
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

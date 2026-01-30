@@ -6,8 +6,8 @@ ksqlDB is a database purpose-built for stream processing applications. It allows
 
 ## Services
 
-- **Service Name**: `ksqldb-node1`
-- **Image**: `bitnami/ksql:latest`
+- **Service Name**: `ksqldb-server`
+- **Image**: `confluentinc/cp-ksqldb-server:8.0.3`
 - **Exposed Port**: `${KSQLDB_HOST_PORT}:${KSQLDB_PORT}` (Default usually 8088)
 
 ## Networking
@@ -20,29 +20,25 @@ ksqlDB is a database purpose-built for stream processing applications. It allows
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
-| `KSQL_BOOTSTRAP_SERVERS` | Kafka Brokers | `kafka-0:${KAFKA_PORT}` |
-
-> [!WARNING]
-> **Configuration Mismatch**: The current configuration points to `kafka-0`. However, the main Kafka stack (in `infra/kafka`) uses `kafka-1`, `kafka-2`, and `kafka-3`.
-> Verify if `kafka-0` exists in another context or if this needs to be updated to `kafka-1:${KAFKA_PORT}`.
+| `KSQL_BOOTSTRAP_SERVERS` | Kafka Brokers | `kafka-1:${KAFKA_INTERNAL_PORT},kafka-2:${KAFKA_INTERNAL_PORT},kafka-3:${KAFKA_INTERNAL_PORT}` |
 
 ## Persistence
 
-- **Data Persistence**: `ksqldb-node-1-data-volume` matches `/bitnami/ksql` inside the container.
+- **Data Persistence**: `ksqldb-data-volume` matches `/var/lib/ksql` inside the container.
 - **Host Path**: Mapped to `${DEFAULT_DATABASE_DIR}/ksqldb/node1`
 
 ## Usage
 
 ### Accessing via CLI (Internal)
 
-Since the `ksqldb-cli` service is commented out in the compose file, you can access the CLI by executing into the node:
+`ksqldb-cli` 서비스를 통해 접속할 수 있습니다:
 
 ```bash
-docker exec -it ksqldb-node1 ksql http://localhost:8088
+docker exec -it ksqldb-cli ksql http://ksqldb-server:${KSQLDB_PORT}
 ```
 
 ### Checking Logs
 
 ```bash
-docker logs ksqldb-node1
+docker logs ksqldb-server
 ```

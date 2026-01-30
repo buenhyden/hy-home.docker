@@ -107,3 +107,17 @@ docker compose --profile airflow --profile ollama up -d
 
 - **볼륨 경로**: 반드시 호스트 컴퓨터의 실제 경로를 `.env` 파일에 지정해야 데이터가 유실되지 않습니다.
 - **네트워크**: `infra_net`이라는 브리지 네트워크를 통해 내부 서비스 간 통신이 이루어집니다.
+  - `INFRA_SUBNET`, `INFRA_GATEWAY`로 네트워크 대역을 변경할 수 있습니다.
+
+### 운영 헬퍼 스크립트 (PowerShell)
+
+```powershell
+# 예: 프로파일 포함 기동
+.\scripts\infra-compose.ps1 -Action up -Profiles airflow,ollama
+
+# 로그 확인
+.\scripts\infra-compose.ps1 -Action logs -Args "-f" -Services alertmanager
+
+# 특정 서비스만 기동
+.\scripts\infra-compose.ps1 -Action up -Profiles observability -Services prometheus,grafana
+```

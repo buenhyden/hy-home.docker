@@ -28,14 +28,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 20s  # 초기 클러스터 구성 시간을 벌어줍니다.
+      start_period: 20s # 초기 클러스터 구성 시간을 벌어줍니다.
     volumes:
       - etcd1-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT}
     networks:
       infra_net:
-        ipv4_address: 172.19.0.50    
+        ipv4_address: 172.19.0.50
     logging:
       driver: "json-file"
       options:
@@ -68,7 +68,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 20s  # 초기 클러스터 구성 시간을 벌어줍니다.
+      start_period: 20s # 초기 클러스터 구성 시간을 벌어줍니다.
     volumes:
       - etcd2-data:/etcd-data
     expose:
@@ -108,7 +108,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 20s  # 초기 클러스터 구성 시간을 벌어줍니다.
+      start_period: 20s # 초기 클러스터 구성 시간을 벌어줍니다.
     volumes:
       - etcd3-data:/etcd-data
     expose:
@@ -130,7 +130,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 2G
         reservations:
           memory: 1G
@@ -154,9 +154,9 @@ services:
       PATRONI_RESTAPI_CONNECT_ADDRESS: pg-0:${PATRONI_RESTAPI_PORT}
       # PostgreSQL listen / connect
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT}
-      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:${POSTGRES_PORT}      
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:${POSTGRES_PORT}
     volumes:
-      - pg0-data:/home/postgres/pgdata      
+      - pg0-data:/home/postgres/pgdata
     expose:
       - ${POSTGRES_PORT}
     healthcheck:
@@ -185,7 +185,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 2G
         reservations:
           memory: 1G
@@ -209,7 +209,7 @@ services:
       PATRONI_RESTAPI_CONNECT_ADDRESS: pg-1:${PATRONI_RESTAPI_PORT}
       # PostgreSQL listen / connect
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT}
-      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:${POSTGRES_PORT}      
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:${POSTGRES_PORT}
     volumes:
       - pg1-data:/home/postgres/pgdata
     networks:
@@ -240,7 +240,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 2G
         reservations:
           memory: 1G
@@ -291,7 +291,7 @@ services:
       etcd-3:
         condition: service_healthy
     restart: unless-stopped
-  
+
   # ##############################################################
   # HAProxy 라우터 (Writer/Reader 분리)
   # ##############################################################
@@ -299,17 +299,17 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 256M
     image: haproxy:3.3.1
     container_name: pg-router
     volumes:
       - ./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     ports:
-      - "${POSTGRES_WRITE_HOST_PORT}:${POSTGRES_WRITE_PORT}"  # Write endpoint
-      - "${POSTGRES_READ_HOST_PORT}:${POSTGRES_READ_PORT}"  # Read endpoint
+      - "${POSTGRES_WRITE_HOST_PORT}:${POSTGRES_WRITE_PORT}" # Write endpoint
+      - "${POSTGRES_READ_HOST_PORT}:${POSTGRES_READ_PORT}" # Read endpoint
       # - "${HAPROXY_HOST_PORT}:${HAPROXY_PORT}" # Stats (옵션)
-      - "${HAPROXY_METRICS_HOST_PORT}:${HAPROXY_METRICS_PORT}"  # Stats (옵션)
+      - "${HAPROXY_METRICS_HOST_PORT}:${HAPROXY_METRICS_PORT}" # Stats (옵션)
     networks:
       infra_net:
         ipv4_address: 172.19.0.56
@@ -340,7 +340,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 128M
     image: postgres:17-alpine
     container_name: pg-cluster-init
@@ -352,8 +352,8 @@ services:
       - POSTGRES_READ_PORT=${POSTGRES_READ_PORT}
       - POSTGRES_USER=${POSTGRES_USER}
       - PGPASSWORD_SUPERUSER=${PGPASSWORD_SUPERUSER}
-      - POSTGRES_DB=${POSTGRES_DB}              
-    depends_on:      
+      - POSTGRES_DB=${POSTGRES_DB}
+    depends_on:
       pg-router:
         condition: service_started
     command: >
@@ -368,7 +368,7 @@ services:
       unset PGPASSWORD;
       echo 'SQL 스크립트 실행 완료.';"
     volumes:
-      - "./init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql"                
+      - "./init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql"
     networks:
       - infra_net
     restart: "no"
@@ -384,7 +384,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-0-exporter
@@ -420,7 +420,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-1-exporter
@@ -456,7 +456,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-2-exporter
@@ -488,3 +488,49 @@ services:
       interval: 30s
       timeout: 5s
       retries: 5
+
+volumes:
+  pg0-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/pg0
+  pg1-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/pg1
+  pg2-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/pg2
+  etcd1-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_ETCD_DATA_DIR}/etcd1
+  etcd2-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_ETCD_DATA_DIR}/etcd2
+  etcd3-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_ETCD_DATA_DIR}/etcd3
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}

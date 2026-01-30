@@ -133,3 +133,12 @@ services:
       - "traefik.http.routers.terrakube-executor.rule=Host(`terrakube-executor.${DEFAULT_URL}`)"
       - "traefik.http.services.terrakube-executor.loadbalancer.server.port=${TERRAKUBE_EXECUTOR_PORT}"
 
+
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}
