@@ -170,11 +170,12 @@ services:
     #   - "${KIBANA_HOST_PORT}:${KIBANA_PORT}"
     volumes:
       - ./certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro
-    environment:      
+    environment:
       - 'OPENSEARCH_HOSTS=["https://opensearch-node1:9200","https://opensearch-node2:9200","https://opensearch-node3:9200"]'
       - OPENSEARCH_USERNAME=${ELASTIC_USERNAME}
       - OPENSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-      - OPENSEARCH_SSL_VERIFICATIONMODE=full
+      # mkcert 기반 인증서(SAN 없음) 대응: 호스트 검증은 끄고 CA만 검증
+      - OPENSEARCH_SSL_VERIFICATIONMODE=certificate
       - OPENSEARCH_SSL_CERTIFICATEAUTHORITIES=["/usr/share/opensearch-dashboards/config/rootCA.pem"]
     labels:
       - "traefik.enable=true"

@@ -23,7 +23,7 @@ services:
       - '--web.enable-remote-write-receiver'
     volumes:
       - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./prometheus/config/alert_rules.yml:/etc/prometheus/alert_rules.yml:ro
+      - ./prometheus/config/alert_rules:/etc/prometheus/alert_rules
       - prometheus-data:/prometheus
     # ports:
     #   - "${PROMETHEUS_HOST_PORT}:${PROMETHEUS_PORT}"

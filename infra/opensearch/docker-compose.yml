@@ -61,6 +61,9 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.44
+        aliases:
+          - opensearch-node
+          - opensearch-node1
     logging:
       driver: "json-file"
       options:
@@ -87,10 +90,11 @@ services:
     volumes:
       - ./certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro
     environment:
-      - 'OPENSEARCH_HOSTS=["https://opensearch-node:9200"]'
+      - 'OPENSEARCH_HOSTS=["https://opensearch:9200"]'
       - OPENSEARCH_USERNAME=${ELASTIC_USERNAME}
       - OPENSEARCH_PASSWORD=${ELASTIC_PASSWORD}
-      - OPENSEARCH_SSL_VERIFICATIONMODE=full
+      # mkcert 기반 인증서(SAN 없음) 대응: 호스트 검증은 끄고 CA만 검증
+      - OPENSEARCH_SSL_VERIFICATIONMODE=certificate
       - OPENSEARCH_SSL_CERTIFICATEAUTHORITIES=["/usr/share/opensearch-dashboards/config/rootCA.pem"]
     labels:
       - "traefik.enable=true"
@@ -114,7 +118,7 @@ services:
     container_name: opensearch-exporter
     restart: unless-stopped
     command:
-      - '--es.uri=https://opensearch-node:9200'  # 노드1을 바라봄
+      - '--es.uri=https://opensearch:9200'
       - '--es.all'
       - '--es.indices'
       - '--es.ssl-skip-verify'  # OpenSearch 기본 TLS 인증서 검증 건너뛰기
