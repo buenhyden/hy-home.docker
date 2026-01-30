@@ -4,7 +4,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 1G
         reservations:
           memory: 512M
@@ -53,10 +53,10 @@ services:
           - auth.${DEFAULT_URL}
           - whoami.${DEFAULT_URL}
     logging:
-      driver: 'json-file'
+      driver: "json-file"
       options:
-        max-size: '5m'
-        max-file: '2'
+        max-size: "5m"
+        max-file: "2"
   # whoami:
   #   image: traefik/whoami
   #   container_name: whoami
@@ -72,7 +72,3 @@ services:
   #     - "traefik.http.routers.whoami.tls=true"
   #     - "traefik.http.routers.whoami.middlewares=sso-auth@file"
   #     # - "traefik.http.services.whoami.loadbalancer.server.port=80"
-
-networks:
-  infra_net:
-    external: true

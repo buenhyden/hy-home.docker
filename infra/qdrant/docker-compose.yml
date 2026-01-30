@@ -1,17 +1,17 @@
 name: qdrant
-services:  
+services:
   qdrant:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 1G
     image: qdrant/qdrant:v1.16.3
     container_name: qdrant
     ports:
       - "${QDRANT_HOST_PORT}:${QDRANT_PORT}"
     environment:
-      - QDRANT__TELEMETRY_DISABLED=false  # 메트릭 수집 활성화
+      - QDRANT__TELEMETRY_DISABLED=false # 메트릭 수집 활성화
     volumes:
       - qdrant-data:/qdrant/storage
     restart: unless-stopped
@@ -43,7 +43,3 @@ volumes:
   #     o: bind
   #     type: none
   #     device: ${DEFAULT_VECTOR_DB_DIR}/qdrant
-  
-networks:
-  infra_net:
-    external: true

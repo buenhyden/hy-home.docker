@@ -134,7 +134,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_MINIO_DATA_DIR}/data
-
-networks:
-  infra_net:
-    external: true

@@ -294,7 +294,3 @@ services:
     expose:
       - "${STATSD_PROMETHEUS_PORT}" # Prometheus가 긁어갈 포트
       - "${STATSD_AIRFLOW_PORT}" # Airflow가 보낼 포트
-
-networks:
-  infra_net:
-    external: true

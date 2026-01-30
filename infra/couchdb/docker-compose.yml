@@ -191,7 +191,3 @@ volumes:
   couchdb1-data:
   couchdb2-data:
   couchdb3-data:
-
-networks:
-  infra_net:
-    external: true

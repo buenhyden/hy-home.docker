@@ -126,7 +126,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_VALKEY_DATA_DIR}/oauth2-proxy-node
-
-networks:
-  infra_net:
-    external: true

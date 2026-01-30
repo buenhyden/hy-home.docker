@@ -3,7 +3,7 @@ services:
   # ######################################################
   # OpenSearch 노드 1 (cluster_manager + data + ingest)
   # ######################################################
-  opensearch:    
+  opensearch:
     # image: opensearchproject/opensearch:3.4.0  # 2025-11 기준 최신 3.x 안정 버전
     build:
       context: . ## build Docker file location
@@ -12,12 +12,12 @@ services:
     restart: unless-stopped
     # 비밀번호, 클러스터 이름, JVM 옵션 등은 env 파일에서 주입
     environment:
-      # 노드/클러스터 기본 설정      
+      # 노드/클러스터 기본 설정
       - discovery.type=single-node
       # JVM Heap 설정 (env에서 값 가져옴)
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
       # 메모리 관련 bootstrap 체크 통과용
-      - bootstrap.memory_lock=true      
+      - bootstrap.memory_lock=true
       # 2.12+ 기준 보안 데모 구성에서 admin 패스워드 설정 (env 파일에서 가져옴)
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ELASTIC_PASSWORD}
       - plugins.security.ssl.http.enabled=true
@@ -57,7 +57,7 @@ services:
       # Traefik이 백엔드(OpenSearch)와 통신할 때도 HTTPS를 써야 함.
       # serversTransport 설정을 통해 인증서 검증을 스킵해야 할 수 있음.
       - "traefik.http.services.opensearch.loadbalancer.server.port=9200"
-      - "traefik.http.services.opensearch.loadbalancer.server.scheme=https"  # 백엔드 통신 스킴 지정
+      - "traefik.http.services.opensearch.loadbalancer.server.scheme=https" # 백엔드 통신 스킴 지정
     networks:
       infra_net:
         ipv4_address: 172.19.0.44
@@ -75,7 +75,6 @@ services:
       timeout: 30s
       retries: 3
 
-
   opensearch-dashboards:
     image: opensearchproject/opensearch-dashboards:3.4.0
     container_name: opensearch-dashboards
@@ -84,7 +83,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.47
     expose:
-      - "${KIBANA_PORT}"  # Expose port 5601 for web access to OpenSearch Dashboards
+      - "${KIBANA_PORT}" # Expose port 5601 for web access to OpenSearch Dashboards
     # ports:
     #   - "${KIBANA_HOST_PORT}:${KIBANA_PORT}"
     volumes:
@@ -106,7 +105,7 @@ services:
       - "traefik.http.services.opensearch-dashboards.loadbalancer.server.port=5601"
     depends_on:
       opensearch:
-        condition: service_healthy      
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:${KIBANA_PORT}/api/status || wget -q --spider http://localhost:${KIBANA_PORT}/api/status || exit 1"]
       interval: 10s
@@ -124,15 +123,15 @@ services:
     container_name: opensearch-exporter
     restart: unless-stopped
     command:
-      - '--es.uri=https://opensearch:9200'
-      - '--es.all'
-      - '--es.indices'
-      - '--es.ssl-skip-verify'  # OpenSearch 기본 TLS 인증서 검증 건너뛰기
+      - "--es.uri=https://opensearch:9200"
+      - "--es.all"
+      - "--es.indices"
+      - "--es.ssl-skip-verify" # OpenSearch 기본 TLS 인증서 검증 건너뛰기
     environment:
       - ES_USERNAME=${ELASTIC_USERNAME}
       - ES_PASSWORD=${ELASTIC_PASSWORD}
     ports:
-      - "${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}"  # 9114
+      - "${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}" # 9114
     networks:
       infra_net:
         ipv4_address: 172.19.0.48
@@ -151,14 +150,10 @@ services:
         max-size: "5m"
         max-file: "2"
 
-volumes:    
+volumes:
   opensearch-data:
     # driver: local
     # driver_opts:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_OPENSEARCH_DATA_DIR}/standalone
-
-networks:
-  infra_net:
-    external: true

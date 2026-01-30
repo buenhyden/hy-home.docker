@@ -3,11 +3,11 @@ services:
   # ##############################################################
   # Redis Cluster Nodes (6개: 3 master + 3 replica)
   # ##############################################################
-  valkey-node-0:  
+  valkey-node-0:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
@@ -39,8 +39,7 @@ services:
       - "${VALKEY0_BUS_PORT}:${VALKEY0_BUS_PORT}"
     healthcheck:
       # secret 파일에서 비밀번호 읽어서 PING 체크
-      test:
-        [
+      test: [
           "CMD-SHELL",
           "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY0_PORT} ping | grep PONG",
@@ -58,7 +57,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
@@ -85,8 +84,7 @@ services:
       - "${VALKEY1_PORT}:${VALKEY1_PORT}"
       - "${VALKEY1_BUS_PORT}:${VALKEY1_BUS_PORT}"
     healthcheck:
-      test:
-        [
+      test: [
           "CMD-SHELL",
           "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY1_PORT} ping | grep PONG",
@@ -104,7 +102,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
@@ -131,8 +129,7 @@ services:
       - "${VALKEY2_PORT}:${VALKEY2_PORT}"
       - "${VALKEY2_BUS_PORT}:${VALKEY2_BUS_PORT}"
     healthcheck:
-      test:
-        [
+      test: [
           "CMD-SHELL",
           "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY2_PORT} ping | grep PONG",
@@ -150,7 +147,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
@@ -177,8 +174,7 @@ services:
       - "${VALKEY3_PORT}:${VALKEY3_PORT}"
       - "${VALKEY3_BUS_PORT}:${VALKEY3_BUS_PORT}"
     healthcheck:
-      test:
-        [
+      test: [
           "CMD-SHELL",
           "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY3_PORT} ping | grep PONG",
@@ -196,7 +192,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
@@ -223,8 +219,7 @@ services:
       - "${VALKEY4_PORT}:${VALKEY4_PORT}"
       - "${VALKEY4_BUS_PORT}:${VALKEY4_BUS_PORT}"
     healthcheck:
-      test:
-        [
+      test: [
           "CMD-SHELL",
           "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY4_PORT} ping | grep PONG",
@@ -242,7 +237,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
@@ -269,8 +264,7 @@ services:
       - "${VALKEY5_PORT}:${VALKEY5_PORT}"
       - "${VALKEY5_BUS_PORT}:${VALKEY5_BUS_PORT}"
     healthcheck:
-      test:
-        [
+      test: [
           "CMD-SHELL",
           "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY5_PORT} ping | grep PONG",
@@ -301,7 +295,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     depends_on:
       valkey-node-0:
@@ -332,7 +326,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: valkey-exporter
@@ -360,7 +354,7 @@ services:
           -redis.addr="redis://valkey-node-0:6379" \
           -redis.password="$$R_PWD" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT}
-    depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
+    depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       valkey-node-0:
         condition: service_healthy
       valkey-node-1:
@@ -379,7 +373,7 @@ services:
         max-size: "5m"
         max-file: "2"
 
-volumes:  
+volumes:
   valkey-data-0:
     # driver: local
     # driver_opts:
@@ -416,7 +410,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_VALKEY_DATA_DIR}/node5
-
-networks:
-  infra_net:
-    external: true

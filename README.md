@@ -7,6 +7,52 @@
 복잡한 마이크로서비스 아키텍처를 로컬 환경에서 손쉽게 구축하고 관리할 수 있도록 설계되었습니다.
 
 > 📖 **자세한 문서는 [docs/README.md](docs/README.md)에서 확인하실 수 있습니다.**
+> 🧭 **인프라 스택 상세는 [infra/README.md](infra/README.md)에서 확인하실 수 있습니다.**
+
+---
+
+## ✅ 준비 사항
+
+- Docker Engine / Docker Desktop
+- Docker Compose v2 (CLI 기반)
+
+---
+
+## 🏁 빠른 시작 (Quick Start)
+
+자세한 설치 가이드는 [Development Guide](docs/03-development-and-contribution.md)를 참조하세요.
+
+### 1. 설정
+
+```bash
+# 저장소 루트에서
+cp .env.example .env
+```
+
+- `.env` 파일 내의 각 서비스별 경로 및 포트, 비밀번호 설정을 사용자의 환경에 맞게 수정합니다.
+  - `DEFAULT_URL`: 서비스 접속 도메인 (기본값: `127.0.0.1.nip.io`)
+  - `DEFAULT_MOUNT_VOLUME_PATH`: 볼륨 데이터가 저장될 호스트 경로
+  - `INFRA_SUBNET`, `INFRA_GATEWAY`: 내부 네트워크 대역 설정
+- `secrets/` 내 `*.txt` 파일의 초기 비밀번호/토큰 값을 확인합니다.
+
+### 2. 실행
+
+```bash
+docker compose up -d
+```
+
+### 3. 접속 예시
+
+- **Traefik Dashboard**: `http://traefik.localhost` (또는 설정한 도메인)
+- **Grafana**: `http://grafana.localhost`
+
+### 4. 프로파일로 옵션 스택 실행
+
+```bash
+docker compose --profile ollama --profile airflow up -d
+```
+
+> 사용 가능한 프로파일 목록은 [infra/README.md](infra/README.md)를 참고하세요.
 
 ---
 
@@ -27,31 +73,6 @@
 | [**`projects/`**](projects/) | 인프라 위에서 구동될 애플리케이션 | - |
 | [**`docs/`**](docs/) | 프로젝트 전체 상세 문서 및 가이드 | [Documentation Index](docs/README.md) |
 | [**`scripts/`**](scripts/) | 배포 및 관리 자동화 스크립트 | [Dev Guide](docs/03-development-and-contribution.md) |
-
----
-
-## 🏁 빠른 시작 (Quick Start)
-
-자세한 설치 가이드는 [Development Guide](docs/03-development-and-contribution.md)를 참조하세요.
-
-### 1. 설정
-
-```bash
-cd infra
-cp .env.example .env
-# .env 파일 내의 DOMAIN 및 DATA_PATH 설정 필수
-```
-
-### 2. 실행
-
-```bash
-docker compose up -d
-```
-
-### 3. 접속
-
-- **Traefik Dashboard**: `http://traefik.localhost` (또는 설정한 도메인)
-- **Grafana**: `http://grafana.localhost`
 
 ---
 

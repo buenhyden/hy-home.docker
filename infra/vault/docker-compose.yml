@@ -52,7 +52,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_SECRETS_DIR}/vault
-
-networks:
-  infra_net:
-    external: true

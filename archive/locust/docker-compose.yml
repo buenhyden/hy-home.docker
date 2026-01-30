@@ -50,7 +50,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_LOCUST_DIR}
-
-networks:
-  infra_net:
-    external: true

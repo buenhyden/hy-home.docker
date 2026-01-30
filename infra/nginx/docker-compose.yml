@@ -32,11 +32,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
-
-networks:
-  infra_net:
-    external: true

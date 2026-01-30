@@ -74,7 +74,3 @@ services:
 
 volumes:
   stalwart-data:
-
-networks:
-  infra_net:
-    external: true

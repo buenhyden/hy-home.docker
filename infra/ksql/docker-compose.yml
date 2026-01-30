@@ -1,9 +1,22 @@
 name: ksql
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
 services:
   ksqldb-server:
     image: confluentinc/cp-ksqldb-server:8.0.3
     hostname: ksqldb-server
     container_name: ksqldb-server
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          memory: 512M
     ports:
       - "${KSQLDB_HOST_PORT}:${KSQLDB_PORT}"
     environment:
@@ -19,35 +32,42 @@ services:
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR: 1
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
       KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
+      KSQL_HEAP_OPTS: "-Xms512m -Xmx512m"
     volumes:
       - ksqldb-data-volume:/var/lib/ksql
     networks:
       - infra_net
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${KSQLDB_PORT}/info || wget -q --spider http://localhost:${KSQLDB_PORT}/info || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    logging: *default-logging
 
   ksqldb-cli:
     image: confluentinc/cp-ksqldb-cli:8.0.3
     container_name: ksqldb-cli
     depends_on:
-      - ksqldb-server
+      ksqldb-server:
+        condition: service_healthy
     entrypoint: /bin/sh
+    stdin_open: true
     tty: true
     networks:
       - infra_net
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   ksql-datagen:
     image: confluentinc/ksqldb-examples:8.0.3
     hostname: ksql-datagen
     container_name: ksql-datagen
+    restart: unless-stopped
+    profiles:
+      - examples
+    depends_on:
+      ksqldb-server:
+        condition: service_healthy
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
       cub kafka-ready -b kafka-1:${KAFKA_INTERNAL_PORT} 1 40 && \
       echo Waiting for Confluent Schema Registry to be ready... && \
@@ -62,15 +82,7 @@ services:
       STREAMS_SCHEMA_REGISTRY_PORT: ${SCHEMA_REGISTRY_PORT}
     networks:
       - infra_net
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
 volumes:
   ksqldb-data-volume:
-
-networks:
-  infra_net:
-    external: true

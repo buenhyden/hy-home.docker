@@ -9,11 +9,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
-    image: redis:8.4.0-bookworm  # Redis 8.4.x
+    image: redis:8.4.0-bookworm # Redis 8.4.x
     container_name: redis-node-0
     secrets:
       - redis_password
@@ -41,8 +41,7 @@ services:
       - "${REDIS0_BUS_PORT}:${REDIS0_BUS_PORT}"
     healthcheck:
       # secret 파일에서 비밀번호 읽어서 PING 체크
-      test:
-        [
+      test: [
           "CMD-SHELL",
           "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS0_PORT} ping | grep PONG",
@@ -62,7 +61,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
@@ -89,8 +88,7 @@ services:
       - "${REDIS1_PORT}:${REDIS1_PORT}"
       - "${REDIS1_BUS_PORT}:${REDIS1_BUS_PORT}"
     healthcheck:
-      test:
-        [
+      test: [
           "CMD-SHELL",
           "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS1_PORT} ping | grep PONG",
@@ -110,7 +108,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
@@ -137,8 +135,7 @@ services:
       - "${REDIS2_PORT}:${REDIS2_PORT}"
       - "${REDIS2_BUS_PORT}:${REDIS2_BUS_PORT}"
     healthcheck:
-      test:
-        [
+      test: [
           "CMD-SHELL",
           "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS2_PORT} ping | grep PONG",
@@ -158,7 +155,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
@@ -185,8 +182,7 @@ services:
       - "${REDIS3_PORT}:${REDIS3_PORT}"
       - "${REDIS3_BUS_PORT}:${REDIS3_BUS_PORT}"
     healthcheck:
-      test:
-        [
+      test: [
           "CMD-SHELL",
           "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS3_PORT} ping | grep PONG",
@@ -206,7 +202,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
@@ -233,8 +229,7 @@ services:
       - "${REDIS4_PORT}:${REDIS4_PORT}"
       - "${REDIS4_BUS_PORT}:${REDIS4_BUS_PORT}"
     healthcheck:
-      test:
-        [
+      test: [
           "CMD-SHELL",
           "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS4_PORT} ping | grep PONG",
@@ -254,7 +249,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
           memory: 256M
@@ -281,8 +276,7 @@ services:
       - "${REDIS5_PORT}:${REDIS5_PORT}"
       - "${REDIS5_BUS_PORT}:${REDIS5_BUS_PORT}"
     healthcheck:
-      test:
-        [
+      test: [
           "CMD-SHELL",
           "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS5_PORT} ping | grep PONG",
@@ -315,7 +309,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     depends_on:
       redis-node-0:
@@ -348,7 +342,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: redis-exporter
@@ -376,7 +370,7 @@ services:
           -redis.addr="redis://redis-node-0:6379" \
           -redis.password="$$R_PWD" \
           -web.listen-address=:${REDIS_EXPORTER_PORT}
-    depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
+    depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       redis-node-0:
         condition: service_healthy
       redis-node-1:
@@ -395,7 +389,7 @@ services:
         max-size: "5m"
         max-file: "2"
 
-volumes:  
+volumes:
   redis-data-0:
     # driver: local
     # driver_opts:
@@ -432,7 +426,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_REDIS_DATA_DIR}/node5
-
-networks:
-  infra_net:
-    external: true

@@ -26,8 +26,8 @@ services:
       KC_DB_URL: jdbc:postgresql://${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${KEYCLOAK_DBNAME}
       KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
       KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HOSTNAME: https://keycloak.${DEFAULT_URL}
       KC_PROXY_HEADERS: xforwarded
       # DB 연결이 끊겼는지 확인하고, 오래된 연결을 자동으로 정리합니다.
@@ -36,7 +36,6 @@ services:
       KC_DB_POOL_MAX_SIZE: 10
       KC_METRICS_ENABLED: true
       KC_HEALTH_ENABLED: true
-
       # Java 옵션을 통해 Quarkus(Agroal)의 유효성 검사 강제 설정
       # 1. idle 상태가 5분 지나면 연결 끊음 (DB 타임아웃보다 짧게)
       # 2. 연결 가져올 때 유효성 검사 수행 (background)
@@ -55,7 +54,3 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-
-networks:
-  infra_net:
-    external: true

@@ -56,7 +56,3 @@ volumes:
       o: bind
       type: none
       device: ${SONARQUBE_DEFAULT_DIR}/logs
-
-networks:
-  infra_net:
-    external: true

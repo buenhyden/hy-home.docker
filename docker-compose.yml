@@ -1,0 +1,55 @@
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}
+  project_net:
+    external: true
+  kind:
+    external: true
+
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password.txt
+  redis_password:
+    file: ./secrets/redis_password.txt
+  minio_root_password:
+    file: ./secrets/minio_root_password.txt
+  minio_root_user:
+    file: ./secrets/minio_root_user.txt
+  minio_app_user_password:
+    file: ./secrets/minio_app_user_password.txt
+  minio_app_user:
+    file: ./secrets/minio_app_user.txt
+  valkey_password:
+    file: ./secrets/valkey_password.txt
+
+include:
+  # Core stack
+  - infra/traefik/docker-compose.yml
+  - infra/mng-db/docker-compose.yml
+  - infra/oauth2-proxy/docker-compose.yml
+  - infra/observability/docker-compose.yml
+  - infra/minio/docker-compose.yml
+  - infra/keycloak/docker-compose.yml
+  - infra/n8n/docker-compose.yml
+  - infra/qdrant/docker-compose.yml
+  - infra/postgresql-cluster/docker-compose.yml
+  - infra/kafka/docker-compose.yml
+  - infra/valkey-cluster/docker-compose.yml
+  - infra/opensearch/docker-compose.yml
+  - infra/ksql/docker-compose.yml
+  # Optional stacks (enabled via profiles)
+  - infra/influxdb/docker-compose.yml
+  - infra/vault/docker-compose.yml
+  - infra/ollama/docker-compose.yml
+  - infra/sonarqube/docker-compose.yml
+  - infra/mail/docker-compose.yml
+  - infra/airflow/docker-compose.yml
+  - infra/nginx/docker-compose.yml
+  - infra/couchdb/docker-compose.yml
+  - infra/terrakube/docker-compose.yml
+  - infra/redis-cluster/docker-compose.yml

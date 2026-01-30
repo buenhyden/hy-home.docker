@@ -526,6 +526,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_ETCD_DATA_DIR}/etcd3
-networks:
-  infra_net:
-    external: true

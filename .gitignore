@@ -20,9 +20,10 @@ certs/*.pem
 # Example
 examples/harbor
 examples/keycloak
+
+.env
+!.env.example
 # Infra Configure Files related to secrets
-infra/.env
-!infra/.env.example
 infra/mail/certs/*.pem
 infra/mng-db/init-scripts/init_users_dbs.sql
 infra/nginx/certs/*.pem

@@ -6,7 +6,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 1G
         reservations:
           memory: 512M
@@ -55,7 +55,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_INFLUXDB_DIR}/data
-
-networks:
-  infra_net:
-    external: true

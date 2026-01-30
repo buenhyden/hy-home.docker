@@ -355,7 +355,7 @@ services:
       fi;
       echo 'Generating config file...';
       sed 's|__SLACK_WEBHOOK_URL__|'$SLACK_ALERTMANAGER_WEBHOOK_URL'|g' /etc/alertmanager/config.yml.template > /tmp/config.yml;
-      
+
       echo 'Starting Alertmanager...';
       exec /bin/alertmanager --config.file=/tmp/config.yml --storage.path=/alertmanager"
     volumes:
@@ -461,7 +461,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_OBSERVABILITY_DIR}/grafana
-
-networks:
-  infra_net:
-    external: true

@@ -25,11 +25,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 60s  # 모델 로드 시간을 고려하여 여유 있게 설정
+      start_period: 60s # 모델 로드 시간을 고려하여 여유 있게 설정
     deploy:
       resources:
         limits:
-          cpus: '4.0'
+          cpus: "4.0"
           memory: 8G
         reservations:
           memory: 4G
@@ -60,14 +60,14 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 1G
     image: ghcr.io/open-webui/open-webui:v0.7.2
     container_name: open-webui
     # ports:
     #   - "${OLLAMA_WEBUI_HOST_PORT}:${OLLAMA_WEBUI_PORT}" # 브라우저에서 localhost:3000 으로 접속
     environment:
-      - OLLAMA_BASE_URL=http://ollama:${OLLAMA_PORT}  # 도커 네트워크 내부 통신
+      - OLLAMA_BASE_URL=http://ollama:${OLLAMA_PORT} # 도커 네트워크 내부 통신
       # --- RAG 설정 추가 ---
       # 벡터 DB 연결 설정
       - VECTOR_DB_URL=http://qdrant:${QDRANT_PORT}
@@ -105,14 +105,14 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.1'
+          cpus: "0.1"
           memory: 128M
     image: lucabecker42/ollama-exporter:1.0.1
     container_name: ollama-exporter
     environment:
       - OLLAMA_HOST=ollama:${OLLAMA_PORT}
     ports:
-      - "${OLLAMA_EXPORTER_HOST_PORT}:${OLLAMA_EXPORTER_PORT}"   # /metrics
+      - "${OLLAMA_EXPORTER_HOST_PORT}:${OLLAMA_EXPORTER_PORT}" # /metrics
     restart: unless-stopped
     networks:
       infra_net:
@@ -139,7 +139,3 @@ volumes:
   #     o: bind
   #     type: none
   #     device: ${DEFAULT_AI_MODEL_DIR}/webui
-  
-networks:
-  infra_net:
-    external: true

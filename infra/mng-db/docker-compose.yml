@@ -247,7 +247,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_REDIS_DATA_DIR}/redisinsight
-
-networks:
-  infra_net:
-    external: true

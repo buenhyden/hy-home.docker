@@ -7,8 +7,8 @@ services:
       - terrakube
     image: azbuilder/api-server:2.29.0
     container_name: terrakube-api
-    restart: unless-stopped          
-    environment:      
+    restart: unless-stopped
+    environment:
       ApiDataSourceType: POSTGRESQL
       DatasourceHostname: ${POSTGRES_HOSTNAME}
       DatasourceDatabase: terrakube
@@ -23,7 +23,7 @@ services:
       PatSecret: ${TERRAKUBE_PAT_SECRET}
       InternalSecret: ${TERRAKUBE_INTERNAL_SECRET}
       DexClientId: ${OAUTH2_PROXY_CLIENT_ID}
-      
+
       StorageType: AWS
       AwsStorageAccessKey: ${MINIO_APP_USERNAME}
       AwsStorageSecretKey: ${MINIO_APP_USER_PASSWORD}
@@ -33,10 +33,10 @@ services:
 
       TerrakubeUiURL: https://terrakube-ui.${DEFAULT_URL}
       DexIssuerUri: "https://keycloak.${DEFAULT_URL}/realms/hy-home.realm"
-      
-      TerrakubeRedisHostname:  ${MNG_VALKEY_HOST}
+
+      TerrakubeRedisHostname: ${MNG_VALKEY_HOST}
       TerrakubeRedisPassword: ${VALKEY_PASSWORD}
-      TerrakubeRedisPort: ${VALKEY_PORT}      
+      TerrakubeRedisPort: ${VALKEY_PORT}
 
     labels:
       - "traefik.enable=true"
@@ -62,7 +62,7 @@ services:
       - terrakube
     image: azbuilder/terrakube-ui:2.29.0
     container_name: terrakube-ui
-    restart: unless-stopped          
+    restart: unless-stopped
     environment:
       REACT_APP_TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}/api/v1/
       REACT_APP_AUTHORITY: https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
@@ -88,7 +88,7 @@ services:
       - terrakube
     image: azbuilder/executor:2.29.0
     container_name: terrakube-executor
-    restart: unless-stopped          
+    restart: unless-stopped
     environment:
       TerrakubeEnableSecurity: "true"
       InternalSecret: ${TERRAKUBE_INTERNAL_SECRET}
@@ -114,12 +114,11 @@ services:
       TerrakubeApiUrl: https://terrakube-api.${DEFAULT_URL}
       CustomTerraformReleasesUrl: "https://releases.hashicorp.com/terraform/index.json"
 
-
       TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}
       EXECUTOR_NAME: local-executor
-      TerrakubeRedisHostname:  ${MNG_VALKEY_HOST}
+      TerrakubeRedisHostname: ${MNG_VALKEY_HOST}
       TerrakubeRedisPassword: ${VALKEY_PASSWORD}
-      TerrakubeRedisPort: ${VALKEY_PORT}  
+      TerrakubeRedisPort: ${VALKEY_PORT}
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -132,8 +131,3 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.terrakube-executor.rule=Host(`terrakube-executor.${DEFAULT_URL}`)"
       - "traefik.http.services.terrakube-executor.loadbalancer.server.port=${TERRAKUBE_EXECUTOR_PORT}"
-
-
-networks:
-  infra_net:
-    external: true

@@ -344,7 +344,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_AIRFLOW_DIR}/plugins
-
-networks:
-  infra_net:
-    external: true

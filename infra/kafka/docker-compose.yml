@@ -429,7 +429,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_KAFKA_DATA_DIR}/kafka-connect
-
-networks:
-  infra_net:
-    external: true

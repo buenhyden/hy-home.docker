@@ -223,7 +223,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_REDIS_DATA_DIR}/n8n-node
-
-networks:
-  infra_net:
-    external: true

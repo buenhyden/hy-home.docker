@@ -13,7 +13,7 @@ services:
     # 비밀번호, 클러스터 이름, JVM 옵션 등은 env 파일에서 주입
     environment:
       # 노드/클러스터 기본 설정
-      - node.name=opensearch-node1      
+      - node.name=opensearch-node1
       - cluster.name=${OPENSEARCH_CLUSTER_NAME}
       # 클러스터 디스커버리 설정 (3노드 모두 동일하게 설정)
       - discovery.seed_hosts=opensearch-node1,opensearch-node2,opensearch-node3
@@ -63,7 +63,7 @@ services:
       # Traefik이 백엔드(OpenSearch)와 통신할 때도 HTTPS를 써야 함.
       # serversTransport 설정을 통해 인증서 검증을 스킵해야 할 수 있음.
       - "traefik.http.services.opensearch.loadbalancer.server.port=9200"
-      - "traefik.http.services.opensearch.loadbalancer.server.scheme=https"  # 백엔드 통신 스킴 지정
+      - "traefik.http.services.opensearch.loadbalancer.server.scheme=https" # 백엔드 통신 스킴 지정
     networks:
       infra_net:
         ipv4_address: 172.19.0.44
@@ -165,7 +165,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.47
     expose:
-      - "${KIBANA_PORT}"  # Expose port 5601 for web access to OpenSearch Dashboards
+      - "${KIBANA_PORT}" # Expose port 5601 for web access to OpenSearch Dashboards
     # ports:
     #   - "${KIBANA_HOST_PORT}:${KIBANA_PORT}"
     volumes:
@@ -188,9 +188,9 @@ services:
     depends_on:
       opensearch-node1:
         condition: service_healthy
-      opensearch-node2: 
+      opensearch-node2:
         condition: service_healthy
-      opensearch-node3: 
+      opensearch-node3:
         condition: service_healthy
     logging:
       driver: "json-file"
@@ -203,24 +203,24 @@ services:
     container_name: opensearch-exporter
     restart: unless-stopped
     command:
-      - '--es.uri=https://opensearch-node1:9200'  # 노드1을 바라봄
-      - '--es.all'
-      - '--es.indices'
-      - '--es.ssl-skip-verify'  # OpenSearch 기본 TLS 인증서 검증 건너뛰기
+      - "--es.uri=https://opensearch-node1:9200" # 노드1을 바라봄
+      - "--es.all"
+      - "--es.indices"
+      - "--es.ssl-skip-verify" # OpenSearch 기본 TLS 인증서 검증 건너뛰기
     environment:
       - ES_USERNAME=${ELASTIC_USERNAME}
       - ES_PASSWORD=${ELASTIC_PASSWORD}
     ports:
-      - "${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}"  # 9114
+      - "${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}" # 9114
     networks:
       infra_net:
         ipv4_address: 172.19.0.48
     depends_on:
       opensearch-node1:
         condition: service_healthy
-      opensearch-node2: 
+      opensearch-node2:
         condition: service_healthy
-      opensearch-node3: 
+      opensearch-node3:
         condition: service_healthy
     logging:
       driver: "json-file"
@@ -228,7 +228,7 @@ services:
         max-size: "5m"
         max-file: "2"
 
-volumes:  
+volumes:
   opensearch-data1:
     # driver: local
     # driver_opts:
@@ -247,7 +247,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_OPENSEARCH_DATA_DIR}/node3
-
-networks:
-  infra_net:
-    external: true

@@ -234,7 +234,3 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_VALKEY_DATA_DIR}/n8n-node
-    
-networks:
-  infra_net:
-    external: true
