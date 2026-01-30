@@ -1,6 +1,8 @@
 name: influxdb
 services:
   influxdb:
+    profiles:
+      - influxdb
     deploy:
       resources:
         limits:

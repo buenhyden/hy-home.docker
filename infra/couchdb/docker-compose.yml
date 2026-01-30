@@ -1,6 +1,8 @@
 name: couchdb
 services:
   couchdb-1:
+    profiles:
+      - couchdb
     image: couchdb:3.5.1
     container_name: couchdb-1
     restart: unless-stopped
@@ -44,6 +46,8 @@ services:
       - "traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie=true"
       - "traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name=couchdb_sticky"
   couchdb-2:
+    profiles:
+      - couchdb
     image: couchdb:3.5.1
     container_name: couchdb-2
     restart: unless-stopped
@@ -81,6 +85,8 @@ services:
       - "traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie=true"
       - "traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name=couchdb_sticky"
   couchdb-3:
+    profiles:
+      - couchdb
     image: couchdb:3.5.1
     container_name: couchdb-3
     restart: unless-stopped
@@ -117,6 +123,8 @@ services:
   # Cluster Initializer (Setup Assistant)
   # ============================================================================
   couchdb-cluster-init:
+    profiles:
+      - couchdb
     image: curlimages/curl
     container_name: couchdb-cluster-init
     restart: "no"

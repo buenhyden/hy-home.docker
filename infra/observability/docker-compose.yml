@@ -106,6 +106,12 @@ services:
         max-file: "2"
     ports:
       - "${TEMPO_HOST_PORT}:${TEMPO_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:${TEMPO_PORT}/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     restart: unless-stopped
   # -------------------------------------------------------
   # 4. Visualization (Grafana)
@@ -258,6 +264,12 @@ services:
       - "traefik.http.routers.alloy.entrypoints=websecure"
       - "traefik.http.routers.alloy.tls=true"
       - "traefik.http.services.alloy.loadbalancer.server.port=${ALLOY_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:${ALLOY_PORT}/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     logging:
       driver: "json-file"
       options:
@@ -302,6 +314,12 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.35
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:${CADVISOR_PORT}/healthz || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     logging:
       driver: "json-file"
       options:
@@ -336,6 +354,12 @@ services:
     # ports:
     #   - "${ALERTMANAGER_HOST_PORT}:${ALERTMANAGER_PORT}"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:${ALERTMANAGER_PORT}/-/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     labels:
       - "traefik.enable=true"
       # Alertmanager UI: alertmanager.${DEFAULT_URL}
@@ -369,6 +393,12 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.37
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:${PUSHGATEWAY_PORT}/-/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     labels:
       - "traefik.enable=true"
       # pushgateway UI: pushgateway.${DEFAULT_URL}

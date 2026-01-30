@@ -2,6 +2,8 @@
 name: sonarqube
 services:
   sonarqube:        
+    profiles:
+      - sonarqube
     deploy:
       resources:
         limits:
@@ -13,6 +15,12 @@ services:
     restart: unless-stopped
     expose:
       - ${SONARQUBE_PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:${SONARQUBE_PORT}/api/system/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
     volumes:      
       - sonarqube-data-volume:/opt/sonarqube/data
       - sonarqube-logs-volume:/opt/sonarqube/logs

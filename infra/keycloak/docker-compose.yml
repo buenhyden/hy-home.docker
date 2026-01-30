@@ -15,6 +15,12 @@ services:
     command: start-dev
     expose:
       - ${KEYCLOAK_MANAGEMENT_PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:${KEYCLOAK_MANAGEMENT_PORT}/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     environment:
       KC_DB: ${KEYCLOAK_DATABASE}
       KC_DB_URL: jdbc:postgresql://${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${KEYCLOAK_DBNAME}

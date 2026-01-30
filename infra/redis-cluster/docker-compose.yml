@@ -4,6 +4,8 @@ services:
   # Redis Cluster Nodes (6개: 3 master + 3 replica)
   # ##############################################################
   redis-node-0:
+    profiles:
+      - redis-cluster
     deploy:
       resources:
         limits:
@@ -55,6 +57,8 @@ services:
         max-file: "2"
 
   redis-node-1:
+    profiles:
+      - redis-cluster
     deploy:
       resources:
         limits:
@@ -101,6 +105,8 @@ services:
         max-file: "2"
 
   redis-node-2:
+    profiles:
+      - redis-cluster
     deploy:
       resources:
         limits:
@@ -147,6 +153,8 @@ services:
         max-file: "2"
 
   redis-node-3:
+    profiles:
+      - redis-cluster
     deploy:
       resources:
         limits:
@@ -193,6 +201,8 @@ services:
         max-file: "2"
 
   redis-node-4:
+    profiles:
+      - redis-cluster
     deploy:
       resources:
         limits:
@@ -239,6 +249,8 @@ services:
         max-file: "2"
 
   redis-node-5:
+    profiles:
+      - redis-cluster
     deploy:
       resources:
         limits:
@@ -290,6 +302,8 @@ services:
   #   - 이미 클러스터 구성돼 있으면 noop로 끝나도록 스크립트 작성
   # ##############################################################
   redis-cluster-init:
+    profiles:
+      - redis-cluster
     image: redis:8.4
     container_name: redis-cluster-init
     secrets:
@@ -329,6 +343,8 @@ services:
   # ##############################################################
 
   redis-exporter:
+    profiles:
+      - redis-cluster
     deploy:
       resources:
         limits:

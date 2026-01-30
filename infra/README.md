@@ -82,6 +82,27 @@ docker compose up -d
 
 특정 서비스만 실행하려면 각 서비스 폴더로 이동하거나 메인에서 서비스를 지정할 수 있습니다.
 
+### 프로파일(Profiles)로 선택 실행
+
+일부 스택은 **프로파일로 비활성화**되어 있으며 필요할 때만 켤 수 있습니다.
+
+```bash
+# 예: Airflow와 Ollama만 켜기
+docker compose --profile airflow --profile ollama up -d
+```
+
+현재 사용 중인 프로파일:
+- `airflow`
+- `influxdb`
+- `couchdb`
+- `mail`
+- `nginx`
+- `ollama`
+- `sonarqube`
+- `vault`
+- `terrakube`
+- `redis-cluster`
+
 ## 📝 참고 사항
 
 - **볼륨 경로**: 반드시 호스트 컴퓨터의 실제 경로를 `.env` 파일에 지정해야 데이터가 유실되지 않습니다.

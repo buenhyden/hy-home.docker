@@ -3,6 +3,8 @@ services:
   # 5. Terrakube API (백엔드)
   # ----------------------------------------------------------------
   terrakube-api:
+    profiles:
+      - terrakube
     image: azbuilder/api-server:2.29.0
     container_name: terrakube-api
     restart: unless-stopped          
@@ -56,6 +58,8 @@ services:
   # 6. Terrakube UI (프론트엔드)
   # ----------------------------------------------------------------
   terrakube-ui:
+    profiles:
+      - terrakube
     image: azbuilder/terrakube-ui:2.29.0
     container_name: terrakube-ui
     restart: unless-stopped          
@@ -80,6 +84,8 @@ services:
   # 7. 인프라 (DB, Redis, Executor)
   # ----------------------------------------------------------------
   terrakube-executor:
+    profiles:
+      - terrakube
     image: azbuilder/executor:2.29.0
     container_name: terrakube-executor
     restart: unless-stopped          

@@ -1,6 +1,8 @@
 name: ollama
 services:
   ollama:
+    profiles:
+      - ollama
     image: ollama/ollama:0.13.5
     container_name: ollama
     # ports:
@@ -53,6 +55,8 @@ services:
 
   # 2. Open WebUI 서비스 (선택 사항: ChatGPT 같은 웹 인터페이스)
   open-webui:
+    profiles:
+      - ollama
     deploy:
       resources:
         limits:
@@ -96,6 +100,8 @@ services:
         max-file: "2"
 
   ollama-exporter:
+    profiles:
+      - ollama
     deploy:
       resources:
         limits:

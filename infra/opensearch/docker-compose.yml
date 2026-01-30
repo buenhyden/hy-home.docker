@@ -3,7 +3,7 @@ services:
   # ######################################################
   # OpenSearch 노드 1 (cluster_manager + data + ingest)
   # ######################################################
-  opensearch:
+  opensearch:    
     # image: opensearchproject/opensearch:3.4.0  # 2025-11 기준 최신 3.x 안정 버전
     build:
       context: . ## build Docker file location
@@ -76,7 +76,7 @@ services:
       retries: 3
 
 
-  opensearch-dashboards:
+  opensearch-dashboards:    
     image: opensearchproject/opensearch-dashboards:3.4.0
     container_name: opensearch-dashboards
     restart: unless-stopped
@@ -113,7 +113,7 @@ services:
         max-size: "5m"
         max-file: "2"
 
-  opensearch-exporter:
+  opensearch-exporter:    
     image: prometheuscommunity/elasticsearch-exporter:v1.10.0
     container_name: opensearch-exporter
     restart: unless-stopped

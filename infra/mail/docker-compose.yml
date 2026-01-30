@@ -38,6 +38,8 @@ services:
   #     # (선택) 웹 UI에 OAuth2 Proxy 인증을 걸고 싶다면 아래 주석 해제
   #     # - "traefik.http.routers.stalwart-ui.middlewares=sso-auth@file"
   mailhog:
+    profiles:
+      - mail
     image: mailhog/mailhog
     container_name: mailhog
     restart: unless-stopped
@@ -51,6 +53,12 @@ services:
       - "traefik.http.routers.mailhog.tls=true"
       - "traefik.http.services.mailhog.loadbalancer.server.port=${MAILHOG_UI_PORT}"
       - "traefik.http.routers.mailhog.middlewares=sso-auth@file"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:${MAILHOG_UI_PORT} || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
     logging:
       driver: "json-file"
       options:

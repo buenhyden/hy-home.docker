@@ -1,8 +1,11 @@
 name: vault
 services:
   vault:
+    profiles:
+      - vault
     image: hashicorp/vault:1.21.2
     container_name: vault
+    restart: unless-stopped
     ports:
       - "${VAULT_HOST_PORT}:${VAULT_PORT}"
     expose:

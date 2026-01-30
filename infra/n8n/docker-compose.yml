@@ -209,7 +209,7 @@ services:
         echo "Starting Valkey Exporter..."
         # -redis.password-file 대신 -redis.password 사용
         exec /redis_exporter \
-          -redis.addr=redis://mng-valkey:6379 \
+          -redis.addr=redis://n8n-valkey:6379 \
           -redis.password="$VALKEY_PASSWORD" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT}
     depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
