@@ -72,6 +72,8 @@ All services run on `infra_net` and rely on shared infrastructure.
 | :--- | :--- | :--- |
 | `airflow-dags` | `/opt/airflow/dags` | DAG definition files |
 | `airflow-plugins` | `/opt/airflow/plugins` | Custom plugins |
+| `airflow-logs` | `/opt/airflow/logs` | Task and scheduler logs |
+| `airflow-config` | `/opt/airflow/config` | Airflow configuration files |
 | `./config/statsd_mapping.yml` | `/tmp/mappings.yml` | Metrics mapping config |
 
 ## Configuration

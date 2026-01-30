@@ -45,7 +45,7 @@ services:
     depends_on:
       mng-pg:
         condition: service_healthy
-      mng-redis:
+      mng-valkey:
         condition: service_started
       keycloak:
         condition: service_started
@@ -136,9 +136,4 @@ services:
 
 networks:
   infra_net:
-    name: infra_net
-    driver: bridge
-    ipam:
-      config:
-        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
-          gateway: ${INFRA_GATEWAY:-172.19.0.1}
+    external: true

@@ -4,7 +4,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
+          cpus: "1.0"
           memory: 1G
         reservations:
           memory: 512M
@@ -46,7 +46,7 @@ services:
       - "traefik.http.routers.keycloak.rule=Host(`keycloak.${DEFAULT_URL}`)"
       - "traefik.http.routers.keycloak.entrypoints=websecure"
       - "traefik.http.routers.keycloak.tls=true"
-      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=${KEYCLOAK_PORT}"
     networks:
       infra_net:
         ipv4_address: 172.19.0.29
@@ -58,9 +58,4 @@ services:
 
 networks:
   infra_net:
-    name: infra_net
-    driver: bridge
-    ipam:
-      config:
-        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
-          gateway: ${INFRA_GATEWAY:-172.19.0.1}
+    external: true
