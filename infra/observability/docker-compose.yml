@@ -348,14 +348,18 @@ services:
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SLACK_ALERTMANAGER_WEBHOOK_URL=${SLACK_ALERTMANAGER_WEBHOOK_URL}
     entrypoint: ["/bin/sh", "-c"]
-    command: |
-      if [ -z "$SLACK_ALERTMANAGER_WEBHOOK_URL" ]; then
-        echo "SLACK_ALERTMANAGER_WEBHOOK_URL is not set"; exit 1;
-      fi
-      sed "s|__SLACK_WEBHOOK_URL__|$SLACK_ALERTMANAGER_WEBHOOK_URL|g" /etc/alertmanager/config.yml.template > /etc/alertmanager/config.yml
-      exec /bin/alertmanager --config.file=/etc/alertmanager/config.yml --storage.path=/alertmanager
+    command: >
+      "if [ -z \"$SLACK_ALERTMANAGER_WEBHOOK_URL\" ]; then
+        echo 'ERROR: SLACK_ALERTMANAGER_WEBHOOK_URL is not set';
+        exit 1;
+      fi;
+      echo 'Generating config file...';
+      sed 's|__SLACK_WEBHOOK_URL__|'$SLACK_ALERTMANAGER_WEBHOOK_URL'|g' /etc/alertmanager/config.yml.template > /tmp/config.yml;
+      
+      echo 'Starting Alertmanager...';
+      exec /bin/alertmanager --config.file=/tmp/config.yml --storage.path=/alertmanager"
     volumes:
-      - ./alertmanager/config/config.yml:/etc/alertmanager/config.yml.template:ro
+      - ./alertmanager/config/config.yml:/etc/alertmanager/config.yml.template
       - alertmanager-data:/alertmanager
     depends_on:
       prometheus:
