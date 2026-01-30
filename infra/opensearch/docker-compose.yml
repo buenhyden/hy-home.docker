@@ -102,7 +102,7 @@ services:
       - "traefik.http.routers.opensearch-dashboards.rule=Host(`opensearch-dashboard.${DEFAULT_URL}`)"
       - "traefik.http.routers.opensearch-dashboards.entrypoints=websecure"
       - "traefik.http.routers.opensearch-dashboards.tls=true"
-      - "traefik.http.services.opensearch-dashboards.loadbalancer.server.port=5601"
+      - "traefik.http.services.opensearch-dashboards.loadbalancer.server.port=${KIBANA_PORT}"
     depends_on:
       opensearch:
         condition: service_healthy
