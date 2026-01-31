@@ -7,6 +7,7 @@
 | ID | Title | Status | Date |
 | :--- | :--- | :--- | :--- |
 | 0001 | [Record Architecture Decisions](./0001-record-architecture-decisions.md) | Accepted | 2026-01-27 |
+| 0002 | [Add RabbitMQ (Optional) and Keep Supabase Standalone](./0002-add-rabbitmq-and-keep-supabase-standalone.md) | Accepted | 2026-01-31 |
 
 ---
 
