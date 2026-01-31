@@ -2,7 +2,7 @@
 
 ## Overview
 
-Event streaming and messaging services. **Kafka** provides the core streaming platform. **ksqlDB** is available as an optional profile for stream processing. **RabbitMQ** is currently a placeholder.
+Event streaming and messaging services. **Kafka** provides the core streaming platform for high-throughput event processing. **ksqlDB** is available for real-time stream SQL processing. **RabbitMQ** provides a robust AMQP-based message broker for reliable asynchronous communication.
 
 ## Services
 
@@ -10,22 +10,25 @@ Event streaming and messaging services. **Kafka** provides the core streaming pl
 | --- | --- | --- | --- |
 | Kafka | (core) | `./kafka` | KRaft cluster + Schema Registry + Connect |
 | ksqlDB | `ksql` | `./ksql` | Stream SQL engine (optional profile) |
-| RabbitMQ | (placeholder) | `./rabbitmq` | No compose yet |
+| RabbitMQ | `rabbitmq` | `./rabbitmq` | AMQP 0-9-1 broker + Management UI |
 
 ## Run
 
 ```bash
-# Core streaming
+# Core streaming (Kafka)
 docker compose up -d kafka
 
 # Stream SQL (optional)
 docker compose --profile ksql up -d ksqldb-server
+
+# Message Broker (optional)
+docker compose --profile rabbitmq up -d rabbitmq
 ```
 
 ## Notes
 
-- ksqlDB depends on Kafka and Schema Registry.
-- RabbitMQ is a reserved placeholder; no services are enabled yet.
+- **ksqlDB** depends on Kafka and Schema Registry.
+- **RabbitMQ** includes a management interface on port `15672`.
 
 ## File Map
 
@@ -33,5 +36,5 @@ docker compose --profile ksql up -d ksqldb-server
 | --- | --- |
 | `kafka/` | Kafka cluster and Confluent stack. |
 | `ksql/` | ksqlDB server/CLI and example datagen. |
-| `rabbitmq/` | Placeholder for future RabbitMQ. |
+| `rabbitmq/` | RabbitMQ service definition and documentation. |
 | `README.md` | Category overview. |
