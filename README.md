@@ -58,7 +58,7 @@ docker compose --profile ollama --profile airflow up -d
 
 ## 🚀 주요 특징
 
-- **Modular Architecture**: 서비스별로 독립된 설정(`infra/<service>`)과 Docker Compose의 `include`를 활용한 유연한 구성.
+- **Modular Architecture**: 서비스별로 독립된 설정(`infra/<번호-카테고리>/<service>`)과 Docker Compose의 `include`를 활용한 유연한 구성.
 - **AI-Ready Stack**: **Ollama** (LLM), **Qdrant** (Vector DB), **n8n** (Automation) 사전 통합.
 - **Enterprise Observability**: **Grafana, Prometheus, Loki, Tempo**를 통한 풀 스택 모니터링.
 - **Security First**: **Keycloak**(SSO), **Vault**, **OAuth2 Proxy**를 통한 철저한 보안/인증 레이어.

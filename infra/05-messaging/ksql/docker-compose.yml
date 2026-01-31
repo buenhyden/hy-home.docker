@@ -6,6 +6,8 @@ x-logging: &default-logging
     max-file: "2"
 services:
   ksqldb-server:
+    profiles:
+      - ksql
     image: confluentinc/cp-ksqldb-server:8.0.3
     hostname: ksqldb-server
     container_name: ksqldb-server
@@ -46,6 +48,8 @@ services:
     logging: *default-logging
 
   ksqldb-cli:
+    profiles:
+      - ksql
     image: confluentinc/cp-ksqldb-cli:8.0.3
     container_name: ksqldb-cli
     depends_on:
@@ -59,12 +63,12 @@ services:
     logging: *default-logging
 
   ksql-datagen:
+    profiles:
+      - ksql
     image: confluentinc/ksqldb-examples:8.0.3
     hostname: ksql-datagen
     container_name: ksql-datagen
-    restart: unless-stopped
-    profiles:
-      - examples
+    restart: unless-stopped    
     depends_on:
       ksqldb-server:
         condition: service_healthy
