@@ -1,0 +1,89 @@
+name: ollama
+services:
+  ollama:
+    profiles:
+      - ollama
+    image: ollama/ollama:0.13.5
+    container_name: ollama
+    # ports:
+    #   - "${OLLAMA_HOST_PORT}:${OLLAMA_PORT}"
+    expose:
+      - ${OLLAMA_PORT}
+    volumes:
+      - ollama-data:/root/.ollama
+    environment:
+      # [필수 추가] Ollama가 모든 네트워크 인터페이스(Docker 내부)에서 수신하도록 설정
+      # 기본 포트가 11434라면 ${OLLAMA_PORT}는 11434와 일치해야 합니다.
+      - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT}
+      # [GPU 필수] 컨테이너가 할당된 GPU를 사용하도록 명시
+      - NVIDIA_VISIBLE_DEVICES=all
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.40
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s # 모델 로드 시간을 고려하여 여유 있게 설정
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 8G
+        reservations:
+          memory: 4G
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    labels:
+      - "traefik.enable=true"
+      # Ollama API 라우터 (https://ollama.${DEFAULT_URL})
+      - "traefik.http.routers.ollama.rule=Host(`ollama.${DEFAULT_URL}`)"
+      - "traefik.http.routers.ollama.entrypoints=websecure"
+      - "traefik.http.routers.ollama.tls=true"
+
+      # [중요] 내부 포트 11434 연결
+      - "traefik.http.services.ollama.loadbalancer.server.port=${OLLAMA_PORT}"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"  
+
+  ollama-exporter:
+    profiles:
+      - ollama
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 128M
+    image: lucabecker42/ollama-exporter:latest
+    container_name: ollama-exporter
+    environment:
+      - OLLAMA_HOST=ollama:${OLLAMA_PORT}
+    ports:
+      - "${OLLAMA_EXPORTER_HOST_PORT}:${OLLAMA_EXPORTER_PORT}" # /metrics
+    restart: unless-stopped
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.43
+    depends_on:
+      ollama:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+volumes:
+  ollama-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_AI_MODEL_DIR}/ollama

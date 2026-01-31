@@ -15,8 +15,6 @@ archive/클라우드_취약점_점검_가이드.pdf
 archive/Infisical Emergency Kit.pdf
 archive/.env
 archive/hosts.txt
-# Cert
-certs/*.pem
 # Example
 examples/harbor
 examples/keycloak
@@ -24,40 +22,52 @@ examples/keycloak
 .env
 !.env.example
 # Infra Configure Files related to secrets
-infra/mail/certs/*.pem
-infra/mng-db/init-scripts/init_users_dbs.sql
-infra/nginx/certs/*.pem
-infra/oauth2-proxy/certs/*.pem
-infra/oauth2-proxy/config/oauth2-proxy.cfg
-infra/observability/alertmanager/config/config.yml
-infra/observability/alloy/config/config.alloy
-infra/observability/loki/config/loki-config.yaml
-infra/observability/prometheus/config/alert_rules/alert_rules*.yml
-infra/observability/prometheus/config/prometheus.yml
-infra/observability/tempo/config/tempo.yaml
-infra/opensearch/opensearch/config/certs/*.pem
-infra/opensearch/opensearch/config/opensearch.yml
-infra/opensearch/opensearch-dashboards/config/certs/*.pem
-infra/opensearch/opensearch-dashboards/config/opensearch_dashboards.yml
-infra/postgresql-cluster/init-scripts/init_users_dbs.sql
-infra/postgresql-cluster/config/haproxy.cfg
-infra/redis-cluster/config/redis.conf
-infra/terrakube/certs/*.pem
-infra/traefik/certs/*.pem
-infra/traefik/config/traefik.yml
-infra/traefik/dynamic/middleware.yml
-infra/traefik/dynamic/tls.yaml
-infra/valkey-cluster/config/valkey.conf
-infra/vault/config/vault.hcl
-infra/vault/config/certs/*.pem
 infra/**/.env
 infra/**/.env.*
 !infra/**/.env*.example
+# 01-gateway
+infra/01-gateway/nginx/config/nginx.conf
+infra/01-gateway/traefik/config/traefik.yml
+infra/01-gateway/traefik/dynamic/middleware.yml
+infra/01-gateway/traefik/dynamic/tls.yaml
+
+# 02-auth
+infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg
+
+# 03-security
+infra/03-security/vault/config/vault.hcl
+
+# 04-data
+infra/04-data/mng-db/init-scripts/init_users_dbs.sql
+infra/04-data/opensearch/opensearch/config/opensearch.yml
+infra/04-data/opensearch/opensearch-dashboards/config/opensearch_dashboards.yml
+infra/04-data/postgresql-cluster/init-scripts/init_users_dbs.sql
+infra/04-data/postgresql-cluster/config/haproxy.cfg
+infra/04-data/redis-cluster/config/redis.conf
+infra/04-data/valkey-cluster/config/valkey.conf
+# 05-messaging
+
+# 06-observability
+infra/06-observability/alertmanager/config/config.yml
+infra/06-observability/alloy/config/config.alloy
+infra/06-observability/loki/config/loki-config.yaml
+infra/06-observability/prometheus/config/alert_rules/alert_rules*.yml
+infra/06-observability/prometheus/config/prometheus.yml
+infra/06-observability/tempo/config/tempo.yaml
+# 07-workflow
+
+# 08-ai
+
+# 09-tooling
+
+# 10-communication
+
 # projects
 projects/.env
 projects/storybook/react-js/node_modules
 projects/storybook/react-ts/node_modules
 # secrets
+secrets/certs/*.pem
 secrets/*.txt
 
 # Antigravity Rules
@@ -73,6 +83,5 @@ secrets/*.txt
 # opencode Skills
 .opencode/skills/
 !.opencode/skills/.gitkeep
-
 
 

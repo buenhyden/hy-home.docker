@@ -1,15 +1,32 @@
 # Hy-Home Infrastructure (infra/)
 
-이 디렉토리는 `Docker Compose`로 구축된 홈 서버/개발 환경 인프라의 **서비스 정의**를 관리합니다. 각 서비스는 `infra/서비스명/docker-compose.yml`에 분리되어 있으며, **저장소 루트의 `docker-compose.yml`에서 `include`** 기능으로 통합됩니다.
+이 디렉토리는 `Docker Compose`로 구축된 홈 서버/개발 환경 인프라의 **서비스 정의**를 관리합니다. 각 서비스는 `infra/<번호-카테고리>/<서비스명>/docker-compose.yml`에 분리되어 있으며, **저장소 루트의 `docker-compose.yml`에서 `include`** 기능으로 통합됩니다.
 
 ## 🏗️ 전체 구조
 
 ```text
 infra/
-├── [service]/                # 각 서비스별 설정 폴더
-│   ├── docker-compose.yml    # 개별 서비스 정의
-│   └── README.md             # 서비스별 상세 가이드
-└── ...
+├── 01-gateway/               # Edge/Gateway
+│   └── traefik/
+├── 02-auth/                  # 인증/SSO
+│   └── keycloak/
+├── 03-security/              # 시크릿/보안
+│   └── vault/
+├── 04-data/                  # DB/Storage
+│   └── postgresql-cluster/
+├── 05-messaging/             # 메시징/스트리밍
+│   └── kafka/
+├── 06-observability/         # LGTM 스택
+│   ├── docker-compose.yml
+│   └── prometheus/
+├── 07-workflow/              # 워크플로우
+│   └── n8n/
+├── 08-ai/                    # AI/LLM
+│   └── ollama/
+├── 09-tooling/               # DevOps/QA/TF
+│   └── terrakube/
+└── 10-communication/         # Mail
+    └── mail/
 ```
 
 ## 🧭 실행 흐름
@@ -41,7 +58,7 @@ infra 하위 폴더는 실행 방식에 따라 다음 4가지로 분류합니다
 ### 분류 요약
 
 - **Core (Include)**: traefik, mng-db, oauth2-proxy, observability, minio, keycloak, n8n, qdrant, postgresql-cluster, kafka, valkey-cluster, opensearch, ksql
-- **Optional (Profile)**: airflow, influxdb, couchdb, mail, nginx, ollama, sonarqube, vault, terrakube, redis-cluster
+- **Optional (Profile)**: airflow, influxdb, couchdb, mail, nginx, ollama, open-webui, sonarqube, vault, terrakube, redis-cluster
 - **Standalone**: supabase
 - **Placeholder**: rabbitmq
 
@@ -86,14 +103,15 @@ infra 하위 폴더는 실행 방식에 따라 다음 4가지로 분류합니다
 
 ### 5. AI & Workflow
 
-- **Ollama**: 로컬 LLM 구동 엔진 및 Web UI.
+- **Ollama**: 로컬 LLM 구동 엔진.
+- **Open WebUI**: Ollama 연동 웹 UI (프로파일: `ollama`).
 - **Qdrant**: 벡터 데이터베이스 (RAG 구축용).
 - **n8n / Airflow**: 워크플로우 자동화 및 데이터 파이프라인 관리.
 
 ### 6. Others
 
 - **SonarQube**: 코드 품질 검사 도구 (옵션).
-- **Storybook**: 디자인 시스템 템플릿.
+- **Storybook**: 디자인 시스템 템플릿 (`projects/storybook`).
 - **Terraform / Terrakube**: IaC 실행 및 오케스트레이션.
 - **MailHog**: 개발용 SMTP 테스트 서버 (옵션).
 - **RabbitMQ**: 메시지 브로커 (구성 예정).
@@ -102,33 +120,33 @@ infra 하위 폴더는 실행 방식에 따라 다음 4가지로 분류합니다
 
 | 서비스 | 프로파일 | 경로 | 요약 |
 | --- | --- | --- | --- |
-| Traefik | - | `infra/traefik` | Edge Router, TLS, 라우팅/미들웨어 |
-| Keycloak | - | `infra/keycloak` | 중앙 인증/인가 (SSO) |
-| OAuth2 Proxy | - | `infra/oauth2-proxy` | ForwardAuth SSO 게이트 |
-| Nginx | `nginx` | `infra/nginx` | 보조 리버스 프록시 |
-| Vault | `vault` | `infra/vault` | 시크릿/키 관리 |
-| mng-db | - | `infra/mng-db` | PostgreSQL + Valkey + RedisInsight |
-| PostgreSQL Cluster | - | `infra/postgresql-cluster` | Patroni HA + HAProxy |
-| Valkey Cluster | - | `infra/valkey-cluster` | 6노드 인메모리 클러스터 |
-| Redis Cluster | `redis-cluster` | `infra/redis-cluster` | Redis 클러스터 (옵션) |
-| InfluxDB | `influxdb` | `infra/influxdb` | TSDB (옵션) |
-| CouchDB | `couchdb` | `infra/couchdb` | 3노드 CouchDB (옵션) |
-| MinIO | - | `infra/minio` | S3 오브젝트 스토리지 |
-| OpenSearch | - | `infra/opensearch` | 검색/대시보드/Exporter |
-| Qdrant | - | `infra/qdrant` | 벡터 DB |
-| Kafka | - | `infra/kafka` | KRaft + Confluent 스택 |
-| ksqlDB | - | `infra/ksql` | 스트림 SQL (예제 데이터는 `examples` 프로파일) |
-| Observability | - | `infra/observability` | Prometheus + Grafana + Loki + Tempo |
-| n8n | - | `infra/n8n` | 워크플로우 자동화 (Queue) |
-| Airflow | `airflow` | `infra/airflow` | 워크플로우 오케스트레이션 |
-| Ollama | `ollama` | `infra/ollama` | 로컬 LLM + WebUI |
-| SonarQube | `sonarqube` | `infra/sonarqube` | 코드 품질 분석 |
-| Storybook | - | `infra/storybook` | 디자인 시스템 템플릿 |
-| Terraform | - | `infra/terraform` | Terraform CLI 컨테이너 |
-| Terrakube | `terrakube` | `infra/terrakube` | Terraform 오케스트레이션 |
-| Mail | `mail` | `infra/mail` | MailHog 테스트 SMTP |
-| Supabase | - | `infra/supabase` | 자체 호스팅 Supabase 스택 (별도 실행) |
-| RabbitMQ | - | `infra/rabbitmq` | Placeholder (구성 예정) |
+| Traefik | - | `infra/01-gateway/traefik` | Edge Router, TLS, 라우팅/미들웨어 |
+| Keycloak | - | `infra/02-auth/keycloak` | 중앙 인증/인가 (SSO) |
+| OAuth2 Proxy | - | `infra/02-auth/oauth2-proxy` | ForwardAuth SSO 게이트 |
+| Nginx | `nginx` | `infra/01-gateway/nginx` | 보조 리버스 프록시 |
+| Vault | `vault` | `infra/03-security/vault` | 시크릿/키 관리 |
+| mng-db | - | `infra/04-data/mng-db` | PostgreSQL + Valkey + RedisInsight |
+| PostgreSQL Cluster | - | `infra/04-data/postgresql-cluster` | Patroni HA + HAProxy |
+| Valkey Cluster | - | `infra/04-data/valkey-cluster` | 6노드 인메모리 클러스터 |
+| Redis Cluster | `redis-cluster` | `infra/04-data/redis-cluster` | Redis 클러스터 (옵션) |
+| InfluxDB | `influxdb` | `infra/04-data/influxdb` | TSDB (옵션) |
+| CouchDB | `couchdb` | `infra/04-data/couchdb` | 3노드 CouchDB (옵션) |
+| MinIO | - | `infra/04-data/minio` | S3 오브젝트 스토리지 |
+| OpenSearch | - | `infra/04-data/opensearch` | 검색/대시보드/Exporter |
+| Qdrant | - | `infra/04-data/qdrant` | 벡터 DB |
+| Kafka | - | `infra/05-messaging/kafka` | KRaft + Confluent 스택 |
+| ksqlDB | - | `infra/05-messaging/ksql` | 스트림 SQL (예제 데이터는 `examples` 프로파일) |
+| Observability | - | `infra/06-observability` | Prometheus + Grafana + Loki + Tempo |
+| n8n | - | `infra/07-workflow/n8n` | 워크플로우 자동화 (Queue) |
+| Airflow | `airflow` | `infra/07-workflow/airflow` | 워크플로우 오케스트레이션 |
+| Ollama | `ollama` | `infra/08-ai/ollama` | 로컬 LLM |
+| Open WebUI | `ollama` | `infra/08-ai/open-webui` | Ollama Web UI |
+| SonarQube | `sonarqube` | `infra/09-tooling/sonarqube` | 코드 품질 분석 |
+| Terraform | - | `infra/09-tooling/terraform` | Terraform CLI 컨테이너 |
+| Terrakube | `terrakube` | `infra/09-tooling/terrakube` | Terraform 오케스트레이션 |
+| Mail | `mail` | `infra/10-communication/mail` | MailHog 테스트 SMTP |
+| Supabase | - | `infra/04-data/supabase` | 자체 호스팅 Supabase 스택 (별도 실행) |
+| RabbitMQ | - | `infra/05-messaging/rabbitmq` | Placeholder (구성 예정) |
 
 ## ⚙️ 설정 가이드
 
@@ -152,6 +170,7 @@ docker compose --profile airflow --profile ollama up -d
 ```
 
 현재 사용 중인 프로파일:
+
 - `airflow` (기본 Airflow 스택)
 - `debug` (Airflow 디버그 구성)
 - `flower` (Airflow 모니터링 UI)
@@ -168,7 +187,7 @@ docker compose --profile airflow --profile ollama up -d
 
 ## ➕ 서비스 추가 방법
 
-1. `infra/서비스명/` 디렉토리를 생성하고 `docker-compose.yml`을 작성합니다.
+1. `infra/<번호-카테고리>/<서비스명>/` 디렉토리를 생성하고 `docker-compose.yml`을 작성합니다.
 2. 필요 시 `profiles`를 지정해 선택 실행 가능한 스택으로 분리합니다.
 3. 루트 `docker-compose.yml`의 `include`에 새 서비스를 추가합니다.
 4. 환경 변수가 필요하면 루트 `.env.example`에 추가하고, 민감 값은 `secrets/`에 `*.txt`로 분리합니다.
