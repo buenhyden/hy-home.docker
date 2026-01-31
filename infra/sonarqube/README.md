@@ -89,7 +89,7 @@ You can run a scan using Docker without installing the scanner locally:
 docker run \
     --rm \
     -e SONAR_HOST_URL="https://sonarqube.${DEFAULT_URL}" \
-    -e SONAR_TOKEN="<your-generated-token>" \
+    -e SONAR_TOKEN="${SONAR_TOKEN}" \
     -v "${PWD}:/usr/src" \
     sonarsource/sonar-scanner-cli
 ```
@@ -103,3 +103,10 @@ Check `vm.max_map_count` as described in [Configuration](#kernel-requirements-im
 ### "Database connection failed"
 
 Ensure the PostgreSQL container is consistent and the `sonarqube` database exists and is accessible by the configured user.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | SonarQube service definition and DB wiring. |
+| `README.md` | Usage and configuration notes. |

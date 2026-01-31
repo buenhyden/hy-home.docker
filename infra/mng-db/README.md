@@ -97,7 +97,7 @@ The `mng-pg-init` container runs automatically on startup.
 From inside the network:
 
 ```bash
-valkey-cli -h 172.19.0.70 -a <valkey_password>
+valkey-cli -h 172.19.0.70 -a $(cat /run/secrets/valkey_password)
 ```
 
 ### 2. Connecting to PostgreSQL
@@ -139,3 +139,13 @@ If `mng-pg-init` fails:
 1. Check `docker compose logs mng-pg-init`.
 2. Ensure `init_users_dbs.sql` syntax is correct.
 3. Verify `PGPASSWORD_SUPERUSER` matches `POSTGRES_PASSWORD`.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Management Valkey + PostgreSQL (default). |
+| `docker-compose.redis.yml` | Redis-based alternative stack. |
+| `init-scripts/init_users_dbs.sql` | Initial DB/user bootstrap (runs once on empty volume). |
+| `init-scripts/init_users_dbs.sql.example` | Template for bootstrap SQL. |
+| `README.md` | Service overview and connection notes. |

@@ -17,7 +17,7 @@ In the `hy-home.docker` environment, we run Terraform within a Docker container 
 /infra/terraform/
 ├── docker-compose.yml  # Defines the Terraform container
 ├── README.md           # This documentation
-└── (your .tf files)    # Place your Terraform configuration files here
+└── workspace/          # Mount point for .tf files and local state
 ```
 
 ## Usage
@@ -66,3 +66,11 @@ By default, the `terraform.tfstate` file is stored in the local directory (since
 - **Modules**: Use modules to organize configurations.
 - **Variables**: Do not hardcode secrets. Use `terraform.tfvars` (ensure it's `.gitignore`d) or environment variables.
 - **Version Control**: Commit your `.tf` and `.lock.hcl` files. **Do NOT** commit `.tfstate` or `.tfvars` containing secrets.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Runs Terraform CLI in a container with cloud credential mounts. |
+| `workspace/` | Working directory for Terraform configurations and state. |
+| `README.md` | Usage and workflow guidance. |

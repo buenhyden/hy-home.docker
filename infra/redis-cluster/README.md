@@ -103,3 +103,14 @@ This is normal Redis Cluster behavior. The client must be able to reach the IP r
 
 - **Inside Docker**: Works fine.
 - **From Host**: Fails because Host cannot reach `172.19.x.x` directly without routing.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | 6-node Redis cluster + init + exporter. |
+| `config/redis.conf` | Base Redis cluster config (AOF/RDB, cluster mode). |
+| `config/redis.conf.example` | Template config for Redis. |
+| `scripts/redis-start.sh` | Node entrypoint wrapper (announce/cluster ports). |
+| `scripts/redis-cluster-init.sh` | Cluster creation once nodes are healthy. |
+| `README.md` | Architecture and usage notes. |

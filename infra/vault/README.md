@@ -3,7 +3,7 @@
 ## 1. 개요 (Overview)
 
 **HashiCorp Vault**는 현대적인 인프라 환경에서 **Secrets(비밀값)**, **Encryption(암호화)**, **Identity(신원)** 관리를 중앙집중화하는 업계 표준 솔루션입니다.
-`hy-home.docker` 환경에서 Vault를 도입함으로써 단순한 환경 변수(`<service>/.env`) 기반의 관리를 넘어, **동적 시크릿(Dynamic Secrets)**, **데이터 암호화(Encryption-as-a-Service)**, **정교한 접근 제어(ACL)** 를 구현할 수 있습니다.
+`hy-home.docker` 환경에서 Vault를 도입함으로써 단순한 서비스별 `.env` 기반의 관리를 넘어, **동적 시크릿(Dynamic Secrets)**, **데이터 암호화(Encryption-as-a-Service)**, **정교한 접근 제어(ACL)** 를 구현할 수 있습니다.
 
 ---
 
@@ -82,15 +82,15 @@ Vault는 처음 실행 시 **Sealed** 상태로 시작됩니다. 데이터를 �
 2. **Unseal**: 봉인 해제 (3개의 키 필요)
 
     ```bash
-    docker compose exec vault vault operator unseal <Unseal Key 1>
-    docker compose exec vault vault operator unseal <Unseal Key 2>
-    docker compose exec vault vault operator unseal <Unseal Key 3>
+    docker compose exec vault vault operator unseal "${VAULT_UNSEAL_KEY_1}"
+    docker compose exec vault vault operator unseal "${VAULT_UNSEAL_KEY_2}"
+    docker compose exec vault vault operator unseal "${VAULT_UNSEAL_KEY_3}"
     ```
 
 3. **Login**: 루트 로그인
 
     ```bash
-    docker compose exec vault vault login <Initial Root Token>
+    docker compose exec vault vault login "${VAULT_ROOT_TOKEN}"
     ```
 
 ### 4.3 권장 엔진 활성화
@@ -164,7 +164,7 @@ spring:
 ### 7.1 Docker 컨테이너 내부 실행 (권장)
 
 ```bash
-docker compose exec vault vault <command>
+docker compose exec vault vault status
 ```
 
 주요 명령어:
@@ -194,3 +194,13 @@ docker compose exec vault vault <command>
 * **Sealed Status**: 컨테이너 재시작 후 `Vault is sealed` 상태가 됩니다. 4.2절의 Unseal 과정을 다시 수행해야 합니다.
 * **Connection Refused**: 포트 8200이 열려있는지, 컨테이너가 정상 실행 중인지 확인하세요.
 * **Permission Denied**: 볼륨 마운트 경로(`.config`, `vault-data`)의 권한을 확인하세요.
+
+## 8. File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Vault service definition (IPC_LOCK, ports, volumes). |
+| `config/vault.hcl` | Vault server configuration (storage, listener, telemetry). |
+| `config/vault.hcl.example` | Template config. |
+| `config/certs/` | TLS materials for Vault (optional). |
+| `README.md` | Integration and operational guidance. |

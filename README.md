@@ -20,7 +20,7 @@
 
 ## 🏁 빠른 시작 (Quick Start)
 
-자세한 설치 가이드는 [Development Guide](docs/03-development-and-contribution.md)를 참조하세요.
+자세한 설치 가이드는 [Setup Guide](docs/setup/README.md)를 참조하세요.
 
 ### 1. 설정
 
@@ -69,10 +69,10 @@ docker compose --profile ollama --profile airflow up -d
 
 | 디렉토리 | 설명 | 상세 문서 |
 | --- | --- | --- |
-| [**`infra/`**](infra/) | Docker Compose 기반 인프라 서비스 | [Stack Details](docs/02-infrastructure-stack.md) |
+| [**`infra/`**](infra/) | Docker Compose 기반 인프라 서비스 | [Stack Details](infra/README.md) |
 | [**`projects/`**](projects/) | 인프라 위에서 구동될 애플리케이션 | - |
 | [**`docs/`**](docs/) | 프로젝트 전체 상세 문서 및 가이드 | [Documentation Index](docs/README.md) |
-| [**`scripts/`**](scripts/) | 배포 및 관리 자동화 스크립트 | [Dev Guide](docs/03-development-and-contribution.md) |
+| [**`scripts/`**](scripts/) | 배포 및 관리 자동화 스크립트 | [Operations Guide](docs/ops/README.md) |
 
 ---
 
@@ -83,7 +83,7 @@ docker compose --profile ollama --profile airflow up -d
 
 - [**CONTRIBUTING.md**](CONTRIBUTING.md): 기여 가이드라인
 - [**Code of Conduct**](.github/CODE_OF_CONDUCT.md): 행동 강령
-- [**Architecture Guide**](docs/01-repository-structure.md): 구조 이해
+- [**Architecture Guide**](ARCHITECTURE.md): 구조 이해
 
 ## 📝 License
 

@@ -132,3 +132,10 @@ docker exec -it ollama nvidia-smi
 
 - Check if `qwen3-embedding:0.6b` (or your configured `RAG_EMBEDDING_MODEL`) is actually pulled.
 - Verify connectivity to **Qdrant** (`http://qdrant:6333` from WebUI container).
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Ollama + Open WebUI + exporter stack. |
+| `README.md` | Model/RAG usage and GPU notes. |

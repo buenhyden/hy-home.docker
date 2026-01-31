@@ -92,3 +92,11 @@ labels:
 
 - [Figma Integration Guide](./react-ts/FIGMA_INTEGRATION.md)
 - [Visual Regression Testing](./react-ts/VISUAL_REGRESSION.md)
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `react-ts/` | TypeScript Storybook template (Vite, Nginx, CI workflows). |
+| `react-js/` | JavaScript Storybook template (Vite, Nginx, CI workflows). |
+| `README.md` | Monorepo-level overview and usage notes. |

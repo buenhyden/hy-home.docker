@@ -86,16 +86,15 @@ A dedicated `n8n` database on the management PostgreSQL instance is used for ope
 
 This directory features a custom **Multi-stage Dockerfile** designed to overcome the limitations of the official distroless image.
 
-87:
-88: ### Multi-stage Build Workflow
-89:
-90: 1. **Stage 1 (Builder)**: Uses `alpine:3.21` to install necessary TTF fonts (`font-noto`, `ttf-dejavu`, etc.) and system packages.
-91: 2. **Stage 2 (Final)**:
-92:    - Copies pre-compiled fonts from the builder.
-93:    - Installs **Python 3** and build dependencies (`make`, `g++`, etc.) to support the `Execute Command` node and complex data processing.
-94:    - Installs `n8n-cli` globally for management tasks.
-95:    - Sets up the `custom/` directory for **Private Custom Nodes**.
-96: 3. **Result**: A secured, production-ready image capable of handling Korean fonts, Python scripts, and custom extensions.
+### Multi-stage Build Workflow
+
+1. **Stage 1 (Builder)**: Uses `alpine:3.21` to install TTF fonts (`font-noto`, `ttf-dejavu`, etc.) and build caches.
+2. **Stage 2 (Final)**:
+   - Copies pre-compiled fonts from the builder.
+   - Installs **Python 3** and build dependencies (`make`, `g++`, etc.) for `Execute Command` nodes.
+   - Installs `n8n-cli` globally.
+   - Sets up the `custom/` directory for **Private Custom Nodes**.
+3. **Result**: A production-ready image with Korean fonts, Python runtime, and custom node support.
 
 ### Build and Run
 
@@ -133,3 +132,13 @@ Ensure `N8N_PROXY_HOPS` is set correctly (default: 1) if using multiple layers o
 ### "PDF/Image Rendering Issues"
 
 Verify that the custom build was successful and fonts are available in `/usr/share/fonts` within the container.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | n8n + Valkey queue stack (default). |
+| `docker-compose.redis.yml` | Redis-based alternative stack. |
+| `Dockerfile` | Custom n8n image (fonts, Python, n8n-cli). |
+| `custom/` | Private/custom nodes (bind-mounted into the container). |
+| `README.md` | Queue-mode architecture and operations. |

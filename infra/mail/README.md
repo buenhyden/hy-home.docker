@@ -62,5 +62,13 @@ To send emails from other services within the `infra_net` network:
 
 ### Accessing Web UI
 
-- **URL**: `https://mail.<your-domain>`
+- **URL**: `https://mail.${DEFAULT_URL}`
 - **Login**: Authenticate via your SSO provider.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | MailHog active stack + commented Stalwart Mail Server blueprint. |
+| `certs/` | TLS materials for Stalwart (cert.pem, key.pem, rootCA.pem). |
+| `README.md` | Service overview and usage notes. |

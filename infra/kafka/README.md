@@ -144,3 +144,10 @@ Check `KAFKA_CONTROLLER_QUORUM_VOTERS`. All nodes must list the exact same voter
 ### Connect Worker OOM
 
 Kafka Connect is memory intensive. If it crashes, increase the memory limit in `docker-compose.yml` (currently `1.5G`).
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | KRaft Kafka cluster + Confluent components + exporters. |
+| `README.md` | Architecture, ports, and operations. |

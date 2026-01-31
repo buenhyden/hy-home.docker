@@ -78,8 +78,8 @@ This Nginx instance is configured to support **Single Sign-On (SSO)** via **OAut
 
 Access services via the host machine's IP or DNS mapping using path-based URLs:
 
-- `https://<host-ip>/keycloak/`
-- `https://<host-ip>/minio-console/`
+- `https://localhost:${HTTPS_HOST_PORT}/keycloak/`
+- `https://localhost:${HTTPS_HOST_PORT}/minio-console/`
 
 ### 2. Monitoring Logs
 
@@ -99,3 +99,12 @@ docker logs -f nginx
 
 - Check if you are correctly logged in via Keycloak.
 - Verify OAuth2 Proxy is receiving the sub-request and validating the session token.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Standalone Nginx service with host port exposure. |
+| `config/nginx.conf` | Reverse proxy rules, SSL, OAuth2 auth_request flow. |
+| `certs/` | TLS certificates for HTTPS termination. |
+| `README.md` | Usage and routing notes. |

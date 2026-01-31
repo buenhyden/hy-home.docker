@@ -115,3 +115,17 @@ curl -X POST https://alertmanager.${DEFAULT_URL}/-/reload
 
 - [Grafana Alloy Dashboard Guide](./alloy/README.md)
 - [Prometheus Alerting Rules Reference](./prometheus/README.md)
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | LGTM + Alloy stack definition. |
+| `alertmanager/` | Alert routing config (`config/config.yml`). |
+| `alloy/` | Unified telemetry collector config (`config/config.alloy`). |
+| `grafana/` | Provisioned dashboards and datasources. |
+| `loki/` | Loki storage and ingestion config. |
+| `prometheus/` | Scrape configs and alert rules. |
+| `pushgateway/` | Pushgateway service README. |
+| `tempo/` | Tempo trace storage config. |
+| `README.md` | Stack topology and integration notes. |

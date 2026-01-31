@@ -59,10 +59,13 @@ Services run on `infra_net` with static IPs.
 
 Contains the core logic for OIDC integration. Key settings typically include:
 
-- `provider = "oidc"`
-- `oidc_issuer_url`: Pointing to Keycloak realm
-- `email_domains = "*"`: Allow any email (filtering handled by IdP)
-- `upstreams = "file:///dev/null"`: Acts as an auth-only server
+- `provider = "keycloak-oidc"`
+- `oidc_issuer_url`: Keycloak realm URL (configured to `https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm`)
+- `redirect_url`: `https://auth.127.0.0.1.nip.io/oauth2/callback`
+- `scope`: `openid email profile offline_access groups`
+- `cookie_domains`: `.127.0.0.1.nip.io`
+- `email_domains = "*"`, `whitelist_domains = "*.127.0.0.1.nip.io"`
+- `upstreams = [ "static://200" ]` (auth-only response)
 
 ### Environment Variables
 
@@ -110,3 +113,14 @@ The OAuth2 Proxy container doesn't trust the IdP (Keycloak) certificate.
 
 - Ensure `rootCA.pem` is valid.
 - Verify `SSL_CERT_FILE` env var is set correctly.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | OAuth2 Proxy + Valkey session store (default). |
+| `docker-compose.redis.yml` | OAuth2 Proxy + Redis session store (alternative). |
+| `config/oauth2-proxy.cfg` | Active Keycloak OIDC configuration (issuer, cookies, scopes). |
+| `config/oauth2-proxy.cfg.example` | Template config. |
+| `certs/` | Local CA and TLS materials for IdP trust. |
+| `README.md` | SSO wiring and usage notes. |

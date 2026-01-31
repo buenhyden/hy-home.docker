@@ -132,3 +132,11 @@ If `minio-create-buckets` fails:
 1. Check if `minio` service is healthy.
 2. Verify secrets are correctly populated in `/run/secrets/`.
 3. Check logs: `docker compose logs minio-create-buckets`
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Single-node MinIO with bucket init sidecar. |
+| `docker-compose.cluster.yaml` | Multi-node (distributed) MinIO cluster template. |
+| `README.md` | Usage and initialization notes. |

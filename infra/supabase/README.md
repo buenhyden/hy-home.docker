@@ -4,6 +4,8 @@
 
 이 디렉토리는 자체 호스팅 Supabase 스택을 실행하기 위한 Docker Compose 구성을 포함합니다. Auth, Realtime, Storage, Studio 대시보드와 같은 모든 핵심 서비스를 포함합니다.
 
+> 이 스택은 현재 루트 `docker-compose.yml`의 `include` 대상이 아니므로 `infra/supabase`에서 별도로 실행합니다.
+
 ## 서비스
 
 - **studio**: Supabase 대시보드.
@@ -23,7 +25,7 @@
 ## 필수 조건
 
 - Docker 및 Docker Compose 설치.
-- `Docker/Infra` 루트 디렉토리에 `.env` 파일.
+- `infra/supabase/.env` 파일.
 
 ## 설정
 
@@ -38,7 +40,7 @@
 서비스 시작:
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ## 접속
@@ -49,3 +51,11 @@ docker-compose up -d
 ## 볼륨
 
 - 데이터베이스, 스토리지, 설정 데이터의 영구 보존을 위해 다수의 볼륨이 사용됩니다.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `.env` | Supabase 스택 전용 환경 변수 파일. |
+| `docker-compose.yml` | Supabase self-hosted 전체 스택 정의. |
+| `README.md` | 서비스 구성 및 사용 안내. |

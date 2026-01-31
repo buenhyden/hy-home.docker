@@ -6,9 +6,11 @@ ksqlDB is a database purpose-built for stream processing applications. It allows
 
 ## Services
 
-- **Service Name**: `ksqldb-server`
-- **Image**: `confluentinc/cp-ksqldb-server:8.0.3`
-- **Exposed Port**: `${KSQLDB_HOST_PORT}:${KSQLDB_PORT}` (Default usually 8088)
+| Service | Image | Role | Notes |
+| --- | --- | --- | --- |
+| `ksqldb-server` | `confluentinc/cp-ksqldb-server:8.0.3` | ksqlDB Engine (REST + Stream Processing) | `${KSQLDB_HOST_PORT}:${KSQLDB_PORT}` |
+| `ksqldb-cli` | `confluentinc/cp-ksqldb-cli:8.0.3` | Interactive CLI Client | Internal-only |
+| `ksql-datagen` | `confluentinc/ksqldb-examples:8.0.3` | Example data generator | Enabled via `examples` profile |
 
 ## Networking
 
@@ -42,3 +44,10 @@ docker exec -it ksqldb-cli ksql http://ksqldb-server:${KSQLDB_PORT}
 ```bash
 docker logs ksqldb-server
 ```
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | ksqlDB server + CLI + example datagen profile. |
+| `README.md` | Service overview and usage notes. |

@@ -93,10 +93,10 @@ Access the management dashboard at `https://couchdb.${DEFAULT_URL}/_utils`.
 
 ```bash
 # Check cluster status
-curl -u admin:password https://couchdb.${DEFAULT_URL}/_membership
+curl -u ${COUCHDB_USERNAME}:${COUCHDB_PASSWORD} https://couchdb.${DEFAULT_URL}/_membership
 
 # Create a database
-curl -X PUT -u admin:password https://couchdb.${DEFAULT_URL}/my_new_db
+curl -X PUT -u ${COUCHDB_USERNAME}:${COUCHDB_PASSWORD} https://couchdb.${DEFAULT_URL}/my_new_db
 ```
 
 ## Troubleshooting
@@ -112,3 +112,10 @@ docker logs couchdb-cluster-init
 ### "Consistency Issues"
 
 Ensure your client supports HTTP cookies to take advantage of Traefik's sticky sessions, or target a specific node alias if performing cluster maintenance.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | 3-node CouchDB cluster + initializer. |
+| `README.md` | Cluster topology and access notes. |

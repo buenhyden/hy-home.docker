@@ -121,7 +121,7 @@ Use the `airflow-cli` service or `exec` into `airflow-scheduler` to run commands
 docker compose run --rm airflow-cli airflow dags list
 
 # Trigger a DAG
-docker compose run --rm airflow-cli airflow dags trigger <dag_id>
+docker compose run --rm airflow-cli airflow dags trigger example_dag
 
 # Check config
 docker compose run --rm airflow-cli airflow config list
@@ -162,3 +162,12 @@ docker compose logs airflow-scheduler
 1. Check Celery connection to Redis.
 2. Verify `AIRFLOW__CELERY__BROKER_URL` matches the active Redis/Valkey service.
 3. Check Flower UI to see if workers are online.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Airflow CeleryExecutor stack (default broker). |
+| `docker-compose.redis.yml` | Alternate compose with Redis-specific wiring. |
+| `config/statsd_mapping.yml` | StatsD → Prometheus metric mapping rules. |
+| `README.md` | Architecture, config, and usage notes. |

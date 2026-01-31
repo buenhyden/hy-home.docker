@@ -106,3 +106,11 @@ You can use the output from the UI to configure your Terraform CLI backend or ge
 
 - Verify connection to `mng-redis` (Valkey).
 - Check `terrakube-api` logs for Redis connection errors.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Terrakube API/UI/Executor stack definition. |
+| `certs/` | TLS assets (if enabled for internal services). |
+| `README.md` | Usage and dependency notes. |

@@ -145,3 +145,16 @@ If a PG node keeps restarting:
 1. Check logs: `docker compose logs pg-0`
 2. Look for "WalSender" or "Replication" errors.
 3. Verify `etcd` connectivity from the PG container.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Patroni + etcd + HAProxy cluster definition. |
+| `.env.postgres` | Local env values for cluster bootstrap. |
+| `.env.postgres.example` | Template env values. |
+| `config/haproxy.cfg` | HAProxy routing for write/read split and stats. |
+| `config/haproxy.cfg.example` | Template HAProxy config. |
+| `init-scripts/init_users_dbs.sql` | Initial DB/user bootstrap (runs once). |
+| `init-scripts/init_users_dbs.sql.example` | Template bootstrap SQL. |
+| `README.md` | HA cluster usage and troubleshooting. |

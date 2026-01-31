@@ -94,3 +94,10 @@ Ensure the host directory mapped to the volume has the correct permissions for t
 ### "API Token Invalid"
 
 If you manually change the token in the UI or CLI, ensure all dependent services (Telegraf, Airflow) are updated with the new `INFLUXDB_API_TOKEN`.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | InfluxDB v2 service definition with auto-init. |
+| `README.md` | Usage and configuration notes. |

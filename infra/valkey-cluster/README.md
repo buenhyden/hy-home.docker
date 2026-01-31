@@ -100,3 +100,14 @@ Similar to the Redis Cluster, Host ports are for debugging specific nodes only. 
 
 - Ensure your client is "Cluster Aware".
 - Do not use a standalone client for cluster operations.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | 6-node Valkey cluster + init + exporter. |
+| `config/valkey.conf` | Base Valkey cluster config (AOF/RDB, cluster mode). |
+| `config/valkey.conf.example` | Template config for Valkey. |
+| `scripts/valkey-start.sh` | Node entrypoint wrapper (announce/cluster ports). |
+| `scripts/valkey-cluster-init.sh` | Cluster creation once nodes are healthy. |
+| `README.md` | Architecture and usage notes. |

@@ -1,8 +1,13 @@
+# ==============================================================================
+# Cluster & Network Settings
+# ==============================================================================
 network.host: 0.0.0.0
 http.port: 9200
 discovery.type: single-node
 
-# 보안 플러그인 설정 (정적)
+# ==============================================================================
+# Security Settings
+# ==============================================================================
 plugins.security.disabled: false
 plugins.security.ssl.transport.pemcert_filepath: certs/cert.pem
 plugins.security.ssl.transport.pemkey_filepath: certs/key.pem
@@ -21,7 +26,9 @@ plugins.security.authcz.admin_dn:
   - "CN=localhost, O=mkcert dev, L=Seoul, ST=Seoul, C=KR"
 
 plugins.security.restapi.roles_enabled: ["all_access", "admin"]
-
+# ==============================================================================
+# Path & Monitoring Settings
+# ==============================================================================
 path.data: /usr/share/opensearch/data
 path.logs: /usr/share/opensearch/logs
 

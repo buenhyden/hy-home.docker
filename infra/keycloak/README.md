@@ -135,3 +135,11 @@ https://grafana.${DEFAULT_URL}/login
 https://keycloak.${DEFAULT_URL}/realms/hy-home.realm/protocol/openid-connect/logout?post_logout_redirect_uri=https://grafana.${DEFAULT_URL}/login
 https://grafana.${DEFAULT_URL}/login
 ```
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Keycloak service definition and env wiring. |
+| `Dockerfile` | Optional custom Keycloak build (health/metrics, providers). |
+| `README.md` | IAM setup and integration notes. |

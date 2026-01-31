@@ -111,3 +111,16 @@ To protect a service with Keycloak SSO (via OAuth2 Proxy), add the middleware:
 
 - Verify `oauth2-proxy` service is running.
 - Check Traefik logs for ForwardAuth failures.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Traefik edge router service definition. |
+| `config/traefik.yml` | Static config (entrypoints, providers, metrics, tracing). |
+| `config/traefik.yml.example` | Template for static config. |
+| `dynamic/middleware.yml` | ForwardAuth, basic auth, and rate-limit middlewares. |
+| `dynamic/tls.yaml` | TLS store and default cert config. |
+| `dynamic/*.example` | Template files for dynamic config. |
+| `certs/` | TLS certificates and root CA. |
+| `README.md` | Usage and routing notes. |

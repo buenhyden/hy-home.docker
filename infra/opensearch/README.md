@@ -195,3 +195,20 @@ sysctl -w vm.max_map_count=262144
 
 If Traefik returns "Bad Gateway", it might be due to SSL verification failure.
 Check `traefik.http.services.opensearch.loadbalancer.server.scheme=https`.
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Single-node OpenSearch + Dashboards + exporter. |
+| `docker-compose.cluster.yml` | 3-node HA cluster definition (optional). |
+| `Dockerfile` | Custom OpenSearch build with plugins. |
+| `opensearch/config/opensearch.yml` | Core node config (network, TLS, security plugin). |
+| `opensearch/config/opensearch.yml.example` | Template OpenSearch config. |
+| `opensearch/config/userdict_ko.txt` | Korean user dictionary for `analysis-nori`. |
+| `opensearch/config/opensearch-security/*.yml` | Security plugin config (users/roles/mappings/tenants). |
+| `opensearch/config/certs/` | Node TLS certificates. |
+| `opensearch-dashboards/config/opensearch_dashboards.yml` | Dashboards config. |
+| `opensearch-dashboards/config/opensearch_dashboards.yml.example` | Template Dashboards config. |
+| `opensearch-dashboards/config/certs/` | Dashboards TLS certificates. |
+| `README.md` | Cluster usage and security notes. |

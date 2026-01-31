@@ -68,7 +68,7 @@ curl -X PUT "https://qdrant.${DEFAULT_URL}/collections/my_documents" \
      -H "Content-Type: application/json" \
      --data '{
        "vectors": {
-         "size": 768,
+         "size": 3,
          "distance": "Cosine"
        }
      }'
@@ -80,7 +80,7 @@ curl -X PUT "https://qdrant.${DEFAULT_URL}/collections/my_documents" \
 curl -X POST "https://qdrant.${DEFAULT_URL}/collections/my_documents/points/search" \
      -H "Content-Type: application/json" \
      --data '{
-       "vector": [0.1, 0.2, ...],
+       "vector": [0.12, 0.08, 0.94],
        "limit": 3
      }'
 ```
@@ -107,3 +107,10 @@ Vector databases hold indices in RAM for speed. If Qdrant OOMs:
 
 1. Increase memory limit in `docker-compose.yml`.
 2. Configure `memmap_threshold` in `config.yaml` (advanced).
+
+## File Map
+
+| Path | Description |
+| --- | --- |
+| `docker-compose.yml` | Qdrant single-node service definition. |
+| `README.md` | Usage and integration notes. |
