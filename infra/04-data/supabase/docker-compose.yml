@@ -12,21 +12,14 @@ x-logging: &default-logging
   options:
     max-size: "5m"
     max-file: "2"
-    
-services:
 
+services:
   studio:
     container_name: supabase-studio
     image: supabase/studio:2025.11.10-sha-5291fe3
     restart: unless-stopped
     healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "fetch('http://studio:3000/api/platform/profile').then((r) => {if (r.status !== 200) throw new Error(r.status)})"
-        ]
+      test: ["CMD", "node", "-e", "fetch('http://studio:3000/api/platform/profile').then((r) => {if (r.status !== 200) throw new Error(r.status)})"]
       timeout: 10s
       interval: 5s
       retries: 3
@@ -65,6 +58,7 @@ services:
       NEXT_ANALYTICS_BACKEND_PROVIDER: postgres
       # Uncomment to use Big Query backend for analytics
       # NEXT_ANALYTICS_BACKEND_PROVIDER: bigquery
+    logging: *default-logging
 
   kong:
     container_name: supabase-kong
@@ -93,21 +87,14 @@ services:
       DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD}
     # https://unix.stackexchange.com/a/294837
     entrypoint: bash -c 'eval "echo \"$$(cat ~/temp.yml)\"" > ~/kong.yml && /docker-entrypoint.sh kong docker-start'
+    logging: *default-logging
 
   auth:
     container_name: supabase-auth
     image: supabase/gotrue:v2.182.1
     restart: unless-stopped
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost:9999/health"
-        ]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9999/health"]
       timeout: 5s
       interval: 5s
       retries: 3
@@ -176,7 +163,7 @@ services:
       # GOTRUE_HOOK_SEND_EMAIL_ENABLED: "false"
       # GOTRUE_HOOK_SEND_EMAIL_URI: "http://host.docker.internal:54321/functions/v1/email_sender"
       # GOTRUE_HOOK_SEND_EMAIL_SECRETS: "v1,whsec_VGhpcyBpcyBhbiBleGFtcGxlIG9mIGEgc2hvcnRlciBCYXNlNjQgc3RyaW5n"
-
+    logging: *default-logging
   rest:
     container_name: supabase-rest
     image: postgrest/postgrest:v13.0.8
@@ -195,10 +182,8 @@ services:
       PGRST_DB_USE_LEGACY_GUCS: "false"
       PGRST_APP_SETTINGS_JWT_SECRET: ${JWT_SECRET}
       PGRST_APP_SETTINGS_JWT_EXP: ${JWT_EXPIRY}
-    command:
-      [
-        "postgrest"
-      ]
+    command: ["postgrest"]
+    logging: *default-logging
 
   realtime:
     # This container name looks inconsistent but is correct because realtime constructs tenant id by parsing the subdomain
@@ -212,18 +197,7 @@ services:
       analytics:
         condition: service_healthy
     healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "-sSfL",
-          "--head",
-          "-o",
-          "/dev/null",
-          "-H",
-          "Authorization: Bearer ${ANON_KEY}",
-          "http://localhost:4000/api/tenants/realtime-dev/health"
-        ]
+      test: ["CMD", "curl", "-sSfL", "--head", "-o", "/dev/null", "-H", "Authorization: Bearer ${ANON_KEY}", "http://localhost:4000/api/tenants/realtime-dev/health"]
       timeout: 5s
       interval: 5s
       retries: 3
@@ -234,7 +208,7 @@ services:
       DB_USER: supabase_admin
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       DB_NAME: ${POSTGRES_DB}
-      DB_AFTER_CONNECT_QUERY: 'SET search_path TO _realtime'
+      DB_AFTER_CONNECT_QUERY: "SET search_path TO _realtime"
       DB_ENC_KEY: supabaserealtime
       API_JWT_SECRET: ${JWT_SECRET}
       SECRET_KEY_BASE: ${SECRET_KEY_BASE}
@@ -244,6 +218,7 @@ services:
       APP_NAME: realtime
       SEED_SELF_HOST: true
       RUN_JANITOR: true
+    logging: *default-logging
 
   # To use S3 backed storage: docker compose -f docker-compose.yml -f docker-compose.s3.yml up
   storage:
@@ -253,15 +228,7 @@ services:
     volumes:
       - ./volumes/storage:/var/lib/storage:z
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://storage:5000/status"
-        ]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://storage:5000/status"]
       timeout: 5s
       interval: 5s
       retries: 3
@@ -289,6 +256,7 @@ services:
       GLOBAL_S3_BUCKET: stub
       ENABLE_IMAGE_TRANSFORMATION: "true"
       IMGPROXY_URL: http://imgproxy:5001
+    logging: *default-logging
 
   imgproxy:
     container_name: supabase-imgproxy
@@ -297,12 +265,7 @@ services:
     volumes:
       - ./volumes/storage:/var/lib/storage:z
     healthcheck:
-      test:
-        [
-          "CMD",
-          "imgproxy",
-          "health"
-        ]
+      test: ["CMD", "imgproxy", "health"]
       timeout: 5s
       interval: 5s
       retries: 3
@@ -311,6 +274,7 @@ services:
       IMGPROXY_LOCAL_FILESYSTEM_ROOT: /
       IMGPROXY_USE_ETAG: "true"
       IMGPROXY_ENABLE_WEBP_DETECTION: ${IMGPROXY_ENABLE_WEBP_DETECTION}
+    logging: *default-logging
 
   meta:
     container_name: supabase-meta
@@ -330,6 +294,7 @@ services:
       PG_META_DB_USER: supabase_admin
       PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD}
       CRYPTO_KEY: ${PG_META_CRYPTO_KEY}
+    logging: *default-logging
 
   functions:
     container_name: supabase-edge-functions
@@ -348,12 +313,8 @@ services:
       SUPABASE_DB_URL: postgresql://postgres:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       # TODO: Allow configuring VERIFY_JWT per function. This PR might help: https://github.com/supabase/cli/pull/786
       VERIFY_JWT: "${FUNCTIONS_VERIFY_JWT}"
-    command:
-      [
-        "start",
-        "--main-service",
-        "/home/deno/functions/main"
-      ]
+    command: ["start", "--main-service", "/home/deno/functions/main"]
+    logging: *default-logging
 
   analytics:
     container_name: supabase-analytics
@@ -368,12 +329,7 @@ services:
     #     target: /opt/app/rel/logflare/bin/gcloud.json
     #     read_only: true
     healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "http://localhost:4000/health"
-        ]
+      test: ["CMD", "curl", "http://localhost:4000/health"]
       timeout: 5s
       interval: 5s
       retries: 10
@@ -401,6 +357,7 @@ services:
       # Uncomment to use Big Query backend for analytics
       # GOOGLE_PROJECT_ID: ${GOOGLE_PROJECT_ID}
       # GOOGLE_PROJECT_NUMBER: ${GOOGLE_PROJECT_NUMBER}
+    logging: *default-logging
 
   # Comment out everything below this point if you are using an external Postgres database
   db:
@@ -426,15 +383,7 @@ services:
       # Use named volume to persist pgsodium decryption key between restarts
       - db-config:/etc/postgresql-custom
     healthcheck:
-      test:
-        [
-        "CMD",
-        "pg_isready",
-        "-U",
-        "postgres",
-        "-h",
-        "localhost"
-        ]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-h", "localhost"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -451,14 +400,14 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXP: ${JWT_EXPIRY}
-    command:
-      [
+    command: [
         "postgres",
         "-c",
         "config_file=/etc/postgresql/postgresql.conf",
         "-c",
-        "log_min_messages=fatal" # prevents Realtime polling queries from appearing in logs
+        "log_min_messages=fatal", # prevents Realtime polling queries from appearing in logs
       ]
+    logging: *default-logging
 
   vector:
     container_name: supabase-vector
@@ -468,27 +417,16 @@ services:
       - ./volumes/logs/vector.yml:/etc/vector/vector.yml:ro,z
       - ${DOCKER_SOCKET_LOCATION}:/var/run/docker.sock:ro,z
     healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://vector:9001/health"
-        ]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://vector:9001/health"]
       timeout: 5s
       interval: 5s
       retries: 3
     environment:
       LOGFLARE_PUBLIC_ACCESS_TOKEN: ${LOGFLARE_PUBLIC_ACCESS_TOKEN}
-    command:
-      [
-        "--config",
-        "/etc/vector/vector.yml"
-      ]
+    command: ["--config", "/etc/vector/vector.yml"]
     security_opt:
       - "label=disable"
+    logging: *default-logging
 
   # Update the DATABASE_URL if you are using an external Postgres database
   supavisor:
@@ -501,16 +439,7 @@ services:
     volumes:
       - ./volumes/pooler/pooler.exs:/etc/pooler/pooler.exs:ro,z
     healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "-sSfL",
-          "--head",
-          "-o",
-          "/dev/null",
-          "http://127.0.0.1:4000/api/health"
-        ]
+      test: ["CMD", "curl", "-sSfL", "--head", "-o", "/dev/null", "http://127.0.0.1:4000/api/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -537,12 +466,8 @@ services:
       POOLER_MAX_CLIENT_CONN: ${POOLER_MAX_CLIENT_CONN}
       POOLER_POOL_MODE: transaction
       DB_POOL_SIZE: ${POOLER_DB_POOL_SIZE}
-    command:
-      [
-        "/bin/sh",
-        "-c",
-        "/app/bin/migrate && /app/bin/supavisor eval \"$$(cat /etc/pooler/pooler.exs)\" && /app/bin/server"
-      ]
+    command: ["/bin/sh", "-c", '/app/bin/migrate && /app/bin/supavisor eval "$$(cat /etc/pooler/pooler.exs)" && /app/bin/server']
+    logging: *default-logging
 
 volumes:
   db-config:
