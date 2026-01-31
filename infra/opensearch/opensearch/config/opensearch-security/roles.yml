@@ -1,0 +1,4 @@
+_meta:
+  type: "roles"
+  config_version: 2
+# (Empty or minimal, standard roles like all_access are built-in)

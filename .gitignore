@@ -35,7 +35,8 @@ infra/observability/loki/config/loki-config.yaml
 infra/observability/prometheus/config/alert_rules/alert_rules*.yml
 infra/observability/prometheus/config/prometheus.yml
 infra/observability/tempo/config/tempo.yaml
-infra/opensearch/certs/*.pem
+infra/opensearch/opensearch/config/certs/*.pem
+infra/opensearch/opensearch-dashboards/config/certs/*.pem
 infra/postgresql-cluster/init-scripts/init_users_dbs.sql
 infra/postgresql-cluster/config/haproxy.cfg
 infra/redis-cluster/config/redis.conf

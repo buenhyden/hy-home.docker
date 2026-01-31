@@ -12,18 +12,12 @@ services:
     restart: unless-stopped
     # 비밀번호, 클러스터 이름, JVM 옵션 등은 env 파일에서 주입
     environment:
-      # 노드/클러스터 기본 설정
-      - discovery.type=single-node
-      # JVM Heap 설정 (env에서 값 가져옴)
+      # JVM Heap 설정
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
       # 메모리 관련 bootstrap 체크 통과용
       - bootstrap.memory_lock=true
-      # 2.12+ 기준 보안 데모 구성에서 admin 패스워드 설정 (env 파일에서 가져옴)
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ELASTIC_PASSWORD}
-      - plugins.security.ssl.http.enabled=true
-      - plugins.security.ssl.http.pemcert_filepath=/usr/share/opensearch/config/certs/cert.pem
-      - plugins.security.ssl.http.pemkey_filepath=/usr/share/opensearch/config/certs/key.pem
-      - plugins.security.ssl.http.pemtrustedcas_filepath=/usr/share/opensearch/config/certs/rootCA.pem
+      # - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD}
+      - DISABLE_INSTALL_DEMO_CONFIG=false
     ulimits:
       # 스왑 방지를 위해 memlock 무제한
       memlock:
@@ -38,13 +32,22 @@ services:
     volumes:
       # 데이터 영속화 볼륨
       - opensearch-data:/usr/share/opensearch/data
-      - ./certs:/usr/share/opensearch/config/certs:ro
-      - ./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
+      - ./opensearch/config/certs:/usr/share/opensearch/config/certs:ro
+      - ./opensearch/config/opensearch-security/config.yml:/usr/share/opensearch/config/opensearch-security/config.yml:ro
+      - ./opensearch/config/opensearch-security/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml:ro
+      - ./opensearch/config/opensearch-security/internal_users.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml:ro
+      - ./opensearch/config/opensearch-security/action_groups.yml:/usr/share/opensearch/config/opensearch-security/action_groups.yml:ro
+      - ./opensearch/config/opensearch-security/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml:ro
+      - ./opensearch/config/opensearch-security/tenants.yml:/usr/share/opensearch/config/opensearch-security/tenants.yml:ro
+      - ./opensearch/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
+      - ./opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
     ports:
       # REST API (TLS on 기본) – Loki/Alloy에서 로그/메트릭 수집, 앱 연결
-      # - "${ES_HOST_1_PORT}:${ES_PORT}"
+      - "${ES_HOST_1_PORT}:${ES_PORT}"
       # Performance Analyzer / 메트릭 포트
       - "${ES_PERFORMANCE_ANALYZER_HOST_PORT}:${ES_PERFORMANCE_ANALYZER_PORT}"
+    extra_hosts:
+      - "keycloak.127.0.0.1.nip.io:172.19.0.13"
     labels:
       - "traefik.enable=true"
       # 1. OpenSearch API 라우터 (https://opensearch.${DEFAULT_URL})
@@ -70,7 +73,7 @@ services:
         max-size: "5m"
         max-file: "2"
     healthcheck:
-      test: ["CMD-SHELL", "curl -k -u admin:${ELASTIC_PASSWORD} --silent --fail https://localhost:9200/_cluster/health || exit 1"]
+      test: ["CMD-SHELL", "curl -k -u admin:${OPENSEARCH_ADMIN_PASSWORD} --silent --fail https://localhost:9200/_cluster/health || exit 1"]
       interval: 30s
       timeout: 30s
       retries: 3
@@ -87,17 +90,17 @@ services:
     # ports:
     #   - "${KIBANA_HOST_PORT}:${KIBANA_PORT}"
     volumes:
-      - ./certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro
+      - ./opensearch-dashboards/config/certs:/usr/share/opensearch-dashboards/config/certs:ro
+      - ./opensearch-dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
+    extra_hosts:
+      - "keycloak.127.0.0.1.nip.io:172.19.0.13"
     environment:
-      - 'OPENSEARCH_HOSTS=["https://opensearch:9200"]'
-      - OPENSEARCH_USERNAME=${ELASTIC_USERNAME}
-      - OPENSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      - OPENSEARCH_USERNAME=${OPENSEARCH_DASHBOARD_USERNAME}
+      - OPENSEARCH_PASSWORD=${OPENSEARCH_DASHBOARD_PASSWORD}
       # mkcert 기반 인증서(SAN 없음) 대응: 호스트 검증은 끄고 CA만 검증
-      - OPENSEARCH_SSL_VERIFICATIONMODE=certificate
-      - OPENSEARCH_SSL_CERTIFICATEAUTHORITIES=["/usr/share/opensearch-dashboards/config/rootCA.pem"]
     labels:
       - "traefik.enable=true"
-      # 2. Dashboards 라우터 (https://dashboards.opensearch.${DEFAULT_URL})
+      # 2. Dashboards 라우터 (https://opensearch-dashboard.${DEFAULT_URL})
       # (서브 도메인을 분리하여 라우팅)
       - "traefik.http.routers.opensearch-dashboards.rule=Host(`opensearch-dashboard.${DEFAULT_URL}`)"
       - "traefik.http.routers.opensearch-dashboards.entrypoints=websecure"
@@ -107,10 +110,7 @@ services:
       opensearch:
         condition: service_healthy
     healthcheck:
-      test: [
-        "CMD-SHELL",
-        "curl -fsS -u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}  http://localhost:${KIBANA_PORT}/api/status >/dev/null 2>&1 || exit 1"
-      ]
+      test: ["CMD-SHELL", "curl -fsSk -u kibanaserver:${OPENSEARCH_DASHBOARD_PASSWORD} https://localhost:${KIBANA_PORT}/api/status >/dev/null 2>&1 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -131,8 +131,8 @@ services:
       - "--es.indices"
       - "--es.ssl-skip-verify" # OpenSearch 기본 TLS 인증서 검증 건너뛰기
     environment:
-      - ES_USERNAME=${ELASTIC_USERNAME}
-      - ES_PASSWORD=${ELASTIC_PASSWORD}
+      - ES_USERNAME=${OPENSEARCH_EXPORTER_USERNAME}
+      - ES_PASSWORD=${OPENSEARCH_EXPORTER_PASSWORD}
     ports:
       - "${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}" # 9114
     networks:

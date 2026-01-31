@@ -1,0 +1,28 @@
+_meta:
+  type: "internalusers"
+  config_version: 2
+
+# admin user
+admin:
+  # password: Kebx2Hiya6B5qpho
+  hash: "$2y$12$bgcg5pKEJVXYRBmJ6dufBK8e16kwPCIC4TiJy1dNLd"
+  reserved: true
+  backend_roles:
+    - "admin"
+  description: "Administrator user"
+
+# user for Dashboards
+kibanaserver:
+  # password: kqXV5aIiSXMDCzqF
+  hash: "$2y$12$CPzGIwIhXhy6TF14PhLI6umYFTGRb5iNYPdkGz2uENBXnDkvmtwOe"
+  reserved: true
+  description: "Dashboards server user"
+
+# user for Prometheus Exporter
+exporter:
+  # password: hkBPRKwG9itp4B2m
+  hash: "$2y$12$2NijrrejP6uakOMrm1vtmn0SxmzSrq8gj.ifuGVrf1"
+  reserved: false
+  backend_roles:
+    - "readall"
+  description: "Prometheus exporter user"

@@ -1,0 +1,21 @@
+server.name: dashboards
+server.host: 0.0.0.0
+server.ssl.enabled: true
+server.ssl.key: /usr/share/opensearch-dashboards/config/certs/key.pem
+server.ssl.certificate: /usr/share/opensearch-dashboards/config/certs/cert.pem
+
+# OIDC 연동 설정 (임시 비활성화하여 헬스체크 확인)
+opensearch_security.auth.type: ["basicauth"]
+# opensearch_security.auth.multiple_auth_enabled: true
+# opensearch_security.openid.connect_url: "https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/.well-known/openid-configuration"
+# opensearch_security.openid.client_id: "proxy-client"
+# opensearch_security.openid.client_secret: "vyoSDzjJPYkq1Aulmp2xTiteXSE97RnX"
+# opensearch_security.openid.root_ca: /usr/share/opensearch-dashboards/config/certs/rootCA.pem
+# opensearch_security.openid.verify_hostnames: false
+
+opensearch_security.cookie.secure: true
+
+opensearch.hosts: ["https://opensearch:9200"]
+opensearch.ssl.certificateAuthorities: /usr/share/opensearch-dashboards/config/certs/rootCA.pem
+opensearch.ssl.verificationMode: certificate
+opensearch.requestHeadersAllowlist: ["Authorization", "security_tenant"]
