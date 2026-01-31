@@ -1,4 +1,11 @@
 name: minio
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   minio:
     deploy:
@@ -56,11 +63,7 @@ services:
       - "traefik.http.routers.minio-console.service=minio-console"
       # [중요] 내부 포트 9001번과 연결
       - "traefik.http.services.minio-console.loadbalancer.server.port=${MINIO_CONSOLE_PORT}"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   minio-create-buckets:
     image: minio/mc:RELEASE.2025-08-13T08-35-41Z
@@ -116,11 +119,7 @@ services:
         echo "버킷 및 계정 초기화 완료"
         mc  ls myminio
         echo "----------------------------------"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     deploy:
       resources:
         limits:

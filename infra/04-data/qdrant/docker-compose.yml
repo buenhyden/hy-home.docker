@@ -1,4 +1,11 @@
 name: qdrant
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   qdrant:
     deploy:
@@ -30,11 +37,7 @@ services:
       - "traefik.http.routers.qdrant.entrypoints=websecure"
       - "traefik.http.routers.qdrant.tls=true"
       - "traefik.http.services.qdrant.loadbalancer.server.port=${QDRANT_PORT}"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
 volumes:
   qdrant-data:

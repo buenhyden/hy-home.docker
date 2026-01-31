@@ -1,3 +1,9 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   ###############################################################
   # Kafka Broker 1 (KRaft Controller + Broker)
@@ -9,7 +15,7 @@ services:
     ports:
       - "${KAFKA_CONTROLLER_1_HOST_PORT}:${KAFKA_CONTROLLER_PORT}"
     environment:
-      # --- KRaft 공통 ---      
+      # --- KRaft 공통 ---
       # 클러스터 ID (3개 브로커 모두 동일해야 함)
       CLUSTER_ID: ${KAFKA_CLUSTER_ID}
       # 이 노드의 고유 ID (브로커/컨트롤러 구분)
@@ -48,11 +54,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.11
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   ###############################################################
   # Kafka Broker 2
@@ -89,11 +91,7 @@ services:
     networks:
       - infra_net
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   ###############################################################
   # Kafka Broker 3
@@ -130,11 +128,7 @@ services:
     networks:
       - infra_net
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   # -------------------------------------------
   # 2. Schema Registry (스키마 레지스트리)
@@ -158,11 +152,7 @@ services:
       - kafka-1
       - kafka-2
       - kafka-3
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   ###############################################################
   # Kafka Connect (Distributed)
@@ -221,11 +211,7 @@ services:
       # 커스텀 커넥터가 있다면 여기에 마운트 (예: ./connect-plugins:/usr/share/confluent-hub-components)
       # - ./connect-plugins:/usr/share/confluent-hub-components
       - kafka-connect-data:/var/lib/kafka-connect
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   # -------------------------------------------
   # 4. Kafka REST Proxy (레스트 프록시)
@@ -248,11 +234,7 @@ services:
       - kafka-2
       - kafka-3
       - schema-registry
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   # -------------------------------------------
   # 5. Kafka UI (카프카 UI - Provectus)
@@ -280,11 +262,7 @@ services:
       - kafka-3
       - schema-registry
       - kafka-connect
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   kafka-exporter:
     image: danielqsj/kafka-exporter:v1.7.0
@@ -300,8 +278,4 @@ services:
       - kafka-1
       - kafka-2
       - kafka-3
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging

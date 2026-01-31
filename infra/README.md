@@ -57,8 +57,8 @@ infra 하위 폴더는 실행 방식에 따라 다음 4가지로 분류합니다
 
 ### 분류 요약
 
-- **Core (Include)**: traefik, mng-db, oauth2-proxy, observability, minio, keycloak, n8n, qdrant, postgresql-cluster, kafka, valkey-cluster, opensearch, ksql
-- **Optional (Profile)**: airflow, influxdb, couchdb, mail, nginx, ollama, open-webui, sonarqube, vault, terrakube, redis-cluster
+- **Core (Include)**: traefik, mng-db, oauth2-proxy, observability, minio, keycloak, n8n, qdrant, postgresql-cluster, kafka, valkey-cluster, opensearch
+- **Optional (Profile)**: airflow, influxdb, couchdb, mail, nginx, ollama, open-webui, sonarqube, vault, terrakube, redis-cluster, ksql
 - **Standalone**: supabase
 - **Placeholder**: rabbitmq
 
@@ -135,7 +135,7 @@ infra 하위 폴더는 실행 방식에 따라 다음 4가지로 분류합니다
 | OpenSearch | - | `infra/04-data/opensearch` | 검색/대시보드/Exporter |
 | Qdrant | - | `infra/04-data/qdrant` | 벡터 DB |
 | Kafka | - | `infra/05-messaging/kafka` | KRaft + Confluent 스택 |
-| ksqlDB | - | `infra/05-messaging/ksql` | 스트림 SQL (예제 데이터는 `examples` 프로파일) |
+| ksqlDB | `ksql` | `infra/05-messaging/ksql` | 스트림 SQL (예제 데이터 포함) |
 | Observability | - | `infra/06-observability` | Prometheus + Grafana + Loki + Tempo |
 | n8n | - | `infra/07-workflow/n8n` | 워크플로우 자동화 (Queue) |
 | Airflow | `airflow` | `infra/07-workflow/airflow` | 워크플로우 오케스트레이션 |
@@ -183,7 +183,7 @@ docker compose --profile airflow --profile ollama up -d
 - `vault`
 - `terrakube`
 - `redis-cluster`
-- `examples` (KSQL/예제 스택)
+- `ksql` (KSQL/예제 스택)
 
 ## ➕ 서비스 추가 방법
 

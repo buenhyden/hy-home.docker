@@ -4,6 +4,14 @@
 
 **InfluxDB** is a high-performance open-source time-series database (TSDB) optimized for fast, high-availability storage and retrieval of time-stamped data. This deployment uses **InfluxDB v2**, providing an integrated environment for data collection, visualization, and alerting.
 
+## Profile
+
+This stack is **optional** and runs under the `influxdb` profile.
+
+```bash
+docker compose --profile influxdb up -d influxdb
+```
+
 ```mermaid
 graph TD
     subgraph "Data Sources"
@@ -43,7 +51,7 @@ graph TD
 
 ## Networking
 
-This service is core monitoring infrastructure and uses a fixed IP for reliable internal telemetry collection without DNS dependency.
+This service is optional and uses a fixed IP for reliable internal telemetry collection without DNS dependency.
 
 | Service | Static IP | Internal Port | Traefik Domain |
 | :--- | :--- | :--- | :--- |

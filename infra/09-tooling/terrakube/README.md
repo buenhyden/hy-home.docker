@@ -4,6 +4,14 @@
 
 **Terrakube** is an open-source Infrastructure as Code (IaC) management platform that serves as an alternative to Terraform Cloud/Enterprise. It orchestrates Terraform runs (Plan/Apply) and manages state files securely.
 
+## Profile
+
+This stack is **optional** and runs under the `terrakube` profile.
+
+```bash
+docker compose --profile terrakube up -d
+```
+
 ```mermaid
 graph TB
     subgraph "External"

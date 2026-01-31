@@ -1,4 +1,11 @@
 name: airflow
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 x-airflow-common: &airflow-common
   profiles:
     - airflow
@@ -308,11 +315,7 @@ services:
     expose:
       - "${STATSD_PROMETHEUS_PORT}" # Prometheus가 긁어갈 포트
       - "${STATSD_AIRFLOW_PORT}" # Airflow가 보낼 포트
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     deploy:
       resources:
         limits:

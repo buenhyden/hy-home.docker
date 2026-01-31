@@ -1,4 +1,11 @@
 name: open-webui
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   # 2. Open WebUI 서비스 (선택 사항: ChatGPT 같은 웹 인터페이스)
   open-webui:
@@ -22,7 +29,7 @@ services:
       - RAG_EMBEDDING_ENGINE=ollama
       - RAG_EMBEDDING_MODEL=qwen3-embedding:0.6b
     volumes:
-      - ollama-webui:/app/backend/data    
+      - ollama-webui:/app/backend/data
     restart: unless-stopped
     networks:
       infra_net:
@@ -37,13 +44,9 @@ services:
 
       # [중요] 내부 포트 8080 연결 (Open WebUI 기본 포트)
       - "traefik.http.services.open-webui.loadbalancer.server.port=8080"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"  
+    logging: *default-logging
 
-volumes:  
+volumes:
   ollama-webui:
   #   driver: local
   #   driver_opts:

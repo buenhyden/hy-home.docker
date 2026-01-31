@@ -4,6 +4,14 @@
 
 This directory contains configurations for mail services. Currently, **MailHog** is the active service used for development and testing. A configuration for **Stalwart Mail Server** (an all-in-one production solution) is also present but currently inactive.
 
+## Profile
+
+This stack is **optional** and runs under the `mail` profile.
+
+```bash
+docker compose --profile mail up -d mailhog
+```
+
 ## Services
 
 ### Active: MailHog

@@ -4,13 +4,21 @@
 
 ksqlDB is a database purpose-built for stream processing applications. It allows you to build event streaming applications using a familiar SQL syntax.
 
+## Profile
+
+This stack is **optional** and runs under the `ksql` profile.
+
+```bash
+docker compose --profile ksql up -d ksqldb-server
+```
+
 ## Services
 
 | Service | Image | Role | Notes |
 | --- | --- | --- | --- |
 | `ksqldb-server` | `confluentinc/cp-ksqldb-server:8.0.3` | ksqlDB Engine (REST + Stream Processing) | `${KSQLDB_HOST_PORT}:${KSQLDB_PORT}` |
 | `ksqldb-cli` | `confluentinc/cp-ksqldb-cli:8.0.3` | Interactive CLI Client | Internal-only |
-| `ksql-datagen` | `confluentinc/ksqldb-examples:8.0.3` | Example data generator | Enabled via `examples` profile |
+| `ksql-datagen` | `confluentinc/ksqldb-examples:8.0.3` | Example data generator | Enabled via `ksql` profile |
 
 ## Networking
 

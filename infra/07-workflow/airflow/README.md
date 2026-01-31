@@ -4,6 +4,17 @@
 
 A platform to programmatically author, schedule, and monitor workflows. This deployment uses the **CeleryExecutor** architecture for distributed task execution, allowing for high availability and scalability.
 
+## Profiles
+
+- `airflow`: Base Airflow stack (scheduler, webserver, workers).
+- `flower`: Optional Celery monitoring UI.
+- `debug`: Optional debug webserver and extra tooling.
+
+```bash
+docker compose --profile airflow up -d
+docker compose --profile airflow --profile flower up -d
+```
+
 ```mermaid
 graph TB
     subgraph "Airflow Control Plane"

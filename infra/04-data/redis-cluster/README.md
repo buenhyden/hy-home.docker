@@ -4,6 +4,14 @@
 
 A distributed **Redis Cluster** configured for horizontal scalability and high availability. It consists of **6 nodes** (3 Masters, 3 Replicas) with automatic data sharding and failover capabilities.
 
+## Profile
+
+This stack is **optional** and runs under the `redis-cluster` profile.
+
+```bash
+docker compose --profile redis-cluster up -d
+```
+
 ```mermaid
 graph TD
     subgraph "Clients"

@@ -1,3 +1,9 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   cassandra-exporter:
     image: bitnami/cassandra-exporter:latest
@@ -7,17 +13,13 @@ services:
     expose:
       - ${CASSANDRA_EXPORTER_PORT}
       - ${CASSANDRA_EXPORTER_LISTEN_PORT}
-    depends_on:      
+    depends_on:
       cassandra-node1:
         condition: service_healthy
       # - cassandra-node2
     networks:
       - infra_net
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2" 
+    logging: *default-logging
     volumes:
       - cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf
     command: java -jar ./cassandra_exporter.jar ./conf/config.yml
@@ -35,12 +37,8 @@ services:
       - ${CASSANDRA_CLIENT_PORT}
     networks:
       - infra_net
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2" 
-    environment:      
+    logging: *default-logging
+    environment:
       - CASSANDRA_SEEDS=cassandra-node1
       # - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
       # - CASSANDRA_CLUSTER_NAME=cassandra-cluster
@@ -65,9 +63,9 @@ services:
   #     - ${CASSANDRA_INTER_NODE_PORT}
   #     - ${CASSANDRA_CLIENT_PORT}
   #   networks:
-  #     - infra_net  
+  #     - infra_net
   #   environment:
-  #     
+  #
   #     - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
   #     - CASSANDRA_CLUSTER_NAME=cassandra-cluster
   #     - CASSANDRA_PASSWORD_SEEDER=yes
@@ -101,4 +99,3 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_DATABASE_DIR}/cassandra/exporter
-

@@ -5,6 +5,14 @@
 **HashiCorp Vault**는 현대적인 인프라 환경에서 **Secrets(비밀값)**, **Encryption(암호화)**, **Identity(신원)** 관리를 중앙집중화하는 업계 표준 솔루션입니다.
 `hy-home.docker` 환경에서 Vault를 도입함으로써 단순한 서비스별 `.env` 기반의 관리를 넘어, **동적 시크릿(Dynamic Secrets)**, **데이터 암호화(Encryption-as-a-Service)**, **정교한 접근 제어(ACL)** 를 구현할 수 있습니다.
 
+### 1.1 Profile
+
+Vault is **optional** and runs under the `vault` profile.
+
+```bash
+docker compose --profile vault up -d vault
+```
+
 ---
 
 ## 2. 도입 목적 및 분석 (Objectives & Analysis)

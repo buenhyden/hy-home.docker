@@ -4,6 +4,14 @@
 
 **SonarQube** is a continuous code quality inspection platform that performs automatic reviews with static analysis of code to detect bugs, code smells, and security vulnerabilities. It supports 25+ programming languages.
 
+## Profile
+
+This stack is **optional** and runs under the `sonarqube` profile.
+
+```bash
+docker compose --profile sonarqube up -d sonarqube
+```
+
 ```mermaid
 graph TB
     subgraph "CI/CD Pipeline"

@@ -1,4 +1,11 @@
 name: postgresql-cluster
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   # ##############################################################
   # etcd 3노드 (Patroni DCS)
@@ -36,11 +43,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.50
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     restart: unless-stopped
 
   etcd-2:
@@ -76,11 +79,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.51
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     restart: unless-stopped
 
   etcd-3:
@@ -116,11 +115,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.52
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     restart: unless-stopped
 
   # ##############################################################
@@ -167,11 +162,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.53
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     depends_on:
       etcd-1:
         condition: service_healthy
@@ -215,11 +206,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.54
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -271,11 +258,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.55
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     expose:
       - ${POSTGRES_PORT}
     healthcheck:
@@ -330,11 +313,7 @@ services:
       pg-2:
         condition: service_healthy
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   pg-cluster-init:
     deploy:
@@ -372,11 +351,7 @@ services:
     networks:
       - infra_net
     restart: "no"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
   # ##############################################################
   # postgres-exporter (Prometheus / Alloy용 메트릭)
   # ##############################################################
@@ -391,11 +366,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.57
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     expose:
       - "${POSTGRES_EXPORTER_PORT}"
     secrets:
@@ -427,11 +398,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.58
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     expose:
       - "${POSTGRES_EXPORTER_PORT}"
     secrets:
@@ -463,11 +430,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.59
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     expose:
       - "${POSTGRES_EXPORTER_PORT}"
     secrets:

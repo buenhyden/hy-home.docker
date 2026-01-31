@@ -1,4 +1,11 @@
 name: vault
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   vault:
     profiles:

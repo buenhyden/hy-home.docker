@@ -1,4 +1,11 @@
 name: couchdb
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   couchdb-1:
     profiles:
@@ -176,11 +183,7 @@ services:
 
         echo 'CouchDB Cluster Setup Complete!';
       "
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     deploy:
       resources:
         limits:

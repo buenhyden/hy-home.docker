@@ -4,6 +4,14 @@
 
 A high-availability **3-node CouchDB Cluster** designed for distributed data storage and fault tolerance. This setup leverages CouchDB's native clustering capabilities, using a dedicated initialization assistant to automate node discovery and cluster creation.
 
+## Profile
+
+This stack is **optional** and runs under the `couchdb` profile.
+
+```bash
+docker compose --profile couchdb up -d
+```
+
 ```mermaid
 graph TB
     User((User))

@@ -1,4 +1,11 @@
 name: mng-db
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   mng-valkey:
     deploy:
@@ -33,11 +40,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   mng-valkey-exporter:
     deploy:
@@ -72,11 +75,7 @@ services:
     depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       mng-valkey:
         condition: service_healthy
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   redisinsight:
     deploy:
@@ -105,11 +104,7 @@ services:
       # [중요] RedisInsight 기본 포트 5540 (또는 8001) 확인 필요
       # 최신 이미지는 보통 5540을 사용합니다.
       - "traefik.http.services.redisinsight.loadbalancer.server.port=${REDIS_INSIGHT_PORT}"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   mng-pg:
     deploy:
@@ -147,11 +142,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
   mng-pg-init:
     deploy:
       resources:
@@ -190,11 +181,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   mng-pg-exporter:
     deploy:

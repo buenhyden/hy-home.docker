@@ -1,3 +1,9 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   neo4j:
     image: neo4j:5.26.19
@@ -12,18 +18,14 @@ services:
       - "${NEO4J_HOST_BOLT_PORT}:${NEO4J_BOLT_PORT}"
       # - "${NEO4J_HOST_HTTP_PORT}:${NEO4J_HTTP_PORT}"
       # - "${NEO4J_HOST_HTTPS_PORT}:${NEO4J_HTTPS_PORT}"
-    environment:      
+    environment:
       - NEO4J_PASSWORD=${NEO4J_PASSWORD}
     volumes:
       - "neo4j-volume:/bitnami/neo4j"
     networks:
       - infra_net
     # The ports that will be accessible from outside the container - HTTP (7474) and Bolt (7687).
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2" 
+    logging: *default-logging
   # ######################################################################################
   # neo4j:
   #   # Docker image to be used
@@ -36,7 +38,7 @@ services:
   #   # Adds a network alias (used in neo4j.conf when configuring the discovery members)
   #   networks:
   #     - infra_net
-  #   # The ports that will be accessible from outside the container - HTTP (7474) and Bolt (7687).  
+  #   # The ports that will be accessible from outside the container - HTTP (7474) and Bolt (7687).
   #   expose:
   #     - 7687
   #     - 7474

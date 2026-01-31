@@ -38,11 +38,12 @@ include:
   - infra/07-workflow/n8n/docker-compose.yml
   - infra/04-data/qdrant/docker-compose.yml
   - infra/04-data/postgresql-cluster/docker-compose.yml
-  - infra/05-messaging/kafka/docker-compose.yml
+  - infra/05-messaging/kafka/docker-compose.yml  
   - infra/04-data/valkey-cluster/docker-compose.yml
   - infra/04-data/opensearch/docker-compose.yml
   - infra/05-messaging/ksql/docker-compose.yml
   # Optional stacks (enabled via profiles)
+  - infra/05-messaging/rabbitmq/docker-compose.yml
   - infra/04-data/influxdb/docker-compose.yml
   - infra/03-security/vault/docker-compose.yml
   - infra/08-ai/ollama/docker-compose.yml

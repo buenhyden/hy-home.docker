@@ -4,6 +4,14 @@
 
 A standalone **Nginx** reverse proxy and web server instance. While the primary gateway of this infrastructure is **Traefik**, this Nginx instance serves as an alternative ingress point, specifically optimized for path-based routing, advanced caching, and custom SSO integration.
 
+## Profile
+
+This stack is **optional** and runs under the `nginx` profile.
+
+```bash
+docker compose --profile nginx up -d nginx
+```
+
 ```mermaid
 graph TD
     Client((Client))
@@ -42,6 +50,10 @@ This service runs on the `infra_net` network and exposes ports directly to the h
 | :--- | :--- | :--- | :--- | :--- |
 | `nginx` | `172.19.0.13` | HTTP | `80` | `${HTTP_HOST_PORT}` |
 | | | HTTPS | `443` | `${HTTPS_HOST_PORT}` |
+
+## Notes
+
+- Nginx and Traefik both use static IP `172.19.0.13`. Do not run both without changing one of the IPs.
 
 ## Persistence
 

@@ -1,4 +1,11 @@
 name: ollama
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   ollama:
     profiles:
@@ -47,11 +54,7 @@ services:
       # [중요] 내부 포트 11434 연결
       - "traefik.http.services.ollama.loadbalancer.server.port=${OLLAMA_PORT}"
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"  
+    logging: *default-logging
 
   ollama-exporter:
     profiles:
@@ -74,11 +77,7 @@ services:
     depends_on:
       ollama:
         condition: service_healthy
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
 volumes:
   ollama-data:

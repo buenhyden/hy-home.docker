@@ -4,6 +4,14 @@
 
 A private, local **LLM AI Stack** capable of running large language models like Llama 3, Mistral, and Gemma offline. It includes **Open WebUI** for a ChatGPT-like experience and **RAG (Retrieval-Augmented Generation)** capabilities using Qdrant as the vector store.
 
+## Profile
+
+This stack is **optional** and runs under the `ollama` profile.
+
+```bash
+docker compose --profile ollama up -d ollama open-webui
+```
+
 ```mermaid
 graph TB
     subgraph "User Interface"
@@ -41,8 +49,8 @@ graph TB
 | Service | Image | Role | Resources |
 | :--- | :--- | :--- | :--- |
 | `ollama` | `ollama/ollama:0.13.5` | LLM Inference Server | 4 CPU / 8GB RAM / 1 GPU |
-| `open-webui` | `ghcr.io/open-webui/open-webui:v0.7.2` | Chat UI & RAG Orchestrator | 1 CPU / 1GB RAM |
-| `ollama-exporter` | `lucabecker42/ollama-exporter:1.0.1` | Metrics Exporter | 0.1 CPU / 128MB |
+| `open-webui` | `ghcr.io/open-webui/open-webui:main` | Chat UI & RAG Orchestrator | 1 CPU / 1GB RAM |
+| `ollama-exporter` | `lucabecker42/ollama-exporter:latest` | Metrics Exporter | 0.1 CPU / 128MB |
 
 ## Networking
 

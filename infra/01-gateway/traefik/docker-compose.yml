@@ -1,4 +1,10 @@
 name: traefik
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
 services:
   traefik:
     deploy:
@@ -52,11 +58,7 @@ services:
           - keycloak.${DEFAULT_URL}
           - auth.${DEFAULT_URL}
           - whoami.${DEFAULT_URL}
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
   # whoami:
   #   image: traefik/whoami
   #   container_name: whoami

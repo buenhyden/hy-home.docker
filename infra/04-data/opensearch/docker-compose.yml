@@ -1,4 +1,11 @@
 name: opensearch
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   # ######################################################
   # OpenSearch 노드 1 (cluster_manager + data + ingest)
@@ -67,11 +74,7 @@ services:
         aliases:
           - opensearch-node
           - opensearch-node1
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     healthcheck:
       test: ["CMD-SHELL", "curl -k -u admin:${OPENSEARCH_ADMIN_PASSWORD} --silent --fail \"https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s\" || exit 1"]
       interval: 30s
@@ -118,11 +121,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 60s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   opensearch-exporter:
     image: prometheuscommunity/elasticsearch-exporter:v1.10.0
@@ -150,11 +149,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
 volumes:
   opensearch-data:

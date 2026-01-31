@@ -1,4 +1,11 @@
 name: valkey-cluster
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   # ##############################################################
   # Redis Cluster Nodes (6개: 3 master + 3 replica)
@@ -47,11 +54,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   valkey-node-1:
     deploy:
@@ -92,11 +95,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   valkey-node-2:
     deploy:
@@ -137,11 +136,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   valkey-node-3:
     deploy:
@@ -182,11 +177,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   valkey-node-4:
     deploy:
@@ -227,11 +218,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   valkey-node-5:
     deploy:
@@ -272,11 +259,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   # ##############################################################
   # Redis Cluster 초기화용 one-shot 컨테이너
@@ -313,11 +296,7 @@ services:
     volumes:
       - ./scripts/valkey-cluster-init.sh:/usr/local/bin/valkey-cluster-init.sh:ro
     command: ["sh", "/usr/local/bin/valkey-cluster-init.sh"]
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
   # ##############################################################
   # Redis Exporter – Prometheus용 메트릭
   # ##############################################################
@@ -367,11 +346,7 @@ services:
         condition: service_healthy
       valkey-node-5:
         condition: service_healthy
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
 volumes:
   valkey-data-0:

@@ -1,5 +1,11 @@
 name: n8n
 
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 x-n8n-common-env: &n8n-common-env
   GENERIC_TIMEZONE: ${DEFAULT_TIMEZONE:-Asia/Seoul}
   TZ: ${DEFAULT_TIMEZONE:-Asia/Seoul}
@@ -87,11 +93,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.14
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
   n8n-worker:
     image: n8nio/n8n:2.6.2
     container_name: n8n-worker
@@ -113,12 +115,8 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.17 # 여유 IP 하나
-    command: worker    
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    command: worker
+    logging: *default-logging
     volumes:
       - n8n-data:/home/node/.n8n
       - ./custom:/home/node/.n8n/custom
@@ -129,7 +127,7 @@ services:
     restart: unless-stopped
     environment:
       - N8N_RUNNERS_TASK_BROKER_URI=http://n8n:${N8N_BROKER_PORT}
-      - N8N_RUNNERS_AUTH_TOKEN=${N8N_RUNNER_AUTH_TOKEN}    
+      - N8N_RUNNERS_AUTH_TOKEN=${N8N_RUNNER_AUTH_TOKEN}
     networks:
       infra_net:
         ipv4_address: 172.19.0.74 # 새로운 IP 할당
@@ -138,11 +136,7 @@ services:
         limits:
           cpus: "0.5"
           memory: 1G
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
   n8n-valkey:
     deploy:
       resources:
@@ -176,11 +170,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   n8n-valkey-exporter:
     deploy:
@@ -215,11 +205,7 @@ services:
     depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       n8n-valkey:
         condition: service_healthy
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
 volumes:
   n8n-data:

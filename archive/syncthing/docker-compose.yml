@@ -1,3 +1,9 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   syncthing:
     image: syncthing/syncthing:2.0.13
@@ -29,11 +35,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2" 
+    logging: *default-logging 
     # labels:
     #   - traefik.enable=true
     #   - traefik.docker.network=nt-develop

@@ -1,4 +1,11 @@
 name: observability
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   # -------------------------------------------------------
   # 1. Metrics Storage (Prometheus)
@@ -43,11 +50,7 @@ services:
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls=true"
       - "traefik.http.services.prometheus.loadbalancer.server.port=${PROMETHEUS_PORT}"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
   # -------------------------------------------------------
   # 2. Log Storage (Loki)
   # -------------------------------------------------------
@@ -65,11 +68,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.31
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     ports:
       - "${LOKI_HOST_PORT}:${LOKI_PORT}"
     volumes:
@@ -101,11 +100,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.32
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     ports:
       - "${TEMPO_HOST_PORT}:${TEMPO_PORT}"
     environment:
@@ -219,11 +214,7 @@ services:
       - "traefik.http.routers.grafana.tls=true"
       - "traefik.http.services.grafana.loadbalancer.server.port=${GRAFANA_PORT}"
       - "traefik.http.routers.grafana.middlewares=sso-auth@file"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
   # -------------------------------------------------------
   # 5. Telemetry Collector (Alloy)
   # -------------------------------------------------------
@@ -269,11 +260,7 @@ services:
       timeout: 5s
       retries: 3
       start_period: 15s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
   # -------------------------------------------------------
   # 6. Container Metrics (cAdvisor)
   # -------------------------------------------------------
@@ -313,11 +300,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.35
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
   alertmanager:
     deploy:
       resources:
@@ -368,11 +351,7 @@ services:
       - "traefik.http.routers.alertmanager.entrypoints=websecure"
       - "traefik.http.routers.alertmanager.tls=true"
       - "traefik.http.services.alertmanager.loadbalancer.server.port=${ALERTMANAGER_PORT}"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
   pushgateway:
     deploy:
       resources:
@@ -407,11 +386,7 @@ services:
       - "traefik.http.routers.pushgateway.entrypoints=websecure"
       - "traefik.http.routers.pushgateway.tls=true"
       - "traefik.http.services.pushgateway.loadbalancer.server.port=${PUSHGATEWAY_PORT}"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
 volumes:
   tempo-data:

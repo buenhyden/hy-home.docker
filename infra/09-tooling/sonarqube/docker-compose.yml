@@ -1,4 +1,11 @@
 name: sonarqube
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   sonarqube:
     profiles:
@@ -25,11 +32,7 @@ services:
       - sonarqube-logs-volume:/opt/sonarqube/logs
     networks:
       - infra_net
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     environment:
       - SONAR_JDBC_URL=jdbc:postgresql://${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${SONARQUBE_DBNAME}
       - SONAR_JDBC_USERNAME=${SONARQUBE_DB_USER}

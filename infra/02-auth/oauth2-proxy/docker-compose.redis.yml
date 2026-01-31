@@ -1,3 +1,9 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   oauth2-proxy:
     deploy:
@@ -34,11 +40,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.28
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   oauth2-proxy-redis:
     deploy:
@@ -73,11 +75,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   oauth2-proxy-redis-exporter:
     deploy:
@@ -112,11 +110,7 @@ services:
     depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       oauth2-proxy-redis:
         condition: service_healthy
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
 volumes:
   oauth2-proxy-redis-data:

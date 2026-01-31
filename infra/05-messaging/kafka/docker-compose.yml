@@ -1,4 +1,11 @@
 name: kafka
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 # ------------------------------------------------------------
 # Kafka Brokers (KRaft) — Primary 패턴 (완전 동일 템플릿 + YAML 앵커)
 # - INTERNAL: 컨테이너 간 통신 (PLAINTEXT, 19092)
@@ -158,11 +165,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   # ##############################################################
   # Kafka Connect (Distributed)
@@ -247,11 +250,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   # -------------------------------------------
   # 4. Kafka REST Proxy (레스트 프록시)
@@ -299,11 +298,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   # -------------------------------------------
   # 5. Kafka UI (카프카 UI - kafbat-ui)
@@ -358,11 +353,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   kafka-exporter:
     deploy:
@@ -396,11 +387,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
 volumes:
   kafka-1-data:

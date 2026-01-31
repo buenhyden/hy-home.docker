@@ -1,4 +1,10 @@
 name: nginx
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
 services:
   nginx:
     profiles:
@@ -24,11 +30,7 @@ services:
       timeout: 3s
       retries: 5
       start_period: 10s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
     deploy:
       resources:
         limits:

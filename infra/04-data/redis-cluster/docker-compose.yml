@@ -1,4 +1,11 @@
 name: redic-cluster
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 services:
   # ##############################################################
   # Redis Cluster Nodes (6개: 3 master + 3 replica)
@@ -49,11 +56,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   redis-node-1:
     profiles:
@@ -96,11 +99,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   redis-node-2:
     profiles:
@@ -143,11 +142,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   redis-node-3:
     profiles:
@@ -190,11 +185,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   redis-node-4:
     profiles:
@@ -237,11 +228,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   redis-node-5:
     profiles:
@@ -284,11 +271,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
   # ##############################################################
   # Redis Cluster 초기화용 one-shot 컨테이너
@@ -327,11 +310,7 @@ services:
     volumes:
       - ./scripts/redis-cluster-init.sh:/usr/local/bin/redis-cluster-init.sh:ro
     command: ["sh", "/usr/local/bin/redis-cluster-init.sh"]
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
   # ##############################################################
   # Redis Exporter – Prometheus용 메트릭
   # ##############################################################
@@ -383,11 +362,7 @@ services:
         condition: service_healthy
       redis-node-5:
         condition: service_healthy
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
+    logging: *default-logging
 
 volumes:
   redis-data-0:
