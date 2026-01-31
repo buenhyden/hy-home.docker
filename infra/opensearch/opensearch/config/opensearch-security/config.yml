@@ -14,9 +14,23 @@ config:
         order: 0
         http_authenticator:
           type: basic
-          challenge: true
+          challenge: false
         authentication_backend:
           type: internal
+      openid_auth_domain:
+        description: "OpenID Connect (Keycloak)"
+        http_enabled: true
+        transport_enabled: true
+        order: 1
+        http_authenticator:
+          type: openid
+          challenge: false
+          config:
+            subject_key: preferred_username
+            roles_key: groups
+            openid_connect_url: "https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/.well-known/openid-configuration"
+        authentication_backend:
+          type: noop
     authz:
       roles_from_mybackend:
         description: "Internal roles"

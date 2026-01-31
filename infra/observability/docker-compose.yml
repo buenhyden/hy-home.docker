@@ -69,7 +69,7 @@ services:
       driver: "json-file"
       options:
         max-size: "5m"
-        max-file: "2"    
+        max-file: "2"
     ports:
       - "${LOKI_HOST_PORT}:${LOKI_PORT}"
     volumes:

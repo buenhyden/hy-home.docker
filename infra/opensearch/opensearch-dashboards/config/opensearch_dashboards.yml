@@ -4,14 +4,17 @@ server.ssl.enabled: true
 server.ssl.key: /usr/share/opensearch-dashboards/config/certs/key.pem
 server.ssl.certificate: /usr/share/opensearch-dashboards/config/certs/cert.pem
 
-# OIDC 연동 설정 (임시 비활성화하여 헬스체크 확인)
-opensearch_security.auth.type: ["basicauth"]
-# opensearch_security.auth.multiple_auth_enabled: true
-# opensearch_security.openid.connect_url: "https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/.well-known/openid-configuration"
-# opensearch_security.openid.client_id: "proxy-client"
-# opensearch_security.openid.client_secret: "vyoSDzjJPYkq1Aulmp2xTiteXSE97RnX"
-# opensearch_security.openid.root_ca: /usr/share/opensearch-dashboards/config/certs/rootCA.pem
-# opensearch_security.openid.verify_hostnames: false
+# OIDC 연동 설정
+opensearch_security.auth.type: ["basicauth", "openid"]
+opensearch_security.auth.multiple_auth_enabled: true
+opensearch_security.openid.connect_url: "https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/.well-known/openid-configuration"
+opensearch_security.openid.client_id: "proxy-client"
+opensearch_security.openid.client_secret: "vyoSDzjJPYkq1Aulmp2xTiteXSE97RnX"
+opensearch_security.openid.scope: "openid profile email offline_access groups"
+opensearch_security.openid.base_redirect_url: "https://opensearch-dashboard.127.0.0.1.nip.io"
+opensearch_security.openid.root_ca: /usr/share/opensearch-dashboards/config/certs/rootCA.pem
+# mkcert 기반 인증서(SAN 없음) 대응: 호스트 검증은 끄고 CA만 검증
+opensearch_security.openid.verify_hostnames: false
 
 opensearch_security.cookie.secure: true
 

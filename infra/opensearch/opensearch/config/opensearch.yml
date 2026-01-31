@@ -24,3 +24,5 @@ plugins.security.restapi.roles_enabled: ["all_access", "admin"]
 
 path.data: /usr/share/opensearch/data
 path.logs: /usr/share/opensearch/logs
+
+prometheus.metric_name.prefix: "opensearch_"

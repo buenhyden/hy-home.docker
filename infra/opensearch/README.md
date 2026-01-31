@@ -102,7 +102,7 @@ Uncomment the `build` section in `docker-compose.yml` and comment out `image`.
 - **Note**: Self-signed certificate warning is expected.
 
 ```bash
-curl -k -u admin:password https://opensearch.${DEFAULT_URL}/_cluster/health?pretty
+curl -k -u admin:${OPENSEARCH_ADMIN_PASSWORD} https://opensearch.${DEFAULT_URL}/_cluster/health?pretty
 ```
 
 ### 3. Scaling to 3 Nodes
@@ -116,6 +116,66 @@ curl -k -u admin:password https://opensearch.${DEFAULT_URL}/_cluster/health?pret
    ```bash
    docker compose up -d
    ```
+
+## Exporter Metrics (Prometheus)
+
+`opensearch-exporter` collects cluster metrics and requires read-only monitor permissions.
+Because the built-in `readall` role is reserved/static, use a dedicated role and mapping:
+
+- Role definition: `infra/opensearch/opensearch/config/opensearch-security/roles.yml` (`exporter_role`)
+- Role mapping: `infra/opensearch/opensearch/config/opensearch-security/roles_mapping.yml` (map user `exporter`)
+
+### Apply security changes (REST API)
+
+`securityadmin.sh` may fail if the client certificate does not allow TLS client auth. Use the REST API instead:
+
+```bash
+docker exec opensearch bash -lc '
+cat <<'"'"'JSON'"'"' >/tmp/exporter_role.json
+{
+  "cluster_permissions": ["cluster:monitor/*"],
+  "index_permissions": [
+    {
+      "index_patterns": ["*"],
+      "allowed_actions": [
+        "indices:monitor/*",
+        "indices:admin/get",
+        "indices:admin/aliases/get",
+        "indices:data/read/*"
+      ],
+      "fls": [],
+      "masked_fields": []
+    }
+  ]
+}
+JSON
+
+curl -ks -u admin:${OPENSEARCH_ADMIN_PASSWORD} \
+  -H "Content-Type: application/json" \
+  -XPUT https://localhost:9200/_plugins/_security/api/roles/exporter_role \
+  -d @/tmp/exporter_role.json
+'
+
+docker exec opensearch bash -lc '
+cat <<'"'"'JSON'"'"' >/tmp/exporter_role_mapping.json
+{
+  "users": ["exporter"]
+}
+JSON
+
+curl -ks -u admin:${OPENSEARCH_ADMIN_PASSWORD} \
+  -H "Content-Type: application/json" \
+  -XPUT https://localhost:9200/_plugins/_security/api/rolesmapping/exporter_role \
+  -d @/tmp/exporter_role_mapping.json
+'
+```
+
+### Verify
+
+```bash
+docker exec opensearch bash -lc "curl -ks -u exporter:${OPENSEARCH_EXPORTER_PASSWORD} https://localhost:9200/_cluster/health"
+curl http://localhost:${ES_EXPORTER_HOST_PORT}/metrics
+```
 
 ## Troubleshooting
 

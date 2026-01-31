@@ -6,6 +6,8 @@ all_access:
   reserved: false
   backend_roles:
     - "admin"
+    - "opensearch_admin"
+    - "opensearch-admin"
   users:
     - "admin"
 
@@ -18,5 +20,12 @@ readall:
   reserved: false
   backend_roles:
     - "user"
+    - "readall"
+    - "opensearch_readall"
+    - "opensearch-readall"
+  users: []
+
+exporter_role:
+  reserved: false
   users:
     - "exporter"

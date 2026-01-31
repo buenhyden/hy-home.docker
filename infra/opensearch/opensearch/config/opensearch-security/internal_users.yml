@@ -5,7 +5,7 @@ _meta:
 # admin user
 admin:
   # password: Kebx2Hiya6B5qpho
-  hash: "$2y$12$bgcg5pKEJVXYRBmJ6dufBK8e16kwPCIC4TiJy1dNLd"
+  hash: "$2y$12$fEqrJs26IUqu4BjztfsOy.ngX9DW0GudtLI0Nmtjx6t8oLIHP2.LS"
   reserved: true
   backend_roles:
     - "admin"
@@ -14,14 +14,14 @@ admin:
 # user for Dashboards
 kibanaserver:
   # password: kqXV5aIiSXMDCzqF
-  hash: "$2y$12$CPzGIwIhXhy6TF14PhLI6umYFTGRb5iNYPdkGz2uENBXnDkvmtwOe"
+  hash: "$2y$12$Br4xYb4OgoKoWe9tDsVwXee3HfCTJgYMe8iSU3N/TyxyoEcRFl1R6"
   reserved: true
   description: "Dashboards server user"
 
 # user for Prometheus Exporter
 exporter:
   # password: hkBPRKwG9itp4B2m
-  hash: "$2y$12$2NijrrejP6uakOMrm1vtmn0SxmzSrq8gj.ifuGVrf1"
+  hash: "$2y$12$n1GdisJt2X6i/8vIj3TQ2Oik2.q68IzzUkLCKbhN8VKV7IcJK2ueG"
   reserved: false
   backend_roles:
     - "readall"

@@ -185,6 +185,8 @@ services:
       - "traefik.http.routers.opensearch-dashboards.entrypoints=websecure"
       - "traefik.http.routers.opensearch-dashboards.tls=true"
       - "traefik.http.services.opensearch-dashboards.loadbalancer.server.port=5601"
+      - "traefik.http.services.opensearch-dashboards.loadbalancer.server.scheme=https"
+      - "traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport=opensearch-dashboards-transport@file"
     depends_on:
       opensearch-node1:
         condition: service_healthy
