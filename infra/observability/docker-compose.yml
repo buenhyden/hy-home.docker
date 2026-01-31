@@ -69,12 +69,7 @@ services:
       driver: "json-file"
       options:
         max-size: "5m"
-        max-file: "2"
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q --tries=1 --spider http://localhost:${LOKI_PORT}/ready || exit 1"]
-      interval: 10s
-      retries: 5
-      start_period: 60s
+        max-file: "2"    
     ports:
       - "${LOKI_HOST_PORT}:${LOKI_PORT}"
     volumes:
@@ -116,12 +111,6 @@ services:
     environment:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
       - MINIO_APP_USER_PASSWORD=${MINIO_APP_USER_PASSWORD}
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:${TEMPO_PORT}/ready || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
     restart: unless-stopped
   # -------------------------------------------------------
   # 4. Visualization (Grafana)
@@ -275,11 +264,11 @@ services:
       - "traefik.http.routers.alloy.tls=true"
       - "traefik.http.services.alloy.loadbalancer.server.port=${ALLOY_PORT}"
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:${ALLOY_PORT}/ || exit 1"]
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/localhost/12345; printf \"HEAD /-/healthy HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n\" >&3; timeout 2 head -1 <&3 | grep -q \"200\"'"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 20s
+      retries: 3
+      start_period: 15s
     logging:
       driver: "json-file"
       options:
@@ -324,12 +313,6 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.35
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:${CADVISOR_PORT}/healthz || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
     logging:
       driver: "json-file"
       options:

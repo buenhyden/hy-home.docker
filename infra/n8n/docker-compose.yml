@@ -113,7 +113,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.17 # 여유 IP 하나
-    command: worker
+    command: worker    
     logging:
       driver: "json-file"
       options:
@@ -129,7 +129,7 @@ services:
     restart: unless-stopped
     environment:
       - N8N_RUNNERS_TASK_BROKER_URI=http://n8n:${N8N_BROKER_PORT}
-      - N8N_RUNNERS_AUTH_TOKEN=${N8N_RUNNER_AUTH_TOKEN}
+      - N8N_RUNNERS_AUTH_TOKEN=${N8N_RUNNER_AUTH_TOKEN}    
     networks:
       infra_net:
         ipv4_address: 172.19.0.74 # 새로운 IP 할당
