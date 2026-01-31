@@ -29,6 +29,22 @@ docker compose up -d
 docker compose up -d traefik
 ```
 
+## 🧩 정리 기준 (분류 원칙)
+
+infra 하위 폴더는 실행 방식에 따라 다음 4가지로 분류합니다.
+
+1. **Core (Include)**: 루트 `docker-compose.yml`에 `include`된 기본 스택.
+2. **Optional (Profile)**: `include`는 되어 있으나 `profiles`로 켜는 스택.
+3. **Standalone**: 루트 `include`에 없으며 폴더 단위로 별도 실행.
+4. **Placeholder**: 문서만 존재하며 실행 정의가 아직 없음.
+
+### 분류 요약
+
+- **Core (Include)**: traefik, mng-db, oauth2-proxy, observability, minio, keycloak, n8n, qdrant, postgresql-cluster, kafka, valkey-cluster, opensearch, ksql
+- **Optional (Profile)**: airflow, influxdb, couchdb, mail, nginx, ollama, sonarqube, vault, terrakube, redis-cluster
+- **Standalone**: supabase
+- **Placeholder**: rabbitmq
+
 ## 🛠️ 주요 컴포넌트
 
 현재 구성된 인프라는 다음과 같은 서비스들을 포함하고 있습니다.

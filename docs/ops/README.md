@@ -6,6 +6,7 @@
 
 - 모니터링 스택: `infra/observability/README.md`
 - 인증/접근 제어: `infra/keycloak/README.md`, `infra/oauth2-proxy/README.md`
+ - 인프라 분류/프로파일: `infra/README.md`
 
 ## 데이터/시크릿
 
