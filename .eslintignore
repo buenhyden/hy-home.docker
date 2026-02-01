@@ -4,4 +4,5 @@ node_modules/
 .git/
 dist/
 coverage/
+storybook-static/
 *.min.js

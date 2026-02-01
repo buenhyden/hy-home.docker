@@ -1,6 +1,5 @@
 {
   "default": true,
   "MD013": false,
-  "MD033": false,
-  "ignores": [".agent/workflows/**", ".agent/rules/**", "node_modules/**", ".git/**"]
+  "MD033": false
 }

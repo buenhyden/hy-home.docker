@@ -93,6 +93,19 @@ labels:
 - [Figma Integration Guide](./react-ts/FIGMA_INTEGRATION.md)
 - [Visual Regression Testing](./react-ts/VISUAL_REGRESSION.md)
 
+## 🪝 Git Hooks (Local)
+
+Commit-time checks are available via a repo-level `pre-commit` hook that runs lint/format/markdownlint for Storybook templates touched by your staged files.
+
+```bash
+# Enable hooks for this repo
+git config core.hooksPath .githooks
+```
+
+Notes:
+- Run `npm install` in each template once so the checks can execute.
+- Checks run only for `projects/storybook/react-js/` and/or `projects/storybook/react-ts/` when those paths are staged.
+
 ## File Map
 
 | Path | Description |
