@@ -1,7 +1,0 @@
-[INFO] Initializing environment for https://github.com/prettier/pre-commit.
-An unexpected error has occurred: CalledProcessError: command: ('C:\\Program Files\\Git\\cmd\\git.EXE', 'checkout', 'v4.0.0-alpha.8')
-return code: 1
-stdout: (none)
-stderr:
-    error: pathspec 'v4.0.0-alpha.8' did not match any file(s) known to git
-Check the log at C:\Users\hy\.cache\pre-commit\pre-commit.log
