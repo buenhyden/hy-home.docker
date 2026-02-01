@@ -1,10 +1,10 @@
 name: opensearch
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 services:
   # ######################################################
   # OpenSearch 노드 1 (cluster_manager + data + ingest)
@@ -56,20 +56,20 @@ services:
       # REST API (TLS on 기본) – Loki/Alloy에서 로그/메트릭 수집, 앱 연결
       # - "${ES_HOST_1_PORT}:${ES_PORT}"
       # Performance Analyzer / 메트릭 포트
-      - "${ES_PERFORMANCE_ANALYZER_HOST_PORT}:${ES_PERFORMANCE_ANALYZER_PORT}"
+      - '${ES_PERFORMANCE_ANALYZER_HOST_PORT}:${ES_PERFORMANCE_ANALYZER_PORT}'
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # 1. OpenSearch API 라우터 (https://opensearch.${DEFAULT_URL})
-      - "traefik.http.routers.opensearch.rule=Host(`opensearch.${DEFAULT_URL}`)"
-      - "traefik.http.routers.opensearch.entrypoints=websecure"
-      - "traefik.http.routers.opensearch.tls=true"
-      - "traefik.http.services.opensearch.loadbalancer.serversTransport=opensearch-transport@file"
+      - 'traefik.http.routers.opensearch.rule=Host(`opensearch.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.opensearch.entrypoints=websecure'
+      - 'traefik.http.routers.opensearch.tls=true'
+      - 'traefik.http.services.opensearch.loadbalancer.serversTransport=opensearch-transport@file'
 
       # [중요] OpenSearch는 기본적으로 HTTPS(Self-signed)를 사용하므로
       # Traefik이 백엔드(OpenSearch)와 통신할 때도 HTTPS를 써야 함.
       # serversTransport 설정을 통해 인증서 검증을 스킵해야 할 수 있음.
-      - "traefik.http.services.opensearch.loadbalancer.server.port=9200"
-      - "traefik.http.services.opensearch.loadbalancer.server.scheme=https" # 백엔드 통신 스킴 지정
+      - 'traefik.http.services.opensearch.loadbalancer.server.port=9200'
+      - 'traefik.http.services.opensearch.loadbalancer.server.scheme=https' # 백엔드 통신 스킴 지정
     networks:
       infra_net:
         ipv4_address: 172.19.0.44
@@ -106,8 +106,8 @@ services:
       - opensearch-data2:/usr/share/opensearch/data
       - ./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
     expose:
-      - "${ES_PORT}"
-      - "${ES_PERFORMANCE_ANALYZER_PORT}"
+      - '${ES_PORT}'
+      - '${ES_PERFORMANCE_ANALYZER_PORT}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.45
@@ -144,8 +144,8 @@ services:
       - opensearch-data3:/usr/share/opensearch/data
       - ./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
     expose:
-      - "${ES_PORT}"
-      - "${ES_PERFORMANCE_ANALYZER_PORT}"
+      - '${ES_PORT}'
+      - '${ES_PERFORMANCE_ANALYZER_PORT}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.46
@@ -159,7 +159,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.47
     expose:
-      - "${KIBANA_PORT}" # Expose port 5601 for web access to OpenSearch Dashboards
+      - '${KIBANA_PORT}' # Expose port 5601 for web access to OpenSearch Dashboards
     # ports:
     #   - "${KIBANA_HOST_PORT}:${KIBANA_PORT}"
     volumes:
@@ -172,15 +172,15 @@ services:
       - OPENSEARCH_SSL_VERIFICATIONMODE=certificate
       - OPENSEARCH_SSL_CERTIFICATEAUTHORITIES=["/usr/share/opensearch-dashboards/config/rootCA.pem"]
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # 2. Dashboards 라우터 (https://dashboards.opensearch.${DEFAULT_URL})
       # (서브 도메인을 분리하여 라우팅)
-      - "traefik.http.routers.opensearch-dashboards.rule=Host(`opensearch-dashboard.${DEFAULT_URL}`)"
-      - "traefik.http.routers.opensearch-dashboards.entrypoints=websecure"
-      - "traefik.http.routers.opensearch-dashboards.tls=true"
-      - "traefik.http.services.opensearch-dashboards.loadbalancer.server.port=5601"
-      - "traefik.http.services.opensearch-dashboards.loadbalancer.server.scheme=https"
-      - "traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport=opensearch-dashboards-transport@file"
+      - 'traefik.http.routers.opensearch-dashboards.rule=Host(`opensearch-dashboard.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.opensearch-dashboards.entrypoints=websecure'
+      - 'traefik.http.routers.opensearch-dashboards.tls=true'
+      - 'traefik.http.services.opensearch-dashboards.loadbalancer.server.port=5601'
+      - 'traefik.http.services.opensearch-dashboards.loadbalancer.server.scheme=https'
+      - 'traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport=opensearch-dashboards-transport@file'
     depends_on:
       opensearch-node1:
         condition: service_healthy
@@ -195,15 +195,15 @@ services:
     container_name: opensearch-exporter
     restart: unless-stopped
     command:
-      - "--es.uri=https://opensearch-node1:9200" # 노드1을 바라봄
-      - "--es.all"
-      - "--es.indices"
-      - "--es.ssl-skip-verify" # OpenSearch 기본 TLS 인증서 검증 건너뛰기
+      - '--es.uri=https://opensearch-node1:9200' # 노드1을 바라봄
+      - '--es.all'
+      - '--es.indices'
+      - '--es.ssl-skip-verify' # OpenSearch 기본 TLS 인증서 검증 건너뛰기
     environment:
       - ES_USERNAME=${ELASTIC_USERNAME}
       - ES_PASSWORD=${ELASTIC_PASSWORD}
     ports:
-      - "${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}" # 9114
+      - '${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}' # 9114
     networks:
       infra_net:
         ipv4_address: 172.19.0.48

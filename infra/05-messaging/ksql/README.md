@@ -14,22 +14,22 @@ docker compose --profile ksql up -d ksqldb-server
 
 ## Services
 
-| Service | Image | Role | Notes |
-| --- | --- | --- | --- |
+| Service         | Image                                 | Role                                     | Notes                                |
+| --------------- | ------------------------------------- | ---------------------------------------- | ------------------------------------ |
 | `ksqldb-server` | `confluentinc/cp-ksqldb-server:8.0.3` | ksqlDB Engine (REST + Stream Processing) | `${KSQLDB_HOST_PORT}:${KSQLDB_PORT}` |
-| `ksqldb-cli` | `confluentinc/cp-ksqldb-cli:8.0.3` | Interactive CLI Client | Internal-only |
-| `ksql-datagen` | `confluentinc/ksqldb-examples:8.0.3` | Example data generator | Enabled via `ksql` profile |
+| `ksqldb-cli`    | `confluentinc/cp-ksqldb-cli:8.0.3`    | Interactive CLI Client                   | Internal-only                        |
+| `ksql-datagen`  | `confluentinc/ksqldb-examples:8.0.3`  | Example data generator                   | Enabled via `ksql` profile           |
 
 ## Networking
 
 - **Network**: `infra_net`
-- **Static IP**: *None assigned* (Dynamic IP allocation)
+- **Static IP**: _None assigned_ (Dynamic IP allocation)
 - **Traefik**: **Not Configured**. This service is currently **internal only** within the docker network, or accessible via the exposed host port.
 
 ## Configuration
 
-| Variable | Description | Default |
-| :--- | :--- | :--- |
+| Variable                 | Description   | Default                                                                                        |
+| :----------------------- | :------------ | :--------------------------------------------------------------------------------------------- |
 | `KSQL_BOOTSTRAP_SERVERS` | Kafka Brokers | `kafka-1:${KAFKA_INTERNAL_PORT},kafka-2:${KAFKA_INTERNAL_PORT},kafka-3:${KAFKA_INTERNAL_PORT}` |
 
 ## Persistence
@@ -55,7 +55,7 @@ docker logs ksqldb-server
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
+| Path                 | Description                                    |
+| -------------------- | ---------------------------------------------- |
 | `docker-compose.yml` | ksqlDB server + CLI + example datagen profile. |
-| `README.md` | Service overview and usage notes. |
+| `README.md`          | Service overview and usage notes.              |

@@ -1,17 +1,17 @@
 name: keycloak
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   keycloak:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: '1.0'
           memory: 1G
         reservations:
           memory: 512M
@@ -24,7 +24,7 @@ services:
       - ${KEYCLOAK_MANAGEMENT_PORT}
     healthcheck:
       test: [
-          "CMD-SHELL",
+          'CMD-SHELL',
           "exec 3<>/dev/tcp/127.0.0.1/${KEYCLOAK_MANAGEMENT_PORT}; \
           printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; \
           cat <&3 | grep -Eq '\"status\"[[:space:]]*:[[:space:]]*\"UP\"' && exit 0 || exit 1",
@@ -52,18 +52,18 @@ services:
       # Java 옵션을 통해 Quarkus(Agroal)의 유효성 검사 강제 설정
       # 1. idle 상태가 5분 지나면 연결 끊음 (DB 타임아웃보다 짧게)
       # 2. 연결 가져올 때 유효성 검사 수행 (background)
-      JAVA_OPTS_APPEND: "-Dquarkus.datasource.jdbc.idle-removal-interval=5M -Dquarkus.datasource.jdbc.background-validation-interval=1M"
+      JAVA_OPTS_APPEND: '-Dquarkus.datasource.jdbc.idle-removal-interval=5M -Dquarkus.datasource.jdbc.background-validation-interval=1M'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.keycloak.rule=Host(`keycloak.${DEFAULT_URL}`)"
-      - "traefik.http.routers.keycloak.entrypoints=websecure"
-      - "traefik.http.routers.keycloak.tls=true"
-      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.keycloak.rule=Host(`keycloak.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.keycloak.entrypoints=websecure'
+      - 'traefik.http.routers.keycloak.tls=true'
+      - 'traefik.http.services.keycloak.loadbalancer.server.port=8080'
     networks:
       infra_net:
         ipv4_address: 172.19.0.29
     logging:
-      driver: "json-file"
+      driver: 'json-file'
       options:
-        max-size: "10m"
-        max-file: "5"
+        max-size: '10m'
+        max-file: '5'

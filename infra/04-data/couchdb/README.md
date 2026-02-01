@@ -15,36 +15,36 @@ docker compose --profile couchdb up -d
 ```mermaid
 graph TB
     User((User))
-    
+
     subgraph "Edge Layer"
         GW[Traefik Router]
     end
-    
+
     subgraph "CouchDB Cluster"
         C1[Node 1<br/>Seed Node]
         C2[Node 2]
         C3[Node 3]
         Init[Setup Assistant<br/>Ephemeral]
     end
-    
+
     subgraph "Internal Storage"
         V1[(Data Vol 1)]
         V2[(Data Vol 2)]
         V3[(Data Vol 3)]
     end
-    
+
     User -->|HTTPS| GW
     GW -->|Sticky Session| C1
     GW -->|Sticky Session| C2
     GW -->|Sticky Session| C3
-    
+
     Init -.->|1. Join Nodes| C1
     Init -.->|2. Setup DBs| C1
-    
+
     C1 <-->|Mesh| C2
     C1 <-->|Mesh| C3
     C2 <-->|Mesh| C3
-    
+
     C1 --- V1
     C2 --- V2
     C3 --- V3
@@ -52,18 +52,18 @@ graph TB
 
 ## Services
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `couchdb-1` | `couchdb:3.5.1` | Seed & Management Node | *(Implicit)* |
-| `couchdb-2..3` | `couchdb:3.5.1` | Cluster Data Member | *(Implicit)* |
-| `couchdb-cluster-init`| `curlimages/curl:8.18.0`| Setup Assistant (One-shot) | 0.1 CPU / 128MB |
+| Service                | Image                    | Role                       | Resources       |
+| :--------------------- | :----------------------- | :------------------------- | :-------------- |
+| `couchdb-1`            | `couchdb:3.5.1`          | Seed & Management Node     | _(Implicit)_    |
+| `couchdb-2..3`         | `couchdb:3.5.1`          | Cluster Data Member        | _(Implicit)_    |
+| `couchdb-cluster-init` | `curlimages/curl:8.18.0` | Setup Assistant (One-shot) | 0.1 CPU / 128MB |
 
 ## Networking
 
 All nodes communicate internally via Erlang's distributed protocol on the `infra_net` network.
 
-| Service | Host Alias | Database Port | Cluster Ports (Internal) |
-| :--- | :--- | :--- | :--- |
+| Service        | Host Alias            | Database Port     | Cluster Ports (Internal)   |
+| :------------- | :-------------------- | :---------------- | :------------------------- |
 | `couchdb-1..3` | `couchdb-X.infra_net` | `5984` (HTTP API) | `4369` (EPMD), `9100-9200` |
 
 ## Initialization Process
@@ -123,7 +123,7 @@ Ensure your client supports HTTP cookies to take advantage of Traefik's sticky s
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
+| Path                 | Description                           |
+| -------------------- | ------------------------------------- |
 | `docker-compose.yml` | 3-node CouchDB cluster + initializer. |
-| `README.md` | Cluster topology and access notes. |
+| `README.md`          | Cluster topology and access notes.    |

@@ -1,10 +1,10 @@
 name: vault
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   vault:
@@ -14,16 +14,16 @@ services:
     container_name: vault
     restart: unless-stopped
     ports:
-      - "${VAULT_HOST_PORT}:${VAULT_PORT}"
+      - '${VAULT_HOST_PORT}:${VAULT_PORT}'
     expose:
       - ${VAULT_PORT}
     environment:
-      VAULT_ADDR: "http://0.0.0.0:${VAULT_PORT}"
-      VAULT_API_ADDR: "http://0.0.0.0:${VAULT_PORT}"
-      KEYCLOAK_URL: "${KEYCLOAK_URL}"
-      REALM_NAME: "${KEYCLOAK_REALM}"
-      CLIENT_ID: "${OAUTH2_PROXY_CLIENT_ID}"
-      CLIENT_SECRET: "${OAUTH2_PROXY_CLIENT_SECRET}"
+      VAULT_ADDR: 'http://0.0.0.0:${VAULT_PORT}'
+      VAULT_API_ADDR: 'http://0.0.0.0:${VAULT_PORT}'
+      KEYCLOAK_URL: '${KEYCLOAK_URL}'
+      REALM_NAME: '${KEYCLOAK_REALM}'
+      CLIENT_ID: '${OAUTH2_PROXY_CLIENT_ID}'
+      CLIENT_SECRET: '${OAUTH2_PROXY_CLIENT_SECRET}'
     volumes:
       - vault-data:/vault/file
       - ./config:/vault/config
@@ -36,7 +36,7 @@ services:
     healthcheck:
       test:
         [
-          "CMD-SHELL",
+          'CMD-SHELL',
           'curl -fsS "http://localhost:${VAULT_PORT}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || wget -q --spider "http://localhost:${VAULT_PORT}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || exit 1',
         ]
       interval: 10s
@@ -45,12 +45,12 @@ services:
       start_period: 20s
     labels:
       # Enable self‑routing
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # Dashboard router
-      - "traefik.http.routers.vault.rule=Host(`vault.${DEFAULT_URL}`)"
-      - "traefik.http.routers.vault.entrypoints=websecure"
-      - "traefik.http.routers.vault.tls=true"
-      - "traefik.http.services.vault.loadbalancer.server.port=${VAULT_PORT}"
+      - 'traefik.http.routers.vault.rule=Host(`vault.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.vault.entrypoints=websecure'
+      - 'traefik.http.routers.vault.tls=true'
+      - 'traefik.http.services.vault.loadbalancer.server.port=${VAULT_PORT}'
 
 volumes:
   vault-data:

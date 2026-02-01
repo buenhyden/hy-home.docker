@@ -10,55 +10,55 @@ graph TB
         Apps[Platform Services]
         UI[RedisInsight]
     end
-    
+
     subgraph "Data Store"
         V[Valkey<br/>Cache/Queue]
         P[PostgreSQL<br/>Relational DB]
     end
-    
+
     subgraph "Operations"
         Init[PG Init Service]
         EXP_V[Valkey Exporter]
         EXP_P[PG Exporter]
     end
-    
+
     Apps --> V
     Apps --> P
     UI --> V
     Init -->|SQL| P
-    
+
     EXP_V --> V
     EXP_P --> P
 ```
 
 ## Services
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `mng-valkey` | `valkey/valkey:9.0.1` | **Cache & Broker** (Redis Comp.) | 0.5 CPU / 512MB |
-| `mng-pg` | `postgres:17-bookworm` | **Metadata Database** | 1 CPU / 1GB |
-| `redisinsight` | `redis/redisinsight:3.0.1` | Valkey UI Management | 0.5 CPU / 512MB |
-| `mng-pg-init` | `postgres:17-alpine` | DB Initializer | 0.5 CPU / 128MB |
-| `mng-valkey-exporter`| `oliver006/redis_exporter` | Prometheus Metrics | 0.1 CPU / 128MB |
-| `mng-pg-exporter` | `postgres-exporter` | Prometheus Metrics | 0.1 CPU / 128MB |
+| Service               | Image                      | Role                             | Resources       |
+| :-------------------- | :------------------------- | :------------------------------- | :-------------- |
+| `mng-valkey`          | `valkey/valkey:9.0.1`      | **Cache & Broker** (Redis Comp.) | 0.5 CPU / 512MB |
+| `mng-pg`              | `postgres:17-bookworm`     | **Metadata Database**            | 1 CPU / 1GB     |
+| `redisinsight`        | `redis/redisinsight:3.0.1` | Valkey UI Management             | 0.5 CPU / 512MB |
+| `mng-pg-init`         | `postgres:17-alpine`       | DB Initializer                   | 0.5 CPU / 128MB |
+| `mng-valkey-exporter` | `oliver006/redis_exporter` | Prometheus Metrics               | 0.1 CPU / 128MB |
+| `mng-pg-exporter`     | `postgres-exporter`        | Prometheus Metrics               | 0.1 CPU / 128MB |
 
 ## Networking
 
 Services run on `infra_net` with static IPs.
 
-| Service | Static IP | Port (Internal) | Host Port | Traefik Domain |
-| :--- | :--- | :--- | :--- | :--- |
-| `mng-valkey` | `172.19.0.70` | `6379` | - | - |
-| `mng-pg` | `172.19.0.72` | `5432` | `${POSTGRES_PORT}` | - |
-| `redisinsight` | `172.19.0.68` | `5540` | - | `redisinsight.${DEFAULT_URL}` |
+| Service        | Static IP     | Port (Internal) | Host Port          | Traefik Domain                |
+| :------------- | :------------ | :-------------- | :----------------- | :---------------------------- |
+| `mng-valkey`   | `172.19.0.70` | `6379`          | -                  | -                             |
+| `mng-pg`       | `172.19.0.72` | `5432`          | `${POSTGRES_PORT}` | -                             |
+| `redisinsight` | `172.19.0.68` | `5540`          | -                  | `redisinsight.${DEFAULT_URL}` |
 
 ## Persistence
 
-| Volume | Mount Point | Description |
-| :--- | :--- | :--- |
-| `mng-valkey-data` | `/data` | Valkey AOF/RDB files |
-| `mng-pg-data` | `/var/lib/postgresql/data` | PostgreSQL Data files |
-| `redisinsight-data` | `/db` | RedisInsight user settings |
+| Volume              | Mount Point                | Description                |
+| :------------------ | :------------------------- | :------------------------- |
+| `mng-valkey-data`   | `/data`                    | Valkey AOF/RDB files       |
+| `mng-pg-data`       | `/var/lib/postgresql/data` | PostgreSQL Data files      |
+| `redisinsight-data` | `/db`                      | RedisInsight user settings |
 
 ## Configuration
 
@@ -142,10 +142,10 @@ If `mng-pg-init` fails:
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `docker-compose.yml` | Management Valkey + PostgreSQL (default). |
-| `docker-compose.redis.yml` | Redis-based alternative stack. |
-| `init-scripts/init_users_dbs.sql` | Initial DB/user bootstrap (runs once on empty volume). |
-| `init-scripts/init_users_dbs.sql.example` | Template for bootstrap SQL. |
-| `README.md` | Service overview and connection notes. |
+| Path                                      | Description                                            |
+| ----------------------------------------- | ------------------------------------------------------ |
+| `docker-compose.yml`                      | Management Valkey + PostgreSQL (default).              |
+| `docker-compose.redis.yml`                | Redis-based alternative stack.                         |
+| `init-scripts/init_users_dbs.sql`         | Initial DB/user bootstrap (runs once on empty volume). |
+| `init-scripts/init_users_dbs.sql.example` | Template for bootstrap SQL.                            |
+| `README.md`                               | Service overview and connection notes.                 |

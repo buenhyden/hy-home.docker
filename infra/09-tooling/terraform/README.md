@@ -69,8 +69,8 @@ By default, the `terraform.tfstate` file is stored in the local directory (since
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
+| Path                 | Description                                                     |
+| -------------------- | --------------------------------------------------------------- |
 | `docker-compose.yml` | Runs Terraform CLI in a container with cloud credential mounts. |
-| `workspace/` | Working directory for Terraform configurations and state. |
-| `README.md` | Usage and workflow guidance. |
+| `workspace/`         | Working directory for Terraform configurations and state.       |
+| `README.md`          | Usage and workflow guidance.                                    |

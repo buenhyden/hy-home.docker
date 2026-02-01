@@ -65,7 +65,7 @@ http {
 
     # upstream opensearch_backend {
     #     # [수정] 고정 IP 대신 도커 서비스명 권장 (Docker DNS 활용)
-    #     server opensearch:9200; 
+    #     server opensearch:9200;
     #     keepalive 16;
     # }
 
@@ -75,7 +75,7 @@ http {
         server_name _;
         return 301 https://$host$request_uri;
     }
-    
+
     # 7. HTTPS 메인 서버
     server {
         listen 443 ssl;
@@ -147,19 +147,19 @@ http {
             proxy_request_buffering off;
             proxy_read_timeout 900s;
             client_max_body_size 0; # 용량 제한 없음
-            
+
             proxy_http_version 1.1;
             proxy_set_header Connection "";
-            
+
             # [핵심] 끝에 / 가 중요합니다. (/minio/ 경로를 제거하고 전달)
-            proxy_pass http://keycloak; 
+            proxy_pass http://keycloak;
 
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            
+
             # [중요] SSL(https) 환경임을 알려주어야 redirect loop가 안 생깁니다.
-            proxy_set_header X-Forwarded-Proto https; 
+            proxy_set_header X-Forwarded-Proto https;
             # 포트 정보도 명확히 주는 것이 좋습니다.
             proxy_set_header X-Forwarded-Port 443;
         }
@@ -171,10 +171,10 @@ http {
             proxy_request_buffering off;
             proxy_read_timeout 900s;
             client_max_body_size 0; # 용량 제한 없음
-            
+
             proxy_http_version 1.1;
             proxy_set_header Connection "";
-            
+
             # [핵심] 끝에 / 가 중요합니다. (/minio/ 경로를 제거하고 전달)
             proxy_pass http://minio_server/;
 
@@ -193,12 +193,12 @@ http {
 
             # [핵심] 끝에 / 가 중요합니다.
             proxy_pass http://minio_console/;
-            
+
             proxy_set_header Host $http_host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
-            
+
             # 캐시 무효화 (콘솔 UI 깨짐 방지)
             add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
         }

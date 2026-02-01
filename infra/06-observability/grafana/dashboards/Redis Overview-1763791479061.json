@@ -31,9 +31,7 @@
       "icon": "external link",
       "includeVars": true,
       "keepTime": true,
-      "tags": [
-        "redis"
-      ],
+      "tags": ["redis"],
       "targetBlank": false,
       "title": "Redis",
       "tooltip": "",
@@ -99,9 +97,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -129,9 +125,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "instantaneous_ops_per_sec"
-              ]
+              "names": ["instantaneous_ops_per_sec"]
             }
           }
         }
@@ -181,9 +175,7 @@
         "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -208,10 +200,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "instantaneous_input_kbps",
-                "instantaneous_output_kbps"
-              ]
+              "names": ["instantaneous_input_kbps", "instantaneous_output_kbps"]
             }
           }
         },
@@ -332,9 +321,7 @@
         "namePlacement": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -430,9 +417,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -460,9 +445,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "uptime_in_seconds"
-              ]
+              "names": ["uptime_in_seconds"]
             }
           }
         }
@@ -504,9 +487,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -534,9 +515,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "connected_clients"
-              ]
+              "names": ["connected_clients"]
             }
           }
         }
@@ -576,9 +555,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -603,9 +580,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "redis_version"
-              ]
+              "names": ["redis_version"]
             }
           }
         }
@@ -646,9 +621,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -714,9 +687,7 @@
         "namePlacement": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -741,10 +712,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "expired_keys",
-                "evicted_keys"
-              ]
+              "names": ["expired_keys", "evicted_keys"]
             }
           }
         },
@@ -805,9 +773,7 @@
         "namePlacement": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -832,10 +798,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "keyspace_hits",
-                "keyspace_misses"
-              ]
+              "names": ["keyspace_hits", "keyspace_misses"]
             }
           }
         },
@@ -887,9 +850,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -914,9 +875,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "maxmemory_policy"
-              ]
+              "names": ["maxmemory_policy"]
             }
           }
         }
@@ -1055,12 +1014,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "addr",
-                "age",
-                "idle",
-                "cmd"
-              ]
+              "names": ["addr", "age", "idle", "cmd"]
             }
           }
         },
@@ -1413,9 +1367,7 @@
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -1440,9 +1392,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "cluster_state"
-              ]
+              "names": ["cluster_state"]
             }
           }
         }
@@ -1480,9 +1430,7 @@
         "justifyMode": "center",
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -1508,9 +1456,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "role"
-              ]
+              "names": ["role"]
             }
           }
         }
@@ -1548,9 +1494,7 @@
         "displayMode": "lcd",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "/.*/",
           "values": true
         },
@@ -1573,10 +1517,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "cluster_known_nodes",
-                "cluster_size"
-              ]
+              "names": ["cluster_known_nodes", "cluster_size"]
             }
           }
         },
@@ -1753,9 +1694,7 @@
   "preload": false,
   "refresh": "10s",
   "schemaVersion": 42,
-  "tags": [
-    "redis"
-  ],
+  "tags": ["redis"],
   "templating": {
     "list": [
       {
@@ -1779,17 +1718,7 @@
     "to": "now"
   },
   "timepicker": {
-    "refresh_intervals": [
-      "10s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "2h",
-      "1d"
-    ]
+    "refresh_intervals": ["10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"]
   },
   "timezone": "",
   "title": "Redis Overview",

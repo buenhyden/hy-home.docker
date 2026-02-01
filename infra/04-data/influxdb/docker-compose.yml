@@ -1,10 +1,10 @@
 name: influxdb
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   influxdb:
@@ -13,7 +13,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: '1.0'
           memory: 1G
         reservations:
           memory: 512M
@@ -22,7 +22,11 @@ services:
     restart: unless-stopped
     hostname: influxdb
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:${INFLUXDB_PORT}/health || wget -q --spider http://localhost:${INFLUXDB_PORT}/health || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'curl -fsS http://localhost:${INFLUXDB_PORT}/health || wget -q --spider http://localhost:${INFLUXDB_PORT}/health || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -43,12 +47,12 @@ services:
       infra_net:
         ipv4_address: 172.19.0.11
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # 도메인: influxdb.${DEFAULT_URL}
-      - "traefik.http.routers.influxdb.rule=Host(`influxdb.${DEFAULT_URL}`)"
-      - "traefik.http.routers.influxdb.entrypoints=websecure"
-      - "traefik.http.routers.influxdb.tls=true"
-      - "traefik.http.services.influxdb.loadbalancer.server.port=${INFLUXDB_PORT}"
+      - 'traefik.http.routers.influxdb.rule=Host(`influxdb.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.influxdb.entrypoints=websecure'
+      - 'traefik.http.routers.influxdb.tls=true'
+      - 'traefik.http.services.influxdb.loadbalancer.server.port=${INFLUXDB_PORT}'
     logging: *default-logging
 
 volumes:

@@ -14,12 +14,12 @@ graph LR
         N[n8n Main<br/>Editor/Webhook]
         W[n8n Worker<br/>Job Executor]
     end
-    
+
     subgraph "Persistence & Queue"
         PG[(PostgreSQL)]
         V[Valkey<br/>Job Queue]
     end
-    
+
     subgraph "Observability"
         E[Valkey Exporter]
         P[Prometheus]
@@ -27,12 +27,12 @@ graph LR
 
     User((User)) -->|HTTPS| GW
     GW -->|/| N
-    
+
     N -->|Push Jobs| V
     W -->|Pull Jobs| V
     N --> PG
     W --> PG
-    
+
     E -->|Scrape| V
     P -->|Scrape| E
     P -->|Scrape| N
@@ -40,31 +40,31 @@ graph LR
 
 ## Services
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `n8n` | `n8nio/n8n:2.3.0` | Main Node (UI, API, Webhooks) | 1.0 CPU / 2GB |
-| `n8n-worker` | `n8nio/n8n:2.3.0` | Worker Node (Workflow Execution) | 1.0 CPU / 2GB |
-| `n8n-valkey` | `valkey/valkey:9.0.1-alpine` | High-Performance Job Queue | 0.5 CPU / 256MB |
-| `n8n-valkey-exporter` | `oliver006/redis_exporter` | Prometheus Metrics | 0.1 CPU / 128MB |
+| Service               | Image                        | Role                             | Resources       |
+| :-------------------- | :--------------------------- | :------------------------------- | :-------------- |
+| `n8n`                 | `n8nio/n8n:2.3.0`            | Main Node (UI, API, Webhooks)    | 1.0 CPU / 2GB   |
+| `n8n-worker`          | `n8nio/n8n:2.3.0`            | Worker Node (Workflow Execution) | 1.0 CPU / 2GB   |
+| `n8n-valkey`          | `valkey/valkey:9.0.1-alpine` | High-Performance Job Queue       | 0.5 CPU / 256MB |
+| `n8n-valkey-exporter` | `oliver006/redis_exporter`   | Prometheus Metrics               | 0.1 CPU / 128MB |
 
 ## Networking
 
 All services are connected to the `infra_net` network with static IPs for consistent metrics collection and internal communication.
 
-| Service | Static IP | Internal Port | Traefik Domain |
-| :--- | :--- | :--- | :--- |
-| `n8n` | `172.19.0.14` | `${N8N_PORT}` (5678) | `n8n.${DEFAULT_URL}` |
-| `n8n-worker` | `172.19.0.17` | - | - |
-| `n8n-valkey` | `172.19.0.15` | `6379` | - |
-| `n8n-valkey-exporter` | `172.19.0.16` | `9121` | - |
+| Service               | Static IP     | Internal Port        | Traefik Domain       |
+| :-------------------- | :------------ | :------------------- | :------------------- |
+| `n8n`                 | `172.19.0.14` | `${N8N_PORT}` (5678) | `n8n.${DEFAULT_URL}` |
+| `n8n-worker`          | `172.19.0.17` | -                    | -                    |
+| `n8n-valkey`          | `172.19.0.15` | `6379`               | -                    |
+| `n8n-valkey-exporter` | `172.19.0.16` | `9121`               | -                    |
 
 ## Persistence
 
-| Volume | Mount Point | Description |
-| :--- | :--- | :--- |
-| `n8n-data` | `/home/node/.n8n` | Stores workflows, credentials, and binary files. |
-| `n8n-custom` | `/home/node/.n8n/custom` | (Bind Mount) Local `infra/n8n/custom` directory for developing Private Nodes. |
-| `n8n-valkey-data` | `/data` | Redis-compatible AOF persistence for the job queue. |
+| Volume            | Mount Point              | Description                                                                   |
+| :---------------- | :----------------------- | :---------------------------------------------------------------------------- |
+| `n8n-data`        | `/home/node/.n8n`        | Stores workflows, credentials, and binary files.                              |
+| `n8n-custom`      | `/home/node/.n8n/custom` | (Bind Mount) Local `infra/n8n/custom` directory for developing Private Nodes. |
+| `n8n-valkey-data` | `/data`                  | Redis-compatible AOF persistence for the job queue.                           |
 
 ## Configuration
 
@@ -135,10 +135,10 @@ Verify that the custom build was successful and fonts are available in `/usr/sha
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `docker-compose.yml` | n8n + Valkey queue stack (default). |
-| `docker-compose.redis.yml` | Redis-based alternative stack. |
-| `Dockerfile` | Custom n8n image (fonts, Python, n8n-cli). |
-| `custom/` | Private/custom nodes (bind-mounted into the container). |
-| `README.md` | Queue-mode architecture and operations. |
+| Path                       | Description                                             |
+| -------------------------- | ------------------------------------------------------- |
+| `docker-compose.yml`       | n8n + Valkey queue stack (default).                     |
+| `docker-compose.redis.yml` | Redis-based alternative stack.                          |
+| `Dockerfile`               | Custom n8n image (fonts, Python, n8n-cli).              |
+| `custom/`                  | Private/custom nodes (bind-mounted into the container). |
+| `README.md`                | Queue-mode architecture and operations.                 |

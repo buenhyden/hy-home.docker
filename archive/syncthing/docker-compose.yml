@@ -1,8 +1,8 @@
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   syncthing:
@@ -19,7 +19,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      
+
       - FILE__USER=${SYNCTHING_USERNAME}
       - FILE__PASSWORD=${SYNCTHING_PASSWORD}
     volumes:
@@ -28,14 +28,14 @@ services:
     healthcheck:
       test:
         [
-          "CMD-SHELL",
-          "curl -fkLsS -m 2 syncthing:8384/rest/noauth/health | grep -o --color=never OK || exit 1",
+          'CMD-SHELL',
+          'curl -fkLsS -m 2 syncthing:8384/rest/noauth/health | grep -o --color=never OK || exit 1',
         ]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 30s
-    logging: *default-logging 
+    logging: *default-logging
     # labels:
     #   - traefik.enable=true
     #   - traefik.docker.network=nt-develop
@@ -51,7 +51,7 @@ services:
     networks:
       - nt-sync
       - nt-webserver
-      - nt-observability    
+      - nt-observability
   # ######################################################################################
 
 volumes:

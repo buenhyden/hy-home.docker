@@ -32,7 +32,7 @@ schema_config:
 
 # [추가] S3 사용 시 필수: 데이터 정리 및 보관 주기 관리
 compactor:
-  working_directory: /tmp/loki/compactor  
+  working_directory: /tmp/loki/compactor
   delete_request_store: s3
   compaction_interval: 10m
   retention_enabled: true

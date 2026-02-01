@@ -25,7 +25,7 @@ GRANT ALL ON SCHEMA public TO n8n;
 ALTER SCHEMA public OWNER TO n8n;
 
 ---------------------------------------------------------
--- 2. keycloak 설정 
+-- 2. keycloak 설정
 ---------------------------------------------------------
 DO $$
 BEGIN
@@ -43,7 +43,7 @@ GRANT ALL ON SCHEMA public TO keycloak;
 ALTER SCHEMA public OWNER TO keycloak;
 
 ---------------------------------------------------------
--- 3. airflow 설정 
+-- 3. airflow 설정
 ---------------------------------------------------------
 DO $$
 BEGIN
@@ -62,7 +62,7 @@ ALTER SCHEMA public OWNER TO airflow;
 
 
 ---------------------------------------------------------
--- 4. terrakube 설정 
+-- 4. terrakube 설정
 ---------------------------------------------------------
 DO $$
 BEGIN

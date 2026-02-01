@@ -1,10 +1,10 @@
 name: sonarqube
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   sonarqube:
@@ -13,7 +13,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: '1.0'
           memory: 1G
     image: sonarqube:26.1.0.118079-community
     container_name: sonarqube
@@ -22,7 +22,11 @@ services:
     expose:
       - ${SONARQUBE_PORT}
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:${SONARQUBE_PORT}/api/system/health || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'wget -q --spider http://localhost:${SONARQUBE_PORT}/api/system/health || exit 1',
+        ]
       interval: 15s
       timeout: 5s
       retries: 10
@@ -40,11 +44,11 @@ services:
       - SONAR_WEB_JAVAOPTS=-Xmx512m -Xms512m
       - SONAR_SEARCH_JAVAOPTS=-Xmx512m -Xms512m
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sonarqube.rule=Host(`sonarqube.${DEFAULT_URL}`)"
-      - "traefik.http.routers.sonarqube.entrypoints=websecure"
-      - "traefik.http.routers.sonarqube.tls=true"
-      - "traefik.http.services.sonarqube.loadbalancer.server.port=${SONARQUBE_PORT}"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.sonarqube.rule=Host(`sonarqube.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.sonarqube.entrypoints=websecure'
+      - 'traefik.http.routers.sonarqube.tls=true'
+      - 'traefik.http.services.sonarqube.loadbalancer.server.port=${SONARQUBE_PORT}'
 
 volumes:
   sonarqube-data-volume:

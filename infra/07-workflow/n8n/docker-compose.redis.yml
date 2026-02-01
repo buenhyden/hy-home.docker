@@ -1,15 +1,15 @@
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   n8n:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: '1.0'
           memory: 2G # 대규모 워크플로우 대비
         reservations:
           memory: 1G
@@ -67,21 +67,21 @@ services:
       - QUEUE_HEALTH_CHECK_ACTIVE=true # Redis 연결 상태 내부 헬스체크 활성화
       - OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true # 수동 실행도 워커로 보내기 (선택)
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # n8n UI & Webhook 라우터 (https://n8n.${DEFAULT_URL})
-      - "traefik.http.routers.n8n.rule=Host(`n8n.${DEFAULT_URL}`)"
-      - "traefik.http.routers.n8n.entrypoints=websecure"
-      - "traefik.http.routers.n8n.tls=true"
-      - "traefik.http.routers.n8n.service=n8n"
+      - 'traefik.http.routers.n8n.rule=Host(`n8n.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.n8n.entrypoints=websecure'
+      - 'traefik.http.routers.n8n.tls=true'
+      - 'traefik.http.routers.n8n.service=n8n'
       # [중요] n8n 내부 포트 (5678) 연결
-      - "traefik.http.services.n8n.loadbalancer.server.port=${N8N_PORT}"
+      - 'traefik.http.services.n8n.loadbalancer.server.port=${N8N_PORT}'
     volumes:
       - n8n-data:/home/node/.n8n
     depends_on:
       n8n-redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "nc -z localhost ${N8N_PORT} || exit 1"] # 간단한 포트 체크 방식
+      test: ['CMD-SHELL', 'nc -z localhost ${N8N_PORT} || exit 1'] # 간단한 포트 체크 방식
       interval: 10s
       timeout: 5s
       retries: 5
@@ -94,7 +94,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: '1.0'
           memory: 2G
     image: n8nio/n8n:2.3.0
     container_name: n8n-worker
@@ -140,7 +140,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 256M
     image: redis:8.4.0-bookworm # Redis 8.4.x
     container_name: n8n-redis
@@ -162,10 +162,14 @@ services:
       '
     # 클러스터 내부 통신 포트는 expose
     expose:
-      - "${REDIS_PORT}"
-      - "${REDIS_BUS_PORT}"
+      - '${REDIS_PORT}'
+      - '${REDIS_BUS_PORT}'
     healthcheck:
-      test: ["CMD-SHELL", "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a $REDIS_PASSWORD -h 127.0.0.1 -p 6379 ping | grep PONG"]
+      test:
+        [
+          'CMD-SHELL',
+          'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a $REDIS_PASSWORD -h 127.0.0.1 -p 6379 ping | grep PONG',
+        ]
       interval: 10s
       timeout: 3s
       retries: 5
@@ -175,12 +179,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.1"
+          cpus: '0.1'
           memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: n8n-redis-exporter
     expose:
-      - "${REDIS_EXPORTER_PORT}"
+      - '${REDIS_EXPORTER_PORT}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.16

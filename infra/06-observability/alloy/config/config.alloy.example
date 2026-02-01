@@ -13,7 +13,7 @@ discovery.docker "linux" {
 loki.source.docker "default" {
   host       = "unix:///var/run/docker.sock"
   targets    = discovery.docker.linux.targets
-  forward_to = [loki.write.local_loki.receiver]  
+  forward_to = [loki.write.local_loki.receiver]
 }
 
 loki.write "local_loki" {

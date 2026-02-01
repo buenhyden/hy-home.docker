@@ -1,0 +1,9 @@
+[INFO] Locking pre-commit directory
+[INFO] Initializing environment for https://github.com/pre-commit/pre-commit-hooks.
+[INFO] Initializing environment for https://github.com/prettier/pre-commit.
+An unexpected error has occurred: CalledProcessError: command: ('C:\\Program Files\\Git\\cmd\\git.EXE', 'checkout', 'v3.3.3')
+return code: 1
+stdout: (none)
+stderr:
+    error: pathspec 'v3.3.3' did not match any file(s) known to git
+Check the log at C:\Users\hy\.cache\pre-commit\pre-commit.log

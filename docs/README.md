@@ -4,13 +4,13 @@
 
 ## 구조
 
-| 경로 | 설명 |
-| --- | --- |
-| `docs/adr/` | Architecture Decision Records (ADR) |
-| `docs/setup/` | 초기 설정 및 실행 흐름 |
-| `docs/ops/` | 운영, 모니터링, 장애 대응 |
-| `docs/guides/` | 서비스별 사용 가이드 모음 |
-| `docs/standards/` | 규칙/표준 및 문서 기준 |
+| 경로              | 설명                                |
+| ----------------- | ----------------------------------- |
+| `docs/adr/`       | Architecture Decision Records (ADR) |
+| `docs/setup/`     | 초기 설정 및 실행 흐름              |
+| `docs/ops/`       | 운영, 모니터링, 장애 대응           |
+| `docs/guides/`    | 서비스별 사용 가이드 모음           |
+| `docs/standards/` | 규칙/표준 및 문서 기준              |
 
 ## 주요 링크
 

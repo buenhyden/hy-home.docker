@@ -6,9 +6,9 @@ Local AI/LLM services. The stack is **optional** and enabled via the `ollama` pr
 
 ## Services
 
-| Service | Profile | Path | Notes |
-| --- | --- | --- | --- |
-| Ollama | `ollama` | `./ollama` | LLM inference server |
+| Service    | Profile  | Path           | Notes                       |
+| ---------- | -------- | -------------- | --------------------------- |
+| Ollama     | `ollama` | `./ollama`     | LLM inference server        |
 | Open WebUI | `ollama` | `./open-webui` | Chat UI + RAG orchestration |
 
 ## Run
@@ -24,8 +24,8 @@ docker compose --profile ollama up -d ollama open-webui
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `ollama/` | Ollama inference + exporter. |
-| `open-webui/` | Open WebUI service. |
-| `README.md` | Category overview. |
+| Path          | Description                  |
+| ------------- | ---------------------------- |
+| `ollama/`     | Ollama inference + exporter. |
+| `open-webui/` | Open WebUI service.          |
+| `README.md`   | Category overview.           |

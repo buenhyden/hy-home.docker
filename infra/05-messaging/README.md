@@ -6,11 +6,11 @@ Event streaming and messaging services. **Kafka** provides the core streaming pl
 
 ## Services
 
-| Service | Profile | Path | Notes |
-| --- | --- | --- | --- |
-| Kafka | (core) | `./kafka` | KRaft cluster + Schema Registry + Connect |
-| ksqlDB | `ksql` | `./ksql` | Stream SQL engine (optional profile) |
-| RabbitMQ | `rabbitmq` | `./rabbitmq` | AMQP 0-9-1 broker + Management UI |
+| Service  | Profile    | Path         | Notes                                     |
+| -------- | ---------- | ------------ | ----------------------------------------- |
+| Kafka    | (core)     | `./kafka`    | KRaft cluster + Schema Registry + Connect |
+| ksqlDB   | `ksql`     | `./ksql`     | Stream SQL engine (optional profile)      |
+| RabbitMQ | `rabbitmq` | `./rabbitmq` | AMQP 0-9-1 broker + Management UI         |
 
 ## Run
 
@@ -32,9 +32,9 @@ docker compose --profile rabbitmq up -d rabbitmq
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `kafka/` | Kafka cluster and Confluent stack. |
-| `ksql/` | ksqlDB server/CLI and example datagen. |
+| Path        | Description                                    |
+| ----------- | ---------------------------------------------- |
+| `kafka/`    | Kafka cluster and Confluent stack.             |
+| `ksql/`     | ksqlDB server/CLI and example datagen.         |
 | `rabbitmq/` | RabbitMQ service definition and documentation. |
-| `README.md` | Category overview. |
+| `README.md` | Category overview.                             |

@@ -6,9 +6,9 @@ Communication-related services. Currently this directory hosts **MailHog** for d
 
 ## Services
 
-| Service | Profile | Path | Notes |
-| --- | --- | --- | --- |
-| MailHog | `mail` | `./mail` | SMTP test server + web UI |
+| Service | Profile | Path     | Notes                     |
+| ------- | ------- | -------- | ------------------------- |
+| MailHog | `mail`  | `./mail` | SMTP test server + web UI |
 
 ## Run
 
@@ -18,7 +18,7 @@ docker compose --profile mail up -d mailhog
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `mail/` | MailHog stack and commented Stalwart config. |
-| `README.md` | Category overview. |
+| Path        | Description                                  |
+| ----------- | -------------------------------------------- |
+| `mail/`     | MailHog stack and commented Stalwart config. |
+| `README.md` | Category overview.                           |

@@ -13,14 +13,17 @@
 ## 🚀 기여 프로세스
 
 1. **이슈(Issue) 확인 및 생성**
+
    - 버그를 발견하거나 새로운 아이디어가 있다면 [Issue](https://github.com/buenhyden/hy-home.docker/issues)를 등록하여 논의해 주세요.
    - 보안 문제의 경우 `.github/SECURITY.md`를 참고하여 비공개로 제보해 주시기 바랍니다.
 
 2. **브랜치 생성 및 작업**
+
    - `develop` 브랜치(또는 `main`)에서 분기하여 작업 브랜치를 생성하세요.
    - 예: `feat/add-new-service`, `fix/typo-in-docs`
 
 3. **커밋 메시지**
+
    - [Conventional Commits](https://www.conventionalcommits.org/) 규약을 준수해 주세요.
    - 예: `feat: add redis cluster configuration`, `docs: update readme`
 

@@ -1,0 +1,62 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+        exclude: ^projects/.*/tsconfig.*\.json$
+      - id: check-added-large-files
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        types_or: [javascript, jsx, ts, tsx, json, css, scss, less, markdown, yaml]
+
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.47.0
+    hooks:
+      - id: markdownlint
+        args: ['--config', '.markdownlint.json', '--ignore', '.markdownlintignore']
+
+  - repo: local
+    hooks:
+      - id: eslint-react-ts
+        name: eslint (react-ts)
+        entry: npm run lint --prefix projects/storybook/react-ts
+        language: system
+        types: [javascript, jsx, ts, tsx]
+        files: ^projects/storybook/react-ts/
+        pass_filenames: false
+
+      - id: eslint-nextjs
+        name: eslint (nextjs)
+        entry: npm run lint --prefix projects/storybook/nextjs
+        language: system
+        types: [javascript, jsx, ts, tsx]
+        files: ^projects/storybook/nextjs/
+        pass_filenames: false
+
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.11.0.1
+    hooks:
+      - id: shellcheck
+        args: ['--severity=warning']
+
+  - repo: https://github.com/AleksaC/hadolint-py
+    rev: v2.12.0.3
+    hooks:
+      - id: hadolint
+        exclude: ^archive/
+
+  - repo: local
+    hooks:
+      - id: docker-compose-check
+        name: Validate Docker Compose
+        entry: python scripts/validate_compose.py
+        language: system
+        files: ^.*docker-compose.*\.ya?ml$
+        exclude: ^archive/|infra/02-auth/oauth2-proxy/docker-compose.redis.yml
+        types: [yaml]

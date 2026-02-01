@@ -1,10 +1,10 @@
 name: rabbitmq
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   rabbitmq:
@@ -15,18 +15,18 @@ services:
     hostname: rabbitmq
     restart: unless-stopped
     ports:
-      - "${RABBITMQ_HOST_PORT}:${RABBITMQ_PORT}"
-      - "${RABBITMQ_MANAGEMENT_HOST_PORT}:${RABBITMQ_MANAGEMENT_PORT}"
+      - '${RABBITMQ_HOST_PORT}:${RABBITMQ_PORT}'
+      - '${RABBITMQ_MANAGEMENT_HOST_PORT}:${RABBITMQ_MANAGEMENT_PORT}'
     environment:
-      RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
-      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
+      RABBITMQ_DEFAULT_USER: '${RABBITMQ_DEFAULT_USER}'
+      RABBITMQ_DEFAULT_PASS: '${RABBITMQ_DEFAULT_PASS}'
     volumes:
       - rabbitmq-data-volume:/var/lib/rabbitmq
     networks:
       infra_net:
         ipv4_address: 172.19.0.21
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "check_running"]
+      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'check_running']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,7 +35,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M

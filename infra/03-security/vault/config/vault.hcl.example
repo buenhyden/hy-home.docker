@@ -19,7 +19,7 @@ storage "raft" {
   # The directory where Vault data is stored.
   # Ensure this path is mounted to a persistent volume in Docker.
   path    = "/vault/file"
-  
+
   # Unique identifier for this Vault node.
   node_id = "node1"
 }
@@ -29,7 +29,7 @@ storage "raft" {
 listener "tcp" {
   # Listen on all interfaces on port 8200.
   address     = "0.0.0.0:8200"
-  
+
   # TLS Configuration
   # IMPORTANT: In a real production environment, `tls_disable` should be `0` (false),
   # and valid certificate paths must be provided.

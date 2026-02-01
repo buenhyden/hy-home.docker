@@ -1,9 +1,9 @@
 name: ksql
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 services:
   ksqldb-server:
     profiles:
@@ -15,32 +15,36 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: '1.0'
           memory: 1G
         reservations:
           memory: 512M
     ports:
-      - "${KSQLDB_HOST_PORT}:${KSQLDB_PORT}"
+      - '${KSQLDB_HOST_PORT}:${KSQLDB_PORT}'
     environment:
-      KSQL_CONFIG_DIR: "/etc/ksql"
-      KSQL_BOOTSTRAP_SERVERS: "kafka-1:${KAFKA_INTERNAL_PORT},kafka-2:${KAFKA_INTERNAL_PORT},kafka-3:${KAFKA_INTERNAL_PORT}"
+      KSQL_CONFIG_DIR: '/etc/ksql'
+      KSQL_BOOTSTRAP_SERVERS: 'kafka-1:${KAFKA_INTERNAL_PORT},kafka-2:${KAFKA_INTERNAL_PORT},kafka-3:${KAFKA_INTERNAL_PORT}'
       KSQL_HOST_NAME: ksqldb-server
-      KSQL_LISTENERS: "http://0.0.0.0:${KSQLDB_PORT}"
+      KSQL_LISTENERS: 'http://0.0.0.0:${KSQLDB_PORT}'
       KSQL_CACHE_MAX_BYTES_BUFFERING: 0
-      KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:${SCHEMA_REGISTRY_PORT}"
-      KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
-      KSQL_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
-      KSQL_KSQL_CONNECT_URL: "http://kafka-connect:${KAFKA_CONNECT_PORT}"
+      KSQL_KSQL_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT}'
+      KSQL_PRODUCER_INTERCEPTOR_CLASSES: 'io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor'
+      KSQL_CONSUMER_INTERCEPTOR_CLASSES: 'io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor'
+      KSQL_KSQL_CONNECT_URL: 'http://kafka-connect:${KAFKA_CONNECT_PORT}'
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR: 1
-      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
-      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
-      KSQL_HEAP_OPTS: "-Xms512m -Xmx512m"
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: 'true'
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
+      KSQL_HEAP_OPTS: '-Xms512m -Xmx512m'
     volumes:
       - ksqldb-data-volume:/var/lib/ksql
     networks:
       - infra_net
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:${KSQLDB_PORT}/info || wget -q --spider http://localhost:${KSQLDB_PORT}/info || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'curl -fsS http://localhost:${KSQLDB_PORT}/info || wget -q --spider http://localhost:${KSQLDB_PORT}/info || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -68,7 +72,7 @@ services:
     image: confluentinc/ksqldb-examples:8.0.3
     hostname: ksql-datagen
     container_name: ksql-datagen
-    restart: unless-stopped    
+    restart: unless-stopped
     depends_on:
       ksqldb-server:
         condition: service_healthy
@@ -80,7 +84,7 @@ services:
       sleep 11 && \
       tail -f /dev/null'"
     environment:
-      KSQL_CONFIG_DIR: "/etc/ksql"
+      KSQL_CONFIG_DIR: '/etc/ksql'
       STREAMS_BOOTSTRAP_SERVERS: kafka-1:${KAFKA_INTERNAL_PORT},kafka-2:${KAFKA_INTERNAL_PORT},kafka-3:${KAFKA_INTERNAL_PORT}
       STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
       STREAMS_SCHEMA_REGISTRY_PORT: ${SCHEMA_REGISTRY_PORT}

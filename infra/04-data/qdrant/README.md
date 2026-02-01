@@ -10,15 +10,15 @@ graph TB
         UI[Open WebUI]
         Users[Direct API]
     end
-    
+
     subgraph "Vector Store"
         Q[Qdrant]
     end
-    
+
     subgraph "Storage"
         Vol[qdrant-data]
     end
-    
+
     UI -->|Search/Upsert| Q
     Users -->|REST/gRPC| Q
     Q -->|Persist| Vol
@@ -26,31 +26,31 @@ graph TB
 
 ## Services
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
+| Service  | Image                   | Role                 | Resources   |
+| :------- | :---------------------- | :------------------- | :---------- |
 | `qdrant` | `qdrant/qdrant:v1.16.3` | Vector Search Engine | 1 CPU / 1GB |
 
 ## Networking
 
 Service runs on `infra_net` with a static IP.
 
-| Service | Static IP | Port (Internal) | Host Port | Traefik Domain |
-| :--- | :--- | :--- | :--- | :--- |
+| Service  | Static IP     | Port (Internal)                | Host Port             | Traefik Domain          |
+| :------- | :------------ | :----------------------------- | :-------------------- | :---------------------- |
 | `qdrant` | `172.19.0.41` | `6333` (HTTP)<br>`6334` (gRPC) | `${QDRANT_HOST_PORT}` | `qdrant.${DEFAULT_URL}` |
 
 ## Persistence
 
-| Volume | Mount Point | Description |
-| :--- | :--- | :--- |
+| Volume        | Mount Point       | Description                 |
+| :------------ | :---------------- | :-------------------------- |
 | `qdrant-data` | `/qdrant/storage` | Vector indices and payloads |
 
 ## Configuration
 
 ### Environment Variables
 
-| Variable | Description | Value |
-| :--- | :--- | :--- |
-| `QDRANT__TELEMETRY_DISABLED` | Telemetry | `false` |
+| Variable                     | Description | Value   |
+| :--------------------------- | :---------- | :------ |
+| `QDRANT__TELEMETRY_DISABLED` | Telemetry   | `false` |
 
 ## Usage
 
@@ -110,7 +110,7 @@ Vector databases hold indices in RAM for speed. If Qdrant OOMs:
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
+| Path                 | Description                            |
+| -------------------- | -------------------------------------- |
 | `docker-compose.yml` | Qdrant single-node service definition. |
-| `README.md` | Usage and integration notes. |
+| `README.md`          | Usage and integration notes.           |

@@ -6,10 +6,10 @@ Workflow orchestration tools for automation and data pipelines. **n8n** is part 
 
 ## Services
 
-| Service | Profile | Path | Notes |
-| --- | --- | --- | --- |
-| n8n | (core) | `./n8n` | Workflow automation with queue mode |
-| Airflow | `airflow` | `./airflow` | Orchestrator (CeleryExecutor) |
+| Service | Profile   | Path        | Notes                               |
+| ------- | --------- | ----------- | ----------------------------------- |
+| n8n     | (core)    | `./n8n`     | Workflow automation with queue mode |
+| Airflow | `airflow` | `./airflow` | Orchestrator (CeleryExecutor)       |
 
 ## Run
 
@@ -28,8 +28,8 @@ docker compose --profile airflow up -d
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `n8n/` | n8n worker/queue setup. |
-| `airflow/` | Airflow CeleryExecutor stack. |
-| `README.md` | Category overview. |
+| Path        | Description                   |
+| ----------- | ----------------------------- |
+| `n8n/`      | n8n worker/queue setup.       |
+| `airflow/`  | Airflow CeleryExecutor stack. |
+| `README.md` | Category overview.            |

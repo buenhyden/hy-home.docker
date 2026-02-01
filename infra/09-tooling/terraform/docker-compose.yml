@@ -1,11 +1,11 @@
 name: terraform
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
-    
+    max-size: '5m'
+    max-file: '2'
+
 services:
   terraform:
     image: hashicorp/terraform:1.14.4
@@ -16,9 +16,10 @@ services:
       - $HOME/.aws:/root/.aws # Optional: For AWS Auth
       - $HOME/.azure:/root/.azure # Optional: For Azure Auth
     working_dir: /workspace
-    entrypoint: ["terraform"]
+    entrypoint: ['terraform']
     networks:
       - infra_net
 
 networks:
-  external: true
+  infra_net:
+    external: true

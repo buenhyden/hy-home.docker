@@ -1,16 +1,16 @@
 name: traefik
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 services:
   traefik:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: '1.0'
           memory: 1G
         reservations:
           memory: 512M
@@ -32,22 +32,22 @@ services:
       - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
     command:
       # 이제 모든 설정은 파일로 → configFile 한 줄만
-      - "--configFile=/etc/traefik/traefik.yml"
+      - '--configFile=/etc/traefik/traefik.yml'
     labels:
       # Enable self‑routing
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # Dashboard router
-      - "traefik.http.routers.dashboard.rule=Host(`dashboard.${DEFAULT_URL}`)"
-      - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      - "traefik.http.routers.dashboard.tls=true"
+      - 'traefik.http.routers.dashboard.rule=Host(`dashboard.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.dashboard.entrypoints=websecure'
+      - 'traefik.http.routers.dashboard.service=api@internal'
+      - 'traefik.http.routers.dashboard.tls=true'
       # Basic‑auth middleware
-      - "traefik.http.routers.dashboard.middlewares=dashboard-auth@file"
+      - 'traefik.http.routers.dashboard.middlewares=dashboard-auth@file'
       # - "traefik.http.routers.cdn.middlewares=cdn-cache"
       # 브라우저에게 1주일간 캐시하도록 지시
       # - "traefik.http.middlewares.cdn-cache.headers.customResponseHeaders.Cache-Control=public, max-age=604800"
     healthcheck:
-      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      test: ['CMD', 'traefik', 'healthcheck', '--ping']
       interval: 10s
       timeout: 10s
       retries: 30

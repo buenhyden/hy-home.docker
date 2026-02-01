@@ -19,15 +19,15 @@ The configuration file is located at `config/config.alloy`.
 
 1. **Copy the example configuration:**
 
-    ```bash
-    cp config.alloy.example config.alloy
-    ```
+   ```bash
+   cp config.alloy.example config.alloy
+   ```
 
 2. **Edit `config.alloy`:**
-    - Review the pipelines. The default configuration sets up:
-        - **Logging**: Collects Docker logs and pushes to Loki (`http://loki:3100`).
-        - **Metrics**: Scrapes itself and pushes to Prometheus (`http://prometheus:9090`).
-        - **Tracing**: Receives OTLP traces (gRPC/HTTP) and forwards to Tempo (`tempo:4317`).
+   - Review the pipelines. The default configuration sets up:
+     - **Logging**: Collects Docker logs and pushes to Loki (`http://loki:3100`).
+     - **Metrics**: Scrapes itself and pushes to Prometheus (`http://prometheus:9090`).
+     - **Tracing**: Receives OTLP traces (gRPC/HTTP) and forwards to Tempo (`tempo:4317`).
 
 ### Pipelines
 

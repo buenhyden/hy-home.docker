@@ -1,10 +1,10 @@
 name: oauth2-proxy
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   oauth2-proxy:
@@ -30,15 +30,15 @@ services:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
     extra_hosts:
-      - "keycloak.${DEFAULT_URL}:host-gateway"
-      - "auth.${DEFAULT_URL}:host-gateway"
+      - 'keycloak.${DEFAULT_URL}:host-gateway'
+      - 'auth.${DEFAULT_URL}:host-gateway'
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # OAuth2 콜백 처리를 위한 라우터
-      - "traefik.http.routers.oauth2-proxy.rule=Host(`auth.${DEFAULT_URL}`)"
-      - "traefik.http.routers.oauth2-proxy.entrypoints=websecure"
-      - "traefik.http.routers.oauth2-proxy.tls=true"
-      - "traefik.http.services.oauth2-proxy.loadbalancer.server.port=${OAUTH2_PROXY_PORT}"
+      - 'traefik.http.routers.oauth2-proxy.rule=Host(`auth.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.oauth2-proxy.entrypoints=websecure'
+      - 'traefik.http.routers.oauth2-proxy.tls=true'
+      - 'traefik.http.services.oauth2-proxy.loadbalancer.server.port=${OAUTH2_PROXY_PORT}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.28
@@ -74,13 +74,13 @@ services:
       '
     # 클러스터 내부 통신 포트는 expose
     expose:
-      - "${VALKEY_PORT}"
-      - "${VALKEY_BUS_PORT}"
+      - '${VALKEY_PORT}'
+      - '${VALKEY_BUS_PORT}'
     healthcheck:
       test:
         [
-          "CMD-SHELL",
-          "V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG",
+          'CMD-SHELL',
+          'V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -96,7 +96,7 @@ services:
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: oauth2-proxy-redis-exporter
     expose:
-      - "${VALKEY_EXPORTER_PORT}"
+      - '${VALKEY_EXPORTER_PORT}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.19
@@ -117,7 +117,7 @@ services:
           -redis.addr=redis://mng-valkey:6379 \
           -redis.password="$VALKEY_PASSWORD" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT}
-    depends_on:  # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
+    depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       oauth2-proxy-valkey:
         condition: service_healthy
     logging: *default-logging

@@ -118,35 +118,35 @@ infra 하위 폴더는 실행 방식에 따라 다음 4가지로 분류합니다
 
 ## 📌 서비스 인덱스
 
-| 서비스 | 프로파일 | 경로 | 요약 |
-| --- | --- | --- | --- |
-| Traefik | - | `infra/01-gateway/traefik` | Edge Router, TLS, 라우팅/미들웨어 |
-| Keycloak | - | `infra/02-auth/keycloak` | 중앙 인증/인가 (SSO) |
-| OAuth2 Proxy | - | `infra/02-auth/oauth2-proxy` | ForwardAuth SSO 게이트 |
-| Nginx | `nginx` | `infra/01-gateway/nginx` | 보조 리버스 프록시 |
-| Vault | `vault` | `infra/03-security/vault` | 시크릿/키 관리 |
-| mng-db | - | `infra/04-data/mng-db` | PostgreSQL + Valkey + RedisInsight |
-| PostgreSQL Cluster | - | `infra/04-data/postgresql-cluster` | Patroni HA + HAProxy |
-| Valkey Cluster | - | `infra/04-data/valkey-cluster` | 6노드 인메모리 클러스터 |
-| Redis Cluster | `redis-cluster` | `infra/04-data/redis-cluster` | Redis 클러스터 (옵션) |
-| InfluxDB | `influxdb` | `infra/04-data/influxdb` | TSDB (옵션) |
-| CouchDB | `couchdb` | `infra/04-data/couchdb` | 3노드 CouchDB (옵션) |
-| MinIO | - | `infra/04-data/minio` | S3 오브젝트 스토리지 |
-| OpenSearch | - | `infra/04-data/opensearch` | 검색/대시보드/Exporter |
-| Qdrant | - | `infra/04-data/qdrant` | 벡터 DB |
-| Kafka | - | `infra/05-messaging/kafka` | KRaft + Confluent 스택 |
-| ksqlDB | `ksql` | `infra/05-messaging/ksql` | 스트림 SQL (예제 데이터 포함) |
-| Observability | - | `infra/06-observability` | Prometheus + Grafana + Loki + Tempo |
-| n8n | - | `infra/07-workflow/n8n` | 워크플로우 자동화 (Queue) |
-| Airflow | `airflow` | `infra/07-workflow/airflow` | 워크플로우 오케스트레이션 |
-| Ollama | `ollama` | `infra/08-ai/ollama` | 로컬 LLM |
-| Open WebUI | `ollama` | `infra/08-ai/open-webui` | Ollama Web UI |
-| SonarQube | `sonarqube` | `infra/09-tooling/sonarqube` | 코드 품질 분석 |
-| Terraform | - | `infra/09-tooling/terraform` | Terraform CLI 컨테이너 |
-| Terrakube | `terrakube` | `infra/09-tooling/terrakube` | Terraform 오케스트레이션 |
-| Mail | `mail` | `infra/10-communication/mail` | MailHog 테스트 SMTP |
-| Supabase | - | `infra/04-data/supabase` | 자체 호스팅 Supabase 스택 (별도 실행) |
-| RabbitMQ | - | `infra/05-messaging/rabbitmq` | Placeholder (구성 예정) |
+| 서비스             | 프로파일        | 경로                               | 요약                                  |
+| ------------------ | --------------- | ---------------------------------- | ------------------------------------- |
+| Traefik            | -               | `infra/01-gateway/traefik`         | Edge Router, TLS, 라우팅/미들웨어     |
+| Keycloak           | -               | `infra/02-auth/keycloak`           | 중앙 인증/인가 (SSO)                  |
+| OAuth2 Proxy       | -               | `infra/02-auth/oauth2-proxy`       | ForwardAuth SSO 게이트                |
+| Nginx              | `nginx`         | `infra/01-gateway/nginx`           | 보조 리버스 프록시                    |
+| Vault              | `vault`         | `infra/03-security/vault`          | 시크릿/키 관리                        |
+| mng-db             | -               | `infra/04-data/mng-db`             | PostgreSQL + Valkey + RedisInsight    |
+| PostgreSQL Cluster | -               | `infra/04-data/postgresql-cluster` | Patroni HA + HAProxy                  |
+| Valkey Cluster     | -               | `infra/04-data/valkey-cluster`     | 6노드 인메모리 클러스터               |
+| Redis Cluster      | `redis-cluster` | `infra/04-data/redis-cluster`      | Redis 클러스터 (옵션)                 |
+| InfluxDB           | `influxdb`      | `infra/04-data/influxdb`           | TSDB (옵션)                           |
+| CouchDB            | `couchdb`       | `infra/04-data/couchdb`            | 3노드 CouchDB (옵션)                  |
+| MinIO              | -               | `infra/04-data/minio`              | S3 오브젝트 스토리지                  |
+| OpenSearch         | -               | `infra/04-data/opensearch`         | 검색/대시보드/Exporter                |
+| Qdrant             | -               | `infra/04-data/qdrant`             | 벡터 DB                               |
+| Kafka              | -               | `infra/05-messaging/kafka`         | KRaft + Confluent 스택                |
+| ksqlDB             | `ksql`          | `infra/05-messaging/ksql`          | 스트림 SQL (예제 데이터 포함)         |
+| Observability      | -               | `infra/06-observability`           | Prometheus + Grafana + Loki + Tempo   |
+| n8n                | -               | `infra/07-workflow/n8n`            | 워크플로우 자동화 (Queue)             |
+| Airflow            | `airflow`       | `infra/07-workflow/airflow`        | 워크플로우 오케스트레이션             |
+| Ollama             | `ollama`        | `infra/08-ai/ollama`               | 로컬 LLM                              |
+| Open WebUI         | `ollama`        | `infra/08-ai/open-webui`           | Ollama Web UI                         |
+| SonarQube          | `sonarqube`     | `infra/09-tooling/sonarqube`       | 코드 품질 분석                        |
+| Terraform          | -               | `infra/09-tooling/terraform`       | Terraform CLI 컨테이너                |
+| Terrakube          | `terrakube`     | `infra/09-tooling/terrakube`       | Terraform 오케스트레이션              |
+| Mail               | `mail`          | `infra/10-communication/mail`      | MailHog 테스트 SMTP                   |
+| Supabase           | -               | `infra/04-data/supabase`           | 자체 호스팅 Supabase 스택 (별도 실행) |
+| RabbitMQ           | -               | `infra/05-messaging/rabbitmq`      | Placeholder (구성 예정)               |
 
 ## ⚙️ 설정 가이드
 

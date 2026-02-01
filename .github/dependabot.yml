@@ -7,47 +7,47 @@ version: 2
 updates:
   # 1. GitHub Actions
   # 워크플로우 내의 Action 버전들을 주간 단위로 확인합니다.
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: 'weekly'
+      day: 'monday'
     reviewers:
-      - "buenhyden"
+      - 'buenhyden'
 
   # 2. Docker (Root)
   # 루트 디렉토리의 Dockerfile 및 Docker Compose 파일의 베이스 이미지를 감시합니다.
-  - package-ecosystem: "docker"
-    directory: "/"
+  - package-ecosystem: 'docker'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: 'weekly'
+      day: 'monday'
     reviewers:
-      - "buenhyden"
+      - 'buenhyden'
     groups:
       docker-dependencies:
         patterns:
-          - "*"
+          - '*'
 
   # 3. Docker (Infra Layer)
   # infra/ 디렉토리 하위의 인프라 서비스 관련 Docker 의존성을 감시합니다.
-  - package-ecosystem: "docker"
-    directory: "/infra"
+  - package-ecosystem: 'docker'
+    directory: '/infra'
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: 'weekly'
+      day: 'monday'
     reviewers:
-      - "buenhyden"
+      - 'buenhyden'
     groups:
       infra-dependencies:
         patterns:
-          - "*"
+          - '*'
 
   # 4. Terraform (If applicable)
   # infra/ 디렉토리 내에 Terraform 파일이 존재할 경우 활성화됩니다.
-  - package-ecosystem: "terraform"
-    directory: "/infra"
+  - package-ecosystem: 'terraform'
+    directory: '/infra'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     reviewers:
-      - "buenhyden"
+      - 'buenhyden'

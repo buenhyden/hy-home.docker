@@ -11,62 +11,62 @@ graph TB
         N2[Node 2<br/>Manager/Data]:::inactive
         N3[Node 3<br/>Manager/Data]:::inactive
     end
-    
+
     D[Dashboards<br/>Visualization]
     E[Exporter<br/>Prometheus Metrics]
     T[Traefik<br/>Ingress]
-    
+
     T --> D
     T --> N1
     D --> N1
     E --> N1
     N1 -.-> N2
     N1 -.-> N3
-    
+
     classDef inactive stroke-dasharray: 5 5,opacity:0.5;
 ```
 
 ## Services
 
-| Service | Image | Role | Status | Resources |
-| :--- | :--- | :--- | :--- | :--- |
-| `opensearch-node1` | `opensearchproject/opensearch:3.4.0` | Cluster Manager, Data, Ingest | Active | 1 CPU / 1GB |
-| `opensearch-node2` | `opensearchproject/opensearch:3.4.0` | Cluster Manager, Data, Ingest | Optional | 1 CPU / 1GB |
-| `opensearch-node3` | `opensearchproject/opensearch:3.4.0` | Cluster Manager, Data, Ingest | Optional | 1 CPU / 1GB |
-| `opensearch-dashboards` | `opensearchproject/opensearch-dashboards:3.4.0` | Visualization UI (Kibana fork) | Active | 0.5 CPU / 512MB |
-| `opensearch-exporter` | `prometheuscommunity/elasticsearch-exporter:v1.10.0` | Prometheus Metrics | Active | 0.1 CPU / 128MB |
+| Service                 | Image                                                | Role                           | Status   | Resources       |
+| :---------------------- | :--------------------------------------------------- | :----------------------------- | :------- | :-------------- |
+| `opensearch-node1`      | `opensearchproject/opensearch:3.4.0`                 | Cluster Manager, Data, Ingest  | Active   | 1 CPU / 1GB     |
+| `opensearch-node2`      | `opensearchproject/opensearch:3.4.0`                 | Cluster Manager, Data, Ingest  | Optional | 1 CPU / 1GB     |
+| `opensearch-node3`      | `opensearchproject/opensearch:3.4.0`                 | Cluster Manager, Data, Ingest  | Optional | 1 CPU / 1GB     |
+| `opensearch-dashboards` | `opensearchproject/opensearch-dashboards:3.4.0`      | Visualization UI (Kibana fork) | Active   | 0.5 CPU / 512MB |
+| `opensearch-exporter`   | `prometheuscommunity/elasticsearch-exporter:v1.10.0` | Prometheus Metrics             | Active   | 0.1 CPU / 128MB |
 
 ## Networking
 
 All services run on `infra_net` with static IPs in the `172.19.0.4X` range.
 
-| Service | Static IP | Port | Host Port | Traefik Domain |
-| :--- | :--- | :--- | :--- | :--- |
-| `opensearch-node1` | `172.19.0.44` | `9200` | - | `opensearch.${DEFAULT_URL}` |
-| `opensearch-node2` | `172.19.0.45` | `9200` | - | - |
-| `opensearch-node3` | `172.19.0.46` | `9200` | - | - |
-| `opensearch-dashboards` | `172.19.0.47` | `5601` | `${KIBANA_HOST_PORT}` | `opensearch-dashboard.${DEFAULT_URL}` |
-| `opensearch-exporter` | `172.19.0.48` | `9114` | `${ES_EXPORTER_HOST_PORT}` | - |
+| Service                 | Static IP     | Port   | Host Port                  | Traefik Domain                        |
+| :---------------------- | :------------ | :----- | :------------------------- | :------------------------------------ |
+| `opensearch-node1`      | `172.19.0.44` | `9200` | -                          | `opensearch.${DEFAULT_URL}`           |
+| `opensearch-node2`      | `172.19.0.45` | `9200` | -                          | -                                     |
+| `opensearch-node3`      | `172.19.0.46` | `9200` | -                          | -                                     |
+| `opensearch-dashboards` | `172.19.0.47` | `5601` | `${KIBANA_HOST_PORT}`      | `opensearch-dashboard.${DEFAULT_URL}` |
+| `opensearch-exporter`   | `172.19.0.48` | `9114` | `${ES_EXPORTER_HOST_PORT}` | -                                     |
 
 ## Persistence
 
-| Volume | Mount Point | Description |
-| :--- | :--- | :--- |
-| `opensearch-data1` | `/usr/share/opensearch/data` | Node 1 Data |
-| `opensearch-data2` | `/usr/share/opensearch/data` | Node 2 Data (Optional) |
-| `opensearch-data3` | `/usr/share/opensearch/data` | Node 3 Data (Optional) |
-| `secrets/certs/` | `/usr/share/opensearch/config/certs` | SSL/TLS Certificates (Read-only, shared) |
+| Volume             | Mount Point                          | Description                              |
+| :----------------- | :----------------------------------- | :--------------------------------------- |
+| `opensearch-data1` | `/usr/share/opensearch/data`         | Node 1 Data                              |
+| `opensearch-data2` | `/usr/share/opensearch/data`         | Node 2 Data (Optional)                   |
+| `opensearch-data3` | `/usr/share/opensearch/data`         | Node 3 Data (Optional)                   |
+| `secrets/certs/`   | `/usr/share/opensearch/config/certs` | SSL/TLS Certificates (Read-only, shared) |
 
 ## Configuration
 
 ### Environment Variables
 
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `ELASTIC_PASSWORD` | Admin Password | Provided via `.env` |
-| `OPENSEARCH_JAVA_OPTS` | JVM Heap Size | `-Xms1g -Xmx1g` |
-| `OPENSEARCH_CLUSTER_NAME` | Cluster Name | `docker-cluster` |
-| `discovery.type` | Discovery Mode | `single-node` (for 1 node) |
+| Variable                  | Description    | Default                    |
+| :------------------------ | :------------- | :------------------------- |
+| `ELASTIC_PASSWORD`        | Admin Password | Provided via `.env`        |
+| `OPENSEARCH_JAVA_OPTS`    | JVM Heap Size  | `-Xms1g -Xmx1g`            |
+| `OPENSEARCH_CLUSTER_NAME` | Cluster Name   | `docker-cluster`           |
+| `discovery.type`          | Discovery Mode | `single-node` (for 1 node) |
 
 ### Performance Tuning
 
@@ -84,7 +84,7 @@ A `Dockerfile` is provided to build a custom image with plugins pre-installed.
 - `ingest-attachment`: Tika-based document processor
 - `mapper-annotated-text`: Indexing annotated text
 - `mapper-murmur3`: Murmur3 field mapper
-- `mapper-size`: _size field mapper
+- `mapper-size`: \_size field mapper
 
 **To use custom build:**
 Uncomment the `build` section in `docker-compose.yml` and comment out `image`.
@@ -198,16 +198,16 @@ Check `traefik.http.services.opensearch.loadbalancer.server.scheme=https`.
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `docker-compose.yml` | Single-node OpenSearch + Dashboards + exporter. |
-| `docker-compose.cluster.yml` | 3-node HA cluster definition (optional). |
-| `Dockerfile` | Custom OpenSearch build with plugins. |
-| `opensearch/config/opensearch.yml` | Core node config (network, TLS, security plugin). |
-| `opensearch/config/opensearch.yml.example` | Template OpenSearch config. |
-| `opensearch/config/userdict_ko.txt` | Korean user dictionary for `analysis-nori`. |
-| `opensearch/config/opensearch-security/*.yml` | Security plugin config (users/roles/mappings/tenants). |
-| `secrets/certs/` | Shared TLS certificates (mounted into OpenSearch + Dashboards). |
-| `opensearch-dashboards/config/opensearch_dashboards.yml` | Dashboards config. |
-| `opensearch-dashboards/config/opensearch_dashboards.yml.example` | Template Dashboards config. |
-| `README.md` | Cluster usage and security notes. |
+| Path                                                             | Description                                                     |
+| ---------------------------------------------------------------- | --------------------------------------------------------------- |
+| `docker-compose.yml`                                             | Single-node OpenSearch + Dashboards + exporter.                 |
+| `docker-compose.cluster.yml`                                     | 3-node HA cluster definition (optional).                        |
+| `Dockerfile`                                                     | Custom OpenSearch build with plugins.                           |
+| `opensearch/config/opensearch.yml`                               | Core node config (network, TLS, security plugin).               |
+| `opensearch/config/opensearch.yml.example`                       | Template OpenSearch config.                                     |
+| `opensearch/config/userdict_ko.txt`                              | Korean user dictionary for `analysis-nori`.                     |
+| `opensearch/config/opensearch-security/*.yml`                    | Security plugin config (users/roles/mappings/tenants).          |
+| `secrets/certs/`                                                 | Shared TLS certificates (mounted into OpenSearch + Dashboards). |
+| `opensearch-dashboards/config/opensearch_dashboards.yml`         | Dashboards config.                                              |
+| `opensearch-dashboards/config/opensearch_dashboards.yml.example` | Template Dashboards config.                                     |
+| `README.md`                                                      | Cluster usage and security notes.                               |

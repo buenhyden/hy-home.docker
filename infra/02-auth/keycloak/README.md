@@ -10,35 +10,35 @@ graph TB
         Client[Client Apps]
         IdP[Identity Providers<br/>Google/Naver/Kakao]
     end
-    
+
     subgraph "Keycloak Stack"
         KC[Keycloak]
         DB[(PostgreSQL)]
     end
-    
+
     Client -->|OIDC/SAML| KC
     KC -->|Federation| IdP
     KC -->|Persist| DB
-    
+
     subgraph "Observability"
         PROM[Prometheus]
     end
-    
+
     KC -.->|Metrics| PROM
 ```
 
 ## Services
 
-| Service | Image | Role | Resources | Port |
-| :--- | :--- | :--- | :--- | :--- |
+| Service    | Image                              | Role         | Resources   | Port       |
+| :--------- | :--------------------------------- | :----------- | :---------- | :--------- |
 | `keycloak` | `quay.io/keycloak/keycloak:26.5.0` | IAM Provider | 1 CPU / 1GB | 8080 (Int) |
 
 ## Networking
 
 Services run on `infra_net` with static IPs.
 
-| Service | Static IP | Endpoint | Host Port |
-| :--- | :--- | :--- | :--- |
+| Service    | Static IP     | Endpoint                  | Host Port                     |
+| :--------- | :------------ | :------------------------ | :---------------------------- |
 | `keycloak` | `172.19.0.29` | `keycloak.${DEFAULT_URL}` | `${KEYCLOAK_MANAGEMENT_PORT}` |
 
 ## Persistence
@@ -51,12 +51,12 @@ Data is stored in the external **PostgreSQL** database (typically `postgres-clus
 
 ### Core Environment Variables
 
-| Variable | Description | Value |
-| :--- | :--- | :--- |
-| `KC_DB` | Database Vendor | `postgres` |
-| `KEYCLOAK_ADMIN` | Admin Username | `${KEYCLOAK_ADMIN_USER}` |
-| `KC_HOSTNAME` | Public URL | `https://keycloak.${DEFAULT_URL}` |
-| `KC_PROXY_HEADERS` | Proxy Mode | `xforwarded` (Trusts Traefik) |
+| Variable           | Description     | Value                             |
+| :----------------- | :-------------- | :-------------------------------- |
+| `KC_DB`            | Database Vendor | `postgres`                        |
+| `KEYCLOAK_ADMIN`   | Admin Username  | `${KEYCLOAK_ADMIN_USER}`          |
+| `KC_HOSTNAME`      | Public URL      | `https://keycloak.${DEFAULT_URL}` |
+| `KC_PROXY_HEADERS` | Proxy Mode      | `xforwarded` (Trusts Traefik)     |
 
 ### Performance & Usage
 
@@ -138,8 +138,8 @@ https://grafana.${DEFAULT_URL}/login
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `docker-compose.yml` | Keycloak service definition and env wiring. |
-| `Dockerfile` | Optional custom Keycloak build (health/metrics, providers). |
-| `README.md` | IAM setup and integration notes. |
+| Path                 | Description                                                 |
+| -------------------- | ----------------------------------------------------------- |
+| `docker-compose.yml` | Keycloak service definition and env wiring.                 |
+| `Dockerfile`         | Optional custom Keycloak build (health/metrics, providers). |
+| `README.md`          | IAM setup and integration notes.                            |

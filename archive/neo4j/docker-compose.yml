@@ -1,8 +1,8 @@
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   neo4j:
@@ -15,13 +15,13 @@ services:
       - ${NEO4J_HTTP_PORT}
       - ${NEO4J_HTTPS_PORT}
     ports:
-      - "${NEO4J_HOST_BOLT_PORT}:${NEO4J_BOLT_PORT}"
+      - '${NEO4J_HOST_BOLT_PORT}:${NEO4J_BOLT_PORT}'
       # - "${NEO4J_HOST_HTTP_PORT}:${NEO4J_HTTP_PORT}"
       # - "${NEO4J_HOST_HTTPS_PORT}:${NEO4J_HTTPS_PORT}"
     environment:
       - NEO4J_PASSWORD=${NEO4J_PASSWORD}
     volumes:
-      - "neo4j-volume:/bitnami/neo4j"
+      - 'neo4j-volume:/bitnami/neo4j'
     networks:
       - infra_net
     # The ports that will be accessible from outside the container - HTTP (7474) and Bolt (7687).

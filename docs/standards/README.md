@@ -8,6 +8,7 @@
 - `ARCHITECTURE.md` (아키텍처 개요)
 - `CONTRIBUTING.md` (기여 규칙)
 - `.markdownlint.json` (문서 규칙)
+- `docs/standards/git-hooks.md` (커밋 훅 규칙)
 
 ## Infra 문서 규칙
 

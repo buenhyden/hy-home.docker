@@ -6,9 +6,9 @@ Secrets and security services. Currently **Vault** is provided as an optional st
 
 ## Services
 
-| Service | Profile | Path | Purpose |
-| --- | --- | --- | --- |
-| Vault | `vault` | `./vault` | Secret management, encryption, and PKI |
+| Service | Profile | Path      | Purpose                                |
+| ------- | ------- | --------- | -------------------------------------- |
+| Vault   | `vault` | `./vault` | Secret management, encryption, and PKI |
 
 ## Run
 
@@ -23,7 +23,7 @@ docker compose --profile vault up -d vault
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `vault/` | Vault service and config. |
-| `README.md` | Category overview. |
+| Path        | Description               |
+| ----------- | ------------------------- |
+| `vault/`    | Vault service and config. |
+| `README.md` | Category overview.        |

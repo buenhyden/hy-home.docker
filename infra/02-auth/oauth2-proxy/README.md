@@ -9,49 +9,49 @@ graph TB
     subgraph "Public"
         User[User]
     end
-    
+
     subgraph "Edge"
         Traefik[Traefik Gateway]
     end
-    
+
     subgraph "Auth Stack"
         Proxy[OAuth2 Proxy]
         V[Valkey<br/>Session Store]
     end
-    
+
     subgraph "Backend"
         App[Protected Service]
     end
-    
+
     subgraph "Identity Provider"
         KC[Keycloak / OIDC Provider]
     end
-    
+
     User -->|HTTPS| Traefik
-    
+
     Traefik -->|Forward Auth| Proxy
     Proxy -->|Validate Session| V
     Proxy -->|Redirect Login| KC
-    
+
     Traefik -->|Authorized| App
 ```
 
 ## Services
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `oauth2-proxy` | `quay.io/oauth2-proxy/oauth2-proxy:v7.13.0` | Auth Gateway | 0.5 CPU / 256MB |
-| `oauth2-proxy-valkey` | `valkey/valkey:9.0.1` | Session Storage | 0.5 CPU / 256MB |
-| `oauth2-proxy-valkey-exporter` | `oliver006/redis_exporter` | Metrics | .1 CPU / 128MB |
+| Service                        | Image                                       | Role            | Resources       |
+| :----------------------------- | :------------------------------------------ | :-------------- | :-------------- |
+| `oauth2-proxy`                 | `quay.io/oauth2-proxy/oauth2-proxy:v7.13.0` | Auth Gateway    | 0.5 CPU / 256MB |
+| `oauth2-proxy-valkey`          | `valkey/valkey:9.0.1`                       | Session Storage | 0.5 CPU / 256MB |
+| `oauth2-proxy-valkey-exporter` | `oliver006/redis_exporter`                  | Metrics         | .1 CPU / 128MB  |
 
 ## Networking
 
 Services run on `infra_net` with static IPs.
 
-| Service | Static IP | Port (Internal) | Endpoint |
-| :--- | :--- | :--- | :--- |
-| `oauth2-proxy` | `172.19.0.28` | `${OAUTH2_PROXY_PORT}` (4180) | `auth.${DEFAULT_URL}` |
-| `oauth2-proxy-valkey` | `172.19.0.18` | `${VALKEY_PORT}` | - |
+| Service               | Static IP     | Port (Internal)               | Endpoint              |
+| :-------------------- | :------------ | :---------------------------- | :-------------------- |
+| `oauth2-proxy`        | `172.19.0.28` | `${OAUTH2_PROXY_PORT}` (4180) | `auth.${DEFAULT_URL}` |
+| `oauth2-proxy-valkey` | `172.19.0.18` | `${VALKEY_PORT}`              | -                     |
 
 ## Configuration
 
@@ -69,12 +69,12 @@ Contains the core logic for OIDC integration. Key settings typically include:
 
 ### Environment Variables
 
-| Variable | Description | Value |
-| :--- | :--- | :--- |
-| `OAUTH2_PROXY_CLIENT_ID` | OIDC Client ID | (In .cfg or env) |
-| `OAUTH2_PROXY_CLIENT_SECRET` | OIDC Secret | `${OAUTH2_PROXY_CLIENT_SECRET}` |
-| `OAUTH2_PROXY_COOKIE_SECRET` | Cookie Config | `${OAUTH2_PROXY_COOKIE_SECRET}` |
-| `SSL_CERT_FILE` | Trusted CA | `/etc/ssl/certs/rootCA.pem` |
+| Variable                     | Description    | Value                           |
+| :--------------------------- | :------------- | :------------------------------ |
+| `OAUTH2_PROXY_CLIENT_ID`     | OIDC Client ID | (In .cfg or env)                |
+| `OAUTH2_PROXY_CLIENT_SECRET` | OIDC Secret    | `${OAUTH2_PROXY_CLIENT_SECRET}` |
+| `OAUTH2_PROXY_COOKIE_SECRET` | Cookie Config  | `${OAUTH2_PROXY_COOKIE_SECRET}` |
+| `SSL_CERT_FILE`              | Trusted CA     | `/etc/ssl/certs/rootCA.pem`     |
 
 ### SSL/TLS
 
@@ -88,7 +88,7 @@ To protect any service with SSO, apply the following Traefik label in its `docke
 
 ```yaml
 labels:
-  - "traefik.http.routers.my-app.middlewares=sso-auth@file"
+  - 'traefik.http.routers.my-app.middlewares=sso-auth@file'
 ```
 
 The `sso-auth` middleware (defined in Traefik's dynamic config) forwards requests to `http://auth.${DEFAULT_URL}/oauth2/auth`.
@@ -116,11 +116,11 @@ The OAuth2 Proxy container doesn't trust the IdP (Keycloak) certificate.
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `docker-compose.yml` | OAuth2 Proxy + Valkey session store (default). |
-| `docker-compose.redis.yml` | OAuth2 Proxy + Redis session store (alternative). |
-| `config/oauth2-proxy.cfg` | Active Keycloak OIDC configuration (issuer, cookies, scopes). |
-| `config/oauth2-proxy.cfg.example` | Template config. |
-| `secrets/certs/` | Shared CA and TLS materials for IdP trust. |
-| `README.md` | SSO wiring and usage notes. |
+| Path                              | Description                                                   |
+| --------------------------------- | ------------------------------------------------------------- |
+| `docker-compose.yml`              | OAuth2 Proxy + Valkey session store (default).                |
+| `docker-compose.redis.yml`        | OAuth2 Proxy + Redis session store (alternative).             |
+| `config/oauth2-proxy.cfg`         | Active Keycloak OIDC configuration (issuer, cookies, scopes). |
+| `config/oauth2-proxy.cfg.example` | Template config.                                              |
+| `secrets/certs/`                  | Shared CA and TLS materials for IdP trust.                    |
+| `README.md`                       | SSO wiring and usage notes.                                   |

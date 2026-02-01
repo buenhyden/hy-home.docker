@@ -219,8 +219,8 @@ curl http://localhost:8888/
 
 ```yaml
 volumes:
-  seaweedfs-master-data:    # 클러스터 메타데이터
-  seaweedfs-volume-data:    # 실제 파일 데이터
+  seaweedfs-master-data: # 클러스터 메타데이터
+  seaweedfs-volume-data: # 실제 파일 데이터
 ```
 
 ### 백업 권장사항

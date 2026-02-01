@@ -18,17 +18,17 @@ graph TD
         App[Application]
         Init[Cluster Init]
     end
-    
+
     subgraph "Redis Cluster (Mesh)"
         M1[Master-0] <--> M2[Master-1]
         M2 <--> M3[Master-2]
         M1 <--> M3
-        
+
         M1 -.- R1[Replica-3]
         M2 -.- R2[Replica-4]
         M3 -.- R3[Replica-5]
     end
-    
+
     subgraph "Observability"
         Exp[Redis Exporter]
     end
@@ -40,34 +40,34 @@ graph TD
 
 ## Services
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `redis-node-{0..5}` | `redis:8.4.0-bookworm` | Data Node (Sharded) | 0.5 CPU / 512MB |
-| `redis-cluster-init` | `redis:8.4` | Cluster Bootstrap Script | 0.1 CPU / 128MB |
-| `redis-exporter` | `oliver006/redis_exporter` | Prometheus Metrics | 0.1 CPU / 128MB |
+| Service              | Image                      | Role                     | Resources       |
+| :------------------- | :------------------------- | :----------------------- | :-------------- |
+| `redis-node-{0..5}`  | `redis:8.4.0-bookworm`     | Data Node (Sharded)      | 0.5 CPU / 512MB |
+| `redis-cluster-init` | `redis:8.4`                | Cluster Bootstrap Script | 0.1 CPU / 128MB |
+| `redis-exporter`     | `oliver006/redis_exporter` | Prometheus Metrics       | 0.1 CPU / 128MB |
 
 ## Networking
 
 Services run on `infra_net` with static IPs (`172.19.0.6X`).
 
-| Service | Static IP | Internal Port | Host Port |
-| :--- | :--- | :--- | :--- |
-| `redis-node-0` | `172.19.0.60` | `${REDIS0_PORT}` | `${REDIS0_PORT}` |
-| `redis-node-1` | `172.19.0.61` | `${REDIS1_PORT}` | `${REDIS1_PORT}` |
-| `redis-node-2` | `172.19.0.62` | `${REDIS2_PORT}` | `${REDIS2_PORT}` |
-| `redis-node-3` | `172.19.0.63` | `${REDIS3_PORT}` | `${REDIS3_PORT}` |
-| `redis-node-4` | `172.19.0.64` | `${REDIS4_PORT}` | `${REDIS4_PORT}` |
-| `redis-node-5` | `172.19.0.65` | `${REDIS5_PORT}` | `${REDIS5_PORT}` |
-| `redis-cluster-init` | `172.19.0.66` | - | - |
-| `redis-exporter` | `172.19.0.67` | `${REDIS_EXPORTER_PORT}` | `${REDIS_EXPORTER_HOST_PORT}` |
+| Service              | Static IP     | Internal Port            | Host Port                     |
+| :------------------- | :------------ | :----------------------- | :---------------------------- |
+| `redis-node-0`       | `172.19.0.60` | `${REDIS0_PORT}`         | `${REDIS0_PORT}`              |
+| `redis-node-1`       | `172.19.0.61` | `${REDIS1_PORT}`         | `${REDIS1_PORT}`              |
+| `redis-node-2`       | `172.19.0.62` | `${REDIS2_PORT}`         | `${REDIS2_PORT}`              |
+| `redis-node-3`       | `172.19.0.63` | `${REDIS3_PORT}`         | `${REDIS3_PORT}`              |
+| `redis-node-4`       | `172.19.0.64` | `${REDIS4_PORT}`         | `${REDIS4_PORT}`              |
+| `redis-node-5`       | `172.19.0.65` | `${REDIS5_PORT}`         | `${REDIS5_PORT}`              |
+| `redis-cluster-init` | `172.19.0.66` | -                        | -                             |
+| `redis-exporter`     | `172.19.0.67` | `${REDIS_EXPORTER_PORT}` | `${REDIS_EXPORTER_HOST_PORT}` |
 
 ## Persistence
 
-| Volume | Description |
-| :--- | :--- |
-| `redis-data-{0..5}` | Persists AOF/RDB data mapped to `/data` |
-| `./config/redis.conf` | Shared configuration file (Bind Mount) |
-| `./scripts/` | Startup and Init scripts (Bind Mount) |
+| Volume                | Description                             |
+| :-------------------- | :-------------------------------------- |
+| `redis-data-{0..5}`   | Persists AOF/RDB data mapped to `/data` |
+| `./config/redis.conf` | Shared configuration file (Bind Mount)  |
+| `./scripts/`          | Startup and Init scripts (Bind Mount)   |
 
 ## Configuration
 
@@ -91,7 +91,7 @@ To manually interact with the cluster from the specific node:
 docker exec -it redis-node-0 redis-cli -c -a $(cat /run/secrets/redis_password) -p 6379
 ```
 
-*Note: The `-c` flag enables cluster mode redirection.*
+_Note: The `-c` flag enables cluster mode redirection._
 
 ### Usage from Host
 
@@ -114,11 +114,11 @@ This is normal Redis Cluster behavior. The client must be able to reach the IP r
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `docker-compose.yml` | 6-node Redis cluster + init + exporter. |
-| `config/redis.conf` | Base Redis cluster config (AOF/RDB, cluster mode). |
-| `config/redis.conf.example` | Template config for Redis. |
-| `scripts/redis-start.sh` | Node entrypoint wrapper (announce/cluster ports). |
-| `scripts/redis-cluster-init.sh` | Cluster creation once nodes are healthy. |
-| `README.md` | Architecture and usage notes. |
+| Path                            | Description                                        |
+| ------------------------------- | -------------------------------------------------- |
+| `docker-compose.yml`            | 6-node Redis cluster + init + exporter.            |
+| `config/redis.conf`             | Base Redis cluster config (AOF/RDB, cluster mode). |
+| `config/redis.conf.example`     | Template config for Redis.                         |
+| `scripts/redis-start.sh`        | Node entrypoint wrapper (announce/cluster ports).  |
+| `scripts/redis-cluster-init.sh` | Cluster creation once nodes are healthy.           |
+| `README.md`                     | Architecture and usage notes.                      |

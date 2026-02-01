@@ -1,10 +1,10 @@
 name: postgresql-cluster
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   # ##############################################################
@@ -31,7 +31,7 @@ services:
       - --initial-cluster-state=new
       - --initial-cluster-token=pg-ha-etcd
     healthcheck:
-      test: ["CMD", "etcdctl", "endpoint", "health", "--endpoints=http://localhost:2379"]
+      test: ['CMD', 'etcdctl', 'endpoint', 'health', '--endpoints=http://localhost:2379']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -67,7 +67,7 @@ services:
       - --initial-cluster-state=new
       - --initial-cluster-token=pg-ha-etcd
     healthcheck:
-      test: ["CMD", "etcdctl", "endpoint", "health", "--endpoints=http://localhost:2379"]
+      test: ['CMD', 'etcdctl', 'endpoint', 'health', '--endpoints=http://localhost:2379']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -103,7 +103,7 @@ services:
       - --initial-cluster-state=new
       - --initial-cluster-token=pg-ha-etcd
     healthcheck:
-      test: ["CMD", "etcdctl", "endpoint", "health", "--endpoints=http://localhost:2379"]
+      test: ['CMD', 'etcdctl', 'endpoint', 'health', '--endpoints=http://localhost:2379']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -125,7 +125,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: '1.0'
           memory: 2G
         reservations:
           memory: 1G
@@ -135,9 +135,9 @@ services:
     env_file:
       - .env.postgres
     environment:
-      SCOPE: "pg-ha"
+      SCOPE: 'pg-ha'
       # etcd 클러스터 주소
-      ETCD3_HOSTS: "etcd-1:2379,etcd-2:2379,etcd-3:2379"
+      ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
       # --------------------------------------------------------------------
       # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
       # --------------------------------------------------------------------
@@ -155,7 +155,7 @@ services:
     expose:
       - ${POSTGRES_PORT}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -176,7 +176,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: '1.0'
           memory: 2G
         reservations:
           memory: 1G
@@ -186,9 +186,9 @@ services:
     env_file:
       - .env.postgres
     environment:
-      SCOPE: "pg-ha"
+      SCOPE: 'pg-ha'
       # etcd 클러스터 주소
-      ETCD3_HOSTS: "etcd-1:2379,etcd-2:2379,etcd-3:2379"
+      ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
       # --------------------------------------------------------------------
       # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
       # --------------------------------------------------------------------
@@ -208,7 +208,7 @@ services:
         ipv4_address: 172.19.0.54
     logging: *default-logging
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -227,7 +227,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: '1.0'
           memory: 2G
         reservations:
           memory: 1G
@@ -237,9 +237,9 @@ services:
     env_file:
       - .env.postgres
     environment:
-      SCOPE: "pg-ha"
+      SCOPE: 'pg-ha'
       # etcd 클러스터 주소
-      ETCD3_HOSTS: "etcd-1:2379,etcd-2:2379,etcd-3:2379"
+      ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
       # 계정 비밀번호 (Spilo가 initdb 시 사용)
       # --------------------------------------------------------------------
       # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
@@ -262,7 +262,7 @@ services:
     expose:
       - ${POSTGRES_PORT}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -282,29 +282,29 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 256M
     image: haproxy:3.3.1
     container_name: pg-router
     volumes:
       - ./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     ports:
-      - "${POSTGRES_WRITE_HOST_PORT}:${POSTGRES_WRITE_PORT}" # Write endpoint
-      - "${POSTGRES_READ_HOST_PORT}:${POSTGRES_READ_PORT}" # Read endpoint
+      - '${POSTGRES_WRITE_HOST_PORT}:${POSTGRES_WRITE_PORT}' # Write endpoint
+      - '${POSTGRES_READ_HOST_PORT}:${POSTGRES_READ_PORT}' # Read endpoint
       # - "${HAPROXY_HOST_PORT}:${HAPROXY_PORT}" # Stats (옵션)
-      - "${HAPROXY_METRICS_HOST_PORT}:${HAPROXY_METRICS_PORT}" # Stats (옵션)
+      - '${HAPROXY_METRICS_HOST_PORT}:${HAPROXY_METRICS_PORT}' # Stats (옵션)
     networks:
       infra_net:
         ipv4_address: 172.19.0.56
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # HAProxy Stats UI 라우터
       # 도메인: haproxy.pg.${DEFAULT_URL}
-      - "traefik.http.routers.haproxy-stats.rule=Host(`pg-haproxy.${DEFAULT_URL}`)"
-      - "traefik.http.routers.haproxy-stats.entrypoints=websecure"
-      - "traefik.http.routers.haproxy-stats.tls=true"
+      - 'traefik.http.routers.haproxy-stats.rule=Host(`pg-haproxy.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.haproxy-stats.entrypoints=websecure'
+      - 'traefik.http.routers.haproxy-stats.tls=true'
       # [중요] HAProxy 설정 파일(haproxy.cfg)에 정의된 Stats 포트(보통 8404)와 일치해야 함
-      - "traefik.http.services.haproxy-stats.loadbalancer.server.port=${HAPROXY_PORT}"
+      - 'traefik.http.services.haproxy-stats.loadbalancer.server.port=${HAPROXY_PORT}'
     depends_on:
       pg-0:
         condition: service_healthy
@@ -319,7 +319,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 128M
     image: postgres:17-alpine
     container_name: pg-cluster-init
@@ -347,10 +347,10 @@ services:
       unset PGPASSWORD;
       echo 'SQL 스크립트 실행 완료.';"
     volumes:
-      - "./init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql"
+      - './init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql'
     networks:
       - infra_net
-    restart: "no"
+    restart: 'no'
     logging: *default-logging
   # ##############################################################
   # postgres-exporter (Prometheus / Alloy용 메트릭)
@@ -359,7 +359,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.1"
+          cpus: '0.1'
           memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-0-exporter
@@ -368,13 +368,13 @@ services:
         ipv4_address: 172.19.0.57
     logging: *default-logging
     expose:
-      - "${POSTGRES_EXPORTER_PORT}"
+      - '${POSTGRES_EXPORTER_PORT}'
     secrets:
       - postgres_password
     depends_on:
       pg-0:
         condition: service_healthy
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: ['/bin/sh', '-c']
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/postgres_password | tr -d '\n')
@@ -383,7 +383,11 @@ services:
         exec /bin/postgres_exporter
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
+        ]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -391,7 +395,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.1"
+          cpus: '0.1'
           memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-1-exporter
@@ -400,13 +404,13 @@ services:
         ipv4_address: 172.19.0.58
     logging: *default-logging
     expose:
-      - "${POSTGRES_EXPORTER_PORT}"
+      - '${POSTGRES_EXPORTER_PORT}'
     secrets:
       - postgres_password
     depends_on:
       pg-1:
         condition: service_healthy
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: ['/bin/sh', '-c']
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/postgres_password | tr -d '\n')
@@ -415,7 +419,11 @@ services:
         exec /bin/postgres_exporter
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
+        ]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -423,7 +431,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.1"
+          cpus: '0.1'
           memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-2-exporter
@@ -432,13 +440,13 @@ services:
         ipv4_address: 172.19.0.59
     logging: *default-logging
     expose:
-      - "${POSTGRES_EXPORTER_PORT}"
+      - '${POSTGRES_EXPORTER_PORT}'
     secrets:
       - postgres_password
     depends_on:
       pg-2:
         condition: service_healthy
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: ['/bin/sh', '-c']
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/postgres_password | tr -d '\n')
@@ -447,7 +455,11 @@ services:
         exec /bin/postgres_exporter
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
+        ]
       interval: 30s
       timeout: 5s
       retries: 5

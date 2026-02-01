@@ -11,13 +11,13 @@ graph TB
         K2[Broker 2<br/>Controller]
         K3[Broker 3<br/>Controller]
     end
-    
+
     subgraph "Integration"
         SR[Schema Registry]
         KC[Kafka Connect]
         RP[REST Proxy]
     end
-    
+
     subgraph "Management & Obs"
         UI[Kafka UI]
         EXP[Exporter]
@@ -26,7 +26,7 @@ graph TB
     K1 <--> K2
     K1 <--> K3
     K2 <--> K3
-    
+
     KC --> K1
     KC --> SR
     SR --> K1
@@ -40,40 +40,40 @@ graph TB
 
 ## Services
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `kafka-{1,2,3}` | `confluentinc/cp-kafka:8.1.1` | Combined Broker & Controller | 1 CPU / 1GB |
-| `schema-registry` | `confluentinc/cp-schema-registry:8.1.1` | Schema Management (Avro/Proto) | 512MB RAM |
-| `kafka-connect` | `confluentinc/cp-kafka-connect:8.1.1` | Distributed Connector Worker | 1 CPU / 1.5GB |
-| `kafka-rest-proxy` | `confluentinc/cp-kafka-rest:8.1.1` | HTTP API for Kafka | 0.5 CPU / 512MB |
-| `kafka-ui` | `provectuslabs/kafka-ui:v0.7.2` | Web Management Interface | 0.5 CPU / 512MB |
-| `kafka-exporter` | `danielqsj/kafka-exporter:v1.9.0` | Prometheus Metrics Exporter | 0.1 CPU / 128MB |
+| Service            | Image                                   | Role                           | Resources       |
+| :----------------- | :-------------------------------------- | :----------------------------- | :-------------- |
+| `kafka-{1,2,3}`    | `confluentinc/cp-kafka:8.1.1`           | Combined Broker & Controller   | 1 CPU / 1GB     |
+| `schema-registry`  | `confluentinc/cp-schema-registry:8.1.1` | Schema Management (Avro/Proto) | 512MB RAM       |
+| `kafka-connect`    | `confluentinc/cp-kafka-connect:8.1.1`   | Distributed Connector Worker   | 1 CPU / 1.5GB   |
+| `kafka-rest-proxy` | `confluentinc/cp-kafka-rest:8.1.1`      | HTTP API for Kafka             | 0.5 CPU / 512MB |
+| `kafka-ui`         | `provectuslabs/kafka-ui:v0.7.2`         | Web Management Interface       | 0.5 CPU / 512MB |
+| `kafka-exporter`   | `danielqsj/kafka-exporter:v1.9.0`       | Prometheus Metrics Exporter    | 0.1 CPU / 128MB |
 
 ## Networking
 
 Services run on `infra_net` with static IPs (`172.19.0.2X`).
 
-| Service | Static IP | Port (Internal) | Port (Host) | Traefik Domain |
-| :--- | :--- | :--- | :--- | :--- |
-| `kafka-1` | `172.19.0.20` | `19092`, `9093` | `${KAFKA_CONTROLLER_1_HOST_PORT}` | - |
-| `kafka-2` | `172.19.0.21` | `19092`, `9093` | `${KAFKA_CONTROLLER_2_HOST_PORT}` | - |
-| `kafka-3` | `172.19.0.22` | `19092`, `9093` | `${KAFKA_CONTROLLER_3_HOST_PORT}` | - |
-| `schema-registry` | `172.19.0.23` | `8081` | `${SCHEMA_REGISTRY_PORT}` | `schema-registry.${DEFAULT_URL}` |
-| `kafka-connect` | `172.19.0.24` | `8083` | - | `kafka-connect.${DEFAULT_URL}` |
-| `kafka-rest-proxy` | `172.19.0.25` | `8082` | - | `kafka-rest.${DEFAULT_URL}` |
-| `kafka-ui` | `172.19.0.26` | `8080` | `${KAFKA_UI_PORT}` | `kafka-ui.${DEFAULT_URL}` |
-| `kafka-exporter` | `172.19.0.27` | `9308` | - | - |
+| Service            | Static IP     | Port (Internal) | Port (Host)                       | Traefik Domain                   |
+| :----------------- | :------------ | :-------------- | :-------------------------------- | :------------------------------- |
+| `kafka-1`          | `172.19.0.20` | `19092`, `9093` | `${KAFKA_CONTROLLER_1_HOST_PORT}` | -                                |
+| `kafka-2`          | `172.19.0.21` | `19092`, `9093` | `${KAFKA_CONTROLLER_2_HOST_PORT}` | -                                |
+| `kafka-3`          | `172.19.0.22` | `19092`, `9093` | `${KAFKA_CONTROLLER_3_HOST_PORT}` | -                                |
+| `schema-registry`  | `172.19.0.23` | `8081`          | `${SCHEMA_REGISTRY_PORT}`         | `schema-registry.${DEFAULT_URL}` |
+| `kafka-connect`    | `172.19.0.24` | `8083`          | -                                 | `kafka-connect.${DEFAULT_URL}`   |
+| `kafka-rest-proxy` | `172.19.0.25` | `8082`          | -                                 | `kafka-rest.${DEFAULT_URL}`      |
+| `kafka-ui`         | `172.19.0.26` | `8080`          | `${KAFKA_UI_PORT}`                | `kafka-ui.${DEFAULT_URL}`        |
+| `kafka-exporter`   | `172.19.0.27` | `9308`          | -                                 | -                                |
 
 ## Configuration
 
 ### KRaft Environment Variables
 
-| Variable | Description | Value |
-| :--- | :--- | :--- |
-| `CLUSTER_ID` | Unique Cluster ID | `${KAFKA_CLUSTER_ID}` |
-| `KAFKA_PROCESS_ROLES` | Server Role | `broker,controller` |
-| `KAFKA_CONTROLLER_QUORUM_VOTERS` | Voter List | `1@kafka-1:9093,2@kafka-2:9093...` |
-| `KAFKA_HEAP_OPTS` | JVM Heap | `-Xms512m -Xmx512m` |
+| Variable                         | Description       | Value                              |
+| :------------------------------- | :---------------- | :--------------------------------- |
+| `CLUSTER_ID`                     | Unique Cluster ID | `${KAFKA_CLUSTER_ID}`              |
+| `KAFKA_PROCESS_ROLES`            | Server Role       | `broker,controller`                |
+| `KAFKA_CONTROLLER_QUORUM_VOTERS` | Voter List        | `1@kafka-1:9093,2@kafka-2:9093...` |
+| `KAFKA_HEAP_OPTS`                | JVM Heap          | `-Xms512m -Xmx512m`                |
 
 ### Replication Defaults
 
@@ -135,7 +135,7 @@ If you see errors about `CLUSTER_ID` mismatch in logs:
 2. Remove volumes: `docker volume rm infra_kafka-1-data infra_kafka-2-data infra_kafka-3-data`
 3. Restart: `docker compose up -d`
 
-***Note**: This deletes all data! Ensure `KAFKA_CLUSTER_ID` in `.env` remains constant.*
+**\*Note**: This deletes all data! Ensure `KAFKA_CLUSTER_ID` in `.env` remains constant.\*
 
 ### Broker Not Joining
 
@@ -147,7 +147,7 @@ Kafka Connect is memory intensive. If it crashes, increase the memory limit in `
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
+| Path                 | Description                                             |
+| -------------------- | ------------------------------------------------------- |
 | `docker-compose.yml` | KRaft Kafka cluster + Confluent components + exporters. |
-| `README.md` | Architecture, ports, and operations. |
+| `README.md`          | Architecture, ports, and operations.                    |

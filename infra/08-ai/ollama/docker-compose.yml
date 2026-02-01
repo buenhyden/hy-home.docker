@@ -1,10 +1,10 @@
 name: ollama
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   ollama:
@@ -28,7 +28,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.40
     healthcheck:
-      test: ["CMD", "ollama", "list"]
+      test: ['CMD', 'ollama', 'list']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -36,7 +36,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "4.0"
+          cpus: '4.0'
           memory: 8G
         reservations:
           memory: 4G
@@ -45,14 +45,14 @@ services:
               count: 1
               capabilities: [gpu]
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # Ollama API 라우터 (https://ollama.${DEFAULT_URL})
-      - "traefik.http.routers.ollama.rule=Host(`ollama.${DEFAULT_URL}`)"
-      - "traefik.http.routers.ollama.entrypoints=websecure"
-      - "traefik.http.routers.ollama.tls=true"
+      - 'traefik.http.routers.ollama.rule=Host(`ollama.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.ollama.entrypoints=websecure'
+      - 'traefik.http.routers.ollama.tls=true'
 
       # [중요] 내부 포트 11434 연결
-      - "traefik.http.services.ollama.loadbalancer.server.port=${OLLAMA_PORT}"
+      - 'traefik.http.services.ollama.loadbalancer.server.port=${OLLAMA_PORT}'
     restart: unless-stopped
     logging: *default-logging
 
@@ -62,14 +62,14 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.1"
+          cpus: '0.1'
           memory: 128M
     image: lucabecker42/ollama-exporter:latest
     container_name: ollama-exporter
     environment:
       - OLLAMA_HOST=ollama:${OLLAMA_PORT}
     ports:
-      - "${OLLAMA_EXPORTER_HOST_PORT}:${OLLAMA_EXPORTER_PORT}" # /metrics
+      - '${OLLAMA_EXPORTER_HOST_PORT}:${OLLAMA_EXPORTER_PORT}' # /metrics
     restart: unless-stopped
     networks:
       infra_net:

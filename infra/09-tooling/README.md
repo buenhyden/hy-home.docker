@@ -6,11 +6,11 @@ DevOps and tooling services for infrastructure management and code quality. Terr
 
 ## Services
 
-| Service | Profile | Path | Notes |
-| --- | --- | --- | --- |
-| Terraform CLI | (standalone) | `./terraform` | Local Terraform runner container |
-| Terrakube | `terrakube` | `./terrakube` | Terraform orchestration platform |
-| SonarQube | `sonarqube` | `./sonarqube` | Code quality and security scanner |
+| Service       | Profile      | Path          | Notes                             |
+| ------------- | ------------ | ------------- | --------------------------------- |
+| Terraform CLI | (standalone) | `./terraform` | Local Terraform runner container  |
+| Terrakube     | `terrakube`  | `./terrakube` | Terraform orchestration platform  |
+| SonarQube     | `sonarqube`  | `./sonarqube` | Code quality and security scanner |
 
 ## Run
 
@@ -26,9 +26,9 @@ docker compose run --rm terraform version
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
+| Path         | Description              |
+| ------------ | ------------------------ |
 | `terraform/` | Terraform CLI container. |
-| `terrakube/` | Terrakube stack. |
-| `sonarqube/` | SonarQube service. |
-| `README.md` | Category overview. |
+| `terrakube/` | Terrakube stack.         |
+| `sonarqube/` | SonarQube service.       |
+| `README.md`  | Category overview.       |

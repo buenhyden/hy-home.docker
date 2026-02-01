@@ -24,7 +24,7 @@ appendfsync everysec
 # Logging
 ###########################################
 # stdout로 로깅 → Docker 로그로 수집
-logfile ""          
+logfile ""
 
 ###########################################
 # Cluster 설정

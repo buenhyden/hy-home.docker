@@ -16,17 +16,18 @@ The configuration files are located in the `config/` directory.
 
 1. **Copy the example configuration:**
 
-    ```bash
-    cp prometheus.yml.example prometheus.yml
-    cp alert_rules.yml.example alert_rules.yml
-    ```
+   ```bash
+   cp prometheus.yml.example prometheus.yml
+   cp alert_rules.yml.example alert_rules.yml
+   ```
 
 2. **Edit `prometheus.yml`:**
-    - Review `scrape_configs` to ensure all target services are correctly defined.
-    - If using external services or custom ports, update the `targets`.
+
+   - Review `scrape_configs` to ensure all target services are correctly defined.
+   - If using external services or custom ports, update the `targets`.
 
 3. **Edit `alert_rules.yml`:**
-    - Define your recording rules and alerting rules here.
+   - Define your recording rules and alerting rules here.
 
 ### Scrape Jobs
 

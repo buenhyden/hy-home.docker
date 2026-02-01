@@ -6,10 +6,10 @@ Authentication and SSO layer for the platform. **Keycloak** provides IAM, while 
 
 ## Services
 
-| Service | Profile | Path | Purpose |
-| --- | --- | --- | --- |
-| Keycloak | (core) | `./keycloak` | IAM provider (SSO, realms, users, clients) |
-| OAuth2 Proxy | (core) | `./oauth2-proxy` | ForwardAuth gateway for protected services |
+| Service      | Profile | Path             | Purpose                                    |
+| ------------ | ------- | ---------------- | ------------------------------------------ |
+| Keycloak     | (core)  | `./keycloak`     | IAM provider (SSO, realms, users, clients) |
+| OAuth2 Proxy | (core)  | `./oauth2-proxy` | ForwardAuth gateway for protected services |
 
 ## Run
 
@@ -24,8 +24,8 @@ docker compose up -d keycloak oauth2-proxy
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `keycloak/` | Keycloak service and optional custom image build. |
-| `oauth2-proxy/` | OAuth2 Proxy service and config. |
-| `README.md` | Category overview. |
+| Path            | Description                                       |
+| --------------- | ------------------------------------------------- |
+| `keycloak/`     | Keycloak service and optional custom image build. |
+| `oauth2-proxy/` | OAuth2 Proxy service and config.                  |
+| `README.md`     | Category overview.                                |

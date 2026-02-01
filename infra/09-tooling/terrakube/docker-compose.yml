@@ -1,9 +1,9 @@
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
-    
+    max-size: '5m'
+    max-file: '2'
+
 services:
   # ----------------------------------------------------------------
   # 5. Terrakube API (백엔드)
@@ -21,9 +21,9 @@ services:
       DatasourceUser: ${TERRAKUBE_DB_USERNAME}
       DatasourcePassword: ${TERRAKUBE_DB_PASSWORD}
 
-      GroupValidationType: "DEX"
-      UserValidationType: "DEX"
-      AuthenticationValidationType: "DEX"
+      GroupValidationType: 'DEX'
+      UserValidationType: 'DEX'
+      AuthenticationValidationType: 'DEX'
       TerrakubeHostname: terrakube-api.${DEFAULT_URL}
       AzBuilderExecutorUrl: http://terrakube-executor:8090/api/v1/terraform-rs
       PatSecret: ${TERRAKUBE_PAT_SECRET}
@@ -38,16 +38,16 @@ services:
       AwsEndpoint: http://minio:9000
 
       TerrakubeUiURL: https://terrakube-ui.${DEFAULT_URL}
-      DexIssuerUri: "https://keycloak.${DEFAULT_URL}/realms/hy-home.realm"
+      DexIssuerUri: 'https://keycloak.${DEFAULT_URL}/realms/hy-home.realm'
 
       TerrakubeRedisHostname: ${MNG_VALKEY_HOST}
       TerrakubeRedisPassword: ${VALKEY_PASSWORD}
       TerrakubeRedisPort: ${VALKEY_PORT}
 
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.terrakube-api.rule=Host(`terrakube-api.${DEFAULT_URL}`)"
-      - "traefik.http.services.terrakube-api.loadbalancer.server.port=8080"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.terrakube-api.rule=Host(`terrakube-api.${DEFAULT_URL}`)'
+      - 'traefik.http.services.terrakube-api.loadbalancer.server.port=8080'
     depends_on:
       mng-pg:
         condition: service_healthy
@@ -77,9 +77,9 @@ services:
       REACT_APP_SCOPE: openid profile email offline_access groups
       JAVA_TOOL_OPTIONS: -Dcom.sun.security.enableAIAcaIssuers=true
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.terrakube-ui.rule=Host(`terrakube-ui.${DEFAULT_URL}`)"
-      - "traefik.http.services.terrakube-ui.loadbalancer.server.port=${TERRAKUBE_UI_PORT}"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.terrakube-ui.rule=Host(`terrakube-ui.${DEFAULT_URL}`)'
+      - 'traefik.http.services.terrakube-ui.loadbalancer.server.port=${TERRAKUBE_UI_PORT}'
     depends_on:
       terrakube-api:
         condition: service_healthy
@@ -96,7 +96,7 @@ services:
     container_name: terrakube-executor
     restart: unless-stopped
     environment:
-      TerrakubeEnableSecurity: "true"
+      TerrakubeEnableSecurity: 'true'
       InternalSecret: ${TERRAKUBE_INTERNAL_SECRET}
       TerraformStateType: AwsTerraformStateImpl
 
@@ -112,13 +112,13 @@ services:
       AwsTerraformOutputBucketName: tfstate
       AwsTerraformOutputRegion: ap-northeast-2
       AzBuilderApiUrl: https://terrakube-api.${DEFAULT_URL}
-      ExecutorFlagBatch: "false"
-      ExecutorFlagDisableAcknowledge: "false"
+      ExecutorFlagBatch: 'false'
+      ExecutorFlagDisableAcknowledge: 'false'
       TerrakubeToolsRepository: https://github.com/terrakube-io/terrakube-extensions.git
       TerrakubeToolsBranch: main
       TerrakubeRegistryDomain: terrakube-api.${DEFAULT_URL}
       TerrakubeApiUrl: https://terrakube-api.${DEFAULT_URL}
-      CustomTerraformReleasesUrl: "https://releases.hashicorp.com/terraform/index.json"
+      CustomTerraformReleasesUrl: 'https://releases.hashicorp.com/terraform/index.json'
 
       TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}
       EXECUTOR_NAME: local-executor
@@ -134,6 +134,6 @@ services:
     networks:
       - infra_net
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.terrakube-executor.rule=Host(`terrakube-executor.${DEFAULT_URL}`)"
-      - "traefik.http.services.terrakube-executor.loadbalancer.server.port=${TERRAKUBE_EXECUTOR_PORT}"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.terrakube-executor.rule=Host(`terrakube-executor.${DEFAULT_URL}`)'
+      - 'traefik.http.services.terrakube-executor.loadbalancer.server.port=${TERRAKUBE_EXECUTOR_PORT}'

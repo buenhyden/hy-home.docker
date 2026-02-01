@@ -17,17 +17,17 @@ graph TB
     subgraph "CI/CD Pipeline"
         Runner[CI Runner<br/>SonarScanner]
     end
-    
+
     subgraph "SonarQube Stack"
         Server[SonarQube Server]
         ES[Embedded<br/>ElasticSearch]
     end
-    
+
     subgraph "Persistence"
         DB[(PostgreSQL<br/>External)]
         Vol[Docker Volume<br/>Data/Logs]
     end
-    
+
     Runner -->|Analysis Report| Server
     Server <--> ES
     Server -->|JDBC| DB
@@ -36,24 +36,24 @@ graph TB
 
 ## Services
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
+| Service     | Image                               | Role                | Resources       |
+| :---------- | :---------------------------------- | :------------------ | :-------------- |
 | `sonarqube` | `sonarqube:26.1.0.118079-community` | Code Quality Server | 0.5 CPU / 512MB |
 
 ## Networking
 
 Service runs on `infra_net` using **Dynamic** IP assignment (DHCP).
 
-| Service | IP Address | Internal Port | Traefik Domain |
-| :--- | :--- | :--- | :--- |
-| `sonarqube` | *(Dynamic)* | `${SONARQUBE_PORT}` (9000) | `sonarqube.${DEFAULT_URL}` |
+| Service     | IP Address  | Internal Port              | Traefik Domain             |
+| :---------- | :---------- | :------------------------- | :------------------------- |
+| `sonarqube` | _(Dynamic)_ | `${SONARQUBE_PORT}` (9000) | `sonarqube.${DEFAULT_URL}` |
 
 ## Persistence
 
-| Volume | Mount Point | Description |
-| :--- | :--- | :--- |
+| Volume                  | Mount Point           | Description               |
+| :---------------------- | :-------------------- | :------------------------ |
 | `sonarqube-data-volume` | `/opt/sonarqube/data` | Plugins, embedded ES data |
-| `sonarqube-logs-volume` | `/opt/sonarqube/logs` | Access and error logs |
+| `sonarqube-logs-volume` | `/opt/sonarqube/logs` | Access and error logs     |
 
 ## Configuration
 
@@ -61,11 +61,11 @@ Service runs on `infra_net` using **Dynamic** IP assignment (DHCP).
 
 SonarQube requires a dedicated PostgreSQL database. In this infrastructure, it connects to the shared Management DB (`infra/mng-db`) or a dedicated instance.
 
-| Variable | Description | Value |
-| :--- | :--- | :--- |
-| `SONAR_JDBC_URL` | Connection String | `jdbc:postgresql://${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${SONARQUBE_DBNAME}` |
-| `SONAR_JDBC_USERNAME` | DB User | `${SONARQUBE_DB_USER}` |
-| `SONAR_JDBC_PASSWORD` | DB Password | `${SONARQUBE_DB_PASSWORD}` |
+| Variable              | Description       | Value                                                                         |
+| :-------------------- | :---------------- | :---------------------------------------------------------------------------- |
+| `SONAR_JDBC_URL`      | Connection String | `jdbc:postgresql://${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${SONARQUBE_DBNAME}` |
+| `SONAR_JDBC_USERNAME` | DB User           | `${SONARQUBE_DB_USER}`                                                        |
+| `SONAR_JDBC_PASSWORD` | DB Password       | `${SONARQUBE_DB_PASSWORD}`                                                    |
 
 ### Kernel Requirements (Important)
 
@@ -114,7 +114,7 @@ Ensure the PostgreSQL container is consistent and the `sonarqube` database exist
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
+| Path                 | Description                                 |
+| -------------------- | ------------------------------------------- |
 | `docker-compose.yml` | SonarQube service definition and DB wiring. |
-| `README.md` | Usage and configuration notes. |
+| `README.md`          | Usage and configuration notes.              |

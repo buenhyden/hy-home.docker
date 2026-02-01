@@ -1,10 +1,10 @@
 name: valkey-cluster
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   # ##############################################################
@@ -14,7 +14,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M
@@ -35,21 +35,21 @@ services:
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       # 데이터 영속화
       - valkey-data-0:/data
-    command: ["sh", "/usr/local/bin/valkey-start.sh"]
+    command: ['sh', '/usr/local/bin/valkey-start.sh']
     # 클러스터 내부 통신 포트는 expose
     # expose:
     #   - "${VALKEY_PORT}"
     #   - "${VALKEY_BUS_PORT}"
     # 호스트에서 디버깅/개발용으로 6379는 0번 노드만 오픈
     ports:
-      - "${VALKEY0_PORT}:${VALKEY0_PORT}"
-      - "${VALKEY0_BUS_PORT}:${VALKEY0_BUS_PORT}"
+      - '${VALKEY0_PORT}:${VALKEY0_PORT}'
+      - '${VALKEY0_BUS_PORT}:${VALKEY0_BUS_PORT}'
     healthcheck:
       # secret 파일에서 비밀번호 읽어서 PING 체크
       test: [
-          "CMD-SHELL",
-          "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
-          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY0_PORT} ping | grep PONG",
+          'CMD-SHELL',
+          'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY0_PORT} ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -60,7 +60,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M
@@ -79,18 +79,18 @@ services:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-1:/data
-    command: ["sh", "/usr/local/bin/valkey-start.sh"]
+    command: ['sh', '/usr/local/bin/valkey-start.sh']
     # expose:
     #   - "${VALKEY_PORT}"
     #   - "${VALKEY_BUS_PORT}"
     ports:
-      - "${VALKEY1_PORT}:${VALKEY1_PORT}"
-      - "${VALKEY1_BUS_PORT}:${VALKEY1_BUS_PORT}"
+      - '${VALKEY1_PORT}:${VALKEY1_PORT}'
+      - '${VALKEY1_BUS_PORT}:${VALKEY1_BUS_PORT}'
     healthcheck:
       test: [
-          "CMD-SHELL",
-          "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
-          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY1_PORT} ping | grep PONG",
+          'CMD-SHELL',
+          'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY1_PORT} ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -101,7 +101,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M
@@ -120,18 +120,18 @@ services:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-2:/data
-    command: ["sh", "/usr/local/bin/valkey-start.sh"]
+    command: ['sh', '/usr/local/bin/valkey-start.sh']
     # expose:
     #   - "${VALKEY_PORT}"
     #   - "${VALKEY_BUS_PORT}"
     ports:
-      - "${VALKEY2_PORT}:${VALKEY2_PORT}"
-      - "${VALKEY2_BUS_PORT}:${VALKEY2_BUS_PORT}"
+      - '${VALKEY2_PORT}:${VALKEY2_PORT}'
+      - '${VALKEY2_BUS_PORT}:${VALKEY2_BUS_PORT}'
     healthcheck:
       test: [
-          "CMD-SHELL",
-          "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
-          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY2_PORT} ping | grep PONG",
+          'CMD-SHELL',
+          'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY2_PORT} ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -142,7 +142,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M
@@ -161,18 +161,18 @@ services:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-3:/data
-    command: ["sh", "/usr/local/bin/valkey-start.sh"]
+    command: ['sh', '/usr/local/bin/valkey-start.sh']
     # expose:
     #   - "${VALKEY_PORT}"
     #   - "${VALKEY_BUS_PORT}"
     ports:
-      - "${VALKEY3_PORT}:${VALKEY3_PORT}"
-      - "${VALKEY3_BUS_PORT}:${VALKEY3_BUS_PORT}"
+      - '${VALKEY3_PORT}:${VALKEY3_PORT}'
+      - '${VALKEY3_BUS_PORT}:${VALKEY3_BUS_PORT}'
     healthcheck:
       test: [
-          "CMD-SHELL",
-          "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
-          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY3_PORT} ping | grep PONG",
+          'CMD-SHELL',
+          'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY3_PORT} ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -183,7 +183,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M
@@ -202,18 +202,18 @@ services:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-4:/data
-    command: ["sh", "/usr/local/bin/valkey-start.sh"]
+    command: ['sh', '/usr/local/bin/valkey-start.sh']
     # expose:
     #   - "${VALKEY_PORT}"
     #   - "${VALKEY_BUS_PORT}"
     ports:
-      - "${VALKEY4_PORT}:${VALKEY4_PORT}"
-      - "${VALKEY4_BUS_PORT}:${VALKEY4_BUS_PORT}"
+      - '${VALKEY4_PORT}:${VALKEY4_PORT}'
+      - '${VALKEY4_BUS_PORT}:${VALKEY4_BUS_PORT}'
     healthcheck:
       test: [
-          "CMD-SHELL",
-          "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
-          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY4_PORT} ping | grep PONG",
+          'CMD-SHELL',
+          'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY4_PORT} ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -224,7 +224,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M
@@ -243,18 +243,18 @@ services:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-5:/data
-    command: ["sh", "/usr/local/bin/valkey-start.sh"]
+    command: ['sh', '/usr/local/bin/valkey-start.sh']
     # expose:
     #   - "${VALKEY_PORT}"
     #   - "${VALKEY_BUS_PORT}"
     ports:
-      - "${VALKEY5_PORT}:${VALKEY5_PORT}"
-      - "${VALKEY5_BUS_PORT}:${VALKEY5_BUS_PORT}"
+      - '${VALKEY5_PORT}:${VALKEY5_PORT}'
+      - '${VALKEY5_BUS_PORT}:${VALKEY5_BUS_PORT}'
     healthcheck:
       test: [
-          "CMD-SHELL",
-          "VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
-          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY5_PORT} ping | grep PONG",
+          'CMD-SHELL',
+          'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY5_PORT} ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -274,11 +274,11 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.66
-    restart: "no"
+    restart: 'no'
     deploy:
       resources:
         limits:
-          cpus: "0.1"
+          cpus: '0.1'
           memory: 128M
     depends_on:
       valkey-node-0:
@@ -295,7 +295,7 @@ services:
         condition: service_healthy
     volumes:
       - ./scripts/valkey-cluster-init.sh:/usr/local/bin/valkey-cluster-init.sh:ro
-    command: ["sh", "/usr/local/bin/valkey-cluster-init.sh"]
+    command: ['sh', '/usr/local/bin/valkey-cluster-init.sh']
     logging: *default-logging
   # ##############################################################
   # Redis Exporter – Prometheus용 메트릭
@@ -305,12 +305,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.1"
+          cpus: '0.1'
           memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: valkey-exporter
     ports:
-      - "${VALKEY_EXPORTER_HOST_PORT}:${VALKEY_EXPORTER_PORT}"
+      - '${VALKEY_EXPORTER_HOST_PORT}:${VALKEY_EXPORTER_PORT}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.67

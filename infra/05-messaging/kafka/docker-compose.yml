@@ -1,10 +1,10 @@
 name: kafka
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 # ------------------------------------------------------------
 # Kafka Brokers (KRaft) — Primary 패턴 (완전 동일 템플릿 + YAML 앵커)
@@ -23,16 +23,16 @@ x-kafka-broker-common: &kafka-broker-common
       target: /var/lib/kafka/data
   environment: &kafka-broker-env-common # ---- KRaft 공통 ----
     CLUSTER_ID: ${KAFKA_CLUSTER_ID}
-    KAFKA_PROCESS_ROLES: "broker,controller"
+    KAFKA_PROCESS_ROLES: 'broker,controller'
 
     # 컨트롤러 쿼럼 (3노드 고정)
-    KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka-1:${KAFKA_CONTROLLER_PORT},2@kafka-2:${KAFKA_CONTROLLER_PORT},3@kafka-3:${KAFKA_CONTROLLER_PORT}"
+    KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:${KAFKA_CONTROLLER_PORT},2@kafka-2:${KAFKA_CONTROLLER_PORT},3@kafka-3:${KAFKA_CONTROLLER_PORT}'
 
     # 리스너: 바인딩은 0.0.0.0, 광고(advertised)는 DNS/localhost로
-    KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT},CONTROLLER://0.0.0.0:${KAFKA_CONTROLLER_PORT},EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT}"
-    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT"
-    KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
-    KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+    KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT},CONTROLLER://0.0.0.0:${KAFKA_CONTROLLER_PORT},EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT}'
+    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
+    KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+    KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
 
     # ---- 토픽/복제 관련 (3노드 기준) ----
     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
@@ -41,28 +41,32 @@ x-kafka-broker-common: &kafka-broker-common
     KAFKA_MIN_INSYNC_REPLICAS: 2
 
     # ---- 운영 기본값 ----
-    KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-    KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+    KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    KAFKA_LOG_DIRS: '/var/lib/kafka/data'
     KAFKA_NUM_PARTITIONS: 3
     KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     KAFKA_GROUP_MAX_SESSION_TIMEOUT_MS: 45000
     KAFKA_CONTROLLER_QUORUM_FETCH_TIMEOUT_MS: 3000
 
     # ---- JVM ----
-    KAFKA_HEAP_OPTS: "-Xms512m -Xmx512m"
+    KAFKA_HEAP_OPTS: '-Xms512m -Xmx512m'
 
   healthcheck:
-    test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT} >/dev/null 2>&1 || exit 1"]
+    test:
+      [
+        'CMD-SHELL',
+        'kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT} >/dev/null 2>&1 || exit 1',
+      ]
     interval: 10s
     timeout: 10s
     retries: 10
     start_period: 60s
 
   logging:
-    driver: "json-file"
+    driver: 'json-file'
     options:
-      max-size: "5m"
-      max-file: "2"
+      max-size: '5m'
+      max-file: '2'
 
 services:
   # ##############################################################
@@ -80,11 +84,11 @@ services:
         source: kafka-1-data
         target: /var/lib/kafka/data
     ports:
-      - "${KAFKA_EXTERNAL_1_HOST_PORT}:${KAFKA_EXTERNAL_PORT}"
+      - '${KAFKA_EXTERNAL_1_HOST_PORT}:${KAFKA_EXTERNAL_PORT}'
     environment:
       <<: *kafka-broker-env-common
       KAFKA_NODE_ID: 1
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-1:${KAFKA_INTERNAL_PORT},EXTERNAL://localhost:${KAFKA_EXTERNAL_1_HOST_PORT}"
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-1:${KAFKA_INTERNAL_PORT},EXTERNAL://localhost:${KAFKA_EXTERNAL_1_HOST_PORT}'
 
   kafka-2:
     <<: *kafka-broker-common
@@ -98,11 +102,11 @@ services:
         source: kafka-2-data
         target: /var/lib/kafka/data
     ports:
-      - "${KAFKA_EXTERNAL_2_HOST_PORT}:${KAFKA_EXTERNAL_PORT}"
+      - '${KAFKA_EXTERNAL_2_HOST_PORT}:${KAFKA_EXTERNAL_PORT}'
     environment:
       <<: *kafka-broker-env-common
       KAFKA_NODE_ID: 2
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-2:${KAFKA_INTERNAL_PORT},EXTERNAL://localhost:${KAFKA_EXTERNAL_2_HOST_PORT}"
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-2:${KAFKA_INTERNAL_PORT},EXTERNAL://localhost:${KAFKA_EXTERNAL_2_HOST_PORT}'
 
   kafka-3:
     <<: *kafka-broker-common
@@ -116,11 +120,11 @@ services:
         source: kafka-3-data
         target: /var/lib/kafka/data
     ports:
-      - "${KAFKA_EXTERNAL_3_HOST_PORT}:${KAFKA_EXTERNAL_PORT}"
+      - '${KAFKA_EXTERNAL_3_HOST_PORT}:${KAFKA_EXTERNAL_PORT}'
     environment:
       <<: *kafka-broker-env-common
       KAFKA_NODE_ID: 3
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-3:${KAFKA_INTERNAL_PORT},EXTERNAL://localhost:${KAFKA_EXTERNAL_3_HOST_PORT}"
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-3:${KAFKA_INTERNAL_PORT},EXTERNAL://localhost:${KAFKA_EXTERNAL_3_HOST_PORT}'
 
   # -------------------------------------------
   # 2. Schema Registry (스키마 레지스트리)
@@ -138,20 +142,20 @@ services:
         ipv4_address: 172.19.0.23
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:${SCHEMA_REGISTRY_PORT}"
+      SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:${SCHEMA_REGISTRY_PORT}'
       # 내부 리스너 포트(19092)로 연결해야 함
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092"
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092'
     expose:
       - ${SCHEMA_REGISTRY_PORT}
     # ports:
     #   - "${SCHEMA_REGISTRY_HOST_PORT}:${SCHEMA_REGISTRY_PORT}"
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # 도메인: schema-registry.${DEFAULT_URL}
-      - "traefik.http.routers.schema-registry.rule=Host(`schema-registry.${DEFAULT_URL}`)"
-      - "traefik.http.routers.schema-registry.entrypoints=websecure"
-      - "traefik.http.routers.schema-registry.tls=true"
-      - "traefik.http.services.schema-registry.loadbalancer.server.port=${SCHEMA_REGISTRY_PORT}"
+      - 'traefik.http.routers.schema-registry.rule=Host(`schema-registry.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.schema-registry.entrypoints=websecure'
+      - 'traefik.http.routers.schema-registry.tls=true'
+      - 'traefik.http.services.schema-registry.loadbalancer.server.port=${SCHEMA_REGISTRY_PORT}'
     depends_on:
       kafka-1:
         condition: service_healthy
@@ -160,7 +164,11 @@ services:
       kafka-3:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:${SCHEMA_REGISTRY_PORT}/subjects || wget -q --spider http://localhost:${SCHEMA_REGISTRY_PORT}/subjects || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'curl -fsS http://localhost:${SCHEMA_REGISTRY_PORT}/subjects || wget -q --spider http://localhost:${SCHEMA_REGISTRY_PORT}/subjects || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -174,7 +182,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: '1.0'
           memory: 1.5G # 커넥터 실행 시 메모리 소모가 큼
         reservations:
           memory: 1G
@@ -197,9 +205,9 @@ services:
     #   - "${KAFKA_CONNECT_HOST_PORT}:${KAFKA_CONNECT_PORT}"
     environment:
       # 내부 리스너 포트(19092) 사용
-      CONNECT_BOOTSTRAP_SERVERS: "kafka-1:19092,kafka-2:19092,kafka-3:19092"
+      CONNECT_BOOTSTRAP_SERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
       # Connect 클러스터 ID (그룹)
-      CONNECT_GROUP_ID: "kafka-connect-cluster"
+      CONNECT_GROUP_ID: 'kafka-connect-cluster'
       # 내부 토픽들 (replication 3으로)
       CONNECT_CONFIG_STORAGE_TOPIC: _connect-configs
       CONNECT_OFFSET_STORAGE_TOPIC: _connect-offsets
@@ -210,42 +218,46 @@ services:
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
 
       # Key/Value 변환기 (JSON, Schema-less 예시)
-      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
-      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
+      CONNECT_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
 
       # 내부 변환기
-      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
+      CONNECT_INTERNAL_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
 
       # REST 리스너
       CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
       CONNECT_REST_PORT: ${KAFKA_CONNECT_PORT}
 
       # 플러그인 디렉터리 (커스텀 커넥터 넣고 싶을 때 사용)
-      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+      CONNECT_PLUGIN_PATH: '/usr/share/java,/usr/share/confluent-hub-components'
       # 오프셋 flush 주기 등 (필요에 따라 조정)
       CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
 
-      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
-      CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
+      CONNECT_LOG4J_ROOT_LOGLEVEL: 'INFO'
+      CONNECT_LOG4J_LOGGERS: 'org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR'
       # Schema Registry와 연동
-      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:${SCHEMA_REGISTRY_PORT}"
-      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:${SCHEMA_REGISTRY_PORT}"
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT}'
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT}'
     volumes:
       # 커스텀 커넥터가 있다면 여기에 마운트 (예: ./connect-plugins:/usr/share/confluent-hub-components)
       # - ./connect-plugins:/usr/share/confluent-hub-components
       - kafka-connect-data:/var/lib/kafka-connect
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # 도메인: connect.${DEFAULT_URL}
-      - "traefik.http.routers.kafka-connect.rule=Host(`kafka-connect.${DEFAULT_URL}`)"
-      - "traefik.http.routers.kafka-connect.entrypoints=websecure"
-      - "traefik.http.routers.kafka-connect.tls=true"
-      - "traefik.http.services.kafka-connect.loadbalancer.server.port=${KAFKA_CONNECT_PORT}"
+      - 'traefik.http.routers.kafka-connect.rule=Host(`kafka-connect.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.kafka-connect.entrypoints=websecure'
+      - 'traefik.http.routers.kafka-connect.tls=true'
+      - 'traefik.http.services.kafka-connect.loadbalancer.server.port=${KAFKA_CONNECT_PORT}'
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:${KAFKA_CONNECT_PORT}/connectors || wget -q --spider http://localhost:${KAFKA_CONNECT_PORT}/connectors || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'curl -fsS http://localhost:${KAFKA_CONNECT_PORT}/connectors || wget -q --spider http://localhost:${KAFKA_CONNECT_PORT}/connectors || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -259,7 +271,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
     image: confluentinc/cp-kafka-rest:8.1.1
     container_name: kafka-rest-proxy
@@ -270,19 +282,19 @@ services:
     # ports:
     #   - "${KAFKA_REST_PROXY_HOST_PORT}:${KAFKA_REST_PROXY_PORT}"
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # 도메인: kafka-rest.${DEFAULT_URL}
-      - "traefik.http.routers.kafka-rest.rule=Host(`kafka-rest.${DEFAULT_URL}`)"
-      - "traefik.http.routers.kafka-rest.entrypoints=websecure"
-      - "traefik.http.routers.kafka-rest.tls=true"
-      - "traefik.http.services.kafka-rest.loadbalancer.server.port=${KAFKA_REST_PROXY_PORT}"
+      - 'traefik.http.routers.kafka-rest.rule=Host(`kafka-rest.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.kafka-rest.entrypoints=websecure'
+      - 'traefik.http.routers.kafka-rest.tls=true'
+      - 'traefik.http.services.kafka-rest.loadbalancer.server.port=${KAFKA_REST_PROXY_PORT}'
 
     environment:
       KAFKA_REST_HOST_NAME: kafka-rest-proxy
-      KAFKA_REST_LISTENERS: "http://0.0.0.0:${KAFKA_REST_PROXY_PORT}"
+      KAFKA_REST_LISTENERS: 'http://0.0.0.0:${KAFKA_REST_PROXY_PORT}'
       # 내부 리스너 사용
-      KAFKA_REST_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092"
-      KAFKA_REST_SCHEMA_REGISTRY_URL: "http://schema-registry:${SCHEMA_REGISTRY_PORT}"
+      KAFKA_REST_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092'
+      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT}'
     depends_on:
       kafka-1:
         condition: service_healthy
@@ -293,7 +305,11 @@ services:
       schema-registry:
         condition: service_started
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:${KAFKA_REST_PROXY_PORT}/topics || wget -q --spider http://localhost:${KAFKA_REST_PROXY_PORT}/topics || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'curl -fsS http://localhost:${KAFKA_REST_PROXY_PORT}/topics || wget -q --spider http://localhost:${KAFKA_REST_PROXY_PORT}/topics || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -307,7 +323,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
     image: provectuslabs/kafka-ui:v0.7.2
     container_name: kafka-ui
@@ -318,24 +334,24 @@ services:
     environment:
       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_NAME}
       # 내부 리스너 사용
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka-1:19092,kafka-2:19092,kafka-3:19092"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
       # UI가 Schema Registry에 접속하는 주소 (컨테이너 내부 통신)
-      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: "http://schema-registry:${SCHEMA_REGISTRY_PORT}"
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: 'http://schema-registry:${SCHEMA_REGISTRY_PORT}'
       # UI가 Kafka Connect에 접속하는 주소 (컨테이너 내부 통신)
-      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: "kafka-connect"
-      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: "http://kafka-connect:${KAFKA_CONNECT_PORT}"
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: 'kafka-connect'
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: 'http://kafka-connect:${KAFKA_CONNECT_PORT}'
     expose:
       - ${KAFKA_UI_PORT}
     # ports:
     #   - "${KAFKA_UI_HOST_PORT}:${KAFKA_UI_PORT}" # Host -> Container
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # 도메인: kafka-ui.${DEFAULT_URL}
-      - "traefik.http.routers.kafka-ui.rule=Host(`kafka-ui.${DEFAULT_URL}`)"
-      - "traefik.http.routers.kafka-ui.entrypoints=websecure"
-      - "traefik.http.routers.kafka-ui.tls=true"
-      - "traefik.http.services.kafka-ui.loadbalancer.server.port=${KAFKA_UI_PORT}"
-      - "traefik.http.routers.kafka-ui.middlewares=sso-auth@file"
+      - 'traefik.http.routers.kafka-ui.rule=Host(`kafka-ui.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.kafka-ui.entrypoints=websecure'
+      - 'traefik.http.routers.kafka-ui.tls=true'
+      - 'traefik.http.services.kafka-ui.loadbalancer.server.port=${KAFKA_UI_PORT}'
+      - 'traefik.http.routers.kafka-ui.middlewares=sso-auth@file'
     depends_on:
       kafka-1:
         condition: service_healthy
@@ -348,7 +364,11 @@ services:
       kafka-connect:
         condition: service_started
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:${KAFKA_UI_PORT}/ || wget -q --spider http://localhost:${KAFKA_UI_PORT}/ || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'curl -fsS http://localhost:${KAFKA_UI_PORT}/ || wget -q --spider http://localhost:${KAFKA_UI_PORT}/ || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -359,7 +379,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.1"
+          cpus: '0.1'
           memory: 128M
     image: danielqsj/kafka-exporter:v1.9.0
     container_name: kafka-exporter
@@ -382,7 +402,11 @@ services:
       kafka-3:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:${KAFKA_EXPORTER_PORT}/metrics || wget -q --spider http://localhost:${KAFKA_EXPORTER_PORT}/metrics || exit 1"]
+      test:
+        [
+          'CMD-SHELL',
+          'curl -fsS http://localhost:${KAFKA_EXPORTER_PORT}/metrics || wget -q --spider http://localhost:${KAFKA_EXPORTER_PORT}/metrics || exit 1',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5

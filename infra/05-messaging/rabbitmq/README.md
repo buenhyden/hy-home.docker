@@ -14,15 +14,15 @@ RabbitMQ는 AMQP(Advanced Message Queuing Protocol)를 지원하는 오픈 소�
 
 ## Configuration (.env)
 
-| Variable | Default Value | Description |
-| --- | --- | --- |
-| `RABBITMQ_PORT` | `5672` | AMQP 기본 포트 |
-| `RABBITMQ_HOST_PORT` | `5672` | 호스트 노출 AMQP 포트 |
-| `RABBITMQ_MANAGEMENT_PORT` | `15672` | 관리 UI 내부 포트 |
-| `RABBITMQ_MANAGEMENT_HOST_PORT` | `15672` | 관리 UI 호스트 포트 |
-| `RABBITMQ_DEFAULT_USER` | `admin` | 초기 관리자 계정 명 |
-| `RABBITMQ_DEFAULT_PASS` | `<password>` | 초기 관리자 비밀번호 |
-| `DEFAULT_RABBITMQ_DATA_DIR` | (Path) | 데이터 영속화 경로 |
+| Variable                        | Default Value | Description           |
+| ------------------------------- | ------------- | --------------------- |
+| `RABBITMQ_PORT`                 | `5672`        | AMQP 기본 포트        |
+| `RABBITMQ_HOST_PORT`            | `5672`        | 호스트 노출 AMQP 포트 |
+| `RABBITMQ_MANAGEMENT_PORT`      | `15672`       | 관리 UI 내부 포트     |
+| `RABBITMQ_MANAGEMENT_HOST_PORT` | `15672`       | 관리 UI 호스트 포트   |
+| `RABBITMQ_DEFAULT_USER`         | `admin`       | 초기 관리자 계정 명   |
+| `RABBITMQ_DEFAULT_PASS`         | `<password>`  | 초기 관리자 비밀번호  |
+| `DEFAULT_RABBITMQ_DATA_DIR`     | (Path)        | 데이터 영속화 경로    |
 
 ## Run
 
@@ -38,10 +38,10 @@ docker compose --profile rabbitmq stop
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
+| Path                 | Description                  |
+| -------------------- | ---------------------------- |
 | `docker-compose.yml` | RabbitMQ 서비스 및 볼륨 정의 |
-| `README.md` | 서비스 설명 및 운영 가이드 |
+| `README.md`          | 서비스 설명 및 운영 가이드   |
 
 ## Notes
 

@@ -6,10 +6,10 @@ Edge ingress and routing services for the stack. **Traefik** is the default gate
 
 ## Services
 
-| Service | Profile | Path | Purpose |
-| --- | --- | --- | --- |
-| Traefik | (core) | `./traefik` | Primary reverse proxy, TLS, routing, SSO middleware |
-| Nginx | `nginx` | `./nginx` | Optional standalone proxy (path-based routing) |
+| Service | Profile | Path        | Purpose                                             |
+| ------- | ------- | ----------- | --------------------------------------------------- |
+| Traefik | (core)  | `./traefik` | Primary reverse proxy, TLS, routing, SSO middleware |
+| Nginx   | `nginx` | `./nginx`   | Optional standalone proxy (path-based routing)      |
 
 ## Run
 
@@ -28,8 +28,8 @@ docker compose --profile nginx up -d nginx
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `traefik/` | Traefik router and dynamic config. |
-| `nginx/` | Optional standalone Nginx gateway. |
-| `README.md` | Category overview. |
+| Path        | Description                        |
+| ----------- | ---------------------------------- |
+| `traefik/`  | Traefik router and dynamic config. |
+| `nginx/`    | Optional standalone Nginx gateway. |
+| `README.md` | Category overview.                 |

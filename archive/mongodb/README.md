@@ -20,34 +20,34 @@ flowchart TB
         INIT[mongo-init<br/>One-shot]
         KEYGEN[mongo-key-generator<br/>KeyFile 생성]
     end
-    
+
     subgraph "MongoDB Replica Set"
         PRIMARY[mongodb-rep1<br/>Primary]
         SECONDARY[mongodb-rep2<br/>Secondary]
         ARBITER[mongodb-arbiter<br/>Arbiter]
     end
-    
+
     subgraph "관리 도구"
         EXPRESS[Mongo Express<br/>Web UI]
     end
-    
+
     subgraph "모니터링"
         EXP[mongodb-exporter]
         PROM[Prometheus]
     end
-    
+
     KEYGEN -->|KeyFile 생성| PRIMARY
     KEYGEN -->|KeyFile 생성| SECONDARY
     KEYGEN -->|KeyFile 생성| ARBITER
-    
+
     INIT -.->|ReplicaSet 초기화| PRIMARY
-    
+
     PRIMARY -->|복제| SECONDARY
     PRIMARY <-.->|투표| ARBITER
     SECONDARY <-.->|투표| ARBITER
-    
+
     EXPRESS -->|관리| PRIMARY
-    
+
     PRIMARY -->|메트릭| EXP
     SECONDARY -->|메트릭| EXP
     EXP -->|수집| PROM

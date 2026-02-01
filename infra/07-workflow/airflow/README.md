@@ -23,17 +23,17 @@ graph TB
         DP[DAG Processor]
         T[Triggerer]
     end
-    
+
     subgraph "Execution Plane"
         WK[Celery Worker]
         FL[Flower<br/>Monitoring]
     end
-    
+
     subgraph "Infrastructure"
         DB[(PostgreSQL<br/>Metadata)]
         RD[(Redis/Valkey<br/>Broker)]
     end
-    
+
     subgraph "Observability"
         EXP[StatsD Exporter]
     end
@@ -46,31 +46,31 @@ graph TB
     DP --> DB
     T --> DB
     FL --> RD
-    
+
     S -.->|Metrics| EXP
     WK -.->|Metrics| EXP
 ```
 
 ## Services
 
-| Service | Role | Resources | Port |
-| :--- | :--- | :--- | :--- |
-| `airflow-apiserver` | Web UI & API Server | 1 CPU / 1GB | `${AIRFLOW_PORT}` (8080) |
-| `airflow-scheduler` | Schedules tasks to be executed | 1 CPU / 1GB | - |
-| `airflow-worker` | Executes the tasks (Celery) | 1 CPU / 1GB | - |
-| `airflow-triggerer` | Async execution support | 1 CPU / 1GB | - |
-| `airflow-dag-processor`| Parses DAG files | 1 CPU / 1GB | - |
-| `flower` | Celery monitoring tool | 1 CPU / 1GB | `${FLOWER_PORT}` (5555) |
-| `airflow-statsd-exporter` | Metrics for Prometheus | 0.1 CPU / 128MB | 9102 (HTTP) |
+| Service                   | Role                           | Resources       | Port                     |
+| :------------------------ | :----------------------------- | :-------------- | :----------------------- |
+| `airflow-apiserver`       | Web UI & API Server            | 1 CPU / 1GB     | `${AIRFLOW_PORT}` (8080) |
+| `airflow-scheduler`       | Schedules tasks to be executed | 1 CPU / 1GB     | -                        |
+| `airflow-worker`          | Executes the tasks (Celery)    | 1 CPU / 1GB     | -                        |
+| `airflow-triggerer`       | Async execution support        | 1 CPU / 1GB     | -                        |
+| `airflow-dag-processor`   | Parses DAG files               | 1 CPU / 1GB     | -                        |
+| `flower`                  | Celery monitoring tool         | 1 CPU / 1GB     | `${FLOWER_PORT}` (5555)  |
+| `airflow-statsd-exporter` | Metrics for Prometheus         | 0.1 CPU / 128MB | 9102 (HTTP)              |
 
 ## Networking
 
 All services run on `infra_net` and rely on shared infrastructure.
 
-| Service | Static IP | Traefik Domain |
-| :--- | :--- | :--- |
-| `airflow-apiserver` | Dynamic | `airflow.${DEFAULT_URL}` |
-| `flower` | Dynamic | `flower.${DEFAULT_URL}` |
+| Service             | Static IP | Traefik Domain           |
+| :------------------ | :-------- | :----------------------- |
+| `airflow-apiserver` | Dynamic   | `airflow.${DEFAULT_URL}` |
+| `flower`            | Dynamic   | `flower.${DEFAULT_URL}`  |
 
 ### External Dependencies
 
@@ -79,32 +79,32 @@ All services run on `infra_net` and rely on shared infrastructure.
 
 ## Persistence
 
-| Volume | Mount Point | Description |
-| :--- | :--- | :--- |
-| `airflow-dags` | `/opt/airflow/dags` | DAG definition files |
-| `airflow-plugins` | `/opt/airflow/plugins` | Custom plugins |
-| `airflow-logs` | `/opt/airflow/logs` | Task and scheduler logs |
-| `airflow-config` | `/opt/airflow/config` | Airflow configuration files |
-| `./config/statsd_mapping.yml` | `/tmp/mappings.yml` | Metrics mapping config |
+| Volume                        | Mount Point            | Description                 |
+| :---------------------------- | :--------------------- | :-------------------------- |
+| `airflow-dags`                | `/opt/airflow/dags`    | DAG definition files        |
+| `airflow-plugins`             | `/opt/airflow/plugins` | Custom plugins              |
+| `airflow-logs`                | `/opt/airflow/logs`    | Task and scheduler logs     |
+| `airflow-config`              | `/opt/airflow/config`  | Airflow configuration files |
+| `./config/statsd_mapping.yml` | `/tmp/mappings.yml`    | Metrics mapping config      |
 
 ## Configuration
 
 ### Core Environment Variables
 
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `AIRFLOW__CORE__EXECUTOR` | Execution Mode | `CeleryExecutor` |
-| `AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION` | Auto-pause DAGs | `true` |
-| `AIRFLOW__CORE__LOAD_EXAMPLES` | Load Example DAGs | `true` |
-| `AIRFLOW__WEBSERVER__BASE_URL` | Public URL | `https://airflow.${DEFAULT_URL}` |
-| `AIRFLOW_UID` | Process User ID | `50000` |
+| Variable                                     | Description       | Default                          |
+| :------------------------------------------- | :---------------- | :------------------------------- |
+| `AIRFLOW__CORE__EXECUTOR`                    | Execution Mode    | `CeleryExecutor`                 |
+| `AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION` | Auto-pause DAGs   | `true`                           |
+| `AIRFLOW__CORE__LOAD_EXAMPLES`               | Load Example DAGs | `true`                           |
+| `AIRFLOW__WEBSERVER__BASE_URL`               | Public URL        | `https://airflow.${DEFAULT_URL}` |
+| `AIRFLOW_UID`                                | Process User ID   | `50000`                          |
 
 ### Database & Broker
 
-| Variable | Description |
-| :--- | :--- |
+| Variable                              | Description                                                     |
+| :------------------------------------ | :-------------------------------------------------------------- |
 | `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN` | `postgresql+psycopg2://${USER}:${PASS}@${HOST}:${PORT}/airflow` |
-| `AIRFLOW__CELERY__BROKER_URL` | `redis://:${PASS}@${HOST}:${PORT}/0` |
+| `AIRFLOW__CELERY__BROKER_URL`         | `redis://:${PASS}@${HOST}:${PORT}/0`                            |
 
 ### Metrics (StatsD)
 
@@ -176,9 +176,9 @@ docker compose logs airflow-scheduler
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `docker-compose.yml` | Airflow CeleryExecutor stack (default broker). |
-| `docker-compose.redis.yml` | Alternate compose with Redis-specific wiring. |
-| `config/statsd_mapping.yml` | StatsD → Prometheus metric mapping rules. |
-| `README.md` | Architecture, config, and usage notes. |
+| Path                        | Description                                    |
+| --------------------------- | ---------------------------------------------- |
+| `docker-compose.yml`        | Airflow CeleryExecutor stack (default broker). |
+| `docker-compose.redis.yml`  | Alternate compose with Redis-specific wiring.  |
+| `config/statsd_mapping.yml` | StatsD → Prometheus metric mapping rules.      |
+| `README.md`                 | Architecture, config, and usage notes.         |

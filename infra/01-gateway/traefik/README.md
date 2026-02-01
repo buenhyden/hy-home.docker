@@ -7,27 +7,27 @@
 ```mermaid
 graph TB
     Internet((Internet))
-    
+
     subgraph "Infrastructure Network"
         Traefik[Traefik Proxy]
-        
+
         subgraph "Services"
             App1[App Containers]
             App2[Prometheus/Grafana]
             App3[Keycloak]
         end
-        
+
         Config[Dynamic Config]
         Certs[Certificates]
         Socket[Docker Socket]
     end
-    
+
     Internet -->|Ports 80/443| Traefik
-    
+
     Traefik -->|Discover| Socket
     Traefik -->|Read| Config
     Traefik -->|Read| Certs
-    
+
     Traefik -->|Route| App1
     Traefik -->|Route| App2
     Traefik -->|Route| App3
@@ -35,26 +35,26 @@ graph TB
 
 ## Services
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
+| Service   | Image            | Role            | Resources     |
+| :-------- | :--------------- | :-------------- | :------------ |
 | `traefik` | `traefik:v3.6.6` | Ingress Gateway | 1.0 CPU / 1GB |
 
 ## Networking
 
 Traefik occupies the static IP suffix `.13` on `infra_net` and listens on standard web ports.
 
-| Service | Static IP | Ports | Host Aliases |
-| :--- | :--- | :--- | :--- |
+| Service   | Static IP     | Ports                                                                  | Host Aliases                       |
+| :-------- | :------------ | :--------------------------------------------------------------------- | :--------------------------------- |
 | `traefik` | `172.19.0.13` | `80` (HTTP)<br>`443` (HTTPS)<br>`8080` (Dashboard)<br>`8082` (Metrics) | `keycloak.*`, `auth.*`, `whoami.*` |
 
 ## Persistence
 
-| Volume | Mount Point | Description |
-| :--- | :--- | :--- |
-| `./config/traefik.yml` | `/etc/traefik/traefik.yml` | **Static Config**: Entrypoints, Providers, Tracing |
-| `./dynamic/` | `/dynamic/` | **Dynamic Config**: TLS Stores, Middlewares (BasicAuth, etc.) |
-| `secrets/certs/` | `/certs/` | **Certificates**: Custom CA or wildcard certs |
-| `/var/run/docker.sock` | `/var/run/docker.sock` | **Docker Socket**: For Service Discovery |
+| Volume                 | Mount Point                | Description                                                   |
+| :--------------------- | :------------------------- | :------------------------------------------------------------ |
+| `./config/traefik.yml` | `/etc/traefik/traefik.yml` | **Static Config**: Entrypoints, Providers, Tracing            |
+| `./dynamic/`           | `/dynamic/`                | **Dynamic Config**: TLS Stores, Middlewares (BasicAuth, etc.) |
+| `secrets/certs/`       | `/certs/`                  | **Certificates**: Custom CA or wildcard certs                 |
+| `/var/run/docker.sock` | `/var/run/docker.sock`     | **Docker Socket**: For Service Discovery                      |
 
 ## Configuration
 
@@ -84,11 +84,11 @@ To expose a Docker container via Traefik, add labels to its `docker-compose.yml`
 
 ```yaml
 labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.my-service.rule=Host(`service.${DEFAULT_URL}`)"
-  - "traefik.http.routers.my-service.entrypoints=websecure"
-  - "traefik.http.routers.my-service.tls=true"
-  - "traefik.http.services.my-service.loadbalancer.server.port=3000"
+  - 'traefik.enable=true'
+  - 'traefik.http.routers.my-service.rule=Host(`service.${DEFAULT_URL}`)'
+  - 'traefik.http.routers.my-service.entrypoints=websecure'
+  - 'traefik.http.routers.my-service.tls=true'
+  - 'traefik.http.services.my-service.loadbalancer.server.port=3000'
 ```
 
 ### 2. Enabling SSO
@@ -96,7 +96,7 @@ labels:
 To protect a service with Keycloak SSO (via OAuth2 Proxy), add the middleware:
 
 ```yaml
-  - "traefik.http.routers.my-service.middlewares=sso-auth@file"
+- 'traefik.http.routers.my-service.middlewares=sso-auth@file'
 ```
 
 ## Troubleshooting
@@ -114,13 +114,13 @@ To protect a service with Keycloak SSO (via OAuth2 Proxy), add the middleware:
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `docker-compose.yml` | Traefik edge router service definition. |
-| `config/traefik.yml` | Static config (entrypoints, providers, metrics, tracing). |
-| `config/traefik.yml.example` | Template for static config. |
-| `dynamic/middleware.yml` | ForwardAuth, basic auth, and rate-limit middlewares. |
-| `dynamic/tls.yaml` | TLS store and default cert config. |
-| `dynamic/*.example` | Template files for dynamic config. |
-| `secrets/certs/` | TLS certificates and root CA (shared). |
-| `README.md` | Usage and routing notes. |
+| Path                         | Description                                               |
+| ---------------------------- | --------------------------------------------------------- |
+| `docker-compose.yml`         | Traefik edge router service definition.                   |
+| `config/traefik.yml`         | Static config (entrypoints, providers, metrics, tracing). |
+| `config/traefik.yml.example` | Template for static config.                               |
+| `dynamic/middleware.yml`     | ForwardAuth, basic auth, and rate-limit middlewares.      |
+| `dynamic/tls.yaml`           | TLS store and default cert config.                        |
+| `dynamic/*.example`          | Template files for dynamic config.                        |
+| `secrets/certs/`             | TLS certificates and root CA (shared).                    |
+| `README.md`                  | Usage and routing notes.                                  |

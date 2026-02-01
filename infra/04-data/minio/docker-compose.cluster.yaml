@@ -7,21 +7,18 @@ x-minio-common: &minio-common
     - ${MINIO_PORT}
     - ${MINIO_CONSOLE_PORT}
   healthcheck:
-    test: ["CMD", "mc", "ready", "local"]
+    test: ['CMD', 'mc', 'ready', 'local']
     interval: 5s
     timeout: 5s
     retries: 5
   networks:
-    - nt-storage
-    - nt-webserver
-    - nt-observability
+    - infra_net
   logging:
-    driver: "json-file"
+    driver: 'json-file'
     options:
-      max-size: "5m"
-      max-file: "2"
+      max-size: '5m'
+      max-file: '2'
   environment:
-
     - MINIO_ROOT_USER=${DEFAULT_USERNAME}
     - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
 
@@ -109,3 +106,7 @@ volumes:
       type: none
       device: ${DEFAULT_STORAGE_DIR}/minio/data4
   # ######################################################################################
+
+networks:
+  infra_net:
+    external: true

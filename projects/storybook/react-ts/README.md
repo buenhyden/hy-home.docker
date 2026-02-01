@@ -1,86 +1,73 @@
-# React (TypeScript) + Storybook Design System Infrastructure
+# React + TypeScript + Vite
 
-This directory contains a complete **React (TypeScript) Design System** environment powered by **Storybook**, **Vite**, and **Docker**. It is configured for type-safe library building, interaction testing, and automated CI/CD.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 🚀 Features
+Currently, two official plugins are available:
 
-- **React 19 + Vite (TS)**: Fast development with strict TypeScript support.
-- **Type Definitions (`.d.ts`)**: Automated type generation using `vite-plugin-dts`.
-- **Storybook 8**: Component isolation, documentation, and testing.
-- **Interaction Testing**: Play functions and testing-library integration.
-- **Accessibility (A11y)**: Automated WCAG compliance checks.
-- **Figma Integration**: Design-to-code syncing.
-- **CI/CD**: GitHub Actions for testing, linting, and semantic releases.
-- **Dockerized**: Run the documentation site anywhere with Docker Compose.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## 🛠 Setup & Installation
+## React Compiler
 
-```bash
-# Install dependencies
-npm install
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-# Start development server
-npm run storybook
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+]);
 ```
 
-Storybook will open at `http://localhost:6006`.
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-## 📦 Building the Library
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x';
+import reactDom from 'eslint-plugin-react-dom';
 
-To package the components as a distributable library (ESM/UMD) with type definitions:
-
-```bash
-npm run build
-```
-
-Output will be in `dist/` including `index.d.ts`.
-
-## 🧪 Testing
-
-### Interaction Tests
-
-Run interaction tests via the test runner:
-
-```bash
-npm run test-storybook
-```
-
-### Visual Regression Testing
-
-See [VISUAL_REGRESSION.md](./VISUAL_REGRESSION.md) for setup instructions.
-
-## 🐋 Docker Usage
-
-To run the static Storybook documentation in a container:
-
-```bash
-# Build and Start
-docker-compose up --build
-```
-
-Access at `http://localhost:6006`.
-
-## 🎨 Integrations
-
-- **Figma**: See [FIGMA_INTEGRATION.md](./FIGMA_INTEGRATION.md) for linking designs.
-- **Theming**: Toggle background colors in the Storybook toolbar to test Light/Dark modes.
-
-## 🔄 CI/CD & Release
-
-- **CI**: Runs on Pull Request. Checks Lint, Build, and Tests.
-- **Release**: Runs on push to `main`. Uses **Semantic Release** to publish to NPM/GitHub Packages.
-
-## 📂 Project Structure
-
-```text
-.
-├── .github/              # CI/CD Workflows
-├── .storybook/           # Storybook Config (Addons, Preview)
-├── src/                  # Component Source Code
-│   ├── stories/          # Story Files (*.stories.tsx)
-│   ├── index.ts          # Library Entry Point
-├── vite.config.ts        # Vite & Library Config
-├── tsconfig.json         # TypeScript Config
-├── docker-compose.yml    # Docker Services
-└── package.json          # Dependencies & Scripts
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+]);
 ```

@@ -10,17 +10,17 @@ graph TB
         App[Application]
         Init[Init Service]
     end
-    
+
     subgraph "Routing Layer"
         LB[HAProxy<br/>Write: 5432 / Read: 5433]
     end
-    
+
     subgraph "Data Layer (Patroni Cluster)"
         P1[PG-0<br/>(Leader?)]
         P2[PG-1<br/>(Replica?)]
         P3[PG-2<br/>(Replica?)]
     end
-    
+
     subgraph "Consensus (DCS)"
         E1[etcd-1]
         E2[etcd-2]
@@ -29,54 +29,54 @@ graph TB
 
     App --> LB
     Init --> LB
-    
+
     LB -->|Write| P1
     LB -->|Read Round-Robin| P2
     LB -->|Read Round-Robin| P3
-    
+
     P1 <--> E1
     P1 <--> E2
     P1 <--> E3
     P2 <--> E1
     P3 <--> E1
-    
+
     P1 -.->|Replication| P2
     P1 -.->|Replication| P3
 ```
 
 ## Services
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `etcd-{1,2,3}` | `coreos/etcd:v3.6.7` | DCS (Distributed Config Store) | 256MB RAM |
-| `pg-{0,1,2}` | `zalando/spilo-17:4.0-p3` | PostgreSQL 17 + Patroni Agent | 1 CPU / 2GB |
-| `pg-router` | `haproxy:3.3.1` | SQL Traffic Router | 0.5 CPU / 256MB |
-| `pg-cluster-init` | `postgres:17-alpine` | Schema Initializer (One-off) | 0.5 CPU / 128MB |
-| `pg-*-exporter` | `postgres-exporter` | Metrics Sidecar | 0.1 CPU / 128MB |
+| Service           | Image                     | Role                           | Resources       |
+| :---------------- | :------------------------ | :----------------------------- | :-------------- |
+| `etcd-{1,2,3}`    | `coreos/etcd:v3.6.7`      | DCS (Distributed Config Store) | 256MB RAM       |
+| `pg-{0,1,2}`      | `zalando/spilo-17:4.0-p3` | PostgreSQL 17 + Patroni Agent  | 1 CPU / 2GB     |
+| `pg-router`       | `haproxy:3.3.1`           | SQL Traffic Router             | 0.5 CPU / 256MB |
+| `pg-cluster-init` | `postgres:17-alpine`      | Schema Initializer (One-off)   | 0.5 CPU / 128MB |
+| `pg-*-exporter`   | `postgres-exporter`       | Metrics Sidecar                | 0.1 CPU / 128MB |
 
 ## Networking
 
 Services run on `infra_net` with static IPs (`172.19.0.5X`).
 
-| Service | Static IP | Port (Internal) | Host Port | Traefik Domain |
-| :--- | :--- | :--- | :--- | :--- |
-| `etcd-1` | `172.19.0.50` | `2379` | `${ETCD_CLIENT_PORT}` | - |
-| `etcd-2` | `172.19.0.51` | `2379` | `${ETCD_CLIENT_PORT}` | - |
-| `etcd-3` | `172.19.0.52` | `2379` | `${ETCD_CLIENT_PORT}` | - |
-| `pg-0` | `172.19.0.53` | `5432` | `${POSTGRES_PORT}` | - |
-| `pg-1` | `172.19.0.54` | `5432` | `${POSTGRES_PORT}` | - |
-| `pg-2` | `172.19.0.55` | `5432` | `${POSTGRES_PORT}` | - |
+| Service     | Static IP     | Port (Internal)      | Host Port                                                           | Traefik Domain              |
+| :---------- | :------------ | :------------------- | :------------------------------------------------------------------ | :-------------------------- |
+| `etcd-1`    | `172.19.0.50` | `2379`               | `${ETCD_CLIENT_PORT}`                                               | -                           |
+| `etcd-2`    | `172.19.0.51` | `2379`               | `${ETCD_CLIENT_PORT}`                                               | -                           |
+| `etcd-3`    | `172.19.0.52` | `2379`               | `${ETCD_CLIENT_PORT}`                                               | -                           |
+| `pg-0`      | `172.19.0.53` | `5432`               | `${POSTGRES_PORT}`                                                  | -                           |
+| `pg-1`      | `172.19.0.54` | `5432`               | `${POSTGRES_PORT}`                                                  | -                           |
+| `pg-2`      | `172.19.0.55` | `5432`               | `${POSTGRES_PORT}`                                                  | -                           |
 | `pg-router` | `172.19.0.56` | W: `5432`, R: `5433` | W: `${POSTGRES_WRITE_HOST_PORT}`<br>R: `${POSTGRES_READ_HOST_PORT}` | `pg-haproxy.${DEFAULT_URL}` |
 
 ## Persistence
 
 Data is isolated in named volumes for each node.
 
-| Volume | Description |
-| :--- | :--- |
-| `etcd1-data`, `etcd2...` | Consensus state data |
-| `pg0-data`, `pg1...` | PostgreSQL data files (mapped to `/home/postgres/pgdata`) |
-| `haproxy.cfg` | Configuration bind mount |
+| Volume                   | Description                                               |
+| :----------------------- | :-------------------------------------------------------- |
+| `etcd1-data`, `etcd2...` | Consensus state data                                      |
+| `pg0-data`, `pg1...`     | PostgreSQL data files (mapped to `/home/postgres/pgdata`) |
+| `haproxy.cfg`            | Configuration bind mount                                  |
 
 ## Configuration
 
@@ -90,7 +90,7 @@ The `zalando/spilo` image encapsulates Postgres and Patroni. Key configuration v
 
 ### Initialization (`pg-cluster-init`)
 
-This container creates users and databases *after* the cluster is healthy.
+This container creates users and databases _after_ the cluster is healthy.
 
 - **Wait Logic**: Polls `pg_router` until it accepts connections.
 - **Execution**: Runs `./init-scripts/init_users_dbs.sql`.
@@ -148,13 +148,13 @@ If a PG node keeps restarting:
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `docker-compose.yml` | Patroni + etcd + HAProxy cluster definition. |
-| `.env.postgres` | Local env values for cluster bootstrap. |
-| `.env.postgres.example` | Template env values. |
-| `config/haproxy.cfg` | HAProxy routing for write/read split and stats. |
-| `config/haproxy.cfg.example` | Template HAProxy config. |
-| `init-scripts/init_users_dbs.sql` | Initial DB/user bootstrap (runs once). |
-| `init-scripts/init_users_dbs.sql.example` | Template bootstrap SQL. |
-| `README.md` | HA cluster usage and troubleshooting. |
+| Path                                      | Description                                     |
+| ----------------------------------------- | ----------------------------------------------- |
+| `docker-compose.yml`                      | Patroni + etcd + HAProxy cluster definition.    |
+| `.env.postgres`                           | Local env values for cluster bootstrap.         |
+| `.env.postgres.example`                   | Template env values.                            |
+| `config/haproxy.cfg`                      | HAProxy routing for write/read split and stats. |
+| `config/haproxy.cfg.example`              | Template HAProxy config.                        |
+| `init-scripts/init_users_dbs.sql`         | Initial DB/user bootstrap (runs once).          |
+| `init-scripts/init_users_dbs.sql.example` | Template bootstrap SQL.                         |
+| `README.md`                               | HA cluster usage and troubleshooting.           |

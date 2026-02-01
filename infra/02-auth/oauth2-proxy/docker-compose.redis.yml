@@ -1,15 +1,15 @@
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   oauth2-proxy:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 256M
     image: quay.io/oauth2-proxy/oauth2-proxy:v7.13.0
     container_name: oauth2-proxy
@@ -28,15 +28,15 @@ services:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
     extra_hosts:
-      - "keycloak.${DEFAULT_URL}:host-gateway"
-      - "auth.${DEFAULT_URL}:host-gateway"
+      - 'keycloak.${DEFAULT_URL}:host-gateway'
+      - 'auth.${DEFAULT_URL}:host-gateway'
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # OAuth2 콜백 처리를 위한 라우터
-      - "traefik.http.routers.oauth2-proxy.rule=Host(`auth.${DEFAULT_URL}`)"
-      - "traefik.http.routers.oauth2-proxy.entrypoints=websecure"
-      - "traefik.http.routers.oauth2-proxy.tls=true"
-      - "traefik.http.services.oauth2-proxy.loadbalancer.server.port=${OAUTH2_PROXY_PORT}"
+      - 'traefik.http.routers.oauth2-proxy.rule=Host(`auth.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.oauth2-proxy.entrypoints=websecure'
+      - 'traefik.http.routers.oauth2-proxy.tls=true'
+      - 'traefik.http.services.oauth2-proxy.loadbalancer.server.port=${OAUTH2_PROXY_PORT}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.28
@@ -46,7 +46,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 256M
     image: redis:8.4.0-bookworm # Redis 8.4.x
     container_name: oauth2-proxy-redis
@@ -68,10 +68,14 @@ services:
       '
     # 클러스터 내부 통신 포트는 expose
     expose:
-      - "${REDIS_PORT}"
-      - "${REDIS_BUS_PORT}"
+      - '${REDIS_PORT}'
+      - '${REDIS_BUS_PORT}'
     healthcheck:
-      test: ["CMD-SHELL", "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a $REDIS_PASSWORD -h 127.0.0.1 -p 6379 ping | grep PONG"]
+      test:
+        [
+          'CMD-SHELL',
+          'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a $REDIS_PASSWORD -h 127.0.0.1 -p 6379 ping | grep PONG',
+        ]
       interval: 10s
       timeout: 3s
       retries: 5
@@ -81,12 +85,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.1"
+          cpus: '0.1'
           memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: oauth2-proxy-redis-exporter
     expose:
-      - "${REDIS_EXPORTER_PORT}"
+      - '${REDIS_EXPORTER_PORT}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.19

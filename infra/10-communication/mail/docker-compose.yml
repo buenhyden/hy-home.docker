@@ -1,9 +1,9 @@
 name: mail
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 services:
   # ----------------------------------------------------------------
   # Stalwart Mail Server (올인원 메일 서버)
@@ -52,14 +52,14 @@ services:
     networks:
       - infra_net
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.mailhog.rule=Host(`mail.${DEFAULT_URL}`)" # 메일함 접속 주소
-      - "traefik.http.routers.mailhog.entrypoints=websecure"
-      - "traefik.http.routers.mailhog.tls=true"
-      - "traefik.http.services.mailhog.loadbalancer.server.port=${MAILHOG_UI_PORT}"
-      - "traefik.http.routers.mailhog.middlewares=sso-auth@file"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.mailhog.rule=Host(`mail.${DEFAULT_URL}`)' # 메일함 접속 주소
+      - 'traefik.http.routers.mailhog.entrypoints=websecure'
+      - 'traefik.http.routers.mailhog.tls=true'
+      - 'traefik.http.services.mailhog.loadbalancer.server.port=${MAILHOG_UI_PORT}'
+      - 'traefik.http.routers.mailhog.middlewares=sso-auth@file'
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:${MAILHOG_UI_PORT} || exit 1"]
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${MAILHOG_UI_PORT} || exit 1']
       interval: 10s
       timeout: 3s
       retries: 5
@@ -68,7 +68,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M

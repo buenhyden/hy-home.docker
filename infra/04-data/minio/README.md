@@ -12,12 +12,12 @@ graph TB
         CDN[Web CDN]
         Browser[Console UI]
     end
-    
+
     subgraph "MinIO Stack"
         M[MinIO Server]
         Init[Init Container<br/>make-buckets]
     end
-    
+
     subgraph "Storage"
         Vol[Volume<br/>minio-data]
     end
@@ -26,31 +26,31 @@ graph TB
     Loki -->|S3 API/9000| M
     Tempo -->|S3 API/9000| M
     CDN -->|S3 API/9000| M
-    
+
     Init -->|Create| M
     M -->|Persist| Vol
 ```
 
 ## Services
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `minio` | `minio/minio:RELEASE.2025-09-07...` | S3 Server | 1 CPU / 1GB |
-| `minio-create-buckets` | `minio/mc:RELEASE.2025-08-13...` | Init Script | 0.1 CPU / 128MB |
+| Service                | Image                               | Role        | Resources       |
+| :--------------------- | :---------------------------------- | :---------- | :-------------- |
+| `minio`                | `minio/minio:RELEASE.2025-09-07...` | S3 Server   | 1 CPU / 1GB     |
+| `minio-create-buckets` | `minio/mc:RELEASE.2025-08-13...`    | Init Script | 0.1 CPU / 128MB |
 
 ## Networking
 
 Services run on `infra_net` with static IPs.
 
-| Service | Static IP | API Port | Console Port | Traefik Domain |
-| :--- | :--- | :--- | :--- | :--- |
+| Service | Static IP     | API Port                 | Console Port                     | Traefik Domain                                           |
+| :------ | :------------ | :----------------------- | :------------------------------- | :------------------------------------------------------- |
 | `minio` | `172.19.0.12` | `9000` (`${MINIO_PORT}`) | `9001` (`${MINIO_CONSOLE_PORT}`) | `minio.${DEFAULT_URL}`<br>`minio-console.${DEFAULT_URL}` |
 
 ## Persistence
 
-| Volume | Mount Point | Description |
-| :--- | :--- | :--- |
-| `minio-data` | `/data` | Object storage data |
+| Volume       | Mount Point | Description         |
+| :----------- | :---------- | :------------------ |
+| `minio-data` | `/data`     | Object storage data |
 
 ## Configuration
 
@@ -58,19 +58,19 @@ Services run on `infra_net` with static IPs.
 
 Credentials are managed via Docker Secrets for security.
 
-| Secret | Description |
-| :--- | :--- |
-| `minio_root_user` | Admin Username |
-| `minio_root_password` | Admin Password |
-| `minio_app_user` | Application User (for buckets) |
-| `minio_app_user_password` | Application Password |
+| Secret                    | Description                    |
+| :------------------------ | :----------------------------- |
+| `minio_root_user`         | Admin Username                 |
+| `minio_root_password`     | Admin Password                 |
+| `minio_app_user`          | Application User (for buckets) |
+| `minio_app_user_password` | Application Password           |
 
 ### Environment Variables
 
-| Variable | Description | Value |
-| :--- | :--- | :--- |
-| `MINIO_PROMETHEUS_AUTH_TYPE` | Metrics Auth | `public` (for scraping) |
-| `MINIO_API_ROOT_ACCESS` | Root API Access | `on` |
+| Variable                     | Description     | Value                   |
+| :--------------------------- | :-------------- | :---------------------- |
+| `MINIO_PROMETHEUS_AUTH_TYPE` | Metrics Auth    | `public` (for scraping) |
+| `MINIO_API_ROOT_ACCESS`      | Root API Access | `on`                    |
 
 ## Initialization Process
 
@@ -80,9 +80,9 @@ The `minio-create-buckets` container runs on startup to:
 2. Authenticate as Root.
 3. Create `minio_app_user` and assign `readwrite` policy.
 4. Create required buckets:
-    - `tempo-bucket`
-    - `loki-bucket`
-    - `cdn-bucket` (Set to Public)
+   - `tempo-bucket`
+   - `loki-bucket`
+   - `cdn-bucket` (Set to Public)
 
 ## Usage
 
@@ -135,8 +135,8 @@ If `minio-create-buckets` fails:
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `docker-compose.yml` | Single-node MinIO with bucket init sidecar. |
+| Path                          | Description                                      |
+| ----------------------------- | ------------------------------------------------ |
+| `docker-compose.yml`          | Single-node MinIO with bucket init sidecar.      |
 | `docker-compose.cluster.yaml` | Multi-node (distributed) MinIO cluster template. |
-| `README.md` | Usage and initialization notes. |
+| `README.md`                   | Usage and initialization notes.                  |

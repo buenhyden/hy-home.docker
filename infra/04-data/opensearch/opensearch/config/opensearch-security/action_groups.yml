@@ -1,4 +1,4 @@
 _meta:
-  type: "actiongroups"
+  type: 'actiongroups'
   config_version: 2
 # (Empty or minimal, standard roles will use internal defaults if not redefined)

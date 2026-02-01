@@ -61,8 +61,8 @@ docker compose up -d
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
-| `.env` | Supabase 스택 전용 환경 변수 파일. |
+| Path                 | Description                          |
+| -------------------- | ------------------------------------ |
+| `.env`               | Supabase 스택 전용 환경 변수 파일.   |
 | `docker-compose.yml` | Supabase self-hosted 전체 스택 정의. |
-| `README.md` | 서비스 구성 및 사용 안내. |
+| `README.md`          | 서비스 구성 및 사용 안내.            |

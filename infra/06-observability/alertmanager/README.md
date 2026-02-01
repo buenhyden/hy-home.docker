@@ -16,14 +16,14 @@ The configuration file is located at `config/config.yml`.
 
 1. **Copy the example configuration:**
 
-    ```bash
-    cp config.yml.example config.yml
-    ```
+   ```bash
+   cp config.yml.example config.yml
+   ```
 
 2. **Edit `config.yml`:**
-    - Update email settings (`smtp_auth_username`, `smtp_auth_password`) if you want email notifications.
-    - Slack Webhook은 파일에 직접 넣지 않고 `SLACK_ALERTMANAGER_WEBHOOK_URL`로 주입합니다.
-    - Ensure the `route.receiver` matches your desired default receiver.
+   - Update email settings (`smtp_auth_username`, `smtp_auth_password`) if you want email notifications.
+   - Slack Webhook은 파일에 직접 넣지 않고 `SLACK_ALERTMANAGER_WEBHOOK_URL`로 주입합니다.
+   - Ensure the `route.receiver` matches your desired default receiver.
 
 ### Key Settings
 

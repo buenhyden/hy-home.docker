@@ -18,16 +18,16 @@ The configuration file is located at `config/loki-config.yaml`.
 
 1. **Copy the example configuration:**
 
-    ```bash
-    cp loki-config.yaml.example loki-config.yaml
-    ```
+   ```bash
+   cp loki-config.yaml.example loki-config.yaml
+   ```
 
 2. **Edit `loki-config.yaml`:**
-    - **Storage (S3/MinIO)**: This setup uses MinIO for object storage.
-        - `endpoint`: `http://minio:9000`
-        - `access_key_id`: `${MINIO_APP_USERNAME}` (환경변수로 주입)
-        - `secret_access_key`: `${MINIO_APP_USER_PASSWORD}` (환경변수로 주입)
-        - `-config.expand-env=true` 옵션으로 환경변수 치환이 활성화됩니다.
+   - **Storage (S3/MinIO)**: This setup uses MinIO for object storage.
+     - `endpoint`: `http://minio:9000`
+     - `access_key_id`: `${MINIO_APP_USERNAME}` (환경변수로 주입)
+     - `secret_access_key`: `${MINIO_APP_USER_PASSWORD}` (환경변수로 주입)
+     - `-config.expand-env=true` 옵션으로 환경변수 치환이 활성화됩니다.
 
 ### Key Features
 

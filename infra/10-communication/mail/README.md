@@ -75,8 +75,8 @@ To send emails from other services within the `infra_net` network:
 
 ## File Map
 
-| Path | Description |
-| --- | --- |
+| Path                 | Description                                                      |
+| -------------------- | ---------------------------------------------------------------- |
 | `docker-compose.yml` | MailHog active stack + commented Stalwart Mail Server blueprint. |
-| `secrets/certs/` | TLS materials for Stalwart (cert.pem, key.pem, rootCA.pem). |
-| `README.md` | Service overview and usage notes. |
+| `secrets/certs/`     | TLS materials for Stalwart (cert.pem, key.pem, rootCA.pem).      |
+| `README.md`          | Service overview and usage notes.                                |

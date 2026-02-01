@@ -1,7 +1,7 @@
 ---
 name: ✨ Feature Request
 about: Suggest an idea for this project
-title: "[FEAT] "
+title: '[FEAT] '
 labels: enhancement
 assignees: ''
 ---
@@ -9,7 +9,7 @@ assignees: ''
 ## 🚀 Problem Statement
 
 Is your feature request related to a problem? Please describe.
-*Ex: I'm always frustrated when...*
+_Ex: I'm always frustrated when..._
 
 ## 💡 Proposed Solution
 

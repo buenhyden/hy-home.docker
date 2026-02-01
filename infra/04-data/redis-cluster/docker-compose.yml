@@ -1,10 +1,10 @@
 name: redic-cluster
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   # ##############################################################
@@ -16,7 +16,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M
@@ -37,21 +37,21 @@ services:
       - ./scripts/redis-start.sh:/usr/local/bin/redis-start.sh:ro
       # 데이터 영속화
       - redis-data-0:/data
-    command: ["sh", "/usr/local/bin/redis-start.sh"]
+    command: ['sh', '/usr/local/bin/redis-start.sh']
     # 클러스터 내부 통신 포트는 expose
     # expose:
     #   - "${REDIS_PORT}"
     #   - "${REDIS_BUS_PORT}"
     # 호스트에서 디버깅/개발용으로 6379는 0번 노드만 오픈
     ports:
-      - "${REDIS0_PORT}:${REDIS0_PORT}"
-      - "${REDIS0_BUS_PORT}:${REDIS0_BUS_PORT}"
+      - '${REDIS0_PORT}:${REDIS0_PORT}'
+      - '${REDIS0_BUS_PORT}:${REDIS0_BUS_PORT}'
     healthcheck:
       # secret 파일에서 비밀번호 읽어서 PING 체크
       test: [
-          "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
-          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS0_PORT} ping | grep PONG",
+          'CMD-SHELL',
+          'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
+          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS0_PORT} ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -64,7 +64,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M
@@ -83,18 +83,18 @@ services:
       - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./scripts/redis-start.sh:/usr/local/bin/redis-start.sh:ro
       - redis-data-1:/data
-    command: ["sh", "/usr/local/bin/redis-start.sh"]
+    command: ['sh', '/usr/local/bin/redis-start.sh']
     # expose:
     #   - "${REDIS_PORT}"
     #   - "${REDIS_BUS_PORT}"
     ports:
-      - "${REDIS1_PORT}:${REDIS1_PORT}"
-      - "${REDIS1_BUS_PORT}:${REDIS1_BUS_PORT}"
+      - '${REDIS1_PORT}:${REDIS1_PORT}'
+      - '${REDIS1_BUS_PORT}:${REDIS1_BUS_PORT}'
     healthcheck:
       test: [
-          "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
-          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS1_PORT} ping | grep PONG",
+          'CMD-SHELL',
+          'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
+          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS1_PORT} ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -107,7 +107,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M
@@ -126,18 +126,18 @@ services:
       - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./scripts/redis-start.sh:/usr/local/bin/redis-start.sh:ro
       - redis-data-2:/data
-    command: ["sh", "/usr/local/bin/redis-start.sh"]
+    command: ['sh', '/usr/local/bin/redis-start.sh']
     # expose:
     #   - "${REDIS_PORT}"
     #   - "${REDIS_BUS_PORT}"
     ports:
-      - "${REDIS2_PORT}:${REDIS2_PORT}"
-      - "${REDIS2_BUS_PORT}:${REDIS2_BUS_PORT}"
+      - '${REDIS2_PORT}:${REDIS2_PORT}'
+      - '${REDIS2_BUS_PORT}:${REDIS2_BUS_PORT}'
     healthcheck:
       test: [
-          "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
-          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS2_PORT} ping | grep PONG",
+          'CMD-SHELL',
+          'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
+          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS2_PORT} ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -150,7 +150,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M
@@ -169,18 +169,18 @@ services:
       - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./scripts/redis-start.sh:/usr/local/bin/redis-start.sh:ro
       - redis-data-3:/data
-    command: ["sh", "/usr/local/bin/redis-start.sh"]
+    command: ['sh', '/usr/local/bin/redis-start.sh']
     # expose:
     #   - "${REDIS_PORT}"
     #   - "${REDIS_BUS_PORT}"
     ports:
-      - "${REDIS3_PORT}:${REDIS3_PORT}"
-      - "${REDIS3_BUS_PORT}:${REDIS3_BUS_PORT}"
+      - '${REDIS3_PORT}:${REDIS3_PORT}'
+      - '${REDIS3_BUS_PORT}:${REDIS3_BUS_PORT}'
     healthcheck:
       test: [
-          "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
-          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS3_PORT} ping | grep PONG",
+          'CMD-SHELL',
+          'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
+          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS3_PORT} ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -193,7 +193,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M
@@ -212,18 +212,18 @@ services:
       - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./scripts/redis-start.sh:/usr/local/bin/redis-start.sh:ro
       - redis-data-4:/data
-    command: ["sh", "/usr/local/bin/redis-start.sh"]
+    command: ['sh', '/usr/local/bin/redis-start.sh']
     # expose:
     #   - "${REDIS_PORT}"
     #   - "${REDIS_BUS_PORT}"
     ports:
-      - "${REDIS4_PORT}:${REDIS4_PORT}"
-      - "${REDIS4_BUS_PORT}:${REDIS4_BUS_PORT}"
+      - '${REDIS4_PORT}:${REDIS4_PORT}'
+      - '${REDIS4_BUS_PORT}:${REDIS4_BUS_PORT}'
     healthcheck:
       test: [
-          "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
-          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS4_PORT} ping | grep PONG",
+          'CMD-SHELL',
+          'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
+          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS4_PORT} ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -236,7 +236,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.5"
+          cpus: '0.5'
           memory: 512M
         reservations:
           memory: 256M
@@ -255,18 +255,18 @@ services:
       - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
       - ./scripts/redis-start.sh:/usr/local/bin/redis-start.sh:ro
       - redis-data-5:/data
-    command: ["sh", "/usr/local/bin/redis-start.sh"]
+    command: ['sh', '/usr/local/bin/redis-start.sh']
     # expose:
     #   - "${REDIS_PORT}"
     #   - "${REDIS_BUS_PORT}"
     ports:
-      - "${REDIS5_PORT}:${REDIS5_PORT}"
-      - "${REDIS5_BUS_PORT}:${REDIS5_BUS_PORT}"
+      - '${REDIS5_PORT}:${REDIS5_PORT}'
+      - '${REDIS5_BUS_PORT}:${REDIS5_BUS_PORT}'
     healthcheck:
       test: [
-          "CMD-SHELL",
-          "REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
-          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS5_PORT} ping | grep PONG",
+          'CMD-SHELL',
+          'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
+          $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS5_PORT} ping | grep PONG',
         ]
       interval: 10s
       timeout: 3s
@@ -288,11 +288,11 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.66
-    restart: "no"
+    restart: 'no'
     deploy:
       resources:
         limits:
-          cpus: "0.1"
+          cpus: '0.1'
           memory: 128M
     depends_on:
       redis-node-0:
@@ -309,7 +309,7 @@ services:
         condition: service_healthy
     volumes:
       - ./scripts/redis-cluster-init.sh:/usr/local/bin/redis-cluster-init.sh:ro
-    command: ["sh", "/usr/local/bin/redis-cluster-init.sh"]
+    command: ['sh', '/usr/local/bin/redis-cluster-init.sh']
     logging: *default-logging
   # ##############################################################
   # Redis Exporter – Prometheus용 메트릭
@@ -321,12 +321,12 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.1"
+          cpus: '0.1'
           memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: redis-exporter
     ports:
-      - "${REDIS_EXPORTER_HOST_PORT}:${REDIS_EXPORTER_PORT}"
+      - '${REDIS_EXPORTER_HOST_PORT}:${REDIS_EXPORTER_PORT}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.67

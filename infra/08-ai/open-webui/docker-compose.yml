@@ -1,10 +1,10 @@
 name: open-webui
 
 x-logging: &default-logging
-  driver: "json-file"
+  driver: 'json-file'
   options:
-    max-size: "5m"
-    max-file: "2"
+    max-size: '5m'
+    max-file: '2'
 
 services:
   # 2. Open WebUI 서비스 (선택 사항: ChatGPT 같은 웹 인터페이스)
@@ -14,7 +14,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
+          cpus: '1.0'
           memory: 1G
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
@@ -35,15 +35,15 @@ services:
       infra_net:
         ipv4_address: 172.19.0.42
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
 
       # 챗봇 UI 라우터 (https://chat.${DEFAULT_URL})
-      - "traefik.http.routers.open-webui.rule=Host(`chat.${DEFAULT_URL}`)"
-      - "traefik.http.routers.open-webui.entrypoints=websecure"
-      - "traefik.http.routers.open-webui.tls=true"
+      - 'traefik.http.routers.open-webui.rule=Host(`chat.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.open-webui.entrypoints=websecure'
+      - 'traefik.http.routers.open-webui.tls=true'
 
       # [중요] 내부 포트 8080 연결 (Open WebUI 기본 포트)
-      - "traefik.http.services.open-webui.loadbalancer.server.port=8080"
+      - 'traefik.http.services.open-webui.loadbalancer.server.port=8080'
     logging: *default-logging
 
 volumes:

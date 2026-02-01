@@ -2,7 +2,7 @@ services:
   mongo-key-generator:
     image: alpine:3.23.2
     container_name: mongo-key-generator
-    restart: "no" # 한 번 실행하고 종료됨
+    restart: 'no' # 한 번 실행하고 종료됨
     volumes:
       - mongo-key:/data/configdb # 여기는 RW(읽기/쓰기)로 마운트
     command: >
@@ -14,7 +14,7 @@ services:
         else
           echo 'KeyFile already exists.';
         fi;
-        
+
         # [핵심] 권한 강제 설정 (MongoDB 유저 ID: 999)
         echo 'Setting permissions...';
         chown 999:999 /data/configdb/mongodb.key;
@@ -25,22 +25,22 @@ services:
     image: mongo:8.2.3-noble
     restart: unless-stopped
     container_name: mongodb-rep1
-    hostname: mongodb-rep1    
+    hostname: mongodb-rep1
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
     # 볼륨 설정
-    volumes:      
+    volumes:
       - mongodb1-data:/data/db:rw
       - mongo-key:/data/configdb:ro
     command:
-      - "--replSet"
-      - "MyReplicaSet"
-      - "--keyFile"
-      - "/data/configdb/mongodb.key"
-      - "--bind_ip_all"
+      - '--replSet'
+      - 'MyReplicaSet'
+      - '--keyFile'
+      - '/data/configdb/mongodb.key'
+      - '--bind_ip_all'
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -55,32 +55,32 @@ services:
     image: mongo:8.2.3-noble
     restart: unless-stopped
     container_name: mongodb-rep2
-    hostname: mongodb-rep2    
+    hostname: mongodb-rep2
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
     # 볼륨 설정
-    volumes:      
+    volumes:
       - mongodb2-data:/data/db:rw
       - mongo-key:/data/configdb:ro
     command:
-      - "--replSet"
-      - "MyReplicaSet"
-      - "--keyFile"
-      - "/data/configdb/mongodb.key"
-      - "--bind_ip_all"
+      - '--replSet'
+      - 'MyReplicaSet'
+      - '--keyFile'
+      - '/data/configdb/mongodb.key'
+      - '--bind_ip_all'
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 30s
     networks:
-      - infra_net    
+      - infra_net
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
-  
+
   # [추가] MongoDB Arbiter (투표권만 가진 가벼운 노드, 데이터 저장 안 함)
   mongodb-arbiter:
     image: mongo:8.2.3-noble
@@ -91,11 +91,11 @@ services:
     volumes:
       - mongo-key:/data/configdb:ro
     command:
-      - "--replSet"
-      - "MyReplicaSet"
-      - "--keyFile"
-      - "/data/configdb/mongodb.key"
-      - "--bind_ip_all"
+      - '--replSet'
+      - 'MyReplicaSet'
+      - '--keyFile'
+      - '/data/configdb/mongodb.key'
+      - '--bind_ip_all'
     networks:
       - infra_net
     depends_on:
@@ -105,7 +105,7 @@ services:
   mongo-init:
     image: mongo:8.2.3-noble
     container_name: mongo-init
-    restart: "no"
+    restart: 'no'
     networks:
       - infra_net
     depends_on:
@@ -148,7 +148,7 @@ services:
       ME_CONFIG_MONGODB_AUTH_DATABASE: admin
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_ROOT_USERNAME}
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ROOT_PASSWORD}
-      
+
       ME_CONFIG_MONGODB_SERVER: mongodb-rep1,mongodb-rep2,mongodb-arbiter
       ME_CONFIG_MONGODB_REPLICA_SET: MyReplicaSet
       ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_CONFIG_BASICAUTH_USERNAME}
@@ -156,13 +156,13 @@ services:
     expose:
       - ${MONGO_EXPRESS_PORT}
     labels:
-      - "traefik.enable=true"      
+      - 'traefik.enable=true'
       # mongo-express 라우터
       # 도메인: mongo-express.pg.${DEFAULT_URL}
-      - "traefik.http.routers.mongo-express.rule=Host(`mongo-express.${DEFAULT_URL}`)"
-      - "traefik.http.routers.mongo-express.entrypoints=websecure"
-      - "traefik.http.routers.mongo-express.tls=true"
-      - "traefik.http.services.mongo-express.loadbalancer.server.port=${MONGO_EXPRESS_PORT}"
+      - 'traefik.http.routers.mongo-express.rule=Host(`mongo-express.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.mongo-express.entrypoints=websecure'
+      - 'traefik.http.routers.mongo-express.tls=true'
+      - 'traefik.http.services.mongo-express.loadbalancer.server.port=${MONGO_EXPRESS_PORT}'
     networks:
       - infra_net
     depends_on:
@@ -178,11 +178,11 @@ services:
       - ${MONGO_EXPORTER_PORT}
     command:
       # [수정] 변수명 통일 (NOSQL_ROOT_USER -> MONGODB_ROOT_USERNAME) 및 Connection String 정리
-      - "--mongodb.uri=mongodb://${MONGODB_ROOT_USERNAME}:${MONGODB_ROOT_PASSWORD}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin"
+      - '--mongodb.uri=mongodb://${MONGODB_ROOT_USERNAME}:${MONGODB_ROOT_PASSWORD}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin'
       # (선택) 컬렉션 수집 활성화
-      - "--collect.collection" 
-      - "--collect.database"
-      - "--collect.indexusage"
+      - '--collect.collection'
+      - '--collect.database'
+      - '--collect.indexusage'
     depends_on:
       mongo-init:
         condition: service_completed_successfully

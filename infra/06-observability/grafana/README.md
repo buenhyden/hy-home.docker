@@ -26,6 +26,7 @@ Key variables include:
 Grafana uses "Provisioning" to automatically configure datasources and dashboards on startup, avoiding manual setup.
 
 - **Datasources**: `provisioning/datasources/datasource.yml`
+
   - **Prometheus**: Metrics backend.
   - **Loki**: Logs backend.
   - **Tempo**: Traces backend (includes links to Loki for Trace-to-Log correlation).

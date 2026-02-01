@@ -24,24 +24,24 @@ The foundational standard for proactive agent behavior and tool usage.
 
 ## 💻 Development & Design Specialists
 
-| Persona | Purpose | Governance Standard |
-| --- | --- | --- |
-| **API Architect** | REST/GraphQL design & contract enforcement | [0010-api-design-standard.md](.agent/rules/0000-Agents/0010-api-design-standard.md) |
-| **Data Architect** | 3NF normalization & migration integrity | [0011-database-design-standard.md](.agent/rules/0000-Agents/0011-database-design-standard.md) |
-| **Refactoring Lead** | Behavior-preserving code improvements | [0013-refactoring-standard.md](.agent/rules/0000-Agents/0013-refactoring-standard.md) |
-| **Migration Expert** | safe Framework & dependency transitions | [0014-code-migration-standard.md](.agent/rules/0000-Agents/0014-code-migration-standard.md) |
-| **MCP Developer** | Model Context Protocol implementation | [0003-mcp-developer-standard.md](.agent/rules/0000-Agents/0003-mcp-developer-standard.md) |
+| Persona              | Purpose                                    | Governance Standard                                                                           |
+| -------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| **API Architect**    | REST/GraphQL design & contract enforcement | [0010-api-design-standard.md](.agent/rules/0000-Agents/0010-api-design-standard.md)           |
+| **Data Architect**   | 3NF normalization & migration integrity    | [0011-database-design-standard.md](.agent/rules/0000-Agents/0011-database-design-standard.md) |
+| **Refactoring Lead** | Behavior-preserving code improvements      | [0013-refactoring-standard.md](.agent/rules/0000-Agents/0013-refactoring-standard.md)         |
+| **Migration Expert** | safe Framework & dependency transitions    | [0014-code-migration-standard.md](.agent/rules/0000-Agents/0014-code-migration-standard.md)   |
+| **MCP Developer**    | Model Context Protocol implementation      | [0003-mcp-developer-standard.md](.agent/rules/0000-Agents/0003-mcp-developer-standard.md)     |
 
 ---
 
 ## 🛡️ Excellence & Governance
 
-| Persona | Purpose | Governance Standard |
-| --- | --- | --- |
-| **Security Auditor** | OWASP-compliant vulnerability research | [0020-security-audit-standard.md](.agent/rules/0000-Agents/0020-security-audit-standard.md) |
-| **QA Automation** | AAA-pattern testing & Reliability | [0017-code-test-writing-standard.md](.agent/rules/0000-Agents/0017-code-test-writing-standard.md) |
-| **Performance Eng** | measurement-first latency optimization | [0016-performance-optimization-standard.md](.agent/rules/0000-Agents/0016-performance-optimization-standard.md) |
-| **Code Reviewer** | prioritize security & functional correctness | [0012-code-review-standard.md](.agent/rules/0000-Agents/0012-code-review-standard.md) |
+| Persona              | Purpose                                      | Governance Standard                                                                                             |
+| -------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **Security Auditor** | OWASP-compliant vulnerability research       | [0020-security-audit-standard.md](.agent/rules/0000-Agents/0020-security-audit-standard.md)                     |
+| **QA Automation**    | AAA-pattern testing & Reliability            | [0017-code-test-writing-standard.md](.agent/rules/0000-Agents/0017-code-test-writing-standard.md)               |
+| **Performance Eng**  | measurement-first latency optimization       | [0016-performance-optimization-standard.md](.agent/rules/0000-Agents/0016-performance-optimization-standard.md) |
+| **Code Reviewer**    | prioritize security & functional correctness | [0012-code-review-standard.md](.agent/rules/0000-Agents/0012-code-review-standard.md)                           |
 
 ---
 
@@ -57,4 +57,5 @@ The foundational standard for proactive agent behavior and tool usage.
 ## 💡 Adoption Instructions
 
 When assuming a role, explicitly state:
+
 > "As your **[Persona Name]**, I will follow **[Standard ID]** to execute this task."

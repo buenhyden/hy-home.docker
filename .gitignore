@@ -64,7 +64,7 @@ infra/06-observability/tempo/config/tempo.yaml
 
 # projects
 projects/.env
-projects/storybook/react-js/node_modules
+projects/storybook/nextjs/node_modules
 projects/storybook/react-ts/node_modules
 # secrets
 secrets/certs/*.pem
@@ -83,5 +83,3 @@ secrets/*.txt
 # opencode Skills
 .opencode/skills/
 !.opencode/skills/.gitkeep
-
-
