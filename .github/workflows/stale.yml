@@ -6,14 +6,18 @@ on:
 
 jobs:
   stale:
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/stale@v10
         with:
-          stale-issue-message: '이 이슈는 소통이 없어 stale 상태로 표시되었습니다. 7일
-            내에 답변이 없으면 닫힙니다.'
-          stale-pr-message: '이 PR은 소통이 없어 stale 상태로 표시되었습니다. 7일 내에
-            답변이 없으면 닫힙니다.'
+          stale-issue-message: '이 이슈는 소통이 없어 stale 상태로 표시되었습니다. 7일 내에 답변이
+            없으면 닫힙니다.'
+          stale-pr-message: '이 PR은 소통이 없어 stale 상태로 표시되었습니다. 7일 내에 답변이
+            없으면 닫힙니다.'
           days-before-stale: 30
           days-before-close: 7
           stale-issue-label: 'stale'

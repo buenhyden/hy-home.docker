@@ -1,8 +1,22 @@
+# Dependencies
+node_modules/
+.venv/
+vendor/
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+
+# Project specific
+agent/workflows/
+agent/rules/
 .agent/workflows/
 .agent/rules/
-node_modules/
-.git/
-dist/
+.history/
 coverage/
+tmp/
+
 storybook-static/
 *.min.js
