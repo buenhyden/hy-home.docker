@@ -29,10 +29,10 @@ services:
           printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; \
           cat <&3 | grep -Eq '\"status\"[[:space:]]*:[[:space:]]*\"UP\"' && exit 0 || exit 1",
         ]
-      interval: 30s
-      timeout: 10s
+      interval: 15s
+      timeout: 15s
       retries: 5
-      start_period: 90s
+      start_period: 60s
     environment:
       KC_DB: ${KEYCLOAK_DATABASE}
       KC_DB_URL: jdbc:postgresql://${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${KEYCLOAK_DBNAME}

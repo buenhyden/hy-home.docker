@@ -86,10 +86,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: ['CMD-SHELL', 'nc -z localhost ${N8N_PORT} || exit 1'] # 간단한 포트 체크 방식
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
-      start_period: 20s
+      start_period: 30s
     networks:
       infra_net:
         ipv4_address: 172.19.0.14
@@ -171,9 +171,10 @@ services:
           'CMD-SHELL',
           'V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   n8n-valkey-exporter:

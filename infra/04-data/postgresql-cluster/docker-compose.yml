@@ -32,10 +32,10 @@ services:
       - --initial-cluster-token=pg-ha-etcd
     healthcheck:
       test: ['CMD', 'etcdctl', 'endpoint', 'health', '--endpoints=http://localhost:2379']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
-      start_period: 20s # 초기 클러스터 구성 시간을 벌어줍니다.
+      start_period: 30s
     volumes:
       - etcd1-data:/etcd-data
     expose:
@@ -68,10 +68,10 @@ services:
       - --initial-cluster-token=pg-ha-etcd
     healthcheck:
       test: ['CMD', 'etcdctl', 'endpoint', 'health', '--endpoints=http://localhost:2379']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
-      start_period: 20s # 초기 클러스터 구성 시간을 벌어줍니다.
+      start_period: 30s
     volumes:
       - etcd2-data:/etcd-data
     expose:
@@ -104,10 +104,10 @@ services:
       - --initial-cluster-token=pg-ha-etcd
     healthcheck:
       test: ['CMD', 'etcdctl', 'endpoint', 'health', '--endpoints=http://localhost:2379']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
-      start_period: 20s # 초기 클러스터 구성 시간을 벌어줍니다.
+      start_period: 30s
     volumes:
       - etcd3-data:/etcd-data
     expose:
@@ -156,9 +156,10 @@ services:
       - ${POSTGRES_PORT}
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     networks:
       infra_net:
         ipv4_address: 172.19.0.53
@@ -209,9 +210,10 @@ services:
     logging: *default-logging
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     expose:
       - ${POSTGRES_PORT}
     depends_on:
@@ -263,9 +265,10 @@ services:
       - ${POSTGRES_PORT}
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     depends_on:
       etcd-1:
         condition: service_healthy
@@ -388,9 +391,10 @@ services:
           'CMD-SHELL',
           'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
         ]
-      interval: 30s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
   pg-1-exporter:
     deploy:
       resources:
@@ -424,9 +428,10 @@ services:
           'CMD-SHELL',
           'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
         ]
-      interval: 30s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
   pg-2-exporter:
     deploy:
       resources:
@@ -460,9 +465,10 @@ services:
           'CMD-SHELL',
           'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
         ]
-      interval: 30s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
 
 volumes:
   pg0-data:

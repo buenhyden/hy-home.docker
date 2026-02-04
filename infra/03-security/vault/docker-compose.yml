@@ -39,10 +39,10 @@ services:
           'CMD-SHELL',
           'curl -fsS "http://localhost:${VAULT_PORT}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || wget -q --spider "http://localhost:${VAULT_PORT}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || exit 1',
         ]
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
-      start_period: 20s
+      start_period: 30s
     labels:
       # Enable self‑routing
       - 'traefik.enable=true'

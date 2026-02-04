@@ -29,10 +29,10 @@ services:
         ipv4_address: 172.19.0.40
     healthcheck:
       test: ['CMD', 'ollama', 'list']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
-      start_period: 60s # 모델 로드 시간을 고려하여 여유 있게 설정
+      start_period: 60s
     deploy:
       resources:
         limits:

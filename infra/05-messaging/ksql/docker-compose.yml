@@ -45,9 +45,9 @@ services:
           'CMD-SHELL',
           'curl -fsS http://localhost:${KSQLDB_PORT}/info || wget -q --spider http://localhost:${KSQLDB_PORT}/info || exit 1',
         ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      interval: 15s
+      timeout: 15s
+      retries: 5
       start_period: 30s
     logging: *default-logging
 

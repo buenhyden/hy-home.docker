@@ -51,9 +51,10 @@ services:
           'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY0_PORT} ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   valkey-node-1:
@@ -92,9 +93,10 @@ services:
           'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY1_PORT} ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   valkey-node-2:
@@ -133,9 +135,10 @@ services:
           'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY2_PORT} ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   valkey-node-3:
@@ -174,9 +177,10 @@ services:
           'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY3_PORT} ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   valkey-node-4:
@@ -215,9 +219,10 @@ services:
           'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY4_PORT} ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   valkey-node-5:
@@ -256,9 +261,10 @@ services:
           'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY5_PORT} ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   # ##############################################################

@@ -8,9 +8,10 @@ x-minio-common: &minio-common
     - ${MINIO_CONSOLE_PORT}
   healthcheck:
     test: ['CMD', 'mc', 'ready', 'local']
-    interval: 5s
-    timeout: 5s
+    interval: 15s
+    timeout: 15s
     retries: 5
+    start_period: 30s
   networks:
     - infra_net
   logging:

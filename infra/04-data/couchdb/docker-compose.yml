@@ -32,9 +32,10 @@ services:
           - couchdb-1.infra_net
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:${COUCHDB_PORT}/_up']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     labels:
       - 'traefik.enable=true'
       # [Router] 도메인 설정: couchdb.${DEFAULT_URL}
@@ -77,9 +78,10 @@ services:
           - couchdb-2.infra_net
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:${COUCHDB_PORT}/_up']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     labels:
       - 'traefik.enable=true'
       # [중요] 라우터(Host 규칙) 설정은 제거함 (충돌 방지)
@@ -116,9 +118,10 @@ services:
           - couchdb-3.infra_net
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:${COUCHDB_PORT}/_up']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     labels:
       - 'traefik.enable=true'
       # [서비스 합류]

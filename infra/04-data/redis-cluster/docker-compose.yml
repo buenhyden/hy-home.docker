@@ -53,9 +53,10 @@ services:
           'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS0_PORT} ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   redis-node-1:
@@ -96,9 +97,10 @@ services:
           'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS1_PORT} ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   redis-node-2:
@@ -139,9 +141,10 @@ services:
           'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS2_PORT} ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   redis-node-3:
@@ -182,9 +185,10 @@ services:
           'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS3_PORT} ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   redis-node-4:
@@ -225,9 +229,10 @@ services:
           'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS4_PORT} ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   redis-node-5:
@@ -268,9 +273,10 @@ services:
           'REDIS_PASSWORD=$(cat /run/secrets/redis_password); redis-cli -a
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS5_PORT} ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   # ##############################################################

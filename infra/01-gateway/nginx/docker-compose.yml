@@ -26,10 +26,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:${HTTP_PORT} || exit 1']
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
-      start_period: 10s
+      start_period: 30s
     logging: *default-logging
     deploy:
       resources:

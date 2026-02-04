@@ -48,9 +48,10 @@ services:
       # - "traefik.http.middlewares.cdn-cache.headers.customResponseHeaders.Cache-Control=public, max-age=604800"
     healthcheck:
       test: ['CMD', 'traefik', 'healthcheck', '--ping']
-      interval: 10s
-      timeout: 10s
-      retries: 30
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
     networks:
       infra_net:
         ipv4_address: 172.19.0.13

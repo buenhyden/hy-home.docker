@@ -26,9 +26,10 @@ services:
           '-e',
           "fetch('http://studio:3000/api/platform/profile').then((r) => {if (r.status !== 200) throw new Error(r.status)})",
         ]
-      timeout: 10s
-      interval: 5s
-      retries: 3
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
     depends_on:
       analytics:
         condition: service_healthy
@@ -101,9 +102,10 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:9999/health']
-      timeout: 5s
-      interval: 5s
-      retries: 3
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -215,9 +217,10 @@ services:
           'Authorization: Bearer ${ANON_KEY}',
           'http://localhost:4000/api/tenants/realtime-dev/health',
         ]
-      timeout: 5s
-      interval: 5s
-      retries: 3
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
     environment:
       PORT: 4000
       DB_HOST: ${POSTGRES_HOST}
@@ -246,9 +249,10 @@ services:
       - ./volumes/storage:/var/lib/storage:z
     healthcheck:
       test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://storage:5000/status']
-      timeout: 5s
-      interval: 5s
-      retries: 3
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -283,9 +287,10 @@ services:
       - ./volumes/storage:/var/lib/storage:z
     healthcheck:
       test: ['CMD', 'imgproxy', 'health']
-      timeout: 5s
-      interval: 5s
-      retries: 3
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
     environment:
       IMGPROXY_BIND: ':5001'
       IMGPROXY_LOCAL_FILESYSTEM_ROOT: /
@@ -347,9 +352,10 @@ services:
     #     read_only: true
     healthcheck:
       test: ['CMD', 'curl', 'http://localhost:4000/health']
-      timeout: 5s
-      interval: 5s
-      retries: 10
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -401,9 +407,10 @@ services:
       - db-config:/etc/postgresql-custom
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres', '-h', 'localhost']
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
     depends_on:
       vector:
         condition: service_healthy
@@ -435,9 +442,10 @@ services:
       - ${DOCKER_SOCKET_LOCATION:-/var/run/docker.sock}:/var/run/docker.sock:ro,z
     healthcheck:
       test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://vector:9001/health']
-      timeout: 5s
-      interval: 5s
-      retries: 3
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
     environment:
       LOGFLARE_PUBLIC_ACCESS_TOKEN: ${LOGFLARE_PUBLIC_ACCESS_TOKEN}
     command: ['--config', '/etc/vector/vector.yml']
@@ -458,9 +466,10 @@ services:
     healthcheck:
       test:
         ['CMD', 'curl', '-sSfL', '--head', '-o', '/dev/null', 'http://127.0.0.1:4000/api/health']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     depends_on:
       db:
         condition: service_healthy

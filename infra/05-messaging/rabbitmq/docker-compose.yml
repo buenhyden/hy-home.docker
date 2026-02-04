@@ -27,8 +27,8 @@ services:
         ipv4_address: 172.19.0.21
     healthcheck:
       test: ['CMD', 'rabbitmq-diagnostics', '-q', 'check_running']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
       start_period: 30s
     logging: *default-logging

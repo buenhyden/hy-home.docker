@@ -41,9 +41,10 @@ services:
           'CMD-SHELL',
           'V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG',
         ]
-      interval: 10s
-      timeout: 3s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   mng-valkey-exporter:
@@ -143,9 +144,10 @@ services:
       - ./init-scripts/init_users_dbs.sql:/docker-entrypoint-initdb.d/init_users_dbs.sql
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
   mng-pg-init:
     deploy:
@@ -182,9 +184,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
     logging: *default-logging
 
   mng-pg-exporter:
@@ -219,9 +222,10 @@ services:
           'CMD-SHELL',
           'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
         ]
-      interval: 30s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 5
+      start_period: 30s
 
 volumes:
   mng-pg-data:

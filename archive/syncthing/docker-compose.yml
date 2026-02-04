@@ -31,8 +31,8 @@ services:
           'CMD-SHELL',
           'curl -fkLsS -m 2 syncthing:8384/rest/noauth/health | grep -o --color=never OK || exit 1',
         ]
-      interval: 30s
-      timeout: 10s
+      interval: 15s
+      timeout: 15s
       retries: 5
       start_period: 30s
     logging: *default-logging
