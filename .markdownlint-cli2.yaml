@@ -1,0 +1,19 @@
+config:
+  MD013:
+    line_length: 350
+    heading_line_length: 120
+    code_block_line_length: 0 # 코드 블록은 무시
+  MD060:
+    style: consistent
+  MD033:
+    allowed_elements:
+      - div
+      - br
+      - p
+  MD024: false
+
+# 자동 고침 활성화
+fix: true
+# 출력 포맷(선택)
+# outputFormatters:
+#   - - markdownlint-cli2-formatter-pretty

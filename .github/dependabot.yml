@@ -12,8 +12,16 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'monday'
-    reviewers:
-      - 'buenhyden'
+    open-pull-requests-limit: 10
+    cooldown:
+      default-days: 7
+    labels:
+      - 'dependencies'
+      - 'github-actions'
+    groups:
+      actions:
+        patterns:
+          - '*'
 
   # 2. Docker (Root)
   # 루트 디렉토리의 Dockerfile 및 Docker Compose 파일의 베이스 이미지를 감시합니다.
@@ -22,12 +30,16 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'monday'
-    reviewers:
-      - 'buenhyden'
+    open-pull-requests-limit: 10
+    labels:
+      - 'dependencies'
+      - 'docker'
     groups:
-      docker-dependencies:
+      actions:
         patterns:
           - '*'
+    cooldown:
+      default-days: 7
 
   # 3. Docker (Infra Layer)
   # infra/ 디렉토리 하위의 인프라 서비스 관련 Docker 의존성을 감시합니다.
@@ -36,8 +48,9 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'monday'
-    reviewers:
-      - 'buenhyden'
+    open-pull-requests-limit: 10
+    cooldown:
+      default-days: 7
     groups:
       infra-dependencies:
         patterns:
@@ -49,5 +62,6 @@ updates:
     directory: '/infra'
     schedule:
       interval: 'weekly'
-    reviewers:
-      - 'buenhyden'
+    open-pull-requests-limit: 10
+    cooldown:
+      default-days: 7

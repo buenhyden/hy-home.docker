@@ -1,5 +1,6 @@
 .history/
 .vscode/
+node_modules/
 .mypy_cache/
 .pytest_cache/
 .agent/rules/
