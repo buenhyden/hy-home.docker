@@ -54,11 +54,26 @@ def main():
         "FLOWER_PORT": "5555",
         "STATSD_AIRFLOW_PORT": "9125",
         "STATSD_PROMETHEUS_PORT": "9102",
+        "REDIS_PASSWORD": "dummy",
+        "AIRFLOW_UID": "50000",
+        "INFRA_SUBNET": "172.19.0.0/16",
+        "INFRA_GATEWAY": "172.19.0.1",
+        "POSTGRES_HOSTNAME": "localhost",
+        "POSTGRES_PORT": "5432",
+        "REDIS_NODE_NAME": "localhost",
+        "REDIS_PORT": "6379",
+        "STATSD_HOST": "localhost",
+        "AIRFLOW_DB_USER": "airflow",
+        "AIRFLOW_DB_PASSWORD": "dummy",
+        "AIRFLOW_IMAGE_NAME": "apache/airflow:latest",
     }
 
     for key, value in dummy_defaults.items():
         if key not in env_vars:
             env_vars[key] = value
+
+    # Explicitly set COMPOSE_INTERACTIVE_NO_CLI to avoid issues in CI
+    env_vars["COMPOSE_INTERACTIVE_NO_CLI"] = "1"
 
     for f in files:
         # Normalize path separators for checking against docker-compose.yml content
