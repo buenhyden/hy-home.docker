@@ -1,0 +1,25 @@
+_meta:
+  type: 'internalusers'
+  config_version: 2
+
+# admin user
+admin:
+  hash: <REPLACE_ME>
+  reserved: true
+  backend_roles:
+    - 'admin'
+  description: 'Administrator user'
+
+# user for Dashboards
+kibanaserver:
+  hash: <REPLACE_ME>
+  reserved: true
+  description: 'Dashboards server user'
+
+# user for Prometheus Exporter
+exporter:
+  hash: <REPLACE_ME>
+  reserved: false
+  backend_roles:
+    - 'readall'
+  description: 'Prometheus exporter user'

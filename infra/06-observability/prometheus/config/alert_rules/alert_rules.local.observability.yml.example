@@ -1,0 +1,68 @@
+groups:
+  # ============================================================================
+  # [10] Observability Stack (LGTM)
+  # ============================================================================
+  - name: lgtm_alerts
+    rules:
+      - alert: LokiRequestErrors
+        expr:
+          100 *
+          sum(rate(loki_request_duration_seconds_count{status_code=~"5.."}[1m]))
+          by (namespace, job, route) /
+          sum(rate(loki_request_duration_seconds_count[1m])) by (namespace, job,
+          route) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Loki 요청 에러율 10% 초과"
+          description:
+            "Loki 경로 {{ $labels.route }} 에서 에러가 10% 이상 발생 중입니다."
+
+      - alert: LokiProcessTooManyRestarts
+        expr: changes(process_start_time_seconds{job=~".*loki.*"}[15m]) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Loki 과다 재시작"
+          description: "Loki가 15분 내 2회 이상 재시작되었습니다."
+
+      - alert: LokiRequestPanic
+        expr: sum(increase(loki_panic_total[10m])) by (namespace, job) > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Loki 패닉 발생"
+          description: "Loki에서 패닉이 발생했습니다."
+
+      - alert: LokiRequestLatency
+        expr:
+          (histogram_quantile(0.99,
+          sum(rate(loki_request_duration_seconds_bucket{route!~"(?i).*tail.*"}[5m]))
+          by (le))) > 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Loki 요청 지연 높음"
+          description: "Loki 99 퍼센타일 요청 지연이 1초를 초과했습니다."
+
+      - alert: GrafanaAlloyDown
+        expr: up{job="alloy"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Grafana Alloy 다운"
+          description: "Alloy 메트릭 수집기가 응답하지 않습니다."
+
+      - alert: TempoDown
+        expr: up{job="tempo"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Tempo 다운"
+          description: "Tempo 트레이싱 서비스가 응답하지 않습니다."

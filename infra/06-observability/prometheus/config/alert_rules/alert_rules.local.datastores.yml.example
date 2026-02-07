@@ -1,0 +1,206 @@
+groups:
+  # ============================================================================
+  # [3] Databases (Valkey)
+  # ============================================================================
+  - name: valkey_alerts
+    rules:
+      # NOTE: valkey-exporter는 redis_exporter 기반이므로 메트릭 prefix가 redis_* 입니다.
+      # job 라벨로 Valkey 관련 exporter만 필터링합니다.
+      - alert: ValkeyDown
+        expr: redis_up{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Valkey 다운: {{ $labels.instance }}"
+          description:
+            "Valkey 인스턴스 {{ $labels.instance }} 가 1분 이상 down 상태입니다."
+
+      - alert: ValkeyMemoryCritical
+        expr:
+          redis_memory_max_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"} > 0 and on(instance, job)
+          (redis_memory_used_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"} /
+          redis_memory_max_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"} > 0.9)
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Valkey 메모리 90% 초과: {{ $labels.instance }}"
+          description: "Valkey 인스턴스 메모리 사용률이 90%를 초과했습니다."
+
+      - alert: ValkeyRejectedConnections
+        expr: increase(redis_rejected_connections_total{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}[1m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Valkey 연결 거부 발생: {{ $labels.instance }}"
+          description: "Valkey가 연결을 거부하고 있습니다."
+
+  # ============================================================================
+  # [4] Databases (PostgreSQL)
+  # ============================================================================
+  - name: postgres_alerts
+    rules:
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL 다운: {{ $labels.instance }}"
+          description:
+            "PostgreSQL 인스턴스 {{ $labels.instance }} 가 1분 이상 down
+            상태입니다."
+
+      - alert: PostgresqlRestarted
+        expr: time() - pg_postmaster_start_time_seconds < 60
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL 재시작됨: {{ $labels.instance }}"
+          description: "PostgreSQL이 최근 재시작되었습니다."
+
+      - alert: PostgresqlExporterError
+        expr: pg_exporter_last_scrape_error > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL 익스포터 에러: {{ $labels.instance }}"
+          description: "PostgreSQL 익스포터에서 에러가 발생했습니다."
+
+      - alert: PostgresTooManyConnections
+        expr:
+          sum by (instance, job, server) (pg_stat_activity_count) > min by
+          (instance, job, server) (pg_settings_max_connections * 0.8)
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "DB 연결 수 80% 초과: {{ $labels.instance }}"
+          description:
+            "PostgreSQL 인스턴스 {{ $labels.instance }} 활성 세션이
+            max_connections의 80%를 초과했습니다."
+
+      - alert: PostgresDeadlocks
+        expr:
+          increase(pg_stat_database_deadlocks{datname!~"template.*|postgres"}[1m])
+          > 5
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Postgres 교착 상태 발생: {{ $labels.instance }}"
+          description: "최근 1분간 {{ $value }} 개의 데드락이 발생했습니다."
+
+      - alert: PostgresHighRollbackRate
+        expr: >
+          sum by (namespace, datname)
+          ((rate(pg_stat_database_xact_rollback{datname!~"template.*|postgres",
+          datid!="0"}[3m])) /
+          ((rate(pg_stat_database_xact_rollback{datname!~"template.*|postgres",
+          datid!="0"}[3m])) +
+          (rate(pg_stat_database_xact_commit{datname!~"template.*|postgres",
+          datid!="0"}[3m])))) > 0.02
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Postgres 롤백 비율 높음"
+          description:
+            "롤백 비율이 2%를 초과했습니다 (DB: {{ $labels.datname }})."
+
+      - alert: PostgresqlReplicationLag
+        expr:
+          pg_replication_lag > 30 and on(instance) pg_replication_is_replica ==
+          1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL 복제 지연: {{ $labels.instance }}"
+          description: "PostgreSQL 복제 지연이 30초를 초과했습니다."
+
+      - alert: PostgresqlTableNotAutoVacuumed
+        expr:
+          ((pg_stat_user_tables_n_tup_del + pg_stat_user_tables_n_tup_upd +
+          pg_stat_user_tables_n_tup_hot_upd) >
+          pg_settings_autovacuum_vacuum_threshold) and (time() -
+          pg_stat_user_tables_last_autovacuum) > 60 * 60 * 24 * 10
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL 테이블 VACUUM 미수행"
+          description:
+            "테이블 {{ $labels.relname }}이 10일간 자동 VACUUM되지 않았습니다."
+
+  # ============================================================================
+  # [5] Object Storage (MinIO)
+  # ============================================================================
+  - name: Minio_alerts
+    rules:
+      - alert: MinioServiceDown
+        expr: up{job="minio"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MinIO 서비스 다운: {{ $labels.instance }}"
+          description: "MinIO 인스턴스가 응답하지 않습니다."
+
+      - alert: MinioClusterDiskOffline
+        expr: minio_cluster_drive_offline_total > 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MinIO 클러스터 디스크 오프라인"
+          description: "MinIO 클러스터에서 디스크가 오프라인입니다."
+
+      - alert: MinioDiskSpaceUsage
+        expr: (sum(minio_cluster_capacity_used_bytes) / sum(minio_cluster_capacity_total_bytes)) > 0.85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "MinIO 디스크 공간 부족"
+          description: "MinIO 클러스터 사용률이 85%를 초과했습니다."
+
+  # ============================================================================
+  # [6] Vector DB (Qdrant)
+  # ============================================================================
+  - name: Qdrant_alerts
+    rules:
+      - alert: QdrantDown
+        expr: up{job="qdrant-monitor"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Qdrant 서비스 다운"
+          description:
+            "Qdrant 인스턴스 {{ $labels.instance }} 가 1분 이상 응답하지
+            않습니다."
+
+      - alert: QdrantHighMemoryUsage
+        expr: memory_resident_bytes > 2 * 1024 * 1024 * 1024
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Qdrant 메모리 사용량 높음"
+          description: >
+            Qdrant 프로세스 메모리(resident)가 2GiB를 초과했습니다. 현재 값: {{
+            $value | humanize1024 }}
+
+      - alert: QdrantHighOpenFds
+        expr: process_open_fds / process_max_fds > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Qdrant 파일 디스크립터 사용률 80% 초과"
+          description: "Qdrant 프로세스의 FD 사용률이 80%를 초과했습니다."

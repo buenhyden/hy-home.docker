@@ -1,0 +1,32 @@
+groups:
+  # ============================================================================
+  # [11] Authentication (Keycloak)
+  # ============================================================================
+  - name: keycloak_alerts
+    rules:
+      - alert: KeycloakDown
+        expr: up{job="keycloak"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Keycloak 다운"
+          description: "Keycloak 인증 서버가 응답하지 않습니다."
+
+      - alert: KeycloakHighLoginFailures
+        expr: increase(keycloak_login_error_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Keycloak 로그인 실패 급증"
+          description: "5분 내 로그인 실패가 10회를 초과했습니다."
+
+      - alert: KeycloakTokenRefreshFailed
+        expr: increase(keycloak_refresh_token_error_total[5m]) > 10
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Keycloak 토큰 갱신 실패 급증"
+          description: "5분 내 토큰 갱신 실패가 10회를 초과했습니다."

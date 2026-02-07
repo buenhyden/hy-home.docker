@@ -9,18 +9,18 @@ discovery.type: single-node
 # Security Settings
 # ==============================================================================
 plugins.security.disabled: false
-plugins.security.ssl.transport.pemcert_filepath: certs/cert.pem
-plugins.security.ssl.transport.pemkey_filepath: certs/key.pem
+plugins.security.ssl.transport.pemcert_filepath: <REPLACE_ME>
+plugins.security.ssl.transport.pemkey_filepath: <REPLACE_ME>
 plugins.security.ssl.transport.pemtrustedcas_filepath: certs/rootCA.pem
 plugins.security.ssl.transport.enforce_hostname_verification: false
 plugins.security.ssl.http.enabled: true
-plugins.security.ssl.http.pemcert_filepath: certs/cert.pem
-plugins.security.ssl.http.pemkey_filepath: certs/key.pem
+plugins.security.ssl.http.pemcert_filepath: <REPLACE_ME>
+plugins.security.ssl.http.pemkey_filepath: <REPLACE_ME>
 plugins.security.ssl.http.pemtrustedcas_filepath: certs/rootCA.pem
 
 # 초기 설치 시 보안 인덱스 자동 생성 허용
 plugins.security.allow_default_init_securityindex: true
-plugins.security.allow_unsafe_democertificates: true
+plugins.security.allow_unsafe_democertificates: <REPLACE_ME>
 
 plugins.security.authcz.admin_dn:
   - "CN=localhost, O=mkcert dev, L=Seoul, ST=Seoul, C=KR"

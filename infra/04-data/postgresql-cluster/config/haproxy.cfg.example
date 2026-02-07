@@ -32,7 +32,7 @@ backend pg-primary
   option httpchk GET /master
   http-check expect status 200
   # 서버 공통 헬스체크 옵션
-  default-server inter 5s fall 3 rise 2 on-marked-down shutdown-sessions
+  default-server inter 2s fall 3 rise 2 on-marked-down shutdown-sessions
   # 데이터 트래픽은 5432, 헬스체크는 Patroni REST 포트(8008 가정)
   server pg0 pg-0:5432 check port 8008
   server pg1 pg-1:5432 check port 8008

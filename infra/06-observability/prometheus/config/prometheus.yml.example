@@ -9,7 +9,8 @@ alerting:
 
 # [NEW] 알람 규칙 파일 로드 (local)
 rule_files:
-  - "alert_rules.local.*.yml"
+  - "alert_rules/alert_rules.local.*.yml"
+# - "alert_rules.k8s.yml"  # K8S 전용 (필요 시 별도 Prometheus 설정에서 로드)
 
 scrape_configs:
   - job_name: "prometheus"
@@ -31,6 +32,8 @@ scrape_configs:
       - targets: ["tempo:3200"]
 
   - job_name: "cadvisor"
+    scrape_interval: 1m      # 15s → 60s 등
+    scrape_timeout: 50s      # fsHandler 지연을 고려해 크게 잡기
     static_configs:
       - targets: ["cadvisor:8080"]
 
@@ -58,16 +61,37 @@ scrape_configs:
       # Docker 네트워크 내부 포트(9187) 사용
       - targets: ["mng-pg-exporter:9187"]
 
-  - job_name: "redis-cluster"
+  # - job_name: "redis-cluster"
+  #   static_configs:
+  #     - targets:
+  #         # 여기에 6개 노드의 주소를 모두 적습니다.
+  #         - redis://redis-node-0:6379
+  #         - redis://redis-node-1:6379
+  #         - redis://redis-node-2:6379
+  #         - redis://redis-node-3:6379
+  #         - redis://redis-node-4:6379
+  #         - redis://redis-node-5:6379
+  #   metrics_path: /scrape
+  #   relabel_configs:
+  #     - source_labels: [__address__]
+  #       target_label: __param_target
+  #     - source_labels: [__address__]
+  #       target_label: instance
+  #     - source_labels: [__address__]
+  #       target_label: addr
+  #     - target_label: __address__
+  #       # Docker Compose에서 실행 중인 Exporter의 서비스명:포트
+  #       replacement: redis-exporter:9121
+  - job_name: "valkey-cluster"
     static_configs:
       - targets:
           # 여기에 6개 노드의 주소를 모두 적습니다.
-          - redis://redis-node-0:6379
-          - redis://redis-node-1:6379
-          - redis://redis-node-2:6379
-          - redis://redis-node-3:6379
-          - redis://redis-node-4:6379
-          - redis://redis-node-5:6379
+          - redis://valkey-node-0:6379
+          - redis://valkey-node-1:6380
+          - redis://valkey-node-2:6381
+          - redis://valkey-node-3:6382
+          - redis://valkey-node-4:6383
+          - redis://valkey-node-5:6384
     metrics_path: /scrape
     relabel_configs:
       - source_labels: [__address__]
@@ -78,15 +102,29 @@ scrape_configs:
         target_label: addr
       - target_label: __address__
         # Docker Compose에서 실행 중인 Exporter의 서비스명:포트
-        replacement: redis-exporter:9121
-
-  - job_name: "mng-redis-exporter"
+        replacement: valkey-exporter:9121
+  - job_name: "oauth2-proxy-valkey-exporter"
     static_configs:
-      - targets: ["mng-redis-exporter:9121"]
+      - targets: ["oauth2-proxy-valkey-exporter:9121"]
 
-  - job_name: "n8n-redis-exporter"
+  - job_name: "mng-valkey-exporter"
     static_configs:
-      - targets: ["n8n-redis-exporter:9121"]
+      - targets: ["mng-valkey-exporter:9121"]
+
+  - job_name: "n8n-valkey-exporter"
+    static_configs:
+      - targets: ["n8n-valkey-exporter:9121"]
+  # - job_name: "oauth2-proxy-redis-exporter"
+  #   static_configs:
+  #     - targets: ["oauth2-proxy-redis-exporter:9121"]
+
+  # - job_name: "mng-redis-exporter"
+  #   static_configs:
+  #     - targets: ["mng-redis-exporter:9121"]
+
+  # - job_name: "n8n-redis-exporter"
+  #   static_configs:
+  #     - targets: ["n8n-redis-exporter:9121"]
 
   - job_name: "kafka-exporter"
     static_configs:
@@ -108,9 +146,9 @@ scrape_configs:
     static_configs:
       - targets: ["qdrant:6333"] # Qdrant는 기본적으로 6333/metrics를 엽니다.
 
-  - job_name: "ollama"
-    static_configs:
-      - targets: ["ollama-exporter:8000"]
+  # - job_name: "ollama"
+  #   static_configs:
+  #     - targets: ["ollama-exporter:8000"]
 
   - job_name: "haproxy"
     static_configs:
@@ -122,11 +160,26 @@ scrape_configs:
     static_configs:
       - targets: ["keycloak:9000"]
 
-  - job_name: "opensearch-exporter"
-    metrics_path: /metrics
+  # - job_name: "opensearch-exporter"
+  #   metrics_path: /metrics
+  #   static_configs:
+  #     # Docker 네트워크 내부 통신이므로 서비스 이름 사용
+  #     - targets: ["opensearch-exporter:9114"]
+  - job_name: opensearch
+    scrape_interval: 10s
+    metrics_path: "/_prometheus/metrics"
+    scheme: https
     static_configs:
-      # Docker 네트워크 내부 통신이므로 서비스 이름 사용
-      - targets: ["opensearch-exporter:9114"]
+      - targets:
+          - opensearch:9200
+    basic_auth:
+      username: "exporter"      # OpenSearch 사용자 ID (기본값: admin)
+      password: <REPLACE_ME>
+    tls_config:
+      # 인증서 검증을 건너뜁니다.
+      insecure_skip_verify: true
+      # 인증서 검증은 수행하되, 기대하는 서버 이름을 인증서 내 도메인으로 지정합니다.
+      # server_name: "hy-home.local"
 
   # - job_name: 'airflow'
   #   static_configs:

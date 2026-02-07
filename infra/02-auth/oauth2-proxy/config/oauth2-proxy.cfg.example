@@ -5,8 +5,10 @@ provider = "keycloak-oidc"
 client_id = "proxy-client"
 # .env의 변수를 여기서는 쓸 수 없으므로, 직접 값을 넣거나
 # 민감한 정보는 docker-compose의 environment에 남겨둬도 됩니다.
-# 여기서는 파일 관리를 위해 직접 적는 예시입니다.
-client_secret = "<client_secret>"
+
+
+# [핵심 추가] 그룹 정보를 가져오기 위해 groups 스코프를 반드시 추가합니다.
+scope = "openid email profile offline_access groups"
 
 # Keycloak 내부 주소 (host-gateway)
 #oidc_issuer_url = "http://keycloak:8080/realms/hy-home.realm"
@@ -26,14 +28,9 @@ upstreams = [ "static://200" ]
 
 # --- 쿠키 설정 (CSRF 해결) ---
 cookie_name = "__Secure-sso-cookie"
-cookie_secret = "<cookie_secret>"
+
 
 # (쿠키/CSRF가 정상 동작하는지 보고, 그 다음에 여러 서브도메인으로 확장)
-# cookie_domains:
-#   - "hy-home.local"
-# whitelist_domains:
-#   - "hy-home.local"
-# cookie_domains = [ ".hy-home.local" ]
 cookie_domains = [ ".127.0.0.1.nip.io" ]
 
 cookie_secure = true
@@ -53,8 +50,11 @@ email_domains = [ "*" ]
 
 http_address = "0.0.0.0:4180"
 reverse_proxy = true
-set_xauthrequest = true
 skip_provider_button = true
-
+# [추가] 헤더를 통해 그룹 정보를 전달하기 위한 설정
+# OAuth2 Proxy가 추출한 클레임(Claim)을 상위 애플리케이션(Grafana 등)에 전달합니다.
+pass_authorization_header : <REPLACE_ME>
+pass_access_token : <REPLACE_ME>
+set_xauthrequest = true
 # --- SSL 설정 ---
 ssl_insecure_skip_verify = false

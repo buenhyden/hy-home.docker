@@ -14,10 +14,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1.0'
-          memory: 1G
+          cpus: '2.0'
+          memory: 2G
         reservations:
-          memory: 512M
+          memory: 1G
     image: prom/prometheus:v3.9.0
     container_name: infra-prometheus
     restart: unless-stopped
@@ -47,10 +47,10 @@ services:
           '--spider',
           'http://localhost:${PROMETHEUS_PORT}/-/healthy',
         ]
-      interval: 15s
+      interval: 30s
       timeout: 15s
       retries: 5
-      start_period: 30s
+      start_period: 3m
     labels:
       - 'traefik.enable=true'
       # 도메인: prometheus.${DEFAULT_URL}
@@ -281,7 +281,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 512M
+          memory: 1G
     image: gcr.io/cadvisor/cadvisor:v0.55.1
     container_name: cadvisor
     hostname: cadvisor
@@ -317,8 +317,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
-          memory: 256M
+          cpus: '1.0'
+          memory: 1G
     image: prom/alertmanager:v0.30.0
     container_name: infra-alertmanager
     environment:
@@ -356,7 +356,7 @@ services:
       interval: 15s
       timeout: 15s
       retries: 5
-      start_period: 30s
+      start_period: 1m
     labels:
       - 'traefik.enable=true'
       # Alertmanager UI: alertmanager.${DEFAULT_URL}

@@ -1,0 +1,44 @@
+groups:
+  # ============================================================================
+  # [7] Messaging (Kafka)
+  # ============================================================================
+  - name: kafka_alerts
+    rules:
+      - alert: KafkaBrokerDown
+        expr: kafka_brokers < 1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Kafka 브로커 다운 감지"
+          description:
+            "Kafka 브로커 수가 기대값보다 적습니다. 현재 {{ $value }} 개입니다."
+
+      - alert: KafkaTopicUnderReplicatedPartition
+        expr:
+          sum(kafka_topic_partition_under_replicated_partition) by (topic) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kafka 복제 미달 파티션: {{ $labels.topic }}"
+          description: "토픽 {{ $labels.topic }} 의 복제본 수가 부족합니다."
+
+      - alert: KafkaTopicsReplicas
+        expr: min(kafka_topic_partition_in_sync_replica) by (topic) < 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kafka ISR 부족: {{ $labels.topic }}"
+          description: "토픽 {{ $labels.topic }}의 ISR 수가 부족합니다."
+
+      - alert: KafkaConsumersGroupLag
+        expr: sum(kafka_consumergroup_lag) by (consumergroup) > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kafka 컨슈머 그룹 지연: {{ $labels.consumergroup }}"
+          description:
+            "컨슈머 그룹 {{ $labels.consumergroup }}의 지연이 50을 초과했습니다."

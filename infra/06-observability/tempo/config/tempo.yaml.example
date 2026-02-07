@@ -20,14 +20,14 @@ compactor:
   compaction:
     compaction_window: 1h
     max_block_bytes: 100_000_000
-    block_retention: 24h # 하루치 데이터 보관
+    block_retention: 24h  # 하루치 데이터 보관
     compacted_block_retention: 1h
 
 # ---------- 메트릭 생성기 설정 (Tempo → Prometheus remote_write) ----------
 metrics_generator:
   ring:
     kvstore:
-      store: inmemory # 단일 노드 구성이므로 인메모리 사용 (Empty ring 오류 해결)
+      store: inmemory  # 단일 노드 구성이므로 인메모리 사용 (Empty ring 오류 해결)
   processor:
     span_metrics:
       dimensions:
@@ -53,11 +53,11 @@ storage:
 
     # S3 backend 설정 (MinIO)
     s3:
-      bucket: tempo-bucket # MinIO에 미리 만들어둔 bucket 이름
-      endpoint: minio:9000 # Docker 네트워크 상의 MinIO 엔드포인트
-      access_key: minio_user # MINIO_ROOT_USER (또는 전용 계정)
-      secret_key: <secret_key> # MINIO_ROOT_PASSWORD (또는 전용 계정 비밀번호)
-      insecure: true # http 사용이므로 true
+      bucket: tempo-bucket  # MinIO에 미리 만들어둔 bucket 이름
+      endpoint: minio:9000  # Docker 네트워크 상의 MinIO 엔드포인트
+      access_key: <REPLACE_ME>
+      secret_key: <REPLACE_ME>
+      insecure: true  # http 사용이므로 true
 
 # ---------- 공통 오버라이드 ----------
 overrides:

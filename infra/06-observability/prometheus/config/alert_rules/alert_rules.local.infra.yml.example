@@ -1,0 +1,108 @@
+groups:
+  # ============================================================================
+  # [1] Infrastructure (Container & cAdvisor)
+  # ============================================================================
+  - name: infrastructure_alerts
+    rules:
+      # [What] High CPU Usage / CPU 사용률 높음
+      - alert: ContainerHighCpuUtilization
+        expr:
+          (sum(rate(container_cpu_usage_seconds_total{name!=""}[5m])) by (name)
+          /
+          sum(container_spec_cpu_quota{name!=""}/container_spec_cpu_period{name!=""})
+          by (name) * 100) > 90
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU 과부하 지속: {{ $labels.name }}"
+          description:
+            "{{ $labels.name }} 컨테이너가 CPU 90% 이상을 점유
+            중입니다.\n  VALUE = {{ $value }}"
+
+      # [What] High Memory Usage / 메모리 사용률 높음
+      - alert: ContainerHighMemoryUsage
+        expr:
+          (sum(container_memory_working_set_bytes{name!=""}) BY (instance, name)
+          / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) *
+          100) > 90
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "메모리 사용량 높음: {{ $labels.name }}"
+          description:
+            "{{ $labels.name }} 컨테이너가 메모리 리밋의 90% 이상을 사용
+            중입니다.\n  VALUE = {{ $value }}"
+
+      # [What] Container Memory Critical / 메모리 위험 수준
+      - alert: ContainerMemoryCritical
+        expr:
+          (sum(container_memory_working_set_bytes{name!=""}) BY (instance, name)
+          / sum(container_spec_memory_limit_bytes > 0) BY (instance, name) *
+          100) > 95
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "메모리 부족 임박: {{ $labels.name }}"
+          description:
+            "{{ $labels.name }} 컨테이너가 메모리 리밋의 95% 이상을 사용
+            중입니다. OOM 위험이 있습니다.\n  VALUE = {{ $value }}"
+
+      # [What] Container Volume Usage High / 볼륨 사용량 높음
+      - alert: ContainerVolumeUsage
+        expr:
+          (1 - (sum(container_fs_inodes_free{name!=""}) BY (instance) /
+          sum(container_fs_inodes_total) BY (instance))) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "컨테이너 볼륨 사용량 높음: {{ $labels.instance }}"
+          description:
+            "컨테이너 볼륨 사용량이 80%를 초과했습니다.\n  VALUE = {{ $value }}"
+
+      # [What] Container CPU Throttled / CPU 쓰로틀링
+      - alert: ContainerHighThrottleRate
+        expr:
+          sum(increase(container_cpu_cfs_throttled_periods_total{container!=""}[5m]))
+          by (container, pod, namespace) /
+          sum(increase(container_cpu_cfs_periods_total[5m])) by (container, pod,
+          namespace) > 0.25
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "컨테이너 CPU 쓰로틀링: {{ $labels.container }}"
+          description:
+            "컨테이너가 25% 이상 CPU 쓰로틀링되고 있습니다.\n  VALUE = {{ $value
+            }}"
+
+  # ============================================================================
+  # [2] n8n Automation
+  # ============================================================================
+  - name: n8n_alerts
+    rules:
+      # [What] Workflow Failed / 워크플로우 실패
+      - alert: N8nWorkflowFailed
+        expr:
+          increase(n8n_workflow_execution_count_total{status="error"}[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "n8n 워크플로우 실패 감지"
+          description:
+            "workflow_id={{ $labels.workflow_id }} 실행 중 에러가 발생했습니다."
+
+      # [What] Leader Instance Missing / 리더 인스턴스 누락
+      - alert: N8nLeaderMissing
+        expr: max(n8n_instance_role_leader) < 1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "n8n 리더 인스턴스 없음"
+          description:
+            "n8n 리더가 감지되지 않습니다. (HA 구성/리더 선출/메트릭 노출 상태를 확인하세요.)"

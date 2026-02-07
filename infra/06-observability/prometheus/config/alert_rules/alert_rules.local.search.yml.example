@@ -1,0 +1,80 @@
+groups:
+  # ============================================================================
+  # [8] Search (OpenSearch)
+  # ============================================================================
+  - name: OpenSearch_alerts
+    rules:
+      # NOTE: opensearch-exporter 스크레이프가 활성화되어 있어야 합니다.
+      - alert: OpenSearchHealthRed
+        expr: elasticsearch_cluster_health_status{color="red"} == 1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "OpenSearch 상태 RED"
+          description: "OpenSearch 클러스터 상태가 RED 입니다."
+
+      - alert: OpenSearchClusterYellow
+        expr: elasticsearch_cluster_health_status{color="yellow"} == 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "OpenSearch 클러스터 상태 YELLOW"
+          description:
+            "OpenSearch 클러스터 상태가 YELLOW입니다. 일부 복제본이 할당되지
+            않았습니다."
+
+      - alert: OpenSearchHeapUsageTooHigh
+        expr:
+          (elasticsearch_jvm_memory_used_bytes{area="heap"} /
+          elasticsearch_jvm_memory_max_bytes{area="heap"}) * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "OpenSearch 힙 메모리 90% 초과"
+          description: "JVM 힙 메모리 사용량이 90%를 넘었습니다."
+
+      - alert: OpenSearchHeapUsageWarning
+        expr:
+          (elasticsearch_jvm_memory_used_bytes{area="heap"} /
+          elasticsearch_jvm_memory_max_bytes{area="heap"}) * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "OpenSearch 힙 메모리 80% 초과"
+          description: "JVM 힙 메모리 사용량이 80%를 넘었습니다."
+
+      - alert: OpenSearchDiskSpaceLow
+        expr:
+          elasticsearch_filesystem_data_available_bytes /
+          elasticsearch_filesystem_data_size_bytes * 100 < 20
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "OpenSearch 디스크 공간 부족"
+          description: "OpenSearch 디스크 사용량이 80%를 초과했습니다."
+
+      - alert: OpenSearchDiskOutOfSpace
+        expr:
+          elasticsearch_filesystem_data_available_bytes /
+          elasticsearch_filesystem_data_size_bytes * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "OpenSearch 디스크 공간 없음"
+          description: "OpenSearch 디스크 사용량이 90%를 초과했습니다."
+
+      - alert: OpenSearchUnassignedShards
+        expr: elasticsearch_cluster_health_unassigned_shards > 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "OpenSearch 미할당 샤드"
+          description:
+            "OpenSearch에서 {{ $value }}개의 샤드가 할당되지 않았습니다."
