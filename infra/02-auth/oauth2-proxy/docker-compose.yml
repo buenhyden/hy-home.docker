@@ -16,7 +16,6 @@ services:
     image: quay.io/oauth2-proxy/oauth2-proxy:v7.13.0
     container_name: oauth2-proxy
     restart: unless-stopped
-    # [1] 설정 파일 로드 명령
     command: --config /etc/oauth2-proxy.cfg
     environment:
       # [2] 시스템 레벨 환경 변수 (설정 파일로 대체 불가)
@@ -24,14 +23,13 @@ services:
       - SSL_CERT_FILE=/etc/ssl/certs/rootCA.pem
       - OAUTH2_PROXY_CLIENT_SECRET=${OAUTH2_PROXY_CLIENT_SECRET}
       - OAUTH2_PROXY_COOKIE_SECRET=${OAUTH2_PROXY_COOKIE_SECRET}
-      - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://:${REDIS_PASSWORD}@oauth2-proxy-redis:6379
+      - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://:${VALKEY_PASSWORD}@oauth2-proxy-valkey:6379
     volumes:
       # 호스트의 mkcert RootCA를 컨테이너 내부로 주입
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
-    extra_hosts:
-      - 'keycloak.${DEFAULT_URL}:host-gateway'
-      - 'auth.${DEFAULT_URL}:host-gateway'
+    secrets:
+      - valkey_password
     labels:
       - 'traefik.enable=true'
       # OAuth2 콜백 처리를 위한 라우터
@@ -115,7 +113,7 @@ services:
         echo "Starting Valkey Exporter..."
         # -redis.password-file 대신 -redis.password 사용
         exec /redis_exporter \
-          -redis.addr=redis://mng-valkey:6379 \
+          -redis.addr=redis://oauth2-proxy-valkey:6379 \
           -redis.password="$VALKEY_PASSWORD" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT}
     depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)

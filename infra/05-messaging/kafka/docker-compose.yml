@@ -24,10 +24,6 @@ x-kafka-broker-common: &kafka-broker-common
         memory: 1G
   networks:
     infra_net: {}
-  volumes:
-    - type: volume
-      source: ${KAFKA_DATA_VOLUME}
-      target: /var/lib/kafka/data
   environment: &kafka-broker-env-common # ---- KRaft 공통 ----
     CLUSTER_ID: ${KAFKA_CLUSTER_ID}
     KAFKA_PROCESS_ROLES: 'broker,controller'
@@ -53,7 +49,9 @@ x-kafka-broker-common: &kafka-broker-common
     KAFKA_NUM_PARTITIONS: 3
     KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     KAFKA_GROUP_MAX_SESSION_TIMEOUT_MS: 45000
-    KAFKA_CONTROLLER_QUORUM_FETCH_TIMEOUT_MS: 3000
+    KAFKA_REQUEST_TIMEOUT_MS: 10000
+    KAFKA_CONTROLLER_QUORUM_FETCH_TIMEOUT_MS: 10000
+    KAFKA_CONTROLLER_QUORUM_REQUEST_TIMEOUT_MS: 10000
 
     # ---- JVM ----
     KAFKA_HEAP_OPTS: '-Xms1G -Xmx1G'

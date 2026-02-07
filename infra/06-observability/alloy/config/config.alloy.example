@@ -10,9 +10,61 @@ discovery.docker "linux" {
   host = "unix:///var/run/docker.sock"
 }
 
+discovery.relabel "docker_logs_relabel" {
+  targets = discovery.docker.linux.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_label_observability_logs"]
+    regex         = "(?i)false|off|0"
+    action        = "drop"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "service_name"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container_name"
+    replacement   = "$1"
+  }
+
+  rule {
+    source_labels = ["service_name", "container_name"]
+    separator     = ";"
+    regex         = ";(.*)"
+    target_label  = "service_name"
+    replacement   = "$1"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_project"]
+    target_label  = "compose_project"
+  }
+
+  rule {
+    target_label = "env"
+    replacement  = "dev"
+  }
+
+  rule {
+    target_label = "scope"
+    replacement  = "app"
+  }
+
+  rule {
+    source_labels = ["service_name"]
+    regex         = "prometheus|loki|tempo|grafana|alloy|cadvisor|alertmanager|pushgateway|traefik"
+    target_label  = "scope"
+    replacement   = "infra"
+  }
+}
+
 loki.source.docker "default" {
   host       = "unix:///var/run/docker.sock"
-  targets    = discovery.docker.linux.targets
+  targets    = discovery.relabel.docker_logs_relabel.output
   forward_to = [loki.write.local_loki.receiver]
 }
 

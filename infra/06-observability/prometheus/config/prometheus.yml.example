@@ -1,6 +1,9 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  external_labels:
+    env: dev
+    stack: hy-homedocker
 
 alerting:
   alertmanagers:
@@ -18,15 +21,18 @@ scrape_configs:
       - targets: ["localhost:9090"]
 
   - job_name: "alloy"
+    scrape_interval: 30s
     static_configs:
       - targets: ["alloy:12345"]
 
   - job_name: "loki"
+    scrape_interval: 30s
     metrics_path: /metrics
     static_configs:
       - targets: ["loki:3100"]
 
   - job_name: "tempo"
+    scrape_interval: 30s
     metrics_path: /metrics
     static_configs:
       - targets: ["tempo:3200"]
@@ -36,12 +42,22 @@ scrape_configs:
     scrape_timeout: 50s      # fsHandler 지연을 고려해 크게 잡기
     static_configs:
       - targets: ["cadvisor:8080"]
+    metric_relabel_configs:
+      - source_labels: [id]
+        regex: '^/$'
+        action: drop
+      - action: labeldrop
+        regex: 'container_label_com_docker_compose_(config_hash|project_working_dir|project_config_files|replace|container_number|oneoff|version|depends_on)'
+      - action: labeldrop
+        regex: 'container_label_desktop_docker_io_ports_scheme'
 
   - job_name: "alertmanager"
+    scrape_interval: 30s
     static_configs:
       - targets: ["alertmanager:9093"]
 
   - job_name: "traefik"
+    scrape_interval: 30s
     static_configs:
       - targets: ["traefik:8082"] # 도커 서비스명:메트릭포트
   # -----------------------------------------------
@@ -131,17 +147,20 @@ scrape_configs:
       - targets: ["kafka-exporter:9308"]
 
   - job_name: "minio"
+    scrape_interval: 30s
     metrics_path: /minio/v2/metrics/cluster
     scheme: http
     static_configs:
       - targets: ["minio:9000"]
 
   - job_name: "n8n-monitor"
+    scrape_interval: 30s
     metrics_path: "/metrics"
     static_configs:
       - targets: ["n8n:5678"] # 도커 네트워크 내부에서 n8n 컨테이너를 찾음
 
   - job_name: "qdrant-monitor"
+    scrape_interval: 30s
     metrics_path: "/metrics"
     static_configs:
       - targets: ["qdrant:6333"] # Qdrant는 기본적으로 6333/metrics를 엽니다.
@@ -155,6 +174,7 @@ scrape_configs:
       - targets: ["pg-router:8404"] # 도커 내부 통신
 
   - job_name: "keycloak"
+    scrape_interval: 30s
     metrics_path: /metrics
     scheme: http
     static_configs:
@@ -166,7 +186,7 @@ scrape_configs:
   #     # Docker 네트워크 내부 통신이므로 서비스 이름 사용
   #     - targets: ["opensearch-exporter:9114"]
   - job_name: opensearch
-    scrape_interval: 10s
+    scrape_interval: 30s
     metrics_path: "/_prometheus/metrics"
     scheme: https
     static_configs:

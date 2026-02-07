@@ -32,16 +32,18 @@ metrics_generator:
     span_metrics:
       dimensions:
         - service.name
-        - http.method
         - http.status_code
     service_graphs:
-      max_items: 10000
+      max_items: 2000
+    local_blocks: {}
   storage:
     # metrics_generator용 WAL 경로
     path: /var/tempo/generator/wal
     remote_write:
       - url: http://prometheus:9090/api/v1/write
         send_exemplars: true
+  traces_storage:
+    path: /var/tempo/generator/traces
 
 # ---------- Trace 저장소: MinIO(S3) backend ----------
 storage:

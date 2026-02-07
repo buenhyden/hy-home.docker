@@ -283,6 +283,12 @@ services:
           cpus: '0.5'
           memory: 1G
     image: gcr.io/cadvisor/cadvisor:v0.55.1
+    command:
+      - '--docker_only=true'
+      - '--housekeeping_interval=30s'
+      - '--max_housekeeping_interval=35s'
+      - '--event_storage_event_limit=default=0'
+      - '--event_storage_age_limit=default=0'
     container_name: cadvisor
     hostname: cadvisor
     restart: unless-stopped

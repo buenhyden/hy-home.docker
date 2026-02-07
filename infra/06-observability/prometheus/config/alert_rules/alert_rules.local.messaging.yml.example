@@ -25,13 +25,15 @@ groups:
           description: "토픽 {{ $labels.topic }} 의 복제본 수가 부족합니다."
 
       - alert: KafkaTopicsReplicas
-        expr: min(kafka_topic_partition_in_sync_replica) by (topic) < 2
+        expr:
+          min(kafka_topic_partition_in_sync_replica) by (topic)
+          < max(kafka_topic_partition_replicas) by (topic)
         for: 5m
         labels:
           severity: warning
         annotations:
           summary: "Kafka ISR 부족: {{ $labels.topic }}"
-          description: "토픽 {{ $labels.topic }}의 ISR 수가 부족합니다."
+          description: "토픽 {{ $labels.topic }}의 ISR이 설정된 복제본 수보다 작습니다."
 
       - alert: KafkaConsumersGroupLag
         expr: sum(kafka_consumergroup_lag) by (consumergroup) > 50
