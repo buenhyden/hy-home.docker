@@ -25,6 +25,8 @@ services:
       - bootstrap.memory_lock=true
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD}
       - DISABLE_INSTALL_DEMO_CONFIG=true
+      # base image entrypoint starts a separate PA agent CLI by default; disable to reduce noise/warnings
+      - DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI=true
     ulimits:
       # 스왑 방지를 위해 memlock 무제한
       memlock:
@@ -61,6 +63,7 @@ services:
       - 'traefik.http.routers.opensearch.rule=Host(`opensearch.${DEFAULT_URL}`)'
       - 'traefik.http.routers.opensearch.entrypoints=websecure'
       - 'traefik.http.routers.opensearch.tls=true'
+      - 'traefik.http.routers.opensearch.middlewares=opensearch-auth@file'
       - 'traefik.http.services.opensearch.loadbalancer.serversTransport=opensearch-transport@file'
 
       # [중요] OpenSearch는 기본적으로 HTTPS(Self-signed)를 사용하므로

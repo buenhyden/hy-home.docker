@@ -6,6 +6,9 @@ config:
   dynamic:
     http:
       anonymous_auth_enabled: false
+      # Trust X-Forwarded-For from internal reverse proxies (Traefik) so logs show real client IP.
+      xff:
+        enabled: true
     authc:
       basic_internal_auth_domain:
         description: 'Basic internal users'
@@ -14,7 +17,7 @@ config:
         order: 0
         http_authenticator:
           type: basic
-          challenge: false
+          challenge: true
         authentication_backend:
           type: internal
       openid_auth_domain:
@@ -28,7 +31,8 @@ config:
           config:
             subject_key: preferred_username
             roles_key: groups
-            openid_connect_url: 'https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/.well-known/openid-configuration'
+            # openid_connect_url: 'https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/.well-known/openid-configuration'
+            openid_connect_url: 'http://keycloak:8080/realms/hy-home.realm/.well-known/openid-configuration'
         authentication_backend:
           type: noop
     authz:

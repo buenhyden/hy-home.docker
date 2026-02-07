@@ -20,13 +20,13 @@ groups:
             "Loki 경로 {{ $labels.route }} 에서 에러가 10% 이상 발생 중입니다."
 
       - alert: LokiProcessTooManyRestarts
-        expr: changes(process_start_time_seconds{job=~".*loki.*"}[15m]) > 2
-        for: 5m
+        expr: changes(process_start_time_seconds{job=\"loki\"}[5m]) > 2
+        for: 2m
         labels:
           severity: warning
         annotations:
           summary: "Loki 과다 재시작"
-          description: "Loki가 15분 내 2회 이상 재시작되었습니다."
+          description: "Loki가 5분 내 2회 이상 재시작되었습니다."
 
       - alert: LokiRequestPanic
         expr: sum(increase(loki_panic_total[10m])) by (namespace, job) > 0

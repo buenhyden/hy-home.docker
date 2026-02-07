@@ -26,6 +26,8 @@ opensearch_security.cookie.secure: true
 # OpenSearch Connection Settings
 # ==============================================================================
 opensearch.hosts: ["https://opensearch:9200"]
+opensearch.username: "kibanaserver"
+opensearch.password: "<REPLACE_ME>"  # 초기 비밀번호 (변경했다면 변경된 값 입력)
 opensearch.ssl.certificateAuthorities: <REPLACE_ME>
 opensearch.ssl.verificationMode: certificate
 opensearch.requestHeadersAllowlist: ["Authorization", "security_tenant"]

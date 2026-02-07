@@ -76,7 +76,7 @@ groups:
       # [What] Prometheus Too Many Restarts / 프로메테우스 과다 재시작
       - alert: PrometheusTooManyRestarts
         expr:
-          changes(process_start_time_seconds{job=~"prometheus|pushgateway|alertmanager"}[15m])
+          changes(process_start_time_seconds{job=~"prometheus|pushgateway|alertmanager"}[5m])
           > 2
         for: 2m
         labels:
@@ -85,7 +85,7 @@ groups:
           summary:
             "Prometheus too many restarts (instance {{ $labels.instance }})"
           description:
-            "프로메테우스가 15분 내 2회 이상 재시작했습니다.\n  VALUE = {{
+            "프로메테우스가 5분 내 2회 이상 재시작했습니다.\n  VALUE = {{
             $value }}\n  LABELS = {{ $labels }}"
 
       # [What] Prometheus Rule Evaluation Failures / 규칙 평가 실패

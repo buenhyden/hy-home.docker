@@ -144,7 +144,7 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false # 일반 회원가입 비활성화 (OAuth로만 가입)
       # (선택) 자동 생성된 유저의 기본 권한 (Viewer, Editor, Admin)
       - GF_USERS_AUTO_ASSIGN_ORG_ROLE=Editor
-      - GF_LOG_LEVEL=debug
+      - GF_LOG_LEVEL=info
 
       # [3] Keycloak OAuth2 연동 (Generic OAuth)
       - GF_AUTH_GENERIC_OAUTH_ENABLED=true

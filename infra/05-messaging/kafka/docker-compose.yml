@@ -38,6 +38,8 @@ x-kafka-broker-common: &kafka-broker-common
     KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
 
     # ---- 토픽/복제 관련 (3노드 기준) ----
+    # auto-create되는 토픽도 3복제로 생성되도록 기본값 지정 (dev 환경에서도 prod 유사하게)
+    KAFKA_DEFAULT_REPLICATION_FACTOR: 3
     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
     KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
     KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2

@@ -23,6 +23,13 @@ http:
           # 위에서 생성한 '사용자:해시' 문자열을 여기에 붙여넣으세요.
           # $ 기호가 포함되므로 반드시 작은따옴표('')로 감싸야 안전합니다.
           - "admin:<hashed_password>"
+
+    # 3. OpenSearch API용 Basic Auth (인증 성공 시 Authorization 헤더를 백엔드로 전달)
+    opensearch-auth:
+      basicAuth:
+        removeHeader: false
+        users:
+          - "admin:<hashed_password>"
     req-rate-limit:
       rateLimit:
         average: 100 # 초당 평균 100개 요청
