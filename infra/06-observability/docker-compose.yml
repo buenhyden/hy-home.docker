@@ -48,7 +48,7 @@ services:
           'http://localhost:${PROMETHEUS_PORT}/-/healthy',
         ]
       interval: 30s
-      timeout: 30s
+      timeout: 15s
       retries: 5
       start_period: 3m
     labels:
@@ -67,7 +67,7 @@ services:
       resources:
         limits:
           cpus: '1.0'
-          memory: 2G
+          memory: 1G
     image: grafana/loki:3.6.3
     container_name: infra-loki
     command:
@@ -85,6 +85,9 @@ services:
     environment:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
       - MINIO_APP_USER_PASSWORD=${MINIO_APP_USER_PASSWORD}
+    depends_on:
+      minio:
+        condition: service_healthy
     restart: unless-stopped
   # -------------------------------------------------------
   # 3. Trace Storage (Tempo)
@@ -203,7 +206,7 @@ services:
       # Grafana 내부의 전용 상태 확인 API (Application Programming Interface) 사용
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:${GRAFANA_PORT}/api/health || exit 1']
       interval: 15s
-      timeout: 30s
+      timeout: 15s
       retries: 5
       start_period: 30s
     depends_on:
@@ -269,7 +272,7 @@ services:
           "bash -c 'exec 3<>/dev/tcp/localhost/12345; printf \"HEAD /-/healthy HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n\" >&3; timeout 2 head -1 <&3 | grep -q \"200\"'",
         ]
       interval: 15s
-      timeout: 30s
+      timeout: 15s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -360,7 +363,7 @@ services:
       test:
         ['CMD-SHELL', 'wget -q --spider http://localhost:${ALERTMANAGER_PORT}/-/ready || exit 1']
       interval: 15s
-      timeout: 30s
+      timeout: 15s
       retries: 5
       start_period: 1m
     labels:
@@ -395,7 +398,7 @@ services:
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:${PUSHGATEWAY_PORT}/-/ready || exit 1']
       interval: 15s
-      timeout: 30s
+      timeout: 15s
       retries: 5
       start_period: 30s
     labels:
