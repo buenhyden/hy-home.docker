@@ -76,7 +76,7 @@ groups:
       # [What] Prometheus Too Many Restarts / 프로메테우스 과다 재시작
       - alert: PrometheusTooManyRestarts
         expr:
-          changes(process_start_time_seconds{job=~"prometheus|pushgateway|alertmanager"}[5m])
+          resets((time() - process_start_time_seconds{job=~"prometheus|pushgateway|alertmanager"})[5m:15s])
           > 2
         for: 2m
         labels:

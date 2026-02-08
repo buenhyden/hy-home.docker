@@ -20,7 +20,7 @@ groups:
             "Loki 경로 {{ $labels.route }} 에서 에러가 10% 이상 발생 중입니다."
 
       - alert: LokiProcessTooManyRestarts
-        expr: changes(process_start_time_seconds{job=\"loki\"}[5m]) > 2
+        expr: resets((time() - process_start_time_seconds{job="loki"})[5m:15s]) > 2
         for: 2m
         labels:
           severity: warning
