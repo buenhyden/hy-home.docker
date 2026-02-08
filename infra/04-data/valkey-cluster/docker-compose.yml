@@ -52,7 +52,7 @@ services:
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY0_PORT} ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -94,7 +94,7 @@ services:
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY1_PORT} ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -136,7 +136,7 @@ services:
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY2_PORT} ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -178,7 +178,7 @@ services:
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY3_PORT} ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -220,7 +220,7 @@ services:
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY4_PORT} ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -262,7 +262,7 @@ services:
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY5_PORT} ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging

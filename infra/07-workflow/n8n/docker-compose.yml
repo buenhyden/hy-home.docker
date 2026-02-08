@@ -87,7 +87,7 @@ services:
     healthcheck:
       test: ['CMD-SHELL', 'nc -z localhost ${N8N_PORT} || exit 1'] # 간단한 포트 체크 방식
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     networks:
@@ -172,7 +172,7 @@ services:
           'V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging

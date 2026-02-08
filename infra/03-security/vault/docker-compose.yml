@@ -40,7 +40,7 @@ services:
           'curl -fsS "http://localhost:${VAULT_PORT}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || wget -q --spider "http://localhost:${VAULT_PORT}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     labels:

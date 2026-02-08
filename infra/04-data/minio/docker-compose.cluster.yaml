@@ -9,7 +9,7 @@ x-minio-common: &minio-common
   healthcheck:
     test: ['CMD', 'mc', 'ready', 'local']
     interval: 15s
-    timeout: 15s
+    timeout: 30s
     retries: 5
     start_period: 30s
   networks:

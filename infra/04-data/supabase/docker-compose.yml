@@ -27,7 +27,7 @@ services:
           "fetch('http://studio:3000/api/platform/profile').then((r) => {if (r.status !== 200) throw new Error(r.status)})",
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     depends_on:
@@ -103,7 +103,7 @@ services:
     healthcheck:
       test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:9999/health']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     depends_on:
@@ -218,7 +218,7 @@ services:
           'http://localhost:4000/api/tenants/realtime-dev/health',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     environment:
@@ -250,7 +250,7 @@ services:
     healthcheck:
       test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://storage:5000/status']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     depends_on:
@@ -288,7 +288,7 @@ services:
     healthcheck:
       test: ['CMD', 'imgproxy', 'health']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     environment:
@@ -353,7 +353,7 @@ services:
     healthcheck:
       test: ['CMD', 'curl', 'http://localhost:4000/health']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     depends_on:
@@ -408,7 +408,7 @@ services:
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres', '-h', 'localhost']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     depends_on:
@@ -443,7 +443,7 @@ services:
     healthcheck:
       test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://vector:9001/health']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     environment:
@@ -467,7 +467,7 @@ services:
       test:
         ['CMD', 'curl', '-sSfL', '--head', '-o', '/dev/null', 'http://127.0.0.1:4000/api/health']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     depends_on:

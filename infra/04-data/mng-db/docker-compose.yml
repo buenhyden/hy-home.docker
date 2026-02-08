@@ -42,7 +42,7 @@ services:
           'V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -145,7 +145,7 @@ services:
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -185,7 +185,7 @@ services:
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -223,7 +223,7 @@ services:
           'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
 

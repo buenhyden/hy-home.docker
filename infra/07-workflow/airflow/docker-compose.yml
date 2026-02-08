@@ -71,7 +71,7 @@ services:
     healthcheck:
       test: ['CMD', 'curl', '--fail', 'http://localhost:${AIRFLOW_PORT}/api/v2/version']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     restart: unless-stopped
@@ -95,7 +95,7 @@ services:
     healthcheck:
       test: ['CMD', 'curl', '--fail', 'http://localhost:8974/health']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     restart: unless-stopped
@@ -113,7 +113,7 @@ services:
           "$${HOSTNAME}"',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     restart: unless-stopped
@@ -133,7 +133,7 @@ services:
           airflow.executors.celery_executor.app inspect ping -d
           "celery@$${HOSTNAME}"'
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     environment:
@@ -154,7 +154,7 @@ services:
     healthcheck:
       test: ['CMD-SHELL', 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     restart: unless-stopped
@@ -280,7 +280,7 @@ services:
     healthcheck:
       test: ['CMD', 'curl', '--fail', 'http://localhost:${FLOWER_PORT}/']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     restart: unless-stopped

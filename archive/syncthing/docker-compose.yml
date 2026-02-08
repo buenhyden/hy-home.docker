@@ -32,7 +32,7 @@ services:
           'curl -fkLsS -m 2 syncthing:8384/rest/noauth/health | grep -o --color=never OK || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging

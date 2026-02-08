@@ -85,7 +85,7 @@ services:
           'curl -k -u admin:${OPENSEARCH_ADMIN_PASSWORD} --silent --fail "https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s" || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 60s
   opensearch-dashboards:
@@ -128,7 +128,7 @@ services:
           'curl -fsSk -u ${OPENSEARCH_DASHBOARD_USERNAME}:${OPENSEARCH_DASHBOARD_PASSWORD} https://localhost:${KIBANA_PORT}/api/status >/dev/null 2>&1 || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 60s
     logging: *default-logging
@@ -160,7 +160,7 @@ services:
           'curl -fsS http://localhost:${ES_EXPORTER_PORT}/metrics || wget -q --spider http://localhost:${ES_EXPORTER_PORT}/metrics || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging

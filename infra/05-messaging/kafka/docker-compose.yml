@@ -65,7 +65,7 @@ x-kafka-broker-common: &kafka-broker-common
         'kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT} >/dev/null 2>&1 || exit 1',
       ]
     interval: 15s
-    timeout: 15s
+    timeout: 30s
     retries: 5
     start_period: 30s
   logging: *default-logging
@@ -172,7 +172,7 @@ services:
           'curl -fsS http://localhost:${SCHEMA_REGISTRY_PORT}/subjects || wget -q --spider http://localhost:${SCHEMA_REGISTRY_PORT}/subjects || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -261,7 +261,7 @@ services:
           'curl -fsS http://localhost:${KAFKA_CONNECT_PORT}/connectors || wget -q --spider http://localhost:${KAFKA_CONNECT_PORT}/connectors || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -313,7 +313,7 @@ services:
           'curl -fsS http://localhost:${KAFKA_REST_PROXY_PORT}/topics || wget -q --spider http://localhost:${KAFKA_REST_PROXY_PORT}/topics || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -372,7 +372,7 @@ services:
           'curl -fsS http://localhost:${KAFKA_UI_PORT}/ || wget -q --spider http://localhost:${KAFKA_UI_PORT}/ || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -410,7 +410,7 @@ services:
           'curl -fsS http://localhost:${KAFKA_EXPORTER_PORT}/metrics || wget -q --spider http://localhost:${KAFKA_EXPORTER_PORT}/metrics || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging

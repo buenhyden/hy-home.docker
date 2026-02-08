@@ -33,7 +33,7 @@ services:
     healthcheck:
       test: ['CMD', 'etcdctl', 'endpoint', 'health', '--endpoints=http://localhost:2379']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     volumes:
@@ -69,7 +69,7 @@ services:
     healthcheck:
       test: ['CMD', 'etcdctl', 'endpoint', 'health', '--endpoints=http://localhost:2379']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     volumes:
@@ -105,7 +105,7 @@ services:
     healthcheck:
       test: ['CMD', 'etcdctl', 'endpoint', 'health', '--endpoints=http://localhost:2379']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     volumes:
@@ -157,7 +157,7 @@ services:
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     networks:
@@ -211,7 +211,7 @@ services:
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     expose:
@@ -266,7 +266,7 @@ services:
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     depends_on:
@@ -392,7 +392,7 @@ services:
           'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
   pg-1-exporter:
@@ -429,7 +429,7 @@ services:
           'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
   pg-2-exporter:
@@ -466,7 +466,7 @@ services:
           'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
 

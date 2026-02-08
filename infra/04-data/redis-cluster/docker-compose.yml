@@ -54,7 +54,7 @@ services:
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS0_PORT} ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -98,7 +98,7 @@ services:
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS1_PORT} ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -142,7 +142,7 @@ services:
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS2_PORT} ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -186,7 +186,7 @@ services:
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS3_PORT} ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -230,7 +230,7 @@ services:
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS4_PORT} ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
@@ -274,7 +274,7 @@ services:
           $REDIS_PASSWORD -h 127.0.0.1 -p ${REDIS5_PORT} ping | grep PONG',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging

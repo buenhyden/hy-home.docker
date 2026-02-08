@@ -28,7 +28,7 @@ services:
           'wget -q --spider http://localhost:${SONARQUBE_PORT}/api/system/health || exit 1',
         ]
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     volumes:

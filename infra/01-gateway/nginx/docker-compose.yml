@@ -27,7 +27,7 @@ services:
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:${HTTP_PORT} || exit 1']
       interval: 15s
-      timeout: 15s
+      timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
