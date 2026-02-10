@@ -37,6 +37,7 @@ engineering personas.
 
 | Persona | Purpose | Governance Standard |
 | :--- | :--- | :--- |
+| **System Architect** | System blueprints, C4 modeling, ADR governance | [0130-architecture-standard.md](.agent/rules/0100-Standards/0130-architecture-standard.md) |
 | **API Architect** | REST/GraphQL design & contract enforcement | [0010-api-design-standard.md](.agent/rules/0000-Agents/0010-api-design-standard.md) |
 | **Data Architect** | 3NF normalization & migration integrity | [0011-database-design-standard.md](.agent/rules/0000-Agents/0011-database-design-standard.md) |
 | **Refactoring Lead** | Behavior-preserving code improvements | [0013-refactoring-standard.md](.agent/rules/0000-Agents/0013-refactoring-standard.md) |
@@ -79,7 +80,8 @@ this template:
    [0000-agentic-pillar-standard.md](.agent/rules/0000-Agents/0000-agentic-pillar-standard.md),
    [0150-tech-stack-standard.md](.agent/rules/0100-Standards/0150-tech-stack-standard.md)
 3. **Dev Process / Collaboration**:
-   [0200-workflow-standard.md](.agent/rules/0200-Workflows/0200-workflow-standard.md)
+   [0200-workflow-standard.md](.agent/rules/0200-Workflows/0200-workflow-standard.md),
+   [0250-implementation-lifecycle-standard.md](.agent/rules/0200-Workflows/0250-implementation-lifecycle-standard.md)
    (DevOps Governance)
 4. **Quality / Testing / Security**:
    [0700-testing-and-qa-standard.md](.agent/rules/0700-Testing_and_QA/0700-testing-and-qa-standard.md),
@@ -89,6 +91,40 @@ this template:
    (SRE Role)
 
 For a detailed item-by-item mapping, see **[docs/guides/agent-rules-checklist.md](docs/guides/agent-rules-checklist.md)**.
+For the **User Manual** on overseeing agents, see **[docs/manuals/ai-agent-workflow-guide.md](docs/manuals/ai-agent-workflow-guide.md)**.
+
+---
+
+## 🧭 Default Workflow (PRD → Plan → Spec → Code)
+
+This template is designed for a document-first, spec-driven flow:
+
+1. **PRD (What)**: Create a PRD in `docs/prd/<feature>-prd.md` and get it to **Approved** before implementation.
+   - Windows: `./scripts/new-prd.ps1 -Feature "my-feature" -WithSpec`
+   - Unix: `WITH_SPEC=1 ./scripts/new-prd.sh "my-feature"`
+2. **Plan (Execution Intent)**: Create `specs/<feature>/plan.md` (MUST include `stack: node|python` in YAML front matter).
+   - Windows: `./scripts/new-plan.ps1 -Feature "My Feature" -Slug my-feature -Owner your-name -Stack node`
+   - Unix: `./scripts/new-plan.sh "My Feature" my-feature your-name node`
+   Supported stack catalog: `docs/core/tech-stack.md`.
+3. **Spec (Feature-level How)**: Write `specs/<feature>/spec.md` (MUST reference the PRD).
+   - Before coding, you MUST complete:
+     - `templates/spec-template.md` Section 0: **Quality / Testing / Security Checklist (Fill Before Implementation)**
+     - `templates/spec-template.md` Section 7: **Verification Plan (Unit/Integration/E2E/Load)**
+   - If E2E or Load testing is not applicable, write `N/A (reason: ...)` in the Verification Plan.
+   - Gate (pre-implementation): run strict docs validation:
+     - Windows: `./scripts/validate-docs.ps1 -Strict`
+     - Unix: `./scripts/validate-docs.sh --strict`
+   - References:
+     - `docs/manuals/audit-security-qa.md`
+     - `.agent/rules/0700-Testing_and_QA/0700-testing-and-qa-standard.md`
+     - `.agent/rules/0000-Agents/0017-code-test-writing-standard.md`
+4. **ADR (Why, optional)**: Record significant decisions in `docs/adr/` and link them from the spec.
+   - Windows: `./scripts/new-adr.ps1 -Title "Decision Title" -Authors "name"`
+   - Unix: `./scripts/new-adr.sh "Decision Title" "name"`
+5. **ARD (How, patterns)**: Document living implementation patterns in `docs/ard/` and keep them current as code changes.
+6. **Validate**: Before merging, validate PRDs/specs/plans/ADRs/ARDs:
+   - Windows: `./scripts/validate-docs.ps1 -Strict`
+   - Unix: `./scripts/validate-docs.sh --strict`
 
 ---
 

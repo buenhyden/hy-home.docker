@@ -33,6 +33,7 @@ config:
             roles_key: groups
             # openid_connect_url: 'https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/.well-known/openid-configuration'
             openid_connect_url: 'http://keycloak:8080/realms/hy-home.realm/.well-known/openid-configuration'
+            pemtrustedcas_filepath: certs/rootCA.pem
         authentication_backend:
           type: noop
     authz:
