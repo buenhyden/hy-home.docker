@@ -125,6 +125,25 @@ curl -X POST -H "Content-Type: application/json" --data @my-connector.json \
   http://localhost:8083/connectors
 ```
 
+## Observability (Prometheus + Grafana)
+
+Kafka broker metrics are exposed via **JMX Exporter** on port `9404` (inside `infra_net`).
+Prometheus scrapes those endpoints and Grafana dashboards expect the **job label** to be `kafka`.
+
+- **Prometheus targets**: `kafka-1:9404`, `kafka-2:9404`, `kafka-3:9404`
+- **Prometheus job name**: `kafka`
+- **Grafana**: Kafka dashboards query with `job="kafka"`
+
+If metrics are not visible in Grafana, first confirm the Prometheus job label matches:
+
+```bash
+# Inside the Prometheus container
+wget -qO- 'http://localhost:9090/api/v1/query?query=up%7Bjob%3D%22kafka%22%7D'
+```
+
+If the response is empty but JMX targets are up, the scrape job name is likely mismatched.
+Update `infra/06-observability/prometheus/config/prometheus.yml` to use `job_name: "kafka"` and reload Prometheus.
+
 ## Troubleshooting
 
 ### "Inconsistent Cluster ID"
@@ -144,6 +163,18 @@ Check `KAFKA_CONTROLLER_QUORUM_VOTERS`. All nodes must list the exact same voter
 ### Connect Worker OOM
 
 Kafka Connect is memory intensive. If it crashes, increase the memory limit in `docker-compose.yml` (currently `1.5G`).
+
+### Grafana Kafka Dashboard Shows No Data
+
+**Symptom**: Grafana dashboards show empty panels even though Kafka is running.
+
+**Cause**: Prometheus scrape job name does not match Grafana's `job="kafka"` filter.
+
+**Fix**:
+
+1. Ensure Prometheus uses `job_name: "kafka"` for the Kafka JMX scrape targets.
+2. Reload Prometheus configuration.
+3. Refresh Grafana dashboards.
 
 ## File Map
 

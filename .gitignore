@@ -48,7 +48,7 @@ infra/04-data/postgresql-cluster/config/haproxy.cfg
 infra/04-data/redis-cluster/config/redis.conf
 infra/04-data/valkey-cluster/config/valkey.conf
 # 05-messaging
-
+infra/05-messaging/kafka/kafbat-ui/dynamic_config.yaml
 # 06-observability
 infra/06-observability/alertmanager/config/config.yml
 infra/06-observability/alloy/config/config.alloy
@@ -70,6 +70,9 @@ projects/storybook/nextjs/node_modules
 projects/storybook/react-ts/node_modules
 # secrets
 secrets/certs/*.pem
+secrets/certs/*.srl
+secrets/certs/*.crt
+secrets/certs/*.p12
 secrets/*.txt
 
 # Antigravity Rules

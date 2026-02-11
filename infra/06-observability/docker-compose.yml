@@ -118,6 +118,15 @@ services:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
       - MINIO_APP_USER_PASSWORD=${MINIO_APP_USER_PASSWORD}
     restart: unless-stopped
+
+  pyroscope:
+    image: grafana/pyroscope:latest
+    container_name: pyroscope
+    ports:
+      - '${PYROSCOPE_HOST_PORT}:${PYROSCOPE_PORT}'
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.38
   # -------------------------------------------------------
   # 4. Visualization (Grafana)
   # -------------------------------------------------------
@@ -132,15 +141,12 @@ services:
     environment:
       - GF_SERVER_ROOT_URL=https://grafana.${DEFAULT_URL}
       - GF_SERVER_DOMAIN=grafana.${DEFAULT_URL}
-
       # OAuth 자동 로그인 활성화
       # true로 설정하면, 접속 시 로그인 화면을 건너뛰고 바로 Keycloak 인증을 시도합니다.
       - GF_AUTH_OAUTH_AUTO_LOGIN=true
-
       # Grafana 기본 로그인 폼 숨기기
       # ID/PW 입력창을 없애고 오직 OAuth(Keycloak)만 사용하게 강제합니다.
       - GF_AUTH_DISABLE_LOGIN_FORM=true
-
       # [2] 보안 및 기본 관리자 계정 (초기 세팅용)
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USERNAME}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
@@ -148,7 +154,6 @@ services:
       # (선택) 자동 생성된 유저의 기본 권한 (Viewer, Editor, Admin)
       - GF_USERS_AUTO_ASSIGN_ORG_ROLE=Editor
       - GF_LOG_LEVEL=info
-
       # [3] Keycloak OAuth2 연동 (Generic OAuth)
       - GF_AUTH_GENERIC_OAUTH_ENABLED=true
       - GF_AUTH_GENERIC_OAUTH_NAME=Keycloak
@@ -156,17 +161,18 @@ services:
       - GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH=preferred_username
       - GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_PATH=email
       - GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH=name
-
       # Keycloak 클라이언트 정보 (.env 파일에 변수 정의 필요)
       - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID} # 예: nginx-client
       - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${OAUTH2_PROXY_CLIENT_SECRET}
-
       # Scopes: 'groups'가 반드시 포함되어야 함 (Client Scope 설정 필요)
       - GF_AUTH_GENERIC_OAUTH_SCOPES=openid profile email offline_access groups
-
       # [해결책] 내부 통신(Token Exchange) 시 사설 인증서 에러 무시
       - GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE=true
-
+      # Grafana가 Loki 응답을 5분까지 기다리도록 설정
+      - GF_DATAPROXY_TIMEOUT=300
+      - GF_DATAPROXY_KEEP_ALIVE_SECONDS=300
+      # 전체 서버 읽기 타임아웃
+      - GF_SERVER_READ_TIMEOUT=5m
       # Keycloak Endpoints (Realm 이름이 'myrealm'인 경우의 예시, 변수화 추천)
       # ${KEYCLOAK_REALM} 부분은 본인의 Realm 이름으로 변경하세요.
       - GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://keycloak.${DEFAULT_URL}/realms/hy-home.realm/protocol/openid-connect/auth
@@ -182,7 +188,6 @@ services:
       # Keycloak의 'groups' 정보를 읽어서 Grafana 권한(Admin/Editor/Viewer)으로 변환
       # 로직: groups 배열에 '/admins'이 있으면 'Admin', 아니면 'Viewer' 부여
       - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups[*], '/admins') && 'Admin' || contains(groups[*], '/editors') && 'Editor' || 'Viewer'
-
       - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT=true
       # (옵션) '/admin' 그룹 유저에게 Grafana 전체 서버 관리자(Super Admin) 권한까지 부여하려면 true
       - GF_AUTH_GENERIC_OAUTH_ALLOW_ASSIGN_GRAFANA_ADMIN=true

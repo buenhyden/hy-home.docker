@@ -177,6 +177,95 @@ docker exec opensearch bash -lc "curl -ks -u exporter:${OPENSEARCH_EXPORTER_PASS
 curl http://localhost:${ES_EXPORTER_HOST_PORT}/metrics
 ```
 
+## Security Initialization (Required Once)
+
+If you see:
+
+```text
+OpenSearch Security not initialized. (you may need to run securityadmin)
+```
+
+initialize the security index with an **admin client certificate**.
+
+### 1. Ensure admin client certs exist
+
+Expected files in `secrets/certs/`:
+
+- `admin-ca.pem`
+- `admin-ca-key.pem`
+- `admin.pem`
+- `admin-key.pem`
+
+If they are missing, generate them:
+
+```bash
+openssl req -x509 -newkey rsa:2048 -days 3650 -nodes \
+  -subj "/CN=hy-home-admin-ca/O=hy-home" \
+  -keyout secrets/certs/admin-ca-key.pem \
+  -out secrets/certs/admin-ca.pem
+
+openssl req -newkey rsa:2048 -nodes \
+  -subj "/CN=opensearch-admin/O=hy-home" \
+  -keyout secrets/certs/admin-key.pem \
+  -out /tmp/opensearch-admin.csr
+
+cat > /tmp/opensearch-admin-ext.cnf <<'EOF'
+extendedKeyUsage = clientAuth
+keyUsage = digitalSignature, keyEncipherment
+basicConstraints = CA:FALSE
+EOF
+
+openssl x509 -req -in /tmp/opensearch-admin.csr \
+  -CA secrets/certs/admin-ca.pem -CAkey secrets/certs/admin-ca-key.pem -CAcreateserial \
+  -out secrets/certs/admin.pem -days 3650 -extfile /tmp/opensearch-admin-ext.cnf
+```
+
+### 2. Trust admin CA and allow admin DN
+
+Append the admin CA to `secrets/certs/rootCA.pem` and ensure the DN exists:
+
+```yaml
+plugins.security.authcz.admin_dn:
+  - "O=hy-home,CN=opensearch-admin"
+  - "CN=opensearch-admin, O=hy-home"
+```
+
+Then restart:
+
+```bash
+docker compose up -d --force-recreate opensearch
+```
+
+### 3. Initialize security index
+
+```bash
+docker exec opensearch bash -lc '
+/usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh \
+  -cd /usr/share/opensearch/config/opensearch-security \
+  -icl -nhnv -h localhost -p 9200 \
+  -cacert /usr/share/opensearch/config/certs/rootCA.pem \
+  -cert /usr/share/opensearch/config/certs/admin.pem \
+  -key /usr/share/opensearch/config/certs/admin-key.pem
+'
+```
+
+### 4. Restart Dashboards (if needed)
+
+```bash
+docker compose up -d --force-recreate opensearch-dashboards
+```
+
+### 5. If admin login fails
+
+Update the admin hash to match `.env`:
+
+```bash
+docker exec opensearch bash -lc \
+  '/usr/share/opensearch/plugins/opensearch-security/tools/hash.sh -p "${OPENSEARCH_ADMIN_PASSWORD}"'
+```
+
+Replace the `admin.hash` in `opensearch/config/opensearch-security/internal_users.yml`, then re-run `securityadmin.sh`.
+
 ## Troubleshooting
 
 ### Node Not Joining

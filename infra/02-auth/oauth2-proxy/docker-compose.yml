@@ -18,6 +18,8 @@ services:
       dockerfile: Dockerfile
     container_name: oauth2-proxy
     restart: unless-stopped
+    secrets:
+      - valkey_password
     command:
       - '--config'
       - '/etc/oauth2-proxy.cfg'
@@ -25,14 +27,19 @@ services:
       # [2] 시스템 레벨 환경 변수 (설정 파일로 대체 불가)
       # SSL 인증서 로드는 앱 로직 이전에 Go 언어 런타임에서 처리하므로 Env에 있어야 함
       - SSL_CERT_FILE=/etc/ssl/certs/rootCA.pem
+      # 필수 설정: 세션 저장소를 Redis로 변경
+      - OAUTH2_PROXY_SESSION_STORE_TYPE=redis
+      # 필수 설정: Redis 연결 주소 (서비스명:포트)
+      - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://oauth2-proxy-valkey:6379
+      # 2. 비밀번호를 파일에서 읽도록 지시 (_FILE 접미사 사용)
+      - OAUTH2_PROXY_REDIS_PASSWORD_FILE=/run/secrets/valkey_password
+      - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}
       - OAUTH2_PROXY_CLIENT_SECRET=${OAUTH2_PROXY_CLIENT_SECRET}
       - OAUTH2_PROXY_COOKIE_SECRET=${OAUTH2_PROXY_COOKIE_SECRET}
     volumes:
       # 호스트의 mkcert RootCA를 컨테이너 내부로 주입
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
-    secrets:
-      - valkey_password
     labels:
       - 'traefik.enable=true'
       # OAuth2 콜백 처리를 위한 라우터

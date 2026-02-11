@@ -38,6 +38,26 @@ This configuration includes monitoring for various infrastructure components:
 - **Middleware**: Kafka, Traefik, HAProxy.
 - **Applications**: Keycloak, MinIO, N8n, Qdrant, Ollama.
 
+### Kafka Metrics (JMX Exporter)
+
+Kafka broker metrics are scraped from JMX Exporter endpoints on port `9404`.
+Grafana Kafka dashboards in this repo filter by `job="kafka"`, so the Prometheus scrape job **must** use:
+
+```yaml
+- job_name: "kafka"
+  scrape_interval: 30s
+  static_configs:
+    - targets: ["kafka-1:9404", "kafka-2:9404", "kafka-3:9404"]
+```
+
+If Kafka dashboards show no data while the brokers are healthy, check Prometheus targets:
+
+```bash
+wget -qO- 'http://localhost:9090/api/v1/query?query=up%7Bjob%3D%22kafka%22%7D'
+```
+
+Empty results typically mean the Kafka scrape job is named differently (for example, `kafka-broker-jmx`).
+
 ## 🔔 Alerting
 
 - **Alertmanager**: Configured to send alerts to `alertmanager:9093`.

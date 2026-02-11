@@ -142,6 +142,11 @@ scrape_configs:
   #   static_configs:
   #     - targets: ["n8n-redis-exporter:9121"]
 
+  - job_name: "kafka"
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["kafka-1:9404", "kafka-2:9404", "kafka-3:9404"]
+
   - job_name: "kafka-exporter"
     static_configs:
       - targets: ["kafka-exporter:9308"]

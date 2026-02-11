@@ -1,0 +1,32 @@
+# Overriding default config to remove issuer-uri
+# The configuration is primarily handled via environment variables in docker-compose.yml
+logging:
+  level:
+    org.springframework.security: TRACE
+    io.kafbat.ui.service.rbac: TRACE
+
+dynamic.config.enabled: true
+
+auth:
+  type: OAUTH2
+  oauth2:
+    client:
+      keycloak:
+        # Intentionally empty to allow Env Vars to take precedence
+        # and to override any default issuer-uri pointing to kafka-auth
+        clientId: proxy-client
+        clientSecret: <replace_me> # CLIENT SECRET OBTAINED FROM KEYCLOAK
+        scope: openid,roles,groups
+        client-name: keycloak
+        provider: keycloak
+        redirect-uri: https://kafbat-ui.127.0.0.1.nip.io/login/oauth2/code/keycloak
+        authorization-grant-type: authorization_code
+        authorization-uri: https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/protocol/openid-connect/auth
+        token-uri: http://keycloak:8080/realms/hy-home.realm/protocol/openid-connect/token
+        jwk-set-uri: http://keycloak:8080/realms/hy-home.realm/protocol/openid-connect/certs
+        user-info-uri: http://keycloak:8080/realms/hy-home.realm/protocol/openid-connect/userinfo
+        # issuer-uri: http://keycloak:8080/realms/hy-home.realm
+        user-name-attribute: name
+        custom-params:
+          type: oauth
+          roles-field: groups

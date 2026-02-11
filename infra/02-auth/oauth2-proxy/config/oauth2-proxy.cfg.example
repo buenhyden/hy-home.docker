@@ -2,7 +2,6 @@
 
 # --- Provider 설정 ---
 provider = "keycloak-oidc"
-client_id = "proxy-client"
 # .env의 변수를 여기서는 쓸 수 없으므로, 직접 값을 넣거나
 # 민감한 정보는 docker-compose의 environment에 남겨둬도 됩니다.
 

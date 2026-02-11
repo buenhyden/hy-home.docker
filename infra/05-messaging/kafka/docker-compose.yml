@@ -57,12 +57,13 @@ x-kafka-broker-common: &kafka-broker-common
 
     # ---- JVM ----
     KAFKA_HEAP_OPTS: '-Xms1G -Xmx1G'
+    KAFKA_JMX_OPTS: '-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost} -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT} -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=9404:/usr/share/jmx_exporter/kafka-config.yaml'
 
   healthcheck:
     test:
       [
         'CMD-SHELL',
-        'kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT} >/dev/null 2>&1 || exit 1',
+        'unset KAFKA_JMX_OPTS; kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT} >/dev/null 2>&1 || exit 1',
       ]
     interval: 15s
     timeout: 30s
@@ -85,12 +86,19 @@ services:
       - type: volume
         source: kafka-1-data
         target: /var/lib/kafka/data
+      - ./jmx-exporter:/usr/share/jmx_exporter
+
     ports:
       - '${KAFKA_EXTERNAL_1_HOST_PORT}:${KAFKA_EXTERNAL_PORT}'
+      - '${KAFKA_JMX_1_HOST_PORT}:${KAFKA_JMX_PORT}'
+      - '${KAFKA_JMX_EXPORTER_1_HOST_PORT}:${KAFKA_JMX_EXPORTER_PORT}'
+
     environment:
       <<: *kafka-broker-env-common
       KAFKA_NODE_ID: 1
       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-1:${KAFKA_INTERNAL_PORT},EXTERNAL://localhost:${KAFKA_EXTERNAL_1_HOST_PORT}'
+      KAFKA_JMX_PORT: ${KAFKA_JMX_PORT}
+      KAFKA_JMX_HOSTNAME: kafka-1
 
   kafka-2:
     <<: *kafka-broker-common
@@ -103,12 +111,19 @@ services:
       - type: volume
         source: kafka-2-data
         target: /var/lib/kafka/data
+      - ./jmx-exporter:/usr/share/jmx_exporter
+
     ports:
       - '${KAFKA_EXTERNAL_2_HOST_PORT}:${KAFKA_EXTERNAL_PORT}'
+      - '${KAFKA_JMX_2_HOST_PORT}:${KAFKA_JMX_PORT}'
+      - '${KAFKA_JMX_EXPORTER_2_HOST_PORT}:${KAFKA_JMX_EXPORTER_PORT}'
+
     environment:
       <<: *kafka-broker-env-common
       KAFKA_NODE_ID: 2
       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-2:${KAFKA_INTERNAL_PORT},EXTERNAL://localhost:${KAFKA_EXTERNAL_2_HOST_PORT}'
+      KAFKA_JMX_PORT: ${KAFKA_JMX_PORT}
+      KAFKA_JMX_HOSTNAME: kafka-2
 
   kafka-3:
     <<: *kafka-broker-common
@@ -121,12 +136,19 @@ services:
       - type: volume
         source: kafka-3-data
         target: /var/lib/kafka/data
+      - ./jmx-exporter:/usr/share/jmx_exporter
+
     ports:
       - '${KAFKA_EXTERNAL_3_HOST_PORT}:${KAFKA_EXTERNAL_PORT}'
+      - '${KAFKA_JMX_3_HOST_PORT}:${KAFKA_JMX_PORT}'
+      - '${KAFKA_JMX_EXPORTER_3_HOST_PORT}:${KAFKA_JMX_EXPORTER_PORT}'
+
     environment:
       <<: *kafka-broker-env-common
       KAFKA_NODE_ID: 3
       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-3:${KAFKA_INTERNAL_PORT},EXTERNAL://localhost:${KAFKA_EXTERNAL_3_HOST_PORT}'
+      KAFKA_JMX_PORT: ${KAFKA_JMX_PORT}
+      KAFKA_JMX_HOSTNAME: kafka-3
 
   # -------------------------------------------
   # 2. Schema Registry (스키마 레지스트리)
@@ -317,39 +339,41 @@ services:
       retries: 5
       start_period: 30s
     logging: *default-logging
-
   # -------------------------------------------
   # 5. Kafka UI (카프카 UI - kafbat-ui)
   # -------------------------------------------
-  kafka-ui:
+  kafbat-ui:
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: 512M
-    image: provectuslabs/kafka-ui:v0.7.2
-    container_name: kafka-ui
-    restart: unless-stopped
+    container_name: kafbat-ui
+    image: ghcr.io/kafbat/kafka-ui:main
     networks:
       infra_net:
         ipv4_address: 172.19.0.26
+    restart: unless-stopped
     environment:
+      SERVER_MAXHTTPHEADERSIZE: 16384 # 16KB
       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_NAME}
-      # 내부 리스너 사용
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
-      # UI가 Schema Registry에 접속하는 주소 (컨테이너 내부 통신)
-      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: 'http://schema-registry:${SCHEMA_REGISTRY_PORT}'
-      # UI가 Kafka Connect에 접속하는 주소 (컨테이너 내부 통신)
-      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: 'kafka-connect'
-      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: 'http://kafka-connect:${KAFKA_CONNECT_PORT}'
-    expose:
-      - ${KAFKA_UI_PORT}
-    # ports:
-    #   - "${KAFKA_UI_HOST_PORT}:${KAFKA_UI_PORT}" # Host -> Container
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:${SCHEMA_REGISTRY_PORT}
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: kafka-connect
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:${KAFKA_CONNECT_PORT}
+      KAFKA_CLUSTERS_0_METRICS_PORT: ${KAFKA_JMX_PORT}
+      KAFKA_CLUSTERS_0_METRICS_TYPE: PROMETHEUS
+      KAFKA_CLUSTERS_0_METRICS_STORE_PROMETHEUS_URL: 'http://prometheus:9090'
+      KAFKA_CLUSTERS_0_METRICS_STORE_PROMETHEUS_REMOTEWRITE: 'true'
+      KAFKA_CLUSTERS_0_METRICS_STORE_KAFKA_TOPIC: 'kafka_metrics'
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    # volumes:
+    # - ./kafbat-ui/dynamic_config.yaml:/etc/kafkaui/dynamic_config.yaml
+    # - ../../../secrets/certs/truststore.p12:/etc/ssl/truststore.p12:ro
     labels:
       - 'traefik.enable=true'
       # 도메인: kafka-ui.${DEFAULT_URL}
-      - 'traefik.http.routers.kafka-ui.rule=Host(`kafka-ui.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.kafka-ui.rule=Host(`kafbat-ui.${DEFAULT_URL}`)'
       - 'traefik.http.routers.kafka-ui.entrypoints=websecure'
       - 'traefik.http.routers.kafka-ui.tls=true'
       - 'traefik.http.services.kafka-ui.loadbalancer.server.port=${KAFKA_UI_PORT}'
@@ -369,14 +393,15 @@ services:
       test:
         [
           'CMD-SHELL',
-          'curl -fsS http://localhost:${KAFKA_UI_PORT}/ || wget -q --spider http://localhost:${KAFKA_UI_PORT}/ || exit 1',
+          'wget --no-verbose --tries=1 --spider http://localhost:${KAFKA_UI_PORT}/actuator/health',
         ]
       interval: 15s
       timeout: 30s
       retries: 5
       start_period: 30s
     logging: *default-logging
-
+    # extra_hosts:
+    #   - 'keycloak.127.0.0.1.nip.io:host-gateway'
   kafka-exporter:
     deploy:
       resources:

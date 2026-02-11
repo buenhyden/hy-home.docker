@@ -63,7 +63,7 @@ services:
       - 'traefik.http.routers.opensearch.rule=Host(`opensearch.${DEFAULT_URL}`)'
       - 'traefik.http.routers.opensearch.entrypoints=websecure'
       - 'traefik.http.routers.opensearch.tls=true'
-      - 'traefik.http.routers.opensearch.middlewares=sso-auth@file'
+      - 'traefik.http.routers.opensearch.middlewares=opensearch-auth@file'
       - 'traefik.http.services.opensearch.loadbalancer.serversTransport=opensearch-transport@file'
 
       # [중요] OpenSearch는 기본적으로 HTTPS(Self-signed)를 사용하므로
