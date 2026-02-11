@@ -355,7 +355,6 @@ services:
         ipv4_address: 172.19.0.26
     restart: unless-stopped
     environment:
-      SERVER_MAXHTTPHEADERSIZE: 16384 # 16KB
       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_NAME}
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:${SCHEMA_REGISTRY_PORT}
@@ -367,9 +366,9 @@ services:
       KAFKA_CLUSTERS_0_METRICS_STORE_PROMETHEUS_REMOTEWRITE: 'true'
       KAFKA_CLUSTERS_0_METRICS_STORE_KAFKA_TOPIC: 'kafka_metrics'
       DYNAMIC_CONFIG_ENABLED: 'true'
-    # volumes:
-    # - ./kafbat-ui/dynamic_config.yaml:/etc/kafkaui/dynamic_config.yaml
-    # - ../../../secrets/certs/truststore.p12:/etc/ssl/truststore.p12:ro
+    volumes:
+      - ./kafbat-ui/dynamic_config.yaml:/etc/kafkaui/dynamic_config.yaml
+      # - ../../../secrets/certs/truststore.p12:/etc/ssl/truststore.p12:ro
     labels:
       - 'traefik.enable=true'
       # 도메인: kafka-ui.${DEFAULT_URL}
