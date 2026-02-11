@@ -11,7 +11,8 @@ config:
         description: 'Basic internal users'
         http_enabled: true
         transport_enabled: true
-        order: 0
+        # NOTE: Keep BASIC after OIDC so Bearer tokens are evaluated by OIDC/JWT first.
+        order: 1
         http_authenticator:
           type: basic
           challenge: false
@@ -21,14 +22,20 @@ config:
         description: 'OpenID Connect (Keycloak)'
         http_enabled: true
         transport_enabled: true
-        order: 1
+        order: 0
         http_authenticator:
           type: openid
           challenge: false
           config:
-            subject_key: <REPLACE_ME>
-            roles_key: <REPLACE_ME>
+            subject_key: preferred_username
+            roles_key: groups
             openid_connect_url: 'https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/.well-known/openid-configuration'
+            # OpenSearch Security OIDC/JWKS fetch uses a dedicated HTTP client.
+            # If Keycloak uses mkcert/self-signed CA, configure trust here to avoid PKIX failures.
+            openid_connect_idp:
+              enable_ssl: true
+              verify_hostnames: false
+              pemtrustedcas_filepath: /usr/share/opensearch/config/certs/rootCA.pem
         authentication_backend:
           type: noop
     authz:

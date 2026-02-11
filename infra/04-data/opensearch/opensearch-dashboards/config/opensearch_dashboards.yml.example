@@ -18,9 +18,13 @@ opensearch_security.openid.client_secret: <REPLACE_ME>
 opensearch_security.openid.scope: "openid profile email offline_access groups"
 opensearch_security.openid.base_redirect_url: "https://opensearch-dashboard.127.0.0.1.nip.io"
 opensearch_security.openid.root_ca: /usr/share/opensearch-dashboards/config/certs/rootCA.pem
+# 프록시(Traefik) 헤더 기반으로 redirect URL 계산
+opensearch_security.openid.trust_dynamic_headers: true
 # mkcert 기반 인증서(SAN 없음) 대응: 호스트 검증은 끄고 CA만 검증
 opensearch_security.openid.verify_hostnames: false
 
+opensearch_security.cookie.password: <REPLACE_ME> # 32+ chars recommended
+opensearch_security.cookie.isSameSite: "None"
 opensearch_security.cookie.secure: true
 # ==============================================================================
 # OpenSearch Connection Settings

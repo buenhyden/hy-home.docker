@@ -53,8 +53,10 @@ reverse_proxy = true
 skip_provider_button = true
 # [추가] 헤더를 통해 그룹 정보를 전달하기 위한 설정
 # OAuth2 Proxy가 추출한 클레임(Claim)을 상위 애플리케이션(Grafana 등)에 전달합니다.
-pass_authorization_header : <REPLACE_ME>
-pass_access_token : <REPLACE_ME>
+pass_authorization_header = true
+pass_access_token = true
+# ForwardAuth 응답에 `Authorization: Bearer <access_token>` 헤더를 포함시킵니다(Traefik authResponseHeaders와 함께 사용).
+set_authorization_header = true
 set_xauthrequest = true
 # --- SSL 설정 ---
 ssl_insecure_skip_verify = false

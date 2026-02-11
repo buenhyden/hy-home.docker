@@ -26,6 +26,10 @@ plugins.security.authcz.admin_dn:
   - "CN=localhost, O=mkcert dev, L=Seoul, ST=Seoul, C=KR"
 
 plugins.security.restapi.roles_enabled: ["all_access", "admin"]
+
+# [DEV ONLY] Allow updating /_plugins/_security/api/securityconfig via REST API.
+# Keep this disabled in production environments.
+plugins.security.unsupported.restapi.allow_securityconfig_modification: true
 # ==============================================================================
 # Path & Monitoring Settings
 # ==============================================================================

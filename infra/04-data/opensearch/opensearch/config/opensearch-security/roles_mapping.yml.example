@@ -8,6 +8,11 @@ all_access:
     - 'admin'
     - 'opensearch_admin'
     - 'opensearch-admin'
+    # Keycloak Group Membership mapper가 "Full group path" ON인 경우 슬래시(/)가 포함될 수 있음
+    - 'admins'
+    - '/admins'
+    - '/opensearch_admin'
+    - '/opensearch-admin'
   users:
     - 'admin'
 
@@ -23,6 +28,9 @@ readall:
     - 'readall'
     - 'opensearch_readall'
     - 'opensearch-readall'
+    - '/readall'
+    - '/opensearch_readall'
+    - '/opensearch-readall'
   users: []
 
 exporter_role:

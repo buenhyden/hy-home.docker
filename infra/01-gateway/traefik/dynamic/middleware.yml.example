@@ -6,6 +6,10 @@ http:
       serverName: "hy-home.local" # [핵심] 인증서 검사 시 이 도메인으로 검증하라!
       rootCAs:
         - "/certs/rootCA.pem" # 검증에 사용할 신뢰하는 뿌리 인증서
+    opensearch-dashboards-transport:
+      serverName: "hy-home.local" # [핵심] 인증서 검사 시 이 도메인으로 검증하라!
+      rootCAs:
+        - "/certs/rootCA.pem" # 검증에 사용할 신뢰하는 뿌리 인증서
   middlewares:
     # 1. 기존 SSO 인증 (앱 보호용)
     sso-auth:
@@ -15,6 +19,10 @@ http:
         authResponseHeaders:
           - "X-Auth-Request-User"
           - "X-Auth-Request-Email"
+          # ForwardAuth 응답에서 Bearer 토큰을 백엔드(OpenSearch)로 전달하기 위함
+          - "Authorization"
+          - "X-Auth-Request-Access-Token"
+          - "X-Auth-Request-Id-Token"
 
     # 2. [NEW] 대시보드용 Basic Auth
     dashboard-auth:
