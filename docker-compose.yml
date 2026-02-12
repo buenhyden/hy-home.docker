@@ -35,13 +35,13 @@ include:
   - infra/06-observability/docker-compose.yml
   - infra/04-data/minio/docker-compose.yml
   - infra/02-auth/keycloak/docker-compose.yml
-  - infra/07-workflow/n8n/docker-compose.yml
   - infra/04-data/qdrant/docker-compose.yml
   - infra/04-data/postgresql-cluster/docker-compose.yml
   - infra/05-messaging/kafka/docker-compose.yml
   - infra/04-data/valkey-cluster/docker-compose.yml
   - infra/04-data/opensearch/docker-compose.yml
   - infra/05-messaging/ksql/docker-compose.yml
+  # - infra/07-workflow/n8n/docker-compose.yml
   # Optional stacks (enabled via profiles)
   - infra/05-messaging/rabbitmq/docker-compose.yml
   - infra/04-data/influxdb/docker-compose.yml
