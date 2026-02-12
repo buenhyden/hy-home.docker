@@ -6,6 +6,14 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  vault-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_SECRETS_DIR}/vault
+
 services:
   vault:
     profiles:
@@ -51,11 +59,4 @@ services:
       - 'traefik.http.routers.vault.entrypoints=websecure'
       - 'traefik.http.routers.vault.tls=true'
       - 'traefik.http.services.vault.loadbalancer.server.port=${VAULT_PORT}'
-
-volumes:
-  vault-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_SECRETS_DIR}/vault
+    logging: *default-logging

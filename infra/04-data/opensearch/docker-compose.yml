@@ -6,6 +6,14 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  opensearch-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_OPENSEARCH_DATA_DIR}/standalone
+
 services:
   # ######################################################
   # OpenSearch 노드 1 (cluster_manager + data + ingest)
@@ -164,11 +172,3 @@ services:
       retries: 5
       start_period: 30s
     logging: *default-logging
-
-volumes:
-  opensearch-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_OPENSEARCH_DATA_DIR}/standalone

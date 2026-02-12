@@ -54,4 +54,3 @@ include:
   - infra/01-gateway/nginx/docker-compose.yml
   - infra/04-data/couchdb/docker-compose.yml
   - infra/09-tooling/terrakube/docker-compose.yml
-  - infra/04-data/redis-cluster/docker-compose.yml

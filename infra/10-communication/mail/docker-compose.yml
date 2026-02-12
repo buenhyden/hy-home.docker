@@ -4,6 +4,10 @@ x-logging: &default-logging
   options:
     max-size: '5m'
     max-file: '2'
+
+volumes:
+  stalwart-data:
+
 services:
   # ----------------------------------------------------------------
   # Stalwart Mail Server (올인원 메일 서버)
@@ -72,6 +76,3 @@ services:
           memory: 512M
         reservations:
           memory: 256M
-
-volumes:
-  stalwart-data:

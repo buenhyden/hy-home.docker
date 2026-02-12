@@ -1,4 +1,11 @@
 # Settings and configurations that are common for all containers
+
+x-logging: &default-logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+
 x-minio-common: &minio-common
   image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
   # command: server --console-address ":${MINIO_CONSOLE_PORT}" http://minio{1...4}/data{1...2}
@@ -14,11 +21,7 @@ x-minio-common: &minio-common
     start_period: 30s
   networks:
     - infra_net
-  logging:
-    driver: 'json-file'
-    options:
-      max-size: '5m'
-      max-file: '2'
+  logging: *default-logging
   environment:
     - MINIO_ROOT_USER=${DEFAULT_USERNAME}
     - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
@@ -106,8 +109,3 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_STORAGE_DIR}/minio/data4
-  # ######################################################################################
-
-networks:
-  infra_net:
-    external: true

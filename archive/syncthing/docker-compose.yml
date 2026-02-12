@@ -4,6 +4,20 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  syncthing-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SYNCTHING_DIR}
+  resources-contents-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_RESOURCES_DIR}/Contents
+
 services:
   syncthing:
     image: syncthing/syncthing:2.0.13
@@ -52,19 +66,3 @@ services:
       - nt-sync
       - nt-webserver
       - nt-observability
-  # ######################################################################################
-
-volumes:
-  syncthing-volume:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_SYNCTHING_DIR}
-  resources-contents-volume:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_RESOURCES_DIR}/Contents
-  # ######################################################################################

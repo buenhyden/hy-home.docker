@@ -4,6 +4,9 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  neo4j-volume:
+
 services:
   neo4j:
     image: neo4j:5.26.19

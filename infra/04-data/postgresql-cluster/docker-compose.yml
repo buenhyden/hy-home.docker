@@ -6,6 +6,44 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  pg0-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/pg0
+  pg1-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/pg1
+  pg2-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/pg2
+  etcd1-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_ETCD_DATA_DIR}/etcd1
+  etcd2-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_ETCD_DATA_DIR}/etcd2
+  etcd3-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_ETCD_DATA_DIR}/etcd3
+
 services:
   # ##############################################################
   # etcd 3노드 (Patroni DCS)
@@ -469,41 +507,3 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-
-volumes:
-  pg0-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/pg0
-  pg1-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/pg1
-  pg2-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/pg2
-  etcd1-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_ETCD_DATA_DIR}/etcd1
-  etcd2-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_ETCD_DATA_DIR}/etcd2
-  etcd3-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_ETCD_DATA_DIR}/etcd3

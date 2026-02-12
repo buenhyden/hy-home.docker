@@ -6,6 +6,26 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  mng-pg-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/mng-pg
+  mng-valkey-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/mng-node
+  redisinsight-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_REDIS_DATA_DIR}/redisinsight
+
 services:
   mng-valkey:
     deploy:
@@ -226,23 +246,3 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-
-volumes:
-  mng-pg-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/mng-pg
-  mng-valkey-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_VALKEY_DATA_DIR}/mng-node
-  redisinsight-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_REDIS_DATA_DIR}/redisinsight

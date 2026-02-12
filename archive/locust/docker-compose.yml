@@ -1,3 +1,17 @@
+x-logging: &default-logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+
+volumes:
+  locust-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_LOCUST_DIR}
+
 services:
   locust-master:
     build: .
@@ -20,6 +34,7 @@ services:
         condition: service_healthy
     extra_hosts:
       - '${DEFAULT_URL}:host-gateway'
+    logging: *default-logging
 
   locust-worker:
     build: .
@@ -42,11 +57,4 @@ services:
       replicas: 2 # 워커를 2개로 늘려서 부하 분산 (필요시 조절)
     extra_hosts:
       - '${DEFAULT_URL}:host-gateway'
-
-volumes:
-  locust-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_LOCUST_DIR}
+    logging: *default-logging

@@ -13,6 +13,9 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  db-config:
+
 services:
   studio:
     container_name: supabase-studio
@@ -500,6 +503,3 @@ services:
         '/app/bin/migrate && /app/bin/supavisor eval "$$(cat /etc/pooler/pooler.exs)" && /app/bin/server',
       ]
     logging: *default-logging
-
-volumes:
-  db-config:

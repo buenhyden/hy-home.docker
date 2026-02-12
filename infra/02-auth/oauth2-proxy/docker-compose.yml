@@ -6,6 +6,14 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  oauth2-proxy-valkey-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/oauth2-proxy-node
+
 services:
   oauth2-proxy:
     deploy:
@@ -50,11 +58,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.28
-    logging:
-      driver: 'json-file'
-      options:
-        max-size: '5m'
-        max-file: '2'
+    logging: *default-logging
 
   oauth2-proxy-valkey:
     deploy:
@@ -130,11 +134,3 @@ services:
       oauth2-proxy-valkey:
         condition: service_healthy
     logging: *default-logging
-
-volumes:
-  oauth2-proxy-valkey-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_VALKEY_DATA_DIR}/oauth2-proxy-node

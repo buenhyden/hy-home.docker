@@ -6,6 +6,11 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  couchdb1-data:
+  couchdb2-data:
+  couchdb3-data:
+
 services:
   couchdb-1:
     profiles:
@@ -192,8 +197,3 @@ services:
         limits:
           cpus: '0.1'
           memory: 128M
-
-volumes:
-  couchdb1-data:
-  couchdb2-data:
-  couchdb3-data:

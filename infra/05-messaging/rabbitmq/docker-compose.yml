@@ -6,6 +6,14 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  rabbitmq-data-volume:
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: "${DEFAULT_RABBITMQ_DATA_DIR}"
+
 services:
   rabbitmq:
     profiles:
@@ -39,11 +47,3 @@ services:
           memory: 512M
         reservations:
           memory: 256M
-
-volumes:
-  rabbitmq-data-volume:
-    # driver: local
-    # driver_opts:
-    #   type: none
-    #   o: bind
-    #   device: "${DEFAULT_RABBITMQ_DATA_DIR}"

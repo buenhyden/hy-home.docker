@@ -4,6 +4,10 @@ x-logging: &default-logging
   options:
     max-size: '5m'
     max-file: '2'
+
+volumes:
+  ksqldb-data-volume:
+
 services:
   ksqldb-server:
     profiles:
@@ -91,6 +95,3 @@ services:
     networks:
       - infra_net
     logging: *default-logging
-
-volumes:
-  ksqldb-data-volume:

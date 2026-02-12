@@ -1,4 +1,6 @@
 name: nginx
+volumes:
+  nginx-logs:
 
 x-logging: &default-logging
   driver: 'json-file'

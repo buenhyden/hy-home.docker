@@ -19,7 +19,4 @@ services:
     entrypoint: ['terraform']
     networks:
       - infra_net
-
-networks:
-  infra_net:
-    external: true
+    logging: *default-logging

@@ -4,6 +4,26 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  cassandra-node1-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATABASE_DIR}/cassandra/node1
+  # cassandra-node2-volume:
+  #   driver: local
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: ${DEFAULT_DATABASE_DIR}/cassandra/node2
+  cassandra-exporter-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATABASE_DIR}/cassandra/exporter
+
 services:
   cassandra-exporter:
     image: bitnami/cassandra-exporter:latest
@@ -79,23 +99,3 @@ services:
   #     - cassandra-node2-volume:/bitnami/cassandra
   #   depends_on:
   #     - cassandra-node1
-
-volumes:
-  cassandra-node1-volume:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_DATABASE_DIR}/cassandra/node1
-  # cassandra-node2-volume:
-  #   driver: local
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: ${DEFAULT_DATABASE_DIR}/cassandra/node2
-  cassandra-exporter-volume:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_DATABASE_DIR}/cassandra/exporter

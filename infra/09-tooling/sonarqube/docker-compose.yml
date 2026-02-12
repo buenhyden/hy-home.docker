@@ -6,6 +6,20 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  sonarqube-data-volume:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${SONARQUBE_DEFAULT_DIR}/data
+  sonarqube-logs-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${SONARQUBE_DEFAULT_DIR}/logs
+
 services:
   sonarqube:
     profiles:
@@ -49,17 +63,3 @@ services:
       - 'traefik.http.routers.sonarqube.entrypoints=websecure'
       - 'traefik.http.routers.sonarqube.tls=true'
       - 'traefik.http.services.sonarqube.loadbalancer.server.port=${SONARQUBE_PORT}'
-
-volumes:
-  sonarqube-data-volume:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${SONARQUBE_DEFAULT_DIR}/data
-  sonarqube-logs-volume:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${SONARQUBE_DEFAULT_DIR}/logs

@@ -4,6 +4,10 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  kafka-1-data:
+  kafka-2-data:
+  kafka-3-data:
 services:
   ###############################################################
   # Kafka Broker 1 (KRaft Controller + Broker)

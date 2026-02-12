@@ -6,6 +6,14 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  influxdb-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_INFLUXDB_DIR}/data
+
 services:
   influxdb:
     profiles:
@@ -54,11 +62,3 @@ services:
       - 'traefik.http.routers.influxdb.tls=true'
       - 'traefik.http.services.influxdb.loadbalancer.server.port=${INFLUXDB_PORT}'
     logging: *default-logging
-
-volumes:
-  influxdb-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_INFLUXDB_DIR}/data

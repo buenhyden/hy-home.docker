@@ -6,6 +6,38 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  tempo-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_OBSERVABILITY_DIR}/tempo
+  loki-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_OBSERVABILITY_DIR}/loki
+  alertmanager-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_OBSERVABILITY_DIR}/alertmanager
+  prometheus-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_OBSERVABILITY_DIR}/prometheus
+  grafana-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_OBSERVABILITY_DIR}/grafana
+
 services:
   # -------------------------------------------------------
   # 1. Metrics Storage (Prometheus)
@@ -414,35 +446,3 @@ services:
       - 'traefik.http.routers.pushgateway.tls=true'
       - 'traefik.http.services.pushgateway.loadbalancer.server.port=${PUSHGATEWAY_PORT}'
     logging: *default-logging
-
-volumes:
-  tempo-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_OBSERVABILITY_DIR}/tempo
-  loki-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_OBSERVABILITY_DIR}/loki
-  alertmanager-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_OBSERVABILITY_DIR}/alertmanager
-  prometheus-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_OBSERVABILITY_DIR}/prometheus
-  grafana-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_OBSERVABILITY_DIR}/grafana

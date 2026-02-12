@@ -6,6 +6,14 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  ollama-webui:
+  #   driver: local
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: ${DEFAULT_AI_MODEL_DIR}/webui
+
 services:
   # 2. Open WebUI 서비스 (선택 사항: ChatGPT 같은 웹 인터페이스)
   open-webui:
@@ -45,11 +53,3 @@ services:
       # [중요] 내부 포트 8080 연결 (Open WebUI 기본 포트)
       - 'traefik.http.services.open-webui.loadbalancer.server.port=8080'
     logging: *default-logging
-
-volumes:
-  ollama-webui:
-  #   driver: local
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: ${DEFAULT_AI_MODEL_DIR}/webui

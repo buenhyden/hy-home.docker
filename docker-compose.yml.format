@@ -13,6 +13,8 @@ networks:
   infra_net:
     external: true
 
+volumes:
+
 include:
   -
 
@@ -34,5 +36,3 @@ services:
     environment:
 
     logging: *default-logging
-
-volumes:

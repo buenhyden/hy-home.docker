@@ -6,6 +6,34 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  kafka-1-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_KAFKA_DATA_DIR}/node1
+
+  kafka-2-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_KAFKA_DATA_DIR}/node2
+
+  kafka-3-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_KAFKA_DATA_DIR}/node3
+  kafka-connect-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_KAFKA_DATA_DIR}/kafka-connect
+
 # ------------------------------------------------------------
 # Kafka Brokers (KRaft) — Primary 패턴 (완전 동일 템플릿 + YAML 앵커)
 # - INTERNAL: 컨테이너 간 통신 (PLAINTEXT, 19092)
@@ -438,31 +466,3 @@ services:
       retries: 5
       start_period: 30s
     logging: *default-logging
-
-volumes:
-  kafka-1-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_KAFKA_DATA_DIR}/node1
-
-  kafka-2-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_KAFKA_DATA_DIR}/node2
-
-  kafka-3-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_KAFKA_DATA_DIR}/node3
-  kafka-connect-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_KAFKA_DATA_DIR}/kafka-connect

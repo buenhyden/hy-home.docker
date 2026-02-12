@@ -33,6 +33,20 @@ x-n8n-common-env: &n8n-common-env
   N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
   N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
 
+volumes:
+  n8n-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_N8N_DIR}
+  n8n-valkey-data:
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_VALKEY_DATA_DIR}/n8n-node
+
 services:
   n8n:
     image: n8nio/n8n:2.6.2
@@ -152,7 +166,6 @@ services:
         ipv4_address: 172.19.0.15
     restart: unless-stopped
     volumes:
-      # 공통 redis.conf
       - n8n-valkey-data:/data
     command: >
       sh -c '
@@ -211,17 +224,3 @@ services:
       n8n-valkey:
         condition: service_healthy
     logging: *default-logging
-
-volumes:
-  n8n-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_N8N_DIR}
-  n8n-valkey-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_VALKEY_DATA_DIR}/n8n-node
