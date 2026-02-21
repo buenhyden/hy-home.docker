@@ -2,9 +2,19 @@
 
 This document defines the high-level architecture of projects created from this template. It serves as a blueprint that should be customized for each new project.
 
-## 1. System Context
+## 1. System Context & Necessity
 
-This template provides a standardized foundation for building software projects with:
+This template provides a standardized foundation for building software projects.
+
+**Necessity**: This specific `ARCHITECTURE.md` file is absolutely essential as the global, unchanging architectural law of the repository. While `docs/adr/` handles specific component decisions over time and `docs/ard/` holds deep architectural diagrams, this root file holds the *highest-level constraints and checklists* that must NEVER be violated by any human or AI agent without a formal override.
+
+**What Must Be Written Here**:
+
+- The overarching architecture style (Microservices vs Monolith).
+- The list of acceptable core tech stacks.
+- The Architectural Checklist that every new feature MUST pass before entering the `specs/` phase.
+
+### Core Architecture Pillars
 
 - **Spec-Driven Development**: `specs/` uniquely drives all implementation.
 - **AI-Assisted Development**: Multi Sub-Agent AI system phases (`AGENTS.md`).

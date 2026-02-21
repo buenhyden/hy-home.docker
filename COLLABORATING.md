@@ -1,6 +1,13 @@
 # Collaborating in this Framework
 
-This repository is built for **Human + AI collaboration** and **Human + Human collaboration**. To effectively work in this repo, you must understand the hand-offs and boundaries between human developers and Multi Sub-Agents.
+## Necessity & Required Content
+
+This file is absolutely necessary to establish the operational handoffs between Human Developers and the Multi Sub-Agent System. While `AGENTS.md` defines what the AI does, this file defines how the *Human* manages the AI.
+**What Must Be Written Here**:
+
+- Workflow handoff rules across Pre-Dev, During-Dev, and Post-Dev phases.
+- Conflict resolution tactics for AI Hallucinations.
+- Pointers to mandatory collaborative processes.
 
 ## 0. Mandatory Project Kickoff
 

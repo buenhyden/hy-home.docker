@@ -1,20 +1,23 @@
-# Utilities & Automation Scripts
+# Utilities & Automation Scripts (`scripts/`)
 
 This directory is reserved for repository maintenance, utility scripts, and automation triggers.
 
-## Purpose
+## 1. Necessity and Purpose
 
-- Hold scripts that humans or CI/CD pipelines run to manage the project environment.
-- Separate development toolings from application logic (`src/`) and operational deployments (`runbooks/`).
-- Serve as the execution layer for tasks like dataset syncing, pre-commit hook setups, or database seeding.
+This folder is necessary to encapsulate build, test, and environment scaffolding tools.
 
-## Guidelines
+- Separation of Concerns: It deliberately separates development tooling from application logic (`src/`/`web/`) and operational deployments (`runbooks/`).
+- Consistent Execution: It serves as the common execution layer for tasks like dataset syncing, pre-commit hook setups, or database seeding across developer machines.
 
-Ensure cross-platform compatibility where possible, or document explicit dependencies.
+## 2. Required Content
 
-### Agent Workflow Standardization
+- **Content**: Small, target-specific bash, Python, or Node scripts (`.sh`, `.py`, `.js`).
+- Ensure cross-platform compatibility where possible, or document explicit OS dependencies at the top of the file.
+
+## 3. Agent Workflow Standardization
 
 Any automation scripts or workflows added to this directory MUST comply with the **Idempotent and Deterministic** principles defined in `.agent/rules/0200-workflows-pillar-standard.md`.
 
-- **Idempotency**: Running a script twice should have the same effect as running it once (no corrupted state or duplicate data).
+- **Idempotency**: Running a script twice should have the exact same effect as running it once (e.g., no corrupted state or duplicate data).
 - **Clear Boundaries**: Scripts should have single responsibilities and handle failures gracefully.
+- **No Hardcoded Secrets**: Scripts here MUST NEVER contain hardcoded API keys or passwords. They must fetch credentials securely from environment variables.
