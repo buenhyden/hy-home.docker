@@ -1,12 +1,57 @@
-.history/
-.vscode/
-node_modules/
+# Python
+__pycache__/
+*.py[cod]
+.pyre/
+.pyright/
+*.egg-info/
+.venv/
+venv/
 .mypy_cache/
+.pytype/
+.pyvenv
+.ruff_cache/
+
+# Node.js/TypeScript/JavaScript
+node_modules/
+dist/
+build/
+*.log
+.env
+.env.local
+.env.production
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Testing
+coverage/
+.nyc_output/
 .pytest_cache/
-.agent/rules/
-.github/instructions/
-.github/agents/
-.github/prompts/
+.vitest/
+tests/.tmp_validate_docs/
+tests/.tmp*/
+tests/tmp*/
+tests/_tmp_*/
+tests/_tmp_*
+
+# IDE
+.vscode/
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.swp
+*.swo
+*.sublime-*
+
+# Universal
+*.tmp
+Thumbs.db
+
+# Project-specific
+uploads/
+examples/.generated/
+.history/
+
 # Archive
 archive/seaweedfs/config/security.toml
 archive/Terrakube/certs/*.pem

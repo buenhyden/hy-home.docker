@@ -10,13 +10,8 @@ out/
 .next/
 
 # Project specific
-agent/workflows/
-agent/rules/
 .agent/workflows/
 .agent/rules/
 .history/
 coverage/
 tmp/
-
-storybook-static/
-*.min.js
