@@ -1,10 +1,15 @@
-# Guides
+# Development Guides
 
-서비스별 사용 가이드와 운영 노하우를 모으는 공간입니다.
+This folder contains lifecycle guides for AI-assisted and human-assisted delivery.
 
-## 추천 시작점
+## Guides
 
-- `infra/README.md` (전체 스택 인덱스)
-- `infra/06-observability/README.md` (모니터링/로그)
-- `infra/04-data/opensearch/README.md` (검색 및 보안 설정)
-- `infra/07-workflow/n8n/README.md` (워크플로우 자동화)
+- `pre-development-guide.md` — requirements, PRD/ADR/spec creation, approval gate
+- `development-guide.md` — implementation standards, testing, CI expectations
+- `post-development-guide.md` — review, deployment readiness, runbook and incident readiness
+
+Use these guides as the default execution path for feature delivery.
+
+## Agent Rule Overrides
+
+This directory is critical for AI-Human alignment. While general rules live in `.agent/rules/`, files in `docs/guides/` serve as project-specific and team-specific overrides. AI Agents are instructed to prioritize the constraints and working agreements documented here over the global generic rules.

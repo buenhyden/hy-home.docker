@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Create .env from example
-        run: cp infra/.env.example infra/.env
+        run: cp .env.example .env
 
       - name: Check Docker Compose Config
         run: |

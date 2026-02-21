@@ -1,56 +1,42 @@
-# Specifications (Spec-Driven Development)
+# Technical Specifications Hub (`specs/`)
 
-## 📂 Folder Scope
+This directory is the absolute **Source of Truth** for the During-Development phase. It forms the primary bridge between Human Intent and AI Execution.
 
-This directory is the **Active Workspace** for technical implementation. It is distinct from the **Knowledge Base** (`docs/`).
+## Golden Rule for AI Agents
 
-| Directory | Purpose | Content |
-| :--- | :--- | :--- |
-| **`specs/`** | **Building** | `plan.md`, `spec.md`, temporary assets for active implementation. |
-| **`docs/`** | **Reference** | Standards, Manuals, PRDs, ADRs, ARDs. |
+**NO SPEC, NO CODE.**
+Coder Agents (Backend/Frontend) are governed by `.agent/workflows/` to explicitly refuse writing executable code unless a corresponding, human-approved specification exists in this folder.
 
-### Governance
+## Purpose
 
-- **Source of Truth**: During active development, `specs/<feature>/spec.md` is the source of truth.
-- **Migration**: Once a feature is stable, key architectural patterns should be documented in `docs/ard/`, but the spec remains as a record of the implementation plan.
+- Translate high-level Product Requirements (PRDs) and Architecture Designs (ARDs) into concrete, deterministic coding instructions.
+- Provide a rigid, unchanging target for AI Coder Agents to implement against, establishing exactly what Unit and Integration tests must be created.
+- Prevent AI hallucination by removing the need for agents to guess at edge cases, error handling, or API signatures.
 
-## The Flow
+## Creation & Execution Rules
 
-1. **Create a Plan**: Create a subfolder for your feature (e.g., `specs/auth-system/`).
-2. **Draft the Plan**: Create a `plan.md` file describing your requirements.
-3. **Bootstrap**: Run the setup script to generate a workspace tailored to that
-   plan.
+- **Owner**: The Planner Agent creates these files.
+- **Template**: All specs MUST be generated using `templates/engineering/spec-template.md`.
+- **Locations**:
+  - **Spec** MUST be stored at `specs/<feature>/spec.md`.
+  - **Plan** MUST be stored at `specs/<feature>/plan.md`.
+  - **API contracts** (if any) MUST be stored under `specs/<feature>/api/`.
+- **Approval Gate**: Specs MUST be explicitly approved by a Human Developer. The gate MUST be validated against `ARCHITECTURE.md` checklist items with Priority `**필수**`.
 
-```bash
-# Example
-# Windows
-./scripts/setup-workspace.ps1 -PlanPath specs/auth-system/plan.md
+## Example Feature Layout
 
-# Mac/Linux
-./scripts/setup-workspace.sh specs/auth-system/plan.md
+```text
+specs/user-auth/
+  spec.md
+  plan.md
+  api/
+    openapi.yaml
 ```
 
-Optional scaffolding:
+## Relation to Other Ecosystems
 
-```bash
-./scripts/new-plan.sh "Auth System" auth-system your-name node
-```
-
-## Structure
-
-- **`plan.md`**: The high-level implementation plan (Goals, user stories).
-- **`spec.md`**: Technical specification (Schema, APIs), must reference the PRD.
-- **PRD (Product Requirements)**: Stored in `docs/prd/<feature>-prd.md` (Vision,
-  Metrics, Personas, Use Cases).
-
-Use `templates/spec-template.md` and `templates/prd-template.md` as your
-baselines.
-
-Specs should complete the architecture/stack checklist in
-`templates/spec-template.md` Section 0 and link ADRs (`docs/adr/`) when a
-decision is significant.
-
-## Quick Start
-
-- Windows: `./scripts/new-prd.ps1 -Feature "my-feature" -WithSpec`
-- Unix: `WITH_SPEC=1 ./scripts/new-prd.sh "my-feature"`
+- `docs/prd/`: The **What** (Human-readable Features, Success Metrics).
+- `docs/ard/`: The **How** (System Architecture, Data Models).
+- `.agent/workflows/`: The **Behaviors** (AI Agent Prompt logic and runtime loops).
+- `specs/`: The **Exact Instructions** (File paths, function signatures, QA layer test requirements).
+- `.agent/rules/`: Specifically `.agent/rules/0250-implementation-lifecycle-standard.md` which mandates the overarching Plan -> Implement -> QA -> Document cycle, alongside the **6 Core Engineering Pillars** (Security, Performance, Observability, Compliance, Documentation, Localization). All specs must adhere to rigid standards like GWT Acceptance Criteria and Machine-Readable IDs (defined in `0120-requirements-and-specifications-standard.md`).

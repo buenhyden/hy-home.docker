@@ -1,18 +1,105 @@
-# 🏗️ Architecture Decision Records (ADR)
+# Architecture Decision Records (ADR)
 
-이 디렉토리는 프로젝트의 주요 아키텍처 의사 결정 사항을 기록합니다. 각 ADR 문서는 결정의 배경, 대안, 그리고 최종 선택 이유를 포함합니다.
-
-## Index of Records
-
-| ID   | Title                                                                                                       | Status   | Date       |
-| :--- | :---------------------------------------------------------------------------------------------------------- | :------- | :--------- |
-| 0001 | [Record Architecture Decisions](./0001-record-architecture-decisions.md)                                    | Accepted | 2026-01-27 |
-| 0002 | [Add RabbitMQ (Optional) and Keep Supabase Standalone](./0002-add-rabbitmq-and-keep-supabase-standalone.md) | Accepted | 2026-01-31 |
-
----
+This directory contains Architecture Decision Records for the project. ADRs document significant architectural decisions along with their context and consequences.
 
 ## What is an ADR?
 
-ADR은 소프트웨어 설계에 있어 중요한 의사 결정을 문서화하는 기술입니다. 이는 향후 프로젝트 유지보수 시 "왜 이렇게 설계되었는가?"에 대한 맥락을 제공합니다.
+An Architecture Decision Record (ADR) captures a significant architectural decision, including:
 
-[ADR Template Guide](./0001-record-architecture-decisions.md)를 참조하여 새로운 결정을 작성하십시오.
+- **Context**: The issue motivating the decision
+- **Decision**: The change being proposed or made
+- **Consequences**: What becomes easier or more difficult as a result
+
+ADRs provide a historical record of "why" the system is built the way it is, making it easier for future maintainers (both human and AI) to understand the rationale behind architectural choices. All ADRs are strictly governed by the Architecture Design Standards (`.agent/rules/0130-architecture-standard.md`) and must be verified by the Reviewer Agent.
+
+## When to Create an ADR
+
+Create an ADR when making decisions that:
+
+- Affect the structure or characteristics of the system
+- Impact multiple components or services
+- Involve trade-offs between alternatives
+- Would benefit from future reference
+
+### Examples of ADR-Worthy Decisions
+
+- Choice of database technology
+- Selection of API architecture style (REST vs GraphQL)
+- Adoption of a specific framework
+- Security authentication approach
+- Deployment strategy
+
+## How to Create an ADR
+
+1. **Determine Domain/Feature**: ADRs MUST be placed inside a specific business domain folder (e.g., `docs/adr/auth/`, `docs/adr/payments/`). Do NOT place them directly in the root of `docs/adr/` unless they are truly global.
+2. **Name Convention**: `NNNN-title-with-dashes.md` (e.g., `0001-database-selection.md`)
+3. **Fill All Sections**: Context, Decision, Consequences, Alternatives
+4. **Set Status**: Proposed → Accepted (or Rejected)
+
+```bash
+# Example workflow
+mkdir -p docs/adr/core-infra
+cp templates/architecture/adr-template.md docs/adr/core-infra/0001-use-postgresql.md
+# Edit the file with your decision details
+```
+
+## ADR Template
+
+All ADRs MUST use `templates/architecture/adr-template.md`. The template includes:
+
+| Section | Purpose |
+| --- | --- |
+| **Title** | Short noun phrase describing the decision |
+| **Status** | Proposed, Accepted, Rejected, Deprecated, Superseded |
+| **Context** | Problem statement and background |
+| **Decision** | The change being proposed/made |
+| **Consequences** | Positive and negative impacts |
+| **Alternatives** | Options considered and why not chosen |
+
+## Naming Convention
+
+```text
+docs/adr/
+├── core-infra/
+│   ├── 0001-use-postgresql.md
+│   └── 0002-api-gateway-pattern.md
+├── identity/
+│   └── 0003-microservices-communication.md
+└── ...
+```
+
+- Use 4-digit sequential numbers
+- Use lowercase with hyphens
+- Keep titles short and descriptive
+
+## Status Lifecycle
+
+```text
+[Proposed] → [Accepted] → (may become [Deprecated] or [Superseded])
+     ↓
+[Rejected]
+```
+
+- **Proposed**: Under discussion
+- **Accepted**: Approved and active
+- **Rejected**: Not approved
+- **Deprecated**: No longer recommended
+- **Superseded**: Replaced by a newer ADR
+
+## AI Agent Guidelines
+
+When working with ADRs:
+
+1. **Read before proposing**: Check existing ADRs in corresponding domain folders for related decisions
+2. **Use template**: Always use `templates/architecture/adr-template.md`
+3. **Document alternatives**: AI agents must consider and document alternatives
+4. **Reference in specs**: Decisions in ADRs should be referenced in `specs/`
+5. **Governance Compliance**: The Planner and Reviewer Agents must evaluate all proposed decisions against `.agent/rules/1901-architecture-rules.md` to prevent anti-patterns.
+
+## Index of ADRs
+
+| Number | Title | Status | Date |
+| --- | --- | --- | --- |
+| - | *No ADRs yet* | - | - |
+
+> Add entries to this index as ADRs are created.

@@ -1,0 +1,11 @@
+# Replace placeholder owners with real GitHub users/teams before enforcing branch protection.
+# Owners must have explicit write access to this repository.
+# For best protection, enable "Require review from Code Owners" on protected branches.
+
+* @buenhyden
+
+docs/** @buenhyden
+specs/** @buenhyden
+runbooks/** @buenhyden
+templates/** @buenhyden
+.github/** @buenhyden

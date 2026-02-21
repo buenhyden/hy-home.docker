@@ -1,36 +1,53 @@
-# Pull Request Template
+# Pull Request
 
-## 📝 Pull Request Description
+> **Warning**: Your PR Title MUST follow the **Conventional Commits** format (`feat:`, `fix:`, `docs:`, etc.) as mandated by `.agent/rules/0401-git-workflow-standard.md`!
 
-A brief summary of the changes and the motivation behind them.
+## Related Specification
 
----
+- **Spec File:** [Link to the file in `specs/`]
+- **Issue:** Resolves #
 
-## 🔗 Related Issues
+## Change Type
 
-- Fixes # (issue)
-- Closes # (issue)
+- [ ] Feature
+- [ ] Bug fix
+- [ ] Refactor
+- [ ] Documentation
+- [ ] Operations / Runbook
 
-## 🛠️ Type of Change
+## Description
 
-- [ ] ✨ New feature (non-breaking change which adds functionality)
-- [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
-- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] 📝 Documentation update
-- [ ] 🎨 Refactoring / Style update
+[Describe the changes made in this pull request]
 
----
+## Breaking Changes
 
-## ✅ Checklist
+- [ ] No breaking changes
+- [ ] Breaking changes included (describe below)
 
-- [ ] I have performed a self-review of my code.
-- [ ] My changes generate no new warnings/errors in the logs.
-- [ ] I have added/updated documentation in the `docs/` folder.
-- [ ] I have linked the relevant issues.
-- [ ] (If applicable) UI/UX changes have been verified via screenshots/recordings.
+[If breaking, describe migration path and impact]
 
----
+## Validation Evidence
 
-## 📸 Screenshots / Recordings
+List exact commands used and outcome.
 
-(Optional: Provide visual evidence of the change if relevant)
+```bash
+# Example:
+# npm test
+# npm run lint
+```
+
+## Risk Assessment
+
+- Risk Level: [Low/Medium/High]
+- Rollback Plan: [Describe rollback or mitigation]
+
+## Validations
+
+- [ ] I have read the `CONTRIBUTING.md` document.
+- [ ] My code strictly follows the Implementation Specification.
+- [ ] Documentation has been added/updated utilizing the `templates/` folder (if applicable).
+- [ ] **Commit Standard**: My Pull Request title uses Conventional Commits format.
+- [ ] I have run tests locally.
+- [ ] **Test Coverage Baseline:** I have verified unit test lines coverage is > 80% (`npm run test:coverage` or equivalent).
+- [ ] No secrets or credentials are included in this PR.
+- [ ] If operational behavior changed, runbook updates were added under `runbooks/`.

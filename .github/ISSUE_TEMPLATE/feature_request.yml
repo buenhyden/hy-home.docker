@@ -1,0 +1,58 @@
+name: Feature Request
+description: Propose a new feature using the spec-driven approach
+title: '[FEATURE] '
+labels: ['enhancement']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a feature!
+        **Remember**: All features must go through the spec-driven development process.
+  - type: input
+    id: prd_link
+    attributes:
+      label: PRD / ARD Link
+      description: Provide a link to the PRD (docs/prd) or ARD (docs/ard) for this feature.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What user/business problem should this feature solve?
+    validations:
+      required: true
+  - type: textarea
+    id: expected_outcome
+    attributes:
+      label: Expected Outcome
+      description: What measurable outcome should improve after this feature?
+      placeholder: 'Example: Reduce onboarding completion time from 8m to < 5m'
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the feature is and what it aims
+        to solve.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria (Given-When-Then)
+      description: Provide testable acceptance criteria.
+      placeholder: |
+        Given ...
+        When ...
+        Then ...
+    validations:
+      required: true
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of Scope
+      description: Explicitly state what this request does not include.
+    validations:
+      required: false

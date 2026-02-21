@@ -1,9 +1,0 @@
-.agent/
-.git/
-.history/
-.mypy_cache/
-.vscode/
-node_modules/
-dist/
-coverage/
-storybook-static/

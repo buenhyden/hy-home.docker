@@ -1,26 +1,27 @@
-# Documentation Index
+# Documentation Hub (Human Domain)
 
-이 디렉토리는 `hy-home.docker` 프로젝트의 문서 인덱스를 제공합니다. 모든 문서는 저장소 루트 기준의 상대 경로로 참조합니다.
+This directory contains long-term, human-readable project documentation used across planning, design, and reference delivery.
 
-## 구조
+## Purpose
 
-| 경로              | 설명                                |
-| ----------------- | ----------------------------------- |
-| `docs/adr/`       | Architecture Decision Records (ADR) |
-| `docs/setup/`     | 초기 설정 및 실행 흐름              |
-| `docs/ops/`       | 운영, 모니터링, 장애 대응           |
-| `docs/guides/`    | 서비스별 사용 가이드 모음           |
-| `docs/standards/` | 규칙/표준 및 문서 기준              |
+- Retain durable project knowledge that must survive beyond a single feature implementation.
+- **Isolate product/design knowledge** from executable logic (`specs/`), operational scripts (`runbooks/`), and AI Automation logic (`.agent/workflows/`).
+- Serve as the primary reference point for **Human Developers** trying to understand the system.
 
-## 주요 링크
+## Sub-Directories & Content Mapping
 
-- 인프라 스택: `infra/README.md`
-- 저장소 구조: `ARCHITECTURE.md`
-- 기여 가이드: `CONTRIBUTING.md`
-- 변경 이력: `CHANGELOG.md`
-- 지원: `SUPPORT.md`
+- `adr/` — **Architecture Decision Records**. Must use `templates/architecture/adr-template.md`. Used for capturing "Why" a technical decision was made.
+- `ard/` — **Architecture Reference Documents**. Must use `templates/architecture/ard-template.md`. Used for deep structural "How" designs.
+- `prd/` — **Product Requirements Documents**. Must use `templates/product/prd-template.md`. Used for "What" features we are building and success metrics.
+- `guides/` — Human-centric lifecycle procedures. Contains `pre-development-guide.md`, `during-development-guide.md`, `post-development-guide.md`.
+- `api/` — API references, schemas, and contract documentation.
+- `manuals/` — Non-technical human process manuals.
 
-## 문서 유지 보수 규칙
+## Explicit Boundaries & Rules
 
-- 비밀값은 문서에 직접 기입하지 않고 `secrets/` 또는 `.env` 경로를 안내합니다.
-- 서비스별 상세 내용은 각 `infra/<번호-카테고리>/<서비스>/README.md`에 정리합니다.
+1. **NO RUNBOOKS ALLOWED**: Do NOT create a `docs/runbook/` folder. All playbooks, incident response guides, and deployment workflows must go in the root `/runbooks/` directory.
+2. **NO SPECS ALLOWED**: Do NOT place implementation specs here. All coding specs belong in `/specs/`.
+3. **NO AI WORKFLOWS ALLOWED**: Do NOT place AI agent behavioral guidelines or prompts here. Those belong strictly in `.agent/workflows/`.
+4. **TEMPLATE MANDATORY**: Any new ADR, ARD, or PRD created in this folder **MUST** be generated from its respective counterpart in the `templates/` directory.
+5. **DOCUMENTATION PILLAR**: All content in this directory is subject to the Document Pillar (`.agent/rules/2100-documentation-pillar.md`) and must adhere to the Diátaxis framework where applicable.
+6. **PROJECT-SPECIFIC OVERRIDES**: The `guides/` and `manuals/` folders serve as the official location for project-specific overrides to the generic `.agent/rules/`. AI Agents will prioritize instructions in these local guides during execution.

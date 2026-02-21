@@ -78,13 +78,3 @@ repos:
     rev: v1.7.10
     hooks:
       - id: actionlint # GitHub Actions 워크플로우 검사
-
-  - repo: local
-    hooks:
-      - id: docker-compose-check
-        name: Validate Docker Compose
-        entry: python scripts/validate_compose.py
-        language: system
-        files: ^.*docker-compose.*\.ya?ml$
-        exclude: ^archive/|infra/02-auth/oauth2-proxy/docker-compose.redis.yml
-        types: [yaml]

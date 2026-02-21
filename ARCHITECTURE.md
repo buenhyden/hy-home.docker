@@ -1,107 +1,75 @@
-# 📐 System Architecture
+# System Architecture
 
-이 문서는 **Hy-Home Docker Infrastructure**의 설계 원칙, 구성 계층, 그리고 운영 상의 불변 조건을 정의합니다. 상세 포트/환경 변수는 `docs/02-infrastructure-stack.md`와 `infra/README.md`를 기준으로 합니다.
+This document defines the high-level architecture of projects created from this template. It serves as a blueprint that should be customized for each new project.
 
----
+## 1. System Context
 
-## 1. Purpose & Scope
+This template provides a standardized foundation for building software projects with:
 
-- **목적**: 인프라 전체의 의존성 방향, 운영 표준, 변경 원칙을 명확히 한다.
-- **범위**: Docker Compose 기반의 `infra/` 디렉토리 및 루트 `docker-compose.yml`에서 조립되는 스택.
-- **비범위**: 개별 서비스의 상세 튜닝/운영 절차(각 서비스 README로 위임).
+- **Spec-Driven Development**: `specs/` uniquely drives all implementation.
+- **AI-Assisted Development**: Multi Sub-Agent AI system phases (`AGENTS.md`).
+- **Template-Based Documentation**: Consistent output enforced via `templates/`.
+- **Strict Boundary Segregation**: Clear division of Knowledge (`docs/`), Implementation (`specs/`, `web/`, `app/`, `server/`), and Operations (`runbooks/`).
 
----
+## 2. Core Constraints & Decisions
 
-## 2. System Context (C4)
+### Core Constraints & Decisions
 
-```mermaid
-C4Context
-    title "Hy-Home Infrastructure System Context"
+| Decision                | Rationale                                                                           |
+|-------------------------|-------------------------------------------------------------------------------------|
+| **Spec-Driven Code**    | Eliminates AI hallucination by giving Coder Agents a hard, human-approved target.   |
+| **Templates Mandatory** | Ensures parsing consistency for future AI tasks (PRDs, Specs, Runbooks).            |
+| **Dedicated Runbooks**  | Prevents ops scripts from getting lost in `docs/` hierarchies.                      |
 
-    Person(dev, "Developer", "인프라 구성 및 애플리케이션 개발")
-    System(infra, "Hy-Home Infra", "Docker Compose 기반 서비스 플랫폼")
-    System_Ext(agents, "AI Agents", "코드 구현 및 디버깅 보조")
-    System_Ext(projects, "Project Apps", "project_net을 통해 연결되는 외부 애플리케이션")
-    System_Ext(iot, "IoT Devices", "홈 네트워크 내 연결 기기 (Future)")
+> See `docs/adr/` for detailed Architecture Decision Records that shaped this specific system logic.
 
-    Rel(dev, infra, "배포/설정 관리")
-    Rel(agents, infra, "표준 규칙 기반 변경 지원")
-    Rel(projects, infra, "API/스토리지/메시징 연동")
-    Rel(infra, iot, "지표 수집 및 제어 인터페이스 제공")
-```
+## 3. Architecture & Tech Stack Checklist
 
----
+When starting a project or writing an Architecture Reference Document (ARD), the following checklist MUST be addressed and agreed upon by the Human and Planner Agent:
 
-## 3. Architecture Principles
+| Category | Check Question | Priority | Notes / Decisions |
+| --- | --- | --- | --- |
+| **Architecture Style** | Is the architectural style decided (e.g., Monolithic, Modular Monolith, Microservices)? | **Mandatory** | |
+| **Service Boundaries** | Are the boundaries and responsibilities of core services/modules expressed in diagrams/docs? | **Mandatory** | |
+| **Domain Model** | Are core domain entities (e.g., User, Document) and relations defined (ER/UML)? | **Mandatory** | |
+| **Tech Stack (Backend)** | Have the language, framework, and key libraries (e.g., web framework, ORM) been decided? | **Mandatory** | |
+| **Tech Stack (Frontend)** | Have the framework (React/Vue/Next), state management, and build tools been decided? | **Mandatory** | |
+| **Database** | Have the primary DB engine (e.g., MySQL, PostgreSQL, MongoDB) and schema strategy been decided? | **Mandatory** | |
+| **Messaging / Async** | Is a message broker (e.g., Kafka, RabbitMQ) or async processing method defined? | *Optional* | |
+| **Infrastructure** | Is the deployment target (Cloud/On-Prem, Kubernetes, Serverless) decided? | **Mandatory** | |
+| **Non-Functional Req** | Are NFRs (Availability, Latency, Throughput) defined with quantitative metrics? | **Mandatory** | |
+| **Scalability Strategy** | Are Scale-up/out, partitioning, or caching strategies drafted? | *Optional* | |
+| **Arch. Principles** | Is there a documented list of architectural principles, including "what NOT to do"? | *Optional* | |
+| **ADR Management** | Is there a process established to leave ADRs for key technical decisions? | *Optional* | Yes, use `docs/adr/`. |
+| **Pillar Alignment** | Does the architecture align with the 6 Core Pillars (Security `2200`, Performance `2300`, Observability `2600`, Compliance `2400`, Documentation `2100`, Localization `2500`)? | **Mandatory** | See `.agent/rules/`. |
+| **Agent Rule Compliance** | Does the tech stack selection comply with language/framework specific laws (e.g., `1200-Nextjs.md`) defined in `.agent/rules/`? | **Mandatory** | |
 
-1. **Layered Dependency**: 상위 레이어는 하위 레이어에만 의존한다.
-2. **Composable Modules**: 서비스는 `infra/<category>/<service>` 단위로 분리한다.
-3. **Profile-Driven Optionality**: 선택 스택은 `profiles`로 활성화한다.
-4. **Security Baseline**: 기본 접근은 SSO를 통해 보호하고, 민감 정보는 `.env`/`secrets`로 분리한다.
-5. **Observability-First**: 모든 핵심 서비스는 지표/로그/추적을 수집 가능해야 한다.
-6. **Change Traceability**: 큰 변경은 ADR로 기록한다.
+> **Process Enforcement**: The Planner Agent MUST explicitly answer all items of this checklist when creating an ARD, adhering to `.agent/rules/1910-architecture-documentation.md` and `.agent/rules/1901-architecture-rules.md`. The Reviewer Agent MUST verify that any code changes (e.g., in a PR) do not violate these agreed-upon decisions (such as unauthorized Tech Stack or DB changes) before merging.
 
----
+## 4. Reference Technology Stack (Template)
 
-## 4. Layered Architecture
+Customize the following for your specific project upon cloning.
 
-의존성 흐름은 **Ingress → Auth/Security → Service → Data/Messaging → Observability** 방향으로 유지한다.
+| Layer        | Recommended Technology         | Purpose                              |
+| ------------ | ------------------------------ | ------------------------------------ |
+| **Frontend** | React / Next.js / TailwindCSS  | Client-side interactions             |
+| **Backend**  | Node.js / Python / Go / Rust   | Server-side APIs and logic           |
+| **Database** | PostgreSQL / MongoDB           | Data persistence                     |
+| **DevOps**   | Docker / GitHub Actions        | CI/CD and Containerization           |
 
-1. **Ingress Layer**: Traefik(기본), Nginx(옵션)
-2. **Auth & Security Layer**: Keycloak, OAuth2 Proxy, Vault(옵션)
-3. **Service Layer**: 워크플로우, 툴링, AI 서비스 등 비즈니스/플랫폼 서비스
-4. **Data & Messaging Layer**: PostgreSQL, Valkey/Redis, Kafka, OpenSearch, Qdrant, MinIO 등
-5. **Observability Layer**: Prometheus, Grafana, Loki, Tempo, Alloy, Alertmanager
+## 4. Integration & Separation Points
 
----
+### Document vs Code vs Operations
 
-## 5. Orchestration Model
+- **`docs/`**: Holds "Why" and "What" (PRD, ADR, ARD).
+- **`specs/`**: Holds "Exactly How" prior to coding.
+- **`runbooks/`**: Holds executable scripts and "What to do when X fails."
 
-- **Top-level Compose**: 루트 `docker-compose.yml`이 `include`로 infra 스택을 조립한다.
-- **Service Ownership**: 각 서비스는 `infra/<category>/<service>/docker-compose.yml`로 독립 관리한다.
-- **Classification**
-  - **Core**: 기본 포함되는 서비스.
-  - **Optional (Profile)**: `profiles`로 켜는 서비스.
-  - **Standalone**: 루트 `include`에 없는 별도 스택.
+### Extending the Architecture
 
-```bash
-# 전체 기동 (루트)
-docker compose up -d
-
-# 선택 스택
-docker compose --profile <profile> up -d
-```
-
----
-
-## 6. Networking Model
-
-- **infra_net**: 내부 핵심 서비스 간 통신 (기본 172.19.0.0/16)
-- **project_net**: 외부 프로젝트 앱 연결용 (외부 네트워크)
-- **kind**: K8s 실험/연동용 외부 네트워크
-
-정적 IP는 서비스 간 참조 안정성을 위해 사용하지만, **중복되지 않도록 카테고리별 대역을 유지**한다.
+1. **Design Changes**: Create an ADR in `docs/adr/` using `templates/architecture/adr-template.md`.
+2. **Data Structure Changes**: Document via ARD in `docs/ard/` using `templates/architecture/ard-template.md`.
+3. **Execution Rules**: Modify `.agent/rules/` to enforce new architectural linters globally.
 
 ---
-
-## 7. Configuration & Secrets
-
-- **공통 설정**: 루트 `.env` 및 `.env.example`에서 관리
-- **민감 정보**: `secrets/` 하위 텍스트 파일로 분리
-- **서비스별 설정**: 각 서비스 폴더의 `config/` 또는 `*.example`로 템플릿 제공
-- **영속 데이터**: `DEFAULT_*_DIR` 환경 변수로 호스트 경로를 지정해 데이터 유실 방지
-
----
-
-## 8. Observability & Operations
-
-- **Metrics**: Prometheus 중심 수집, Grafana 시각화
-- **Logs**: Loki, **Traces**: Tempo, **Collector**: Alloy
-- **Alerting**: Alertmanager로 라우팅 및 통지
-- **SSO**: Grafana 등 UI는 Keycloak 연동을 기본 전제로 한다.
-
----
-
-## 9. Decision Records (ADR)
-
-주요 아키텍처 변경은 `docs/adr/`에 **ADR 형식**으로 기록한다. 레이어링 및 의존성 원칙을 훼손하는 변경은 ADR 검토를 선행한다.
+> **Note**: This architecture document must be kept strictly to high-level system design. For operational procedures, alerting logic, or CI orchestration, consult `OPERATIONS.md`.

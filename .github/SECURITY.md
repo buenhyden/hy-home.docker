@@ -1,21 +1,34 @@
 # Security Policy
 
+> Template note: Replace placeholder contact channels before enabling this repository publicly.
+
 ## Supported Versions
 
-보안 업데이트가 지원되는 버전은 다음과 같습니다.
+Use this table to define currently supported versions for security fixes.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| latest  | :white_check_mark: |
-| < 1.0   | :x:                |
+| Version | Supported |
+| ------- | --------- |
+| main    | yes       |
 
-## Reporting a Vulnerability (보안 취약점 신고)
+## Reporting a Vulnerability
 
-이 프로젝트에서 보안 취약점을 발견하셨다면, 다음과 같은 절차로 알려주시기 바랍니다.
+Please do not open public issues for security vulnerabilities.
 
-1. **공개적인 Issue로 등록하지 마십시오.** 보안 취약점이 악용될 수 있습니다.
-2. 가능하다면 프로젝트 관리자(buenhyden)에게 이메일이나 비공개 채널을 통해 먼저 연락해 주십시오.
-3. 취약점에 대한 상세 정보(재현 방법, 영향도 등)를 제공해 주시면 신속하게 검토하겠습니다.
-4. 보안 패치가 준비되면, 해당 내용을 Issue와 PR을 통해 투명하게 공개하고 업데이트를 진행합니다.
+1. Send a private report to your security contact channel:
+   - Email: `chochyjj@gmail.com`
+   - Or GitHub Security Advisory: `https://github.com/<owner>/<repo>/security/advisories/new`
+2. Include reproduction details, impact, and affected files.
+3. If possible, include a proof-of-concept and suggested mitigation.
 
-프로젝트의 보안을 위해 힘써주셔서 감사합니다.
+Expected response targets:
+
+- Initial triage acknowledgment: within 2 business days
+- Severity assessment: within 5 business days
+- Remediation plan: shared after validation
+
+## Disclosure Process
+
+1. Validate report and assign severity.
+2. Prepare fix in a private branch/repository.
+3. Release patch and update affected documentation.
+4. Publish advisory after fix is available.

@@ -1,0 +1,53 @@
+# Repository AI Context File (`llms.txt`)
+
+You are reading the root context vector. This repository relies exclusively on a **Multi Sub-Agent System** using **Spec-Driven Development**. You are operating within an infrastructure that separates Pre-development, During-development, and Post-development execution phases.
+
+## 1. Golden Rules for AI Agents
+
+- **Rule 1: Spec-Anchored Development.** Never write executable code without an approved spec. The `specs/` directory holds the ultimate source of truth. When extending functionality or fixing bugs, you MUST read the existing specs first and update the spec files BEFORE altering the code to prevent drift.
+- **Rule 2: Never place operational playbooks inside `docs/`.** ALL executable deploy and troubleshooting playbooks belong strictly in `runbooks/`. The generic `operations/` root folder is exclusively reserved for strategic Operations Blueprints (`0301-operations-blueprint-standard.md`). **Never create a `docs/runbook` folder.**
+- **Rule 3: Never hallucinate format structures.** For ARD, ADR, PRD, Runbooks, or Specs, you **MUST** read the corresponding format from `templates/` and use it.
+-   Key templates live under subfolders: `templates/architecture/`, `templates/engineering/`, `templates/guides/`, `templates/operations/`, `templates/product/`, `templates/project/`.
+- **Rule 4: Obey your immediate Agent Persona.** Refer to `AGENTS.md` to understand your explicitly declared specialized role (e.g., System Architect, Security Auditor, React Developer, Doc Writer) for your current phase. Avoid overlapping into another agent's domain unprompted. **You must exclusively follow the technical standards (.agent/rules) assigned to your persona.**
+- **Rule 5: Always consult `.agent/rules/`**. Before writing code or generating documentation, you MUST understand and abide by the technical standards mapped in `.agent/rules/`.
+- **Rule 6: Ensure Executability (E2E Validation).** Code and tests must not remain as mere text blobs. AI Agents (especially Coder and DevOps) MUST leverage the environment to run builds, execute tests (Unit/E2E), and validate functionality locally before considering a feature complete.
+- **Rule 7: Framework Agnosticism Guardrail.** Do not strictly apply framework-specific rules (`.agent/rules/`) unless the user explicitly requested that framework or it is already established in the current project architecture.
+- **Rule 8: Fast-Track / Prototype Mode.** If the user explicitly asks for a "quick script", "prototype", or uses `/workflow-fast-prototype`, bypass the heavy PRD/Spec process and use a single `specs/fast-prototype.md` to begin coding immediately.
+- **Rule 9: Approval Gate (필수).** BEFORE implementation, all `ARCHITECTURE.md` checklist items with Priority `**필수**` MUST be satisfied. (If the checklist labels them as `**Mandatory**`, treat that as `**필수**`.)
+- **Rule 10: Full-stack Workspace Split.** When frontend and backend coexist, start with clear root separation: `web/`, `app/`, and `server/`.
+- **Rule 11: CI Scope Policy.** Default CI is structural-only; opt-in workflows live under `templates/workflows/`, and the Docker workflow template is build-only (no push).
+- **Rule 12: Rule + Workflow + Skill Execution Contract.** Agents MUST explicitly define the combination of Rules (`.agent/rules/`), Workflows (`.agent/workflows/`), and Skills (`.agent/skills/`) they are using before implementation.
+- **Rule 13: Evidence-Driven Execution.** Agents MUST synthesize prior findings (PRDs, Specs, ARDs) and align with `PRD -> Plan -> Spec -> Implement`. Prohibited from writing code based on prompt-only assumptions.
+- **Rule 14: Core Pillars Mandate.** Agents MUST strictly adhere to the **6 Core Engineering Pillars** (Security, Performance, Observability, Compliance, Documentation, Localization) before proposing architecture or code.
+- **Rule 15: Think Before Coding.** Don't assume. Surface tradeoffs explicitly. If multiple interpretations exist, present them. If something is unclear, stop and ask. Push back if a simpler approach exists.
+- **Rule 16: Simplicity First.** Write minimum verifiable code. No speculative features, unrequested configurability, or multi-use abstractions for single-use code. Rewrite if overcomplicated.
+- **Rule 17: Surgical Changes.** Touch only what you must. Match existing style. Don't 'cleanup' adjacent code. Remove imports/variables that YOUR changes made unused, but leave pre-existing dead code alone. Every changed line must trace directly to the request.
+- **Rule 18: Goal-Driven Execution.** Define success criteria upfront. Formulate verifiable goals (e.g., "Write test -> make it pass") and state brief plans for multi-step tasks. Loop until verified independent of user input.
+- **Rule 19: Reverse Documentation (Drift Prevention).** Before proposing a merge, you MUST update `specs/` and `docs/` to reflect the final code state if your implementation diverged from the original spec.
+
+## 2. Directory Matrix
+
+- **`app/`**: Native Mobile/Desktop application source code.
+- **`docs/`**: Long-term descriptive knowledge (`adr/`, `ard/`, `prd/`, `guides/`, `manuals/`).
+- **`operations/`**: Strategic Operations Blueprints and Risk Management.
+- **`runbooks/`**: Executable operational procedures (`incidents/`, `postmortems/`, `services/`).
+- **`scripts/`**: Automation pipeline and maintenance utilities.
+- **`server/`**: Backend application source code.
+- **`specs/`**: Output of the Pre-dev phase; input of the During-dev phase. (Spec-Driven Development)
+- **`templates/`**: Core definitions for document structures (`architecture/`, `engineering/`, `guides/`, `operations/`, `product/`, `project/`).
+- **`tests/`**: Global end-to-end (E2E) and integration test suites spanning across multiple services.
+- **`web/`**: Frontend application source code.
+- **`.github/`**: GitHub specific artifacts (`workflows/` for CI/CD quality gates, `ISSUE_TEMPLATE/` for DoR).
+- **`.agent/rules/`**: Technical/Security standards governing the project.
+- **`.agent/workflows/`**: Step-by-step procedures for AI agents to follow.
+- **`.agent/skills/`**: Reusable code patterns, tool configurations, and capabilities context.
+- **`examples/`**: Demonstration and sandbox code.
+
+## 2.1 Canonical Paths
+
+- `specs/<feature>/spec.md`
+- `specs/<feature>/plan.md`
+- `specs/<feature>/api/`
+
+## 3. Immediate Action on Prompt
+When initialized by the user, dynamically load the relevant context base (e.g., `docs/guides/pre-development-guide.md` if planning) and declare your current Sub-Agent persona before proceeding.
