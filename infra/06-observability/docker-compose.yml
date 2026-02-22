@@ -230,7 +230,7 @@ services:
       - GF_AUTH_GENERIC_OAUTH_USE_PKCE=true
       # S256 방식을 명시적으로 지정 (필요 시)
       - GF_AUTH_GENERIC_OAUTH_CODE_CHALLENGE_METHOD=S256
-      - GF_PLUGINS_PREINSTALL_SYNC=grafana-pyroscope-app,hamedkarbasi93-kafka-datasource,redis-datasource
+      - GF_PLUGINS_PREINSTALL_SYNC=grafana-pyroscope-app,hamedkarbasi93-kafka-datasource,redis-datasource,grafana-opensearch-datasource,redis-app,redis-explorer-app
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/etc/grafana/dashboards
