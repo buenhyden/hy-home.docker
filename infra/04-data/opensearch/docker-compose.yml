@@ -8,11 +8,17 @@ x-logging: &default-logging
 
 volumes:
   opensearch-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_OPENSEARCH_DATA_DIR}/standalone
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/opensearch/opensearch1-data
+  opensearch_certs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEFAULT_DOCKER_PATH}/secrets/certs
 
 services:
   # ######################################################
@@ -49,7 +55,7 @@ services:
     volumes:
       # 데이터 영속화 볼륨
       - opensearch-data:/usr/share/opensearch/data
-      - ../../../secrets/certs:/usr/share/opensearch/config/certs:ro
+      - opensearch_certs:/usr/share/opensearch/config/certs:ro
       - ./opensearch/config/opensearch-security/config.yml:/usr/share/opensearch/config/opensearch-security/config.yml:ro
       - ./opensearch/config/opensearch-security/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml:ro
       - ./opensearch/config/opensearch-security/internal_users.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml:ro
@@ -108,7 +114,7 @@ services:
     # ports:
     #   - "${KIBANA_HOST_PORT}:${KIBANA_PORT}"
     volumes:
-      - ../../../secrets/certs:/usr/share/opensearch-dashboards/config/certs:ro
+      - opensearch_certs:/usr/share/opensearch-dashboards/config/certs:ro
       - ./opensearch-dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
     extra_hosts:
       - 'keycloak.127.0.0.1.nip.io:172.19.0.13'

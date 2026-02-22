@@ -7,7 +7,12 @@ x-logging: &default-logging
 
 volumes:
   stalwart-data:
-
+  stalwart_certs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEFAULT_DOCKER_PATH}/secrets/certs
 services:
   # ----------------------------------------------------------------
   # Stalwart Mail Server (올인원 메일 서버)
@@ -30,7 +35,7 @@ services:
   #   # [데이터 영구 저장]
   #   volumes:
   #     - stalwart-data:/opt/stalwart
-  #     - ../../../secrets/certs:/opt/stalwart/certs:ro
+  #     - stalwart_certs:/opt/stalwart/certs:ro
   #   networks:
   #     - infra_net
   #   # [환경 변수] - 초기 관리자 계정 설정

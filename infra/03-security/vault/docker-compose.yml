@@ -12,7 +12,7 @@ volumes:
     # driver_opts:
     #   o: bind
     #   type: none
-    #   device: ${DEFAULT_SECRETS_DIR}/vault
+    #   device: ${DEFAULT_SECURITY_DIR}/vault
 
 services:
   vault:

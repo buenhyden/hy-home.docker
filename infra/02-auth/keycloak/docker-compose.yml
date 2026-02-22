@@ -6,6 +6,26 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+volumes:
+  keycloak-config:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AUTH_DIR}/keycloak/conf
+  keycloak-providers:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AUTH_DIR}/keycloak/providers
+  keycloak-themes:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AUTH_DIR}/keycloak/themes
+
 services:
   keycloak:
     deploy:
@@ -15,10 +35,14 @@ services:
           memory: 1G
         reservations:
           memory: 512M
-    image: quay.io/keycloak/keycloak:26.5.0
+    image: quay.io/keycloak/keycloak:26.5.4
     container_name: keycloak
     hostname: keycloak
     restart: unless-stopped
+    volumes:
+      - keycloak-themes:/opt/keycloak/themes
+      - keycloak-config:/opt/keycloak/conf
+      - keycloak-providers:/opt/keycloak/providers
     command: start-dev
     expose:
       - ${KEYCLOAK_MANAGEMENT_PORT}
@@ -62,8 +86,4 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.29
-    logging:
-      driver: 'json-file'
-      options:
-        max-size: '10m'
-        max-file: '5'
+    logging: *default-logging

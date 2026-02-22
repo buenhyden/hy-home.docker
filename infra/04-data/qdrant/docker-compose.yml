@@ -8,11 +8,11 @@ x-logging: &default-logging
 
 volumes:
   qdrant-data:
-  #   driver: local
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: ${DEFAULT_VECTOR_DB_DIR}/qdrant
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/qdrant/data
 
 services:
   qdrant:
@@ -21,7 +21,7 @@ services:
         limits:
           cpus: '1.0'
           memory: 1G
-    image: qdrant/qdrant:v1.16.3
+    image: qdrant/qdrant:v1.17
     container_name: qdrant
     ports:
       - '${QDRANT_HOST_PORT}:${QDRANT_PORT}'

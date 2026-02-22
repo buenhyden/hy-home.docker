@@ -14,7 +14,7 @@ auth:
       keycloak:
         # Intentionally empty to allow Env Vars to take precedence
         # and to override any default issuer-uri pointing to kafka-auth
-        clientId: proxy-client
+        clientId: realm-home-client
         clientSecret: <replace_me> # CLIENT SECRET OBTAINED FROM KEYCLOAK
         scope: openid,roles,groups
         client-name: keycloak

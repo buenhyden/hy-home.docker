@@ -13,7 +13,7 @@ server.ssl.certificate: <REPLACE_ME>
 opensearch_security.auth.type: ["basicauth", "openid"]
 opensearch_security.auth.multiple_auth_enabled: true
 opensearch_security.openid.connect_url: "https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/.well-known/openid-configuration"
-opensearch_security.openid.client_id: "proxy-client"
+opensearch_security.openid.client_id: "realm-home-client"
 opensearch_security.openid.client_secret: <REPLACE_ME>
 opensearch_security.openid.scope: "openid profile email offline_access groups"
 opensearch_security.openid.base_redirect_url: "https://opensearch-dashboard.127.0.0.1.nip.io"

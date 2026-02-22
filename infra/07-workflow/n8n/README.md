@@ -44,7 +44,7 @@ graph LR
 | :-------------------- | :--------------------------- | :------------------------------- | :-------------- |
 | `n8n`                 | `n8nio/n8n:2.3.0`            | Main Node (UI, API, Webhooks)    | 1.0 CPU / 2GB   |
 | `n8n-worker`          | `n8nio/n8n:2.3.0`            | Worker Node (Workflow Execution) | 1.0 CPU / 2GB   |
-| `n8n-valkey`          | `valkey/valkey:9.0.1-alpine` | High-Performance Job Queue       | 0.5 CPU / 256MB |
+| `n8n-valkey`          | `valkey/valkey:9.0.2-alpine` | High-Performance Job Queue       | 0.5 CPU / 256MB |
 | `n8n-valkey-exporter` | `oliver006/redis_exporter`   | Prometheus Metrics               | 0.1 CPU / 128MB |
 
 ## Networking

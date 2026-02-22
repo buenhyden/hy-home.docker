@@ -8,23 +8,23 @@ x-logging: &default-logging
 
 volumes:
   mng-pg-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_POSTGRESQL_DATA_DIR}/mng-pg
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MANAGEMENT_DIR}/pg
   mng-valkey-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_VALKEY_DATA_DIR}/mng-node
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MANAGEMENT_DIR}/valkey
   redisinsight-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_REDIS_DATA_DIR}/redisinsight
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MANAGEMENT_DIR}/redisinsight
 
 services:
   mng-valkey:
@@ -33,7 +33,7 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
-    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: mng-valkey
     secrets:
       - valkey_password
@@ -73,7 +73,7 @@ services:
         limits:
           cpus: '0.1'
           memory: 128M
-    image: oliver006/redis_exporter:v1.80.1-alpine
+    image: oliver006/redis_exporter:v1.81.0-alpine
     container_name: mng-valkey-exporter
     expose:
       - '${VALKEY_EXPORTER_PORT}'
@@ -108,7 +108,7 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
-    image: redis/redisinsight:3.0.1
+    image: redis/redisinsight:3.0.3
     container_name: redisinsight
     restart: unless-stopped
     networks:
@@ -169,6 +169,7 @@ services:
       retries: 5
       start_period: 30s
     logging: *default-logging
+
   mng-pg-init:
     deploy:
       resources:

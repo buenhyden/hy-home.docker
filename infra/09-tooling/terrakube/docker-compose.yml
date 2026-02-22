@@ -72,7 +72,7 @@ services:
     environment:
       REACT_APP_TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}/api/v1/
       REACT_APP_AUTHORITY: https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
-      REACT_APP_CLIENT_ID: proxy-client
+      REACT_APP_CLIENT_ID: ${OAUTH2_PROXY_CLIENT_ID}
       REACT_APP_REDIRECT_URI: https://terrakube-ui.${DEFAULT_URL}
       REACT_APP_SCOPE: openid profile email offline_access groups
       JAVA_TOOL_OPTIONS: -Dcom.sun.security.enableAIAcaIssuers=true

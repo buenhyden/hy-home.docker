@@ -157,7 +157,7 @@ services:
         limits:
           cpus: '2.0'
           memory: 1G
-    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: n8n-valkey
     secrets:
       - valkey_password

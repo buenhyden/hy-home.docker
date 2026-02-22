@@ -41,7 +41,7 @@ graph TB
 | Service                        | Image                                       | Role            | Resources       |
 | :----------------------------- | :------------------------------------------ | :-------------- | :-------------- |
 | `oauth2-proxy`                 | `quay.io/oauth2-proxy/oauth2-proxy:v7.13.0` | Auth Gateway    | 0.5 CPU / 256MB |
-| `oauth2-proxy-valkey`          | `valkey/valkey:9.0.1`                       | Session Storage | 0.5 CPU / 256MB |
+| `oauth2-proxy-valkey`          | `valkey/valkey:9.0.2-alpine`                       | Session Storage | 0.5 CPU / 256MB |
 | `oauth2-proxy-valkey-exporter` | `oliver006/redis_exporter`                  | Metrics         | .1 CPU / 128MB  |
 
 ## Networking

@@ -34,8 +34,8 @@ graph TD
 
 | Service               | Image                        | Role                | Resources       |
 | :-------------------- | :--------------------------- | :------------------ | :-------------- |
-| `valkey-node-{0..5}`  | `valkey/valkey:9.0.1-alpine` | Data Node (Sharded) | 0.5 CPU / 512MB |
-| `valkey-cluster-init` | `valkey/valkey:9.0.1`        | Bootstrap Script    | 0.1 CPU / 128MB |
+| `valkey-node-{0..5}`  | `valkey/valkey:9.0.2-alpine` | Data Node (Sharded) | 0.5 CPU / 512MB |
+| `valkey-cluster-init` | `valkey/valkey:9.0.2-alpine`        | Bootstrap Script    | 0.1 CPU / 128MB |
 | `valkey-exporter`     | `oliver006/redis_exporter`   | Prometheus Metrics  | 0.1 CPU / 128MB |
 
 ## Networking

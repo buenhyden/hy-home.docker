@@ -35,7 +35,7 @@ graph TB
 
 | Service               | Image                      | Role                             | Resources       |
 | :-------------------- | :------------------------- | :------------------------------- | :-------------- |
-| `mng-valkey`          | `valkey/valkey:9.0.1`      | **Cache & Broker** (Redis Comp.) | 0.5 CPU / 512MB |
+| `mng-valkey`          | `valkey/valkey:9.0.2-alpine`      | **Cache & Broker** (Redis Comp.) | 0.5 CPU / 512MB |
 | `mng-pg`              | `postgres:17-bookworm`     | **Metadata Database**            | 1 CPU / 1GB     |
 | `redisinsight`        | `redis/redisinsight:3.0.1` | Valkey UI Management             | 0.5 CPU / 512MB |
 | `mng-pg-init`         | `postgres:17-alpine`       | DB Initializer                   | 0.5 CPU / 128MB |

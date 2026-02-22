@@ -1,12 +1,20 @@
 name: nginx
-volumes:
-  nginx-logs:
 
 x-logging: &default-logging
   driver: 'json-file'
   options:
     max-size: '5m'
     max-file: '2'
+
+volumes:
+  nginx-logs:
+  nginx_certs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEFAULT_DOCKER_PATH}/secrets/certs
+
 services:
   nginx:
     profiles:
@@ -19,7 +27,7 @@ services:
       - ${HTTPS_HOST_PORT}:${HTTPS_PORT}
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ../../../secrets/certs:/etc/nginx/certs:ro
+      - nginx_certs:/etc/nginx/certs:ro
     networks:
       infra_net:
         ipv4_address: 172.19.0.13

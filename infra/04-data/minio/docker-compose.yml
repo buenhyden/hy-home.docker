@@ -8,11 +8,11 @@ x-logging: &default-logging
 
 volumes:
   minio-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_MINIO_DATA_DIR}/data
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/minio/data-1
 
 services:
   minio:
@@ -34,9 +34,6 @@ services:
       MINIO_PROMETHEUS_AUTH_TYPE: 'public'
       MINIO_API_ROOT_ACCESS: 'on'
       # MINIO_BROWSER_REDIRECT_URL: "https://${DEFAULT_URL}/minio-console/"
-    # ports:
-    #   - "${MINIO_HOST_PORT}:${MINIO_PORT}" # S3 API
-    #   - "${MINIO_CONSOLE_HOST_PORT}:${MINIO_CONSOLE_PORT}" # Console
     networks:
       infra_net:
         ipv4_address: 172.19.0.12
@@ -49,7 +46,6 @@ services:
       retries: 3
     labels:
       - 'traefik.enable=true'
-
       # ---------------------------------------------------------
       # 1. MinIO API 라우터 (S3 호환 프로그램용 - 포트 9000)
       # ---------------------------------------------------------

@@ -8,31 +8,31 @@ x-logging: &default-logging
 
 volumes:
   kafka-1-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_KAFKA_DATA_DIR}/node1
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka1-data
 
   kafka-2-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_KAFKA_DATA_DIR}/node2
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka2-data
 
   kafka-3-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_KAFKA_DATA_DIR}/node3
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka3-data
   kafka-connect-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_KAFKA_DATA_DIR}/kafka-connect
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka-connect
 
 # ------------------------------------------------------------
 # Kafka Brokers (KRaft) — Primary 패턴 (완전 동일 템플릿 + YAML 앵커)

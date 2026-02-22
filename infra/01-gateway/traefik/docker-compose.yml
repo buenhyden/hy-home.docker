@@ -5,6 +5,15 @@ x-logging: &default-logging
   options:
     max-size: '5m'
     max-file: '2'
+
+volumes:
+  traefik_certs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEFAULT_DOCKER_PATH}/secrets/certs
+
 services:
   traefik:
     deploy:
@@ -14,7 +23,7 @@ services:
           memory: 1G
         reservations:
           memory: 512M
-    image: traefik:v3.6.6
+    image: traefik:v3.6.8
     container_name: traefik
     hostname: traefik
     security_opt:
@@ -27,7 +36,7 @@ services:
       - ${TRAEFIK_METRICS_HOST_PORT}:${TRAEFIK_METRICS_PORT}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ../../../secrets/certs:/certs:ro
+      - traefik_certs:/certs:ro
       - ./dynamic:/dynamic:ro
       - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
     command:

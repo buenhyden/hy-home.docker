@@ -8,41 +8,41 @@ x-logging: &default-logging
 
 volumes:
   valkey-data-0:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_VALKEY_DATA_DIR}/node0
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/valkey/valkey0-data
   valkey-data-1:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_VALKEY_DATA_DIR}/node1
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/valkey/valkey1-data
   valkey-data-2:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_VALKEY_DATA_DIR}/node2
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/valkey/valkey2-data
   valkey-data-3:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_VALKEY_DATA_DIR}/node3
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/valkey/valkey3-data
   valkey-data-4:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_VALKEY_DATA_DIR}/node4
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/valkey/valkey4-data
   valkey-data-5:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_VALKEY_DATA_DIR}/node5
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/valkey/valkey5-data
 
 services:
   # ##############################################################
@@ -56,7 +56,7 @@ services:
           memory: 512M
         reservations:
           memory: 256M
-    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: valkey-node-0
     secrets:
       - valkey_password
@@ -99,7 +99,7 @@ services:
           memory: 512M
         reservations:
           memory: 256M
-    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: valkey-node-1
     secrets:
       - valkey_password
@@ -139,7 +139,7 @@ services:
           memory: 512M
         reservations:
           memory: 256M
-    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: valkey-node-2
     secrets:
       - valkey_password
@@ -179,7 +179,7 @@ services:
           memory: 512M
         reservations:
           memory: 256M
-    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: valkey-node-3
     secrets:
       - valkey_password
@@ -219,7 +219,7 @@ services:
           memory: 512M
         reservations:
           memory: 256M
-    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: valkey-node-4
     secrets:
       - valkey_password
@@ -259,7 +259,7 @@ services:
           memory: 512M
         reservations:
           memory: 256M
-    image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+    image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: valkey-node-5
     secrets:
       - valkey_password
@@ -297,7 +297,7 @@ services:
   #   - 이미 클러스터 구성돼 있으면 noop로 끝나도록 스크립트 작성
   # ##############################################################
   valkey-cluster-init:
-    image: valkey/valkey:9.0.1
+    image: valkey/valkey:9.0.2-alpine
     container_name: valkey-cluster-init
     secrets:
       - valkey_password
