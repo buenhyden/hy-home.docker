@@ -44,17 +44,92 @@ updates:
   # 3. Docker (Infra Layer)
   # infra/ 디렉토리 하위의 인프라 서비스 관련 Docker 의존성을 감시합니다.
   - package-ecosystem: 'docker'
-    directory: '/infra'
-    schedule:
-      interval: 'weekly'
-      day: 'monday'
+    directory: '/infra/01-gateway/traefik'
+    schedule: { interval: 'weekly', day: 'monday' }
     open-pull-requests-limit: 10
-    cooldown:
-      default-days: 7
+    cooldown: { default-days: 7 }
     groups:
-      infra-dependencies:
-        patterns:
-          - '*'
+      infra-dependencies: { patterns: ['*'] }
+
+  - package-ecosystem: 'docker'
+    directory: '/infra/02-auth/keycloak'
+    schedule: { interval: 'weekly', day: 'monday' }
+    open-pull-requests-limit: 10
+    cooldown: { default-days: 7 }
+    groups:
+      infra-dependencies: { patterns: ['*'] }
+
+  - package-ecosystem: 'docker'
+    directory: '/infra/02-auth/oauth2-proxy'
+    schedule: { interval: 'weekly', day: 'monday' }
+    open-pull-requests-limit: 10
+    cooldown: { default-days: 7 }
+    groups:
+      infra-dependencies: { patterns: ['*'] }
+
+  - package-ecosystem: 'docker'
+    directory: '/infra/04-data/mng-db'
+    schedule: { interval: 'weekly', day: 'monday' }
+    open-pull-requests-limit: 10
+    cooldown: { default-days: 7 }
+    groups:
+      infra-dependencies: { patterns: ['*'] }
+
+  - package-ecosystem: 'docker'
+    directory: '/infra/04-data/minio'
+    schedule: { interval: 'weekly', day: 'monday' }
+    open-pull-requests-limit: 10
+    cooldown: { default-days: 7 }
+    groups:
+      infra-dependencies: { patterns: ['*'] }
+
+  - package-ecosystem: 'docker'
+    directory: '/infra/04-data/qdrant'
+    schedule: { interval: 'weekly', day: 'monday' }
+    open-pull-requests-limit: 10
+    cooldown: { default-days: 7 }
+    groups:
+      infra-dependencies: { patterns: ['*'] }
+
+  - package-ecosystem: 'docker'
+    directory: '/infra/04-data/postgresql-cluster'
+    schedule: { interval: 'weekly', day: 'monday' }
+    open-pull-requests-limit: 10
+    cooldown: { default-days: 7 }
+    groups:
+      infra-dependencies: { patterns: ['*'] }
+
+  - package-ecosystem: 'docker'
+    directory: '/infra/04-data/valkey-cluster'
+    schedule: { interval: 'weekly', day: 'monday' }
+    open-pull-requests-limit: 10
+    cooldown: { default-days: 7 }
+    groups:
+      infra-dependencies: { patterns: ['*'] }
+
+  - package-ecosystem: 'docker'
+    directory: '/infra/04-data/opensearch'
+    schedule: { interval: 'weekly', day: 'monday' }
+    open-pull-requests-limit: 10
+    cooldown: { default-days: 7 }
+    groups:
+      infra-dependencies: { patterns: ['*'] }
+
+  - package-ecosystem: 'docker'
+    directory: '/infra/05-messaging/kafka'
+    schedule: { interval: 'weekly', day: 'monday' }
+    open-pull-requests-limit: 10
+    cooldown: { default-days: 7 }
+    groups:
+      infra-dependencies: { patterns: ['*'] }
+
+  - package-ecosystem: 'docker'
+    directory: '/infra/06-observability'
+    schedule: { interval: 'weekly', day: 'monday' }
+    open-pull-requests-limit: 10
+    cooldown: { default-days: 7 }
+    groups:
+      infra-dependencies: { patterns: ['*'] }
 
   # 4. Terraform (If applicable)
   # infra/ 디렉토리 내에 Terraform 파일이 존재할 경우 활성화됩니다.

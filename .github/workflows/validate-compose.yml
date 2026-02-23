@@ -1,10 +1,17 @@
 name: Validate Docker Compose
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'infra/**'
+      - '.env.example'
+      - 'docker-compose.yml'
   pull_request:
     paths:
       - 'infra/**'
       - '.env.example'
+      - 'docker-compose.yml'
 
 jobs:
   validate:
@@ -19,7 +26,16 @@ jobs:
       - name: Create .env from example
         run: cp .env.example .env
 
-      - name: Check Docker Compose Config
+      - name: Create dummy secrets for validation
         run: |
-          cd infra
-          docker compose config > /dev/null
+          mkdir -p secrets
+          echo "dummy" > secrets/postgres_password.txt
+          echo "dummy" > secrets/redis_password.txt
+          echo "dummy" > secrets/minio_root_password.txt
+          echo "dummy" > secrets/minio_root_user.txt
+          echo "dummy" > secrets/minio_app_user_password.txt
+          echo "dummy" > secrets/minio_app_user.txt
+          echo "dummy" > secrets/valkey_password.txt
+
+      - name: Check Docker Compose Config
+        run: docker compose config > /dev/null
