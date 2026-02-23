@@ -15,7 +15,8 @@
 
 | 파일명 | 용도 |
 |---|---|
-| `traefik_basicauth_password.txt` | Traefik 대시보드 접근을 위한 HTTP Basic Auth 비밀번호 |
+| `traefik_basicauth_password.txt` | Traefik 대시보드 접근을 위한 HTTP Basic Auth 자격증명 (htpasswd 형식) |
+| `traefik_opensearch_basicauth_password.txt` | OpenSearch API 접근을 위한 HTTP Basic Auth 자격증명 (htpasswd 형식, 대시보드 계정과 별개) |
 | `keycloak_admin_password.txt` | Keycloak 마스터 렐름 관리자 비밀번호 |
 | `keycloak_db_password.txt` | Keycloak이 DB에 접속할 때 사용하는 비밀번호 |
 | `oauth2_proxy_client_secret.txt` | Vault 및 Grafana SSO 연동을 위한 OAuth2 Client Secret |

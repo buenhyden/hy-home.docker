@@ -44,6 +44,8 @@ secrets:
   # ── Gateway ─────────────────────────────────────────────
   traefik_basicauth_password:
     file: ./secrets/traefik_basicauth_password.txt
+  traefik_opensearch_basicauth_password:
+    file: ./secrets/traefik_opensearch_basicauth_password.txt
 
   # ── Auth ────────────────────────────────────────────────
   keycloak_db_password:

@@ -69,8 +69,11 @@ services:
           - whoami.${DEFAULT_URL}
     secrets:
       - traefik_basicauth_password
+      - traefik_opensearch_basicauth_password
     logging: *default-logging
 
 secrets:
   traefik_basicauth_password:
+    external: true
+  traefik_opensearch_basicauth_password:
     external: true
