@@ -44,7 +44,6 @@ services:
       POSTGRES_PORT: ${SUPABASE_POSTGRES_PORT}
       POSTGRES_HOST: ${SUPABASE_POSTGRES_HOST}
       POSTGRES_DB: ${SUPABASE_POSTGRES_DB}
-      PG_META_CRYPTO_KEY: ${SUPABASE_PG_META_CRYPTO_KEY}
       DEFAULT_ORGANIZATION_NAME: ${SUPABASE_STUDIO_DEFAULT_ORGANIZATION}
       DEFAULT_PROJECT_NAME: ${SUPABASE_STUDIO_DEFAULT_PROJECT}
       OPENAI_API_KEY: ${SUPABASE_OPENAI_API_KEY:-}
@@ -62,6 +61,7 @@ services:
       export SUPABASE_ANON_KEY=$$(cat /run/secrets/supabase_anon_key) &&
       export SUPABASE_SERVICE_KEY=$$(cat /run/secrets/supabase_service_key) &&
       export AUTH_JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
+      export PG_META_CRYPTO_KEY=$$(cat /run/secrets/supabase_pg_meta_crypto_key) &&
       exec node server.js
       "
     secrets:
@@ -69,6 +69,7 @@ services:
       - supabase_anon_key
       - supabase_service_key
       - supabase_jwt_secret
+      - supabase_pg_meta_crypto_key
     logging: *default-logging
 
   kong:
@@ -93,17 +94,18 @@ services:
       KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
       KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
       DASHBOARD_USERNAME: ${SUPABASE_DASHBOARD_USERNAME}
-      DASHBOARD_PASSWORD: ${SUPABASE_DASHBOARD_PASSWORD}
     command: >
       bash -c "
       export SUPABASE_ANON_KEY=$$(cat /run/secrets/supabase_anon_key) &&
       export SUPABASE_SERVICE_KEY=$$(cat /run/secrets/supabase_service_key) &&
+      export DASHBOARD_PASSWORD=$$(cat /run/secrets/supabase_dashboard_password) &&
       eval \"echo \\\"$$(cat ~/temp.yml)\\\"\" > ~/kong.yml &&
       exec /docker-entrypoint.sh kong docker-start
       "
     secrets:
       - supabase_anon_key
       - supabase_service_key
+      - supabase_dashboard_password
     logging: *default-logging
 
   auth:
@@ -226,7 +228,6 @@ services:
       DB_NAME: ${SUPABASE_POSTGRES_DB}
       DB_AFTER_CONNECT_QUERY: 'SET search_path TO _realtime'
       DB_ENC_KEY: supabaserealtime
-      SECRET_KEY_BASE: ${SUPABASE_SECRET_KEY_BASE}
       ERL_AFLAGS: -proto_dist inet_tcp
       DNS_NODES: "''"
       RLIMIT_NOFILE: '10000'
@@ -237,11 +238,13 @@ services:
       bash -c "
       export DB_PASSWORD=$$(cat /run/secrets/supabase_db_password) &&
       export API_JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
+      export SECRET_KEY_BASE=$$(cat /run/secrets/supabase_secret_key_base) &&
       exec /app/bin/realtime start
       "
     secrets:
       - supabase_db_password
       - supabase_jwt_secret
+      - supabase_secret_key_base
     logging: *default-logging
 
   storage:
@@ -329,14 +332,15 @@ services:
       PG_META_DB_PORT: ${SUPABASE_POSTGRES_PORT}
       PG_META_DB_NAME: ${SUPABASE_POSTGRES_DB}
       PG_META_DB_USER: supabase_admin
-      CRYPTO_KEY: ${SUPABASE_PG_META_CRYPTO_KEY}
     command: >
       bash -c "
       export PG_META_DB_PASSWORD=$$(cat /run/secrets/supabase_db_password) &&
+      export CRYPTO_KEY=$$(cat /run/secrets/supabase_pg_meta_crypto_key) &&
       exec node dist/index.js
       "
     secrets:
       - supabase_db_password
+      - supabase_pg_meta_crypto_key
     logging: *default-logging
 
   functions:
@@ -505,8 +509,6 @@ services:
       POSTGRES_PORT: ${SUPABASE_POSTGRES_PORT}
       POSTGRES_DB: ${SUPABASE_POSTGRES_DB}
       CLUSTER_POSTGRES: true
-      SECRET_KEY_BASE: ${SUPABASE_SECRET_KEY_BASE}
-      VAULT_ENC_KEY: ${SUPABASE_VAULT_ENC_KEY}
       REGION: local
       ERL_AFLAGS: -proto_dist inet_tcp
       POOLER_TENANT_ID: ${SUPABASE_POOLER_TENANT_ID}
@@ -520,11 +522,15 @@ services:
       export DATABASE_URL=ecto://supabase_admin:$$(cat /run/secrets/supabase_db_password)@${POSTGRES_HOST}:${POSTGRES_PORT}/_supabase &&
       export API_JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
       export METRICS_JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
+      export SECRET_KEY_BASE=$$(cat /run/secrets/supabase_secret_key_base) &&
+      export VAULT_ENC_KEY=$$(cat /run/secrets/supabase_vault_enc_key) &&
       /app/bin/migrate && /app/bin/supavisor eval \"$$(cat /etc/pooler/pooler.exs)\" && /app/bin/server
       "
     secrets:
       - supabase_db_password
       - supabase_jwt_secret
+      - supabase_secret_key_base
+      - supabase_vault_enc_key
     logging: *default-logging
 
 secrets:
@@ -535,4 +541,12 @@ secrets:
   supabase_anon_key:
     external: true
   supabase_service_key:
+    external: true
+  supabase_dashboard_password:
+    external: true
+  supabase_secret_key_base:
+    external: true
+  supabase_vault_enc_key:
+    external: true
+  supabase_pg_meta_crypto_key:
     external: true
