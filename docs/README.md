@@ -24,8 +24,6 @@ Each sub-directory serves a distinct, non-overlapping purpose. Documents created
   - **Template**: `templates/product/prd-template.md`.
 - `guides/` — **AI & Human Lifecycle Procedures**.
   - **Required Content**: Checklists and behavioral rules for managing the Pre, During, and Post-Development phases. Both humans and AI Agents read these to know their exact responsibilities at each stage.
-- `api/` — **API References**.
-  - **Required Content**: General API conventions, public schema explanations, or long-term integration notes. (Implementation-specific API contracts belong in `specs/<feature>/api/`).
 - `manuals/` — **Non-technical Process Manuals**.
   - **Required Content**: Human collaboration agreements, SLA definitions, and generic QA standards.
 

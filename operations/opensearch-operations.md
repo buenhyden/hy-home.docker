@@ -1,43 +1,50 @@
-# OpenSearch Operations Blueprint
+# OpenSearch Operations
 
-> Standard operating procedures for the OpenSearch data node and UI dashboards.
+> **Component**: `opensearch`
 
-## 1. Description
+## Usage
 
-This document details operational patterns for managing the OpenSearch analytics and search engine deployed via `infra/04-data/opensearch/docker-compose.yml`.
+### 1. Accessing Dashboards
 
-## 2. System Resource Tuning
+- **URL**: `https://opensearch-dashboard.${DEFAULT_URL}`
+- **Credentials**: user: `${ELASTIC_USERNAME}` / pass: `${ELASTIC_PASSWORD}`
 
-OpenSearch heavily depends on adequate memory and Host OS limits (like `net.ipv4.tcp_max_syn_backlog` and memory locking).
+### 2. Accessing API
 
-- The `docker-compose` is statically configured (`bootstrap.memory_lock=true`, `-Xms1g -Xmx1g`) alongside `shm_size: 1g`.
-- Ensure your WSL/Linux Daemon limits satisfy `vm.max_map_count=262144`.
-
-If crashes occur stating out of memory constraints:
-
-1. Temporarily bump reservations inside the `OPENSEARCH_JAVA_OPTS` setting.
-2. Make sure the container limit `memory:` exceeds the `-Xmx` setting by at least 25% (e.g. limit 1.5G, heap 1G) to account for off-heap buffers.
-
-## 3. Data Integrity & Index Management
-
-All indexes and PA (Performance Analyzer) agents retain data perpetually in `opensearch-data` volume mounts mapped to the host `${DEFAULT_DATA_DIR}/opensearch/opensearch1-data`.
-
-### Manually Clearing Storage
-
-Avoid direct OS file deletion inside the mounted folders. Instead, query the API:
+- **URL**: `https://opensearch.${DEFAULT_URL}`
+- **Note**: Self-signed certificate warning is expected.
 
 ```bash
-# Obtain Index list
-curl -k -u admin:${OPENSEARCH_ADMIN_PASSWORD} -X GET "https://opensearch.${DEFAULT_URL}/_cat/indices?v"
-
-# Drop bloated index
-curl -k -u admin:${OPENSEARCH_ADMIN_PASSWORD} -X DELETE "https://opensearch.${DEFAULT_URL}/<index-name>"
+curl -k -u admin:${OPENSEARCH_ADMIN_PASSWORD} https://opensearch.${DEFAULT_URL}/_cluster/health?pretty
 ```
 
-### Dashboard Configurations
+### 3. Scaling to 3 Nodes
 
-`opensearch-dashboards` binds natively and handles graphical index mapping. If visual reporting hangs, restart the dashboard service, leaving the engine intact:
+1. Edit `docker-compose.yml`:
+   - Uncomment `opensearch-node2` and `opensearch-node3`.
+   - Comment out `discovery.type=single-node`.
+   - Uncomment `discovery.seed_hosts` and `cluster.initial_cluster_manager_nodes`.
+2. Deploy:
+
+   ```bash
+   docker compose up -d
+   ```
+
+## Troubleshooting
+
+### Node Not Joining
+
+Check logs for discovery errors. Ensure `discovery.seed_hosts` matches container names.
+
+### "max virtual memory areas vm.max_map_count is too low"
+
+Linux hosts require increasing the mmap count:
 
 ```bash
-docker compose -f infra/04-data/opensearch/docker-compose.yml restart opensearch-dashboards
+sysctl -w vm.max_map_count=262144
 ```
+
+### Certificate Issues
+
+If Traefik returns "Bad Gateway", it might be due to SSL verification failure.
+Check `traefik.http.services.opensearch.loadbalancer.server.scheme=https`.

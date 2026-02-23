@@ -1,50 +1,52 @@
-# MinIO Storage Operations Blueprint
+# MinIO Operations
 
-> Standard operating procedures for the S3-compatible MinIO object storage cluster.
+> **Component**: `minio`
 
-## 1. Description
+## Usage
 
-MinIO serves as the primary artifact and blob storage utility for the applications and infrastructure deployments (e.g., Loki logs, database backups) routed through `infra/04-data/minio/docker-compose.yml`.
+### 1. Web Console
 
-## 2. Bucket Provisioning
+- **URL**: `https://minio-console.${DEFAULT_URL}`
+- **Login**: Use credentials from `.env` (or secrets).
 
-MinIO relies on the `mc` (MinIO Client) utility to interact with the backend API reliably. Initial buckets and users are constructed natively by the `minio-createbuckets` sidecar container upon fresh compose startups.
+### 2. S3 Access (Clients)
 
-If you need to add new buckets manually in runtime:
+- **Endpoint**: `https://minio.${DEFAULT_URL}`
+- **Region**: `us-east-1` (MinIO default)
 
-```bash
-docker exec -it minio-createbuckets sh
+### 3. CLI (mc)
 
-# Inside the container, point alias to local minio instance
-mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}
+You can interact with MinIO using the official client.
 
-# Make bucket
-mc mb myminio/new-custom-bucket
-
-# Assign policy
-mc anonymous set download myminio/new-custom-bucket
-```
-
-## 3. Storage Scalability and Limits
-
-MinIO binds directly to the host filesystem at `${DEFAULT_DATA_DIR}/minio/data`.
-To migrate or increase the host filesystem without compromising data:
-
-1. Halt the MinIO stack.
+**Alias Configuration:**
 
 ```bash
-docker compose -f infra/04-data/minio/docker-compose.yml down
+mc alias set local http://localhost:${MINIO_HOST_PORT} ROOT_USER ROOT_PASSWORD
 ```
 
-1. Re-mount or transition the underlying host volume pointing to `${DEFAULT_DATA_DIR}/minio/data`.
-2. Restart the container. Single-node MinIO configurations gracefully adopt existing disk states without strict re-indexing constraints.
+**Commands:**
 
-## 4. Web Console Interface
+```bash
+# List buckets
+mc ls local
 
-Administrative operations (User management, Access Keys, direct file uploads) should primarily be executed via the Console.
+# Upload file
+mc cp my-file.txt local/cdn-bucket/
 
-- Access the Console through `https://minio-console.${DEFAULT_URL}` over the Traefik router.
-- Login exclusively utilizing `${MINIO_ROOT_USER}` mapped credentials.
+# Set bucket public
+mc anonymous set public local/cdn-bucket
+```
 
-> [!TIP]
-> MinIO's console runs on port `9001` internally, while the strict S3 API runs on `9000`. Ensure Traefik labels distinctively port-balance these domains (`minio.${DEFAULT_URL}` vs `minio-console.${DEFAULT_URL}`).
+## Troubleshooting
+
+### "Bucket already owned by you"
+
+The init container prints "ignore-existing" warnings if buckets already exist. This is normal and indicates idempotency.
+
+### "Init container fails"
+
+If `minio-create-buckets` fails:
+
+1. Check if `minio` service is healthy.
+2. Verify secrets are correctly populated in `/run/secrets/`.
+3. Check logs: `docker compose logs minio-create-buckets`
