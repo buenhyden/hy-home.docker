@@ -25,19 +25,42 @@ secrets/
 | `auth/traefik_basicauth_password.txt` | Traefik 대시보드 접근 (htpasswd) |
 | `auth/traefik_opensearch_basicauth_password.txt` | OpenSearch API 접근 (htpasswd) |
 | `auth/keycloak_admin_password.txt` | Keycloak 관리자 비밀번호 |
-| `db/postgres/keycloak_password.txt` | Keycloak DB 접속 비밀번호 |
 | `auth/oauth2_proxy_client_secret.txt` | OAuth2 Client Secret |
 | `auth/oauth2_proxy_cookie_secret.txt` | OAuth2 세션 쿠키 암호화 (base64) |
-| `db/valkey/oauth2_password.txt` | OAuth2 세션 저장용 Valkey 비밀번호 |
 
 ### 2. 데이터베이스 클러스터 (`db/`)
+
+#### 🐘 PostgreSQL (`db/postgres/`)
 
 | 파일 경로 | 용도 |
 |---|---|
 | `db/postgres/service_password.txt` | 서비스용 PostgreSQL 루트 비밀번호 |
 | `db/postgres/mng_password.txt` | 관리용(MNG) PostgreSQL 비밀번호 |
+| `db/postgres/keycloak_password.txt` | Keycloak DB 접속 비밀번호 |
+| `db/postgres/airflow_password.txt` | Airflow DB 접속 비밀번호 |
+| `db/postgres/n8n_password.txt` | n8n DB 접속 비밀번호 |
+| `db/postgres/sonarqube_password.txt` | SonarQube DB 접속 비밀번호 |
+| `db/postgres/terrakube_password.txt` | Terrakube API DB 비밀번호 |
+| `db/postgres/supabase_password.txt` | Supabase PostgreSQL 비밀번호 |
+
+#### ⚡ Valkey & Redis (`db/valkey/`)
+
+| 파일 경로 | 용도 |
+|---|---|
 | `db/valkey/service_password.txt` | 서비스용 Valkey 클러스터 비밀번호 |
 | `db/valkey/mng_password.txt` | 관리용(MNG) Valkey 비밀번호 |
+| `db/valkey/n8n_password.txt` | n8n 용 Valkey 비밀번호 |
+| `db/valkey/oauth2_password.txt` | OAuth2 세션 저장용 Valkey 비밀번호 |
+| `db/valkey/terrakube_password.txt` | Terrakube Valkey 비밀번호 |
+
+#### 📈 Time Series & NoSQL (`db/influxdb/`, `db/couchdb/`)
+
+| 파일 경로 | 용도 |
+|---|---|
+| `db/influxdb/influxdb_password.txt` | InfluxDB 비밀번호 |
+| `db/influxdb/influxdb_api_token.txt` | InfluxDB API 토큰 |
+| `db/couchdb/couchdb_password.txt` | CouchDB 비밀번호 |
+| `db/couchdb/couchdb_cookie.txt` | CouchDB 클러스터 쿠키 |
 
 ### 3. 오브젝트 스토리지 (`storage/`)
 
@@ -55,8 +78,7 @@ secrets/
 | `data/opensearch_admin_password.txt` | OpenSearch admin 비밀번호 |
 | `data/opensearch_dashboard_password.txt` | OpenSearch Dashboards 내부 비밀번호 |
 | `data/opensearch_exporter_password.txt` | OpenSearch Prometheus Exporter 비밀번호 |
-| `db/postgres/supabase_db_password.txt` | Supabase PostgreSQL 비밀번호 |
-| `data/supabase_jwt_secret.txt` | Supabase인증용 JWT Secret |
+| `data/supabase_jwt_secret.txt` | Supabase 인증용 JWT Secret |
 | `data/supabase_anon_key.txt` | Supabase 익명 클라이언트 키 |
 | `data/supabase_service_key.txt` | Supabase 서비스 롤(Admin) 키 |
 | `data/supabase_dashboard_password.txt` | Supabase Kong 대시보드 비밀번호 |
@@ -69,42 +91,32 @@ secrets/
 | 파일 경로 | 용도 |
 |---|---|
 | `observability/grafana_admin_password.txt` | Grafana 관리자 비밀번호 |
-| `common/smtp_password.txt` | Alertmanager 이메일 비밀번호 |
-| `common/slack_webhook.txt` | Alertmanager Slack Webhook URL |
-| `db/influxdb/influxdb_password.txt` | InfluxDB 비밀번호 |
-| `db/influxdb/influxdb_api_token.txt` | InfluxDB API 토큰 |
-| `db/couchdb/couchdb_password.txt` | CouchDB 비밀번호 |
-| `db/couchdb/couchdb_cookie.txt` | CouchDB 클러스터 쿠키 |
 
 ### 6. 워크플로우 자동화 (`automation/`)
 
 | 파일 경로 | 용도 |
 |---|---|
-| `db/postgres/n8n_password.txt` | n8n DB 접속 비밀번호 |
-| `automation/n8n_encryption_key.txt` | n8n 내부 데이터 암호화 키 |
-| `automation/n8n_runner_auth_token.txt` | n8n Task Runner 인증 토큰 |
-| `db/valkey/n8n_password.txt` | n8n 용 Valkey 비밀번호 |
-| `db/postgres/airflow_password.txt` | Airflow DB 접속 비밀번호 |
 | `automation/airflow_fernet_key.txt` | Airflow Fernet Key |
 | `automation/airflow_www_password.txt` | Airflow Web UI 관리자 비밀번호 |
+| `automation/n8n_encryption_key.txt` | n8n 내부 데이터 암호화 키 |
+| `automation/n8n_runner_auth_token.txt` | n8n Task Runner 인증 토큰 |
 
 ### 7. 개발 및 배포 도구 (`tools/`)
 
 | 파일 경로 | 용도 |
 |---|---|
 | `tools/sonarqube_admin_password.txt` | SonarQube 관리자 비밀번호 |
-| `db/postgres/sonarqube_password.txt` | SonarQube DB 접속 비밀번호 |
-| `db/postgres/terrakube_password.txt` | Terrakube API DB 비밀번호 |
 | `tools/terrakube_internal_secret.txt` | Terrakube 내부 통신 시크릿 |
 | `tools/terrakube_minio_secret_key.txt` | Terrakube MinIO Secret Key |
-| `tools/terrakube_valkey_password.txt` | Terrakube Valkey 비밀번호 |
 | `tools/terrakube_pat_secret.txt` | Terrakube PAT 암호화 키 |
 
 ### 8. 공통 (`common/`)
 
 | 파일 경로 | 용도 |
 |---|---|
-| `common/smtp_username.txt` | 시스템 공통 SMTP 계정 |
+| `common/smtp_username.txt` | 시스템 공공 SMTP 계정 |
+| `common/smtp_password.txt` | 시스템 공공 SMTP 비밀번호 |
+| `common/slack_webhook.txt` | Slack 알림 Webhook URL |
 
 ---
 

@@ -119,7 +119,7 @@ secrets/certs/*.srl
 secrets/certs/*.crt
 secrets/certs/*.p12
 secrets/**/*.txt
-
+secrets/SENSITIVE_ENV_VARS.md
 # opencode Skills
 .opencode/skills/
 !.opencode/skills/.gitkeep
