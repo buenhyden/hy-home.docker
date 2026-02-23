@@ -20,6 +20,12 @@ services:
       - vault
     image: hashicorp/vault:1.21.2
     container_name: vault
+    security_opt:
+      - no-new-privileges:true
+    # cap_add: [IPC_LOCK] is already present and required for Vault.
+    # In some cases cap_drop: [ALL] might interfere with IPC_LOCK, but let's try to be restrictive.
+    cap_drop:
+      - ALL
     restart: unless-stopped
     ports:
       - '${VAULT_HOST_PORT}:${VAULT_PORT}'

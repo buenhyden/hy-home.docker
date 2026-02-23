@@ -44,6 +44,10 @@ services:
           memory: 512M
     image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: mng-valkey
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     secrets:
       - mng_valkey_password
     networks:
@@ -122,6 +126,10 @@ services:
           memory: 512M
     image: redis/redisinsight:3.0.3
     container_name: redisinsight
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     <<: *default-restart
     networks:
       infra_net:
@@ -151,6 +159,10 @@ services:
           memory: 1G
     image: postgres:17-bookworm
     container_name: mng-pg
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     <<: *default-restart
     networks:
       infra_net:
@@ -164,13 +176,15 @@ services:
     #    tmpfs:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
-      POSTGRES_PASSWORD: ${PGPASSWORD_SUPERUSER}
+      POSTGRES_PASSWORD_FILE: /run/secrets/mng_postgres_password
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - '${POSTGRES_HOST_PORT}:${POSTGRES_PORT}'
     expose:
       - '${POSTGRES_PORT}'
+    secrets:
+      - mng_postgres_password
     volumes:
       - mng-pg-data:/var/lib/postgresql/data
       - ./init-scripts/init_users_dbs.sql:/docker-entrypoint-initdb.d/init_users_dbs.sql
@@ -194,7 +208,7 @@ services:
     networks:
       - infra_net
     environment:
-      PGPASSWORD_SUPERUSER: ${PGPASSWORD_SUPERUSER}
+      PGPASSWORD_FILE: /run/secrets/mng_postgres_password
       POSTGRES_HOSTNAME: ${POSTGRES_HOSTNAME}
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -206,7 +220,7 @@ services:
         sleep 2;
       done;
       echo 'SQL 스크립트 실행 시작...';
-      export PGPASSWORD="$$PGPASSWORD_SUPERUSER";
+      export PGPASSWORD=$$(cat /run/secrets/mng_postgres_password);
       psql -h "$$POSTGRES_HOSTNAME" -p "$$POSTGRES_PORT" -U "$$POSTGRES_USER" -d "$${POSTGRES_DB}" -f /home/postgres/init-scripts/init_users_dbs.sql;
       unset PGPASSWORD;
       echo 'SQL 스크립트 실행 완료.';"

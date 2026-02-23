@@ -32,6 +32,8 @@ services:
     hostname: traefik
     security_opt:
       - no-new-privileges:true
+    cap_drop:
+      - ALL
     read_only: true
     ports:
       - ${HTTP_HOST_PORT}:${HTTP_PORT}

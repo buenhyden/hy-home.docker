@@ -57,6 +57,10 @@ services:
     container_name: infra-prometheus
     <<: *default-restart
     user: '1000:1000'
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -106,6 +110,10 @@ services:
           memory: 1G
     image: grafana/loki:3.6.6
     container_name: infra-loki
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     command:
       - '-config.file=/etc/loki/loki-config.yaml'
       - '-config.expand-env=true'
@@ -120,7 +128,9 @@ services:
       - loki-data:/loki
     environment:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
-      - MINIO_APP_USER_PASSWORD=${MINIO_APP_USER_PASSWORD}
+      - MINIO_APP_USER_PASSWORD_FILE=/run/secrets/minio_app_password
+    secrets:
+      - minio_app_password
     depends_on:
       minio:
         condition: service_healthy
@@ -138,6 +148,10 @@ services:
           memory: 512M
     image: grafana/tempo:2.10.1
     container_name: infra-tempo
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     command:
       - '-config.file=/etc/tempo.yaml'
       - '-config.expand-env=true'
@@ -152,7 +166,9 @@ services:
       - '${TEMPO_HOST_PORT}:${TEMPO_PORT}'
     environment:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
-      - MINIO_APP_USER_PASSWORD=${MINIO_APP_USER_PASSWORD}
+      - MINIO_APP_USER_PASSWORD_FILE=/run/secrets/minio_app_password
+    secrets:
+      - minio_app_password
     <<: *default-restart
 
   pyroscope:
@@ -175,6 +191,10 @@ services:
           memory: 512M
     image: grafana/grafana:12.3.3
     container_name: infra-grafana
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     environment:
       - GF_SERVER_ROOT_URL=https://grafana.${DEFAULT_URL}
       - GF_SERVER_DOMAIN=grafana.${DEFAULT_URL}
@@ -186,7 +206,7 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
       # [2] 보안 및 기본 관리자 계정 (초기 세팅용)
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USERNAME}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana_admin_password
       - GF_USERS_ALLOW_SIGN_UP=false # 일반 회원가입 비활성화 (OAuth로만 가입)
       # (선택) 자동 생성된 유저의 기본 권한 (Viewer, Editor, Admin)
       - GF_USERS_AUTO_ASSIGN_ORG_ROLE=Editor
@@ -200,7 +220,7 @@ services:
       - GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH=name
       # Keycloak 클라이언트 정보 (.env 파일에 변수 정의 필요)
       - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID} # 예: nginx-client
-      - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${OAUTH2_PROXY_CLIENT_SECRET}
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE=/run/secrets/oauth2_proxy_client_secret
       # Scopes: 'groups'가 반드시 포함되어야 함 (Client Scope 설정 필요)
       - GF_AUTH_GENERIC_OAUTH_SCOPES=openid profile email offline_access groups
       # [해결책] 내부 통신(Token Exchange) 시 사설 인증서 에러 무시
@@ -240,6 +260,9 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/etc/grafana/dashboards
       - grafana-data:/var/lib/grafana
+    secrets:
+      - grafana_admin_password
+      - oauth2_proxy_client_secret
     networks:
       infra_net:
         ipv4_address: 172.19.0.33
@@ -417,6 +440,13 @@ services:
       - 'traefik.http.routers.alertmanager.tls=true'
       - 'traefik.http.services.alertmanager.loadbalancer.server.port=${ALERTMANAGER_PORT}'
     logging: *default-logging
+secrets:
+  minio_app_password:
+    external: true
+  grafana_admin_password:
+    external: true
+  oauth2_proxy_client_secret:
+    external: true
   pushgateway:
     deploy:
       resources:

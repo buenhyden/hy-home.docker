@@ -40,6 +40,8 @@ services:
           memory: 512M
     image: quay.io/keycloak/keycloak:26.5.4
     container_name: keycloak
+    security_opt:
+      - no-new-privileges:true
     hostname: keycloak
     <<: *default-restart
     volumes:

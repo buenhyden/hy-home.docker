@@ -45,6 +45,8 @@ volumes:
 # ------------------------------------------------------------
 x-kafka-broker-common: &kafka-broker-common
   image: confluentinc/cp-kafka:8.1.1
+  security_opt:
+    - no-new-privileges:true
   <<: *default-restart
   deploy:
     resources:
@@ -191,6 +193,10 @@ services:
           memory: 512M
     image: confluentinc/cp-schema-registry:8.1.1
     container_name: schema-registry
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     <<: *default-restart
     networks:
       infra_net:
@@ -243,6 +249,10 @@ services:
           memory: 1G
     image: confluentinc/cp-kafka-connect:8.1.1
     container_name: kafka-connect
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     <<: *default-restart
     depends_on:
       kafka-1:
@@ -330,6 +340,10 @@ services:
           memory: 512M
     image: confluentinc/cp-kafka-rest:8.1.1
     container_name: kafka-rest-proxy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     <<: *default-restart
     networks:
       infra_net:
@@ -379,8 +393,12 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
-    container_name: kafbat-ui
     image: ghcr.io/kafbat/kafka-ui:main
+    container_name: kafbat-ui
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     networks:
       infra_net:
         ipv4_address: 172.19.0.26
