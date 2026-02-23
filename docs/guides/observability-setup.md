@@ -33,3 +33,13 @@ Grafana is provisioned statelessly:
 - **Datasources**: Configured via `./grafana/provisioning/datasources/datasource.yml`.
 
 To deploy changes to dashboards or datasources, simply update the JSON/YAML files and restart the Grafana container (`docker restart infra-grafana`).
+
+## 5. Tracing Verification (Tempo)
+
+When integrating custom applications or microservices, test the routing of OTLP traces into Tempo:
+
+1. Ensure your application points to the OpenTelemetry Collector (Alloy) at `http://infra-alloy:4318` (HTTP) or `4317` (gRPC).
+2. Generate a request within your application.
+3. Open `Grafana -> Explore -> Tempo`.
+4. Run a `Search` or input a specific `TraceQL` query (e.g. `{ resource.service.name = "my-backend-api" }`).
+5. Ensure that the trace spans are properly stitched together and visible in the waterfall graph.
