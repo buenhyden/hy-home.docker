@@ -6,6 +6,9 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+x-restart: &default-restart
+  restart: unless-stopped
+
 volumes:
   valkey-data-0:
     driver: local
@@ -63,7 +66,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.60
-    restart: unless-stopped
+    <<: *default-restart
     environment:
       NODE_NAME: valkey-node-0
       PORT: ${VALKEY0_PORT}
@@ -106,7 +109,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.61
-    restart: unless-stopped
+    <<: *default-restart
     environment:
       NODE_NAME: valkey-node-1
       PORT: ${VALKEY1_PORT}
@@ -146,7 +149,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.62
-    restart: unless-stopped
+    <<: *default-restart
     environment:
       NODE_NAME: valkey-node-2
       PORT: ${VALKEY2_PORT}
@@ -186,7 +189,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.63
-    restart: unless-stopped
+    <<: *default-restart
     environment:
       NODE_NAME: valkey-node-3
       PORT: ${VALKEY3_PORT}
@@ -226,7 +229,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.64
-    restart: unless-stopped
+    <<: *default-restart
     environment:
       NODE_NAME: valkey-node-4
       PORT: ${VALKEY4_PORT}
@@ -266,7 +269,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.65
-    restart: unless-stopped
+    <<: *default-restart
     environment:
       NODE_NAME: valkey-node-5
       PORT: ${VALKEY5_PORT}
@@ -344,7 +347,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.67
-    restart: unless-stopped
+    <<: *default-restart
     secrets:
       - valkey_password
     entrypoint:

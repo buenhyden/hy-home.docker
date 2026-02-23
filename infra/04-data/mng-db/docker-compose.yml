@@ -6,6 +6,9 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+x-restart: &default-restart
+  restart: unless-stopped
+
 volumes:
   mng-pg-data:
     driver: local
@@ -40,7 +43,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.70
-    restart: unless-stopped
+    <<: *default-restart
     volumes:
       # 공통 valkey.conf
       - mng-valkey-data:/data
@@ -75,12 +78,15 @@ services:
           memory: 128M
     image: oliver006/redis_exporter:v1.81.0-alpine
     container_name: mng-valkey-exporter
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
     expose:
       - '${VALKEY_EXPORTER_PORT}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.71
-    restart: unless-stopped
+    <<: *default-restart
     secrets:
       - valkey_password
     entrypoint:
@@ -110,7 +116,7 @@ services:
           memory: 512M
     image: redis/redisinsight:3.0.3
     container_name: redisinsight
-    restart: unless-stopped
+    <<: *default-restart
     networks:
       infra_net:
         ipv4_address: 172.19.0.68
@@ -139,7 +145,7 @@ services:
           memory: 1G
     image: postgres:17-bookworm
     container_name: mng-pg
-    restart: unless-stopped
+    <<: *default-restart
     networks:
       infra_net:
         ipv4_address: 172.19.0.72
@@ -219,7 +225,10 @@ services:
           memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: mng-pg-exporter
-    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    <<: *default-restart
     networks:
       infra_net:
         ipv4_address: 172.19.0.73

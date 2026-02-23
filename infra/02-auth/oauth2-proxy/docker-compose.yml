@@ -6,6 +6,9 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+x-restart: &default-restart
+  restart: unless-stopped
+
 # volumes:
 #   oauth2-proxy-valkey-data:
 #     driver: local
@@ -25,7 +28,10 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: oauth2-proxy
-    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    <<: *default-restart
     secrets:
       - valkey_password
     command:

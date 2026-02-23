@@ -6,6 +6,9 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+x-restart: &default-restart
+  restart: unless-stopped
+
 volumes:
   keycloak-config:
     driver: local
@@ -38,7 +41,7 @@ services:
     image: quay.io/keycloak/keycloak:26.5.4
     container_name: keycloak
     hostname: keycloak
-    restart: unless-stopped
+    <<: *default-restart
     volumes:
       - keycloak-themes:/opt/keycloak/themes
       - keycloak-config:/opt/keycloak/conf

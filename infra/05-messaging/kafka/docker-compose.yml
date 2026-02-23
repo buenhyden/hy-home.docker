@@ -6,6 +6,9 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+x-restart: &default-restart
+  restart: unless-stopped
+
 volumes:
   kafka-1-data:
     driver: local
@@ -42,7 +45,7 @@ volumes:
 # ------------------------------------------------------------
 x-kafka-broker-common: &kafka-broker-common
   image: confluentinc/cp-kafka:8.1.1
-  restart: unless-stopped
+  <<: *default-restart
   deploy:
     resources:
       limits:
@@ -188,7 +191,7 @@ services:
           memory: 512M
     image: confluentinc/cp-schema-registry:8.1.1
     container_name: schema-registry
-    restart: unless-stopped
+    <<: *default-restart
     networks:
       infra_net:
         ipv4_address: 172.19.0.23
@@ -240,7 +243,7 @@ services:
           memory: 1G
     image: confluentinc/cp-kafka-connect:8.1.1
     container_name: kafka-connect
-    restart: unless-stopped
+    <<: *default-restart
     depends_on:
       kafka-1:
         condition: service_healthy
@@ -327,7 +330,7 @@ services:
           memory: 512M
     image: confluentinc/cp-kafka-rest:8.1.1
     container_name: kafka-rest-proxy
-    restart: unless-stopped
+    <<: *default-restart
     networks:
       infra_net:
         ipv4_address: 172.19.0.25
@@ -381,7 +384,7 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.26
-    restart: unless-stopped
+    <<: *default-restart
     environment:
       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_NAME}
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
@@ -437,7 +440,10 @@ services:
           memory: 128M
     image: danielqsj/kafka-exporter:v1.9.0
     container_name: kafka-exporter
-    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    <<: *default-restart
     command:
       # 내부 리스너 사용
       - --kafka.server=kafka-1:19092

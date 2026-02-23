@@ -6,6 +6,9 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+x-restart: &default-restart
+  restart: unless-stopped
+
 volumes:
   opensearch-data:
     driver: local
@@ -30,7 +33,7 @@ services:
       context: . ## build Docker file location
       dockerfile: Dockerfile ## build file name
     container_name: opensearch
-    restart: unless-stopped
+    <<: *default-restart
     # 비밀번호, 클러스터 이름, JVM 옵션 등은 env 파일에서 주입
     environment:
       # JVM Heap 설정
@@ -105,7 +108,7 @@ services:
   opensearch-dashboards:
     image: opensearchproject/opensearch-dashboards:3.4.0
     container_name: opensearch-dashboards
-    restart: unless-stopped
+    <<: *default-restart
     networks:
       infra_net:
         ipv4_address: 172.19.0.47
@@ -150,7 +153,10 @@ services:
   opensearch-exporter:
     image: prometheuscommunity/elasticsearch-exporter:v1.10.0
     container_name: opensearch-exporter
-    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    <<: *default-restart
     command:
       - '--es.uri=https://opensearch:9200'
       - '--es.all'

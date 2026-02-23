@@ -6,6 +6,9 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+x-restart: &default-restart
+  restart: unless-stopped
+
 volumes:
   qdrant-data:
     driver: local
@@ -29,7 +32,7 @@ services:
       - QDRANT__TELEMETRY_DISABLED=false # 메트릭 수집 활성화
     volumes:
       - qdrant-data:/qdrant/storage
-    restart: unless-stopped
+    <<: *default-restart
     networks:
       infra_net:
         ipv4_address: 172.19.0.41
