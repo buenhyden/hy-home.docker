@@ -1,3 +1,5 @@
+name: terrakube
+
 x-logging: &default-logging
   driver: 'json-file'
   options:
@@ -14,25 +16,35 @@ services:
     image: azbuilder/api-server:2.29.0
     container_name: terrakube-api
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    secrets:
+      - terrakube_db_password
+      - terrakube_minio_secret_key
+      - terrakube_redis_password
+      - terrakube_pat_secret
+      - terrakube_internal_secret
     environment:
       ApiDataSourceType: POSTGRESQL
       DatasourceHostname: ${POSTGRES_HOSTNAME}
       DatasourceDatabase: terrakube
       DatasourceUser: ${TERRAKUBE_DB_USERNAME}
-      DatasourcePassword: ${TERRAKUBE_DB_PASSWORD}
+      DatasourcePassword_FILE: /run/secrets/terrakube_db_password
 
       GroupValidationType: 'DEX'
       UserValidationType: 'DEX'
       AuthenticationValidationType: 'DEX'
       TerrakubeHostname: terrakube-api.${DEFAULT_URL}
       AzBuilderExecutorUrl: http://terrakube-executor:8090/api/v1/terraform-rs
-      PatSecret: ${TERRAKUBE_PAT_SECRET}
-      InternalSecret: ${TERRAKUBE_INTERNAL_SECRET}
+      PatSecret_FILE: /run/secrets/terrakube_pat_secret
+      InternalSecret_FILE: /run/secrets/terrakube_internal_secret
       DexClientId: ${OAUTH2_PROXY_CLIENT_ID}
 
       StorageType: AWS
       AwsStorageAccessKey: ${MINIO_APP_USERNAME}
-      AwsStorageSecretKey: ${MINIO_APP_USER_PASSWORD}
+      AwsStorageSecretKey_FILE: /run/secrets/terrakube_minio_secret_key
       AwsStorageBucketName: tfstate
       AwsStorageRegion: ap-northeast-2
       AwsEndpoint: http://minio:9000
@@ -41,13 +53,19 @@ services:
       DexIssuerUri: 'https://keycloak.${DEFAULT_URL}/realms/hy-home.realm'
 
       TerrakubeRedisHostname: ${MNG_VALKEY_HOST}
-      TerrakubeRedisPassword: ${VALKEY_PASSWORD}
+      TerrakubeRedisPassword_FILE: /run/secrets/terrakube_redis_password
       TerrakubeRedisPort: ${VALKEY_PORT}
 
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.terrakube-api.rule=Host(`terrakube-api.${DEFAULT_URL}`)'
       - 'traefik.http.services.terrakube-api.loadbalancer.server.port=8080'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:8080/actuator/health || exit 1']
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 3m
     depends_on:
       mng-pg:
         condition: service_healthy
@@ -59,6 +77,7 @@ services:
         condition: service_started
     networks:
       - infra_net
+    logging: *default-logging
 
   # ----------------------------------------------------------------
   # 6. Terrakube UI (프론트엔드)
@@ -69,6 +88,10 @@ services:
     image: azbuilder/terrakube-ui:2.29.0
     container_name: terrakube-ui
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     environment:
       REACT_APP_TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}/api/v1/
       REACT_APP_AUTHORITY: https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
@@ -80,11 +103,18 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.terrakube-ui.rule=Host(`terrakube-ui.${DEFAULT_URL}`)'
       - 'traefik.http.services.terrakube-ui.loadbalancer.server.port=${TERRAKUBE_UI_PORT}'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${TERRAKUBE_UI_PORT} || exit 1']
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 1m
     depends_on:
       terrakube-api:
         condition: service_healthy
     networks:
       - infra_net
+    logging: *default-logging
 
   # ----------------------------------------------------------------
   # 7. 인프라 (DB, Redis, Executor)
@@ -95,20 +125,27 @@ services:
     image: azbuilder/executor:2.29.0
     container_name: terrakube-executor
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    # cap_drop은 docker.sock 마운트로 인해 일부 제한 가능성 있음
+    secrets:
+      - terrakube_internal_secret
+      - terrakube_minio_secret_key
+      - terrakube_redis_password
     environment:
       TerrakubeEnableSecurity: 'true'
-      InternalSecret: ${TERRAKUBE_INTERNAL_SECRET}
+      InternalSecret_FILE: /run/secrets/terrakube_internal_secret
       TerraformStateType: AwsTerraformStateImpl
 
       AwsTerraformStateAccessKey: ${MINIO_APP_USERNAME}
-      AwsTerraformStateSecretKey: ${MINIO_APP_USER_PASSWORD}
+      AwsTerraformStateSecretKey_FILE: /run/secrets/terrakube_minio_secret_key
       AwsTerraformStateBucketName: tfstate
       AwsTerraformStateRegion: ap-northeast-2
       AwsEndpoint: http://minio:9000
 
       TerraformOutputType: AwsTerraformOutputImpl
       AwsTerraformOutputAccessKey: ${MINIO_APP_USERNAME}
-      AwsTerraformOutputSecretKey: ${MINIO_APP_USER_PASSWORD}
+      AwsTerraformOutputSecretKey_FILE: /run/secrets/terrakube_minio_secret_key
       AwsTerraformOutputBucketName: tfstate
       AwsTerraformOutputRegion: ap-northeast-2
       AzBuilderApiUrl: https://terrakube-api.${DEFAULT_URL}
@@ -123,11 +160,19 @@ services:
       TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}
       EXECUTOR_NAME: local-executor
       TerrakubeRedisHostname: ${MNG_VALKEY_HOST}
-      TerrakubeRedisPassword: ${VALKEY_PASSWORD}
+      TerrakubeRedisPassword_FILE: /run/secrets/terrakube_redis_password
       TerrakubeRedisPort: ${VALKEY_PORT}
 
     volumes:
+      # [주의] docker.sock 마운트는 사실상 root 권한에 준하는 접근을 허용합니다.
+      # Terraform plan/apply 실행을 위해 필요하지만, 접근 범위를 최소화하세요.
       - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:8090/actuator/health || exit 1']
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 2m
     depends_on:
       terrakube-api:
         condition: service_healthy
@@ -137,3 +182,16 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.terrakube-executor.rule=Host(`terrakube-executor.${DEFAULT_URL}`)'
       - 'traefik.http.services.terrakube-executor.loadbalancer.server.port=${TERRAKUBE_EXECUTOR_PORT}'
+    logging: *default-logging
+
+secrets:
+  terrakube_db_password:
+    external: true
+  terrakube_minio_secret_key:
+    external: true
+  terrakube_redis_password:
+    external: true
+  terrakube_pat_secret:
+    external: true
+  terrakube_internal_secret:
+    external: true

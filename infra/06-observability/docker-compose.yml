@@ -134,6 +134,12 @@ services:
     depends_on:
       minio:
         condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:3100/ready || exit 1']
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 2m
     <<: *default-restart
   # -------------------------------------------------------
   # 3. Trace Storage (Tempo)
@@ -172,14 +178,32 @@ services:
     <<: *default-restart
 
   pyroscope:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          memory: 256M
     image: grafana/pyroscope:1.18.1
     container_name: infra-pyroscope
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     ports:
       - '${PYROSCOPE_HOST_PORT}:${PYROSCOPE_PORT}'
     <<: *default-restart
     networks:
       infra_net:
         ipv4_address: 172.19.0.38
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:4040/ready || exit 1']
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 1m
+    logging: *default-logging
   # -------------------------------------------------------
   # 4. Visualization (Grafana)
   # -------------------------------------------------------
@@ -396,14 +420,21 @@ services:
           memory: 1G
     image: prom/alertmanager:v0.30.0
     container_name: infra-alertmanager
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     environment:
       - SMTP_USERNAME=${SMTP_USERNAME}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-      - SLACK_ALERTMANAGER_WEBHOOK_URL=${SLACK_ALERTMANAGER_WEBHOOK_URL}
+    secrets:
+      - alertmanager_smtp_password
+      - alertmanager_slack_webhook
     entrypoint: ['/bin/sh', '-c']
     command: >
-      "if [ -z \"$SLACK_ALERTMANAGER_WEBHOOK_URL\" ]; then
-        echo 'ERROR: SLACK_ALERTMANAGER_WEBHOOK_URL is not set';
+      "SMTP_PASSWORD=$(cat /run/secrets/alertmanager_smtp_password);
+      SLACK_ALERTMANAGER_WEBHOOK_URL=$(cat /run/secrets/alertmanager_slack_webhook);
+      if [ -z \"$SLACK_ALERTMANAGER_WEBHOOK_URL\" ]; then
+        echo 'ERROR: alertmanager_slack_webhook secret is not set';
         exit 1;
       fi;
       echo 'Generating config file...';
@@ -440,13 +471,6 @@ services:
       - 'traefik.http.routers.alertmanager.tls=true'
       - 'traefik.http.services.alertmanager.loadbalancer.server.port=${ALERTMANAGER_PORT}'
     logging: *default-logging
-secrets:
-  minio_app_password:
-    external: true
-  grafana_admin_password:
-    external: true
-  oauth2_proxy_client_secret:
-    external: true
   pushgateway:
     deploy:
       resources:
@@ -455,6 +479,10 @@ secrets:
           memory: 128M
     image: prom/pushgateway:v1.11.2
     container_name: pushgateway
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     <<: *default-restart
     expose:
       - ${PUSHGATEWAY_PORT}
@@ -482,3 +510,15 @@ secrets:
       - 'traefik.http.routers.pushgateway.tls=true'
       - 'traefik.http.services.pushgateway.loadbalancer.server.port=${PUSHGATEWAY_PORT}'
     logging: *default-logging
+
+secrets:
+  minio_app_password:
+    external: true
+  grafana_admin_password:
+    external: true
+  oauth2_proxy_client_secret:
+    external: true
+  alertmanager_smtp_password:
+    external: true
+  alertmanager_slack_webhook:
+    external: true

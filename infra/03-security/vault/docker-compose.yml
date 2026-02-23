@@ -37,7 +37,9 @@ services:
       KEYCLOAK_URL: '${KEYCLOAK_URL}'
       REALM_NAME: '${KEYCLOAK_REALM}'
       CLIENT_ID: '${OAUTH2_PROXY_CLIENT_ID}'
-      CLIENT_SECRET: '${OAUTH2_PROXY_CLIENT_SECRET}'
+      # CLIENT_SECRET은 Docker Secret으로 주입 (/run/secrets/oauth2_proxy_client_secret)
+    secrets:
+      - oauth2_proxy_client_secret
     volumes:
       - vault-data:/vault/file
       - ./config:/vault/config
@@ -66,3 +68,7 @@ services:
       - 'traefik.http.routers.vault.tls=true'
       - 'traefik.http.services.vault.loadbalancer.server.port=${VAULT_PORT}'
     logging: *default-logging
+
+secrets:
+  oauth2_proxy_client_secret:
+    external: true

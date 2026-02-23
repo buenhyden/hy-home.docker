@@ -9,13 +9,15 @@ x-logging: &default-logging
 x-airflow-common: &airflow-common
   profiles:
     - airflow
-  # In order to add custom dependencies or upgrade provider packages you can use your extended image.
-  # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
-  # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
   image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:slim-3.1.6}
   networks:
     - infra_net
   # build: .
+  security_opt:
+    - no-new-privileges:true
+  # CeleryExecutor는 일부 capability가 필요할 수 있어 cap_drop는 테스트 후 활성화 권장
+  # cap_drop:
+  #   - ALL
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
@@ -24,25 +26,17 @@ x-airflow-common: &airflow-common
     AIRFLOW__CELERY__BROKER_URL_CMD: echo "redis://:${REDIS_PASSWORD}@${REDIS_NODE_NAME}:${REDIS_PORT}/0"
     AIRFLOW__CORE__FERNET_KEY_CMD: cat /run/secrets/airflow_fernet_key
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false' # [보안] 프로덕션에서는 반드시 false
     AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-apiserver:8080/execution/'
-    # yamllint disable rule:line-length
-    # Use simple http server on scheduler for health checks
-    # See https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/check-health.html#scheduler-health-check-server
-    # yamllint enable rule:line-length
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-    # The following line can be used to set a custom config file, stored in the local config folder
     AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
-    # 1. X-Forwarded-* 헤더를 신뢰하여 HTTPS 인식
     AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: 'true'
-    # 2. 외부 접속 도메인 명시 (CSRF 문제 방지)
     AIRFLOW__WEBSERVER__BASE_URL: 'https://airflow.${DEFAULT_URL}'
-    # StatsD 메트릭 활성화
     AIRFLOW__METRICS__STATSD_ON: 'true'
-    AIRFLOW__METRICS__STATSD_HOST: 'airflow-statsd-exporter' # 위에서 만든 컨테이너 이름
+    AIRFLOW__METRICS__STATSD_HOST: 'airflow-statsd-exporter'
     AIRFLOW__METRICS__STATSD_PORT: '${STATSD_AIRFLOW_PORT}'
-    AIRFLOW__METRICS__STATSD_PREFIX: 'airflow' # 메트릭 접두사
+    AIRFLOW__METRICS__STATSD_PREFIX: 'airflow'
   volumes:
     - airflow-dags:/opt/airflow/dags
     - airflow-plugins:/opt/airflow/plugins
@@ -280,7 +274,7 @@ services:
       _AIRFLOW_DB_MIGRATE: 'true'
       _AIRFLOW_WWW_USER_CREATE: 'true'
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
-      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+      _AIRFLOW_WWW_USER_PASSWORD_CMD: cat /run/secrets/airflow_www_password
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: '0:0'
 
@@ -333,9 +327,12 @@ services:
     image: prom/statsd-exporter:v0.28.0
     container_name: airflow-statsd-exporter
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     command: '--statsd.listen-udp=:${STATSD_AIRFLOW_PORT} --web.listen-address=:${STATSD_PROMETHEUS_PORT} --statsd.mapping-config=/tmp/mappings.yml'
     volumes:
-      # 매핑 파일 (아래 3번 단계에서 생성)
       - ./config/statsd_mapping.yml:/tmp/mappings.yml:ro
     depends_on:
       airflow-init:
@@ -343,8 +340,8 @@ services:
     networks:
       - infra_net
     expose:
-      - '${STATSD_PROMETHEUS_PORT}' # Prometheus가 긁어갈 포트
-      - '${STATSD_AIRFLOW_PORT}' # Airflow가 보낼 포트
+      - '${STATSD_PROMETHEUS_PORT}'
+      - '${STATSD_AIRFLOW_PORT}'
     logging: *default-logging
 
 secrets:

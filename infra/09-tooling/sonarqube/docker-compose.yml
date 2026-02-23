@@ -33,6 +33,10 @@ services:
     container_name: sonarqube
     hostname: sonarqube
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     expose:
       - ${SONARQUBE_PORT}
     healthcheck:

@@ -10,11 +10,16 @@ services:
   terraform:
     image: hashicorp/terraform:1.14.4
     container_name: terraform
+    restart: 'no' # 단발성 작업 컨테이너
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     volumes:
       - ./workspace:/workspace
-      # - $HOME/.config/gcloud:/root/.config/gcloud # Optional: For GCP Auth
-      - $HOME/.aws:/root/.aws # Optional: For AWS Auth
-      - $HOME/.azure:/root/.azure # Optional: For Azure Auth
+      # - $HOME/.config/gcloud:/root/.config/gcloud:ro # Optional: For GCP Auth
+      - $HOME/.aws:/root/.aws:ro # Optional: For AWS Auth (Read-Only)
+      - $HOME/.azure:/root/.azure:ro # Optional: For Azure Auth (Read-Only)
     working_dir: /workspace
     entrypoint: ['terraform']
     networks:

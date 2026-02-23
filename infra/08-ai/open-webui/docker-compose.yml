@@ -24,8 +24,12 @@ services:
         limits:
           cpus: '1.0'
           memory: 1G
-    image: ghcr.io/open-webui/open-webui:main
+    image: ghcr.io/open-webui/open-webui:v0.8.5-cuda
     container_name: open-webui
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     # ports:
     #   - "${OLLAMA_WEBUI_HOST_PORT}:${OLLAMA_WEBUI_PORT}" # 브라우저에서 localhost:3000 으로 접속
     environment:
