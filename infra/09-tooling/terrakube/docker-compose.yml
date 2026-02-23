@@ -22,8 +22,8 @@ services:
       - ALL
     secrets:
       - terrakube_db_password
-      - terrakube_minio_secret_key
-      - terrakube_redis_password
+      - minio_app_user_password
+      - terrakube_valkey_password
       - terrakube_pat_secret
       - terrakube_internal_secret
     environment:
@@ -44,7 +44,7 @@ services:
 
       StorageType: AWS
       AwsStorageAccessKey: ${MINIO_APP_USERNAME}
-      AwsStorageSecretKey_FILE: /run/secrets/terrakube_minio_secret_key
+      AwsStorageSecretKey_FILE: /run/secrets/minio_app_user_password
       AwsStorageBucketName: tfstate
       AwsStorageRegion: ap-northeast-2
       AwsEndpoint: http://minio:9000
@@ -53,7 +53,7 @@ services:
       DexIssuerUri: 'https://keycloak.${DEFAULT_URL}/realms/hy-home.realm'
 
       TerrakubeRedisHostname: ${MNG_VALKEY_HOST}
-      TerrakubeRedisPassword_FILE: /run/secrets/terrakube_redis_password
+      TerrakubeRedisPassword_FILE: /run/secrets/terrakube_valkey_password
       TerrakubeRedisPort: ${VALKEY_PORT}
 
     labels:
@@ -130,22 +130,22 @@ services:
     # cap_drop은 docker.sock 마운트로 인해 일부 제한 가능성 있음
     secrets:
       - terrakube_internal_secret
-      - terrakube_minio_secret_key
-      - terrakube_redis_password
+      - minio_app_user_password
+      - terrakube_valkey_password
     environment:
       TerrakubeEnableSecurity: 'true'
       InternalSecret_FILE: /run/secrets/terrakube_internal_secret
       TerraformStateType: AwsTerraformStateImpl
 
       AwsTerraformStateAccessKey: ${MINIO_APP_USERNAME}
-      AwsTerraformStateSecretKey_FILE: /run/secrets/terrakube_minio_secret_key
+      AwsTerraformStateSecretKey_FILE: /run/secrets/minio_app_user_password
       AwsTerraformStateBucketName: tfstate
       AwsTerraformStateRegion: ap-northeast-2
       AwsEndpoint: http://minio:9000
 
       TerraformOutputType: AwsTerraformOutputImpl
       AwsTerraformOutputAccessKey: ${MINIO_APP_USERNAME}
-      AwsTerraformOutputSecretKey_FILE: /run/secrets/terrakube_minio_secret_key
+      AwsTerraformOutputSecretKey_FILE: /run/secrets/minio_app_user_password
       AwsTerraformOutputBucketName: tfstate
       AwsTerraformOutputRegion: ap-northeast-2
       AzBuilderApiUrl: https://terrakube-api.${DEFAULT_URL}
@@ -160,7 +160,7 @@ services:
       TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}
       EXECUTOR_NAME: local-executor
       TerrakubeRedisHostname: ${MNG_VALKEY_HOST}
-      TerrakubeRedisPassword_FILE: /run/secrets/terrakube_redis_password
+      TerrakubeRedisPassword_FILE: /run/secrets/terrakube_valkey_password
       TerrakubeRedisPort: ${VALKEY_PORT}
 
     volumes:
@@ -187,9 +187,9 @@ services:
 secrets:
   terrakube_db_password:
     external: true
-  terrakube_minio_secret_key:
+  minio_app_user_password:
     external: true
-  terrakube_redis_password:
+  terrakube_valkey_password:
     external: true
   terrakube_pat_secret:
     external: true

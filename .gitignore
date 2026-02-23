@@ -118,7 +118,7 @@ secrets/certs/*.pem
 secrets/certs/*.srl
 secrets/certs/*.crt
 secrets/certs/*.p12
-secrets/*.txt
+secrets/**/*.txt
 
 # opencode Skills
 .opencode/skills/

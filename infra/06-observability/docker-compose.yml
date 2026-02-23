@@ -128,9 +128,9 @@ services:
       - loki-data:/loki
     environment:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
-      - MINIO_APP_USER_PASSWORD_FILE=/run/secrets/minio_app_password
+      - MINIO_APP_USER_PASSWORD_FILE=/run/secrets/minio_app_user_password
     secrets:
-      - minio_app_password
+      - minio_app_user_password
     depends_on:
       minio:
         condition: service_healthy
@@ -172,9 +172,9 @@ services:
       - '${TEMPO_HOST_PORT}:${TEMPO_PORT}'
     environment:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
-      - MINIO_APP_USER_PASSWORD_FILE=/run/secrets/minio_app_password
+      - MINIO_APP_USER_PASSWORD_FILE=/run/secrets/minio_app_user_password
     secrets:
-      - minio_app_password
+      - minio_app_user_password
     <<: *default-restart
 
   pyroscope:
@@ -427,14 +427,14 @@ services:
     environment:
       - SMTP_USERNAME=${SMTP_USERNAME}
     secrets:
-      - alertmanager_smtp_password
-      - alertmanager_slack_webhook
+      - smtp_password
+      - slack_webhook
     entrypoint: ['/bin/sh', '-c']
     command: >
-      "SMTP_PASSWORD=$(cat /run/secrets/alertmanager_smtp_password);
-      SLACK_ALERTMANAGER_WEBHOOK_URL=$(cat /run/secrets/alertmanager_slack_webhook);
+      "SMTP_PASSWORD=$(cat /run/secrets/smtp_password);
+      SLACK_ALERTMANAGER_WEBHOOK_URL=$(cat /run/secrets/slack_webhook);
       if [ -z \"$SLACK_ALERTMANAGER_WEBHOOK_URL\" ]; then
-        echo 'ERROR: alertmanager_slack_webhook secret is not set';
+        echo 'ERROR: slack_webhook secret is not set';
         exit 1;
       fi;
       echo 'Generating config file...';
@@ -512,13 +512,13 @@ services:
     logging: *default-logging
 
 secrets:
-  minio_app_password:
+  minio_app_user_password:
     external: true
   grafana_admin_password:
     external: true
   oauth2_proxy_client_secret:
     external: true
-  alertmanager_smtp_password:
+  smtp_password:
     external: true
-  alertmanager_slack_webhook:
+  slack_webhook:
     external: true

@@ -12,132 +12,127 @@ networks:
     external: true
 
 secrets:
-  service_postgres_password:
-    file: ./secrets/service_postgres_password.txt
-  mng_postgres_password:
-    file: ./secrets/mng_postgres_password.txt
-
-  # ── Valkey / Redis ─────────────────────────────────────
-  n8n_valkey_password:
-    file: ./secrets/n8n_valkey_password.txt
-  # redis_password:
-  #   file: ./secrets/redis_password.txt
-  service_valkey_password:
-    file: ./secrets/service_valkey_password.txt
-  mng_valkey_password:
-    file: ./secrets/mng_valkey_password.txt
-  oauth2_valkey_password:
-    file: ./secrets/oauth2_valkey_password.txt
-
-  # ── MinIO ───────────────────────────────────────────────
-  minio_root_password:
-    file: ./secrets/minio_root_password.txt
-  minio_root_username:
-    file: ./secrets/minio_root_username.txt
-  minio_app_user_password:
-    file: ./secrets/minio_app_user_password.txt
-  minio_app_username:
-    file: ./secrets/minio_app_username.txt
-  minio_app_password:
-    file: ./secrets/minio_app_password.txt
+  # ── Common ─────────────────────────────────────────────
+  smtp_password:
+    file: ./secrets/common/smtp_password.txt
+  slack_webhook:
+    file: ./secrets/common/slack_webhook.txt
+  smtp_username:
+    file: ./secrets/common/smtp_username.txt
 
   # ── Gateway ─────────────────────────────────────────────
   traefik_basicauth_password:
-    file: ./secrets/traefik_basicauth_password.txt
+    file: ./secrets/auth/traefik_basicauth_password.txt
   traefik_opensearch_basicauth_password:
-    file: ./secrets/traefik_opensearch_basicauth_password.txt
-  smtp_username:
-    file: ./secrets/smtp_username.txt
-
-  # ── InfluxDB ─────────────────────────────────────────────
-  influxdb_password:
-    file: ./secrets/influxdb_password.txt
-  influxdb_api_token:
-    file: ./secrets/influxdb_api_token.txt
-
-  # ── CouchDB ──────────────────────────────────────────────
-  couchdb_password:
-    file: ./secrets/couchdb_password.txt
-  couchdb_cookie:
-    file: ./secrets/couchdb_cookie.txt
+    file: ./secrets/auth/traefik_opensearch_basicauth_password.txt
 
   # ── Auth ────────────────────────────────────────────────
-  keycloak_db_password:
-    file: ./secrets/keycloak_db_password.txt
   keycloak_admin_password:
-    file: ./secrets/keycloak_admin_password.txt
+    file: ./secrets/auth/keycloak_admin_password.txt
   oauth2_proxy_client_secret:
-    file: ./secrets/oauth2_proxy_client_secret.txt
+    file: ./secrets/auth/oauth2_proxy_client_secret.txt
   oauth2_proxy_cookie_secret:
-    file: ./secrets/oauth2_proxy_cookie_secret.txt
-
-  # ── OpenSearch ──────────────────────────────────────────
-  opensearch_admin_password:
-    file: ./secrets/opensearch_admin_password.txt
-  opensearch_dashboard_password:
-    file: ./secrets/opensearch_dashboard_password.txt
-  opensearch_exporter_password:
-    file: ./secrets/opensearch_exporter_password.txt
-
-  # ── Workflow: Airflow ───────────────────────────────────
-  airflow_db_password:
-    file: ./secrets/airflow_db_password.txt
-  airflow_fernet_key:
-    file: ./secrets/airflow_fernet_key.txt
-  airflow_www_password:
-    file: ./secrets/airflow_www_password.txt
-
-  # ── Workflow: n8n ───────────────────────────────────────
-  n8n_db_password:
-    file: ./secrets/n8n_db_password.txt
-  n8n_encryption_key:
-    file: ./secrets/n8n_encryption_key.txt
-  n8n_runner_auth_token:
-    file: ./secrets/n8n_runner_auth_token.txt
-
-  # ── Tooling: SonarQube ──────────────────────────────────
-  sonarqube_db_password:
-    file: ./secrets/sonarqube_db_password.txt
-  sonarqube_admin_password:
-    file: ./secrets/sonarqube_admin_password.txt
-
-  # ── Tooling: Terrakube ──────────────────────────────────
-  terrakube_db_password:
-    file: ./secrets/terrakube_db_password.txt
-  terrakube_minio_secret_key:
-    file: ./secrets/terrakube_minio_secret_key.txt
-  terrakube_redis_password:
-    file: ./secrets/terrakube_redis_password.txt
-  terrakube_pat_secret:
-    file: ./secrets/terrakube_pat_secret.txt
-  terrakube_internal_secret:
-    file: ./secrets/terrakube_internal_secret.txt
+    file: ./secrets/auth/oauth2_proxy_cookie_secret.txt
 
   # ── Observability ───────────────────────────────────────
   grafana_admin_password:
-    file: ./secrets/grafana_admin_password.txt
-  alertmanager_smtp_password:
-    file: ./secrets/alertmanager_smtp_password.txt
-  alertmanager_slack_webhook:
-    file: ./secrets/alertmanager_slack_webhook.txt
+    file: ./secrets/observability/grafana_admin_password.txt
+
+  # ── PostgreSQL ─────────────────────────────────────
+  service_postgres_password:
+    file: ./secrets/db/postgres/service_password.txt
+  mng_postgres_password:
+    file: ./secrets/db/postgres/mng_password.txt
+  keycloak_db_password:
+    file: ./secrets/db/postgres/keycloak_password.txt
+  airflow_db_password:
+    file: ./secrets/db/postgres/airflow_password.txt
+  n8n_db_password:
+    file: ./secrets/db/postgres/n8n_password.txt
+  sonarqube_db_password:
+    file: ./secrets/db/postgres/sonarqube_password.txt
+  terrakube_db_password:
+    file: ./secrets/db/postgres/terrakube_password.txt
+  supabase_db_password:
+    file: ./secrets/db/postgres/supabase_password.txt
+  # ── Valkey / Redis ─────────────────────────────────────
+  n8n_valkey_password:
+    file: ./secrets/db/valkey/n8n_password.txt
+  service_valkey_password:
+    file: ./secrets/db/valkey/service_password.txt
+  mng_valkey_password:
+    file: ./secrets/db/valkey/mng_password.txt
+  oauth2_valkey_password:
+    file: ./secrets/db/valkey/oauth2_password.txt
+  terrakube_valkey_password:
+    file: ./secrets/db/valkey/terrakube_password.txt
+  # ── MinIO ───────────────────────────────────────────────
+  minio_root_password:
+    file: ./secrets/storage/minio_root_password.txt
+  minio_root_username:
+    file: ./secrets/storage/minio_root_username.txt
+  minio_app_user_password:
+    file: ./secrets/storage/minio_app_user_password.txt
+  minio_app_username:
+    file: ./secrets/storage/minio_app_username.txt
+
+  # ── OpenSearch ──────────────────────────────────────────
+  opensearch_admin_password:
+    file: ./secrets/data/opensearch_admin_password.txt
+  opensearch_dashboard_password:
+    file: ./secrets/data/opensearch_dashboard_password.txt
+  opensearch_exporter_password:
+    file: ./secrets/data/opensearch_exporter_password.txt
+
+  # ── Workflow: Airflow ───────────────────────────────────
+  airflow_fernet_key:
+    file: ./secrets/automation/airflow_fernet_key.txt
+  airflow_www_password:
+    file: ./secrets/automation/airflow_www_password.txt
+
+  # ── Workflow: n8n ───────────────────────────────────────
+  n8n_encryption_key:
+    file: ./secrets/automation/n8n_encryption_key.txt
+  n8n_runner_auth_token:
+    file: ./secrets/automation/n8n_runner_auth_token.txt
+
+  # ── Tooling: SonarQube ──────────────────────────────────
+  sonarqube_admin_password:
+    file: ./secrets/tools/sonarqube_admin_password.txt
+
+  # ── Tooling: Terrakube ──────────────────────────────────
+  terrakube_pat_secret:
+    file: ./secrets/tools/terrakube_pat_secret.txt
+  terrakube_internal_secret:
+    file: ./secrets/tools/terrakube_internal_secret.txt
 
   # ── Data: Supabase ──────────────────────────────────────
-  supabase_db_password:
-    file: ./secrets/supabase_db_password.txt
   supabase_jwt_secret:
-    file: ./secrets/supabase_jwt_secret.txt
+    file: ./secrets/data/supabase_jwt_secret.txt
   supabase_anon_key:
-    file: ./secrets/supabase_anon_key.txt
+    file: ./secrets/data/supabase_anon_key.txt
   supabase_service_key:
-    file: ./secrets/supabase_service_key.txt
+    file: ./secrets/data/supabase_service_key.txt
   supabase_dashboard_password:
-    file: ./secrets/supabase_dashboard_password.txt
+    file: ./secrets/data/supabase_dashboard_password.txt
   supabase_secret_key_base:
-    file: ./secrets/supabase_secret_key_base.txt
+    file: ./secrets/data/supabase_secret_key_base.txt
   supabase_vault_enc_key:
-    file: ./secrets/supabase_vault_enc_key.txt
+    file: ./secrets/data/supabase_vault_enc_key.txt
   supabase_pg_meta_crypto_key:
-    file: ./secrets/supabase_pg_meta_crypto_key.txt
+    file: ./secrets/data/supabase_pg_meta_crypto_key.txt
+
+  # ── InfluxDB ─────────────────────────────────────────────
+  influxdb_password:
+    file: ./secrets/db/influxdb/influxdb_password.txt
+  influxdb_api_token:
+    file: ./secrets/db/influxdb/influxdb_api_token.txt
+
+  # ── CouchDB ──────────────────────────────────────────────
+  couchdb_password:
+    file: ./secrets/db/couchdb/couchdb_password.txt
+  couchdb_cookie:
+    file: ./secrets/db/couchdb/couchdb_cookie.txt
 
 include:
   # Core stack
