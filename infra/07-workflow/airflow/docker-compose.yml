@@ -19,10 +19,10 @@ x-airflow-common: &airflow-common
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: 'postgresql+psycopg2://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/airflow'
-    AIRFLOW__CELERY__RESULT_BACKEND: 'db+postgresql://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASSWORD}@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/airflow'
-    AIRFLOW__CELERY__BROKER_URL: 'redis://:${REDIS_PASSWORD}@${REDIS_NODE_NAME}:${REDIS_PORT}/0'
-    AIRFLOW__CORE__FERNET_KEY: '${AIRFLOW_FERNET_KEY}'
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: echo "postgresql+psycopg2://${AIRFLOW_DB_USER}:$$(cat /run/secrets/airflow_db_password)@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/airflow"
+    AIRFLOW__CELERY__RESULT_BACKEND_CMD: echo "db+postgresql://${AIRFLOW_DB_USER}:$$(cat /run/secrets/airflow_db_password)@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/airflow"
+    AIRFLOW__CELERY__BROKER_URL_CMD: echo "redis://:${REDIS_PASSWORD}@${REDIS_NODE_NAME}:${REDIS_PORT}/0"
+    AIRFLOW__CORE__FERNET_KEY_CMD: cat /run/secrets/airflow_fernet_key
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
     AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-apiserver:8080/execution/'
@@ -49,6 +49,10 @@ x-airflow-common: &airflow-common
     - airflow-logs:/opt/airflow/logs
     - airflow-config:/opt/airflow/config
   user: '${AIRFLOW_UID:-50000}:0'
+  secrets:
+    - airflow_db_password
+    - airflow_fernet_key
+    - airflow_www_password
   logging:
     driver: 'json-file'
     options:
@@ -342,8 +346,11 @@ services:
       - '${STATSD_PROMETHEUS_PORT}' # Prometheus가 긁어갈 포트
       - '${STATSD_AIRFLOW_PORT}' # Airflow가 보낼 포트
     logging: *default-logging
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
+
+secrets:
+  airflow_db_password:
+    external: true
+  airflow_fernet_key:
+    external: true
+  airflow_www_password:
+    external: true

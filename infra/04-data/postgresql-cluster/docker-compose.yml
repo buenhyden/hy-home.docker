@@ -47,6 +47,10 @@ volumes:
       type: none
       device: ${DEFAULT_DATA_DIR}/etcd/etcd3-data
 
+secrets:
+  service_postgres_password:
+    external: true
+
 services:
   # ##############################################################
   # etcd 3노드 (Patroni DCS)
@@ -417,14 +421,14 @@ services:
     expose:
       - '${POSTGRES_EXPORTER_PORT}'
     secrets:
-      - postgres_password
+      - service_postgres_password
     depends_on:
       pg-0:
         condition: service_healthy
     entrypoint: ['/bin/sh', '-c']
     command:
       - |
-        export PGPASSWORD=$$(cat /run/secrets/postgres_password | tr -d '\n')
+        export PGPASSWORD=$$(cat /run/secrets/service_postgres_password | tr -d '\n')
         # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-0:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
@@ -454,14 +458,14 @@ services:
     expose:
       - '${POSTGRES_EXPORTER_PORT}'
     secrets:
-      - postgres_password
+      - service_postgres_password
     depends_on:
       pg-1:
         condition: service_healthy
     entrypoint: ['/bin/sh', '-c']
     command:
       - |
-        export PGPASSWORD=$$(cat /run/secrets/postgres_password | tr -d '\n')
+        export PGPASSWORD=$$(cat /run/secrets/service_postgres_password | tr -d '\n')
         # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-1:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
@@ -491,14 +495,14 @@ services:
     expose:
       - '${POSTGRES_EXPORTER_PORT}'
     secrets:
-      - postgres_password
+      - service_postgres_password
     depends_on:
       pg-2:
         condition: service_healthy
     entrypoint: ['/bin/sh', '-c']
     command:
       - |
-        export PGPASSWORD=$$(cat /run/secrets/postgres_password | tr -d '\n')
+        export PGPASSWORD=$$(cat /run/secrets/service_postgres_password | tr -d '\n')
         # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-2:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter

@@ -65,4 +65,10 @@ services:
           - keycloak.${DEFAULT_URL}
           - auth.${DEFAULT_URL}
           - whoami.${DEFAULT_URL}
+    secrets:
+      - traefik_basicauth_password
     logging: *default-logging
+
+secrets:
+  traefik_basicauth_password:
+    external: true

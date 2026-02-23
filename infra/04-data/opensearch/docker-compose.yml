@@ -40,10 +40,14 @@ services:
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
       # 메모리 관련 bootstrap 체크 통과용
       - bootstrap.memory_lock=true
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_ADMIN_PASSWORD}
       - DISABLE_INSTALL_DEMO_CONFIG=true
       # base image entrypoint starts a separate PA agent CLI by default; disable to reduce noise/warnings
       - DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI=true
+    command: >
+      bash -c "
+      export OPENSEARCH_INITIAL_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) &&
+      exec /usr/share/opensearch/opensearch-docker-entrypoint.sh
+      "
     ulimits:
       # 스왑 방지를 위해 memlock 무제한
       memlock:
@@ -99,7 +103,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'curl -k -u admin:${OPENSEARCH_ADMIN_PASSWORD} --silent --fail "https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s" || exit 1',
+          'export OPENSEARCH_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) && curl -k -u admin:$${OPENSEARCH_ADMIN_PASSWORD} --silent --fail "https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s" || exit 1',
         ]
       interval: 15s
       timeout: 30s
@@ -123,7 +127,13 @@ services:
       - 'keycloak.127.0.0.1.nip.io:172.19.0.13'
     environment:
       - OPENSEARCH_USERNAME=${OPENSEARCH_DASHBOARD_USERNAME}
-      - OPENSEARCH_PASSWORD=${OPENSEARCH_DASHBOARD_PASSWORD}
+    command: >
+      bash -c "
+      export OPENSEARCH_PASSWORD=$$(cat /run/secrets/opensearch_dashboard_password) &&
+      exec /usr/share/opensearch-dashboards/bin/opensearch-dashboards
+      "
+    secrets:
+      - opensearch_dashboard_password
       # mkcert 기반 인증서(SAN 없음) 대응: 호스트 검증은 끄고 CA만 검증
     labels:
       - 'traefik.enable=true'
@@ -157,14 +167,15 @@ services:
       - no-new-privileges:true
     read_only: true
     <<: *default-restart
-    command:
-      - '--es.uri=https://opensearch:9200'
-      - '--es.all'
-      - '--es.indices'
-      - '--es.ssl-skip-verify' # OpenSearch 기본 TLS 인증서 검증 건너뛰기
     environment:
       - ES_USERNAME=${OPENSEARCH_EXPORTER_USERNAME}
-      - ES_PASSWORD=${OPENSEARCH_EXPORTER_PASSWORD}
+    command: >
+      bash -c "
+      export ES_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) &&
+      exec /bin/elasticsearch_exporter --es.uri=https://opensearch:9200 --es.all --es.indices --es.ssl-skip-verify
+      "
+    secrets:
+      - opensearch_exporter_password
     ports:
       - '${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}' # 9114
     networks:

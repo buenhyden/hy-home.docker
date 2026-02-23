@@ -47,6 +47,10 @@ volumes:
       type: none
       device: ${DEFAULT_DATA_DIR}/valkey/valkey5-data
 
+secrets:
+  service_valkey_password:
+    external: true
+
 services:
   # ##############################################################
   # Redis Cluster Nodes (6개: 3 master + 3 replica)
@@ -62,7 +66,7 @@ services:
     image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: valkey-node-0
     secrets:
-      - valkey_password
+      - service_valkey_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.60
@@ -85,7 +89,7 @@ services:
       # secret 파일에서 비밀번호 읽어서 PING 체크
       test: [
           'CMD-SHELL',
-          'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY0_PORT} ping | grep PONG',
         ]
       interval: 15s
@@ -105,7 +109,7 @@ services:
     image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: valkey-node-1
     secrets:
-      - valkey_password
+      - service_valkey_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.61
@@ -125,7 +129,7 @@ services:
     healthcheck:
       test: [
           'CMD-SHELL',
-          'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY1_PORT} ping | grep PONG',
         ]
       interval: 15s
@@ -145,7 +149,7 @@ services:
     image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: valkey-node-2
     secrets:
-      - valkey_password
+      - service_valkey_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.62
@@ -165,7 +169,7 @@ services:
     healthcheck:
       test: [
           'CMD-SHELL',
-          'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY2_PORT} ping | grep PONG',
         ]
       interval: 15s
@@ -185,7 +189,7 @@ services:
     image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: valkey-node-3
     secrets:
-      - valkey_password
+      - service_valkey_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.63
@@ -205,7 +209,7 @@ services:
     healthcheck:
       test: [
           'CMD-SHELL',
-          'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY3_PORT} ping | grep PONG',
         ]
       interval: 15s
@@ -225,7 +229,7 @@ services:
     image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: valkey-node-4
     secrets:
-      - valkey_password
+      - service_valkey_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.64
@@ -245,7 +249,7 @@ services:
     healthcheck:
       test: [
           'CMD-SHELL',
-          'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY4_PORT} ping | grep PONG',
         ]
       interval: 15s
@@ -265,7 +269,7 @@ services:
     image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: valkey-node-5
     secrets:
-      - valkey_password
+      - service_valkey_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.65
@@ -285,7 +289,7 @@ services:
     healthcheck:
       test: [
           'CMD-SHELL',
-          'VALKEY_PASSWORD=$(cat /run/secrets/valkey_password); valkey-cli -a
+          'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
           $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY5_PORT} ping | grep PONG',
         ]
       interval: 15s
@@ -303,7 +307,7 @@ services:
     image: valkey/valkey:9.0.2-alpine
     container_name: valkey-cluster-init
     secrets:
-      - valkey_password
+      - service_valkey_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.66
@@ -349,14 +353,14 @@ services:
         ipv4_address: 172.19.0.67
     <<: *default-restart
     secrets:
-      - valkey_password
+      - service_valkey_password
     entrypoint:
       - /bin/sh
       - -c
     command:
       - |
         echo "Loading Valkey password..."
-        export R_PWD=$$(cat /run/secrets/valkey_password | tr -d '\n')
+        export R_PWD=$$(cat /run/secrets/service_valkey_password | tr -d '\n')
 
         echo "Starting Exporter (Stateless Mode)..."
         # [수정] -redis.addr 옵션을 제거하거나 비워둡니다.

@@ -21,7 +21,7 @@ x-n8n-common-env: &n8n-common-env
   QUEUE_BULL_REDIS_HOST: n8n-valkey # [최적화 2] IP 대신 서비스명 사용
   QUEUE_BULL_REDIS_PORT: ${VALKEY_PORT}
   QUEUE_BULL_PREFIX: n8n
-  QUEUE_BULL_REDIS_PASSWORD_FILE: /run/secrets/valkey_password
+  QUEUE_BULL_REDIS_PASSWORD_FILE: /run/secrets/n8n_valkey_password
   # Task Runner 설정
   N8N_RUNNERS_ENABLED: true
   N8N_RUNNERS_MODE: external
@@ -47,6 +47,10 @@ volumes:
     #   type: none
     #   device: ${DEFAULT_VALKEY_DATA_DIR}/n8n-node
 
+secrets:
+  n8n_valkey_password:
+    external: true
+
 services:
   n8n:
     image: n8nio/n8n:2.6.2
@@ -62,7 +66,7 @@ services:
     expose:
       - ${N8N_PORT}
     secrets:
-      - valkey_password
+      - n8n_valkey_password
     environment:
       <<: *n8n-common-env # 공통 환경변수 불러오기
       # Main 노드 전용 설정
@@ -125,7 +129,7 @@ services:
     environment:
       <<: *n8n-common-env # 공통 환경변수 재사용 (유지보수 용이)
     secrets:
-      - valkey_password
+      - n8n_valkey_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.17 # 여유 IP 하나
@@ -160,7 +164,7 @@ services:
     image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: n8n-valkey
     secrets:
-      - valkey_password
+      - n8n_valkey_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.15
@@ -170,7 +174,7 @@ services:
     command: >
       sh -c '
       valkey-server
-      --requirepass "$$(cat /run/secrets/valkey_password)"
+      --requirepass "$$(cat /run/secrets/n8n_valkey_password)"
       --appendonly yes
       --port 6379
       '
@@ -182,7 +186,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG',
+          'V_PASS=$$(cat /run/secrets/n8n_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -205,14 +209,14 @@ services:
         ipv4_address: 172.19.0.16
     restart: unless-stopped
     secrets:
-      - valkey_password
+      - n8n_valkey_password
     entrypoint:
       - /bin/sh
       - -c
     command:
       - |
         echo "Reading password from secret..."
-        export VALKEY_PASSWORD=$(cat /run/secrets/valkey_password | tr -d '\n')
+        export VALKEY_PASSWORD=$(cat /run/secrets/n8n_valkey_password | tr -d '\n')
 
         echo "Starting Valkey Exporter..."
         # -redis.password-file 대신 -redis.password 사용

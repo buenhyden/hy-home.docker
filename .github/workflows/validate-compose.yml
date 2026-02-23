@@ -32,9 +32,9 @@ jobs:
           echo "dummy" > secrets/postgres_password.txt
           echo "dummy" > secrets/redis_password.txt
           echo "dummy" > secrets/minio_root_password.txt
-          echo "dummy" > secrets/minio_root_user.txt
+          echo "dummy" > secrets/minio_root_username.txt
           echo "dummy" > secrets/minio_app_user_password.txt
-          echo "dummy" > secrets/minio_app_user.txt
+          echo "dummy" > secrets/minio_app_username.txt
           echo "dummy" > secrets/valkey_password.txt
 
       - name: Check Docker Compose Config

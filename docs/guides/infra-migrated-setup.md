@@ -1619,9 +1619,9 @@ Credentials are managed via Docker Secrets for security.
 
 | Secret                    | Description                    |
 | :------------------------ | :----------------------------- |
-| `minio_root_user`         | Admin Username                 |
+| `minio_root_username`         | Admin Username                 |
 | `minio_root_password`     | Admin Password                 |
-| `minio_app_user`          | Application User (for buckets) |
+| `minio_app_username`          | Application User (for buckets) |
 | `minio_app_user_password` | Application Password           |
 
 ### Environment Variables
@@ -1639,7 +1639,7 @@ The `minio-create-buckets` container runs on startup to:
 
 1. Wait for MinIO to be healthy.
 2. Authenticate as Root.
-3. Create `minio_app_user` and assign `readwrite` policy.
+3. Create `minio_app_username` and assign `readwrite` policy.
 4. Create required buckets:
    - `tempo-bucket`
    - `loki-bucket`

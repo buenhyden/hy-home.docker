@@ -17,6 +17,16 @@ volumes:
       type: none
       device: ${DEFAULT_DATA_DIR}/minio/data-1
 
+secrets:
+  minio_root_username:
+    external: true
+  minio_app_username:
+    external: true
+  minio_root_password:
+    external: true
+  minio_app_user_password:
+    external: true
+
 services:
   minio:
     deploy:
@@ -29,10 +39,10 @@ services:
     <<: *default-restart
     command: server /data --console-address ":${MINIO_CONSOLE_HOST_PORT}"
     secrets:
-      - minio_root_user
+      - minio_root_username
       - minio_root_password
     environment:
-      MINIO_ROOT_USER_FILE: /run/secrets/minio_root_user
+      MINIO_ROOT_USER_FILE: /run/secrets/minio_root_username
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_password
       MINIO_PROMETHEUS_AUTH_TYPE: 'public'
       MINIO_API_ROOT_ACCESS: 'on'
@@ -79,9 +89,9 @@ services:
     networks:
       - infra_net
     secrets:
-      - minio_root_user
+      - minio_root_username
       - minio_root_password
-      - minio_app_user
+      - minio_app_username
       - minio_app_user_password
     depends_on:
       minio:
@@ -93,9 +103,9 @@ services:
         set -e
 
         echo "[1] root 크레덴셜 로딩..."
-        ROOT_USER=$$(cat /run/secrets/minio_root_user)
+        ROOT_USER=$$(cat /run/secrets/minio_root_username)
         ROOT_PASS=$$(cat /run/secrets/minio_root_password)
-        APP_USER=$$(cat /run/secrets/minio_app_user)
+        APP_USER=$$(cat /run/secrets/minio_app_username)
         APP_PASS=$$(cat /run/secrets/minio_app_user_password)
 
         export MC_CONFIG_DIR=/tmp/.mc

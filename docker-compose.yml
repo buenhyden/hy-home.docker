@@ -12,20 +12,58 @@ networks:
     external: true
 
 secrets:
-  postgres_password:
-    file: ./secrets/postgres_password.txt
-  redis_password:
-    file: ./secrets/redis_password.txt
+  service_postgres_password:
+    file: ./secrets/service_postgres_password.txt
+  mng_postgres_password:
+    file: ./secrets/mng_postgres_password.txt
+  n8n_valkey_password:
+    file: ./secrets/n8n_valkey_password.txt
+  # redis_password:
+  #   file: ./secrets/redis_password.txt
+  service_valkey_password:
+    file: ./secrets/service_valkey_password.txt
+  mng_valkey_password:
+    file: ./secrets/mng_valkey_password.txt
+  oauth2_valkey_password:
+    file: ./secrets/oauth2_valkey_password.txt
   minio_root_password:
     file: ./secrets/minio_root_password.txt
-  minio_root_user:
-    file: ./secrets/minio_root_user.txt
+  minio_root_username:
+    file: ./secrets/minio_root_username.txt
   minio_app_user_password:
     file: ./secrets/minio_app_user_password.txt
-  minio_app_user:
-    file: ./secrets/minio_app_user.txt
-  valkey_password:
-    file: ./secrets/valkey_password.txt
+  minio_app_username:
+    file: ./secrets/minio_app_username.txt
+  traefik_basicauth_password:
+    file: ./secrets/traefik_basicauth_password.txt
+  keycloak_db_password:
+    file: ./secrets/keycloak_db_password.txt
+  keycloak_admin_password:
+    file: ./secrets/keycloak_admin_password.txt
+  opensearch_admin_password:
+    file: ./secrets/opensearch_admin_password.txt
+  opensearch_dashboard_password:
+    file: ./secrets/opensearch_dashboard_password.txt
+  opensearch_exporter_password:
+    file: ./secrets/opensearch_exporter_password.txt
+  airflow_db_password:
+    file: ./secrets/airflow_db_password.txt
+  airflow_fernet_key:
+    file: ./secrets/airflow_fernet_key.txt
+  airflow_www_password:
+    file: ./secrets/airflow_www_password.txt
+  sonarqube_db_password:
+    file: ./secrets/sonarqube_db_password.txt
+  sonarqube_admin_password:
+    file: ./secrets/sonarqube_admin_password.txt
+  supabase_db_password:
+    file: ./secrets/supabase_db_password.txt
+  supabase_jwt_secret:
+    file: ./secrets/supabase_jwt_secret.txt
+  supabase_anon_key:
+    file: ./secrets/supabase_anon_key.txt
+  supabase_service_key:
+    file: ./secrets/supabase_service_key.txt
 
 include:
   # Core stack

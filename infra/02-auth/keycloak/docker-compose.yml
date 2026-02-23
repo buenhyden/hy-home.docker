@@ -64,9 +64,9 @@ services:
       KC_DB: ${KEYCLOAK_DATABASE}
       KC_DB_URL: jdbc:postgresql://${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${KEYCLOAK_DBNAME}
       KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
-      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      KC_DB_PASSWORD_FILE: /run/secrets/keycloak_db_password
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KEYCLOAK_ADMIN_PASSWORD_FILE: /run/secrets/keycloak_admin_password
       KC_HOSTNAME: https://keycloak.${DEFAULT_URL}
       KC_PROXY_HEADERS: xforwarded
       # DB 연결이 끊겼는지 확인하고, 오래된 연결을 자동으로 정리합니다.
@@ -89,4 +89,13 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.29
+    secrets:
+      - keycloak_db_password
+      - keycloak_admin_password
     logging: *default-logging
+
+secrets:
+  keycloak_db_password:
+    external: true
+  keycloak_admin_password:
+    external: true

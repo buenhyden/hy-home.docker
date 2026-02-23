@@ -29,6 +29,12 @@ volumes:
       type: none
       device: ${DEFAULT_MANAGEMENT_DIR}/redisinsight
 
+secrets:
+  mng_valkey_password:
+    external: true
+  mng_postgres_password:
+    external: true
+
 services:
   mng-valkey:
     deploy:
@@ -39,7 +45,7 @@ services:
     image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: mng-valkey
     secrets:
-      - valkey_password
+      - mng_valkey_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.70
@@ -50,7 +56,7 @@ services:
     command: >
       sh -c '
       valkey-server
-      --requirepass "$$(cat /run/secrets/valkey_password)"
+      --requirepass "$$(cat /run/secrets/mng_valkey_password)"
       --appendonly yes
       --port 6379
       '
@@ -62,7 +68,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'V_PASS=$$(cat /run/secrets/valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG',
+          'V_PASS=$$(cat /run/secrets/mng_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -88,14 +94,14 @@ services:
         ipv4_address: 172.19.0.71
     <<: *default-restart
     secrets:
-      - valkey_password
+      - mng_valkey_password
     entrypoint:
       - /bin/sh
       - -c
     command:
       - |
         echo "Reading password from secret..."
-        export VALKEY_PASSWORD=$(cat /run/secrets/valkey_password | tr -d '\n')
+        export VALKEY_PASSWORD=$(cat /run/secrets/mng_valkey_password | tr -d '\n')
 
         echo "Starting Redis Exporter..."
         # -redis.password-file 대신 -redis.password 사용
@@ -235,14 +241,14 @@ services:
     expose:
       - '${POSTGRES_EXPORTER_PORT}'
     secrets:
-      - postgres_password
+      - mng_postgres_password
     depends_on:
       mng-pg:
         condition: service_healthy
     entrypoint: ['/bin/sh', '-c']
     command:
       - |
-        export PGPASSWORD=$$(cat /run/secrets/postgres_password | tr -d '\n')
+        export PGPASSWORD=$$(cat /run/secrets/mng_postgres_password | tr -d '\n')
         # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@mng-pg:5432/postgres?sslmode=disable"
         exec /bin/postgres_exporter

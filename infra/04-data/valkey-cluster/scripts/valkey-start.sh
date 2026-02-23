@@ -2,7 +2,7 @@
 set -eu
 
 # 시크릿 읽기
-VALKEY_PASSWORD=$(cat /run/secrets/valkey_password)
+VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password)
 NODE_NAME="${NODE_NAME:-$(hostname)}"
 
 # [중요] 외부에서 주입받은 포트로 실행 (기본값 6379)
