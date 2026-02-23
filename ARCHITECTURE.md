@@ -6,7 +6,7 @@ This document defines the high-level architecture of projects created from this 
 
 This template provides a standardized foundation for building software projects.
 
-**Necessity**: This specific `ARCHITECTURE.md` file is absolutely essential as the global, unchanging architectural law of the repository. While `docs/adr/` handles specific component decisions over time and `docs/ard/` holds deep architectural diagrams, this root file holds the *highest-level constraints and checklists* that must NEVER be violated by any human or AI agent without a formal override.
+**Necessity**: This specific `ARCHITECTURE.md` file is absolutely essential as the global, unchanging architectural law of the repository. While `docs/adr/` handles specific component decisions over time and `docs/ard/` holds deep architectural diagrams, this root file holds the _highest-level constraints and checklists_ that must NEVER be violated by any human or AI agent without a formal override.
 
 **What Must Be Written Here**:
 
@@ -25,11 +25,12 @@ This template provides a standardized foundation for building software projects.
 
 ### Core Constraints & Decisions
 
-| Decision                | Rationale                                                                           |
-|-------------------------|-------------------------------------------------------------------------------------|
-| **Spec-Driven Code**    | Eliminates AI hallucination by giving Coder Agents a hard, human-approved target.   |
-| **Templates Mandatory** | Ensures parsing consistency for future AI tasks (PRDs, Specs, Runbooks).            |
-| **Dedicated Runbooks**  | Prevents ops scripts from getting lost in `docs/` hierarchies.                      |
+| Decision                | Rationale                                                                               |
+| ----------------------- | --------------------------------------------------------------------------------------- |
+| **Spec-Driven Code**    | Eliminates AI hallucination by giving Coder Agents a hard, human-approved target.       |
+| **Templates Mandatory** | Ensures parsing consistency for future AI tasks (PRDs, Specs, Runbooks).                |
+| **Dedicated Runbooks**  | Prevents ops scripts from getting lost in `docs/` hierarchies.                          |
+| **WSL I/O Constraints** | Prevents drastic Docker performance loss. The repository MUST NOT be run from `/mnt/c`. |
 
 > See `docs/adr/` for detailed Architecture Decision Records that shaped this specific system logic.
 
@@ -37,22 +38,22 @@ This template provides a standardized foundation for building software projects.
 
 When starting a project or writing an Architecture Reference Document (ARD), the following checklist MUST be addressed and agreed upon by the Human and Planner Agent:
 
-| Category | Check Question | Priority | Notes / Decisions |
-| --- | --- | --- | --- |
-| **Architecture Style** | Is the architectural style decided (e.g., Monolithic, Modular Monolith, Microservices)? | **Mandatory** | |
-| **Service Boundaries** | Are the boundaries and responsibilities of core services/modules expressed in diagrams/docs? | **Mandatory** | |
-| **Domain Model** | Are core domain entities (e.g., User, Document) and relations defined (ER/UML)? | **Mandatory** | |
-| **Tech Stack (Backend)** | Have the language, framework, and key libraries (e.g., web framework, ORM) been decided? | **Mandatory** | |
-| **Tech Stack (Frontend)** | Have the framework (React/Vue/Next), state management, and build tools been decided? | **Mandatory** | |
-| **Database** | Have the primary DB engine (e.g., MySQL, PostgreSQL, MongoDB) and schema strategy been decided? | **Mandatory** | |
-| **Messaging / Async** | Is a message broker (e.g., Kafka, RabbitMQ) or async processing method defined? | *Optional* | |
-| **Infrastructure** | Is the deployment target (Cloud/On-Prem, Kubernetes, Serverless) decided? | **Mandatory** | |
-| **Non-Functional Req** | Are NFRs (Availability, Latency, Throughput) defined with quantitative metrics? | **Mandatory** | |
-| **Scalability Strategy** | Are Scale-up/out, partitioning, or caching strategies drafted? | *Optional* | |
-| **Arch. Principles** | Is there a documented list of architectural principles, including "what NOT to do"? | *Optional* | |
-| **ADR Management** | Is there a process established to leave ADRs for key technical decisions? | *Optional* | Yes, use `docs/adr/`. |
-| **Pillar Alignment** | Does the architecture align with the 6 Core Pillars (Security `2200`, Performance `2300`, Observability `2600`, Compliance `2400`, Documentation `2100`, Localization `2500`)? | **Mandatory** | See `.agent/rules/`. |
-| **Agent Rule Compliance** | Does the tech stack selection comply with language/framework specific laws (e.g., `1200-Nextjs.md`) defined in `.agent/rules/`? | **Mandatory** | |
+| Category                  | Check Question                                                                                                                                                                 | Priority      | Notes / Decisions     |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------- | --------------------- |
+| **Architecture Style**    | Is the architectural style decided (e.g., Monolithic, Modular Monolith, Microservices)?                                                                                        | **Mandatory** |                       |
+| **Service Boundaries**    | Are the boundaries and responsibilities of core services/modules expressed in diagrams/docs?                                                                                   | **Mandatory** |                       |
+| **Domain Model**          | Are core domain entities (e.g., User, Document) and relations defined (ER/UML)?                                                                                                | **Mandatory** |                       |
+| **Tech Stack (Backend)**  | Have the language, framework, and key libraries (e.g., web framework, ORM) been decided?                                                                                       | **Mandatory** |                       |
+| **Tech Stack (Frontend)** | Have the framework (React/Vue/Next), state management, and build tools been decided?                                                                                           | **Mandatory** |                       |
+| **Database**              | Have the primary DB engine (e.g., MySQL, PostgreSQL, MongoDB) and schema strategy been decided?                                                                                | **Mandatory** |                       |
+| **Messaging / Async**     | Is a message broker (e.g., Kafka, RabbitMQ) or async processing method defined?                                                                                                | _Optional_    |                       |
+| **Infrastructure**        | Is the deployment target (Cloud/On-Prem, Kubernetes, Serverless) decided?                                                                                                      | **Mandatory** |                       |
+| **Non-Functional Req**    | Are NFRs (Availability, Latency, Throughput) defined with quantitative metrics?                                                                                                | **Mandatory** |                       |
+| **Scalability Strategy**  | Are Scale-up/out, partitioning, or caching strategies drafted?                                                                                                                 | _Optional_    |                       |
+| **Arch. Principles**      | Is there a documented list of architectural principles, including "what NOT to do"?                                                                                            | _Optional_    |                       |
+| **ADR Management**        | Is there a process established to leave ADRs for key technical decisions?                                                                                                      | _Optional_    | Yes, use `docs/adr/`. |
+| **Pillar Alignment**      | Does the architecture align with the 6 Core Pillars (Security `2200`, Performance `2300`, Observability `2600`, Compliance `2400`, Documentation `2100`, Localization `2500`)? | **Mandatory** | See `.agent/rules/`.  |
+| **Agent Rule Compliance** | Does the tech stack selection comply with language/framework specific laws (e.g., `1200-Nextjs.md`) defined in `.agent/rules/`?                                                | **Mandatory** |                       |
 
 > **Process Enforcement**: The Planner Agent MUST explicitly answer all items of this checklist when creating an ARD, adhering to `.agent/rules/1910-architecture-documentation.md` and `.agent/rules/1901-architecture-rules.md`. The Reviewer Agent MUST verify that any code changes (e.g., in a PR) do not violate these agreed-upon decisions (such as unauthorized Tech Stack or DB changes) before merging.
 
@@ -60,12 +61,14 @@ When starting a project or writing an Architecture Reference Document (ARD), the
 
 Customize the following for your specific project upon cloning.
 
-| Layer        | Recommended Technology         | Purpose                              |
-| ------------ | ------------------------------ | ------------------------------------ |
-| **Frontend** | React / Next.js / TailwindCSS  | Client-side interactions             |
-| **Backend**  | Node.js / Python / Go / Rust   | Server-side APIs and logic           |
-| **Database** | PostgreSQL / MongoDB           | Data persistence                     |
-| **DevOps**   | Docker / GitHub Actions        | CI/CD and Containerization           |
+| Layer             | Selected Technology                      | Purpose                                          |
+| ----------------- | ---------------------------------------- | ------------------------------------------------ |
+| **Gateway**       | Traefik                                  | Edge router, Reverse Proxy, SSL Termination      |
+| **Auth/Security** | Keycloak / OAuth2-Proxy / Vault          | OIDC Identity provisioning, Proxy Auth, Secrets  |
+| **Data Stores**   | PostgreSQL / Valkey / MinIO / OpenSearch | Relational DB, Memory Store, Object Blob, Search |
+| **Messaging**     | Kafka (KRaft) / Schema Registry          | Distributed event streaming and schemas          |
+| **Observability** | Grafana / Prometheus / Loki / Tempo      | Metrics, Logs, Tracing dashboarding              |
+| **Workflows**     | n8n / Airflow                            | Local state automations and CI data pipelines    |
 
 ## 4. Integration & Separation Points
 
@@ -82,4 +85,5 @@ Customize the following for your specific project upon cloning.
 3. **Execution Rules**: Modify `.agent/rules/` to enforce new architectural linters globally.
 
 ---
+
 > **Note**: This architecture document must be kept strictly to high-level system design. For operational procedures, alerting logic, or CI orchestration, consult `OPERATIONS.md`.

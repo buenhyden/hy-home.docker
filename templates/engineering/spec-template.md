@@ -1,12 +1,12 @@
 ---
-title: "[Feature Name] Implementation Spec"
-status: "Draft | Implementation | Validated"
-version: "1.0"
-owner: "[Team/Owner]"
-prd_reference: "[Link to PRD]"
-api_reference: "[Link to API Spec]"
-arch_reference: "[Link to ARCHITECTURE.md]"
-tags: ["spec", "implementation"]
+title: '[Feature Name] Implementation Spec'
+status: 'Draft | Implementation | Validated'
+version: '1.0'
+owner: '[Team/Owner]'
+prd_reference: '[Link to PRD]'
+api_reference: '[Link to API Spec]'
+arch_reference: '[Link to ARCHITECTURE.md]'
+tags: ['spec', 'implementation']
 ---
 
 # Implementation Specification (Spec)
@@ -16,8 +16,8 @@ tags: ["spec", "implementation"]
 > **Related API Spec**: [Link to API Spec if applicable]
 > **Related Architecture**: [Link to ARCHITECTURE.md](../../ARCHITECTURE.md)
 
-*Target Directory: `specs/<feature>/spec.md`*
-*Note: This document is the absolute Source of Truth for Coder Agents. NO CODE can be generated without it.*
+_Target Directory: `specs/<feature>/spec.md`_
+_Note: This document is the absolute Source of Truth for Coder Agents. NO CODE can be generated without it._
 
 ---
 
@@ -37,25 +37,25 @@ tags: ["spec", "implementation"]
 
 ### 0.2 Quality / Testing / Security
 
-| Item            | Check Question                                     | Required | Alignment Notes | Where to document       |
-| --------------- | -------------------------------------------------- | -------- | --------------- | ----------------------- |
-| Test Strategy   | Levels (Unit/Integration/E2E/Load) defined?        | Must     |                 | Section 7               |
-| Test Tooling    | Agreed framework/runner and mock strategy?         | Must     |                 | Section 7               |
-| Coverage Policy | Are goals defined as numbers (e.g. 100%)?          | Must     |                 | Section 7               |
-| AuthN/AuthZ     | Is auth approach designed (token/OAuth/RBAC)?      | Must     |                 | Section 4               |
-| Data Protection | Encryption/access policies for sensitive data?     | Must     |                 | Section 9               |
-| Performance     | Are Core Web Vitals/Latency metrics targeted?      | Must     |                 | Section 8               |
-| Accessibility   | Is WCAG compliance integrated (contrast/ARIA)?     | Must     |                 | Section 8               |
+| Item            | Check Question                                 | Required | Alignment Notes | Where to document |
+| --------------- | ---------------------------------------------- | -------- | --------------- | ----------------- |
+| Test Strategy   | Levels (Unit/Integration/E2E/Load) defined?    | Must     |                 | Section 7         |
+| Test Tooling    | Agreed framework/runner and mock strategy?     | Must     |                 | Section 7         |
+| Coverage Policy | Are goals defined as numbers (e.g. 100%)?      | Must     |                 | Section 7         |
+| AuthN/AuthZ     | Is auth approach designed (token/OAuth/RBAC)?  | Must     |                 | Section 4         |
+| Data Protection | Encryption/access policies for sensitive data? | Must     |                 | Section 9         |
+| Performance     | Are Core Web Vitals/Latency metrics targeted?  | Must     |                 | Section 8         |
+| Accessibility   | Is WCAG compliance integrated (contrast/ARIA)? | Must     |                 | Section 8         |
 
 ### 0.3 Operations / Deployment / Monitoring
 
-| Item           | Check Question                                           | Required | Alignment Notes | Where to document |
-| -------------- | -------------------------------------------------------- | -------- | --------------- | ----------------- |
-| Environments   | Are tiers (dev/staging/prod) clarified for this feature? | Must     |                 | OPERATIONS.md     |
-| Logging        | Required structured logs defined (fields, IDs)?          | Must     |                 | Section 9         |
-| Monitoring     | Metrics and dashboards defined (RED/USE)?                | Must     |                 | Section 9         |
-| Alerts         | Are alert thresholds and routing defined?                | Must     |                 | Section 9         |
-| Backups        | Are backup policies defined for added data?              | Must     |                 | Section 9         |
+| Item         | Check Question                                           | Required | Alignment Notes | Where to document |
+| ------------ | -------------------------------------------------------- | -------- | --------------- | ----------------- |
+| Environments | Are tiers (dev/staging/prod) clarified for this feature? | Must     |                 | OPERATIONS.md     |
+| Logging      | Required structured logs defined (fields, IDs)?          | Must     |                 | Section 9         |
+| Monitoring   | Metrics and dashboards defined (RED/USE)?                | Must     |                 | Section 9         |
+| Alerts       | Are alert thresholds and routing defined?                | Must     |                 | Section 9         |
+| Backups      | Are backup policies defined for added data?              | Must     |                 | Section 9         |
 
 ---
 

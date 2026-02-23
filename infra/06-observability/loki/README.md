@@ -1,58 +1,10 @@
 # Loki
 
-Loki is a horizontally scalable, highly available, multi-tenant log aggregation system inspired by Prometheus. It is designed to be very cost-effective and easy to operate. It does not index the contents of the logs, but rather a set of labels for each log stream.
+> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
 
-## 🚀 Overview
+Please refer to the following global documentation directories for information regarding this service:
 
-- **Service**: `loki`
-- **Docker Image**: `grafana/loki:3.6.3`
-- **Ports**:
-  - `3100`: HTTP (Ingestion/Query)
-  - `9096`: gRPC
-
-## ⚙️ Configuration
-
-The configuration file is located at `config/loki-config.yaml`.
-
-### Setup
-
-1. **Copy the example configuration:**
-
-   ```bash
-   cp loki-config.yaml.example loki-config.yaml
-   ```
-
-2. **Edit `loki-config.yaml`:**
-   - **Storage (S3/MinIO)**: This setup uses MinIO for object storage.
-     - `endpoint`: `http://minio:9000`
-     - `access_key_id`: `${MINIO_APP_USERNAME}` (환경변수로 주입)
-     - `secret_access_key`: `${MINIO_APP_USER_PASSWORD}` (환경변수로 주입)
-     - `-config.expand-env=true` 옵션으로 환경변수 치환이 활성화됩니다.
-
-### Key Features
-
-- **S3 Backend**: Configured to use MinIO for storing chunks and indices.
-- **Compactor**: Manages retention and deduplication of logs.
-- **Ruler**: Configured to send alerts to Alertmanager (`http://alertmanager:9093`).
-
-## 📦 Storage
-
-Loki requires an Object Store (like AWS S3 or MinIO).
-
-- **Bucket**: `loki-bucket` (must be created in MinIO).
-- **Volume**: `loki-data` (Docker volume).
-
-## 🔗 Integration
-
-- **Promtail / Alloy**: Agents push logs to Loki.
-- **Grafana**: Queries Loki for log visualization (Data Source: Loki).
-
-## 🛠 Directory Structure
-
-```text
-loki/
-├── config/
-│   ├── loki-config.yaml          # Environment variable 기반 설정
-│   └── loki-config.yaml.example  # Template configuration
-└── README.md
-```
+- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
+- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
+- **Routine Operations**: [operations/](../../../operations)
+- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)

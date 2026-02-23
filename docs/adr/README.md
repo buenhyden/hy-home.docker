@@ -47,14 +47,14 @@ cp templates/architecture/adr-template.md docs/adr/core-infra/0001-use-postgresq
 
 All ADRs MUST use `templates/architecture/adr-template.md`. The template includes:
 
-| Section | Purpose |
-| --- | --- |
-| **Title** | Short noun phrase describing the decision |
-| **Status** | Proposed, Accepted, Rejected, Deprecated, Superseded |
-| **Context** | Problem statement and background |
-| **Decision** | The change being proposed/made |
-| **Consequences** | Positive and negative impacts |
-| **Alternatives** | Options considered and why not chosen |
+| Section          | Purpose                                              |
+| ---------------- | ---------------------------------------------------- |
+| **Title**        | Short noun phrase describing the decision            |
+| **Status**       | Proposed, Accepted, Rejected, Deprecated, Superseded |
+| **Context**      | Problem statement and background                     |
+| **Decision**     | The change being proposed/made                       |
+| **Consequences** | Positive and negative impacts                        |
+| **Alternatives** | Options considered and why not chosen                |
 
 ## Naming Convention
 
@@ -98,8 +98,8 @@ When working with ADRs:
 
 ## Index of ADRs
 
-| Number | Title | Status | Date |
-| --- | --- | --- | --- |
-| - | *No ADRs yet* | - | - |
+| Number | Title         | Status | Date |
+| ------ | ------------- | ------ | ---- |
+| -      | _No ADRs yet_ | -      | -    |
 
 > Add entries to this index as ADRs are created.

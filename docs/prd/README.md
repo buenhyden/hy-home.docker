@@ -42,14 +42,14 @@ cp templates/product/prd-template.md docs/prd/payments/payment-integration-prd.m
 
 All PRDs MUST use `templates/product/prd-template.md`. The template includes:
 
-| Section | Purpose |
-| --- | --- |
-| **Product Overview** | What and why |
-| **Target Audience** | User personas |
-| **Success Metrics** | Measurable goals |
+| Section                     | Purpose                               |
+| --------------------------- | ------------------------------------- |
+| **Product Overview**        | What and why                          |
+| **Target Audience**         | User personas                         |
+| **Success Metrics**         | Measurable goals                      |
 | **User Stories & Features** | Requirements with acceptance criteria |
-| **Out of Scope** | Explicit exclusions |
-| **Dependencies** | External requirements |
+| **Out of Scope**            | Explicit exclusions                   |
+| **Dependencies**            | External requirements                 |
 
 ## User Story Format
 
@@ -73,6 +73,7 @@ Each user story must include:
 As a returning user, I want to log in with my email so that I can access my account quickly.
 
 **Acceptance Criteria**:
+
 - Email and password fields are visible on login page
 - "Forgot Password" link is available
 - Error message shown for invalid credentials
@@ -83,11 +84,11 @@ As a returning user, I want to log in with my email so that I can access my acco
 
 Define quantifiable and measurable success criteria as mandated by `[REQ-SPT-01] Explicit Success Metric Grounding`:
 
-| Metric Type | Example |
-| --- | --- |
-| **Business** | Increase conversion by 5% |
-| **User** | Reduce time-to-complete by 30% |
-| **Technical** | API response time < 200ms |
+| Metric Type   | Example                        |
+| ------------- | ------------------------------ |
+| **Business**  | Increase conversion by 5%      |
+| **User**      | Reduce time-to-complete by 30% |
+| **Technical** | API response time < 200ms      |
 
 ## Relationship to Other Documents
 
@@ -120,8 +121,8 @@ When working with PRDs:
 
 ## Index of PRDs
 
-| Document | Feature | Status | Last Updated |
-| --- | --- | --- | --- |
-| - | *No PRDs yet* | - | - |
+| Document | Feature       | Status | Last Updated |
+| -------- | ------------- | ------ | ------------ |
+| -        | _No PRDs yet_ | -      | -            |
 
 > Add entries to this index as PRDs are created.

@@ -8,10 +8,10 @@ An Architecture Requirements Document (ARD) captures the "how" of system archite
 
 ### ARD vs ADR
 
-| Document | Focus | Question Answered |
-| --- | --- | --- |
-| **ADR** | Decisions | "Why did we choose X?" |
-| **ARD** | Requirements | "What must the system do?" |
+| Document | Focus        | Question Answered          |
+| -------- | ------------ | -------------------------- |
+| **ADR**  | Decisions    | "Why did we choose X?"     |
+| **ARD**  | Requirements | "What must the system do?" |
 
 ## When to Create an ARD
 
@@ -40,14 +40,14 @@ cp templates/architecture/ard-template.md docs/ard/users/user-service-requiremen
 
 All ARDs MUST use `templates/architecture/ard-template.md`. The template includes:
 
-| Section | Purpose |
-| --- | --- |
-| **Introduction** | High-level overview |
-| **Business Goals** | Top-level objectives |
-| **Scope** | System boundaries |
-| **Functional Requirements** | Core technical capabilities |
+| Section                         | Purpose                                         |
+| ------------------------------- | ----------------------------------------------- |
+| **Introduction**                | High-level overview                             |
+| **Business Goals**              | Top-level objectives                            |
+| **Scope**                       | System boundaries                               |
+| **Functional Requirements**     | Core technical capabilities                     |
 | **Non-Functional Requirements** | Performance, scalability, reliability, security |
-| **Constraints** | External limitations |
+| **Constraints**                 | External limitations                            |
 
 ## Key Sections
 
@@ -97,8 +97,8 @@ When working with ARDs:
 
 ## Index of ARDs
 
-| Document | System | Last Updated |
-| --- | --- | --- |
-| - | *No ARDs yet* | - |
+| Document | System        | Last Updated |
+| -------- | ------------- | ------------ |
+| -        | _No ARDs yet_ | -            |
 
 > Add entries to this index as ARDs are created.

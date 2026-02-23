@@ -8,11 +8,15 @@ This document is the central index for operational readiness in repositories cre
 
 All operational procedures must use `templates/operations/runbook-template.md`. Below is the index of standard runbooks included in the `runbooks/` directory.
 
-| Runbook           | Status | Location                                 | Purpose                              |
-|-------------------|--------|------------------------------------------|--------------------------------------|
-| Deployment        | Active | `runbooks/deployment-runbook.md`         | Staging/Production release steps     |
-| Incident Response | Active | `runbooks/incident-response-runbook.md`  | SEV-1/SEV-2 incident mitigation      |
-| Monitoring        | Active | `runbooks/monitoring-runbook.md`         | Threshold checks and alerting config |
+| Runbook           | Status | Location                                 | Purpose                                     |
+| ----------------- | ------ | ---------------------------------------- | ------------------------------------------- |
+| **DB Continuity** | Active | `runbooks/patroni-split-brain.md`        | Recover from Patroni state/Etcd mismatch    |
+| **Auth**          | Active | `runbooks/auth-lockout.md`               | Restore Keycloak administrative lockouts    |
+| **Security**      | Active | `runbooks/vault-sealed.md`               | Unseal HashiCorp Vault after restarts       |
+| **Observability** | Active | `runbooks/observability-storage-full.md` | Clear full storage on Prometheus/Loki       |
+| **Data Storage**  | Active | `runbooks/minio-sync-failure.md`         | Recover MinIO from read-only crashes        |
+| **Gateway**       | Active | `runbooks/gateway-502-errors.md`         | Troubleshoot Traefik service unreachability |
+| **Messaging**     | Active | `runbooks/kafka-broker-offline.md`       | Correct KRaft quorum and broker node drops  |
 
 > **Note:** If a specific operational procedure (e.g. database migration, failover) is missing from this index, the DevOps Agent should proactively create a new runbook based on `templates/operations/runbook-template.md` and link it here.
 
@@ -41,6 +45,13 @@ All operational procedures must use `templates/operations/runbook-template.md`. 
 - **Data Backups**: All stateful data stores MUST have automated, encrypted daily backups at a minimum, verified monthly, adhering to `.agent/rules/0342-backup-restore.md`.
 - **Recovery Time Objective (RTO)**: Target < 4 hours for Tier-1 services.
 - **Recovery Point Objective (RPO)**: Target < 1 hour of potential data loss via WAL (Write-Ahead Logging) or continuous replication.
+
+### Deep Maintenance (WSL / Docker)
+
+If running on Windows/WSL2, active scaling of `.vhdx` dynamic disks is required.
+
+1. Run `docker system prune -a --volumes` to clear stopped layers.
+2. In PowerShell, compress WSL volume: `wsl --manage <distro> --set-sparse true` or using `diskpart` logic.
 
 ## 5. Operational Rules
 

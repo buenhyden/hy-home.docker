@@ -1,7 +1,7 @@
 # Service Runbook: [Service/Component Name]
 
-*Target Directory: `runbooks/services/<service-name>.md`*
-*Note: This is strictly for operational context. It MUST follow the deterministic rules in `0381-runbooks-oncall.md`.*
+_Target Directory: `runbooks/services/<service-name>.md`_
+_Note: This is strictly for operational context. It MUST follow the deterministic rules in `0381-runbooks-oncall.md`._
 
 ---
 
@@ -13,10 +13,10 @@
 
 ## 2. Dependencies
 
-| Dependency | Type | Impact if Down | Link to Runbook |
-| ---------- | ---- | -------------- | --------------- |
-| [e.g., PostgreSQL] | Database | Complete service failure | [Link] |
-| [e.g., Analytics API] | External | Non-critical feature degradation | [Link] |
+| Dependency            | Type     | Impact if Down                   | Link to Runbook |
+| --------------------- | -------- | -------------------------------- | --------------- |
+| [e.g., PostgreSQL]    | Database | Complete service failure         | [Link]          |
+| [e.g., Analytics API] | External | Non-critical feature degradation | [Link]          |
 
 ## 3. Observability & Dashboards
 
@@ -26,7 +26,7 @@
 
 ## 4. Alerts & Common Failures
 
-*Provide deterministic, checklist-based remediation steps for known alerts and common failures.*
+_Provide deterministic, checklist-based remediation steps for known alerts and common failures._
 
 ### Scenario A: [e.g., High Latency Alert / CPU Saturation]
 
@@ -44,7 +44,7 @@
 
 ## 5. Safe Rollback Procedure
 
-*Crucial: What do we do if a deployment or config change fails? Provide deterministic rollback commands.*
+_Crucial: What do we do if a deployment or config change fails? Provide deterministic rollback commands._
 
 - [ ] **Step 1**: [e.g., Identify the previous stable Git SHA]
 - [ ] **Step 2**: [e.g., Execute rollback via ArgoCD/GitHub Actions / CLI command]
@@ -56,7 +56,7 @@
 
 ## 7. Escalation Path
 
-*If the primary on-call cannot resolve the issue, follow this path.*
+_If the primary on-call cannot resolve the issue, follow this path._
 
 1. **Primary On-Call**: [PagerDuty Schedule / Team Slack]
 2. **Secondary Escalation**: [Secondary Pager / Tech Lead]
@@ -64,7 +64,7 @@
 
 ## 8. Verification Steps (Post-Fix)
 
-*How do we know the steps succeeded and the service is healthy again?*
+_How do we know the steps succeeded and the service is healthy again?_
 
 - [ ] [e.g., Error rate on dashboard drops below 1%]
 - [ ] [e.g., Synthetic monitoring (DataDog) reports 200 OK]

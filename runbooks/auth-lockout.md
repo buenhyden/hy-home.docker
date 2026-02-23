@@ -16,7 +16,7 @@ A lockout incident occurs when all administrative access to the Keycloak instanc
 
 ### Method 1: Bootstrapping a New Admin
 
-Because Keycloak utilizes a secondary Postgres cache for storing user tables (`keycloak-db` container), simply restarting it won't reset the `admin` account automatically if it has already been bootstrapped. However, you can force the creation of a *new* temporary admin user utilizing Docker execute commands.
+Because Keycloak utilizes a secondary Postgres cache for storing user tables (`keycloak-db` container), simply restarting it won't reset the `admin` account automatically if it has already been bootstrapped. However, you can force the creation of a _new_ temporary admin user utilizing Docker execute commands.
 
 1. SSH into the WSL / Host running the Docker daemon.
 2. Formulate the add user command via the `kc.sh` utility:

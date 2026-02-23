@@ -1,81 +1,10 @@
 # Prometheus
 
-Prometheus is an open-source systems monitoring and alerting toolkit. It collects metrics from configured targets at given intervals, evaluates rule expressions, displays the results, and can trigger alerts if some condition is observed to be true.
+> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
 
-## 🚀 Overview
+Please refer to the following global documentation directories for information regarding this service:
 
-- **Service**: `prometheus`
-- **Docker Image**: `prom/prometheus:v3.9.0`
-- **Port**: `9090` (Web UI/API)
-
-## ⚙️ Configuration
-
-The configuration files are located in the `config/` directory.
-
-### Setup
-
-1. **Copy the example configuration:**
-
-   ```bash
-   cp prometheus.yml.example prometheus.yml
-   cp alert_rules.yml.example alert_rules.yml
-   ```
-
-2. **Edit `prometheus.yml`:**
-
-   - Review `scrape_configs` to ensure all target services are correctly defined.
-   - If using external services or custom ports, update the `targets`.
-
-3. **Edit `alert_rules.yml`:**
-   - Define your recording rules and alerting rules here.
-
-### Scrape Jobs
-
-This configuration includes monitoring for various infrastructure components:
-
-- **Self**: Prometheus, Alertmanager, Cadvisor, Alloy.
-- **Databases**: PostgreSQL Cluster, Redis Cluster, MongoDB (Mng), CouchDB.
-- **Middleware**: Kafka, Traefik, HAProxy.
-- **Applications**: Keycloak, MinIO, N8n, Qdrant, Ollama.
-
-### Kafka Metrics (JMX Exporter)
-
-Kafka broker metrics are scraped from JMX Exporter endpoints on port `9404`.
-Grafana Kafka dashboards in this repo filter by `job="kafka"`, so the Prometheus scrape job **must** use:
-
-```yaml
-- job_name: "kafka"
-  scrape_interval: 30s
-  static_configs:
-    - targets: ["kafka-1:9404", "kafka-2:9404", "kafka-3:9404"]
-```
-
-If Kafka dashboards show no data while the brokers are healthy, check Prometheus targets:
-
-```bash
-wget -qO- 'http://localhost:9090/api/v1/query?query=up%7Bjob%3D%22kafka%22%7D'
-```
-
-Empty results typically mean the Kafka scrape job is named differently (for example, `kafka-broker-jmx`).
-
-## 🔔 Alerting
-
-- **Alertmanager**: Configured to send alerts to `alertmanager:9093`.
-- **Rules**: Loaded from `alert_rules.yml`.
-
-## 🔗 Integration
-
-- **Grafana**: Uses Prometheus as a primary data source for dashboards.
-- **Tempo**: Receives trace-related metrics via remote write (if configured).
-
-## 🛠 Directory Structure
-
-```text
-prometheus/
-├── config/
-│   ├── alert_rules.yml          # Alerting rules (Ignored by Git)
-│   ├── alert_rules.yml.example  # Template rules
-│   ├── prometheus.yml           # Main configuration (Ignored by Git)
-│   └── prometheus.yml.example   # Template configuration
-└── README.md
-```
+- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
+- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
+- **Routine Operations**: [operations/](../../../operations)
+- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)

@@ -2,14 +2,20 @@
 
 ## Necessity & Required Content
 
-This file is absolutely necessary to establish the operational handoffs between Human Developers and the Multi Sub-Agent System. While `AGENTS.md` defines what the AI does, this file defines how the *Human* manages the AI.
+This file is absolutely necessary to establish the operational handoffs between Human Developers and the Multi Sub-Agent System. While `AGENTS.md` defines what the AI does, this file defines how the _Human_ manages the AI.
 **What Must Be Written Here**:
 
 - Workflow handoff rules across Pre-Dev, During-Dev, and Post-Dev phases.
 - Conflict resolution tactics for AI Hallucinations.
 - Pointers to mandatory collaborative processes.
 
-## 0. Mandatory Project Kickoff
+## 0. Mandatory Project Kickoff & IDE Rules
+
+Before any major development begins, ensure your Environment allows seamless AI/Human workflows without locking files.
+
+- **Filesystem Lock Warning**: When collaborating with Claude IDE Plugins/Agents on Windows, you MUST connect using the `Remote - WSL` VS Code extension natively rooted in your Ubuntu distro. Modifying files across the OS boundary corrupts Agents.
+
+### Team Kickoff
 
 Before any major development begins, the team MUST establish working agreements.
 

@@ -15,7 +15,7 @@ In this phase, you are the conductor. The **Backend Coder Agent** and **Frontend
 While the AI writes the code, your role is to oversee the structure and testing layers.
 
 - **Check Test Coverage**: As per the engineering standards, all new code requires **> 80% test coverage**. Enforce this rule strictly upon the Coder Agents.
-- **Ensure TDD Accuracy**: The Coder Agents must write Unit & Integration tests matching the Given-When-Then criteria from the PRD/Spec. You must inspect that positive *and* negative edge cases (error handling) are tested.
+- **Ensure TDD Accuracy**: The Coder Agents must write Unit & Integration tests matching the Given-When-Then criteria from the PRD/Spec. You must inspect that positive _and_ negative edge cases (error handling) are tested.
 - **Reject Code Without Tests**: If an agent outputs business logic without unit or integration tests, command it to erase the logic until the test suite is built locally.
 
 ## 3. Human Local Verification (Pre-PR Gate)

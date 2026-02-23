@@ -1,17 +1,17 @@
 ---
-goal: "[One-sentence implementation goal]"
-version: "1.0"
-date_created: "YYYY-MM-DD"
-last_updated: "YYYY-MM-DD"
-owner: "[Team or owner]"
-status: "Planned"
-tags: ["implementation", "planning"]
-stack: "[node | python | react | nextjs | go | rust | java]"
+goal: '[One-sentence implementation goal]'
+version: '1.0'
+date_created: 'YYYY-MM-DD'
+last_updated: 'YYYY-MM-DD'
+owner: '[Team or owner]'
+status: 'Planned'
+tags: ['implementation', 'planning']
+stack: '[node | python | react | nextjs | go | rust | java]'
 ---
 
 # [Feature/Component] Implementation Plan
 
-*Target Directory: `specs/<feature>/plan.md`*
+_Target Directory: `specs/<feature>/plan.md`_
 
 ## 1. Context & Introduction
 
@@ -33,7 +33,7 @@ stack: "[node | python | react | nextjs | go | rust | java]"
 
 ## 4. Requirements & Constraints
 
-*Note: Use Machine-Readable Identifiers (e.g., `[REQ-001]`) for traceability.*
+_Note: Use Machine-Readable Identifiers (e.g., `[REQ-001]`) for traceability._
 
 - **Requirements:**
   - `[REQ-001]`: [Description]
@@ -41,24 +41,24 @@ stack: "[node | python | react | nextjs | go | rust | java]"
 
 ## 5. Work Breakdown (Tasks & Traceability)
 
-| Task | Description | Files Affected | Target REQ | Validation Criteria |
-| ---- | ----------- | -------------- | ---------- | ------------------- |
-| TASK-001 | [Action] | `path/to/file` | [REQ-001] | [Binary pass/fail condition] |
-| TASK-002 | [Action] | `path/to/file` | [REQ-002] | [Binary pass/fail condition] |
+| Task     | Description | Files Affected | Target REQ | Validation Criteria          |
+| -------- | ----------- | -------------- | ---------- | ---------------------------- |
+| TASK-001 | [Action]    | `path/to/file` | [REQ-001]  | [Binary pass/fail condition] |
+| TASK-002 | [Action]    | `path/to/file` | [REQ-002]  | [Binary pass/fail condition] |
 
 ## 6. Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| -- | ----- | ----------- | -------------------- | ------------- |
-| VAL-PLN-001 | Unit | [e.g., test isolated function] | `npm run test:unit` | All pass |
-| VAL-PLN-002 | Integration | [e.g., test API endpoint] | `pytest tests/api/` | All pass |
-| VAL-PLN-003 | Lint/Build | [e.g., type check] | `npm run build` | Zero errors |
+| ID          | Level       | Description                    | Command / How to Run | Pass Criteria |
+| ----------- | ----------- | ------------------------------ | -------------------- | ------------- |
+| VAL-PLN-001 | Unit        | [e.g., test isolated function] | `npm run test:unit`  | All pass      |
+| VAL-PLN-002 | Integration | [e.g., test API endpoint]      | `pytest tests/api/`  | All pass      |
+| VAL-PLN-003 | Lint/Build  | [e.g., type check]             | `npm run build`      | Zero errors   |
 
 ## 7. Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-| ---- | ------ | ---------- |
-| [Risk Title] | [High/Med/Low] | [Action] |
+| Risk         | Impact         | Mitigation |
+| ------------ | -------------- | ---------- |
+| [Risk Title] | [High/Med/Low] | [Action]   |
 
 ## 8. Completion Criteria
 

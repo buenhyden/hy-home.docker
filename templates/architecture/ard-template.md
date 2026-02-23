@@ -1,6 +1,6 @@
 # [System/Service Name] Architecture Reference Document (ARD)
 
-*Target Directory: `docs/ard/<system-name>-ard.md`*
+_Target Directory: `docs/ard/<system-name>-ard.md`_
 
 - **Status**: [Draft | Review | Approved]
 - **Owner**: [Name]
@@ -34,7 +34,7 @@ C4Context
 
 ## 4. Architecture & Tech Stack Decisions (Checklist)
 
-*Ensure all mandatory fields are addressed based on `ARCHITECTURE.md`.*
+_Ensure all mandatory fields are addressed based on `ARCHITECTURE.md`._
 
 ### 4.1 Component Architecture
 

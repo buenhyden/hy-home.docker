@@ -1,12 +1,12 @@
 ---
-title: "[API Name / Feature] API Specification"
-status: "Draft | Proposed | Approved | Deprecated"
-version: "v1.x.x"
-base_url: "https://api.example.com/v1"
-prd_reference: "[Link to PRD]"
-spec_reference: "[Link to Tech Spec]"
-adr_reference: "[Link to ADR]"
-tags: ["api", "contract", "specification"]
+title: '[API Name / Feature] API Specification'
+status: 'Draft | Proposed | Approved | Deprecated'
+version: 'v1.x.x'
+base_url: 'https://api.example.com/v1'
+prd_reference: '[Link to PRD]'
+spec_reference: '[Link to Tech Spec]'
+adr_reference: '[Link to ADR]'
+tags: ['api', 'contract', 'specification']
 ---
 
 # API Specification Template ([API Name / Feature])
@@ -95,7 +95,7 @@ Each API contract MUST include `specs/<feature>/api/changelog.md` using Keep a C
 
 **Resource Models**: Define the core domain entities used in this API using JSON schema or simple tables.
 
-*Example: Widget Resource*
+_Example: Widget Resource_
 
 ```json
 {

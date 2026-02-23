@@ -1,7 +1,7 @@
 # Postmortem: [INC-YYYYMMDD-XXX]
 
-*Target Directory: `runbooks/postmortems/YYYY-MM-DD-[incident-name].md`*
-*Note: This document follows the blameless postmortem culture defined in the Risk Management & Incident Response Standards.*
+_Target Directory: `runbooks/postmortems/YYYY-MM-DD-[incident-name].md`_
+_Note: This document follows the blameless postmortem culture defined in the Risk Management & Incident Response Standards._
 
 ## 1. Incident Summary
 
@@ -20,18 +20,18 @@
 
 ## 3. Timeline (UTC)
 
-*Log all critical phases from detection to resolution.*
+_Log all critical phases from detection to resolution._
 
-| Time | Event |
-| ---- | ----- |
+| Time  | Event                                                                         |
+| ----- | ----------------------------------------------------------------------------- |
 | HH:MM | **[Detection]** [How was the issue first noticed? (e.g., Alert, User report)] |
-| HH:MM | **[Investigation]** [Key diagnostic action or discovery] |
-| HH:MM | **[Mitigation]** [Action taken to stop the bleeding] |
-| HH:MM | **[Resolved]** [Service returned to normal healthy state] |
+| HH:MM | **[Investigation]** [Key diagnostic action or discovery]                      |
+| HH:MM | **[Mitigation]** [Action taken to stop the bleeding]                          |
+| HH:MM | **[Resolved]** [Service returned to normal healthy state]                     |
 
 ## 4. Root Cause Analysis (Five Whys)
 
-*Conduct a blameless "Five Whys" analysis to identify the fundamental systemic failure.*
+_Conduct a blameless "Five Whys" analysis to identify the fundamental systemic failure._
 
 1. **Why did the service fail?** -> [e.g., The database connection pool was exhausted.]
 2. **Why was the pool exhausted?** -> [e.g., A recent deploy introduced a query without a timeout.]
@@ -40,7 +40,7 @@
 5. **Why is load testing not run per-PR?** -> [e.g., The load test suite takes 45 minutes to execute.]
 
 - **Primary Root Cause**: [The final systemic issue identified above.]
-- **Detection Gaps**: [Why didn't monitoring catch this *before* it impacted users?]
+- **Detection Gaps**: [Why didn't monitoring catch this _before_ it impacted users?]
 
 ## 5. What Went Well
 
@@ -54,13 +54,13 @@
 
 ## 7. Action Items (Remediation)
 
-*Action items must be specific, assigned to an owner, and tracked to completion.*
+_Action items must be specific, assigned to an owner, and tracked to completion._
 
-| Action (Corrective/Preventive) | Owner | Priority | Ticket/Issue Link | Status |
-| ------------------------------ | ----- | -------- | ----------------- | ------ |
-| [e.g., Enforce 5s timeout on ORM global config] | [Name] | High | [Link] | Pending |
-| [e.g., Add correlation IDs to database query logs] | [Name] | Medium | [Link] | Pending |
-| [e.g., Create a 5-minute smoke load test for per-PR CI] | [Name] | Medium | [Link] | Pending |
+| Action (Corrective/Preventive)                          | Owner  | Priority | Ticket/Issue Link | Status  |
+| ------------------------------------------------------- | ------ | -------- | ----------------- | ------- |
+| [e.g., Enforce 5s timeout on ORM global config]         | [Name] | High     | [Link]            | Pending |
+| [e.g., Add correlation IDs to database query logs]      | [Name] | Medium   | [Link]            | Pending |
+| [e.g., Create a 5-minute smoke load test for per-PR CI] | [Name] | Medium   | [Link]            | Pending |
 
 ## 8. Follow-up Links & Artifacts
 

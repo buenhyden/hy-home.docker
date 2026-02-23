@@ -22,6 +22,7 @@ Alloy serves as the OpenTelemetry Collector and unified agent.
 ## 3. Storage Dependencies
 
 Loki and Tempo utilize **MinIO** (from `04-data`) as their primary object storage backend.
+
 > [!WARNING]
 > Loki and Tempo will fail to start or operate correctly if the `minio` container is not healthy. Ensure MinIO is provisioned with appropriate keys before deploying observability.
 

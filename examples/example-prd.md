@@ -15,16 +15,16 @@ The User Authentication System provides secure, passwordless authentication for 
 > This PRD is the single source of truth for the business/product checklist.
 > Complete the PRD sections referenced below and capture alignment notes before approval.
 
-| Item                  | Check Question                                                         | Required | Alignment Notes (Agreement) | PRD Section |
-| --------------------- | ---------------------------------------------------------------------- | -------- | --------------------------- | ----------- |
-| Vision & Goal         | Is the problem + business goal defined in one paragraph?               | Must     | Validated by John (PO)      | Section 1   |
-| Success Metrics       | Are the key success/failure metrics defined with quantitative targets? | Must     | Target 95% defined          | Section 3   |
-| Target Users          | Are specific primary personas and their pain points defined?           | Must     | SMB Owners & IT Admins      | Section 2   |
-| Use Case (GWT)        | Are acceptance criteria written in Given-When-Then format?             | Must     | All stories match GWT       | Section 4   |
-| Scope (In)            | Is the feature list included in this release clearly defined?          | Must     | 2 core features listed      | Section 4   |
-| Not in Scope          | Is what we will NOT build in this release explicitly listed?           | Must     | Passwords/MFA explicitly out| Section 5   |
-| Timeline & Milestones | Are PoC / MVP / Beta / v1.0 milestones dated?                          | Must     | Deferred to JIRA            | N/A         |
-| Risks & Compliance    | Are major risks, privacy, or regulatory constraints documented?        | Must     | GDPR compliance noted       | N/A         |
+| Item                  | Check Question                                                         | Required | Alignment Notes (Agreement)  | PRD Section |
+| --------------------- | ---------------------------------------------------------------------- | -------- | ---------------------------- | ----------- |
+| Vision & Goal         | Is the problem + business goal defined in one paragraph?               | Must     | Validated by John (PO)       | Section 1   |
+| Success Metrics       | Are the key success/failure metrics defined with quantitative targets? | Must     | Target 95% defined           | Section 3   |
+| Target Users          | Are specific primary personas and their pain points defined?           | Must     | SMB Owners & IT Admins       | Section 2   |
+| Use Case (GWT)        | Are acceptance criteria written in Given-When-Then format?             | Must     | All stories match GWT        | Section 4   |
+| Scope (In)            | Is the feature list included in this release clearly defined?          | Must     | 2 core features listed       | Section 4   |
+| Not in Scope          | Is what we will NOT build in this release explicitly listed?           | Must     | Passwords/MFA explicitly out | Section 5   |
+| Timeline & Milestones | Are PoC / MVP / Beta / v1.0 milestones dated?                          | Must     | Deferred to JIRA             | N/A         |
+| Risks & Compliance    | Are major risks, privacy, or regulatory constraints documented?        | Must     | GDPR compliance noted        | N/A         |
 
 ## 2. Target Audience
 

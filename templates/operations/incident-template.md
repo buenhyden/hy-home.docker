@@ -1,22 +1,22 @@
 # Active Incident: [INC-YYYYMMDD-XXX]
 
-*Target Directory: `runbooks/incidents/`*
-*Note: This document tracks the real-time response to a production event.*
+_Target Directory: `runbooks/incidents/`_
+_Note: This document tracks the real-time response to a production event._
 
 **Postmortem Link**: [To be linked here once `runbooks/postmortems/...` is created]
 
 ## 1. Incident Metadata
 
-| Field          | Value                                                         |
-| -------------- | ------------------------------------------------------------- |
-| Incident ID    | [INC-YYYYMMDD-XXX]                                            |
-| Severity       | [SEV-1 / SEV-2 / SEV-3] (See legend below)                    |
-| Status         | [Investigating / Identified / Mitigating / Resolved / Closed] |
-| Detection Time | [YYYY-MM-DD HH:MM UTC]                                        |
-| Primary Service| [Service Name]                                                |
-| Affected Deps  | [Upstream/Downstream systems experiencing impact]             |
-| Dashboard Link | [URL to primary monitoring dashboard]                         |
-| Runbook Link   | [URL to relevant service runbook in `runbooks/`]              |
+| Field           | Value                                                         |
+| --------------- | ------------------------------------------------------------- |
+| Incident ID     | [INC-YYYYMMDD-XXX]                                            |
+| Severity        | [SEV-1 / SEV-2 / SEV-3] (See legend below)                    |
+| Status          | [Investigating / Identified / Mitigating / Resolved / Closed] |
+| Detection Time  | [YYYY-MM-DD HH:MM UTC]                                        |
+| Primary Service | [Service Name]                                                |
+| Affected Deps   | [Upstream/Downstream systems experiencing impact]             |
+| Dashboard Link  | [URL to primary monitoring dashboard]                         |
+| Runbook Link    | [URL to relevant service runbook in `runbooks/`]              |
 
 > **Severity Legend**:
 >
@@ -34,7 +34,7 @@
 
 ## 3. Communication Cadence
 
-*Updates must be posted on the following interval: [every 15m / 30m / 60m]*
+_Updates must be posted on the following interval: [every 15m / 30m / 60m]_
 
 ### Latest Status Update
 
@@ -47,13 +47,13 @@
 
 ## 4. Timeline
 
-*Log all actions, discoveries, and state changes here during the incident. Include UTC times.*
+_Log all actions, discoveries, and state changes here during the incident. Include UTC times._
 
-| Time (UTC) | Actor  | Detail / Event               |
-| ---------- | ------ | ---------------------------- |
-| HH:MM      | -      | [Detection] Incident Declared|
-| HH:MM      | [Name] | [Action] Investigating logs at [link] |
-| HH:MM      | [Name] | [Mitigation] Restarting pods in deployment xyz |
+| Time (UTC) | Actor  | Detail / Event                                    |
+| ---------- | ------ | ------------------------------------------------- |
+| HH:MM      | -      | [Detection] Incident Declared                     |
+| HH:MM      | [Name] | [Action] Investigating logs at [link]             |
+| HH:MM      | [Name] | [Mitigation] Restarting pods in deployment xyz    |
 | HH:MM      | [Name] | [Status update] 500 errors dropping, but not zero |
 
 ## 5. End State & Handoff
@@ -63,11 +63,11 @@
 
 ### Follow-up Actions (Action Items)
 
-*List any temporary mitigations that need permanent fixes, or cleanup tasks required immediately after the incident.*
+_List any temporary mitigations that need permanent fixes, or cleanup tasks required immediately after the incident._
 
 - [ ] [e.g., Re-enable the rate limit rule we temporarily bypassed] - **Owner**: [Name]
 - [ ] [e.g., Create Jira ticket for database index missing] - **Owner**: [Name]
 
 - **Postmortem Required?**: [Yes/No]
 
-*If yes, DevOps Agent or Human must generate `runbooks/postmortems/YYYY-MM-DD-[incident-name].md` using the postmortem template and link it at the top of this file.*
+_If yes, DevOps Agent or Human must generate `runbooks/postmortems/YYYY-MM-DD-[incident-name].md` using the postmortem template and link it at the top of this file._

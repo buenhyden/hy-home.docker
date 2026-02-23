@@ -1,11 +1,11 @@
 ---
-title: "[Feature Name] Product Requirements Document"
-status: "Draft | Review | Approved | Deprecated"
-version: "v1.x.x"
-owner: "[Name]"
-stakeholders: "[Project Manager, Lead Engineer, Designer, etc.]"
-parent_epic: "[Link to Epic PRD]"
-tags: ["prd", "requirements", "product"]
+title: '[Feature Name] Product Requirements Document'
+status: 'Draft | Review | Approved | Deprecated'
+version: 'v1.x.x'
+owner: '[Name]'
+stakeholders: '[Project Manager, Lead Engineer, Designer, etc.]'
+parent_epic: '[Link to Epic PRD]'
+tags: ['prd', 'requirements', 'product']
 ---
 
 # Product Requirements Document (PRD)
@@ -16,8 +16,8 @@ tags: ["prd", "requirements", "product"]
 > **Stakeholders**: [Project Manager, Lead Engineer, Designer, etc.]
 > **Parent Epic**: [Link to Epic PRD] (Optional)
 
-*Target Directory: `docs/prd/<feature>-prd.md`*
-*Note: This document defines the What and Why. It must be approved before Spec generation.*
+_Target Directory: `docs/prd/<feature>-prd.md`_
+_Note: This document defines the What and Why. It must be approved before Spec generation._
 
 ---
 

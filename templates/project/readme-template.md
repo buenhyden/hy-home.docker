@@ -21,12 +21,12 @@ Brief paragraph explaining:
 
 ## Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| Language | {TypeScript / Python / Go / etc.} |
-| Framework | {Next.js / FastAPI / etc.} |
-| Database | {PostgreSQL / MongoDB / etc.} |
-| Deployment | {Docker / Kubernetes / etc.} |
+| Category   | Technology                        |
+| ---------- | --------------------------------- |
+| Language   | {TypeScript / Python / Go / etc.} |
+| Framework  | {Next.js / FastAPI / etc.}        |
+| Database   | {PostgreSQL / MongoDB / etc.}     |
+| Deployment | {Docker / Kubernetes / etc.}      |
 
 ## Prerequisites
 
@@ -89,23 +89,23 @@ This project follows an AI-Agent-managed, Spec-Driven Development structure:
 
 ## Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run test` | Run test suite |
-| `npm run lint` | Run linter |
-| `npm run format` | Format code |
+| Command          | Description              |
+| ---------------- | ------------------------ |
+| `npm run dev`    | Start development server |
+| `npm run build`  | Build for production     |
+| `npm run test`   | Run test suite           |
+| `npm run lint`   | Run linter               |
+| `npm run format` | Format code              |
 
 ## Configuration
 
 ### Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `DATABASE_URL` | Yes | Database connection string |
-| `API_KEY` | Yes | External API authentication key |
-| `NODE_ENV` | No | Environment (development/production) |
+| Variable       | Required | Description                          |
+| -------------- | -------- | ------------------------------------ |
+| `DATABASE_URL` | Yes      | Database connection string           |
+| `API_KEY`      | Yes      | External API authentication key      |
+| `NODE_ENV`     | No       | Environment (development/production) |
 
 ## Extensibility & Documentation
 

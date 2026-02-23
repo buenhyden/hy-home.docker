@@ -13,13 +13,13 @@ This directory is necessary to provide safe, isolated reference implementations 
 
 Examples must be completely self-contained and should not import live production databases or configurations.
 
-| Example File           | Template Used         | Purpose                                                  |
-| ---------------------- | --------------------- | -------------------------------------------------------- |
-| `example-adr.md`       | `adr-template.md`     | Architecture Decision Record for database selection      |
-| `example-prd.md`       | `prd-template.md`     | Product Requirements Document for authentication feature |
-| `example-runbook.md`   | `runbook-template.md` | Deployment runbook with rollback procedures              |
+| Example File         | Template Used         | Purpose                                                  |
+| -------------------- | --------------------- | -------------------------------------------------------- |
+| `example-adr.md`     | `adr-template.md`     | Architecture Decision Record for database selection      |
+| `example-prd.md`     | `prd-template.md`     | Product Requirements Document for authentication feature |
+| `example-runbook.md` | `runbook-template.md` | Deployment runbook with rollback procedures              |
 
-*(Also see `specs/example-spec.md` for a complete feature specification example)*
+_(Also see `specs/example-spec.md` for a complete feature specification example)_
 
 ## 3. General Guidelines
 
@@ -31,4 +31,4 @@ Examples must be completely self-contained and should not import live production
 
 While these serve as "examples" to guide format and structure, any AI agent deriving actual project templates or creating new documents from these MUST ensure full compliance with the latest `.agent/rules/`.
 
-- **Anti-Pattern**: Using outdated example configurations to override a strict security or operational rule defined in the `.agent/rules/`. Examples do *not* supersede official standards unless explicitly permitted by `docs/guides/`.
+- **Anti-Pattern**: Using outdated example configurations to override a strict security or operational rule defined in the `.agent/rules/`. Examples do _not_ supersede official standards unless explicitly permitted by `docs/guides/`.

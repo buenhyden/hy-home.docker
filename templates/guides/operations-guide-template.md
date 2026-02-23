@@ -1,7 +1,7 @@
 # Operations Blueprint (OPERATIONS.md)
 
-*Target Location: `OPERATIONS.md` (Project Root)*
-*Description: This document defines the project's operational baseline, including environments, deployment strategies, observability, and continuity plans, as per the `0301-operations-blueprint-standard.md` rule.*
+_Target Location: `OPERATIONS.md` (Project Root)_
+_Description: This document defines the project's operational baseline, including environments, deployment strategies, observability, and continuity plans, as per the `0301-operations-blueprint-standard.md` rule._
 
 ---
 
@@ -9,11 +9,11 @@
 
 Define the tiers of environments and the strict rules for promoting code between them.
 
-| Environment | Purpose | Promotion Gate / Rule |
-| ----------- | ------- | --------------------- |
-| **Development** | Sandbox for active feature testing | Auto-deploy from `develop` branch or PRs |
-| **Staging** | Pre-production validation matching prod | Manual approval from TL / QA sign-off |
-| **Production** | Live serving environment | Manual Gate after staging validation |
+| Environment     | Purpose                                 | Promotion Gate / Rule                    |
+| --------------- | --------------------------------------- | ---------------------------------------- |
+| **Development** | Sandbox for active feature testing      | Auto-deploy from `develop` branch or PRs |
+| **Staging**     | Pre-production validation matching prod | Manual approval from TL / QA sign-off    |
+| **Production**  | Live serving environment                | Manual Gate after staging validation     |
 
 ## 2. Deployment Strategy
 
@@ -45,10 +45,10 @@ Define how the application state will be monitored (Logs, Metrics, Alerts).
 
 ### Alerts & Routing
 
-| Alert Condition | Severity | Routing Destination |
-| --------------- | -------- | ------------------- |
-| API 5xx > 5% for 5m | SEV-1 | PagerDuty (Primary On-Call) |
-| Latency p95 > 2s | SEV-2 | Slack `#ops-alerts` |
+| Alert Condition     | Severity | Routing Destination         |
+| ------------------- | -------- | --------------------------- |
+| API 5xx > 5% for 5m | SEV-1    | PagerDuty (Primary On-Call) |
+| Latency p95 > 2s    | SEV-2    | Slack `#ops-alerts`         |
 
 ## 4. Continuity Plan (Backups & Disaster Recovery)
 

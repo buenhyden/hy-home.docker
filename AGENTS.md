@@ -46,18 +46,18 @@ The repository utilizes structured execution phases. Agents must understand thei
 - **Specialized Personas in this Phase**:
   - **UI/UX Designer**: UI/UX standards, A11y, Forms & Typography enforcement. (Rules: `0160-ux-research.md`, `1020-ui-ux-standard.md`, `1070-a11y-details.md`, `1088-web-fonts.md`, `1089-web-forms.md`)
   - **Frontend Developer**: General UI logic, Styling, Perf, & Browser APIs. (Rules: `1000-frontend-standard.md`, `1003-frontend-project-standard.md`, `1010-styling-standard.md`, `1030-htmx-standard.md`, `1040-frontend-networking.md`, `1050-data-visualization.md`, `1060-performance.md`, `1080-browser-api-standards.md`, `1081-web-components-standard.md`, `1082-cross-browser.md`, `1085-pwa-expert.md`, `1087-web-animation.md`, `1092-wasm-expert.md`, `1500-typescript.md`, `1600-advanced-typescript-patterns.md`, `1600-javascript-standard.md`)
-    - *Next.js Developer*: Server Components & App Router. (Rule: `1200-nextjs-standard.md`)
-    - *React Developer*: Modern React Hooks & State. (Rules: `1700-react-standard.md`, `1701-react-modern-js.md`)
+    - _Next.js Developer_: Server Components & App Router. (Rule: `1200-nextjs-standard.md`)
+    - _React Developer_: Modern React Hooks & State. (Rules: `1700-react-standard.md`, `1701-react-modern-js.md`)
   - **Backend Developer**: General API & Business Logic design. (Rule: `0900-backend-standard.md`)
-    - *Node.js Developer*: Async I/O & Express/Fastify patterns. (Rules: `0920-node-backend-standard.md`, `0931-kafka-standard.md`, `1500-typescript.md`, `1600-advanced-typescript-patterns.md`, `1600-javascript-standard.md`)
-    - *Python Developer*: PEP8, Async I/O, & Tooling. (Rule: `1100-python-standard.md`)
-    - *Go Developer*: Goroutine concurrency & Explicit error handling. (Rule: `1300-go-standard.md`)
-    - *Rust Developer*: Memory safety & Tokio concurrency. (Rule: `1400-rust-standard.md`)
+    - _Node.js Developer_: Async I/O & Express/Fastify patterns. (Rules: `0920-node-backend-standard.md`, `0931-kafka-standard.md`, `1500-typescript.md`, `1600-advanced-typescript-patterns.md`, `1600-javascript-standard.md`)
+    - _Python Developer_: PEP8, Async I/O, & Tooling. (Rule: `1100-python-standard.md`)
+    - _Go Developer_: Goroutine concurrency & Explicit error handling. (Rule: `1300-go-standard.md`)
+    - _Rust Developer_: Memory safety & Tokio concurrency. (Rule: `1400-rust-standard.md`)
   - **Mobile Developer**: General Native Apps UI & Mobile Perf. (Rules: `1800-mobile-performance-optimization.md`, `1800-mobile-security-best-practices.md`, `1800-mobile-testing-strategies.md`, `1800-mobile-ui-ux-best-practices.md`)
-    - *Android/Kotlin Developer*: Jetpack Compose & ViewModel flow. (Rule: `1800-android-kotlin-development.md`)
-    - *iOS/Swift Developer*: SwiftUI & Swift Concurrency. (Rule: `1800-ios-swift-development.md`)
-    - *React Native Developer*: Metro Bundler & Cross-platform React elements. (Rule: `1820-react-native.md`)
-    - *Flutter Developer*: Dart, Widgets, & State Management. (Rule: `1830-flutter.md`)
+    - _Android/Kotlin Developer_: Jetpack Compose & ViewModel flow. (Rule: `1800-android-kotlin-development.md`)
+    - _iOS/Swift Developer_: SwiftUI & Swift Concurrency. (Rule: `1800-ios-swift-development.md`)
+    - _React Native Developer_: Metro Bundler & Cross-platform React elements. (Rule: `1820-react-native.md`)
+    - _Flutter Developer_: Dart, Widgets, & State Management. (Rule: `1830-flutter.md`)
   - **Specialized Engineer**: Niche domain logic including Web3, Desktop (Electron/Tauri), Extensions, and Web Scraping. (Rules: `1430-rust-desktop-apps.md`, `9000-special-pillar.md`, `9010-web3-std.md`, `9020-desktop-app-std.md`, `9030-jquery-std.md`, `9031-web-scraping-std.md`, `9041-codemirror-std.md`, `9050-extension-development-standard.md`, `9090-special-misc.md`)
   - **Refactoring Lead**: Behavior-preserving code improvements. (Rule: `0013-refactoring-standard.md`)
   - **Migration Expert**: Safe Framework & dependency transitions. (Rule: `0014-code-migration-standard.md`)
@@ -109,7 +109,7 @@ This template is document-first and gate-driven, operating on a **Spec-Anchored*
 8. **Release & Deploy (Ops)**: Deploy using governed approvals and `OPERATIONS.md`. Use runbook release mechanics (version tagging, staged promotion).
 9. **Closeout**: Keep docs and controls aligned with shipped behavior.
 
-*Document Traceability*: AI Agents MUST ensure all documents in the lifecycle are cross-linked (**PRD <-> API Spec <-> Technical Spec <-> ADRs**).
+_Document Traceability_: AI Agents MUST ensure all documents in the lifecycle are cross-linked (**PRD <-> API Spec <-> Technical Spec <-> ADRs**).
 
 ## 4. Checklist Governance
 
@@ -130,6 +130,7 @@ These standards are the primary rule anchors for the 5 checklist areas we use in
 5. **AI (Phase 3 / Post-Dev)**: Audits the PR, drafts the CI update, and prepares the operational guide in `runbooks/`.
 
 Humans MUST maintain readable documentation of what the AI planned, verified, implemented, tested, and deployed. No lifecycle stage is considered complete without corresponding documentation evidence.
+
 > See `docs/manuals/collaboration-guide.md` and the Phase guides in `docs/guides/` for specific interpersonal collaboration guidelines.
 
 ## 6. Adoption Instructions

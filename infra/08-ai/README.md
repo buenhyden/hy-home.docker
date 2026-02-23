@@ -1,31 +1,10 @@
 # AI (08-ai)
 
-## Overview
+> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
 
-Local AI/LLM services. The stack is **optional** and enabled via the `ollama` profile. It provides model inference with **Ollama** and a web UI via **Open WebUI**.
+Please refer to the following global documentation directories for information regarding this service:
 
-## Services
-
-| Service    | Profile  | Path           | Notes                       |
-| ---------- | -------- | -------------- | --------------------------- |
-| Ollama     | `ollama` | `./ollama`     | LLM inference server        |
-| Open WebUI | `ollama` | `./open-webui` | Chat UI + RAG orchestration |
-
-## Run
-
-```bash
-docker compose --profile ollama up -d ollama open-webui
-```
-
-## Notes
-
-- Open WebUI expects Qdrant (`infra/04-data/qdrant`) for vector storage.
-- GPU usage requires NVIDIA container tooling on the host.
-
-## File Map
-
-| Path          | Description                  |
-| ------------- | ---------------------------- |
-| `ollama/`     | Ollama inference + exporter. |
-| `open-webui/` | Open WebUI service.          |
-| `README.md`   | Category overview.           |
+- **Architecture & Topology**: [docs/architecture](../../docs/architecture)
+- **Configuration & Setup Guides**: [docs/guides](../../docs/guides)
+- **Routine Operations**: [operations/](../../operations)
+- **Troubleshooting & Recovery**: [runbooks/](../../runbooks)

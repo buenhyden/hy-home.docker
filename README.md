@@ -13,8 +13,10 @@
 
 ## ✅ 준비 사항
 
-- Docker Engine / Docker Desktop
+- Docker Engine / Docker Desktop (WSL2 백엔드 사용 권장)
 - Docker Compose v2 (CLI 기반)
+- **Windows 개발 시**: 볼륨 I/O 성능 극대화를 위해 프로젝트 파일은 `/mnt/c/` 경로가 아닌 **WSL 내부 리눅스 파일 시스템(`~` 또는 `/home/user`)**에 클론해야 합니다.
+- **메모리 최적화**: `.wslconfig` 파일을 통해 WSL에 할당된 램이 전체 시스템의 50~80% 정도로 제한되어 있는지 확인하는 것을 권장합니다 (`memory=16GB` 등).
 
 ---
 
@@ -82,8 +84,8 @@ docker compose --profile ollama --profile airflow up -d
 기여하기 전에 다음 문서들을 꼭 확인해 주세요.
 
 - [**CONTRIBUTING.md**](CONTRIBUTING.md): 기여 가이드라인
-- [**Code of Conduct**](.github/CODE_OF_CONDUCT.md): 행동 강령
-- [**Architecture Guide**](ARCHITECTURE.md): 구조 이해
+- [**CODE_OF_CONDUCT.md**](CODE_OF_CONDUCT.md): 행동 강령
+- [**ARCHITECTURE.md**](ARCHITECTURE.md): 구조 이해
 
 ## 📝 License
 

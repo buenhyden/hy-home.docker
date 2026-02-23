@@ -16,20 +16,20 @@ When generating an ADR, ARD, PRD, Runbook, or Spec, you **MUST** read the exact 
 
 The templates are pre-written here to serve specific output locations. Each template dictates exactly what content must be filled in.
 
-| Template File                                | Destination Directory | Created By          | Required Content / Purpose               |
-|----------------------------------------------|-----------------------|---------------------|------------------------------------------|
-| `architecture/adr-template.md`               | `docs/adr/`           | Planner Agent       | Context, Options, and Decision (Why)     |
-| `architecture/ard-template.md`               | `docs/ard/`           | Planner Agent       | System Context, Container Diagrams (How) |
-| `product/prd-template.md`                    | `docs/prd/`           | Planner Agent       | Success Metrics, Epics, User Stories     |
-| `engineering/spec-template.md`               | `specs/`              | Planner Agent       | Step-by-step code implementation rules   |
-| `engineering/api-spec-template.md`           | `specs/<feature>/api/`| Planner Agent       | OpenAPI endpoints, params, response schemas|
-| `operations/runbook-template.md`             | `runbooks/`           | DevOps / Coder      | Bash commands, rollbacks, and triggers   |
-| `operations/postmortem-template.md`          | `docs/manuals/`       | DevOps / Human      | RCA, Five Whys, Timeline (SEV-1/2)       |
-| `guides/collaboration-guide-template.md`     | `docs/manuals/`       | Human / Planner     | SLAs, DoD, Branching Agreements          |
-| `guides/operations-guide-template.md`        | `docs/manuals/`       | DevOps              | Generic readiness and observability rules|
-| `guides/qa-security-guide-template.md`       | `docs/manuals/`       | QA / Sec Agent      | Security thresholds and test standards   |
-| `project/readme-template.md`                 | `/`                   | Planner Agent       | Root project value prop and badges       |
-| `project/plan-template.md`                   | `/`                   | Planner Agent       | High-level task milestones and stages    |
+| Template File                            | Destination Directory  | Created By      | Required Content / Purpose                  |
+| ---------------------------------------- | ---------------------- | --------------- | ------------------------------------------- |
+| `architecture/adr-template.md`           | `docs/adr/`            | Planner Agent   | Context, Options, and Decision (Why)        |
+| `architecture/ard-template.md`           | `docs/ard/`            | Planner Agent   | System Context, Container Diagrams (How)    |
+| `product/prd-template.md`                | `docs/prd/`            | Planner Agent   | Success Metrics, Epics, User Stories        |
+| `engineering/spec-template.md`           | `specs/`               | Planner Agent   | Step-by-step code implementation rules      |
+| `engineering/api-spec-template.md`       | `specs/<feature>/api/` | Planner Agent   | OpenAPI endpoints, params, response schemas |
+| `operations/runbook-template.md`         | `runbooks/`            | DevOps / Coder  | Bash commands, rollbacks, and triggers      |
+| `operations/postmortem-template.md`      | `docs/manuals/`        | DevOps / Human  | RCA, Five Whys, Timeline (SEV-1/2)          |
+| `guides/collaboration-guide-template.md` | `docs/manuals/`        | Human / Planner | SLAs, DoD, Branching Agreements             |
+| `guides/operations-guide-template.md`    | `docs/manuals/`        | DevOps          | Generic readiness and observability rules   |
+| `guides/qa-security-guide-template.md`   | `docs/manuals/`        | QA / Sec Agent  | Security thresholds and test standards      |
+| `project/readme-template.md`             | `/`                    | Planner Agent   | Root project value prop and badges          |
+| `project/plan-template.md`               | `/`                    | Planner Agent   | High-level task milestones and stages       |
 
 ## 4. Anti-Patterns & Boundaries
 

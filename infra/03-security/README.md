@@ -1,29 +1,10 @@
 # Security (03-security)
 
-## Overview
+> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
 
-Secrets and security services. Currently **Vault** is provided as an optional stack to centralize secrets, encryption, and PKI.
+Please refer to the following global documentation directories for information regarding this service:
 
-## Services
-
-| Service | Profile | Path      | Purpose                                |
-| ------- | ------- | --------- | -------------------------------------- |
-| Vault   | `vault` | `./vault` | Secret management, encryption, and PKI |
-
-## Run
-
-```bash
-docker compose --profile vault up -d vault
-```
-
-## Notes
-
-- Vault requires **initialization and unseal** before it can be used.
-- TLS assets can be mounted from `secrets/certs` for HTTPS.
-
-## File Map
-
-| Path        | Description               |
-| ----------- | ------------------------- |
-| `vault/`    | Vault service and config. |
-| `README.md` | Category overview.        |
+- **Architecture & Topology**: [docs/architecture](../../docs/architecture)
+- **Configuration & Setup Guides**: [docs/guides](../../docs/guides)
+- **Routine Operations**: [operations/](../../operations)
+- **Troubleshooting & Recovery**: [runbooks/](../../runbooks)

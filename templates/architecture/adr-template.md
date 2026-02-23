@@ -1,6 +1,6 @@
 # Architecture Decision Record (ADR)
 
-*Target Directory: `docs/adr/NNNN-short-title.md`*
+_Target Directory: `docs/adr/NNNN-short-title.md`_
 
 ## Title: [Short noun phrase describing the decision]
 

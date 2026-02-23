@@ -6,9 +6,9 @@ This directory is the absolute **Source of Truth** for the During-Development ph
 
 This directory is necessary because it forms the rigid, non-negotiable bridge between Human Intent (defined in `docs/`) and AI Execution.
 
-- **Spec-Driven Development Core**: By forcing all planned changes into concrete specifications here *before* coding begins, we eliminate AI hallucination, scope creep, and untested edge cases.
+- **Spec-Driven Development Core**: By forcing all planned changes into concrete specifications here _before_ coding begins, we eliminate AI hallucination, scope creep, and untested edge cases.
 - **Traceability**: It translates high-level Product Requirements (PRDs) and Architecture Designs (ARDs) into deterministic coding instructions mapping directly to file paths.
-- **QA Gateway**: It provides a concrete target for AI Coder Agents to implement against, establishing exactly what Unit and Integration tests *must* be created to pass CI/CD.
+- **QA Gateway**: It provides a concrete target for AI Coder Agents to implement against, establishing exactly what Unit and Integration tests _must_ be created to pass CI/CD.
 
 ## 2. Required Content and Templates
 
@@ -26,7 +26,7 @@ Every specification created in this folder MUST be instantiated from the predefi
 Coder Agents (Backend/Frontend) are governed by `.agent/workflows/` to explicitly refuse writing executable code unless a corresponding, human-approved specification exists in this folder.
 
 - **Approval Gate**: Specs MUST be explicitly approved by a Human Developer. The gate MUST validate that all `ARCHITECTURE.md` items with Priority `**필수**` are satisfied.
-- **Drift Prevention (Reverse Documentation)**: If during implementation, technical limitations force a deviation from the plan, Coder Agents MUST update the `spec.md` to match reality *before* finalizing the Pull Request.
+- **Drift Prevention (Reverse Documentation)**: If during implementation, technical limitations force a deviation from the plan, Coder Agents MUST update the `spec.md` to match reality _before_ finalizing the Pull Request.
 
 ## 4. Relation to Other Ecosystems (No Overlap)
 

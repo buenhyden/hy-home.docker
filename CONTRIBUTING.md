@@ -26,8 +26,13 @@ We enforce strict Quality Assurance metrics. Before you pull request, you must s
 
 1. **Coverages**: The PR must meet or maintain the project coverage baseline (**> 80%**).
 2. **Test Layers**: Are Unit and Integration tests functioning as defined by the Spec and `.agent/rules/0700-testing-and-qa-standard.md`?
-3. **Linting**: No static typing or linting errors allowed.
-4. **Agent Rule Compliance**: All code MUST comply with the organizational standards in `.agent/rules/` (primarily `0140-engineering-excellence.md` and `2220-secure-coding.md`). The Reviewer Agent strictly evaluates PRs against these rules.
+3. **Linting**: No static typing or linting errors allowed. **Markdown files MUST respect `MD001` to `MD051` rules** (no jumping header levels).
+4. **Agent Rule Compliance**: All code MUST comply with the organizational standards in `.agent/rules/`.
+
+### 3.1 Infra Contribution Constraints
+
+- Do not run `docker compose` or Git directly from `/mnt/c/`. Execute everything within the WSL2 ext4 filesystem.
+- When creating a new service in `infra/`, DO NOT add a local `README.md`. Use the centralized `docs/`, `operations/`, or `runbooks/` routes.
 
 ## 4. Pull Request Process
 

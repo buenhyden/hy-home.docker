@@ -32,7 +32,7 @@ docker exec -it kafka-1 kafka-topics \
   --partitions 6
 ```
 
-*Note: You cannot decrease partitions natively in Kafka.*
+_Note: You cannot decrease partitions natively in Kafka._
 
 ## 3. Consumer Group Interventions
 

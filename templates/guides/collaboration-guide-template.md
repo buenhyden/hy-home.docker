@@ -1,7 +1,7 @@
 # Development Process & Collaboration Guide
 
-*Target Directory: `docs/manuals/collaboration-guide.md`*
-*Description: This document defines the team's working agreements, development processes, and collaboration SLAs as per the 0202-collaboration-and-sla-standard.md rules.*
+_Target Directory: `docs/manuals/collaboration-guide.md`_
+_Description: This document defines the team's working agreements, development processes, and collaboration SLAs as per the 0202-collaboration-and-sla-standard.md rules._
 
 ---
 
@@ -9,22 +9,22 @@
 
 Explicitly define who makes the final calls to prevent deadlocks.
 
-| Role | Name | Responsibilities |
-| ---- | ---- | ---------------- |
-| **Product Owner (PO)** | [Name] | Business requirements, priority, final feature sign-off |
-| **Tech Lead (TL)** | [Name] | Architecture decisions, code review final say, technical dispute resolution |
-| **QA Lead** | [Name] | Test strategy, release sign-off |
+| Role                   | Name   | Responsibilities                                                            |
+| ---------------------- | ------ | --------------------------------------------------------------------------- |
+| **Product Owner (PO)** | [Name] | Business requirements, priority, final feature sign-off                     |
+| **Tech Lead (TL)**     | [Name] | Architecture decisions, code review final say, technical dispute resolution |
+| **QA Lead**            | [Name] | Test strategy, release sign-off                                             |
 
 ## 2. Communication Channels & SLAs
 
 Define how the team communicates and what the expected response times are to prevent flow-breaking delays.
 
-| Channel | Purpose | Expected Response SLA |
-| ------- | ------- | --------------------- |
-| **Slack/Teams - #project-channel** | Daily syncs, quick questions | `< 4 hours` |
-| **GitHub Pull Requests** | Code Review & Feedback | `< 24 business hours` |
-| **Jira / GitHub Issues** | Task tracking, AC discussions | `< 24 business hours` |
-| **Urgent Incidents (Pager)** | P0/SEV-1 Production Downs | `< 15 minutes` |
+| Channel                            | Purpose                       | Expected Response SLA |
+| ---------------------------------- | ----------------------------- | --------------------- |
+| **Slack/Teams - #project-channel** | Daily syncs, quick questions  | `< 4 hours`           |
+| **GitHub Pull Requests**           | Code Review & Feedback        | `< 24 business hours` |
+| **Jira / GitHub Issues**           | Task tracking, AC discussions | `< 24 business hours` |
+| **Urgent Incidents (Pager)**       | P0/SEV-1 Production Downs     | `< 15 minutes`        |
 
 ## 3. Development Methodology
 
@@ -72,7 +72,7 @@ Define how the team communicates and what the expected response times are to pre
 
 ## 7. Collaboration Checklist (Initial Setup)
 
-*Ensure all statements below are True before starting the project.*
+_Ensure all statements below are True before starting the project._
 
 - [ ] We have defined the final technical decision-maker.
 - [ ] We have agreed upon communication SLAs for PR reviews.

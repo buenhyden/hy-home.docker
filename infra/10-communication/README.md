@@ -1,24 +1,10 @@
 # Communication (10-communication)
 
-## Overview
+> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
 
-Communication-related services. Currently this directory hosts **MailHog** for development/testing and an inactive Stalwart blueprint.
+Please refer to the following global documentation directories for information regarding this service:
 
-## Services
-
-| Service | Profile | Path     | Notes                     |
-| ------- | ------- | -------- | ------------------------- |
-| MailHog | `mail`  | `./mail` | SMTP test server + web UI |
-
-## Run
-
-```bash
-docker compose --profile mail up -d mailhog
-```
-
-## File Map
-
-| Path        | Description                                  |
-| ----------- | -------------------------------------------- |
-| `mail/`     | MailHog stack and commented Stalwart config. |
-| `README.md` | Category overview.                           |
+- **Architecture & Topology**: [docs/architecture](../../docs/architecture)
+- **Configuration & Setup Guides**: [docs/guides](../../docs/guides)
+- **Routine Operations**: [operations/](../../operations)
+- **Troubleshooting & Recovery**: [runbooks/](../../runbooks)
