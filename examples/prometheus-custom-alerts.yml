@@ -1,0 +1,47 @@
+groups:
+  - name: infra.rules
+    rules:
+      # Alert for high CPU usage across containers
+      - alert: HighCpuUsage
+        expr: sum(rate(container_cpu_usage_seconds_total[5m])) by (container_name) >
+          0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'High CPU Usage in {{ $labels.container_name }}'
+          description: 'Container {{ $labels.container_name }} is using more than 80% CPU
+            for the last 5 minutes.'
+
+      # Alert for PostgreSQL Node Down
+      - alert: PostgresNodeDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'PostgreSQL node {{ $labels.instance }} is down'
+          description: 'Postgres exporter cannot run a test query on {{ $labels.instance
+            }}.'
+
+      # Alert for Patroni Split Brain
+      - alert: PatroniMissingLeader
+        expr: sum(patroni_master) == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'No Patroni Leader'
+          description: 'The Patroni cluster does not have an active leader node.'
+
+      # Alert for Loki Storage Maxing Out
+      - alert: LokiStorageHigh
+        expr: (sum(node_filesystem_size_bytes{mountpoint="/loki"}) -
+          sum(node_filesystem_free_bytes{mountpoint="/loki"})) /
+          sum(node_filesystem_size_bytes{mountpoint="/loki"}) * 100 > 90
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: 'Loki Storage is 90% full'
+          description: 'Loki data volume is running out of disk space.'

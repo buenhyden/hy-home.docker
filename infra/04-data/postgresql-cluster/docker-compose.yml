@@ -6,6 +6,9 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
+x-restart: &default-restart
+  restart: unless-stopped
+
 volumes:
   pg0-data:
     driver: local
@@ -57,6 +60,7 @@ services:
           memory: 128M
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-1
+    user: '1000:1000'
     command:
       - /usr/local/bin/etcd
       - --name=etcd-1
@@ -82,7 +86,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.50
     logging: *default-logging
-    restart: unless-stopped
+    <<: *default-restart
 
   etcd-2:
     deploy:
@@ -93,6 +97,7 @@ services:
           memory: 128M
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-2
+    user: '1000:1000'
     command:
       - /usr/local/bin/etcd
       - --name=etcd-2
@@ -118,7 +123,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.51
     logging: *default-logging
-    restart: unless-stopped
+    <<: *default-restart
 
   etcd-3:
     deploy:
@@ -129,6 +134,7 @@ services:
           memory: 128M
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-3
+    user: '1000:1000'
     command:
       - /usr/local/bin/etcd
       - --name=etcd-3
@@ -154,7 +160,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.52
     logging: *default-logging
-    restart: unless-stopped
+    <<: *default-restart
 
   # ##############################################################
   # Patroni + PostgreSQL 17 노드 3개
@@ -209,7 +215,7 @@ services:
         condition: service_healthy
       etcd-3:
         condition: service_healthy
-    restart: unless-stopped
+    <<: *default-restart
 
   pg-1:
     deploy:
@@ -261,7 +267,7 @@ services:
         condition: service_healthy
       etcd-3:
         condition: service_healthy
-    restart: unless-stopped
+    <<: *default-restart
 
   pg-2:
     deploy:
@@ -314,7 +320,7 @@ services:
         condition: service_healthy
       etcd-3:
         condition: service_healthy
-    restart: unless-stopped
+    <<: *default-restart
 
   # ##############################################################
   # HAProxy 라우터 (Writer/Reader 분리)
@@ -353,7 +359,7 @@ services:
         condition: service_healthy
       pg-2:
         condition: service_healthy
-    restart: unless-stopped
+    <<: *default-restart
     logging: *default-logging
 
   pg-cluster-init:
@@ -422,7 +428,7 @@ services:
         # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-0:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
-    restart: unless-stopped
+    <<: *default-restart
     healthcheck:
       test:
         [
@@ -459,7 +465,7 @@ services:
         # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-1:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
-    restart: unless-stopped
+    <<: *default-restart
     healthcheck:
       test:
         [
@@ -496,7 +502,7 @@ services:
         # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-2:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
-    restart: unless-stopped
+    <<: *default-restart
     healthcheck:
       test:
         [
