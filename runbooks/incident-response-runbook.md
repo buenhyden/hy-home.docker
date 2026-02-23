@@ -6,8 +6,9 @@ Standard response process for production incidents with clear roles and cadence.
 
 ## 2. Prerequisites
 
-- Access Requirements: Incident channel, service dashboards, deployment controls
-- Tools: Incident tracker/document, alerting and observability tools
+- Access Requirements: Incident channel (`Slack`), deployment controls.
+- Tools: Operational dashboards (Grafana via `https://dashboard.${DEFAULT_URL}`), Log aggregation (Loki).
+- **Network Notice**: Ensure you are authenticated through the Traefik/OAuth2 Proxy layer to access diagnostic endpoints during an outage. If SSO is down, utilize internal Docker DNS (`docker exec -it ...`).
 
 ## 3. Execution Steps
 

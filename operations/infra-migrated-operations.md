@@ -197,7 +197,7 @@ Use the **Internal Address** `http://influxdb:9999` or the **Static IP** `http:/
 From inside the network:
 
 ```bash
-valkey-cli -h 172.19.0.70 -a $(cat /run/secrets/valkey_password)
+valkey-cli -h mng-valkey -a $(cat /run/secrets/valkey_password)
 ```
 
 ### 2. Connecting to PostgreSQL
@@ -219,7 +219,7 @@ docker exec -it mng-pg psql -U postgres
 1. Go to `https://redisinsight.${DEFAULT_URL}`.
 2. Login via SSO.
 3. Add Database:
-   - **Host**: `172.19.0.70` (or `mng-valkey`)
+   - **Host**: `mng-valkey`
    - **Port**: `6379`
    - **Username**: (Empty)
    - **Password**: Copy from `.env` or secret.

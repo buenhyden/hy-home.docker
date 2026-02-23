@@ -1,0 +1,32 @@
+# Example Application Docker Compose (OTLP integration)
+
+# This is an example of how a custom Go/Node/Python app would connect
+# to the infra stack, particularly Traefik and Grafana Alloy.
+
+name: example-app
+
+networks:
+  infra_net:
+    external: true
+
+services:
+  api:
+    image: node:20-alpine
+    container_name: example-app-api
+    networks:
+      - infra_net
+    environment:
+      # OTLP Configuration pointing to the Alloy collector
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4317
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      # Standard environment variables
+      - NODE_ENV=production
+    command: >
+      sh -c "npm install && node server.js"
+    labels:
+      # Traefik Routing Configuration
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.example-api.rule=Host(`api.local.test`)'
+      - 'traefik.http.routers.example-api.entrypoints=websecure'
+      - 'traefik.http.routers.example-api.tls=true'
+      - 'traefik.http.services.example-api.loadbalancer.server.port=8080'
