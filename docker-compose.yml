@@ -46,6 +46,20 @@ secrets:
     file: ./secrets/traefik_basicauth_password.txt
   traefik_opensearch_basicauth_password:
     file: ./secrets/traefik_opensearch_basicauth_password.txt
+  smtp_username:
+    file: ./secrets/smtp_username.txt
+
+  # ── InfluxDB ─────────────────────────────────────────────
+  influxdb_password:
+    file: ./secrets/influxdb_password.txt
+  influxdb_api_token:
+    file: ./secrets/influxdb_api_token.txt
+
+  # ── CouchDB ──────────────────────────────────────────────
+  couchdb_password:
+    file: ./secrets/couchdb_password.txt
+  couchdb_cookie:
+    file: ./secrets/couchdb_cookie.txt
 
   # ── Auth ────────────────────────────────────────────────
   keycloak_db_password:

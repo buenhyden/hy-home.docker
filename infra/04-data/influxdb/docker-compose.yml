@@ -43,10 +43,17 @@ services:
       - INFLUXDB_DB=${INFLUXDB_DB_NAME}
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_USERNAME}
-      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD}
       - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
       - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_API_TOKEN}
+    command: >
+      bash -c "
+      export DOCKER_INFLUXDB_INIT_PASSWORD=$$(cat /run/secrets/influxdb_password) &&
+      export DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$$(cat /run/secrets/influxdb_api_token) &&
+      exec influxd
+      "
+    secrets:
+      - influxdb_password
+      - influxdb_api_token
     # ports:
     #   - ${INFLUXDB_HOST_PORT}:${INFLUXDB_PORT}
     volumes:
@@ -62,3 +69,9 @@ services:
       - 'traefik.http.routers.influxdb.tls=true'
       - 'traefik.http.services.influxdb.loadbalancer.server.port=${INFLUXDB_PORT}'
     logging: *default-logging
+
+secrets:
+  influxdb_password:
+    external: true
+  influxdb_api_token:
+    external: true
