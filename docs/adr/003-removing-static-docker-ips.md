@@ -15,7 +15,7 @@ While static IPs simplified external routing in legacy designs, in modern Docker
 
 We will remove all explicit `ipv4_address` assignments across the `docker-compose.yml` topography.
 
-Instead, we will rely exclusively on **Docker Internal DNS**. Services will communicate by addressing each other via their explicit `container_name` or defined `aliases` (e.g., `mng-pg:5432`).
+Instead, we will rely exclusively on **Docker Internal DNS**. Services will communicate by addressing each other via their explicit `container_name` or defined `aliases` (e.g., `mng-pg:5432`). Detailed network bindings for each service are documented in the [Technical Context Hub](../context/README.md).
 
 ## Consequences
 

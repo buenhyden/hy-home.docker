@@ -99,6 +99,8 @@ docs/prd/ (What - Product Requirements)
       ↓
 docs/ard/ (How - Architecture Requirements)
       ↓
+docs/guides/ (Lifecycle - Delivery Workflows)
+      ↓
 specs/ (Implementation Specifications)
 ```
 

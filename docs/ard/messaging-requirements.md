@@ -2,7 +2,7 @@
 
 ## Overview
 
-Event streaming and messaging services mapped under `infra/05-messaging`. **Kafka** provides the core streaming platform for high-throughput event processing. **ksqlDB** is available for real-time stream SQL processing. **RabbitMQ** provides a robust AMQP-based message broker for reliable asynchronous communication.
+Event streaming and messaging services mapped under `infra/05-messaging`. **Kafka** provides the core streaming platform for high-throughput event processing (see [Kafka KRaft Guide](../context/05-messaging/kafka-kraft-guide.md)). **ksqlDB** is available for real-time stream SQL processing. **RabbitMQ** provides a robust AMQP-based message broker (see [RabbitMQ Guide](../context/05-messaging/rabbitmq-guide.md)).
 
 ### RabbitMQ
 

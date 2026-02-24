@@ -21,6 +21,11 @@ Please fill out the following agreed-upon points before initiating significant d
 | **Communication Channels**    | Are official channels (Slack/Teams/Mail) and expected response SLAs established?        | **Mandatory** |                    |
 | **Decision Making**           | Is the final decision-making structure (PO, Tech Lead) for technical disputes defined?  | **Mandatory** |                    |
 
-## 2. Additional Collaboration Guidelines
+## 2. Platform Lifecycle Integration
 
-[Add any project-specific coding conventions, meeting schedules, or escalation paths here]
+This project follows a strict AI-assisted delivery lifecycle. Developers and Agents must adhere to the high-level guides in `docs/guides/`:
+
+- [**Pre-Development**](../guides/pre-development-guide.md): Requirements and Specs.
+- [**During-Development**](../guides/during-development-guide.md): Standards and Implementation.
+- [**Post-Development**](../guides/post-development-guide.md): Review and Deployment.
+- [**Architecture Strategy**](../guides/arch-optimization-strategy.md): Modernization and decoupling.

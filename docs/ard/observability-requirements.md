@@ -2,7 +2,7 @@
 
 ## Overview
 
-A comprehensive, enterprise-grade observability stack based on the **LGTM** pattern (Loki, Grafana, Tempo, Mimir/Prometheus). This stack provides full-spectrum visibility into infrastructure and application health, utilizing **Grafana Alloy** as a unified telemetry collector for metrics, logs, and distributed traces.
+A comprehensive, enterprise-grade observability stack based on the **LGTM** pattern (Loki, Grafana, Tempo, Mimir/Prometheus). This stack provides full-spectrum visibility into infrastructure and application health, utilizing **Grafana Alloy** as a unified telemetry collector. Detailed implementation details can be found in the [LGTM Stack Blueprint](../context/06-observability/lgtm-stack-blueprint.md).
 
 ```mermaid
 graph TB

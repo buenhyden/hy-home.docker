@@ -12,17 +12,17 @@ The `infra` directory hosts the core operational tooling for the platform. It is
 
 The infrastructure is broken down into tiered capabilities:
 
-- `01-gateway`: Edge routing and load balancing via Traefik.
-- `02-auth`: Authentication providers (Keycloak, OAuth2 Proxy).
-- `03-security`: Secrets management and hardening (Vault).
-- `04-data`: Stateful stores (PostgreSQL Patroni cluster, MinIO, Redis/Valkey, Qdrant).
-- `05-messaging`: Async bus and streaming (Kafka).
-- `06-observability`: Telemetry (Prometheus, Loki, Tempo, Grafana, Alloy).
-- `07-workflow` / `08-ai` / `09-tooling` / `10-communication`: Extension tools for application requirements.
+- [**01-Gateway**](../context/README.md#01-gateway): Edge routing and load balancing via Traefik.
+- [**02-Auth**](../context/README.md#02-authentication--communication): Authentication providers (Keycloak, OAuth2 Proxy).
+- [**03-Security**](../context/README.md#03-security): Secrets management and hardening (Vault).
+- [**04-Data**](../context/README.md#04-data): Stateful stores (PostgreSQL cluster, MinIO, Valkey, Qdrant).
+- [**05-Messaging**](../context/README.md#05-messaging): Async bus and streaming (Kafka, RabbitMQ).
+- [**06-Observability**](../context/README.md#06-observability): Telemetry (Prometheus, Loki, Tempo, Grafana, Alloy).
+- [**07-Workflow**](../context/README.md#07-workflow) / [**08-AI**](../context/README.md#08-ai-capabilities) / [**09-Tooling**](../context/README.md#09-tooling): Extension tools.
 
 ## 3. Network Architecture
 
-The environment relies on the `infra_net` custom bridge network with the IP space defined as `172.19.0.0/16`. Services explicitly define static IPv4 assignments within this subnet for predictability during node recovery.
+The environment relies on the `infra_net` custom bridge network. As per [ADR-003](../adr/003-removing-static-docker-ips.md), we avoid static IPv4 assignments to ensure portability and avoid boot-time race conditions.
 
 > [!IMPORTANT]
 > Do not expose internal ports directly to the host (`ports: "5432:5432"`) unless absolutely necessary. Inter-service communication MUST occur via the `infra_net` utilizing Docker DNS names (e.g., `pg-router:5000` or `prometheus:9090`).

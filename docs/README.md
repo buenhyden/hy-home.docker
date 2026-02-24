@@ -13,23 +13,36 @@ This directory exists to permanently store the "Why" and "What" of the system. I
 
 Each sub-directory serves a distinct, non-overlapping purpose. Documents created here MUST use their respective templates from the `templates/` folder.
 
-- `adr/` — **Architecture Decision Records**.
-  - **Purpose**: Why major technical choices were made.
-  - **Template**: `templates/architecture/adr-template.md`.
-- `ard/` — **Architecture Reference Documents**.
-  - **Purpose**: Global "How it works" diagrams and domain models.
-  - **Index**: [ARD Index](docs/ard/README.md).
-  - **Files**: [Infra Overview](docs/ard/infra-overview.md), [AI](docs/ard/ai-requirements.md), [Messaging](docs/ard/messaging-requirements.md).
-- `prd/` — **Product Requirements Documents**.
-  - **Purpose**: What we be building (Metrics, GWT Scenarios).
-  - **Template**: `templates/product/prd-template.md`.
-- `guides/` — **Platform Lifecycle & Workflows**.
-  - **Purpose**: Global "How to develop" guidelines and migration history.
-  - **Index**: [Guides Index](guides/README.md).
+## 🗺️ Documentation Navigator (Role-Based)
+
+### 🏗️ For Architects
+
+- **Rationale**: [Architecture Decisions (ADR)](adr/README.md) — The "Why" behind the stack.
+- **Constraints**: [Architecture Requirements (ARD)](ard/README.md) — NFRs and boundaries.
+- **Optimization**: [Architecture Optimization Strategy](guides/arch-optimization-strategy.md).
+
+### 💻 For Developers
+
+- **Lifecycle**: [Feature Delivery Roadmap](guides/README.md) — Pre, During, and Post development guides.
+- **Blueprints**: [Technical Context Hub](context/README.md) — Service-specific implementation details.
+- **Prerequisites**: [Product Requirements (PRD)](prd/README.md).
+
+### 🛠️ For DevOps & Operators
+
+- **Incident Hub**: [Runbooks Catalog](../runbooks/README.md) — Actionable CLI guides.
+- **Central Index**: [OPERATIONS.md](../OPERATIONS.md) — Operational readiness and strategy.
+- **Configuration**: [Infrastructure Lifecycle](context/core/infra-lifecycle-ops.md).
+
+---
+
+## Folder Taxonomy
+
+- [**`adr/`**](adr/README.md) — **Architecture Decision Records**.
+- [**`ard/`**](ard/README.md) — **Architecture Reference Documents**.
+- [**`prd/`**](prd/README.md) — **Product Requirements Documents**.
 - [**`context/`**](context/README.md) — **Technical Blueprints & Service Setup**.
-  - **Purpose**: Service-specific operational architecture, technical specs, and bootstrapping logic.
-- `manuals/` — **Collaboration & Standards**.
-  - **Purpose**: SLA, A11y, and non-technical governance.
+- [**`guides/`**](guides/README.md) — **Platform Lifecycle & Workflows**.
+- [**`manuals/`**](manuals/README.md) — **Collaboration & Standards**.
 
 ## 3. Explicit Boundaries & Anti-Patterns
 
