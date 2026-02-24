@@ -247,6 +247,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Delete VERSION file and clear CHANGELOG.md content.
 - Refresh Grafana dashboards by adding new, removing old, and modifying an existing one, and update docker-compose configuration.
 - **docs:** Auto-format markdown docs and finalize MD001 syntax correction
+- Automate changelog generation using git-cliff via a new GitHub Actions workflow.
 
 ### Refactor
 
