@@ -34,6 +34,27 @@ jobs:
           echo "dummy" > secrets/minio_root_password.txt
           echo "dummy" > secrets/minio_app_user_password.txt
           echo "dummy" > secrets/valkey_password.txt
+          echo "dummy" > secrets/smtp_username.txt
+          echo "dummy" > secrets/influxdb_password.txt
+          echo "dummy" > secrets/influxdb_api_token.txt
+          echo "dummy" > secrets/couchdb_password.txt
+          echo "dummy" > secrets/couchdb_cookie.txt
+          echo "dummy" > secrets/valkey_cluster_password.txt
+          echo "dummy" > secrets/n8n_db_password.txt
+          echo "dummy" > secrets/n8n_valkey_password.txt
+          echo "dummy" > secrets/n8n_encryption_key.txt
+          echo "dummy" > secrets/n8n_runner_auth_token.txt
+          echo "dummy" > secrets/airflow_db_password.txt
+          echo "dummy" > secrets/airflow_fernet_key.txt
+          echo "dummy" > secrets/airflow_www_password.txt
+          echo "dummy" > secrets/grafana_admin_password.txt
+          echo "dummy" > secrets/oauth2_proxy_client_secret.txt
+          echo "dummy" > secrets/sonarqube_db_password.txt
+          echo "dummy" > secrets/terrakube_db_password.txt
+          echo "dummy" > secrets/terrakube_pat_secret.txt
+          echo "dummy" > secrets/terrakube_internal_secret.txt
+          echo "dummy" > secrets/alertmanager_smtp_password.txt
+          echo "dummy" > secrets/alertmanager_slack_webhook.txt
 
       - name: Check Docker Compose Config
         run: docker compose config > /dev/null

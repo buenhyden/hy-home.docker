@@ -1,7 +1,7 @@
 name: Bug Report
 description: Report a defect with reproducible details
-title: '[BUG] '
-labels: ['bug']
+title: "[BUG] "
+labels: ["bug"]
 body:
   - type: markdown
     attributes:
@@ -70,6 +70,14 @@ body:
     id: diagnostics
     attributes:
       label: Diagnostics / Logs
-      description: Paste relevant logs, trace IDs, or screenshots (redact secrets/PII).
+      description:
+        Paste relevant logs, trace IDs, or screenshots (redact secrets/PII).
+    validations:
+      required: false
+  - type: input
+    id: docker_version
+    attributes:
+      label: Docker Version
+      description: Output of `docker version` and `docker compose version`
     validations:
       required: false
