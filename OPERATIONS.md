@@ -15,13 +15,13 @@ Below is the index of verified operational guides.
 
 | Category | Procedure | Location |
 | :--- | :--- | :--- |
-| **HA DB** | Patroni Split-Brain Recovery | [patroni-split-brain.md](runbooks/04-data/patroni-split-brain.md) |
-| **Auth** | Administrative Lockout Recovery | [auth-lockout.md](runbooks/02-auth/auth-lockout.md) |
+| **HA DB** | PostgreSQL HA & Patroni Recovery | [postgres-ha-recovery.md](runbooks/04-data/postgres-ha-recovery.md) |
+| **Gateway**| Traefik Ingress & Gateway Recovery | [traefik-proxy-recovery.md](runbooks/01-gateway/traefik-proxy-recovery.md) |
+| **Messaging**| Kafka Cluster & KRaft Recovery | [kafka-cluster-ops.md](runbooks/05-messaging/kafka-cluster-ops.md) |
+| **Auth** | Keycloak Auth Lockout Recovery | [auth-lockout.md](runbooks/02-auth/auth-lockout.md) |
 | **Storage** | MinIO Sync & Read-only Fix | [minio-sync-failure.md](runbooks/04-data/minio-sync-failure.md) |
-| **Messaging** | Kafka Broker Quorum Repair | [kafka-broker-offline.md](runbooks/05-messaging/kafka-broker-offline.md) |
-| **Workflow** | Airflow/Celery Worker Recovery | [airflow-celery-recovery.md](runbooks/07-workflow/airflow-celery-recovery.md) |
-| **Security**| Unsealing Vault Cluster | [vault-sealed.md](runbooks/03-security/vault-sealed.md) |
-| **Monitor** | Storage Cleanup (Loki/Prom) | [observability-storage-full.md](runbooks/06-observability/observability-storage-full.md) |
+| **Security**| Vault Unseal & Recovery | [vault-sealed.md](runbooks/03-security/vault-sealed.md) |
+| **Monitor** | Observability Stack Maintenance | [observability-stack-maintenance.md](runbooks/06-observability/observability-stack-maintenance.md) |
 
 > **Note:** If a specific operational procedure (e.g. database migration, failover) is missing from this index, the DevOps Agent should proactively create a new runbook based on `templates/operations/runbook-template.md` and link it here.
 
