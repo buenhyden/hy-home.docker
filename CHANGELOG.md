@@ -252,6 +252,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - Version changelog as 0.0.1.
 - Add yamllint and gitleaks pre-commit hooks and standardize YAML string quotes across configurations.
+- **release:** Update CHANGELOG.md [skip ci]
+- Externalize yamllint configuration to a dedicated file and remove redundant Docker Compose security options.
 
 ### Refactor
 
