@@ -20,9 +20,16 @@ services:
     restart: unless-stopped
     environment:
       - COUCHDB_USER=${COUCHDB_USERNAME}
-      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD}
-      - ERL_FLAGS=-setcookie "${COUCHDB_COOKIE}"
       - NODENAME=couchdb-1.infra_net
+    command: >
+      bash -c "
+      export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) &&
+      export ERL_FLAGS=\"-setcookie $$(cat /run/secrets/couchdb_cookie)\" &&
+      exec /opt/couchdb/bin/couchdb
+      "
+    secrets:
+      - couchdb_password
+      - couchdb_cookie
     volumes:
       - couchdb1-data:/opt/couchdb/data
     expose:
@@ -36,7 +43,9 @@ services:
         aliases:
           - couchdb-1.infra_net
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:${COUCHDB_PORT}/_up']
+      test:
+        - CMD-SHELL
+        - export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) && curl -f http://$$COUCHDB_USERNAME:$$COUCHDB_PASSWORD@localhost:${COUCHDB_PORT}/_up
       interval: 15s
       timeout: 30s
       retries: 5
@@ -66,9 +75,16 @@ services:
     restart: unless-stopped
     environment:
       - COUCHDB_USER=${COUCHDB_USERNAME}
-      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD}
-      - ERL_FLAGS=-setcookie "${COUCHDB_COOKIE}"
       - NODENAME=couchdb-2.infra_net
+    command: >
+      bash -c "
+      export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) &&
+      export ERL_FLAGS=\"-setcookie $$(cat /run/secrets/couchdb_cookie)\" &&
+      exec /opt/couchdb/bin/couchdb
+      "
+    secrets:
+      - couchdb_password
+      - couchdb_cookie
     volumes:
       - couchdb2-data:/opt/couchdb/data
     expose:
@@ -82,7 +98,9 @@ services:
         aliases:
           - couchdb-2.infra_net
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:${COUCHDB_PORT}/_up']
+      test:
+        - CMD-SHELL
+        - export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) && curl -f http://$$COUCHDB_USERNAME:$$COUCHDB_PASSWORD@localhost:${COUCHDB_PORT}/_up
       interval: 15s
       timeout: 30s
       retries: 5
@@ -106,9 +124,16 @@ services:
     restart: unless-stopped
     environment:
       - COUCHDB_USER=${COUCHDB_USERNAME}
-      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD}
-      - ERL_FLAGS=-setcookie "${COUCHDB_COOKIE}"
       - NODENAME=couchdb-3.infra_net
+    command: >
+      bash -c "
+      export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) &&
+      export ERL_FLAGS=\"-setcookie $$(cat /run/secrets/couchdb_cookie)\" &&
+      exec /opt/couchdb/bin/couchdb
+      "
+    secrets:
+      - couchdb_password
+      - couchdb_cookie
     volumes:
       - couchdb3-data:/opt/couchdb/data
     expose:
@@ -122,7 +147,9 @@ services:
         aliases:
           - couchdb-3.infra_net
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:${COUCHDB_PORT}/_up']
+      test:
+        - CMD-SHELL
+        - export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) && curl -f http://$$COUCHDB_USERNAME:$$COUCHDB_PASSWORD@localhost:${COUCHDB_PORT}/_up
       interval: 15s
       timeout: 30s
       retries: 5
@@ -152,45 +179,55 @@ services:
         condition: service_healthy
     networks:
       - infra_net
+    secrets:
+      - couchdb_password
     # 클러스터 조인 명령을 실행합니다.
     command: >
       /bin/sh -c "
+        export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) &&
         echo 'Waiting for nodes to start...';
         sleep 10;
 
         # 1. 노드 2를 클러스터(노드 1)에 조인
         echo 'Joining Node 2...';
         curl -X POST -H 'Content-Type: application/json' \
-          http://${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}@couchdb-1:${COUCHDB_PORT}/_cluster_setup \
-          -d '{\"action\": \"enable_cluster\", \"bind_address\":\"0.0.0.0\", \"username\": \"${COUCHDB_USERNAME}\", \"password\":\"${COUCHDB_PASSWORD}\", \"port\": ${COUCHDB_PORT}, \"node_count\": \"3\", \"remote_node\": \"couchdb@couchdb-2.infra_net\", \"remote_current_user\": \"${COUCHDB_USERNAME}\", \"remote_current_password\": \"${COUCHDB_PASSWORD}\"}';
+          http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT}/_cluster_setup \
+          -d '{\"action\": \"enable_cluster\", \"bind_address\":\"0.0.0.0\", \"username\": \"${COUCHDB_USERNAME}\", \"password\":\"'$$COUCHDB_PASSWORD'\", \"port\": ${COUCHDB_PORT}, \"node_count\": \"3\", \"remote_node\": \"couchdb@couchdb-2.infra_net\", \"remote_current_user\": \"${COUCHDB_USERNAME}\", \"remote_current_password\": \"'$$COUCHDB_PASSWORD'\"}';
 
         curl -X POST -H 'Content-Type: application/json' \
-          http://${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}@couchdb-1:${COUCHDB_PORT}/_cluster_setup \
-          -d '{\"action\": \"add_node\", \"host\":\"couchdb-2.infra_net\", \"port\": ${COUCHDB_PORT}, \"username\": \"${COUCHDB_USERNAME}\", \"password\":\"${COUCHDB_PASSWORD}\"}';
+          http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT}/_cluster_setup \
+          -d '{\"action\": \"add_node\", \"host\":\"couchdb-2.infra_net\", \"port\": ${COUCHDB_PORT}, \"username\": \"${COUCHDB_USERNAME}\", \"password\":\"'$$COUCHDB_PASSWORD'\"}';
 
         # 2. 노드 3을 클러스터(노드 1)에 조인
         echo 'Joining Node 3...';
         curl -X POST -H 'Content-Type: application/json' \
-          http://${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}@couchdb-1:5984/_cluster_setup \
-          -d '{\"action\": \"enable_cluster\", \"bind_address\":\"0.0.0.0\", \"username\": \"${COUCHDB_USERNAME}\", \"password\":\"${COUCHDB_PASSWORD}\", \"port\": 5984, \"node_count\": \"3\", \"remote_node\": \"couchdb@couchdb-3.infra_net\", \"remote_current_user\": \"${COUCHDB_USERNAME}\", \"remote_current_password\": \"${COUCHDB_PASSWORD}\"}';
+          http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:5984/_cluster_setup \
+          -d '{\"action\": \"enable_cluster\", \"bind_address\":\"0.0.0.0\", \"username\": \"${COUCHDB_USERNAME}\", \"password\":\"'$$COUCHDB_PASSWORD'\", \"port\": 5984, \"node_count\": \"3\", \"remote_node\": \"couchdb@couchdb-3.infra_net\", \"remote_current_user\": \"${COUCHDB_USERNAME}\", \"remote_current_password\": \"'$$COUCHDB_PASSWORD'\"}';
 
         curl -X POST -H 'Content-Type: application/json' \
-          http://${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}@couchdb-1:5984/_cluster_setup \
-          -d '{\"action\": \"add_node\", \"host\":\"couchdb-3.infra_net\", \"port\": 5984, \"username\": \"${COUCHDB_USERNAME}\", \"password\":\"${COUCHDB_PASSWORD}\"}';
+          http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:5984/_cluster_setup \
+          -d '{\"action\": \"add_node\", \"host\":\"couchdb-3.infra_net\", \"port\": 5984, \"username\": \"${COUCHDB_USERNAME}\", \"password\":\"'$$COUCHDB_PASSWORD'\"}';
 
         # 3. 클러스터 설정 완료 (Finish)
         echo 'Finishing Cluster Setup...';
         curl -X POST -H 'Content-Type: application/json' \
-          http://${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}@couchdb-1:5984/_cluster_setup \
+          http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:5984/_cluster_setup \
           -d '{\"action\": \"finish_cluster\"}';
 
         # 4. 시스템 DB 생성 (단일 노드때와 동일하게 필요함)
-        curl -X PUT http://${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}@couchdb-1:5984/_users;
-        curl -X PUT http://${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}@couchdb-1:5984/_replicator;
-        curl -X PUT http://${COUCHDB_USERNAME}:${COUCHDB_PASSWORD}@couchdb-1:5984/_global_changes;
+        curl -X PUT http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:5984/_users;
+        curl -X PUT http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:5984/_replicator;
+        curl -X PUT http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:5984/_global_changes;
 
         echo 'CouchDB Cluster Setup Complete!';
       "
+    logging: *default-logging
+
+secrets:
+  couchdb_password:
+    external: true
+  couchdb_cookie:
+    external: true
     logging: *default-logging
     deploy:
       resources:

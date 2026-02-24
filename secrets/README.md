@@ -1,132 +1,134 @@
 # Docker Secrets Registry
 
-이 디렉토리는 인프라 내 서비스에서 사용하는 민감한 정보(비밀번호, API 키, 토큰 등)를 카테고리별로 관리하는 저장소입니다. 모든 파일은 Docker Secrets 기능을 통해 컨테이너 내부로 안전하게 전달됩니다.
+이 디렉토리는 인프라 내 서비스에서 사용하는 민감한 정보(비밀번호, API 키, 토큰 등)를 저장하고 관리합니다. 모든 파일은 `./docker-compose.yml`의 `secrets` 섹션에 정의되어 있으며, 컨테이너 실행 시 `/run/secrets/` 경로로 전달됩니다.
 
-## 📁 디렉토리 구조
+## � 디렉토리 구조
 
 ```text
 secrets/
 ├── auth/          # 인증 및 게이트웨이 (Traefik, Keycloak, OAuth2 Proxy)
-├── db/            # 데이터베이스 클러스터 (PostgreSQL, Valkey, Redis)
-├── storage/       # 오브젝트 스토리지 (MinIO)
-├── data/          # 데이터 플랫폼 (OpenSearch, Supabase)
-├── observability/ # 모니터링 및 알림 (Grafana, Prometheus, InfluxDB, CouchDB)
 ├── automation/    # 워크플로우 자동화 (Airflow, n8n)
+├── certs/         # SSL/TLS 인증서 및 키
+├── common/        # 공통 설정 (SMTP, Slack)
+├── data/          # 데이터 플랫폼 (OpenSearch, Supabase)
+├── db/            # 데이터베이스 (PostgreSQL, Valkey, InfluxDB, CouchDB)
+├── observability/ # 모니터링 (Grafana)
+├── storage/       # 오브젝트 스토리지 (MinIO)
 ├── tools/         # 개발 및 배포 도구 (SonarQube, Terrakube)
-└── common/        # 공통 환경설정 및 유틸리티
+└── README.md      # 본 문서
 ```
-
-## 📂 카테고리별 시크릿 목록
-
-### 1. 인증 및 게이트웨이 (`auth/`)
-
-| 파일 경로 | 용도 |
-|---|---|
-| `auth/traefik_basicauth_password.txt` | Traefik 대시보드 접근 (htpasswd) |
-| `auth/traefik_opensearch_basicauth_password.txt` | OpenSearch API 접근 (htpasswd) |
-| `auth/keycloak_admin_password.txt` | Keycloak 관리자 비밀번호 |
-| `auth/oauth2_proxy_client_secret.txt` | OAuth2 Client Secret |
-| `auth/oauth2_proxy_cookie_secret.txt` | OAuth2 세션 쿠키 암호화 (base64) |
-
-### 2. 데이터베이스 클러스터 (`db/`)
-
-#### 🐘 PostgreSQL (`db/postgres/`)
-
-| 파일 경로 | 용도 |
-|---|---|
-| `db/postgres/service_password.txt` | 서비스용 PostgreSQL 루트 비밀번호 |
-| `db/postgres/mng_password.txt` | 관리용(MNG) PostgreSQL 비밀번호 |
-| `db/postgres/keycloak_password.txt` | Keycloak DB 접속 비밀번호 |
-| `db/postgres/airflow_password.txt` | Airflow DB 접속 비밀번호 |
-| `db/postgres/n8n_password.txt` | n8n DB 접속 비밀번호 |
-| `db/postgres/sonarqube_password.txt` | SonarQube DB 접속 비밀번호 |
-| `db/postgres/terrakube_password.txt` | Terrakube API DB 비밀번호 |
-| `db/postgres/supabase_password.txt` | Supabase PostgreSQL 비밀번호 |
-
-#### ⚡ Valkey & Redis (`db/valkey/`)
-
-| 파일 경로 | 용도 |
-|---|---|
-| `db/valkey/service_password.txt` | 서비스용 Valkey 클러스터 비밀번호 |
-| `db/valkey/mng_password.txt` | 관리용(MNG) Valkey 비밀번호 |
-| `db/valkey/n8n_password.txt` | n8n 용 Valkey 비밀번호 |
-| `db/valkey/oauth2_password.txt` | OAuth2 세션 저장용 Valkey 비밀번호 |
-| `db/valkey/terrakube_password.txt` | Terrakube Valkey 비밀번호 |
-
-#### 📈 Time Series & NoSQL (`db/influxdb/`, `db/couchdb/`)
-
-| 파일 경로 | 용도 |
-|---|---|
-| `db/influxdb/influxdb_password.txt` | InfluxDB 비밀번호 |
-| `db/influxdb/influxdb_api_token.txt` | InfluxDB API 토큰 |
-| `db/couchdb/couchdb_password.txt` | CouchDB 비밀번호 |
-| `db/couchdb/couchdb_cookie.txt` | CouchDB 클러스터 쿠키 |
-
-### 3. 오브젝트 스토리지 (`storage/`)
-
-| 파일 경로 | 용도 |
-|---|---|
-| `storage/minio_root_username.txt` | MinIO 관리자 ID |
-| `storage/minio_root_password.txt` | MinIO 관리자 비밀번호 |
-| `storage/minio_app_username.txt` | 앱 전용 MinIO ID |
-| `storage/minio_app_user_password.txt` | 앱 전용 MinIO 비밀번호 |
-
-### 4. 데이터 플랫폼 (`data/`)
-
-| 파일 경로 | 용도 |
-|---|---|
-| `data/opensearch_admin_password.txt` | OpenSearch admin 비밀번호 |
-| `data/opensearch_dashboard_password.txt` | OpenSearch Dashboards 내부 비밀번호 |
-| `data/opensearch_exporter_password.txt` | OpenSearch Prometheus Exporter 비밀번호 |
-| `data/supabase_jwt_secret.txt` | Supabase 인증용 JWT Secret |
-| `data/supabase_anon_key.txt` | Supabase 익명 클라이언트 키 |
-| `data/supabase_service_key.txt` | Supabase 서비스 롤(Admin) 키 |
-| `data/supabase_dashboard_password.txt` | Supabase Kong 대시보드 비밀번호 |
-| `data/supabase_secret_key_base.txt` | Supabase Phoenix 앱 시크릿 키 |
-| `data/supabase_vault_enc_key.txt` | Supabase Vault 암호화 키 |
-| `data/supabase_pg_meta_crypto_key.txt` | Supabase PG Meta 암호화 키 |
-
-### 5. 모니터링 및 알림 (`observability/`)
-
-| 파일 경로 | 용도 |
-|---|---|
-| `observability/grafana_admin_password.txt` | Grafana 관리자 비밀번호 |
-
-### 6. 워크플로우 자동화 (`automation/`)
-
-| 파일 경로 | 용도 |
-|---|---|
-| `automation/airflow_fernet_key.txt` | Airflow Fernet Key |
-| `automation/airflow_www_password.txt` | Airflow Web UI 관리자 비밀번호 |
-| `automation/n8n_encryption_key.txt` | n8n 내부 데이터 암호화 키 |
-| `automation/n8n_runner_auth_token.txt` | n8n Task Runner 인증 토큰 |
-
-### 7. 개발 및 배포 도구 (`tools/`)
-
-| 파일 경로 | 용도 |
-|---|---|
-| `tools/sonarqube_admin_password.txt` | SonarQube 관리자 비밀번호 |
-| `tools/terrakube_internal_secret.txt` | Terrakube 내부 통신 시크릿 |
-| `tools/terrakube_minio_secret_key.txt` | Terrakube MinIO Secret Key |
-| `tools/terrakube_pat_secret.txt` | Terrakube PAT 암호화 키 |
-
-### 8. 공통 (`common/`)
-
-| 파일 경로 | 용도 |
-|---|---|
-| `common/smtp_username.txt` | 시스템 공공 SMTP 계정 |
-| `common/smtp_password.txt` | 시스템 공공 SMTP 비밀번호 |
-| `common/slack_webhook.txt` | Slack 알림 Webhook URL |
 
 ---
 
-## 🔄 유지관리 및 재생성
+## � 시크릿 상세 레지스트리
 
-본 디렉토리의 시크릿들은 보안 강화를 위해 생성 스크립트를 통해 일괄 관리됩니다.
+모든 시크릿 이름은 `./docker-compose.yml`에 정의된 `secrets` 이름을 기준으로 합니다.
 
-- **생성일**: 2026-02-24
-- **정책**:
-  - 비밀번호: 32자 영문/숫자 혼합
-  - 키/토큰: 64자 Hex 또는 32바이트 Base64
-  - Traefik: `admin` 계정 기준 MD5-Crypt 해시 (`password321`)
-- **주의**: 외부 서비스(Slack Webhook, SMTP 등)와 연동되는 시크릿은 실제 서비스 값으로 수동 교체해야 합니다.
+### 1. 공통 및 가용성 (`common/`)
+
+| Docker Secret Name | 파일 경로 | 용도 |
+|:---:|---|---|
+| `smtp_password` | `common/smtp_password.txt` | 알림 및 메일 발송용 SMTP 비밀번호 |
+| `slack_webhook` | `common/slack_webhook.txt` | Slack Alert 전용 Webhook URL |
+| `smtp_username` | `common/smtp_username.txt` | 알림용 공용 SMTP 서버 계정명 |
+
+### 2. 게이트웨이 및 인증 (`auth/`)
+
+| Docker Secret Name | 파일 경로 | 용도 |
+|:---:|---|---|
+| `traefik_basicauth_password` | `auth/traefik_basicauth_password.txt` | Traefik 대시보드 Basic Auth (bcrypt) |
+| `traefik_opensearch_basicauth_password` | `auth/traefik_opensearch_basicauth_password.txt` | OpenSearch API 전용 Basic Auth |
+| `keycloak_admin_password` | `auth/keycloak_admin_password.txt` | Keycloak Master Realm 관리자 비밀번호 |
+| `oauth2_proxy_client_secret` | `auth/oauth2_proxy_client_secret.txt` | Keycloak/OAuth2 Proxy Client Secret |
+| `oauth2_proxy_cookie_secret` | `auth/oauth2_proxy_cookie_secret.txt` | OAuth2 Proxy 세션 암호화 쿠키 시크릿 |
+
+### 3. 관측성 (`observability/`)
+
+| Docker Secret Name | 파일 경로 | 용도 |
+|:---:|---|---|
+| `grafana_admin_password` | `observability/grafana_admin_password.txt` | Grafana 초기 관리자(admin) 비밀번호 |
+
+### 4. 관계형 데이터베이스 (PostgreSQL)
+
+| Docker Secret Name | 파일 경로 | 용도 |
+|:---:|---|---|
+| `service_postgres_password` | `db/postgres/service_password.txt` | PostgreSQL 서비스용 루트 관리 비밀번호 |
+| `mng_postgres_password` | `db/postgres/mng_password.txt` | PostgreSQL 관리용(MNG) 관리 비밀번호 |
+| `keycloak_db_password` | `db/postgres/keycloak_password.txt` | Keycloak DB 접속용 비밀번호 |
+| `airflow_db_password` | `db/postgres/airflow_password.txt` | Airflow 메타데이터 DB 접속 비밀번호 |
+| `n8n_db_password` | `db/postgres/n8n_password.txt` | n8n DB 접속 비밀번호 |
+| `sonarqube_db_password` | `db/postgres/sonarqube_password.txt` | SonarQube DB 접속 비밀번호 |
+| `terrakube_db_password` | `db/postgres/terrakube_password.txt` | Terrakube API DB 비밀번호 |
+| `supabase_db_password` | `db/postgres/supabase_password.txt` | Supabase 내부 DB 비밀번호 |
+
+### 5. 인메모리 및 NoSQL (Valkey, InfluxDB, CouchDB)
+
+| Docker Secret Name | 파일 경로 | 용도 |
+|:---:|---|---|
+| `service_valkey_password` | `db/valkey/service_password.txt` | 서비스용 Valkey 클러스터 비밀번호 |
+| `mng_valkey_password` | `db/valkey/mng_password.txt` | 관리용(MNG) Valkey 비밀번호 |
+| `n8n_valkey_password` | `db/valkey/n8n_password.txt` | n8n 용 Valkey 전용 비밀번호 |
+| `oauth2_valkey_password` | `db/valkey/oauth2_password.txt` | OAuth2 Proxy 세션 저장용 비밀번호 |
+| `terrakube_valkey_password` | `db/valkey/terrakube_password.txt` | Terrakube Valkey 저장소 비밀번호 |
+| `influxdb_password` | `db/influxdb/influxdb_password.txt` | InfluxDB 관리자(admin) 비밀번호 |
+| `influxdb_api_token` | `db/influxdb/influxdb_api_token.txt` | InfluxDB 관리자 액세스 토큰 |
+| `couchdb_password` | `db/couchdb/couchdb_password.txt` | CouchDB 클러스터 관리자 비밀번호 |
+| `couchdb_cookie` | `db/couchdb/couchdb_cookie.txt` | CouchDB Erlang 노드 간 인증 쿠키 |
+
+### 6. 오브젝트 스토리지 (`storage/`)
+
+| Docker Secret Name | 파일 경로 | 용도 |
+|:---:|---|---|
+| `minio_root_username` | `storage/minio_root_username.txt` | MinIO 서버 루트 관리자 ID |
+| `minio_root_password` | `storage/minio_root_password.txt` | MinIO 서버 루트 관리자 비밀번호 |
+| `minio_app_username` | `storage/minio_app_username.txt` | 애플리케이션(Loki/Tempo 등) 전용 ID |
+| `minio_app_user_password` | `storage/minio_app_user_password.txt` | 애플리케이션 전용 계정 비밀번호 |
+
+### 7. 검색 및 로그 스토리지 (OpenSearch)
+
+| Docker Secret Name | 파일 경로 | 용도 |
+|:---:|---|---|
+| `opensearch_admin_password` | `data/opensearch_admin_password.txt` | OpenSearch 초기 admin 비밀번호 |
+| `opensearch_dashboard_password` | `data/opensearch_dashboard_password.txt` | Dashboards 내장 유저 비밀번호 |
+| `opensearch_exporter_password` | `data/opensearch_exporter_password.txt` | Prometheus용 OpenSearch Exporter 비밀번호 |
+
+### 8. 워크플로우 자동화 (`automation/`)
+
+| Docker Secret Name | 파일 경로 | 용도 |
+|:---:|---|---|
+| `airflow_fernet_key` | `automation/airflow_fernet_key.txt` | Airflow Fernet 암호화 키 |
+| `airflow_www_password` | `automation/airflow_www_password.txt` | Airflow WebUI 초기 관리자 비밀번호 |
+| `n8n_encryption_key` | `automation/n8n_encryption_key.txt` | n8n 내부 데이터 암호화 키 |
+| `n8n_runner_auth_token` | `automation/n8n_runner_auth_token.txt` | n8n Worker 호스트 인증 토큰 |
+
+### 9. 개발 및 배포 도구 (`tools/` & `tools/`)
+
+| Docker Secret Name | 파일 경로 | 용도 |
+|:---:|---|---|
+| `sonarqube_admin_password` | `tools/sonarqube_admin_password.txt` | SonarQube 초기 관리자 비밀번호 |
+| `terrakube_pat_secret` | `tools/terrakube_pat_secret.txt` | Terrakube PAT 암호화 키 |
+| `terrakube_internal_secret` | `tools/terrakube_internal_secret.txt` | Terrakube API 서비스 간 통신 시크릿 |
+
+### 10. BaaS 플랫폼 (Supabase)
+
+| Docker Secret Name | 파일 경로 | 용도 |
+|:---:|---|---|
+| `supabase_jwt_secret` | `data/supabase_jwt_secret.txt` | Supabase 인증용 고유 JWT Secret |
+| `supabase_anon_key` | `data/supabase_anon_key.txt` | Public 익명 클라이언트 API 키 |
+| `supabase_service_key` | `data/supabase_service_key.txt` | Private 서비스 롤(관리) API 키 |
+| `supabase_dashboard_password` | `data/supabase_dashboard_password.txt` | Supabase Kong 대시보드 Basic Auth 비밀번호 |
+| `supabase_secret_key_base` | `data/supabase_secret_key_base.txt` | Supabase 내부 Elixir/Phoenix 앱 시크릿 |
+| `supabase_vault_enc_key` | `data/supabase_vault_enc_key.txt` | Supabase Vault 확장 암호화 키 |
+| `supabase_pg_meta_crypto_key` | `data/supabase_pg_meta_crypto_key.txt` | PG Meta 서버 암호화 키 |
+
+---
+
+## � 보안 정책 및 주의사항
+
+- **생성 일시**: 2026-02-24
+- **관리 원칙**:
+  - 본 디렉토리의 모든 파일은 `.gitignore`에 의해 Git 추적 대상에서 제외됩니다.
+  - 모든 시크릿은 `./docker-compose.yml`에서 파일 기반으로 정의되어 관리됩니다.
+  - 신규 서비스 추가 시 관련 컨테이너 내부의 `/run/secrets/` 경로를 통해 시크릿을 읽어오도록 구성하십시오.
+- **수동 교체 대상**:
+  - `slack_webhook`, `smtp_username/password` 등 외부 연동이 필요한 시크릿은 생성 스크립트 실행 후 수동으로 실제 값을 채워 넣어야 합니다.
