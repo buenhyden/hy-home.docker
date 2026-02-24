@@ -42,7 +42,7 @@ The most reliable way to take a snapshot block-level backup:
 4. Restart the replica: `docker start pg-1` (It will catch up via WAL logs automatically).
 
 > [!TIP]
-> For cluster re-initialization (destructive), use `runbooks/postgres-ha-reinit.md`.
+> For cluster re-initialization (destructive), use `runbooks/04-data/postgres-ha-reinit.md`.
 
 ## 5. HAProxy Stats
 

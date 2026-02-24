@@ -4,9 +4,10 @@ This document is the central index for operational readiness in repositories cre
 
 > **IMPORTANT:** Operational knowledge is tiered:
 >
-> 1. **Historical Records**: `operations/` (Incidents, Postmortems, Service Context).
-> 2. **Executable Procedures**: `runbooks/` (Playbooks, Deployment/Rollback commands).
-> 3. **Infrastructure Hub**: `infra/` (Technical Specs and folder-level READMEs).
+> 1. **Historical Records**: `operations/` (Incidents, Postmortems).
+> 2. **Technical Context**: `docs/context/` (Service Operational Architecture).
+> 3. **Executable Procedures**: `runbooks/` (Playbooks, Deployment/Rollback commands).
+> 4. **Infrastructure Hub**: `infra/` (Technical Specs and folder-level READMEs).
 
 ## 1. Runbook & Maintenance Catalog
 
@@ -14,13 +15,13 @@ Below is the index of verified operational guides.
 
 | Category | Procedure | Location |
 | :--- | :--- | :--- |
-| **HA DB** | Patroni Split-Brain Recovery | [patroni-split-brain.md](runbooks/patroni-split-brain.md) |
-| **Auth** | Administrative Lockout Recovery | [auth-lockout.md](runbooks/auth-lockout.md) |
-| **Storage** | MinIO Sync & Read-only Fix | [minio-sync-failure.md](runbooks/minio-sync-failure.md) |
-| **Messaging** | Kafka Broker Quorum Repair | [kafka-broker-offline.md](runbooks/kafka-broker-offline.md) |
-| **Workflow** | Airflow/Celery Worker Recovery | [airflow-celery-recovery.md](runbooks/airflow-celery-recovery.md) |
-| **Security**| Unsealing Vault Cluster | [vault-sealed.md](runbooks/vault-sealed.md) |
-| **Monitor** | Storage Cleanup (Loki/Prom) | [observability-storage-full.md](runbooks/observability-storage-full.md) |
+| **HA DB** | Patroni Split-Brain Recovery | [patroni-split-brain.md](runbooks/04-data/patroni-split-brain.md) |
+| **Auth** | Administrative Lockout Recovery | [auth-lockout.md](runbooks/02-auth/auth-lockout.md) |
+| **Storage** | MinIO Sync & Read-only Fix | [minio-sync-failure.md](runbooks/04-data/minio-sync-failure.md) |
+| **Messaging** | Kafka Broker Quorum Repair | [kafka-broker-offline.md](runbooks/05-messaging/kafka-broker-offline.md) |
+| **Workflow** | Airflow/Celery Worker Recovery | [airflow-celery-recovery.md](runbooks/07-workflow/airflow-celery-recovery.md) |
+| **Security**| Unsealing Vault Cluster | [vault-sealed.md](runbooks/03-security/vault-sealed.md) |
+| **Monitor** | Storage Cleanup (Loki/Prom) | [observability-storage-full.md](runbooks/06-observability/observability-storage-full.md) |
 
 > **Note:** If a specific operational procedure (e.g. database migration, failover) is missing from this index, the DevOps Agent should proactively create a new runbook based on `templates/operations/runbook-template.md` and link it here.
 
@@ -50,9 +51,9 @@ Below is the index of verified operational guides.
 - **Recovery Time Objective (RTO)**: Target < 4 hours for Tier-1 services.
 - **Recovery Point Objective (RPO)**: Target < 1 hour of potential data loss via WAL (Write-Ahead Logging) or continuous replication.
 
-### Deep Maintenance (WSL / Docker)
+For Docker resource cleanup and WSL volume compression, use the dedicated runbook: `runbooks/core/docker-resource-maintenance.md`.
 
-For Docker resource cleanup and WSL volume compression, use the dedicated runbook: `runbooks/docker-resource-maintenance.md`.
+For a deep overview of infrastructure lifecycle and startup order, see [infra-lifecycle.md](docs/context/core/infra-lifecycle.md).
 
 ## 5. Operational Rules
 
@@ -67,7 +68,7 @@ Code must not be deployed unless:
 
 ### Incident Priorities
 
-- **SEV-1 (Critical)**: Production offline. Immediate action via `runbooks/incident-response-runbook.md` and `.agent/rules/0380-incident-response.md`.
+- **SEV-1 (Critical)**: Production offline. Immediate action via `runbooks/core/incident-response-runbook.md` and `.agent/rules/0380-incident-response.md`.
 - **SEV-2 (Major)**: Critical flow degraded.
 - **SEV-3 (Minor)**: Non-critical bugs.
 

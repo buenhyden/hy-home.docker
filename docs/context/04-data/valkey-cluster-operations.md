@@ -27,4 +27,4 @@ You should expect `cluster_state:ok` and `cluster_known_nodes:6`.
 
 ### Hard Reloads & Upgrades
 
-For manual failover and rolling upgrade procedures, refer to the dedicated playbook: `runbooks/valkey-cluster-manual-failover.md`.
+For manual failover and rolling upgrade procedures, refer to the dedicated playbook: `runbooks/04-data/valkey-cluster-manual-failover.md`.
