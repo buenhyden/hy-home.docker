@@ -22,12 +22,12 @@ repos:
 
   # --- 2. Linting (YAML, Markdown, Shell) ---
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.35.1
+    rev: v1.38.0
     hooks:
       - id: yamllint
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.20.0
+    rev: v0.21.0
     hooks:
       - id: markdownlint-cli2
         require_serial: true
@@ -40,12 +40,12 @@ repos:
 
   # --- 3. Actions & CI Configuration ---
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.10
+    rev: v1.7.11
     hooks:
       - id: actionlint
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.36.1
+    rev: 0.36.2
     hooks:
       - id: check-dependabot
 
@@ -62,7 +62,7 @@ repos:
 
   # --- 5. Security ---
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.21.2
+    rev: v8.30.0
     hooks:
       - id: gitleaks
 
