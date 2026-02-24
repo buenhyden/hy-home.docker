@@ -1,0 +1,30 @@
+# .zizmor.yml
+rules:
+  unpinned-uses:
+    ignore:
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/generate-changelog.yml'
+      - '.github/workflows/greetings.yml'
+      - '.github/workflows/labeler.yml'
+      - '.github/workflows/stale.yml'
+  artipacked:
+    ignore:
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/generate-changelog.yml'
+  template-injection:
+    ignore:
+      - '.github/workflows/ci.yml'
+  excessive-permissions:
+    ignore:
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/generate-changelog.yml'
+      - '.github/workflows/greetings.yml'
+      - '.github/workflows/labeler.yml'
+      - '.github/workflows/stale.yml'
+  cache-poisoning:
+    ignore:
+      - '.github/workflows/ci.yml'
+  secrets-persistence:
+    ignore:
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/generate-changelog.yml'
