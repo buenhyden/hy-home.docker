@@ -49,6 +49,10 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
     # labels:
     #   - traefik.enable=true

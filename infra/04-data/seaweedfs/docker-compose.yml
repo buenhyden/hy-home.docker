@@ -33,6 +33,10 @@ services:
       - 'traefik.http.routers.seaweedfs-master.entrypoints=websecure'
       - 'traefik.http.routers.seaweedfs-master.tls=true'
       - 'traefik.http.services.seaweedfs-master.loadbalancer.server.port=${SEAWEEDFS_MASTER_HTTP_PORT}'
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   seaweedfs-volume:
@@ -52,6 +56,10 @@ services:
         condition: service_healthy
     networks:
       - infra_net
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   seaweedfs-filer:
@@ -78,6 +86,10 @@ services:
       - 'traefik.http.services.cdn.loadbalancer.server.port=${SEAWEEDFS_FILER_HTTP_PORT}'
     networks:
       - infra_net
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   seaweedfs-s3:
@@ -101,6 +113,10 @@ services:
         condition: service_healthy
     networks:
       - infra_net
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   seaweedfs-mount:
@@ -119,4 +135,7 @@ services:
         condition: service_healthy
       seaweedfs-filer:
         condition: service_healthy
+    # privileged + SYS_ADMIN required for mount; cap_drop is intentionally omitted.
+    security_opt:
+      - no-new-privileges:true
     logging: *default-logging

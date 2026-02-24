@@ -100,6 +100,13 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.44
+    # memlock 사용을 위해 IPC_LOCK만 허용
+    cap_drop:
+      - ALL
+    cap_add:
+      - IPC_LOCK
+    security_opt:
+      - no-new-privileges:true
     logging: *default-logging
 
   # #######################################################
@@ -138,6 +145,13 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.45
+    # memlock 사용을 위해 IPC_LOCK만 허용
+    cap_drop:
+      - ALL
+    cap_add:
+      - IPC_LOCK
+    security_opt:
+      - no-new-privileges:true
     logging: *default-logging
 
   # #######################################################
@@ -176,6 +190,13 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.46
+    # memlock 사용을 위해 IPC_LOCK만 허용
+    cap_drop:
+      - ALL
+    cap_add:
+      - IPC_LOCK
+    security_opt:
+      - no-new-privileges:true
     logging: *default-logging
 
   opensearch-dashboards:
@@ -198,6 +219,10 @@ services:
       # mkcert 기반 인증서(SAN 없음) 대응: 호스트 검증은 끄고 CA만 검증
       - OPENSEARCH_SSL_VERIFICATIONMODE=certificate
       - OPENSEARCH_SSL_CERTIFICATEAUTHORITIES=["/usr/share/opensearch-dashboards/config/rootCA.pem"]
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     labels:
       - 'traefik.enable=true'
       # 2. Dashboards 라우터 (https://dashboards.opensearch.${DEFAULT_URL})

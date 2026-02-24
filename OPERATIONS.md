@@ -18,8 +18,8 @@ Below is the index of verified operational guides.
 | **Auth** | Keycloak Auth Lockout Recovery | [auth-lockout.md](runbooks/02-auth/auth-lockout.md) |
 | **Storage** | MinIO Sync & Read-only Fix | [minio-sync-failure.md](runbooks/04-data/minio-sync-failure.md) |
 | **Security**| Vault Unseal & Recovery | [vault-sealed.md](runbooks/03-security/vault-sealed.md) |
-| **Monitor** | Observability Stack & Alloy Configuration | [observability.md](runbooks/06-observability/observability-stack-maintenance.md) |
-| **Workflow**| Airflow & n8n Operational Tasks | [workflow-ops.md](runbooks/07-workflow/README.md) |
+| **Monitor** | Observability Stack & Alloy Configuration | [observability-stack-maintenance.md](runbooks/06-observability/observability-stack-maintenance.md) |
+| **Workflow**| Airflow Celery Recovery | [airflow-celery-recovery.md](runbooks/07-workflow/airflow-celery-recovery.md) |
 
 > **Note:** If a specific operational procedure (e.g. database migration, failover) is missing from this index, the DevOps Agent should proactively create a new runbook based on `templates/operations/runbook-template.md` and link it here.
 

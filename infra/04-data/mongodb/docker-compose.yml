@@ -33,6 +33,10 @@ services:
         chmod 400 /data/configdb/mongodb.key;
         ls -l /data/configdb/mongodb.key;
       "
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   mongodb-rep1:
@@ -64,6 +68,10 @@ services:
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   mongodb-rep2:
@@ -95,6 +103,10 @@ services:
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   # [추가] MongoDB Arbiter (투표권만 가진 가벼운 노드, 데이터 저장 안 함)
@@ -117,6 +129,10 @@ services:
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   # [추가] Replica Set 초기화 (한 번만 실행되고 죽음)
@@ -131,6 +147,10 @@ services:
         condition: service_healthy
       mongodb-rep2:
         condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     command: >
       bash -c "
         echo 'Waiting for servers to be ready...';
@@ -187,6 +207,10 @@ services:
     depends_on:
       mongo-init:
         condition: service_completed_successfully
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
   # ============================================================================
   # MongoDB Exporter (Prometheus)
@@ -206,6 +230,10 @@ services:
     depends_on:
       mongo-init:
         condition: service_completed_successfully
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     networks:
       - infra_net
     logging: *default-logging

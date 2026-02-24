@@ -34,6 +34,6 @@ Terrakube acts as the private automation engine for Terraform runs.
 | Action | Reference | Link |
 | --- | --- | --- |
 | **Manual** | Tooling Ops | [Operations Guide](tooling-operations.md) |
-| **Troubleshoot**| Infra Recovery | [Runbooks](../../runbooks/README.md#09-tooling) |
+| **Troubleshoot**| Infra Recovery | [Runbooks](../../../runbooks/README.md) |
 
 Always audit the `SONAR_TOKEN` and `TERRAFORM_SECRET` stored in Docker Secrets before initiating large-scale infra changes.

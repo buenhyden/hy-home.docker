@@ -16,7 +16,7 @@ This directory is the **exclusive, authoritative home** for all executable proce
 - [**05-Messaging**](05-messaging/) ([Blueprint](../docs/context/05-messaging/kafka-kraft-guide.md)): Kafka/RabbitMQ quorum and maintenance.
 - [**06-Observability**](06-observability/) ([Blueprint](../docs/context/06-observability/lgtm-stack-blueprint.md)): LGTM stack maintenance and storage cleanup.
 - [**07-Workflow**](07-workflow/) ([Blueprint](../docs/context/07-workflow/n8n-automation-context.md)): Automation engine and worker recovery.
-- [**08-AI**](docs/context/08-ai/ai-inference-guide.md) ([Blueprint](../docs/context/08-ai/ai-inference-guide.md)): Model inference and GPU recovery.
+- **08-AI (Blueprint only)** ([Blueprint](../docs/context/08-ai/ai-inference-guide.md)): Model inference and GPU recovery.
 - [**Core**](core/) ([Blueprint](../docs/context/core/infra-lifecycle-ops.md)): Global incident response and deployment workflows.
 
 ## Standards for New Runbooks

@@ -21,6 +21,10 @@ x-minio-common: &minio-common
     start_period: 30s
   networks:
     - infra_net
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
   logging: *default-logging
   environment:
     - MINIO_ROOT_USER=${DEFAULT_USERNAME}

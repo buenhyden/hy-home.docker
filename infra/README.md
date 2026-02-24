@@ -41,6 +41,11 @@ docker compose up -d
 
 - `.env`와 `secrets/` 값은 루트 기준으로 관리됩니다.
 
+## 🔒 컨테이너 보안 기준
+
+- 모든 infra 서비스는 `security_opt: [no-new-privileges:true]`와 `cap_drop: [ALL]`을 기본 적용합니다.
+- 예외(예: `privileged`, `cap_add`, root 필요)는 **compose 파일에 주석으로 사유를 명시**하고, 관련 Spec에 기록합니다.
+
 ## 🧩 정리 기준 (분류 원칙)
 
 infra 하위 폴더는 실행 방식에 따라 다음 4가지로 분류합니다.

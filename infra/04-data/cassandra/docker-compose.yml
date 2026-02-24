@@ -43,6 +43,10 @@ services:
     volumes:
       - cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf
     command: java -jar ./cassandra_exporter.jar ./conf/config.yml
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
 
   cassandra-node1:
     #image: cassandra:latest
@@ -71,6 +75,10 @@ services:
       - HEAP_NEWSIZE=200M
     volumes:
       - cassandra-node1-volume:/bitnami/cassandra
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
   # cassandra-node2:
   #   #image: cassandra:latest
   #   image: docker.io/bitnami/cassandra:latest

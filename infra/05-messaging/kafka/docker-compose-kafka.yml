@@ -58,6 +58,10 @@ services:
       infra_net:
         ipv4_address: 172.19.0.11
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   ###############################################################
@@ -95,6 +99,10 @@ services:
     networks:
       - infra_net
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   ###############################################################
@@ -132,6 +140,10 @@ services:
     networks:
       - infra_net
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   # -------------------------------------------
@@ -156,6 +168,10 @@ services:
       - kafka-1
       - kafka-2
       - kafka-3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   ###############################################################
@@ -215,6 +231,10 @@ services:
       # 커스텀 커넥터가 있다면 여기에 마운트 (예: ./connect-plugins:/usr/share/confluent-hub-components)
       # - ./connect-plugins:/usr/share/confluent-hub-components
       - kafka-connect-data:/var/lib/kafka-connect
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   # -------------------------------------------
@@ -238,6 +258,10 @@ services:
       - kafka-2
       - kafka-3
       - schema-registry
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   # -------------------------------------------
@@ -266,6 +290,10 @@ services:
       - kafka-3
       - schema-registry
       - kafka-connect
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   kafka-exporter:
@@ -282,4 +310,8 @@ services:
       - kafka-1
       - kafka-2
       - kafka-3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging

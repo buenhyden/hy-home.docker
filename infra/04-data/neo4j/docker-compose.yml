@@ -27,6 +27,10 @@ services:
       - 'neo4j-volume:/bitnami/neo4j'
     networks:
       - infra_net
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     # The ports that will be accessible from outside the container - HTTP (7474) and Bolt (7687).
     logging: *default-logging
   # ######################################################################################

@@ -16,6 +16,7 @@ This template provides a standardized foundation for building software projects.
 
 - **Strict Boundary Segregation**: Clear division of Knowledge (`docs/`), Implementation (`specs/`, `web/`, `app/`, `server/`), and Operations (`runbooks/`).
 - **Standard Security Hardening**: Mandatory `no-new-privileges:true` and `cap_drop: [ALL]` for all infrastructure services.
+- **Security Exceptions**: Any service requiring elevated privileges or capabilities MUST document the exception inline and in the relevant spec.
 
 ## 2. Core Constraints & Decisions
 

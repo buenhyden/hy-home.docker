@@ -42,15 +42,15 @@ Keycloak is configured to utilize the Management PostgreSQL instance (`mng-pg`) 
 
 | Action | Reference | Link |
 | --- | --- | --- |
-| **Recovery** | Lockout Flow | [Runbook](../../runbooks/02-auth/auth-lockout.md) |
-| **Usage**    | Secrets Access | [Onboarding](../../examples/README.md#secrets) |
+| **Recovery** | Lockout Flow | [Runbook](../../../runbooks/02-auth/auth-lockout.md) |
+| **Usage**    | Secrets Access | [Onboarding](../../../examples/README.md#secrets) |
 | **App Link** | OAuth2 Proxy | [Guide](sso-oauth2-proxy-guide.md) |
 
 ## 5. Troubleshooting
 
 ### "Admin User Locked"
 
-If the administrative user is locked out due to invalid attempts, use the bootstrap runbook: `runbooks/02-auth/auth-lockout.md`.
+If the administrative user is locked out due to invalid attempts, use the bootstrap runbook: `../../../runbooks/02-auth/auth-lockout.md`.
 
 ### "Token Signature Invalid"
 
