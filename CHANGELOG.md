@@ -4,8 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [0.0.1]
+## [Unreleased]
 
 ### Added
 
@@ -256,6 +255,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - Externalize yamllint configuration to a dedicated file and remove redundant Docker Compose security options.
 - **release:** Update CHANGELOG.md [skip ci]
+- **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
 
@@ -265,7 +265,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Ci
 
 - Docker-compose.test.yml 수정
+- Introduce a unified CI quality workflow and add Docker Compose validation to pre-commit.
 
 ### Config
 
 - Disable breaking change protection and commit filtering in `cliff.toml`.
+
+
