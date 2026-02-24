@@ -1,10 +1,24 @@
-# Ollama & Open WebUI
+# Open WebUI
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+Open WebUI is an extensible, self-hosted AI interface that operates entirely offline.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+| Service       | Image                                 | Role           | Resources       |
+| :------------ | :------------------------------------ | :------------- | :-------------- |
+| `open-webui`  | `ghcr.io/open-webui/open-webui:main`  | Chat Interface | 1 CPU / 1GB RAM |
+
+## Dependencies
+
+- **Inference**: Connects to Ollama (`infra/08-ai/ollama`).
+- **Vector DB**: Connects to Qdrant (`infra/04-data/qdrant`) for RAG.
+
+## Networking
+
+Exposed via Traefik at `chat.${DEFAULT_URL}`.
+
+## File Map
+
+| Path        | Description                         |
+| ----------- | ----------------------------------- |
+| `README.md` | Service overview and user guides.   |

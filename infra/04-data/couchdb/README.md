@@ -1,10 +1,29 @@
-# CouchDB Cluster
+# CouchDB
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+Apache CouchDB is an open-source document-oriented NoSQL database, implemented in Erlang.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+| Service   | Image               | Role           | Resources         | Port       |
+| :-------- | :------------------ | :------------- | :---------------- | :--------- |
+| `couchdb` | `couchdb:3.3`       | Document DB    | 0.5 CPU / 1GB RAM | 5984 (Int) |
+
+## Networking
+
+| Endpoint                   | Port | Purpose                 |
+| :------------------------- | :--- | :---------------------- |
+| `couchdb.${DEFAULT_URL}`   | 5984 | Web UI (Fauxton) / API  |
+
+## Persistence
+
+- **Data**: `/opt/couchdb/data` (mounted to `couchdb-data` volume).
+
+## Configuration
+
+- **Admin**: Configured via `COUCHDB_USER` and `COUCHDB_PASSWORD`.
+
+## File Map
+
+| Path        | Description                         |
+| ----------- | ----------------------------------- |
+| `README.md` | Service overview and cluster docs.  |

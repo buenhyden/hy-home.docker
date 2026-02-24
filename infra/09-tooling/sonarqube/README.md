@@ -1,10 +1,20 @@
 # SonarQube
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+SonarQube is a self-managed, automatic code review tool that systematically helps you deliver Clean Code.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+| Service     | Image                      | Role           | Resources       |
+| :---------- | :----------------------- | :------------- | :-------------- |
+| `sonarqube` | `sonarqube:9.9-community`  | Code Analysis  | 2 CPU / 4GB RAM |
+
+## Persistence
+
+- **Data**: `/opt/sonarqube/data` (mounted to `sonarqube-data` volume).
+- **PostgreSQL**: Uses an internal or shared database for state.
+
+## File Map
+
+| Path        | Description                         |
+| ----------- | ----------------------------------- |
+| `README.md` | Service overview and analysis docs. |

@@ -1,10 +1,26 @@
-# RabbitMQ (05-messaging/rabbitmq)
+# RabbitMQ
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+RabbitMQ is the most widely deployed open source message broker.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+| Service    | Image                        | Role           | Resources         |
+| :--------- | :--------------------------- | :------------- | :---------------- |
+| `rabbitmq` | `rabbitmq:3-management-alpine`| Message Broker | 0.5 CPU / 1GB RAM |
+
+## Networking
+
+| Port | Purpose                |
+| :--- | :--------------------- |
+| 5672 | AMQP protocol          |
+| 15672| Management UI (Web)    |
+
+## Persistence
+
+- **Data**: `/var/lib/rabbitmq` (mounted to `rabbitmq-data` volume).
+
+## File Map
+
+| Path        | Description                         |
+| ----------- | ----------------------------------- |
+| `README.md` | Service overview and usage notes.   |

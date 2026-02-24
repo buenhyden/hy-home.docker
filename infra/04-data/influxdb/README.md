@@ -1,10 +1,29 @@
 # InfluxDB
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+InfluxDB is an open-source time series database (TSDB) developed by InfluxData.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+| Service    | Image               | Role           | Resources         | Port       |
+| :--------- | :------------------ | :------------- | :---------------- | :--------- |
+| `influxdb` | `influxdb:2.7-alpine`| Time Series DB | 0.5 CPU / 1GB RAM | 8086 (Int) |
+
+## Networking
+
+| Endpoint                    | Port | Purpose                 |
+| :-------------------------- | :--- | :---------------------- |
+| `influxdb.${DEFAULT_URL}`   | 8086 | Web UI / Ingest API     |
+
+## Persistence
+
+- **Data**: `/var/lib/influxdb2` (mounted to `influxdb-data` volume).
+
+## Configuration
+
+- **Initialization**: Configured via `DOCKER_INFLUXDB_INIT_*` environment variables.
+
+## File Map
+
+| Path        | Description                         |
+| ----------- | ----------------------------------- |
+| `README.md` | Service overview and CLI usage.     |

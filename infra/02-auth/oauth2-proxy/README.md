@@ -1,10 +1,26 @@
-# OAuth2 Proxy (SSO)
+# OAuth2 Proxy
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+OAuth2 Proxy is a reverse proxy and static file server that provides authentication using Providers (Google, GitHub, and others) to validate accounts by email, domain or group.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+| Service        | Image                           | Role               | Resources         | Port       |
+| :------------- | :------------------------------ | :----------------- | :---------------- | :--------- |
+| `oauth2-proxy` | `quay.io/oauth2-proxy/oauth2-proxy:latest` | Auth Proxy | 0.2 CPU / 128MB | 4180 (Int) |
+
+## Dependencies
+
+- **IdP**: Typically connected to Keycloak (`infra/02-auth/keycloak`).
+- **Session Store**: Uses Valkey (`infra/04-data/valkey-cluster`) or Redis for session storage.
+
+## Networking
+
+Exposed via Traefik at `auth.${DEFAULT_URL}`.
+
+## File Map
+
+| Path               | Description                           |
+| ------------------ | ------------------------------------- |
+| `docker-compose.yml` | Service and session store wiring.    |
+| `config/`          | Provider and cookie configuration.    |
+| `README.md`        | Service overview and SSO notes.       |

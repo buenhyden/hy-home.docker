@@ -1,10 +1,14 @@
-# Terraform Infrastructure as Code
+# Terraform
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+This directory provides local Terraform runners and state management configurations.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Notes
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+- **Backend**: Configured to use S3 (MinIO) or local filesystem for state.
+- **Provider**: Typically manages Docker or Kubernetes resources.
+
+## File Map
+
+| Path        | Description                         |
+| ----------- | ----------------------------------- |
+| `README.md` | Usage notes and provider setup.     |
