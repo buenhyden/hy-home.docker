@@ -6,12 +6,21 @@
 
 ## 1. Observability Architecture
 
-The platform utilizes a modern push-based telemetry model. All services ship logs, metrics, and traces to a centralized **Grafana Alloy** collector.
+The platform utilizes a push-based model where all services ship OTLP telemetry to **Grafana Alloy**.
 
-- **Grafana (Port 3000)**: Visualization/Alerting Dashboard.
-- **Prometheus (Port 9090)**: Metrics persistence.
-- **Loki (Port 3100)**: Log aggregation.
-- **Tempo (Port 3200)**: Distributed tracing.
+### Technical Specifications
+
+| Tool | Internal Port | Logic |
+| --- | --- | --- |
+| **Prometheus** | `9090` | Metrics (v3.9+) |
+| **Loki** | `3100` | Logs (v3.6+) |
+| **Tempo** | `3200` | Traces (v2.10+) |
+| **Alloy** | `12345` | Collector Hub |
+
+### Telemetry Ports (OTLP)
+
+- **gRPC**: `alloy:4317`
+- **HTTP**: `alloy:4318`
 
 ## 2. Telemetry Ingestion Flow
 

@@ -4,9 +4,22 @@
 > **Internal Port**: `8080`
 > **Administrative Path**: `https://keycloak.${DEFAULT_URL}`
 
-## 1. Identity & Access Management Core
+## 1. Technical Specification
 
-Keycloak serves as the primary OIDC and SAML identity provider for the entire platform. It manages user lifecycles, roles, and client authentication.
+Keycloak serves as the primary OIDC/SAML provider with PostgreSQL persistence.
+
+| Attribute | Value |
+| --- | --- |
+| **Internal Host** | `keycloak` |
+| **External URL** | `https://keycloak.${DEFAULT_URL}` |
+| **Static IP** | `172.19.0.29` |
+| **Main Port** | `8080` |
+| **Management Port**| `9000` |
+
+### Database Persistence
+
+- **Connectivity**: Managed via `pg-router` forwarding to the Patroni cluster.
+- **Verification**: `docker exec keycloak curl -f http://localhost:9000/health/ready`
 
 ## 2. Bootstrapping a New Environment
 

@@ -6,10 +6,32 @@
 
 ## 1. Roles and Endpoints
 
-MinIO provides a high-performance S3 alternative for local and staging assets (Loki chunks, Postgres backups, etc.).
+MinIO is the primary S3-compatible cold storage for the LGTM stack (Tempo/Loki).
 
-- **S3 Endpoint**: `https://minio.${DEFAULT_URL}`
-- **Web Console**: `https://minio-console.${DEFAULT_URL}`
+### Technical Specifications
+
+| Attribute | Internal DNS | Internal Port | External Port (Proxy) |
+| --- | --- | --- | --- |
+| **API Endpoint** | `minio` | `9000` | `minio.${DEFAULT_URL}` |
+| **Console UI** | `minio` | `9001` | `minio-console.${DEFAULT_URL}` |
+| **Static IP** | `172.19.0.12` | - | - |
+
+## 2. Bucket Automation & Provisioning
+
+Buckets are automatically provisioned by the `minio-create-buckets` container using the `mc` tool.
+
+### Managed Buckets
+
+- `tempo-bucket`: Cold storage for tracing.
+- `loki-bucket`: Log chunk persistence.
+- `cdn-bucket`: Publicly accessible assets.
+- `doc-intel-assets`: AI processing state.
+
+### Provisioning Verification
+
+```bash
+docker logs minio-create-buckets
+```
 
 ## 2. Initialization & Provisioning
 

@@ -99,7 +99,7 @@ When working with ARDs:
 
 | Document | System | Last Updated |
 | :--- | :--- | :--- |
-| [infra-overview.md](infra-overview.md) | Entire Infra Stack | 2026-02-24 |
+| [infra-overview.md](infra-overview.md) | Entire Infra Stack ([ADR-003](../adr/003-removing-static-docker-ips.md)) | 2026-02-24 |
 | [ai-requirements.md](ai-requirements.md) | Local AI (Ollama/WebUI) | 2026-02-24 |
 | [messaging-requirements.md](messaging-requirements.md) | Kafka / RabbitMQ | 2026-02-24 |
 | [observability-requirements.md](observability-requirements.md) | LGTM / Alloy Stack | 2026-02-24 |

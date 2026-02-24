@@ -6,11 +6,30 @@
 
 ## 1. Enterprise-Scale Workflow Engine
 
-n8n is deployed using a distributed architecture to ensure reliability and performance.
+n8n is deployed in a distributed queue mode for high dependability.
 
-- **Main URL**: `https://n8n.${DEFAULT_URL}`
-- **Database**: SQLite (local dev) or Management PostgreSQL.
-- **Queue Mode**: Enabled. Workloads are distributed to `n8n-worker` containers.
+### Technical Specifications
+
+| Attribute | Value |
+| --- | --- |
+| **Main URL** | `https://n8n.${DEFAULT_URL}` |
+| **Static IP** | `172.19.0.14` |
+| **Database** | Management PostgreSQL (`pg-router`) |
+| **Execution Mode**| `queue` (via Valkey) |
+| **Internal Port** | `5678` |
+
+### Infrastructure Components
+
+- **Main Engine**: `n8n` (Main UI and orchestration).
+- **Workers**: `n8n-worker` (Executes large workflow payloads).
+- **Task Runner**: `n8n-task-runner` (External script execution).
+- **Message Broker**: `n8n-valkey` (Execution queue).
+
+### Provisioning Verification
+
+```bash
+docker exec n8n curl -f http://localhost:5678/healthz
+```
 
 ## 2. Webhook Infrastructure
 

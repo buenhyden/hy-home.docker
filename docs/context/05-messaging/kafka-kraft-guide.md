@@ -6,12 +6,24 @@
 
 ## 1. Streaming Infrastructure
 
-We utilize a modern KRaft (Kafka Raft) architecture where nodes manage their own metadata without an external Zookeeper.
+The stack utilizes KRaft mode (ZooKeeper-less) for simplified metadata management across 3 nodes.
 
-- **Internal Broker Port**: `19092` (Inside `infra_net`)
-- **Controller Quorum Port**: `9093`
-- **External Port (WSL)**: `9092`
-- **Metadata Log Path**: `/var/lib/kafka/data/__cluster_metadata-0`
+### Technical Specifications
+
+| Service | IPv4 | Internal Port | Role |
+| --- | --- | --- | --- |
+| `kafka-1` | `172.19.0.20` | `19092` | Broker + Controller |
+| `kafka-2` | `172.19.0.21` | `19092` | Broker + Controller |
+| `kafka-3` | `172.19.0.22` | `19092` | Broker + Controller |
+| `schema-registry`| `172.19.0.23` | `8081` | Confluent SR |
+
+### Provisioning Verification
+
+Check KRaft leader election results:
+
+```bash
+docker logs kafka-1 | grep "Leader election"
+```
 
 ## 2. Component Layout
 

@@ -18,8 +18,31 @@ The cluster uses Patroni to handle automatic failover. Etcd serves as the Distri
 
 The cluster is initialized using a temporary `pg-cluster-init` container which injects `init_users_dbs.sql` upon the first successful startup.
 
+### Provisioning Verification
+
+Check logs for successful SQL execution:
+
+```bash
+docker logs pg-cluster-init
+```
+
 > [!NOTE]
 > Database migrations should be executed against the HAProxy Writer endpoint (`pg-router:5000`).
+
+## 3. Technical Specifications
+
+### Network Bindings (Internal)
+
+| Service | IPv4 (Static) | Internal DNS | Ports |
+| --- | --- | --- | --- |
+| `etcd-1` | `172.19.0.50` | `etcd-1` | `2379`, `2380` |
+| `pg-0` | `172.19.0.53` | `pg-0` | `5432` |
+| `pg-router`| `172.19.0.56` | `pg-router` | `5000`, `5001`, `8404` |
+
+### Storage Layout
+
+- **PG Data**: `${DEFAULT_DATA_DIR}/pg/pg[0-2]-data` → `/home/postgres/pgdata`
+- **Etcd Data**: `${DEFAULT_DATA_DIR}/etcd/etcd[1-3]-data` → `/etcd-data`
 
 ## 3. Reading Cluster Health
 
