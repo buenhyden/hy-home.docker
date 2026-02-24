@@ -1,6 +1,6 @@
 # Technical Context Documentation Hub (`docs/context/`)
 
-This directory serves as the **authoritative hub for service-specific operational architecture** and technical blueprints. It bridges the gap between high-level design requirements (`docs/ard/`) and executable runtime procedures (`runbooks/`).
+This directory serves as the **authoritative hub for service-specific operational architecture** and technical blueprints. It integrates design-time context with bootstrapping and initialization logic.
 
 ## Navigation Index
 
@@ -10,8 +10,13 @@ This directory serves as the **authoritative hub for service-specific operationa
 
 ### 02-Authentication & Communication
 
+- [**Keycloak Identity Provider Guide**](02-auth/keycloak-idp-guide.md): Realm setup, OIDC clients, and user provisioning.
 - [**SSO & OAuth2 Proxy Blueprint**](02-auth/sso-oauth2-proxy-guide.md): Centralized auth flow and cache.
 - [**SMTP Mail Relay Guide**](02-auth/mail-relay-operations.md): Internal mail trapping and testing.
+
+### 03-Security Tier
+
+- [**HashiCorp Vault Security Guide**](03-security/vault-cluster-guide.md): Secret initialization, unsealing, and integration.
 
 ### 04-Data Storage
 
@@ -28,6 +33,7 @@ This directory serves as the **authoritative hub for service-specific operationa
 
 ### 06-Observability
 
+- [**LGTM Stack Blueprint**](06-observability/lgtm-stack-blueprint.md): Loki, Grafana, Tempo, and Alloy metrics flow.
 - [**InfluxDB TSDB Guide**](06-observability/influxdb-tsdb-guide.md): Time-series metrics and data retention.
 - [**OpenSearch Log Analytics Guide**](06-observability/opensearch-log-search-guide.md): Centralized searching and indexing.
 
@@ -38,6 +44,7 @@ This directory serves as the **authoritative hub for service-specific operationa
 
 ### 08-AI Infrastructure
 
+- [**AI Inferencing & UI Guide**](08-ai/ai-inference-guide.md): Ollama, Open-WebUI, and GPU acceleration.
 - [**Qdrant Vector DB Context**](08-ai/qdrant-vector-db-context.md): RAG memory and HNSW optimization.
 
 ### 09-DevOps Tooling

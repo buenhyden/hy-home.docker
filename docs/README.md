@@ -23,8 +23,11 @@ Each sub-directory serves a distinct, non-overlapping purpose. Documents created
 - `prd/` — **Product Requirements Documents**.
   - **Purpose**: What we be building (Metrics, GWT Scenarios).
   - **Template**: `templates/product/prd-template.md`.
-- `guides/` — **Implementation & Operations Lifecycle**.
-  - **Purpose**: Step-by-step setup and phase-based behavioral guidelines.
+- `guides/` — **Platform Lifecycle & Workflows**.
+  - **Purpose**: Global "How to develop" guidelines and migration history.
+  - **Index**: [Guides Index](guides/README.md).
+- [**`context/`**](context/README.md) — **Technical Blueprints & Service Setup**.
+  - **Purpose**: Service-specific operational architecture, technical specs, and bootstrapping logic.
 - `manuals/` — **Collaboration & Standards**.
   - **Purpose**: SLA, A11y, and non-technical governance.
 

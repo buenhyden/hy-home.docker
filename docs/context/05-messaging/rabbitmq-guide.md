@@ -7,17 +7,21 @@
 
 RabbitMQ serves as the secondary AMQP broker, typically utilized for task-based async worker queues and legacy system integrations.
 
-- **AMQP Port**: `5672`
+- **AMQP Port**: `5672` (Internal)
 - **Management Web UI**: `https://rabbitmq.${DEFAULT_URL}`
 
-## 2. Configuration Standards
+## 2. Initial Setup
 
-The deployment uses a declarative `rabbitmq.conf` file.
+The deployment is declarative via `rabbitmq.conf`.
 
 - **Erlang Cookie**: Managed via Docker Secret `rabbitmq_erlang_cookie`.
+- **Initialization**: Upon first boot, enable required plugins (e.g., `rabbitmq_management`) if not defined in the base image.
+
+## 3. Configuration Standards
+
 - **Definition Export**: Regularly export definitions from the Web UI to keep a record of exchanges and bindings.
 
-## 3. Troubleshooting Persistence
+## 4. Troubleshooting Persistence
 
 If the service fails to boot with "Permission Denied", check the host volume permission on `${DEFAULT_DATA_DIR}/rabbitmq`. RabbitMQ demands UID `999`.
 

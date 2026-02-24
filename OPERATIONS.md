@@ -53,7 +53,7 @@ Below is the index of verified operational guides.
 
 For Docker resource cleanup and WSL volume compression, use the dedicated runbook: `runbooks/core/docker-resource-maintenance.md`.
 
-For a deep overview of infrastructure lifecycle and startup order, see [infra-lifecycle.md](docs/context/core/infra-lifecycle.md).
+For a deep overview of infrastructure lifecycle and startup order, see [infra-lifecycle-ops.md](docs/context/core/infra-lifecycle-ops.md).
 
 ## 5. Operational Rules
 
