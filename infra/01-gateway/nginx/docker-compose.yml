@@ -21,6 +21,10 @@ services:
       - nginx
     image: nginx:alpine
     container_name: nginx
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     restart: unless-stopped
     ports:
       - ${HTTP_HOST_PORT}:${HTTP_PORT}

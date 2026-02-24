@@ -16,6 +16,10 @@ services:
     hostname: ksqldb-server
     container_name: ksqldb-server
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     deploy:
       resources:
         limits:

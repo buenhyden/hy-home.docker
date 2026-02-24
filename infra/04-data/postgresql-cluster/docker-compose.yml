@@ -179,6 +179,10 @@ services:
           memory: 1G
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-0
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     hostname: pg-0
     env_file:
       - .env.postgres
@@ -231,6 +235,10 @@ services:
           memory: 1G
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-1
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     hostname: pg-1
     env_file:
       - .env.postgres
@@ -283,6 +291,10 @@ services:
           memory: 1G
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-2
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     hostname: pg-2
     env_file:
       - .env.postgres
@@ -414,6 +426,10 @@ services:
           memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-0-exporter
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     networks:
       infra_net:
         ipv4_address: 172.19.0.57
@@ -451,6 +467,10 @@ services:
           memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-1-exporter
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     networks:
       infra_net:
         ipv4_address: 172.19.0.58
@@ -488,6 +508,10 @@ services:
           memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-2-exporter
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     networks:
       infra_net:
         ipv4_address: 172.19.0.59

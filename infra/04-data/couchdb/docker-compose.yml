@@ -17,6 +17,10 @@ services:
       - couchdb
     image: couchdb:3.5.1
     container_name: couchdb-1
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     restart: unless-stopped
     environment:
       - COUCHDB_USER=${COUCHDB_USERNAME}

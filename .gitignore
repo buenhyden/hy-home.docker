@@ -53,17 +53,8 @@ examples/.generated/
 .history/
 
 # Archive
-archive/seaweedfs/config/security.toml
-archive/Terrakube/certs/*.pem
-archive/supabase/.env
-archive/harbor/
-archive/클라우드_취약점_점검_가이드.pdf
-archive/Infisical Emergency Kit.pdf
-archive/.env
-archive/hosts.txt
+
 # Example
-examples/harbor
-examples/keycloak
 
 .env
 !.env.example

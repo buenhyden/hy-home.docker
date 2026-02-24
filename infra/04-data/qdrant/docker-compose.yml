@@ -26,6 +26,10 @@ services:
           memory: 1G
     image: qdrant/qdrant:v1.17
     container_name: qdrant
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     ports:
       - '${QDRANT_HOST_PORT}:${QDRANT_PORT}'
     environment:

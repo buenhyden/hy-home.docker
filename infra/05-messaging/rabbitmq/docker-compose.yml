@@ -25,9 +25,16 @@ services:
     ports:
       - '${RABBITMQ_HOST_PORT}:${RABBITMQ_PORT}'
       - '${RABBITMQ_MANAGEMENT_HOST_PORT}:${RABBITMQ_MANAGEMENT_PORT}'
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    secrets:
+      - rabbitmq_user
+      - rabbitmq_password
     environment:
-      RABBITMQ_DEFAULT_USER: '${RABBITMQ_DEFAULT_USER}'
-      RABBITMQ_DEFAULT_PASS: '${RABBITMQ_DEFAULT_PASS}'
+      RABBITMQ_DEFAULT_USER_FILE: /run/secrets/rabbitmq_user
+      RABBITMQ_DEFAULT_PASS_FILE: /run/secrets/rabbitmq_password
     volumes:
       - rabbitmq-data-volume:/var/lib/rabbitmq
     networks:
