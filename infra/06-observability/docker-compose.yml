@@ -424,8 +424,6 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    environment:
-      # SMTP_USERNAME is now managed via Docker Secret
     secrets:
       - smtp_username
       - alertmanager_smtp_password

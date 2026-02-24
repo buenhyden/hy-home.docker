@@ -10,96 +10,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # ── Configurations Lint (YAML/JSON) ──────────────────────────
-  lint-configs:
+  # ── Pre-commit Hooks ──────────────────────────────────────────
+  pre-commit:
     permissions:
       contents: read
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
-
-      - name: Check YAML syntax
-        uses: ibiqlik/action-yamllint@v3
+      - uses: actions/setup-python@v5
         with:
-          file_or_dir: '.'
-          config_file: '.yamllint'
-
-      - name: Check JSON format
-        run: |
-          find . -name "*.json" -not -path "./node_modules/*" | xargs -I {} jq . {} > /dev/null
-
-  # ── Dockerfile Lint ───────────────────────────────────────────
-  lint-dockerfiles:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v6
-      - name: Run hadolint
-        uses: hadolint/hadolint-action@v3.3.0
-        with:
-          recursive: true
-
-  # ── Markdown Lint ─────────────────────────────────────────────
-  lint-markdown:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v6
-      - name: Lint Markdown
-        uses: davidanson/markdownlint-cli2-action@v22
-        with:
-          globs: '**/*.md'
-
-  # ── Secret Scanning ──────────────────────────────────────────
-  secret-scan:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Run Gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  # ── Docker Compose Validation ─────────────────────────────────
-  validate-compose:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Create .env from example
-        run: cp .env.example .env
-
-      - name: Create dummy secrets for validation
-        run: |
-          mkdir -p secrets
-          find secrets -type f -name "*.txt" -delete || true
-          # List of secrets needed for validation based on current docker-compose files
-          for s in postgres_password redis_password minio_root_password minio_app_user_password \
-                   valkey_password smtp_username influxdb_password influxdb_api_token \
-                   couchdb_password couchdb_cookie valkey_cluster_password n8n_db_password \
-                   n8n_valkey_password n8n_encryption_key n8n_runner_auth_token airflow_db_password \
-                   airflow_fernet_key airflow_www_password grafana_admin_password \
-                   oauth2_proxy_client_secret sonarqube_db_password terrakube_db_password \
-                   terrakube_pat_secret terrakube_internal_secret alertmanager_smtp_password \
-                   alertmanager_slack_webhook; do
-            echo "dummy" > "secrets/${s}.txt"
-          done
-
-      - name: Check Docker Compose Config
-        run: docker compose config > /dev/null
+          python-version: '3.12'
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.1
 
   # ── GitHub Actions Security Analysis ─────────────────────────
   zizmor:

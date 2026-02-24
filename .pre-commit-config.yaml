@@ -10,6 +10,7 @@ repos:
       - id: check-symlinks
       - id: check-toml
       - id: end-of-file-fixer
+      - id: check-json
       - id: mixed-line-ending
       - id: trailing-whitespace
 
@@ -86,9 +87,8 @@ repos:
 
       - id: docker-compose-check
         name: Validate Docker Compose
-        entry: bash -c 'cp .env.example .env 2>/dev/null; docker compose config >
-          /dev/null && rm -f .env'
-        language: system
+        entry: ./scripts/validate-docker-compose.sh
+        language: script
         files: (docker-compose\.yml|\.env\.example|infra/.*)
         pass_filenames: false
         stages: [pre-push]
