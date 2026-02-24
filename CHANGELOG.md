@@ -262,6 +262,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
+- Update pre-commit hook versions for yamllint, markdownlint-cli2, actionlint, check-dependabot, and gitleaks.
+- **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
 
