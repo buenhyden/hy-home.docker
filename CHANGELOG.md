@@ -97,6 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove `validate-compose` and `zizmor` GitHub Actions workflows, integrate Docker Compose validation into pre-commit hooks, and update changelog generation.
 - Introduce a dedicated script for Docker Compose validation, integrate it into pre-commit, and update `smtp_username` to use a Docker secret.
 - Add GitHub Actions workflow for greeting first-time contributors and configure Zizmor security checks.
+- Implement and document standard Docker security hardening for infrastructure services by adding `no-new-privileges` and `cap_drop: ALL` to compose files and updating related documentation.
 
 ### Changed
 
@@ -263,6 +264,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - Update pre-commit hook versions for yamllint, markdownlint-cli2, actionlint, check-dependabot, and gitleaks.
+- **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
