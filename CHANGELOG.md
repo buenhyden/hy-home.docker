@@ -248,6 +248,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refresh Grafana dashboards by adding new, removing old, and modifying an existing one, and update docker-compose configuration.
 - **docs:** Auto-format markdown docs and finalize MD001 syntax correction
 - Automate changelog generation using git-cliff via a new GitHub Actions workflow.
+- **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
 
@@ -256,5 +257,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Ci
 
 - Docker-compose.test.yml 수정
+
+### Config
+
+- Disable breaking change protection and commit filtering in `cliff.toml`.
 
 
