@@ -15,6 +15,7 @@ MinIO is the primary S3-compatible cold storage for the LGTM stack (Tempo/Loki).
 | **API Endpoint** | `minio` | `9000` | `minio.${DEFAULT_URL}` |
 | **Console UI** | `minio` | `9001` | `minio-console.${DEFAULT_URL}` |
 | **Static IP** | `172.19.0.12` | - | - |
+| **Hardening** | Standard | `no-new-privileges`, `cap_drop` | [Verified] |
 
 ## 2. Bucket Automation & Provisioning
 

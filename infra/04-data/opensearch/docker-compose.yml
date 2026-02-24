@@ -112,6 +112,22 @@ services:
   opensearch-dashboards:
     image: opensearchproject/opensearch-dashboards:3.4.0
     container_name: opensearch-dashboards
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     <<: *default-restart
     networks:
       infra_net:

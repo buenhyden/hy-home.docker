@@ -38,6 +38,7 @@ docker logs pg-cluster-init
 | `etcd-1` | `172.19.0.50` | `etcd-1` | `2379`, `2380` |
 | `pg-0` | `172.19.0.53` | `pg-0` | `5432` |
 | `pg-router`| `172.19.0.56` | `pg-router` | `5000`, `5001`, `8404` |
+| **Security** | `Hardware` | [Hardened] | `no-new-privileges`, `cap_drop` |
 
 ### Storage Layout
 

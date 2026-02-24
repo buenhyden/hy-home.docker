@@ -54,3 +54,9 @@ services:
           memory: 512M
         reservations:
           memory: 256M
+
+secrets:
+  rabbitmq_user:
+    external: true
+  rabbitmq_password:
+    external: true

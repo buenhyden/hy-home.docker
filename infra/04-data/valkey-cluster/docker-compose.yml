@@ -370,6 +370,10 @@ services:
           memory: 128M
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: valkey-exporter
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     ports:
       - '${VALKEY_EXPORTER_HOST_PORT}:${VALKEY_EXPORTER_PORT}'
     networks:

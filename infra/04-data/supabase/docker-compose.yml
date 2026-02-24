@@ -19,6 +19,10 @@ volumes:
 services:
   studio:
     container_name: supabase-studio
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: supabase/studio:2025.11.10-sha-5291fe3
     security_opt:
       - no-new-privileges:true
@@ -76,6 +80,10 @@ services:
 
   kong:
     container_name: supabase-kong
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: kong:3.9.1
     security_opt:
       - no-new-privileges:true
@@ -114,6 +122,10 @@ services:
 
   auth:
     container_name: supabase-auth
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: supabase/gotrue:v2.182.1
     security_opt:
       - no-new-privileges:true
@@ -169,6 +181,10 @@ services:
 
   rest:
     container_name: supabase-rest
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: postgrest/postgrest:v13.0.8
     security_opt:
       - no-new-privileges:true
@@ -197,6 +213,10 @@ services:
 
   realtime:
     container_name: realtime-dev.supabase-realtime
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: supabase/realtime:v2.63.0
     security_opt:
       - no-new-privileges:true
@@ -253,6 +273,10 @@ services:
 
   storage:
     container_name: supabase-storage
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: supabase/storage-api:v1.29.0
     security_opt:
       - no-new-privileges:true
@@ -300,6 +324,10 @@ services:
 
   imgproxy:
     container_name: supabase-imgproxy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: darthsim/imgproxy:v3.30.1
     security_opt:
       - no-new-privileges:true
@@ -321,6 +349,10 @@ services:
 
   meta:
     container_name: supabase-meta
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: supabase/postgres-meta:v0.93.1
     security_opt:
       - no-new-privileges:true
@@ -349,6 +381,10 @@ services:
 
   functions:
     container_name: supabase-edge-functions
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: supabase/edge-runtime:v1.69.23
     security_opt:
       - no-new-privileges:true
@@ -378,6 +414,10 @@ services:
 
   analytics:
     container_name: supabase-analytics
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: supabase/logflare:1.22.6
     security_opt:
       - no-new-privileges:true
@@ -418,6 +458,10 @@ services:
 
   db:
     container_name: supabase-db
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: supabase/postgres:15.14.1.068
     security_opt:
       - no-new-privileges:true
@@ -466,6 +510,10 @@ services:
 
   vector:
     container_name: supabase-vector
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: timberio/vector:0.52.0-alpine
     security_opt:
       - no-new-privileges:true
@@ -487,6 +535,10 @@ services:
 
   supavisor:
     container_name: supabase-pooler
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     image: supabase/supavisor:2.7.4
     security_opt:
       - no-new-privileges:true

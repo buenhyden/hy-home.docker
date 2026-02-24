@@ -16,6 +16,7 @@ The stack utilizes KRaft mode (ZooKeeper-less) for simplified metadata managemen
 | `kafka-2` | `172.19.0.21` | `19092` | Broker + Controller |
 | `kafka-3` | `172.19.0.22` | `19092` | Broker + Controller |
 | `schema-registry`| `172.19.0.23` | `8081` | Confluent SR |
+| `ksql-server` | `172.19.0.24` | `8088` | [Hardened: Standard] |
 
 ### Provisioning Verification
 

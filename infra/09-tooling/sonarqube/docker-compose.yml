@@ -31,6 +31,10 @@ services:
           memory: 1G
     image: sonarqube:26.1.0.118079-community
     container_name: sonarqube
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     hostname: sonarqube
     restart: unless-stopped
     security_opt:

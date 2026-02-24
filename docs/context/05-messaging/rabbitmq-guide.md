@@ -10,6 +10,14 @@ RabbitMQ serves as the secondary AMQP broker, typically utilized for task-based 
 - **AMQP Port**: `5672` (Internal)
 - **Management Web UI**: `https://rabbitmq.${DEFAULT_URL}`
 
+### Technical Specifications
+
+| Attribute | Internal DNS | Port | Hardening |
+| --- | --- | --- | --- |
+| **Service** | `rabbitmq` | `5672` | Standard (`no-new-privileges`) |
+| **Management**| `rabbitmq` | `15672` | [Hardened] |
+| **Secrets** | `rabbitmq_user` | `rabbitmq_password` | [Docker Secrets] |
+
 ## 2. Initial Setup
 
 The deployment is declarative via `rabbitmq.conf`.
