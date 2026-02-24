@@ -5,15 +5,13 @@ on:
     branches: [main]
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  # ── YAML / JSON lint ──────────────────────────────────────────
+  # ── Configurations Lint (YAML/JSON) ──────────────────────────
   lint-configs:
-    if: >-
-      github.event_name == 'push' ||
-      contains(join(github.event.pull_request.*.filename, ' '), '.yml') ||
-      contains(join(github.event.pull_request.*.filename, ' '), '.yaml')
-      || contains(join(github.event.pull_request.*.filename, ' '),
-      '.json')
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -31,12 +29,8 @@ jobs:
         run: |
           find . -name "*.json" -not -path "./node_modules/*" | xargs -I {} jq . {} > /dev/null
 
-  # ── Dockerfile lint ───────────────────────────────────────────
+  # ── Dockerfile Lint ───────────────────────────────────────────
   lint-dockerfiles:
-    if: >-
-      github.event_name == 'push' ||
-      contains(join(github.event.pull_request.*.filename, ' '),
-      'Dockerfile')
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -47,13 +41,9 @@ jobs:
         uses: hadolint/hadolint-action@v3.3.0
         with:
           recursive: true
-          # Uses .hadolint.yaml for ignore rules
 
-  # ── Markdown lint ─────────────────────────────────────────────
+  # ── Markdown Lint ─────────────────────────────────────────────
   lint-markdown:
-    if: >-
-      github.event_name == 'push' ||
-      contains(join(github.event.pull_request.*.filename, ' '), '.md')
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -65,7 +55,7 @@ jobs:
         with:
           globs: '**/*.md'
 
-  # ── Secret scanning ──────────────────────────────────────────
+  # ── Secret Scanning ──────────────────────────────────────────
   secret-scan:
     permissions:
       contents: read
@@ -79,3 +69,60 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ── Docker Compose Validation ─────────────────────────────────
+  validate-compose:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Create .env from example
+        run: cp .env.example .env
+
+      - name: Create dummy secrets for validation
+        run: |
+          mkdir -p secrets
+          find secrets -type f -name "*.txt" -delete || true
+          # List of secrets needed for validation based on current docker-compose files
+          for s in postgres_password redis_password minio_root_password minio_app_user_password \
+                   valkey_password smtp_username influxdb_password influxdb_api_token \
+                   couchdb_password couchdb_cookie valkey_cluster_password n8n_db_password \
+                   n8n_valkey_password n8n_encryption_key n8n_runner_auth_token airflow_db_password \
+                   airflow_fernet_key airflow_www_password grafana_admin_password \
+                   oauth2_proxy_client_secret sonarqube_db_password terrakube_db_password \
+                   terrakube_pat_secret terrakube_internal_secret alertmanager_smtp_password \
+                   alertmanager_slack_webhook; do
+            echo "dummy" > "secrets/${s}.txt"
+          done
+
+      - name: Check Docker Compose Config
+        run: docker compose config > /dev/null
+
+  # ── GitHub Actions Security Analysis ─────────────────────────
+  zizmor:
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Run zizmor
+        run: uvx zizmor . --format sarif . > results.sarif
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+          category: zizmor
