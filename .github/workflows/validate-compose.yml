@@ -4,14 +4,14 @@ on:
   push:
     branches: [main]
     paths:
-      - "infra/**"
-      - ".env.example"
-      - "docker-compose.yml"
+      - 'infra/**'
+      - '.env.example'
+      - 'docker-compose.yml'
   pull_request:
     paths:
-      - "infra/**"
-      - ".env.example"
-      - "docker-compose.yml"
+      - 'infra/**'
+      - '.env.example'
+      - 'docker-compose.yml'
 
 jobs:
   validate:

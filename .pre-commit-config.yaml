@@ -33,6 +33,12 @@ repos:
         # 필요시 파일 확장자/경로를 args로 조정 가능
         # args: ["**/*.md"]
 
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: ['-d', 'relaxed']
+
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.36.1
     hooks:
@@ -78,3 +84,9 @@ repos:
     rev: v1.7.10
     hooks:
       - id: actionlint # GitHub Actions 워크플로우 검사
+
+  # --- 6. 보안 검사 (Security) ---
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.21.2
+    hooks:
+      - id: gitleaks

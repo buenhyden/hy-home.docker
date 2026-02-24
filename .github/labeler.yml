@@ -1,48 +1,48 @@
 # Infra Layer
 area/infra:
   - changed-files:
-      - any-glob-to-any-file: "infra/**/*"
+      - any-glob-to-any-file: 'infra/**/*'
 
 area/infra/gateway:
   - changed-files:
-      - any-glob-to-any-file: "infra/01-gateway/**/*"
+      - any-glob-to-any-file: 'infra/01-gateway/**/*'
 
 area/infra/auth:
   - changed-files:
-      - any-glob-to-any-file: "infra/02-auth/**/*"
+      - any-glob-to-any-file: 'infra/02-auth/**/*'
 
 area/infra/data:
   - changed-files:
-      - any-glob-to-any-file: "infra/04-data/**/*"
+      - any-glob-to-any-file: 'infra/04-data/**/*'
 
 area/infra/messaging:
   - changed-files:
-      - any-glob-to-any-file: "infra/05-messaging/**/*"
+      - any-glob-to-any-file: 'infra/05-messaging/**/*'
 
 area/infra/observability:
   - changed-files:
-      - any-glob-to-any-file: "infra/06-observability/**/*"
+      - any-glob-to-any-file: 'infra/06-observability/**/*'
 
 area/infra/workflow:
   - changed-files:
-      - any-glob-to-any-file: "infra/07-workflow/**/*"
+      - any-glob-to-any-file: 'infra/07-workflow/**/*'
 
 area/infra/ai:
   - changed-files:
-      - any-glob-to-any-file: "infra/08-ai/**/*"
+      - any-glob-to-any-file: 'infra/08-ai/**/*'
 
 # Documentation
 area/docs:
   - changed-files:
-      - any-glob-to-any-file: "docs/**/*"
-      - any-glob-to-any-file: "*.md"
+      - any-glob-to-any-file: 'docs/**/*'
+      - any-glob-to-any-file: '*.md'
 
 # Scripts
 area/scripts:
   - changed-files:
-      - any-glob-to-any-file: "scripts/**/*"
+      - any-glob-to-any-file: 'scripts/**/*'
 
 # GitHub & Workflow
 area/github:
   - changed-files:
-      - any-glob-to-any-file: ".github/**/*"
+      - any-glob-to-any-file: '.github/**/*'
