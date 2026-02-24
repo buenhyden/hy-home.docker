@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
 ## [Unreleased]
 
 ### Added
@@ -255,10 +254,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add yamllint and gitleaks pre-commit hooks and standardize YAML string quotes across configurations.
 - **release:** Update CHANGELOG.md [skip ci]
 - Externalize yamllint configuration to a dedicated file and remove redundant Docker Compose security options.
+- **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
 
 - Reorganize runbooks into a new categorized directory structure, consolidating and standardizing operational guides.
+- Remove Docker Compose security options, add GitHub Actions read permissions, and format pre-commit hook arguments.
 
 ### Ci
 
@@ -267,3 +268,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Config
 
 - Disable breaking change protection and commit filtering in `cliff.toml`.
+
+
