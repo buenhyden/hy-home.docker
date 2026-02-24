@@ -15,10 +15,6 @@ services:
       - terrakube
     image: azbuilder/api-server:2.29.0
     container_name: terrakube-api
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -91,10 +87,6 @@ services:
       - terrakube
     image: azbuilder/terrakube-ui:2.29.0
     container_name: terrakube-ui
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -137,8 +129,6 @@ services:
     cap_drop:
       - ALL
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
     # cap_drop은 docker.sock 마운트로 인해 일부 제한 가능성 있음
     secrets:
       - terrakube_internal_secret
