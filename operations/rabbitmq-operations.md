@@ -1,6 +1,7 @@
 # RabbitMQ Routine Operations
 
 > **Component**: `rabbitmq`
+> **Profile**: `rabbitmq`
 
 이 서비스는 `rabbitmq` 프로파일로 관리됩니다.
 

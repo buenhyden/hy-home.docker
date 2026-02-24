@@ -81,7 +81,7 @@ When starting a project or writing an Architecture Reference Document (ARD), the
 
 1. **Design Changes**: Create an ADR in `docs/adr/` using `templates/architecture/adr-template.md`.
 2. **Data Structure Changes**: Document via ARD in `docs/ard/` using `templates/architecture/ard-template.md`.
-3. **Execution Rules**: Modify `.agent/rules/` to enforce new architectural linters globally.
+3. **Reference Diagrams**: See [Infrastructure ARD](docs/ard/infra-overview.md) and [Messaging ARD](docs/ard/messaging-requirements.md).
 
 ---
 

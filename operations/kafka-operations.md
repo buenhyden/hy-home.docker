@@ -1,6 +1,7 @@
 # Kafka Routine Operations
 
 > **Component**: `kafka`, `ksql`
+> **Profile**: `compose-file` / `ksql`
 
 ## Run Profile
 

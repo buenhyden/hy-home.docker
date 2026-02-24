@@ -1,6 +1,7 @@
 # InfluxDB Operations
 
 > **Component**: `influxdb`
+> **Profile**: `compose-file` (Standard)
 
 ## Usage
 

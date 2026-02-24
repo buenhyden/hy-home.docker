@@ -41,20 +41,9 @@ The most reliable way to take a snapshot block-level backup:
 3. Back up the mapped volume directory: `tar -czvf pg1-backup.tar.gz ${DEFAULT_DATA_DIR}/pg/pg1-data`
 4. Restart the replica: `docker start pg-1` (It will catch up via WAL logs automatically).
 
-## 5. Reinitialization (Destroying Data)
+> [!TIP]
+> For cluster re-initialization (destructive), use `runbooks/postgres-ha-reinit.md`.
 
-If the cluster enters a completely unrecoverable state, or for testing:
-
-```bash
-docker compose -f infra/04-data/postgresql-cluster/docker-compose.yml down -v
-sudo rm -rf ${DEFAULT_DATA_DIR}/pg/*
-sudo rm -rf ${DEFAULT_DATA_DIR}/etcd/*
-docker compose -f infra/04-data/postgresql-cluster/docker-compose.yml up -d
-```
-
-> [!CAUTION]
-> This destroys ALL database data permanently.
-
-## 6. HAProxy Stats
+## 5. HAProxy Stats
 
 You can monitor HAProxy load distribution visually by navigating to the Traefik route: `https://pg-haproxy.local.dev` (assuming `DEFAULT_URL=local.dev`).

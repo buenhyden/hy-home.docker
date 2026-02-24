@@ -1,6 +1,8 @@
 # CouchDB Operations
 
-> **Component**: `couchdb`
+> **Component**: `influxdb`
+> **Profile**: `compose-file` (Standard)
+> **Profile**: `compose-file` (Standard)
 
 ## Usage
 

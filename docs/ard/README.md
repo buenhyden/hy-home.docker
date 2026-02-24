@@ -97,8 +97,11 @@ When working with ARDs:
 
 ## Index of ARDs
 
-| Document | System        | Last Updated |
-| -------- | ------------- | ------------ |
-| -        | _No ARDs yet_ | -            |
+| Document | System | Last Updated |
+| :--- | :--- | :--- |
+| [infra-overview.md](infra-overview.md) | Entire Infra Stack | 2026-02-24 |
+| [ai-requirements.md](ai-requirements.md) | Local AI (Ollama/WebUI) | 2026-02-24 |
+| [messaging-requirements.md](messaging-requirements.md) | Kafka / RabbitMQ | 2026-02-24 |
+| [observability-requirements.md](observability-requirements.md) | LGTM / Alloy Stack | 2026-02-24 |
 
 > Add entries to this index as ARDs are created.

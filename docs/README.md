@@ -14,18 +14,19 @@ This directory exists to permanently store the "Why" and "What" of the system. I
 Each sub-directory serves a distinct, non-overlapping purpose. Documents created here MUST use their respective templates from the `templates/` folder.
 
 - `adr/` — **Architecture Decision Records**.
-  - **Required Content**: The context, decision, and consequences for major technical choices (e.g., "Why we chose MongoDB over PostgreSQL").
+  - **Purpose**: Why major technical choices were made.
   - **Template**: `templates/architecture/adr-template.md`.
 - `ard/` — **Architecture Reference Documents**.
-  - **Required Content**: Deep structural diagrams, core domain models, and high-level behavioral flow definitions (the "How it works globally").
-  - **Template**: `templates/architecture/ard-template.md`.
+  - **Purpose**: Global "How it works" diagrams and domain models.
+  - **Index**: [ARD Index](docs/ard/README.md).
+  - **Files**: [Infra Overview](docs/ard/infra-overview.md), [AI](docs/ard/ai-requirements.md), [Messaging](docs/ard/messaging-requirements.md).
 - `prd/` — **Product Requirements Documents**.
-  - **Required Content**: Measurable success metrics, target personas, and Given-When-Then (GWT) scenarios for new epic-level features. (The "What we are building").
+  - **Purpose**: What we be building (Metrics, GWT Scenarios).
   - **Template**: `templates/product/prd-template.md`.
-- `guides/` — **AI & Human Lifecycle Procedures**.
-  - **Required Content**: Checklists and behavioral rules for managing the Pre, During, and Post-Development phases. Both humans and AI Agents read these to know their exact responsibilities at each stage.
-- `manuals/` — **Non-technical Process Manuals**.
-  - **Required Content**: Human collaboration agreements, SLA definitions, and generic QA standards.
+- `guides/` — **Implementation & Operations Lifecycle**.
+  - **Purpose**: Step-by-step setup and phase-based behavioral guidelines.
+- `manuals/` — **Collaboration & Standards**.
+  - **Purpose**: SLA, A11y, and non-technical governance.
 
 ## 3. Explicit Boundaries & Anti-Patterns
 

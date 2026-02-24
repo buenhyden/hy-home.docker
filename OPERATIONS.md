@@ -52,10 +52,7 @@ Below is the index of verified operational guides.
 
 ### Deep Maintenance (WSL / Docker)
 
-If running on Windows/WSL2, active scaling of `.vhdx` dynamic disks is required.
-
-1. Run `docker system prune -a --volumes` to clear stopped layers.
-2. In PowerShell, compress WSL volume: `wsl --manage <distro> --set-sparse true` or using `diskpart` logic.
+For Docker resource cleanup and WSL volume compression, use the dedicated runbook: `runbooks/docker-resource-maintenance.md`.
 
 ## 5. Operational Rules
 
