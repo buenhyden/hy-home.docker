@@ -6,8 +6,9 @@
 **Hy-Home Docker**는 확장 가능하고 안정적인 홈 서버 및 AI 최적화 개발 환경을 위한 **Docker 기반 인프라 프로젝트**입니다.
 복잡한 마이크로서비스 아키텍처를 로컬 환경에서 손쉽게 구축하고 관리할 수 있도록 설계되었습니다.
 
-> 📖 **자세한 문서는 [docs/README.md](docs/README.md)에서 확인하실 수 있습니다.**
-> 🧭 **인프라 스택 상세는 [infra/README.md](infra/README.md)에서 확인하실 수 있습니다.**
+> 📖 **종합 문서 허브: [docs/README.md](docs/README.md)**
+> ⚖️ **시스템 아키텍처: [ARCHITECTURE.md](ARCHITECTURE.md)**
+> 🛠️ **운영 및 유지보수: [OPERATIONS.md](OPERATIONS.md)**
 
 ---
 
@@ -55,6 +56,17 @@ docker compose --profile ollama --profile airflow up -d
 ```
 
 > 사용 가능한 프로파일 목록은 [infra/README.md](infra/README.md)를 참고하세요.
+
+---
+
+## 🏛️ 구조적 핵심 기둥 (Structural Pillars)
+
+이 인프라는 다음과 같은 4개 핵심 레이어로 정의됩니다.
+
+1. **Architecture Rules ([ARCHITECTURE.md](ARCHITECTURE.md))**: 변경할 수 없는 글로벌 설계 규격.
+2. **Operational Mastery ([OPERATIONS.md](OPERATIONS.md))**: 서비스 가동 및 복구 정책 가이드.
+3. **Technical Blueprints ([docs/context/](docs/context/))**: 개별 서비스의 상세 기술 사양서.
+4. **Executable Runbooks ([runbooks/](runbooks/))**: 장애 상황 시 즉시 실행 가능한 명령 시퀀스.
 
 ---
 

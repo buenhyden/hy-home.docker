@@ -2,12 +2,9 @@
 
 This document is the central index for operational readiness in repositories created from this template. It provides policy-level guidance and points to executable runbooks managed by the **DevOps Agent**.
 
-> **IMPORTANT:** Operational knowledge is tiered:
->
-> 1. **Historical Records**: `operations/` (Incidents, Postmortems).
-> 2. **Technical Context**: `docs/context/` (Service Operational Architecture).
-> 3. **Executable Procedures**: `runbooks/` (Playbooks, Deployment/Rollback commands).
-> 4. **Infrastructure Hub**: `infra/` (Technical Specs and folder-level READMEs).
+> 1. **Technical Blueprints**: [**Service Technical context hub**](docs/context/README.md).
+> 2. **Executable Procedures**: [**Runbooks Catalog**](runbooks/README.md).
+> 3. **Infrastructure Hub**: `infra/` (Technical Specs and folder-level READMEs).
 
 ## 1. Runbook & Maintenance Catalog
 
@@ -21,7 +18,8 @@ Below is the index of verified operational guides.
 | **Auth** | Keycloak Auth Lockout Recovery | [auth-lockout.md](runbooks/02-auth/auth-lockout.md) |
 | **Storage** | MinIO Sync & Read-only Fix | [minio-sync-failure.md](runbooks/04-data/minio-sync-failure.md) |
 | **Security**| Vault Unseal & Recovery | [vault-sealed.md](runbooks/03-security/vault-sealed.md) |
-| **Monitor** | Observability Stack Maintenance | [observability-stack-maintenance.md](runbooks/06-observability/observability-stack-maintenance.md) |
+| **Monitor** | Observability Stack & Alloy Configuration | [observability.md](runbooks/06-observability/observability-stack-maintenance.md) |
+| **Workflow**| Airflow & n8n Operational Tasks | [workflow-ops.md](runbooks/07-workflow/README.md) |
 
 > **Note:** If a specific operational procedure (e.g. database migration, failover) is missing from this index, the DevOps Agent should proactively create a new runbook based on `templates/operations/runbook-template.md` and link it here.
 
@@ -40,10 +38,8 @@ Below is the index of verified operational guides.
 
 ## 3. Observability Baseline
 
-- **Metrics**: Essential RED metrics MUST be collected utilizing OTel collectors, adhering to `.agent/rules/2610-observability-strategy.md`.
-- **Logging**: All logs MUST use structured JSON format with correlation IDs per `.agent/rules/2620-logging-std.md`.
-- **Tracing**: Critical inter-service pipelines MUST propagate HTTP `trace_id` headers per `.agent/rules/2610-observability-strategy.md`.
-- **Alerts**: Alerts trigger based on SLO Error Budget burns affecting users, adhering to `.agent/rules/2630-alerting-std.md`.
+- **Metrics**: Essential RED metrics MUST be collected utilizing Alloy collectors, adhering to `.agent/rules/2610-observability-strategy.md`.
+- **Collection**: Unified OTLP ingestion via [Grafana Alloy](docs/context/06-observability/lgtm-stack-blueprint.md).
 
 ## 4. Continuity & Disaster Recovery
 

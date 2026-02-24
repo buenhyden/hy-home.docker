@@ -8,6 +8,7 @@ This directory exists to permanently store the "Why" and "What" of the system. I
 
 - **Isolate product/design knowledge** from executable logic (`specs/`), operational scripts (`runbooks/`), and AI Automation logic (`.agent/workflows/`).
 - Serve as the primary reference point for **Human Developers** and **AI Planner Agents** trying to understand the overarching system constraints.
+- This hub is subordinate to the global repository rules: [**ARCHITECTURE.md**](../ARCHITECTURE.md) (Design Laws) and [**OPERATIONS.md**](../OPERATIONS.md) (Execution Policy).
 
 ## 2. Sub-Directories & Required Content
 

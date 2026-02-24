@@ -14,12 +14,8 @@ This template provides a standardized foundation for building software projects.
 - The list of acceptable core tech stacks.
 - The Architectural Checklist that every new feature MUST pass before entering the `specs/` phase.
 
-### Core Architecture Pillars
-
-- **Spec-Driven Development**: `specs/` uniquely drives all implementation.
-- **AI-Assisted Development**: Multi Sub-Agent AI system phases (`AGENTS.md`).
-- **Template-Based Documentation**: Consistent output enforced via `templates/`.
 - **Strict Boundary Segregation**: Clear division of Knowledge (`docs/`), Implementation (`specs/`, `web/`, `app/`, `server/`), and Operations (`runbooks/`).
+- **Standard Security Hardening**: Mandatory `no-new-privileges:true` and `cap_drop: [ALL]` for all infrastructure services.
 
 ## 2. Core Constraints & Decisions
 
@@ -29,6 +25,7 @@ This template provides a standardized foundation for building software projects.
 | ----------------------- | --------------------------------------------------------------------------------------- |
 | **Spec-Driven Code**    | Eliminates AI hallucination by giving Coder Agents a hard, human-approved target.       |
 | **Templates Mandatory** | Ensures parsing consistency for future AI tasks (PRDs, Specs, Runbooks).                |
+| **Security Hardening** | Mandatory baseline for production-grade containers (no-new-privileges).               |
 | **Dedicated Runbooks**  | Prevents ops scripts from getting lost in `docs/` hierarchies.                          |
 | **WSL I/O Constraints** | Prevents drastic Docker performance loss. The repository MUST NOT be run from `/mnt/c`. |
 
@@ -64,9 +61,10 @@ When starting a project or writing an Architecture Reference Document (ARD), the
 | **Gateway** | Traefik | Edge router, SSL Termination, Load Balancing |
 | **Auth/Security** | Keycloak / OAuth2-Proxy / Vault | OIDC SSO, Admin Secrets, Boundary Auth |
 | **Data Stores** | Postgres (Patroni) / Valkey / MinIO | HA RDBMS, Memory Store, Object Blob |
-| **Messaging** | Kafka (KRaft) / RabbitMQ | Distributed event streaming & Task queues |
-| **Observability**| LGTM (Grafana, Loki, Tempo, Mimir) | Unified Metric/Log/Trace correlation |
-| **AI/Logic** | Ollama / Open WebUI / n8n / Airflow | Local LLM hosting, RAG, & Workflow automation |
+| **Messaging** | Kafka (KRaft) / RabbitMQ / ksqldb | Distributed event streaming & Task queues |
+| **Observability**| LGTM Stack (Grafana, Loki, Tempo, Alloy) | Unified Metric/Log/Trace correlation |
+| **Workflow** | n8n / Airflow | Orchestration & Automation pipelines |
+| **AI Infrastructure**| Ollama / Open-WebUI / Qdrant | Local LLM hosting & Vector Memory |
 | **CI/Ops** | GitHub Actions / Docker Secrets | Declarative validation & Secret Hardening |
 
 ## 4. Integration & Separation Points
