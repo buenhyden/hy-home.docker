@@ -430,10 +430,6 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     networks:
       infra_net:
         ipv4_address: 172.19.0.57
@@ -475,10 +471,6 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     networks:
       infra_net:
         ipv4_address: 172.19.0.58
@@ -516,10 +508,6 @@ services:
           memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-2-exporter
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     security_opt:
       - no-new-privileges:true
     cap_drop:

@@ -24,10 +24,6 @@ services:
     cap_drop:
       - ALL
     image: supabase/studio:2025.11.10-sha-5291fe3
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     restart: unless-stopped
     healthcheck:
       test:
@@ -85,10 +81,6 @@ services:
     cap_drop:
       - ALL
     image: kong:3.9.1
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     restart: unless-stopped
     ports:
       - ${SUPABASE_KONG_HTTP_PORT}:8000/tcp
@@ -127,8 +119,6 @@ services:
     cap_drop:
       - ALL
     image: supabase/gotrue:v2.182.1
-    security_opt:
-      - no-new-privileges:true
     restart: unless-stopped
     healthcheck:
       test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:9999/health']
@@ -186,8 +176,6 @@ services:
     cap_drop:
       - ALL
     image: postgrest/postgrest:v13.0.8
-    security_opt:
-      - no-new-privileges:true
     restart: unless-stopped
     depends_on:
       db:
@@ -218,8 +206,6 @@ services:
     cap_drop:
       - ALL
     image: supabase/realtime:v2.63.0
-    security_opt:
-      - no-new-privileges:true
     restart: unless-stopped
     depends_on:
       db:
@@ -278,8 +264,6 @@ services:
     cap_drop:
       - ALL
     image: supabase/storage-api:v1.29.0
-    security_opt:
-      - no-new-privileges:true
     restart: unless-stopped
     volumes:
       - ./volumes/storage:/var/lib/storage:z
@@ -329,8 +313,6 @@ services:
     cap_drop:
       - ALL
     image: darthsim/imgproxy:v3.30.1
-    security_opt:
-      - no-new-privileges:true
     restart: unless-stopped
     volumes:
       - ./volumes/storage:/var/lib/storage:z
@@ -354,8 +336,6 @@ services:
     cap_drop:
       - ALL
     image: supabase/postgres-meta:v0.93.1
-    security_opt:
-      - no-new-privileges:true
     restart: unless-stopped
     depends_on:
       db:
@@ -386,8 +366,6 @@ services:
     cap_drop:
       - ALL
     image: supabase/edge-runtime:v1.69.23
-    security_opt:
-      - no-new-privileges:true
     restart: unless-stopped
     volumes:
       - ./volumes/functions:/home/deno/functions:Z
@@ -419,8 +397,6 @@ services:
     cap_drop:
       - ALL
     image: supabase/logflare:1.22.6
-    security_opt:
-      - no-new-privileges:true
     restart: unless-stopped
     ports:
       - 4000:4000
@@ -463,8 +439,6 @@ services:
     cap_drop:
       - ALL
     image: supabase/postgres:15.14.1.068
-    security_opt:
-      - no-new-privileges:true
     restart: unless-stopped
     volumes:
       - ./volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
@@ -510,8 +484,6 @@ services:
 
   vector:
     container_name: supabase-vector
-    security_opt:
-      - no-new-privileges:true
     cap_drop:
       - ALL
     image: timberio/vector:0.52.0-alpine
@@ -540,8 +512,6 @@ services:
     cap_drop:
       - ALL
     image: supabase/supavisor:2.7.4
-    security_opt:
-      - no-new-privileges:true
     restart: unless-stopped
     ports:
       - ${SUPABASE_POSTGRES_PORT}:5432

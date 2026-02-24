@@ -120,14 +120,6 @@ services:
       resources:
         limits:
           memory: 512M
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    deploy:
-      resources:
-        limits:
-          memory: 512M
     <<: *default-restart
     networks:
       infra_net:
