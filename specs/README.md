@@ -17,8 +17,10 @@ Every specification created in this folder MUST be instantiated from the predefi
 - **Owner**: The **Planner Agent** creates these files. The **Coder Agent** reads and executes them.
 - **Required Files per Feature**:
   - `specs/<feature>/spec.md` — The technical specification detailing exact required code changes, logic flows, and testing constraints. **(Template: `templates/engineering/spec-template.md`)**
-  - `specs/<feature>/plan.md` — The step-by-step execution roadmap for the Coder agent.
+  - `specs/<feature>/plan.md` — The step-by-step execution roadmap for the Coder agent. **(Template: `templates/project/plan-template.md`)**
   - `specs/<feature>/api/` — OpenAPI or GraphQL schemas documenting interface contracts. **(Template: `templates/engineering/api-spec-template.md`)**
+
+> **Note**: Domain groupings (e.g., `specs/infra/<feature>/spec.md`) are allowed, but the feature folder must still contain `spec.md` and `plan.md`.
 
 ## 3. Golden Rules for AI Agents
 
