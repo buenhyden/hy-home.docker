@@ -95,6 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhance container security by adding `no-new-privileges` and `cap_drop: ALL` to most services, create a SeaweedFS security example, and
 - Implement container security hardening with `no-new-privileges` and `cap_drop` across multiple services, introduce RabbitMQ secrets, and update documentation.
 - Remove `validate-compose` and `zizmor` GitHub Actions workflows, integrate Docker Compose validation into pre-commit hooks, and update changelog generation.
+- Introduce a dedicated script for Docker Compose validation, integrate it into pre-commit, and update `smtp_username` to use a Docker secret.
 
 ### Changed
 
@@ -255,6 +256,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add yamllint and gitleaks pre-commit hooks and standardize YAML string quotes across configurations.
 - **release:** Update CHANGELOG.md [skip ci]
 - Externalize yamllint configuration to a dedicated file and remove redundant Docker Compose security options.
+- **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
