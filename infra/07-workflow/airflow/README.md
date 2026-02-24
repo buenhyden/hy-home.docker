@@ -4,12 +4,12 @@ Apache Airflow is a platform to programmatically author, schedule, and monitor w
 
 ## Services
 
-| Service            | Image                         | Role           | Resources         |
-| :----------------- | :---------------------------- | :------------- | :---------------- |
-| `airflow-webserver`| `apache/airflow:2.10.0`      | Web UI         | 0.5 CPU / 1GB RAM |
-| `airflow-scheduler`| `apache/airflow:2.10.0`      | Orchestrator   | 0.5 CPU / 512MB   |
-| `airflow-worker`   | `apache/airflow:2.10.0`      | Task Execution | 1 CPU / 1GB RAM   |
-| `airflow-init`     | `apache/airflow:2.10.0`      | Initialization | -                 |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `api-server` | `airflow:slim-3.1.6`| Web / API | 1.0 CPU / 1G |
+| `scheduler` | `airflow:slim-3.1.6`| Orchestrator | 1.0 CPU / 1G |
+| `worker` | `airflow:slim-3.1.6`| Celery Worker| 1.0 CPU / 1G |
+| `dag-proc` | `airflow:slim-3.1.6`| DAG Loader | 1.0 CPU / 1G |
 
 ## Networking
 

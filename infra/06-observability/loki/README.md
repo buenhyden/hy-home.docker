@@ -4,9 +4,9 @@ Loki is a horizontally-scalable, highly-available, multi-tenant log aggregation 
 
 ## Services
 
-| Service | Image                  | Role           | Resources         |
-| :------ | :--------------------- | :------------- | :---------------- |
-| `loki`  | `grafana/loki:3.3.0`   | Log Processor  | 0.5 CPU / 1GB RAM |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `loki` | `grafana/loki:3.6.6` | Log Storage | 1.0 CPU / 1GB RAM |
 
 ## Networking
 

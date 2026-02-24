@@ -4,9 +4,9 @@ A developer-focused email testing tool with a built-in SMTP server and web UI.
 
 ## Services
 
-| Service   | Image                | Role           | Port       |
-| :-------- | :------------------- | :------------- | :--------- |
-| `mailhog` | `mailhog/mailhog:latest` | Email Testing  | 1025, 8025 |
+| Service | Image | Role | Resources | Portal |
+| :--- | :--- | :--- | :--- | :--- |
+| `mailhog` | `mailhog:v1.0.1` | SMTP Test | 0.5 CPU / 512M | `mail.${DEFAULT_URL}` |
 
 ## Networking
 

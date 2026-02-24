@@ -4,9 +4,9 @@ Tempo is a high-volume, low-cost distributed tracing backend.
 
 ## Services
 
-| Service | Image                   | Role           | Resources         |
-| :------ | :---------------------- | :------------- | :---------------- |
-| `tempo` | `grafana/tempo:2.7.0`   | Tracing Server | 0.5 CPU / 1GB RAM |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `tempo` | `grafana/tempo:2.10.1` | Trace Storage | 1.0 CPU / 1GB RAM |
 
 ## Networking
 

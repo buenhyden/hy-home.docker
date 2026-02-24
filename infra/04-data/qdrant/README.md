@@ -4,20 +4,19 @@ Qdrant is a high-performance vector search engine designed for RAG (Retrieval-Au
 
 ## Services
 
-| Service  | Image                     | Role            | Resources       |
-| :------- | :------------------------ | :-------------- | :-------------- |
-| `qdrant` | `qdrant/qdrant:v1.12.1`   | Vector Search   | 0.5 CPU / 2GB RAM |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `qdrant` | `qdrant/qdrant:v1.17` | Vector Database | 1.0 CPU / 1GB RAM |
 
 ## Networking
 
-| Endpoint             | Port | Purpose             |
-| :------------------- | :--- | :------------------ |
-| `vector.${DEFAULT_URL}`| 6333 | REST / Web Console  |
-| `qdrant:6334`        | 6334 | gRPC API            |
+- **Static IP**: `172.19.0.41`
+- **URL**: `qdrant.${DEFAULT_URL}` via Traefik.
+- **Internal Port**: `6333` (HTTP API).
 
 ## Persistence
 
-- **Data**: `/qdrant/storage` (mounted to `qdrant-data` volume).
+- **Data**: `qdrant-data` volume mapped to `${DEFAULT_DATA_DIR}/qdrant/data`.
 
 ## Configuration
 

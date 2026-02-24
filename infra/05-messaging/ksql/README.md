@@ -4,14 +4,19 @@ ksqlDB is the streaming SQL engine for Apache Kafka. It allows you to build stre
 
 ## Services
 
-| Service        | Image                           | Role               | Resources         |
-| :------------- | :------------------------------ | :----------------- | :---------------- |
-| `ksqldb-server`| `confluentinc/ksqldb-server:latest` | Stream Processor | 1 CPU / 2GB RAM   |
-| `ksqldb-cli`   | `confluentinc/ksqldb-cli:latest`    | CLI Tool           | -                 |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `ksqldb-server` | `cp-ksqldb-server:8.0.3` | Stream Processing | 1.0 CPU / 1G RAM |
+| `ksqldb-cli` | `cp-ksqldb-cli:8.0.3` | Management CLI | Default |
 
-## Dependencies
+## Networking
 
-- **Kafka**: Connects to the Kafka broker (`infra/05-messaging/kafka`).
+- **URL**: `${KSQLDB_HOST_PORT}` (Host) / `8088` (Internal).
+- **Dependencies**: Connects to `kafka-1..3` and `schema-registry`.
+
+## Persistence
+
+- **Data**: `ksqldb-data-volume` mapped to `/var/lib/ksql`.
 
 ## File Map
 

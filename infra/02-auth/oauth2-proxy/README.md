@@ -6,16 +6,18 @@ OAuth2 Proxy is a reverse proxy and static file server that provides authenticat
 
 | Service        | Image                           | Role               | Resources         | Port       |
 | :------------- | :------------------------------ | :----------------- | :---------------- | :--------- |
-| `oauth2-proxy` | `quay.io/oauth2-proxy/oauth2-proxy:latest` | Auth Proxy | 0.2 CPU / 128MB | 4180 (Int) |
+| `oauth2-proxy` | `build: ./Dockerfile`           | Auth Proxy         | 0.5 CPU / 256MB   | 4180 (Int) |
 
 ## Dependencies
 
 - **IdP**: Typically connected to Keycloak (`infra/02-auth/keycloak`).
-- **Session Store**: Uses Valkey (`infra/04-data/valkey-cluster`) or Redis for session storage.
+- **Session Store**: Uses Valkey (`mng-valkey:6379`) located in `infra/04-data/mng-db`.
 
 ## Networking
 
 Exposed via Traefik at `auth.${DEFAULT_URL}`.
+
+- **Port Mapping**: Uses `${OAUTH2_PROXY_PORT}` (usually 4180).
 
 ## File Map
 

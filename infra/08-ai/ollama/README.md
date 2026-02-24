@@ -4,19 +4,26 @@ This stack provides local LLM inference and a powerful chat interface.
 
 ## Services
 
-| Service      | Image                      | Role           | Resources               |
-| :----------- | :------------------------- | :------------- | :---------------------- |
-| `ollama`     | `ollama/ollama:latest`     | Inference Engine| 4 CPU / 8GB RAM / 1 GPU |
-| `open-webui` | `ghcr.io/open-webui/open-webui:main` | Chat UI        | 1 CPU / 1GB RAM         |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `ollama` | `ollama/ollama:0.13.5` | LLM Engine | 4.0 CPU / 8GB RAM / GPU |
+| `exporter`| `ollama-exporter:1.0.1` | Metrics | Default |
 
 ## Networking
 
-- **Ollama**: `ollama.${DEFAULT_URL}`.
-- **WebUI**: `chat.${DEFAULT_URL}`.
+- **Static IP**: `172.19.0.40`
+- **URL**: `ollama.${DEFAULT_URL}` via Traefik.
+- **Port**: `11434` (Internal).
 
-## GPU Support
+## Security
 
-Ensure the NVIDIA Container Toolkit is installed on the host and `deploy: resources: reservations: devices` is configured in `docker-compose.yml`.
+- **SSO**: Protected by `sso-auth@file` middleware (Keycloak).
+- **Hardening**: `no-new-privileges:true`.
+
+## Persistence
+
+- **Models**: `ollama-data` volume mapped to `/root/.ollama`.
+ is installed on the host and `deploy: resources: reservations: devices` is configured in `docker-compose.yml`.
 
 ## File Map
 

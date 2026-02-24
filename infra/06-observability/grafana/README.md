@@ -4,9 +4,9 @@ Grafana provides the visualization layer for metrics, logs, and traces.
 
 ## Services
 
-| Service   | Image                    | Role         | Resources       |
-| :-------- | :----------------------- | :----------- | :-------------- |
-| `grafana` | `grafana/grafana:11.5.2` | Visualization| 0.5 CPU / 1GB RAM |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `grafana` | `grafana/grafana:12.3.3`| Dashboard | 0.5 CPU / 512M |
 
 ## Networking
 

@@ -4,14 +4,19 @@ Nginx acts as an optional, path-based reverse proxy or standalone gateway for sp
 
 ## Services
 
-| Service | Image            | Role              | Resources       | Port       |
-| :------ | :--------------- | :---------------- | :-------------- | :--------- |
-| `nginx` | `nginx:alpine`   | Lightweight Proxy | 0.2 CPU / 128MB | 80, 443    |
+| Service | Image            | Role              | Resources       | Profile  |
+| :------ | :--------------- | :---------------- | :-------------- | :------- |
+| `nginx` | `nginx:alpine`   | Lightweight Proxy | 0.5 CPU / 512MB | `nginx`  |
 
 ## Networking
 
 - **Static IP**: `172.19.0.13` (Shares IP with Traefik, do not run concurrently).
-- **Configuration**: Uses `config/nginx.conf` for routing rules.
+- **Ports**: `${HTTP_HOST_PORT}:${HTTP_PORT}`, `${HTTPS_HOST_PORT}:${HTTPS_PORT}`.
+- **Configuration**: Uses `./config/nginx.conf` for routing rules.
+
+## Persistence
+
+- **Certs**: `nginx_certs` volume mapped to `${DEFAULT_DOCKER_PATH}/secrets/certs`.
 
 ## File Map
 

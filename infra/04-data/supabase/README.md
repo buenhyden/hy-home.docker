@@ -6,26 +6,34 @@ Self-hosted Supabase stack provides an open-source Firebase alternative with Pos
 
 Supabase runs as a complex set of integrated services, typically managed as a standalone stack.
 
-| Service       | Role                     | Endpoint                     |
-| :------------ | :----------------------- | :--------------------------- |
-| `kong`        | API Gateway              | `supabase.${DEFAULT_URL}`    |
-| `studio`      | Dashboard UI             | `dashboard.${DEFAULT_URL}`   |
-| `auth`        | GoTrue Auth server       |                              |
-| `db`          | PostgreSQL + PostgREST   |                              |
-| `storage`     | S3-compatible storage    |                              |
-| `realtime`    | Websocket sync server    |                              |
+## Services (Partial List)
+
+| Service | Image | Role |
+| :--- | :--- | :--- |
+| `db` | `supabase/postgres:15.14.1...`| Core Database |
+| `auth` | `supabase/gotrue:v2.182.1` | GoTrue Auth |
+| `rest` | `postgrest/postgrest:v13.0.8` | PostgREST API |
+| `studio` | `supabase/studio:2025.11.10...`| Management GUI |
+| `kong` | `kong:3.9.1` | API Gateway |
 
 ## Networking
 
-| Endpoint                   | Port | Purpose                 |
-| :------------------------- | :--- | :---------------------- |
-| `supabase.${DEFAULT_URL}`  | 8000 | Kong API Gateway        |
-| `dashboard.${DEFAULT_URL}` | 3000 | Supabase Studio Console |
+Accessed via **Kong** bridge:
+
+- **HTTP**: `http://localhost:${SUPABASE_KONG_HTTP_PORT}` (External)
+- **HTTPS**: `https://localhost:${SUPABASE_KONG_HTTPS_PORT}` (External)
+- **Studio**: Port 3000 (Internal)
 
 ## Persistence
 
-- **Database**: Uses local PostgreSQL volume or external cluster.
-- **Storage**: Files are persisted in the `storage` volume.
+- **Database**: `./volumes/db/data`
+- **Storage**: `./volumes/storage`
+- **Functions**: `./volumes/functions`
+
+## Configuration
+
+- **Auth**: Uses `supabase_db_password`, `supabase_jwt_secret`, `supabase_anon_key`, and `supabase_service_key` secrets.
+- **Edge Runtime**: `supabase-edge-functions` runs custom Deno tasks.
 
 ## Configuration
 

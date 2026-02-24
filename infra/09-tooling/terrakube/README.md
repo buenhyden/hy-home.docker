@@ -4,15 +4,23 @@ Terrakube is an open-source alternative to Terraform Cloud and Terraform Enterpr
 
 ## Services
 
-| Service              | Image                         | Role           | Resources       |
-| :------------------- | :---------------------------- | :------------- | :-------------- |
-| `terrakube-api`      | `terrakube/api:latest`        | Backend API    | 0.5 CPU / 1GB RAM |
-| `terrakube-ui`       | `terrakube/ui:latest`         | Management UI  | 0.2 CPU / 256MB |
-| `terrakube-executor` | `terrakube/executor:latest`   | Job Runner     | 1 CPU / 1GB RAM |
+| Service | Image | Role |
+| :--- | :--- | :--- |
+| `terrakube-api`| `api-server:2.29.0` | Backend API |
+| `terrakube-ui` | `terrakube-ui:2.29.0`| Frontend GUI|
+| `executor` | `executor:2.29.0` | Task Runner |
 
 ## Networking
 
-Exposed via Traefik at `terrakube.${DEFAULT_URL}`.
+- **UI**: `terrakube-ui.${DEFAULT_URL}`
+- **API**: `terrakube-api.${DEFAULT_URL}`
+- **Runner**: `terrakube-executor.${DEFAULT_URL}`
+
+## Dependencies
+
+- **IdP**: Keycloak (`infra/02-auth/keycloak`).
+- **Store**: MinIO (`infra/04-data/minio`) for state/outputs.
+- **Cache**: Management Valkey (`infra/04-data/mng-db`).
 
 ## Persistence
 

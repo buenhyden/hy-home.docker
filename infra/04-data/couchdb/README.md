@@ -4,23 +4,26 @@ Apache CouchDB is an open-source document-oriented NoSQL database, implemented i
 
 ## Services
 
-| Service   | Image               | Role           | Resources         | Port       |
-| :-------- | :------------------ | :------------- | :---------------- | :--------- |
-| `couchdb` | `couchdb:3.3`       | Document DB    | 0.5 CPU / 1GB RAM | 5984 (Int) |
+| Service | Image | Role | Profile |
+| :--- | :--- | :--- | :--- |
+| `couchdb-1, 2, 3` | `couchdb:3.5.1` | DB Nodes | `couchdb` |
+| `couchdb-init` | `curlimages/curl` | Cluster Setup | `couchdb` |
 
 ## Networking
 
-| Endpoint                   | Port | Purpose                 |
-| :------------------------- | :--- | :---------------------- |
-| `couchdb.${DEFAULT_URL}`   | 5984 | Web UI (Fauxton) / API  |
+- **URL**: `couchdb.${DEFAULT_URL}` via Traefik.
+- **Load Balancing**: Sticky sessions enabled (`couchdb_sticky` cookie).
+- **Internal Ports**: `5984` (API), `4369` (Epmd), `9100` (Distribution).
 
 ## Persistence
 
-- **Data**: `/opt/couchdb/data` (mounted to `couchdb-data` volume).
+- **Volumes**: `couchdb1-data`, `couchdb2-data`, `couchdb3-data`.
+- **Mount Point**: `/opt/couchdb/data`.
 
 ## Configuration
 
-- **Admin**: Configured via `COUCHDB_USER` and `COUCHDB_PASSWORD`.
+- **Admin User**: `${COUCHDB_USERNAME}`
+- **Secrets**: Uses `couchdb_password` and `couchdb_cookie` Docker secrets.
 
 ## File Map
 

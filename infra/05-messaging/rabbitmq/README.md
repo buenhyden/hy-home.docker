@@ -4,23 +4,18 @@ RabbitMQ is the most widely deployed open source message broker.
 
 ## Services
 
-| Service    | Image                        | Role           | Resources         |
-| :--------- | :--------------------------- | :------------- | :---------------- |
-| `rabbitmq` | `rabbitmq:3-management-alpine`| Message Broker | 0.5 CPU / 1GB RAM |
+| Service | Image | Role | Resources | Profile |
+| :--- | :--- | :--- | :--- | :--- |
+| `rabbitmq` | `rabbitmq:4.2.3-...` | Bus Broker | 0.5 CPU / 512M | `rabbitmq` |
 
 ## Networking
 
-| Port | Purpose                |
-| :--- | :--------------------- |
-| 5672 | AMQP protocol          |
-| 15672| Management UI (Web)    |
+- **Static IP**: `172.19.0.21`
+- **AMQP**: `${RABBITMQ_HOST_PORT}` (default 5672).
+- **Management Web**: `${RABBITMQ_MANAGEMENT_HOST_PORT}` (default 15672).
 
 ## Persistence
 
-- **Data**: `/var/lib/rabbitmq` (mounted to `rabbitmq-data` volume).
-
-## File Map
-
-| Path        | Description                         |
+- **Data**: `rabbitmq-data-volume` mapped to `/var/lib/rabbitmq`.
 | ----------- | ----------------------------------- |
 | `README.md` | Service overview and usage notes.   |

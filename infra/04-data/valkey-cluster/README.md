@@ -4,18 +4,26 @@ A high-performance, 6-node distributed Valkey (Redis-compatible) cluster.
 
 ## Services
 
-| Service          | Role            | Instances | Resources         |
-| :--------------- | :-------------- | :-------- | :---------------- |
-| `valkey-cluster` | Distributed Cache| 6 Nodes   | 0.2 CPU / 256MB ea|
+| Service | Image | Role | Resources | IP Range |
+| :--- | :--- | :--- | :--- | :--- |
+| `valkey-node-0..5` | `valkey/valkey:9.0.2-alpine`| Cluster Nodes | 0.5 CPU / 512M | `172.19.0.60..65`|
+| `valkey-init` | `valkey/valkey:9.0.2-alpine`| Setup Assistant | 128MB RAM | `172.19.0.66` |
+| `exporter` | `redis_exporter:v1.80.1` | Metrics | 128MB RAM | `172.19.0.67` |
 
 ## Networking
 
-- **Internal Ports**: 6379 (Client), 16379 (Bus).
-- **Setup**: Nodes are automatically clustered using a startup script (Check `scripts/` or `docker-compose.yml`).
+- **Nodes**: Internal ports `${VALKEY[0-5]_PORT}` and bus ports `${VALKEY[0-5]_BUS_PORT}`.
+- **Exporter**: `${VALKEY_EXPORTER_HOST_PORT}` (Host).
+
+## Initialization
+
+Automated via `valkey-cluster-init.sh` which executes `valkey-cli --cluster create` with the 6 nodes.
 
 ## Persistence
 
-- **Data**: Each node has its own persistence directory in the `valkey-data` volume.
+- **Volumes**: `valkey-data-0` to `valkey-data-5`.
+- **Mount Path**: `/data`.
+- **Config**: Mounts local `./config/valkey.conf`.
 
 ## File Map
 

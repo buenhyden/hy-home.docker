@@ -4,34 +4,36 @@ This stack provides a high-availability PostgreSQL cluster managed by **Patroni*
 
 ## Services
 
-| Service            | Image                                    | Role                        | Resources       |
-| :----------------- | :--------------------------------------- | :-------------------------- | :-------------- |
-| `postgres-cluster`| `bitnami/postgresql-repmgr:latest` (Ref) | Database Node (Patroni)     | 1 CPU / 2GB RAM |
-| `etcd`             | `bitnami/etcd:latest`                    | Consensus / State Store     | 0.5 CPU / 512MB |
-| `haproxy`          | `haproxy:latest`                         | SQL Load Balancer (R/W/RO)  | 0.2 CPU / 256MB |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `pg-0, 1, 2` | `ghcr.io/zalando/spilo-17:4.0-p3` | SQL Nodes (Patroni) | 1 CPU / 2GB RAM ea |
+| `etcd-1, 2, 3`| `quay.io/coreos/etcd:v3.6.7` | Consensus (DCS) | 256MB RAM ea |
+| `pg-router` | `haproxy:3.3.1` | Load Balancer | 0.5 CPU / 256MB |
+| `pg-exporter` | `postgres-exporter:v0.18.1` | Metrics | 0.1 CPU / 128MB |
 
 ## Networking
 
-| Service    | Port (Int) | Purpose                       |
-| :--------- | :--------- | :---------------------------- |
-| `haproxy`  | `5432`     | Read/Write endpoint (Master)  |
-| `haproxy`  | `5433`     | Read-Only endpoint (Slaves)   |
-| `etcd`     | `2379`     | Client communication          |
+| Service | Port (Int) | Host Port | Purpose |
+| :--- | :--- | :--- | :--- |
+| `pg-router` | `5432` | `${POSTGRES_WRITE_HOST_PORT}` | R/W Master Traffic |
+| `pg-router` | `5433` | `${POSTGRES_READ_HOST_PORT}` | RO Replica Traffic |
+| `pg-router` | `${HAPROXY_PORT}` | - | Stats UI (Internal) |
+| `etcd-*` | `2379` | - | Client API |
 
 ## Persistence
 
-- **Data**: `/bitnami/postgresql` (mounted to `pg-data` volumes).
-- **Backups**: Automated via Barman or simple dump scripts (Check `operations/`).
+- **DB Data**: `/home/postgres/pgdata` (mounted to `pg0-data`, `pg1-data`, `pg2-data`).
+- **Storage**: `${DEFAULT_DATA_DIR}/pg/...` on host.
 
 ## Configuration
 
 ### Key Variables
 
-| Variable             | Description               | Value                     |
-| :------------------- | :------------------------ | :------------------------ |
-| `POSTGRES_PASSWORD`  | Admin Password            | `${POSTGRES_PASSWORD}`    |
-| `PATRONI_SCOPE`      | Cluster Name              | `hy-home-db`              |
-| `PATRONI_ETCD_HOSTS` | Consensus Cluster         | `etcd:2379`               |
+| Variable | Description | Value |
+| :--- | :--- | :--- |
+| `SCOPE` | Patroni Cluster Name | `pg-ha` |
+| `POSTGRES_PORT` | DB Internal Port | `5432` |
+| `PATRONI_RESTAPI_PORT` | Patroni internal API | `8008` |
 
 ## Operations
 

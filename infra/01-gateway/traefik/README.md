@@ -6,34 +6,37 @@ Traefik is the primary reverse proxy and load balancer for the Hy-Home infrastru
 
 | Service   | Image                    | Role                       | Resources         | Port       |
 | :-------- | :----------------------- | :------------------------- | :---------------- | :--------- |
-| `traefik` | `traefik:v3.3.3`         | Edge Router / Reverse Proxy| 0.5 CPU / 256MB   | 80, 443    |
-| `whoami`  | `traefik/whoami:latest`  | Connection testing utility | 0.1 CPU / 64MB    | 80 (Int)   |
+| `traefik` | `traefik:v3.6.8`         | Edge Router / Reverse Proxy| 1.0 CPU / 1GB RAM | 80, 443    |
 
 ## Networking
 
-Traefik binds to the host's ports 80 and 443 and routes traffic to internal services on `infra_net`.
+Traefik binds to the host's ports (configurable via `.env`) and routes traffic via `infra_net`.
 
-| Local IP      | Host Port | Protocol | Purpose                  |
-| :------------ | :-------- | :------- | :----------------------- |
-| `172.19.0.13` | `80`      | HTTP     | Forced redirect to HTTPS |
-| `172.19.0.13` | `443`     | HTTPS    | Primary entrypoint       |
-| `172.19.0.13` | `8080`    | Dashboard| Traefik monitoring UI    |
+| Local IP      | Host Port                        | Protocol | Purpose                  |
+| :------------ | :------------------------------- | :------- | :----------------------- |
+| `172.19.0.13` | `${HTTP_HOST_PORT}` (80)         | HTTP     | Forced redirect to HTTPS |
+| `172.19.0.13` | `${HTTPS_HOST_PORT}` (443)       | HTTPS    | Primary entrypoint       |
+| `172.19.0.13` | `${TRAEFIK_DASHBOARD_HOST_PORT}`| Dashboard| Traefik monitoring UI    |
+| `172.19.0.13` | `${TRAEFIK_METRICS_HOST_PORT}`  | Metrics  | Prometheus scraping      |
 
 ## Persistence
 
-Traefik maintains a small amount of state for ACME (SSL) certificates and logs.
+Traefik maintains state for certificates and dynamic configurations.
 
-- **Storage**: `acme-data` volume (tracks Let's Encrypt certificates).
-- **Certificates**: Shared from `secrets/certs` for internal/manual TLS.
+- **Certs**: `${DEFAULT_DOCKER_PATH}/secrets/certs` mapped to `/certs`.
+- **Config**: `./config/traefik.yml` (Static) and `./dynamic` (Dynamic).
 
 ## Configuration
 
 ### Key Environment Variables
 
-| Variable       | Description                       | Value                        |
-| :------------- | :-------------------------------- | :--------------------------- |
-| `DEFAULT_URL`  | Parent domain for all services    | e.g., `hy-home.com`          |
-| `TRAEFIK_PORT` | Host port mapping for dashboard   | `${TRAEFIK_PORT}`            |
+| Variable                       | Description                      | Default/Example     |
+| :----------------------------- | :------------------------------- | :------------------ |
+| `DEFAULT_URL`                  | Parent domain                    | `hy-home.com`       |
+| `DEFAULT_DOCKER_PATH`          | Root host path                   | `/opt/hy-home`      |
+| `HTTP_HOST_PORT`               | Host HTTP Port                   | `80`                |
+| `HTTPS_HOST_PORT`              | Host HTTPS Port                  | `443`               |
+| `TRAEFIK_DASHBOARD_HOST_PORT`  | Dashboard Port                   | `8080`              |
 
 ### Dashboard Security
 

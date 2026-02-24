@@ -4,9 +4,9 @@ Prometheus is the core metrics collection and time-series database.
 
 ## Services
 
-| Service      | Image                       | Role         | Resources       |
-| :----------- | :-------------------------- | :----------- | :-------------- |
-| `prometheus` | `prom/prometheus:v3.2.1`    | Metrics DB   | 1 CPU / 2GB RAM |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `prometheus` | `prom/prometheus:v3.9.0`| Time-Series DB | 2.0 CPU / 2GB RAM |
 
 ## Networking
 

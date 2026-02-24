@@ -4,27 +4,31 @@ This stack provides shared database services for internal infrastructure compone
 
 ## Services
 
-| Service        | Image                           | Role               | Resources         |
-| :------------- | :------------------------------ | :----------------- | :---------------- |
-| `mng-db`       | `postgres:17.2-alpine`          | Shared SQL DB      | 0.5 CPU / 1GB RAM |
-| `mng-valkey`   | `valkey/valkey:8.0.2`           | Shared Cache       | 0.2 CPU / 256MB   |
-| `redisinsight` | `redis/redisinsight:latest`     | Cache GUI          | 0.2 CPU / 256MB   |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `mng-valkey` | `valkey/valkey:9.0.2-alpine`| Shared Session/Cache | 0.5 CPU / 512MB |
+| `mng-pg` | `postgres:17-bookworm` | Management SQL | 1.0 CPU / 1GB RAM |
+| `redisinsight`| `redis/redisinsight:3.0.3` | Redis/Valkey GUI | 0.5 CPU / 512MB |
+| `exporters` | `redis_exporter`, `postgres_exporter` | Metrics | 128MB ea |
 
 ## Networking
 
-| Service        | Internal Port | Endpoint                  |
-| :------------- | :------------ | :------------------------ |
-| `mng-db`       | `5432`        | `mng-db:5432`             |
-| `redisinsight` | `5540`        | `redis.${DEFAULT_URL}`    |
+| Service | IP | External URL |
+| :--- | :--- | :--- |
+| `mng-valkey` | `172.19.0.70`| - |
+| `redisinsight`| `172.19.0.68`| `redisinsight.${DEFAULT_URL}` |
+| `mng-pg` | `172.19.0.72`| - (Port `${POSTGRES_PORT}`) |
 
 ## Persistence
 
-- **PostgreSQL**: Mounted to `mng-db-data`.
-- **Valkey**: Mounted to `mng-valkey-data`.
+- **Valkey**: `${DEFAULT_MANAGEMENT_DIR}/valkey`
+- **Postgres**: `${DEFAULT_MANAGEMENT_DIR}/pg`
+- **Insights**: `${DEFAULT_MANAGEMENT_DIR}/redisinsight`
 
 ## Configuration
 
-Shared databases are initialized with multiple users/databases via the `init-db/` scripts or environment variables.
+- **Auth**: `redisinsight` is protected by `sso-auth@file` (Keycloak).
+- **Postgres Init**: `mng-pg-init` automatically runs `init_users_dbs.sql`.
 
 | Variable           | Description           | Value                  |
 | :----------------- | :-------------------- | :--------------------- |
