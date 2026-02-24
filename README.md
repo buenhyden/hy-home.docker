@@ -62,19 +62,24 @@ docker compose --profile ollama --profile airflow up -d
 
 - **Modular Architecture**: 서비스별로 독립된 설정(`infra/<번호-카테고리>/<service>`)과 Docker Compose의 `include`를 활용한 유연한 구성.
 - **AI-Ready Stack**: **Ollama** (LLM), **Qdrant** (Vector DB), **n8n** (Automation) 사전 통합.
-- **Enterprise Observability**: **Grafana, Prometheus, Loki, Tempo**를 통한 풀 스택 모니터링.
-- **Security First**: **Keycloak**(SSO), **Vault**, **OAuth2 Proxy**를 통한 철저한 보안/인증 레이어.
+- **Full-Stack Observability**: **Grafana, Prometheus, Loki, Tempo** (LGTM Stack) 사전 구성.
+- **Enterprise-Grade Security**: **Keycloak**(SSO), **Vault**, **OAuth2 Proxy** 및 Docker Secrets 기반의 시크릿 관리.
 
 ---
 
-## 📂 저장소 안내
+## 📂 Repository Guide
 
-| 디렉토리                     | 설명                              | 상세 문서                              |
-| ---------------------------- | --------------------------------- | -------------------------------------- |
-| [**`infra/`**](infra/)       | Docker Compose 기반 인프라 서비스 | [Stack Details](infra/README.md)       |
-| [**`projects/`**](projects/) | 인프라 위에서 구동될 애플리케이션 | -                                      |
-| [**`docs/`**](docs/)         | 프로젝트 전체 상세 문서 및 가이드 | [Documentation Index](docs/README.md)  |
-| [**`scripts/`**](scripts/)   | 배포 및 관리 자동화 스크립트      | [Operations Guide](docs/ops/README.md) |
+| Directory | Purpose | Docs |
+| :--- | :--- | :--- |
+| [**`infra/`**](infra/) | Docker Compose based infrastructure services | [Stack Details](infra/README.md) |
+| [**`projects/`**](projects/) | Application source code & microservices | - |
+| [**`docs/`**](docs/) | Architectural blueprints and life-cycle guides | [Index](docs/README.md) |
+| [**`secrets/`**](secrets/) | Security-hardened runtime secret files (`*.txt`) | [Secret Guide](secrets/README.md) |
+| [**`operations/`**](operations/) | Service operational context & incident history | [Records](operations/README.md) |
+| [**`runbooks/`**](runbooks/) | Executable playbooks for maintenance & recovery | [Playbooks](runbooks/README.md) |
+| [**`specs/`**](specs/) | Component-level implementation specifications | - |
+| [**`scripts/`**](scripts/) | Automation scripts for deployment and ops | - |
+| [**`.github/`**](.github/) | CI/CD Workflows (Lint, Validate, Secret Scan) | - |
 
 ---
 

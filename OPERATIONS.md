@@ -2,21 +2,25 @@
 
 This document is the central index for operational readiness in repositories created from this template. It provides policy-level guidance and points to executable runbooks managed by the **DevOps Agent**.
 
-> **IMPORTANT:** Detailed operational procedures, deployment scripts, and incident guides are located exclusively in the `runbooks/` directory. **Never create `docs/runbook` or use an `operations/` folder.**
+> **IMPORTANT:** Operational knowledge is tiered:
+>
+> 1. **Historical Records**: `operations/` (Incidents, Postmortems, Service Context).
+> 2. **Executable Procedures**: `runbooks/` (Playbooks, Deployment/Rollback commands).
+> 3. **Infrastructure Hub**: `infra/` (Technical Specs and folder-level READMEs).
 
-## 1. Runbook Catalog
+## 1. Runbook & Maintenance Catalog
 
-All operational procedures must use `templates/operations/runbook-template.md`. Below is the index of standard runbooks included in the `runbooks/` directory.
+Below is the index of verified operational guides.
 
-| Runbook           | Status | Location                                 | Purpose                                     |
-| ----------------- | ------ | ---------------------------------------- | ------------------------------------------- |
-| **DB Continuity** | Active | `runbooks/patroni-split-brain.md`        | Recover from Patroni state/Etcd mismatch    |
-| **Auth**          | Active | `runbooks/auth-lockout.md`               | Restore Keycloak administrative lockouts    |
-| **Security**      | Active | `runbooks/vault-sealed.md`               | Unseal HashiCorp Vault after restarts       |
-| **Observability** | Active | `runbooks/observability-storage-full.md` | Clear full storage on Prometheus/Loki       |
-| **Data Storage**  | Active | `runbooks/minio-sync-failure.md`         | Recover MinIO from read-only crashes        |
-| **Gateway**       | Active | `runbooks/gateway-502-errors.md`         | Troubleshoot Traefik service unreachability |
-| **Messaging**     | Active | `runbooks/kafka-broker-offline.md`       | Correct KRaft quorum and broker node drops  |
+| Category | Procedure | Location |
+| :--- | :--- | :--- |
+| **HA DB** | Patroni Split-Brain Recovery | [patroni-split-brain.md](runbooks/patroni-split-brain.md) |
+| **Auth** | Administrative Lockout Recovery | [auth-lockout.md](runbooks/auth-lockout.md) |
+| **Storage** | MinIO Sync & Read-only Fix | [minio-sync-failure.md](runbooks/minio-sync-failure.md) |
+| **Messaging** | Kafka Broker Quorum Repair | [kafka-broker-offline.md](runbooks/kafka-broker-offline.md) |
+| **Workflow** | Airflow/Celery Worker Recovery | [airflow-celery-recovery.md](runbooks/airflow-celery-recovery.md) |
+| **Security**| Unsealing Vault Cluster | [vault-sealed.md](runbooks/vault-sealed.md) |
+| **Monitor** | Storage Cleanup (Loki/Prom) | [observability-storage-full.md](runbooks/observability-storage-full.md) |
 
 > **Note:** If a specific operational procedure (e.g. database migration, failover) is missing from this index, the DevOps Agent should proactively create a new runbook based on `templates/operations/runbook-template.md` and link it here.
 

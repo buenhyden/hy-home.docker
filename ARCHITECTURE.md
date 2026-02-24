@@ -57,18 +57,17 @@ When starting a project or writing an Architecture Reference Document (ARD), the
 
 > **Process Enforcement**: The Planner Agent MUST explicitly answer all items of this checklist when creating an ARD, adhering to `.agent/rules/1910-architecture-documentation.md` and `.agent/rules/1901-architecture-rules.md`. The Reviewer Agent MUST verify that any code changes (e.g., in a PR) do not violate these agreed-upon decisions (such as unauthorized Tech Stack or DB changes) before merging.
 
-## 4. Reference Technology Stack (Template)
+## 4. Reference Technology Stack (Production Ready)
 
-Customize the following for your specific project upon cloning.
-
-| Layer             | Selected Technology                      | Purpose                                          |
-| ----------------- | ---------------------------------------- | ------------------------------------------------ |
-| **Gateway**       | Traefik                                  | Edge router, Reverse Proxy, SSL Termination      |
-| **Auth/Security** | Keycloak / OAuth2-Proxy / Vault          | OIDC Identity provisioning, Proxy Auth, Secrets  |
-| **Data Stores**   | PostgreSQL / Valkey / MinIO / OpenSearch | Relational DB, Memory Store, Object Blob, Search |
-| **Messaging**     | Kafka (KRaft) / Schema Registry          | Distributed event streaming and schemas          |
-| **Observability** | Grafana / Prometheus / Loki / Tempo      | Metrics, Logs, Tracing dashboarding              |
-| **Workflows**     | n8n / Airflow                            | Local state automations and CI data pipelines    |
+| Layer | Selected Technology | Purpose |
+| :--- | :--- | :--- |
+| **Gateway** | Traefik | Edge router, SSL Termination, Load Balancing |
+| **Auth/Security** | Keycloak / OAuth2-Proxy / Vault | OIDC SSO, Admin Secrets, Boundary Auth |
+| **Data Stores** | Postgres (Patroni) / Valkey / MinIO | HA RDBMS, Memory Store, Object Blob |
+| **Messaging** | Kafka (KRaft) / RabbitMQ | Distributed event streaming & Task queues |
+| **Observability**| LGTM (Grafana, Loki, Tempo, Mimir) | Unified Metric/Log/Trace correlation |
+| **AI/Logic** | Ollama / Open WebUI / n8n / Airflow | Local LLM hosting, RAG, & Workflow automation |
+| **CI/Ops** | GitHub Actions / Docker Secrets | Declarative validation & Secret Hardening |
 
 ## 4. Integration & Separation Points
 

@@ -1,6 +1,11 @@
 # Operations Tracking
 
-This directory (`operations/`) serves as the permanent, historical record for production events and system failures. It is distinctly separate from `runbooks/`, which contains executable procedures, and `OPERATIONS.md` in the root directory, which defines the global operational blueprint.
+This directory (`operations/`) serves as the permanent home for:
+
+1. **Service Operational Context**: Non-executable technical guides and manual operation notes.
+2. **Historical Records**: Production events, incident tracking, and postmortems.
+
+It is distinctly separate from `runbooks/`, which contains executable procedures (scripts/playbooks).
 
 ## Directory Structure
 
