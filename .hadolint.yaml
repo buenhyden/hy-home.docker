@@ -1,3 +1,5 @@
+# Hadolint configuration shared by CI and pre-commit
+# https://github.com/hadolint/hadolint#configure
 ignored:
   - DL3008
   - DL3018

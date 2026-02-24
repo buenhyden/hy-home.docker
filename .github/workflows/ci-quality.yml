@@ -1,0 +1,81 @@
+name: CI Quality Gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  # ── YAML / JSON lint ──────────────────────────────────────────
+  lint-configs:
+    if: >-
+      github.event_name == 'push' ||
+      contains(join(github.event.pull_request.*.filename, ' '), '.yml') ||
+      contains(join(github.event.pull_request.*.filename, ' '), '.yaml')
+      || contains(join(github.event.pull_request.*.filename, ' '),
+      '.json')
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check YAML syntax
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: '.'
+          config_file: '.yamllint'
+
+      - name: Check JSON format
+        run: |
+          find . -name "*.json" -not -path "./node_modules/*" | xargs -I {} jq . {} > /dev/null
+
+  # ── Dockerfile lint ───────────────────────────────────────────
+  lint-dockerfiles:
+    if: >-
+      github.event_name == 'push' ||
+      contains(join(github.event.pull_request.*.filename, ' '),
+      'Dockerfile')
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run hadolint
+        uses: hadolint/hadolint-action@v3.3.0
+        with:
+          recursive: true
+          # Uses .hadolint.yaml for ignore rules
+
+  # ── Markdown lint ─────────────────────────────────────────────
+  lint-markdown:
+    if: >-
+      github.event_name == 'push' ||
+      contains(join(github.event.pull_request.*.filename, ' '), '.md')
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Lint Markdown
+        uses: davidanson/markdownlint-cli2-action@v22
+        with:
+          globs: '**/*.md'
+
+  # ── Secret scanning ──────────────────────────────────────────
+  secret-scan:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

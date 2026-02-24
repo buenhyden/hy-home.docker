@@ -89,3 +89,15 @@ repos:
     rev: v8.21.2
     hooks:
       - id: gitleaks
+
+  # --- 7. Docker Compose 검증 ---
+  - repo: local
+    hooks:
+      - id: docker-compose-check
+        name: Validate Docker Compose
+        entry: bash -c 'cp .env.example .env 2>/dev/null; docker compose config >
+          /dev/null && rm -f .env'
+        language: system
+        files: (docker-compose\.yml|\.env\.example|infra/.*)
+        pass_filenames: false
+        stages: [pre-push]
