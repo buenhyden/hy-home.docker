@@ -38,7 +38,15 @@ Upon initial deployment (`docker compose up -d`), Keycloak initializes with the 
 
 Keycloak is configured to utilize the Management PostgreSQL instance (`mng-pg`) for persistent state and a distributed Infinispan cache (integrated) for session clustering.
 
-## 4. Troubleshooting
+## 4. Maintenance & Integration
+
+| Action | Reference | Link |
+| --- | --- | --- |
+| **Recovery** | Lockout Flow | [Runbook](../../runbooks/02-auth/auth-lockout.md) |
+| **Usage**    | Secrets Access | [Onboarding](../../examples/README.md#secrets) |
+| **App Link** | OAuth2 Proxy | [Guide](sso-oauth2-proxy-guide.md) |
+
+## 5. Troubleshooting
 
 ### "Admin User Locked"
 

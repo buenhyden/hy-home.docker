@@ -1,7 +1,7 @@
 # Runbook: PostgreSQL HA & Patroni Recovery
 
-> **Component**: `pg-cluster`
-> **Orchestration**: Patroni + Etcd
+> **Architecture**: [PostgreSQL HA Blueprint](../../docs/context/04-data/postgres-patroni-ha-guide.md)
+> **Endpoint**: `pg-router:5000` (Write), `pg-router:5001` (Read)
 > **Nodes**: `pg-0`, `pg-1`, `pg-2`
 
 ## 1. Issue: Split-Brain or No Leader Election

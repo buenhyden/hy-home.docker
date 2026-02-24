@@ -9,6 +9,8 @@ The local AI stack provides private inference capabilities. Ollama serves the mo
 
 - **Internal API**: `http://ollama:11434`
 - **Dashboard**: `https://chat.${DEFAULT_URL}`
+- **Static IP**: `172.19.0.40`
+- **Exporter Port**: `9735` (Collected by LGTM)
 
 ## 2. Hardware Acceleration Initialization
 
@@ -33,3 +35,11 @@ Open-WebUI connects to Ollama via the internal Docker DNS. Verify the connection
 ## 4. Resource Usage
 
 LLMs consume significant memory. Monitor host RAM during inference; a 7B-8B parameter model typically requires 6GB-8GB of dedicated video or system memory.
+
+## 5. Maintenance & Integration
+
+| Action | Reference | Link |
+| --- | --- | --- |
+| **Recovery** | AI Runbooks | [Runbooks](../../runbooks/README.md#08-ai) |
+| **Monitoring** | OTLP Export | [LGTM Context](../06-observability/lgtm-stack-blueprint.md) |
+| **Integration**| OTLP Apps | [Example App](../../examples/app-compose-telemetry.yml) |

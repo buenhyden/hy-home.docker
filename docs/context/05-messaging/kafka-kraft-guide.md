@@ -33,6 +33,14 @@ The Kafka ecosystem includes:
 - **Kafka Connect**: Distributed data workers.
 - **Kafbat UI**: Graphical management at `https://kafka-ui.${DEFAULT_URL}`.
 
+## 3. Maintenance & Integration
+
+| Action | Reference | Link |
+| --- | --- | --- |
+| **Recovery** | Broker Offline | [Runbook](../../runbooks/05-messaging/kafka-broker-offline.md) |
+| **Ops**      | Cluster Ops   | [Runbook](../../runbooks/05-messaging/kafka-cluster-ops.md) |
+| **Connect**  | Java/Node/Py  | [Onboarding](../../examples/README.md#pubsub) |
+
 ## 3. Initial Interaction
 
 Upon `docker compose up -d`, wait ~45s for leader election.

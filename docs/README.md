@@ -29,9 +29,14 @@ Each sub-directory serves a distinct, non-overlapping purpose. Documents created
 
 ### 🛠️ For DevOps & Operators
 
-- **Incident Hub**: [Runbooks Catalog](../runbooks/README.md) — Actionable CLI guides.
-- **Central Index**: [OPERATIONS.md](../OPERATIONS.md) — Operational readiness and strategy.
-- **Configuration**: [Infrastructure Lifecycle](context/core/infra-lifecycle-ops.md).
+- **Incident Hub**: [Runbooks Catalog](../runbooks/README.md) — Actionable recovery guides.
+- **Bootstrapping**: [Infra Lifecycle](context/core/infra-lifecycle-ops.md) — Startup and order of operations.
+- **Reference**: [Arch Requirements (ARD)](ard/README.md) — Technical boundaries and constraints.
+
+### 🧪 For Quality & Automation
+
+- **Usage Patterns**: [Integration Examples](../examples/README.md) — How to connect to infrastructure.
+- **Compliance**: [QA & Security Guide](manuals/qa-security-guide.md).
 
 ---
 

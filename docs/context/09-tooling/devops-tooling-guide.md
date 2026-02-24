@@ -4,9 +4,15 @@
 
 ## 1. Static Analysis (SonarQube)
 
-Provides real-time code quality and security feedback.
+SonarQube provides continuous inspection of code quality.
 
-- **Default Path**: `https://sonarqube.${DEFAULT_URL}`
+### Technical Specifications
+
+| Attribute | Internal DNS | Port | External Proxy |
+| --- | --- | --- | --- |
+| **Web UI** | `sonarqube` | `9000` | `sonarqube.${DEFAULT_URL}` |
+| **Static IP** | `172.19.0.41` | - | - |
+
 - **Setup Node**: Upon initial boot, SonarQube initializes its PostgreSQL schema. Use `admin / admin` for initial login and change the password immediately.
 
 ## 2. Infrastructure as Code (Terraform)
@@ -23,6 +29,11 @@ Terrakube acts as the private automation engine for Terraform runs.
 - **UI Interface**: `https://terrakube-ui.${DEFAULT_URL}`
 - **Security**: Redirects to the centralized Keycloak provider for authentication.
 
-## 4. Maintenance Notes
+## 4. Maintenance & Integration
+
+| Action | Reference | Link |
+| --- | --- | --- |
+| **Manual** | Tooling Ops | [Operations Guide](tooling-operations.md) |
+| **Troubleshoot**| Infra Recovery | [Runbooks](../../runbooks/README.md#09-tooling) |
 
 Always audit the `SONAR_TOKEN` and `TERRAFORM_SECRET` stored in Docker Secrets before initiating large-scale infra changes.

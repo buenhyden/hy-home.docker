@@ -1,34 +1,37 @@
-# Example Implementations (`examples/`)
+# Developer & Integration Examples (`examples/`)
 
-This directory holds sample codes, mock configurations, and proof-of-concept setups demonstrating how to use the templates defined in `/templates/`.
+This directory provides **functional patterns** for integrating applications with the platform's infrastructure tiers.
 
-## 1. Necessity and Purpose
+## 1. Core Integration Hub
 
-This directory is necessary to provide safe, isolated reference implementations without polluting production code or formal specifications.
+Use these examples to connect your application to the core infrastructure capabilities.
 
-- Provide humans and AI models with tangible references for how specific components or integrations are expected to work in this architecture.
-- Isolate experimental code from the primary `/src` and specification paths.
+### Telemetry & Observability
 
-## 2. Required Content
+- **[OTLP Application Integration](app-compose-telemetry.yml)**: How to push traces and metrics to **Grafana Alloy** (`alloy:4317`).
+- **[Custom Alerts](prometheus-custom-alerts.yml)**: Define Prometheus alerting rules for application-specific SLOs.
 
-Examples must be completely self-contained and should not import live production databases or configurations.
+### Infrastructure Configuration
 
-| Example File         | Template Used         | Purpose                                                  |
-| -------------------- | --------------------- | -------------------------------------------------------- |
-| `example-adr.md`     | `adr-template.md`     | Architecture Decision Record for database selection      |
-| `example-prd.md`     | `prd-template.md`     | Product Requirements Document for authentication feature |
-| `example-runbook.md` | `runbook-template.md` | Deployment runbook with rollback procedures              |
+- **[Infrastructure Environment Variables](.env.infra.example)**: Reference for core stack tuning (Ports, Memory Limits).
 
-_(Also see `specs/example-spec.md` for a complete feature specification example)_
+## 2. Documentation Examples
 
-## 3. General Guidelines
+Reference formats for maintaining the platform's "Infrastructure-as-Documentation" standard.
 
-- All examples MUST include brief inline comments explaining their intended context.
-- Assume nothing in this folder will be deployed to production.
-- Examples MUST follow the exact structure defined in their corresponding templates.
+- **[Architecture Decision (ADR)](example-adr.md)**: Decision template (`Why`).
+- **[Product Requirements (PRD)](example-prd.md)**: Feature template (`What`).
+- **[Procedural Manual (Runbook)](example-runbook.md)**: Recovery template (`How`).
 
-## 4. AI Agent Guidelines & Anti-Patterns
+## 3. Quick-Start: Connecting to Tiers
 
-While these serve as "examples" to guide format and structure, any AI agent deriving actual project templates or creating new documents from these MUST ensure full compliance with the latest `.agent/rules/`.
+| Capability | Integration Endpoint | Context Link |
+| --- | --- | --- |
+| **Object Storage**| `minio:9000` | [MinIO Guide](../docs/context/04-data/minio-s3-guide.md) |
+| **Pub/Sub**      | `kafka-1:19092` | [Kafka Guide](../docs/context/05-messaging/kafka-kraft-guide.md) |
+| **Secrets**      | `/run/secrets/*` | [Identity Guide](../docs/context/02-auth/keycloak-idp-guide.md) |
+| **Telemetry**    | `alloy:4317` | [LGTM Blueprint](../docs/context/06-observability/lgtm-stack-blueprint.md) |
 
-- **Anti-Pattern**: Using outdated example configurations to override a strict security or operational rule defined in the `.agent/rules/`. Examples do _not_ supersede official standards unless explicitly permitted by `docs/guides/`.
+---
+> [!TIP]
+> Always check the [Technical Context](../docs/context/README.md) for precise port mappings and service labels before configuring your `docker-compose.yml`.

@@ -1,6 +1,7 @@
 # Runbook: Kafka Broker/Controller Offline
 
-> Recovery strategies when KRaft nodes fail, crash loops occur, or the topic cluster becomes degraded.
+> **Architecture**: [Kafka KRaft Blueprint](../../docs/context/05-messaging/kafka-kraft-guide.md)
+> **Nodes**: 3 Broker-Controllers (`kafka-1`, `kafka-2`, `kafka-3`)
 
 ## Context
 

@@ -9,14 +9,15 @@ This directory is the **exclusive, authoritative home** for all executable proce
 
 ## Directory Structure
 
-- [**01-Gateway**](01-gateway/): Ingress recovery and routing fixes.
-- [**02-Auth**](02-auth/): Identity provider lockout and DB restoration.
-- [**03-Security**](03-security/): Vault unsealing and key management.
-- [**04-Data**](04-data/): Database HA recovery and sync maintenance.
-- [**05-Messaging**](05-messaging/): Kafka/RabbitMQ quorum and maintenance.
-- [**06-Observability**](06-observability/): LGTM stack maintenance and storage cleanup.
-- [**07-Workflow**](07-workflow/): Automation engine and worker recovery.
-- [**Core**](core/): Global incident response and deployment workflows.
+- [**01-Gateway**](01-gateway/) ([Blueprint](../docs/context/01-gateway/traefik-ingress-guide.md)): Ingress recovery and routing fixes.
+- [**02-Auth**](02-auth/) ([Blueprint](../docs/context/02-auth/keycloak-idp-guide.md)): Identity provider lockout and DB restoration.
+- [**03-Security**](03-security/) ([Blueprint](../docs/context/03-security/vault-cluster-guide.md)): Vault unsealing and key management.
+- [**04-Data**](04-data/) ([Blueprint](../docs/context/04-data/postgres-patroni-ha-guide.md)): Database HA recovery and sync maintenance.
+- [**05-Messaging**](05-messaging/) ([Blueprint](../docs/context/05-messaging/kafka-kraft-guide.md)): Kafka/RabbitMQ quorum and maintenance.
+- [**06-Observability**](06-observability/) ([Blueprint](../docs/context/06-observability/lgtm-stack-blueprint.md)): LGTM stack maintenance and storage cleanup.
+- [**07-Workflow**](07-workflow/) ([Blueprint](../docs/context/07-workflow/n8n-automation-context.md)): Automation engine and worker recovery.
+- [**08-AI**](docs/context/08-ai/ai-inference-guide.md) ([Blueprint](../docs/context/08-ai/ai-inference-guide.md)): Model inference and GPU recovery.
+- [**Core**](core/) ([Blueprint](../docs/context/core/infra-lifecycle-ops.md)): Global incident response and deployment workflows.
 
 ## Standards for New Runbooks
 
