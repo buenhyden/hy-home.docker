@@ -1,10 +1,27 @@
 # Ollama & Open WebUI
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+This stack provides local LLM inference and a powerful chat interface.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+| Service      | Image                      | Role           | Resources               |
+| :----------- | :------------------------- | :------------- | :---------------------- |
+| `ollama`     | `ollama/ollama:latest`     | Inference Engine| 4 CPU / 8GB RAM / 1 GPU |
+| `open-webui` | `ghcr.io/open-webui/open-webui:main` | Chat UI        | 1 CPU / 1GB RAM         |
+
+## Networking
+
+- **Ollama**: `ollama.${DEFAULT_URL}`.
+- **WebUI**: `chat.${DEFAULT_URL}`.
+
+## GPU Support
+
+Ensure the NVIDIA Container Toolkit is installed on the host and `deploy: resources: reservations: devices` is configured in `docker-compose.yml`.
+
+## File Map
+
+| Path             | Description                         |
+| ---------------- | ----------------------------------- |
+| `ollama/`        | Ollama service and data persistence.|
+| `open-webui/`    | Open WebUI service.                 |
+| `README.md`      | Service overview and model guides.  |

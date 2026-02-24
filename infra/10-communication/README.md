@@ -1,10 +1,16 @@
 # Communication (10-communication)
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+This category manages external communication services, primarily email infrastructure.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../docs/guides)
-- **Routine Operations**: [operations/](../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../runbooks)
+| Service | Profile | Path     | Purpose                   |
+| ------- | ------- | -------- | ------------------------- |
+| Mail    | `mail`  | `./mail` | SMTP testing and mail server infrastructure |
+
+## File Map
+
+| Path        | Description                              |
+| ----------- | ---------------------------------------- |
+| `mail/`     | MailHog and Stalwart blueprints.         |
+| `README.md` | Category overview.                       |

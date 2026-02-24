@@ -1,10 +1,25 @@
 # Pushgateway
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+Pushgateway allows ephemeral and batch jobs to expose their metrics to Prometheus.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+| Service       | Image                      | Role           | Resources         |
+| :------------ | :------------------------- | :------------- | :---------------- |
+| `pushgateway` | `prom/pushgateway:v1.11.0` | Metrics Buffer | 0.1 CPU / 64MB    |
+
+## Networking
+
+| Port | Purpose                |
+| :--- | :--------------------- |
+| 9091 | Metrics ingestion API  |
+
+## Notes
+
+- **Caution**: Pushgateway should only be used for batch/short-lived jobs. For long-running services, use the standard Prometheus pull model.
+
+## File Map
+
+| Path        | Description                         |
+| ----------- | ----------------------------------- |
+| `README.md` | Service overview and usage notes.   |

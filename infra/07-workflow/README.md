@@ -1,10 +1,23 @@
 # Workflow (07-workflow)
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+This category manages automation workflows, ETL pipelines, and task orchestration.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../docs/guides)
-- **Routine Operations**: [operations/](../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../runbooks)
+| Service | Profile   | Path        | Purpose                                    |
+| ------- | --------- | ----------- | ------------------------------------------ |
+| n8n     | (core)    | `./n8n`     | Low-code automation tool                   |
+| Airflow | `airflow` | `./airflow` | Programmatic workflow orchestration (DAGs) |
+
+## Dependencies
+
+- **Database**: Both n8n and Airflow use PostgreSQL (via `infra/04-data/postgresql-cluster`).
+- **Redis**: Airflow uses Redis for task queuing (CeleryExecutor).
+
+## File Map
+
+| Path        | Description                              |
+| ----------- | ---------------------------------------- |
+| `n8n/`      | n8n service and persistence.             |
+| `airflow/`  | Airflow nodes (Web, Scheduler, Worker).  |
+| `README.md` | Category overview.                       |

@@ -1,10 +1,18 @@
 # Tooling (09-tooling)
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+This category manages developer tools, code quality analyzers, and infrastructure automation.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../docs/guides)
-- **Routine Operations**: [operations/](../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../runbooks)
+| Service   | Profile      | Path           | Purpose                            |
+| --------- | ------------ | -------------- | ---------------------------------- |
+| SonarQube | `sonarqube`  | `./sonarqube`  | Continuous inspection of code quality |
+| Terrakube | `terrakube`  | `./terrakube`  | Self-hosted Terraform automation   |
+
+## File Map
+
+| Path          | Description                              |
+| ------------- | ---------------------------------------- |
+| `sonarqube/`  | SonarQube server and internal database.  |
+| `terrakube/`  | Terrakube API, UI, and Executor nodes.   |
+| `README.md`   | Category overview.                       |

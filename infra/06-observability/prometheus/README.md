@@ -1,10 +1,33 @@
 # Prometheus
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+Prometheus is the core metrics collection and time-series database.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+| Service      | Image                       | Role         | Resources       |
+| :----------- | :-------------------------- | :----------- | :-------------- |
+| `prometheus` | `prom/prometheus:v3.2.1`    | Metrics DB   | 1 CPU / 2GB RAM |
+
+## Networking
+
+| Endpoint                   | Port | Purpose                |
+| :------------------------- | :--- | :--------------------- |
+| `prometheus.${DEFAULT_URL}`| 9090 | Web UI / Query API     |
+
+## Persistence
+
+- **Data**: `/prometheus` (mounted to `prometheus-data` volume).
+- **Retention**: 15 days (default).
+
+## Configuration
+
+- **Scrape Config**: Defined in `config/prometheus.yml`.
+- **Rules**: Alerting and recording rules in `config/rules.yml`.
+
+## File Map
+
+| Path                 | Description                    |
+| -------------------- | ------------------------------ |
+| `config/prometheus.yml` | Master scrape configuration. |
+| `config/rules.yml`   | Alerting/Recording rules.      |
+| `README.md`          | Service notes.                 |

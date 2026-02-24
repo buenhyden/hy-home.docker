@@ -1,10 +1,21 @@
 # Security (03-security)
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+This category manages secret storage, encryption-as-a-service, and security auditing.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../docs/guides)
-- **Routine Operations**: [operations/](../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../runbooks)
+| Service | Profile | Path      | Purpose                                     |
+| ------- | ------- | --------- | ------------------------------------------- |
+| Vault   | `vault` | `./vault` | Central secret management and transit encryption |
+
+## Dependencies
+
+- **Consul/Storage**: Vault requires a storage backend (configured to use internal filesystem or shared DB).
+- **Gateway**: Exposed via Traefik at `vault.${DEFAULT_URL}`.
+
+## File Map
+
+| Path        | Description                               |
+| ----------- | ----------------------------------------- |
+| `vault/`    | Vault service and configuration policies. |
+| `README.md` | Category overview.                        |

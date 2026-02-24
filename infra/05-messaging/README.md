@@ -1,10 +1,25 @@
 # Messaging (05-messaging)
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+This category manages message brokers, event streaming, and real-time data processing.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../docs/guides)
-- **Routine Operations**: [operations/](../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../runbooks)
+| Service  | Profile | Path        | Purpose                                |
+| -------- | ------- | ----------- | -------------------------------------- |
+| Kafka    | (core)  | `./kafka`   | Distributed event streaming platform   |
+| ksqlDB   | `ksql`  | `./ksql`    | Streaming SQL engine for Kafka         |
+| RabbitMQ | (n/a)   | `./rabbitmq`| Optional AMQP broker (Placeholder)      |
+
+## Dependencies
+
+- **Zookeeper**: Kafka uses the internal Zookeeper (or KRaft mode if enabled).
+- **Dashboard**: Kafka UI is available at `kafka-ui.${DEFAULT_URL}`.
+
+## File Map
+
+| Path         | Description                            |
+| ------------ | -------------------------------------- |
+| `kafka/`     | Kafka, Zookeeper, and UI stack.        |
+| `ksql/`      | ksqlDB server and CLI.                 |
+| `rabbitmq/`  | Placeholder for RabbitMQ configuration.|
+| `README.md`  | Category overview.                     |

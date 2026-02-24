@@ -1,10 +1,33 @@
 # Tempo
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+Tempo is a high-volume, low-cost distributed tracing backend.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+| Service | Image                   | Role           | Resources         |
+| :------ | :---------------------- | :------------- | :---------------- |
+| `tempo` | `grafana/tempo:2.7.0`   | Tracing Server | 0.5 CPU / 1GB RAM |
+
+## Networking
+
+| Port | Protocol | Purpose                  |
+| :--- | :------- | :----------------------- |
+| 3200 | HTTP     | Web UI / Query API       |
+| 4317 | OTLP/gRPC| Trace ingestion (gRPC)   |
+| 4318 | OTLP/HTTP| Trace ingestion (HTTP)   |
+
+## Persistence
+
+- **Data**: `/tmp/tempo` (mounted to `tempo-data` volume).
+
+## Configuration
+
+- **Config**: Defined in `config/tempo-config.yml`.
+- **Storage**: Configured for local block storage in development.
+
+## File Map
+
+| Path                   | Description              |
+| ---------------------- | ------------------------ |
+| `config/tempo-config.yml` | Master Tempo configuration. |
+| `README.md`            | Service notes.           |

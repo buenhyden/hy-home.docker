@@ -1,10 +1,32 @@
 # Loki
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+Loki is a horizontally-scalable, highly-available, multi-tenant log aggregation system inspired by Prometheus.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+| Service | Image                  | Role           | Resources         |
+| :------ | :--------------------- | :------------- | :---------------- |
+| `loki`  | `grafana/loki:3.3.0`   | Log Processor  | 0.5 CPU / 1GB RAM |
+
+## Networking
+
+| Port | Purpose                |
+| :--- | :--------------------- |
+| 3100 | HTTP API (Ingest/Query)|
+
+## Persistence
+
+- **Data**: `/loki` (mounted to `loki-data` volume).
+- **Index**: BoltDB/TSDB (persisted in the data volume).
+
+## Configuration
+
+- **Config**: Defined in `config/loki-config.yml`.
+- **Retention**: Configured via the `limits_config` in the YAML file.
+
+## File Map
+
+| Path                   | Description             |
+| ---------------------- | ----------------------- |
+| `config/loki-config.yml` | Master Loki configuration. |
+| `README.md`            | Service notes.          |

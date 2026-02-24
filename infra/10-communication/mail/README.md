@@ -1,10 +1,25 @@
-# Mail Server Infrastructure
+# Mail (MailHog)
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+A developer-focused email testing tool with a built-in SMTP server and web UI.
 
-Please refer to the following global documentation directories for information regarding this service:
+## Services
 
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+| Service   | Image                | Role           | Port       |
+| :-------- | :------------------- | :------------- | :--------- |
+| `mailhog` | `mailhog/mailhog:latest` | Email Testing  | 1025, 8025 |
+
+## Networking
+
+- **SMTP**: `mailhog:1025`.
+- **Web UI**: `mail.${DEFAULT_URL}` (via Traefik).
+
+## Note
+
+Check the `docker-compose.yml` comments for an alternative production-ready **Stalwart** configuration.
+
+## File Map
+
+| Path                 | Description                                  |
+| -------------------- | -------------------------------------------- |
+| `docker-compose.yml` | MailHog service definition.                  |
+| `README.md`          | Service overview and SMTP settings.          |
