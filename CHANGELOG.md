@@ -4,8 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [0,0,1]
+## [Unreleased]
 
 ### Added
 
@@ -95,6 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Ollama and Airflow blueprints and enhance existing service documentation with technical specifications and provisioning verification.
 - Enhance container security by adding `no-new-privileges` and `cap_drop: ALL` to most services, create a SeaweedFS security example, and
 - Implement container security hardening with `no-new-privileges` and `cap_drop` across multiple services, introduce RabbitMQ secrets, and update documentation.
+- Remove `validate-compose` and `zizmor` GitHub Actions workflows, integrate Docker Compose validation into pre-commit hooks, and update changelog generation.
 
 ### Changed
 
@@ -257,6 +257,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Externalize yamllint configuration to a dedicated file and remove redundant Docker Compose security options.
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
+- **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
 
@@ -271,3 +272,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Config
 
 - Disable breaking change protection and commit filtering in `cliff.toml`.
+
+
