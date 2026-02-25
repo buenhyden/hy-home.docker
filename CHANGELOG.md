@@ -123,6 +123,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve compose environment variable specificity and coverage, including Supabase PostgreSQL connection updates and expanded `.env.example` definitions, with new optimization documentation.
 - Standardize volume path environment variables and integrate Valkey into Airflow.
 - Update mng-db PostgreSQL user creation to use service-specific database passwords from Docker secrets and remove the example script.
+- Dynamically inject secrets into Prometheus, Loki, Tempo, and Alertmanager configurations using templates and Docker secrets, and update gitignore.
 
 ### Docs
 
@@ -290,6 +291,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - Update Valkey password secret path from `valkey_password` to `service_valkey_password`.
 - Delete .env.postgres.example
+- **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
 
