@@ -35,6 +35,11 @@ secrets:
   mng_postgres_password:
     external: true
 
+networks:
+  infra_net:
+    name: infra_net
+    external: true
+
 services:
   mng-valkey:
     deploy:
@@ -205,6 +210,10 @@ services:
     image: postgres:17-alpine
     container_name: mng-pg-init
     restart: 'no'
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     networks:
       - infra_net
     environment:
