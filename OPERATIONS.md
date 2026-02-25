@@ -1,80 +1,100 @@
 # Operations Index
 
-This document is the central index for operational readiness in repositories created from this template. It provides policy-level guidance and points to executable runbooks managed by the **DevOps Agent**.
+이 문서는 `hy-home.docker`의 운영 정책 인덱스입니다.
+실행 가능한 절차는 반드시 `runbooks/`의 개별 문서를 기준으로 수행합니다.
 
-> 1. **Technical Blueprints**: [**Service Technical context hub**](docs/context/README.md).
-> 2. **Executable Procedures**: [**Runbooks Catalog**](runbooks/README.md).
-> 3. **Infrastructure Hub**: `infra/` (Technical Specs and folder-level READMEs).
+- 기술 배경/구성 원리: `docs/context/README.md`
+- 실행 절차 모음: `runbooks/README.md`
+- 아키텍처 규칙: `ARCHITECTURE.md`
 
-## 1. Runbook & Maintenance Catalog
+## 1. 운영 원칙
 
-Below is the index of verified operational guides.
+1. **Runbook-First**: 장애 대응/복구 절차는 인덱스가 아닌 `runbooks/`에서 실행
+2. **Validate-Then-Apply**: 변경 전후 `scripts/validate-docker-compose.sh`로 구성 검증
+3. **Secrets Hygiene**: 비밀값은 `secrets/**/*.txt` + Docker secrets만 사용
+4. **Port Governance**: Host 포트는 `*_HOST_PORT`, 컨테이너 포트는 `*_PORT`로 관리
+
+## 2. Day-0 Bootstrap
+
+초기 기동은 아래 순서를 권장합니다.
+
+```bash
+cp .env.example .env
+bash scripts/generate-local-certs.sh
+bash scripts/preflight-compose.sh
+docker compose up -d
+```
+
+관련 문서:
+
+- 부트스트랩 런북: `runbooks/core/infra-bootstrap-runbook.md`
+- 라이프사이클 개요: `docs/context/core/infra-lifecycle-ops.md`
+
+## 3. Day-1 운영 명령
+
+```bash
+# Compose 유효성 검증
+bash scripts/validate-docker-compose.sh
+
+# 서비스 단위 갱신
+docker compose up -d --no-deps <service>
+
+# 로그/상태 점검
+docker compose logs -f <service>
+docker compose ps
+
+# 종료/정리
+docker compose down
+```
+
+리소스 정리는 `runbooks/core/docker-resource-maintenance.md`를 따릅니다.
+
+## 4. Incident Runbook Catalog
 
 | Category | Procedure | Location |
 | :--- | :--- | :--- |
-| **HA DB** | PostgreSQL HA & Patroni Recovery | [postgres-ha-recovery.md](runbooks/04-data/postgres-ha-recovery.md) |
-| **Gateway**| Traefik Ingress & Gateway Recovery | [traefik-proxy-recovery.md](runbooks/01-gateway/traefik-proxy-recovery.md) |
-| **Messaging**| Kafka Cluster & KRaft Recovery | [kafka-cluster-ops.md](runbooks/05-messaging/kafka-cluster-ops.md) |
-| **Auth** | Keycloak Auth Lockout Recovery | [auth-lockout.md](runbooks/02-auth/auth-lockout.md) |
-| **Storage** | MinIO Sync & Read-only Fix | [minio-sync-failure.md](runbooks/04-data/minio-sync-failure.md) |
-| **Security**| Vault Unseal & Recovery | [vault-sealed.md](runbooks/03-security/vault-sealed.md) |
-| **Monitor** | Observability Stack & Alloy Configuration | [observability-stack-maintenance.md](runbooks/06-observability/observability-stack-maintenance.md) |
-| **Workflow**| Airflow Celery Recovery | [airflow-celery-recovery.md](runbooks/07-workflow/airflow-celery-recovery.md) |
-| **Core** | Core Infra Bootstrap (Docker Compose) | [infra-bootstrap-runbook.md](runbooks/core/infra-bootstrap-runbook.md) |
+| Core | Infra Bootstrap / Preflight | `runbooks/core/infra-bootstrap-runbook.md` |
+| Gateway | Traefik Recovery | `runbooks/01-gateway/traefik-proxy-recovery.md` |
+| Auth | Keycloak Lockout Recovery | `runbooks/02-auth/auth-lockout.md` |
+| Security | Vault Unseal/Recovery | `runbooks/03-security/vault-sealed.md` |
+| Data | PostgreSQL HA Recovery | `runbooks/04-data/postgres-ha-recovery.md` |
+| Data | MinIO Sync Failure Recovery | `runbooks/04-data/minio-sync-failure.md` |
+| Messaging | Kafka Cluster Operations | `runbooks/05-messaging/kafka-cluster-ops.md` |
+| Observability | LGTM Stack Maintenance | `runbooks/06-observability/observability-stack-maintenance.md` |
+| Workflow | Airflow Celery Recovery | `runbooks/07-workflow/airflow-celery-recovery.md` |
+| Core | Incident Response | `runbooks/core/incident-response-runbook.md` |
 
-> **Note:** If a specific operational procedure (e.g. database migration, failover) is missing from this index, the DevOps Agent should proactively create a new runbook based on `templates/operations/runbook-template.md` and link it here.
+런북이 없으면 `templates/operations/runbook-template.md` 기반으로 신규 작성 후 본 문서에 링크를 추가합니다.
 
-## 2. Environment & Deployment Strategy
+## 5. Incident Severity
 
-### Environment Hierarchy
+- **SEV-1**: 핵심 서비스 불능. 즉시 `runbooks/core/incident-response-runbook.md` 실행
+- **SEV-2**: 핵심 기능 성능/가용성 저하
+- **SEV-3**: 부분 기능 장애 또는 우회 가능한 이슈
 
-- **Development (Dev)**: Used for intra-team testing. Automatically deployed upon PR merge to `main`.
-- **Staging**: Used for pre-production validation (QA, Load testing, User Acceptance). Matches production infrastructure parity exactly.
-- **Production**: Live environment for end-users.
+## 6. Change & Release Gates
 
-### Deployment Strategy
+변경 반영 전 최소 게이트:
 
-- **Default Strategy**: Blue-Green Deployment (or Rolling Update for stateless worker tiers). Zero-downtime required.
-- **Infrastructure Mutability**: Manual "ClickOps" in production is strictly **FORBIDDEN**. All changes must execute via Infrastructure-as-Code (Terraform/ArgoCD).
+1. 관련 `specs/`/문서 반영 완료
+2. `bash scripts/validate-docker-compose.sh` 통과
+3. 필요한 시크릿 파일/인증서 존재 확인 (`scripts/preflight-compose.sh`)
+4. 운영 영향이 있는 경우 관련 runbook 업데이트
 
-## 3. Observability Baseline
+## 7. DR Baseline
 
-- **Metrics**: Essential RED metrics MUST be collected utilizing Alloy collectors, adhering to `.agent/rules/2610-observability-strategy.md`.
-- **Collection**: Unified OTLP ingestion via [Grafana Alloy](docs/context/06-observability/lgtm-stack-blueprint.md).
+- 백업/복구 정책은 `runbooks/`와 서비스별 블루프린트 기준으로 운영
+- 권고 목표:
+  - **RTO**: Tier-1 기준 4시간 이내
+  - **RPO**: 1시간 이내
 
-## 4. Continuity & Disaster Recovery
+세부 정책은 `docs/context/core/infra-lifecycle-ops.md`와 각 데이터 계층 문서를 따릅니다.
 
-- **Data Backups**: All stateful data stores MUST have automated, encrypted daily backups at a minimum, verified monthly, adhering to `.agent/rules/0342-backup-restore.md`.
-- **Recovery Time Objective (RTO)**: Target < 4 hours for Tier-1 services.
-- **Recovery Point Objective (RPO)**: Target < 1 hour of potential data loss via WAL (Write-Ahead Logging) or continuous replication.
+## 8. References
 
-For Docker resource cleanup and WSL volume compression, use the dedicated runbook: `runbooks/core/docker-resource-maintenance.md`.
-
-For a deep overview of infrastructure lifecycle and startup order, see [infra-lifecycle-ops.md](docs/context/core/infra-lifecycle-ops.md).
-For compose optimization details and env coverage audit, see [infra-compose-optimization-audit.md](docs/context/core/infra-compose-optimization-audit.md).
-
-## 5. Operational Rules
-
-### Pre-Deployment Checks
-
-Code must not be deployed unless:
-
-1. Specs in `specs/` exist and are implemented.
-2. Reviewer Agent approves the PR.
-3. Tests across all tiers pass (unit tests colocated, E2E in global `tests/`) via `.github/workflows/`.
-4. A rollback procedure is documented in the corresponding deployment runbook.
-
-### Incident Priorities
-
-- **SEV-1 (Critical)**: Production offline. Immediate action via `runbooks/core/incident-response-runbook.md` and `.agent/rules/0380-incident-response.md`.
-- **SEV-2 (Major)**: Critical flow degraded.
-- **SEV-3 (Minor)**: Non-critical bugs.
-
-## 6. Security Baseline
-
-- CI/CD must run `.github/workflows/` container and SAST security scans.
-- See `.github/SECURITY.md` for vulnerability policies.
+- Compose/Env/Secrets 감사 문서: `docs/context/core/infra-compose-optimization-audit.md`
+- 보안 정책: `.github/SECURITY.md`
 
 ---
 
-> **Note to AI Agents (DevOps Role):** Do not write operation steps directly in this index. For any operational change, modify or create a specific runbook inside `runbooks/` using the approved template.
+운영 절차의 상세 명령/분기 로직은 본 문서에 직접 쓰지 않고 반드시 `runbooks/`에 둡니다.

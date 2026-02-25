@@ -38,11 +38,10 @@ This category manages databases, object storage, and persistence search engines.
 | `supabase/`           | Standalone Supabase stack.                 |
 | `README.md`           | Category overview.                         |
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+## Documentation References
 
-Please refer to the following global documentation directories for information regarding this service:
-
-- **Architecture & Topology**: [docs/architecture](../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../docs/guides)
-- **Routine Operations**: [operations/](../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../runbooks)
+- **Architecture Principles**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- **Data Technical Blueprints**: [docs/context/04-data](../../docs/context/04-data)
+- **Platform Guides**: [docs/guides/README.md](../../docs/guides/README.md)
+- **Runbooks (Executable)**: [runbooks/README.md](../../runbooks/README.md)
+- **Operations History**: [operations/README.md](../../operations/README.md)

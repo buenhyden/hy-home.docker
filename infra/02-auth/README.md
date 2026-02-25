@@ -22,11 +22,10 @@ This category manages Identity and Access Management (IAM) and authentication ga
 | `oauth2-proxy/` | OAuth2 Proxy service and config.                  |
 | `README.md`     | Category overview.                                |
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+## Documentation References
 
-Please refer to the following global documentation directories for information regarding this service:
-
-- **Architecture & Topology**: [docs/architecture](../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../docs/guides)
-- **Routine Operations**: [operations/](../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../runbooks)
+- **Architecture Principles**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- **Auth Blueprints**: [docs/context/02-auth](../../docs/context/02-auth)
+- **Platform Guides**: [docs/guides/README.md](../../docs/guides/README.md)
+- **Runbooks (Auth)**: [runbooks/02-auth](../../runbooks/02-auth)
+- **Operations History**: [operations/README.md](../../operations/README.md)

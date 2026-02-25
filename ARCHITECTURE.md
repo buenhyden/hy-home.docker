@@ -1,87 +1,76 @@
 # System Architecture
 
-This document defines the high-level architecture of projects created from this template. It serves as a blueprint that should be customized for each new project.
+이 문서는 `hy-home.docker` 저장소의 전역 아키텍처 제약과 변경 규칙을 정의합니다.
+서비스별 상세 설계는 `docs/context/`, 실행 절차는 `runbooks/` 및 `OPERATIONS.md`를 기준으로 합니다.
 
-## 1. System Context & Necessity
+## 1. Scope
 
-This template provides a standardized foundation for building software projects.
+- 대상: 루트 `docker-compose.yml` + `infra/**/docker-compose*.yml|yaml`로 구성된 인프라 스택
+- 목표: 로컬/홈랩 환경에서 재현 가능한 멀티 서비스 인프라 제공
+- 제외: 개별 서비스 내부 비즈니스 로직, 앱 코드 구현 세부 (`specs/`에서 별도 정의)
 
-**Necessity**: This specific `ARCHITECTURE.md` file is absolutely essential as the global, unchanging architectural law of the repository. While `docs/adr/` handles specific component decisions over time and `docs/ard/` holds deep architectural diagrams, this root file holds the _highest-level constraints and checklists_ that must NEVER be violated by any human or AI agent without a formal override.
+## 2. Architectural Invariants
 
-**What Must Be Written Here**:
+아래 항목은 기본 규칙이며, 예외는 ADR/Spec에 명시되어야 합니다.
 
-- The overarching architecture style (Microservices vs Monolith).
-- The list of acceptable core tech stacks.
-- The Architectural Checklist that every new feature MUST pass before entering the `specs/` phase.
+- **Root Orchestration**: `docker-compose.yml`이 단일 진입점이며, 서비스 스택은 `include`로 조립합니다.
+- **Modular Boundaries**: 서비스별 Compose는 `infra/<tier>/<service>/`에 분리하고, 공통 정책은 루트에서 관리합니다.
+- **Secrets-First**: 비밀번호/토큰은 `.env`가 아닌 `secrets/**/*.txt` + Docker secrets로 주입합니다.
+- **Port Policy**: 호스트 노출 포트는 `*_HOST_PORT`, 컨테이너 포트는 `*_PORT`를 사용합니다. Compose 파일에는 `${VAR:-default}`로 기본 포트를 명시합니다.
+- **Security Baseline**: 기본적으로 `security_opt: [no-new-privileges:true]`, `cap_drop: [ALL]`를 적용합니다.
+- **Docs Separation**: 아키텍처/배경은 `docs/`, 구현 계획은 `specs/`, 실행 절차는 `runbooks/`에 분리합니다.
 
-- **Strict Boundary Segregation**: Clear division of Knowledge (`docs/`), Implementation (`specs/`, `web/`, `app/`, `server/`), and Operations (`runbooks/`).
-- **Standard Security Hardening**: Mandatory `no-new-privileges:true` and `cap_drop: [ALL]` for all infrastructure services.
-- **Security Exceptions**: Any service requiring elevated privileges or capabilities MUST document the exception inline and in the relevant spec.
+## 3. Runtime Topology
 
-## 2. Core Constraints & Decisions
+### 3.1 Network Model
 
-### Core Constraints & Decisions
-
-| Decision                | Rationale                                                                               |
-| ----------------------- | --------------------------------------------------------------------------------------- |
-| **Spec-Driven Code**    | Eliminates AI hallucination by giving Coder Agents a hard, human-approved target.       |
-| **Templates Mandatory** | Ensures parsing consistency for future AI tasks (PRDs, Specs, Runbooks).                |
-| **Security Hardening** | Mandatory baseline for production-grade containers (no-new-privileges).               |
-| **Dedicated Runbooks**  | Prevents ops scripts from getting lost in `docs/` hierarchies.                          |
-| **WSL I/O Constraints** | Prevents drastic Docker performance loss. The repository MUST NOT be run from `/mnt/c`. |
-
-> See `docs/adr/` for detailed Architecture Decision Records that shaped this specific system logic.
-
-## 3. Architecture & Tech Stack Checklist
-
-When starting a project or writing an Architecture Reference Document (ARD), the following checklist MUST be addressed and agreed upon by the Human and Planner Agent:
-
-| Category                  | Check Question                                                                                                                                                                 | Priority      | Notes / Decisions     |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------- | --------------------- |
-| **Architecture Style**    | Is the architectural style decided (e.g., Monolithic, Modular Monolith, Microservices)?                                                                                        | **Mandatory** |                       |
-| **Service Boundaries**    | Are the boundaries and responsibilities of core services/modules expressed in diagrams/docs?                                                                                   | **Mandatory** |                       |
-| **Domain Model**          | Are core domain entities (e.g., User, Document) and relations defined (ER/UML)?                                                                                                | **Mandatory** |                       |
-| **Tech Stack (Backend)**  | Have the language, framework, and key libraries (e.g., web framework, ORM) been decided?                                                                                       | **Mandatory** |                       |
-| **Tech Stack (Frontend)** | Have the framework (React/Vue/Next), state management, and build tools been decided?                                                                                           | **Mandatory** |                       |
-| **Database**              | Have the primary DB engine (e.g., MySQL, PostgreSQL, MongoDB) and schema strategy been decided?                                                                                | **Mandatory** |                       |
-| **Messaging / Async**     | Is a message broker (e.g., Kafka, RabbitMQ) or async processing method defined?                                                                                                | _Optional_    |                       |
-| **Infrastructure**        | Is the deployment target (Cloud/On-Prem, Kubernetes, Serverless) decided?                                                                                                      | **Mandatory** |                       |
-| **Non-Functional Req**    | Are NFRs (Availability, Latency, Throughput) defined with quantitative metrics?                                                                                                | **Mandatory** |                       |
-| **Scalability Strategy**  | Are Scale-up/out, partitioning, or caching strategies drafted?                                                                                                                 | _Optional_    |                       |
-| **Arch. Principles**      | Is there a documented list of architectural principles, including "what NOT to do"?                                                                                            | _Optional_    |                       |
-| **ADR Management**        | Is there a process established to leave ADRs for key technical decisions?                                                                                                      | _Optional_    | Yes, use `docs/adr/`. |
-| **Pillar Alignment**      | Does the architecture align with the 6 Core Pillars (Security `2200`, Performance `2300`, Observability `2600`, Compliance `2400`, Documentation `2100`, Localization `2500`)? | **Mandatory** | See `.agent/rules/`.  |
-| **Agent Rule Compliance** | Does the tech stack selection comply with language/framework specific laws (e.g., `1200-Nextjs.md`) defined in `.agent/rules/`?                                                | **Mandatory** |                       |
-
-> **Process Enforcement**: The Planner Agent MUST explicitly answer all items of this checklist when creating an ARD, adhering to `.agent/rules/1910-architecture-documentation.md` and `.agent/rules/1901-architecture-rules.md`. The Reviewer Agent MUST verify that any code changes (e.g., in a PR) do not violate these agreed-upon decisions (such as unauthorized Tech Stack or DB changes) before merging.
-
-## 4. Reference Technology Stack (Production Ready)
-
-| Layer | Selected Technology | Purpose |
+| Network | Type | Purpose |
 | :--- | :--- | :--- |
-| **Gateway** | Traefik | Edge router, SSL Termination, Load Balancing |
-| **Auth/Security** | Keycloak / OAuth2-Proxy / Vault | OIDC SSO, Admin Secrets, Boundary Auth |
-| **Data Stores** | Postgres (Patroni) / Valkey / MinIO | HA RDBMS, Memory Store, Object Blob |
-| **Messaging** | Kafka (KRaft) / RabbitMQ / ksqldb | Distributed event streaming & Task queues |
-| **Observability**| LGTM Stack (Grafana, Loki, Tempo, Alloy) | Unified Metric/Log/Trace correlation |
-| **Workflow** | n8n / Airflow | Orchestration & Automation pipelines |
-| **AI Infrastructure**| Ollama / Open-WebUI / Qdrant | Local LLM hosting & Vector Memory |
-| **CI/Ops** | GitHub Actions / Docker Secrets | Declarative validation & Secret Hardening |
+| `infra_net` | bridge (internal) | 서비스 간 기본 통신망 |
+| `project_net` | external | 외부 프로젝트 연동용 |
+| `kind` | external | Kubernetes(kind) 연동용 |
 
-## 4. Integration & Separation Points
+`infra_net`의 대역/게이트웨이는 `.env`의 `INFRA_SUBNET`, `INFRA_GATEWAY`로 관리합니다.
 
-### Document vs Code vs Operations
+### 3.2 Layered Service Map
 
-- **`docs/`**: Holds "Why" and "What" (PRD, ADR, ARD).
-- **`specs/`**: Holds "Exactly How" prior to coding.
-- **`runbooks/`**: Holds executable scripts and "What to do when X fails."
+| Tier | Role | 대표 서비스 |
+| :--- | :--- | :--- |
+| `01-gateway` | Ingress / Edge Routing | Traefik, Nginx |
+| `02-auth` | Identity / Access Proxy | Keycloak, OAuth2 Proxy |
+| `03-security` | Secret Vault | Vault |
+| `04-data` | DB / Cache / Object / Search | PostgreSQL, Valkey, MinIO, OpenSearch, Qdrant, Supabase |
+| `05-messaging` | Event / Queue | Kafka, ksqlDB, RabbitMQ |
+| `06-observability` | Metrics / Logs / Traces | Prometheus, Grafana, Loki, Tempo, Alloy, Pyroscope |
+| `07-workflow` | Orchestration | Airflow, n8n |
+| `08-ai` | Inference / AI UI | Ollama, Open-WebUI |
+| `09-tooling` | QA / DevOps Tools | SonarQube, Terrakube, Syncthing, Locust |
+| `10-communication` | Mail / Relay | Stalwart, Mailhog |
 
-### Extending the Architecture
+### 3.3 Stack Modes
 
-1. **Design Changes**: Create an ADR in `docs/adr/` using `templates/architecture/adr-template.md`.
-2. **Data Structure Changes**: Document via ARD in `docs/ard/` using `templates/architecture/ard-template.md`.
-3. **Reference Diagrams**: See [Infrastructure ARD](docs/ard/infra-overview.md) and [Messaging ARD](docs/ard/messaging-requirements.md).
+- **Core Include Stack**: 루트 `docker-compose.yml`에 활성 `include`된 서비스 세트
+- **Optional Stack**: 프로파일 또는 주석 해제로 선택 활성화하는 서비스 세트
+- **Standalone Stack**: 루트 `include` 없이 별도 Compose로 운영 가능한 서비스(예: Supabase)
 
----
+## 4. Change Governance
 
-> **Note**: This architecture document must be kept strictly to high-level system design. For operational procedures, alerting logic, or CI orchestration, consult `OPERATIONS.md`.
+아키텍처 변경 시 아래 체크리스트를 충족해야 합니다.
+
+| Check | Requirement | Mandatory |
+| :--- | :--- | :--- |
+| Boundary Impact | 어떤 tier/서비스 경계를 바꾸는지 명시 | Yes |
+| Network Impact | `infra_net`/external network 영향 분석 | Yes |
+| Secret Impact | 신규/변경 secret 파일 경로 및 주입 방식 명시 | Yes |
+| Port Impact | `*_HOST_PORT`/`*_PORT` 변수 및 기본값 영향 반영 | Yes |
+| Security Baseline | 권한 상승(cap_add/privileged) 필요 시 근거 문서화 | Yes |
+| Ops Impact | 관련 runbook/OPERATIONS 업데이트 | Yes |
+| Validation | `bash scripts/validate-docker-compose.sh` 통과 | Yes |
+| Traceability | ADR/Spec/Runbook 상호 링크 | Yes |
+
+## 5. Architecture References
+
+- 인프라 개요 ARD: `docs/ard/infra-overview.md`
+- 메시징 ARD: `docs/ard/messaging-requirements.md`
+- 기술 컨텍스트 허브: `docs/context/README.md`
+- 운영 정책: `OPERATIONS.md`

@@ -1,113 +1,95 @@
-# 🏠 Hy-Home Docker Infrastructure
+# Hy-Home Docker Infrastructure
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
-**Hy-Home Docker**는 확장 가능하고 안정적인 홈 서버 및 AI 최적화 개발 환경을 위한 **Docker 기반 인프라 프로젝트**입니다.
-복잡한 마이크로서비스 아키텍처를 로컬 환경에서 손쉽게 구축하고 관리할 수 있도록 설계되었습니다.
+`hy-home.docker`는 로컬/홈랩 환경에서 멀티 서비스 인프라를 일관되게 실행하기 위한 Docker Compose 기반 저장소입니다.
+루트 `docker-compose.yml`이 `infra/**/docker-compose*.yml`을 `include`하여 스택을 조립합니다.
 
-> 📖 **종합 문서 허브: [docs/README.md](docs/README.md)**
-> ⚖️ **시스템 아키텍처: [ARCHITECTURE.md](ARCHITECTURE.md)**
-> 🛠️ **운영 및 유지보수: [OPERATIONS.md](OPERATIONS.md)**
+## 문서 시작점
 
----
+- 아키텍처 원칙: `ARCHITECTURE.md`
+- 운영 정책/런북 인덱스: `OPERATIONS.md`
+- 기술 블루프린트 허브: `docs/context/README.md`
+- 실행 런북 허브: `runbooks/README.md`
+- 인프라 디렉토리 가이드: `infra/README.md`
 
-## ✅ 준비 사항
+## 준비 사항
 
-- Docker Engine / Docker Desktop (WSL2 백엔드 사용 권장)
-- Docker Compose v2 (CLI 기반)
-- **Windows 개발 시**: 볼륨 I/O 성능 극대화를 위해 프로젝트 파일은 `/mnt/c/` 경로가 아닌 **WSL 내부 리눅스 파일 시스템(`~` 또는 `/home/user`)**에 클론해야 합니다.
-- **메모리 최적화**: `.wslconfig` 파일을 통해 WSL에 할당된 램이 전체 시스템의 50~80% 정도로 제한되어 있는지 확인하는 것을 권장합니다 (`memory=16GB` 등).
+- Docker Engine 또는 Docker Desktop
+- Docker Compose v2
+- `rg`(ripgrep), `bash` (스크립트 실행용)
+- Windows + WSL2 사용 시: 저장소를 `/mnt/c`가 아닌 WSL Linux 파일시스템(예: `/home/<user>`)에 두는 것을 권장
 
----
-
-## 🏁 빠른 시작 (Quick Start)
-
-자세한 설치 가이드는 [Setup Guide](docs/setup/README.md)를 참조하세요.
-
-### 1. 설정
+## 빠른 시작
 
 ```bash
-# 저장소 루트에서
+# 1) 환경 파일 생성
 cp .env.example .env
-```
 
-- `.env` 파일 내의 각 서비스별 경로 및 포트, 비밀번호 설정을 사용자의 환경에 맞게 수정합니다.
-  - `DEFAULT_URL`: 서비스 접속 도메인 (기본값: `127.0.0.1.nip.io`)
-  - `DEFAULT_MOUNT_VOLUME_PATH`: 볼륨 데이터가 저장될 호스트 경로
-  - `INFRA_SUBNET`, `INFRA_GATEWAY`: 내부 네트워크 대역 설정
-- `secrets/` 내 `*.txt` 파일의 초기 비밀번호/토큰 값을 확인합니다.
+# 2) 로컬 TLS 인증서 생성 (최초 1회)
+bash scripts/generate-local-certs.sh
 
-### 2. 실행
+# 3) 사전 점검
+bash scripts/preflight-compose.sh
 
-```bash
+# 4) 스택 실행
 docker compose up -d
 ```
 
-### 3. 접속 예시
+접속 예시 (`DEFAULT_URL=127.0.0.1.nip.io` 기준):
 
-- **Traefik Dashboard**: `http://traefik.localhost` (또는 설정한 도메인)
-- **Grafana**: `http://grafana.localhost`
+- Traefik Dashboard: `https://dashboard.127.0.0.1.nip.io`
+- Grafana: `https://grafana.127.0.0.1.nip.io`
+- Prometheus: `https://prometheus.127.0.0.1.nip.io`
 
-### 4. 프로파일로 옵션 스택 실행
+옵션 스택 예시:
 
 ```bash
 docker compose --profile ollama --profile airflow up -d
 ```
 
-> 사용 가능한 프로파일 목록은 [infra/README.md](infra/README.md)를 참고하세요.
+## 운영 명령 요약
 
----
+```bash
+# Compose 설정 검증
+bash scripts/validate-docker-compose.sh
 
-## 🏛️ 구조적 핵심 기둥 (Structural Pillars)
+# 특정 서비스만 재기동
+docker compose up -d --no-deps <service>
 
-이 인프라는 다음과 같은 4개 핵심 레이어로 정의됩니다.
+# 로그 확인
+docker compose logs -f <service>
 
-1. **Architecture Rules ([ARCHITECTURE.md](ARCHITECTURE.md))**: 변경할 수 없는 글로벌 설계 규격.
-2. **Operational Mastery ([OPERATIONS.md](OPERATIONS.md))**: 서비스 가동 및 복구 정책 가이드.
-3. **Technical Blueprints ([docs/context/](docs/context/))**: 개별 서비스의 상세 기술 사양서.
-4. **Executable Runbooks ([runbooks/](runbooks/))**: 장애 상황 시 즉시 실행 가능한 명령 시퀀스.
+# 종료
+docker compose down
+```
 
----
+## 구성 정책 요약
 
-## 🚀 주요 특징
+- Host 포트는 `.env`/`.env.example`의 `*_HOST_PORT`로 관리
+- 컨테이너 기본 포트는 `*_PORT`로 관리하고, Compose에는 `${VAR:-default}` 형태로 기본값 명시
+- 비밀번호/토큰은 환경변수 대신 `secrets/**/*.txt` 파일 + Docker secrets로 주입
+- 컨테이너 보안 기본값: `no-new-privileges:true`, `cap_drop: [ALL]` (예외 시 파일 내 사유 명시)
 
-- **Modular Architecture**: 서비스별로 독립된 설정(`infra/<번호-카테고리>/<service>`)과 Docker Compose의 `include`를 활용한 유연한 구성.
-- **AI-Ready Stack**: **Ollama** (LLM), **Qdrant** (Vector DB), **n8n** (Automation) 사전 통합.
-- **Full-Stack Observability**: **Grafana, Prometheus, Loki, Tempo** (LGTM Stack) 사전 구성.
-- **Enterprise-Grade Security**: **Keycloak**(SSO), **Vault**, **OAuth2 Proxy** 및 Docker Secrets 기반의 시크릿 관리.
-
----
-
-## 📂 Repository Guide
+## 저장소 구조
 
 | Directory | Purpose | Docs |
 | :--- | :--- | :--- |
-| [**`infra/`**](infra/) | Docker Compose based infrastructure services | [Stack Details](infra/README.md) |
-| [**`projects/`**](projects/) | Application source code & microservices | - |
-| [**`docs/`**](docs/) | Architectural blueprints and life-cycle guides | [Index](docs/README.md) |
-| [**`secrets/`**](secrets/) | Security-hardened runtime secret files (`*.txt`) | [Secret Guide](secrets/README.md) |
-| [**`operations/`**](operations/) | Service operational context & incident history | [Records](operations/README.md) |
-| [**`runbooks/`**](runbooks/) | Executable playbooks for maintenance & recovery | [Playbooks](runbooks/README.md) |
-| [**`specs/`**](specs/) | Component-level implementation specifications | - |
-| [**`scripts/`**](scripts/) | Automation scripts for deployment and ops | - |
-| [**`.github/`**](.github/) | CI/CD Workflows (Lint, Validate, Secret Scan) | - |
+| `infra/` | 서비스별 Compose 정의 | `infra/README.md` |
+| `docs/` | 아키텍처/가이드/블루프린트 | `docs/README.md` |
+| `runbooks/` | 장애 대응/복구 절차 | `runbooks/README.md` |
+| `secrets/` | 런타임 시크릿 파일 | `secrets/README.md` |
+| `scripts/` | 검증/부트스트랩 스크립트 | `scripts/README.md` |
+| `specs/` | 구현 스펙/계획 문서 | `specs/` |
+| `.github/` | CI/CD 워크플로 | `.github/workflows/` |
 
----
+## 기여
 
-## 🤝 기여 (Contributing)
+- 가이드: `CONTRIBUTING.md`
+- 행동강령: `CODE_OF_CONDUCT.md`
+- 아키텍처 제약: `ARCHITECTURE.md`
 
-이 프로젝트는 오픈 소스 기여를 환영합니다.
-기여하기 전에 다음 문서들을 꼭 확인해 주세요.
+## License
 
-- [**CONTRIBUTING.md**](CONTRIBUTING.md): 기여 가이드라인
-- [**CODE_OF_CONDUCT.md**](CODE_OF_CONDUCT.md): 행동 강령
-- [**ARCHITECTURE.md**](ARCHITECTURE.md): 구조 이해
-
-## 📝 License
-
-이 프로젝트는 **Apache License 2.0** 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
-
----
-
-© 2026 Hy-Home Infrastructure Project.
+Apache-2.0. See `LICENSE`.

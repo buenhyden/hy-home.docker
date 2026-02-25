@@ -51,11 +51,10 @@ docker compose exec postgres-cluster patronictl list
 | `config/`            | Custom Patroni and HAProxy configurations.     |
 | `README.md`          | HA docs and operational commands.              |
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+## Documentation References
 
-Please refer to the following global documentation directories for information regarding this service:
-
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+- **Architecture Principles**: [ARCHITECTURE.md](../../../ARCHITECTURE.md)
+- **PostgreSQL HA Blueprint**: [docs/context/04-data/postgres-patroni-ha-guide.md](../../../docs/context/04-data/postgres-patroni-ha-guide.md)
+- **PostgreSQL Router Blueprint**: [docs/context/04-data/postgres-router-guide.md](../../../docs/context/04-data/postgres-router-guide.md)
+- **Runbook (Recovery)**: [runbooks/04-data/postgres-ha-recovery.md](../../../runbooks/04-data/postgres-ha-recovery.md)
+- **Operations History**: [operations/README.md](../../../operations/README.md)

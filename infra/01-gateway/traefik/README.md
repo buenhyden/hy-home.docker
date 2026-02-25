@@ -79,11 +79,9 @@ labels:
 | `config/acme.json`         | Auto-generated Let's Encrypt certificates. |
 | `README.md`                | Overview and routing guides.               |
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+## Documentation References
 
-Please refer to the following global documentation directories for information regarding this service:
-
-- **Architecture & Topology**: [docs/architecture](../../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../../docs/guides)
-- **Routine Operations**: [operations/](../../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../../runbooks)
+- **Architecture Principles**: [ARCHITECTURE.md](../../../ARCHITECTURE.md)
+- **Traefik Blueprint**: [docs/context/01-gateway/traefik-ingress-guide.md](../../../docs/context/01-gateway/traefik-ingress-guide.md)
+- **Runbook (Gateway Recovery)**: [runbooks/01-gateway/traefik-proxy-recovery.md](../../../runbooks/01-gateway/traefik-proxy-recovery.md)
+- **Operations History**: [operations/README.md](../../../operations/README.md)

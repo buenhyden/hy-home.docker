@@ -22,11 +22,10 @@ This category manages the ingress traffic and edge routing for the entire infras
 | `nginx/`    | Optional standalone Nginx gateway. |
 | `README.md` | Category overview.                 |
 
-> **Note**: This component's local documentation has been migrated to the global repository standards to enforce Spec-Driven Development boundaries.
+## Documentation References
 
-Please refer to the following global documentation directories for information regarding this service:
-
-- **Architecture & Topology**: [docs/architecture](../../docs/architecture)
-- **Configuration & Setup Guides**: [docs/guides](../../docs/guides)
-- **Routine Operations**: [operations/](../../operations)
-- **Troubleshooting & Recovery**: [runbooks/](../../runbooks)
+- **Architecture Principles**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
+- **Gateway Blueprints**: [docs/context/01-gateway](../../docs/context/01-gateway)
+- **Platform Guides**: [docs/guides/README.md](../../docs/guides/README.md)
+- **Runbooks (Gateway)**: [runbooks/01-gateway](../../runbooks/01-gateway)
+- **Operations History**: [operations/README.md](../../operations/README.md)
