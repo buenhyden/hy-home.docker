@@ -72,6 +72,8 @@ services:
       - supabase_service_key
       - supabase_jwt_secret
       - supabase_pg_meta_crypto_key
+    networks:
+      - infra_net
     logging: *default-logging
 
   kong:
@@ -110,6 +112,8 @@ services:
       - supabase_anon_key
       - supabase_service_key
       - supabase_dashboard_password
+    networks:
+      - infra_net
     logging: *default-logging
 
   auth:
@@ -167,6 +171,8 @@ services:
     secrets:
       - supabase_db_password
       - supabase_jwt_secret
+    networks:
+      - infra_net
     logging: *default-logging
 
   rest:
@@ -197,6 +203,8 @@ services:
     secrets:
       - supabase_db_password
       - supabase_jwt_secret
+    networks:
+      - infra_net
     logging: *default-logging
 
   realtime:
@@ -255,6 +263,8 @@ services:
       - supabase_db_password
       - supabase_jwt_secret
       - supabase_secret_key_base
+    networks:
+      - infra_net
     logging: *default-logging
 
   storage:
@@ -304,6 +314,8 @@ services:
       - supabase_service_key
       - supabase_jwt_secret
       - supabase_db_password
+    networks:
+      - infra_net
     logging: *default-logging
 
   imgproxy:
@@ -327,6 +339,8 @@ services:
       IMGPROXY_LOCAL_FILESYSTEM_ROOT: /
       IMGPROXY_USE_ETAG: 'true'
       IMGPROXY_ENABLE_WEBP_DETECTION: ${SUPABASE_IMGPROXY_ENABLE_WEBP_DETECTION}
+    networks:
+      - infra_net
     logging: *default-logging
 
   meta:
@@ -357,6 +371,8 @@ services:
     secrets:
       - supabase_db_password
       - supabase_pg_meta_crypto_key
+    networks:
+      - infra_net
     logging: *default-logging
 
   functions:
@@ -388,6 +404,8 @@ services:
       - supabase_anon_key
       - supabase_service_key
       - supabase_db_password
+    networks:
+      - infra_net
     logging: *default-logging
 
   analytics:
@@ -430,6 +448,8 @@ services:
       "
     secrets:
       - supabase_db_password
+    networks:
+      - infra_net
     logging: *default-logging
 
   db:
@@ -480,6 +500,8 @@ services:
         '-c',
         'log_min_messages=fatal',
       ]
+    networks:
+      - infra_net
     logging: *default-logging
 
   vector:
@@ -503,6 +525,8 @@ services:
     environment:
       LOGFLARE_PUBLIC_ACCESS_TOKEN: ${LOGFLARE_PUBLIC_ACCESS_TOKEN}
     command: ['--config', '/etc/vector/vector.yml']
+    networks:
+      - infra_net
     logging: *default-logging
 
   supavisor:
@@ -557,7 +581,14 @@ services:
       - supabase_jwt_secret
       - supabase_secret_key_base
       - supabase_vault_enc_key
+    networks:
+      - infra_net
     logging: *default-logging
+
+networks:
+  infra_net:
+    name: infra_net
+    external: true
 
 secrets:
   supabase_db_password:

@@ -431,6 +431,11 @@ services:
       - '${STATSD_AIRFLOW_PORT:-9125}'
     logging: *default-logging
 
+networks:
+  infra_net:
+    name: infra_net
+    external: true
+
 secrets:
   airflow_db_password:
     external: true

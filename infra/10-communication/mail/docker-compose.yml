@@ -21,14 +21,18 @@ services:
     image: stalwartlabs/stalwart:v0.14
     container_name: stalwart
     restart: always
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     # [포트 설정]
     # 메일 프로토콜 포트는 Traefik을 통하지 않고 호스트에 직접 노출해야 합니다.
     ports:
-      - "${SMTP_HOST_PORT:-25}:${SMTP_PORT:-25}"       # SMTP (서버 간 메일 전송 / 릴레이)
-      - "${SUBMISSION_HOST_PORT:-587}:${SUBMISSION_PORT:-587}"     # Submission (클라이언트 메일 발송 - StartTLS)
-      - "${SMTPS_HOST_PORT:-465}:${SMTPS_PORT:-465}"     # SMTPS (보안 메일 발송 - Implicit TLS)
-      - "${IMAPS_HOST_PORT:-993}:${IMAPS_PORT:-993}"     # IMAPS (메일 수신/확인)
-      - "${MANAGESIEVE_HOST_PORT:-4190}:${MANAGESIEVE_PORT:-4190}"   # ManageSieve (메일 필터링 규칙 관리)
+      - '${SMTP_HOST_PORT:-25}:${SMTP_PORT:-25}' # SMTP (서버 간 메일 전송 / 릴레이)
+      - '${SUBMISSION_HOST_PORT:-587}:${SUBMISSION_PORT:-587}' # Submission (클라이언트 메일 발송 - StartTLS)
+      - '${SMTPS_HOST_PORT:-465}:${SMTPS_PORT:-465}' # SMTPS (보안 메일 발송 - Implicit TLS)
+      - '${IMAPS_HOST_PORT:-993}:${IMAPS_PORT:-993}' # IMAPS (메일 수신/확인)
+      - '${MANAGESIEVE_HOST_PORT:-4190}:${MANAGESIEVE_PORT:-4190}' # ManageSieve (메일 필터링 규칙 관리)
       # 8080 포트는 Traefik을 통해 라우팅하므로 주석 처리 (직접 접속 필요 시 해제)
       # - "8080:8080"
 
@@ -45,10 +49,10 @@ services:
 
     # [Traefik 연동] - 관리자 웹 UI 라우팅
     labels:
-      - "traefik.enable=true"
+      - 'traefik.enable=true'
       # 도메인 접속 설정 (http://mail.${DEFAULT_URL})
-      - "traefik.http.routers.stalwart-ui.rule=Host(`mail.${DEFAULT_URL}`)"
-      - "traefik.http.services.stalwart-ui.loadbalancer.server.port=${STALWART_PORT:-8080}"
+      - 'traefik.http.routers.stalwart-ui.rule=Host(`mail.${DEFAULT_URL}`)'
+      - 'traefik.http.services.stalwart-ui.loadbalancer.server.port=${STALWART_PORT:-8080}'
       # (선택) 웹 UI에 OAuth2 Proxy 인증을 걸고 싶다면 아래 주석 해제
       # - "traefik.http.routers.stalwart-ui.middlewares=sso-auth@file"
   mailhog:
@@ -85,3 +89,8 @@ services:
           memory: 512M
         reservations:
           memory: 256M
+
+networks:
+  infra_net:
+    name: infra_net
+    external: true

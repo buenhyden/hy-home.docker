@@ -55,6 +55,11 @@ secrets:
   patroni_replication_password:
     external: true
 
+networks:
+  infra_net:
+    name: infra_net
+    external: true
+
 services:
   # ##############################################################
   # etcd 3노드 (Patroni DCS)

@@ -70,6 +70,11 @@ services:
       - 'traefik.http.routers.sonarqube.tls=true'
       - 'traefik.http.services.sonarqube.loadbalancer.server.port=${SONARQUBE_PORT:-9000}'
 
+networks:
+  infra_net:
+    name: infra_net
+    external: true
+
 secrets:
   sonarqube_db_password:
     external: true

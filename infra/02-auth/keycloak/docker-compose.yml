@@ -98,6 +98,11 @@ services:
       - keycloak_admin_password
     logging: *default-logging
 
+networks:
+  infra_net:
+    name: infra_net
+    external: true
+
 secrets:
   keycloak_db_password:
     external: true

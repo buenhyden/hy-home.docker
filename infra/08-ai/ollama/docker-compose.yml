@@ -97,3 +97,7 @@ services:
       ollama:
         condition: service_healthy
     logging: *default-logging
+networks:
+  infra_net:
+    name: infra_net
+    external: true

@@ -1,0 +1,98 @@
+-- PostgreSQL 초기화 스크립트 (Initialization Script)
+-- 주의: 이 스크립트는 데이터 볼륨이 비어 있을 때 최초 1회만 실행됩니다.
+
+---------------------------------------------------------
+-- 1. n8n 설정
+---------------------------------------------------------
+-- 사용자 생성 (존재하지 않을 경우에만 생성하도록 DO 블록 활용)
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'n8n') THEN
+        CREATE USER n8n WITH PASSWORD '${POSTGRES_PASSWORD}';
+    END IF;
+END
+$$;
+
+-- 데이터베이스 생성 및 권한 부여
+CREATE DATABASE n8n OWNER n8n;
+GRANT ALL PRIVILEGES ON DATABASE n8n TO n8n;
+
+-- 해당 DB로 접속하여 스키마 권한 설정
+\connect n8n
+-- PostgreSQL 15 이상 대응: public 스키마 권한 명시적 부여
+GRANT ALL ON SCHEMA public TO n8n;
+-- n8n 사용자가 public 스키마의 소유권을 갖게 하여 확장을 자유롭게 함
+ALTER SCHEMA public OWNER TO n8n;
+
+---------------------------------------------------------
+-- 2. keycloak 설정
+---------------------------------------------------------
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'keycloak') THEN
+        CREATE USER keycloak WITH PASSWORD '${POSTGRES_PASSWORD}';
+    END IF;
+END
+$$;
+
+CREATE DATABASE keycloak OWNER keycloak;
+GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak;
+
+\connect keycloak
+GRANT ALL ON SCHEMA public TO keycloak;
+ALTER SCHEMA public OWNER TO keycloak;
+
+---------------------------------------------------------
+-- 3. airflow 설정
+---------------------------------------------------------
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'airflow') THEN
+        CREATE USER airflow WITH PASSWORD '${POSTGRES_PASSWORD}';
+    END IF;
+END
+$$;
+
+CREATE DATABASE airflow OWNER airflow;
+GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
+
+\connect airflow
+GRANT ALL ON SCHEMA public TO airflow;
+ALTER SCHEMA public OWNER TO airflow;
+
+
+---------------------------------------------------------
+-- 4. terrakube 설정
+---------------------------------------------------------
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'terrakube') THEN
+        CREATE USER terrakube WITH PASSWORD '${POSTGRES_PASSWORD}';
+    END IF;
+END
+$$;
+
+CREATE DATABASE terrakube OWNER terrakube;
+GRANT ALL PRIVILEGES ON DATABASE terrakube TO terrakube;
+
+\connect terrakube
+GRANT ALL ON SCHEMA public TO terrakube;
+ALTER SCHEMA public OWNER TO terrakube;
+
+---------------------------------------------------------
+-- 5. sonarqube 설정
+---------------------------------------------------------
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'sonarqube') THEN
+        CREATE USER sonarqube WITH PASSWORD '${POSTGRES_PASSWORD}';
+    END IF;
+END
+$$;
+
+CREATE DATABASE sonarqube OWNER sonarqube;
+GRANT ALL PRIVILEGES ON DATABASE sonarqube TO sonarqube;
+
+\connect sonarqube
+GRANT ALL ON SCHEMA public TO sonarqube;
+ALTER SCHEMA public OWNER TO sonarqube;

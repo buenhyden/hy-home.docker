@@ -294,7 +294,11 @@ services:
     #   - "${GRAFANA_HOST_PORT}:${GRAFANA_PORT}"
     healthcheck:
       # Grafana 내부의 전용 상태 확인 API (Application Programming Interface) 사용
-      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${GRAFANA_PORT:-3000}/api/health || exit 1']
+      test:
+        [
+          'CMD-SHELL',
+          'wget -q --spider http://localhost:${GRAFANA_PORT:-3000}/api/health || exit 1',
+        ]
       interval: 15s
       timeout: 15s
       retries: 5
@@ -329,7 +333,8 @@ services:
     container_name: infra-alloy
     <<: *default-restart
     user: '0:0'
-    command: ['run', '--server.http.listen-addr=0.0.0.0:${ALLOY_PORT:-12345}', '/etc/alloy/config.alloy']
+    command:
+      ['run', '--server.http.listen-addr=0.0.0.0:${ALLOY_PORT:-12345}', '/etc/alloy/config.alloy']
     volumes:
       - ./alloy/config/config.alloy:/etc/alloy/config.alloy:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro # 도커 로그 접근
@@ -458,7 +463,10 @@ services:
     <<: *default-restart
     healthcheck:
       test:
-        ['CMD-SHELL', 'wget -q --spider http://localhost:${ALERTMANAGER_PORT:-9093}/-/ready || exit 1']
+        [
+          'CMD-SHELL',
+          'wget -q --spider http://localhost:${ALERTMANAGER_PORT:-9093}/-/ready || exit 1',
+        ]
       interval: 15s
       timeout: 15s
       retries: 5
@@ -497,7 +505,11 @@ services:
       infra_net:
         ipv4_address: 172.19.0.37
     healthcheck:
-      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${PUSHGATEWAY_PORT:-9091}/-/ready || exit 1']
+      test:
+        [
+          'CMD-SHELL',
+          'wget -q --spider http://localhost:${PUSHGATEWAY_PORT:-9091}/-/ready || exit 1',
+        ]
       interval: 15s
       timeout: 15s
       retries: 5
@@ -510,6 +522,11 @@ services:
       - 'traefik.http.routers.pushgateway.tls=true'
       - 'traefik.http.services.pushgateway.loadbalancer.server.port=${PUSHGATEWAY_PORT:-9091}'
     logging: *default-logging
+
+networks:
+  infra_net:
+    name: infra_net
+    external: true
 
 secrets:
   minio_app_user_password:

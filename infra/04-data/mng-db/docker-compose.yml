@@ -192,7 +192,7 @@ services:
       - mng_postgres_password
     volumes:
       - mng-pg-data:/var/lib/postgresql/data
-      - ./init-scripts/init_users_dbs.sql:/docker-entrypoint-initdb.d/init_users_dbs.sql
+      - ./pg/init-scripts/init_users_dbs.sql:/docker-entrypoint-initdb.d/init_users_dbs.sql
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres']
       interval: 15s
@@ -234,7 +234,7 @@ services:
       unset PGPASSWORD;
       echo 'SQL 스크립트 실행 완료.';"
     volumes:
-      - ./init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql
+      - ./pg/init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql
     depends_on:
       mng-pg:
         condition: service_healthy
