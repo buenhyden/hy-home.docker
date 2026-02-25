@@ -4,15 +4,15 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
 `hy-home.docker`는 로컬/홈랩 환경에서 멀티 서비스 인프라를 일관되게 실행하기 위한 Docker Compose 기반 저장소입니다.
-루트 `docker-compose.yml`이 `infra/**/docker-compose*.yml`을 `include`하여 스택을 조립합니다.
+루트 [`docker-compose.yml`](docker-compose.yml)이 [`infra/**/docker-compose*.yml`](infra/)을 `include`하여 스택을 조립합니다.
 
 ## 문서 시작점
 
-- 아키텍처 원칙: `ARCHITECTURE.md`
-- 운영 정책/런북 인덱스: `OPERATIONS.md`
-- 기술 블루프린트 허브: `docs/context/README.md`
-- 실행 런북 허브: `runbooks/README.md`
-- 인프라 디렉토리 가이드: `infra/README.md`
+- 아키텍처 원칙: [`ARCHITECTURE.md`](ARCHITECTURE.md)
+- 운영 정책/런북 인덱스: [`OPERATIONS.md`](OPERATIONS.md)
+- 기술 블루프린트 허브: [`docs/context/README.md`](docs/context/README.md)
+- 실행 런북 허브: [`runbooks/README.md`](runbooks/README.md)
+- 인프라 디렉토리 가이드: [`infra/README.md`](infra/README.md)
 
 ## 준비 사항
 
@@ -76,19 +76,19 @@ docker compose down
 
 | Directory | Purpose | Docs |
 | :--- | :--- | :--- |
-| `infra/` | 서비스별 Compose 정의 | `infra/README.md` |
-| `docs/` | 아키텍처/가이드/블루프린트 | `docs/README.md` |
-| `runbooks/` | 장애 대응/복구 절차 | `runbooks/README.md` |
-| `secrets/` | 런타임 시크릿 파일 | `secrets/README.md` |
-| `scripts/` | 검증/부트스트랩 스크립트 | `scripts/README.md` |
-| `specs/` | 구현 스펙/계획 문서 | `specs/` |
-| `.github/` | CI/CD 워크플로 | `.github/workflows/` |
+| [`infra/`](infra/) | 서비스별 Compose 정의 | [`infra/README.md`](infra/README.md) |
+| [`docs/`](docs/) | 아키텍처/가이드/블루프린트 | [`docs/README.md`](docs/README.md) |
+| [`runbooks/`](runbooks/) | 장애 대응/복구 절차 | [`runbooks/README.md`](runbooks/README.md) |
+| [`secrets/`](secrets/) | 런타임 시크릿 파일 | [`secrets/README.md`](secrets/README.md) |
+| [`scripts/`](scripts/) | 검증/부트스트랩 스크립트 | [`scripts/README.md`](scripts/README.md) |
+| [`specs/`](specs/) | 구현 스펙/계획 문서 | [`specs/`](specs/) |
+| [`.github/`](.github/) | CI/CD 워크플로 | [`.github/workflows/`](.github/workflows/) |
 
 ## 기여
 
-- 가이드: `CONTRIBUTING.md`
-- 행동강령: `CODE_OF_CONDUCT.md`
-- 아키텍처 제약: `ARCHITECTURE.md`
+- 가이드: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- 행동강령: [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
+- 아키텍처 제약: [`ARCHITECTURE.md`](ARCHITECTURE.md)
 
 ## License
 

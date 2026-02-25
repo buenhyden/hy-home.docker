@@ -1,13 +1,13 @@
 # System Architecture
 
 이 문서는 `hy-home.docker` 저장소의 전역 아키텍처 제약과 변경 규칙을 정의합니다.
-서비스별 상세 설계는 `docs/context/`, 실행 절차는 `runbooks/` 및 `OPERATIONS.md`를 기준으로 합니다.
+서비스별 상세 설계는 [`docs/context/`](docs/context/), 실행 절차는 [`runbooks/`](runbooks/) 및 [`OPERATIONS.md`](OPERATIONS.md)를 기준으로 합니다.
 
 ## 1. Scope
 
-- 대상: 루트 `docker-compose.yml` + `infra/**/docker-compose*.yml|yaml`로 구성된 인프라 스택
+- 대상: 루트 [`docker-compose.yml`](docker-compose.yml) + [`infra/**/docker-compose*.yml|yaml`](infra/)로 구성된 인프라 스택
 - 목표: 로컬/홈랩 환경에서 재현 가능한 멀티 서비스 인프라 제공
-- 제외: 개별 서비스 내부 비즈니스 로직, 앱 코드 구현 세부 (`specs/`에서 별도 정의)
+- 제외: 개별 서비스 내부 비즈니스 로직, 앱 코드 구현 세부 ([`specs/`](specs/)에서 별도 정의)
 
 ## 2. Architectural Invariants
 
@@ -18,7 +18,7 @@
 - **Secrets-First**: 비밀번호/토큰은 `.env`가 아닌 `secrets/**/*.txt` + Docker secrets로 주입합니다.
 - **Port Policy**: 호스트 노출 포트는 `*_HOST_PORT`, 컨테이너 포트는 `*_PORT`를 사용합니다. Compose 파일에는 `${VAR:-default}`로 기본 포트를 명시합니다.
 - **Security Baseline**: 기본적으로 `security_opt: [no-new-privileges:true]`, `cap_drop: [ALL]`를 적용합니다.
-- **Docs Separation**: 아키텍처/배경은 `docs/`, 구현 계획은 `specs/`, 실행 절차는 `runbooks/`에 분리합니다.
+- **Docs Separation**: 아키텍처/배경은 [`docs/`](docs/), 구현 계획은 [`specs/`](specs/), 실행 절차는 [`runbooks/`](runbooks/)에 분리합니다.
 
 ## 3. Runtime Topology
 
@@ -70,7 +70,7 @@
 
 ## 5. Architecture References
 
-- 인프라 개요 ARD: `docs/ard/infra-overview.md`
-- 메시징 ARD: `docs/ard/messaging-requirements.md`
-- 기술 컨텍스트 허브: `docs/context/README.md`
-- 운영 정책: `OPERATIONS.md`
+- 인프라 개요 ARD: [`docs/ard/infra-overview.md`](docs/ard/infra-overview.md)
+- 메시징 ARD: [`docs/ard/messaging-requirements.md`](docs/ard/messaging-requirements.md)
+- 기술 컨텍스트 허브: [`docs/context/README.md`](docs/context/README.md)
+- 운영 정책: [`OPERATIONS.md`](OPERATIONS.md)
