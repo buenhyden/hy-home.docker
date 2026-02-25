@@ -10,13 +10,13 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_SYNCTHING_DIR}
+      device: ${DEFAULT_TOOLING_DIR}/syncthing
   resources-contents-volume:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_RESOURCES_DIR}/Contents
+      device: ${DEFAULT_RESOURCES_DIR}
 
 services:
   syncthing:

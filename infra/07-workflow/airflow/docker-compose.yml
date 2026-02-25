@@ -63,29 +63,35 @@ x-airflow-common: &airflow-common
 
 volumes:
   airflow-dags:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_AIRFLOW_DIR}/dags
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_WORKFLOW_DIR}/airflow/dags
   airflow-logs:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_AIRFLOW_DIR}/logs
+      device: ${DEFAULT_WORKFLOW_DIR}/airflow/logs
   airflow-config:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_AIRFLOW_DIR}/config
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_WORKFLOW_DIR}/airflow/config
   airflow-plugins:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_WORKFLOW_DIR}/airflow/plugins
+  airflow-valkey-data:
     # driver: local
     # driver_opts:
     #   o: bind
     #   type: none
-    #   device: ${DEFAULT_AIRFLOW_DIR}/plugins
+    #   device: ${DEFAULT_WORKFLOW_DIR}/valkey
 
 services:
   airflow-apiserver:
@@ -322,6 +328,86 @@ services:
 
       # [보안 권장] Flower는 기본 로그인 보안이 취약하므로 SSO 미들웨어를 붙이는 것이 좋습니다.
       - 'traefik.http.routers.flower.middlewares=sso-auth@file'
+
+  airflow-valkey:
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 1G
+    image: valkey/valkey:9.0.2-alpine
+    container_name: airflow-valkey
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    secrets:
+      - airflow_valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.15
+    restart: unless-stopped
+    volumes:
+      - airflow-valkey-data:/data
+    command: >
+      sh -c '
+      valkey-server
+      --requirepass "$$(cat /run/secrets/airflow_valkey_password)"
+      --appendonly yes
+      --port 6379
+      '
+    # 클러스터 내부 통신 포트는 expose
+    expose:
+      - '${VALKEY_PORT:-6379}'
+      - '${VALKEY_BUS_PORT:-16379}'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'V_PASS=$$(cat /run/secrets/airflow_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG',
+        ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    logging: *default-logging
+
+  airflow-valkey-exporter:
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
+    image: oliver006/redis_exporter:v1.80.1-alpine
+    container_name: airflow-valkey-exporter
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    expose:
+      - '${VALKEY_EXPORTER_PORT:-9121}'
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.16
+    restart: unless-stopped
+    secrets:
+      - airflow_valkey_password
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        echo "Starting Valkey Exporter..."
+        # -redis.password-file 플래그로 직접 파일 경로 전달 (환경변수 export 없음)
+        exec /redis_exporter \
+          -redis.addr=redis://airflow-valkey:6379 \
+          -redis.password-file=/run/secrets/airflow_valkey_password \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
+    depends_on:
+      airflow-valkey:
+        condition: service_healthy
+    logging: *default-logging
+
   airflow-statsd-exporter:
     profiles:
       - airflow

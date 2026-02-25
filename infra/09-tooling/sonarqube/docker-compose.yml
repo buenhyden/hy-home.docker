@@ -12,13 +12,13 @@ volumes:
     # driver_opts:
     #   o: bind
     #   type: none
-    #   device: ${SONARQUBE_DEFAULT_DIR}/data
+    #   device: ${DEFAULT_TOOLING_DIR}/sonarqube/data
   sonarqube-logs-volume:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${SONARQUBE_DEFAULT_DIR}/logs
+      device: ${DEFAULT_TOOLING_DIR}/sonarqube/logs
 
 services:
   sonarqube:

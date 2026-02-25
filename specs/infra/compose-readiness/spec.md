@@ -82,7 +82,7 @@ _Note: This document is the Source of Truth for implementation changes in compos
 
 본 작업은 데이터 모델 변경이 목적이 아니다. 다만 core stack은 bind mount 기반 볼륨을 다수 사용하므로, **호스트 디렉토리 존재/권한**이 부팅 성공률에 직접 영향을 준다.
 
-- **Storage**: local bind mounts (`${DEFAULT_DATA_DIR}`, `${DEFAULT_OBSERVABILITY_DIR}`, `${DEFAULT_DOCKER_PATH}` 등)
+- **Storage**: local bind mounts (`${DEFAULT_DATA_DIR}`, `${DEFAULT_OBSERVABILITY_DIR}`, `${DEFAULT_DOCKER_PROJECT_PATH}` 등)
 - **Policy**: runbook 및 preflight에서 “필수 경로 목록”과 생성 명령을 제공한다.
 
 ---

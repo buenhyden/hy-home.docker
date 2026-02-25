@@ -10,19 +10,19 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_DATABASE_DIR}/cassandra/node1
+      device: ${DEFAULT_DATA_DIR}/cassandra/node1
   # cassandra-node2-volume:
   #   driver: local
   #   driver_opts:
   #     o: bind
   #     type: none
-  #     device: ${DEFAULT_DATABASE_DIR}/cassandra/node2
+  #     device: ${DEFAULT_DATA_DIR}/cassandra/node2
   cassandra-exporter-volume:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_DATABASE_DIR}/cassandra/exporter
+      device: ${DEFAULT_DATA_DIR}/cassandra/exporter
 
 services:
   cassandra-exporter:

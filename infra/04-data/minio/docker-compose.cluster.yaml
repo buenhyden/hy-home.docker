@@ -91,31 +91,31 @@ volumes:
   #   driver_opts:
   #     o: bind
   #     type: none
-  #     device: ${DEFAULT_STORAGE_DIR}/minio/nginx
+  #     device: ${DEFAULT_DATA_DIR}/minio/nginx
   minio-data1-volume:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_STORAGE_DIR}/minio/data1
+      device: ${DEFAULT_DATA_DIR}/minio/data1
   minio-data2-volume:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_STORAGE_DIR}/minio/data2
+      device: ${DEFAULT_DATA_DIR}/minio/data2
   minio-data3-volume:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_STORAGE_DIR}/minio/data3
+      device: ${DEFAULT_DATA_DIR}/minio/data3
   minio-data4-volume:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_STORAGE_DIR}/minio/data4
+      device: ${DEFAULT_DATA_DIR}/minio/data4
 
 secrets:
   minio_root_username:

@@ -32,7 +32,7 @@ The environment is strictly initialized by the `airflow-init` container.
 
 1. **DB Migration**: `airflow-init` runs `airflow db migrate`.
 2. **User Creation**: Creates the administrative user from `airflow_www_password` secret.
-3. **Permission Fix**: Repairs directory ownership for `${DEFAULT_AIRFLOW_DIR}`.
+3. **Permission Fix**: Repairs directory ownership for `${DEFAULT_WORKFLOW_DIR}/airflow`.
 
 ### Verification
 
@@ -44,8 +44,8 @@ docker logs airflow-init
 
 ### Log Inspection
 
-Worker task logs are persisted to `${DEFAULT_AIRFLOW_DIR}/logs`.
+Worker task logs are persisted to `${DEFAULT_WORKFLOW_DIR}/airflow/logs`.
 
 ### DAG Deployment
 
-Mount or sync Python files to `${DEFAULT_AIRFLOW_DIR}/dags`.
+Mount or sync Python files to `${DEFAULT_WORKFLOW_DIR}/airflow/dags`.

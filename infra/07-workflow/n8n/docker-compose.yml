@@ -39,13 +39,13 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_N8N_DIR}
+      device: ${DEFAULT_WORKFLOW_DIR}/n8n
   n8n-valkey-data:
     # driver: local
     # driver_opts:
     #   o: bind
     #   type: none
-    #   device: ${DEFAULT_VALKEY_DATA_DIR}/n8n-node
+    #   device: ${DEFAULT_WORKFLOW_DIR}/valkey
 
 secrets:
   n8n_valkey_password:

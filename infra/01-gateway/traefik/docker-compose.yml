@@ -15,7 +15,7 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${DEFAULT_DOCKER_PATH}/secrets/certs
+      device: ${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs
 
 services:
   traefik:

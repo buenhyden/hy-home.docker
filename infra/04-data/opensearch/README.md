@@ -19,7 +19,7 @@ OpenSearch is a distributed search and analytics engine.
 ## Persistence
 
 - **Data**: `opensearch-data` volume mapped to `${DEFAULT_DATA_DIR}/opensearch/opensearch1-data`.
-- **Certs**: `opensearch_certs` volume mapped to `${DEFAULT_DOCKER_PATH}/secrets/certs`.
+- **Certs**: `opensearch_certs` volume mapped to `${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs`.
 
 ## Configuration
 

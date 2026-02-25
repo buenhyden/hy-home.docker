@@ -23,7 +23,7 @@ Traefik binds to the host's ports (configurable via `.env`) and routes traffic v
 
 Traefik maintains state for certificates and dynamic configurations.
 
-- **Certs**: `${DEFAULT_DOCKER_PATH}/secrets/certs` mapped to `/certs`.
+- **Certs**: `${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs` mapped to `/certs`.
 - **Config**: `./config/traefik.yml` (Static) and `./dynamic` (Dynamic).
 
 ## Configuration
@@ -33,7 +33,7 @@ Traefik maintains state for certificates and dynamic configurations.
 | Variable                       | Description                      | Default/Example     |
 | :----------------------------- | :------------------------------- | :------------------ |
 | `DEFAULT_URL`                  | Parent domain                    | `hy-home.com`       |
-| `DEFAULT_DOCKER_PATH`          | Root host path                   | `/opt/hy-home`      |
+| `DEFAULT_DOCKER_PROJECT_PATH`          | Root host path                   | `/opt/hy-home`      |
 | `HTTP_HOST_PORT`               | Host HTTP Port                   | `80`                |
 | `HTTPS_HOST_PORT`              | Host HTTPS Port                  | `443`               |
 | `TRAEFIK_DASHBOARD_HOST_PORT`  | Dashboard Port                   | `8080`              |

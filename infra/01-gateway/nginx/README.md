@@ -16,7 +16,7 @@ Nginx acts as an optional, path-based reverse proxy or standalone gateway for sp
 
 ## Persistence
 
-- **Certs**: `nginx_certs` volume mapped to `${DEFAULT_DOCKER_PATH}/secrets/certs`.
+- **Certs**: `nginx_certs` volume mapped to `${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs`.
 
 ## File Map
 

@@ -79,8 +79,8 @@ secrets:
     file: ./secrets/db/valkey/service_password.txt
   mng_valkey_password:
     file: ./secrets/db/valkey/mng_password.txt
-  oauth2_valkey_password:
-    file: ./secrets/db/valkey/oauth2_password.txt
+  # oauth2_valkey_password:
+  #   file: ./secrets/db/valkey/oauth2_password.txt
   terrakube_valkey_password:
     file: ./secrets/db/valkey/terrakube_password.txt
   airflow_valkey_password:

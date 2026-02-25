@@ -20,7 +20,7 @@
 
 - `CASSANDRA_USERNAME`: Cassandra 사용자.
 - `CASSANDRA_EXPORTER_PORT`: Exporter 포트.
-- `DEFAULT_DATABASE_DIR`: 영구 저장을 위한 기본 디렉토리.
+- `DEFAULT_DATA_DIR`: 영구 저장을 위한 기본 디렉토리.
 
 비밀번호는 `.env`가 아닌 Docker Secret 파일로 관리합니다:
 

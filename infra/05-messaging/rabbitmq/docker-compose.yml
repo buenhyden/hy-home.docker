@@ -12,7 +12,7 @@ volumes:
     # driver_opts:
     #   type: none
     #   o: bind
-    #   device: "${DEFAULT_RABBITMQ_DATA_DIR}"
+    #   device: ${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq
 
 services:
   rabbitmq:
