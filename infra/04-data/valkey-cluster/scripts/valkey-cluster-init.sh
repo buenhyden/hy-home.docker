@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-VALKEY_PASSWORD=$(cat /run/secrets/valkey_password)
+VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password)
 echo "Waiting for Cluster nodes..."
 sleep 5
 
