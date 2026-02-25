@@ -16,6 +16,8 @@ The infrastructure is designed with a "Bottom-Up" dependency model.
 
 To launch or update the entire standard stack:
 
+- Bootstrap prerequisites (secrets/certs/env/dirs): `runbooks/core/infra-bootstrap-runbook.md`
+
 ```bash
 # Standard boot (without specific profiles)
 docker compose up -d

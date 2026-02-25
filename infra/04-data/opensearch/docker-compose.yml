@@ -134,7 +134,7 @@ services:
     extra_hosts:
       - 'keycloak.127.0.0.1.nip.io:172.19.0.13'
     environment:
-      - OPENSEARCH_USERNAME=${OPENSEARCH_DASHBOARD_USERNAME}
+      - OPENSEARCH_USERNAME=${OPENSEARCH_DASHBOARD_USERNAME:-admin}
     command: >
       bash -c "
       export OPENSEARCH_PASSWORD=$$(cat /run/secrets/opensearch_dashboard_password) &&
@@ -160,7 +160,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'export OS_PASS=$$(cat /run/secrets/opensearch_dashboard_password) && curl -fsSk -u ${OPENSEARCH_DASHBOARD_USERNAME}:$${OS_PASS} https://localhost:${KIBANA_PORT}/api/status >/dev/null 2>&1 || exit 1',
+          'export OS_PASS=$$(cat /run/secrets/opensearch_dashboard_password) && curl -fsSk -u ${OPENSEARCH_DASHBOARD_USERNAME:-admin}:$${OS_PASS} https://localhost:${KIBANA_PORT}/api/status >/dev/null 2>&1 || exit 1',
         ]
       interval: 15s
       timeout: 30s
@@ -176,7 +176,7 @@ services:
     read_only: true
     <<: *default-restart
     environment:
-      - ES_USERNAME=${OPENSEARCH_EXPORTER_USERNAME}
+      - ES_USERNAME=${OPENSEARCH_EXPORTER_USERNAME:-admin}
     command: >
       bash -c "
       export ES_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) &&

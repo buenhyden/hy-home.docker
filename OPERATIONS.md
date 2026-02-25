@@ -20,6 +20,7 @@ Below is the index of verified operational guides.
 | **Security**| Vault Unseal & Recovery | [vault-sealed.md](runbooks/03-security/vault-sealed.md) |
 | **Monitor** | Observability Stack & Alloy Configuration | [observability-stack-maintenance.md](runbooks/06-observability/observability-stack-maintenance.md) |
 | **Workflow**| Airflow Celery Recovery | [airflow-celery-recovery.md](runbooks/07-workflow/airflow-celery-recovery.md) |
+| **Core** | Core Infra Bootstrap (Docker Compose) | [infra-bootstrap-runbook.md](runbooks/core/infra-bootstrap-runbook.md) |
 
 > **Note:** If a specific operational procedure (e.g. database migration, failover) is missing from this index, the DevOps Agent should proactively create a new runbook based on `templates/operations/runbook-template.md` and link it here.
 

@@ -94,7 +94,7 @@ services:
       test: [
           'CMD-SHELL',
           'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
-          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY0_PORT} ping | grep PONG',
+          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY0_PORT} ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -138,7 +138,7 @@ services:
       test: [
           'CMD-SHELL',
           'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
-          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY1_PORT} ping | grep PONG',
+          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY1_PORT} ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -182,7 +182,7 @@ services:
       test: [
           'CMD-SHELL',
           'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
-          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY2_PORT} ping | grep PONG',
+          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY2_PORT} ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -226,7 +226,7 @@ services:
       test: [
           'CMD-SHELL',
           'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
-          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY3_PORT} ping | grep PONG',
+          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY3_PORT} ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -270,7 +270,7 @@ services:
       test: [
           'CMD-SHELL',
           'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
-          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY4_PORT} ping | grep PONG',
+          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY4_PORT} ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -314,7 +314,7 @@ services:
       test: [
           'CMD-SHELL',
           'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
-          $VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY5_PORT} ping | grep PONG',
+          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY5_PORT} ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
