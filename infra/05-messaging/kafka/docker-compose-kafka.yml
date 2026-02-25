@@ -273,7 +273,7 @@ services:
     networks:
       - infra_net
     environment:
-      KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_NAME}
+      KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_ID}
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:9092,kafka-2:9092,kafka-3:9092'
       # UI가 Schema Registry에 접속하는 주소 (컨테이너 내부 통신)
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: 'http://schema-registry:8081'

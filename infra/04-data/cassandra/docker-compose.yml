@@ -67,7 +67,7 @@ services:
       # - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
       # - CASSANDRA_CLUSTER_NAME=cassandra-cluster
       - CASSANDRA_PASSWORD_SEEDER=yes
-      - CASSANDRA_USER=${DEFAULT_USERNAME}
+      - CASSANDRA_USER=${CASSANDRA_USERNAME}
       - CASSANDRA_PASSWORD_FILE=/run/secrets/cassandra_password
       # By default, Cassandra autodetects the available host memory and takes as much as it can.
       # Therefore, memory options are mandatory if multiple Cassandras are launched in the same node.
@@ -99,7 +99,7 @@ services:
   #     - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
   #     - CASSANDRA_CLUSTER_NAME=cassandra-cluster
   #     - CASSANDRA_PASSWORD_SEEDER=yes
-  #     - CASSANDRA_USER=${DEFAULT_USERNAME}
+  #     - CASSANDRA_USER=${CASSANDRA_USERNAME}
   #     - CASSANDRA_PASSWORD_FILE=/run/secrets/cassandra_password
   #     # By default, Cassandra autodetects the available host memory and takes as much as it can.
   #     # Therefore, memory options are mandatory if multiple Cassandras are launched in the same node.

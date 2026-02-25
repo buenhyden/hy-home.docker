@@ -18,7 +18,7 @@
 
 이 서비스는 다음 환경 변수(`.env`에 정의됨)를 사용합니다:
 
-- `DEFAULT_USERNAME`: Cassandra 사용자.
+- `CASSANDRA_USERNAME`: Cassandra 사용자.
 - `CASSANDRA_EXPORTER_PORT`: Exporter 포트.
 - `DEFAULT_DATABASE_DIR`: 영구 저장을 위한 기본 디렉토리.
 

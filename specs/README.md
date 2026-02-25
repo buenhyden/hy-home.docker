@@ -2,36 +2,41 @@
 
 This directory is the absolute **Source of Truth** for the During-Development phase. It exists explicitly and exclusively for **Spec-Driven Development**.
 
-## 1. Necessity and Purpose
+## 1. Directory Structure
 
-This directory is necessary because it forms the rigid, non-negotiable bridge between Human Intent (defined in `docs/`) and AI Execution.
+Specifications are organized by domain to ensure clarity and ease of navigation.
 
-- **Spec-Driven Development Core**: By forcing all planned changes into concrete specifications here _before_ coding begins, we eliminate AI hallucination, scope creep, and untested edge cases.
-- **Traceability**: It translates high-level Product Requirements (PRDs) and Architecture Designs (ARDs) into deterministic coding instructions mapping directly to file paths.
-- **QA Gateway**: It provides a concrete target for AI Coder Agents to implement against, establishing exactly what Unit and Integration tests _must_ be created to pass CI/CD.
+### 🔐 Auth & Integration
 
-## 2. Required Content and Templates
+- [auth-integration/](file:///home/hy/projects/hy-home.docker/specs/auth-integration/): Keycloak, OAuth2-Proxy, and SSO integration specs.
 
-Every specification created in this folder MUST be instantiated from the predefined templates located in `templates/engineering/`.
+### 🏗️ Infrastructure (`specs/infra/`)
 
-- **Owner**: The **Planner Agent** creates these files. The **Coder Agent** reads and executes them.
-- **Required Files per Feature**:
-  - `specs/<feature>/spec.md` — The technical specification detailing exact required code changes, logic flows, and testing constraints. **(Template: `templates/engineering/spec-template.md`)**
-  - `specs/<feature>/plan.md` — The step-by-step execution roadmap for the Coder agent. **(Template: `templates/project/plan-template.md`)**
-  - `specs/<feature>/api/` — OpenAPI or GraphQL schemas documenting interface contracts. **(Template: `templates/engineering/api-spec-template.md`)**
+Core infrastructure specifications and planning.
 
-> **Note**: Domain groupings (e.g., `specs/infra/<feature>/spec.md`) are allowed, but the feature folder must still contain `spec.md` and `plan.md`.
+- [compose-readiness/](file:///home/hy/projects/hy-home.docker/specs/infra/compose-readiness/): "Core stack boot-ready" prerequisites and verification.
+- [resource-budgets/](file:///home/hy/projects/hy-home.docker/specs/infra/resource-budgets/): Standardized CPU/Memory limits for core services.
+- [security-consistency/](file:///home/hy/projects/hy-home.docker/specs/infra/security-consistency/): Rootless, `cap_drop`, and `no-new-privileges` standardization.
+- [startup-automation/](file:///home/hy/projects/hy-home.docker/specs/infra/startup-automation/): Resource optimization for Supabase and Makefile-based startup automation.
+- [alloy-telemetry/](file:///home/hy/projects/hy-home.docker/specs/infra/alloy-telemetry/): Alloy-based monitoring and telemetry collection.
+- [gateway-routing/](file:///home/hy/projects/hy-home.docker/specs/infra/gateway-routing/): Traefik routing and dynamic configuration.
+- [rag-stack/](file:///home/hy/projects/hy-home.docker/specs/infra/rag-stack/): Vector database (Qdrant) and AI-related infra components.
+
+## 2. Path to Implementation
+
+1. **Draft**: Planner Agent creates `spec.md` and `plan.md`.
+2. **Approve**: Human Developer reviews and approves the spec.
+3. **Execute**: Coder Agent implements changes following the `plan.md`.
+4. **Verify**: Automated scripts and manual checks confirm success.
 
 ## 3. Golden Rules for AI Agents
 
 **NO SPEC, NO CODE.**
-Coder Agents (Backend/Frontend) are governed by `.agent/workflows/` to explicitly refuse writing executable code unless a corresponding, human-approved specification exists in this folder.
+Coder Agents MUST NOT write code without an approved specification in this folder.
 
-- **Approval Gate**: Specs MUST be explicitly approved by a Human Developer. The gate MUST validate that all `ARCHITECTURE.md` items with Priority `**필수**` are satisfied.
-- **Drift Prevention (Reverse Documentation)**: If during implementation, technical limitations force a deviation from the plan, Coder Agents MUST update the `spec.md` to match reality _before_ finalizing the Pull Request.
+- **Traceability**: Every coding change MUST map back to a requirement (e.g., `REQ-OPT-001`) in a `spec.md`.
+- **Drift Prevention**: If technical debt or limitations force a plan change, the `spec.md` MUST be updated first.
 
-## 4. Relation to Other Ecosystems (No Overlap)
-
-- `docs/prd/`: The **What** (Human-readable Features, Success Metrics). Do not place implementation rules there.
-- `docs/ard/`: The **How** globally (System Architecture). Do not place function-level logic there.
-- `specs/`: The **Exact Instructions** (File paths, function signatures, QA layer test requirements). Do not place broad product visions here.
+---
+> [!TIP]
+> Use `scripts/validate-docker-compose.sh` to ensure your specification changes maintain syntax integrity across the entire stack.

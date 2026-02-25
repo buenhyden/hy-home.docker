@@ -404,7 +404,7 @@ services:
         ipv4_address: 172.19.0.26
     <<: *default-restart
     environment:
-      KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_NAME}
+      KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_ID}
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: kafka-connect

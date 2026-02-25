@@ -78,3 +78,21 @@ GRANT ALL PRIVILEGES ON DATABASE terrakube TO terrakube;
 \connect terrakube
 GRANT ALL ON SCHEMA public TO terrakube;
 ALTER SCHEMA public OWNER TO terrakube;
+
+---------------------------------------------------------
+-- 5. sonarqube 설정
+---------------------------------------------------------
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'sonarqube') THEN
+        CREATE USER sonarqube WITH PASSWORD '<password>';
+    END IF;
+END
+$$;
+
+CREATE DATABASE sonarqube OWNER sonarqube;
+GRANT ALL PRIVILEGES ON DATABASE sonarqube TO sonarqube;
+
+\connect sonarqube
+GRANT ALL ON SCHEMA public TO sonarqube;
+ALTER SCHEMA public OWNER TO sonarqube;
