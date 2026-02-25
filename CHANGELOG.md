@@ -103,6 +103,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrate PostgreSQL Patroni credentials from .env files to Docker secrets via a new entrypoint script and standardize Slack webhook variable.
 - Introduce Docker secrets for managing sensitive credentials across various services and update preflight checks and documentation.
 - Set default values for environment variables across docker-compose files and add a dedicated OAuth2 Proxy configuration.
+- Refactor spec organization to `specs/infra` and add SonarQube to `init_users_dbs.sql.example`.
+- Define and assign `infra_net` to `mng-pg-init` while enhancing its security with capability drops.
+- Add `infra_net` external network to Docker Compose files and include a PostgreSQL initialization script for service databases.
+- Migrate sensitive configurations to Docker secrets and standardize secret naming conventions.
 
 ### Changed
 
@@ -117,6 +121,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrate setup guides into detailed context blueprints and guides, and update related documentation.
 - Improve documentation structure, enhance integration guidance, and update example patterns across guides and runbooks.
 - Improve compose environment variable specificity and coverage, including Supabase PostgreSQL connection updates and expanded `.env.example` definitions, with new optimization documentation.
+- Standardize volume path environment variables and integrate Valkey into Airflow.
+- Update mng-db PostgreSQL user creation to use service-specific database passwords from Docker secrets and remove the example script.
 
 ### Docs
 
@@ -281,6 +287,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **deps:** Bump astral-sh/setup-uv
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
+- **release:** Update CHANGELOG.md [skip ci]
+- Update Valkey password secret path from `valkey_password` to `service_valkey_password`.
+- Delete .env.postgres.example
 
 ### Refactor
 
