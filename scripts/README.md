@@ -16,7 +16,7 @@ This folder is necessary to encapsulate build, test, and environment scaffolding
 
 ## 3. Current Scripts
 
-- `scripts/validate-docker-compose.sh`: Validates root Compose config by creating temporary dummy prerequisites (secrets and `.env.postgres`) and running `docker compose config`.
+- `scripts/validate-docker-compose.sh`: Validates root Compose config by creating temporary dummy prerequisites (secrets files) and running `docker compose config`.
 - `scripts/preflight-compose.sh`: Checks local bootstrap prerequisites (`.env`, cert files, secrets, mount directories, optional external networks) before `docker compose up -d`.
 - `scripts/generate-local-certs.sh`: Generates mkcert-based local TLS files at `secrets/certs/{rootCA.pem,cert.pem,key.pem}`.
 

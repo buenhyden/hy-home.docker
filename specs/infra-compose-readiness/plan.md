@@ -41,7 +41,7 @@ _Target Directory: `specs/infra-compose-readiness/plan.md`_
 ## 4. Requirements & Constraints
 
 - **Requirements:**
-  - `[REQ-BOOT-001]` `infra/04-data/postgresql-cluster/.env.postgres` 필수화 및 생성 절차 제공
+  - `[REQ-BOOT-001]` PostgreSQL HA(Spilo/Patroni) 자격 증명은 `.env.postgres` 대신 Docker secrets로 관리 (필수 secret 파일 2개)
   - `[REQ-BOOT-002]` mkcert 기반 `secrets/certs/{rootCA.pem,cert.pem,key.pem}` 표준화
   - `[REQ-BOOT-003]` Alertmanager 시크릿명 표준화(기존 `smtp_password`/`slack_webhook` 재사용)
   - `[REQ-BOOT-004]` `.env.example` 누락 core 변수 보강 (민감값 제외)
@@ -57,12 +57,12 @@ _Target Directory: `specs/infra-compose-readiness/plan.md`_
 
 | Task     | Description | Files Affected | Target REQ | Validation Criteria |
 | -------- | ----------- | -------------- | ---------- | ------------------- |
-| TASK-001 | `.env.postgres` 생성 방식 확정: `.env.postgres.example` 기반, 민감 값은 파일/로컬 env로만 관리 | `infra/04-data/postgresql-cluster/.env.postgres.example`, `runbooks/core/infra-bootstrap-runbook.md` | [REQ-BOOT-001] | Runbook에 생성 절차 포함 |
+| TASK-001 | Patroni 비밀번호 secret 2개를 표준화: `patroni_superuser_password`, `patroni_replication_password` | `docker-compose.yml`, `secrets/README.md`, `runbooks/core/infra-bootstrap-runbook.md` | [REQ-BOOT-001] | Runbook에 생성 절차 포함 |
 | TASK-002 | Alertmanager compose에서 시크릿명 변경: `alertmanager_*` → `smtp_password`/`slack_webhook`로 통일. Compose 변수 보간을 피하기 위해 shell 변수는 `$$` 이스케이프 적용 | `infra/06-observability/docker-compose.yml`, `docker-compose.yml` (필요 시) | [REQ-BOOT-003] | `docker compose config` 에러 0 + 보간 경고 감소 |
 | TASK-003 | `.env.example` 변수 보강: core compose 참조 변수 전수 점검 후 누락 추가 | `.env.example` | [REQ-BOOT-004] | `docker compose config` 경고/오류 감소 + 문서에 변수 설명 |
 | TASK-004 | mkcert 로컬 인증서 생성 스크립트 추가 및 문서화 | `scripts/generate-local-certs.sh`, `runbooks/core/infra-bootstrap-runbook.md` | [REQ-BOOT-002] | 스크립트 2회 실행해도 동일 결과(멱등) |
 | TASK-005 | 볼륨 루트 디렉토리 생성/권한 체크를 runbook + (선택) preflight 스크립트로 제공. (부가) compose healthcheck 내부 shell 변수도 필요 시 `$$` 이스케이프 정합성 점검 | `scripts/preflight-compose.sh`, `runbooks/core/infra-bootstrap-runbook.md`, `infra/**/docker-compose*.yml` (필요 시) | [REQ-BOOT-005] | 누락 경로/권한이 명확히 보고됨 |
-| TASK-006 | `scripts/validate-docker-compose.sh`를 현재 secrets 구조로 업데이트(더미 파일 생성 경로 정합) + `.env.postgres` 템플릿 적용 | `scripts/validate-docker-compose.sh`, `docker-compose.yml` | [REQ-BOOT-006] | `scripts/validate-docker-compose.sh` exit 0 |
+| TASK-006 | `scripts/validate-docker-compose.sh`를 현재 secrets 구조로 업데이트(더미 파일 생성 경로 정합) | `scripts/validate-docker-compose.sh`, `docker-compose.yml` | [REQ-BOOT-006] | `scripts/validate-docker-compose.sh` exit 0 |
 | TASK-007 | 문서 인덱스 업데이트(부팅/선행조건 링크 추가) | `OPERATIONS.md`, `docs/context/core/infra-lifecycle-ops.md` | [REQ-BOOT-008] | 링크가 실제 파일을 가리킴 |
 
 ## 6. Verification Plan

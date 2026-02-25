@@ -31,16 +31,16 @@ _Scope: root `docker-compose.yml` include된 Core stack의 “첫 부팅(boot-re
 
 ## 4. Alerts & Common Failures
 
-### Scenario A: `docker compose config` 가 `.env.postgres` 누락으로 실패
+### Scenario A: PostgreSQL HA(Patroni) secret 파일 누락으로 실패
 
-- **Symptoms**: `env_file .../.env.postgres: no such file or directory`
+- **Symptoms**: PostgreSQL cluster 관련 secret 파일 누락 또는 preflight 실패
 - **Investigation Steps**:
-  1. `ls -la infra/04-data/postgresql-cluster/.env.postgres.example`
-  2. `ls -la infra/04-data/postgresql-cluster/.env.postgres`
+  1. `ls -la secrets/db/postgres/patroni_superuser_password.txt`
+  2. `ls -la secrets/db/postgres/patroni_replication_password.txt`
 - **Remediation Action**:
-  - [ ] `cp infra/04-data/postgresql-cluster/.env.postgres.example infra/04-data/postgresql-cluster/.env.postgres`
-  - [ ] `.env.postgres` 내부 값을 로컬 환경에 맞게 조정 (민감값은 커밋 금지)
-- **Expected Outcome**: `docker compose config`가 해당 오류 없이 진행된다.
+  - [ ] `secrets/db/postgres/patroni_superuser_password.txt`에 superuser 비밀번호를 설정 (커밋 금지)
+  - [ ] `secrets/db/postgres/patroni_replication_password.txt`에 replication 비밀번호를 설정 (커밋 금지)
+- **Expected Outcome**: `bash scripts/preflight-compose.sh`와 `docker compose config`가 통과한다.
 
 ### Scenario B: Traefik TLS 인증서 파일 누락
 
@@ -97,7 +97,10 @@ _Scope: root `docker-compose.yml` include된 Core stack의 “첫 부팅(boot-re
      - `secrets/db/postgres/{service_password.txt,mng_password.txt,keycloak_password.txt,...}`
 
 2. **PostgreSQL cluster env_file 준비**
-   - [ ] `cp infra/04-data/postgresql-cluster/.env.postgres.example infra/04-data/postgresql-cluster/.env.postgres`
+   - [ ] `.env.postgres`는 더 이상 사용하지 않는다.
+   - [ ] Patroni 비밀번호 secret 파일 2개를 준비한다:
+     - `secrets/db/postgres/patroni_superuser_password.txt`
+     - `secrets/db/postgres/patroni_replication_password.txt`
 
 3. **로컬 TLS 인증서 준비 (mkcert)**
    - [ ] 목표 파일: `secrets/certs/rootCA.pem`, `secrets/certs/cert.pem`, `secrets/certs/key.pem`

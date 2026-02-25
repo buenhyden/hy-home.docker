@@ -432,13 +432,13 @@ services:
     command: >
       "SMTP_USERNAME=$$(cat /run/secrets/smtp_username);
       SMTP_PASSWORD=$$(cat /run/secrets/smtp_password);
-      SLACK_ALERTMANAGER_WEBHOOK_URL=$$(cat /run/secrets/slack_webhook);
-      if [ -z \"$$SLACK_ALERTMANAGER_WEBHOOK_URL\" ]; then
+      SLACK_WEBHOOK_URL=$$(cat /run/secrets/slack_webhook);
+      if [ -z \"$$SLACK_WEBHOOK_URL\" ]; then
         echo 'ERROR: slack_webhook secret is not set';
         exit 1;
       fi;
       echo 'Generating config file...';
-      sed \"s|__SLACK_WEBHOOK_URL__|$$SLACK_ALERTMANAGER_WEBHOOK_URL|g\" /etc/alertmanager/config.yml.template > /tmp/config.yml;
+      sed \"s|__SLACK_WEBHOOK_URL__|$$SLACK_WEBHOOK_URL|g\" /etc/alertmanager/config.yml.template > /tmp/config.yml;
 
       echo 'Starting Alertmanager...';
       exec /bin/alertmanager --config.file=/tmp/config.yml --storage.path=/alertmanager"

@@ -42,7 +42,7 @@ _Note: This document defines the What and Why. It must be approved before implem
 
 **Problem Statement**: 현재 Core stack은 `docker compose config` / `docker compose up -d` 과정에서 다음과 같은 “첫 부팅 장애 요소”가 발생한다.
 
-- 필수 env_file(`infra/04-data/postgresql-cluster/.env.postgres`) 누락 시 즉시 실패
+- PostgreSQL HA(Spilo/Patroni) 자격 증명(secret 파일) 누락 시 즉시 실패
 - Traefik 로컬 TLS 인증서 파일(`secrets/certs/{rootCA.pem,cert.pem,key.pem}`) 부재 시 TLS 라우팅이 실패하거나 경고/오류 유발
 - Alertmanager 시크릿 이름이 루트 compose registry와 불일치하여 런타임에서 `/run/secrets/...` 조회 실패 가능
 - `.env.example`가 core compose가 참조하는 값을 충분히 포함하지 않아 초기 설정에 혼선
@@ -88,6 +88,7 @@ _Note: This document defines the What and Why. It must be approved before implem
 - **[REQ-PRD-FUN-01]** Core stack boot prerequisites(파일/변수/디렉토리/네트워크)를 PRD/Spec/Runbook으로 명확히 정의한다.
 - **[REQ-PRD-FUN-02]** 로컬 개발 TLS는 `mkcert` 기반으로 `secrets/certs/{rootCA.pem,cert.pem,key.pem}`를 생성하도록 표준화한다.
 - **[REQ-PRD-FUN-03]** Alertmanager는 신규 시크릿을 추가하지 않고, 기존 `smtp_password`/`slack_webhook` 재사용으로 표준화한다.
+- **[REQ-PRD-FUN-06]** PostgreSQL HA(Spilo/Patroni) 자격 증명은 `.env.postgres` 대신 Docker secrets로 표준화한다.
 - **[REQ-PRD-FUN-04]** `.env.example`는 core compose에서 요구하는 “비-민감 변수”를 누락 없이 포함한다. (민감값은 `secrets/` 기준)
 - **[REQ-PRD-FUN-05]** 검증 절차를 제공한다: `yamllint` + `docker compose config` + (선택) preflight.
 

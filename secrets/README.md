@@ -60,6 +60,8 @@ secrets/
 | `sonarqube_db_password` | `db/postgres/sonarqube_password.txt` | SonarQube DB 접속 비밀번호 |
 | `terrakube_db_password` | `db/postgres/terrakube_password.txt` | Terrakube API DB 비밀번호 |
 | `supabase_db_password` | `db/postgres/supabase_password.txt` | Supabase 내부 DB 비밀번호 |
+| `patroni_superuser_password` | `db/postgres/patroni_superuser_password.txt` | PostgreSQL HA(Spilo/Patroni) superuser 비밀번호 |
+| `patroni_replication_password` | `db/postgres/patroni_replication_password.txt` | PostgreSQL HA(Spilo/Patroni) replication 비밀번호 |
 
 ### 5. 인메모리 및 NoSQL (Valkey, InfluxDB, CouchDB)
 

@@ -50,6 +50,10 @@ volumes:
 secrets:
   service_postgres_password:
     external: true
+  patroni_superuser_password:
+    external: true
+  patroni_replication_password:
+    external: true
 
 services:
   # ##############################################################
@@ -184,12 +188,13 @@ services:
     cap_drop:
       - ALL
     hostname: pg-0
-    env_file:
-      - .env.postgres
+    entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
     environment:
       SCOPE: 'pg-ha'
       # etcd 클러스터 주소
       ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
+      PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
+      PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
       # --------------------------------------------------------------------
       # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
       # --------------------------------------------------------------------
@@ -204,8 +209,12 @@ services:
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:${POSTGRES_PORT}
     volumes:
       - pg0-data:/home/postgres/pgdata
+      - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     expose:
       - ${POSTGRES_PORT}
+    secrets:
+      - patroni_superuser_password
+      - patroni_replication_password
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 15s
@@ -240,12 +249,13 @@ services:
     cap_drop:
       - ALL
     hostname: pg-1
-    env_file:
-      - .env.postgres
+    entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
     environment:
       SCOPE: 'pg-ha'
       # etcd 클러스터 주소
       ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
+      PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
+      PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
       # --------------------------------------------------------------------
       # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
       # --------------------------------------------------------------------
@@ -260,10 +270,14 @@ services:
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:${POSTGRES_PORT}
     volumes:
       - pg1-data:/home/postgres/pgdata
+      - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     networks:
       infra_net:
         ipv4_address: 172.19.0.54
     logging: *default-logging
+    secrets:
+      - patroni_superuser_password
+      - patroni_replication_password
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 15s
@@ -296,12 +310,13 @@ services:
     cap_drop:
       - ALL
     hostname: pg-2
-    env_file:
-      - .env.postgres
+    entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
     environment:
       SCOPE: 'pg-ha'
       # etcd 클러스터 주소
       ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
+      PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
+      PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
       # 계정 비밀번호 (Spilo가 initdb 시 사용)
       # --------------------------------------------------------------------
       # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
@@ -317,12 +332,16 @@ services:
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-2:${POSTGRES_PORT}
     volumes:
       - pg2-data:/home/postgres/pgdata
+      - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     networks:
       infra_net:
         ipv4_address: 172.19.0.55
     logging: *default-logging
     expose:
       - ${POSTGRES_PORT}
+    secrets:
+      - patroni_superuser_password
+      - patroni_replication_password
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 15s
@@ -386,14 +405,14 @@ services:
           memory: 128M
     image: postgres:17-alpine
     container_name: pg-cluster-init
-    env_file:
-      - .env.postgres
     environment:
       - POSTGRES_ROUTER_HOSTNAME=${POSTGRES_ROUTER_HOSTNAME}
       - POSTGRES_WRITE_PORT=${POSTGRES_WRITE_PORT}
       - POSTGRES_READ_PORT=${POSTGRES_READ_PORT}
-      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_USER=${PATRONI_SUPERUSER_USERNAME:-postgres}
       - POSTGRES_DB=${POSTGRES_DB}
+    secrets:
+      - patroni_superuser_password
     depends_on:
       pg-router:
         condition: service_started
@@ -404,7 +423,7 @@ services:
         sleep 2;
       done;
       echo 'SQL 스크립트 실행 시작...';
-      export PGPASSWORD="$$PGPASSWORD_SUPERUSER";
+      export PGPASSWORD=\"$$(cat /run/secrets/patroni_superuser_password | tr -d '\n')\";
       psql -h "$$POSTGRES_ROUTER_HOSTNAME" -p "$$POSTGRES_WRITE_PORT" -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -f /home/postgres/init-scripts/init_users_dbs.sql;
       unset PGPASSWORD;
       echo 'SQL 스크립트 실행 완료.';"

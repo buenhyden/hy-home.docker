@@ -67,12 +67,12 @@ _Note: This document is the Source of Truth for implementation changes in compos
 
 | ID             | Requirement Description | Priority | Parent PRD REQ |
 | -------------- | ----------------------- | -------- | -------------- |
-| **REQ-BOOT-001** | `infra/04-data/postgresql-cluster/.env.postgres`가 “core 부팅”의 필수 prereq임을 명시하고, `.env.postgres.example` 기반 생성 절차를 제공한다. | High | REQ-PRD-FUN-01 |
+| **REQ-BOOT-001** | PostgreSQL HA(Spilo/Patroni) 자격 증명은 `.env.postgres` 대신 Docker secrets로 관리한다. 필수 secret 파일: `secrets/db/postgres/patroni_superuser_password.txt`, `secrets/db/postgres/patroni_replication_password.txt`. | High | REQ-PRD-FUN-01 |
 | **REQ-BOOT-002** | 로컬 TLS는 `mkcert` 기반으로 `secrets/certs/{rootCA.pem,cert.pem,key.pem}`를 생성/배치한다. | High | REQ-PRD-FUN-02 |
 | **REQ-BOOT-003** | Alertmanager 시크릿명은 신규 `alertmanager_*`를 만들지 않고 기존 `smtp_password`/`slack_webhook`로 통일한다. 또한 compose의 `command`/`healthcheck`에서 shell 변수는 `$VAR`가 아닌 `$$VAR`로 표기하여 Compose 변수 보간 경고/오동작을 방지한다. | High | REQ-PRD-FUN-03 |
 | **REQ-BOOT-004** | `.env.example`에 core compose가 참조하는 “비-민감 변수”(예: `QDRANT_HOST_PORT`, OpenSearch dashboard/exporter username)를 누락 없이 포함한다. | Medium | REQ-PRD-FUN-04 |
 | **REQ-BOOT-005** | bind mount 경로(특히 `${DEFAULT_*_DIR}` 계열)가 존재/권한이 맞는지 runbook에서 preflight 절차로 제공한다. | Medium | REQ-PRD-FUN-01 |
-| **REQ-BOOT-006** | `scripts/validate-docker-compose.sh`가 “현재 secrets 디렉토리 구조”와 `.env.postgres` 템플릿을 인지하도록 수정 또는 대체한다. | High | REQ-PRD-FUN-05 |
+| **REQ-BOOT-006** | `scripts/validate-docker-compose.sh`가 “현재 secrets 디렉토리 구조”를 지원하도록 수정 또는 대체한다. | High | REQ-PRD-FUN-05 |
 | **REQ-BOOT-007** | 외부 네트워크(`project_net`, `kind`)는 core 부팅 필수로 강제하지 않고 “필요 시 생성”으로 문서화한다. | Medium | REQ-PRD-FUN-01 |
 | **REQ-BOOT-008** | 변경 사항이 반영되도록 문서 인덱스를 업데이트한다. (`OPERATIONS.md`, `docs/context/core/infra-lifecycle-ops.md`) | Low | REQ-PRD-FUN-01 |
 
@@ -115,15 +115,15 @@ N/A (부팅 준비/문서/구성 정합성 작업)
 - `runbooks/core/infra-bootstrap-runbook.md`: Core stack 기동 절차.
 - (Spec 승인 후) `infra/06-observability/docker-compose.yml`: Alertmanager secret 표준화.
 - (Spec 승인 후) `.env.example`: 누락된 core 변수 보강.
-- (Spec 승인 후) `scripts/validate-docker-compose.sh`: secrets 구조 및 `.env.postgres` 템플릿 지원.
+- (Spec 승인 후) `scripts/validate-docker-compose.sh`: secrets 구조 지원.
 - (Spec 승인 후, 선택) `scripts/generate-local-certs.sh`, `scripts/preflight-compose.sh`.
 
 ---
 
 ## 6. Edge Cases & Error Handling
 
-- **Missing `.env.postgres`**:
-  - Expected: preflight/runbook에서 복사/생성 안내, `docker compose config` 실행 전에 해결.
+- **Missing Patroni secret files**:
+  - Expected: preflight/runbook에서 `secrets/db/postgres/patroni_superuser_password.txt` 및 `secrets/db/postgres/patroni_replication_password.txt` 준비로 안내.
 - **Missing `secrets/certs/cert.pem` / `key.pem`**:
   - Expected: TLS 라우팅 실패/경고 → `generate-local-certs.sh`로 해결.
 - **External networks (`project_net`, `kind`) not present**:

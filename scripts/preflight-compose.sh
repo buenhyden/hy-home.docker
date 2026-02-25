@@ -58,7 +58,8 @@ else
   set +a
 fi
 
-check_file "infra/04-data/postgresql-cluster/.env.postgres"
+check_file "./secrets/db/postgres/patroni_superuser_password.txt"
+check_file "./secrets/db/postgres/patroni_replication_password.txt"
 
 check_file "secrets/certs/rootCA.pem"
 check_file "secrets/certs/cert.pem"

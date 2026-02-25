@@ -25,11 +25,6 @@ if [ ! -f .env ]; then
   CLEANUP_ENV=true
 fi
 
-if [ ! -f infra/04-data/postgresql-cluster/.env.postgres ]; then
-  cp infra/04-data/postgresql-cluster/.env.postgres.example infra/04-data/postgresql-cluster/.env.postgres
-  CREATED_FILES+=("infra/04-data/postgresql-cluster/.env.postgres")
-fi
-
 mapfile -t SECRET_FILES < <(
   rg --no-filename '^[[:space:]]*file:[[:space:]]*' docker-compose.yml \
     | sed -E 's/^[[:space:]]*file:[[:space:]]*//; s/[[:space:]]+#.*$//; s/^["'"'"']|["'"'"']$//g'

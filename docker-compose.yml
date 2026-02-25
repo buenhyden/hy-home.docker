@@ -55,6 +55,12 @@ secrets:
     file: ./secrets/db/postgres/terrakube_password.txt
   supabase_db_password:
     file: ./secrets/db/postgres/supabase_password.txt
+
+  # ── PostgreSQL (Patroni / Spilo) ───────────────────────
+  patroni_superuser_password:
+    file: ./secrets/db/postgres/patroni_superuser_password.txt
+  patroni_replication_password:
+    file: ./secrets/db/postgres/patroni_replication_password.txt
   # ── Valkey / Redis ─────────────────────────────────────
   n8n_valkey_password:
     file: ./secrets/db/valkey/n8n_password.txt
