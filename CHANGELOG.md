@@ -99,6 +99,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add GitHub Actions workflow for greeting first-time contributors and configure Zizmor security checks.
 - Implement and document standard Docker security hardening for infrastructure services by adding `no-new-privileges` and `cap_drop: ALL` to compose files and updating related documentation.
 - **specs:** Add new infrastructure and feature specifications and plans, and update the main README.
+- Introduce local certificate generation, Docker Compose preflight checks, and infra bootstrap runbooks for improved development readiness.
 
 ### Changed
 
@@ -265,6 +266,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - Update pre-commit hook versions for yamllint, markdownlint-cli2, actionlint, check-dependabot, and gitleaks.
+- **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
