@@ -4,8 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [0.0.1]
+## [Unreleased]
 
 ### Added
 
@@ -101,6 +100,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Implement and document standard Docker security hardening for infrastructure services by adding `no-new-privileges` and `cap_drop: ALL` to compose files and updating related documentation.
 - **specs:** Add new infrastructure and feature specifications and plans, and update the main README.
 - Introduce local certificate generation, Docker Compose preflight checks, and infra bootstrap runbooks for improved development readiness.
+- Migrate PostgreSQL Patroni credentials from .env files to Docker secrets via a new entrypoint script and standardize Slack webhook variable.
+- Introduce Docker secrets for managing sensitive credentials across various services and update preflight checks and documentation.
+- Set default values for environment variables across docker-compose files and add a dedicated OAuth2 Proxy configuration.
 
 ### Changed
 
@@ -114,6 +116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adjust secret management by removing MinIO username files from CI and ignoring `SENSITIVE_ENV_VARS.md`.
 - Migrate setup guides into detailed context blueprints and guides, and update related documentation.
 - Improve documentation structure, enhance integration guidance, and update example patterns across guides and runbooks.
+- Improve compose environment variable specificity and coverage, including Supabase PostgreSQL connection updates and expanded `.env.example` definitions, with new optimization documentation.
 
 ### Docs
 
@@ -271,11 +274,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
+- **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
 
 - Reorganize runbooks into a new categorized directory structure, consolidating and standardizing operational guides.
 - Remove Docker Compose security options, add GitHub Actions read permissions, and format pre-commit hook arguments.
+
+### Build
+
+- Add default values for environment variables across various docker-compose configurations.
 
 ### Ci
 
@@ -285,3 +293,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Config
 
 - Disable breaking change protection and commit filtering in `cliff.toml`.
+
+
