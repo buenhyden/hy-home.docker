@@ -7,7 +7,9 @@ groups:
       # NOTE: valkey-exporter는 redis_exporter 기반이므로 메트릭 prefix가 redis_* 입니다.
       # job 라벨로 Valkey 관련 exporter만 필터링합니다.
       - alert: ValkeyDown
-        expr: redis_up{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"} == 0
+        expr:
+          redis_up{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
+          == 0
         for: 1m
         labels:
           severity: critical
@@ -18,9 +20,12 @@ groups:
 
       - alert: ValkeyMemoryCritical
         expr:
-          redis_memory_max_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"} > 0 and on(instance, job)
-          (redis_memory_used_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"} /
-          redis_memory_max_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"} > 0.9)
+          redis_memory_max_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
+          > 0 and on(instance, job)
+          (redis_memory_used_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
+          /
+          redis_memory_max_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
+          > 0.9)
         for: 1m
         labels:
           severity: critical
@@ -29,7 +34,9 @@ groups:
           description: "Valkey 인스턴스 메모리 사용률이 90%를 초과했습니다."
 
       - alert: ValkeyRejectedConnections
-        expr: increase(redis_rejected_connections_total{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}[1m]) > 0
+        expr:
+          increase(redis_rejected_connections_total{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}[1m])
+          > 0
         for: 0m
         labels:
           severity: critical
@@ -161,7 +168,9 @@ groups:
           description: "MinIO 클러스터에서 디스크가 오프라인입니다."
 
       - alert: MinioDiskSpaceUsage
-        expr: (sum(minio_cluster_capacity_used_bytes) / sum(minio_cluster_capacity_total_bytes)) > 0.85
+        expr:
+          (sum(minio_cluster_capacity_used_bytes) /
+          sum(minio_cluster_capacity_total_bytes)) > 0.85
         for: 10m
         labels:
           severity: warning

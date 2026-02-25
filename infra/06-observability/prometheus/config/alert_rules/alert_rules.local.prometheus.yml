@@ -24,7 +24,9 @@ groups:
 
       # [What] All Targets Missing / 모든 타겟 다운
       - alert: PrometheusAllTargetsMissing
-        expr: sum by (job) (up{job=~"prometheus|alertmanager|traefik|cadvisor|alloy"}) == 0
+        expr:
+          sum by (job)
+          (up{job=~"prometheus|alertmanager|traefik|cadvisor|alloy"}) == 0
         for: 3m
         labels:
           severity: critical
@@ -36,14 +38,18 @@ groups:
 
       # [What] Infra Targets Missing (Optional Tier) / 인프라 잡 타겟 다운(옵션)
       - alert: PrometheusInfraTargetsMissing
-        expr: sum by (job) (up{job=~"postgres-cluster|manage postgres|valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter|kafka-exporter|minio|n8n-monitor|qdrant-monitor|haproxy|keycloak|opensearch-exporter"}) == 0
+        expr:
+          sum by (job) (up{job=~"postgres-cluster|manage
+          postgres|valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter|kafka-exporter|minio|n8n-monitor|qdrant-monitor|haproxy|keycloak|opensearch-exporter"})
+          == 0
         for: 10m
         labels:
           severity: warning
         annotations:
           summary: "Infra targets missing (job {{ $labels.job }})"
           description:
-            "인프라 잡 {{ $labels.job }} 의 모든 타겟이 다운되었습니다(또는 실행되지 않음).\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+            "인프라 잡 {{ $labels.job }} 의 모든 타겟이 다운되었습니다(또는
+            실행되지 않음).\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       # [What] Configuration Reload Failure / 설정 리로드 실패
       - alert: PrometheusConfigurationReloadFailure
@@ -76,7 +82,8 @@ groups:
       # [What] Prometheus Too Many Restarts / 프로메테우스 과다 재시작
       - alert: PrometheusTooManyRestarts
         expr:
-          resets((time() - process_start_time_seconds{job=~"prometheus|pushgateway|alertmanager"})[5m:15s])
+          resets((time() -
+          process_start_time_seconds{job=~"prometheus|pushgateway|alertmanager"})[5m:15s])
           > 2
         for: 2m
         labels:
@@ -85,8 +92,8 @@ groups:
           summary:
             "Prometheus too many restarts (instance {{ $labels.instance }})"
           description:
-            "프로메테우스가 5분 내 2회 이상 재시작했습니다.\n  VALUE = {{
-            $value }}\n  LABELS = {{ $labels }}"
+            "프로메테우스가 5분 내 2회 이상 재시작했습니다.\n  VALUE = {{ $value
+            }}\n  LABELS = {{ $labels }}"
 
       # [What] Prometheus Rule Evaluation Failures / 규칙 평가 실패
       - alert: PrometheusRuleEvaluationFailures

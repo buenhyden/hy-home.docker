@@ -1,10 +1,10 @@
 global:
   resolve_timeout: 5m
   # # [Email 공통 설정] Gmail 기준
-  # smtp_smarthost: "smtp.gmail.com:587"
-  # smtp_from: "alertmanager@example.com" # 발신자 표시용 (실제 계정과 달라도 됨)
-  # smtp_auth_username: "chochyjj@gmail.com" # 본인 구글 계정
-  # smtp_auth_password: "<app_password>" # 구글 앱 비밀번호 (16자리)
+  smtp_smarthost: "smtp.gmail.com:587"
+  smtp_from: "alertmanager@example.com" # 발신자 표시용 (실제 계정과 달라도 됨)
+  smtp_auth_username: "__SMTP_USERNAME__" # 본인 구글 계정
+  smtp_auth_password: "__SMTP_PASSWORD__" # 구글 앱 비밀번호 (16자리)
   # smtp_require_tls: true
 
 route:
@@ -17,13 +17,9 @@ route:
 
 receivers:
   - name: "team-notifications"
-    # 1. Email 발송 설정
-    # email_configs:
-    #   - to: "chochyjj@gmail.com" # 알림을 받을 이메일 주소
-    #     send_resolved: true # '해결됨(Resolved)' 알림도 받을지 여부
-    # 2. Slack 발송 설정
+    # Slack 발송 설정
     slack_configs:
-      - api_url: "__SLACK_WEBHOOK_URL__" # SLACK_ALERTMANAGER_WEBHOOK_URL로 치환
+      - api_url: "__SLACK_WEBHOOK_URL__" # SLACK_WEBHOOK_URL로 치환
         channel: "#notification" # 메시지를 보낼 채널명 (Webhook 설정과 일치 권장)
         send_resolved: true
         icon_url: https://avatars3.githubusercontent.com/u/3380462
