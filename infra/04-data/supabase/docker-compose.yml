@@ -160,7 +160,7 @@ services:
       GOTRUE_SMS_AUTOCONFIRM: ${SUPABASE_ENABLE_PHONE_AUTOCONFIRM}
     command: >
       bash -c "
-      export GOTRUE_DB_DATABASE_URL=postgres://supabase_auth_admin:$$(cat /run/secrets/supabase_db_password)@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} &&
+      export GOTRUE_DB_DATABASE_URL=postgres://supabase_auth_admin:$$(cat /run/secrets/supabase_db_password)@${SUPABASE_POSTGRES_HOST}:${SUPABASE_POSTGRES_PORT}/${SUPABASE_POSTGRES_DB} &&
       export GOTRUE_JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
       exec /usr/local/bin/gotrue
       "
@@ -189,7 +189,7 @@ services:
       PGRST_APP_SETTINGS_JWT_EXP: ${SUPABASE_JWT_EXPIRY}
     command: >
       bash -c "
-      export PGRST_DB_URI=postgres://authenticator:$$(cat /run/secrets/supabase_db_password)@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} &&
+      export PGRST_DB_URI=postgres://authenticator:$$(cat /run/secrets/supabase_db_password)@${SUPABASE_POSTGRES_HOST}:${SUPABASE_POSTGRES_PORT}/${SUPABASE_POSTGRES_DB} &&
       export PGRST_JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
       export PGRST_APP_SETTINGS_JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
       exec postgrest
@@ -222,7 +222,7 @@ services:
           '-o',
           '/dev/null',
           '-H',
-          'Authorization: Bearer ${SUPABASE_ANON_KEY}',
+          'Authorization: Bearer $${SUPABASE_ANON_KEY}',
           'http://localhost:4000/api/tenants/realtime-dev/health',
         ]
       interval: 15s
@@ -232,7 +232,7 @@ services:
     environment:
       PORT: 4000
       PGPORT: ${SUPABASE_POSTGRES_PORT}
-      DB_HOST: ${POSTGRES_HOST}
+      DB_HOST: ${SUPABASE_POSTGRES_HOST}
       DB_PORT: ${SUPABASE_POSTGRES_PORT}
       DB_USER: supabase_admin
       DB_NAME: ${SUPABASE_POSTGRES_DB}
@@ -296,7 +296,7 @@ services:
       export ANON_KEY=$$(cat /run/secrets/supabase_anon_key) &&
       export SERVICE_KEY=$$(cat /run/secrets/supabase_service_key) &&
       export PGRST_JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
-      export DATABASE_URL=postgres://supabase_storage_admin:$$(cat /run/secrets/supabase_db_password)@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} &&
+      export DATABASE_URL=postgres://supabase_storage_admin:$$(cat /run/secrets/supabase_db_password)@${SUPABASE_POSTGRES_HOST}:${SUPABASE_POSTGRES_PORT}/${SUPABASE_POSTGRES_DB} &&
       exec node dist/index.js
       "
     secrets:
@@ -380,7 +380,7 @@ services:
       export JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
       export SUPABASE_ANON_KEY=$$(cat /run/secrets/supabase_anon_key) &&
       export SUPABASE_SERVICE_ROLE_KEY=$$(cat /run/secrets/supabase_service_key) &&
-      export SUPABASE_DB_URL=postgresql://postgres:$$(cat /run/secrets/supabase_db_password)@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} &&
+      export SUPABASE_DB_URL=postgresql://postgres:$$(cat /run/secrets/supabase_db_password)@${SUPABASE_POSTGRES_HOST}:${SUPABASE_POSTGRES_PORT}/${SUPABASE_POSTGRES_DB} &&
       exec edge-runtime start --main-service /home/deno/functions/main
       "
     secrets:
@@ -425,7 +425,7 @@ services:
     command: >
       bash -c "
       export DB_PASSWORD=$$(cat /run/secrets/supabase_db_password) &&
-      export POSTGRES_BACKEND_URL=postgresql://supabase_admin:$$(cat /run/secrets/supabase_db_password)@${POSTGRES_HOST}:${POSTGRES_PORT}/_supabase &&
+      export POSTGRES_BACKEND_URL=postgresql://supabase_admin:$$(cat /run/secrets/supabase_db_password)@${SUPABASE_POSTGRES_HOST}:${SUPABASE_POSTGRES_PORT}/_supabase &&
       exec /opt/app/bin/logflare start
       "
     secrets:
@@ -545,7 +545,7 @@ services:
     command: >
       /bin/sh -c "
       export POSTGRES_PASSWORD=$$(cat /run/secrets/supabase_db_password) &&
-      export DATABASE_URL=ecto://supabase_admin:$$(cat /run/secrets/supabase_db_password)@${POSTGRES_HOST}:${POSTGRES_PORT}/_supabase &&
+      export DATABASE_URL=ecto://supabase_admin:$$(cat /run/secrets/supabase_db_password)@${SUPABASE_POSTGRES_HOST}:${SUPABASE_POSTGRES_PORT}/_supabase &&
       export API_JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
       export METRICS_JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
       export SECRET_KEY_BASE=$$(cat /run/secrets/supabase_secret_key_base) &&

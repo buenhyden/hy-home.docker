@@ -54,3 +54,4 @@ This directory serves as the **authoritative hub for service-specific operationa
 ### Core Foundation
 
 - [**Infra Lifecycle & Core Operations**](core/infra-lifecycle-ops.md): Global stack management and startup order.
+- [**Infra Compose Optimization & Env Audit**](core/infra-compose-optimization-audit.md): Compose optimization changes and full env interpolation coverage report.

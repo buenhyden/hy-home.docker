@@ -42,3 +42,8 @@ docker compose stop
 # Wait for 30s
 docker compose down
 ```
+
+## 5. Compose Readiness Audit
+
+- Latest compose optimization and env coverage audit: `docs/context/core/infra-compose-optimization-audit.md`
+- Bootstrap execution procedure: `runbooks/core/infra-bootstrap-runbook.md`
