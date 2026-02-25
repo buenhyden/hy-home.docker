@@ -38,18 +38,18 @@ scrape_configs:
       - targets: ["tempo:3200"]
 
   - job_name: "cadvisor"
-    scrape_interval: 1m      # 15s → 60s 등
-    scrape_timeout: 50s      # fsHandler 지연을 고려해 크게 잡기
+    scrape_interval: 1m # 15s → 60s 등
+    scrape_timeout: 50s # fsHandler 지연을 고려해 크게 잡기
     static_configs:
       - targets: ["cadvisor:8080"]
     metric_relabel_configs:
       - source_labels: [id]
-        regex: '^/$'
+        regex: "^/$"
         action: drop
       - action: labeldrop
-        regex: 'container_label_com_docker_compose_(config_hash|project_working_dir|project_config_files|replace|container_number|oneoff|version|depends_on)'
+        regex: "container_label_com_docker_compose_(config_hash|project_working_dir|project_config_files|replace|container_number|oneoff|version|depends_on)"
       - action: labeldrop
-        regex: 'container_label_desktop_docker_io_ports_scheme'
+        regex: "container_label_desktop_docker_io_ports_scheme"
 
   - job_name: "alertmanager"
     scrape_interval: 30s
@@ -198,8 +198,8 @@ scrape_configs:
       - targets:
           - opensearch:9200
     basic_auth:
-      username: "exporter"      # OpenSearch 사용자 ID (기본값: admin)
-      password: <REPLACE_ME>
+      username: "exporter" # OpenSearch 사용자 ID (기본값: admin)
+      password: "__OPENSEARCH_PASSWORD__"
     tls_config:
       # 인증서 검증을 건너뜁니다.
       insecure_skip_verify: true

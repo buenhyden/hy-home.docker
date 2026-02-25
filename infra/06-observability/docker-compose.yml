@@ -68,8 +68,18 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
       - '--web.enable-lifecycle' # 설정 리로드 허용
       - '--web.enable-remote-write-receiver'
+    entrypoint: ['/bin/sh', '-c']
+    command: >
+      "OPENSEARCH_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) &&
+      sed \"s|__OPENSEARCH_PASSWORD__|$$OPENSEARCH_PASSWORD|g\" /etc/prometheus/prometheus.yml.template > /tmp/prometheus.yml &&
+      exec /bin/prometheus --config.file=/tmp/prometheus.yml
+      --storage.tsdb.path=/prometheus
+      --web.console.libraries=/usr/share/prometheus/console_libraries
+      --web.console.templates=/usr/share/prometheus/consoles
+      --web.enable-lifecycle
+      --web.enable-remote-write-receiver"
     volumes:
-      - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml.template:ro
       - ./prometheus/config/alert_rules:/etc/prometheus/alert_rules
       - prometheus-data:/prometheus
     # ports:
@@ -77,6 +87,8 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.30
+    secrets:
+      - opensearch_exporter_password
     healthcheck:
       test:
         [
@@ -114,9 +126,10 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    command:
-      - '-config.file=/etc/loki/loki-config.yaml'
-      - '-config.expand-env=true'
+    entrypoint: ['/bin/sh', '-c']
+    command: >
+      "export MINIO_APP_USER_PASSWORD=$$(cat /run/secrets/minio_app_user_password) &&
+      exec /usr/bin/loki -config.file=/etc/loki/loki-config.yaml -config.expand-env=true"
     networks:
       infra_net:
         ipv4_address: 172.19.0.31
@@ -128,7 +141,6 @@ services:
       - loki-data:/loki
     environment:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
-      - MINIO_APP_USER_PASSWORD_FILE=/run/secrets/minio_app_user_password
     secrets:
       - minio_app_user_password
     depends_on:
@@ -158,9 +170,10 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    command:
-      - '-config.file=/etc/tempo.yaml'
-      - '-config.expand-env=true'
+    entrypoint: ['/bin/sh', '-c']
+    command: >
+      "export MINIO_APP_USER_PASSWORD=$$(cat /run/secrets/minio_app_user_password) &&
+      exec /usr/bin/tempo -config.file=/etc/tempo.yaml -config.expand-env=true"
     volumes:
       - ./tempo/config/tempo.yaml:/etc/tempo.yaml:ro
       - tempo-data:/var/tempo
@@ -172,7 +185,6 @@ services:
       - '${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}'
     environment:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
-      - MINIO_APP_USER_PASSWORD_FILE=/run/secrets/minio_app_user_password
     secrets:
       - minio_app_user_password
     <<: *default-restart
@@ -435,17 +447,13 @@ services:
       - slack_webhook
     entrypoint: ['/bin/sh', '-c']
     command: >
-      "SMTP_USERNAME=$$(cat /run/secrets/smtp_username);
-      SMTP_PASSWORD=$$(cat /run/secrets/smtp_password);
-      SLACK_WEBHOOK_URL=$$(cat /run/secrets/slack_webhook);
-      if [ -z \"$$SLACK_WEBHOOK_URL\" ]; then
-        echo 'ERROR: slack_webhook secret is not set';
-        exit 1;
-      fi;
-      echo 'Generating config file...';
-      sed \"s|__SLACK_WEBHOOK_URL__|$$SLACK_WEBHOOK_URL|g\" /etc/alertmanager/config.yml.template > /tmp/config.yml;
-
-      echo 'Starting Alertmanager...';
+      "SMTP_USERNAME=$$(cat /run/secrets/smtp_username) &&
+      SMTP_PASSWORD=$$(cat /run/secrets/smtp_password) &&
+      SLACK_WEBHOOK_URL=$$(cat /run/secrets/slack_webhook) &&
+      sed -e \"s|__SMTP_USERNAME__|$$SMTP_USERNAME|g\" \
+          -e \"s|__SMTP_PASSWORD__|$$SMTP_PASSWORD|g\" \
+          -e \"s|__SLACK_WEBHOOK_URL__|$$SLACK_WEBHOOK_URL|g\" \
+          /etc/alertmanager/config.yml.template > /tmp/config.yml &&
       exec /bin/alertmanager --config.file=/tmp/config.yml --storage.path=/alertmanager"
     volumes:
       - ./alertmanager/config/config.yml:/etc/alertmanager/config.yml.template
@@ -540,4 +548,6 @@ secrets:
   smtp_password:
     external: true
   slack_webhook:
+    external: true
+  opensearch_exporter_password:
     external: true

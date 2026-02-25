@@ -75,9 +75,7 @@ infra/04-data/opensearch/opensearch-dashboards/config/opensearch_dashboards.yml
 # 05-messaging
 infra/05-messaging/kafka/kafbat-ui/dynamic_config.yaml
 # 06-observability
-infra/06-observability/loki/config/loki-config.yaml
-infra/06-observability/prometheus/config/prometheus.yml
-infra/06-observability/tempo/config/tempo.yaml
+
 # 07-workflow
 
 # 08-ai
