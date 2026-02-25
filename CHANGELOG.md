@@ -4,15 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [0.0.1-beta]
-
-### Documentation
-
-- Align root documentation with current compose/runtime policy: [`README.md`](README.md), [`ARCHITECTURE.md`](ARCHITECTURE.md), [`OPERATIONS.md`](OPERATIONS.md).
-- Replace obsolete `docs/architecture` references in infra READMEs with valid links: [`infra/01-gateway/README.md`](infra/01-gateway/README.md), [`infra/01-gateway/traefik/README.md`](infra/01-gateway/traefik/README.md), [`infra/02-auth/README.md`](infra/02-auth/README.md), [`infra/04-data/README.md`](infra/04-data/README.md), [`infra/04-data/postgresql-cluster/README.md`](infra/04-data/postgresql-cluster/README.md).
-
-## [0.0.1]
+## [Unreleased]
 
 ### Added
 
@@ -191,6 +183,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update architecture technology stack, revise operations runbook catalog, and clarify the purpose of the operations directory.
 - Revamp documentation structure with role-based navigation and extensive internal linking to guides and context.
 - Clarify documentation hierarchy, update architecture with security hardening, and refresh observability and AI/workflow tech stack details.
+- Update documentation references in infra READMEs to new architecture, context, and runbook paths, and add corresponding changelog entries.
+- Align root documentation with current policies, fix obsolete infra links, and update changelog for the 0.0.1-beta release.
 
 ### Fixed
 
@@ -285,6 +279,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **deps:** Bump astral-sh/setup-uv
+- **release:** Update CHANGELOG.md [skip ci]
+- **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
 
@@ -303,3 +299,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Config
 
 - Disable breaking change protection and commit filtering in `cliff.toml`.
+
+
