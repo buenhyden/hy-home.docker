@@ -8,7 +8,7 @@
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'n8n') THEN
-        CREATE USER n8n WITH PASSWORD '${POSTGRES_PASSWORD}';
+        CREATE USER n8n WITH PASSWORD '${N8N_DB_PASSWORD}';
     END IF;
 END
 $$;
@@ -30,7 +30,7 @@ ALTER SCHEMA public OWNER TO n8n;
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'keycloak') THEN
-        CREATE USER keycloak WITH PASSWORD '${POSTGRES_PASSWORD}';
+        CREATE USER keycloak WITH PASSWORD '${KEYCLOAK_DB_PASSWORD}';
     END IF;
 END
 $$;
@@ -48,7 +48,7 @@ ALTER SCHEMA public OWNER TO keycloak;
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'airflow') THEN
-        CREATE USER airflow WITH PASSWORD '${POSTGRES_PASSWORD}';
+        CREATE USER airflow WITH PASSWORD '${AIRFLOW_DB_PASSWORD}';
     END IF;
 END
 $$;
@@ -67,7 +67,7 @@ ALTER SCHEMA public OWNER TO airflow;
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'terrakube') THEN
-        CREATE USER terrakube WITH PASSWORD '${POSTGRES_PASSWORD}';
+        CREATE USER terrakube WITH PASSWORD '${TERRAKUBE_DB_PASSWORD}';
     END IF;
 END
 $$;
@@ -85,7 +85,7 @@ ALTER SCHEMA public OWNER TO terrakube;
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'sonarqube') THEN
-        CREATE USER sonarqube WITH PASSWORD '${POSTGRES_PASSWORD}';
+        CREATE USER sonarqube WITH PASSWORD '${SONARQUBE_DB_PASSWORD}';
     END IF;
 END
 $$;

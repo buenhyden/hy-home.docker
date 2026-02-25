@@ -75,11 +75,9 @@ infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg
 infra/03-security/vault/config/vault.hcl
 
 # 04-data
-infra/04-data/mng-db/init-scripts/init_users_dbs.sql
 infra/04-data/opensearch/opensearch/config/opensearch.yml
 infra/04-data/opensearch/opensearch/config/opensearch-security/*.yml
 infra/04-data/opensearch/opensearch-dashboards/config/opensearch_dashboards.yml
-infra/04-data/postgresql-cluster/init-scripts/init_users_dbs.sql
 infra/04-data/postgresql-cluster/config/haproxy.cfg
 infra/04-data/redis-cluster/config/redis.conf
 infra/04-data/valkey-cluster/config/valkey.conf

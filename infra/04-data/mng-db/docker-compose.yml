@@ -34,6 +34,16 @@ secrets:
     external: true
   mng_postgres_password:
     external: true
+  n8n_db_password:
+    external: true
+  keycloak_db_password:
+    external: true
+  airflow_db_password:
+    external: true
+  terrakube_db_password:
+    external: true
+  sonarqube_db_password:
+    external: true
 
 networks:
   infra_net:
@@ -229,15 +239,32 @@ services:
         sleep 2;
       done;
       echo 'SQL 스크립트 실행 시작...';
-      export PGPASSWORD=$$(cat /run/secrets/mng_postgres_password);
-      psql -h "$$POSTGRES_HOSTNAME" -p "$$POSTGRES_PORT" -U "$$POSTGRES_USER" -d "$${POSTGRES_DB}" -f /home/postgres/init-scripts/init_users_dbs.sql;
+      export PGPASSWORD=$(cat /run/secrets/mng_postgres_password | tr -d '\n');
+      export N8N_DB_PASSWORD=$(cat /run/secrets/n8n_db_password | tr -d '\n');
+      export KEYCLOAK_DB_PASSWORD=$(cat /run/secrets/keycloak_db_password | tr -d '\n');
+      export AIRFLOW_DB_PASSWORD=$(cat /run/secrets/airflow_db_password | tr -d '\n');
+      export TERRAKUBE_DB_PASSWORD=$(cat /run/secrets/terrakube_db_password | tr -d '\n');
+      export SONARQUBE_DB_PASSWORD=$(cat /run/secrets/sonarqube_db_password | tr -d '\n');
+      psql -h \"$$POSTGRES_HOSTNAME\" -p \"$$POSTGRES_PORT\" -U \"$$POSTGRES_USER\" -d \"$${POSTGRES_DB}\" -f /home/postgres/init-scripts/init_users_dbs.sql;
       unset PGPASSWORD;
+      unset N8N_DB_PASSWORD;
+      unset KEYCLOAK_DB_PASSWORD;
+      unset AIRFLOW_DB_PASSWORD;
+      unset TERRAKUBE_DB_PASSWORD;
+      unset SONARQUBE_DB_PASSWORD;
       echo 'SQL 스크립트 실행 완료.';"
     volumes:
       - ./pg/init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql
     depends_on:
       mng-pg:
         condition: service_healthy
+    secrets:
+      - mng_postgres_password
+      - n8n_db_password
+      - keycloak_db_password
+      - airflow_db_password
+      - terrakube_db_password
+      - sonarqube_db_password
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres']
       interval: 15s

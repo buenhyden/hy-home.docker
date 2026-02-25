@@ -428,9 +428,11 @@ services:
         sleep 2;
       done;
       echo 'SQL 스크립트 실행 시작...';
-      export PGPASSWORD=\"$$(cat /run/secrets/patroni_superuser_password | tr -d '\n')\";
+      export PGPASSWORD="$(cat /run/secrets/patroni_superuser_password | tr -d '\n')";
+      export SERVICE_POSTGRES_PASSWORD="$(cat /run/secrets/service_postgres_password | tr -d '\n')";
       psql -h "$$POSTGRES_ROUTER_HOSTNAME" -p "$$POSTGRES_WRITE_PORT" -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -f /home/postgres/init-scripts/init_users_dbs.sql;
       unset PGPASSWORD;
+      unset SERVICE_POSTGRES_PASSWORD;
       echo 'SQL 스크립트 실행 완료.';"
     volumes:
       - './init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql'
