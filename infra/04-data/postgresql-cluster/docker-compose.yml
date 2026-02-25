@@ -54,6 +54,8 @@ secrets:
     external: true
   patroni_replication_password:
     external: true
+  pg_haproxy_stats_password:
+    external: true
 
 networks:
   infra_net:
@@ -375,6 +377,13 @@ services:
     container_name: pg-router
     volumes:
       - ./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    secrets:
+      - pg_haproxy_stats_password
+    command: >
+      /bin/sh -c "
+      export HAPROXY_STATS_PASSWORD=$$(cat /run/secrets/pg_haproxy_stats_password) &&
+      exec haproxy -f /usr/local/etc/haproxy/haproxy.cfg
+      "
     ports:
       - '${POSTGRES_WRITE_HOST_PORT:-15432}:${POSTGRES_WRITE_PORT:-15432}' # Write endpoint
       - '${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}' # Read endpoint

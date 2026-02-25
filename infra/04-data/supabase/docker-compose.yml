@@ -48,12 +48,10 @@ services:
       POSTGRES_DB: ${SUPABASE_POSTGRES_DB}
       DEFAULT_ORGANIZATION_NAME: ${SUPABASE_STUDIO_DEFAULT_ORGANIZATION}
       DEFAULT_PROJECT_NAME: ${SUPABASE_STUDIO_DEFAULT_PROJECT}
-      OPENAI_API_KEY: ${SUPABASE_OPENAI_API_KEY:-}
       SUPABASE_URL: http://kong:8000
       SUPABASE_PUBLIC_URL: ${SUPABASE_PUBLIC_URL}
       LOGFLARE_API_KEY: ${SUPABASE_LOGFLARE_PUBLIC_ACCESS_TOKEN}
       LOGFLARE_PUBLIC_ACCESS_TOKEN: ${SUPABASE_LOGFLARE_PUBLIC_ACCESS_TOKEN}
-      LOGFLARE_PRIVATE_ACCESS_TOKEN: ${SUPABASE_LOGFLARE_PRIVATE_ACCESS_TOKEN}
       LOGFLARE_URL: http://analytics:4000
       NEXT_PUBLIC_ENABLE_LOGS: true
       NEXT_ANALYTICS_BACKEND_PROVIDER: postgres
@@ -64,6 +62,8 @@ services:
       export SUPABASE_SERVICE_KEY=$$(cat /run/secrets/supabase_service_key) &&
       export AUTH_JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
       export PG_META_CRYPTO_KEY=$$(cat /run/secrets/supabase_pg_meta_crypto_key) &&
+      export OPENAI_API_KEY=$$(cat /run/secrets/supabase_openai_api_key) &&
+      export LOGFLARE_PRIVATE_ACCESS_TOKEN=$$(cat /run/secrets/supabase_logflare_private_token) &&
       exec node server.js
       "
     secrets:
@@ -72,6 +72,8 @@ services:
       - supabase_service_key
       - supabase_jwt_secret
       - supabase_pg_meta_crypto_key
+      - supabase_openai_api_key
+      - supabase_logflare_private_token
     networks:
       - infra_net
     logging: *default-logging
@@ -154,7 +156,6 @@ services:
       GOTRUE_SMTP_HOST: ${SUPABASE_SMTP_HOST}
       GOTRUE_SMTP_PORT: ${SUPABASE_SMTP_PORT:-1025}
       GOTRUE_SMTP_USER: ${SUPABASE_SMTP_USER}
-      GOTRUE_SMTP_PASS: ${SUPABASE_SMTP_PASS}
       GOTRUE_SMTP_SENDER_NAME: ${SUPABASE_SMTP_SENDER_NAME}
       GOTRUE_MAILER_URLPATHS_INVITE: ${SUPABASE_MAILER_URLPATHS_INVITE}
       GOTRUE_MAILER_URLPATHS_CONFIRMATION: ${SUPABASE_MAILER_URLPATHS_CONFIRMATION}
@@ -166,11 +167,13 @@ services:
       bash -c "
       export GOTRUE_DB_DATABASE_URL=postgres://supabase_auth_admin:$$(cat /run/secrets/supabase_db_password)@${SUPABASE_POSTGRES_HOST}:${SUPABASE_POSTGRES_PORT:-5432}/${SUPABASE_POSTGRES_DB} &&
       export GOTRUE_JWT_SECRET=$$(cat /run/secrets/supabase_jwt_secret) &&
+      export GOTRUE_SMTP_PASS=$$(cat /run/secrets/supabase_smtp_password) &&
       exec /usr/local/bin/gotrue
       "
     secrets:
       - supabase_db_password
       - supabase_jwt_secret
+      - supabase_smtp_password
     networks:
       - infra_net
     logging: *default-logging
@@ -435,7 +438,7 @@ services:
       DB_PORT: ${SUPABASE_POSTGRES_PORT:-5432}
       DB_SCHEMA: _analytics
       LOGFLARE_PUBLIC_ACCESS_TOKEN: ${LOGFLARE_PUBLIC_ACCESS_TOKEN}
-      LOGFLARE_PRIVATE_ACCESS_TOKEN: ${LOGFLARE_PRIVATE_ACCESS_TOKEN}
+      LOGFLARE_PRIVATE_ACCESS_TOKEN: '' # Using secret via command
       LOGFLARE_SINGLE_TENANT: true
       LOGFLARE_SUPABASE_MODE: true
       POSTGRES_BACKEND_SCHEMA: _analytics
@@ -444,10 +447,12 @@ services:
       bash -c "
       export DB_PASSWORD=$$(cat /run/secrets/supabase_db_password) &&
       export POSTGRES_BACKEND_URL=postgresql://supabase_admin:$$(cat /run/secrets/supabase_db_password)@${SUPABASE_POSTGRES_HOST}:${SUPABASE_POSTGRES_PORT:-5432}/_supabase &&
+      export LOGFLARE_PRIVATE_ACCESS_TOKEN=$$(cat /run/secrets/supabase_logflare_private_token) &&
       exec /opt/app/bin/logflare start
       "
     secrets:
       - supabase_db_password
+      - supabase_logflare_private_token
     networks:
       - infra_net
     logging: *default-logging
@@ -606,4 +611,10 @@ secrets:
   supabase_vault_enc_key:
     external: true
   supabase_pg_meta_crypto_key:
+    external: true
+  supabase_openai_api_key:
+    external: true
+  supabase_logflare_private_token:
+    external: true
+  supabase_smtp_password:
     external: true

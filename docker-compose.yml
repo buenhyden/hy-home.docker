@@ -19,6 +19,10 @@ secrets:
     file: ./secrets/common/slack_webhook.txt
   smtp_username:
     file: ./secrets/common/smtp_username.txt
+  stalwart_password:
+    file: ./secrets/common/stalwart_password.txt
+  supabase_smtp_password:
+    file: ./secrets/common/supabase_smtp_password.txt
 
   # ── Gateway ─────────────────────────────────────────────
   traefik_basicauth_password:
@@ -33,6 +37,8 @@ secrets:
     file: ./secrets/auth/oauth2_proxy_client_secret.txt
   oauth2_proxy_cookie_secret:
     file: ./secrets/auth/oauth2_proxy_cookie_secret.txt
+  pg_haproxy_stats_password:
+    file: ./secrets/auth/pg_haproxy_stats_password.txt
 
   # ── Observability ───────────────────────────────────────
   grafana_admin_password:
@@ -143,6 +149,10 @@ secrets:
     file: ./secrets/data/supabase_vault_enc_key.txt
   supabase_pg_meta_crypto_key:
     file: ./secrets/data/supabase_pg_meta_crypto_key.txt
+  supabase_openai_api_key:
+    file: ./secrets/data/supabase_openai_api_key.txt
+  supabase_logflare_private_token:
+    file: ./secrets/data/supabase_logflare_private_token.txt
 
   # ── InfluxDB ─────────────────────────────────────────────
   influxdb_password:

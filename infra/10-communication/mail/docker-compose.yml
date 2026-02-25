@@ -13,6 +13,9 @@ volumes:
       type: none
       o: bind
       device: ${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs
+secrets:
+  stalwart_password:
+    external: true
 services:
   # ----------------------------------------------------------------
   # Stalwart Mail Server (올인원 메일 서버)
@@ -42,10 +45,16 @@ services:
       - stalwart_certs:/opt/stalwart/certs:ro
     networks:
       - infra_net
+    secrets:
+      - stalwart_password
     # [환경 변수] - 초기 관리자 계정 설정
     environment:
       - STALWART_ADMIN_USER=admin
-      - STALWART_ADMIN_PASSWORD=${STALWART_PASSWORD} # [중요] 최초 실행 후 반드시 변경하세요.
+    command: >
+      sh -c "
+      export STALWART_ADMIN_PASSWORD=$$(cat /run/secrets/stalwart_password) &&
+      exec /usr/local/bin/stalwart-mail
+      "
 
     # [Traefik 연동] - 관리자 웹 UI 라우팅
     labels:

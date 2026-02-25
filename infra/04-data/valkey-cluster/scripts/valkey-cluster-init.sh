@@ -1,6 +1,10 @@
 #!/bin/sh
+# Valkey Cluster Initialization Script (Example)
+# 실제 사용 시에는 이 파일을 복사하여 valkey-cluster-init.sh로 저장하고 환경에 맞게 수정하세요.
+
 set -eu
 
+# Docker Secrets에서 비밀번호 로드
 VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password)
 echo "Waiting for Cluster nodes..."
 sleep 5
@@ -33,7 +37,6 @@ fi
 echo "$output"
 if echo "$output" | grep -qi "is not empty"; then
   echo "ℹ️  Nodes already contain data/cluster metadata. Skipping destructive re-init."
-  echo "ℹ️  To rebuild the cluster, run the manual reset runbook."
   exit 0
 fi
 
