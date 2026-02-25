@@ -17,7 +17,7 @@
 
 이 서비스는 다음 환경 변수(`.env`에 정의됨)를 사용합니다:
 
-- `NEO4J_HOST_BOLT_PORT`: Bolt 프로토콜 호스트 포트.
+- `NEO4J_BOLT_HOST_PORT`: Bolt 프로토콜 호스트 포트.
 - `NEO4J_BOLT_PORT`: 컨테이너 Bolt 포트 (기본값 7687).
 - `NEO4J_USERNAME`: 관리자 사용자명 (기본 `neo4j`).
 
@@ -35,7 +35,7 @@ docker-compose up -d
 
 ## 접속
 
-- **Bolt**: `bolt://localhost:${NEO4J_HOST_BOLT_PORT}`
+- **Bolt**: `bolt://localhost:${NEO4J_BOLT_HOST_PORT}`
 - **HTTP/HTTPS**: 현재 `docker-compose.yml`에서 HTTP/HTTPS 포트 매핑은 주석 처리되어 있습니다. 필요 시 주석을 해제하거나 내부 네트워크를 통해 접근해야 합니다.
 
 ## 볼륨

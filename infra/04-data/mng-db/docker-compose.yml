@@ -66,8 +66,8 @@ services:
       '
     # 클러스터 내부 통신 포트는 expose
     expose:
-      - '${VALKEY_PORT}'
-      - '${VALKEY_BUS_PORT}'
+      - '${VALKEY_PORT:-6379}'
+      - '${VALKEY_BUS_PORT:-16379}'
     healthcheck:
       test:
         [
@@ -92,7 +92,7 @@ services:
       - no-new-privileges:true
     read_only: true
     expose:
-      - '${VALKEY_EXPORTER_PORT}'
+      - '${VALKEY_EXPORTER_PORT:-9121}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.71
@@ -112,7 +112,7 @@ services:
         exec /redis_exporter \
           -redis.addr=redis://mng-valkey:6379 \
           -redis.password="$$VALKEY_PASSWORD" \
-          -web.listen-address=:${VALKEY_EXPORTER_PORT}
+          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       mng-valkey:
         condition: service_healthy
@@ -148,7 +148,7 @@ services:
       - 'traefik.http.routers.redisinsight.middlewares=sso-auth@file'
       # [중요] RedisInsight 기본 포트 5540 (또는 8001) 확인 필요
       # 최신 이미지는 보통 5540을 사용합니다.
-      - 'traefik.http.services.redisinsight.loadbalancer.server.port=${REDIS_INSIGHT_PORT}'
+      - 'traefik.http.services.redisinsight.loadbalancer.server.port=${REDIS_INSIGHT_PORT:-8001}'
     logging: *default-logging
 
   mng-pg:
@@ -180,9 +180,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - '${POSTGRES_HOST_PORT}:${POSTGRES_PORT}'
+      - '${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}'
     expose:
-      - '${POSTGRES_PORT}'
+      - '${POSTGRES_PORT:-5432}'
     secrets:
       - mng_postgres_password
     volumes:
@@ -209,8 +209,8 @@ services:
       - infra_net
     environment:
       PGPASSWORD_FILE: /run/secrets/mng_postgres_password
-      POSTGRES_HOSTNAME: ${POSTGRES_HOSTNAME}
-      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_HOSTNAME: ${POSTGRES_MNG_HOSTNAME}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
     command: >
@@ -253,7 +253,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.73
     expose:
-      - '${POSTGRES_EXPORTER_PORT}'
+      - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
       - mng_postgres_password
     depends_on:

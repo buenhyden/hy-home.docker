@@ -104,7 +104,7 @@ secrets/
 |:---:|---|---|
 | `airflow_fernet_key` | `automation/airflow_fernet_key.txt` | Airflow Fernet 암호화 키 |
 | `airflow_www_password` | `automation/airflow_www_password.txt` | Airflow WebUI 초기 관리자 비밀번호 |
-| `airflow_redis_password` | `db/valkey/airflow_password.txt` | Airflow Celery broker(Redis/Valkey) 비밀번호 |
+| `airflow_valkey_password` | `db/valkey/airflow_password.txt` | Airflow Celery broker(Redis/Valkey) 비밀번호 |
 | `n8n_encryption_key` | `automation/n8n_encryption_key.txt` | n8n 내부 데이터 암호화 키 |
 | `n8n_runner_auth_token` | `automation/n8n_runner_auth_token.txt` | n8n Worker 호스트 인증 토큰 |
 

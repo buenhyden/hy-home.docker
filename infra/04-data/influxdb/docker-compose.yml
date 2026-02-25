@@ -37,7 +37,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'curl -fsS http://localhost:${INFLUXDB_PORT}/health || wget -q --spider http://localhost:${INFLUXDB_PORT}/health || exit 1',
+          'curl -fsS http://localhost:${INFLUXDB_PORT:-8086}/health || wget -q --spider http://localhost:${INFLUXDB_PORT:-8086}/health || exit 1',
         ]
       interval: 15s
       timeout: 30s
@@ -71,7 +71,7 @@ services:
       - 'traefik.http.routers.influxdb.rule=Host(`influxdb.${DEFAULT_URL}`)'
       - 'traefik.http.routers.influxdb.entrypoints=websecure'
       - 'traefik.http.routers.influxdb.tls=true'
-      - 'traefik.http.services.influxdb.loadbalancer.server.port=${INFLUXDB_PORT}'
+      - 'traefik.http.services.influxdb.loadbalancer.server.port=${INFLUXDB_PORT:-8086}'
     logging: *default-logging
 
 secrets:

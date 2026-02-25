@@ -28,7 +28,7 @@ services:
       - terrakube_internal_secret
     environment:
       ApiDataSourceType: POSTGRESQL
-      DatasourceHostname: ${POSTGRES_HOSTNAME}
+      DatasourceHostname: ${POSTGRES_MNG_HOSTNAME}
       DatasourceDatabase: terrakube
       DatasourceUser: ${TERRAKUBE_DB_USERNAME}
       DatasourcePassword_FILE: /run/secrets/terrakube_db_password
@@ -52,9 +52,9 @@ services:
       TerrakubeUiURL: https://terrakube-ui.${DEFAULT_URL}
       DexIssuerUri: 'https://keycloak.${DEFAULT_URL}/realms/hy-home.realm'
 
-      TerrakubeRedisHostname: ${MNG_VALKEY_HOST}
+      TerrakubeRedisHostname: ${VALKEY_MNG_HOSTNAME}
       TerrakubeRedisPassword_FILE: /run/secrets/terrakube_valkey_password
-      TerrakubeRedisPort: ${VALKEY_PORT}
+      TerrakubeRedisPort: ${VALKEY_PORT:-6379}
 
     labels:
       - 'traefik.enable=true'
@@ -102,9 +102,9 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.terrakube-ui.rule=Host(`terrakube-ui.${DEFAULT_URL}`)'
-      - 'traefik.http.services.terrakube-ui.loadbalancer.server.port=${TERRAKUBE_UI_PORT}'
+      - 'traefik.http.services.terrakube-ui.loadbalancer.server.port=${TERRAKUBE_UI_PORT:-3000}'
     healthcheck:
-      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${TERRAKUBE_UI_PORT} || exit 1']
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${TERRAKUBE_UI_PORT:-3000} || exit 1']
       interval: 30s
       timeout: 15s
       retries: 5
@@ -161,9 +161,9 @@ services:
 
       TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}
       EXECUTOR_NAME: local-executor
-      TerrakubeRedisHostname: ${MNG_VALKEY_HOST}
+      TerrakubeRedisHostname: ${VALKEY_MNG_HOSTNAME}
       TerrakubeRedisPassword_FILE: /run/secrets/terrakube_valkey_password
-      TerrakubeRedisPort: ${VALKEY_PORT}
+      TerrakubeRedisPort: ${VALKEY_PORT:-6379}
 
     volumes:
       # [주의] docker.sock 마운트는 사실상 root 권한에 준하는 접근을 허용합니다.
@@ -183,7 +183,7 @@ services:
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.terrakube-executor.rule=Host(`terrakube-executor.${DEFAULT_URL}`)'
-      - 'traefik.http.services.terrakube-executor.loadbalancer.server.port=${TERRAKUBE_EXECUTOR_PORT}'
+      - 'traefik.http.services.terrakube-executor.loadbalancer.server.port=${TERRAKUBE_EXECUTOR_PORT:-8090}'
     logging: *default-logging
 
 secrets:

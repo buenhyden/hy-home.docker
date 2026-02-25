@@ -33,10 +33,10 @@ services:
     # ports:
     #   - "${OLLAMA_WEBUI_HOST_PORT}:${OLLAMA_WEBUI_PORT}" # 브라우저에서 localhost:3000 으로 접속
     environment:
-      - OLLAMA_BASE_URL=http://ollama:${OLLAMA_PORT} # 도커 네트워크 내부 통신
+      - OLLAMA_BASE_URL=http://ollama:${OLLAMA_PORT:-11434} # 도커 네트워크 내부 통신
       # --- RAG 설정 추가 ---
       # 벡터 DB 연결 설정
-      - VECTOR_DB_URL=http://qdrant:${QDRANT_PORT}
+      - VECTOR_DB_URL=http://qdrant:${QDRANT_PORT:-6333}
       # 임베딩(텍스트를 숫자로 변환) 작업을 Ollama에게 맡김
       - RAG_EMBEDDING_ENGINE=ollama
       - RAG_EMBEDDING_MODEL=qwen3-embedding:0.6b

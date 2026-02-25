@@ -37,7 +37,7 @@ services:
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio
     <<: *default-restart
-    command: server /data --console-address ":${MINIO_CONSOLE_HOST_PORT}"
+    command: server /data --console-address ":${MINIO_CONSOLE_HOST_PORT:-9001}"
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -72,7 +72,7 @@ services:
       - 'traefik.http.routers.minio-api.tls=true'
       - 'traefik.http.routers.minio-api.service=minio-api'
       # [중요] 내부 포트 9000번과 연결
-      - 'traefik.http.services.minio-api.loadbalancer.server.port=${MINIO_PORT}'
+      - 'traefik.http.services.minio-api.loadbalancer.server.port=${MINIO_PORT:-9000}'
 
       # ---------------------------------------------------------
       # 2. MinIO Console 라우터 (웹 브라우저용 - 포트 9001)
@@ -83,7 +83,7 @@ services:
       - 'traefik.http.routers.minio-console.tls=true'
       - 'traefik.http.routers.minio-console.service=minio-console'
       # [중요] 내부 포트 9001번과 연결
-      - 'traefik.http.services.minio-console.loadbalancer.server.port=${MINIO_CONSOLE_PORT}'
+      - 'traefik.http.services.minio-console.loadbalancer.server.port=${MINIO_CONSOLE_PORT:-9001}'
     logging: *default-logging
 
   minio-create-buckets:

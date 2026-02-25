@@ -77,7 +77,7 @@ services:
     <<: *default-restart
     environment:
       NODE_NAME: valkey-node-0
-      PORT: ${VALKEY0_PORT}
+      PORT: ${VALKEY0_PORT:-6379}
     volumes:
       # 공통 valkey.conf
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
@@ -86,15 +86,15 @@ services:
       - valkey-data-0:/data
     command: ['sh', '/usr/local/bin/valkey-start.sh']
     ports:
-      - '${VALKEY0_HOST_PORT}:${VALKEY0_PORT}'
+      - '${VALKEY0_HOST_PORT:-6379}:${VALKEY0_PORT:-6379}'
     expose:
-      - ${VALKEY0_BUS_PORT}
+      - ${VALKEY0_BUS_PORT:-16379}
     healthcheck:
       # secret 파일에서 비밀번호 읽어서 PING 체크
       test: [
           'CMD-SHELL',
           'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
-          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY0_PORT} ping | grep PONG',
+          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY0_PORT:-6379} ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -124,21 +124,21 @@ services:
     <<: *default-restart
     environment:
       NODE_NAME: valkey-node-1
-      PORT: ${VALKEY1_PORT}
+      PORT: ${VALKEY1_PORT:-6380}
     volumes:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-1:/data
     command: ['sh', '/usr/local/bin/valkey-start.sh']
     ports:
-      - '${VALKEY1_HOST_PORT}:${VALKEY1_PORT}'
+      - '${VALKEY1_HOST_PORT:-6380}:${VALKEY1_PORT:-6380}'
     expose:
-      - ${VALKEY1_BUS_PORT}
+      - ${VALKEY1_BUS_PORT:-16380}
     healthcheck:
       test: [
           'CMD-SHELL',
           'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
-          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY1_PORT} ping | grep PONG',
+          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY1_PORT:-6380} ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -168,21 +168,21 @@ services:
     <<: *default-restart
     environment:
       NODE_NAME: valkey-node-2
-      PORT: ${VALKEY2_PORT}
+      PORT: ${VALKEY2_PORT:-6381}
     volumes:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-2:/data
     command: ['sh', '/usr/local/bin/valkey-start.sh']
     ports:
-      - '${VALKEY2_HOST_PORT}:${VALKEY2_PORT}'
+      - '${VALKEY2_HOST_PORT:-6381}:${VALKEY2_PORT:-6381}'
     expose:
-      - ${VALKEY2_BUS_PORT}
+      - ${VALKEY2_BUS_PORT:-16381}
     healthcheck:
       test: [
           'CMD-SHELL',
           'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
-          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY2_PORT} ping | grep PONG',
+          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY2_PORT:-6381} ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -212,21 +212,21 @@ services:
     <<: *default-restart
     environment:
       NODE_NAME: valkey-node-3
-      PORT: ${VALKEY3_PORT}
+      PORT: ${VALKEY3_PORT:-6382}
     volumes:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-3:/data
     command: ['sh', '/usr/local/bin/valkey-start.sh']
     ports:
-      - '${VALKEY3_HOST_PORT}:${VALKEY3_PORT}'
+      - '${VALKEY3_HOST_PORT:-6382}:${VALKEY3_PORT:-6382}'
     expose:
-      - ${VALKEY3_BUS_PORT}
+      - ${VALKEY3_BUS_PORT:-16382}
     healthcheck:
       test: [
           'CMD-SHELL',
           'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
-          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY3_PORT} ping | grep PONG',
+          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY3_PORT:-6382} ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -256,21 +256,21 @@ services:
     <<: *default-restart
     environment:
       NODE_NAME: valkey-node-4
-      PORT: ${VALKEY4_PORT}
+      PORT: ${VALKEY4_PORT:-6383}
     volumes:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-4:/data
     command: ['sh', '/usr/local/bin/valkey-start.sh']
     ports:
-      - '${VALKEY4_HOST_PORT}:${VALKEY4_PORT}'
+      - '${VALKEY4_HOST_PORT:-6383}:${VALKEY4_PORT:-6383}'
     expose:
-      - ${VALKEY4_BUS_PORT}
+      - ${VALKEY4_BUS_PORT:-16383}
     healthcheck:
       test: [
           'CMD-SHELL',
           'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
-          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY4_PORT} ping | grep PONG',
+          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY4_PORT:-6383} ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -300,21 +300,21 @@ services:
     <<: *default-restart
     environment:
       NODE_NAME: valkey-node-5
-      PORT: ${VALKEY5_PORT}
+      PORT: ${VALKEY5_PORT:-6384}
     volumes:
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
       - valkey-data-5:/data
     command: ['sh', '/usr/local/bin/valkey-start.sh']
     ports:
-      - '${VALKEY5_HOST_PORT}:${VALKEY5_PORT}'
+      - '${VALKEY5_HOST_PORT:-6384}:${VALKEY5_PORT:-6384}'
     expose:
-      - ${VALKEY5_BUS_PORT}
+      - ${VALKEY5_BUS_PORT:-16384}
     healthcheck:
       test: [
           'CMD-SHELL',
           'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password); valkey-cli -a
-          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY5_PORT} ping | grep PONG',
+          $$VALKEY_PASSWORD -h 127.0.0.1 -p ${VALKEY5_PORT:-6384} ping | grep PONG',
         ]
       interval: 15s
       timeout: 30s
@@ -375,7 +375,7 @@ services:
     cap_drop:
       - ALL
     ports:
-      - '${VALKEY_EXPORTER_HOST_PORT}:${VALKEY_EXPORTER_PORT}'
+      - '${VALKEY_EXPORTER_HOST_PORT:-9121}:${VALKEY_EXPORTER_PORT:-9121}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.67
@@ -397,7 +397,7 @@ services:
         exec /redis_exporter \
           -redis.addr="redis://valkey-node-0:6379" \
           -redis.password="$$R_PWD" \
-          -web.listen-address=:${VALKEY_EXPORTER_PORT}
+          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       valkey-node-0:
         condition: service_healthy

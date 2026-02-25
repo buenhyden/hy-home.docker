@@ -38,12 +38,12 @@ services:
     cap_drop:
       - ALL
     expose:
-      - ${SONARQUBE_PORT}
+      - ${SONARQUBE_PORT:-9000}
     healthcheck:
       test:
         [
           'CMD-SHELL',
-          'wget -q --spider http://localhost:${SONARQUBE_PORT}/api/system/health || exit 1',
+          'wget -q --spider http://localhost:${SONARQUBE_PORT:-9000}/api/system/health || exit 1',
         ]
       interval: 15s
       timeout: 30s
@@ -58,7 +58,7 @@ services:
     secrets:
       - sonarqube_db_password
     environment:
-      - SONAR_JDBC_URL=jdbc:postgresql://${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/${SONARQUBE_DBNAME}
+      - SONAR_JDBC_URL=jdbc:postgresql://${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/${SONARQUBE_DBNAME}
       - SONAR_JDBC_USERNAME=${SONARQUBE_DB_USER}
       - SONAR_JDBC_PASSWORD_FILE=/run/secrets/sonarqube_db_password
       - SONAR_WEB_JAVAOPTS=-Xmx512m -Xms512m
@@ -68,7 +68,7 @@ services:
       - 'traefik.http.routers.sonarqube.rule=Host(`sonarqube.${DEFAULT_URL}`)'
       - 'traefik.http.routers.sonarqube.entrypoints=websecure'
       - 'traefik.http.routers.sonarqube.tls=true'
-      - 'traefik.http.services.sonarqube.loadbalancer.server.port=${SONARQUBE_PORT}'
+      - 'traefik.http.services.sonarqube.loadbalancer.server.port=${SONARQUBE_PORT:-9000}'
 
 secrets:
   sonarqube_db_password:

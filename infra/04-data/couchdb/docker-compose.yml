@@ -37,9 +37,9 @@ services:
     volumes:
       - couchdb1-data:/opt/couchdb/data
     expose:
-      - ${COUCHDB_PORT}
-      - ${COUCHDB_ERLANG_MAPPER_PORT}
-      - ${COUCHDB_ERLANG_DISTRIBUTION_PORT}
+      - ${COUCHDB_PORT:-5984}
+      - ${COUCHDB_ERLANG_MAPPER_PORT:-4369}
+      - ${COUCHDB_ERLANG_DISTRIBUTION_PORT:-9100}
     # ports:
     #   - "${COUCHDB_HOST_PORT}:${COUCHDB_PORT}"
     networks:
@@ -49,7 +49,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) && curl -f http://$$COUCHDB_USER:$$COUCHDB_PASSWORD@localhost:${COUCHDB_PORT}/_up
+        - export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) && curl -f http://$$COUCHDB_USER:$$COUCHDB_PASSWORD@localhost:${COUCHDB_PORT:-5984}/_up
       interval: 15s
       timeout: 30s
       retries: 5
@@ -66,7 +66,7 @@ services:
 
       # [3] 서비스 정의 (Load Balancer)
       # 내(Node 1)가 'couchdb-cluster' 서비스의 일원임을 알림
-      - 'traefik.http.services.couchdb-cluster.loadbalancer.server.port=${COUCHDB_PORT}'
+      - 'traefik.http.services.couchdb-cluster.loadbalancer.server.port=${COUCHDB_PORT:-5984}'
 
       # [4] Sticky Session (중요)
       - 'traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie=true'
@@ -92,9 +92,9 @@ services:
     volumes:
       - couchdb2-data:/opt/couchdb/data
     expose:
-      - ${COUCHDB_PORT}
-      - ${COUCHDB_ERLANG_MAPPER_PORT}
-      - ${COUCHDB_ERLANG_DISTRIBUTION_PORT}
+      - ${COUCHDB_PORT:-5984}
+      - ${COUCHDB_ERLANG_MAPPER_PORT:-4369}
+      - ${COUCHDB_ERLANG_DISTRIBUTION_PORT:-9100}
     # ports:
     #   - "${COUCHDB_HOST_PORT}:${COUCHDB_PORT}"
     networks:
@@ -104,7 +104,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) && curl -f http://$$COUCHDB_USER:$$COUCHDB_PASSWORD@localhost:${COUCHDB_PORT}/_up
+        - export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) && curl -f http://$$COUCHDB_USER:$$COUCHDB_PASSWORD@localhost:${COUCHDB_PORT:-5984}/_up
       interval: 15s
       timeout: 30s
       retries: 5
@@ -115,7 +115,7 @@ services:
 
       # [서비스 합류]
       # Node 1과 같은 서비스 이름('couchdb-cluster')을 사용하여 로드밸런싱 그룹에 들어감
-      - 'traefik.http.services.couchdb-cluster.loadbalancer.server.port=${COUCHDB_PORT}'
+      - 'traefik.http.services.couchdb-cluster.loadbalancer.server.port=${COUCHDB_PORT:-5984}'
 
       # Sticky Session 설정은 서비스 레벨이므로 여기도 적어주는 것이 안전함 (병합됨)
       - 'traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie=true'
@@ -141,9 +141,9 @@ services:
     volumes:
       - couchdb3-data:/opt/couchdb/data
     expose:
-      - ${COUCHDB_PORT}
-      - ${COUCHDB_ERLANG_MAPPER_PORT}
-      - ${COUCHDB_ERLANG_DISTRIBUTION_PORT}
+      - ${COUCHDB_PORT:-5984}
+      - ${COUCHDB_ERLANG_MAPPER_PORT:-4369}
+      - ${COUCHDB_ERLANG_DISTRIBUTION_PORT:-9100}
     # ports:
     #   - "${COUCHDB_HOST_PORT}:${COUCHDB_PORT}"
     networks:
@@ -153,7 +153,7 @@ services:
     healthcheck:
       test:
         - CMD-SHELL
-        - export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) && curl -f http://$$COUCHDB_USER:$$COUCHDB_PASSWORD@localhost:${COUCHDB_PORT}/_up
+        - export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) && curl -f http://$$COUCHDB_USER:$$COUCHDB_PASSWORD@localhost:${COUCHDB_PORT:-5984}/_up
       interval: 15s
       timeout: 30s
       retries: 5
@@ -161,7 +161,7 @@ services:
     labels:
       - 'traefik.enable=true'
       # [서비스 합류]
-      - 'traefik.http.services.couchdb-cluster.loadbalancer.server.port=${COUCHDB_PORT}'
+      - 'traefik.http.services.couchdb-cluster.loadbalancer.server.port=${COUCHDB_PORT:-5984}'
       - 'traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie=true'
       - 'traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name=couchdb_sticky'
 
@@ -195,12 +195,12 @@ services:
         # 1. 노드 2를 클러스터(노드 1)에 조인
         echo 'Joining Node 2...';
         curl -X POST -H 'Content-Type: application/json' \
-          http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT}/_cluster_setup \
-          -d '{\"action\": \"enable_cluster\", \"bind_address\":\"0.0.0.0\", \"username\": \"${COUCHDB_USERNAME}\", \"password\":\"'$$COUCHDB_PASSWORD'\", \"port\": ${COUCHDB_PORT}, \"node_count\": \"3\", \"remote_node\": \"couchdb@couchdb-2.infra_net\", \"remote_current_user\": \"${COUCHDB_USERNAME}\", \"remote_current_password\": \"'$$COUCHDB_PASSWORD'\"}';
+          http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT:-5984}/_cluster_setup \
+          -d '{\"action\": \"enable_cluster\", \"bind_address\":\"0.0.0.0\", \"username\": \"${COUCHDB_USERNAME}\", \"password\":\"'$$COUCHDB_PASSWORD'\", \"port\": ${COUCHDB_PORT:-5984}, \"node_count\": \"3\", \"remote_node\": \"couchdb@couchdb-2.infra_net\", \"remote_current_user\": \"${COUCHDB_USERNAME}\", \"remote_current_password\": \"'$$COUCHDB_PASSWORD'\"}';
 
         curl -X POST -H 'Content-Type: application/json' \
-          http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT}/_cluster_setup \
-          -d '{\"action\": \"add_node\", \"host\":\"couchdb-2.infra_net\", \"port\": ${COUCHDB_PORT}, \"username\": \"${COUCHDB_USERNAME}\", \"password\":\"'$$COUCHDB_PASSWORD'\"}';
+          http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT:-5984}/_cluster_setup \
+          -d '{\"action\": \"add_node\", \"host\":\"couchdb-2.infra_net\", \"port\": ${COUCHDB_PORT:-5984}, \"username\": \"${COUCHDB_USERNAME}\", \"password\":\"'$$COUCHDB_PASSWORD'\"}';
 
         # 2. 노드 3을 클러스터(노드 1)에 조인
         echo 'Joining Node 3...';

@@ -73,11 +73,11 @@ services:
       - /usr/local/bin/etcd
       - --name=etcd-1
       - --data-dir=/etcd-data
-      - --initial-advertise-peer-urls=http://etcd-1:${ETCD_PEER_PORT}
-      - --listen-peer-urls=http://0.0.0.0:${ETCD_PEER_PORT}
-      - --listen-client-urls=http://0.0.0.0:${ETCD_CLIENT_PORT}
-      - --advertise-client-urls=http://etcd-1:${ETCD_CLIENT_PORT}
-      - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT},etcd-2=http://etcd-2:${ETCD_PEER_PORT},etcd-3=http://etcd-3:${ETCD_PEER_PORT}
+      - --initial-advertise-peer-urls=http://etcd-1:${ETCD_PEER_PORT:-2380}
+      - --listen-peer-urls=http://0.0.0.0:${ETCD_PEER_PORT:-2380}
+      - --listen-client-urls=http://0.0.0.0:${ETCD_CLIENT_PORT:-2379}
+      - --advertise-client-urls=http://etcd-1:${ETCD_CLIENT_PORT:-2379}
+      - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT:-2380},etcd-2=http://etcd-2:${ETCD_PEER_PORT:-2380},etcd-3=http://etcd-3:${ETCD_PEER_PORT:-2380}
       - --initial-cluster-state=new
       - --initial-cluster-token=pg-ha-etcd
     healthcheck:
@@ -89,7 +89,7 @@ services:
     volumes:
       - etcd1-data:/etcd-data
     expose:
-      - ${ETCD_CLIENT_PORT}
+      - ${ETCD_CLIENT_PORT:-2379}
     networks:
       infra_net:
         ipv4_address: 172.19.0.50
@@ -110,11 +110,11 @@ services:
       - /usr/local/bin/etcd
       - --name=etcd-2
       - --data-dir=/etcd-data
-      - --initial-advertise-peer-urls=http://etcd-2:${ETCD_PEER_PORT}
-      - --listen-peer-urls=http://0.0.0.0:${ETCD_PEER_PORT}
-      - --listen-client-urls=http://0.0.0.0:${ETCD_CLIENT_PORT}
-      - --advertise-client-urls=http://etcd-2:${ETCD_CLIENT_PORT}
-      - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT},etcd-2=http://etcd-2:${ETCD_PEER_PORT},etcd-3=http://etcd-3:${ETCD_PEER_PORT}
+      - --initial-advertise-peer-urls=http://etcd-2:${ETCD_PEER_PORT:-2380}
+      - --listen-peer-urls=http://0.0.0.0:${ETCD_PEER_PORT:-2380}
+      - --listen-client-urls=http://0.0.0.0:${ETCD_CLIENT_PORT:-2379}
+      - --advertise-client-urls=http://etcd-2:${ETCD_CLIENT_PORT:-2379}
+      - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT:-2380},etcd-2=http://etcd-2:${ETCD_PEER_PORT:-2380},etcd-3=http://etcd-3:${ETCD_PEER_PORT:-2380}
       - --initial-cluster-state=new
       - --initial-cluster-token=pg-ha-etcd
     healthcheck:
@@ -126,7 +126,7 @@ services:
     volumes:
       - etcd2-data:/etcd-data
     expose:
-      - ${ETCD_CLIENT_PORT}
+      - ${ETCD_CLIENT_PORT:-2379}
     networks:
       infra_net:
         ipv4_address: 172.19.0.51
@@ -147,11 +147,11 @@ services:
       - /usr/local/bin/etcd
       - --name=etcd-3
       - --data-dir=/etcd-data
-      - --initial-advertise-peer-urls=http://etcd-3:${ETCD_PEER_PORT}
-      - --listen-peer-urls=http://0.0.0.0:${ETCD_PEER_PORT}
-      - --listen-client-urls=http://0.0.0.0:${ETCD_CLIENT_PORT}
-      - --advertise-client-urls=http://etcd-3:${ETCD_CLIENT_PORT}
-      - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT},etcd-2=http://etcd-2:${ETCD_PEER_PORT},etcd-3=http://etcd-3:${ETCD_PEER_PORT}
+      - --initial-advertise-peer-urls=http://etcd-3:${ETCD_PEER_PORT:-2380}
+      - --listen-peer-urls=http://0.0.0.0:${ETCD_PEER_PORT:-2380}
+      - --listen-client-urls=http://0.0.0.0:${ETCD_CLIENT_PORT:-2379}
+      - --advertise-client-urls=http://etcd-3:${ETCD_CLIENT_PORT:-2379}
+      - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT:-2380},etcd-2=http://etcd-2:${ETCD_PEER_PORT:-2380},etcd-3=http://etcd-3:${ETCD_PEER_PORT:-2380}
       - --initial-cluster-state=new
       - --initial-cluster-token=pg-ha-etcd
     healthcheck:
@@ -163,7 +163,7 @@ services:
     volumes:
       - etcd3-data:/etcd-data
     expose:
-      - ${ETCD_CLIENT_PORT}
+      - ${ETCD_CLIENT_PORT:-2379}
     networks:
       infra_net:
         ipv4_address: 172.19.0.52
@@ -202,16 +202,16 @@ services:
       PATRONI_NAMESPACE: /service/
       # 네트워크 바인딩 (이 설정은 유지)
       # REST API
-      PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT}
-      PATRONI_RESTAPI_CONNECT_ADDRESS: pg-0:${PATRONI_RESTAPI_PORT}
+      PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT:-8008}
+      PATRONI_RESTAPI_CONNECT_ADDRESS: pg-0:${PATRONI_RESTAPI_PORT:-8008}
       # PostgreSQL listen / connect
-      PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT}
-      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:${POSTGRES_PORT}
+      PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:${POSTGRES_PORT:-5432}
     volumes:
       - pg0-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     expose:
-      - ${POSTGRES_PORT}
+      - ${POSTGRES_PORT:-5432}
     secrets:
       - patroni_superuser_password
       - patroni_replication_password
@@ -263,11 +263,11 @@ services:
       PATRONI_NAMESPACE: /service/
       # 네트워크 바인딩 (이 설정은 유지)
       # REST API
-      PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT}
-      PATRONI_RESTAPI_CONNECT_ADDRESS: pg-1:${PATRONI_RESTAPI_PORT}
+      PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT:-8008}
+      PATRONI_RESTAPI_CONNECT_ADDRESS: pg-1:${PATRONI_RESTAPI_PORT:-8008}
       # PostgreSQL listen / connect
-      PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT}
-      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:${POSTGRES_PORT}
+      PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:${POSTGRES_PORT:-5432}
     volumes:
       - pg1-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
@@ -285,7 +285,7 @@ services:
       retries: 5
       start_period: 30s
     expose:
-      - ${POSTGRES_PORT}
+      - ${POSTGRES_PORT:-5432}
     depends_on:
       etcd-1:
         condition: service_healthy
@@ -325,11 +325,11 @@ services:
       PATRONI_NAMESPACE: /service/
       # 네트워크 바인딩 (이 설정은 유지)
       # REST API
-      PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT}
-      PATRONI_RESTAPI_CONNECT_ADDRESS: pg-2:${PATRONI_RESTAPI_PORT}
+      PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT:-8008}
+      PATRONI_RESTAPI_CONNECT_ADDRESS: pg-2:${PATRONI_RESTAPI_PORT:-8008}
       # PostgreSQL listen / connect
-      PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT}
-      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-2:${POSTGRES_PORT}
+      PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-2:${POSTGRES_PORT:-5432}
     volumes:
       - pg2-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
@@ -338,7 +338,7 @@ services:
         ipv4_address: 172.19.0.55
     logging: *default-logging
     expose:
-      - ${POSTGRES_PORT}
+      - ${POSTGRES_PORT:-5432}
     secrets:
       - patroni_superuser_password
       - patroni_replication_password
@@ -371,10 +371,10 @@ services:
     volumes:
       - ./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     ports:
-      - '${POSTGRES_WRITE_HOST_PORT}:${POSTGRES_WRITE_PORT}' # Write endpoint
-      - '${POSTGRES_READ_HOST_PORT}:${POSTGRES_READ_PORT}' # Read endpoint
+      - '${POSTGRES_WRITE_HOST_PORT:-15432}:${POSTGRES_WRITE_PORT:-15432}' # Write endpoint
+      - '${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}' # Read endpoint
       # - "${HAPROXY_HOST_PORT}:${HAPROXY_PORT}" # Stats (옵션)
-      - '${HAPROXY_METRICS_HOST_PORT}:${HAPROXY_METRICS_PORT}' # Stats (옵션)
+      - '${HAPROXY_METRICS_HOST_PORT:-8404}:${HAPROXY_METRICS_PORT:-8404}' # Stats (옵션)
     networks:
       infra_net:
         ipv4_address: 172.19.0.56
@@ -386,7 +386,7 @@ services:
       - 'traefik.http.routers.haproxy-stats.entrypoints=websecure'
       - 'traefik.http.routers.haproxy-stats.tls=true'
       # [중요] HAProxy 설정 파일(haproxy.cfg)에 정의된 Stats 포트(보통 8404)와 일치해야 함
-      - 'traefik.http.services.haproxy-stats.loadbalancer.server.port=${HAPROXY_PORT}'
+      - 'traefik.http.services.haproxy-stats.loadbalancer.server.port=${HAPROXY_PORT:-7000}'
     depends_on:
       pg-0:
         condition: service_healthy
@@ -407,8 +407,8 @@ services:
     container_name: pg-cluster-init
     environment:
       - POSTGRES_ROUTER_HOSTNAME=${POSTGRES_ROUTER_HOSTNAME}
-      - POSTGRES_WRITE_PORT=${POSTGRES_WRITE_PORT}
-      - POSTGRES_READ_PORT=${POSTGRES_READ_PORT}
+      - POSTGRES_WRITE_PORT=${POSTGRES_WRITE_PORT:-15432}
+      - POSTGRES_READ_PORT=${POSTGRES_READ_PORT:-15433}
       - POSTGRES_USER=${PATRONI_SUPERUSER_USERNAME:-postgres}
       - POSTGRES_DB=${POSTGRES_DB}
     secrets:
@@ -453,7 +453,7 @@ services:
         ipv4_address: 172.19.0.57
     logging: *default-logging
     expose:
-      - '${POSTGRES_EXPORTER_PORT}'
+      - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
       - service_postgres_password
     depends_on:
@@ -494,7 +494,7 @@ services:
         ipv4_address: 172.19.0.58
     logging: *default-logging
     expose:
-      - '${POSTGRES_EXPORTER_PORT}'
+      - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
       - service_postgres_password
     depends_on:
@@ -535,7 +535,7 @@ services:
         ipv4_address: 172.19.0.59
     logging: *default-logging
     expose:
-      - '${POSTGRES_EXPORTER_PORT}'
+      - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
       - service_postgres_password
     depends_on:

@@ -31,7 +31,7 @@ services:
     cap_drop:
       - ALL
     ports:
-      - '${QDRANT_HOST_PORT:-6333}:${QDRANT_PORT}'
+      - '${QDRANT_HOST_PORT:-6333}:${QDRANT_PORT:-6333}'
     environment:
       - QDRANT__TELEMETRY_DISABLED=false # 메트릭 수집 활성화
     volumes:
@@ -58,5 +58,5 @@ services:
       - 'traefik.http.routers.qdrant.rule=Host(`qdrant.${DEFAULT_URL}`)'
       - 'traefik.http.routers.qdrant.entrypoints=websecure'
       - 'traefik.http.routers.qdrant.tls=true'
-      - 'traefik.http.services.qdrant.loadbalancer.server.port=${QDRANT_PORT}'
+      - 'traefik.http.services.qdrant.loadbalancer.server.port=${QDRANT_PORT:-6333}'
     logging: *default-logging

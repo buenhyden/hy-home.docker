@@ -85,7 +85,7 @@ services:
           '-q',
           '--tries=1',
           '--spider',
-          'http://localhost:${PROMETHEUS_PORT}/-/healthy',
+          'http://localhost:${PROMETHEUS_PORT:-9090}/-/healthy',
         ]
       interval: 30s
       timeout: 15s
@@ -97,7 +97,7 @@ services:
       - 'traefik.http.routers.prometheus.rule=Host(`prometheus.${DEFAULT_URL}`)'
       - 'traefik.http.routers.prometheus.entrypoints=websecure'
       - 'traefik.http.routers.prometheus.tls=true'
-      - 'traefik.http.services.prometheus.loadbalancer.server.port=${PROMETHEUS_PORT}'
+      - 'traefik.http.services.prometheus.loadbalancer.server.port=${PROMETHEUS_PORT:-9090}'
     logging: *default-logging
   # -------------------------------------------------------
   # 2. Log Storage (Loki)
@@ -122,7 +122,7 @@ services:
         ipv4_address: 172.19.0.31
     logging: *default-logging
     ports:
-      - '${LOKI_HOST_PORT}:${LOKI_PORT}'
+      - '${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}'
     volumes:
       - ./loki/config/loki-config.yaml:/etc/loki/loki-config.yaml:ro
       - loki-data:/loki
@@ -169,7 +169,7 @@ services:
         ipv4_address: 172.19.0.32
     logging: *default-logging
     ports:
-      - '${TEMPO_HOST_PORT}:${TEMPO_PORT}'
+      - '${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}'
     environment:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
       - MINIO_APP_USER_PASSWORD_FILE=/run/secrets/minio_app_user_password
@@ -192,7 +192,7 @@ services:
     cap_drop:
       - ALL
     ports:
-      - '${PYROSCOPE_HOST_PORT}:${PYROSCOPE_PORT}'
+      - '${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}'
     <<: *default-restart
     networks:
       infra_net:
@@ -294,7 +294,7 @@ services:
     #   - "${GRAFANA_HOST_PORT}:${GRAFANA_PORT}"
     healthcheck:
       # Grafana 내부의 전용 상태 확인 API (Application Programming Interface) 사용
-      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${GRAFANA_PORT}/api/health || exit 1']
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${GRAFANA_PORT:-3000}/api/health || exit 1']
       interval: 15s
       timeout: 15s
       retries: 5
@@ -313,7 +313,7 @@ services:
       - 'traefik.http.routers.grafana.rule=Host(`grafana.${DEFAULT_URL}`)'
       - 'traefik.http.routers.grafana.entrypoints=websecure'
       - 'traefik.http.routers.grafana.tls=true'
-      - 'traefik.http.services.grafana.loadbalancer.server.port=${GRAFANA_PORT}'
+      - 'traefik.http.services.grafana.loadbalancer.server.port=${GRAFANA_PORT:-3000}'
       - 'traefik.http.routers.grafana.middlewares=sso-auth@file'
     logging: *default-logging
   # -------------------------------------------------------
@@ -329,15 +329,15 @@ services:
     container_name: infra-alloy
     <<: *default-restart
     user: '0:0'
-    command: ['run', '--server.http.listen-addr=0.0.0.0:${ALLOY_PORT}', '/etc/alloy/config.alloy']
+    command: ['run', '--server.http.listen-addr=0.0.0.0:${ALLOY_PORT:-12345}', '/etc/alloy/config.alloy']
     volumes:
       - ./alloy/config/config.alloy:/etc/alloy/config.alloy:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro # 도커 로그 접근
       - /var/run/docker.sock:/var/run/docker.sock:ro # 도커 메타데이터 접근
     ports:
       #   - "${ALLOY_HOST_PORT}:${ALLOY_PORT}"
-      - '${ALLOY_OTLP_GRPC_HOST_PORT}:${ALLOY_OTLP_GRPC_PORT}' # OTLP gRPC Receiver
-      - '${ALLOY_OTLP_HTTP_HOST_PORT}:${ALLOY_OTLP_HTTP_PORT}' # OTLP HTTP Receiver
+      - '${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}' # OTLP gRPC Receiver
+      - '${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}' # OTLP HTTP Receiver
     networks:
       infra_net:
         ipv4_address: 172.19.0.34
@@ -354,7 +354,7 @@ services:
       - 'traefik.http.routers.alloy.rule=Host(`alloy.${DEFAULT_URL}`)'
       - 'traefik.http.routers.alloy.entrypoints=websecure'
       - 'traefik.http.routers.alloy.tls=true'
-      - 'traefik.http.services.alloy.loadbalancer.server.port=${ALLOY_PORT}'
+      - 'traefik.http.services.alloy.loadbalancer.server.port=${ALLOY_PORT:-12345}'
     healthcheck:
       test:
         [
@@ -391,7 +391,7 @@ services:
     devices:
       - /dev/kmsg
     expose:
-      - ${CADVISOR_PORT}
+      - ${CADVISOR_PORT:-8080}
     volumes:
       # 호스트(VM)의 루트 파일시스템
       - /:/rootfs:ro
@@ -458,7 +458,7 @@ services:
     <<: *default-restart
     healthcheck:
       test:
-        ['CMD-SHELL', 'wget -q --spider http://localhost:${ALERTMANAGER_PORT}/-/ready || exit 1']
+        ['CMD-SHELL', 'wget -q --spider http://localhost:${ALERTMANAGER_PORT:-9093}/-/ready || exit 1']
       interval: 15s
       timeout: 15s
       retries: 5
@@ -469,7 +469,7 @@ services:
       - 'traefik.http.routers.alertmanager.rule=Host(`alertmanager.${DEFAULT_URL}`)'
       - 'traefik.http.routers.alertmanager.entrypoints=websecure'
       - 'traefik.http.routers.alertmanager.tls=true'
-      - 'traefik.http.services.alertmanager.loadbalancer.server.port=${ALERTMANAGER_PORT}'
+      - 'traefik.http.services.alertmanager.loadbalancer.server.port=${ALERTMANAGER_PORT:-9093}'
     logging: *default-logging
   pushgateway:
     deploy:
@@ -485,7 +485,7 @@ services:
       - ALL
     <<: *default-restart
     expose:
-      - ${PUSHGATEWAY_PORT}
+      - ${PUSHGATEWAY_PORT:-9091}
     # ports:
     #   - "${PUSHGATEWAY_HOST_PORT}:${PUSHGATEWAY_PORT}"
     depends_on:
@@ -497,7 +497,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.37
     healthcheck:
-      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${PUSHGATEWAY_PORT}/-/ready || exit 1']
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${PUSHGATEWAY_PORT:-9091}/-/ready || exit 1']
       interval: 15s
       timeout: 15s
       retries: 5
@@ -508,7 +508,7 @@ services:
       - 'traefik.http.routers.pushgateway.rule=Host(`pushgateway.${DEFAULT_URL}`)'
       - 'traefik.http.routers.pushgateway.entrypoints=websecure'
       - 'traefik.http.routers.pushgateway.tls=true'
-      - 'traefik.http.services.pushgateway.loadbalancer.server.port=${PUSHGATEWAY_PORT}'
+      - 'traefik.http.services.pushgateway.loadbalancer.server.port=${PUSHGATEWAY_PORT:-9091}'
     logging: *default-logging
 
 secrets:

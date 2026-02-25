@@ -17,10 +17,10 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - '${LOCUST_HOST_PORT}:${LOCUST_PORT}'
+      - '${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}'
     environment:
       - LOCUST_INFLUXDB_HOST=influxdb
-      - LOCUST_INFLUXDB_PORT=${INFLUXDB_PORT}
+      - LOCUST_INFLUXDB_PORT=${INFLUXDB_PORT:-8086}
       - LOCUST_INFLUXDB_ORG=${INFLUXDB_ORG}
       - LOCUST_INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
     volumes:
@@ -50,7 +50,7 @@ services:
     restart: unless-stopped
     environment:
       - LOCUST_INFLUXDB_HOST=influxdb
-      - LOCUST_INFLUXDB_PORT=${INFLUXDB_PORT}
+      - LOCUST_INFLUXDB_PORT=${INFLUXDB_PORT:-8086}
       - LOCUST_INFLUXDB_ORG=${INFLUXDB_ORG}
       - LOCUST_INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
     volumes:

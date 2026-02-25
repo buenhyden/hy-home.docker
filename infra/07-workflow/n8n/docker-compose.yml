@@ -11,15 +11,15 @@ x-n8n-common-env: &n8n-common-env
   TZ: ${DEFAULT_TIMEZONE:-Asia/Seoul}
   # DB 설정
   DB_TYPE: postgresdb
-  DB_POSTGRESDB_HOST: ${POSTGRES_HOSTNAME}
-  DB_POSTGRESDB_PORT: ${POSTGRES_PORT}
+  DB_POSTGRESDB_HOST: ${POSTGRES_MNG_HOSTNAME}
+  DB_POSTGRESDB_PORT: ${POSTGRES_PORT:-5432}
   DB_POSTGRESDB_DATABASE: n8n
   DB_POSTGRESDB_USER: ${N8N_DB_USER}
   DB_POSTGRESDB_PASSWORD_FILE: /run/secrets/n8n_db_password
   # 실행 모드 & Redis(Valkey)
   EXECUTIONS_MODE: queue
   QUEUE_BULL_REDIS_HOST: n8n-valkey
-  QUEUE_BULL_REDIS_PORT: ${VALKEY_PORT}
+  QUEUE_BULL_REDIS_PORT: ${VALKEY_PORT:-6379}
   QUEUE_BULL_PREFIX: n8n
   QUEUE_BULL_REDIS_PASSWORD_FILE: /run/secrets/n8n_valkey_password
   # Task Runner 설정
@@ -74,7 +74,7 @@ services:
         reservations:
           memory: 1G
     expose:
-      - ${N8N_PORT}
+      - ${N8N_PORT:-5678}
     secrets:
       - n8n_valkey_password
       - n8n_db_password
@@ -86,7 +86,7 @@ services:
       N8N_PROXY_HOPS: 1
       N8N_PROTOCOL: https
       N8N_HOST: n8n.${DEFAULT_URL}
-      N8N_PORT: ${N8N_PORT}
+      N8N_PORT: ${N8N_PORT:-5678}
       WEBHOOK_URL: https://n8n.${DEFAULT_URL}
       N8N_PUSH_BACKEND: websocket
       N8N_PUBLIC_API_DISABLED: false
@@ -108,7 +108,7 @@ services:
       - 'traefik.http.routers.n8n.tls=true'
       - 'traefik.http.routers.n8n.service=n8n'
       # [중요] n8n 내부 포트 (5678) 연결
-      - 'traefik.http.services.n8n.loadbalancer.server.port=${N8N_PORT}'
+      - 'traefik.http.services.n8n.loadbalancer.server.port=${N8N_PORT:-5678}'
     volumes:
       - n8n-data:/home/node/.n8n
       - ./custom:/home/node/.n8n/custom
@@ -116,7 +116,7 @@ services:
       n8n-valkey:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'nc -z localhost ${N8N_PORT} || exit 1'] # 간단한 포트 체크 방식
+      test: ['CMD-SHELL', 'nc -z localhost ${N8N_PORT:-5678} || exit 1'] # 간단한 포트 체크 방식
       interval: 15s
       timeout: 30s
       retries: 5
@@ -170,7 +170,7 @@ services:
     secrets:
       - n8n_runner_auth_token
     environment:
-      - N8N_RUNNERS_TASK_BROKER_URI=http://n8n:${N8N_BROKER_PORT}
+      - N8N_RUNNERS_TASK_BROKER_URI=http://n8n:${N8N_BROKER_PORT:-5679}
       - N8N_RUNNERS_AUTH_TOKEN_FILE=/run/secrets/n8n_runner_auth_token
     networks:
       infra_net:
@@ -210,8 +210,8 @@ services:
       '
     # 클러스터 내부 통신 포트는 expose
     expose:
-      - '${VALKEY_PORT}'
-      - '${VALKEY_BUS_PORT}'
+      - '${VALKEY_PORT:-6379}'
+      - '${VALKEY_BUS_PORT:-16379}'
     healthcheck:
       test:
         [
@@ -237,7 +237,7 @@ services:
     cap_drop:
       - ALL
     expose:
-      - '${VALKEY_EXPORTER_PORT}'
+      - '${VALKEY_EXPORTER_PORT:-9121}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.16
@@ -254,7 +254,7 @@ services:
         exec /redis_exporter \
           -redis.addr=redis://n8n-valkey:6379 \
           -redis.password-file=/run/secrets/n8n_valkey_password \
-          -web.listen-address=:${VALKEY_EXPORTER_PORT}
+          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on:
       n8n-valkey:
         condition: service_healthy

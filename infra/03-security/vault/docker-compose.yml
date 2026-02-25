@@ -28,12 +28,12 @@ services:
       - ALL
     restart: unless-stopped
     ports:
-      - '${VAULT_HOST_PORT}:${VAULT_PORT}'
+      - '${VAULT_HOST_PORT:-8200}:${VAULT_PORT:-8200}'
     expose:
-      - ${VAULT_PORT}
+      - ${VAULT_PORT:-8200}
     environment:
-      VAULT_ADDR: 'http://0.0.0.0:${VAULT_PORT}'
-      VAULT_API_ADDR: 'http://0.0.0.0:${VAULT_PORT}'
+      VAULT_ADDR: 'http://0.0.0.0:${VAULT_PORT:-8200}'
+      VAULT_API_ADDR: 'http://0.0.0.0:${VAULT_PORT:-8200}'
       KEYCLOAK_URL: '${KEYCLOAK_URL}'
       REALM_NAME: '${KEYCLOAK_REALM}'
       CLIENT_ID: '${OAUTH2_PROXY_CLIENT_ID}'
@@ -53,7 +53,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'curl -fsS "http://localhost:${VAULT_PORT}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || wget -q --spider "http://localhost:${VAULT_PORT}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || exit 1',
+          'curl -fsS "http://localhost:${VAULT_PORT:-8200}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || wget -q --spider "http://localhost:${VAULT_PORT:-8200}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || exit 1',
         ]
       interval: 15s
       timeout: 30s
@@ -66,7 +66,7 @@ services:
       - 'traefik.http.routers.vault.rule=Host(`vault.${DEFAULT_URL}`)'
       - 'traefik.http.routers.vault.entrypoints=websecure'
       - 'traefik.http.routers.vault.tls=true'
-      - 'traefik.http.services.vault.loadbalancer.server.port=${VAULT_PORT}'
+      - 'traefik.http.services.vault.loadbalancer.server.port=${VAULT_PORT:-8200}'
     logging: *default-logging
 
 secrets:

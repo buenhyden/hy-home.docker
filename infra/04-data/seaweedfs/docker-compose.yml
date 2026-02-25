@@ -19,8 +19,8 @@ services:
     #   - "9333:${SEAWEEDFS_MASTER_PORT}"
     #   - "19333:19333"
     expose:
-      - ${SEAWEEDFS_MASTER_HTTP_PORT}
-      - ${SEAWEEDFS_MASTER_GRPC_PORT}
+      - ${SEAWEEDFS_MASTER_HTTP_PORT:-9333}
+      - ${SEAWEEDFS_MASTER_GRPC_PORT:-19333}
     command: '-v=1 master -ip=seaweedfs-master -volumeSizeLimitMB=1024'
     volumes:
       - seaweedfs-master-data:/data
@@ -32,7 +32,7 @@ services:
       - 'traefik.http.routers.seaweedfs-master.rule=Host(`seaweedfs.${DEFAULT_URL}`)'
       - 'traefik.http.routers.seaweedfs-master.entrypoints=websecure'
       - 'traefik.http.routers.seaweedfs-master.tls=true'
-      - 'traefik.http.services.seaweedfs-master.loadbalancer.server.port=${SEAWEEDFS_MASTER_HTTP_PORT}'
+      - 'traefik.http.services.seaweedfs-master.loadbalancer.server.port=${SEAWEEDFS_MASTER_HTTP_PORT:-9333}'
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -46,9 +46,9 @@ services:
     #   - "8085:${SEAWEEDFS_VOLUME_PORT}" # Host port changed to avoid conflict
     #   - "18080:18080"
     expose:
-      - ${SEAWEEDFS_VOLUME_HTTP_PORT}
-      - ${SEAWEEDFS_VOLUME_GRPC_PORT}
-    command: '-v=1 volume -mserver=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT} -port=${SEAWEEDFS_VOLUME_HTTP_PORT} -ip=seaweedfs-volume -preStopSeconds=1 -max=10000'
+      - ${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}
+      - ${SEAWEEDFS_VOLUME_GRPC_PORT:-18085}
+    command: '-v=1 volume -mserver=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333} -port=${SEAWEEDFS_VOLUME_HTTP_PORT:-8085} -ip=seaweedfs-volume -preStopSeconds=1 -max=10000'
     volumes:
       - seaweedfs-volume-data:/data
     depends_on:
@@ -69,9 +69,9 @@ services:
     #   - "8888:${SEAWEEDFS_FILER_PORT}"
     #   - "18888:18888"
     expose:
-      - ${SEAWEEDFS_FILER_HTTP_PORT}
-      - ${SEAWEEDFS_FILER_GRPC_PORT}
-    command: '-v=1 filer -ip.bind=0.0.0.0 -master=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT}'
+      - ${SEAWEEDFS_FILER_HTTP_PORT:-8888}
+      - ${SEAWEEDFS_FILER_GRPC_PORT:-18888}
+    command: '-v=1 filer -ip.bind=0.0.0.0 -master=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}'
     depends_on:
       seaweedfs-master:
         condition: service_healthy
@@ -83,7 +83,7 @@ services:
       - 'traefik.http.routers.cdn.rule=Host(`cdn.${DEFAULT_URL}`)'
       - 'traefik.http.routers.cdn.entrypoints=websecure'
       - 'traefik.http.routers.cdn.tls=true'
-      - 'traefik.http.services.cdn.loadbalancer.server.port=${SEAWEEDFS_FILER_HTTP_PORT}'
+      - 'traefik.http.services.cdn.loadbalancer.server.port=${SEAWEEDFS_FILER_HTTP_PORT:-8888}'
     networks:
       - infra_net
     security_opt:
@@ -99,15 +99,15 @@ services:
     #   - "8333:${SEAWEEDFS_S3_HTTP_PORT}"
     # S3 API Gateway
     expose:
-      - ${SEAWEEDFS_S3_HTTP_PORT}
-    command: '-v=1 s3 -filer=seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT} -ip.bind=seaweedfs-s3'
+      - ${SEAWEEDFS_S3_HTTP_PORT:-8333}
+    command: '-v=1 s3 -filer=seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888} -ip.bind=seaweedfs-s3'
     labels:
       - 'traefik.enable=true'
       # [S3 API 용도] Tempo/Loki가 내부적으로 사용할 수도 있고, 외부에서 접근할 수도 있음
       - 'traefik.http.routers.s3.rule=Host(`s3.${DEFAULT_URL}`)'
       - 'traefik.http.routers.s3.entrypoints=websecure'
       - 'traefik.http.routers.s3.tls=true'
-      - 'traefik.http.services.s3.loadbalancer.server.port=${SEAWEEDFS_S3_HTTP_PORT}'
+      - 'traefik.http.services.s3.loadbalancer.server.port=${SEAWEEDFS_S3_HTTP_PORT:-8333}'
     depends_on:
       seaweedfs-filer:
         condition: service_healthy
@@ -125,7 +125,7 @@ services:
     cap_add:
       - SYS_ADMIN
     mem_limit: 4096m
-    command: '-v=4 mount -filer="seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT}" -dirAutoCreate -dir=/mnt/seaweedfs -cacheCapacityMB=100 -concurrentWriters=128'
+    command: '-v=4 mount -filer="seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888}" -dirAutoCreate -dir=/mnt/seaweedfs -cacheCapacityMB=100 -concurrentWriters=128'
     networks:
       - infra_net
     depends_on:

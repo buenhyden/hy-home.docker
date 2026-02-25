@@ -17,7 +17,7 @@ services:
     container_name: kafka-1
     hostname: kafka-1
     ports:
-      - '${KAFKA_CONTROLLER_1_HOST_PORT}:${KAFKA_CONTROLLER_PORT}'
+      - '${KAFKA_CONTROLLER_1_HOST_PORT:-9093}:${KAFKA_CONTROLLER_PORT:-9093}'
     environment:
       # --- KRaft 공통 ---
       # 클러스터 ID (3개 브로커 모두 동일해야 함)
@@ -72,7 +72,7 @@ services:
     container_name: kafka-2
     hostname: kafka-2
     ports:
-      - '${KAFKA_CONTROLLER_2_HOST_PORT}:${KAFKA_CONTROLLER_PORT}'
+      - '${KAFKA_CONTROLLER_2_HOST_PORT:-9095}:${KAFKA_CONTROLLER_PORT:-9093}'
     environment:
       CLUSTER_ID: ${KAFKA_CLUSTER_ID}
       KAFKA_NODE_ID: 2
@@ -113,7 +113,7 @@ services:
     container_name: kafka-3
     hostname: kafka-3
     ports:
-      - '${KAFKA_CONTROLLER_3_HOST_PORT}:${KAFKA_CONTROLLER_PORT}'
+      - '${KAFKA_CONTROLLER_3_HOST_PORT:-9097}:${KAFKA_CONTROLLER_PORT:-9093}'
     environment:
       CLUSTER_ID: ${KAFKA_CLUSTER_ID}
       KAFKA_NODE_ID: 3
@@ -163,7 +163,7 @@ services:
     expose:
       - 8081
     ports:
-      - '${SCHEMA_REGISTRY_HOST_PORT}:${SCHEMA_REGISTRY_PORT}'
+      - '${SCHEMA_REGISTRY_HOST_PORT:-8081}:${SCHEMA_REGISTRY_PORT:-8081}'
     depends_on:
       - kafka-1
       - kafka-2
@@ -189,7 +189,7 @@ services:
     networks:
       - infra_net
     ports:
-      - '${KAFKA_CONNECT_HOST_PORT}:${KAFKA_CONNECT_PORT}'
+      - '${KAFKA_CONNECT_HOST_PORT:-8083}:${KAFKA_CONNECT_PORT:-8083}'
     environment:
       CONNECT_BOOTSTRAP_SERVERS: 'kafka-1:9092,kafka-2:9092,kafka-3:9092'
       # Connect 클러스터 ID (그룹)
@@ -247,7 +247,7 @@ services:
     networks:
       - infra_net
     ports:
-      - '${KAFKA_REST_PROXY_HOST_PORT}:${KAFKA_REST_PROXY_PORT}'
+      - '${KAFKA_REST_PROXY_HOST_PORT:-8082}:${KAFKA_REST_PROXY_PORT:-8082}'
     environment:
       KAFKA_REST_HOST_NAME: kafka-rest-proxy
       KAFKA_REST_LISTENERS: 'http://0.0.0.0:8082'
@@ -283,7 +283,7 @@ services:
     expose:
       - 8080
     ports:
-      - '${KAFKA_UI_HOST_PORT}:${KAFKA_UI_PORT}' # Host -> Container
+      - '${KAFKA_UI_HOST_PORT:-18080}:${KAFKA_UI_PORT:-8080}' # Host -> Container
     depends_on:
       - kafka-1
       - kafka-2
@@ -303,7 +303,7 @@ services:
     environment:
       KAFKA_SERVER: 'kafka-1:9092,kafka-2:9092,kafka-3:9092'
     ports:
-      - '${KAFKA_EXPORTER_HOST_PORT}:${KAFKA_EXPORTER_PORT}'
+      - '${KAFKA_EXPORTER_HOST_PORT:-9308}:${KAFKA_EXPORTER_PORT:-9308}'
     networks:
       - infra_net
     depends_on:

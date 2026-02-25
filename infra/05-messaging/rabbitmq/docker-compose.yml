@@ -23,8 +23,8 @@ services:
     hostname: rabbitmq
     restart: unless-stopped
     ports:
-      - '${RABBITMQ_HOST_PORT}:${RABBITMQ_PORT}'
-      - '${RABBITMQ_MANAGEMENT_HOST_PORT}:${RABBITMQ_MANAGEMENT_PORT}'
+      - '${RABBITMQ_HOST_PORT:-5672}:${RABBITMQ_PORT:-5672}'
+      - '${RABBITMQ_MANAGEMENT_HOST_PORT:-15672}:${RABBITMQ_MANAGEMENT_PORT:-15672}'
     security_opt:
       - no-new-privileges:true
     cap_drop:

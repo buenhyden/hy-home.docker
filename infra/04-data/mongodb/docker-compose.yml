@@ -200,7 +200,7 @@ services:
       ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_CONFIG_BASICAUTH_USERNAME}
       ME_CONFIG_BASICAUTH_PASSWORD_FILE: /run/secrets/mongo_express_basicauth_password
     expose:
-      - ${MONGO_EXPRESS_PORT}
+      - ${MONGO_EXPRESS_PORT:-8081}
     labels:
       - 'traefik.enable=true'
       # mongo-express 라우터
@@ -208,7 +208,7 @@ services:
       - 'traefik.http.routers.mongo-express.rule=Host(`mongo-express.${DEFAULT_URL}`)'
       - 'traefik.http.routers.mongo-express.entrypoints=websecure'
       - 'traefik.http.routers.mongo-express.tls=true'
-      - 'traefik.http.services.mongo-express.loadbalancer.server.port=${MONGO_EXPRESS_PORT}'
+      - 'traefik.http.services.mongo-express.loadbalancer.server.port=${MONGO_EXPRESS_PORT:-8081}'
     networks:
       - infra_net
     depends_on:
@@ -229,7 +229,7 @@ services:
     image: percona/mongodb_exporter:2.37
     container_name: mongodb-exporter
     expose:
-      - ${MONGO_EXPORTER_PORT}
+      - ${MONGO_EXPORTER_PORT:-9216}
     entrypoint:
       - /bin/sh
       - -c

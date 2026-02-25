@@ -28,13 +28,13 @@ services:
     # ports:
     #   - "${OLLAMA_HOST_PORT}:${OLLAMA_PORT}"
     expose:
-      - ${OLLAMA_PORT}
+      - ${OLLAMA_PORT:-11434}
     volumes:
       - ollama-data:/root/.ollama
     environment:
       # [필수 추가] Ollama가 모든 네트워크 인터페이스(Docker 내부)에서 수신하도록 설정
       # 기본 포트가 11434라면 ${OLLAMA_PORT}는 11434와 일치해야 합니다.
-      - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT}
+      - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT:-11434}
       # [GPU 필수] 컨테이너가 할당된 GPU를 사용하도록 명시
       - NVIDIA_VISIBLE_DEVICES=all
     networks:
@@ -65,7 +65,7 @@ services:
       - 'traefik.http.routers.ollama.tls=true'
 
       # [중요] 내부 포트 11434 연결
-      - 'traefik.http.services.ollama.loadbalancer.server.port=${OLLAMA_PORT}'
+      - 'traefik.http.services.ollama.loadbalancer.server.port=${OLLAMA_PORT:-11434}'
       # [보안] Ollama API에 SSO 인증 추가 권장 (외부 접근 제어)
       - 'traefik.http.routers.ollama.middlewares=sso-auth@file'
     restart: unless-stopped
@@ -86,9 +86,9 @@ services:
     cap_drop:
       - ALL
     environment:
-      - OLLAMA_HOST=ollama:${OLLAMA_PORT}
+      - OLLAMA_HOST=ollama:${OLLAMA_PORT:-11434}
     expose:
-      - '${OLLAMA_EXPORTER_PORT}'
+      - '${OLLAMA_EXPORTER_PORT:-11435}'
     restart: unless-stopped
     networks:
       infra_net:

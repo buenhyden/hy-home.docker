@@ -21,9 +21,9 @@ x-airflow-common: &airflow-common
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: echo "postgresql+psycopg2://${AIRFLOW_DB_USER}:$$(cat /run/secrets/airflow_db_password)@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/airflow"
-    AIRFLOW__CELERY__RESULT_BACKEND_CMD: echo "db+postgresql://${AIRFLOW_DB_USER}:$$(cat /run/secrets/airflow_db_password)@${POSTGRES_HOSTNAME}:${POSTGRES_PORT}/airflow"
-    AIRFLOW__CELERY__BROKER_URL_CMD: echo "redis://:$$(cat /run/secrets/airflow_redis_password)@${REDIS_NODE_NAME}:${REDIS_PORT}/0"
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: echo "postgresql+psycopg2://${AIRFLOW_DB_USER}:$$(cat /run/secrets/airflow_db_password)@${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/airflow"
+    AIRFLOW__CELERY__RESULT_BACKEND_CMD: echo "db+postgresql://${AIRFLOW_DB_USER}:$$(cat /run/secrets/airflow_db_password)@${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/airflow"
+    AIRFLOW__CELERY__BROKER_URL_CMD: echo "redis://:$$(cat /run/secrets/airflow_valkey_password)@${VALKEY_MNG_HOSTNAME}:${VALKEY_PORT:-6379}/0"
     AIRFLOW__CORE__FERNET_KEY_CMD: cat /run/secrets/airflow_fernet_key
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false' # [보안] 프로덕션에서는 반드시 false
@@ -35,7 +35,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__WEBSERVER__BASE_URL: 'https://airflow.${DEFAULT_URL}'
     AIRFLOW__METRICS__STATSD_ON: 'true'
     AIRFLOW__METRICS__STATSD_HOST: 'airflow-statsd-exporter'
-    AIRFLOW__METRICS__STATSD_PORT: '${STATSD_AIRFLOW_PORT}'
+    AIRFLOW__METRICS__STATSD_PORT: '${STATSD_AIRFLOW_PORT:-9125}'
     AIRFLOW__METRICS__STATSD_PREFIX: 'airflow'
   volumes:
     - airflow-dags:/opt/airflow/dags
@@ -47,7 +47,7 @@ x-airflow-common: &airflow-common
     - airflow_db_password
     - airflow_fernet_key
     - airflow_www_password
-    - airflow_redis_password
+    - airflow_valkey_password
   logging:
     driver: 'json-file'
     options:
@@ -94,7 +94,7 @@ services:
     # ports:
     #   - "${AIRFLOW_HOST_PORT}:${AIRFLOW_PORT}"
     healthcheck:
-      test: ['CMD', 'curl', '--fail', 'http://localhost:${AIRFLOW_PORT}/api/v2/version']
+      test: ['CMD', 'curl', '--fail', 'http://localhost:${AIRFLOW_PORT:-8080}/api/v2/version']
       interval: 15s
       timeout: 30s
       retries: 5
@@ -109,7 +109,7 @@ services:
       - 'traefik.http.routers.airflow.rule=Host(`airflow.${DEFAULT_URL}`)'
       - 'traefik.http.routers.airflow.entrypoints=websecure'
       - 'traefik.http.routers.airflow.tls=true'
-      - 'traefik.http.services.airflow.loadbalancer.server.port=${AIRFLOW_PORT}' # Airflow UI 기본 포트
+      - 'traefik.http.services.airflow.loadbalancer.server.port=${AIRFLOW_PORT:-8080}' # Airflow UI 기본 포트
 
       # (선택 사항) Keycloak SSO를 적용하려면 아래 주석 해제
       # - "traefik.http.routers.airflow.middlewares=sso-auth@file"
@@ -303,7 +303,7 @@ services:
     # ports:
     #   - "${FLOWER_HOST_PORT}:${FLOWER_PORT}"
     healthcheck:
-      test: ['CMD', 'curl', '--fail', 'http://localhost:${FLOWER_PORT}/']
+      test: ['CMD', 'curl', '--fail', 'http://localhost:${FLOWER_PORT:-5555}/']
       interval: 15s
       timeout: 30s
       retries: 5
@@ -318,7 +318,7 @@ services:
       - 'traefik.http.routers.flower.rule=Host(`flower.${DEFAULT_URL}`)'
       - 'traefik.http.routers.flower.entrypoints=websecure'
       - 'traefik.http.routers.flower.tls=true'
-      - 'traefik.http.services.flower.loadbalancer.server.port=${FLOWER_PORT}'
+      - 'traefik.http.services.flower.loadbalancer.server.port=${FLOWER_PORT:-5555}'
 
       # [보안 권장] Flower는 기본 로그인 보안이 취약하므로 SSO 미들웨어를 붙이는 것이 좋습니다.
       - 'traefik.http.routers.flower.middlewares=sso-auth@file'
@@ -332,7 +332,7 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    command: '--statsd.listen-udp=:${STATSD_AIRFLOW_PORT} --web.listen-address=:${STATSD_PROMETHEUS_PORT} --statsd.mapping-config=/tmp/mappings.yml'
+    command: '--statsd.listen-udp=:${STATSD_AIRFLOW_PORT:-9125} --web.listen-address=:${STATSD_PROMETHEUS_PORT:-9102} --statsd.mapping-config=/tmp/mappings.yml'
     volumes:
       - ./config/statsd_mapping.yml:/tmp/mappings.yml:ro
     depends_on:
@@ -341,8 +341,8 @@ services:
     networks:
       - infra_net
     expose:
-      - '${STATSD_PROMETHEUS_PORT}'
-      - '${STATSD_AIRFLOW_PORT}'
+      - '${STATSD_PROMETHEUS_PORT:-9102}'
+      - '${STATSD_AIRFLOW_PORT:-9125}'
     logging: *default-logging
 
 secrets:
@@ -352,5 +352,5 @@ secrets:
     external: true
   airflow_www_password:
     external: true
-  airflow_redis_password:
+  airflow_valkey_password:
     external: true

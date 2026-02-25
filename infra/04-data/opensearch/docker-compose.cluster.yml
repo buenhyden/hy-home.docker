@@ -86,9 +86,9 @@ services:
       - opensearch_admin_password
     ports:
       # REST API (TLS on 기본) – Loki/Alloy에서 로그/메트릭 수집, 앱 연결
-      # - "${ES_HOST_1_PORT}:${ES_PORT}"
+      # - "${ES_HOST_PORT}:${ES_PORT}"
       # Performance Analyzer / 메트릭 포트
-      - '${ES_PERFORMANCE_ANALYZER_HOST_PORT}:${ES_PERFORMANCE_ANALYZER_PORT}'
+      - '${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}'
     labels:
       - 'traefik.enable=true'
       # 1. OpenSearch API 라우터 (https://opensearch.${DEFAULT_URL})
@@ -279,7 +279,7 @@ services:
     secrets:
       - opensearch_exporter_password
     ports:
-      - '${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}' # 9114
+      - '${ES_EXPORTER_HOST_PORT:-9114}:${ES_EXPORTER_PORT:-9114}' # 9114
     networks:
       infra_net:
         ipv4_address: 172.19.0.48
