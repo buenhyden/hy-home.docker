@@ -157,11 +157,11 @@ services:
       - infra_net
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:${SCHEMA_REGISTRY_PORT}'
+      SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:8081'
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-1:9092,PLAINTEXT://kafka-2:9092,PLAINTEXT://kafka-3:9092'
       # 기본 스키마 호환성 (필요에 따라 변경 가능)
     expose:
-      - ${SCHEMA_REGISTRY_PORT}
+      - 8081
     ports:
       - '${SCHEMA_REGISTRY_HOST_PORT}:${SCHEMA_REGISTRY_PORT}'
     depends_on:
@@ -215,7 +215,7 @@ services:
 
       # REST 리스너
       CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
-      CONNECT_REST_PORT: ${KAFKA_CONNECT_PORT}
+      CONNECT_REST_PORT: 8083
 
       # 플러그인 디렉터리 (커스텀 커넥터 넣고 싶을 때 사용)
       CONNECT_PLUGIN_PATH: '/usr/share/java,/usr/share/confluent-hub-components'
@@ -225,8 +225,8 @@ services:
       CONNECT_LOG4J_ROOT_LOGLEVEL: 'INFO'
       CONNECT_LOG4J_LOGGERS: 'org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR'
       # Schema Registry와 연동
-      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT}'
-      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT}'
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
     volumes:
       # 커스텀 커넥터가 있다면 여기에 마운트 (예: ./connect-plugins:/usr/share/confluent-hub-components)
       # - ./connect-plugins:/usr/share/confluent-hub-components
@@ -250,9 +250,9 @@ services:
       - '${KAFKA_REST_PROXY_HOST_PORT}:${KAFKA_REST_PROXY_PORT}'
     environment:
       KAFKA_REST_HOST_NAME: kafka-rest-proxy
-      KAFKA_REST_LISTENERS: 'http://0.0.0.0:${KAFKA_REST_PROXY_PORT}'
+      KAFKA_REST_LISTENERS: 'http://0.0.0.0:8082'
       KAFKA_REST_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-1:9092,PLAINTEXT://kafka-2:9092,PLAINTEXT://kafka-3:9092'
-      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT}'
+      KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081'
     depends_on:
       - kafka-1
       - kafka-2
@@ -276,12 +276,12 @@ services:
       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_NAME}
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:9092,kafka-2:9092,kafka-3:9092'
       # UI가 Schema Registry에 접속하는 주소 (컨테이너 내부 통신)
-      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: 'http://schema-registry:${SCHEMA_REGISTRY_PORT}'
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: 'http://schema-registry:8081'
       # UI가 Kafka Connect에 접속하는 주소 (컨테이너 내부 통신)
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: 'kafka-connect'
-      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: 'http://kafka-connect:${KAFKA_CONNECT_PORT}'
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: 'http://kafka-connect:8083'
     expose:
-      - ${KAFKA_UI_PORT}
+      - 8080
     ports:
       - '${KAFKA_UI_HOST_PORT}:${KAFKA_UI_PORT}' # Host -> Container
     depends_on:

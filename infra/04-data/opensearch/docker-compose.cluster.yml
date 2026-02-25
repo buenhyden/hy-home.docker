@@ -151,8 +151,8 @@ services:
     secrets:
       - opensearch_admin_password
     expose:
-      - '${ES_PORT}'
-      - '${ES_PERFORMANCE_ANALYZER_PORT}'
+      - '9200'
+      - '9600'
     networks:
       infra_net:
         ipv4_address: 172.19.0.45
@@ -202,8 +202,8 @@ services:
     secrets:
       - opensearch_admin_password
     expose:
-      - '${ES_PORT}'
-      - '${ES_PERFORMANCE_ANALYZER_PORT}'
+      - '9200'
+      - '9600'
     networks:
       infra_net:
         ipv4_address: 172.19.0.46
@@ -224,7 +224,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.47
     expose:
-      - '${KIBANA_PORT}' # Expose port 5601 for web access to OpenSearch Dashboards
+      - '5601' # Expose port 5601 for web access to OpenSearch Dashboards
     # ports:
     #   - "${KIBANA_HOST_PORT}:${KIBANA_PORT}"
     volumes:

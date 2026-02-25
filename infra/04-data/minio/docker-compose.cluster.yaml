@@ -9,10 +9,10 @@ x-logging: &default-logging
 x-minio-common: &minio-common
   image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
   # command: server --console-address ":${MINIO_CONSOLE_PORT}" http://minio{1...4}/data{1...2}
-  command: server --console-address ":${MINIO_CONSOLE_PORT}" http://minio{1...4}/data
+  command: server --console-address ":9001" http://minio{1...4}/data
   expose:
-    - ${MINIO_PORT}
-    - ${MINIO_CONSOLE_PORT}
+    - 9000
+    - 9001
   healthcheck:
     test: ['CMD', 'mc', 'ready', 'local']
     interval: 15s

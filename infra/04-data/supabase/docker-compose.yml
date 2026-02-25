@@ -83,8 +83,8 @@ services:
     image: kong:3.9.1
     restart: unless-stopped
     ports:
-      - ${SUPABASE_KONG_HTTP_PORT}:8000/tcp
-      - ${SUPABASE_KONG_HTTPS_PORT}:8443/tcp
+      - ${SUPABASE_KONG_HTTP_HOST_PORT}:8000/tcp
+      - ${SUPABASE_KONG_HTTPS_HOST_PORT}:8443/tcp
     volumes:
       - ./volumes/api/kong.yml:/home/kong/temp.yml:ro,z
     depends_on:
@@ -399,7 +399,7 @@ services:
     image: supabase/logflare:1.22.6
     restart: unless-stopped
     ports:
-      - 4000:4000
+      - ${SUPABASE_ANALYTICS_HOST_PORT}:4000
     healthcheck:
       test: ['CMD', 'curl', 'http://localhost:4000/health']
       interval: 15s
@@ -514,8 +514,8 @@ services:
     image: supabase/supavisor:2.7.4
     restart: unless-stopped
     ports:
-      - ${SUPABASE_POSTGRES_PORT}:5432
-      - ${SUPABASE_POOLER_PROXY_PORT_TRANSACTION}:6543
+      - ${SUPABASE_POSTGRES_HOST_PORT}:5432
+      - ${SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT}:6543
     volumes:
       - ./volumes/pooler/pooler.exs:/etc/pooler/pooler.exs:ro,z
     healthcheck:

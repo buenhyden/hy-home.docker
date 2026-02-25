@@ -86,7 +86,7 @@ services:
       - valkey-data-0:/data
     command: ['sh', '/usr/local/bin/valkey-start.sh']
     ports:
-      - '${VALKEY0_PORT}:${VALKEY0_PORT}'
+      - '${VALKEY0_HOST_PORT}:${VALKEY0_PORT}'
     expose:
       - ${VALKEY0_BUS_PORT}
     healthcheck:
@@ -131,7 +131,7 @@ services:
       - valkey-data-1:/data
     command: ['sh', '/usr/local/bin/valkey-start.sh']
     ports:
-      - '${VALKEY1_PORT}:${VALKEY1_PORT}'
+      - '${VALKEY1_HOST_PORT}:${VALKEY1_PORT}'
     expose:
       - ${VALKEY1_BUS_PORT}
     healthcheck:
@@ -175,7 +175,7 @@ services:
       - valkey-data-2:/data
     command: ['sh', '/usr/local/bin/valkey-start.sh']
     ports:
-      - '${VALKEY2_PORT}:${VALKEY2_PORT}'
+      - '${VALKEY2_HOST_PORT}:${VALKEY2_PORT}'
     expose:
       - ${VALKEY2_BUS_PORT}
     healthcheck:
@@ -219,7 +219,7 @@ services:
       - valkey-data-3:/data
     command: ['sh', '/usr/local/bin/valkey-start.sh']
     ports:
-      - '${VALKEY3_PORT}:${VALKEY3_PORT}'
+      - '${VALKEY3_HOST_PORT}:${VALKEY3_PORT}'
     expose:
       - ${VALKEY3_BUS_PORT}
     healthcheck:
@@ -263,7 +263,7 @@ services:
       - valkey-data-4:/data
     command: ['sh', '/usr/local/bin/valkey-start.sh']
     ports:
-      - '${VALKEY4_PORT}:${VALKEY4_PORT}'
+      - '${VALKEY4_HOST_PORT}:${VALKEY4_PORT}'
     expose:
       - ${VALKEY4_BUS_PORT}
     healthcheck:
@@ -307,7 +307,7 @@ services:
       - valkey-data-5:/data
     command: ['sh', '/usr/local/bin/valkey-start.sh']
     ports:
-      - '${VALKEY5_PORT}:${VALKEY5_PORT}'
+      - '${VALKEY5_HOST_PORT}:${VALKEY5_PORT}'
     expose:
       - ${VALKEY5_BUS_PORT}
     healthcheck:

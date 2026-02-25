@@ -29,7 +29,7 @@
 - `infra/04-data/mongodb/docker-compose.yml`: root/mongo-express/exporter 관련 비밀번호를 secrets 기반으로 전환
 - `infra/04-data/neo4j/docker-compose.yml`: `neo4j-entrypoint-with-secrets.sh` 추가, `NEO4J_AUTH`를 `neo4j_password` secret으로 주입
 - `infra/04-data/opensearch/docker-compose.cluster.yml`: `ELASTIC_PASSWORD` 의존 제거, admin/dashboard/exporter 비밀번호를 secrets 주입 방식으로 전환
-- `infra/07-workflow/airflow/docker-compose.yml`: Celery broker 비밀번호를 `airflow_redis_password` secret으로 전환
+- `infra/07-workflow/airflow/docker-compose.yml`: Celery broker 비밀번호를 `airflow_valkey_password` secret으로 전환
 - `infra/09-tooling/locust/docker-compose.yml`: InfluxDB token을 `influxdb_api_token` secret으로 주입
 - `infra/09-tooling/syncthing/docker-compose.yml`: `FILE__PASSWORD` 직접 주입 제거, `FILE__PASSWORD_FILE` + `syncthing_password` secret 사용
 
@@ -39,7 +39,7 @@
   - `mongodb_root_password`
   - `mongo_express_basicauth_password`
   - `neo4j_password`
-  - `airflow_redis_password`
+  - `airflow_valkey_password`
   - `syncthing_password`
 
 5. `.env.example`

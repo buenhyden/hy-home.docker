@@ -83,7 +83,7 @@ secrets:
     file: ./secrets/db/valkey/oauth2_password.txt
   terrakube_valkey_password:
     file: ./secrets/db/valkey/terrakube_password.txt
-  airflow_redis_password:
+  airflow_valkey_password:
     file: ./secrets/db/valkey/airflow_password.txt
   # ── MinIO ───────────────────────────────────────────────
   minio_root_password:
