@@ -142,14 +142,12 @@ flowchart TB
 ### .env 파일
 
 ```bash
-# MongoDB 인증
+# MongoDB 사용자명 (비밀번호는 Docker Secret 사용)
 MONGODB_ROOT_USERNAME=admin
-MONGODB_ROOT_PASSWORD=<secure_password>
 
 # Mongo Express
 MONGO_EXPRESS_PORT=8081
 MONGO_EXPRESS_CONFIG_BASICAUTH_USERNAME=admin
-MONGO_EXPRESS_CONFIG_BASICAUTH_PASSWORD=<password>
 
 # MongoDB Exporter
 MONGO_EXPORTER_PORT=9216
@@ -157,6 +155,11 @@ MONGO_EXPORTER_PORT=9216
 # 도메인
 DEFAULT_URL=127.0.0.1.nip.io
 ```
+
+### Docker Secret 파일
+
+- `secrets/db/mongodb/mongodb_root_password.txt` (`mongodb_root_password`)
+- `secrets/db/mongodb/mongo_express_basicauth_password.txt` (`mongo_express_basicauth_password`)
 
 ## 네트워크
 

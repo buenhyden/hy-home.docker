@@ -19,8 +19,12 @@
 
 - `SYNCTHING_SYNC_HOST_PORT`: 동기화 트래픽용 포트.
 - `SYNCTHING_GUI_PORT`: 웹 GUI용 포트.
-- `SYNCTHING_USERNAME`, `SYNCTHING_PASSWORD`: 웹 GUI 자격 증명.
+- `SYNCTHING_USERNAME`: 웹 GUI 계정 사용자명.
 - `PUID`, `PGID`: 파일 권한을 위한 사용자/그룹 ID.
+
+비밀번호는 `.env`가 아닌 Docker Secret 파일로 관리합니다:
+
+- `secrets/tools/syncthing_password.txt` (`syncthing_password`)
 
 ## 사용법
 

@@ -57,12 +57,15 @@ services:
       - bootstrap.memory_lock=true
       # 노드 역할: 클러스터 매니저 + 데이터 + 인제스트 + 원격 클러스터 클라이언트
       - node.roles=cluster_manager,data,ingest,remote_cluster_client
-      # 2.12+ 기준 보안 데모 구성에서 admin 패스워드 설정 (env 파일에서 가져옴)
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ELASTIC_PASSWORD}
       - plugins.security.ssl.http.enabled=true
       - plugins.security.ssl.http.pemcert_filepath=/usr/share/opensearch/config/certs/cert.pem
       - plugins.security.ssl.http.pemkey_filepath=/usr/share/opensearch/config/certs/key.pem
       - plugins.security.ssl.http.pemtrustedcas_filepath=/usr/share/opensearch/config/certs/rootCA.pem
+    command: >
+      bash -c "
+      export OPENSEARCH_INITIAL_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) &&
+      exec /usr/share/opensearch/opensearch-docker-entrypoint.sh
+      "
     ulimits:
       # 스왑 방지를 위해 memlock 무제한
       memlock:
@@ -79,6 +82,8 @@ services:
       - opensearch-data1:/usr/share/opensearch/data
       - opensearch_certs:/usr/share/opensearch/config/certs:ro
       - ./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
+    secrets:
+      - opensearch_admin_password
     ports:
       # REST API (TLS on 기본) – Loki/Alloy에서 로그/메트릭 수집, 앱 연결
       # - "${ES_HOST_1_PORT}:${ES_PORT}"
@@ -126,8 +131,12 @@ services:
       - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2,opensearch-node3
       - bootstrap.memory_lock=true
       - node.roles=cluster_manager,data,ingest,remote_cluster_client
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ELASTIC_PASSWORD}
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
+    command: >
+      bash -c "
+      export OPENSEARCH_INITIAL_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) &&
+      exec /usr/share/opensearch/opensearch-docker-entrypoint.sh
+      "
     ulimits:
       memlock:
         soft: -1
@@ -139,6 +148,8 @@ services:
     volumes:
       - opensearch-data2:/usr/share/opensearch/data
       - ./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
+    secrets:
+      - opensearch_admin_password
     expose:
       - '${ES_PORT}'
       - '${ES_PERFORMANCE_ANALYZER_PORT}'
@@ -171,8 +182,12 @@ services:
       - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2,opensearch-node3
       - bootstrap.memory_lock=true
       - node.roles=cluster_manager,data,ingest,remote_cluster_client
-      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${ELASTIC_PASSWORD}
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
+    command: >
+      bash -c "
+      export OPENSEARCH_INITIAL_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) &&
+      exec /usr/share/opensearch/opensearch-docker-entrypoint.sh
+      "
     ulimits:
       memlock:
         soft: -1
@@ -184,6 +199,8 @@ services:
     volumes:
       - opensearch-data3:/usr/share/opensearch/data
       - ./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
+    secrets:
+      - opensearch_admin_password
     expose:
       - '${ES_PORT}'
       - '${ES_PERFORMANCE_ANALYZER_PORT}'
@@ -215,10 +232,16 @@ services:
     environment:
       - 'OPENSEARCH_HOSTS=["https://opensearch-node1:9200","https://opensearch-node2:9200","https://opensearch-node3:9200"]'
       - OPENSEARCH_USERNAME=${ELASTIC_USERNAME}
-      - OPENSEARCH_PASSWORD=${ELASTIC_PASSWORD}
       # mkcert 기반 인증서(SAN 없음) 대응: 호스트 검증은 끄고 CA만 검증
       - OPENSEARCH_SSL_VERIFICATIONMODE=certificate
       - OPENSEARCH_SSL_CERTIFICATEAUTHORITIES=["/usr/share/opensearch-dashboards/config/rootCA.pem"]
+    command: >
+      bash -c "
+      export OPENSEARCH_PASSWORD=$$(cat /run/secrets/opensearch_dashboard_password) &&
+      exec /usr/share/opensearch-dashboards/bin/opensearch-dashboards
+      "
+    secrets:
+      - opensearch_dashboard_password
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -246,14 +269,15 @@ services:
     image: prometheuscommunity/elasticsearch-exporter:v1.10.0
     container_name: opensearch-exporter
     restart: unless-stopped
-    command:
-      - '--es.uri=https://opensearch-node1:9200' # 노드1을 바라봄
-      - '--es.all'
-      - '--es.indices'
-      - '--es.ssl-skip-verify' # OpenSearch 기본 TLS 인증서 검증 건너뛰기
+    command: >
+      bash -c "
+      export ES_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) &&
+      exec /bin/elasticsearch_exporter --es.uri=https://opensearch-node1:9200 --es.all --es.indices --es.ssl-skip-verify
+      "
     environment:
       - ES_USERNAME=${ELASTIC_USERNAME}
-      - ES_PASSWORD=${ELASTIC_PASSWORD}
+    secrets:
+      - opensearch_exporter_password
     ports:
       - '${ES_EXPORTER_HOST_PORT}:${ES_EXPORTER_PORT}' # 9114
     networks:
@@ -267,3 +291,11 @@ services:
       opensearch-node3:
         condition: service_healthy
     logging: *default-logging
+
+secrets:
+  opensearch_admin_password:
+    external: true
+  opensearch_dashboard_password:
+    external: true
+  opensearch_exporter_password:
+    external: true

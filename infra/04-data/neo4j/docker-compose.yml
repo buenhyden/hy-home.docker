@@ -22,9 +22,13 @@ services:
       # - "${NEO4J_HOST_HTTP_PORT}:${NEO4J_HTTP_PORT}"
       # - "${NEO4J_HOST_HTTPS_PORT}:${NEO4J_HTTPS_PORT}"
     environment:
-      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+      - NEO4J_USERNAME=${NEO4J_USERNAME:-neo4j}
+    entrypoint: ['/bin/sh', '/startup/neo4j-entrypoint-with-secrets.sh']
     volumes:
       - 'neo4j-volume:/bitnami/neo4j'
+      - ./scripts/neo4j-entrypoint-with-secrets.sh:/startup/neo4j-entrypoint-with-secrets.sh:ro
+    secrets:
+      - neo4j_password
     networks:
       - infra_net
     security_opt:
@@ -162,3 +166,7 @@ services:
   #   # This status can be checked using the "docker ps" command.
   #   healthcheck:
   #     test: ['CMD-SHELL', 'wget --no-verbose --tries=1 --spider localhost:7474 || exit 1']
+
+secrets:
+  neo4j_password:
+    external: true

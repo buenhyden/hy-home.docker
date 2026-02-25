@@ -19,7 +19,11 @@
 
 - `NEO4J_HOST_BOLT_PORT`: Bolt 프로토콜 호스트 포트.
 - `NEO4J_BOLT_PORT`: 컨테이너 Bolt 포트 (기본값 7687).
-- `NEO4J_PASSWORD`: 관리자 비밀번호.
+- `NEO4J_USERNAME`: 관리자 사용자명 (기본 `neo4j`).
+
+비밀번호는 `.env`가 아닌 Docker Secret 파일로 관리합니다:
+
+- `secrets/db/neo4j/neo4j_password.txt` (`neo4j_password`)
 
 ## 사용법
 

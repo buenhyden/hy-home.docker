@@ -26,9 +26,12 @@ x-minio-common: &minio-common
   cap_drop:
     - ALL
   logging: *default-logging
+  secrets:
+    - minio_root_username
+    - minio_root_password
   environment:
-    - MINIO_ROOT_USER=${DEFAULT_USERNAME}
-    - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
+    - MINIO_ROOT_USER_FILE=/run/secrets/minio_root_username
+    - MINIO_ROOT_PASSWORD_FILE=/run/secrets/minio_root_password
 
 # starts 4 docker containers running minio server instances.
 # using nginx reverse proxy, load balancing, you can access
@@ -113,3 +116,9 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_STORAGE_DIR}/minio/data4
+
+secrets:
+  minio_root_username:
+    external: true
+  minio_root_password:
+    external: true

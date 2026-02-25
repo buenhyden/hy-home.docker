@@ -63,7 +63,7 @@ secrets/
 | `patroni_superuser_password` | `db/postgres/patroni_superuser_password.txt` | PostgreSQL HA(Spilo/Patroni) superuser 비밀번호 |
 | `patroni_replication_password` | `db/postgres/patroni_replication_password.txt` | PostgreSQL HA(Spilo/Patroni) replication 비밀번호 |
 
-### 5. 인메모리 및 NoSQL (Valkey, InfluxDB, CouchDB)
+### 5. 인메모리 및 NoSQL (Valkey, InfluxDB, CouchDB, Cassandra, MongoDB, Neo4j)
 
 | Docker Secret Name | 파일 경로 | 용도 |
 |:---:|---|---|
@@ -76,6 +76,10 @@ secrets/
 | `influxdb_api_token` | `db/influxdb/influxdb_api_token.txt` | InfluxDB 관리자 액세스 토큰 |
 | `couchdb_password` | `db/couchdb/couchdb_password.txt` | CouchDB 클러스터 관리자 비밀번호 |
 | `couchdb_cookie` | `db/couchdb/couchdb_cookie.txt` | CouchDB Erlang 노드 간 인증 쿠키 |
+| `cassandra_password` | `db/cassandra/cassandra_password.txt` | Cassandra 클러스터 사용자 비밀번호 |
+| `mongodb_root_password` | `db/mongodb/mongodb_root_password.txt` | MongoDB ReplicaSet root 비밀번호 |
+| `mongo_express_basicauth_password` | `db/mongodb/mongo_express_basicauth_password.txt` | Mongo Express UI Basic Auth 비밀번호 |
+| `neo4j_password` | `db/neo4j/neo4j_password.txt` | Neo4j 관리자 비밀번호 |
 
 ### 6. 오브젝트 스토리지 (`storage/`)
 
@@ -100,6 +104,7 @@ secrets/
 |:---:|---|---|
 | `airflow_fernet_key` | `automation/airflow_fernet_key.txt` | Airflow Fernet 암호화 키 |
 | `airflow_www_password` | `automation/airflow_www_password.txt` | Airflow WebUI 초기 관리자 비밀번호 |
+| `airflow_redis_password` | `db/valkey/airflow_password.txt` | Airflow Celery broker(Redis/Valkey) 비밀번호 |
 | `n8n_encryption_key` | `automation/n8n_encryption_key.txt` | n8n 내부 데이터 암호화 키 |
 | `n8n_runner_auth_token` | `automation/n8n_runner_auth_token.txt` | n8n Worker 호스트 인증 토큰 |
 
@@ -110,6 +115,7 @@ secrets/
 | `sonarqube_admin_password` | `tools/sonarqube_admin_password.txt` | SonarQube 초기 관리자 비밀번호 |
 | `terrakube_pat_secret` | `tools/terrakube_pat_secret.txt` | Terrakube PAT 암호화 키 |
 | `terrakube_internal_secret` | `tools/terrakube_internal_secret.txt` | Terrakube API 서비스 간 통신 시크릿 |
+| `syncthing_password` | `tools/syncthing_password.txt` | Syncthing GUI 계정 비밀번호 |
 
 ### 10. BaaS 플랫폼 (Supabase)
 

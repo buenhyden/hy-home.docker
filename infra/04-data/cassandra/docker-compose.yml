@@ -68,13 +68,15 @@ services:
       # - CASSANDRA_CLUSTER_NAME=cassandra-cluster
       - CASSANDRA_PASSWORD_SEEDER=yes
       - CASSANDRA_USER=${DEFAULT_USERNAME}
-      - CASSANDRA_PASSWORD=${CASSANDRA_PASSWORD}
+      - CASSANDRA_PASSWORD_FILE=/run/secrets/cassandra_password
       # By default, Cassandra autodetects the available host memory and takes as much as it can.
       # Therefore, memory options are mandatory if multiple Cassandras are launched in the same node.
       - MAX_HEAP_SIZE=2G
       - HEAP_NEWSIZE=200M
     volumes:
       - cassandra-node1-volume:/bitnami/cassandra
+    secrets:
+      - cassandra_password
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -98,7 +100,7 @@ services:
   #     - CASSANDRA_CLUSTER_NAME=cassandra-cluster
   #     - CASSANDRA_PASSWORD_SEEDER=yes
   #     - CASSANDRA_USER=${DEFAULT_USERNAME}
-  #     - CASSANDRA_PASSWORD=${CASSANDRA_PASSWORD}
+  #     - CASSANDRA_PASSWORD_FILE=/run/secrets/cassandra_password
   #     # By default, Cassandra autodetects the available host memory and takes as much as it can.
   #     # Therefore, memory options are mandatory if multiple Cassandras are launched in the same node.
   #     - MAX_HEAP_SIZE=2G
@@ -107,3 +109,7 @@ services:
   #     - cassandra-node2-volume:/bitnami/cassandra
   #   depends_on:
   #     - cassandra-node1
+
+secrets:
+  cassandra_password:
+    external: true

@@ -17,40 +17,40 @@ services:
   # ----------------------------------------------------------------
   # Stalwart Mail Server (올인원 메일 서버)
   # ----------------------------------------------------------------
-  # stalwart:
-  #   image: stalwartlabs/stalwart:v0.14
-  #   container_name: stalwart
-  #   restart: always
-  #   # [포트 설정]
-  #   # 메일 프로토콜 포트는 Traefik을 통하지 않고 호스트에 직접 노출해야 합니다.
-  #   ports:
-  #     - "${SMTP_PORT}:${SMTP_PORT}"       # SMTP (서버 간 메일 전송 / 릴레이)
-  #     - "${SUBMISSION_PORT}:${SUBMISSION_PORT}"     # Submission (클라이언트 메일 발송 - StartTLS)
-  #     - "${SMTPS_PORT}:${SMTPS_PORT}"     # SMTPS (보안 메일 발송 - Implicit TLS)
-  #     - "${IMAPS_PORT}:${IMAPS_PORT}"     # IMAPS (메일 수신/확인)
-  #     - "${MANAGESIEVE_PORT}:${MANAGESIEVE_PORT}"   # ManageSieve (메일 필터링 규칙 관리)
-  #     # 8080 포트는 Traefik을 통해 라우팅하므로 주석 처리 (직접 접속 필요 시 해제)
-  #     # - "8080:8080"
+  stalwart:
+    image: stalwartlabs/stalwart:v0.14
+    container_name: stalwart
+    restart: always
+    # [포트 설정]
+    # 메일 프로토콜 포트는 Traefik을 통하지 않고 호스트에 직접 노출해야 합니다.
+    ports:
+      - "${SMTP_PORT}:${SMTP_PORT}"       # SMTP (서버 간 메일 전송 / 릴레이)
+      - "${SUBMISSION_PORT}:${SUBMISSION_PORT}"     # Submission (클라이언트 메일 발송 - StartTLS)
+      - "${SMTPS_PORT}:${SMTPS_PORT}"     # SMTPS (보안 메일 발송 - Implicit TLS)
+      - "${IMAPS_PORT}:${IMAPS_PORT}"     # IMAPS (메일 수신/확인)
+      - "${MANAGESIEVE_PORT}:${MANAGESIEVE_PORT}"   # ManageSieve (메일 필터링 규칙 관리)
+      # 8080 포트는 Traefik을 통해 라우팅하므로 주석 처리 (직접 접속 필요 시 해제)
+      # - "8080:8080"
 
-  #   # [데이터 영구 저장]
-  #   volumes:
-  #     - stalwart-data:/opt/stalwart
-  #     - stalwart_certs:/opt/stalwart/certs:ro
-  #   networks:
-  #     - infra_net
-  #   # [환경 변수] - 초기 관리자 계정 설정
-  #   environment:
-  #     - STALWART_ADMIN_USER=admin
-  #     - STALWART_ADMIN_PASSWORD=${STALWART_PASSWORD} # [중요] 최초 실행 후 반드시 변경하세요.
+    # [데이터 영구 저장]
+    volumes:
+      - stalwart-data:/opt/stalwart
+      - stalwart_certs:/opt/stalwart/certs:ro
+    networks:
+      - infra_net
+    # [환경 변수] - 초기 관리자 계정 설정
+    environment:
+      - STALWART_ADMIN_USER=admin
+      - STALWART_ADMIN_PASSWORD=${STALWART_PASSWORD} # [중요] 최초 실행 후 반드시 변경하세요.
 
-  #   # [Traefik 연동] - 관리자 웹 UI 라우팅
-  #   labels:
-  #     - "traefik.enable=true"
-  #     # 도메인 접속 설정 (http://mail.${DEFAULT_URL})
-  #     - "traefik.http.routers.stalwart-ui.rule=Host(`mail.${DEFAULT_URL}`)"
-  #     - "traefik.http.services.stalwart-ui.loadbalancer.server.port=${STALWART_PORT}"
-  #     # (선택) 웹 UI에 OAuth2 Proxy 인증을 걸고 싶다면 아래 주석 해제
-  #     # - "traefik.http.routers.stalwart-ui.middlewares=sso-auth@file"
+    # [Traefik 연동] - 관리자 웹 UI 라우팅
+    labels:
+      - "traefik.enable=true"
+      # 도메인 접속 설정 (http://mail.${DEFAULT_URL})
+      - "traefik.http.routers.stalwart-ui.rule=Host(`mail.${DEFAULT_URL}`)"
+      - "traefik.http.services.stalwart-ui.loadbalancer.server.port=${STALWART_PORT}"
+      # (선택) 웹 UI에 OAuth2 Proxy 인증을 걸고 싶다면 아래 주석 해제
+      # - "traefik.http.routers.stalwart-ui.middlewares=sso-auth@file"
   mailhog:
     profiles:
       - mail

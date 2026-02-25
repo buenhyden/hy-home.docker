@@ -46,11 +46,13 @@ services:
     hostname: mongodb-rep1
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb_root_password
     # 볼륨 설정
     volumes:
       - mongodb1-data:/data/db:rw
       - mongo-key:/data/configdb:ro
+    secrets:
+      - mongodb_root_password
     command:
       - '--replSet'
       - 'MyReplicaSet'
@@ -81,11 +83,13 @@ services:
     hostname: mongodb-rep2
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb_root_password
     # 볼륨 설정
     volumes:
       - mongodb2-data:/data/db:rw
       - mongo-key:/data/configdb:ro
+    secrets:
+      - mongodb_root_password
     command:
       - '--replSet'
       - 'MyReplicaSet'
@@ -155,7 +159,8 @@ services:
       bash -c "
         echo 'Waiting for servers to be ready...';
         sleep 5;
-        mongosh --host mongodb-rep1 -u ${MONGODB_ROOT_USERNAME} -p ${MONGODB_ROOT_PASSWORD} --eval '
+        export MONGO_ROOT_PASSWORD=$$(cat /run/secrets/mongodb_root_password | tr -d '\n');
+        mongosh --host mongodb-rep1 -u ${MONGODB_ROOT_USERNAME} -p $$MONGO_ROOT_PASSWORD --eval '
           try {
             rs.status();
             print(\"Replica set already initialized\");
@@ -172,6 +177,8 @@ services:
           }
         '
       "
+    secrets:
+      - mongodb_root_password
     logging: *default-logging
 
   # ============================================================================
@@ -186,12 +193,12 @@ services:
       ME_CONFIG_MONGODB_ENABLE_ADMIN: true
       ME_CONFIG_MONGODB_AUTH_DATABASE: admin
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_ROOT_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_ADMINPASSWORD_FILE: /run/secrets/mongodb_root_password
 
       ME_CONFIG_MONGODB_SERVER: mongodb-rep1,mongodb-rep2,mongodb-arbiter
       ME_CONFIG_MONGODB_REPLICA_SET: MyReplicaSet
       ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_CONFIG_BASICAUTH_USERNAME}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_CONFIG_BASICAUTH_PASSWORD}
+      ME_CONFIG_BASICAUTH_PASSWORD_FILE: /run/secrets/mongo_express_basicauth_password
     expose:
       - ${MONGO_EXPRESS_PORT}
     labels:
@@ -207,6 +214,9 @@ services:
     depends_on:
       mongo-init:
         condition: service_completed_successfully
+    secrets:
+      - mongodb_root_password
+      - mongo_express_basicauth_password
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -220,16 +230,21 @@ services:
     container_name: mongodb-exporter
     expose:
       - ${MONGO_EXPORTER_PORT}
-    command:
-      # [수정] 변수명 통일 (NOSQL_ROOT_USER -> MONGODB_ROOT_USERNAME) 및 Connection String 정리
-      - '--mongodb.uri=mongodb://${MONGODB_ROOT_USERNAME}:${MONGODB_ROOT_PASSWORD}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin'
-      # (선택) 컬렉션 수집 활성화
-      - '--collect.collection'
-      - '--collect.database'
-      - '--collect.indexusage'
+    entrypoint:
+      - /bin/sh
+      - -c
+    command: >
+      export MONGO_ROOT_PASSWORD=$$(cat /run/secrets/mongodb_root_password | tr -d '\n') &&
+      exec mongodb_exporter
+      --mongodb.uri="mongodb://${MONGODB_ROOT_USERNAME}:$${MONGO_ROOT_PASSWORD}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin"
+      --collect.collection
+      --collect.database
+      --collect.indexusage
     depends_on:
       mongo-init:
         condition: service_completed_successfully
+    secrets:
+      - mongodb_root_password
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -237,3 +252,9 @@ services:
     networks:
       - infra_net
     logging: *default-logging
+
+secrets:
+  mongodb_root_password:
+    external: true
+  mongo_express_basicauth_password:
+    external: true

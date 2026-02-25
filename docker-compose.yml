@@ -61,6 +61,17 @@ secrets:
     file: ./secrets/db/postgres/patroni_superuser_password.txt
   patroni_replication_password:
     file: ./secrets/db/postgres/patroni_replication_password.txt
+  # ── Cassandra ───────────────────────────────────────────
+  cassandra_password:
+    file: ./secrets/db/cassandra/cassandra_password.txt
+  # ── MongoDB ─────────────────────────────────────────────
+  mongodb_root_password:
+    file: ./secrets/db/mongodb/mongodb_root_password.txt
+  mongo_express_basicauth_password:
+    file: ./secrets/db/mongodb/mongo_express_basicauth_password.txt
+  # ── Neo4j ───────────────────────────────────────────────
+  neo4j_password:
+    file: ./secrets/db/neo4j/neo4j_password.txt
   # ── Valkey / Redis ─────────────────────────────────────
   n8n_valkey_password:
     file: ./secrets/db/valkey/n8n_password.txt
@@ -72,6 +83,8 @@ secrets:
     file: ./secrets/db/valkey/oauth2_password.txt
   terrakube_valkey_password:
     file: ./secrets/db/valkey/terrakube_password.txt
+  airflow_redis_password:
+    file: ./secrets/db/valkey/airflow_password.txt
   # ── MinIO ───────────────────────────────────────────────
   minio_root_password:
     file: ./secrets/storage/minio_root_password.txt
@@ -111,6 +124,9 @@ secrets:
     file: ./secrets/tools/terrakube_pat_secret.txt
   terrakube_internal_secret:
     file: ./secrets/tools/terrakube_internal_secret.txt
+  # ── Tooling: Syncthing ──────────────────────────────────
+  syncthing_password:
+    file: ./secrets/tools/syncthing_password.txt
 
   # ── Data: Supabase ──────────────────────────────────────
   supabase_jwt_secret:

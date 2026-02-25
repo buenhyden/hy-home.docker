@@ -18,6 +18,7 @@ This folder is necessary to encapsulate build, test, and environment scaffolding
 
 - `scripts/validate-docker-compose.sh`: Validates root Compose config by creating temporary dummy prerequisites (secrets files) and running `docker compose config`.
 - `scripts/preflight-compose.sh`: Checks local bootstrap prerequisites (`.env`, cert files, secrets, mount directories, optional external networks) before `docker compose up -d`.
+  - Optional-stack-only secrets (e.g., Cassandra/MongoDB/Neo4j/Syncthing) are reported as `WARN` instead of hard failure.
 - `scripts/generate-local-certs.sh`: Generates mkcert-based local TLS files at `secrets/certs/{rootCA.pem,cert.pem,key.pem}`.
 
 ## 4. Agent Workflow Standardization

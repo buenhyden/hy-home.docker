@@ -7,7 +7,9 @@
 ### 1. Accessing Dashboards
 
 - **URL**: `https://opensearch-dashboard.${DEFAULT_URL}`
-- **Credentials**: user: `${ELASTIC_USERNAME}` / pass: `${ELASTIC_PASSWORD}`
+- **Credentials**:
+  - username: `${OPENSEARCH_DASHBOARD_USERNAME:-admin}` (or `${ELASTIC_USERNAME}` for cluster profile)
+  - password secret: `secrets/data/opensearch_dashboard_password.txt` (`opensearch_dashboard_password`)
 
 ### 2. Accessing API
 

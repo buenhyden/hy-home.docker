@@ -19,9 +19,12 @@
 이 서비스는 다음 환경 변수(`.env`에 정의됨)를 사용합니다:
 
 - `DEFAULT_USERNAME`: Cassandra 사용자.
-- `CASSANDRA_PASSWORD`: Cassandra 비밀번호.
 - `CASSANDRA_EXPORTER_PORT`: Exporter 포트.
 - `DEFAULT_DATABASE_DIR`: 영구 저장을 위한 기본 디렉토리.
+
+비밀번호는 `.env`가 아닌 Docker Secret 파일로 관리합니다:
+
+- `secrets/db/cassandra/cassandra_password.txt` (`cassandra_password`)
 
 ## 사용법
 

@@ -23,27 +23,42 @@
 - Fixed healthchecks to use the actual container env var (`$${COUCHDB_USER}`) instead of undefined `$${COUCHDB_USERNAME}`.
 - Removed invalid keys accidentally nested under `secrets.couchdb_cookie` (`logging`, `deploy`) that break compose schema validation for standalone file checks.
 
-3. `.env.example`
-- Added missing variables referenced by compose files so active interpolation coverage is complete across root + infra compose files.
-- Added optional stack defaults/placeholders for:
-  - Cassandra, CouchDB, MongoDB, Neo4j, SeaweedFS
-  - Kafka controller host ports
-  - OpenSearch cluster credentials/cluster name
-  - MinIO optional password var
-  - Airflow `_AIRFLOW_WWW_USER_USERNAME`
-  - Locust and Syncthing ports/credentials
-  - Optional directory roots (`DEFAULT_DATABASE_DIR`, `DEFAULT_STORAGE_DIR`, `DEFAULT_RESOURCES_DIR`, `DEFAULT_SYNCTHING_DIR`)
+3. Secret migration (`password/token` -> Docker secrets files)
+- `infra/04-data/cassandra/docker-compose.yml`: `CASSANDRA_PASSWORD` -> `CASSANDRA_PASSWORD_FILE=/run/secrets/cassandra_password`
+- `infra/04-data/minio/docker-compose.cluster.yaml`: root 계정/비밀번호를 `MINIO_ROOT_USER_FILE`, `MINIO_ROOT_PASSWORD_FILE`로 전환
+- `infra/04-data/mongodb/docker-compose.yml`: root/mongo-express/exporter 관련 비밀번호를 secrets 기반으로 전환
+- `infra/04-data/neo4j/docker-compose.yml`: `neo4j-entrypoint-with-secrets.sh` 추가, `NEO4J_AUTH`를 `neo4j_password` secret으로 주입
+- `infra/04-data/opensearch/docker-compose.cluster.yml`: `ELASTIC_PASSWORD` 의존 제거, admin/dashboard/exporter 비밀번호를 secrets 주입 방식으로 전환
+- `infra/07-workflow/airflow/docker-compose.yml`: Celery broker 비밀번호를 `airflow_redis_password` secret으로 전환
+- `infra/09-tooling/locust/docker-compose.yml`: InfluxDB token을 `influxdb_api_token` secret으로 주입
+- `infra/09-tooling/syncthing/docker-compose.yml`: `FILE__PASSWORD` 직접 주입 제거, `FILE__PASSWORD_FILE` + `syncthing_password` secret 사용
+
+4. `docker-compose.yml` (root secrets registry)
+- 신규 secret registry 항목 추가:
+  - `cassandra_password`
+  - `mongodb_root_password`
+  - `mongo_express_basicauth_password`
+  - `neo4j_password`
+  - `airflow_redis_password`
+  - `syncthing_password`
+
+5. `.env.example`
+- 전체 compose interpolation 변수 누락을 `0`으로 유지.
+- secret 파일로 전환된 민감 변수(`*_PASSWORD`, token 등)는 `.env.example`에서 제거.
+- 비민감 변수(포트/호스트/사용자명)만 템플릿에 유지.
 
 ## Result Summary
 
 - Missing active compose interpolation vars vs `.env.example`: `0`
 - Root stack config render with template env: success
 - YAML lint for compose files: success
+- `password/token` 계열의 주요 optional stack 설정이 Docker secrets 파일 기준으로 통일됨
 
 ## Notes
 
 - Many infra compose files are designed to be included by root `docker-compose.yml` and therefore rely on root-defined networks/secrets (`infra_net`, secrets registry). Standalone `-f <service compose>` execution may still require additional top-level declarations by design.
 - `infra/09-tooling/syncthing/docker-compose.yml` references `nt-sync`, `nt-webserver`, `nt-observability` networks without local declarations. This is valid only when those networks are pre-created by external orchestration.
+- `scripts/preflight-compose.sh` now treats optional-stack-only secret files as `WARN` to avoid blocking core stack bootstrap.
 
 ## Repro Commands
 

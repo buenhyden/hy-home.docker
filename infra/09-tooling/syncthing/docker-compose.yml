@@ -35,7 +35,9 @@ services:
       - PGID=1000
 
       - FILE__USER=${SYNCTHING_USERNAME}
-      - FILE__PASSWORD=${SYNCTHING_PASSWORD}
+      - FILE__PASSWORD_FILE=/run/secrets/syncthing_password
+    secrets:
+      - syncthing_password
     volumes:
       - syncthing-volume:/var/syncthing:rw
       - resources-contents-volume:/Sync:rw
@@ -70,3 +72,7 @@ services:
       - nt-sync
       - nt-webserver
       - nt-observability
+
+secrets:
+  syncthing_password:
+    external: true

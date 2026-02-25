@@ -23,12 +23,17 @@ services:
       - LOCUST_INFLUXDB_PORT=${INFLUXDB_PORT}
       - LOCUST_INFLUXDB_ORG=${INFLUXDB_ORG}
       - LOCUST_INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
-      - LOCUST_INFLUXDB_TOKEN=${INFLUXDB_API_TOKEN}
     volumes:
       - locust-data:/mnt/locust
     networks:
       - infra_net
-    command: -f /mnt/locust/locustfile.py --master
+    secrets:
+      - influxdb_api_token
+    command: >
+      /bin/sh -c "
+      export LOCUST_INFLUXDB_TOKEN=$$(cat /run/secrets/influxdb_api_token | tr -d '\n') &&
+      exec locust -f /mnt/locust/locustfile.py --master
+      "
     depends_on:
       influxdb:
         condition: service_healthy
@@ -48,12 +53,17 @@ services:
       - LOCUST_INFLUXDB_PORT=${INFLUXDB_PORT}
       - LOCUST_INFLUXDB_ORG=${INFLUXDB_ORG}
       - LOCUST_INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
-      - LOCUST_INFLUXDB_TOKEN=${INFLUXDB_API_TOKEN}
     volumes:
       - locust-data:/mnt/locust
     networks:
       - infra_net
-    command: -f /mnt/locust/locustfile.py --worker --master-host locust-master
+    secrets:
+      - influxdb_api_token
+    command: >
+      /bin/sh -c "
+      export LOCUST_INFLUXDB_TOKEN=$$(cat /run/secrets/influxdb_api_token | tr -d '\n') &&
+      exec locust -f /mnt/locust/locustfile.py --worker --master-host locust-master
+      "
     depends_on:
       locust-master:
         condition: service_healthy
@@ -66,3 +76,7 @@ services:
     cap_drop:
       - ALL
     logging: *default-logging
+
+secrets:
+  influxdb_api_token:
+    external: true

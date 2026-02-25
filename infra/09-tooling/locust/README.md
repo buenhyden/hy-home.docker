@@ -20,7 +20,11 @@
 이 서비스는 다음 환경 변수(`.env`에 정의됨)를 사용합니다:
 
 - `LOCUST_HOST_PORT`: Locust 웹 인터페이스 호스트 포트.
-- `INFLUXDB_PORT`, `INFLUXDB_ORG`, `INFLUXDB_BUCKET`, `INFLUXDB_API_TOKEN`: InfluxDB 연결 정보.
+- `INFLUXDB_PORT`, `INFLUXDB_ORG`, `INFLUXDB_BUCKET`: InfluxDB 연결 정보.
+
+토큰은 `.env`가 아닌 Docker Secret 파일로 관리합니다:
+
+- `secrets/db/influxdb/influxdb_api_token.txt` (`influxdb_api_token`)
 
 ## 사용법
 
