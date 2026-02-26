@@ -32,15 +32,21 @@
 | **SEV-2** | Critical degradation (DB/Data) | Response within 4 hours | [Incident History](operations/incidents/) |
 | **SEV-3** | Minor/Intermittent issue | Log to GitHub Issues | N/A |
 
-## 4. Change & Release Gates
+## 4. Observability & Monitoring
 
-모든 인프라 변경(Change)은 아래 관문을 통과해야 합니다.
+- **Log Centralization**: All services MUST utilize the `loki` driver. Queries are performed via [Grafana Explore](https://grafana.${DEFAULT_URL}/explore).
+- **Metric Collection**: Prometheus scrapes exporters every 15s. Standard dashboards are located in [`infra/06-observability/grafana/dashboards/`](infra/06-observability/grafana/dashboards/).
+- **Alerting**: Alertmanager routes SEV-1/2 alerts to Slack/Email. See [`runbooks/alerting/`](runbooks/alerting/) for logic.
 
-1. **Spec Sync**: 해당 PRD/ARD에 대응하는 [`specs/`](specs/) 업데이트 완료.
-2. **Preflight**: [`scripts/preflight-compose.sh`](scripts/preflight-compose.sh) 통과 여부 확인.
-3. **Risk Scoring**: 중대한 아키텍처 변경 시 `[REQ-RSK-04]`에 따른 위험도 평가 수행.
+## 5. Backup & Disaster Recovery
 
-## 5. References
+- **DB Snapshots**: Automated nightly dumps for PostgreSQL and OpenSearch located at `/mnt/backup/db/`.
+- **Secret Backups**: Encrypted copies of `.env` and `secrets/` stored in an isolated, offline-first tier.
+- **Recovery SLO**: Restoration of core Auth/Gateway services MUST be achievable within 30 minutes from L2/L3 hardware.
+
+## 6. Change & Release Gates
+
+## 7. References
 
 - **Infra Lifecycle**: [`docs/context/core/infra-lifecycle-ops.md`](docs/context/core/infra-lifecycle-ops.md)
 - **Security Policy**: [`.github/SECURITY.md`](.github/SECURITY.md)

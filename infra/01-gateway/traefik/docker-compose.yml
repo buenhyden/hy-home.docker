@@ -1,13 +1,21 @@
 name: traefik
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
-x-restart: &default-restart
-  restart: unless-stopped
+x-optimizations:
+  security-baseline: &security-baseline
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+  logging-loki: &logging-loki
+    driver: loki
+    options:
+      loki-url: 'http://localhost:3100/loki/api/v1/push'
+      loki-external-labels: 'job=infra,container={{.Name}}'
+  labels-base: &labels-base
+    hy-home.scope: infra
+    observability.logs: 'true'
+  restart-base: &default-restart
+    restart: unless-stopped
 
 volumes:
   traefik_certs:
@@ -19,7 +27,7 @@ volumes:
 
 services:
   traefik:
-    <<: *default-restart
+    <<: [*default-restart, *security-baseline]
     deploy:
       resources:
         limits:
@@ -31,11 +39,9 @@ services:
     image: traefik:v3.6.8
     container_name: traefik
     hostname: traefik
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     read_only: true
+    tmpfs:
+      - /tmp
     ports:
       - ${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}
       - ${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}
@@ -49,15 +55,14 @@ services:
     command:
       - '--configFile=/etc/traefik/traefik.yml'
     labels:
-      - 'traefik.enable=true'
-      - 'hy-home.scope=infra'
-      - 'hy-home.tier=gateway'
-      - 'observability.logs=true'
-      - 'traefik.http.routers.dashboard.rule=Host(`dashboard.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.dashboard.entrypoints=websecure'
-      - 'traefik.http.routers.dashboard.service=api@internal'
-      - 'traefik.http.routers.dashboard.tls=true'
-      - 'traefik.http.routers.dashboard.middlewares=dashboard-auth@file'
+      <<: *labels-base
+      traefik.enable: 'true'
+      hy-home.tier: gateway
+      traefik.http.routers.dashboard.rule: Host(`dashboard.${DEFAULT_URL}`)
+      traefik.http.routers.dashboard.entrypoints: websecure
+      traefik.http.routers.dashboard.service: api@internal
+      traefik.http.routers.dashboard.tls: 'true'
+      traefik.http.routers.dashboard.middlewares: dashboard-auth@file
     healthcheck:
       test: ['CMD', 'traefik', 'healthcheck', '--ping']
       interval: 15s
@@ -74,11 +79,7 @@ services:
     secrets:
       - traefik_basicauth_password
       - traefik_opensearch_basicauth_password
-    logging:
-      driver: 'loki'
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=traefik,tier=gateway'
+    logging: *logging-loki
 
 secrets:
   traefik_basicauth_password:

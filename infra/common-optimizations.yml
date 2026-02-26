@@ -1,0 +1,21 @@
+# Hy-Home System Optimization Templates
+# This file is intended to be included in other docker-compose files to provide common anchors.
+
+x-security-baseline: &security-baseline
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+x-logging-loki: &logging-loki
+  driver: loki
+  options:
+    loki-url: "http://localhost:3100/loki/api/v1/push"
+    loki-external-labels: "job=infra,container={{.Name}}"
+
+x-labels-base: &labels-base
+  hy-home.scope: infra
+  observability.logs: "true"
+
+x-restart: &default-restart
+  restart: unless-stopped

@@ -1,33 +1,43 @@
-# PRD: Home Lab System Optimization [REQ-OPT-001]
+# PRD: Hy-Home System Optimization (2026-Q1)
 
-## Vision
+## 1. Vision
 
-Transform the `hy-home.docker` environment into a high-performance, secure, and observable infrastructure that minimizes manual intervention and maximizes resource efficiency.
+To establish a high-performance, secure, and observable home server infrastructure that serves as a robust foundation for development and AI workflows.
 
-## Personas
+## 2. Personas
 
-- **Platform Engineer (Hy)**: Needs fast deployment cycles and automated verification.
-- **SRE (Hy)**: Needs deep visibility into system health and resource metrics.
+- **Developer (Hy)**: Needs a fast, reliable environment for deploying and testing services.
+- **Platform Engineer**: Needs easy maintenance, clear observability, and standardized security.
 
-## Success Metrics [REQ-SPT-01]
+## 3. Success Metrics [REQ-SPT-01]
 
-- **[MET-01] Build Latency**: Reduce full stack build time (bootstrap to ready) to < 10 minutes.
-- **[MET-02] Security Compliance**: Achieve 100% Docker Secrets usage for all sensitive variables.
-- **[MET-03] SLO Consistency**: Maintain > 99.9% uptime for core gateway/auth services.
+- **Security**: 100% of core services MUST have non-root execution and minimal capabilities.
+- **Observability**: 100% of services MUST have logs integrated into Loki.
+- **Resource**: System-wide resource usage targets (TBD based on baseline).
+- **Deployment**: `docker compose up` time reduced by 20% through optimized dependencies and healthchecks.
 
-## Scope
+## 4. Use Cases
 
-- **In-Scope**: Docker Compose optimization, Security hardening (Secrets/Network), Observability (LGTM), Resource limits.
-- **Out-of-Scope**: Migration to Kubernetes, hardware-level virtualization changes.
+- [UC-01] Standardized service deployment with baseline security.
+- [UC-02] Real-time log and metric analysis across all infrastructure tiers.
+- [UC-03] Automated resource bottleneck identification.
 
-## Use Cases
+## 5. Scope
 
-- **Scenario 1**: Developer updates a core database configuration. The system should rebuild only affected layers and verify integrity within 2 minutes.
-- **Scenario 2**: A resource spike occurs in an AI container. Observability stack triggers an alert and limits the blast radius.
+- **In-Scope**: `infra/` directory services, root `docker-compose.yml`, observability stack hardening.
+- **Out-of-Scope**: Application-level logic updates, Kubernetes migration (handled separately).
 
-## Milestones
+## 6. Requirements
 
-1. **M1**: Analysis and Documentation (Completed)
-2. **M2**: Build and Layer Optimization (Completed)
-3. **M3**: Security and Network Hardening (Completed)
-4. **M4**: Observability and Resource Limit implementation (Completed)
+| ID | Requirement | Persona | Priority |
+| :--- | :--- | :--- | :--- |
+| REQ-001 | Security Hardening (no-new-privileges, cap_drop) | Platform Engineer | Critical |
+| REQ-002 | Standardized Loki Logging | Developer | High |
+| REQ-003 | Resource Limit Normalization | Platform Engineer | Medium |
+| REQ-004 | Healthcheck and Dependency Optimization | Developer | Medium |
+
+## 7. Acceptance Criteria [REQ-SPT-06]
+
+- **AC-1**: All `docker-compose.yml` files in `infra/` must pass a security audit (no dangerous capabilities).
+- **AC-2**: Grafana logs dashboard shows entries for all running services without configuration errors.
+- **AC-3**: Service startup sequence is deterministic and avoids race conditions.

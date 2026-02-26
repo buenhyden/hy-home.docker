@@ -1,13 +1,21 @@
 name: mng-db
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
-x-restart: &default-restart
-  restart: unless-stopped
+x-optimizations:
+  security-baseline: &security-baseline
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+  logging-loki: &logging-loki
+    driver: loki
+    options:
+      loki-url: 'http://localhost:3100/loki/api/v1/push'
+      loki-external-labels: 'job=infra,container={{.Name}}'
+  labels-base: &labels-base
+    hy-home.scope: infra
+    observability.logs: 'true'
+  restart-base: &default-restart
+    restart: unless-stopped
 
 volumes:
   mng-pg-data:
@@ -60,20 +68,15 @@ services:
         reservations:
           cpus: '0.2'
           memory: 256M
-    image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
+    image: valkey/valkey:9.0.2-alpine
     container_name: mng-valkey
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *labels-base]
     secrets:
       - mng_valkey_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.70
-    <<: *default-restart
     volumes:
-      # 공통 valkey.conf
       - mng-valkey-data:/data
     command: >
       sh -c '
@@ -82,7 +85,6 @@ services:
       --appendonly yes
       --port 6379
       '
-    # 클러스터 내부 통신 포트는 expose
     expose:
       - '${VALKEY_PORT:-6379}'
       - '${VALKEY_BUS_PORT:-16379}'
@@ -96,11 +98,9 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging:
-      driver: 'loki'
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=mng-valkey,tier=data'
+    labels:
+      - 'hy-home.tier=data'
+    logging: *logging-loki
 
   mng-valkey-exporter:
     deploy:
@@ -113,15 +113,13 @@ services:
           memory: 64M
     image: oliver006/redis_exporter:v1.81.0-alpine
     container_name: mng-valkey-exporter
-    security_opt:
-      - no-new-privileges:true
+    <<: [*default-restart, *security-baseline, *labels-base]
     read_only: true
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.71
-    <<: *default-restart
     secrets:
       - mng_valkey_password
     entrypoint:
@@ -133,19 +131,16 @@ services:
         export VALKEY_PASSWORD=$(cat /run/secrets/mng_valkey_password | tr -d '\n')
 
         echo "Starting Redis Exporter..."
-        # -redis.password-file 대신 -redis.password 사용
         exec /redis_exporter \
           -redis.addr=redis://mng-valkey:6379 \
           -redis.password="$$VALKEY_PASSWORD" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
-    depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
+    depends_on:
       mng-valkey:
         condition: service_healthy
-    logging:
-      driver: 'loki'
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=mng-valkey-exporter,tier=data'
+    labels:
+      - 'hy-home.tier=data'
+    logging: *logging-loki
 
   redisinsight:
     deploy:
@@ -155,34 +150,22 @@ services:
           memory: 512M
     image: redis/redisinsight:3.0.3
     container_name: redisinsight
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    <<: *default-restart
+    <<: [*default-restart, *security-baseline]
     networks:
       infra_net:
         ipv4_address: 172.19.0.68
-    # ports:
-    #   - "${REDIS_INSIGHT_HOST_PORT}:${REDIS_INSIGHT_PORT}" # 호스트에서 GUI 웹페이지에 접근할 포트
     volumes:
       - redisinsight-data:/db
     labels:
-      - 'traefik.enable=true'
-      # 도메인: redisinsight.${DEFAULT_URL}
-      - 'traefik.http.routers.redisinsight.rule=Host(`redisinsight.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.redisinsight.entrypoints=websecure'
-      - 'traefik.http.routers.redisinsight.tls=true'
-      # Keycloak 인증 미들웨어 적용 (이 한 줄로 보안 적용 끝)
-      - 'traefik.http.routers.redisinsight.middlewares=sso-auth@file'
-      # [중요] RedisInsight 기본 포트 5540 (또는 8001) 확인 필요
-      # 최신 이미지는 보통 5540을 사용합니다.
-      - 'traefik.http.services.redisinsight.loadbalancer.server.port=${REDIS_INSIGHT_PORT:-8001}'
-    logging:
-      driver: 'loki'
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=redisinsight,tier=data'
+      <<: *labels-base
+      traefik.enable: 'true'
+      hy-home.tier: data
+      traefik.http.routers.redisinsight.rule: Host(`redisinsight.${DEFAULT_URL}`)
+      traefik.http.routers.redisinsight.entrypoints: websecure
+      traefik.http.routers.redisinsight.tls: 'true'
+      traefik.http.routers.redisinsight.middlewares: sso-auth@file
+      traefik.http.services.redisinsight.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-8001}
+    logging: *logging-loki
 
   mng-pg:
     deploy:
@@ -195,22 +178,11 @@ services:
           memory: 512M
     image: postgres:17-bookworm
     container_name: mng-pg
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    <<: *default-restart
+    <<: [*default-restart, *security-baseline]
     networks:
       infra_net:
         ipv4_address: 172.19.0.72
-    # set shared memory limit when using docker compose
     shm_size: 256mb
-    # or set shared memory limit when deploy via swarm stack
-    # volumes:
-    #  - type: tmpfs
-    #    target: /dev/shm
-    #    tmpfs:
-    #      size: 134217728 # 128*2^20 bytes = 128Mb
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/mng_postgres_password
       POSTGRES_USER: ${POSTGRES_USER}
@@ -230,11 +202,10 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging:
-      driver: 'loki'
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=mng-pg,tier=data'
+    labels:
+      <<: *labels-base
+      hy-home.tier: data
+    logging: *logging-loki
 
   mng-pg-init:
     deploy:

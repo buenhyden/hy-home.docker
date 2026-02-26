@@ -1,13 +1,21 @@
 name: keycloak
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
-x-restart: &default-restart
-  restart: unless-stopped
+x-optimizations:
+  security-baseline: &security-baseline
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+  logging-loki: &logging-loki
+    driver: loki
+    options:
+      loki-url: 'http://localhost:3100/loki/api/v1/push'
+      loki-external-labels: 'job=infra,container={{.Name}}'
+  labels-base: &labels-base
+    hy-home.scope: infra
+    observability.logs: 'true'
+  restart-base: &default-restart
+    restart: unless-stopped
 
 volumes:
   keycloak-config:
@@ -41,12 +49,8 @@ services:
           memory: 512M
     image: quay.io/keycloak/keycloak:26.5.4
     container_name: keycloak
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline]
     hostname: keycloak
-    <<: *default-restart
     volumes:
       - keycloak-themes:/opt/keycloak/themes
       - keycloak-config:/opt/keycloak/conf
@@ -80,28 +84,25 @@ services:
       KC_DB_POOL_MAX_SIZE: 10
       KC_METRICS_ENABLED: true
       KC_HEALTH_ENABLED: true
-
       # Java 옵션을 통해 Quarkus(Agroal)의 유효성 검사 강제 설정
       # 1. idle 상태가 5분 지나면 연결 끊음 (DB 타임아웃보다 짧게)
       # 2. 연결 가져올 때 유효성 검사 수행 (background)
       JAVA_OPTS_APPEND: '-Dquarkus.datasource.jdbc.idle-removal-interval=5M -Dquarkus.datasource.jdbc.background-validation-interval=1M'
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.keycloak.rule=Host(`keycloak.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.keycloak.entrypoints=websecure'
-      - 'traefik.http.routers.keycloak.tls=true'
-      - 'traefik.http.services.keycloak.loadbalancer.server.port=8080'
+      <<: *labels-base
+      traefik.enable: 'true'
+      hy-home.tier: auth
+      traefik.http.routers.keycloak.rule: Host(`keycloak.${DEFAULT_URL}`)
+      traefik.http.routers.keycloak.entrypoints: websecure
+      traefik.http.routers.keycloak.tls: 'true'
+      traefik.http.services.keycloak.loadbalancer.server.port: '8080'
     networks:
       infra_net:
         ipv4_address: 172.19.0.29
     secrets:
       - keycloak_db_password
       - keycloak_admin_password
-    logging:
-      driver: 'loki'
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=keycloak,tier=auth'
+    logging: *logging-loki
 
 networks:
   infra_net:
