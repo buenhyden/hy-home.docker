@@ -6,37 +6,29 @@ This directory is the absolute **Source of Truth** for the During-Development ph
 
 Specifications are organized by domain to ensure clarity and ease of navigation.
 
-### 🔐 Auth & Integration
-
-- [auth-integration/](file:///home/hy/projects/hy-home.docker/specs/auth-integration/): Keycloak, OAuth2-Proxy, and SSO integration specs.
-
 ### 🏗️ Infrastructure (`specs/infra/`)
 
-Core infrastructure specifications and planning.
+Core infrastructure implementation details, partitioned by deployment sequence.
 
-- [compose-readiness/](file:///home/hy/projects/hy-home.docker/specs/infra/compose-readiness/): "Core stack boot-ready" prerequisites and verification.
-- [resource-budgets/](file:///home/hy/projects/hy-home.docker/specs/infra/resource-budgets/): Standardized CPU/Memory limits for core services.
-- [security-consistency/](file:///home/hy/projects/hy-home.docker/specs/infra/security-consistency/): Rootless, `cap_drop`, and `no-new-privileges` standardization.
-- [startup-automation/](file:///home/hy/projects/hy-home.docker/specs/infra/startup-automation/): Resource optimization for Supabase and Makefile-based startup automation.
-- [alloy-telemetry/](file:///home/hy/projects/hy-home.docker/specs/infra/alloy-telemetry/): Alloy-based monitoring and telemetry collection.
-- [gateway-routing/](file:///home/hy/projects/hy-home.docker/specs/infra/gateway-routing/): Traefik routing and dynamic configuration.
-- [rag-stack/](file:///home/hy/projects/hy-home.docker/specs/infra/rag-stack/): Vector database (Qdrant) and AI-related infra components.
+- [baseline/](file:///home/hy/projects/hy-home.docker/specs/infra/baseline/spec.md): Root orchestration, kernel hardening, and Day-0 bootstrap.
+- [automation/](file:///home/hy/projects/hy-home.docker/specs/infra/automation/spec.md): Autonomous sidecars, resource limits, and self-provisioning dashboards.
 
 ## 2. Path to Implementation
 
-1. **Draft**: Planner Agent creates `spec.md` and `plan.md`.
+1. **Draft**: AI Planner Agent creates `spec.md` and `plan.md` in a feature folder.
 2. **Approve**: Human Developer reviews and approves the spec.
-3. **Execute**: Coder Agent implements changes following the `plan.md`.
+3. **Execute**: AI Coder Agent implements changes following the spec.
 4. **Verify**: Automated scripts and manual checks confirm success.
 
-## 3. Golden Rules for AI Agents
+## 3. Compliance Standard (`[REQ-SPT-05]`)
 
-**NO SPEC, NO CODE.**
-Coder Agents MUST NOT write code without an approved specification in this folder.
+Every `spec.md` in this directory MUST contain:
 
-- **Traceability**: Every coding change MUST map back to a requirement (e.g., `REQ-OPT-001`) in a `spec.md`.
-- **Drift Prevention**: If technical debt or limitations force a plan change, the `spec.md` MUST be updated first.
+- **Section 0**: Mandatory governance checklists.
+- **Section 5**: 3+ Given-When-Then Acceptance Criteria for core requirements (Rule `[REQ-SPT-10]`).
+- **Section 7**: A detailed Verification Plan (Unit/Integration/E2E).
+- **Section 8/9**: Quantified NFRs and Operational procedures.
 
 ---
-> [!TIP]
-> Use `scripts/validate-docker-compose.sh` to ensure your specification changes maintain syntax integrity across the entire stack.
+> [!IMPORTANT]
+> **NO SPEC, NO CODE.** Coder Agents MUST NOT modify infrastructure without an approved specification.
