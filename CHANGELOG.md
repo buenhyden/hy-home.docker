@@ -120,6 +120,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Establish system optimization guidelines using YAML anchors, Loki logging, and resource guardrails.
 - Implement multi-stage Docker builds and centralize common Docker Compose optimizations.
 - Introduce new architecture, requirements, and technical specifications for AI, messaging, and data platforms, enhancing infrastructure reliability and observability.
+- Centralize common Docker Compose configurations for logging, security, and resource management into `common-optimizations.yml` and apply them across services.
+- Centralize Docker Compose configurations by introducing a common optimizations file and a global baseline specification.
 
 ### Changed
 
@@ -143,6 +145,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standardize Docker Compose service labels and restructure runbooks into a new service-oriented format.
 - Standardize Docker Compose label definitions using `<<: *labels-base`, explicitly define `hy-home.tier` for services, and update Traefik's tier.
 - Centralize Docker Compose configurations into `common-optimizations.yml` and optimize OpenSearch Dockerfile caching.
+- Embed common Docker Compose optimization anchors directly into service files and remove the shared include.
+- Restructure infrastructure specifications to a new structured format and rename the global baseline spec.
 
 ### Docs
 
@@ -315,6 +319,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - Add .gitkeep files to various secrets subdirectories for version control.
+- **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
 
@@ -324,6 +329,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Build
 
 - Add default values for environment variables across various docker-compose configurations.
+- Standardize infrastructure baseline by introducing a global spec and streamlining Docker Compose configurations.
 
 ### Ci
 
