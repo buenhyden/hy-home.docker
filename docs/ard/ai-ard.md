@@ -1,5 +1,5 @@
 ---
-title: 'Local AI Stack Architecture Reference Document (ARD)'
+title: '[ARD-AI-01] Local AI Stack Architecture Reference'
 status: 'Approved'
 version: '1.0.0'
 owner: 'Platform Architect'
@@ -8,7 +8,7 @@ adr_references: ['../adr/adr-0005-sidecar-resource-initialization.md']
 tags: ['ard', 'ai', 'ollama', 'rag', 'qdrant']
 ---
 
-# Local AI Stack Architecture Reference Document (ARD)
+# [ARD-AI-01] Local AI Stack Architecture Reference
 
 _Target Directory: `docs/ard/ai-ard.md`_
 

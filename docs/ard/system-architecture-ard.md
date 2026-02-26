@@ -1,4 +1,4 @@
-# ARD: Hy-Home Infrastructure Target Architecture (ARD-001)
+# [ARD-CORE-01] Infrastructure Target Architecture Reference
 
 ## 1. Overview
 

@@ -1,5 +1,5 @@
 ---
-title: 'Hy-Home Infrastructure Baseline Product Requirements Document'
+title: '[PRD-BASE-01] Infrastructure Baseline PRD'
 status: 'Approved'
 version: 'v1.0.0'
 owner: 'Platform Architect'
@@ -7,7 +7,7 @@ stakeholders: ['DevOps Team', 'Home-Lab Users']
 tags: ['prd', 'requirements', 'baseline', 'infra']
 ---
 
-# Product Requirements Document (PRD)
+# [PRD-BASE-01] Infrastructure Baseline PRD
 
 > **Status**: Approved
 > **Target Version**: v1.0.0
@@ -66,7 +66,7 @@ _Target Directory: `docs/prd/infra-baseline-prd.md`_
 
 ## 6. Technical Specifications
 
-- **Technical Specification**: [Infra Baseline Spec](../../specs/infra/baseline/spec.md)
+- **Technical Specification**: [Infra Baseline Spec](../../../../../specs/infra/baseline/spec.md)
 
 ## 7. Milestones & Roadmap
 

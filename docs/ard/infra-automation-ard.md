@@ -1,4 +1,4 @@
-# Phase 2 ARD: Scaling & Autonomous Patterns
+# [ARD-AUTO-01] Scaling & Autonomous Patterns Reference Document
 
 _Target Directory: `docs/ard/infra-automation-ard.md`_
 

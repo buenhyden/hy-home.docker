@@ -1,10 +1,21 @@
 name: nginx
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+x-optimizations:
+  security-baseline: &security-baseline
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+  logging-loki: &logging-loki
+    driver: loki
+    options:
+      loki-url: 'http://localhost:3100/loki/api/v1/push'
+      loki-external-labels: 'job=infra,container={{.Name}}'
+  labels-base: &labels-base
+    hy-home.scope: infra
+    observability.logs: 'true'
+  restart-base: &default-restart
+    restart: unless-stopped
 
 volumes:
   nginx-logs:
@@ -21,11 +32,7 @@ services:
       - nginx
     image: nginx:alpine
     container_name: nginx
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    restart: unless-stopped
+    <<: [*default-restart, *security-baseline]
     ports:
       - ${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}
       - ${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}
@@ -44,7 +51,10 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
+    labels:
+      <<: *labels-base
+      hy-home.tier: gateway
+    logging: *logging-loki
     deploy:
       resources:
         limits:

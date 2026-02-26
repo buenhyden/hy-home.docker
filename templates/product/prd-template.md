@@ -107,6 +107,6 @@ _Note: This document defines the What and Why. It must be approved before Spec g
 
 ## 11. Related Documents (Reference / Traceability)
 
-- **Technical Specification**: [Link to Spec](../../specs/<feature>/spec.md)
-- **API Specification**: [Link to API Spec](../../specs/<feature>/api/<feature>-api.md)
+- **Technical Specification**: [Link to Spec](../../../specs/<feature>/spec.md)
+- **API Specification**: [Link to API Spec](../../../specs/<feature>/api/<feature>-api.md)
 - **Architecture Decisions (ADRs)**: [Link to ADRs](../../docs/adr/README.md)

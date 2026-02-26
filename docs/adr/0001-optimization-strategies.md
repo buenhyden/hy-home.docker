@@ -2,22 +2,22 @@
 
 ## Status
 
-Proposed
+Approved
 
 ## Context
 
-The current Hy-Home infrastructure consists of multiple Docker Compose sub-stacks integrated via the `include` directive. While functional, there is a lack of standardization in security (caps/privileges), observability (logging drivers), and resource limits.
+The previous Hy-Home infrastructure integrated multiple Docker Compose sub-stacks via the `include` directive. However, it lacked standardization in security capabilities, observability drivers, and resource boundaries, leading to inconsistent security postures across tiers.
 
 ## Decision [REQ-SPT-09]
 
-We SHALL implement the following optimization strategies:
+We SHALL implement the following optimization strategies to fulfill **[REQ-SYS-01]** and **[REQ-SYS-02]**:
 
-1. **YAML Anchors for Standardization**: Use YAML anchors/aliases in the root `docker-compose.yml` or shared configuration files to define `x-logging`, `x-security`, and `x-resource` templates.
-2. **Minimal Capabilities Policy**: Every service MUST explicitly drop all capabilities and only add required ones (e.g., `NET_BIND_SERVICE`).
-3. **Loki-First Logging**: The `loki` logging driver SHALL be the primary driver for all services, with a `json-file` fallback where necessary.
-4. **Deterministic Healthchecks**: Refine `depends_on` conditions to use `service_healthy` to ensure ordered startup and reduce initial failure noise.
+1. **Local YAML Anchors**: Every tier-specific `docker-compose.yml` SHALL define a local `x-optimizations` block with anchors for `&security-baseline` and `&logging-loki` to ensure reliable expansion.
+2. **Minimal Capabilities Policy**: All infrastructure services MUST explicitly drop all capabilities (`cap_drop: ALL`) and utilize `no-new-privileges: true`.
+3. **Loki-Integrated Logging**: The `loki` logging driver MUST be the primary telemetry channel for all containers, providing unified metadata via `hy-home.tier` labels.
+4. **Deterministic Orchestration**: Service dependencies SHALL be enforced via `service_healthy` conditions to ensure reliable startup order.
 
-## Consequences
+## Consequences [REQ-SPT-05]
 
-- **Positive**: Improved security posture, centralized log management, better resource predictability.
-- **Negative**: Increased complexity in template management, potential for service-specific capability issues during initial rollout.
+- **Positive**: Uniform security across all tiers, predictable resource consumption, and simplified log aggregation.
+- **Negative**: Increased YAML boilerplate in localized compose files to overcome Docker Compose scoping limitations.

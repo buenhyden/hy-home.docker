@@ -1,43 +1,38 @@
-# PRD: Hy-Home System Optimization (2026-Q1)
+# [PRD-SYS-01] Hy-Home System Optimization
 
 ## 1. Vision
 
-To establish a high-performance, secure, and observable home server infrastructure that serves as a robust foundation for development and AI workflows.
+Establish a high-performance, secure, and observable home server infrastructure that provides a deterministic foundation for both AI workloads and standard development workflows.
 
-## 2. Personas
+## 2. Personas [REQ-SPT-08]
 
-- **Developer (Hy)**: Needs a fast, reliable environment for deploying and testing services.
-- **Platform Engineer**: Needs easy maintenance, clear observability, and standardized security.
+- **Persona: Hy (Developer)**: Wants a fast, reliable local environment where services are pre-integrated with security and logging by default.
+- **Persona: Platform Architect**: Requires a standardized configuration model that reduces technical debt and simplifies cross-tier auditing.
 
 ## 3. Success Metrics [REQ-SPT-01]
 
-- **Security**: 100% of core services MUST have non-root execution and minimal capabilities.
-- **Observability**: 100% of services MUST have logs integrated into Loki.
-- **Resource**: System-wide resource usage targets (TBD based on baseline).
-- **Deployment**: `docker compose up` time reduced by 20% through optimized dependencies and healthchecks.
+- **Metric-01 (Security)**: 100% of services SHALL pass a `docker inspect` audit verifying `no-new-privileges: true` and `cap_drop: ALL`.
+- **Metric-02 (Observability)**: 100% of infrastructure logs MUST be indexed in Loki with `hy-home.tier` metadata tags.
+- **Metric-03 (Performance)**: Cold startup time for the core gateway (NGINX/Traefik) SHALL be < 15 seconds.
 
-## 4. Use Cases
+## 4. Use Cases [REQ-SPT-04]
 
-- [UC-01] Standardized service deployment with baseline security.
-- [UC-02] Real-time log and metric analysis across all infrastructure tiers.
-- [UC-03] Automated resource bottleneck identification.
+- **[UC-SYS-01]**: A developer deploys a new database service, and it automatically inherits Loki logging and security constraints via include-templates.
+- **[UC-SYS-02]**: An architect monitors real-time resource contention across the 'data' and 'observability' tiers using unified Grafana dashboards.
 
 ## 5. Scope
 
-- **In-Scope**: `infra/` directory services, root `docker-compose.yml`, observability stack hardening.
-- **Out-of-Scope**: Application-level logic updates, Kubernetes migration (handled separately).
+- **In-Scope**: `infra/` service refactoring, root orchestration hardening, metadata standardization, and local YAML anchor strategy.
+- **Out-of-Scope**: Application-level logic, external cloud provider integration, or migration to Kubernetes.
 
-## 6. Requirements
+## 6. Requirements [REQ-SPT-03]
 
-| ID | Requirement | Persona | Priority |
-| :--- | :--- | :--- | :--- |
-| REQ-001 | Security Hardening (no-new-privileges, cap_drop) | Platform Engineer | Critical |
-| REQ-002 | Standardized Loki Logging | Developer | High |
-| REQ-003 | Resource Limit Normalization | Platform Engineer | Medium |
-| REQ-004 | Healthcheck and Dependency Optimization | Developer | Medium |
+- **[REQ-SYS-01]**: The system SHALL provide standardized YAML anchors for security baselines to prevent configuration drift.
+- **[REQ-SYS-02]**: Every service MUST be integrated with the Loki logging driver with job-specific labels.
+- **[REQ-SYS-03]**: Service startup MUST be ordered via `service_healthy` conditions to prevent race conditions.
 
-## 7. Acceptance Criteria [REQ-SPT-06]
+## 7. Acceptance Criteria [REQ-SPT-10] [REQ-SPT-06]
 
-- **AC-1**: All `docker-compose.yml` files in `infra/` must pass a security audit (no dangerous capabilities).
-- **AC-2**: Grafana logs dashboard shows entries for all running services without configuration errors.
-- **AC-3**: Service startup sequence is deterministic and avoids race conditions.
+- **AC-1 (Given-When-Then)**: Given a running service, When queried via `docker inspect`, Then `CapDrop` MUST contain `ALL`.
+- **AC-2**: Given the Loki dashboard, When logs are generated, Then they MUST contain the `hy-home.tier` label matching the service directory.
+- **AC-3**: Given a full stack start, When `docker compose up` is executed, Then the Gateway SHALL only start after the Identity Provider is healthy.

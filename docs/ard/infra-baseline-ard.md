@@ -1,4 +1,4 @@
-# Hy-Home Infrastructure Baseline ARD
+# [ARD-BASE-01] Infrastructure Baseline Reference Document
 
 _Target Directory: `docs/ard/infra-baseline-ard.md`_
 

@@ -1,5 +1,5 @@
 ---
-title: 'Observability Stack Architecture Reference Document (ARD)'
+title: '[ARD-OBS-01] Observability Stack Architecture Reference'
 status: 'Approved'
 version: '1.0.0'
 owner: 'Platform Architect'
@@ -8,7 +8,7 @@ adr_references: ['../adr/adr-0005-sidecar-resource-initialization.md']
 tags: ['ard', 'observability', 'lgtm', 'alloy']
 ---
 
-# Observability Stack Architecture Reference Document (ARD)
+# [ARD-OBS-01] Observability Stack Architecture Reference
 
 _Target Directory: `docs/ard/observability-ard.md`_
 

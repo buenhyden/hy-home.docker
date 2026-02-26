@@ -1,22 +1,35 @@
-# ARD: Optimized Home Lab Architecture Review
+# [ARD-SYS-01] Optimized Infrastructure Architecture Reference
 
-## Architecture Overview
+## 1. System Topology
 
-The system is a multi-tier Docker Compose environment organized into functional clusters (Gateway, Security, Data, Messaging, Observability, AI).
+The Hy-Home infrastructure utilizes a multi-tier, isolated container topology to minimize blast radius and ensure operational stability.
 
-## Optimized Tiers
+### 1.1 Infrastructure Tiers
 
-1. **Tier 1 (Gateway)**: HA Traefik with automatic TLS and internal routing.
-2. **Tier 2 (Core Logic)**: Auth (Keycloak) and Security (Vault) isolation.
-3. **Tier 3 (Data Persistence)**: Clustered DBs with resource limits and backup schedules.
-4. **Tier 4 (Observability)**: LGTM stack with centralized log collection from Tiers 1-3.
+- **Tier 1 (Gateway)**: Core ingress tier (Traefik/NGINX) handling TLS termination and internal routing.
+- **Tier 2 (Identity & Auth)**: Keycloak and OAuth2 Proxy managing centralized OIDC authentication.
+- **Tier 3 (Stateful Data)**: Dedicated clusters for PostgreSQL, Valkey, and MinIO with isolated network segments.
+- **Tier 4 (Observability Stack)**: Unified LGTM pipeline (Loki, Grafana, Tempo, Alloyl) collecting cross-tier telemetry.
 
-## Resource Strategy
+## 2. Standardization Patterns [SPEC-SYS-01]
 
-- **Limits**: Every container has configured `deploy.resources.limits` (cpus, memory) and `reservations` to prevent resource exhaustion.
-- **Enforcement**: Docker Compose native resource constraints applied across all architecture tiers.
+To ensure consistency across heterogeneous service stacks, the following architectural patterns are enforced:
 
-## Security Controls
+### 2.1 Configuration Inheritance (Yamal Anchors)
 
-- **Secrets**: 100% Docker Secrets adoption. Verified that sensitive data is mounted under `/run/secrets/`.
-- **Infrastructure**: Service isolation via functional compose tiers, with logging centralized to Loki for auditability.
+Implementation SHALL utilize local configuration blocks (`x-optimizations`) to provide:
+
+- **`&security-baseline`**: Universal cap-drop and privilege escalation protection.
+- **`&logging-loki`**: Standardized push-based log collection.
+- **`&labels-base`**: Automated schema-compliant metadata injection.
+
+### 2.2 Telemetry Architecture
+
+- **Logs**: Containers MUST emit structured logs via the Loki driver.
+- **Metrics**: Exporters SHALL expose OTLP/Prometheus endpoints on the `infra_net` for scrapers.
+- **Traces**: Distributed tracing (Tempo) handles request-level correlation between Tier 1 and Tier 2.
+
+## 3. Security Boundaries
+
+- **Network Strategy**: Direct container-to-container access is restricted via tier-specific user-defined networks.
+- **Credential Lifecycle**: 100% of sensitive material MUST be managed via Docker Secrets mounted at runtime, as per **[ADR-009]**.

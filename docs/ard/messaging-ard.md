@@ -1,5 +1,5 @@
 ---
-title: 'Messaging Infrastructure Architecture Reference Document (ARD)'
+title: '[ARD-MSG-01] Messaging Infrastructure Architecture Reference'
 status: 'Approved'
 version: '1.0.0'
 owner: 'Platform Architect'
@@ -8,7 +8,7 @@ adr_references: ['../adr/adr-0001-root-orchestration-include.md']
 tags: ['ard', 'messaging', 'infra', 'kafka', 'rabbitmq']
 ---
 
-# Messaging Infrastructure Architecture Reference Document (ARD)
+# [ARD-MSG-01] Messaging Infrastructure Architecture Reference
 
 _Target Directory: `docs/ard/messaging-ard.md`_
 
@@ -66,7 +66,7 @@ C4Container
 
 - **Availability**: 99.9% (3-node minimum for production-like durability).
 - **Latency**: < 10ms for producer acknowledgement.
-- **Durability**: `min.insync.replicas=2` enforced via Sidecars (see [automation spec](../../specs/infra/automation/spec.md)).
+- **Durability**: `min.insync.replicas=2` enforced via Sidecars (see [automation spec](../../../../../specs/infra/automation/spec.md)).
 
 ## 9. Architectural Principles & Trade-offs
 

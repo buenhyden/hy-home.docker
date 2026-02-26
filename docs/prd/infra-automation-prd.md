@@ -1,5 +1,5 @@
 ---
-title: 'Infrastructure Automation & Advanced Operations PRD'
+title: '[PRD-AUTO-01] Infrastructure Automation PRD'
 status: 'Draft'
 version: 'v1.1.0'
 owner: 'Platform Architect'
@@ -7,7 +7,7 @@ stakeholders: ['Platform Team']
 tags: ['prd', 'requirements', 'automation', 'phase2']
 ---
 
-# Product Requirements Document (PRD)
+# [PRD-AUTO-01] Infrastructure Automation PRD
 
 > **Status**: Draft
 > **Target Version**: v1.1.0
@@ -59,4 +59,4 @@ _Target Directory: `docs/prd/infra-automation-prd.md`_
 
 ## 6. Technical Specifications
 
-- **Technical Specification**: [Infra Automation Spec](../../specs/infra/automation/spec.md)
+- **Technical Specification**: [Infra Automation Spec](../../../../../specs/infra/automation/spec.md)
