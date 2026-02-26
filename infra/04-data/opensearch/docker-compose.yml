@@ -35,6 +35,13 @@ services:
     container_name: opensearch
     <<: *default-restart
     # 비밀번호, 클러스터 이름, JVM 옵션 등은 env 파일에서 주입
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          memory: 1G
     environment:
       # JVM Heap 설정
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
@@ -120,6 +127,8 @@ services:
       resources:
         limits:
           memory: 512M
+        reservations:
+          memory: 256M
     <<: *default-restart
     networks:
       infra_net:

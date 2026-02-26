@@ -55,6 +55,12 @@ discovery.relabel "docker_logs_relabel" {
   }
 
   rule {
+    source_labels = ["__meta_docker_network_name"]
+    regex         = "project_net|infra_net"
+    action        = "keep"
+  }
+
+  rule {
     source_labels = ["service_name"]
     regex         = "prometheus|loki|tempo|grafana|alloy|cadvisor|alertmanager|pushgateway|traefik"
     target_label  = "scope"

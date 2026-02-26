@@ -1,12 +1,11 @@
 apiVersion: 1
 
 providers:
-  - name: 'default'
+  - name: "Standard Dashboards"
     orgId: 1
-    folder: ''
+    folder: ""
     type: file
     disableDeletion: false
-    updateIntervalSeconds: 10
-    allowUiUpdates: false
+    editable: true
     options:
       path: /etc/grafana/dashboards

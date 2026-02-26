@@ -112,6 +112,13 @@ services:
     <<: *kafka-broker-common
     container_name: kafka-1
     hostname: kafka-1
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 1.5G
+        reservations:
+          memory: 1G
     networks:
       infra_net:
         ipv4_address: 172.19.0.20
@@ -490,6 +497,32 @@ services:
       retries: 5
       start_period: 30s
     logging: *default-logging
+  kafka-init:
+    image: confluentinc/cp-kafka:8.1.1
+    container_name: kafka-init
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - infra_net
+    depends_on:
+      kafka-1:
+        condition: service_healthy
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        echo "Creating internal topics..."
+        kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic infra-events --partitions 3 --replication-factor 3
+        kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic application-logs --partitions 6 --replication-factor 3
+        echo "Kafka initialization complete."
+    labels:
+      - 'hy-home.scope=infra'
+      - 'hy-home.tier=messaging'
+    deploy:
+      resources:
+        limits: { memory: 256M }
+
 networks:
   infra_net:
     name: infra_net

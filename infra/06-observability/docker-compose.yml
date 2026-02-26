@@ -61,13 +61,6 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
-      - '--web.enable-lifecycle' # 설정 리로드 허용
-      - '--web.enable-remote-write-receiver'
     entrypoint: ['/bin/sh', '-c']
     command: >
       "OPENSEARCH_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) &&
@@ -120,6 +113,8 @@ services:
         limits:
           cpus: '1.0'
           memory: 1G
+        reservations:
+          memory: 512M
     image: grafana/loki:3.6.6
     container_name: infra-loki
     security_opt:
@@ -225,6 +220,8 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
+        reservations:
+          memory: 256M
     image: grafana/grafana:12.3.3
     container_name: infra-grafana
     security_opt:
