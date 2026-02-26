@@ -1,48 +1,8 @@
-# Hy-Home System Optimization Headers (Standardized)
-x-security-baseline: &security-baseline
-  security_opt:
-    - no-new-privileges:true
-  cap_drop:
-    - ALL
-
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
-x-logging-loki: &logging-loki
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}}'
-
-x-labels-base: &labels-base
-  traefik.enable: 'true'
-  hy-home.managed: 'true'
-
-x-resource-low: &resource-low
-  deploy:
-    resources:
-      limits: { cpus: '0.2', memory: 128M }
-      reservations: { memory: 64M }
-
-x-resource-med: &resource-med
-  deploy:
-    resources:
-      limits: { cpus: '0.5', memory: 512M }
-      reservations: { memory: 256M }
-
-x-resource-high: &resource-high
-  deploy:
-    resources:
-      limits: { cpus: '1.0', memory: 1G }
-      reservations: { memory: 512M }
-
-x-restart: &default-restart
-  restart: unless-stopped
-
 name: traefik
+
+include:
+  - ../../common-optimizations.yml
+
 
 volumes:
   traefik_certs:
@@ -50,12 +10,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${DEFAULT_DOCKER_PROJECT_PATH:-.}/secrets/certs
+      device: ${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs
 
 services:
   traefik:
     <<: [*default-restart, *security-baseline, *resource-med]
     image: traefik:v3.6.8
+
     container_name: traefik
     hostname: traefik
     read_only: true
@@ -104,9 +65,4 @@ secrets:
   traefik_basicauth_password:
     external: true
   traefik_opensearch_basicauth_password:
-    external: true
-
-networks:
-  infra_net:
-    name: infra_net
     external: true

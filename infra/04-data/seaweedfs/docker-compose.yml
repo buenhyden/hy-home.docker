@@ -1,46 +1,16 @@
-# Hy-Home System Optimization Headers (Standardized)
-x-security-baseline: &security-baseline
-  security_opt:
-    - no-new-privileges:true
-  cap_drop:
-    - ALL
+x-common:
+  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
+  logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
+  res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
+  res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
+  res-high: &res-high { deploy: { resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { memory: 512M } } } }
+  restart: &restart { restart: unless-stopped }
+  labels-base: &labels-base { traefik.enable: 'true', hy-home.managed: 'true' }
 
 x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
-x-resource-low: &resource-low
-  deploy:
-    resources:
-      limits: { cpus: '0.2', memory: 128M }
-      reservations: { memory: 64M }
-
-x-resource-med: &resource-med
-  deploy:
-    resources:
-      limits: { cpus: '0.5', memory: 512M }
-      reservations: { memory: 256M }
-
-x-resource-high: &resource-high
-  deploy:
-    resources:
-      limits: { cpus: '1.0', memory: 1G }
-      reservations: { memory: 512M }
-
-x-restart: &default-restart
-  restart: unless-stopped
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
 volumes:
   seaweedfs-master-data:
   seaweedfs-volume-data:
-
 services:
   # ----------------------------------------------------------------
   # SeaweedFS (스토리지 클러스터)
@@ -70,7 +40,7 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    logging: *default-logging
+    logging: *logging
 
   seaweedfs-volume:
     image: chrislusf/seaweedfs:4.05
@@ -93,7 +63,7 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    logging: *default-logging
+    logging: *logging
 
   seaweedfs-filer:
     image: chrislusf/seaweedfs:4.05
@@ -123,7 +93,7 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    logging: *default-logging
+    logging: *logging
 
   seaweedfs-s3:
     image: chrislusf/seaweedfs:4.05
@@ -150,7 +120,7 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    logging: *default-logging
+    logging: *logging
 
   seaweedfs-mount:
     image: chrislusf/seaweedfs:4.05
@@ -171,4 +141,4 @@ services:
     # privileged + SYS_ADMIN required for mount; cap_drop is intentionally omitted.
     security_opt:
       - no-new-privileges:true
-    logging: *default-logging
+    logging: *logging

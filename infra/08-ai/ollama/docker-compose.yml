@@ -1,9 +1,4 @@
-# Hy-Home System Optimization Headers (Standardized)
-x-security-baseline: &security-baseline
-  security_opt:
-    - no-new-privileges:true
-  cap_drop:
-    - ALL
+name: ollama
 
 x-logging: &default-logging
   driver: 'json-file'
@@ -11,83 +6,79 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
-x-resource-low: &resource-low
-  deploy:
-    resources:
-      limits: { cpus: '0.2', memory: 128M }
-      reservations: { memory: 64M }
-
-x-resource-med: &resource-med
-  deploy:
-    resources:
-      limits: { cpus: '0.5', memory: 512M }
-      reservations: { memory: 256M }
-
-x-resource-high: &resource-high
-  deploy:
-    resources:
-      limits: { cpus: '1.0', memory: 1G }
-      reservations: { memory: 512M }
-
-x-restart: &default-restart
-  restart: unless-stopped
-
-name: ollama
-
 volumes:
   ollama-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_AI_DIR}/ollama/data
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_AI_MODEL_DIR}/ollama
 
 services:
   ollama:
-    <<: [*default-restart, *resource-high]
     profiles:
       - ollama
     image: ollama/ollama:0.13.5
     container_name: ollama
     security_opt:
       - no-new-privileges:true
+    # GPU 장치 접근을 위해 cap_drop은 제한적으로 적용
+    # cap_drop:
+    #   - ALL
+    # ports:
+    #   - "${OLLAMA_HOST_PORT}:${OLLAMA_PORT}"
     expose:
-      - '${OLLAMA_PORT:-11434}'
-    environment:
-      - OLLAMA_HOST=0.0.0.0
-      - OLLAMA_ORIGINS=*
-      - OLLAMA_MODELS=/root/.ollama/models
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+      - ${OLLAMA_PORT:-11434}
     volumes:
       - ollama-data:/root/.ollama
+    environment:
+      # [필수 추가] Ollama가 모든 네트워크 인터페이스(Docker 내부)에서 수신하도록 설정
+      # 기본 포트가 11434라면 ${OLLAMA_PORT}는 11434와 일치해야 합니다.
+      - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT:-11434}
+      # [GPU 필수] 컨테이너가 할당된 GPU를 사용하도록 명시
+      - NVIDIA_VISIBLE_DEVICES=all
     networks:
       infra_net:
-        ipv4_address: 172.19.0.80
+        ipv4_address: 172.19.0.40
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:11434/api/tags']
+      test: ['CMD', 'ollama', 'list']
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 8G
+        reservations:
+          memory: 4G
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     labels:
       - 'traefik.enable=true'
+      # Ollama API 라우터 (https://ollama.${DEFAULT_URL})
       - 'traefik.http.routers.ollama.rule=Host(`ollama.${DEFAULT_URL}`)'
       - 'traefik.http.routers.ollama.entrypoints=websecure'
       - 'traefik.http.routers.ollama.tls=true'
+
+      # [중요] 내부 포트 11434 연결
       - 'traefik.http.services.ollama.loadbalancer.server.port=${OLLAMA_PORT:-11434}'
+      # [보안] Ollama API에 SSO 인증 추가 권장 (외부 접근 제어)
       - 'traefik.http.routers.ollama.middlewares=sso-auth@file'
+    restart: unless-stopped
     logging: *default-logging
 
   ollama-exporter:
     profiles:
       - ollama
-    <<: [*default-restart, *resource-low]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     image: lucabecker42/ollama-exporter:1.0.1
     container_name: ollama-exporter
     security_opt:
@@ -95,17 +86,17 @@ services:
     cap_drop:
       - ALL
     environment:
-      - OLLAMA_HOST=http://ollama:11434
+      - OLLAMA_HOST=ollama:${OLLAMA_PORT:-11434}
     expose:
       - '${OLLAMA_EXPORTER_PORT:-11435}'
+    restart: unless-stopped
     networks:
       infra_net:
-        ipv4_address: 172.19.0.83 # Restored to free IP in AI range
+        ipv4_address: 172.19.0.43
     depends_on:
       ollama:
         condition: service_healthy
     logging: *default-logging
-
 networks:
   infra_net:
     name: infra_net

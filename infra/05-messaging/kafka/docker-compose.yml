@@ -1,9 +1,4 @@
-# Hy-Home System Optimization Headers (Standardized)
-x-security-baseline: &security-baseline
-  security_opt:
-    - no-new-privileges:true
-  cap_drop:
-    - ALL
+name: kafka
 
 x-logging: &default-logging
   driver: 'json-file'
@@ -11,29 +6,8 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
-x-resource-low: &resource-low
-  deploy:
-    resources:
-      limits: { cpus: '0.2', memory: 128M }
-      reservations: { memory: 64M }
-
-x-resource-med: &resource-med
-  deploy:
-    resources:
-      limits: { cpus: '0.5', memory: 512M }
-      reservations: { memory: 256M }
-
-x-resource-high: &resource-high
-  deploy:
-    resources:
-      limits: { cpus: '1.0', memory: 1G }
-      reservations: { memory: 512M }
-
 x-restart: &default-restart
   restart: unless-stopped
-name: kafka
-
-
 
 volumes:
   kafka-1-data:
@@ -71,8 +45,16 @@ volumes:
 # ------------------------------------------------------------
 x-kafka-broker-common: &kafka-broker-common
   image: confluentinc/cp-kafka:8.1.1
-  <<: [*default-restart, *resource-high]
-
+  security_opt:
+    - no-new-privileges:true
+  <<: *default-restart
+  deploy:
+    resources:
+      limits:
+        cpus: '1.5' # 200% -> 150%로 제한 (호스트 보호)
+        memory: 1.5G # 컨테이너 메모리 상한
+      reservations:
+        memory: 1G
   networks:
     infra_net: {}
   environment: &kafka-broker-env-common # ---- KRaft 공통 ----

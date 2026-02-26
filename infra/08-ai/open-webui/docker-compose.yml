@@ -1,9 +1,4 @@
-# Hy-Home System Optimization Headers (Standardized)
-x-security-baseline: &security-baseline
-  security_opt:
-    - no-new-privileges:true
-  cap_drop:
-    - ALL
+name: open-webui
 
 x-logging: &default-logging
   driver: 'json-file'
@@ -11,63 +6,54 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
-x-resource-low: &resource-low
-  deploy:
-    resources:
-      limits: { cpus: '0.2', memory: 128M }
-      reservations: { memory: 64M }
-
-x-resource-med: &resource-med
-  deploy:
-    resources:
-      limits: { cpus: '0.5', memory: 512M }
-      reservations: { memory: 256M }
-
-x-resource-high: &resource-high
-  deploy:
-    resources:
-      limits: { cpus: '1.0', memory: 1G }
-      reservations: { memory: 512M }
-
-x-restart: &default-restart
-  restart: unless-stopped
-
-name: open-webui
-
 volumes:
-  open-webui:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_AI_DIR}/open-webui/data
+  ollama-webui:
+  #   driver: local
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: ${DEFAULT_AI_MODEL_DIR}/webui
 
 services:
+  # 2. Open WebUI 서비스 (선택 사항: ChatGPT 같은 웹 인터페이스)
   open-webui:
-    <<: [*default-restart, *security-baseline, *resource-med]
-    image: ghcr.io/open-webui/open-webui:main
+    profiles:
+      - ollama
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    image: ghcr.io/open-webui/open-webui:v0.8.5-cuda
     container_name: open-webui
-    ports:
-      - '${OPEN_WEBUI_PORT:-3001}:8080'
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # ports:
+    #   - "${OLLAMA_WEBUI_HOST_PORT}:${OLLAMA_WEBUI_PORT}" # 브라우저에서 localhost:3000 으로 접속
     environment:
-      - 'OLLAMA_BASE_URL=${OLLAMA_BASE_URL}'
-      - 'WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}'
+      - OLLAMA_BASE_URL=http://ollama:${OLLAMA_PORT:-11434} # 도커 네트워크 내부 통신
+      # --- RAG 설정 추가 ---
+      # 벡터 DB 연결 설정
+      - VECTOR_DB_URL=http://qdrant:${QDRANT_PORT:-6333}
+      # 임베딩(텍스트를 숫자로 변환) 작업을 Ollama에게 맡김
+      - RAG_EMBEDDING_ENGINE=ollama
+      - RAG_EMBEDDING_MODEL=qwen3-embedding:0.6b
     volumes:
-      - open-webui:/app/backend/data
+      - ollama-webui:/app/backend/data
+    restart: unless-stopped
     networks:
       infra_net:
-        ipv4_address: 172.19.0.81
+        ipv4_address: 172.19.0.42
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.open-webui.rule=Host(`ai.${DEFAULT_URL}`)'
+
+      # 챗봇 UI 라우터 (https://chat.${DEFAULT_URL})
+      - 'traefik.http.routers.open-webui.rule=Host(`chat.${DEFAULT_URL}`)'
       - 'traefik.http.routers.open-webui.entrypoints=websecure'
       - 'traefik.http.routers.open-webui.tls=true'
+
+      # [중요] 내부 포트 8080 연결 (Open WebUI 기본 포트)
       - 'traefik.http.services.open-webui.loadbalancer.server.port=8080'
     logging: *default-logging
-
-networks:
-  infra_net:
-    name: infra_net
-    external: true

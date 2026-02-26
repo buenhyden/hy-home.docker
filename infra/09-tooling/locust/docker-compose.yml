@@ -1,51 +1,21 @@
-# Hy-Home System Optimization Headers (Standardized)
-x-security-baseline: &security-baseline
-  security_opt:
-    - no-new-privileges:true
-  cap_drop:
-    - ALL
-
 x-logging: &default-logging
   driver: 'json-file'
   options:
     max-size: '5m'
     max-file: '2'
 
-x-resource-low: &resource-low
-  deploy:
-    resources:
-      limits: { cpus: '0.2', memory: 128M }
-      reservations: { memory: 64M }
-
-x-resource-med: &resource-med
-  deploy:
-    resources:
-      limits: { cpus: '0.5', memory: 512M }
-      reservations: { memory: 256M }
-
-x-resource-high: &resource-high
-  deploy:
-    resources:
-      limits: { cpus: '1.0', memory: 1G }
-      reservations: { memory: 512M }
-
-x-restart: &default-restart
-  restart: unless-stopped
-
-name: locust
-
 volumes:
   locust-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_TOOLING_DIR}/locust
+    # driver: local
+    # driver_opts:
+    #   o: bind
+    #   type: none
+    #   device: ${DEFAULT_LOCUST_DIR}
 
 services:
   locust-master:
-    <<: [*default-restart, *security-baseline, *resource-med]
     build: .
+    restart: unless-stopped
     ports:
       - '${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}'
     environment:
@@ -64,16 +34,20 @@ services:
       export LOCUST_INFLUXDB_TOKEN=$$(cat /run/secrets/influxdb_api_token | tr -d '\n') &&
       exec locust -f /mnt/locust/locustfile.py --master
       "
-    # depends_on:
-    #   influxdb:
-    #     condition: service_healthy
+    depends_on:
+      influxdb:
+        condition: service_healthy
     extra_hosts:
-      - '${DEFAULT_URL:-localhost}:host-gateway'
+      - '${DEFAULT_URL}:host-gateway'
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
   locust-worker:
-    <<: [*default-restart, *security-baseline, *resource-med]
     build: .
+    restart: unless-stopped
     environment:
       - LOCUST_INFLUXDB_HOST=influxdb
       - LOCUST_INFLUXDB_PORT=${INFLUXDB_PORT:-8086}
@@ -94,16 +68,15 @@ services:
       locust-master:
         condition: service_healthy
     deploy:
-      replicas: 2
+      replicas: 2 # 워커를 2개로 늘려서 부하 분산 (필요시 조절)
     extra_hosts:
-      - '${DEFAULT_URL:-localhost}:host-gateway'
+      - '${DEFAULT_URL}:host-gateway'
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     logging: *default-logging
 
 secrets:
   influxdb_api_token:
-    external: true
-
-networks:
-  infra_net:
-    name: infra_net
     external: true

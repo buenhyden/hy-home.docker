@@ -1,42 +1,13 @@
-# Hy-Home System Optimization Headers (Standardized)
-x-security-baseline: &security-baseline
-  security_opt:
-    - no-new-privileges:true
-  cap_drop:
-    - ALL
+x-common:
+  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
+  logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
+  res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
+  res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
+  res-high: &res-high { deploy: { resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { memory: 512M } } } }
+  restart: &restart { restart: unless-stopped }
+  labels-base: &labels-base { traefik.enable: 'true', hy-home.managed: 'true' }
 
 x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
-x-resource-low: &resource-low
-  deploy:
-    resources:
-      limits: { cpus: '0.2', memory: 128M }
-      reservations: { memory: 64M }
-
-x-resource-med: &resource-med
-  deploy:
-    resources:
-      limits: { cpus: '0.5', memory: 512M }
-      reservations: { memory: 256M }
-
-x-resource-high: &resource-high
-  deploy:
-    resources:
-      limits: { cpus: '1.0', memory: 1G }
-      reservations: { memory: 512M }
-
-x-restart: &default-restart
-  restart: unless-stopped
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
 volumes:
   cassandra-node1-volume:
     driver: local
@@ -44,12 +15,12 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_DATA_DIR}/cassandra/node1
-  cassandra-node2-volume:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_DATA_DIR}/cassandra/node2
+  # cassandra-node2-volume:
+  #   driver: local
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: ${DEFAULT_DATA_DIR}/cassandra/node2
   cassandra-exporter-volume:
     driver: local
     driver_opts:
@@ -72,7 +43,7 @@ services:
       # - cassandra-node2
     networks:
       - infra_net
-    logging: *default-logging
+    logging: *logging
     volumes:
       - cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf
     command: java -jar ./cassandra_exporter.jar ./conf/config.yml
@@ -94,7 +65,7 @@ services:
       - ${CASSANDRA_CLIENT_PORT:-9042}
     networks:
       - infra_net
-    logging: *default-logging
+    logging: *logging
     environment:
       - CASSANDRA_SEEDS=cassandra-node1
       # - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2

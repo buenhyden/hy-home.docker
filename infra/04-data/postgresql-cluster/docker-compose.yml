@@ -1,9 +1,4 @@
-# Hy-Home System Optimization Headers (Standardized)
-x-security-baseline: &security-baseline
-  security_opt:
-    - no-new-privileges:true
-  cap_drop:
-    - ALL
+name: postgresql-cluster
 
 x-logging: &default-logging
   driver: 'json-file'
@@ -11,28 +6,8 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
-x-resource-low: &resource-low
-  deploy:
-    resources:
-      limits: { cpus: '0.2', memory: 128M }
-      reservations: { memory: 64M }
-
-x-resource-med: &resource-med
-  deploy:
-    resources:
-      limits: { cpus: '0.5', memory: 512M }
-      reservations: { memory: 256M }
-
-x-resource-high: &resource-high
-  deploy:
-    resources:
-      limits: { cpus: '1.0', memory: 1G }
-      reservations: { memory: 512M }
-
 x-restart: &default-restart
   restart: unless-stopped
-
-name: postgresql-cluster
 
 volumes:
   pg0-data:
@@ -82,12 +57,22 @@ secrets:
   pg_haproxy_stats_password:
     external: true
 
+networks:
+  infra_net:
+    name: infra_net
+    external: true
+
 services:
-  # ============================================================================
-  # ETCD Cluster (Patroni DCS)
-  # ============================================================================
+  # ##############################################################
+  # etcd 3노드 (Patroni DCS)
+  # ##############################################################
   etcd-1:
-    <<: [*default-restart, *security-baseline, *resource-low]
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-1
     user: '1000:1000'
@@ -116,9 +101,15 @@ services:
       infra_net:
         ipv4_address: 172.19.0.50
     logging: *default-logging
+    <<: *default-restart
 
   etcd-2:
-    <<: [*default-restart, *security-baseline, *resource-low]
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-2
     user: '1000:1000'
@@ -147,9 +138,15 @@ services:
       infra_net:
         ipv4_address: 172.19.0.51
     logging: *default-logging
+    <<: *default-restart
 
   etcd-3:
-    <<: [*default-restart, *security-baseline, *resource-low]
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-3
     user: '1000:1000'
@@ -178,34 +175,50 @@ services:
       infra_net:
         ipv4_address: 172.19.0.52
     logging: *default-logging
+    <<: *default-restart
 
-  # ============================================================================
-  # PostgreSQL Nodes (Spilo 17)
-  # ============================================================================
+  # ##############################################################
+  # Patroni + PostgreSQL 17 노드 3개
+  # ##############################################################
   pg-0:
-    <<: [*default-restart, *security-baseline, *resource-high]
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          memory: 1G
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-0
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     hostname: pg-0
     entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
     environment:
       SCOPE: 'pg-ha'
+      # etcd 클러스터 주소
       ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
       PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
       PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
+      # --------------------------------------------------------------------
+      # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
+      # --------------------------------------------------------------------
       PATRONI_NAME: pg-0
       PATRONI_NAMESPACE: /service/
+      # 네트워크 바인딩 (이 설정은 유지)
+      # REST API
       PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT:-8008}
       PATRONI_RESTAPI_CONNECT_ADDRESS: pg-0:${PATRONI_RESTAPI_PORT:-8008}
+      # PostgreSQL listen / connect
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:${POSTGRES_PORT:-5432}
     volumes:
       - pg0-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.53
-    logging: *default-logging
+    expose:
+      - ${POSTGRES_PORT:-5432}
     secrets:
       - patroni_superuser_password
       - patroni_replication_password
@@ -215,8 +228,10 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    expose:
-      - ${POSTGRES_PORT:-5432}
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.53
+    logging: *default-logging
     depends_on:
       etcd-1:
         condition: service_healthy
@@ -224,22 +239,40 @@ services:
         condition: service_healthy
       etcd-3:
         condition: service_healthy
+    <<: *default-restart
 
   pg-1:
-    <<: [*default-restart, *security-baseline, *resource-high]
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          memory: 1G
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-1
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     hostname: pg-1
     entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
     environment:
       SCOPE: 'pg-ha'
+      # etcd 클러스터 주소
       ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
       PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
       PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
+      # --------------------------------------------------------------------
+      # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
+      # --------------------------------------------------------------------
       PATRONI_NAME: pg-1
       PATRONI_NAMESPACE: /service/
+      # 네트워크 바인딩 (이 설정은 유지)
+      # REST API
       PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT:-8008}
       PATRONI_RESTAPI_CONNECT_ADDRESS: pg-1:${PATRONI_RESTAPI_PORT:-8008}
+      # PostgreSQL listen / connect
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:${POSTGRES_PORT:-5432}
     volumes:
@@ -267,22 +300,41 @@ services:
         condition: service_healthy
       etcd-3:
         condition: service_healthy
+    <<: *default-restart
 
   pg-2:
-    <<: [*default-restart, *security-baseline, *resource-high]
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          memory: 1G
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-2
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     hostname: pg-2
     entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
     environment:
       SCOPE: 'pg-ha'
+      # etcd 클러스터 주소
       ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
       PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
       PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
+      # 계정 비밀번호 (Spilo가 initdb 시 사용)
+      # --------------------------------------------------------------------
+      # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
+      # --------------------------------------------------------------------
       PATRONI_NAME: pg-2
       PATRONI_NAMESPACE: /service/
+      # 네트워크 바인딩 (이 설정은 유지)
+      # REST API
       PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT:-8008}
       PATRONI_RESTAPI_CONNECT_ADDRESS: pg-2:${PATRONI_RESTAPI_PORT:-8008}
+      # PostgreSQL listen / connect
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-2:${POSTGRES_PORT:-5432}
     volumes:
@@ -292,6 +344,8 @@ services:
       infra_net:
         ipv4_address: 172.19.0.55
     logging: *default-logging
+    expose:
+      - ${POSTGRES_PORT:-5432}
     secrets:
       - patroni_superuser_password
       - patroni_replication_password
@@ -301,8 +355,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    expose:
-      - ${POSTGRES_PORT:-5432}
     depends_on:
       etcd-1:
         condition: service_healthy
@@ -310,12 +362,17 @@ services:
         condition: service_healthy
       etcd-3:
         condition: service_healthy
+    <<: *default-restart
 
-  # ============================================================================
-  # HAProxy Router (Writer/Reader 분리)
-  # ============================================================================
+  # ##############################################################
+  # HAProxy 라우터 (Writer/Reader 분리)
+  # ##############################################################
   pg-router:
-    <<: [*default-restart, *security-baseline, *resource-med]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
     image: haproxy:3.3.1
     container_name: pg-router
     volumes:
@@ -328,29 +385,38 @@ services:
       exec haproxy -f /usr/local/etc/haproxy/haproxy.cfg
       "
     ports:
-      - '${POSTGRES_WRITE_HOST_PORT:-15432}:${POSTGRES_WRITE_PORT:-15432}'
-      - '${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}'
-      - '${HAPROXY_METRICS_HOST_PORT:-8404}:${HAPROXY_METRICS_PORT:-8404}'
+      - '${POSTGRES_WRITE_HOST_PORT:-15432}:${POSTGRES_WRITE_PORT:-15432}' # Write endpoint
+      - '${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}' # Read endpoint
+      # - "${HAPROXY_HOST_PORT}:${HAPROXY_PORT}" # Stats (옵션)
+      - '${HAPROXY_METRICS_HOST_PORT:-8404}:${HAPROXY_METRICS_PORT:-8404}' # Stats (옵션)
     networks:
       infra_net:
         ipv4_address: 172.19.0.56
     labels:
       - 'traefik.enable=true'
+      # HAProxy Stats UI 라우터
+      # 도메인: haproxy.pg.${DEFAULT_URL}
       - 'traefik.http.routers.haproxy-stats.rule=Host(`pg-haproxy.${DEFAULT_URL}`)'
       - 'traefik.http.routers.haproxy-stats.entrypoints=websecure'
       - 'traefik.http.routers.haproxy-stats.tls=true'
+      # [중요] HAProxy 설정 파일(haproxy.cfg)에 정의된 Stats 포트(보통 8404)와 일치해야 함
       - 'traefik.http.services.haproxy-stats.loadbalancer.server.port=${HAPROXY_PORT:-7000}'
     depends_on:
-      pg-0: { condition: service_healthy }
-      pg-1: { condition: service_healthy }
-      pg-2: { condition: service_healthy }
+      pg-0:
+        condition: service_healthy
+      pg-1:
+        condition: service_healthy
+      pg-2:
+        condition: service_healthy
+    <<: *default-restart
     logging: *default-logging
 
-  # ============================================================================
-  # Cluster Initialization
-  # ============================================================================
   pg-cluster-init:
-    <<: [*security-baseline, *resource-med]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
     image: postgres:17-alpine
     container_name: pg-cluster-init
     environment:
@@ -361,7 +427,6 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     secrets:
       - patroni_superuser_password
-      - service_postgres_password
     depends_on:
       pg-router:
         condition: service_started
@@ -384,14 +449,21 @@ services:
       - infra_net
     restart: 'no'
     logging: *default-logging
-
-  # ============================================================================
-  # Exporters
-  # ============================================================================
+  # ##############################################################
+  # postgres-exporter (Prometheus / Alloy용 메트릭)
+  # ##############################################################
   pg-0-exporter:
-    <<: [*default-restart, *security-baseline, *resource-low]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-0-exporter
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     networks:
       infra_net:
         ipv4_address: 172.19.0.57
@@ -407,8 +479,10 @@ services:
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/service_postgres_password | tr -d '\n')
+        # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-0:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
+    <<: *default-restart
     healthcheck:
       test:
         [
@@ -418,11 +492,19 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-
+      start_period: 30s
   pg-1-exporter:
-    <<: [*default-restart, *security-baseline, *resource-low]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-1-exporter
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     networks:
       infra_net:
         ipv4_address: 172.19.0.58
@@ -438,8 +520,10 @@ services:
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/service_postgres_password | tr -d '\n')
+        # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-1:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
+    <<: *default-restart
     healthcheck:
       test:
         [
@@ -449,11 +533,19 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-
+      start_period: 30s
   pg-2-exporter:
-    <<: [*default-restart, *security-baseline, *resource-low]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-2-exporter
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     networks:
       infra_net:
         ipv4_address: 172.19.0.59
@@ -469,8 +561,10 @@ services:
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/service_postgres_password | tr -d '\n')
+        # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-2:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
+    <<: *default-restart
     healthcheck:
       test:
         [
@@ -480,8 +574,4 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-
-networks:
-  infra_net:
-    name: infra_net
-    external: true
+      start_period: 30s

@@ -1,48 +1,8 @@
-# Hy-Home System Optimization Headers (Standardized)
-x-security-baseline: &security-baseline
-  security_opt:
-    - no-new-privileges:true
-  cap_drop:
-    - ALL
-
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
-x-logging-loki: &logging-loki
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}}'
-
-x-labels-base: &labels-base
-  traefik.enable: 'true'
-  hy-home.managed: 'true'
-
-x-resource-low: &resource-low
-  deploy:
-    resources:
-      limits: { cpus: '0.2', memory: 128M }
-      reservations: { memory: 64M }
-
-x-resource-med: &resource-med
-  deploy:
-    resources:
-      limits: { cpus: '0.5', memory: 512M }
-      reservations: { memory: 256M }
-
-x-resource-high: &resource-high
-  deploy:
-    resources:
-      limits: { cpus: '1.0', memory: 1G }
-      reservations: { memory: 512M }
-
-x-restart: &default-restart
-  restart: unless-stopped
-
 name: keycloak
+
+include:
+  - ../../common-optimizations.yml
+
 
 volumes:
   keycloak-config:
@@ -67,7 +27,7 @@ volumes:
 services:
   keycloak:
     <<: [*default-restart, *security-baseline, *resource-med]
-    image: quay.io/keycloak/keycloak:26.1
+
     hostname: keycloak
     volumes:
       - keycloak-themes:/opt/keycloak/themes
@@ -89,18 +49,22 @@ services:
       start_period: 60s
     environment:
       KC_DB: ${KEYCLOAK_DATABASE}
-      KC_DB_URL: jdbc:postgresql://${POSTGRES_MNG_HOSTNAME:-mng-pg}:${POSTGRES_PORT:-5432}/${KEYCLOAK_DBNAME}
+      KC_DB_URL: jdbc:postgresql://${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/${KEYCLOAK_DBNAME}
       KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
       KC_DB_PASSWORD_FILE: /run/secrets/keycloak_db_password
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
       KEYCLOAK_ADMIN_PASSWORD_FILE: /run/secrets/keycloak_admin_password
       KC_HOSTNAME: https://keycloak.${DEFAULT_URL}
       KC_PROXY_HEADERS: xforwarded
+      # DB 연결이 끊겼는지 확인하고, 오래된 연결을 자동으로 정리합니다.
       KC_DB_POOL_INITIAL_SIZE: 1
       KC_DB_POOL_MIN_SIZE: 1
       KC_DB_POOL_MAX_SIZE: 10
       KC_METRICS_ENABLED: true
       KC_HEALTH_ENABLED: true
+      # Java 옵션을 통해 Quarkus(Agroal)의 유효성 검사 강제 설정
+      # 1. idle 상태가 5분 지나면 연결 끊음 (DB 타임아웃보다 짧게)
+      # 2. 연결 가져올 때 유효성 검사 수행 (background)
       JAVA_OPTS_APPEND: '-Dquarkus.datasource.jdbc.idle-removal-interval=5M -Dquarkus.datasource.jdbc.background-validation-interval=1M'
     labels:
       <<: *labels-base

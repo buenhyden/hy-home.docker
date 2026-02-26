@@ -1,9 +1,4 @@
-# Hy-Home System Optimization Headers (Standardized)
-x-security-baseline: &security-baseline
-  security_opt:
-    - no-new-privileges:true
-  cap_drop:
-    - ALL
+name: qdrant
 
 x-logging: &default-logging
   driver: 'json-file'
@@ -11,28 +6,8 @@ x-logging: &default-logging
     max-size: '5m'
     max-file: '2'
 
-x-resource-low: &resource-low
-  deploy:
-    resources:
-      limits: { cpus: '0.2', memory: 128M }
-      reservations: { memory: 64M }
-
-x-resource-med: &resource-med
-  deploy:
-    resources:
-      limits: { cpus: '0.5', memory: 512M }
-      reservations: { memory: 256M }
-
-x-resource-high: &resource-high
-  deploy:
-    resources:
-      limits: { cpus: '1.0', memory: 1G }
-      reservations: { memory: 512M }
-
 x-restart: &default-restart
   restart: unless-stopped
-
-name: qdrant
 
 volumes:
   qdrant-data:
@@ -44,15 +19,24 @@ volumes:
 
 services:
   qdrant:
-    <<: [*default-restart, *security-baseline, *resource-med]
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
     image: qdrant/qdrant:v1.17
     container_name: qdrant
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     ports:
       - '${QDRANT_HOST_PORT:-6333}:${QDRANT_PORT:-6333}'
     environment:
-      - QDRANT__TELEMETRY_DISABLED=false
+      - QDRANT__TELEMETRY_DISABLED=false # 메트릭 수집 활성화
     volumes:
       - qdrant-data:/qdrant/storage
+    <<: *default-restart
     networks:
       infra_net:
         ipv4_address: 172.19.0.41
@@ -68,6 +52,7 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+    # Qdrant 대시보드(Web UI)를 보고 싶다면 아래 라벨 주석 해제
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.qdrant.rule=Host(`qdrant.${DEFAULT_URL}`)'
@@ -75,8 +60,3 @@ services:
       - 'traefik.http.routers.qdrant.tls=true'
       - 'traefik.http.services.qdrant.loadbalancer.server.port=${QDRANT_PORT:-6333}'
     logging: *default-logging
-
-networks:
-  infra_net:
-    name: infra_net
-    external: true
