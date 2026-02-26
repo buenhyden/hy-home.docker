@@ -1,44 +1,59 @@
-# [SPEC-SYS-01] Infrastructure Hardening & Optimization
+# [SPEC-INFRA-04] Infrastructure Hardening & Optimization
 
-## 1. Non-Functional Requirements (NFR) [REQ-SPT-05]
+- **Role**: Reliability & Security Engineer
+- **Purpose**: Define standards for system isolation, resource density, and security hardening across the hy-home ecosystem.
+- **Activates When**: Performing security audits or optimizing existing container workloads.
 
-- **NFR-SEC-01 (Isolation)**: All containers MUST NOT have access to the host pid, network, or ipc namespaces unless explicitly justified in an ADR.
-- **NFR-OBS-01 (Latency)**: Loki log ingestion latency SHALL be < 2 seconds for all local docker events.
-- **NFR-RES-01 (Density)**: Infrastructure services MUST collectively utilize < 20% of system memory under idle conditions.
+## 1. Standards
 
-## 2. Storage Strategy [REQ-SPT-05]
+### Principles
 
-- **Strategy-ST-01**: Sensitive credentials SHALL be stored as Docker Secrets (`/run/secrets/`).
-- **Strategy-ST-02**: Persistent volume mounts MUST utilize the `infra_net` for distributed data access where applicable.
-- **Strategy-ST-03**: Bind mounts MUST be `ro` (read-only) unless write access is functionally required.
+- **[REQ-HARD-01] Universal Isolation**: All infrastructure containers SHALL BE isolated from host-level namespaces (`pid`, `network`, `ipc`) unless explicitly documented as a functional dependency.
+- **[REQ-HARD-02] Resource Density Primacy**: Infrastructure services MUST NOT consume more than 20% of aggregate system memory under idle conditions.
+- **[REQ-HARD-03] Immutable Execution**: Every container SHALL utilize read-only root filesystems wherever functionally feasible.
 
-## 3. Interfaces
+## 2. Technical Specification [REQ-SPT-05]
 
-- **Internal**: Every service SHALL expose metrics via an OTLP-compatible endpoint or Prometheus exporter.
-- **External**: Public access MUST be routed through Traefik using TLS v1.2+.
+### 2.1 Non-Functional Requirements (NFR)
 
-## 4. Security Implementation [REQ-SPT-05]
+- **NFR-SEC-01**: Host-to-Container escape vectors MUST be mitigated via restricted kernel capability sets.
+- **NFR-OBS-01**: Centralized log ingestion SHALL maintain a p95 latency of < 2 seconds.
 
-- **Templates**: Implementation utilize centralized YAML templates included from `infra/common-optimizations.yml` to enforce `no-new-privileges` and `cap_drop: ALL`.
+### 2.2 Storage Strategy
 
-- **Identity**: Root execution inside containers is STRICTLY PROHIBITED.
+- **ST-01**: Persistent mounts SHALL utilize `bind` mounts for deterministic IO performance.
+- **ST-02**: All sensitive volumes MUST be restricted to owner-only permissions on the host system.
 
-## 5. Ops & Observability [REQ-SPT-05]
+### 2.3 Interfaces
 
-- **Telemetry**: LGTM Stack (Loki, Grafana, Tempo, Pyroscope) serves as the primary observability plane.
-- **Alerting**: Alertmanager SHALL trigger Slack notifications for any `hy-home.tier: infra` service downtime.
+- **INF-01**: Interservice communication SHALL BE restricted to the dedicated `infra_net`.
+- **INF-02**: External exposing of infrastructure-only ports is STRICTLY PROHIBITED.
 
-## 6. Verification Plan [REQ-SPT-10]
+### 2.4 Security
 
-- **AC-SPEC-01 (Security Audit)**:
-  - **Given**: A service deployed via standardized templates.
-  - **When**: Running `docker inspect --format '{{.HostConfig.SecurityOpt}}' <container>`.
-  - **Then**: Output MUST include `no-new-privileges:true`.
-- **AC-SPEC-02 (Observability Integrity)**:
-  - **Given**: A service crash or log event.
-  - **When**: Searching Loki with `{job="infra", tier="gateway"}`.
-  - **Then**: Relevant logs MUST be returned within 5 seconds of the event.
-- **AC-SPEC-03 (Resource Ceiling)**:
-  - **Given**: System at 80% CPU load.
-  - **When**: Monitoring Prometheus `container_memory_usage_bytes`.
-  - **Then**: Baseline infrastructure services MUST NOT exceed their defined memory limits.
+- **SEC-01**: `no-new-privileges: true` MUST BE present in every production service runtime.
+- **SEC-02**: The `cap_drop: ALL` flag is mandatory for all non-privileged sidecars.
+
+### 2.5 Ops & Observability
+
+- **OBS-01**: Operational metrics SHALL BE collected via standard OTLP or Prometheus exporters.
+
+## 3. Verification & Acceptance Criteria (GWT) [REQ-SPT-10]
+
+### [AC-HARD-01] Privilege Escalation Protection
+
+- **Given**: A deployed infrastructure container.
+- **When**: Running `docker inspect --format '{{.HostConfig.SecurityOpt}}' <container>`.
+- **Then**: The output MUST explicitly contain `no-new-privileges:true`.
+
+### [AC-HARD-02] Resource Ceiling Enforcement
+
+- **Given**: A service deployed with the `template-infra-high` template.
+- **When**: Synthetic load is applied to the service.
+- **Then**: The container MUST NOT exceed a memory utilization of `2GiB`.
+
+### [AC-HARD-03] Log Ingestion Consistency
+
+- **Given**: A critical log event in any tier.
+- **When**: Inspecting the Loki aggregation point.
+- **Then**: The event MUST BE searchable and present within 5 seconds of occurrence.

@@ -28,7 +28,6 @@ services:
       context: . ## build Docker file location
       dockerfile: Dockerfile ## build file name
     container_name: opensearch
-    <<: *default-restart
     # 비밀번호, 클러스터 이름, JVM 옵션 등은 env 파일에서 주입
     deploy:
       resources:
@@ -212,10 +211,3 @@ services:
       options:
         loki-url: "http://localhost:3100/loki/api/v1/push"
         loki-external-labels: "container_name={{.Name}}"
-
-...
-logging:
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name=opensearch-exporter,tier=data'

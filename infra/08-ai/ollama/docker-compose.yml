@@ -21,7 +21,6 @@ services:
       service: template-infra-high
     image: ollama/ollama:0.13.5
     container_name: ollama
-    # GPU 장치 접근을 위해 cap_drop은 제한적으로 적용 (base-security는 cap_drop: ALL을 포함하므로 주의)
     # 하지만 Ollama는 NVIDIA runtime을 사용하므로 cap_drop이 문제될 수 있음.
     # 여기서는 base-resource-high만 가져오고 security는 개별 설정 권장.
     deploy:

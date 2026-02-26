@@ -1,5 +1,4 @@
 x-common:
-  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
   logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
   res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
   res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
@@ -36,11 +35,6 @@ services:
       - 'traefik.http.routers.seaweedfs-master.entrypoints=websecure'
       - 'traefik.http.routers.seaweedfs-master.tls=true'
       - 'traefik.http.services.seaweedfs-master.loadbalancer.server.port=${SEAWEEDFS_MASTER_HTTP_PORT:-9333}'
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *logging
 
   seaweedfs-volume:
     image: chrislusf/seaweedfs:4.05
@@ -59,11 +53,6 @@ services:
         condition: service_healthy
     networks:
       - infra_net
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *logging
 
   seaweedfs-filer:
     image: chrislusf/seaweedfs:4.05
@@ -89,11 +78,6 @@ services:
       - 'traefik.http.services.cdn.loadbalancer.server.port=${SEAWEEDFS_FILER_HTTP_PORT:-8888}'
     networks:
       - infra_net
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *logging
 
   seaweedfs-s3:
     image: chrislusf/seaweedfs:4.05
@@ -116,11 +100,6 @@ services:
         condition: service_healthy
     networks:
       - infra_net
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *logging
 
   seaweedfs-mount:
     image: chrislusf/seaweedfs:4.05
@@ -139,6 +118,3 @@ services:
       seaweedfs-filer:
         condition: service_healthy
     # privileged + SYS_ADMIN required for mount; cap_drop is intentionally omitted.
-    security_opt:
-      - no-new-privileges:true
-    logging: *logging

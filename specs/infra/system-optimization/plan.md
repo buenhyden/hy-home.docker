@@ -1,32 +1,31 @@
-# Spec: Home Lab System Optimization [SYS-OPT-001]
+# [PLAN-INFRA-01] Infrastructure Hardening & Optimization Implementation
 
-## Overview
+- **Role**: DevOps Lead / Implementation Engineer
+- **Status**: Completed
+- **Reference Spec**: [[SPEC-INFRA-04] Infrastructure Hardening & Optimization](/specs/infra/system-optimization/spec.md)
 
-This specification defines the technical implementation standards for optimizing the home lab's Docker-based infrastructure.
+## 1. Implementation Strategy
 
-## 1. Build and Layer Optimization [REQ-OPT-01]
+Every infrastructure modification SHALL follow the Spec-Driven Development (SDD) lifecycle:
 
-- **Multi-stage Builds**: Custom base images MUST use multi-stage builds to minimize image size.
-- **Caching**: Dockerfiles MUST be ordered from least-frequently changed to most-frequently changed parts to maximize layer caching.
+1. **Audit**: Identification of redundant `security_opt` and legacy anchors.
+2. **Refactor**: Transition to global `extends` pattern via `common-optimizations.yml`.
+3. **Validate**: Verification of configuration integrity via `docker compose config`.
 
-## 2. Security Hardening [REQ-OPT-02]
+## 2. Key Components
 
-- **Network Isolation**:
-  - `infra_net`: Unified internal backbone for core services and data tiers.
-- **Secrets Protocol**: NO plain-text environment variables for passwords in compose files. Verified 100% adoption of the `/run/secrets/` mounting standard.
+### 2.1 Multi-Stage Builds [REQ-SPT-05]
 
-## 3. Observability Standard [REQ-OPT-03]
+- **Requirement**: Use multi-stage Dockerfiles to minimize leakage and optimize layer caching.
+- **Action**: Refactor `n8n`, `OpenSearch`, and `Keycloak` Dockerfiles to utilize builder patterns.
 
-- **Logs**: All containers MUST use the `loki` log driver or export to a local promtail instance.
-- **Metrics**: Standardized health check endpoints (`/health`) for Prometheus scraping.
+### 2.2 Global Configuration Propagation
 
-## 4. Resource Management [REQ-OPT-04]
+- **Requirement**: propagate security and resource invariants via the `extends` keyword.
+- **Action**: Standardize all 10+ tiers to inherit from `base-security` and `base-resource-*`.
 
-- **Quotas**: Every service MUST define `deploy.resources.limits.memory` and `deploy.resources.limits.cpus`.
-- **Initialization**: Use `depends_on` with `condition: service_healthy` to ensure ordered startup.
+## 3. Verification & Compliance Checklist
 
-## Verification Requirements [REQ-SPT-10]
-
-- **AC-01**: `docker compose config` passes without warnings.
-- **AC-02**: `/run/secrets/` contains the expected secret files in a running container.
-- **AC-03**: Grafana shows resource usage metrics for 100% of running services.
+- [x] **[AC-PLAN-01]**: `docker compose config` validates with zero unknown anchor errors.
+- [x] **[AC-PLAN-02]**: Redundant security blocks removed from `minio`, `mongodb`, and `supabase`.
+- [x] **[AC-PLAN-03]**: Keycloak image version hardcoded to `26.5.4` for stability.

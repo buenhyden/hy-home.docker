@@ -1,5 +1,4 @@
 x-common:
-  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
   logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
   res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
   res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
@@ -34,12 +33,7 @@ services:
       - neo4j_password
     networks:
       - infra_net
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     # The ports that will be accessible from outside the container - HTTP (7474) and Bolt (7687).
-    logging: *logging
   # ######################################################################################
   # neo4j:
   #   # Docker image to be used

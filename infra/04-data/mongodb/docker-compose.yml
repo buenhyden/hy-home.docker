@@ -33,11 +33,6 @@ services:
         chmod 400 /data/configdb/mongodb.key;
         ls -l /data/configdb/mongodb.key;
       "
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *default-logging
 
   mongodb-rep1:
     image: mongo:8.2.3-noble
@@ -70,11 +65,6 @@ services:
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *default-logging
 
   mongodb-rep2:
     image: mongo:8.2.3-noble
@@ -107,11 +97,6 @@ services:
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *default-logging
 
   # [추가] MongoDB Arbiter (투표권만 가진 가벼운 노드, 데이터 저장 안 함)
   mongodb-arbiter:
@@ -133,11 +118,6 @@ services:
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *default-logging
 
   # [추가] Replica Set 초기화 (한 번만 실행되고 죽음)
   mongo-init:
@@ -151,10 +131,6 @@ services:
         condition: service_healthy
       mongodb-rep2:
         condition: service_healthy
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     command: >
       bash -c "
         echo 'Waiting for servers to be ready...';
@@ -179,7 +155,6 @@ services:
       "
     secrets:
       - mongodb_root_password
-    logging: *default-logging
 
   # ============================================================================
   # Mongo Express (Admin UI)
@@ -217,11 +192,6 @@ services:
     secrets:
       - mongodb_root_password
       - mongo_express_basicauth_password
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *default-logging
   # ============================================================================
   # MongoDB Exporter (Prometheus)
   # ============================================================================
@@ -245,13 +215,8 @@ services:
         condition: service_completed_successfully
     secrets:
       - mongodb_root_password
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     networks:
       - infra_net
-    logging: *default-logging
 
 secrets:
   mongodb_root_password:

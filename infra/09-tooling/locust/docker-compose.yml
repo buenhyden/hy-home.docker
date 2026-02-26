@@ -41,11 +41,6 @@ services:
         condition: service_healthy
     extra_hosts:
       - '${DEFAULT_URL}:host-gateway'
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *default-logging
 
   locust-worker:
     extends:
@@ -75,11 +70,6 @@ services:
       replicas: 2 # 워커를 2개로 늘려서 부하 분산 (필요시 조절)
     extra_hosts:
       - '${DEFAULT_URL}:host-gateway'
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *default-logging
 
 secrets:
   influxdb_api_token:

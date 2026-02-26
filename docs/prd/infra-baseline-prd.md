@@ -69,7 +69,7 @@ _Target Directory: `docs/prd/infra-baseline-prd.md`_
 - [REQ-PRD-FUN-06] Global Configuration Inheritance via `infra/common-optimizations.yml`.
 - [REQ-PRD-FUN-07] Mandatory `extends` usage for cross-file resource and security baseline.
 
-- **Technical Specification**: [[SPEC-INFRA-01] Infrastructure Global Baseline Specification](../specs/infra-global-baseline-spec.md)
+- **Technical Specification**: [[SPEC-INFRA-01] Infrastructure Global Baseline Specification](/specs/infra-global-baseline-spec.md)
 
 ## 7. Milestones & Roadmap
 

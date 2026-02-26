@@ -30,10 +30,6 @@ services:
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio
     command: server /data --console-address ":${MINIO_CONSOLE_HOST_PORT:-9001}"
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     secrets:
       - minio_root_username
       - minio_root_password

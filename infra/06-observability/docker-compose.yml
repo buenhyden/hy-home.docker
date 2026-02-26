@@ -96,7 +96,6 @@ services:
       traefik.http.routers.prometheus.entrypoints: websecure
       traefik.http.routers.prometheus.tls: 'true'
       traefik.http.services.prometheus.loadbalancer.server.port: ${PROMETHEUS_PORT:-9090}
-    logging: *logging-loki
 
   # -------------------------------------------------------
   # 2. Log Storage (Loki)
@@ -115,7 +114,6 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.31
-    logging: *logging-loki
     ports:
       - '${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}'
     volumes:
@@ -162,7 +160,6 @@ services:
       - minio_app_user_password
     labels:
       <<: *labels-base
-    logging: *logging-loki
 
   pyroscope:
     extends:
@@ -184,7 +181,6 @@ services:
       start_period: 1m
     labels:
       <<: *labels-base
-    logging: *logging-loki
 
   # -------------------------------------------------------
   # 4. Visualization (Grafana)
@@ -266,7 +262,6 @@ services:
       traefik.http.routers.grafana.tls: 'true'
       traefik.http.services.grafana.loadbalancer.server.port: ${GRAFANA_PORT:-3000}
       traefik.http.routers.grafana.middlewares: sso-auth@file
-    logging: *logging-loki
 
   # -------------------------------------------------------
   # 5. Telemetry Collector (Alloy)
@@ -315,7 +310,6 @@ services:
       traefik.http.routers.alloy.entrypoints: websecure
       traefik.http.routers.alloy.tls: 'true'
       traefik.http.services.alloy.loadbalancer.server.port: ${ALLOY_PORT:-12345}
-    logging: *logging-loki
 
   cadvisor:
     extends:
@@ -347,7 +341,6 @@ services:
         ipv4_address: 172.19.0.35
     labels:
       <<: *labels-base
-    logging: *logging-loki
 
   alertmanager:
     extends:
@@ -398,7 +391,6 @@ services:
       traefik.http.routers.alertmanager.entrypoints: websecure
       traefik.http.routers.alertmanager.tls: 'true'
       traefik.http.services.alertmanager.loadbalancer.server.port: ${ALERTMANAGER_PORT:-9093}
-    logging: *logging-loki
 
   pushgateway:
     extends:
@@ -434,7 +426,6 @@ services:
       traefik.http.routers.pushgateway.entrypoints: websecure
       traefik.http.routers.pushgateway.tls: 'true'
       traefik.http.services.pushgateway.loadbalancer.server.port: ${PUSHGATEWAY_PORT:-9091}
-    logging: *logging-loki
 
 networks:
   infra_net:

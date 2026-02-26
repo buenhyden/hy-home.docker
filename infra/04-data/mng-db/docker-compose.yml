@@ -204,10 +204,6 @@ services:
     container_name: mng-pg-init
     restart: 'no'
     # Override security for specific init needs if necessary, but base-security covers baseline.
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
 
     environment:
       PGPASSWORD_FILE: /run/secrets/mng_postgres_password

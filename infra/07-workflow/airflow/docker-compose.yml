@@ -11,11 +11,7 @@ x-airflow-common: &airflow-common
   networks:
     - infra_net
   # build: .
-  security_opt:
-    - no-new-privileges:true
   # CeleryExecutor는 일부 capability가 필요할 수 있어 cap_drop는 테스트 후 활성화 권장
-  # cap_drop:
-  #   - ALL
   environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
@@ -347,10 +343,6 @@ services:
       service: template-infra-med
     image: valkey/valkey:9.0.2-alpine
     container_name: airflow-valkey
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     secrets:
       - airflow_valkey_password
     networks:
@@ -392,10 +384,6 @@ services:
       service: template-infra-low
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: airflow-valkey-exporter
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
     networks:
@@ -430,10 +418,6 @@ services:
     image: prom/statsd-exporter:v0.28.0
     container_name: airflow-statsd-exporter
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     command: '--statsd.listen-udp=:${STATSD_AIRFLOW_PORT:-9125} --web.listen-address=:${STATSD_PROMETHEUS_PORT:-9102} --statsd.mapping-config=/tmp/mappings.yml'
     volumes:
       - ./config/statsd_mapping.yml:/tmp/mappings.yml:ro

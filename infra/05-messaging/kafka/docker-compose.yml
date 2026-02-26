@@ -1,7 +1,7 @@
 name: kafka
 
 x-labels-base: &labels-base
-  hy-home.managed: "true"
+  hy-home.managed: 'true'
   hy-home.tier: messaging
 
 volumes:
@@ -99,12 +99,11 @@ x-kafka-broker-common: &kafka-broker-common
     timeout: 30s
     retries: 5
     start_period: 30s
-    logging:
-      driver: loki
-      options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
-
+  logging:
+    driver: loki
+    options:
+      loki-url: 'http://localhost:3100/loki/api/v1/push'
+      loki-external-labels: 'container_name={{.Name}}'
 
 services:
   # ##############################################################
@@ -238,7 +237,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
 
   # ##############################################################
   # Kafka Connect (Distributed)
@@ -323,7 +321,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
 
   # -------------------------------------------
   # 4. Kafka REST Proxy (레스트 프록시)
@@ -373,7 +370,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
   # -------------------------------------------
   # 5. Kafka UI (카프카 UI - kafbat-ui)
   # -------------------------------------------
@@ -428,7 +424,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
     # extra_hosts:
     #   - 'keycloak.127.0.0.1.nip.io:host-gateway'
   kafka-exporter:
@@ -466,7 +461,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
   kafka-init:
     extends:
       file: ../../common-optimizations.yml

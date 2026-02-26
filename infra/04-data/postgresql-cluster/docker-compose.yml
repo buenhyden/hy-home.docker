@@ -98,7 +98,6 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.50
-    logging: *logging
 
   etcd-2:
     extends:
@@ -131,7 +130,6 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.51
-    logging: *logging
 
   etcd-3:
     extends:
@@ -164,7 +162,6 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.52
-    logging: *logging
 
   # ##############################################################
   # Patroni + PostgreSQL 17 노드 3개

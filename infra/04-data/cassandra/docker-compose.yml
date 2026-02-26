@@ -1,5 +1,4 @@
 x-common:
-  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
   logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
   res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
   res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
@@ -43,14 +42,9 @@ services:
       # - cassandra-node2
     networks:
       - infra_net
-    logging: *logging
     volumes:
       - cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf
     command: java -jar ./cassandra_exporter.jar ./conf/config.yml
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
 
   cassandra-node1:
     #image: cassandra:latest
@@ -65,7 +59,6 @@ services:
       - ${CASSANDRA_CLIENT_PORT:-9042}
     networks:
       - infra_net
-    logging: *logging
     environment:
       - CASSANDRA_SEEDS=cassandra-node1
       # - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2
@@ -81,10 +74,6 @@ services:
       - cassandra-node1-volume:/bitnami/cassandra
     secrets:
       - cassandra_password
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
   # cassandra-node2:
   #   #image: cassandra:latest
   #   image: docker.io/bitnami/cassandra:latest

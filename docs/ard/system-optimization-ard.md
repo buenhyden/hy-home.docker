@@ -11,7 +11,7 @@ The Hy-Home infrastructure utilizes a multi-tier, isolated container topology to
 - **Tier 3 (Stateful Data)**: Dedicated clusters for PostgreSQL, Valkey, and MinIO with isolated network segments.
 - **Tier 4 (Observability Stack)**: Unified LGTM pipeline (Loki, Grafana, Tempo, Alloyl) collecting cross-tier telemetry.
 
-## 2. Standardization Patterns [SPEC-INFRA-01]
+## 2. Standardization Patterns [[SPEC-INFRA-01]](/specs/infra-global-baseline-spec.md)
 
 To ensure consistency across heterogeneous service stacks, the following architectural patterns are enforced:
 
