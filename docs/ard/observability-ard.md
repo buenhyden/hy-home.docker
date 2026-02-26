@@ -67,5 +67,5 @@ C4Container
 
 ## 9. Architectural Principles & Trade-offs
 
-- **Sidecar Scaping**: Alloy uses cAdvisor labels to automatically discover and context-tag container logs.
+- **Logging Strategy**: Transitioned from file-based scraping (Promtail style) to direct `loki` driver pushing to reduce host I/O.
 - **Chosen Path**: Single Alloy agent over fragmented exporters (NodeExporter + Promtail) to reduce total RAM footprint.

@@ -12,6 +12,7 @@ Core infrastructure implementation details, partitioned by deployment sequence.
 
 - [baseline/](file:///home/hy/projects/hy-home.docker/specs/infra/baseline/spec.md): Root orchestration, kernel hardening, and Day-0 bootstrap.
 - [automation/](file:///home/hy/projects/hy-home.docker/specs/infra/automation/spec.md): Autonomous sidecars, resource limits, and self-provisioning dashboards.
+- [system-optimization/](file:///home/hy/projects/hy-home.docker/specs/infra/system-optimization/spec.md): YAML standardized anchors, Loki integration, and zero-capability enforcement.
 
 ## 2. Path to Implementation
 

@@ -15,13 +15,13 @@ The Hy-Home infrastructure utilizes a multi-tier, isolated container topology to
 
 To ensure consistency across heterogeneous service stacks, the following architectural patterns are enforced:
 
-### 2.1 Configuration Inheritance (Yamal Anchors)
+### 2.1 Configuration Inheritance (YAML Anchors)
 
-Implementation SHALL utilize local configuration blocks (`x-optimizations`) to provide:
+Implementation SHALL utilize root-level configuration blocks (`x-optimizations`) in the main `docker-compose.yml` to provide reusable architectural invariants across all service tiers:
 
 - **`&security-baseline`**: Universal cap-drop and privilege escalation protection.
-- **`&logging-loki`**: Standardized push-based log collection.
-- **`&labels-base`**: Automated schema-compliant metadata injection.
+- **`&logging-loki`**: Standardized push-based log collection using the Loki driver.
+- **`&labels-base`**: Automated schema-compliant metadata injection for system-wide filtering.
 
 ### 2.2 Telemetry Architecture
 

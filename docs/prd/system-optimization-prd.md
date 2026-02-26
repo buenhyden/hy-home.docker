@@ -30,6 +30,7 @@ Establish a high-performance, secure, and observable home server infrastructure 
 - **[REQ-SYS-01]**: The system SHALL provide standardized YAML anchors for security baselines to prevent configuration drift.
 - **[REQ-SYS-02]**: Every service MUST be integrated with the Loki logging driver with job-specific labels.
 - **[REQ-SYS-03]**: Service startup MUST be ordered via `service_healthy` conditions to prevent race conditions.
+- **[REQ-SYS-04]**: The system SHALL utilize Docker Compose `include` to propagate optimization blocks (`x-optimizations`) across all service tiers.
 
 ## 7. Acceptance Criteria [REQ-SPT-10] [REQ-SPT-06]
 

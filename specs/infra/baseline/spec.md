@@ -59,9 +59,12 @@ This specification governs the core setup and security hardening of the primary 
 | ID                | Requirement Description | Priority | Parent PRD REQ |
 | ----------------- | ----------------------- | -------- | -------------- |
 | **REQ-SPC-001** | Implement `include` pattern for sub-compose imports | Critical | REQ-PRD-FUN-01 |
-| **REQ-SPC-002** | Add `no-new-privileges:true` and `cap_drop: [ALL]` | Critical | REQ-PRD-FUN-01 |
+| **REQ-SPC-002** | Add `&security-baseline`, `&logging-loki`, and `&labels-base` anchors | Critical | REQ-PRD-FUN-01 |
+| **REQ-SPC-005** | Utilize `include` for global optimization propagation | Critical | REQ-SYS-04 |
 | **REQ-SPC-003** | Standardize Bootstrap & Secrets Prerequisites | High | REQ-PRD-FUN-03 |
 | **REQ-SPC-004** | Standardize Local TLS paths (secrets/certs/) | High | REQ-PRD-FUN-04 |
+| **REQ-SPC-005** | Mandate `loki` log driver for all services | Critical | REQ-PRD-FUN-05 |
+| **REQ-SPC-006** | Require standardized CPU/Memory constraints | High | REQ-PRD-MET-03 |
 
 ## 3. Data Modeling & Storage Strategy
 
@@ -88,6 +91,20 @@ This specification governs the core setup and security hardening of the primary 
 - **When** the container is inspected via `docker inspect`.
 - **Then** `HostConfig.SecurityOpt` contains `no-new-privileges:true`.
 - **And** `HostConfig.CapDrop` contains `ALL`.
+
+### REQ-SPC-005: Log Driver Verification
+
+- **Given** any service utilizing YAML anchors for optimization.
+- **When** the container is inspected.
+- **Then** `HostConfig.LogConfig.Type` is exactly `loki`.
+- **And** `loki-external-labels` includes `job=infra`.
+
+### REQ-SPC-006: Resource Limits Verification
+
+- **Given** a service with defined limits in `deploy`.
+- **When** running `docker stats`.
+- **Then** the CPUS limit matches the `cpus` value in the spec.
+- **And** the memory limit matches the `memory` value in the spec.
 
 ### REQ-SPC-003: Preflight Failure Logic
 
@@ -116,4 +133,5 @@ This specification governs the core setup and security hardening of the primary 
 ## 9. Operations & Observability
 
 - **Secrets Rotation**: Replace target `.txt` file in `secrets/` and restart the specific service.
-- **Observability**: Standardized `observability.logs=true` label on all containers.
+- **Observability**: MANDATORY use of `loki` log driver via root `&logging-loki` anchor.
+- **Metadata**: Every service MUST include `hy-home.tier` and `traefik.enable` labels via `&labels-base`.

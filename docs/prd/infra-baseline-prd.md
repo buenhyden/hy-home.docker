@@ -50,6 +50,7 @@ _Target Directory: `docs/prd/infra-baseline-prd.md`_
 | ------------------ | ------------------ | ------------------ | ---------------- | ------------------- |
 | **REQ-PRD-MET-01** | Bootstrap Time     | 30 mins            | < 10 mins        | Day-0 build         |
 | **REQ-PRD-MET-02** | Security Coverage | 50%                | 100% (Secrets)   | Audit cycle         |
+| **REQ-PRD-MET-03** | Resource Efficiency | N/A                | < 20% Overhead   | Baseline run        |
 
 ## 4. Key Use Cases & Acceptance Criteria (GWT)
 
@@ -63,6 +64,7 @@ _Target Directory: `docs/prd/infra-baseline-prd.md`_
 - **[REQ-PRD-FUN-02]** Secrets-First Policy enforcement (100% Docker Secrets).
 - **[REQ-PRD-FUN-03]** Bootstrap Prerequisites: Define required `.env` keys and directory permissions.
 - **[REQ-PRD-FUN-04]** Local TLS Standardisation via `mkcert` (secrets/certs/).
+- **[REQ-PRD-FUN-05]** Centralized Log Aggregation using Loki.
 
 ## 6. Technical Specifications
 

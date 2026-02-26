@@ -11,6 +11,7 @@ This directory defines the technical requirements and constraints for major infr
 | [messaging-ard.md](messaging-ard.md) | Kafka / RabbitMQ | 2026-02-26 |
 | [observability-ard.md](observability-ard.md) | LGTM / Alloy Stack | 2026-02-26 |
 | [ai-ard.md](ai-ard.md) | Local AI (Ollama/WebUI) | 2026-02-26 |
+| [system-optimization-ard.md](system-optimization-ard.md) | Hardening Architecture | 2026-02-26 |
 
 ---
 > [!NOTE]

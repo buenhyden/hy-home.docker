@@ -60,7 +60,7 @@ This specification governs the self-provisioning layer and advanced telemetry co
 | ----------------- | ----------------------- | -------- | -------------- |
 | **REQ-SPC-101** | Implement `init-sidecar` for OpenSearch templates | Critical | REQ-AUTO-01 |
 | **REQ-SPC-102** | Implement `init-sidecar` for Kafka topic creation | Critical | REQ-AUTO-01 |
-| **REQ-SPC-103** | Standardize `mem_reservation` across clusters | High | ADR-0007 |
+| **REQ-SPC-103** | Standardize Resource Guardrails (CPU/Mem) | High | ADR-0007 |
 | **REQ-SPC-104** | Use File-based Grafana Dashboard provisioning | High | REQ-OBS-01 |
 
 ## 3. Data Modeling & Storage Strategy
@@ -106,7 +106,8 @@ This specification governs the self-provisioning layer and advanced telemetry co
 
 - **[VAL-SPC-101] Idempotency Test**: Run `docker compose up <sidecar>` twice; verify second run logs "Topic already exists" and exits 0.
 - **[VAL-SPC-102] Connectivity Test**: Sidecar MUST block execution until target port (9200/9092) is reachable.
-- **[VAL-SPC-103] Alerting Pipeline**: Simulate a sidecar failure (invalid API key); verify Alertmanager triggers an `InitFailed` notification.
+- **[VAL-SPC-103] Logging Integrity**: Verify that sidecar logs appear in `loki` via Grafana Explore using `container_name` filters.
+- **[VAL-SPC-104] Alerting Pipeline**: Simulate a sidecar failure (invalid API key); verify Alertmanager triggers an `InitFailed` notification.
 
 ## 8. Non-Functional Requirements (NFR) & Scalability
 

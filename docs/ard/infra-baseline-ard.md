@@ -57,6 +57,8 @@ C4Container
 - **Authentication**: Managed via Keycloak (Auth Tier).
 - **Secrets**: 100% Docker Secrets (`secrets/*.txt`).
 - **Hardening**: `cap_drop: [ALL]`, `no-new-privileges: true`.
+- **Logging**: Mandatory direct push to Loki via Docker native driver (Loki).
+- **Resource Policy**: Explicit CPU and Memory reservations/limits for all Tier-1 and Tier-2 services.
 
 ## 8. Non-Functional Requirements (NFRs)
 
