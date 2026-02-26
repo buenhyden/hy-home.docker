@@ -121,8 +121,7 @@ services:
         reservations:
           memory: 1G
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.20
+      - infra_net
     volumes:
       - type: volume
         source: kafka-1-data
@@ -146,8 +145,7 @@ services:
     container_name: kafka-2
     hostname: kafka-2
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.21
+      - infra_net
     volumes:
       - type: volume
         source: kafka-2-data
@@ -171,8 +169,7 @@ services:
     container_name: kafka-3
     hostname: kafka-3
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.22
+      - infra_net
     volumes:
       - type: volume
         source: kafka-3-data
@@ -202,8 +199,7 @@ services:
     container_name: schema-registry
 
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.23
+      - infra_net
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:${SCHEMA_REGISTRY_PORT:-8081}'
@@ -258,8 +254,7 @@ services:
       schema-registry:
         condition: service_started
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.24
+      - infra_net
     # ports:
     #   - "${KAFKA_CONNECT_HOST_PORT}:${KAFKA_CONNECT_PORT}"
     environment:
@@ -333,8 +328,7 @@ services:
     container_name: kafka-rest-proxy
 
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.25
+      - infra_net
     # ports:
     #   - "${KAFKA_REST_PROXY_HOST_PORT}:${KAFKA_REST_PROXY_PORT}"
     labels:
@@ -442,8 +436,7 @@ services:
     # ports:
     #   - "${KAFKA_EXPORTER_HOST_PORT}:${KAFKA_EXPORTER_PORT}"
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.27
+      - infra_net
     depends_on:
       kafka-1:
         condition: service_healthy

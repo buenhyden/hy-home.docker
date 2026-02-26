@@ -1,3 +1,4 @@
+name: hy-home-infra
 # Hy-Home Docker Infrastructure Root
 networks:
   infra_net:

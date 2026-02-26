@@ -47,6 +47,16 @@ graph TD
     S1 & S2 & S3 -- "Osh Scrape" --> A
     A -- "Remote Write" --> P
     A -- "Export Traces" --> T
+
+### 2.3 Network Portability [ADR-0008]
+
+All infrastructure services SHALL operate without explicit `ipv4_address` assignments. Service discovery is performed via:
+- **Internal DNS**: Relying on Docker's embedded DNS server and service names within the `infra_net` bridge.
+- **Service Aliases**: Utilizing network aliases for cross-stack compatibility where services belong to multiple networks.
+
+### 2.4 Standardized Init Process [ADR-0012]
+
+Every containerized service MUST utilize `init: true` to ensure robust signal handling (SIGTERM/SIGINT) and the proper reaping of zombie processes. This improves observability stability and ensures clean shutdowns during orchestration events.
 ```
 
 ## 3. Security Boundaries

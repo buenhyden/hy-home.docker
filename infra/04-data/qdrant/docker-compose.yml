@@ -26,8 +26,7 @@ services:
     volumes:
       - qdrant-data:/qdrant/storage
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.41
+      - infra_net
     healthcheck:
       test:
         [

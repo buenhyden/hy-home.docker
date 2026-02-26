@@ -43,8 +43,7 @@ services:
     cap_add:
       - IPC_LOCK
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.75
+      - infra_net
     healthcheck:
       test:
         [

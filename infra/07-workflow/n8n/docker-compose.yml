@@ -121,8 +121,7 @@ services:
       - n8n_encryption_key
       - n8n_runner_auth_token
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.17
+      - infra_net
     command: worker
     logging:
       driver: loki
@@ -154,8 +153,7 @@ services:
     secrets:
       - n8n_valkey_password
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.15
+      - infra_net
     restart: unless-stopped
     volumes:
       - n8n-valkey-data:/data
@@ -195,8 +193,7 @@ services:
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.16
+      - infra_net
     restart: unless-stopped
     secrets:
       - n8n_valkey_password

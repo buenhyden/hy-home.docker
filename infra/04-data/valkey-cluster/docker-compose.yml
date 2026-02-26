@@ -34,8 +34,7 @@ services:
     secrets:
       - service_valkey_password
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.60
+      - infra_net
     labels:
       <<: *labels-base
     logging:
@@ -61,8 +60,7 @@ services:
     secrets:
       - service_valkey_password
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.61
+      - infra_net
     labels:
       <<: *labels-base
     logging:
@@ -88,8 +86,7 @@ services:
     secrets:
       - service_valkey_password
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.62
+      - infra_net
     labels:
       <<: *labels-base
     logging:
@@ -115,8 +112,7 @@ services:
     secrets:
       - service_valkey_password
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.63
+      - infra_net
     labels:
       <<: *labels-base
     logging:
@@ -142,8 +138,7 @@ services:
     secrets:
       - service_valkey_password
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.64
+      - infra_net
     labels:
       <<: *labels-base
     logging:
@@ -169,8 +164,7 @@ services:
     secrets:
       - service_valkey_password
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.65
+      - infra_net
     labels:
       <<: *labels-base
     logging:

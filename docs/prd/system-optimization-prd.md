@@ -14,6 +14,7 @@ Establish a high-performance, secure, and observable home server infrastructure 
 - **Metric-01 (Security)**: 100% of services SHALL pass a `docker inspect` audit verifying `no-new-privileges: true` and `cap_drop: ALL`.
 - **Metric-02 (Observability)**: 100% of infrastructure logs MUST be indexed in Loki with `hy-home.tier` metadata tags.
 - **Metric-03 (Performance)**: Cold startup time for the core gateway (NGINX/Traefik) SHALL be < 15 seconds.
+- **Metric-04 (Portability)**: 100% of infrastructure services SHALL operate without explicit `ipv4_address` assignments.
 
 ## 4. Use Cases [REQ-SPT-04]
 
@@ -31,6 +32,8 @@ Establish a high-performance, secure, and observable home server infrastructure 
 - **[REQ-SYS-02]**: Every service MUST be integrated with the Loki logging driver with job-specific labels.
 - **[REQ-SYS-03]**: Service startup MUST be ordered via `service_healthy` conditions to prevent race conditions.
 - **[REQ-SYS-04]**: The system SHALL utilize Docker Compose `include` to propagate optimization blocks (`x-optimizations`) across all service tiers.
+- **[REQ-SYS-05]**: All networking SHALL rely on Docker's internal DNS (service names) to ensure environment portability [ADR-0008].
+- **[REQ-SYS-06]**: Services SHALL utilize the standard `init: true` process for robust signal handling [ADR-0012].
 
 ## 7. Acceptance Criteria [REQ-SPT-10] [REQ-SPT-06]
 

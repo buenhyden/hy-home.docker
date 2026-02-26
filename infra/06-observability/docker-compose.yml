@@ -71,8 +71,7 @@ services:
       - ./prometheus/config/alert_rules:/etc/prometheus/alert_rules
       - prometheus-data:/prometheus
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.30
+      - infra_net
     secrets:
       - opensearch_exporter_password
     healthcheck:
@@ -112,8 +111,7 @@ services:
       "export MINIO_APP_USER_PASSWORD=$$(cat /run/secrets/minio_app_user_password) &&
       exec /usr/bin/loki -config.file=/etc/loki/loki-config.yaml -config.expand-env=true"
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.31
+      - infra_net
     ports:
       - '${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}'
     volumes:
@@ -150,8 +148,7 @@ services:
       - ./tempo/config/tempo.yaml:/etc/tempo.yaml:ro
       - tempo-data:/var/tempo
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.32
+      - infra_net
     ports:
       - '${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}'
     environment:
@@ -171,8 +168,7 @@ services:
     ports:
       - '${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}'
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.38
+      - infra_net
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:4040/ready || exit 1']
       interval: 30s
@@ -235,8 +231,7 @@ services:
       - grafana_admin_password
       - oauth2_proxy_client_secret
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.33
+      - infra_net
     healthcheck:
       test:
         [
@@ -284,8 +279,7 @@ services:
       - '${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}'
       - '${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}'
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.34
+      - infra_net
     depends_on:
       prometheus:
         condition: service_healthy
@@ -337,8 +331,7 @@ services:
       - /etc/machine-id:/etc/machine-id:ro
       - /var/lib/dbus/machine-id:/var/lib/dbus/machine-id:ro
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.35
+      - infra_net
     labels:
       <<: *labels-base
 
@@ -372,8 +365,7 @@ services:
       grafana:
         condition: service_healthy
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.36
+      - infra_net
     healthcheck:
       test:
         [
@@ -407,8 +399,7 @@ services:
       grafana:
         condition: service_healthy
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.37
+      - infra_net
     healthcheck:
       test:
         [

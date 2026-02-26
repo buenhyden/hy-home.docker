@@ -48,6 +48,8 @@ services:
       options:
         loki-url: 'http://localhost:3100/loki/api/v1/push'
         loki-external-labels: 'container_name={{.Name}}'
+    networks:
+      - infra_net
 
   ollama-exporter:
     extends:
@@ -60,8 +62,7 @@ services:
     expose:
       - '${OLLAMA_EXPORTER_PORT:-11435}'
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.43
+      - infra_net
     depends_on:
       ollama:
         condition: service_healthy

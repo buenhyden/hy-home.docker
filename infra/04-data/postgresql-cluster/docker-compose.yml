@@ -1,14 +1,14 @@
 name: postgresql-cluster
 
 x-labels-base: &labels-base
-  hy-home.managed: "true"
+  hy-home.managed: 'true'
   hy-home.tier: data
 
 x-logging: &logging
   driver: loki
   options:
-    loki-url: "http://localhost:3100/loki/api/v1/push"
-    loki-external-labels: "container_name={{.Name}}"
+    loki-url: 'http://localhost:3100/loki/api/v1/push'
+    loki-external-labels: 'container_name={{.Name}}'
 
 volumes:
   pg0-data:
@@ -96,8 +96,7 @@ services:
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.50
+      - infra_net
 
   etcd-2:
     extends:
@@ -128,8 +127,7 @@ services:
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.51
+      - infra_net
 
   etcd-3:
     extends:
@@ -160,8 +158,7 @@ services:
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.52
+      - infra_net
 
   # ##############################################################
   # Patroni + PostgreSQL 17 노드 3개
@@ -207,13 +204,12 @@ services:
       retries: 5
       start_period: 30s
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.53
+      - infra_net
     logging:
       driver: loki
       options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
     depends_on:
       etcd-1:
@@ -253,13 +249,12 @@ services:
       - pg1-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.54
+      - infra_net
     logging:
       driver: loki
       options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   pg-2:
     extends:
@@ -292,13 +287,12 @@ services:
       - pg2-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.55
+      - infra_net
     logging:
       driver: loki
       options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   # ##############################################################
   # HAProxy 라우터 (Writer/Reader 분리)
@@ -324,8 +318,7 @@ services:
       # - "${HAPROXY_HOST_PORT}:${HAPROXY_PORT}" # Stats (옵션)
       - '${HAPROXY_METRICS_HOST_PORT:-8404}:${HAPROXY_METRICS_PORT:-8404}' # Stats (옵션)
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.56
+      - infra_net
     labels:
       <<: *labels-base
       traefik.enable: 'true'
@@ -336,8 +329,8 @@ services:
     logging:
       driver: loki
       options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   pg-cluster-init:
     extends:
@@ -377,8 +370,8 @@ services:
     logging:
       driver: loki
       options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   # ##############################################################
   # postgres-exporter (Prometheus / Alloy용 메트릭)
@@ -390,13 +383,12 @@ services:
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-0-exporter
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.57
+      - infra_net
     logging:
       driver: loki
       options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
@@ -429,13 +421,12 @@ services:
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-1-exporter
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.58
+      - infra_net
     logging:
       driver: loki
       options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
@@ -468,13 +459,12 @@ services:
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-2-exporter
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.59
+      - infra_net
     logging:
       driver: loki
       options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'

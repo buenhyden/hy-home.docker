@@ -28,8 +28,7 @@ services:
     volumes:
       - ollama-webui:/app/backend/data
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.42
+      - infra_net
     labels:
       <<: *labels-base
       traefik.enable: 'true'

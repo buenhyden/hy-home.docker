@@ -58,8 +58,7 @@ services:
       - 'traefik.http.routers.oauth2-proxy.tls=true'
       - 'traefik.http.services.oauth2-proxy.loadbalancer.server.port=${OAUTH2_PROXY_PORT:-4180}'
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.28
+      - infra_net
     logging:
       driver: 'loki'
       options:

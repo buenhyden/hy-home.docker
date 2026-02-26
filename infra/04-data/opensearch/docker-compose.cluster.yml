@@ -103,8 +103,7 @@ services:
       - 'traefik.http.services.opensearch.loadbalancer.server.port=9200'
       - 'traefik.http.services.opensearch.loadbalancer.server.scheme=https' # 백엔드 통신 스킴 지정
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.44
+      - infra_net
     # memlock 사용을 위해 IPC_LOCK만 허용
     cap_drop:
       - ALL
@@ -154,8 +153,7 @@ services:
       - '9200'
       - '9600'
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.45
+      - infra_net
     # memlock 사용을 위해 IPC_LOCK만 허용
     cap_drop:
       - ALL
@@ -205,8 +203,7 @@ services:
       - '9200'
       - '9600'
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.46
+      - infra_net
     # memlock 사용을 위해 IPC_LOCK만 허용
     cap_drop:
       - ALL
@@ -221,8 +218,7 @@ services:
     container_name: opensearch-dashboards
     restart: unless-stopped
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.47
+      - infra_net
     expose:
       - '5601' # Expose port 5601 for web access to OpenSearch Dashboards
     # ports:
@@ -281,8 +277,7 @@ services:
     ports:
       - '${ES_EXPORTER_HOST_PORT:-9114}:${ES_EXPORTER_PORT:-9114}' # 9114
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.48
+      - infra_net
     depends_on:
       opensearch-node1:
         condition: service_healthy

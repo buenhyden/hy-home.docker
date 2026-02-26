@@ -346,8 +346,7 @@ services:
     secrets:
       - airflow_valkey_password
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.15
+      - infra_net
     restart: unless-stopped
     volumes:
       - airflow-valkey-data:/data
@@ -387,8 +386,7 @@ services:
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.16
+      - infra_net
     restart: unless-stopped
     secrets:
       - airflow_valkey_password

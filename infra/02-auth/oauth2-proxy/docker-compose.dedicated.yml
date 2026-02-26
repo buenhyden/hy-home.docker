@@ -74,8 +74,7 @@ services:
       - 'traefik.http.routers.oauth2-proxy.tls=true'
       - 'traefik.http.services.oauth2-proxy.loadbalancer.server.port=${OAUTH2_PROXY_PORT:-4180}'
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.28
+      - infra_net
     logging: *default-logging
 
   oauth2-proxy-valkey:
@@ -89,8 +88,7 @@ services:
     secrets:
       - oauth2_valkey_password
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.18
+      - infra_net
     restart: unless-stopped
     volumes:
       # 공통 valkey.conf
@@ -129,8 +127,7 @@ services:
     expose:
       - '${VALKEY_EXPORTER_PORT}'
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.19
+      - infra_net
     restart: unless-stopped
     secrets:
       - oauth2_valkey_password

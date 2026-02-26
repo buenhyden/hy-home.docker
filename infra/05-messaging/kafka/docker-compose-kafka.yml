@@ -55,8 +55,7 @@ services:
     volumes:
       - kafka-1-data:/var/lib/kafka/data
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.11
+      - infra_net
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true

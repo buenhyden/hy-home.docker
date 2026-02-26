@@ -40,8 +40,7 @@ services:
       MINIO_API_ROOT_ACCESS: 'on'
       # MINIO_BROWSER_REDIRECT_URL: "https://${DEFAULT_URL}/minio-console/"
     networks:
-      infra_net:
-        ipv4_address: 172.19.0.12
+      - infra_net
     volumes:
       - minio-data:/data
     healthcheck:

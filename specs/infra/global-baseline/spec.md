@@ -52,6 +52,8 @@ This specification defines standard extension fields and service templates for c
 | **[REQ-INF-01]** | Global Inheritance Primacy: All infrastructure services SHALL extend from a baseline template in `infra/common-optimizations.yml`. | Critical | REQ-PRD-FUN-06 |
 | **[REQ-INF-02]** | Mandatory Least Privilege: All containers MUST drop all capabilities (`cap_drop: ALL`) and prohibit privilege escalation (`no-new-privileges: true`). | Critical | REQ-SYS-04 |
 | **[REQ-INF-03]** | Standardized Resource Quotas: Every service definition SHALL define CPU and Memory limits using established profiles (Low/Med/High). | High     | REQ-PRD-MET-03 |
+| **[REQ-INF-04]** | Environment Portability: All services MUST rely on internal DNS for discovery; explicit static IPs are PROHIBITED [ADR-0008]. | Critical | REQ-SYS-05      |
+| **[REQ-INF-05]** | Managed Process Lifecycle: All services MUST utilize `init: true` for robust signal handling [ADR-0012]. | High     | REQ-SYS-06      |
 
 ## 3. Data Modeling & Storage Strategy
 
@@ -85,10 +87,17 @@ This specification defines standard extension fields and service templates for c
   - **When**: Inspecting container limits via `docker stats`.
   - **Then**: Memory limit MUST be exactly `128MiB`.
 
-- **[VAL-SPC-003] Telemetry Compliance**:
-  - **Given**: A newly deployed infrastructure service.
-  - **When**: Querying Loki with `{job="infra"}`.
   - **Then**: Structured logs MUST appear in the centralized plane.
+
+- **[VAL-SPC-004] DNS-Based Connectivity Verification**:
+  - **Given**: Two services on the `infra_net` bridge.
+  - **When**: Executing `ping -c 1 <service_name>` from one container to another.
+  - **Then**: ICMP response MUST be received without IP-level configuration.
+
+- **[VAL-SPC-005] Init Process Verification**:
+  - **Given**: A running container.
+  - **When**: Inspecting via `docker inspect --format '{{.Config.Init}}'`.
+  - **Then**: Output MUST be `true`.
 
 ## 8. Non-Functional Requirements (NFR) & Scalability
 

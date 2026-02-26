@@ -4,10 +4,24 @@
 services:
   # ── Security Baselines ──────────────────────────────────
   base-security:
+    init: true
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
+
+  base-security-hardened: # Standard security + Read-only filesystem
+    extends:
+      service: base-security
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
+
+  base-security-nonroot: # Standard security + Non-root user (1000:1000)
+    extends:
+      service: base-security
+    user: "1000:1000"
 
   # ── Resource Profiles ───────────────────────────────────
   base-resource-low:
