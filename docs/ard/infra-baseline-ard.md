@@ -50,14 +50,20 @@ To ensure consistent service discovery and telemetry, all infra services SHOULD 
   - `cap_drop: [ALL]`
   - User namespaces (where applicable).
 
-### Verification (Tests/Coverage)
+### Non-Functional Requirements (NFR)
 
-- **Static Validation**: `scripts/validate-docker-compose.sh` for YAML schema and circular dependency checks.
-- **Operational Verification**: Runbooks in `runbooks/` with Given-When-Then consistency.
-- **Runtime Monitoring**: Grafana dashboards for health and resource consumption (LCP/Metrics).
+- **High Availability**: PostgreSQL and Kafka stacks SHALL use multi-node replication (Patroni/KRaft).
+- **Security Density**: Standard Linux capabilities SHALL be dropped by default (`cap_drop: [ALL]`).
+- **Resource Limits**: Every service MUST have `deploy.resources.limits` to prevent OOM events.
+
+### Verification Plan (Tests/Coverage)
+
+- **Static Validation**: `scripts/validate-docker-compose.sh` for YAML schema check.
+- **Security Scan**: Regular `trivy` or `docker scan` on core images.
+- **Traceability**: Requirements map directly to task tables in `specs/`.
 
 ### Ops & Observability
 
-- **Logs**: Loki integration.
-- **Metrics**: Prometheus with Alloy/Exporter sidecars.
-- **Traces**: Tempo integration.
+- **Logs**: Loki integration via Alloy.
+- **Metrics**: Prometheus with direct scrape or Alloy.
+- **Traces**: OTLP ingest into Tempo.

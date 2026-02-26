@@ -14,6 +14,11 @@ Manual bucket creation or database initialization is error-prone and prevents "i
 
 Adopt the `init-container` (sidecar) pattern in Docker Compose. A one-off container SHALL run mc/sql commands against the core service.
 
+### Consequences
+
+- **Positive**: Self-healing resources, zero-touch Day-0 setup.
+- **Negative**: Increased image pull count, slightly longer cluster startup.
+
 ---
 
 ## ADR-006: External `project_net` Convention
@@ -30,6 +35,11 @@ Apps and Infra often reside in separate repositories. Hardcoding internal IP add
 
 Use a standard external network named `project_net`. All infra services needing app integration MUST join this network with a known alias.
 
+### Consequences
+
+- **Positive**: Unified discovery across repositories, port mapping reduction.
+- **Negative**: Requires manual network creation if not present (handled by preflight).
+
 ---
 
 ## ADR-007: Mandatory Resource Limiting (Reservations)
@@ -45,3 +55,8 @@ Local machines can experience "thrashing" when containers consume all CPU/RAM du
 ### Decision
 
 Standardize `deploy.resources.reservations`. Every service MUST define a floor for memory to prevent over-allocation.
+
+### Consequences
+
+- **Positive**: Stable local environment, prevented OOM cascades.
+- **Negative**: Requires higher baseline RAM availability on host.

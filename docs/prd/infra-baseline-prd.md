@@ -25,6 +25,17 @@ To provide a highly modular, secure, and production-grade local infrastructure f
 2. **Infrastructure Testing**: DevOps engineer modifies a service configuration and validates it before production deployment.
 3. **Incident Recovery**: User follows a runbook to recover a database cluster after a failure.
 
+## Milestones
+
+- **M1: Baseline Setup**: Core orchestration and tiered directory structure established.
+- **M2: Security Hardening**: Secrets-First policy and container security defaults applied Repo-wide.
+- **M3: Operational Readiness**: Basic runbooks and incident logging system initialized.
+
+## Risks & Mitigations
+
+- **Risk**: Local resource exhaustion (CPU/RAM). **Mitigation**: Standardized resource limits and reservations in all Compose files.
+- **Risk**: Secret leakage in Git history. **Mitigation**: Mandatory `.gitignore` enforcement and preflight secret presence checks.
+
 ## Scope & Constraints
 
 - **In-Scope**: Infrastructure orchestration, security baselines, secret management, operational procedures.

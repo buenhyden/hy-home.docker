@@ -1,22 +1,37 @@
 # Phase 2 ARD: Scaling & Autonomous Patterns
 
-## [REQ-PH2-02] Advanced Technical Spec
+## [REQ-SPT-05] Technical Specification
 
-### Multi-Project Bridge Architecture
+### Architecture Overview
 
-Infrastructure tiers SHALL define standardized `project_net` interfaces for seamless app-to-infra bridging without expose-port conflicts.
+Expansion of the baseline architecture to include autonomous resource setup and project-bridging network aliases.
 
-### Autonomous sidecars
+### NFR (Non-Functional Requirements)
 
-- Services requiring post-boot setup (e.g., MinIO, OpenSearch) SHALL utilize the "Init-Sidecar" pattern.
-- Init-containers MUST use standard images (e.g., `minio/mc`) and exit with code 0 upon success.
+- **Zero-Touch Reliability**: Initialization containers MUST be idempotent and handle transient service unavailability.
+- **Network Isolation**: `project_net` MUST be used exclusively for app-to-infra traffic.
 
-### Provisioned Observability
+### Storage Strategy
 
-- **Grafana**: Dashboards and Datasources MUST be defined in `./infra/06-observability/grafana/provisioning`.
-- **Alloy**: Standardized relabeling rules for `hy-home.scope` across all projects.
+- **S3 Dynamic**: MinIO buckets handled by `minio-mc` sidecar.
+- **Search Sharding**: OpenSearch templates optimized for 1-shard per index on local machines.
 
-### Scaling Strategy
+### Interfaces
 
-- **Horizontal**: Use of Docker Compose `deploy.replicas` for stateless components (e.g., n8n-worker).
-- **Vertical**: Expansion of `resource-budgets/` spec to include dynamic scaling profiles.
+- **External Bridge**: `project_net` (External bridge network).
+- **Service Discovery**: Docker Label based discovery for Traefik and Prometheus/Alloy.
+
+### Security
+
+- **Init Security**: Sidecars MUST run as non-privileged users with `no-new-privileges:true`.
+- **Secret Access**: Initialization secrets MUST be scoped to the sidecar only.
+
+### Verification (Tests/Coverage)
+
+- **GWT Verification**: Every init-script has a matching GWT case in its corresponding spec.
+- **Health Checks**: Containers MUST wait for upstream dependency healthiness before running init logic.
+
+### Ops & Observability
+
+- **Provisioning**: Grafana dashboards stored in `grafana/dashboards/*.json`.
+- **Relabeling**: Alloy dynamic network detection for multi-repo log aggregation.

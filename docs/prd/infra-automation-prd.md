@@ -1,26 +1,30 @@
 # Phase 2 PRD: Infrastructure Automation & Advanced Operations
 
-## [REQ-PH2-01] Vision
+## [REQ-SPT-04] Vision
 
 To evolve from a static infrastructure stack to an autonomous platform with self-provisioning capabilities and advanced error handling.
 
-## Success Metrics
+## Personas
 
-- **Zero-Touch Provisioning**: Core buckets and DB schemas initialized automatically on Day-0.
-- **Observability Maturity**: 100% of services have dedicated Grafana dashboards and alerting rules.
-- **Failover Automation**: Critical services (Postgres, Kafka) have verified automated failover mechanisms.
+- **DevOps Engineer**: Needs to reduce manual toil by automating repetitive setup tasks (buckets, topics).
+- **Service Operator**: Needs clear visualization of infra health via pre-provisioned dashboards.
 
-## Use Cases
+## Success Metrics [REQ-SPT-01]
 
-1. **Automated Resource Setup**: A new storage service is added; buckets and IAM policies are created via a sidecar container.
-2. **Unified Monitoring**: Operator views a central "Infra Health" dashboard that aggregates status from all tiers.
-3. **Pre-emptive Healing**: Monitoring triggers a recovery script (via n8n) when specific failure patterns are detected.
+- **Zero-Touch Provisioning**: Core buckets and DB schemas initialized automatically on first boot.
+- **Observability Coverage**: 100% of services have dedicated Grafana dashboards.
+- **Manual Toil Reduction**: 50% reduction in manual setup steps for new data clusters.
 
-## Phase 2 Requirements
+## Phase 2 Requirements (Persona Framed)
 
-| ID | Requirement | Priority |
-| --- | --- | --- |
-| REQ-AUTO-01 | Sidecar-based resource initialization (e.g., MinIO buckets, Kafka topics). | Critical |
-| REQ-OBS-01 | Standardization of Grafana via Provisioning (YAML) instead of manual UI edits. | High |
-| REQ-SCR-01 | Enhancement of `preflight-compose.sh` to include container runtime density checks. | Medium |
-| REQ-OPS-01 | Multi-Project networking standard (External project bridging). | High |
+- [REQ-AUTO-01] **As a DevOps Engineer**, I want buckets and topics initialized via sidecars so that I don't have to run manual `mc` commands.
+- [REQ-OBS-01] **As a Service Operator**, I want dashboards provisioned from code so that my telemetry is always consistent after a restart.
+- [REQ-OPS-01] **As a Developer**, I want `project_net` bridging so that my apps in other repos can talk to the infra without port collisions.
+
+## Acceptance Criteria (GWT) [REQ-SPT-06]
+
+| ID | Given | When | Then |
+| --- | --- | --- | --- |
+| AC-PH2-01 | OpenSearch is running | `opensearch-init` completes | Index templates exist without manual input. |
+| AC-PH2-02 | Grafana starts | User opens dashboard UI | Standard dashboards are pre-loaded from `/etc/grafana/dashboards`. |
+| AC-PH2-03 | Project Net exists | Alloy relabeling is active | Logs from project containers are visible in Loki under `scope: app`. |
