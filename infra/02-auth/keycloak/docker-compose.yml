@@ -37,6 +37,7 @@ services:
           cpus: '1.0'
           memory: 1G
         reservations:
+          cpus: '0.5'
           memory: 512M
     image: quay.io/keycloak/keycloak:26.5.4
     container_name: keycloak
@@ -96,7 +97,11 @@ services:
     secrets:
       - keycloak_db_password
       - keycloak_admin_password
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name=keycloak,tier=auth'
 
 networks:
   infra_net:

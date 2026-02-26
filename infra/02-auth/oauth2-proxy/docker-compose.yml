@@ -32,6 +32,9 @@ services:
         limits:
           cpus: '0.5'
           memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 128M
     build:
       context: .
       dockerfile: Dockerfile
@@ -76,4 +79,8 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.28
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name=oauth2-proxy,tier=auth'

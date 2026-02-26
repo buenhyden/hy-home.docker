@@ -57,6 +57,9 @@ services:
         limits:
           cpus: '0.5'
           memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 256M
     image: valkey/valkey:9.0.2-alpine # Valkey 9.0.x
     container_name: mng-valkey
     security_opt:
@@ -172,6 +175,9 @@ services:
         limits:
           cpus: '1.0'
           memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     image: postgres:17-bookworm
     container_name: mng-pg
     security_opt:
