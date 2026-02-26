@@ -1,69 +1,69 @@
-# ARD: Infrastructure Architecture
+# Hy-Home Infrastructure Baseline ARD
 
-## [REQ-SPT-05] Technical Specification
+_Target Directory: `docs/ard/infra-baseline-ard.md`_
 
-### Architecture Overview
+- **Status**: Approved
+- **Owner**: Platform Architect
+- **PRD Reference**: [infra-baseline-prd.md](../prd/infra-baseline-prd.md)
+- **ADR References**: [adr-0001](./adr/adr-0001-root-orchestration-include.md) to [adr-0004](./adr/adr-0004-tiered-directory-structure.md)
 
-The system follows a **Layered Modular Orchestration** pattern. A root orchestrator (`docker-compose.yml`) aggregates specialized service stacks from a multi-tier directory structure (`infra/`) using the `include` feature of Docker Compose v2.
+---
 
-- **Standalone Stack**: 루트 `include` 없이 별도 Compose로 운영 가능한 서비스(예: Supabase)
+## 1. Executive Summary
 
-### Labeling Standards
+A modular service orchestrator utilizing Docker Compose v2 `include` to manage a multi-tier infrastructure stack. Focused on security consistency, ease of bootstrap, and local environment stability.
 
-To ensure consistent service discovery and telemetry, all infra services SHOULD include the following labels:
+## 3. System Overview & Context
 
-- `hy-home.scope`: Set to `infra` for system services, `app` for user applications.
-- `hy-home.tier`: The category name (e.g., `gateway`, `auth`, `data`).
-- `observability.logs`: Explicitly set to `"true"` to enable log scraping.
-- `traefik.enable`: Set to `"true"` if the service needs external routing.
+```mermaid
+C4Context
+    title Infrastructure System Context
+    Person(dev, "Developer", "Uses local infra for app testing")
+    System(infra, "Hy-Home Infra", "LGTM stack, PG Cluster, Kafka, MinIO")
+    System_Ext(docker, "Docker Host", "Provides container runtime")
 
-### Components (Tiers)
+    Rel(dev, infra, "Bootstraps via CLI")
+    Rel(infra, docker, "Runs on")
+```
 
-1. **Gateway (01-gateway)**: Edge routing and SSL termination (Traefik).
-2. **Auth (02-auth)**: Identity management (Keycloak).
-3. **Security (03-security)**: Secret vaulting (Vault).
-4. **Data (04-data)**: Persistence layers (Postgres, MinIO, OpenSearch).
-5. **Messaging (05-messaging)**: Async communication (Kafka).
-6. **Observability (06-observability)**: LGTM stack.
-7. **Workflow (07-workflow)**: Orchestration (Airflow, n8n).
-8. **AI (08-ai)**: Local LLM inference (Ollama).
-9. **Tooling (09-tooling)**: DevOps utilities.
-10. **Communication (10-communication)**: Mail services.
+## 4. Architecture & Tech Stack
 
-### Storage Strategy
+### 4.1 Component Architecture
 
-- **Volumes**: Standard Docker named volumes for persistence.
-- **Object Storage**: MinIO for S3-compatible workloads.
-- **Cluster HA**: Patroni for PostgreSQL HA clusters.
+```mermaid
+C4Container
+    title Infra Tier Hierarchy
+    Container(gateway, "Gateway Tiers", "Traefik", "SSL & Routing")
+    Container(data, "Data Tier", "Postgres/MinIO/OpenSearch", "Persistence")
+    Container(obs, "Observability", "LGTM Stack", "Telemetry")
 
-### Interface & Networking
+    Rel(gateway, data, "Routes to")
+    Rel(data, obs, "Sends logs/metrics")
+```
 
-- **Internal**: `infra_net` bridge for inter-service communication.
-- **External**: `project_net` for app integration; `kind` for K8s bridging.
-- **Ingress**: Traefik handles HTTP/HTTPS routing via Docker labels.
+### 4.2 Technology Stack
 
-### Security Implementation
+- **Orchestration**: Docker Compose v2 (`include`)
+- **Gateway**: Traefik 3+
+- **Data**: PostgreSQL 17 (Patroni), Kafka (KRaft), MinIO
 
-- **Secret Management**: Mandatory use of Docker Secrets. Files in `secrets/*.txt` are mounted at runtime.
-- **Container Hardening**:
-  - `no-new-privileges: true`
-  - `cap_drop: [ALL]`
-  - User namespaces (where applicable).
+## 5. Data Architecture
 
-### Non-Functional Requirements (NFR)
+- **Storage Strategy**: Bind mounts to `${DEFAULT_DATA_DIR}` for persistence; Docker volumes for internal cache.
+- **HA Strategy**: Multi-node clusters for Tier-1 services (PG, Kafka).
 
-- **High Availability**: PostgreSQL and Kafka stacks SHALL use multi-node replication (Patroni/KRaft).
-- **Security Density**: Standard Linux capabilities SHALL be dropped by default (`cap_drop: [ALL]`).
-- **Resource Limits**: Every service MUST have `deploy.resources.limits` to prevent OOM events.
+## 6. Security & Compliance
 
-### Verification Plan (Tests/Coverage)
+- **Authentication**: Managed via Keycloak (Auth Tier).
+- **Secrets**: 100% Docker Secrets (`secrets/*.txt`).
+- **Hardening**: `cap_drop: [ALL]`, `no-new-privileges: true`.
 
-- **Static Validation**: `scripts/validate-docker-compose.sh` for YAML schema check.
-- **Security Scan**: Regular `trivy` or `docker scan` on core images.
-- **Traceability**: Requirements map directly to task tables in `specs/`.
+## 8. Non-Functional Requirements (NFRs)
 
-### Ops & Observability
+- **Availability**: Standard HA (3-node clusters) for data.
+- **Performance**: Standardized resource limits to prevent host thrashing.
 
-- **Logs**: Loki integration via Alloy.
-- **Metrics**: Prometheus with direct scrape or Alloy.
-- **Traces**: OTLP ingest into Tempo.
+## 9. Architectural Principles & Trade-offs
+
+- **What NOT to do**: Manual port mapping in sub-compose files (Use labels).
+- **Trade-offs**: Docker Compose over Kubernetes for lower local overhead.

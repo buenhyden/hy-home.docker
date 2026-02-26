@@ -1,30 +1,58 @@
-# Phase 2 PRD: Infrastructure Automation & Advanced Operations
+---
+title: 'Infrastructure Automation & Advanced Operations PRD'
+status: 'Draft'
+version: 'v1.1.0'
+owner: 'Platform Architect'
+stakeholders: ['Platform Team']
+tags: ['prd', 'requirements', 'automation', 'phase2']
+---
 
-## [REQ-SPT-04] Vision
+# Product Requirements Document (PRD)
 
-To evolve from a static infrastructure stack to an autonomous platform with self-provisioning capabilities and advanced error handling.
+> **Status**: Draft
+> **Target Version**: v1.1.0
+> **Owner**: Platform Architect
 
-## Personas
+_Target Directory: `docs/prd/infra-automation-prd.md`_
 
-- **DevOps Engineer**: Needs to reduce manual toil by automating repetitive setup tasks (buckets, topics).
-- **Service Operator**: Needs clear visualization of infra health via pre-provisioned dashboards.
+---
 
-## Success Metrics [REQ-SPT-01]
+## 0. Pre-Review Checklist (Business & Product)
 
-- **Zero-Touch Provisioning**: Core buckets and DB schemas initialized automatically on first boot.
-- **Observability Coverage**: 100% of services have dedicated Grafana dashboards.
-- **Manual Toil Reduction**: 50% reduction in manual setup steps for new data clusters.
+| Item                  | Check Question                                                         | Required | Alignment Notes (Agreement) | PRD Section |
+| --------------------- | ---------------------------------------------------------------------- | -------- | --------------------------- | ----------- |
+| Vision & Goal         | Is the problem + business goal defined in one paragraph?               | Must     | Autonomous platform vision   | Section 1   |
+| Success Metrics       | Are the key success/failure metrics defined with quantitative targets? | Must     | 50% toil reduction          | Section 3   |
 
-## Phase 2 Requirements (Persona Framed)
+---
 
-- [REQ-AUTO-01] **As a DevOps Engineer**, I want buckets and topics initialized via sidecars so that I don't have to run manual `mc` commands.
-- [REQ-OBS-01] **As a Service Operator**, I want dashboards provisioned from code so that my telemetry is always consistent after a restart.
-- [REQ-OPS-01] **As a Developer**, I want `project_net` bridging so that my apps in other repos can talk to the infra without port collisions.
+## 1. Vision & Problem Statement
 
-## Acceptance Criteria (GWT) [REQ-SPT-06]
+**Vision**: To evolve into an autonomous platform with self-provisioning capabilities and advanced telemetry.
 
-| ID | Given | When | Then |
-| --- | --- | --- | --- |
-| AC-PH2-01 | OpenSearch is running | `opensearch-init` completes | Index templates exist without manual input. |
-| AC-PH2-02 | Grafana starts | User opens dashboard UI | Standard dashboards are pre-loaded from `/etc/grafana/dashboards`. |
-| AC-PH2-03 | Project Net exists | Alloy relabeling is active | Logs from project containers are visible in Loki under `scope: app`. |
+**Problem Statement**: Manual setup of buckets, topics, and dashboards creates friction and operational risk during scaling.
+
+## 2. Target Personas
+
+- **Persona 1 (DevOps Engineer)**:
+  - **Goal**: Reduce manual toil for repetitive setup tasks.
+- **Persona 2 (Service Operator)**:
+  - **Goal**: Persistent and pre-provisioned health visibility.
+
+## 3. Success Metrics (Quantitative)
+
+| ID                 | Metric Name        | Baseline (Current) | Target (Success) | Measurement Period  |
+| ------------------ | ------------------ | ------------------ | ---------------- | ------------------- |
+| **REQ-PRD-MET-01** | Provisioning Toil  | 10 manual steps    | 0 manual steps   | Per cluster setup   |
+
+## 4. Key Use Cases & Acceptance Criteria (GWT)
+
+| ID           | User Story (INVEST)                                                                      | Acceptance Criteria (Given-When-Then)                                                                                                |
+| ------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **STORY-PH2-01** | **As a** DevOps Engineer,<br>**I want** init-sidecars,<br>**So that** my data cluster is ready on boot. | **Given** OpenSearch starts,<br>**When** `opensearch-init` runs,<br>**Then** index templates are created automatically. |
+
+## 5. Scope & Functional Requirements
+
+- **[REQ-AUTO-01]** Sidecar-based resource initialization.
+- **[REQ-OBS-01]** Provisioned Grafana Dashboards as Code.
+- **[REQ-OPS-01]** Multi-Project bridge networking via `project_net`.

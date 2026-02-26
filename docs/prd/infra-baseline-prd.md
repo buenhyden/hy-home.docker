@@ -1,57 +1,75 @@
-# PRD: Hy-Home Docker Infrastructure
+---
+title: 'Hy-Home Infrastructure Baseline Product Requirements Document'
+status: 'Approved'
+version: 'v1.0.0'
+owner: 'Platform Architect'
+stakeholders: ['DevOps Team', 'Home-Lab Users']
+tags: ['prd', 'requirements', 'baseline', 'infra']
+---
 
-## [REQ-SPT-04] Vision & Persona
+# Product Requirements Document (PRD)
 
-### Vision
+> **Status**: Approved
+> **Target Version**: v1.0.0
+> **Owner**: Platform Architect
+> **Stakeholders**: DevOps Team, Home-Lab Users
 
-To provide a highly modular, secure, and production-grade local infrastructure for DevOps experimentation, home-lab hosting, and consistent development environments using Docker Compose.
+_Target Directory: `docs/prd/infra-baseline-prd.md`_
 
-### Personas
+---
 
-- **Home-Lab Enthusiast (Primary)**: Needs a stable, multi-service environment that is easy to bootstrap and recover.
-- **DevOps Engineer**: Needs a sandbox to test infrastructure patterns (secrets, networking, observability) on a local machine.
-- **Software Developer**: Needs a local stack for application integration testing (DBs, Messaging, Auth).
+## 0. Pre-Review Checklist (Business & Product)
 
-## Success Metrics [REQ-SPT-01]
+| Item                  | Check Question                                                         | Required | Alignment Notes (Agreement) | PRD Section |
+| --------------------- | ---------------------------------------------------------------------- | -------- | --------------------------- | ----------- |
+| Vision & Goal         | Is the problem + business goal defined in one paragraph?               | Must     | High-level vision established | Section 1   |
+| Success Metrics       | Are the key success/failure metrics defined with quantitative targets? | Must     | Bootstrap time < 10 mins     | Section 3   |
+| Target Users          | Are specific primary personas and their pain points defined?           | Must     | Enthusiast/Dev/DevOps        | Section 2   |
+| Use Case (GWT)        | Are acceptance criteria written in Given-When-Then format?             | Must     | Standard ACs defined         | Section 4   |
 
-- **Bootstrap Time**: Initial stack up (Day-0) in < 10 minutes including cert generation.
-- **Recovery Time (RTO)**: Tier-1 services recovered via Runbooks in < 30 minutes.
-- **Security Coverage**: 100% of sensitive credentials managed via Docker Secrets (0 secrets in `.env`).
-- **Validation Rate**: 100% success rate on `validate-docker-compose.sh` before merging changes.
+---
 
-## Use Cases
+## 1. Vision & Problem Statement
 
-1. **Local Development Setup**: Developer runs `docker compose up` to start all necessary backends.
-2. **Infrastructure Testing**: DevOps engineer modifies a service configuration and validates it before production deployment.
-3. **Incident Recovery**: User follows a runbook to recover a database cluster after a failure.
+**Vision**: To provide a highly modular, secure, and production-grade local infrastructure for DevOps experimentation and home-lab hosting using Docker Compose.
 
-## Milestones
+**Problem Statement**: Local infrastructure is often fragmented, insecure, and difficult to reproduce, leading to wasted time on setup instead of learning or development.
 
-- **M1: Baseline Setup**: Core orchestration and tiered directory structure established.
-- **M2: Security Hardening**: Secrets-First policy and container security defaults applied Repo-wide.
-- **M3: Operational Readiness**: Basic runbooks and incident logging system initialized.
+## 2. Target Personas
 
-## Risks & Mitigations
+- **Persona 1 (Home-Lab Enthusiast)**:
+  - **Pain Point**: Complex multi-service setups break easily.
+  - **Goal**: A stable environment that is easy to bootstrap.
+- **Persona 2 (DevOps Engineer)**:
+  - **Pain Point**: Testing infra patterns locally is hard without standard layering.
+  - **Goal**: A sandbox that mirrors production-grade orchestration and security.
 
-- **Risk**: Local resource exhaustion (CPU/RAM). **Mitigation**: Standardized resource limits and reservations in all Compose files.
-- **Risk**: Secret leakage in Git history. **Mitigation**: Mandatory `.gitignore` enforcement and preflight secret presence checks.
+## 3. Success Metrics (Quantitative)
 
-## Scope & Constraints
+| ID                 | Metric Name        | Baseline (Current) | Target (Success) | Measurement Period  |
+| ------------------ | ------------------ | ------------------ | ---------------- | ------------------- |
+| **REQ-PRD-MET-01** | Bootstrap Time     | 30 mins            | < 10 mins        | Day-0 build         |
+| **REQ-PRD-MET-02** | Security Coverage | 50%                | 100% (Secrets)   | Audit cycle         |
 
-- **In-Scope**: Infrastructure orchestration, security baselines, secret management, operational procedures.
-- **Out-of-Scope**: Application business logic, external cloud provider integrations (unless specifically proxying).
-- **Compliance**: Adheres to `[REQ-RSK-04]` (Risk Tiering) and `[REQ-FSTR-00]` (Workspace Separation).
+## 4. Key Use Cases & Acceptance Criteria (GWT)
 
-## Implementation Rules
+| ID           | User Story (INVEST)                                                                      | Acceptance Criteria (Given-When-Then)                                                                                                |
+| ------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **STORY-01** | **As a** Enthusiast,<br>**I want** a preflight check,<br>**So that** I know I'm missing secrets. | **Given** a clean Docker environment,<br>**When** running `preflight-compose.sh`,<br>**Then** missing secrets are identified. |
 
-- **[REQ-SPT-08] Mandatory Persona Framing**: Every feature must support at least one persona's need.
-- **[REQ-SPT-09] Deterministic Language**: Use SHALL, MUST, PROHIBITED in technical specs.
-- **[REQ-SPT-10] Verifiable AC**: Every infra change MUST be accompanied by verification steps in `specs/`.
+## 5. Scope & Functional Requirements
 
-## Acceptance Criteria [REQ-SPT-06]
+- **[REQ-PRD-FUN-01]** Modular Orchestration via `include`.
+- **[REQ-PRD-FUN-02]** Secrets-First Policy enforcement (100% Docker Secrets).
+- **[REQ-PRD-FUN-03]** Bootstrap Prerequisites: Define required `.env` keys and directory permissions.
+- **[REQ-PRD-FUN-04]** Local TLS Standardisation via `mkcert` (secrets/certs/).
 
-| ID | Given | When | Then |
-| --- | --- | --- | --- |
-| AC-1 | A clean Docker environment | Running `scripts/preflight-compose.sh` | All required secrets and certs are identified or generated. |
-| AC-2 | A new service sub-folder | Included in root `docker-compose.yml` | `scripts/validate-docker-compose.sh` passes without errors. |
-| AC-3 | A service failure | Executing the corresponding Runbook | Service state is restored to healthy within the defined RTO. |
+## 7. Milestones & Roadmap
+
+- **M1: Baseline Setup**: Foundation tiers (Gateway, Data) established.
+- **M2: Security Hardening**: 100% secret management logic applied.
+
+## 8. Risks, Security & Compliance
+
+- **Risks**: Resource exhaustion on low-RAM hosts.
+- **Security**: Mandatory `cap_drop` and `no-new-privileges`.
