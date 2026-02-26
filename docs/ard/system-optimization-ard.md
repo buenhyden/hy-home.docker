@@ -57,9 +57,11 @@ All infrastructure services SHALL operate without explicit `ipv4_address` assign
 ### 2.4 Standardized Init Process [ADR-0012]
 
 Every containerized service MUST utilize `init: true` to ensure robust signal handling (SIGTERM/SIGINT) and the proper reaping of zombie processes. This improves observability stability and ensures clean shutdowns during orchestration events.
-```
 
-## 3. Security Boundaries
+## 3. Stateless Hardening Patterns
+Stateless services (exporters, proxies, UIs) MUST utilize `read_only: true` for the root filesystem. Transient write requirements MUST be handled via `tmpfs` mounts to ensure zero persistent side-effects and prevent runtime binary tampering.
+
+## 4. Security Boundaries
 
 - **Network Strategy**: Direct container-to-container access is restricted via tier-specific user-defined networks.
 - **Credential Lifecycle**: 100% of sensitive material MUST be managed via Docker Secrets mounted at runtime, as per **[ADR-009]**.

@@ -55,7 +55,6 @@ services:
 
     labels:
       <<: *labels-base
-      hy-home.tier: data
       traefik.enable: 'false'
     secrets:
       - mng_valkey_password
@@ -98,8 +97,9 @@ services:
 
     labels:
       <<: *labels-base
-      hy-home.tier: data
     read_only: true
+    tmpfs:
+      - /tmp
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
     networks:
@@ -122,11 +122,6 @@ services:
     depends_on:
       mng-valkey:
         condition: service_healthy
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   redisinsight:
     extends:
@@ -142,17 +137,11 @@ services:
     labels:
       <<: *labels-base
       traefik.enable: 'true'
-      hy-home.tier: data
       traefik.http.routers.redisinsight.rule: Host(`redisinsight.${DEFAULT_URL}`)
       traefik.http.routers.redisinsight.entrypoints: websecure
       traefik.http.routers.redisinsight.tls: 'true'
       traefik.http.routers.redisinsight.middlewares: sso-auth@file
       traefik.http.services.redisinsight.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-8001}
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   mng-pg:
     extends:
@@ -170,8 +159,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - '${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}'
-    expose:
-      - '${POSTGRES_PORT:-5432}'
     secrets:
       - mng_postgres_password
     volumes:
@@ -185,12 +172,6 @@ services:
       start_period: 30s
     labels:
       <<: *labels-base
-      hy-home.tier: data
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   mng-pg-init:
     extends:
@@ -259,6 +240,8 @@ services:
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: mng-pg-exporter
     read_only: true
+    tmpfs:
+      - /tmp
 
     networks:
       - infra_net
@@ -286,8 +269,3 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'

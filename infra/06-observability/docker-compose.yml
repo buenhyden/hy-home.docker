@@ -43,6 +43,7 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_OBSERVABILITY_DIR}/grafana
+  prom-tmp:
 
 services:
   # -------------------------------------------------------
@@ -55,6 +56,10 @@ services:
     image: prom/prometheus:v3.9.0
     container_name: infra-prometheus
     user: '1000:1000'
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /etc/prometheus:size=10M
 
     entrypoint: ['/bin/sh', '-c']
     command: >
@@ -341,6 +346,10 @@ services:
       service: template-infra-low
     image: prom/alertmanager:v0.30.0
     container_name: infra-alertmanager
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /etc/alertmanager:size=1M
 
     secrets:
       - smtp_username
@@ -390,6 +399,9 @@ services:
       service: template-infra-low
     image: prom/pushgateway:v1.11.2
     container_name: pushgateway
+    read_only: true
+    tmpfs:
+      - /tmp
 
     expose:
       - ${PUSHGATEWAY_PORT:-9091}

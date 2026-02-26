@@ -15,7 +15,7 @@ Establish a high-performance, secure, and observable home server infrastructure 
 - **Metric-02 (Observability)**: 100% of infrastructure logs MUST be indexed in Loki with `hy-home.tier` metadata tags.
 - **Metric-03 (Performance)**: Cold startup time for the core gateway (NGINX/Traefik) SHALL be < 15 seconds.
 - **Metric-04 (Portability)**: 100% of services SHALL operate without explicit `ipv4_address` assignments [ADR-0008].
-- **Metric-05 (Hardening)**: > 90% of stateless services SHALL implement `read_only: true` filesystems with `tmpfs` support.
+- **Metric-05 (Hardening)**: 100% of stateless services SHALL implement `read_only: true` filesystems with `tmpfs` support.
 
 ## 4. Use Cases [REQ-SPT-04]
 

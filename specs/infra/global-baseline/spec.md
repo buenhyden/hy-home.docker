@@ -89,10 +89,15 @@ This specification defines standard extension fields and service templates for c
 
   - **Then**: Structured logs MUST appear in the centralized plane.
 
-- **[VAL-SPC-004] DNS-Based Connectivity Verification**:
-  - **Given**: Two services on the `infra_net` bridge.
-  - **When**: Executing `ping -c 1 <service_name>` from one container to another.
-  - **Then**: ICMP response MUST be received without IP-level configuration.
+- [VAL-SPC-004] DNS-Based Connectivity Verification:
+  - Given: Two services on the infra_net bridge.
+  - When: Executing ping -c 1 <service_name> from one container to another.
+  - Then: ICMP response MUST be received without IP-level configuration.
+
+- [VAL-SPC-006] Filesystem Immutability Verification:
+  - Given: A stateless service (e.g., pg-exporter).
+  - When: Inspecting via docker inspect <container> --format '{{.HostConfig.ReadonlyRootfs}}'.
+  - Then: Boolean value MUST be true.
 
 - **[VAL-SPC-005] Init Process Verification**:
   - **Given**: A running container.

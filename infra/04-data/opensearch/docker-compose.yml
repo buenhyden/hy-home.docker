@@ -23,7 +23,10 @@ services:
   # OpenSearch 노드 1 (cluster_manager + data + ingest)
   # ######################################################
   opensearch:
-    # image: opensearchproject/opensearch:3.4.0  # 2025-11 기준 최신 3.x 안정 버전
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
+    # image: opensearchproject/opensearch:3.4.0
     build:
       context: . ## build Docker file location
       dockerfile: Dockerfile ## build file name
@@ -73,11 +76,11 @@ services:
       - ./opensearch/config/opensearch-security/tenants.yml:/usr/share/opensearch/config/opensearch-security/tenants.yml:ro
       - ./opensearch/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
       - ./opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
-    ports:
+    # ports:
       # REST API (TLS on 기본) – Loki/Alloy에서 로그/메트릭 수집, 앱 연결
-      - '${ES_HOST_PORT:-9200}:${ES_PORT:-9200}'
+      # - '${ES_HOST_PORT:-9200}:${ES_PORT:-9200}'
       # Performance Analyzer / 메트릭 포트
-      - '${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}'
+      # - '${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}'
     extra_hosts:
       - 'keycloak.127.0.0.1.nip.io:172.19.0.13'
     labels:
@@ -203,8 +206,3 @@ services:
         reservations:
           cpus: '0.05'
           memory: 64M
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
