@@ -14,6 +14,7 @@ This directory contains Architecture Decision Records for the project. ADRs docu
 | [ADR-0006](adr-0006-project-net-external-network.md) | Project Net External Network | Accepted | 2026-02-26 |
 | [ADR-0007](adr-0007-mandatory-resource-limits.md) | Mandatory Resource Limits | Accepted | 2026-02-26 |
 | [ADR-0008](adr-0008-removing-static-docker-ips.md) | Removing Static Docker IPs | Accepted | 2026-02-26 |
+| [ADR-0012](adr-0012-standardized-init-process.md) | Standardized Init Process | Proposed | 2026-02-27 |
 
 ---
 > [!NOTE]
