@@ -49,6 +49,9 @@ services:
       - '--configFile=/etc/traefik/traefik.yml'
     labels:
       - 'traefik.enable=true'
+      - 'hy-home.scope=infra'
+      - 'hy-home.tier=gateway'
+      - 'observability.logs=true'
       - 'traefik.http.routers.dashboard.rule=Host(`dashboard.${DEFAULT_URL}`)'
       - 'traefik.http.routers.dashboard.entrypoints=websecure'
       - 'traefik.http.routers.dashboard.service=api@internal'

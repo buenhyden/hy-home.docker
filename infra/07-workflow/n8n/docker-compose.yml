@@ -102,6 +102,9 @@ services:
       QUEUE_HEALTH_CHECK_ACTIVE: true
     labels:
       - 'traefik.enable=true'
+      - 'hy-home.scope=infra'
+      - 'hy-home.tier=workflow'
+      - 'observability.logs=true'
       # n8n UI & Webhook 라우터 (https://n8n.${DEFAULT_URL})
       - 'traefik.http.routers.n8n.rule=Host(`n8n.${DEFAULT_URL}`)'
       - 'traefik.http.routers.n8n.entrypoints=websecure'
