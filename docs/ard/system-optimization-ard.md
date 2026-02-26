@@ -22,12 +22,31 @@ Implementation SHALL utilize root-level configuration blocks (`x-optimizations`)
 - **`&security-baseline`**: Universal cap-drop and privilege escalation protection.
 - **`&logging-loki`**: Standardized push-based log collection using the Loki driver.
 - **`&labels-base`**: Automated schema-compliant metadata injection for system-wide filtering.
+- **`&resource-low/med/high`**: Standardized quota presets to prevent resource contention.
 
 ### 2.2 Telemetry Architecture
 
-- **Logs**: Containers MUST emit structured logs via the Loki driver.
-- **Metrics**: Exporters SHALL expose OTLP/Prometheus endpoints on the `infra_net` for scrapers.
-- **Traces**: Distributed tracing (Tempo) handles request-level correlation between Tier 1 and Tier 2.
+```mermaid
+graph TD
+    subgraph Services
+        S1[Tier 1: Gateway]
+        S2[Tier 2: Auth]
+        S3[Tier 3: Data]
+    end
+    subgraph Collector
+        A[Grafana Alloy]
+    end
+    subgraph Storage
+        L[Loki: Logs]
+        P[Prometheus: Metrics]
+        T[Tempo: Traces]
+    end
+
+    S1 & S2 & S3 -- "Push Logs (Loki Driver)" --> L
+    S1 & S2 & S3 -- "Osh Scrape" --> A
+    A -- "Remote Write" --> P
+    A -- "Export Traces" --> T
+```
 
 ## 3. Security Boundaries
 

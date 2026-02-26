@@ -1,13 +1,8 @@
 name: oauth2-proxy
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+include:
+  - ../../common-optimizations.yml
 
-x-restart: &default-restart
-  restart: unless-stopped
 
 # volumes:
 #   oauth2-proxy-valkey-data:
@@ -27,22 +22,13 @@ secrets:
 
 services:
   oauth2-proxy:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
-        reservations:
-          cpus: '0.1'
-          memory: 128M
+    <<: [*default-restart, *security-baseline, *resource-low]
     build:
       context: .
       dockerfile: Dockerfile
     container_name: oauth2-proxy
-    security_opt:
-      - no-new-privileges:true
     read_only: true
-    <<: *default-restart
+
     secrets:
       - mng_valkey_password
       - oauth2_proxy_client_secret

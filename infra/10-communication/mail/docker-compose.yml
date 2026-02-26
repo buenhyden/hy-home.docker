@@ -1,18 +1,6 @@
-name: mail
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+include:
+  - ../../common-optimizations.yml
 
-volumes:
-  stalwart-data:
-  stalwart_certs:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs
 secrets:
   stalwart_password:
     external: true
@@ -21,13 +9,10 @@ services:
   # Stalwart Mail Server (올인원 메일 서버)
   # ----------------------------------------------------------------
   stalwart:
+    <<: [*default-restart, *security-baseline, *resource-med]
     image: stalwartlabs/stalwart:v0.14
     container_name: stalwart
-    restart: always
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+
     # [포트 설정]
     # 메일 프로토콜 포트는 Traefik을 통하지 않고 호스트에 직접 노출해야 합니다.
     ports:
@@ -65,15 +50,12 @@ services:
       # (선택) 웹 UI에 OAuth2 Proxy 인증을 걸고 싶다면 아래 주석 해제
       # - "traefik.http.routers.stalwart-ui.middlewares=sso-auth@file"
   mailhog:
+    <<: [*default-restart, *security-baseline, *resource-low]
     profiles:
       - mail
     image: mailhog/mailhog:v1.0.1
     container_name: mailhog
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+
     # SMTP 포트(1025)는 내부용, UI 포트(8025)는 Traefik으로 노출
     networks:
       - infra_net
