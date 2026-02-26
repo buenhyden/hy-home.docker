@@ -70,7 +70,11 @@ services:
           memory: 256M
     image: valkey/valkey:9.0.2-alpine
     container_name: mng-valkey
-    <<: [*default-restart, *security-baseline, *labels-base]
+    <<: [*default-restart, *security-baseline]
+    labels:
+      <<: *labels-base
+      hy-home.tier: data
+      traefik.enable: 'false'
     secrets:
       - mng_valkey_password
     networks:
@@ -98,8 +102,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    labels:
-      - 'hy-home.tier=data'
     logging: *logging-loki
 
   mng-valkey-exporter:
@@ -113,7 +115,10 @@ services:
           memory: 64M
     image: oliver006/redis_exporter:v1.81.0-alpine
     container_name: mng-valkey-exporter
-    <<: [*default-restart, *security-baseline, *labels-base]
+    <<: [*default-restart, *security-baseline]
+    labels:
+      <<: *labels-base
+      hy-home.tier: data
     read_only: true
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
@@ -138,8 +143,6 @@ services:
     depends_on:
       mng-valkey:
         condition: service_healthy
-    labels:
-      - 'hy-home.tier=data'
     logging: *logging-loki
 
   redisinsight:

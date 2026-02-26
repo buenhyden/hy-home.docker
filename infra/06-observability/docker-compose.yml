@@ -105,12 +105,13 @@ services:
       retries: 5
       start_period: 3m
     labels:
-      - 'traefik.enable=true'
-      # 도메인: prometheus.${DEFAULT_URL}
-      - 'traefik.http.routers.prometheus.rule=Host(`prometheus.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.prometheus.entrypoints=websecure'
-      - 'traefik.http.routers.prometheus.tls=true'
-      - 'traefik.http.services.prometheus.loadbalancer.server.port=${PROMETHEUS_PORT:-9090}'
+      <<: *labels-base
+      traefik.enable: 'true'
+      hy-home.tier: observability
+      traefik.http.routers.prometheus.rule: Host(`prometheus.${DEFAULT_URL}`)
+      traefik.http.routers.prometheus.entrypoints: websecure
+      traefik.http.routers.prometheus.tls: 'true'
+      traefik.http.services.prometheus.loadbalancer.server.port: ${PROMETHEUS_PORT:-9090}
     logging:
       driver: 'loki'
       options:
@@ -153,16 +154,15 @@ services:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
     secrets:
       - minio_app_user_password
-    depends_on:
-      minio:
-        condition: service_healthy
+    labels:
+      <<: *labels-base
+      hy-home.tier: observability
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:3100/ready || exit 1']
       interval: 30s
       timeout: 15s
       retries: 5
       start_period: 2m
-    <<: *default-restart
   # -------------------------------------------------------
   # 3. Trace Storage (Tempo)
   # -------------------------------------------------------
