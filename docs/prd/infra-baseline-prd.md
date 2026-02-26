@@ -64,6 +64,10 @@ _Target Directory: `docs/prd/infra-baseline-prd.md`_
 - **[REQ-PRD-FUN-03]** Bootstrap Prerequisites: Define required `.env` keys and directory permissions.
 - **[REQ-PRD-FUN-04]** Local TLS Standardisation via `mkcert` (secrets/certs/).
 
+## 6. Technical Specifications
+
+- **Technical Specification**: [Infra Baseline Spec](../../specs/infra/baseline/spec.md)
+
 ## 7. Milestones & Roadmap
 
 - **M1: Baseline Setup**: Foundation tiers (Gateway, Data) established.

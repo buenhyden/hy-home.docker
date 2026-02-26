@@ -56,3 +56,7 @@ _Target Directory: `docs/prd/infra-automation-prd.md`_
 - **[REQ-AUTO-01]** Sidecar-based resource initialization.
 - **[REQ-OBS-01]** Provisioned Grafana Dashboards as Code.
 - **[REQ-OPS-01]** Multi-Project bridge networking via `project_net`.
+
+## 6. Technical Specifications
+
+- **Technical Specification**: [Infra Automation Spec](../../specs/infra/automation/spec.md)

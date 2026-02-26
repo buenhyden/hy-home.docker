@@ -70,7 +70,7 @@
 
 ## 5. Architecture References
 
-- 인프라 개요 ARD: [`docs/ard/infra-overview.md`](docs/ard/infra-overview.md)
-- 메시징 ARD: [`docs/ard/messaging-requirements.md`](docs/ard/messaging-requirements.md)
+- 인프라 기초 ARD: [`docs/ard/infra-baseline-ard.md`](docs/ard/infra-baseline-ard.md)
+- 메시징/기타 ARD: [`docs/ard/messaging-ard.md`](docs/ard/messaging-ard.md)
 - 기술 컨텍스트 허브: [`docs/context/README.md`](docs/context/README.md)
 - 운영 정책: [`OPERATIONS.md`](OPERATIONS.md)

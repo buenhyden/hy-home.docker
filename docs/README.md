@@ -18,8 +18,6 @@ Each sub-directory serves a distinct, non-overlapping purpose. Documents created
 
 ### 🏗️ For Architects
 
-- **Rationale**: [Architecture Decisions (ADR)](adr/README.md) — The "Why" behind the stack.
-- **Constraints**: [Architecture Requirements (ARD)](ard/README.md) — NFRs and boundaries.
 - **Optimization**: [Architecture Optimization Strategy](guides/arch-optimization-strategy.md).
 
 ### 💻 For Developers
