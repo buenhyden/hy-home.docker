@@ -2,27 +2,39 @@
 
 This directory is the **exclusive, authoritative home** for all executable procedures and incident response guides. Every file here is strictly procedural: "Actionable steps to resolve infrastructure state."
 
-## Documentation Taxonomy
+## 📚 Documentation Taxonomy
 
-1. **Technical Blueprints** ([`docs/context/`](../docs/context/README.md)): The "Why" and "How it works".
-2. **Runbooks** ([`runbooks/`](./README.md)): The "What to type" during an incident.
+1. **Architecture Reference (ARD)** ([`docs/ard/`](../docs/ard/README.md)): The "How it's built".
+2. **Product Requirements (PRD)** ([`docs/prd/`](../docs/prd/README.md)): The "What it should do".
+3. **Operational Runbooks** ([`runbooks/`](./README.md)): The "What to type" during an incident.
 
-## Directory Structure
+## 🧭 Operational Navigator (Role-Based)
 
-- [**01-Gateway**](01-gateway/) ([Blueprint](../docs/context/01-gateway/traefik-ingress-guide.md)): Ingress recovery and routing fixes.
-- [**02-Auth**](02-auth/) ([Blueprint](../docs/context/02-auth/keycloak-idp-guide.md)): Identity provider lockout and DB restoration.
-- [**03-Security**](03-security/) ([Blueprint](../docs/context/03-security/vault-cluster-guide.md)): Vault unsealing and key management.
-- [**04-Data**](04-data/) ([Blueprint](../docs/context/04-data/postgres-patroni-ha-guide.md)): Database HA recovery and sync maintenance.
-- [**05-Messaging**](05-messaging/) ([Blueprint](../docs/context/05-messaging/kafka-kraft-guide.md)): Kafka/RabbitMQ quorum and maintenance.
-- [**06-Observability**](06-observability/) ([Blueprint](../docs/context/06-observability/lgtm-stack-blueprint.md)): LGTM stack maintenance and storage cleanup.
-- [**07-Workflow**](07-workflow/) ([Blueprint](../docs/context/07-workflow/n8n-automation-context.md)): Automation engine and worker recovery.
-- **08-AI (Blueprint only)** ([Blueprint](../docs/context/08-ai/ai-inference-guide.md)): Model inference and GPU recovery.
-- [**Core**](core/) ([Blueprint](../docs/context/core/infra-lifecycle-ops.md)): Global incident response and deployment workflows.
+### 🏗️ For Platform Engineers (Bootstrap & Core)
 
-## Standards for New Runbooks
+- [**Core Procedures**](core/) — `make bootstrap`, environment setup, and global incident response.
+- [**Gateway Ingress**](01-gateway/) — Traefik routing, 502/504 errors, and middleware fixes.
+- [**Security & Vault**](03-security/) — Unsealing Vault, rotated secrets, and TLS certificate generation.
 
-- **Given**: The starting state or symptoms.
-- **When**: The specific trigger or failure condition.
-- **Then**: The exact CLI commands to resolve the issue.
+### 💾 For Data & Reliability Engineers
 
-> **DevOps Rule**: No architecture diagrams or background theory in this folder. Use cross-links to `docs/context/` for that purpose.
+- [**Database HA**](04-data/) — PostgreSQL Patroni recovery, MinIO sync, and OpenSearch shards.
+- [**Event Streams**](05-messaging/) — Kafka broker offline recovery and RabbitMQ quorum.
+- [**Observability Stack**](06-observability/) — Maintaining the LGTM stack (Loki/Prom/Tempo) and full storage remediation.
+
+### 🤖 For AI & Automation Ops
+
+- [**Workflow Engines**](07-workflow/) — Airflow Celery workers and n8n engine recovery.
+- [**Local AI Stack**](docs/ard/ai-ard.md) — GPU passthrough and model pulling procedures.
+
+## 📐 Operational Standards (`0381-runbooks-oncall.md`)
+
+Every runbook MUST follow the 8-section template:
+
+- **Scenario Based**: Uses **Given-When-Then** format for troubleshooting scenarios.
+- **Deterministic**: Provides direct CLI commands with expected outcomes.
+- **Verification First**: Every fix must be validated via Section 8.
+
+---
+> [!IMPORTANT]
+> **NO THEORY, ONLY ACTION.** Documentation for architectural background belongs in `docs/ard/`.

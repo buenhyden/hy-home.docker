@@ -1,56 +1,70 @@
-# Runbook: PostgreSQL HA & Patroni Recovery
+# Service Runbook: PostgreSQL HA & Patroni Recovery
 
-> **Architecture**: [PostgreSQL HA Blueprint](../../docs/context/04-data/postgres-patroni-ha-guide.md)
-> **Endpoint**: `pg-router:5000` (Write), `pg-router:5001` (Read)
-> **Nodes**: `pg-0`, `pg-1`, `pg-2`
+_Target Directory: `runbooks/04-data/postgres-ha-recovery.md`_
+_Note: High-criticality data tier recovery procedure._
 
-## 1. Issue: Split-Brain or No Leader Election
+---
 
-**Given**: `PatroniMissingLeader` alert triggered, or multiple nodes claim leadership.
-**When**: Etcd quorum is lost or network partitions occur.
-**Then**:
+## 1. Service Overview & Ownership
 
-1. **Identify Topology**: `docker exec -it pg-0 patronictl -c /home/postgres/postgres0.yml topology`.
-2. **Restart Etcd**: If Etcd is unhealthy:
+- **Description**: High-Availability PostgreSQL cluster managed by Patroni and Etcd.
+- **Owner Team**: Database Ops / Platform
+- **Primary Contact**: #ops-database (Slack)
 
-   ```bash
-   docker compose -f infra/04-data/postgresql-cluster/docker-compose.yml restart etcd-1 etcd-2 etcd-3
-   ```
+## 2. Dependencies
 
-3. **Forced Failover**: If a primary is deadlocked:
+| Dependency | Type | Impact if Down | Link to Runbook |
+| ---------- | ---- | -------------- | --------------- |
+| Etcd Cluster | Quorum | No leader election | [Vault/Etcd Runbook](../03-security/vault-sealed.md) |
+| Docker Engine | Runtime | Complete service failure | [Core Runbook](../core/infra-bootstrap-runbook.md) |
 
-   ```bash
-   docker exec -it pg-1 patronictl -c /home/postgres/postgres1.yml failover --force
-   ```
+## 3. Observability & Dashboards
 
-## 2. Issue: Replica Out of Sync
+- **Primary Dashboard**: [Grafana DB Overview](https://grafana.${DEFAULT_URL}/d/postgres-ha)
+- **SLOs/SLIs**: 99.99% Write availability, zero data loss.
+- **Alert Definitions**: `PatroniMissingLeader`, `PostgresReplicaLag`
 
-**Given**: Replica node is running but logs show divergence or lag.
-**When**: Transaction logs (WAL) have been recycled before replica could fetch them.
-**Then**: Wipe and re-initialize the specific node:
+## 4. Alerts & Common Failures
 
-```bash
-docker exec -it pg-0 patronictl -c /home/postgres/postgres0.yml reinit pg-ha [stuck_node_name]
-```
+### Scenario A: Split-Brain or No Leader Election
 
-## 3. Destructive Re-initialization (Emergency Reset)
+- **Symptoms**: `PatroniMissingLeader` alert; multiple nodes claiming leader.
+- **Investigation Steps**:
+  1. `docker exec -it pg-0 patronictl topology`
+  2. Check Etcd logs: `docker logs etcd-1`
+- **Remediation Action**:
+  - [ ] Restart Etcd quorum: `docker compose restart etcd-1 etcd-2 etcd-3`
+  - [ ] Forced Failover (if primary deadlocked): `docker exec -it pg-1 patronictl failover --force`
+- **Expected Outcome**: Single "Leader" appears in `patronictl list`.
 
-**Given**: The entire cluster state is corrupted beyond repair.
-**When**: You need a clean slate (WARNING: DATA LOSS).
-**Then**:
+### Scenario B: Replica Out of Sync
 
-1. **Stop Stack**: `docker compose -f infra/04-data/postgresql-cluster/docker-compose.yml down`.
-2. **Wipe Data**:
+- **Symptoms**: WAL recycling error in replica logs.
+- **Investigation Steps**:
+  1. `docker logs pg-1 | grep "requested WAL segment"`
+- **Remediation Action**:
+  - [ ] Rebuilt node: `docker exec -it pg-0 patronictl reinit pg-ha [stuck_node]`
+- **Expected Outcome**: Node enters `streaming` state with 0 lag.
 
-   ```bash
-   sudo rm -rf ${DEFAULT_DATA_DIR}/pg/*
-   sudo rm -rf ${DEFAULT_DATA_DIR}/etcd/*
-   ```
+## 5. Safe Rollback Procedure
 
-3. **Restart**: `docker compose -f infra/04-data/postgresql-cluster/docker-compose.yml up -d`.
+- [ ] **Step 1**: Check if data volume is intact.
+- [ ] **Step 2**: Revert any recent `docker-compose.yml` config changes.
+- [ ] **Step 3**: Restart stack: `docker compose up -d`.
 
-## 4. Verification Check
+## 6. Data Safety Notes (If Stateful)
 
-**Given**: Recover is complete.
-**When**: Checking cluster health.
-**Then**: `patronictl list` must show one "Leader" and two "Replicas" with `running` status and 0 lag.
+- **WARNING**: Do NOT delete `${DEFAULT_DATA_DIR}/pg/` unless performing an Emergency Reset.
+- **Backups**: Verified daily via PgBackRest sidecar.
+
+## 7. Escalation Path
+
+1. **Primary On-Call**: Database Engineer (Slack)
+2. **Secondary Escalation**: Platform Architect
+3. **Management Escalation (SEV-1)**: CTO / VP Eng
+
+## 8. Verification Steps (Post-Fix)
+
+- [ ] `patronictl list` shows one Leader and two Replicas in `running` state.
+- [ ] Application logs show successful DB connections.
+- [ ] Grafana "Postgres Connections" counts are > 0.
