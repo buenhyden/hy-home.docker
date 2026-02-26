@@ -50,8 +50,8 @@ _Target Directory: `docs/prd/infra-baseline-prd.md`_
 | ------------------ | ------------------ | ------------------ | ---------------- | ------------------- |
 | **REQ-PRD-MET-01** | Bootstrap Time     | 30 mins            | < 10 mins        | Day-0 build         |
 | **REQ-PRD-MET-02** | Security Coverage | 50%                | 100% (Secrets)   | Audit cycle         |
-| **REQ-PRD-MET-03** | Resource Efficiency | N/A                | < 20% Overhead   | Baseline run        |
-| **REQ-PRD-MET-04** | Build Latency      | > 5 mins           | < 3 mins (Cache) | CI/CD build cycle   |
+| **REQ-PRD-MET-03** | Resource Efficiency | N/A                | < 4GB Idle (RAM) | Baseline run        |
+| **REQ-PRD-MET-04** | Build Latency      | > 5 mins           | < 2 mins (Hot)   | CI/CD build cycle   |
 
 ## 4. Key Use Cases & Acceptance Criteria (GWT)
 
@@ -66,12 +66,10 @@ _Target Directory: `docs/prd/infra-baseline-prd.md`_
 - **[REQ-PRD-FUN-03]** Bootstrap Prerequisites: Define required `.env` keys and directory permissions.
 - **[REQ-PRD-FUN-04]** Local TLS Standardisation via `mkcert` (secrets/certs/).
 - **[REQ-PRD-FUN-05]** Centralized Log Aggregation using Loki.
-- **[REQ-PRD-FUN-06]** Configuration Consolidation via `common-optimizations.yml`.
-- **[REQ-PRD-FUN-07]** Mandatory CPU/Memory limits for all service tiers.
+- [REQ-PRD-FUN-06] Global Configuration Inheritance via `infra/common-optimizations.yml`.
+- [REQ-PRD-FUN-07] Mandatory `extends` usage for cross-file resource and security baseline.
 
-## 6. Technical Specifications
-
-- **Technical Specification**: [Infra Baseline Spec](../../../../../specs/infra/baseline/spec.md)
+- **Technical Specification**: [[SPEC-INFRA-01] Infrastructure Global Baseline Specification](../specs/infra-global-baseline-spec.md)
 
 ## 7. Milestones & Roadmap
 

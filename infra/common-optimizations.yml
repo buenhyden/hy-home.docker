@@ -1,0 +1,99 @@
+# Hy-Home Common Infrastructure Optimizations
+# This file provides base service templates for use with 'extends'
+
+services:
+  # ── Security Baselines ──────────────────────────────────
+  base-security:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+  # ── Resource Profiles ───────────────────────────────────
+  base-resource-low:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: 256M
+        reservations:
+          memory: 128M
+
+  base-resource-med:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  base-resource-high:
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          memory: 512M
+
+  # ── Operational Baselines ───────────────────────────────
+  base-standard:
+    restart: unless-stopped
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+
+  # ── Composite Templates ────────────────────────────────
+  template-infra-low:
+    extends:
+      service: base-security
+    deploy:
+      resources:
+        limits: { cpus: "0.2", memory: "256M" }
+    restart: unless-stopped
+    logging:
+      {
+        driver: loki,
+        options:
+          {
+            loki-url: "http://localhost:3100/loki/api/v1/push",
+            loki-external-labels: "container_name={{.Name}}",
+          },
+      }
+
+  template-infra-med:
+    extends:
+      service: base-security
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: "512M" }
+    restart: unless-stopped
+    logging:
+      {
+        driver: loki,
+        options:
+          {
+            loki-url: "http://localhost:3100/loki/api/v1/push",
+            loki-external-labels: "container_name={{.Name}}",
+          },
+      }
+
+  template-infra-high:
+    extends:
+      service: base-security
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: "1G" }
+    restart: unless-stopped
+    logging:
+      {
+        driver: loki,
+        options:
+          {
+            loki-url: "http://localhost:3100/loki/api/v1/push",
+            loki-external-labels: "container_name={{.Name}}",
+          },
+      }

@@ -1,9 +1,218 @@
-x-common:
-  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
-  logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
-  res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
-  res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
-  res-high: &res-high { deploy: { resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { memory: 512M } } } }
-  restart: &restart { restart: unless-stopped }
-  labels-base: &labels-base { traefik.enable: 'true', hy-home.managed: 'true' }
+name: valkey-cluster
 
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: data
+
+volumes:
+  valkey0-data:
+  valkey1-data:
+  valkey2-data:
+  valkey3-data:
+  valkey4-data:
+  valkey5-data:
+
+secrets:
+  service_valkey_password:
+    external: true
+
+services:
+  valkey-node-0:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    image: valkey/valkey:9.0.2-alpine
+    container_name: valkey-node-0
+    environment:
+      - PORT=6379
+      - NODE_NAME=valkey-node-0
+    volumes:
+      - valkey0-data:/data
+      - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    entrypoint: ['/bin/sh', '/usr/local/bin/valkey-start.sh']
+    secrets:
+      - service_valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.60
+    labels:
+      <<: *labels-base
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
+
+  valkey-node-1:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    image: valkey/valkey:9.0.2-alpine
+    container_name: valkey-node-1
+    environment:
+      - PORT=6380
+      - NODE_NAME=valkey-node-1
+    volumes:
+      - valkey1-data:/data
+      - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    entrypoint: ['/bin/sh', '/usr/local/bin/valkey-start.sh']
+    secrets:
+      - service_valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.61
+    labels:
+      <<: *labels-base
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
+
+  valkey-node-2:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    image: valkey/valkey:9.0.2-alpine
+    container_name: valkey-node-2
+    environment:
+      - PORT=6381
+      - NODE_NAME=valkey-node-2
+    volumes:
+      - valkey2-data:/data
+      - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    entrypoint: ['/bin/sh', '/usr/local/bin/valkey-start.sh']
+    secrets:
+      - service_valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.62
+    labels:
+      <<: *labels-base
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
+
+  valkey-node-3:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    image: valkey/valkey:9.0.2-alpine
+    container_name: valkey-node-3
+    environment:
+      - PORT=6382
+      - NODE_NAME=valkey-node-3
+    volumes:
+      - valkey3-data:/data
+      - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    entrypoint: ['/bin/sh', '/usr/local/bin/valkey-start.sh']
+    secrets:
+      - service_valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.63
+    labels:
+      <<: *labels-base
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
+
+  valkey-node-4:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    image: valkey/valkey:9.0.2-alpine
+    container_name: valkey-node-4
+    environment:
+      - PORT=6383
+      - NODE_NAME=valkey-node-4
+    volumes:
+      - valkey4-data:/data
+      - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    entrypoint: ['/bin/sh', '/usr/local/bin/valkey-start.sh']
+    secrets:
+      - service_valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.64
+    labels:
+      <<: *labels-base
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
+
+  valkey-node-5:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    image: valkey/valkey:9.0.2-alpine
+    container_name: valkey-node-5
+    environment:
+      - PORT=6384
+      - NODE_NAME=valkey-node-5
+    volumes:
+      - valkey5-data:/data
+      - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    entrypoint: ['/bin/sh', '/usr/local/bin/valkey-start.sh']
+    secrets:
+      - service_valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.65
+    labels:
+      <<: *labels-base
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
+
+  valkey-cluster-init:
+    extends:
+      file: ../../common-optimizations.yml
+      service: base-resource-low
+    image: valkey/valkey:9.0.2-alpine
+    container_name: valkey-cluster-init
+    restart: 'no'
+    depends_on:
+      valkey-node-0:
+        condition: service_started
+      valkey-node-1:
+        condition: service_started
+      valkey-node-2:
+        condition: service_started
+      valkey-node-3:
+        condition: service_started
+      valkey-node-4:
+        condition: service_started
+      valkey-node-5:
+        condition: service_started
+    volumes:
+      - ./scripts/valkey-cluster-init.sh:/usr/local/bin/valkey-cluster-init.sh:ro
+    entrypoint: ['/bin/sh', '/usr/local/bin/valkey-cluster-init.sh']
+    secrets:
+      - service_valkey_password
+    networks:
+      - infra_net
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
+
+networks:
+  infra_net:
+    name: infra_net
+    external: true

@@ -1,13 +1,14 @@
 name: postgresql-cluster
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+x-labels-base: &labels-base
+  hy-home.managed: "true"
+  hy-home.tier: data
 
-x-restart: &default-restart
-  restart: unless-stopped
+x-logging: &logging
+  driver: loki
+  options:
+    loki-url: "http://localhost:3100/loki/api/v1/push"
+    loki-external-labels: "container_name={{.Name}}"
 
 volumes:
   pg0-data:
@@ -67,12 +68,9 @@ services:
   # etcd 3노드 (Patroni DCS)
   # ##############################################################
   etcd-1:
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 128M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-1
     user: '1000:1000'
@@ -100,16 +98,12 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.50
-    logging: *default-logging
-    <<: *default-restart
+    logging: *logging
 
   etcd-2:
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 128M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-2
     user: '1000:1000'
@@ -137,16 +131,12 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.51
-    logging: *default-logging
-    <<: *default-restart
+    logging: *logging
 
   etcd-3:
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 128M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-3
     user: '1000:1000'
@@ -174,26 +164,17 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.52
-    logging: *default-logging
-    <<: *default-restart
+    logging: *logging
 
   # ##############################################################
   # Patroni + PostgreSQL 17 노드 3개
   # ##############################################################
   pg-0:
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 2G
-        reservations:
-          memory: 1G
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-0
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     hostname: pg-0
     entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
     environment:
@@ -231,7 +212,12 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.53
-    logging: *default-logging
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+
     depends_on:
       etcd-1:
         condition: service_healthy
@@ -239,22 +225,13 @@ services:
         condition: service_healthy
       etcd-3:
         condition: service_healthy
-    <<: *default-restart
 
   pg-1:
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 2G
-        reservations:
-          memory: 1G
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-1
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     hostname: pg-1
     entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
     environment:
@@ -281,41 +258,18 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.54
-    logging: *default-logging
-    secrets:
-      - patroni_superuser_password
-      - patroni_replication_password
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
-      interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
-    expose:
-      - ${POSTGRES_PORT:-5432}
-    depends_on:
-      etcd-1:
-        condition: service_healthy
-      etcd-2:
-        condition: service_healthy
-      etcd-3:
-        condition: service_healthy
-    <<: *default-restart
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
 
   pg-2:
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 2G
-        reservations:
-          memory: 1G
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-2
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     hostname: pg-2
     entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
     environment:
@@ -343,36 +297,19 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.55
-    logging: *default-logging
-    expose:
-      - ${POSTGRES_PORT:-5432}
-    secrets:
-      - patroni_superuser_password
-      - patroni_replication_password
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
-      interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
-    depends_on:
-      etcd-1:
-        condition: service_healthy
-      etcd-2:
-        condition: service_healthy
-      etcd-3:
-        condition: service_healthy
-    <<: *default-restart
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
 
   # ##############################################################
   # HAProxy 라우터 (Writer/Reader 분리)
   # ##############################################################
   pg-router:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: haproxy:3.3.1
     container_name: pg-router
     volumes:
@@ -393,30 +330,22 @@ services:
       infra_net:
         ipv4_address: 172.19.0.56
     labels:
-      - 'traefik.enable=true'
-      # HAProxy Stats UI 라우터
-      # 도메인: haproxy.pg.${DEFAULT_URL}
-      - 'traefik.http.routers.haproxy-stats.rule=Host(`pg-haproxy.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.haproxy-stats.entrypoints=websecure'
-      - 'traefik.http.routers.haproxy-stats.tls=true'
-      # [중요] HAProxy 설정 파일(haproxy.cfg)에 정의된 Stats 포트(보통 8404)와 일치해야 함
-      - 'traefik.http.services.haproxy-stats.loadbalancer.server.port=${HAPROXY_PORT:-7000}'
-    depends_on:
-      pg-0:
-        condition: service_healthy
-      pg-1:
-        condition: service_healthy
-      pg-2:
-        condition: service_healthy
-    <<: *default-restart
-    logging: *default-logging
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.haproxy-stats.rule: Host(`pg-haproxy.${DEFAULT_URL}`)
+      traefik.http.routers.haproxy-stats.entrypoints: websecure
+      traefik.http.routers.haproxy-stats.tls: 'true'
+      traefik.http.services.haproxy-stats.loadbalancer.server.port: ${HAPROXY_PORT:-7000}
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
 
   pg-cluster-init:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 128M
+    extends:
+      file: ../../common-optimizations.yml
+      service: base-resource-low
     image: postgres:17-alpine
     container_name: pg-cluster-init
     environment:
@@ -448,26 +377,30 @@ services:
     networks:
       - infra_net
     restart: 'no'
-    logging: *default-logging
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+
   # ##############################################################
   # postgres-exporter (Prometheus / Alloy용 메트릭)
   # ##############################################################
   pg-0-exporter:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-0-exporter
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     networks:
       infra_net:
         ipv4_address: 172.19.0.57
-    logging: *default-logging
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
@@ -482,7 +415,6 @@ services:
         # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-0:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
-    <<: *default-restart
     healthcheck:
       test:
         [
@@ -494,21 +426,20 @@ services:
       retries: 5
       start_period: 30s
   pg-1-exporter:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-1-exporter
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     networks:
       infra_net:
         ipv4_address: 172.19.0.58
-    logging: *default-logging
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
@@ -523,7 +454,6 @@ services:
         # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-1:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
-    <<: *default-restart
     healthcheck:
       test:
         [
@@ -535,21 +465,20 @@ services:
       retries: 5
       start_period: 30s
   pg-2-exporter:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-2-exporter
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     networks:
       infra_net:
         ipv4_address: 172.19.0.59
-    logging: *default-logging
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
@@ -564,7 +493,6 @@ services:
         # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-2:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
-    <<: *default-restart
     healthcheck:
       test:
         [

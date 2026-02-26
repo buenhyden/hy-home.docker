@@ -1,14 +1,8 @@
-x-common:
-  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
-  logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
-  res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
-  res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
-  res-high: &res-high { deploy: { resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { memory: 512M } } } }
-  restart: &restart { restart: unless-stopped }
-  labels-base: &labels-base { traefik.enable: 'true', hy-home.managed: 'true' }
-
 name: nginx
-x-optimizations:
+
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: gateway
 volumes:
   nginx-logs:
   nginx_certs:
@@ -20,11 +14,11 @@ volumes:
 
 services:
   nginx:
-    profiles:
-      - nginx
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: nginx:alpine
     container_name: nginx
-    <<: [*restart, *security]
     ports:
       - ${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}
       - ${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}
@@ -45,12 +39,8 @@ services:
       start_period: 30s
     labels:
       <<: *labels-base
-      hy-home.tier: gateway
-    logging: *logging
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          memory: 256M
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'

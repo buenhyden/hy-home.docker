@@ -1,8 +1,8 @@
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+name: locust
+
+x-labels-base: &labels-base
+  hy-home.managed: "true"
+  hy-home.tier: tooling
 
 volumes:
   locust-data:
@@ -14,8 +14,10 @@ volumes:
 
 services:
   locust-master:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     build: .
-    restart: unless-stopped
     ports:
       - '${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}'
     environment:
@@ -46,8 +48,10 @@ services:
     logging: *default-logging
 
   locust-worker:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     build: .
-    restart: unless-stopped
     environment:
       - LOCUST_INFLUXDB_HOST=influxdb
       - LOCUST_INFLUXDB_PORT=${INFLUXDB_PORT:-8086}

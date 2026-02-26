@@ -1,10 +1,8 @@
 name: n8n
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: workflow
 
 x-n8n-common-env: &n8n-common-env
   GENERIC_TIMEZONE: ${DEFAULT_TIMEZONE:-Asia/Seoul}
@@ -59,20 +57,11 @@ secrets:
 
 services:
   n8n:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     image: n8nio/n8n:2.6.2
     container_name: n8n
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 2G
-        reservations:
-          memory: 1G
     expose:
       - ${N8N_PORT:-5678}
     secrets:
@@ -101,46 +90,24 @@ services:
       N8N_METRICS_INCLUDE_QUEUE_METRICS: true
       QUEUE_HEALTH_CHECK_ACTIVE: true
     labels:
-      - 'traefik.enable=true'
-      - 'hy-home.scope=infra'
-      - 'hy-home.tier=workflow'
-      - 'observability.logs=true'
-      # n8n UI & Webhook 라우터 (https://n8n.${DEFAULT_URL})
-      - 'traefik.http.routers.n8n.rule=Host(`n8n.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.n8n.entrypoints=websecure'
-      - 'traefik.http.routers.n8n.tls=true'
-      - 'traefik.http.routers.n8n.service=n8n'
-      # [중요] n8n 내부 포트 (5678) 연결
-      - 'traefik.http.services.n8n.loadbalancer.server.port=${N8N_PORT:-5678}'
-    volumes:
-      - n8n-data:/home/node/.n8n
-      - ./custom:/home/node/.n8n/custom
-    depends_on:
-      n8n-valkey:
-        condition: service_healthy
-    healthcheck:
-      test: ['CMD-SHELL', 'nc -z localhost ${N8N_PORT:-5678} || exit 1'] # 간단한 포트 체크 방식
-      interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.14
-    logging: *default-logging
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.n8n.rule: Host(`n8n.${DEFAULT_URL}`)
+      traefik.http.routers.n8n.entrypoints: websecure
+      traefik.http.routers.n8n.tls: 'true'
+      traefik.http.routers.n8n.service: n8n
+      traefik.http.services.n8n.loadbalancer.server.port: ${N8N_PORT:-5678}
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
   n8n-worker:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     image: n8nio/n8n:2.6.2
     container_name: n8n-worker
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 2G
     depends_on:
       n8n:
         condition: service_healthy
@@ -157,45 +124,33 @@ services:
       infra_net:
         ipv4_address: 172.19.0.17
     command: worker
-    logging: *default-logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
+
     volumes:
       - n8n-data:/home/node/.n8n
       - ./custom:/home/node/.n8n/custom
 
   n8n-task-runner:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: n8nio/runners:2.6.2
     container_name: n8n-task-runner
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    secrets:
-      - n8n_runner_auth_token
-    environment:
-      - N8N_RUNNERS_TASK_BROKER_URI=http://n8n:${N8N_BROKER_PORT:-5679}
-      - N8N_RUNNERS_AUTH_TOKEN_FILE=/run/secrets/n8n_runner_auth_token
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.74
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 1G
-    logging: *default-logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
   n8n-valkey:
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 1G
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: valkey/valkey:9.0.2-alpine
     container_name: n8n-valkey
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     secrets:
       - n8n_valkey_password
     networks:
@@ -225,20 +180,18 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   n8n-valkey-exporter:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: n8n-valkey-exporter
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
     networks:
@@ -261,7 +214,12 @@ services:
     depends_on:
       n8n-valkey:
         condition: service_healthy
-    logging: *default-logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
+
 networks:
   infra_net:
     name: infra_net

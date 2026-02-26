@@ -1,10 +1,8 @@
 name: ollama
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: ai
 
 volumes:
   ollama-data:
@@ -18,34 +16,14 @@ services:
   ollama:
     profiles:
       - ollama
+    extends:
+      file: ../../../infra/common-optimizations.yml
+      service: template-infra-high
     image: ollama/ollama:0.13.5
     container_name: ollama
-    security_opt:
-      - no-new-privileges:true
-    # GPU 장치 접근을 위해 cap_drop은 제한적으로 적용
-    # cap_drop:
-    #   - ALL
-    # ports:
-    #   - "${OLLAMA_HOST_PORT}:${OLLAMA_PORT}"
-    expose:
-      - ${OLLAMA_PORT:-11434}
-    volumes:
-      - ollama-data:/root/.ollama
-    environment:
-      # [필수 추가] Ollama가 모든 네트워크 인터페이스(Docker 내부)에서 수신하도록 설정
-      # 기본 포트가 11434라면 ${OLLAMA_PORT}는 11434와 일치해야 합니다.
-      - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT:-11434}
-      # [GPU 필수] 컨테이너가 할당된 GPU를 사용하도록 명시
-      - NVIDIA_VISIBLE_DEVICES=all
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.40
-    healthcheck:
-      test: ['CMD', 'ollama', 'list']
-      interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 60s
+    # GPU 장치 접근을 위해 cap_drop은 제한적으로 적용 (base-security는 cap_drop: ALL을 포함하므로 주의)
+    # 하지만 Ollama는 NVIDIA runtime을 사용하므로 cap_drop이 문제될 수 있음.
+    # 여기서는 base-resource-high만 가져오고 security는 개별 설정 권장.
     deploy:
       resources:
         limits:
@@ -57,46 +35,38 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    labels:
-      - 'traefik.enable=true'
-      # Ollama API 라우터 (https://ollama.${DEFAULT_URL})
-      - 'traefik.http.routers.ollama.rule=Host(`ollama.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.ollama.entrypoints=websecure'
-      - 'traefik.http.routers.ollama.tls=true'
 
-      # [중요] 내부 포트 11434 연결
-      - 'traefik.http.services.ollama.loadbalancer.server.port=${OLLAMA_PORT:-11434}'
-      # [보안] Ollama API에 SSO 인증 추가 권장 (외부 접근 제어)
-      - 'traefik.http.routers.ollama.middlewares=sso-auth@file'
-    restart: unless-stopped
-    logging: *default-logging
+    labels:
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.ollama.rule: Host(`ollama.${DEFAULT_URL}`)
+      traefik.http.routers.ollama.entrypoints: websecure
+      traefik.http.routers.ollama.tls: 'true'
+      traefik.http.services.ollama.loadbalancer.server.port: ${OLLAMA_PORT:-11434}
+      traefik.http.routers.ollama.middlewares: sso-auth@file
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   ollama-exporter:
-    profiles:
-      - ollama
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
+    extends:
+      file: ../../../infra/common-optimizations.yml
+      service: template-infra-low
     image: lucabecker42/ollama-exporter:1.0.1
     container_name: ollama-exporter
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     environment:
       - OLLAMA_HOST=ollama:${OLLAMA_PORT:-11434}
     expose:
       - '${OLLAMA_EXPORTER_PORT:-11435}'
-    restart: unless-stopped
     networks:
       infra_net:
         ipv4_address: 172.19.0.43
     depends_on:
       ollama:
         condition: service_healthy
-    logging: *default-logging
+
 networks:
   infra_net:
     name: infra_net

@@ -1,7 +1,9 @@
-include:
-  - ../../common-optimizations.yml
+name: mail
 
-secrets:
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: communication
+
   stalwart_password:
     external: true
 services:
@@ -9,7 +11,9 @@ services:
   # Stalwart Mail Server (올인원 메일 서버)
   # ----------------------------------------------------------------
   stalwart:
-    <<: [*default-restart, *security-baseline, *resource-med]
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: stalwartlabs/stalwart:v0.14
     container_name: stalwart
 
@@ -43,16 +47,20 @@ services:
 
     # [Traefik 연동] - 관리자 웹 UI 라우팅
     labels:
-      - 'traefik.enable=true'
-      # 도메인 접속 설정 (http://mail.${DEFAULT_URL})
-      - 'traefik.http.routers.stalwart-ui.rule=Host(`mail.${DEFAULT_URL}`)'
-      - 'traefik.http.services.stalwart-ui.loadbalancer.server.port=${STALWART_PORT:-8080}'
-      # (선택) 웹 UI에 OAuth2 Proxy 인증을 걸고 싶다면 아래 주석 해제
-      # - "traefik.http.routers.stalwart-ui.middlewares=sso-auth@file"
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.stalwart-ui.rule: Host(`mail.${DEFAULT_URL}`)
+      traefik.http.services.stalwart-ui.loadbalancer.server.port: ${STALWART_PORT:-8080}
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
+
   mailhog:
-    <<: [*default-restart, *security-baseline, *resource-low]
-    profiles:
-      - mail
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: mailhog/mailhog:v1.0.1
     container_name: mailhog
 
@@ -60,26 +68,18 @@ services:
     networks:
       - infra_net
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.mailhog.rule=Host(`mail.${DEFAULT_URL}`)' # 메일함 접속 주소
-      - 'traefik.http.routers.mailhog.entrypoints=websecure'
-      - 'traefik.http.routers.mailhog.tls=true'
-      - 'traefik.http.services.mailhog.loadbalancer.server.port=${MAILHOG_UI_PORT:-8025}'
-      - 'traefik.http.routers.mailhog.middlewares=sso-auth@file'
-    healthcheck:
-      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${MAILHOG_UI_PORT:-8025} || exit 1']
-      interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
-    logging: *default-logging
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          memory: 256M
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.mailhog.rule: Host(`mailhog.${DEFAULT_URL}`)
+      traefik.http.routers.mailhog.entrypoints: websecure
+      traefik.http.routers.mailhog.tls: 'true'
+      traefik.http.services.mailhog.loadbalancer.server.port: ${MAILHOG_UI_PORT:-8025}
+      traefik.http.routers.mailhog.middlewares: sso-auth@file
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
 networks:
   infra_net:

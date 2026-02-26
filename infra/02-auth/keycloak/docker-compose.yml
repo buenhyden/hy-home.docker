@@ -1,8 +1,8 @@
 name: keycloak
 
-include:
-  - ../../common-optimizations.yml
-
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: auth
 
 volumes:
   keycloak-config:
@@ -26,8 +26,10 @@ volumes:
 
 services:
   keycloak:
-    <<: [*default-restart, *security-baseline, *resource-med]
-
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    image: quay.io/keycloak/keycloak:26.5.4
     hostname: keycloak
     volumes:
       - keycloak-themes:/opt/keycloak/themes
@@ -80,7 +82,11 @@ services:
     secrets:
       - keycloak_db_password
       - keycloak_admin_password
-    logging: *logging-loki
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
 networks:
   infra_net:

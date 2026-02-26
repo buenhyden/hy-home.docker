@@ -1,8 +1,8 @@
 name: traefik
 
-include:
-  - ../../common-optimizations.yml
-
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: infra
 
 volumes:
   traefik_certs:
@@ -14,7 +14,9 @@ volumes:
 
 services:
   traefik:
-    <<: [*default-restart, *security-baseline, *resource-med]
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: traefik:v3.6.8
 
     container_name: traefik
@@ -37,12 +39,12 @@ services:
     labels:
       <<: *labels-base
       traefik.enable: 'true'
-      hy-home.tier: infra
       traefik.http.routers.dashboard.rule: Host(`dashboard.${DEFAULT_URL}`)
       traefik.http.routers.dashboard.entrypoints: websecure
       traefik.http.routers.dashboard.service: api@internal
       traefik.http.routers.dashboard.tls: 'true'
       traefik.http.routers.dashboard.middlewares: dashboard-auth@file
+
     healthcheck:
       test: ['CMD', 'traefik', 'healthcheck', '--ping']
       interval: 15s
@@ -59,7 +61,11 @@ services:
     secrets:
       - traefik_basicauth_password
       - traefik_opensearch_basicauth_password
-    logging: *logging-loki
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
 secrets:
   traefik_basicauth_password:

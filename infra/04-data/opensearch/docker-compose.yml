@@ -1,13 +1,8 @@
 name: opensearch
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
-x-restart: &default-restart
-  restart: unless-stopped
+x-labels-base: &labels-base
+  hy-home.managed: "true"
+  hy-home.tier: data
 
 volumes:
   opensearch-data:
@@ -87,30 +82,21 @@ services:
     extra_hosts:
       - 'keycloak.127.0.0.1.nip.io:172.19.0.13'
     labels:
-      - 'traefik.enable=true'
-      # 1. OpenSearch API 라우터 (https://opensearch.${DEFAULT_URL})
-      - 'traefik.http.routers.opensearch.rule=Host(`opensearch.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.opensearch.entrypoints=websecure'
-      - 'traefik.http.routers.opensearch.tls=true'
-      - 'traefik.http.routers.opensearch.middlewares=opensearch-auth@file'
-      - 'traefik.http.services.opensearch.loadbalancer.serversTransport=opensearch-transport@file'
-
-      # [중요] OpenSearch는 기본적으로 HTTPS(Self-signed)를 사용하므로
-      # Traefik이 백엔드(OpenSearch)와 통신할 때도 HTTPS를 써야 함.
-      # serversTransport 설정을 통해 인증서 검증을 스킵해야 할 수 있음.
-      - 'traefik.http.services.opensearch.loadbalancer.server.port=9200'
-      - 'traefik.http.services.opensearch.loadbalancer.server.scheme=https' # 백엔드 통신 스킴 지정
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.44
-        aliases:
-          - opensearch-node
-          - opensearch-node1
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.opensearch.rule: Host(`opensearch.${DEFAULT_URL}`)
+      traefik.http.routers.opensearch.entrypoints: websecure
+      traefik.http.routers.opensearch.tls: 'true'
+      traefik.http.routers.opensearch.middlewares: opensearch-auth@file
+      traefik.http.services.opensearch.loadbalancer.serversTransport: opensearch-transport@file
+      traefik.http.services.opensearch.loadbalancer.server.port: 9200
+      traefik.http.services.opensearch.loadbalancer.server.scheme: https
     logging:
-      driver: 'loki'
+      driver: loki
       options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=opensearch,tier=data'
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+
     healthcheck:
       test:
         [
@@ -122,21 +108,11 @@ services:
       retries: 5
       start_period: 60s
   opensearch-dashboards:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: opensearchproject/opensearch-dashboards:3.4.0
     container_name: opensearch-dashboards
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          cpus: '0.2'
-          memory: 256M
-    <<: *default-restart
     networks:
       infra_net:
         ipv4_address: 172.19.0.47
@@ -183,18 +159,19 @@ services:
       retries: 5
       start_period: 60s
     logging:
-      driver: 'loki'
+      driver: loki
       options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=opensearch-dashboards,tier=data'
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+
 
   opensearch-exporter:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: prometheuscommunity/elasticsearch-exporter:v1.10.0
     container_name: opensearch-exporter
-    security_opt:
-      - no-new-privileges:true
     read_only: true
-    <<: *default-restart
     environment:
       - ES_USERNAME=${OPENSEARCH_EXPORTER_USERNAME:-admin}
     command: >
@@ -230,6 +207,12 @@ services:
         reservations:
           cpus: '0.05'
           memory: 64M
+    logging:
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
+
 ...
 logging:
   driver: 'loki'

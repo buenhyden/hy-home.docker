@@ -1,10 +1,8 @@
 name: airflow
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: workflow
 
 x-airflow-common: &airflow-common
   profiles:
@@ -49,10 +47,10 @@ x-airflow-common: &airflow-common
     - airflow_www_password
     - airflow_valkey_password
   logging:
-    driver: 'json-file'
+    driver: loki
     options:
-      max-size: '5m'
-      max-file: '2'
+      loki-url: 'http://localhost:3100/loki/api/v1/push'
+      loki-external-labels: 'container_name={{.Name}}'
   deploy:
     resources:
       limits:
@@ -95,7 +93,9 @@ volumes:
 
 services:
   airflow-apiserver:
-    <<: *airflow-common
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     command: api-server
     # ports:
     #   - "${AIRFLOW_HOST_PORT}:${AIRFLOW_PORT}"
@@ -110,18 +110,20 @@ services:
       airflow-init:
         condition: service_completed_successfully
     labels:
-      - 'traefik.enable=true'
-      # 도메인: airflow.${DEFAULT_URL}
-      - 'traefik.http.routers.airflow.rule=Host(`airflow.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.airflow.entrypoints=websecure'
-      - 'traefik.http.routers.airflow.tls=true'
-      - 'traefik.http.services.airflow.loadbalancer.server.port=${AIRFLOW_PORT:-8080}' # Airflow UI 기본 포트
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.airflow.rule: Host(`airflow.${DEFAULT_URL}`)
+      traefik.http.routers.airflow.entrypoints: websecure
+      traefik.http.routers.airflow.tls: 'true'
+      traefik.http.services.airflow.loadbalancer.server.port: ${AIRFLOW_PORT:-8080}
 
       # (선택 사항) Keycloak SSO를 적용하려면 아래 주석 해제
       # - "traefik.http.routers.airflow.middlewares=sso-auth@file"
 
   airflow-scheduler:
-    <<: *airflow-common
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     command: scheduler
     healthcheck:
       test: ['CMD', 'curl', '--fail', 'http://localhost:8974/health']
@@ -135,7 +137,9 @@ services:
         condition: service_completed_successfully
 
   airflow-dag-processor:
-    <<: *airflow-common
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     command: dag-processor
     healthcheck:
       test: [
@@ -153,7 +157,9 @@ services:
         condition: service_completed_successfully
 
   airflow-worker:
-    <<: *airflow-common
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     command: celery worker
     healthcheck:
       # yamllint disable rule:line-length
@@ -180,7 +186,9 @@ services:
         condition: service_completed_successfully
 
   airflow-triggerer:
-    <<: *airflow-common
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     command: triggerer
     healthcheck:
       test: ['CMD-SHELL', 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
@@ -194,7 +202,9 @@ services:
         condition: service_completed_successfully
 
   airflow-init:
-    <<: *airflow-common
+    extends:
+      file: ../../common-optimizations.yml
+      service: base-resource-low
     entrypoint: /bin/bash
     # yamllint disable rule:line-length
     command:
@@ -286,7 +296,9 @@ services:
     user: '0:0'
 
   airflow-cli:
-    <<: *airflow-common
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     profiles:
       - debug
     environment:
@@ -302,7 +314,9 @@ services:
   # or by explicitly targeted on the command line e.g. docker-compose up flower.
   # See: https://docs.docker.com/compose/profiles/
   flower:
-    <<: *airflow-common
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     command: celery flower
     profiles:
       - flower
@@ -319,22 +333,18 @@ services:
       airflow-init:
         condition: service_completed_successfully
     labels:
-      - 'traefik.enable=true'
-      # 도메인: flower.${DEFAULT_URL}
-      - 'traefik.http.routers.flower.rule=Host(`flower.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.flower.entrypoints=websecure'
-      - 'traefik.http.routers.flower.tls=true'
-      - 'traefik.http.services.flower.loadbalancer.server.port=${FLOWER_PORT:-5555}'
-
-      # [보안 권장] Flower는 기본 로그인 보안이 취약하므로 SSO 미들웨어를 붙이는 것이 좋습니다.
-      - 'traefik.http.routers.flower.middlewares=sso-auth@file'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.flower.rule: Host(`flower.${DEFAULT_URL}`)
+      traefik.http.routers.flower.entrypoints: websecure
+      traefik.http.routers.flower.tls: 'true'
+      traefik.http.services.flower.loadbalancer.server.port: ${FLOWER_PORT:-5555}
+      traefik.http.routers.flower.middlewares: sso-auth@file
 
   airflow-valkey:
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 1G
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: valkey/valkey:9.0.2-alpine
     container_name: airflow-valkey
     security_opt:
@@ -370,14 +380,16 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   airflow-valkey-exporter:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: airflow-valkey-exporter
     security_opt:
@@ -406,7 +418,11 @@ services:
     depends_on:
       airflow-valkey:
         condition: service_healthy
-    logging: *default-logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   airflow-statsd-exporter:
     profiles:
@@ -429,7 +445,11 @@ services:
     expose:
       - '${STATSD_PROMETHEUS_PORT:-9102}'
       - '${STATSD_AIRFLOW_PORT:-9125}'
-    logging: *default-logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
 networks:
   infra_net:

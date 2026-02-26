@@ -1,14 +1,8 @@
-x-common:
-  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
-  logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
-  res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
-  res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
-  res-high: &res-high { deploy: { resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { memory: 512M } } } }
-  restart: &restart { restart: unless-stopped }
-  labels-base: &labels-base { traefik.enable: 'true', hy-home.managed: 'true' }
-
 name: couchdb
-x-logging: &default-logging
+
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: data
 volumes:
   couchdb1-data:
   couchdb2-data:
@@ -16,15 +10,11 @@ volumes:
 
 services:
   couchdb-1:
-    profiles:
-      - couchdb
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: couchdb:3.5.1
     container_name: couchdb-1
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    restart: unless-stopped
     environment:
       - COUCHDB_USER=${COUCHDB_USERNAME}
       - NODENAME=couchdb-1.infra_net
@@ -58,28 +48,26 @@ services:
       retries: 5
       start_period: 30s
     labels:
-      - 'traefik.enable=true'
-      # [Router] 도메인 설정: couchdb.${DEFAULT_URL}
-      - 'traefik.http.routers.couchdb.rule=Host(`couchdb.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.couchdb.entrypoints=websecure'
-      - 'traefik.http.routers.couchdb.tls=true'
-
-      # 이 라우터는 'couchdb-cluster'라는 서비스로 트래픽을 보낸다.
-      - 'traefik.http.routers.couchdb.service=couchdb-cluster'
-
-      # [3] 서비스 정의 (Load Balancer)
-      # 내(Node 1)가 'couchdb-cluster' 서비스의 일원임을 알림
-      - 'traefik.http.services.couchdb-cluster.loadbalancer.server.port=${COUCHDB_PORT:-5984}'
-
-      # [4] Sticky Session (중요)
-      - 'traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie=true'
-      - 'traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name=couchdb_sticky'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.couchdb.rule: Host(`couchdb.${DEFAULT_URL}`)
+      traefik.http.routers.couchdb.entrypoints: websecure
+      traefik.http.routers.couchdb.tls: 'true'
+      traefik.http.routers.couchdb.service: couchdb-cluster
+      traefik.http.services.couchdb-cluster.loadbalancer.server.port: ${COUCHDB_PORT:-5984}
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
   couchdb-2:
-    profiles:
-      - couchdb
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: couchdb:3.5.1
     container_name: couchdb-2
-    restart: unless-stopped
     environment:
       - COUCHDB_USER=${COUCHDB_USERNAME}
       - NODENAME=couchdb-2.infra_net
@@ -113,22 +101,22 @@ services:
       retries: 5
       start_period: 30s
     labels:
-      - 'traefik.enable=true'
-      # [중요] 라우터(Host 규칙) 설정은 제거함 (충돌 방지)
-
-      # [서비스 합류]
-      # Node 1과 같은 서비스 이름('couchdb-cluster')을 사용하여 로드밸런싱 그룹에 들어감
-      - 'traefik.http.services.couchdb-cluster.loadbalancer.server.port=${COUCHDB_PORT:-5984}'
-
-      # Sticky Session 설정은 서비스 레벨이므로 여기도 적어주는 것이 안전함 (병합됨)
-      - 'traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie=true'
-      - 'traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name=couchdb_sticky'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.server.port: ${COUCHDB_PORT:-5984}
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
   couchdb-3:
-    profiles:
-      - couchdb
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: couchdb:3.5.1
     container_name: couchdb-3
-    restart: unless-stopped
     environment:
       - COUCHDB_USER=${COUCHDB_USERNAME}
       - NODENAME=couchdb-3.infra_net
@@ -162,18 +150,24 @@ services:
       retries: 5
       start_period: 30s
     labels:
-      - 'traefik.enable=true'
-      # [서비스 합류]
-      - 'traefik.http.services.couchdb-cluster.loadbalancer.server.port=${COUCHDB_PORT:-5984}'
-      - 'traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie=true'
-      - 'traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name=couchdb_sticky'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.server.port: ${COUCHDB_PORT:-5984}
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   # ============================================================================
   # Cluster Initializer (Setup Assistant)
   # ============================================================================
   couchdb-cluster-init:
-    profiles:
-      - couchdb
+    extends:
+      file: ../../common-optimizations.yml
+      service: base-resource-low
     image: curlimages/curl:8.18.0
     container_name: couchdb-cluster-init
     restart: 'no'
@@ -228,7 +222,11 @@ services:
 
         echo 'CouchDB Cluster Setup Complete!';
       "
-    logging: *logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
 secrets:
   couchdb_password:

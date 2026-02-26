@@ -11,18 +11,19 @@ The Hy-Home infrastructure utilizes a multi-tier, isolated container topology to
 - **Tier 3 (Stateful Data)**: Dedicated clusters for PostgreSQL, Valkey, and MinIO with isolated network segments.
 - **Tier 4 (Observability Stack)**: Unified LGTM pipeline (Loki, Grafana, Tempo, Alloyl) collecting cross-tier telemetry.
 
-## 2. Standardization Patterns [SPEC-SYS-01]
+## 2. Standardization Patterns [SPEC-INFRA-01]
 
 To ensure consistency across heterogeneous service stacks, the following architectural patterns are enforced:
 
-### 2.1 Configuration Inheritance (YAML Anchors)
+### 2.1 Configuration Inheritance (`extends`)
 
-Implementation SHALL utilize root-level configuration blocks (`x-optimizations`) in the main `docker-compose.yml` to provide reusable architectural invariants across all service tiers:
+Implementation SHALL utilize global service templates in `infra/common-optimizations.yml` via the `extends` keyword to ensure cross-file architectural invariants across all service tiers:
 
-- **`&security-baseline`**: Universal cap-drop and privilege escalation protection.
-- **`&logging-loki`**: Standardized push-based log collection using the Loki driver.
-- **`&labels-base`**: Automated schema-compliant metadata injection for system-wide filtering.
-- **`&resource-low/med/high`**: Standardized quota presets to prevent resource contention.
+- **`template-infra-low/med/high`**: Standardized service templates combining resource quotas, security baseline, and restart policies.
+- **`base-security`**: Universal `cap_drop: ALL` and `no-new-privileges: true` baseline.
+- **`base-resource-low/med/high`**: Specific resource quota presets (`deploy.resources`).
+
+Local `docker-compose.yml` files MUST define their own internal YAML anchors for labels (`&labels-base`) and logging (`&logging-loki`) to maintain file independence and handle container-specific metadata properly.
 
 ### 2.2 Telemetry Architecture
 

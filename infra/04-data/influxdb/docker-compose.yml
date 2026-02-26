@@ -1,14 +1,8 @@
-x-common:
-  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
-  logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
-  res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
-  res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
-  res-high: &res-high { deploy: { resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { memory: 512M } } } }
-  restart: &restart { restart: unless-stopped }
-  labels-base: &labels-base { traefik.enable: 'true', hy-home.managed: 'true' }
-
 name: influxdb
-x-logging: &default-logging
+
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: data
 volumes:
   influxdb-data:
     # driver: local
@@ -19,22 +13,11 @@ volumes:
 
 services:
   influxdb:
-    profiles:
-      - influxdb
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
-        reservations:
-          memory: 512M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: influxdb:2.8
     container_name: influxdb
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    restart: unless-stopped
     hostname: influxdb
     healthcheck:
       test:
@@ -69,13 +52,17 @@ services:
       infra_net:
         ipv4_address: 172.19.0.11
     labels:
-      - 'traefik.enable=true'
-      # 도메인: influxdb.${DEFAULT_URL}
-      - 'traefik.http.routers.influxdb.rule=Host(`influxdb.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.influxdb.entrypoints=websecure'
-      - 'traefik.http.routers.influxdb.tls=true'
-      - 'traefik.http.services.influxdb.loadbalancer.server.port=${INFLUXDB_PORT:-8086}'
-    logging: *logging
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.influxdb.rule: Host(`influxdb.${DEFAULT_URL}`)
+      traefik.http.routers.influxdb.entrypoints: websecure
+      traefik.http.routers.influxdb.tls: 'true'
+      traefik.http.services.influxdb.loadbalancer.server.port: ${INFLUXDB_PORT:-8086}
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
 secrets:
   influxdb_password:

@@ -1,16 +1,8 @@
 name: oauth2-proxy
 
-include:
-  - ../../common-optimizations.yml
-
-
-# volumes:
-#   oauth2-proxy-valkey-data:
-#     driver: local
-#     driver_opts:
-#       o: bind
-#       type: none
-#       device: ${DEFAULT_AUTH_DIR}/valkey
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: auth
 
 secrets:
   mng_valkey_password:
@@ -22,7 +14,10 @@ secrets:
 
 services:
   oauth2-proxy:
-    <<: [*default-restart, *security-baseline, *resource-low]
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.8.1
     build:
       context: .
       dockerfile: Dockerfile

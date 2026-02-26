@@ -1,13 +1,8 @@
-x-common:
-  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
-  logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
-  res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
-  res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
-  res-high: &res-high { deploy: { resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { memory: 512M } } } }
-  restart: &restart { restart: unless-stopped }
-  labels-base: &labels-base { traefik.enable: 'true', hy-home.managed: 'true' }
+name: syncthing
 
-x-logging: &default-logging
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: tooling
 volumes:
   syncthing-volume:
     driver: local
@@ -24,8 +19,10 @@ volumes:
 
 services:
   syncthing:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: syncthing/syncthing:2.0.13
-    restart: unless-stopped
     container_name: syncthing
     ports:
       - ${SYNCTHING_SYNC_HOST_PORT:-22000}:${SYNCTHING_SYNC_PORT:-22000}/tcp
@@ -55,22 +52,18 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *logging
-    # labels:
-    #   - traefik.enable=true
-    #   - traefik.docker.network=nt-develop
-    #   - traefik.http.services.syncthing.loadbalancer.server.port=8384
-    #   - traefik.http.routers.syncthing.rule=Host(`syncthing.${DEFAULT_URL}`)
-    #   - traefik.http.routers.syncthing.entrypoints=web
-    #   # For https:
-    #   - traefik.http.routers.syncthing-secure.rule=Host(`syncthing.${DEFAULT_URL}`)
-    #   - traefik.http.routers.syncthing-secure.entrypoints=websecure
-    #   - traefik.http.middlewares.web-redirect-websecure.redirectscheme.scheme=https
-    #   - traefik.http.routers.syncthing.middlewares=web-redirect-websecure
+    labels:
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.syncthing.rule: Host(`syncthing.${DEFAULT_URL}`)
+      traefik.http.routers.syncthing.entrypoints: websecure
+      traefik.http.routers.syncthing.tls: 'true'
+      traefik.http.services.syncthing.loadbalancer.server.port: ${SYNCTHING_GUI_PORT:-8384}
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
     networks:
       - nt-sync

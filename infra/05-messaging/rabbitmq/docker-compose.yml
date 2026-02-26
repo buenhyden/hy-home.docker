@@ -1,37 +1,31 @@
-x-common:
-  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
-  logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
-  res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
-  res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
-  res-high: &res-high { deploy: { resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { memory: 512M } } } }
-  restart: &restart { restart: unless-stopped }
-  labels-base: &labels-base { traefik.enable: 'true', hy-home.managed: 'true' }
-
 name: rabbitmq
+
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: messaging
+
 x-logging: &default-logging
 volumes:
   rabbitmq-data-volume:
-    # driver: local
-    # driver_opts:
-    #   type: none
-    #   o: bind
-    #   device: ${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq
 
 services:
   rabbitmq:
     profiles:
       - rabbitmq
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: rabbitmq:4.2.3-management-alpine
     container_name: rabbitmq
     hostname: rabbitmq
-    restart: unless-stopped
     ports:
       - '${RABBITMQ_HOST_PORT:-5672}:${RABBITMQ_PORT:-5672}'
       - '${RABBITMQ_MANAGEMENT_HOST_PORT:-15672}:${RABBITMQ_MANAGEMENT_PORT:-15672}'
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     secrets:
       - rabbitmq_user
       - rabbitmq_password
@@ -49,14 +43,13 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *logging
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          memory: 256M
+    labels:
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.rabbitmq.rule: Host(`rabbitmq.${DEFAULT_URL}`)
+      traefik.http.routers.rabbitmq.entrypoints: websecure
+      traefik.http.routers.rabbitmq.tls: 'true'
+      traefik.http.services.rabbitmq.loadbalancer.server.port: ${RABBITMQ_MANAGEMENT_PORT:-15672}
 
 secrets:
   rabbitmq_user:

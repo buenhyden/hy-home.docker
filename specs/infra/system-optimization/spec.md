@@ -19,7 +19,8 @@
 
 ## 4. Security Implementation [REQ-SPT-05]
 
-- **Anchors**: Implementation utilizes local YAML anchors (`&security-baseline`) to enforce `no-new-privileges` and `cap_drop: ALL`.
+- **Templates**: Implementation utilize centralized YAML templates included from `infra/common-optimizations.yml` to enforce `no-new-privileges` and `cap_drop: ALL`.
+
 - **Identity**: Root execution inside containers is STRICTLY PROHIBITED.
 
 ## 5. Ops & Observability [REQ-SPT-05]

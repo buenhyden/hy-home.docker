@@ -1,14 +1,9 @@
-x-common:
-  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
-  logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
-  res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
-  res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
-  res-high: &res-high { deploy: { resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { memory: 512M } } } }
-  restart: &restart { restart: unless-stopped }
-  labels-base: &labels-base { traefik.enable: 'true', hy-home.managed: 'true' }
-
 name: mng-db
-include:
+
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: data
+
 volumes:
   mng-pg-data:
     driver: local
@@ -52,7 +47,11 @@ networks:
 
 services:
   mng-valkey:
-    <<: [*restart, *security, *res-med]
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    image: valkey/valkey:8.0.2-alpine
+    container_name: mng-valkey
 
     labels:
       <<: *labels-base
@@ -85,20 +84,19 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   mng-valkey-exporter:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
-        reservations:
-          cpus: '0.05'
-          memory: 64M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: oliver006/redis_exporter:v1.81.0-alpine
     container_name: mng-valkey-exporter
-    <<: [*restart, *security]
+
     labels:
       <<: *labels-base
       hy-home.tier: data
@@ -126,17 +124,19 @@ services:
     depends_on:
       mng-valkey:
         condition: service_healthy
-    logging: *logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   redisinsight:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: redis/redisinsight:3.0.3
     container_name: redisinsight
-    <<: [*restart, *security]
+
     networks:
       infra_net:
         ipv4_address: 172.19.0.68
@@ -151,10 +151,18 @@ services:
       traefik.http.routers.redisinsight.tls: 'true'
       traefik.http.routers.redisinsight.middlewares: sso-auth@file
       traefik.http.services.redisinsight.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-8001}
-    logging: *logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   mng-pg:
-    <<: [*restart, *security, *res-med]
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    image: postgres:17-alpine
+    container_name: mng-pg
 
     networks:
       infra_net:
@@ -182,23 +190,25 @@ services:
     labels:
       <<: *labels-base
       hy-home.tier: data
-    logging: *logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   mng-pg-init:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 128M
+    extends:
+      file: ../../common-optimizations.yml
+      service: base-resource-low
     image: postgres:17-alpine
     container_name: mng-pg-init
     restart: 'no'
+    # Override security for specific init needs if necessary, but base-security covers baseline.
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    networks:
-      - infra_net
+
     environment:
       PGPASSWORD_FILE: /run/secrets/mng_postgres_password
       POSTGRES_HOSTNAME: ${POSTGRES_MNG_HOSTNAME}
@@ -245,26 +255,19 @@ services:
       retries: 5
       start_period: 30s
     logging:
-      driver: 'loki'
+      driver: loki
       options:
         loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=mng-pg-init,tier=data'
+        loki-external-labels: 'container_name={{.Name}}'
 
   mng-pg-exporter:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
-        reservations:
-          cpus: '0.05'
-          memory: 64M
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: mng-pg-exporter
-    security_opt:
-      - no-new-privileges:true
     read_only: true
-    <<: *restart
+
     networks:
       infra_net:
         ipv4_address: 172.19.0.73
@@ -293,7 +296,7 @@ services:
       retries: 5
       start_period: 30s
     logging:
-      driver: 'loki'
+      driver: loki
       options:
         loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=mng-pg-exporter,tier=data'
+        loki-external-labels: 'container_name={{.Name}}'

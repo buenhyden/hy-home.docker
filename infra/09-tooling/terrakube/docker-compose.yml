@@ -1,28 +1,18 @@
-x-common:
-  security: &security { security_opt: [no-new-privileges:true], cap_drop: [ALL] }
-  logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
-  res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
-  res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
-  res-high: &res-high { deploy: { resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { memory: 512M } } } }
-  restart: &restart { restart: unless-stopped }
-  labels-base: &labels-base { traefik.enable: 'true', hy-home.managed: 'true' }
-
 name: terrakube
-x-logging: &default-logging
+
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: tooling
 services:
   # ----------------------------------------------------------------
   # 5. Terrakube API (백엔드)
   # ----------------------------------------------------------------
   terrakube-api:
-    profiles:
-      - terrakube
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: azbuilder/api-server:2.29.0
     container_name: terrakube-api
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     secrets:
       - terrakube_db_password
       - minio_app_user_password
@@ -60,9 +50,11 @@ services:
       TerrakubeRedisPort: ${VALKEY_PORT:-6379}
 
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.terrakube-api.rule=Host(`terrakube-api.${DEFAULT_URL}`)'
-      - 'traefik.http.services.terrakube-api.loadbalancer.server.port=8080'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.terrakube-api.rule: Host(`terrakube-api.${DEFAULT_URL}`)
+      traefik.http.services.terrakube-api.loadbalancer.server.port: 8080
+
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:8080/actuator/health || exit 1']
       interval: 30s
@@ -80,21 +72,21 @@ services:
         condition: service_started
     networks:
       - infra_net
-    logging: *logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   # ----------------------------------------------------------------
   # 6. Terrakube UI (프론트엔드)
   # ----------------------------------------------------------------
   terrakube-ui:
-    profiles:
-      - terrakube
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: azbuilder/terrakube-ui:2.29.0
     container_name: terrakube-ui
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     environment:
       REACT_APP_TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}/api/v1/
       REACT_APP_AUTHORITY: https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
@@ -103,9 +95,11 @@ services:
       REACT_APP_SCOPE: openid profile email offline_access groups
       JAVA_TOOL_OPTIONS: -Dcom.sun.security.enableAIAcaIssuers=true
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.terrakube-ui.rule=Host(`terrakube-ui.${DEFAULT_URL}`)'
-      - 'traefik.http.services.terrakube-ui.loadbalancer.server.port=${TERRAKUBE_UI_PORT:-3000}'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.terrakube-ui.rule: Host(`terrakube-ui.${DEFAULT_URL}`)
+      traefik.http.services.terrakube-ui.loadbalancer.server.port: ${TERRAKUBE_UI_PORT:-3000}
+
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:${TERRAKUBE_UI_PORT:-3000} || exit 1']
       interval: 30s
@@ -117,21 +111,21 @@ services:
         condition: service_healthy
     networks:
       - infra_net
-    logging: *logging
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
   # ----------------------------------------------------------------
   # 7. 인프라 (DB, Redis, Executor)
   # ----------------------------------------------------------------
   terrakube-executor:
-    profiles:
-      - terrakube
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     image: azbuilder/executor:2.29.0
     container_name: terrakube-executor
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    restart: unless-stopped
     # cap_drop은 docker.sock 마운트로 인해 일부 제한 가능성 있음
     secrets:
       - terrakube_internal_secret
@@ -184,10 +178,15 @@ services:
     networks:
       - infra_net
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.terrakube-executor.rule=Host(`terrakube-executor.${DEFAULT_URL}`)'
-      - 'traefik.http.services.terrakube-executor.loadbalancer.server.port=${TERRAKUBE_EXECUTOR_PORT:-8090}'
-    logging: *logging
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.terrakube-executor.rule: Host(`terrakube-executor.${DEFAULT_URL}`)
+      traefik.http.services.terrakube-executor.loadbalancer.server.port: ${TERRAKUBE_EXECUTOR_PORT:-8090}
+    logging:
+      driver: loki
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name={{.Name}}'
 
 secrets:
   terrakube_db_password:
