@@ -13,10 +13,10 @@ The system is a multi-tier Docker Compose environment organized into functional 
 
 ## Resource Strategy
 
-- **Limits**: Every container has configured `mem_limit` and `cpu_quota`.
-- **Profiles**: `docker compose --profile` used to toggle heavy AI and Tooling services to save idle RAM.
+- **Limits**: Every container has configured `deploy.resources.limits` (cpus, memory) and `reservations` to prevent resource exhaustion.
+- **Enforcement**: Docker Compose native resource constraints applied across all architecture tiers.
 
 ## Security Controls
 
-- **Secrets**: 100% Docker Secrets.
-- **Network**: Service isolation via `internal` Docker networks, only exposing Tier 1 Gateway to host.
+- **Secrets**: 100% Docker Secrets adoption. Verified that sensitive data is mounted under `/run/secrets/`.
+- **Infrastructure**: Service isolation via functional compose tiers, with logging centralized to Loki for auditability.

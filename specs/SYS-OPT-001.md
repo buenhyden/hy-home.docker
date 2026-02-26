@@ -12,10 +12,8 @@ This specification defines the technical implementation standards for optimizing
 ## 2. Security Hardening [REQ-OPT-02]
 
 - **Network Isolation**:
-  - `hy-net-ingress`: Only gateway and external proxy containers.
-  - `hy-net-internal`: Core services, data, and logic.
-  - `hy-net-observability`: Centralized telemetry collectors.
-- **Secrets Protocol**: NO plain-text environment variables for passwords. Use `secrets` block in `docker-compose.yml`.
+  - `infra_net`: Unified internal backbone for core services and data tiers.
+- **Secrets Protocol**: NO plain-text environment variables for passwords in compose files. Verified 100% adoption of the `/run/secrets/` mounting standard.
 
 ## 3. Observability Standard [REQ-OPT-03]
 

@@ -27,7 +27,7 @@ Transform the `hy-home.docker` environment into a high-performance, secure, and 
 
 ## Milestones
 
-1. **M1**: Analysis and Documentation (Current)
-2. **M2**: Build and Layer Optimization (Caching, Multi-stage)
-3. **M3**: Security and Network Hardening (VLAN-like isolation, Secrets)
-4. **M4**: Observability and Resource Limit implementation
+1. **M1**: Analysis and Documentation (Completed)
+2. **M2**: Build and Layer Optimization (Completed)
+3. **M3**: Security and Network Hardening (Completed)
+4. **M4**: Observability and Resource Limit implementation (Completed)

@@ -222,4 +222,17 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
+        reservations:
+          cpus: '0.05'
+          memory: 64M
+...
+logging:
+  driver: 'loki'
+  options:
+    loki-url: 'http://localhost:3100/loki/api/v1/push'
+    loki-external-labels: 'container_name=opensearch-exporter,tier=data'
