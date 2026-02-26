@@ -1,17 +1,17 @@
 name: airflow
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+include:
+  - ../../../common-optimizations.yml
+
 
 x-airflow-common: &airflow-common
+  <<: [*default-restart, *security-baseline, *resource-med]
   profiles:
     - airflow
   image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:slim-3.1.6}
   networks:
     - infra_net
+
   # build: .
   security_opt:
     - no-new-privileges:true

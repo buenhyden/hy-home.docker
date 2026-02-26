@@ -1,10 +1,8 @@
 name: n8n
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+include:
+  - ../../../common-optimizations.yml
+
 
 x-n8n-common-env: &n8n-common-env
   GENERIC_TIMEZONE: ${DEFAULT_TIMEZONE:-Asia/Seoul}
@@ -59,20 +57,10 @@ secrets:
 
 services:
   n8n:
+    <<: [*default-restart, *security-baseline, *resource-med]
     image: n8nio/n8n:2.6.2
     container_name: n8n
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 2G
-        reservations:
-          memory: 1G
+
     expose:
       - ${N8N_PORT:-5678}
     secrets:

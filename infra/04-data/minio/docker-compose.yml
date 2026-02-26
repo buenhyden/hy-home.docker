@@ -1,13 +1,8 @@
 name: minio
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+include:
+  - ../../../common-optimizations.yml
 
-x-restart: &default-restart
-  restart: unless-stopped
 
 volumes:
   minio-data:
@@ -29,19 +24,12 @@ secrets:
 
 services:
   minio:
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
+    <<: [*default-restart, *security-baseline, *resource-high]
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio
-    <<: *default-restart
     command: server /data --console-address ":${MINIO_CONSOLE_HOST_PORT:-9001}"
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+
+
     secrets:
       - minio_root_username
       - minio_root_password

@@ -1,13 +1,11 @@
 name: vault
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+include:
+  - ../../common-optimizations.yml
 
 volumes:
   vault-data:
+
     # driver: local
     # driver_opts:
     #   o: bind
@@ -16,25 +14,12 @@ volumes:
 
 services:
   vault:
+    <<: [*default-restart, *security-baseline, *resource-med]
+    image: hashicorp/vault:1.17
     profiles:
+
       - vault
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          cpus: '0.1'
-          memory: 256M
-    image: hashicorp/vault:1.21.2
-    container_name: vault
-    security_opt:
-      - no-new-privileges:true
-    # cap_add: [IPC_LOCK] is already present and required for Vault.
-    # In some cases cap_drop: [ALL] might interfere with IPC_LOCK, but let's try to be restrictive.
-    cap_drop:
-      - ALL
-    restart: unless-stopped
+
     ports:
       - '${VAULT_HOST_PORT:-8200}:${VAULT_PORT:-8200}'
     expose:

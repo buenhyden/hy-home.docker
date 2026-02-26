@@ -1,10 +1,8 @@
 name: ollama
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+include:
+  - ../../../common-optimizations.yml
+
 
 volumes:
   ollama-data:
@@ -16,47 +14,32 @@ volumes:
 
 services:
   ollama:
+    <<: [*default-restart, *resource-high]
     profiles:
       - ollama
     image: ollama/ollama:0.13.5
     container_name: ollama
     security_opt:
       - no-new-privileges:true
-    # GPU 장치 접근을 위해 cap_drop은 제한적으로 적용
-    # cap_drop:
-    #   - ALL
-    # ports:
-    #   - "${OLLAMA_HOST_PORT}:${OLLAMA_PORT}"
     expose:
-      - ${OLLAMA_PORT:-11434}
+      - '${OLLAMA_PORT:-11434}'
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_ORIGINS=*
+      - OLLAMA_MODELS=/root/.ollama/models
+      # GPU 오버라이드는 dev compose나 환경변수로 처리
     volumes:
       - ollama-data:/root/.ollama
-    environment:
-      # [필수 추가] Ollama가 모든 네트워크 인터페이스(Docker 내부)에서 수신하도록 설정
-      # 기본 포트가 11434라면 ${OLLAMA_PORT}는 11434와 일치해야 합니다.
-      - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT:-11434}
-      # [GPU 필수] 컨테이너가 할당된 GPU를 사용하도록 명시
-      - NVIDIA_VISIBLE_DEVICES=all
     networks:
       infra_net:
-        ipv4_address: 172.19.0.40
+        ipv4_address: 172.19.0.42
     healthcheck:
-      test: ['CMD', 'ollama', 'list']
-      interval: 15s
-      timeout: 30s
+      test: ['CMD', 'curl', '-f', 'http://localhost:11434/api/tags']
+      interval: 10s
+      timeout: 5s
       retries: 5
-      start_period: 60s
-    deploy:
-      resources:
-        limits:
-          cpus: '4.0'
-          memory: 8G
-        reservations:
-          memory: 4G
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+
+
     labels:
       - 'traefik.enable=true'
       # Ollama API 라우터 (https://ollama.${DEFAULT_URL})

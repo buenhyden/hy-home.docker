@@ -7,24 +7,19 @@
 
 name: supabase
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+include:
+  - ../../../common-optimizations.yml
+
 
 volumes:
   db-config:
 
 services:
   studio:
+    <<: [*default-restart, *security-baseline, *resource-med]
+    image: supabase/studio:2025.11.10
     container_name: supabase-studio
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    image: supabase/studio:2025.11.10-sha-5291fe3
-    restart: unless-stopped
+
     healthcheck:
       test:
         [
@@ -79,13 +74,10 @@ services:
     logging: *default-logging
 
   kong:
-    container_name: supabase-kong
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *resource-med]
     image: kong:3.9.1
-    restart: unless-stopped
+    container_name: supabase-kong
+
     ports:
       - ${SUPABASE_KONG_HTTP_HOST_PORT:-8000}:8000/tcp
       - ${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp
@@ -119,13 +111,10 @@ services:
     logging: *default-logging
 
   auth:
-    container_name: supabase-auth
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *resource-med]
     image: supabase/gotrue:v2.182.1
-    restart: unless-stopped
+    container_name: supabase-auth
+
     healthcheck:
       test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:9999/health']
       interval: 15s
@@ -458,13 +447,10 @@ services:
     logging: *default-logging
 
   db:
-    container_name: supabase-db
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *resource-high]
     image: supabase/postgres:15.14.1.068
-    restart: unless-stopped
+    container_name: supabase-db
+
     volumes:
       - ./volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
       - ./volumes/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:Z

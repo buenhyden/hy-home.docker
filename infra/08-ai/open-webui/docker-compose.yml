@@ -1,10 +1,8 @@
 name: open-webui
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+include:
+  - ../../../common-optimizations.yml
+
 
 volumes:
   ollama-webui:
@@ -17,19 +15,11 @@ volumes:
 services:
   # 2. Open WebUI 서비스 (선택 사항: ChatGPT 같은 웹 인터페이스)
   open-webui:
+    <<: [*default-restart, *security-baseline, *resource-med]
     profiles:
       - ollama
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
     image: ghcr.io/open-webui/open-webui:v0.8.5-cuda
-    container_name: open-webui
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+
     # ports:
     #   - "${OLLAMA_WEBUI_HOST_PORT}:${OLLAMA_WEBUI_PORT}" # 브라우저에서 localhost:3000 으로 접속
     environment:
