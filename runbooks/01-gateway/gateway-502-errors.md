@@ -1,48 +1,63 @@
-# Incident Runbook: Traefik 502 Bad Gateway
+# Service Runbook: Gateway 502 Troubleshooting
 
-**Issue:** End users or internal microservices receive `HTTP 502 Bad Gateway` when hitting Traefik routes.
+_Target Directory: `runbooks/01-gateway/gateway-502-errors.md`_
+_Note: Procedure for resolving "Bad Gateway" responses from Traefik ingress._
 
-## Definition
+---
 
-A 502 error from Traefik strictly implies that Traefik successfully captured the request, successfully evaluated the router rules, but the target application container is unreachable or refusing connections.
+## 1. Service Overview & Ownership
 
-## Resolution Steps
+- **Description**: Handles Ingress traffic and edge routing via Traefik.
+- **Owner Team**: Gateway / Platform
+- **Primary Contact**: #infra-gateway (Slack)
 
-### 1. Identify the Failing Route
+## 2. Dependencies
 
-Open the Traefik dashboard (usually at `https://dashboard.local.dev`) and navigate to the HTTP Routers section. Identify which router is failing.
+| Dependency | Type | Impact if Down | Link to Runbook |
+| ---------- | ---- | -------------- | --------------- |
+| Traefik Proxy | Hub | Gateway failure | [Traefik Recovery](traefik-proxy-recovery.md) |
+| infra_net | Network | Routing lost | [Bootstrap](../core/infra-bootstrap-runbook.md) |
 
-Alternatively, review Traefik access logs:
+## 3. Observability & Dashboards
 
-```bash
-docker logs --tail 100 traefik | grep "502"
-```
+- **Primary Dashboard**: [Traefik HTTP Routers](https://dashboard.${DEFAULT_URL}/#http/routers)
+- **Error Trends**: [Grafana Edge Metrics](https://grafana.${DEFAULT_URL}/d/traefik-overview)
 
-### 2. Check the Target Container
+## 4. Operational Scenarios
 
-Traefik routes dynamically via Docker labels. Inspect the target container.
+### Scenario A: Target Container Unreachable
 
-```bash
-docker ps | grep <target_service>
-docker logs <target_service>
-```
+- **Given**: End user receives `502 Bad Gateway`.
+- **When**: Traefik access logs show "service unreachable".
+- **Then**:
+  1. [ ] Check Target Service status: `docker compose ps <service_name>`
+  2. [ ] Verify Network membership: `docker network inspect infra_net | grep <service_name>`
+- **Expected Outcome**: Container status is `Up` and has an internal IP on `infra_net`.
 
-If the container is in a `restarting` loop, fix the application error.
+### Scenario B: Load Balancer Port Mismatch
 
-### 3. Validate Network Bridges
+- **Given**: Container is healthy but 502 persists.
+- **When**: Application listens on dynamic port (e.g. 8080) but label refers to default.
+- **Then**:
+  1. [ ] Check labels: `docker inspect <service_name> --format '{{.Config.Labels}}'`
+  2. [ ] Verify `traefik.http.services.<name>.loadbalancer.server.port` matches internal app port.
+- **Expected Outcome**: Port label matches `EXPOSE` or binary listen port.
 
-Ensure the target container is legitimately present on the `infra_net` (or the network Traefik shares).
+## 5. Safe Rollback Procedure
 
-```bash
-docker network inspect infra_net
-```
+- [ ] Revert any recent `labels:` changes in `docker-compose.yml`.
+- [ ] Run `docker compose up -d <service_name>` to re-apply.
 
-Ensure the target container's IPv4 address matches Traefik's expectations, or if dynamic, ensure the container name resolves.
+## 6. Data Safety Notes
 
-### 4. Check Internal Port Binding
+- **Configuration**: Traefik dynamic configs in `infra/01-gateway/traefik/dynamic/` are auto-reloaded.
 
-Make sure the label `traefik.http.services.<name>.loadbalancer.server.port` matches the port the container is _actually_ listening on internally, NOT the host-mapped port.
+## 7. Escalation Path
 
-Example: If a container listens on `8080` internally, but exposed to host as `9090`:
+1. **On-Call**: Gateway Engineer
+2. **Secondary**: Platform Lead
 
-- **Correct label:** `...loadbalancer.server.port=8080`
+## 8. Verification Steps (Post-Fix)
+
+- [ ] `curl -I https://<service>.${DEFAULT_URL}` returns `200 OK` or `302 Found`.
+- [ ] Traefik Dashboard shows router state as `success` (green).

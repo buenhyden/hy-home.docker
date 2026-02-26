@@ -1,67 +1,65 @@
-# Incident Response Runbook
+# Incident Response Framework Guide
 
-## 1. Document Purpose
+_Target Directory: `runbooks/core/incident-response-runbook.md`_
+_Note: Global protocol for managing system outages and service degradations._
 
-Standard response process for production incidents with clear roles and cadence.
+---
 
-## 2. Prerequisites
+## 1. Service Overview & Ownership
 
-- Access Requirements: Incident channel (`Slack`), deployment controls.
-- Tools: Operational dashboards (Grafana via `https://dashboard.${DEFAULT_URL}`), Log aggregation (Loki).
-- **Network Notice**: Ensure you are authenticated through the Traefik/OAuth2 Proxy layer to access diagnostic endpoints during an outage. If SSO is down, utilize internal Docker DNS (`docker exec -it ...`).
+- **Description**: The coordination protocol for responding to infrastructure incidents.
+- **Owner Team**: SRE / Ops
+- **Primary Contact**: #incident-response (Slack)
 
-## 3. Execution Steps
+## 2. Dependencies
 
-### Phase P1: Declare and Staff
+| Dependency | Type | Impact if Down | Link to Runbook |
+| ---------- | ---- | -------------- | --------------- |
+| Slack / Comms | Internal | Zero coordination | N/A |
+| Grafana / Loki | Observability | Blind response | [Monitoring Runbook](monitoring-runbook.md) |
 
-1. Classify severity.
-   - **SEV-1**: Widespread user impact or data loss risk.
-   - **SEV-2**: Partial user impact or high-risk dependency failure.
-   - **SEV-3**: Limited internal-only impact.
-2. Declare incident and assign roles (Incident Commander, Communications Lead, Operations Lead).
+## 3. Observability & Dashboards
 
-   ```bash
-   # Create incident document and incident communication channel.
-   ```
+- **Incident Central**: [System health dashboard](https://grafana.${DEFAULT_URL}/d/global-health)
+- **Live Logs**: [Loki Explore view](https://grafana.${DEFAULT_URL}/explore)
 
-### Phase P2: Stabilize and Mitigate
+## 4. Operational Scenarios
 
-1. Assess blast radius and apply immediate mitigation.
+### Scenario A: SEV-1 (Core Outage)
 
-   ```bash
-   # Execute containment action to reduce user impact under IC authority.
-   ```
+- **Symptoms**: Dashboard shows 100% error rate on Gateway.
+- **Remediation Action**:
+  1. [ ] Declare Incident in Slack within 5 minutes.
+  2. [ ] Assign IC (Incident Commander).
+  3. [ ] Set update cadence to 15 minutes.
+- **Expected Outcome**: Stakeholders informed; mitigation started.
 
-### Phase P3: Communicate
+### Scenario B: SEV-2 (Feature Degradation)
 
-1. Communicate updates on a fixed cadence based on Severity:
-   - **SEV-1**: Every 15 minutes.
-   - **SEV-2**: Every 30 minutes.
-   - **SEV-3**: Every 60 minutes.
+- **Symptoms**: Elevated 5xx errors; partial database lag.
+- **Remediation Action**:
+  1. [ ] Declare SEV-2.
+  2. [ ] Set update cadence to 30 minutes.
+- **Expected Outcome**: Engineers investigating root cause within 1 hour.
 
-   ```bash
-   # Publish status updates detailing current impact, hypothesis, and next update time.
-   ```
+## 5. Safe Rollback Procedure
 
-### Phase P4: Resolve and Verify
+- [ ] **Method 1**: Git Revert to last stable commit and CI/CD redeploy.
+- [ ] **Method 2**: Docker sidecar roll-back (manual image tag update in `.env`).
 
-1. Resolve and verify recovery.
+## 6. Data Safety Notes
 
-   ```bash
-   # Confirm service health and customer impact recovery.
-   ```
+- **Auditability**: Never delete logs during an incident.
+- **Shadow Systems**: Avoid spinning up un-monitored "fix" containers.
 
-## 4. Validation
+## 7. Escalation Path
 
-- Timestamped Event Timeline is captured from detection to resolution (detection, declaration, mitigation start/end, full resolution).
-- User impact resolved and verified.
-- Required postmortem created when applicable (Mandatory for SEV-1/SEV-2).
+1. **On-Call**: SRE Rotation
+2. **Secondary**: Engineering Lead (@handle)
+3. **Emergency**: CTO (@handle)
 
-## 5. Rollback / Reversal Procedure
+## 8. Verification Steps (Post-Fix)
 
-- If mitigation fails, roll back using deployment runbook and re-check health.
-
-## 6. Escalation Contacts
-
-- Primary Contact: Incident Commander / On-call
-- Secondary Contact: Engineering leadership
+- [ ] Confirm error rates dropped to baseline.
+- [ ] Create Postmortem document in `operations/postmortems/`.
+- [ ] Close incident record in `operations/incidents/`.
