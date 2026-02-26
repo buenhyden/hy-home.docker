@@ -107,6 +107,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Define and assign `infra_net` to `mng-pg-init` while enhancing its security with capability drops.
 - Add `infra_net` external network to Docker Compose files and include a PostgreSQL initialization script for service databases.
 - Migrate sensitive configurations to Docker secrets and standardize secret naming conventions.
+- Add operational runbooks, incident management documentation, and observability labels to services.
+- Define baseline and automation infrastructure architecture, requirements, and decisions for the Docker Compose environment.
+- Configure resource limits and reservations for OpenSearch, Kafka, Loki, and Grafana, add a Kafka topic initialization service, update Prometheus command for secret handling, and refine Alloy network filtering.
+- Add infra maturity and automation spec, update related PRD/ARD, and refine existing ADRs.
+- Standardize runbook format to an 8-section template and update PostgreSQL HA recovery guide.
+- Introduce system optimization documentation, implement resource reservations, and configure Loki logging for authentication services.
+- Add resource reservations and configure Loki logging for various services.
+- Migrate all services to explicit Loki logging and add CPU resource reservations to various containers.
+- Implement system optimization and infrastructure hardening strategies using common YAML anchors and comprehensive documentation.
+- Introduce infrastructure hardening specification and standardize optimization strategies across documentation.
+- Establish system optimization guidelines using YAML anchors, Loki logging, and resource guardrails.
+- Implement multi-stage Docker builds and centralize common Docker Compose optimizations.
+- Introduce new architecture, requirements, and technical specifications for AI, messaging, and data platforms, enhancing infrastructure reliability and observability.
 
 ### Changed
 
@@ -124,6 +137,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standardize volume path environment variables and integrate Valkey into Airflow.
 - Update mng-db PostgreSQL user creation to use service-specific database passwords from Docker secrets and remove the example script.
 - Dynamically inject secrets into Prometheus, Loki, Tempo, and Alertmanager configurations using templates and Docker secrets, and update gitignore.
+- Reorganize infrastructure specifications, introduce `baseline` and `automation` specs, and enhance the automation spec with detailed governance and verification plans.
+- Migrate architecture requirements to dedicated ARD files and update PRD and top-level documentation.
+- Complete system optimization milestones, standardize resource limits and Loki logging, and refine network/secrets protocols.
+- Standardize Docker Compose service labels and restructure runbooks into a new service-oriented format.
+- Standardize Docker Compose label definitions using `<<: *labels-base`, explicitly define `hy-home.tier` for services, and update Traefik's tier.
+- Centralize Docker Compose configurations into `common-optimizations.yml` and optimize OpenSearch Dockerfile caching.
 
 ### Docs
 
@@ -192,6 +211,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clarify documentation hierarchy, update architecture with security hardening, and refresh observability and AI/workflow tech stack details.
 - Update documentation references in infra READMEs to new architecture, context, and runbook paths, and add corresponding changelog entries.
 - Align root documentation with current policies, fix obsolete infra links, and update changelog for the 0.0.1-beta release.
+- Introduce new ADRs for infrastructure decisions and consolidate/remove outdated specifications and documentation.
+- Add new incident report and update postmortem for infrastructure documentation audit.
 
 ### Fixed
 
@@ -292,6 +313,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update Valkey password secret path from `valkey_password` to `service_valkey_password`.
 - Delete .env.postgres.example
 - **release:** Update CHANGELOG.md [skip ci]
+- **release:** Update CHANGELOG.md [skip ci]
+- Add .gitkeep files to various secrets subdirectories for version control.
 
 ### Refactor
 
