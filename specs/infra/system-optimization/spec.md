@@ -1,59 +1,101 @@
+---
+title: 'Infrastructure Hardening & Optimization Spec'
+status: 'Validated'
+version: '1.0'
+owner: 'Reliability & Security Engineer'
+prd_reference: '/docs/prd/infra-baseline-prd.md'
+api_reference: 'N/A'
+arch_reference: '/docs/ard/system-optimization-ard.md'
+tags: ['spec', 'implementation', 'security', 'hardening']
+---
+
 # [SPEC-INFRA-04] Infrastructure Hardening & Optimization
 
-- **Role**: Reliability & Security Engineer
-- **Purpose**: Define standards for system isolation, resource density, and security hardening across the hy-home ecosystem.
-- **Activates When**: Performing security audits or optimizing existing container workloads.
+> **Status**: Validated
+> **Related PRD**: [/docs/prd/infra-baseline-prd.md](/docs/prd/infra-baseline-prd.md)
+> **Related Architecture**: [/docs/ard/system-optimization-ard.md](/docs/ard/system-optimization-ard.md)
 
-## 1. Standards
+_Target Directory: `specs/infra/system-optimization/spec.md`_
 
-### Principles
+---
 
-- **[REQ-HARD-01] Universal Isolation**: All infrastructure containers SHALL BE isolated from host-level namespaces (`pid`, `network`, `ipc`) unless explicitly documented as a functional dependency.
-- **[REQ-HARD-02] Resource Density Primacy**: Infrastructure services MUST NOT consume more than 20% of aggregate system memory under idle conditions.
-- **[REQ-HARD-03] Immutable Execution**: Every container SHALL utilize read-only root filesystems wherever functionally feasible.
+## 0. Pre-Implementation Checklist (Governance)
 
-## 2. Technical Specification [REQ-SPT-05]
+### 0.1 Architecture / Tech Stack
 
-### 2.1 Non-Functional Requirements (NFR)
+| Item               | Check Question                                        | Required | Alignment Notes | Where to document |
+| ------------------ | ----------------------------------------------------- | -------- | --------------- | ----------------- |
+| Architecture Style | Is the style Monolith/Modular Monolith/Microservices? | Must     | Hardened Tiers  | Section 1         |
+| Service Boundaries | Are module boundaries documented (diagram/text)?      | Must     | Namespace Iso   | Section 1         |
+| Backend Stack      | Are language/framework/libs decided?                  | Must     | Kernel Sec      | Section 1         |
 
-- **NFR-SEC-01**: Host-to-Container escape vectors MUST be mitigated via restricted kernel capability sets.
-- **NFR-OBS-01**: Centralized log ingestion SHALL maintain a p95 latency of < 2 seconds.
+### 0.2 Quality / Testing / Security
 
-### 2.2 Storage Strategy
+| Item            | Check Question                                 | Required | Alignment Notes | Where to document |
+| --------------- | ---------------------------------------------- | -------- | --------------- | ----------------- |
+| Test Strategy   | Levels (Unit/Integration/E2E/Load) defined?    | Must     | Security Audit  | Section 7         |
+| AuthN/AuthZ     | Is auth approach designed (token/OAuth/RBAC)?  | Must     | Secrets Prot    | Section 4         |
+| Data Protection | Encryption/access policies for sensitive data? | Must     | Bind Isolation  | Section 9         |
 
-- **ST-01**: Persistent mounts SHALL utilize `bind` mounts for deterministic IO performance.
-- **ST-02**: All sensitive volumes MUST be restricted to owner-only permissions on the host system.
+## 1. Technical Overview & Architecture Style
 
-### 2.3 Interfaces
+This specification defines standards for system isolation, resource density, and security hardening across the hy-home ecosystem.
 
-- **INF-01**: Interservice communication SHALL BE restricted to the dedicated `infra_net`.
-- **INF-02**: External exposing of infrastructure-only ports is STRICTLY PROHIBITED.
+- **Component Boundary**: Container runtimes and kernel-level security options.
+- **Key Dependencies**: Docker Engine capability management.
+- **Tech Stack**: `security_opt`, `cap_drop`, immutable filesystems.
 
-### 2.4 Security
+## 2. Coded Requirements (Traceability)
 
-- **SEC-01**: `no-new-privileges: true` MUST BE present in every production service runtime.
-- **SEC-02**: The `cap_drop: ALL` flag is mandatory for all non-privileged sidecars.
+| ID                | Requirement Description | Priority | Parent PRD REQ |
+| ----------------- | ----------------------- | -------- | -------------- |
+| **[REQ-HARD-01]** | Universal Isolation: Isolated from host namespaces (`pid`, `network`, `ipc`). | Critical | REQ-SYS-04     |
+| **[REQ-HARD-02]** | Resource Density: Utilization < 20% aggregate system RAM. | High     | REQ-PRD-MET-03 |
+| **[REQ-HARD-03]** | Immutable Execution: Read-only root filesystems wherever feasible. | High     | SEC-SPC-001    |
 
-### 2.5 Ops & Observability
+## 3. Data Modeling & Storage Strategy
 
-- **OBS-01**: Operational metrics SHALL BE collected via standard OTLP or Prometheus exporters.
+- **Persistence**: IOPs-optimized bind mounts.
+- **Security**: restriction to owner-only host permissions.
 
-## 3. Verification & Acceptance Criteria (GWT) [REQ-SPT-10]
+## 4. Interfaces & Data Structures
 
-### [AC-HARD-01] Privilege Escalation Protection
+- **Internal Interface**: Dedicated `infra_net` for interservice traffic.
+- **Restriction**: External exposing of infrastructure ports is STRICTLY PROHIBITED.
 
-- **Given**: A deployed infrastructure container.
-- **When**: Running `docker inspect --format '{{.HostConfig.SecurityOpt}}' <container>`.
-- **Then**: The output MUST explicitly contain `no-new-privileges:true`.
+## 5. Component Breakdown
 
-### [AC-HARD-02] Resource Ceiling Enforcement
+- **Global Baseline**: `template-infra-high` resource templates.
+- **Invariants**: `base-security` inheritance.
 
-- **Given**: A service deployed with the `template-infra-high` template.
-- **When**: Synthetic load is applied to the service.
-- **Then**: The container MUST NOT exceed a memory utilization of `2GiB`.
+## 6. Edge Cases & Error Handling
 
-### [AC-HARD-03] Log Ingestion Consistency
+- **Error**: Permission denied -> Kernel log analysis via cAdvisor.
+- **Error**: Resource starvation -> Aggressive throttling of non-critical sidecars.
 
-- **Given**: A critical log event in any tier.
-- **When**: Inspecting the Loki aggregation point.
-- **Then**: The event MUST BE searchable and present within 5 seconds of occurrence.
+## 7. Verification Plan (Testing & QA) [REQ-SPT-10]
+
+- **[VAL-SPEC-01] Privilege Escalation Protection**:
+  - **Given**: A deployed infrastructure container.
+  - **When**: Running `docker inspect --format '{{.HostConfig.SecurityOpt}}'`.
+  - **Then**: Output MUST explicitly contain `no-new-privileges:true`.
+
+- **[VAL-SPEC-02] Resource Ceiling Enforcement**:
+  - **Given**: A service deployed via standardized template.
+  - **When**: Synthetic load is applied.
+  - **Then**: Container utilization MUST NOT exceed the profile RAM limit.
+
+- **[VAL-SPEC-03] Log Ingestion Consistency**:
+  - **Given**: A localized log event.
+  - **When**: Inspecting Loki aggregation.
+  - **Then**: Event MUST be searchable within 5 seconds (p95).
+
+## 8. Non-Functional Requirements (NFR) & Scalability
+
+- **Ingestion**: p95 ingestion latency < 2 seconds.
+- **Footprint**: p90 idle utilization < 4GB.
+
+## 9. Operations & Observability
+
+- **Metrics**: Standard OTLP exporters.
+- **Hardening**: Periodic audit of kernel capability sets.

@@ -1,59 +1,102 @@
+---
+title: 'Infrastructure Automation Specification'
+status: 'Validated'
+version: '1.0'
+owner: 'Platform Architect'
+prd_reference: '/docs/prd/infra-automation-prd.md'
+api_reference: 'N/A'
+arch_reference: '/docs/ard/infra-automation-ard.md'
+tags: ['spec', 'implementation', 'infra', 'automation']
+---
+
 # [SPEC-INFRA-03] Infrastructure Automation Specification
 
-- **Role**: Platform Engineer / DevOps Architect
-- **Purpose**: Define implementation standards for self-provisioning sidecars and automated resource readiness.
-- **Activates When**: Creating or modifying "Init" services (`os-init`, `k-init`) or automated dashboard pipelines.
+> **Status**: Validated
+> **Related PRD**: [/docs/prd/infra-automation-prd.md](/docs/prd/infra-automation-prd.md)
+> **Related Architecture**: [/docs/ard/infra-automation-ard.md](/docs/ard/infra-automation-ard.md)
 
-## 1. Standards
+_Target Directory: `specs/infra/automation/spec.md`_
 
-### Principles
+---
 
-- **[REQ-AUTO-01] Idempotency Primacy**: All automation sidecars MUST BE strictly idempotent. Subsequent runs SHALL NOT produce errors if resources already exist.
-- **[REQ-AUTO-02] Readiness Blocking**: Init containers MUST block dependent application startup until core backend services (9200, 9092) are functionally reachable.
-- **[REQ-AUTO-03] Fail-Fast Execution**: Sidecars SHALL exit with code 1 upon unrecoverable configuration errors to stop downstream deployment.
+## 0. Pre-Implementation Checklist (Governance)
 
-## 2. Technical Specification [REQ-SPT-05]
+### 0.1 Architecture / Tech Stack
 
-### 2.1 Non-Functional Requirements (NFR)
+| Item               | Check Question                                        | Required | Alignment Notes | Where to document |
+| ------------------ | ----------------------------------------------------- | -------- | --------------- | ----------------- |
+| Architecture Style | Is the style Monolith/Modular Monolith/Microservices? | Must     | Sidecar Pattern | Section 1         |
+| Service Boundaries | Are module boundaries documented (diagram/text)?      | Must     | Init-to-Core    | Section 1         |
+| Backend Stack      | Are language/framework/libs decided?                  | Must     | Shell / Python  | Section 1         |
 
-- **NFR-AUTO-01**: Sidecar initialization SHALL complete in < 60 seconds post-backend readiness.
-- **NFR-RES-01**: Sidecars MUST use the `template-infra-low` resource profile to minimize overhead.
+### 0.2 Quality / Testing / Security
 
-### 2.2 Storage Strategy
+| Item            | Check Question                                 | Required | Alignment Notes | Where to document |
+| --------------- | ---------------------------------------------- | -------- | --------------- | ----------------- |
+| Test Strategy   | Levels (Unit/Integration/E2E/Load) defined?    | Must     | Idempotency Test| Section 7         |
+| AuthN/AuthZ     | Is auth approach designed (token/OAuth/RBAC)?  | Must     | Service Account | Section 4         |
+| Data Protection | Encryption/access policies for sensitive data? | Must     | Read-only Mounts| Section 9         |
 
-- **ST-01**: Automation scripts SHALL reside in tier-specific `scripts/` directories.
-- **ST-02**: Configuration templates MUST be mounted as read-only volumes.
+## 1. Technical Overview & Architecture Style
 
-### 2.3 Interfaces
+This specification governs the implementation standards for self-provisioning sidecars and automated resource readiness using the "Init-Sidecar" pattern.
 
-- **INF-01**: Sidecars SHALL utilize standard Docker `depends_on` conditions (`service_healthy`).
-- **INF-02**: Logs MUST be exported to Loki for auditing automation results.
+- **Component Boundary**: Resource initialization (`os-init`, `k-init`) and telemetry provisioning.
+- **Key Dependencies**: Core backend services (9200, 9092).
+- **Tech Stack**: curl, kafka-console-producer (CLI), Grafana APIs.
 
-### 2.4 Security
+## 2. Coded Requirements (Traceability)
 
-- **SEC-01**: Automation containers MUST NOT run with `privileged: true`.
-- **SEC-02**: Access to backend APIs MUST utilize specialized service accounts with least privilege.
+| ID                | Requirement Description | Priority | Parent PRD REQ |
+| ----------------- | ----------------------- | -------- | -------------- |
+| **[REQ-AUTO-01]** | Idempotency Primacy: Automation sidecars MUST BE strictly idempotent. | Critical | REQ-AUTO-01    |
+| **[REQ-AUTO-02]** | Readiness Blocking: Init containers MUST block dependent startup until core ports are reachable. | Critical | REQ-AUTO-01    |
+| **[REQ-AUTO-03]** | Fail-Fast Execution: Sidecars SHALL exit with code 1 upon unrecoverable error. | High     | REQ-SYS-04     |
 
-### 2.5 Ops & Observability
+## 3. Data Modeling & Storage Strategy
 
-- **OBS-01**: Every sidecar SHALL log its version and environment state upon startup for troubleshooting.
+- **Database Engine**: Index-based (OpenSearch) / Cluster-based (Kafka).
+- **Schema Strategy**: Index templates and topic metadata.
+- **Migration Plan**: Self-healing initialization on startup.
 
-## 3. Verification & Acceptance Criteria (GWT) [REQ-SPT-10]
+## 4. Interfaces & Data Structures
 
-### [AC-AUTO-01] OpenSearch Index Readiness
+- **Sidecar API**: Docker-native `healthcheck` and `depends_on`.
+- **Telemetry Interface**: Dashboard JSON volume mounting.
 
-- **Given**: An uninitialized OpenSearch cluster.
-- **When**: The `opensearch-init` service completes successfully.
-- **Then**: The mapping API MUST return 200 OK for the `infra-logs` template.
+## 5. Component Breakdown
 
-### [AC-AUTO-02] Kafka Topic Persistence
+- **`infra/04-data/os-init.yml`**: Sidecar for index management.
+- **`infra/05-messaging/k-init.yml`**: Sidecar for stream management.
 
-- **Given**: A Kafka cluster with zero topics.
-- **When**: `kafka-init` exits with code 0.
-- **Then**: `kafka-topics --list` MUST contain the required system topics with the correct partition count.
+## 6. Edge Cases & Error Handling
 
-### [AC-AUTO-03] Idempotency Validation
+- **Error**: Target service timeout -> Retry loop with backoff.
+- **Error**: Resource already exists -> Graceful exit (idempotent).
 
-- **Given**: A previously initialized resource.
-- **When**: Running the automation sidecar for the second time.
-- **Then**: The container MUST exit with code 0 or log a "resource exists" warning without failing.
+## 7. Verification Plan (Testing & QA) [REQ-SPT-10]
+
+- **[VAL-SPC-101] Idempotency Validation**:
+  - **Given**: A previously initialized resource (e.g. Kafka Topic).
+  - **When**: Running the automation sidecar for the second time.
+  - **Then**: Container MUST exit with code 0 without failing.
+
+- **[VAL-SPC-102] Connectivity Test**:
+  - **Given**: Targeted backend service in a "Starting" state.
+  - **When**: Automation sidecar attempts connection.
+  - **Then**: Sidecar MUST block until target port (e.g. 9200) is reachable.
+
+- **[VAL-SPC-103] Readiness Audit**:
+  - **Given**: Successful sidecar termination.
+  - **When**: Inspecting backend resource via CLI.
+  - **Then**: Resource (Index/Topic) MUST exist and return 200 OK.
+
+## 8. Non-Functional Requirements (NFR) & Scalability
+
+- **Availability**: Resilience via `MAX_RETRIES` logic.
+- **Performance**: Initialization SHALL complete in < 60s post-backend readiness.
+
+## 9. Operations & Observability
+
+- **Auditing**: Automation results MUST be searchable in Loki.
+- **Lifecycle**: Sidecars are transitionary; monitoring via exit code telemetry.

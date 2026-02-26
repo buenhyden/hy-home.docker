@@ -1,35 +1,25 @@
 # Technical Specifications Hub (`specs/`)
 
-This directory is the absolute **Source of Truth** for the During-Development phase. It exists explicitly and exclusively for **Spec-Driven Development**.
+This directory is the absolute **Source of Truth** for the During-Development phase. Every artifact SHALL comply with the `[REQ-SPT]` standards.
 
 ## 1. Directory Structure
 
-Specifications are organized by domain to ensure clarity and ease of navigation.
+### 🏗️ Infrastructure Specifications
 
-### 🏗️ Infrastructure (`specs/infra/`)
+- **[[SPEC-INFRA-01] Global Baseline](/specs/infra/global-baseline/spec.md)**: Standard templates for `extends` and security invariants.
+- **[[SPEC-INFRA-02] Implementation Baseline](/specs/infra/baseline/spec.md)**: Modular orchestration, Day-0 bootstrap, and secrets strategy.
+- **[[SPEC-INFRA-03] Automation Logic](/specs/infra/automation/spec.md)**: "Init-Sidecar" implementation and automated resource readiness.
+- **[[SPEC-INFRA-04] Hardening & Density](/specs/infra/system-optimization/spec.md)**: Host isolation, aggregate memory limits, and p95 ingestion SLOs.
 
-Core infrastructure implementation details, partitioned by deployment sequence.
+## 2. Compliance Baseline [REQ-SPT-05]
 
-- [baseline/](file:///home/hy/projects/hy-home.docker/specs/infra/baseline/spec.md): Root orchestration, kernel hardening, and Day-0 bootstrap.
-- [automation/](file:///home/hy/projects/hy-home.docker/specs/infra/automation/spec.md): Autonomous sidecars, resource limits, and self-provisioning dashboards.
-- [system-optimization/](file:///home/hy/projects/hy-home.docker/specs/infra/system-optimization/spec.md): YAML standardized anchors, Loki integration, and zero-capability enforcement.
+Every specification in this directory MUST contain:
 
-## 2. Path to Implementation
-
-1. **Draft**: AI Planner Agent creates `spec.md` and `plan.md` in a feature folder.
-2. **Approve**: Human Developer reviews and approves the spec.
-3. **Execute**: AI Coder Agent implements changes following the spec.
-4. **Verify**: Automated scripts and manual checks confirm success.
-
-## 3. Compliance Standard (`[REQ-SPT-05]`)
-
-Every `spec.md` in this directory MUST contain:
-
-- **Section 0**: Mandatory governance checklists.
-- **Section 5**: 3+ Given-When-Then Acceptance Criteria for core requirements (Rule `[REQ-SPT-10]`).
-- **Section 7**: A detailed Verification Plan (Unit/Integration/E2E).
-- **Section 8/9**: Quantified NFRs and Operational procedures.
+- **Identifier**: Machine-readable coded ID (e.g., `[SPEC-INFRA-NNN]`).
+- **Persona**: Mandatory framing from an engineering persona perspective.
+- **Components**: NFR, Storage, Interfaces, Verification, Security, and Ops sections.
+- **Verification**: At least 3 testable Given-When-Then Acceptance Criteria [REQ-SPT-10].
 
 ---
 > [!IMPORTANT]
-> **NO SPEC, NO CODE.** Coder Agents MUST NOT modify infrastructure without an approved specification.
+> **NO SPEC, NO CODE.** All infrastructure modifications MUST BE grounded in an approved specification.
