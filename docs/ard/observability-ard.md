@@ -67,5 +67,6 @@ C4Container
 
 ## 9. Architectural Principles & Trade-offs
 
-- **Logging Strategy**: Transitioned from file-based scraping (Promtail style) to direct `loki` driver pushing to reduce host I/O.
-- **Chosen Path**: Single Alloy agent over fragmented exporters (NodeExporter + Promtail) to reduce total RAM footprint.
+- **Logging Strategy**: Transitioned from file-based scraping (Promtail style) to direct `loki` driver pushing via centralized collector to reduce host I/O.
+- **Chosen Path**: Single Alloy agent over fragmented exporters to minimize total system resource footprint.
+- **Configuration Standard**: All services SHALL inherit from `infra/common-optimizations.yml` for unified observability labels and security settings.

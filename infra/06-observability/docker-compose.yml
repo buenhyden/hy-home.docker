@@ -1,20 +1,8 @@
 # Hy-Home Observability Stack
-x-optimizations:
-  security-baseline: &security-baseline
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-  logging-loki: &logging-loki
-    driver: loki
-    options:
-      loki-url: 'http://localhost:3100/loki/api/v1/push'
-      loki-external-labels: 'job=infra,container={{.Name}}'
-  labels-base: &labels-base
-    hy-home.scope: infra
-    observability.logs: 'true'
-  restart-base: &default-restart
-    restart: unless-stopped
+
+include:
+  - ../common-optimizations.yml
+
 
 volumes:
   tempo-data:
@@ -53,22 +41,11 @@ services:
   # 1. Metrics Storage (Prometheus)
   # -------------------------------------------------------
   prometheus:
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 2G
-        reservations:
-          cpus: '0.5'
-          memory: 1G
+    <<: [*default-restart, *security-baseline, *resource-high]
     image: prom/prometheus:v3.9.0
     container_name: infra-prometheus
-    <<: *default-restart
     user: '1000:1000'
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+
     entrypoint: ['/bin/sh', '-c']
     command: >
       "OPENSEARCH_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) &&
@@ -120,20 +97,10 @@ services:
   # 2. Log Storage (Loki)
   # -------------------------------------------------------
   loki:
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
-        reservations:
-          cpus: '0.2'
-          memory: 512M
+    <<: [*default-restart, *security-baseline, *resource-high]
     image: grafana/loki:3.6.6
     container_name: infra-loki
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+
     entrypoint: ['/bin/sh', '-c']
     command: >
       "export MINIO_APP_USER_PASSWORD=$$(cat /run/secrets/minio_app_user_password) &&
@@ -167,16 +134,10 @@ services:
   # 3. Trace Storage (Tempo)
   # -------------------------------------------------------
   tempo:
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
-        reservations:
-          memory: 512M
+    <<: [*default-restart, *security-baseline, *resource-high]
     image: grafana/tempo:2.10.1
     container_name: infra-tempo
-    <<: [*default-restart, *security-baseline]
+
     entrypoint: ['/bin/sh', '-c']
     command: >
       "export MINIO_APP_USER_PASSWORD=$$(cat /run/secrets/minio_app_user_password) &&
@@ -199,16 +160,10 @@ services:
     logging: *logging-loki
 
   pyroscope:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          memory: 256M
+    <<: [*default-restart, *security-baseline, *resource-med]
     image: grafana/pyroscope:1.18.1
     container_name: infra-pyroscope
-    <<: [*default-restart, *security-baseline]
+
     ports:
       - '${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}'
     networks:
@@ -228,16 +183,10 @@ services:
   # 4. Visualization (Grafana)
   # -------------------------------------------------------
   grafana:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          memory: 256M
+    <<: [*default-restart, *security-baseline, *resource-med]
     image: grafana/grafana:12.3.3
     container_name: infra-grafana
-    <<: [*default-restart, *security-baseline]
+
     environment:
       - GF_SERVER_ROOT_URL=https://grafana.${DEFAULT_URL}
       - GF_SERVER_DOMAIN=grafana.${DEFAULT_URL}
@@ -314,14 +263,10 @@ services:
   # 5. Telemetry Collector (Alloy)
   # -------------------------------------------------------
   alloy:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
+    <<: [*default-restart, *security-baseline, *resource-med]
     image: grafana/alloy:v1.13.1
     container_name: infra-alloy
-    <<: [*default-restart, *security-baseline]
+
     user: '0:0'
     command:
       ['run', '--server.http.listen-addr=0.0.0.0:${ALLOY_PORT:-12345}', '/etc/alloy/config.alloy']
@@ -363,16 +308,9 @@ services:
     logging: *logging-loki
 
   cadvisor:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 1G
-        reservations:
-          cpus: '0.1'
-          memory: 512M
+    <<: [*default-restart, *resource-med]
     image: gcr.io/cadvisor/cadvisor:v0.55.1
-    command:
+
       - '--docker_only=true'
       - '--housekeeping_interval=30s'
       - '--max_housekeeping_interval=35s'
@@ -402,14 +340,10 @@ services:
     logging: *logging-loki
 
   alertmanager:
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
+    <<: [*default-restart, *security-baseline, *resource-low]
     image: prom/alertmanager:v0.30.0
     container_name: infra-alertmanager
-    <<: [*default-restart, *security-baseline]
+
     secrets:
       - smtp_username
       - smtp_password
@@ -455,17 +389,10 @@ services:
       traefik.http.services.alertmanager.loadbalancer.server.port: ${ALERTMANAGER_PORT:-9093}
     logging: *logging-loki
   pushgateway:
-    deploy:
-      resources:
-        limits:
-          cpus: '0.2'
-          memory: 128M
-        reservations:
-          cpus: '0.05'
-          memory: 64M
+    <<: [*default-restart, *security-baseline, *resource-low]
     image: prom/pushgateway:v1.11.2
     container_name: pushgateway
-    <<: [*default-restart, *security-baseline]
+
     expose:
       - ${PUSHGATEWAY_PORT:-9091}
     depends_on:

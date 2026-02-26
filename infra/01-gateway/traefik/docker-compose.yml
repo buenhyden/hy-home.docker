@@ -1,21 +1,8 @@
 name: traefik
 
-x-optimizations:
-  security-baseline: &security-baseline
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-  logging-loki: &logging-loki
-    driver: loki
-    options:
-      loki-url: 'http://localhost:3100/loki/api/v1/push'
-      loki-external-labels: 'job=infra,container={{.Name}}'
-  labels-base: &labels-base
-    hy-home.scope: infra
-    observability.logs: 'true'
-  restart-base: &default-restart
-    restart: unless-stopped
+include:
+  - ../../common-optimizations.yml
+
 
 volumes:
   traefik_certs:
@@ -27,16 +14,9 @@ volumes:
 
 services:
   traefik:
-    <<: [*default-restart, *security-baseline]
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
-        reservations:
-          cpus: '0.2'
-          memory: 512M
+    <<: [*default-restart, *security-baseline, *resource-med]
     image: traefik:v3.6.8
+
     container_name: traefik
     hostname: traefik
     read_only: true

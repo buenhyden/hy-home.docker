@@ -19,3 +19,48 @@ x-labels-base: &labels-base
 
 x-restart: &default-restart
   restart: unless-stopped
+
+# --- Resource Presets ---
+x-resource-low: &resource-low
+  deploy:
+    resources:
+      limits:
+        cpus: "0.2"
+        memory: 128M
+      reservations:
+        memory: 64M
+
+x-resource-med: &resource-med
+  deploy:
+    resources:
+      limits:
+        cpus: "0.5"
+        memory: 512M
+      reservations:
+        memory: 256M
+
+x-resource-high: &resource-high
+  deploy:
+    resources:
+      limits:
+        cpus: "1.0"
+        memory: 1G
+      reservations:
+        memory: 512M
+
+# --- Healthcheck Templates ---
+x-healthcheck-http: &healthcheck-http
+  healthcheck:
+    test:
+      [
+        "CMD",
+        "wget",
+        "--no-verbose",
+        "--tries=1",
+        "--spider",
+        "http://localhost:{{.ServicePort}}/health",
+      ]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+    start_period: 40s
