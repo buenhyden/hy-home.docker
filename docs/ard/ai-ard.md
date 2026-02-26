@@ -54,9 +54,13 @@ C4Container
 
 ### 4.2 Technology Stack
 
-- **Server**: Ollama (supports Llama3, Mixtral, etc.).
+- **Server**: Ollama (supports Llama3, Mixtral, etc.) with Docker GPU Passthrough.
 - **Vector DB**: Qdrant (high-performance vector similarity).
-- **UI**: Open WebUI (integrated RAG support).
+- **UI**: Open WebUI (integrated RAG support) via OAuth2 Proxy authentication.
+
+### 4.3 GPU Isolation Strategy
+
+Containerized GPUs are managed via the `nvidia-container-runtime`. Resource reservations in `docker-compose` ensure the primary inference engine (Ollama) has exclusive access to specified VRAM segments.
 
 ## 8. Non-Functional Requirements (NFRs)
 

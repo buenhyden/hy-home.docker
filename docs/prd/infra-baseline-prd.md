@@ -52,6 +52,9 @@ _Target Directory: `docs/prd/infra-baseline-prd.md`_
 | **REQ-PRD-MET-02** | Security Coverage | 50%                | 100% (Secrets)   | Audit cycle         |
 | **REQ-PRD-MET-03** | Resource Efficiency | N/A                | < 20% Overhead   | Baseline run        |
 | **REQ-PRD-MET-04** | Build Latency      | > 5 mins           | < 3 mins (Cache) | CI/CD build cycle   |
+| **REQ-PRD-MET-05** | Service Availability | 95% (Estimated)    | 99.9% (HA Tiers) | Monthly average     |
+| **REQ-PRD-MET-06** | Recovery Time (RTO) | 4 hours            | < 30 mins        | Disaster recovery   |
+| **REQ-PRD-MET-07** | Recovery Point (RPO) | 1 day              | < 1 hour (DB HA) | Snapshot frequency  |
 
 ## 4. Key Use Cases & Acceptance Criteria (GWT)
 

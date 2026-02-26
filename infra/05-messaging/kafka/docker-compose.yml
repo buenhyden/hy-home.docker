@@ -1,13 +1,8 @@
 name: kafka
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+include:
+  - ../../../common-optimizations.yml
 
-x-restart: &default-restart
-  restart: unless-stopped
 
 volumes:
   kafka-1-data:
@@ -45,16 +40,8 @@ volumes:
 # ------------------------------------------------------------
 x-kafka-broker-common: &kafka-broker-common
   image: confluentinc/cp-kafka:8.1.1
-  security_opt:
-    - no-new-privileges:true
-  <<: *default-restart
-  deploy:
-    resources:
-      limits:
-        cpus: '1.5' # 200% -> 150%로 제한 (호스트 보호)
-        memory: 1.5G # 컨테이너 메모리 상한
-      reservations:
-        memory: 1G
+  <<: [*default-restart, *resource-high]
+
   networks:
     infra_net: {}
   environment: &kafka-broker-env-common # ---- KRaft 공통 ----

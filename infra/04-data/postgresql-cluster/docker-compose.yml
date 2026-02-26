@@ -1,13 +1,8 @@
 name: postgresql-cluster
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+include:
+  - ../../../common-optimizations.yml
 
-x-restart: &default-restart
-  restart: unless-stopped
 
 volumes:
   pg0-data:
@@ -67,41 +62,8 @@ services:
   # etcd 3노드 (Patroni DCS)
   # ##############################################################
   etcd-1:
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-        reservations:
-          memory: 128M
-    image: quay.io/coreos/etcd:v3.6.7
-    container_name: etcd-1
-    user: '1000:1000'
-    command:
-      - /usr/local/bin/etcd
-      - --name=etcd-1
-      - --data-dir=/etcd-data
-      - --initial-advertise-peer-urls=http://etcd-1:${ETCD_PEER_PORT:-2380}
-      - --listen-peer-urls=http://0.0.0.0:${ETCD_PEER_PORT:-2380}
-      - --listen-client-urls=http://0.0.0.0:${ETCD_CLIENT_PORT:-2379}
-      - --advertise-client-urls=http://etcd-1:${ETCD_CLIENT_PORT:-2379}
-      - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT:-2380},etcd-2=http://etcd-2:${ETCD_PEER_PORT:-2380},etcd-3=http://etcd-3:${ETCD_PEER_PORT:-2380}
-      - --initial-cluster-state=new
-      - --initial-cluster-token=pg-ha-etcd
-    healthcheck:
-      test: ['CMD', 'etcdctl', 'endpoint', 'health', '--endpoints=http://localhost:2379']
-      interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
-    volumes:
-      - etcd1-data:/etcd-data
-    expose:
-      - ${ETCD_CLIENT_PORT:-2379}
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.50
-    logging: *default-logging
-    <<: *default-restart
+    <<: [*default-restart, *security-baseline, *resource-low]
+
 
   etcd-2:
     deploy:
@@ -181,65 +143,8 @@ services:
   # Patroni + PostgreSQL 17 노드 3개
   # ##############################################################
   pg-0:
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 2G
-        reservations:
-          memory: 1G
-    image: ghcr.io/zalando/spilo-17:4.0-p3
-    container_name: pg-0
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    hostname: pg-0
-    entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
-    environment:
-      SCOPE: 'pg-ha'
-      # etcd 클러스터 주소
-      ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
-      PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
-      PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
-      # --------------------------------------------------------------------
-      # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
-      # --------------------------------------------------------------------
-      PATRONI_NAME: pg-0
-      PATRONI_NAMESPACE: /service/
-      # 네트워크 바인딩 (이 설정은 유지)
-      # REST API
-      PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT:-8008}
-      PATRONI_RESTAPI_CONNECT_ADDRESS: pg-0:${PATRONI_RESTAPI_PORT:-8008}
-      # PostgreSQL listen / connect
-      PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
-      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:${POSTGRES_PORT:-5432}
-    volumes:
-      - pg0-data:/home/postgres/pgdata
-      - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
-    expose:
-      - ${POSTGRES_PORT:-5432}
-    secrets:
-      - patroni_superuser_password
-      - patroni_replication_password
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
-      interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.53
-    logging: *default-logging
-    depends_on:
-      etcd-1:
-        condition: service_healthy
-      etcd-2:
-        condition: service_healthy
-      etcd-3:
-        condition: service_healthy
-    <<: *default-restart
+    <<: [*default-restart, *security-baseline, *resource-high]
+
 
   pg-1:
     deploy:
