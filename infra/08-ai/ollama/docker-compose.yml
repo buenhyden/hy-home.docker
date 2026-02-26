@@ -1,16 +1,46 @@
+# Hy-Home System Optimization Headers (Standardized)
+x-security-baseline: &security-baseline
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+x-logging: &default-logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+
+x-resource-low: &resource-low
+  deploy:
+    resources:
+      limits: { cpus: '0.2', memory: 128M }
+      reservations: { memory: 64M }
+
+x-resource-med: &resource-med
+  deploy:
+    resources:
+      limits: { cpus: '0.5', memory: 512M }
+      reservations: { memory: 256M }
+
+x-resource-high: &resource-high
+  deploy:
+    resources:
+      limits: { cpus: '1.0', memory: 1G }
+      reservations: { memory: 512M }
+
+x-restart: &default-restart
+  restart: unless-stopped
+
 name: ollama
-
-include:
-  - ../../../common-optimizations.yml
-
 
 volumes:
   ollama-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_AI_MODEL_DIR}/ollama
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AI_DIR}/ollama/data
 
 services:
   ollama:
@@ -27,41 +57,37 @@ services:
       - OLLAMA_HOST=0.0.0.0
       - OLLAMA_ORIGINS=*
       - OLLAMA_MODELS=/root/.ollama/models
-      # GPU 오버라이드는 dev compose나 환경변수로 처리
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     volumes:
       - ollama-data:/root/.ollama
     networks:
       infra_net:
-        ipv4_address: 172.19.0.42
+        ipv4_address: 172.19.0.80
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:11434/api/tags']
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 30s
       retries: 5
-
-
+      start_period: 30s
     labels:
       - 'traefik.enable=true'
-      # Ollama API 라우터 (https://ollama.${DEFAULT_URL})
       - 'traefik.http.routers.ollama.rule=Host(`ollama.${DEFAULT_URL}`)'
       - 'traefik.http.routers.ollama.entrypoints=websecure'
       - 'traefik.http.routers.ollama.tls=true'
-
-      # [중요] 내부 포트 11434 연결
       - 'traefik.http.services.ollama.loadbalancer.server.port=${OLLAMA_PORT:-11434}'
-      # [보안] Ollama API에 SSO 인증 추가 권장 (외부 접근 제어)
       - 'traefik.http.routers.ollama.middlewares=sso-auth@file'
-    restart: unless-stopped
     logging: *default-logging
 
   ollama-exporter:
     profiles:
       - ollama
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
+    <<: [*default-restart, *resource-low]
     image: lucabecker42/ollama-exporter:1.0.1
     container_name: ollama-exporter
     security_opt:
@@ -69,17 +95,17 @@ services:
     cap_drop:
       - ALL
     environment:
-      - OLLAMA_HOST=ollama:${OLLAMA_PORT:-11434}
+      - OLLAMA_HOST=http://ollama:11434
     expose:
       - '${OLLAMA_EXPORTER_PORT:-11435}'
-    restart: unless-stopped
     networks:
       infra_net:
-        ipv4_address: 172.19.0.43
+        ipv4_address: 172.19.0.83 # Restored to free IP in AI range
     depends_on:
       ollama:
         condition: service_healthy
     logging: *default-logging
+
 networks:
   infra_net:
     name: infra_net

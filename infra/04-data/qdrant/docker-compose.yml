@@ -1,8 +1,38 @@
+# Hy-Home System Optimization Headers (Standardized)
+x-security-baseline: &security-baseline
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+x-logging: &default-logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+
+x-resource-low: &resource-low
+  deploy:
+    resources:
+      limits: { cpus: '0.2', memory: 128M }
+      reservations: { memory: 64M }
+
+x-resource-med: &resource-med
+  deploy:
+    resources:
+      limits: { cpus: '0.5', memory: 512M }
+      reservations: { memory: 256M }
+
+x-resource-high: &resource-high
+  deploy:
+    resources:
+      limits: { cpus: '1.0', memory: 1G }
+      reservations: { memory: 512M }
+
+x-restart: &default-restart
+  restart: unless-stopped
+
 name: qdrant
-
-include:
-  - ../../../common-optimizations.yml
-
 
 volumes:
   qdrant-data:
@@ -20,7 +50,7 @@ services:
     ports:
       - '${QDRANT_HOST_PORT:-6333}:${QDRANT_PORT:-6333}'
     environment:
-      - QDRANT__TELEMETRY_DISABLED=false # 메트릭 수집 활성화
+      - QDRANT__TELEMETRY_DISABLED=false
     volumes:
       - qdrant-data:/qdrant/storage
     networks:
@@ -45,3 +75,8 @@ services:
       - 'traefik.http.routers.qdrant.tls=true'
       - 'traefik.http.services.qdrant.loadbalancer.server.port=${QDRANT_PORT:-6333}'
     logging: *default-logging
+
+networks:
+  infra_net:
+    name: infra_net
+    external: true

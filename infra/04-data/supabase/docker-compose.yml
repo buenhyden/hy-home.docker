@@ -1,15 +1,38 @@
-# Usage
-#   Start:              docker compose up
-#   With helpers:       docker compose -f docker-compose.yml -f ./dev/docker-compose.dev.yml up
-#   Stop:               docker compose down
-#   Destroy:            docker compose -f docker-compose.yml -f ./dev/docker-compose.dev.yml down -v --remove-orphans
-#   Reset everything:  ./reset.sh
+# Hy-Home System Optimization Headers (Standardized)
+x-security-baseline: &security-baseline
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+x-logging: &default-logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+
+x-resource-low: &resource-low
+  deploy:
+    resources:
+      limits: { cpus: '0.2', memory: 128M }
+      reservations: { memory: 64M }
+
+x-resource-med: &resource-med
+  deploy:
+    resources:
+      limits: { cpus: '0.5', memory: 512M }
+      reservations: { memory: 256M }
+
+x-resource-high: &resource-high
+  deploy:
+    resources:
+      limits: { cpus: '1.0', memory: 1G }
+      reservations: { memory: 512M }
+
+x-restart: &default-restart
+  restart: unless-stopped
 
 name: supabase
-
-include:
-  - ../../../common-optimizations.yml
-
 
 volumes:
   db-config:
@@ -19,7 +42,6 @@ services:
     <<: [*default-restart, *security-baseline, *resource-med]
     image: supabase/studio:2025.11.10
     container_name: supabase-studio
-
     healthcheck:
       test:
         [
@@ -71,13 +93,19 @@ services:
       - supabase_logflare_private_token
     networks:
       - infra_net
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.supabase-studio.rule=Host(`supabase-studio.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.supabase-studio.entrypoints=websecure'
+      - 'traefik.http.routers.supabase-studio.tls=true'
+      - 'traefik.http.services.supabase-studio.loadbalancer.server.port=3000'
+      - 'traefik.http.routers.supabase-studio.middlewares=sso-auth@file'
     logging: *default-logging
 
   kong:
     <<: [*default-restart, *security-baseline, *resource-med]
     image: kong:3.9.1
     container_name: supabase-kong
-
     ports:
       - ${SUPABASE_KONG_HTTP_HOST_PORT:-8000}:8000/tcp
       - ${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp
@@ -108,13 +136,18 @@ services:
       - supabase_dashboard_password
     networks:
       - infra_net
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.supabase-api.rule=Host(`api.supabase.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.supabase-api.entrypoints=websecure'
+      - 'traefik.http.routers.supabase-api.tls=true'
+      - 'traefik.http.services.supabase-api.loadbalancer.server.port=8000'
     logging: *default-logging
 
   auth:
     <<: [*default-restart, *security-baseline, *resource-med]
     image: supabase/gotrue:v2.182.1
     container_name: supabase-auth
-
     healthcheck:
       test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:9999/health']
       interval: 15s
@@ -168,13 +201,9 @@ services:
     logging: *default-logging
 
   rest:
-    container_name: supabase-rest
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *resource-low]
     image: postgrest/postgrest:v13.0.8
-    restart: unless-stopped
+    container_name: supabase-rest
     depends_on:
       db:
         condition: service_healthy
@@ -200,13 +229,9 @@ services:
     logging: *default-logging
 
   realtime:
-    container_name: realtime-dev.supabase-realtime
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *resource-low]
     image: supabase/realtime:v2.63.0
-    restart: unless-stopped
+    container_name: realtime-dev.supabase-realtime
     depends_on:
       db:
         condition: service_healthy
@@ -260,13 +285,9 @@ services:
     logging: *default-logging
 
   storage:
-    container_name: supabase-storage
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *resource-low]
     image: supabase/storage-api:v1.29.0
-    restart: unless-stopped
+    container_name: supabase-storage
     volumes:
       - ./volumes/storage:/var/lib/storage:z
     healthcheck:
@@ -311,13 +332,9 @@ services:
     logging: *default-logging
 
   imgproxy:
-    container_name: supabase-imgproxy
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *resource-low]
     image: darthsim/imgproxy:v3.30.1
-    restart: unless-stopped
+    container_name: supabase-imgproxy
     volumes:
       - ./volumes/storage:/var/lib/storage:z
     healthcheck:
@@ -336,13 +353,9 @@ services:
     logging: *default-logging
 
   meta:
-    container_name: supabase-meta
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *resource-low]
     image: supabase/postgres-meta:v0.93.1
-    restart: unless-stopped
+    container_name: supabase-meta
     depends_on:
       db:
         condition: service_healthy
@@ -368,13 +381,9 @@ services:
     logging: *default-logging
 
   functions:
-    container_name: supabase-edge-functions
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *resource-low]
     image: supabase/edge-runtime:v1.69.23
-    restart: unless-stopped
+    container_name: supabase-edge-functions
     volumes:
       - ./volumes/functions:/home/deno/functions:Z
     depends_on:
@@ -401,13 +410,9 @@ services:
     logging: *default-logging
 
   analytics:
-    container_name: supabase-analytics
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *resource-med]
     image: supabase/logflare:1.22.6
-    restart: unless-stopped
+    container_name: supabase-analytics
     ports:
       - ${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000
     healthcheck:
@@ -427,7 +432,7 @@ services:
       DB_PORT: ${SUPABASE_POSTGRES_PORT:-5432}
       DB_SCHEMA: _analytics
       LOGFLARE_PUBLIC_ACCESS_TOKEN: ${LOGFLARE_PUBLIC_ACCESS_TOKEN}
-      LOGFLARE_PRIVATE_ACCESS_TOKEN: '' # Using secret via command
+      LOGFLARE_PRIVATE_ACCESS_TOKEN: ''
       LOGFLARE_SINGLE_TENANT: true
       LOGFLARE_SUPABASE_MODE: true
       POSTGRES_BACKEND_SCHEMA: _analytics
@@ -450,7 +455,6 @@ services:
     <<: [*default-restart, *security-baseline, *resource-high]
     image: supabase/postgres:15.14.1.068
     container_name: supabase-db
-
     volumes:
       - ./volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
       - ./volumes/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:Z
@@ -496,14 +500,9 @@ services:
     logging: *default-logging
 
   vector:
-    container_name: supabase-vector
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *resource-low]
     image: timberio/vector:0.52.0-alpine
-    security_opt:
-      - no-new-privileges:true
-      - 'label=disable'
-    restart: unless-stopped
+    container_name: supabase-vector
     volumes:
       - ./volumes/logs/vector.yml:/etc/vector/vector.yml:ro,z
       - ${DOCKER_SOCKET_LOCATION:-/var/run/docker.sock}:/var/run/docker.sock:ro,z
@@ -521,13 +520,9 @@ services:
     logging: *default-logging
 
   supavisor:
-    container_name: supabase-pooler
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
+    <<: [*default-restart, *security-baseline, *resource-med]
     image: supabase/supavisor:2.7.4
-    restart: unless-stopped
+    container_name: supabase-pooler
     ports:
       - ${SUPABASE_POSTGRES_HOST_PORT:-5432}:5432
       - ${SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT:-6543}:6543

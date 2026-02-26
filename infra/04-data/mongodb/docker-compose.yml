@@ -1,250 +1,232 @@
-include:
-  - ../../../common-optimizations.yml
+# Hy-Home System Optimization Headers (Standardized)
+x-security-baseline: &security-baseline
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
 
+x-logging: &default-logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+
+x-resource-low: &resource-low
+  deploy:
+    resources:
+      limits: { cpus: '0.2', memory: 128M }
+      reservations: { memory: 64M }
+
+x-resource-med: &resource-med
+  deploy:
+    resources:
+      limits: { cpus: '0.5', memory: 512M }
+      reservations: { memory: 256M }
+
+x-resource-high: &resource-high
+  deploy:
+    resources:
+      limits: { cpus: '1.0', memory: 1G }
+      reservations: { memory: 512M }
+
+x-restart: &default-restart
+  restart: unless-stopped
+
+name: mongodb
 
 volumes:
-  mongo-key:
-  mongodb1-data:
-  mongodb2-data:
-  mongodb3-data:
+  mongodb-rep1-data:
+  mongodb-rep2-data:
+  mongodb-arbiter-data:
+  mongo-key-data:
 
 services:
+  # ============================================================================
+  # Key Generation (Replica Set Auth)
+  # ============================================================================
   mongo-key-generator:
-    <<: [*security-baseline, *resource-low]
-    image: alpine:3.23.2
+    <<: [*default-restart, *security-baseline, *resource-low]
+    image: alpine:latest
     container_name: mongo-key-generator
-    restart: 'no' # 한 번 실행하고 종료됨
     volumes:
-      - mongo-key:/data/configdb # 여기는 RW(읽기/쓰기)로 마운트
+      - mongo-key-data:/data/configdb
     command: >
-      /bin/sh -c "
-        if [ ! -f /data/configdb/mongodb.key ]; then
-          echo 'Generating MongoDB KeyFile...';
-          apk add --no-cache openssl;
-          openssl rand -base64 756 > /data/configdb/mongodb.key;
-        else
-          echo 'KeyFile already exists.';
-        fi;
-
-        # [핵심] 권한 강제 설정 (MongoDB 유저 ID: 999)
-        echo 'Setting permissions...';
-        chown 999:999 /data/configdb/mongodb.key;
-        chmod 400 /data/configdb/mongodb.key;
-        ls -l /data/configdb/mongodb.key;
+      sh -c "
+      if [ ! -f /data/configdb/mongodb.key ]; then
+        echo 'Generating MongoDB key file...'
+        apk add --no-cache openssl
+        openssl rand -base64 756 > /data/configdb/mongodb.key
+        chmod 400 /data/configdb/mongodb.key
+        chown 999:999 /data/configdb/mongodb.key
+      else
+        echo 'Key file already exists.'
+      fi
       "
-
-
-
-  mongodb-rep1:
-    <<: [*default-restart, *security-baseline, *resource-med]
-    image: mongo:8.2.3-noble
-    container_name: mongodb-rep1
-    hostname: mongodb-rep1
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb_root_password
-    # 볼륨 설정
-    volumes:
-      - mongodb1-data:/data/db:rw
-      - mongo-key:/data/configdb:ro
-    secrets:
-      - mongodb_root_password
-    command:
-      - '--replSet'
-      - 'MyReplicaSet'
-      - '--keyFile'
-      - '/data/configdb/mongodb.key'
-      - '--bind_ip_all'
-    healthcheck:
-      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
-      interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
     networks:
       - infra_net
-    depends_on:
-      mongo-key-generator:
-        condition: service_completed_successfully
-
-
-
-  mongodb-rep2:
-    image: mongo:8.2.3-noble
-    restart: unless-stopped
-    container_name: mongodb-rep2
-    hostname: mongodb-rep2
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongodb_root_password
-    # 볼륨 설정
-    volumes:
-      - mongodb2-data:/data/db:rw
-      - mongo-key:/data/configdb:ro
-    secrets:
-      - mongodb_root_password
-    command:
-      - '--replSet'
-      - 'MyReplicaSet'
-      - '--keyFile'
-      - '/data/configdb/mongodb.key'
-      - '--bind_ip_all'
-    healthcheck:
-      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
-      interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
-    networks:
-      - infra_net
-    depends_on:
-      mongo-key-generator:
-        condition: service_completed_successfully
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     logging: *default-logging
 
-  # [추가] MongoDB Arbiter (투표권만 가진 가벼운 노드, 데이터 저장 안 함)
-  mongodb-arbiter:
-    <<: [*default-restart, *security-baseline, *resource-low]
-    image: mongo:8.2.3-noble
-    container_name: mongodb-arbiter
-    hostname: mongodb-arbiter
-    # Arbiter는 계정 생성이 필요 없음 (KeyFile로만 인증)
+  # ============================================================================
+  # Replica Set Members
+  # ============================================================================
+  mongodb-rep1:
+    <<: [*default-restart, *security-baseline, *resource-high]
+    image: mongo:8.0.4
+    container_name: mongodb-rep1
+    command: >
+      mongod --replSet rs0 --keyFile /data/configdb/mongodb.key --bind_ip_all
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_DATABASE: admin
     volumes:
-      - mongo-key:/data/configdb:ro
-    command:
-      - '--replSet'
-      - 'MyReplicaSet'
-      - '--keyFile'
-      - '/data/configdb/mongodb.key'
-      - '--bind_ip_all'
+      - mongodb-rep1-data:/data/db
+      - mongo-key-data:/data/configdb:ro
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.60
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mongosh',
+          '--quiet',
+          '--eval',
+          'db.adminCommand("ping")',
+          '-u',
+          '${MONGO_ROOT_USER:-admin}',
+          '-p',
+          '${MONGO_ROOT_PASSWORD}',
+        ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    logging: *default-logging
 
-
-
-  # [추가] Replica Set 초기화 (한 번만 실행되고 죽음)
-  mongo-init:
-    image: mongo:8.2.3-noble
-    container_name: mongo-init
-    restart: 'no'
+  mongodb-rep2:
+    <<: [*default-restart, *security-baseline, *resource-high]
+    image: mongo:8.0.4
+    container_name: mongodb-rep2
+    command: >
+      mongod --replSet rs0 --keyFile /data/configdb/mongodb.key --bind_ip_all
+    volumes:
+      - mongodb-rep2-data:/data/db
+      - mongo-key-data:/data/configdb:ro
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.61
     depends_on:
       mongodb-rep1:
         condition: service_healthy
-      mongodb-rep2:
-        condition: service_healthy
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    command: >
-      bash -c "
-        echo 'Waiting for servers to be ready...';
-        sleep 5;
-        export MONGO_ROOT_PASSWORD=$$(cat /run/secrets/mongodb_root_password | tr -d '\n');
-        mongosh --host mongodb-rep1 -u ${MONGODB_ROOT_USERNAME} -p $$MONGO_ROOT_PASSWORD --eval '
-          try {
-            rs.status();
-            print(\"Replica set already initialized\");
-          } catch (e) {
-            print(\"Initializing replica set...\");
-            rs.initiate({
-              _id: \"MyReplicaSet\",
-              members: [
-                { _id: 0, host: \"mongodb-rep1:27017\", priority: 2 },
-                { _id: 1, host: \"mongodb-rep2:27017\", priority: 1 },
-                { _id: 2, host: \"mongodb-arbiter:27017\", arbiterOnly: true }
-              ]
-            });
-          }
-        '
-      "
-    secrets:
-      - mongodb_root_password
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', 'db.adminCommand("ping")']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     logging: *default-logging
 
   # ============================================================================
-  # Mongo Express (Admin UI)
+  # Arbiter Node
   # ============================================================================
-  mongo-express:
-    image: mongo-express:1.0.2-20-alpine3.19
-    container_name: mongo-express
-    hostname: mongo-express
-    restart: unless-stopped
-    environment:
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: true
-      ME_CONFIG_MONGODB_AUTH_DATABASE: admin
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_ROOT_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD_FILE: /run/secrets/mongodb_root_password
+  mongodb-arbiter:
+    <<: [*default-restart, *security-baseline, *resource-low]
+    image: mongo:8.0.4
+    container_name: mongodb-arbiter
+    command: >
+      mongod --replSet rs0 --keyFile /data/configdb/mongodb.key --bind_ip_all
+    volumes:
+      - mongodb-arbiter-data:/data/db
+      - mongo-key-data:/data/configdb:ro
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.62
+    depends_on:
+      mongodb-rep2:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', 'db.adminCommand("ping")']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    logging: *default-logging
 
-      ME_CONFIG_MONGODB_SERVER: mongodb-rep1,mongodb-rep2,mongodb-arbiter
-      ME_CONFIG_MONGODB_REPLICA_SET: MyReplicaSet
-      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_CONFIG_BASICAUTH_USERNAME}
-      ME_CONFIG_BASICAUTH_PASSWORD_FILE: /run/secrets/mongo_express_basicauth_password
-    expose:
-      - ${MONGO_EXPRESS_PORT:-8081}
+  # ============================================================================
+  # MongoDB Management & Export
+  # ============================================================================
+  mongo-init:
+    <<: [*default-restart, *security-baseline, *resource-low]
+    image: mongo:8.0.4
+    container_name: mongo-init
+    depends_on:
+      mongodb-rep2:
+        condition: service_healthy
+      mongodb-arbiter:
+        condition: service_healthy
+    command: >
+      mongosh --host mongodb-rep1:27017 -u ${MONGO_ROOT_USER:-admin} -p ${MONGO_ROOT_PASSWORD} --eval '
+      try {
+        rs.status();
+        console.log("Replica set already initialized.");
+      } catch (e) {
+        rs.initiate({
+          _id: "rs0",
+          members: [
+            { _id: 0, host: "mongodb-rep1:27017", priority: 2 },
+            { _id: 1, host: "mongodb-rep2:27017", priority: 1 },
+            { _id: 2, host: "mongodb-arbiter:27017", arbiterOnly: true }
+          ]
+        });
+        console.log("Replica set initiated.");
+      }
+      '
+    networks:
+      - infra_net
+    logging: *default-logging
+
+  mongo-express:
+    <<: [*default-restart, *security-baseline, *resource-med]
+    image: mongo-express:1.0.2-alpha.4
+    container_name: mongo-express
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USER:-admin}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASSWORD}@mongodb-rep1:27017/admin?replicaSet=rs0
+      ME_CONFIG_BASICAUTH: 'true'
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER:-admin}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
+    ports:
+      - '${MONGO_EXPRESS_HOST_PORT:-8081}:${MONGO_EXPRESS_PORT:-8081}'
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.63
     labels:
       - 'traefik.enable=true'
-      # mongo-express 라우터
-      # 도메인: mongo-express.pg.${DEFAULT_URL}
       - 'traefik.http.routers.mongo-express.rule=Host(`mongo-express.${DEFAULT_URL}`)'
       - 'traefik.http.routers.mongo-express.entrypoints=websecure'
       - 'traefik.http.routers.mongo-express.tls=true'
       - 'traefik.http.services.mongo-express.loadbalancer.server.port=${MONGO_EXPRESS_PORT:-8081}'
-    networks:
-      - infra_net
-    depends_on:
-      mongo-init:
-        condition: service_completed_successfully
-    secrets:
-      - mongodb_root_password
-      - mongo_express_basicauth_password
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *default-logging
-  # ============================================================================
-  # MongoDB Exporter (Prometheus)
-  # ============================================================================
-  mongodb-exporter:
-    image: percona/mongodb_exporter:2.37
-    container_name: mongodb-exporter
-    expose:
-      - ${MONGO_EXPORTER_PORT:-9216}
-    entrypoint:
-      - /bin/sh
-      - -c
-    command: >
-      export MONGO_ROOT_PASSWORD=$$(cat /run/secrets/mongodb_root_password | tr -d '\n') &&
-      exec mongodb_exporter
-      --mongodb.uri="mongodb://${MONGODB_ROOT_USERNAME}:$${MONGO_ROOT_PASSWORD}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin"
-      --collect.collection
-      --collect.database
-      --collect.indexusage
-    depends_on:
-      mongo-init:
-        condition: service_completed_successfully
-    secrets:
-      - mongodb_root_password
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    networks:
-      - infra_net
     logging: *default-logging
 
-secrets:
-  mongodb_root_password:
-    external: true
-  mongo_express_basicauth_password:
+  mongodb-exporter:
+    <<: [*default-restart, *security-baseline, *resource-low]
+    image: percona/mongodb_exporter:0.40
+    container_name: mongodb-exporter
+    command:
+      - --mongodb.uri=mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASSWORD}@mongodb-rep1:27017/admin?replicaSet=rs0
+      - --collect-all
+    ports:
+      - '${MONGO_EXPORTER_HOST_PORT:-9216}:9216'
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.64
+    logging: *default-logging
+
+networks:
+  infra_net:
+    name: infra_net
     external: true

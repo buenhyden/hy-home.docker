@@ -1,8 +1,38 @@
+# Hy-Home System Optimization Headers (Standardized)
+x-security-baseline: &security-baseline
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+x-logging: &default-logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+
+x-resource-low: &resource-low
+  deploy:
+    resources:
+      limits: { cpus: '0.2', memory: 128M }
+      reservations: { memory: 64M }
+
+x-resource-med: &resource-med
+  deploy:
+    resources:
+      limits: { cpus: '0.5', memory: 512M }
+      reservations: { memory: 256M }
+
+x-resource-high: &resource-high
+  deploy:
+    resources:
+      limits: { cpus: '1.0', memory: 1G }
+      reservations: { memory: 512M }
+
+x-restart: &default-restart
+  restart: unless-stopped
+
 name: opensearch
-
-include:
-  - ../../../common-optimizations.yml
-
 
 volumes:
   opensearch-data:
@@ -106,7 +136,7 @@ services:
       infra_net:
         ipv4_address: 172.19.0.47
     expose:
-      - '${KIBANA_PORT:-5601}' # Expose port 5601 for web access to OpenSearch Dashboards
+      - '${KIBANA_PORT:-5601}'
     volumes:
       - opensearch_certs:/usr/share/opensearch-dashboards/config/certs:ro
       - ./opensearch-dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
@@ -145,12 +175,9 @@ services:
     logging: *default-logging
 
   opensearch-exporter:
+    <<: [*default-restart, *security-baseline, *resource-low]
     image: prometheuscommunity/elasticsearch-exporter:v1.10.0
     container_name: opensearch-exporter
-    security_opt:
-      - no-new-privileges:true
-    read_only: true
-    <<: *default-restart
     environment:
       - ES_USERNAME=${OPENSEARCH_EXPORTER_USERNAME:-admin}
     command: >
@@ -161,7 +188,7 @@ services:
     secrets:
       - opensearch_exporter_password
     ports:
-      - '${ES_EXPORTER_HOST_PORT:-9114}:${ES_EXPORTER_PORT:-9114}' # 9114
+      - '${ES_EXPORTER_HOST_PORT:-9114}:${ES_EXPORTER_PORT:-9114}'
     networks:
       infra_net:
         ipv4_address: 172.19.0.48
@@ -178,16 +205,17 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
-        reservations:
-          cpus: '0.05'
-          memory: 64M
-    logging:
-      driver: 'loki'
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=opensearch-exporter,tier=data'
+    logging: *default-logging
+
+networks:
+  infra_net:
+    name: infra_net
+    external: true
+
+secrets:
+  opensearch_admin_password:
+    external: true
+  opensearch_dashboard_password:
+    external: true
+  opensearch_exporter_password:
+    external: true

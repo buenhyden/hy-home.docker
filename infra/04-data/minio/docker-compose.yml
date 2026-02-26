@@ -1,140 +1,99 @@
+# Hy-Home System Optimization Headers (Standardized)
+x-security-baseline: &security-baseline
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+x-logging: &default-logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+
+x-resource-low: &resource-low
+  deploy:
+    resources:
+      limits: { cpus: '0.2', memory: 128M }
+      reservations: { memory: 64M }
+
+x-resource-med: &resource-med
+  deploy:
+    resources:
+      limits: { cpus: '0.5', memory: 512M }
+      reservations: { memory: 256M }
+
+x-resource-high: &resource-high
+  deploy:
+    resources:
+      limits: { cpus: '1.0', memory: 1G }
+      reservations: { memory: 512M }
+
+x-restart: &default-restart
+  restart: unless-stopped
+
 name: minio
-
-include:
-  - ../../../common-optimizations.yml
-
 
 volumes:
   minio-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_DATA_DIR}/minio/data-1
-
-secrets:
-  minio_root_username:
-    external: true
-  minio_app_username:
-    external: true
-  minio_root_password:
-    external: true
-  minio_app_user_password:
-    external: true
 
 services:
   minio:
-    <<: [*default-restart, *security-baseline, *resource-high]
-    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    <<: [*default-restart, *security-baseline, *resource-med]
+    image: minio/minio:RELEASE.2024-11-07T00-52-20Z
     container_name: minio
-    command: server /data --console-address ":${MINIO_CONSOLE_HOST_PORT:-9001}"
-
-
-    secrets:
-      - minio_root_username
-      - minio_root_password
+    command: server /data --console-address ":${MINIO_CONSOLE_PORT:-9001}"
     environment:
-      MINIO_ROOT_USER_FILE: /run/secrets/minio_root_username
-      MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_password
-      MINIO_PROMETHEUS_AUTH_TYPE: 'public'
-      MINIO_API_ROOT_ACCESS: 'on'
-      # MINIO_BROWSER_REDIRECT_URL: "https://${DEFAULT_URL}/minio-console/"
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.12
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BROWSER_REDIRECT_URL: https://minio-console.${DEFAULT_URL}
+      MINIO_SERVER_URL: https://minio.${DEFAULT_URL}
     volumes:
       - minio-data:/data
+    ports:
+      - '${MINIO_HOST_PORT:-9000}:${MINIO_PORT:-9000}'
+      - '${MINIO_CONSOLE_HOST_PORT:-9001}:${MINIO_CONSOLE_PORT:-9001}'
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.35
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://minio:9000/minio/health/live']
-      interval: 30s
-      timeout: 20s
-      retries: 3
+      test: ['CMD', 'curl', '-f', 'http://localhost:${MINIO_PORT:-9000}/minio/health/live']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     labels:
       - 'traefik.enable=true'
-      # ---------------------------------------------------------
-      # 1. MinIO API 라우터 (S3 호환 프로그램용 - 포트 9000)
-      # ---------------------------------------------------------
-      # 접속 주소: https://minio.${DEFAULT_URL}
-      - 'traefik.http.routers.minio-api.rule=Host(`minio.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.minio-api.entrypoints=websecure'
-      - 'traefik.http.routers.minio-api.tls=true'
-      - 'traefik.http.routers.minio-api.service=minio-api'
-      # [중요] 내부 포트 9000번과 연결
-      - 'traefik.http.services.minio-api.loadbalancer.server.port=${MINIO_PORT:-9000}'
-
-      # ---------------------------------------------------------
-      # 2. MinIO Console 라우터 (웹 브라우저용 - 포트 9001)
-      # ---------------------------------------------------------
-      # 접속 주소: https://console.minio.${DEFAULT_URL}
+      # API 라우터 (S3 호환 서버 포트)
+      - 'traefik.http.routers.minio.rule=Host(`minio.${DEFAULT_URL}`)'
+      - 'traefik.http.routers.minio.entrypoints=websecure'
+      - 'traefik.http.routers.minio.tls=true'
+      - 'traefik.http.services.minio.loadbalancer.server.port=${MINIO_PORT:-9000}'
+      # Console 라우터 (관리 UI 포트)
       - 'traefik.http.routers.minio-console.rule=Host(`minio-console.${DEFAULT_URL}`)'
       - 'traefik.http.routers.minio-console.entrypoints=websecure'
       - 'traefik.http.routers.minio-console.tls=true'
-      - 'traefik.http.routers.minio-console.service=minio-console'
-      # [중요] 내부 포트 9001번과 연결
       - 'traefik.http.services.minio-console.loadbalancer.server.port=${MINIO_CONSOLE_PORT:-9001}'
     logging: *default-logging
 
-  minio-create-buckets:
-    image: minio/mc:RELEASE.2025-08-13T08-35-41Z
-    container_name: minio-create-buckets
-    restart: 'no'
-    networks:
-      - infra_net
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    secrets:
-      - minio_root_username
-      - minio_root_password
-      - minio_app_username
-      - minio_app_user_password
+  createbuckets:
+    image: minio/mc:RELEASE.2024-11-05T11-29-45Z
+    container_name: minio-createbuckets
     depends_on:
       minio:
-        condition: service_healthy # MinIO가 헬스체크 통과할 때까지 대기 (필수)
-    entrypoint: ['/bin/sh']
-    command:
-      - -c
-      - |
-        set -e
-
-        echo "[1] root 크레덴셜 로딩..."
-        ROOT_USER=$$(cat /run/secrets/minio_root_username)
-        ROOT_PASS=$$(cat /run/secrets/minio_root_password)
-        APP_USER=$$(cat /run/secrets/minio_app_username)
-        APP_PASS=$$(cat /run/secrets/minio_app_user_password)
-
-        export MC_CONFIG_DIR=/tmp/.mc
-
-        echo "[2] root alias 설정..."
-        mc  alias set root http://minio:9000 "$$ROOT_USER" "$$ROOT_PASS"
-
-        echo "[3] 버킷용 유저 생성 (있으면 무시)..."
-        # 이미 존재하면 에러 날 수 있으니 || true
-        mc  admin user add root "$$APP_USER" "$$APP_PASS" || true
-
-        echo "[4] readwrite 정책 부여..."
-        mc  admin policy attach root readwrite --user="$$APP_USER"
-
-        echo "[5] 버킷용 유저 alias 생성..."
-        mc  alias set myminio http://minio:9000 "$$APP_USER" "$$APP_PASS"
-
-        echo "[6] 버킷 생성..."
-        mc  mb myminio/tempo-bucket --ignore-existing
-        mc  mb myminio/loki-bucket --ignore-existing
-        mc  mb myminio/cdn-bucket --ignore-existing
-        mc  mb myminio/doc-intel-assets --ignore-existing
-
-        echo "[7] cdn-bucket public 설정 (선택)..."
-        mc  anonymous set public myminio/cdn-bucket || true
-
-        echo "----------------------------------"
-        echo "버킷 및 계정 초기화 완료"
-        mc  ls myminio
-        echo "----------------------------------"
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:${MINIO_PORT:-9000} ${MINIO_ROOT_USER:-admin} ${MINIO_ROOT_PASSWORD};
+      /usr/bin/mc mb myminio/${MINIO_DEFAULT_BUCKETS:-default};
+      /usr/bin/mc policy set public myminio/${MINIO_DEFAULT_BUCKETS:-default};
+      exit 0;
+      "
+    networks:
+      - infra_net
     logging: *default-logging
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
+
+networks:
+  infra_net:
+    name: infra_net
+    external: true

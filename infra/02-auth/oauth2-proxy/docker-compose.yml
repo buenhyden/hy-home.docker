@@ -1,16 +1,38 @@
+# Hy-Home System Optimization Headers (Standardized)
+x-security-baseline: &security-baseline
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+x-logging: &default-logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+
+x-resource-low: &resource-low
+  deploy:
+    resources:
+      limits: { cpus: '0.2', memory: 128M }
+      reservations: { memory: 64M }
+
+x-resource-med: &resource-med
+  deploy:
+    resources:
+      limits: { cpus: '0.5', memory: 512M }
+      reservations: { memory: 256M }
+
+x-resource-high: &resource-high
+  deploy:
+    resources:
+      limits: { cpus: '1.0', memory: 1G }
+      reservations: { memory: 512M }
+
+x-restart: &default-restart
+  restart: unless-stopped
+
 name: oauth2-proxy
-
-include:
-  - ../../common-optimizations.yml
-
-
-# volumes:
-#   oauth2-proxy-valkey-data:
-#     driver: local
-#     driver_opts:
-#       o: bind
-#       type: none
-#       device: ${DEFAULT_AUTH_DIR}/valkey
 
 secrets:
   mng_valkey_password:
@@ -41,23 +63,16 @@ services:
         export OAUTH2_PROXY_COOKIE_SECRET=$$(cat /run/secrets/oauth2_proxy_cookie_secret)
         exec /bin/oauth2-proxy --config /etc/oauth2-proxy.cfg
     environment:
-      # [2] 시스템 레벨 환경 변수 (설정 파일로 대체 불가)
-      # SSL 인증서 로드는 앱 로직 이전에 Go 언어 런타임에서 처리하므로 Env에 있어야 함
       - SSL_CERT_FILE=/etc/ssl/certs/rootCA.pem
-      # 필수 설정: 세션 저장소를 Redis로 변경
       - OAUTH2_PROXY_SESSION_STORE_TYPE=redis
-      # 필수 설정: Redis 연결 주소 (서비스명:포트)
       - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://mng-valkey:6379
-      # 비밀번호를 파일에서 읽도록 지시 (_FILE 접미사 사용)
       - OAUTH2_PROXY_REDIS_PASSWORD_FILE=/run/secrets/mng_valkey_password
       - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}
     volumes:
-      # 호스트의 mkcert RootCA를 컨테이너 내부로 주입
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
     labels:
       - 'traefik.enable=true'
-      # OAuth2 콜백 처리를 위한 라우터
       - 'traefik.http.routers.oauth2-proxy.rule=Host(`auth.${DEFAULT_URL}`)'
       - 'traefik.http.routers.oauth2-proxy.entrypoints=websecure'
       - 'traefik.http.routers.oauth2-proxy.tls=true'
@@ -65,8 +80,9 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.28
-    logging:
-      driver: 'loki'
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=oauth2-proxy,tier=auth'
+    logging: *default-logging
+
+networks:
+  infra_net:
+    name: infra_net
+    external: true

@@ -1,23 +1,52 @@
-name: vault
+# Hy-Home System Optimization Headers (Standardized)
+x-security-baseline: &security-baseline
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
 
-include:
-  - ../../common-optimizations.yml
+x-logging: &default-logging
+  driver: 'json-file'
+  options:
+    max-size: '5m'
+    max-file: '2'
+
+x-resource-low: &resource-low
+  deploy:
+    resources:
+      limits: { cpus: '0.2', memory: 128M }
+      reservations: { memory: 64M }
+
+x-resource-med: &resource-med
+  deploy:
+    resources:
+      limits: { cpus: '0.5', memory: 512M }
+      reservations: { memory: 256M }
+
+x-resource-high: &resource-high
+  deploy:
+    resources:
+      limits: { cpus: '1.0', memory: 1G }
+      reservations: { memory: 512M }
+
+x-restart: &default-restart
+  restart: unless-stopped
+
+name: vault
 
 volumes:
   vault-data:
-
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_SECURITY_DIR}/vault
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SECURITY_DIR}/vault
 
 services:
   vault:
     <<: [*default-restart, *security-baseline, *resource-med]
     image: hashicorp/vault:1.17
     profiles:
-
       - vault
 
     ports:
@@ -30,7 +59,6 @@ services:
       KEYCLOAK_URL: '${KEYCLOAK_URL}'
       REALM_NAME: '${KEYCLOAK_REALM}'
       CLIENT_ID: '${OAUTH2_PROXY_CLIENT_ID}'
-      # CLIENT_SECRET은 Docker Secret으로 주입 (/run/secrets/oauth2_proxy_client_secret)
     secrets:
       - oauth2_proxy_client_secret
     volumes:
@@ -53,19 +81,18 @@ services:
       retries: 5
       start_period: 30s
     labels:
-      # Enable self‑routing
       - 'traefik.enable=true'
-      # Dashboard router
       - 'traefik.http.routers.vault.rule=Host(`vault.${DEFAULT_URL}`)'
       - 'traefik.http.routers.vault.entrypoints=websecure'
       - 'traefik.http.routers.vault.tls=true'
       - 'traefik.http.services.vault.loadbalancer.server.port=${VAULT_PORT:-8200}'
-    logging:
-      driver: 'loki'
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=vault,tier=security'
+    logging: *default-logging
 
 secrets:
   oauth2_proxy_client_secret:
+    external: true
+
+networks:
+  infra_net:
+    name: infra_net
     external: true
