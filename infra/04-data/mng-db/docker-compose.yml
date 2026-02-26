@@ -141,7 +141,11 @@ services:
     depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       mng-valkey:
         condition: service_healthy
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name=mng-valkey-exporter,tier=data'
 
   redisinsight:
     deploy:
@@ -174,7 +178,11 @@ services:
       # [중요] RedisInsight 기본 포트 5540 (또는 8001) 확인 필요
       # 최신 이미지는 보통 5540을 사용합니다.
       - 'traefik.http.services.redisinsight.loadbalancer.server.port=${REDIS_INSIGHT_PORT:-8001}'
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name=redisinsight,tier=data'
 
   mng-pg:
     deploy:
@@ -222,7 +230,11 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name=mng-pg,tier=data'
 
   mng-pg-init:
     deploy:
@@ -284,7 +296,11 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name=mng-pg-init,tier=data'
 
   mng-pg-exporter:
     deploy:
@@ -292,6 +308,9 @@ services:
         limits:
           cpus: '0.1'
           memory: 128M
+        reservations:
+          cpus: '0.05'
+          memory: 64M
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: mng-pg-exporter
     security_opt:
@@ -325,3 +344,8 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name=mng-pg-exporter,tier=data'

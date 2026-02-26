@@ -52,6 +52,7 @@ services:
           cpus: '2.0'
           memory: 2G
         reservations:
+          cpus: '0.5'
           memory: 1G
     image: prom/prometheus:v3.9.0
     container_name: infra-prometheus
@@ -103,7 +104,10 @@ services:
       - 'traefik.http.routers.prometheus.entrypoints=websecure'
       - 'traefik.http.routers.prometheus.tls=true'
       - 'traefik.http.services.prometheus.loadbalancer.server.port=${PROMETHEUS_PORT:-9090}'
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
   # -------------------------------------------------------
   # 2. Log Storage (Loki)
   # -------------------------------------------------------
@@ -114,6 +118,7 @@ services:
           cpus: '1.0'
           memory: 1G
         reservations:
+          cpus: '0.2'
           memory: 512M
     image: grafana/loki:3.6.6
     container_name: infra-loki
@@ -128,7 +133,10 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.31
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
     ports:
       - '${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}'
     volumes:
@@ -175,7 +183,10 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.32
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
     ports:
       - '${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}'
     environment:
@@ -210,7 +221,10 @@ services:
       timeout: 15s
       retries: 5
       start_period: 1m
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
   # -------------------------------------------------------
   # 4. Visualization (Grafana)
   # -------------------------------------------------------
@@ -328,7 +342,10 @@ services:
       - 'traefik.http.routers.grafana.tls=true'
       - 'traefik.http.services.grafana.loadbalancer.server.port=${GRAFANA_PORT:-3000}'
       - 'traefik.http.routers.grafana.middlewares=sso-auth@file'
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
   # -------------------------------------------------------
   # 5. Telemetry Collector (Alloy)
   # -------------------------------------------------------
@@ -379,7 +396,10 @@ services:
       timeout: 15s
       retries: 5
       start_period: 30s
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
   # -------------------------------------------------------
   # 6. Container Metrics (cAdvisor)
   # -------------------------------------------------------
@@ -389,6 +409,9 @@ services:
         limits:
           cpus: '0.5'
           memory: 1G
+        reservations:
+          cpus: '0.1'
+          memory: 512M
     image: gcr.io/cadvisor/cadvisor:v0.55.1
     command:
       - '--docker_only=true'
@@ -425,7 +448,10 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.35
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
   alertmanager:
     deploy:
       resources:
@@ -483,13 +509,19 @@ services:
       - 'traefik.http.routers.alertmanager.entrypoints=websecure'
       - 'traefik.http.routers.alertmanager.tls=true'
       - 'traefik.http.services.alertmanager.loadbalancer.server.port=${ALERTMANAGER_PORT:-9093}'
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
   pushgateway:
     deploy:
       resources:
         limits:
           cpus: '0.2'
           memory: 128M
+        reservations:
+          cpus: '0.05'
+          memory: 64M
     image: prom/pushgateway:v1.11.2
     container_name: pushgateway
     security_opt:
@@ -526,7 +558,10 @@ services:
       - 'traefik.http.routers.pushgateway.entrypoints=websecure'
       - 'traefik.http.routers.pushgateway.tls=true'
       - 'traefik.http.services.pushgateway.loadbalancer.server.port=${PUSHGATEWAY_PORT:-9091}'
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
 
 networks:
   infra_net:

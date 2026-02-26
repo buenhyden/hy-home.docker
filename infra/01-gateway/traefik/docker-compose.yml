@@ -26,6 +26,7 @@ services:
           cpus: '1.0'
           memory: 1G
         reservations:
+          cpus: '0.2'
           memory: 512M
     image: traefik:v3.6.8
     container_name: traefik
@@ -73,7 +74,11 @@ services:
     secrets:
       - traefik_basicauth_password
       - traefik_opensearch_basicauth_password
-    logging: *default-logging
+    logging:
+      driver: 'loki'
+      options:
+        loki-url: 'http://localhost:3100/loki/api/v1/push'
+        loki-external-labels: 'container_name=traefik,tier=gateway'
 
 secrets:
   traefik_basicauth_password:
