@@ -79,13 +79,13 @@ This specification defines standard extension fields and service templates for c
 
 - **[VAL-SPC-001] Security Baseline Verification**:
   - **Given**: A service definition inheriting from `base-security`.
-  - **When**: Executing `docker compose config`.
+  - **When**: Inspecting via `docker inspect <container_name> --format '{{.HostConfig.SecurityOpt}}'`.
   - **Then**: JSON output MUST contain `no-new-privileges:true`.
 
 - **[VAL-SPC-002] Resource Quota Enforcement**:
   - **Given**: A container running with the `template-infra-low` profile.
-  - **When**: Inspecting container limits via `docker stats`.
-  - **Then**: Memory limit MUST be exactly `128MiB`.
+  - **When**: Inspecting container limits via `docker stats --no-stream --format "{{.MemLimit}}"`.
+  - **Then**: Memory limit MUST be exactly `256MiB` (as defined in `infra/common-optimizations.yml`).
 
   - **Then**: Structured logs MUST appear in the centralized plane.
 

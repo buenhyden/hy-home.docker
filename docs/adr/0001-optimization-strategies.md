@@ -12,9 +12,9 @@ The previous Hy-Home infrastructure integrated multiple Docker Compose sub-stack
 
 We SHALL implement the following optimization strategies to fulfill **[REQ-SYS-01]** and **[REQ-SYS-02]**:
 
-1. **Local YAML Anchors**: Every tier-specific `docker-compose.yml` SHALL define a local `x-optimizations` block with anchors for `&security-baseline` and `&logging-loki` to ensure reliable expansion.
+1. **Template-Driven Inheritance**: All infrastructure services SHALL utilize the `extends` directive targeting `infra/common-optimizations.yml` to inherit resource presets and security baselines.
 2. **Minimal Capabilities Policy**: All infrastructure services MUST explicitly drop all capabilities (`cap_drop: ALL`) and utilize `no-new-privileges: true`.
-3. **Loki-Integrated Logging**: The `loki` logging driver MUST be the primary telemetry channel for all containers, providing unified metadata via `hy-home.tier` labels.
+3. **Mandatory Loki Logging**: The `loki` logging driver MUST be the primary telemetry channel, configured once in composite templates to ensure unified metadata collection.
 4. **Deterministic Orchestration**: Service dependencies SHALL be enforced via `service_healthy` conditions to ensure reliable startup order.
 
 ## Consequences [REQ-SPT-05]

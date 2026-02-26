@@ -69,14 +69,10 @@ services:
         limits: { cpus: "0.2", memory: "256M" }
     restart: unless-stopped
     logging:
-      {
-        driver: loki,
-        options:
-          {
-            loki-url: "http://localhost:3100/loki/api/v1/push",
-            loki-external-labels: "container_name={{.Name}}",
-          },
-      }
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
 
   template-infra-med:
     extends:
@@ -86,14 +82,10 @@ services:
         limits: { cpus: "0.5", memory: "512M" }
     restart: unless-stopped
     logging:
-      {
-        driver: loki,
-        options:
-          {
-            loki-url: "http://localhost:3100/loki/api/v1/push",
-            loki-external-labels: "container_name={{.Name}}",
-          },
-      }
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"
 
   template-infra-high:
     extends:
@@ -103,11 +95,7 @@ services:
         limits: { cpus: "1.0", memory: "1G" }
     restart: unless-stopped
     logging:
-      {
-        driver: loki,
-        options:
-          {
-            loki-url: "http://localhost:3100/loki/api/v1/push",
-            loki-external-labels: "container_name={{.Name}}",
-          },
-      }
+      driver: loki
+      options:
+        loki-url: "http://localhost:3100/loki/api/v1/push"
+        loki-external-labels: "container_name={{.Name}}"

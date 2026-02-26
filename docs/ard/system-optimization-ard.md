@@ -17,13 +17,13 @@ To ensure consistency across heterogeneous service stacks, the following archite
 
 ### 2.1 Configuration Inheritance (`extends`)
 
-Implementation SHALL utilize global service templates in `infra/common-optimizations.yml` via the `extends` keyword to ensure cross-file architectural invariants across all service tiers:
+Implementation SHALL utilize global service templates in `infra/common-optimizations.yml` via the `extends` keyword. This ensures cross-file architectural invariants:
 
-- **`template-infra-low/med/high`**: Standardized service templates combining resource quotas, security baseline, and restart policies.
-- **`base-security`**: Universal `cap_drop: ALL` and `no-new-privileges: true` baseline.
-- **`base-resource-low/med/high`**: Specific resource quota presets (`deploy.resources`).
+- **`template-infra-low/med/high`**: Preferred composite templates for standardizing resource quotas, security baseline, and Loki logging.
+- **`base-security`**: Core isolation baseline (`cap_drop: ALL`, `no-new-privileges: true`).
+- **`base-security-hardened`**: Extends `base-security` with `read_only: true` and default `tmpfs` mounts.
 
-Local `docker-compose.yml` files MUST define their own internal YAML anchors for labels (`&labels-base`) and logging (`&logging-loki`) to maintain file independence and handle container-specific metadata properly.
+Local `docker-compose.yml` files MUST define internal YAML anchors (e.g., `&labels-base`) for tier-specific metadata that cannot be captured in global generic templates.
 
 ### 2.2 Telemetry Architecture
 

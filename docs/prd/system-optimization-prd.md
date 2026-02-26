@@ -32,10 +32,11 @@ Establish a high-performance, secure, and observable home server infrastructure 
 - **[REQ-SYS-01]**: The system SHALL provide standardized YAML anchors for security baselines to prevent configuration drift.
 - **[REQ-SYS-02]**: Every service MUST be integrated with the Loki logging driver with job-specific labels.
 - **[REQ-SYS-03]**: Service startup MUST be ordered via `service_healthy` conditions to prevent race conditions.
-- **[REQ-SYS-04]**: The system SHALL utilize Docker Compose `include` to propagate optimization blocks (`x-optimizations`) across all service tiers.
+- **[REQ-SYS-04]**: The system SHALL utilize Docker Compose `include` to consolidate stack orchestration.
 - **[REQ-SYS-05]**: All networking SHALL rely on Docker's internal DNS (service names) to ensure environment portability [ADR-0008].
 - **[REQ-SYS-06]**: Services SHALL utilize the standard `init: true` process for robust signal handling [ADR-0012].
 - **[REQ-SYS-07]**: Stateless services SHALL implement `read_only: true` with `tmpfs` mounts for temporary directories.
+- **[REQ-SYS-08]**: All infrastructure services SHALL extend from a common baseline template in `infra/common-optimizations.yml` to ensure architectural invariants [SPEC-INFRA-01].
 
 ## 7. Acceptance Criteria [REQ-SPT-10] [REQ-SPT-06]
 
