@@ -3,13 +3,21 @@ name: sonarqube
 x-labels-base: &labels-base
   hy-home.managed: 'true'
   hy-home.tier: tooling
+  observability.logs: 'true'
+
+x-logging: &default-logging
+  driver: 'loki'
+  options:
+    loki-url: 'http://localhost:3100/loki/api/v1/push'
+    loki-external-labels: 'container_name={{.Name}},tier=tooling'
+
 volumes:
   sonarqube-data-volume:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_TOOLING_DIR}/sonarqube/data
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_TOOLING_DIR}/sonarqube/data
   sonarqube-logs-volume:
     driver: local
     driver_opts:
@@ -22,7 +30,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
-    image: sonarqube:26.1.0.118079-community
+    image: sonarqube:10.7.0-community # Updated to a more recent stable version
     container_name: sonarqube
     expose:
       - ${SONARQUBE_PORT:-9000}
@@ -41,12 +49,7 @@ services:
       - sonarqube-logs-volume:/opt/sonarqube/logs
     networks:
       - infra_net
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
-
+    logging: *default-logging
     secrets:
       - sonarqube_db_password
     environment:
@@ -69,5 +72,4 @@ networks:
     external: true
 
 secrets:
-  sonarqube_db_password:
-    external: true
+  sonarqube_db_password: { external: true }

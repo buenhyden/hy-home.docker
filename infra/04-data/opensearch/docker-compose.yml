@@ -3,6 +3,13 @@ name: opensearch
 x-labels-base: &labels-base
   hy-home.managed: 'true'
   hy-home.tier: data
+  observability.logs: 'true'
+
+x-logging: &default-logging
+  driver: 'loki'
+  options:
+    loki-url: 'http://localhost:3100/loki/api/v1/push'
+    loki-external-labels: 'container_name={{.Name}},tier=data'
 
 volumes:
   opensearch-data:
@@ -19,34 +26,18 @@ volumes:
       device: ${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs
 
 services:
-  # ######################################################
-  # OpenSearch 노드 1 (cluster_manager + data + ingest)
-  # ######################################################
   opensearch:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
-    # image: opensearchproject/opensearch:3.4.0
     build:
-      context: . ## build Docker file location
-      dockerfile: Dockerfile ## build file name
+      context: .
+      dockerfile: Dockerfile
     container_name: opensearch
-    # 비밀번호, 클러스터 이름, JVM 옵션 등은 env 파일에서 주입
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 2G
-        reservations:
-          cpus: '0.5'
-          memory: 1G
     environment:
-      # JVM Heap 설정
       - OPENSEARCH_JAVA_OPTS=${OPENSEARCH_JAVA_OPTS:--Xms1g -Xmx1g}
-      # 메모리 관련 bootstrap 체크 통과용
       - bootstrap.memory_lock=true
       - DISABLE_INSTALL_DEMO_CONFIG=true
-      # base image entrypoint starts a separate PA agent CLI by default; disable to reduce noise/warnings
       - DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI=true
     command: >
       bash -c "
@@ -54,18 +45,10 @@ services:
       exec /usr/share/opensearch/opensearch-docker-entrypoint.sh
       "
     ulimits:
-      # 스왑 방지를 위해 memlock 무제한
-      memlock:
-        soft: -1
-        hard: -1
-      # OpenSearch 권장 파일 디스크립터 수
-      nofile:
-        soft: 65536
-        hard: 65536
-    # Performance Analyzer가 /dev/shm 를 많이 쓰므로 크기를 넉넉히
+      memlock: { soft: -1, hard: -1 }
+      nofile: { soft: 65536, hard: 65536 }
     shm_size: 1g
     volumes:
-      # 데이터 영속화 볼륨
       - opensearch-data:/usr/share/opensearch/data
       - opensearch_certs:/usr/share/opensearch/config/certs:ro
       - ./opensearch/config/opensearch-security/config.yml:/usr/share/opensearch/config/opensearch-security/config.yml:ro
@@ -76,11 +59,6 @@ services:
       - ./opensearch/config/opensearch-security/tenants.yml:/usr/share/opensearch/config/opensearch-security/tenants.yml:ro
       - ./opensearch/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
       - ./opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
-    # ports:
-    # REST API (TLS on 기본) – Loki/Alloy에서 로그/메트릭 수집, 앱 연결
-    # - '${ES_HOST_PORT:-9200}:${ES_PORT:-9200}'
-    # Performance Analyzer / 메트릭 포트
-    # - '${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}'
     extra_hosts:
       - 'keycloak.127.0.0.1.nip.io:${KEYCLOAK_IP:-127.0.0.1}'
     labels:
@@ -93,22 +71,20 @@ services:
       traefik.http.services.opensearch.loadbalancer.serversTransport: opensearch-transport@file
       traefik.http.services.opensearch.loadbalancer.server.port: 9200
       traefik.http.services.opensearch.loadbalancer.server.scheme: https
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
-
+    logging: *default-logging
     healthcheck:
       test:
         [
           'CMD-SHELL',
-          'export OPENSEARCH_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) && curl -k -u admin:$${OPENSEARCH_ADMIN_PASSWORD} --silent --fail "https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s" || exit 1',
+          "export OPENSEARCH_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) && curl -k -u admin:$${OPENSEARCH_ADMIN_PASSWORD} --silent --fail 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' || exit 1",
         ]
       interval: 15s
       timeout: 30s
       retries: 5
       start_period: 60s
+    secrets:
+      - opensearch_admin_password
+
   opensearch-dashboards:
     extends:
       file: ../../common-optimizations.yml
@@ -118,9 +94,7 @@ services:
     networks:
       - infra_net
     expose:
-      - '${KIBANA_PORT:-5601}' # Expose port 5601 for web access to OpenSearch Dashboards
-    # ports:
-    #   - "${KIBANA_HOST_PORT}:${KIBANA_PORT}"
+      - '${KIBANA_PORT:-5601}'
     volumes:
       - opensearch_certs:/usr/share/opensearch-dashboards/config/certs:ro
       - ./opensearch-dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
@@ -133,22 +107,17 @@ services:
       export OPENSEARCH_PASSWORD=$$(cat /run/secrets/opensearch_dashboard_password) &&
       exec /usr/share/opensearch-dashboards/bin/opensearch-dashboards
       "
-    secrets:
-      - opensearch_dashboard_password
-      # mkcert 기반 인증서(SAN 없음) 대응: 호스트 검증은 끄고 CA만 검증
     labels:
-      - 'traefik.enable=true'
-      # 2. Dashboards 라우터 (https://opensearch-dashboard.${DEFAULT_URL})
-      # (서브 도메인을 분리하여 라우팅)
-      - 'traefik.http.routers.opensearch-dashboards.rule=Host(`opensearch-dashboard.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.opensearch-dashboards.entrypoints=websecure'
-      - 'traefik.http.routers.opensearch-dashboards.tls=true'
-      - 'traefik.http.services.opensearch-dashboards.loadbalancer.server.port=${KIBANA_PORT:-5601}'
-      - 'traefik.http.services.opensearch-dashboards.loadbalancer.server.scheme=https'
-      - 'traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport=opensearch-dashboards-transport@file'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.opensearch-dashboards.rule: Host(`opensearch-dashboard.${DEFAULT_URL}`)
+      traefik.http.routers.opensearch-dashboards.entrypoints: websecure
+      traefik.http.routers.opensearch-dashboards.tls: 'true'
+      traefik.http.services.opensearch-dashboards.loadbalancer.server.port: ${KIBANA_PORT:-5601}
+      traefik.http.services.opensearch-dashboards.loadbalancer.server.scheme: https
+      traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport: opensearch-dashboards-transport@file
     depends_on:
-      opensearch:
-        condition: service_healthy
+      opensearch: { condition: service_healthy }
     healthcheck:
       test:
         [
@@ -159,11 +128,9 @@ services:
       timeout: 30s
       retries: 5
       start_period: 60s
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
+    logging: *default-logging
+    secrets:
+      - opensearch_dashboard_password
 
   opensearch-exporter:
     extends:
@@ -179,42 +146,28 @@ services:
       export ES_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) &&
       exec /bin/elasticsearch_exporter --es.uri=https://opensearch:9200 --es.all --es.indices --es.ssl-skip-verify
       "
-    secrets:
-      - opensearch_exporter_password
     ports:
-      - '${ES_EXPORTER_HOST_PORT:-9114}:${ES_EXPORTER_PORT:-9114}' # 9114
+      - '${ES_EXPORTER_HOST_PORT:-9114}:${ES_EXPORTER_PORT:-9114}'
     networks:
       - infra_net
     depends_on:
-      opensearch:
-        condition: service_healthy
+      opensearch: { condition: service_healthy }
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'curl -fsS http://localhost:${ES_EXPORTER_PORT:-9114}/metrics || wget -q --spider http://localhost:${ES_EXPORTER_PORT:-9114}/metrics || exit 1',
-        ]
+      test: ['CMD-SHELL', 'curl -fsS http://localhost:${ES_EXPORTER_PORT:-9114}/metrics || exit 1']
       interval: 15s
       timeout: 30s
       retries: 5
       start_period: 30s
-    deploy:
-      resources:
-        limits:
-          cpus: '0.1'
-          memory: 128M
-        reservations:
-          cpus: '0.05'
-          memory: 64M
+    logging: *default-logging
+    secrets:
+      - opensearch_exporter_password
+
 networks:
   infra_net:
     name: infra_net
     external: true
 
 secrets:
-  opensearch_admin_password:
-    external: true
-  opensearch_exporter_password:
-    external: true
-  opensearch_dashboard_password:
-    external: true
+  opensearch_admin_password: { external: true }
+  opensearch_exporter_password: { external: true }
+  opensearch_dashboard_password: { external: true }

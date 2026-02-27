@@ -3,6 +3,13 @@ name: minio
 x-labels-base: &labels-base
   hy-home.managed: 'true'
   hy-home.tier: data
+  observability.logs: 'true'
+
+x-logging: &default-logging
+  driver: 'loki'
+  options:
+    loki-url: 'http://localhost:3100/loki/api/v1/push'
+    loki-external-labels: 'container_name={{.Name}},tier=data'
 
 volumes:
   minio-data:
@@ -13,14 +20,10 @@ volumes:
       device: ${DEFAULT_DATA_DIR}/minio/data-1
 
 secrets:
-  minio_root_username:
-    external: true
-  minio_app_username:
-    external: true
-  minio_root_password:
-    external: true
-  minio_app_user_password:
-    external: true
+  minio_root_username: { external: true }
+  minio_app_username: { external: true }
+  minio_root_password: { external: true }
+  minio_app_user_password: { external: true }
 
 services:
   minio:
@@ -38,7 +41,6 @@ services:
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_password
       MINIO_PROMETHEUS_AUTH_TYPE: 'public'
       MINIO_API_ROOT_ACCESS: 'on'
-      # MINIO_BROWSER_REDIRECT_URL: "https://${DEFAULT_URL}/minio-console/"
     networks:
       - infra_net
     volumes:
@@ -61,11 +63,7 @@ services:
       traefik.http.routers.minio-console.tls: 'true'
       traefik.http.routers.minio-console.service: minio-console
       traefik.http.services.minio-console.loadbalancer.server.port: ${MINIO_CONSOLE_PORT:-9001}
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
+    logging: *default-logging
 
   minio-create-buckets:
     extends:
@@ -80,47 +78,29 @@ services:
       - minio_app_username
       - minio_app_user_password
     depends_on:
-      minio:
-        condition: service_healthy # MinIO가 헬스체크 통과할 때까지 대기 (필수)
-    entrypoint: ['/bin/sh']
+      minio: { condition: service_healthy }
+    entrypoint: [/bin/sh]
     command:
       - -c
       - |
         set -e
-
-        echo "[1] root 크레덴셜 로딩..."
         ROOT_USER=$$(cat /run/secrets/minio_root_username)
         ROOT_PASS=$$(cat /run/secrets/minio_root_password)
         APP_USER=$$(cat /run/secrets/minio_app_username)
         APP_PASS=$$(cat /run/secrets/minio_app_user_password)
-
         export MC_CONFIG_DIR=/tmp/.mc
+        mc alias set root http://minio:9000 "$$ROOT_USER" "$$ROOT_PASS"
+        mc admin user add root "$$APP_USER" "$$APP_PASS" || true
+        mc admin policy attach root readwrite --user="$$APP_USER"
+        mc alias set myminio http://minio:9000 "$$APP_USER" "$$APP_PASS"
+        mc mb myminio/tempo-bucket --ignore-existing
+        mc mb myminio/loki-bucket --ignore-existing
+        mc mb myminio/cdn-bucket --ignore-existing
+        mc mb myminio/doc-intel-assets --ignore-existing
+        mc anonymous set public myminio/cdn-bucket || true
+    logging: *default-logging
 
-        echo "[2] root alias 설정..."
-        mc  alias set root http://minio:9000 "$$ROOT_USER" "$$ROOT_PASS"
-
-        echo "[3] 버킷용 유저 생성 (있으면 무시)..."
-        # 이미 존재하면 에러 날 수 있으니 || true
-        mc  admin user add root "$$APP_USER" "$$APP_PASS" || true
-
-        echo "[4] readwrite 정책 부여..."
-        mc  admin policy attach root readwrite --user="$$APP_USER"
-
-        echo "[5] 버킷용 유저 alias 생성..."
-        mc  alias set myminio http://minio:9000 "$$APP_USER" "$$APP_PASS"
-
-        echo "[6] 버킷 생성..."
-        mc  mb myminio/tempo-bucket --ignore-existing
-        mc  mb myminio/loki-bucket --ignore-existing
-        mc  mb myminio/cdn-bucket --ignore-existing
-        mc  mb myminio/doc-intel-assets --ignore-existing
-
-        echo "[7] cdn-bucket public 설정 (선택)..."
-        mc  anonymous set public myminio/cdn-bucket || true
-
-        echo "----------------------------------"
-        echo "버킷 및 계정 초기화 완료"
-        mc  ls myminio
-        echo "----------------------------------"
-        mc  ls myminio
-        echo "----------------------------------"
+networks:
+  infra_net:
+    name: infra_net
+    external: true

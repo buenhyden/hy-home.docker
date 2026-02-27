@@ -3,17 +3,18 @@ name: open-webui
 x-labels-base: &labels-base
   hy-home.managed: 'true'
   hy-home.tier: ai
+  observability.logs: 'true'
+
+x-logging: &default-logging
+  driver: 'loki'
+  options:
+    loki-url: 'http://localhost:3100/loki/api/v1/push'
+    loki-external-labels: 'container_name={{.Name}},tier=ai'
 
 volumes:
   ollama-webui:
-  #   driver: local
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: ${DEFAULT_AI_MODEL_DIR}/webui
 
 services:
-  # 2. Open WebUI 서비스 (선택 사항: ChatGPT 같은 웹 인터페이스)
   open-webui:
     extends:
       file: ../../../infra/common-optimizations.yml
@@ -36,8 +37,15 @@ services:
       traefik.http.routers.open-webui.entrypoints: websecure
       traefik.http.routers.open-webui.tls: 'true'
       traefik.http.services.open-webui.loadbalancer.server.port: 8080
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
+    logging: *default-logging
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:8080/health || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 1m
+
+networks:
+  infra_net:
+    name: infra_net
+    external: true

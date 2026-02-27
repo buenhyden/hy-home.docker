@@ -3,12 +3,13 @@ name: postgresql-cluster
 x-labels-base: &labels-base
   hy-home.managed: 'true'
   hy-home.tier: data
+  observability.logs: 'true'
 
-x-logging: &logging
-  driver: loki
+x-logging: &default-logging
+  driver: 'loki'
   options:
     loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}}'
+    loki-external-labels: 'container_name={{.Name}},tier=data'
 
 volumes:
   pg0-data:
@@ -49,14 +50,10 @@ volumes:
       device: ${DEFAULT_DATA_DIR}/etcd/etcd3-data
 
 secrets:
-  service_postgres_password:
-    external: true
-  patroni_superuser_password:
-    external: true
-  patroni_replication_password:
-    external: true
-  pg_haproxy_stats_password:
-    external: true
+  service_postgres_password: { external: true }
+  patroni_superuser_password: { external: true }
+  patroni_replication_password: { external: true }
+  pg_haproxy_stats_password: { external: true }
 
 networks:
   infra_net:
@@ -64,9 +61,6 @@ networks:
     external: true
 
 services:
-  # ##############################################################
-  # etcd 3노드 (Patroni DCS)
-  # ##############################################################
   etcd-1:
     extends:
       file: ../../common-optimizations.yml
@@ -95,10 +89,11 @@ services:
       - etcd1-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
-    networks:
-      - infra_net
+    logging: *default-logging
+    labels: *labels-base
 
   etcd-2:
+    <<: [] # Placeholder for inheritance if needed, but extends handles it.
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -126,8 +121,8 @@ services:
       - etcd2-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
-    networks:
-      - infra_net
+    logging: *default-logging
+    labels: *labels-base
 
   etcd-3:
     extends:
@@ -157,12 +152,9 @@ services:
       - etcd3-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
-    networks:
-      - infra_net
+    logging: *default-logging
+    labels: *labels-base
 
-  # ##############################################################
-  # Patroni + PostgreSQL 17 노드 3개
-  # ##############################################################
   pg-0:
     extends:
       file: ../../common-optimizations.yml
@@ -173,20 +165,13 @@ services:
     entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
     environment:
       SCOPE: 'pg-ha'
-      # etcd 클러스터 주소
       ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
       PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
       PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
-      # --------------------------------------------------------------------
-      # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
-      # --------------------------------------------------------------------
       PATRONI_NAME: pg-0
       PATRONI_NAMESPACE: /service/
-      # 네트워크 바인딩 (이 설정은 유지)
-      # REST API
       PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT:-8008}
       PATRONI_RESTAPI_CONNECT_ADDRESS: pg-0:${PATRONI_RESTAPI_PORT:-8008}
-      # PostgreSQL listen / connect
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:${POSTGRES_PORT:-5432}
     volumes:
@@ -203,16 +188,12 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    networks:
-      - infra_net
-
     depends_on:
-      etcd-1:
-        condition: service_healthy
-      etcd-2:
-        condition: service_healthy
-      etcd-3:
-        condition: service_healthy
+      etcd-1: { condition: service_healthy }
+      etcd-2: { condition: service_healthy }
+      etcd-3: { condition: service_healthy }
+    logging: *default-logging
+    labels: *labels-base
 
   pg-1:
     extends:
@@ -224,27 +205,20 @@ services:
     entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
     environment:
       SCOPE: 'pg-ha'
-      # etcd 클러스터 주소
       ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
       PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
       PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
-      # --------------------------------------------------------------------
-      # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
-      # --------------------------------------------------------------------
       PATRONI_NAME: pg-1
       PATRONI_NAMESPACE: /service/
-      # 네트워크 바인딩 (이 설정은 유지)
-      # REST API
       PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT:-8008}
       PATRONI_RESTAPI_CONNECT_ADDRESS: pg-1:${PATRONI_RESTAPI_PORT:-8008}
-      # PostgreSQL listen / connect
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:${POSTGRES_PORT:-5432}
     volumes:
       - pg1-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
-    networks:
-      - infra_net
+    logging: *default-logging
+    labels: *labels-base
 
   pg-2:
     extends:
@@ -256,32 +230,21 @@ services:
     entrypoint: ['/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh']
     environment:
       SCOPE: 'pg-ha'
-      # etcd 클러스터 주소
       ETCD3_HOSTS: 'etcd-1:2379,etcd-2:2379,etcd-3:2379'
       PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
       PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
-      # 계정 비밀번호 (Spilo가 initdb 시 사용)
-      # --------------------------------------------------------------------
-      # 2. Patroni 네이티브 오버라이드 (세부 설정 제어)
-      # --------------------------------------------------------------------
       PATRONI_NAME: pg-2
       PATRONI_NAMESPACE: /service/
-      # 네트워크 바인딩 (이 설정은 유지)
-      # REST API
       PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT:-8008}
       PATRONI_RESTAPI_CONNECT_ADDRESS: pg-2:${PATRONI_RESTAPI_PORT:-8008}
-      # PostgreSQL listen / connect
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-2:${POSTGRES_PORT:-5432}
     volumes:
       - pg2-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
-    networks:
-      - infra_net
+    logging: *default-logging
+    labels: *labels-base
 
-  # ##############################################################
-  # HAProxy 라우터 (Writer/Reader 분리)
-  # ##############################################################
   pg-router:
     extends:
       file: ../../common-optimizations.yml
@@ -298,12 +261,9 @@ services:
       exec haproxy -f /usr/local/etc/haproxy/haproxy.cfg
       "
     ports:
-      - '${POSTGRES_WRITE_HOST_PORT:-15432}:${POSTGRES_WRITE_PORT:-15432}' # Write endpoint
-      - '${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}' # Read endpoint
-      # - "${HAPROXY_HOST_PORT}:${HAPROXY_PORT}" # Stats (옵션)
-      - '${HAPROXY_METRICS_HOST_PORT:-8404}:${HAPROXY_METRICS_PORT:-8404}' # Stats (옵션)
-    networks:
-      - infra_net
+      - '${POSTGRES_WRITE_HOST_PORT:-15432}:${POSTGRES_WRITE_PORT:-15432}'
+      - '${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}'
+      - '${HAPROXY_METRICS_HOST_PORT:-8404}:${HAPROXY_METRICS_PORT:-8404}'
     labels:
       <<: *labels-base
       traefik.enable: 'true'
@@ -311,11 +271,7 @@ services:
       traefik.http.routers.haproxy-stats.entrypoints: websecure
       traefik.http.routers.haproxy-stats.tls: 'true'
       traefik.http.services.haproxy-stats.loadbalancer.server.port: ${HAPROXY_PORT:-7000}
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
+    logging: *default-logging
 
   pg-cluster-init:
     extends:
@@ -332,61 +288,36 @@ services:
     secrets:
       - patroni_superuser_password
     depends_on:
-      pg-router:
-        condition: service_started
+      pg-router: { condition: service_started }
     command: >
       sh -c "
-      echo 'DB 연결 대기 중...';
       until pg_isready -h $$POSTGRES_ROUTER_HOSTNAME -p $$POSTGRES_WRITE_PORT -U $$POSTGRES_USER; do
         sleep 2;
       done;
-      echo 'SQL 스크립트 실행 시작...';
-      export PGPASSWORD="$(cat /run/secrets/patroni_superuser_password | tr -d '\n')";
-      export SERVICE_POSTGRES_PASSWORD="$(cat /run/secrets/service_postgres_password | tr -d '\n')";
+      export PGPASSWORD=$(cat /run/secrets/patroni_superuser_password | tr -d '\n');
       psql -h "$$POSTGRES_ROUTER_HOSTNAME" -p "$$POSTGRES_WRITE_PORT" -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -f /home/postgres/init-scripts/init_users_dbs.sql;
-      unset PGPASSWORD;
-      unset SERVICE_POSTGRES_PASSWORD;
-      echo 'SQL 스크립트 실행 완료.';"
+      "
     volumes:
       - './init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql'
-    networks:
-      - infra_net
     restart: 'no'
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
+    logging: *default-logging
 
-  # ##############################################################
-  # postgres-exporter (Prometheus / Alloy용 메트릭)
-  # ##############################################################
   pg-0-exporter:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-0-exporter
-    networks:
-      - infra_net
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
-
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
       - service_postgres_password
     depends_on:
-      pg-0:
-        condition: service_healthy
-    entrypoint: ['/bin/sh', '-c']
+      pg-0: { condition: service_healthy }
+    entrypoint: [/bin/sh, -c]
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/service_postgres_password | tr -d '\n')
-        # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-0:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
     healthcheck:
@@ -399,32 +330,25 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+    logging: *default-logging
+    labels: *labels-base
+
   pg-1-exporter:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-1-exporter
-    networks:
-      - infra_net
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
-
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
       - service_postgres_password
     depends_on:
-      pg-1:
-        condition: service_healthy
-    entrypoint: ['/bin/sh', '-c']
+      pg-1: { condition: service_healthy }
+    entrypoint: [/bin/sh, -c]
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/service_postgres_password | tr -d '\n')
-        # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-1:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
     healthcheck:
@@ -437,32 +361,25 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+    logging: *default-logging
+    labels: *labels-base
+
   pg-2-exporter:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: pg-2-exporter
-    networks:
-      - infra_net
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
-
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
       - service_postgres_password
     depends_on:
-      pg-2:
-        condition: service_healthy
-    entrypoint: ['/bin/sh', '-c']
+      pg-2: { condition: service_healthy }
+    entrypoint: [/bin/sh, -c]
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/service_postgres_password | tr -d '\n')
-        # pg-0에 직접 접속
         export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-2:5432/postgres?sslmode=require"
         exec /bin/postgres_exporter
     healthcheck:
@@ -475,3 +392,5 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+    logging: *default-logging
+    labels: *labels-base

@@ -4,6 +4,7 @@ x-labels-base: &labels-base
   hy-home.managed: 'true'
   hy-home.tier: communication
 
+secrets:
   stalwart_password:
     external: true
 services:
@@ -80,6 +81,15 @@ services:
       options:
         loki-url: 'http://localhost:3100/loki/api/v1/push'
         loki-external-labels: 'container_name={{.Name}}'
+
+volumes:
+  stalwart-data:
+  stalwart_certs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs
 
 networks:
   infra_net:

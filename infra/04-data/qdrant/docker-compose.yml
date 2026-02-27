@@ -3,6 +3,13 @@ name: qdrant
 x-labels-base: &labels-base
   hy-home.managed: 'true'
   hy-home.tier: data
+  observability.logs: 'true'
+
+x-logging: &default-logging
+  driver: 'loki'
+  options:
+    loki-url: 'http://localhost:3100/loki/api/v1/push'
+    loki-external-labels: 'container_name={{.Name}},tier=data'
 
 volumes:
   qdrant-data:
@@ -25,7 +32,7 @@ services:
     ports:
       - '${QDRANT_HOST_PORT:-6333}:${QDRANT_PORT:-6333}'
     environment:
-      - QDRANT__TELEMETRY_DISABLED=false # 메트릭 수집 활성화
+      - QDRANT__TELEMETRY_DISABLED=false
     volumes:
       - qdrant-data:/qdrant/storage
     networks:
@@ -42,7 +49,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    # Qdrant 대시보드(Web UI)를 보고 싶다면 아래 라벨 주석 해제
     labels:
       <<: *labels-base
       traefik.enable: 'true'
@@ -50,3 +56,9 @@ services:
       traefik.http.routers.qdrant.entrypoints: websecure
       traefik.http.routers.qdrant.tls: 'true'
       traefik.http.services.qdrant.loadbalancer.server.port: ${QDRANT_PORT:-6333}
+    logging: *default-logging
+
+networks:
+  infra_net:
+    name: infra_net
+    external: true

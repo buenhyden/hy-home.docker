@@ -3,6 +3,13 @@ name: kafka
 x-labels-base: &labels-base
   hy-home.managed: 'true'
   hy-home.tier: messaging
+  observability.logs: 'true'
+
+x-logging: &default-logging
+  driver: 'loki'
+  options:
+    loki-url: 'http://localhost:3100/loki/api/v1/push'
+    loki-external-labels: 'container_name={{.Name}},tier=messaging'
 
 volumes:
   kafka-1-data:
@@ -11,14 +18,12 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka1-data
-
   kafka-2-data:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka2-data
-
   kafka-3-data:
     driver: local
     driver_opts:
@@ -32,12 +37,6 @@ volumes:
       type: none
       device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka-connect
 
-# ------------------------------------------------------------
-# Kafka Brokers (KRaft) — Primary 패턴 (완전 동일 템플릿 + YAML 앵커)
-# - INTERNAL: 컨테이너 간 통신 (PLAINTEXT, 19092)
-# - CONTROLLER: KRaft 컨트롤러 (9093)
-# - EXTERNAL: 호스트에서 접속 (9092 컨테이너 포트, 호스트는 브로커별로 다르게 매핑)
-# ------------------------------------------------------------
 x-kafka-broker-common: &kafka-broker-common
   image: confluentinc/cp-kafka:8.1.1
   extends:
@@ -53,31 +52,22 @@ x-kafka-broker-common: &kafka-broker-common
     labels:
       <<: *labels-base
   restart: unless-stopped
-
   networks:
-    infra_net: {}
-  environment: &kafka-broker-env-common # ---- KRaft 공통 ----
+    - infra_net
+  logging: *default-logging
+  environment: &kafka-broker-env-common
     CLUSTER_ID: ${KAFKA_CLUSTER_ID}
     KAFKA_PROCESS_ROLES: 'broker,controller'
-
-    # 컨트롤러 쿼럼 (3노드 고정)
     KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:${KAFKA_CONTROLLER_PORT:-9093},2@kafka-2:${KAFKA_CONTROLLER_PORT:-9093},3@kafka-3:${KAFKA_CONTROLLER_PORT:-9093}'
-
-    # 리스너: 바인딩은 0.0.0.0, 광고(advertised)는 DNS/localhost로
     KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT:-19092},CONTROLLER://0.0.0.0:${KAFKA_CONTROLLER_PORT:-9093},EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT:-9092}'
     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
     KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
     KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
-
-    # ---- 토픽/복제 관련 (3노드 기준) ----
-    # auto-create되는 토픽도 3복제로 생성되도록 기본값 지정 (dev 환경에서도 prod 유사하게)
     KAFKA_DEFAULT_REPLICATION_FACTOR: 3
     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
     KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
     KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
     KAFKA_MIN_INSYNC_REPLICAS: 2
-
-    # ---- 운영 기본값 ----
     KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
     KAFKA_LOG_DIRS: '/var/lib/kafka/data'
     KAFKA_NUM_PARTITIONS: 3
@@ -86,11 +76,8 @@ x-kafka-broker-common: &kafka-broker-common
     KAFKA_REQUEST_TIMEOUT_MS: 10000
     KAFKA_CONTROLLER_QUORUM_FETCH_TIMEOUT_MS: 10000
     KAFKA_CONTROLLER_QUORUM_REQUEST_TIMEOUT_MS: 10000
-
-    # ---- JVM ----
     KAFKA_HEAP_OPTS: '-Xms1G -Xmx1G'
     KAFKA_JMX_OPTS: '-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost} -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101} -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=9404:/usr/share/jmx_exporter/kafka-config.yaml'
-
   healthcheck:
     test:
       [
@@ -103,33 +90,17 @@ x-kafka-broker-common: &kafka-broker-common
     start_period: 30s
 
 services:
-  # ##############################################################
-  # Kafka Broker 1 (KRaft Controller + Broker)
-  # ##############################################################
   kafka-1:
     <<: *kafka-broker-common
     container_name: kafka-1
     hostname: kafka-1
-    deploy:
-      resources:
-        limits:
-          cpus: '1.5'
-          memory: 1.5G
-        reservations:
-          memory: 1G
-    networks:
-      - infra_net
     volumes:
-      - type: volume
-        source: kafka-1-data
-        target: /var/lib/kafka/data
+      - kafka-1-data:/var/lib/kafka/data
       - ./jmx-exporter:/usr/share/jmx_exporter
-
     ports:
       - '${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}'
       - '${KAFKA_JMX_1_HOST_PORT:-19101}:${KAFKA_JMX_PORT:-9101}'
       - '${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}'
-
     environment:
       <<: *kafka-broker-env-common
       KAFKA_NODE_ID: 1
@@ -141,19 +112,13 @@ services:
     <<: *kafka-broker-common
     container_name: kafka-2
     hostname: kafka-2
-    networks:
-      - infra_net
     volumes:
-      - type: volume
-        source: kafka-2-data
-        target: /var/lib/kafka/data
+      - kafka-2-data:/var/lib/kafka/data
       - ./jmx-exporter:/usr/share/jmx_exporter
-
     ports:
       - '${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}'
       - '${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}'
       - '${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}'
-
     environment:
       <<: *kafka-broker-env-common
       KAFKA_NODE_ID: 2
@@ -165,19 +130,13 @@ services:
     <<: *kafka-broker-common
     container_name: kafka-3
     hostname: kafka-3
-    networks:
-      - infra_net
     volumes:
-      - type: volume
-        source: kafka-3-data
-        target: /var/lib/kafka/data
+      - kafka-3-data:/var/lib/kafka/data
       - ./jmx-exporter:/usr/share/jmx_exporter
-
     ports:
       - '${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}'
       - '${KAFKA_JMX_3_HOST_PORT:-39101}:${KAFKA_JMX_PORT:-9101}'
       - '${KAFKA_JMX_EXPORTER_3_HOST_PORT:-39404}:${KAFKA_JMX_EXPORTER_PORT:-9404}'
-
     environment:
       <<: *kafka-broker-env-common
       KAFKA_NODE_ID: 3
@@ -185,192 +144,134 @@ services:
       KAFKA_JMX_PORT: ${KAFKA_JMX_PORT:-9101}
       KAFKA_JMX_HOSTNAME: kafka-3
 
-  # -------------------------------------------
-  # 2. Schema Registry (스키마 레지스트리)
-  # -------------------------------------------
   schema-registry:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
     image: confluentinc/cp-schema-registry:8.1.1
     container_name: schema-registry
-
     networks:
       - infra_net
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:${SCHEMA_REGISTRY_PORT:-8081}'
-      # 내부 리스너 포트(19092)로 연결해야 함
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092'
     expose:
       - ${SCHEMA_REGISTRY_PORT:-8081}
-    # ports:
-    #   - "${SCHEMA_REGISTRY_HOST_PORT}:${SCHEMA_REGISTRY_PORT}"
     labels:
-      - 'traefik.enable=true'
-      # 도메인: schema-registry.${DEFAULT_URL}
-      - 'traefik.http.routers.schema-registry.rule=Host(`schema-registry.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.schema-registry.entrypoints=websecure'
-      - 'traefik.http.routers.schema-registry.tls=true'
-      - 'traefik.http.services.schema-registry.loadbalancer.server.port=${SCHEMA_REGISTRY_PORT:-8081}'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.schema-registry.rule: Host(`schema-registry.${DEFAULT_URL}`)
+      traefik.http.routers.schema-registry.entrypoints: websecure
+      traefik.http.routers.schema-registry.tls: 'true'
+      traefik.http.services.schema-registry.loadbalancer.server.port: ${SCHEMA_REGISTRY_PORT:-8081}
     depends_on:
-      kafka-1:
-        condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-      kafka-3:
-        condition: service_healthy
+      kafka-1: { condition: service_healthy }
+      kafka-2: { condition: service_healthy }
+      kafka-3: { condition: service_healthy }
     healthcheck:
       test:
-        [
-          'CMD-SHELL',
-          'curl -fsS http://localhost:${SCHEMA_REGISTRY_PORT:-8081}/subjects || wget -q --spider http://localhost:${SCHEMA_REGISTRY_PORT:-8081}/subjects || exit 1',
-        ]
+        ['CMD-SHELL', 'curl -fsS http://localhost:${SCHEMA_REGISTRY_PORT:-8081}/subjects || exit 1']
       interval: 15s
       timeout: 30s
       retries: 5
       start_period: 30s
+    logging: *default-logging
 
-  # ##############################################################
-  # Kafka Connect (Distributed)
-  # ##############################################################
   kafka-connect:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
     image: confluentinc/cp-kafka-connect:8.1.1
     container_name: kafka-connect
-
     depends_on:
-      kafka-1:
-        condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-      kafka-3:
-        condition: service_healthy
-      schema-registry:
-        condition: service_started
+      kafka-1: { condition: service_healthy }
+      kafka-2: { condition: service_healthy }
+      kafka-3: { condition: service_healthy }
+      schema-registry: { condition: service_started }
     networks:
       - infra_net
-    # ports:
-    #   - "${KAFKA_CONNECT_HOST_PORT}:${KAFKA_CONNECT_PORT}"
     environment:
-      # 내부 리스너 포트(19092) 사용
       CONNECT_BOOTSTRAP_SERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
-      # Connect 클러스터 ID (그룹)
       CONNECT_GROUP_ID: 'kafka-connect-cluster'
-      # 내부 토픽들 (replication 3으로)
       CONNECT_CONFIG_STORAGE_TOPIC: _connect-configs
       CONNECT_OFFSET_STORAGE_TOPIC: _connect-offsets
       CONNECT_STATUS_STORAGE_TOPIC: _connect-status
-
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
-
-      # Key/Value 변환기 (JSON, Schema-less 예시)
       CONNECT_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
       CONNECT_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
       CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
       CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
-
-      # 내부 변환기
       CONNECT_INTERNAL_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
       CONNECT_INTERNAL_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-
-      # REST 리스너
       CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
       CONNECT_REST_PORT: ${KAFKA_CONNECT_PORT:-8083}
-
-      # 플러그인 디렉터리 (커스텀 커넥터 넣고 싶을 때 사용)
       CONNECT_PLUGIN_PATH: '/usr/share/java,/usr/share/confluent-hub-components'
-      # 오프셋 flush 주기 등 (필요에 따라 조정)
       CONNECT_OFFSET_FLUSH_INTERVAL_MS: 10000
-
       CONNECT_LOG4J_ROOT_LOGLEVEL: 'INFO'
       CONNECT_LOG4J_LOGGERS: 'org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR'
-      # Schema Registry와 연동
       CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}'
       CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}'
     volumes:
-      # 커스텀 커넥터가 있다면 여기에 마운트 (예: ./connect-plugins:/usr/share/confluent-hub-components)
-      # - ./connect-plugins:/usr/share/confluent-hub-components
       - kafka-connect-data:/var/lib/kafka-connect
     labels:
-      - 'traefik.enable=true'
-      # 도메인: connect.${DEFAULT_URL}
-      - 'traefik.http.routers.kafka-connect.rule=Host(`kafka-connect.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.kafka-connect.entrypoints=websecure'
-      - 'traefik.http.routers.kafka-connect.tls=true'
-      - 'traefik.http.services.kafka-connect.loadbalancer.server.port=${KAFKA_CONNECT_PORT:-8083}'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.kafka-connect.rule: Host(`kafka-connect.${DEFAULT_URL}`)
+      traefik.http.routers.kafka-connect.entrypoints: websecure
+      traefik.http.routers.kafka-connect.tls: 'true'
+      traefik.http.services.kafka-connect.loadbalancer.server.port: ${KAFKA_CONNECT_PORT:-8083}
     healthcheck:
       test:
-        [
-          'CMD-SHELL',
-          'curl -fsS http://localhost:${KAFKA_CONNECT_PORT:-8083}/connectors || wget -q --spider http://localhost:${KAFKA_CONNECT_PORT:-8083}/connectors || exit 1',
-        ]
+        ['CMD-SHELL', 'curl -fsS http://localhost:${KAFKA_CONNECT_PORT:-8083}/connectors || exit 1']
       interval: 15s
       timeout: 30s
       retries: 5
       start_period: 30s
+    logging: *default-logging
 
-  # -------------------------------------------
-  # 4. Kafka REST Proxy (레스트 프록시)
-  # -------------------------------------------
   kafka-rest-proxy:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
     image: confluentinc/cp-kafka-rest:8.1.1
     container_name: kafka-rest-proxy
-
     networks:
       - infra_net
-    # ports:
-    #   - "${KAFKA_REST_PROXY_HOST_PORT}:${KAFKA_REST_PROXY_PORT}"
     labels:
-      - 'traefik.enable=true'
-      # 도메인: kafka-rest.${DEFAULT_URL}
-      - 'traefik.http.routers.kafka-rest.rule=Host(`kafka-rest.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.kafka-rest.entrypoints=websecure'
-      - 'traefik.http.routers.kafka-rest.tls=true'
-      - 'traefik.http.services.kafka-rest.loadbalancer.server.port=${KAFKA_REST_PROXY_PORT:-8082}'
-
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.kafka-rest.rule: Host(`kafka-rest.${DEFAULT_URL}`)
+      traefik.http.routers.kafka-rest.entrypoints: websecure
+      traefik.http.routers.kafka-rest.tls: 'true'
+      traefik.http.services.kafka-rest.loadbalancer.server.port: ${KAFKA_REST_PROXY_PORT:-8082}
     environment:
       KAFKA_REST_HOST_NAME: kafka-rest-proxy
       KAFKA_REST_LISTENERS: 'http://0.0.0.0:${KAFKA_REST_PROXY_PORT:-8082}'
-      # 내부 리스너 사용
       KAFKA_REST_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092'
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}'
     depends_on:
-      kafka-1:
-        condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-      kafka-3:
-        condition: service_healthy
-      schema-registry:
-        condition: service_started
+      kafka-1: { condition: service_healthy }
+      kafka-2: { condition: service_healthy }
+      kafka-3: { condition: service_healthy }
+      schema-registry: { condition: service_started }
     healthcheck:
       test:
-        [
-          'CMD-SHELL',
-          'curl -fsS http://localhost:${KAFKA_REST_PROXY_PORT:-8082}/topics || wget -q --spider http://localhost:${KAFKA_REST_PROXY_PORT:-8082}/topics || exit 1',
-        ]
+        ['CMD-SHELL', 'curl -fsS http://localhost:${KAFKA_REST_PROXY_PORT:-8082}/topics || exit 1']
       interval: 15s
       timeout: 30s
       retries: 5
       start_period: 30s
-  # -------------------------------------------
-  # 5. Kafka UI (카프카 UI - kafbat-ui)
-  # -------------------------------------------
+    logging: *default-logging
+
   kafbat-ui:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
     image: ghcr.io/kafbat/kafka-ui:main
     container_name: kafbat-ui
-
     environment:
       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_ID}
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
@@ -385,26 +286,20 @@ services:
       DYNAMIC_CONFIG_ENABLED: 'true'
     volumes:
       - ./kafbat-ui/dynamic_config.yaml:/etc/kafkaui/dynamic_config.yaml
-      # - ../../../secrets/certs/truststore.p12:/etc/ssl/truststore.p12:ro
     labels:
-      - 'traefik.enable=true'
-      # 도메인: kafka-ui.${DEFAULT_URL}
-      - 'traefik.http.routers.kafka-ui.rule=Host(`kafbat-ui.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.kafka-ui.entrypoints=websecure'
-      - 'traefik.http.routers.kafka-ui.tls=true'
-      - 'traefik.http.services.kafka-ui.loadbalancer.server.port=${KAFKA_UI_PORT:-8080}'
-      - 'traefik.http.routers.kafka-ui.middlewares=sso-auth@file'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.kafka-ui.rule: Host(`kafbat-ui.${DEFAULT_URL}`)
+      traefik.http.routers.kafka-ui.entrypoints: websecure
+      traefik.http.routers.kafka-ui.tls: 'true'
+      traefik.http.services.kafka-ui.loadbalancer.server.port: ${KAFKA_UI_PORT:-8080}
+      traefik.http.routers.kafka-ui.middlewares: sso-auth@file
     depends_on:
-      kafka-1:
-        condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-      kafka-3:
-        condition: service_healthy
-      schema-registry:
-        condition: service_started
-      kafka-connect:
-        condition: service_started
+      kafka-1: { condition: service_healthy }
+      kafka-2: { condition: service_healthy }
+      kafka-3: { condition: service_healthy }
+      schema-registry: { condition: service_started }
+      kafka-connect: { condition: service_started }
     healthcheck:
       test:
         [
@@ -415,8 +310,8 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    # extra_hosts:
-    #   - 'keycloak.127.0.0.1.nip.io:host-gateway'
+    logging: *default-logging
+
   kafka-exporter:
     extends:
       file: ../../common-optimizations.yml
@@ -424,45 +319,35 @@ services:
     image: danielqsj/kafka-exporter:v1.9.0
     container_name: kafka-exporter
     read_only: true
-
     command:
-      # 내부 리스너 사용
       - --kafka.server=kafka-1:19092
       - --kafka.server=kafka-2:19092
       - --kafka.server=kafka-3:19092
-    # ports:
-    #   - "${KAFKA_EXPORTER_HOST_PORT}:${KAFKA_EXPORTER_PORT}"
     networks:
       - infra_net
     depends_on:
-      kafka-1:
-        condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-      kafka-3:
-        condition: service_healthy
+      kafka-1: { condition: service_healthy }
+      kafka-2: { condition: service_healthy }
+      kafka-3: { condition: service_healthy }
     healthcheck:
       test:
-        [
-          'CMD-SHELL',
-          'curl -fsS http://localhost:${KAFKA_EXPORTER_PORT:-9308}/metrics || wget -q --spider http://localhost:${KAFKA_EXPORTER_PORT:-9308}/metrics || exit 1',
-        ]
+        ['CMD-SHELL', 'curl -fsS http://localhost:${KAFKA_EXPORTER_PORT:-9308}/metrics || exit 1']
       interval: 15s
       timeout: 30s
       retries: 5
       start_period: 30s
+    logging: *default-logging
+
   kafka-init:
     extends:
       file: ../../common-optimizations.yml
       service: base-security
     image: confluentinc/cp-kafka:8.1.1
     container_name: kafka-init
-
     networks:
       - infra_net
     depends_on:
-      kafka-1:
-        condition: service_healthy
+      kafka-1: { condition: service_healthy }
     entrypoint: ['/bin/sh', '-c']
     command:
       - |
@@ -471,13 +356,16 @@ services:
         kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic application-logs --partitions 6 --replication-factor 3
         echo "Kafka initialization complete."
     labels:
-      - 'hy-home.scope=infra'
-      - 'hy-home.tier=messaging'
+      <<: *labels-base
+      hy-home.scope: infra
     deploy:
       resources:
         limits: { memory: 256M }
+    logging: *default-logging
 
 networks:
   infra_net:
     name: infra_net
     external: true
+
+secrets: {}
