@@ -16,6 +16,9 @@ Establish a high-performance, secure, and observable home server infrastructure 
 - **Metric-03 (Performance)**: Cold startup time for the core gateway (NGINX/Traefik) SHALL be < 15 seconds.
 - **Metric-04 (Portability)**: 100% of services SHALL operate without explicit `ipv4_address` assignments [ADR-0008].
 - **Metric-05 (Hardening)**: 100% of stateless services SHALL implement `read_only: true` filesystems with `tmpfs` support.
+- **[METRIC-06] Secret Integrity**: 100% of sensitive data injected via Docker Secrets (`/run/secrets/`), zero hardcoded credentials in `environment`.
+- **[METRIC-07] Network Isolation**: 100% of services on internal `infra_net`, zero direct public port exposure except for Traefik/Gateway.
+- **[METRIC-08] Image Pinning**: 100% of service images must use specific version tags (no `latest`).
 
 ## 4. Use Cases [REQ-SPT-04]
 

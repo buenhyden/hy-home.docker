@@ -58,7 +58,19 @@ All infrastructure services SHALL operate without explicit `ipv4_address` assign
 
 Every containerized service MUST utilize `init: true` to ensure robust signal handling (SIGTERM/SIGINT) and the proper reaping of zombie processes. This improves observability stability and ensures clean shutdowns during orchestration events.
 
-## 3. Stateless Hardening Patterns
+## 3. Mandatory Directive Standard
+
+To ensure schema compliance and operational visibility, every service definition MUST include:
+1.  **`image`**: Pinned version tag (e.g., `redis:7.4-alpine`).
+2.  **`container_name`**: Service-prefixed unique name.
+3.  **`hostname`**: Identical to container name for internal DNS consistency.
+4.  **`secrets`**: External references only, mapped to `/run/secrets/`.
+5.  **`networks`**: Member of `infra_net` (external).
+6.  **`extends`**: Config inheritance from `common-optimizations.yml`.
+
+## Network Topology
+
+The infrastructure utilizes a flat `infra_net` bridge for inter-service communication, isolated from host ports except through the `traefik` entrypoints.
 Stateless services (exporters, proxies, UIs) MUST utilize `read_only: true` for the root filesystem. Transient write requirements MUST be handled via `tmpfs` mounts to ensure zero persistent side-effects and prevent runtime binary tampering.
 
 ## 4. Security Boundaries

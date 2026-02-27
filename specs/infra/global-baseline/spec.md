@@ -54,6 +54,7 @@ This specification defines standard extension fields and service templates for c
 | **[REQ-INF-03]** | Standardized Resource Quotas: Every service definition SHALL define CPU and Memory limits using established profiles (Low/Med/High). | High     | REQ-PRD-MET-03 |
 | **[REQ-INF-04]** | Environment Portability: All services MUST rely on internal DNS for discovery; explicit static IPs are PROHIBITED [ADR-0008]. | Critical | REQ-SYS-05      |
 | **[REQ-INF-05]** | Managed Process Lifecycle: All services MUST utilize `init: true` for robust signal handling [ADR-0012]. | High     | REQ-SYS-06      |
+| **[REQ-INF-06]** | Functional Metadata Overlays: Services SHALL maintain local `labels` for service-specific functional requirements (e.g. Traefik rules) while extending global security invariants. | Medium   | REQ-SYS-08 |
 
 ## 3. Data Modeling & Storage Strategy
 
@@ -76,6 +77,10 @@ This specification defines standard extension fields and service templates for c
 - **Error**: Overlapping limits -> Container runtime OOM or throttling.
 
 ## 7. Verification Plan (Testing & QA) [REQ-SPT-10]
+
+- **[REQ-SPC-010] External Secret Reference**: Services SHALL reference secrets as `external: true` to source from the root compose.
+- **[REQ-SPC-011] Version Pinning Enforcement**: The use of `latest` image tags is PROHIBITED.
+- **[VAL-SPC-007] Network Isolation Check**: `docker compose config` must verify no services expose `ports` directly to the host except for Gateway tier.
 
 - **[VAL-SPC-001] Security Baseline Verification**:
   - **Given**: A service definition inheriting from `base-security`.

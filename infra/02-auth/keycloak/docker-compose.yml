@@ -31,6 +31,10 @@ services:
       service: template-infra-med
     image: quay.io/keycloak/keycloak:26.5.4
     hostname: keycloak
+    read_only: true
+    tmpfs:
+      - /opt/keycloak/data
+      - /tmp
     volumes:
       - keycloak-themes:/opt/keycloak/themes
       - keycloak-config:/opt/keycloak/conf
@@ -71,21 +75,10 @@ services:
     labels:
       <<: *labels-base
       traefik.enable: 'true'
-      hy-home.tier: auth
       traefik.http.routers.keycloak.rule: Host(`keycloak.${DEFAULT_URL}`)
       traefik.http.routers.keycloak.entrypoints: websecure
       traefik.http.routers.keycloak.tls: 'true'
       traefik.http.services.keycloak.loadbalancer.server.port: '8080'
-    networks:
-      - infra_net
-    secrets:
-      - keycloak_db_password
-      - keycloak_admin_password
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
 networks:
   infra_net:

@@ -23,6 +23,10 @@ services:
       service: template-infra-med
     image: valkey/valkey:9.0.2-alpine
     container_name: valkey-node-0
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     environment:
       - PORT=6379
       - NODE_NAME=valkey-node-0
@@ -49,6 +53,10 @@ services:
       service: template-infra-med
     image: valkey/valkey:9.0.2-alpine
     container_name: valkey-node-1
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     environment:
       - PORT=6380
       - NODE_NAME=valkey-node-1
@@ -75,6 +83,10 @@ services:
       service: template-infra-med
     image: valkey/valkey:9.0.2-alpine
     container_name: valkey-node-2
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     environment:
       - PORT=6381
       - NODE_NAME=valkey-node-2
@@ -101,6 +113,10 @@ services:
       service: template-infra-med
     image: valkey/valkey:9.0.2-alpine
     container_name: valkey-node-3
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     environment:
       - PORT=6382
       - NODE_NAME=valkey-node-3
@@ -127,6 +143,10 @@ services:
       service: template-infra-med
     image: valkey/valkey:9.0.2-alpine
     container_name: valkey-node-4
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     environment:
       - PORT=6383
       - NODE_NAME=valkey-node-4
@@ -141,11 +161,6 @@ services:
       - infra_net
     labels:
       <<: *labels-base
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   valkey-node-5:
     extends:
@@ -153,6 +168,10 @@ services:
       service: template-infra-med
     image: valkey/valkey:9.0.2-alpine
     container_name: valkey-node-5
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run
     environment:
       - PORT=6384
       - NODE_NAME=valkey-node-5
@@ -167,11 +186,6 @@ services:
       - infra_net
     labels:
       <<: *labels-base
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   valkey-cluster-init:
     extends:
@@ -200,11 +214,6 @@ services:
       - service_valkey_password
     networks:
       - infra_net
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
 networks:
   infra_net:

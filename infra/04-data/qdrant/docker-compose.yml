@@ -19,6 +19,9 @@ services:
       service: template-infra-med
     image: qdrant/qdrant:v1.17
     container_name: qdrant
+    read_only: true
+    tmpfs:
+      - /tmp
     ports:
       - '${QDRANT_HOST_PORT:-6333}:${QDRANT_PORT:-6333}'
     environment:
@@ -47,8 +50,3 @@ services:
       traefik.http.routers.qdrant.entrypoints: websecure
       traefik.http.routers.qdrant.tls: 'true'
       traefik.http.services.qdrant.loadbalancer.server.port: ${QDRANT_PORT:-6333}
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'

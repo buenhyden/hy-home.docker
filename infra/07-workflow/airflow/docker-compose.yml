@@ -42,11 +42,6 @@ x-airflow-common: &airflow-common
     - airflow_fernet_key
     - airflow_www_password
     - airflow_valkey_password
-  logging:
-    driver: loki
-    options:
-      loki-url: 'http://localhost:3100/loki/api/v1/push'
-      loki-external-labels: 'container_name={{.Name}}'
   deploy:
     resources:
       limits:
@@ -371,11 +366,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   airflow-valkey-exporter:
     extends:
@@ -404,11 +394,6 @@ services:
     depends_on:
       airflow-valkey:
         condition: service_healthy
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   airflow-statsd-exporter:
     profiles:
@@ -427,11 +412,6 @@ services:
     expose:
       - '${STATSD_PROMETHEUS_PORT:-9102}'
       - '${STATSD_AIRFLOW_PORT:-9125}'
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
 networks:
   infra_net:

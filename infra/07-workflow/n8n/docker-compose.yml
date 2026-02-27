@@ -97,11 +97,6 @@ services:
       traefik.http.routers.n8n.tls: 'true'
       traefik.http.routers.n8n.service: n8n
       traefik.http.services.n8n.loadbalancer.server.port: ${N8N_PORT:-5678}
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
   n8n-worker:
     extends:
       file: ../../common-optimizations.yml
@@ -123,11 +118,6 @@ services:
     networks:
       - infra_net
     command: worker
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
     volumes:
       - n8n-data:/home/node/.n8n
@@ -139,11 +129,6 @@ services:
       service: template-infra-med
     image: n8nio/runners:2.6.2
     container_name: n8n-task-runner
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
   n8n-valkey:
     extends:
       file: ../../common-optimizations.yml
@@ -178,11 +163,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   n8n-valkey-exporter:
     extends:
@@ -211,11 +191,6 @@ services:
     depends_on:
       n8n-valkey:
         condition: service_healthy
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
 networks:
   infra_net:

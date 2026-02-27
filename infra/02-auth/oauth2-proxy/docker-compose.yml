@@ -23,6 +23,8 @@ services:
       dockerfile: Dockerfile
     container_name: oauth2-proxy
     read_only: true
+    tmpfs:
+      - /tmp
 
     secrets:
       - mng_valkey_password
@@ -51,16 +53,11 @@ services:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
     labels:
-      - 'traefik.enable=true'
-      # OAuth2 콜백 처리를 위한 라우터
-      - 'traefik.http.routers.oauth2-proxy.rule=Host(`auth.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.oauth2-proxy.entrypoints=websecure'
-      - 'traefik.http.routers.oauth2-proxy.tls=true'
-      - 'traefik.http.services.oauth2-proxy.loadbalancer.server.port=${OAUTH2_PROXY_PORT:-4180}'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.oauth2-proxy.rule: Host(`auth.${DEFAULT_URL}`)
+      traefik.http.routers.oauth2-proxy.entrypoints: websecure
+      traefik.http.routers.oauth2-proxy.tls: 'true'
+      traefik.http.services.oauth2-proxy.loadbalancer.server.port: ${OAUTH2_PROXY_PORT:-4180}
     networks:
       - infra_net
-    logging:
-      driver: 'loki'
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name=oauth2-proxy,tier=auth'

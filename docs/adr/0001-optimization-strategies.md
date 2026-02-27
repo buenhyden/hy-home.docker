@@ -16,8 +16,9 @@ We SHALL implement the following optimization strategies to fulfill **[REQ-SYS-0
 2. **Minimal Capabilities Policy**: All infrastructure services MUST explicitly drop all capabilities (`cap_drop: ALL`) and utilize `no-new-privileges: true`.
 3. **Mandatory Loki Logging**: The `loki` logging driver MUST be the primary telemetry channel, configured once in composite templates to ensure unified metadata collection.
 4. **Deterministic Orchestration**: Service dependencies SHALL be enforced via `service_healthy` conditions to ensure reliable startup order.
+5. **Local Configuration Overlays**: Services SHALL maintain local `labels` for service-specific functional metadata (e.g., Traefik routing) while inheriting global security/resource invariants. Local `logging` blocks MAY be maintained for file-level isolation despite redundancy.
 
 ## Consequences [REQ-SPT-05]
 
 - **Positive**: Uniform security across all tiers, predictable resource consumption, and simplified log aggregation.
-- **Negative**: Increased YAML boilerplate in localized compose files to overcome Docker Compose scoping limitations.
+- **Negative**: Redundant YAML blocks in local stacks if file-level isolation is prioritized over strict deduplication.
