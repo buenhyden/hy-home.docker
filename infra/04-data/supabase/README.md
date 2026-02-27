@@ -26,9 +26,9 @@ Accessed via **Kong** bridge:
 
 ## Persistence
 
-- **Database**: `./volumes/db/data`
-- **Storage**: `./volumes/storage`
-- **Functions**: `./volumes/functions`
+- **Database**: `${DEFAULT_DATA_DIR}/supabase/db/data`
+- **Storage**: `${DEFAULT_DATA_DIR}/supabase/storage`
+- **Functions**: `${DEFAULT_DATA_DIR}/supabase/functions`
 
 ## Configuration
 
@@ -45,6 +45,7 @@ Accessed via **Kong** bridge:
 | `JWT_SECRET`            | Auth Token Secret        | `${SUPABASE_JWT_SECRET}`        |
 | `SERVICE_ROLE_KEY`      | Admin API Key            | `${SUPABASE_SERVICE_ROLE_KEY}`  |
 | `ANON_KEY`              | Public API Key           | `${SUPABASE_ANON_KEY}`          |
+| `DB_ENC_KEY`            | Secret Encryption Key    | `(Secret)`                      |
 
 ## File Map
 

@@ -8,7 +8,7 @@ The Hy-Home infrastructure utilizes a multi-tier, isolated container topology to
 
 - **Tier 1 (Gateway)**: Core ingress tier (Traefik/NGINX) handling TLS termination and internal routing.
 - **Tier 2 (Identity & Auth)**: Keycloak and OAuth2 Proxy managing centralized OIDC authentication.
-- **Tier 3 (Stateful Data)**: Dedicated clusters for PostgreSQL, Valkey, and MinIO with isolated network segments.
+- **Tier 3 (Stateful Data)**: Dedicated clusters for PostgreSQL, Valkey, MongoDB, Supabase, and MinIO with isolated network segments.
 - **Tier 4 (Observability Stack)**: Unified LGTM pipeline (Loki, Grafana, Tempo, Alloy) collecting cross-tier telemetry.
 
 ## 2. Hardening Invariants

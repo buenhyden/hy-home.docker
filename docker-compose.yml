@@ -155,6 +155,8 @@ secrets:
     file: ./secrets/data/supabase_openai_api_key.txt
   supabase_logflare_private_token:
     file: ./secrets/data/supabase_logflare_private_token.txt
+  supabase_db_enc_key:
+    file: ./secrets/data/supabase_db_enc_key.txt
 
   # ── InfluxDB ─────────────────────────────────────────────
   influxdb_password:
@@ -179,6 +181,8 @@ include:
   - infra/04-data/postgresql-cluster/docker-compose.yml
   - infra/04-data/valkey-cluster/docker-compose.yml
   - infra/04-data/opensearch/docker-compose.yml
+  # - infra/04-data/supabase/docker-compose.yml
+  # - infra/04-data/mongodb/docker-compose.yml
   - infra/05-messaging/kafka/docker-compose.yml
   # - infra/05-messaging/ksql/docker-compose.yml
   - infra/06-observability/docker-compose.yml
