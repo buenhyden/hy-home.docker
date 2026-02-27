@@ -10,20 +10,19 @@ The stack utilizes KRaft mode (ZooKeeper-less) for simplified metadata managemen
 
 ### Technical Specifications
 
-| Service | IPv4 | Internal Port | Role |
+| Service | Internal DNS | Internal Port | Role |
 | --- | --- | --- | --- |
-| `kafka-1` | `172.19.0.20` | `19092` | Broker + Controller |
-| `kafka-2` | `172.19.0.21` | `19092` | Broker + Controller |
-| `kafka-3` | `172.19.0.22` | `19092` | Broker + Controller |
-| `schema-registry`| `172.19.0.23` | `8081` | Confluent SR |
-| `ksql-server` | `172.19.0.24` | `8088` | [Hardened: Standard] |
+| `kafka-1` | `kafka-1` | `19092` | Broker + Controller |
+| `kafka-2` | `kafka-2` | `19092` | Broker + Controller |
+| `kafka-3` | `kafka-3` | `19092` | Broker + Controller |
+| `schema-registry`| `schema-registry` | `8081` | Confluent Schema Registry |
 
 ### Provisioning Verification
 
 Check KRaft leader election results:
 
 ```bash
-docker logs kafka-1 | grep "Leader election"
+docker compose logs kafka-1 | rg "Leader election"
 ```
 
 ## 2. Component Layout
@@ -32,7 +31,7 @@ The Kafka ecosystem includes:
 
 - **Schema Registry**: Port `8081`. Validates data schemas (Avro/JSON).
 - **Kafka Connect**: Distributed data workers.
-- **Kafbat UI**: Graphical management at `https://kafka-ui.${DEFAULT_URL}`.
+- **Kafbat UI**: Graphical management at `https://kafbat-ui.${DEFAULT_URL}`.
 
 ## 3. Maintenance & Integration
 
@@ -55,7 +54,7 @@ Upon `docker compose up -d`, wait ~45s for leader election.
 
 ```bash
 # Create a topic with 3 replicas for safety
-docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 \
+docker compose exec kafka-1 kafka-topics --bootstrap-server localhost:19092 \
   --create --topic events.logs --partitions 6 --replication-factor 3
 ```
 

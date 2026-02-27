@@ -1,11 +1,3 @@
----
-title: 'ADR-0005: Sidecar-Driven Resource Initialization'
-status: 'Accepted'
-date: '2026-02-26'
-authors: 'DevOps Engineer'
-deciders: 'Engineering Team'
----
-
 # Architecture Decision Record (ADR)
 
 ## Title: Sidecar-Driven Resource Initialization
@@ -31,9 +23,12 @@ Manual bucket creation in MinIO, topic creation in Kafka, or index template setu
 
 ### 3.1 Core Engineering Pillars Alignment
 
-- **Architecture**: Promotes autonomous service discovery and setup.
-- **Security**: Sidecar users are scoped only to resource initialization permissions.
-- **Observability**: Provisioning sequences are logged to Loki for audit.
+- **Security**: Enables least-privilege provisioning credentials scoped to init tasks (separate from long-running service credentials).
+- **Observability**: Makes initialization steps explicit and loggable (debuggable bootstrap, auditable provisioning).
+- **Compliance**: Improves reproducibility (Day-0 provisioning becomes deterministic and reviewable).
+- **Performance**: Avoids repeated manual setup toil; amortizes startup work into idempotent init flows.
+- **Documentation**: Init responsibilities can be documented per service without hand-run steps.
+- **Localization**: Not applicable (bootstrap automation).
 
 ### 3.2 Positive Consequences
 
@@ -58,4 +53,9 @@ Run `mc` or `kafka-topics` manually from the host.
 
 - **Confidence Rating**: High
 - **Notes**: Standard pattern in Kubernetes (InitContainers) adapted for Compose.
-- **Technical Requirements Addressed**: REQ-PRD-AUTO-01, REQ-PRD-BASE-05
+- **Technical Requirements Addressed**: REQ-PRD-AUTO-FUN-01, REQ-PRD-AUTO-MET-01
+
+## 6. Related Documents (Traceability)
+
+- **Feature PRD**: [Infrastructure Automation PRD](../prd/infra-automation-prd.md)
+- **Feature Spec**: [Infrastructure Automation Spec](../../specs/infra/automation/spec.md)

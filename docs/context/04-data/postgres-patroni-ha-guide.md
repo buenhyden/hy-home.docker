@@ -23,7 +23,7 @@ The cluster is initialized using a temporary `pg-cluster-init` container which i
 Check logs for successful SQL execution:
 
 ```bash
-docker logs pg-cluster-init
+docker compose logs pg-cluster-init
 ```
 
 > [!NOTE]
@@ -33,12 +33,11 @@ docker logs pg-cluster-init
 
 ### Network Bindings (Internal)
 
-| Service | IPv4 (Static) | Internal DNS | Ports |
+| Service | Internal DNS | Ports | Notes |
 | --- | --- | --- | --- |
-| `etcd-1` | `172.19.0.50` | `etcd-1` | `2379`, `2380` |
-| `pg-0` | `172.19.0.53` | `pg-0` | `5432` |
-| `pg-router`| `172.19.0.56` | `pg-router` | `5000`, `5001`, `8404` |
-| **Security** | `Hardware` | [Hardened] | `no-new-privileges`, `cap_drop` |
+| `etcd-1..3` | `etcd-1`, `etcd-2`, `etcd-3` | `2379`, `2380` | DCS quorum for Patroni |
+| `pg-0..2` | `pg-0`, `pg-1`, `pg-2` | `5432` | Postgres nodes (Spilo/Patroni) |
+| `pg-router`| `pg-router` | `5000`, `5001`, `8404` | HAProxy write/read + stats |
 
 ### Storage Layout
 
@@ -50,7 +49,7 @@ docker logs pg-cluster-init
 To check the current cluster leader and replication lag:
 
 ```bash
-docker exec -it pg-0 patronictl -c /home/postgres/postgres0.yml list
+docker compose exec pg-0 patronictl -c /home/postgres/postgres0.yml list
 ```
 
 ## 4. Database Routing
@@ -67,7 +66,7 @@ Traffic is balanced via HAProxy (pg-router) to ensure apps always hit the correc
 Use this command to demote the current leader and promote a replica without downtime:
 
 ```bash
-docker exec -it pg-0 patronictl -c /home/postgres/postgres0.yml switchover
+docker compose exec pg-0 patronictl -c /home/postgres/postgres0.yml switchover
 ```
 
 ### Data Re-initialization

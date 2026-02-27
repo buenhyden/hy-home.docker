@@ -1,11 +1,3 @@
----
-title: 'ADR-0009: Strict Docker Secrets Adoption'
-status: 'Accepted'
-date: '2026-02-27'
-authors: 'Security Architect'
-deciders: 'Security & DevOps Team'
----
-
 # Architecture Decision Record (ADR)
 
 ## Title: Strict Docker Secrets Adoption
@@ -31,9 +23,12 @@ Sensitive information (passwords, API tokens) is currently partially scattered a
 
 ### 3.1 Core Engineering Pillars Alignment
 
-- **Security**: Direct alignment with `[REQ-SEC-01]`.
-- **Compliance**: Hardening requirement for data privacy.
-- **Documentation**: Centralizes the source of truth for credentials.
+- **Security**: Enforces secrets as files (Docker secrets) and avoids plaintext in compose env blocks.
+- **Observability**: Reduces risk of secret leakage into logs/metrics (no env-dump patterns).
+- **Compliance**: Establishes a strict, auditable standard for local environments handling sensitive configs.
+- **Performance**: No measurable runtime cost; improves human performance by removing ambiguity.
+- **Documentation**: Makes secret sources and mount paths deterministic across all services.
+- **Localization**: Not applicable (secret handling policy).
 
 ### 3.2 Positive Consequences
 
@@ -57,4 +52,10 @@ Using tools like SOPS to encrypt .env files.
 
 - **Confidence Rating**: High
 - **Notes**: Crucial for production-readiness.
-- **Technical Requirements Addressed**: REQ-PRD-SYS-03
+- **Technical Requirements Addressed**: REQ-PRD-BASE-FUN-02, REQ-PRD-BASE-MET-02, REQ-PRD-SYS-MET-01
+
+## 6. Related Documents (Traceability)
+
+- **Feature PRD**: [Infrastructure Baseline PRD](../prd/infra-baseline-prd.md), [System Optimization PRD](../prd/system-optimization-prd.md)
+- **Feature Spec**: [Infrastructure Baseline Spec](../../specs/infra/baseline/spec.md)
+- **Related ADRs**: [ADR-0002: Secrets-First Management Policy](./adr-0002-secrets-first-management.md)

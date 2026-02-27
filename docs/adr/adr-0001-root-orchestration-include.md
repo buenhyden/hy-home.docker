@@ -1,11 +1,3 @@
----
-title: 'ADR-0001: Root Orchestration with include'
-status: 'Accepted'
-date: '2026-02-26'
-authors: 'Platform Architect'
-deciders: 'DevOps Team'
----
-
 # Architecture Decision Record (ADR)
 
 ## Title: Root Orchestration via `include`
@@ -31,10 +23,12 @@ Managing 30+ services in a single `docker-compose.yml` is unmaintainable and pro
 
 ### 3.1 Core Engineering Pillars Alignment
 
-- **Security**: Ensures consistent network and volume naming across included files.
-- **Observability**: Simplifies mapping of service definitions to infrastructure tiers.
-- **Performance**: No measurable overhead for inclusion at runtime.
-- **Documentation**: Maps directly to the `infra/` directory structure.
+- **Security**: Centralizes shared primitives (networks, secrets, common templates) so included stacks cannot silently diverge from security baselines.
+- **Observability**: Makes it easier to enforce and audit common logging/labels by routing all stacks through a single root entrypoint.
+- **Compliance**: Supports policy enforcement at one layer (root compose), reducing “hidden overrides” in per-service compose files.
+- **Performance**: No runtime performance impact; improves operational performance by reducing merge conflicts and human error.
+- **Documentation**: Mirrors the tiered `infra/**` layout and keeps the root entrypoint as the single canonical “what runs” registry.
+- **Localization**: Not applicable (infrastructure orchestration policy).
 
 ### 3.2 Positive Consequences
 
@@ -58,4 +52,10 @@ Maintain everything in one file.
 
 - **Confidence Rating**: High
 - **Notes**: Standard pattern for large modern Compose projects.
-- **Technical Requirements Addressed**: REQ-PRD-BASE-01
+- **Technical Requirements Addressed**: REQ-PRD-BASE-FUN-01, REQ-PRD-SYS-FUN-04
+
+## 6. Related Documents (Traceability)
+
+- **Feature PRD**: [Infrastructure Baseline PRD](../prd/infra-baseline-prd.md), [System Optimization PRD](../prd/system-optimization-prd.md)
+- **Feature Spec**: [Infrastructure Baseline Spec](../../specs/infra/baseline/spec.md), [System Optimization Spec](../../specs/infra/system-optimization/spec.md)
+- **Architecture Reference (ARD)**: [Global System Architecture ARD](../ard/system-architecture-ard.md)

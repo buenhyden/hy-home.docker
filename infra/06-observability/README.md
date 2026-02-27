@@ -4,22 +4,22 @@ This category manages the LGTM (Loki, Grafana, Tempo, Mimir/Prometheus) stack fo
 
 ## Stack Overview
 
-| Service | Image | Role | IP |
-| :--- | :--- | :--- | :--- |
-| `prometheus` | `prometheus:v3.9.0` | Metrics Storage | `172.19.0.30` |
-| `loki` | `loki:3.6.6` | Log Storage | `172.19.0.31` |
-| `tempo` | `tempo:2.10.1` | Trace Storage | `172.19.0.32` |
-| `grafana` | `grafana:12.3.3` | Visualization | `172.19.0.33` |
-| `alloy` | `alloy:v1.13.1` | Telemetry Collector| `172.19.0.34` |
-| `alertmanager`| `alertmanager:v0.30.0`| Alert Routing | `172.19.0.36` |
-| `pushgateway` | `pushgateway:v1.11.2`| Ephemeral Metrics | `172.19.0.37` |
-| `cadvisor` | `cadvisor:v0.55.1` | Container Metrics | `172.19.0.35` |
+| Service | Image | Role |
+| :--- | :--- | :--- |
+| `prometheus` | `prom/prometheus:v3.9.0` | Metrics storage |
+| `loki` | `grafana/loki:3.6.6` | Log storage (S3 backend via MinIO) |
+| `tempo` | `grafana/tempo:2.10.1` | Trace storage (S3 backend via MinIO) |
+| `grafana` | `grafana/grafana:12.3.3` | Dashboards / UI |
+| `alloy` | `grafana/alloy:v1.13.1` | Telemetry collector / OTLP endpoint |
+| `alertmanager`| `prom/alertmanager:v0.30.0`| Alert routing |
+| `pushgateway` | `prom/pushgateway:v1.11.2`| Ephemeral metrics |
+| `cadvisor` | `gcr.io/cadvisor/cadvisor:v0.55.1` | Container metrics |
 
 ## Dependencies
 
-- **Storage**: Objects are backed by MinIO (`tfstate` bucket for state, etc.) and local volumes.
-- **Network**: All services on `infra_net` with static IP assignments.
-- **Auth**: SSO via Keycloak for Grafana and potentially Prometheus/Alertmanager.
+- **Storage**: Loki and Tempo use MinIO (S3) buckets; Prometheus/Grafana/etc. persist to bind-mounted volumes under `${DEFAULT_OBSERVABILITY_DIR}`.
+- **Network**: All services communicate via Docker DNS on `infra_net` (no static IP assumptions).
+- **Auth**: Grafana is protected via Traefik SSO middleware and integrates with Keycloak (generic OAuth).
 
 ## File Map
 

@@ -1,11 +1,3 @@
----
-title: 'ADR-0006: External project_net Convention'
-status: 'Accepted'
-date: '2026-02-26'
-authors: 'Network Architect'
-deciders: 'Platform Team'
----
-
 # Architecture Decision Record (ADR)
 
 ## Title: External `project_net` Convention
@@ -31,10 +23,12 @@ Applications often reside in separate repositories from the core infrastructure.
 
 ### 3.1 Core Engineering Pillars Alignment
 
-- **Architecture**: Cleanly separates infrastructure from application lifecycle.
-- **Security**: Aligns with network isolation principles.
-- **Performance**: Native bridge performance over port-forwarding.
-- **Documentation**: Standardized naming reduces documentation overhead for individual projects.
+- **Security**: Preserves isolation by avoiding “expose everything on localhost” and limiting cross-repo connectivity to a deliberate shared network.
+- **Observability**: Prevents accidental access to internal observability backends by default (external apps must opt-in).
+- **Compliance**: Provides a consistent, reviewable pattern for cross-repo integration (no ad-hoc port exposures).
+- **Performance**: Avoids port-forward overhead and reduces host port collisions.
+- **Documentation**: Standardizes external connectivity instructions across repos (one network name, DNS-based access).
+- **Localization**: Not applicable (network convention).
 
 ### 3.2 Positive Consequences
 
@@ -58,4 +52,10 @@ Connect all external apps directly to the internal infra network.
 
 - **Confidence Rating**: High
 - **Notes**: Common pattern for platform-as-a-service styles.
-- **Technical Requirements Addressed**: REQ-PRD-AUTO-01, REQ-PRD-BASE-06
+- **Technical Requirements Addressed**: REQ-PRD-AUTO-FUN-03
+
+## 6. Related Documents (Traceability)
+
+- **Feature PRD**: [Infrastructure Automation PRD](../prd/infra-automation-prd.md)
+- **Feature Spec**: [Infrastructure Automation Spec](../../specs/infra/automation/spec.md)
+- **Repository Blueprint**: [ARCHITECTURE.md](../../ARCHITECTURE.md)

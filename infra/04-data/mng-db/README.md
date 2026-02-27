@@ -13,11 +13,11 @@ This stack provides shared database services for internal infrastructure compone
 
 ## Networking
 
-| Service | IP | External URL |
-| :--- | :--- | :--- |
-| `mng-valkey` | `172.19.0.70`| - |
-| `redisinsight`| `172.19.0.68`| `redisinsight.${DEFAULT_URL}` |
-| `mng-pg` | `172.19.0.72`| - (Port `${POSTGRES_PORT}`) |
+- **Internal DNS (infra_net)**:
+  - Postgres: `mng-pg:${POSTGRES_PORT:-5432}`
+  - Valkey: `mng-valkey:${VALKEY_PORT:-6379}`
+- **External URL (Traefik)**:
+  - RedisInsight: `https://redisinsight.${DEFAULT_URL}`
 
 ## Persistence
 
@@ -32,7 +32,7 @@ This stack provides shared database services for internal infrastructure compone
 
 | Variable           | Description           | Value                  |
 | :----------------- | :-------------------- | :--------------------- |
-| `POSTGRES_PASSWORD`| Root DB Password      | `${POSTGRES_PASSWORD}` |
+| `POSTGRES_PASSWORD_FILE`| Root DB Password file | `/run/secrets/mng_postgres_password` |
 
 ## File Map
 

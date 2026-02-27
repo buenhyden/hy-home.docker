@@ -4,16 +4,19 @@ n8n is a low-code workflow automation tool that allows you to connect any app.
 
 ## Services
 
-| Service | Image | Role | IP | Resources |
-| :--- | :--- | :--- | :--- | :--- |
-| `n8n` | `n8nio/n8n:2.6.2` | Main Engine | `172.19.0.14` | 1.0 CPU / 2G |
-| `worker`| `n8nio/n8n:2.6.2` | Job Worker | `172.19.0.17` | 1.0 CPU / 2G |
-| `runner`| `n8nio/runners:2.6.2` | Task Runner | `172.19.0.74` | 0.5 CPU / 1G |
-| `valkey`| `valkey:9.0.2` | Queue DB | `172.19.0.15` | 2.0 CPU / 1G |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `n8n` | `n8nio/n8n:2.6.2` | Main engine | 1.0 CPU / 2G |
+| `worker`| `n8nio/n8n:2.6.2` | Job worker | 1.0 CPU / 2G |
+| `runner`| `n8nio/runners:2.6.2` | Task runner | 0.5 CPU / 1G |
+| `valkey`| `valkey:9.0.2` | Queue DB | 2.0 CPU / 1G |
 
 ## Networking
 
 Exposed via Traefik at `n8n.${DEFAULT_URL}`.
+
+> [!NOTE]
+> `n8n` is currently not enabled in the root `docker-compose.yml` by default. Enable it by uncommenting the `infra/07-workflow/n8n/docker-compose.yml` include entry.
 
 ## Persistence
 

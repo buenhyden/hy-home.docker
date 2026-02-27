@@ -1,11 +1,3 @@
----
-title: 'ADR-0011: Multi-Stage Build Standard'
-status: 'Accepted'
-date: '2026-02-27'
-authors: 'Build Engineer'
-deciders: 'Platform Team'
----
-
 # Architecture Decision Record (ADR)
 
 ## Title: Multi-Stage Build Standard
@@ -31,9 +23,12 @@ Custom Docker images for services were consistently using mono-stage builds, inc
 
 ### 3.1 Core Engineering Pillars Alignment
 
-- **Security**: Aligns with binary hardening standards.
-- **Performance**: Optimizes image layers and startup weight.
-- **Documentation**: Clearly defines the build lifecycle for custom services.
+- **Security**: Reduces shipped attack surface (no compilers/build tooling in runtime layers).
+- **Observability**: Not directly impacted; smaller images can indirectly reduce deployment friction.
+- **Compliance**: Supports secure build practices and reproducible artifacts.
+- **Performance**: Smaller images reduce pull time and storage footprint.
+- **Documentation**: Establishes an explicit Dockerfile pattern for any custom images in this repo.
+- **Localization**: Not applicable (build standard).
 
 ### 3.2 Positive Consequences
 
@@ -57,4 +52,8 @@ Run `apt-get clean` and remove packages in the same layer.
 
 - **Confidence Rating**: High
 - **Notes**: Best practice for modern containerized development.
-- **Technical Requirements Addressed**: REQ-PRD-SYS-04
+- **Technical Requirements Addressed**: REQ-PRD-BASE-MET-04, REQ-PRD-SYS-MET-01
+
+## 6. Related Documents (Traceability)
+
+- **Feature PRD**: [Infrastructure Baseline PRD](../prd/infra-baseline-prd.md), [System Optimization PRD](../prd/system-optimization-prd.md)

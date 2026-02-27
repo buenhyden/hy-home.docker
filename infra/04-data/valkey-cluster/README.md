@@ -4,11 +4,11 @@ A high-performance, 6-node distributed Valkey (Redis-compatible) cluster.
 
 ## Services
 
-| Service | Image | Role | Resources | IP Range |
-| :--- | :--- | :--- | :--- | :--- |
-| `valkey-node-0..5` | `valkey/valkey:9.0.2-alpine`| Cluster Nodes | 0.5 CPU / 512M | `172.19.0.60..65`|
-| `valkey-init` | `valkey/valkey:9.0.2-alpine`| Setup Assistant | 128MB RAM | `172.19.0.66` |
-| `exporter` | `redis_exporter:v1.80.1` | Metrics | 128MB RAM | `172.19.0.67` |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `valkey-node-0..5` | `valkey/valkey:9.0.2-alpine`| Cluster nodes | 0.5 CPU / 512M |
+| `valkey-cluster-init` | `valkey/valkey:9.0.2-alpine`| One-shot cluster bootstrap | 128MB RAM |
+| `valkey-exporter` | `oliver006/redis_exporter:v1.80.1` | Metrics exporter | 128MB RAM |
 
 ## Networking
 

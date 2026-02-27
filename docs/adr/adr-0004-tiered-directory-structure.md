@@ -1,11 +1,3 @@
----
-title: 'ADR-0004: Tiered Directory Structure'
-status: 'Accepted'
-date: '2026-02-26'
-authors: 'Platform Lead'
-deciders: 'DevOps Team'
----
-
 # Architecture Decision Record (ADR)
 
 ## Title: Tiered Directory Structure
@@ -30,8 +22,12 @@ A flat directory structure for infrastructure service definitions becomes unmana
 
 ### 3.1 Core Engineering Pillars Alignment
 
-- **Architecture**: Reflects the actual layered design of the system.
-- **Documentation**: Simplifies tree-based documentation of the repository.
+- **Security**: Improves reviewability by making “where a service lives” predictable, reducing accidental cross-tier coupling.
+- **Observability**: Clarifies where tier-specific telemetry configs live (e.g., `06-observability`).
+- **Compliance**: Supports consistent governance boundaries (what changes affect which tier).
+- **Performance**: Reduces operational overhead by improving navigation and dependency clarity.
+- **Documentation**: Aligns directory layout with ARD/PRD references and the layered service map in `ARCHITECTURE.md`.
+- **Localization**: Not applicable (repository structure).
 
 ### 3.2 Positive Consequences
 
@@ -55,4 +51,10 @@ Keep all folders at the top level of `infra/`.
 
 - **Confidence Rating**: High
 - **Notes**: Proven pattern for complex infrastructure-as-code repos.
-- **Technical Requirements Addressed**: REQ-PRD-BASE-04
+- **Technical Requirements Addressed**: REQ-PRD-FUN-01
+
+## 6. Related Documents (Traceability)
+
+- **Feature PRD**: [System Architecture Standards PRD](../prd/system-architecture-prd.md)
+- **Architecture Reference (ARD)**: [Global System Architecture ARD](../ard/system-architecture-ard.md)
+- **Repository Blueprint**: [ARCHITECTURE.md](../../ARCHITECTURE.md)

@@ -1,17 +1,9 @@
----
-title: '[ARD-ARCH-01] Global System Architecture'
-status: 'Approved'
-owner: 'Platform Architect'
-prd_reference: '[system-architecture-prd.md](../prd/system-architecture-prd.md)'
-adr_references: '[adr-0003](../adr/adr-0003-spec-driven-development.md), [adr-0004](../adr/adr-0004-tiered-directory-structure.md)'
----
+# Global System Architecture Architecture Reference Document (ARD)
 
-# [ARD-ARCH-01] Global System Architecture Reference Document
-
-> **Status**: Approved
-> **Owner**: Platform Architect
-> **PRD Reference**: [system-architecture-prd.md](../prd/system-architecture-prd.md)
-> **ADR References**: [adr-0003](../adr/adr-0003-spec-driven-development.md), [adr-0004](../adr/adr-0004-tiered-directory-structure.md)
+- **Status**: Approved
+- **Owner**: Platform Architect
+- **PRD Reference**: [System Architecture Standards PRD](../prd/system-architecture-prd.md)
+- **ADR References**: [ADR-0003](../adr/adr-0003-spec-driven-development.md), [ADR-0004](../adr/adr-0004-tiered-directory-structure.md), [ADR-0001](../adr/adr-0001-root-orchestration-include.md)
 
 ---
 
@@ -72,7 +64,7 @@ C4Container
 
 - **Authentication/Authorization**: Centralized Keycloak OIDC for infrastructure dashboards.
 - **Data Protection**: Docker Secrets (file-based) mounted at `/run/secrets/`. No environment variable injection for sensitive data.
-- **Rootless Operation**: Services MUST run as non-root (UID 1000:1000) where possible.
+- **Rootless Operation**: Services SHOULD run as non-root where feasible; exceptions (e.g., host socket readers) must be explicitly documented.
 - **Isolation**: `security_opt: [no-new-privileges:true]`, `cap_drop: [ALL]`.
 
 ## 7. Infrastructure & Deployment

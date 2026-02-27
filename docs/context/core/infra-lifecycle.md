@@ -4,7 +4,7 @@ This document defines the lifecycle operations for managing the entire `infra` d
 
 ## 1. Startup Order
 
-While `docker-compose.yml` uses `#include` to load the stack, certain systems have strict dependencies. Services are chained using `depends_on`, but if you need to bring up the stack manually in phases:
+While the root `docker-compose.yml` uses `include` to load the stack, certain systems have strict dependencies. Services are chained using `depends_on`, but if you need to bring up the stack manually in phases:
 
 1. **Security & Auth**: Keycloak must be up before Traefik can authenticate APIs. (`02-auth`)
 2. **Data Tier**: MinIO and PostgreSQL must be up next. The observability stack depends critically on `minio` and auth. (`04-data`)
@@ -14,7 +14,11 @@ While `docker-compose.yml` uses `#include` to load the stack, certain systems ha
 To launch the entire stack:
 
 ```bash
-docker compose -f docker-compose.yml --profile default up -d
+# Uses `COMPOSE_PROFILES` from `.env` (default in `.env.example` is `core,data,obs`)
+docker compose up -d
+
+# Or explicitly:
+COMPOSE_PROFILES=core,data,obs docker compose up -d
 ```
 
 ## 2. Graceful Shutdown
@@ -44,5 +48,5 @@ docker compose -f docker-compose.yml up -d --no-deps --build <service_name>
 Occasionally, `infra_net` might conflict with host routes.
 
 1. `docker network rm infra_net`
-2. Update the subnet inside `docker-compose.yml` `ipam` settings.
-3. Bring the stack back up. This requires an IP refresh for static IPs defined in sub-compose files.
+2. Update the subnet/gateway via `.env` (`INFRA_SUBNET`, `INFRA_GATEWAY`) or adjust the root `docker-compose.yml` IPAM defaults.
+3. Bring the stack back up. No static IP refresh is required; service discovery uses Docker DNS.

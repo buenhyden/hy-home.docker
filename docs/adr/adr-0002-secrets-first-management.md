@@ -1,11 +1,3 @@
----
-title: 'ADR-0002: Secrets-First Management Policy'
-status: 'Accepted'
-date: '2026-02-26'
-authors: 'Security Engineer'
-deciders: 'DevOps Team'
----
-
 # Architecture Decision Record (ADR)
 
 ## Title: Secrets-First Management Policy
@@ -31,9 +23,12 @@ Hardcoding seeds, passwords, and API keys in `.env` files or directly in Compose
 
 ### 3.1 Core Engineering Pillars Alignment
 
-- **Security**: Aligns with `[REQ-SEC-01]` by ensuring zero-plaintext leaks in the host environment.
-- **Observability**: Prevents accidental logging of sensitive data via environment dumps.
-- **Performance**: High (file reads are negligible for secrets).
+- **Security**: Prevents plaintext secrets from living in compose files or process environments (`docker inspect`, crash dumps, shell history).
+- **Observability**: Reduces the likelihood of secret leakage through log scrapes or environment-dump troubleshooting.
+- **Compliance**: Establishes a consistent secret handling policy required for audits (one secret = one file, mounted at runtime).
+- **Performance**: Secret reads are trivial; no measurable overhead.
+- **Documentation**: Standardizes how all docs refer to secrets (`secrets/**/*.txt` + `/run/secrets/*`).
+- **Localization**: Not applicable (secret handling policy).
 
 ### 3.2 Positive Consequences
 
@@ -57,4 +52,10 @@ The standard Docker Compose approach.
 
 - **Confidence Rating**: High
 - **Notes**: Industry standard for secure container orchestration.
-- **Technical Requirements Addressed**: REQ-PRD-BASE-03
+- **Technical Requirements Addressed**: REQ-PRD-BASE-FUN-02, REQ-PRD-BASE-MET-02
+
+## 6. Related Documents (Traceability)
+
+- **Feature PRD**: [Infrastructure Baseline PRD](../prd/infra-baseline-prd.md)
+- **Feature Spec**: [Infrastructure Baseline Spec](../../specs/infra/baseline/spec.md)
+- **Related ADRs**: [ADR-0009: Strict Docker Secrets Adoption](./adr-0009-strict-docker-secrets.md)

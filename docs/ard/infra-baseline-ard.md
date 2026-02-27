@@ -1,17 +1,9 @@
----
-title: '[ARD-BASE-01] Infrastructure Baseline Reference'
-status: 'Approved'
-owner: 'Platform Architect'
-prd_reference: '../prd/infra-baseline-prd.md'
-adr_references: ['../adr/adr-0001-root-orchestration-include.md']
----
+# Infrastructure Baseline Architecture Reference Document (ARD)
 
-# Architecture Reference Document (ARD)
-
-> **Status**: Approved
-> **Owner**: Platform Architect
-> **PRD Reference**: [[REQ-PRD-BASE-01] Infrastructure Baseline PRD](../prd/infra-baseline-prd.md)
-> **ADR References**: [ADR-0001](../adr/adr-0001-root-orchestration-include.md) to [ADR-0004](../adr/adr-0004-tiered-directory-structure.md)
+- **Status**: Approved
+- **Owner**: Platform Architect
+- **PRD Reference**: [Infrastructure Baseline PRD](../prd/infra-baseline-prd.md)
+- **ADR References**: [ADR-0001](../adr/adr-0001-root-orchestration-include.md), [ADR-0002](../adr/adr-0002-secrets-first-management.md), [ADR-0004](../adr/adr-0004-tiered-directory-structure.md), [ADR-0007](../adr/adr-0007-mandatory-resource-limits.md), [ADR-0008](../adr/adr-0008-removing-static-docker-ips.md), [ADR-0009](../adr/adr-0009-strict-docker-secrets.md)
 
 ---
 
@@ -38,7 +30,7 @@ C4Context
     Rel(infra, docker, "Runs on")
 ```
 
-## 4. Component Architecture & Tech Stack Decisions
+## 4. Architecture & Tech Stack Decisions (Checklist)
 
 ### 4.1 Component Architecture
 
@@ -56,9 +48,11 @@ C4Container
 ### 4.2 Technology Stack
 
 - **Orchestration**: Docker Compose v2.20+ (`include` / `extends`)
-- **Gateway/Ingress**: Traefik 3.x
-- **Core Data**: PostgreSQL 17 (Patroni), Kafka 3.9+ (KRaft), MinIO (S3 compatible)
-- **Init System**: `tini` (Docker-integrated `init: true`)
+- **Gateway/Ingress**: Traefik
+- **Identity**: Keycloak + OAuth2 Proxy (SSO middleware)
+- **Core Data**: PostgreSQL cluster (Spilo/Patroni), Valkey cluster, MinIO (S3), OpenSearch, Qdrant
+- **Messaging**: Kafka (KRaft mode) + Schema Registry (Confluent)
+- **Init System**: Docker-integrated `init: true` (tini)
 
 ## 5. Data Architecture
 
@@ -69,19 +63,19 @@ C4Container
 ## 6. Security & Compliance
 
 - **Authentication**: Centralized OIDC via Keycloak.
-- **Secrets**: 100% file-based secrets in `secrets/*.txt` via Docker Secret API.
+- **Secrets**: File-based secrets in `secrets/**/*.txt` mounted via Docker secrets (`/run/secrets/*`).
 - **Hardening**: Global enforcement of `cap_drop: [ALL]` and `no-new-privileges: true`.
 
 ## 7. Infrastructure & Deployment
 
 - **Deployment Hub**: Local Linux/macOS host with Docker Engine.
 - **Orchestration**: Root `docker-compose.yml` aggregating sub-stacks via `include`.
-- **CI/CD Pipeline**: Pre-commit hooks for YAML and Markdown validation.
+- **Default Boot**: `.env.example` sets `COMPOSE_PROFILES="core,data,obs"` so `docker compose up -d` starts a standard baseline stack.
 
 ## 8. Non-Functional Requirements (NFRs)
 
 - **Availability**: 3-node HA clusters for critical data path (Kafka/Postgres).
-- **Performance**: Bootstrap time SHALL be < 10 mins on standard SSD hardware.
+- **Performance**: Bootstrap time target is < 10 mins on standard SSD hardware (see PRD metrics).
 - **Scalability**: Config inheritance allows adding tiers without modifying root logic.
 
 ## 9. Architectural Principles, Constraints & Trade-offs

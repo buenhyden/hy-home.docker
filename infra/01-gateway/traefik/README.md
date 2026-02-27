@@ -12,12 +12,12 @@ Traefik is the primary reverse proxy and load balancer for the Hy-Home infrastru
 
 Traefik binds to the host's ports (configurable via `.env`) and routes traffic via `infra_net`.
 
-| Local IP      | Host Port                        | Protocol | Purpose                  |
-| :------------ | :------------------------------- | :------- | :----------------------- |
-| `172.19.0.13` | `${HTTP_HOST_PORT}` (80)         | HTTP     | Forced redirect to HTTPS |
-| `172.19.0.13` | `${HTTPS_HOST_PORT}` (443)       | HTTPS    | Primary entrypoint       |
-| `172.19.0.13` | `${TRAEFIK_DASHBOARD_HOST_PORT}`| Dashboard| Traefik monitoring UI    |
-| `172.19.0.13` | `${TRAEFIK_METRICS_HOST_PORT}`  | Metrics  | Prometheus scraping      |
+| Host Bind | Host Port                         | Protocol | Purpose                  |
+| :-------- | :-------------------------------- | :------- | :----------------------- |
+| `0.0.0.0` | `${HTTP_HOST_PORT}` (80)          | HTTP     | Forced redirect to HTTPS |
+| `0.0.0.0` | `${HTTPS_HOST_PORT}` (443)        | HTTPS    | Primary entrypoint       |
+| `0.0.0.0` | `${TRAEFIK_DASHBOARD_HOST_PORT}`  | Dashboard| Traefik monitoring UI    |
+| `0.0.0.0` | `${TRAEFIK_METRICS_HOST_PORT}`    | Metrics  | Prometheus scraping      |
 
 ## Persistence
 
@@ -40,10 +40,10 @@ Traefik maintains state for certificates and dynamic configurations.
 
 ### Dashboard Security
 
-The Traefik dashboard is protected by **basic auth** (credentials in `secrets/traefik_auth.txt`).
+The Traefik dashboard is protected by **basic auth** (Docker secret file mounted at `/run/secrets/traefik_basicauth_password`).
 
-- **Endpoint**: `https://traefik.${DEFAULT_URL}`
-- **Auth**: `traefik-auth` middleware (applied via labels).
+- **Endpoint**: `https://dashboard.${DEFAULT_URL}`
+- **Auth**: `dashboard-auth@file` middleware (see `dynamic/middleware.yml`).
 
 ## Integration Guides
 
@@ -75,8 +75,8 @@ labels:
 | -------------------------- | ------------------------------------------ |
 | `docker-compose.yml`       | Service definition and host port bindings. |
 | `config/traefik.yml`       | Static configuration (entrypoints, logs).  |
-| `config/dynamic_conf.yml`  | Dynamic config (SSO middleware, manual TLS)|
-| `config/acme.json`         | Auto-generated Let's Encrypt certificates. |
+| `dynamic/middleware.yml`   | Dynamic config (SSO + basic auth middleware). |
+| `dynamic/tls.yaml`         | Local TLS configuration. |
 | `README.md`                | Overview and routing guides.               |
 
 ## Documentation References

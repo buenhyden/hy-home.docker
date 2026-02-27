@@ -30,8 +30,13 @@ cp .env.example .env
 # 2) 로컬 TLS 인증서 생성 (최초 1회)
 bash scripts/generate-local-certs.sh
 
-# 3) 사전 점검
-bash scripts/preflight-compose.sh
+# 3) Compose 정적 검증 (Docker 데몬 없이도 가능)
+# - `.env.example` 기반으로 `docker compose config`가 0 exit인지 확인
+# - (옵션) missing secrets 파일을 임시 생성할 수 있음
+bash scripts/validate-docker-compose.sh
+
+# (옵션) 런타임 사전 점검 (Docker 데몬 필요)
+# bash scripts/preflight-compose.sh
 
 # 4) 스택 실행
 docker compose up -d
@@ -51,11 +56,12 @@ docker compose --profile core --profile data up -d
 | Profile | Description | Included Services |
 | :--- | :--- | :--- |
 | `core` | 핵심 관문 및 인증 | Traefik, Keycloak, OAuth2-Proxy |
-| `data` | 공통 데이터 저장소 | Management DB (PG+RE), Databases cluster (Valkey, PG) |
-| `obs` | 관측성 (LGTM) | Grafana, Loki, Tempo, Prometheus, etc. |
+| `data` | 공통 데이터 저장소 | mng-db, postgresql-cluster, valkey-cluster, minio, opensearch, qdrant |
+| `obs` | 관측성 (LGTM) | Grafana, Loki, Tempo, Prometheus, Alloy, Alertmanager, etc. |
 | `messaging` | 메시징 인프라 | Kafka Stack |
-| `workflow` | 자동화 엔진 | Airflow, n8n |
+| `workflow` | 자동화 엔진 | Airflow (n8n은 기본 비활성/주석 처리) |
 | `ai` | 로컬 LLM 환경 | Ollama, Open-webui, Qdrant |
+| `tooling` | QA/DevOps 도구 | SonarQube |
 
 ```bash
 docker compose --profile obs up -d
@@ -79,6 +85,7 @@ docker compose down
 
 ## 구성 정책 요약
 
+- **Root-only**: 서비스 폴더의 `docker-compose.yml` 단독 실행은 지원하지 않으며, 루트 `docker-compose.yml`에서만 조립/실행합니다. (Standalone로 명시된 스택은 예외)
 - Host 포트는 `.env`/`.env.example`의 `*_HOST_PORT`로 관리
 - 컨테이너 기본 포트는 `*_PORT`로 관리하고, Compose에는 `${VAR:-default}` 형태로 기본값 명시
 - 비밀번호/토큰은 환경변수 대신 `secrets/**/*.txt` 파일 + Docker secrets로 주입

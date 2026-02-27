@@ -1,11 +1,3 @@
----
-title: 'ADR-0003: Spec-Driven Development (SDD)'
-status: 'Accepted'
-date: '2026-02-26'
-authors: 'Architecture Lead'
-deciders: 'Engineering Team'
----
-
 # Architecture Decision Record (ADR)
 
 ## Title: Spec-Driven Development (SDD)
@@ -31,9 +23,12 @@ Ad-hoc infrastructure changes often lack formal documentation, verification plan
 
 ### 3.1 Core Engineering Pillars Alignment
 
-- **Documentation**: Primary enforcer of the Documentation Pillar.
-- **Performance**: Encourages performance-first thinking during the design phase.
-- **Observability**: Mandates identifying telemetry requirements before building.
+- **Security**: Forces explicit review of secret handling, ports, and privilege requirements before implementation.
+- **Observability**: Requires verification/telemetry thinking up-front, reducing “silent” drift between runtime and docs.
+- **Compliance**: Improves auditability by ensuring requirements → spec → implementation traceability.
+- **Performance**: Encourages performance constraints and verification to be captured before changes ship.
+- **Documentation**: Establishes “NO SPEC, NO CODE” as the primary drift-prevention mechanism.
+- **Localization**: Not applicable (process governance).
 
 ### 3.2 Positive Consequences
 
@@ -57,4 +52,10 @@ Write documentation after the code is verified.
 
 - **Confidence Rating**: High
 - **Notes**: Critical for maintaining consistency in AI-augmented codebases.
-- **Technical Requirements Addressed**: REQ-PRD-BASE-10
+- **Technical Requirements Addressed**: REQ-PRD-FUN-02, REQ-PRD-MET-02
+
+## 6. Related Documents (Traceability)
+
+- **Feature PRD**: [System Architecture Standards PRD](../prd/system-architecture-prd.md)
+- **Architecture Reference (ARD)**: [Global System Architecture ARD](../ard/system-architecture-ard.md)
+- **Specs**: [Infra Specs Index](../../specs/infra/README.md)

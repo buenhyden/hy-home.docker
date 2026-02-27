@@ -1,11 +1,3 @@
----
-title: 'ADR-0007: Mandatory Resource Limits'
-status: 'Accepted'
-date: '2026-02-26'
-authors: 'Site Reliability Engineer'
-deciders: 'DevOps Team'
----
-
 # Architecture Decision Record (ADR)
 
 ## Title: Mandatory Resource Limits
@@ -31,9 +23,12 @@ Local workstations often freeze or experience "thrashing" when 20+ containers st
 
 ### 3.1 Core Engineering Pillars Alignment
 
-- **Performance**: Prevents noisy neighbor effects on local dev machines.
-- **Observability**: Resource limits provide a baseline for alerting.
-- **Scalability**: Ensures the stack can grow without unpredictable crashes.
+- **Security**: Reduces “runaway container” blast radius and supports safer multi-tenant local hosts.
+- **Observability**: Makes resource usage expectations explicit and measurable (limits/reservations become the baseline for debugging).
+- **Compliance**: Standardizes operational constraints for all long-running services (auditable configuration).
+- **Performance**: Prevents noisy-neighbor effects and host thrashing during parallel startups.
+- **Documentation**: Ensures resource expectations are documented in code (compose) rather than tribal knowledge.
+- **Localization**: Not applicable (runtime constraints).
 
 ### 3.2 Positive Consequences
 
@@ -57,4 +52,10 @@ Let Docker and the OS handle allocation dynamically.
 
 - **Confidence Rating**: High
 - **Notes**: Industry standard for reliable container deployments.
-- **Technical Requirements Addressed**: REQ-PRD-SYS-01, REQ-PRD-BASE-07
+- **Technical Requirements Addressed**: REQ-PRD-BASE-MET-03, REQ-PRD-BASE-FUN-08
+
+## 6. Related Documents (Traceability)
+
+- **Feature PRD**: [Infrastructure Baseline PRD](../prd/infra-baseline-prd.md)
+- **Feature Spec**: [Infrastructure Baseline Spec](../../specs/infra/baseline/spec.md)
+- **Related Specs**: [System Optimization Spec](../../specs/infra/system-optimization/spec.md)

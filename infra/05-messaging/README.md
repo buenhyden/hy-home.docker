@@ -6,20 +6,20 @@ This category manages message brokers, event streaming, and real-time data proce
 
 | Service  | Profile | Path        | Purpose                                |
 | -------- | ------- | ----------- | -------------------------------------- |
-| Kafka    | (core)  | `./kafka`   | Distributed event streaming platform   |
+| Kafka    | `messaging`  | `./kafka`   | Distributed event streaming platform   |
 | ksqlDB   | `ksql`  | `./ksql`    | Streaming SQL engine for Kafka         |
 | RabbitMQ | (n/a)   | `./rabbitmq`| Optional AMQP broker (Placeholder)      |
 
 ## Dependencies
 
-- **Zookeeper**: Kafka uses the internal Zookeeper (or KRaft mode if enabled).
-- **Dashboard**: Kafka UI is available at `kafka-ui.${DEFAULT_URL}`.
+- **KRaft**: Kafka runs in KRaft mode (no ZooKeeper in the root-included stack).
+- **Dashboard**: Kafka UI is available at `kafbat-ui.${DEFAULT_URL}` (Traefik + SSO middleware).
 
 ## File Map
 
 | Path         | Description                            |
 | ------------ | -------------------------------------- |
-| `kafka/`     | Kafka, Zookeeper, and UI stack.        |
+| `kafka/`     | Kafka (KRaft) + Schema Registry + UI stack. |
 | `ksql/`      | ksqlDB server and CLI.                 |
 | `rabbitmq/`  | Placeholder for RabbitMQ configuration.|
 | `README.md`  | Category overview.                     |

@@ -4,11 +4,11 @@ OpenSearch is a distributed search and analytics engine.
 
 ## Services
 
-| Service | Image | Role | Resources | IP |
-| :--- | :--- | :--- | :--- | :--- |
-| `opensearch` | `build: ./Dockerfile` | Search Engine | 1GB Heap / 1GB SHM | `172.19.0.44` |
-| `dashboards` | `opensearchproject/...:3.4.0` | Analytics GUI | Default | `172.19.0.47` |
-| `exporter` | `elasticsearch-exporter:v1.10.0`| Metrics | Default | `172.19.0.48` |
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `opensearch` | `build: ./Dockerfile` | Search engine | 1GB heap / 1GB shm |
+| `dashboards` | `opensearchproject/opensearch-dashboards:3.4.0` | Analytics GUI | Default |
+| `exporter` | `prometheuscommunity/elasticsearch-exporter:v1.10.0`| Metrics exporter | Default |
 
 ## Networking
 
@@ -25,7 +25,6 @@ OpenSearch is a distributed search and analytics engine.
 
 - **Auth**: Uses `opensearch_admin_password` and `opensearch_dashboard_password` secrets.
 - **Plugins**: Custom build includes `analysis-nori` and `repository-s3`.
-s/opensearch_auth.txt`).
 - **Cluster**: Single-node configuration for development (`discovery.type=single-node`).
 
 ## File Map

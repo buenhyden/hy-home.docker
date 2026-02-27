@@ -1,17 +1,9 @@
----
-title: '[ARD-AUTO-01] Scaling & Autonomous Patterns'
-status: 'Approved'
-owner: 'Platform Architect'
-prd_reference: '[infra-automation-prd.md](../prd/infra-automation-prd.md)'
-adr_references: ['[adr-0005](../adr/adr-0005-sidecar-resource-initialization.md)']
----
+# Infrastructure Automation Architecture Reference Document (ARD)
 
-# Architecture Reference Document (ARD)
-
-> **Status**: Approved
-> **Owner**: Platform Architect
-> **PRD Reference**: [[REQ-PRD-AUTO-01] Infrastructure Automation PRD](../prd/infra-automation-prd.md)
-> **ADR References**: [ADR-0005](../adr/adr-0005-sidecar-resource-initialization.md)
+- **Status**: Approved
+- **Owner**: Platform Architect
+- **PRD Reference**: [Infrastructure Automation PRD](../prd/infra-automation-prd.md)
+- **ADR References**: [ADR-0005](../adr/adr-0005-sidecar-resource-initialization.md), [ADR-0006](../adr/adr-0006-project-net-external-network.md)
 
 ---
 
@@ -38,12 +30,12 @@ C4Context
     Rel(app_repo, main_infra, "Connects via project_net bridge")
 ```
 
-## 4. Component Architecture & Tech Stack Decisions
+## 4. Architecture & Tech Stack Decisions (Checklist)
 
 ### 4.1 Component Architecture
 
-- **Initialization Layer**: Ephemeral containers (`os-init`, `k-init`) that exit with code 0 after task completion.
-- **Bridge Network**: `project_net` external bridge serving as the primary integration point for external microservices.
+- **Initialization Layer (one-shot services)**: Ephemeral containers that run idempotent bootstrap tasks and then exit (e.g., `kafka-init`, `minio-init`, `valkey-cluster-init`, `mng-pg-init`, `pg-cluster-init`).
+- **Bridge Network**: `project_net` external bridge serving as the primary integration point for external microservices and sibling repos.
 
 ### 4.2 Technology Stack
 
@@ -57,8 +49,8 @@ C4Context
 
 ## 6. Security & Compliance
 
-- **Access Controls**: Provisioning scripts use temporary tokens or dedicated service accounts with restrictive scopes.
-- **Auditing**: All provisioning actions MUST generate a `Level=INFO` log event in Loki for compliance tracking.
+- **Access Controls**: Provisioning scripts SHOULD use dedicated credentials/service accounts scoped to the minimum required actions.
+- **Auditing**: Provisioning actions SHOULD emit clear, structured logs so bootstrap behavior is reviewable via the observability stack.
 
 ## 7. Infrastructure & Deployment
 
@@ -67,9 +59,9 @@ C4Context
 
 ## 8. Non-Functional Requirements (NFRs)
 
-- **Reliability**: Sidecars MUST handle transient service failures via exponential backoff (Max 5 retries).
-- **Latency**: Provisioning SHALL complete within 60 seconds of core service health.
-- **Idempotency**: Multiple runs of a sidecar SHALL produce identical system state without errors.
+- **Reliability**: Init services MUST fail fast with actionable logs when prerequisites are missing (e.g., secrets, connectivity).
+- **Latency**: Provisioning SHOULD complete quickly after core service health (target: under a minute for simple tasks).
+- **Idempotency**: Re-running init services MUST NOT corrupt cluster state (use “create if not exists” semantics).
 
 ## 9. Architectural Principles, Constraints & Trade-offs
 

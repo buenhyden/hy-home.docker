@@ -8,25 +8,35 @@
 infra/
 ├── 01-gateway/               # Edge/Gateway
 │   └── traefik/
+│   └── nginx/                 # (Standalone/Optional)
 ├── 02-auth/                  # 인증/SSO
-│   └── keycloak/
+│   ├── keycloak/
+│   └── oauth2-proxy/
 ├── 03-security/              # 시크릿/보안
-│   └── vault/
+│   └── vault/                 # (Standalone/Optional)
 ├── 04-data/                  # DB/Storage
-│   └── postgresql-cluster/
+│   ├── mng-db/
+│   ├── minio/
+│   ├── opensearch/
+│   ├── postgresql-cluster/
+│   ├── qdrant/
+│   └── valkey-cluster/
 ├── 05-messaging/             # 메시징/스트리밍
 │   └── kafka/
 ├── 06-observability/         # LGTM 스택
 │   ├── docker-compose.yml
 │   └── prometheus/
 ├── 07-workflow/              # 워크플로우
-│   └── n8n/
+│   ├── airflow/
+│   └── n8n/                   # (Optional, root include 주석 처리)
 ├── 08-ai/                    # AI/LLM
-│   └── ollama/
+│   ├── ollama/
+│   └── open-webui/
 ├── 09-tooling/               # DevOps/QA/TF
-│   └── terrakube/
-└── 10-communication/         # Mail
-    └── mail/
+│   ├── sonarqube/
+│   └── terrakube/             # (Optional, root include 주석 처리)
+└── 10-communication/         # Mail (Optional)
+    └── mail/                  # (Optional, root include 주석 처리)
 ```
 
 ## 🧭 실행 흐름
@@ -62,9 +72,10 @@ infra 하위 폴더는 실행 방식에 따라 다음 4가지로 분류합니다
 - **Observability (Profile: `obs`)**: prometheus, loki, tempo, grafana, alloy, etc.
 - **Messaging (Profile: `messaging`)**: kafka, schema-registry, etc.
 - **AI (Profile: `ai`)**: ollama, open-webui, qdrant
-- **Workflow (Profile: `workflow`)**: n8n, airflow
+- **Workflow (Profile: `workflow`)**: airflow (n8n은 기본 비활성/주석 처리)
+- **Tooling (Profile: `tooling`)**: sonarqube
 - **Standalone**: supabase (manual directory run)
-- **Placeholder**: courier, rabbitmq (documentation only)
+- **Placeholder**: courier, rabbitmq (정의는 있으나 루트 include에 아직 미통합)
 
 ## ➕ 서비스 추가 방법
 

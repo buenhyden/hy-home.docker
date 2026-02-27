@@ -60,11 +60,11 @@ _Note: This document defines the What and Why for autonomous infrastructure capa
 
 | ID           | User Story (INVEST)                                                                      | Acceptance Criteria (Given-When-Then)                                                                                                |
 | ------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **STORY-AUTO-01** | **As a** DevOps Engineer,<br>**I want** init-sidecars,<br>**So that** my data cluster is ready on boot. | **Given** OpenSearch starts,<br>**When** `opensearch-init` runs,<br>**Then** index templates are created automatically. |
+| **STORY-AUTO-01** | **As a** DevOps Engineer,<br>**I want** init-sidecars,<br>**So that** my data cluster is ready on boot. | **Given** Kafka is healthy,<br>**When** `kafka-init` runs,<br>**Then** baseline topics are created automatically. |
 
 ## 5. Scope & Functional Requirements
 
-- **[REQ-PRD-AUTO-FUN-01]** Sidecar-based resource initialization (e.g., `os-init`, `k-init`).
+- **[REQ-PRD-AUTO-FUN-01]** Sidecar-based resource initialization (e.g., `kafka-init`, `minio-init`, `pg-cluster-init`, `valkey-cluster-init`).
 - **[REQ-PRD-AUTO-FUN-02]** Provisioned Grafana Dashboards as Code (YAML/JSON).
 - **[REQ-PRD-AUTO-FUN-03]** Multi-Project bridge networking via `project_net` for autonomous integration.
 

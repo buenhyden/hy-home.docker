@@ -1,11 +1,3 @@
----
-title: 'ADR-0008: Removing Static Docker IPs'
-status: 'Accepted'
-date: '2026-02-23'
-authors: 'Platform Engineer'
-deciders: 'Infrastructure Team'
----
-
 # Architecture Decision Record (ADR)
 
 ## Title: Removing Static Docker IPs
@@ -31,9 +23,12 @@ The initial infrastructure composition designated static IPv4 addresses for cruc
 
 ### 3.1 Core Engineering Pillars Alignment
 
-- **Architecture**: Promotes service-oriented discovery.
-- **Performance**: Native DNS resolution is highly efficient in Docker.
-- **Maintainability**: No need to maintain a manual IP registry.
+- **Security**: Avoids brittle addressing patterns that encourage bypassing ingress/auth layers via “known IPs”.
+- **Observability**: Improves portability of dashboards/runbooks by referencing stable DNS names (service names) instead of per-host IP tables.
+- **Compliance**: Reduces configuration drift risk across environments (no hardcoded IP registries).
+- **Performance**: Docker’s internal DNS is efficient and avoids manual IP management overhead.
+- **Documentation**: Standardizes docs on service DNS and hostnames, preventing “static IP” drift.
+- **Localization**: Not applicable (networking convention).
 
 ### 3.2 Positive Consequences
 
@@ -57,4 +52,10 @@ Manually assign every service an IP in the subnet.
 
 - **Confidence Rating**: High
 - **Notes**: Moving toward standard cloud-native networking patterns.
-- **Technical Requirements Addressed**: REQ-PRD-SYS-02
+- **Technical Requirements Addressed**: REQ-PRD-SYS-MET-04, REQ-PRD-SYS-FUN-05
+
+## 6. Related Documents (Traceability)
+
+- **Feature PRD**: [System Optimization PRD](../prd/system-optimization-prd.md)
+- **Feature Spec**: [System Optimization Spec](../../specs/infra/system-optimization/spec.md)
+- **Repository Blueprint**: [ARCHITECTURE.md](../../ARCHITECTURE.md)

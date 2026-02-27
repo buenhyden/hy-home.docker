@@ -11,7 +11,7 @@ This category manages the ingress traffic and edge routing for the entire infras
 
 ## Notes
 
-- **Traefik and Nginx both use static IP `172.19.0.13`** on `infra_net`. Do not run them together unless you change one of the IPs.
+- Traefik and Nginx both compete for the same **host ports** (typically 80/443). Do not run them together unless you change one of the host port mappings.
 - TLS assets are shared from `secrets/certs`.
 
 ## File Map
