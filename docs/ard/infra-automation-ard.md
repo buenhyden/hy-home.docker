@@ -2,10 +2,10 @@
 
 _Target Directory: `docs/ard/infra-automation-ard.md`_
 
-- **Status**: Draft
+- **Status**: Approved
 - **Owner**: Platform Architect
 - **PRD Reference**: [infra-automation-prd.md](../prd/infra-automation-prd.md)
-- **ADR References**: [adr-0005](./adr/adr-0005-sidecar-resource-initialization.md) to [adr-0007](./adr/adr-0007-mandatory-resource-limits.md)
+- **ADR References**: [adr-0005](./adr/adr-0005-sidecar-resource-initialization.md) to [adr-0015](./adr/adr-0015-infrastructure-directive-standard.md)
 
 ---
 

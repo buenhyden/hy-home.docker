@@ -18,8 +18,8 @@ Every infrastructure service containerized within the `hy-home` ecosystem MUST a
 
 | ID | Category | Requirement Detail | Verification |
 | --- | --- | --- | --- |
-| REQ-STD-01 | Security | MUST use `extends` from `common-optimizations.yml`. | `docker compose config` |
-| REQ-STD-02 | Security | MUST implement `no-new-privileges: true` and `cap_drop: ALL`. | `docker inspect` |
+| REQ-SYS-01 | Security | MUST use `extends` from `common-optimizations.yml`. | `docker compose config` |
+| REQ-SYS-01 | Security | MUST implement `no-new-privileges: true` and `cap_drop: ALL`. | `docker inspect` |
 | REQ-STD-03 | Observability | MUST include `hy-home.tier` and `hy-home.service` labels. | Loki Label filter |
 | REQ-STD-04 | Observability | MUST defined a `healthcheck` for readiness signaling. | `docker ps` status |
 | REQ-STD-05 | Portability | MUST utilize `${DEFAULT_..._DIR}` for volume mapping. | `.env` audit |
@@ -46,7 +46,7 @@ Loki integration is MANDATORY for all infrastructure services.
 x-logging: &default-logging
   driver: "loki"
   options:
-    loki-url: "http://localhost:3100/loki/api/v1/push"
+    loki-url: "http://infra-loki:3100/loki/api/v1/push"
     loki-external-labels: "container_name={{.Name}},tier=<tier_name>"
 ```
 

@@ -91,4 +91,4 @@ Stateless services (exporters, proxies, UIs) MUST utilize `read_only: true` for 
 ## 4. Security Boundaries
 
 - **Network Strategy**: Direct container-to-container access is restricted via tier-specific user-defined networks.
-- **Credential Lifecycle**: 100% of sensitive material MUST be managed via Docker Secrets mounted at runtime, as per **[ADR-009]**.
+- **Credential Lifecycle**: 100% of sensitive material MUST be managed via Docker Secrets mounted at runtime, as per **[ADR-0009]**.

@@ -49,12 +49,12 @@ This specification defines standard extension fields and service templates for c
 
 | ID                | Requirement Description | Priority | Parent PRD REQ |
 | ----------------- | ----------------------- | -------- | -------------- |
-| **[REQ-INF-01]** | Global Inheritance Primacy: All infrastructure services SHALL extend from a baseline template in `infra/common-optimizations.yml`. | Critical | REQ-PRD-FUN-06 |
-| **[REQ-INF-02]** | Mandatory Least Privilege: All containers MUST drop all capabilities (`cap_drop: ALL`) and prohibit privilege escalation (`no-new-privileges: true`). | Critical | REQ-SYS-04 |
-| **[REQ-INF-03]** | Standardized Resource Quotas: Every service definition SHALL define CPU and Memory limits using established profiles (Low/Med/High). | High     | REQ-PRD-MET-03 |
+| **[REQ-INF-01]** | Global Inheritance Primacy: All infrastructure services SHALL extend from a baseline template in `infra/common-optimizations.yml`. | Critical | REQ-SYS-01 |
+| **[REQ-INF-02]** | Mandatory Least Privilege: All containers MUST drop all capabilities (`cap_drop: ALL`) and prohibit privilege escalation (`no-new-privileges: true`). | Critical | REQ-SYS-01 |
+| **[REQ-INF-03]** | Standardized Resource Quotas: Every service definition SHALL define CPU and Memory limits using established profiles (Low/Med/High). | High     | REQ-SYS-08 |
 | **[REQ-INF-04]** | Environment Portability: All services MUST rely on internal DNS for discovery; explicit static IPs are PROHIBITED [ADR-0008]. | Critical | REQ-SYS-05      |
 | **[REQ-INF-05]** | Managed Process Lifecycle: All services MUST utilize `init: true` for robust signal handling [ADR-0012]. | High     | REQ-SYS-06      |
-| **[REQ-INF-06]** | Functional Metadata Overlays: Services SHALL maintain local `labels` for service-specific functional requirements (e.g. Traefik rules) while extending global security invariants. | Medium   | REQ-SYS-08 |
+| **[REQ-INF-06]** | Functional Metadata Overlays: Services SHALL maintain local `labels` for service-specific functional requirements (e.g. Traefik rules) while extending global security invariants. | Medium   | REQ-SYS-01 |
 
 ## 3. Data Modeling & Storage Strategy
 

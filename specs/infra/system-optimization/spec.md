@@ -49,9 +49,9 @@ This specification defines standards for system isolation, resource density, and
 
 | ID                | Requirement Description | Priority | Parent PRD REQ |
 | ----------------- | ----------------------- | -------- | -------------- |
-| **[REQ-HARD-01]** | Universal Isolation: Isolated from host namespaces (`pid`, `network`, `ipc`). | Critical | REQ-SYS-04     |
-| **[REQ-HARD-02]** | Resource Density: Utilization < 20% aggregate system RAM. | High     | REQ-PRD-MET-03 |
-| **[REQ-HARD-03]** | Immutable Execution: Read-only root filesystems wherever feasible. | High     | SEC-SPC-001    |
+| **[REQ-HARD-01]** | Universal Isolation: Isolated from host namespaces (`pid`, `network`, `ipc`). | Critical | REQ-SYS-01     |
+| **[REQ-HARD-02]** | Resource Density: Utilization < 20% aggregate system RAM. | High     | REQ-SYS-08 |
+| **[REQ-HARD-03]** | Immutable Execution: Read-only root filesystems wherever feasible. | High     | REQ-SYS-07    |
 
 ## 3. Data Modeling & Storage Strategy
 
