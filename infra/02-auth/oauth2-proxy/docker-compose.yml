@@ -13,6 +13,7 @@ secrets:
 
 services:
   oauth2-proxy:
+    profiles: ['core']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

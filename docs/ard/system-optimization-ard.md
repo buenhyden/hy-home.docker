@@ -1,17 +1,17 @@
 ---
-title: '[ARD-SYS-01] Optimized Infrastructure Reference'
+title: '[ARD-OPT-01] Optimized Infrastructure Reference'
 status: 'Approved'
 owner: 'Reliability Engineer'
-prd_reference: '[system-optimization-prd.md](../prd/system-optimization-prd.md)'
-adr_references: '[adr-0008](../adr/adr-0008-removing-static-docker-ips.md), [adr-0012](../adr/adr-0012-standardized-init-process.md), [adr-0013](../adr/adr-0013-configuration-deduplication.md)'
+prd_reference: '../prd/system-optimization-prd.md'
+adr_references: ['../adr/adr-0008-removing-static-docker-ips.md', '../adr/adr-0012-standardized-init-process.md', '../adr/adr-0013-configuration-deduplication.md']
 ---
 
-# [ARD-SYS-01] Optimized Infrastructure Reference Document
+# Architecture Reference Document (ARD)
 
 > **Status**: Approved
 > **Owner**: Reliability Engineer
-> **PRD Reference**: [system-optimization-prd.md](../prd/system-optimization-prd.md)
-> **ADR References**: [adr-0008](../adr/adr-0008-removing-static-docker-ips.md), [adr-0012](../adr/adr-0012-standardized-init-process.md), [adr-0013](../adr/adr-0013-configuration-deduplication.md)
+> **PRD Reference**: [[REQ-PRD-SYS-01] Hy-Home System Optimization](../prd/system-optimization-prd.md)
+> **ADR References**: [ADR-0008](../adr/adr-0008-removing-static-docker-ips.md), [ADR-0012](../adr/adr-0012-standardized-init-process.md), [ADR-0013](../adr/adr-0013-configuration-deduplication.md)
 
 ---
 
@@ -25,13 +25,7 @@ A hardened configuration model for the Hy-Home ecosystem focusing on resource de
 - Achieve sub-4GB host RAM utilization for standard local operation.
 - Provide zero-portability-risk configurations for developers.
 
-## 3. Optimization Details
-
-### 3.1 Telemetry and Observability Optimization
-
-- **[ARD-OPT-03] Centralized Logging Integration**: All infrastructure services MUST explicitly set the `hy-home.tier` label. This label is critical for Loki's `internal_prom_labels` pipeline to route logs to appropriate dashboards and alerting rules.
-
-## 4. System Overview & Context
+## 3. System Overview & Context
 
 ```mermaid
 graph TD
@@ -47,7 +41,7 @@ graph TD
     T3 --> T4
 ```
 
-## 4. Architecture & Tech Stack Decisions
+## 4. Component Architecture & Tech Stack Decisions
 
 ### 4.1 Standardization Patterns
 
@@ -78,8 +72,13 @@ graph LR
 ## 6. Security & Compliance
 
 - **Network Isolation**: Tier-specific user-defined networks restricting cross-segment traffic.
-- **Credential Lifecycle**: 100% runtime injection via Docker Secrets [ADR-0009].
+- **Credential Lifecycle**: 100% runtime injection via Docker Secrets.
 - **Runtime Integrity**: Immutable root filesystems and disabled binary execution escalation.
+
+## 7. Infrastructure & Deployment
+
+- **Orchestration**: Aggregated via root `docker-compose.yml` using the `include` directive.
+- **Profiles**: Implements `core`, `data`, `obs`, `messaging`, `ai` profiles for selective startup.
 
 ## 8. Non-Functional Requirements (NFRs)
 

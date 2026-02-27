@@ -43,6 +43,7 @@ secrets:
 
 services:
   valkey-node-0: &valkey-node
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -121,6 +122,7 @@ services:
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
 
   valkey-cluster-init:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: base-resource-low

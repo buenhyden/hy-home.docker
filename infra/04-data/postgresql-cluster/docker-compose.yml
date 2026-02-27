@@ -54,6 +54,7 @@ networks:
 
 services:
   etcd-1:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -86,6 +87,7 @@ services:
 
   etcd-2:
     <<: [] # Placeholder for inheritance if needed, but extends handles it.
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -117,6 +119,7 @@ services:
       <<: *tier-label
 
   etcd-3:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -148,6 +151,7 @@ services:
       <<: *tier-label
 
   pg-0:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
@@ -188,6 +192,7 @@ services:
       etcd-3: { condition: service_healthy }
 
   pg-1:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
@@ -213,6 +218,7 @@ services:
       <<: *tier-label
 
   pg-2:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
@@ -238,6 +244,7 @@ services:
       <<: *tier-label
 
   pg-router:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -265,6 +272,7 @@ services:
       traefik.http.services.haproxy-stats.loadbalancer.server.port: ${HAPROXY_PORT:-7000}
 
   pg-cluster-init:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -295,6 +303,7 @@ services:
       <<: *tier-label
 
   pg-0-exporter:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -326,6 +335,7 @@ services:
       <<: *tier-label
 
   pg-1-exporter:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -357,6 +367,7 @@ services:
       <<: *tier-label
 
   pg-2-exporter:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

@@ -1,8 +1,14 @@
+---
+title: 'ADR-0002: Secrets-First Management Policy'
+status: 'Accepted'
+date: '2026-02-26'
+authors: 'Security Engineer'
+deciders: 'DevOps Team'
+---
+
 # Architecture Decision Record (ADR)
 
-_Target Directory: `docs/adr/adr-0002-secrets-first-management.md`_
-
-## Title: adr-0002: Secrets-First Management
+## Title: Secrets-First Management Policy
 
 - **Status:** Accepted
 - **Date:** 2026-02-26
@@ -11,13 +17,13 @@ _Target Directory: `docs/adr/adr-0002-secrets-first-management.md`_
 
 ## 1. Context and Problem Statement
 
-Hardcoding seeds, passwords, and API keys in `.env` files or directly in Compose files leads to repository leakage and poor security posture.
+Hardcoding seeds, passwords, and API keys in `.env` files or directly in Compose files leads to repository leakage and poor security posture. Environment variables are often logged or visible in `docker inspect`, creating a major vulnerability.
 
 ## 2. Decision Drivers
 
-- **Security**: Prevents credential exposure in Git.
-- **Compliance**: Follows secret management best practices.
-- **Portability**: Compatible with Swarm and Kubernetes secret patterns.
+- **Security**: Prevents credential exposure in Git and runtime inspection.
+- **Compliance**: Follows secret management best practices for local development.
+- **Portability**: Compatible with Swarm and Kubernetes secret patterns (file-based).
 
 ## 3. Decision Outcome
 
@@ -25,8 +31,9 @@ Hardcoding seeds, passwords, and API keys in `.env` files or directly in Compose
 
 ### 3.1 Core Engineering Pillars Alignment
 
-- **Security**: Aligns with `[REQ-SEC-01]` by ensuring zero-plaintext leaks.
-- **Operations**: Simplifies secret rotation in production-like environments.
+- **Security**: Aligns with `[REQ-SEC-01]` by ensuring zero-plaintext leaks in the host environment.
+- **Observability**: Prevents accidental logging of sensitive data via environment dumps.
+- **Performance**: High (file reads are negligible for secrets).
 
 ### 3.2 Positive Consequences
 
@@ -35,15 +42,19 @@ Hardcoding seeds, passwords, and API keys in `.env` files or directly in Compose
 
 ### 3.3 Negative Consequences
 
-- Slightly more complex local setup (file creation required).
+- Slightly more complex local setup; users must create the `secrets/` directory and files.
 
-## 4. Alternatives Considered
+## 4. Alternatives Considered (Pros and Cons)
 
 ### Environment Variables (.env)
 
-- **Good**: Simple to use.
-- **Bad**: Secrets shown in `docker inspect` and prone to accidental logging.
+The standard Docker Compose approach.
 
-## 5. Confidence Level
+- **Good**, because it is simple to use and universally supported.
+- **Bad**, because secrets are shown in `docker inspect`, visible to all users on the host, and prone to accidental logging.
+
+## 5. Confidence Level & Technical Requirements
 
 - **Confidence Rating**: High
+- **Notes**: Industry standard for secure container orchestration.
+- **Technical Requirements Addressed**: REQ-PRD-BASE-03

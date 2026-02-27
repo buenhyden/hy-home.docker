@@ -25,6 +25,7 @@ volumes:
 
 services:
   keycloak:
+    profiles: ['core']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med

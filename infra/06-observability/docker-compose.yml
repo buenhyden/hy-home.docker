@@ -43,6 +43,7 @@ services:
   # 1. Metrics Storage (Prometheus)
   # -------------------------------------------------------
   prometheus:
+    profiles: ['obs']
     extends:
       file: ../common-optimizations.yml
       service: template-infra-high
@@ -98,6 +99,7 @@ services:
   # 2. Log Storage (Loki)
   # -------------------------------------------------------
   loki:
+    profiles: ['obs']
     extends:
       file: ../common-optimizations.yml
       service: template-infra-high
@@ -132,6 +134,7 @@ services:
   # 3. Trace Storage (Tempo)
   # -------------------------------------------------------
   tempo:
+    profiles: ['obs']
     extends:
       file: ../common-optimizations.yml
       service: template-infra-high
@@ -163,6 +166,7 @@ services:
       <<: *tier-label
 
   pyroscope:
+    profiles: ['obs']
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
@@ -186,6 +190,7 @@ services:
   # 4. Visualization (Grafana)
   # -------------------------------------------------------
   grafana:
+    profiles: ['obs']
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
@@ -266,6 +271,7 @@ services:
   # 5. Telemetry Collector (Alloy)
   # -------------------------------------------------------
   alloy:
+    profiles: ['obs']
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
@@ -310,6 +316,7 @@ services:
       traefik.http.services.alloy.loadbalancer.server.port: ${ALLOY_PORT:-12345}
 
   cadvisor:
+    profiles: ['obs']
     extends:
       file: ../common-optimizations.yml
       service: base-resource-med
@@ -340,6 +347,7 @@ services:
       <<: *tier-label
 
   alertmanager:
+    profiles: ['obs']
     extends:
       file: ../common-optimizations.yml
       service: template-infra-low
@@ -393,6 +401,7 @@ services:
       traefik.http.services.alertmanager.loadbalancer.server.port: ${ALERTMANAGER_PORT:-9093}
 
   pushgateway:
+    profiles: ['obs']
     extends:
       file: ../common-optimizations.yml
       service: template-infra-low

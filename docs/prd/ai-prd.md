@@ -7,7 +7,7 @@ stakeholders: 'AI Researchers, Developers'
 tags: ['prd', 'requirements', 'ai', 'ollama']
 ---
 
-# [PRD-AI-01] Local AI Infrastructure PRD
+# Product Requirements Document (PRD)
 
 > **Status**: Approved
 > **Target Version**: v1.0.0
@@ -26,7 +26,7 @@ _Note: This document defines the What and Why for the local AI serving capabilit
 | Vision & Goal         | Is the problem + business goal defined in one paragraph?               | Must     | Local AI serving vision     | Section 1   |
 | Success Metrics       | Are the key success/failure metrics defined with quantitative targets? | Must     | Model load time defined     | Section 3   |
 | Target Users          | Are specific primary personas and their pain points defined?           | Must     | AI Researcher/Dev defined   | Section 2   |
-| Use Case (GWT)        | Are acceptance criteria written in Given-When-Then format?             | Must     | STORY-01 defined            | Section 4   |
+| Use Case (GWT)        | Are acceptance criteria written in Given-When-Then format?             | Must     | STORY-AI-01 defined         | Section 4   |
 | Scope (In)            | Is the feature list included in this release clearly defined?          | Must     | Ollama & WebUI in scope     | Section 5   |
 | Not in Scope          | Is what we will NOT build in this release explicitly listed?           | Must     | Model training out of scope | Section 6   |
 | Timeline & Milestones | Are PoC / MVP / Beta / v1.0 milestones dated?                          | Must     | Milestone established       | Section 7   |
@@ -53,20 +53,20 @@ _Note: This document defines the What and Why for the local AI serving capabilit
 
 | ID                 | Metric Name        | Baseline (Current) | Target (Success) | Measurement Period  |
 | ------------------ | ------------------ | ------------------ | ---------------- | ------------------- |
-| **REQ-PRD-MET-01** | Model Load Time    | > 2 mins           | < 30 seconds     | Post-download       |
-| **REQ-PRD-MET-02** | API Availability   | N/A                | 99%              | Runtime monitoring  |
+| **REQ-PRD-AI-MET-01** | Model Load Time    | > 2 mins           | < 30 seconds     | Post-download       |
+| **REQ-PRD-AI-MET-02** | API Availability   | N/A                | 99%              | Runtime monitoring  |
 
 ## 4. Key Use Cases & Acceptance Criteria (GWT)
 
 | ID           | User Story (INVEST)                                                                      | Acceptance Criteria (Given-When-Then)                                                                                                |
 | ------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **STORY-01** | **As a** Developer,<br>**I want** an OpenAI-compatible API,<br>**So that** I can reuse standard libraries. | **Given** Ollama is running,<br>**When** sending a chat completion request,<br>**Then** a valid JSON response is returned. |
+| **STORY-AI-01** | **As a** Developer,<br>**I want** an OpenAI-compatible API,<br>**So that** I can reuse standard libraries. | **Given** Ollama is running,<br>**When** sending a chat completion request,<br>**Then** a valid JSON response is returned. |
 
 ## 5. Scope & Functional Requirements
 
-- **[REQ-PRD-FUN-01]** Containerized Ollama serving with GPU passthrough support.
-- **[REQ-PRD-FUN-02]** Unified Chat Web UI for direct user interaction.
-- **[REQ-PRD-FUN-03]** Standardized model volume mounting to avoid host duplication.
+- **[REQ-PRD-AI-FUN-01]** Containerized Ollama serving with GPU passthrough support.
+- **[REQ-PRD-AI-FUN-02]** Unified Chat Web UI for direct user interaction.
+- **[REQ-PRD-AI-FUN-03]** Standardized model volume mounting to avoid host duplication.
 
 ## 6. Out of Scope
 
@@ -94,3 +94,4 @@ _Note: This document defines the What and Why for the local AI serving capabilit
 ## 11. Related Documents (Reference / Traceability)
 
 - **Architecture Reference (ARD)**: [[ARD-AI-01] Local AI Architecture Reference](../ard/ai-ard.md)
+- **Technical Specification**: [[REQ-SPEC-AI-01] AI Infrastructure Spec](../../specs/infra/ai/spec.md)

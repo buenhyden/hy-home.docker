@@ -57,10 +57,14 @@ infra 하위 폴더는 실행 방식에 따라 다음 4가지로 분류합니다
 
 ### 분류 요약
 
-- **Core (Include)**: traefik, mng-db, oauth2-proxy, observability, minio, keycloak, n8n, qdrant, postgresql-cluster, kafka, valkey-cluster, opensearch
-- **Optional (Profile)**: airflow, influxdb, couchdb, mail, nginx, ollama, open-webui, sonarqube, vault, terrakube, redis-cluster, ksql
-- **Standalone**: supabase
-- **Placeholder**: rabbitmq
+- **Core (Profile: `core`)**: traefik, keycloak, oauth2-proxy
+- **Data (Profile: `data`)**: mng-db (valkey, postgres), postgresql-cluster, valkey-cluster, opensearch, minio
+- **Observability (Profile: `obs`)**: prometheus, loki, tempo, grafana, alloy, etc.
+- **Messaging (Profile: `messaging`)**: kafka, schema-registry, etc.
+- **AI (Profile: `ai`)**: ollama, open-webui, qdrant
+- **Workflow (Profile: `workflow`)**: n8n, airflow
+- **Standalone**: supabase (manual directory run)
+- **Placeholder**: courier, rabbitmq (documentation only)
 
 ## ➕ 서비스 추가 방법
 

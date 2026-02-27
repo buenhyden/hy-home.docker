@@ -1,25 +1,60 @@
-# ADR-0011: Mandatory Multi-Stage Docker Builds
+---
+title: 'ADR-0011: Multi-Stage Build Standard'
+status: 'Accepted'
+date: '2026-02-27'
+authors: 'Build Engineer'
+deciders: 'Platform Team'
+---
 
-## Status
+# Architecture Decision Record (ADR)
 
-Accepted
+## Title: Multi-Stage Build Standard
 
-## Context
+- **Status:** Accepted
+- **Date:** 2026-02-27
+- **Authors:** Build Engineer
+- **Deciders:** Platform Team
 
-Custom Docker images for services like Keycloak, n8n, and OpenSearch were inconsistently using multi-stage builds. Mono-stage builds often include unnecessary build-time dependencies (compilers, headers, cache), leading to bloated images and a larger security attack surface.
+## 1. Context and Problem Statement
 
-## Decision
+Custom Docker images for services were consistently using mono-stage builds, including unnecessary build-time dependencies (compilers, headers) in the final image. This leads to bloated images and a larger security attack surface.
 
-All custom Dockerfiles within the `infra/` directory MUST utilize multi-stage builds.
+## 2. Decision Drivers
 
-- **Stage 1 (Builder)**: Install all necessary build tools and compile/process assets.
-- **Stage 2 (Runner)**: Copy only the final artifacts from the Builder stage into a clean, minimal base image (e.g., Alpine or Distroless).
+- **Security**: Reduce attack surface by removing build tools from production.
+- **Performance**: Smaller images mean faster pulls and less disk usage.
+- **Consistency**: Standardize how custom components are built.
 
-Layer ordering MUST also prioritize caching, placing stable commands (like installing generic system packages) above volatile commands (copying application source code).
+## 3. Decision Outcome
 
-## Consequences
+**Chosen option: "Mandatory Multi-Stage Docker Build"**, because separating the build environment from the runtime environment ensures that only necessary artifacts are shipped, dramatically reducing image size.
 
-- **Positive**: Significant reduction in final image size (often >50%).
-- **Positive**: Improved security posture by removing build-time tools from production containers.
-- **Positive**: Faster build/pull times due to smaller image layers.
-- **Negative**: Slightly more complex Dockerfile syntax.
+### 3.1 Core Engineering Pillars Alignment
+
+- **Security**: Aligns with binary hardening standards.
+- **Performance**: Optimizes image layers and startup weight.
+- **Documentation**: Clearly defines the build lifecycle for custom services.
+
+### 3.2 Positive Consequences
+
+- Significant reduction in final image size (often >50%).
+- Faster build/pull times in CI and local dev.
+
+### 3.3 Negative Consequences
+
+- Slightly more complex Dockerfile maintenance.
+
+## 4. Alternatives Considered (Pros and Cons)
+
+### Mono-stage with Cleanup
+
+Run `apt-get clean` and remove packages in the same layer.
+
+- **Good**, because it is simpler syntax.
+- **Bad**, because it often misses hidden build dependencies and caches.
+
+## 5. Confidence Level & Technical Requirements
+
+- **Confidence Rating**: High
+- **Notes**: Best practice for modern containerized development.
+- **Technical Requirements Addressed**: REQ-PRD-SYS-04

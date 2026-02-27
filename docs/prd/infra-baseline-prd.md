@@ -7,7 +7,7 @@ stakeholders: 'DevOps Team, Home-Lab Users'
 tags: ['prd', 'requirements', 'baseline', 'infra']
 ---
 
-# [PRD-BASE-01] Infrastructure Baseline PRD
+# Product Requirements Document (PRD)
 
 > **Status**: Approved
 > **Target Version**: v1.0.0
@@ -51,31 +51,31 @@ _Note: This document defines the What and Why for the core infrastructure founda
 
 ## 3. Success Metrics (Quantitative)
 
-| ID                 | Metric Name        | Baseline (Current) | Target (Success) | Measurement Period  |
-| ------------------ | ------------------ | ------------------ | ---------------- | ------------------- |
-| **REQ-PRD-MET-01** | Bootstrap Time     | 30 mins            | < 10 mins        | Day-0 build         |
-| **REQ-PRD-MET-02** | Security Coverage  | 50%                | 100% (Secrets)   | Audit cycle         |
-| **REQ-PRD-MET-03** | Resource Efficiency | N/A                | < 4GB Idle (RAM) | Baseline run        |
-| **REQ-PRD-MET-04** | Build Latency      | > 5 mins           | < 2 mins (Hot)   | CI/CD build cycle   |
+| ID                      | Metric Name        | Baseline (Current) | Target (Success) | Measurement Period  |
+| ----------------------- | ------------------ | ------------------ | ---------------- | ------------------- |
+| **REQ-PRD-BASE-MET-01** | Bootstrap Time     | 30 mins            | < 10 mins        | Day-0 build         |
+| **REQ-PRD-BASE-MET-02** | Security Coverage  | 50%                | 100% (Secrets)   | Audit cycle         |
+| **REQ-PRD-BASE-MET-03** | Resource Efficiency | N/A                | < 4GB Idle (RAM) | Baseline run        |
+| **REQ-PRD-BASE-MET-04** | Build Latency      | > 5 mins           | < 2 mins (Hot)   | CI/CD build cycle   |
 
 ## 4. Key Use Cases & Acceptance Criteria (GWT)
 
 | ID           | User Story (INVEST)                                                                      | Acceptance Criteria (Given-When-Then)                                                                                                |
 | ------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **STORY-01** | **As a** Enthusiast,<br>**I want** a preflight check,<br>**So that** I know I'm missing secrets. | **Given** a clean Docker environment,<br>**When** running `preflight-compose.sh`,<br>**Then** missing secrets are identified. |
+| **STORY-BASE-01** | **As a** Enthusiast,<br>**I want** a preflight check,<br>**So that** I know I'm missing secrets. | **Given** a clean Docker environment,<br>**When** running `preflight-compose.sh`,<br>**Then** missing secrets are identified. |
 
 ## 5. Scope & Functional Requirements
 
-- **[REQ-PRD-FUN-01]** Modular Orchestration via `include`.
-- **[REQ-PRD-FUN-02]** Secrets-First Policy enforcement (100% Docker Secrets).
-- **[REQ-PRD-FUN-03]** Bootstrap Prerequisites: Define required `.env` keys and directory permissions.
-- **[REQ-PRD-FUN-04]** Local TLS Standardisation via `mkcert` (secrets/certs/).
-- **[REQ-PRD-FUN-05]** Centralized Log Aggregation using Loki.
-- **[REQ-PRD-FUN-06]** Global Configuration Inheritance via `infra/common-optimizations.yml`.
-- **[REQ-INFRA-05] Strict Version Pinning**
+- **[REQ-PRD-BASE-FUN-01]** Modular Orchestration via `include`.
+- **[REQ-PRD-BASE-FUN-02]** Secrets-First Policy enforcement (100% Docker Secrets).
+- **[REQ-PRD-BASE-FUN-03]** Bootstrap Prerequisites: Define required `.env` keys and directory permissions.
+- **[REQ-PRD-BASE-FUN-04]** Local TLS Standardisation via `mkcert` (secrets/certs/).
+- **[REQ-PRD-BASE-FUN-05]** Centralized Log Aggregation using Loki.
+- **[REQ-PRD-BASE-FUN-06]** Global Configuration Inheritance via `infra/common-optimizations.yml`.
+- **[REQ-PRD-BASE-FUN-07] Strict Version Pinning**
   - Vague tags (e.g., `latest`, `stable`) are PROHIBITED for infrastructure images.
   - All images MUST use specific semver or SHA-based tags to ensure reproducible deployments.
-- **[REQ-PRD-FUN-07]** Mandatory `extends` usage for cross-file resource and security baseline.
+- **[REQ-PRD-BASE-FUN-08]** Mandatory `extends` usage for cross-file resource and security baseline.
 
 ## 6. Out of Scope
 
@@ -92,18 +92,13 @@ _Note: This document defines the What and Why for the core infrastructure founda
 
 - **Risks**: Resource exhaustion on low-RAM hosts.
 - **Security**: Mandatory `cap_drop` and `no-new-privileges` enforced via `common-optimizations.yml`.
-- **Compliance**: Adherence to local security standards for local environment sandboxing.
 
 ## 9. Assumptions & Dependencies
 
 - **Assumptions**: Host system has Docker Engine (v20.10+) and Docker Compose (v2.20+) installed.
 - **Dependencies**: RELIES on correct `.env` configuration for path mapping.
 
-## 10. Q&A / Open Issues
-
-- **[ISSUE-01]**: Should we support rootless Docker? - **Update**: Deferred to Phase 3.
-
 ## 11. Related Documents (Reference / Traceability)
 
-- **Technical Specification**: [[SPEC-INFRA-01] Infrastructure Global Baseline Specification](/specs/infra/global-baseline/spec.md)
+- **Technical Specification**: [[REQ-SPEC-BASE-01] Infrastructure Baseline Spec](../../specs/infra/baseline/spec.md)
 - **Architecture Decisions (ADRs)**: [[ADR-0001] Root Orchestration via include](../adr/adr-0001-root-orchestration-include.md)

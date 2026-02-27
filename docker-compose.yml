@@ -188,14 +188,9 @@ include:
   - infra/06-observability/docker-compose.yml
   # - infra/07-workflow/n8n/docker-compose.yml
   # Optional stacks (enabled via profiles)
-  # - infra/01-gateway/nginx/docker-compose.yml
-  # - infra/03-security/vault/docker-compose.yml
-  # - infra/04-data/couchdb/docker-compose.yml
-  # - infra/04-data/influxdb/docker-compose.yml
-  # - infra/05-messaging/rabbitmq/docker-compose.yml
-  # - infra/07-workflow/airflow/docker-compose.yml
-  # - infra/08-ai/ollama/docker-compose.yml
-  # - infra/08-ai/open-webui/docker-compose.yml
-  # - infra/09-tooling/sonarqube/docker-compose.yml
+  - infra/07-workflow/airflow/docker-compose.yml
+  - infra/08-ai/ollama/docker-compose.yml
+  - infra/08-ai/open-webui/docker-compose.yml
+  - infra/09-tooling/sonarqube/docker-compose.yml
   # - infra/09-tooling/terrakube/docker-compose.yml
   # - infra/10-communication/mail/docker-compose.yml

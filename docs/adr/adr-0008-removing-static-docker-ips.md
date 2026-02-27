@@ -1,29 +1,60 @@
-# 003: Removing Static Docker IPs
+---
+title: 'ADR-0008: Removing Static Docker IPs'
+status: 'Accepted'
+date: '2026-02-23'
+authors: 'Platform Engineer'
+deciders: 'Infrastructure Team'
+---
 
-| Attribute | Detail |
-| --- | --- |
-| **Status** | Accepted |
-| **Date** | 2026-02-23 |
-| **Drivers** | Scalability, Predictability, Best Practices |
+# Architecture Decision Record (ADR)
 
-## Context and Problem Statement
+## Title: Removing Static Docker IPs
 
-The initial infrastructure composition designated static IPv4 addresses (e.g., `172.19.0.70`, `172.19.0.13`) for crucial containers via the centralized `infra_net` bridge network configuration (`subnet: 172.19.0.0/16`).
-While static IPs simplified external routing in legacy designs, in modern Docker environments, hardcoding static IPs is an anti-pattern. It restricts the deployment to single instances, complicates teardowns/rebuilds, and risks IP collisions if multiple developers or automated testing suites (CI/CD) spin up the stack simultaneously.
+- **Status:** Accepted
+- **Date:** 2026-02-23
+- **Authors:** Platform Engineer
+- **Deciders:** Infrastructure Team
 
-## Decision
+## 1. Context and Problem Statement
 
-We will remove all explicit `ipv4_address` assignments across the `docker-compose.yml` topography.
+The initial infrastructure composition designated static IPv4 addresses for crucial containers via the centralized `infra_net` bridge. While static IPs simplified external routing in legacy designs, in modern Docker environments, hardcoding static IPs is an anti-pattern. It restricts deployment to single instances and risks IP collisions.
 
-Instead, we will rely exclusively on **Docker Internal DNS**. Services will communicate by addressing each other via their explicit `container_name` or defined `aliases` (e.g., `mng-pg:5432`). Detailed network bindings for each service are documented in the [Technical Context Hub](../context/README.md).
+## 2. Decision Drivers
 
-## Consequences
+- **Scalability**: Need to support multiple stack instances on one host.
+- **Predictability**: Rely on Docker's native lifecycle for network provisioning.
+- **Best Practices**: Eliminate brittle hardcoded networking dependencies.
 
-### Positive
+## 3. Decision Outcome
 
-- **Highly Portable**: The stack can be spun up multiple times on different subnets or parallel networks without modification.
-- **Resilient**: Avoids network boot race conditions where an IP hasn't been released gracefully.
+**Chosen option: "Docker Internal DNS"**, because removing explicit `ipv4_address` assignments and relying exclusively on container names or aliases allows for higher portability and avoids network boot race conditions.
 
-### Negative
+### 3.1 Core Engineering Pillars Alignment
 
-- **DNS Exclusivity**: Ad-hoc commands or scripts that previously hardcoded these internal IPs will break and must be updated to target the DNS hostname.
+- **Architecture**: Promotes service-oriented discovery.
+- **Performance**: Native DNS resolution is highly efficient in Docker.
+- **Maintainability**: No need to maintain a manual IP registry.
+
+### 3.2 Positive Consequences
+
+- **Highly Portable**: The stack can be spun up on different subnets without modification.
+- **Resilient**: Avoids race conditions where an IP hasn't been released gracefully.
+
+### 3.3 Negative Consequences
+
+- **DNS Exclusivity**: Ad-hoc commands or scripts that previously hardcoded these internal IPs will break.
+
+## 4. Alternatives Considered (Pros and Cons)
+
+### Static IP Addressing (Legacy)
+
+Manually assign every service an IP in the subnet.
+
+- **Good**, because routing is predictable for legacy external systems.
+- **Bad**, because it's brittle and prevents scaling horizontally.
+
+## 5. Confidence Level & Technical Requirements
+
+- **Confidence Rating**: High
+- **Notes**: Moving toward standard cloud-native networking patterns.
+- **Technical Requirements Addressed**: REQ-PRD-SYS-02

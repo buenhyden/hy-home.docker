@@ -35,6 +35,9 @@ bash scripts/preflight-compose.sh
 
 # 4) 스택 실행
 docker compose up -d
+
+# 또는 프로파일 기반 실행
+docker compose --profile core --profile data up -d
 ```
 
 접속 예시 (`DEFAULT_URL=127.0.0.1.nip.io` 기준):
@@ -43,10 +46,19 @@ docker compose up -d
 - Grafana: `https://grafana.127.0.0.1.nip.io`
 - Prometheus: `https://prometheus.127.0.0.1.nip.io`
 
-옵션 스택 예시:
+### 인프라 서비스 프로파일 (Profiles)
+
+| Profile | Description | Included Services |
+| :--- | :--- | :--- |
+| `core` | 핵심 관문 및 인증 | Traefik, Keycloak, OAuth2-Proxy |
+| `data` | 공통 데이터 저장소 | Management DB (PG+RE), Databases cluster (Valkey, PG) |
+| `obs` | 관측성 (LGTM) | Grafana, Loki, Tempo, Prometheus, etc. |
+| `messaging` | 메시징 인프라 | Kafka Stack |
+| `workflow` | 자동화 엔진 | Airflow, n8n |
+| `ai` | 로컬 LLM 환경 | Ollama, Open-webui, Qdrant |
 
 ```bash
-docker compose --profile ollama --profile airflow up -d
+docker compose --profile obs up -d
 ```
 
 ## 운영 명령 요약

@@ -31,6 +31,7 @@ volumes:
 
 x-kafka-broker-common: &kafka-broker-common
   image: confluentinc/cp-kafka:8.1.1
+  profiles: ['messaging']
   extends:
     file: ../../common-optimizations.yml
     service: base-security
@@ -136,6 +137,7 @@ services:
       KAFKA_JMX_HOSTNAME: kafka-3
 
   schema-registry:
+    profiles: ['messaging']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -163,7 +165,6 @@ services:
       kafka-1: { condition: service_healthy }
       kafka-2: { condition: service_healthy }
       kafka-3: { condition: service_healthy }
-      schema-registry: { condition: service_started }
     healthcheck:
       test:
         ['CMD-SHELL', 'curl -fsS http://localhost:${SCHEMA_REGISTRY_PORT:-8081}/subjects || exit 1']
@@ -173,6 +174,7 @@ services:
       start_period: 30s
 
   kafka-connect:
+    profiles: ['messaging']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
@@ -230,6 +232,7 @@ services:
       start_period: 30s
 
   kafka-rest-proxy:
+    profiles: ['messaging']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -263,6 +266,7 @@ services:
       start_period: 30s
 
   kafbat-ui:
+    profiles: ['messaging']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -309,6 +313,7 @@ services:
       start_period: 30s
 
   kafka-exporter:
+    profiles: ['messaging']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -334,6 +339,7 @@ services:
       start_period: 30s
 
   kafka-init:
+    profiles: ['messaging']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

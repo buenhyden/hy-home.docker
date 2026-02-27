@@ -2,17 +2,17 @@
 title: '[ARD-MSG-01] Messaging & Eventing Architecture'
 status: 'Approved'
 owner: 'Infrastructure Architect'
-prd_reference: '[messaging-prd.md](../prd/messaging-prd.md)'
-adr_references: '[adr-0006](../adr/adr-0006-event-streaming-protocol.md)'
+prd_reference: '../prd/messaging-prd.md'
+adr_references: ['../adr/adr-0006-event-streaming-protocol.md']
 tags: ['ard', 'messaging', 'infra', 'kafka', 'rabbitmq']
 ---
 
-# [ARD-MSG-01] Messaging & Eventing Architecture Reference Document
+# Architecture Reference Document (ARD)
 
 > **Status**: Approved
 > **Owner**: Infrastructure Architect
-> **PRD Reference**: [messaging-prd.md](../prd/messaging-prd.md)
-> **ADR References**: [adr-0006](../adr/adr-0006-event-streaming-protocol.md)
+> **PRD Reference**: [[REQ-PRD-MSG-01] Messaging & Eventing PRD](../prd/messaging-prd.md)
+> **ADR References**: [ADR-0006](../adr/adr-0006-event-streaming-protocol.md)
 
 ---
 
@@ -39,7 +39,7 @@ C4Context
     Rel(msg_bus, persistence, "Streams to Sinks")
 ```
 
-## 4. Architecture & Tech Stack Decisions
+## 4. Component Architecture & Tech Stack Decisions
 
 ### 4.1 Component Architecture
 
@@ -63,11 +63,17 @@ C4Context
 - **Access Control**: Topic-level ACLs for all producers and consumers.
 - **Data in Transit**: Mandatory TLS for all messaging endpoints.
 
+## 7. Infrastructure & Deployment
+
+- **Profile**: Managed under the `messaging` Docker Compose profile.
+- **High Availability**: 3-node Kafka cluster with spread across internal sub-nets.
+
 ## 8. Non-Functional Requirements (NFRs)
 
-- **Durability**: `min.insync.replicas=2` enforced via Sidecars (see [automation spec](../../../../../specs/infra/automation/spec.md)).
+- **Durability**: `min.insync.replicas=2` enforced via Sidecars (see [[REQ-SPEC-AUTO-01] Infrastructure Automation Spec](../../specs/infra/automation/spec.md)).
+- **Latency**: End-to-end messaging latency SHALL remain < 100ms (p95).
 
-## 9. Architectural Principles & Trade-offs
+## 9. Architectural Principles, Constraints & Trade-offs
 
 - **What NOT to do**: Use RabbitMQ for long-term event retention.
 - **Chosen Path**: KRaft over Zookeeper to reduce operational complexity and initialization time.

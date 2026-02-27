@@ -1,17 +1,17 @@
 ---
-title: '[ARD-BASE-01] Infrastructure Baseline Reference Document'
+title: '[ARD-BASE-01] Infrastructure Baseline Reference'
 status: 'Approved'
 owner: 'Platform Architect'
-prd_reference: '[infra-baseline-prd.md](../prd/infra-baseline-prd.md)'
-adr_references: '[adr-0001](../adr/adr-0001-root-orchestration-include.md) to [adr-0004](../adr/adr-0004-tiered-directory-structure.md)'
+prd_reference: '../prd/infra-baseline-prd.md'
+adr_references: ['../adr/adr-0001-root-orchestration-include.md']
 ---
 
-# [ARD-BASE-01] Infrastructure Baseline Reference Document
+# Architecture Reference Document (ARD)
 
 > **Status**: Approved
 > **Owner**: Platform Architect
-> **PRD Reference**: [infra-baseline-prd.md](../prd/infra-baseline-prd.md)
-> **ADR References**: [adr-0001](../adr/adr-0001-root-orchestration-include.md) to [adr-0004](../adr/adr-0004-tiered-directory-structure.md)
+> **PRD Reference**: [[REQ-PRD-BASE-01] Infrastructure Baseline PRD](../prd/infra-baseline-prd.md)
+> **ADR References**: [ADR-0001](../adr/adr-0001-root-orchestration-include.md) to [ADR-0004](../adr/adr-0004-tiered-directory-structure.md)
 
 ---
 
@@ -38,7 +38,7 @@ C4Context
     Rel(infra, docker, "Runs on")
 ```
 
-## 4. Architecture & Tech Stack Decisions
+## 4. Component Architecture & Tech Stack Decisions
 
 ### 4.1 Component Architecture
 
@@ -63,7 +63,7 @@ C4Container
 ## 5. Data Architecture
 
 - **Domain Model**: Tiered service folders (`01-gateway`, `04-data`, etc.)
-- **Storage Strategy**: Bind mounts to `${DEFAULT_DATA_DIR}` for persistent data; Docker volumes for transient logs and caches.
+- **Storage Strategy**: Bind mounts to `${DEFAULT_DATA_DIR}` for persistent data.
 - **Data Flow**: Direct container push to Loki for logs; sidecar initialization for schema readiness.
 
 ## 6. Security & Compliance
@@ -88,5 +88,5 @@ C4Container
 
 - **What NOT to do**: Use static IP addresses for inter-service communication.
 - **Constraints**: Limited by host RAM (target < 4GB idle footprint).
-- **Chosen Path Rationale**: Docker Compose chosen for low overhead and developer familiarity over local K8s (k3s/kind).
-- **Known Limitations**: Lacks the native service discovery features of a full mesh (e.g., Istio).
+- **Chosen Path Rationale**: Docker Compose chosen for low overhead and developer familiarity over local K8s.
+- **Known Limitations**: Lacks the native service discovery features of a full mesh.

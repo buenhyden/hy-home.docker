@@ -3,14 +3,17 @@ title: '[ARD-OBS-01] Observability Stack Architecture Reference'
 status: 'Approved'
 version: '1.0.0'
 owner: 'Platform Architect'
-prd_reference: '../prd/infra-baseline-prd.md'
+prd_reference: '../prd/observability-prd.md'
 adr_references: ['../adr/adr-0005-sidecar-resource-initialization.md']
 tags: ['ard', 'observability', 'lgtm', 'alloy']
 ---
 
-# [ARD-OBS-01] Observability Stack Architecture Reference
+# Architecture Reference Document (ARD)
 
-_Target Directory: `docs/ard/observability-ard.md`_
+> **Status**: Approved
+> **Owner**: Platform Architect
+> **PRD Reference**: [[REQ-PRD-OBS-01] Unified Observability PRD](../prd/observability-prd.md)
+> **ADR References**: [ADR-0005](../adr/adr-0005-sidecar-resource-initialization.md)
 
 ---
 
@@ -22,9 +25,7 @@ The Hy-Home Observability stack implements the **LGTM** pattern, providing a uni
 
 - **Unified Visibility**: Single pane of glass for all infrastructure tiers.
 - **Operational Intelligence**: Fast root-cause analysis via trace-to-log correlation.
-- Reduce MTTR for infrastructure and application failures.
-- Provide a single pane of glass for multi-tier resource monitoring.
-- Enforce structured telemetry standards across all containerized services.
+- **Resilience**: Enforce structured telemetry standards across all containerized services.
 
 ## 3. System Overview & Context
 
@@ -48,7 +49,7 @@ graph LR
     L & P & T --> G
 ```
 
-## 4. Architecture & Tech Stack Decisions
+## 4. Component Architecture & Tech Stack Decisions
 
 ### 4.1 Component Architecture
 
@@ -69,11 +70,17 @@ graph LR
   - Logs: 14 days (local disk).
   - Metrics: 30 days (Prometheus TSDB).
   - Traces: 7 days.
+- **Schema**: Structured logs in JSON format are primary for high-cardinality analysis.
 
 ## 6. Security & Compliance
 
 - **Storage Security**: Local filesystem encryption for telemetry data.
 - **Access Control**: RBAC enforced via Grafana integration with Keycloak.
+
+## 7. Infrastructure & Deployment
+
+- **Profile**: Managed under the `obs` Docker Compose profile.
+- **Sidecars**: Uses initialization sidecars for dashboard and data source injection.
 
 ## 8. Non-Functional Requirements (NFRs)
 
@@ -84,7 +91,5 @@ graph LR
 
 - **Constraints**: Relies on specific Docker plugins (Loki) being installed on the host.
 - **What NOT to do**: Use local file logging inside containers.
-- **Chosen Path Rationale**: LGTM stack chosen for its deep integration and shared metadata model.
-or to reduce host I/O.
-- **Chosen Path**: Single Alloy agent over fragmented exporters to minimize total system resource footprint.
-- **Configuration Standard**: All services SHALL inherit from `infra/common-optimizations.yml` for unified observability labels and security settings.
+- **Chosen Path Rationale**: LGTM stack chosen for its deep integration and single Alloy agent over fragmented exporters to minimize footprint.
+- **Configuration Standard**: All services SHALL inherit from `infra/common-optimizations.yml` for unified observability labels.

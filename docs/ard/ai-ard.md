@@ -3,17 +3,17 @@ title: '[ARD-AI-01] Local AI Stack Architecture Reference'
 status: 'Approved'
 version: '1.0.0'
 owner: 'Platform Architect'
-prd_reference: '../prd/infra-baseline-prd.md'
-adr_references: ['../adr/adr-0005-sidecar-resource-initialization.md']
+prd_reference: '../prd/ai-prd.md'
+adr_references: ['../adr/adr-0007-local-gpu-passthrough.md', '../adr/adr-0005-sidecar-resource-initialization.md']
 tags: ['ard', 'ai', 'ollama', 'rag', 'qdrant']
 ---
 
-# [ARD-AI-01] Local AI Infrastructure Reference Document
+# Architecture Reference Document (ARD)
 
 > **Status**: Approved
 > **Owner**: AI Infrastructure Engineer
-> **PRD Reference**: [ai-prd.md](../prd/ai-prd.md)
-> **ADR References**: [adr-0007](../adr/adr-0007-local-gpu-passthrough.md)
+> **PRD Reference**: [[REQ-PRD-AI-01] Local AI Infrastructure PRD](../prd/ai-prd.md)
+> **ADR References**: [ADR-0007](../adr/adr-0007-local-gpu-passthrough.md), [ADR-0005](../adr/adr-0005-sidecar-resource-initialization.md)
 
 ---
 
@@ -40,7 +40,7 @@ C4Context
     Rel(ai_serv, host_gpu, "Offloads Tensors")
 ```
 
-## 4. Architecture & Tech Stack Decisions
+## 4. Component Architecture & Tech Stack Decisions
 
 ### 4.1 Component Architecture
 
@@ -53,10 +53,20 @@ C4Context
 - **Acceleration**: NVIDIA CUDA / Container Toolkit
 - **Storage**: Persistent Docker volumes for `/root/.ollama/models`
 
+## 5. Data Architecture
+
+- **Model Persistence**: Models are stored in local bind paths `${DEFAULT_MODEL_DIR}` to survive container restarts.
+- **Telemetry**: Inference logs are tagged with `hy-home.tier=ai` and pushed to Loki.
+
 ## 6. Security & Compliance
 
 - **Prominent Guard**: Isolation within `infra_net` to prevent unauthenticated external prompt ingestion.
 - **Data Privacy**: 100% of data remains on the local host with zero telemetry to external model providers.
+
+## 7. Infrastructure & Deployment
+
+- **Profile**: Managed under the `ai` Docker Compose profile.
+- **Dependency**: Requires `nvidia-docker2` or matching toolkit on the host.
 
 ## 8. Non-Functional Requirements (NFRs)
 

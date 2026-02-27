@@ -1,24 +1,71 @@
-# [ADR-0014] Strategy for Infrastructure Optimization and Hardening Strategies
+# Architecture Decision Record (ADR)
 
-## Status
+_Target Directory: `docs/adr/adr-0014-optimization-strategies.md`_
 
-Approved
+## Title: System Optimization and Hardening Strategies
 
-## Context
+- **Status:** Accepted
+- **Date:** 2026-02-27
+- **Authors:** Platform Architect
+- **Deciders:** All Contributors
+- **Reviewers:** Security Agent
 
-The previous Hy-Home infrastructure integrated multiple Docker Compose sub-stacks via the `include` directive. However, it lacked standardization in security capabilities, observability drivers, and resource boundaries, leading to inconsistent security postures across tiers.
+## 1. Context and Problem Statement
 
-## Decision [REQ-SPT-09]
+The previous Hy-Home infrastructure integrated multiple Docker Compose sub-stacks via the `include` directive. However, it lacked standardization in security capabilities, observability drivers, and resource boundaries, leading to inconsistent security postures across tiers. How can we enforce a uniform baseline across various service types without excessive duplication?
 
-We SHALL implement the following optimization strategies to fulfill **[REQ-SYS-01]** and **[REQ-SYS-02]**:
+## 2. Decision Drivers
 
-1. **Template-Driven Inheritance**: All infrastructure services SHALL utilize the `extends` directive targeting `infra/common-optimizations.yml` to inherit resource presets and security baselines.
-2. **Minimal Capabilities Policy**: All infrastructure services MUST explicitly drop all capabilities (`cap_drop: ALL`) and utilize `no-new-privileges: true`.
-3. **Mandatory Loki Logging**: The `loki` logging driver MUST be the primary telemetry channel, configured once in composite templates to ensure unified metadata collection.
-4. **Deterministic Orchestration**: Service dependencies SHALL be enforced via `service_healthy` conditions to ensure reliable startup order.
-5. **Local Configuration Overlays**: Services SHALL maintain local `labels` for service-specific functional metadata (e.g., Traefik routing) while inheriting global security/resource invariants. Local `logging` blocks MAY be maintained for file-level isolation despite redundancy.
+- **Security**: Mandatory principle of least privilege.
+- **Observability**: Unified log routing for all services.
+- **Resource Management**: Preventing noisy neighbors in constrained environments.
+- **Developer Experience**: Simple inheritance model using Docker Compose native features.
 
-## Consequences [REQ-SPT-05]
+## 3. Decision Outcome
 
-- **Positive**: Uniform security across all tiers, predictable resource consumption, and simplified log aggregation.
-- **Negative**: Redundant YAML blocks in local stacks if file-level isolation is prioritized over strict deduplication.
+**Chosen option: "Template-Driven Inheritance via common-optimizations.yml"**, because it provides the best balance between central governance and service-specific flexibility using standard Docker Compose `extends`.
+
+### 3.1 Core Engineering Pillars Alignment
+
+- **Security**: Aligns with `[REQ-SEC-01]` by dropping all capabilities and enforcing non-root users.
+- **Observability**: Aligns with `[REQ-OBS-01]` by mandating the Loki logging driver.
+- **Performance**: Aligns with `[REQ-PERF-01]` by enforcing CPU and memory limits.
+- **Documentation**: Standardizes the inheritance model documented in technical specs.
+
+### 3.2 Positive Consequences
+
+- Uniform security across all tiers.
+- Predictable resource consumption.
+- Simplified log aggregation with consistent metadata.
+
+### 3.3 Negative Consequences
+
+- Redundant YAML blocks in local stacks if file-level isolation is prioritized over strict deduplication.
+- Learning curve for new contributors regarding the `extends` pattern.
+
+## 4. Alternatives Considered (Pros and Cons)
+
+### Manual Duplication
+
+Repeating security and resource blocks in every `docker-compose.yml`.
+
+- **Good**, because files are self-contained.
+- **Bad**, because it's impossible to audit and leads to configuration drift.
+
+### Docker Swarm Configs/Secrets
+
+Using native Swarm features for global defaults.
+
+- **Good**, because it scales better across multiple nodes.
+- **Bad**, because it adds significant operational overhead for a single-node labs setup.
+
+## 5. Confidence Level & Technical Requirements
+
+- **Confidence Rating**: High
+- **Notes**: The `extends` pattern is a proven standard in modern Docker Compose.
+- **Technical Requirements Addressed**: [REQ-INFRA-GLOB-01, REQ-SEC-HARDEN-01]
+
+## 6. Related Documents (Traceability)
+
+- **Feature PRD**: [[PRD-OPT-01] Infrastructure Optimization PRD](../prd/system-optimization-prd.md)
+- **Feature Spec**: [[SPEC-INFRA-04] System Optimization Spec](../../specs/infra/system-optimization/spec.md)

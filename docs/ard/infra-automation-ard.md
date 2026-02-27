@@ -3,15 +3,15 @@ title: '[ARD-AUTO-01] Scaling & Autonomous Patterns'
 status: 'Approved'
 owner: 'Platform Architect'
 prd_reference: '[infra-automation-prd.md](../prd/infra-automation-prd.md)'
-adr_references: '[adr-0005](../adr/adr-0005-sidecar-resource-initialization.md)'
+adr_references: ['[adr-0005](../adr/adr-0005-sidecar-resource-initialization.md)']
 ---
 
-# [ARD-AUTO-01] Scaling & Autonomous Patterns Reference Document
+# Architecture Reference Document (ARD)
 
 > **Status**: Approved
 > **Owner**: Platform Architect
-> **PRD Reference**: [infra-automation-prd.md](../prd/infra-automation-prd.md)
-> **ADR References**: [adr-0005](../adr/adr-0005-sidecar-resource-initialization.md)
+> **PRD Reference**: [[REQ-PRD-AUTO-01] Infrastructure Automation PRD](../prd/infra-automation-prd.md)
+> **ADR References**: [ADR-0005](../adr/adr-0005-sidecar-resource-initialization.md)
 
 ---
 
@@ -38,7 +38,7 @@ C4Context
     Rel(app_repo, main_infra, "Connects via project_net bridge")
 ```
 
-## 4. Architecture & Tech Stack Decisions
+## 4. Component Architecture & Tech Stack Decisions
 
 ### 4.1 Component Architecture
 
@@ -54,6 +54,11 @@ C4Context
 
 - **Schema Provisioning**: Sidecars run idempotent scripts on boot to ensure Day-0 readiness for buckets, topics, and users.
 - **Metadata Flow**: Provisioning logs are pushed to Loki for operational auditing.
+
+## 6. Security & Compliance
+
+- **Access Controls**: Provisioning scripts use temporary tokens or dedicated service accounts with restrictive scopes.
+- **Auditing**: All provisioning actions MUST generate a `Level=INFO` log event in Loki for compliance tracking.
 
 ## 7. Infrastructure & Deployment
 

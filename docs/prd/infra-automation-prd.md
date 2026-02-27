@@ -1,15 +1,15 @@
 ---
 title: '[PRD-AUTO-01] Infrastructure Automation PRD'
-status: 'Draft'
+status: 'Approved'
 version: 'v1.1.0'
 owner: 'Platform Architect'
 stakeholders: 'Platform Team'
 tags: ['prd', 'requirements', 'automation', 'phase2']
 ---
 
-# [PRD-AUTO-01] Infrastructure Automation PRD
+# Product Requirements Document (PRD)
 
-> **Status**: Draft
+> **Status**: Approved
 > **Target Version**: v1.1.0
 > **Owner**: Platform Architect
 > **Stakeholders**: Platform Team
@@ -26,7 +26,7 @@ _Note: This document defines the What and Why for autonomous infrastructure capa
 | Vision & Goal         | Is the problem + business goal defined in one paragraph?               | Must     | Autonomous platform vision   | Section 1   |
 | Success Metrics       | Are the key success/failure metrics defined with quantitative targets? | Must     | 50% toil reduction          | Section 3   |
 | Target Users          | Are specific primary personas and their pain points defined?           | Must     | Identified Persona 1 & 2    | Section 2   |
-| Use Case (GWT)        | Are acceptance criteria written in Given-When-Then format?             | Must     | STORY-PH2-01 defined        | Section 4   |
+| Use Case (GWT)        | Are acceptance criteria written in Given-When-Then format?             | Must     | STORY-AUTO-01 defined       | Section 4   |
 | Scope (In)            | Is the feature list included in this release clearly defined?          | Must     | Sidecars & Dashboards code  | Section 5   |
 | Not in Scope          | Is what we will NOT build in this release explicitly listed?           | Must     | Out-of-scope defined        | Section 6   |
 | Timeline & Milestones | Are PoC / MVP / Beta / v1.0 milestones dated?                          | Must     | Roadmap established         | Section 7   |
@@ -51,22 +51,22 @@ _Note: This document defines the What and Why for autonomous infrastructure capa
 
 ## 3. Success Metrics (Quantitative)
 
-| ID                 | Metric Name        | Baseline (Current) | Target (Success) | Measurement Period  |
-| ------------------ | ------------------ | ------------------ | ---------------- | ------------------- |
-| **REQ-PRD-MET-01** | Provisioning Toil  | 10 manual steps    | 0 manual steps   | Per cluster setup   |
-| **REQ-PRD-MET-02** | Dashboard Readiness| > 1 hour           | < 5 seconds      | Post-service start  |
+| ID                      | Metric Name        | Baseline (Current) | Target (Success) | Measurement Period  |
+| ----------------------- | ------------------ | ------------------ | ---------------- | ------------------- |
+| **REQ-PRD-AUTO-MET-01** | Provisioning Toil  | 10 manual steps    | 0 manual steps   | Per cluster setup   |
+| **REQ-PRD-AUTO-MET-02** | Dashboard Readiness| > 1 hour           | < 5 seconds      | Post-service start  |
 
 ## 4. Key Use Cases & Acceptance Criteria (GWT)
 
 | ID           | User Story (INVEST)                                                                      | Acceptance Criteria (Given-When-Then)                                                                                                |
 | ------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **STORY-PH2-01** | **As a** DevOps Engineer,<br>**I want** init-sidecars,<br>**So that** my data cluster is ready on boot. | **Given** OpenSearch starts,<br>**When** `opensearch-init` runs,<br>**Then** index templates are created automatically. |
+| **STORY-AUTO-01** | **As a** DevOps Engineer,<br>**I want** init-sidecars,<br>**So that** my data cluster is ready on boot. | **Given** OpenSearch starts,<br>**When** `opensearch-init` runs,<br>**Then** index templates are created automatically. |
 
 ## 5. Scope & Functional Requirements
 
-- **[REQ-PRD-FUN-01]** Sidecar-based resource initialization (e.g., `os-init`, `k-init`).
-- **[REQ-PRD-FUN-02]** Provisioned Grafana Dashboards as Code (YAML/JSON).
-- **[REQ-PRD-FUN-03]** Multi-Project bridge networking via `project_net` for autonomous integration.
+- **[REQ-PRD-AUTO-FUN-01]** Sidecar-based resource initialization (e.g., `os-init`, `k-init`).
+- **[REQ-PRD-AUTO-FUN-02]** Provisioned Grafana Dashboards as Code (YAML/JSON).
+- **[REQ-PRD-AUTO-FUN-03]** Multi-Project bridge networking via `project_net` for autonomous integration.
 
 ## 6. Out of Scope
 
@@ -97,5 +97,5 @@ _Note: This document defines the What and Why for autonomous infrastructure capa
 
 ## 11. Related Documents (Reference / Traceability)
 
-- **Technical Specification**: [[SPEC-INFRA-03] Infrastructure Automation Specification](../../../specs/infra/automation/spec.md)
+- **Technical Specification**: [[REQ-SPEC-AUTO-01] Infrastructure Automation Spec](../../specs/infra/automation/spec.md)
 - **Architecture Decisions (ADRs)**: [[ADR-0005] Sidecar Resource Initialization](../adr/adr-0005-sidecar-resource-initialization.md)

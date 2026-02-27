@@ -46,6 +46,7 @@ networks:
 
 services:
   mng-valkey:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -83,6 +84,7 @@ services:
       start_period: 30s
 
   mng-valkey-exporter:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -126,6 +128,7 @@ services:
         condition: service_healthy
 
   redisinsight:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -146,6 +149,7 @@ services:
       traefik.http.services.redisinsight.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-8001}
 
   mng-pg:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -174,6 +178,7 @@ services:
       start_period: 30s
 
   mng-pg-init:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: base-resource-low
@@ -229,6 +234,7 @@ services:
       start_period: 30s
 
   mng-pg-exporter:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
