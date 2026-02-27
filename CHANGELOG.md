@@ -134,6 +134,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add healthchecks and tier labels to various services, configure Stalwart volume, update .env.example, and remove Loki logging drivers from mail services.
 - Introduce standardized tier labeling for observability, refine infrastructure optimizations, and update healthcheck configurations
 - Introduce read-only filesystems for several services, standardize tier labels, and update network configurations.
+- Introduce a comprehensive AI agent guide (`GEMINI.md`) and standardize Docker Compose profiles for AI services.
+- Refactor Docker Compose files to remove static IPs, external networks, and top-level names, introduce service profiles, and update related documentation and specs.
+- Add script to bootstrap file-based Docker secrets, including its specification, plan, and documentation updates.
+- Add infrastructure implementation plans for baseline, global-baseline, messaging, observability, service standards, AI, and automation.
 
 ### Changed
 
@@ -235,6 +239,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Consolidate configuration management ADRs, update requirement IDs, and refine infrastructure documentation references.
 - Add new PRDs for system architecture, observability, messaging, and AI, and update related ARDs, ADRs, and infrastructure specifications.
 - Standardize ADR, PRD, and ARD formats, and implement Docker Compose profiles for infrastructure services.
+- Refine architectural decision records and standardize `docker compose` command usage across documentation.
 
 ### Fixed
 
@@ -337,6 +342,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - Add .gitkeep files to various secrets subdirectories for version control.
+- **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
