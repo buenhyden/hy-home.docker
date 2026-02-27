@@ -31,6 +31,15 @@ Implementation SHALL utilize global service templates in `infra/common-optimizat
 
 Local `docker-compose.yml` files MUST define internal YAML anchors (e.g., `&labels-base`) for tier-specific metadata that cannot be captured in global generic templates.
 
+## 9. Configuration Deduplication
+
+To ensure consistency and reduce maintenance overhead, the infrastructure adopts a template-based configuration model:
+
+1. **Inheritance**: All services MUST extend from `infra/common-optimizations.yml`.
+2. **Specialized Anchors**: Use tier-level anchors for logging and labels to ensure unified discovery.
+3. **Path Abstraction**: All host paths MUST use environment variables (e.g., `${DEFAULT_DATA_DIR}`) instead of absolute paths.
+4. **Resource Caps**: Standardized profiles (`low`, `med`, `high`) are enforced via global templates.
+
 ### 2.2 Telemetry Architecture
 
 ```mermaid

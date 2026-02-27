@@ -99,3 +99,20 @@ services:
       options:
         loki-url: "http://localhost:3100/loki/api/v1/push"
         loki-external-labels: "container_name={{.Name}}"
+  base-security-hardened-nonroot: # Hardened + Non-root
+    extends:
+      service: base-security-hardened
+    user: "1000:1000"
+
+  # ── Logging Anchors ──────────────────────────────────────
+  x-logging-loki: &loki-logging
+    driver: loki
+    options:
+      loki-url: "http://localhost:3100/loki/api/v1/push"
+      loki-external-labels:
+        'container_name={{.Name}},tier={{.Label "hy-home.tier"}}'
+
+  # ── Metadata Anchors ─────────────────────────────────────
+  x-labels-infra: &labels-infra
+    hy-home.managed: "true"
+    observability.logs: "true"

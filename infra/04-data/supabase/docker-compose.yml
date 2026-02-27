@@ -10,12 +10,13 @@ name: supabase
 x-labels-base: &labels-base
   hy-home.managed: 'true'
   hy-home.tier: data
+  observability.logs: 'true'
 
 x-logging: &default-logging
-  driver: 'json-file'
+  driver: 'loki'
   options:
-    max-size: '5m'
-    max-file: '2'
+    loki-url: 'http://localhost:3100/loki/api/v1/push'
+    loki-external-labels: 'container_name={{.Name}},tier=data'
 
 volumes:
   db-config:

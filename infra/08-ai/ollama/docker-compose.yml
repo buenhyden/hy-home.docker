@@ -3,14 +3,21 @@ name: ollama
 x-labels-base: &labels-base
   hy-home.managed: 'true'
   hy-home.tier: ai
+  observability.logs: 'true'
+
+x-logging: &default-logging
+  driver: 'loki'
+  options:
+    loki-url: 'http://localhost:3100/loki/api/v1/push'
+    loki-external-labels: 'container_name={{.Name}},tier=ai'
 
 volumes:
   ollama-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_AI_MODEL_DIR}/ollama
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AI_MODEL_DIR}/ollama
 
 services:
   ollama:
@@ -21,8 +28,6 @@ services:
       service: template-infra-high
     image: ollama/ollama:0.13.5
     container_name: ollama
-    # 하지만 Ollama는 NVIDIA runtime을 사용하므로 cap_drop이 문제될 수 있음.
-    # 여기서는 base-resource-high만 가져오고 security는 개별 설정 권장.
     deploy:
       resources:
         limits:
@@ -34,7 +39,6 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-
     labels:
       <<: *labels-base
       traefik.enable: 'true'
@@ -43,13 +47,15 @@ services:
       traefik.http.routers.ollama.tls: 'true'
       traefik.http.services.ollama.loadbalancer.server.port: ${OLLAMA_PORT:-11434}
       traefik.http.routers.ollama.middlewares: sso-auth@file
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
+    logging: *default-logging
     networks:
       - infra_net
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:11434/api/tags || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 1m
 
   ollama-exporter:
     extends:
@@ -66,6 +72,8 @@ services:
     depends_on:
       ollama:
         condition: service_healthy
+    labels: *labels-base
+    logging: *default-logging
 
 networks:
   infra_net:

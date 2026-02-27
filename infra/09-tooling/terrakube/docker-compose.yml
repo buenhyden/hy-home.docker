@@ -3,6 +3,14 @@ name: terrakube
 x-labels-base: &labels-base
   hy-home.managed: 'true'
   hy-home.tier: tooling
+  observability.logs: 'true'
+
+x-logging: &default-logging
+  driver: 'loki'
+  options:
+    loki-url: 'http://localhost:3100/loki/api/v1/push'
+    loki-external-labels: 'container_name={{.Name}},tier=tooling'
+
 services:
   # ----------------------------------------------------------------
   # 5. Terrakube API (백엔드)
@@ -72,11 +80,7 @@ services:
         condition: service_started
     networks:
       - infra_net
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
+    logging: *default-logging
 
   # ----------------------------------------------------------------
   # 6. Terrakube UI (프론트엔드)
@@ -111,11 +115,7 @@ services:
         condition: service_healthy
     networks:
       - infra_net
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
+    logging: *default-logging
 
   # ----------------------------------------------------------------
   # 7. 인프라 (DB, Redis, Executor)
@@ -182,11 +182,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.terrakube-executor.rule: Host(`terrakube-executor.${DEFAULT_URL}`)
       traefik.http.services.terrakube-executor.loadbalancer.server.port: ${TERRAKUBE_EXECUTOR_PORT:-8090}
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
+    logging: *default-logging
 
 secrets:
   terrakube_db_password:

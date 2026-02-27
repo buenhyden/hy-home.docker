@@ -21,6 +21,8 @@ Establish a high-performance, secure, and observable home server infrastructure 
 - **[METRIC-08] Image Pinning**: 100% of service images must use specific version tags (no `latest`).
 - **[METRIC-09] Healthcheck Saturation**: 100% of core persistent and gateway services MUST have valid `healthcheck` definitions.
 - **[METRIC-10] Portability Index**: Zero hardcoded IP addresses (v4/v6) in service-level configurations.
+- [METRIC-11] Configuration Density: 100% of services MUST inherit security/logging from `common-optimizations.yml`.
+- [METRIC-12] Environment Portability: Zero hardcoded project-specific absolute paths in `.env.example` (use `${HOME}`).
 
 ## 4. Use Cases [REQ-SPT-04]
 

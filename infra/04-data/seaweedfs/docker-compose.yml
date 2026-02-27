@@ -1,25 +1,30 @@
-x-common:
-  logging: &logging { driver: 'json-file', options: { max-size: '5m', max-file: '2' } }
-  res-low: &res-low { deploy: { resources: { limits: { cpus: '0.2', memory: 128M }, reservations: { memory: 64M } } } }
-  res-med: &res-med { deploy: { resources: { limits: { cpus: '0.5', memory: 512M }, reservations: { memory: 256M } } } }
-  res-high: &res-high { deploy: { resources: { limits: { cpus: '1.0', memory: 1G }, reservations: { memory: 512M } } } }
-  restart: &restart { restart: unless-stopped }
-  labels-base: &labels-base { traefik.enable: 'true', hy-home.managed: 'true' }
+name: seaweedfs
+
+x-labels-base: &labels-base
+  hy-home.managed: 'true'
+  hy-home.tier: data
+  observability.logs: 'true'
 
 x-logging: &default-logging
+  driver: 'loki'
+  options:
+    loki-url: 'http://localhost:3100/loki/api/v1/push'
+    loki-external-labels: 'container_name={{.Name}},tier=data'
+
 volumes:
   seaweedfs-master-data:
   seaweedfs-volume-data:
+
 services:
   # ----------------------------------------------------------------
   # SeaweedFS (스토리지 클러스터)
   # ----------------------------------------------------------------
   seaweedfs-master:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: chrislusf/seaweedfs:4.05
     container_name: seaweedfs-master
-    # ports:
-    #   - "9333:${SEAWEEDFS_MASTER_PORT}"
-    #   - "19333:19333"
     expose:
       - ${SEAWEEDFS_MASTER_HTTP_PORT:-9333}
       - ${SEAWEEDFS_MASTER_GRPC_PORT:-19333}
@@ -29,19 +34,20 @@ services:
     networks:
       - infra_net
     labels:
-      - 'traefik.enable=true'
-      # [CDN 용도] Filer는 파일 시스템처럼 접근 가능하므로 정적 에셋 제공에 최적화됨
-      - 'traefik.http.routers.seaweedfs-master.rule=Host(`seaweedfs.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.seaweedfs-master.entrypoints=websecure'
-      - 'traefik.http.routers.seaweedfs-master.tls=true'
-      - 'traefik.http.services.seaweedfs-master.loadbalancer.server.port=${SEAWEEDFS_MASTER_HTTP_PORT:-9333}'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.seaweedfs-master.rule: Host(`seaweedfs.${DEFAULT_URL}`)
+      traefik.http.routers.seaweedfs-master.entrypoints: websecure
+      traefik.http.routers.seaweedfs-master.tls: 'true'
+      traefik.http.services.seaweedfs-master.loadbalancer.server.port: ${SEAWEEDFS_MASTER_HTTP_PORT:-9333}
+    logging: *default-logging
 
   seaweedfs-volume:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     image: chrislusf/seaweedfs:4.05
     container_name: seaweedfs-volume
-    # ports:
-    #   - "8085:${SEAWEEDFS_VOLUME_PORT}" # Host port changed to avoid conflict
-    #   - "18080:18080"
     expose:
       - ${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}
       - ${SEAWEEDFS_VOLUME_GRPC_PORT:-18085}
@@ -53,13 +59,14 @@ services:
         condition: service_healthy
     networks:
       - infra_net
+    logging: *default-logging
 
   seaweedfs-filer:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: chrislusf/seaweedfs:4.05
     container_name: seaweedfs-filer
-    # ports:
-    #   - "8888:${SEAWEEDFS_FILER_PORT}"
-    #   - "18888:18888"
     expose:
       - ${SEAWEEDFS_FILER_HTTP_PORT:-8888}
       - ${SEAWEEDFS_FILER_GRPC_PORT:-18888}
@@ -70,43 +77,47 @@ services:
       seaweedfs-volume:
         condition: service_healthy
     labels:
-      - 'traefik.enable=true'
-      # [CDN 용도] Filer는 파일 시스템처럼 접근 가능하므로 정적 에셋 제공에 최적화됨
-      - 'traefik.http.routers.cdn.rule=Host(`cdn.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.cdn.entrypoints=websecure'
-      - 'traefik.http.routers.cdn.tls=true'
-      - 'traefik.http.services.cdn.loadbalancer.server.port=${SEAWEEDFS_FILER_HTTP_PORT:-8888}'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.cdn.rule: Host(`cdn.${DEFAULT_URL}`)
+      traefik.http.routers.cdn.entrypoints: websecure
+      traefik.http.routers.cdn.tls: 'true'
+      traefik.http.services.cdn.loadbalancer.server.port: ${SEAWEEDFS_FILER_HTTP_PORT:-8888}
     networks:
       - infra_net
+    logging: *default-logging
 
   seaweedfs-s3:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: chrislusf/seaweedfs:4.05
     container_name: seaweedfs-s3
-    # ports:
-    #   - "8333:${SEAWEEDFS_S3_HTTP_PORT}"
-    # S3 API Gateway
     expose:
       - ${SEAWEEDFS_S3_HTTP_PORT:-8333}
     command: '-v=1 s3 -filer=seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888} -ip.bind=seaweedfs-s3'
     labels:
-      - 'traefik.enable=true'
-      # [S3 API 용도] Tempo/Loki가 내부적으로 사용할 수도 있고, 외부에서 접근할 수도 있음
-      - 'traefik.http.routers.s3.rule=Host(`s3.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.s3.entrypoints=websecure'
-      - 'traefik.http.routers.s3.tls=true'
-      - 'traefik.http.services.s3.loadbalancer.server.port=${SEAWEEDFS_S3_HTTP_PORT:-8333}'
+      <<: *labels-base
+      traefik.enable: 'true'
+      traefik.http.routers.s3.rule: Host(`s3.${DEFAULT_URL}`)
+      traefik.http.routers.s3.entrypoints: websecure
+      traefik.http.routers.s3.tls: 'true'
+      traefik.http.services.s3.loadbalancer.server.port: ${SEAWEEDFS_S3_HTTP_PORT:-8333}
     depends_on:
       seaweedfs-filer:
         condition: service_healthy
     networks:
       - infra_net
+    logging: *default-logging
 
   seaweedfs-mount:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
     image: chrislusf/seaweedfs:4.05
     privileged: true
     cap_add:
       - SYS_ADMIN
-    mem_limit: 4096m
     command: '-v=4 mount -filer="seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888}" -dirAutoCreate -dir=/mnt/seaweedfs -cacheCapacityMB=100 -concurrentWriters=128'
     networks:
       - infra_net
@@ -117,4 +128,9 @@ services:
         condition: service_healthy
       seaweedfs-filer:
         condition: service_healthy
-    # privileged + SYS_ADMIN required for mount; cap_drop is intentionally omitted.
+    logging: *default-logging
+
+networks:
+  infra_net:
+    name: infra_net
+    external: true
