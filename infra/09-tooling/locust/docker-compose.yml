@@ -38,19 +38,23 @@ services:
     depends_on:
       influxdb:
         condition: service_healthy
+    labels:
+      <<: *tier-label
     healthcheck:
       test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:8089']
       interval: 30s
       timeout: 10s
       retries: 3
     extra_hosts:
-      - '${DEFAULT_URL}:host-gateway'
+      - '${DEFAULT_URL:-localhost}:host-gateway'
 
   locust-worker:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
     build: .
+    labels:
+      <<: *tier-label
     environment:
       - LOCUST_INFLUXDB_HOST=influxdb
       - LOCUST_INFLUXDB_PORT=${INFLUXDB_PORT:-8086}
@@ -73,7 +77,12 @@ services:
     deploy:
       replicas: 2 # 워커를 2개로 늘려서 부하 분산 (필요시 조절)
     extra_hosts:
-      - '${DEFAULT_URL}:host-gateway'
+      - '${DEFAULT_URL:-localhost}:host-gateway'
+
+networks:
+  infra_net:
+    name: infra_net
+    external: true
 
 secrets:
   influxdb_api_token:

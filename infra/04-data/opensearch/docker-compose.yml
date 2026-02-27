@@ -65,7 +65,7 @@ services:
       traefik.http.services.opensearch.loadbalancer.server.scheme: https
     healthcheck:
       test:
-        - "CMD-SHELL"
+        - 'CMD-SHELL'
         - "export OPENSEARCH_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) && curl -k -u admin:$${OPENSEARCH_ADMIN_PASSWORD} --silent --fail 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' || exit 1"
       interval: 15s
       timeout: 10s
@@ -107,9 +107,13 @@ services:
       traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport: opensearch-dashboards-transport@file
     depends_on:
       opensearch: { condition: service_healthy }
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /usr/share/opensearch-dashboards/data
     healthcheck:
       test:
-        - "CMD-SHELL"
+        - 'CMD-SHELL'
         - 'export OS_PASS=$$(cat /run/secrets/opensearch_dashboard_password) && curl -fsSk -u ${OPENSEARCH_DASHBOARD_USERNAME:-admin}:$${OS_PASS} https://localhost:${KIBANA_PORT:-5601}/api/status >/dev/null 2>&1 || exit 1'
       interval: 15s
       timeout: 30s
@@ -133,17 +137,20 @@ services:
       exec /bin/elasticsearch_exporter --es.uri=https://opensearch:9200 --es.all --es.indices --es.ssl-skip-verify
       "
     ports:
--      test: ['CMD-SHELL', 'curl -fsS http://localhost:${ES_EXPORTER_PORT:-9114}/metrics || exit 1']
-+      test: ['CMD-SHELL', 'curl -fsS http://localhost:${ES_EXPORTER_PORT:-9114}/metrics || exit 1']
-       interval: 15s
--      timeout: 30s
--      retries: 5
-+      timeout: 10s
-+      retries: 5
-       start_period: 30s
-+    labels:
-+      <<: *tier-label
-     secrets:
+      - '${ES_EXPORTER_HOST_PORT:-9114}:${ES_EXPORTER_PORT:-9114}'
+    networks:
+      - infra_net
+    depends_on:
+      opensearch: { condition: service_healthy }
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fsS http://localhost:${ES_EXPORTER_PORT:-9114}/metrics || exit 1']
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    labels:
+      <<: *tier-label
+    secrets:
       - opensearch_exporter_password
 
 networks:

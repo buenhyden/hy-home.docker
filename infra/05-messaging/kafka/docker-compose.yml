@@ -147,6 +147,9 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:${SCHEMA_REGISTRY_PORT:-8081}'
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092'
+    read_only: true
+    tmpfs:
+      - /tmp
     expose:
       - ${SCHEMA_REGISTRY_PORT:-8081}
     labels:
@@ -160,6 +163,7 @@ services:
       kafka-1: { condition: service_healthy }
       kafka-2: { condition: service_healthy }
       kafka-3: { condition: service_healthy }
+      schema-registry: { condition: service_started }
     healthcheck:
       test:
         ['CMD-SHELL', 'curl -fsS http://localhost:${SCHEMA_REGISTRY_PORT:-8081}/subjects || exit 1']
@@ -174,6 +178,10 @@ services:
       service: template-infra-high
     image: confluentinc/cp-kafka-connect:8.1.1
     container_name: kafka-connect
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /etc/kafka
     depends_on:
       kafka-1: { condition: service_healthy }
       kafka-2: { condition: service_healthy }
@@ -260,6 +268,9 @@ services:
       service: template-infra-med
     image: ghcr.io/kafbat/kafka-ui:main
     container_name: kafbat-ui
+    read_only: true
+    tmpfs:
+      - /tmp
     environment:
       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_ID}
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
@@ -290,10 +301,8 @@ services:
       kafka-connect: { condition: service_started }
     healthcheck:
       test:
-        [
-          'CMD-SHELL',
-          'wget --no-verbose --tries=1 --spider http://localhost:${KAFKA_UI_PORT:-8080}/actuator/health',
-        ]
+        - 'CMD-SHELL'
+        - 'wget --no-verbose --tries=1 --spider http://localhost:${KAFKA_UI_PORT:-8080}/actuator/health'
       interval: 15s
       timeout: 30s
       retries: 5

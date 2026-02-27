@@ -87,6 +87,7 @@ services:
       retries: 5
       start_period: 3m
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.prometheus.rule: Host(`prometheus.${DEFAULT_URL}`)
       traefik.http.routers.prometheus.entrypoints: websecure
