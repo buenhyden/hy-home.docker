@@ -122,6 +122,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce new architecture, requirements, and technical specifications for AI, messaging, and data platforms, enhancing infrastructure reliability and observability.
 - Centralize common Docker Compose configurations for logging, security, and resource management into `common-optimizations.yml` and apply them across services.
 - Centralize Docker Compose configurations by introducing a common optimizations file and a global baseline specification.
+- Standardize infrastructure networking by removing explicit IPv4 addresses and document the standardized init process for containers.
+- Add ADR-0012 for standardized init process and update system optimization PRD with new hardening metrics and requirements.
+- Implement read-only filesystems with tmpfs for stateless services and remove direct Loki logging configurations from services.
+- Standardize Docker Compose service definitions with mandatory directives, security hardening, and centralized logging via YAML anchors.
+- Introduce infrastructure directive standards, mandatory healthchecks, dynamic configuration, and volume path standardization across services.
+- Add MongoDB and Supabase to the Stateful Data tier documentation, standardize Supabase persistence paths, and introduce a new DB encryption key configuration.
+- Centralize Docker Compose configurations using common-optimizations and standardize Loki logging across services.
+- Integrate Loki logging and standardize network configurations across multiple infrastructure services.
+- Add `hy-home.tier` labels to docker-compose services using a shared YAML anchor for categorization.
+- Add healthchecks and tier labels to various services, configure Stalwart volume, update .env.example, and remove Loki logging drivers from mail services.
 
 ### Changed
 
@@ -147,6 +157,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Centralize Docker Compose configurations into `common-optimizations.yml` and optimize OpenSearch Dockerfile caching.
 - Embed common Docker Compose optimization anchors directly into service files and remove the shared include.
 - Restructure infrastructure specifications to a new structured format and rename the global baseline spec.
+- Standardize infrastructure configurations by adopting template-driven inheritance via `extends` for security, logging, and resource management.
+- Remove redundant logging configurations and label anchors from docker-compose files, and add a volume definition for ksql.
 
 ### Docs
 
@@ -217,6 +229,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Align root documentation with current policies, fix obsolete infra links, and update changelog for the 0.0.1-beta release.
 - Introduce new ADRs for infrastructure decisions and consolidate/remove outdated specifications and documentation.
 - Add new incident report and update postmortem for infrastructure documentation audit.
+- Consolidate configuration management ADRs, update requirement IDs, and refine infrastructure documentation references.
 
 ### Fixed
 
@@ -319,6 +332,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - Add .gitkeep files to various secrets subdirectories for version control.
+- **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
