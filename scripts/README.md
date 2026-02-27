@@ -16,6 +16,7 @@ This folder is necessary to encapsulate build, test, and environment scaffolding
 
 ## 3. Current Scripts
 
+- `scripts/bootstrap-secrets.sh`: Creates file-based secret files under `secrets/**/*.txt` referenced by the root `docker-compose.yml` (idempotent, no overwrite unless `--force`).
 - `scripts/validate-docker-compose.sh`: Validates root Compose config by creating temporary dummy prerequisites (secrets files) and running `docker compose config`.
 - `scripts/preflight-compose.sh`: Checks local bootstrap prerequisites (`.env`, cert files, secrets, mount directories, optional external networks) before `docker compose up -d`.
   - Optional-stack-only secrets (e.g., Cassandra/MongoDB/Neo4j/Syncthing) are reported as `WARN` instead of hard failure.

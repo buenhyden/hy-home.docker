@@ -2,7 +2,7 @@
 
 이 디렉토리는 인프라 내 서비스에서 사용하는 민감한 정보(비밀번호, API 키, 토큰 등)를 저장하고 관리합니다. 모든 파일은 `./docker-compose.yml`의 `secrets` 섹션에 정의되어 있으며, 컨테이너 실행 시 `/run/secrets/` 경로로 전달됩니다.
 
-## � 디렉토리 구조
+## 📁 디렉토리 구조
 
 ```text
 secrets/
@@ -20,7 +20,7 @@ secrets/
 
 ---
 
-## � 시크릿 상세 레지스트리
+## 🔐 시크릿 상세 레지스트리
 
 모든 시크릿 이름은 `./docker-compose.yml`에 정의된 `secrets` 이름을 기준으로 합니다.
 
@@ -31,6 +31,8 @@ secrets/
 | `smtp_password` | `common/smtp_password.txt` | 알림 및 메일 발송용 SMTP 비밀번호 |
 | `slack_webhook` | `common/slack_webhook.txt` | Slack Alert 전용 Webhook URL |
 | `smtp_username` | `common/smtp_username.txt` | 알림용 공용 SMTP 서버 계정명 |
+| `stalwart_password` | `common/stalwart_password.txt` | Stalwart Mail Server 관리자 비밀번호 |
+| `supabase_smtp_password` | `common/supabase_smtp_password.txt` | Supabase Auth(GoTrue) SMTP 비밀번호 |
 
 ### 2. 게이트웨이 및 인증 (`auth/`)
 
@@ -41,6 +43,7 @@ secrets/
 | `keycloak_admin_password` | `auth/keycloak_admin_password.txt` | Keycloak Master Realm 관리자 비밀번호 |
 | `oauth2_proxy_client_secret` | `auth/oauth2_proxy_client_secret.txt` | Keycloak/OAuth2 Proxy Client Secret |
 | `oauth2_proxy_cookie_secret` | `auth/oauth2_proxy_cookie_secret.txt` | OAuth2 Proxy 세션 암호화 쿠키 시크릿 |
+| `pg_haproxy_stats_password` | `auth/pg_haproxy_stats_password.txt` | PostgreSQL HAProxy Stats 비밀번호 |
 
 ### 3. 관측성 (`observability/`)
 
@@ -70,8 +73,8 @@ secrets/
 | `service_valkey_password` | `db/valkey/service_password.txt` | 서비스용 Valkey 클러스터 비밀번호 |
 | `mng_valkey_password` | `db/valkey/mng_password.txt` | 관리용(MNG) Valkey 비밀번호 |
 | `n8n_valkey_password` | `db/valkey/n8n_password.txt` | n8n 용 Valkey 전용 비밀번호 |
-| `oauth2_valkey_password` | `db/valkey/oauth2_password.txt` | OAuth2 Proxy 세션 저장용 비밀번호 |
 | `terrakube_valkey_password` | `db/valkey/terrakube_password.txt` | Terrakube Valkey 저장소 비밀번호 |
+| `airflow_valkey_password` | `db/valkey/airflow_password.txt` | Airflow Celery broker(Redis/Valkey) 비밀번호 |
 | `influxdb_password` | `db/influxdb/influxdb_password.txt` | InfluxDB 관리자(admin) 비밀번호 |
 | `influxdb_api_token` | `db/influxdb/influxdb_api_token.txt` | InfluxDB 관리자 액세스 토큰 |
 | `couchdb_password` | `db/couchdb/couchdb_password.txt` | CouchDB 클러스터 관리자 비밀번호 |
@@ -104,11 +107,10 @@ secrets/
 |:---:|---|---|
 | `airflow_fernet_key` | `automation/airflow_fernet_key.txt` | Airflow Fernet 암호화 키 |
 | `airflow_www_password` | `automation/airflow_www_password.txt` | Airflow WebUI 초기 관리자 비밀번호 |
-| `airflow_valkey_password` | `db/valkey/airflow_password.txt` | Airflow Celery broker(Redis/Valkey) 비밀번호 |
 | `n8n_encryption_key` | `automation/n8n_encryption_key.txt` | n8n 내부 데이터 암호화 키 |
 | `n8n_runner_auth_token` | `automation/n8n_runner_auth_token.txt` | n8n Worker 호스트 인증 토큰 |
 
-### 9. 개발 및 배포 도구 (`tools/` & `tools/`)
+### 9. 개발 및 배포 도구 (`tools/`)
 
 | Docker Secret Name | 파일 경로 | 용도 |
 |:---:|---|---|
@@ -128,10 +130,13 @@ secrets/
 | `supabase_secret_key_base` | `data/supabase_secret_key_base.txt` | Supabase 내부 Elixir/Phoenix 앱 시크릿 |
 | `supabase_vault_enc_key` | `data/supabase_vault_enc_key.txt` | Supabase Vault 확장 암호화 키 |
 | `supabase_pg_meta_crypto_key` | `data/supabase_pg_meta_crypto_key.txt` | PG Meta 서버 암호화 키 |
+| `supabase_db_enc_key` | `data/supabase_db_enc_key.txt` | Supabase Realtime DB 암호화 키 |
+| `supabase_openai_api_key` | `data/supabase_openai_api_key.txt` | Supabase Studio SQL Assistant(OpenAI) API 키 |
+| `supabase_logflare_private_token` | `data/supabase_logflare_private_token.txt` | Supabase Analytics(Logflare) private token |
 
 ---
 
-## � 보안 정책 및 주의사항
+## ✅ 보안 정책 및 주의사항
 
 - **생성 일시**: 2026-02-24
 - **관리 원칙**:
@@ -140,3 +145,11 @@ secrets/
   - 신규 서비스 추가 시 관련 컨테이너 내부의 `/run/secrets/` 경로를 통해 시크릿을 읽어오도록 구성하십시오.
 - **수동 교체 대상**:
   - `slack_webhook`, `smtp_username/password` 등 외부 연동이 필요한 시크릿은 생성 스크립트 실행 후 수동으로 실제 값을 채워 넣어야 합니다.
+
+## (옵션) Dedicated / Standalone 스택에서만 사용하는 시크릿
+
+루트 `docker-compose.yml` 기준 목록 외에, 일부 스택은 독립 실행(dedicated) 구성에서 추가 시크릿을 사용합니다.
+
+| Docker Secret Name | 파일 경로 | 용도 | 비고 |
+|:---:|---|---|---|
+| `oauth2_valkey_password` | `db/valkey/oauth2_password.txt` | OAuth2 Proxy 세션 저장용 Valkey 비밀번호 | `infra/02-auth/oauth2-proxy/docker-compose.dedicated.yml` 전용 |

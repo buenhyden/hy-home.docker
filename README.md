@@ -30,15 +30,22 @@ cp .env.example .env
 # 2) 로컬 TLS 인증서 생성 (최초 1회)
 bash scripts/generate-local-certs.sh
 
-# 3) Compose 정적 검증 (Docker 데몬 없이도 가능)
+# 3) 시크릿 파일 생성 (최초 1회)
+# - root docker-compose.yml의 secrets(file:)를 기준으로 `secrets/**/*.txt`를 생성
+# - 외부 연동이 필요한 값(Slack Webhook, SMTP 등)은 CHANGE_ME_* placeholder로 생성됨
+bash scripts/bootstrap-secrets.sh --env-file .env.example
+
+# (옵션) placeholder 강제 검증 (CHANGE_ME_*가 남아있으면 실패)
+# bash scripts/bootstrap-secrets.sh --strict
+
+# 4) Compose 정적 검증 (Docker 데몬 없이도 가능)
 # - `.env.example` 기반으로 `docker compose config`가 0 exit인지 확인
-# - (옵션) missing secrets 파일을 임시 생성할 수 있음
 bash scripts/validate-docker-compose.sh
 
 # (옵션) 런타임 사전 점검 (Docker 데몬 필요)
 # bash scripts/preflight-compose.sh
 
-# 4) 스택 실행
+# 5) 스택 실행
 docker compose up -d
 
 # 또는 프로파일 기반 실행
