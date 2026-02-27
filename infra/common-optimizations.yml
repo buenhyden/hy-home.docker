@@ -1,19 +1,13 @@
 # Hy-Home Common Infrastructure Optimizations
 # This file provides base service templates for use with 'extends'
 
-
 # ── Logging Anchors ──────────────────────────────────────
 x-logging-loki: &loki-logging
   driver: loki
   options:
-    loki-url: "http://localhost:3100/loki/api/v1/push"
+    loki-url: "${LOKI_URL:-http://infra-loki:3100/loki/api/v1/push}"
     loki-external-labels:
       'container_name={{.Name}},tier={{.Label "hy-home.tier"}}'
-
-# ── Metadata Anchors ─────────────────────────────────────
-x-labels-infra: &labels-infra
-  hy-home.managed: "true"
-  observability.logs: "true"
 
 services:
   # ── Security Baselines ──────────────────────────────────
@@ -83,7 +77,6 @@ services:
       hy-home.managed: "true"
       observability.logs: "true"
 
-
   template-infra-med:
     extends:
       service: base-security
@@ -95,7 +88,6 @@ services:
     labels:
       hy-home.managed: "true"
       observability.logs: "true"
-
 
   template-infra-high:
     extends:
@@ -113,4 +105,3 @@ services:
     extends:
       service: base-security-hardened
     user: "1000:1000"
-

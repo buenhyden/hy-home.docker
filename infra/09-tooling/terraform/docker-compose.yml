@@ -20,3 +20,4 @@ services:
     entrypoint: ['terraform']
     networks:
       - infra_net
+    labels: *tier-label

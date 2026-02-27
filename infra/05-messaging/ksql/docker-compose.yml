@@ -59,6 +59,11 @@ services:
     depends_on:
       ksqldb-server:
         condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'ps', 'aux', '|', 'grep', 'ksql', '|', 'grep', '-v', 'grep']
+      interval: 30s
+      timeout: 10s
+      retries: 3
     entrypoint: /bin/sh
     stdin_open: true
     tty: true
@@ -87,5 +92,10 @@ services:
       STREAMS_BOOTSTRAP_SERVERS: kafka-1:${KAFKA_INTERNAL_PORT:-19092},kafka-2:${KAFKA_INTERNAL_PORT:-19092},kafka-3:${KAFKA_INTERNAL_PORT:-19092}
       STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
       STREAMS_SCHEMA_REGISTRY_PORT: ${SCHEMA_REGISTRY_PORT:-8081}
+    healthcheck:
+      test: ['CMD', 'ps', 'aux', '|', 'grep', 'datagen', '|', 'grep', '-v', 'grep']
+      interval: 30s
+      timeout: 10s
+      retries: 3
     networks:
       - infra_net

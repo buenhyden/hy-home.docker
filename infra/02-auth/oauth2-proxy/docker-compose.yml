@@ -60,3 +60,8 @@ services:
       traefik.http.services.oauth2-proxy.loadbalancer.server.port: ${OAUTH2_PROXY_PORT:-4180}
     networks:
       - infra_net
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:4180/ping']
+      interval: 30s
+      timeout: 10s
+      retries: 3

@@ -112,6 +112,15 @@ services:
           -redis.addr=redis://mng-valkey:6379 \
           -redis.password="$$VALKEY_PASSWORD" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget -qO- http://localhost:${VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     depends_on:
       mng-valkey:
         condition: service_healthy

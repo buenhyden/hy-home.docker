@@ -152,6 +152,11 @@ services:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
     secrets:
       - minio_app_user_password
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:3200/ready || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
     labels:
       <<: *tier-label
 

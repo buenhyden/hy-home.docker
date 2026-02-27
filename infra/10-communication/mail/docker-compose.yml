@@ -5,6 +5,11 @@ x-tier-label: &tier-label
 
 volumes:
   stalwart-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEFAULT_COMMUNICATION_DIR}/stalwart/data
   stalwart_certs:
     driver: local
     driver_opts:
@@ -54,16 +59,17 @@ services:
       exec /usr/local/bin/stalwart-mail
       "
 
+    healthcheck:
+      test: ['CMD', 'stalwart-mail', 'healthcheck']
+      interval: 30s
+      timeout: 10s
+      retries: 3
     # [Traefik 연동] - 관리자 웹 UI 라우팅
     labels:
       <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.stalwart-ui.rule: Host(`mail.${DEFAULT_URL}`)
       traefik.http.services.stalwart-ui.loadbalancer.server.port: ${STALWART_PORT:-8080}
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   mailhog:
     extends:
@@ -75,6 +81,11 @@ services:
     # SMTP 포트(1025)는 내부용, UI 포트(8025)는 Traefik으로 노출
     networks:
       - infra_net
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:8025/']
+      interval: 30s
+      timeout: 10s
+      retries: 3
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -83,10 +94,6 @@ services:
       traefik.http.routers.mailhog.tls: 'true'
       traefik.http.services.mailhog.loadbalancer.server.port: ${MAILHOG_UI_PORT:-8025}
       traefik.http.routers.mailhog.middlewares: sso-auth@file
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
 networks:
   infra_net:

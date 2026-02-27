@@ -25,6 +25,7 @@ services:
     networks:
       - infra_net
     labels:
+      hy-home.tier: ai
       traefik.enable: 'true'
       traefik.http.routers.open-webui.rule: Host(`chat.${DEFAULT_URL}`)
       traefik.http.routers.open-webui.entrypoints: websecure
