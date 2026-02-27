@@ -1,5 +1,8 @@
 name: minio
 
+x-tier-label: &tier-label
+  hy-home.tier: data
+
 volumes:
   minio-data:
     driver: local
@@ -35,11 +38,12 @@ services:
     volumes:
       - minio-data:/data
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://minio:9000/minio/health/live']
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
       interval: 30s
-      timeout: 20s
-      retries: 3
+      timeout: 10s
+      retries: 5
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.minio-api.rule: Host(`minio.${DEFAULT_URL}`)
       traefik.http.routers.minio-api.entrypoints: websecure
@@ -55,7 +59,7 @@ services:
   minio-create-buckets:
     extends:
       file: ../../common-optimizations.yml
-      service: base-resource-low
+      service: template-infra-low
     image: minio/mc:RELEASE.2025-08-13T08-35-41Z
     container_name: minio-create-buckets
     restart: 'no'
@@ -85,6 +89,8 @@ services:
         mc mb myminio/cdn-bucket --ignore-existing
         mc mb myminio/doc-intel-assets --ignore-existing
         mc anonymous set public myminio/cdn-bucket || true
+    labels:
+      <<: *tier-label
 
 networks:
   infra_net:

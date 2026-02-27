@@ -327,7 +327,7 @@ services:
   kafka-init:
     extends:
       file: ../../common-optimizations.yml
-      service: base-security
+      service: template-infra-low
     image: confluentinc/cp-kafka:8.1.1
     container_name: kafka-init
     networks:

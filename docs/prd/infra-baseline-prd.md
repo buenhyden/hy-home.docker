@@ -72,6 +72,9 @@ _Note: This document defines the What and Why for the core infrastructure founda
 - **[REQ-PRD-FUN-04]** Local TLS Standardisation via `mkcert` (secrets/certs/).
 - **[REQ-PRD-FUN-05]** Centralized Log Aggregation using Loki.
 - **[REQ-PRD-FUN-06]** Global Configuration Inheritance via `infra/common-optimizations.yml`.
+- **[REQ-INFRA-05] Strict Version Pinning**
+  - Vague tags (e.g., `latest`, `stable`) are PROHIBITED for infrastructure images.
+  - All images MUST use specific semver or SHA-based tags to ensure reproducible deployments.
 - **[REQ-PRD-FUN-07]** Mandatory `extends` usage for cross-file resource and security baseline.
 
 ## 6. Out of Scope

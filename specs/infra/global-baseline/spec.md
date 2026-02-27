@@ -35,6 +35,17 @@ This specification establishes the global technical invariants for all infrastru
 - **Variable**: `DEFAULT_DATA_DIR`
 - **Usage**: Mandatory for all database and log volumes.
 
+### [REQ-INFRA-GLOB-05] Standardized Metadata Labeling
+
+- All services SHALL implement a Tier labeling strategy using YAML anchors.
+- The `hy-home.tier` label MUST be present to enable centralized Loki telemetry stream routing.
+- Pattern:
+
+  ```yaml
+  x-tier-label: &tier-label
+    hy-home.tier: [tier_name]
+  ```
+
 ## 6. Edge Cases & Failure Handling
 
 - **Missing ENV**: Startup SHALL fail if `DEFAULT_DATA_DIR` is unbound.

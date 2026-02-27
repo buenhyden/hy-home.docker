@@ -25,7 +25,13 @@ A hardened configuration model for the Hy-Home ecosystem focusing on resource de
 - Achieve sub-4GB host RAM utilization for standard local operation.
 - Provide zero-portability-risk configurations for developers.
 
-## 3. System Overview & Context
+## 3. Optimization Details
+
+### 3.1 Telemetry and Observability Optimization
+
+- **[ARD-OPT-03] Centralized Logging Integration**: All infrastructure services MUST explicitly set the `hy-home.tier` label. This label is critical for Loki's `internal_prom_labels` pipeline to route logs to appropriate dashboards and alerting rules.
+
+## 4. System Overview & Context
 
 ```mermaid
 graph TD

@@ -16,7 +16,8 @@ This specification details the implementation of performance and security optimi
 | --- | --- | --- |
 | **SPEC-OPT-01** | All production-like tiers MUST utilize `resource-med` or higher. | P0 |
 | **SPEC-OPT-02** | Security hardening (`no-new-privileges: true`) is mandatory. | P0 |
-| **SPEC-OPT-03** | Use of `alpine` or `distroless` for runner stages is required. | P1 |
+| **SPEC-OPT-03** | Use of `init: true` is mandatory for correct signal handling. | P1 |
+| **SPEC-OPT-04** | Root filesystems SHOULD be `read_only: true` where state is externalized. | P1 |
 
 ## 5. Component Breakdown
 
@@ -27,7 +28,8 @@ This specification details the implementation of performance and security optimi
 
 ### 5.2 Security Hardening
 
-- **Directives**: `cap_drop: [ALL]`, `security_opt: [no-new-privileges:true]`.
+- **Directives**: `cap_drop: [ALL]`, `security_opt: [no-new-privileges:true]`, `init: true`.
+- **Statelessness**: Mandatory `read_only: true` for exporters and UI proxies.
 
 ## 7. Verification Plan
 

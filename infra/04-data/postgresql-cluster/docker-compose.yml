@@ -81,6 +81,8 @@ services:
       - etcd1-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
+    labels:
+      <<: *tier-label
 
   etcd-2:
     <<: [] # Placeholder for inheritance if needed, but extends handles it.
@@ -111,6 +113,8 @@ services:
       - etcd2-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
+    labels:
+      <<: *tier-label
 
   etcd-3:
     extends:
@@ -140,6 +144,8 @@ services:
       - etcd3-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
+    labels:
+      <<: *tier-label
 
   pg-0:
     extends:
@@ -168,10 +174,12 @@ services:
     secrets:
       - patroni_superuser_password
       - patroni_replication_password
+    labels:
+      <<: *tier-label
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      test: ['CMD-SHELL', 'pg_isready -U postgres -h localhost']
       interval: 15s
-      timeout: 30s
+      timeout: 10s
       retries: 5
       start_period: 30s
     depends_on:
@@ -201,6 +209,8 @@ services:
     volumes:
       - pg1-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+    labels:
+      <<: *tier-label
 
   pg-2:
     extends:
@@ -224,6 +234,8 @@ services:
     volumes:
       - pg2-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+    labels:
+      <<: *tier-label
 
   pg-router:
     extends:
@@ -255,7 +267,7 @@ services:
   pg-cluster-init:
     extends:
       file: ../../common-optimizations.yml
-      service: base-resource-low
+      service: template-infra-low
     image: postgres:17-alpine
     container_name: pg-cluster-init
     environment:
@@ -279,6 +291,8 @@ services:
     volumes:
       - './init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql'
     restart: 'no'
+    labels:
+      <<: *tier-label
 
   pg-0-exporter:
     extends:
@@ -308,6 +322,8 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+    labels:
+      <<: *tier-label
 
   pg-1-exporter:
     extends:
@@ -337,6 +353,8 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+    labels:
+      <<: *tier-label
 
   pg-2-exporter:
     extends:
@@ -366,3 +384,5 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
+    labels:
+      <<: *tier-label

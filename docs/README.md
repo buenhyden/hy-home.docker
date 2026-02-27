@@ -6,6 +6,12 @@ This directory contains long-term, human-readable project documentation used acr
 
 This directory exists to permanently store the "Why" and "What" of the system. It is absolutely necessary because it acts as the stable knowledge base that survives beyond single feature implementations or operational incidents.
 
+### Optimization Standards
+
+- **Global Inheritance**: All services EXTEND from `infra/common-optimizations.yml`.
+- **Telemetry Labeling**: Mandatory `hy-home.tier` labels for Loki routing.
+- **Resource Hardening**: Profile-based limits (low/med/high) and `read_only` root FS.
+
 - **Isolate product/design knowledge** from executable logic (`specs/`), operational scripts (`runbooks/`), and AI Automation logic (`.agent/workflows/`).
 - Serve as the primary reference point for **Human Developers** and **AI Planner Agents** trying to understand the overarching system constraints.
 - This hub is subordinate to the global repository rules: [**ARCHITECTURE.md**](../ARCHITECTURE.md) (Design Laws) and [**OPERATIONS.md**](../OPERATIONS.md) (Execution Policy).
