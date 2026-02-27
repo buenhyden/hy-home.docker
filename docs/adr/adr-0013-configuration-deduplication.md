@@ -1,6 +1,6 @@
 # ADR-0013: Configuration Deduplication and Consolidation
 
-- **Status**: Proposed
+- **Status**: Accepted
 - **Date**: 2026-02-27
 - **Authors**: Platform Architect
 

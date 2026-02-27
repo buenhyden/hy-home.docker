@@ -1,71 +1,70 @@
 ---
-title: '[ARD-MSG-01] Messaging Infrastructure Architecture Reference'
+title: '[ARD-MSG-01] Messaging & Eventing Architecture'
 status: 'Approved'
-version: '1.0.0'
-owner: 'Platform Architect'
-prd_reference: '../prd/infra-baseline-prd.md'
-adr_references: ['../adr/adr-0001-root-orchestration-include.md']
+owner: 'Infrastructure Architect'
+prd_reference: '[messaging-prd.md](../prd/messaging-prd.md)'
+adr_references: '[adr-0006](../adr/adr-0006-event-streaming-protocol.md)'
 tags: ['ard', 'messaging', 'infra', 'kafka', 'rabbitmq']
 ---
 
-# [ARD-MSG-01] Messaging Infrastructure Architecture Reference
+# [ARD-MSG-01] Messaging & Eventing Architecture Reference Document
 
-_Target Directory: `docs/ard/messaging-ard.md`_
+> **Status**: Approved
+> **Owner**: Infrastructure Architect
+> **PRD Reference**: [messaging-prd.md](../prd/messaging-prd.md)
+> **ADR References**: [adr-0006](../adr/adr-0006-event-streaming-protocol.md)
 
 ---
 
 ## 1. Executive Summary
 
-This document defines the architectural patterns for the Hy-Home messaging tier, providing high-throughput event streaming via Kafka and flexible task queuing via RabbitMQ. It enables decoupled communication between infrastructure and application services.
+Blueprint for the decoupled communication backbone of the Hy-Home ecosystem. This architecture provides high-availability event streaming via Kafka and lightweight task queuing via RabbitMQ to ensure system resilience and asynchronous scalability.
 
 ## 2. Business Goals
 
-- **High Throughput**: Support thousands of events per second for log ingestion and telemetry.
-- **Reliability**: Ensure zero data loss for critical state events.
-- **Interoperability**: Provide standard AMQP and Kafka interfaces for diverse application stacks.
+- Enable reliable asynchronous integration between microservices.
+- Ensure zero-data-loss for critical infrastructure events.
+- Standardize message formats across heterogeneous service tiers.
 
 ## 3. System Overview & Context
 
 ```mermaid
 C4Context
-    title Messaging Tier Context Diagram
-    Person(dev, "Developer", "Uses messaging for app logic")
-    System(messaging, "Messaging Tier", "Kafka & RabbitMQ")
-    System_Ext(obs, "Observability Stack", "Loki/Prometheus")
+    title Messaging System Context
+    Container(apps, "App Services", "Producers/Consumers")
+    System(msg_bus, "Messaging Tier", "Kafka/RabbitMQ")
+    System(persistence, "Data Tier", "Sink Connectors")
 
-    Rel(dev, messaging, "Publishes/Subscribes")
-    Rel(messaging, obs, "Exposes metrics/logs")
+    Rel(apps, msg_bus, "Pub/Sub Events")
+    Rel(msg_bus, persistence, "Streams to Sinks")
 ```
 
 ## 4. Architecture & Tech Stack Decisions
 
 ### 4.1 Component Architecture
 
-```mermaid
-C4Container
-    title Messaging Tier Container Diagram
-    Container(kafka, "Kafka Cluster", "KRaft Mode", "Core event bus")
-    Container(rabbitmq, "RabbitMQ", "AMQP", "Task queuing")
-    ContainerDb(sr, "Schema Registry", "Confluent", "Payload validation")
-
-    Rel(kafka, sr, "Uses")
-```
+- **Stream Processor**: Kafka cluster operating in KRaft mode for unified metadata management.
+- **Task Broker**: RabbitMQ for low-latency point-to-point task distribution.
+- **Contract Guard**: Schema Registry enforcing Avro/Protobuf metadata consistency.
 
 ### 4.2 Technology Stack
 
-- **Streaming**: Kafka 3.x (KRaft mode).
-- **Queuing**: RabbitMQ (AMQP 0-9-1).
-- **Processing**: ksqlDB for stream-SQL.
+- **Streaming**: Apache Kafka 3.x
+- **Queuing**: RabbitMQ 3.x (Management Plugin enabled)
+- **Connectors**: Kafka Connect (S3, Postgres sinks)
 
 ## 5. Data Architecture
 
-- **Storage Strategy**: Persistent volumes for Kafka brokers (`/var/lib/kafka/data`).
-- **Data Flow**: Async publisher-subscriber model with Schema Registry enforcing Avro/JSON schemas.
+- **Replication Strategy**: `min.insync.replicas=2` for critical topics to guarantee persistence.
+- **Retention Policy**: Tiered retention (7 days for events, infinite for logs/audit).
+
+## 6. Security & Compliance
+
+- **Access Control**: Topic-level ACLs for all producers and consumers.
+- **Data in Transit**: Mandatory TLS for all messaging endpoints.
 
 ## 8. Non-Functional Requirements (NFRs)
 
-- **Availability**: 99.9% (3-node minimum for production-like durability).
-- **Latency**: < 10ms for producer acknowledgement.
 - **Durability**: `min.insync.replicas=2` enforced via Sidecars (see [automation spec](../../../../../specs/infra/automation/spec.md)).
 
 ## 9. Architectural Principles & Trade-offs

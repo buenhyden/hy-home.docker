@@ -22,51 +22,69 @@ The Hy-Home Observability stack implements the **LGTM** pattern, providing a uni
 
 - **Unified Visibility**: Single pane of glass for all infrastructure tiers.
 - **Operational Intelligence**: Fast root-cause analysis via trace-to-log correlation.
-- **Scale-on-Demand**: Local-first storage with remote-write capabilities.
+- Reduce MTTR for infrastructure and application failures.
+- Provide a single pane of glass for multi-tier resource monitoring.
+- Enforce structured telemetry standards across all containerized services.
 
 ## 3. System Overview & Context
 
 ```mermaid
-C4Context
-    title Observability Context Diagram
-    System(infra, "Infra Tiers", "Gateway, Data, Messaging")
-    System(obs, "Observability Tier", "LGTM + Alloy")
-    Person(ops, "Operator", "Monitors dashboards")
+graph LR
+    subgraph "Service Tiers"
+        S[Containers]
+    end
+    subgraph "Telemetry Pipeline"
+        L[Loki]
+        P[Prometheus]
+        T[Tempo]
+    end
+    subgraph "Visualization"
+        G[Grafana]
+    end
 
-    Rel(infra, obs, "Sends Telemetry")
-    Rel(ops, obs, "Queries Dashboards")
+    S -- Logs --> L
+    S -- Metrics --> P
+    S -- Traces --> T
+    L & P & T --> G
 ```
 
 ## 4. Architecture & Tech Stack Decisions
 
 ### 4.1 Component Architecture
 
-```mermaid
-C4Container
-    title LGTM Stack Container Diagram
-    Container(alloy, "Grafana Alloy", "Collector", "Scrapes & Forwards")
-    ContainerDb(loki, "Loki", "Log Storage", "Chunky logs")
-    ContainerDb(prom, "Prometheus", "TSDB", "Metrics storage")
-    Container(grafana, "Grafana", "Visualization", "Dashboards")
-
-    Rel(alloy, loki, "Pushes logs")
-    Rel(alloy, prom, "Remote writes")
-    Rel(grafana, prom, "Queries")
-```
+- **Logging**: Docker natively pushes to Loki via the `loki` driver.
+- **Metrics**: Grafana Alloy scrapes Prometheus endpoints via `infra_net`.
+- **Tracing**: OTLP-compatible libraries export traces to Tempo.
 
 ### 4.2 Technology Stack
 
-- **Collector**: Grafana Alloy (OTLP compliant).
-- **Backend**: Loki, Prometheus, Tempo.
-- **Visualization**: Grafana with SSO integration.
+- **Logs**: Grafana Loki (Storage) & Docker Driver (Shipper)
+- **Metrics**: Prometheus (Storage) & Grafana Alloy (Collector)
+- **Traces**: Grafana Tempo
+- **Visualization**: Grafana 11.x
+
+## 5. Data Architecture
+
+- **Retention Strategy**:
+  - Logs: 14 days (local disk).
+  - Metrics: 30 days (Prometheus TSDB).
+  - Traces: 7 days.
+
+## 6. Security & Compliance
+
+- **Storage Security**: Local filesystem encryption for telemetry data.
+- **Access Control**: RBAC enforced via Grafana integration with Keycloak.
 
 ## 8. Non-Functional Requirements (NFRs)
 
-- **Retention**: 7 days localized storage for metrics/logs.
-- **Latency**: Dashboard query response < 1s for 24h range.
+- **Ingestion Latency**: Logs MUST be queryable in Grafana within 2 seconds of generation.
+- **Query Performance**: Standard dashboard panels SHALL load in < 500ms.
 
-## 9. Architectural Principles & Trade-offs
+## 9. Architectural Principles, Constraints & Trade-offs
 
-- **Logging Strategy**: Transitioned from file-based scraping (Promtail style) to direct `loki` driver pushing via centralized collector to reduce host I/O.
+- **Constraints**: Relies on specific Docker plugins (Loki) being installed on the host.
+- **What NOT to do**: Use local file logging inside containers.
+- **Chosen Path Rationale**: LGTM stack chosen for its deep integration and shared metadata model.
+or to reduce host I/O.
 - **Chosen Path**: Single Alloy agent over fragmented exporters to minimize total system resource footprint.
 - **Configuration Standard**: All services SHALL inherit from `infra/common-optimizations.yml` for unified observability labels and security settings.

@@ -1,4 +1,4 @@
-# ADR-001: System Optimization and Hardening Strategies
+# [ADR-0014] Strategy for Infrastructure Optimization and Hardening Strategies
 
 ## Status
 

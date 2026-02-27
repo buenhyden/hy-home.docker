@@ -1,6 +1,6 @@
 # ADR-0012: Standardized Init Process for Infrastructure Containers
 
-- **Status**: Proposed
+- **Status**: Accepted
 - **Date**: 2026-02-27
 - **Author**: Antigravity (AI Coder)
 

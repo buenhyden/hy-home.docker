@@ -1,94 +1,88 @@
-# [ARD-SYS-01] Optimized Infrastructure Architecture Reference
+---
+title: '[ARD-SYS-01] Optimized Infrastructure Reference'
+status: 'Approved'
+owner: 'Reliability Engineer'
+prd_reference: '[system-optimization-prd.md](../prd/system-optimization-prd.md)'
+adr_references: '[adr-0008](../adr/adr-0008-removing-static-docker-ips.md), [adr-0012](../adr/adr-0012-standardized-init-process.md), [adr-0013](../adr/adr-0013-configuration-deduplication.md)'
+---
 
-## 1. System Topology
+# [ARD-SYS-01] Optimized Infrastructure Reference Document
 
-The Hy-Home infrastructure utilizes a multi-tier, isolated container topology to minimize blast radius and ensure operational stability.
+> **Status**: Approved
+> **Owner**: Reliability Engineer
+> **PRD Reference**: [system-optimization-prd.md](../prd/system-optimization-prd.md)
+> **ADR References**: [adr-0008](../adr/adr-0008-removing-static-docker-ips.md), [adr-0012](../adr/adr-0012-standardized-init-process.md), [adr-0013](../adr/adr-0013-configuration-deduplication.md)
 
-### 1.1 Infrastructure Tiers
+---
 
-- **Tier 1 (Gateway)**: Core ingress tier (Traefik/NGINX) handling TLS termination and internal routing.
-- **Tier 2 (Identity & Auth)**: Keycloak and OAuth2 Proxy managing centralized OIDC authentication.
-- **Tier 3 (Stateful Data)**: Dedicated clusters for PostgreSQL, Valkey, MongoDB, Supabase, and MinIO with isolated network segments.
-- **Tier 4 (Observability Stack)**: Unified LGTM pipeline (Loki, Grafana, Tempo, Alloy) collecting cross-tier telemetry.
+## 1. Executive Summary
 
-## 2. Hardening Invariants
+A hardened configuration model for the Hy-Home ecosystem focusing on resource density, kernel-level security options, and unified observability. Extends the baseline with surgical technical invariants for high-reliability hosting.
 
-- **Hardening Logic**: Driver-level logging (Loki) and mandated `init: true` across all tiers.
-- **Directive Compliance**: 100% saturation of `healthcheck`, `container_name`, and `networks` definitions.
-- **Zero-Portability-Risk**: 100% removal of hardcoded host IPs and static secrets.
+## 2. Business Goals
 
-## 2. Standardization Patterns [[SPEC-INFRA-01]](/specs/infra/global-baseline/spec.md)
+- Ensure 100% auditable security posture across all tiers.
+- Achieve sub-4GB host RAM utilization for standard local operation.
+- Provide zero-portability-risk configurations for developers.
 
-To ensure consistency across heterogeneous service stacks, the following architectural patterns are enforced:
-
-### 2.1 Configuration Inheritance (`extends`)
-
-Implementation SHALL utilize global service templates in `infra/common-optimizations.yml` via the `extends` keyword. This ensures cross-file architectural invariants:
-
-- **`template-infra-low/med/high`**: Preferred composite templates for standardizing resource quotas, security baseline, and Loki logging.
-- **`base-security`**: Core isolation baseline (`cap_drop: ALL`, `no-new-privileges: true`).
-- **`base-security-hardened`**: Extends `base-security` with `read_only: true` and default `tmpfs` mounts.
-
-Local `docker-compose.yml` files MUST define internal YAML anchors (e.g., `&labels-base`) for tier-specific metadata that cannot be captured in global generic templates.
-
-## 9. Configuration Deduplication
-
-To ensure consistency and reduce maintenance overhead, the infrastructure adopts a template-based configuration model:
-
-1. **Inheritance**: All services MUST extend from `infra/common-optimizations.yml`.
-2. **Specialized Anchors**: Use tier-level anchors for logging and labels to ensure unified discovery.
-3. **Path Abstraction**: All host paths MUST use environment variables (e.g., `${DEFAULT_DATA_DIR}`) instead of absolute paths.
-4. **Resource Caps**: Standardized profiles (`low`, `med`, `high`) are enforced via global templates.
-
-### 2.2 Telemetry Architecture
+## 3. System Overview & Context
 
 ```mermaid
 graph TD
-    subgraph Services
-        S1[Tier 1: Gateway]
-        S2[Tier 2: Auth]
-        S3[Tier 3: Data]
+    subgraph "Infrastructure Tiers"
+        T1[Tier 1: Gateway]
+        T2[Tier 2: Identity]
+        T3[Tier 3: Stateful Data]
+        T4[Tier 4: Observability]
     end
-    subgraph Collector
-        A[Grafana Alloy]
-    end
-    subgraph Storage
-        L[Loki: Logs]
-        P[Prometheus: Metrics]
-        T[Tempo: Traces]
-    end
+    
+    T1 <--> T2
+    T1 <--> T3
+    T3 --> T4
+```
 
-    S1 & S2 & S3 -- "Push Logs (Loki Driver)" --> L
-    S1 & S2 & S3 -- "Osh Scrape" --> A
-    A -- "Remote Write" --> P
-    A -- "Export Traces" --> T
+## 4. Architecture & Tech Stack Decisions
 
-### 2.3 Network Portability [ADR-0008]
+### 4.1 Standardization Patterns
 
-All infrastructure services SHALL operate without explicit `ipv4_address` assignments. Service discovery is performed via:
-- **Internal DNS**: Relying on Docker's embedded DNS server and service names within the `infra_net` bridge.
-- **Service Aliases**: Utilizing network aliases for cross-stack compatibility where services belong to multiple networks.
+Implementation utilizes global service templates in `infra/common-optimizations.yml` via the `extends` keyword:
 
-### 2.4 Standardized Init Process [ADR-0012]
+- **`template-infra-low/med/high`**: Standardizing resource quotas and security base.
+- **`base-security-hardened`**: Mandatory `read_only: true` with `tmpfs` support.
 
-Every containerized service MUST utilize `init: true` to ensure robust signal handling (SIGTERM/SIGINT) and the proper reaping of zombie processes. This improves observability stability and ensures clean shutdowns during orchestration events.
+### 4.2 Technology Stack
 
-## 3. Mandatory Directive Standard
+- **Hardening**: `security_opt` (no-new-privileges), `cap_drop` (ALL).
+- **Engine Directives**: `init: true`, driver-level `logging`.
+- **Naming**: Unified `container_name` and `hostname` standards.
 
-To ensure schema compliance and operational visibility, every service definition MUST include:
-1.  **`image`**: Pinned version tag (e.g., `redis:7.4-alpine`).
-2.  **`container_name`**: Service-prefixed unique name.
-3.  **`hostname`**: Identical to container name for internal DNS consistency.
-4.  **`secrets`**: External references only, mapped to `/run/secrets/`.
-5.  **`networks`**: Member of `infra_net` (external).
-6.  **`extends`**: Config inheritance from `common-optimizations.yml`.
+## 5. Data Architecture
 
-## Network Topology
+- **Path Abstraction**: 100% of host volumes SHALL use `${DEFAULT_*_DIR}` variables.
+- **Telemetry Architecture**:
 
-The infrastructure utilizes a flat `infra_net` bridge for inter-service communication, isolated from host ports except through the `traefik` entrypoints.
-Stateless services (exporters, proxies, UIs) MUST utilize `read_only: true` for the root filesystem. Transient write requirements MUST be handled via `tmpfs` mounts to ensure zero persistent side-effects and prevent runtime binary tampering.
+```mermaid
+graph LR
+    S[Services] -- Loki Driver --> L[Loki]
+    S -- Scrape --> A[Alloy]
+    A --> P[Prometheus]
+    A --> T[Tempo]
+```
 
-## 4. Security Boundaries
+## 6. Security & Compliance
 
-- **Network Strategy**: Direct container-to-container access is restricted via tier-specific user-defined networks.
-- **Credential Lifecycle**: 100% of sensitive material MUST be managed via Docker Secrets mounted at runtime, as per **[ADR-0009]**.
+- **Network Isolation**: Tier-specific user-defined networks restricting cross-segment traffic.
+- **Credential Lifecycle**: 100% runtime injection via Docker Secrets [ADR-0009].
+- **Runtime Integrity**: Immutable root filesystems and disabled binary execution escalation.
+
+## 8. Non-Functional Requirements (NFRs)
+
+- **Resource Efficiency**: Aggregate idle RAM utilization MUST remain under 4GB.
+- **Observability Stability**: 100% of service logs MUST be searchable in Loki with `hy-home.tier` labels.
+- **Response Accuracy**: Sub-2s ingestion latency for all telemetry pipelines.
+
+## 9. Architectural Principles, Constraints & Trade-offs
+
+- **What NOT to do**: Use absolute host paths in compose files.
+- **Trade-offs**: template inheritance increases configuration resolution complexity but ensures global standard enforcement.
+- **Known Limitations**: `read_only` filesystems require manual identification of all writeable directories for `tmpfs` mapping.

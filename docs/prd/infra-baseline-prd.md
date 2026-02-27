@@ -3,7 +3,7 @@ title: '[PRD-BASE-01] Infrastructure Baseline PRD'
 status: 'Approved'
 version: 'v1.0.0'
 owner: 'Platform Architect'
-stakeholders: ['DevOps Team', 'Home-Lab Users']
+stakeholders: 'DevOps Team, Home-Lab Users'
 tags: ['prd', 'requirements', 'baseline', 'infra']
 ---
 
@@ -15,6 +15,7 @@ tags: ['prd', 'requirements', 'baseline', 'infra']
 > **Stakeholders**: DevOps Team, Home-Lab Users
 
 _Target Directory: `docs/prd/infra-baseline-prd.md`_
+_Note: This document defines the What and Why for the core infrastructure foundations._
 
 ---
 
@@ -26,6 +27,10 @@ _Target Directory: `docs/prd/infra-baseline-prd.md`_
 | Success Metrics       | Are the key success/failure metrics defined with quantitative targets? | Must     | Bootstrap time < 10 mins     | Section 3   |
 | Target Users          | Are specific primary personas and their pain points defined?           | Must     | Enthusiast/Dev/DevOps        | Section 2   |
 | Use Case (GWT)        | Are acceptance criteria written in Given-When-Then format?             | Must     | Standard ACs defined         | Section 4   |
+| Scope (In)            | Is the feature list included in this release clearly defined?          | Must     | Foundation tiers defined    | Section 5   |
+| Not in Scope          | Is what we will NOT build in this release explicitly listed?           | Must     | Out-of-scope defined        | Section 6   |
+| Timeline & Milestones | Are PoC / MVP / Beta / v1.0 milestones dated?                          | Must     | M1/M2 defined               | Section 7   |
+| Risks & Compliance    | Are major risks, privacy, or regulatory constraints documented?        | Must     | Low-RAM risk documented     | Section 8   |
 
 ---
 
@@ -49,7 +54,7 @@ _Target Directory: `docs/prd/infra-baseline-prd.md`_
 | ID                 | Metric Name        | Baseline (Current) | Target (Success) | Measurement Period  |
 | ------------------ | ------------------ | ------------------ | ---------------- | ------------------- |
 | **REQ-PRD-MET-01** | Bootstrap Time     | 30 mins            | < 10 mins        | Day-0 build         |
-| **REQ-PRD-MET-02** | Security Coverage | 50%                | 100% (Secrets)   | Audit cycle         |
+| **REQ-PRD-MET-02** | Security Coverage  | 50%                | 100% (Secrets)   | Audit cycle         |
 | **REQ-PRD-MET-03** | Resource Efficiency | N/A                | < 4GB Idle (RAM) | Baseline run        |
 | **REQ-PRD-MET-04** | Build Latency      | > 5 mins           | < 2 mins (Hot)   | CI/CD build cycle   |
 
@@ -66,10 +71,14 @@ _Target Directory: `docs/prd/infra-baseline-prd.md`_
 - **[REQ-PRD-FUN-03]** Bootstrap Prerequisites: Define required `.env` keys and directory permissions.
 - **[REQ-PRD-FUN-04]** Local TLS Standardisation via `mkcert` (secrets/certs/).
 - **[REQ-PRD-FUN-05]** Centralized Log Aggregation using Loki.
-- [REQ-PRD-FUN-06] Global Configuration Inheritance via `infra/common-optimizations.yml`.
-- [REQ-PRD-FUN-07] Mandatory `extends` usage for cross-file resource and security baseline.
+- **[REQ-PRD-FUN-06]** Global Configuration Inheritance via `infra/common-optimizations.yml`.
+- **[REQ-PRD-FUN-07]** Mandatory `extends` usage for cross-file resource and security baseline.
 
-- **Technical Specification**: [[SPEC-INFRA-01] Infrastructure Global Baseline Specification](/specs/infra/global-baseline/spec.md)
+## 6. Out of Scope
+
+- Application-level logic and business features.
+- External cloud provider integration (AWS/GCP/Azure).
+- Deployment to Kubernetes or cluster schedulers beyond Docker Compose.
 
 ## 7. Milestones & Roadmap
 
@@ -79,4 +88,19 @@ _Target Directory: `docs/prd/infra-baseline-prd.md`_
 ## 8. Risks, Security & Compliance
 
 - **Risks**: Resource exhaustion on low-RAM hosts.
-- **Security**: Mandatory `cap_drop` and `no-new-privileges`.
+- **Security**: Mandatory `cap_drop` and `no-new-privileges` enforced via `common-optimizations.yml`.
+- **Compliance**: Adherence to local security standards for local environment sandboxing.
+
+## 9. Assumptions & Dependencies
+
+- **Assumptions**: Host system has Docker Engine (v20.10+) and Docker Compose (v2.20+) installed.
+- **Dependencies**: RELIES on correct `.env` configuration for path mapping.
+
+## 10. Q&A / Open Issues
+
+- **[ISSUE-01]**: Should we support rootless Docker? - **Update**: Deferred to Phase 3.
+
+## 11. Related Documents (Reference / Traceability)
+
+- **Technical Specification**: [[SPEC-INFRA-01] Infrastructure Global Baseline Specification](/specs/infra/global-baseline/spec.md)
+- **Architecture Decisions (ADRs)**: [[ADR-0001] Root Orchestration via include](../adr/adr-0001-root-orchestration-include.md)

@@ -8,62 +8,63 @@ adr_references: ['../adr/adr-0005-sidecar-resource-initialization.md']
 tags: ['ard', 'ai', 'ollama', 'rag', 'qdrant']
 ---
 
-# [ARD-AI-01] Local AI Stack Architecture Reference
+# [ARD-AI-01] Local AI Infrastructure Reference Document
 
-_Target Directory: `docs/ard/ai-ard.md`_
+> **Status**: Approved
+> **Owner**: AI Infrastructure Engineer
+> **PRD Reference**: [ai-prd.md](../prd/ai-prd.md)
+> **ADR References**: [adr-0007](../adr/adr-0007-local-gpu-passthrough.md)
 
 ---
 
 ## 1. Executive Summary
 
-This document defines the architecture for local AI inference and RAG capabilities within the Hy-Home infrastructure. It utilizes Ollama for model serving, Open WebUI for the user interface, and Qdrant for vector storage.
+Architectural blueprint for the local AI serving tier of the Hy-Home ecosystem. Leverages Ollama for containerized inference and Open-WebUI for user interaction, with dedicated GPU passthrough hooks for performance-critical LLM workloads.
 
 ## 2. Business Goals
 
-- **Privacy First**: All model inference and document embeddings remain strictly local.
-- **Ease of Use**: Unified chat interface with RAG capabilities for local project documentation.
-- **Resource Efficiency**: Optimized GPU utilization for inference on consumer hardware.
+- Provide a secure, air-gapped AI workspace for private data analysis.
+- Standardize the inference API surface (OpenAI compatibility).
+- Optimize local GPU utilization across multiple experimental models.
 
 ## 3. System Overview & Context
 
 ```mermaid
 C4Context
-    title AI Stack Context Diagram
-    Person(user, "User", "Interacts with AI")
-    System(ai, "Local AI Stack", "Ollama + UI + Qdrant")
-    System_Ext(gateway, "Traefik Ingress", "Reverse Proxy")
+    title AI Serving Context
+    Person(user, "Researcher", "Interacts with WebUI")
+    System(ai_serv, "Ollama Service", "Local Inference Engine")
+    System_Ext(host_gpu, "NVIDIA GPU", "Hardware Acceleration")
 
-    Rel(user, gateway, "HTTPS")
-    Rel(gateway, ai, "Proxies traffic")
+    Rel(user, ai_serv, "Sends Prompts")
+    Rel(ai_serv, host_gpu, "Offloads Tensors")
 ```
 
 ## 4. Architecture & Tech Stack Decisions
 
 ### 4.1 Component Architecture
 
-```mermaid
-C4Container
-    title AI Stack Container Diagram
-    Container(ui, "Open WebUI", "React/Python", "Chat Interface")
-    Container(ollama, "Ollama", "Model Server", "C++/Go")
-    ContainerDb(qdrant, "Qdrant", "Vector Database", "Rust")
-
-    Rel(ui, ollama, "Inference API")
-    Rel(ui, qdrant, "Vector Search")
-```
+- **Engine**: Ollama containerized with host-level volume mapping for model persistency.
+- **Frontend**: Open-WebUI with internal OIDC integration for multi-user safety.
 
 ### 4.2 Technology Stack
 
-- **Server**: Ollama (supports Llama3, Mixtral, etc.).
-- **Vector DB**: Qdrant (high-performance vector similarity).
-- **UI**: Open WebUI (integrated RAG support).
+- **Core Engine**: Ollama (official Docker image)
+- **Acceleration**: NVIDIA CUDA / Container Toolkit
+- **Storage**: Persistent Docker volumes for `/root/.ollama/models`
+
+## 6. Security & Compliance
+
+- **Prominent Guard**: Isolation within `infra_net` to prevent unauthenticated external prompt ingestion.
+- **Data Privacy**: 100% of data remains on the local host with zero telemetry to external model providers.
 
 ## 8. Non-Functional Requirements (NFRs)
 
-- **Latency**: Token generation > 10 tokens/sec on modern GPUs.
-- **Privacy**: No external API calls for inference (Zero-Leakage).
+- **Performance**: LLM response latency SHALL be < 200ms per token for models < 7B parameters.
+- **Efficiency**: Idle memory footprint for the serving engine MUST remain under 1GB.
 
-## 9. Architectural Principles & Trade-offs
+## 9. Architectural Principles, Constraints & Trade-offs
 
-- **GPU Passthrough**: Mandatory `nvidia-smi` capability for inference performance.
-- **Chosen Path**: Qdrant over integrated PGVector to ensure isolation of vector search workloads.
+- **Constraints**: Limited by available VRAM on the host GPU.
+- **What NOT to do**: Use CPU execution for interactive chat workloads.
+- **Trade-offs**: Ollama chosen for its ease of containerization over raw vLLM/TGI for local simplicity.

@@ -1,102 +1,61 @@
----
-title: 'Infrastructure Automation Specification'
-status: 'Validated'
-version: '1.0'
-owner: 'Platform Architect'
-prd_reference: '/docs/prd/infra-automation-prd.md'
-api_reference: 'N/A'
-arch_reference: '/docs/ard/infra-automation-ard.md'
-tags: ['spec', 'implementation', 'infra', 'automation']
----
-
 # [SPEC-INFRA-03] Infrastructure Automation Specification
 
-> **Status**: Validated
-> **Related PRD**: [/docs/prd/infra-automation-prd.md](/docs/prd/infra-automation-prd.md)
-> **Related Architecture**: [/docs/ard/infra-automation-ard.md](/docs/ard/infra-automation-ard.md)
+## 0. Pre-Implementation Checklist
 
-_Target Directory: `specs/infra/automation/spec.md`_
+- [x] Traceability: PRD-AUTO-01 and ARD-AUTO-01 references.
+- [x] Security: Least-privilege sidecar tokens.
+- [x] Operations: Audit trail in Loki.
 
----
+## 1. Technical Overview
 
-## 0. Pre-Implementation Checklist (Governance)
+This specification governs the implementation of self-provisioning sidecars and automated resource readiness across the Hy-Home infrastructure. It ensures that stateful services (Postgres, MinIO, Kafka) are not only running but also provisioned with required buckets, topics, and roles before application consumers attempt connection.
 
-### 0.1 Architecture / Tech Stack
+## 2. Coded Requirements
 
-| Item               | Check Question                                        | Required | Alignment Notes | Where to document |
-| ------------------ | ----------------------------------------------------- | -------- | --------------- | ----------------- |
-| Architecture Style | Is the style Monolith/Modular Monolith/Microservices? | Must     | Sidecar Pattern | Section 1         |
-| Service Boundaries | Are module boundaries documented (diagram/text)?      | Must     | Init-to-Core    | Section 1         |
-| Backend Stack      | Are language/framework/libs decided?                  | Must     | Shell / Python  | Section 1         |
+| Req ID | Requirement Description | Priority |
+| --- | --- | --- |
+| **SPEC-AUTO-01** | Sidecars MUST exit with code 0 upon successful provisioning. | P0 |
+| **SPEC-AUTO-02** | Provisioning logic MUST be idempotent (Safe for multiple runs). | P0 |
+| **SPEC-AUTO-03** | Sidecars SHALL utilize exponential backoff for target service health. | P1 |
 
-### 0.2 Quality / Testing / Security
+## 3. Data Modeling & Storage
 
-| Item            | Check Question                                 | Required | Alignment Notes | Where to document |
-| --------------- | ---------------------------------------------- | -------- | --------------- | ----------------- |
-| Test Strategy   | Levels (Unit/Integration/E2E/Load) defined?    | Must     | Idempotency Test| Section 7         |
-| AuthN/AuthZ     | Is auth approach designed (token/OAuth/RBAC)?  | Must     | Service Account | Section 4         |
-| Data Protection | Encryption/access policies for sensitive data? | Must     | Read-only Mounts| Section 9         |
+- **Configuration Storage**: provisioning scripts are mounted as read-only volumes from `./provisioning/` directories.
+- **State tracking**: completion status is logged to Loki; sidecars do not maintain local state.
 
-## 1. Technical Overview & Architecture Style
+## 4. Interfaces & Internal API
 
-This specification governs the implementation standards for self-provisioning sidecars and automated resource readiness using the "Init-Sidecar" pattern.
-
-- **Component Boundary**: Resource initialization (`os-init`, `k-init`) and telemetry provisioning.
-- **Key Dependencies**: Core backend services (9200, 9092).
-- **Tech Stack**: curl, kafka-console-producer (CLI), Grafana APIs.
-
-## 2. Coded Requirements (Traceability)
-
-| ID                | Requirement Description | Priority | Parent PRD REQ |
-| ----------------- | ----------------------- | -------- | -------------- |
-| **[REQ-AUTO-01]** | Idempotency Primacy: Automation sidecars MUST BE strictly idempotent. | Critical | REQ-AUTO-01    |
-| **[REQ-AUTO-02]** | Readiness Blocking: Init containers MUST block dependent startup until core ports are reachable. | Critical | REQ-AUTO-01    |
-| **[REQ-AUTO-03]** | Fail-Fast Execution: Sidecars SHALL exit with code 1 upon unrecoverable error. | High     | REQ-SYS-04     |
-
-## 3. Data Modeling & Storage Strategy
-
-- **Database Engine**: Index-based (OpenSearch) / Cluster-based (Kafka).
-- **Schema Strategy**: Index templates and topic metadata.
-- **Migration Plan**: Self-healing initialization on startup.
-
-## 4. Interfaces & Data Structures
-
-- **Sidecar API**: Docker-native `healthcheck` and `depends_on`.
-- **Telemetry Interface**: Dashboard JSON volume mounting.
+- **Service Interaction**: Sidecars interact with target services via official CLI tools (e.g., `mc`, `psql`) over `infra_net`.
+- **Readiness Protocol**: Sidecars use `HEALTHCHECK` instructions or `until` loops to wait for target endpoint availability.
 
 ## 5. Component Breakdown
 
-- **`infra/04-data/os-init.yml`**: Sidecar for index management.
-- **`infra/05-messaging/k-init.yml`**: Sidecar for stream management.
+### 5.1 MinIO-Init Sidecar
 
-## 6. Edge Cases & Error Handling
+- **Image**: `minio/mc:latest`
+- **Logic**: Creates `HY_BUCKET_NAME` and sets public/private policies.
 
-- **Error**: Target service timeout -> Retry loop with backoff.
-- **Error**: Resource already exists -> Graceful exit (idempotent).
+### 5.2 Postgres-Init Sidecar
 
-## 7. Verification Plan (Testing & QA) [REQ-SPT-10]
+- **Image**: `postgres:17-alpine`
+- **Logic**: Executes SQL schema migrations or role creations using `psql`.
 
-- **[VAL-SPC-101] Idempotency Validation**:
-  - **Given**: A previously initialized resource (e.g. Kafka Topic).
-  - **When**: Running the automation sidecar for the second time.
-  - **Then**: Container MUST exit with code 0 without failing.
+## 6. Edge Cases & Failure Handling
 
-- **[VAL-SPC-102] Connectivity Test**:
-  - **Given**: Targeted backend service in a "Starting" state.
-  - **When**: Automation sidecar attempts connection.
-  - **Then**: Sidecar MUST block until target port (e.g. 9200) is reachable.
+- **Service Timeout**: If the target service is not healthy within 5 minutes, the sidecar MUST fail with exit code 1 to block downstream service starts.
+- **Network Flapping**: Retries MUST be randomized to prevent "thundering herd" after a stack restart.
 
-- **[VAL-SPC-103] Readiness Audit**:
-  - **Given**: Successful sidecar termination.
-  - **When**: Inspecting backend resource via CLI.
-  - **Then**: Resource (Index/Topic) MUST exist and return 200 OK.
+## 7. Verification Plan
 
-## 8. Non-Functional Requirements (NFR) & Scalability
+- **Test-01**: Run `docker compose up os-init` and verify index template exists via `curl`.
+- **Test-02**: verify successful exit (code 0) in `docker ps -a`.
 
-- **Availability**: Resilience via `MAX_RETRIES` logic.
-- **Performance**: Initialization SHALL complete in < 60s post-backend readiness.
+## 8. Non-Functional Requirements (NFRs)
 
-## 9. Operations & Observability
+- **Performance**: Sidecar execution SHALL NOT exceed 60 seconds.
+- **Portability**: All endpoint URLs MUST use service names instead of IPs.
 
-- **Auditing**: Automation results MUST be searchable in Loki.
-- **Lifecycle**: Sidecars are transitionary; monitoring via exit code telemetry.
+## 11. Related Documents
+
+- **PRD Reference**: [[PRD-AUTO-01] Infrastructure Automation PRD](../../docs/prd/infra-automation-prd.md)
+- **Architecture Reference**: [[ARD-AUTO-01] Scaling & Autonomous Patterns Reference Document](../../docs/ard/infra-automation-ard.md)

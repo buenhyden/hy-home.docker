@@ -14,7 +14,12 @@ This directory contains Architecture Decision Records for the project. ADRs docu
 | [ADR-0006](adr-0006-project-net-external-network.md) | Project Net External Network | Accepted | 2026-02-26 |
 | [ADR-0007](adr-0007-mandatory-resource-limits.md) | Mandatory Resource Limits | Accepted | 2026-02-26 |
 | [ADR-0008](adr-0008-removing-static-docker-ips.md) | Removing Static Docker IPs | Accepted | 2026-02-26 |
-| [ADR-0012](adr-0012-standardized-init-process.md) | Standardized Init Process | Proposed | 2026-02-27 |
+| [ADR-0009](adr-0009-strict-docker-secrets.md) | Strict Docker Secrets Enforcement | Accepted | 2026-02-27 |
+| [ADR-0011](adr-0011-multi-stage-build-standard.md) | Multi-Stage Build Standard | Accepted | 2026-02-27 |
+| [ADR-0012](adr-0012-standardized-init-process.md) | Standardized Init Process | Accepted | 2026-02-27 |
+| [ADR-0013](adr-0013-configuration-deduplication.md) | Configuration Deduplication Strategy | Accepted | 2026-02-27 |
+| [ADR-0014](adr-0014-optimization-strategies.md) | System Optimization & Hardening | Accepted | 2026-02-27 |
+| [ADR-0015](adr-0015-infrastructure-directive-standard.md) | Infrastructure Directive Standard | Accepted | 2026-02-27 |
 
 ---
 > [!NOTE]

@@ -29,29 +29,54 @@ Every infrastructure service containerized within the `hy-home` ecosystem MUST a
 
 ### 3.1 Metadata Labels
 
-Labels MUST be applied using the tier-specific anchor:
+# [SPEC-INFRA-05] Service Standards Specification
 
-```yaml
-x-labels-base: &labels-base
-  hy-home.managed: "true"
-  hy-home.tier: <tier_name>
-  observability.logs: "true"
-```
+## 0. Pre-Implementation Checklist
 
-### 3.2 Logging Strategy
+- [x] Traceability: PRD-ARCH-01 and ARD-ARCH-01 references.
+- [x] Security: Mandatory non-root user.
+- [x] Design: Healthcheck standard.
 
-Loki integration is MANDATORY for all infrastructure services.
+## 1. Technical Overview
 
-```yaml
-x-logging: &default-logging
-  driver: "loki"
-  options:
-    loki-url: "http://infra-loki:3100/loki/api/v1/push"
-    loki-external-labels: "container_name={{.Name}},tier=<tier_name>"
-```
+This specification defines the mandatory formatting and configuration standards for all application-level services integrated into the Hy-Home ecosystem. It ensures uniform discovery, security, and lifecycle management across heterogeneous stacks.
 
-## 4. Verification Flow
+## 2. Coded Requirements
 
-1. **Schema Check**: `docker compose config` MUST exit with status 0.
-2. **Security Audit**: `docker-bench-security` score MUST NOT degrade.
-3. **Log Check**: Logs MUST appear in Grafana Explore under the correct labels.
+| Req ID | Requirement Description | Priority |
+| --- | --- | --- |
+| **SPEC-STD-01** | Every service MUST define a `healthcheck` in the Compose file. | P0 |
+| **SPEC-STD-02** | services SHALL expose only required ports via Traefik labels. | P0 |
+| **SPEC-STD-03** | Use of `${DEFAULT_ENV}` for environment file mapping is required. | P1 |
+
+## 4. Interfaces & Internal API
+
+- **Service Discovery**: Internal DNS via `infra_net`.
+- **API Surface**: Services SHALL follow standard REST or gRPC patterns if public.
+
+## 5. Component Breakdown
+
+### 5.1 Healthcheck Standard
+
+- **Interval**: `30s`
+- **Timeout**: `10s`
+- **Retries**: `3`
+- **Command**: MUST use internal tools (e.g., `wget`, `curl`, or app-provided check).
+
+### 5.2 Traefik Integration
+
+- **Labels**: Mandatory `traefik.enable=true` and `traefik.http.routers.*` rules.
+
+## 6. Edge Cases & Failure Handling
+
+- **Zombie Health**: Healthchecks MUST NOT give false positives during service OOM.
+- **Boot order**: Services SHOULD use `depends_on` with `service_healthy`.
+
+## 7. Verification Plan
+
+- **Audit-01**: Run `docker compose config` to check for missing healthchecks.
+- **Audit-02**: verify Traefik dashboard reflects correctly mapped routes.
+
+## 11. Related Documents
+
+- **Architecture Reference**: [[ARD-ARCH-01] Global System Architecture Reference Document](../../docs/ard/system-architecture-ard.md)

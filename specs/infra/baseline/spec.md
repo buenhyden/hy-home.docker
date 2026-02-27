@@ -37,21 +37,25 @@ _Target Directory: `specs/infra/baseline/spec.md`_
 | AuthN/AuthZ     | Is auth approach designed (token/OAuth/RBAC)?  | Must     | Docker Secrets  | Section 4         |
 | Data Protection | Encryption/access policies for sensitive data? | Must     | Secrets Mounting| Section 9         |
 
-## 1. Technical Overview & Architecture Style
+## [SPEC-INFRA-02] Infrastructure Baseline Specification
 
-This specification governs the core setup and security hardening requirements for the primary infrastructure engine.
+## 0. Pre-Implementation Checklist
 
-- **Component Boundary**: Root orchestration and tier-specific bootstrap logic.
-- **Key Dependencies**: `/secrets/certs`, `.env` master configuration.
-- **Tech Stack**: Docker Compose v2.20+, YAML 3.8.
+- [x] Traceability: PRD-BASE-01 and ARD-BASE-01 references.
+- [x] Security: 100% cap_drop coverage.
+- [x] Operations: Loki driver verification.
 
-## 2. Coded Requirements (Traceability)
+## 1. Technical Overview
 
-| ID                | Requirement Description | Priority | Parent PRD REQ |
-| ----------------- | ----------------------- | -------- | -------------- |
-| **[REQ-BSL-01]** | Registry Integrality: The root `docker-compose.yml` SHALL serve as the master registry for all `infra/` modules. | Critical | REQ-PRD-FUN-01 |
-| **[REQ-BSL-02]** | Driver Standardisation: All system-level services MUST utilize the `loki` log driver. | Critical | REQ-PRD-FUN-05 |
-| **[REQ-BSL-03]** | Secrets Hermeticity: Persistent credentials SHALL ALWAYS utilize Docker Secrets. | High     | REQ-PRD-FUN-03 |
+This specification defines the core setup and security hardening requirements for the primary infrastructure engine. It establishes the "registry of truth" for image versions, network isolation boundaries, and the global inheritance model for all ecosystem services.
+
+## 2. Coded Requirements
+
+| Req ID | Requirement Description | Priority |
+| --- | --- | --- |
+| **SPEC-BASE-01** | All images MUST use pinned version tags; the `latest` tag is prohibited. | P0 |
+| **SPEC-BASE-02** | Every service SHALL utilize the `init: true` directive for signal handling. | P0 |
+| **SPEC-BASE-03** | Sensitive data MUST be injected via `/run/secrets/` filesystem mounts. | P0 |
 
 ## 3. Data Modeling & Storage Strategy
 

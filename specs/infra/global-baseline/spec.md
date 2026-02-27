@@ -1,123 +1,51 @@
----
-title: 'Infrastructure Global Baseline Specification'
-status: 'Validated'
-version: '1.0'
-owner: 'Principal Infrastructure & Reliability Architect'
-prd_reference: '/docs/prd/infra-baseline-prd.md'
-api_reference: 'N/A'
-arch_reference: '/docs/ard/system-optimization-ard.md'
-tags: ['spec', 'implementation', 'infra', 'baseline']
----
-
 # [SPEC-INFRA-01] Infrastructure Global Baseline Specification
 
-> **Status**: Validated
-> **Related PRD**: [/docs/prd/infra-baseline-prd.md](/docs/prd/infra-baseline-prd.md)
-> **Related Architecture**: [/docs/ard/system-optimization-ard.md](/docs/ard/system-optimization-ard.md)
+## 0. Pre-Implementation Checklist
 
-_Target Directory: `specs/infra/global-baseline/spec.md`_
+- [x] Traceability: PRD-BASE-01 and ARD-BASE-01 references.
+- [x] Security: Verified non-root UID (1000).
+- [x] Design: global inheritance via common-optimizations.yml.
 
----
+## 1. Technical Overview
 
-## 0. Pre-Implementation Checklist (Governance)
+This specification establishes the global technical invariants for all infrastructure services. It defines the mandatory inheritance model, least privilege access controls, and environment portability required across the Hy-Home service tiers.
 
-### 0.1 Architecture / Tech Stack
+## 2. Coded Requirements
 
-| Item               | Check Question                                        | Required | Alignment Notes | Where to document |
-| ------------------ | ----------------------------------------------------- | -------- | --------------- | ----------------- |
-| Architecture Style | Is the style Monolith/Modular Monolith/Microservices? | Must     | Modular Compose | Section 1         |
-| Service Boundaries | Are module boundaries documented (diagram/text)?      | Must     | Tier Isolation  | Section 1         |
-| Backend Stack      | Are language/framework/libs decided?                  | Must     | Docker Compose  | Section 1         |
+| Req ID | Requirement Description | Priority |
+| --- | --- | --- |
+| **SPEC-GLOB-01** | All services MUST extend from `infra/common-optimizations.yml`. | P0 |
+| **SPEC-GLOB-02** | services SHALL utilize `${DEFAULT_DATA_DIR}` for all bind mounts. | P0 |
+| **SPEC-GLOB-03** | Runtime filesystems SHALL be `read_only: true` by default. | P1 |
 
-### 0.2 Quality / Testing / Security
+## 4. Interfaces & Internal API
 
-| Item            | Check Question                                 | Required | Alignment Notes | Where to document |
-| --------------- | ---------------------------------------------- | -------- | --------------- | ----------------- |
-| Test Strategy   | Levels (Unit/Integration/E2E/Load) defined?    | Must     | Config Linting  | Section 7         |
-| AuthN/AuthZ     | Is auth approach designed (token/OAuth/RBAC)?  | Must     | Docker Secrets  | Section 4         |
-| Data Protection | Encryption/access policies for sensitive data? | Must     | Least Privilege | Section 9         |
-
-## 1. Technical Overview & Architecture Style
-
-This specification defines standard extension fields and service templates for cross-file inheritance for the hy-home ecosystem.
-
-- **Component Boundary**: Global configuration invariants and resource templates.
-- **Key Dependencies**: `infra/common-optimizations.yml`
-- **Tech Stack**: Docker Compose v2.20+
-
-## 2. Coded Requirements (Traceability)
-
-| ID                | Requirement Description | Priority | Parent PRD REQ |
-| ----------------- | ----------------------- | -------- | -------------- |
-| **[REQ-INF-01]** | Global Inheritance Primacy: All infrastructure services SHALL extend from a baseline template in `infra/common-optimizations.yml`. | Critical | REQ-SYS-01 |
-| **[REQ-INF-02]** | Mandatory Least Privilege: All containers MUST drop all capabilities (`cap_drop: ALL`) and prohibit privilege escalation (`no-new-privileges: true`). | Critical | REQ-SYS-01 |
-| **[REQ-INF-03]** | Standardized Resource Quotas: Every service definition SHALL define CPU and Memory limits using established profiles (Low/Med/High). | High     | REQ-SYS-08 |
-| **[REQ-INF-04]** | Environment Portability: All services MUST rely on internal DNS for discovery; explicit static IPs are PROHIBITED [ADR-0008]. | Critical | REQ-SYS-05      |
-| **[REQ-INF-05]** | Managed Process Lifecycle: All services MUST utilize `init: true` for robust signal handling [ADR-0012]. | High     | REQ-SYS-06      |
-| **[REQ-INF-06]** | Functional Metadata Overlays: Services SHALL maintain local `labels` for service-specific functional requirements (e.g. Traefik rules) while extending global security invariants. | Medium   | REQ-SYS-01 |
-
-## 3. Data Modeling & Storage Strategy
-
-- **Database Engine**: Containerized local storage.
-- **Schema Strategy**: Deterministic volume mounting.
-- **Migration Plan**: YAML anchor-to-extends migration.
-
-## 4. Interfaces & Data Structures
-
-- **Common Interface**: `infra_net` bridge network.
-- **Logging Interface**: `loki` driver aggregation point.
+- **Logging Interface**: Loki driver with `hy-home.tier` and `job` labels.
+- **Environment API**: Mandatory `.env` template defined in `.env.example`.
 
 ## 5. Component Breakdown
 
-- **`infra/common-optimizations.yml`**: Primary inheritance template provider.
+### 5.1 Common Optimizations
 
-## 6. Edge Cases & Error Handling
+- **File**: `infra/common-optimizations.yml`
+- **Templates**: `base-security`, `logging-loki`, `resource-med`.
 
-- **Error**: Unknown extension fields -> `docker compose config` validation failure.
-- **Error**: Overlapping limits -> Container runtime OOM or throttling.
+### 5.2 Path Abstraction
 
-## 7. Verification Plan (Testing & QA) [REQ-SPT-10]
+- **Variable**: `DEFAULT_DATA_DIR`
+- **Usage**: Mandatory for all database and log volumes.
 
-- **[REQ-SPC-010] External Secret Reference**: Services SHALL reference secrets as `external: true` to source from the root compose.
-- **[REQ-SPC-011] Version Pinning Enforcement**: The use of `latest` image tags is PROHIBITED.
-- **[REQ-SPC-012] Mandatory Healthcheck Coverage**: Every service SHALL define a `healthcheck` that utilizes the container's internal loopback (`localhost`).
-- **[REQ-SPC-013] Dynamic Configuration Enforcement**: All environment variables MUST source values from `.env.example` or Docker Secrets, forbidding inline literals for IPs or credentials.
-- **[VAL-SPC-008] Volume Variable Validation**: `docker compose config` MUST verify that host volume sources resolve to `${DEFAULT_*_DIR}` base paths.
+## 6. Edge Cases & Failure Handling
 
-- **[VAL-SPC-001] Security Baseline Verification**:
-  - **Given**: A service definition inheriting from `base-security`.
-  - **When**: Inspecting via `docker inspect <container_name> --format '{{.HostConfig.SecurityOpt}}'`.
-  - **Then**: JSON output MUST contain `no-new-privileges:true`.
+- **Missing ENV**: Startup SHALL fail if `DEFAULT_DATA_DIR` is unbound.
+- **Resource Exhaustion**: Services hitting mem_limit SHALL be restarted by the system.
 
-- **[VAL-SPC-002] Resource Quota Enforcement**:
-  - **Given**: A container running with the `template-infra-low` profile.
-  - **When**: Inspecting container limits via `docker stats --no-stream --format "{{.MemLimit}}"`.
-  - **Then**: Memory limit MUST be exactly `256MiB` (as defined in `infra/common-optimizations.yml`).
+## 7. Verification Plan
 
-  - **Then**: Structured logs MUST appear in the centralized plane.
+- **Audit-01**: Run `docker compose config` to verify template resolution.
+- **Audit-02**: verify label searchability in Grafana Loki Explorer.
 
-- [VAL-SPC-004] DNS-Based Connectivity Verification:
-  - Given: Two services on the infra_net bridge.
-  - When: Executing ping -c 1 <service_name> from one container to another.
-  - Then: ICMP response MUST be received without IP-level configuration.
+## 11. Related Documents
 
-- [VAL-SPC-006] Filesystem Immutability Verification:
-  - Given: A stateless service (e.g., pg-exporter).
-  - When: Inspecting via docker inspect <container> --format '{{.HostConfig.ReadonlyRootfs}}'.
-  - Then: Boolean value MUST be true.
-
-- **[VAL-SPC-005] Init Process Verification**:
-  - **Given**: A running container.
-  - **When**: Inspecting via `docker inspect --format '{{.Config.Init}}'`.
-  - **Then**: Output MUST be `true`.
-
-## 8. Non-Functional Requirements (NFR) & Scalability
-
-- **Reliability**: termination handling via `unless-stopped` policy.
-- **Efficiency**: Idle memory utilization MUST NOT exceed 4GB aggregate.
-
-## 9. Operations & Observability
-
-- **Monitoring**: Prometheus scraping of container resources.
-- **Logging**: Mandatory Loki forwarding.
-- **Identity**: Root execution inside containers is STRICTLY PROHIBITED.
+- **PRD Reference**: [[PRD-BASE-01] Infrastructure Baseline PRD](../../docs/prd/infra-baseline-prd.md)
+- **Architecture Reference**: [[ARD-BASE-01] Infrastructure Baseline Reference Document](../../docs/ard/infra-baseline-ard.md)
