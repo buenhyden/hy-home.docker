@@ -157,8 +157,8 @@ services:
     shm_size: 256mb
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/mng_postgres_password
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_DEFAULT_USER}
+      POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
     ports:
       - '${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}'
     secrets:
@@ -186,8 +186,8 @@ services:
       PGPASSWORD_FILE: /run/secrets/mng_postgres_password
       POSTGRES_HOSTNAME: ${POSTGRES_MNG_HOSTNAME}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_DEFAULT_USER}
+      POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
     command: >
       sh -c "
       echo 'DB 연결 대기 중...';

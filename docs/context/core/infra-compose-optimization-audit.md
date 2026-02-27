@@ -17,7 +17,7 @@
 1. `infra/04-data/supabase/docker-compose.yml`
 
 - Replaced ambiguous `${POSTGRES_HOST}` references with `${SUPABASE_POSTGRES_HOST}` in connection strings and DB host env.
-- Replaced generic `${POSTGRES_PORT}` / `${POSTGRES_DB}` references in Supabase connection strings with `${SUPABASE_POSTGRES_PORT}` / `${SUPABASE_POSTGRES_DB}`.
+- Replaced generic `${POSTGRES_PORT}` / `${POSTGRES_DEFAULT_DB}` references in Supabase connection strings with `${SUPABASE_POSTGRES_PORT}` / `${SUPABASE_POSTGRES_DB}`.
 - Escaped realtime healthcheck bearer token interpolation (`${SUPABASE_ANON_KEY}` -> `$${SUPABASE_ANON_KEY}`) so Compose does not resolve it at render time.
 
 1. `infra/04-data/couchdb/docker-compose.yml`
