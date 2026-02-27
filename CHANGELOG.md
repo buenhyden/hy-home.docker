@@ -132,6 +132,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Integrate Loki logging and standardize network configurations across multiple infrastructure services.
 - Add `hy-home.tier` labels to docker-compose services using a shared YAML anchor for categorization.
 - Add healthchecks and tier labels to various services, configure Stalwart volume, update .env.example, and remove Loki logging drivers from mail services.
+- Introduce standardized tier labeling for observability, refine infrastructure optimizations, and update healthcheck configurations
+- Introduce read-only filesystems for several services, standardize tier labels, and update network configurations.
 
 ### Changed
 
@@ -159,6 +161,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restructure infrastructure specifications to a new structured format and rename the global baseline spec.
 - Standardize infrastructure configurations by adopting template-driven inheritance via `extends` for security, logging, and resource management.
 - Remove redundant logging configurations and label anchors from docker-compose files, and add a volume definition for ksql.
+- Rename generic `POSTGRES_USER` and `POSTGRES_DB` environment variables to `_DEFAULT` variants in Docker Compose files and documentation.
 
 ### Docs
 
@@ -230,6 +233,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Introduce new ADRs for infrastructure decisions and consolidate/remove outdated specifications and documentation.
 - Add new incident report and update postmortem for infrastructure documentation audit.
 - Consolidate configuration management ADRs, update requirement IDs, and refine infrastructure documentation references.
+- Add new PRDs for system architecture, observability, messaging, and AI, and update related ARDs, ADRs, and infrastructure specifications.
+- Standardize ADR, PRD, and ARD formats, and implement Docker Compose profiles for infrastructure services.
 
 ### Fixed
 
@@ -332,6 +337,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - Add .gitkeep files to various secrets subdirectories for version control.
+- **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 
