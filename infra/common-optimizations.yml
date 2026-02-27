@@ -54,11 +54,7 @@ services:
   # ── Operational Baselines ───────────────────────────────
   base-standard:
     restart: unless-stopped
-    logging:
-      driver: loki
-      options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
+    logging: *loki-logging
 
   # ── Composite Templates ────────────────────────────────
   template-infra-low:
@@ -68,11 +64,8 @@ services:
       resources:
         limits: { cpus: "0.2", memory: "256M" }
     restart: unless-stopped
-    logging:
-      driver: loki
-      options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
+    logging: *loki-logging
+
 
   template-infra-med:
     extends:
@@ -81,11 +74,8 @@ services:
       resources:
         limits: { cpus: "0.5", memory: "512M" }
     restart: unless-stopped
-    logging:
-      driver: loki
-      options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
+    logging: *loki-logging
+
 
   template-infra-high:
     extends:
@@ -94,11 +84,8 @@ services:
       resources:
         limits: { cpus: "1.0", memory: "1G" }
     restart: unless-stopped
-    logging:
-      driver: loki
-      options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
-        loki-external-labels: "container_name={{.Name}}"
+    logging: *loki-logging
+
   base-security-hardened-nonroot: # Hardened + Non-root
     extends:
       service: base-security-hardened

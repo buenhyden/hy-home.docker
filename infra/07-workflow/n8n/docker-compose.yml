@@ -1,16 +1,5 @@
 name: n8n
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: workflow
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=workflow'
-
 x-n8n-common-env: &n8n-common-env
   GENERIC_TIMEZONE: ${DEFAULT_TIMEZONE:-Asia/Seoul}
   TZ: ${DEFAULT_TIMEZONE:-Asia/Seoul}
@@ -87,14 +76,12 @@ services:
       N8N_METRICS_INCLUDE_QUEUE_METRICS: true
       QUEUE_HEALTH_CHECK_ACTIVE: true
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.n8n.rule: Host(`n8n.${DEFAULT_URL}`)
       traefik.http.routers.n8n.entrypoints: websecure
       traefik.http.routers.n8n.tls: 'true'
       traefik.http.routers.n8n.service: n8n
       traefik.http.services.n8n.loadbalancer.server.port: ${N8N_PORT:-5678}
-    logging: *default-logging
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:${N8N_PORT:-5678}/healthz || exit 1']
       interval: 30s
@@ -124,7 +111,6 @@ services:
     volumes:
       - n8n-data:/home/node/.n8n
       - ./custom:/home/node/.n8n/custom
-    logging: *default-logging
 
   n8n-task-runner:
     extends:
@@ -132,7 +118,6 @@ services:
       service: template-infra-med
     image: n8nio/runners:2.6.2
     container_name: n8n-task-runner
-    logging: *default-logging
 
   n8n-valkey:
     extends:
@@ -163,7 +148,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
 
   n8n-valkey-exporter:
     extends:
@@ -187,7 +171,6 @@ services:
           -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on:
       n8n-valkey: { condition: service_healthy }
-    logging: *default-logging
 
 networks:
   infra_net:

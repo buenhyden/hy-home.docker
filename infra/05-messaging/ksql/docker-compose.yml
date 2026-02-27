@@ -1,10 +1,12 @@
 name: ksql
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: messaging
 volumes:
   ksqldb-data-volume:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/ksql
 services:
   ksqldb-server:
     extends:
@@ -43,11 +45,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   ksqldb-cli:
     profiles:
@@ -62,11 +59,6 @@ services:
     tty: true
     networks:
       - infra_net
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   ksql-datagen:
     profiles:
@@ -92,8 +84,3 @@ services:
       STREAMS_SCHEMA_REGISTRY_PORT: ${SCHEMA_REGISTRY_PORT:-8081}
     networks:
       - infra_net
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'

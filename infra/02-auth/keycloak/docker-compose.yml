@@ -1,16 +1,5 @@
 name: keycloak
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: auth
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=auth'
-
 volumes:
   keycloak-config:
     driver: local
@@ -80,13 +69,11 @@ services:
       # 2. 연결 가져올 때 유효성 검사 수행 (background)
       JAVA_OPTS_APPEND: '-Dquarkus.datasource.jdbc.idle-removal-interval=5M -Dquarkus.datasource.jdbc.background-validation-interval=1M'
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.keycloak.rule: Host(`keycloak.${DEFAULT_URL}`)
       traefik.http.routers.keycloak.entrypoints: websecure
       traefik.http.routers.keycloak.tls: 'true'
-      traefik.http.services.keycloak.loadbalancer.server.port: '8080'
-    logging: *default-logging
+      traefik.http.services.keycloak.loadbalancer.server.port: ${KEYCLOAK_PORT:-8080}
 
 networks:
   infra_net:

@@ -1,9 +1,5 @@
 name: vault
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: security
-
 volumes:
   vault-data:
     driver: local
@@ -55,17 +51,11 @@ services:
       retries: 5
       start_period: 30s
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.vault.rule: Host(`vault.${DEFAULT_URL}`)
       traefik.http.routers.vault.entrypoints: websecure
       traefik.http.routers.vault.tls: 'true'
       traefik.http.services.vault.loadbalancer.server.port: ${VAULT_PORT:-8200}
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
 secrets:
   oauth2_proxy_client_secret:

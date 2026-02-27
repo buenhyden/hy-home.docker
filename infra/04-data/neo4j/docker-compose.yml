@@ -1,16 +1,5 @@
 name: neo4j
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: data
-  traefik.enable: 'true'
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=data'
 
 volumes:
   neo4j-volume:
@@ -46,7 +35,6 @@ services:
       traefik.http.routers.neo4j.entrypoints: websecure
       traefik.http.routers.neo4j.tls: 'true'
       traefik.http.services.neo4j.loadbalancer.server.port: ${NEO4J_HTTP_PORT:-7474}
-    logging: *default-logging
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:${NEO4J_HTTP_PORT:-7474} || exit 1']
       interval: 30s

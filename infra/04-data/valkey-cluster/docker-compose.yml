@@ -1,23 +1,42 @@
 name: valkey-cluster
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: data
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=data'
-
 volumes:
   valkey0-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/valkey/data-1
   valkey1-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/valkey/data-1
   valkey2-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/valkey/data-2
   valkey3-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/valkey/data-3
   valkey4-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/valkey/data-4
   valkey5-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/valkey/data-5
 
 secrets:
   service_valkey_password: { external: true }
@@ -45,8 +64,6 @@ services:
       - service_valkey_password
     networks:
       - infra_net
-    labels: *labels-base
-    logging: *default-logging
 
   valkey-node-1:
     <<: *valkey-node
@@ -124,7 +141,6 @@ services:
       - service_valkey_password
     networks:
       - infra_net
-    logging: *default-logging
 
 networks:
   infra_net:

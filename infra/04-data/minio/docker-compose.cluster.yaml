@@ -1,11 +1,5 @@
 # Settings and configurations that are common for all containers
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
 x-minio-common: &minio-common
   image: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
   # command: server --console-address ":${MINIO_CONSOLE_PORT}" http://minio{1...4}/data{1...2}
@@ -25,7 +19,6 @@ x-minio-common: &minio-common
     - no-new-privileges:true
   cap_drop:
     - ALL
-  logging: *default-logging
   secrets:
     - minio_root_username
     - minio_root_password

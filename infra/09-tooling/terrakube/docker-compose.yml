@@ -1,16 +1,5 @@
 name: terrakube
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: tooling
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=tooling'
-
 services:
   # ----------------------------------------------------------------
   # 5. Terrakube API (백엔드)
@@ -58,7 +47,6 @@ services:
       TerrakubeRedisPort: ${VALKEY_PORT:-6379}
 
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.terrakube-api.rule: Host(`terrakube-api.${DEFAULT_URL}`)
       traefik.http.services.terrakube-api.loadbalancer.server.port: 8080
@@ -80,7 +68,6 @@ services:
         condition: service_started
     networks:
       - infra_net
-    logging: *default-logging
 
   # ----------------------------------------------------------------
   # 6. Terrakube UI (프론트엔드)
@@ -99,7 +86,6 @@ services:
       REACT_APP_SCOPE: openid profile email offline_access groups
       JAVA_TOOL_OPTIONS: -Dcom.sun.security.enableAIAcaIssuers=true
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.terrakube-ui.rule: Host(`terrakube-ui.${DEFAULT_URL}`)
       traefik.http.services.terrakube-ui.loadbalancer.server.port: ${TERRAKUBE_UI_PORT:-3000}
@@ -115,7 +101,6 @@ services:
         condition: service_healthy
     networks:
       - infra_net
-    logging: *default-logging
 
   # ----------------------------------------------------------------
   # 7. 인프라 (DB, Redis, Executor)
@@ -178,11 +163,9 @@ services:
     networks:
       - infra_net
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.terrakube-executor.rule: Host(`terrakube-executor.${DEFAULT_URL}`)
       traefik.http.services.terrakube-executor.loadbalancer.server.port: ${TERRAKUBE_EXECUTOR_PORT:-8090}
-    logging: *default-logging
 
 secrets:
   terrakube_db_password:

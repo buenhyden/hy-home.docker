@@ -1,11 +1,5 @@
 name: opensearch
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
 volumes:
   opensearch-data1:
     # driver: local
@@ -111,7 +105,6 @@ services:
       - IPC_LOCK
     security_opt:
       - no-new-privileges:true
-    logging: *default-logging
 
   # #######################################################
   # # OpenSearch 노드 2
@@ -161,7 +154,6 @@ services:
       - IPC_LOCK
     security_opt:
       - no-new-privileges:true
-    logging: *default-logging
 
   # #######################################################
   # # OpenSearch 노드 3
@@ -211,7 +203,6 @@ services:
       - IPC_LOCK
     security_opt:
       - no-new-privileges:true
-    logging: *default-logging
 
   opensearch-dashboards:
     image: opensearchproject/opensearch-dashboards:3.4.0
@@ -259,7 +250,6 @@ services:
         condition: service_healthy
       opensearch-node3:
         condition: service_healthy
-    logging: *default-logging
 
   opensearch-exporter:
     image: prometheuscommunity/elasticsearch-exporter:v1.10.0
@@ -285,7 +275,6 @@ services:
         condition: service_healthy
       opensearch-node3:
         condition: service_healthy
-    logging: *default-logging
 
 secrets:
   opensearch_admin_password:

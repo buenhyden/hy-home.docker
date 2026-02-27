@@ -1,18 +1,32 @@
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
+name: kafka
 
 volumes:
   kafka-1-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kakfa/data-1
   kafka-2-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kakfa/data-2
   kafka-3-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kakfa/data-3
 services:
   ###############################################################
   # Kafka Broker 1 (KRaft Controller + Broker)
   ###############################################################
   kafka-1:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: confluentinc/cp-kafka:7.7.7
     container_name: kafka-1
     hostname: kafka-1
@@ -56,17 +70,14 @@ services:
       - kafka-1-data:/var/lib/kafka/data
     networks:
       - infra_net
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *default-logging
 
   ###############################################################
   # Kafka Broker 2
   ###############################################################
   kafka-2:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: confluentinc/cp-kafka:7.7.7
     container_name: kafka-2
     hostname: kafka-2
@@ -97,17 +108,14 @@ services:
       - kafka-2-data:/var/lib/kafka/data
     networks:
       - infra_net
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *default-logging
 
   ###############################################################
   # Kafka Broker 3
   ###############################################################
   kafka-3:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: confluentinc/cp-kafka:7.7.7
     container_name: kafka-3
     hostname: kafka-3
@@ -138,20 +146,16 @@ services:
       - kafka-3-data:/var/lib/kafka/data
     networks:
       - infra_net
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    logging: *default-logging
 
   # -------------------------------------------
   # 2. Schema Registry (스키마 레지스트리)
   # -------------------------------------------
   schema-registry:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: confluentinc/cp-schema-registry:7.7.0
     container_name: schema-registry
-    restart: unless-stopped
     networks:
       - infra_net
     environment:
@@ -171,12 +175,14 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    logging: *default-logging
 
   ###############################################################
   # Kafka Connect (Distributed)
   ###############################################################
   kafka-connect:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: confluentinc/cp-kafka-connect:7.7.0
     container_name: kafka-connect
     restart: unless-stopped
@@ -234,15 +240,16 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    logging: *default-logging
 
   # -------------------------------------------
   # 4. Kafka REST Proxy (레스트 프록시)
   # -------------------------------------------
   kafka-rest-proxy:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: confluentinc/cp-kafka-rest:7.7.0
     container_name: kafka-rest-proxy
-    restart: unless-stopped
     networks:
       - infra_net
     ports:
@@ -261,12 +268,14 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    logging: *default-logging
 
   # -------------------------------------------
   # 5. Kafka UI (카프카 UI - Provectus)
   # -------------------------------------------
   kafka-ui:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: provectuslabs/kafka-ui:v0.7.2
     container_name: kafka-ui
     networks:
@@ -293,12 +302,13 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    logging: *default-logging
 
   kafka-exporter:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: danielqsj/kafka-exporter:v1.7.0
     container_name: kafka-exporter
-    restart: unless-stopped
     environment:
       KAFKA_SERVER: 'kafka-1:9092,kafka-2:9092,kafka-3:9092'
     ports:
@@ -313,4 +323,3 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
-    logging: *default-logging

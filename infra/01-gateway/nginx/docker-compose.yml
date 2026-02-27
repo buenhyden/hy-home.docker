@@ -1,16 +1,5 @@
 name: nginx
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: gateway
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=gateway'
-
 volumes:
   nginx-logs:
   nginx_certs:
@@ -43,9 +32,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    labels:
-      <<: *labels-base
-    logging: *default-logging
 
 networks:
   infra_net:

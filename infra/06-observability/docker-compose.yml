@@ -1,17 +1,6 @@
 # Hy-Home Observability Stack
 # Refactored to use extends pattern for configuration inheritance
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  observability.logs: 'true'
-  hy-home.tier: observability
-
-x-logging: &default-logging
-  driver: loki
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=observability'
-
 volumes:
   tempo-data:
     driver: local
@@ -94,7 +83,6 @@ services:
       retries: 5
       start_period: 3m
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.prometheus.rule: Host(`prometheus.${DEFAULT_URL}`)
       traefik.http.routers.prometheus.entrypoints: websecure
@@ -127,7 +115,6 @@ services:
     secrets:
       - minio_app_user_password
     labels:
-      <<: *labels-base
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:3100/ready || exit 1']
       interval: 30s
@@ -161,7 +148,6 @@ services:
     secrets:
       - minio_app_user_password
     labels:
-      <<: *labels-base
 
   pyroscope:
     extends:
@@ -181,7 +167,6 @@ services:
       retries: 5
       start_period: 1m
     labels:
-      <<: *labels-base
 
   # -------------------------------------------------------
   # 4. Visualization (Grafana)
@@ -255,7 +240,6 @@ services:
       tempo:
         condition: service_started
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.grafana.rule: Host(`grafana.${DEFAULT_URL}`)
       traefik.http.routers.grafana.entrypoints: websecure
@@ -303,7 +287,6 @@ services:
       retries: 5
       start_period: 30s
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.alloy.rule: Host(`alloy.${DEFAULT_URL}`)
       traefik.http.routers.alloy.entrypoints: websecure
@@ -338,7 +321,6 @@ services:
     networks:
       - infra_net
     labels:
-      <<: *labels-base
 
   alertmanager:
     extends:
@@ -386,7 +368,6 @@ services:
       retries: 5
       start_period: 1m
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.alertmanager.rule: Host(`alertmanager.${DEFAULT_URL}`)
       traefik.http.routers.alertmanager.entrypoints: websecure
@@ -423,7 +404,6 @@ services:
       retries: 5
       start_period: 30s
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.pushgateway.rule: Host(`pushgateway.${DEFAULT_URL}`)
       traefik.http.routers.pushgateway.entrypoints: websecure

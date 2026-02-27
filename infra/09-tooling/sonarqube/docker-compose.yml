@@ -1,16 +1,5 @@
 name: sonarqube
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: tooling
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=tooling'
-
 volumes:
   sonarqube-data-volume:
     driver: local
@@ -49,7 +38,6 @@ services:
       - sonarqube-logs-volume:/opt/sonarqube/logs
     networks:
       - infra_net
-    logging: *default-logging
     secrets:
       - sonarqube_db_password
     environment:
@@ -59,7 +47,6 @@ services:
       - SONAR_WEB_JAVAOPTS=-Xmx512m -Xms512m
       - SONAR_SEARCH_JAVAOPTS=-Xmx512m -Xms512m
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.sonarqube.rule: Host(`sonarqube.${DEFAULT_URL}`)
       traefik.http.routers.sonarqube.entrypoints: websecure

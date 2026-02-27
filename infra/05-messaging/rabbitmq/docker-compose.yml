@@ -1,16 +1,5 @@
 name: rabbitmq
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: messaging
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=messaging'
-
 volumes:
   rabbitmq-data-volume:
     driver: local
@@ -49,13 +38,11 @@ services:
       retries: 5
       start_period: 30s
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.rabbitmq.rule: Host(`rabbitmq.${DEFAULT_URL}`)
       traefik.http.routers.rabbitmq.entrypoints: websecure
       traefik.http.routers.rabbitmq.tls: 'true'
       traefik.http.services.rabbitmq.loadbalancer.server.port: ${RABBITMQ_MANAGEMENT_PORT:-15672}
-    logging: *default-logging
 
 secrets:
   rabbitmq_user:

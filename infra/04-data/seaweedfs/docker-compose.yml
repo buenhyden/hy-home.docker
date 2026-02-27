@@ -1,15 +1,5 @@
 name: seaweedfs
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: data
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=data'
 
 volumes:
   seaweedfs-master-data:
@@ -40,7 +30,6 @@ services:
       traefik.http.routers.seaweedfs-master.entrypoints: websecure
       traefik.http.routers.seaweedfs-master.tls: 'true'
       traefik.http.services.seaweedfs-master.loadbalancer.server.port: ${SEAWEEDFS_MASTER_HTTP_PORT:-9333}
-    logging: *default-logging
 
   seaweedfs-volume:
     extends:
@@ -59,7 +48,6 @@ services:
         condition: service_healthy
     networks:
       - infra_net
-    logging: *default-logging
 
   seaweedfs-filer:
     extends:
@@ -85,7 +73,6 @@ services:
       traefik.http.services.cdn.loadbalancer.server.port: ${SEAWEEDFS_FILER_HTTP_PORT:-8888}
     networks:
       - infra_net
-    logging: *default-logging
 
   seaweedfs-s3:
     extends:
@@ -108,7 +95,6 @@ services:
         condition: service_healthy
     networks:
       - infra_net
-    logging: *default-logging
 
   seaweedfs-mount:
     extends:
@@ -128,7 +114,6 @@ services:
         condition: service_healthy
       seaweedfs-filer:
         condition: service_healthy
-    logging: *default-logging
 
 networks:
   infra_net:

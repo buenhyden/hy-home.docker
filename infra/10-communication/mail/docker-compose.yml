@@ -1,8 +1,15 @@
 name: mail
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: communication
+
+
+volumes:
+  stalwart-data:
+  stalwart_certs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs
 
 secrets:
   stalwart_password:
@@ -52,7 +59,6 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.stalwart-ui.rule: Host(`mail.${DEFAULT_URL}`)
       traefik.http.services.stalwart-ui.loadbalancer.server.port: ${STALWART_PORT:-8080}
-    logging:
       driver: loki
       options:
         loki-url: 'http://localhost:3100/loki/api/v1/push'
@@ -76,20 +82,11 @@ services:
       traefik.http.routers.mailhog.tls: 'true'
       traefik.http.services.mailhog.loadbalancer.server.port: ${MAILHOG_UI_PORT:-8025}
       traefik.http.routers.mailhog.middlewares: sso-auth@file
-    logging:
       driver: loki
       options:
         loki-url: 'http://localhost:3100/loki/api/v1/push'
         loki-external-labels: 'container_name={{.Name}}'
 
-volumes:
-  stalwart-data:
-  stalwart_certs:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs
 
 networks:
   infra_net:

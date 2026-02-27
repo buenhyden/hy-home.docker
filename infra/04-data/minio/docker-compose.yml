@@ -1,16 +1,5 @@
 name: minio
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: data
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=data'
-
 volumes:
   minio-data:
     driver: local
@@ -51,7 +40,6 @@ services:
       timeout: 20s
       retries: 3
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.minio-api.rule: Host(`minio.${DEFAULT_URL}`)
       traefik.http.routers.minio-api.entrypoints: websecure
@@ -63,7 +51,6 @@ services:
       traefik.http.routers.minio-console.tls: 'true'
       traefik.http.routers.minio-console.service: minio-console
       traefik.http.services.minio-console.loadbalancer.server.port: ${MINIO_CONSOLE_PORT:-9001}
-    logging: *default-logging
 
   minio-create-buckets:
     extends:
@@ -98,7 +85,6 @@ services:
         mc mb myminio/cdn-bucket --ignore-existing
         mc mb myminio/doc-intel-assets --ignore-existing
         mc anonymous set public myminio/cdn-bucket || true
-    logging: *default-logging
 
 networks:
   infra_net:

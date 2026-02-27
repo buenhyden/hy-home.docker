@@ -1,16 +1,5 @@
 name: qdrant
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: data
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=data'
-
 volumes:
   qdrant-data:
     driver: local
@@ -50,13 +39,11 @@ services:
       retries: 5
       start_period: 30s
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.qdrant.rule: Host(`qdrant.${DEFAULT_URL}`)
       traefik.http.routers.qdrant.entrypoints: websecure
       traefik.http.routers.qdrant.tls: 'true'
       traefik.http.services.qdrant.loadbalancer.server.port: ${QDRANT_PORT:-6333}
-    logging: *default-logging
 
 networks:
   infra_net:

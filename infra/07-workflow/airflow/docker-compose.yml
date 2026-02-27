@@ -1,15 +1,5 @@
 name: airflow
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: workflow
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=workflow'
 
 x-airflow-common: &airflow-common
   profiles:
@@ -47,7 +37,6 @@ x-airflow-common: &airflow-common
     - airflow_fernet_key
     - airflow_www_password
     - airflow_valkey_password
-  logging: *default-logging
 
 volumes:
   airflow-dags:
@@ -243,17 +232,10 @@ services:
         echo "Airflow version:"
         /entrypoint airflow version
         echo
-        echo "Files in shared volumes:"
-        echo
-        ls -la /opt/airflow/{logs,dags,plugins,config}
-        echo
         echo "Running airflow config list to create default config file if missing."
         echo
         /entrypoint airflow config list >/dev/null
         echo
-        echo "Files in shared volumes:"
-        echo
-        ls -la /opt/airflow/{logs,dags,plugins,config}
         echo
         echo "Change ownership of files in /opt/airflow to ${AIRFLOW_UID}:0"
         echo
@@ -352,7 +334,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
 
   airflow-valkey-exporter:
     extends:
@@ -381,7 +362,6 @@ services:
     depends_on:
       airflow-valkey:
         condition: service_healthy
-    logging: *default-logging
 
   airflow-statsd-exporter:
     profiles:
@@ -400,7 +380,6 @@ services:
     expose:
       - '${STATSD_PROMETHEUS_PORT:-9102}'
       - '${STATSD_AIRFLOW_PORT:-9125}'
-    logging: *default-logging
 
 networks:
   infra_net:

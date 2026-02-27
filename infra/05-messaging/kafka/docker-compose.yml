@@ -1,15 +1,5 @@
 name: kafka
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: messaging
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=messaging'
 
 volumes:
   kafka-1-data:
@@ -54,7 +44,6 @@ x-kafka-broker-common: &kafka-broker-common
   restart: unless-stopped
   networks:
     - infra_net
-  logging: *default-logging
   environment: &kafka-broker-env-common
     CLUSTER_ID: ${KAFKA_CLUSTER_ID}
     KAFKA_PROCESS_ROLES: 'broker,controller'
@@ -176,7 +165,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
 
   kafka-connect:
     extends:
@@ -230,7 +218,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
 
   kafka-rest-proxy:
     extends:
@@ -264,7 +251,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
 
   kafbat-ui:
     extends:
@@ -310,7 +296,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
 
   kafka-exporter:
     extends:
@@ -336,7 +321,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
 
   kafka-init:
     extends:
@@ -361,7 +345,6 @@ services:
     deploy:
       resources:
         limits: { memory: 256M }
-    logging: *default-logging
 
 networks:
   infra_net:

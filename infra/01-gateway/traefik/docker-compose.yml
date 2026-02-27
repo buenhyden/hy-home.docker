@@ -1,9 +1,5 @@
 name: traefik
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: infra
-
 volumes:
   traefik_certs:
     driver: local
@@ -37,13 +33,12 @@ services:
     command:
       - '--configFile=/etc/traefik/traefik.yml'
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.dashboard.rule: Host(`dashboard.${DEFAULT_URL}`)
       traefik.http.routers.dashboard.entrypoints: websecure
-      traefik.http.routers.dashboard.service: api@internal
       traefik.http.routers.dashboard.tls: 'true'
-      traefik.http.routers.dashboard.middlewares: dashboard-auth@file
+      traefik.http.routers.dashboard.service: api@internal
+      traefik.http.routers.dashboard.middlewares: traefik-auth@file
 
     healthcheck:
       test: ['CMD', 'traefik', 'healthcheck', '--ping']
@@ -60,7 +55,6 @@ services:
     secrets:
       - traefik_basicauth_password
       - traefik_opensearch_basicauth_password
-    logging: *default-logging
 
 secrets:
   traefik_basicauth_password:

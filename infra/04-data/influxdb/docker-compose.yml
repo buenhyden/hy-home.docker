@@ -1,15 +1,12 @@
 name: influxdb
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: data
 volumes:
   influxdb-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_INFLUXDB_DIR}/data
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/influxdb/data
 
 services:
   influxdb:
@@ -57,7 +54,6 @@ services:
       traefik.http.routers.influxdb.entrypoints: websecure
       traefik.http.routers.influxdb.tls: 'true'
       traefik.http.services.influxdb.loadbalancer.server.port: ${INFLUXDB_PORT:-8086}
-    logging:
       driver: loki
       options:
         loki-url: 'http://localhost:3100/loki/api/v1/push'

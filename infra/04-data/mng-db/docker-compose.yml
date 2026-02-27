@@ -1,9 +1,5 @@
 name: mng-db
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: data
-
 volumes:
   mng-pg-data:
     driver: local
@@ -54,7 +50,6 @@ services:
     container_name: mng-valkey
 
     labels:
-      <<: *labels-base
       traefik.enable: 'false'
     secrets:
       - mng_valkey_password
@@ -82,11 +77,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   mng-valkey-exporter:
     extends:
@@ -95,8 +85,7 @@ services:
     image: oliver006/redis_exporter:v1.81.0-alpine
     container_name: mng-valkey-exporter
 
-    labels:
-      <<: *labels-base
+    labels: {}
     read_only: true
     tmpfs:
       - /tmp
@@ -135,7 +124,6 @@ services:
     volumes:
       - redisinsight-data:/db
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.redisinsight.rule: Host(`redisinsight.${DEFAULT_URL}`)
       traefik.http.routers.redisinsight.entrypoints: websecure
@@ -170,8 +158,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    labels:
-      <<: *labels-base
 
   mng-pg-init:
     extends:
@@ -227,11 +213,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   mng-pg-exporter:
     extends:

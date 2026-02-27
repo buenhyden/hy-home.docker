@@ -1,16 +1,5 @@
 name: opensearch
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: data
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=data'
-
 volumes:
   opensearch-data:
     driver: local
@@ -71,7 +60,6 @@ services:
       traefik.http.services.opensearch.loadbalancer.serversTransport: opensearch-transport@file
       traefik.http.services.opensearch.loadbalancer.server.port: 9200
       traefik.http.services.opensearch.loadbalancer.server.scheme: https
-    logging: *default-logging
     healthcheck:
       test:
         [
@@ -128,7 +116,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 60s
-    logging: *default-logging
     secrets:
       - opensearch_dashboard_password
 
@@ -158,7 +145,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
     secrets:
       - opensearch_exporter_password
 

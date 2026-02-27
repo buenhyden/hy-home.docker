@@ -1,16 +1,12 @@
 name: locust
 
-x-labels-base: &labels-base
-  hy-home.managed: "true"
-  hy-home.tier: tooling
-
 volumes:
   locust-data:
-    # driver: local
-    # driver_opts:
-    #   o: bind
-    #   type: none
-    #   device: ${DEFAULT_LOCUST_DIR}
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_TOOLING_DIR}/locust
 
 services:
   locust-master:

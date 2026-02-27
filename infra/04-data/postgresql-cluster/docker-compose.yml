@@ -1,15 +1,5 @@
 name: postgresql-cluster
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: data
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=data'
 
 volumes:
   pg0-data:
@@ -89,8 +79,6 @@ services:
       - etcd1-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
-    logging: *default-logging
-    labels: *labels-base
 
   etcd-2:
     <<: [] # Placeholder for inheritance if needed, but extends handles it.
@@ -121,8 +109,6 @@ services:
       - etcd2-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
-    logging: *default-logging
-    labels: *labels-base
 
   etcd-3:
     extends:
@@ -152,8 +138,6 @@ services:
       - etcd3-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
-    logging: *default-logging
-    labels: *labels-base
 
   pg-0:
     extends:
@@ -192,8 +176,6 @@ services:
       etcd-1: { condition: service_healthy }
       etcd-2: { condition: service_healthy }
       etcd-3: { condition: service_healthy }
-    logging: *default-logging
-    labels: *labels-base
 
   pg-1:
     extends:
@@ -217,8 +199,6 @@ services:
     volumes:
       - pg1-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
-    logging: *default-logging
-    labels: *labels-base
 
   pg-2:
     extends:
@@ -242,8 +222,6 @@ services:
     volumes:
       - pg2-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
-    logging: *default-logging
-    labels: *labels-base
 
   pg-router:
     extends:
@@ -271,7 +249,6 @@ services:
       traefik.http.routers.haproxy-stats.entrypoints: websecure
       traefik.http.routers.haproxy-stats.tls: 'true'
       traefik.http.services.haproxy-stats.loadbalancer.server.port: ${HAPROXY_PORT:-7000}
-    logging: *default-logging
 
   pg-cluster-init:
     extends:
@@ -300,7 +277,6 @@ services:
     volumes:
       - './init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql'
     restart: 'no'
-    logging: *default-logging
 
   pg-0-exporter:
     extends:
@@ -330,8 +306,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
-    labels: *labels-base
 
   pg-1-exporter:
     extends:
@@ -361,8 +335,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
-    labels: *labels-base
 
   pg-2-exporter:
     extends:
@@ -392,5 +364,3 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
-    labels: *labels-base

@@ -1,15 +1,5 @@
 name: ollama
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: ai
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=ai'
 
 volumes:
   ollama-data:
@@ -47,7 +37,6 @@ services:
       traefik.http.routers.ollama.tls: 'true'
       traefik.http.services.ollama.loadbalancer.server.port: ${OLLAMA_PORT:-11434}
       traefik.http.routers.ollama.middlewares: sso-auth@file
-    logging: *default-logging
     networks:
       - infra_net
     healthcheck:
@@ -72,8 +61,9 @@ services:
     depends_on:
       ollama:
         condition: service_healthy
-    labels: *labels-base
-    logging: *default-logging
+    labels:
+      hy-home.managed: 'true'
+      hy-home.tier: ai
 
 networks:
   infra_net:

@@ -1,14 +1,5 @@
 name: oauth2-proxy
 
-x-logging: &default-logging
-  driver: 'json-file'
-  options:
-    max-size: '5m'
-    max-file: '2'
-
-x-restart: &default-restart
-  restart: unless-stopped
-
 volumes:
   oauth2-proxy-valkey-data:
     driver: local
@@ -75,7 +66,6 @@ services:
       - 'traefik.http.services.oauth2-proxy.loadbalancer.server.port=${OAUTH2_PROXY_PORT:-4180}'
     networks:
       - infra_net
-    logging: *default-logging
 
   oauth2-proxy-valkey:
     deploy:
@@ -114,7 +104,6 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    logging: *default-logging
 
   oauth2-proxy-valkey-exporter:
     deploy:
@@ -148,4 +137,3 @@ services:
     depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       oauth2-proxy-valkey:
         condition: service_healthy
-    logging: *default-logging

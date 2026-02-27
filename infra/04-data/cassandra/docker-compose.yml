@@ -1,16 +1,5 @@
 name: cassandra
 
-x-labels-base: &labels-base
-  traefik.enable: 'true'
-  hy-home.managed: 'true'
-  hy-home.tier: data
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=data'
 
 volumes:
   cassandra-node1-volume:
@@ -47,7 +36,6 @@ services:
       - cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf
     command: java -jar ./cassandra_exporter.jar ./conf/config.yml
     labels: *labels-base
-    logging: *default-logging
 
   cassandra-node1:
     extends:
@@ -80,7 +68,6 @@ services:
       retries: 5
       start_period: 1m
     labels: *labels-base
-    logging: *default-logging
 
 secrets:
   cassandra_password:

@@ -1,12 +1,24 @@
 name: couchdb
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: data
 volumes:
   couchdb1-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/couchdb/data-1
   couchdb2-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/couchdb/data-2
   couchdb3-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/couchdb/data-3
 
 services:
   couchdb-1:
@@ -57,11 +69,6 @@ services:
       traefik.http.services.couchdb-cluster.loadbalancer.server.port: ${COUCHDB_PORT:-5984}
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
   couchdb-2:
     extends:
       file: ../../common-optimizations.yml
@@ -101,16 +108,10 @@ services:
       retries: 5
       start_period: 30s
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.services.couchdb-cluster.loadbalancer.server.port: ${COUCHDB_PORT:-5984}
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
   couchdb-3:
     extends:
       file: ../../common-optimizations.yml
@@ -150,16 +151,10 @@ services:
       retries: 5
       start_period: 30s
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.services.couchdb-cluster.loadbalancer.server.port: ${COUCHDB_PORT:-5984}
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
   # ============================================================================
   # Cluster Initializer (Setup Assistant)
@@ -222,11 +217,6 @@ services:
 
         echo 'CouchDB Cluster Setup Complete!';
       "
-    logging:
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
 secrets:
   couchdb_password:

@@ -1,16 +1,5 @@
 name: oauth2-proxy
 
-x-labels-base: &labels-base
-  hy-home.managed: 'true'
-  hy-home.tier: auth
-  observability.logs: 'true'
-
-x-logging: &default-logging
-  driver: 'loki'
-  options:
-    loki-url: 'http://localhost:3100/loki/api/v1/push'
-    loki-external-labels: 'container_name={{.Name}},tier=auth'
-
 secrets:
   mng_valkey_password:
     external: true
@@ -60,7 +49,6 @@ services:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
     labels:
-      <<: *labels-base
       traefik.enable: 'true'
       traefik.http.routers.oauth2-proxy.rule: Host(`auth.${DEFAULT_URL}`)
       traefik.http.routers.oauth2-proxy.entrypoints: websecure
