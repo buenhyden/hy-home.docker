@@ -1,5 +1,8 @@
 name: mng-db
 
+x-tier-label: &tier-label
+  hy-home.tier: data
+
 volumes:
   mng-pg-data:
     driver: local
@@ -50,6 +53,7 @@ services:
     container_name: mng-valkey
 
     labels:
+      <<: *tier-label
       traefik.enable: 'false'
     secrets:
       - mng_valkey_password
@@ -124,6 +128,7 @@ services:
     volumes:
       - redisinsight-data:/db
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.redisinsight.rule: Host(`redisinsight.${DEFAULT_URL}`)
       traefik.http.routers.redisinsight.entrypoints: websecure

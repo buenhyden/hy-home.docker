@@ -1,5 +1,8 @@
 name: terrakube
 
+x-tier-label: &tier-label
+  hy-home.tier: tooling
+
 services:
   # ----------------------------------------------------------------
   # 5. Terrakube API (백엔드)
@@ -47,6 +50,7 @@ services:
       TerrakubeRedisPort: ${VALKEY_PORT:-6379}
 
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.terrakube-api.rule: Host(`terrakube-api.${DEFAULT_URL}`)
       traefik.http.services.terrakube-api.loadbalancer.server.port: 8080
@@ -86,6 +90,7 @@ services:
       REACT_APP_SCOPE: openid profile email offline_access groups
       JAVA_TOOL_OPTIONS: -Dcom.sun.security.enableAIAcaIssuers=true
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.terrakube-ui.rule: Host(`terrakube-ui.${DEFAULT_URL}`)
       traefik.http.services.terrakube-ui.loadbalancer.server.port: ${TERRAKUBE_UI_PORT:-3000}
@@ -163,6 +168,7 @@ services:
     networks:
       - infra_net
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.terrakube-executor.rule: Host(`terrakube-executor.${DEFAULT_URL}`)
       traefik.http.services.terrakube-executor.loadbalancer.server.port: ${TERRAKUBE_EXECUTOR_PORT:-8090}

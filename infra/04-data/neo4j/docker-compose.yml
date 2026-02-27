@@ -1,5 +1,7 @@
 name: neo4j
 
+x-tier-label: &tier-label
+  hy-home.tier: data
 
 volumes:
   neo4j-volume:
@@ -30,7 +32,7 @@ services:
     networks:
       - infra_net
     labels:
-      <<: *labels-base
+      <<: *tier-label
       traefik.http.routers.neo4j.rule: Host(`neo4j.${DEFAULT_URL}`)
       traefik.http.routers.neo4j.entrypoints: websecure
       traefik.http.routers.neo4j.tls: 'true'

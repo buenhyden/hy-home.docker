@@ -1,5 +1,7 @@
 name: postgresql-cluster
 
+x-tier-label: &tier-label
+  hy-home.tier: data
 
 volumes:
   pg0-data:
@@ -243,7 +245,7 @@ services:
       - '${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}'
       - '${HAPROXY_METRICS_HOST_PORT:-8404}:${HAPROXY_METRICS_PORT:-8404}'
     labels:
-      <<: *labels-base
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.haproxy-stats.rule: Host(`pg-haproxy.${DEFAULT_URL}`)
       traefik.http.routers.haproxy-stats.entrypoints: websecure

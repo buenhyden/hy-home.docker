@@ -1,5 +1,8 @@
 name: opensearch
 
+x-tier-label: &tier-label
+  hy-home.tier: data
+
 volumes:
   opensearch-data:
     driver: local
@@ -51,7 +54,7 @@ services:
     extra_hosts:
       - 'keycloak.127.0.0.1.nip.io:${KEYCLOAK_IP:-127.0.0.1}'
     labels:
-      <<: *labels-base
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.opensearch.rule: Host(`opensearch.${DEFAULT_URL}`)
       traefik.http.routers.opensearch.entrypoints: websecure
@@ -96,7 +99,7 @@ services:
       exec /usr/share/opensearch-dashboards/bin/opensearch-dashboards
       "
     labels:
-      <<: *labels-base
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.opensearch-dashboards.rule: Host(`opensearch-dashboard.${DEFAULT_URL}`)
       traefik.http.routers.opensearch-dashboards.entrypoints: websecure

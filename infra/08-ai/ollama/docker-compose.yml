@@ -1,5 +1,7 @@
 name: ollama
 
+x-tier-label: &tier-label
+  hy-home.tier: ai
 
 volumes:
   ollama-data:
@@ -30,7 +32,7 @@ services:
               count: 1
               capabilities: [gpu]
     labels:
-      <<: *labels-base
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.ollama.rule: Host(`ollama.${DEFAULT_URL}`)
       traefik.http.routers.ollama.entrypoints: websecure

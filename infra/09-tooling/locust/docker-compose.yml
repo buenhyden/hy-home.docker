@@ -1,5 +1,8 @@
 name: locust
 
+x-tier-label: &tier-label
+  hy-home.tier: tooling
+
 volumes:
   locust-data:
     driver: local

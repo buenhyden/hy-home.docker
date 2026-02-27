@@ -1,5 +1,8 @@
 name: mongodb
 
+x-tier-label: &tier-label
+  hy-home.tier: data
+
 volumes:
   mongo-key:
   mongodb1-data:
@@ -175,6 +178,7 @@ services:
     expose:
       - ${MONGO_EXPRESS_PORT:-8081}
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.mongo-express.rule: Host(`mongo-express.${DEFAULT_URL}`)
       traefik.http.routers.mongo-express.entrypoints: websecure

@@ -1,5 +1,8 @@
 name: terraform
 
+x-tier-label: &tier-label
+  hy-home.tier: tooling
+
 services:
   terraform:
     extends:

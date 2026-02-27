@@ -1,6 +1,7 @@
 name: mail
 
-
+x-tier-label: &tier-label
+  hy-home.tier: communication
 
 volumes:
   stalwart-data:
@@ -55,7 +56,7 @@ services:
 
     # [Traefik 연동] - 관리자 웹 UI 라우팅
     labels:
-      <<: *labels-base
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.stalwart-ui.rule: Host(`mail.${DEFAULT_URL}`)
       traefik.http.services.stalwart-ui.loadbalancer.server.port: ${STALWART_PORT:-8080}
@@ -75,7 +76,7 @@ services:
     networks:
       - infra_net
     labels:
-      <<: *labels-base
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.mailhog.rule: Host(`mailhog.${DEFAULT_URL}`)
       traefik.http.routers.mailhog.entrypoints: websecure
@@ -86,7 +87,6 @@ services:
       options:
         loki-url: 'http://localhost:3100/loki/api/v1/push'
         loki-external-labels: 'container_name={{.Name}}'
-
 
 networks:
   infra_net:

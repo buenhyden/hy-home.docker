@@ -1,5 +1,8 @@
 name: syncthing
 
+x-tier-label: &tier-label
+  hy-home.tier: tooling
+
 volumes:
   syncthing-volume:
     driver: local
@@ -50,6 +53,7 @@ services:
       retries: 5
       start_period: 30s
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.syncthing.rule: Host(`syncthing.${DEFAULT_URL}`)
       traefik.http.routers.syncthing.entrypoints: websecure

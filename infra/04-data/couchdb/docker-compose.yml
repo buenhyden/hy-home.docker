@@ -1,5 +1,8 @@
 name: couchdb
 
+x-tier-label: &tier-label
+  hy-home.tier: data
+
 volumes:
   couchdb1-data:
     driver: local
@@ -60,7 +63,7 @@ services:
       retries: 5
       start_period: 30s
     labels:
-      <<: *labels-base
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.couchdb.rule: Host(`couchdb.${DEFAULT_URL}`)
       traefik.http.routers.couchdb.entrypoints: websecure
@@ -108,6 +111,7 @@ services:
       retries: 5
       start_period: 30s
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.services.couchdb-cluster.loadbalancer.server.port: ${COUCHDB_PORT:-5984}
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
@@ -151,6 +155,7 @@ services:
       retries: 5
       start_period: 30s
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.services.couchdb-cluster.loadbalancer.server.port: ${COUCHDB_PORT:-5984}
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'

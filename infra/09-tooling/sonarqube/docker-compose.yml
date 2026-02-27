@@ -1,5 +1,8 @@
 name: sonarqube
 
+x-tier-label: &tier-label
+  hy-home.tier: tooling
+
 volumes:
   sonarqube-data-volume:
     driver: local
@@ -47,6 +50,7 @@ services:
       - SONAR_WEB_JAVAOPTS=-Xmx512m -Xms512m
       - SONAR_SEARCH_JAVAOPTS=-Xmx512m -Xms512m
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.sonarqube.rule: Host(`sonarqube.${DEFAULT_URL}`)
       traefik.http.routers.sonarqube.entrypoints: websecure

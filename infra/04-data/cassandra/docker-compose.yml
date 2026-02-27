@@ -1,5 +1,7 @@
 name: cassandra
 
+x-tier-label: &tier-label
+  hy-home.tier: data
 
 volumes:
   cassandra-node1-volume:
@@ -35,7 +37,7 @@ services:
     volumes:
       - cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf
     command: java -jar ./cassandra_exporter.jar ./conf/config.yml
-    labels: *labels-base
+    labels: *tier-label
 
   cassandra-node1:
     extends:
@@ -67,7 +69,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 1m
-    labels: *labels-base
+    labels: *tier-label
 
 secrets:
   cassandra_password:

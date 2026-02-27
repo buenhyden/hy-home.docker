@@ -1,5 +1,8 @@
 name: traefik
 
+x-tier-label: &tier-label
+  hy-home.tier: gateway
+
 volumes:
   traefik_certs:
     driver: local
@@ -33,6 +36,7 @@ services:
     command:
       - '--configFile=/etc/traefik/traefik.yml'
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.dashboard.rule: Host(`dashboard.${DEFAULT_URL}`)
       traefik.http.routers.dashboard.entrypoints: websecure

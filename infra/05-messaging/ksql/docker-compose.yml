@@ -1,5 +1,8 @@
 name: ksql
 
+x-tier-label: &tier-label
+  hy-home.tier: messaging
+
 volumes:
   ksqldb-data-volume:
     driver: local
@@ -9,6 +12,8 @@ volumes:
       device: ${DEFAULT_DATA_DIR}/ksql
 services:
   ksqldb-server:
+    labels:
+      <<: *tier-label
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high

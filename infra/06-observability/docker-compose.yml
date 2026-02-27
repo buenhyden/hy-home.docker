@@ -1,4 +1,8 @@
 # Hy-Home Observability Stack
+name: observability
+
+x-tier-label: &tier-label
+  hy-home.tier: observability
 # Refactored to use extends pattern for configuration inheritance
 
 volumes:
@@ -115,6 +119,7 @@ services:
     secrets:
       - minio_app_user_password
     labels:
+      <<: *tier-label
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:3100/ready || exit 1']
       interval: 30s
@@ -148,6 +153,7 @@ services:
     secrets:
       - minio_app_user_password
     labels:
+      <<: *tier-label
 
   pyroscope:
     extends:
@@ -167,6 +173,7 @@ services:
       retries: 5
       start_period: 1m
     labels:
+      <<: *tier-label
 
   # -------------------------------------------------------
   # 4. Visualization (Grafana)
@@ -240,6 +247,7 @@ services:
       tempo:
         condition: service_started
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.grafana.rule: Host(`grafana.${DEFAULT_URL}`)
       traefik.http.routers.grafana.entrypoints: websecure
@@ -287,6 +295,7 @@ services:
       retries: 5
       start_period: 30s
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.alloy.rule: Host(`alloy.${DEFAULT_URL}`)
       traefik.http.routers.alloy.entrypoints: websecure
@@ -321,6 +330,7 @@ services:
     networks:
       - infra_net
     labels:
+      <<: *tier-label
 
   alertmanager:
     extends:
@@ -368,6 +378,7 @@ services:
       retries: 5
       start_period: 1m
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.alertmanager.rule: Host(`alertmanager.${DEFAULT_URL}`)
       traefik.http.routers.alertmanager.entrypoints: websecure
@@ -404,6 +415,7 @@ services:
       retries: 5
       start_period: 30s
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.pushgateway.rule: Host(`pushgateway.${DEFAULT_URL}`)
       traefik.http.routers.pushgateway.entrypoints: websecure

@@ -1,5 +1,8 @@
 name: influxdb
 
+x-tier-label: &tier-label
+  hy-home.tier: data
+
 volumes:
   influxdb-data:
     driver: local
@@ -48,16 +51,12 @@ services:
     networks:
       - infra_net
     labels:
-      <<: *labels-base
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.influxdb.rule: Host(`influxdb.${DEFAULT_URL}`)
       traefik.http.routers.influxdb.entrypoints: websecure
       traefik.http.routers.influxdb.tls: 'true'
       traefik.http.services.influxdb.loadbalancer.server.port: ${INFLUXDB_PORT:-8086}
-      driver: loki
-      options:
-        loki-url: 'http://localhost:3100/loki/api/v1/push'
-        loki-external-labels: 'container_name={{.Name}}'
 
 secrets:
   influxdb_password:

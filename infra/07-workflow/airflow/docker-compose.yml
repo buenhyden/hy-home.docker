@@ -1,5 +1,7 @@
 name: airflow
 
+x-tier-label: &tier-label
+  hy-home.tier: workflow
 
 x-airflow-common: &airflow-common
   profiles:
@@ -83,7 +85,7 @@ services:
       airflow-init:
         condition: service_completed_successfully
     labels:
-      <<: *labels-base
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.airflow.rule: Host(`airflow.${DEFAULT_URL}`)
       traefik.http.routers.airflow.entrypoints: websecure
@@ -293,7 +295,7 @@ services:
       airflow-init:
         condition: service_completed_successfully
     labels:
-      <<: *labels-base
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.flower.rule: Host(`flower.${DEFAULT_URL}`)
       traefik.http.routers.flower.entrypoints: websecure

@@ -1,5 +1,8 @@
 name: oauth2-proxy
 
+x-tier-label: &tier-label
+  hy-home.tier: auth
+
 secrets:
   mng_valkey_password:
     external: true
@@ -49,6 +52,7 @@ services:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.oauth2-proxy.rule: Host(`auth.${DEFAULT_URL}`)
       traefik.http.routers.oauth2-proxy.entrypoints: websecure

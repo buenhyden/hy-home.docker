@@ -1,5 +1,8 @@
 name: keycloak
 
+x-tier-label: &tier-label
+  hy-home.tier: auth
+
 volumes:
   keycloak-config:
     driver: local
@@ -69,6 +72,7 @@ services:
       # 2. 연결 가져올 때 유효성 검사 수행 (background)
       JAVA_OPTS_APPEND: '-Dquarkus.datasource.jdbc.idle-removal-interval=5M -Dquarkus.datasource.jdbc.background-validation-interval=1M'
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.keycloak.rule: Host(`keycloak.${DEFAULT_URL}`)
       traefik.http.routers.keycloak.entrypoints: websecure

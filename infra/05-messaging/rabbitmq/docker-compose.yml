@@ -1,5 +1,8 @@
 name: rabbitmq
 
+x-tier-label: &tier-label
+  hy-home.tier: messaging
+
 volumes:
   rabbitmq-data-volume:
     driver: local
@@ -38,6 +41,7 @@ services:
       retries: 5
       start_period: 30s
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.rabbitmq.rule: Host(`rabbitmq.${DEFAULT_URL}`)
       traefik.http.routers.rabbitmq.entrypoints: websecure
