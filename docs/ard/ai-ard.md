@@ -1,25 +1,15 @@
----
-title: '[ARD-AI-01] Local AI Stack Architecture Reference'
-status: 'Approved'
-version: '1.0.0'
-owner: 'Platform Architect'
-prd_reference: '../prd/ai-prd.md'
-adr_references: ['../adr/adr-0007-local-gpu-passthrough.md', '../adr/adr-0005-sidecar-resource-initialization.md']
-tags: ['ard', 'ai', 'ollama', 'rag', 'qdrant']
----
+# Local AI Stack Architecture Reference Document (ARD)
 
-# Architecture Reference Document (ARD)
-
-> **Status**: Approved
-> **Owner**: AI Infrastructure Engineer
-> **PRD Reference**: [[REQ-PRD-AI-01] Local AI Infrastructure PRD](../prd/ai-prd.md)
-> **ADR References**: [ADR-0007](../adr/adr-0007-local-gpu-passthrough.md), [ADR-0005](../adr/adr-0005-sidecar-resource-initialization.md)
+- **Status**: Approved
+- **Owner**: AI Infrastructure Engineer
+- **PRD Reference**: [docs/prd/ai-prd.md](../prd/ai-prd.md)
+- **ADR References**: [ADR-0001](../adr/adr-0001-root-orchestration-include.md), [ADR-0007](../adr/adr-0007-mandatory-resource-limits.md), [ADR-0008](../adr/adr-0008-removing-static-docker-ips.md), [ADR-0009](../adr/adr-0009-strict-docker-secrets.md)
 
 ---
 
 ## 1. Executive Summary
 
-Architectural blueprint for the local AI serving tier of the Hy-Home ecosystem. Leverages Ollama for containerized inference and Open-WebUI for user interaction, with dedicated GPU passthrough hooks for performance-critical LLM workloads.
+Architectural blueprint for the local AI stack. Uses Ollama for containerized inference, Open WebUI for user interaction, and Qdrant for local vector storage (RAG experiments).
 
 ## 2. Business Goals
 
@@ -33,48 +23,53 @@ Architectural blueprint for the local AI serving tier of the Hy-Home ecosystem. 
 C4Context
     title AI Serving Context
     Person(user, "Researcher", "Interacts with WebUI")
-    System(ai_serv, "Ollama Service", "Local Inference Engine")
+    System(ui, "Open WebUI", "Chat UI")
+    System(ai_serv, "Ollama", "Local Inference Engine")
+    SystemDb(vec, "Qdrant", "Vector Store")
     System_Ext(host_gpu, "NVIDIA GPU", "Hardware Acceleration")
 
-    Rel(user, ai_serv, "Sends Prompts")
-    Rel(ai_serv, host_gpu, "Offloads Tensors")
+    Rel(user, ui, "Chat")
+    Rel(ui, ai_serv, "Calls inference API")
+    Rel(ui, vec, "Reads/Writes embeddings")
+    Rel(ai_serv, host_gpu, "Uses (optional)")
 ```
 
-## 4. Component Architecture & Tech Stack Decisions
+## 4. Architecture & Tech Stack Decisions (Checklist)
 
 ### 4.1 Component Architecture
 
-- **Engine**: Ollama containerized with host-level volume mapping for model persistency.
-- **Frontend**: Open-WebUI with internal OIDC integration for multi-user safety.
+- **Engine**: Ollama container with host-level persistence for models.
+- **UI**: Open WebUI container pointing to the internal Ollama endpoint.
+- **Vector Store**: Qdrant for local vector search (optional, enabled with `ai` profile).
 
 ### 4.2 Technology Stack
 
 - **Core Engine**: Ollama (official Docker image)
-- **Acceleration**: NVIDIA CUDA / Container Toolkit
-- **Storage**: Persistent Docker volumes for `/root/.ollama/models`
+- **Acceleration**: NVIDIA Container Toolkit (optional for GPU passthrough)
+- **Storage**: Host-mapped volumes under `${DEFAULT_AI_MODEL_DIR}` and `${DEFAULT_DATA_DIR}`
 
 ## 5. Data Architecture
 
-- **Model Persistence**: Models are stored in local bind paths `${DEFAULT_MODEL_DIR}` to survive container restarts.
+- **Model Persistence**: Ollama models are stored under `${DEFAULT_AI_MODEL_DIR}/ollama`.
 - **Telemetry**: Inference logs are tagged with `hy-home.tier=ai` and pushed to Loki.
 
 ## 6. Security & Compliance
 
-- **Prominent Guard**: Isolation within `infra_net` to prevent unauthenticated external prompt ingestion.
+- **Network Boundary**: Services run inside `infra_net`.
 - **Data Privacy**: 100% of data remains on the local host with zero telemetry to external model providers.
 
 ## 7. Infrastructure & Deployment
 
 - **Profile**: Managed under the `ai` Docker Compose profile.
-- **Dependency**: Requires `nvidia-docker2` or matching toolkit on the host.
+- **Dependency**: GPU passthrough requires NVIDIA Container Toolkit on the host.
 
 ## 8. Non-Functional Requirements (NFRs)
 
-- **Performance**: LLM response latency SHALL be < 200ms per token for models < 7B parameters.
-- **Efficiency**: Idle memory footprint for the serving engine MUST remain under 1GB.
+- **Resource Bounds**: AI services must declare CPU/memory bounds through shared templates.
+- **Portability**: Internal connectivity must rely on Docker DNS (no static IP assumptions).
 
 ## 9. Architectural Principles, Constraints & Trade-offs
 
 - **Constraints**: Limited by available VRAM on the host GPU.
-- **What NOT to do**: Use CPU execution for interactive chat workloads.
-- **Trade-offs**: Ollama chosen for its ease of containerization over raw vLLM/TGI for local simplicity.
+- **What NOT to do**: Assume the UI is protected by SSO unless middleware is explicitly configured.
+- **Trade-offs**: Ollama is chosen for containerized simplicity over heavier serving stacks.

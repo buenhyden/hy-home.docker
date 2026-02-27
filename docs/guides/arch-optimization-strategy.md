@@ -6,11 +6,10 @@ Based on the review of the current `docker-compose.yml` topology and the files i
 
 ### 1.1 Infrastructure Network & Static IPs
 
-- **Current State**: The `infra_net` bridge network configures subnet `172.19.0.0/16`. Containers (e.g., `traefik` at `172.19.0.13`, `mng-valkey` at `172.19.0.70`, `mng-pg` at `172.19.0.72`) are explicitly assigned static `ipv4_address` values.
-- **Analysis**: While static IPs provide a sense of predictability, they introduce fragility in containerized environments. They can lead to IP conflicts, hinder scalability (e.g., running multiple instances or creating ephemeral test environments), and are generally considered a Docker anti-pattern.
+- **Current State**: The `infra_net` bridge network configures subnet `172.19.0.0/16`. Services communicate via Docker internal DNS (service name / network aliases), without pinning `ipv4_address`.
+- **Analysis**: Static IPs introduce fragility in containerized environments (IP conflicts, boot ordering issues) and reduce portability.
 - **Optimization Strategy**:
-  - **Remove Static IPs**: Remove the `ipv4_address` field from all service configurations.
-  - **Rely on Docker DNS**: Leverage Docker's native internal DNS. Services should discover and communicate with each other using their `container_name` or `aliases` (e.g., connecting to `mng-valkey:6379` instead of `172.19.0.70:6379`).
+  - **Rely on Docker DNS**: Use service names and aliases (e.g., `mng-valkey:6379`) instead of hard-coded IPs.
 
 ### 1.2 Redundant Initialization Containers
 

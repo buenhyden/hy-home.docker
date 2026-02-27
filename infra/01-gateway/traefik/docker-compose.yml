@@ -1,5 +1,3 @@
-name: traefik
-
 x-tier-label: &tier-label
   hy-home.tier: gateway
 
@@ -60,9 +58,3 @@ services:
     secrets:
       - traefik_basicauth_password
       - traefik_opensearch_basicauth_password
-
-secrets:
-  traefik_basicauth_password:
-    external: true
-  traefik_opensearch_basicauth_password:
-    external: true

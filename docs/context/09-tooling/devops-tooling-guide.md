@@ -11,7 +11,6 @@ SonarQube provides continuous inspection of code quality.
 | Attribute | Internal DNS | Port | External Proxy |
 | --- | --- | --- | --- |
 | **Web UI** | `sonarqube` | `9000` | `sonarqube.${DEFAULT_URL}` |
-| **Static IP** | `172.19.0.41` | - | - |
 
 - **Setup Node**: Upon initial boot, SonarQube initializes its PostgreSQL schema. Use `admin / admin` for initial login and change the password immediately.
 

@@ -1,5 +1,3 @@
-name: opensearch
-
 x-tier-label: &tier-label
   hy-home.tier: data
 
@@ -19,6 +17,7 @@ volumes:
 
 services:
   opensearch:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
@@ -51,8 +50,8 @@ services:
       - ./opensearch/config/opensearch-security/tenants.yml:/usr/share/opensearch/config/opensearch-security/tenants.yml:ro
       - ./opensearch/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
       - ./opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
-    extra_hosts:
-      - 'keycloak.127.0.0.1.nip.io:${KEYCLOAK_IP:-127.0.0.1}'
+    networks:
+      - infra_net
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -75,6 +74,7 @@ services:
       - opensearch_admin_password
 
   opensearch-dashboards:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -87,8 +87,6 @@ services:
     volumes:
       - opensearch_certs:/usr/share/opensearch-dashboards/config/certs:ro
       - ./opensearch-dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
-    extra_hosts:
-      - 'keycloak.127.0.0.1.nip.io:${KEYCLOAK_IP:-127.0.0.1}'
     environment:
       - OPENSEARCH_USERNAME=${OPENSEARCH_DASHBOARD_USERNAME:-admin}
     command: >
@@ -123,6 +121,7 @@ services:
       - opensearch_dashboard_password
 
   opensearch-exporter:
+    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -152,13 +151,3 @@ services:
       <<: *tier-label
     secrets:
       - opensearch_exporter_password
-
-networks:
-  infra_net:
-    name: infra_net
-    external: true
-
-secrets:
-  opensearch_admin_password: { external: true }
-  opensearch_exporter_password: { external: true }
-  opensearch_dashboard_password: { external: true }

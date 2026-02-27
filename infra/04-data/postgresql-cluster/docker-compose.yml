@@ -1,5 +1,3 @@
-name: postgresql-cluster
-
 x-tier-label: &tier-label
   hy-home.tier: data
 
@@ -41,17 +39,6 @@ volumes:
       type: none
       device: ${DEFAULT_DATA_DIR}/etcd/etcd3-data
 
-secrets:
-  service_postgres_password: { external: true }
-  patroni_superuser_password: { external: true }
-  patroni_replication_password: { external: true }
-  pg_haproxy_stats_password: { external: true }
-
-networks:
-  infra_net:
-    name: infra_net
-    external: true
-
 services:
   etcd-1:
     profiles: ['data']
@@ -82,6 +69,8 @@ services:
       - etcd1-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
+    networks:
+      - infra_net
     labels:
       <<: *tier-label
 
@@ -115,6 +104,8 @@ services:
       - etcd2-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
+    networks:
+      - infra_net
     labels:
       <<: *tier-label
 
@@ -147,6 +138,8 @@ services:
       - etcd3-data:/etcd-data
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
+    networks:
+      - infra_net
     labels:
       <<: *tier-label
 
@@ -178,6 +171,8 @@ services:
     secrets:
       - patroni_superuser_password
       - patroni_replication_password
+    networks:
+      - infra_net
     labels:
       <<: *tier-label
     healthcheck:
@@ -214,6 +209,8 @@ services:
     volumes:
       - pg1-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+    networks:
+      - infra_net
     labels:
       <<: *tier-label
 
@@ -240,6 +237,8 @@ services:
     volumes:
       - pg2-data:/home/postgres/pgdata
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+    networks:
+      - infra_net
     labels:
       <<: *tier-label
 
@@ -254,6 +253,8 @@ services:
       - ./config/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     secrets:
       - pg_haproxy_stats_password
+    networks:
+      - infra_net
     command: >
       /bin/sh -c "
       export HAPROXY_STATS_PASSWORD=$$(cat /run/secrets/pg_haproxy_stats_password) &&
@@ -298,6 +299,8 @@ services:
       "
     volumes:
       - './init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql'
+    networks:
+      - infra_net
     restart: 'no'
     labels:
       <<: *tier-label
@@ -313,6 +316,8 @@ services:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
       - service_postgres_password
+    networks:
+      - infra_net
     depends_on:
       pg-0: { condition: service_healthy }
     entrypoint: [/bin/sh, -c]
@@ -345,6 +350,8 @@ services:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
       - service_postgres_password
+    networks:
+      - infra_net
     depends_on:
       pg-1: { condition: service_healthy }
     entrypoint: [/bin/sh, -c]
@@ -377,6 +384,8 @@ services:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
       - service_postgres_password
+    networks:
+      - infra_net
     depends_on:
       pg-2: { condition: service_healthy }
     entrypoint: [/bin/sh, -c]

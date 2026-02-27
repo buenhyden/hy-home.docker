@@ -10,7 +10,6 @@ RabbitMQ is the most widely deployed open source message broker.
 
 ## Networking
 
-- **Static IP**: `172.19.0.21`
 - **AMQP**: `${RABBITMQ_HOST_PORT}` (default 5672).
 - **Management Web**: `${RABBITMQ_MANAGEMENT_HOST_PORT}` (default 15672).
 

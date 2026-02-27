@@ -12,9 +12,8 @@ HashiCorp Vault is an identity-based secrets and encryption management system.
 
 ## Networking
 
-- **Static IP**: `172.19.0.75`
 - **Port**: `${VAULT_PORT}` (internal) / `${VAULT_HOST_PORT}` (host)
-- **External**: `vault.${DEFAULT_URL}` via Traefik.
+- **External URL**: `https://vault.${DEFAULT_URL}` (via Traefik, if included/routed)
 
 ## Security
 

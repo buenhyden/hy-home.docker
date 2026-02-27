@@ -1,5 +1,3 @@
-name: ollama
-
 x-tier-label: &tier-label
   hy-home.tier: ai
 
@@ -13,8 +11,7 @@ volumes:
 
 services:
   ollama:
-    profiles:
-      - ollama
+    profiles: ['ai']
     extends:
       file: ../../../infra/common-optimizations.yml
       service: template-infra-high
@@ -49,6 +46,7 @@ services:
       start_period: 1m
 
   ollama-exporter:
+    profiles: ['ai']
     extends:
       file: ../../../infra/common-optimizations.yml
       service: template-infra-low
@@ -66,8 +64,3 @@ services:
     labels:
       hy-home.managed: 'true'
       hy-home.tier: ai
-
-networks:
-  infra_net:
-    name: infra_net
-    external: true

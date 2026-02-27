@@ -11,9 +11,9 @@ This stack provides local LLM inference and a powerful chat interface.
 
 ## Networking
 
-- **Static IP**: `172.19.0.40`
-- **URL**: `ollama.${DEFAULT_URL}` via Traefik.
-- **Port**: `11434` (Internal).
+- **Internal DNS**: `ollama:${OLLAMA_PORT:-11434}` (within `infra_net`)
+- **External URL**: `https://ollama.${DEFAULT_URL}` (via Traefik)
+- **Metrics**: `ollama-exporter:${OLLAMA_EXPORTER_PORT:-11435}` (within `infra_net`)
 
 ## Security
 
@@ -22,8 +22,8 @@ This stack provides local LLM inference and a powerful chat interface.
 
 ## Persistence
 
-- **Models**: `ollama-data` volume mapped to `/root/.ollama`.
- is installed on the host and `deploy: resources: reservations: devices` is configured in `docker-compose.yml`.
+- **Models**: `ollama-data` volume mapped to `${DEFAULT_AI_MODEL_DIR}/ollama` on the host.
+- **GPU**: Enable GPU passthrough on the host (Compose uses a `deploy.resources.reservations.devices` block).
 
 ## File Map
 

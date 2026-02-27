@@ -9,6 +9,9 @@ This directory contains implementation-level technical specifications for the Hy
 | [global-baseline/spec.md](global-baseline/spec.md) | Global Standards | [ARD-ARCH-01](../../docs/ard/system-architecture-ard.md) |
 | [baseline/spec.md](baseline/spec.md) | Core Foundations | [ARD-BASE-01](../../docs/ard/infra-baseline-ard.md) |
 | [automation/spec.md](automation/spec.md) | Autonomous Ops | [ARD-AUTO-01](../../docs/ard/infra-automation-ard.md) |
+| [ai/spec.md](ai/spec.md) | Local AI | [ARD-AI-01](../../docs/ard/ai-ard.md) |
+| [observability/spec.md](observability/spec.md) | Observability (LGTM) | [ARD-OBS-01](../../docs/ard/observability-ard.md) |
+| [messaging/spec.md](messaging/spec.md) | Messaging (Kafka) | [ARD-MSG-01](../../docs/ard/messaging-ard.md) |
 | [system-optimization/spec.md](system-optimization/spec.md) | Hardening & Optimization | [ARD-OPT-01](../../docs/ard/system-optimization-ard.md) |
 | [service-standards/spec.md](service-standards/spec.md) | App Integration | [ARD-ARCH-01](../../docs/ard/system-architecture-ard.md) |
 

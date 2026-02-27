@@ -1,42 +1,120 @@
-# [SPEC-INFRA-04] System Optimization & Hardening Specification
+---
+title: 'Infrastructure System Optimization & Hardening Spec'
+status: 'Draft'
+version: '1.0'
+owner: 'Platform Architect'
+prd_reference: '../../../docs/prd/system-optimization-prd.md'
+api_reference: 'N/A'
+arch_reference: '../../../ARCHITECTURE.md'
+tags: ['spec', 'infra', 'optimization', 'hardening', 'docker-compose']
+---
 
-## 0. Pre-Implementation Checklist
+# Implementation Specification (Spec)
 
-- [x] Traceability: PRD-OPT-01 and ARD-OPT-01 references.
-- [x] Security: 100% no-new-privileges coverage.
-- [x] Performance: Resource reservations.
+> **Status**: Draft
+> **Related PRD**: [docs/prd/system-optimization-prd.md](../../../docs/prd/system-optimization-prd.md)
+> **Related Architecture**: [ARCHITECTURE.md](../../../ARCHITECTURE.md)
 
-## 1. Technical Overview
+_Target Directory: `specs/infra/system-optimization/spec.md`_
 
-This specification details the implementation of performance and security optimizations across the repository. It focuses on the inheritance of the "common-optimizations" layer and the enforcement of the hardened container standard.
+---
 
-## 2. Coded Requirements
+## 0. Pre-Implementation Checklist (Governance)
 
-| Req ID | Requirement Description | Priority |
-| --- | --- | --- |
-| **SPEC-OPT-01** | All production-like tiers MUST utilize `resource-med` or higher. | P0 |
-| **SPEC-OPT-02** | Security hardening (`no-new-privileges: true`) is mandatory. | P0 |
-| **SPEC-OPT-03** | Use of `init: true` is mandatory for correct signal handling. | P1 |
-| **SPEC-OPT-04** | Root filesystems SHOULD be `read_only: true` where state is externalized. | P1 |
+### 0.1 Architecture / Tech Stack
+
+| Item               | Check Question                                        | Required | Alignment Notes | Where to document |
+| ------------------ | ----------------------------------------------------- | -------- | --------------- | ----------------- |
+| Architecture Style | Is the style Monolith/Modular Monolith/Microservices? | Must     | Root-only Docker Compose orchestration with modular includes. | Section 1 |
+| Service Boundaries | Are module boundaries documented (diagram/text)?      | Must     | `infra/**/docker-compose.yml` grouped by profile + tier. | Section 5 |
+| Domain Model       | Are core domain entities and relationships defined?   | Must     | N/A (infra baseline). | N/A |
+| Backend Stack      | Are language/framework/libs (web, ORM, auth) decided? | Must     | N/A. | N/A |
+| Frontend Stack     | Are framework/state/build tools decided?              | Must     | N/A. | N/A |
+
+### 0.2 Quality / Testing / Security
+
+| Item            | Check Question                                 | Required | Alignment Notes | Where to document |
+| --------------- | ---------------------------------------------- | -------- | --------------- | ----------------- |
+| Test Strategy   | Levels (Unit/Integration/E2E/Load) defined?    | Must     | Compose config validation + runtime healthchecks. | Section 7 |
+| Test Tooling    | Agreed framework/runner and mock strategy?     | Must     | `docker compose config -q` + smoke checks. | Section 7 |
+| Coverage Policy | Are goals defined as numbers (e.g. 100%)?      | Must     | N/A (infra-only). | N/A |
+| AuthN/AuthZ     | Is auth approach designed (token/OAuth/RBAC)?  | Must     | SSO boundary is enforced at gateway/middleware level; infra services assume internal networking. | Section 4 |
+| Data Protection | Encryption/access policies for sensitive data? | Must     | Secrets are file-injected via Docker secrets; no plaintext env secrets. | Section 9 |
+| Performance     | Are Core Web Vitals/Latency metrics targeted?  | Must     | N/A. | N/A |
+| Accessibility   | Is WCAG compliance integrated (contrast/ARIA)? | Must     | N/A. | N/A |
+
+### 0.3 Operations / Deployment / Monitoring
+
+| Item         | Check Question                                           | Required | Alignment Notes | Where to document |
+| ------------ | -------------------------------------------------------- | -------- | --------------- | ----------------- |
+| Environments | Are tiers (dev/staging/prod) clarified for this feature? | Must     | Local/internal development environment only. | Section 9 |
+| Logging      | Required structured logs defined (fields, IDs)?          | Must     | Loki logging driver via shared templates. | Section 9 |
+| Monitoring   | Metrics and dashboards defined (RED/USE)?                | Must     | Observability spec owns metrics dashboards. | Section 9 |
+| Alerts       | Are alert thresholds and routing defined?                | Must     | Alerting is handled in Observability spec. | N/A |
+| Backups      | Are backup policies defined for added data?              | Must     | Out of scope for this spec. | N/A |
+
+---
+
+## 1. Technical Overview & Architecture Style
+
+This spec defines the shared infrastructure hardening and optimization standards for the repository’s Docker Compose stack:
+
+- **Root-only orchestration** via `docker-compose.yml` includes
+- **Shared security baseline** (`no-new-privileges`, `cap_drop: [ALL]`, `init: true`)
+- **Resource bounds** via shared templates
+- **Centralized logging** via Loki driver configuration in `infra/common-optimizations.yml`
+
+## 2. Coded Requirements (Traceability)
+
+| ID                 | Requirement Description | Priority | Parent PRD REQ |
+| ------------------ | ----------------------- | -------- | -------------- |
+| **REQ-SPC-OPT-001** | The root `docker-compose.yml` MUST remain the single supported entrypoint (root-only). | High | REQ-PRD-SYS-FUN-04 |
+| **REQ-SPC-OPT-002** | Long-running services MUST declare resource bounds via shared templates. | High | REQ-PRD-SYS-FUN-01 |
+| **SEC-SPC-OPT-001** | Services MUST use `no-new-privileges:true` and `cap_drop: [ALL]` by default. | Critical | REQ-PRD-SYS-FUN-01 |
+| **REQ-SPC-OPT-003** | Internal connectivity MUST rely on Docker DNS (no static IPs). | High | REQ-PRD-SYS-FUN-05 |
+| **REQ-SPC-OPT-004** | Secrets MUST be injected via Docker secrets files. | Critical | N/A |
+
+## 3. Data Modeling & Storage Strategy
+
+- Stateful services persist to host-mapped volumes under `${DEFAULT_MOUNT_VOLUME_PATH}`.
+- Optimization templates must not change state format; they only apply defaults and resource/security bounds.
+
+## 4. Interfaces & Data Structures
+
+### 4.1 Shared Baselines
+
+- **Security templates** and **resource profiles** are defined in `infra/common-optimizations.yml` and used via `extends`.
+
+### 4.2 AuthN / AuthZ
+
+- External access control is enforced at the gateway layer. Do not assume internal services are “protected” unless middleware is explicitly configured and documented.
 
 ## 5. Component Breakdown
 
-### 5.1 Common Optimization Layer
+- **`infra/common-optimizations.yml`**: baseline templates (security, resources, logging)
+- **`docker-compose.yml`**: root-only include entrypoint, shared networks, shared secrets
 
-- **Templates**: `resource-low`, `resource-med`, `resource-high`.
-- **Logic**: Centralized in `infra/common-optimizations.yml`.
+## 6. Edge Cases & Error Handling
 
-### 5.2 Security Hardening
+- **Loki driver unavailable**: services using the logging driver will fail to start; ensure host plugin support before enabling stacks that depend on it.
+- **Overly strict hardening**: some stateful services may require exceptions (document per-service with rationale + link to ADR/spec).
 
-- **Directives**: `cap_drop: [ALL]`, `security_opt: [no-new-privileges:true]`, `init: true`.
-- **Statelessness**: Mandatory `read_only: true` for exporters and UI proxies.
+## 7. Verification Plan (Testing & QA)
 
-## 7. Verification Plan
+- **[VAL-OPT-001] Compose schema**: `docker compose --env-file .env.example config -q`
+- **[VAL-OPT-002] Profile matrix (schema)**:
+  - `COMPOSE_PROFILES=core,data,obs docker compose --env-file .env.example config -q`
+  - `COMPOSE_PROFILES=core,data,obs,ai docker compose --env-file .env.example config -q`
+  - `COMPOSE_PROFILES=core,data,obs,messaging docker compose --env-file .env.example config -q`
+  - `COMPOSE_PROFILES=core,data,obs,workflow docker compose --env-file .env.example config -q`
+  - `COMPOSE_PROFILES=core,data,obs,tooling docker compose --env-file .env.example config -q`
 
-- **Audit-01**: verify `docker stats` reflects limits defined in templates.
-- **Audit-02**: verify image sizes in registry/local cache.
+## 8. Non-Functional Requirements (NFR) & Scalability
 
-## 11. Related Documents
+- **Stability**: deterministic startup via healthchecks and explicit `depends_on` conditions.
+- **Portability**: root-only execution, no static IP assumptions, DNS-only.
 
-- **PRD Reference**: [[PRD-OPT-01] System Optimization PRD](../../docs/prd/system-optimization-prd.md)
-- **Architecture Reference**: [[ARD-OPT-01] Optimized Infrastructure Reference Document](../../docs/ard/system-optimization-ard.md)
+## 9. Operations & Observability
+
+- **Logging**: Loki logging driver configuration is standardized and must be used consistently.
+- **Sensitive Data Handling**: secrets are never printed; injected only via `/run/secrets/*`.

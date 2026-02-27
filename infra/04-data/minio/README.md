@@ -11,9 +11,9 @@ MinIO is an S3-compatible high-performance object storage server.
 
 ## Networking
 
-- **Static IP**: `172.19.0.12`
-- **S3 API**: `minio.${DEFAULT_URL}` (Port 9000)
-- **Web Console**: `minio-console.${DEFAULT_URL}` (Port 9001)
+- **Internal DNS**: `minio:${MINIO_PORT:-9000}` (S3 API, within `infra_net`)
+- **External (S3 API)**: `https://minio.${DEFAULT_URL}` (via Traefik)
+- **External (Console)**: `https://minio-console.${DEFAULT_URL}` (via Traefik)
 
 ## Persistence
 
@@ -23,10 +23,7 @@ MinIO is an S3-compatible high-performance object storage server.
 
 - **Auto-Buckets**: Creates `tempo-bucket`, `loki-bucket`, `cdn-bucket`, `doc-intel-assets`.
 - **Public CDN**: `cdn-bucket` is set to anonymous public access by default.
-| Variable             | Description        | Value                  |
-| :------------------- | :----------------- | :--------------------- |
-| `MINIO_ROOT_USER`    | Admin Username     | `${MINIO_ROOT_USER}`   |
-| `MINIO_ROOT_PASSWORD`| Admin Password     | `${MINIO_ROOT_PASSWORD}`|
+- **Credentials**: Injected via Docker secrets (`minio_root_username`, `minio_root_password`, `minio_app_username`, `minio_app_user_password`).
 
 ## File Map
 

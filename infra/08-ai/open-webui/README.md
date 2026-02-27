@@ -10,9 +10,8 @@ Open WebUI is an extensible, self-hosted AI interface that operates entirely off
 
 ## Networking
 
-- **Static IP**: `172.19.0.42`
-- **URL**: `chat.${DEFAULT_URL}` via Traefik.
-- **Port**: `8080` (Internal).
+- **Internal DNS**: `open-webui:8080` (within `infra_net`)
+- **External URL**: `https://chat.${DEFAULT_URL}` (via Traefik)
 
 ## Dependencies
 

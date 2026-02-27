@@ -1,5 +1,4 @@
 # Hy-Home Observability Stack
-name: observability
 
 x-tier-label: &tier-label
   hy-home.tier: observability
@@ -437,24 +436,3 @@ services:
       traefik.http.routers.pushgateway.entrypoints: websecure
       traefik.http.routers.pushgateway.tls: 'true'
       traefik.http.services.pushgateway.loadbalancer.server.port: ${PUSHGATEWAY_PORT:-9091}
-
-networks:
-  infra_net:
-    name: infra_net
-    external: true
-
-secrets:
-  minio_app_user_password:
-    external: true
-  grafana_admin_password:
-    external: true
-  oauth2_proxy_client_secret:
-    external: true
-  smtp_username:
-    external: true
-  smtp_password:
-    external: true
-  slack_webhook:
-    external: true
-  opensearch_exporter_password:
-    external: true

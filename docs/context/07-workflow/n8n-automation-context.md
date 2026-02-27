@@ -2,7 +2,7 @@
 
 > **Component**: `n8n`
 > **Workflow Pattern**: Distributed Queue Mode
-> **Message Broker**: `mng-redis` (Valkey)
+> **Message Broker**: `n8n-valkey` (Valkey)
 
 ## 1. Enterprise-Scale Workflow Engine
 
@@ -13,8 +13,7 @@ n8n is deployed in a distributed queue mode for high dependability.
 | Attribute | Value |
 | --- | --- |
 | **Main URL** | `https://n8n.${DEFAULT_URL}` |
-| **Static IP** | `172.19.0.14` |
-| **Database** | Management PostgreSQL (`pg-router`) |
+| **Database** | Management PostgreSQL (`mng-pg`) |
 | **Execution Mode**| `queue` (via Valkey) |
 | **Internal Port** | `5678` |
 

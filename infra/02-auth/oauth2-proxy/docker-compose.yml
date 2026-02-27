@@ -1,15 +1,5 @@
-name: oauth2-proxy
-
 x-tier-label: &tier-label
   hy-home.tier: auth
-
-secrets:
-  mng_valkey_password:
-    external: true
-  oauth2_proxy_client_secret:
-    external: true
-  oauth2_proxy_cookie_secret:
-    external: true
 
 services:
   oauth2-proxy:

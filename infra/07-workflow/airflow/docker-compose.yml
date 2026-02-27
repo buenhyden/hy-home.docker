@@ -1,11 +1,9 @@
-name: airflow
-
 x-tier-label: &tier-label
   hy-home.tier: workflow
 
 x-airflow-common: &airflow-common
   profiles:
-    - airflow
+    - workflow
   image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:slim-3.1.6}
   networks:
     - infra_net
@@ -304,6 +302,7 @@ services:
       traefik.http.routers.flower.middlewares: sso-auth@file
 
   airflow-valkey:
+    profiles: ['workflow']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -338,6 +337,7 @@ services:
       start_period: 30s
 
   airflow-valkey-exporter:
+    profiles: ['workflow']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -367,7 +367,10 @@ services:
 
   airflow-statsd-exporter:
     profiles:
-      - airflow
+      - workflow
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: prom/statsd-exporter:v0.28.0
     container_name: airflow-statsd-exporter
     restart: unless-stopped
@@ -382,18 +385,3 @@ services:
     expose:
       - '${STATSD_PROMETHEUS_PORT:-9102}'
       - '${STATSD_AIRFLOW_PORT:-9125}'
-
-networks:
-  infra_net:
-    name: infra_net
-    external: true
-
-secrets:
-  airflow_db_password:
-    external: true
-  airflow_fernet_key:
-    external: true
-  airflow_www_password:
-    external: true
-  airflow_valkey_password:
-    external: true

@@ -9,8 +9,7 @@ The local AI stack provides private inference capabilities. Ollama serves the mo
 
 - **Internal API**: `http://ollama:11434`
 - **Dashboard**: `https://chat.${DEFAULT_URL}`
-- **Static IP**: `172.19.0.40`
-- **Exporter Port**: `9735` (Collected by LGTM)
+- **Exporter**: `ollama-exporter:${OLLAMA_EXPORTER_PORT:-11435}` (within `infra_net`)
 
 ## 2. Hardware Acceleration Initialization
 

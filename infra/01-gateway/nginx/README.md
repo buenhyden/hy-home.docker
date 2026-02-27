@@ -10,9 +10,9 @@ Nginx acts as an optional, path-based reverse proxy or standalone gateway for sp
 
 ## Networking
 
-- **Static IP**: `172.19.0.13` (Shares IP with Traefik, do not run concurrently).
 - **Ports**: `${HTTP_HOST_PORT}:${HTTP_PORT}`, `${HTTPS_HOST_PORT}:${HTTPS_PORT}`.
 - **Configuration**: Uses `./config/nginx.conf` for routing rules.
+- **Note**: Nginx is an optional gateway. It will conflict with Traefik on host ports `80/443` unless ports are changed.
 
 ## Persistence
 

@@ -10,9 +10,8 @@ Qdrant is a high-performance vector search engine designed for RAG (Retrieval-Au
 
 ## Networking
 
-- **Static IP**: `172.19.0.41`
-- **URL**: `qdrant.${DEFAULT_URL}` via Traefik.
-- **Internal Port**: `6333` (HTTP API).
+- **Internal DNS**: `qdrant:${QDRANT_PORT:-6333}` (within `infra_net`)
+- **External URL**: `https://qdrant.${DEFAULT_URL}` (via Traefik)
 
 ## Persistence
 
@@ -20,7 +19,7 @@ Qdrant is a high-performance vector search engine designed for RAG (Retrieval-Au
 
 ## Configuration
 
-- **API Key**: Protected via the `QDRANT__SERVICE__API_KEY` environment variable.
+- **Auth**: Not enabled in the current Compose definition.
 
 ## File Map
 
