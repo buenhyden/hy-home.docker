@@ -19,6 +19,8 @@ Establish a high-performance, secure, and observable home server infrastructure 
 - **[METRIC-06] Secret Integrity**: 100% of sensitive data injected via Docker Secrets (`/run/secrets/`), zero hardcoded credentials in `environment`.
 - **[METRIC-07] Network Isolation**: 100% of services on internal `infra_net`, zero direct public port exposure except for Traefik/Gateway.
 - **[METRIC-08] Image Pinning**: 100% of service images must use specific version tags (no `latest`).
+- **[METRIC-09] Healthcheck Saturation**: 100% of core persistent and gateway services MUST have valid `healthcheck` definitions.
+- **[METRIC-10] Portability Index**: Zero hardcoded IP addresses (v4/v6) in service-level configurations.
 
 ## 4. Use Cases [REQ-SPT-04]
 

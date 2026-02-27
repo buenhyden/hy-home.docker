@@ -80,7 +80,9 @@ This specification defines standard extension fields and service templates for c
 
 - **[REQ-SPC-010] External Secret Reference**: Services SHALL reference secrets as `external: true` to source from the root compose.
 - **[REQ-SPC-011] Version Pinning Enforcement**: The use of `latest` image tags is PROHIBITED.
-- **[VAL-SPC-007] Network Isolation Check**: `docker compose config` must verify no services expose `ports` directly to the host except for Gateway tier.
+- **[REQ-SPC-012] Mandatory Healthcheck Coverage**: Every service SHALL define a `healthcheck` that utilizes the container's internal loopback (`localhost`).
+- **[REQ-SPC-013] Dynamic Configuration Enforcement**: All environment variables MUST source values from `.env.example` or Docker Secrets, forbidding inline literals for IPs or credentials.
+- **[VAL-SPC-008] Volume Variable Validation**: `docker compose config` MUST verify that host volume sources resolve to `${DEFAULT_*_DIR}` base paths.
 
 - **[VAL-SPC-001] Security Baseline Verification**:
   - **Given**: A service definition inheriting from `base-security`.

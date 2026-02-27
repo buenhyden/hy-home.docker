@@ -9,7 +9,13 @@ The Hy-Home infrastructure utilizes a multi-tier, isolated container topology to
 - **Tier 1 (Gateway)**: Core ingress tier (Traefik/NGINX) handling TLS termination and internal routing.
 - **Tier 2 (Identity & Auth)**: Keycloak and OAuth2 Proxy managing centralized OIDC authentication.
 - **Tier 3 (Stateful Data)**: Dedicated clusters for PostgreSQL, Valkey, and MinIO with isolated network segments.
-- **Tier 4 (Observability Stack)**: Unified LGTM pipeline (Loki, Grafana, Tempo, Alloyl) collecting cross-tier telemetry.
+- **Tier 4 (Observability Stack)**: Unified LGTM pipeline (Loki, Grafana, Tempo, Alloy) collecting cross-tier telemetry.
+
+## 2. Hardening Invariants
+
+- **Hardening Logic**: Driver-level logging (Loki) and mandated `init: true` across all tiers.
+- **Directive Compliance**: 100% saturation of `healthcheck`, `container_name`, and `networks` definitions.
+- **Zero-Portability-Risk**: 100% removal of hardcoded host IPs and static secrets.
 
 ## 2. Standardization Patterns [[SPEC-INFRA-01]](/specs/infra/global-baseline/spec.md)
 

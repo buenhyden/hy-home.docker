@@ -42,7 +42,7 @@ services:
           memory: 1G
     environment:
       # JVM Heap 설정
-      - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g
+      - OPENSEARCH_JAVA_OPTS=${OPENSEARCH_JAVA_OPTS:--Xms1g -Xmx1g}
       # 메모리 관련 bootstrap 체크 통과용
       - bootstrap.memory_lock=true
       - DISABLE_INSTALL_DEMO_CONFIG=true
@@ -77,12 +77,12 @@ services:
       - ./opensearch/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
       - ./opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
     # ports:
-      # REST API (TLS on 기본) – Loki/Alloy에서 로그/메트릭 수집, 앱 연결
-      # - '${ES_HOST_PORT:-9200}:${ES_PORT:-9200}'
-      # Performance Analyzer / 메트릭 포트
-      # - '${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}'
+    # REST API (TLS on 기본) – Loki/Alloy에서 로그/메트릭 수집, 앱 연결
+    # - '${ES_HOST_PORT:-9200}:${ES_PORT:-9200}'
+    # Performance Analyzer / 메트릭 포트
+    # - '${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}'
     extra_hosts:
-      - 'keycloak.127.0.0.1.nip.io:172.19.0.13'
+      - 'keycloak.127.0.0.1.nip.io:${KEYCLOAK_IP:-127.0.0.1}'
     labels:
       <<: *labels-base
       traefik.enable: 'true'
@@ -125,7 +125,7 @@ services:
       - opensearch_certs:/usr/share/opensearch-dashboards/config/certs:ro
       - ./opensearch-dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
     extra_hosts:
-      - 'keycloak.127.0.0.1.nip.io:172.19.0.13'
+      - 'keycloak.127.0.0.1.nip.io:${KEYCLOAK_IP:-127.0.0.1}'
     environment:
       - OPENSEARCH_USERNAME=${OPENSEARCH_DASHBOARD_USERNAME:-admin}
     command: >
@@ -206,3 +206,15 @@ services:
         reservations:
           cpus: '0.05'
           memory: 64M
+networks:
+  infra_net:
+    name: infra_net
+    external: true
+
+secrets:
+  opensearch_admin_password:
+    external: true
+  opensearch_exporter_password:
+    external: true
+  opensearch_dashboard_password:
+    external: true
