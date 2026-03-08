@@ -1,7 +1,7 @@
 ---
 trigger: model_decision
 glob:
-  - "runbooks/**/*.md"
+  - "docs/runbooks/**/*.md"
   - "services/**"
   - "docs/oncall/**/*.md"
 description: "Runbook and on-call standards: deterministic runbook structure, service ownership, dashboards/alerts linkage, and escalation rules."
@@ -24,7 +24,7 @@ description: "Runbook and on-call standards: deterministic runbook structure, se
 
 - **[REQ-RBK-PREREQ-02] Runbook Location**
   - Each service MUST have a runbook at:
-    - `runbooks/services/<service-name>.md`
+    - `docs/runbooks/services/<service-name>.md`
   - If no runbook exists, production-like deployment MUST be blocked.
 
 - **[REQ-RBK-OUT-01] Out of Scope**

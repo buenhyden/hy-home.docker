@@ -14,11 +14,11 @@ description: Initialize workspace rules and structural pillars
 4. Verify that the Operations & Deployment agreements are formally documented:
    - Expected path: `docs/manuals/operations-guide.md`
    - If missing or incomplete, halt and ask the user to fill out the 11 items in the **Operations & Deployment Checklist** using `templates/guides/operations-guide-template.md`.
-5. Identify the active implementation plan (e.g., `specs/auth/plan.md`).
+5. Identify the active implementation plan (e.g., `docs/plans/YYYY-MM-DD-auth.md`).
 6. Confirm the feature PRD exists and is approved:
    - Expected path: `docs/prd/<feature>-prd.md`
 7. Confirm the feature spec exists and references the PRD:
-   - Expected path: `specs/<feature>/spec.md`
+   - Expected path: `docs/specs/YYYY-MM-DD-<feature>.md`
    - The spec MUST include a `PRD Reference` line and traceability IDs.
 8. Complete QA prerequisites in the spec before coding:
    - Fill `templates/engineering/spec-template.md` Section 0: **Quality / Testing / Security Checklist (Fill Before Implementation)**

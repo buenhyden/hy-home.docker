@@ -10,7 +10,7 @@ Based on `098-core-create-command-specific.md`, `102-frontend-project-structure-
     - Understand requirements.
     - Confirm PRD + Spec gates:
       - PRD is **Approved**: `docs/prd/<feature>-prd.md`
-      - Spec exists and references PRD: `specs/<feature>/spec.md`
+      - Spec exists and references PRD: `docs/specs/YYYY-MM-DD-<feature>.md`
     - Identify domain/feature area.
 
 2. **Structure Creation**

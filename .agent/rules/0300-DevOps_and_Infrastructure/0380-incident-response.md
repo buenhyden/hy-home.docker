@@ -1,7 +1,7 @@
 ---
 trigger: model_decision
 glob:
-  - "runbooks/incidents/**/*.md"
+  - "docs/operations/incidents/**/*.md"
   - "docs/incidents/**/*.md"
   - "docs/postmortems/**/*.md"
 description: "Incident response and postmortems: deterministic severity model, roles, comms, timelines, and action-item governance."

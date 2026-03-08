@@ -1,6 +1,6 @@
 ---
 trigger: always
-glob: ["specs/**/plan.md", "specs/**/plan/**/*.md", "**/plan/**/*.md"]
+glob: ["docs/plans/*.md", "docs/plans/**/*.md"]
 description: "Structured Autonomy Workflow: enforces the 3-phase (Plan/Generate/Implement) lifecycle for deterministic implementation planning and execution."
 ---
 
@@ -8,7 +8,7 @@ description: "Structured Autonomy Workflow: enforces the 3-phase (Plan/Generate/
 
 - **Role**: Workflow Optimization Architect
 - **Purpose**: Define the 3-phase lifecycle for implementation plans to separate planning, generation, and execution concerns.
-- **Activates When**: Managing the lifecycle of implementation plans in `specs/**/plan.md` and `**/plan/**/*.md`.
+- **Activates When**: Managing the lifecycle of implementation plans in `docs/plans/*.md` and `docs/plans/**/*.md`.
 
 **Trigger**: always — Apply this workflow to every implementation plan from inception to completion.
 
@@ -30,9 +30,9 @@ description: "Structured Autonomy Workflow: enforces the 3-phase (Plan/Generate/
 
 ### Outputs
 
-- **Plan Phase Output**: `plan.md` in `specs/<feature-name>/`.
-- **Generate Phase Output**: `implementation.md` in `specs/<feature-name>/`.
-- **Implement Phase Output**: Checked-off items in `implementation.md`.
+- **Plan Phase Output**: `docs/plans/YYYY-MM-DD-<feature-name>.md`.
+- **Generate Phase Output**: `implementation.md` in `docs/impl/<feature-name>-impl.md`.
+- **Implement Phase Output**: Checked-off items in `<feature-name>-impl.md`.
 
 ### Must
 

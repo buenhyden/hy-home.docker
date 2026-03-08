@@ -11,7 +11,7 @@ stack: '[node | python | react | nextjs | go | rust | java]'
 
 # [Feature/Component] Implementation Plan
 
-_Target Directory: `specs/<feature>/plan.md`_
+_Target Directory: `docs/plans/YYYY-MM-DD-<feature-name>.md`_
 
 ## 1. Context & Introduction
 
@@ -69,5 +69,5 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-001]`) for traceability._
 ## 9. References
 
 - **PRD**: `docs/prd/<feature>-prd.md` (Optional)
-- **Spec**: `specs/<feature>/spec.md` (Optional)
-- **ADRs**: `docs/adr/NNNN-...` (Optional)
+- **Spec**: `docs/specs/YYYY-MM-DD-<feature-name>.md` (Optional)
+- **ADRs**: `docs/adr/NNNN-short-title.md` (Optional)

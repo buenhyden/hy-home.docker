@@ -1,6 +1,6 @@
 ---
 trigger: always
-glob: ["**/plan/**/*.md"]
+glob: ["docs/plans/*.md", "docs/plans/**/*.md"]
 description: "Core principles for deterministic implementation planning: enforces naming, structural standards, and AI-executable instruction design."
 ---
 
@@ -8,7 +8,7 @@ description: "Core principles for deterministic implementation planning: enforce
 
 - **Role**: Intelligence Architecture Strategist
 - **Purpose**: Define the fundamental standards for creating implementation plans that are fully executable by AI agents or humans.
-- **Activates When**: Creating, refactoring, or reviewing implementation plans in `**/plan/**/*.md`.
+- **Activates When**: Creating, refactoring, or reviewing implementation plans in `docs/plans/*.md` and `docs/plans/**/*.md`.
 
 **Trigger**: always — Apply these principles at all times during implementation planning.
 
@@ -42,7 +42,7 @@ description: "Core principles for deterministic implementation planning: enforce
 - **[REQ-IMPL_CORE-06] Front Matter**
   - Every plan MUST include YAML front matter with: `goal`, `version`, `date_created`, `last_updated`, `owner`, `status`, `tags`.
 - **[REQ-IMPL_CORE-07] Directory Location**
-  - Active plans MUST be stored in `specs/<feature-name>/plan.md`.
+  - Active plans MUST be stored in `docs/plans/YYYY-MM-DD-<feature-name>.md`.
 
 ### Must Not
 

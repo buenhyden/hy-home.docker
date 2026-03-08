@@ -1,6 +1,6 @@
 ---
 trigger: model_decision
-glob: ["docs/technical/**/*.md", "specs/**/*.md"]
+glob: ["docs/technical/**/*.md", "docs/specs/**/*.md", "docs/plans/**/*.md"]
 description: "Technical Documentation: Standards for APIs, Architecture decisions, and technical specifications."
 ---
 

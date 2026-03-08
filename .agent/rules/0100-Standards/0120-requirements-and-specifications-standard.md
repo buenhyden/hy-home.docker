@@ -1,6 +1,6 @@
 ---
 trigger: always_on
-glob: ["**/docs/prd/**/*", "**/specs/**/*", "**/*-prd.md", "**/*-spec.md"]
+glob: ["**/docs/prd/**/*", "**/docs/specs/**/*", "**/docs/plans/**/*", "**/*-prd.md", "**/*-spec.md"]
 description: "Requirements & Specifications Standards: Enforces PRD metric grounding, INVEST user stories, and machine-readable technical specifications with coded identifiers."
 ---
 
@@ -57,7 +57,7 @@ description: "Requirements & Specifications Standards: Enforces PRD metric groun
 - **[PROC-SPT-01] Requirement Refinement Flow**
   - IF a requirement is identified as "Ambiguous" THEN MUST return it to the `needs-refinement` state until GWT acceptance criteria are added.
 - **[PROC-SPT-02] Specification Lifecycle Audit**
-  - Quarterly, audit the `/specs/` directory to ensure that implemented features have their corresponding "Approved" or "Retired" status correctly reflected.
+  - Quarterly, audit the `/docs/specs/` directory to ensure that implemented features have their corresponding "Approved" or "Retired" status correctly reflected.
 
 ## 3. Examples
 

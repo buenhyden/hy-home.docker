@@ -16,7 +16,7 @@ tags: ['spec', 'implementation']
 > **Related API Spec**: [Link to API Spec if applicable]
 > **Related Architecture**: [Link to ARCHITECTURE.md](../../ARCHITECTURE.md)
 
-_Target Directory: `specs/<feature>/spec.md`_
+_Target Directory: `docs/specs/YYYY-MM-DD-<feature-name>.md`_
 _Note: This document is the absolute Source of Truth for Coder Agents. NO CODE can be generated without it._
 
 ---

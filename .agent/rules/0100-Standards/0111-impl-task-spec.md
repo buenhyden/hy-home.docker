@@ -1,6 +1,6 @@
 ---
 trigger: always
-glob: ["specs/**/plan.md", "specs/**/plan/**/*.md", "**/plan/**/*.md"]
+glob: ["docs/plans/*.md", "docs/plans/**/*.md"]
 description: "Task specification and validation standards: enforces variable definition, exact command sequences, and measurable compliance for implementation plans."
 ---
 
@@ -8,7 +8,7 @@ description: "Task specification and validation standards: enforces variable def
 
 - **Role**: Intelligence Verification Engineer
 - **Purpose**: Define the standards for specifying tasks, variables, and validation criteria within implementation plans.
-- **Activates When**: Writing or reviewing implementation tasks and validation criteria in `specs/**/plan.md` and `**/plan/**/*.md`.
+- **Activates When**: Writing or reviewing implementation tasks and validation criteria in `docs/plans/*.md` and `docs/plans/**/*.md`.
 
 **Trigger**: always — Apply these standards consistently for all task specifications.
 

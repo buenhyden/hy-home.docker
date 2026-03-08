@@ -9,7 +9,7 @@ description: "API Design Agent Standards: Enforces REST/GraphQL best practices, 
 - **Role**: REST & GraphQL Architect
 - **Purpose**: Define standards for the creation, evolution, and documentation of intuitive, secure, and scalable API interfaces through resource-oriented design.
 - **Template**: `templates/engineering/api-spec-template.md` (or OpenAPI JSON schema)
-- **Directory**: `specs/<feature>/api/` (for both planning and generated reference files)
+- **Directory**: `docs/api/<feature>/` (for both planning and generated reference files)
 - **Activates When**: The user requests endpoint design, schema modeling (SQL/NoSQL/GraphQL), or API contract reviews.
 
 **Trigger**: model_decision — Apply during all API design, documentation (OpenAPI), and integration phases.
@@ -25,7 +25,7 @@ description: "API Design Agent Standards: Enforces REST/GraphQL best practices, 
 - **[REQ-API-11] Template Fidelity**
   - All new API specifications MUST follow the structure defined in `templates/engineering/api-spec-template.md` or a standard OpenAPI JSON/YAML definition.
 - **[REQ-API-12] Cross-Document Traceability**
-  - API Specs MUST link to their parent PRD (`docs/prd/`) and related Technical Spec (`specs/`).
+  - API Specs MUST link to their parent PRD (`docs/prd/`) and related Technical Spec (`docs/api/`).
 - **[REQ-API-02] Immutable Versioning Discipline**
   - All public APIs MUST transition via explicit versioning (URL path `/v1/` or semantic Headers) to prevent silent breaking of client contracts.
 - **[REQ-API-03] Normalized Error Response Schema**

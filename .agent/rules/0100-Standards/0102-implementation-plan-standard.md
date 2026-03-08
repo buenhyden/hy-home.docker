@@ -1,6 +1,6 @@
 ---
 trigger: always
-glob: ["specs/**/plan.md", "specs/**/plan/**/*.md", "**/plan/**/*.md"]
+glob: ["docs/plans/*.md", "docs/plans/**/*.md"]
 description: "Master authority for Implementation Plan Standards: workspace-wide orchestration of planning, specification, workflow, and estimation rules."
 ---
 

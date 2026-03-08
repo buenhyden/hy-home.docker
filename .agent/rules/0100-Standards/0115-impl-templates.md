@@ -1,6 +1,6 @@
 ---
 trigger: model_decision
-glob: ["**/templates/project/*.md", "specs/**/plan.md", "specs/**/plan/**/*.md", "**/plan/**/*.md"]
+glob: ["**/templates/project/*.md", "docs/plans/*.md", "docs/plans/**/*.md"]
 description: "Implementation plan templates: provides canonical structures for stories, features, and epics to ensure data consistency and parseability."
 ---
 
@@ -8,7 +8,7 @@ description: "Implementation plan templates: provides canonical structures for s
 
 - **Role**: Software Design Architect
 - **Purpose**: Provide the canonical markdown structures for all levels of implementation planning.
-- **Activates When**: Using or validating implementation plan templates in `specs/**/plan.md`, `**/plan/**/*.md`, or `templates/project/`.
+- **Activates When**: Using or validating implementation plan templates in `docs/plans/*.md`, `docs/plans/**/*.md`, or `templates/project/`.
 
 **Trigger**: model_decision — Automatically apply these templates when creating new plan files.
 

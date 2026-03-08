@@ -30,7 +30,7 @@ Once the PRD and ADRs are agreed upon by the human:
 
 1. Generate the absolute source of truth: the Implementation Spec.
 2. **Template Enforcement**: You MUST use `templates/engineering/spec-template.md`.
-3. Save it to `specs/<feature>/spec.md`.
+3. Save it to `docs/specs/YYYY-MM-DD-<feature>.md` and `docs/plans/YYYY-MM-DD-<feature>.md`.
 4. **QA Constraint**: Define what Unit Tests and Integration Tests MUST be written by the Coder agents to satisfy the PRD's GWT criteria.
 
 ## 4. End State

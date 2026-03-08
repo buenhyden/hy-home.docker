@@ -18,7 +18,7 @@ description: "API Governance Pillar: Enforces Contract-First design, versioning,
 
 - **[REQ-API-01] Contract-First Design**
   - All API interfaces MUST have a formal specification (OpenAPI, Protobuf, or GraphQL) defined and approved BEFORE implementation begins.
-  - Canonical contract location MUST be `specs/<feature>/api/` and the spec MUST follow `templates/engineering/api-spec-template.md`.
+  - Canonical contract location MUST be `docs/api/<feature>/` and the spec MUST follow `templates/engineering/api-spec-template.md`.
 - **[REQ-API-02] Major Versioning**
   - Breaking changes (e.g., removing fields, changing types) MUST result in a major version increment (e.g., `/v1/` to `/v2/`).
 - **[REQ-API-03] Protocol Atomicity**

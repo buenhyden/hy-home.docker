@@ -8,9 +8,9 @@ This workflow defines the execution loop for the **Backend Coder Agent** and **F
 
 ## 1. Specification Ingestion
 
-**CRITICAL RULE**: Do not write a single line of executable code without an approved spec in `specs/`.
+**CRITICAL RULE**: Do not write a single line of executable code without an approved spec in `docs/plans` and `docs/specs`.
 
-1. Locate the assigned spec in the `specs/` directory.
+1. Locate the assigned spec in the `docs/plans` and `docs/specs` directory.
 2. Read the spec and the project's `ARCHITECTURE.md`.
 3. If the spec demands a technology forbidden by `ARCHITECTURE.md`, or if an acceptance criteria is impossible, **STOP** and ask the human to update the spec.
 
@@ -26,7 +26,7 @@ This workflow defines the execution loop for the **Backend Coder Agent** and **F
 1. Run the local compilation, linters, and type checkers.
 2. If errors occur, read the logs and recursively fix your code until the build passes cleanly.
 3. Verify test coverage meets the project standard (generally > 80%).
-4. **Documentation Sync**: Before finishing, you MUST update any impacted API specifications (e.g., OpenAPI/Swagger) and technical documentation in `docs/` and `specs/` to reflect the final implemented code.
+4. **Documentation Sync**: Before finishing, you MUST update any impacted API specifications (e.g., OpenAPI/Swagger) and technical documentation in `docs/` and `docs/plans` and `docs/specs` to reflect the final implemented code.
 
 ## 4. End State
 
