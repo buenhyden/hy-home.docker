@@ -166,6 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standardize infrastructure configurations by adopting template-driven inheritance via `extends` for security, logging, and resource management.
 - Remove redundant logging configurations and label anchors from docker-compose files, and add a volume definition for ksql.
 - Rename generic `POSTGRES_USER` and `POSTGRES_DB` environment variables to `_DEFAULT` variants in Docker Compose files and documentation.
+- Centralize specification and plan documents under `docs/` and remove the `templates/README.md`.
 
 ### Docs
 
@@ -240,6 +241,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add new PRDs for system architecture, observability, messaging, and AI, and update related ARDs, ADRs, and infrastructure specifications.
 - Standardize ADR, PRD, and ARD formats, and implement Docker Compose profiles for infrastructure services.
 - Refine architectural decision records and standardize `docker compose` command usage across documentation.
+- Delete `llms.txt` and create `CLAUDE.md`.
 
 ### Fixed
 
@@ -342,6 +344,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - Add .gitkeep files to various secrets subdirectories for version control.
+- **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
