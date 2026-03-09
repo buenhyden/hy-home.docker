@@ -97,4 +97,6 @@ secrets/SENSITIVE_ENV_VARS.md
 # opencode Skills
 .opencode/skills/
 !.opencode/skills/.gitkeep
+
+.claude/settings.local.json
 .agent/
