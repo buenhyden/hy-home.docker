@@ -1,0 +1,136 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(/home/hy/projects/blog-data/30_PARA/:*)",
+      "Bash(/home/hy/projects/blog-data/00_System/:*)",
+      "Bash(/home/hy/projects/blog-data/00_System/Manual/06-Dashboards.md:*)",
+      "Bash(/home/hy/projects/blog-data/00_System/00_System-Index.md:*)",
+      "Bash(/home/hy/projects/blog-data/20_ZK/:*)",
+      "Bash(/home/hy/projects/blog-data/20_ZK/EX-ZK-Flow-Demo.md:*)",
+      "Bash(/home/hy/projects/blog-data/00_System/Templates/T-Fleeting.md:*)",
+      "Bash(/home/hy/projects/blog-data/20_ZK/00_ZK-Index.md:*)",
+      "Bash(/home/hy/projects/blog-data/20_ZK/21_Literature/00_Literature-Index.md:*)",
+      "Bash(/home/hy/projects/blog-data/20_ZK/README.md:*)",
+      "Bash(/home/hy/projects/blog-data/00_System/Health-Checks.md:*)",
+      "Bash(__NEW_LINE_f69ae2e14804af70__ echo:*)",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(\"D:/blog-data/docs/adr/bundle-index-siblings-001.md\":*)",
+      "Bash(\"D:/blog-data/docs/prd/bundle-index-siblings.md\":*)",
+      "Bash(python:*)",
+      "Bash(npm run:*)",
+      "Bash(do:*)",
+      "Bash(/tmp/fix_sidebars.py:*)",
+      "Bash(/tmp/fix_canonical.py:*)",
+      "Bash(echo:*)",
+      "Bash(',\n    '',\n    '- Built:*)",
+      "Bash(npx tsc:*)",
+      "Bash(cat:*)",
+      "Bash(timeout 300 npx playwright:*)",
+      "Bash(TEST_EXPORT=1 npx playwright:*)",
+      "Bash(TEST_EXPORT=1 npm run:*)",
+      "Bash(python3:*)",
+      "Bash(for f in docs/adr/*.md)",
+      "Read(//home/hy/projects/blog-data/**)",
+      "Bash(done)",
+      "Bash(for f in \"a11y-modal-search.md\" \"blog-thumbnail-render.md\" \"bundle-index-siblings-001.md\" \"bundle-siblings-001.md\" \"layout-navigation-001.md\" \"local-resource-rewrite-001.md\" \"metadata-icons.md\" \"rendering-engine-001.md\" \"strict-validation-001.md\" \"table-overflow-fix.md\" \"test-triage-suite.md\" \"typography-prose-policy.md\")",
+      "Read(//home/hy/projects/blog-data/docs/adr/**)",
+      "Bash(for i in 0002 0003 0004 0005 0006 0007 0008 0009)",
+      "Bash(for f in \"a11y-modal-search.md\" \"blog-thumbnail-render.md\" \"bundle-index-siblings.md\" \"bundle-siblings.md\" \"config-map.md\" \"local-resource-rewrite.md\" \"metadata-icons.md\" \"table-overflow-fix.md\" \"test-triage-suite.md\" \"typography-prose-policy.md\")",
+      "Read(//home/hy/projects/blog-data/docs/ard/**)",
+      "Bash(for f in \"config-map-ard.md\" \"core-system-ard.md\" \"layout-navigation.md\" \"layout-search-ard.md\" \"layout-width.md\" \"README.md\")",
+      "Bash(for f in \"routing-engine-ard.md\" \"static-export-ard.md\" \"strict-validation.md\" \"validation-strategy-ard.md\")",
+      "Bash(rm:*)",
+      "Bash(find:*)",
+      "Bash(D:/blog-data/web/.gitignore:*)"
+    ]
+  },
+  "deniedMcpServers": [
+    {
+      "serverName": "MCP_DOCKER"
+    },
+    {
+      "serverName": "notebooklm"
+    },
+    {
+      "serverName": "github-mcp-server"
+    },
+    {
+      "serverName": "notebooklm"
+    }
+  ],
+  "mcpServers": {
+    "sequential-thinking": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "env": {},
+      "disabled": true
+    },
+    "playwright": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "@playwright/mcp@latest"
+      ],
+      "disabled": true
+    },
+    "github-mcp-server": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+      },
+      "disabled": true
+    },
+    "git": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@mseep/git-mcp-server"
+      ],
+      "env": {},
+      "disabled": true
+    },
+    "next-devtools": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "next-devtools-mcp@latest"
+      ],
+      "disabled": true
+    },
+    "chrome-devtools": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "chrome-devtools-mcp@latest"
+      ],
+      "disabled": true
+    },
+    "notebooklm": {
+      "command": "notebooklm-mcp",
+      "args": [],
+      "disabled": true
+    }
+  }
+}
