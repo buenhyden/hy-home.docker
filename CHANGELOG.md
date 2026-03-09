@@ -351,6 +351,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **deps-dev:** Bump the npm_and_yarn group across 2 directories with 1 update
+- **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
 
@@ -361,6 +362,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add default values for environment variables across various docker-compose configurations.
 - Standardize infrastructure baseline by introducing a global spec and streamlining Docker Compose configurations.
+- **deps:** Bump the actions group with 2 updates
 
 ### Ci
 
