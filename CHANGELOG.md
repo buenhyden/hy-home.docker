@@ -138,6 +138,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactor Docker Compose files to remove static IPs, external networks, and top-level names, introduce service profiles, and update related documentation and specs.
 - Add script to bootstrap file-based Docker secrets, including its specification, plan, and documentation updates.
 - Add infrastructure implementation plans for baseline, global-baseline, messaging, observability, service standards, AI, and automation.
+- Add `.claude/settings.local.json` and `.agent/` to `.gitignore` to exclude them from version control.
 
 ### Changed
 
@@ -242,6 +243,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standardize ADR, PRD, and ARD formats, and implement Docker Compose profiles for infrastructure services.
 - Refine architectural decision records and standardize `docker compose` command usage across documentation.
 - Delete `llms.txt` and create `CLAUDE.md`.
+- Update various agent rules and workflows across multiple domains.
 
 ### Fixed
 
@@ -351,6 +353,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **deps-dev:** Bump the npm_and_yarn group across 2 directories with 1 update
+- **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
