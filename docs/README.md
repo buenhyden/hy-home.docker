@@ -1,64 +1,33 @@
-# Documentation Hub (`docs/`)
+# Project Documentation Index (Lazy Loading Gateway)
+>
+> Master entry point for spec-driven documentation discovery.
 
-This directory contains long-term, human-readable project documentation used across planning, design, and reference delivery.
+To prevent context window saturation, AI agents MUST follow this gateway protocol for discovering and reading documentation.
 
-## 1. Necessity and Purpose
+## 1. Documentation Discovery Protocols
 
-This directory exists to permanently store the "Why" and "What" of the system. It is absolutely necessary because it acts as the stable knowledge base that survives beyond single feature implementations or operational incidents.
+- **[GATE-DISC-01] Index-First Search**: Always read this README before fetching specific sub-directories.
+- **[GATE-DISC-02] Conditional Read**: Only fetch folders relevant to your active layer (see below).
+- **[GATE-DISC-03] Link Integrity**: Use the correct relative paths defined below and GFM alerts for emphasis.
 
-### Optimization Standards
+## 2. Directory Map (Layered Access)
 
-- **Global Inheritance**: All services EXTEND from `infra/common-optimizations.yml`.
-- **Telemetry Labeling**: Mandatory `hy-home.tier` labels for Loki routing.
-- **Resource Hardening**: Profile-based limits (low/med/high) and `read_only` root FS.
+| Layer | Entry Point | Usage Priority | Lazy Load Marker |
+| --- | --- | --- | --- |
+| **Index** | `README.md` | Session Start | `[LOAD:INDEX]` |
+| **Strategic** | `prd/`, `ard/` | High (Planning) | `[LOAD:STRATEGIC]` |
+| **Tactical** | `specs/`, `plans/` | Critical (Execution) | `[LOAD:TACTICAL]` |
+| **Decision** | `adr/` | Medium (Rationale) | `[LOAD:DECISION]` |
+| **Operational** | `runbooks/`, `operations/` | High (Maintenance) | `[LOAD:OPERATIONAL]` |
+| **Procedural** | `guides/`, `manuals/` | Medium (Reference) | `[LOAD:PROCEDURAL]` |
 
-- **Isolate product/design knowledge** from executable logic (`specs/`), operational scripts (`runbooks/`), and AI Automation logic (`.agent/workflows/`).
-- Serve as the primary reference point for **Human Developers** and **AI Planner Agents** trying to understand the overarching system constraints.
-- This hub is subordinate to the global repository rules: [**ARCHITECTURE.md**](../ARCHITECTURE.md) (Design Laws) and [**OPERATIONS.md**](../OPERATIONS.md) (Execution Policy).
+## 3. Latest Templates & Guidelines
 
-## 2. Sub-Directories & Required Content
+For all new document creation, MUST refer to the `templates/` directory at the project root.
 
-Each sub-directory serves a distinct, non-overlapping purpose. Documents created here MUST use their respective templates from the `templates/` folder.
-
-## 🗺️ Documentation Navigator (Role-Based)
-
-### 🏗️ For Architects
-
-- **Optimization**: [Architecture Optimization Strategy](guides/arch-optimization-strategy.md).
-
-### 💻 For Developers
-
-- **Lifecycle**: [Feature Delivery Roadmap](guides/README.md) — Pre, During, and Post development guides.
-- **Blueprints**: [Technical Context Hub](context/README.md) — Service-specific implementation details.
-- **Prerequisites**: [Product Requirements (PRD)](prd/README.md).
-
-### 🛠️ For DevOps & Operators
-
-- **Incident Hub**: [Runbooks Catalog](../runbooks/README.md) — Actionable recovery guides.
-- **Bootstrapping**: [Infra Lifecycle](context/core/infra-lifecycle-ops.md) — Startup and order of operations.
-- **Reference**: [Arch Requirements (ARD)](ard/README.md) — Technical boundaries and constraints.
-
-### 🧪 For Quality & Automation
-
-- **Usage Patterns**: [Integration Examples](../examples/README.md) — How to connect to infrastructure.
-- **Compliance**: [QA & Security Guide](manuals/qa-security-guide.md).
+- [PRD Template](file:///home/hy/projects/hy-home.docker/templates/prd-template.md)
+- [Spec Template](file:///home/hy/projects/hy-home.docker/templates/spec-template.md)
+- [ADR Template](file:///home/hy/projects/hy-home.docker/templates/adr-template.md)
 
 ---
-
-## Folder Taxonomy
-
-- [**`adr/`**](adr/README.md) — **Architecture Decision Records**.
-- [**`ard/`**](ard/README.md) — **Architecture Reference Documents**.
-- [**`prd/`**](prd/README.md) — **Product Requirements Documents**.
-- [**`context/`**](context/README.md) — **Technical Blueprints & Service Setup**.
-- [**`guides/`**](guides/README.md) — **Platform Lifecycle & Workflows**.
-- [**`manuals/`**](manuals/README.md) — **Collaboration & Standards**.
-
-## 3. Explicit Boundaries & Anti-Patterns
-
-1. **NO RUNBOOKS ALLOWED**: Do NOT create a `docs/runbook/` folder. All playbooks, incident response guides, and deployment workflows **MUST go in the root `/runbooks/` directory**.
-2. **NO SPECS ALLOWED**: Do NOT place implementation specs here. All feature-specific coding specifications and plans belong in `/specs/`.
-3. **NO AI WORKFLOWS ALLOWED**: Do NOT place AI agent behavioral guidelines or prompts here. Those belong strictly in `.agent/workflows/`.
-4. **TEMPLATE MANDATORY**: Any new ADR, ARD, or PRD created in this folder **MUST** be generated from its respective counterpart in the `templates/` directory.
-5. **DOCUMENTATION PILLAR**: All content in this directory is subject to the Document Pillar (`.agent/rules/2100-documentation-pillar.md`) and must adhere to the Diátaxis framework where applicable.
-6. **PROJECT-SPECIFIC OVERRIDES**: The `guides/` and `manuals/` folders serve as the official location for project-specific overrides to the generic `.agent/rules/`. AI Agents will prioritize instructions in these local guides during execution.
+*For behavioral directives, see [AGENTS.md](file:///home/hy/projects/hy-home.docker/AGENTS.md) at the repository root.*
