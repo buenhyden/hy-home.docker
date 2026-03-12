@@ -1,76 +1,102 @@
 # System Architecture
 
-이 문서는 `hy-home.docker` 저장소의 전역 아키텍처 제약과 변경 규칙을 정의합니다.
-서비스별 상세 설계는 [`docs/context/`](docs/context/), 실행 절차는 [`runbooks/`](runbooks/) 및 [`OPERATIONS.md`](OPERATIONS.md)를 기준으로 합니다.
+This document defines the global architectural invariants and rules for the `hy-home.docker` repository. For service-specific details, see [`docs/context/`](docs/context/). For operational procedures, refer to [`runbooks/`](runbooks/) and [`OPERATIONS.md`](OPERATIONS.md).
 
 ## 1. Scope
 
-- 대상: 루트 [`docker-compose.yml`](docker-compose.yml) + [`infra/**/docker-compose*.yml|yaml`](infra/)로 구성된 인프라 스택
-- 목표: 로컬/홈랩 환경에서 재현 가능한 멀티 서비스 인프라 제공
-- 제외: 개별 서비스 내부 비즈니스 로직, 앱 코드 구현 세부 ([`specs/`](specs/)에서 별도 정의)
+- **Target:** The infrastructure stack composed of the root [`docker-compose.yml`](docker-compose.yml) and modular definitions in [`infra/`](infra/).
+- **Goal:** To provide a reproducible, multi-tier infrastructure for local development and home-lab environments.
+- **Exclusions:** Internal business logic and application-level code details (defined in [`specs/`](specs/)).
 
 ## 2. Architectural Invariants
 
-아래 항목은 기본 규칙이며, 예외는 ADR/Spec에 명시되어야 합니다.
+Standard rules for the codebase. Exceptions must be documented in ADRs or feature specs.
 
-- **Root Orchestration**: `docker-compose.yml`이 단일 진입점이며, 서비스 스택은 `include`로 조립합니다.
-- **Modular Boundaries**: 서비스별 Compose는 `infra/<tier>/<service>/`에 분리하고, 공통 정책은 루트에서 관리합니다.
-- **Secrets-First**: 비밀번호/토큰은 `.env`가 아닌 `secrets/**/*.txt` + Docker secrets로 주입합니다.
-- **Port Policy**: 호스트 노출 포트는 `*_HOST_PORT`, 컨테이너 포트는 `*_PORT`를 사용합니다. Compose 파일에는 `${VAR:-default}`로 기본 포트를 명시합니다.
-- **Security Baseline**: 기본적으로 `security_opt: [no-new-privileges:true]`, `cap_drop: [ALL]`를 적용합니다.
-- **Docs Separation**: 아키텍처/배경은 [`docs/`](docs/), 구현 계획은 [`specs/`](specs/), 실행 절차는 [`runbooks/`](runbooks/)에 분리합니다.
+- **Root orchestration:** The `docker-compose.yml` is the single entry point. The stack is assembled using the `include` feature.
+- **Modular boundaries:** Compose definitions are isolated in `infra/<tier>/<service>/`. Common policies are managed globally at the root.
+- **Secrets-first:** Passwords and tokens must never be in `.env`. They are injected via `secrets/**/*.txt` into `/run/secrets/`.
+- **Port policy:** Host-exposed ports use `*_HOST_PORT`. Container-internal ports use `*_PORT`. Always use `${VAR:-default}` in Compose files.
+- **Security baseline:** By default, all services must implement `security_opt: [no-new-privileges:true]` and `cap_drop: [ALL]`.
+- **Documentation separation:** Background info goes to [`docs/`](docs/), plans to [`specs/`](specs/), and executable manuals to [`runbooks/`](runbooks/).
 
 ## 3. Runtime Topology
 
-### 3.1 Network Model
+### 3.1 Network model
 
 | Network | Type | Purpose |
 | :--- | :--- | :--- |
-| `infra_net` | bridge (internal) | 서비스 간 기본 통신망 |
-| `project_net` | external | 외부 프로젝트 연동용 |
-| `kind` | external | Kubernetes(kind) 연동용 |
+| `infra_net` | bridge (internal) | Primary backbone for inter-service communication. |
+| `project_net` | external | For connecting external application projects. |
+| `kind` | external | For integration with Kubernetes (KinD) clusters. |
 
-`infra_net`의 대역/게이트웨이는 `.env`의 `INFRA_SUBNET`, `INFRA_GATEWAY`로 관리합니다.
+### 3.2 Layered service map
 
-### 3.2 Layered Service Map
+The infrastructure is organized into 10 logical tiers.
 
-| Tier | Role | 대표 서비스 |
+```mermaid
+graph TD
+    subgraph Tier_01_Gateway [01 Gateway]
+        Traefik["Traefik / Nginx"]
+    end
+
+    subgraph Tier_02_Auth [02 Auth]
+        Keycloak["Keycloak / OAuth2 Proxy"]
+    end
+
+    subgraph Tier_04_Data [04 Data]
+        DB["PostgreSQL / Valkey / MinIO / Qdrant"]
+    end
+
+    subgraph Tier_05_Messaging [05 Messaging]
+        Kafka["Kafka / ksqlDB / RabbitMQ"]
+    end
+
+    subgraph Tier_06_Obs [06 Observability]
+        LGTM["Promethus / Grafana / Loki / Tempo"]
+    end
+
+    subgraph Tier_08_AI [08 AI]
+        Ollama["Ollama / Open-WebUI"]
+    end
+
+    Tier_01_Gateway --> Tier_02_Auth
+    Tier_02_Auth --> Tier_04_Data
+    Tier_05_Messaging --> Tier_04_Data
+    Tier_06_Obs -.-> Tier_01_Gateway
+    Tier_08_AI --> Tier_04_Data
+```
+
+| Tier | Role | Primary Services |
 | :--- | :--- | :--- |
 | `01-gateway` | Ingress / Edge Routing | Traefik, Nginx |
 | `02-auth` | Identity / Access Proxy | Keycloak, OAuth2 Proxy |
 | `03-security` | Secret Vault | Vault |
-| `04-data` | DB / Cache / Object / Search | PostgreSQL, Valkey, MinIO, OpenSearch, Qdrant, Supabase |
+| `04-data` | DB / Cache / Object / Search | PostgreSQL, Valkey, MinIO, Qdrant |
 | `05-messaging` | Event / Queue | Kafka, ksqlDB, RabbitMQ |
-| `06-observability` | Metrics / Logs / Traces | Prometheus, Grafana, Loki, Tempo, Alloy, Pyroscope |
+| `06-observability` | Metrics / Logs / Traces | Prometheus, Grafana, Loki, Tempo |
 | `07-workflow` | Orchestration | Airflow, n8n |
 | `08-ai` | Inference / AI UI | Ollama, Open-WebUI |
-| `09-tooling` | QA / DevOps Tools | SonarQube, Terrakube, Syncthing, Locust |
-| `10-communication` | Mail / Relay | Stalwart, Mailhog |
-
-### 3.3 Stack Modes
-
-- **Core Include Stack**: 루트 `docker-compose.yml`에 활성 `include`된 서비스 세트
-- **Optional Stack**: 프로파일 또는 주석 해제로 선택 활성화하는 서비스 세트
-- **Standalone Stack**: 루트 `include` 없이 별도 Compose로 운영 가능한 서비스(예: Supabase)
+| `09-tooling` | QA / DevOps Tools | SonarQube, Terrakube, Locust |
+| `10-communication`| Mail / Relay | Stalwart, Mailhog |
 
 ## 4. Change Governance
 
-아키텍처 변경 시 아래 체크리스트를 충족해야 합니다.
+All architectural modifications must satisfy this checklist:
 
 | Check | Requirement | Mandatory |
 | :--- | :--- | :--- |
-| Boundary Impact | 어떤 tier/서비스 경계를 바꾸는지 명시 | Yes |
-| Network Impact | `infra_net`/external network 영향 분석 | Yes |
-| Secret Impact | 신규/변경 secret 파일 경로 및 주입 방식 명시 | Yes |
-| Port Impact | `*_HOST_PORT`/`*_PORT` 변수 및 기본값 영향 반영 | Yes |
-| Security Baseline | 권한 상승(cap_add/privileged) 필요 시 근거 문서화 | Yes |
-| Ops Impact | 관련 runbook/OPERATIONS 업데이트 | Yes |
-| Validation | `bash scripts/validate-docker-compose.sh` 통과 | Yes |
-| Traceability | ADR/Spec/Runbook 상호 링크 | Yes |
+| Boundary impact | Explicitly state which tier/service boundary is changing. | Yes |
+| Network impact | Analyze effects on `infra_net` or external networks. | Yes |
+| Secret impact | Define new secret file paths and injection methods. | Yes |
+| Port impact | Update `*_HOST_PORT` variables and default values. | Yes |
+| Security baseline | Provide justification for privilege escalation (cap_add/privileged). | Yes |
+| Ops impact | Update corresponding `runbooks/` and `OPERATIONS.md`. | Yes |
+| Validation | Must pass `bash scripts/validate-docker-compose.sh`. | Yes |
+| Traceability | Reciprocal links between ADR, Spec, and Runbook. | Yes |
 
-## 5. Architecture References
+## 5. References
 
-- 인프라 기초 ARD: [`docs/ard/infra-baseline-ard.md`](docs/ard/infra-baseline-ard.md)
-- 메시징/기타 ARD: [`docs/ard/messaging-ard.md`](docs/ard/messaging-ard.md)
-- 기술 컨텍스트 허브: [`docs/context/README.md`](docs/context/README.md)
-- 운영 정책: [`OPERATIONS.md`](OPERATIONS.md)
+- **Infra baseline ARD:** [`docs/ard/infra-baseline-ard.md`](docs/ard/infra-baseline-ard.md)
+- **Messaging ARD:** [`docs/ard/messaging-ard.md`](docs/ard/messaging-ard.md)
+- **Context hub:** [`docs/context/README.md`](docs/context/README.md)
+- **Ops policy:** [`OPERATIONS.md`](OPERATIONS.md)

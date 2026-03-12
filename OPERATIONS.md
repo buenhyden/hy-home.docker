@@ -1,11 +1,11 @@
 # Operations Index
 
-이 문서는 `hy-home.docker`의 운영 정책 및 실행 체계의 중앙 인덱스입니다.
+This document is the central index for the `hy-home.docker` operational policies and execution frameworks.
 
-- **Design Reference**: [`ARCHITECTURE.md`](ARCHITECTURE.md) (설계 원칙)
-- **Product Vision**: [`docs/prd/README.md`](docs/prd/README.md) (제품 목표)
-- **Executable Manuals**: [`runbooks/README.md`](runbooks/README.md) (역할별 장애 대응)
-- **Historical Memory**: [`operations/README.md`](operations/README.md) (장애 기록물)
+- **Design reference:** [`ARCHITECTURE.md`](ARCHITECTURE.md) (Architecture principles)
+- **Product vision:** [`docs/prd/README.md`](docs/prd/README.md) (Project goals)
+- **Executable manuals:** [`runbooks/README.md`](runbooks/README.md) (Incident response by tier)
+- **Shared memory:** [`operations/README.md`](operations/README.md) (Postmortem and incident archives)
 
 ---
 
@@ -13,45 +13,43 @@
 
 | Tier | Name | Target Hardware | Purpose |
 | :--- | :--- | :--- | :--- |
-| **L1** | Local Dev | Host Laptop | Individual service testing & spec validation |
-| **L2** | Home-Lab | Dedicated NUC/Server | Multi-tier cluster integration & 24/7 availability |
-| **L3** | Pro-Lab | High-spec Host | Performance benchmarking & HA recovery drills |
+| **L1** | Local Dev | Host Laptop | Service iteration and specification validation. |
+| **L2** | Home-Lab | Dedicated Server | Integration testing and 24/7 availability. |
+| **L3** | Pro-Lab | High-spec Host | Performance benchmarking and recovery drills. |
 
-## 2. 운영 원칙
+## 2. Operational Principles
 
-1. **Runbook-First**: 모든 실행 명령은 [`runbooks/`](runbooks/)에 정의된 문서를 최우선으로 따릅니다.
-2. **Validate-Then-Apply**: 변경 전후 [`scripts/validate-docker-compose.sh`](scripts/validate-docker-compose.sh) 실행 필수.
-3. **Secrets Hygiene**: 100% Docker Secrets를 통해 `/run/secrets/` 경로로 주입합니다.
-4. **Blameless Culture**: 모든 SEV-1/2 장애는 비난 없는 사후 분석([operations/postmortems/](operations/postmortems/))을 수행합니다.
+1. **Runbook-first:** Follow procedures defined in [`runbooks/`](runbooks/) before executing commands manually.
+2. **Validate-then-apply:** Run [`scripts/validate-docker-compose.sh`](scripts/validate-docker-compose.sh) before every modification.
+3. **Secrets hygiene:** 100% of sensitive data must flow through Docker Secrets at `/run/secrets/`.
+4. **Blameless culture:** Perform a blameless postmortem ([operations/postmortems/](operations/postmortems/)) for all SEV-1/2 incidents.
 
 ## 3. Incident Severity & Response
 
 | Severity | Impact | Action | Tracking Hub |
 | :--- | :--- | :--- | :--- |
-| **SEV-1** | Core failure (Gateway/Auth) | Immediate response via `runbooks/core/` | [Incident History](operations/incidents/) |
-| **SEV-2** | Critical degradation (DB/Data) | Response within 4 hours | [Incident History](operations/incidents/) |
-| **SEV-3** | Minor/Intermittent issue | Log to GitHub Issues | N/A |
+| **SEV-1** | Core failure (Gateway/Auth) | Immediate response via `runbooks/core/`. | [Incident History](operations/incidents/) |
+| **SEV-2** | Service degradation (DB/Data) | Response within 4 hours. | [Incident History](operations/incidents/) |
+| **SEV-3** | Minor/Intermittent issue | Log via GitHub Issues. | N/A |
 
 ## 4. Observability & Monitoring
 
-- **Log Centralization**: All services MUST utilize the `loki` driver. Queries are performed via [Grafana Explore](https://grafana.${DEFAULT_URL}/explore).
-- **Metric Collection**: Prometheus scrapes exporters every 15s. Standard dashboards are located in [`infra/06-observability/grafana/dashboards/`](infra/06-observability/grafana/dashboards/).
-- **Alerting**: Alertmanager routes SEV-1/2 alerts to Slack/Email. See [`runbooks/alerting/`](runbooks/alerting/) for logic.
+- **Log centralization:** All services must use the `loki` driver. Perform queries via [Grafana Explore](https://grafana.${DEFAULT_URL}/explore).
+- **Metric collection:** Prometheus scrapes exporters every 15 seconds. Standard dashboards are in [`infra/06-observability/grafana/dashboards/`](infra/06-observability/grafana/dashboards/).
+- **Alerting:** Alertmanager routes critical alerts to configured messengers. Logic is defined in [`runbooks/alerting/`](runbooks/alerting/).
 
 ## 5. Backup & Disaster Recovery
 
-- **DB Snapshots**: Automated nightly dumps for PostgreSQL and OpenSearch located at `/mnt/backup/db/`.
-- **Secret Backups**: Encrypted copies of `.env` and `secrets/` stored in an isolated, offline-first tier.
-- **Recovery SLO**: Restoration of core Auth/Gateway services MUST be achievable within 30 minutes from L2/L3 hardware.
+- **DB snapshots:** Automated nightly dumps for PostgreSQL and OpenSearch are saved to `/mnt/backup/db/`.
+- **Secret backups:** Encrypted copies of `.env` and `secrets/` are stored in an offline-first tier.
+- **Recovery SLO:** Core Auth/Gateway services must be restorable within 30 minutes from L2/L3 hardware.
 
-## 6. Change & Release Gates
+## 6. Project References
 
-## 7. References
-
-- **Infra Lifecycle**: [`docs/context/core/infra-lifecycle-ops.md`](docs/context/core/infra-lifecycle-ops.md)
-- **Security Policy**: [`.github/SECURITY.md`](.github/SECURITY.md)
-- **RCA Hub**: [`operations/postmortems/README.md`](operations/postmortems/README.md)
+- **Infra lifecycle:** [`docs/context/core/infra-lifecycle-ops.md`](docs/context/core/infra-lifecycle-ops.md)
+- **Security policy:** [`.github/SECURITY.md`](.github/SECURITY.md)
+- **RCA hub:** [`operations/postmortems/README.md`](operations/postmortems/README.md)
 
 ---
 > [!TIP]
-> 운영 절차의 상세 로직은 본 문서에 직접 작성하지 않고 반드시 `runbooks/` 디렉토리를 활용하십시오.
+> Keep detailed operational logic in the `runbooks/` directory instead of this index document.

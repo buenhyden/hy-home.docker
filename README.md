@@ -1,242 +1,659 @@
-# Hy-Home Docker Infrastructure
+# hy-home.docker
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](#license)
+[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](CHANGELOG.md)
 
-> A modular, production-ready Docker Compose infrastructure for professional-grade home labs.
-
-`hy-home.docker` is a comprehensive infrastructure-as-code repository designed to deploy and manage a multi-tier service ecosystem consistently. It leverages Docker Compose's `include` feature and profiles to assemble a tailored stack—ranging from core identity management and security to advanced AI inference and observability.
+> Modular Docker Compose infrastructure for local development and homelab multi-service stacks.
 
 ## Overview
 
-This project solves the complexity of maintaining a consistent, secure, and observable infrastructure in local or home-lab environments.
+`hy-home.docker` is the root orchestration repository for a layered, self-hosted platform stack built on Docker Compose `include` files and profiles. It is designed for operators who want a reproducible local or homelab environment and for contributors who need a clear entrypoint into the repository’s infrastructure, validation, and documentation workflows.
 
-- **Modular Orchestration:** Services are grouped by tiers (Gateway, Auth, Data, etc.) and can be selectively enabled via profiles.
-- **Production Alignment:** Implements production-grade patterns like Docker Secrets, non-root users, and centralized observability (LGTM stack).
-- **Extensible Architecture:** Designed as a foundational blueprint for developers, data engineers, and AI researchers to build upon.
+The repository assembles gateway, identity, data, messaging, observability, workflow, AI, and tooling tiers into one Compose-driven system. It favors secrets-first configuration, explicit operational runbooks, and spec-driven change management over ad hoc bring-up.
+
+## Key Features
+
+- Modular service tiers under [`infra/`](infra/)
+- Profile-based stack assembly through a single root [`docker-compose.yml`](docker-compose.yml)
+- File-based Docker secrets bootstrapped under [`secrets/`](secrets/)
+- Local TLS bootstrap with `mkcert`
+- Centralized architecture, context, plans, and runbooks under [`docs/`](docs/)
+- Static validation and runtime preflight scripts before `docker compose up`
+- Optional observability, workflow, AI, and tooling stacks for broader platform builds
 
 ## Tech Stack
 
 | Category | Technology |
-| :--- | :--- |
-| **Orchestration** | Docker Engine 24+, Docker Compose v2 |
-| **Ingress/Edge** | Traefik, OAuth2-Proxy |
-| **Identity/Auth** | Keycloak |
-| **Storage/DB** | PostgreSQL (HA), Valkey (Cluster), MinIO, Neo4j, CouchDB |
-| **Observability** | LGTM Stack (Grafana, Loki, Tempo, Prometheus), Alloy, Pyroscope |
-| **Messaging** | Kafka (KRaft mode), ksqlDB, Schema Registry |
-| **AI/ML** | Ollama, Open-WebUI, Qdrant |
-| **Workflow/CI** | Airflow, n8n, SonarQube |
+| --- | --- |
+| Orchestration | Docker Engine 24+, Docker Compose v2 |
+| Gateway / Edge | Traefik, optional Nginx |
+| Identity / Access | Keycloak, OAuth2 Proxy |
+| Data / Storage | PostgreSQL cluster, Valkey cluster, MinIO, OpenSearch, Qdrant |
+| Optional Data Services | MongoDB, Cassandra, CouchDB, Neo4j, SeaweedFS, Supabase, InfluxDB |
+| Messaging | Kafka, optional ksqlDB, optional RabbitMQ |
+| Observability | Prometheus, Grafana, Loki, Tempo, Alloy, Pushgateway, Alertmanager |
+| Workflow | Airflow, optional n8n |
+| AI | Ollama, Open WebUI |
+| Tooling | SonarQube, optional Terrakube, Syncthing, Locust, Terraform helpers |
+| Deployment Model | Self-hosted Docker Compose on Linux, WSL2, and homelab hosts |
 
 ## Prerequisites
 
-Ensure your host environment meets these requirements before starting:
+Install and verify the following before bootstrapping the stack:
 
-- **Docker Engine:** v24.0.0 or higher
-- **Docker Compose:** v2.20.0 or higher
-- **System Utilities:** `bash`, `rg` (ripgrep)
-- **Memory:** Minimum 16GB RAM recommended for the "Core + Data + Obs" stack.
-- **Platform Notes:**
-  - **Linux:** Native Docker is recommended.
-  - **WSL2 (Windows):** Highly recommended to keep the repository within the WSL filesystem (e.g., `/home/<user>/`) rather than `/mnt/c/` for performance and file permission consistency.
+- Docker Engine `24.x` or newer
+- Docker Compose v2 `20.x` or newer
+- `bash`
+- `git`
+- `mkcert` for local certificate generation
+- `python3` and `openssl` for the secrets bootstrap workflow
+- Enough RAM for the enabled profiles
+  - `core,data,obs` is the default baseline
+  - add more headroom before enabling `workflow`, `ai`, or `tooling`
+
+Platform notes:
+
+- Linux is the primary target.
+- On WSL2, keep the repository inside the Linux filesystem, not under `/mnt/c`, to avoid slow mounts and permission issues.
+- Ensure the host mount root configured by `DEFAULT_MOUNT_VOLUME_PATH` exists and is writable.
+- External networks `project_net` and `kind` are optional for core boot, but integrations that rely on them need those networks to exist.
 
 ## Quick Start
 
-Follow these steps to initialize your local environment and spin up the core infrastructure.
+### 1. Clone the repository
 
-### 1. Repository Setup
-
-Clone the repository and enter the directory:
+Clone the repo into a Linux or WSL2 filesystem path where Docker can mount volumes reliably.
 
 ```bash
-git clone https://github.com/organization/hy-home.docker.git
+git clone https://github.com/buenhyden/hy-home.docker.git
 cd hy-home.docker
 ```
 
-### 2. Environment Configuration
+### 2. Create your local environment file
 
-Create your local environment file from the template:
+Start from the tracked example file so the scripts and Compose interpolation have all required defaults.
 
 ```bash
 cp .env.example .env
 ```
 
-Open `.env` and adjust variables like `DEFAULT_URL` (e.g., `127.0.0.1.nip.io`) and `DEFAULT_MOUNT_VOLUME_PATH` to suit your system.
+Review these values before the first boot:
 
-### 3. Initialize Security Assets
+| Variable | Why it matters | Typical local value |
+| --- | --- | --- |
+| `DEFAULT_URL` | Base domain used by Traefik routers and service URLs | `127.0.0.1.nip.io` |
+| `COMPOSE_PROFILES` | Profiles enabled by default on `docker compose up` | `core,data,obs` |
+| `DEFAULT_MOUNT_VOLUME_PATH` | Host path for persistent service data | `/home/<user>/volumes` |
+| `HTTP_HOST_PORT` / `HTTPS_HOST_PORT` | Host ports exposed by the gateway | `80` / `443` |
+| `INFRA_SUBNET` | Internal Docker subnet for `infra_net` | `172.19.0.0/16` |
 
-Generate local TLS certificates and bootstrap the mandatory secrets store:
+### 3. Prepare host volume directories
+
+The preflight script expects the mount roots declared in `.env` to exist.
 
 ```bash
-# Generate mkcert-based local TLS certificates
-bash scripts/generate-local-certs.sh
-
-# Bootstrap file-based secrets (referenced by Docker Compose)
-bash scripts/bootstrap-secrets.sh --env-file .env.example
+mkdir -p \
+  /home/hy/volumes/auth \
+  /home/hy/volumes/data \
+  /home/hy/volumes/message_broker \
+  /home/hy/volumes/obs \
+  /home/hy/volumes/workflow \
+  /home/hy/volumes/ai \
+  /home/hy/volumes/tooling
 ```
 
-> [!NOTE]
-> `bootstrap-secrets.sh` creates placeholders (`CHANGE_ME_*`) for external integrations like Slack Webhooks and SMTP. You must fill these in `secrets/` before those services will function correctly.
+Adjust the paths if you changed `DEFAULT_MOUNT_VOLUME_PATH`.
 
-### 4. Validation & Pre-flight
+### 4. Generate local TLS certificates
 
-Validate that your Compose configuration is syntactically correct and all prerequisites are met:
+This step installs the local CA via `mkcert` and writes certificates to `secrets/certs/`.
 
 ```bash
-# Static validation of the composed stack
-bash scripts/validate-docker-compose.sh
+bash scripts/generate-local-certs.sh
+```
 
-# Runtime pre-flight check (requires Docker daemon)
+Generated files:
+
+- `secrets/certs/cert.pem`
+- `secrets/certs/key.pem`
+- `secrets/certs/rootCA.pem`
+
+### 5. Bootstrap Docker secrets
+
+Generate the file-based secrets referenced by the root Compose file.
+
+```bash
+bash scripts/bootstrap-secrets.sh --env-file .env
+```
+
+Notes:
+
+- Secret files are written under `secrets/**/*.txt`.
+- Existing files are preserved unless you pass `--force`.
+- Some values are intentionally placeholders, for example Slack and SMTP credentials. Replace every `CHANGE_ME_*` value before enabling the integrations that depend on them.
+- To fail fast on unresolved placeholders, run:
+
+```bash
+bash scripts/bootstrap-secrets.sh --env-file .env --strict
+```
+
+### 6. Validate the composed configuration
+
+Run static validation before touching the Docker daemon state.
+
+```bash
+bash scripts/validate-docker-compose.sh
+```
+
+This script creates temporary dummy secret files only when needed and runs `docker compose config`.
+
+### 7. Run the runtime preflight
+
+Check the `.env`, certs, required secret files, mount directories, and optional external networks.
+
+```bash
 bash scripts/preflight-compose.sh
 ```
 
-### 5. Launch the Stack
+Warnings for optional-stack secrets or networks do not block the default core boot.
 
-You can start the default stack (Core + Data + Obs) or use specific profiles:
+### 8. Start the default stack
 
-**Default Stack:**
+Bring up the profiles defined in `COMPOSE_PROFILES`, which default to `core,data,obs`.
 
 ```bash
 docker compose up -d
 ```
 
-**Profile-based Launch:**
+### 9. Open the initial endpoints
 
-```bash
-# Only start core gateway and observability tools
-docker compose --profile core --profile obs up -d
-```
+After the default stack is healthy, use the configured `DEFAULT_URL` to reach the main dashboards.
 
-### Accessing Services
+- Traefik dashboard: `https://dashboard.<DEFAULT_URL>`
+- Keycloak: `https://keycloak.<DEFAULT_URL>`
+- Grafana: `https://grafana.<DEFAULT_URL>`
 
-Once the containers are running, you can access the primary dashboards through your configured `DEFAULT_URL`:
+With the default `.env.example`, those become:
 
-- **Traefik Dashboard:** `https://dashboard.127.0.0.1.nip.io`
-- **Grafana:** `https://grafana.127.0.0.1.nip.io`
-- **Keycloak:** `https://keycloak.127.0.0.1.nip.io`
+- `https://dashboard.127.0.0.1.nip.io`
+- `https://keycloak.127.0.0.1.nip.io`
+- `https://grafana.127.0.0.1.nip.io`
 
-## System Architecture
+## Configuration
 
-This project follows a modular, profile-driven infrastructure pattern. The goal is to provide a single entry point for a complex, multi-tier ecosystem.
+### Core environment variables
 
-### Project Structure
+Use [`.env.example`](.env.example) as the full reference. The table below covers the settings most readers need to understand first.
+
+| Variable | Default | Description |
+| --- | --- | --- |
+| `DEFAULT_URL` | `127.0.0.1.nip.io` | Base domain for service ingress and certificate generation |
+| `DEFAULT_TIMEZONE` | `Asia/Seoul` | Default timezone injected into services that honor it |
+| `COMPOSE_PROFILES` | `core,data,obs` | Profiles enabled by default when no `--profile` flags are supplied |
+| `DEFAULT_MOUNT_VOLUME_PATH` | `/home/hy/volumes` | Root host path for bind-mounted persistent volumes |
+| `INFRA_SUBNET` | `172.19.0.0/16` | Internal bridge subnet for `infra_net` |
+| `INFRA_GATEWAY` | `172.19.0.1` | Gateway IP for `infra_net` |
+| `HTTP_HOST_PORT` | `80` | Host port for Traefik HTTP traffic |
+| `HTTPS_HOST_PORT` | `443` | Host port for Traefik HTTPS traffic |
+
+### Port variable policy
+
+This repository uses a consistent port convention across Compose files:
+
+- `*_PORT` means the container-side or service-side port.
+- `*_HOST_PORT` means the host-exposed port.
+- Compose files use `${VAR:-default}` interpolation to keep the root `.env` authoritative.
+
+Examples:
+
+- `POSTGRES_PORT=5432`
+- `POSTGRES_HOST_PORT=25432`
+- `GRAFANA_PORT=3000`
+- `GRAFANA_HOST_PORT=3000`
+
+### Volume path conventions
+
+Persistent data is rooted under `DEFAULT_MOUNT_VOLUME_PATH`, then split by tier.
+
+| Variable | Purpose |
+| --- | --- |
+| `DEFAULT_AUTH_DIR` | Identity and auth service state |
+| `DEFAULT_DATA_DIR` | Databases, object storage, search, and cache |
+| `DEFAULT_MESSAGE_BROKER_DIR` | Kafka and related broker state |
+| `DEFAULT_OBSERVABILITY_DIR` | Observability stack data |
+| `DEFAULT_WORKFLOW_DIR` | Airflow and workflow assets |
+| `DEFAULT_AI_MODEL_DIR` | Ollama models and AI artifacts |
+| `DEFAULT_TOOLING_DIR` | Tooling services such as SonarQube |
+
+### Compose profiles
+
+Services are included from modular Compose files and activated through profiles.
+
+| Profile | Purpose | Representative services |
+| --- | --- | --- |
+| `core` | Ingress and identity baseline | Traefik, Keycloak, OAuth2 Proxy |
+| `data` | Shared persistence layer | PostgreSQL cluster, Valkey cluster, MinIO, OpenSearch |
+| `obs` | Metrics, logs, traces, and dashboards | Prometheus, Grafana, Loki, Tempo, Alloy |
+| `messaging` | Event streaming and queueing | Kafka, optional RabbitMQ, optional ksqlDB |
+| `workflow` | Orchestration and automation | Airflow, optional n8n |
+| `ai` | Local inference and AI UI | Ollama, Open WebUI, Qdrant |
+| `tooling` | Engineering and QA tooling | SonarQube and related tools |
+
+### Secrets model
+
+The root [`docker-compose.yml`](docker-compose.yml) declares file-backed secrets and maps them into services through `/run/secrets/...`.
+
+Key points:
+
+- Do not put passwords or tokens directly in `.env`.
+- Generate secret files with [`scripts/bootstrap-secrets.sh`](scripts/bootstrap-secrets.sh).
+- Keep secret files under `secrets/` with restrictive permissions.
+- Replace every generated placeholder before enabling dependent integrations.
+
+## Project Structure
+
+This tree shows the meaningful repository layout. Local-only artifacts such as `node_modules/` and `.env` are omitted.
 
 ```text
 hy-home.docker/
-├── .agent/             # AI Agent rules, workflows, and prompts
-├── .github/            # CI/CD workflows and repository templates
-├── infra/              # Service-specific Compose definitions (Tier 01-10)
-│   ├── 01-gateway/      # Ingress (Traefik, OAuth2-Proxy)
-│   ├── 02-auth/         # Identity (Keycloak)
-│   ├── 04-data/         # Databases (Postgres, Valkey, MinIO)
-│   └── ...              # Other tiers (Obs, Messaging, AI)
-├── docs/               # Architecture, PRDs, and technical blueprints
-├── operations/         # Incident history and postmortems
-├── runbooks/           # Executable manual procedures
-├── scripts/            # Environment validation and bootstrap tools
-├── secrets/            # Local secret store (Docker secrets compatible)
-├── specs/              # Implementation plans and feature specs
-├── ARCHITECTURE.md     # Global architectural invariants
-├── OPERATIONS.md       # Operational index and lifecycle
-└── docker-compose.yml  # Main entry point (includes and orchestrates)
+├── .agent/               # Agent rules, personas, and workflow pillars
+├── .claude/              # Shared Claude memory fragments and imported guidance
+├── .github/              # CI, issue templates, security policy, and repo automation
+├── archive/              # Archived or historical artifacts
+├── docs/                 # PRDs, ARDs, ADRs, specs, plans, runbooks, context, guides
+│   ├── adr/
+│   ├── ard/
+│   ├── context/
+│   ├── guides/
+│   ├── manuals/
+│   ├── operations/
+│   ├── plans/
+│   ├── prd/
+│   ├── runbooks/
+│   └── specs/
+├── examples/             # Example assets and supporting reference material
+├── infra/                # Tiered service definitions grouped by platform domain
+│   ├── 01-gateway/
+│   ├── 02-auth/
+│   ├── 03-security/
+│   ├── 04-data/
+│   ├── 05-messaging/
+│   ├── 06-observability/
+│   ├── 07-workflow/
+│   ├── 08-ai/
+│   ├── 09-tooling/
+│   └── 10-communication/
+├── projects/             # Example or companion application projects
+├── scripts/              # Bootstrap, validation, and maintenance scripts
+├── secrets/              # File-backed Docker secrets and generated certs
+├── templates/            # Markdown templates for engineering and product docs
+├── tests/                # Global testing policy and cross-cutting test assets
+├── AGENTS.md             # Cross-agent working contract for this repository
+├── ARCHITECTURE.md       # Global architecture rules and runtime topology
+├── CLAUDE.md             # Claude-specific deltas
+├── GEMINI.md             # Gemini-specific deltas
+├── OPERATIONS.md         # Environment tiers and operational policy
+├── docker-compose.yml    # Root Compose entrypoint using include-based assembly
+├── .env.example          # Environment defaults and host port configuration
+└── README.md             # Primary operator and contributor entrypoint
 ```
 
-### Infrastructure Profiles
+## Architecture Overview
 
-Services are grouped into logical stacks. You can enable them by setting `COMPOSE_PROFILES` in your `.env` or using the `--profile` flag.
+### Root orchestration model
 
-| Profile | Description | Primary Services |
-| :--- | :--- | :--- |
-| `core` | **Edge & Identity:** Mandatory gateway and auth services. | Traefik, Keycloak, OAuth2-Proxy |
-| `data` | **Persistence Layer:** Shared databases and object storage. | Postgres, Valkey, MinIO |
-| `obs` | **Observability:** Centralized logging, metrics, and tracing. | Grafana, Prometheus, Loki, Tempo |
-| `messaging`| **Event Streaming:** Kafka-based messaging infrastructure. | Kafka, Schema Registry, ksqlDB |
-| `workflow` | **Orchestration:** ETL and automation engines. | Airflow, n8n |
-| `ai` | **Inference:** Local LLM and Vector search environment. | Ollama, Open-WebUI, Qdrant |
-| `tooling` | **Engineering Tools:** Quality and DevOps utilities. | SonarQube, Locust |
+The root [`docker-compose.yml`](docker-compose.yml) is the single entrypoint for the stack. It declares shared networks and secrets, then uses Compose `include` directives to assemble service modules from `infra/<tier>/<service>/docker-compose.yml`.
 
-### Core Principles
+This keeps the repository modular:
 
-- **Include-based Assembly:** The root `docker-compose.yml` does not define services directly; it `include`s definitions from the `infra/` directory to maintain modularity.
-- **Secrets First:** Never pass passwords in `.env`. All sensitive data is injected via Docker Secrets from `secrets/**/*.txt`.
-- **Security Baseline:** Services run with `no-new-privileges:true` and dropped capabilities (`cap_drop: [ALL]`) by default.
-- **Network Isolation:** All internal traffic flows through `infra_net`. Boundary traffic is handled exclusively by Tier 01 Gateway.
+- global concerns live at the root
+- tier-specific services stay isolated in `infra/`
+- profile selection decides what actually boots
 
-## Configuration & Reference
+### Network model
 
-### Environment Variables
+The repository defines three top-level networks:
 
-The project uses a comprehensive set of environment variables managed via `.env`. Below are the primary configuration points:
+| Network | Type | Purpose |
+| --- | --- | --- |
+| `infra_net` | Internal bridge | Primary service-to-service backbone |
+| `project_net` | External | Optional integration point for other Docker projects |
+| `kind` | External | Optional integration point for KinD or Kubernetes testing |
 
-| Variable | Default | Description |
-| :--- | :--- | :--- |
-| `DEFAULT_URL` | `127.0.0.1.nip.io` | Primary domain for all service ingress. |
-| `COMPOSE_PROFILES` | `core,data,obs` | Default profiles to boot on `up`. |
-| `HTTP_HOST_PORT` | `80` | Host port for Traefik HTTP entry point. |
-| `HTTPS_HOST_PORT` | `443` | Host port for Traefik HTTPS entry point. |
-| `DEFAULT_MOUNT_VOLUME_PATH` | `/home/hy/volumes` | Root directory for persistent data mounts. |
-| `INFRA_SUBNET` | `172.19.0.0/16` | Subnet range for the internal `infra_net`. |
+### Tiered service map
 
-> [!TIP]
-> For a full list of service-specific ports (e.g., `POSTGRES_HOST_PORT`, `KAFKA_UI_HOST_PORT`), refer to the [`.env.example`](.env.example) file.
+The platform is organized into ten logical tiers:
 
-### Available Scripts (`scripts/`)
+| Tier | Role | Example services |
+| --- | --- | --- |
+| `01-gateway` | Edge routing and ingress | Traefik, Nginx |
+| `02-auth` | Identity and access proxy | Keycloak, OAuth2 Proxy |
+| `03-security` | Secret management | Vault |
+| `04-data` | Databases, cache, object and search storage | PostgreSQL, Valkey, MinIO, OpenSearch, Qdrant |
+| `05-messaging` | Streams and queues | Kafka, RabbitMQ, ksqlDB |
+| `06-observability` | Metrics, logs, traces, dashboards | Prometheus, Grafana, Loki, Tempo |
+| `07-workflow` | Workflow execution and scheduling | Airflow, n8n |
+| `08-ai` | Local inference and AI interfaces | Ollama, Open WebUI |
+| `09-tooling` | QA and platform tooling | SonarQube, Terrakube, Locust |
+| `10-communication` | Mail and relay tooling | Stalwart and related services |
 
-Maintenance and bootstrap tasks should be executed through the following scripts:
+### Profile-driven composition
 
-| Script | Purpose |
-| :--- | :--- |
-| `bootstrap-secrets.sh` | Generates initial `secrets/**/*.txt` files from placeholders. |
-| `generate-local-certs.sh`| Creates mkcert-based TLS certificates for local HTTPS. |
-| `validate-docker-compose.sh`| Performs static analysis on the Compose stack. |
-| `preflight-compose.sh` | Checks runtime prerequisites (mounts, networks, env). |
+The root compose file includes more modules than the default boot starts. Actual runtime scope is controlled by profiles defined in the included service files.
 
-### Operational Tiers
+Examples:
 
-This infrastructure is designed to scale across different environments (defined in `OPERATIONS.md`):
+- `core,data,obs` is the default baseline from `.env.example`
+- `messaging` activates Kafka-related services
+- `workflow` activates Airflow
+- `ai` activates Ollama, Open WebUI, and AI-supporting services
+- `tooling` activates SonarQube and related tooling
 
-- **L1 (Local Dev):** Fast iterations and unit testing on a local machine.
-- **L2 (Home-Lab):** 24/7 internal services running on dedicated hardware (e.g., NUC, Server).
-- **L3 (Pro-Lab):** High-availability clusters for benchmarking and recovery drills.
+### Secrets-first and security baseline
 
-### Observability & Backup
+The architecture intentionally keeps sensitive values out of `.env`.
 
-- **Centralized Logs:** All logs are routed via the `loki` driver and viewable in Grafana.
-- **Backups:** Nightly DB snapshots are stored at `/mnt/backup/db/` (for PostgreSQL and OpenSearch).
-- **Secrets Management:** 100% of sensitive data is handled via Docker Secrets at `/run/secrets/`.
+Repository-wide rules:
+
+- credentials are stored in `secrets/**/*.txt`
+- services consume them via Docker secrets under `/run/secrets/`
+- root architecture policy lives in [`ARCHITECTURE.md`](ARCHITECTURE.md)
+- operational policy lives in [`OPERATIONS.md`](OPERATIONS.md)
+
+## Running The Stack
+
+### Start the default profiles
+
+Use the profiles declared by `COMPOSE_PROFILES` in `.env`.
+
+```bash
+docker compose up -d
+```
+
+### Start specific profiles
+
+Add profile flags when you want more than the default baseline.
+
+```bash
+docker compose --profile core --profile data --profile obs up -d
+docker compose --profile messaging up -d
+docker compose --profile workflow up -d
+docker compose --profile ai up -d
+docker compose --profile tooling up -d
+```
+
+If a service is included in the root compose file but does not appear at runtime, check its profile in the corresponding `infra/**/docker-compose.yml`.
+
+### Inspect the fully rendered configuration
+
+Use Compose interpolation output when debugging merged configuration.
+
+```bash
+docker compose config
+```
+
+### Follow logs
+
+Inspect service logs after startup or while debugging.
+
+```bash
+docker compose logs -f
+docker compose logs -f traefik
+docker compose logs -f keycloak
+```
+
+### Restart or stop the stack
+
+Use standard Compose lifecycle commands at the repo root.
+
+```bash
+docker compose restart
+docker compose down
+```
+
+### Access the main dashboards
+
+With `DEFAULT_URL=127.0.0.1.nip.io`, the main endpoints are:
+
+- Traefik dashboard: `https://dashboard.127.0.0.1.nip.io`
+- Keycloak: `https://keycloak.127.0.0.1.nip.io`
+- Grafana: `https://grafana.127.0.0.1.nip.io`
+
+Additional profile-specific services expose their own `https://<service>.<DEFAULT_URL>` routes through Traefik labels.
+
+## Available Scripts And Validation Workflow
+
+Use repository scripts instead of ad hoc commands whenever possible.
+
+| Script / Command | Purpose |
+| --- | --- |
+| `bash scripts/generate-local-certs.sh` | Install local CA with `mkcert` and generate TLS files under `secrets/certs/` |
+| `bash scripts/bootstrap-secrets.sh --env-file .env` | Generate file-backed Docker secrets without overwriting existing files |
+| `bash scripts/bootstrap-secrets.sh --env-file .env --strict` | Fail if generated placeholders remain unresolved |
+| `bash scripts/validate-docker-compose.sh` | Run static Compose validation with temporary dummy prerequisites |
+| `bash scripts/preflight-compose.sh` | Check runtime prerequisites before starting containers |
+| `pre-commit run --all-files` | Run repo-wide lint, security, and config validation hooks |
+
+Validation order:
+
+1. update `.env`
+2. generate certs
+3. bootstrap secrets
+4. validate compose
+5. run preflight
+6. start or update the stack
+
+CI mirrors the same philosophy:
+
+- `pre-commit` runs in [`.github/workflows/ci-quality.yml`](.github/workflows/ci-quality.yml)
+- `zizmor` scans GitHub Actions configuration in the same workflow
+
+## Testing And Quality Gates
+
+This repository is infrastructure-heavy, so most validation happens through configuration checks, script verification, and policy enforcement rather than a single application test runner.
+
+Contributor expectations:
+
+- run `pre-commit run --all-files`
+- run `bash scripts/validate-docker-compose.sh`
+- run `bash scripts/preflight-compose.sh` when your change affects runtime behavior
+- follow test coverage and testing-layer requirements for code changes, as documented in deeper testing policy
+
+Quality tooling currently includes:
+
+- YAML linting
+- Markdown linting
+- ShellCheck
+- Hadolint
+- actionlint
+- gitleaks
+- `zizmor`
+- project-specific ESLint hooks for the storybook examples
+
+For deeper policy, read:
+
+- [`tests/README.md`](tests/README.md)
+- [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- [`.pre-commit-config.yaml`](.pre-commit-config.yaml)
+
+## Deployment And Operations
+
+### Supported environment tiers
+
+[`OPERATIONS.md`](OPERATIONS.md) defines three operating tiers:
+
+| Tier | Name | Purpose |
+| --- | --- | --- |
+| `L1` | Local Dev | Service iteration and specification validation on a developer machine |
+| `L2` | Home-Lab | 24/7 internal services on dedicated self-hosted hardware |
+| `L3` | Pro-Lab | Higher-capacity hosts for resilience testing and benchmarking |
+
+### Recommended deployment flow
+
+For local and homelab deployment, this repository is the deployment artifact.
+
+Recommended flow:
+
+1. prepare `.env`
+2. create host mount directories
+3. generate certificates
+4. bootstrap secrets
+5. validate compose
+6. run preflight
+7. start the required profiles
+8. verify ingress, auth, and observability routes
+9. consult runbooks before making manual recovery changes
+
+### Production-style checklist
+
+- [ ] `.env` reviewed for host ports, domain, profiles, and mount paths
+- [ ] required secret files created under `secrets/`
+- [ ] placeholder values replaced for enabled integrations
+- [ ] local certificates generated
+- [ ] `docker compose config` validation passes
+- [ ] preflight passes for required directories and files
+- [ ] observability endpoints are reachable after boot
+- [ ] recovery and maintenance paths are known before the system is treated as persistent infrastructure
+
+### Where to go deeper
+
+Use these docs instead of expanding the root README into an operating manual:
+
+- [`docs/runbooks/README.md`](docs/runbooks/README.md) for executable recovery procedures
+- [`docs/context/README.md`](docs/context/README.md) for service-specific architecture and operations context
+- [`docs/README.md`](docs/README.md) for the lazy-loading docs index
 
 ## Troubleshooting
 
-### Secret Bootstrapping Issues
+### Placeholder secrets are still present
 
-- **Error:** `CHANGE_ME_*` placeholders remain in `secrets/*.txt`.
-- **Solution:** You must manually edit the files in the `secrets/` directory to replace placeholders with your actual credentials (e.g., SMTP passwords, Slack Webhooks). Use `bash scripts/bootstrap-secrets.sh --strict` to verify.
+Symptom:
+- integrations fail authentication
+- a secret file still contains `CHANGE_ME_*`
 
-### Port Conflicts
+Likely cause:
+- bootstrap generated placeholders for values that must be supplied manually
 
-- **Error:** `Bind for 0.0.0.0:80 failed: port is already allocated`.
-- **Solution:** Change `HTTP_HOST_PORT` or `HTTPS_HOST_PORT` in your `.env` file to an available port.
+Exact next step:
 
-### Directory Permissions
+```bash
+bash scripts/bootstrap-secrets.sh --env-file .env --strict
+```
 
-- **Error:** Permission denied when mounting volumes.
-- **Solution:** Ensure your `DEFAULT_MOUNT_VOLUME_PATH` exists and is writable by the user running Docker. On WSL2, avoid mounting from `/mnt/c/`.
+Then edit the reported files under `secrets/` and replace the placeholders with real values.
 
-## Governance & Contributing
+### Certificate generation fails immediately
 
-This project implements **Spec-Driven Development** managed by AI Agents.
+Symptom:
+- `generate-local-certs.sh` exits with `mkcert is not installed`
 
-- **Spec Requirement:** All new features must start with a specification in the `specs/` directory.
-- **Rule Compliance:** Code and documentation must adhere to the standards defined in `.agent/rules/`.
-- **Merge Policy:** Pull Requests require passing all local QA gates (Coverage > 80%, Linting).
+Likely cause:
+- `mkcert` is missing from the host
 
-For detailed instructions, refer to:
+Exact next step:
+- install `mkcert`
+- rerun:
 
-- [🤝 Contributing Guidelines](./CONTRIBUTING.md)
-- [🤖 Multi-Agent Governance](./AGENTS.md)
-- [🏛️ System Architecture](./ARCHITECTURE.md)
-- [⚙️ Operations Baseline](./OPERATIONS.md)
+```bash
+bash scripts/generate-local-certs.sh
+```
+
+### Compose validation fails
+
+Symptom:
+- `bash scripts/validate-docker-compose.sh` returns a Compose interpolation or config error
+
+Likely cause:
+- `.env` is missing required values
+- a referenced include or secret path is invalid
+- a recent Compose change introduced invalid YAML or interpolation
+
+Exact next step:
+
+```bash
+docker compose config
+```
+
+Read the failing service or variable reference, fix the config, then rerun the validation script.
+
+### Preflight reports missing directories
+
+Symptom:
+- `bash scripts/preflight-compose.sh` fails on one or more mount paths
+
+Likely cause:
+- the directories from `.env` were not created yet
+
+Exact next step:
+
+```bash
+mkdir -p \
+  /home/hy/volumes/auth \
+  /home/hy/volumes/data \
+  /home/hy/volumes/message_broker \
+  /home/hy/volumes/obs
+```
+
+If you changed `DEFAULT_MOUNT_VOLUME_PATH`, create the equivalent subdirectories under your chosen root and rerun preflight.
+
+### Host ports are already in use
+
+Symptom:
+- `docker compose up -d` fails with a bind error such as `port is already allocated`
+
+Likely cause:
+- another service is using one of the host ports defined in `.env`
+
+Exact next step:
+- update the conflicting `*_HOST_PORT` value in `.env`
+- rerun validation
+- start the stack again
+
+### Optional external networks are missing
+
+Symptom:
+- preflight warns that `project_net` or `kind` does not exist
+
+Likely cause:
+- the integration network has not been created yet
+
+Exact next step:
+- ignore the warning if you do not use that integration
+- otherwise create the needed network before booting dependent services:
+
+```bash
+docker network create project_net
+docker network create kind
+```
+
+## Contributing
+
+This repository expects spec-driven changes and explicit validation.
+
+Before opening a PR:
+
+1. start from the relevant specification or create one in [`docs/specs/`](docs/specs/)
+2. use the templates in [`templates/`](templates/) for structured docs changes
+3. follow Conventional Commits and branch naming rules
+4. run local validation and QA checks
+5. link the relevant spec or plan in your PR description
+
+Read the full contributor policy in:
+
+- [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- [`COLLABORATING.md`](COLLABORATING.md)
+
+## Related Documentation
+
+- [`AGENTS.md`](AGENTS.md) for the repository-wide agent contract
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) for architectural invariants and runtime topology
+- [`OPERATIONS.md`](OPERATIONS.md) for environment tiers and operational principles
+- [`docs/README.md`](docs/README.md) for the documentation index
+- [`docs/context/README.md`](docs/context/README.md) for service and tier deep dives
+- [`docs/runbooks/README.md`](docs/runbooks/README.md) for executable operational procedures
+- [`docs/specs/README.md`](docs/specs/README.md) for tactical implementation specifications
+- [`infra/`](infra/) for service-specific READMEs and Compose definitions
 
 ## License
 
-This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
+This repository is documented and distributed under the Apache License 2.0 conventions used by the project.
