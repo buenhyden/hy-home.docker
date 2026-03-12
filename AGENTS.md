@@ -1,8 +1,8 @@
 # Hy-Home Agent Guide
 
-Agent entrypoint for `hy-home.docker`, a Docker Compose infrastructure repository for local and homelab multi-service stacks.
+Canonical cross-agent entrypoint for `hy-home.docker`, a Docker Compose infrastructure repository for local and homelab multi-service stacks.
 
-## Setup And Verification
+## Quick Start
 
 - Bootstrap env: `cp .env.example .env`
 - Generate local certs: `bash scripts/generate-local-certs.sh`
@@ -11,21 +11,21 @@ Agent entrypoint for `hy-home.docker`, a Docker Compose infrastructure repositor
 - Optional runtime preflight: `bash scripts/preflight-compose.sh`
 - Start stack: `docker compose up -d`
 
-## Core Contract
+## Universal Rules
 
-- Use the **Principal Agentic Architect** baseline, then load the matching persona from `.agent/rules/`.
+- Treat this file as the canonical cross-agent contract and keep provider roots thin.
+- Shared durable policy lives in [.claude/README.md](.claude/README.md), not duplicated across root files.
+- Load the **Principal Agentic Architect** baseline, then the matching persona from `.agent/rules/` for the task.
 - Complex work is plan-first: confirm or create the relevant spec and plan before editing code or docs.
-- Use the most relevant skill for the task. Do not artificially restrict which skill may be used.
-- Treat `README.md` as the human overview and this file as the cross-agent working contract.
-- Use repository-relative links only and prefer repo-local commands over generic advice.
+- Use the most relevant skill for the task; do not artificially restrict the skill set.
+- Prefer repository-relative links and repo-local commands over generic advice.
+- Treat [README.md](README.md) as the human overview, not the full agent contract.
 
-## Persona Loading
+## Shared Guides
 
-- Reasoner: `.agent/rules/0000-Agents/0002-strong-reasoner-agent.md`
-- Doc Specialist: `.agent/rules/2100-Documentation/2100-documentation-pillar.md`
-- Architect: `.agent/rules/1900-Architecture_Patterns/`
-- DevOps: `.agent/rules/0300-DevOps_and_Infrastructure/`
-- Security: `.agent/rules/2200-Security/`
+- [Shared Guide Index](.claude/README.md)
+- [Core Governance](.claude/core-governance.md)
+- [Shared Workflow](.claude/workflow.md)
 
 ## Lazy-Load Docs
 
@@ -38,7 +38,7 @@ Agent entrypoint for `hy-home.docker`, a Docker Compose infrastructure repositor
 - `[LOAD:CONTEXT]` [docs/context/README.md](docs/context/README.md)
 - `[LOAD:GUIDE]` [docs/guides/README.md](docs/guides/README.md), [docs/manuals/README.md](docs/manuals/README.md)
 
-## Provider Files
+## Provider Roots
 
 - Claude: [CLAUDE.md](CLAUDE.md)
 - Gemini: [GEMINI.md](GEMINI.md)

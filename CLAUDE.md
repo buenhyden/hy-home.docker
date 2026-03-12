@@ -1,13 +1,12 @@
 # Claude Project Memory
 
-Claude-specific deltas only. Shared project policy lives in imported `.claude/*.md` files and in [AGENTS.md](AGENTS.md).
+Claude-specific root only. Shared repository policy is imported from `.claude/*.md`; do not duplicate it here.
 
 @.claude/core-governance.md
 @.claude/workflow.md
 
-## Claude-Specific Notes
+## Claude-Specific Deltas
 
-- Use imports to keep this file thin; do not restate shared policy here.
-- Prefer repo-local commands, paths, and docs over generic examples.
-- Keep memory concise and current; use `/memory` or `#` only when the new instruction is durable.
-- If a task needs additional subtree-specific context, prefer adding nested docs or imported files instead of bloating this root file.
+- Keep this file as a thin shim; shared policy belongs in the imported guides and [AGENTS.md](AGENTS.md).
+- Use `/memory` or `#` only for durable repository learnings, not temporary task notes.
+- If a subtree needs durable Claude-only context, prefer a nested `CLAUDE.md` or another imported guide over growing this root file.
