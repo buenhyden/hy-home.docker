@@ -169,6 +169,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rename generic `POSTGRES_USER` and `POSTGRES_DB` environment variables to `_DEFAULT` variants in Docker Compose files and documentation.
 - Centralize specification and plan documents under `docs/` and remove the `templates/README.md`.
 - Refactor documentation
+- Flatten shared agent instructions
 
 ### Docs
 
@@ -354,6 +355,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **deps-dev:** Bump the npm_and_yarn group across 2 directories with 1 update
+- **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
