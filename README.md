@@ -3,119 +3,240 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
-`hy-home.docker`는 로컬/홈랩 환경에서 멀티 서비스 인프라를 일관되게 실행하기 위한 Docker Compose 기반 저장소입니다.
-루트 [`docker-compose.yml`](docker-compose.yml)이 [`infra/**/docker-compose*.yml`](infra/)을 `include`하여 스택을 조립합니다.
+> A modular, production-ready Docker Compose infrastructure for professional-grade home labs.
 
-## 문서 시작점
+`hy-home.docker` is a comprehensive infrastructure-as-code repository designed to deploy and manage a multi-tier service ecosystem consistently. It leverages Docker Compose's `include` feature and profiles to assemble a tailored stack—ranging from core identity management and security to advanced AI inference and observability.
 
-- 아키텍처 원칙: [`ARCHITECTURE.md`](ARCHITECTURE.md)
-- 운영 정책/런북 인덱스: [`OPERATIONS.md`](OPERATIONS.md)
-- 기술 블루프린트 허브: [`docs/context/README.md`](docs/context/README.md)
-- 실행 런북 허브: [`runbooks/README.md`](runbooks/README.md)
-- 인프라 디렉토리 가이드: [`infra/README.md`](infra/README.md)
+## Overview
 
-## 준비 사항
+This project solves the complexity of maintaining a consistent, secure, and observable infrastructure in local or home-lab environments.
 
-- Docker Engine 또는 Docker Desktop
-- Docker Compose v2
-- `rg`(ripgrep), `bash` (스크립트 실행용)
-- Windows + WSL2 사용 시: 저장소를 `/mnt/c`가 아닌 WSL Linux 파일시스템(예: `/home/<user>`)에 두는 것을 권장
+- **Modular Orchestration:** Services are grouped by tiers (Gateway, Auth, Data, etc.) and can be selectively enabled via profiles.
+- **Production Alignment:** Implements production-grade patterns like Docker Secrets, non-root users, and centralized observability (LGTM stack).
+- **Extensible Architecture:** Designed as a foundational blueprint for developers, data engineers, and AI researchers to build upon.
 
-## 빠른 시작
+## Tech Stack
+
+| Category | Technology |
+| :--- | :--- |
+| **Orchestration** | Docker Engine 24+, Docker Compose v2 |
+| **Ingress/Edge** | Traefik, OAuth2-Proxy |
+| **Identity/Auth** | Keycloak |
+| **Storage/DB** | PostgreSQL (HA), Valkey (Cluster), MinIO, Neo4j, CouchDB |
+| **Observability** | LGTM Stack (Grafana, Loki, Tempo, Prometheus), Alloy, Pyroscope |
+| **Messaging** | Kafka (KRaft mode), ksqlDB, Schema Registry |
+| **AI/ML** | Ollama, Open-WebUI, Qdrant |
+| **Workflow/CI** | Airflow, n8n, SonarQube |
+
+## Prerequisites
+
+Ensure your host environment meets these requirements before starting:
+
+- **Docker Engine:** v24.0.0 or higher
+- **Docker Compose:** v2.20.0 or higher
+- **System Utilities:** `bash`, `rg` (ripgrep)
+- **Memory:** Minimum 16GB RAM recommended for the "Core + Data + Obs" stack.
+- **Platform Notes:**
+  - **Linux:** Native Docker is recommended.
+  - **WSL2 (Windows):** Highly recommended to keep the repository within the WSL filesystem (e.g., `/home/<user>/`) rather than `/mnt/c/` for performance and file permission consistency.
+
+## Quick Start
+
+Follow these steps to initialize your local environment and spin up the core infrastructure.
+
+### 1. Repository Setup
+
+Clone the repository and enter the directory:
 
 ```bash
-# 1) 환경 파일 생성
-cp .env.example .env
+git clone https://github.com/organization/hy-home.docker.git
+cd hy-home.docker
+```
 
-# 2) 로컬 TLS 인증서 생성 (최초 1회)
+### 2. Environment Configuration
+
+Create your local environment file from the template:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and adjust variables like `DEFAULT_URL` (e.g., `127.0.0.1.nip.io`) and `DEFAULT_MOUNT_VOLUME_PATH` to suit your system.
+
+### 3. Initialize Security Assets
+
+Generate local TLS certificates and bootstrap the mandatory secrets store:
+
+```bash
+# Generate mkcert-based local TLS certificates
 bash scripts/generate-local-certs.sh
 
-# 3) 시크릿 파일 생성 (최초 1회)
-# - root docker-compose.yml의 secrets(file:)를 기준으로 `secrets/**/*.txt`를 생성
-# - 외부 연동이 필요한 값(Slack Webhook, SMTP 등)은 CHANGE_ME_* placeholder로 생성됨
+# Bootstrap file-based secrets (referenced by Docker Compose)
 bash scripts/bootstrap-secrets.sh --env-file .env.example
+```
 
-# (옵션) placeholder 강제 검증 (CHANGE_ME_*가 남아있으면 실패)
-# bash scripts/bootstrap-secrets.sh --strict
+> [!NOTE]
+> `bootstrap-secrets.sh` creates placeholders (`CHANGE_ME_*`) for external integrations like Slack Webhooks and SMTP. You must fill these in `secrets/` before those services will function correctly.
 
-# 4) Compose 정적 검증 (Docker 데몬 없이도 가능)
-# - `.env.example` 기반으로 `docker compose config`가 0 exit인지 확인
+### 4. Validation & Pre-flight
+
+Validate that your Compose configuration is syntactically correct and all prerequisites are met:
+
+```bash
+# Static validation of the composed stack
 bash scripts/validate-docker-compose.sh
 
-# (옵션) 런타임 사전 점검 (Docker 데몬 필요)
-# bash scripts/preflight-compose.sh
+# Runtime pre-flight check (requires Docker daemon)
+bash scripts/preflight-compose.sh
+```
 
-# 5) 스택 실행
+### 5. Launch the Stack
+
+You can start the default stack (Core + Data + Obs) or use specific profiles:
+
+**Default Stack:**
+
+```bash
 docker compose up -d
-
-# 또는 프로파일 기반 실행
-docker compose --profile core --profile data up -d
 ```
 
-접속 예시 (`DEFAULT_URL=127.0.0.1.nip.io` 기준):
-
-- Traefik Dashboard: `https://dashboard.127.0.0.1.nip.io`
-- Grafana: `https://grafana.127.0.0.1.nip.io`
-- Prometheus: `https://prometheus.127.0.0.1.nip.io`
-
-### 인프라 서비스 프로파일 (Profiles)
-
-| Profile | Description | Included Services |
-| :--- | :--- | :--- |
-| `core` | 핵심 관문 및 인증 | Traefik, Keycloak, OAuth2-Proxy |
-| `data` | 공통 데이터 저장소 | mng-db, postgresql-cluster, valkey-cluster, minio, opensearch, qdrant |
-| `obs` | 관측성 (LGTM) | Grafana, Loki, Tempo, Prometheus, Alloy, Alertmanager, etc. |
-| `messaging` | 메시징 인프라 | Kafka Stack |
-| `workflow` | 자동화 엔진 | Airflow (n8n은 기본 비활성/주석 처리) |
-| `ai` | 로컬 LLM 환경 | Ollama, Open-webui, Qdrant |
-| `tooling` | QA/DevOps 도구 | SonarQube |
+**Profile-based Launch:**
 
 ```bash
-docker compose --profile obs up -d
+# Only start core gateway and observability tools
+docker compose --profile core --profile obs up -d
 ```
 
-## 운영 명령 요약
+### Accessing Services
 
-```bash
-# Compose 설정 검증
-bash scripts/validate-docker-compose.sh
+Once the containers are running, you can access the primary dashboards through your configured `DEFAULT_URL`:
 
-# 특정 서비스만 재기동
-docker compose up -d --no-deps <service>
+- **Traefik Dashboard:** `https://dashboard.127.0.0.1.nip.io`
+- **Grafana:** `https://grafana.127.0.0.1.nip.io`
+- **Keycloak:** `https://keycloak.127.0.0.1.nip.io`
 
-# 로그 확인
-docker compose logs -f <service>
+## System Architecture
 
-# 종료
-docker compose down
+This project follows a modular, profile-driven infrastructure pattern. The goal is to provide a single entry point for a complex, multi-tier ecosystem.
+
+### Project Structure
+
+```text
+hy-home.docker/
+├── .agent/             # AI Agent rules, workflows, and prompts
+├── .github/            # CI/CD workflows and repository templates
+├── infra/              # Service-specific Compose definitions (Tier 01-10)
+│   ├── 01-gateway/      # Ingress (Traefik, OAuth2-Proxy)
+│   ├── 02-auth/         # Identity (Keycloak)
+│   ├── 04-data/         # Databases (Postgres, Valkey, MinIO)
+│   └── ...              # Other tiers (Obs, Messaging, AI)
+├── docs/               # Architecture, PRDs, and technical blueprints
+├── operations/         # Incident history and postmortems
+├── runbooks/           # Executable manual procedures
+├── scripts/            # Environment validation and bootstrap tools
+├── secrets/            # Local secret store (Docker secrets compatible)
+├── specs/              # Implementation plans and feature specs
+├── ARCHITECTURE.md     # Global architectural invariants
+├── OPERATIONS.md       # Operational index and lifecycle
+└── docker-compose.yml  # Main entry point (includes and orchestrates)
 ```
 
-## 구성 정책 요약
+### Infrastructure Profiles
 
-- **Root-only**: 서비스 폴더의 `docker-compose.yml` 단독 실행은 지원하지 않으며, 루트 `docker-compose.yml`에서만 조립/실행합니다. (Standalone로 명시된 스택은 예외)
-- Host 포트는 `.env`/`.env.example`의 `*_HOST_PORT`로 관리
-- 컨테이너 기본 포트는 `*_PORT`로 관리하고, Compose에는 `${VAR:-default}` 형태로 기본값 명시
-- 비밀번호/토큰은 환경변수 대신 `secrets/**/*.txt` 파일 + Docker secrets로 주입
-- 컨테이너 보안 기본값: `no-new-privileges:true`, `cap_drop: [ALL]` (예외 시 파일 내 사유 명시)
+Services are grouped into logical stacks. You can enable them by setting `COMPOSE_PROFILES` in your `.env` or using the `--profile` flag.
 
-## 저장소 구조
-
-| Directory | Purpose | Docs |
+| Profile | Description | Primary Services |
 | :--- | :--- | :--- |
-| [`infra/`](infra/) | 서비스별 Compose 정의 | [`infra/README.md`](infra/README.md) |
-| [`docs/`](docs/) | 아키텍처/가이드/블루프린트 | [`docs/README.md`](docs/README.md) |
-| [`runbooks/`](runbooks/) | 장애 대응/복구 절차 | [`runbooks/README.md`](runbooks/README.md) |
-| [`secrets/`](secrets/) | 런타임 시크릿 파일 | [`secrets/README.md`](secrets/README.md) |
-| [`scripts/`](scripts/) | 검증/부트스트랩 스크립트 | [`scripts/README.md`](scripts/README.md) |
-| [`specs/`](specs/) | 구현 스펙/계획 문서 | [`specs/`](specs/) |
-| [`.github/`](.github/) | CI/CD 워크플로 | [`.github/workflows/`](.github/workflows/) |
+| `core` | **Edge & Identity:** Mandatory gateway and auth services. | Traefik, Keycloak, OAuth2-Proxy |
+| `data` | **Persistence Layer:** Shared databases and object storage. | Postgres, Valkey, MinIO |
+| `obs` | **Observability:** Centralized logging, metrics, and tracing. | Grafana, Prometheus, Loki, Tempo |
+| `messaging`| **Event Streaming:** Kafka-based messaging infrastructure. | Kafka, Schema Registry, ksqlDB |
+| `workflow` | **Orchestration:** ETL and automation engines. | Airflow, n8n |
+| `ai` | **Inference:** Local LLM and Vector search environment. | Ollama, Open-WebUI, Qdrant |
+| `tooling` | **Engineering Tools:** Quality and DevOps utilities. | SonarQube, Locust |
 
-## 기여
+### Core Principles
 
-- 가이드: [`CONTRIBUTING.md`](CONTRIBUTING.md)
-- 행동강령: [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
-- 아키텍처 제약: [`ARCHITECTURE.md`](ARCHITECTURE.md)
+- **Include-based Assembly:** The root `docker-compose.yml` does not define services directly; it `include`s definitions from the `infra/` directory to maintain modularity.
+- **Secrets First:** Never pass passwords in `.env`. All sensitive data is injected via Docker Secrets from `secrets/**/*.txt`.
+- **Security Baseline:** Services run with `no-new-privileges:true` and dropped capabilities (`cap_drop: [ALL]`) by default.
+- **Network Isolation:** All internal traffic flows through `infra_net`. Boundary traffic is handled exclusively by Tier 01 Gateway.
+
+## Configuration & Reference
+
+### Environment Variables
+
+The project uses a comprehensive set of environment variables managed via `.env`. Below are the primary configuration points:
+
+| Variable | Default | Description |
+| :--- | :--- | :--- |
+| `DEFAULT_URL` | `127.0.0.1.nip.io` | Primary domain for all service ingress. |
+| `COMPOSE_PROFILES` | `core,data,obs` | Default profiles to boot on `up`. |
+| `HTTP_HOST_PORT` | `80` | Host port for Traefik HTTP entry point. |
+| `HTTPS_HOST_PORT` | `443` | Host port for Traefik HTTPS entry point. |
+| `DEFAULT_MOUNT_VOLUME_PATH` | `/home/hy/volumes` | Root directory for persistent data mounts. |
+| `INFRA_SUBNET` | `172.19.0.0/16` | Subnet range for the internal `infra_net`. |
+
+> [!TIP]
+> For a full list of service-specific ports (e.g., `POSTGRES_HOST_PORT`, `KAFKA_UI_HOST_PORT`), refer to the [`.env.example`](.env.example) file.
+
+### Available Scripts (`scripts/`)
+
+Maintenance and bootstrap tasks should be executed through the following scripts:
+
+| Script | Purpose |
+| :--- | :--- |
+| `bootstrap-secrets.sh` | Generates initial `secrets/**/*.txt` files from placeholders. |
+| `generate-local-certs.sh`| Creates mkcert-based TLS certificates for local HTTPS. |
+| `validate-docker-compose.sh`| Performs static analysis on the Compose stack. |
+| `preflight-compose.sh` | Checks runtime prerequisites (mounts, networks, env). |
+
+### Operational Tiers
+
+This infrastructure is designed to scale across different environments (defined in `OPERATIONS.md`):
+
+- **L1 (Local Dev):** Fast iterations and unit testing on a local machine.
+- **L2 (Home-Lab):** 24/7 internal services running on dedicated hardware (e.g., NUC, Server).
+- **L3 (Pro-Lab):** High-availability clusters for benchmarking and recovery drills.
+
+### Observability & Backup
+
+- **Centralized Logs:** All logs are routed via the `loki` driver and viewable in Grafana.
+- **Backups:** Nightly DB snapshots are stored at `/mnt/backup/db/` (for PostgreSQL and OpenSearch).
+- **Secrets Management:** 100% of sensitive data is handled via Docker Secrets at `/run/secrets/`.
+
+## Troubleshooting
+
+### Secret Bootstrapping Issues
+
+- **Error:** `CHANGE_ME_*` placeholders remain in `secrets/*.txt`.
+- **Solution:** You must manually edit the files in the `secrets/` directory to replace placeholders with your actual credentials (e.g., SMTP passwords, Slack Webhooks). Use `bash scripts/bootstrap-secrets.sh --strict` to verify.
+
+### Port Conflicts
+
+- **Error:** `Bind for 0.0.0.0:80 failed: port is already allocated`.
+- **Solution:** Change `HTTP_HOST_PORT` or `HTTPS_HOST_PORT` in your `.env` file to an available port.
+
+### Directory Permissions
+
+- **Error:** Permission denied when mounting volumes.
+- **Solution:** Ensure your `DEFAULT_MOUNT_VOLUME_PATH` exists and is writable by the user running Docker. On WSL2, avoid mounting from `/mnt/c/`.
+
+## Governance & Contributing
+
+This project implements **Spec-Driven Development** managed by AI Agents.
+
+- **Spec Requirement:** All new features must start with a specification in the `specs/` directory.
+- **Rule Compliance:** Code and documentation must adhere to the standards defined in `.agent/rules/`.
+- **Merge Policy:** Pull Requests require passing all local QA gates (Coverage > 80%, Linting).
+
+For detailed instructions, refer to:
+
+- [🤝 Contributing Guidelines](./CONTRIBUTING.md)
+- [🤖 Multi-Agent Governance](./AGENTS.md)
+- [🏛️ System Architecture](./ARCHITECTURE.md)
+- [⚙️ Operations Baseline](./OPERATIONS.md)
 
 ## License
 
-Apache-2.0. See `LICENSE`.
+This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
