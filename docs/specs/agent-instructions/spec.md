@@ -18,7 +18,7 @@ tags: ['spec', 'documentation', 'agents']
 > **Related Architecture**: N/A (documentation maintenance task)
 > **Decision Record**: N/A
 
-**Overview (KR):** 이 명세는 루트 에이전트 지침 파일을 점진적 공개 구조로 재편하되, 공통 정책은 `.claude/agent-instructions/`로 이동하고 공급자별 차이만 루트에 남기기 위한 기준을 정의한다. 주요 위험은 잘못된 공유 지침 위치를 유지해 에이전트가 기대한 탐색 경로를 따르지 못하게 만드는 것이다.
+**Overview (KR):** 이 명세는 루트 에이전트 지침 파일을 점진적 공개 구조로 재편하되, 공통 정책은 `.claude/` 바로 아래로 이동하고 공급자별 차이만 루트에 남기기 위한 기준을 정의한다. 주요 위험은 공유 지침 경로를 깊게 유지해 탐색 비용과 참조 복잡도를 높이는 것이다.
 
 ## Technical or Platform Baseline
 
@@ -28,17 +28,17 @@ The repository currently exposes three root instruction files: `AGENTS.md`, `CLA
 
 - **Governance Contract**: `AGENTS.md` remains the canonical root entrypoint for universal agent rules, but it must only contain rules that apply to every task.
 - **Provider Contract**: `CLAUDE.md` and `GEMINI.md` retain only provider-specific execution or reasoning behavior.
-- **Shared Documentation Contract**: Common guidance moves into `.claude/agent-instructions/` and is linked from the root files using relative paths only.
+- **Shared Documentation Contract**: Common guidance moves into `.claude/` and is linked from the root files using relative paths only.
 - **Truth Contract**: No instruction file may reference unavailable tools, imaginary artifacts, or unsupported repository paths.
 - **Maintenance Contract**: The refactor must create a repository-local spec and plan and include documentation-only verification steps.
 
 ## Verification
 
 ```bash
-rg -n "\\.claude/agent-instructions" AGENTS.md CLAUDE.md GEMINI.md
+rg -n "\\.claude/(core-governance|workflow)" AGENTS.md CLAUDE.md GEMINI.md
 test -f docs/plans/2026-03-12-agent-instruction-refactor.md
 test -f docs/specs/agent-instructions/spec.md
-test -f .claude/agent-instructions/README.md
+test -f .claude/README.md
 ```
 
 ## 1. Technical Overview & Architecture Style
@@ -49,7 +49,7 @@ This is a documentation-only refactor. The target architecture is a progressive-
 - Shared operational details live in linked guides.
 - Provider-specific files remain focused on the differences that matter during execution.
 
-- **Component Boundary**: Root agent entrypoints plus a shared guide bundle under `.claude/agent-instructions/`.
+- **Component Boundary**: Root agent entrypoints plus a shared guide bundle directly under `.claude/`.
 - **Key Dependencies**: `docs/README.md`, `templates/spec-template.md`, `templates/plan-template.md`, `.agent/rules/0000-Agents/`, `.agent/rules/2100-Documentation/`
 - **Tech Stack**: Markdown, relative links, shell validation with `rg` and `test`
 
@@ -58,7 +58,7 @@ This is a documentation-only refactor. The target architecture is a progressive-
 | ID | Requirement Description | Priority | Parent PRD REQ |
 | -- | ----------------------- | -------- | -------------- |
 | **[REQ-SPC-AGT-001]** | The three root files must become concise entrypoints rather than long-form policy stores. | High | N/A |
-| **[REQ-SPC-AGT-002]** | Shared policy must move into repository-local linked guides under `.claude/agent-instructions/`. | High | N/A |
+| **[REQ-SPC-AGT-002]** | Shared policy must move into repository-local linked guides directly under `.claude/`. | High | N/A |
 | **[REQ-SPC-AGT-003]** | All new and updated links must be relative and resolve to existing files. | Critical | N/A |
 | **[REQ-SPC-AGT-004]** | Stale references to unavailable tools and artifacts must be removed. | Critical | N/A |
 
@@ -66,7 +66,7 @@ This is a documentation-only refactor. The target architecture is a progressive-
 
 - **Database Engine**: None
 - **Schema Strategy**: Markdown-only documentation split between root entrypoints and guide documents
-- **Migration Plan**: Rewrite the roots in place, move the shared guide bundle into `.claude/agent-instructions/`, and remove the obsolete shared-guide files without changing repository code
+- **Migration Plan**: Rewrite the roots in place, flatten the shared guide bundle into `.claude/`, and remove the obsolete nested guide directory without changing repository code
 
 ## 4. Interfaces & Data Structures
 
@@ -87,9 +87,9 @@ interface InstructionGuideLink {
 - `AGENTS.md`: Minimal universal policy and rule-map entrypoint
 - `CLAUDE.md`: Claude-specific execution rules
 - `GEMINI.md`: Gemini-specific reasoning rules
-- `.claude/agent-instructions/README.md`: Shared guide index
-- `.claude/agent-instructions/core-governance.md`: Universal governance details moved out of the root
-- `.claude/agent-instructions/workflow.md`: Shared operating workflow and maintenance checks
+- `.claude/README.md`: Shared guide index
+- `.claude/core-governance.md`: Universal governance details moved out of the root
+- `.claude/workflow.md`: Shared operating workflow and maintenance checks
 - `docs/plans/2026-03-12-agent-instruction-refactor.md`: Execution plan for this refactor
 
 ## 6. Domain-Specific Contract Sections
@@ -103,7 +103,7 @@ interface InstructionGuideLink {
 
 ## 7. Edge Cases & Error Handling
 
-- **Missing shared guide path**: If `.claude/agent-instructions/` is missing, root files must not be updated to link to non-existent targets.
+- **Missing shared guide path**: If the required `.claude/` guide files are missing, root files must not be updated to link to non-existent targets.
 - **Dirty worktree overlap**: If unrelated user edits touch the same files, preserve their intent and layer the refactor around the current content rather than reverting.
 
 ## 8. Verification Plan (Testing & QA)

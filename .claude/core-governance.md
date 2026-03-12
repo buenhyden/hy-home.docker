@@ -29,13 +29,13 @@ Use the repository docs in layers instead of bulk-loading directories.
 
 | Marker | Entry point | Use when |
 | ------ | ----------- | -------- |
-| `[LOAD:INDEX]` | `../../README.md` and `../../docs/README.md` | Starting a session or entering a new domain |
-| `[LOAD:STRATEGIC]` | `../../docs/prd/`, `../../docs/ard/` | Product, architecture, or planning decisions |
-| `[LOAD:TACTICAL]` | `../../docs/specs/`, `../../docs/plans/` | Active implementation or refactor work |
-| `[LOAD:DECISION]` | `../../docs/adr/` | Rationale and decision recovery |
-| `[LOAD:OPERATIONAL]` | `../../docs/runbooks/`, `../../docs/operations/` | Debugging, incidents, or operations |
-| `[LOAD:PROCEDURAL]` | `../../docs/guides/`, `../../docs/manuals/` | Reference procedures and maintenance guides |
-| `[LOAD:CONTEXT]` | `../../docs/context/` | Deep domain or system research |
+| `[LOAD:INDEX]` | `../README.md` and `../docs/README.md` | Starting a session or entering a new domain |
+| `[LOAD:STRATEGIC]` | `../docs/prd/`, `../docs/ard/` | Product, architecture, or planning decisions |
+| `[LOAD:TACTICAL]` | `../docs/specs/`, `../docs/plans/` | Active implementation or refactor work |
+| `[LOAD:DECISION]` | `../docs/adr/` | Rationale and decision recovery |
+| `[LOAD:OPERATIONAL]` | `../docs/runbooks/`, `../docs/operations/` | Debugging, incidents, or operations |
+| `[LOAD:PROCEDURAL]` | `../docs/guides/`, `../docs/manuals/` | Reference procedures and maintenance guides |
+| `[LOAD:CONTEXT]` | `../docs/context/` | Deep domain or system research |
 
 ## Rule Interlocks
 

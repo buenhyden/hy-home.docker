@@ -13,5 +13,5 @@ Use this file for Gemini-specific behavior only. Load [AGENTS.md](AGENTS.md) and
 
 ## Shared References
 
-- [Shared governance](.claude/agent-instructions/core-governance.md)
-- [Shared workflow](.claude/agent-instructions/workflow.md)
+- [Shared governance](.claude/core-governance.md)
+- [Shared workflow](.claude/workflow.md)

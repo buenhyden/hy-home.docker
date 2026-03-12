@@ -39,7 +39,7 @@ Before finishing an instruction-file change, confirm:
 ## Recommended Validation Commands
 
 ```bash
-rg -n "\\.claude/agent-instructions" AGENTS.md CLAUDE.md GEMINI.md
+rg -n "\\.claude/(core-governance|workflow|README\\.md)" AGENTS.md CLAUDE.md GEMINI.md
 test -f docs/specs/agent-instructions/spec.md
 test -f docs/plans/2026-03-12-agent-instruction-refactor.md
 ```

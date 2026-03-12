@@ -14,8 +14,8 @@ This repository uses layered agent documentation. Start here, then load only the
 ## Load Order
 
 - `[LOAD:INDEX]` [Documentation index](docs/README.md)
-- `[LOAD:TACTICAL]` [Shared governance](.claude/agent-instructions/core-governance.md)
-- `[LOAD:TACTICAL]` [Shared workflow](.claude/agent-instructions/workflow.md)
+- `[LOAD:TACTICAL]` [Shared governance](.claude/core-governance.md)
+- `[LOAD:TACTICAL]` [Shared workflow](.claude/workflow.md)
 
 ## Provider Directives
 

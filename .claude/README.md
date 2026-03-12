@@ -2,9 +2,9 @@
 
 This directory holds the shared guidance that supports the root instruction files:
 
-- `../../AGENTS.md`
-- `../../CLAUDE.md`
-- `../../GEMINI.md`
+- `../AGENTS.md`
+- `../CLAUDE.md`
+- `../GEMINI.md`
 
 Use these guides when maintaining agent-facing documentation with a progressive-disclosure structure.
 
@@ -15,6 +15,6 @@ Use these guides when maintaining agent-facing documentation with a progressive-
 
 ## Usage
 
-- Read `../../AGENTS.md` first for the repository entrypoint.
+- Read `../AGENTS.md` first for the repository entrypoint.
 - Follow [Core Governance](core-governance.md) for universal policy.
 - Follow [Shared Workflow](workflow.md) for execution and maintenance rules.

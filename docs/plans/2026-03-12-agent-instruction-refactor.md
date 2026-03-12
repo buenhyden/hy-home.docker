@@ -4,9 +4,9 @@
 > **Status**: Completed
 > **Scope**: domain
 
-**Goal:** Refactor `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` into a progressive-disclosure instruction set with accurate provider-specific roots and shared linked guidance under `.claude/agent-instructions/`.
+**Goal:** Refactor `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` into a progressive-disclosure instruction set with accurate provider-specific roots and shared linked guidance directly under `.claude/`.
 
-**Architecture:** Keep root files as stable entrypoints, move shared universal policy into `.claude/agent-instructions/`, and keep the repository-local spec and plan under `docs/` so the refactor still satisfies the repo's spec-first governance. The resulting structure should remove stale tool references and keep all links relative.
+**Architecture:** Keep root files as stable entrypoints, move shared universal policy directly under `.claude/`, and keep the repository-local spec and plan under `docs/` so the refactor still satisfies the repo's spec-first governance. The resulting structure should remove stale tool references and keep all links relative.
 
 **Tech Stack:** Markdown, repository documentation templates, `rg`, `test`
 
@@ -21,15 +21,15 @@ This repository requires a spec and plan before refactors. The current instructi
 | Task | Description | Files Affected | Target REQ | Validation Criteria |
 | ---- | ----------- | -------------- | ---------- | ------------------- |
 | TASK-001 | Capture the refactor contract in a repository-local spec. | `docs/specs/agent-instructions/spec.md` | [REQ-SPC-AGT-002] | Spec exists and states structure, truth, and verification contracts. |
-| TASK-002 | Create a shared guide bundle for common governance and workflow rules. | `.claude/agent-instructions/README.md`, `.claude/agent-instructions/core-governance.md`, `.claude/agent-instructions/workflow.md` | [REQ-SPC-AGT-002] | Guide files exist and use relative links only. |
+| TASK-002 | Create a shared guide bundle for common governance and workflow rules. | `.claude/README.md`, `.claude/core-governance.md`, `.claude/workflow.md` | [REQ-SPC-AGT-002] | Guide files exist and use relative links only. |
 | TASK-003 | Rewrite `AGENTS.md` as the minimal universal entrypoint. | `AGENTS.md` | [REQ-SPC-AGT-001] | Root file stays concise and links to the shared guides. |
 | TASK-004 | Rewrite `CLAUDE.md` and `GEMINI.md` to keep only provider-specific directives. | `CLAUDE.md`, `GEMINI.md` | [REQ-SPC-AGT-001], [REQ-SPC-AGT-004] | Provider roots no longer contain deprecated runtime assumptions or duplicated universal policy. |
-| TASK-005 | Validate links and remove stale references from the whole instruction set. | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.claude/agent-instructions/*.md` | [REQ-SPC-AGT-003], [REQ-SPC-AGT-004] | `rg` checks return only the intended matches and `test -f` checks succeed. |
+| TASK-005 | Validate links and remove stale references from the whole instruction set. | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.claude/*.md` | [REQ-SPC-AGT-003], [REQ-SPC-AGT-004] | `rg` checks return only the intended matches and `test -f` checks succeed. |
 
 ## Verification
 
 - `[VAL-001]` Manually inspect the roots and shared guides and confirm no deprecated runtime-specific instructions remain.
-- `[VAL-002]` Run `rg -n "\\.claude/agent-instructions" AGENTS.md CLAUDE.md GEMINI.md` and confirm each root links to the shared guide bundle.
+- `[VAL-002]` Run `rg -n "\\.claude/(core-governance|workflow)" AGENTS.md CLAUDE.md GEMINI.md` and confirm each root links to the shared guide bundle.
 - `[VAL-003]` Run `test -f docs/plans/2026-03-12-agent-instruction-refactor.md`.
 - `[VAL-004]` Run `test -f docs/specs/agent-instructions/spec.md`.
 
@@ -49,7 +49,7 @@ This repository requires a spec and plan before refactors. The current instructi
   - Preserve provider-specific guidance without duplicating repository governance.
 - **In-Scope (Scope of this Plan):**
   - Root instruction files
-  - Shared guide documents under `.claude/agent-instructions/`
+  - Shared guide documents under `.claude/`
   - This spec and plan pair
 
 ## 3. Non-Goals & Out-of-Scope
@@ -75,7 +75,7 @@ This repository requires a spec and plan before refactors. The current instructi
 
 | Risk | Impact | Mitigation |
 | ---- | ------ | ---------- |
-| Shared guide placement feels unnatural to future maintainers | Medium | Use `.claude/agent-instructions/README.md` as an obvious entrypoint and link from all roots. |
+| Shared guide placement feels unnatural to future maintainers | Medium | Use `.claude/README.md` as an obvious entrypoint and link from all roots. |
 | Root files become too sparse to be useful | Medium | Keep high-signal quick-reference bullets in each root. |
 | Deprecated runtime-specific instructions remain in migrated content | High | Use targeted inspection before completion and keep roots/provider files tightly scoped. |
 
