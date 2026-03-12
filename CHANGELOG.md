@@ -246,6 +246,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refine architectural decision records and standardize `docker compose` command usage across documentation.
 - Delete `llms.txt` and create `CLAUDE.md`.
 - Update various agent rules and workflows across multiple domains.
+- Rewrite README
 
 ### Fixed
 
@@ -355,6 +356,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **deps-dev:** Bump the npm_and_yarn group across 2 directories with 1 update
+- **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
