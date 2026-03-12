@@ -16,4 +16,4 @@ This directory defines the "what" and "why" of product features, serving as the 
 
 ---
 > [!NOTE]
-> All PRDs must follow the `templates/product/prd-template.md`.
+> All PRDs must follow [`../../templates/prd-template.md`](../../templates/prd-template.md).

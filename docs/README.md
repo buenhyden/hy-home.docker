@@ -1,33 +1,42 @@
 # Project Documentation Index (Lazy Loading Gateway)
->
-> Master entry point for spec-driven documentation discovery.
 
-To prevent context window saturation, AI agents MUST follow this gateway protocol for discovering and reading documentation.
+Master entry point for spec-driven documentation discovery.
 
-## 1. Documentation Discovery Protocols
+Read this file first, then load only the relevant index document for the task.
 
-- **[GATE-DISC-01] Index-First Search**: Always read this README before fetching specific sub-directories.
-- **[GATE-DISC-02] Conditional Read**: Only fetch folders relevant to your active layer (see below).
-- **[GATE-DISC-03] Link Integrity**: Use the correct relative paths defined below and GFM alerts for emphasis.
+## Discovery Protocol
 
-## 2. Directory Map (Layered Access)
+- `[GATE-DISC-01]` Start here before opening a doc family.
+- `[GATE-DISC-02]` Prefer README/index files over blind directory scans.
+- `[GATE-DISC-03]` Use relative links only.
 
-| Layer | Entry Point | Usage Priority | Lazy Load Marker |
-| --- | --- | --- | --- |
-| **Index** | `README.md` | Session Start | `[LOAD:INDEX]` |
-| **Strategic** | `prd/`, `ard/` | High (Planning) | `[LOAD:STRATEGIC]` |
-| **Tactical** | `specs/`, `plans/` | Critical (Execution) | `[LOAD:TACTICAL]` |
-| **Decision** | `adr/` | Medium (Rationale) | `[LOAD:DECISION]` |
-| **Operational** | `runbooks/`, `operations/` | High (Maintenance) | `[LOAD:OPERATIONAL]` |
-| **Procedural** | `guides/`, `manuals/` | Medium (Reference) | `[LOAD:PROCEDURAL]` |
+## Lazy-Loading Map
 
-## 3. Latest Templates & Guidelines
+| Marker | Entry Point | Use when |
+| --- | --- | --- |
+| `[LOAD:INDEX]` | [README.md](README.md) | Session start or repo-wide orientation |
+| `[LOAD:DECISION]` | [adr/README.md](adr/README.md) | Architecture decisions and rationale |
+| `[LOAD:STRATEGIC]` | [prd/README.md](prd/README.md), [ard/README.md](ard/README.md) | Product scope, architecture boundaries |
+| `[LOAD:TACTICAL]` | [specs/README.md](specs/README.md), [plans/README.md](plans/README.md) | Active implementation and refactor work |
+| `[LOAD:RUNBOOK]` | [runbooks/README.md](runbooks/README.md) | Executable operational procedures |
+| `[LOAD:HISTORY]` | [operations/README.md](operations/README.md), [operations/incidents/README.md](operations/incidents/README.md) | Incidents, RCA, historical records |
+| `[LOAD:CONTEXT]` | [context/README.md](context/README.md) | Deep service and platform blueprints |
+| `[LOAD:GUIDE]` | [guides/README.md](guides/README.md), [manuals/README.md](manuals/README.md) | Lifecycle guides and team manuals |
 
-For all new document creation, MUST refer to the `templates/` directory at the project root.
+## Templates
 
-- [PRD Template](file:///home/hy/projects/hy-home.docker/templates/prd-template.md)
-- [Spec Template](file:///home/hy/projects/hy-home.docker/templates/spec-template.md)
-- [ADR Template](file:///home/hy/projects/hy-home.docker/templates/adr-template.md)
+Use the repository templates at the project root when creating new artifacts:
 
----
-*For behavioral directives, see [AGENTS.md](file:///home/hy/projects/hy-home.docker/AGENTS.md) at the repository root.*
+- [PRD Template](../templates/prd-template.md)
+- [ARD Template](../templates/ard-template.md)
+- [ADR Template](../templates/adr-template.md)
+- [Spec Template](../templates/spec-template.md)
+- [Plan Template](../templates/plan-template.md)
+- [Runbook Template](../templates/runbook-template.md)
+- [Incident Template](../templates/incident-template.md)
+
+## Related Policy
+
+- [AGENTS.md](../AGENTS.md)
+- [CLAUDE.md](../CLAUDE.md)
+- [GEMINI.md](../GEMINI.md)

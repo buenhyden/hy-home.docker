@@ -1,20 +1,18 @@
-# Agent Instruction Guides
+# Shared Agent Guidance
 
-This directory holds the shared guidance that supports the root instruction files:
+This directory stores the shared operational detail referenced by the root agent files.
 
-- `../AGENTS.md`
-- `../CLAUDE.md`
-- `../GEMINI.md`
+## Files
 
-Use these guides when maintaining agent-facing documentation with a progressive-disclosure structure.
+- [core-governance.md](core-governance.md): Shared policy, persona loading, lazy-loading rules, and template contracts
+- [workflow.md](workflow.md): Shared execution loop, command references, and document usage rules
 
-## Guides
+## Consumer Files
 
-- [Core Governance](core-governance.md)
-- [Shared Workflow](workflow.md)
+- [../AGENTS.md](../AGENTS.md): Canonical cross-agent entrypoint
+- [../CLAUDE.md](../CLAUDE.md): Claude-specific shim via `@` imports
+- [../GEMINI.md](../GEMINI.md): Gemini-specific shim via links
 
-## Usage
+## Maintenance Rule
 
-- Read `../AGENTS.md` first for the repository entrypoint.
-- Follow [Core Governance](core-governance.md) for universal policy.
-- Follow [Shared Workflow](workflow.md) for execution and maintenance rules.
+Keep the root files concise. Add durable shared detail here instead of duplicating it across `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md`.

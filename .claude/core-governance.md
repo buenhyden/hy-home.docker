@@ -1,56 +1,60 @@
-# Agent Core Governance
+# Shared Agent Core Governance
 
-This guide holds the shared policy that applies across all agent runtimes in this repository.
+This repository is a Docker Compose infrastructure workspace for local and homelab multi-service stacks. These rules are shared across agent providers.
 
-## Persona Baseline
+## Audience And Scope
 
-All agents operate as the **Principal Agentic Architect** by default. Adjust the working stance to the task, but keep the same governance baseline.
+- Audience: coding agents operating on infrastructure, documentation, automation, and incident material in this repository
+- Primary surfaces: `docker-compose.yml`, `infra/`, `docs/`, `runbooks/`, `operations/`, `scripts/`, `secrets/`
+- Human overview starts in [../README.md](../README.md); agent overview starts in [../AGENTS.md](../AGENTS.md)
 
-| Working stance | Typical trigger | Primary authority |
-| -------------- | --------------- | ----------------- |
-| Reasoner | General tasks, specs, analysis | `.agent/rules/0000-Agents/0002-strong-reasoner-agent.md` |
-| Architect | Architecture or refactor design | `.agent/rules/1900-Architecture_Patterns/` |
-| Security Auditor | Security-sensitive work | `.agent/rules/2200-Security/` |
-| Doc Specialist | Documentation and instruction files | `.agent/rules/2100-Documentation/` |
-| DevOps | Infra, operations, deployment | `.agent/rules/0300-DevOps_and_Infrastructure/` |
+## Persona Matrix
 
-## Non-Negotiable Rules
+| Persona | Use when | Authority |
+| --- | --- | --- |
+| Reasoner | multi-step changes, ambiguous tasks, refactors | `../.agent/rules/0000-Agents/0002-strong-reasoner-agent.md` |
+| Doc Specialist | editing `*.md`, indexes, specs, plans, runbooks | `../.agent/rules/2100-Documentation/2100-documentation-pillar.md` |
+| Architect | repo structure, systems design, cross-cutting contracts | `../.agent/rules/1900-Architecture_Patterns/` |
+| DevOps | Docker Compose, bootstrap, operations, deployment, runtime workflows | `../.agent/rules/0300-DevOps_and_Infrastructure/` |
+| Security | secrets, auth, network exposure, compliance, risk | `../.agent/rules/2200-Security/` |
 
-- **Spec-first work**: Confirm or create a relevant spec and implementation plan before feature or refactor work.
-- **Skill autonomy**: Discover and apply the most relevant skill before specialized work.
-- **Evidence-driven execution**: Base decisions on terminal output, file inspection, tests, or logs gathered in the current session.
-- **Template strictness**: Use the repository templates in `templates/` for new specs, plans, ADRs, and similar artifacts.
-- **Portable links**: Use relative links for repository documentation.
-- **Isolation when needed**: Prefer a worktree or other isolated context when parallel changes could collide.
+## Rule-Loading Policy
 
-## Lazy-Load Documentation Order
+- Load the closest applicable rule family from `../.agent/rules/` before specialized work.
+- For complex tasks, default to Reasoner + the relevant specialist persona.
+- When multiple personas are needed, separate the passes instead of blending conflicting priorities.
 
-Use the repository docs in layers instead of bulk-loading directories.
+## Skill Autonomy
 
-| Marker | Entry point | Use when |
-| ------ | ----------- | -------- |
-| `[LOAD:INDEX]` | `../README.md` and `../docs/README.md` | Starting a session or entering a new domain |
-| `[LOAD:STRATEGIC]` | `../docs/prd/`, `../docs/ard/` | Product, architecture, or planning decisions |
-| `[LOAD:TACTICAL]` | `../docs/specs/`, `../docs/plans/` | Active implementation or refactor work |
-| `[LOAD:DECISION]` | `../docs/adr/` | Rationale and decision recovery |
-| `[LOAD:OPERATIONAL]` | `../docs/runbooks/`, `../docs/operations/` | Debugging, incidents, or operations |
-| `[LOAD:PROCEDURAL]` | `../docs/guides/`, `../docs/manuals/` | Reference procedures and maintenance guides |
-| `[LOAD:CONTEXT]` | `../docs/context/` | Deep domain or system research |
+- Discover and use the most relevant skill for the task.
+- Do not hardcode an allowlist of “approved skills” unless the user explicitly asks for one.
+- If multiple skills apply, use the smallest set that fully covers the task and keep the role split explicit.
 
-## Rule Interlocks
+## Lazy-Loading Policy For docs/
 
-Cross-load the authority that matches the work:
+- Start with [../docs/README.md](../docs/README.md).
+- Use index documents, not raw directory scans, when a README/index exists.
+- Default doc families:
+  - Decisions: [../docs/adr/README.md](../docs/adr/README.md)
+  - Strategy: [../docs/prd/README.md](../docs/prd/README.md), [../docs/ard/README.md](../docs/ard/README.md)
+  - Tactical execution: [../docs/specs/README.md](../docs/specs/README.md), [../docs/plans/README.md](../docs/plans/README.md)
+  - Procedures: [../docs/runbooks/README.md](../docs/runbooks/README.md)
+  - History: [../docs/operations/README.md](../docs/operations/README.md), [../docs/operations/incidents/README.md](../docs/operations/incidents/README.md)
+  - Deep technical context: [../docs/context/README.md](../docs/context/README.md)
+  - Working guides: [../docs/guides/README.md](../docs/guides/README.md), [../docs/manuals/README.md](../docs/manuals/README.md)
 
-- `.agent/rules/0000-Agents/` for general agent behavior
-- `.agent/rules/2100-Documentation/` for documentation work
-- `.agent/rules/2200-Security/` for security constraints
-- `.agent/rules/2300-Performance/` for performance-sensitive changes
-- `.agent/rules/0500-AI_and_ML/` for AI-specific systems
+## Template Usage Contract
 
-## Documentation Contract
+- New PRDs use [../templates/prd-template.md](../templates/prd-template.md)
+- New ARDs use [../templates/ard-template.md](../templates/ard-template.md)
+- New ADRs use [../templates/adr-template.md](../templates/adr-template.md)
+- New specs use [../templates/spec-template.md](../templates/spec-template.md)
+- New plans use [../templates/plan-template.md](../templates/plan-template.md)
+- New runbooks use [../templates/runbook-template.md](../templates/runbook-template.md)
+- New incidents and postmortems use [../templates/incident-template.md](../templates/incident-template.md) and [../templates/postmortem-template.md](../templates/postmortem-template.md)
 
-Instruction files should be truthful, compact, and easy to navigate:
+## Link And Truth Rules
 
-- Keep root files as entrypoints, not encyclopedias.
-- Move shared detail into linked guides rather than duplicating it.
-- Do not document tools, commands, or artifact paths that are not supported by the current runtime or repository.
+- Use relative links for repository documentation.
+- Do not leave `file://` links, stale template paths, or broken root-style links such as `/specs/...`.
+- Do not document tools, commands, paths, or workflows that are not supported by current repo evidence.

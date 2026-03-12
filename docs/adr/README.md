@@ -23,4 +23,4 @@ This directory contains Architecture Decision Records for the project. ADRs docu
 
 ---
 > [!NOTE]
-> All ADRs must be generated using `templates/architecture/adr-template.md`.
+> All ADRs must be generated using [`../../templates/adr-template.md`](../../templates/adr-template.md).

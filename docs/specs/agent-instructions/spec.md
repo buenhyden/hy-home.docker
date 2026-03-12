@@ -1,6 +1,6 @@
 ---
 title: 'Agent Instruction Refactor Specification'
-status: 'Validated'
+status: 'Implementation'
 version: '1.0'
 owner: 'buenhyden'
 scope: 'domain'
@@ -11,45 +11,48 @@ tags: ['spec', 'documentation', 'agents']
 
 # Agent Instruction Refactor Specification
 
-> **Status**: Validated
+> **Status**: Implementation
 > **Scope**: domain
 > **Parent Master Spec**: N/A
 > **Related PRD**: N/A (documentation maintenance task)
 > **Related Architecture**: N/A (documentation maintenance task)
 > **Decision Record**: N/A
 
-**Overview (KR):** 이 명세는 루트 에이전트 지침 파일을 점진적 공개 구조로 재편하되, 공통 정책은 `.claude/` 바로 아래로 이동하고 공급자별 차이만 루트에 남기기 위한 기준을 정의한다. 주요 위험은 공유 지침 경로를 깊게 유지해 탐색 비용과 참조 복잡도를 높이는 것이다.
+**Overview (KR):** 이 명세는 루트 에이전트 지침 파일과 관련 인덱스 문서를 2026년 3월 기준 최신 provider 가이드와 저장소 실태에 맞게 재편하는 계약을 정의한다. 주요 위험은 오래된 템플릿 경로, 절대 링크, 불완전한 lazy-loading 구조를 남겨 에이전트가 잘못된 문서를 우선 참조하는 것이다.
 
 ## Technical or Platform Baseline
 
-The repository currently exposes three root instruction files: `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md`. Those files already contain useful governance, reasoning, and execution rules, but they mix universal guidance with provider-specific details and reference tools or artifacts that are not guaranteed to exist in the current runtime.
+The repository currently exposes three root instruction files: `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md`. It also relies on `.claude/*.md` and `docs/*/README.md` as linked context. The current documents are partially refactored but still too thin at the root, too generic in `.claude/`, and inconsistent across documentation indexes.
 
 ## Contracts
 
 - **Governance Contract**: `AGENTS.md` remains the canonical root entrypoint for universal agent rules, but it must only contain rules that apply to every task.
-- **Provider Contract**: `CLAUDE.md` and `GEMINI.md` retain only provider-specific execution or reasoning behavior.
-- **Shared Documentation Contract**: Common guidance moves into `.claude/` and is linked from the root files using relative paths only.
+- **Provider Contract**: `CLAUDE.md` and `GEMINI.md` retain only provider-specific execution or reasoning behavior, with `CLAUDE.md` using `@` imports.
+- **Shared Documentation Contract**: Common guidance lives in `.claude/` and is linked or imported from the root files using relative paths only.
 - **Truth Contract**: No instruction file may reference unavailable tools, imaginary artifacts, or unsupported repository paths.
-- **Maintenance Contract**: The refactor must create a repository-local spec and plan and include documentation-only verification steps.
+- **Maintenance Contract**: The refactor must keep the repository-local spec and plan current and include documentation-only verification steps.
 
 ## Verification
 
 ```bash
-rg -n "\\.claude/(core-governance|workflow)" AGENTS.md CLAUDE.md GEMINI.md
+rg -n "^@" CLAUDE.md
+rg -n 'file://|templates/(architecture|product|operations)/|\]\(/specs/' AGENTS.md CLAUDE.md GEMINI.md .claude docs
 test -f docs/plans/2026-03-12-agent-instruction-refactor.md
 test -f docs/specs/agent-instructions/spec.md
 test -f .claude/README.md
+test -f docs/plans/README.md
 ```
 
 ## 1. Technical Overview & Architecture Style
 
 This is a documentation-only refactor. The target architecture is a progressive-disclosure model:
 
-- Root files stay small and stable.
-- Shared operational details live in linked guides.
+- `AGENTS.md` is the cross-agent canonical entrypoint.
+- Shared operational details live in `.claude/*.md`.
 - Provider-specific files remain focused on the differences that matter during execution.
+- `docs/*/README.md` files act as stable lazy-loading indexes for the documentation families.
 
-- **Component Boundary**: Root agent entrypoints plus a shared guide bundle directly under `.claude/`.
+- **Component Boundary**: Root agent entrypoints, shared `.claude/*.md` guidance, and documentation-family README indexes under `docs/`.
 - **Key Dependencies**: `docs/README.md`, `templates/spec-template.md`, `templates/plan-template.md`, `.agent/rules/0000-Agents/`, `.agent/rules/2100-Documentation/`
 - **Tech Stack**: Markdown, relative links, shell validation with `rg` and `test`
 
@@ -58,15 +61,17 @@ This is a documentation-only refactor. The target architecture is a progressive-
 | ID | Requirement Description | Priority | Parent PRD REQ |
 | -- | ----------------------- | -------- | -------------- |
 | **[REQ-SPC-AGT-001]** | The three root files must become concise entrypoints rather than long-form policy stores. | High | N/A |
-| **[REQ-SPC-AGT-002]** | Shared policy must move into repository-local linked guides directly under `.claude/`. | High | N/A |
+| **[REQ-SPC-AGT-002]** | Shared policy must live in repository-local guidance under `.claude/`. | High | N/A |
 | **[REQ-SPC-AGT-003]** | All new and updated links must be relative and resolve to existing files. | Critical | N/A |
 | **[REQ-SPC-AGT-004]** | Stale references to unavailable tools and artifacts must be removed. | Critical | N/A |
+| **[REQ-SPC-AGT-005]** | Documentation indexes must expose ADR, ARD, PRD, specs, plans, runbooks, operations history, and incidents as lazy-loadable entrypoints. | High | N/A |
+| **[REQ-SPC-AGT-006]** | `CLAUDE.md` must use provider-native `@` imports instead of duplicating shared guidance. | High | N/A |
 
 ## 3. Data Modeling & Storage Strategy
 
 - **Database Engine**: None
 - **Schema Strategy**: Markdown-only documentation split between root entrypoints and guide documents
-- **Migration Plan**: Rewrite the roots in place, flatten the shared guide bundle into `.claude/`, and remove the obsolete nested guide directory without changing repository code
+- **Migration Plan**: Rewrite the roots in place, rebuild `.claude/*.md` around repo-specific guidance, repair linked docs indexes, and add a plans index without changing product code
 
 ## 4. Interfaces & Data Structures
 
@@ -85,11 +90,13 @@ interface InstructionGuideLink {
 ## 5. Component Breakdown
 
 - `AGENTS.md`: Minimal universal policy and rule-map entrypoint
-- `CLAUDE.md`: Claude-specific execution rules
-- `GEMINI.md`: Gemini-specific reasoning rules
-- `.claude/README.md`: Shared guide index
-- `.claude/core-governance.md`: Universal governance details moved out of the root
-- `.claude/workflow.md`: Shared operating workflow and maintenance checks
+- `CLAUDE.md`: Claude-specific shim using `@` imports
+- `GEMINI.md`: Gemini-specific shim with provider notes and shared references
+- `.claude/README.md`: Shared guidance index
+- `.claude/core-governance.md`: Repo-specific governance, personas, and lazy-loading policy
+- `.claude/workflow.md`: Repo-specific execution workflow and validation commands
+- `docs/README.md`: Canonical docs lazy-loading gateway
+- `docs/plans/README.md`: Tactical plans index
 - `docs/plans/2026-03-12-agent-instruction-refactor.md`: Execution plan for this refactor
 
 ## 6. Domain-Specific Contract Sections
@@ -103,7 +110,8 @@ interface InstructionGuideLink {
 
 ## 7. Edge Cases & Error Handling
 
-- **Missing shared guide path**: If the required `.claude/` guide files are missing, root files must not be updated to link to non-existent targets.
+- **Missing shared guide path**: If the required `.claude/` guide files are missing, root files must not be updated to link or import non-existent targets.
+- **Index drift**: If a doc family has content but no stable README/index, add or repair the index before relying on that family in lazy-loading guidance.
 - **Dirty worktree overlap**: If unrelated user edits touch the same files, preserve their intent and layer the refactor around the current content rather than reverting.
 
 ## 8. Verification Plan (Testing & QA)
@@ -111,7 +119,8 @@ interface InstructionGuideLink {
 - **[VAL-SPC-AGT-001] Structural review**: Confirm each root file reads as an entrypoint, not a full handbook.
 - **[VAL-SPC-AGT-002] Link review**: Validate all new relative links with targeted `rg` and `test` commands.
 - **[VAL-SPC-AGT-003] Truth review**: Manually inspect the roots and shared guides to confirm deprecated runtime-specific instructions no longer appear.
-- **[VAL-SPC-AGT-004] Evidence capture**: Record command results after edits before declaring completion.
+- **[VAL-SPC-AGT-004] Provider review**: Confirm `CLAUDE.md` imports and `GEMINI.md` link semantics match the chosen provider models.
+- **[VAL-SPC-AGT-005] Evidence capture**: Record command results after edits before declaring completion.
 
 ## 9. Non-Functional Requirements (NFR) & Scalability
 

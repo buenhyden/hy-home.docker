@@ -16,4 +16,4 @@ This directory defines the technical requirements and constraints for major infr
 
 ---
 > [!NOTE]
-> All ARDs must follow the `templates/architecture/ard-template.md`.
+> All ARDs must follow [`../../templates/ard-template.md`](../../templates/ard-template.md).

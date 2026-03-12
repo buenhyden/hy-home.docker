@@ -1,17 +1,13 @@
-# Claude Directive
+# Claude Project Memory
 
-Use this file for Claude-specific behavior only. Load [AGENTS.md](AGENTS.md) and the shared guides first.
+Claude-specific deltas only. Shared project policy lives in imported `.claude/*.md` files and in [AGENTS.md](AGENTS.md).
 
-## Claude-Specific Rules
+@.claude/core-governance.md
+@.claude/workflow.md
 
-- Execute directly once the path is clear and keep status updates dense.
-- Read stderr carefully and retry corrected commands before escalating routine command errors.
-- Prefer fast local inspection tools such as `rg`, `find`, `sed`, and `ls`, and use parallel reads when they reduce latency.
-- Keep edits compact; rewrite an entire file only when the task is structural.
-- Do not rely on tools or artifact paths unless they are confirmed in the current runtime or repository.
-- When work needs planning or durable context, use repository-local documents under `docs/specs/` and `docs/plans/`.
+## Claude-Specific Notes
 
-## Shared References
-
-- [Shared governance](.claude/core-governance.md)
-- [Shared workflow](.claude/workflow.md)
+- Use imports to keep this file thin; do not restate shared policy here.
+- Prefer repo-local commands, paths, and docs over generic examples.
+- Keep memory concise and current; use `/memory` or `#` only when the new instruction is durable.
+- If a task needs additional subtree-specific context, prefer adding nested docs or imported files instead of bloating this root file.

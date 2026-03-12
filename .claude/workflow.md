@@ -1,45 +1,59 @@
-# Agent Workflow
+# Shared Agent Workflow
 
-This guide describes the shared execution loop for agent work in this repository.
+This file describes the shared execution loop for work in `hy-home.docker`.
 
 ## Default Loop
 
-1. Inspect the current state of the repository, docs, and working tree.
-2. Confirm or write the relevant spec and implementation plan.
-3. Activate the skills that match the task.
-4. Execute changes with terminal-backed evidence.
-5. Verify the result before claiming completion.
-6. Update durable documentation when the work changes behavior or process.
+1. Discover the current state from repo files, docs, rules, and command output.
+2. Load the relevant docs indexes from `docs/`.
+3. Confirm or create the required spec and plan for complex work.
+4. Apply the relevant persona and skills.
+5. Execute the smallest correct change.
+6. Verify with repo-local commands.
+7. Update durable docs when behavior, structure, or operational guidance changes.
 
-## Execution Rules
+## Which Docs To Load
 
-- Use repository-local files as the source of truth for commands, paths, and workflows.
-- Prefer direct, low-friction execution once the path is clear.
-- Retry correctable command failures after reading stderr instead of stopping at the first error.
-- Keep edits surgical unless the task explicitly calls for structural rewrites.
-- Treat documentation-only work as real work: it still needs verification and link review.
+- Infrastructure behavior and stack usage: [../README.md](../README.md), [../ARCHITECTURE.md](../ARCHITECTURE.md)
+- Tactical implementation: [../docs/specs/README.md](../docs/specs/README.md), [../docs/plans/README.md](../docs/plans/README.md)
+- Runbooks for “what to type”: [../docs/runbooks/README.md](../docs/runbooks/README.md)
+- Incident history and RCA: [../docs/operations/README.md](../docs/operations/README.md), [../docs/operations/incidents/README.md](../docs/operations/incidents/README.md)
+- Technical blueprints: [../docs/context/README.md](../docs/context/README.md)
 
-## Maintenance Rules for Root Instruction Files
+## Specs And Plans
 
-- `AGENTS.md` should contain only universal repository policy and navigation.
-- `CLAUDE.md` should contain only Claude-specific execution behavior.
-- `GEMINI.md` should contain only Gemini-specific reasoning behavior.
-- Shared rules belong in this guide bundle, not repeated across the roots.
-- Every repository-internal link must remain relative.
+- For non-trivial work, verify that a matching spec and plan already exist under `../docs/specs/` and `../docs/plans/`.
+- If they do not exist and the task is complex, create them using the repository templates before implementation.
+- Current refactor contract:
+  - [../docs/specs/agent-instructions/spec.md](../docs/specs/agent-instructions/spec.md)
+  - [../docs/plans/2026-03-12-agent-instruction-refactor.md](../docs/plans/2026-03-12-agent-instruction-refactor.md)
 
-## Truth Checks
+## Runbooks Vs Operations History
 
-Before finishing an instruction-file change, confirm:
+- `docs/runbooks/`: executable recovery and maintenance procedures
+- `docs/operations/`: historical incidents, postmortems, and anomaly records
+- `docs/operations/incidents/README.md`: incident log entrypoint
 
-- Root files link to the shared guide bundle.
-- Stale tool or artifact names are gone.
-- New paths exist in the repository.
-- The new structure is easier to skim than the old one.
-
-## Recommended Validation Commands
+## Repo-Local Validation Commands
 
 ```bash
-rg -n "\\.claude/(core-governance|workflow|README\\.md)" AGENTS.md CLAUDE.md GEMINI.md
-test -f docs/specs/agent-instructions/spec.md
-test -f docs/plans/2026-03-12-agent-instruction-refactor.md
+bash scripts/validate-docker-compose.sh
+bash scripts/preflight-compose.sh
+docker compose config
+docker compose up -d
+rg -n 'file://|templates/(architecture|product|operations)/|\]\(/specs/' AGENTS.md CLAUDE.md GEMINI.md .claude docs
 ```
+
+## Root-File Maintenance Rules
+
+- `AGENTS.md` is the canonical cross-agent entrypoint.
+- `CLAUDE.md` stays thin and uses `@` imports for shared guidance.
+- `GEMINI.md` stays thin and links to shared guidance without duplicating it.
+- Shared detail goes in `.claude/*.md`, not repeated in every root file.
+
+## Anti-Patterns
+
+- Treating `README.md` as the only source of truth for agent behavior
+- Duplicating the same policy in all three root files
+- Linking directly to raw directories when an index README exists
+- Leaving outdated template paths or absolute filesystem links in docs

@@ -3,14 +3,14 @@
 This directory (`operations/`) is the **exclusive home for historical records** and diagnostic anomalies. It serves as the project's institutional memory for what has happened in the past.
 
 > [!IMPORTANT]
-> Non-historical technical guides and service context have been migrated to the **[Documentation Hub](../docs/context/)** to maintain a clean separation between design context and incident history.
+> Non-historical technical guides and service context have been migrated to the **[Documentation Hub](../context/README.md)** to maintain a clean separation between design context and incident history.
 
 ## Historical Data Stores
 
 - **`incidents/`**: Active and resolved incident tracking documents.
-  - Every time an alert fires or an incident is declared, a document must be created here using `../../templates/operations/incident-template.md`.
+  - Every time an alert fires or an incident is declared, a document must be created here using [`../../templates/incident-template.md`](../../templates/incident-template.md).
 - **`postmortems/`**: Detailed "after-action" reviews for SEV-1 and SEV-2 incidents.
-  - Must be created using `../../templates/operations/postmortem-template.md` and linked in `incidents/README.md`.
+  - Must be created using [`../../templates/postmortem-template.md`](../../templates/postmortem-template.md) and linked in [`incidents/README.md`](incidents/README.md).
 
 ## Golden Rules for History Tracking
 
@@ -26,3 +26,5 @@ This directory (`operations/`) is the **exclusive home for historical records** 
 | **Historical Records** | `operations/` (This folder) |
 | **Technical Context** | `docs/context/` |
 | **Executable Procedures** | `runbooks/` |
+
+Use this README as the lazy-load entrypoint for historical operational records. For the active incident index, continue with [`incidents/README.md`](incidents/README.md).

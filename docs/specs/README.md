@@ -1,17 +1,22 @@
 # Technical Specifications Hub (`specs/`)
 
-This directory is the absolute **Source of Truth** for the During-Development phase. Every artifact SHALL comply with the `[REQ-SPT]` standards.
+This directory is the tactical source of truth for active implementation contracts. Read this index before opening spec subdirectories.
 
-## 1. Directory Structure
+## Specification Families
 
-### 🏗️ Infrastructure Specifications
+### Shared And Cross-Cutting Specs
 
-- **[[SPEC-INFRA-01] Global Baseline](/specs/infra/global-baseline/spec.md)**: Standard templates for `extends` and security invariants.
-- **[[SPEC-INFRA-02] Implementation Baseline](/specs/infra/baseline/spec.md)**: Modular orchestration, Day-0 bootstrap, and secrets strategy.
-- **[[SPEC-INFRA-03] Automation Logic](/specs/infra/automation/spec.md)**: "Init-Sidecar" implementation and automated resource readiness.
-- **[[SPEC-INFRA-04] Hardening & Density](/specs/infra/system-optimization/spec.md)**: Host isolation, aggregate memory limits, and p95 ingestion SLOs.
+- [Agent Instruction Refactor Specification](agent-instructions/spec.md)
 
-## 2. Compliance Baseline [REQ-SPT-05]
+### Infrastructure Specs
+
+- [Infrastructure Specs Index](infra/README.md)
+- [Global Baseline](infra/global-baseline/spec.md)
+- [Implementation Baseline](infra/baseline/spec.md)
+- [Automation Logic](infra/automation/spec.md)
+- [Hardening & Density](infra/system-optimization/spec.md)
+
+## Compliance Baseline
 
 Every specification in this directory MUST contain:
 
@@ -19,6 +24,11 @@ Every specification in this directory MUST contain:
 - **Persona**: Mandatory framing from an engineering persona perspective.
 - **Components**: NFR, Storage, Interfaces, Verification, Security, and Ops sections.
 - **Verification**: At least 3 testable Given-When-Then Acceptance Criteria [REQ-SPT-10].
+
+## Related Tactical Docs
+
+- [Plans Index](../plans/README.md)
+- [Documentation Index](../README.md)
 
 ---
 > [!IMPORTANT]

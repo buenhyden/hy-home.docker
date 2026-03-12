@@ -4,9 +4,9 @@ This directory is the **exclusive, authoritative home** for all executable proce
 
 ## 📚 Documentation Taxonomy
 
-1. **Architecture Reference (ARD)** ([`docs/ard/`](../docs/ard/README.md)): "How it's built".
-2. **Product Requirements (PRD)** ([`docs/prd/`](../docs/prd/README.md)): "What it should do".
-3. **Operational Runbooks** ([`runbooks/`](./README.md)): "What to type" during an incident.
+1. **Architecture Reference (ARD)** ([`../ard/README.md`](../ard/README.md)): "How it's built".
+2. **Product Requirements (PRD)** ([`../prd/README.md`](../prd/README.md)): "What it should do".
+3. **Operational Runbooks** ([`README.md`](README.md)): "What to type" during an incident.
 
 ## 🧭 Operational Navigator (Role-Based)
 
@@ -29,7 +29,7 @@ This directory is the **exclusive, authoritative home** for all executable proce
 
 ## 📐 Operational Standards
 
-Every runbook MUST follow the 8-section template from [`templates/operations/runbook-template.md`](../templates/operations/runbook-template.md):
+Every runbook MUST follow the 8-section template from [`../../templates/runbook-template.md`](../../templates/runbook-template.md):
 
 1. **Service Overview** (Owners/Criticality)
 2. **Dependencies** (Upstream impact)
@@ -43,3 +43,5 @@ Every runbook MUST follow the 8-section template from [`templates/operations/run
 ---
 > [!IMPORTANT]
 > **NO THEORY, ONLY ACTION.** Procedural runbooks save time during outages. Background info belongs in `docs/`.
+
+This README is the canonical lazy-load entrypoint for runbook discovery from [`../README.md`](../README.md).
