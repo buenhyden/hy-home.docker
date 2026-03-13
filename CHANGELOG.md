@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
 ## [Unreleased]
 
 ### Added
@@ -253,6 +252,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update various agent rules and workflows across multiple domains.
 - Rewrite README
 - Improve README
+- Update documentation templates
 
 ### Fixed
 
@@ -372,6 +372,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
+- **release:** Update CHANGELOG.md [skip ci]
 
 ### Refactor
 
@@ -393,3 +394,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Config
 
 - Disable breaking change protection and commit filtering in `cliff.toml`.
+
+
