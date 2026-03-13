@@ -1,7 +1,7 @@
 name: Feature Request
 description: Propose a new feature using the spec-driven approach
-title: '[FEATURE] '
-labels: ['enhancement']
+title: "[FEATURE] "
+labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
@@ -12,7 +12,8 @@ body:
     id: prd_link
     attributes:
       label: PRD / ARD Link
-      description: Provide a link to the PRD (docs/prd) or ARD (docs/ard) for this feature.
+      description:
+        Provide a link to the PRD (docs/prd) or ARD (docs/ard) for this feature.
     validations:
       required: true
   - type: textarea
@@ -27,14 +28,15 @@ body:
     attributes:
       label: Expected Outcome
       description: What measurable outcome should improve after this feature?
-      placeholder: 'Example: Reduce onboarding completion time from 8m to < 5m'
+      placeholder: "Example: Reduce onboarding completion time from 8m to < 5m"
     validations:
       required: true
   - type: textarea
     id: description
     attributes:
       label: Description
-      description: A clear and concise description of what the feature is and what it aims
+      description:
+        A clear and concise description of what the feature is and what it aims
         to solve.
     validations:
       required: true
