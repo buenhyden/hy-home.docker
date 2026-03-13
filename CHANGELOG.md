@@ -140,6 +140,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add infrastructure implementation plans for baseline, global-baseline, messaging, observability, service standards, AI, and automation.
 - Add `.claude/settings.local.json` and `.agent/` to `.gitignore` to exclude them from version control.
 - Refactor
+- Introduce agent instructions gateway
+- Establish `docs/agent-instructions.md`
 
 ### Changed
 
@@ -359,6 +361,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **deps-dev:** Bump the npm_and_yarn group across 2 directories with 1 update
+- **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
 - **release:** Update CHANGELOG.md [skip ci]
