@@ -12,3 +12,4 @@ Claude-specific root only. Shared repository policy is imported from `.claude/*.
 - Keep this file as a thin shim; shared policy belongs in the imported guides and [AGENTS.md](AGENTS.md).
 - Use `/memory` or `#` only for durable repository learnings, not temporary task notes.
 - If a subtree needs durable Claude-only context, prefer a nested `CLAUDE.md` or another imported guide over growing this root file.
+- Agent-specific documentation gateway: [docs/agent-instructions.md](docs/agent-instructions.md)

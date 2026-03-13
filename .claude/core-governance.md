@@ -12,11 +12,18 @@ This repository is a Docker Compose infrastructure workspace for local and homel
 
 | Persona | Use when | Authority |
 | --- | --- | --- |
-| Reasoner | multi-step changes, ambiguous tasks, refactors | `../.agent/rules/0000-Agents/0002-strong-reasoner-agent.md` |
-| Doc Specialist | editing `*.md`, indexes, specs, plans, runbooks | `../.agent/rules/2100-Documentation/2100-documentation-pillar.md` |
-| Architect | repo structure, systems design, cross-cutting contracts | `../.agent/rules/1900-Architecture_Patterns/` |
-| DevOps | Docker Compose, bootstrap, operations, deployment, runtime workflows | `../.agent/rules/0300-DevOps_and_Infrastructure/` |
-| Security | secrets, auth, network exposure, compliance, risk | `../.agent/rules/2200-Security/` |
+| Reasoner | Multi-step changes, ambiguous tasks, refactors | `../.agent/rules/0000-Agents/0002-strong-reasoner-agent.md` |
+| Architect | Repo structure, systems design, cross-cutting contracts, ADR governance | `../.agent/rules/1900-Architecture_Patterns/` |
+| DevOps & CI/CD | Docker Compose, bootstrap, deployment pipelines, CI/CD, gitops | `../.agent/rules/0300-DevOps_and_Infrastructure/` |
+| Security Auditor | Secrets, auth, network exposure, OWASP compliance, risk assessment | `../.agent/rules/2200-Security/` |
+| SRE / Operations | Runbooks, monitoring, incident response, recovery, on-call procedures | `../.agent/rules/0300-DevOps_and_Infrastructure/0380-incident-response.md`, `../.agent/rules/0300-DevOps_and_Infrastructure/0381-runbooks-oncall.md` |
+| Observability | Logging, alerting, distributed tracing, metrics strategy, SLO implementation | `../.agent/rules/2600-Observability/` |
+| Performance Eng | Measurement-first latency optimization, resource limits, profiling | `../.agent/rules/2300-Performance/` |
+| Data Architect | Database design, 3NF normalization, storage policy, Redis, NoSQL | `../.agent/rules/0600-DB_and_Data/` |
+| Doc Specialist | Editing `*.md`, indexes, specs, plans, runbooks (Diátaxis framework) | `../.agent/rules/2100-Documentation/2100-documentation-pillar.md` |
+| Debugging Specialist | Systematic RCA, defect isolation, log analysis | `../.agent/rules/0000-Agents/0015-debugging-standard.md` |
+| Compliance | Regulatory compliance, PII tracking, GDPR/HIPAA standards | `../.agent/rules/2400-Compliance/` |
+| AI Safety Lead | Structured system instructions, red-teaming, bias verification | `../.agent/rules/0500-AI_and_ML/`, `../.agent/rules/0000-Agents/0001-ai-prompt-engineer-agent.md` |
 
 ## Rule-Loading Policy
 
@@ -27,12 +34,12 @@ This repository is a Docker Compose infrastructure workspace for local and homel
 ## Skill Autonomy
 
 - Discover and use the most relevant skill for the task.
-- Do not hardcode an allowlist of “approved skills” unless the user explicitly asks for one.
+- Do not hardcode an allowlist of "approved skills" unless the user explicitly asks for one.
 - If multiple skills apply, use the smallest set that fully covers the task and keep the role split explicit.
 
 ## Lazy-Loading Policy For docs/
 
-- Start with [../docs/README.md](../docs/README.md).
+- Start with [../docs/agent-instructions.md](../docs/agent-instructions.md) for agent-specific context.
 - Use index documents, not raw directory scans, when a README/index exists.
 - Default doc families:
   - Decisions: [../docs/adr/README.md](../docs/adr/README.md)
@@ -51,7 +58,8 @@ This repository is a Docker Compose infrastructure workspace for local and homel
 - New specs use [../templates/spec-template.md](../templates/spec-template.md)
 - New plans use [../templates/plan-template.md](../templates/plan-template.md)
 - New runbooks use [../templates/runbook-template.md](../templates/runbook-template.md)
-- New incidents and postmortems use [../templates/incident-template.md](../templates/incident-template.md) and [../templates/postmortem-template.md](../templates/postmortem-template.md)
+- New incidents use [../templates/incident-template.md](../templates/incident-template.md)
+- New postmortems use [../templates/postmortem-template.md](../templates/postmortem-template.md)
 
 ## Link And Truth Rules
 

@@ -4,8 +4,8 @@ This file describes the shared execution loop for work in `hy-home.docker`.
 
 ## Default Loop
 
-1. Discover the current state from repo files, docs, rules, and command output.
-2. Load the relevant docs indexes from `docs/`.
+1. Load [../docs/agent-instructions.md](../docs/agent-instructions.md) to discover current specs, ADRs, and runbooks.
+2. Discover the current state from repo files, docs, rules, and command output.
 3. Confirm or create the required spec and plan for complex work.
 4. Apply the relevant persona and skills.
 5. Execute the smallest correct change.
@@ -14,6 +14,7 @@ This file describes the shared execution loop for work in `hy-home.docker`.
 
 ## Which Docs To Load
 
+- Agent session entrypoint: [../docs/agent-instructions.md](../docs/agent-instructions.md)
 - Infrastructure behavior and stack usage: [../README.md](../README.md), [../ARCHITECTURE.md](../ARCHITECTURE.md)
 - Tactical implementation: [../docs/specs/README.md](../docs/specs/README.md), [../docs/plans/README.md](../docs/plans/README.md)
 - Runbooks for “what to type”: [../docs/runbooks/README.md](../docs/runbooks/README.md)

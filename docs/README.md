@@ -37,6 +37,7 @@ Use the repository templates at the project root when creating new artifacts:
 
 ## Related Policy
 
-- [AGENTS.md](../AGENTS.md)
-- [CLAUDE.md](../CLAUDE.md)
-- [GEMINI.md](../GEMINI.md)
+- [Agent Instructions Gateway](agent-instructions.md) — Agent-specific session entrypoint
+- [AGENTS.md](../AGENTS.md) — Canonical cross-agent entrypoint
+- [CLAUDE.md](../CLAUDE.md) — Claude-specific shim
+- [GEMINI.md](../GEMINI.md) — Gemini-specific shim

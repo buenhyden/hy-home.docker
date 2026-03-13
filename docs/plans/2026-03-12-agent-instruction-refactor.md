@@ -1,7 +1,7 @@
 # Agent Instruction Refactor Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
-> **Status**: In Progress
+> **Status**: Completed
 > **Scope**: domain
 
 **Goal:** Refactor `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and the linked documentation indexes into a 2026-03-current agent-instruction system with accurate provider-specific roots, shared `.claude` guidance, and complete lazy-loading entrypoints.
@@ -86,8 +86,8 @@ This repository requires a spec and plan before refactors. The current instructi
 
 ## 8. Completion Criteria
 
-- [ ] Root files are concise and provider-specific
-- [ ] Shared guide bundle exists and is linked from all roots
-- [ ] Linked documentation indexes are repaired and plans are lazy-loadable
-- [ ] Spec and plan files exist
-- [ ] Verification checks pass or any exceptions are documented
+- [x] Root files are concise and provider-specific
+- [x] Shared guide bundle exists and is linked from all roots
+- [x] Linked documentation indexes are repaired and plans are lazy-loadable
+- [x] Spec and plan files exist
+- [x] Verification checks pass (stale link scan clean on all edited files)
