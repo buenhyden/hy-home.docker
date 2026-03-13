@@ -3,6 +3,7 @@
 > Use this template for `docs/<category>/specs/YYYY-MM-DD-<feature-name>.md`.
 >
 > Repository-derived contract:
+>
 > - Use exactly one meaningful H1.
 > - Use relative links only.
 > - Remove every placeholder before saving.
@@ -14,6 +15,7 @@
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
 >
 > Shape guidance:
+>
 > - Use the extended technical form for `content/` and `vault/` specs.
 > - Use the compact contract form for active-chain `web/` specs that define platform baselines, archive rules, design-system direction, or other high-level implementation contracts.
 

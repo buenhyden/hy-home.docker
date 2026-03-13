@@ -112,4 +112,3 @@ The stack is enabled via the standard Compose profile `messaging` and runs insid
 
 - **Metrics**: JMX exporter + Kafka exporter (as configured) for Prometheus scraping.
 - **Logs**: Loki logging driver via shared templates where supported.
-

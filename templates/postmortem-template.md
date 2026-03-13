@@ -3,6 +3,7 @@
 > Use this template for `docs/<category>/operations/postmortems/YYYY-MM-DD-<slug>.md`.
 >
 > Repository-derived contract:
+>
 > - Use exactly one meaningful H1.
 > - Use relative links only.
 > - Remove every placeholder before saving.
@@ -44,7 +45,7 @@ tags:
 | **Incident Date** | `YYYY-MM-DD` |
 | **Analysis Date** | `YYYY-MM-DD` |
 | **Duration** | [For example: `2h 15m`] |
-| **Severity** | `[SEV-1 | SEV-2 | SEV-3]` |
+| **Severity** | `[SEV-1 \| SEV-2 \| SEV-3]` |
 | **Status** | `Resolved` |
 | **Incident Document** | `[../incidents/YYYY-MM-DD-incident.md]` |
 

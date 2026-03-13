@@ -82,7 +82,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 | -------------- | ----------- | ----------- | -------------------- | ------------- |
 | VAL-MSG-PLN-001 | Lint/Build | Compose schema validation with messaging profile enabled. | `COMPOSE_PROFILES=core,data,obs,messaging docker compose --env-file .env.example config -q` | Exit `0` |
 | VAL-MSG-PLN-002 | Integration | Runtime healthcheck for brokers. | `COMPOSE_PROFILES=messaging docker compose --env-file .env.example up -d && docker compose ps` | Brokers are `running`; healthchecks are `healthy` where defined |
-| VAL-MSG-PLN-003 | Integration | PRD AC: topic smoke (create + produce + consume). | `COMPOSE_PROFILES=messaging docker compose --env-file .env.example up -d && docker exec kafka-1 kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic events-topic --partitions 1 --replication-factor 3 && echo \"hello\" | docker exec -i kafka-1 kafka-console-producer --bootstrap-server kafka-1:19092 --topic events-topic >/dev/null && docker exec kafka-1 kafka-console-consumer --bootstrap-server kafka-1:19092 --topic events-topic --from-beginning --max-messages 1 --timeout-ms 10000 | rg -q \"hello\"` | Exit `0` |
+| VAL-MSG-PLN-003 | Integration | PRD AC: topic smoke (create + produce + consume). | `COMPOSE_PROFILES=messaging docker compose --env-file .env.example up -d && docker exec kafka-1 kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic events-topic --partitions 1 --replication-factor 3 && echo \"hello\" | docker exec -i kafka-1 kafka-console-producer --bootstrap-server kafka-1:19092 --topic events-topic >/dev/null && docker exec kafka-1 kafka-console-consumer --bootstrap-server kafka-1:19092 --topic events-topic --from-beginning --max-messages 1 --timeout-ms 10000 \| rg -q \"hello\"` \| Exit `0` |
 
 ## 7. Risks & Mitigations
 
@@ -103,4 +103,3 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 - **Spec**: `specs/infra/messaging/spec.md`
 - **ARD**: `docs/ard/messaging-ard.md`
 - **Architecture**: `ARCHITECTURE.md`
-

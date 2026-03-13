@@ -27,7 +27,7 @@ graph TD
         T3[Tier 3: Stateful Data]
         T4[Tier 4: Observability]
     end
-    
+
     T1 <--> T2
     T1 <--> T3
     T3 --> T4

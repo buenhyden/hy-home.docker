@@ -528,10 +528,12 @@ Use these docs instead of expanding the root README into an operating manual:
 ### Placeholder secrets are still present
 
 Symptom:
+
 - integrations fail authentication
 - a secret file still contains `CHANGE_ME_*`
 
 Likely cause:
+
 - bootstrap generated placeholders for values that must be supplied manually
 
 Exact next step:
@@ -545,12 +547,15 @@ Then edit the reported files under `secrets/` and replace the placeholders with 
 ### Certificate generation fails immediately
 
 Symptom:
+
 - `generate-local-certs.sh` exits with `mkcert is not installed`
 
 Likely cause:
+
 - `mkcert` is missing from the host
 
 Exact next step:
+
 - install `mkcert`
 - rerun:
 
@@ -561,9 +566,11 @@ bash scripts/generate-local-certs.sh
 ### Compose validation fails
 
 Symptom:
+
 - `bash scripts/validate-docker-compose.sh` returns a Compose interpolation or config error
 
 Likely cause:
+
 - `.env` is missing required values
 - a referenced include or secret path is invalid
 - a recent Compose change introduced invalid YAML or interpolation
@@ -579,9 +586,11 @@ Read the failing service or variable reference, fix the config, then rerun the v
 ### Preflight reports missing directories
 
 Symptom:
+
 - `bash scripts/preflight-compose.sh` fails on one or more mount paths
 
 Likely cause:
+
 - the directories from `.env` were not created yet
 
 Exact next step:
@@ -599,12 +608,15 @@ If you changed `DEFAULT_MOUNT_VOLUME_PATH`, create the equivalent subdirectories
 ### Host ports are already in use
 
 Symptom:
+
 - `docker compose up -d` fails with a bind error such as `port is already allocated`
 
 Likely cause:
+
 - another service is using one of the host ports defined in `.env`
 
 Exact next step:
+
 - update the conflicting `*_HOST_PORT` value in `.env`
 - rerun validation
 - start the stack again
@@ -612,12 +624,15 @@ Exact next step:
 ### Optional external networks are missing
 
 Symptom:
+
 - preflight warns that `project_net` or `kind` does not exist
 
 Likely cause:
+
 - the integration network has not been created yet
 
 Exact next step:
+
 - ignore the warning if you do not use that integration
 - otherwise create the needed network before booting dependent services:
 

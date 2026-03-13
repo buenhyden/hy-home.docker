@@ -3,6 +3,7 @@
 > Use this template for `docs/<category>/runbooks/<topic>.md`.
 >
 > Repository-derived contract:
+>
 > - Use exactly one meaningful H1.
 > - Use relative links only.
 > - Remove every placeholder before saving.
@@ -13,6 +14,7 @@
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
 >
 > Shape guidance:
+>
 > - Use the checklist form for repeatable review workflows such as active `docs/web` validation runbooks.
 > - Use the extended troubleshooting form for operational investigation and recovery workflows such as `docs/content/runbooks/content-pipeline-verification.md`.
 

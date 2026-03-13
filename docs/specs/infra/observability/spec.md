@@ -120,4 +120,3 @@ The stack is enabled via the standard Compose profile `obs` and runs inside `inf
 - **Metrics**: Prometheus + exporters across core/data services.
 - **Traces**: Tempo + OTLP collection (as configured via Alloy).
 - **Sensitive Data Handling**: all credentials are mounted under `/run/secrets/*`.
-

@@ -60,7 +60,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 | TASK-002 | Enforce idempotency semantics for each init container (use `--if-not-exists`, `--ignore-existing`, or safe rerun patterns). | `infra/04-data/minio/docker-compose.yml`, `infra/05-messaging/kafka/docker-compose.yml` | [REQ-AUTO-001] | Re-running init containers does not fail due to “already exists” errors. |
 | TASK-003 | Ensure readiness gating and fail-fast behavior using `depends_on` + healthchecks and timeouts. | `infra/04-data/minio/docker-compose.yml`, `infra/05-messaging/kafka/docker-compose.yml`, related dependent compose files | [REQ-AUTO-002] | If a dependency never becomes healthy, the init container exits non-zero within a bounded time. |
 | TASK-004 | Ensure all credentials used by init containers are read from `/run/secrets/*` and not passed as plaintext env. | `docker-compose.yml`, `infra/04-data/minio/docker-compose.yml`, `infra/06-observability/docker-compose.yml` | [SEC-AUTO-001] | No credentials are introduced via plaintext env; all are defined as secrets and mounted. |
-| TASK-005 | Ensure all provisioning uses Docker DNS endpoints (no hard-coded IPs). | `infra/**/docker-compose*.yml` (init containers only) | [REQ-AUTO-003] | `rg -n "172\\.|ipv4_address" infra` finds no provisioning endpoints using fixed IPs. |
+| TASK-005 | Ensure all provisioning uses Docker DNS endpoints (no hard-coded IPs). | `infra/**/docker-compose*.yml` (init containers only) | [REQ-AUTO-003] | `rg -n "172\\.\|ipv4_address" infra` finds no provisioning endpoints using fixed IPs. |
 
 **Traceability Matrix**
 
@@ -89,7 +89,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 | VAL-AUTO-PLN-001 | Lint/Build | Static config validation. | `docker compose --env-file .env.example config -q` | Exit `0` |
 | VAL-AUTO-PLN-002 | Integration | Runtime behavior: init containers succeed when deps are healthy. | `docker compose --env-file .env.example up -d && docker compose ps -a` | All init containers reach `exited (0)` |
 | VAL-AUTO-PLN-003 | Integration | Idempotency: re-run does not fail. | Run `docker compose --env-file .env.example up -d` twice | Second run yields no init failures |
-| VAL-AUTO-PLN-004 | Integration | PRD AC: `kafka-init` creates baseline topics. | `COMPOSE_PROFILES=messaging docker compose --env-file .env.example up -d && docker exec kafka-1 kafka-topics --bootstrap-server kafka-1:19092 --list | rg -q \"^(infra-events|application-logs)$\"` | Exit `0` |
+| VAL-AUTO-PLN-004 | Integration | PRD AC: `kafka-init` creates baseline topics. | `COMPOSE_PROFILES=messaging docker compose --env-file .env.example up -d && docker exec kafka-1 kafka-topics --bootstrap-server kafka-1:19092 --list | rg -q \"^(infra-events\|application-logs)$\"` \| Exit `0` |
 
 ## 7. Risks & Mitigations
 
@@ -110,4 +110,3 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 - **Spec**: `specs/infra/automation/spec.md`
 - **ARD**: `docs/ard/infra-automation-ard.md`
 - **Architecture**: `ARCHITECTURE.md`
-

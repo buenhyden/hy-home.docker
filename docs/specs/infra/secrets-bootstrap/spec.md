@@ -120,6 +120,7 @@ All secrets are identified from root `docker-compose.yml`. Generation rules are 
 - `--validate-compose`
 
 Exit codes:
+
 - `0`: success
 - `1`: invalid args/prereqs or strict validation failure
 

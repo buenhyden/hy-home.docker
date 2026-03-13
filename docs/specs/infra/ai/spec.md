@@ -119,4 +119,3 @@ This spec defines the local AI stack for development use:
 - **Logging**: Loki logging driver (configured via `infra/common-optimizations.yml`).
 - **Metrics**: `ollama-exporter` exposes metrics on `:${OLLAMA_EXPORTER_PORT:-11435}` inside `infra_net`.
 - **Sensitive Data Handling**: All secrets must be mounted under `/run/secrets/*` and never logged.
-

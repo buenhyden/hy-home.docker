@@ -18,6 +18,7 @@ _Target Directory: `specs/infra/ai/plan.md`_
 This plan implements and verifies the local AI stack defined in `specs/infra/ai/spec.md` and the product intent in `docs/prd/ai-prd.md`.
 
 The AI stack MUST be:
+
 - enabled via the Compose profile `ai`,
 - internally connected via Docker DNS on `infra_net`,
 - persistent via host-mapped volumes,
@@ -112,4 +113,3 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 - **Spec**: `specs/infra/ai/spec.md`
 - **ARD**: `docs/ard/ai-ard.md`
 - **Architecture**: `ARCHITECTURE.md`
-

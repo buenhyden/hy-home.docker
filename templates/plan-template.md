@@ -3,6 +3,7 @@
 > Use this template for `docs/<category>/plans/YYYY-MM-DD-<feature-name>.md`.
 >
 > Repository-derived contract:
+>
 > - Use exactly one meaningful H1.
 > - Use relative links only.
 > - Remove every placeholder before saving.
@@ -13,6 +14,7 @@
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
 >
 > Shape guidance:
+>
 > - Use the extended task-and-verification form for `content/` and `vault/`.
 > - Use the compact implementation form when the plan is mainly a phased task ledger, as in the active `docs/web` V2 chain.
 
@@ -125,7 +127,7 @@ List the commands, manual checks, or evidence collection steps required before t
 
 | Risk | Impact | Mitigation |
 | ---- | ------ | ---------- |
-| [Risk title] | [High | Medium | Low] | [Mitigation] |
+| [Risk title] | [High \| Medium \| Low] | [Mitigation] |
 
 ## 8. Completion Criteria
 

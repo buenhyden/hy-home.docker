@@ -3,6 +3,7 @@
 > Use this template for `docs/<category>/operations/incidents/YYYY-MM-DD-<slug>.md`.
 >
 > Repository-derived contract:
+>
 > - Use exactly one meaningful H1.
 > - Use relative links only.
 > - Remove every placeholder before saving.
@@ -13,6 +14,7 @@
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
 >
 > Shape guidance:
+>
 > - The repository currently uses both a compact active-incident form and a more detailed response-ledger form.
 > - The core sections below are mandatory in both cases.
 > - Add the optional response-roster and communication sections when the incident is long-running, multi-step, or handoff-heavy.
@@ -48,8 +50,8 @@ tags:
 | Field | Value |
 | ----- | ----- |
 | **Incident ID** | `INC-YYYYMMDD-XXX` |
-| **Severity** | `[SEV-1 | SEV-2 | SEV-3]` |
-| **Status** | `[Investigating | Identified | Mitigating | Monitoring | Resolved | Closed]` |
+| **Severity** | `[SEV-1 \| SEV-2 \| SEV-3]` |
+| **Status** | `[Investigating \| Identified \| Mitigating \| Monitoring \| Resolved \| Closed]` |
 | **Detection Time** | `YYYY-MM-DD HH:MM UTC` |
 | **Primary Service** | [Affected service or workflow] |
 | **Affected Dependencies** | [Key dependency or `N/A`] |

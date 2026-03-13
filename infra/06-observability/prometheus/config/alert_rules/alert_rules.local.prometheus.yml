@@ -18,37 +18,32 @@ groups:
           severity: warning
         annotations:
           summary: Prometheus job missing (instance {{ $labels.instance }})
-          description:
-            "프로메테우스 잡이 사라졌습니다.\n  VALUE = {{ $value }}\n  LABELS =
+          description: "프로메테우스 잡이 사라졌습니다.\n  VALUE = {{ $value }}\n  LABELS =
             {{ $labels }}"
 
       # [What] All Targets Missing / 모든 타겟 다운
       - alert: PrometheusAllTargetsMissing
-        expr:
-          sum by (job)
+        expr: sum by (job)
           (up{job=~"prometheus|alertmanager|traefik|cadvisor|alloy"}) == 0
         for: 3m
         labels:
           severity: critical
         annotations:
           summary: Prometheus all targets missing (job {{ $labels.job }})
-          description:
-            "프로메테우스 잡에 활성 타겟이 없습니다.\n  VALUE = {{ $value
+          description: "프로메테우스 잡에 활성 타겟이 없습니다.\n  VALUE = {{ $value
             }}\n  LABELS = {{ $labels }}"
 
       # [What] Infra Targets Missing (Optional Tier) / 인프라 잡 타겟 다운(옵션)
       - alert: PrometheusInfraTargetsMissing
-        expr:
-          sum by (job) (up{job=~"postgres-cluster|manage
+        expr: sum by (job) (up{job=~"postgres-cluster|manage
           postgres|valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter|kafka-exporter|minio|n8n-monitor|qdrant-monitor|haproxy|keycloak|opensearch-exporter"})
           == 0
         for: 10m
         labels:
           severity: warning
         annotations:
-          summary: "Infra targets missing (job {{ $labels.job }})"
-          description:
-            "인프라 잡 {{ $labels.job }} 의 모든 타겟이 다운되었습니다(또는
+          summary: 'Infra targets missing (job {{ $labels.job }})'
+          description: "인프라 잡 {{ $labels.job }} 의 모든 타겟이 다운되었습니다(또는
             실행되지 않음).\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       # [What] Configuration Reload Failure / 설정 리로드 실패
@@ -58,11 +53,9 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary:
-            Prometheus configuration reload failure (instance {{
+          summary: Prometheus configuration reload failure (instance {{
             $labels.instance }})
-          description:
-            "프로메테우스 설정 리로드에 실패했습니다.\n  VALUE = {{ $value
+          description: "프로메테우스 설정 리로드에 실패했습니다.\n  VALUE = {{ $value
             }}\n  LABELS = {{ $labels }}"
 
       # [What] Alertmanager Connection Failed / 얼럿매니저 연결 실패
@@ -72,27 +65,22 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary:
-            Prometheus not connected to alertmanager (instance {{
+          summary: Prometheus not connected to alertmanager (instance {{
             $labels.instance }})
-          description:
-            "프로메테우스가 얼럿매니저에 연결할 수 없습니다.\n  VALUE = {{
+          description: "프로메테우스가 얼럿매니저에 연결할 수 없습니다.\n  VALUE = {{
             $value }}\n  LABELS = {{ $labels }}"
 
       # [What] Prometheus Too Many Restarts / 프로메테우스 과다 재시작
       - alert: PrometheusTooManyRestarts
-        expr:
-          resets((time() -
+        expr: resets((time() -
           process_start_time_seconds{job=~"prometheus|pushgateway|alertmanager"})[5m:15s])
           > 2
         for: 2m
         labels:
           severity: warning
         annotations:
-          summary:
-            "Prometheus too many restarts (instance {{ $labels.instance }})"
-          description:
-            "프로메테우스가 5분 내 2회 이상 재시작했습니다.\n  VALUE = {{ $value
+          summary: 'Prometheus too many restarts (instance {{ $labels.instance }})'
+          description: "프로메테우스가 5분 내 2회 이상 재시작했습니다.\n  VALUE = {{ $value
             }}\n  LABELS = {{ $labels }}"
 
       # [What] Prometheus Rule Evaluation Failures / 규칙 평가 실패
@@ -102,11 +90,9 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary:
-            "Prometheus rule evaluation failures (instance {{ $labels.instance
-            }})"
-          description:
-            "프로메테우스 규칙 평가에 실패했습니다.\n  VALUE = {{ $value
+          summary: 'Prometheus rule evaluation failures (instance {{ $labels.instance
+            }})'
+          description: "프로메테우스 규칙 평가에 실패했습니다.\n  VALUE = {{ $value
             }}\n  LABELS = {{ $labels }}"
 
       # [What] Prometheus TSDB Compaction Failed / TSDB 압축 실패
@@ -116,11 +102,9 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary:
-            "Prometheus TSDB compactions failed (instance {{ $labels.instance
-            }})"
-          description:
-            "TSDB 압축에 실패했습니다.\n  VALUE = {{ $value }}\n  LABELS = {{
+          summary: 'Prometheus TSDB compactions failed (instance {{ $labels.instance
+            }})'
+          description: "TSDB 압축에 실패했습니다.\n  VALUE = {{ $value }}\n  LABELS = {{
             $labels }}"
 
       # [What] Alertmanager Config Not Synced / 얼럿매니저 설정 미동기화
@@ -130,7 +114,6 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "Alertmanager config not synced"
-          description:
-            "얼럿매니저 인스턴스 간 설정이 동기화되지 않았습니다.\n  VALUE = {{
+          summary: 'Alertmanager config not synced'
+          description: "얼럿매니저 인스턴스 간 설정이 동기화되지 않았습니다.\n  VALUE = {{
             $value }}\n  LABELS = {{ $labels }}"

@@ -2,7 +2,7 @@
 set -euo pipefail
 umask 077
 
-SCRIPT_NAME="$(basename "$0")"
+# SCRIPT_NAME="$(basename "$0")"
 
 usage() {
   cat <<'EOF'

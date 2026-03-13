@@ -105,4 +105,3 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 - **Spec**: `specs/infra/baseline/spec.md`
 - **ARD**: `docs/ard/infra-baseline-ard.md`
 - **Architecture**: `ARCHITECTURE.md`
-

@@ -57,7 +57,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 | TASK-001 | Audit all long-running services for `healthcheck` coverage and add missing healthchecks. | `infra/**/docker-compose*.yml` | [REQ-STD-001] | `docker compose --env-file .env.example config` output contains `healthcheck:` for all long-running services. |
 | TASK-002 | Audit external exposure patterns; ensure Traefik labels are used for intended public endpoints and remove unnecessary host `ports:` where safe. | `infra/**/docker-compose*.yml`, `infra/01-gateway/traefik/**` | [REQ-STD-002] | Services intended for external access have `traefik.http.routers.*`; unnecessary host ports are removed without breaking documented workflows. |
 | TASK-003 | Normalize env mapping conventions (where applicable) to `${DEFAULT_ENV}` and consistent `.env` usage patterns. | `.env.example`, `infra/**/docker-compose*.yml` | [REQ-STD-003] | No ad-hoc envfile paths; conventions documented and consistent. |
-| TASK-004 | Validate security baseline propagation via `extends: base-security` (cap_drop/no-new-privileges). | `infra/common-optimizations.yml`, representative compose files using `base-security` (e.g. `infra/05-messaging/kafka/docker-compose.yml`) | [AC-STD-001] | `docker compose --env-file .env.example config | rg -q \"cap_drop:\\n\\s*- ALL\"` exits `0`. |
+| TASK-004 | Validate security baseline propagation via `extends: base-security` (cap_drop/no-new-privileges). | `infra/common-optimizations.yml`, representative compose files using `base-security` (e.g. `infra/05-messaging/kafka/docker-compose.yml`) | [AC-STD-001] | `docker compose --env-file .env.example config \| rg -q \"cap_drop:\\n\\s*- ALL\"` exits `0`. |
 
 **Traceability Matrix**
 
@@ -82,7 +82,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 | ID             | Level       | Description | Command / How to Run | Pass Criteria |
 | -------------- | ----------- | ----------- | -------------------- | ------------- |
 | VAL-STD-PLN-001 | Lint/Build | Schema validation (ensures healthchecks and labels resolve). | `docker compose --env-file .env.example config -q` | Exit `0` |
-| VAL-STD-PLN-002 | Lint/Build | Security baseline propagation (cap_drop). | `docker compose --env-file .env.example config | rg -q \"cap_drop:\\n\\s*- ALL\"` | Exit `0` |
+| VAL-STD-PLN-002 | Lint/Build | Security baseline propagation (cap_drop). | `docker compose --env-file .env.example config \| rg -q \"cap_drop:\\n\\s*- ALL\"` | Exit `0` |
 | VAL-STD-PLN-003 | Integration | Runtime readiness behavior (spot-check). | `docker compose --env-file .env.example up -d && docker compose ps` | Services reach `healthy` where defined; unhealthy services investigated |
 
 ## 7. Risks & Mitigations
@@ -104,4 +104,3 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 - **Spec**: `specs/infra/service-standards/spec.md`
 - **ARD**: `docs/ard/system-optimization-ard.md`
 - **Architecture**: `ARCHITECTURE.md`
-

@@ -58,7 +58,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 | TASK-001 | Audit and normalize `extends` usage to shared templates. | `infra/common-optimizations.yml`, `infra/**/docker-compose*.yml` | [REQ-GLOB-001] | `rg -n \"extends:\\n\\s+file:\" infra` references valid template files and `docker compose ... config -q` passes. |
 | TASK-002 | Audit bind mounts and normalize to `${DEFAULT_*_DIR}` path abstractions. | `.env.example`, `infra/**/docker-compose*.yml` | [REQ-GLOB-002] | No unexpected hard-coded bind paths under `device:` outside defined defaults. |
 | TASK-003 | Enforce hardened defaults via templates (read-only filesystem by default where feasible). | `infra/common-optimizations.yml`, `infra/**/docker-compose*.yml` | [SEC-GLOB-001] | Services intended to be hardened extend hardened templates; exceptions documented and minimal. |
-| TASK-004 | Validate profile behavior supports starting only core services. | `infra/01-gateway/traefik/docker-compose.yml`, `infra/02-auth/keycloak/docker-compose.yml`, `infra/02-auth/oauth2-proxy/docker-compose.yml`, `docker-compose.yml` | [AC-GLOB-001] | `COMPOSE_PROFILES=core docker compose --env-file .env.example config --services | sort` output is exactly `keycloak`, `oauth2-proxy`, `traefik`. |
+| TASK-004 | Validate profile behavior supports starting only core services. | `infra/01-gateway/traefik/docker-compose.yml`, `infra/02-auth/keycloak/docker-compose.yml`, `infra/02-auth/oauth2-proxy/docker-compose.yml`, `docker-compose.yml` | [AC-GLOB-001] | `COMPOSE_PROFILES=core docker compose --env-file .env.example config --services \| sort` output is exactly `keycloak`,`oauth2-proxy`,`traefik`. |
 
 **Traceability Matrix**
 
@@ -84,7 +84,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 | ----------------- | ----------- | ----------- | -------------------- | ------------- |
 | VAL-GLOB-PLN-001 | Lint/Build | Global schema validation (root-only orchestration). | `docker compose --env-file .env.example config -q` | Exit `0` |
 | VAL-GLOB-PLN-002 | Lint/Build | Bind-mount abstraction audit. | `rg -n \"device:\\s*/\" infra` | No unexpected hard-coded paths (only documented exceptions) |
-| VAL-GLOB-PLN-003 | Integration | PRD AC: core profile isolates core services. | `COMPOSE_PROFILES=core docker compose --env-file .env.example config --services | sort` | Output is exactly: `keycloak`, `oauth2-proxy`, `traefik` |
+| VAL-GLOB-PLN-003 | Integration | PRD AC: core profile isolates core services. | `COMPOSE_PROFILES=core docker compose --env-file .env.example config --services \| sort` | Output is exactly: `keycloak`, `oauth2-proxy`, `traefik` |
 
 ## 7. Risks & Mitigations
 
