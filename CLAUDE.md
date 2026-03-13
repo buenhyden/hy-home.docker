@@ -1,4 +1,6 @@
-# Claude Project Memory
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 Claude-specific root only. Shared repository policy is imported from `.claude/*.md`; do not duplicate it here.
 
