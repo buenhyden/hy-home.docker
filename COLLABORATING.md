@@ -19,7 +19,7 @@ Before any major development begins, ensure your Environment allows seamless AI/
 
 Before any major development begins, the team MUST establish working agreements.
 
-- **Action**: Use `templates/guides/collaboration-guide-template.md` to create `docs/manuals/collaboration-guide.md`.
+- **Action**: Use `templates/collaboration-guide-template.md` to create `docs/manuals/collaboration-guide.md`.
 - **Requirement**: Answer all 11 items in the **Development Process & Collaboration Checklist** (e.g., Branching Strategy, SLA, DoD, Code Review rules).
 - **Enforcement**: AI Agents will verify the existence and completeness of this guide during project initialization.
 
@@ -28,15 +28,15 @@ Before any major development begins, the team MUST establish working agreements.
 When requesting new features, humans should primarily interact with the **Planner Agent**.
 
 - **Human**: Defines the high-level business need in an Issue or a prompt.
-- **AI (Planner)**: Utilizes `templates/product/prd-template.md` to generate a PRD (`docs/prd/`).
-- **AI (Planner)**: Once the PRD is approved, it writes an Implementation Spec in `specs/` using `templates/engineering/spec-template.md`.
+- **AI (Planner)**: Utilizes `templates/prd-template.md` to generate a PRD (`docs/prd/`).
+- **AI (Planner)**: Once the PRD is approved, it writes an Implementation Spec in `docs/specs/` using `templates/spec-template.md`.
 - **Human**: MUST approve the final spec before any code is generated.
 
 ## 2. Code Implementation Workflow (During-Development)
 
 Humans generally **do not write boilerplate**.
 
-- **AI (Backend/Frontend Coder)**: Implements code and inline tests EXACTLY as specified in `specs/`.
+- **AI (Backend/Frontend Coder)**: Implements code and inline tests EXACTLY as specified in `docs/specs/`.
 - **Rule of Thumb**: The AI should never invent undocumented edge cases. If missing, it must stop and ask.
 - **Human**: Provide domain-specific guidance only when the AI encounters genuine architectural friction not covered by `ARCHITECTURE.md`.
 
@@ -44,20 +44,20 @@ Humans generally **do not write boilerplate**.
 
 - **AI (Reviewer)**: Performs initial linting, security checks, and spec-compliance verification on the PR.
 - **Human**: Final merge approval, focusing on business value and preventing regressions.
-- **AI (DevOps)**: Instructed to generate/update the deployment guide in `runbooks/` using `templates/operations/runbook-template.md`.
+- **AI (DevOps)**: Instructed to generate/update the deployment guide in `docs/runbooks/` using `templates/runbook-template.md`.
 
 ## 4. Resolving Conflicts (AI Hallucinations)
 
 If an AI Agent hallucinates or gets stuck in a loop:
 
 1. Explicitly stop the agent.
-2. Manually adjust the specification in `specs/` or add rigid constraints to `docs/guides/` or `llms.txt`.
+2. Manually adjust the specification in `docs/specs/` or add rigid constraints to `docs/guides/`.
 3. Re-prompt the agent, pointing them firmly to the specific markdown line they disregarded.
 
 ## 5. Evolving the Rules (Collaborating on Standards)
 
-Standard Agent Rules live in `.agent/rules/`. Project-specific context lives in `llms.txt` or `docs/guides/`.
+Standard Agent Rules live in `.agent/rules/`. Project-specific context lives in `docs/guides/`.
 
-1. **Project-Specific Overrides**: Humans can define overrides to global `.agent/rules/` within `llms.txt` or specific `docs/guides/`. Agents will prioritize `llms.txt` for project context.
+1. **Project-Specific Overrides**: Humans can define overrides to global `.agent/rules/` within specific `docs/guides/`.
 2. **Global Rule Updates**: If a global standard needs to evolve, humans must update the corresponding markdown file in `.agent/rules/` to ensure all future Agents act upon the new intent.
 3. **Contradictions**: If human instructions contradict an established `.agent/rule/`, the Agent will flag the violation based on `.agent/rules/` and request explicit confirmation to bypass or update the rule.

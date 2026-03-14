@@ -4,8 +4,8 @@ This document is the central index for the `hy-home.docker` operational policies
 
 - **Design reference:** [`ARCHITECTURE.md`](ARCHITECTURE.md) (Architecture principles)
 - **Product vision:** [`docs/prd/README.md`](docs/prd/README.md) (Project goals)
-- **Executable manuals:** [`runbooks/README.md`](runbooks/README.md) (Incident response by tier)
-- **Shared memory:** [`operations/README.md`](operations/README.md) (Postmortem and incident archives)
+- **Executable manuals:** [`docs/runbooks/README.md`](runbooks/README.md) (Incident response by tier)
+- **Shared memory:** [`docs/operations/README.md`](operations/README.md) (Postmortem and incident archives)
 
 ---
 
@@ -19,17 +19,17 @@ This document is the central index for the `hy-home.docker` operational policies
 
 ## 2. Operational Principles
 
-1. **Runbook-first:** Follow procedures defined in [`runbooks/`](runbooks/) before executing commands manually.
+1. **Runbook-first:** Follow procedures defined in [`docs/runbooks/`](docs/runbooks/) before executing commands manually.
 2. **Validate-then-apply:** Run [`scripts/validate-docker-compose.sh`](scripts/validate-docker-compose.sh) before every modification.
 3. **Secrets hygiene:** 100% of sensitive data must flow through Docker Secrets at `/run/secrets/`.
-4. **Blameless culture:** Perform a blameless postmortem ([operations/postmortems/](operations/postmortems/)) for all SEV-1/2 incidents.
+4. **Blameless culture:** Perform a blameless postmortem ([docs/operations/postmortems/](docs/operations/postmortems/)) for all SEV-1/2 incidents.
 
 ## 3. Incident Severity & Response
 
 | Severity | Impact | Action | Tracking Hub |
 | :--- | :--- | :--- | :--- |
-| **SEV-1** | Core failure (Gateway/Auth) | Immediate response via `runbooks/core/`. | [Incident History](operations/incidents/) |
-| **SEV-2** | Service degradation (DB/Data) | Response within 4 hours. | [Incident History](operations/incidents/) |
+| **SEV-1** | Core failure (Gateway/Auth) | Immediate response via `docs/runbooks/`. | [Incident History](operations/incidents/) |
+| **SEV-2** | Service degradation (DB/Data) | Response within 4 hours. | [Incident History](docs/operations/incidents/) |
 | **SEV-3** | Minor/Intermittent issue | Log via GitHub Issues. | N/A |
 
 ## 4. Observability & Monitoring
@@ -52,4 +52,4 @@ This document is the central index for the `hy-home.docker` operational policies
 
 ---
 > [!TIP]
-> Keep detailed operational logic in the `runbooks/` directory instead of this index document.
+> Keep detailed operational logic in the `docs/runbooks/` directory instead of this index document.

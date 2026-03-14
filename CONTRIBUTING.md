@@ -11,13 +11,13 @@ This file is necessary to define the exact, mechanical steps a human must take t
 
 ## 1. Spec-Driven Core Rule
 
-All new features **must** begin with a specification in the `specs/` folder. Pull Requests that add code without an approved, corresponding specification will be immediately rejected without review.
+All new features **must** begin with a specification in the `docs/specs/` folder. Pull Requests that add code without an approved, corresponding specification will be immediately rejected without review.
 
 ## 2. Template Enforcement
 
 If your contribution involves documentation (ADR, PRD, Runbook, etc.), you **MUST** use the predefined templates located in the `templates/` directory.
 
-- Do not invent your own format for Architecture Decision Records. Use `templates/architecture/adr-template.md`.
+- Do not invent your own format for Architecture Decision Records. Use `templates/adr-template.md`.
 - Ensure all sections are filled out before submitting.
 
 ## 3. Local QA & Test Coverage (Pre-PR Gate)
@@ -32,13 +32,13 @@ We enforce strict Quality Assurance metrics. Before you pull request, you must s
 ### 3.1 Infra Contribution Constraints
 
 - Do not run `docker compose` or Git directly from `/mnt/c/`. Execute everything within the WSL2 ext4 filesystem.
-- When creating a new service in `infra/`, DO NOT add a local `README.md`. Use the centralized `docs/`, `operations/`, or `runbooks/` routes.
+- When creating a new service in `infra/`, DO NOT add a local `README.md`. Use the centralized `docs/`, `docs/operations/`, or `docs/runbooks/` routes.
 
 ## 4. Pull Request Process
 
 1. **Branch Naming**: Ensure your branch name follows the convention: `feature/XXX`, `fix/XXX`, or `docs/XXX`.
 2. **Commit Messages**: Use Conventional Commits.
-3. **Traceability**: Your PR description **must** reference the specific file in `specs/` it addresses.
+3. **Traceability**: Your PR description **must** reference the specific file in `docs/specs/` it addresses.
 
 ## 5. Multi Sub-Agent Interaction
 

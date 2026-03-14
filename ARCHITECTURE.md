@@ -1,12 +1,12 @@
 # System Architecture
 
-This document defines the global architectural invariants and rules for the `hy-home.docker` repository. For service-specific details, see [`docs/context/`](docs/context/). For operational procedures, refer to [`runbooks/`](runbooks/) and [`OPERATIONS.md`](OPERATIONS.md).
+This document defines the global architectural invariants and rules for the `hy-home.docker` repository. For service-specific details, see [`docs/context/`](docs/context/). For operational procedures, refer to [`docs/runbooks/`](docs/runbooks/) and [`OPERATIONS.md`](OPERATIONS.md).
 
 ## 1. Scope
 
 - **Target:** The infrastructure stack composed of the root [`docker-compose.yml`](docker-compose.yml) and modular definitions in [`infra/`](infra/).
 - **Goal:** To provide a reproducible, multi-tier infrastructure for local development and home-lab environments.
-- **Exclusions:** Internal business logic and application-level code details (defined in [`specs/`](specs/)).
+- **Exclusions:** Internal business logic and application-level code details (defined in [`docs/specs/`](docs/specs/)).
 
 ## 2. Architectural Invariants
 
@@ -17,7 +17,7 @@ Standard rules for the codebase. Exceptions must be documented in ADRs or featur
 - **Secrets-first:** Passwords and tokens must never be in `.env`. They are injected via `secrets/**/*.txt` into `/run/secrets/`.
 - **Port policy:** Host-exposed ports use `*_HOST_PORT`. Container-internal ports use `*_PORT`. Always use `${VAR:-default}` in Compose files.
 - **Security baseline:** By default, all services must implement `security_opt: [no-new-privileges:true]` and `cap_drop: [ALL]`.
-- **Documentation separation:** Background info goes to [`docs/`](docs/), plans to [`specs/`](specs/), and executable manuals to [`runbooks/`](runbooks/).
+- **Documentation separation:** Background info goes to [`docs/`](docs/), plans to [`docs/specs/`](docs/specs/), and executable manuals to [`docs/runbooks/`](docs/runbooks/).
 
 ## 3. Runtime Topology
 
