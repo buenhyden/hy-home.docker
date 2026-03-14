@@ -90,7 +90,7 @@ All architectural modifications must satisfy this checklist:
 | Secret impact | Define new secret file paths and injection methods. | Yes |
 | Port impact | Update `*_HOST_PORT` variables and default values. | Yes |
 | Security baseline | Provide justification for privilege escalation (cap_add/privileged). | Yes |
-| Ops impact | Update corresponding `runbooks/` and `OPERATIONS.md`. | Yes |
+| Ops impact | Update corresponding `docs/runbooks/` and `OPERATIONS.md`. | Yes |
 | Validation | Must pass `bash scripts/validate-docker-compose.sh`. | Yes |
 | Traceability | Reciprocal links between ADR, Spec, and Runbook. | Yes |
 

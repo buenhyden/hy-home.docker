@@ -28,7 +28,7 @@ This document is the central index for the `hy-home.docker` operational policies
 
 | Severity | Impact | Action | Tracking Hub |
 | :--- | :--- | :--- | :--- |
-| **SEV-1** | Core failure (Gateway/Auth) | Immediate response via `docs/runbooks/`. | [Incident History](operations/incidents/) |
+| **SEV-1** | Core failure (Gateway/Auth) | Immediate response via `docs/runbooks/`. | [Incident History](docs/operations/incidents/) |
 | **SEV-2** | Service degradation (DB/Data) | Response within 4 hours. | [Incident History](docs/operations/incidents/) |
 | **SEV-3** | Minor/Intermittent issue | Log via GitHub Issues. | N/A |
 
@@ -36,7 +36,7 @@ This document is the central index for the `hy-home.docker` operational policies
 
 - **Log centralization:** All services must use the `loki` driver. Perform queries via [Grafana Explore](https://grafana.${DEFAULT_URL}/explore).
 - **Metric collection:** Prometheus scrapes exporters every 15 seconds. Standard dashboards are in [`infra/06-observability/grafana/dashboards/`](infra/06-observability/grafana/dashboards/).
-- **Alerting:** Alertmanager routes critical alerts to configured messengers. Logic is defined in [`runbooks/alerting/`](runbooks/alerting/).
+- **Alerting:** Alertmanager routes critical alerts to configured messengers. Logic is defined in [`docs/runbooks/alerting/`](docs/runbooks/alerting/).
 
 ## 5. Backup & Disaster Recovery
 
@@ -48,7 +48,7 @@ This document is the central index for the `hy-home.docker` operational policies
 
 - **Infra lifecycle:** [`docs/context/core/infra-lifecycle-ops.md`](docs/context/core/infra-lifecycle-ops.md)
 - **Security policy:** [`.github/SECURITY.md`](.github/SECURITY.md)
-- **RCA hub:** [`operations/postmortems/README.md`](operations/postmortems/README.md)
+- **RCA hub:** [`docs/operations/postmortems/README.md`](docs/operations/postmortems/README.md)
 
 ---
 > [!TIP]
