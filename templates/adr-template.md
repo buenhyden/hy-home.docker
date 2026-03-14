@@ -13,11 +13,7 @@
 > - Allowed scope values layer values: `common | architecture | backend | frontend | infra | mobile | product | qa | security`
 > - Keep all structural and narrative content in English.
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
->
-> Shape guidance:
->
-> - Use the extended shape for `content/` and `vault/` domain decisions or any decision that needs alternatives, trade-offs, and traceability detail.
-> - Use the compact shape for lightweight governance or documentation-boundary ADRs such as the `docs/web` V2 active chain.
+
 
 ## Optional Frontmatter
 

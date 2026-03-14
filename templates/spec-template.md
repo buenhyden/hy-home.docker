@@ -14,11 +14,6 @@
 > - Verification is mandatory even for documentation-only tracks.
 > - Keep all structural and narrative content in English.
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
->
-> Shape guidance:
->
-> - Use the extended technical form for `content/` and `vault/` specs.
-> - Use the compact contract form for active-chain `web/` specs that define platform baselines, archive rules, design-system direction, or other high-level implementation contracts.
 
 ## Optional Frontmatter
 

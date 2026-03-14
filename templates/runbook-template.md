@@ -16,8 +16,8 @@
 >
 > Shape guidance:
 >
-> - Use the checklist form for repeatable review workflows such as active `docs/web` validation runbooks.
-> - Use the extended troubleshooting form for operational investigation and recovery workflows such as `docs/content/runbooks/content-pipeline-verification.md`.
+> - Use the checklist form for repeatable review workflows such as active `docs/` validation runbooks.
+> - Use the extended troubleshooting form for operational investigation and recovery workflows such as `docs/runbooks/content-pipeline-verification.md`.
 
 ## Optional Frontmatter
 

@@ -13,11 +13,6 @@
 > - Every active plan must include explicit verification criteria.
 > - Keep all structural and narrative content in English.
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
->
-> Shape guidance:
->
-> - Use the extended task-and-verification form for `content/` and `vault/`.
-> - Use the compact implementation form when the plan is mainly a phased task ledger, as in the active `docs/web` V2 chain.
 
 ## Optional Frontmatter
 

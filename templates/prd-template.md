@@ -13,11 +13,6 @@
 > - `domain` documents should name their parent master PRD where applicable.
 > - Keep all structural and narrative content in English.
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
->
-> Shape guidance:
->
-> - Use the extended form for `content/` and `vault/` system PRDs.
-> - Use the compact form for active-chain `web/` PRDs where the requirements are already narrowed by adjacent ADR/ARD/spec docs.
 
 ## Optional Frontmatter
 

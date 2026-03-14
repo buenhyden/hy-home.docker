@@ -14,11 +14,7 @@
 > - `domain` documents should name their parent master ARD where applicable.
 > - Keep all structural and narrative content in English.
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
->
-> Shape guidance:
->
-> - Use the extended architecture form for `content/` and `vault/` system documents.
-> - Use the compact architecture form for focused `web/` active-chain ARDs where the architecture boundary is intentionally compressed into summary, rules, and ownership.
+
 
 ## Optional Frontmatter
 
