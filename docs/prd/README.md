@@ -17,6 +17,7 @@ This directory defines the "what" and "why" of product features, serving as the 
 | [messaging-prd.md](messaging-prd.md) | Messaging Backbone | Approved | 2026-02-27 |
 | [observability-prd.md](observability-prd.md) | Unified Telemetry | Approved | 2026-02-27 |
 | [system-architecture-prd.md](system-architecture-prd.md) | Global Repostory Structure | Approved | 2026-02-27 |
+| [refactor-docs-prd.md](refactor-docs-prd.md) | Documentation Refactor | Approved | 2026-03-14 |
 
 ---
 > [!NOTE]

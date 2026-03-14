@@ -1,11 +1,15 @@
+---
+layer: ops
+---
+
 # Operations Index
 
 This document is the central index for the `hy-home.docker` operational policies and execution frameworks.
 
 - **Design reference:** [`ARCHITECTURE.md`](ARCHITECTURE.md) (Architecture principles)
 - **Product vision:** [`docs/prd/README.md`](docs/prd/README.md) (Project goals)
-- **Executable manuals:** [`docs/runbooks/README.md`](runbooks/README.md) (Incident response by tier)
-- **Shared memory:** [`docs/operations/README.md`](operations/README.md) (Postmortem and incident archives)
+- **Executable manuals:** [`docs/runbooks/README.md`](docs/runbooks/README.md) (Incident response by tier)
+- **Shared memory:** [`docs/operations/README.md`](docs/operations/README.md) (Postmortem and incident archives)
 
 ---
 

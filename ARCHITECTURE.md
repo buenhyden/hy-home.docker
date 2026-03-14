@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # System Architecture
 
 This document defines the global architectural invariants and rules for the `hy-home.docker` repository. For service-specific details, see [`docs/context/`](docs/context/). For operational procedures, refer to [`docs/runbooks/`](docs/runbooks/) and [`OPERATIONS.md`](OPERATIONS.md).
@@ -81,18 +85,7 @@ graph TD
 
 ## 4. Change Governance
 
-All architectural modifications must satisfy this checklist:
-
-| Check | Requirement | Mandatory |
-| :--- | :--- | :--- |
-| Boundary impact | Explicitly state which tier/service boundary is changing. | Yes |
-| Network impact | Analyze effects on `infra_net` or external networks. | Yes |
-| Secret impact | Define new secret file paths and injection methods. | Yes |
-| Port impact | Update `*_HOST_PORT` variables and default values. | Yes |
-| Security baseline | Provide justification for privilege escalation (cap_add/privileged). | Yes |
-| Ops impact | Update corresponding `docs/runbooks/` and `OPERATIONS.md`. | Yes |
-| Validation | Must pass `bash scripts/validate-docker-compose.sh`. | Yes |
-| Traceability | Reciprocal links between ADR, Spec, and Runbook. | Yes |
+All architectural modifications must satisfy the repository's governance checklist. For detailed requirements, see the [Architecture Governance Rule](docs/agentic/rules/governance-rule.md).
 
 ## 5. References
 

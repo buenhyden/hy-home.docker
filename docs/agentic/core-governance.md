@@ -46,13 +46,13 @@ This repository is a Docker Compose infrastructure workspace for local and homel
 - Start with [gateway.md](gateway.md) for session-start orientation.
 - Use index documents (`README.md`) for discovery within categories.
 - Stable doc roots (Flat taxonomy):
-  - Decisions: [../docs/adr/README.md](../docs/adr/README.md)
-  - Requirements: [../docs/prd/README.md](../docs/prd/README.md), [../docs/ard/README.md](../docs/ard/README.md)
-  - Implementation: [../docs/specs/README.md](../docs/specs/README.md), [../docs/plans/README.md](../docs/plans/README.md)
-  - Operations: [../docs/runbooks/README.md](../docs/runbooks/README.md), [../docs/operations/README.md](../docs/operations/README.md)
+  - Decisions: [../adr/README.md](../adr/README.md)
+  - Requirements: [../prd/README.md](../prd/README.md), [../ard/README.md](../ard/README.md)
+  - Implementation: [../specs/README.md](../specs/README.md), [../plans/README.md](../plans/README.md)
+  - Operations: [../runbooks/README.md](../runbooks/README.md), [../operations/incidents/README.md](../operations/incidents/README.md), [../operations/postmortems/README.md](../operations/postmortems/README.md)
   - Agentic: [README.md](README.md)
-  - Deep Context: [../docs/context/README.md](../docs/context/README.md)
-  - Methods: [../docs/guides/README.md](../docs/guides/README.md), [../docs/manuals/README.md](../docs/manuals/README.md)
+  - Deep Context: [../context/README.md](../context/README.md)
+  - Methods: [../guides/README.md](../guides/README.md), [../manuals/README.md](../manuals/README.md)
 
 ## Template Usage Contract
 

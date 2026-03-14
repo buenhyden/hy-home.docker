@@ -1,13 +1,8 @@
+---
+layer: meta
+---
+
 # Contributor Covenant Code of Conduct
-
-## Necessity & Required Content
-
-This `CODE_OF_CONDUCT.md` file is necessary to outline the ethical and behavioral expectations for both human contributors and AI entities operating within the repository.
-**What Must Be Written Here**:
-
-- Human-to-human behavioral standards.
-- Human-to-AI prompt ethics and anti-harassment rules.
-- Reporting instructions for safety violations.
 
 ## Our Pledge
 
@@ -43,7 +38,3 @@ Report incidents to the maintainers through a private channel:
 ## Scope
 
 This Code of Conduct applies within all project spaces, including issues, pull requests, code review discussions, and other official communication channels.
-
-## Responsible AI Collaboration
-
-As this repository utilizes AI agents for development and review, all interactions with AI (prompts, issues, PR comments) must also adhere to our community standards. Furthermore, contributors must align with `.agent/rules/0106-responsible-ai.md` to ensure that AI is utilized in an ethically sound, unbiased, and safe manner.

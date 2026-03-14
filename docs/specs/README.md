@@ -11,6 +11,7 @@ This directory is the tactical source of truth for active implementation contrac
 ### 🏗️ Global & Agent Standards
 
 - [**Agent Instruction Refactor**](agent-instructions-spec.md) — Normalizing agent guidance.
+- [**Documentation Refactor**](refactor-docs-spec.md) — Role-based taxonomy and metadata.
 - [**Global Baseline**](infra-global-baseline-spec.md) — Cross-stack standards and conventions.
 - [**Service Standards**](infra-service-standards-spec.md) — Inter-service communication rules.
 

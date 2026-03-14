@@ -1,3 +1,7 @@
+---
+layer: entry
+---
+
 # hy-home.docker
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](#license)
@@ -261,16 +265,16 @@ hy-home.docker/
 ├── .github/              # CI, issue templates, security policy, and repo automation
 ├── archive/              # Archived or historical artifacts
 ├── docs/                 # PRDs, ARDs, ADRs, specs, plans, runbooks, context, guides
-│   ├── adr/
-│   ├── ard/
-│   ├── context/
-│   ├── guides/
-│   ├── manuals/
-│   ├── operations/
-│   ├── plans/
-│   ├── prd/
-│   ├── runbooks/
-│   └── specs/
+│   ├── adr/              # Architectural Decision Records
+│   ├── ard/              # Architecture Requirements Documents
+│   ├── context/          # System and service context
+│   ├── guides/           # Procedural and lifecycle guides
+│   ├── manuals/          # Team and collaboration manuals
+│   ├── operations/       # Incidents and postmortems (Shared memory)
+│   ├── plans/            # Implementation plans
+│   ├── prd/              # Product Requirements Documents
+│   ├── runbooks/         # Executable runbooks
+│   └── specs/            # Technical specifications
 ├── examples/             # Example assets and supporting reference material
 ├── infra/                # Tiered service definitions grouped by platform domain
 │   ├── 01-gateway/
@@ -525,150 +529,19 @@ Use these docs instead of expanding the root README into an operating manual:
 
 ## Troubleshooting
 
-### Placeholder secrets are still present
-
-Symptom:
-
-- integrations fail authentication
-- a secret file still contains `CHANGE_ME_*`
-
-Likely cause:
-
-- bootstrap generated placeholders for values that must be supplied manually
-
-Exact next step:
-
-```bash
-bash scripts/bootstrap-secrets.sh --env-file .env --strict
-```
-
-Then edit the reported files under `secrets/` and replace the placeholders with real values.
-
-### Certificate generation fails immediately
-
-Symptom:
-
-- `generate-local-certs.sh` exits with `mkcert is not installed`
-
-Likely cause:
-
-- `mkcert` is missing from the host
-
-Exact next step:
-
-- install `mkcert`
-- rerun:
-
-```bash
-bash scripts/generate-local-certs.sh
-```
-
-### Compose validation fails
-
-Symptom:
-
-- `bash scripts/validate-docker-compose.sh` returns a Compose interpolation or config error
-
-Likely cause:
-
-- `.env` is missing required values
-- a referenced include or secret path is invalid
-- a recent Compose change introduced invalid YAML or interpolation
-
-Exact next step:
-
-```bash
-docker compose config
-```
-
-Read the failing service or variable reference, fix the config, then rerun the validation script.
-
-### Preflight reports missing directories
-
-Symptom:
-
-- `bash scripts/preflight-compose.sh` fails on one or more mount paths
-
-Likely cause:
-
-- the directories from `.env` were not created yet
-
-Exact next step:
-
-```bash
-mkdir -p \
-  /home/hy/volumes/auth \
-  /home/hy/volumes/data \
-  /home/hy/volumes/message_broker \
-  /home/hy/volumes/obs
-```
-
-If you changed `DEFAULT_MOUNT_VOLUME_PATH`, create the equivalent subdirectories under your chosen root and rerun preflight.
-
-### Host ports are already in use
-
-Symptom:
-
-- `docker compose up -d` fails with a bind error such as `port is already allocated`
-
-Likely cause:
-
-- another service is using one of the host ports defined in `.env`
-
-Exact next step:
-
-- update the conflicting `*_HOST_PORT` value in `.env`
-- rerun validation
-- start the stack again
-
-### Optional external networks are missing
-
-Symptom:
-
-- preflight warns that `project_net` or `kind` does not exist
-
-Likely cause:
-
-- the integration network has not been created yet
-
-Exact next step:
-
-- ignore the warning if you do not use that integration
-- otherwise create the needed network before booting dependent services:
-
-```bash
-docker network create project_net
-docker network create kind
-```
+For common issues regarding secrets, certificates, or network configuration, refer to the [Troubleshooting Guide](docs/guides/troubleshooting.md).
 
 ## Contributing
 
-This repository expects spec-driven changes and explicit validation.
-
-Before opening a PR:
-
-1. start from the relevant specification or create one in [`docs/specs/`](docs/specs/)
-2. use the templates in [`templates/`](templates/) for structured docs changes
-3. follow Conventional Commits and branch naming rules
-4. run local validation and QA checks
-5. link the relevant spec or plan in your PR description
-
-Read the full contributor policy in:
-
-- [`CONTRIBUTING.md`](CONTRIBUTING.md)
-- [`COLLABORATING.md`](COLLABORATING.md)
+We welcome contributions! Please read our [Contributing Guide](docs/guides/contributing-guide.md) and [Collaboration Guide](docs/manuals/collaboration-guide.md) before getting started.
 
 ## Related Documentation
 
-- [`AGENTS.md`](AGENTS.md) for the repository-wide agent contract
-- [`ARCHITECTURE.md`](ARCHITECTURE.md) for architectural invariants and runtime topology
-- [`OPERATIONS.md`](OPERATIONS.md) for environment tiers and operational principles
-- [`docs/README.md`](docs/README.md) for the documentation index
-- [`docs/context/README.md`](docs/context/README.md) for service and tier deep dives
-- [`docs/runbooks/README.md`](docs/runbooks/README.md) for executable operational procedures
-- [`docs/specs/README.md`](docs/specs/README.md) for tactical implementation specifications
-- [`infra/`](infra/) for service-specific READMEs and Compose definitions
+- [`AGENTS.md`](AGENTS.md): Global agent contract.
+- [`ARCHITECTURE.md`](ARCHITECTURE.md): Architectural invariants.
+- [`OPERATIONS.md`](OPERATIONS.md): Operational index.
+- [`docs/README.md`](docs/README.md): Documentation taxonomy and index.
 
 ## License
 
-This repository is documented and distributed under the Apache License 2.0 conventions used by the project.
+This repository is distributed under the Apache License 2.0.

@@ -4,7 +4,6 @@ layer: core
 
 # QA & Security Guide
 
-_Target Directory: `docs/manuals/qa-security-guide.md`_
 _Description: This document defines the team's quantitative and qualitative standards for testing, code quality, and application security._
 
 ## 1. Quality & Test Checklist

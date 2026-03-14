@@ -24,6 +24,7 @@ This directory indexes active implementation and refactor plans. Plans define th
 ## Refactor & Maintenance Plans
 
 - [**Agent Instruction Refactor**](2026-03-12-agent-instruction-refactor.md)
+- [**Documentation Refactor**](refactor-docs-plan.md)
 
 ## Purpose
 
