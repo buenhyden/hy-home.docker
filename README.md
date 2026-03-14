@@ -271,7 +271,7 @@ hy-home.docker/
 │   ├── guides/           # Procedural and lifecycle guides
 │   ├── manuals/          # Team and collaboration manuals
 │   ├── operations/       # Incidents and postmortems (Shared memory)
-│   ├── plans/            # Implementation plans
+│   ├── plan/             # Implementation plans
 │   ├── prd/              # Product Requirements Documents
 │   ├── runbooks/         # Executable runbooks
 │   └── specs/            # Technical specifications

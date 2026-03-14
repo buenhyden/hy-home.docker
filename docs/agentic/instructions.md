@@ -30,6 +30,7 @@ Detailed behavioral standards and operational rules for AI agents in `hy-home.do
 ## 4. Responsible AI Collaboration
 
 - Adhere to community standards for empathy and constructive feedback.
+- **Skill Autonomy**: Proactively discover and apply purpose-fit skills from the toolkit. There are no restricted skills; use what is appropriate for the task.
 - Ensure tool use is efficient and well-documented.
 - Never hallucinate requirements or edge cases; stop and ask for clarification.
 - Follow the persona matrix to ensure the correct level of authority and expertise.

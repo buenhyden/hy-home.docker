@@ -8,8 +8,9 @@ This document is the central index for the `hy-home.docker` operational policies
 
 - **Design reference:** [`ARCHITECTURE.md`](ARCHITECTURE.md) (Architecture principles)
 - **Product vision:** [`docs/prd/README.md`](docs/prd/README.md) (Project goals)
+- **Execution maps:** [`docs/plans/README.md`](docs/plans/README.md) (Active workstreams)
 - **Executable manuals:** [`docs/runbooks/README.md`](docs/runbooks/README.md) (Incident response by tier)
-- **Shared memory:** [`docs/operations/README.md`](docs/operations/README.md) (Postmortem and incident archives)
+- **Shared memory:** [`docs/operations/incidents/README.md`](docs/operations/incidents/README.md) (Postmortem and incident archives)
 
 ---
 

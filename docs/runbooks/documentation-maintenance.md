@@ -1,38 +1,41 @@
 ---
-layer: ops
+title: 'Documentation Maintenance Runbook'
+status: 'Active'
+owner: 'buenhyden'
+tags: ['runbook', 'documentation']
+layer: 'ops'
 ---
 
 # Documentation Maintenance Runbook
 
-This runbook describes the procedure for maintaining, updating, and verifying the integrity of the repository's documentation system.
+**Overview (KR):** 저장소의 평면적 문서 구조와 AI Agent용 Lazy-Loading 체계를 유지하고 관리하기 위한 실행 지침서입니다.
 
-## 1. Adding a New Document
+## Prerequisites
 
-1. **Identify the Role**: Determine if the document is a Decision (ADR), Requirement (ARD/PRD), Spec, Plan, or Runbook.
-2. **Select the Template**: Go to `templates/` and copy the relevant template.
-3. **Place in Taxonomy**: Save the file in the matching `docs/<category>/` folder.
-4. **Metadata**: Ensure the `layer` frontmatter is present.
-5. **Cross-Reference**: Link the new document in the relevant category's `README.md`.
+- Knowledge of YAML frontmatter.
+- Understanding of `docs/agentic/gateway.md` structure.
 
-## 2. Integrity Verification
+## Procedures
 
-Pre-flight checklist for documentation changes:
+### 1. Adding a New Document
+
+1. Select the correct category subdirectory (`adr/`, `prd/`, `specs/`, etc.).
+2. Use the corresponding template from `templates/`.
+3. Add `layer:` metadata to frontmatter.
+4. Ensure all internal links are relative.
+
+### 2. Updating the Gateway
+
+If a new document category or a major rule file is added:
+
+1. Update the `Lazy-Loading Map` table in `docs/agentic/gateway.md`.
+2. Add the corresponding `[LOAD:*]` marker.
+
+### 3. Verifying Integrity
+
+Run the following commands periodically:
 
 ```bash
-# Check for missing layer metadata
 grep -r "layer:" docs/
-
-# Check for absolute filesystem links (Anti-pattern)
-grep -r "file://" docs/
-
-# Validate relative links
-# (Use md-link-checker or manual inspection)
+rg "\]\(" docs/ | grep -v "http"
 ```
-
-## 3. Link Maintenance
-
-If a folder is moved or renamed:
-
-1. Update `docs/agentic/gateway.md` immediately.
-2. Update `docs/agentic/core-governance.md` lazy-loading paths.
-3. Run a global search for links to the old path.

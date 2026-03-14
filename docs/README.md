@@ -21,9 +21,9 @@ Read this file first, then load only the relevant index document for the task.
 | `[LOAD:INDEX]` | [README.md](README.md) | Session start or repo-wide orientation |
 | `[LOAD:DECISION]` | [adr/README.md](adr/README.md) | Architecture decisions and rationale |
 | `[LOAD:STRATEGIC]` | [prd/README.md](prd/README.md), [ard/README.md](ard/README.md) | Product scope, architecture boundaries |
-| `[LOAD:TACTICAL]` | [specs/README.md](specs/README.md), [plans/README.md](plans/README.md) | Active implementation and refactor work |
+| `[LOAD:TACTICAL]` | [plan/README.md](plan/README.md) | Active implementation and refactor work |
 | `[LOAD:RUNBOOK]` | [runbooks/README.md](runbooks/README.md) | Executable operational procedures |
-| `[LOAD:HISTORY]` | [operations/README.md](operations/README.md) | Incidents, RCA, historical records |
+| `[LOAD:HISTORY]` | [operations/incidents/README.md](operations/incidents/README.md) | Incidents, RCA, historical records |
 | `[LOAD:CONTEXT]` | [context/README.md](context/README.md) | Deep service and platform blueprints |
 | `[LOAD:GUIDE]` | [guides/README.md](guides/README.md), [manuals/README.md](manuals/README.md) | Lifecycle guides and team manuals |
 

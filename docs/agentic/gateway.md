@@ -13,15 +13,19 @@ Agent-specific context entrypoint for the `hy-home.docker` infrastructure worksp
 - `[GATE-AGT-01]` Load this file first in any agent session.
 - `[GATE-AGT-02]` Read category indexes via the map below.
 - `[GATE-AGT-03]` Follow the consolidated [Behavioral Instructions](instructions.md).
+- `[GATE-AGT-04]` Select intent from the **Intent-Based Discovery** table and load the corresponding rule.
 
 ## Lazy-Loading Map (By Category)
 
 | Marker | Entry Point | Load when |
 | --- | --- | --- |
 | `[LOAD:ADR]` | [../adr/README.md](../adr/README.md) | Reviewing architecture decisions |
-| `[LOAD:PRD]` | [../prd/README.md](../prd/README.md) | Reviewing requirements |
+| `[LOAD:ARD]` | [../ard/README.md](../ard/README.md) | Reviewing architectural requirements |
+| `[LOAD:PRD]` | [../prd/README.md](../prd/README.md) | Reviewing product/system requirements |
 | `[LOAD:SPEC]` | [../specs/README.md](../specs/README.md) | Implementing or verifying specs |
+| `[LOAD:PLANS]` | [../plans/README.md](../plans/README.md) | Executing or updating implementation plans |
 | `[LOAD:RUNBOOK]` | [../runbooks/README.md](../runbooks/README.md) | Performing operational procedures |
+| `[LOAD:OPS]` | [../operations/incidents/README.md](../operations/incidents/README.md) | Reviewing operational history |
 
 ## Intent-Based Discovery (Load Rule Files)
 

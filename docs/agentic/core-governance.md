@@ -38,18 +38,17 @@ This repository is a Docker Compose infrastructure workspace for local and homel
 ## Skill Autonomy
 
 - **Discover and apply**: Choose the best-fit skill for the current task context proactively.
-- **Unrestricted usage**: Do not hardcode "approved skills" or restrict the agent's ability to browse and use its full toolkit. Use purpose-fit skills for every task (e.g., `agent-md-refactor` for instructions, `docker-expert` for compose work).
-- **Purpose Matching**: Select skills based on their functional purpose rather than list-matching.
+- **Unrestricted usage**: AI agents have full autonomy to use any available skill in their toolkit. No skills are restricted.
+- **2026-03 Compliance**: Always check root triggers `[LOAD:RULES:*]` before starting a task.
 
 ## Lazy-Loading Policy For docs/
 
 - Start with [gateway.md](gateway.md) for session-start orientation.
-- Use index documents (`README.md`) for discovery within categories.
-- Stable doc roots (Flat taxonomy):
+- Stable doc roots:
   - Decisions: [../adr/README.md](../adr/README.md)
   - Requirements: [../prd/README.md](../prd/README.md), [../ard/README.md](../ard/README.md)
-  - Implementation: [../specs/README.md](../specs/README.md), [../plans/README.md](../plans/README.md)
-  - Operations: [../runbooks/README.md](../runbooks/README.md), [../operations/incidents/README.md](../operations/incidents/README.md), [../operations/postmortems/README.md](../operations/postmortems/README.md)
+  - Implementation: [../specs/README.md](../specs/README.md), [../plan/README.md](../plan/README.md)
+  - Operations: [../runbooks/README.md](../runbooks/README.md), [../operations/incidents/README.md](../operations/incidents/README.md)
   - Agentic: [README.md](README.md)
   - Deep Context: [../context/README.md](../context/README.md)
   - Methods: [../guides/README.md](../guides/README.md), [../manuals/README.md](../manuals/README.md)
