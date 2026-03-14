@@ -5,6 +5,7 @@ version: 'v1.0.0'
 owner: 'Platform Architect'
 stakeholders: 'DevOps Team, Home-Lab Users'
 tags: ['prd', 'requirements', 'baseline', 'infra']
+layer: core
 ---
 
 # Product Requirements Document (PRD)

@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # Project Documentation Index (Lazy Loading Gateway)
 
 Master entry point for spec-driven documentation discovery.
@@ -19,7 +23,7 @@ Read this file first, then load only the relevant index document for the task.
 | `[LOAD:STRATEGIC]` | [prd/README.md](prd/README.md), [ard/README.md](ard/README.md) | Product scope, architecture boundaries |
 | `[LOAD:TACTICAL]` | [specs/README.md](specs/README.md), [plans/README.md](plans/README.md) | Active implementation and refactor work |
 | `[LOAD:RUNBOOK]` | [runbooks/README.md](runbooks/README.md) | Executable operational procedures |
-| `[LOAD:HISTORY]` | [operations/README.md](operations/README.md), [operations/incidents/README.md](operations/incidents/README.md) | Incidents, RCA, historical records |
+| `[LOAD:HISTORY]` | [operations/README.md](operations/README.md) | Incidents, RCA, historical records |
 | `[LOAD:CONTEXT]` | [context/README.md](context/README.md) | Deep service and platform blueprints |
 | `[LOAD:GUIDE]` | [guides/README.md](guides/README.md), [manuals/README.md](manuals/README.md) | Lifecycle guides and team manuals |
 
@@ -37,7 +41,7 @@ Use the repository templates at the project root when creating new artifacts:
 
 ## Related Policy
 
-- [Agent Instructions Gateway](agent-instructions.md) — Agent-specific session entrypoint
+- [Agent Instructions Gateway](agentic/gateway.md) — Agent-specific session entrypoint
 - [AGENTS.md](../AGENTS.md) — Canonical cross-agent entrypoint
 - [CLAUDE.md](../CLAUDE.md) — Claude-specific shim
 - [GEMINI.md](../GEMINI.md) — Gemini-specific shim

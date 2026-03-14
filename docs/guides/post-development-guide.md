@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # Post-Development Guide (Human Centric)
 
 This guide outlines the human responsibilities after code is implemented, focusing on Pull Request review oversight, CI/CD validations, and operations handoff.

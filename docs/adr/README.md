@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # Architecture Decision Records (ADR)
 
 This directory contains Architecture Decision Records for the project. ADRs document significant architectural decisions along with their context and consequences.

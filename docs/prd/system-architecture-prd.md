@@ -5,6 +5,7 @@ version: 'v1.0.0'
 owner: 'Platform Architect'
 stakeholders: 'All Contributors'
 tags: ['prd', 'requirements', 'architecture', 'standards']
+layer: core
 ---
 
 # Product Requirements Document (PRD)

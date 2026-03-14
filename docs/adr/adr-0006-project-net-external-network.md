@@ -1,3 +1,6 @@
+---
+layer: core
+---
 # Architecture Decision Record (ADR)
 
 ## Title: External `project_net` Convention

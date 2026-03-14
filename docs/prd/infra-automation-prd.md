@@ -5,6 +5,7 @@ version: 'v1.1.0'
 owner: 'Platform Architect'
 stakeholders: 'Platform Team'
 tags: ['prd', 'requirements', 'automation', 'phase2']
+layer: core
 ---
 
 # Product Requirements Document (PRD)

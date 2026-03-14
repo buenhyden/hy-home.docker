@@ -1,6 +1,6 @@
 # [Feature or System Name] Product Requirements Document (PRD)
 
-> Use this template for `docs/<category>/prd/<feature-or-system>-prd.md`.
+> Use this template for `docs/prd/<feature-or-system>-prd.md`.
 >
 > Repository-derived contract:
 >
@@ -9,6 +9,7 @@
 > - Remove every placeholder before saving.
 > - Allowed PRD status values: `Approved | Superseded | Deprecated`.
 > - Allowed scope values where your doc set uses them: `master | domain | historical`.
+> - Allowed scope values layer values: `common | architecture | backend | frontend | infra | mobile | product | qa | security`
 > - `domain` documents should name their parent master PRD where applicable.
 > - Keep all structural and narrative content in English.
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
@@ -29,7 +30,8 @@ owner: 'buenhyden'
 stakeholders: ['buenhyden']
 scope: 'master'
 parent_epic: 'N/A'
-tags: ['prd', 'requirements', '<category>']
+tags: ['prd', 'requirements']
+layer: '<layer>'
 ---
 ```
 
@@ -42,6 +44,7 @@ tags: ['prd', 'requirements', '<category>']
 > **Owner**: [Repository Owner]
 > **Stakeholders**: [Repository Owner, Frontend Engineer]
 > **Scope**: [master | domain | historical]
+> **layer:** [common | architecture | backend | frontend | infra | mobile | product | qa | security]
 > **Parent Epic**: [N/A or parent PRD] (Optional)
 > **Parent Master PRD**: `[./system-master-prd.md]` (Optional for `domain`)
 
@@ -98,15 +101,15 @@ Use these when the PRD needs full product framing, personas, milestones, or acce
 
 ## 3. Success Metrics (Quantitative)
 
-| ID | Metric Name | Baseline (Current) | Target (Success) | Measurement Period |
-| -- | ----------- | ------------------ | ---------------- | ------------------ |
-| **REQ-PRD-MET-01** | [Metric] | [Current] | [Target] | [Window] |
-| **REQ-PRD-MET-02** | [Metric] | [Current] | [Target] | [Window] |
+| ID                 | Metric Name | Baseline (Current) | Target (Success) | Measurement Period |
+| ------------------ | ----------- | ------------------ | ---------------- | ------------------ |
+| **REQ-PRD-MET-01** | [Metric]    | [Current]          | [Target]         | [Window]           |
+| **REQ-PRD-MET-02** | [Metric]    | [Current]          | [Target]         | [Window]           |
 
 ## 4. Key Use Cases & Acceptance Criteria (GWT)
 
-| ID | User Story (INVEST) | Acceptance Criteria (Given-When-Then) |
-| -- | ------------------- | ------------------------------------- |
+| ID           | User Story (INVEST)                                                 | Acceptance Criteria (Given-When-Then)                             |
+| ------------ | ------------------------------------------------------------------- | ----------------------------------------------------------------- |
 | **STORY-01** | **As a** [Persona],<br>**I want** [action],<br>**So that** [value]. | **Given** [context],<br>**When** [action],<br>**Then** [outcome]. |
 | **STORY-02** | **As a** [Persona],<br>**I want** [action],<br>**So that** [value]. | **Given** [context],<br>**When** [action],<br>**Then** [outcome]. |
 

@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # Manuals
 
 This folder stores process-oriented manuals for contributors and operators.

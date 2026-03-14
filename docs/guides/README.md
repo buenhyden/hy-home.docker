@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # Platform Lifecycle & Workflow Guides (`docs/guides/`)
 
 This directory contains **Cross-Service Platform Workflows** and behavioral guidelines for the environment. These documents focus on "How to develop and operate the platform" rather than specific service architectures.

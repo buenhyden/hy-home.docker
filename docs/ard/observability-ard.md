@@ -1,3 +1,6 @@
+---
+layer: 06-observability
+---
 # Observability Stack Architecture Reference Document (ARD)
 
 - **Status**: Approved

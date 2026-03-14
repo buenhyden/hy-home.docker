@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # During-Development Guide (Human Centric)
 
 This guide outlines how human developers manage the AI Coder Agents and ensure code quality via Local QA during the implementation phase.

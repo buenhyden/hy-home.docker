@@ -1,3 +1,6 @@
+---
+layer: 08-ai
+---
 # Local AI Stack Architecture Reference Document (ARD)
 
 - **Status**: Approved

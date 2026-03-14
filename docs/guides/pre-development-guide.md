@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # Pre-Development Guide (Human Centric)
 
 This guide outlines how human developers and product owners should manage the **Pre-Development** phase. The heavy lifting is done by the **Planner Agent**, but humans define the success criteria and act as the final approval gate.

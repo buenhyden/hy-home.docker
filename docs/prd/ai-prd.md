@@ -5,6 +5,7 @@ version: 'v1.0.0'
 owner: 'AI Infrastructure Engineer'
 stakeholders: 'AI Researchers, Developers'
 tags: ['prd', 'requirements', 'ai', 'ollama']
+layer: 08-ai
 ---
 
 # Product Requirements Document (PRD)

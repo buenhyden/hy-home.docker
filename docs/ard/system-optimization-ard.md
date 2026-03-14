@@ -1,3 +1,6 @@
+---
+layer: core
+---
 # System Optimization & Hardening Architecture Reference Document (ARD)
 
 - **Status**: Approved

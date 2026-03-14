@@ -1,6 +1,6 @@
 # Runbook: [Service or Workflow Name]
 
-> Use this template for `docs/<category>/runbooks/<topic>.md`.
+> Use this template for `docs/runbooks/<topic>.md`.
 >
 > Repository-derived contract:
 >
@@ -9,6 +9,7 @@
 > - Remove every placeholder before saving.
 > - Prefer direct, executable guidance over long background explanation.
 > - Allowed runbook status values: `Active | Deprecated | Archived`.
+> - Allowed scope values layer values: `common | architecture | backend | frontend | infra | mobile | product | qa | security`
 > - If this runbook depends on canonical docs, link them explicitly near the top.
 > - Keep all structural and narrative content in English.
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
@@ -28,7 +29,8 @@ date: 'YYYY-MM-DD'
 owner: '[Repository Owner or Responsible Maintainer]'
 tags:
   - runbook
-  - operations
+  - operation
+layer: '<layer>'
 ---
 ```
 
@@ -39,6 +41,7 @@ tags:
 - **Status**: [Active | Deprecated | Archived]
 - **Owner**: [Repository Owner or Responsible Maintainer]
 - **Last Reviewed**: [YYYY-MM-DD or `N/A`]
+- **layer:** [common | architecture | backend | frontend | infra | mobile | product | qa | security]
 
 **Overview (KR):** [Write a 1-2 sentence Korean summary of the operational problem this runbook addresses and when maintainers should use it.]
 
@@ -103,9 +106,9 @@ Choose one of the two approved shapes below.
 
 ## Dependencies
 
-| Dependency | Type | Impact if Unavailable | Related Runbook |
-| ---------- | ---- | --------------------- | --------------- |
-| [Dependency] | [Runtime / Build / Toolchain / External] | [Impact] | `[./other-runbook.md]` |
+| Dependency   | Type                                     | Impact if Unavailable | Related Runbook        |
+| ------------ | ---------------------------------------- | --------------------- | ---------------------- |
+| [Dependency] | [Runtime / Build / Toolchain / External] | [Impact]              | `[./other-runbook.md]` |
 
 ## Observability and Evidence Sources
 

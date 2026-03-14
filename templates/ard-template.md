@@ -1,6 +1,6 @@
 # [System or Domain Name] Architecture Reference Document (ARD)
 
-> Use this template for `docs/<category>/ard/<system-or-domain>-ard.md`.
+> Use this template for `docs/ard/<system-or-domain>-ard.md`.
 >
 > Repository-derived contract:
 >
@@ -10,6 +10,7 @@
 > - Keep ARDs architectural. File-level implementation detail belongs in the Spec.
 > - Allowed ARD status values: `Approved | Superseded | Deprecated`.
 > - Allowed scope values where your doc set uses them: `master | domain | historical`.
+> - Allowed scope values layer values: `common | architecture | backend | frontend | infra | mobile | product | qa | security`
 > - `domain` documents should name their parent master ARD where applicable.
 > - Keep all structural and narrative content in English.
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
@@ -29,7 +30,8 @@ owner: 'buenhyden'
 scope: 'master'
 parent_ard: '../ard/system-master-ard.md'
 prd_reference: '../prd/feature-or-system-prd.md'
-tags: ['ard', '<category>', '<topic>']
+tags: ['ard', '<topic>']
+layer: '<layer>'
 ---
 ```
 
@@ -40,6 +42,7 @@ tags: ['ard', '<category>', '<topic>']
 - **Status**: [Approved | Superseded | Deprecated]
 - **Owner**: [Repository Owner]
 - **Scope**: [master | domain | historical]
+- **layer:** [common | architecture | backend | frontend | infra | mobile | product | qa | security]
 - **Parent Master ARD**: `[../ard/system-master-ard.md]` (Optional for `master`)
 - **PRD Reference**: `[../prd/feature-or-system-prd.md]`
 - **ADR References**: `[../adr/NNNN-decision.md]`, `[../adr/NNNN-decision-2.md]`
@@ -166,14 +169,14 @@ flowchart TD
 
 ## 10. Source-of-Truth Map
 
-| Scope | Canonical Document | Role |
-| ----- | ------------------ | ---- |
-| master | `docs/<category>/ard/system-master-ard.md` | Top-level architecture authority |
-| domain | `docs/<category>/ard/domain-ard.md` | Subordinate domain architecture |
-| feature | `docs/<category>/specs/YYYY-MM-DD-feature.md` | Implementation detail |
+| Scope   | Canonical Document                            | Role                             |
+| ------- | --------------------------------------------- | -------------------------------- |
+| master  | `docs/ard/system-master-ard.md`    | Top-level architecture authority |
+| domain  | `docs/ard/domain-ard.md`           | Subordinate domain architecture  |
+| feature | `docs/specs/YYYY-MM-DD-feature.md` | Implementation detail            |
 
 ## 11. Legacy Document Traceability
 
-| Existing Document | New Relationship |
-| ----------------- | ---------------- |
-| `docs/<category>/ard/old-system-ard.md` | Superseded by this document |
+| Existing Document                       | New Relationship            |
+| --------------------------------------- | --------------------------- |
+| `docs/ard/old-system-ard.md` | Superseded by this document |

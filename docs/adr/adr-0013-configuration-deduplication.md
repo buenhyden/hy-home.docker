@@ -1,3 +1,6 @@
+---
+layer: core
+---
 # ADR-0013: Configuration Deduplication and Consolidation
 
 - **Status**: Accepted

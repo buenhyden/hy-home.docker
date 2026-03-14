@@ -81,7 +81,7 @@ This project follows an AI-Agent-managed, Spec-Driven Development structure:
 ├── tests/              # Unit and Integration test suites
 ├── AGENTS.md           # Multi-Agent governance and persona guide
 ├── ARCHITECTURE.md     # High-level system blueprints and principles
-├── OPERATIONS.md       # Target environment and deployment baseline
+├── OPERATION.md       # Target environment and deployment baseline
 ├── llms.txt            # System context for prompt construction
 ├── .env.example        # Environment template
 └── README.md           # This file
@@ -113,7 +113,7 @@ Ensure you read the governance files before contributing or generating code via 
 
 - [🤖 Multi-Agent Governance](./AGENTS.md)
 - [🏛️ System Architecture](./ARCHITECTURE.md)
-- [⚙️ Operations Baseline](./OPERATIONS.md)
+- [⚙️ Operations Baseline](./OPERATION.md)
 - [📝 Specifications & API Contracts](./specs/)
 - [📚 Product & Arch Docs](./docs/)
 - [🤝 Contributor Guide](./CONTRIBUTING.md)

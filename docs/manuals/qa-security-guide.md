@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # QA & Security Guide
 
 _Target Directory: `docs/manuals/qa-security-guide.md`_

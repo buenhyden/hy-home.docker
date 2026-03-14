@@ -1,3 +1,6 @@
+---
+layer: core
+---
 # Infrastructure Baseline Architecture Reference Document (ARD)
 
 - **Status**: Approved

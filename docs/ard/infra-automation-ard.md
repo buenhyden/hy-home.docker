@@ -1,3 +1,6 @@
+---
+layer: core
+---
 # Infrastructure Automation Architecture Reference Document (ARD)
 
 - **Status**: Approved

@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # Product Requirements Documents (PRD)
 
 This directory defines the "what" and "why" of product features, serving as the starting point for Spec-Driven Development.

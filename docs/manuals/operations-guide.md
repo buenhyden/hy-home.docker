@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # Operations & Deployment Guide
 
 _Target Directory: `docs/manuals/operations-guide.md`_

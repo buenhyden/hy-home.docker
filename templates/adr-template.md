@@ -1,6 +1,6 @@
 # Architecture Decision Record (ADR)
 
-> Use this template for `docs/<category>/adr/NNNN-short-title.md`.
+> Use this template for `docs/adr/NNNN-short-title.md`.
 >
 > Repository-derived contract:
 >
@@ -10,6 +10,7 @@
 > - Keep the document decision-focused. Do not turn ADRs into implementation specs.
 > - Allowed ADR status values: `Accepted | Superseded | Deprecated`.
 > - Allowed scope values where your doc set uses them: `master | domain | historical`.
+> - Allowed scope values layer values: `common | architecture | backend | frontend | infra | mobile | product | qa | security`
 > - Keep all structural and narrative content in English.
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
 >
@@ -27,7 +28,8 @@ status: 'Accepted'
 date: 'YYYY-MM-DD'
 authors: ['buenhyden']
 deciders: ['buenhyden']
-tags: ['adr', '<category>', '<topic>']
+tags: ['adr', '<topic>']
+layer: '<layer>'
 ---
 ```
 
@@ -40,6 +42,7 @@ Use frontmatter when the surrounding doc set already uses it. Skip it when the a
 - **Status:** [Accepted | Superseded | Deprecated]
 - **Date:** YYYY-MM-DD
 - **Scope:** [master | domain | historical]
+- **layer:** [common | architecture | backend | frontend | infra | mobile | product | qa | security]
 - **Authors:** [Optional]
 - **Deciders:** [Optional]
 

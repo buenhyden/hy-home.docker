@@ -1,3 +1,6 @@
+---
+layer: core
+---
 # ADR-0012: Standardized Init Process for Infrastructure Containers
 
 - **Status**: Accepted

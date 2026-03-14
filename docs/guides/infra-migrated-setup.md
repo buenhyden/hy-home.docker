@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # Infrastructure Overview
 
 Hy-Home 인프라는 도커 컴포즈(Docker Compose)를 기반으로 구축된 계층화된 서비스 스택입니다. 각 서비스의 상세 설정 및 기술 정보는 해당 `infra/` 디렉토리 내의 `README.md`에서 확인할 수 있습니다.

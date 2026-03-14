@@ -1,3 +1,6 @@
+---
+layer: core
+---
 # Architecture Decision Record (ADR)
 
 _Target Directory: `docs/adr/adr-0014-optimization-strategies.md`_

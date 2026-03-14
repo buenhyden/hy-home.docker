@@ -1,3 +1,6 @@
+---
+layer: core
+---
 # Messaging & Eventing Architecture Reference Document (ARD)
 
 - **Status**: Approved

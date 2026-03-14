@@ -1,3 +1,6 @@
+---
+layer: core
+---
 # Global System Architecture Architecture Reference Document (ARD)
 
 - **Status**: Approved

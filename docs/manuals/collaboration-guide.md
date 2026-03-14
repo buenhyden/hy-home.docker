@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # Development Process & Collaboration Guide
 
 _Target Directory: `docs/manuals/collaboration-guide.md`_

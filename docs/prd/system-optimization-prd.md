@@ -5,6 +5,7 @@ version: 'v1.0.0'
 owner: 'Platform Architect'
 stakeholders: 'Developer, Infrastructure Lead'
 tags: ['prd', 'requirements', 'optimization', 'hardening']
+layer: core
 ---
 
 # Product Requirements Document (PRD)

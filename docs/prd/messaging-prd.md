@@ -5,6 +5,7 @@ version: 'v1.0.0'
 owner: 'Infrastructure Architect'
 stakeholders: 'Application Developers, Data Engineers'
 tags: ['prd', 'requirements', 'messaging', 'kafka']
+layer: infra
 ---
 
 # Product Requirements Document (PRD)

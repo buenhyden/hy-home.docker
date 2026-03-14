@@ -1,3 +1,6 @@
+---
+layer: core
+---
 # ADR-0015: Mandatory Infrastructure Directives
 
 ## Status

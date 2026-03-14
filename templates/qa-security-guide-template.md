@@ -2,6 +2,8 @@
 
 _Description: This document defines the team's quantitative and qualitative standards for testing, code quality, and application security, as per the `0700-testing-and-qa-standard.md` and `2200-security-pillar` rules._
 
+- **layer:** [qa | security | common]
+
 ---
 
 ## 1. Quality & Test Strategy

@@ -1,3 +1,6 @@
+---
+layer: core
+---
 # Architecture Decision Record (ADR)
 
 ## Title: Removing Static Docker IPs

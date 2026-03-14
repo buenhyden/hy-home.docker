@@ -1,12 +1,13 @@
 ---
-title: "[API Name / Feature] API Specification"
-status: "Draft | Proposed | Approved | Deprecated"
-version: "v1.x.x"
-base_url: "https://api.example.com/v1"
-prd_reference: "[Link to PRD]"
-spec_reference: "[Link to Tech Spec]"
-adr_reference: "[Link to ADR]"
-tags: ["api", "contract", "specification"]
+title: '[API Name / Feature] API Specification'
+status: 'Draft | Proposed | Approved | Deprecated'
+version: 'v1.x.x'
+base_url: 'https://api.example.com/v1'
+prd_reference: '[Link to PRD]'
+spec_reference: '[Link to Tech Spec]'
+adr_reference: '[Link to ADR]'
+tags: ['api', 'contract', 'specification']
+layer: '<layer>'
 ---
 
 # API Specification Template ([API Name / Feature])
@@ -63,6 +64,10 @@ Each API contract MUST include `docs/api/<feature>/changelog.md` using Keep a Ch
 - API design standards: `.agent/rules/0000-Agents/0010-api-design-standard.md`
 
 ### 0.6 API Governance Checklist (Fill Before Design)
+
+_Description: This document defines the team's working agreements, development processes, and collaboration SLAs as per the 0202-collaboration-and-sla-standard.md rules._
+
+- **layer:** [common | architecture | backend | frontend | infra | mobile | product | qa | security]
 
 > This document follows the **API Governance Pillar (2000)**. Ensure all endpoints
 > adhere to RESTful/GraphQL standards and versioning policies.

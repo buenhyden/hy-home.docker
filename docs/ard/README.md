@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # Architecture Reference Documents (ARD)
 
 This directory defines the technical requirements and constraints for major infrastructure components.

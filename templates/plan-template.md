@@ -1,6 +1,6 @@
 # [Feature or Component] Plan
 
-> Use this template for `docs/<category>/plans/YYYY-MM-DD-<feature-name>.md`.
+> Use this template for `docs/plans/YYYY-MM-DD-<feature-name>.md`.
 >
 > Repository-derived contract:
 >
@@ -9,6 +9,7 @@
 > - Remove every placeholder before saving.
 > - Allowed plan status values: `Planned | In Progress | Completed | Superseded | Deprecated`.
 > - Allowed scope values where your doc set uses them: `master | domain | historical`.
+> - Allowed scope values layer values: `common | architecture | backend | frontend | infra | mobile | product | qa | security`
 > - Every active plan must include explicit verification criteria.
 > - Keep all structural and narrative content in English.
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
@@ -31,6 +32,7 @@ status: '[Planned | In Progress | Completed | Superseded | Deprecated]'
 scope: '[master | domain | historical]'
 tags: ['implementation', 'planning']
 stack: '[nextjs | node | python | go | rust | java]'
+layer: '<layer>'
 ---
 ```
 
@@ -40,6 +42,7 @@ stack: '[nextjs | node | python | go | rust | java]'
 
 > **Status**: [Planned | In Progress | Completed | Superseded | Deprecated]
 > **Scope**: [master | domain | historical]
+> **layer:** [common | architecture | backend | frontend | infra | mobile | product | qa | security]
 > **Parent Master Plan**: `[./YYYY-MM-DD-system-master-plan.md]` (Optional for `domain`)
 
 **Overview (KR):** [Write a 1-2 sentence Korean summary of why this work exists, where it sits in the document hierarchy, and what this plan is trying to complete.]
@@ -62,10 +65,10 @@ Use either a phase list or a traceability table.
 
 ### Traceability-style task table
 
-| Task | Description | Files Affected | Target REQ | Validation Criteria |
-| ---- | ----------- | -------------- | ---------- | ------------------- |
-| TASK-001 | [Action] | `path/to/file` | REQ-001 | [Pass/fail evidence] |
-| TASK-002 | [Action] | `path/to/file` | REQ-002 | [Pass/fail evidence] |
+| Task     | Description | Files Affected | Target REQ | Validation Criteria  |
+| -------- | ----------- | -------------- | ---------- | -------------------- |
+| TASK-001 | [Action]    | `path/to/file` | REQ-001    | [Pass/fail evidence] |
+| TASK-002 | [Action]    | `path/to/file` | REQ-002    | [Pass/fail evidence] |
 
 ## Verification
 
@@ -110,24 +113,24 @@ List the commands, manual checks, or evidence collection steps required before t
 
 ## 5. Work Breakdown (Tasks & Traceability)
 
-| Task | Description | Files Affected | Target REQ | Validation Criteria |
-| ---- | ----------- | -------------- | ---------- | ------------------- |
-| TASK-001 | [Action] | `path/to/file` | REQ-001 | [Pass/fail evidence] |
-| TASK-002 | [Action] | `path/to/file` | REQ-002 | [Pass/fail evidence] |
+| Task     | Description | Files Affected | Target REQ | Validation Criteria  |
+| -------- | ----------- | -------------- | ---------- | -------------------- |
+| TASK-001 | [Action]    | `path/to/file` | REQ-001    | [Pass/fail evidence] |
+| TASK-002 | [Action]    | `path/to/file` | REQ-002    | [Pass/fail evidence] |
 
 ## 6. Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| -- | ----- | ----------- | -------------------- | ------------- |
-| VAL-PLN-001 | Structural | [Document or architecture check] | [Manual or command] | [Pass condition] |
-| VAL-PLN-002 | Build / Test / Link | [What is being verified] | [Command] | [Pass condition] |
-| VAL-PLN-003 | Manual / Operational | [Manual validation or walkthrough] | [How to inspect] | [Pass condition] |
+| ID          | Level                | Description                        | Command / How to Run | Pass Criteria    |
+| ----------- | -------------------- | ---------------------------------- | -------------------- | ---------------- |
+| VAL-PLN-001 | Structural           | [Document or architecture check]   | [Manual or command]  | [Pass condition] |
+| VAL-PLN-002 | Build / Test / Link  | [What is being verified]           | [Command]            | [Pass condition] |
+| VAL-PLN-003 | Manual / Operational | [Manual validation or walkthrough] | [How to inspect]     | [Pass condition] |
 
 ## 7. Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-| ---- | ------ | ---------- |
-| [Risk title] | [High \| Medium \| Low] | [Mitigation] |
+| Risk         | Impact | Mitigation |
+| ------------ | ------ | ---------- | ---- | ------------ |
+| [Risk title] | [High  | Medium     | Low] | [Mitigation] |
 
 ## 8. Completion Criteria
 

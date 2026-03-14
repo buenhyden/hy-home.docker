@@ -1,7 +1,9 @@
-# Operations Blueprint (OPERATIONS.md)
+# Operations Blueprint (OPERATION.md)
 
-_Target Location: `OPERATIONS.md` (Project Root)_
+_Target Location: `OPERATION.md` (Project Root)_
 _Description: This document defines the project's operational baseline, including environments, deployment strategies, observability, and continuity plans, as per the `0301-operations-blueprint-standard.md` rule._
+
+- **layer:** [infra]
 
 ---
 

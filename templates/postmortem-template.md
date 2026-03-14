@@ -1,6 +1,6 @@
 # Postmortem: [Short Incident Title]
 
-> Use this template for `docs/<category>/operations/postmortems/YYYY-MM-DD-<slug>.md`.
+> Use this template for `docs/operations/postmortems/YYYY-MM-DD-<slug>.md`.
 >
 > Repository-derived contract:
 >
@@ -8,6 +8,7 @@
 > - Use relative links only.
 > - Remove every placeholder before saving.
 > - Allowed postmortem status values: `Resolved | Archived`.
+> - Allowed scope values layer values: `common | architecture | backend | frontend | infra | mobile | product | qa | security`
 > - Keep the tone blameless and system-focused.
 > - A postmortem should explain why the system allowed the incident, not just what command fixed it.
 > - Keep all structural and narrative content in English.
@@ -25,7 +26,8 @@ severity: 'SEV-3'
 owner: '[Repository Owner or Incident Commander]'
 tags:
   - postmortem
-  - operations
+  - operation
+layer: '<layer>'
 ---
 ```
 
@@ -39,15 +41,16 @@ tags:
 
 ## 1. Incident Summary
 
-| Field | Value |
-| ----- | ----- |
-| **Incident ID** | `INC-YYYYMMDD-XXX` |
-| **Incident Date** | `YYYY-MM-DD` |
-| **Analysis Date** | `YYYY-MM-DD` |
-| **Duration** | [For example: `2h 15m`] |
-| **Severity** | `[SEV-1 \| SEV-2 \| SEV-3]` |
-| **Status** | `Resolved` |
+| Field                 | Value                                   |
+| --------------------- | --------------------------------------- | ----- | ------- |
+| **Incident ID**       | `INC-YYYYMMDD-XXX`                      |
+| **Incident Date**     | `YYYY-MM-DD`                            |
+| **Analysis Date**     | `YYYY-MM-DD`                            |
+| **Duration**          | [For example: `2h 15m`]                 |
+| **Severity**          | `[SEV-1                                 | SEV-2 | SEV-3]` |
+| **Status**            | `Resolved`                              |
 | **Incident Document** | `[../incidents/YYYY-MM-DD-incident.md]` |
+| **layer:** |  [common \| architecture \| backend \| frontend \| infra \| mobile \| product \| qa \| security]|
 
 ## 2. Impact
 
@@ -57,12 +60,12 @@ tags:
 
 ## 3. Timeline
 
-| Time (UTC) | Event |
-| ---------- | ----- |
-| HH:MM | **[Detection]** [How the issue surfaced] |
-| HH:MM | **[Investigation]** [What was learned] |
-| HH:MM | **[Mitigation]** [What reduced impact] |
-| HH:MM | **[Resolved]** [When the issue was considered fixed] |
+| Time (UTC) | Event                                                |
+| ---------- | ---------------------------------------------------- |
+| HH:MM      | **[Detection]** [How the issue surfaced]             |
+| HH:MM      | **[Investigation]** [What was learned]               |
+| HH:MM      | **[Mitigation]** [What reduced impact]               |
+| HH:MM      | **[Resolved]** [When the issue was considered fixed] |
 
 ## 4. Root Cause Analysis
 
@@ -92,10 +95,10 @@ tags:
 
 ## 7. Action Items
 
-| Action | Owner | Priority | Ticket / Reference | Status |
-| ------ | ----- | -------- | ------------------ | ------ |
-| [Action item] | [Name] | High | [Link or `N/A`] | Pending |
-| [Action item] | [Name] | Medium | [Link or `N/A`] | Pending |
+| Action        | Owner  | Priority | Ticket / Reference | Status  |
+| ------------- | ------ | -------- | ------------------ | ------- |
+| [Action item] | [Name] | High     | [Link or `N/A`]    | Pending |
+| [Action item] | [Name] | Medium   | [Link or `N/A`]    | Pending |
 
 ## 8. Prevention and Verification
 

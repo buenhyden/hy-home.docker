@@ -2,6 +2,8 @@
 
 _Description: This document defines the team's working agreements, development processes, and collaboration SLAs as per the 0202-collaboration-and-sla-standard.md rules._
 
+- **layer:** [common | architecture | backend | frontend | infra | mobile | product | qa | security]
+
 ---
 
 ## 1. Team Roster & Decision Makers

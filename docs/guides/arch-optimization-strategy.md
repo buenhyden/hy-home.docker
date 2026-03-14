@@ -1,3 +1,7 @@
+---
+layer: core
+---
+
 # Infra Architecture & Topologies Analysis
 
 ## 1. Architecture & Optimization Analysis

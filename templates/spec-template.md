@@ -1,6 +1,6 @@
 # [Feature Name] Specification
 
-> Use this template for `docs/<category>/specs/YYYY-MM-DD-<feature-name>.md`.
+> Use this template for `docs/specs/YYYY-MM-DD-<feature-name>.md`.
 >
 > Repository-derived contract:
 >
@@ -9,6 +9,7 @@
 > - Remove every placeholder before saving.
 > - Allowed spec status values: `Canonical | Implementation | Validated | Superseded | Deprecated`.
 > - Allowed scope values where your doc set uses them: `master | domain | historical`.
+> - Allowed scope values layer values: `common | architecture | backend | frontend | infra | mobile | product | qa | security`
 > - Every active spec must declare PRD and ARD references or make the absence explicit.
 > - Verification is mandatory even for documentation-only tracks.
 > - Keep all structural and narrative content in English.
@@ -31,7 +32,8 @@ scope: 'master'
 prd_reference: '../prd/<feature-or-system>-prd.md'
 arch_reference: '../ard/<system-or-domain>-ard.md'
 decision_reference: '../adr/NNNN-decision.md'
-tags: ['spec', '<category>', 'implementation']
+tags: ['spec','implementation']
+layer: '<layer>'
 ---
 ```
 
@@ -41,6 +43,7 @@ tags: ['spec', '<category>', 'implementation']
 
 > **Status**: [Canonical | Implementation | Validated | Superseded | Deprecated]
 > **Scope**: [master | domain | historical]
+> **layer:** [common | architecture | backend | frontend | infra | mobile | product | qa | security]
 > **Parent Master Spec**: `[./YYYY-MM-DD-system-master-spec.md]` (Optional for `domain`)
 > **Related PRD**: `[../prd/feature-or-system-prd.md]`
 > **Related Architecture**: `[../ard/system-or-domain-ard.md]`
@@ -88,9 +91,9 @@ Use these sections when the spec needs full implementation detail and traceabili
 
 ## 2. Coded Requirements (Traceability)
 
-| ID | Requirement Description | Priority | Parent PRD REQ |
-| -- | ----------------------- | -------- | -------------- |
-| **[REQ-SPC-001]** | [Technical requirement] | High | REQ-PRD-FUN-01 |
+| ID                | Requirement Description | Priority | Parent PRD REQ |
+| ----------------- | ----------------------- | -------- | -------------- |
+| **[REQ-SPC-001]** | [Technical requirement] | High     | REQ-PRD-FUN-01 |
 | **[REQ-SPC-002]** | [Technical requirement] | Critical | REQ-PRD-FUN-02 |
 
 ## 3. Data Modeling & Storage Strategy
@@ -113,7 +116,7 @@ interface ExampleContract {
 ### 4.2 Authority or Integration Model (Optional)
 
 ```typescript
-type DocumentationScope = "master" | "domain" | "historical";
+type DocumentationScope = 'master' | 'domain' | 'historical';
 ```
 
 ## 5. Component Breakdown

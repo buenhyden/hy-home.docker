@@ -5,6 +5,7 @@ version: 'v1.0.0'
 owner: 'Reliability Engineer'
 stakeholders: 'Platform Team, Developers'
 tags: ['prd', 'requirements', 'observability', 'lgtm']
+layer: 06-observability
 ---
 
 # Product Requirements Document (PRD)

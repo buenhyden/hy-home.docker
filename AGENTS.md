@@ -2,8 +2,8 @@
 
 Docker Compose infrastructure workspace for local and homelab multi-service stacks.
 
-**Shared governance:** [.claude/core-governance.md](.claude/core-governance.md) · [.claude/workflow.md](.claude/workflow.md)
-**Documentation gateway:** [docs/agent-instructions.md](docs/agent-instructions.md)
+**Shared governance:** [docs/agentic/core-governance.md](docs/agentic/core-governance.md) · [docs/agentic/workflow.md](docs/agentic//workflow.md)
+**Documentation gateway:** [docs/agentic/gateway.md](docs/agentic/gateway.md)
 **Architecture:** [ARCHITECTURE.md](ARCHITECTURE.md) · [README.md](README.md)
 
 ## Core Principles
@@ -12,8 +12,8 @@ Docker Compose infrastructure workspace for local and homelab multi-service stac
 - **Evidence-Driven**: Execute from validated investigation outputs and command results, not prompt-only assumptions.
 - **Minimal Blast Radius**: Touch only what the spec requires. Do not modify adjacent services.
 - **Secrets Safety**: Never log, print, or commit secret values. Use Docker Secrets or environment references.
-- **Link Integrity**: Relative links only. No `file://` or absolute filesystem paths in documentation.
-- **Skill Autonomy**: Use the most relevant available skill. Do not restrict skill discovery unless explicitly asked.
+- **Link Integrity**: Relative links only; no absolute paths in documentation.
+- **Skill Discovery**: Use the most relevant purpose-built skill proactively. Do not restrict discovery unless asked.
 
 ## Persona Matrix
 
@@ -36,9 +36,9 @@ For complex tasks, combine Reasoner + the relevant specialist persona.
 
 ## Infrastructure Lifecycle
 
-1. **Discover** — Load [docs/agent-instructions.md](docs/agent-instructions.md); find existing specs, ADRs, runbooks.
-2. **Specify** — If no spec exists, create `docs/specs/<domain>/spec.md` from [templates/spec-template.md](templates/spec-template.md).
-3. **Plan** — Verify or create `docs/plans/<date>-<name>.md` from [templates/plan-template.md](templates/plan-template.md).
+1. **Discover** — Load [docs/agentic/gateway.md](docs/agentic/gateway.md); find existing specs, ADRs, runbooks.
+2. **Specify** — If no spec exists, create `docs/specs/<name>.md` from [templates/spec-template.md](templates/spec-template.md).
+3. **Plan** — Verify or create `docs/plans/<name>.md` from [templates/plan-template.md](templates/plan-template.md).
 4. **Implement** — Apply the smallest correct change. `docker compose config` must pass before any `up`.
 5. **Verify** — Run `bash scripts/validate-docker-compose.sh && bash scripts/preflight-compose.sh`.
 6. **Document** — Update runbooks, ADRs, and operations history whenever behavior or structure changes.
