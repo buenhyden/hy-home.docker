@@ -25,7 +25,7 @@ Agent-specific context entrypoint for the `hy-home.docker` infrastructure worksp
 | `[LOAD:SPECS]` | [../specs/README.md](../specs/README.md) | Implementing or verifying specs |
 | `[LOAD:PLANS]` | [../plans/README.md](../plans/README.md) | Executing or updating implementation plans |
 | `[LOAD:RUNBOOKS]` | [../runbooks/README.md](../runbooks/README.md) | Performing operational procedures |
-| `[LOAD:OPS]` | [../operations/incidents/README.md](../operations/incidents/README.md) | Reviewing operational history |
+| `[LOAD:OPS]` | [../operations/README.md](../operations/README.md) | Reviewing operational history |
 
 ## Intent-Based Discovery (Load Rule Files)
 

@@ -10,10 +10,10 @@ Claude-specific operational triggers for `hy-home.docker`.
 
 Identify your task and load the required rule module:
 
-- **Refactoring**: `[LOAD:RULES:REFACTOR]`
+- **Refactoring**: `[LOAD:RULES:REFACTOR]` (Follows [March 2026 Standard](docs/adr/0003-2026-march-agentic-standard.md))
 - **Documentation**: `[LOAD:RULES:DOCS]`
-- **Infrastructure**: `[LOAD:RULES:INFRA]`
-- **Operations**: `[LOAD:RULES:OPS]`
+- **Infrastructure**: `[LOAD:RULES:INFRA]` (See [ARCHITECTURE.md](ARCHITECTURE.md))
+- **Operations**: `[LOAD:RULES:OPS]` (See [OPERATIONS.md](OPERATIONS.md))
 
 ## Execution Baseline
 

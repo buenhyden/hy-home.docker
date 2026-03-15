@@ -6,24 +6,19 @@ layer: agentic
 
 Canonical working contract for all AI agents in `hy-home.docker`.
 
-## 1. Governance Model
+## Rule Triggers
 
-This repository follows a **Spec-Driven Infrastructure** lifecycle. Agents MUST NOT implement features without an approved PRD, Spec, and Plan.
+Identify your task and load the required rule module:
 
-## 2. Discovery Gateway
+- **Refactoring**: `[LOAD:RULES:REFACTOR]`
+- **Documentation**: `[LOAD:RULES:DOCS]`
+- **Infrastructure**: `[LOAD:RULES:INFRA]`
+- **Operations**: `[LOAD:RULES:OPS]`
 
-To avoid context bloat, agents use a lazy-loading protocol.
+## Execution Baseline
 
-1. **Start**: Read [docs/agentic/gateway.md](docs/agentic/gateway.md).
-2. **Behavior**: Read [docs/agentic/instructions.md](docs/agentic/instructions.md).
-3. **Trigger**: Use `[LOAD:RULES:<CATEGORY>]` to pull specific logic from `docs/agentic/rules/`.
-
-## 3. Tool Policy
-
-- **Full Skill Autonomy**: Agents are encouraged to use any purpose-fit skill in their toolkit.
-- **Verification**: All code changes must be validated via `docker compose config`.
-
-## 4. Documentation Taxonomy
-
-- **Authority**: `docs/adr/`, `docs/ard/`, `docs/prd/`.
-- **Implementation**: `docs/plans/`, `docs/specs/`, `docs/runbooks/`.
+1. **Load Gateway**: Always start with [docs/agentic/gateway.md](docs/agentic/gateway.md).
+2. **Skill Autonomy**: Use any tool in your bundle (Ref: [March 2026 Agentic Standard](docs/adr/0003-2026-march-agentic-standard.md)).
+3. **Draft Plans**: Use pluralized paths for implementation plans ([docs/plans/](docs/plans/)).
+4. **Validation**: Always run `docker compose config` before updating infrastructure (Ref: [ARCHITECTURE.md](ARCHITECTURE.md)).
+5. **Safety & Ethics**: Adhere to [Code of Conduct](CODE_OF_CONDUCT.md) standards for interaction.

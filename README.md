@@ -523,24 +523,11 @@ Recommended flow:
 
 Use these docs instead of expanding the root README into an operating manual:
 
-- [`docs/runbooks/README.md`](docs/runbooks/README.md) for executable recovery procedures
-- [`docs/context/README.md`](docs/context/README.md) for service-specific architecture and operations context
-- [`docs/gateway.md`](docs/agentic/gateway.md) for the AI agent discovery hub
-
-## Troubleshooting
-
-For common issues regarding secrets, certificates, or network configuration, refer to the [Troubleshooting Guide](docs/guides/troubleshooting.md).
-
-## Contributing
-
-We welcome contributions! Please read our [Contributing Guide](docs/guides/contributing-guide.md) and [Collaboration Guide](docs/manuals/collaboration-guide.md) before getting started.
-
-## Related Documentation
-
-- [`AGENTS.md`](AGENTS.md): Global agent contract.
+- [`AGENTS.md`](AGENTS.md): Global agent contract and [March 2026 Standard](docs/adr/0003-2026-march-agentic-standard.md).
 - [`ARCHITECTURE.md`](ARCHITECTURE.md): Architectural invariants.
 - [`OPERATIONS.md`](OPERATIONS.md): Operational index.
 - [`docs/README.md`](docs/README.md): Documentation taxonomy and index.
+- [`docs/agentic/gateway.md`](docs/agentic/gateway.md): AI Agent discovery hub.
 
 ## License
 

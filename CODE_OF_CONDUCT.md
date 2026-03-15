@@ -37,4 +37,4 @@ Report incidents to the maintainers through a private channel:
 
 ## Scope
 
-This Code of Conduct applies within all project spaces, including issues, pull requests, code review discussions, and other official communication channels.
+This Code of Conduct applies within all project spaces, including issues, pull requests, code review discussions, and other official communication channels. It also governs the interaction patterns and safety standards for AI Agents (Ref: [`AGENTS.md`](AGENTS.md)).
