@@ -1,32 +1,42 @@
-# Agentic Platform Architecture Reference Document
+# Agentic Platform Architecture Reference Document (ARD)
 
 - **Status**: Approved
 - **Owner**: buenhyden
 - **Scope**: master
 - **layer:** agentic
-- **PRD Reference**: `[../prd/agentic-prd.md]`
-- **ADR References**: `[../adr/0001-doc-taxonomy.md]`
+- **PRD Reference**: `[../prd/refactor-prd.md]`
 
-**Overview (KR):** AI Agent가 리포지토리의 규칙과 도구를 효과적으로 사용할 수 있도록 하는 지능형 컨텍스트 관리 시스템의 설계를 정의합니다.
+**Overview (KR):** 리포지토리의 AI Agent 운영 방침과 규칙 로딩 아키텍처를 정의합니다.
 
 ## Summary
 
-The Agentic platform provides a rule-based gateway for AI agents to discover project context, apply purpose-fit skills, and execute infrastructure changes safely.
+The Agentic layer is a meta-layer that manages how AI assistants interact with the codebase. It implements a decoupled, rule-based approach to minimize session noise.
 
 ## Boundaries
 
-- **Owns**: AI instruction loading, intent-based rule routing, persona definitions.
-- **Consumes**: Repository metadata, tool toolkit, workspace file structure.
-- **Does Not Own**: Actual Docker infrastructure implementation (owned by `infra` ARD).
+- **Owns**: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` shims, and `docs/agentic/` instructions.
+- **Consumes**: Project metadata and global architecture rules (`ARCHITECTURE.md`).
+- **Does Not Own**: Infrastructure configuration or application logic.
 
 ## Ownership
 
 - **Primary owner**: buenhyden
 - **Primary artifacts**: `[docs/agentic/]`, `[AGENTS.md]`
-- **Operational evidence**: `N/A`
 
-## Related
+## 1. Architecture Decisions
 
-- `[../prd/agentic-prd.md]`
-- `[../specs/agent-gateway-spec.md]`
-- `[../adr/0001-doc-taxonomy.md]`
+### 1.1 Intent-Based Discovery
+
+Agents are not given a monolithic prompt. Instead, they use `[LOAD:RULES:<CATEGORY>]` triggers to pull in specific instructions.
+
+### 1.2 Path Invariants
+
+All implementation plans reside in `docs/plans/`. All technical specifications reside in `docs/specs/`. No exceptions.
+
+## 2. Source-of-Truth Map
+
+| Scope   | Canonical Document                            | Role                             |
+| ------- | --------------------------------------------- | -------------------------------- |
+| master  | `docs/ard/agentic-ard.md`                     | Layer authority                  |
+| domain  | `docs/agentic/gateway.md`                     | Operational entrypoint           |
+| feature | `docs/specs/refactor-spec.md`                 | Implementation detail            |

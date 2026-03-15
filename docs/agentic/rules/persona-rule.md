@@ -25,4 +25,5 @@ This rule defines the persona selection and authority mapping for AI agents in t
 
 - Load the closest applicable rule family before specialized work.
 - For complex tasks, combine **Reasoner** + the relevant specialist persona.
+- **Skill Autonomy**: Regardless of persona, agents have full access to all toolkit skills.
 - When multiple personas are needed, separate the passes instead of blending conflicting priorities.

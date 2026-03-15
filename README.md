@@ -525,7 +525,7 @@ Use these docs instead of expanding the root README into an operating manual:
 
 - [`docs/runbooks/README.md`](docs/runbooks/README.md) for executable recovery procedures
 - [`docs/context/README.md`](docs/context/README.md) for service-specific architecture and operations context
-- [`docs/README.md`](docs/README.md) for the lazy-loading docs index
+- [`docs/gateway.md`](docs/agentic/gateway.md) for the AI agent discovery hub
 
 ## Troubleshooting
 

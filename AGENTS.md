@@ -1,25 +1,29 @@
 ---
-layer: core
+layer: agentic
 ---
 
-# Agent Working Contract — hy-home.docker
+# AGENTS.md
 
-This repository uses an intent-based rule loading system. All AI agents MUST initialize their session by loading the gateway.
+Canonical working contract for all AI agents in `hy-home.docker`.
 
-## Core Discovery
+## 1. Governance Model
 
-- **Gateway**: [docs/agentic/gateway.md](docs/agentic/gateway.md)
-- **Instructions**: [docs/agentic/instructions.md](docs/agentic/instructions.md)
+This repository follows a **Spec-Driven Infrastructure** lifecycle. Agents MUST NOT implement features without an approved PRD, Spec, and Plan.
 
-## Intent triggers
+## 2. Discovery Gateway
 
-Load the corresponding rule set by identifying your task category:
+To avoid context bloat, agents use a lazy-loading protocol.
 
-- **Refactoring**: `[LOAD:RULES:REFACTOR]`
-- **Documentation**: `[LOAD:RULES:DOCS]`
-- **Infrastructure**: `[LOAD:RULES:INFRA]`
-- **Operations**: `[LOAD:RULES:OPS]`
+1. **Start**: Read [docs/agentic/gateway.md](docs/agentic/gateway.md).
+2. **Behavior**: Read [docs/agentic/instructions.md](docs/agentic/instructions.md).
+3. **Trigger**: Use `[LOAD:RULES:<CATEGORY>]` to pull specific logic from `docs/agentic/rules/`.
 
-## Skill Autonomy
+## 3. Tool Policy
 
-Agents have full autonomy to use any available tool. No restrictions apply. Proactively discover and apply relevant skills (e.g., `agent-md-refactor`, `docker-expert`).
+- **Full Skill Autonomy**: Agents are encouraged to use any purpose-fit skill in their toolkit.
+- **Verification**: All code changes must be validated via `docker compose config`.
+
+## 4. Documentation Taxonomy
+
+- **Authority**: `docs/adr/`, `docs/ard/`, `docs/prd/`.
+- **Implementation**: `docs/plans/`, `docs/specs/`, `docs/runbooks/`.

@@ -12,6 +12,7 @@ This rule applies to tasks involving repository structure changes, documentation
 - `agent-md-refactor`: Use for splitting or merging large Markdown files.
 - `claude-md-improver`: Use for validating content quality post-refactor.
 - `doc-coauthoring`: Use when new PRDs/ARDs are needed for the refactor.
+- **Skill Autonomy**: Use any additional tools (e.g., `grep_search`, `sequential-thinking`) proactively to ensure accuracy.
 
 ## 2. Refactor Workflow
 

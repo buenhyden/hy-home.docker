@@ -15,7 +15,6 @@
 > - Keep all structural and narrative content in English.
 > - Add exactly one `Overview (KR)` summary near the top. That overview summary alone should be written in Korean.
 
-
 ## Optional Frontmatter
 
 ```yaml

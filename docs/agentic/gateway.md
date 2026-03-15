@@ -22,9 +22,9 @@ Agent-specific context entrypoint for the `hy-home.docker` infrastructure worksp
 | `[LOAD:ADR]` | [../adr/README.md](../adr/README.md) | Reviewing architecture decisions |
 | `[LOAD:ARD]` | [../ard/README.md](../ard/README.md) | Reviewing architectural requirements |
 | `[LOAD:PRD]` | [../prd/README.md](../prd/README.md) | Reviewing product/system requirements |
-| `[LOAD:SPEC]` | [../specs/README.md](../specs/README.md) | Implementing or verifying specs |
+| `[LOAD:SPECS]` | [../specs/README.md](../specs/README.md) | Implementing or verifying specs |
 | `[LOAD:PLANS]` | [../plans/README.md](../plans/README.md) | Executing or updating implementation plans |
-| `[LOAD:RUNBOOK]` | [../runbooks/README.md](../runbooks/README.md) | Performing operational procedures |
+| `[LOAD:RUNBOOKS]` | [../runbooks/README.md](../runbooks/README.md) | Performing operational procedures |
 | `[LOAD:OPS]` | [../operations/incidents/README.md](../operations/incidents/README.md) | Reviewing operational history |
 
 ## Intent-Based Discovery (Load Rule Files)

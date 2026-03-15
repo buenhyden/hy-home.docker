@@ -27,10 +27,10 @@ Detailed behavioral standards and operational rules for AI agents in `hy-home.do
 - **Port Convention**: Distinguish between `*_PORT` (container) and `*_HOST_PORT` (host).
 - **Lifecycle**: Follow the [Discover -> Specify -> Plan -> Implement -> Verify -> Document] chain.
 
-## 4. Responsible AI Collaboration
+## 4. Responsible AI Collaboration (March 2026 Standards)
 
 - Adhere to community standards for empathy and constructive feedback.
-- **Skill Autonomy**: Proactively discover and apply purpose-fit skills from the toolkit. There are no restricted skills; use what is appropriate for the task.
+- **Full Skill Autonomy**: Proactively discover and apply ANY purpose-fit skill from your toolkit. There are NO restricted skills in this repository.
 - Ensure tool use is efficient and well-documented.
 - Never hallucinate requirements or edge cases; stop and ask for clarification.
 - Follow the persona matrix to ensure the correct level of authority and expertise.
