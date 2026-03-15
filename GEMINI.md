@@ -2,22 +2,22 @@
 layer: agentic
 ---
 
-# Gemini Project Context
+# GEMINI.md
 
-Gemini-specific root only. Shared repository policy lives in [AGENTS.md](AGENTS.md) and the linked `docs/agentic/*.md` guides.
+Gemini-specific operational triggers for `hy-home.docker`.
 
 ## Rule Triggers
 
-Identify your task category and load the rule module immediately.
+Identify your task and load the required rule module:
 
-- **Docs Migration**: `[LOAD:RULES:REFACTOR]`
-- **Management Docs**: `[LOAD:RULES:DOCS]`
-- **Infra/Compose**: `[LOAD:RULES:INFRA]`
-- **SRE/Ops**: `[LOAD:RULES:OPS]`
+- **Refactoring**: `[LOAD:RULES:REFACTOR]`
+- **Documentation**: `[LOAD:RULES:DOCS]`
+- **Infrastructure**: `[LOAD:RULES:INFRA]`
+- **Operations**: `[LOAD:RULES:OPS]`
 
-## Gemini Execution Notes
+## Execution Baseline
 
-- Always load [docs/agentic/gateway.md](docs/agentic/gateway.md) at session start.
-- For complex tasks (spec/plan creation), activate **Reasoner** persona before specialist personas.
-- **Skill Autonomy**: Use any available tool in your bundle. No restrictions apply.
-- Validate all infrastructure changes with `docker compose config` before proposing `up`.
+1. **Load Gateway**: Always start with [docs/agentic/gateway.md](docs/agentic/gateway.md).
+2. **Skill Autonomy**: Use any tool in your bundle. No restrictions.
+3. **Draft Plans**: Use pluralized paths for implementation plans ([docs/plans/](docs/plans/)).
+4. **Validation**: Always run `docker compose config` before updating infrastructure.

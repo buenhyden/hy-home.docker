@@ -4,22 +4,25 @@ layer: agentic
 
 # CLAUDE.md
 
-Cla## Rule Triggers
+Claude-specific operational triggers for `hy-home.docker`.
 
-Identify your task and load the rule module:
+## Rule Triggers
+
+Identify your task and load the required rule module:
 
 - **Refactoring**: `[LOAD:RULES:REFACTOR]`
 - **Documentation**: `[LOAD:RULES:DOCS]`
+- **Infrastructure**: `[LOAD:RULES:INFRA]`
+- **Operations**: `[LOAD:RULES:OPS]`
 
-## Claude Execution Notes
+## Execution Baseline
 
-- **Gateway First**: Always begin session with [docs/agentic/gateway.md](docs/agentic/gateway.md).
-- **Skill Autonomy**: Use any available tool in your bundle. No restrictions apply. Proactively apply skills like `agent-md-refactor` or `claude-md-improver` as needed.
-- **Path Compliance**: Implementation plans must reside in `docs/plans/`.
-- **Skill Autonomy**: Proactively apply any purpose-fit skill. No tool restrictions.
+1. **Load Gateway**: Always start with [docs/agentic/gateway.md](docs/agentic/gateway.md).
+2. **Skill Autonomy**: Use any tool in your bundle. No restrictions.
+3. **Draft Plans**: Use pluralized paths for implementation plans ([docs/plans/](docs/plans/)).
 
-## Shared Policy Imports
+## Policy Imports
 
-@docs/agentic/core-governance.md
-@docs/agentic/workflow.md
-@docs/agentic/instructions.md
+- @docs/agentic/instructions.md
+- @docs/agentic/core-governance.md
+- @docs/agentic/workflow.md

@@ -21,7 +21,7 @@ Standard rules for the codebase. Exceptions must be documented in ADRs or featur
 - **Secrets-first:** Passwords and tokens must never be in `.env`. They are injected via `secrets/**/*.txt` into `/run/secrets/`.
 - **Port policy:** Host-exposed ports use `*_HOST_PORT`. Container-internal ports use `*_PORT`. Always use `${VAR:-default}` in Compose files.
 - **Security baseline:** By default, all services must implement `security_opt: [no-new-privileges:true]` and `cap_drop: [ALL]`.
-- **Documentation separation:** Background info goes to [`docs/`](docs/), plans to [`docs/specs/`](docs/specs/), and executable manuals to [`docs/runbooks/`](docs/runbooks/).
+- **Documentation separation**: Background info goes to [`docs/`](docs/), plans to [`docs/plans/`](docs/plans/), and executable manuals to [`docs/runbooks/`](docs/runbooks/).
 
 ## 3. Runtime Topology
 

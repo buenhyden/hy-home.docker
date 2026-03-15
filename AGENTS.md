@@ -2,25 +2,24 @@
 layer: core
 ---
 
-# Agent Instructions — hy-home.docker
+# Agent Working Contract — hy-home.docker
 
-Docker Compose infrastructure workspace.
+This repository uses an intent-based rule loading system. All AI agents MUST initialize their session by loading the gateway.
 
 ## Core Discovery
 
-All agents MUST start their session by loading the gateway:
-
 - **Gateway**: [docs/agentic/gateway.md](docs/agentic/gateway.md)
+- **Instructions**: [docs/agentic/instructions.md](docs/agentic/instructions.md)
 
-## Intent-Based Rule Selection
+## Intent triggers
 
-Identify your current task and load the corresponding rule set.
+Load the corresponding rule set by identifying your task category:
 
-| **Refactoring** | `[LOAD:RULES:REFACTOR]` | Doc restructuring and plural migration |
-| **Documentation** | `[LOAD:RULES:DOCS]` | Maintaining or creating management docs |
-| **Lifecycle** | `[LOAD:RULES:INFRA]` | Service bring-up and teardown |
-| **Governance** | `[LOAD:RULES:OPS]` | Architecture review and code standards |
+- **Refactoring**: `[LOAD:RULES:REFACTOR]`
+- **Documentation**: `[LOAD:RULES:DOCS]`
+- **Infrastructure**: `[LOAD:RULES:INFRA]`
+- **Operations**: `[LOAD:RULES:OPS]`
 
 ## Skill Autonomy
 
-Proactively discover and apply any relevant skill from your toolkit. There are no restricted skills in this repository; use purpose-fit tools for every task (e.g., `agent-md-refactor`, `docker-expert`).
+Agents have full autonomy to use any available tool. No restrictions apply. Proactively discover and apply relevant skills (e.g., `agent-md-refactor`, `docker-expert`).
