@@ -43,7 +43,6 @@ graph LR
 
 | Directory                     | Stack                            | Features                                                | Recommended For                       |
 | :---------------------------- | :------------------------------- | :------------------------------------------------------ | :------------------------------------ |
-| **[`react-ts/`](./react-ts)** | **TypeScript** + React 19 + Vite | Type generation (`d.ts`), Strict Mode                   | **New Projects** & Enterprise Apps    |
 | **[`nextjs/`](./nextjs)**     | **Next.js 16 + React 19 + Vite** | Tailwind/PostCSS + hybrid routing with Storybook (Vite) | Production-ready Next.js UI libraries |
 
 ## 🚀 Key Features
@@ -60,7 +59,7 @@ graph LR
 Each template includes a `docker-compose.yml` for isolated development.
 
 ```bash
-cd react-ts
+cd nextjs
 
 # Start Storybook on http://localhost:6006
 docker-compose up -d --build
@@ -70,7 +69,7 @@ docker-compose up -d --build
 
 | Service     | Context      | Internal Port | Host Port | Role                |
 | :---------- | :----------- | :------------ | :-------- | :------------------ |
-| `storybook` | `./react-ts` | `80` (Nginx)  | `6006`    | Serves static build |
+| `storybook` | `./nextjs` | `80` (Nginx)  | `6006`    | Serves static build |
 
 ## 🚢 Production Deployment
 
@@ -90,9 +89,6 @@ labels:
 
 ## 🔗 Reference Documentation
 
-- [Figma Integration Guide](./react-ts/FIGMA_INTEGRATION.md)
-- [Visual Regression Testing](./react-ts/VISUAL_REGRESSION.md)
-
 ## 🪝 Git Hooks (Local)
 
 Commit-time checks are available via a repo-level `pre-commit` hook that runs Storybook lint plus repo-wide format/markdownlint on every commit (includes `docs/`, `README.md`, etc).
@@ -104,12 +100,11 @@ git config core.hooksPath .githooks
 
 Notes:
 
-- Run `npm install` inside both templates (`react-ts/` and `nextjs/`) once so the checks can execute.
+- Run `npm install` inside both templates (`nextjs/`) once so the checks can execute.
 
 ## File Map
 
 | Path        | Description                                                |
 | ----------- | ---------------------------------------------------------- |
-| `react-ts/` | TypeScript Storybook template (Vite, Nginx, CI workflows). |
 | `nextjs/`   | Next.js Storybook template (Vite, Nginx, CI workflows).    |
 | `README.md` | Monorepo-level overview and usage notes.                   |
