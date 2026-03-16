@@ -1,6 +1,6 @@
 # Architecture Decision Record (ADR)
 
-> Use this template for `docs/adr/NNNN-short-title.md`.
+> Use this template for `docs/adr/NNNN-<short-title>.md`.
 >
 > Repository-derived contract:
 >
