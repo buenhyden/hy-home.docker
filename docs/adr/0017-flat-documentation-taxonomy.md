@@ -8,7 +8,7 @@ tags: ['adr', 'documentation', 'taxonomy']
 layer: architecture
 ---
 
-# ADR-0017: Flat Documentation Taxonomy and Layer Metadata
+# ADR 0017: Flat Documentation Taxonomy and Layer Metadata
 
 - **Status:** Accepted
 - **Date:** 2026-03-14
@@ -36,6 +36,6 @@ The previous documentation structure was either fragmented or relied on inconsis
 
 ## Related
 
-- `[../specs/refactor-docs-spec.md]`
-- `[../ard/refactor-docs-ard.md]`
-- `[../prd/refactor-docs-prd.md]`
+- `[../specs/2026-03-15-refactor-docs-spec.md]`
+- `[../ard/2026-03-15-doc-taxonomy-ard.md]`
+- `[../prd/2026-03-15-refactor-docs-prd.md]`

@@ -40,6 +40,6 @@ This is the final execution phase for the refactoring task initiated in the prev
 
 ## References
 
-- `[../prd/rule-implementation-prd.md]`
-- `[../ard/rule-refactor-ard.md]`
-- `[../adr/0002-intent-based-triggers.md]`
+- `[../prd/2026-03-15-rule-implementation-prd.md]`
+- `[../ard/2026-03-15-doc-taxonomy-ard.md]`
+- `[../adr/0020-intent-based-triggers.md]`

@@ -1,7 +1,7 @@
 ---
 layer: agentic
 ---
-# ADR-0016: Standardized Documentation Taxonomy
+# ADR 0016: Standardized Documentation Taxonomy
 
 - **Status:** Accepted
 - **Date:** 2026-03-15
@@ -31,6 +31,6 @@ The repository had inconsistent path naming (singular vs plural) and nested stru
 
 ## Related
 
-- `[../specs/infra-spec.md]`
+- `[../specs/2026-02-27-infra-baseline-spec.md]`
 - `[../ard/2026-02-27-infra-baseline-ard.md]`
-- `[../plans/2026-03-15-doc-refactor.md]`
+- `[../plans/2026-03-15-doc-refactor-plan.md]`

@@ -14,7 +14,7 @@ layer: core
 # Infrastructure Hardening & Optimization Implementation Plan
 
 > **Status**: Completed
-> **Reference Spec**: [[SPEC-INFRA-04] Infrastructure Hardening & Optimization](../specs/system-optimization/spec.md)
+> **Reference Spec**: [[SPEC-INFRA-04] Infrastructure Hardening & Optimization](../specs/2026-02-26-infra-system-optimization-spec.md)
 
 _Target Directory: `specs/infra/system-optimization/plan.md`_
 
@@ -77,7 +77,7 @@ The hy-home infrastructure requires surgical technical refinement to resolve val
 ## 9. References
 
 - **PRD**: [../prd/2026-02-27-infra-baseline-prd.md](../prd/2026-02-27-infra-baseline-prd.md)
-- **Spec**: [../specs/system-optimization/spec.md](../specs/system-optimization/spec.md)
+- **Spec**: [../specs/2026-02-26-infra-system-optimization-spec.md](../specs/2026-02-26-infra-system-optimization-spec.md)
 
 ## References
 

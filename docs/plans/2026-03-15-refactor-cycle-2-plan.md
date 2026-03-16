@@ -2,12 +2,13 @@
 layer: agentic
 ---
 # Plan: Cycle 2 Documentation & Agentic Refactor Implementation
+
 n**Overview (KR):** 문서 강화 2단계 과업의 기술적 사양 구현 및 ID 중복 해결을 위한 세부 실행 계획입니다.
 
 - **Status**: Ready
 - **Scope**: master
 - **layer:** architecture
-- **Specification Reference**: `[../specs/refactor-cycle-2-spec.md]`
+- **Specification Reference**: `[../specs/2026-03-15-refactor-cycle-2-spec.md]`
 
 **Overview (KR):** 분석된 내용을 바탕으로 실제 파일 시스템 가공과 AI Agent 엔트리포인트 고도화를 수행하는 실행 계획입니다.
 

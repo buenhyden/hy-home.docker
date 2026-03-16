@@ -2,7 +2,8 @@
 layer: ops
 ---
 # Postmortem: [INC-20260226-000]
-n**Overview (KR):** 인프라 장애(INC-000)의 근본 원인을 분석하고 재발 방지 대책을 수립한 분석 보고서입니다.
+
+**Overview (KR):** 인프라 장애(INC-000)의 근본 원인을 분석하고 재발 방지 대책을 수립한 분석 보고서입니다.
 
 _Target Directory: `operations/postmortems/2026-02-26-rca-infra-bootstrap-postmortem.md`_
 _Note: This document follows the blameless postmortem culture defined in the Risk Management & Incident Response Standards._
@@ -55,11 +56,11 @@ _Note: This document follows the blameless postmortem culture defined in the Ris
 
 | Action (Corrective/Preventive) | Owner | Priority | Ticket/Issue Link | Status |
 | ----------------------------- | ----- | -------- | ----------------- | ------ |
-| Implement `[REQ-SPT-05]` via ARD refactoring | Architect | High | [ARD Architecture Review Site](../ard/README.md) | Done |
-| Initialize `incident-log.md` with persona mapping | Ops Lead | Medium | [Incident Log Index](../incidents/README.md) | Done |
+| Implement `[REQ-SPT-05]` via ARD refactoring | Architect | High | [ARD Architecture Review Site](../../ard/README.md) | Done |
+| Initialize `incident-log.md` with persona mapping | Ops Lead | Medium | [Incident Log Index](../../operations/incidents/README.md) | Done |
 | Standardize labels across clusters for Alloy | Platform | Medium | N/A | Pending |
 
 ## 8. Follow-up Links & Artifacts
 
-- **Remediation Walkthrough**: [Operations Documentation Summary](../README.md)
-- **Updated Standard**: [`0301-operations-blueprint-standard.md`](../../.agent/rules/0301-operations-blueprint-standard.md)
+- **Remediation Walkthrough**: [Operations Documentation Summary](../../operations/README.md)
+- **Updated Standard**: [`0301-operations-blueprint-standard.md`](../../../.agent/rules/0300-DevOps_and_Infrastructure/0301-operations-blueprint-standard.md)

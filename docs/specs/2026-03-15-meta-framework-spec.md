@@ -39,6 +39,6 @@ Update `docs/agentic/gateway.md` with:
 ```markdown
 | Intent | Entry Point |
 | --- | --- |
-| Refactoring Documentation | [.agent/rules/2100-Documentation/2105-doc-refactor.md](../../.agent/rules/2100-Documentation/2105-doc-refactor.md) |
+| Refactoring Documentation | [.agent/rules/2100-Documentation/2106-doc-workflow.md](../../.agent/rules/2100-Documentation/2106-doc-workflow.md) |
 | Standard Doc Update | [.agent/rules/2100-Documentation/2110-doc-core-std.md](../../.agent/rules/2100-Documentation/2110-doc-core-std.md) |
 ```

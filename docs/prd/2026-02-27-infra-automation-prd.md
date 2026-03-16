@@ -96,9 +96,9 @@ _Note: This document defines the What and Why for autonomous infrastructure capa
 
 ## 10. Q&A / Open Issues
 
-- **[ISSUE-01]**: Should we use Terraform for this? - **Update**: Decision made to use Docker Sidecars for local simplicity [ADR-0005].
+- **[ISSUE-01]**: Should we use Terraform for this? - **Update**: Decision made to use Docker Sidecars for local simplicity [[ADR-0005]](../adr/0005-sidecar-resource-initialization.md).
 
 ## 11. Related Documents (Reference / Traceability)
 
 - **Technical Specification**: [[REQ-SPEC-AUTO-01] Infrastructure Automation Spec](../specs/2026-02-27-infra-automation-spec.md)
-- **Architecture Decisions (ADRs)**: [[ADR-0005] Sidecar Resource Initialization](../adr/adr-0005-sidecar-resource-initialization.md)
+- **Architecture Decisions (ADRs)**: [[ADR-0005] Sidecar Resource Initialization](../adr/0005-sidecar-resource-initialization.md)

@@ -2,12 +2,13 @@
 layer: architecture
 ---
 # System Optimization & Hardening Architecture Reference Document (ARD)
-n**Overview (KR):** 시스템 전반의 성능 향상 및 리소스 최적화 전략이 반영된 아키텍처 설계 참조입니다.
+
+**Overview (KR):** 시스템 전반의 성능 향상 및 리소스 최적화 전략이 반영된 아키텍처 설계 참조입니다.
 
 - **Status**: Approved
 - **Owner**: Reliability Engineer
 - **PRD Reference**: [Hy-Home System Optimization PRD](../prd/2026-02-26-system-optimization-prd.md)
-- **ADR References**: [ADR-0007](../adr/0007-mandatory-resource-limits.md), [ADR-0008](../adr/0008-removing-static-docker-ips.md), [ADR-0012](../adr/0012-standardized-init-process.md), [ADR-0013](../adr/adr-0013-configuration-deduplication.md), [ADR-0014](../adr/adr-0014-optimization-strategies.md)
+- **ADR References**: [ADR-0007](../adr/0007-mandatory-resource-limits.md), [ADR-0008](../adr/0008-removing-static-docker-ips.md), [ADR-0012](../adr/0012-standardized-init-process.md), [ADR-0013](../adr/0013-configuration-deduplication.md), [ADR-0014](../adr/0014-optimization-strategies.md)
 
 ---
 

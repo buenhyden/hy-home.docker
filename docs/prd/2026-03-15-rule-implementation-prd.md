@@ -48,5 +48,5 @@ A seamless AI-collaboration environment where agents automatically load the most
 
 ## Related
 
-- `[../ard/rule-refactor-ard.md]`
+- `[../ard/2026-03-15-doc-taxonomy-ard.md]`
 - `[../specs/2026-03-15-rule-refactor-spec.md]`

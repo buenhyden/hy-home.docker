@@ -13,9 +13,9 @@ prd_reference: '../prd/2026-03-15-alignment-prd.md'
 
 ```mermaid
 graph TD
-    Root[Root Files: AGENTS, CLAUDE, GEMINI] -->|Triggers| Gateway[docs/agentic/gateway.md]
-    Gateway -->|Mappings| Rules[docs/agentic/rules/*.md]
-    Rules -->|Imports| Behavioral[docs/agentic/instructions.md]
+    Root[Root Files: AGENTS, CLAUDE, GEMINI] -->|Triggers| Gateway[../agentic/gateway.md]
+    Gateway -->|Mappings| Rules[../agentic/rules/*.md]
+    Rules -->|Imports| Behavioral[../agentic/instructions.md]
     Behavioral -->|Metadata| Layering[layer: metadata standard]
 ```
 

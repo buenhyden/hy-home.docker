@@ -41,7 +41,7 @@ To establish a highly structured, discoverable, and machine-readable documentati
 
 ## Related
 
-- `[../ard/refactor-docs-ard.md]`
-- `[../specs/refactor-docs-spec.md]`
-- `[../plans/refactor-docs-plan.md]`
-- `[../adr/0001-flat-taxonomy-metadata.md]`
+- `[../ard/2026-03-15-doc-taxonomy-ard.md]`
+- `[../specs/2026-03-15-refactor-docs-spec.md]`
+- `[../plans/2026-03-15-doc-refactor-plan.md]`
+- `[../adr/0016-doc-taxonomy.md]`

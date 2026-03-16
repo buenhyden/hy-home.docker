@@ -2,11 +2,12 @@
 layer: agentic
 ---
 # Spec: Cycle 2 Documentation & Agent Optimization
+
 n**Overview (KR):** 문서 강화 2단계 과업의 범위와 기술적 달성 목표를 설명하는 명세입니다.
 
 - **Status**: Review
 - **layer:** architecture
-- **Related PRD**: `[../prd/refactor-cycle-2-prd.md]`
+- **Related PRD**: `[../prd/2026-03-15-refactor-cycle-2-prd.md]`
 
 **Overview (KR):** 리포지토리의 루트 파일들과 AI Agent 운영 지침을 통합하기 위한 기술적 구현 가이드입니다.
 

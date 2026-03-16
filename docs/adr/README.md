@@ -32,7 +32,7 @@ This directory contains Architecture Decision Records for the project. ADRs docu
 | [ADR-0020](0020-intent-based-triggers.md) | Intent-Based Rule Triggers | Accepted | 2026-03-15 |
 | [ADR-0021](0021-2026-march-agentic-standard.md) | March 2026 Agentic Standard Adoption | Accepted | 2026-03-15 |
 | [ADR-0022](0022-cycle-2-doc-taxonomy.md) | Strict Enforcement of Plural Execution Paths | Accepted | 2026-03-15 |
-| [ADR-0023](0023-plural-plans-path.md) | Adoption of Singular plan Path | Accepted | 2026-03-16 |
+| [ADR-0023](0023-plural-plans-path.md) | Adoption of Plural plans Path | Accepted | 2026-03-16 |
 | [ADR-0024](0024-lazy-loading-agent-rules.md) | Lazy-Loading Agent Rules | Accepted | 2026-03-15 |
 | [ADR-0025](0025-intent-based-lazy-loading.md) | Intent-Based Lazy Loading for Agent Rules | Accepted | 2026-03-16 |
 

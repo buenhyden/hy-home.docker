@@ -2,14 +2,15 @@
 layer: agentic
 ---
 # Agent Rule Implementation and Refactor Specification
-n**Overview (KR):** 에이전트 전용 규칙(Rules)의 구조를 리팩토링하고 신규 트리거를 적용하는 명세입니다.
+
+**Overview (KR):** 에이전트 전용 규칙(Rules)의 구조를 리팩토링하고 신규 트리거를 적용하는 명세입니다.
 
 > **Status**: Canonical
 > **Scope**: master
 > **layer:** product
-> **Related PRD**: `[../prd/rule-implementation-prd.md]`
-> **Related Architecture**: `[../ard/rule-refactor-ard.md]`
-> **Decision Record**: `[../adr/0002-intent-based-triggers.md]`
+> **Related PRD**: `[../prd/2026-03-15-rule-implementation-prd.md]`
+> **Related Architecture**: `[../ard/2026-03-15-doc-taxonomy-ard.md]`
+> **Decision Record**: `[../adr/0020-intent-based-triggers.md]`
 
 **Overview (KR):** 본 명세서는 루트 파일에서 지침을 직접 로드하기 위한 구체적인 트리거 형식과 `docs/agentic/`의 디렉토리 구조를 확정합니다.
 

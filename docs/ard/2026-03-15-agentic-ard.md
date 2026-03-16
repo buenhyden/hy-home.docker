@@ -7,7 +7,7 @@ layer: agentic
 - **Owner**: buenhyden
 - **Scope**: master
 - **layer:** agentic
-- **PRD Reference**: `[../prd/refactor-prd.md]`
+- **PRD Reference**: `[../prd/2026-03-15-refactor-prd.md]`
 
 **Overview (KR):** 리포지토리의 AI Agent 운영 방침과 규칙 로딩 아키텍처를 정의합니다.
 
@@ -24,7 +24,7 @@ The Agentic layer is a meta-layer that manages how AI assistants interact with t
 ## Ownership
 
 - **Primary owner**: buenhyden
-- **Primary artifacts**: `[docs/agentic/]`, `[AGENTS.md]`
+- **Primary artifacts**: `[../agentic/]`, `[../../AGENTS.md]`
 
 ## 1. Architecture Decisions
 
@@ -42,7 +42,7 @@ All implementation plans reside in `docs/plans/`. All technical specifications r
 | ------- | --------------------------------------------- | -------------------------------- |
 | master  | `docs/ard/2026-03-15-agentic-ard.md`                     | Layer authority                  |
 | domain  | `docs/agentic/gateway.md`                     | Operational entrypoint           |
-| feature | `docs/specs/refactor-spec.md`                 | Implementation detail            |
+| feature | `docs/specs/2026-03-15-refactor-spec.md`                 | Implementation detail            |
 
 ## Related
 

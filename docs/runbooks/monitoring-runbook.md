@@ -2,7 +2,8 @@
 layer: ops
 ---
 # Monitoring Runbook
-n**Overview (KR):** 전체 가동 중단 시 모니터링 시스템의 가용성을 확인하고 대시보드를 복구하는 절차입니다.
+
+**Overview (KR):** 전체 가동 중단 시 모니터링 시스템의 가용성을 확인하고 대시보드를 복구하는 절차입니다.
 
 ## 1. Document Purpose
 
@@ -15,9 +16,9 @@ Procedure for monitoring service health and responding to alert signals.
 
 ## 3. Dashboards & Alerts (Required Links)
 
-- [ ] **Primary Dashboard**: `[Link to grafana/datadog]`
-- [ ] **SLOs / SLIs**: `[Link to SLO definitions]`
-- [ ] **Alert Routing**: `[Where does this alert page? PagerDuty/Slack]`
+- [ ] **Primary Dashboard**: Grafana Home (<https://grafana.${DEFAULT_URL}>)
+- [ ] **SLOs / SLIs**: See LGTM Blueprint standard
+- [ ] **Alert Routing**: PagerDuty or Slack alerts channel
 
 ## 4. Execution Steps
 

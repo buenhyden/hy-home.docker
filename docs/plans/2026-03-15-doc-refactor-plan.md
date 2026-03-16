@@ -41,5 +41,5 @@ This plan executes the requirements defined in `docs/prd/2026-03-15-doc-refactor
 ## References
 
 - `[../prd/2026-03-15-doc-refactor-prd.md]`
-- `[../ard/doc-refactor-ard.md]`
-- `[../adr/0001-lazy-loading-protocol.md]`
+- `[../ard/2026-03-15-doc-taxonomy-ard.md]`
+- `[../adr/0018-lazy-loading-protocol.md]`

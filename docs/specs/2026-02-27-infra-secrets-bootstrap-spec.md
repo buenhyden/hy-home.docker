@@ -1,13 +1,13 @@
 ---
 title: 'Infra Secrets Bootstrap Script'
-n**Overview (KR):** Docker Secrets 및 mkcert를 이용한 로컬 환경 보안 초기화 스크립트 명세입니다.
+**Overview (KR):** Docker Secrets 및 mkcert를 이용한 로컬 환경 보안 초기화 스크립트 명세입니다.
 layer: infra
 status: 'Implementation'
 version: '1.0'
 owner: 'Platform / DevOps'
 prd_reference: '../prd/2026-02-27-infra-baseline-prd.md'
 api_reference: 'N/A'
-arch_reference: '/ARCHITECTURE.md'
+arch_reference: '../../ARCHITECTURE.md'
 tags: ['spec', 'implementation', 'infra', 'secrets', 'bootstrap']
 layer: core
 ---
@@ -17,7 +17,7 @@ layer: core
 > **Status**: Implementation
 > **Related PRD**: [../prd/2026-02-27-infra-baseline-prd.md](../prd/2026-02-27-infra-baseline-prd.md)
 > **Related ADR**: [../adr/0002-secrets-first-management.md](../adr/0002-secrets-first-management.md)
-> **Related Architecture**: [/ARCHITECTURE.md](/ARCHITECTURE.md)
+> **Related Architecture**: [../../ARCHITECTURE.md](../../ARCHITECTURE.md)
 
 _Target Directory: `specs/infra/secrets-bootstrap/spec.md`_
 

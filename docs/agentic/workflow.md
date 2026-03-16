@@ -29,8 +29,8 @@ This file describes the shared execution loop for work in `hy-home.docker`.
 
 - For non-trivial work, verify that a matching spec and plan already exist under `../specs/` and `../plan/`.
 - Current refactor contract:
-  - [../specs/2026-03-alignment-spec.md](../specs/2026-03-alignment-spec.md)
-  - [../plan/2026-03-alignment-plan.md](../plan/2026-03-alignment-plan.md)
+  - [../specs/2026-03-15-alignment-spec.md](../specs/2026-03-15-alignment-spec.md)
+  - [../plans/2026-03-15-alignment-plan.md](../plans/2026-03-15-alignment-plan.md)
 
 ## Runbooks Vs Operations History
 

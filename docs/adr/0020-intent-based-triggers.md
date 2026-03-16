@@ -8,7 +8,7 @@ tags: ['adr', 'agentic', 'rules']
 layer: architecture
 ---
 
-# ADR-0020: Intent-Based Rule Triggers and Lazy Loading
+# ADR 0020: Intent-Based Rule Triggers and Lazy Loading
 
 - **Status:** Accepted
 - **Date:** 2026-03-15
@@ -36,5 +36,5 @@ We will implement explicit **Intent-Based Rule Triggers** in the root agent file
 
 ## Related
 
-- `[../prd/rule-implementation-prd.md]`
+- `[../prd/2026-03-15-rule-implementation-prd.md]`
 - `[../specs/2026-03-15-rule-refactor-spec.md]`

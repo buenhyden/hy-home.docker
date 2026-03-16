@@ -1,7 +1,7 @@
 ---
 layer: infra
 ---
-# ADR-0003: Spec-Driven Development (SDD)
+# ADR 0003: Spec-Driven Development (SDD)
 n**Overview (KR):** 기술 명세서(Spec)를 우선적으로 작성하고 이를 기반으로 구현을 진행하는 SDD 워크플로우를 도입합니다.
 
 : Spec-Driven Development (SDD)

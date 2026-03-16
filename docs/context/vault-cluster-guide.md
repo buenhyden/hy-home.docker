@@ -2,7 +2,8 @@
 layer: infra
 ---
 # HashiCorp Vault Security Guide
-n**Overview (KR):** HashiCorp Vault 클러스터의 시크릿 관리 가버넌스 및 보안 정책 설계 가이드입니다.
+
+**Overview (KR):** HashiCorp Vault 클러스터의 시크릿 관리 가버넌스 및 보안 정책 설계 가이드입니다.
 
 > **Component**: `vault`
 > **Tier**: `03-security`
@@ -31,9 +32,9 @@ Vault starts in an **Uninitialized** state. This is a one-time operation per env
 Vault seals itself after every container restart. You MUST unseal it before any dependent application (like Keycloak or App APIs) can fetch secrets.
 
 ```bash
-vault operator unseal [Key 1]
-vault operator unseal [Key 2]
-vault operator unseal [Key 3]
+vault operator unseal <UNSEAL_KEY_1>
+vault operator unseal <UNSEAL_KEY_2>
+vault operator unseal <UNSEAL_KEY_3>
 ```
 
 ## 3. Storage Integration

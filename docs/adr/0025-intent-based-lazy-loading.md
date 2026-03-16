@@ -1,5 +1,5 @@
 ---
-title: 'ADR-0025: Intent-Based Lazy Loading for Agent Rules'
+title: 'ADR 0025: Intent-Based Lazy Loading for Agent Rules'
 status: 'Accepted'
 date: '2026-03-14'
 authors: ['buenhyden']
@@ -8,7 +8,7 @@ tags: ['adr', 'agentic', 'lazy-loading']
 layer: agentic
 ---
 
-# ADR-0025: Intent-Based Lazy Loading for Agent Rules
+# ADR 0025: Intent-Based Lazy Loading for Agent Rules
 
 - **Status:** Accepted
 - **Date:** 2026-03-14
@@ -37,6 +37,6 @@ Prior to this decision, AI agents were often loaded with the entire `AGENTS.md` 
 
 ## Related
 
-- `[../specs/agent-rule-lazy-loading-spec.md]`
-- `[../ard/refactor-agent-documentation-ard.md]`
-- `[./0010-lazy-loading-agent-rules.md]` (Reference to earlier concepts)
+- `[../specs/2026-03-15-agent-rule-lazy-loading-spec.md]`
+- `[../ard/2026-03-15-doc-taxonomy-ard.md]`
+- `[./0024-lazy-loading-agent-rules.md]` (Reference to earlier concepts)

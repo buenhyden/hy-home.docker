@@ -1,5 +1,5 @@
 ---
-title: 'ADR-0026: Documentation Structure and Lazy Loading'
+title: 'ADR 0026: Documentation Structure and Lazy Loading'
 status: 'Accepted'
 date: '2026-03-16'
 authors: ['Antigravity']
@@ -8,7 +8,7 @@ tags: ['adr', 'documentation', 'lazy-loading']
 layer: common
 ---
 
-# ADR-1001: Documentation Structure and Lazy Loading
+# ADR 0026: Documentation Structure and Lazy Loading
 
 - **Status:** Accepted
 - **Date:** 2026-03-16

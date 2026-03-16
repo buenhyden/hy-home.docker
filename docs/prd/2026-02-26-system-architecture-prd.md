@@ -15,6 +15,8 @@ layer: core
 > **Owner**: Platform Architect
 > **Stakeholders**: All Contributors
 
+**Overview (KR):** 리포지토리의 가독성과 유지보수성을 높이기 위해 계층화된 구조, 문서 기반 워크플로우, 그리고 서비스 간 통합 모델을 정의하는 시스템 아키텍처 표준 요구사항 문서입니다.
+
 _Target Directory: `docs/prd/2026-02-26-system-architecture-prd.md`_
 _Note: This document defines the What and Why for the entire repository._
 

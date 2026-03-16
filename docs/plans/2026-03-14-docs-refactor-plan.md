@@ -38,7 +38,7 @@ This plan covers the implementation phase of the refactoring task, focusing on m
 
 ## References
 
-- `[../prd/documentation-framework-prd.md]`
-- `[../specs/agent-rule-lazy-loading-spec.md]`
-- `[../ard/refactor-agent-documentation-ard.md]`
-- `[../adr/0016-intent-based-lazy-loading.md]`
+- `[../prd/2026-03-15-refactor-docs-prd.md]`
+- `[../specs/2026-03-15-agent-rule-lazy-loading-spec.md]`
+- `[../ard/2026-03-15-doc-taxonomy-ard.md]`
+- `[../adr/0025-intent-based-lazy-loading.md]`

@@ -1,7 +1,7 @@
 ---
 layer: infra
 ---
-# ADR-0011: Multi-Stage Build Standard
+# ADR 0011: Multi-Stage Build Standard
 n**Overview (KR):** 도커 이미지 최적화와 보안 강화를 위해 모든 서비스에 멀티 스테이지 빌드 방식을 적용합니다.
 
 : Multi-Stage Build Standard

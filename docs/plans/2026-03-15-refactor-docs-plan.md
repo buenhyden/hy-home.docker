@@ -3,9 +3,10 @@ layer: agentic
 ---
 
 # Documentation Refactor Implementation Plan
+
 n**Overview (KR):** 기존 기술 문서의 구조적 정렬 및 메타데이터 동기화를 위한 리팩토링 단계입니다.
 
-> **Technical Specification**: `[../specs/refactor-docs-spec.md]`
+> **Technical Specification**: `[../specs/2026-03-15-refactor-docs-spec.md]`
 
 ## Milestone 1: Core Metadata and Hubs (DONE)
 

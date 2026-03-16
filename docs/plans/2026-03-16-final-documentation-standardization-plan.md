@@ -1,4 +1,6 @@
 # Final Documentation Standardization Implementation Plan
+>
+> **Overview (KR):** 리포지토리의 중복된 문서를 제거하고 명명 규칙 및 메타데이터를 통일하여 문서 허브의 완성도를 높이는 실행 계획입니다.
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 

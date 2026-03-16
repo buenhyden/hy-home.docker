@@ -3,10 +3,11 @@ layer: agentic
 ---
 
 # Documentation Refactor Technical Specification
+
 n**Overview (KR):** 기존 기술 문서의 분류 체계 재정립 및 구문 최적화 작업을 위한 명세입니다.
 
-> **Parent PRD**: `[../prd/refactor-docs-prd.md]`
-> **Architecture Reference**: `[../ard/refactor-docs-ard.md]`
+> **Parent PRD**: `[../prd/2026-03-15-refactor-docs-prd.md]`
+> **Architecture Reference**: `[../ard/2026-03-15-doc-taxonomy-ard.md]`
 
 **Overview (KR):** 이 명세서는 문서 재구성 작업의 기술적 구현 세부 사항을 정의합니다. 메타데이터 형식, 에이전트 지침 격리, 그리고 지연 로딩 시스템의 작동 방식을 설명합니다.
 

@@ -1,12 +1,13 @@
 # Spec-0001: Documentation Taxonomy and Plural Migration
+
 n**Overview (KR):** 문서 분류 체계 변경 및 복수형 경로 전환을 위한 기초 사양입니다.
 
 - **Status**: Implementation
 - **Scope**: master
 - **layer:** architecture
-- **Related PRD**: `[../prd/refactor-prd.md]`
+- **Related PRD**: `[../prd/2026-03-15-refactor-prd.md]`
 - **Related Architecture**: `[../ard/2026-03-15-agentic-ard.md]`
-- **Decision Record**: `[../adr/0002-doc-taxonomy.md]`
+- **Decision Record**: `[../adr/0016-doc-taxonomy.md]`
 
 **Overview (KR):** 인프라 리포지토리의 모든 문서를 평탄화된 계층으로 재배치하고, 실행 관련 파일들의 경로를 복수형으로 통일하기 위한 기술적 세부 사항을 정의합니다.
 

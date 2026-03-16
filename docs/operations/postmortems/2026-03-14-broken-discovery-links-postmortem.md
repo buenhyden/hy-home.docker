@@ -3,6 +3,8 @@ layer: ops
 ---
 
 # Postmortem: Broken Documentation Discovery Path
+>
+> **Overview (KR):** 문서 발견 경로의 유효성 검증 부족으로 인해 발생한 장애의 사후 분석 및 재발 방지 대책입니다.
 
 > **Incident Reference**: `[../incidents/2026-03-14-broken-discovery-links.md]`
 

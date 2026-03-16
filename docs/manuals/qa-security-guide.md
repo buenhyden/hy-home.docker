@@ -29,4 +29,4 @@ _Description: This document defines the team's quantitative and qualitative stan
 
 ## 3. Custom QA / Security Rules
 
-[List any project-specific security rules, additional compliance mandates, or custom linters here.]
+- **Custom Rules**: Rules for this repository are defined in the Project Governance standards.

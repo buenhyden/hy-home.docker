@@ -1,12 +1,12 @@
 ---
 layer: agentic
 ---
-# ADR-0022: Strict Enforcement of Plural Execution Paths
+# ADR 0022: Strict Enforcement of Plural Execution Paths
 
 - **Status:** Accepted
 - **Date:** 2026-03-15
 - **layer:** architecture
-- **Reference ARD**: `[../ard/agentic-framework-cycle-2-ard.md]`
+- **Reference ARD**: `[../ard/2026-03-15-doc-taxonomy-ard.md]`
 
 **Overview (KR):** 문서 탐색의 일관성을 위해 모든 실행 관련 문서(plans, specs, runbooks)의 경로를 반드시 복수형으로 유지하고, 단수 경로를 영구적으로 제거합니다.
 

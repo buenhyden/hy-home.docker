@@ -2,6 +2,7 @@
 layer: ops
 ---
 # Active Incident: INC-20260315-001 / Documentation Path Inconsistency
+
 **Overview (KR):** 문서 경로 불일치 및 트리거 동작 오류로 인한 시스템 운영 장애 내역입니다.
 
 **Postmortem Link**: `[../postmortems/2026-03-15-doc-path-fix.md]`
@@ -19,7 +20,7 @@ layer: ops
 | **Primary Service**       | Documentation Hub                                      |
 | **Affected Dependencies** | AI Agent Rules                                         |
 | **Evidence Source**       | Agent Hallucination Report                             |
-| **Runbook Link**          | `[../../runbooks/doc-maintenance.md]`                  |
+| **Runbook Link**          | `[../../runbooks/documentation-maintenance.md]`      |
 | **layer:**                | architecture                                           |
 
 ## Incident Summary
