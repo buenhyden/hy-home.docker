@@ -87,3 +87,8 @@ graph LR
 - **What NOT to do**: Use absolute host paths in compose files.
 - **Trade-offs**: template inheritance increases configuration resolution complexity but ensures global standard enforcement.
 - **Known Limitations**: `read_only` filesystems require manual identification of all writeable directories for `tmpfs` mapping.
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

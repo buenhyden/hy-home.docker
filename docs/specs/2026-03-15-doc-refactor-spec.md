@@ -44,8 +44,8 @@ The repository uses Markdown for all documentation. Agent instructions are loade
 ## Verification
 
 ```bash
-# Check layers
+## Check layers
 head -n 5 *.md docs/**/*.md | grep "layer:"
-# Check links
+## Check links
 rg "\]\(" docs/**/*.md | grep -v "http"
 ```

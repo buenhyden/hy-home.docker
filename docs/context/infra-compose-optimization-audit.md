@@ -1,7 +1,7 @@
 ---
 layer: infra
 ---
-## Infra
+# Infra
 n**Overview (KR):** Docker Compose 파일 및 환경 변수 구성의 최적화 상태를 점검한 오디트 결과입니다.
 
 ## Scope
@@ -88,13 +88,13 @@ n**Overview (KR):** Docker Compose 파일 및 환경 변수 구성의 최적화 
 ## Repro Commands
 
 ```bash
-# 1) Lint compose YAML files
+## 1) Lint compose YAML files
 yamllint docker-compose.yml infra/**/docker-compose*.yml infra/**/docker-compose*.yaml
 
-# 2) Root render check
+## 2) Root render check
 docker compose --env-file .env.example config > /tmp/root.compose.rendered.yaml
 
-# 3) Active interpolation vars that are NOT in .env.example
+## 3) Active interpolation vars that are NOT in .env.example
 awk -F= '/^[A-Za-z_][A-Za-z0-9_]*=/{print $1}' .env.example | sort -u > /tmp/env_vars_u.txt
 rg --files -g 'docker-compose*.yml' -g 'docker-compose*.yaml' \
   | sort \

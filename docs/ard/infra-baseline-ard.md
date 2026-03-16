@@ -88,3 +88,8 @@ C4Container
 - **Constraints**: Limited by host RAM (target < 4GB idle footprint).
 - **Chosen Path Rationale**: Docker Compose chosen for low overhead and developer familiarity over local K8s.
 - **Known Limitations**: Lacks the native service discovery features of a full mesh.
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

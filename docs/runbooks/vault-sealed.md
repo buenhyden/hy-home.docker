@@ -15,7 +15,7 @@ n**Overview (KR):** HashiCorp Vault가 봉인(Sealed) 상태로 전환되었을 
 **Then**: Provide the unseal quorum (default 3 of 5):
 
 ```bash
-# Execute for each of the 3 keys
+## Execute for each of the 3 keys
 docker exec -it vault vault operator unseal [Key_1]
 docker exec -it vault vault operator unseal [Key_2]
 docker exec -it vault vault operator unseal [Key_3]

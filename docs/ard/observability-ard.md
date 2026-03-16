@@ -89,3 +89,8 @@ graph LR
 - **What NOT to do**: Use local file logging inside containers.
 - **Chosen Path Rationale**: LGTM stack chosen for its deep integration and single Alloy agent over fragmented exporters to minimize footprint.
 - **Configuration Standard**: All services SHALL inherit from `infra/common-optimizations.yml` for unified observability labels.
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

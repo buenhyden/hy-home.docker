@@ -17,7 +17,7 @@ Loki and Prometheus both store timeseries and chunk data locally (or in MinIO). 
 Check the physical disk utilization on the host.
 
 ```bash
-# Verify local bind mounts sizes
+## Verify local bind mounts sizes
 sudo du -sh /mnt/wsl/data/observability/* | sort -rh
 ```
 

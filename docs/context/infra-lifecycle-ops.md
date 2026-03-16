@@ -23,10 +23,10 @@ To launch or update the entire standard stack:
 - Bootstrap prerequisites (secrets/certs/env/dirs): `runbooks/core/infra-bootstrap-runbook.md`
 
 ```bash
-# Standard boot (without specific profiles)
+## Standard boot (without specific profiles)
 docker compose up -d
 
-# Targeted update of one service
+## Targeted update of one service
 docker compose up -d --no-deps --build [service_name]
 ```
 
@@ -43,7 +43,7 @@ To ensure database flush and log commit:
 
 ```bash
 docker compose stop
-# Wait for 30s
+## Wait for 30s
 docker compose down
 ```
 

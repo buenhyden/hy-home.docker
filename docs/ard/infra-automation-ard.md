@@ -72,3 +72,8 @@ C4Context
 - **What NOT to do**: Use manual host-level shell scripts for resource provisioning.
 - **Chosen Path Rationale**: Sidecars ensure consistency within the container lifecycle and require zero host-level dependencies.
 - **Known Limitations**: sidecars increase initial cold startup time of the entire stack.
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

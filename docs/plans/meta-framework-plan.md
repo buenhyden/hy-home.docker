@@ -29,3 +29,8 @@ layer: 'architecture'
 - [x] Spec created.
 - [ ] ADR 0010 created.
 - [ ] Runbook for framework maintenance created.
+
+## References
+
+- [../prd/README.md]
+- [../specs/README.md]

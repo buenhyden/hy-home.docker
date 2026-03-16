@@ -106,3 +106,8 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 - **Spec**: `specs/infra/observability/spec.md`
 - **ARD**: `docs/ard/observability-ard.md`
 - **Architecture**: `ARCHITECTURE.md`
+
+## References
+
+- [../prd/README.md]
+- [../specs/README.md]

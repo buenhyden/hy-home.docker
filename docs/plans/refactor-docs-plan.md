@@ -37,3 +37,8 @@ n**Overview (KR):** 기존 기술 문서의 구조적 정렬 및 메타데이터
 - [x] Validate 100% metadata coverage.
 - [x] Run link integrity checks.
 - [x] Final Walkthrough.
+
+## References
+
+- [../prd/README.md]
+- [../specs/README.md]

@@ -45,7 +45,7 @@ If the filesystem is actually corrupted, you must execute a recovery block.
 2. Remount the block into read/write format if the Linux kernel forcefully changed it.
 
 ```bash
-# Verify mount states
+## Verify mount states
 mount | grep $(df -P ${DEFAULT_DATA_DIR} | tail -1 | awk '{print $1}')
 ```
 

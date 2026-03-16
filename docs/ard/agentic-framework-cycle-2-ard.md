@@ -29,3 +29,8 @@ Authority = Singular; Execution = Plural.
 
 - Correct: `docs/adr/`, `docs/plans/`.
 - Incorrect: `docs/adrs/`, `docs/plan/`.
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

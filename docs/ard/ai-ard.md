@@ -77,3 +77,8 @@ C4Context
 - **Constraints**: Limited by available VRAM on the host GPU.
 - **What NOT to do**: Assume the UI is protected by SSO unless middleware is explicitly configured.
 - **Trade-offs**: Ollama is chosen for containerized simplicity over heavier serving stacks.
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

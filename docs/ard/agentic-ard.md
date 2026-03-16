@@ -43,3 +43,8 @@ All implementation plans reside in `docs/plans/`. All technical specifications r
 | master  | `docs/ard/agentic-ard.md`                     | Layer authority                  |
 | domain  | `docs/agentic/gateway.md`                     | Operational entrypoint           |
 | feature | `docs/specs/refactor-spec.md`                 | Implementation detail            |
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

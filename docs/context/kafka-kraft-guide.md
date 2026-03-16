@@ -57,7 +57,7 @@ Upon `docker compose up -d`, wait ~45s for leader election.
 ### Topic Lifecycle
 
 ```bash
-# Create a topic with 3 replicas for safety
+## Create a topic with 3 replicas for safety
 docker compose exec kafka-1 kafka-topics --bootstrap-server localhost:19092 \
   --create --topic events.logs --partitions 6 --replication-factor 3
 ```

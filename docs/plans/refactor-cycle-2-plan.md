@@ -33,3 +33,8 @@ n**Overview (KR):** 문서 강화 2단계 과업의 기술적 사양 구현 및 
 ## 5. Phase 5: Metadata Completion
 
 - [ ] Audit every `.md` file for `layer:` presence.
+
+## References
+
+- [../prd/README.md]
+- [../specs/README.md]

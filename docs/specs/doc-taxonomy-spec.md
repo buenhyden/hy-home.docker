@@ -24,6 +24,6 @@ The system relies on a flat directory hierarchy where each subdirectory of `docs
 ## Verification
 
 ```bash
-# Verify layer metadata
+## Verify layer metadata
 grep -r "layer:" docs/
 ```

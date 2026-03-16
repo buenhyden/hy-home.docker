@@ -32,3 +32,8 @@ Ensure a high-discovery, low-context-bloat documentation ecosystem where AI agen
 - Successful `docker compose config` validation.
 - All documentation links are relative and functional.
 - Zero "restricted skills" messages in agent entrypoints.
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

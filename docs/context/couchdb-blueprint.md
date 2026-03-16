@@ -20,7 +20,7 @@ The CouchDB setup operates in a "Full Partitioned Cluster" mode. Nodes `couchdb0
 Clients should use the Traefik-exposed URL for load-balanced access:
 
 ```bash
-# Verify cluster healthy membership
+## Verify cluster healthy membership
 curl -u admin:${COUCHDB_PASSWORD} https://couchdb.${DEFAULT_URL}/_membership
 ```
 

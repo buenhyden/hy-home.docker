@@ -10,15 +10,15 @@ n**Overview (KR):** Kafka 클러스터의 일상적인 관리 과업 및 토픽 
 ## Run Profile
 
 ```bash
-# Start the standard baseline stack (profiles are read from `.env`)
+## Start the standard baseline stack (profiles are read from `.env`)
 docker compose up -d
 
-# Enable messaging profile (example)
+## Enable messaging profile (example)
 COMPOSE_PROFILES=core,data,obs,messaging docker compose up -d
 
-# Stream SQL (optional)
-# (Not enabled by default in the root compose)
-# docker compose --profile ksql up -d
+## Stream SQL (optional)
+## (Not enabled by default in the root compose)
+## docker compose --profile ksql up -d
 ```
 
 ## Kafka Cluster Usage
@@ -72,12 +72,12 @@ curl -X POST -H "Content-Type: application/json" --data @my-connector.json \
 `ksqldb-cli` 서비스를 통해 접속할 수 있습니다:
 
 ```bash
-# (Not enabled by default in the root compose)
-# docker compose exec -it ksqldb-cli ksql http://ksqldb-server:${KSQLDB_PORT}
+## (Not enabled by default in the root compose)
+## docker compose exec -it ksqldb-cli ksql http://ksqldb-server:${KSQLDB_PORT}
 ```
 
 ### Checking Logs
 
 ```bash
-# docker compose logs ksqldb-server
+## docker compose logs ksqldb-server
 ```

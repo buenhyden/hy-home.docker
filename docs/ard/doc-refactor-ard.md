@@ -51,3 +51,8 @@ flowchart TD
 | master  | `docs/ard/doc-refactor-ard.md`                | Top-level architecture authority |
 | agentic | `docs/agentic/gateway.md`                     | Agent entrypoint                 |
 | policy  | `docs/agentic/instructions.md`                | Core behavioral behavioral rules |
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

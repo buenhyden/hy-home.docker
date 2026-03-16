@@ -38,6 +38,6 @@ The deployment is declarative via `rabbitmq.conf`.
 If the service fails to boot with "Permission Denied", check the host volume permission on `${DEFAULT_DATA_DIR}/rabbitmq`. RabbitMQ demands UID `999`.
 
 ```bash
-# Fix permissions on host
+## Fix permissions on host
 sudo chown -R 999:999 data/rabbitmq
 ```

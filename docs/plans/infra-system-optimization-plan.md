@@ -78,3 +78,8 @@ The hy-home infrastructure requires surgical technical refinement to resolve val
 
 - **PRD**: [/docs/prd/infra-baseline-prd.md](/docs/prd/infra-baseline-prd.md)
 - **Spec**: [/specs/infra/system-optimization/spec.md](/specs/infra/system-optimization/spec.md)
+
+## References
+
+- [../prd/README.md]
+- [../specs/README.md]

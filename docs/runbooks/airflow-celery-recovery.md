@@ -47,7 +47,7 @@ If the whole orchestrator state is corrupted, revert to a clean state (WARNING: 
 
 ```bash
 docker compose -f docker-compose.yml --profile airflow down
-# CAUTION: Removing volumes
+## CAUTION: Removing volumes
 docker volume rm hy-home-docker_airflow-metadata
 docker compose -f docker-compose.yml --profile airflow up -d
 ```

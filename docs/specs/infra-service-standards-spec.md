@@ -32,7 +32,7 @@ Every infrastructure service containerized within the `hy-home` ecosystem MUST a
 
 ### 3.1 Metadata Labels
 
-# [SPEC-INFRA-05] Service Standards Specification
+## [SPEC-INFRA-05] Service Standards Specification
 
 ## 0. Pre-Implementation Checklist
 

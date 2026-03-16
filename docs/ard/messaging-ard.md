@@ -73,3 +73,8 @@ C4Context
 
 - **What NOT to do**: Use messaging as a database (do not treat Kafka topics as the primary long-term system of record).
 - **Chosen Path**: KRaft mode reduces operational complexity (no Zookeeper) and aligns with the current compose implementation.
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

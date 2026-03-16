@@ -12,9 +12,9 @@ n**Overview (KR):** RabbitMQ 큐 상태 모니터링 및 메시지 전달 보장
 ## Run Commands
 
 ```bash
-# 서비스 실행
+## 서비스 실행
 docker compose --profile rabbitmq up -d
 
-# 서비스 중지
+## 서비스 중지
 docker compose --profile rabbitmq stop
 ```

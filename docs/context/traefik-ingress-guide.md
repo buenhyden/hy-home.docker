@@ -41,6 +41,6 @@ All non-label based configs (Middlewares, Transport settings) reside in the `./d
 Traefik watches files in `/dynamic` for changes. Restarts are only necessary for core static flag modifications.
 
 ```bash
-# Graceful restart of the gateway
+## Graceful restart of the gateway
 docker compose -f infra/01-gateway/traefik/docker-compose.yml restart
 ```

@@ -16,10 +16,10 @@ Access the management dashboard at `https://couchdb.${DEFAULT_URL}/_utils`.
 ### 2. API Access
 
 ```bash
-# Check cluster status
+## Check cluster status
 curl -u ${COUCHDB_USERNAME}:${COUCHDB_PASSWORD} https://couchdb.${DEFAULT_URL}/_membership
 
-# Create a database
+## Create a database
 curl -X PUT -u ${COUCHDB_USERNAME}:${COUCHDB_PASSWORD} https://couchdb.${DEFAULT_URL}/my_new_db
 ```
 

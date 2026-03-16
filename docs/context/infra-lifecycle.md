@@ -18,10 +18,10 @@ While the root `docker-compose.yml` uses `include` to load the stack, certain sy
 To launch the entire stack:
 
 ```bash
-# Uses `COMPOSE_PROFILES` from `.env` (default in `.env.example` is `core,data,obs`)
+## Uses `COMPOSE_PROFILES` from `.env` (default in `.env.example` is `core,data,obs`)
 docker compose up -d
 
-# Or explicitly:
+## Or explicitly:
 COMPOSE_PROFILES=core,data,obs docker compose up -d
 ```
 

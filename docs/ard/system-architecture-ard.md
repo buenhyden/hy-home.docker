@@ -91,3 +91,8 @@ C4Container
 - **Considered Alternatives**: Kubernetes (rejected for complexity), Nomad (rejected for smaller community).
 - **Chosen Path Rationale**: Docker Compose provides ideal balance of portability and operational simplicity for edge stacks.
 - **Known Limitations**: Manual node failover; limited cross-node scheduling without Swarm/K8s.
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

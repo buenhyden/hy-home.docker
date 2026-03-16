@@ -31,3 +31,8 @@ n**Overview (KR):** 리포지토리의 문서 분류 체계 및 에이전틱 리
 - [ ] No broken links in root files.
 - [ ] Every file has `layer:` metadata.
 - [ ] Agents can load rules via triggers.
+
+## References
+
+- [../prd/README.md]
+- [../specs/README.md]

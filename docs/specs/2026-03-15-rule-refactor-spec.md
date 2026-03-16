@@ -40,8 +40,8 @@ Root files act as the initial prompt context for AI agents. By placing explicit 
 ## Verification
 
 ```bash
-# Verify no 'plans' directory exists
+## Verify no 'plans' directory exists
 ls docs/plans && exit 1 || echo "Success: 'plan' path in use"
-# Verify root triggers
+## Verify root triggers
 grep "\[LOAD:RULES:" AGENTS.md GEMINI.md
 ```

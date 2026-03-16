@@ -31,13 +31,13 @@ mc alias set local http://localhost:${MINIO_HOST_PORT} ROOT_USER ROOT_PASSWORD
 **Commands:**
 
 ```bash
-# List buckets
+## List buckets
 mc ls local
 
-# Upload file
+## Upload file
 mc cp my-file.txt local/cdn-bucket/
 
-# Set bucket public
+## Set bucket public
 mc anonymous set public local/cdn-bucket
 ```
 

@@ -24,3 +24,8 @@ graph TD
 - **Plurality**: Plans are stored in `plans/`.
 - **Metadata**: `layer` key is mandatory in frontmatter.
 - **Autonomy**: High-trust model for agent skill usage.
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

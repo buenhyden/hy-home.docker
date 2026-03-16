@@ -39,3 +39,8 @@ layer: [common | architecture | backend | frontend | infra | mobile | product | 
 - **Gateway**: Serves as a lookup table for markers like `[LOAD:TASK_NAME]`.
 - **Rules**: Modular rules in `docs/agentic/rules/` contain granular instructions and "Lazy Loading" pointers to relevant `docs/`.
 - **Skills**: Skill usage is governed by `docs/agentic/core-governance.md`.
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

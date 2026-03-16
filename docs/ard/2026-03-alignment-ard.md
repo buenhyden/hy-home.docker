@@ -24,3 +24,8 @@ graph TD
 - **Entrypoints**: Root files must remain < 50 lines, pointing to the gateway or rules.
 - **Discovery**: Markers must be searchable using static tools (grep/rg).
 - **Isolation**: Rules must not cross-pollinate behavioral instructions.
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

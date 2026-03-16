@@ -40,10 +40,10 @@ docker stop keycloak
 ### Step 2: Drop and Recreate the Database
 
 ```bash
-# Enter the DB
+## Enter the DB
 docker exec -it mng-pg psql -U postgres
 
-# In the PSQL prompt:
+## In the PSQL prompt:
 DROP DATABASE keycloak;
 CREATE DATABASE keycloak OWNER keycloak;
 \q
@@ -75,6 +75,6 @@ If the backup file is corrupted, you must perform a clean wipe and allow the `mn
 
 ```bash
 docker rm -f keycloak mng-pg
-# Wipe the volume (WARNING: LOSES ALL mng-pg DATA)
-# docker volume rm hy-home-docker_mng-pg-data
+## Wipe the volume (WARNING: LOSES ALL mng-pg DATA)
+## docker volume rm hy-home-docker_mng-pg-data
 ```

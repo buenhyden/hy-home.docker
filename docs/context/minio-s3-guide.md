@@ -50,10 +50,10 @@ Required buckets (e.g., `loki-data`, `tempo-data`) must be automatically provisi
 The `mc` tool is the preferred way to manage buckets and policies.
 
 ```bash
-# Setup local alias
+## Setup local alias
 mc alias set myminio https://minio.${DEFAULT_URL} admin ${MINIO_ROOT_PASSWORD}
 
-# Create a private bucket for logs
+## Create a private bucket for logs
 mc mb myminio/system-logs
 mc versioning enable myminio/system-logs
 ```

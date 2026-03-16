@@ -50,3 +50,8 @@ flowchart LR
 | master  | `docs/ard/rule-refactor-ard.md`               | Architecture authority           |
 | gateway | `docs/agentic/gateway.md`                     | Secondary index                  |
 | rules   | `docs/agentic/rules/`                         | Domain-specific implementations  |
+
+## Related
+
+- [../adr/README.md]
+- [../prd/README.md]

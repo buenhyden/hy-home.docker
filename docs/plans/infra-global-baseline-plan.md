@@ -107,3 +107,8 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 - **Spec**: `specs/infra/global-baseline/spec.md`
 - **ARD**: `docs/ard/system-architecture-ard.md`
 - **Architecture**: `ARCHITECTURE.md`
+
+## References
+
+- [../prd/README.md]
+- [../specs/README.md]
