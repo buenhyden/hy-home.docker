@@ -1,28 +1,28 @@
 ---
 title: 'Meta-Framework & Documentation Spec'
-n**Overview (KR):** 리포지토리 가버넌스와 문서화 프레임워크의 메타 설계를 정의하는 사양입니다.
-layer: agentic
 status: 'Draft'
 version: 'v1.1.0'
 owner: 'Antigravity'
-layer: 'architecture'
+layer: agentic
 ---
 
 # Meta-Framework & Documentation Spec
 
+**Overview (KR):** 리포지토리 가버넌스와 문서화 프레임워크의 메타 설계를 정의하는 사양입니다.
+
 ## 1. Root File Cleanup
 
 - **README.md**: Retain Overview, Features, Tech Stack, and Quick Start. Move Troubleshooting to `docs/guides/troubleshooting.md`. Remove "Project Structure" (covered by `docs/README.md`).
-- **ARCHITECTURE.md**: Retain Invariants and Runtime Topology. Move change governance details to `docs/agentic/rules/governance-rule.md`.
+- **ARCHITECTURE.md**: Retain Invariants and Runtime Topology. Move change governance details to `.agent/rules/1900-Architecture_Patterns/1910-architecture-documentation.md`.
 - **COLLABORATING.md/CONTRIBUTING.md**: Move content to `docs/manuals/collaboration-guide.md` and `docs/guides/contributing-guide.md`. Replace with short pointers to those files.
 
 ## 2. Agent Rule Refactor
 
-- Create `docs/agentic/rules/refactor-rule.md`:
+- Create `.agent/rules/2100-Documentation/2105-doc-refactor.md`:
   - Definition of refactoring workflow.
   - Required skills (`agent-md-refactor`, `claude-md-improver`).
   - Automated checks.
-- Create `docs/agentic/rules/doc-maintenance-rule.md`:
+- Create `.agent/rules/2100-Documentation/2110-doc-core-std.md`:
   - Rules for updating `docs/`.
   - Forced `layer` metadata check.
 
@@ -33,6 +33,6 @@ Update `docs/agentic/gateway.md` with:
 ```markdown
 | Intent | Entry Point |
 | --- | --- |
-| Refactoring Documentation | [rules/refactor-rule.md](rules/refactor-rule.md) |
-| Standard Doc Update | [rules/doc-maintenance-rule.md](rules/doc-maintenance-rule.md) |
+| Refactoring Documentation | [.agent/rules/2100-Documentation/2105-doc-refactor.md](../../.agent/rules/2100-Documentation/2105-doc-refactor.md) |
+| Standard Doc Update | [.agent/rules/2100-Documentation/2110-doc-core-std.md](../../.agent/rules/2100-Documentation/2110-doc-core-std.md) |
 ```

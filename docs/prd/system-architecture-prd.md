@@ -89,4 +89,4 @@ _Note: This document defines the What and Why for the entire repository._
 ## 11. Related Documents (Reference / Traceability)
 
 - **Architecture Reference (ARD)**: [[ARD-ARCH-01] Global System Architecture Reference](../ard/system-architecture-ard.md)
-- **Architecture Decisions (ADRs)**: [[ADR-0003] Spec-Driven Development](../adr/adr-0003-spec-driven-development.md)
+- **Architecture Decisions (ADRs)**: [[ADR-0003] Spec-Driven Development](../adr/0003-spec-driven-development.md)

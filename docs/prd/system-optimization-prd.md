@@ -98,4 +98,4 @@ layer: core
 
 - **Technical Specification**: [[REQ-SPEC-OPT-01] Infrastructure Hardening & Optimization](../specs/infra-system-optimization-spec.md)
 - **Architecture Reference (ARD)**: [[ARD-OPT-01] Optimized Infrastructure Architecture Reference](../ard/system-optimization-ard.md)
-- **Architecture Decisions (ADRs)**: [[ADR-0008] Removing Static Docker IPs](../adr/adr-0008-removing-static-docker-ips.md), [[ADR-0012] Standardized Init Process](../adr/adr-0012-standardized-init-process.md)
+- **Architecture Decisions (ADRs)**: [[ADR-0008] Removing Static Docker IPs](../adr/0008-removing-static-docker-ips.md), [[ADR-0012] Standardized Init Process](../adr/0012-standardized-init-process.md)

@@ -20,7 +20,7 @@ _Note: Procedure for resolving "Bad Gateway" responses from Traefik ingress._
 | Dependency | Type | Impact if Down | Link to Runbook |
 | ---------- | ---- | -------------- | --------------- |
 | Traefik Proxy | Hub | Gateway failure | [Traefik Recovery](traefik-proxy-recovery.md) |
-| infra_net | Network | Routing lost | [Bootstrap](../core/infra-bootstrap-runbook.md) |
+| infra_net | Network | Routing lost | [Bootstrap](infra-bootstrap-runbook.md) |
 
 ## 3. Observability & Dashboards
 

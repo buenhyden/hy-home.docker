@@ -101,4 +101,4 @@ layer: core
 ## 11. Related Documents (Reference / Traceability)
 
 - **Technical Specification**: [[REQ-SPEC-BASE-01] Infrastructure Baseline Spec](../specs/infra-baseline-spec.md)
-- **Architecture Decisions (ADRs)**: [[ADR-0001] Root Orchestration via include](../adr/adr-0001-root-orchestration-include.md)
+- **Architecture Decisions (ADRs)**: [[ADR-0001] Root Orchestration via include](../adr/0001-root-orchestration-include.md)

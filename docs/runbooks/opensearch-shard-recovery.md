@@ -19,8 +19,8 @@ _Note: High-priority procedure for data tier availability and cluster health._
 
 | Dependency | Type | Impact if Down | Link to Runbook |
 | ---------- | ---- | -------------- | --------------- |
-| Docker Volumes | Storage | Permanent data loss | [Maintenance](../core/docker-resource-maintenance.md) |
-| Loki Driver | Logging | Log ingestion stall | [Monitoring](../core/monitoring-runbook.md) |
+| Docker Volumes | Storage | Permanent data loss | [Maintenance](docker-resource-maintenance.md) |
+| Loki Driver | Logging | Log ingestion stall | [Monitoring](monitoring-runbook.md) |
 
 ## 3. Observability & Dashboards
 
