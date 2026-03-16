@@ -60,4 +60,4 @@ Run `apt-get clean` and remove packages in the same layer.
 
 ## 6. Related Documents (Traceability)
 
-- **Feature PRD**: [Infrastructure Baseline PRD](../prd/infra-baseline-prd.md), [System Optimization PRD](../prd/system-optimization-prd.md)
+- **Feature PRD**: [Infrastructure Baseline PRD](../prd/2026-02-27-infra-baseline-prd.md), [System Optimization PRD](../prd/2026-02-26-system-optimization-prd.md)

@@ -5,16 +5,16 @@ status: 'Canonical'
 version: '1.0'
 owner: 'buenhyden'
 scope: 'master'
-prd_reference: '../prd/documentation-framework-prd.md'
-arch_reference: '../ard/refactor-agent-documentation-ard.md'
-decision_reference: '../adr/0016-intent-based-lazy-loading.md'
+prd_reference: '../prd/2026-03-15-doc-refactor-prd.md'
+arch_reference: '../ard/2026-03-15-agentic-ard.md'
+decision_reference: '../adr/0026-documentation-structure-and-lazy-loading.md'
 tags: ['spec','implementation','agentic']
 layer: agentic
 ---
-layer: agentic
 
 # Agent Rule Lazy-Loading Specification
-n**Overview (KR):** 지연 로딩(Lazy-loading) 메커니즘을 통해 에이전트의 효율적인 규칙 로드를 구현하는 사양입니다.
+
+**Overview (KR):** 지연 로딩(Lazy-loading) 메커니즘을 통해 에이전트의 효율적인 규칙 로드를 구현하는 사양입니다.
 
 > **Status**: Canonical
 > **Scope**: master
@@ -44,8 +44,8 @@ Rules are decoupled from the core behavioral instructions. When an agent identif
 | ID                | Requirement Description | Priority | Parent PRD REQ |
 | ----------------- | ----------------------- | -------- | -------------- |
 layer: agentic
-| **[REQ-SPC-001]** | Gateway-indexed rules   | Critical | REQ-PRD-RD-03     |
-| **[REQ-SPC-002]** | Modular rule separation | High     | REQ-PRD-RD-01     |
+| **[REQ-SPC-001]** | Gateway-indexed rules   | Critical | REQ-PRD-RD-03 |
+| **[REQ-SPC-002]** | Modular rule separation | High | REQ-PRD-RD-01 |
 
 ## 8. Verification Plan (Testing & QA)
 

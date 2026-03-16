@@ -14,7 +14,7 @@ layer: core
 # Infra Secrets Bootstrap Implementation Plan
 
 > **Status**: Implementation
-> **Reference Spec**: [Infra Secrets Bootstrap Spec](/specs/infra/secrets-bootstrap/spec.md)
+> **Reference Spec**: [Infra Secrets Bootstrap Spec](../specs/secrets-bootstrap/spec.md)
 
 _Target Directory: `specs/infra/secrets-bootstrap/plan.md`_
 

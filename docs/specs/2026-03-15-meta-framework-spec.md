@@ -6,7 +6,13 @@ owner: 'Antigravity'
 layer: agentic
 ---
 
-# Meta-Framework & Documentation Spec
+# Meta-Framework & Documentation Specification
+
+> **Status**: Draft
+> **Scope**: master
+> **layer:** agentic
+> **Related PRD**: `../prd/2026-03-15-meta-framework-prd.md`
+> **Related Architecture**: `../ard/2026-03-15-agentic-ard.md`
 
 **Overview (KR):** 리포지토리 가버넌스와 문서화 프레임워크의 메타 설계를 정의하는 사양입니다.
 

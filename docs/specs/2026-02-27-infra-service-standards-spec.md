@@ -1,6 +1,6 @@
 ---
 title: 'Standardized Service Requirements'
-n**Overview (KR):** 모든 인프라 서비스가 준수해야 할 헬스체크, 리소스 제한 등의 공통 기술 표준입니다.
+**Overview (KR):** 모든 인프라 서비스가 준수해야 할 헬스체크, 리소스 제한 등의 공통 기술 표준입니다.
 layer: infra
 status: 'Proposed'
 version: '1.0'

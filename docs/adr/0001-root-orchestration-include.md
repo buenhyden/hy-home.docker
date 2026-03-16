@@ -60,6 +60,6 @@ Maintain everything in one file.
 
 ## 6. Related Documents (Traceability)
 
-- **Feature PRD**: [Infrastructure Baseline PRD](../prd/infra-baseline-prd.md), [System Optimization PRD](../prd/system-optimization-prd.md)
-- **Feature Spec**: [Infrastructure Baseline Spec](../../specs/infra/baseline/spec.md), [System Optimization Spec](../../specs/infra/system-optimization/spec.md)
+- **Feature PRD**: [Infrastructure Baseline PRD](../prd/2026-02-27-infra-baseline-prd.md), [System Optimization PRD](../prd/2026-02-26-system-optimization-prd.md)
+- **Feature Spec**: [Infrastructure Baseline Spec](../specs/2026-02-27-infra-baseline-spec.md), [System Optimization Spec](../specs/2026-02-26-infra-system-optimization-spec.md)
 - **Architecture Reference (ARD)**: [Global System Architecture ARD](../ard/2026-02-26-system-architecture-ard.md)

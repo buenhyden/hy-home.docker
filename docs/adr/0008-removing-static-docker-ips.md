@@ -60,6 +60,6 @@ Manually assign every service an IP in the subnet.
 
 ## 6. Related Documents (Traceability)
 
-- **Feature PRD**: [System Optimization PRD](../prd/system-optimization-prd.md)
-- **Feature Spec**: [System Optimization Spec](../../specs/infra/system-optimization/spec.md)
+- **Feature PRD**: [System Optimization PRD](../prd/2026-02-26-system-optimization-prd.md)
+- **Feature Spec**: [System Optimization Spec](../specs/2026-02-26-infra-system-optimization-spec.md)
 - **Repository Blueprint**: [ARCHITECTURE.md](../../ARCHITECTURE.md)

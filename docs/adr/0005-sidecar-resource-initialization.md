@@ -61,5 +61,5 @@ Run `mc` or `kafka-topics` manually from the host.
 
 ## 6. Related Documents (Traceability)
 
-- **Feature PRD**: [Infrastructure Automation PRD](../prd/infra-automation-prd.md)
-- **Feature Spec**: [Infrastructure Automation Spec](../../specs/infra/automation/spec.md)
+- **Feature PRD**: [Infrastructure Automation PRD](../prd/2026-02-27-infra-automation-prd.md)
+- **Feature Spec**: [Infrastructure Automation Spec](../specs/2026-02-27-infra-automation-spec.md)

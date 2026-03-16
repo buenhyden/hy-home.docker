@@ -71,5 +71,5 @@ Using native Swarm features for global defaults.
 
 ## 6. Related Documents (Traceability)
 
-- **Feature PRD**: [[PRD-OPT-01] Infrastructure Optimization PRD](../prd/system-optimization-prd.md)
-- **Feature Spec**: [[SPEC-INFRA-04] System Optimization Spec](../../specs/infra/system-optimization/spec.md)
+- **Feature PRD**: [[PRD-OPT-01] Infrastructure Optimization PRD](../prd/2026-02-26-system-optimization-prd.md)
+- **Feature Spec**: [[SPEC-INFRA-04] System Optimization Spec](../specs/2026-02-26-infra-system-optimization-spec.md)

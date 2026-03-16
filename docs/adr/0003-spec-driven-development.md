@@ -60,6 +60,6 @@ Write documentation after the code is verified.
 
 ## 6. Related Documents (Traceability)
 
-- **Feature PRD**: [System Architecture Standards PRD](../prd/system-architecture-prd.md)
+- **Feature PRD**: [System Architecture Standards PRD](../prd/2026-02-26-system-architecture-prd.md)
 - **Architecture Reference (ARD)**: [Global System Architecture ARD](../ard/2026-02-26-system-architecture-ard.md)
-- **Specs**: [Infra Specs Index](../../specs/infra/README.md)
+- **Specs**: [Infra Specs Index](../specs/README.md)

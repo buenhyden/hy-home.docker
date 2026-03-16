@@ -59,6 +59,6 @@ Keep all folders at the top level of `infra/`.
 
 ## 6. Related Documents (Traceability)
 
-- **Feature PRD**: [System Architecture Standards PRD](../prd/system-architecture-prd.md)
+- **Feature PRD**: [System Architecture Standards PRD](../prd/2026-02-26-system-architecture-prd.md)
 - **Architecture Reference (ARD)**: [Global System Architecture ARD](../ard/2026-02-26-system-architecture-ard.md)
 - **Repository Blueprint**: [ARCHITECTURE.md](../../ARCHITECTURE.md)

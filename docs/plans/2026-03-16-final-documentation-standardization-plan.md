@@ -35,25 +35,25 @@ Run: `git commit -m "docs: remove redundant and overlapping documentation fragme
 
 **Files:**
 
-- Rename: `docs/ard/2026-02-27-observability-ard.md` -> `docs/ard/2026-02-27-2026-02-27-observability-ard.md`
-- Rename: `docs/ard/2026-02-27-infra-automation-ard.md` -> `docs/ard/2026-02-27-2026-02-27-infra-automation-ard.md`
-- Rename: `docs/ard/2026-02-27-infra-baseline-ard.md` -> `docs/ard/2026-02-27-2026-02-27-infra-baseline-ard.md`
-- Rename: `docs/ard/2026-02-27-messaging-ard.md` -> `docs/ard/2026-02-27-2026-02-27-messaging-ard.md`
-- Rename: `docs/ard/2026-02-26-system-optimization-ard.md` -> `docs/ard/2026-02-26-2026-02-26-system-optimization-ard.md`
+- Rename: `docs/ard/2026-02-27-observability-ard.md` -> `docs/ard/2026-02-27-observability-ard.md`
+- Rename: `docs/ard/2026-02-27-infra-automation-ard.md` -> `docs/ard/2026-02-27-infra-automation-ard.md`
+- Rename: `docs/ard/2026-02-27-infra-baseline-ard.md` -> `docs/ard/2026-02-27-infra-baseline-ard.md`
+- Rename: `docs/ard/2026-02-27-messaging-ard.md` -> `docs/ard/2026-02-27-messaging-ard.md`
+- Rename: `docs/ard/2026-02-26-system-optimization-ard.md` -> `docs/ard/2026-02-26-system-optimization-ard.md`
 
 **Step 1: Execute renames and update cross-links in PRDs**
-Run: `mv docs/ard/2026-02-27-observability-ard.md docs/ard/2026-02-27-2026-02-27-observability-ard.md`
-Run: `mv docs/ard/2026-02-27-infra-automation-ard.md docs/ard/2026-02-27-2026-02-27-infra-automation-ard.md`
-Run: `mv docs/ard/2026-02-27-infra-baseline-ard.md docs/ard/2026-02-27-2026-02-27-infra-baseline-ard.md`
-Run: `mv docs/ard/2026-02-27-messaging-ard.md docs/ard/2026-02-27-2026-02-27-messaging-ard.md`
-Run: `mv docs/ard/2026-02-26-system-optimization-ard.md docs/ard/2026-02-26-2026-02-26-system-optimization-ard.md`
+Run: `mv docs/ard/2026-02-27-observability-ard.md docs/ard/2026-02-27-observability-ard.md`
+Run: `mv docs/ard/2026-02-27-infra-automation-ard.md docs/ard/2026-02-27-infra-automation-ard.md`
+Run: `mv docs/ard/2026-02-27-infra-baseline-ard.md docs/ard/2026-02-27-infra-baseline-ard.md`
+Run: `mv docs/ard/2026-02-27-messaging-ard.md docs/ard/2026-02-27-messaging-ard.md`
+Run: `mv docs/ard/2026-02-26-system-optimization-ard.md docs/ard/2026-02-26-system-optimization-ard.md`
 
 **Step 2: Update internal references**
-Run: `sed -i "s|2026-02-27-observability-ard.md|2026-02-27-2026-02-27-observability-ard.md|g" docs/**/*.md`
-Run: `sed -i "s|2026-02-27-infra-automation-ard.md|2026-02-27-2026-02-27-infra-automation-ard.md|g" docs/**/*.md`
-Run: `sed -i "s|2026-02-27-infra-baseline-ard.md|2026-02-27-2026-02-27-infra-baseline-ard.md|g" docs/**/*.md`
-Run: `sed -i "s|2026-02-27-messaging-ard.md|2026-02-27-2026-02-27-messaging-ard.md|g" docs/**/*.md`
-Run: `sed -i "s|2026-02-26-system-optimization-ard.md|2026-02-26-2026-02-26-system-optimization-ard.md|g" docs/**/*.md`
+Run: `sed -i "s|2026-02-27-observability-ard.md|2026-02-27-observability-ard.md|g" docs/**/*.md`
+Run: `sed -i "s|2026-02-27-infra-automation-ard.md|2026-02-27-infra-automation-ard.md|g" docs/**/*.md`
+Run: `sed -i "s|2026-02-27-infra-baseline-ard.md|2026-02-27-infra-baseline-ard.md|g" docs/**/*.md`
+Run: `sed -i "s|2026-02-27-messaging-ard.md|2026-02-27-messaging-ard.md|g" docs/**/*.md`
+Run: `sed -i "s|2026-02-26-system-optimization-ard.md|2026-02-26-system-optimization-ard.md|g" docs/**/*.md`
 
 **Step 3: Commit**
 Run: `git commit -m "docs: enforce YYYY-MM-DD- naming convention for ARD family"`

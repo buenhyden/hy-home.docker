@@ -41,8 +41,8 @@ The Kafka ecosystem includes:
 
 | Action | Reference | Link |
 | --- | --- | --- |
-| **Recovery** | Broker Offline | [Runbook](../runbooks/05-messaging/kafka-broker-offline.md) |
-| **Ops**      | Cluster Ops   | [Runbook](../runbooks/05-messaging/kafka-cluster-ops.md) |
+| **Recovery** | Broker Offline | [Runbook](../runbooks/kafka-broker-offline.md) |
+| **Ops**      | Cluster Ops   | [Runbook](../runbooks/kafka-cluster-ops.md) |
 | **Connect**  | Java/Node/Py  | [Onboarding](../examples/README.md#pubsub) |
 
 ## 3. Initial Interaction

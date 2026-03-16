@@ -18,8 +18,8 @@ This directory defines the technical requirements and constraints for major infr
 | [2026-02-27-observability-ard.md](2026-02-27-observability-ard.md) | LGTM / Alloy Stack | 2026-02-27 |
 | [2026-02-27-ai-ard.md](2026-02-27-ai-ard.md) | Local AI (Ollama/WebUI) | 2026-02-27 |
 | [2026-03-15-agentic-ard.md](2026-03-15-agentic-ard.md) | Agent Optimization | 2026-03-15 |
-| [2026-03-doc-taxonomy-ard.md](2026-03-doc-taxonomy-ard.md) | Documentation Taxonomy | 2026-03-16 |
-| [2026-03-alignment-ard.md](2026-03-alignment-ard.md) | Final Hub Alignment | 2026-03-16 |
+| [2026-03-15-doc-taxonomy-ard.md](2026-03-15-doc-taxonomy-ard.md) | Documentation Taxonomy | 2026-03-16 |
+| [2026-03-15-alignment-ard.md](2026-03-15-alignment-ard.md) | Final Hub Alignment | 2026-03-16 |
 
 ---
 > [!NOTE]

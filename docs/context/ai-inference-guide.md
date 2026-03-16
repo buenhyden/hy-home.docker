@@ -44,5 +44,5 @@ LLMs consume significant memory. Monitor host RAM during inference; a 7B-8B para
 | Action | Reference | Link |
 | --- | --- | --- |
 | **Recovery** | AI Runbooks | [Runbooks](../runbooks/README.md) |
-| **Monitoring** | OTLP Export | [LGTM Context](../06-observability/lgtm-stack-blueprint.md) |
+| **Monitoring** | OTLP Export | [LGTM Context](../context/lgtm-stack-blueprint.md) |
 | **Integration**| OTLP Apps | [Example App](../examples/app-compose-telemetry.yml) |

@@ -60,6 +60,6 @@ The standard Docker Compose approach.
 
 ## 6. Related Documents (Traceability)
 
-- **Feature PRD**: [Infrastructure Baseline PRD](../prd/infra-baseline-prd.md)
-- **Feature Spec**: [Infrastructure Baseline Spec](../../specs/infra/baseline/spec.md)
-- **Related ADRs**: [ADR-0009: Strict Docker Secrets Adoption](./adr-0009-strict-docker-secrets.md)
+- **Feature PRD**: [Infrastructure Baseline PRD](../prd/2026-02-27-infra-baseline-prd.md)
+- **Feature Spec**: [Infrastructure Baseline Spec](../specs/2026-02-27-infra-baseline-spec.md)
+- **Related ADRs**: [ADR-0009: Strict Docker Secrets Adoption](0009-strict-docker-secrets.md)

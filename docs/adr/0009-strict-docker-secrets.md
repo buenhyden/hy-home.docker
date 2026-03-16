@@ -60,6 +60,6 @@ Using tools like SOPS to encrypt .env files.
 
 ## 6. Related Documents (Traceability)
 
-- **Feature PRD**: [Infrastructure Baseline PRD](../prd/infra-baseline-prd.md), [System Optimization PRD](../prd/system-optimization-prd.md)
-- **Feature Spec**: [Infrastructure Baseline Spec](../../specs/infra/baseline/spec.md)
-- **Related ADRs**: [ADR-0002: Secrets-First Management Policy](./adr-0002-secrets-first-management.md)
+- **Feature PRD**: [Infrastructure Baseline PRD](../prd/2026-02-27-infra-baseline-prd.md), [System Optimization PRD](../prd/2026-02-26-system-optimization-prd.md)
+- **Feature Spec**: [Infrastructure Baseline Spec](../specs/2026-02-27-infra-baseline-spec.md)
+- **Related ADRs**: [ADR-0002: Secrets-First Management Policy](0002-secrets-first-management.md)

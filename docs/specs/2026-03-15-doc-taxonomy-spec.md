@@ -2,7 +2,8 @@
 layer: agentic
 ---
 # Documentation Taxonomy Specification
-n**Overview (KR):** 문서의 분류 체계 및 명명 규칙을 정의하여 탐색 효율을 높이는 기술 사양입니다.
+
+**Overview (KR):** 문서의 분류 체계 및 명명 규칙을 정의하여 탐색 효율을 높이는 기술 사양입니다.
 
 - **Status**: Implementation
 - **Scope**: master
