@@ -1,3 +1,6 @@
+---
+layer: agentic
+---
 # PRD-0001: Documentation Taxonomy and Agentic Refactor
 
 - **Status**: Canonical

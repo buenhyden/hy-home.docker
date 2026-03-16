@@ -1,11 +1,13 @@
 ---
 title: 'Infrastructure Observability (LGTM) Implementation Spec'
+n**Overview (KR):** LGTM 스택을 이용한 로그, 메트릭, 트레이싱 수집 엔진의 기술적 사양입니다.
+layer: infra
 status: 'Draft'
 version: '1.0'
 owner: 'Reliability Engineer'
-prd_reference: '../../../docs/prd/observability-prd.md'
+prd_reference: '../../docs/prd/observability-prd.md'
 api_reference: 'N/A'
-arch_reference: '../../../ARCHITECTURE.md'
+arch_reference: '../../ARCHITECTURE.md'
 tags: ['spec', 'infra', 'observability', 'lgtm', 'grafana', 'loki', 'tempo', 'prometheus']
 layer: 06-observability
 ---
@@ -13,8 +15,8 @@ layer: 06-observability
 # Implementation Specification (Spec)
 
 > **Status**: Draft
-> **Related PRD**: [docs/prd/observability-prd.md](../../../docs/prd/observability-prd.md)
-> **Related Architecture**: [ARCHITECTURE.md](../../../ARCHITECTURE.md)
+> **Related PRD**: [docs/prd/observability-prd.md](../../docs/prd/observability-prd.md)
+> **Related Architecture**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
 _Target Directory: `specs/infra/observability/spec.md`_
 

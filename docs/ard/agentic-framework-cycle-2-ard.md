@@ -1,3 +1,6 @@
+---
+layer: agentic
+---
 # Agentic Framework Architecture (Cycle 2)
 
 - **Status**: Implementation

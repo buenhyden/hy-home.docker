@@ -10,13 +10,12 @@ layer: core
 
 # Product Requirements Document (PRD)
 
-> **Status**: Approved
-> **Target Version**: v1.0.0
-> **Owner**: Platform Architect
-> **Stakeholders**: DevOps Team, Home-Lab Users
+- **Status**: Approved
+- **Target Version**: v1.0.0
+- **Owner**: Platform Architect
+- **layer:** core
 
-_Target Directory: `docs/prd/infra-baseline-prd.md`_
-_Note: This document defines the What and Why for the core infrastructure foundations._
+**Overview (KR):** 시스템 전반의 성능 최적화, 보안 위협 감소, 그리고 통합 로깅 시스템 구축을 위한 요구사항을 정의합니다.
 
 ---
 
@@ -101,5 +100,5 @@ _Note: This document defines the What and Why for the core infrastructure founda
 
 ## 11. Related Documents (Reference / Traceability)
 
-- **Technical Specification**: [[REQ-SPEC-BASE-01] Infrastructure Baseline Spec](../../specs/infra/baseline/spec.md)
+- **Technical Specification**: [[REQ-SPEC-BASE-01] Infrastructure Baseline Spec](../specs/infra-baseline-spec.md)
 - **Architecture Decisions (ADRs)**: [[ADR-0001] Root Orchestration via include](../adr/adr-0001-root-orchestration-include.md)

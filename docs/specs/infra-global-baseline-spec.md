@@ -1,5 +1,7 @@
 ---
 title: '[SPEC-INFRA-01] Infrastructure Global Baseline'
+n**Overview (KR):** 프로젝트 전반의 인프라 공통 최적화 요소 및 전역 변수 표준을 정의하는 사양입니다.
+layer: infra
 status: 'Validated'
 version: '1.0'
 owner: 'Platform Architect'

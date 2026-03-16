@@ -1,4 +1,7 @@
-# ADR 0003: Strict Enforcement of Plural Execution Paths
+---
+layer: agentic
+---
+# ADR 0022: Strict Enforcement of Plural Execution Paths
 
 - **Status:** Accepted
 - **Date:** 2026-03-15

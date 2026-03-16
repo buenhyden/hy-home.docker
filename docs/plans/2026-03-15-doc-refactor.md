@@ -1,3 +1,6 @@
+---
+layer: agentic
+---
 # Documentation Refactor Plan
 
 > **Status**: In Progress

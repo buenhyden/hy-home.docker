@@ -8,7 +8,7 @@ tags: ['adr', 'agentic', 'context']
 layer: 'architecture'
 ---
 
-# ADR 0001: Lazy-Loading Protocol for AI Agents
+# ADR 0018: Lazy-Loading Protocol for AI Agents
 
 - **Status:** Accepted
 - **Date:** 2026-03-15

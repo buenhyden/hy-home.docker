@@ -3,6 +3,7 @@ goal: 'Bootstrap file-based Docker secrets for first-time local setup.'
 version: '1.0'
 date_created: '2026-02-27'
 last_updated: '2026-02-27'
+n**Overview (KR):** 초기 로컬 환경 구성을 위한 Docker Secrets 생성 및 mkcert 인증서 발급 자동화 계획입니다.
 owner: 'Platform / DevOps'
 status: 'Implementation'
 tags: ['implementation', 'planning', 'infra', 'secrets', 'bootstrap']
@@ -54,5 +55,5 @@ This repository enforces Secrets-First policy (Docker secrets mounted as files u
 ## 6. References
 
 - PRD: `/docs/prd/infra-baseline-prd.md`
-- ADR: `/docs/adr/adr-0002-secrets-first-management.md`
+- ADR: `../adr/adr-0002-secrets-first-management.md`
 - Secrets registry: `/secrets/README.md`

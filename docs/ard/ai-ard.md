@@ -1,7 +1,8 @@
 ---
-layer: 08-ai
+layer: architecture
 ---
 # Local AI Stack Architecture Reference Document (ARD)
+n**Overview (KR):** 로컬 모델 서빙 및 벡터 검색 엔진을 포함한 AI 스택의 고수준 아키텍처 설계 참조 문서입니다.
 
 - **Status**: Approved
 - **Owner**: AI Infrastructure Engineer

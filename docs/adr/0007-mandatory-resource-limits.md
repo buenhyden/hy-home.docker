@@ -1,9 +1,10 @@
 ---
-layer: core
+layer: infra
 ---
-# Architecture Decision Record (ADR)
+# ADR 0007: Mandatory Resource Limits
+n**Overview (KR):** 모든 컨테이너 서비스에 대해 메모리 및 CPU 리소스 제한을 강제하여 시스템 안정성을 보장합니다.
 
-## Title: Mandatory Resource Limits
+: Mandatory Resource Limits
 
 - **Status:** Accepted
 - **Date:** 2026-02-26

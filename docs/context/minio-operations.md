@@ -1,7 +1,8 @@
 ---
-layer: 04-data
+layer: infra
 ---
 # MinIO Operations
+n**Overview (KR):** MinIO 오브젝트 스토리지의 버킷 관리 및 사용자 권한 설정 절차입니다.
 
 > **Component**: `minio`
 

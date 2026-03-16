@@ -1,7 +1,8 @@
 ---
-layer: 06-observability
+layer: ops
 ---
 # Monitoring Runbook
+n**Overview (KR):** 전체 가동 중단 시 모니터링 시스템의 가용성을 확인하고 대시보드를 복구하는 절차입니다.
 
 ## 1. Document Purpose
 

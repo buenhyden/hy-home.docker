@@ -1,7 +1,8 @@
 ---
-layer: 07-workflow
+layer: infra
 ---
 # n8n Low-Code Automation Context
+n**Overview (KR):** n8n 로우코드 자동화 플랫폼의 아키텍처 및 워크플로우 실행 환경 설명입니다.
 
 > **Component**: `n8n`
 > **Workflow Pattern**: Distributed Queue Mode

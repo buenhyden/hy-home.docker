@@ -1,4 +1,11 @@
+---
+layer: agentic
+---
 # Documentation and Agent Refactor Specification
+
+n**Overview (KR):** 에이전틱 문서 체계의 2차 강화 및 ID 중복 해결을 위한 상세 기술 명세입니다.
+
+n**Overview (KR):** 에이전틱 문서 체계의 2차 강화 및 ID 중복 해결을 위한 상세 기술 명세입니다.
 
 > **Status**: Canonical
 > **Scope**: master

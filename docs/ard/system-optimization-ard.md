@@ -1,7 +1,8 @@
 ---
-layer: core
+layer: architecture
 ---
 # System Optimization & Hardening Architecture Reference Document (ARD)
+n**Overview (KR):** 시스템 전반의 성능 향상 및 리소스 최적화 전략이 반영된 아키텍처 설계 참조입니다.
 
 - **Status**: Approved
 - **Owner**: Reliability Engineer

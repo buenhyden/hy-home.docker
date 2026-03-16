@@ -1,5 +1,7 @@
 ---
 title: 'Meta-Documentation & Agentic Framework ARD'
+n**Overview (KR):** 문서 자산 관리 및 에이전트 통합 가버넌스를 위한 메타 아키텍처 정의 문서입니다.
+layer: architecture
 status: 'Draft'
 version: 'v1.1.0'
 owner: 'Antigravity'

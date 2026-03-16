@@ -95,4 +95,4 @@ _Note: This document defines the What and Why for the local AI serving capabilit
 ## 11. Related Documents (Reference / Traceability)
 
 - **Architecture Reference (ARD)**: [[ARD-AI-01] Local AI Architecture Reference](../ard/ai-ard.md)
-- **Technical Specification**: [[REQ-SPEC-AI-01] AI Infrastructure Spec](../../specs/infra/ai/spec.md)
+- **Technical Specification**: [[REQ-SPEC-AI-01] AI Infrastructure Spec](../specs/infra-ai-spec.md)

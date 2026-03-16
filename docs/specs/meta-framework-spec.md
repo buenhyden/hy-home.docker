@@ -1,5 +1,7 @@
 ---
 title: 'Meta-Framework & Documentation Spec'
+n**Overview (KR):** 리포지토리 가버넌스와 문서화 프레임워크의 메타 설계를 정의하는 사양입니다.
+layer: agentic
 status: 'Draft'
 version: 'v1.1.0'
 owner: 'Antigravity'

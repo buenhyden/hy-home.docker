@@ -1,9 +1,10 @@
 ---
-layer: core
+layer: infra
 ---
-# Architecture Decision Record (ADR)
+# ADR 0002: Secrets-First Management Policy
+n**Overview (KR):** 모든 민감한 설정 정보를 환경 변수가 아닌 Docker Secrets로 관리하여 보안성을 강화하는 정책을 정의합니다.
 
-## Title: Secrets-First Management Policy
+: Secrets-First Management Policy
 
 - **Status:** Accepted
 - **Date:** 2026-02-26

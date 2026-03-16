@@ -7,7 +7,7 @@ prd_reference: '/docs/prd/infra-baseline-prd.md'
 api_reference: 'N/A'
 arch_reference: '/docs/ard/system-optimization-ard.md'
 tags: ['spec', 'implementation', 'infra', 'baseline']
-layer: core
+layer: infra
 ---
 
 # [SPEC-INFRA-02] Infrastructure Implementation Baseline

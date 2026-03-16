@@ -2,6 +2,7 @@
 layer: infra
 ---
 # DevOps Tooling & Static Analysis Guide
+n**Overview (KR):** SonarQube, Terraform 등 프로젝트 전체에서 사용되는 DevOps 도구들의 구성 및 가이드입니다.
 
 > **Components**: `sonarqube`, `terraform`, `terrakube`
 
@@ -36,6 +37,6 @@ Terrakube acts as the private automation engine for Terraform runs.
 | Action | Reference | Link |
 | --- | --- | --- |
 | **Manual** | Tooling Ops | [Operations Guide](tooling-operations.md) |
-| **Troubleshoot**| Infra Recovery | [Runbooks](../../../runbooks/README.md) |
+| **Troubleshoot**| Infra Recovery | [Runbooks](../runbooks/README.md) |
 
 Always audit the `SONAR_TOKEN` and `TERRAFORM_SECRET` stored in Docker Secrets before initiating large-scale infra changes.

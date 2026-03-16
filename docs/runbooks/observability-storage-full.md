@@ -1,7 +1,8 @@
 ---
-layer: 06-observability
+layer: ops
 ---
 # Incident Runbook: Observability Storage Full
+n**Overview (KR):** 로깅 및 메트릭 저장소 용량이 가득 찼을 때 데이터 유지 정책을 적용하고 디스크 공간을 확보하는 절차입니다.
 
 **Issue:** `LokiStorageHigh` or `PrometheusStorageHigh` alert triggered indicating >90% disk utilization.
 

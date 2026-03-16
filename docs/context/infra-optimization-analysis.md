@@ -2,6 +2,7 @@
 layer: infra
 ---
 # Infrastructure Optimization Analysis Results
+n**Overview (KR):** 인프라 아키텍처의 병목 지점을 분석하고 이를 개선하기 위한 기술적 제안서입니다.
 
 ## 1. Identified Optimization Opportunities
 

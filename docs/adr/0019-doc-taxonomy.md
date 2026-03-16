@@ -1,4 +1,7 @@
-# ADR 0002: Document Taxonomy and Pluralization Standards
+---
+layer: agentic
+---
+# ADR 0019: Document Taxonomy and Pluralization Standards
 
 - **Status:** Accepted
 - **Date:** 2026-03-15

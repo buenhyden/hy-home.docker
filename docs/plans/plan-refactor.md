@@ -2,6 +2,7 @@
 layer: agentic
 ---
 # Agent Instruction Refactor Implementation Plan
+n**Overview (KR):** 에이전트 지침 및 리포지토리 운영 가이드 리팩토링을 위한 실행 계획입니다.
 
 > **For Claude:** Suggested skills: superpowers:executing-plans, or any purpose-built skill that achieves the task goals
 > **Status**: Completed

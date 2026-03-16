@@ -1,7 +1,8 @@
 ---
-layer: 05-messaging
+layer: infra
 ---
 # Kafka Routine Operations
+n**Overview (KR):** Kafka 클러스터의 일상적인 관리 과업 및 토픽 운영 절차를 설명합니다.
 
 > **Component**: `kafka`
 > **Profile**: `messaging`

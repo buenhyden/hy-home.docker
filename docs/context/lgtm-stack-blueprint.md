@@ -1,7 +1,8 @@
 ---
-layer: 06-observability
+layer: infra
 ---
 # LGTM (Loki, Grafana, Tempo, Metrics) Stack Blueprint
+n**Overview (KR):** Grafana, Loki, Tempo를 포함한 통합 관측성(Observability) 스택의 설계 청사진입니다.
 
 > **Tier**: `06-observability`
 > **Collector**: Grafana Alloy

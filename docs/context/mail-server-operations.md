@@ -1,7 +1,8 @@
 ---
-layer: 08-ai
+layer: infra
 ---
 # Mail Server Operations Blueprint
+n**Overview (KR):** 메일 서버 시스템의 실행 상태 점검 및 통합 오퍼레이션 청사진입니다.
 
 > Operational strategy for managing local SMTP relay components.
 

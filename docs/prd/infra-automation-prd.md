@@ -98,5 +98,5 @@ _Note: This document defines the What and Why for autonomous infrastructure capa
 
 ## 11. Related Documents (Reference / Traceability)
 
-- **Technical Specification**: [[REQ-SPEC-AUTO-01] Infrastructure Automation Spec](../../specs/infra/automation/spec.md)
+- **Technical Specification**: [[REQ-SPEC-AUTO-01] Infrastructure Automation Spec](../specs/infra-automation-spec.md)
 - **Architecture Decisions (ADRs)**: [[ADR-0005] Sidecar Resource Initialization](../adr/adr-0005-sidecar-resource-initialization.md)

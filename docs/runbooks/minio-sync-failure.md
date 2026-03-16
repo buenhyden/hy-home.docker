@@ -1,7 +1,8 @@
 ---
-layer: 04-data
+layer: ops
 ---
 # Runbook: MinIO Sync and Read-Only Failures
+n**Overview (KR):** MinIO 오브젝트 스토리지의 동기화 오류 및 읽기 전용 모드 전환 문제를 해결하는 절차입니다.
 
 > Recovery steps when MinIO drives max out or fail to synchronize, triggering Read-Only mode.
 

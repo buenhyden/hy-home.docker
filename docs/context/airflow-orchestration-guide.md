@@ -1,7 +1,8 @@
 ---
-layer: 07-workflow
+layer: infra
 ---
-# Apache Airflow Orchestration Blueprint
+# Apache Airflow Orchestration Guide
+n**Overview (KR):** 데이터 엔지니어링 허브로서의 Airflow 아키텍처와 통합 운영 가이드입니다.
 
 > **Component**: `airflow`
 > **Executor**: CeleryExecutor

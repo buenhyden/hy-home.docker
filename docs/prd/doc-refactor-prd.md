@@ -27,12 +27,12 @@ To create a highly discoverable, structured, and efficient documentation system 
 
 ## Requirements
 
-- **[REQ-PRD-01] Flat Taxonomy**: All management documents must reside in specific subdirectories under `docs/` (e.g., `docs/adr/`, `docs/prd/`) without deep nesting.
-- **[REQ-PRD-02] Metadata Requirements**: Every Markdown file must include a `layer:` key in its YAML frontmatter.
-- **[REQ-PRD-03] Template Consistency**: All new ADR, ARD, PRD, Spec, Plan, Runbook, Incident, and Postmortem files must use repository-defined templates.
-- **[REQ-PRD-04] Lazy Loading Protocol**: AI agents must be guided to load only the necessary context based on their current intent.
-- **[REQ-PRD-05] Central Gateway**: `docs/agentic/gateway.md` must serve as the primary entry point for agent discovery.
-- **[REQ-PRD-06] Skill Autonomy**: Agents must be explicitly allowed to use any relevant skill from their toolkit without restriction.
+- **[REQ-PRD-DR-01] Flat Taxonomy**: All management documents must reside in specific subdirectories under `docs/` (e.g., `docs/adr/`, `docs/prd/`) without deep nesting.
+- **[REQ-PRD-DR-02] Metadata Requirements**: Every Markdown file must include a `layer:` key in its YAML frontmatter.
+- **[REQ-PRD-DR-03] Template Consistency**: All new ADR, ARD, PRD, Spec, Plan, Runbook, Incident, and Postmortem files must use repository-defined templates.
+- **[REQ-PRD-DR-04] Lazy Loading Protocol**: AI agents must be guided to load only the necessary context based on their current intent.
+- **[REQ-PRD-DR-05] Central Gateway**: `docs/agentic/gateway.md` must serve as the primary entry point for agent discovery.
+- **[REQ-PRD-DR-06] Skill Autonomy**: Agents must be explicitly allowed to use any relevant skill from their toolkit without restriction.
 
 ## Success Criteria
 

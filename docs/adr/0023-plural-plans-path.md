@@ -5,7 +5,7 @@ date: '2026-03-15'
 layer: 'architecture'
 ---
 
-# ADR 0004: Adoption of Plural plans Path
+# ADR 0023: Adoption of Plural plans Path
 
 ## Context
 

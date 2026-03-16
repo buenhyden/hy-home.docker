@@ -1,7 +1,8 @@
 ---
-layer: 08-ai
+layer: ops
 ---
 # Runbook: Docker Resource Maintenance
+n**Overview (KR):** Docker 엔진의 리소스(이미지, 볼륨 등)를 관리하고 최적화하기 위한 정기 점검 절차입니다.
 
 > **Component**: `docker-engine`
 > **Profile**: N/A (Global)

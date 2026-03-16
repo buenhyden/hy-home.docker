@@ -1,7 +1,8 @@
 ---
-layer: 01-gateway
+layer: infra
 ---
 # Traefik Ingress Controller Guide
+n**Overview (KR):** Traefik 기반 인그레스 컨트롤러의 동적 라우팅 및 SSL 설정 관리 가이드입니다.
 
 > **Component**: `traefik`
 > **Internal DNS**: `traefik`

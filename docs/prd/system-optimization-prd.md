@@ -10,14 +10,12 @@ layer: core
 
 # Product Requirements Document (PRD)
 
-> **Status**: Approved
-> **Target Version**: v1.0.0
-> **Owner**: Platform Architect
-> **Stakeholders**: Developer, Infrastructure Lead
+- **Status**: Approved
+- **Target Version**: v1.0.0
+- **Owner**: Platform Architect
+- **layer:** core
 
-_Target Directory: `docs/prd/system-optimization-prd.md`_
-_Note: This document defines the What and Why for the overall system hardening and technical excellence._
-
+**Overview (KR):** 시스템 전반의 성능 최적화, 보안 위협 감소, 그리고 통합 로깅 시스템 구축을 위한 요구사항을 정의합니다.
 ---
 
 ## 0. Pre-Review Checklist (Business & Product)
@@ -98,6 +96,6 @@ _Note: This document defines the What and Why for the overall system hardening a
 
 ## 11. Related Documents (Reference / Traceability)
 
-- **Technical Specification**: [[REQ-SPEC-OPT-01] Infrastructure Hardening & Optimization](../../../specs/infra/system-optimization/spec.md)
+- **Technical Specification**: [[REQ-SPEC-OPT-01] Infrastructure Hardening & Optimization](../specs/infra-system-optimization-spec.md)
 - **Architecture Reference (ARD)**: [[ARD-OPT-01] Optimized Infrastructure Architecture Reference](../ard/system-optimization-ard.md)
 - **Architecture Decisions (ADRs)**: [[ADR-0008] Removing Static Docker IPs](../adr/adr-0008-removing-static-docker-ips.md), [[ADR-0012] Standardized Init Process](../adr/adr-0012-standardized-init-process.md)

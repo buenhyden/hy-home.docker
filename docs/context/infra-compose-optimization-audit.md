@@ -1,7 +1,8 @@
 ---
 layer: infra
 ---
-# Infra Compose Optimization & Env Audit
+## Infra
+n**Overview (KR):** Docker Compose 파일 및 환경 변수 구성의 최적화 상태를 점검한 오디트 결과입니다.
 
 ## Scope
 

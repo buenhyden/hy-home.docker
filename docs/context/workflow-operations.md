@@ -1,7 +1,8 @@
 ---
-layer: 07-workflow
+layer: infra
 ---
 # Workflow Stack Operations (n8n & Airflow)
+n**Overview (KR):** n8n과 Airflow를 포함한 전체 워크플로우 스택의 통합 운영 가이드입니다.
 
 > Standard operational guidelines for managing internal automation flows via n8n and Apache Airflow.
 

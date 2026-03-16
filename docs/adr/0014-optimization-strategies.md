@@ -1,11 +1,12 @@
 ---
-layer: core
+layer: infra
 ---
-# Architecture Decision Record (ADR)
+# ADR-0014: Optimization Strategies
+n**Overview (KR):** 인프라 전반의 지연 시간 단축 및 리소스 효율 향상을 위한 기술적 최적화 전략을 수립합니다.
 
 _Target Directory: `docs/adr/adr-0014-optimization-strategies.md`_
 
-## Title: System Optimization and Hardening Strategies
+: System Optimization and Hardening Strategies
 
 - **Status:** Accepted
 - **Date:** 2026-02-27

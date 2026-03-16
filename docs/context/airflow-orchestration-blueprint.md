@@ -1,7 +1,8 @@
 ---
-layer: 07-workflow
+layer: infra
 ---
 # Apache Airflow Orchestration Blueprint
+n**Overview (KR):** Apache Airflow의 Celery 실행 모델과 전반적인 서비스 오케스트레이션 설계 청사진입니다.
 
 > **Component**: `airflow`
 > **Executor**: `CeleryExecutor`

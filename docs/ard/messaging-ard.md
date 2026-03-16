@@ -1,7 +1,8 @@
 ---
-layer: core
+layer: architecture
 ---
 # Messaging & Eventing Architecture Reference Document (ARD)
+n**Overview (KR):** Kafka 및 메시지 브로커를 활용한 비동기 이벤트 처리 시스템의 아키텍처 설계를 설명합니다.
 
 - **Status**: Approved
 - **Owner**: Infrastructure Architect

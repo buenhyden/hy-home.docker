@@ -1,7 +1,8 @@
 ---
-layer: 04-data
+layer: infra
 ---
 # MinIO Object Storage (S3) Guide
+n**Overview (KR):** S3 호환 스토리지를 애플리케이션 및 백업 솔루션과 연동하는 기술 가이드입니다.
 
 > **Component**: `minio`
 > **S3 API Port**: `9000`

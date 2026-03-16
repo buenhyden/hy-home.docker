@@ -1,4 +1,8 @@
+---
+layer: agentic
+---
 # Plan: Cycle 2 Documentation & Agentic Refactor Implementation
+n**Overview (KR):** 문서 강화 2단계 과업의 기술적 사양 구현 및 ID 중복 해결을 위한 세부 실행 계획입니다.
 
 - **Status**: Ready
 - **Scope**: master

@@ -1,5 +1,7 @@
 ---
 title: 'Incident 0001: Documentation Structure Mismatch'
+n**Overview (KR):** 인프라 명세서와 PRD 간의 구조 불일치 현상을 탐지하고 분석한 장애 기록입니다.
+layer: ops
 status: 'Resolved'
 severity: 'SEV-2'
 date: '2026-03-15'

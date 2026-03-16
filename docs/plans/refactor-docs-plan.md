@@ -1,8 +1,9 @@
 ---
-layer: architecture
+layer: agentic
 ---
 
 # Documentation Refactor Implementation Plan
+n**Overview (KR):** 기존 기술 문서의 구조적 정렬 및 메타데이터 동기화를 위한 리팩토링 단계입니다.
 
 > **Technical Specification**: `[../specs/refactor-docs-spec.md]`
 

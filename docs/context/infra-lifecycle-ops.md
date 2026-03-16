@@ -1,7 +1,8 @@
 ---
-layer: core
+layer: infra
 ---
 # Infrastructure Lifecycle & Core Operations
+n**Overview (KR):** 전체 인프라의 핵심 수명 주기 및 운영 우선순위에 대한 가이드입니다.
 
 > **Component**: Global `infra` stack
 > **Orchestrator**: Docker Compose V2

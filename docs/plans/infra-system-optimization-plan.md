@@ -3,6 +3,7 @@ goal: 'Refine infrastructure optimization via global extends and compliance stan
 version: '1.0'
 date_created: '2026-02-26'
 last_updated: '2026-02-26'
+n**Overview (KR):** 시스템 전반의 공통 최적화 요소 적용 및 하드닝을 위한 운영 실행 계획입니다.
 owner: 'DevOps Lead / Implementation Engineer'
 status: 'Completed'
 tags: ['implementation', 'planning', 'infra', 'optimization']

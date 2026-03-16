@@ -1,7 +1,8 @@
 ---
-layer: infra
+layer: ops
 ---
 # Deployment Runbook
+n**Overview (KR):** 서비스 변경 사항을 안정적으로 배포하기 위한 표준 운영 절차입니다.
 
 ## 1. Document Purpose
 

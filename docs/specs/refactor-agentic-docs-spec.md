@@ -1,8 +1,9 @@
 ---
-layer: architecture
+layer: agentic
 ---
 
 # Technical Specification: Agentic Documentation Refactor
+n**Overview (KR):** 에이전트 지침 및 리포지토리 규칙 최적화를 위한 기술적 리팩토링 명세입니다.
 
 ## 1. Directory Structure
 

@@ -1,7 +1,8 @@
 ---
-layer: 08-ai
+layer: infra
 ---
 # SMTP Mail Relay Operational Guide
+n**Overview (KR):** 시스템 알림 전송을 위한 SMTP 메일 릴레이 구성 및 운영 지침입니다.
 
 > **Component**: `mailhog`
 > **Internal Port**: `1025` (SMTP), `8025` (HTTP UI)

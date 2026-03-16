@@ -7,7 +7,7 @@ owner: 'buenhyden'
 status: 'Planned'
 scope: 'master'
 tags: ['implementation', 'planning']
-layer: 'product'
+layer: agentic
 ---
 
 # Agent Rule Implementation and Refactor Plan

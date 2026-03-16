@@ -3,9 +3,9 @@ title: 'Infrastructure Automation Implementation Spec'
 status: 'Draft'
 version: '1.0'
 owner: 'Platform Architect'
-prd_reference: '../../../docs/prd/infra-automation-prd.md'
+prd_reference: '../../docs/prd/infra-automation-prd.md'
 api_reference: 'N/A'
-arch_reference: '../../../ARCHITECTURE.md'
+arch_reference: '../../ARCHITECTURE.md'
 tags: ['spec', 'infra', 'automation', 'init', 'sidecar']
 layer: infra
 ---
@@ -13,8 +13,8 @@ layer: infra
 # Implementation Specification (Spec)
 
 > **Status**: Draft
-> **Related PRD**: [docs/prd/infra-automation-prd.md](../../../docs/prd/infra-automation-prd.md)
-> **Related Architecture**: [ARCHITECTURE.md](../../../ARCHITECTURE.md)
+> **Related PRD**: [docs/prd/infra-automation-prd.md](../../docs/prd/infra-automation-prd.md)
+> **Related Architecture**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
 _Target Directory: `specs/infra/automation/spec.md`_
 

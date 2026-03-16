@@ -8,7 +8,7 @@ tags: ['adr', 'documentation', 'taxonomy']
 layer: 'architecture'
 ---
 
-# ADR 0001: Flat Documentation Taxonomy and Layer Metadata
+# ADR 0017: Flat Documentation Taxonomy and Layer Metadata
 
 - **Status:** Accepted
 - **Date:** 2026-03-14

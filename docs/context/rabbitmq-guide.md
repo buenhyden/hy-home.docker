@@ -1,7 +1,8 @@
 ---
-layer: 05-messaging
+layer: infra
 ---
 # RabbitMQ Operational Blueprint
+n**Overview (KR):** RabbitMQ 메시지 브로커의 클러스터 구성 및 관리 청사진 가이드입니다.
 
 > **Component**: `rabbitmq`
 > **Profile**: `rabbitmq` (Optional Tier)

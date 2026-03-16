@@ -1,4 +1,8 @@
+---
+layer: agentic
+---
 # Spec: Cycle 2 Documentation & Agent Optimization
+n**Overview (KR):** 문서 강화 2단계 과업의 범위와 기술적 달성 목표를 설명하는 명세입니다.
 
 - **Status**: Review
 - **layer:** architecture

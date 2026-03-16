@@ -1,11 +1,13 @@
 ---
 title: 'Infrastructure System Optimization & Hardening Spec'
+n**Overview (KR):** 전체 스택의 안정성 향상과 성능 최적화를 위한 세부 구현 지침입니다.
+layer: infra
 status: 'Draft'
 version: '1.0'
 owner: 'Platform Architect'
-prd_reference: '../../../docs/prd/system-optimization-prd.md'
+prd_reference: '../../docs/prd/system-optimization-prd.md'
 api_reference: 'N/A'
-arch_reference: '../../../ARCHITECTURE.md'
+arch_reference: '../../ARCHITECTURE.md'
 tags: ['spec', 'infra', 'optimization', 'hardening', 'docker-compose']
 layer: core
 ---
@@ -13,8 +15,8 @@ layer: core
 # Implementation Specification (Spec)
 
 > **Status**: Draft
-> **Related PRD**: [docs/prd/system-optimization-prd.md](../../../docs/prd/system-optimization-prd.md)
-> **Related Architecture**: [ARCHITECTURE.md](../../../ARCHITECTURE.md)
+> **Related PRD**: [docs/prd/system-optimization-prd.md](../../docs/prd/system-optimization-prd.md)
+> **Related Architecture**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
 _Target Directory: `specs/infra/system-optimization/spec.md`_
 

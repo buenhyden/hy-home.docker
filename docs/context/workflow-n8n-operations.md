@@ -1,7 +1,8 @@
 ---
-layer: 07-workflow
+layer: infra
 ---
 # n8n Workflow Operations Tracking
+n**Overview (KR):** n8n 워크플로우의 실행 실패 추적 및 워커 관리 운영 지침입니다.
 
 > This document serves as the permanent, historical record for production events, scaling efforts, and stability metrics related to the distributed `n8n` workflow orchestration system.
 

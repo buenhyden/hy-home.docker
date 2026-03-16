@@ -1,3 +1,6 @@
+---
+layer: agentic
+---
 # PRD-0002: Deep Taxonomy Alignment & Agent Optimization
 
 - **Status**: Draft

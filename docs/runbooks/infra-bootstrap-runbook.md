@@ -1,7 +1,8 @@
 ---
-layer: infra
+layer: ops
 ---
 # Service Runbook: Core Infra Bootstrap
+n**Overview (KR):** 클린 환경에서 기본 인프라(Gateway, Auth, Data 등)를 순차적으로 초기화하고 기동하는 절차입니다.
 
 _Target Directory: `runbooks/core/infra-bootstrap-runbook.md`_
 _Note: High-criticality bootstrap procedure for the combined Docker Compose infrastructure._

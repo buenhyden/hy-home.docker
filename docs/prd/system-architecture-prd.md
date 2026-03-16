@@ -65,9 +65,9 @@ _Note: This document defines the What and Why for the entire repository._
 
 ## 5. Scope & Functional Requirements
 
-- **[REQ-PRD-FUN-01]** Tiered directory structure for service isolation.
-- **[REQ-PRD-FUN-02]** Spec-Driven Development (SDD) mandatory workflow.
-- **[REQ-PRD-FUN-03]** Coded identifier system for all requirements.
+- **[REQ-PRD-ARCH-FUN-01]** Tiered directory structure for service isolation.
+- **[REQ-PRD-ARCH-FUN-02]** Spec-Driven Development (SDD) mandatory workflow.
+- **[REQ-PRD-ARCH-FUN-03]** Coded identifier system for all requirements.
 
 ## 6. Out of Scope
 

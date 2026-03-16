@@ -1,7 +1,8 @@
 ---
-layer: 04-data
+layer: infra
 ---
 # PostgreSQL Router Operations
+n**Overview (KR):** PostgreSQL 라우터 및 데이터베이스 계정 관리 등 필수 운영 과업 설명입니다.
 
 > **Component**: `postgresql-cluster`, `mng-db`
 

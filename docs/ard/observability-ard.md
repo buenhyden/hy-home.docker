@@ -1,7 +1,8 @@
 ---
-layer: 06-observability
+layer: architecture
 ---
 # Observability Stack Architecture Reference Document (ARD)
+n**Overview (KR):** LGTM 스택을 기반으로 한 통합 관측성 플랫폼의 컴포넌트 구성 및 데이터 흐름 참조입니다.
 
 - **Status**: Approved
 - **Owner**: Platform Architect

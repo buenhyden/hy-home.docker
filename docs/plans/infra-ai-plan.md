@@ -3,11 +3,12 @@ goal: 'Create a deterministic, spec-compliant implementation path for the local 
 version: '1.0'
 date_created: '2026-02-27'
 last_updated: '2026-02-27'
+n**Overview (KR):** 로컬 AI 스택(Ollama, Qdrant) 구축을 위한 결정론적 구현 경로 및 컨테이너 프로필 설계 계획입니다.
 owner: 'AI Infrastructure Engineer'
 status: 'Planned'
 tags: ['implementation', 'planning', 'infra', 'ai', 'ollama', 'open-webui', 'qdrant', 'docker-compose']
 stack: 'docker'
-layer: 08-ai
+layer: infra
 ---
 
 # AI Infrastructure Implementation Plan

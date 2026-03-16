@@ -55,14 +55,14 @@ This repository is a Docker Compose infrastructure workspace for local and homel
 
 ## Template Usage Contract
 
-- New PRDs use [../templates/prd-template.md](../templates/prd-template.md)
-- New ARDs use [../templates/ard-template.md](../templates/ard-template.md)
-- New ADRs use [../templates/adr-template.md](../templates/adr-template.md)
-- New specs use [../templates/spec-template.md](../templates/spec-template.md)
-- New plans use [../templates/plan-template.md](../templates/plan-template.md)
-- New runbooks use [../templates/runbook-template.md](../templates/runbook-template.md)
-- New incidents use [../templates/incident-template.md](../templates/incident-template.md)
-- New postmortems use [../templates/postmortem-template.md](../templates/postmortem-template.md)
+- New PRDs use [../../templates/prd-template.md](../templates/prd-template.md)
+- New ARDs use [../../templates/ard-template.md](../templates/ard-template.md)
+- New ADRs use [../../templates/adr-template.md](../templates/adr-template.md)
+- New specs use [../../templates/spec-template.md](../templates/spec-template.md)
+- New plans use [../../templates/plan-template.md](../templates/plan-template.md)
+- New runbooks use [../../templates/runbook-template.md](../templates/runbook-template.md)
+- New incidents use [../../templates/incident-template.md](../templates/incident-template.md)
+- New postmortems use [../../templates/postmortem-template.md](../templates/postmortem-template.md)
 
 ## Link And Truth Rules
 

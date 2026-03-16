@@ -1,7 +1,8 @@
 ---
-layer: 03-security
+layer: infra
 ---
 # HashiCorp Vault Security Guide
+n**Overview (KR):** HashiCorp Vault 클러스터의 시크릿 관리 가버넌스 및 보안 정책 설계 가이드입니다.
 
 > **Component**: `vault`
 > **Tier**: `03-security`

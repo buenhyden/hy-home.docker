@@ -1,7 +1,8 @@
 ---
-layer: infra
+layer: ops
 ---
 # Postmortem: [INC-20260226-000]
+n**Overview (KR):** 인프라 장애(INC-000)의 근본 원인을 분석하고 재발 방지 대책을 수립한 분석 보고서입니다.
 
 _Target Directory: `operations/postmortems/RCA-BASE-001.md`_
 _Note: This document follows the blameless postmortem culture defined in the Risk Management & Incident Response Standards._

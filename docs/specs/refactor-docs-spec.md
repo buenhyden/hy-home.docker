@@ -1,8 +1,9 @@
 ---
-layer: architecture
+layer: agentic
 ---
 
 # Documentation Refactor Technical Specification
+n**Overview (KR):** 기존 기술 문서의 분류 체계 재정립 및 구문 최적화 작업을 위한 명세입니다.
 
 > **Parent PRD**: `[../prd/refactor-docs-prd.md]`
 > **Architecture Reference**: `[../ard/refactor-docs-ard.md]`

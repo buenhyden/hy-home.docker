@@ -3,6 +3,7 @@ goal: 'Create a deterministic, spec-compliant implementation path for the LGTM o
 version: '1.0'
 date_created: '2026-02-27'
 last_updated: '2026-02-27'
+n**Overview (KR):** LGTM 관측성 스택 통합 및 보안 정책 기반의 대시보드 구축 실행 계획입니다.
 owner: 'Reliability Engineer'
 status: 'Planned'
 tags: ['implementation', 'planning', 'infra', 'observability', 'lgtm', 'grafana', 'loki', 'tempo', 'prometheus', 'docker-compose']

@@ -1,4 +1,8 @@
+---
+layer: agentic
+---
 # Agent Rule Implementation and Refactor Specification
+n**Overview (KR):** 에이전트 전용 규칙(Rules)의 구조를 리팩토링하고 신규 트리거를 적용하는 명세입니다.
 
 > **Status**: Canonical
 > **Scope**: master

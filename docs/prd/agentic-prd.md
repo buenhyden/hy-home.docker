@@ -1,3 +1,6 @@
+---
+layer: agentic
+---
 # Agentic Framework PRD
 
 - **Status**: Canonical
@@ -17,9 +20,9 @@ The project requires a consistent way to interact with AI agents across differen
 
 ## Functional Requirements
 
-- `[REQ-PRD-FUN-01]` Lazy-loading of rule modules via `[LOAD:RULES:*]` triggers.
-- `[REQ-PRD-FUN-02]` Centralized instruction hub in `docs/agentic/`.
-- `[REQ-PRD-FUN-03]` Support for plural implementation paths (`plans/`, `specs/`).
+- `[REQ-PRD-AGT-FUN-01]` Lazy-loading of rule modules via `[LOAD:RULES:*]` triggers.
+- `[REQ-PRD-AGT-FUN-02]` Centralized instruction hub in `docs/agentic/`.
+- `[REQ-PRD-AGT-FUN-03]` Support for plural implementation paths (`plans/`, `specs/`).
 
 ## Non-Functional Requirements
 

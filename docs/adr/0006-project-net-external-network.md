@@ -1,9 +1,10 @@
 ---
-layer: core
+layer: infra
 ---
-# Architecture Decision Record (ADR)
+# ADR 0006: Project-Net External Network
+n**Overview (KR):** 모든 서비스가 공유하는 외부 네트워크(`project_net`)를 정의하여 컨테이너 간 통신 표준을 수립합니다.
 
-## Title: External `project_net` Convention
+: External `project_net` Convention
 
 - **Status:** Accepted
 - **Date:** 2026-02-26

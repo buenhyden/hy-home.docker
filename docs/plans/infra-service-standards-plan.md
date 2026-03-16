@@ -3,6 +3,7 @@ goal: 'Create a deterministic, spec-compliant implementation path to enforce sta
 version: '1.0'
 date_created: '2026-02-27'
 last_updated: '2026-02-27'
+n**Overview (KR):** 헬스체크 및 Traefik 노출 준수 등 모든 서비스가 지켜야 할 기술 표준 강제화 계획입니다.
 owner: 'Reliability & Security Engineer'
 status: 'Planned'
 tags: ['implementation', 'planning', 'infra', 'standards', 'service', 'docker-compose']
@@ -43,9 +44,9 @@ Service standards are cross-cutting: they apply to all long-running services in 
 _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 - **Requirements:**
-  - `[REQ-STD-001]`: Every service MUST define a `healthcheck` in the Compose file (maps to `SPEC-STD-01`).
-  - `[REQ-STD-002]`: Services SHALL expose only required ports via Traefik labels (maps to `SPEC-STD-02`).
-  - `[REQ-STD-003]`: Use of `${DEFAULT_ENV}` for environment file mapping is required where applicable (maps to `SPEC-STD-03`).
+  - `[REQ-BSL-STD-001]`: Every service MUST define a `healthcheck` in the Compose file (maps to `SPEC-STD-01`).
+  - `[REQ-BSL-STD-002]`: Services SHALL expose only required ports via Traefik labels (maps to `SPEC-STD-02`).
+  - `[REQ-BSL-STD-003]`: Use of `${DEFAULT_ENV}` for environment file mapping is required where applicable (maps to `SPEC-STD-03`).
   - `[AC-STD-001]`: (from `STORY-SYS-01`) Given a new `docker-compose.yml`, when extending `base-security`, then `cap_drop: ALL` is applied automatically.
 - **Constraints:**
   - Healthchecks MUST avoid false positives; they must validate readiness, not only liveness.
@@ -55,9 +56,9 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 | Task     | Description | Files Affected | Target REQ | Validation Criteria |
 | -------- | ----------- | -------------- | ---------- | ------------------- |
-| TASK-001 | Audit all long-running services for `healthcheck` coverage and add missing healthchecks. | `infra/**/docker-compose*.yml` | [REQ-STD-001] | `docker compose --env-file .env.example config` output contains `healthcheck:` for all long-running services. |
-| TASK-002 | Audit external exposure patterns; ensure Traefik labels are used for intended public endpoints and remove unnecessary host `ports:` where safe. | `infra/**/docker-compose*.yml`, `infra/01-gateway/traefik/**` | [REQ-STD-002] | Services intended for external access have `traefik.http.routers.*`; unnecessary host ports are removed without breaking documented workflows. |
-| TASK-003 | Normalize env mapping conventions (where applicable) to `${DEFAULT_ENV}` and consistent `.env` usage patterns. | `.env.example`, `infra/**/docker-compose*.yml` | [REQ-STD-003] | No ad-hoc envfile paths; conventions documented and consistent. |
+| TASK-001 | Audit all long-running services for `healthcheck` coverage and add missing healthchecks. | `infra/**/docker-compose*.yml` | [REQ-BSL-STD-001] | `docker compose --env-file .env.example config` output contains `healthcheck:` for all long-running services. |
+| TASK-002 | Audit external exposure patterns; ensure Traefik labels are used for intended public endpoints and remove unnecessary host `ports:` where safe. | `infra/**/docker-compose*.yml`, `infra/01-gateway/traefik/**` | [REQ-BSL-STD-002] | Services intended for external access have `traefik.http.routers.*`; unnecessary host ports are removed without breaking documented workflows. |
+| TASK-003 | Normalize env mapping conventions (where applicable) to `${DEFAULT_ENV}` and consistent `.env` usage patterns. | `.env.example`, `infra/**/docker-compose*.yml` | [REQ-BSL-STD-003] | No ad-hoc envfile paths; conventions documented and consistent. |
 | TASK-004 | Validate security baseline propagation via `extends: base-security` (cap_drop/no-new-privileges). | `infra/common-optimizations.yml`, representative compose files using `base-security` (e.g. `infra/05-messaging/kafka/docker-compose.yml`) | [AC-STD-001] | `docker compose --env-file .env.example config \| rg -q \"cap_drop:\\n\\s*- ALL\"` exits `0`. |
 
 **Traceability Matrix**

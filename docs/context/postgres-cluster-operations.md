@@ -1,7 +1,8 @@
 ---
-layer: 04-data
+layer: infra
 ---
 # PostgreSQL Patroni Cluster Operations
+n**Overview (KR):** Patroni를 이용한 PostgreSQL 고가용성 클러스터의 상태 모니터링 및 운영 지침입니다.
 
 This document defines the standard operating procedures for managing the `postgresql-cluster` stack in the `infra/04-data` directory.
 

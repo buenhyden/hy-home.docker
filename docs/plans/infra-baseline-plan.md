@@ -3,11 +3,12 @@ goal: 'Create a deterministic, spec-compliant implementation path for the baseli
 version: '1.0'
 date_created: '2026-02-27'
 last_updated: '2026-02-27'
+n**Overview (KR):** 기초 인프라(버전 고정, 보안 관리 등) 수립 및 부트스트랩 필수 과업 실행 계획입니다.
 owner: 'Infrastructure Architect'
 status: 'Planned'
 tags: ['implementation', 'planning', 'infra', 'baseline', 'docker-compose']
 stack: 'docker'
-layer: core
+layer: infra
 ---
 
 # Infrastructure Baseline Implementation Plan
@@ -45,8 +46,8 @@ The baseline defines the minimum compliant state required for contributors to bo
 _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 - **Requirements:**
-  - `[REQ-BSL-001]`: All images MUST use pinned version tags; `latest` is prohibited (maps to `SPEC-BASE-01`).
-  - `[REQ-BSL-002]`: Every service SHALL utilize `init: true` for signal handling (maps to `SPEC-BASE-02`).
+  - `[REQ-INFRA-BSL-001]`: All images MUST use pinned version tags; `latest` is prohibited (maps to `SPEC-BASE-01`).
+  - `[REQ-INFRA-BSL-002]`: Every service SHALL utilize `init: true` for signal handling (maps to `SPEC-BASE-02`).
   - `[SEC-BSL-001]`: Sensitive data MUST be injected via `/run/secrets/` filesystem mounts (maps to `SPEC-BASE-03`).
   - `[AC-BSL-001]`: (from `STORY-BASE-01`) Given a clean Docker environment, when running `preflight-compose.sh`, then missing secrets are identified.
 - **Constraints:**
@@ -56,8 +57,8 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 | Task     | Description | Files Affected | Target REQ | Validation Criteria |
 | -------- | ----------- | -------------- | ---------- | ------------------- |
-| TASK-001 | Audit and enforce pinned image tags across root and included compose files (no `latest`). | `docker-compose.yml`, `infra/**/docker-compose*.yml` | [REQ-BSL-001] | `rg -n \"image:.*:latest\\b\" docker-compose.yml infra` returns 0 matches. |
-| TASK-002 | Ensure `init: true` is present by default via `infra/common-optimizations.yml` templates or explicit service config. | `infra/common-optimizations.yml`, `infra/**/docker-compose*.yml` | [REQ-BSL-002] | `docker compose --env-file .env.example config` output includes `init: true` for services using baseline templates. |
+| TASK-001 | Audit and enforce pinned image tags across root and included compose files (no `latest`). | `docker-compose.yml`, `infra/**/docker-compose*.yml` | [REQ-INFRA-BSL-001] | `rg -n \"image:.*:latest\\b\" docker-compose.yml infra` returns 0 matches. |
+| TASK-002 | Ensure `init: true` is present by default via `infra/common-optimizations.yml` templates or explicit service config. | `infra/common-optimizations.yml`, `infra/**/docker-compose*.yml` | [REQ-INFRA-BSL-002] | `docker compose --env-file .env.example config` output includes `init: true` for services using baseline templates. |
 | TASK-003 | Ensure all sensitive values are injected via Docker secrets mounted under `/run/secrets/*` (no plaintext secret env vars). | `docker-compose.yml`, `infra/**/docker-compose*.yml`, `secrets/**` | [SEC-BSL-001] | Secrets are referenced via `*_FILE=/run/secrets/*` or `cat /run/secrets/*`; no plaintext passwords/tokens introduced. |
 | TASK-004 | Ensure contributors can identify missing bootstrap prerequisites (env/secrets/certs/dirs) via preflight script. | `scripts/preflight-compose.sh`, `scripts/README.md`, `runbooks/core/infra-bootstrap-runbook.md` | [AC-BSL-001] | Running `bash scripts/preflight-compose.sh` reports missing prerequisites with non-zero exit (or WARN where documented). |
 

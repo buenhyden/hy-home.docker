@@ -1,9 +1,10 @@
 ---
-layer: core
+layer: infra
 ---
-# Architecture Decision Record (ADR)
+# ADR 0008: Removing Static Docker IPs
+n**Overview (KR):** 컨테이너에 고정 IP를 할당하는 대신 내부 DNS 이름을 사용하여 네트워크 유연성과 포터빌리티를 높입니다.
 
-## Title: Removing Static Docker IPs
+: Removing Static Docker IPs
 
 - **Status:** Accepted
 - **Date:** 2026-02-23

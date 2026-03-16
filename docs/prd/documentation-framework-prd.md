@@ -26,10 +26,10 @@ To provide a documentation ecosystem that feels like an integrated operating man
 
 ## Requirements
 
-- **[REQ-PRD-01]** Category-based storage for all documents (ADR, ARD, PRD, Plan, Spec, Runbook, Operation).
-- **[REQ-PRD-02]** Mandatory `layer:` metadata in every markdown file.
-- **[REQ-PRD-03]** Central discovery gateway for AI agents.
-- **[REQ-PRD-04]** Template-driven creation for consistency.
+- **[REQ-PRD-DF-01]** Category-based storage for all documents (ADR, ARD, PRD, Plan, Spec, Runbook, Operation).
+- **[REQ-PRD-DF-02]** Mandatory `layer:` metadata in every markdown file.
+- **[REQ-PRD-DF-03]** Central discovery gateway for AI agents.
+- **[REQ-PRD-DF-04]** Template-driven creation for consistency.
 
 ## Success Criteria
 

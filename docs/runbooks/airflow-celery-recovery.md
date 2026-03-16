@@ -1,7 +1,8 @@
 ---
-layer: 07-workflow
+layer: ops
 ---
 # Airflow Celery Recovery Runbook
+n**Overview (KR):** Airflow의 Celery 워커 가동 중단이나 큐 적체 현상을 해결하기 위한 복구 절차입니다.
 
 > **Service**: `airflow`
 > **Profile**: `airflow`, `flower`

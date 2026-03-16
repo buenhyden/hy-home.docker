@@ -2,6 +2,7 @@
 layer: infra
 ---
 # Tooling Operations & Troubleshooting
+n**Overview (KR):** 인프라 관리 도구들의 일반적인 장애 상황 분석 및 해결 방법 오퍼레이션 가이드입니다.
 
 > **Components**: `sonarqube`, `terraform`, `terrakube`
 

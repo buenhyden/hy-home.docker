@@ -1,7 +1,8 @@
 ---
-layer: 04-data
+layer: infra
 ---
 # PostgreSQL Patroni High-Availability Guide
+n**Overview (KR):** PostgreSQL 고가용성(HA) 아키텍처 설계와 장애 조치 매커니즘 설명 가이드입니다.
 
 > **Component**: `pg-cluster`
 > **Nodes**: 3 (Leader + 2 Replicas)

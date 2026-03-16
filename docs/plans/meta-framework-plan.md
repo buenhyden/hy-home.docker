@@ -1,5 +1,7 @@
 ---
 title: 'Meta-Framework Refactor Plan'
+n**Overview (KR):** 리포지토리 가버넌스 및 메타 프레임워크 리팩토링을 위한 단계별 구현 계획입니다.
+layer: agentic
 status: 'Draft'
 version: 'v1.1.0'
 owner: 'Antigravity'

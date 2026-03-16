@@ -1,7 +1,8 @@
 ---
-layer: 08-ai
+layer: infra
 ---
 # Auth & Communication Operations
+n**Overview (KR):** OAuth2 Proxy를 통한 SSO(단일 로그인) 적용 및 메일 통신 시스템 운영 가이드입니다.
 
 > **Components**: `oauth2-proxy`, `keycloak`, `mailhog`
 

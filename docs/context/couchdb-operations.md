@@ -1,7 +1,8 @@
 ---
-layer: 04-data
+layer: infra
 ---
 # CouchDB Operations
+n**Overview (KR):** CouchDB 클러스터의 데이터 복제 모니터링 및 일상적인 운영 관리 절차입니다.
 
 > **Component**: `influxdb`
 > **Profile**: `compose-file` (Standard)

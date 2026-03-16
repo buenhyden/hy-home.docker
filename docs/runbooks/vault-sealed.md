@@ -1,7 +1,8 @@
 ---
-layer: 03-security
+layer: ops
 ---
 # Runbook: HashiCorp Vault Unseal & Recovery
+n**Overview (KR):** HashiCorp Vault가 봉인(Sealed) 상태로 전환되었을 때 복구 키를 사용하여 봉인을 해제하는 절차입니다.
 
 > **Component**: `vault`
 > **Storage**: Filesystem (Encrypted)

@@ -1,7 +1,8 @@
 ---
-layer: 05-messaging
+layer: infra
 ---
 # RabbitMQ Routine Operations
+n**Overview (KR):** RabbitMQ 큐 상태 모니터링 및 메시지 전달 보장 정책 등 루틴 오퍼레이션 설명입니다.
 
 > **Component**: `rabbitmq`
 > **Profile**: `rabbitmq`

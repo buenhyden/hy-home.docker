@@ -1,9 +1,10 @@
 ---
-layer: core
+layer: infra
 ---
-# Architecture Decision Record (ADR)
+# ADR 0005: Sidecar-Driven Resource Initialization
+n**Overview (KR):** 메인 서비스 구동 전 필요한 리소스를 초기화하기 위해 사이드카 컨테이너 패턴을 사용하는 아키텍처 결정입니다.
 
-## Title: Sidecar-Driven Resource Initialization
+: Sidecar-Driven Resource Initialization
 
 - **Status:** Accepted
 - **Date:** 2026-02-26

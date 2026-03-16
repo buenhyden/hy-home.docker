@@ -1,4 +1,5 @@
 # Spec-0001: Documentation Taxonomy and Plural Migration
+n**Overview (KR):** 문서 분류 체계 변경 및 복수형 경로 전환을 위한 기초 사양입니다.
 
 - **Status**: Implementation
 - **Scope**: master

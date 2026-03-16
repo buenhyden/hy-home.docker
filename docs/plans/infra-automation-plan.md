@@ -3,6 +3,7 @@ goal: 'Create a deterministic, spec-compliant implementation path for init/sidec
 version: '1.0'
 date_created: '2026-02-27'
 last_updated: '2026-02-27'
+n**Overview (KR):** 인프라 초기화 및 사이드카 자동화 구현을 위한 상세 로드맵입니다.
 owner: 'Platform Architect'
 status: 'Planned'
 tags: ['implementation', 'planning', 'infra', 'automation', 'init', 'sidecar', 'docker-compose']

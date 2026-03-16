@@ -3,11 +3,12 @@ goal: 'Create a deterministic, spec-compliant implementation path for global inf
 version: '1.0'
 date_created: '2026-02-27'
 last_updated: '2026-02-27'
+n**Overview (KR):** 전역 인프라 불변성 확보 및 템플릿 상속 구조 구현을 위한 단계별 계획입니다.
 owner: 'Platform Architect'
 status: 'Planned'
 tags: ['implementation', 'planning', 'infra', 'global-baseline', 'docker-compose', 'standards']
 stack: 'docker'
-layer: core
+layer: infra
 ---
 
 # Infrastructure Global Baseline Implementation Plan

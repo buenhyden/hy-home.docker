@@ -1,7 +1,8 @@
 ---
-layer: 05-messaging
+layer: infra
 ---
 # Kafka KRaft Streaming Guide
+n**Overview (KR):** ZooKeeper 없이 KRaft 모드로 동작하는 Kafka 클러스터 구축 및 관리 가이드입니다.
 
 > **Component**: `kafka`
 > **Architecture**: Zookeeper-less KRaft Quorum
@@ -40,9 +41,9 @@ The Kafka ecosystem includes:
 
 | Action | Reference | Link |
 | --- | --- | --- |
-| **Recovery** | Broker Offline | [Runbook](../../../runbooks/05-messaging/kafka-broker-offline.md) |
-| **Ops**      | Cluster Ops   | [Runbook](../../../runbooks/05-messaging/kafka-cluster-ops.md) |
-| **Connect**  | Java/Node/Py  | [Onboarding](../../../examples/README.md#pubsub) |
+| **Recovery** | Broker Offline | [Runbook](../runbooks/05-messaging/kafka-broker-offline.md) |
+| **Ops**      | Cluster Ops   | [Runbook](../runbooks/05-messaging/kafka-cluster-ops.md) |
+| **Connect**  | Java/Node/Py  | [Onboarding](../examples/README.md#pubsub) |
 
 ## 3. Initial Interaction
 

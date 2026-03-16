@@ -84,4 +84,4 @@ _Note: This document defines the What and Why for async messaging and event stre
 ## 11. Related Documents (Reference / Traceability)
 
 - **Architecture Reference (ARD)**: [[ARD-MSG-01] Messaging Architecture Reference](../ard/messaging-ard.md)
-- **Technical Specification**: [[REQ-SPEC-MSG-01] Kafka Cluster Spec](../../specs/infra/messaging/spec.md)
+- **Technical Specification**: [[REQ-SPEC-MSG-01] Kafka Cluster Spec](../specs/infra-messaging-spec.md)

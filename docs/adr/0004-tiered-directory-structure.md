@@ -1,9 +1,10 @@
 ---
-layer: core
+layer: infra
 ---
-# Architecture Decision Record (ADR)
+# ADR 0004: Tiered Directory Structure
+n**Overview (KR):** 서비스의 역할에 따라 디렉토리를 계층화하여 리소스 격리와 관리 체계의 명확성을 확보합니다.
 
-## Title: Tiered Directory Structure
+: Tiered Directory Structure
 
 - **Status:** Accepted
 - **Date:** 2026-02-26
@@ -54,7 +55,7 @@ Keep all folders at the top level of `infra/`.
 
 - **Confidence Rating**: High
 - **Notes**: Proven pattern for complex infrastructure-as-code repos.
-- **Technical Requirements Addressed**: REQ-PRD-FUN-01
+- **Technical Requirements Addressed**: REQ-PRD-ARCH-FUN-01
 
 ## 6. Related Documents (Traceability)
 

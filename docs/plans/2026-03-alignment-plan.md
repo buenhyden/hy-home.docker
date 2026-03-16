@@ -1,9 +1,10 @@
 ---
 goal: 'Align repository with March 2026 agentic standards'
-layer: 'product'
+layer: agentic
 ---
 
 # 2026-03 Alignment implementation Plan
+n**Overview (KR):** 2026년 3월 에이전틱 표준에 맞춘 리포지토리 전반의 정렬 실행 계획입니다.
 
 ## Tasks
 

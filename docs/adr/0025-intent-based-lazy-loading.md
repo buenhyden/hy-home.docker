@@ -8,7 +8,7 @@ tags: ['adr', 'agentic', 'lazy-loading']
 layer: 'agentic'
 ---
 
-# ADR 0016: Intent-Based Lazy Loading for Agent Rules
+# ADR 0025: Intent-Based Lazy Loading for Agent Rules
 
 - **Status:** Accepted
 - **Date:** 2026-03-14

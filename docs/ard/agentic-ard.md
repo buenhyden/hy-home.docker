@@ -1,3 +1,6 @@
+---
+layer: agentic
+---
 # Agentic Platform Architecture Reference Document (ARD)
 
 - **Status**: Approved

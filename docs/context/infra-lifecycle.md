@@ -2,6 +2,7 @@
 layer: infra
 ---
 # Infrastructure Lifecycle Operations
+n**Overview (KR):** 시스템 구성 요소의 부팅 순서 및 중지 절차 등 인프라 생명 주기 오퍼레이션 설명입니다.
 
 This document defines the lifecycle operations for managing the entire `infra` docker-compose stack.
 

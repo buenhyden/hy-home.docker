@@ -1,4 +1,7 @@
-# ADR 0001: Standardized Documentation Taxonomy
+---
+layer: agentic
+---
+# ADR 0016: Standardized Documentation Taxonomy
 
 - **Status:** Accepted
 - **Date:** 2026-03-15
