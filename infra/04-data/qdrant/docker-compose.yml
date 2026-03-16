@@ -36,7 +36,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     labels:
       traefik.enable: 'true'
       traefik.http.routers.qdrant.rule: Host(`qdrant.${DEFAULT_URL}`)

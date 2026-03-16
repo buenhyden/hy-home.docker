@@ -29,7 +29,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     depends_on:
       analytics:
         condition: service_healthy
@@ -94,7 +94,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     environment:
       KONG_DATABASE: 'off'
       KONG_DECLARATIVE_CONFIG: /home/kong/kong.yml
@@ -133,7 +133,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     depends_on:
       db:
         condition: service_healthy
@@ -199,7 +199,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     environment:
       PGRST_DB_SCHEMAS: ${SUPABASE_PGRST_DB_SCHEMAS}
       PGRST_DB_ANON_ROLE: anon
@@ -246,7 +246,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     environment:
       PORT: 4000
       PGPORT: ${SUPABASE_POSTGRES_PORT:-5432}
@@ -292,7 +292,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     depends_on:
       db:
         condition: service_healthy
@@ -344,7 +344,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     environment:
       IMGPROXY_BIND: ':5001'
       IMGPROXY_LOCAL_FILESYSTEM_ROOT: /
@@ -376,7 +376,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     environment:
       PG_META_PORT: 8080
       PG_META_DB_HOST: ${SUPABASE_POSTGRES_HOST}
@@ -412,7 +412,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     environment:
       SUPABASE_URL: http://kong:8000
       VERIFY_JWT: '${SUPABASE_FUNCTIONS_VERIFY_JWT}'
@@ -446,7 +446,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     depends_on:
       db:
         condition: service_healthy
@@ -498,7 +498,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     depends_on:
       vector:
         condition: service_healthy
@@ -542,7 +542,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     environment:
       LOGFLARE_PUBLIC_ACCESS_TOKEN: ${LOGFLARE_PUBLIC_ACCESS_TOKEN}
     command: ['--config', '/etc/vector/vector.yml']
@@ -567,7 +567,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     depends_on:
       db:
         condition: service_healthy

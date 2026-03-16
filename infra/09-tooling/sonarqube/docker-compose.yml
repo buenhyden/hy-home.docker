@@ -34,7 +34,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     volumes:
       - sonarqube-data-volume:/opt/sonarqube/data
       - sonarqube-logs-volume:/opt/sonarqube/logs

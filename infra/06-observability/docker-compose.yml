@@ -85,7 +85,7 @@ services:
       interval: 30s
       timeout: 15s
       retries: 5
-      start_period: 3m
+      start_period: 1m
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -127,7 +127,7 @@ services:
       interval: 30s
       timeout: 15s
       retries: 5
-      start_period: 2m
+      start_period: 1m
 
   # -------------------------------------------------------
   # 3. Trace Storage (Tempo)
@@ -181,7 +181,7 @@ services:
       interval: 30s
       timeout: 15s
       retries: 5
-      start_period: 1m
+      start_period: 15s
     labels:
       <<: *tier-label
 
@@ -249,7 +249,7 @@ services:
       interval: 15s
       timeout: 15s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     depends_on:
       prometheus:
         condition: service_healthy
@@ -305,7 +305,7 @@ services:
       interval: 15s
       timeout: 15s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -390,7 +390,7 @@ services:
       interval: 15s
       timeout: 15s
       retries: 5
-      start_period: 1m
+      start_period: 15s
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -428,7 +428,7 @@ services:
       interval: 15s
       timeout: 15s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     labels:
       <<: *tier-label
       traefik.enable: 'true'

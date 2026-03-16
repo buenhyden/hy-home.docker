@@ -64,7 +64,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     volumes:
       - etcd1-data:/etcd-data
     expose:
@@ -99,7 +99,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     volumes:
       - etcd2-data:/etcd-data
     expose:
@@ -133,7 +133,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     volumes:
       - etcd3-data:/etcd-data
     expose:
@@ -180,7 +180,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     depends_on:
       etcd-1: { condition: service_healthy }
       etcd-2: { condition: service_healthy }
@@ -335,7 +335,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     labels:
       <<: *tier-label
 
@@ -369,7 +369,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     labels:
       <<: *tier-label
 
@@ -403,6 +403,6 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     labels:
       <<: *tier-label

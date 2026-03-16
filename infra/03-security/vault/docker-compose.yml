@@ -49,7 +49,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     labels:
       hy-home.tier: security
       traefik.enable: 'true'

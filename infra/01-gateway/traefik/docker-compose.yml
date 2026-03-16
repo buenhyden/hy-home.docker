@@ -1,14 +1,6 @@
 x-tier-label: &tier-label
   hy-home.tier: gateway
 
-volumes:
-  traefik_certs:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs
-
 services:
   traefik:
     profiles: ['core']
@@ -29,9 +21,10 @@ services:
       - ${TRAEFIK_METRICS_HOST_PORT:-9100}:${TRAEFIK_METRICS_PORT:-9100}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik_certs:/certs:ro
+      - ../../../secrets/certs:/certs:ro
       - ./dynamic:/dynamic:ro
       - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
+
     command:
       - '--configFile=/etc/traefik/traefik.yml'
     labels:
@@ -48,7 +41,7 @@ services:
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 15s
     networks:
       infra_net:
         aliases:

@@ -19,12 +19,7 @@ volumes:
     #   o: bind
     #   type: none
     #   device: ${DEFAULT_OPENSEARCH_DATA_DIR}/node3
-  opensearch_certs:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs
+
 
 services:
   # ######################################################
@@ -74,7 +69,7 @@ services:
     volumes:
       # 데이터 영속화 볼륨
       - opensearch-data1:/usr/share/opensearch/data
-      - opensearch_certs:/usr/share/opensearch/config/certs:ro
+      - ../../../secrets/certs:/usr/share/opensearch/config/certs:ro
       - ./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
     secrets:
       - opensearch_admin_password

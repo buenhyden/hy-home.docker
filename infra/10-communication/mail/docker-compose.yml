@@ -10,12 +10,7 @@ volumes:
       type: none
       o: bind
       device: ${DEFAULT_COMMUNICATION_DIR}/stalwart/data
-  stalwart_certs:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs
+
 
 secrets:
   stalwart_password:
@@ -45,7 +40,7 @@ services:
     # [데이터 영구 저장]
     volumes:
       - stalwart-data:/opt/stalwart
-      - stalwart_certs:/opt/stalwart/certs:ro
+      - ../../../secrets/certs:/opt/stalwart/certs:ro
     networks:
       - infra_net
     secrets:

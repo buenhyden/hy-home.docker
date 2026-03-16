@@ -27,7 +27,7 @@ Because the `/dynamic` directory and `docker.sock` are mounted as read-only (`ro
 
 By default, the Traefik deployment heavily utilizes a local certificate generation system (such as `mkcert`).
 
-- Volume Mount: `traefik_certs:/certs:ro`
+- Volume Mount: `../../../secrets/certs:/certs:ro`
 - To rotate certificates or renew them, replace the files hosted on the Docker Engine volume map (`traefik_certs`) and send a soft reload command or restart the proxy container as a last resort.
 
 ## 4. Middleware & Auth Interception
