@@ -8,23 +8,23 @@ This directory indexes active implementation and refactor plans. Plans define th
 
 ## Active Infrastructure Plans
 
-- [**Global Baseline**](infra-global-baseline-plan.md)
-- [**Implementation Baseline**](infra-baseline-plan.md)
-- [**Automation Logic**](infra-automation-plan.md)
-- [**Secrets Bootstrap**](infra-secrets-bootstrap-plan.md)
-- [**Service Standards**](infra-service-standards-plan.md)
-- [**System Optimization**](infra-system-optimization-plan.md)
+- [**Global Baseline**](2026-02-27-infra-global-baseline-plan.md)
+- [**Implementation Baseline**](2026-02-27-infra-baseline-plan.md)
+- [**Automation Logic**](2026-02-27-infra-automation-plan.md)
+- [**Secrets Bootstrap**](2026-02-27-infra-secrets-bootstrap-plan.md)
+- [**Service Standards**](2026-02-27-infra-service-standards-plan.md)
+- [**System Optimization**](2026-02-26-infra-system-optimization-plan.md)
 
 ## Active Platform Service Plans
 
-- [**AI Services**](infra-ai-plan.md)
-- [**Observability Stack**](infra-observability-plan.md)
-- [**Messaging Fabric**](infra-messaging-plan.md)
+- [**AI Services**](2026-02-27-infra-ai-plan.md)
+- [**Observability Stack**](2026-02-27-infra-observability-plan.md)
+- [**Messaging Fabric**](2026-02-27-infra-messaging-plan.md)
 
 ## Refactor & Maintenance Plans
 
-- [**Agent Instruction Refactor**](2026-03-12-agent-instruction-refactor.md)
-- [**Documentation Refactor**](refactor-docs-plan.md)
+- [**Documentation Hardening**](2026-03-16-documentation-refactor-plan.md)
+- [**Hub Stabilization**](2026-03-16-final-documentation-standardization-plan.md)
 
 ## Purpose
 

@@ -5,7 +5,7 @@ date: '2026-03-15'
 incident_reference: './incidents/2026-03-15-doc-struct-mismatch.md'
 owner: 'buenhyden'
 tags: ['postmortem', 'documentation']
-layer: 'ops'
+layer: ops
 ---
 
 # Postmortem: Documentation Structure Mismatch

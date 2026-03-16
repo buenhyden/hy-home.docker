@@ -4,7 +4,7 @@ layer: ops
 # Postmortem: [INC-20260226-000]
 n**Overview (KR):** 인프라 장애(INC-000)의 근본 원인을 분석하고 재발 방지 대책을 수립한 분석 보고서입니다.
 
-_Target Directory: `operations/postmortems/RCA-BASE-001.md`_
+_Target Directory: `operations/postmortems/2026-02-26-rca-infra-bootstrap-postmortem.md`_
 _Note: This document follows the blameless postmortem culture defined in the Risk Management & Incident Response Standards._
 
 ## 1. Incident Summary
@@ -14,7 +14,7 @@ _Note: This document follows the blameless postmortem culture defined in the Ris
 - **Severity**: SEV-3
 - **Status**: Resolved
 - **Owner (Incident Commander)**: Platform Architect
-- **Related Incident Doc**: [INC-000.md](../incidents/INC-000.md)
+- **Related Incident Doc**: [2026-02-26-inc-infra-bootstrap.md](../incidents/2026-02-26-inc-infra-bootstrap.md)
 
 ## 2. Impact
 

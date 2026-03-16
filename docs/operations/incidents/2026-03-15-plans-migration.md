@@ -5,7 +5,7 @@ severity: 'SEV-2'
 date: '2026-03-15'
 owner: 'buenhyden'
 tags: ['incident', 'path-migration']
-layer: 'ops'
+layer: ops
 ---
 
 # Incident 0004: Plural plans Path Migration

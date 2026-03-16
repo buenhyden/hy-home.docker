@@ -7,7 +7,7 @@ stakeholders: ['buenhyden']
 scope: 'master'
 parent_epic: 'N/A'
 tags: ['prd', 'requirements', 'standardization']
-layer: 'product'
+layer: product
 ---
 
 # Documentation and Agent Instruction Standardization Product Requirements Document (PRD)
@@ -27,9 +27,9 @@ To establish a high-performance, compliant, and well-organized documentation sys
 
 ## Requirements
 
-- **[REQ-PRD-001]** All documentation must follow the canonical templates in `templates/`.
-- **[REQ-PRD-002]** Every document must include `layer` metadata in the frontmatter.
-- **[REQ-PRD-003]** Documentation paths must align with user specifications:
+- **[REQ-PRD-DOC-01]** All documentation must follow the canonical templates in `templates/`.
+- **[REQ-PRD-DOC-02]** Every document must include `layer` metadata in the frontmatter.
+- **[REQ-PRD-DOC-03]** Documentation paths must align with user specifications:
   - ADR: `docs/adr/`
   - ARD: `docs/ard/`
   - Incident: `docs/operations/incidents/`
@@ -38,9 +38,9 @@ To establish a high-performance, compliant, and well-organized documentation sys
   - Spec: `docs/specs/`
   - PRD: `docs/prd/`
   - Runbook: `docs/runbooks/`
-- **[REQ-PRD-004]** AI Agent instructions in `docs/agentic/` must implement Lazy Loading via markers (`[LOAD:RULES:*]`).
-- **[REQ-PRD-005]** Cumulative agent description token size must be reduced from ~39.0k to below 15.0k.
-- **[REQ-PRD-006]** `CONTRIBUTING.md` and `COLLABORATING.md` must be promoted to the repository root.
+- **[REQ-PRD-DOC-04]** AI Agent instructions in `docs/agentic/` must implement Lazy Loading via markers (`[LOAD:RULES:*]`).
+- **[REQ-PRD-DOC-05]** Cumulative agent description token size must be reduced from ~39.0k to below 15.0k.
+- **[REQ-PRD-DOC-06]** `CONTRIBUTING.md` and `COLLABORATING.md` must be promoted to the repository root.
 
 ## Success Criteria
 

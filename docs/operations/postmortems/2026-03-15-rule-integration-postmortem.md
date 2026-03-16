@@ -5,7 +5,7 @@ date: '2026-03-15'
 incident_reference: './incidents/2026-03-15-rule-trigger-integration.md'
 owner: 'buenhyden'
 tags: ['postmortem', 'rules']
-layer: 'ops'
+layer: ops
 ---
 
 # Postmortem: Rule Discovery Latency

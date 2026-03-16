@@ -12,6 +12,8 @@ layer: infra
 
 # Implementation Specification (Spec)
 
+**Overview (KR):** GPU 가속 기반의 로컬 AI 모델 추론 및 벡터 데이터베이스 구성을 위한 Docker 기반의 기술적 세부 설계 및 구성 사양입니다.
+
 > **Status**: Draft
 > **Related PRD**: [docs/prd/2026-02-27-ai-prd.md](../prd/2026-02-27-ai-prd.md)
 > **Related Architecture**: [ARCHITECTURE.md](../../ARCHITECTURE.md)

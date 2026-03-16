@@ -1,6 +1,6 @@
 ---
 title: 'Documentation Maintenance Rule'
-layer: 'agentic'
+layer: agentic
 ---
 
 # Documentation Maintenance Rule

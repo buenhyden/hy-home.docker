@@ -6,8 +6,8 @@ n**Overview (KR):** 인프라 초기화 및 자동화 워크플로우를 위한 
 
 - **Status**: Approved
 - **Owner**: Platform Architect
-- **PRD Reference**: [Infrastructure Automation PRD](../prd/infra-automation-prd.md)
-- **ADR References**: [ADR-0005](../adr/adr-0005-sidecar-resource-initialization.md), [ADR-0006](../adr/adr-0006-project-net-external-network.md)
+- **PRD Reference**: [Infrastructure Automation PRD](../prd/2026-02-27-infra-automation-prd.md)
+- **ADR References**: [ADR-0005](../adr/0005-sidecar-resource-initialization.md), [ADR-0006](../adr/0006-project-net-external-network.md)
 
 ---
 

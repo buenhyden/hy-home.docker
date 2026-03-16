@@ -4,10 +4,10 @@ layer: ops
 # Active Incident: [INC-20260226-000]
 n**Overview (KR):** 2026-02-26에 발생한 인프라 초기화 시퀀스 오류 및 긴급 복구 매뉴얼입니다.
 
-_Target Directory: `operations/incidents/INC-000.md`_
+_Target Directory: `operations/incidents/2026-02-26-inc-infra-bootstrap.md`_
 _Note: This document tracks the historical debt audit for system optimization._
 
-**Postmortem Link**: [RCA-BASE-001](../postmortems/RCA-BASE-001.md)
+**Postmortem Link**: [RCA-BASE-001](../postmortems/2026-02-26-rca-infra-bootstrap-postmortem.md)
 
 ## 1. Incident Metadata
 

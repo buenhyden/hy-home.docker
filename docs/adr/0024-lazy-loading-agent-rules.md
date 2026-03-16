@@ -3,10 +3,12 @@ title: 'ADR 0010: Lazy-Loading Agent Rules'
 status: 'Proposed'
 date: '2026-03-14'
 owner: 'Antigravity'
-layer: 'architecture'
+layer: architecture
 ---
 
 # ADR-0024: Lazy-Loading Agent Rules
+
+**Overview (KR):** 에이전트가 작업 의도에 맞는 규칙만 동적으로 로드하게 하여 토큰 사용량을 줄이고 정확도를 높이는 지연 로딩 프로토콜을 도입합니다.
 
 ## Context
 

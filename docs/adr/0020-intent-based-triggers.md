@@ -5,7 +5,7 @@ date: '2026-03-15'
 authors: ['buenhyden']
 deciders: ['buenhyden']
 tags: ['adr', 'agentic', 'rules']
-layer: 'architecture'
+layer: architecture
 ---
 
 # ADR-0020: Intent-Based Rule Triggers and Lazy Loading

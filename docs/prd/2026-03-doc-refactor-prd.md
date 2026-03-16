@@ -3,7 +3,7 @@ title: '2026-03 Documentation Refactor PRD'
 status: 'Approved'
 version: 'v1.0.0'
 owner: 'buenhyden'
-layer: 'product'
+layer: product
 ---
 
 # 2026-03 Documentation Refactor PRD

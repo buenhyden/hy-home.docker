@@ -5,8 +5,8 @@ layer: infra
 status: 'Proposed'
 version: '1.0'
 owner: 'Reliability & Security Engineer'
-prd_reference: '/docs/prd/2026-02-26-system-optimization-prd.md'
-arch_reference: '/docs/ard/system-optimization-ard.md'
+prd_reference: '../prd/2026-02-26-system-optimization-prd.md'
+arch_reference: '../ard/2026-02-26-system-optimization-ard.md'
 tags: ['spec', 'standard', 'docker', 'infrastructure']
 layer: core
 ---

@@ -32,5 +32,5 @@ The repository had inconsistent path naming (singular vs plural) and nested stru
 ## Related
 
 - `[../specs/infra-spec.md]`
-- `[../ard/infra-baseline-ard.md]`
+- `[../ard/2026-02-27-infra-baseline-ard.md]`
 - `[../plans/2026-03-15-doc-refactor.md]`

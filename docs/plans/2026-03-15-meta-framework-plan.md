@@ -5,7 +5,7 @@ layer: agentic
 status: 'Draft'
 version: 'v1.1.0'
 owner: 'Antigravity'
-layer: 'architecture'
+layer: architecture
 ---
 
 # Meta-Framework Refactor Plan

@@ -5,7 +5,7 @@ date: '2026-03-14'
 authors: ['Antigravity']
 deciders: ['buenhyden']
 tags: ['adr', 'documentation', 'taxonomy']
-layer: 'architecture'
+layer: architecture
 ---
 
 # ADR-0017: Flat Documentation Taxonomy and Layer Metadata

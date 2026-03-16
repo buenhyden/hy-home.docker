@@ -10,7 +10,7 @@ This directory is the **exclusive home for historical records** and diagnostic a
 
 | Date | ID | Severity | Status | Summary | Postmortem |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| 2026-02-26 | [INC-000](INC-000.md) | SEV-3 | RESOLVED | Documentation stack debt audit. | [RCA-BASE-001](RCA-BASE-001.md) |
+| 2026-02-26 | [2026-02-26-inc-infra-bootstrap](2026-02-26-inc-infra-bootstrap.md) | SEV-3 | RESOLVED | Documentation stack debt audit. | [2026-02-26-rca-infra-bootstrap-postmortem](2026-02-26-rca-infra-bootstrap-postmortem.md) |
 
 ## Golden Rules for History Tracking
 

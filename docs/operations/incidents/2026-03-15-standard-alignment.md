@@ -5,7 +5,7 @@ severity: 'SEV-2'
 date: '2026-03-15'
 owner: 'buenhyden'
 tags: ['incident', 'standards']
-layer: 'ops'
+layer: ops
 ---
 
 # Incident 0003: 2026-03 Standard Transition

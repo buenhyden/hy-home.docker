@@ -9,7 +9,7 @@ prd_reference: '../prd/2026-02-27-observability-prd.md'
 api_reference: 'N/A'
 arch_reference: '../../ARCHITECTURE.md'
 tags: ['spec', 'infra', 'observability', 'lgtm', 'grafana', 'loki', 'tempo', 'prometheus']
-layer: 06-observability
+layer: observability
 ---
 
 # Implementation Specification (Spec)

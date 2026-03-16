@@ -3,7 +3,7 @@ title: '2026-03 Documentation Taxonomy and Agentic Framework ARD'
 status: 'Accepted'
 date: '2026-03-15'
 scope: 'master'
-layer: 'architecture'
+layer: architecture
 ---
 
 # 2026-03 Documentation Taxonomy and Agentic Framework ARD

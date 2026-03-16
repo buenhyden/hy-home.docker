@@ -16,6 +16,8 @@ layer: core
 > **Stakeholders**: Platform Team
 
 _Target Directory: `docs/prd/2026-02-27-infra-automation-prd.md`_
+
+**Overview (KR):** 인프라 리소스 자동 설정 및 텔레메트리 대시보드 자동 배포를 통해 운영 효율을 높이고 수동 설정을 최소화하는 자동화 요구사항을 정의합니다.
 _Note: This document defines the What and Why for autonomous infrastructure capabilities._
 
 ---

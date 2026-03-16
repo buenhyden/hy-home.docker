@@ -3,18 +3,20 @@ title: 'Infrastructure Implementation Baseline'
 status: 'Validated'
 version: '1.0'
 owner: 'Infrastructure Architect'
-prd_reference: '/docs/prd/2026-02-27-infra-baseline-prd.md'
+prd_reference: '../prd/2026-02-27-infra-baseline-prd.md'
 api_reference: 'N/A'
-arch_reference: '/docs/ard/system-optimization-ard.md'
+arch_reference: '../ard/2026-02-26-system-optimization-ard.md'
 tags: ['spec', 'implementation', 'infra', 'baseline']
 layer: infra
 ---
 
 # [SPEC-INFRA-BSL] Infrastructure Implementation Baseline
 
+**Overview (KR):** 인프라 구축의 핵심이 되는 이미지 버전 관리, 네트워크 격리, 그리고 공통 보안 강화 규칙에 대한 기술적 구현 표준입니다.
+
 > **Status**: Validated
-> **Related PRD**: [/docs/prd/2026-02-27-infra-baseline-prd.md](/docs/prd/2026-02-27-infra-baseline-prd.md)
-> **Related Architecture**: [/docs/ard/system-optimization-ard.md](/docs/ard/system-optimization-ard.md)
+> **Related PRD**: [../prd/2026-02-27-infra-baseline-prd.md](../prd/2026-02-27-infra-baseline-prd.md)
+> **Related Architecture**: [../ard/2026-02-26-system-optimization-ard.md](../ard/2026-02-26-system-optimization-ard.md)
 
 _Target Directory: `specs/infra/baseline/spec.md`_
 

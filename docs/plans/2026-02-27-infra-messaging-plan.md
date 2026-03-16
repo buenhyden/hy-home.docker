@@ -103,7 +103,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 - **PRD**: `docs/prd/2026-02-27-messaging-prd.md`
 - **Spec**: `specs/infra/messaging/spec.md`
-- **ARD**: `docs/ard/messaging-ard.md`
+- **ARD**: `docs/ard/2026-02-27-messaging-ard.md`
 - **Architecture**: `ARCHITECTURE.md`
 
 ## References

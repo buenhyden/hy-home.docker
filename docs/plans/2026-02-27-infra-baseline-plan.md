@@ -105,7 +105,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 - **PRD**: `docs/prd/2026-02-27-infra-baseline-prd.md`
 - **Spec**: `specs/infra/baseline/spec.md`
-- **ARD**: `docs/ard/infra-baseline-ard.md`
+- **ARD**: `docs/ard/2026-02-27-infra-baseline-ard.md`
 - **Architecture**: `ARCHITECTURE.md`
 
 ## References

@@ -6,7 +6,7 @@ owner: 'buenhyden'
 stakeholders: ['buenhyden']
 scope: 'master'
 tags: ['prd', 'requirements', 'agentic', 'rules']
-layer: 'product'
+layer: product
 ---
 
 # Agent Rule Implementation and Document Refinement PRD

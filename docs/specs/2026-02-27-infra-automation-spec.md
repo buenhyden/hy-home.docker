@@ -12,6 +12,8 @@ layer: infra
 
 # Implementation Specification (Spec)
 
+**Overview (KR):** 인프라 리소스 자동 생성 및 설정 동기화를 위해 사용되는 Init/Sidecar 컨테이너의 동작 방식과 기술적 구현 사양입니다.
+
 > **Status**: Draft
 > **Related PRD**: [docs/prd/2026-02-27-infra-automation-prd.md](../prd/2026-02-27-infra-automation-prd.md)
 > **Related Architecture**: [ARCHITECTURE.md](../../ARCHITECTURE.md)

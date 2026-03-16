@@ -6,8 +6,8 @@ n**Overview (KR):** 하이테크 프로젝트 전체 스택의 통합 아키텍�
 
 - **Status**: Approved
 - **Owner**: Platform Architect
-- **PRD Reference**: [System Architecture Standards PRD](../prd/system-architecture-prd.md)
-- **ADR References**: [ADR-0003](../adr/adr-0003-spec-driven-development.md), [ADR-0004](../adr/adr-0004-tiered-directory-structure.md), [ADR-0001](../adr/adr-0001-root-orchestration-include.md)
+- **PRD Reference**: [System Architecture Standards PRD](../prd/2026-02-26-system-architecture-prd.md)
+- **ADR References**: [ADR-0003](../adr/0003-spec-driven-development.md), [ADR-0004](../adr/0004-tiered-directory-structure.md), [ADR-0001](../adr/0001-root-orchestration-include.md)
 
 ---
 

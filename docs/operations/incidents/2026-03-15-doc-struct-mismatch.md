@@ -7,7 +7,7 @@ severity: 'SEV-2'
 date: '2026-03-15'
 owner: 'buenhyden'
 tags: ['incident', 'documentation']
-layer: 'ops'
+layer: ops
 ---
 
 # Incident 0001: Documentation Structure Mismatch

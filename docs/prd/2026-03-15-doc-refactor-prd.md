@@ -7,7 +7,7 @@ stakeholders: ['buenhyden']
 scope: 'master'
 parent_epic: 'N/A'
 tags: ['prd', 'requirements', 'agentic', 'documentation']
-layer: 'product'
+layer: product
 ---
 
 # Documentation and Agent Instruction Refactor PRD

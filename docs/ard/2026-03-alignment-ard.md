@@ -1,7 +1,7 @@
 ---
 title: '2026-03 Agentic Architecture Alignment'
 status: 'Approved'
-layer: 'architecture'
+layer: architecture
 prd_reference: '../prd/2026-03-alignment-prd.md'
 ---
 

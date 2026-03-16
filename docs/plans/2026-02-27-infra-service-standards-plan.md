@@ -104,7 +104,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 - **PRD**: `docs/prd/2026-02-26-system-optimization-prd.md`
 - **Spec**: `specs/infra/service-standards/spec.md`
-- **ARD**: `docs/ard/system-optimization-ard.md`
+- **ARD**: `docs/ard/2026-02-26-system-optimization-ard.md`
 - **Architecture**: `ARCHITECTURE.md`
 
 ## References

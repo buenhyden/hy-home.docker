@@ -1,6 +1,6 @@
 ---
 title: 'Refactor Task Rule'
-layer: 'agentic'
+layer: agentic
 ---
 
 # Refactor Task Rule

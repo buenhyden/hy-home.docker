@@ -5,7 +5,7 @@ date: '2026-03-15'
 authors: ['buenhyden']
 deciders: ['buenhyden']
 tags: ['adr', 'agentic', 'standards']
-layer: 'architecture'
+layer: architecture
 ---
 
 # ADR-0021: March 2026 Agentic Standard Adoption

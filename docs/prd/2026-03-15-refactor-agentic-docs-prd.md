@@ -1,9 +1,12 @@
 ---
-title: 'Consolidated Agent Instructions and Documentation Flat Taxonomy PRD'
+title: 'Consolidated Agent Instructions# Refactor documentation and Agentic Framework PRD
+
+**Overview (KR):** AI 에이전트의 효율적인 작동을 위해 문서 구조를 표준화하고, Lazy Loading 프로토콜을 도입하여 시스템 전반의 컨텍스트 관리를 최적화합니다.
+'
 status: 'Draft'
 version: 'v1.1.0'
 owner: 'Antigravity'
-layer: 'product'
+layer: product
 ---
 
 # PRD: Consolidated Agent Instructions & Flat Taxonomy

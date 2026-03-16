@@ -5,7 +5,7 @@ layer: infra
 status: 'Implementation'
 version: '1.0'
 owner: 'Platform / DevOps'
-prd_reference: '/docs/prd/2026-02-27-infra-baseline-prd.md'
+prd_reference: '../prd/2026-02-27-infra-baseline-prd.md'
 api_reference: 'N/A'
 arch_reference: '/ARCHITECTURE.md'
 tags: ['spec', 'implementation', 'infra', 'secrets', 'bootstrap']
@@ -15,7 +15,7 @@ layer: core
 # Implementation Specification (Spec) — Infra Secrets Bootstrap
 
 > **Status**: Implementation
-> **Related PRD**: [/docs/prd/2026-02-27-infra-baseline-prd.md](/docs/prd/2026-02-27-infra-baseline-prd.md)
+> **Related PRD**: [../prd/2026-02-27-infra-baseline-prd.md](../prd/2026-02-27-infra-baseline-prd.md)
 > **Related ADR**: [../adr/0002-secrets-first-management.md](../adr/0002-secrets-first-management.md)
 > **Related Architecture**: [/ARCHITECTURE.md](/ARCHITECTURE.md)
 

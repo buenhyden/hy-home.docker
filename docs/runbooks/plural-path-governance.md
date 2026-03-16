@@ -4,7 +4,7 @@ title: 'Plural Path Governance Runbook'
 status: 'Active'
 owner: 'buenhyden'
 tags: ['runbook', 'governance']
-layer: 'ops'
+layer: ops
 ---
 layer: ops
 

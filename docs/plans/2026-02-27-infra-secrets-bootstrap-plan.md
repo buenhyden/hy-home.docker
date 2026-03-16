@@ -54,7 +54,7 @@ This repository enforces Secrets-First policy (Docker secrets mounted as files u
 
 ## 6. References
 
-- PRD: `/docs/prd/2026-02-27-infra-baseline-prd.md`
+- PRD: `../prd/2026-02-27-infra-baseline-prd.md`
 - ADR: `../adr/adr-0002-secrets-first-management.md`
 - Secrets registry: `/secrets/README.md`
 

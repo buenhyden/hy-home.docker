@@ -16,7 +16,7 @@ layer: infra
 > **Stakeholders**: Application Developers, Data Engineers
 
 _Target Directory: `docs/prd/2026-02-27-messaging-prd.md`_
-_Note: This document defines the What and Why for async messaging and event streaming._
+**Overview (KR):** 마이크로서비스 간의 느슨한 결합과 높은 처리량을 보장하기 위해 Kafka 기반의 이벤트 스트리밍 인프라 구축 및 운영 요구사항을 정의합니다.
 
 ---
 
@@ -83,5 +83,5 @@ _Note: This document defines the What and Why for async messaging and event stre
 
 ## 11. Related Documents (Reference / Traceability)
 
-- **Architecture Reference (ARD)**: [[ARD-MSG-01] Messaging Architecture Reference](../ard/messaging-ard.md)
+- **Architecture Reference (ARD)**: [[ARD-MSG-01] Messaging Architecture Reference](../ard/2026-02-27-messaging-ard.md)
 - **Technical Specification**: [[REQ-SPEC-MSG-01] Kafka Cluster Spec](../specs/2026-02-27-infra-messaging-spec.md)

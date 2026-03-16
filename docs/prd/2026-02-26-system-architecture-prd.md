@@ -54,14 +54,14 @@ _Note: This document defines the What and Why for the entire repository._
 
 | ID                 | Metric Name        | Baseline (Current) | Target (Success) | Measurement Period  |
 | ------------------ | ------------------ | ------------------ | ---------------- | ------------------- |
-| **REQ-PRD-MET-01** | Documentation Sync | 60%                | 100%             | Audit cycle         |
-| **REQ-PRD-MET-02** | Traceability Ratio | 0.5                | 1.0              | REQ-to-Spec mapping |
+| **REQ-PRD-ARCH-MET-01** | Documentation Sync | 60%                | 100%             | Audit cycle         |
+| **REQ-PRD-ARCH-MET-02** | Traceability Ratio | 0.5                | 1.0              | REQ-to-Spec mapping |
 
 ## 4. Key Use Cases & Acceptance Criteria (GWT)
 
 | ID | User Story (INVEST) | Acceptance Criteria (Given-When-Then) |
 | --- | --- | --- |
-| **STORY-01** | **As a** Contributor,<br>**I want** to use profiles,<br>**So that** I start only needed services. | **Given** a multi-tier infra,<br>**When** I run `docker compose --profile core up`,<br>**Then** only core services start. |
+| **STORY-ARCH-01** | **As a** Contributor,<br>**I want** to use profiles,<br>**So that** I start only needed services. | **Given** a multi-tier infra,<br>**When** I run `docker compose --profile core up`,<br>**Then** only core services start. |
 
 ## 5. Scope & Functional Requirements
 

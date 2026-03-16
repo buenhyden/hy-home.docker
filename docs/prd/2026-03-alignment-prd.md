@@ -4,7 +4,7 @@ status: 'Approved'
 version: 'v1.1.0'
 owner: 'buenhyden'
 tags: ['prd', 'requirements', 'agentic']
-layer: 'product'
+layer: product
 ---
 
 # 2026-03 Documentation & Agent Rule Alignment PRD

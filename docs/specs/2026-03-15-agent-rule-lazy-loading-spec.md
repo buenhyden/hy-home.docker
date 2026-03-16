@@ -9,7 +9,7 @@ prd_reference: '../prd/documentation-framework-prd.md'
 arch_reference: '../ard/refactor-agent-documentation-ard.md'
 decision_reference: '../adr/0016-intent-based-lazy-loading.md'
 tags: ['spec','implementation','agentic']
-layer: 'agentic'
+layer: agentic
 ---
 layer: agentic
 
@@ -49,5 +49,5 @@ layer: agentic
 
 ## 8. Verification Plan (Testing & QA)
 
-- **[VAL-SPC-001] Link Integrity**: All links in `gateway.md` must resolve to existing files.
-- **[VAL-SPC-002] Marker Consistency**: Each `[LOAD:RULES:*]` marker must be unique and documented.
+- **[VAL-SPC-AGT-01] Link Integrity**: All links in `gateway.md` must resolve to existing files.
+- **[VAL-SPC-AGT-02] Marker Consistency**: Each `[LOAD:RULES:*]` marker must be unique and documented.

@@ -6,8 +6,8 @@ n**Overview (KR):** 전체 시스템의 기반이 되는 공통 인프라 계층
 
 - **Status**: Approved
 - **Owner**: Platform Architect
-- **PRD Reference**: [Infrastructure Baseline PRD](../prd/infra-baseline-prd.md)
-- **ADR References**: [ADR-0001](../adr/adr-0001-root-orchestration-include.md), [ADR-0002](../adr/adr-0002-secrets-first-management.md), [ADR-0004](../adr/adr-0004-tiered-directory-structure.md), [ADR-0007](../adr/adr-0007-mandatory-resource-limits.md), [ADR-0008](../adr/adr-0008-removing-static-docker-ips.md), [ADR-0009](../adr/adr-0009-strict-docker-secrets.md)
+- **PRD Reference**: [Infrastructure Baseline PRD](../prd/2026-02-27-infra-baseline-prd.md)
+- **ADR References**: [ADR-0001](../adr/0001-root-orchestration-include.md), [ADR-0002](../adr/0002-secrets-first-management.md), [ADR-0004](../adr/0004-tiered-directory-structure.md), [ADR-0007](../adr/0007-mandatory-resource-limits.md), [ADR-0008](../adr/0008-removing-static-docker-ips.md), [ADR-0009](../adr/0009-strict-docker-secrets.md)
 
 ---
 

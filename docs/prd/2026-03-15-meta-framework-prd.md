@@ -11,6 +11,8 @@ layer: 'meta'
 
 # Meta-Documentation & Agentic Framework PRD
 
+**Overview (KR):** 문서 자체를 실행 가능한 지침으로 활용하는 "Doc-as-Instruction" 시스템을 구축하여 에이전트의 수행 능력을 극대화하기 위한 프레임워크 요구사항입니다.
+
 ## 1. Vision
 
 To create a "Doc-as-Instruction" system where the repository's documentation is not just human-readable, but explicitly structured to guide AI Agents with minimal context overhead via lazy loading and intent-based discovery.

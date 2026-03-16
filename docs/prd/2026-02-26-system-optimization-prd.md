@@ -97,5 +97,5 @@ layer: core
 ## 11. Related Documents (Reference / Traceability)
 
 - **Technical Specification**: [[REQ-SPEC-OPT-01] Infrastructure Hardening & Optimization](../specs/2026-02-26-infra-system-optimization-spec.md)
-- **Architecture Reference (ARD)**: [[ARD-OPT-01] Optimized Infrastructure Architecture Reference](../ard/system-optimization-ard.md)
+- **Architecture Reference (ARD)**: [[ARD-OPT-01] Optimized Infrastructure Architecture Reference](../ard/2026-02-26-system-optimization-ard.md)
 - **Architecture Decisions (ADRs)**: [[ADR-0008] Removing Static Docker IPs](../adr/0008-removing-static-docker-ips.md), [[ADR-0012] Standardized Init Process](../adr/0012-standardized-init-process.md)

@@ -10,13 +10,16 @@ This directory defines the technical requirements and constraints for major infr
 
 | Document | System | Last Updated |
 | :--- | :--- | :--- |
-| [infra-baseline-ard.md](infra-baseline-ard.md) | Core Foundations | 2026-02-27 |
-| [infra-automation-ard.md](infra-automation-ard.md) | Autonomous Ops | 2026-02-27 |
-| [messaging-ard.md](messaging-ard.md) | Kafka + Schema Registry | 2026-02-27 |
-| [observability-ard.md](observability-ard.md) | LGTM / Alloy Stack | 2026-02-27 |
+| [2026-02-26-system-architecture-ard.md](2026-02-26-system-architecture-ard.md) | Global Repository Structure | 2026-02-26 |
+| [2026-02-26-system-optimization-ard.md](2026-02-26-system-optimization-ard.md) | Hardening Architecture | 2026-02-26 |
+| [2026-02-27-infra-baseline-ard.md](2026-02-27-infra-baseline-ard.md) | Core Foundations | 2026-02-27 |
+| [2026-02-27-infra-automation-ard.md](2026-02-27-infra-automation-ard.md) | Autonomous Ops | 2026-02-27 |
+| [2026-02-27-messaging-ard.md](2026-02-27-messaging-ard.md) | Kafka + Schema Registry | 2026-02-27 |
+| [2026-02-27-observability-ard.md](2026-02-27-observability-ard.md) | LGTM / Alloy Stack | 2026-02-27 |
 | [2026-02-27-ai-ard.md](2026-02-27-ai-ard.md) | Local AI (Ollama/WebUI) | 2026-02-27 |
-| [system-optimization-ard.md](system-optimization-ard.md) | Hardening Architecture | 2026-02-27 |
-| [2026-02-26-system-architecture-ard.md](2026-02-26-system-architecture-ard.md) | Global Repository Structure | 2026-02-27 |
+| [2026-03-15-agentic-ard.md](2026-03-15-agentic-ard.md) | Agent Optimization | 2026-03-15 |
+| [2026-03-doc-taxonomy-ard.md](2026-03-doc-taxonomy-ard.md) | Documentation Taxonomy | 2026-03-16 |
+| [2026-03-alignment-ard.md](2026-03-alignment-ard.md) | Final Hub Alignment | 2026-03-16 |
 
 ---
 > [!NOTE]

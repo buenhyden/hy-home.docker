@@ -7,7 +7,7 @@ owner: 'buenhyden'
 status: 'Planned'
 scope: 'master'
 tags: ['implementation', 'planning']
-layer: 'agentic'
+layer: agentic
 ---
 
 # Documentation & Agent Framework Refactoring Plan

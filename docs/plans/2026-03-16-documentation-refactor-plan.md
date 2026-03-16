@@ -8,7 +8,7 @@ status: 'Planned'
 scope: 'master'
 tags: ['implementation', 'planning']
 stack: 'markdown'
-layer: 'plans'
+layer: plans
 ---
 
 # Documentation Reorganization and Instruction Optimization Plan

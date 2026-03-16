@@ -5,7 +5,7 @@ severity: 'SEV-2'
 date: '2026-03-15'
 owner: 'buenhyden'
 tags: ['incident', 'rules']
-layer: 'ops'
+layer: ops
 ---
 
 # Incident 0002: Rule Trigger Integration

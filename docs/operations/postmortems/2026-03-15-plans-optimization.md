@@ -5,7 +5,7 @@ date: '2026-03-15'
 incident_reference: './incidents/2026-03-15-plans-migration.md'
 owner: 'buenhyden'
 tags: ['postmortem', 'optimization']
-layer: 'ops'
+layer: ops
 ---
 
 # Postmortem: Plural Mapping Efficiency

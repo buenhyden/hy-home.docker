@@ -5,7 +5,7 @@ date: '2026-03-14'
 authors: ['buenhyden']
 deciders: ['buenhyden']
 tags: ['adr', 'agentic', 'lazy-loading']
-layer: 'agentic'
+layer: agentic
 ---
 
 # ADR-0025: Intent-Based Lazy Loading for Agent Rules

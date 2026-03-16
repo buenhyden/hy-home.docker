@@ -5,7 +5,7 @@ version: 'v1.0.0'
 owner: 'Reliability Engineer'
 stakeholders: 'Platform Team, Developers'
 tags: ['prd', 'requirements', 'observability', 'lgtm']
-layer: 06-observability
+layer: observability
 ---
 
 # Product Requirements Document (PRD)
@@ -16,7 +16,9 @@ layer: 06-observability
 > **Stakeholders**: Platform Team, Developers
 
 _Target Directory: `docs/prd/2026-02-27-observability-prd.md`_
-_Note: This document defines the What and Why for the LGTM stack and telemetry pipeline._
+_Note: This document defines the observability strategy for local infrastructure._
+
+**Overview (KR):** 시스템 안정성과 투명성을 보장하기 위해 로그, 메트릭, 트레이싱을 포함한 통합 관측성 스택(LGTM) 구축을 위한 요구사항을 정의합니다.
 
 ---
 
@@ -85,5 +87,5 @@ _Note: This document defines the What and Why for the LGTM stack and telemetry p
 
 ## 11. Related Documents (Reference / Traceability)
 
-- **Architecture Reference (ARD)**: [[ARD-OBS-01] Unified Observability Reference](../ard/observability-ard.md)
+- **Architecture Reference (ARD)**: [[ARD-OBS-01] Unified Observability Reference](../ard/2026-02-27-observability-ard.md)
 - **Technical Specification**: [[REQ-SPEC-OBS-01] LGTM Stack Spec](../specs/2026-02-27-infra-observability-spec.md)

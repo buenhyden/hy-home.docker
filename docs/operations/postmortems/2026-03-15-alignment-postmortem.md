@@ -5,7 +5,7 @@ date: '2026-03-15'
 incident_reference: './incidents/2026-03-15-standard-alignment.md'
 owner: 'buenhyden'
 tags: ['postmortem', 'standards']
-layer: 'ops'
+layer: ops
 ---
 
 # Postmortem: 2026-03 Alignment Deployment

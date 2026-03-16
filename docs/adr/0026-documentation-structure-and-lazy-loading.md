@@ -5,7 +5,7 @@ date: '2026-03-16'
 authors: ['Antigravity']
 deciders: ['buenhyden']
 tags: ['adr', 'documentation', 'lazy-loading']
-layer: 'common'
+layer: common
 ---
 
 # ADR-1001: Documentation Structure and Lazy Loading

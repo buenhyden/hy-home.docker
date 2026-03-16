@@ -5,7 +5,7 @@ date: '2026-03-15'
 authors: ['buenhyden']
 deciders: ['buenhyden']
 tags: ['adr', 'agentic', 'context']
-layer: 'architecture'
+layer: architecture
 ---
 
 # ADR-0018: Lazy-Loading Protocol for AI Agents

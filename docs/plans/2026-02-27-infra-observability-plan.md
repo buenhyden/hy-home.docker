@@ -8,7 +8,7 @@ owner: 'Reliability Engineer'
 status: 'Planned'
 tags: ['implementation', 'planning', 'infra', 'observability', 'lgtm', 'grafana', 'loki', 'tempo', 'prometheus', 'docker-compose']
 stack: 'docker'
-layer: 06-observability
+layer: observability
 ---
 
 # Observability (LGTM) Implementation Plan
@@ -104,7 +104,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 - **PRD**: `docs/prd/2026-02-27-observability-prd.md`
 - **Spec**: `specs/infra/observability/spec.md`
-- **ARD**: `docs/ard/observability-ard.md`
+- **ARD**: `docs/ard/2026-02-27-observability-ard.md`
 - **Architecture**: `ARCHITECTURE.md`
 
 ## References
