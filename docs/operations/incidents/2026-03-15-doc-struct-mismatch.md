@@ -31,4 +31,4 @@ Existing root-level documentation lacked consistent metadata and links to the de
 
 ## Resolution
 
-Structure refactored to align with `docs/prd/doc-refactor-prd.md`.
+Structure refactored to align with `docs/prd/2026-03-15-doc-refactor-prd.md`.

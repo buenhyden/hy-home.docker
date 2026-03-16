@@ -24,12 +24,12 @@ This repository requires a spec and plan before refactors. The current instructi
 
 | Task | Description | Files Affected | Target REQ | Validation Criteria |
 | ---- | ----------- | -------------- | ---------- | ------------------- |
-| TASK-001 | Capture the refactor contract in a repository-local spec. | `docs/specs/agent-instructions/spec.md` | [REQ-SPC-AGT-002] | Spec exists and states structure, truth, and verification contracts. |
-| TASK-002 | Rebuild `docs/agentic` guidance around repo-specific governance and workflow. | `docs/agentic/README.md`, `docs/agentic/core-governance.md`, `docs/agentic/workflow.md` | [REQ-SPC-AGT-002], [REQ-SPC-AGT-005] | Shared guidance exists, is repo-specific, and uses relative links only. |
-| TASK-003 | Rewrite `AGENTS.md` as the canonical cross-agent entrypoint. | `AGENTS.md` | [REQ-SPC-AGT-001], [REQ-SPC-AGT-005] | Root file stays concise and exposes the full lazy-loading map. |
-| TASK-004 | Rewrite `CLAUDE.md` and `GEMINI.md` as provider shims. | `CLAUDE.md`, `GEMINI.md` | [REQ-SPC-AGT-001], [REQ-SPC-AGT-004], [REQ-SPC-AGT-006] | Provider roots follow the chosen provider models and avoid duplicating shared policy. |
-| TASK-005 | Repair linked documentation indexes and add a plans index. | `docs/README.md`, `docs/adr/README.md`, `docs/ard/README.md`, `docs/prd/README.md`, `docs/runbooks/README.md`, `docs/operations/README.md`, `docs/operations/incidents/README.md`, `docs/specs/README.md`, `docs/plans/README.md` | [REQ-SPC-AGT-003], [REQ-SPC-AGT-005] | All doc families are lazy-loadable through stable README entrypoints. |
-| TASK-006 | Validate links and remove stale references from the whole instruction set. | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `docs/agentic/*.md`, `docs/**/*.md` | [REQ-SPC-AGT-003], [REQ-SPC-AGT-004] | `rg` checks return only the intended matches and `test -f` checks succeed. |
+| TASK-001 | Capture the refactor contract in a repository-local spec. | `docs/specs/agent-instructions/spec.md` | [REQ-SPC-ADN-002] | Spec exists and states structure, truth, and verification contracts. |
+| TASK-002 | Rebuild `docs/agentic` guidance around repo-specific governance and workflow. | `docs/agentic/README.md`, `docs/agentic/core-governance.md`, `docs/agentic/workflow.md` | [REQ-SPC-ADN-002], [REQ-SPC-ADN-005] | Shared guidance exists, is repo-specific, and uses relative links only. |
+| TASK-003 | Rewrite `AGENTS.md` as the canonical cross-agent entrypoint. | `AGENTS.md` | [REQ-SPC-ADN-001], [REQ-SPC-ADN-005] | Root file stays concise and exposes the full lazy-loading map. |
+| TASK-004 | Rewrite `CLAUDE.md` and `GEMINI.md` as provider shims. | `CLAUDE.md`, `GEMINI.md` | [REQ-SPC-ADN-001], [REQ-SPC-ADN-004], [REQ-SPC-ADN-006] | Provider roots follow the chosen provider models and avoid duplicating shared policy. |
+| TASK-005 | Repair linked documentation indexes and add a plans index. | `docs/README.md`, `docs/adr/README.md`, `docs/ard/README.md`, `docs/prd/README.md`, `docs/runbooks/README.md`, `docs/operations/README.md`, `docs/operations/incidents/README.md`, `docs/specs/README.md`, `docs/plans/README.md` | [REQ-SPC-ADN-003], [REQ-SPC-ADN-005] | All doc families are lazy-loadable through stable README entrypoints. |
+| TASK-006 | Validate links and remove stale references from the whole instruction set. | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `docs/agentic/*.md`, `docs/**/*.md` | [REQ-SPC-ADN-003], [REQ-SPC-ADN-004] | `rg` checks return only the intended matches and `test -f` checks succeed. |
 
 ## Verification
 

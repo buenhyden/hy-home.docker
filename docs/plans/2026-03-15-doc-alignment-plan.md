@@ -15,7 +15,7 @@ n**Overview (KR):** 리포지토리의 문서 분류 체계 및 에이전틱 리
 
 1. **Directory Setup**: Ensure `plans`, `specs`, `runbooks` directories exist.
 2. **File Migration**: Move singular docs to plural paths.
-3. **Link Update**: Global search/replace for `docs/plan/` -> `docs/plans/` etc.
+3. **Link Update**: Global search/replace for `docs/plans/` -> `docs/plans/` etc.
 4. **Agent Optimization**: Update `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` to point to `docs/agentic/gateway.md`.
 5. **Metadata Audit**: Add `layer:` to any file missing it.
 

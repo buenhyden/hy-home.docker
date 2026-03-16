@@ -40,5 +40,5 @@ Please fill out the following operational agreements before initiating deploymen
 For detailed executable procedures and service architectures, refer to the following:
 
 - [**Operations Index (OPERATIONS.md)**](../../OPERATIONS.md): Central catalog for all runbooks.
-- [**Runbooks Hub**](../../runbooks/README.md): Detailed incident response playbooks.
+- [**Runbooks Hub**](../runbooks/README.md): Detailed incident response playbooks.
 - [**Infrastructure Lifecycle**](../context/core/infra-lifecycle-ops.md): Boot order and global lifecycle.

@@ -5,7 +5,7 @@ layer: infra
 status: 'Draft'
 version: '1.0'
 owner: 'Infrastructure Architect'
-prd_reference: '../../docs/prd/messaging-prd.md'
+prd_reference: '../prd/2026-02-27-messaging-prd.md'
 api_reference: 'N/A'
 arch_reference: '../../ARCHITECTURE.md'
 tags: ['spec', 'infra', 'messaging', 'kafka']
@@ -15,7 +15,7 @@ layer: core
 # Implementation Specification (Spec)
 
 > **Status**: Draft
-> **Related PRD**: [docs/prd/messaging-prd.md](../../docs/prd/messaging-prd.md)
+> **Related PRD**: [docs/prd/2026-02-27-messaging-prd.md](../prd/2026-02-27-messaging-prd.md)
 > **Related Architecture**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
 _Target Directory: `specs/infra/messaging/spec.md`_

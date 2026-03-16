@@ -3,7 +3,7 @@ title: 'Infrastructure Automation Implementation Spec'
 status: 'Draft'
 version: '1.0'
 owner: 'Platform Architect'
-prd_reference: '../../docs/prd/infra-automation-prd.md'
+prd_reference: '../prd/2026-02-27-infra-automation-prd.md'
 api_reference: 'N/A'
 arch_reference: '../../ARCHITECTURE.md'
 tags: ['spec', 'infra', 'automation', 'init', 'sidecar']
@@ -13,7 +13,7 @@ layer: infra
 # Implementation Specification (Spec)
 
 > **Status**: Draft
-> **Related PRD**: [docs/prd/infra-automation-prd.md](../../docs/prd/infra-automation-prd.md)
+> **Related PRD**: [docs/prd/2026-02-27-infra-automation-prd.md](../prd/2026-02-27-infra-automation-prd.md)
 > **Related Architecture**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
 _Target Directory: `specs/infra/automation/spec.md`_
@@ -66,8 +66,8 @@ Core principle: provisioning logic is **idempotent** and runs as a dedicated con
 
 | ID                 | Requirement Description | Priority | Parent PRD REQ |
 | ------------------ | ----------------------- | -------- | -------------- |
-| **REQ-SPC-AUTO-001** | Init containers MUST be idempotent and safe to rerun. | High | REQ-PRD-AUTO-FUN-01 |
-| **REQ-SPC-AUTO-002** | Init containers MUST fail fast with a non-zero exit code when prerequisites do not become ready. | High | REQ-PRD-AUTO-FUN-01 |
+| **REQ-SPC-AUTO-001** | Init containers MUST be idempotent and safe to rerun. | High | REQ-PRD-AUT-FUN-01 |
+| **REQ-SPC-AUTO-002** | Init containers MUST fail fast with a non-zero exit code when prerequisites do not become ready. | High | REQ-PRD-AUT-FUN-01 |
 | **SEC-SPC-AUTO-001** | Credentials MUST be provided via Docker secrets (no plaintext env). | Critical | N/A |
 | **REQ-SPC-AUTO-003** | All provisioning MUST use Docker DNS (no hard-coded IPs). | High | N/A |
 

@@ -1,6 +1,6 @@
 # [System or Domain Name] Architecture Reference Document (ARD)
 
-> Use this template for `docs/ard/<system-or-domain>-ard.md`.
+> Use this template for `docs/ard/YYYY-MM-DD-<system-or-domain>.md`.
 >
 > Repository-derived contract:
 >

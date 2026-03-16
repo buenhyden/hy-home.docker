@@ -53,29 +53,29 @@ layer: core
 
 | ID                      | Metric Name        | Baseline (Current) | Target (Success) | Measurement Period  |
 | ----------------------- | ------------------ | ------------------ | ---------------- | ------------------- |
-| **REQ-PRD-BASE-MET-01** | Bootstrap Time     | 30 mins            | < 10 mins        | Day-0 build         |
-| **REQ-PRD-BASE-MET-02** | Security Coverage  | 50%                | 100% (Secrets)   | Audit cycle         |
-| **REQ-PRD-BASE-MET-03** | Resource Efficiency | N/A                | < 4GB Idle (RAM) | Baseline run        |
-| **REQ-PRD-BASE-MET-04** | Build Latency      | > 5 mins           | < 2 mins (Hot)   | CI/CD build cycle   |
+| **REQ-PRD-BSL-MET-01** | Bootstrap Time     | 30 mins            | < 10 mins        | Day-0 build         |
+| **REQ-PRD-BSL-MET-02** | Security Coverage  | 50%                | 100% (Secrets)   | Audit cycle         |
+| **REQ-PRD-BSL-MET-03** | Resource Efficiency | N/A                | < 4GB Idle (RAM) | Baseline run        |
+| **REQ-PRD-BSL-MET-04** | Build Latency      | > 5 mins           | < 2 mins (Hot)   | CI/CD build cycle   |
 
 ## 4. Key Use Cases & Acceptance Criteria (GWT)
 
 | ID           | User Story (INVEST)                                                                      | Acceptance Criteria (Given-When-Then)                                                                                                |
 | ------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **STORY-BASE-01** | **As a** Enthusiast,<br>**I want** a preflight check,<br>**So that** I know I'm missing secrets. | **Given** a clean Docker environment,<br>**When** running `preflight-compose.sh`,<br>**Then** missing secrets are identified. |
+| **STORY-BSL-01** | **As a** Enthusiast,<br>**I want** a preflight check,<br>**So that** I know I'm missing secrets. | **Given** a clean Docker environment,<br>**When** running `preflight-compose.sh`,<br>**Then** missing secrets are identified. |
 
 ## 5. Scope & Functional Requirements
 
-- **[REQ-PRD-BASE-FUN-01]** Modular Orchestration via `include`.
-- **[REQ-PRD-BASE-FUN-02]** Secrets-First Policy enforcement (100% Docker Secrets).
-- **[REQ-PRD-BASE-FUN-03]** Bootstrap Prerequisites: Define required `.env` keys and directory permissions.
-- **[REQ-PRD-BASE-FUN-04]** Local TLS Standardisation via `mkcert` (secrets/certs/).
-- **[REQ-PRD-BASE-FUN-05]** Centralized Log Aggregation using Loki.
-- **[REQ-PRD-BASE-FUN-06]** Global Configuration Inheritance via `infra/common-optimizations.yml`.
-- **[REQ-PRD-BASE-FUN-07] Strict Version Pinning**
+- **[REQ-PRD-BSL-FUN-01]** Modular Orchestration via `include`.
+- **[REQ-PRD-BSL-FUN-02]** Secrets-First Policy enforcement (100% Docker Secrets).
+- **[REQ-PRD-BSL-FUN-03]** Bootstrap Prerequisites: Define required `.env` keys and directory permissions.
+- **[REQ-PRD-BSL-FUN-04]** Local TLS Standardisation via `mkcert` (secrets/certs/).
+- **[REQ-PRD-BSL-FUN-05]** Centralized Log Aggregation using Loki.
+- **[REQ-PRD-BSL-FUN-06]** Global Configuration Inheritance via `infra/common-optimizations.yml`.
+- **[REQ-PRD-BSL-FUN-07] Strict Version Pinning**
   - Vague tags (e.g., `latest`, `stable`) are PROHIBITED for infrastructure images.
   - All images MUST use specific semver or SHA-based tags to ensure reproducible deployments.
-- **[REQ-PRD-BASE-FUN-08]** Mandatory `extends` usage for cross-file resource and security baseline.
+- **[REQ-PRD-BSL-FUN-08]** Mandatory `extends` usage for cross-file resource and security baseline.
 
 ## 6. Out of Scope
 
@@ -100,5 +100,5 @@ layer: core
 
 ## 11. Related Documents (Reference / Traceability)
 
-- **Technical Specification**: [[REQ-SPEC-BASE-01] Infrastructure Baseline Spec](../specs/infra-baseline-spec.md)
+- **Technical Specification**: [[REQ-SPC-BSL-01] Infrastructure Baseline Spec](../specs/2026-02-27-infra-baseline-spec.md)
 - **Architecture Decisions (ADRs)**: [[ADR-0001] Root Orchestration via include](../adr/0001-root-orchestration-include.md)

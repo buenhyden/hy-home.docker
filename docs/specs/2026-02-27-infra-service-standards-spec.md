@@ -5,7 +5,7 @@ layer: infra
 status: 'Proposed'
 version: '1.0'
 owner: 'Reliability & Security Engineer'
-prd_reference: '/docs/prd/system-optimization-prd.md'
+prd_reference: '/docs/prd/2026-02-26-system-optimization-prd.md'
 arch_reference: '/docs/ard/system-optimization-ard.md'
 tags: ['spec', 'standard', 'docker', 'infrastructure']
 layer: core
@@ -82,4 +82,4 @@ This specification defines the mandatory formatting and configuration standards 
 
 ## 11. Related Documents
 
-- **Architecture Reference**: [[ARD-ARCH-01] Global System Architecture Reference Document](../../docs/ard/system-architecture-ard.md)
+- **Architecture Reference**: [[ARD-ARCH-01] Global System Architecture Reference Document](../ard/2026-02-26-system-architecture-ard.md)

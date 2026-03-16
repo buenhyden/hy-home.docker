@@ -17,7 +17,7 @@ _Target Directory: `specs/infra/automation/plan.md`_
 
 ## 1. Context & Introduction
 
-This plan operationalizes `specs/infra/automation/spec.md` aligned with `docs/prd/infra-automation-prd.md`.
+This plan operationalizes `specs/infra/automation/spec.md` aligned with `docs/prd/2026-02-27-infra-automation-prd.md`.
 
 The goal is deterministic Day-0 bootstrap via one-shot init/sidecar containers that provision dependencies (buckets, users, topics, schemas) safely and repeatably.
 
@@ -108,7 +108,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 ## 9. References
 
-- **PRD**: `docs/prd/infra-automation-prd.md`
+- **PRD**: `docs/prd/2026-02-27-infra-automation-prd.md`
 - **Spec**: `specs/infra/automation/spec.md`
 - **ARD**: `docs/ard/infra-automation-ard.md`
 - **Architecture**: `ARCHITECTURE.md`

@@ -13,20 +13,20 @@ This directory is the tactical source of truth for active implementation contrac
 - [**Agent Instruction Refactor**](agent-instructions-spec.md) — Normalizing agent guidance.
 - [**Documentation Refactor**](refactor-docs-spec.md) — Role-based taxonomy and metadata.
 - [**Global Baseline**](infra-global-baseline-spec.md) — Cross-stack standards and conventions.
-- [**Service Standards**](infra-service-standards-spec.md) — Inter-service communication rules.
+- [**Service Standards**](2026-02-27-infra-service-standards-spec.md) — Inter-service communication rules.
 
 ### 🛠️ Infrastructure Core
 
-- [**Implementation Baseline**](infra-baseline-spec.md) — Core foundation requirements.
-- [**Automation Logic**](infra-automation-spec.md) — Autonomous operations specifications.
-- [**Secrets Bootstrap**](infra-secrets-bootstrap-spec.md) — Initial zero-trust setup.
-- [**System Optimization**](infra-system-optimization-spec.md) — Hardening and resource density.
+- [**Implementation Baseline**](2026-02-27-infra-baseline-spec.md) — Core foundation requirements.
+- [**Automation Logic**](2026-02-27-infra-automation-spec.md) — Autonomous operations specifications.
+- [**Secrets Bootstrap**](2026-02-27-infra-secrets-bootstrap-spec.md) — Initial zero-trust setup.
+- [**System Optimization**](2026-02-26-infra-system-optimization-spec.md) — Hardening and resource density.
 
 ### 📊 Platform Services
 
-- [**AI Services**](infra-ai-spec.md) — Local inference and vector storage.
-- [**Observability Stack**](infra-observability-spec.md) — LGTM stack implementation details.
-- [**Messaging Fabric**](infra-messaging-spec.md) — Kafka and stream processing.
+- [**AI Services**](2026-02-27-infra-ai-spec.md) — Local inference and vector storage.
+- [**Observability Stack**](2026-02-27-infra-observability-spec.md) — LGTM stack implementation details.
+- [**Messaging Fabric**](2026-02-27-infra-messaging-spec.md) — Kafka and stream processing.
 
 ## Compliance Baseline
 

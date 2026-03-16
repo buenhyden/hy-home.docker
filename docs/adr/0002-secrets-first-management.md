@@ -1,7 +1,7 @@
 ---
 layer: infra
 ---
-# ADR 0002: Secrets-First Management Policy
+# ADR-0002: Secrets-First Management Policy
 n**Overview (KR):** 모든 민감한 설정 정보를 환경 변수가 아닌 Docker Secrets로 관리하여 보안성을 강화하는 정책을 정의합니다.
 
 : Secrets-First Management Policy
@@ -56,7 +56,7 @@ The standard Docker Compose approach.
 
 - **Confidence Rating**: High
 - **Notes**: Industry standard for secure container orchestration.
-- **Technical Requirements Addressed**: REQ-PRD-BASE-FUN-02, REQ-PRD-BASE-MET-02
+- **Technical Requirements Addressed**: REQ-PRD-BSL-FUN-02, REQ-PRD-BSL-MET-02
 
 ## 6. Related Documents (Traceability)
 

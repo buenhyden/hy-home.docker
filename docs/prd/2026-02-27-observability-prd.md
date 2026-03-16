@@ -15,7 +15,7 @@ layer: 06-observability
 > **Owner**: Reliability Engineer
 > **Stakeholders**: Platform Team, Developers
 
-_Target Directory: `docs/prd/observability-prd.md`_
+_Target Directory: `docs/prd/2026-02-27-observability-prd.md`_
 _Note: This document defines the What and Why for the LGTM stack and telemetry pipeline._
 
 ---
@@ -86,4 +86,4 @@ _Note: This document defines the What and Why for the LGTM stack and telemetry p
 ## 11. Related Documents (Reference / Traceability)
 
 - **Architecture Reference (ARD)**: [[ARD-OBS-01] Unified Observability Reference](../ard/observability-ard.md)
-- **Technical Specification**: [[REQ-SPEC-OBS-01] LGTM Stack Spec](../specs/infra-observability-spec.md)
+- **Technical Specification**: [[REQ-SPEC-OBS-01] LGTM Stack Spec](../specs/2026-02-27-infra-observability-spec.md)

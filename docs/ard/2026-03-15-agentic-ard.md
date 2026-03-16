@@ -40,7 +40,7 @@ All implementation plans reside in `docs/plans/`. All technical specifications r
 
 | Scope   | Canonical Document                            | Role                             |
 | ------- | --------------------------------------------- | -------------------------------- |
-| master  | `docs/ard/agentic-ard.md`                     | Layer authority                  |
+| master  | `docs/ard/2026-03-15-agentic-ard.md`                     | Layer authority                  |
 | domain  | `docs/agentic/gateway.md`                     | Operational entrypoint           |
 | feature | `docs/specs/refactor-spec.md`                 | Implementation detail            |
 

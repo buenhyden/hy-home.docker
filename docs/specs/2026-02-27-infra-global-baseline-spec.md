@@ -5,8 +5,8 @@ layer: infra
 status: 'Validated'
 version: '1.0'
 owner: 'Platform Architect'
-prd_reference: '[infra-baseline-prd.md](../../docs/prd/infra-baseline-prd.md)'
-arch_reference: '[system-architecture-ard.md](../../docs/ard/system-architecture-ard.md)'
+prd_reference: '[infra-baseline-prd.md](../prd/2026-02-27-infra-baseline-prd.md)'
+arch_reference: '[2026-02-26-system-architecture-ard.md](../ard/2026-02-26-system-architecture-ard.md)'
 tags: ['spec', 'implementation', 'baseline']
 layer: core
 ---
@@ -14,8 +14,8 @@ layer: core
 # Implementation Specification (Spec)
 
 > **Status**: Validated
-> **Related PRD**: [[PRD-BASE-01] Infrastructure Baseline PRD](../../docs/prd/infra-baseline-prd.md)
-> **Related Architecture**: [[ARD-ARCH-01] Global System Architecture](../../docs/ard/system-architecture-ard.md)
+> **Related PRD**: [[PRD-BASE-01] Infrastructure Baseline PRD](../prd/2026-02-27-infra-baseline-prd.md)
+> **Related Architecture**: [[ARD-ARCH-01] Global System Architecture](../ard/2026-02-26-system-architecture-ard.md)
 
 _Target Directory: `specs/infra/global-baseline/spec.md`_
 

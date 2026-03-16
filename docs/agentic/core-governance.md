@@ -47,7 +47,7 @@ This repository is a Docker Compose infrastructure workspace for local and homel
 - Stable doc roots:
   - Decisions: [../adr/README.md](../adr/README.md)
   - Requirements: [../prd/README.md](../prd/README.md), [../ard/README.md](../ard/README.md)
-  - Implementation: [../specs/README.md](../specs/README.md), [../plan/README.md](../plan/README.md)
+  - Implementation: [../specs/README.md](../specs/README.md), [../plans/README.md](../plans/README.md)
   - Operations: [../runbooks/README.md](../runbooks/README.md), [../operations/incidents/README.md](../operations/incidents/README.md)
   - Agentic: [README.md](README.md)
   - Deep Context: [../context/README.md](../context/README.md)

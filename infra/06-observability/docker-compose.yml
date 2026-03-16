@@ -274,7 +274,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/Alloy:v1.13.1
+    image: grafana/alloy:v1.13.1
     container_name: infra-Alloy
 
     user: '0:0'

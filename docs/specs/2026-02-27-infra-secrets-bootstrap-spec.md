@@ -5,7 +5,7 @@ layer: infra
 status: 'Implementation'
 version: '1.0'
 owner: 'Platform / DevOps'
-prd_reference: '/docs/prd/infra-baseline-prd.md'
+prd_reference: '/docs/prd/2026-02-27-infra-baseline-prd.md'
 api_reference: 'N/A'
 arch_reference: '/ARCHITECTURE.md'
 tags: ['spec', 'implementation', 'infra', 'secrets', 'bootstrap']
@@ -15,7 +15,7 @@ layer: core
 # Implementation Specification (Spec) — Infra Secrets Bootstrap
 
 > **Status**: Implementation
-> **Related PRD**: [/docs/prd/infra-baseline-prd.md](/docs/prd/infra-baseline-prd.md)
+> **Related PRD**: [/docs/prd/2026-02-27-infra-baseline-prd.md](/docs/prd/2026-02-27-infra-baseline-prd.md)
 > **Related ADR**: [../adr/0002-secrets-first-management.md](../adr/0002-secrets-first-management.md)
 > **Related Architecture**: [/ARCHITECTURE.md](/ARCHITECTURE.md)
 
@@ -46,11 +46,11 @@ This feature adds a bootstrap utility `scripts/bootstrap-secrets.sh` that reads 
 
 | ID | Requirement Description | Priority | Parent PRD REQ |
 | --- | --- | --- | --- |
-| REQ-SEC-001 | Script MUST parse secrets from root `docker-compose.yml` (`secrets:`..`include:`). | High | REQ-PRD-BASE-FUN-03 |
-| REQ-SEC-002 | Script MUST generate missing secret files idempotently (no overwrite unless `--force`). | High | REQ-PRD-BASE-FUN-03 |
-| REQ-SEC-003 | Script MUST support `--dry-run`, `--list`, `--only`, `--strict`, `--validate-compose`. | High | REQ-PRD-BASE-FUN-03 |
-| SEC-SEC-001 | Script MUST NOT leak secret values to stdout/stderr by default. | Critical | REQ-PRD-BASE-FUN-02 |
-| SEC-SEC-002 | Secret files MUST be created with restrictive permissions. | Critical | REQ-PRD-BASE-FUN-02 |
+| REQ-SEC-001 | Script MUST parse secrets from root `docker-compose.yml` (`secrets:`..`include:`). | High | REQ-PRD-BSL-FUN-03 |
+| REQ-SEC-002 | Script MUST generate missing secret files idempotently (no overwrite unless `--force`). | High | REQ-PRD-BSL-FUN-03 |
+| REQ-SEC-003 | Script MUST support `--dry-run`, `--list`, `--only`, `--strict`, `--validate-compose`. | High | REQ-PRD-BSL-FUN-03 |
+| SEC-SEC-001 | Script MUST NOT leak secret values to stdout/stderr by default. | Critical | REQ-PRD-BSL-FUN-02 |
+| SEC-SEC-002 | Secret files MUST be created with restrictive permissions. | Critical | REQ-PRD-BSL-FUN-02 |
 
 ## 3. Secret Types & Generation Rules
 

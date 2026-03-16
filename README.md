@@ -526,6 +526,8 @@ Use these docs instead of expanding the root README into an operating manual:
 - [`AGENTS.md`](AGENTS.md): Global agent contract and [March 2026 Standard](docs/adr/0003-2026-march-agentic-standard.md).
 - [`ARCHITECTURE.md`](ARCHITECTURE.md): Architectural invariants.
 - [`OPERATIONS.md`](OPERATIONS.md): Operational index.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md): Contribution guidelines.
+- [`COLLABORATING.md`](COLLABORATING.md): Collaboration standards.
 - [`docs/README.md`](docs/README.md): Documentation taxonomy and index.
 - [`docs/agentic/gateway.md`](docs/agentic/gateway.md): AI Agent discovery hub.
 

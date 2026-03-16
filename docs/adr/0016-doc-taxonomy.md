@@ -1,7 +1,7 @@
 ---
 layer: agentic
 ---
-# ADR 0016: Standardized Documentation Taxonomy
+# ADR-0016: Standardized Documentation Taxonomy
 
 - **Status:** Accepted
 - **Date:** 2026-03-15
@@ -18,9 +18,10 @@ The repository had inconsistent path naming (singular vs plural) and nested stru
 ## Decision
 
 - Apply a flat directory structure under `docs/`.
-- Use singular names for authority docs: `adr`, `ard`, `prd`.
-- Use plural names for implementation/operational docs: `plans`, `specs`, `runbooks`.
-- Mandatory `layer:` metadata in all Markdown files.
+- **Singular Authority**: Use singular names for authority docs: `adr`, `ard`, `prd`.
+- **Plural Execution**: Use plural names for implementation/operational docs: `plans`, `specs`, `runbooks`, `operations`, `rules`.
+- **Mandatory Metadata**: Every Markdown file MUST include `layer:` frontmatter.
+- **Link Policy**: Use relative paths exclusively for internal references.
 
 ## Consequences
 

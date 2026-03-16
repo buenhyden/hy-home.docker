@@ -1,7 +1,7 @@
 ---
 layer: agentic
 ---
-# ADR 0022: Strict Enforcement of Plural Execution Paths
+# ADR-0022: Strict Enforcement of Plural Execution Paths
 
 - **Status:** Accepted
 - **Date:** 2026-03-15
@@ -12,7 +12,7 @@ layer: agentic
 
 ## Context
 
-Previous attempts at standardization left some "singular" relics and internal links. AI agents occasionally hallucinate `docs/plan/` causing session failures.
+Previous attempts at standardization left some "singular" relics and internal links. AI agents occasionally hallucinate `docs/plans/` causing session failures.
 
 ## Decision
 

@@ -20,7 +20,7 @@ _Note: This document tracks the historical debt audit for system optimization._
 | Primary Service | Documentation Stack |
 | Affected Deps | Infrastructure management workflow |
 | Dashboard Link | N/A |
-| Runbook Link | [Core Runbook](../../runbooks/core/infra-bootstrap-runbook.md) |
+| Runbook Link | [Core Runbook](../../runbooks/infra-bootstrap-runbook.md) |
 
 ## 2. Response Roster
 

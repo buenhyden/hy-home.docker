@@ -6,7 +6,7 @@ owner: 'Antigravity'
 layer: 'architecture'
 ---
 
-# ADR 0024: Lazy-Loading Agent Rules
+# ADR-0024: Lazy-Loading Agent Rules
 
 ## Context
 

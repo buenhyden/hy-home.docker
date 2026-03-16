@@ -8,7 +8,7 @@ tags: ['adr', 'agentic', 'standards']
 layer: 'architecture'
 ---
 
-# ADR 0021: March 2026 Agentic Standard Adoption
+# ADR-0021: March 2026 Agentic Standard Adoption
 
 - **Status:** Accepted
 - **Date:** 2026-03-15

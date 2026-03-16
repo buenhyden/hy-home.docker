@@ -1,7 +1,7 @@
 ---
 layer: infra
 ---
-# ADR 0011: Multi-Stage Build Standard
+# ADR-0011: Multi-Stage Build Standard
 n**Overview (KR):** 도커 이미지 최적화와 보안 강화를 위해 모든 서비스에 멀티 스테이지 빌드 방식을 적용합니다.
 
 : Multi-Stage Build Standard
@@ -56,7 +56,7 @@ Run `apt-get clean` and remove packages in the same layer.
 
 - **Confidence Rating**: High
 - **Notes**: Best practice for modern containerized development.
-- **Technical Requirements Addressed**: REQ-PRD-BASE-MET-04, REQ-PRD-SYS-MET-01
+- **Technical Requirements Addressed**: REQ-PRD-BSL-MET-04, REQ-PRD-OPT-MET-01
 
 ## 6. Related Documents (Traceability)
 

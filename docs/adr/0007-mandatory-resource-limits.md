@@ -1,7 +1,7 @@
 ---
 layer: infra
 ---
-# ADR 0007: Mandatory Resource Limits
+# ADR-0007: Mandatory Resource Limits
 n**Overview (KR):** 모든 컨테이너 서비스에 대해 메모리 및 CPU 리소스 제한을 강제하여 시스템 안정성을 보장합니다.
 
 : Mandatory Resource Limits
@@ -56,7 +56,7 @@ Let Docker and the OS handle allocation dynamically.
 
 - **Confidence Rating**: High
 - **Notes**: Industry standard for reliable container deployments.
-- **Technical Requirements Addressed**: REQ-PRD-BASE-MET-03, REQ-PRD-BASE-FUN-08
+- **Technical Requirements Addressed**: REQ-PRD-BSL-MET-03, REQ-PRD-BSL-FUN-08
 
 ## 6. Related Documents (Traceability)
 

@@ -15,7 +15,7 @@ layer: core
 > **Owner**: Platform Architect
 > **Stakeholders**: Platform Team
 
-_Target Directory: `docs/prd/infra-automation-prd.md`_
+_Target Directory: `docs/prd/2026-02-27-infra-automation-prd.md`_
 _Note: This document defines the What and Why for autonomous infrastructure capabilities._
 
 ---
@@ -54,8 +54,8 @@ _Note: This document defines the What and Why for autonomous infrastructure capa
 
 | ID                      | Metric Name        | Baseline (Current) | Target (Success) | Measurement Period  |
 | ----------------------- | ------------------ | ------------------ | ---------------- | ------------------- |
-| **REQ-PRD-AUTO-MET-01** | Provisioning Toil  | 10 manual steps    | 0 manual steps   | Per cluster setup   |
-| **REQ-PRD-AUTO-MET-02** | Dashboard Readiness| > 1 hour           | < 5 seconds      | Post-service start  |
+| **REQ-PRD-AUT-MET-01** | Provisioning Toil  | 10 manual steps    | 0 manual steps   | Per cluster setup   |
+| **REQ-PRD-AUT-MET-02** | Dashboard Readiness| > 1 hour           | < 5 seconds      | Post-service start  |
 
 ## 4. Key Use Cases & Acceptance Criteria (GWT)
 
@@ -65,9 +65,9 @@ _Note: This document defines the What and Why for autonomous infrastructure capa
 
 ## 5. Scope & Functional Requirements
 
-- **[REQ-PRD-AUTO-FUN-01]** Sidecar-based resource initialization (e.g., `kafka-init`, `minio-init`, `pg-cluster-init`, `valkey-cluster-init`).
-- **[REQ-PRD-AUTO-FUN-02]** Provisioned Grafana Dashboards as Code (YAML/JSON).
-- **[REQ-PRD-AUTO-FUN-03]** Multi-Project bridge networking via `project_net` for autonomous integration.
+- **[REQ-PRD-AUT-FUN-01]** Sidecar-based resource initialization (e.g., `kafka-init`, `minio-init`, `pg-cluster-init`, `valkey-cluster-init`).
+- **[REQ-PRD-AUT-FUN-02]** Provisioned Grafana Dashboards as Code (YAML/JSON).
+- **[REQ-PRD-AUT-FUN-03]** Multi-Project bridge networking via `project_net` for autonomous integration.
 
 ## 6. Out of Scope
 
@@ -98,5 +98,5 @@ _Note: This document defines the What and Why for autonomous infrastructure capa
 
 ## 11. Related Documents (Reference / Traceability)
 
-- **Technical Specification**: [[REQ-SPEC-AUTO-01] Infrastructure Automation Spec](../specs/infra-automation-spec.md)
+- **Technical Specification**: [[REQ-SPEC-AUTO-01] Infrastructure Automation Spec](../specs/2026-02-27-infra-automation-spec.md)
 - **Architecture Decisions (ADRs)**: [[ADR-0005] Sidecar Resource Initialization](../adr/adr-0005-sidecar-resource-initialization.md)

@@ -17,7 +17,7 @@ _Target Directory: `specs/infra/service-standards/plan.md`_
 
 ## 1. Context & Introduction
 
-This plan operationalizes `specs/infra/service-standards/spec.md` aligned with `docs/prd/system-optimization-prd.md`.
+This plan operationalizes `specs/infra/service-standards/spec.md` aligned with `docs/prd/2026-02-26-system-optimization-prd.md`.
 
 Service standards are cross-cutting: they apply to all long-running services in `infra/**/docker-compose*.yml` and aim to prevent drift (security defaults, readiness signaling, and consistent gateway exposure).
 
@@ -47,7 +47,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
   - `[REQ-BSL-STD-001]`: Every service MUST define a `healthcheck` in the Compose file (maps to `SPEC-STD-01`).
   - `[REQ-BSL-STD-002]`: Services SHALL expose only required ports via Traefik labels (maps to `SPEC-STD-02`).
   - `[REQ-BSL-STD-003]`: Use of `${DEFAULT_ENV}` for environment file mapping is required where applicable (maps to `SPEC-STD-03`).
-  - `[AC-STD-001]`: (from `STORY-SYS-01`) Given a new `docker-compose.yml`, when extending `base-security`, then `cap_drop: ALL` is applied automatically.
+  - `[AC-STD-001]`: (from `STORY-OPT-01`) Given a new `docker-compose.yml`, when extending `base-security`, then `cap_drop: ALL` is applied automatically.
 - **Constraints:**
   - Healthchecks MUST avoid false positives; they must validate readiness, not only liveness.
   - Any exceptions (missing healthcheck tooling, necessary host ports) must be explicit and documented.
@@ -68,7 +68,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 | `SPEC-STD-01` | `TASK-001` | `VAL-STD-PLN-001` |
 | `SPEC-STD-02` | `TASK-002` | `VAL-STD-PLN-001` |
 | `SPEC-STD-03` | `TASK-003` | `VAL-STD-PLN-001` |
-| `STORY-SYS-01` | `TASK-004` | `VAL-STD-PLN-002` |
+| `STORY-OPT-01` | `TASK-004` | `VAL-STD-PLN-002` |
 
 **Estimates**
 
@@ -102,7 +102,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 ## 9. References
 
-- **PRD**: `docs/prd/system-optimization-prd.md`
+- **PRD**: `docs/prd/2026-02-26-system-optimization-prd.md`
 - **Spec**: `specs/infra/service-standards/spec.md`
 - **ARD**: `docs/ard/system-optimization-ard.md`
 - **Architecture**: `ARCHITECTURE.md`

@@ -5,7 +5,7 @@ layer: infra
 status: 'Draft'
 version: '1.0'
 owner: 'Platform Architect'
-prd_reference: '../../docs/prd/system-optimization-prd.md'
+prd_reference: '../prd/2026-02-26-system-optimization-prd.md'
 api_reference: 'N/A'
 arch_reference: '../../ARCHITECTURE.md'
 tags: ['spec', 'infra', 'optimization', 'hardening', 'docker-compose']
@@ -15,7 +15,7 @@ layer: core
 # Implementation Specification (Spec)
 
 > **Status**: Draft
-> **Related PRD**: [docs/prd/system-optimization-prd.md](../../docs/prd/system-optimization-prd.md)
+> **Related PRD**: [docs/prd/2026-02-26-system-optimization-prd.md](../prd/2026-02-26-system-optimization-prd.md)
 > **Related Architecture**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
 _Target Directory: `specs/infra/system-optimization/spec.md`_
@@ -71,10 +71,10 @@ This spec defines the shared infrastructure hardening and optimization standards
 
 | ID                 | Requirement Description | Priority | Parent PRD REQ |
 | ------------------ | ----------------------- | -------- | -------------- |
-| **REQ-SPC-OPT-001** | The root `docker-compose.yml` MUST remain the single supported entrypoint (root-only). | High | REQ-PRD-SYS-FUN-04 |
-| **REQ-SPC-OPT-002** | Long-running services MUST declare resource bounds via shared templates. | High | REQ-PRD-SYS-FUN-01 |
-| **SEC-SPC-OPT-001** | Services MUST use `no-new-privileges:true` and `cap_drop: [ALL]` by default. | Critical | REQ-PRD-SYS-FUN-01 |
-| **REQ-SPC-OPT-003** | Internal connectivity MUST rely on Docker DNS (no static IPs). | High | REQ-PRD-SYS-FUN-05 |
+| **REQ-SPC-OPT-001** | The root `docker-compose.yml` MUST remain the single supported entrypoint (root-only). | High | REQ-PRD-OPT-FUN-04 |
+| **REQ-SPC-OPT-002** | Long-running services MUST declare resource bounds via shared templates. | High | REQ-PRD-OPT-FUN-01 |
+| **SEC-SPC-OPT-001** | Services MUST use `no-new-privileges:true` and `cap_drop: [ALL]` by default. | Critical | REQ-PRD-OPT-FUN-01 |
+| **REQ-SPC-OPT-003** | Internal connectivity MUST rely on Docker DNS (no static IPs). | High | REQ-PRD-OPT-FUN-05 |
 | **REQ-SPC-OPT-004** | Secrets MUST be injected via Docker secrets files. | Critical | N/A |
 
 ## 3. Data Modeling & Storage Strategy

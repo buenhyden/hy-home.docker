@@ -1,51 +1,45 @@
 ---
-layer: agentic
+title: '2026-03 Documentation Refactor Specification'
+status: 'Accepted'
+layer: 'documentation'
 ---
-# Documentation and Agent Refactor Specification
 
-n**Overview (KR):** 에이전틱 문서 체계의 2차 강화 및 ID 중복 해결을 위한 상세 기술 명세입니다.
+# 2026-03 Documentation Refactor Specification
 
-n**Overview (KR):** 에이전틱 문서 체계의 2차 강화 및 ID 중복 해결을 위한 상세 기술 명세입니다.
+**Overview (KR):** 본 문서는 문서 리팩토링의 기술적 사양을 정의합니다. 파일 이동 규칙, 메타데이터 표준, 에이전트 트리거 구현 방식을 상세히 설명합니다.
 
-> **Status**: Canonical
-> **Scope**: master
-> **layer:** product
-> **Related PRD**: `[../prd/doc-refactor-prd.md]`
-> **Related Architecture**: `[../ard/doc-refactor-ard.md]`
-> **Decision Record**: `[../adr/0001-lazy-loading-protocol.md]`
+## 1. Directory Mapping
 
-**Overview (KR):** 본 명세서는 문서 리팩토링의 상세 구현 방안을 정의합니다. YAML Frontmatter 표준, 문서 경로 규칙, Agent Gateway의 지침 로드 방식을 규정합니다.
+| Type | Destination Path |
+| --- | --- |
+| ADR | `docs/adr/` |
+| ARD | `docs/ard/` |
+| PRD | `docs/prd/` |
+| Spec | `docs/specs/` |
+| Plan | `docs/plans/` |
+| Runbook | `docs/runbooks/` |
+| Incident | `docs/operations/incidents/` |
+| Postmortem | `docs/operations/postmortems/` |
 
-## Technical Baseline
+## 2. Metadata Specification
 
-The repository uses Markdown for all documentation. Agent instructions are loaded via filesystem reads.
+All files must start with:
 
-## Contracts
-
-- **Metadata Contract**: Every `.md` file MUST start with a YAML frontmatter containing `layer: <layer_name>`.
-- **Path Contract**:
-  - ADR: `docs/adr/`
-  - ARD: `docs/ard/`
-  - Spec: `docs/specs/`
-  - Plan: `docs/plans/`
-  - PRD: `docs/prd/`
-  - Runbook: `docs/runbooks/`
-  - Incident: `docs/operations/incidents/`
-  - Postmortem: `docs/operations/postmortems/`
-- **Gateway Contract**: `docs/agentic/gateway.md` must be the first file loaded. It must contain the section `## Intent-Based Discovery`.
-
-## Component Breakdown
-
-- **`ARCHITECTURE.md`**: Update links to `docs/` subdirectories.
-- **`OPERATIONS.md`**: Update links to `docs/operations/incidents/` and `docs/operations/postmortems/`.
-- **`docs/agentic/gateway.md`**: Update to include the new path contract and clearer lazy-loading triggers.
-- **`docs/agentic/instructions.md`**: Explicitly state that agents have full skill autonomy and should use them purpose-fitly.
-
-## Verification
-
-```bash
-## Check layers
-head -n 5 *.md docs/**/*.md | grep "layer:"
-## Check links
-rg "\]\(" docs/**/*.md | grep -v "http"
+```yaml
+---
+layer: <layer_name>
+---
 ```
+
+Allowed values for `layer`: `entry | core | ops | agentic | meta | common | architecture | backend | frontend | infra | mobile | product | qa | security`.
+
+## 3. Agent Trigger Implementation
+
+Entrypoints (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) will implement the follow pattern:
+
+```markdown
+Identify your task and load the required rule module:
+- **CATEGORY**: `[LOAD:RULES:<CATEGORY>]`
+```
+
+Targeting categories: `REFACTOR`, `DOCS`, `INFRA`, `OPS`.

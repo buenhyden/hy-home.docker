@@ -1,7 +1,7 @@
 ---
 layer: infra
 ---
-# ADR 0001: Root Orchestration via `include`
+# ADR-0001: Root Orchestration via `include`
 n**Overview (KR):** Docker Compose의 `include` 지연 로딩 기능을 활용하여 인프라 설계를 모듈화하고 관리 효율성을 높이는 결정입니다.
 
 : Root Orchestration via `include`
@@ -56,10 +56,10 @@ Maintain everything in one file.
 
 - **Confidence Rating**: High
 - **Notes**: Standard pattern for large modern Compose projects.
-- **Technical Requirements Addressed**: REQ-PRD-BASE-FUN-01, REQ-PRD-SYS-FUN-04
+- **Technical Requirements Addressed**: REQ-PRD-BSL-FUN-01, REQ-PRD-OPT-FUN-04
 
 ## 6. Related Documents (Traceability)
 
 - **Feature PRD**: [Infrastructure Baseline PRD](../prd/infra-baseline-prd.md), [System Optimization PRD](../prd/system-optimization-prd.md)
 - **Feature Spec**: [Infrastructure Baseline Spec](../../specs/infra/baseline/spec.md), [System Optimization Spec](../../specs/infra/system-optimization/spec.md)
-- **Architecture Reference (ARD)**: [Global System Architecture ARD](../ard/system-architecture-ard.md)
+- **Architecture Reference (ARD)**: [Global System Architecture ARD](../ard/2026-02-26-system-architecture-ard.md)

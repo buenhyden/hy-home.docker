@@ -3,17 +3,17 @@ title: 'Infrastructure Implementation Baseline'
 status: 'Validated'
 version: '1.0'
 owner: 'Infrastructure Architect'
-prd_reference: '/docs/prd/infra-baseline-prd.md'
+prd_reference: '/docs/prd/2026-02-27-infra-baseline-prd.md'
 api_reference: 'N/A'
 arch_reference: '/docs/ard/system-optimization-ard.md'
 tags: ['spec', 'implementation', 'infra', 'baseline']
 layer: infra
 ---
 
-# [SPEC-INFRA-02] Infrastructure Implementation Baseline
+# [SPEC-INFRA-BSL] Infrastructure Implementation Baseline
 
 > **Status**: Validated
-> **Related PRD**: [/docs/prd/infra-baseline-prd.md](/docs/prd/infra-baseline-prd.md)
+> **Related PRD**: [/docs/prd/2026-02-27-infra-baseline-prd.md](/docs/prd/2026-02-27-infra-baseline-prd.md)
 > **Related Architecture**: [/docs/ard/system-optimization-ard.md](/docs/ard/system-optimization-ard.md)
 
 _Target Directory: `specs/infra/baseline/spec.md`_
@@ -38,7 +38,7 @@ _Target Directory: `specs/infra/baseline/spec.md`_
 | AuthN/AuthZ     | Is auth approach designed (token/OAuth/RBAC)?  | Must     | Docker Secrets  | Section 4         |
 | Data Protection | Encryption/access policies for sensitive data? | Must     | Secrets Mounting| Section 9         |
 
-## [SPEC-INFRA-02] Infrastructure Baseline Specification
+## [SPEC-INFRA-BSL] Infrastructure Baseline Specification
 
 ## 0. Pre-Implementation Checklist
 
@@ -54,9 +54,9 @@ This specification defines the core setup and security hardening requirements fo
 
 | Req ID | Requirement Description | Priority |
 | --- | --- | --- |
-| **SPEC-BASE-01** | All images MUST use pinned version tags; the `latest` tag is prohibited. | P0 |
-| **SPEC-BASE-02** | Every service SHALL utilize the `init: true` directive for signal handling. | P0 |
-| **SPEC-BASE-03** | Sensitive data MUST be injected via `/run/secrets/` filesystem mounts. | P0 |
+| **REQ-SPC-BSL-01** | All images MUST use pinned version tags; the `latest` tag is prohibited. | P0 |
+| **REQ-SPC-BSL-02** | Every service SHALL utilize the `init: true` directive for signal handling. | P0 |
+| **REQ-SPC-BSL-03** | Sensitive data MUST be injected via `/run/secrets/` filesystem mounts. | P0 |
 
 ## 3. Data Modeling & Storage Strategy
 
@@ -80,7 +80,7 @@ This specification defines the core setup and security hardening requirements fo
 - **Error**: Prerequisite check failure -> Bootstrap termination with error status.
 - **Error**: Secrets mounting conflict -> Unhealthy container status.
 
-## 7. Verification Plan (Testing & QA) [REQ-SPT-10]
+## 7. Verification Plan (Testing & QA)
 
 - **[VAL-BSL-01] Aggregated Config Verification**:
   - **Given**: A modular infrastructure directory structure.

@@ -15,7 +15,7 @@ layer: core
 > **Owner**: Platform Architect
 > **Stakeholders**: All Contributors
 
-_Target Directory: `docs/prd/system-architecture-prd.md`_
+_Target Directory: `docs/prd/2026-02-26-system-architecture-prd.md`_
 _Note: This document defines the What and Why for the entire repository._
 
 ---
@@ -88,5 +88,5 @@ _Note: This document defines the What and Why for the entire repository._
 
 ## 11. Related Documents (Reference / Traceability)
 
-- **Architecture Reference (ARD)**: [[ARD-ARCH-01] Global System Architecture Reference](../ard/system-architecture-ard.md)
+- **Architecture Reference (ARD)**: [[ARD-ARCH-01] Global System Architecture Reference](../ard/2026-02-26-system-architecture-ard.md)
 - **Architecture Decisions (ADRs)**: [[ADR-0003] Spec-Driven Development](../adr/0003-spec-driven-development.md)

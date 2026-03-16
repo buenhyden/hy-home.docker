@@ -1,6 +1,6 @@
 # [Feature or System Name] Product Requirements Document (PRD)
 
-> Use this template for `docs/prd/<feature-or-system>-prd.md`.
+> Use this template for `docs/prd/YYYY-MM-DD-<feature-or-system>.md`.
 >
 > Repository-derived contract:
 >

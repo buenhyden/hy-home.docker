@@ -8,7 +8,7 @@ tags: ['adr', 'agentic', 'rules']
 layer: 'architecture'
 ---
 
-# ADR 0020: Intent-Based Rule Triggers and Lazy Loading
+# ADR-0020: Intent-Based Rule Triggers and Lazy Loading
 
 - **Status:** Accepted
 - **Date:** 2026-03-15

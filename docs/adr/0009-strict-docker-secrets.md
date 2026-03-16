@@ -1,7 +1,7 @@
 ---
 layer: infra
 ---
-# ADR 0009: Strict Docker Secrets
+# ADR-0009: Strict Docker Secrets
 n**Overview (KR):** 일반 텍스트 환경 변수 사용을 엄격히 제한하고 100% Docker Secrets 기반의 보안 정책을 강제합니다.
 
 : Strict Docker Secrets Adoption
@@ -56,7 +56,7 @@ Using tools like SOPS to encrypt .env files.
 
 - **Confidence Rating**: High
 - **Notes**: Crucial for production-readiness.
-- **Technical Requirements Addressed**: REQ-PRD-BASE-FUN-02, REQ-PRD-BASE-MET-02, REQ-PRD-SYS-MET-01
+- **Technical Requirements Addressed**: REQ-PRD-BSL-FUN-02, REQ-PRD-BSL-MET-02, REQ-PRD-OPT-MET-01
 
 ## 6. Related Documents (Traceability)
 

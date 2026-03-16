@@ -5,7 +5,7 @@ layer: infra
 status: 'Draft'
 version: '1.0'
 owner: 'Reliability Engineer'
-prd_reference: '../../docs/prd/observability-prd.md'
+prd_reference: '../prd/2026-02-27-observability-prd.md'
 api_reference: 'N/A'
 arch_reference: '../../ARCHITECTURE.md'
 tags: ['spec', 'infra', 'observability', 'lgtm', 'grafana', 'loki', 'tempo', 'prometheus']
@@ -15,7 +15,7 @@ layer: 06-observability
 # Implementation Specification (Spec)
 
 > **Status**: Draft
-> **Related PRD**: [docs/prd/observability-prd.md](../../docs/prd/observability-prd.md)
+> **Related PRD**: [docs/prd/2026-02-27-observability-prd.md](../prd/2026-02-27-observability-prd.md)
 > **Related Architecture**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
 _Target Directory: `specs/infra/observability/spec.md`_

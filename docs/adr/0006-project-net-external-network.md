@@ -1,7 +1,7 @@
 ---
 layer: infra
 ---
-# ADR 0006: Project-Net External Network
+# ADR-0006: Project-Net External Network
 n**Overview (KR):** 모든 서비스가 공유하는 외부 네트워크(`project_net`)를 정의하여 컨테이너 간 통신 표준을 수립합니다.
 
 : External `project_net` Convention
@@ -56,7 +56,7 @@ Connect all external apps directly to the internal infra network.
 
 - **Confidence Rating**: High
 - **Notes**: Common pattern for platform-as-a-service styles.
-- **Technical Requirements Addressed**: REQ-PRD-AUTO-FUN-03
+- **Technical Requirements Addressed**: REQ-PRD-AUT-FUN-03
 
 ## 6. Related Documents (Traceability)
 

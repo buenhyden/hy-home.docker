@@ -55,7 +55,7 @@ _Note: This document follows the blameless postmortem culture defined in the Ris
 
 | Action (Corrective/Preventive) | Owner | Priority | Ticket/Issue Link | Status |
 | ----------------------------- | ----- | -------- | ----------------- | ------ |
-| Implement `[REQ-SPT-05]` via ARD refactoring | Architect | High | [ARD Architecture Review Site](../../docs/ard/README.md) | Done |
+| Implement `[REQ-SPT-05]` via ARD refactoring | Architect | High | [ARD Architecture Review Site](../ard/README.md) | Done |
 | Initialize `incident-log.md` with persona mapping | Ops Lead | Medium | [Incident Log Index](../incidents/README.md) | Done |
 | Standardize labels across clusters for Alloy | Platform | Medium | N/A | Pending |
 

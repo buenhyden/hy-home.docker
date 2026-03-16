@@ -20,7 +20,7 @@ layer: agentic
 
 ## Context & Introduction
 
-This plan executes the requirements defined in `docs/prd/doc-refactor-prd.md` and follows the architecture in `docs/ard/doc-refactor-ard.md`.
+This plan executes the requirements defined in `docs/prd/2026-03-15-doc-refactor-prd.md` and follows the architecture in `docs/ard/doc-refactor-ard.md`.
 
 ## Tasks
 
@@ -40,6 +40,6 @@ This plan executes the requirements defined in `docs/prd/doc-refactor-prd.md` an
 
 ## References
 
-- `[../prd/doc-refactor-prd.md]`
+- `[../prd/2026-03-15-doc-refactor-prd.md]`
 - `[../ard/doc-refactor-ard.md]`
 - `[../adr/0001-lazy-loading-protocol.md]`

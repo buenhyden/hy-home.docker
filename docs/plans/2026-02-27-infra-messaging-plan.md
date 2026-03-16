@@ -17,7 +17,7 @@ _Target Directory: `specs/infra/messaging/plan.md`_
 
 ## 1. Context & Introduction
 
-This plan operationalizes `specs/infra/messaging/spec.md` aligned with `docs/prd/messaging-prd.md`.
+This plan operationalizes `specs/infra/messaging/spec.md` aligned with `docs/prd/2026-02-27-messaging-prd.md`.
 
 The messaging stack is Kafka-based (KRaft mode) and MUST be enabled via the Compose profile `messaging` with DNS-only internal connectivity on `infra_net`.
 
@@ -101,7 +101,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 ## 9. References
 
-- **PRD**: `docs/prd/messaging-prd.md`
+- **PRD**: `docs/prd/2026-02-27-messaging-prd.md`
 - **Spec**: `specs/infra/messaging/spec.md`
 - **ARD**: `docs/ard/messaging-ard.md`
 - **Architecture**: `ARCHITECTURE.md`

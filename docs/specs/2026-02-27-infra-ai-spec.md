@@ -3,7 +3,7 @@ title: 'Infrastructure AI Implementation Spec'
 status: 'Draft'
 version: '1.0'
 owner: 'AI Infrastructure Engineer'
-prd_reference: '../../docs/prd/ai-prd.md'
+prd_reference: '../prd/2026-02-27-ai-prd.md'
 api_reference: 'N/A'
 arch_reference: '../../ARCHITECTURE.md'
 tags: ['spec', 'infra', 'ai', 'ollama', 'open-webui', 'qdrant']
@@ -13,7 +13,7 @@ layer: infra
 # Implementation Specification (Spec)
 
 > **Status**: Draft
-> **Related PRD**: [docs/prd/ai-prd.md](../../docs/prd/ai-prd.md)
+> **Related PRD**: [docs/prd/2026-02-27-ai-prd.md](../prd/2026-02-27-ai-prd.md)
 > **Related Architecture**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
 
 _Target Directory: `specs/infra/ai/spec.md`_

@@ -36,6 +36,14 @@ If a new document category or a major rule file is added:
 Run the following commands periodically:
 
 ```bash
-grep -r "layer:" docs/
+# Find files missing layer metadata
+find docs -name "*.md" -exec grep -L "layer:" {} +
+
+# Find potential broken manual links
 rg "\]\(" docs/ | grep -v "http"
 ```
+
+## Verification
+
+- `[VAL-RBK-001]` No files missing `layer:` metadata.
+- `[VAL-RBK-002]` All internal documentation links utilize relative paths and pluralized category roots (`plans/`, `specs/`).

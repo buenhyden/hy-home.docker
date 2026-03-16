@@ -28,7 +28,7 @@ Agent entrypoints act as shims. Content discovery happens through:
 Authority = Singular; Execution = Plural.
 
 - Correct: `docs/adr/`, `docs/plans/`.
-- Incorrect: `docs/adrs/`, `docs/plan/`.
+- Incorrect: `docs/adrs/`, `docs/plans/`.
 
 ## Related
 

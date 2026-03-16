@@ -61,12 +61,12 @@ This is a documentation-only refactor. The target architecture is a progressive-
 
 | ID | Requirement Description | Priority | Parent PRD REQ |
 | -- | ----------------------- | -------- | -------------- |
-| **[REQ-SPC-AGT-001]** | The three root files must become concise entrypoints rather than long-form policy stores. | High | N/A |
-| **[REQ-SPC-AGT-002]** | Shared policy must live in repository-local guidance under `docs/agentic/`. | High | N/A |
-| **[REQ-SPC-AGT-003]** | All new and updated links must be relative and resolve to existing files. | Critical | N/A |
-| **[REQ-SPC-AGT-004]** | Stale references to unavailable tools and artifacts must be removed. | Critical | N/A |
-| **[REQ-SPC-AGT-005]** | Documentation indexes must expose ADR, ARD, PRD, specs, plans, runbooks, operations history, and incidents as lazy-loadable entrypoints. | High | N/A |
-| **[REQ-SPC-AGT-006]** | `CLAUDE.md` must use provider-native `@` imports instead of duplicating shared guidance. | High | N/A |
+| **[REQ-SPC-ADN-001]** | The three root files must become concise entrypoints rather than long-form policy stores. | High | N/A |
+| **[REQ-SPC-ADN-002]** | Shared policy must live in repository-local guidance under `docs/agentic/`. | High | N/A |
+| **[REQ-SPC-ADN-003]** | All new and updated links must be relative and resolve to existing files. | Critical | N/A |
+| **[REQ-SPC-ADN-004]** | Stale references to unavailable tools and artifacts must be removed. | Critical | N/A |
+| **[REQ-SPC-ADN-005]** | Documentation indexes must expose ADR, ARD, PRD, specs, plans, runbooks, operations history, and incidents as lazy-loadable entrypoints. | High | N/A |
+| **[REQ-SPC-ADN-006]** | `CLAUDE.md` must use provider-native `@` imports instead of duplicating shared guidance. | High | N/A |
 
 ## 3. Data Modeling & Storage Strategy
 

@@ -1,7 +1,7 @@
 ---
 layer: infra
 ---
-# ADR 0004: Tiered Directory Structure
+# ADR-0004: Tiered Directory Structure
 n**Overview (KR):** 서비스의 역할에 따라 디렉토리를 계층화하여 리소스 격리와 관리 체계의 명확성을 확보합니다.
 
 : Tiered Directory Structure
@@ -60,5 +60,5 @@ Keep all folders at the top level of `infra/`.
 ## 6. Related Documents (Traceability)
 
 - **Feature PRD**: [System Architecture Standards PRD](../prd/system-architecture-prd.md)
-- **Architecture Reference (ARD)**: [Global System Architecture ARD](../ard/system-architecture-ard.md)
+- **Architecture Reference (ARD)**: [Global System Architecture ARD](../ard/2026-02-26-system-architecture-ard.md)
 - **Repository Blueprint**: [ARCHITECTURE.md](../../ARCHITECTURE.md)

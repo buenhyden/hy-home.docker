@@ -8,7 +8,7 @@ tags: ['adr', 'agentic', 'context']
 layer: 'architecture'
 ---
 
-# ADR 0018: Lazy-Loading Protocol for AI Agents
+# ADR-0018: Lazy-Loading Protocol for AI Agents
 
 - **Status:** Accepted
 - **Date:** 2026-03-15
@@ -40,5 +40,5 @@ We will implement a **Lazy-Loading Protocol** anchored in `docs/agentic/gateway.
 
 ## Related
 
-- `[../prd/doc-refactor-prd.md]`
+- `[../prd/2026-03-15-doc-refactor-prd.md]`
 - `[../specs/2026-03-15-doc-refactor-spec.md]`

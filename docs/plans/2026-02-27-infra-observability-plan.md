@@ -17,7 +17,7 @@ _Target Directory: `specs/infra/observability/plan.md`_
 
 ## 1. Context & Introduction
 
-This plan operationalizes `specs/infra/observability/spec.md` aligned with `docs/prd/observability-prd.md`.
+This plan operationalizes `specs/infra/observability/spec.md` aligned with `docs/prd/2026-02-27-observability-prd.md`.
 
 The observability stack (LGTM) MUST be enabled via Compose profile `obs`, and MUST inject sensitive values using Docker secrets (`/run/secrets/*`).
 
@@ -102,7 +102,7 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 ## 9. References
 
-- **PRD**: `docs/prd/observability-prd.md`
+- **PRD**: `docs/prd/2026-02-27-observability-prd.md`
 - **Spec**: `specs/infra/observability/spec.md`
 - **ARD**: `docs/ard/observability-ard.md`
 - **Architecture**: `ARCHITECTURE.md`

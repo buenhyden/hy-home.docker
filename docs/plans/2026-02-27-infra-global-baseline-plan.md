@@ -17,7 +17,7 @@ _Target Directory: `specs/infra/global-baseline/plan.md`_
 
 ## 1. Context & Introduction
 
-This plan operationalizes the global baseline invariants defined in `specs/infra/global-baseline/spec.md` aligned with `docs/prd/system-architecture-prd.md` and `docs/ard/system-architecture-ard.md`.
+This plan operationalizes the global baseline invariants defined in `specs/infra/global-baseline/spec.md` aligned with `docs/prd/2026-02-26-system-architecture-prd.md` and `docs/ard/2026-02-26-system-architecture-ard.md`.
 
 These invariants apply repository-wide and are foundational to a predictable root-only Compose system using profiles and shared templates.
 
@@ -103,9 +103,9 @@ _Note: Use Machine-Readable Identifiers (e.g., `[REQ-...]`) for traceability._
 
 ## 9. References
 
-- **PRD**: `docs/prd/system-architecture-prd.md`
+- **PRD**: `docs/prd/2026-02-26-system-architecture-prd.md`
 - **Spec**: `specs/infra/global-baseline/spec.md`
-- **ARD**: `docs/ard/system-architecture-ard.md`
+- **ARD**: `docs/ard/2026-02-26-system-architecture-ard.md`
 - **Architecture**: `ARCHITECTURE.md`
 
 ## References
