@@ -8,7 +8,6 @@ services:
       file: ../../common-optimizations.yml
       service: template-infra-med
     image: traefik:v3.6.8
-
     container_name: traefik
     hostname: traefik
     read_only: true
