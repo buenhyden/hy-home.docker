@@ -31,7 +31,7 @@ labels:
 
 All non-label based configs (Middlewares, Transport settings) reside in the `./dynamic/` directory within the Traefik service folder.
 
-- **Middlewares**: `sso-auth@file`, `compression@file`
+- **Middlewares**: `sso-errors@file,sso-auth@file`, `compression@file`
 - **ServersTransports**: `insecureTransport@file` (Used for internal self-signed backend SSL)
 
 ## 4. Operational Maintenance

@@ -3,13 +3,18 @@ http:
   serversTransports:
     # 'opensearch-transport'라는 이름의 규칙 생성
     opensearch-transport:
-      serverName: "opensearch.127.0.0.1.nip.io" # [핵심] 인증서 검사 시 이 도메인으로 검증하라!
+      serverName: "localhost" # [핵심] 인증서 검사 시 이 도메인으로 검증하라!
       rootCAs:
         - "/certs/rootCA.pem" # 검증에 사용할 신뢰하는 뿌리 인증서
     opensearch-dashboards-transport:
-      serverName: "opensearch.127.0.0.1.nip.io" # [핵심] 인증서 검사 시 이 도메인으로 검증하라!
+      serverName: "localhost" # [핵심] 인증서 검사 시 이 도메인으로 검증하라!
       rootCAs:
         - "/certs/rootCA.pem" # 검증에 사용할 신뢰하는 뿌리 인증서
+  services:
+    oauth2-proxy-svc:
+      loadBalancer:
+        servers:
+          - url: "http://oauth2-proxy:4180"
   middlewares:
     # 1. 기존 SSO 인증 (앱 보호용)
     sso-auth:
@@ -23,7 +28,12 @@ http:
           - "Authorization"
           - "X-Auth-Request-Access-Token"
           - "X-Auth-Request-Id-Token"
-
+    sso-errors:
+      errors:
+        status:
+          - "401-403"
+        service: oauth2-proxy-svc
+        query: "/oauth2/sign_in?rd={url}"
     # 2. 대시보드용 Basic Auth (Docker Secret 기반)
     dashboard-auth:
       basicAuth:

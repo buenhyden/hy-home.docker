@@ -17,7 +17,7 @@ This stack provides local LLM inference and a powerful chat interface.
 
 ## Security
 
-- **SSO**: Protected by `sso-auth@file` middleware (Keycloak).
+- **SSO**: Protected by `sso-errors@file,sso-auth@file` middleware (Keycloak).
 - **Hardening**: `no-new-privileges:true`.
 
 ## Persistence

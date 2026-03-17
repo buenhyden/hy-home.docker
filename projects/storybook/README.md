@@ -84,7 +84,7 @@ labels:
   - 'traefik.enable=true'
   - 'traefik.http.routers.storybook.rule=Host(`design.${DEFAULT_URL}`)'
   - 'traefik.http.routers.storybook.tls=true'
-  - 'traefik.http.routers.storybook.middlewares=sso-auth@file' # Optional: Protect with Keycloak
+  - 'traefik.http.routers.storybook.middlewares=sso-errors@file,sso-auth@file' # Optional: Protect with Keycloak
 ```
 
 ## 🔗 Reference Documentation

@@ -14,7 +14,7 @@ To protect any service with SSO, apply the following Traefik label in its `docke
 
 ```yaml
 labels:
-  - 'traefik.http.routers.my-app.middlewares=sso-auth@file'
+  - 'traefik.http.routers.my-app.middlewares=sso-errors@file,sso-auth@file'
 ```
 
 The `sso-auth` middleware (defined in Traefik's dynamic config) forwards requests to `http://auth.${DEFAULT_URL}/oauth2/auth`.

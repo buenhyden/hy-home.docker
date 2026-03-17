@@ -20,11 +20,11 @@ services:
       - mng_valkey_password
       - oauth2_proxy_client_secret
       - oauth2_proxy_cookie_secret
-    command:
+    entrypoint:
       - /bin/sh
       - -c
+    command:
       - |
-        export OAUTH2_PROXY_CLIENT_SECRET=$$(cat /run/secrets/oauth2_proxy_client_secret)
         export OAUTH2_PROXY_COOKIE_SECRET=$$(cat /run/secrets/oauth2_proxy_cookie_secret)
         exec /bin/oauth2-proxy --config /etc/oauth2-proxy.cfg
     environment:
@@ -45,7 +45,7 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      traefik.http.routers.oauth2-proxy.rule: Host(`auth.${DEFAULT_URL}`)
+      traefik.http.routers.oauth2-proxy.rule: Host(`auth.${DEFAULT_URL}`) && PathPrefix(`/oauth2/`)
       traefik.http.routers.oauth2-proxy.entrypoints: websecure
       traefik.http.routers.oauth2-proxy.tls: 'true'
       traefik.http.services.oauth2-proxy.loadbalancer.server.port: ${OAUTH2_PROXY_PORT:-4180}

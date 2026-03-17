@@ -34,7 +34,7 @@ By default, the Traefik deployment heavily utilizes a local certificate generati
 
 Several core paths require SS0/OAuth2 middleware checks. If adding authentication, always add:
 
-- `traefik.http.routers.<service_name>.middlewares=sso-auth@file`
+- `traefik.http.routers.<service_name>.middlewares=sso-errors@file,sso-auth@file`
 
 Ensure that the middleware definition lives within `./dynamic/middlewares.yml`. If proxying to services issuing their own SSL (like OpenSearch), force HTTPS transport proxying:
 
