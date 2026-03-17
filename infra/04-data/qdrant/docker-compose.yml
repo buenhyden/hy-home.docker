@@ -22,7 +22,7 @@ services:
     environment:
       - QDRANT__TELEMETRY_DISABLED=false
     volumes:
-      - qdrant-data:/qdrant/storage
+      - qdrant-data:/qdrant/storage:rw
     networks:
       - infra_net
     healthcheck:

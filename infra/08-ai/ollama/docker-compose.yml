@@ -16,6 +16,8 @@ services:
       file: ../../../infra/common-optimizations.yml
       service: template-infra-high
     image: ollama/ollama:0.13.5
+    volumes:
+      - ollama-data:/root/.ollama:rw
     container_name: ollama
     deploy:
       resources:

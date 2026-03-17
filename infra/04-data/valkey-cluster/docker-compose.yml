@@ -52,7 +52,7 @@ services:
       - PORT=6379
       - NODE_NAME=valkey-node-0
     volumes:
-      - valkey0-data:/data
+      - valkey0-data:/data:rw
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
     entrypoint: [/bin/sh, /usr/local/bin/valkey-start.sh]
@@ -68,7 +68,7 @@ services:
       - PORT=6380
       - NODE_NAME=valkey-node-1
     volumes:
-      - valkey1-data:/data
+      - valkey1-data:/data:rw
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
 
@@ -79,7 +79,7 @@ services:
       - PORT=6381
       - NODE_NAME=valkey-node-2
     volumes:
-      - valkey2-data:/data
+      - valkey2-data:/data:rw
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
 
@@ -90,7 +90,7 @@ services:
       - PORT=6382
       - NODE_NAME=valkey-node-3
     volumes:
-      - valkey3-data:/data
+      - valkey3-data:/data:rw
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
 
@@ -101,7 +101,7 @@ services:
       - PORT=6383
       - NODE_NAME=valkey-node-4
     volumes:
-      - valkey4-data:/data
+      - valkey4-data:/data:rw
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
 
@@ -112,7 +112,7 @@ services:
       - PORT=6384
       - NODE_NAME=valkey-node-5
     volumes:
-      - valkey5-data:/data
+      - valkey5-data:/data:rw
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
 

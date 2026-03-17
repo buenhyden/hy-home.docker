@@ -12,7 +12,7 @@ services:
     container_name: terraform
     restart: 'no'
     volumes:
-      - ./workspace:/workspace
+      - ./workspace:/workspace:rw
       # - $HOME/.config/gcloud:/root/.config/gcloud:ro # Optional: For GCP Auth
       - $HOME/.aws:/root/.aws:ro # Optional: For AWS Auth (Read-Only)
       - $HOME/.azure:/root/.azure:ro # Optional: For Azure Auth (Read-Only)

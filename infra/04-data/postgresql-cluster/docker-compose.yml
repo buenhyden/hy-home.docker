@@ -66,7 +66,7 @@ services:
       retries: 5
       start_period: 15s
     volumes:
-      - etcd1-data:/etcd-data
+      - etcd1-data:/etcd-data:rw
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
     networks:
@@ -101,7 +101,7 @@ services:
       retries: 5
       start_period: 15s
     volumes:
-      - etcd2-data:/etcd-data
+      - etcd2-data:/etcd-data:rw
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
     networks:
@@ -135,7 +135,7 @@ services:
       retries: 5
       start_period: 15s
     volumes:
-      - etcd3-data:/etcd-data
+      - etcd3-data:/etcd-data:rw
     expose:
       - ${ETCD_CLIENT_PORT:-2379}
     networks:
@@ -164,7 +164,7 @@ services:
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:${POSTGRES_PORT:-5432}
     volumes:
-      - pg0-data:/home/postgres/pgdata
+      - pg0-data:/home/postgres/pgdata:rw
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     expose:
       - ${POSTGRES_PORT:-5432}
@@ -207,7 +207,7 @@ services:
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:${POSTGRES_PORT:-5432}
     volumes:
-      - pg1-data:/home/postgres/pgdata
+      - pg1-data:/home/postgres/pgdata:rw
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     networks:
       - infra_net
@@ -235,7 +235,7 @@ services:
       PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
       PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-2:${POSTGRES_PORT:-5432}
     volumes:
-      - pg2-data:/home/postgres/pgdata
+      - pg2-data:/home/postgres/pgdata:rw
       - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
     networks:
       - infra_net
@@ -298,7 +298,7 @@ services:
       psql -h "$$POSTGRES_ROUTER_HOSTNAME" -p "$$POSTGRES_WRITE_PORT" -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -f /home/postgres/init-scripts/init_users_dbs.sql;
       "
     volumes:
-      - './init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql'
+      - ./init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql:ro
     networks:
       - infra_net
     restart: 'no'

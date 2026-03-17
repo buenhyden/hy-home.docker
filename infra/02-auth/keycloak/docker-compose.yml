@@ -34,9 +34,9 @@ services:
       - /opt/keycloak/data
       - /tmp
     volumes:
-      - keycloak-themes:/opt/keycloak/themes
-      - keycloak-config:/opt/keycloak/conf
-      - keycloak-providers:/opt/keycloak/providers
+      - keycloak-themes:/opt/keycloak/themes:rw
+      - keycloak-config:/opt/keycloak/conf:rw
+      - keycloak-providers:/opt/keycloak/providers:rw
     command: start-dev
     networks:
       - infra_net

@@ -20,7 +20,7 @@ services:
       - RAG_EMBEDDING_ENGINE=ollama
       - RAG_EMBEDDING_MODEL=qwen3-embedding:0.6b
     volumes:
-      - ollama-webui:/app/backend/data
+      - ollama-webui:/app/backend/data:rw
     networks:
       - infra_net
     labels:

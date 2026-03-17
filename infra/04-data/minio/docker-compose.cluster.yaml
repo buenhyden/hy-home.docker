@@ -35,25 +35,25 @@ services:
     hostname: minio1
     container_name: minio1
     volumes:
-      - minio-data1-volume:/data
+      - minio-data1-volume:/data:rw
   minio2:
     <<: *minio-common
     hostname: minio2
     container_name: minio2
     volumes:
-      - minio-data2-volume:/data
+      - minio-data2-volume:/data:rw
   minio3:
     <<: *minio-common
     hostname: minio3
     container_name: minio3
     volumes:
-      - minio-data3-volume:/data
+      - minio-data3-volume:/data:rw
   minio4:
     <<: *minio-common
     hostname: minio4
     container_name: minio4
     volumes:
-      - minio-data4-volume:/data
+      - minio-data4-volume:/data:rw
 
   # minio-nginx:
   #   image: nginx:1.19.2-alpine

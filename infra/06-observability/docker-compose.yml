@@ -66,8 +66,8 @@ services:
       --web.enable-remote-write-receiver"
     volumes:
       - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml.template:ro
-      - ./prometheus/config/alert_rules:/etc/prometheus/alert_rules
-      - prometheus-data:/prometheus
+      - ./prometheus/config/alert_rules:/etc/prometheus/alert_rules:ro
+      - prometheus-data:/prometheus:rw
     networks:
       - infra_net
     secrets:
@@ -115,7 +115,7 @@ services:
       - '${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}'
     volumes:
       - ./loki/config/loki-config.yaml:/etc/loki/loki-config.yaml:ro
-      - loki-data:/loki
+      - loki-data:/loki:rw
     environment:
       - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
     secrets:
@@ -146,7 +146,7 @@ services:
       exec /usr/bin/tempo -config.file=/etc/tempo.yaml -config.expand-env=true"
     volumes:
       - ./tempo/config/tempo.yaml:/etc/tempo.yaml:ro
-      - tempo-data:/var/tempo
+      - tempo-data:/var/tempo:rw
     networks:
       - infra_net
     ports:
@@ -232,9 +232,9 @@ services:
       - GF_AUTH_GENERIC_OAUTH_CODE_CHALLENGE_METHOD=S256
       - GF_PLUGINS_PREINSTALL_SYNC=grafana-pyroscope-app,hamedkarbasi93-kafka-datasource,redis-datasource,grafana-opensearch-datasource,redis-app,redis-explorer-app
     volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana/dashboards:/etc/grafana/dashboards
-      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:rw
+      - ./grafana/dashboards:/etc/grafana/dashboards:rw
+      - grafana-data:/var/lib/grafana:rw
     secrets:
       - grafana_admin_password
       - oauth2_proxy_client_secret
@@ -372,8 +372,8 @@ services:
           /etc/alertmanager/config.yml.template > /tmp/config.yml &&
       exec /bin/alertmanager --config.file=/tmp/config.yml --storage.path=/alertmanager"
     volumes:
-      - ./alertmanager/config/config.yml:/etc/alertmanager/config.yml.template
-      - alertmanager-data:/alertmanager
+      - ./alertmanager/config/config.yml:/etc/alertmanager/config.yml.template:rw
+      - alertmanager-data:/alertmanager:rw
     depends_on:
       prometheus:
         condition: service_healthy

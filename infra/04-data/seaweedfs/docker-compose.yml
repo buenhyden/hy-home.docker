@@ -22,7 +22,7 @@ services:
       - ${SEAWEEDFS_MASTER_GRPC_PORT:-19333}
     command: '-v=1 master -ip=seaweedfs-master -volumeSizeLimitMB=1024'
     volumes:
-      - seaweedfs-master-data:/data
+      - seaweedfs-master-data:/data:rw
     networks:
       - infra_net
     labels:
@@ -44,7 +44,7 @@ services:
       - ${SEAWEEDFS_VOLUME_GRPC_PORT:-18085}
     command: '-v=1 volume -mserver=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333} -port=${SEAWEEDFS_VOLUME_HTTP_PORT:-8085} -ip=seaweedfs-volume -preStopSeconds=1 -max=10000'
     volumes:
-      - seaweedfs-volume-data:/data
+      - seaweedfs-volume-data:/data:rw
     depends_on:
       seaweedfs-master:
         condition: service_healthy

@@ -34,7 +34,7 @@ services:
       nofile: { soft: 65536, hard: 65536 }
     shm_size: 1g
     volumes:
-      - opensearch-data:/usr/share/opensearch/data
+      - opensearch-data:/usr/share/opensearch/data:rw
       - ../../../secrets/certs:/usr/share/opensearch/config/certs:ro
       - ./opensearch/config/opensearch-security/config.yml:/usr/share/opensearch/config/opensearch-security/config.yml:ro
       - ./opensearch/config/opensearch-security/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml:ro

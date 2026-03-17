@@ -36,8 +36,8 @@ services:
       retries: 5
       start_period: 15s
     volumes:
-      - sonarqube-data-volume:/opt/sonarqube/data
-      - sonarqube-logs-volume:/opt/sonarqube/logs
+      - sonarqube-data-volume:/opt/sonarqube/data:rw
+      - sonarqube-logs-volume:/opt/sonarqube/logs:rw
     networks:
       - infra_net
     secrets:

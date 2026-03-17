@@ -60,7 +60,7 @@ services:
       - MAX_HEAP_SIZE=2G
       - HEAP_NEWSIZE=200M
     volumes:
-      - cassandra-node1-volume:/bitnami/cassandra
+      - cassandra-node1-volume:/bitnami/cassandra:rw
     secrets:
       - cassandra_password
     healthcheck:

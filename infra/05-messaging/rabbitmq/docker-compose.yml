@@ -31,7 +31,7 @@ services:
       RABBITMQ_DEFAULT_USER_FILE: /run/secrets/rabbitmq_user
       RABBITMQ_DEFAULT_PASS_FILE: /run/secrets/rabbitmq_password
     volumes:
-      - rabbitmq-data-volume:/var/lib/rabbitmq
+      - rabbitmq-data-volume:/var/lib/rabbitmq:rw
     networks:
       - infra_net
     healthcheck:

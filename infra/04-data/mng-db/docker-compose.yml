@@ -38,7 +38,7 @@ services:
     networks:
       - infra_net
     volumes:
-      - mng-valkey-data:/data
+      - mng-valkey-data:/data:rw
     command: >
       sh -c '
       valkey-server
@@ -67,7 +67,6 @@ services:
       service: template-infra-low
     image: oliver006/redis_exporter:v1.81.0-alpine
     container_name: mng-valkey-exporter
-
     labels: {}
     read_only: true
     tmpfs:
@@ -115,7 +114,7 @@ services:
     networks:
       - infra_net
     volumes:
-      - redisinsight-data:/db
+      - redisinsight-data:/db:rw
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -145,7 +144,7 @@ services:
     secrets:
       - mng_postgres_password
     volumes:
-      - mng-pg-data:/var/lib/postgresql/data
+      - mng-pg-data:/var/lib/postgresql/data:rw
       - ./pg/init-scripts/init_users_dbs.sql:/docker-entrypoint-initdb.d/init_users_dbs.sql
     healthcheck:
       test: ['CMD', 'pg_isready', '-U', 'postgres']
@@ -192,7 +191,7 @@ services:
       unset SONARQUBE_DB_PASSWORD;
       echo 'SQL 스크립트 실행 완료.';"
     volumes:
-      - ./pg/init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql
+      - ./pg/init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql:ro
     depends_on:
       mng-pg:
         condition: service_healthy

@@ -33,8 +33,8 @@ services:
     secrets:
       - oauth2_proxy_client_secret
     volumes:
-      - vault-data:/vault/file
-      - ./config:/vault/config
+      - vault-data:/vault/file:rw
+      - ./config:/vault/config:ro
     command: vault server -config=/vault/config/vault.hcl
     cap_add:
       - IPC_LOCK

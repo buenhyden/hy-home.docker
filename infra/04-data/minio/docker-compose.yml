@@ -29,7 +29,7 @@ services:
     networks:
       - infra_net
     volumes:
-      - minio-data:/data
+      - minio-data:/data:rw
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
       interval: 30s

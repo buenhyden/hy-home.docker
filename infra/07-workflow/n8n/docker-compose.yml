@@ -57,6 +57,9 @@ services:
       - n8n_db_password
       - n8n_encryption_key
       - n8n_runner_auth_token
+    volumes:
+      - n8n-data:/home/node/.n8n:rw
+      - ./custom:/home/node/.n8n/custom:rw
     environment:
       <<: *n8n-common-env
       N8N_PROXY_HOPS: 1
@@ -98,6 +101,9 @@ services:
     depends_on:
       n8n: { condition: service_healthy }
       n8n-valkey: { condition: service_healthy }
+    volumes:
+      - n8n-data:/home/node/.n8n:rw
+      - ./custom:/home/node/.n8n/custom:rw
     environment:
       <<: *n8n-common-env
     secrets:
@@ -108,9 +114,6 @@ services:
     networks:
       - infra_net
     command: worker
-    volumes:
-      - n8n-data:/home/node/.n8n
-      - ./custom:/home/node/.n8n/custom
 
   n8n-task-runner:
     extends:
@@ -118,7 +121,8 @@ services:
       service: template-infra-med
     image: n8nio/runners:2.6.2
     container_name: n8n-task-runner
-
+    volumes:
+      - n8n-task-runner-data:/home/node/.n8n:rw
   n8n-valkey:
     extends:
       file: ../../common-optimizations.yml
@@ -131,7 +135,8 @@ services:
       - infra_net
     restart: unless-stopped
     volumes:
-      - n8n-valkey-data:/data
+      - n8n-data:/home/node/.n8n:rw
+      - ./custom:/home/node/.n8n/custom:rw
     command: >
       sh -c '
       valkey-server

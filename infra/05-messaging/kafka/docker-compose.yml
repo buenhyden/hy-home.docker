@@ -85,8 +85,8 @@ services:
     container_name: kafka-1
     hostname: kafka-1
     volumes:
-      - kafka-1-data:/var/lib/kafka/data
-      - ./jmx-exporter:/usr/share/jmx_exporter
+      - kafka-1-data:/var/lib/kafka/data:rw
+      - ./jmx-exporter:/usr/share/jmx_exporter:ro
     ports:
       - '${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}'
       - '${KAFKA_JMX_1_HOST_PORT:-19101}:${KAFKA_JMX_PORT:-9101}'
@@ -103,8 +103,8 @@ services:
     container_name: kafka-2
     hostname: kafka-2
     volumes:
-      - kafka-2-data:/var/lib/kafka/data
-      - ./jmx-exporter:/usr/share/jmx_exporter
+      - kafka-2-data:/var/lib/kafka/data:rw
+      - ./jmx-exporter:/usr/share/jmx_exporter:ro
     ports:
       - '${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}'
       - '${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}'
@@ -121,8 +121,8 @@ services:
     container_name: kafka-3
     hostname: kafka-3
     volumes:
-      - kafka-3-data:/var/lib/kafka/data
-      - ./jmx-exporter:/usr/share/jmx_exporter
+      - kafka-3-data:/var/lib/kafka/data:rw
+      - ./jmx-exporter:/usr/share/jmx_exporter:ro
     ports:
       - '${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}'
       - '${KAFKA_JMX_3_HOST_PORT:-39101}:${KAFKA_JMX_PORT:-9101}'
@@ -286,7 +286,7 @@ services:
       KAFKA_CLUSTERS_0_METRICS_STORE_KAFKA_TOPIC: 'kafka_metrics'
       DYNAMIC_CONFIG_ENABLED: 'true'
     volumes:
-      - ./kafbat-ui/dynamic_config.yaml:/etc/kafkaui/dynamic_config.yaml
+      - ./kafbat-ui/dynamic_config.yaml:/etc/kafkaui/dynamic_config.yaml:ro
     labels:
       <<: *tier-label
       traefik.enable: 'true'

@@ -43,7 +43,7 @@ services:
       - couchdb_password
       - couchdb_cookie
     volumes:
-      - couchdb1-data:/opt/couchdb/data
+      - couchdb1-data:/opt/couchdb/data:rw
     expose:
       - ${COUCHDB_PORT:-5984}
       - ${COUCHDB_ERLANG_MAPPER_PORT:-4369}
@@ -91,7 +91,7 @@ services:
       - couchdb_password
       - couchdb_cookie
     volumes:
-      - couchdb2-data:/opt/couchdb/data
+      - couchdb2-data:/opt/couchdb/data:rw
     expose:
       - ${COUCHDB_PORT:-5984}
       - ${COUCHDB_ERLANG_MAPPER_PORT:-4369}
@@ -135,7 +135,7 @@ services:
       - couchdb_password
       - couchdb_cookie
     volumes:
-      - couchdb3-data:/opt/couchdb/data
+      - couchdb3-data:/opt/couchdb/data:rw
     expose:
       - ${COUCHDB_PORT:-5984}
       - ${COUCHDB_ERLANG_MAPPER_PORT:-4369}
