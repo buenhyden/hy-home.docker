@@ -1,0 +1,3 @@
+[submodule "projects/storybook/mcp"]
+	path = projects/storybook/mcp
+	url = https://github.com/storybookjs/mcp.git
