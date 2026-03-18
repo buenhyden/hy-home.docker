@@ -23,7 +23,6 @@ volumes:
 
 services:
   keycloak:
-    profiles: ['core']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -31,20 +30,46 @@ services:
     container_name: keycloak
     hostname: keycloak
     tmpfs:
-      - /opt/keycloak/data
       - /tmp
     volumes:
       - keycloak-themes:/opt/keycloak/themes:ro
       - keycloak-config:/opt/keycloak/conf:ro
       - keycloak-providers:/opt/keycloak/providers:ro
-    command: start-dev
-    networks:
-      - infra_net
+    command:
+      - start
+      - --http-enabled=true
+      - --proxy-headers=xforwarded
+    environment:
+      KC_DB: ${KEYCLOAK_DATABASE}
+      KC_DB_URL: jdbc:postgresql://${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/${KEYCLOAK_DBNAME}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
+      KC_DB_PASSWORD_FILE: /run/secrets/keycloak_db_password
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USER}
+      KC_BOOTSTRAP_ADMIN_PASSWORD_FILE: /run/secrets/keycloak_admin_password
+      KC_HOSTNAME: keycloak.${DEFAULT_URL}
+      KC_HTTP_ENABLED: 'true'
+      KC_PROXY_HEADERS: xforwarded
+      KC_METRICS_ENABLED: 'true'
+      KC_HEALTH_ENABLED: 'true'
+      KC_DB_POOL_INITIAL_SIZE: 1
+      KC_DB_POOL_MIN_SIZE: 1
+      KC_DB_POOL_MAX_SIZE: 10
+      JAVA_OPTS_APPEND: >-
+        -Dquarkus.datasource.jdbc.idle-removal-interval=5M
+        -Dquarkus.datasource.jdbc.background-validation-interval=1M
+    expose:
+      - ${KEYCLOAK_MANAGEMENT_PORT:-9000}
+      - ${KEYCLOAK_PORT:-8080}
     secrets:
       - keycloak_db_password
       - keycloak_admin_password
-    expose:
-      - ${KEYCLOAK_MANAGEMENT_PORT:-9000}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.keycloak.rule: Host(`keycloak.${DEFAULT_URL}`)
+      traefik.http.routers.keycloak.entrypoints: websecure
+      traefik.http.routers.keycloak.tls: 'true'
+      traefik.http.services.keycloak.loadbalancer.server.port: ${KEYCLOAK_PORT:-8080}
     healthcheck:
       test:
         [
@@ -55,27 +80,5 @@ services:
       timeout: 30s
       retries: 5
       start_period: 60s
-    environment:
-      KC_DB: ${KEYCLOAK_DATABASE}
-      KC_DB_URL: jdbc:postgresql://${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/${KEYCLOAK_DBNAME}
-      KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
-      KC_DB_PASSWORD_FILE: /run/secrets/keycloak_db_password
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
-      KEYCLOAK_ADMIN_PASSWORD_FILE: /run/secrets/keycloak_admin_password
-      KC_HOSTNAME: https://keycloak.${DEFAULT_URL}
-      KC_PROXY_HEADERS: xforwarded
-      KC_DB_POOL_INITIAL_SIZE: 1
-      KC_DB_POOL_MIN_SIZE: 1
-      KC_DB_POOL_MAX_SIZE: 10
-      KC_METRICS_ENABLED: true
-      KC_HEALTH_ENABLED: true
-      JAVA_OPTS_APPEND: >-
-        -Dquarkus.datasource.jdbc.idle-removal-interval=5M
-        -Dquarkus.datasource.jdbc.background-validation-interval=1M
-    labels:
-      <<: *tier-label
-      traefik.enable: 'true'
-      traefik.http.routers.keycloak.rule: Host(`keycloak.${DEFAULT_URL}`)
-      traefik.http.routers.keycloak.entrypoints: websecure
-      traefik.http.routers.keycloak.tls: 'true'
-      traefik.http.services.keycloak.loadbalancer.server.port: ${KEYCLOAK_PORT:-8080}
+    networks:
+      - infra_net

@@ -3,22 +3,14 @@ x-tier-label: &tier-label
 
 services:
   oauth2-proxy:
-    profiles: ['core']
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-infra-readonly-med
     # image: quay.io/oauth2-proxy/oauth2-proxy:v7.14.2
     build:
       context: .
       dockerfile: Dockerfile
     container_name: oauth2-proxy
-    read_only: true
-    tmpfs:
-      - /tmp
-    secrets:
-      - mng_valkey_password
-      - oauth2_proxy_client_secret
-      - oauth2_proxy_cookie_secret
     entrypoint:
       - /bin/sh
       - -c
@@ -36,6 +28,10 @@ services:
     volumes:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
+    secrets:
+      - mng_valkey_password
+      - oauth2_proxy_client_secret
+      - oauth2_proxy_cookie_secret
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -45,13 +41,8 @@ services:
       traefik.http.services.oauth2-proxy.loadbalancer.server.port: ${OAUTH2_PROXY_PORT:-4180}
     networks:
       - infra_net
-    # depends_on:
-    #   mng-valkey:
-    #     condition: service_healthy
-    #   keycloak:
-    #     condition: service_healthy
     healthcheck:
-      test: ['CMD', 'wget', '-qO-', 'http://localhost:4180/ping']
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:$${OAUTH2_PROXY_PORT:-4180}/ping']
       interval: 30s
       timeout: 10s
       retries: 3

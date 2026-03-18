@@ -11,13 +11,11 @@ volumes:
 
 services:
   minio:
-    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio
-    read_only: false
     command: server /data --console-address ":${MINIO_CONSOLE_HOST_PORT:-9001}"
     secrets:
       - minio_root_username
@@ -27,12 +25,10 @@ services:
       MINIO_ROOT_PASSWORD_FILE: /run/secrets/minio_root_password
       MINIO_PROMETHEUS_AUTH_TYPE: 'public'
       MINIO_API_ROOT_ACCESS: 'on'
-    networks:
-      - infra_net
     volumes:
       - minio-data:/data:rw
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      test: ['CMD', 'curl', '-f', 'http://localhost:$${MINIO_PORT:-9000}/minio/health/live']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -49,28 +45,15 @@ services:
       traefik.http.routers.minio-console.tls: 'true'
       traefik.http.routers.minio-console.service: minio-console
       traefik.http.services.minio-console.loadbalancer.server.port: ${MINIO_CONSOLE_PORT:-9001}
+    networks:
+      - infra_net
 
   minio-create-buckets:
-    profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
     image: minio/mc:RELEASE.2025-08-13T08-35-41Z
     container_name: minio-create-buckets
-    restart: 'no'
-    read_only: true
-    tmpfs:
-      - /tmp
-    secrets:
-      - minio_root_username
-      - minio_root_password
-      - minio_app_username
-      - minio_app_user_password
-    depends_on:
-      minio:
-        condition: service_healthy
-    networks:
-      - infra_net
     entrypoint: ['/bin/sh', '-c']
     command: |
       set -e
@@ -88,5 +71,15 @@ services:
       mc mb myminio/cdn-bucket --ignore-existing
       mc mb myminio/doc-intel-assets --ignore-existing
       mc anonymous set public myminio/cdn-bucket || true
+    depends_on:
+      minio:
+        condition: service_healthy
+    secrets:
+      - minio_root_username
+      - minio_root_password
+      - minio_app_username
+      - minio_app_user_password
     labels:
       <<: *tier-label
+    networks:
+      - infra_net

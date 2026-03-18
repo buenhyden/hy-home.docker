@@ -37,24 +37,26 @@ volumes:
 
 services:
   prometheus:
-    profiles: ['obs']
-    extends: { file: ../common-optimizations.yml, service: template-stateful-high }
+    extends:
+      file: ../common-optimizations.yml
+      service: template-stateful-high
     image: prom/prometheus:v3.9.0
     container_name: infra-prometheus
     user: '1000:1000'
-    read_only: false
-    tmpfs: [/tmp, /etc/prometheus:size=10M]
-    entrypoint: ['/bin/sh', '-c']
+    tmpfs:
+      - /tmp
+      - /etc/prometheus:size=10M
+    entrypoint:
+      - '/bin/sh'
+      - '-c'
     command: >
       "OPENSEARCH_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) && sed \"s|__OPENSEARCH_PASSWORD__|$$OPENSEARCH_PASSWORD|g\" /etc/prometheus/prometheus.yml.template > /tmp/prometheus.yml && exec /bin/prometheus --config.file=/tmp/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.enable-lifecycle --web.enable-remote-write-receiver"
     volumes:
-      [
-        ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml.template:ro,
-        ./prometheus/config/alert_rules:/etc/prometheus/alert_rules:ro,
-        prometheus-data:/prometheus:rw,
-      ]
-    networks: [infra_net]
-    secrets: [opensearch_exporter_password]
+      - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml.template:ro
+      - ./prometheus/config/alert_rules:/etc/prometheus/alert_rules:ro
+      - prometheus-data:/prometheus:rw
+    secrets:
+      - opensearch_exporter_password
     healthcheck:
       test:
         [
@@ -76,109 +78,128 @@ services:
       traefik.http.routers.prometheus.entrypoints: websecure
       traefik.http.routers.prometheus.tls: 'true'
       traefik.http.services.prometheus.loadbalancer.server.port: ${PROMETHEUS_PORT:-9090}
+    networks:
+      - infra_net
+
   loki:
-    profiles: ['obs']
-    extends: { file: ../common-optimizations.yml, service: template-stateful-high }
+    extends:
+      file: ../common-optimizations.yml
+      service: template-stateful-high
     image: grafana/loki:3.6.6
     container_name: infra-loki
-    read_only: false
-    entrypoint: ['/bin/sh', '-c']
+    entrypoint:
+      - '/bin/sh'
+      - '-c'
     command: >
       "export MINIO_APP_USER_PASSWORD=$$(cat /run/secrets/minio_app_user_password) && exec /usr/bin/loki -config.file=/etc/loki/loki-config.yaml -config.expand-env=true"
-    networks: [infra_net]
-    ports: ['${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}']
-    volumes: [./loki/config/loki-config.yaml:/etc/loki/loki-config.yaml:ro, loki-data:/loki:rw]
+    volumes:
+      - ./loki/config/loki-config.yaml:/etc/loki/loki-config.yaml:ro
+      - loki-data:/loki:rw
+    ports:
+      - '${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}'
     environment:
-      - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
-    secrets: [minio_app_user_password]
-    labels: { <<: *tier-label }
+      MINIO_APP_USERNAME: ${MINIO_APP_USERNAME}
+    secrets:
+      - minio_app_user_password
     healthcheck:
-      test: ['CMD-SHELL', 'wget -q --spider http://localhost:3100/ready || exit 1']
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:$${LOKI_PORT:-3100}/ready || exit 1']
       interval: 30s
       timeout: 15s
       retries: 5
       start_period: 1m
+    labels:
+      <<: *tier-label
+    networks:
+      - infra_net
   tempo:
-    profiles: ['obs']
-    extends: { file: ../common-optimizations.yml, service: template-stateful-high }
+    extends:
+      file: ../common-optimizations.yml
+      service: template-stateful-high
     image: grafana/tempo:2.10.1
     container_name: infra-tempo
-    read_only: false
     entrypoint: ['/bin/sh', '-c']
     command: >
       "export MINIO_APP_USER_PASSWORD=$$(cat /run/secrets/minio_app_user_password) && exec /usr/bin/tempo -config.file=/etc/tempo.yaml -config.expand-env=true"
-    volumes: [./tempo/config/tempo.yaml:/etc/tempo.yaml:ro, tempo-data:/var/tempo:rw]
-    networks: [infra_net]
-    ports: ['${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}']
+    volumes:
+      - ./tempo/config/tempo.yaml:/etc/tempo.yaml:ro
+      - tempo-data:/var/tempo:rw
+    ports:
+      - '${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}'
     environment:
-      - MINIO_APP_USERNAME=${MINIO_APP_USERNAME}
-    secrets: [minio_app_user_password]
+      MINIO_APP_USERNAME: ${MINIO_APP_USERNAME}
+    secrets:
+      - minio_app_user_password
     healthcheck:
       test:
         ['CMD-SHELL', 'wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1']
       interval: 30s
       timeout: 5s
       retries: 5
-    labels: { <<: *tier-label }
+    labels:
+      <<: *tier-label
+    networks:
+      - infra_net
+
   pyroscope:
-    profiles: ['obs']
-    extends: { file: ../common-optimizations.yml, service: template-infra-med }
+    extends:
+      file: ../common-optimizations.yml
+      service: template-infra-med
     image: grafana/pyroscope:1.18.1
     container_name: infra-pyroscope
-    read_only: true
-    tmpfs: [/tmp]
-    ports: ['${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}']
-    networks: [infra_net]
+    ports:
+      - '${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}'
     healthcheck:
-      {
-        test: ['CMD-SHELL', 'wget -q --spider http://localhost:4040/ready || exit 1'],
-        interval: 30s,
-        timeout: 15s,
-        retries: 5,
-        start_period: 15s,
-      }
-    labels: { <<: *tier-label }
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:4040/ready || exit 1']
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+    networks:
+      - infra_net
+
   grafana:
-    profiles: ['obs']
-    extends: { file: ../common-optimizations.yml, service: template-stateful-med }
+    extends:
+      file: ../common-optimizations.yml
+      service: template-stateful-med
     image: grafana/grafana:12.3.3
     container_name: infra-grafana
-    read_only: false
     environment:
-      - GF_SERVER_ROOT_URL=https://grafana.${DEFAULT_URL}
-      - GF_SERVER_DOMAIN=grafana.${DEFAULT_URL}
-      - GF_AUTH_OAUTH_AUTO_LOGIN=true
-      - GF_AUTH_DISABLE_LOGIN_FORM=true
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USERNAME}
-      - GF_SECURITY_ADMIN_PASSWORD__FILE=/run/secrets/grafana_admin_password
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_AUTH_GENERIC_OAUTH_ENABLED=true
-      - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}
-      - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE=/run/secrets/oauth2_proxy_client_secret
+      GF_SERVER_ROOT_URL: https://grafana.${DEFAULT_URL}
+      GF_SERVER_DOMAIN: grafana.${DEFAULT_URL}
+      GF_AUTH_OAUTH_AUTO_LOGIN: 'true'
+      GF_AUTH_DISABLE_LOGIN_FORM: 'true'
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USERNAME}
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_AUTH_GENERIC_OAUTH_ENABLED: 'true'
+      GF_AUTH_GENERIC_OAUTH_CLIENT_ID: ${OAUTH2_PROXY_CLIENT_ID}
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE: /run/secrets/oauth2_proxy_client_secret
     volumes:
-      [
-        ./grafana/provisioning:/etc/grafana/provisioning:ro,
-        ./grafana/dashboards:/etc/grafana/dashboards:ro,
-        grafana-data:/var/lib/grafana:rw,
-      ]
-    secrets: [grafana_admin_password, oauth2_proxy_client_secret]
-    networks: [infra_net]
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/etc/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana:rw
+    secrets:
+      - grafana_admin_password
+      - oauth2_proxy_client_secret
     depends_on:
-      prometheus: { condition: service_healthy }
-      loki: { condition: service_started }
-      tempo: { condition: service_started }
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_started
+      tempo:
+        condition: service_started
     healthcheck:
-      {
-        test:
-          [
-            'CMD-SHELL',
-            'wget -q --spider http://localhost:${GRAFANA_PORT:-3000}/api/health || exit 1',
-          ],
-        interval: 15s,
-        timeout: 15s,
-        retries: 5,
-        start_period: 15s,
-      }
+      test:
+        [
+          'CMD-SHELL',
+          'wget -q --spider http://localhost:${GRAFANA_PORT:-3000}/api/health || exit 1',
+        ]
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 15s
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -187,42 +208,45 @@ services:
       traefik.http.routers.grafana.tls: 'true'
       traefik.http.services.grafana.loadbalancer.server.port: ${GRAFANA_PORT:-3000}
       traefik.http.routers.grafana.middlewares: sso-errors@file,sso-auth@file
+    networks:
+      - infra_net
+
   alloy:
-    profiles: ['obs']
-    extends: { file: ../common-optimizations.yml, service: template-infra-med }
+    extends:
+      file: ../common-optimizations.yml
+      service: template-infra-med
     image: grafana/alloy:v1.13.1
-    container_name: infra-Alloy
+    container_name: infra-alloy
     read_only: true
     command:
-      ['run', '--server.http.listen-addr=0.0.0.0:${ALLOY_PORT:-12345}', '/etc/alloy/config.alloy']
+      - 'run'
+      - '--server.http.listen-addr=0.0.0.0:${ALLOY_PORT:-12345}'
+      - '/etc/alloy/config.alloy'
     volumes:
-      [
-        ./alloy/config/config.alloy:/etc/alloy/config.alloy:ro,
-        /var/lib/docker/containers:/var/lib/docker/containers:ro,
-        /var/run/docker.sock:/var/run/docker.sock:ro,
-      ]
+      - ./alloy/config/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
-      [
-        '${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}',
-        '${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}',
-      ]
-    networks: [infra_net]
+      - '${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}'
+      - '${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}'
     depends_on:
-      prometheus: { condition: service_healthy }
-      loki: { condition: service_started }
-      tempo: { condition: service_started }
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_started
+      tempo:
+        condition: service_started
     healthcheck:
-      {
-        test:
-          [
-            'CMD-SHELL',
-            "bash -c 'exec 3<>/dev/tcp/localhost/12345; printf \"HEAD /-/healthy HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n\" >&3; timeout 2 head -1 <&3 | grep -q \"200\"'",
-          ],
-        interval: 15s,
-        timeout: 15s,
-        retries: 5,
-        start_period: 15s,
-      }
+      test:
+        [
+          'CMD-SHELL',
+          "bash -c 'exec 3<>/dev/tcp/localhost/12345; printf \"HEAD /-/healthy HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n\" >&3; timeout 2 head -1 <&3 | grep -q \"200\"'",
+        ]
+      interval: 15s,
+      timeout: 15s,
+      retries: 5,
+      start_period: 15s,
+
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -230,65 +254,72 @@ services:
       traefik.http.routers.alloy.entrypoints: websecure
       traefik.http.routers.alloy.tls: 'true'
       traefik.http.services.alloy.loadbalancer.server.port: ${ALLOY_PORT:-12345}
+    networks:
+      - infra_net
+
   cadvisor:
-    profiles: ['obs']
-    extends: { file: ../common-optimizations.yml, service: template-host-observer-med }
+    extends:
+      file: ../common-optimizations.yml
+      service: template-host-observer-med
     image: gcr.io/cadvisor/cadvisor:v0.55.1
     container_name: cadvisor
     privileged: true
-    devices: [/dev/kmsg]
+    devices:
+      - /dev/kmsg
     command:
-      [
-        '--docker_only=true',
-        '--housekeeping_interval=30s',
-        '--max_housekeeping_interval=35s',
-        '--event_storage_event_limit=default=0',
-        '--event_storage_age_limit=default=0',
-      ]
-    expose: ['${CADVISOR_PORT:-8080}']
+      - '--docker_only=true'
+      - '--housekeeping_interval=30s'
+      - '--max_housekeeping_interval=35s'
+      - '--event_storage_event_limit=default=0'
+      - '--event_storage_age_limit=default=0'
+    expose:
+      - '${CADVISOR_PORT:-8080}'
     volumes:
-      [
-        /:/rootfs:ro,
-        /var/run:/var/run:ro,
-        /sys:/sys:ro,
-        /var/lib/docker/:/var/lib/docker:ro,
-        /etc/machine-id:/etc/machine-id:ro,
-        /var/lib/dbus/machine-id:/var/lib/dbus/machine-id:ro,
-      ]
-    networks: [infra_net]
-    labels: { <<: *tier-label }
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - /var/lib/dbus/machine-id:/var/lib/dbus/machine-id:ro
+    labels:
+      <<: *tier-label
+    networks:
+      - infra_net
+
   alertmanager:
-    profiles: ['obs']
-    extends: { file: ../common-optimizations.yml, service: template-stateful-low }
+    extends:
+      file: ../common-optimizations.yml
+      service: template-stateful-low
     image: prom/alertmanager:v0.30.0
     container_name: infra-alertmanager
-    read_only: false
-    tmpfs: [/tmp, /etc/alertmanager:size=1M]
-    secrets: [smtp_username, smtp_password, slack_webhook]
+    tmpfs:
+      - /tmp
+      - /etc/alertmanager:size=1M
     entrypoint: ['/bin/sh', '-c']
     command: >
       "SMTP_USERNAME=$$(cat /run/secrets/smtp_username) && SMTP_PASSWORD=$$(cat /run/secrets/smtp_password) && SLACK_WEBHOOK_URL=$$(cat /run/secrets/slack_webhook) && sed -e \"s|__SMTP_USERNAME__|$$SMTP_USERNAME|g\" -e \"s|__SMTP_PASSWORD__|$$SMTP_PASSWORD|g\" -e \"s|__SLACK_WEBHOOK_URL__|$$SLACK_WEBHOOK_URL|g\" /etc/alertmanager/config.yml.template > /tmp/config.yml && exec /bin/alertmanager --config.file=/tmp/config.yml --storage.path=/alertmanager"
     volumes:
-      [
-        ./alertmanager/config/config.yml:/etc/alertmanager/config.yml.template:ro,
-        alertmanager-data:/alertmanager:rw,
-      ]
+      - ./alertmanager/config/config.yml:/etc/alertmanager/config.yml.template:ro
+      - alertmanager-data:/alertmanager:rw
+    secrets:
+      - smtp_username
+      - smtp_password
+      - slack_webhook
     depends_on:
-      prometheus: { condition: service_healthy }
-      grafana: { condition: service_healthy }
-    networks: [infra_net]
+      prometheus:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
     healthcheck:
-      {
-        test:
-          [
-            'CMD-SHELL',
-            'wget -q --spider http://localhost:${ALERTMANAGER_PORT:-9093}/-/ready || exit 1',
-          ],
-        interval: 15s,
-        timeout: 15s,
-        retries: 5,
-        start_period: 15s,
-      }
+      test:
+        [
+          'CMD-SHELL',
+          'wget -q --spider http://localhost:${ALERTMANAGER_PORT:-9093}/-/ready || exit 1',
+        ]
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 15s
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -296,30 +327,33 @@ services:
       traefik.http.routers.alertmanager.entrypoints: websecure
       traefik.http.routers.alertmanager.tls: 'true'
       traefik.http.services.alertmanager.loadbalancer.server.port: ${ALERTMANAGER_PORT:-9093}
+    networks:
+      - infra_net
+
   pushgateway:
-    profiles: ['obs']
-    extends: { file: ../common-optimizations.yml, service: template-infra-low }
+    extends:
+      file: ../common-optimizations.yml
+      service: template-infra-readonly-low
     image: prom/pushgateway:v1.11.2
     container_name: pushgateway
-    read_only: true
-    tmpfs: [/tmp]
-    expose: ['${PUSHGATEWAY_PORT:-9091}']
+    expose:
+      - '${PUSHGATEWAY_PORT:-9091}'
     depends_on:
-      prometheus: { condition: service_healthy }
-      grafana: { condition: service_healthy }
-    networks: [infra_net]
+      prometheus:
+        condition: service_healthy
+      grafana:
+        condition: service_healthy
     healthcheck:
-      {
-        test:
-          [
-            'CMD-SHELL',
-            'wget -q --spider http://localhost:${PUSHGATEWAY_PORT:-9091}/-/ready || exit 1',
-          ],
-        interval: 15s,
-        timeout: 15s,
-        retries: 5,
-        start_period: 15s,
-      }
+      test:
+        [
+          'CMD-SHELL',
+          'wget -q --spider http://localhost:${PUSHGATEWAY_PORT:-9091}/-/ready || exit 1',
+        ]
+      interval: 15s
+      timeout: 15s
+      retries: 5
+      start_period: 15s
+
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -327,3 +361,5 @@ services:
       traefik.http.routers.pushgateway.entrypoints: websecure
       traefik.http.routers.pushgateway.tls: 'true'
       traefik.http.services.pushgateway.loadbalancer.server.port: ${PUSHGATEWAY_PORT:-9091}
+    networks:
+      - infra_net

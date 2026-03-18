@@ -3,22 +3,15 @@ x-tier-label: &tier-label
 
 services:
   traefik:
-    profiles: ['core']
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-infra-readonly-med
     image: traefik:v3.6.8
     container_name: traefik
     hostname: traefik
-    read_only: true
-    tmpfs:
-      - /tmp
-      - /run
     ports:
       - ${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}
       - ${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}
-      - ${TRAEFIK_DASHBOARD_HOST_PORT:-8080}:${TRAEFIK_DASHBOARD_PORT:-8080}
-      - ${TRAEFIK_METRICS_HOST_PORT:-9100}:${TRAEFIK_METRICS_PORT:-9100}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ../../../secrets/certs:/certs:ro
@@ -41,11 +34,7 @@ services:
       retries: 5
       start_period: 15s
     networks:
-      infra_net:
-        aliases:
-          - keycloak.${DEFAULT_URL}
-          - auth.${DEFAULT_URL}
-          - whoami.${DEFAULT_URL}
+      - infra_net
     secrets:
       - traefik_basicauth_password
       - traefik_opensearch_basicauth_password

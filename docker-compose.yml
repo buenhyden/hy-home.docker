@@ -10,8 +10,10 @@ networks:
           gateway: ${INFRA_GATEWAY:-172.19.0.1}
   project_net:
     external: true
+    name: ${PROJECT_NET_NAME:-project_net}
   kind:
     external: true
+    name: ${KIND_NET_NAME:-kind}
 
 secrets:
   # ── Common ─────────────────────────────────────────────

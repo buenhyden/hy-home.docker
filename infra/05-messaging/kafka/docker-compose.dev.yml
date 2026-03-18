@@ -1,0 +1,252 @@
+x-tier-label: &tier-label
+  hy-home.tier: messaging
+
+volumes:
+  kafka-dev-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka-dev/kafka-data
+
+  kafka-connect-dev-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka-dev/kafka-connect
+
+services:
+  kafka-dev:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
+    image: confluentinc/cp-kafka:8.1.1
+    container_name: kafka-dev
+    hostname: kafka-dev
+    read_only: false
+    environment:
+      CLUSTER_ID: ${KAFKA_DEV_CLUSTER_ID}
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-dev:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:19092,CONTROLLER://0.0.0.0:9093,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-dev:19092,EXTERNAL://localhost:${KAFKA_DEV_EXTERNAL_HOST_PORT:-9092}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_HEAP_OPTS: -Xms512M -Xmx512M
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_OPTS: >-
+        -Dcom.sun.management.jmxremote
+        -Dcom.sun.management.jmxremote.authenticate=false
+        -Dcom.sun.management.jmxremote.ssl=false
+        -Djava.rmi.server.hostname=localhost
+        -Dcom.sun.management.jmxremote.rmi.port=9101
+        -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=9404:/usr/share/jmx_exporter/kafka-config.yaml
+    volumes:
+      - kafka-dev-data:/var/lib/kafka/data:rw
+      - ./infra/05-messaging/kafka/jmx-exporter:/usr/share/jmx_exporter:ro
+    ports:
+      - ${KAFKA_DEV_EXTERNAL_HOST_PORT:-9092}:9092
+      - ${KAFKA_DEV_JMX_HOST_PORT:-19101}:9101
+      - ${KAFKA_DEV_JMX_EXPORTER_HOST_PORT:-19404}:9404
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'unset KAFKA_JMX_OPTS; kafka-broker-api-versions --bootstrap-server localhost:19092 >/dev/null 2>&1 || exit 1',
+        ]
+      interval: 20s
+      timeout: 15s
+      retries: 8
+      start_period: 30s
+    labels:
+      <<: *tier-label
+    networks:
+      - infra_net
+
+  schema-registry-dev:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    image: confluentinc/cp-schema-registry:8.1.1
+    container_name: schema-registry-dev
+    read_only: true
+    tmpfs:
+      - /tmp
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry-dev
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka-dev:19092
+    expose:
+      - '8081'
+    depends_on:
+      kafka-dev:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fsS http://localhost:8081/subjects >/dev/null || exit 1']
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.schema-registry-dev.rule: Host(`schema-registry-dev.${DEFAULT_URL}`)
+      traefik.http.routers.schema-registry-dev.entrypoints: websecure
+      traefik.http.routers.schema-registry-dev.tls: 'true'
+      traefik.http.services.schema-registry-dev.loadbalancer.server.port: '8081'
+    networks:
+      - infra_net
+
+  kafka-connect-dev:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
+    image: confluentinc/cp-kafka-connect:8.1.1
+    container_name: kafka-connect-dev
+    read_only: false
+    tmpfs:
+      - /tmp
+      - /etc/kafka
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka-dev:19092
+      CONNECT_GROUP_ID: kafka-connect-dev
+      CONNECT_CONFIG_STORAGE_TOPIC: _connect-configs-dev
+      CONNECT_OFFSET_STORAGE_TOPIC: _connect-offsets-dev
+      CONNECT_STATUS_STORAGE_TOPIC: _connect-status-dev
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
+      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect-dev
+      CONNECT_REST_PORT: 8083
+      CONNECT_PLUGIN_PATH: /usr/share/java,/usr/share/confluent-hub-components
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry-dev:8081
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry-dev:8081
+    volumes:
+      - kafka-connect-dev-data:/var/lib/kafka-connect:rw
+    depends_on:
+      kafka-dev:
+        condition: service_healthy
+      schema-registry-dev:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fsS http://localhost:8083/connectors >/dev/null || exit 1']
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.kafka-connect-dev.rule: Host(`kafka-connect-dev.${DEFAULT_URL}`)
+      traefik.http.routers.kafka-connect-dev.entrypoints: websecure
+      traefik.http.routers.kafka-connect-dev.tls: 'true'
+      traefik.http.services.kafka-connect-dev.loadbalancer.server.port: '8083'
+    networks:
+      - infra_net
+
+  kafbat-ui-dev:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    image: ghcr.io/kafbat/kafka-ui:main
+    container_name: kafbat-ui-dev
+    read_only: true
+    tmpfs:
+      - /tmp
+    environment:
+      KAFKA_CLUSTERS_0_NAME: ${KAFKA_DEV_CLUSTER_NAME:-hy-home-kafka-dev}
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-dev:19092
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry-dev:8081
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: kafka-connect-dev
+      KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect-dev:8083
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    volumes:
+      - ./infra/05-messaging/kafbat-ui/dynamic_config.yaml:/etc/kafkaui/dynamic_config.yaml:ro
+    depends_on:
+      kafka-dev:
+        condition: service_healthy
+      schema-registry-dev:
+        condition: service_healthy
+      kafka-connect-dev:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1',
+        ]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.kafbat-ui-dev.rule: Host(`kafbat-ui-dev.${DEFAULT_URL}`)
+      traefik.http.routers.kafbat-ui-dev.entrypoints: websecure
+      traefik.http.routers.kafbat-ui-dev.tls: 'true'
+      traefik.http.services.kafbat-ui-dev.loadbalancer.server.port: '8080'
+      traefik.http.routers.kafbat-ui-dev.middlewares: sso-errors@file,sso-auth@file
+    networks:
+      - infra_net
+
+  kafka-exporter-dev:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: danielqsj/kafka-exporter:v1.9.0
+    container_name: kafka-exporter-dev
+    command:
+      - --kafka.server=kafka-dev:19092
+    expose:
+      - '9308'
+    depends_on:
+      kafka-dev:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:9308/metrics >/dev/null 2>&1 || exit 1']
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    labels:
+      <<: *tier-label
+    networks:
+      - infra_net
+
+  kafka-init-dev:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    image: confluentinc/cp-kafka:8.1.1
+    container_name: kafka-init-dev
+    entrypoint: ['/bin/sh', '-c']
+    command: |
+      echo "Creating dev topics..."
+      kafka-topics --bootstrap-server kafka-dev:19092 --create --if-not-exists --topic infra-events-dev --partitions 3 --replication-factor 1
+      kafka-topics --bootstrap-server kafka-dev:19092 --create --if-not-exists --topic application-logs-dev --partitions 3 --replication-factor 1
+      echo "Kafka dev initialization complete."
+    depends_on:
+      kafka-dev:
+        condition: service_healthy
+    labels:
+      <<: *tier-label
+    networks:
+      - infra_net
