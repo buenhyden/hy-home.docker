@@ -1,0 +1,26 @@
+server:
+  http_listen_port: 4040
+  log_level: info
+
+analytics:
+  reporting_enabled: false
+
+compactor:
+  data_dir: /var/lib/pyroscope/compactor
+
+limits:
+  ingestion_rate_mb: 16
+  ingestion_burst_size_mb: 32
+  max_label_name_length: 1024
+  max_label_value_length: 2048
+  max_label_names_per_series: 30
+
+multitenancy_enabled: false
+
+storage:
+  backend: filesystem
+  filesystem:
+    dir: /var/lib/pyroscope
+
+self_profiling:
+  disable_push: true

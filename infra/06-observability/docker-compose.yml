@@ -33,7 +33,18 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_OBSERVABILITY_DIR}/grafana
+  pyroscope-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_OBSERVABILITY_DIR}/pyroscope
   alloy-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_OBSERVABILITY_DIR}/alloy
 
 services:
   prometheus:
@@ -325,6 +336,12 @@ services:
       service: template-infra-med
     image: grafana/pyroscope:1.18.1
     container_name: infra-pyroscope
+    command:
+      - -config.file=/etc/pyroscope/pyroscope.yaml
+      - -config.expand-env=true
+    volumes:
+      - ./pyroscope/config/pyroscope.yaml:/etc/pyroscope/pyroscope.yaml:ro
+      - pyroscope-data:/var/lib/pyroscope:rw
     ports:
       - '${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}'
     healthcheck:
@@ -332,7 +349,7 @@ services:
       interval: 30s
       timeout: 15s
       retries: 5
-      start_period: 15s
+      start_period: 60s
     labels:
       <<: *tier-label
     networks:

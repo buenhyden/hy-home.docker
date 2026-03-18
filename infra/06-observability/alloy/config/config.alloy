@@ -133,3 +133,19 @@ otelcol.exporter.otlp "tempo" {
     }
   }
 }
+
+/*****************************************************************
+ * 4. PROFILING PIPELINE (Pyroscope)
+ *****************************************************************/
+
+// Pyroscope 서버로 프로파일 전송
+pyroscope.write "local_pyroscope" {
+  endpoint {
+    url = "http://pyroscope:4040"
+  }
+
+  external_labels = {
+    env     = "dev",
+    cluster = "hy-home",
+  }
+}
