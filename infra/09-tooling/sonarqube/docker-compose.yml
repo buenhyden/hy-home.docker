@@ -18,30 +18,27 @@ volumes:
 services:
   sonarqube:
     profiles: ['tooling']
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-infra-high
-    image: sonarqube:10.7.0-community # Updated to a more recent stable version
+    extends: { file: ../../common-optimizations.yml, service: template-stateful-high }
+    image: sonarqube:10.7.0-community
     container_name: sonarqube
-    expose:
-      - ${SONARQUBE_PORT:-9000}
+    read_only: false
+    expose: ['${SONARQUBE_PORT:-9000}']
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -q --spider http://localhost:${SONARQUBE_PORT:-9000}/api/system/health || exit 1',
-        ]
-      interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 15s
+      {
+        test:
+          [
+            'CMD-SHELL',
+            'wget -q --spider http://localhost:${SONARQUBE_PORT:-9000}/api/system/health || exit 1',
+          ],
+        interval: 15s,
+        timeout: 30s,
+        retries: 5,
+        start_period: 15s,
+      }
     volumes:
-      - sonarqube-data-volume:/opt/sonarqube/data:rw
-      - sonarqube-logs-volume:/opt/sonarqube/logs:rw
-    networks:
-      - infra_net
-    secrets:
-      - sonarqube_db_password
+      [sonarqube-data-volume:/opt/sonarqube/data:rw, sonarqube-logs-volume:/opt/sonarqube/logs:rw]
+    networks: [infra_net]
+    secrets: [sonarqube_db_password]
     environment:
       - SONAR_JDBC_URL=jdbc:postgresql://${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/${SONARQUBE_DBNAME}
       - SONAR_JDBC_USERNAME=${SONARQUBE_DB_USER}

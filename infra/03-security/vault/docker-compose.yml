@@ -1,4 +1,5 @@
-name: vault
+x-tier-label: &tier-label
+  hy-home.tier: security
 
 volumes:
   vault-data:
@@ -17,7 +18,6 @@ services:
       service: template-infra-med
     image: hashicorp/vault:1.21.2
     container_name: vault
-
     restart: unless-stopped
     ports:
       - '${VAULT_HOST_PORT:-8200}:${VAULT_PORT:-8200}'
@@ -51,13 +51,9 @@ services:
       retries: 5
       start_period: 15s
     labels:
-      hy-home.tier: security
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.vault.rule: Host(`vault.${DEFAULT_URL}`)
       traefik.http.routers.vault.entrypoints: websecure
       traefik.http.routers.vault.tls: 'true'
       traefik.http.services.vault.loadbalancer.server.port: ${VAULT_PORT:-8200}
-
-secrets:
-  oauth2_proxy_client_secret:
-    external: true

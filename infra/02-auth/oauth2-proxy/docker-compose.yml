@@ -7,11 +7,12 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.8.1
+    # image: quay.io/oauth2-proxy/oauth2-proxy:v7.14.2
     build:
       context: .
       dockerfile: Dockerfile
     container_name: oauth2-proxy
+    read_only: true
     tmpfs:
       - /tmp
     secrets:
@@ -23,21 +24,16 @@ services:
       - -c
     command:
       - |
-        export OAUTH2_PROXY_COOKIE_SECRET=$$(cat /run/secrets/oauth2_proxy_cookie_secret)
+        export OAUTH2_PROXY_COOKIE_SECRET=$$(cat /run/secrets/oauth2_proxy_cookie_secret | tr -d '\n')
+        export OAUTH2_PROXY_CLIENT_SECRET=$$(cat /run/secrets/oauth2_proxy_client_secret | tr -d '\n')
         exec /bin/oauth2-proxy --config /etc/oauth2-proxy.cfg
     environment:
-      # [2] 시스템 레벨 환경 변수 (설정 파일로 대체 불가)
-      # SSL 인증서 로드는 앱 로직 이전에 Go 언어 런타임에서 처리하므로 Env에 있어야 함
       - SSL_CERT_FILE=/etc/ssl/certs/rootCA.pem
-      # 필수 설정: 세션 저장소를 Redis로 변경
       - OAUTH2_PROXY_SESSION_STORE_TYPE=redis
-      # 필수 설정: Redis 연결 주소 (서비스명:포트)
       - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://mng-valkey:6379
-      # 비밀번호를 파일에서 읽도록 지시 (_FILE 접미사 사용)
       - OAUTH2_PROXY_REDIS_PASSWORD_FILE=/run/secrets/mng_valkey_password
       - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}
     volumes:
-      # 호스트의 mkcert RootCA를 컨테이너 내부로 주입
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
     labels:
@@ -49,6 +45,11 @@ services:
       traefik.http.services.oauth2-proxy.loadbalancer.server.port: ${OAUTH2_PROXY_PORT:-4180}
     networks:
       - infra_net
+    # depends_on:
+    #   mng-valkey:
+    #     condition: service_healthy
+    #   keycloak:
+    #     condition: service_healthy
     healthcheck:
       test: ['CMD', 'wget', '-qO-', 'http://localhost:4180/ping']
       interval: 30s

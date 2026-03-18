@@ -62,8 +62,7 @@ services:
   #   volumes:
   #     - minio-nginx-volume:/etc/nginx:ro
   #   networks:
-  #     - nt-default
-  #     - nt-observability
+  #     - infra_net
   #   ports:
   #     - '${MINIO_HOST_PORT}:${MINIO_PORT}'
   #     - '${MINIO_CONSOLE_HOST_PORT}:${MINIO_CONSOLE_PORT}'
@@ -110,8 +109,3 @@ volumes:
       type: none
       device: ${DEFAULT_DATA_DIR}/minio/data4
 
-secrets:
-  minio_root_username:
-    external: true
-  minio_root_password:
-    external: true

@@ -28,14 +28,15 @@ services:
       file: ../../common-optimizations.yml
       service: template-infra-med
     image: quay.io/keycloak/keycloak:26.5.4
+    container_name: keycloak
     hostname: keycloak
     tmpfs:
       - /opt/keycloak/data
       - /tmp
     volumes:
-      - keycloak-themes:/opt/keycloak/themes:rw
-      - keycloak-config:/opt/keycloak/conf:rw
-      - keycloak-providers:/opt/keycloak/providers:rw
+      - keycloak-themes:/opt/keycloak/themes:ro
+      - keycloak-config:/opt/keycloak/conf:ro
+      - keycloak-providers:/opt/keycloak/providers:ro
     command: start-dev
     networks:
       - infra_net
@@ -45,11 +46,10 @@ services:
     expose:
       - ${KEYCLOAK_MANAGEMENT_PORT:-9000}
     healthcheck:
-      test: [
+      test:
+        [
           'CMD-SHELL',
-          "exec 3<>/dev/tcp/127.0.0.1/${KEYCLOAK_MANAGEMENT_PORT:-9000}; \
-          printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; \
-          cat <&3 | grep -Eq '\"status\"[[:space:]]*:[[:space:]]*\"UP\"' && exit 0 || exit 1",
+          "exec 3<>/dev/tcp/127.0.0.1/${KEYCLOAK_MANAGEMENT_PORT:-9000}; printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; cat <&3 | grep -Eq '\"status\"[[:space:]]*:[[:space:]]*\"UP\"' && exit 0 || exit 1",
         ]
       interval: 15s
       timeout: 30s
@@ -64,16 +64,14 @@ services:
       KEYCLOAK_ADMIN_PASSWORD_FILE: /run/secrets/keycloak_admin_password
       KC_HOSTNAME: https://keycloak.${DEFAULT_URL}
       KC_PROXY_HEADERS: xforwarded
-      # DB 연결이 끊겼는지 확인하고, 오래된 연결을 자동으로 정리합니다.
       KC_DB_POOL_INITIAL_SIZE: 1
       KC_DB_POOL_MIN_SIZE: 1
       KC_DB_POOL_MAX_SIZE: 10
       KC_METRICS_ENABLED: true
       KC_HEALTH_ENABLED: true
-      # Java 옵션을 통해 Quarkus(Agroal)의 유효성 검사 강제 설정
-      # 1. idle 상태가 5분 지나면 연결 끊음 (DB 타임아웃보다 짧게)
-      # 2. 연결 가져올 때 유효성 검사 수행 (background)
-      JAVA_OPTS_APPEND: '-Dquarkus.datasource.jdbc.idle-removal-interval=5M -Dquarkus.datasource.jdbc.background-validation-interval=1M'
+      JAVA_OPTS_APPEND: >-
+        -Dquarkus.datasource.jdbc.idle-removal-interval=5M
+        -Dquarkus.datasource.jdbc.background-validation-interval=1M
     labels:
       <<: *tier-label
       traefik.enable: 'true'

@@ -1,5 +1,3 @@
-name: opensearch
-
 volumes:
   opensearch-data1:
     # driver: local
@@ -271,10 +269,3 @@ services:
       opensearch-node3:
         condition: service_healthy
 
-secrets:
-  opensearch_admin_password:
-    external: true
-  opensearch_dashboard_password:
-    external: true
-  opensearch_exporter_password:
-    external: true

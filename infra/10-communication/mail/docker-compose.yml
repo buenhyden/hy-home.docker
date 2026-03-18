@@ -1,5 +1,3 @@
-name: mail
-
 x-tier-label: &tier-label
   hy-home.tier: communication
 
@@ -11,33 +9,25 @@ volumes:
       o: bind
       device: ${DEFAULT_COMMUNICATION_DIR}/stalwart/data
 
-
 secrets:
   stalwart_password:
     external: true
+
 services:
-  # ----------------------------------------------------------------
-  # Stalwart Mail Server (올인원 메일 서버)
-  # ----------------------------------------------------------------
   stalwart:
+    profiles: ['communication']
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-stateful-med
     image: stalwartlabs/stalwart:v0.14
     container_name: stalwart
-
-    # [포트 설정]
-    # 메일 프로토콜 포트는 Traefik을 통하지 않고 호스트에 직접 노출해야 합니다.
+    read_only: false
     ports:
-      - '${SMTP_HOST_PORT:-25}:${SMTP_PORT:-25}' # SMTP (서버 간 메일 전송 / 릴레이)
-      - '${SUBMISSION_HOST_PORT:-587}:${SUBMISSION_PORT:-587}' # Submission (클라이언트 메일 발송 - StartTLS)
-      - '${SMTPS_HOST_PORT:-465}:${SMTPS_PORT:-465}' # SMTPS (보안 메일 발송 - Implicit TLS)
-      - '${IMAPS_HOST_PORT:-993}:${IMAPS_PORT:-993}' # IMAPS (메일 수신/확인)
-      - '${MANAGESIEVE_HOST_PORT:-4190}:${MANAGESIEVE_PORT:-4190}' # ManageSieve (메일 필터링 규칙 관리)
-      # 8080 포트는 Traefik을 통해 라우팅하므로 주석 처리 (직접 접속 필요 시 해제)
-      # - "8080:8080"
-
-    # [데이터 영구 저장]
+      - '${SMTP_HOST_PORT:-25}:${SMTP_PORT:-25}'
+      - '${SUBMISSION_HOST_PORT:-587}:${SUBMISSION_PORT:-587}'
+      - '${SMTPS_HOST_PORT:-465}:${SMTPS_PORT:-465}'
+      - '${IMAPS_HOST_PORT:-993}:${IMAPS_PORT:-993}'
+      - '${MANAGESIEVE_HOST_PORT:-4190}:${MANAGESIEVE_PORT:-4190}'
     volumes:
       - stalwart-data:/opt/stalwart:rw
       - ../../../secrets/certs:/opt/stalwart/certs:ro
@@ -45,7 +35,6 @@ services:
       - infra_net
     secrets:
       - stalwart_password
-    # [환경 변수] - 초기 관리자 계정 설정
     environment:
       - STALWART_ADMIN_USER=admin
     command: >
@@ -53,27 +42,29 @@ services:
       export STALWART_ADMIN_PASSWORD=$$(cat /run/secrets/stalwart_password) &&
       exec /usr/local/bin/stalwart-mail
       "
-
     healthcheck:
       test: ['CMD', 'stalwart-mail', 'healthcheck']
       interval: 30s
       timeout: 10s
       retries: 3
-    # [Traefik 연동] - 관리자 웹 UI 라우팅
     labels:
       <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.stalwart-ui.rule: Host(`mail.${DEFAULT_URL}`)
+      traefik.http.routers.stalwart-ui.entrypoints: websecure
+      traefik.http.routers.stalwart-ui.tls: 'true'
       traefik.http.services.stalwart-ui.loadbalancer.server.port: ${STALWART_PORT:-8080}
 
   mailhog:
+    profiles: ['communication']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
     image: mailhog/mailhog:v1.0.1
     container_name: mailhog
-
-    # SMTP 포트(1025)는 내부용, UI 포트(8025)는 Traefik으로 노출
+    read_only: true
+    tmpfs:
+      - /tmp
     networks:
       - infra_net
     healthcheck:
@@ -89,8 +80,3 @@ services:
       traefik.http.routers.mailhog.tls: 'true'
       traefik.http.services.mailhog.loadbalancer.server.port: ${MAILHOG_UI_PORT:-8025}
       traefik.http.routers.mailhog.middlewares: sso-errors@file,sso-auth@file
-
-networks:
-  infra_net:
-    name: infra_net
-    external: true

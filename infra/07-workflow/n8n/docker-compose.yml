@@ -1,4 +1,5 @@
-name: n8n
+x-tier-label: &tier-label
+  hy-home.tier: workflow
 
 x-n8n-common-env: &n8n-common-env
   GENERIC_TIMEZONE: ${DEFAULT_TIMEZONE:-Asia/Seoul}
@@ -36,20 +37,21 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_WORKFLOW_DIR}/valkey
-
-secrets:
-  n8n_valkey_password: { external: true }
-  n8n_db_password: { external: true }
-  n8n_encryption_key: { external: true }
-  n8n_runner_auth_token: { external: true }
+  n8n-task-runner-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_WORKFLOW_DIR}/n8n-task-runner
 
 services:
   n8n:
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-high
+      service: template-stateful-high
     image: n8nio/n8n:2.6.2
     container_name: n8n
+    read_only: false
     expose:
       - ${N8N_PORT:-5678}
     secrets:
@@ -79,12 +81,15 @@ services:
       N8N_METRICS_INCLUDE_QUEUE_METRICS: true
       QUEUE_HEALTH_CHECK_ACTIVE: true
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.n8n.rule: Host(`n8n.${DEFAULT_URL}`)
       traefik.http.routers.n8n.entrypoints: websecure
       traefik.http.routers.n8n.tls: 'true'
       traefik.http.routers.n8n.service: n8n
       traefik.http.services.n8n.loadbalancer.server.port: ${N8N_PORT:-5678}
+    networks:
+      - infra_net
     healthcheck:
       test: ['CMD-SHELL', 'wget -q --spider http://localhost:${N8N_PORT:-5678}/healthz || exit 1']
       interval: 30s
@@ -95,9 +100,10 @@ services:
   n8n-worker:
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-high
+      service: template-stateful-high
     image: n8nio/n8n:2.6.2
     container_name: n8n-worker
+    read_only: false
     depends_on:
       n8n: { condition: service_healthy }
       n8n-valkey: { condition: service_healthy }
@@ -114,29 +120,39 @@ services:
     networks:
       - infra_net
     command: worker
+    labels:
+      <<: *tier-label
 
   n8n-task-runner:
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-stateful-low
     image: n8nio/runners:2.6.2
     container_name: n8n-task-runner
+    read_only: false
     volumes:
       - n8n-task-runner-data:/home/node/.n8n:rw
+    networks:
+      - infra_net
+    secrets:
+      - n8n_runner_auth_token
+    labels:
+      <<: *tier-label
+
   n8n-valkey:
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-stateful-low
     image: valkey/valkey:9.0.2-alpine
     container_name: n8n-valkey
+    read_only: false
     secrets:
       - n8n_valkey_password
     networks:
       - infra_net
     restart: unless-stopped
     volumes:
-      - n8n-data:/home/node/.n8n:rw
-      - ./custom:/home/node/.n8n/custom:rw
+      - n8n-valkey-data:/data:rw
     command: >
       sh -c '
       valkey-server
@@ -153,6 +169,8 @@ services:
       timeout: 30s
       retries: 5
       start_period: 15s
+    labels:
+      <<: *tier-label
 
   n8n-valkey-exporter:
     extends:
@@ -160,6 +178,9 @@ services:
       service: template-infra-low
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: n8n-valkey-exporter
+    read_only: true
+    tmpfs:
+      - /tmp
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
     networks:
@@ -170,14 +191,8 @@ services:
     entrypoint: [/bin/sh, -c]
     command:
       - |
-        exec /redis_exporter \
-          -redis.addr=redis://n8n-valkey:6379 \
-          -redis.password-file=/run/secrets/n8n_valkey_password \
-          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
+        exec /redis_exporter           -redis.addr=redis://n8n-valkey:6379           -redis.password-file=/run/secrets/n8n_valkey_password           -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on:
       n8n-valkey: { condition: service_healthy }
-
-networks:
-  infra_net:
-    name: infra_net
-    external: true
+    labels:
+      <<: *tier-label

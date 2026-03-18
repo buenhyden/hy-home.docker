@@ -1,23 +1,25 @@
-name: terraform
-
 x-tier-label: &tier-label
   hy-home.tier: tooling
 
 services:
   terraform:
+    profiles: ['tooling']
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-job-low
     image: hashicorp/terraform:1.14.4
     container_name: terraform
     restart: 'no'
+    read_only: false
+    tmpfs:
+      - /tmp
     volumes:
       - ./workspace:/workspace:rw
-      # - $HOME/.config/gcloud:/root/.config/gcloud:ro # Optional: For GCP Auth
-      - $HOME/.aws:/root/.aws:ro # Optional: For AWS Auth (Read-Only)
-      - $HOME/.azure:/root/.azure:ro # Optional: For Azure Auth (Read-Only)
+      - $HOME/.aws:/root/.aws:ro
+      - $HOME/.azure:/root/.azure:ro
     working_dir: /workspace
     entrypoint: ['terraform']
     networks:
       - infra_net
-    labels: *tier-label
+    labels:
+      <<: *tier-label

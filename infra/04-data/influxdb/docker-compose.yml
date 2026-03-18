@@ -1,5 +1,3 @@
-name: influxdb
-
 x-tier-label: &tier-label
   hy-home.tier: data
 
@@ -12,13 +10,15 @@ volumes:
       device: ${DEFAULT_DATA_DIR}/influxdb/data
 
 services:
+  profiles: ['data']
   influxdb:
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-stateful-med
     image: influxdb:2.8
     container_name: influxdb
     hostname: influxdb
+    read_only: false
     healthcheck:
       test:
         [
@@ -30,7 +30,6 @@ services:
       retries: 5
       start_period: 15s
     environment:
-      - INFLUXDB_DB=${INFLUXDB_DB_NAME}
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_USERNAME}
       - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
@@ -44,8 +43,6 @@ services:
     secrets:
       - influxdb_password
       - influxdb_api_token
-    # ports:
-    #   - ${INFLUXDB_HOST_PORT}:${INFLUXDB_PORT}
     volumes:
       - influxdb-data:/var/lib/influxdb2:rw
     networks:
@@ -57,9 +54,3 @@ services:
       traefik.http.routers.influxdb.entrypoints: websecure
       traefik.http.routers.influxdb.tls: 'true'
       traefik.http.services.influxdb.loadbalancer.server.port: ${INFLUXDB_PORT:-8086}
-
-secrets:
-  influxdb_password:
-    external: true
-  influxdb_api_token:
-    external: true

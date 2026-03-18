@@ -14,9 +14,10 @@ services:
     profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-stateful-med
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     container_name: minio
+    read_only: false
     command: server /data --console-address ":${MINIO_CONSOLE_HOST_PORT:-9001}"
     secrets:
       - minio_root_username
@@ -53,37 +54,39 @@ services:
     profiles: ['data']
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-low
+      service: template-job-low
     image: minio/mc:RELEASE.2025-08-13T08-35-41Z
     container_name: minio-create-buckets
     restart: 'no'
+    read_only: true
+    tmpfs:
+      - /tmp
     secrets:
       - minio_root_username
       - minio_root_password
       - minio_app_username
       - minio_app_user_password
     depends_on:
-      minio: { condition: service_healthy }
+      minio:
+        condition: service_healthy
     networks:
       - infra_net
-    entrypoint: [/bin/sh]
-    command:
-      - -c
-      - |
-        set -e
-        ROOT_USER=$$(cat /run/secrets/minio_root_username)
-        ROOT_PASS=$$(cat /run/secrets/minio_root_password)
-        APP_USER=$$(cat /run/secrets/minio_app_username)
-        APP_PASS=$$(cat /run/secrets/minio_app_user_password)
-        export MC_CONFIG_DIR=/tmp/.mc
-        mc alias set root http://minio:9000 "$$ROOT_USER" "$$ROOT_PASS"
-        mc admin user add root "$$APP_USER" "$$APP_PASS" || true
-        mc admin policy attach root readwrite --user="$$APP_USER"
-        mc alias set myminio http://minio:9000 "$$APP_USER" "$$APP_PASS"
-        mc mb myminio/tempo-bucket --ignore-existing
-        mc mb myminio/loki-bucket --ignore-existing
-        mc mb myminio/cdn-bucket --ignore-existing
-        mc mb myminio/doc-intel-assets --ignore-existing
-        mc anonymous set public myminio/cdn-bucket || true
+    entrypoint: ['/bin/sh', '-c']
+    command: |
+      set -e
+      ROOT_USER=$$(cat /run/secrets/minio_root_username | tr -d '\n')
+      ROOT_PASS=$$(cat /run/secrets/minio_root_password | tr -d '\n')
+      APP_USER=$$(cat /run/secrets/minio_app_username | tr -d '\n')
+      APP_PASS=$$(cat /run/secrets/minio_app_user_password | tr -d '\n')
+      export MC_CONFIG_DIR=/tmp/.mc
+      mc alias set root http://minio:9000 "$$ROOT_USER" "$$ROOT_PASS"
+      mc admin user add root "$$APP_USER" "$$APP_PASS" || true
+      mc admin policy attach root readwrite --user="$$APP_USER"
+      mc alias set myminio http://minio:9000 "$$APP_USER" "$$APP_PASS"
+      mc mb myminio/tempo-bucket --ignore-existing
+      mc mb myminio/loki-bucket --ignore-existing
+      mc mb myminio/cdn-bucket --ignore-existing
+      mc mb myminio/doc-intel-assets --ignore-existing
+      mc anonymous set public myminio/cdn-bucket || true
     labels:
       <<: *tier-label

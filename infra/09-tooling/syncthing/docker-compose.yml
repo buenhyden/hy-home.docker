@@ -1,5 +1,3 @@
-name: syncthing
-
 x-tier-label: &tier-label
   hy-home.tier: tooling
 
@@ -19,22 +17,22 @@ volumes:
 
 services:
   syncthing:
+    profiles: ['tooling']
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-stateful-med
     image: syncthing/syncthing:2.0.13
     container_name: syncthing
+    read_only: false
     ports:
       - ${SYNCTHING_SYNC_HOST_PORT:-22000}:${SYNCTHING_SYNC_PORT:-22000}/tcp
       - ${SYNCTHING_SYNC_HOST_PORT:-22000}:${SYNCTHING_SYNC_PORT:-22000}/udp
       - ${SYNCTHING_BROADCASTS_HOST_PORT:-21027}:${SYNCTHING_BROADCASTS_PORT:-21027}/udp
-      # - ${SYNCTHING_GUI_PORT}:${SYNCTHING_GUI_PORT}
     expose:
       - ${SYNCTHING_GUI_PORT:-8384}
     environment:
       - PUID=1000
       - PGID=1000
-
       - FILE__USER=${SYNCTHING_USERNAME}
       - FILE__PASSWORD_FILE=/run/secrets/syncthing_password
     secrets:
@@ -46,7 +44,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'curl -fkLsS -m 2 syncthing:8384/rest/noauth/health | grep -o --color=never OK || exit 1',
+          'curl -fkLsS -m 2 http://localhost:8384/rest/noauth/health | grep -o --color=never OK || exit 1',
         ]
       interval: 15s
       timeout: 30s
@@ -59,12 +57,5 @@ services:
       traefik.http.routers.syncthing.entrypoints: websecure
       traefik.http.routers.syncthing.tls: 'true'
       traefik.http.services.syncthing.loadbalancer.server.port: ${SYNCTHING_GUI_PORT:-8384}
-
     networks:
-      - nt-sync
-      - nt-webserver
-      - nt-observability
-
-secrets:
-  syncthing_password:
-    external: true
+      - infra_net

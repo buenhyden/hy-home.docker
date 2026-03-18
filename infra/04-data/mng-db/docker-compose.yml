@@ -26,10 +26,11 @@ services:
     profiles: ['mng-data']
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-stateful-low
     image: valkey/valkey:8.0.2-alpine
     container_name: mng-valkey
     user: '999:999'
+    read_only: false
     labels:
       <<: *tier-label
       traefik.enable: 'false'
@@ -67,7 +68,7 @@ services:
       service: template-infra-low
     image: oliver006/redis_exporter:v1.81.0-alpine
     container_name: mng-valkey-exporter
-    labels: {}
+    read_only: true
     tmpfs:
       - /tmp
     expose:
@@ -81,10 +82,7 @@ services:
       - -c
     command:
       - |
-        echo "Reading password from secret..."
-        export VALKEY_PASSWORD=$(cat /run/secrets/mng_valkey_password | tr -d '\n')
-
-        echo "Starting Redis Exporter..."
+        export VALKEY_PASSWORD=$$(cat /run/secrets/mng_valkey_password | tr -d '\n')
         exec /redis_exporter \
           -redis.addr=redis://mng-valkey:6379 \
           -redis.password="$$VALKEY_PASSWORD" \
@@ -106,10 +104,11 @@ services:
     profiles: ['mng-data']
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-stateful-med
     image: redis/redisinsight:3.0.3
     container_name: redisinsight
-    user: "1000:1000"
+    user: '1000:1000'
+    read_only: false
     networks:
       - infra_net
     volumes:
@@ -133,34 +132,36 @@ services:
     networks:
       - infra_net
     shm_size: 256mb
+    read_only: false
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/mng_postgres_password
       POSTGRES_USER: ${POSTGRES_DEFAULT_USER}
       POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - '${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}'
     secrets:
       - mng_postgres_password
     volumes:
       - mng-pg-data:/var/lib/postgresql/data:rw
-      - ./pg/init-scripts/init_users_dbs.sql:/docker-entrypoint-initdb.d/init_users_dbs.sql
+      - ./pg/init-scripts/init_users_dbs.sql:/docker-entrypoint-initdb.d/init_users_dbs.sql:ro
     healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'postgres']
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
       interval: 15s
       timeout: 30s
       retries: 5
-      start_period: 15s
+      start_period: 20s
 
   mng-pg-init:
     profiles: ['mng-data']
     extends:
       file: ../../common-optimizations.yml
-      service: base-resource-low
+      service: template-job-low
     image: postgres:17-alpine
     container_name: mng-pg-init
-    restart: 'no'
-    # Override security for specific init needs if necessary, but base-security covers baseline.
-
+    read_only: true
+    tmpfs:
+      - /tmp
     environment:
       PGPASSWORD_FILE: /run/secrets/mng_postgres_password
       POSTGRES_HOSTNAME: ${POSTGRES_MNG_HOSTNAME}
@@ -169,27 +170,16 @@ services:
       POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
     command: >
       sh -c "
-      echo 'DB 연결 대기 중...';
-      until pg_isready -h $$POSTGRES_HOSTNAME -p $$POSTGRES_PORT -U $$POSTGRES_USER; do
-        sleep 2;
-      done;
-      echo 'SQL 스크립트 실행 시작...';
-      export PGPASSWORD=$(cat /run/secrets/mng_postgres_password | tr -d '\n');
-      export N8N_DB_PASSWORD=$(cat /run/secrets/n8n_db_password | tr -d '\n');
-      export KEYCLOAK_DB_PASSWORD=$(cat /run/secrets/keycloak_db_password | tr -d '\n');
-      export AIRFLOW_DB_PASSWORD=$(cat /run/secrets/airflow_db_password | tr -d '\n');
-      export TERRAKUBE_DB_PASSWORD=$(cat /run/secrets/terrakube_db_password | tr -d '\n');
-      export SONARQUBE_DB_PASSWORD=$(cat /run/secrets/sonarqube_db_password | tr -d '\n');
-      psql -h \"$$POSTGRES_HOSTNAME\" -p \"$$POSTGRES_PORT\" -U \"$$POSTGRES_USER\" -d \"$${POSTGRES_DB}\" -f /home/postgres/init-scripts/init_users_dbs.sql;
-      unset PGPASSWORD;
-      unset N8N_DB_PASSWORD;
-      unset KEYCLOAK_DB_PASSWORD;
-      unset AIRFLOW_DB_PASSWORD;
-      unset TERRAKUBE_DB_PASSWORD;
-      unset SONARQUBE_DB_PASSWORD;
-      echo 'SQL 스크립트 실행 완료.';"
+      until pg_isready -h $$POSTGRES_HOSTNAME -p $$POSTGRES_PORT -U $$POSTGRES_USER -d $$POSTGRES_DB; do sleep 2; done;
+      export PGPASSWORD=$$(cat /run/secrets/mng_postgres_password | tr -d '\n');
+      export N8N_DB_PASSWORD=$$(cat /run/secrets/n8n_db_password | tr -d '\n');
+      export KEYCLOAK_DB_PASSWORD=$$(cat /run/secrets/keycloak_db_password | tr -d '\n');
+      export AIRFLOW_DB_PASSWORD=$$(cat /run/secrets/airflow_db_password | tr -d '\n');
+      export TERRAKUBE_DB_PASSWORD=$$(cat /run/secrets/terrakube_db_password | tr -d '\n');
+      export SONARQUBE_DB_PASSWORD=$$(cat /run/secrets/sonarqube_db_password | tr -d '\n');
+      psql -h $$POSTGRES_HOSTNAME -p $$POSTGRES_PORT -U $$POSTGRES_USER -d $$POSTGRES_DB -f /work/init_users_dbs.sql;"
     volumes:
-      - ./pg/init-scripts/init_users_dbs.sql:/home/postgres/init-scripts/init_users_dbs.sql:ro
+      - ./pg/init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro
     depends_on:
       mng-pg:
         condition: service_healthy
@@ -200,12 +190,6 @@ services:
       - airflow_db_password
       - terrakube_db_password
       - sonarqube_db_password
-    healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'postgres']
-      interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 15s
 
   mng-pg-exporter:
     profiles: ['mng-data']
@@ -214,6 +198,7 @@ services:
       service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: mng-pg-exporter
+    read_only: true
     tmpfs:
       - /tmp
     networks:
@@ -229,8 +214,7 @@ services:
     command:
       - |
         export PGPASSWORD=$$(cat /run/secrets/mng_postgres_password | tr -d '\n')
-        # pg-0에 직접 접속
-        export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@mng-pg:5432/postgres?sslmode=disable"
+        export DATA_SOURCE_NAME="postgresql://${POSTGRES_DEFAULT_USER}:$$PGPASSWORD@mng-pg:5432/${POSTGRES_DEFAULT_DB}?sslmode=disable"
         exec /bin/postgres_exporter
     healthcheck:
       test:

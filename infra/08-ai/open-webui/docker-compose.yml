@@ -1,5 +1,8 @@
+x-tier-label: &tier-label
+  hy-home.tier: ai
+
 volumes:
-  ollama-webui:
+  open-webui:
     driver: local
     driver_opts:
       o: bind
@@ -20,18 +23,18 @@ services:
       - RAG_EMBEDDING_ENGINE=ollama
       - RAG_EMBEDDING_MODEL=qwen3-embedding:0.6b
     volumes:
-      - ollama-webui:/app/backend/data:rw
+      - open-webui:/app/backend/data:rw
     networks:
       - infra_net
     labels:
-      hy-home.tier: ai
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.open-webui.rule: Host(`chat.${DEFAULT_URL}`)
       traefik.http.routers.open-webui.entrypoints: websecure
       traefik.http.routers.open-webui.tls: 'true'
-      traefik.http.services.open-webui.loadbalancer.server.port: 8080
+      traefik.http.services.open-webui.loadbalancer.server.port: ${OLLAMA_WEBUI_PORT:-8080}
     healthcheck:
-      test: ['CMD-SHELL', 'curl -f http://localhost:8080/health || exit 1']
+      test: ['CMD-SHELL', 'curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health || exit 1']
       interval: 30s
       timeout: 10s
       retries: 5

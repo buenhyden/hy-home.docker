@@ -1,3 +1,6 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
 volumes:
   qdrant-data:
     driver: local
@@ -11,9 +14,10 @@ services:
     profiles: ['ai']
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-stateful-med
     image: qdrant/qdrant:v1.17
     container_name: qdrant
+    read_only: false
     tmpfs:
       - /tmp
     ports:
@@ -37,6 +41,7 @@ services:
       retries: 5
       start_period: 15s
     labels:
+      <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.qdrant.rule: Host(`qdrant.${DEFAULT_URL}`)
       traefik.http.routers.qdrant.entrypoints: websecure

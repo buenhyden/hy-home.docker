@@ -1,7 +1,6 @@
 # Hy-Home Common Infrastructure Optimizations
-# This file provides base service templates for use with 'extends'
+# Finalized template set based on service-role classification
 
-# ── Logging Anchors ──────────────────────────────────────
 x-logging: &default-logging
   driver: "json-file"
   options:
@@ -16,7 +15,6 @@ x-logging-loki: &loki-logging
       'container_name={{.Name}},tier={{ index .ContainerLabels "hy-home.tier" }}'
 
 services:
-  # ── Security Baselines ──────────────────────────────────
   base-security:
     init: true
     security_opt:
@@ -24,7 +22,7 @@ services:
     cap_drop:
       - ALL
 
-  base-security-hardened: # Standard security + Read-only filesystem
+  base-security-hardened:
     extends:
       service: base-security
     read_only: true
@@ -32,14 +30,6 @@ services:
       - /tmp
       - /run
 
-  base-stateful:
-    init: true
-    restart: unless-stopped
-    logging: *loki-logging
-    labels:
-      hy-home.managed: "true"
-      observability.logs: "true"
-  # ── Resource Profiles ───────────────────────────────────
   base-resource-low:
     deploy:
       resources:
@@ -67,18 +57,21 @@ services:
         reservations:
           memory: 512M
 
-  # ── Operational Baselines ───────────────────────────────
   base-standard:
     restart: unless-stopped
     logging: *loki-logging
+    labels:
+      hy-home.managed: "true"
+      observability.logs: "true"
 
-  # ── Composite Templates ────────────────────────────────
   template-infra-low:
     extends:
       service: base-security
     deploy:
       resources:
-        limits: { cpus: "0.5", memory: "256M" }
+        limits:
+          cpus: "0.5"
+          memory: "256M"
     restart: unless-stopped
     logging: *loki-logging
     labels:
@@ -90,7 +83,9 @@ services:
       service: base-security
     deploy:
       resources:
-        limits: { cpus: "1.0", memory: "512M" }
+        limits:
+          cpus: "1.0"
+          memory: "512M"
     restart: unless-stopped
     logging: *loki-logging
     labels:
@@ -102,15 +97,85 @@ services:
       service: base-security
     deploy:
       resources:
-        limits: { cpus: "1.5", memory: "1G" }
+        limits:
+          cpus: "1.5"
+          memory: "1G"
     restart: unless-stopped
     logging: *loki-logging
     labels:
       hy-home.managed: "true"
       observability.logs: "true"
+
+  base-stateful:
+    init: true
+    restart: unless-stopped
+    logging: *loki-logging
+    labels:
+      hy-home.managed: "true"
+      observability.logs: "true"
+
+  template-stateful-low:
+    extends:
+      service: base-stateful
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"
+
   template-stateful-med:
     extends:
       service: base-stateful
     deploy:
       resources:
-        limits: { cpus: "1.0", memory: "512M" }
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+
+  template-stateful-high:
+    extends:
+      service: base-stateful
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "2G"
+
+  template-job-low:
+    init: true
+    restart: "no"
+    logging: *loki-logging
+    labels:
+      hy-home.managed: "true"
+      observability.logs: "true"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"
+
+  template-job-med:
+    init: true
+    restart: "no"
+    logging: *loki-logging
+    labels:
+      hy-home.managed: "true"
+      observability.logs: "true"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"
+
+  template-host-observer-med:
+    init: true
+    restart: unless-stopped
+    logging: *loki-logging
+    labels:
+      hy-home.managed: "true"
+      observability.logs: "true"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "512M"

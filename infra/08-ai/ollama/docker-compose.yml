@@ -13,23 +13,17 @@ services:
   ollama:
     profiles: ['ai']
     extends:
-      file: ../../../infra/common-optimizations.yml
-      service: template-infra-high
+      { file: ../../common-optimizations.yml, service: template-stateful-high }
     image: ollama/ollama:0.13.5
-    volumes:
-      - ollama-data:/root/.ollama:rw
     container_name: ollama
+    read_only: false
+    volumes: [ollama-data:/root/.ollama:rw]
     deploy:
       resources:
-        limits:
-          cpus: '4.0'
-          memory: 8G
+        limits: { cpus: '4.0', memory: 8G }
         reservations:
           memory: 4G
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+          devices: [{ driver: nvidia, count: 1, capabilities: [gpu] }]
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -38,31 +32,25 @@ services:
       traefik.http.routers.ollama.tls: 'true'
       traefik.http.services.ollama.loadbalancer.server.port: ${OLLAMA_PORT:-11434}
       traefik.http.routers.ollama.middlewares: sso-errors@file,sso-auth@file
-    networks:
-      - infra_net
+    networks: [infra_net]
     healthcheck:
-      test: ['CMD-SHELL', 'curl -f http://localhost:11434/api/tags || exit 1']
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 15s
-
+      {
+        test: ['CMD-SHELL', 'curl -f http://localhost:11434/api/tags || exit 1'],
+        interval: 30s,
+        timeout: 10s,
+        retries: 5,
+        start_period: 15s,
+      }
   ollama-exporter:
     profiles: ['ai']
-    extends:
-      file: ../../../infra/common-optimizations.yml
-      service: template-infra-low
+    extends: { file: ../../common-optimizations.yml, service: template-infra-low }
     image: lucabecker42/ollama-exporter:1.0.1
     container_name: ollama-exporter
+    read_only: true
+    tmpfs: [/tmp]
     environment:
       - OLLAMA_HOST=ollama:${OLLAMA_PORT:-11434}
-    expose:
-      - '${OLLAMA_EXPORTER_PORT:-11435}'
-    networks:
-      - infra_net
-    depends_on:
-      ollama:
-        condition: service_healthy
-    labels:
-      hy-home.managed: 'true'
-      hy-home.tier: ai
+    expose: ['${OLLAMA_EXPORTER_PORT:-11435}']
+    networks: [infra_net]
+    depends_on: { ollama: { condition: service_healthy } }
+    labels: { hy-home.managed: 'true', hy-home.tier: ai }
