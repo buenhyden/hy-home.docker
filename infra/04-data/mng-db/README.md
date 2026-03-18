@@ -27,7 +27,7 @@ This stack provides shared database services for internal infrastructure compone
 
 ## Configuration
 
-- **Auth**: `redisinsight` is protected by `sso-errors@file,sso-auth@file` (Keycloak).
+- **Auth**: `redisinsight` is protected by `sso-auth@file` (Keycloak).
 - **Postgres Init**: `mng-pg-init` automatically runs `init_users_dbs.sql`.
 
 | Variable           | Description           | Value                  |

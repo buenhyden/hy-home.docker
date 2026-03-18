@@ -19,7 +19,7 @@ A distributed event streaming platform for high-throughput, low-latency data pip
 - **Internal (infra_net)**: Brokers listen on `${KAFKA_INTERNAL_PORT:-19092}` via service DNS (`kafka-1`, `kafka-2`, `kafka-3`).
 - **External (host-mapped)**: Each broker maps `${KAFKA_EXTERNAL_PORT:-9092}` to a host port (`${KAFKA_EXTERNAL_1_HOST_PORT:-9092}`, `${KAFKA_EXTERNAL_2_HOST_PORT:-9094}`, `${KAFKA_EXTERNAL_3_HOST_PORT:-9096}`).
 - **Schema Registry / Connect / REST Proxy**: Exposed via Traefik hostnames (e.g., `schema-registry.${DEFAULT_URL}`).
-- **Kafka UI**: `https://kafbat-ui.${DEFAULT_URL}` (SSO via `sso-errors@file,sso-auth@file`).
+- **Kafka UI**: `https://kafbat-ui.${DEFAULT_URL}` (SSO via `sso-auth@file`).
 
 ## Persistence
 

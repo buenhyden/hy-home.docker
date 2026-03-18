@@ -118,11 +118,11 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
+    restart: 'no'
     image: mongo:8.2.3-noble
     container_name: mongo-init
     read_only: true
     tmpfs: [/tmp]
-    restart: 'no'
     networks: [infra_net]
     depends_on:
       mongodb-rep1: { condition: service_healthy }

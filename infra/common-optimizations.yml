@@ -112,3 +112,29 @@ services:
 
   template-host-observer-med:
     <<: [*service-defaults, *resource-med]
+
+  template-stateful-db-med:
+    init: true
+    restart: unless-stopped
+    logging: *default-logging
+    labels:
+      hy-home.managed: "true"
+    security_opt:
+      - no-new-privileges:true
+    # cap_drop 생략
+    cpus: "1.00"
+    mem_limit: 512m
+    read_only: false
+
+  template-stateful-db-high:
+    init: true
+    restart: unless-stopped
+    logging: *default-logging
+    labels:
+      hy-home.managed: "true"
+    security_opt:
+      - no-new-privileges:true
+    # cap_drop 생략
+    cpus: "2.00"
+    mem_limit: 2g
+    read_only: false

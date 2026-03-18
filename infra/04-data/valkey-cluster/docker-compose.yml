@@ -161,6 +161,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
+    restart: 'no'
     image: valkey/valkey:9.0.2-alpine
     container_name: valkey-cluster-init
     entrypoint: ['/bin/sh', '/usr/local/bin/valkey-cluster-init.sh']

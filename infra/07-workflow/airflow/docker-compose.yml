@@ -152,7 +152,10 @@ services:
     restart: unless-stopped
     depends_on: { airflow-init: { condition: service_completed_successfully } }
   airflow-init:
-    extends: { file: ../../common-optimizations.yml, service: template-job-low }
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    restart: 'no'
     <<: *airflow-common
     read_only: false
     entrypoint: /bin/bash

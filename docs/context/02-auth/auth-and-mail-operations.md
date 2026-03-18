@@ -2,6 +2,7 @@
 layer: infra
 ---
 # Auth & Communication Operations
+
 n**Overview (KR):** OAuth2 Proxy를 통한 SSO(단일 로그인) 적용 및 메일 통신 시스템 운영 가이드입니다.
 
 > **Components**: `oauth2-proxy`, `keycloak`, `mailhog`
@@ -14,7 +15,7 @@ To protect any service with SSO, apply the following Traefik label in its `docke
 
 ```yaml
 labels:
-  - 'traefik.http.routers.my-app.middlewares=sso-errors@file,sso-auth@file'
+  - 'traefik.http.routers.my-app.middlewares=sso-auth@file'
 ```
 
 The `sso-auth` middleware (defined in Traefik's dynamic config) forwards requests to `http://auth.${DEFAULT_URL}/oauth2/auth`.

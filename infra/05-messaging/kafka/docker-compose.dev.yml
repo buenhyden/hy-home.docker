@@ -235,6 +235,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
+    restart: 'no'
     image: confluentinc/cp-kafka:8.1.1
     container_name: kafka-init-dev
     entrypoint: ['/bin/sh', '-c']

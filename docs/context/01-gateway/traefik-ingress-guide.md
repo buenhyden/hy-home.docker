@@ -2,6 +2,7 @@
 layer: infra
 ---
 # Traefik Ingress Controller Guide
+
 n**Overview (KR):** Traefik 기반 인그레스 컨트롤러의 동적 라우팅 및 SSL 설정 관리 가이드입니다.
 
 > **Component**: `traefik`
@@ -31,7 +32,7 @@ labels:
 
 All non-label based configs (Middlewares, Transport settings) reside in the `./dynamic/` directory within the Traefik service folder.
 
-- **Middlewares**: `sso-errors@file,sso-auth@file`, `compression@file`
+- **Middlewares**: `sso-auth@file`, `compression@file`
 - **ServersTransports**: `insecureTransport@file` (Used for internal self-signed backend SSL)
 
 ## 4. Operational Maintenance

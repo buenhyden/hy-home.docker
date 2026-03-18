@@ -18,6 +18,7 @@ services:
       - |
         export OAUTH2_PROXY_COOKIE_SECRET=$$(cat /run/secrets/oauth2_proxy_cookie_secret | tr -d '\n')
         export OAUTH2_PROXY_CLIENT_SECRET=$$(cat /run/secrets/oauth2_proxy_client_secret | tr -d '\n')
+        export OAUTH2_PROXY_REDIS_PASSWORD=$$(cat /run/secrets/mng_valkey_password | tr -d '\n')
         exec /bin/oauth2-proxy --config /etc/oauth2-proxy.cfg
     environment:
       - SSL_CERT_FILE=/etc/ssl/certs/rootCA.pem
@@ -35,14 +36,23 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      traefik.http.routers.oauth2-proxy.rule: Host(`auth.${DEFAULT_URL}`) && PathPrefix(`/oauth2/`)
+      traefik.http.routers.oauth2-proxy.rule: Host(`auth.${DEFAULT_URL}`)
+      traefik.docker.network: infra_net
       traefik.http.routers.oauth2-proxy.entrypoints: websecure
+      # traefik.http.routers.oauth2-proxy.service: oauth2-proxy-svc
       traefik.http.routers.oauth2-proxy.tls: 'true'
       traefik.http.services.oauth2-proxy.loadbalancer.server.port: ${OAUTH2_PROXY_PORT:-4180}
     networks:
       - infra_net
     healthcheck:
-      test: ['CMD', 'wget', '-qO-', 'http://localhost:$${OAUTH2_PROXY_PORT:-4180}/ping']
+      test:
+        [
+          "CMD-SHELL",
+          "wget -qO- http://127.0.0.1:${OAUTH2_PROXY_PORT:-4180}/ping >/dev/null 2>&1 || exit 1"
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
+    extra_hosts:
+      - 'keycloak.127.0.0.1.nip.io:host-gateway'
+      - 'auth.127.0.0.1.nip.io:host-gateway'

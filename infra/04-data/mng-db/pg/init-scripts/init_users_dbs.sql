@@ -1,41 +1,40 @@
--- PostgreSQL 초기화 스크립트 (Initialization Script)
--- 주의: 이 스크립트는 데이터 볼륨이 비어 있을 때 최초 1회만 실행됩니다.
+-- PostgreSQL 초기화 스크립트
+-- psql -v 로 전달된 변수를 사용한다.
 
 ---------------------------------------------------------
 -- 1. n8n 설정
 ---------------------------------------------------------
--- 사용자 생성 (존재하지 않을 경우에만 생성하도록 DO 블록 활용)
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'n8n') THEN
-        CREATE USER n8n WITH PASSWORD '${N8N_DB_PASSWORD}';
-    END IF;
-END
-$$;
+SELECT 'CREATE ROLE n8n LOGIN PASSWORD ' || quote_literal(:'n8n_db_password')
+WHERE NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'n8n')
+\gexec
 
--- 데이터베이스 생성 및 권한 부여
-CREATE DATABASE n8n OWNER n8n;
+ALTER ROLE n8n WITH LOGIN PASSWORD :'n8n_db_password';
+
+SELECT 'CREATE DATABASE n8n OWNER n8n'
+WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'n8n')
+\gexec
+
 GRANT ALL PRIVILEGES ON DATABASE n8n TO n8n;
 
--- 해당 DB로 접속하여 스키마 권한 설정
 \connect n8n
--- PostgreSQL 15 이상 대응: public 스키마 권한 명시적 부여
 GRANT ALL ON SCHEMA public TO n8n;
--- n8n 사용자가 public 스키마의 소유권을 갖게 하여 확장을 자유롭게 함
 ALTER SCHEMA public OWNER TO n8n;
 
 ---------------------------------------------------------
 -- 2. keycloak 설정
 ---------------------------------------------------------
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'keycloak') THEN
-        CREATE USER keycloak WITH PASSWORD '${KEYCLOAK_DB_PASSWORD}';
-    END IF;
-END
-$$;
+\connect postgres
 
-CREATE DATABASE keycloak OWNER keycloak;
+SELECT 'CREATE ROLE keycloak LOGIN PASSWORD ' || quote_literal(:'keycloak_db_password')
+WHERE NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'keycloak')
+\gexec
+
+ALTER ROLE keycloak WITH LOGIN PASSWORD :'keycloak_db_password';
+
+SELECT 'CREATE DATABASE keycloak OWNER keycloak'
+WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'keycloak')
+\gexec
+
 GRANT ALL PRIVILEGES ON DATABASE keycloak TO keycloak;
 
 \connect keycloak
@@ -45,34 +44,39 @@ ALTER SCHEMA public OWNER TO keycloak;
 ---------------------------------------------------------
 -- 3. airflow 설정
 ---------------------------------------------------------
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'airflow') THEN
-        CREATE USER airflow WITH PASSWORD '${AIRFLOW_DB_PASSWORD}';
-    END IF;
-END
-$$;
+\connect postgres
 
-CREATE DATABASE airflow OWNER airflow;
+SELECT 'CREATE ROLE airflow LOGIN PASSWORD ' || quote_literal(:'airflow_db_password')
+WHERE NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'airflow')
+\gexec
+
+ALTER ROLE airflow WITH LOGIN PASSWORD :'airflow_db_password';
+
+SELECT 'CREATE DATABASE airflow OWNER airflow'
+WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'airflow')
+\gexec
+
 GRANT ALL PRIVILEGES ON DATABASE airflow TO airflow;
 
 \connect airflow
 GRANT ALL ON SCHEMA public TO airflow;
 ALTER SCHEMA public OWNER TO airflow;
 
-
 ---------------------------------------------------------
 -- 4. terrakube 설정
 ---------------------------------------------------------
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'terrakube') THEN
-        CREATE USER terrakube WITH PASSWORD '${TERRAKUBE_DB_PASSWORD}';
-    END IF;
-END
-$$;
+\connect postgres
 
-CREATE DATABASE terrakube OWNER terrakube;
+SELECT 'CREATE ROLE terrakube LOGIN PASSWORD ' || quote_literal(:'terrakube_db_password')
+WHERE NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'terrakube')
+\gexec
+
+ALTER ROLE terrakube WITH LOGIN PASSWORD :'terrakube_db_password';
+
+SELECT 'CREATE DATABASE terrakube OWNER terrakube'
+WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'terrakube')
+\gexec
+
 GRANT ALL PRIVILEGES ON DATABASE terrakube TO terrakube;
 
 \connect terrakube
@@ -82,15 +86,18 @@ ALTER SCHEMA public OWNER TO terrakube;
 ---------------------------------------------------------
 -- 5. sonarqube 설정
 ---------------------------------------------------------
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'sonarqube') THEN
-        CREATE USER sonarqube WITH PASSWORD '${SONARQUBE_DB_PASSWORD}';
-    END IF;
-END
-$$;
+\connect postgres
 
-CREATE DATABASE sonarqube OWNER sonarqube;
+SELECT 'CREATE ROLE sonarqube LOGIN PASSWORD ' || quote_literal(:'sonarqube_db_password')
+WHERE NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'sonarqube')
+\gexec
+
+ALTER ROLE sonarqube WITH LOGIN PASSWORD :'sonarqube_db_password';
+
+SELECT 'CREATE DATABASE sonarqube OWNER sonarqube'
+WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = 'sonarqube')
+\gexec
+
 GRANT ALL PRIVILEGES ON DATABASE sonarqube TO sonarqube;
 
 \connect sonarqube

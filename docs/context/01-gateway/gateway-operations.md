@@ -2,6 +2,7 @@
 layer: infra
 ---
 # Gateway Operations Blueprint (Traefik)
+
 n**Overview (KR):** Traefik 기반 인그레스 게이트웨이의 오퍼레이션 패턴 및 외부 접속 설정 가이드입니다.
 
 > Standard operating procedures for the edge router proxy within `infra_net`.
@@ -34,7 +35,7 @@ By default, the Traefik deployment heavily utilizes a local certificate generati
 
 Several core paths require SS0/OAuth2 middleware checks. If adding authentication, always add:
 
-- `traefik.http.routers.<service_name>.middlewares=sso-errors@file,sso-auth@file`
+- `traefik.http.routers.<service_name>.middlewares=sso-auth@file`
 
 Ensure that the middleware definition lives within `./dynamic/middlewares.yml`. If proxying to services issuing their own SSL (like OpenSearch), force HTTPS transport proxying:
 

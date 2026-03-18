@@ -1,3 +1,6 @@
+x-tier-label: &tier-label
+  hy-home.tier: auth
+
 volumes:
   oauth2-proxy-valkey-data:
     driver: local
@@ -37,7 +40,7 @@ services:
       # 필수 설정: 세션 저장소를 Redis로 변경
       - OAUTH2_PROXY_SESSION_STORE_TYPE=redis
       # 필수 설정: Redis 연결 주소 (서비스명:포트)
-      - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://oauth2_valkey:6379
+      - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://oauth2-proxy-valkey:6379
       # 비밀번호를 파일에서 읽도록 지시 (_FILE 접미사 사용)
       - OAUTH2_PROXY_REDIS_PASSWORD_FILE=/run/secrets/oauth2_valkey_password
       - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}
@@ -46,12 +49,12 @@ services:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
     labels:
-      - 'traefik.enable=true'
-      # OAuth2 콜백 처리를 위한 라우터
-      - 'traefik.http.routers.oauth2-proxy.rule=Host(`auth.${DEFAULT_URL}`)'
-      - 'traefik.http.routers.oauth2-proxy.entrypoints=websecure'
-      - 'traefik.http.routers.oauth2-proxy.tls=true'
-      - 'traefik.http.services.oauth2-proxy.loadbalancer.server.port=${OAUTH2_PROXY_PORT:-4180}'
+      <<: *tier-label
+      traefik.enable: true
+      traefik.http.routers.oauth2-proxy.rule: Host(`auth.${DEFAULT_URL}`)
+      traefik.http.routers.oauth2-proxy.entrypoints: websecure
+      traefik.http.routers.oauth2-proxy.tls: true
+      traefik.http.services.oauth2-proxy.loadbalancer.server.port: ${OAUTH2_PROXY_PORT:-4180}
     networks:
       - infra_net
 
@@ -92,6 +95,8 @@ services:
       timeout: 30s
       retries: 5
       start_period: 15s
+    labels:
+      <<: *tier-label
 
   oauth2-proxy-valkey-exporter:
     deploy:
@@ -125,3 +130,5 @@ services:
     depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
       oauth2-proxy-valkey:
         condition: service_healthy
+    labels:
+      <<: *tier-label

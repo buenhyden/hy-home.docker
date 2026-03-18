@@ -34,7 +34,10 @@ services:
       retries: 5
       start_period: 15s
     networks:
-      - infra_net
+      infra_net:
+        aliases:
+          - keycloak.${DEFAULT_URL}
+          - auth.${DEFAULT_URL}
     secrets:
       - traefik_basicauth_password
       - traefik_opensearch_basicauth_password

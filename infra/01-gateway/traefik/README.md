@@ -62,11 +62,11 @@ labels:
 
 ### SSO (OAuth2 Proxy) Integration
 
-To protect a service with Keycloak SSO, add the `sso-errors@file,sso-auth@file` middleware to your router labels:
+To protect a service with Keycloak SSO, add the `sso-auth@file` middleware to your router labels:
 
 ```yaml
 labels:
-  - "traefik.http.routers.myservice.middlewares=sso-errors@file,sso-auth@file"
+  - "traefik.http.routers.myservice.middlewares=sso-auth@file"
 ```
 
 ## File Map

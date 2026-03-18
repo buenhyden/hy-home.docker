@@ -2,6 +2,7 @@
 layer: infra
 ---
 # SSO & OAuth2 Proxy Operational Blueprint
+
 n**Overview (KR):** OAuth2 Proxy를 이용한 인증 연동 통합 서비스 보호 설계 가이드입니다.
 
 > **Component**: `oauth2-proxy`
@@ -25,7 +26,7 @@ Before the proxy can serve requests, the following must be configured in Keycloa
 
 ## 3. Protecting Services
 
-Attach the `sso-errors@file,sso-auth@file` middleware to any Traefik router to enforce SSO.
+Attach the `sso-auth@file` middleware to any Traefik router to enforce SSO.
 
 ### Flow Mechanics
 

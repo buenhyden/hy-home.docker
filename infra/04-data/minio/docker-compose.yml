@@ -52,6 +52,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
+    restart: "no"
     image: minio/mc:RELEASE.2025-08-13T08-35-41Z
     container_name: minio-create-buckets
     entrypoint: ['/bin/sh', '-c']

@@ -72,10 +72,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'etcdctl',
-          'endpoint',
-          'health',
-          '--endpoints=http://localhost:$${ETCD_CLIENT_PORT:-2379}',
+          'etcdctl endpoint health --endpoints=http://localhost:${ETCD_CLIENT_PORT:-2379}',
         ]
       interval: 15s
       timeout: 10s
@@ -109,10 +106,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'etcdctl',
-          'endpoint',
-          'health',
-          '--endpoints=http://localhost:$${ETCD_CLIENT_PORT:-2379}',
+          'etcdctl endpoint health --endpoints=http://localhost:${ETCD_CLIENT_PORT:-2379}',
         ]
       interval: 15s
       timeout: 10s
@@ -146,10 +140,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'etcdctl',
-          'endpoint',
-          'health',
-          '--endpoints=http://localhost:$${ETCD_CLIENT_PORT:-2379}',
+          'etcdctl endpoint health --endpoints=http://localhost:${ETCD_CLIENT_PORT:-2379}',
         ]
       interval: 15s
       timeout: 10s
@@ -163,7 +154,7 @@ services:
   pg-0:
     extends:
       file: ../../common-optimizations.yml
-      service: template-stateful-high
+      service: template-stateful-db-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-0
     hostname: pg-0
@@ -187,7 +178,7 @@ services:
       etcd-3:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -h localhost']
+      test: ['CMD-SHELL', 'pg_isready -U ${PATRONI_SUPERUSER_USERNAME:-postgres} -h localhost']
       interval: 15s
       timeout: 10s
       retries: 5
@@ -200,7 +191,7 @@ services:
   pg-1:
     extends:
       file: ../../common-optimizations.yml
-      service: template-stateful-high
+      service: template-stateful-db-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-1
     hostname: pg-1
@@ -224,7 +215,7 @@ services:
       etcd-3:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -h localhost']
+      test: ['CMD-SHELL', 'pg_isready -U ${PATRONI_SUPERUSER_USERNAME:-postgres} -h localhost']
       interval: 15s
       timeout: 10s
       retries: 5
@@ -237,7 +228,7 @@ services:
   pg-2:
     extends:
       file: ../../common-optimizations.yml
-      service: template-stateful-high
+      service: template-stateful-db-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: pg-2
     hostname: pg-2
@@ -261,7 +252,7 @@ services:
       etcd-3:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -h localhost']
+      test: ['CMD-SHELL', 'pg_isready -U ${PATRONI_SUPERUSER_USERNAME:-postgres} -h localhost']
       interval: 15s
       timeout: 10s
       retries: 5
@@ -290,7 +281,24 @@ services:
       - '${POSTGRES_WRITE_HOST_PORT:-15432}:${POSTGRES_WRITE_PORT:-15432}'
       - '${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}'
     expose:
-      - ${HAPROXY_METRICS_PORT:-8404}
+      - '${HAPROXY_METRICS_PORT:-8404}'
+    depends_on:
+      pg-0:
+        condition: service_healthy
+      pg-1:
+        condition: service_healthy
+      pg-2:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget -qO- http://localhost:$${HAPROXY_METRICS_PORT:-8404}/metrics >/dev/null 2>&1 || exit 1',
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -305,10 +313,11 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
+    restart: 'no'
     image: postgres:17-alpine
     container_name: pg-cluster-init
     environment:
-      POSTGRES_ROUTER_HOSTNAME: ${POSTGRES_ROUTER_HOSTNAME}
+      POSTGRES_ROUTER_HOSTNAME: pg-router
       POSTGRES_WRITE_PORT: ${POSTGRES_WRITE_PORT:-15432}
       POSTGRES_READ_PORT: ${POSTGRES_READ_PORT:-15433}
       POSTGRES_USER: ${PATRONI_SUPERUSER_USERNAME:-postgres}
@@ -319,7 +328,7 @@ services:
       pg-router:
         condition: service_started
     command: >
-      sh -c "until pg_isready -h $$POSTGRES_ROUTER_HOSTNAME -p $$POSTGRES_WRITE_PORT -U $$POSTGRES_USER; do sleep 2; done; export PGPASSWORD=$$(cat /run/secrets/patroni_superuser_password | tr -d '\n'); psql -h \"$$POSTGRES_ROUTER_HOSTNAME\" -p \"$$POSTGRES_WRITE_PORT\" -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\" -f /work/init_users_dbs.sql;"
+      sh -c "until pg_isready -h $$POSTGRES_ROUTER_HOSTNAME -p $$POSTGRES_WRITE_PORT -U $$POSTGRES_USER; do sleep 2; done; export PGPASSWORD=$$(cat /run/secrets/patroni_superuser_password | tr -d '\n'); psql -h \"$$POSTGRES_ROUTER_HOSTNAME\" -p \"$$POSTGRES_WRITE_PORT\" -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\" -v patroni_superuser_password=\"$$PGPASSWORD\" \ -f /work/init_users_dbs.sql;"
     volumes:
       - ./init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro
     labels:

@@ -291,7 +291,10 @@ services:
 
   kafka-init:
     profiles: ['messaging']
-    extends: { file: ../../common-optimizations.yml, service: template-job-low }
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    restart: 'no'
     image: confluentinc/cp-kafka:8.1.1
     container_name: kafka-init
     read_only: true
