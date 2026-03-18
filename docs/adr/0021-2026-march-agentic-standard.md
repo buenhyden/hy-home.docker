@@ -1,5 +1,5 @@
 ---
-title: 'ADR 0003: March 2026 Agentic Standard Adoption'
+title: 'ADR 0021: March 2026 Agentic Standard Adoption'
 status: 'Accepted'
 date: '2026-03-15'
 authors: ['buenhyden']

@@ -1,5 +1,5 @@
 ---
-title: 'ADR 0001: Lazy-Loading Protocol for AI Agents'
+title: 'ADR 0018: Lazy-Loading Protocol for AI Agents'
 status: 'Accepted'
 date: '2026-03-15'
 authors: ['buenhyden']

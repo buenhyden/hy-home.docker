@@ -4,12 +4,10 @@ layer: core
 
 # Architecture Decision Records (ADR)
 
-This directory contains Architecture Decision Records for the project. ADRs document significant architectural decisions along with their context and consequences.
+**Overview (KR):** 이 디렉토리는 프로젝트의 주요 아키텍처 결정 사항을 기록한 ADR(Architecture Decision Record) 문서들을 포함합니다. 각 ADR은 결정의 배경, 대안, 결과 및 영향을 상세히 기술합니다.
 
 ## Index of ADRs
 
-| Number | Title | Status | Date |
-| ------ | ----- | ------ | ---- |
 | Number | Title | Status | Date |
 | ------ | ----- | ------ | ---- |
 | [ADR-0001](0001-root-orchestration-include.md) | Root Orchestration via `include` | Accepted | 2026-02-26 |

@@ -1,5 +1,5 @@
 ---
-title: 'ADR 0001: Flat Documentation Taxonomy and Layer Metadata'
+title: 'ADR 0017: Flat Documentation Taxonomy and Layer Metadata'
 status: 'Accepted'
 date: '2026-03-14'
 authors: ['Antigravity']

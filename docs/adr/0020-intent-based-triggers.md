@@ -1,5 +1,5 @@
 ---
-title: 'ADR 0002: Intent-Based Rule Triggers and Lazy Loading'
+title: 'ADR 0020: Intent-Based Rule Triggers and Lazy Loading'
 status: 'Accepted'
 date: '2026-03-15'
 authors: ['buenhyden']

@@ -1,5 +1,5 @@
 ---
-title: 'ADR 0010: Lazy-Loading Agent Rules'
+title: 'ADR 0024: Lazy-Loading Agent Rules'
 status: 'Proposed'
 date: '2026-03-14'
 owner: 'Antigravity'
