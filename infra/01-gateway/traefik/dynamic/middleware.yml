@@ -28,7 +28,7 @@ http:
           - "Authorization"
           - "X-Auth-Request-Access-Token"
           - "X-Auth-Request-Id-Token"
-          -
+
     sso-errors:
       errors:
         status:

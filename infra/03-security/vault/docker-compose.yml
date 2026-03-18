@@ -12,7 +12,7 @@ volumes:
 services:
   vault:
     profiles:
-      - vault
+      - core
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med

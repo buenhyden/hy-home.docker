@@ -181,7 +181,7 @@ include:
   # - infra/04-data/cassandra/docker-compose.yml
   # - infra/04-data/couchdb/docker-compose.yml
   # - infra/04-data/influxdb/docker-compose.yml
-  # - infra/04-data/minio/docker-compose.yml
+  - infra/04-data/minio/docker-compose.yml
   - infra/04-data/mng-db/docker-compose.yml
   # - infra/04-data/mongodb/docker-compose.yml
   # - infra/04-data/neo4j/docker-compose.yml
@@ -194,7 +194,7 @@ include:
   # - infra/05-messaging/kafka/docker-compose.yml
   # - infra/05-messaging/ksql/docker-compose.yml
   # - infra/05-messaging/rabbitmq/docker-compose.yml
-  # - infra/06-observability/docker-compose.yml
+  - infra/06-observability/docker-compose.yml
   # - infra/07-workflow/n8n/docker-compose.yml
   # - infra/07-workflow/airflow/docker-compose.yml
   # - infra/08-ai/ollama/docker-compose.yml

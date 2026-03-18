@@ -28,7 +28,6 @@ providers:
     exposedByDefault: false
     network: infra_net
   file:
-    # 특정 파일 하나만 지정하기보다 폴더를 지정하면 확장에 유리합니다.
     directory: /dynamic
     watch: true
 

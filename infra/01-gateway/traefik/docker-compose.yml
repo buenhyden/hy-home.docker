@@ -3,6 +3,8 @@ x-tier-label: &tier-label
 
 services:
   traefik:
+    profiles:
+      - core
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-med

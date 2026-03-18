@@ -72,11 +72,12 @@ services:
       - /bin/sh
       - -ec
       - |
+        export PGPASSWORD="$$(tr -d '\n' </run/secrets/mng_postgres_password)"
+
         until pg_isready -h "$$POSTGRES_HOSTNAME" -p "$$POSTGRES_PORT" -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"; do
           sleep 2
         done
 
-        export PGPASSWORD="$$(tr -d '\n' </run/secrets/mng_postgres_password)"
         N8N_DB_PASSWORD="$$(tr -d '\n' </run/secrets/n8n_db_password)"
         KEYCLOAK_DB_PASSWORD="$$(tr -d '\n' </run/secrets/keycloak_db_password)"
         AIRFLOW_DB_PASSWORD="$$(tr -d '\n' </run/secrets/airflow_db_password)"
@@ -88,6 +89,7 @@ services:
           -p "$$POSTGRES_PORT" \
           -U "$$POSTGRES_USER" \
           -d "$$POSTGRES_DB" \
+          -v ON_ERROR_STOP=1 \
           -v n8n_db_password="$$N8N_DB_PASSWORD" \
           -v keycloak_db_password="$$KEYCLOAK_DB_PASSWORD" \
           -v airflow_db_password="$$AIRFLOW_DB_PASSWORD" \

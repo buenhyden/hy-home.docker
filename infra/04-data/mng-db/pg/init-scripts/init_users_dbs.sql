@@ -1,3 +1,4 @@
+\set ON_ERROR_STOP on
 -- PostgreSQL 초기화 스크립트
 -- psql -v 로 전달된 변수를 사용한다.
 
