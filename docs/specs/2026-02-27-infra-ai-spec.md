@@ -72,9 +72,9 @@ This spec defines the local AI stack for development use:
 
 | ID                | Requirement Description | Priority | Parent PRD REQ |
 | ----------------- | ----------------------- | -------- | -------------- |
-| **REQ-SPC-AI-001** | AI stack MUST be gated behind the `ai` profile (root-only entrypoint). | High | REQ-PRD-AI-FUN-01 |
-| **REQ-SPC-AI-002** | Services MUST use internal DNS (no `ipv4_address` pinning). | High | REQ-PRD-AI-FUN-03 |
-| **REQ-SPC-AI-003** | Model and state directories MUST persist via host-mapped volumes. | High | REQ-PRD-AI-FUN-03 |
+| **REQ-SPC-AI-001** | AI stack MUST be gated behind the `ai` profile (root-only entrypoint). | High | REQ-AI-FUN-01 |
+| **REQ-SPC-AI-002** | Services MUST use internal DNS (no `ipv4_address` pinning). | High | REQ-AI-FUN-03 |
+| **REQ-SPC-AI-003** | Model and state directories MUST persist via host-mapped volumes. | High | REQ-AI-FUN-03 |
 | **SEC-SPC-AI-001** | Secrets MUST NOT be passed as plaintext environment variables. | Critical | N/A |
 
 ## 3. Data Modeling & Storage Strategy

@@ -20,7 +20,7 @@ _Note: Global protocol for managing system outages and service degradations._
 | Dependency | Type | Impact if Down | Link to Runbook |
 | ---------- | ---- | -------------- | --------------- |
 | Slack / Comms | Internal | Zero coordination | N/A |
-| Grafana / Loki | Observability | Blind response | [Monitoring Runbook](monitoring-runbook.md) |
+| Grafana / Loki | Observability | Blind response | [Monitoring Runbook](2026-03-15-monitoring-runbook.md) |
 
 ## 3. Observability & Dashboards
 

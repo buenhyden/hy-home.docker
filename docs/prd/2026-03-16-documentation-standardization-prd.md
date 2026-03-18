@@ -27,9 +27,9 @@ To establish a high-performance, compliant, and well-organized documentation sys
 
 ## Requirements
 
-- **[REQ-PRD-FUN-01] Template Compliance**: All documentation must follow the canonical templates in `templates/`.
-- **[REQ-PRD-FUN-02] Metadata Enforcement**: Every document must include `layer` metadata in the frontmatter.
-- **[REQ-PRD-FUN-03] Path Alignment**: Documentation paths must align with user specifications.
+- **[REQ-STAN-FUN-01] Template Compliance**: All documentation must follow the canonical templates in `templates/`.
+- **[REQ-STAN-FUN-02] Metadata Enforcement**: Every document must include `layer` metadata in the frontmatter.
+- **[REQ-STAN-FUN-03] Path Alignment**: Documentation paths must align with user specifications.
   - ADR: `docs/adr/`
   - ARD: `docs/ard/`
   - Incident: `docs/operations/incidents/`

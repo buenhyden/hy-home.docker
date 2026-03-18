@@ -19,8 +19,8 @@ _Note: High-criticality bootstrap procedure for the combined Docker Compose infr
 
 | Dependency | Type | Impact if Down | Link to Runbook |
 | ---------- | ---- | -------------- | --------------- |
-| Docker Engine | Tooling | Bootstrap impossible | [Deployment Runbook](deployment-runbook.md) |
-| Docker Compose v2 | Tooling | Orchestration failure | [Deployment Runbook](deployment-runbook.md) |
+| Docker Engine | Tooling | Bootstrap impossible | [Deployment Runbook](2026-03-15-deployment-runbook.md) |
+| Docker Compose v2 | Tooling | Orchestration failure | [Deployment Runbook](2026-03-15-deployment-runbook.md) |
 | mkcert | Provisioning | No local TLS | N/A |
 
 ## 3. Observability & Dashboards

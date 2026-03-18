@@ -2,7 +2,7 @@
 layer: infra
 ---
 # ADR 0002: Secrets-First Management Policy
-n**Overview (KR):** 모든 민감한 설정 정보를 환경 변수가 아닌 Docker Secrets로 관리하여 보안성을 강화하는 정책을 정의합니다.
+**Overview (KR):** 모든 민감한 설정 정보를 환경 변수가 아닌 Docker Secrets로 관리하여 보안성을 강화하는 정책을 정의합니다.
 
 : Secrets-First Management Policy
 
@@ -62,4 +62,4 @@ The standard Docker Compose approach.
 
 - **Feature PRD**: [Infrastructure Baseline PRD](../prd/2026-02-27-infra-baseline-prd.md)
 - **Feature Spec**: [Infrastructure Baseline Spec](../specs/2026-02-27-infra-baseline-spec.md)
-- **Related ADRs**: [ADR-0009: Strict Docker Secrets Adoption](0009-strict-docker-secrets.md)
+- **Related ADRs**: [ADR-0009: Strict Docker Secrets Adoption](2026-02-26-0009-strict-docker-secrets.md)

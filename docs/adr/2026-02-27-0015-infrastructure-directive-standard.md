@@ -2,7 +2,7 @@
 layer: infra
 ---
 # ADR 0015: Mandatory Infrastructure Directives
-n**Overview (KR):** Compose 파일 내에서 기술 준수 사항을 보장하기 위한 필수 지시어 표준을 정의합니다.
+**Overview (KR):** Compose 파일 내에서 기술 준수 사항을 보장하기 위한 필수 지시어 표준을 정의합니다.
 
 ## Status
 

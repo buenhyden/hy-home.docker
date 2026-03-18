@@ -66,16 +66,16 @@ layer: core
 
 ## 5. Scope & Functional Requirements
 
-- **[REQ-PRD-BSL-FUN-01]** Modular Orchestration via `include`.
-- **[REQ-PRD-BSL-FUN-02]** Secrets-First Policy enforcement (100% Docker Secrets).
-- **[REQ-PRD-BSL-FUN-03]** Bootstrap Prerequisites: Define required `.env` keys and directory permissions.
-- **[REQ-PRD-BSL-FUN-04]** Local TLS Standardisation via `mkcert` (secrets/certs/).
-- **[REQ-PRD-BSL-FUN-05]** Centralized Log Aggregation using Loki.
-- **[REQ-PRD-BSL-FUN-06]** Global Configuration Inheritance via `infra/common-optimizations.yml`.
-- **[REQ-PRD-BSL-FUN-07] Strict Version Pinning**
+- **[REQ-BSL-FUN-01]** Modular Orchestration via `include`.
+- **[REQ-BSL-FUN-02]** Secrets-First Policy enforcement (100% Docker Secrets).
+- **[REQ-BSL-FUN-03]** Bootstrap Prerequisites: Define required `.env` keys and directory permissions.
+- **[REQ-BSL-FUN-04]** Local TLS Standardisation via `mkcert` (secrets/certs/).
+- **[REQ-BSL-FUN-05]** Centralized Log Aggregation using Loki.
+- **[REQ-BSL-FUN-06]** Global Configuration Inheritance via `infra/common-optimizations.yml`.
+- **[REQ-BSL-FUN-07] Strict Version Pinning**
   - Vague tags (e.g., `latest`, `stable`) are PROHIBITED for infrastructure images.
   - All images MUST use specific semver or SHA-based tags to ensure reproducible deployments.
-- **[REQ-PRD-BSL-FUN-08]** Mandatory `extends` usage for cross-file resource and security baseline.
+- **[REQ-BSL-FUN-08]** Mandatory `extends` usage for cross-file resource and security baseline.
 
 ## 6. Out of Scope
 

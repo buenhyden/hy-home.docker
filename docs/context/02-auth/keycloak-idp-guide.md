@@ -45,7 +45,7 @@ Keycloak is configured to utilize the Management PostgreSQL instance (`mng-pg`) 
 
 | Action | Reference | Link |
 | --- | --- | --- |
-| **Recovery** | Lockout Flow | [Runbook](../runbooks/auth-lockout.md) |
+| **Recovery** | Lockout Flow | [Runbook](../runbooks/2026-03-15-auth-lockout.md) |
 | **Usage**    | Secrets Access | [Onboarding](../examples/README.md#secrets) |
 | **App Link** | OAuth2 Proxy | [Guide](sso-oauth2-proxy-guide.md) |
 

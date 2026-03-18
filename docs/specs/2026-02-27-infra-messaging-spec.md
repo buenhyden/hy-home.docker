@@ -73,8 +73,8 @@ The stack is enabled via the standard Compose profile `messaging` and runs insid
 
 | ID                 | Requirement Description | Priority | Parent PRD REQ |
 | ------------------ | ----------------------- | -------- | -------------- |
-| **REQ-SPC-MSG-001** | Kafka stack MUST be gated behind the `messaging` profile. | High | REQ-PRD-MSG-FUN-01 |
-| **REQ-SPC-MSG-002** | Cluster MUST be multi-node (3 brokers) for local HA testing. | High | REQ-PRD-MSG-FUN-01 |
+| **REQ-SPC-MSG-001** | Kafka stack MUST be gated behind the `messaging` profile. | High | REQ-MSG-FUN-01 |
+| **REQ-SPC-MSG-002** | Cluster MUST be multi-node (3 brokers) for local HA testing. | High | REQ-MSG-FUN-01 |
 | **REQ-SPC-MSG-003** | Internal connectivity MUST use Docker DNS (no static IP pinning). | High | N/A |
 
 ## 3. Data Modeling & Storage Strategy

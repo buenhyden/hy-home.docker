@@ -16,35 +16,35 @@ This directory is the **exclusive, authoritative home** for all executable proce
 
 ### 🏗️ Platform & Core
 
-- [**Deployment Logic**](deployment-runbook.md) — Standardized rollout and safe rollback paths.
-- [**Docker Maintenance**](docker-resource-maintenance.md) — Managing Docker resources and constraints.
-- [**Infra Bootstrap**](infra-bootstrap-runbook.md) — Environment setup and global recovery.
-- [**Incident Response**](incident-response-runbook.md) — General incident handling protocols.
-- [**Monitoring**](monitoring-runbook.md) — Observability stack health and alerting.
+- [**Deployment Logic**](2026-03-15-deployment-runbook.md) — Standardized rollout and safe rollback paths.
+- [**Docker Maintenance**](2026-03-15-docker-resource-maintenance.md) — Managing Docker resources and constraints.
+- [**Infra Bootstrap**](2026-03-15-infra-bootstrap-runbook.md) — Environment setup and global recovery.
+- [**Incident Response**](2026-03-15-incident-response-runbook.md) — General incident handling protocols.
+- [**Monitoring**](2026-03-15-monitoring-runbook.md) — Observability stack health and alerting.
 
 ### 🌐 Gateway & Security
 
-- [**Gateway 502 Errors**](gateway-502-errors.md) — Resolving edge proxy errors.
-- [**Traefik Recovery**](traefik-proxy-recovery.md) — Edge routing remediation.
-- [**Auth Lockout**](auth-lockout.md) — Emergency access procedures.
-- [**Vault Sealed**](vault-sealed.md) — Unsealing protocols and rotation.
-- [**Keycloak Restore**](keycloak-db-restore.md) — Identity provider database recovery.
+- [**Gateway 502 Errors**](2026-03-15-gateway-502-errors.md) — Resolving edge proxy errors.
+- [**Traefik Recovery**](2026-03-15-traefik-proxy-recovery.md) — Edge routing remediation.
+- [**Auth Lockout**](2026-03-15-auth-lockout.md) — Emergency access procedures.
+- [**Vault Sealed**](2026-03-15-vault-sealed.md) — Unsealing protocols and rotation.
+- [**Keycloak Restore**](2026-03-15-keycloak-db-restore.md) — Identity provider database recovery.
 
 ### 💾 Data & Messaging
 
-- [**Postgres HA**](postgres-ha-recovery.md) — Patroni cluster recovery.
-- [**Valkey Failover**](valkey-cluster-manual-failover.md) — Key-value store health.
-- [**Minio Sync**](minio-sync-failure.md) — Object storage consistency.
-- [**OpenSearch Shard**](opensearch-shard-recovery.md) — Search cluster maintenance.
-- [**Kafka Broker**](kafka-broker-offline.md) — Stream processing recovery.
-- [**Kafka Ops**](kafka-cluster-ops.md) — Messaging cluster management.
+- [**Postgres HA**](2026-03-15-postgres-ha-recovery.md) — Patroni cluster recovery.
+- [**Valkey Failover**](2026-03-15-valkey-cluster-manual-failover.md) — Key-value store health.
+- [**Minio Sync**](2026-03-15-minio-sync-failure.md) — Object storage consistency.
+- [**OpenSearch Shard**](2026-03-15-opensearch-shard-recovery.md) — Search cluster maintenance.
+- [**Kafka Broker**](2026-03-15-kafka-broker-offline.md) — Stream processing recovery.
+- [**Kafka Ops**](2026-03-15-kafka-cluster-ops.md) — Messaging cluster management.
 
 ### 🤖 Automation & Observability
 
-- [**Airflow Recovery**](airflow-celery-recovery.md) — Worker and task reliability.
-- [**n8n Recovery**](n8n-worker-recovery.md) — Low-code automation health.
-- [**Observability Maintenance**](observability-stack-maintenance.md) — LGTN stack upkeep.
-- [**Observability Storage**](observability-storage-full.md) — Handling disk pressure in monitoring.
+- [**Airflow Recovery**](2026-03-15-airflow-celery-recovery.md) — Worker and task reliability.
+- [**n8n Recovery**](2026-03-15-n8n-worker-recovery.md) — Low-code automation health.
+- [**Observability Maintenance**](2026-03-15-observability-stack-maintenance.md) — LGTN stack upkeep.
+- [**Observability Storage**](2026-03-15-observability-storage-full.md) — Handling disk pressure in monitoring.
 
 ## 📐 Operational Standards
 

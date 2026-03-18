@@ -20,5 +20,5 @@ layer: ops
 
 ## Related Tools
 
-- [Incident Response Runbook](../runbooks/incident-response-runbook.md)
-- [Infrastructure Bootstrap](../runbooks/infra-bootstrap-runbook.md)
+- [Incident Response Runbook](../runbooks/2026-03-15-incident-response-runbook.md)
+- [Infrastructure Bootstrap](../runbooks/2026-03-15-infra-bootstrap-runbook.md)

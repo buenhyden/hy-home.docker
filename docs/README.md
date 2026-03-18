@@ -32,7 +32,7 @@ layer: core
 
 - [Agent Core Governance](agentic/core-governance.md)
 - [Lazy Loading Protocol](agentic/2026-03-15-agent-workflow.md)
-- [Standard Alignment](runbooks/standard-alignment.md)
+- [Standard Alignment](runbooks/2026-03-15-standard-alignment.md)
 
 ---
 *Maintained by Repository Owner*

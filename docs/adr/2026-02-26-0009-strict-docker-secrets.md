@@ -2,7 +2,7 @@
 layer: infra
 ---
 # ADR 0009: Strict Docker Secrets
-n**Overview (KR):** 일반 텍스트 환경 변수 사용을 엄격히 제한하고 100% Docker Secrets 기반의 보안 정책을 강제합니다.
+**Overview (KR):** 일반 텍스트 환경 변수 사용을 엄격히 제한하고 100% Docker Secrets 기반의 보안 정책을 강제합니다.
 
 : Strict Docker Secrets Adoption
 
@@ -62,4 +62,4 @@ Using tools like SOPS to encrypt .env files.
 
 - **Feature PRD**: [Infrastructure Baseline PRD](../prd/2026-02-27-infra-baseline-prd.md), [System Optimization PRD](../prd/2026-02-26-system-optimization-prd.md)
 - **Feature Spec**: [Infrastructure Baseline Spec](../specs/2026-02-27-infra-baseline-spec.md)
-- **Related ADRs**: [ADR-0002: Secrets-First Management Policy](0002-secrets-first-management.md)
+- **Related ADRs**: [ADR-0002: Secrets-First Management Policy](2026-02-26-0002-secrets-first-management.md)

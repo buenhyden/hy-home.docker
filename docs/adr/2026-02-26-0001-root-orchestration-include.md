@@ -2,7 +2,7 @@
 layer: infra
 ---
 # ADR 0001: Root Orchestration via `include`
-n**Overview (KR):** Docker Compose의 `include` 지연 로딩 기능을 활용하여 인프라 설계를 모듈화하고 관리 효율성을 높이는 결정입니다.
+**Overview (KR):** Docker Compose의 `include` 지연 로딩 기능을 활용하여 인프라 설계를 모듈화하고 관리 효율성을 높이는 결정입니다.
 
 : Root Orchestration via `include`
 

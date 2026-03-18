@@ -63,9 +63,9 @@ _Target Directory: `docs/prd/2026-02-27-messaging-prd.md`_
 
 ## 5. Scope & Functional Requirements
 
-- **[REQ-PRD-MSG-FUN-01]** Multi-node Kafka cluster with KRaft mode.
-- **[REQ-PRD-MSG-FUN-02]** Schema Registry for message contract enforcement.
-- **[REQ-PRD-MSG-FUN-03]** RabbitMQ for lightweight pub/sub and task queuing (deferred; not enabled in the root stack by default).
+- **[REQ-MSG-FUN-01]** Multi-node Kafka cluster with KRaft mode.
+- **[REQ-MSG-FUN-02]** Schema Registry for message contract enforcement.
+- **[REQ-MSG-FUN-03]** RabbitMQ for lightweight pub/sub and task queuing (deferred; not enabled in the root stack by default).
 
 ## 6. Out of Scope
 

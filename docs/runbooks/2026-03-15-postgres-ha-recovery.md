@@ -19,8 +19,8 @@ _Note: High-criticality data tier recovery procedure._
 
 | Dependency | Type | Impact if Down | Link to Runbook |
 | ---------- | ---- | -------------- | --------------- |
-| Etcd Cluster | Quorum | No leader election | [Vault/Etcd Runbook](vault-sealed.md) |
-| Docker Engine | Runtime | Complete service failure | [Core Runbook](infra-bootstrap-runbook.md) |
+| Etcd Cluster | Quorum | No leader election | [Vault/Etcd Runbook](2026-03-15-vault-sealed.md) |
+| Docker Engine | Runtime | Complete service failure | [Core Runbook](2026-03-15-infra-bootstrap-runbook.md) |
 
 ## 3. Observability & Dashboards
 

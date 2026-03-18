@@ -8,7 +8,7 @@ layer: architecture
 - **Status**: Approved
 - **Owner**: Reliability Engineer
 - **PRD Reference**: [Hy-Home System Optimization PRD](../prd/2026-02-26-system-optimization-prd.md)
-- **ADR References**: [ADR-0007](../adr/0007-mandatory-resource-limits.md), [ADR-0008](../adr/0008-removing-static-docker-ips.md), [ADR-0012](../adr/0012-standardized-init-process.md), [ADR-0013](../adr/0013-configuration-deduplication.md), [ADR-0014](../adr/0014-optimization-strategies.md)
+- **ADR References**: [ADR-0007](../adr/2026-02-26-0007-mandatory-resource-limits.md), [ADR-0008](../adr/2026-02-26-0008-removing-static-docker-ips.md), [ADR-0012](../adr/2026-02-27-0012-standardized-init-process.md), [ADR-0013](../adr/2026-02-27-0013-configuration-deduplication.md), [ADR-0014](../adr/2026-02-27-0014-optimization-strategies.md)
 
 ---
 

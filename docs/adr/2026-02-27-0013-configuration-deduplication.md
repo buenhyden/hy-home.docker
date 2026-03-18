@@ -2,7 +2,7 @@
 layer: infra
 ---
 # ADR 0013: Configuration Deduplication and Consolidation
-n**Overview (KR):** 중복된 설정을 최소화하고 `common-optimizations.yml`을 통한 설정 상속 구조를 일원화합니다.
+**Overview (KR):** 중복된 설정을 최소화하고 `common-optimizations.yml`을 통한 설정 상속 구조를 일원화합니다.
 
 - **Status**: Accepted
 - **Date**: 2026-02-27

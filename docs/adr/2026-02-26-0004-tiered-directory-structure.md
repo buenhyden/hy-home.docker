@@ -2,7 +2,7 @@
 layer: infra
 ---
 # ADR 0004: Tiered Directory Structure
-n**Overview (KR):** 서비스의 역할에 따라 디렉토리를 계층화하여 리소스 격리와 관리 체계의 명확성을 확보합니다.
+**Overview (KR):** 서비스의 역할에 따라 디렉토리를 계층화하여 리소스 격리와 관리 체계의 명확성을 확보합니다.
 
 : Tiered Directory Structure
 

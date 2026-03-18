@@ -56,7 +56,7 @@ This repository is a Docker Compose infrastructure workspace for local and homel
 
 ## Template Usage Contract
 
-- [ADR 0017: Flat Documentation Taxonomy](../adr/0017-flat-documentation-taxonomy.md)
+- [ADR 0017: Flat Documentation Taxonomy](../adr/2026-02-27-0017-flat-documentation-taxonomy.md)
 - [PRD Template](../../templates/prd-template.md)
 - [ARD Template](../../templates/ard-template.md)
 - [ADR Template](../../templates/adr-template.md)

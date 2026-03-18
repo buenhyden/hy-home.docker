@@ -2,7 +2,7 @@
 layer: infra
 ---
 # ADR 0003: Spec-Driven Development (SDD)
-n**Overview (KR):** 기술 명세서(Spec)를 우선적으로 작성하고 이를 기반으로 구현을 진행하는 SDD 워크플로우를 도입합니다.
+**Overview (KR):** 기술 명세서(Spec)를 우선적으로 작성하고 이를 기반으로 구현을 진행하는 SDD 워크플로우를 도입합니다.
 
 : Spec-Driven Development (SDD)
 
@@ -56,7 +56,7 @@ Write documentation after the code is verified.
 
 - **Confidence Rating**: High
 - **Notes**: Critical for maintaining consistency in AI-augmented codebases.
-- **Technical Requirements Addressed**: REQ-PRD-FUN-02, REQ-PRD-MET-02
+- **Technical Requirements Addressed**: REQ-OPT-FUN-02, REQ-PRD-MET-02
 
 ## 6. Related Documents (Traceability)
 
