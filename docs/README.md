@@ -2,19 +2,11 @@
 layer: core
 ---
 
-# Project Documentation Index (Lazy Loading Gateway)
+# Documentation Hub
 
-Master entry point for spec-driven documentation discovery.
+**Overview (KR):** 프로젝트의 전반적인 아키텍처, 결정 사항, 요구사항 및 운영 가이드를 포함하는 통합 문서 허브입니다.
 
-Read this file first, then load only the relevant index document for the task.
-
-## Discovery Protocol
-
-- `[GATE-DISC-01]` Start here before opening a doc family.
-- `[GATE-DISC-02]` Prefer README/index files over blind directory scans.
-- `[GATE-DISC-03]` Use relative links only.
-
-## Lazy-Loading Map
+## Navigation Map
 
 | Marker | Entry Point | Use when |
 | --- | --- | --- |
@@ -23,25 +15,24 @@ Read this file first, then load only the relevant index document for the task.
 | `[LOAD:STRATEGIC]` | [prd/README.md](prd/README.md), [ard/README.md](ard/README.md) | Product scope, architecture boundaries |
 | `[LOAD:TACTICAL]` | [plans/README.md](plans/README.md) | Active implementation and refactor work |
 | `[LOAD:RUNBOOK]` | [runbooks/README.md](runbooks/README.md) | Executable operational procedures |
-| `[LOAD:HISTORY]` | [operations/incidents/README.md](operations/incidents/README.md) | Incidents, RCA, historical records |
 | `[LOAD:CONTEXT]` | [context/README.md](context/README.md) | Deep service and platform blueprints |
 | `[LOAD:GUIDE]` | [guides/README.md](guides/README.md), [manuals/README.md](manuals/README.md) | Lifecycle guides and team manuals |
 
 ## Templates
 
-Use the repository templates at the project root when creating new artifacts:
-
-- [PRD Template](../templates/prd-template.md)
-- [ARD Template](../templates/ard-template.md)
-- [ADR Template](../templates/adr-template.md)
-- [Spec Template](../templates/spec-template.md)
-- [Plan Template](../templates/plan-template.md)
-- [Runbook Template](../templates/runbook-template.md)
-- [Incident Template](../templates/incident-template.md)
+- [PRD Template](templates/prd-template.md)
+- [ARD Template](templates/ard-template.md)
+- [ADR Template](templates/adr-template.md)
+- [Spec Template](templates/spec-template.md)
+- [Plan Template](templates/plan-template.md)
+- [Runbook Template](templates/runbook-template.md)
+- [Incident Template](templates/incident-template.md)
 
 ## Related Policy
 
-- [Agent Instructions Gateway](agentic/gateway.md) — Agent-specific session entrypoint
-- [AGENTS.md](../AGENTS.md) — Canonical cross-agent entrypoint
-- [CLAUDE.md](../CLAUDE.md) — Claude-specific shim
-- [GEMINI.md](../GEMINI.md) — Gemini-specific shim
+- [Agent Core Governance](agentic/core-governance.md)
+- [Lazy Loading Protocol](agentic/2026-03-15-agent-workflow.md)
+- [Standard Alignment](runbooks/standard-alignment.md)
+
+---
+*Maintained by Repository Owner*

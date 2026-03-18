@@ -4,7 +4,7 @@ layer: core
 
 # Implementation Plans Hub (`plans/`)
 
-This directory indexes active implementation and refactor plans. Plans define the execution path for approved specifications.
+**Overview (KR):** 이 디렉토리는 활성화된 구현 및 리팩토링 계획을 인덱싱합니다. 각 계획은 승인된 기술 사양(Specification)을 실행하기 위한 구체적인 단계와 검증 기준을 정의합니다.
 
 ## Active Infrastructure Plans
 
@@ -33,7 +33,13 @@ This directory indexes active implementation and refactor plans. Plans define th
 
 ## Template
 
-- [Plan Template](../../templates/plan-template.md)
+## Navigation
+
+- [Decision Records (ADR)](../adr/README.md)
+- [Architecture (ARD)](../ard/README.md)
+- [Requirements (PRD)](../prd/README.md)
+- [Specifications (Spec)](../specs/README.md)
+- [Implementation Plans (Plan)](../plans/README.md)
 
 ## Related Docs
 

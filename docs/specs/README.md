@@ -4,7 +4,7 @@ layer: core
 
 # Technical Specifications Hub (`specs/`)
 
-This directory is the tactical source of truth for active implementation contracts. All specifications are categorized by infrastructure tiers and functional domains.
+**Overview (KR):** 이 디렉토리는 실제 구현을 위한 기술적 계약과 상세 사양을 정의하는 Technical Specification 문서들을 관리합니다. 모든 사양은 인프라 계층 및 기능 도메인별로 분류됩니다.
 
 ## Specification Families
 
@@ -13,6 +13,14 @@ This directory is the tactical source of truth for active implementation contrac
 - [**Agent Instruction Refactor**](agent-instructions-spec.md) — Normalizing agent guidance.
 - [**Documentation Refactor**](refactor-docs-spec.md) — Role-based taxonomy and metadata.
 - [**Global Baseline**](infra-global-baseline-spec.md) — Cross-stack standards and conventions.
+
+## Navigation
+
+- [Decision Records (ADR)](../adr/README.md)
+- [Architecture (ARD)](../ard/README.md)
+- [Requirements (PRD)](../prd/README.md)
+- [Specifications (Spec)](../specs/README.md)
+- [Implementation Plans (Plan)](../plans/README.md)
 - [**Service Standards**](2026-02-27-infra-service-standards-spec.md) — Inter-service communication rules.
 
 ### 🛠️ Infrastructure Core

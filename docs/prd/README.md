@@ -4,7 +4,15 @@ layer: core
 
 # Product Requirements Documents (PRD)
 
-This directory defines the "what" and "why" of product features, serving as the starting point for Spec-Driven Development.
+**Overview (KR):** 이 디렉토리는 제품 기능의 요구사항과 비즈니스 가치를 정의하는 PRD(Product Requirements Document) 문서들을 포함하며, 사양 중심 개발(Spec-Driven Development)의 시작점 역할을 합니다.
+
+## Navigation
+
+- [Decision Records (ADR)](../adr/README.md)
+- [Architecture (ARD)](../ard/README.md)
+- [Requirements (PRD)](../prd/README.md)
+- [Specifications (Spec)](../specs/README.md)
+- [Implementation Plans (Plan)](../plans/README.md)
 
 ## Index of PRDs
 

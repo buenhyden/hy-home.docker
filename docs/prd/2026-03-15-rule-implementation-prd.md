@@ -26,11 +26,10 @@ A seamless AI-collaboration environment where agents automatically load the most
 
 ## Requirements
 
-- **[REQ-RULE-01] Uniform Rule Triggers**: `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` must share a consistent trigger mechanism (e.g., `[LOAD:RULES:<NAME>]`).
-- **[REQ-RULE-02] Lazy Loading Alignment**: Rule triggers must point to modular files in `docs/agentic/rules/`.
-- **[REQ-RULE-03] Skill Autonomy Mandate**: Root agent files must explicitly state that no skills are restricted.
-- **[REQ-RULE-04] Path Standardization**:
-  - ADR: `docs/adr/`
+- **[REQ-PRD-FUN-01] Uniform Rule Triggers**: `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` must share a consistent trigger mechanism (e.g., `[LOAD:RULES:<NAME>]`).
+- **[REQ-PRD-FUN-02] Lazy Loading Alignment**: Rule triggers must point to modular files in `docs/agentic/rules/`.
+- **[REQ-PRD-FUN-03] Skill Autonomy Mandate**: Root agent files must explicitly state that no skills are restricted.
+- **[REQ-PRD-FUN-04] Required paths must align with category taxonomy.**:
   - ARD: `docs/ard/`
   - Incident: `docs/operations/incidents/`
   - Postmortem: `docs/operations/postmortems/`

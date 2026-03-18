@@ -36,6 +36,6 @@ The previous documentation structure was either fragmented or relied on inconsis
 
 ## Related
 
-- `[../specs/2026-03-15-refactor-docs-spec.md]`
-- `[../ard/2026-03-15-doc-taxonomy-ard.md]`
-- `[../prd/2026-03-15-refactor-docs-prd.md]`
+- [2026-03-15-refactor-docs-spec.md](../specs/2026-03-15-refactor-docs-spec.md)
+- [2026-03-15-doc-taxonomy-ard.md](../ard/2026-03-15-doc-taxonomy-ard.md)
+- [2026-03-15-refactor-docs-prd.md](../prd/2026-03-15-refactor-docs-prd.md)

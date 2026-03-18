@@ -4,7 +4,15 @@ layer: core
 
 # Architecture Reference Documents (ARD)
 
-This directory defines the technical requirements and constraints for major infrastructure components.
+**Overview (KR):** 이 디렉토리는 주요 인프라 구성 요소 및 시스템 도메인의 기술 사양, 제약 사항 및 아키텍처 원칙을 정의하는 ARD(Architecture Reference Document) 문서들을 관리합니다.
+
+## Navigation
+
+- [Decision Records (ADR)](../adr/README.md)
+- [Architecture (ARD)](../ard/README.md)
+- [Requirements (PRD)](../prd/README.md)
+- [Specifications (Spec)](../specs/README.md)
+- [Implementation Plans (Plan)](../plans/README.md)
 
 ## Index of ARDs
 

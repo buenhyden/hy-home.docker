@@ -13,10 +13,10 @@ layer: product
 
 ## Requirements
 
-- **[REQ-ALGN-01] Path Perfect Linkage**: All root links must point to specific categories (`docs/plans/`, `docs/runbooks/`, etc.).
-- **[REQ-ALGN-02] Intent Trigger Matrix**: Implement `[LOAD:RULES:*]` in `AGENTS.md` and `GEMINI.md`.
-- **[REQ-ALGN-03] Persona Guidance**: Direct Gemini to use higher-intelligence profiles (Reasoner) for spec/plan tasks.
-- **[REQ-ALGN-04] Skill Autonomy Clause**: "No restricted skills" must be explicitly stated in all root instruction shims.
+- **[REQ-PRD-FUN-01] Path Perfect Linkage**: All root links must point to specific categories (`docs/plans/`, `docs/runbooks/`, etc.).
+- **[REQ-PRD-FUN-02] Intent Trigger Matrix**: Implement `[LOAD:RULES:*]` in `AGENTS.md` and `GEMINI.md`.
+- **[REQ-PRD-FUN-03] Persona Guidance**: Direct Gemini to use higher-intelligence profiles (Reasoner) for spec/plan tasks.
+- **[REQ-PRD-FUN-04] Skill Autonomy Clause**: "No restricted skills" must be explicitly stated in all root instruction shims.
 - **[REQ-ALGN-05] Template Consistency**: Every document must use the exact filenames specified in `templates/`.
 
 ## Success Criteria

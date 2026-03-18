@@ -51,18 +51,20 @@ This repository is a Docker Compose infrastructure workspace for local and homel
   - Operations: [../runbooks/README.md](../runbooks/README.md), [../operations/incidents/README.md](../operations/incidents/README.md)
   - Agentic: [README.md](README.md)
   - Deep Context: [../context/README.md](../context/README.md)
-  - Methods: [../guides/README.md](../guides/README.md), [../manuals/README.md](../manuals/README.md)
+  - Guides: [../guides/README.md](../guides/README.md)
+  - Global: [../../AGENTS.md](../../AGENTS.md)
 
 ## Template Usage Contract
 
-- New PRDs use [../../templates/prd-template.md](../templates/prd-template.md)
-- New ARDs use [../../templates/ard-template.md](../templates/ard-template.md)
-- New ADRs use [../../templates/adr-template.md](../templates/adr-template.md)
-- New specs use [../../templates/spec-template.md](../templates/spec-template.md)
-- New plans use [../../templates/plan-template.md](../templates/plan-template.md)
-- New runbooks use [../../templates/runbook-template.md](../templates/runbook-template.md)
-- New incidents use [../../templates/incident-template.md](../templates/incident-template.md)
-- New postmortems use [../../templates/postmortem-template.md](../templates/postmortem-template.md)
+- [ADR 0017: Flat Documentation Taxonomy](../adr/0017-flat-documentation-taxonomy.md)
+- [PRD Template](../../templates/prd-template.md)
+- [ARD Template](../../templates/ard-template.md)
+- [ADR Template](../../templates/adr-template.md)
+- [Spec Template](../../templates/spec-template.md)
+- [Plan Template](../../templates/plan-template.md)
+- [Runbook Template](../../templates/runbook-template.md)
+- [Incident Template](../../templates/incident-template.md)
+- [Postmortem Template](../../templates/postmortem-template.md)
 
 ## Link And Truth Rules
 

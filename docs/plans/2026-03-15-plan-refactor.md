@@ -24,7 +24,7 @@ This repository requires a spec and plan before refactors. The current instructi
 
 | Task | Description | Files Affected | Target REQ | Validation Criteria |
 | ---- | ----------- | -------------- | ---------- | ------------------- |
-| TASK-001 | Capture the refactor contract in a repository-local spec. | `docs/specs/agent-instructions/spec.md` | [REQ-SPC-ADN-002] | Spec exists and states structure, truth, and verification contracts. |
+| TASK-001 | Capture the refactor contract in a repository-local spec. | `docs/specs/agent-instructions-spec.md` | [REQ-SPC-FUN-01] | Spec exists and states structure, truth, and verification contracts. |
 | TASK-002 | Rebuild `docs/agentic` guidance around repo-specific governance and workflow. | `docs/agentic/README.md`, `docs/agentic/core-governance.md`, `docs/agentic/workflow.md` | [REQ-SPC-ADN-002], [REQ-SPC-ADN-005] | Shared guidance exists, is repo-specific, and uses relative links only. |
 | TASK-003 | Rewrite `AGENTS.md` as the canonical cross-agent entrypoint. | `AGENTS.md` | [REQ-SPC-ADN-001], [REQ-SPC-ADN-005] | Root file stays concise and exposes the full lazy-loading map. |
 | TASK-004 | Rewrite `CLAUDE.md` and `GEMINI.md` as provider shims. | `CLAUDE.md`, `GEMINI.md` | [REQ-SPC-ADN-001], [REQ-SPC-ADN-004], [REQ-SPC-ADN-006] | Provider roots follow the chosen provider models and avoid duplicating shared policy. |

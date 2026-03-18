@@ -8,9 +8,11 @@ This directory is the **authoritative home for all AI agent-specific logic, gove
 
 ## Core Instruction Set
 
-1. [**Discovery Gateway**](gateway.md) — The session-start entrypoint. Load this first to map out documentation families.
-2. [**Core Governance**](core-governance.md) — Shared persona matrix, rule-loading policies, and template contracts.
-3. [**Shared Workflow**](workflow.md) — The standard execution loop, validation commands, and anti-patterns.
+- [Agent Gateway](gateway.md) — Session start orientation.
+- [Agent Core Governance](core-governance.md) — Persona management and taxonomy.
+- [Agent System Spec](2026-03-15-agent-system-spec.md) — Technical definitions.
+- [Agent Instructions](2026-03-15-agent-instructions.md) — Behavior and prompting rules.
+- [Agent Workflow](2026-03-15-agent-workflow.md) — Interaction logic.
 
 ## Maintenance Policy
 

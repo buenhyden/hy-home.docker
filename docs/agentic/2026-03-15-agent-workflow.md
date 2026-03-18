@@ -4,7 +4,7 @@ layer: agentic
 
 # Shared Agent Workflow
 
-This file describes the shared execution loop for work in `hy-home.docker`.
+**Overview (KR):** `hy-home.docker`에서 작업을 수행하기 위한 공유 실행 루프 및 검증 절차를 정의합니다.
 
 ## Default Loop
 
@@ -18,12 +18,12 @@ This file describes the shared execution loop for work in `hy-home.docker`.
 
 ## Which Docs To Load
 
-- Agent session entrypoint: [gateway.md](gateway.md)
-- Infrastructure behavior: [../../README.md](../../README.md), [../../ARCHITECTURE.md](../../ARCHITECTURE.md)
-- Tactical implementation: [../specs/README.md](../specs/README.md), [../plans/README.md](../plans/README.md)
-- Procedures: [../runbooks/README.md](../runbooks/README.md)
-- Operations History: [../operations/README.md](../operations/README.md)
-- Technical Context: [../context/README.md](../context/README.md)
+## Related Navigation
+
+- [Decisions Index](../adr/README.md)
+- [Context Hub](../context/README.md)
+- [Persona Standards](core-governance.md)
+- [Agent Governance](../../AGENTS.md)
 
 ## Specs And Plans
 

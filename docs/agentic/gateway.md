@@ -4,15 +4,15 @@ layer: agentic
 
 # Agent Instructions Gateway
 
-Agent-specific context entrypoint for the `hy-home.docker` infrastructure workspace. Load this file at session start to discover relevant documentation families before doing any work.
+**Overview (KR):** `hy-home.docker` 인프라 워크스페이스의 에이전트 전용 컨텍스트 진입점입니다. 세션 시작 시 이 파일을 로드하여 관련 문서 제품군을 탐색하십시오.
 
-**Core Instruction Set**: [instructions.md](instructions.md) - Behavioral standards.
+**Core Instruction Set**: [2026-03-15-agent-instructions.md](2026-03-15-agent-instructions.md) - Behavioral standards.
 
 ## Discovery Protocol
 
 - `[GATE-AGT-01]` Load this file first in any agent session.
 - `[GATE-AGT-02]` Read category indexes via the map below.
-- `[GATE-AGT-03]` Follow the consolidated [Behavioral Instructions](instructions.md).
+- `[GATE-AGT-03]` Follow the consolidated [Behavioral Instructions](2026-03-15-agent-instructions.md).
 - `[GATE-AGT-04]` Select intent from the **Intent-Based Discovery** table and load the corresponding rule.
 
 ## Lazy-Loading Map (By Category)
@@ -41,4 +41,4 @@ Agent-specific context entrypoint for the `hy-home.docker` infrastructure worksp
 
 - [../../AGENTS.md](../../AGENTS.md) — Cross-agent entrypoint
 - [core-governance.md](core-governance.md) — Persona matrix and template contracts
-- [workflow.md](workflow.md) — Execution loop
+- [2026-03-15-agent-workflow.md](2026-03-15-agent-workflow.md) — Execution loop

@@ -4,7 +4,7 @@ layer: agentic
 
 # Agent Behavioral Instructions
 
-Core behavioral standards for AI agents in `hy-home.docker`.
+**Overview (KR):** `hy-home.docker` 내 에이전트들의 표준 행동 지침 및 상호작용 규칙을 정의합니다.
 
 ## 1. Protocol Baseline
 
@@ -18,6 +18,17 @@ Core behavioral standards for AI agents in `hy-home.docker`.
 - **Layer Metadata**: Every file MUST include `layer:` frontmatter.
 - **Flat Taxonomy**: Use `docs/<category>/` roots. Avoid deep nesting.
 - **Relative Links**: Use relative paths for all cross-documentation links.
+
+## Which Docs To Load
+
+## Related Navigation
+
+- [Decisions Index](../adr/README.md)
+- [Context Hub](../context/README.md)
+- [Persona Standards](core-governance.md)
+- [Agent Governance](../../AGENTS.md)
+
+## Specs And Plans
 
 ## 3. Skill & Context Optimization
 

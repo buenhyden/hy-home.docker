@@ -27,10 +27,10 @@ To establish a highly structured, discoverable, and machine-readable documentati
 
 ## Requirements
 
-- **[REQ-PRD-RD-01]** All core files (`README`, `ARCHITECTURE`, etc.) must have `layer` frontmatter metadata.
-- **[REQ-PRD-RD-02]** Documentation must be moved to category-based folders: `ard, adr, prd, specs, plans, runbooks, operations`.
-- **[REQ-PRD-RD-03]** A centralized `docs/agentic/gateway.md` must serve as the primary discovery point for agents.
-- **[REQ-PRD-RD-04]** Instructions for AI agents must be managed separately in `docs/agentic/`.
+- **[REQ-PRD-FUN-01] Layer Metadata**: All core files (`README`, `ARCHITECTURE`, etc.) must have `layer` frontmatter metadata.
+- **[REQ-PRD-FUN-02] Category Taxonomy**: Documentation must be moved to category-based folders: `ard, adr, prd, specs, plans, runbooks, operations`.
+- **[REQ-PRD-FUN-03] Gateway Hub**: A centralized `docs/agentic/gateway.md` must serve as the primary discovery point for agents.
+- **[REQ-PRD-FUN-04] Agent Instruction Isolation**: Instructions for AI agents must be managed separately in `docs/agentic/`.
 - **[REQ-PRD-RD-05]** The system must support lazy loading via explicit `[LOAD:CATEGORY]` markers in instructions.
 
 ## Success Criteria
