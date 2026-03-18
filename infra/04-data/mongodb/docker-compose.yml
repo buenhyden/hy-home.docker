@@ -199,7 +199,6 @@ services:
       service: template-infra-low
     image: percona/mongodb_exporter:2.37
     container_name: mongodb-exporter
-    read_only: true
     tmpfs:
       - /tmp
     expose:

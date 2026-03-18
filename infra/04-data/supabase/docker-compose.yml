@@ -76,7 +76,6 @@ services:
       service: template-infra-med
     container_name: supabase-kong
     image: kong:3.9.1
-    read_only: true
     tmpfs:
       - /tmp
       - /var/run/kong
@@ -124,7 +123,6 @@ services:
       service: template-infra-med
     container_name: supabase-auth
     image: supabase/gotrue:v2.182.1
-    read_only: true
     tmpfs:
       - /tmp
     restart: unless-stopped
@@ -185,7 +183,6 @@ services:
       service: template-infra-low
     container_name: supabase-rest
     image: postgrest/postgrest:v13.0.8
-    read_only: true
     tmpfs:
       - /tmp
     restart: unless-stopped
@@ -333,7 +330,6 @@ services:
       service: template-infra-low
     container_name: supabase-imgproxy
     image: darthsim/imgproxy:v3.30.1
-    read_only: true
     tmpfs:
       - /tmp
     restart: unless-stopped

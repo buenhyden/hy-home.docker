@@ -257,7 +257,6 @@ services:
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD_CMD: cat /run/secrets/airflow_www_password
       _PIP_ADDITIONAL_REQUIREMENTS: ''
-    user: '0:0'
 
   airflow-cli:
     extends:

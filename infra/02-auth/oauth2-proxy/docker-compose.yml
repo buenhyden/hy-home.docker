@@ -6,16 +6,14 @@ services:
     profiles: ['core']
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-low
+      service: template-infra-med
     image: quay.io/oauth2-proxy/oauth2-proxy:v7.8.1
     build:
       context: .
       dockerfile: Dockerfile
     container_name: oauth2-proxy
-    read_only: true
     tmpfs:
       - /tmp
-
     secrets:
       - mng_valkey_password
       - oauth2_proxy_client_secret

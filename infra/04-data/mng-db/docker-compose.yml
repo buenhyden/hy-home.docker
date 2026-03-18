@@ -23,13 +23,13 @@ volumes:
 
 services:
   mng-valkey:
-    profiles: ['data']
+    profiles: ['mng-data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
     image: valkey/valkey:8.0.2-alpine
     container_name: mng-valkey
-
+    user: '999:999'
     labels:
       <<: *tier-label
       traefik.enable: 'false'
@@ -61,14 +61,13 @@ services:
       start_period: 15s
 
   mng-valkey-exporter:
-    profiles: ['data']
+    profiles: ['mng-data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
     image: oliver006/redis_exporter:v1.81.0-alpine
     container_name: mng-valkey-exporter
     labels: {}
-    read_only: true
     tmpfs:
       - /tmp
     expose:
@@ -104,13 +103,13 @@ services:
         condition: service_healthy
 
   redisinsight:
-    profiles: ['data']
+    profiles: ['mng-data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
     image: redis/redisinsight:3.0.3
     container_name: redisinsight
-
+    user: "1000:1000"
     networks:
       - infra_net
     volumes:
@@ -125,13 +124,12 @@ services:
       traefik.http.services.redisinsight.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-8001}
 
   mng-pg:
-    profiles: ['data']
+    profiles: ['mng-data']
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-stateful-med
     image: postgres:17-alpine
     container_name: mng-pg
-
     networks:
       - infra_net
     shm_size: 256mb
@@ -154,7 +152,7 @@ services:
       start_period: 15s
 
   mng-pg-init:
-    profiles: ['data']
+    profiles: ['mng-data']
     extends:
       file: ../../common-optimizations.yml
       service: base-resource-low
@@ -210,16 +208,14 @@ services:
       start_period: 15s
 
   mng-pg-exporter:
-    profiles: ['data']
+    profiles: ['mng-data']
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.18.1
     container_name: mng-pg-exporter
-    read_only: true
     tmpfs:
       - /tmp
-
     networks:
       - infra_net
     expose:

@@ -99,7 +99,7 @@ services:
       traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport: opensearch-dashboards-transport@file
     depends_on:
       opensearch: { condition: service_healthy }
-    read_only: true
+
     tmpfs:
       - /tmp
       - /usr/share/opensearch-dashboards/data
@@ -121,7 +121,6 @@ services:
       service: template-infra-low
     image: prometheuscommunity/elasticsearch-exporter:v1.10.0
     container_name: opensearch-exporter
-    read_only: true
     environment:
       - ES_USERNAME=${OPENSEARCH_EXPORTER_USERNAME:-admin}
     command: >

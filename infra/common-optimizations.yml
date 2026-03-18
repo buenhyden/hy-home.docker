@@ -2,6 +2,12 @@
 # This file provides base service templates for use with 'extends'
 
 # ── Logging Anchors ──────────────────────────────────────
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "5m"
+    max-file: "2"
+
 x-logging-loki: &loki-logging
   driver: loki
   options:
@@ -26,11 +32,13 @@ services:
       - /tmp
       - /run
 
-  base-security-nonroot: # Standard security + Non-root user (1000:1000)
-    extends:
-      service: base-security
-    user: "1000:1000"
-
+  base-stateful:
+    init: true
+    restart: unless-stopped
+    logging: *loki-logging
+    labels:
+      hy-home.managed: "true"
+      observability.logs: "true"
   # ── Resource Profiles ───────────────────────────────────
   base-resource-low:
     deploy:
@@ -100,8 +108,9 @@ services:
     labels:
       hy-home.managed: "true"
       observability.logs: "true"
-
-  base-security-hardened-nonroot: # Hardened + Non-root
+  template-stateful-med:
     extends:
-      service: base-security-hardened
-    user: "1000:1000"
+      service: base-stateful
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: "512M" }

@@ -29,7 +29,6 @@ services:
     container_name: oauth2-proxy
     security_opt:
       - no-new-privileges:true
-    read_only: true
     secrets:
       - oauth2_valkey_password
       - oauth2_proxy_client_secret

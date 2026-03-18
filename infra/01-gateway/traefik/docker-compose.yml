@@ -10,7 +10,6 @@ services:
     image: traefik:v3.6.8
     container_name: traefik
     hostname: traefik
-    read_only: true
     tmpfs:
       - /tmp
     ports:

@@ -44,7 +44,6 @@ services:
       service: template-infra-med
     image: valkey/valkey:9.0.2-alpine
     container_name: valkey-node-0
-    read_only: true
     tmpfs:
       - /tmp
       - /run

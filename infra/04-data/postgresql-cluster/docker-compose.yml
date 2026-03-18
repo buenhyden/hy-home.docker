@@ -47,7 +47,6 @@ services:
       service: template-infra-low
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-1
-    user: '1000:1000'
     command:
       - /usr/local/bin/etcd
       - --name=etcd-1
@@ -82,7 +81,6 @@ services:
       service: template-infra-low
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-2
-    user: '1000:1000'
     command:
       - /usr/local/bin/etcd
       - --name=etcd-2
@@ -116,7 +114,6 @@ services:
       service: template-infra-low
     image: quay.io/coreos/etcd:v3.6.7
     container_name: etcd-3
-    user: '1000:1000'
     command:
       - /usr/local/bin/etcd
       - --name=etcd-3
