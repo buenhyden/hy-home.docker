@@ -7,6 +7,7 @@ related_prd: '../prd/rule-implementation-prd.md'
 ---
 
 # Final Documentation Path Alignment Specification
+
 n**Overview (KR):** 모든 문서의 저장 경로를 확정하고 참조 링크를 최종 정렬하기 위한 사양입니다.
 
 **Overview (KR):** 본 명세서는 저장소의 모든 관리 문서와 지침 파일이 사용자 요구사항에 명시된 최종 경로 표준(`docs/plans/`, `docs/operations/incidents/` 등)을 완벽히 충실히 준수하도록 보장합니다.

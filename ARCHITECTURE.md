@@ -4,7 +4,7 @@ layer: core
 
 # System Architecture
 
-This document defines the global architectural invariants and rules for the `hy-home.docker` repository. For service-specific details, see [`docs/context/`](docs/context/). For operational procedures, refer to [`docs/runbooks/`](docs/runbooks/) and [`OPERATIONS.md`](OPERATIONS.md).
+This document defines the global architectural invariants and rules for the `hy-home.docker` repository. For service-specific details, see [`docs/guides/`](docs/guides/). For operational procedures, refer to [`docs/runbooks/`](docs/runbooks/) and [`OPERATIONS.md`](OPERATIONS.md).
 
 ## 1. Scope
 
@@ -92,5 +92,5 @@ All architectural modifications must satisfy the repository's governance checkli
 - **Infra baseline ARD:** [`docs/ard/infra-baseline-ard.md`](docs/ard/infra-baseline-ard.md)
 - **Messaging ARD:** [`docs/ard/messaging-ard.md`](docs/ard/messaging-ard.md)
 - **Agent Contract:** [`AGENTS.md`](AGENTS.md) (Standard for AI-driven changes)
-- **Context hub:** [`docs/context/README.md`](docs/context/README.md)
+- **Guides hub:** [`docs/guides/README.md`](docs/guides/README.md)
 - **Ops policy:** [`OPERATIONS.md`](OPERATIONS.md)

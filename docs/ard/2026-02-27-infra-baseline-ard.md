@@ -2,6 +2,7 @@
 layer: architecture
 ---
 # Infrastructure Baseline Architecture Reference Document (ARD)
+
 n**Overview (KR):** 전체 시스템의 기반이 되는 공통 인프라 계층의 기술 표준 및 아키텍처 결정 사항입니다.
 
 - **Status**: Approved

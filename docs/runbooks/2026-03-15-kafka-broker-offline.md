@@ -2,9 +2,10 @@
 layer: ops
 ---
 # Runbook: Kafka Broker/Controller Offline
+
 n**Overview (KR):** Kafka 브로커나 컨트롤러가 오프라인 상태일 때 클러스터 가용성을 확인하고 다시 온라인으로 전환하는 절차입니다.
 
-> **Architecture**: [Kafka KRaft Blueprint](../context/kafka-kraft-guide.md)
+> **Architecture**: [Kafka KRaft Blueprint](../guides/kafka-kraft-guide.md)
 > **Nodes**: 3 Broker-Controllers (`kafka-1`, `kafka-2`, `kafka-3`)
 
 ## Context

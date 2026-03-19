@@ -16,6 +16,20 @@ x-security-base: &security-base
   cap_drop:
     - ALL
 
+x-healthcheck-dev: &healthcheck-dev
+  interval: 5s
+  timeout: 5s
+  retries: 3
+  start_period: 5s
+
+x-resource-dev-tiny: &resource-dev-tiny
+  cpus: "0.10"
+  mem_limit: 64m
+
+x-resource-dev-small: &resource-dev-small
+  cpus: "0.20"
+  mem_limit: 128m
+
 x-restart-default: &restart-default
   restart: unless-stopped
 
@@ -138,3 +152,11 @@ services:
     cpus: "2.00"
     mem_limit: 2g
     read_only: false
+
+  template-dev-tiny:
+    <<: [*service-defaults, *resource-dev-tiny]
+    healthcheck: *healthcheck-dev
+
+  template-dev-small:
+    <<: [*service-defaults, *resource-dev-small]
+    healthcheck: *healthcheck-dev

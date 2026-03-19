@@ -2,6 +2,7 @@
 layer: infra
 ---
 # ADR 0012: Standardized Init Process for Infrastructure Containers
+
 **Overview (KR):** 좀비 프로세스 정리와 신호 처리를 원활하게 하기 위해 모든 인프라 서비스에 `init: true` 적용을 의무화합니다.
 
 - **Status**: Accepted

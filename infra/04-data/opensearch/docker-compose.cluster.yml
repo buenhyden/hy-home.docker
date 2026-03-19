@@ -268,4 +268,3 @@ services:
         condition: service_healthy
       opensearch-node3:
         condition: service_healthy
-

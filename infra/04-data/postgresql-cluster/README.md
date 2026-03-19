@@ -54,7 +54,7 @@ docker compose exec postgres-cluster patronictl list
 ## Documentation References
 
 - **Architecture Principles**: [ARCHITECTURE.md](../../../ARCHITECTURE.md)
-- **PostgreSQL HA Blueprint**: [docs/context/04-data/postgres-patroni-ha-guide.md](../../../docs/context/04-data/postgres-patroni-ha-guide.md)
-- **PostgreSQL Router Blueprint**: [docs/context/04-data/postgres-router-guide.md](../../../docs/context/04-data/postgres-router-guide.md)
+- **PostgreSQL HA Blueprint**: [docs/guides/04-data/postgres-patroni-ha-guide.md](../../../docs/guides/04-data/postgres-patroni-ha-guide.md)
+- **PostgreSQL Router Blueprint**: [docs/guides/04-data/postgres-router-guide.md](../../../docs/guides/04-data/postgres-router-guide.md)
 - **Runbook (Recovery)**: [runbooks/04-data/postgres-ha-recovery.md](../../../runbooks/04-data/postgres-ha-recovery.md)
 - **Operations History**: [operations/README.md](../../../operations/README.md)

@@ -24,7 +24,7 @@ The previous documentation structure was either fragmented or relied on inconsis
 
 ## Decision
 
-- **[DEC-01]** Adopt a role-based flat taxonomy. All documentation must live in one of the following root folders: `adr, ard, prd, specs, plans, runbooks, operations, context, guides, manuals, agentic`.
+- **[DEC-01]** Adopt a role-based flat taxonomy. All documentation must live in one of the following root folders: `adr, ard, prd, specs, plans, runbooks, operations, guides, manuals, agentic`.
 - **[DEC-02]** Mandatory `layer` metadata. Every file in the documentation set must include a `layer` key in the YAML frontmatter and a Markdown metadata block.
 - **[DEC-03]** Gateway-Based Discovery. Agents must load `docs/agentic/gateway.md` first and use named markers (`[LOAD:CATEGORY]`) instead of path guessing.
 

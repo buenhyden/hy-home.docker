@@ -6,36 +6,36 @@
 
 ```text
 infra/
-├── 01-gateway/               # Edge/Gateway
+├── [01-gateway](01-gateway/)         # Edge/Gateway ([Context](../docs/guides/01-gateway/))
 │   └── traefik/
 │   └── nginx/                 # (Standalone/Optional)
-├── 02-auth/                  # 인증/SSO
+├── [02-auth](02-auth/)               # 인증/SSO ([Context](../docs/guides/02-auth/))
 │   ├── keycloak/
 │   └── oauth2-proxy/
-├── 03-security/              # 시크릿/보안
+├── [03-security](03-security/)           # 시크릿/보안 ([Context](../docs/guides/03-security/))
 │   └── vault/                 # (Standalone/Optional)
-├── 04-data/                  # DB/Storage
+├── [04-data](04-data/)               # DB/Storage ([Context](../docs/guides/04-data/))
 │   ├── mng-db/
 │   ├── minio/
 │   ├── opensearch/
 │   ├── postgresql-cluster/
 │   ├── qdrant/
 │   └── valkey-cluster/
-├── 05-messaging/             # 메시징/스트리밍
+├── [05-messaging](05-messaging/)          # 메시징/스트리밍 ([Context](../docs/guides/05-messaging/))
 │   └── kafka/
-├── 06-observability/         # LGTM 스택
+├── [06-observability](06-observability/)      # LGTM 스택 ([Context](../docs/guides/06-observability/))
 │   ├── docker-compose.yml
 │   └── prometheus/
-├── 07-workflow/              # 워크플로우
+├── [07-workflow](07-workflow/)           # 워크플로우 ([Context](../docs/guides/07-workflow/))
 │   ├── airflow/
 │   └── n8n/                   # (Optional, root include 주석 처리)
-├── 08-ai/                    # AI/LLM
+├── [08-ai](08-ai/)                 # AI/LLM ([Context](../docs/guides/08-ai/))
 │   ├── ollama/
 │   └── open-webui/
-├── 09-tooling/               # DevOps/QA/TF
+├── [09-tooling](09-tooling/)            # DevOps/QA/TF ([Context](../docs/guides/09-tooling/))
 │   ├── sonarqube/
 │   └── terrakube/             # (Optional, root include 주석 처리)
-└── 10-communication/         # Mail (Optional)
+└── [10-communication](10-communication/)      # Mail (Optional) ([Context](../docs/guides/10-communication/))
     └── mail/                  # (Optional, root include 주석 처리)
 ```
 

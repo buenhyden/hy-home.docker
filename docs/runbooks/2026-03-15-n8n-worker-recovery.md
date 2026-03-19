@@ -2,6 +2,7 @@
 layer: ops
 ---
 # Runbook: n8n Worker Recovery
+
 n**Overview (KR):** n8n 워커 노드의 연결 끊김 현상을 복구하고 워크플로우 실행을 재개하는 절차입니다.
 
 ## Given

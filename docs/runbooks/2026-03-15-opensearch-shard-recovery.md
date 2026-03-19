@@ -2,6 +2,7 @@
 layer: ops
 ---
 # Service Runbook: OpenSearch Shard Recovery
+
 n**Overview (KR):** OpenSearch 인덱스 샤드 할당 오류와 데이터 일관성 문제를 해결하는 절차입니다.
 
 _Target Directory: `runbooks/04-data/opensearch-shard-recovery.md`_

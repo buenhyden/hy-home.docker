@@ -2,6 +2,7 @@
 layer: infra
 ---
 # ADR 0009: Strict Docker Secrets
+
 **Overview (KR):** 일반 텍스트 환경 변수 사용을 엄격히 제한하고 100% Docker Secrets 기반의 보안 정책을 강제합니다.
 
 : Strict Docker Secrets Adoption

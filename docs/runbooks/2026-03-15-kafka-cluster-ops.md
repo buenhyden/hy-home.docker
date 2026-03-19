@@ -2,6 +2,7 @@
 layer: ops
 ---
 # Runbook: Kafka Cluster & KRaft Recovery
+
 n**Overview (KR):** Kafka 클러스터 및 KRaft 메타데이터 불일치 현상을 해결하고 클러스터 상태를 정상화하는 절차입니다.
 
 > **Component**: `kafka`

@@ -19,4 +19,3 @@ GRANT ALL PRIVILEGES ON DATABASE app_db TO app_user;
 \connect app_db
 GRANT ALL ON SCHEMA public TO app_user;
 ALTER SCHEMA public OWNER TO app_user;
-

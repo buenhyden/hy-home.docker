@@ -3,6 +3,7 @@ layer: ops
 ---
 
 # INC-20260314: Broken Documentation Discovery Path
+
 n**Overview (KR):** 리포지토리 문서 탐색 경로가 손상되어 에이전트 인식이 불가능했던 장애 상황의 기록입니다.
 
 > **Status**: Resolved

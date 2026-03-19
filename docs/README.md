@@ -15,7 +15,6 @@ layer: core
 | `[LOAD:STRATEGIC]` | [prd/README.md](prd/README.md), [ard/README.md](ard/README.md) | Product scope, architecture boundaries |
 | `[LOAD:TACTICAL]` | [plans/README.md](plans/README.md) | Active implementation and refactor work |
 | `[LOAD:RUNBOOK]` | [runbooks/README.md](runbooks/README.md) | Executable operational procedures |
-| `[LOAD:CONTEXT]` | [context/README.md](context/README.md) | Deep service and platform blueprints |
 | `[LOAD:GUIDE]` | [guides/README.md](guides/README.md), [manuals/README.md](manuals/README.md) | Lifecycle guides and team manuals |
 
 ## Templates

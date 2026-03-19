@@ -82,6 +82,6 @@ labels:
 ## Documentation References
 
 - **Architecture Principles**: [ARCHITECTURE.md](../../../ARCHITECTURE.md)
-- **Traefik Blueprint**: [docs/context/01-gateway/traefik-ingress-guide.md](../../../docs/context/01-gateway/traefik-ingress-guide.md)
+- **Traefik Blueprint**: [docs/guides/01-gateway/traefik-ingress-guide.md](../../../docs/guides/01-gateway/traefik-ingress-guide.md)
 - **Runbook (Gateway Recovery)**: [runbooks/01-gateway/traefik-proxy-recovery.md](../../../runbooks/01-gateway/traefik-proxy-recovery.md)
 - **Operations History**: [operations/README.md](../../../operations/README.md)

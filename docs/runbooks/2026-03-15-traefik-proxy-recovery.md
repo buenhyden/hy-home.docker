@@ -2,6 +2,7 @@
 layer: ops
 ---
 # Runbook: Traefik Ingress & Gateway Recovery
+
 n**Overview (KR):** Traefik 인그레스 프록시의 설정 오류나 장애를 복구하고 외부 트래픽을 정상화하는 절차입니다.
 
 > **Component**: `traefik`

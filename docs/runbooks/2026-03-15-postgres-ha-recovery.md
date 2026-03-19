@@ -2,6 +2,7 @@
 layer: ops
 ---
 # Service Runbook: PostgreSQL HA & Patroni Recovery
+
 n**Overview (KR):** PostgreSQL 고가용성 클러스터의 리더 전환 실패 및 상태 불일치를 복구하는 절차입니다.
 
 _Target Directory: `runbooks/04-data/postgres-ha-recovery.md`_

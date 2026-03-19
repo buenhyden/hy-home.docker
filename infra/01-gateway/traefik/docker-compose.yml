@@ -5,6 +5,7 @@ services:
   traefik:
     profiles:
       - core
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-med

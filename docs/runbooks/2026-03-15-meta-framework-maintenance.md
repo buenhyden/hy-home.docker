@@ -6,6 +6,7 @@ layer: ops
 layer: ops
 
 # Meta-Framework Maintenance Runbook
+
 n**Overview (KR):** 리포지토리의 메타 프레임워크와 의존성을 최신 상태로 유지하고 시스템 안정성을 점검하는 절차입니다.
 
 Procedures for maintaining the documentation hierarchy and the agentic instruction set.

@@ -2,6 +2,7 @@
 layer: ops
 ---
 # Service Runbook: Gateway 502 Troubleshooting
+
 n**Overview (KR):** Traefik 게이트웨이에서 발생하는 502 Bad Gateway 에러를 진단하고 하위 서비스를 복구하는 절차입니다.
 
 _Target Directory: `runbooks/01-gateway/gateway-502-errors.md`_

@@ -2,6 +2,7 @@
 layer: ops
 ---
 # Runbook: Valkey Cluster Manual Failover & Upgrades
+
 n**Overview (KR):** Valkey(Redis) 클러스터의 수동 장애 조치 및 노드 업그레이드를 수행하는 절차입니다.
 
 > **Component**: `valkey-cluster`

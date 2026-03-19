@@ -2,6 +2,7 @@
 layer: architecture
 ---
 # Global System Architecture Architecture Reference Document (ARD)
+
 n**Overview (KR):** 하이테크 프로젝트 전체 스택의 통합 아키텍처와 계층 간 상호작용 설계 가이드입니다.
 
 - **Status**: Approved

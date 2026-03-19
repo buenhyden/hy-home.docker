@@ -51,7 +51,6 @@ This document is the central index for the `hy-home.docker` operational policies
 
 ## 6. Project References
 
-- **Infra lifecycle:** [`docs/context/core/infra-lifecycle-ops.md`](docs/context/core/infra-lifecycle-ops.md)
 - **Security policy:** [`.github/SECURITY.md`](.github/SECURITY.md)
 - **RCA hub:** [`docs/operations/postmortems/README.md`](docs/operations/postmortems/README.md)
 

@@ -2,6 +2,7 @@
 layer: architecture
 ---
 # Infrastructure Automation Architecture Reference Document (ARD)
+
 n**Overview (KR):** 인프라 초기화 및 자동화 워크플로우를 위한 기술적 구성 방식을 정의한 아키텍처 참조입니다.
 
 - **Status**: Approved

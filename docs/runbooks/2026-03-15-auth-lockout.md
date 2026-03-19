@@ -2,6 +2,7 @@
 layer: ops
 ---
 # Runbook: Keycloak Auth Lockout Recovery
+
 n**Overview (KR):** Keycloak 관리자 계정 잠금 시 데이터베이스를 통해 접근 권한을 복구하는 절차입니다.
 
 > **Component**: `keycloak`

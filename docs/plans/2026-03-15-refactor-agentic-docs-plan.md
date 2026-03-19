@@ -3,6 +3,7 @@ layer: agentic
 ---
 
 # Implementation Plan: Documentation Refactor
+
 n**Overview (KR):** 문서 분류 체계 표준화 및 에이전트 트리거 최적화를 위한 리팩토링 실행 로드맵입니다.
 
 ## Phase 1: Preparation

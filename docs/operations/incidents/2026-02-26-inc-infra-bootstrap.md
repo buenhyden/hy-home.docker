@@ -2,6 +2,7 @@
 layer: ops
 ---
 # Active Incident: [INC-20260226-000]
+
 n**Overview (KR):** 2026-02-26에 발생한 인프라 초기화 시퀀스 오류 및 긴급 복구 매뉴얼입니다.
 
 _Target Directory: `operations/incidents/2026-02-26-inc-infra-bootstrap.md`_

@@ -25,7 +25,7 @@ This category manages the ingress traffic and edge routing for the entire infras
 ## Documentation References
 
 - **Architecture Principles**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
-- **Gateway Blueprints**: [docs/context/01-gateway](../../docs/context/01-gateway)
+- **Gateway Blueprints**: [docs/guides/01-gateway](../../docs/guides/01-gateway)
 - **Platform Guides**: [docs/guides/README.md](../../docs/guides/README.md)
 - **Runbooks (Gateway)**: [runbooks/01-gateway](../../runbooks/01-gateway)
 - **Operations History**: [operations/README.md](../../operations/README.md)

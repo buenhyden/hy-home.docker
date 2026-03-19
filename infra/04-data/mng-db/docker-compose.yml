@@ -25,6 +25,7 @@ services:
   mng-pg:
     profiles:
       - mng-data
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-db-med
@@ -158,6 +159,7 @@ services:
   mng-valkey:
     profiles:
       - mng-data
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low

@@ -15,7 +15,7 @@ layer: core
 - **Owner**: Platform Architect
 - **layer:** core
 
-**Overview (KR):** 시스템 전반의 성능 최적화, 보안 위협 감소, 그리고 통합 로깅 시스템 구축을 위한 요구사항을 정의합니다.
+**Overview (KR):** 시스템 전반의 성능 최적화, 보안 위협 감소, 그리고 통합 로깅 시스템 구축을 위한 요구사항을 정의합니다
 ---
 
 ## 0. Pre-Review Checklist (Business & Product)

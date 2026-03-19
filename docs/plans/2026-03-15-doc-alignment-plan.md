@@ -2,6 +2,7 @@
 layer: agentic
 ---
 # Plan-0001: Documentation Taxonomy and Agentic Refactor Implementation
+
 n**Overview (KR):** 리포지토리의 문서 분류 체계 및 에이전틱 리팩토링의 상세 구현 단계입니다.
 
 - **Status**: In Progress

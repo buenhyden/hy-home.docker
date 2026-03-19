@@ -2,6 +2,7 @@
 layer: ops
 ---
 # Incident Response Framework Guide
+
 n**Overview (KR):** 리포지토리 인프라 장애 발생 시 탐지부터 종결까지의 표준 장애 대응 체계 가이드입니다.
 
 _Target Directory: `runbooks/incident-response-runbook.md`_

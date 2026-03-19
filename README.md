@@ -21,7 +21,7 @@ The repository assembles gateway, identity, data, messaging, observability, work
 - Profile-based stack assembly through a single root [`docker-compose.yml`](docker-compose.yml)
 - File-based Docker secrets bootstrapped under [`secrets/`](secrets/)
 - Local TLS bootstrap with `mkcert`
-- Centralized architecture, context, plans, and runbooks under [`docs/`](docs/)
+- Centralized architecture, guides, plans, and runbooks under [`docs/`](docs/)
 - Static validation and runtime preflight scripts before `docker compose up`
 - Optional observability, workflow, AI, and tooling stacks for broader platform builds
 
@@ -267,8 +267,7 @@ hy-home.docker/
 ├── docs/                 # PRDs, ARDs, ADRs, specs, plans, runbooks, context, guides
 │   ├── adr/              # Architectural Decision Records
 │   ├── ard/              # Architecture Requirements Documents
-│   ├── context/          # System and service context
-│   ├── guides/           # Procedural and lifecycle guides
+│   ├── guides/           # Procedural and lifecycle guides, System and service context
 │   ├── manuals/          # Team and collaboration manuals
 │   ├── operations/       # Incidents and postmortems (Shared memory)
 │   ├── plans/            # Implementation plans
@@ -328,18 +327,18 @@ The repository defines three top-level networks:
 
 The platform is organized into ten logical tiers:
 
-| Tier | Role | Example services |
-| --- | --- | --- |
-| `01-gateway` | Edge routing and ingress | Traefik, Nginx |
-| `02-auth` | Identity and access proxy | Keycloak, OAuth2 Proxy |
-| `03-security` | Secret management | Vault |
-| `04-data` | Databases, cache, object and search storage | PostgreSQL, Valkey, MinIO, OpenSearch, Qdrant |
-| `05-messaging` | Streams and queues | Kafka, RabbitMQ, ksqlDB |
-| `06-observability` | Metrics, logs, traces, dashboards | Prometheus, Grafana, Loki, Tempo |
-| `07-workflow` | Workflow execution and scheduling | Airflow, n8n |
-| `08-ai` | Local inference and AI interfaces | Ollama, Open WebUI |
-| `09-tooling` | QA and platform tooling | SonarQube, Terrakube, Locust |
-| `10-communication` | Mail and relay tooling | Stalwart and related services |
+| Tier | Role | Example services | Architecture Context |
+| --- | --- | --- | --- |
+| `01-gateway` | Edge routing and ingress | Traefik, Nginx | [`docs/guides/01-gateway/`](docs/guides/01-gateway/) |
+| `02-auth` | Identity and access proxy | Keycloak, OAuth2 Proxy | [`docs/guides/02-auth/`](docs/guides/02-auth/) |
+| `03-security` | Secret management | Vault | [`docs/guides/03-security/`](docs/guides/03-security/) |
+| `04-data` | Databases, cache, object and search storage | PostgreSQL, Valkey, MinIO, OpenSearch, Qdrant | [`docs/guides/04-data/`](docs/guides/04-data/) |
+| `05-messaging` | Streams and queues | Kafka, RabbitMQ, ksqlDB | [`docs/guides/05-messaging/`](docs/guides/05-messaging/) |
+| `06-observability` | Metrics, logs, traces, dashboards | Prometheus, Grafana, Loki, Tempo | [`docs/guides/06-observability/`](docs/guides/06-observability/) |
+| `07-workflow` | Workflow execution and scheduling | Airflow, n8n | [`docs/guides/07-workflow/`](docs/guides/07-workflow/) |
+| `08-ai` | Local inference and AI interfaces | Ollama, Open WebUI | [`docs/guides/08-ai/`](docs/guides/08-ai/) |
+| `09-tooling` | QA and platform tooling | SonarQube, Terrakube, Locust | [`docs/guides/09-tooling/`](docs/guides/09-tooling/) |
+| `10-communication` | Mail and relay tooling | Stalwart and related services | [`docs/guides/10-communication/`](docs/guides/10-communication/) |
 
 ### Profile-driven composition
 

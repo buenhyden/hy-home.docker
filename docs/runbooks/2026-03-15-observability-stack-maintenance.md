@@ -2,6 +2,7 @@
 layer: ops
 ---
 # Runbook: Observability Stack & Alloy Maintenance
+
 n**Overview (KR):** LGTM(Grafana, Loki, Tempo, Mimir) 스택과 Alloy 에이전트의 상태를 점검하고 업데이트하는 절차입니다.
 
 > **Tier**: `06-observability`

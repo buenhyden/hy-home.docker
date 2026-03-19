@@ -21,7 +21,7 @@ layer: agentic
 ## Related Navigation
 
 - [Decisions Index](../adr/README.md)
-- [Context Hub](../context/README.md)
+- [Guide Hub](../guides/README.md)
 - [Persona Standards](core-governance.md)
 - [Agent Governance](../../AGENTS.md)
 

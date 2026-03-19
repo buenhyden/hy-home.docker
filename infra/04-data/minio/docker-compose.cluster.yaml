@@ -108,4 +108,3 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_DATA_DIR}/minio/data4
-

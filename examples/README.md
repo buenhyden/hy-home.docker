@@ -27,11 +27,11 @@ Reference formats for maintaining the platform's "Infrastructure-as-Documentatio
 
 | Capability | Integration Endpoint | Context Link |
 | --- | --- | --- |
-| **Object Storage**| `minio:9000` | [MinIO Guide](../docs/context/04-data/minio-s3-guide.md) |
-| **Pub/Sub**      | `kafka-1:19092` | [Kafka Guide](../docs/context/05-messaging/kafka-kraft-guide.md) |
-| **Secrets**      | `/run/secrets/*` | [Identity Guide](../docs/context/02-auth/keycloak-idp-guide.md) |
-| **Telemetry**    | `alloy:4317` | [LGTM Blueprint](../docs/context/06-observability/lgtm-stack-blueprint.md) |
+| **Object Storage**| `minio:9000` | [MinIO Guide](../docs/guides/04-data/minio-s3-guide.md) |
+| **Pub/Sub**      | `kafka-1:19092` | [Kafka Guide](../docs/guides/05-messaging/kafka-kraft-guide.md) |
+| **Secrets**      | `/run/secrets/*` | [Identity Guide](../docs/guides/02-auth/keycloak-idp-guide.md) |
+| **Telemetry**    | `alloy:4317` | [LGTM Blueprint](../docs/guides/06-observability/lgtm-stack-blueprint.md) |
 
 ---
 > [!TIP]
-> Always check the [Technical Context](../docs/context/README.md) for precise port mappings and service labels before configuring your `docker-compose.yml`.
+> Always check the [Technical Context](../docs/guides/README.md) for precise port mappings and service labels before configuring your `docker-compose.yml`.

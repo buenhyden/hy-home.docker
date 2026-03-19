@@ -91,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrate CouchDB and Alertmanager credentials to Docker secrets and add new environment variables for various services.
 - Add linting and secret scanning workflows, expand Dependabot to new infra services, update bug report template with Docker version, and refine labeler and compose validation.
 - Introduce structured runbooks and dedicated directories for operational procedures, incidents, and postmortems, and refine documentation structure.
-- Introduce a new `docs/context` hub with comprehensive operational guides and context documents, updating `operations` and `runbooks` READMEs.
+- Introduce a new `docs/guides` hub with comprehensive operational guides and context documents, updating `operations` and `runbooks` READMEs.
 - Add Ollama and Airflow blueprints and enhance existing service documentation with technical specifications and provisioning verification.
 - Enhance container security by adding `no-new-privileges` and `cap_drop: ALL` to most services, create a SeaweedFS security example, and
 - Implement container security hardening with `no-new-privileges` and `cap_drop` across multiple services, introduce RabbitMQ secrets, and update documentation.
