@@ -54,4 +54,4 @@ To establish a high-performance, compliant, and well-organized documentation sys
 - `docs/ard/documentation-system-ard.md`
 - `docs/specs/2026-03-16-documentation-refactor-spec.md`
 - `docs/plans/2026-03-16-documentation-refactor-plan.md`
-- `docs/adr/0026-documentation-structure-and-lazy-loading.md`
+- `docs/adr/2026-03-15-0026-documentation-structure-and-lazy-loading.md`

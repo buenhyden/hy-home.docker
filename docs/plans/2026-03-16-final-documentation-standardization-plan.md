@@ -69,7 +69,7 @@ Run: `git commit -m "docs: enforce YYYY-MM-DD- naming convention for ARD family"
 - Modify: `docs/runbooks/rule-maintenance.md`
 
 **Step 1: Remove boilerplate text**
-Update the files to remove `[Explain...]`, `[Requirement 1]`, `[Optional]`, etc.
+Update the files to remove ``, ``, ``, etc.
 
 **Step 2: Verify**
 Run: `grep -rnE "\[(Explain|Requirement|Optional)\]" docs`

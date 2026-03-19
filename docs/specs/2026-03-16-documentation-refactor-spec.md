@@ -6,7 +6,7 @@ owner: 'buenhyden'
 scope: 'master'
 prd_reference: '../prd/2026-03-16-documentation-standardization-prd.md'
 arch_reference: '../ard/documentation-system-ard.md'
-decision_reference: '../adr/0026-documentation-structure-and-lazy-loading.md'
+decision_reference: '../adr/2026-03-15-0026-documentation-structure-and-lazy-loading.md'
 tags: ['spec','implementation']
 layer: 'specs'
 ---
@@ -18,7 +18,7 @@ layer: 'specs'
 > **layer:** specs
 > **Related PRD**: [2026-03-16-documentation-standardization-prd.md](../prd/2026-03-16-documentation-standardization-prd.md)
 > **Related Architecture**: [2026-03-15-doc-taxonomy-ard.md](../ard/2026-03-15-doc-taxonomy-ard.md)
-> **Decision Record**: [0026-documentation-structure-and-lazy-loading.md](../adr/0026-documentation-structure-and-lazy-loading.md)
+> **Decision Record**: [2026-03-15-0026-documentation-structure-and-lazy-loading.md](../adr/2026-03-15-0026-documentation-structure-and-lazy-loading.md)
 
 **Overview (KR):** 에이전트 지침 최적화 및 문서 구조 표준화를 위한 기술적 명세를 정의합니다. Lazy Loading 구현 방식과 디렉토리 구조 변경 계획을 포함합니다.
 

@@ -44,4 +44,4 @@ This work exists to align the repository with the [March 2026 Standard] and the 
 - `../prd/2026-03-16-documentation-standardization-prd.md`
 - `../specs/2026-03-16-documentation-refactor-spec.md`
 - `../ard/documentation-system-ard.md`
-- `../adr/0026-documentation-structure-and-lazy-loading.md`
+- `../adr/2026-03-15-0026-documentation-structure-and-lazy-loading.md`

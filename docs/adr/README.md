@@ -27,12 +27,12 @@ layer: core
 | [ADR-0016](2026-02-27-0016-doc-taxonomy.md) | Standardized Documentation Taxonomy | Accepted | 2026-03-15 |
 | [ADR-0017](2026-02-27-0017-flat-documentation-taxonomy.md) | Flat Documentation Taxonomy | Accepted | 2026-03-15 |
 | [ADR-0018](2026-02-27-0018-lazy-loading-protocol.md) | Lazy-Loading Protocol for AI Agents | Accepted | 2026-03-15 |
-| [ADR-0020](0020-intent-based-triggers.md) | Intent-Based Rule Triggers | Accepted | 2026-03-15 |
-| [ADR-0021](0021-2026-march-agentic-standard.md) | March 2026 Agentic Standard Adoption | Accepted | 2026-03-15 |
-| [ADR-0022](0022-cycle-2-doc-taxonomy.md) | Strict Enforcement of Plural Execution Paths | Accepted | 2026-03-15 |
-| [ADR-0023](0023-plural-plans-path.md) | Adoption of Plural plans Path | Accepted | 2026-03-16 |
-| [ADR-0024](0024-lazy-loading-agent-rules.md) | Lazy-Loading Agent Rules | Accepted | 2026-03-15 |
-| [ADR-0025](0025-intent-based-lazy-loading.md) | Intent-Based Lazy Loading for Agent Rules | Accepted | 2026-03-16 |
+| [ADR-0020](2026-03-15-2026-03-15-0020-intent-based-triggers.md) | Intent-Based Rule Triggers | Accepted | 2026-03-15 |
+| [ADR-0021](2026-03-15-2026-03-15-0021-2026-march-agentic-standard.md) | March 2026 Agentic Standard Adoption | Accepted | 2026-03-15 |
+| [ADR-0022](2026-03-15-2026-03-15-0022-cycle-2-doc-taxonomy.md) | Strict Enforcement of Plural Execution Paths | Accepted | 2026-03-15 |
+| [ADR-0023](2026-03-16-2026-03-16-0023-plural-plans-path.md) | Adoption of Plural plans Path | Accepted | 2026-03-16 |
+| [ADR-0024](2026-03-15-2026-03-15-0024-lazy-loading-agent-rules.md) | Lazy-Loading Agent Rules | Accepted | 2026-03-15 |
+| [ADR-0025](2026-03-16-2026-03-16-0025-intent-based-lazy-loading.md) | Intent-Based Lazy Loading for Agent Rules | Accepted | 2026-03-16 |
 
 ---
 > [!NOTE]

@@ -7,7 +7,7 @@ owner: 'buenhyden'
 scope: 'master'
 prd_reference: '../prd/2026-03-15-doc-refactor-prd.md'
 arch_reference: '../ard/2026-03-15-agentic-ard.md'
-decision_reference: '../adr/0026-documentation-structure-and-lazy-loading.md'
+decision_reference: '../adr/2026-03-15-0026-documentation-structure-and-lazy-loading.md'
 tags: ['spec','implementation','agentic']
 layer: agentic
 ---

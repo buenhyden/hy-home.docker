@@ -39,4 +39,4 @@ Prior to this decision, AI agents were often loaded with the entire `AGENTS.md` 
 
 - `[../specs/2026-03-15-agent-rule-lazy-loading-spec.md]`
 - `[../ard/2026-03-15-doc-taxonomy-ard.md]`
-- `[./0024-lazy-loading-agent-rules.md]` (Reference to earlier concepts)
+- `[./2026-03-15-0024-lazy-loading-agent-rules.md]` (Reference to earlier concepts)

@@ -10,7 +10,7 @@ layer: agentic
 > **layer:** product
 > **Related PRD**: `[../prd/2026-03-15-rule-implementation-prd.md]`
 > **Related Architecture**: `[../ard/2026-03-15-doc-taxonomy-ard.md]`
-> **Decision Record**: `[../adr/0020-intent-based-triggers.md]`
+> **Decision Record**: `[../adr/2026-03-15-0020-intent-based-triggers.md]`
 
 **Overview (KR):** 본 명세서는 루트 파일에서 지침을 직접 로드하기 위한 구체적인 트리거 형식과 `docs/agentic/`의 디렉토리 구조를 확정합니다.
 
