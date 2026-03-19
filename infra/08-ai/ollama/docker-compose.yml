@@ -13,7 +13,7 @@ services:
   ollama:
     profiles: ['ai']
     extends: { file: ../../common-optimizations.yml, service: template-stateful-high }
-    image: ollama/ollama:0.13.5
+    image: ollama/ollama:0.18.2
     container_name: ollama
     read_only: false
     volumes: [ollama-data:/root/.ollama:rw]

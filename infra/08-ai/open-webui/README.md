@@ -20,7 +20,7 @@ Open WebUI is an extensible, self-hosted AI interface that operates entirely off
 
 ## Persistence
 
-- **Data**: `ollama-webui` volume mapped to `/app/backend/data`.
+- **Data**: `open-webui` volume mapped to `/app/backend/data`.
 
 ## File Map
 

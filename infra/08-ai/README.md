@@ -4,10 +4,10 @@ This category manages local LLM inference engines and RAG (Retrieval-Augmented G
 
 ## Services
 
-| Service     | Profile  | Path           | Purpose                            |
-| ----------- | -------- | -------------- | ---------------------------------- |
-| Ollama      | `ollama` | `./ollama`     | Local LLM inference server         |
-| Open WebUI  | `ollama` | `./open-webui` | User interface for Chat and RAG    |
+| Service     | Profile | Path           | Purpose                         |
+| ----------- | ------- | -------------- | ------------------------------- |
+| Ollama      | `ai`    | `./ollama`     | Local LLM inference server      |
+| Open WebUI  | `ai`    | `./open-webui` | Chat interface for LLM and RAG  |
 
 ## Dependencies
 

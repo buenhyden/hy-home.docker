@@ -3,7 +3,7 @@ layer: infra
 ---
 # AI Inferencing & UI Guide
 
-n**Overview (KR):** Ollama와 Open WebUI를 이용한 로컬 LLM 추론 환경 구축 및 인터페이스 사용 가이드입니다.
+**Overview (KR):** Ollama와 Open WebUI를 이용한 로컬 LLM 추론 환경 구축 및 인터페이스 사용 가이드입니다.
 
 > **Components**: `ollama`, `open-webui`
 > **Internal Port**: `11434` (Ollama), `8080` (WebUI)
@@ -44,6 +44,6 @@ LLMs consume significant memory. Monitor host RAM during inference; a 7B-8B para
 
 | Action | Reference | Link |
 | --- | --- | --- |
-| **Recovery** | AI Runbooks | [Runbooks](../runbooks/README.md) |
-| **Monitoring** | OTLP Export | [LGTM Context](../context/lgtm-stack-blueprint.md) |
-| **Integration**| OTLP Apps | [Example App](../examples/app-compose-telemetry.yml) |
+| **Recovery** | AI Runbooks | [Runbooks](../../runbooks/README.md) |
+| **Monitoring** | OTLP Export | [LGTM Context](../06-observability/lgtm-stack-blueprint.md) |
+| **Integration**| OTLP Apps | [Example App](../../examples/app-compose-telemetry.yml) |

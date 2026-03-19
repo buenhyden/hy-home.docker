@@ -6,7 +6,7 @@ This stack provides local LLM inference and a powerful chat interface.
 
 | Service | Image | Role | Resources |
 | :--- | :--- | :--- | :--- |
-| `ollama` | `ollama/ollama:0.13.5` | LLM Engine | 4.0 CPU / 8GB RAM / GPU |
+| `ollama` | `ollama/ollama:0.18.2` | LLM Engine | 4.0 CPU / 8GB RAM / GPU |
 | `exporter`| `ollama-exporter:1.0.1` | Metrics | Default |
 
 ## Networking
@@ -27,8 +27,7 @@ This stack provides local LLM inference and a powerful chat interface.
 
 ## File Map
 
-| Path             | Description                         |
-| ---------------- | ----------------------------------- |
-| `ollama/`        | Ollama service and data persistence.|
-| `open-webui/`    | Open WebUI service.                 |
-| `README.md`      | Service overview and model guides.  |
+| Path                 | Description                              |
+| -------------------- | ---------------------------------------- |
+| `docker-compose.yml` | Ollama + exporter service definitions.   |
+| `README.md`          | Service overview (this file).            |
