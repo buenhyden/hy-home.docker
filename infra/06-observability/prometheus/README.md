@@ -21,13 +21,13 @@ Prometheus is the core metrics collection and time-series database.
 
 ## Configuration
 
-- **Scrape Config**: Defined in `config/prometheus.yml`.
-- **Rules**: Alerting and recording rules in `config/rules.yml`.
+- **Scrape Config**: Defined in `config/prometheus.yml`. Secrets are injected at startup via template substitution (`prometheus.yml.template`).
+- **Rules**: Alerting and recording rules in `config/alert_rules/` (directory with multiple YAML files).
 
 ## File Map
 
-| Path                 | Description                    |
-| -------------------- | ------------------------------ |
-| `config/prometheus.yml` | Master scrape configuration. |
-| `config/rules.yml`   | Alerting/Recording rules.      |
-| `README.md`          | Service notes.                 |
+| Path                       | Description                             |
+| -------------------------- | --------------------------------------- |
+| `config/prometheus.yml`    | Master scrape configuration (template). |
+| `config/alert_rules/`      | Alerting/Recording rules (directory).   |
+| `README.md`                | Service notes.                          |

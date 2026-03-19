@@ -7,13 +7,14 @@ This category manages the LGTM (Loki, Grafana, Tempo, Mimir/Prometheus) stack fo
 | Service | Image | Role |
 | :--- | :--- | :--- |
 | `prometheus` | `prom/prometheus:v3.9.0` | Metrics storage |
-| `loki` | `grafana/loki:3.6.6` | Log storage (S3 backend via MinIO) |
-| `tempo` | `grafana/tempo:2.10.1` | Trace storage (S3 backend via MinIO) |
+| `loki` | `hy/loki:3.6.6-custom` | Log storage (S3 backend via MinIO) |
+| `tempo` | `hy/tempo:2.10.1-custom` | Trace storage (S3 backend via MinIO) |
 | `grafana` | `grafana/grafana:12.3.3` | Dashboards / UI |
 | `alloy` | `grafana/alloy:v1.13.1` | Telemetry collector / OTLP endpoint |
 | `alertmanager`| `prom/alertmanager:v0.30.0`| Alert routing |
 | `pushgateway` | `prom/pushgateway:v1.11.2`| Ephemeral metrics |
 | `cadvisor` | `gcr.io/cadvisor/cadvisor:v0.55.1` | Container metrics |
+| `pyroscope` | `grafana/pyroscope:1.18.1` | Continuous profiling |
 
 ## Dependencies
 
@@ -31,4 +32,7 @@ This category manages the LGTM (Loki, Grafana, Tempo, Mimir/Prometheus) stack fo
 | `loki/`           | Loki configuration.                           |
 | `tempo/`          | Tempo configuration.                          |
 | `alloy/`          | Alloy pipeline config.                        |
+| `alertmanager/`   | Alertmanager routing config.                  |
+| `pushgateway/`    | Pushgateway service (no config dir).          |
+| `pyroscope/`      | Pyroscope profiling backend config.           |
 | `README.md`       | Category overview.                            |

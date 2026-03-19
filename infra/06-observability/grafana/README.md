@@ -4,32 +4,33 @@ Grafana provides the visualization layer for metrics, logs, and traces.
 
 ## Services
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `grafana` | `grafana/grafana:12.3.3`| Dashboard | 0.5 CPU / 512M |
+| Service   | Image                    | Role       | Resources       |
+| :-------- | :----------------------- | :--------- | :-------------- |
+| `grafana` | `grafana/grafana:12.3.3` | Dashboard  | 0.5 CPU / 512MB |
 
 ## Networking
 
-| Endpoint                | Port | Purpose                |
-| :---------------------- | :--- | :--------------------- |
-| `grafana.${DEFAULT_URL}`| 3000 | Web UI                 |
+| Endpoint                | Port | Purpose |
+| :---------------------- | :--- | :------ |
+| `grafana.${DEFAULT_URL}`| 3000 | Web UI  |
 
 ## Security (SSO)
 
-Grafana is integrated with Keycloak for SSO via Generic OAuth.
+Grafana integrates with Keycloak for SSO via Generic OAuth with PKCE (`S256`).
 
-- **Client**: `grafana`
-- **Scopes**: `openid`, `profile`, `email`, `groups`
-- **Role Mapping**: Admin/Editor/Viewer roles mapped from Keycloak groups.
+- **Client**: Uses `${OAUTH2_PROXY_CLIENT_ID}` and the `oauth2_proxy_client_secret` Docker Secret.
+- **Scopes**: `openid`, `profile`, `email`, `offline_access`, `groups`
+- **Role mapping**: Keycloak group `/admins` → Grafana Admin; `/editors` → Editor; otherwise Viewer.
+- **Auto-login**: Login form is disabled; SSO is mandatory.
 
 ## Persistence
 
-- **DB**: Local SQLite (default) or shared PostgreSQL.
-- **Plugins**: Persisted in `grafana-plugins` volume.
+- **DB**: SQLite stored in `grafana-data` volume (bind-mounted to `${DEFAULT_OBSERVABILITY_DIR}/grafana`).
 
 ## File Map
 
-| Path                   | Description                           |
-| ---------------------- | ------------------------------------- |
-| `provisioning/`        | Auto-loaded datasources and dashboards. |
-| `README.md`            | Service notes and SSO setup.          |
+| Path                   | Description                              |
+| ---------------------- | ---------------------------------------- |
+| `provisioning/`        | Auto-loaded datasources and alert rules. |
+| `dashboards/`          | Pre-provisioned dashboard JSON files.    |
+| `README.md`            | Service notes and SSO setup.             |
