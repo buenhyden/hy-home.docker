@@ -8,8 +8,9 @@
 ui = true
 
 # Mlock Configuration
-# Disables the server from executing the "mlock" syscall to prevent memory from being swapped to disk.
-# Recommended 'true' for systems where swap is encrypted or disabled, or in containers.
+# disable_mlock = true is safe here because the container gets IPC_LOCK
+# via `cap_add: [IPC_LOCK]` in docker-compose.yml, which prevents Vault's
+# process memory from being swapped to disk at the OS level.
 disable_mlock = true
 
 # Storage Configuration
@@ -43,11 +44,13 @@ listener "tcp" {
 
 # API Address
 # The address clients (and other Vault nodes) should use to reach this Vault instance.
-api_addr = "http://127.0.0.1:8200"
+# Use 0.0.0.0 so that other containers on infra_net can resolve and reach Vault.
+api_addr = "http://0.0.0.0:8200"
 
 # Cluster Address
-# The address used for cluster replication traffic.
-cluster_addr = "https://127.0.0.1:8201"
+# The address used for cluster replication traffic between Raft peers.
+# For single-node deployments this is still required by the Raft backend.
+cluster_addr = "https://0.0.0.0:8201"
 
 # Telemetry Configuration
 # Enable if you want to export metrics to Prometheus or Grafana Agent.

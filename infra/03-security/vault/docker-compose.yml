@@ -15,7 +15,7 @@ services:
       - core
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-stateful-med
     image: hashicorp/vault:1.21.2
     container_name: vault
     restart: unless-stopped
@@ -26,12 +26,6 @@ services:
     environment:
       VAULT_ADDR: 'http://0.0.0.0:${VAULT_PORT:-8200}'
       VAULT_API_ADDR: 'http://0.0.0.0:${VAULT_PORT:-8200}'
-      KEYCLOAK_URL: '${KEYCLOAK_URL}'
-      REALM_NAME: '${KEYCLOAK_REALM}'
-      CLIENT_ID: '${OAUTH2_PROXY_CLIENT_ID}'
-      # CLIENT_SECRET은 Docker Secret으로 주입 (/run/secrets/oauth2_proxy_client_secret)
-    secrets:
-      - oauth2_proxy_client_secret
     volumes:
       - vault-data:/vault/file:rw
       - ./config:/vault/config:ro
