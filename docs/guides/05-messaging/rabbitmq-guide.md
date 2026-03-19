@@ -3,42 +3,77 @@ layer: infra
 ---
 # RabbitMQ Operational Blueprint
 
-n**Overview (KR):** RabbitMQ 메시지 브로커의 클러스터 구성 및 관리 청사진 가이드입니다.
+**Overview (KR):** RabbitMQ 메시지 브로커의 클러스터 구성 및 관리 청사진 가이드입니다.
 
 > **Component**: `rabbitmq`
 > **Profile**: `rabbitmq` (Optional Tier)
 
 ## 1. Role in Ecosystem
 
-RabbitMQ serves as the secondary AMQP broker, typically utilized for task-based async worker queues and legacy system integrations.
+RabbitMQ serves as the secondary AMQP broker, typically utilized for task-based async worker queues and legacy system integrations requiring AMQP 0-9-1 semantics (exchanges, queues, bindings).
 
-- **AMQP Port**: `5672` (Internal)
-- **Management Web UI**: `https://rabbitmq.${DEFAULT_URL}`
+| Attribute | Value |
+| --- | --- |
+| **Internal DNS** | `rabbitmq` |
+| **AMQP Port** | `5672` (Internal) |
+| **Management UI** | `https://rabbitmq.${DEFAULT_URL}` |
+| **Profile** | `rabbitmq` |
 
 ### Technical Specifications
 
-| Attribute | Internal DNS | Port | Hardening |
+| Service | Image | Port | Hardening |
 | --- | --- | --- | --- |
-| **Service** | `rabbitmq` | `5672` | Standard (`no-new-privileges`) |
-| **Management**| `rabbitmq` | `15672` | [Hardened] |
-| **Secrets** | `rabbitmq_user` | `rabbitmq_password` | [Docker Secrets] |
+| `rabbitmq` | `rabbitmq:4.2.3-management-alpine` | `5672` (AMQP), `15672` (Mgmt) | `no-new-privileges`, `cap_drop: ALL` |
 
-## 2. Initial Setup
+## 2. Secrets
 
-The deployment is declarative via `rabbitmq.conf`.
+Credentials are provided via Docker Secrets — no plaintext values in environment variables.
 
-- **Erlang Cookie**: Managed via Docker Secret `rabbitmq_erlang_cookie`.
-- **Initialization**: Upon first boot, enable required plugins (e.g., `rabbitmq_management`) if not defined in the base image.
+| Secret Name | Purpose | Environment Variable |
+| --- | --- | --- |
+| `rabbitmq_user` | Default admin username | `RABBITMQ_DEFAULT_USER_FILE` |
+| `rabbitmq_password` | Default admin password | `RABBITMQ_DEFAULT_PASS_FILE` |
 
-## 3. Configuration Standards
+> **Note**: The `rabbitmq_erlang_cookie` secret is referenced in the guide docs but is **NOT** currently defined in `docker-compose.yml`. If clustering multiple RabbitMQ nodes, add `rabbitmq_erlang_cookie` to the secrets block and mount it.
 
-- **Definition Export**: Regularly export definitions from the Web UI to keep a record of exchanges and bindings.
+## 3. Initial Setup
 
-## 4. Troubleshooting Persistence
+The deployment is declarative via the management Alpine image. Plugins are pre-enabled by the `management-alpine` tag.
 
-If the service fails to boot with "Permission Denied", check the host volume permission on `${DEFAULT_DATA_DIR}/rabbitmq`. RabbitMQ demands UID `999`.
+- **Default vhost**: `/`
+- **Ports**: AMQP on `${RABBITMQ_HOST_PORT:-5672}`, Management on `${RABBITMQ_MANAGEMENT_HOST_PORT:-15672}`.
+- **Traefik**: Management UI exposed at `https://rabbitmq.${DEFAULT_URL}`.
+
+## 4. Configuration Standards
+
+- **Definition Export**: Regularly export definitions from the Web UI (Overview → Export definitions) to keep a backup of all exchanges, queues, and bindings.
+- **Policy Management**: Use the Management UI or `rabbitmqctl` to set queue policies (e.g., dead-lettering, TTL, max-length).
+
+## 5. Persistence
+
+Data is stored in a bind-mounted volume at `${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq` → `/var/lib/rabbitmq`.
+
+## 6. Troubleshooting
+
+### Permission Denied on Startup
+
+If the service fails to boot with "Permission Denied", check the host volume permissions. RabbitMQ requires UID `999`:
 
 ```bash
-## Fix permissions on host
-sudo chown -R 999:999 data/rabbitmq
+sudo chown -R 999:999 ${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq
+```
+
+### Verify Node Health
+
+```bash
+docker compose exec rabbitmq rabbitmq-diagnostics -q check_running
+docker compose exec rabbitmq rabbitmq-diagnostics -q check_local_alarms
+```
+
+### Reset Node (Data Loss Warning)
+
+```bash
+docker compose exec rabbitmq rabbitmqctl stop_app
+docker compose exec rabbitmq rabbitmqctl reset
+docker compose exec rabbitmq rabbitmqctl start_app
 ```
