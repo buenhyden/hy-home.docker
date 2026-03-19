@@ -3,7 +3,7 @@ layer: infra
 ---
 # Keycloak Identity Provider (IdP) Guide
 
-n**Overview (KR):** Keycloak을 활용한 중앙 집중식 ID 관리 및 인증 서비스 구축 가이드입니다.
+**Overview (KR):** Keycloak을 활용한 중앙 집중식 ID 관리 및 인증 서비스 구축 가이드입니다.
 
 > **Component**: `keycloak`
 > **Internal Port**: `8080`
@@ -54,7 +54,7 @@ Keycloak is configured to utilize the Management PostgreSQL instance (`mng-pg`) 
 
 ### "Admin User Locked"
 
-If the administrative user is locked out due to invalid attempts, use the bootstrap runbook: `../runbooks/auth-lockout.md`.
+If the administrative user is locked out due to invalid attempts, use the bootstrap runbook: `../runbooks/2026-03-15-auth-lockout.md`.
 
 ### "Token Signature Invalid"
 

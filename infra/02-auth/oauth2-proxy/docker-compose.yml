@@ -34,7 +34,6 @@ services:
       - SSL_CERT_FILE=/etc/ssl/certs/rootCA.pem
       - OAUTH2_PROXY_SESSION_STORE_TYPE=redis
       - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://mng-valkey:6379
-      - OAUTH2_PROXY_REDIS_PASSWORD_FILE=/run/secrets/mng_valkey_password
       - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}
     volumes:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro

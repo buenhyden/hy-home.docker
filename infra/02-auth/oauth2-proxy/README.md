@@ -22,11 +22,12 @@ Exposed via Traefik at `auth.${DEFAULT_URL}`. Traefik uses this service as a **F
 
 ## File Map
 
-| Path               | Description                                     |
-| ------------------ | ----------------------------------------------- |
-| `docker-compose.yml` | Service and session store (Valkey) wiring.    |
-| `config/oauth2-proxy.cfg` | Core OIDC and Cookie configuration.       |
-| `Dockerfile`       | Custom build injecting root CA certificates.    |
+| Path               | Description                                                                      |
+| ------------------ | -------------------------------------------------------------------------------- |
+| `docker-compose.yml` | Service wiring and secrets injection (overrides entrypoint via `command:`).   |
+| `config/oauth2-proxy.cfg` | Core OIDC and cookie configuration. Hardcoded to local `nip.io` dev URLs. |
+| `Dockerfile`       | Multi-stage build: copies `oauth2-proxy` binary into a `valkey:alpine` base image to leverage its existing CA certificates and `sh` shell for secret injection. |
+| `docker-entrypoint.sh` | Reads `mng_valkey_password` from Docker Secrets and builds the Redis connection URL before starting the proxy. |
 
 ## Documentation References
 

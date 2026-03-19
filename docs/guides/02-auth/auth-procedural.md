@@ -32,8 +32,9 @@ To protect a new service with SSO:
 - **OAuth2 Proxy**: Automatically picks up changes to `config/oauth2-proxy.cfg` on file save (if mounted as a volume), but a restart is recommended for core OIDC settings.
 
 ```bash
-# Restart for clean config application
-docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml restart
+# Restart for clean config application (run from service directory)
+cd infra/02-auth/oauth2-proxy
+docker compose restart oauth2-proxy
 ```
 
 ## Maintenance Procedures
@@ -53,7 +54,8 @@ When the local RootCA expires or a new one is generated:
 2. **Rebuild/Restart**:
 
    ```bash
-   docker compose build --no-cache keycloak
+   cd infra/02-auth/keycloak
+   docker compose build --no-cache
    docker compose up -d
    ```
 
@@ -66,6 +68,7 @@ Monitoring logs is critical for identifying authentication failures or OIDC misc
 ```bash
 docker logs -f keycloak
 ```
+
 - Look for: `WARN  [org.keycloak.events]` (Failed logins, invalid client attempts).
 - Look for: `ERROR [org.keycloak.services]` (System errors, DB connection issues).
 
@@ -74,5 +77,6 @@ docker logs -f keycloak
 ```bash
 docker logs -f oauth2-proxy
 ```
+
 - Look for: `[error] Error retrieving session` (Redis connection or password issues).
 - Look for: `[error] Error validating token` (OIDC provider/certificate mismatch).

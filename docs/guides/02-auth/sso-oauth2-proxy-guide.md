@@ -3,10 +3,10 @@ layer: infra
 ---
 # SSO & OAuth2 Proxy Operational Blueprint
 
-n**Overview (KR):** OAuth2 Proxy를 이용한 인증 연동 통합 서비스 보호 설계 가이드입니다.
+**Overview (KR):** OAuth2 Proxy를 이용한 인증 연동 통합 서비스 보호 설계 가이드입니다.
 
 > **Component**: `oauth2-proxy`
-> **Dependency**: `keycloak`, `mng-redis`
+> **Dependency**: `keycloak`, `mng-valkey`
 > **Port**: `4180`
 
 ## 1. Centralized Authentication Gateway
@@ -37,9 +37,9 @@ Attach the `sso-auth@file` middleware to any Traefik router to enforce SSO.
 
 ## 4. Session Persistence
 
-Sessions are stored dynamically in `mng-redis` (Valkey) to support multi-node scaling of the proxy layer.
+Sessions are stored dynamically in `mng-valkey` (Valkey) to support multi-node scaling of the proxy layer.
 
-- **Connection**: `redis://mng-redis:6379`
+- **Connection**: `redis://mng-valkey:6379`
 
 ## 5. Diagnostics
 

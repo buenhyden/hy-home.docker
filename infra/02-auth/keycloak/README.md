@@ -2,9 +2,9 @@
 
 ## Services
 
-| Service    | Image                            | Role                       | Resources         | Port       |
-| :--------- | :------------------------------- | :------------------------- | :---------------- | :--------- |
-| `keycloak` | `quay.io/keycloak/keycloak:26.5.4`| Identity & Access Management| 1.0 CPU / 1GB RAM | 8080 (Int) |
+| Service    | Image / Build                              | Role                       | Resources         | Port       |
+| :--------- | :----------------------------------------- | :------------------------- | :---------------- | :--------- |
+| `keycloak` | `quay.io/keycloak/keycloak:26.5.4` (base) → custom `Dockerfile` build | Identity & Access Management | 1.0 CPU / 1GB RAM | 8080 (Int) |
 
 ## Networking
 
@@ -36,11 +36,13 @@ docker exec keycloak curl -f http://localhost:9000/health/ready
 
 ### Key Configuration
 
-| Variable          | Description               | Default/Value                      |
-| :---------------- | :------------------------ | :--------------------------------- |
-| `KC_DB`           | Database Vendor           | `postgres`                         |
-| `KC_DB_URL`       | Database JDBC URL         | `jdbc:postgresql://mng-pg:5432/...`|
-| `KEYCLOAK_ADMIN`  | Initial Admin User        | `${KEYCLOAK_ADMIN_USER}`           |
+| Variable                      | Description                   | Default/Value                        |
+| :---------------------------- | :---------------------------- | :----------------------------------- |
+| `KC_DB`                       | Database vendor               | `postgres`                           |
+| `KC_DB_URL`                   | Database JDBC URL             | `jdbc:postgresql://mng-pg:5432/...`  |
+| `KC_BOOTSTRAP_ADMIN_USERNAME` | Initial admin username        | `${KEYCLOAK_ADMIN_USER}`             |
+| `KC_BOOTSTRAP_ADMIN_PASSWORD` | Initial admin password        | Read from `keycloak_admin_password` secret |
+| `KC_DB_PASSWORD`              | Database password             | Read from `keycloak_db_password` secret |
 
 ## Documentation References
 
