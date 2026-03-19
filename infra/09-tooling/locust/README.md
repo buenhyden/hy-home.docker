@@ -1,45 +1,59 @@
 # Locust
 
-## 개요
+Locust is an open-source, Python-based distributed load testing tool. This setup runs a master-worker architecture with integrated InfluxDB metrics reporting.
 
-이 디렉토리는 오픈 소스 부하 테스트 도구인 Locust를 실행하기 위한 Docker Compose 구성을 포함합니다. 마스터-워커 아키텍처로 구성되어 있으며, 메트릭 저장을 위해 InfluxDB와 통합됩니다.
+## Services
 
-## 서비스
+| Service          | Role                    | Resources              |
+| :---             | :---                    | :---                   |
+| `locust-master`  | Test controller / Web UI| med (0.5 CPU / 512 MB) |
+| `locust-worker`  | Load generator (2 replicas) | med (0.5 CPU / 512 MB) |
 
-- **locust-master**: 테스트를 관리하는 마스터 노드.
-- **locust-worker**: 부하를 생성하는 워커 노드 (2개 레플리카로 확장됨).
+## Build
 
-## 필수 조건
+The image is built from the local `Dockerfile`:
 
-- Docker 및 Docker Compose 설치.
-- `Docker/Infra` 루트 디렉토리에 `.env` 파일.
-- InfluxDB 서비스 실행 필요 (메트릭용).
+| Base Image              | Additional Packages    |
+| :---                    | :---                   |
+| `locustio/locust:2.43.2`| `influxdb-client` (PyPI) |
 
-## 설정
+## Networking
 
-이 서비스는 다음 환경 변수(`.env`에 정의됨)를 사용합니다:
+- **Web UI**: `http://localhost:${LOCUST_HOST_PORT:-18089}` (direct port exposure, no Traefik proxy).
+- **Master-Worker**: Workers connect to `locust-master` via Docker internal DNS.
+- **Target Host Resolution**: `extra_hosts` maps `${DEFAULT_URL}` → `host-gateway` so load tests can reach host-network services.
 
-- `LOCUST_HOST_PORT`: Locust 웹 인터페이스 호스트 포트.
-- `INFLUXDB_PORT`, `INFLUXDB_ORG`, `INFLUXDB_BUCKET`: InfluxDB 연결 정보.
+## Persistence
 
-토큰은 `.env`가 아닌 Docker Secret 파일로 관리합니다:
+- **Locustfile Volume**: `locust-data` → `${DEFAULT_TOOLING_DIR}/locust` bind mount, exposed at `/mnt/locust` in both master and worker containers.
+- **Locustfile Path**: `/mnt/locust/locustfile.py` (must be created manually by operator).
 
-- `secrets/db/influxdb/influxdb_api_token.txt` (`influxdb_api_token`)
+## Dependencies
 
-## 사용법
+- **InfluxDB** (`infra/06-observability/influxdb`) — healthcheck dependency, receives metrics from master.
 
-서비스 시작:
+## Secrets
 
-```bash
-docker-compose up -d
-```
+| Secret              | Description                                         |
+| :---                | :---                                                |
+| `influxdb_api_token`| API token for writing metrics to InfluxDB bucket.  |
 
-테스트를 실행하려면 마운트된 볼륨에 `locustfile.py`가 있는지 확인하십시오.
+## Configuration
 
-## 접속
+Key environment variables (from `.env`):
 
-- **Locust Web UI**: `http://localhost:${LOCUST_HOST_PORT}`
+| Variable               | Default   | Description                         |
+| :---                   | :---      | :---                                |
+| `LOCUST_HOST_PORT`     | `18089`   | External port for the Web UI.       |
+| `LOCUST_PORT`          | `8089`    | Internal Locust port.               |
+| `INFLUXDB_PORT`        | `8086`    | InfluxDB connection port.           |
+| `INFLUXDB_ORG`         | —         | InfluxDB organization name.         |
+| `INFLUXDB_BUCKET`      | —         | InfluxDB bucket for metrics.        |
 
-## 볼륨
+## File Map
 
-- `locust-data`: `locustfile.py`를 포함하는 디렉토리 마운트.
+| Path                | Description                                         |
+| ------------------- | --------------------------------------------------- |
+| `Dockerfile`        | Custom image built on `locustio/locust:2.43.2`.     |
+| `docker-compose.yml`| Master and worker service definitions.              |
+| `README.md`         | Service overview (this file).                       |
