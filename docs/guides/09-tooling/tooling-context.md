@@ -45,7 +45,7 @@ layer: infra
 
 ## Network Exposure
 
-```
+```text
 Internet → Traefik (01-gateway)
   ├── sonarqube.${DEFAULT_URL}     → sonarqube:9000       (HTTPS via Traefik)
   ├── terrakube-api.${DEFAULT_URL} → terrakube-api:8080   (HTTPS via Traefik)
@@ -62,7 +62,7 @@ Host Direct Ports:
 
 ## Data Flow Diagram
 
-```
+```text
 Developer → sonarqube.${DEFAULT_URL}
              └── SonarQube ──────────── mng-pg (schema: sonarqube)
                   └── reads code from local scanner CLI
@@ -92,9 +92,11 @@ Build Pipeline → registry:5000
 ## Host Requirements
 
 - **SonarQube Elasticsearch**: `vm.max_map_count >= 524288` on the Docker host. Set with:
+
   ```bash
   sysctl -w vm.max_map_count=524288
   echo "vm.max_map_count=524288" >> /etc/sysctl.conf
   ```
+
 - **Locust**: Requires pre-created `locustfile.py` at `${DEFAULT_TOOLING_DIR}/locust/locustfile.py`.
 - **Registry**: Docker daemon needs `"insecure-registries": ["localhost:5000"]` in `/etc/docker/daemon.json` for local pushes.

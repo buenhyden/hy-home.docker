@@ -49,7 +49,7 @@ Grafana is provisioned from static YAML/JSON files in `./grafana/provisioning`.
 
 ### Startup Order
 
-```
+```text
 MinIO (02-storage tier) → Prometheus, Loki, Tempo → Alloy → Grafana, Alertmanager, Pushgateway
 ```
 

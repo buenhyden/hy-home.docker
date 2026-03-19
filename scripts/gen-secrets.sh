@@ -107,7 +107,7 @@ echo "----------------------------------------------------------------"
 LAST_ID="admin"
 
 # 파례(|) 구분 테이블 행만 추출하여 처리
-grep "|" "$REGISTRY_FILE" | grep -v "자동화(Auto)" | grep -v ":---" | while IFS='|' read -r empty auto type value env_var path date purpose rest; do
+grep "|" "$REGISTRY_FILE" | grep -v "자동화(Auto)" | grep -v ":---" | while IFS='|' read -r _ auto type value _ path date purpose rest; do
     # 필드 양 끝 공백 및 백틱(`) 제거
     auto=$(echo "$auto" | sed 's/^[[:space:]`]*//;s/[[:space:]`]*$//;s/`//g')
     type=$(echo "$type" | sed 's/^[[:space:]`]*//;s/[[:space:]]*$//;s/`//g')

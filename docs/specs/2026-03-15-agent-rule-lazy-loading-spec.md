@@ -43,7 +43,6 @@ Rules are decoupled from the core behavioral instructions. When an agent identif
 
 | ID                | Requirement Description | Priority | Parent PRD REQ |
 | ----------------- | ----------------------- | -------- | -------------- |
-layer: agentic
 | **[REQ-SPC-001]** | Gateway-indexed rules   | Critical | REQ-PRD-RD-03 |
 | **[REQ-SPC-002]** | Modular rule separation | High | REQ-PRD-RD-01 |
 

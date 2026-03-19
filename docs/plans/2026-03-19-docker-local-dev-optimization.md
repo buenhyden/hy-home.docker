@@ -14,7 +14,7 @@
 
 ---
 
-### Task 1: Initialize Dev Templates in common-optimizations.yml
+## Task 1: Initialize Dev Templates in common-optimizations.yml
 
 **Files:**
 
@@ -61,7 +61,7 @@ git commit -m "infra: add dev optimization templates"
 
 ---
 
-### Task 2: Apply Dev Profile to Core Services
+## Task 2: Apply Dev Profile to Core Services
 
 **Files:**
 
@@ -85,7 +85,7 @@ git commit -m "infra: enable dev profile for core gateway and databases"
 
 ---
 
-### Task 3: Optimize .env.example for Dev Workflow
+## Task 3: Optimize .env.example for Dev Workflow
 
 **Files:**
 
@@ -97,7 +97,7 @@ Update the comment around line 8 to suggest using `dev` for faster startup.
 
 ---
 
-### Task 4: Create 'dev-up' utility script
+## Task 4: Create 'dev-up' utility script
 
 **Files:**
 

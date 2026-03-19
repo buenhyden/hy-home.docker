@@ -30,6 +30,7 @@ labels:
 ```
 
 ### Dashboard Access (Basic Auth)
+
 The Traefik dashboard is exposed at `https://dashboard.${DEFAULT_URL}` and uses `dashboard-auth@file` middleware for protection.
 
 ## 3. Dynamic Configuration Hub

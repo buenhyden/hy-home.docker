@@ -41,4 +41,3 @@ For detailed executable procedures and service architectures, refer to the follo
 
 - [**Operations Index (OPERATIONS.md)**](../../OPERATIONS.md): Central catalog for all runbooks.
 - [**Runbooks Hub**](../runbooks/README.md): Detailed incident response playbooks.
-

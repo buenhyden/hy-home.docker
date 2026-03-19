@@ -56,7 +56,7 @@ Grafana provides a unified query and visualization UI over all four backends.
 
 ## Data Flow
 
-```
+```text
 Applications / Services
         │
         │  OTLP gRPC :4317 / HTTP :4318

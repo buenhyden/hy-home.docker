@@ -20,6 +20,7 @@ RabbitMQ is a widely deployed open source message broker supporting AMQP 0-9-1.
 - **Host Path**: `${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq`.
 
 > **⚠️ Permissions**: RabbitMQ requires UID `999` on the host volume directory. If the service fails to start with "Permission Denied":
+>
 > ```bash
 > sudo chown -R 999:999 ${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq
 > ```

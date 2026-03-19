@@ -23,7 +23,7 @@ All Docker Secrets listed in [observability-context.md](observability-context.md
 
 Log in to MinIO (`https://minio.${DEFAULT_URL}`) and create two buckets:
 
-```
+```text
 loki-bucket
 tempo-bucket
 ```
@@ -79,7 +79,7 @@ docker compose \
 
 Docker Compose uses `depends_on` + `condition: service_healthy` to enforce the following order:
 
-```
+```text
 Prometheus (healthy)
     └─▶ Alloy, Grafana, Alertmanager, Pushgateway
          └─▶ (Grafana healthy) ─▶ Alertmanager, Pushgateway

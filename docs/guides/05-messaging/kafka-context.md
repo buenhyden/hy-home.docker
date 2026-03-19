@@ -22,7 +22,7 @@ Kafka is the **primary event streaming backbone** of the `hy-home.docker` infras
 
 ## 2. Architecture
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────┐
 │                    kafka (messaging profile)                  │
 │                                                              │

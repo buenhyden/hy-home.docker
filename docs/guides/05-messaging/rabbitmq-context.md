@@ -22,7 +22,7 @@ RabbitMQ serves as the **secondary, optional message broker** in the `hy-home.do
 
 ## 2. Architecture
 
-```
+```text
            Application Services (infra_net)
                         │
               ┌─────────▼──────────┐
@@ -50,6 +50,7 @@ RabbitMQ uses the AMQP exchange → binding → queue model:
 | **Consumer** | Subscribes to a queue and ACKs messages on processing |
 
 Exchange types available:
+
 - **direct**: Route by exact routing key match
 - **topic**: Route by wildcard pattern (`#`, `*`)
 - **fanout**: Broadcast to all bound queues
@@ -73,6 +74,7 @@ Credentials injected via Docker Secrets (no plaintext in environment):
 - **Owner**: UID `999` (rabbitmq process user)
 
 > **Permission Setup**:
+>
 > ```bash
 > sudo chown -R 999:999 ${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq
 > ```
@@ -103,6 +105,7 @@ docker compose --profile rabbitmq stop
 ### Health Check
 
 The container health check runs:
+
 ```bash
 rabbitmq-diagnostics -q check_running
 ```

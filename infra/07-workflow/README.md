@@ -25,4 +25,3 @@ This category manages automation workflows, ETL pipelines, and task orchestratio
 | `n8n/`      | n8n service and persistence.             |
 | `airflow/`  | Airflow nodes (API server, Scheduler, Worker, DAG Processor). |
 | `README.md` | Category overview.                       |
-

@@ -35,11 +35,12 @@ The `Dockerfile` in `infra/07-workflow/n8n/` extends the official `n8nio/n8n` im
 
 n8n uses an external task runner (`N8N_RUNNERS_MODE: external`) instead of spawning subprocesses inside the main container.
 
-```
+```text
 n8n / n8n-worker → TCP broker → n8n-task-runner
 ```
 
 Key environment variables:
+
 - `N8N_RUNNERS_ENABLED: true`
 - `N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 0.0.0.0`
 - `N8N_RUNNERS_AUTH_TOKEN_FILE: /run/secrets/n8n_runner_auth_token`
@@ -52,11 +53,12 @@ The task runner runs isolated Python/JavaScript tasks without polluting the main
 
 n8n runs in `EXECUTIONS_MODE: queue`. The main `n8n` process receives webhooks and enqueues jobs. Workers pull from the queue and execute them.
 
-```
+```text
 External webhook → n8n (main) → n8n-valkey queue → n8n-worker → n8n-task-runner
 ```
 
 Key queue configuration:
+
 - `QUEUE_BULL_REDIS_HOST: n8n-valkey`
 - `QUEUE_BULL_REDIS_PORT: 6379`
 - `QUEUE_BULL_PREFIX: n8n`
@@ -93,6 +95,7 @@ Webhook URLs must use the external domain: `WEBHOOK_URL: https://n8n.${DEFAULT_U
 ## 8. Metrics
 
 n8n exports Prometheus metrics at `/metrics`:
+
 - `N8N_METRICS: true`
 - `N8N_METRICS_PREFIX: n8n_`
 - `N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL: true`
@@ -105,7 +108,7 @@ n8n exports Prometheus metrics at `/metrics`:
 
 n8n uses management PostgreSQL (`DB_TYPE: postgresdb`) with a dedicated `n8n` database:
 
-```
+```text
 DB_POSTGRESDB_HOST: ${POSTGRES_MNG_HOSTNAME}
 DB_POSTGRESDB_DATABASE: n8n
 DB_POSTGRESDB_USER: ${N8N_DB_USER}

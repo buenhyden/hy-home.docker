@@ -44,4 +44,3 @@ Exposed via Traefik at `n8n.${DEFAULT_URL}`.
 | `docker-entrypoint.sh` | Entrypoint with custom cert support.     |
 | `custom/`              | Custom n8n nodes (mounted into container). |
 | `README.md`            | Service overview and usage notes.        |
-

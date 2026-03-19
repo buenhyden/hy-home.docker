@@ -49,7 +49,7 @@ This repository is a Docker Compose infrastructure workspace for local and homel
   - Requirements: [../prd/README.md](../prd/README.md), [../ard/README.md](../ard/README.md)
   - Implementation: [../specs/README.md](../specs/README.md), [../plans/README.md](../plans/README.md)
   - Operations: [../runbooks/README.md](../runbooks/README.md), [../operations/incidents/README.md](../operations/incidents/README.md)
-  - Agentic: [README.md](README.md)  
+  - Agentic: [README.md](README.md)
   - Guides: [../guides/README.md](../guides/README.md)
   - Global: [../../AGENTS.md](../../AGENTS.md)
 

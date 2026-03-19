@@ -16,10 +16,12 @@ layer: infra
 ### Prerequisites
 
 1. Verify `nvidia-container-toolkit` is installed on the host:
+
    ```bash
    nvidia-smi
    docker run --rm --gpus all nvidia/cuda:12.0-base nvidia-smi
    ```
+
 2. Ensure `.env` defines `DEFAULT_AI_MODEL_DIR` pointing to a directory with sufficient disk space (100 GB+ recommended for multiple models).
 3. Ensure `infra/04-data/qdrant` is running before starting Open WebUI if RAG is needed.
 
@@ -162,6 +164,7 @@ docker logs ollama --tail 50
 ```
 
 Common causes:
+
 - GPU not detected: check `nvidia-smi` on the host and reinstall `nvidia-container-toolkit` if needed.
 - Insufficient memory: reduce model size or increase the memory reservation in the compose file.
 

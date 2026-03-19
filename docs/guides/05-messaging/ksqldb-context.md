@@ -33,7 +33,7 @@ ksqlDB uses a split profile approach to allow the server to run optionally along
 
 ## 3. Architecture
 
-```
+```text
                    Kafka Cluster (infra_net)
                  kafka-1:19092 | kafka-2:19092 | kafka-3:19092
                          │

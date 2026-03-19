@@ -20,7 +20,6 @@ graph LR
     Traefik -- Proxy --> App[Upstream Service]
 ```
 
-
 ```mermaid
 sequenceDiagram
     participant User

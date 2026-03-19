@@ -20,6 +20,7 @@ The Gateway tier provides the primary ingress point for all external and cross-n
 ## Operational Overview
 
 ### Port Mapping
+
 | Host Bind | Internal Port | Protocol | Purpose |
 | :--- | :--- | :--- | :--- |
 | `80` | `80` | HTTP | Redirect to HTTPS |
@@ -27,6 +28,7 @@ The Gateway tier provides the primary ingress point for all external and cross-n
 | `8080/dash` | `8080` | HTTP | Traefik API/Dashboard |
 
 ### Certificate Strategy
+
 Both gateways share certificates from the root `secrets/certs` directory, typically generated via `mkcert` for local development.
 
 | Path | Purpose |

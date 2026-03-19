@@ -3,7 +3,8 @@
 # Quickly start the minimal development infrastructure.
 
 BASE_DIR="$(git rev-parse --show-toplevel)"
-cd "$BASE_DIR"
+
+cd "$BASE_DIR" || exit 1
 
 if [ ! -f .env ]; then
   echo "No .env file found. Copying from .env.example..."

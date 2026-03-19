@@ -26,6 +26,7 @@ Airflow 3.x separates the web layer (API server) from the DAG file parsing layer
 | `airflow-init` | *(one-shot job)* | DB migration + admin user creation |
 
 Optional services (separate profiles):
+
 - **`airflow-cli`** — profile `debug`: interactive Airflow CLI shell.
 - **`flower`** — profile `flower`: Celery worker monitoring UI at `flower.${DEFAULT_URL}`.
 
@@ -78,11 +79,12 @@ All services attach to the shared `infra_net` bridge network. No ports are expos
 
 Airflow emits metrics via StatsD protocol. The `airflow-statsd-exporter` translates them into Prometheus format.
 
-```
+```text
 airflow services → StatsD UDP :9125 → airflow-statsd-exporter → Prometheus scrape :9102
 ```
 
 Key metric mappings (defined in `config/statsd_mapping.yml`):
+
 - `airflow_scheduler_tasks_running`
 - `airflow_executor_queued_tasks`
 - `airflow_dag_task_duration{dag_id, task_id}`

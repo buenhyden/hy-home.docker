@@ -49,4 +49,3 @@ Apache Airflow is a platform to programmatically author, schedule, and monitor w
 | `docker-compose.yml`    | Multi-node Airflow stack definition.         |
 | `config/statsd_mapping.yml` | StatsD metric mapping rules for Prometheus. |
 | `README.md`             | Service overview and DAG authoring docs.     |
-

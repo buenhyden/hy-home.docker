@@ -51,6 +51,7 @@ docker compose up -d locust-worker   # Depends on: locust-master
 3. **Change the password immediately** when prompted.
 4. Create analysis tokens via **My Account → Security → Generate Tokens**.
 5. Use the token with the scanner CLI:
+
    ```bash
    docker run --rm \
      -e SONAR_HOST_URL="https://sonarqube.${DEFAULT_URL}" \
@@ -60,6 +61,7 @@ docker compose up -d locust-worker   # Depends on: locust-master
    ```
 
 > **Host Requirement**: Set `vm.max_map_count >= 524288` on the Docker host:
+>
 > ```bash
 > sysctl -w vm.max_map_count=524288
 > # Persist: echo "vm.max_map_count=524288" >> /etc/sysctl.conf
@@ -132,10 +134,12 @@ docker compose stop sonarqube
 2. Update `image: sonarqube:NEW_VERSION` in `infra/09-tooling/sonarqube/docker-compose.yml`.
 3. Validate: `docker compose -f infra/09-tooling/sonarqube/docker-compose.yml config`.
 4. Pull and restart:
+
    ```bash
    docker compose pull sonarqube
    docker compose up -d sonarqube
    ```
+
 5. Monitor startup logs: `docker logs -f sonarqube` — wait for `SonarQube is operational`.
 
 ### Terrakube
@@ -145,6 +149,7 @@ All three nodes (`terrakube-api`, `terrakube-ui`, `terrakube-executor`) must be 
 1. Update all three image tags in `infra/09-tooling/terrakube/docker-compose.yml`.
 2. Validate: `docker compose -f infra/09-tooling/terrakube/docker-compose.yml config`.
 3. Pull and restart in order:
+
    ```bash
    docker compose pull terrakube-api terrakube-ui terrakube-executor
    docker compose up -d terrakube-api

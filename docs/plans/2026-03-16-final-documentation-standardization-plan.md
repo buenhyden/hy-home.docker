@@ -12,7 +12,7 @@
 
 ---
 
-### Task 1: Redundancy Purge
+## Task 1: Redundancy Purge
 
 **Files:**
 
@@ -33,7 +33,7 @@ Run: `rm docs/ard/doc-refactor-ard.md docs/ard/refactor-docs-ard.md docs/ard/ref
 **Step 2: Commit cleanup**
 Run: `git commit -m "docs: remove redundant and overlapping documentation fragments"`
 
-### Task 2: Filename Hardening (ARD Family)
+## Task 2: Filename Hardening (ARD Family)
 
 **Files:**
 
@@ -60,7 +60,7 @@ Run: `sed -i "s|2026-02-26-system-optimization-ard.md|2026-02-26-system-optimiza
 **Step 3: Commit**
 Run: `git commit -m "docs: enforce YYYY-MM-DD- naming convention for ARD family"`
 
-### Task 3: Placeholder Scrubbing
+## Task 3: Placeholder Scrubbing
 
 **Files:**
 
@@ -75,7 +75,7 @@ Update the files to remove ``,``, ``, etc.
 Run: `grep -rnE "\[(Explain|Requirement|Optional)\]" docs`
 Expected: Empty output.
 
-### Task 4: Metadata Standardization
+## Task 4: Metadata Standardization
 
 **Files:**
 

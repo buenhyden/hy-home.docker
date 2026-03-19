@@ -45,18 +45,23 @@ Reference the [mkcert guide](./mkcert.md) for generation commands.
 ## 4. Verification
 
 Check Traefik health:
+
 ```bash
 docker exec traefik traefik healthcheck --ping
 ```
 
 ### Observability Verification
+
 Verify metrics endpoint is active:
+
 ```bash
 # From within infra_net
 curl http://traefik:8082/metrics
 ```
 
 ### Gateway Switching
+
 Since both Traefik and Nginx bind to host ports 80/443 by default:
+
 1. Stop the active gateway: `docker compose -f infra/01-gateway/<current>/docker-compose.yml stop`
 2. Start the target gateway: `docker compose -f infra/01-gateway/<target>/docker-compose.yml up -d`

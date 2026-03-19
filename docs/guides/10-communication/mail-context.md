@@ -141,7 +141,7 @@ docker inspect --format='{{.State.Health.Status}}' stalwart
 
 On first start, Stalwart auto-configures itself in the data volume. The admin password is set from `stalwart_password` at container startup. Access the admin panel to complete SMTP relay, DKIM, and TLS configuration:
 
-```
+```text
 https://mail.${DEFAULT_URL}
 ```
 

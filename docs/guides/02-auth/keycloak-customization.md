@@ -34,11 +34,15 @@ This triggers the multi-stage build in the `Dockerfile` which runs `bin/kc.sh bu
 ## Custom Themes and Providers
 
 To add custom themes or JAR providers:
+
 1. **Themes**: Place theme folders in `infra/02-auth/keycloak/themes/`. Update the `Dockerfile` to copy this directory:
+
 ```dockerfile
 COPY themes/ /opt/keycloak/themes/
 ```
-2. **Providers**: Place `.jar` files in `infra/02-auth/keycloak/providers/`. Update the `Dockerfile`:
+
+1. **Providers**: Place `.jar` files in `infra/02-auth/keycloak/providers/`. Update the `Dockerfile`:
+
 ```dockerfile
 COPY providers/ /opt/keycloak/providers/
 RUN /opt/keycloak/bin/kc.sh build
