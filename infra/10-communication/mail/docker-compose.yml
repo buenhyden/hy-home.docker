@@ -43,10 +43,11 @@ services:
       exec /usr/local/bin/stalwart-mail
       "
     healthcheck:
-      test: ['CMD', 'stalwart-mail', 'healthcheck']
+      test: ['CMD-SHELL', 'nc -z localhost ${SMTP_PORT:-25} || exit 1']
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 15s
     labels:
       <<: *tier-label
       traefik.enable: 'true'
