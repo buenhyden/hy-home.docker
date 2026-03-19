@@ -46,7 +46,10 @@ To send emails from other services within the `infra_net` network:
 - **Port**: `1025`
 - **Auth**: None (MailHog accepts everything)
 
+> [!NOTE]
+> MailHog is part of the Communication tier (`infra/10-communication/mail`).
+
 ### Accessing Web UI
 
-- **URL**: `https://mail.${DEFAULT_URL}`
+- **URL**: `https://mailhog.${DEFAULT_URL}`
 - **Login**: Authenticate via your SSO provider.

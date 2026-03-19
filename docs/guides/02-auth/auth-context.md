@@ -9,6 +9,16 @@ The authentication tier operates as a two-stage gatekeeper:
 1. **Identity Provider (Keycloak)**: The source of truth for users, roles, and OIDC tokens.
 2. **Service Gateway (OAuth2 Proxy)**: A lightweight daemon that validates tokens and manages session cookies for upstream services.
 
+```mermaid
+graph LR
+    User((User)) --> Traefik[Traefik Ingress]
+    Traefik -- ForwardAuth --> OAuth2Proxy[OAuth2 Proxy]
+    OAuth2Proxy -- OIDC / HTTPS --> Keycloak[Keycloak IDP]
+    Keycloak -- SQL --> Postgres[(PostgreSQL)]
+    OAuth2Proxy -- Sessions --> Valkey[(Valkey/Redis)]
+    Traefik -- Proxy --> App[Upstream Service]
+```
+
 ## Identity Flow (ForwardAuth)
 
 ```mermaid
@@ -37,7 +47,15 @@ sequenceDiagram
 - **Keycloak State**: Persisted in PostgreSQL (`mng-pg`).
 - **OAuth2 Proxy Sessions**: Stored in Valkey/Redis (`mng-valkey`) to support multi-replica scaling and zero-downtime restarts.
 
+## External Dependencies
+
+The identity tier relies on several external components for full functionality:
+
+- **Management DB (`mng-db`)**: Provides PostgreSQL for Keycloak state and Valkey for session storage.
+- **Ingress (`traefik`)**: Handles SSL termination and ForwardAuth routing.
+- **Communication (`mailhog`)**: Used for local SMTP testing (e.g., email verification, password resets).
+
 ## Network Boundaries
 
 - **Public**: `auth.${DEFAULT_URL}` (Keycloak) and `auth-proxy.${DEFAULT_URL}` (OAuth2 Proxy).
-- **Private**: No internal services bypass the gateway; all inter-service traffic requires valid headers or mTLS (if implemented).
+- **Private**: All inter-service traffic within `infra_net` is isolated. Services like `mailhog` are accessible via internal DNS.

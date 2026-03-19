@@ -1,6 +1,14 @@
 x-tier-label: &tier-label
   hy-home.tier: auth
 
+# volumes:
+#   oauth2-proxy-valkey-data:
+#     driver: local
+#     driver_opts:
+#       o: bind
+#       type: none
+#       device: ${DEFAULT_AUTH_DIR}/valkey
+
 services:
   oauth2-proxy:
     profiles:
@@ -49,8 +57,8 @@ services:
     healthcheck:
       test:
         [
-          "CMD-SHELL",
-          "wget -qO- http://127.0.0.1:${OAUTH2_PROXY_PORT:-4180}/ping >/dev/null 2>&1 || exit 1"
+          'CMD-SHELL',
+          'wget -qO- http://127.0.0.1:${OAUTH2_PROXY_PORT:-4180}/ping >/dev/null 2>&1 || exit 1',
         ]
       interval: 30s
       timeout: 10s
@@ -58,3 +66,78 @@ services:
     extra_hosts:
       - 'keycloak.127.0.0.1.nip.io:host-gateway'
       - 'auth.127.0.0.1.nip.io:host-gateway'
+
+  # oauth2-proxy-valkey:
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.5'
+  #         memory: 256M
+  #   image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
+  #   container_name: oauth2-proxy-valkey
+  #   secrets:
+  #     - oauth2_valkey_password
+  #   networks:
+  #     - infra_net
+  #   restart: unless-stopped
+  #   volumes:
+  #     # 공통 valkey.conf
+  #     - oauth2-proxy-valkey-data:/data
+  #   command: >
+  #     sh -c '
+  #     valkey-server
+  #     --requirepass "$(cat /run/secrets/oauth2_valkey_password)"
+  #     --appendonly yes
+  #     --port 6379
+  #     '
+  #   # 클러스터 내부 통신 포트는 expose
+  #   expose:
+  #     - '${VALKEY_PORT}'
+  #     - '${VALKEY_BUS_PORT}'
+  #   healthcheck:
+  #     test:
+  #       [
+  #         'CMD-SHELL',
+  #         'V_PASS=$$(cat /run/secrets/oauth2_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG',
+  #       ]
+  #     interval: 15s
+  #     timeout: 30s
+  #     retries: 5
+  #     start_period: 15s
+  #   labels:
+  #     <<: *tier-label
+
+  # oauth2-proxy-valkey-exporter:
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.1'
+  #         memory: 128M
+  #   image: oliver006/redis_exporter:v1.80.1-alpine
+  #   container_name: oauth2-proxy-redis-exporter
+  #   expose:
+  #     - '${VALKEY_EXPORTER_PORT}'
+  #   networks:
+  #     - infra_net
+  #   restart: unless-stopped
+  #   secrets:
+  #     - oauth2_valkey_password
+  #   entrypoint:
+  #     - /bin/sh
+  #     - -c
+  #   command:
+  #     - |
+  #       echo "Reading password from secret..."
+  #       export VALKEY_PASSWORD=$(cat /run/secrets/oauth2_valkey_password | tr -d '\n')
+
+  #       echo "Starting Valkey Exporter..."
+  #       # -redis.password-file 대신 -redis.password 사용
+  #       exec /redis_exporter \
+  #         -redis.addr=redis://oauth2-proxy-valkey:6379 \
+  #         -redis.password="$VALKEY_PASSWORD" \
+  #         -web.listen-address=:${VALKEY_EXPORTER_PORT}
+  #   depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
+  #     oauth2-proxy-valkey:
+  #       condition: service_healthy
+  #   labels:
+  #     <<: *tier-label

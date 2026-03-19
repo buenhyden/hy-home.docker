@@ -47,3 +47,4 @@ docker exec keycloak curl -f http://localhost:9000/health/ready
 - **Setup Guide**: [auth-procedural.md](../../../docs/guides/02-auth/auth-procedural.md)
 - **System Context**: [auth-context.md](../../../docs/guides/02-auth/auth-context.md)
 - **Recovery**: [2026-03-15-auth-lockout.md](../../../docs/runbooks/2026-03-15-auth-lockout.md)
+- **Customization**: [keycloak-customization.md](../../../docs/guides/02-auth/keycloak-customization.md)
