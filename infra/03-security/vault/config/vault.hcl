@@ -43,14 +43,15 @@ listener "tcp" {
 }
 
 # API Address
-# The address clients (and other Vault nodes) should use to reach this Vault instance.
-# Use 0.0.0.0 so that other containers on infra_net can resolve and reach Vault.
-api_addr = "http://0.0.0.0:8200"
+# The routable address clients and Raft peers use to reach this Vault node.
+# Must be the container name — 0.0.0.0 is a bind address, not a reachable address,
+# and other containers on infra_net resolve Vault by its service name.
+api_addr = "http://vault:8200"
 
 # Cluster Address
-# The address used for cluster replication traffic between Raft peers.
-# For single-node deployments this is still required by the Raft backend.
-cluster_addr = "https://0.0.0.0:8201"
+# The address used for Raft peer-to-peer replication traffic.
+# Even in a single-node setup, Raft requires a reachable cluster address.
+cluster_addr = "https://vault:8201"
 
 # Telemetry Configuration
 # Enable if you want to export metrics to Prometheus or Grafana Agent.

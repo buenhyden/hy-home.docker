@@ -7,20 +7,16 @@ Step-by-step procedures for initializing, configuring, and operating Vault in th
 
 ## First-time initialization
 
-Vault starts in an uninitialized state. Run this once per environment — never again unless the Raft storage is wiped.
+Vault starts uninitialized. Run this once per environment — never again unless Raft storage is wiped.
 
 ```bash
-# 1. Start the service
-cd infra/03-security/vault
-docker compose --profile core up -d
+# 1. Start the service (from the project root)
+docker compose -f infra/03-security/vault/docker-compose.yml --profile core up -d
 
-# 2. Exec into the container
-docker exec -it vault sh
+# 2. Initialize with 5 key shares, threshold of 3
+docker exec -it vault vault operator init -key-shares=5 -key-threshold=3
 
-# 3. Initialize with 5 key shares, threshold of 3
-vault operator init -key-shares=5 -key-threshold=3
-
-# 4. Save the 5 unseal keys and Initial Root Token somewhere safe.
+# 3. Save the 5 unseal keys and Initial Root Token somewhere safe.
 #    These cannot be recovered if lost.
 ```
 
@@ -41,9 +37,9 @@ docker exec -it vault vault status
 ## Enable the KV v2 secret engine
 
 ```bash
-# Authenticate first
-export VAULT_TOKEN=<ROOT_TOKEN>
+# Set these before running any vault CLI commands
 export VAULT_ADDR=http://localhost:${VAULT_HOST_PORT:-8200}
+export VAULT_TOKEN=<ROOT_TOKEN>
 
 # Enable KV v2 at the path "secret/"
 vault secrets enable -path=secret kv-v2
@@ -57,10 +53,12 @@ vault kv get secret/test/app
 
 ## Define an access policy
 
-Vault policies limit what a token or AppRole can read. Create one per application or service group.
+Policies limit what a token or AppRole can read. Create one per application or service group.
 
 ```bash
-# Write a policy that allows reading secrets in secret/myapp/*
+# Ensure VAULT_ADDR and VAULT_TOKEN are exported (see "Enable KV v2" above)
+
+# Write a policy that allows reading secrets under secret/myapp/
 vault policy write myapp-policy - <<EOF
 path "secret/data/myapp/*" {
   capabilities = ["read", "list"]

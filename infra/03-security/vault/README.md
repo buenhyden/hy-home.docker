@@ -14,6 +14,15 @@ HashiCorp Vault is an identity-based secrets and encryption management system. I
 - **Host port**: `${VAULT_HOST_PORT:-8200}` (for direct CLI access)
 - **External URL**: `https://vault.${DEFAULT_URL}` (via Traefik)
 
+## Environment variables
+
+| Variable | Default | Purpose |
+| :--- | :--- | :--- |
+| `VAULT_PORT` | `8200` | Port Vault listens on inside the container |
+| `VAULT_HOST_PORT` | `8200` | Host port mapped for direct `vault` CLI access |
+| `DEFAULT_URL` | — | Base domain; Traefik routes `vault.${DEFAULT_URL}` |
+| `DEFAULT_SECURITY_DIR` | — | Host directory where Raft data is stored |
+
 ## Security
 
 - `IPC_LOCK` capability added — prevents Vault process memory from swapping to disk.

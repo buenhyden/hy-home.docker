@@ -54,10 +54,20 @@ Lease renewal and token revocation follow the same path.
 
 | Storage | Path | Type | Contents |
 | :--- | :--- | :--- | :--- |
-| `vault-data` Docker volume | `/vault/file` | Raft (integrated) | All secrets, policies, auth methods, audit logs |
-| `./config` bind mount | `/vault/config` | Read-only | `vault.hcl` — listener, storage, telemetry config |
+| `vault-data` Docker volume | `/vault/file` | Local bind-mount volume (maps to `${DEFAULT_SECURITY_DIR}/vault` on the host via `driver_opts`) | All secrets, policies, auth methods, audit logs |
+| `./config` bind mount | `/vault/config` | Read-only host directory | `vault.hcl` — listener, storage, telemetry config |
 
 Raft is the only storage backend configured. There is no external Consul dependency.
+
+## Prometheus metrics
+
+Vault exposes metrics when the `telemetry` block is configured (see `vault.hcl`). The scrape endpoint is:
+
+```text
+http://vault:8200/v1/sys/metrics?format=prometheus
+```
+
+Any Prometheus or Grafana Alloy instance on `infra_net` can scrape this path directly.
 
 ## Network boundaries
 

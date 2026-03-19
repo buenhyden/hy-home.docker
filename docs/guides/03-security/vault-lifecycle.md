@@ -106,17 +106,17 @@ vault write -f auth/approle/role/myapp/secret-id
 ## Vault version upgrade
 
 1. **Snapshot**: Take a Raft snapshot before upgrading.
-2. **Pull new image**: Update the image tag in `docker-compose.yml`.
-3. **Check release notes**: Raft storage upgrades are usually automatic, but verify in the [Vault upgrade guide](https://developer.hashicorp.com/vault/docs/upgrading).
+2. **Check the changelog**: Review [Vault CHANGELOG](https://github.com/hashicorp/vault/blob/main/CHANGELOG.md) and the [upgrade guide](https://developer.hashicorp.com/vault/docs/upgrading) for the target version. Raft storage upgrades are usually automatic, but breaking auth or API changes occasionally require action.
+3. **Pull new image**: Update the image tag in `docker-compose.yml`.
 4. **Restart**:
 
 ```bash
-docker compose --profile core pull vault
-docker compose --profile core up -d vault
+docker compose -f infra/03-security/vault/docker-compose.yml --profile core pull vault
+docker compose -f infra/03-security/vault/docker-compose.yml --profile core up -d vault
 # Then unseal
 ```
 
-5. Confirm the new version with `vault status`.
+1. Confirm the new version with `vault status`.
 
 ## Audit log setup
 
@@ -126,7 +126,26 @@ Enable the file audit device to record all API requests:
 vault audit enable file file_path=/vault/logs/audit.log
 ```
 
-Add a volume for `/vault/logs` if you want logs to persist outside the container. Without a persistent mount, logs are lost on container restart.
+To persist logs outside the container, add a named volume for `/vault/logs` in `docker-compose.yml`:
+
+```yaml
+volumes:
+  vault-logs:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SECURITY_DIR}/vault-logs
+
+services:
+  vault:
+    volumes:
+      - vault-data:/vault/file:rw
+      - vault-logs:/vault/logs:rw   # add this
+      - ./config:/vault/config:ro
+```
+
+Then re-enable the audit device after restarting. Without a persistent mount, audit logs are lost on container restart.
 
 ## Scaling considerations
 

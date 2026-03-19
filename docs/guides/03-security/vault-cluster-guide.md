@@ -9,6 +9,17 @@ Vault is the secrets management backend for the entire platform. This guide cove
 > **Tier**: `03-security`
 > **Internal port**: `8200` (HTTP, plain — TLS terminated at Traefik)
 
+## CLI environment
+
+All `vault` CLI commands in this guide assume these environment variables are set:
+
+```bash
+export VAULT_ADDR=http://localhost:${VAULT_HOST_PORT:-8200}  # or http://vault:8200 from inside infra_net
+export VAULT_TOKEN=<YOUR_TOKEN>
+```
+
+Set `VAULT_ADDR` to `http://vault:8200` when running commands from another container on `infra_net`, or to `http://localhost:${VAULT_HOST_PORT:-8200}` when running from the host.
+
 ## Role and security posture
 
 Vault stores and controls access to tokens, passwords, API keys, and TLS certificates. Access is identity-based: callers authenticate with Vault, receive a short-lived token, and use that token to read secrets. No secret is visible in environment variables or Docker Compose files.
