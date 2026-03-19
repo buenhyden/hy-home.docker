@@ -4,6 +4,7 @@ This document describes the high-level architecture, data flow, and network boun
 
 ## Logical Architecture
 
+The system uses a two-stage "Gatekeeper" pattern. OAuth2 Proxy acts as the entry point (the gate), while Keycloak provides the identity logic (the brain).
 The authentication tier operates as a two-stage gatekeeper:
 
 1. **Identity Provider (Keycloak)**: The source of truth for users, roles, and OIDC tokens.
@@ -19,7 +20,6 @@ graph LR
     Traefik -- Proxy --> App[Upstream Service]
 ```
 
-## Identity Flow (ForwardAuth)
 
 ```mermaid
 sequenceDiagram

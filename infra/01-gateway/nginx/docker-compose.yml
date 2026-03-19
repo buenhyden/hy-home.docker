@@ -1,5 +1,7 @@
 services:
   nginx:
+    profiles:
+      - nginx
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
