@@ -3,7 +3,7 @@ layer: infra
 ---
 # Valkey In-Memory Storage Cluster Guide
 
-n**Overview (KR):** Valkey(인메모리 저장소) 클러스터 모드 설정 및 데이터 샤딩 구성 가이드입니다.
+**Overview (KR):** Valkey(인메모리 저장소) 클러스터 모드 설정 및 데이터 샤딩 구성 가이드입니다.
 
 > **Component**: `valkey-cluster`
 > **Nodes**: 6 (3 Masters + 3 Replicas)

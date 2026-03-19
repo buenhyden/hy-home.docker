@@ -35,8 +35,6 @@ Accessed via **Kong** bridge:
 - **Auth**: Uses `supabase_db_password`, `supabase_jwt_secret`, `supabase_anon_key`, and `supabase_service_key` secrets.
 - **Edge Runtime**: `supabase-edge-functions` runs custom Deno tasks.
 
-## Configuration
-
 ### Core Variables
 
 | Variable                | Description              | Value                           |

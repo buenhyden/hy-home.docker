@@ -3,7 +3,7 @@ layer: infra
 ---
 # OpenSearch Log Analytics Guide
 
-n**Overview (KR):** OpenSearch를 활용한 로그 분석 및 대시보드 쿼리 최적화 가이드입니다.
+**Overview (KR):** OpenSearch를 활용한 로그 분석 및 대시보드 쿼리 최적화 가이드입니다.
 
 > **Component**: `opensearch`
 > **Internal API Port**: `9200`

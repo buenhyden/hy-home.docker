@@ -3,7 +3,7 @@ layer: infra
 ---
 # OpenSearch Operations
 
-n**Overview (KR):** OpenSearch 클러스터의 인덱스 관리 및 성능 튜닝 오퍼레이션 가이드입니다.
+**Overview (KR):** OpenSearch 클러스터의 인덱스 관리 및 성능 튀닝 오퍼레이션 가이드입니다.
 
 > **Component**: `opensearch`
 

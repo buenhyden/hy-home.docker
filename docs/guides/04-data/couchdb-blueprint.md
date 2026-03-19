@@ -3,7 +3,7 @@ layer: infra
 ---
 # CouchDB Cluster Blueprint
 
-n**Overview (KR):** CouchDB 3노드 클러스터 아키텍처와 HAProxy 기반의 고가용성 설계 가이드입니다.
+**Overview (KR):** CouchDB 3노드 클러스터 아키텍처와 HAProxy 기반의 고가용성 설계 가이드입니다.
 
 > **Component**: `couchdb`
 > **Topology**: 3-node cluster with HAProxy router

@@ -40,7 +40,7 @@ This stack provides a high-availability PostgreSQL cluster managed by **Patroni*
 ### Checking Cluster Status
 
 ```bash
-docker compose exec postgres-cluster patronictl list
+docker compose exec pg-0 patronictl -c /home/postgres/postgres0.yml list
 ```
 
 ## File Map

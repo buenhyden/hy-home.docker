@@ -3,7 +3,7 @@ layer: infra
 ---
 # Valkey Cluster Operations Blueprint
 
-n**Overview (KR):** Valkey 클러스터의 노드 확장 및 메모리 성능 최적화 운영 청사진입니다.
+**Overview (KR):** Valkey 클러스터의 노드 확장 및 메모리 성능 최적화 운영 청사진입니다.
 
 > Standard operating procedures for the 6-node Valkey (Redis-compatible) cluster.
 

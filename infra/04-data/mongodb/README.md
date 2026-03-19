@@ -175,8 +175,8 @@ DEFAULT_URL=127.0.0.1.nip.io
 ### 2. 서비스 시작
 
 ```bash
-cd d:\hy-home.docker\Infra\mongodb
-docker-compose up -d
+cd infra/04-data/mongodb
+docker compose up -d
 ```
 
 ### 3. 레플리카 셋 상태 확인
@@ -226,7 +226,7 @@ docker exec -it mongodb-rep1 mongosh -u admin -p <password>
 docker exec mongodb-rep1 mongosh -u admin -p <password> --eval "rs.status()"
 
 # Primary 확인
-docker exec mongodb-rep1 mongosh -u admin -p <password> --eval "rs.isMaster()"
+docker exec mongodb-rep1 mongosh -u admin -p <password> --eval "rs.hello()"
 
 # 노드 추가
 docker exec mongodb-rep1 mongosh -u admin -p <password> --eval '
@@ -373,7 +373,14 @@ docker exec mongodb-rep1 mongosh -u admin -p <password> --eval "rs.printSecondar
 
 ## 참고 자료
 
-- [MongoDB 공식 문서](https://www.mongodb.com/docs/)
-- [Replication](https://www.mongodb.com/docs/manual/replication/)
-- [mongosh](https://www.mongodb.com/docs/mongodb-shell/)
-- [Mongo Express](https://github.com/mongo-express/mongo-express)
+## File Map
+
+| Path | Description |
+| :--- | :--- |
+| `docker-compose.yml` | Replica set definition (Primary + Secondary + Arbiter + Mongo Express + Exporter). |
+| `configdb/` | KeyFile directory for replica set internal auth. |
+| `README.md` | Comprehensive operation guide. |
+
+## Documentation References
+
+- **MongoDB Context Guide**: [docs/guides/04-data/mongodb-context.md](../../../docs/guides/04-data/mongodb-context.md)

@@ -12,9 +12,12 @@ This category manages databases, object storage, and persistence search engines.
 | minio              | (core)          | `./minio`              | S3-compatible object storage              |
 | opensearch         | (core)          | `./opensearch`         | Search + Dashboards + exporter            |
 | qdrant             | (core)          | `./qdrant`             | Vector database (RAG)                     |
-| redis-cluster      | `redis-cluster` | `./redis-cluster`      | Optional Redis cluster                    |
 | influxdb           | `influxdb`      | `./influxdb`           | Optional time-series DB                   |
 | couchdb            | `couchdb`       | `./couchdb`            | Optional CouchDB cluster                  |
+| mongodb            | (standalone)    | `./mongodb`            | MongoDB replica set (Primary+Secondary+Arbiter) |
+| cassandra          | (standalone)    | `./cassandra`          | Apache Cassandra single-node + exporter   |
+| neo4j              | (standalone)    | `./neo4j`              | Neo4j graph database                      |
+| seaweedfs          | (standalone)    | `./seaweedfs`          | SeaweedFS distributed object storage      |
 | supabase           | (standalone)    | `./supabase`           | Self-hosted Supabase stack                |
 
 ## Notes
@@ -29,12 +32,15 @@ This category manages databases, object storage, and persistence search engines.
 | `mng-db/`             | Shared PostgreSQL + Valkey + RedisInsight. |
 | `postgresql-cluster/` | Patroni HA PostgreSQL.                     |
 | `valkey-cluster/`     | Valkey cluster.                            |
-| `redis-cluster/`      | Optional Redis cluster.                    |
 | `minio/`              | S3-compatible storage.                     |
 | `opensearch/`         | OpenSearch + Dashboards.                   |
 | `qdrant/`             | Vector DB.                                 |
 | `influxdb/`           | InfluxDB v2.                               |
 | `couchdb/`            | CouchDB cluster.                           |
+| `mongodb/`            | MongoDB replica set.                       |
+| `cassandra/`          | Apache Cassandra.                          |
+| `neo4j/`              | Neo4j graph database.                      |
+| `seaweedfs/`          | SeaweedFS distributed object storage.      |
 | `supabase/`           | Standalone Supabase stack.                 |
 | `README.md`           | Category overview.                         |
 

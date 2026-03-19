@@ -3,7 +3,7 @@ layer: infra
 ---
 # Qdrant Vector Database Context
 
-n**Overview (KR):** Qdrant 벡터 데이터베이스의 아키텍처와 시맨틱 검색을 위한 인덱스 구조 설명입니다.
+**Overview (KR):** Qdrant 벡터 데이터베이스의 아키텍처와 시맨퇱 검색을 위한 인덱스 구조 설명입니다.
 
 > **Component**: `qdrant`
 > **Internal Port**: `6333` (REST), `6334` (gRPC)

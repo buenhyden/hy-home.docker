@@ -3,7 +3,7 @@ layer: infra
 ---
 # InfluxDB Time-Series Database Guide
 
-n**Overview (KR):** InfluxDB를 활용한 시계열 데이터(TSDB) 저장 및 쿼리 최적화 기술 가이드입니다.
+**Overview (KR):** InfluxDB를 활용한 시계열 데이터(TSDB) 저장 및 쿼리 최적화 기술 가이드입니다.
 
 > **Component**: `influxdb`
 > **Internal API Port**: `8086`

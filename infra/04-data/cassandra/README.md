@@ -1,45 +1,40 @@
 # Apache Cassandra
 
-## 개요
+Apache Cassandra is a distributed wide-column NoSQL database optimized for write-heavy workloads and high-throughput key-value access.
 
-이 디렉토리는 Bitnami 이미지를 사용하여 Apache Cassandra를 실행하기 위한 Docker Compose 구성을 포함합니다. Prometheus 모니터링을 위한 Cassandra Exporter도 포함되어 있습니다.
+## Services
 
-## 서비스
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `cassandra-node1` | `bitnami/cassandra:4` | Database node | 1.0 CPU / 2GB RAM |
+| `cassandra-exporter` | `bitnami/cassandra-exporter` | Prometheus metrics | 256MB RAM |
 
-- **cassandra-node1**: Cassandra 데이터베이스 노드.
-- **cassandra-exporter**: Prometheus를 위한 Cassandra 메트릭 추출기.
+## Networking
 
-## 필수 조건
+- **Internal DNS**: `cassandra-node1:9042` (CQL, within `infra_net`)
+- **Exporter**: `${CASSANDRA_EXPORTER_PORT}` (host-mapped, Prometheus scrape target)
+- **Note**: The Cassandra host port is commented out by default. Access is internal-only.
 
-- Docker 및 Docker Compose 설치.
-- `Docker/Infra` 루트 디렉토리에 `.env` 파일.
+## Persistence
 
-## 설정
+- **Data**: `cassandra-node1-volume` → `/bitnami/cassandra`
+- **Exporter Config**: `cassandra-exporter-volume`
 
-이 서비스는 다음 환경 변수(`.env`에 정의됨)를 사용합니다:
+## Configuration
 
-- `CASSANDRA_USERNAME`: Cassandra 사용자.
-- `CASSANDRA_EXPORTER_PORT`: Exporter 포트.
-- `DEFAULT_DATA_DIR`: 영구 저장을 위한 기본 디렉토리.
+| Variable / Secret | Description |
+| :--- | :--- |
+| `CASSANDRA_USERNAME` | CQL client username |
+| `cassandra_password` | Secret at `secrets/db/cassandra/cassandra_password.txt` |
+| `CASSANDRA_EXPORTER_PORT` | Prometheus exporter port |
 
-비밀번호는 `.env`가 아닌 Docker Secret 파일로 관리합니다:
+## File Map
 
-- `secrets/db/cassandra/cassandra_password.txt` (`cassandra_password`)
+| Path | Description |
+| :--- | :--- |
+| `docker-compose.yml` | Single-node Cassandra + exporter stack. |
+| `README.md` | Service overview and access notes. |
 
-## 사용법
+## Documentation References
 
-서비스 시작:
-
-```bash
-docker-compose up -d
-```
-
-## 접속
-
-- **Cassandra**: 내부적으로 `cassandra-node1`의 `9042` 포트(기본 클라이언트 포트)를 통해 접근 가능합니다. (호스트 포트 매핑은 주석 처리되어 있음)
-- **Metrics**: `cassandra-exporter`의 `${CASSANDRA_EXPORTER_PORT}` 포트를 통해 접근 가능합니다.
-
-## 볼륨
-
-- `cassandra-node1-volume`: Cassandra 데이터의 영구 저장소.
-- `cassandra-exporter-volume`: Exporter 설정 파일.
+- **Cassandra Context Guide**: [docs/guides/04-data/cassandra-context.md](../../../docs/guides/04-data/cassandra-context.md)

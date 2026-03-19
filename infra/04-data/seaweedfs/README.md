@@ -304,3 +304,15 @@ docker exec seaweedfs-s3 cat /etc/seaweedfs/security.toml
 - **Traefik**: 리버스 프록시 및 TLS 종료
 - **Tempo**: 트레이스 데이터 장기 보관에 SeaweedFS 사용 가능
 - **Loki**: 로그 데이터 장기 보관에 SeaweedFS 사용 가능
+
+## File Map
+
+| Path | Description |
+| :--- | :--- |
+| `docker-compose.yml` | Master + Volume + Filer + S3 Gateway stack. |
+| `config/` | `security.toml` and other config files. |
+| `README.md` | Architecture, usage, and troubleshooting guide. |
+
+## Documentation References
+
+- **SeaweedFS Context Guide**: [docs/guides/04-data/seaweedfs-context.md](../../../docs/guides/04-data/seaweedfs-context.md)

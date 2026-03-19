@@ -3,7 +3,7 @@ layer: infra
 ---
 # MinIO Object Storage (S3) Guide
 
-n**Overview (KR):** S3 호환 스토리지를 애플리케이션 및 백업 솔루션과 연동하는 기술 가이드입니다.
+**Overview (KR):** S3 호환 스토리지를 애플리케이션 및 백업 솔루션과 연동하는 기술 가이드입니다.
 
 > **Component**: `minio`
 > **S3 API Port**: `9000`
@@ -38,7 +38,7 @@ Buckets are automatically provisioned by the `minio-create-buckets` container us
 docker logs minio-create-buckets
 ```
 
-## 2. Initialization & Provisioning
+## 3. Initialization & Provisioning
 
 MinIO is critical for the observability stack (Loki/Tempo backends).
 

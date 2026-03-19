@@ -3,7 +3,7 @@ layer: infra
 ---
 # PostgreSQL Patroni High-Availability Guide
 
-n**Overview (KR):** PostgreSQL 고가용성(HA) 아키텍처 설계와 장애 조치 매커니즘 설명 가이드입니다.
+**Overview (KR):** PostgreSQL 고가용성(HA) 아키텍처 설계와 장애 조치 매커니즘 설명 가이드입니다.
 
 > **Component**: `pg-cluster`
 > **Nodes**: 3 (Leader + 2 Replicas)
@@ -49,7 +49,7 @@ docker compose logs pg-cluster-init
 - **PG Data**: `${DEFAULT_DATA_DIR}/pg/pg[0-2]-data` → `/home/postgres/pgdata`
 - **Etcd Data**: `${DEFAULT_DATA_DIR}/etcd/etcd[1-3]-data` → `/etcd-data`
 
-## 3. Reading Cluster Health
+## 4. Reading Cluster Health
 
 To check the current cluster leader and replication lag:
 
@@ -57,14 +57,14 @@ To check the current cluster leader and replication lag:
 docker compose exec pg-0 patronictl -c /home/postgres/postgres0.yml list
 ```
 
-## 4. Database Routing
+## 5. Database Routing
 
 Traffic is balanced via HAProxy (pg-router) to ensure apps always hit the correct node role:
 
 - **Write (Primary)**: `pg-router:5000`
 - **Read (Replica)**: `pg-router:5001`
 
-## 5. Maintenance Operations
+## 6. Maintenance Operations
 
 ### Switchover (Graceful Failover)
 

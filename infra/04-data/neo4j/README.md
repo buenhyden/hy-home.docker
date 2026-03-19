@@ -1,43 +1,43 @@
-# Neo4j
+# Neo4j Graph Database
 
-## 개요
+Neo4j is a native property-graph database using the Cypher query language, optimized for highly connected data and relationship traversals.
 
-이 디렉토리는 그래프 데이터베이스인 Neo4j를 실행하기 위한 Docker Compose 구성을 포함합니다. Bitnami 이미지를 사용합니다.
+## Services
 
-## 서비스
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `neo4j` | `bitnami/neo4j` | Graph Database | 1.0 CPU / 1GB RAM |
 
-- **neo4j**: Neo4j 데이터베이스 서버.
+## Networking
 
-## 필수 조건
+- **Internal DNS**: `neo4j:7687` (Bolt, within `infra_net`)
+- **External Bolt**: `bolt://localhost:${NEO4J_BOLT_HOST_PORT}` (host-mapped)
+- **Note**: HTTP/HTTPS Browser UI ports (`7474`/`7473`) are commented out by default for security.
 
-- Docker 및 Docker Compose 설치.
-- `Docker/Infra` 루트 디렉토리에 `.env` 파일.
+## Persistence
 
-## 설정
+- **Data**: `neo4j-volume` → `/bitnami/neo4j`
 
-이 서비스는 다음 환경 변수(`.env`에 정의됨)를 사용합니다:
+## Configuration
 
-- `NEO4J_BOLT_HOST_PORT`: Bolt 프로토콜 호스트 포트.
-- `NEO4J_BOLT_PORT`: 컨테이너 Bolt 포트 (기본값 7687).
-- `NEO4J_USERNAME`: 관리자 사용자명 (기본 `neo4j`).
+| Variable / Secret | Description |
+| :--- | :--- |
+| `NEO4J_USERNAME` | Admin username (default: `neo4j`) |
+| `NEO4J_BOLT_HOST_PORT` | Host-mapped Bolt port |
+| `neo4j_password` | Secret at `secrets/db/neo4j/neo4j_password.txt` |
 
-비밀번호는 `.env`가 아닌 Docker Secret 파일로 관리합니다:
+## Enabling the Browser UI
 
-- `secrets/db/neo4j/neo4j_password.txt` (`neo4j_password`)
+To enable web-based access, uncomment the HTTP/HTTPS port mappings in `docker-compose.yml`.
 
-## 사용법
+## File Map
 
-서비스 시작:
+| Path | Description |
+| :--- | :--- |
+| `docker-compose.yml` | Single-node Neo4j stack definition. |
+| `scripts/` | Helper scripts (if any). |
+| `README.md` | Service overview and access notes. |
 
-```bash
-docker-compose up -d
-```
+## Documentation References
 
-## 접속
-
-- **Bolt**: `bolt://localhost:${NEO4J_BOLT_HOST_PORT}`
-- **HTTP/HTTPS**: 현재 `docker-compose.yml`에서 HTTP/HTTPS 포트 매핑은 주석 처리되어 있습니다. 필요 시 주석을 해제하거나 내부 네트워크를 통해 접근해야 합니다.
-
-## 볼륨
-
-- `neo4j-volume`: Neo4j 데이터의 영구 저장소.
+- **Neo4j Context Guide**: [docs/guides/04-data/neo4j-context.md](../../../docs/guides/04-data/neo4j-context.md)

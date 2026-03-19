@@ -3,7 +3,7 @@ layer: infra
 ---
 # PostgreSQL Router (HAProxy) Operational Guide
 
-n**Overview (KR):** HAProxy를 이용한 PostgreSQL 읽기/쓰기 트래픽 라우팅 구성 및 관리 가이드입니다.
+**Overview (KR):** HAProxy를 이용한 PostgreSQL 읽기/쓰기 트래픽 라우팅 구성 및 관리 가이드입니다.
 
 > **Component**: `pg-router`
 > **Internal Traffic Entry**: `pg-router`

@@ -3,7 +3,7 @@ layer: infra
 ---
 # InfluxDB Operations
 
-n**Overview (KR):** 시계열 데이터베이스인 InfluxDB의 데이터 보관 정책 및 모니터링 연동 운영 절차입니다.
+**Overview (KR):** 시계열 데이터베이스인 InfluxDB의 데이터 보관 정책 및 모니터링 연동 운영 절차입니다.
 
 > **Component**: `influxdb`
 > **Profile**: `compose-file` (Standard)
