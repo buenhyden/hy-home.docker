@@ -3,11 +3,11 @@ layer: infra
 ---
 # Apache Airflow Orchestration Guide
 
-n**Overview (KR):** 데이터 엔지니어링 허브로서의 Airflow 아키텍처와 통합 운영 가이드입니다.
+**Overview (KR):** 데이터 엔지니어링 허브로서의 Airflow 아키텍처와 통합 운영 가이드입니다.
 
 > **Component**: `airflow`
 > **Executor**: CeleryExecutor
-> **Internal Web Interface**: `8080`
+> **Internal API Interface**: `8080` (Airflow 3.x uses `api-server`, not `webserver`)
 
 ## 1. Data Engineering Hub
 
@@ -27,8 +27,8 @@ Pipelines are defined as Python code and mounted from the host:
 
 The cluster utilizes Valkey as the message broker for Celery task distribution.
 
-- **Broker**: `redis://mng-redis:6379/1`
-- **Result Backend**: Management PostgreSQL.
+- **Broker**: `redis://airflow-valkey:6379/0` (dedicated `airflow-valkey` container)
+- **Result Backend**: Airflow's own database in management PostgreSQL (via `AIRFLOW__CELERY__RESULT_BACKEND_CMD`).
 
 ## 4. Resource Management
 

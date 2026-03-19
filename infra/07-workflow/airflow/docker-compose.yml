@@ -6,7 +6,7 @@ x-airflow-common-env: &airflow-common-env
   AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
   AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: echo "postgresql+psycopg2://${AIRFLOW_DB_USER}:$$(cat /run/secrets/airflow_db_password)@${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/airflow"
   AIRFLOW__CELERY__RESULT_BACKEND_CMD: echo "db+postgresql://${AIRFLOW_DB_USER}:$$(cat /run/secrets/airflow_db_password)@${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/airflow"
-  AIRFLOW__CELERY__BROKER_URL_CMD: echo "redis://:$$(cat /run/secrets/airflow_valkey_password)@${VALKEY_MNG_HOSTNAME}:${VALKEY_PORT:-6379}/0"
+  AIRFLOW__CELERY__BROKER_URL_CMD: echo "redis://:$$(cat /run/secrets/airflow_valkey_password)@airflow-valkey:${VALKEY_PORT:-6379}/0"
   AIRFLOW__CORE__FERNET_KEY_CMD: cat /run/secrets/airflow_fernet_key
   AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
   AIRFLOW__CORE__LOAD_EXAMPLES: 'false'

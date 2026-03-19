@@ -1,6 +1,6 @@
 # -----------------------------------------------------------
 
-ARG N8N_VERSION=2.3.0
+ARG N8N_VERSION=2.12.3
 # Stage 1: Font Builder (Alpine)
 FROM alpine:3.21 AS font-builder
 

@@ -49,7 +49,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
-    image: n8nio/n8n:2.6.2
+    image: n8nio/n8n:2.12.3
     container_name: n8n
     read_only: false
     expose:
@@ -101,7 +101,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
-    image: n8nio/n8n:2.6.2
+    image: n8nio/n8n:2.12.3
     container_name: n8n-worker
     read_only: false
     depends_on:
@@ -127,7 +127,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: n8nio/runners:2.6.2
+    image: n8nio/runners:2.12.3
     container_name: n8n-task-runner
     read_only: false
     volumes:

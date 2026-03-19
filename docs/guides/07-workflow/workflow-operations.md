@@ -3,7 +3,7 @@ layer: infra
 ---
 # Workflow Stack Operations (n8n & Airflow)
 
-n**Overview (KR):** n8n과 Airflow를 포함한 전체 워크플로우 스택의 통합 운영 가이드입니다.
+**Overview (KR):** n8n과 Airflow를 포함한 전체 워크플로우 스택의 통합 운영 가이드입니다.
 
 > Standard operational guidelines for managing internal automation flows via n8n and Apache Airflow.
 
@@ -15,10 +15,10 @@ The workflow infrastructure resides under `infra/07-workflow/`. These systems ex
 
 ### State Management
 
-n8n utilizes an embedded SQLite database persisted into a host volumetric mount (`n8n-data:/home/node/.n8n`).
+n8n uses PostgreSQL (`mng-pg`) as its persistent store, configured via `DB_TYPE: postgresdb`.
 
-- **Backup**: Always backup the raw SQLite database before major n8n version upgrades to prevent schema migration corruption.
-- **Scaling**: If workflow concurrency bottlenecks, consider migrating from SQLite to the core management PostgreSQL database (`mng-db`) using the `DB_TYPE=postgres` env variables before scaling n8n into a multi-main queue mode.
+- **Backup**: Before major n8n version upgrades, export all workflows via the n8n UI or API (`GET /api/v1/workflows`) and store the export. Also snapshot the PostgreSQL `n8n` database.
+- **Scaling**: To scale beyond a single worker, add more `n8n-worker` replicas. The queue broker (`n8n-valkey`) handles task distribution without code changes.
 
 ### Webhook Handling
 

@@ -3,7 +3,7 @@ layer: infra
 ---
 # Apache Airflow Orchestration Blueprint
 
-n**Overview (KR):** Apache Airflow의 Celery 실행 모델과 전반적인 서비스 오케스트레이션 설계 청사진입니다.
+**Overview (KR):** Apache Airflow의 Celery 실행 모델과 전반적인 서비스 오케스트레이션 설계 청사진입니다.
 
 > **Component**: `airflow`
 > **Executor**: `CeleryExecutor`
@@ -17,17 +17,18 @@ Airflow is deployed as a multi-component cluster to support high-throughput DAG 
 
 | Component | Function | Internal Port |
 | --- | --- | --- |
-| `airflow-webserver` | UI and API Service | `8080` |
+| `airflow-apiserver` | REST API and UI | `8080` |
 | `airflow-scheduler` | DAG Scheduling | `8974` |
-| `airflow-worker` | Task Execution | - |
-| `airflow-triggerer`| Deferred Operators | - |
-| `statsd-exporter`  | Telemetry Bridge | `9125` (StatsD) |
+| `airflow-dag-processor` | DAG File Parsing | - |
+| `airflow-worker` | Celery Task Execution | - |
+| `airflow-triggerer` | Deferred Operators | - |
+| `airflow-statsd-exporter` | Telemetry Bridge | `9125` (StatsD) |
 
 ### Persistence Layer
 
-- **Metadata DB**: `postgres` (via `pg-router`)
-- **Result Backend**: `postgres`
-- **Broker**: `redis` (or unified `mng-redis`)
+- **Metadata DB**: Management PostgreSQL (via `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD`)
+- **Result Backend**: Management PostgreSQL (via `AIRFLOW__CELERY__RESULT_BACKEND_CMD`)
+- **Broker**: `airflow-valkey` (dedicated Valkey instance, DB 0)
 
 ## 2. Initialization & Bootstrapping
 
