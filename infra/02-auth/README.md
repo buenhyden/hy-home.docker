@@ -24,8 +24,7 @@ This category manages Identity and Access Management (IAM) and authentication ga
 
 ## Documentation References
 
-- **Architecture Principles**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
-- **Auth Blueprints**: [docs/guides/02-auth](../../docs/guides/02-auth)
-- **Platform Guides**: [docs/guides/README.md](../../docs/guides/README.md)
-- **Runbooks (Auth)**: [runbooks/02-auth](../../runbooks/02-auth)
-- **Operations History**: [operations/README.md](../../operations/README.md)
+- **Identity Context**: [auth-context.md](../../docs/guides/02-auth/auth-context.md)
+- **Bootstrap Guide**: [auth-procedural.md](../../docs/guides/02-auth/auth-procedural.md)
+- **Architecture**: [ARCHITECTURE.md](../../ARCHITECTURE.md#32-layered-service-map)
+- **Recovery**: [2026-03-15-auth-lockout.md](../../docs/runbooks/2026-03-15-auth-lockout.md)

@@ -4,15 +4,16 @@ This category manages the ingress traffic and edge routing for the entire infras
 
 ## Services
 
-| Service | Profile | Path        | Purpose                                             |
-| ------- | ------- | ----------- | --------------------------------------------------- |
-| Traefik | (core)  | `./traefik` | Primary reverse proxy, TLS, routing, SSO middleware |
-| Nginx   | `nginx` | `./nginx`   | Optional standalone proxy (path-based routing)      |
+| Service | Profile | Path        | Purpose                                             | Observability |
+| ------- | ------- | ----------- | --------------------------------------------------- | ------------- |
+| Traefik | (core)  | `./traefik` | Primary ingress, handles SSL/TLS and SSO.           | Metrics/Traces|
+| Nginx   | `nginx` | `./nginx`   | Secondary proxy, path-based routing.                | Logs          |
 
 ## Notes
 
-- Traefik and Nginx both compete for the same **host ports** (typically 80/443). Do not run them together unless you change one of the host port mappings.
+- Traefik and Nginx both compete for the same **host ports** (80/443).
 - TLS assets are shared from `secrets/certs`.
+- **Observability**: Traefik exports metrics to Prometheus and traces to Tempo (`tempo:4317`).
 
 ## File Map
 
@@ -24,8 +25,7 @@ This category manages the ingress traffic and edge routing for the entire infras
 
 ## Documentation References
 
-- **Architecture Principles**: [ARCHITECTURE.md](../../ARCHITECTURE.md)
-- **Gateway Blueprints**: [docs/guides/01-gateway](../../docs/guides/01-gateway)
-- **Platform Guides**: [docs/guides/README.md](../../docs/guides/README.md)
-- **Runbooks (Gateway)**: [runbooks/01-gateway](../../runbooks/01-gateway)
-- **Operations History**: [operations/README.md](../../operations/README.md)
+- **Traffic Flow**: [Architecture Principles](../../ARCHITECTURE.md#31-network-model)
+- **Ingress Guide**: [traefik-ingress-guide.md](../../docs/guides/01-gateway/traefik-ingress-guide.md)
+- **Operations**: [gateway-operations.md](../../docs/guides/01-gateway/gateway-operations.md)
+- **Recovery**: [2026-03-15-traefik-proxy-recovery.md](../../docs/runbooks/2026-03-15-traefik-proxy-recovery.md)

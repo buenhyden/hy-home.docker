@@ -6,8 +6,8 @@ layer: infra
 n**Overview (KR):** Traefik 기반 인그레스 컨트롤러의 동적 라우팅 및 SSL 설정 관리 가이드입니다.
 
 > **Component**: `traefik`
-> **Internal DNS**: `traefik`
-> **Administrative Node**: `infra-gateway`
+> **Role**: Primary Ingress / Edge Router
+> **Networks**: `infra_net` (Internal), Host (80/443)
 
 ## 1. Role and Architecture
 
@@ -23,10 +23,14 @@ New services should implement these labels for automatic exposure:
 ```yaml
 labels:
   - "traefik.enable=true"
-  - "traefik.http.routers.<name>.rule=Host('<subdomain>.${DEFAULT_URL}')"
+  - "traefik.http.routers.<name>.rule=Host(`<subdomain>.${DEFAULT_URL}`)"
+  - "traefik.http.routers.<name>.entrypoints=websecure"
   - "traefik.http.routers.<name>.tls=true"
   - "traefik.http.services.<name>.loadbalancer.server.port=<internal_port>"
 ```
+
+### Dashboard Access (Basic Auth)
+The Traefik dashboard is exposed at `https://dashboard.${DEFAULT_URL}` and uses `dashboard-auth@file` middleware for protection.
 
 ## 3. Dynamic Configuration Hub
 

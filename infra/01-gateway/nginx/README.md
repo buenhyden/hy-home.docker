@@ -8,20 +8,28 @@ Nginx acts as an optional, path-based reverse proxy or standalone gateway for sp
 | :------ | :--------------- | :---------------- | :-------------- | :------- |
 | `nginx` | `nginx:alpine`   | Lightweight Proxy | 0.5 CPU / 512MB | `nginx`  |
 
-## Networking
+| Host Port | Internal Port | Protocol | Shared with Traefik? |
+| :-------- | :------------ | :------- | :------------------- |
+| `80`      | `80`          | HTTP     | Yes (Conflict)       |
+| `443`     | `443`         | HTTPS    | Yes (Conflict)       |
 
-- **Ports**: `${HTTP_HOST_PORT}:${HTTP_PORT}`, `${HTTPS_HOST_PORT}:${HTTPS_PORT}`.
-- **Configuration**: Uses `./config/nginx.conf` for routing rules.
-- **Note**: Nginx is an optional gateway. It will conflict with Traefik on host ports `80/443` unless ports are changed.
+- **Config**: Mounts `./config/nginx.conf` for fine-grained routing.
+- **Traffic**: Redirects all HTTP traffic to HTTPS via TLS.
 
 ## Persistence
 
 - **Certs**: `nginx_certs` volume mapped to `${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs`.
 
-## File Map
+| Path                 | Role                                   |
+| :------------------- | :------------------------------------- |
+| `docker-compose.yml` | Resource limits (template-infra-low).  |
+| `config/nginx.conf`  | Virtual hosts / SSO / Proxy definitions. |
 
-| Path               | Description                           |
-| ------------------ | ------------------------------------- |
-| `docker-compose.yml` | Nginx service and volume mounts.    |
-| `config/`          | Virtual host and proxy configurations. |
-| `README.md`        | Service overview and routing rules.   |
+## Routing Patterns
+
+| Path Endpoint      | Upstream Service | Feature           |
+| :----------------- | :--------------- | :---------------- |
+| `/oauth2/`         | `oauth2-proxy`   | Auth Provider     |
+| `/keycloak/`       | `keycloak`       | Identity Server   |
+| `/minio/`          | `minio`          | Object Storage    |
+| `/minio-console/`  | `minio-console`  | Console Admin UI  |

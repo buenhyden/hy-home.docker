@@ -14,10 +14,10 @@ Traefik binds to the host's ports (configurable via `.env`) and routes traffic v
 
 | Host Bind | Host Port                         | Protocol | Purpose                  |
 | :-------- | :-------------------------------- | :------- | :----------------------- |
-| `0.0.0.0` | `${HTTP_HOST_PORT}` (80)          | HTTP     | Forced redirect to HTTPS |
-| `0.0.0.0` | `${HTTPS_HOST_PORT}` (443)        | HTTPS    | Primary entrypoint       |
-| `0.0.0.0` | `${TRAEFIK_DASHBOARD_HOST_PORT}`  | Dashboard| Traefik monitoring UI    |
-| `0.0.0.0` | `${TRAEFIK_METRICS_HOST_PORT}`    | Metrics  | Prometheus scraping      |
+| `0.0.0.0` | `${HTTP_HOST_PORT}` (80)          | HTTP     | Redirect to HTTPS        |
+| `0.0.0.0` | `${HTTPS_HOST_PORT}` (443)        | HTTPS    | Main Edge Entrypoint     |
+| `0.0.0.0` | `${TRAEFIK_DASHBOARD_PORT}`       | Dash     | Traefik UI (Basic-Auth)  |
+| `0.0.0.0` | `${TRAEFIK_METRICS_PORT}`         | Metrics  | Prom scraping /ping      |
 
 ## Persistence
 
@@ -81,7 +81,7 @@ labels:
 
 ## Documentation References
 
-- **Architecture Principles**: [ARCHITECTURE.md](../../../ARCHITECTURE.md)
-- **Traefik Blueprint**: [docs/guides/01-gateway/traefik-ingress-guide.md](../../../docs/guides/01-gateway/traefik-ingress-guide.md)
-- **Runbook (Gateway Recovery)**: [runbooks/01-gateway/traefik-proxy-recovery.md](../../../runbooks/01-gateway/traefik-proxy-recovery.md)
-- **Operations History**: [operations/README.md](../../../operations/README.md)
+- **Edge Spec**: [traefik-ingress-guide.md](../../../docs/guides/01-gateway/traefik-ingress-guide.md)
+- **Operations**: [gateway-operations.md](../../../docs/guides/01-gateway/gateway-operations.md)
+- **Local SSL**: [mkcert.md](../../../docs/guides/01-gateway/mkcert.md)
+- **Recovery**: [2026-03-15-traefik-proxy-recovery.md](../../../docs/runbooks/2026-03-15-traefik-proxy-recovery.md)

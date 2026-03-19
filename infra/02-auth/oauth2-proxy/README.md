@@ -15,14 +15,21 @@ OAuth2 Proxy is a reverse proxy and static file server that provides authenticat
 
 ## Networking
 
-Exposed via Traefik at `auth.${DEFAULT_URL}`.
+Exposed via Traefik at `auth.${DEFAULT_URL}`. Traefik uses this service as a **ForwardAuth** provider.
 
 - **Port Mapping**: Uses `${OAUTH2_PROXY_PORT}` (usually 4180).
+- **Callback**: `https://auth.${DEFAULT_URL}/oauth2/callback`.
 
 ## File Map
 
-| Path               | Description                           |
-| ------------------ | ------------------------------------- |
-| `docker-compose.yml` | Service and session store wiring.    |
-| `config/`          | Provider and cookie configuration.    |
-| `README.md`        | Service overview and SSO notes.       |
+| Path               | Description                                     |
+| ------------------ | ----------------------------------------------- |
+| `docker-compose.yml` | Service and session store (Valkey) wiring.    |
+| `config/oauth2-proxy.cfg` | Core OIDC and Cookie configuration.       |
+| `Dockerfile`       | Custom build injecting root CA certificates.    |
+
+## Documentation References
+
+- **Integration**: [auth-procedural.md](../../../docs/guides/02-auth/auth-procedural.md)
+- **Identity Flow**: [auth-context.md](../../../docs/guides/02-auth/auth-context.md)
+- **SSO Guide**: [sso-oauth2-proxy-guide.md](../../../docs/guides/02-auth/sso-oauth2-proxy-guide.md)
