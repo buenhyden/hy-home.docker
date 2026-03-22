@@ -1,31 +1,45 @@
 # Utilities & Automation Scripts (`scripts/`)
 
-This directory is reserved for repository maintenance, utility scripts, and automation triggers.
+> Repository maintenance, utility scripts, and automation triggers.
 
-## 1. Necessity and Purpose
+## Overview
 
-This folder is necessary to encapsulate build, test, and environment scaffolding tools.
+**KR**: 빌드, 테스트, 환경 구성 등에 필요한 보조 스크립트와 자동화 툴을 포함하는 디렉토리입니다.
+**EN**: Directory containing helper scripts and automation tools for build, test, and environment setup.
 
-- Separation of Concerns: It deliberately separates development tooling from application logic (`src/`/`web/`) and operational deployments (`runbooks/`).
-- Consistent Execution: It serves as the common execution layer for tasks like dataset syncing, pre-commit hook setups, or database seeding across developer machines.
+## Navigation / Inventory
 
-## 2. Required Content
+| Component | Path | Purpose |
+| :--- | :--- | :--- |
+| Secrets Bootstrap | [bootstrap-secrets.sh](bootstrap-secrets.sh) | Create file-based secrets |
+| Docker Validation | [validate-docker-compose.sh](validate-docker-compose.sh) | Validate root compose config |
+| Preflight Check | [preflight-compose.sh](preflight-compose.sh) | Bootstrap prerequisite validation |
+| Cert Generation | [generate-local-certs.sh](generate-local-certs.sh) | Generate local TLS files |
 
-- **Content**: Small, target-specific bash, Python, or Node scripts (`.sh`, `.py`, `.js`).
-- Ensure cross-platform compatibility where possible, or document explicit OS dependencies at the top of the file.
+---
 
-## 3. Current Scripts
+## 🛠️ Utilities & Automation
 
-- `scripts/bootstrap-secrets.sh`: Creates file-based secret files under `secrets/**/*.txt` referenced by the root `docker-compose.yml` (idempotent, no overwrite unless `--force`).
-- `scripts/validate-docker-compose.sh`: Validates root Compose config by creating temporary dummy prerequisites (secrets files) and running `docker compose config`.
-- `scripts/preflight-compose.sh`: Checks local bootstrap prerequisites (`.env`, cert files, secrets, mount directories, optional external networks) before `docker compose up -d`.
-  - Optional-stack-only secrets (e.g., Cassandra/MongoDB/Neo4j/Syncthing) are reported as `WARN` instead of hard failure.
-- `scripts/generate-local-certs.sh`: Generates mkcert-based local TLS files at `secrets/certs/{rootCA.pem,cert.pem,key.pem}`.
+### Standard Rules
+- **Idempotency**: All scripts MUST be safe to run multiple times without causing corrupted state.
+- **No Secrets**: Scripts must fetch credentials from environment variables; never hardcode them.
+- **Deterministic**: Any automation added must comply with standard rules in `.agent/rules/0200-workflows-pillar-standard.md`.
 
-## 4. Agent Workflow Standardization
+### Usage Examples
+```bash
+# Run preflight check
+./scripts/preflight-compose.sh
 
-Any automation scripts or workflows added to this directory MUST comply with the **Idempotent and Deterministic** principles defined in `.agent/rules/0200-workflows-pillar-standard.md`.
+# Bootstrap secrets
+./scripts/bootstrap-secrets.sh --force
+```
 
-- **Idempotency**: Running a script twice should have the exact same effect as running it once (e.g., no corrupted state or duplicate data).
-- **Clear Boundaries**: Scripts should have single responsibilities and handle failures gracefully.
-- **No Hardcoded Secrets**: Scripts here MUST NEVER contain hardcoded API keys or passwords. They must fetch credentials securely from environment variables.
+---
+
+## Extensibility & References
+
+- [🤖 Agent Governance](/AGENTS.md)
+- [⚙️ Operations Baseline](/OPERATION.md)
+
+---
+*Maintained by DevOps & Automation Team*
