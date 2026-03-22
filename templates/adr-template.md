@@ -2,13 +2,13 @@
 
 > Use this template for `docs/adr/NNNN-<short-title>.md`.
 >
-> Repository-derived contract:
+> Repository-driven contract:
 >
 > - Use exactly one meaningful H1.
 > - Use relative links only.
 > - Remove every placeholder before saving.
 > - Keep the document decision-focused. Do not turn ADRs into implementation specs.
-> - Allowed ADR status values: `Accepted | Superseded | Deprecated`.
+> - Allowed ADR status values: `Proposed | Accepted | Rejected | Superseded | Deprecated`.
 > - Allowed scope values where your doc set uses them: `master | domain | historical`.
 > - Allowed scope values layer values: `common | architecture | backend | frontend | infra | mobile | product | qa | security`
 > - Keep all structural and narrative content in English.
@@ -34,14 +34,14 @@ Use frontmatter when the surrounding doc set already uses it. Skip it when the a
 
 # ADR NNNN: [Short Decision Title]
 
-- **Status:** [Accepted | Superseded | Deprecated]
+- **Status:** [Proposed | Accepted | Rejected | Superseded | Deprecated]
 - **Date:** YYYY-MM-DD
 - **Scope:** [master | domain | historical]
 - **layer:** [common | architecture | backend | frontend | infra | mobile | product | qa | security]
 - **Authors:** [Optional]
 - **Deciders:** [Optional]
 
-**Overview (KR):** [Write a 1-2 sentence Korean summary of the decision intent, why it matters now, and what boundary it affects.]
+**Overview (KR):** [결정의 의도, 현재 필요한 이유, 그리고 영향 범위를 한국어로 1-2문장 요약하세요.]
 
 ## Required Core Sections
 
@@ -52,6 +52,11 @@ Use this when the ADR is primarily establishing a boundary, naming a policy, or 
 ## Context
 
 [Explain the context, the current conflict or limitation, and why a formal decision is needed now.]
+
+**Non-goals:**
+
+- [Explicit non-goal 1]
+- [Explicit non-goal 2]
 
 ## Decision
 
@@ -121,13 +126,20 @@ Use these sections when the decision has substantial alternatives, engineering t
 - **Good**, because [benefit]
 - **Bad**, because [trade-off]
 
-## 5. Confidence Level & Technical Requirements
+## 5. Implementation Notes
+
+[Provide high-level guidance on how this decision should be implemented. Avoid turning this into a full specification.]
+
+- [Note 1]
+- [Note 2]
+
+## 6. Confidence Level & Technical Requirements
 
 - **Confidence Rating:** [Low | Medium | High]
 - **Notes:** [Why this confidence level is justified and what would improve it]
 - **Technical Requirements Addressed:** [For example: REQ-PRD-FUN-01, REQ-SPC-001]
 
-## 6. Related Documents (Traceability)
+## 7. Related Documents (Traceability)
 
 - **Parent Master ADR**: `[./NNNN-master-adr.md]` (Optional for `domain`)
 - **Parent Master ARD**: `[../ard/system-master-ard.md]` (Optional for `domain`)
@@ -138,3 +150,8 @@ Use these sections when the decision has substantial alternatives, engineering t
 - **Feature ARD**: `[../ard/system-ard.md]` (Optional)
 - **Feature Spec**: `[../specs/YYYY-MM-DD-feature.md]` (Optional)
 - **Feature Plan**: `[../plans/YYYY-MM-DD-feature.md]` (Optional)
+
+## 8. References
+
+- [External link or document name]
+- [Research paper or community discussion link]

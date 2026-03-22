@@ -2,6 +2,7 @@
 title: '[API Name / Feature] API Specification'
 status: 'Draft | Proposed | Approved | Deprecated'
 version: 'v1.x.x'
+openapi_version: '3.1.0'
 base_url: 'https://api.example.com/v1'
 prd_reference: '[Link to PRD]'
 spec_reference: '[Link to Tech Spec]'
@@ -12,14 +13,14 @@ layer: '<layer>'
 
 # API Specification Template ([API Name / Feature])
 
-> **Status**: Draft / Proposed / Approved / Deprecated
-> **Version**: v1.x.x
+> **Status**: [Draft | Proposed | Approved | Deprecated]
+> **Version**: v1.x.x (OpenAPI 3.1.0)
 > **Base URL**: `https://api.example.com/v1`
 > **Related PRD**: [Link to PRD]
 > **Related Technical Spec**: [Link to Tech Spec]
 > **Related ADR**: [Link to ADR]
 
-> **Purpose**: Define the exact contract, data models, and security requirements for an API feature before implementation begins. This document must be approved by human developers before Coder Agents execute it.
+**Overview (KR):** [API의 목적, 해결하려는 문제, 그리고 주요 소비층(Web, Mobile 등)을 한국어로 1-2문장 요약하세요.]
 
 ---
 
@@ -32,165 +33,170 @@ This API contract MUST be stored under `docs/api/<feature>/` (contract-first).
 ```text
 docs/api/<feature>/
   README.md        # The main specification document (this template)
-  openapi.yaml            # OR schema.proto OR schema.graphql
-  changelog.md            # Keep a Changelog format
+  openapi.yaml     # The formal OpenAPI 3.1 definition
+  changelog.md     # Keep a Changelog format
 ```
 
-### 0.2 Allowed Contract Formats
+### 0.2 Versioning & Breaking Changes
 
-- OpenAPI 3.x (YAML or JSON) for REST APIs.
-- GraphQL SDL for GraphQL APIs.
-- Protobuf (`.proto`) for gRPC APIs.
+- API versions MUST be explicitly defined in the URL (e.g., `/v1/`) or via headers.
+- Breaking changes require a major version bump.
 
-### 0.3 Versioning & Breaking Changes
+### 0.3 API Governance Checklist
 
-- API contracts MUST be versioned (recommended: URL path prefix like `/v1/`).
-- Breaking changes MUST NOT be made within an existing major version. Breaking changes MUST be released as a new major version (e.g., `/v2/`) or via an explicitly documented and approved version negotiation strategy.
-
-### 0.4 Changelog
-
-Each API contract MUST include `docs/api/<feature>/changelog.md` using Keep a Changelog sections:
-
-- Added
-- Changed
-- Deprecated
-- Removed
-- Fixed
-- Security
-
-### 0.5 Governance
-
-- Contract-first governance: `.agent/rules/2000-API_Governance/2000-api-governance.md`
-- API design standards: `.agent/rules/0000-Agents/0010-api-design-standard.md`
-
-### 0.6 API Governance Checklist (Fill Before Design)
-
-_Description: This document defines the team's working agreements, development processes, and collaboration SLAs as per the 0202-collaboration-and-sla-standard.md rules._
-
-- **layer:** [common | architecture | backend | frontend | infra | mobile | product | qa | security]
-
-> This document follows the **API Governance Pillar (2000)**. Ensure all endpoints
-> adhere to RESTful/GraphQL standards and versioning policies.
-
-| Item           | Check Question                              | Required | Alignment Notes |
-| -------------- | ------------------------------------------- | -------- | --------------- |
-| Protocol       | REST / GraphQL / gRPC / Webhook?            | Must     |                 |
-| Versioning     | Is the major version in the URL or Header?  | Must     |                 |
-| Auth           | Is AuthN/AuthZ scheme defined (JWT/Scopes)? | Must     |                 |
-| Validation     | Are all inputs validated via Zod/Pydantic?  | Must     |                 |
-| Error Handling | Standardized JSON error schema used?        | Must     |                 |
-| Rate Limiting  | Are quotas/throttling defined?              | Must     |                 |
-| Documentation  | Is OpenAPI/Swagger generated from this?     | Must     |                 |
+| Item           | Check Question                               | Required | Alignment Notes |
+| -------------- | -------------------------------------------- | -------- | --------------- |
+| Protocol       | REST / GraphQL / gRPC / Webhook?             | Must     |                 |
+| Versioning     | Major version in URL or Header?              | Must     |                 |
+| Auth           | AuthN/AuthZ scheme defined in components?    | Must     |                 |
+| Validation     | All inputs validated via JSON Schema / Zod?  | Must     |                 |
+| Error Handling | Standardized JSON error response used?       | Must     |                 |
+| Rate Limiting  | Quotas and headers (`X-RateLimit-*`) defined?| Must     |                 |
+| Examples       | Are examples provided for ALL responses?     | Must     |                 |
 
 ---
 
 ## 1. Overview & Use Cases
 
-**Objective**: Briefly describe the problem this API solves and its primary consumers (e.g., Web Client, Mobile App, 3rd Party Integration).
+**Objective**: Briefly describe the problem this API solves.
+
+**Primary Consumers**: [Web Client | Mobile App | Internal Service | 3rd Party]
 
 **Use Cases**:
 
-- UC1: User can retrieve a list of widgets with pagination.
-- UC2: User can create a new widget.
+- **UC1**: [e.g., User can retrieve a list of widgets with cursor-based pagination]
+- **UC2**: [e.g., User can create a new widget with validation]
 
 ---
 
-## 2. Resource Definitions
+## 2. API Tags & Grouping
 
-**Resource Models**: Define the core domain entities used in this API using JSON schema or simple tables.
+Define tags used to organize the API endpoints.
 
-_Example: Widget Resource_
-
-```json
-{
-  "id": "uuid",
-  "name": "string",
-  "status": "enum(active, archived)",
-  "created_at": "timestamp"
-}
-```
+| Tag         | Description                                   |
+| ----------- | --------------------------------------------- |
+| `Widgets`   | Operations related to widget management       |
+| `Automations`| Operations related to background tasks        |
 
 ---
 
-## 3. Endpoints Contract
+## 3. Data Models (Components/Schemas)
 
-Define all endpoints using RESTful plural nouns (no verbs in paths). Be sure to include explicit validation rules (e.g., via Zod, Pydantic, or JSON Schema) for all inputs.
+Define core domain entities. Use JSON Schema (2020-12) or structured tables.
 
-### 3.1. `[METHOD] /v1/[resource]`
+### 3.1. `Widget` Model
 
-**Description**: What does this endpoint do?
+| Property     | Type      | Required | Description                     | Example                |
+| ------------ | --------- | -------- | ------------------------------- | ---------------------- |
+| `id`         | `uuid`    | Yes      | Unique identifier               | `550e8400-e29b-...`    |
+| `name`       | `string`  | Yes      | Name of the widget (min: 3)     | `Alpha Widget`         |
+| `status`     | `enum`    | Yes      | `active`, `archived`            | `active`               |
+| `created_at` | `iso8601` | Yes      | Timestamp in ISO format         | `2024-03-22T14:30:00Z` |
+
+---
+
+## 4. Endpoints Contract
+
+### 4.1. `[METHOD] /v1/[resource]`
+
+**Description**: [Detailed description of the endpoint's behavior]
+
+**Tags**: `[Tag Name]`
 
 **Request**:
 
+- **Authentication**: `BearerAuth` (Mandatory)
+- **Content-Type**: `application/json`
 - **Headers**:
-  - `Authorization: Bearer <token>`
+  - `Idempotency-Key` (Optional, UUID)
 - **Query Parameters**:
-  - `limit` (int, default 20)
-  - `cursor` (string, optional)
-- **Body**: (If applicable. Specify schema constraints like min-length, enums.)
+  - `limit` (Integer, default: 20, max: 100)
+  - `cursor` (String, Optional)
+- **Body Schema**: (Reference model or define inline)
 
-**Response**:
+  ```json
+  {
+    "name": "string",
+    "metadata": "object"
+  }
+  ```
 
-- **Success (200 OK)**:
+**Responses**:
 
-```json
-{
-  "data": [...],
-  "meta": { "next_cursor": "abc" }
-}
-```
+- **200 OK / 201 Created**:
 
----
-
-## 4. Webhooks & Events (Optional)
-
-Define asynchronous event payloads or webhook triggers from this service.
-
-- **Trigger**: [Event Name, e.g., `widget.created`]
-- **Payload Schema**: [Define the JSON payload structure]
-- **Security**: [e.g., HMAC Signature Verification via `X-Signature` header]
-
----
-
-## 5. Authentication & Security
-
-- **Auth Method**: OAuth2 / JWT / API Key
-- **Required Scopes/Roles**: e.g., `widget:read`, `widget:write`
-
----
-
-## 6. Non-Functional Requirements (NFRs)
-
-- **Latency**: e.g., < 200ms (p95)
-- **Rate Limit**: e.g., 100 requests / minute per user
-- **Idempotency**: e.g., `X-Idempotency-Key` header required for `POST/PUT` operations
-
----
-
-## 7. Error Handling
-
-Define known failure states and their corresponding standard HTTP status codes.
-
-- **400 Bad Request**: Validation failure (e.g., missing required field).
-- **401 Unauthorized**: Missing or invalid token.
-- **403 Forbidden**: Valid token, but lacks required role.
-- **404 Not Found**: Target resource ID does not exist.
+  ```json
+  {
+    "data": { "id": "uuid", "name": "..." },
+    "meta": { "timestamp": "..." }
+  }
+  ```
+- **400 Bad Request**: Validation failure (provide specific error codes).
+- **401 Unauthorized**: Missing or invalid credentials.
+- **403 Forbidden**: Insufficient permissions (scopes).
 - **429 Too Many Requests**: Rate limit exceeded.
+
+---
+
+## 5. Webhooks & Events (OpenAPI 3.1 Webhooks)
+
+Define asynchronous event payloads.
+
+- **Event Name**: `widget.updated`
+- **Trigger**: Fired when a widget status changes.
+- **Payload Schema**: Same as `Widget` model.
+- **Security**: HMAC Signature (`X-Hub-Signature-256`)
+
+---
+
+## 6. Authentication & Security (Components)
+
+### 6.1. Security Schemes
+
+- **`BearerAuth`**: HTTP Bearer (JWT)
+- **`ApiKeyAuth`**: `X-API-Key` Header
+
+### 6.2. Scopes & Permissions
+
+| Scope           | Description                                |
+| --------------- | ------------------------------------------ |
+| `widget:read`   | Permission to view widget details          |
+| `widget:write`  | Permission to create/update widgets        |
+
+---
+
+## 7. Error Handling & Standard Responses
 
 **Standard Error Schema**:
 
 ```json
 {
   "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "The name field is required."
+    "code": "ERROR_CODE_STRING",
+    "message": "Human readable message",
+    "details": {}
   }
 }
 ```
 
+| Status | Code               | Description                            |
+| ------ | ------------------ | -------------------------------------- |
+| 400    | `VALIDATION_ERROR` | Request body or params failed check    |
+| 404    | `NOT_FOUND`        | The requested resource was not found   |
+| 409    | `CONFLICT`         | Resource state conflict (e.g. duplicate)|
+
 ---
 
-## 8. Versioning Strategy
+## 8. Non-Functional Requirements (NFRs)
 
-- **API Version**: (e.g., v1)
-- **Breaking Change Policy**: State how changes will be handled (e.g., major version bump in URL `/v2/` or via Accept headers).
+- **Latency**: P95 < [Value]ms
+- **Availability**: [Value]% SLA
+- **Rate Limit**: [Number] req/min per [ID Type]
+- **Idempotency**: Supported for all non-GET requests via [Header Name].
+
+---
+
+## 9. References
+
+- [Link to related ADR]
+- [Link to External Documentation]
