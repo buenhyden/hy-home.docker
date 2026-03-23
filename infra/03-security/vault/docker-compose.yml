@@ -7,7 +7,13 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_SECURITY_DIR}/vault
+      device: ${DEFAULT_SECURITY_DIR}/vault/data
+  vault-agent-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SECURITY_DIR}/vault/agent
 
 services:
   vault:
@@ -16,38 +22,46 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: hashicorp/vault:1.21.2
+    image: hashicorp/vault:1.21.4
     container_name: vault
     restart: unless-stopped
+    cap_add:
+      - IPC_LOCK
+      - SETFCAP
+      - SETGID # su-exec: setgroups 에러 해결용
+      - SETUID # 사용자 ID 전환 권한
     ports:
       - '${VAULT_HOST_PORT:-8200}:${VAULT_PORT:-8200}'
     expose:
       - ${VAULT_PORT:-8200}
+      - '${VAULT_CLUSTER_PORT:-8201}'
     environment:
-      # VAULT_ADDR is used by the `vault` CLI inside the container (e.g. docker exec).
-      # Loopback is correct here — the CLI runs on the same host as the server process.
+      # 컨테이너 내부에서 vault CLI가 자기 자신에게 붙을 때 사용
       VAULT_ADDR: 'http://127.0.0.1:${VAULT_PORT:-8200}'
-      # VAULT_API_ADDR overrides api_addr from vault.hcl at runtime.
-      # Must use the container service name so other containers on infra_net can reach Vault.
+      # 다른 컨테이너가 접근할 수 있는 API 주소
       VAULT_API_ADDR: 'http://vault:${VAULT_PORT:-8200}'
+      # raft/cluster 내부 통신용 주소
+      VAULT_CLUSTER_ADDR: 'https://vault:${VAULT_CLUSTER_PORT:-8201}'
+
     volumes:
-      - vault-data:/vault/file:rw
-      - ./config:/vault/config:ro
-    command: vault server -config=/vault/config/vault.hcl
-    cap_add:
-      - IPC_LOCK
+      - vault-data:/vault/data
+      - ./config/vault.hcl:/vault/config/vault.hcl:ro
+    command:
+      - vault
+      - server
+      - -config=/vault/config/vault.hcl
     networks:
       - infra_net
     healthcheck:
       test:
         [
           'CMD-SHELL',
-          'curl -fsS "http://localhost:${VAULT_PORT:-8200}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || wget -q --spider "http://localhost:${VAULT_PORT:-8200}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" || exit 1',
+          'wget -q -O- "http://127.0.0.1:${VAULT_PORT:-8200}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" >/dev/null 2>&1 || exit 1'
         ]
       interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -55,3 +69,29 @@ services:
       traefik.http.routers.vault.entrypoints: websecure
       traefik.http.routers.vault.tls: 'true'
       traefik.http.services.vault.loadbalancer.server.port: ${VAULT_PORT:-8200}
+  vault-agent:
+    profiles:
+      - core
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
+    image: hashicorp/vault:1.21.4
+    container_name: vault-agent
+    restart: unless-stopped
+    depends_on:
+      vault:
+        condition: service_healthy
+    environment:
+      VAULT_ADDR: 'http://vault:${VAULT_PORT:-8200}'
+      SKIP_SETCAP: 'true'
+      SKIP_CHOWN: 'true'
+    volumes:
+      - ./config/vault-agent.hcl:/vault/config/vault-agent.hcl:ro
+      - ./config/templates:/vault/config/templates:ro
+      - vault-agent-data:/vault/agent
+    command:
+      - vault
+      - agent
+      - -config=/vault/config/vault-agent.hcl
+    networks:
+      - infra_net

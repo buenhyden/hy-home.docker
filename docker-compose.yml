@@ -177,7 +177,7 @@ include:
   - infra/01-gateway/traefik/docker-compose.yml
   - infra/02-auth/keycloak/docker-compose.yml
   - infra/02-auth/oauth2-proxy/docker-compose.yml
-  # - infra/03-security/vault/docker-compose.yml
+  - infra/03-security/vault/docker-compose.yml
   # - infra/04-data/cassandra/docker-compose.yml
   # - infra/04-data/couchdb/docker-compose.yml
   # - infra/04-data/influxdb/docker-compose.yml

@@ -1,61 +1,30 @@
-# Vault Configuration File - Production Mode (Example)
-# This file serves as a template for `vault.hcl`.
-# Refer to the official documentation for more options:
-# https://developer.hashicorp.com/vault/docs/configuration
-
-# UI Configuration
-# Enable the web-based user interface.
+# vault.hcl
 ui = true
 
-# Mlock Configuration
-# disable_mlock = true is safe here because the container gets IPC_LOCK
-# via `cap_add: [IPC_LOCK]` in docker-compose.yml, which prevents Vault's
-# process memory from being swapped to disk at the OS level.
+# IPC_LOCK capability를 부여했으므로 mlock 사용을 허용
 disable_mlock = true
 
-# Storage Configuration
-# Vault supports various storage backends. Raft (Integrated Storage) is the recommended
-# option for high availability and operational simplicity.
 storage "raft" {
-  # The directory where Vault data is stored.
-  # Ensure this path is mounted to a persistent volume in Docker.
-  path    = "/vault/file"
-
-  # Unique identifier for this Vault node.
+  path    = "/vault/data"
   node_id = "node1"
 }
 
-# Listener Configuration
-# Defines how Vault listens for incoming API requests.
 listener "tcp" {
-  # Listen on all interfaces on port 8200.
-  address     = "0.0.0.0:8200"
+  address         = "0.0.0.0:8200"
+  cluster_address = "0.0.0.0:8201"
 
-  # TLS Configuration
-  # IMPORTANT: In a real production environment, `tls_disable` should be `0` (false),
-  # and valid certificate paths must be provided.
-  # For local testing or if SSL is terminated at a load balancer, you might leave it disabled.
+  # 현재 구조는 Traefik이 외부 HTTPS를 종료하고,
+  # Vault 컨테이너 내부/infra_net에서는 HTTP로 통신
   tls_disable = 1
-
-  # TLS Certificate Paths (Uncomment if TLS is enabled)
-  # tls_cert_file = "/vault/config/certs/vault.crt"
-  # tls_key_file  = "/vault/config/certs/vault.key"
 }
 
-# API Address
-# The routable address clients and Raft peers use to reach this Vault node.
-# Must be the container name — 0.0.0.0 is a bind address, not a reachable address,
-# and other containers on infra_net resolve Vault by its service name.
+# 다른 컨테이너가 접근 가능한 주소
 api_addr = "http://vault:8200"
 
-# Cluster Address
-# The address used for Raft peer-to-peer replication traffic.
-# Even in a single-node setup, Raft requires a reachable cluster address.
+# raft peer / cluster traffic용 주소
 cluster_addr = "https://vault:8201"
 
-# Telemetry Configuration
-# Enable if you want to export metrics to Prometheus or Grafana Agent.
 telemetry {
-  disable_hostname = true
+  disable_hostname          = true
   prometheus_retention_time = "30s"
 }

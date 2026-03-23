@@ -1,211 +1,205 @@
 #!/bin/bash
 
 # ==============================================================================
-# hy-home.docker Secret Generation Script (Full Automation & Templating)
-# ==============================================================================
-# 1. SENSITIVE_ENV_VARS.md가 없으면 .example에서 복사하여 초기화합니다.
-# 2. 레지스트리를 파싱하여 secrets 파일을 자동 생성하고 레지스트리를 갱신합니다.
-# 3. 모든 값은 백틱(``)으로 감싸서 Markdown 형식을 유지합니다.
+# gen-secrets.sh - hy-home.docker Secret Management Script
 # ==============================================================================
 
-SET_FORCE=false
-REGISTRY_FILE="secrets/SENSITIVE_ENV_VARS.md"
-EXAMPLE_FILE="secrets/SENSITIVE_ENV_VARS.md.example"
-GENERATED_COUNT=0
-SKIPPED_COUNT=0
-SYNCED_COUNT=0
-BACKUP_COUNT=0
+set -e
+
+# Configuration
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+EXAMPLE_FILE="${REPO_ROOT}/secrets/SENSITIVE_ENV_VARS.md.example"
+TARGET_FILE="${REPO_ROOT}/secrets/SENSITIVE_ENV_VARS.md"
+ENV_FILE="${REPO_ROOT}/.env"
 CURRENT_DATE=$(date +%Y-%m-%d)
 
-# 도움말 출력
-usage() {
-    echo "Usage: $0 [options]"
-    echo "Options:"
-    echo "  --force    기존 파일 내용이 있더라도 강제로 다시 생성 (Backup .bak 파일 생성)"
-    echo "  --help     도움말 출력"
-    exit 0
-}
+# Colors for output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m'
 
-# 인수 처리
-for arg in "$@"; do
-    case $arg in
-        --force) SET_FORCE=true ;;
-        --help) usage ;;
-    esac
-done
+echo -e "${BLUE}=== hy-home.docker Secret Management System ===${NC}"
 
-# 필요한 도구 확인
-if ! command -v openssl >/dev/null 2>&1; then
-    echo "❌ Error: openssl이 설치되어 있지 않습니다."
-    exit 1
-fi
-
-# 0. 레지스트리 파일 초기화 확인
-if [ ! -f "$REGISTRY_FILE" ]; then
-    if [ -f "$EXAMPLE_FILE" ]; then
-        echo "📝 Initializing $REGISTRY_FILE from $EXAMPLE_FILE..."
-        cp "$EXAMPLE_FILE" "$REGISTRY_FILE"
-    else
-        echo "❌ Error: Registry 파일($REGISTRY_FILE)과 템플릿($EXAMPLE_FILE)이 모두 없습니다."
+# Check for required tools
+for tool in htpasswd openssl tr head awk grep sed; do
+    if ! command -v $tool &> /dev/null; then
+        echo -e "${RED}Error: Required tool '$tool' not found.${NC}"
         exit 1
     fi
-fi
-
-# 랜덤 비밀번호 생성 함수 (16자리, 대소문자+숫자)
-generate_password() {
-    openssl rand -base64 32 | tr -dc 'A-Za-z0-9' | head -c 16
-}
-
-# htpasswd 생성 함수 (Apache MD5 기반)
-generate_htpasswd() {
-    local username=$1
-    local password=$2
-    if openssl passwd -apr1 "test" >/dev/null 2>&1; then
-        echo "${username}:$(openssl passwd -apr1 "${password}")"
-    else
-        echo "❌ Error: htpasswd 생성을 위한 openssl passwd -apr1 명령어가 지원되지 않습니다." >&2
-        return 1
-    fi
-}
-
-# 레지스트리 항목(값 및 날짜) 업데이트 함수
-update_registry_entry() {
-    local target_path=$1
-    local new_value=$2
-    local new_date=$3
-
-    # 값을 백틱(``)으로 감싸서 기록 (이미 감싸져 있지 않은 경우에 대비)
-    case $new_value in
-        \`*\`) formatted_value=" $new_value " ;;
-        *) formatted_value=" \`$new_value\` " ;;
-    esac
-
-    awk -v p="$target_path" -v v="$formatted_value" -v d=" $new_date " -F'|' '
-        BEGIN { OFS="|" }
-        {
-            # 필드 6에서 백틱과 공백을 제거하고 비교
-            raw_path = $6;
-            gsub(/`/, "", raw_path);
-            gsub(/ /, "", raw_path);
-
-            if (raw_path == p) {
-                # 값 업데이트
-                $4 = v;
-                # 날짜 업데이트
-                $7 = d;
-            }
-            print $0;
-        }
-    ' "$REGISTRY_FILE" > "${REGISTRY_FILE}.tmp" && mv "${REGISTRY_FILE}.tmp" "$REGISTRY_FILE"
-}
-
-echo "----------------------------------------------------------------"
-echo "🔐 hy-home.docker Secret Generation Start"
-echo "Today: ${CURRENT_DATE}"
-echo "----------------------------------------------------------------"
-
-LAST_ID="admin"
-
-# 파례(|) 구분 테이블 행만 추출하여 처리
-grep "|" "$REGISTRY_FILE" | grep -v "자동화(Auto)" | grep -v ":---" | while IFS='|' read -r _ auto type value _ path date purpose rest; do
-    # 필드 양 끝 공백 및 백틱(`) 제거
-    auto=$(echo "$auto" | sed 's/^[[:space:]`]*//;s/[[:space:]`]*$//;s/`//g')
-    type=$(echo "$type" | sed 's/^[[:space:]`]*//;s/[[:space:]]*$//;s/`//g')
-    value=$(echo "$value" | sed 's/^[[:space:]`]*//;s/[[:space:]`]*$//;s/`//g')
-    path=$(echo "$path" | sed 's/^[[:space:]`]*//;s/[[:space:]`]*$//;s/`//g')
-    purpose=$(echo "$purpose" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-
-    # ID 행인 경우 기억해둠
-    if [[ "$type" == "ID" || "$type" == "User" || "$type" == "Account" ]]; then
-        if [[ "$value" != "(N/A)" ]]; then
-            LAST_ID="$value"
-        fi
-    fi
-
-    # 파일 경로가 없거나 '-'이면 처리 대상 아님
-    if [ -z "$path" ] || [[ "$path" == "-" ]]; then
-        continue
-    fi
-
-    # 1. 기존 파일이 있고 생성하지 않는 경우, 레지스트리 값 동기화 확인
-    if [ -s "$path" ] && [ "$SET_FORCE" = false ]; then
-        if [[ "$value" == "(비어있음)" || -z "$value" || "$value" == "-" ]]; then
-            FILE_CONTENT=$(cat "$path")
-            SYNC_VAL=""
-            if [[ "$path" == *"_password"* ]] && [[ "$FILE_CONTENT" == *":"* ]]; then
-                SYNC_VAL=$(echo "$FILE_CONTENT" | cut -c 1-20)...
-            else
-                SYNC_VAL="$FILE_CONTENT"
-            fi
-
-            update_registry_entry "$path" "$SYNC_VAL" "$CURRENT_DATE"
-            echo "🔄  Synced (Formatting): $path"
-            SYNCED_COUNT=$((SYNCED_COUNT + 1))
-        else
-            echo "⏩  Skipping (Registry filled): $path"
-        fi
-        SKIPPED_COUNT=$((SKIPPED_COUNT + 1))
-        continue
-    fi
-
-    # 2. 자동화 비대상(X) 또는 SKIP 태그 확인
-    if [[ "$auto" == "X" ]] || [[ "$purpose" == *"[SKIP]"* ]]; then
-        # SKIP 대상도 날짜가 비어있으면 오늘 날짜로 채워줌
-        current_date_val=$(echo "$date" | xargs)
-        if [ -z "$current_date_val" ] || [[ "$current_date_val" == "-" ]]; then
-             update_registry_entry "$path" "$value" "$CURRENT_DATE"
-        fi
-        echo "⏩  Skipping (X/[SKIP]): $path"
-        SKIPPED_COUNT=$((SKIPPED_COUNT + 1))
-        continue
-    fi
-
-    # 3. 시크릿 생성 및 업데이트
-    mkdir -p "$(dirname "$path")"
-    if [ -s "$path" ] && [ "$SET_FORCE" = true ]; then
-        cp "$path" "${path}.bak"
-        BACKUP_COUNT=$((BACKUP_COUNT + 1))
-    fi
-
-    RAW_PASS=$(generate_password)
-    NEW_CONTENT=""
-    REGISTRY_VALUE=""
-
-    if [[ "$path" == *"traefik_basicauth"* ]] || [[ "$path" == *"traefik_opensearch_basicauth"* ]]; then
-        NEW_CONTENT=$(generate_htpasswd "$LAST_ID" "$RAW_PASS")
-        REGISTRY_VALUE=$(echo "$NEW_CONTENT" | cut -c 1-20)...
-        echo "🔑 Created htpasswd for $LAST_ID -> $path"
-    else
-        NEW_CONTENT="$RAW_PASS"
-        REGISTRY_VALUE="$RAW_PASS"
-        echo "🎲 Created Password -> $path"
-    fi
-
-    # 파일 저장 및 레지스트리 갱신
-    echo -n "$NEW_CONTENT" > "$path"
-    update_registry_entry "$path" "$REGISTRY_VALUE" "$CURRENT_DATE"
-    GENERATED_COUNT=$((GENERATED_COUNT + 1))
-
-    # 서브쉘 카운트 유지
-    echo "$GENERATED_COUNT" > /tmp/gen_count
-    echo "$SKIPPED_COUNT" > /tmp/skip_count
-    echo "$SYNCED_COUNT" > /tmp/sync_count
-    echo "$BACKUP_COUNT" > /tmp/bak_count
 done
 
-# 카운트 복구
-if [ -f /tmp/gen_count ]; then
-    GENERATED_COUNT=$(cat /tmp/gen_count)
-    SKIPPED_COUNT=$(cat /tmp/skip_count)
-    SYNCED_COUNT=$(cat /tmp/sync_count)
-    BACKUP_COUNT=$(cat /tmp/bak_count)
-    rm /tmp/gen_count /tmp/skip_count /tmp/sync_count /tmp/bak_count
+# Initialize target file if not exists
+if [ ! -f "$TARGET_FILE" ]; then
+    echo -e "${YELLOW}Initializing ${TARGET_FILE} from example...${NC}"
+    cp "$EXAMPLE_FILE" "$TARGET_FILE"
 fi
 
-echo "----------------------------------------------------------------"
-echo "✅ 작업 완료!"
-echo "✨ 생성됨: ${GENERATED_COUNT} 개"
-echo "🔄  동기화됨: ${SYNCED_COUNT} 개"
-echo "📦 백업됨: ${BACKUP_COUNT} 개"
-echo "⏭️  건너뜀: ${SKIPPED_COUNT} 개"
-echo "----------------------------------------------------------------"
+# Load .env variables into a temporary file
+TEMP_ENV=$(mktemp)
+if [ -f "$ENV_FILE" ]; then
+    # Clean up .env: remove comments, empty lines, and trim spaces
+    grep -v '^[[:space:]]*#' "$ENV_FILE" | grep -v '^[[:space:]]*$' | sed 's/[[:space:]]*=[[:space:]]*/=/' > "$TEMP_ENV" || true
+fi
+
+# Store values in a temporary directory
+VAL_DIR=$(mktemp -d)
+trap 'rm -rf "$VAL_DIR" "$TEMP_ENV"' EXIT
+
+get_env_val() {
+    local var_name=$1
+    [ -z "$var_name" ] || [ "$var_name" == "-" ] && return 1
+    # Find the variable and extract value, removing quotes and tailing comments
+    local val=$(grep "^[[:space:]]*${var_name}=" "$TEMP_ENV" | head -n 1 | cut -d'=' -f2- | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//" -e 's/[[:space:]]*#.*$//')
+    if [ -n "$val" ]; then
+        echo -n "$val"
+        return 0
+    fi
+    return 1
+}
+
+gen_password() {
+    LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 16
+}
+
+echo -e "${BLUE}Processing secrets...${NC}"
+
+# First pass: Collect metadata and generate/sync values
+while IFS= read -r line; do
+    if [[ "$line" =~ ^[[:space:]]*"|" ]]; then
+        # Skip header and separator rows specifically
+        if [[ "$line" =~ "| ID |" ]] || [[ "$line" =~ "| :---" ]]; then
+            continue
+        fi
+
+        # Extract columns
+        ID=$(echo "$line" | cut -d'|' -f2 | xargs | tr -d '*')
+        AUTO=$(echo "$line" | cut -d'|' -f3 | xargs | tr -d '`')
+        VALUE_RAW=$(echo "$line" | cut -d'|' -f5 | xargs)
+        VALUE=$(echo "$VALUE_RAW" | tr -d '`')
+        ENV_VAR=$(echo "$line" | cut -d'|' -f6 | xargs | tr -d '`')
+        FILE_PATH=$(echo "$line" | cut -d'|' -f7 | xargs | tr -d '`')
+
+        [ -z "$ID" ] && continue
+        # htpasswd entries are handled separately because they depend on other values
+        [[ "$ID" == "INFRA-003" || "$ID" == "INFRA-004" ]] && continue
+
+        NEW_VALUE=""
+        FULL_PATH=""
+        if [ -n "$FILE_PATH" ] && [ "$FILE_PATH" != "-" ]; then
+            FULL_PATH="${REPO_ROOT}/${FILE_PATH}"
+        fi
+
+        # Check if file exists and has content - prioritize THIS over generation
+        if [ -n "$FULL_PATH" ] && [ -s "$FULL_PATH" ]; then
+            NEW_VALUE=$(cat "$FULL_PATH")
+        # Match placeholder if value starts with '(' and contains '비어있음'
+        elif [[ -z "$VALUE" ]] || [[ "$VALUE" == *"비어있음"* ]] || [[ "$VALUE" == "(empty)" ]]; then
+            # Priority 1: .env check
+            ENV_VAL=$(get_env_val "$ENV_VAR" || echo "")
+            if [ -n "$ENV_VAL" ]; then
+                NEW_VALUE="$ENV_VAL"
+            elif [ "$AUTO" == "O" ]; then
+                NEW_VALUE=$(gen_password)
+            fi
+        else
+            # Keep existing value in the Markdown
+            NEW_VALUE="$VALUE"
+        fi
+
+        if [ -n "$NEW_VALUE" ]; then
+            echo -n "$NEW_VALUE" > "$VAL_DIR/$ID"
+            if [ -n "$FULL_PATH" ]; then
+                if [ ! -f "$FULL_PATH" ] || [ ! -s "$FULL_PATH" ]; then
+                    mkdir -p "$(dirname "$FULL_PATH")"
+                    echo -n "$NEW_VALUE" > "$FULL_PATH"
+                fi
+            fi
+        fi
+    fi
+done < "$TARGET_FILE"
+
+# Second pass: Handle special dependencies (htpasswd)
+process_htpasswd() {
+    local target_id=$1
+    local user_id=$2
+    local pass_id=$3
+    local target_file_path=$4
+
+    local full_path=""
+    if [ -n "$target_file_path" ]; then
+        full_path="${REPO_ROOT}/${target_file_path}"
+    fi
+
+    # Even for hashed values, if the file exists, we should probably stick to it
+    if [ -n "$full_path" ] && [ -s "$full_path" ]; then
+        local existing=$(cat "$full_path")
+        echo -n "$existing" > "$VAL_DIR/$target_id"
+        return
+    fi
+
+    local user_val=$(cat "$VAL_DIR/$user_id" 2>/dev/null || echo "")
+    local pass_val=$(cat "$VAL_DIR/$pass_id" 2>/dev/null || echo "")
+
+    if [ -n "$user_val" ] && [ -n "$pass_val" ]; then
+        local hashed=$(htpasswd -nb "$user_val" "$pass_val" | xargs)
+        echo -n "$hashed" > "$VAL_DIR/$target_id"
+        if [ -n "$full_path" ]; then
+            mkdir -p "$(dirname "$full_path")"
+            echo -n "$hashed" > "$full_path"
+        fi
+    fi
+}
+
+process_htpasswd "INFRA-003" "INFRA-001" "INFRA-002" "secrets/auth/traefik_basicauth_password.txt"
+process_htpasswd "INFRA-004" "OBS-003" "OBS-004" "secrets/auth/traefik_opensearch_basicauth_password.txt"
+
+# Third pass: Update the Markdown target file
+echo -e "${BLUE}Updating Markdown registry...${NC}"
+FINAL_TEMP=$(mktemp)
+
+while IFS= read -r line; do
+    if [[ "$line" =~ ^[[:space:]]*"|" ]]; then
+        if [[ "$line" =~ "| ID |" ]] || [[ "$line" =~ "| :---" ]]; then
+            echo "$line" >> "$FINAL_TEMP"
+            continue
+        fi
+
+        ID=$(echo "$line" | cut -d'|' -f2 | xargs | tr -d '*')
+
+        # Check if we have a value for this ID
+        if [ -n "$ID" ] && [ -f "$VAL_DIR/$ID" ]; then
+            VAL=$(cat "$VAL_DIR/$ID")
+            
+            # Extract current value from the line to see if it changed
+            CURRENT_VAL=$(echo "$line" | cut -d'|' -f5 | xargs | tr -d '`')
+            
+            # If value changed OR it was a placeholder, update row and date
+            if [[ "$VAL" != "$CURRENT_VAL" ]] || [[ "$CURRENT_VAL" == *"비어있음"* ]]; then
+                echo "$line" | awk -F'|' -v v="$VAL" -v d="$CURRENT_DATE" 'BEGIN {OFS="|"} {
+                    if (length(v) > 0) { $5 = " `"v"` "; }
+                    else { $5 = " (비어있음) "; }
+                    $8 = " "d" ";
+                    print $0;
+                }' >> "$FINAL_TEMP"
+            else
+                # Value matches existing non-placeholder, keep row as is (don't update date)
+                echo "$line" >> "$FINAL_TEMP"
+            fi
+        else
+            echo "$line" >> "$FINAL_TEMP"
+        fi
+    else
+        if [[ "$line" =~ "마지막 업데이트:" ]]; then
+            echo "*마지막 업데이트: ${CURRENT_DATE}* (스크립트 자동 갱신 완료)" >> "$FINAL_TEMP"
+        else
+            echo "$line" >> "$FINAL_TEMP"
+        fi
+    fi
+done < "$TARGET_FILE"
+
+mv "$FINAL_TEMP" "$TARGET_FILE"
+
+echo -e "${GREEN}Processing complete!${NC}"
+echo -e "Registry updated: ${TARGET_FILE}"
