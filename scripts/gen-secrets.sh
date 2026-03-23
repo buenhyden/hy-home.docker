@@ -70,6 +70,7 @@ while IFS= read -r line; do
     if [[ "$line" =~ ^[[:space:]]*"|" ]]; then
         # Skip header and separator rows specifically
         if [[ "$line" =~ "| ID |" ]] || [[ "$line" =~ "| :---" ]]; then
+            echo "$line" >> /dev/null # just to keep IFS consistent if needed
             continue
         fi
 
@@ -91,7 +92,8 @@ while IFS= read -r line; do
             FULL_PATH="${REPO_ROOT}/${FILE_PATH}"
         fi
 
-        # Check if file exists and has content - prioritize THIS over generation
+        # 1. NEW LOGIC: Always check VAL_DIR if we already processed it (should not happen in pass 1 but good for safety)
+        # 2. Check if file exists and has content - prioritize THIS over generation
         if [ -n "$FULL_PATH" ] && [ -s "$FULL_PATH" ]; then
             NEW_VALUE=$(cat "$FULL_PATH")
         # Match placeholder if value starts with '(' and contains '비어있음'
@@ -121,34 +123,34 @@ while IFS= read -r line; do
 done < "$TARGET_FILE"
 
 # Second pass: Handle special dependencies (htpasswd)
+# CRITICAL: Always regenerate hash if source values (ID/PW) are available in VAL_DIR
 process_htpasswd() {
     local target_id=$1
     local user_id=$2
     local pass_id=$3
     local target_file_path=$4
 
-    local full_path=""
-    if [ -n "$target_file_path" ]; then
-        full_path="${REPO_ROOT}/${target_file_path}"
-    fi
-
-    # Even for hashed values, if the file exists, we should probably stick to it
-    if [ -n "$full_path" ] && [ -s "$full_path" ]; then
-        local existing=$(cat "$full_path")
-        echo -n "$existing" > "$VAL_DIR/$target_id"
-        return
-    fi
-
     local user_val=$(cat "$VAL_DIR/$user_id" 2>/dev/null || echo "")
     local pass_val=$(cat "$VAL_DIR/$pass_id" 2>/dev/null || echo "")
 
     if [ -n "$user_val" ] && [ -n "$pass_val" ]; then
+        local full_path="${REPO_ROOT}/${target_file_path}"
         local hashed=$(htpasswd -nb "$user_val" "$pass_val" | xargs)
-        echo -n "$hashed" > "$VAL_DIR/$target_id"
-        if [ -n "$full_path" ]; then
+        
+        # If the file already exists, we MUST check if it matches our new hash
+        if [ -f "$full_path" ] && [ -s "$full_path" ]; then
+            local existing=$(cat "$full_path")
+            # If they differ, we overwrite both the file and the registry to maintain consistency
+            if [ "$hashed" != "$existing" ]; then
+                echo -e "${YELLOW}Updating htpasswd hash for $target_id to match current ID/PW...${NC}"
+                echo -n "$hashed" > "$full_path"
+            fi
+        else
             mkdir -p "$(dirname "$full_path")"
             echo -n "$hashed" > "$full_path"
         fi
+        
+        echo -n "$hashed" > "$VAL_DIR/$target_id"
     fi
 }
 
@@ -175,7 +177,8 @@ while IFS= read -r line; do
             # Extract current value from the line to see if it changed
             CURRENT_VAL=$(echo "$line" | cut -d'|' -f5 | xargs | tr -d '`')
             
-            # If value changed OR it was a placeholder, update row and date
+            # If value changed OR it was a placeholder OR if it's a derived hash that might have changed
+            # we update row and date.
             if [[ "$VAL" != "$CURRENT_VAL" ]] || [[ "$CURRENT_VAL" == *"비어있음"* ]]; then
                 echo "$line" | awk -F'|' -v v="$VAL" -v d="$CURRENT_DATE" 'BEGIN {OFS="|"} {
                     if (length(v) > 0) { $5 = " `"v"` "; }

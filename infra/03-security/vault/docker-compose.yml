@@ -78,6 +78,11 @@ services:
     image: hashicorp/vault:1.21.4
     container_name: vault-agent
     restart: unless-stopped
+    cap_add:
+      - IPC_LOCK
+      - SETFCAP
+      - SETGID # su-exec: setgroups 에러 해결용
+      - SETUID # 사용자 ID 전환 권한
     depends_on:
       vault:
         condition: service_healthy
