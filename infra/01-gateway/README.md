@@ -1,50 +1,45 @@
+---
+layer: infra
+---
+
 # Gateway Infrastructure (01-gateway)
 
-The Gateway tier provides the primary ingress point for all external and cross-network traffic. It utilizes **Traefik** as the dynamic edge router and **Nginx** as a high-performance secondary proxy for path-based routing.
+The `01-gateway` tier is the unified entry point for all traffic entering the `hy-home.docker` ecosystem. It orchestrates routing, TLS termination, and security middlewares.
 
 ## Services Architecture
 
-| Service | Profile | Status | Role | Observability |
+The stack consists of a primary dynamic router (Traefik) and an optional path-based proxy (Nginx).
+
+| Service | Profile | Status | Role | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| **Traefik** | `core` | Primary | Edge Router / Reverse Proxy | Metrics, Traces |
-| **Nginx** | `nginx` | Optional | Static / Path-based Proxy | Logs |
+| **Traefik** | `core`, `dev` | **Primary** | Edge Router | Dynamic routing via Docker labels, TLS termination. |
+| **Nginx** | `nginx` | Optional | Path Proxy | Specialized path-based routing and legacy proxying. |
 
-## Deployment & Profiles
+## Port Inventory
 
-- **Default (Traefik)**: Enabled via `core` profile. Handles standard `Host()` based routing for most services.
-- **Optional (Nginx)**: Enabled via `nginx` profile. Used for specialized `location` block requirements or legacy migration.
+The gateway manages host-level ports to route traffic to internal services.
 
-> [!IMPORTANT]
-> Both Traefik and Nginx bind to host ports **80** and **443**. They cannot be active at the same time on the same host interface without port remapping.
-
-## Operational Overview
-
-### Port Mapping
-
-| Host Bind | Internal Port | Protocol | Purpose |
+| Port | Protocol | Service | Purpose |
 | :--- | :--- | :--- | :--- |
-| `80` | `80` | HTTP | Redirect to HTTPS |
-| `443` | `443` | HTTPS | Secure Entrypoint |
-| `8080/dash` | `8080` | HTTP | Traefik API/Dashboard |
+| `80` | TCP | Gateway | HTTP Ingress (Redirects to 443) |
+| `443` | TCP | Gateway | HTTPS Ingress (Primary Entrypoint) |
+| `8080` | TCP | Traefik | Admin Dashboard (Host: `dashboard.${DEFAULT_URL}`) |
+| `8082` | TCP | Traefik | Health Check / Metrics (Internal) |
+| `7687` | TCP | Traefik | Neo4j Bolt Protocol (TCP Passthrough) |
 
-### Certificate Strategy
+## Configuration Mapping
 
-Both gateways share certificates from the root `secrets/certs` directory, typically generated via `mkcert` for local development.
+| Component | Path | Role |
+| :--- | :--- | :--- |
+| **Traefik Static** | [`./traefik/config/traefik.yml`](./traefik/config/traefik.yml) | Entrypoints, Providers, Log Level. |
+| **Traefik Dynamic** | [`./traefik/dynamic/`](./traefik/dynamic/) | Middlewares, TLS options, hot-reloaded. |
+| **Nginx Config** | [`./nginx/config/nginx.conf`](./nginx/config/nginx.conf) | Path-based routing and SSO integration. |
 
-| Path | Purpose |
-| :--- | :--- |
-| `secrets/certs/cert.pem` | Server Certificate |
-| `secrets/certs/key.pem` | Private Key |
-| `secrets/certs/rootCA.pem` | Root Certificate Authority |
+## Documentation Hierarchy
 
-## Folder Structure
-
-- [`traefik/`](./traefik/): Main router configuration (Static `traefik.yml`, Dynamic `middleware.yml`).
-- [`nginx/`](./nginx/): Standalone Nginx configuration and `nginx.conf`.
-
-## Documentation
-
-- [Gateway Strategy](../../docs/guides/01-gateway/gateway-context.md)
-- [Traefik Ingress Guide](../../docs/guides/01-gateway/traefik-ingress-guide.md)
-- [Operations Manual](../../docs/guides/01-gateway/gateway-operations.md)
-- [Recovery Runbook](../../docs/runbooks/2026-03-15-traefik-proxy-recovery.md)
+- **Technical Reference**: Detailed configuration and operation guides.
+  - [Traefik Technical Guide](./traefik/README.md)
+  - [Nginx Technical Guide](./nginx/README.md)
+- **Conceptual Guides**: High-level architecture and operational procedures.
+  - [System Context](../../docs/guides/01-gateway/CONTEXT.md)
+  - [Procedural & Lifecycle Guides](../../docs/guides/01-gateway/PROCEDURAL.md)

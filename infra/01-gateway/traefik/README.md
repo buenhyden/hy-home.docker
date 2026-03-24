@@ -1,87 +1,65 @@
+---
+layer: infra
+---
+
 # Traefik Edge Router
 
-Traefik is the primary reverse proxy and load balancer for the Hy-Home infrastructure. It handles TLS termination, dynamic routing based on Docker labels, and authentication middleware integration.
+Traefik is the primary ingress controller for `hy-home.docker`. It handles routing, TLS termination, and middleware orchestration.
 
-## Services
+## Configuration Structure
 
-| Service   | Image                    | Role                       | Resources         | Port       |
-| :-------- | :----------------------- | :------------------------- | :---------------- | :--------- |
-| `traefik` | `traefik:v3.6.8`         | Edge Router / Reverse Proxy| 1.0 CPU / 1GB RAM | 80, 443    |
+Traefik uses a two-tier configuration model:
 
-## Networking
+1. **Static Configuration** ([`./config/traefik.yml`](./config/traefik.yml)):
+   - Defines entrypoints: `web` (80), `websecure` (443), `bolt` (7687).
+   - Configures providers: Docker (dynamic labels) and File (dynamic config directory).
+   - Sets log levels and observability (Prometheus/Metrics).
 
-Traefik binds to the host's ports (configurable via `.env`) and routes traffic via `infra_net`.
+2. **Dynamic Configuration** ([`./dynamic/`](./dynamic/)):
+   - **Middlewares** ([`middleware.yml`](./dynamic/middleware.yml)): SSO auth, headers, rate limiting.
+   - **TLS Options** ([`tls.yaml`](./dynamic/tls.yaml)): Local certificate management and cipher suites.
+   - **Hot-reloaded**: Changes in this folder are applied instantly without restarting Traefik.
 
-| Host Bind | Host Port                         | Protocol | Purpose                  |
-| :-------- | :-------------------------------- | :------- | :----------------------- |
-| `0.0.0.0` | `${HTTP_HOST_PORT}` (80)          | HTTP     | Redirect to HTTPS        |
-| `0.0.0.0` | `${HTTPS_HOST_PORT}` (443)        | HTTPS    | Main Edge Entrypoint     |
-| `0.0.0.0` | `${TRAEFIK_DASHBOARD_PORT}`       | Dash     | Traefik UI (Basic-Auth)  |
-| `0.0.0.0` | `${TRAEFIK_METRICS_PORT}`         | Metrics  | Prom scraping /ping      |
+## Routing Pattern
 
-## Persistence
-
-Traefik maintains state for certificates and dynamic configurations.
-
-- **Certs**: `${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs` mapped to `/certs`.
-- **Config**: `./config/traefik.yml` (Static) and `./dynamic` (Dynamic).
-
-## Configuration
-
-### Key Environment Variables
-
-| Variable                       | Description                      | Default/Example     |
-| :----------------------------- | :------------------------------- | :------------------ |
-| `DEFAULT_URL`                  | Parent domain                    | `hy-home.com`       |
-| `DEFAULT_DOCKER_PROJECT_PATH`          | Root host path                   | `/opt/hy-home`      |
-| `HTTP_HOST_PORT`               | Host HTTP Port                   | `80`                |
-| `HTTPS_HOST_PORT`              | Host HTTPS Port                  | `443`               |
-| `TRAEFIK_DASHBOARD_HOST_PORT`  | Dashboard Port                   | `8080`              |
-
-### Dashboard Security
-
-The Traefik dashboard is protected by **basic auth** (Docker secret file mounted at `/run/secrets/traefik_basicauth_password`).
-
-- **Endpoint**: `https://dashboard.${DEFAULT_URL}`
-- **Auth**: `dashboard-auth@file` middleware (see `dynamic/middleware.yml`).
-
-## Integration Guides
-
-### Adding a New Service to Traefik
-
-To expose a new service via Traefik, add the following labels to its `docker-compose.yml`:
+Services are exposed by adding labels to their `docker-compose.yml` service definition:
 
 ```yaml
 labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.myservice.rule=Host(`myservice.${DEFAULT_URL}`)"
-  - "traefik.http.routers.myservice.entrypoints=websecure"
-  - "traefik.http.routers.myservice.tls=true"
-  - "traefik.http.services.myservice.loadbalancer.server.port=8080"
+  traefik.enable: "true"
+  traefik.http.routers.<name>.rule: Host(`<subdomain>.${DEFAULT_URL}`)
+  traefik.http.routers.<name>.entrypoints: websecure
+  traefik.http.routers.<name>.tls: "true"
+  traefik.http.services.<name>.loadbalancer.server.port: "<port>"
 ```
 
-### SSO (OAuth2 Proxy) Integration
+### Identity & SSO Protection
 
-To protect a service with Keycloak SSO, add the `sso-auth@file` middleware to your router labels:
+To protect a service with SSO, apply the `sso-auth@file` middleware:
 
 ```yaml
 labels:
-  - "traefik.http.routers.myservice.middlewares=sso-auth@file"
+  traefik.http.routers.<name>.middlewares: sso-auth@file
 ```
 
-## File Map
+## Operations
 
-| Path                       | Description                                |
-| -------------------------- | ------------------------------------------ |
-| `docker-compose.yml`       | Service definition and host port bindings. |
-| `config/traefik.yml`       | Static configuration (entrypoints, logs).  |
-| `dynamic/middleware.yml`   | Dynamic config (SSO + basic auth middleware). |
-| `dynamic/tls.yaml`         | Local TLS configuration. |
-| `README.md`                | Overview and routing guides.               |
+### Lifecycle Commands
 
-## Documentation References
+- **Start**: `docker compose up -d`
+- **Restart**: `docker compose restart` (Required for `traefik.yml` or `docker-compose.yml` changes)
+- **Check Logs**: `docker compose logs -f traefik`
 
-- **Edge Spec**: [traefik-ingress-guide.md](../../../docs/guides/01-gateway/traefik-ingress-guide.md)
-- **Operations**: [gateway-operations.md](../../../docs/guides/01-gateway/gateway-operations.md)
-- **Local SSL**: [mkcert.md](../../../docs/guides/01-gateway/mkcert.md)
-- **Recovery**: [2026-03-15-traefik-proxy-recovery.md](../../../docs/runbooks/2026-03-15-traefik-proxy-recovery.md)
+### Verification
+
+| Method | Command / Action |
+| :--- | :--- |
+| **Dashboard** | Visit `https://dashboard.${DEFAULT_URL}` |
+| **Health Check** | `docker exec traefik traefik healthcheck --ping` |
+| **Metrics** | `curl http://localhost:8082/metrics` |
+
+## Dependencies
+
+- **Docker Socket**: Used for dynamic service discovery.
+- **Certificates**: Mounted from `secrets/certs/`.
+- **Auth Tier**: Depends on `02-auth` (OAuth2 Proxy) for the `sso-auth` middleware.

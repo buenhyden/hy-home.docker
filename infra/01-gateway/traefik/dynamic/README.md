@@ -1,12 +1,10 @@
+---
+layer: infra
+---
+
 # Traefik Dynamic Configuration
 
-This directory contains configuration that Traefik watches and hot-reloads without restarts.
+Configurations in this directory are hot-reloaded by Traefik without requiring a restart.
 
-## Files
-
-- `middleware.yml`: Defines reusable security and transport rules.
-  - `sso-auth`: OAuth2 Proxy integration for service protection.
-  - `opensearch-transport`: Configures TLS trust for OpenSearch backends.
-  - `req-rate-limit`: Global rate limiting rules.
-- `tls.yaml`: Configures certificates and stores.
-  - Points to `/certs/cert.pem` and `/certs/key.pem` generated via `mkcert`.
+- **middleware.yml**: Defines reusable middlewares like `sso-auth` (ForwardAuth) and `dashboard-auth` (BasicAuth).
+- **tls.yaml**: Defines the default TLS store and certificate locations.

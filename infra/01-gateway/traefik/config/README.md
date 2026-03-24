@@ -1,9 +1,9 @@
+---
+layer: infra
+---
+
 # Traefik Static Configuration
 
-This directory contains the static configuration for Traefik.
+This folder contains the static configuration for Traefik.
 
-- `traefik.yml`: Main static configuration.
-  - Configures `web` (80) and `websecure` (443) entrypoints.
-  - Enables Docker provider for label-based routing.
-  - Enables File provider for dynamic configuration (in `../dynamic`).
-  - **Observability**: Configures Prometheus metrics and OTLP tracing (Tempo).
+- **traefik.yml**: The main configuration file. It defines the entrypoints (80, 443, 8082), the Docker provider, and the file provider for dynamic configurations in `/dynamic/`.

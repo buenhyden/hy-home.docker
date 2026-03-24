@@ -1,35 +1,57 @@
-# Nginx Gateway
+---
+layer: infra
+---
 
-Nginx acts as an optional, path-based reverse proxy or standalone gateway for specific sub-services.
+# Nginx Secondary Proxy
 
-## Services
+Nginx serves as a secondary gateway in the `hy-home.docker` ecosystem, providing specialized path-based routing, static file serving, and legacy proxy configurations.
 
-| Service | Image            | Role              | Resources       | Profile  |
-| :------ | :--------------- | :---------------- | :-------------- | :------- |
-| `nginx` | `nginx:alpine`   | Lightweight Proxy | 0.5 CPU / 512MB | `nginx`  |
+## Role & Usage
 
-| Host Port | Internal Port | Protocol | Shared with Traefik? |
-| :-------- | :------------ | :------- | :------------------- |
-| `80`      | `80`          | HTTP     | Yes (Conflict)       |
-| `443`     | `443`         | HTTPS    | Yes (Conflict)       |
+While Traefik is the primary dynamic router, Nginx is used when:
+- Complex path-based routing or rewrites are required.
+- Serving static assets directly from the filesystem.
+- Specialized proxy buffers or timeout configurations are needed.
 
-- **Config**: Mounts `./config/nginx.conf` for fine-grained routing.
-- **Traffic**: Redirects all HTTP traffic to HTTPS via TLS.
+## Configuration
 
-## Persistence
+- **Main Config** ([`./config/nginx.conf`](./config/nginx.conf)): The primary configuration file, mounted to `/etc/nginx/nginx.conf`.
+- **Certificates**: Mounted from `../../../../secrets/certs/` to `/etc/nginx/certs/`.
 
-- **Certs**: `nginx_certs` volume mapped to `${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs`.
+## SSO & Identity Integration
 
-| Path                 | Role                                   |
-| :------------------- | :------------------------------------- |
-| `docker-compose.yml` | Resource limits (template-infra-low).  |
-| `config/nginx.conf`  | Virtual hosts / SSO / Proxy definitions. |
+Nginx integrates with `02-auth` (OAuth2 Proxy) using the `auth_request` module. This allows Nginx to verify user sessions before forwarding traffic to backend services.
 
-## Routing Patterns
+### Auth Request Pattern
 
-| Path Endpoint      | Upstream Service | Feature           |
-| :----------------- | :--------------- | :---------------- |
-| `/oauth2/`         | `oauth2-proxy`   | Auth Provider     |
-| `/keycloak/`       | `keycloak`       | Identity Server   |
-| `/minio/`          | `minio`          | Object Storage    |
-| `/minio-console/`  | `minio-console`  | Console Admin UI  |
+```nginx
+location /protected/ {
+    auth_request /_oauth2_auth_check;
+    error_page 401 = /oauth2/sign_in;
+    
+    # Pass user headers to backend
+    auth_request_set $user   $upstream_http_x_auth_request_user;
+    auth_request_set $email  $upstream_http_x_auth_request_email;
+    proxy_set_header X-User  $user;
+    proxy_set_header X-Email $email;
+}
+```
+
+## Operations
+
+### Lifecycle Commands
+
+- **Start**: `docker compose up -d nginx`
+- **Stop**: `docker compose stop nginx`
+- **Restart**: `docker compose restart nginx`
+
+### Maintenance
+
+- **Validate Configuration**: `docker exec nginx nginx -t`
+- **Hot Reload**: `docker exec nginx nginx -s reload` (Reloads configuration without dropped connections)
+- **Check Logs**: `docker compose logs -f nginx`
+
+## Dependencies
+
+- **Secrets**: Requires valid TLS certificates in `secrets/certs/`.
+- **Auth Tier**: Depends on `02-auth` (OAuth2 Proxy) for `auth_request` verification.
