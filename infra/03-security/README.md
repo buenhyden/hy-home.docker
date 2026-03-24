@@ -1,38 +1,46 @@
-# Security (03-security)
+# Security Tier (03-security)
 
-This tier manages secret storage and encryption-as-a-service for the entire platform. All other tiers that need passwords, API keys, or tokens should source them from Vault rather than environment variables.
+<!-- [ID:03-security:root] -->
+: Centralized secret management, encryption-as-a-service, and identity-based access.
 
-## Services
+---
 
-| Service | Profile | Path | Purpose |
+## Navigation Map
+
+### Infrastructure
+- **[Vault](./vault/README.md)**: Central secret storage and Raft-backed persistence.
+- **[Vault Agent](./vault/README.md)**: Sidecar for secret injection and auto-auth.
+
+### Documentation (Golden 5)
+- **[Guides](../../docs/07.guides/03-security/README.md)**: Setup, bootstrapping, and unseal workflows.
+- **[Context](../../docs/07.guides/03-security/README.md)**: Architecture, data flow, and threat model.
+- **[Operations](../../docs/08.operations/03-security/README.md)**: Seal/unseal protocols and security governance.
+- **[Runbooks](../../docs/09.runbooks/03-security/README.md)**: Emergency recovery and lost key procedures.
+
+---
+
+## Tier Overview
+
+The `03-security` tier is the platform's root of trust. It provides HashiCorp Vault as the primary secrets engine, ensuring that sensitive data like passwords, API keys, and certificates are never stored in plain text or exposed in version control.
+
+### Service Matrix
+
+| Service | Role | Data Store | Profile |
 | :--- | :--- | :--- | :--- |
-| `vault` | `core` | `./vault` | Central secret management and Raft-backed storage |
+| **Vault** | Server (Root of Trust) | Raft | `core` |
+| **Vault Agent** | Sidecar / Consumer | Local File / Memory | `core` |
 
-## Startup dependency
+## Core Principles
 
-> **Vault must be manually unsealed after every restart** before dependent services can read secrets. See [vault-procedural.md](../../docs/guides/03-security/vault-procedural.md) for the bootstrap and unseal workflow.
+1.  **Encryption at Rest**: All secrets stored in Vault are encrypted using AES-256-GCM.
+2.  **Identity-Based Access**: Access to secrets is governed by Vault policies linked to AppRoles or User IDs.
+3.  **Manual Unseal**: To ensure security, Vault must be manually unsealed by authorized operators after every restart.
+4.  **No Plaintext Secrets**: Infrastructure components must fetch secrets JIT (Just-In-Time) from Vault.
 
-Initialization is a one-time operation per environment. It produces 5 unseal keys and a root token — store these in a separate secrets manager or offline storage.
+---
 
-## Dependencies
+## Support & Governance
 
-| Dependency | Purpose |
-| :--- | :--- |
-| `traefik` (01-gateway) | SSL termination and routing to `vault.${DEFAULT_URL}` |
-| Host filesystem | Raft data stored at `${DEFAULT_SECURITY_DIR}/vault` |
-
-## File map
-
-| Path | Description |
-| :--- | :--- |
-| `vault/` | Vault service, HCL config, and service README |
-| `README.md` | This document — tier overview |
-
-## Guides
-
-| Guide | Purpose |
-| :--- | :--- |
-| [vault-context.md](../../docs/guides/03-security/vault-context.md) | Architecture, data flow, what depends on Vault |
-| [vault-cluster-guide.md](../../docs/guides/03-security/vault-cluster-guide.md) | Security posture, policies, AppRole |
-| [vault-procedural.md](../../docs/guides/03-security/vault-procedural.md) | Step-by-step bootstrap and configuration |
-| [vault-lifecycle.md](../../docs/guides/03-security/vault-lifecycle.md) | Backup, restore, rotation, upgrade |
+- **Maintainer**: Security Operations
+- **SLA**: 99.9% availability for the unsealed state.
+- **Audit**: All requests to Vault are logged and audited for compliance.
