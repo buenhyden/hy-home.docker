@@ -27,7 +27,7 @@ To establish a high-performance, compliant, and well-organized documentation sys
 
 ## Requirements
 
-- **[REQ-STAN-FUN-01] Template Compliance**: All documentation must follow the canonical templates in `templates/`.
+- **[REQ-STAN-FUN-01] Template Compliance**: All documentation must follow the canonical templates in `docs/templates/`.
 - **[REQ-STAN-FUN-02] Metadata Enforcement**: Every document must include `layer` metadata in the frontmatter.
 - **[REQ-STAN-FUN-03] Path Alignment**: Documentation paths must align with user specifications.
   - ADR: `docs/adr/`

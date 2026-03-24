@@ -56,14 +56,14 @@ This repository is a Docker Compose infrastructure workspace for local and homel
 ## Template Usage Contract
 
 - [ADR 0017: Flat Documentation Taxonomy](../adr/2026-02-27-0017-flat-documentation-taxonomy.md)
-- [PRD Template](../../templates/prd-template.md)
-- [ARD Template](../../templates/ard-template.md)
-- [ADR Template](../../templates/adr-template.md)
-- [Spec Template](../../templates/spec-template.md)
-- [Plan Template](../../templates/plan-template.md)
-- [Runbook Template](../../templates/runbook-template.md)
-- [Incident Template](../../templates/incident-template.md)
-- [Postmortem Template](../../templates/postmortem-template.md)
+- [PRD Specification](../docs/templates/prd.md)
+- [ARD Specification](../docs/templates/ard.md)
+- [ADR Recommendation](../docs/templates/adr.md)
+- [Technical Spec](../docs/templates/spec.md)
+- [Implementation Plan](../docs/templates/plan.md)
+- [Runbook Guide](../docs/templates/runbook.md)
+- [Incident Report](../docs/templates/incident.md)
+- [Postmortem Guide](../docs/templates/postmortem.md)
 
 ## Link And Truth Rules
 

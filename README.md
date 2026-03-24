@@ -273,23 +273,9 @@ hy-home.docker/
 │   ├── plans/            # Implementation plans
 │   ├── prd/              # Product Requirements Documents
 │   ├── runbooks/         # Executable runbooks
-│   └── specs/            # Technical specifications
+│   ├── specs/            # Technical specifications
+│   └── templates/        # Markdown templates for engineering and product docs
 ├── examples/             # Example assets and supporting reference material
-├── infra/                # Tiered service definitions grouped by platform domain
-│   ├── 01-gateway/
-│   ├── 02-auth/
-│   ├── 03-security/
-│   ├── 04-data/
-│   ├── 05-messaging/
-│   ├── 06-observability/
-│   ├── 07-workflow/
-│   ├── 08-ai/
-│   ├── 09-tooling/
-│   └── 10-communication/
-├── projects/             # Example or companion application projects
-├── scripts/              # Bootstrap, validation, and maintenance scripts
-├── secrets/              # File-backed Docker secrets and generated certs
-├── templates/            # Markdown templates for engineering and product docs
 ├── tests/                # Global testing policy and cross-cutting test assets
 ├── AGENTS.md             # Cross-agent working contract for this repository
 ├── ARCHITECTURE.md       # Global architecture rules and runtime topology

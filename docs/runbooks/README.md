@@ -48,7 +48,7 @@ This directory is the **exclusive, authoritative home** for all executable proce
 
 ## 📐 Operational Standards
 
-Every runbook MUST follow the 8-section template from [`../../templates/runbook-template.md`](../../templates/runbook-template.md).
+Every runbook MUST follow the 8-section template from [`../templates/runbook.md`](../templates/runbook.md).
 
 ---
 > [!IMPORTANT]

@@ -45,7 +45,7 @@ bash scripts/validate-docker-compose.sh
 bash scripts/preflight-compose.sh
 docker compose config
 docker compose up -d
-rg -n 'file://|templates/(architecture|product|operations)/|\]\(/specs/' AGENTS.md CLAUDE.md GEMINI.md .claude docs
+rg -n 'file://|docs/templates/(architecture|product|operations)/|\]\(/specs/' AGENTS.md CLAUDE.md GEMINI.md .claude docs
 ```
 
 ## Root-File Maintenance Rules

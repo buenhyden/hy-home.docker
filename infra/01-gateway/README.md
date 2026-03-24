@@ -1,45 +1,69 @@
----
-layer: infra
----
+# 🌐 Gateway Tier (01-gateway)
 
-# Gateway Infrastructure (01-gateway)
+> Unified entry point for all traffic, orchestrating routing, TLS, and security.
 
-The `01-gateway` tier is the unified entry point for all traffic entering the `hy-home.docker` ecosystem. It orchestrates routing, TLS termination, and security middlewares.
+## Overview
 
-## Services Architecture
+**KR**: `01-gateway` 티어는 `hy-home.docker` 생태계로 들어오는 모든 트래픽의 통합 진입점입니다. 트래픽 라우팅, TLS 종료(SSL 처리), 보안 미들웨어 체인(SSO, Rate Limit 등)을 관리합니다.
+**EN**: The `01-gateway` tier is the unified entry point for all traffic entering the `hy-home.docker` ecosystem. It orchestrates routing, TLS termination (SSL), and security middleware chains (SSO, Rate Limit, etc.).
 
-The stack consists of a primary dynamic router (Traefik) and an optional path-based proxy (Nginx).
+## Navigation / Inventory
 
-| Service | Profile | Status | Role | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| **Traefik** | `core`, `dev` | **Primary** | Edge Router | Dynamic routing via Docker labels, TLS termination. |
-| **Nginx** | `nginx` | Optional | Path Proxy | Specialized path-based routing and legacy proxying. |
-
-## Port Inventory
-
-The gateway manages host-level ports to route traffic to internal services.
-
-| Port | Protocol | Service | Purpose |
-| :--- | :--- | :--- | :--- |
-| `80` | TCP | Gateway | HTTP Ingress (Redirects to 443) |
-| `443` | TCP | Gateway | HTTPS Ingress (Primary Entrypoint) |
-| `8080` | TCP | Traefik | Admin Dashboard (Host: `dashboard.${DEFAULT_URL}`) |
-| `8082` | TCP | Traefik | Health Check / Metrics (Internal) |
-| `7687` | TCP | Traefik | Neo4j Bolt Protocol (TCP Passthrough) |
-
-## Configuration Mapping
-
-| Component | Path | Role |
+| Component | Path | Purpose |
 | :--- | :--- | :--- |
-| **Traefik Static** | [`./traefik/config/traefik.yml`](./traefik/config/traefik.yml) | Entrypoints, Providers, Log Level. |
-| **Traefik Dynamic** | [`./traefik/dynamic/`](./traefik/dynamic/) | Middlewares, TLS options, hot-reloaded. |
-| **Nginx Config** | [`./nginx/config/nginx.conf`](./nginx/config/nginx.conf) | Path-based routing and SSO integration. |
+| **Traefik** | [`traefik/`](./traefik/) | Primary edge router with dynamic service discovery |
+| **Nginx** | [`nginx/`](./nginx/) | Specialized path-based proxy and static asset server |
 
-## Documentation Hierarchy
+---
 
-- **Technical Reference**: Detailed configuration and operation guides.
-  - [Traefik Technical Guide](./traefik/README.md)
-  - [Nginx Technical Guide](./nginx/README.md)
-- **Conceptual Guides**: High-level architecture and operational procedures.
-  - [System Context](../../docs/guides/01-gateway/CONTEXT.md)
-  - [Procedural & Lifecycle Guides](../../docs/guides/01-gateway/PROCEDURAL.md)
+## ⚙️ Infrastructure Details
+
+### Services & Resources
+
+| Service | Image | Role | Resources |
+| :--- | :--- | :--- | :--- |
+| `traefik` | `traefik:v3.6.8` | Primary Router | `256MB RAM` / `0.5 CPU` |
+| `nginx` | `nginx:alpine` | Path Proxy | `128MB RAM` / `0.2 CPU` |
+
+### Networking (Ports)
+
+| Port (Host) | Port (Int) | Protocol | Purpose |
+| :--- | :--- | :--- | :--- |
+| `80` | `80` | TCP | HTTP Ingress (Auto-redirect to 443) |
+| `443` | `443` | TCP | HTTPS Ingress (Primary Entrypoint) |
+| `8080` | `8080` | TCP | Traefik Dashboard (Internal) |
+| `7687` | `7687` | TCP | Neo4j Bolt (TCP Passthrough) |
+
+### Operational Commands
+
+```bash
+# Start the gateway stack
+docker compose up -d traefik
+
+# View routing logs
+docker compose logs -f traefik
+
+# Check Traefik internal health
+docker exec traefik traefik healthcheck --ping
+```
+
+---
+
+## 📚 Documentation Hub
+
+### Navigation Map
+
+| Marker | Entry Point | Use when |
+| :--- | :--- | :--- |
+| `[LOAD:CONTEXT]` | [CONTEXT.md](../../docs/guides/01-gateway/CONTEXT.md) | Understanding traffic flow and architecture |
+| `[LOAD:PROC]` | [PROCEDURAL.md](../../docs/guides/01-gateway/PROCEDURAL.md) | Managing lifecycle and certs |
+| `[LOAD:SETUP]` | [SETUP.md](../../docs/guides/01-gateway/SETUP.md) | Initial setup and domain binding |
+
+### Key Resources
+
+- [🤖 Agent Governance](/AGENTS.md)
+- [🏛️ System Architecture](/ARCHITECTURE.md)
+- [🔑 Secret Management](/secrets/README.md)
+
+---
+*Maintained by Infra & Gateway Team*

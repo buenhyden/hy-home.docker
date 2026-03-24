@@ -37,7 +37,7 @@ The repository currently exposes three root instruction files: `AGENTS.md`, `CLA
 
 ```bash
 rg -n "^@" CLAUDE.md
-rg -n 'file://|templates/(architecture|product|operations)/|\]\(/specs/' AGENTS.md CLAUDE.md GEMINI.md .claude docs
+rg -n 'file://|docs/templates/(architecture|product|operations)/|\]\(/specs/' AGENTS.md CLAUDE.md GEMINI.md .claude docs
 test -f docs/plans/2026-03-12-agent-instruction-refactor.md
 test -f docs/specs/agent-instructions/spec.md
 test -f docs/agentic/README.md
@@ -54,7 +54,7 @@ This is a documentation-only refactor. The target architecture is a progressive-
 - `docs/*/README.md` files act as stable lazy-loading indexes for the documentation families.
 
 - **Component Boundary**: Root agent entrypoints, shared `docs/agentic/*.md` guidance, and documentation-family README indexes under `docs/`.
-- **Key Dependencies**: `docs/README.md`, `templates/spec-template.md`, `templates/plan-template.md`, `.agent/rules/0000-Agents/`, `.agent/rules/2100-Documentation/`
+- **Key Dependencies**: `docs/README.md`, `docs/templates/spec-template.md`, `docs/templates/plan-template.md`, `.agent/rules/0000-Agents/`, `.agent/rules/2100-Documentation/`
 - **Tech Stack**: Markdown, relative links, shell validation with `rg` and `test`
 
 ## 2. Coded Requirements (Traceability)

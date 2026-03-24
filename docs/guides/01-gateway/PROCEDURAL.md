@@ -51,6 +51,7 @@ The system uses `mkcert` for local TLS development.
 Always verify the gateway status after any significant change.
 
 ### Connectivity Checks
+
 ```bash
 # Verify HTTP to HTTPS redirect
 curl -I http://localhost

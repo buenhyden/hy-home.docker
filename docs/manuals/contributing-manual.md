@@ -11,7 +11,7 @@ All new features require a specification in `docs/specs/`. PRs without an approv
 
 ## 2. Template Enforcement
 
-Use `templates/` for all documentation artifacts (ADR, PRD, Runbook, etc.).
+Use `docs/templates/` for all documentation artifacts (ADR, PRD, Runbook, etc.).
 
 ## 3. Quality Assurance (Pre-PR Gates)
 

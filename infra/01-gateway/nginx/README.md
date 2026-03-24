@@ -1,57 +1,48 @@
+# 🛡️ Nginx Path Proxy
+
+> Specialized high-performance proxy for path-based routing and static asset serving.
+
+## Overview
+
+**KR**: Nginx는 경로 기반의 복잡한 라우팅과 정적 자원 서빙, 그리고 `auth_request`를 이용한 세밀한 SSO 통합을 위해 사용됩니다.
+**EN**: Nginx is used for complex path-based routing, static asset serving, and fine-grained SSO integration using `auth_request`.
+
+## Navigation / Inventory
+
+| Component | Path | Purpose |
+| :--- | :--- | :--- |
+| **Nginx Config** | [`config/nginx.conf`](./config/nginx.conf) | Server blocks, upstream definitions, and auth logic |
+| **Deployment** | [`docker-compose.yml`](./docker-compose.yml) | Service definition and network mapping |
+
 ---
-layer: infra
----
 
-# Nginx Secondary Proxy
+## ⚙️ Component Details
 
-Nginx serves as a secondary gateway in the `hy-home.docker` ecosystem, providing specialized path-based routing, static file serving, and legacy proxy configurations.
+### Key Features
 
-## Role & Usage
+- **Dual Support**: Binds to 80/443 (same as Traefik, use profiles to switch).
+- **Auth Integration**: Built-in logic to check authentication against the IAM tier.
+- **Upstream Mapping**: Defined for MinIO (S3/Console), Keycloak, and OpenSearch.
 
-While Traefik is the primary dynamic router, Nginx is used when:
-- Complex path-based routing or rewrites are required.
-- Serving static assets directly from the filesystem.
-- Specialized proxy buffers or timeout configurations are needed.
+### Operational Commands
 
-## Configuration
+```bash
+# Test configuration syntax
+docker exec nginx nginx -t
 
-- **Main Config** ([`./config/nginx.conf`](./config/nginx.conf)): The primary configuration file, mounted to `/etc/nginx/nginx.conf`.
-- **Certificates**: Mounted from `../../../../secrets/certs/` to `/etc/nginx/certs/`.
+# Reload configuration without restart
+docker exec nginx nginx -s reload
 
-## SSO & Identity Integration
-
-Nginx integrates with `02-auth` (OAuth2 Proxy) using the `auth_request` module. This allows Nginx to verify user sessions before forwarding traffic to backend services.
-
-### Auth Request Pattern
-
-```nginx
-location /protected/ {
-    auth_request /_oauth2_auth_check;
-    error_page 401 = /oauth2/sign_in;
-    
-    # Pass user headers to backend
-    auth_request_set $user   $upstream_http_x_auth_request_user;
-    auth_request_set $email  $upstream_http_x_auth_request_email;
-    proxy_set_header X-User  $user;
-    proxy_set_header X-Email $email;
-}
+# Start with Nginx profile
+docker compose --profile nginx up -d nginx
 ```
 
-## Operations
+---
 
-### Lifecycle Commands
+## Extensibility & References
 
-- **Start**: `docker compose up -d nginx`
-- **Stop**: `docker compose stop nginx`
-- **Restart**: `docker compose restart nginx`
+- [🌐 Gateway Tier](../README.md)
+- [📜 Nginx Official Docs](https://nginx.org/en/docs/)
 
-### Maintenance
-
-- **Validate Configuration**: `docker exec nginx nginx -t`
-- **Hot Reload**: `docker exec nginx nginx -s reload` (Reloads configuration without dropped connections)
-- **Check Logs**: `docker compose logs -f nginx`
-
-## Dependencies
-
-- **Secrets**: Requires valid TLS certificates in `secrets/certs/`.
-- **Auth Tier**: Depends on `02-auth` (OAuth2 Proxy) for `auth_request` verification.
+---
+*Maintained by Infra Team*

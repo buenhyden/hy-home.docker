@@ -21,10 +21,12 @@
 ## 📚 Documentation Hub
 
 ### Standard Templates
-- [PRD Template](templates/prd-template.md)
-- [ARD Template](templates/ard-template.md)
-- [ADR Template](templates/adr-template.md)
-- [Spec Template](templates/spec-template.md)
+- [PRD Specification](templates/prd.md)
+- [ARD Specification](templates/ard.md)
+- [ADR Recommendation](templates/adr.md)
+- [Technical Spec](templates/spec.md)
+- [API Specification](templates/api-spec.md)
+- [Implementation Plan](templates/plan.md)
 
 ### Key Rules & Policy
 - [Agent Governance](agentic/core-governance.md)

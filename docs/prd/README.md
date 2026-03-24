@@ -30,4 +30,4 @@ layer: core
 
 ---
 > [!NOTE]
-> All PRDs must follow [`../../templates/prd-template.md`](../../templates/prd-template.md).
+> All PRDs must follow [`../templates/prd.md`](../templates/prd.md).

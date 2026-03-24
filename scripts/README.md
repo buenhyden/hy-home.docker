@@ -21,11 +21,13 @@
 ## 🛠️ Utilities & Automation
 
 ### Standard Rules
+
 - **Idempotency**: All scripts MUST be safe to run multiple times without causing corrupted state.
 - **No Secrets**: Scripts must fetch credentials from environment variables; never hardcode them.
 - **Deterministic**: Any automation added must comply with standard rules in `.agent/rules/0200-workflows-pillar-standard.md`.
 
 ### Usage Examples
+
 ```bash
 # Run preflight check
 ./scripts/preflight-compose.sh

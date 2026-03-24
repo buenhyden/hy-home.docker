@@ -45,7 +45,7 @@ List exact commands used and outcome.
 
 - [ ] I have read the `CONTRIBUTING.md` document.
 - [ ] My code strictly follows the Implementation Specification.
-- [ ] Documentation has been added/updated utilizing the `templates/` folder (if applicable).
+- [ ] Documentation has been added/updated utilizing the `docs/templates/` folder (if applicable).
 - [ ] **Commit Standard**: My Pull Request title uses Conventional Commits format.
 - [ ] I have run tests locally.
 - [ ] **Test Coverage Baseline:** I have verified unit test lines coverage is > 80% (`npm run test:coverage` or equivalent).

@@ -17,7 +17,7 @@ layer: product
 - **[REQ-ALGN-FUN-02] Intent Trigger Matrix**: Implement `[LOAD:RULES:*]` in `AGENTS.md` and `GEMINI.md`.
 - **[REQ-ALGN-FUN-03] Persona Guidance**: Direct Gemini to use higher-intelligence profiles (Reasoner) for spec/plan tasks.
 - **[REQ-ALGN-FUN-04] Skill Autonomy Clause**: "No restricted skills" must be explicitly stated in all root instruction shims.
-- **[REQ-ALGN-05] Template Consistency**: Every document must use the exact filenames specified in `templates/`.
+- **[REQ-ALGN-05] Template Consistency**: Every document must use the exact filenames specified in `docs/templates/`.
 
 ## Success Criteria
 

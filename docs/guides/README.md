@@ -4,7 +4,15 @@ This directory contains detailed technical context, blueprints, and operational 
 
 ## Directory Structure
 
-The documentation is organized into tiers matching the [`infra/`](../../infra/) directory:
+The documentation is organized into tiers matching the [`infra/`](../../infra/) directory. Each tier typically includes:
+
+- `README.md`: Tier entry point and service index.
+- `CONTEXT.md`: Architectural context and traffic flow.
+- `SETUP.md`: Initial installation and verification.
+- `USAGE.md`: Operational guides and troubleshooting.
+- `PROCEDURAL.md`: Maintenance and lifecycle procedures.
+
+### Tier Index
 
 - [01-gateway/](01-gateway/): Edge routing, ingress (Traefik, Nginx), and TLS management.
 - [02-auth/](02-auth/): Identity providers (Keycloak) and access proxies (OAuth2 Proxy).

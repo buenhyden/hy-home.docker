@@ -36,7 +36,7 @@ This repository requires a spec and plan before refactors. The current instructi
 
 - `[VAL-001]` Manually inspect the roots and shared guides and confirm no deprecated runtime-specific instructions remain.
 - `[VAL-002]` Run `rg -n "^@" CLAUDE.md` and confirm Claude imports shared guidance.
-- `[VAL-003]` Run `rg -n 'file://|templates/(architecture|product|operations)/|\]\(/specs/' AGENTS.md CLAUDE.md GEMINI.md docs` and confirm no stale links remain.
+- `[VAL-003]` Run `rg -n 'file://|docs/templates/(architecture|product|operations)/|\]\(/specs/' AGENTS.md CLAUDE.md GEMINI.md docs` and confirm no stale links remain.
 - `[VAL-004]` Run `test -f docs/specs/agent-instructions/spec.md`.
 - `[VAL-005]` Run `test -f docs/plans/2026-03-12-agent-instruction-refactor.md`.
 - `[VAL-006]` Run `test -f docs/plans/README.md`.

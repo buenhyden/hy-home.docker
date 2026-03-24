@@ -27,11 +27,13 @@
 ## 🏛️ Secret Management System
 
 ### 1. Registry (Source of Truth)
+
 - **[SENSITIVE_ENV_VARS.md](SENSITIVE_ENV_VARS.md)**: Master list of all secrets.
 - Tracks automation status, file paths, corresponding `.env` variables, and modification dates.
 - For new environments, refer to **[SENSITIVE_ENV_VARS.md.example](SENSITIVE_ENV_VARS.md.example)**.
 
 ### 2. Automation Script
+
 - **`gen-secrets.sh`**: Automatically generates password files based on the registry.
 - **Key Features**:
   - Secure random password generation (16 characters).
@@ -54,6 +56,7 @@
 | `supabase` | Data | `data/supabase_jwt_secret.txt` | JWT Signing Secret |
 
 ### Operational Commands
+
 ```bash
 # Generate/Sync all missing secrets
 ./scripts/gen-secrets.sh

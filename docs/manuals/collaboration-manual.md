@@ -11,7 +11,7 @@ layer: 'manuals'
 
 ## 2. Pre-Development (Planning)
 
-- **Planner Agent**: Use `templates/prd-template.md` and `templates/spec-template.md`.
+- **Planner Agent**: Use `docs/templates/prd.md` and `docs/templates/spec.md`.
 - **Approval**: Humans MUST approve the PRD and Spec before code generation begins.
 
 ## 3. During-Development (Implementation)
@@ -22,7 +22,7 @@ layer: 'manuals'
 ## 4. Post-Development (Review & Ops)
 
 - **Reviewer**: AI performs initial linting and security checks.
-- **DevOps**: Use `templates/runbook-template.md` to update deployment guides.
+- **DevOps**: Use `docs/templates/runbook.md` to update deployment guides.
 
 ## 5. Metadata & Layering
 

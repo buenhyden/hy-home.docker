@@ -7,5 +7,5 @@
 docs/** @buenhyden
 specs/** @buenhyden
 runbooks/** @buenhyden
-templates/** @buenhyden
+docs/templates/** @buenhyden
 .github/** @buenhyden

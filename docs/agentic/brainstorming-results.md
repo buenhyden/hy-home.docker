@@ -15,9 +15,9 @@
 
 **Goal**: Authority docs = Singular (`adr`, `ard`, `prd`). Implementation/Operations = Plural (`plans`, `specs`, `runbooks`, `operations`).
 
-- **Plans**: `docs/plans/` (template: `templates/plan-template.md`) -> **Current Status**: Partially migrated. Need to remove `docs/plan_tmp/`.
-- **Specs**: `docs/specs/` (template: `templates/spec-template.md`) -> **Current Status**: Verified.
-- **Runbooks**: `docs/runbooks/` (template: `templates/runbook-template.md`) -> **Current Status**: Verified.
+- **Plans**: `docs/plans/` (template: `docs/templates/plan-template.md`) -> **Current Status**: Partially migrated. Need to remove `docs/plan_tmp/`.
+- **Specs**: `docs/specs/` (template: `docs/templates/spec-template.md`) -> **Current Status**: Verified.
+- **Runbooks**: `docs/runbooks/` (template: `docs/templates/runbook-template.md`) -> **Current Status**: Verified.
 - **Operations**: `docs/operations/incidents/` & `docs/operations/postmortems/` -> **Current Status**: Sub-folders exist; need template verification.
 
 ## 3. Agent Entrypoints Strategy (March 2026)

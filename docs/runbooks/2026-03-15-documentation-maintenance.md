@@ -20,7 +20,7 @@ layer: ops
 ### 1. Adding a New Document
 
 1. Select the correct category subdirectory (`adr/`, `prd/`, `specs/`, etc.).
-2. Use the corresponding template from `templates/`.
+2. Use the corresponding template from `docs/templates/`.
 3. Add `layer:` metadata to frontmatter.
 4. Ensure all internal links are relative.
 
