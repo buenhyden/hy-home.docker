@@ -1,38 +1,60 @@
-# Auth (02-auth)
+# Auth Tier (02-auth)
 
-This category manages Identity and Access Management (IAM) and authentication gateways.
+<!-- [ID:02-auth:root] -->
+: Identity and Access Management (IAM) & Authentication ForwardAuth Gateway.
 
-## Services
+---
 
-| Service      | Profile | Path             | Purpose                                    |
-| ------------ | ------- | ---------------- | ------------------------------------------ |
-| Keycloak     | (core)  | `./keycloak`     | IAM provider (SSO, realms, users, clients) |
-| OAuth2 Proxy | (core)  | `./oauth2-proxy` | ForwardAuth gateway for protected services |
+## Overview
+
+The `02-auth` tier provides the security foundation for the `hy-home.docker` ecosystem. It centralizes user identity, single sign-on (SSO), and access control through Keycloak and OAuth2 Proxy.
+
+### Service Roles
+
+| Component | Role | Details |
+| :--- | :--- | :--- |
+| **Keycloak** | IAM Provider | OIDC/SAML Provider, User Management, SSO. |
+| **OAuth2 Proxy** | ForwardAuth | Protects internal services via OIDC verification. |
+
+## Navigation Map
+
+
+> [!NOTE]
+> This tier is documented across multiple levels. Use the following map for quick access.
+
+### 1. Infrastructure (This Branch)
+
+- **[Keycloak](./keycloak/README.md)**: IAM service configuration and build.
+- **[OAuth2 Proxy](./oauth2-proxy/README.md)**: SSO gateway configuration.
+
+### 2. Documentation Suite (Golden 5)
+
+- **[Setup Guide](../../docs/07.guides/02-auth/01.setup.md)**: Initialization and bootstrapping.
+- **[Operations Policy](../../docs/08.operations/02-auth/README.md)**: Security and maintenance rules.
+- **[Auth Runbook](../../docs/09.runbooks/02-auth/README.md)**: Recovery and troubleshooting.
 
 ## Dependencies
 
-- **Database**: Keycloak uses PostgreSQL (via `infra/04-data/mng-db`).
-- **Session Store**: OAuth2 Proxy uses Valkey (via `infra/04-data/mng-db`, service `mng-valkey`) for session persistence.
-- **Gateway**: Traefik routes `keycloak.${DEFAULT_URL}` and `auth.${DEFAULT_URL}`.
-- **Mail**: Applications use `mailhog` (via `infra/10-communication/mail`) for dev SMTP.
+- **Database**: Keycloak requires **PostgreSQL** (via `infra/04-data/mng-db`).
+- **Session Cache**: OAuth2 Proxy requires **Valkey** (via `infra/04-data/mng-db`).
+- **Gateway**: Traefik (via `infra/01-gateway`) handles TLS and forward-auth routing.
 
-## File Map
+## Environmental Requirements
 
-| Path            | Description                                       |
-| --------------- | ------------------------------------------------- |
-| `keycloak/`     | Keycloak service and custom image build.          |
-| `oauth2-proxy/` | OAuth2 Proxy service and config.                  |
-| `README.md`     | Category overview.                                |
+| Variable | Description | Source |
+| :--- | :--- | :--- |
+| `DEFAULT_URL` | Root domain for services. | `.env` |
+| `KEYCLOAK_ADMIN_USER` | Initial admin username. | `.env` |
+| `OAUTH2_PROXY_CLIENT_ID` | Client ID for SSO. | `.env` |
 
-## Documentation References
+---
 
-| Guide | Description |
-| ----- | ----------- |
-| [auth-context.md](../../docs/guides/02-auth/auth-context.md) | System architecture and data flow |
-| [auth-procedural.md](../../docs/guides/02-auth/auth-procedural.md) | Bootstrap and configuration procedures |
-| [auth-lifecycle.md](../../docs/guides/02-auth/auth-lifecycle.md) | Backup, rotation, and scaling |
-| [keycloak-idp-guide.md](../../docs/guides/02-auth/keycloak-idp-guide.md) | Keycloak setup and bootstrapping |
-| [keycloak-customization.md](../../docs/guides/02-auth/keycloak-customization.md) | Build-time optimization and custom themes |
-| [sso-oauth2-proxy-guide.md](../../docs/guides/02-auth/sso-oauth2-proxy-guide.md) | OAuth2 Proxy integration and SSO flow |
-| [ARCHITECTURE.md](../../ARCHITECTURE.md#32-layered-service-map) | System architecture overview |
-| [2026-03-15-auth-lockout.md](../../docs/runbooks/2026-03-15-auth-lockout.md) | Admin lockout recovery runbook |
+## Operational Brief
+
+### Monitoring
+
+- **Traefik Dashboard**: Monitor routing status for `keycloak.${DEFAULT_URL}` and `auth.${DEFAULT_URL}`.
+- **Prometheus**: Metrics are exposed at `/metrics` (Keycloak) and `/metrics` (OAuth2 Proxy).
+
+### Maintenance
+Refer to the **[Auth Runbook](../../docs/09.runbooks/02-auth/README.md)** for account recovery and certificate rotation procedures.

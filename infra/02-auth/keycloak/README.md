@@ -1,52 +1,62 @@
 # Keycloak IAM
 
-## Services
+<!-- [ID:02-auth:keycloak] -->
+: Identity and Access Management (IAM) provider based on Quarkus.
 
-| Service    | Image / Build                              | Role                       | Resources         | Port       |
-| :--------- | :----------------------------------------- | :------------------------- | :---------------- | :--------- |
-| `keycloak` | `quay.io/keycloak/keycloak:26.5.4` (base) → custom `Dockerfile` build | Identity & Access Management | 1.0 CPU / 1GB RAM | 8080 (Int) |
+---
+
+## Overview
+
+Keycloak is the central identity provider for the `hy-home.docker` ecosystem. It handles user authentication, session management, and OIDC/SAML token issuance for protected applications.
+
+### Service Details
+
+| Service | Image / Build | Resources | Port |
+| :--- | :--- | :--- | :--- |
+| **keycloak** | `quay.io/keycloak/keycloak:26.5.4` | 1.0 CPU / 1GB RAM | 8080 (HTTP) |
+
+## Features
+
+- **SSO**: Centralized login for all services.
+- **Realms**: Multi-tenancy support for organizing users and clients.
+- **Metrics**: Prometheus-compatible metrics at `${MGMT_PORT}/metrics`.
 
 ## Networking
 
-Exposed via Traefik at `keycloak.${DEFAULT_URL}`.
-
-| Port                         | Purpose                   |
-| :--------------------------- | :------------------------ |
-| `${KEYCLOAK_MANAGEMENT_PORT}`| Health checks & Metrics   |
-| `8080`                       | Internal HTTP Traffic     |
+- **URL**: `https://keycloak.${DEFAULT_URL}`
+- **Management Port**: `9000` (Health checks & Metrics)
+- **Service Port**: `8080` (Internal API/Web)
 
 ## Persistence
 
 Mounted from `${DEFAULT_AUTH_DIR}/keycloak/`:
 
-- **Config**: `/opt/keycloak/conf` (Static configuration)
-- **Providers**: `/opt/keycloak/providers` (Custom JARs/SPIs)
-- **Themes**: `/opt/keycloak/themes` (Custom UI themes)
+| Path | Description |
+| :--- | :--- |
+| `/opt/keycloak/conf` | Quarkus static configuration. |
+| `/opt/keycloak/providers` | Custom JARs/SPIs for extensions. |
+| `/opt/keycloak/themes` | Custom UI/UX themes. |
+
+---
 
 ## Operations
 
 ### Health Verification
 
-Keycloak exposes a dedicated management interface for health checks.
-
 ```bash
-# Verify readiness (Quarkus health extension)
+# Verify readiness
 docker exec keycloak curl -f http://localhost:9000/health/ready
 ```
 
 ### Key Configuration
 
-| Variable                      | Description                   | Default/Value                        |
-| :---------------------------- | :---------------------------- | :----------------------------------- |
-| `KC_DB`                       | Database vendor               | `postgres`                           |
-| `KC_DB_URL`                   | Database JDBC URL             | `jdbc:postgresql://mng-pg:5432/...`  |
-| `KC_BOOTSTRAP_ADMIN_USERNAME` | Initial admin username        | `${KEYCLOAK_ADMIN_USER}`             |
-| `KC_BOOTSTRAP_ADMIN_PASSWORD` | Initial admin password        | Read from `keycloak_admin_password` secret |
-| `KC_DB_PASSWORD`              | Database password             | Read from `keycloak_db_password` secret |
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `KC_DB` | Database vendor | `postgres` |
+| `KC_HOSTNAME` | Public access URL | `keycloak.${DEFAULT_URL}` |
 
-## Documentation References
+## Related Documents
 
-- **Setup Guide**: [auth-procedural.md](../../../docs/guides/02-auth/auth-procedural.md)
-- **System Context**: [auth-context.md](../../../docs/guides/02-auth/auth-context.md)
-- **Recovery**: [2026-03-15-auth-lockout.md](../../../docs/runbooks/2026-03-15-auth-lockout.md)
-- **Customization**: [keycloak-customization.md](../../../docs/guides/02-auth/keycloak-customization.md)
+- **[Setup Guide](../../../docs/07.guides/02-auth/01.setup.md)**
+- **[Operations Policy](../../../docs/08.operations/02-auth/README.md)**
+- **[Auth Runbook](../../../docs/09.runbooks/02-auth/README.md)**

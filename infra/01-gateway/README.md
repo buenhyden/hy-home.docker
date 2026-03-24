@@ -2,28 +2,35 @@
 
 > Unified entry point for all traffic, orchestrating routing, TLS, and security.
 
+## Overview (KR)
+
+`01-gateway` 티어는 `hy-home.docker` 생태계로 들어오는 모든 트래픽의 통합 진입점입니다. 트래픽 라우팅, TLS 종료(SSL 처리), 보안 미들웨어 체인(SSO, Rate Limit 등)을 관리하며, Traefik과 Nginx를 조합하여 효율적인 트래픽 제어를 수행합니다.
+
 ## Overview
 
-**KR**: `01-gateway` 티어는 `hy-home.docker` 생태계로 들어오는 모든 트래픽의 통합 진입점입니다. 트래픽 라우팅, TLS 종료(SSL 처리), 보안 미들웨어 체인(SSO, Rate Limit 등)을 관리합니다.
-**EN**: The `01-gateway` tier is the unified entry point for all traffic entering the `hy-home.docker` ecosystem. It orchestrates routing, TLS termination (SSL), and security middleware chains (SSO, Rate Limit, etc.).
+The `01-gateway` tier is the unified entry point for all traffic entering the `hy-home.docker` ecosystem. It orchestrates routing, TLS termination (SSL), and security middleware chains (SSO, Rate Limit, etc.). By combining Traefik as the edge router and Nginx as a specialized path proxy, it provide robust and flexible traffic management.
 
-## Navigation / Inventory
+## Structure
 
-| Component | Path | Purpose |
-| :--- | :--- | :--- |
-| **Traefik** | [`traefik/`](./traefik/) | Primary edge router with dynamic service discovery |
-| **Nginx** | [`nginx/`](./nginx/) | Specialized path-based proxy and static asset server |
+```text
+01-gateway/
+├── nginx/           # Path-based proxy and static asset server
+├── traefik/         # Primary edge router with dynamic service discovery
+└── README.md        # This file
+```
 
 ---
 
 ## ⚙️ Infrastructure Details
 
-### Services & Resources
+### Tech Stack
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `traefik` | `traefik:v3.6.8` | Primary Router | `256MB RAM` / `0.5 CPU` |
-| `nginx` | `nginx:alpine` | Path Proxy | `128MB RAM` / `0.2 CPU` |
+| Category   | Technology                        | Notes                     |
+| ---------- | --------------------------------- | ------------------------- |
+| Router     | Traefik v3.6.8                    | Primary dynamic router    |
+| Proxy      | Nginx Alpine                      | Specialized path proxy    |
+| Discovery  | Docker Provider                   | Auto-detection of pods    |
+| Security   | OAuth2 Proxy / Keycloak           | Integrated SSO provider   |
 
 ### Networking (Ports)
 
@@ -34,18 +41,14 @@
 | `8080` | `8080` | TCP | Traefik Dashboard (Internal) |
 | `7687` | `7687` | TCP | Neo4j Bolt (TCP Passthrough) |
 
-### Operational Commands
+## Usage Instructions
 
-```bash
-# Start the gateway stack
-docker compose up -d traefik
+### Maintenance & Monitoring
 
-# View routing logs
-docker compose logs -f traefik
-
-# Check Traefik internal health
-docker exec traefik traefik healthcheck --ping
-```
+- **Restarting Gateway**: `docker compose up -d traefik nginx`
+- **Log location**: `docker compose logs -f traefik`
+- **Health Check**: `docker exec traefik traefik healthcheck --ping`
+- **Incident response**: Refer to [Running Books](../../docs/09.runbooks/01-gateway/)
 
 ---
 
@@ -55,15 +58,15 @@ docker exec traefik traefik healthcheck --ping
 
 | Marker | Entry Point | Use when |
 | :--- | :--- | :--- |
-| `[LOAD:CONTEXT]` | [CONTEXT.md](../../docs/guides/01-gateway/CONTEXT.md) | Understanding traffic flow and architecture |
-| `[LOAD:PROC]` | [PROCEDURAL.md](../../docs/guides/01-gateway/PROCEDURAL.md) | Managing lifecycle and certs |
-| `[LOAD:SETUP]` | [SETUP.md](../../docs/guides/01-gateway/SETUP.md) | Initial setup and domain binding |
+| `[LOAD:CONTEXT]` | [CONTEXT.md](../../docs/07.guides/01-gateway/README.md) | Understanding traffic flow and architecture |
+| `[LOAD:SETUP]` | [SETUP.md](../../docs/07.guides/01-gateway/01.setup.md) | Initial setup and domain binding |
+| `[LOAD:PROC]` | [PROCEDURAL.md](../../docs/08.operations/01-gateway/README.md) | Operational policies and governance |
 
 ### Key Resources
 
-- [🤖 Agent Governance](/AGENTS.md)
-- [🏛️ System Architecture](/ARCHITECTURE.md)
-- [🔑 Secret Management](/secrets/README.md)
+- [🤖 Agent Governance](../../AGENTS.md)
+- [🏛️ System Architecture](../../docs/02.ard/README.md)
+- [🔑 Secret Management](../../secrets/README.md)
 
 ---
 *Maintained by Infra & Gateway Team*
