@@ -184,7 +184,7 @@ include:
   - infra/04-data/minio/docker-compose.yml
   - infra/04-data/mng-db/docker-compose.yml
   # - infra/04-data/mongodb/docker-compose.yml
-  # - infra/04-data/neo4j/docker-compose.yml
+  - infra/04-data/neo4j/docker-compose.yml
   # - infra/04-data/opensearch/docker-compose.yml
   # - infra/04-data/postgresql-cluster/docker-compose.yml
   # - infra/04-data/qdrant/docker-compose.yml
