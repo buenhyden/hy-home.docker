@@ -42,7 +42,8 @@ services:
       VAULT_API_ADDR: 'http://vault:${VAULT_PORT:-8200}'
       # raft/cluster 내부 통신용 주소
       VAULT_CLUSTER_ADDR: 'https://vault:${VAULT_CLUSTER_PORT:-8201}'
-
+      SKIP_SETCAP: 'true'
+      SKIP_CHOWN: 'true'
     volumes:
       - vault-data:/vault/data
       - ./config/vault.hcl:/vault/config/vault.hcl:ro
@@ -56,7 +57,7 @@ services:
       test:
         [
           'CMD-SHELL',
-          'wget -q -O- "http://127.0.0.1:${VAULT_PORT:-8200}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" >/dev/null 2>&1 || exit 1'
+          'wget -q -O- "http://127.0.0.1:${VAULT_PORT:-8200}/v1/sys/health?standbyok=true&sealedcode=200&uninitcode=200" >/dev/null 2>&1 || exit 1',
         ]
       interval: 15s
       timeout: 10s
