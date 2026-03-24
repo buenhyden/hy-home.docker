@@ -6,10 +6,23 @@ layer: infra
 
 Identity providers (Keycloak) and access proxies (OAuth2 Proxy) for the platform.
 
-- [Procedural & Lifecycle Guide](./PROCEDURAL.md): How to manageauth services and Keycloak instances.
-- [System & Service Context](./CONTEXT.md): Architectural context for authentication flows.
-- [Setup & Installation Guide](./SETUP.md): Initial Keycloak and OAuth2 Proxy setup.
-- [Usage & Troubleshooting Guide](./USAGE.md): Common authentication issues and operational steps.
+## Navigation Map
+
+| View | Command | Focus |
+| :--- | :--- | :--- |
+| **Architecture** | `[LOAD:CONTEXT]` | Traffic flow and component roles |
+| **Installation** | `[LOAD:SETUP]` | Initial bootstrap and verification |
+| **Operations** | `[LOAD:USAGE]` | Daily tasks and connection strings |
+| **Maintenance** | `[LOAD:PROCEDURAL]` | Lifecycle and recovery |
+
+## Categorized Service Index
+
+### Core Authentication
+
+- **[CONTEXT.md](./CONTEXT.md)**: Architectural context for authentication flows.
+- **[SETUP.md](./SETUP.md)**: Initial Keycloak and OAuth2 Proxy setup.
+- **[USAGE.md](./USAGE.md)**: Common authentication issues and operational steps.
+- **[PROCEDURAL.md](./PROCEDURAL.md)**: How to manage auth services and Keycloak instances.
 
 ## Service Deep Dives
 

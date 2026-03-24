@@ -1,3 +1,7 @@
+---
+layer: infra
+---
+
 # Gateway Tier: Setup & Installation Guide
 
 This guide provides the necessary steps to initialize and verify the gateway tier.
@@ -20,7 +24,14 @@ Before starting the gateway, ensure you have completed the core setup:
   ./scripts/gen-secrets.sh
   ```
 
-- **Local Certificates**: Generate TLS certificates via `mkcert`.
+- **Local Certificates**: Generate TLS certificates via `mkcert` to enable local HTTPS:
+
+  ```bash
+  mkcert hy-home.local hy-home.dev "*.hy-home.local" "*.hy-home.dev" \
+    localhost 127.0.0.1 127.0.0.1.nip.io "*.127.0.0.1" "*.127.0.0.1.nip.io" ::1
+  ```
+
+  Then run the bootstrap script to place them in the correct location:
 
   ```bash
   bash scripts/generate-local-certs.sh

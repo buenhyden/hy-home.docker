@@ -1,7 +1,8 @@
 ---
 layer: infra
 ---
-# Tooling — System Context
+
+# Tooling Tier: Context & Architecture
 
 **Overview (KR):** `09-tooling` 카테고리의 모든 서비스에 대한 시스템 컨텍스트 — 서비스 인벤토리, 외부 의존성, 시크릿 테이블, 네트워크 노출 및 데이터 흐름을 기술합니다.
 

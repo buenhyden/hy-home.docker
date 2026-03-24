@@ -1,18 +1,24 @@
+# Communication Documentation Hub (10-communication)
+
+Mail servers and relay services (Stalwart, MailHog).
+
+## Navigation Map
+
+1. **[CONTEXT.md](CONTEXT.md)**
+   - System architecture and mail flow.
+   - [LOAD:CONTEXT]
+
+2. **[SETUP.md](SETUP.md)**
+   - Initial bootstrap and service dependencies.
+   - [LOAD:SETUP]
+
+3. **[USAGE.md](USAGE.md)**
+   - SMTP configurations and dashboard access.
+   - [LOAD:USAGE]
+
+4. **[PROCEDURAL.md](PROCEDURAL.md)**
+   - Maintenance and troubleshooting.
+   - [LOAD:PROCEDURAL]
+
 ---
-layer: infra
----
-
-# Communication Tier Guides (10-communication)
-
-Mail servers and relay services (Stalwart, etc.).
-
-- [Procedural & Lifecycle Guide](./PROCEDURAL.md): Managing mail services and relay pipelines.
-- [System & Service Context](./CONTEXT.md): Communication architecture and mail flow.
-- [Setup & Installation Guide](./SETUP.md): Initial mail stack setup.
-- [Usage & Troubleshooting Guide](./USAGE.md): Common mail operations and troubleshooting.
-
-## Service Deep Dives
-
-- [Mail Relay Operations](./mail-relay-operations.md)
-
-For technical configuration details (Docker Compose, Config files), see [infra/10-communication/](../../infra/10-communication/README.md).
+For technical configuration details, see [infra/10-communication/](../../infra/10-communication/README.md).

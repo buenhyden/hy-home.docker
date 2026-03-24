@@ -1,3 +1,7 @@
+---
+layer: infra
+---
+
 # Authentication System Context (02-auth)
 
 This document describes the high-level architecture, data flow, and network boundaries of the identity tier.
@@ -46,15 +50,20 @@ sequenceDiagram
 - **Keycloak State**: Persisted in PostgreSQL (`mng-pg`).
 - **OAuth2 Proxy Sessions**: Stored in Valkey/Redis (`mng-valkey`) to support multi-replica scaling and zero-downtime restarts.
 
-## External Dependencies
+## Keycloak Identity Provider (IdP)
 
-The identity tier relies on several external components for full functionality:
+Keycloak serves as the primary OIDC/SAML provider for the platform. It handles:
 
-- **Management DB (`mng-db`)**: Provides PostgreSQL for Keycloak state and Valkey for session storage.
-- **Ingress (`traefik`)**: Handles SSL termination and ForwardAuth routing.
-- **Communication (`mailhog`)**: Used for local SMTP testing (e.g., email verification, password resets).
+- **User Discovery**: LDAP/AD integration (if enabled) or local DB.
+- **Protocol Support**: OIDC, SAML 2.0, OAuth 2.0.
+- **Security**: MFA/2FA support, brute-force protection.
 
-## Network Boundaries
+## SSO & OAuth2 Proxy Flow
 
-- **Public**: `auth.${DEFAULT_URL}` (Keycloak) and `auth-proxy.${DEFAULT_URL}` (OAuth2 Proxy).
-- **Private**: All inter-service traffic within `infra_net` is isolated. Services like `mailhog` are accessible via internal DNS.
+The infrastructure uses a "Sidecar-less" authentication pattern. Traefik intercepts requests and verifies identity via the proxy.
+
+1. **Gatekeeper (OAuth2 Proxy)**: Validates session cookies and triggers OIDC flows.
+2. **Identity (Keycloak)**: Provides the login UI and issues signed JWT tokens.
+
+---
+*Refer to [SETUP.md](./SETUP.md) for initial realm provisioning.*

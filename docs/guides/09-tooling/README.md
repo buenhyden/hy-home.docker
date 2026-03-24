@@ -1,18 +1,24 @@
----
-layer: infra
----
-
-# Tooling Tier Guides (09-tooling)
+# Tooling Documentation Hub (09-tooling)
 
 DevOps, QA, and platform engineering tools (SonarQube, Terrakube, etc.).
 
-- [Procedural & Lifecycle Guide](./PROCEDURAL.md): Managing platform tools.
-- [System & Service Context](./CONTEXT.md): Tooling architecture and integration.
-- [Setup & Installation Guide](./SETUP.md): Initial tooling stack setup.
-- [Usage & Troubleshooting Guide](./USAGE.md): Common tooling operations and troubleshooting.
+## Navigation Map
 
-## Service Deep Dives
+1. **[CONTEXT.md](CONTEXT.md)**
+   - System architecture and tool roles.
+   - [LOAD:CONTEXT]
 
-- [DevOps Tooling Guide](./devops-tooling-guide.md)
+2. **[SETUP.md](SETUP.md)**
+   - Initial bootstrap and service dependencies.
+   - [LOAD:SETUP]
 
-For technical configuration details (Docker Compose, Config files), see [infra/09-tooling/](../../infra/09-tooling/README.md).
+3. **[USAGE.md](USAGE.md)**
+   - Daily developer workflows and tool access.
+   - [LOAD:USAGE]
+
+4. **[PROCEDURAL.md](PROCEDURAL.md)**
+   - Maintenance, upgrades, and secret rotation.
+   - [LOAD:PROCEDURAL]
+
+---
+For technical configuration details, see [infra/09-tooling/](../../infra/09-tooling/README.md).

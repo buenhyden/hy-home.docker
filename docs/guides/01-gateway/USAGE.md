@@ -1,3 +1,7 @@
+---
+layer: infra
+---
+
 # Gateway Tier: Usage & Troubleshooting Guide
 
 High-level operational guide for daily maintenance and common scenarios.

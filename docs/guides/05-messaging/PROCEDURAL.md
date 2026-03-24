@@ -1,7 +1,9 @@
 ---
 layer: infra
 ---
-# Kafka Routine Operations
+# Messaging Tier: Maintenance & Procedures
+
+The `05-messaging` tier requires routine maintenance for cluster health, topic management, and queue lifecycle.
 
 **Overview (KR):** Kafka 클러스터의 일상적인 관리 과업 및 토픽 운영 절차를 설명합니다.
 
@@ -138,7 +140,44 @@ docker compose exec kafka-1 kafka-metadata-quorum \
   --bootstrap-server localhost:19092 describe --status
 ```
 
-## ksqlDB Usage
+## 2. RabbitMQ Maintenance
+
+### Cluster Diagnostics
+
+```bash
+# Check node status
+docker exec rabbitmq rabbitmq-diagnostics status
+
+# Health check
+docker exec rabbitmq rabbitmq-diagnostics check_running
+```
+
+### Queue Management
+
+```bash
+# Delete all messages from a queue (purge)
+docker exec rabbitmq rabbitmqctl purge_queue <queue_name>
+
+# Delete a queue
+docker exec rabbitmq rabbitmqctl delete_queue <queue_name>
+```
+
+### Draining Queues (Graceful Shutdown)
+
+Before stopping the node, ensure all consumers have finished processing:
+
+```bash
+# 1. Stop accepting new connections
+docker exec rabbitmq rabbitmqctl stop_app
+
+# 2. Wait for queues to empty (check via MGMT UI or CLI)
+docker exec rabbitmq rabbitmqctl list_queues
+
+# 3. Stop the container
+docker compose --profile rabbitmq stop
+```
+
+## 3. ksqlDB Usage
 
 > **Profile**: ksqlDB server requires the `messaging-option` profile. The CLI requires `ksql`.
 

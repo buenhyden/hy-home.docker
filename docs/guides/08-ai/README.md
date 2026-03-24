@@ -4,12 +4,13 @@ layer: infra
 
 # AI Tier Guides (08-ai)
 
-Local inference and AI interfaces (Ollama, Open WebUI).
+Local LLM inference and AI interfaces (Ollama, Open WebUI).
 
-- [Procedural & Lifecycle Guide](./PROCEDURAL.md): Managing models and inference services.
-- [System & Service Context](./CONTEXT.md): Local AI architecture and data flow.
-- [Setup & Installation Guide](./SETUP.md): Initial Ollama and AI stack setup.
-- [Usage & Troubleshooting Guide](./USAGE.md): Common AI scenarios and model management.
+## 🧭 Navigation Map
+- **[LOAD:CONTEXT](./CONTEXT.md)**: System architecture and GPU configuration.
+- **[LOAD:SETUP](./SETUP.md)**: Initial bootstrap and prerequisites.
+- **[LOAD:USAGE](./USAGE.md)**: Using the Chat UI and API.
+- **[LOAD:PROCEDURAL](./PROCEDURAL.md)**: Model management and image upgrades.
 
 ## Service Deep Dives
 

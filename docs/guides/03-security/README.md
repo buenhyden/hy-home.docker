@@ -6,11 +6,22 @@ layer: infra
 
 Secret management and security vault (Vault) for the platform.
 
-- [Procedural & Lifecycle Guide](./PROCEDURAL.md): Vault management and key rotation processes.
-- [System & Service Context](./CONTEXT.md): Security architecture and zero-trust principles.
-- [Setup & Installation Guide](./SETUP.md): Initial Vault bootstrapping and configuration.
-## Usage & Troubleshooting Guide
+## Navigation Map
 
-- [Usage & Troubleshooting Guide](./USAGE.md): Common security operations and troubleshooting.
+| View | Command | Focus |
+| :--- | :--- | :--- |
+| **Architecture** | `[LOAD:CONTEXT]` | Traffic flow and component roles |
+| **Installation** | `[LOAD:SETUP]` | Initial bootstrap and verification |
+| **Operations** | `[LOAD:USAGE]` | Daily tasks and connection strings |
+| **Maintenance** | `[LOAD:PROCEDURAL]` | Lifecycle and recovery |
+
+## Categorized Service Index
+
+### Core Security
+
+- **[CONTEXT.md](./CONTEXT.md)**: Security architecture and zero-trust principles.
+- **[SETUP.md](./SETUP.md)**: Initial Vault bootstrapping and configuration.
+- **[USAGE.md](./USAGE.md)**: Common security operations and troubleshooting.
+- **[PROCEDURAL.md](./PROCEDURAL.md)**: Vault management and key rotation processes.
 
 For technical configuration details (Docker Compose, Config files), see [infra/03-security/](../../infra/03-security/README.md).

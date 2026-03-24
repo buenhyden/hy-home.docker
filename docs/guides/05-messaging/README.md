@@ -6,14 +6,28 @@ layer: infra
 
 Event streaming and message brokers (Kafka, RabbitMQ, ksqlDB).
 
-- [Procedural & Lifecycle Guide](./PROCEDURAL.md): Common messaging operations.
-- [System & Service Context](./kafka-context.md): Event streaming architecture.
-- [Service Specifics](./kafka-kraft-guide.md): Deep dives into Kafka and RabbitMQ.
+## Navigation Map
 
-## Service Deep Dives
+| View | Command | Focus |
+| :--- | :--- | :--- |
+| **Architecture** | `[LOAD:CONTEXT]` | Traffic flow and component roles |
+| **Installation** | `[LOAD:SETUP]` | Initial bootstrap and verification |
+| **Operations** | `[LOAD:USAGE]` | Daily tasks and connection strings |
+| **Maintenance** | `[LOAD:PROCEDURAL]` | Lifecycle and recovery |
 
-- [Kafka KRaft Mode](./kafka-kraft-guide.md)
-- [RabbitMQ Guide](./rabbitmq-guide.md)
-- [ksqlDB Context](./ksqldb-context.md)
+## Categorized Service Index
+
+### Core Messaging
+
+- **[CONTEXT.md](./CONTEXT.md)**: Unified context for Kafka and RabbitMQ.
+- **[SETUP.md](./SETUP.md)**: Installation and bootstrapping guides.
+- **[USAGE.md](./USAGE.md)**: Common operations and troubleshooting.
+- **[PROCEDURAL.md](./PROCEDURAL.md)**: Scaling and lifecycle procedures.
+
+### Service Deep Dives
+
+- **[Kafka KRaft Mode](./kafka-kraft-guide.md)**: Detailed KRaft internals.
+- **[RabbitMQ Guide](./rabbitmq-guide.md)**: Advanced AMQP routing and clustering.
+- **[ksqlDB Context](./ksqldb-context.md)**: Stream processing with ksqlDB.
 
 For technical configuration details (Docker Compose, Config files), see [infra/05-messaging/](../../infra/05-messaging/README.md).

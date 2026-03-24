@@ -37,6 +37,21 @@ cd infra/02-auth/oauth2-proxy
 docker compose restart oauth2-proxy
 ```
 
+## Keycloak Customization
+
+### Build-time Optimizations
+
+Keycloak 26.x (Quarkus) uses build-time configurations to reduce startup time.
+
+- **Dockerfile**: Located in `infra/02-auth/keycloak/Dockerfile`.
+- **Custom Themes**: Place in `themes/` and rebuild.
+- **Providers**: Place JARs in `providers/` and rebuild.
+
+```bash
+docker compose build --no-cache keycloak
+docker compose up -d keycloak
+```
+
 ## Maintenance Procedures
 
 ### Database Migrations

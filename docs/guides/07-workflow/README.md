@@ -4,12 +4,13 @@ layer: infra
 
 # Workflow Tier Guides (07-workflow)
 
-Workflow orchestration and automation (Airflow, n8n).
+Distributed automation and orchestration services (Airflow, n8n).
 
-- [Procedural & Lifecycle Guide](./PROCEDURAL.md): Managing DAGs and automation flows.
-- [System & Service Context](./workflow-operations.md): Workflow architecture.
-- [Setup & Installation Guide](./SETUP.md): Initial Airflow and n8n setup.
-- [Usage & Troubleshooting Guide](./USAGE.md): Common workflow scenarios and debugging.
+## 🧭 Navigation Map
+- **[LOAD:CONTEXT](./CONTEXT.md)**: System architecture and service roles.
+- **[LOAD:SETUP](./SETUP.md)**: Initial bootstrap and prerequisites.
+- **[LOAD:USAGE](./USAGE.md)**: Daily operations and task management.
+- **[LOAD:PROCEDURAL](./PROCEDURAL.md)**: Lifecycle, upgrades, and scaling.
 
 ## Service Deep Dives
 
