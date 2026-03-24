@@ -8,4 +8,4 @@ This directory contains human-centric collaboration guides and project working a
 
 ## Manuals Index
 
-- *Initial Setup in progress.* (Use `templates/collaboration-guide-template.md` to bootstrap.)
+- *Initial Setup in progress.* (Use `templates/collaboration-manual-template.md` to bootstrap.)
