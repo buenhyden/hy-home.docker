@@ -13,6 +13,7 @@ services:
   minio:
     profiles:
       - storage
+      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-db-med
@@ -53,6 +54,7 @@ services:
   minio-create-buckets:
     profiles:
       - storage
+      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low

@@ -1,0 +1,55 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+volumes:
+  influxdb-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/influxdb/data
+
+services:
+  influxdb:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
+    image: influxdb:2.8
+    container_name: influxdb
+    hostname: influxdb
+    read_only: false
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'curl -fsS http://localhost:${INFLUXDB_PORT:-8086}/health || wget -q --spider http://localhost:${INFLUXDB_PORT:-8086}/health || exit 1',
+        ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_USERNAME}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
+    command: >
+      bash -c "
+      export DOCKER_INFLUXDB_INIT_PASSWORD=$$(cat /run/secrets/influxdb_password) &&
+      export DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$$(cat /run/secrets/influxdb_api_token) &&
+      exec influxd
+      "
+    secrets:
+      - influxdb_password
+      - influxdb_api_token
+    volumes:
+      - influxdb-data:/var/lib/influxdb2:rw
+    networks:
+      - infra_net
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.influxdb.rule: Host(`influxdb.${DEFAULT_URL}`)
+      traefik.http.routers.influxdb.entrypoints: websecure
+      traefik.http.routers.influxdb.tls: 'true'
+      traefik.http.services.influxdb.loadbalancer.server.port: ${INFLUXDB_PORT:-8086}

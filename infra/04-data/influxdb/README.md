@@ -6,11 +6,11 @@ InfluxDB is an open-source time series database (TSDB) developed by InfluxData.
 
 | Service    | Image          | Role           | Resources         |
 | :--------- | :------------- | :------------- | :---------------- |
-| `influxdb` | `influxdb:2.8` | Time Series DB | 1.0 CPU / 1GB RAM |
+| `influxdb` | `influxdb:3.8.3-core` | Time Series DB | 1.0 CPU / 1GB RAM |
 
 ## Networking
 
-- **Internal DNS**: `influxdb:${INFLUXDB_PORT:-8086}` (within `infra_net`)
+- **Internal DNS**: `influxdb:${INFLUXDB_PORT:-8181}` (within `infra_net`)
 - **External URL**: `https://influxdb.${DEFAULT_URL}` (via Traefik, if included/routed)
 
 ## Persistence
@@ -27,3 +27,5 @@ InfluxDB is an open-source time series database (TSDB) developed by InfluxData.
 | Path        | Description                         |
 | ----------- | ----------------------------------- |
 | `README.md` | Service overview and CLI usage.     |
+
+chmod 0777 "/home/hy/volumes/influxdb/data"

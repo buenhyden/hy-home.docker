@@ -46,7 +46,7 @@ Key environment variables (from `.env`):
 | :---                   | :---      | :---                                |
 | `LOCUST_HOST_PORT`     | `18089`   | External port for the Web UI.       |
 | `LOCUST_PORT`          | `8089`    | Internal Locust port.               |
-| `INFLUXDB_PORT`        | `8086`    | InfluxDB connection port.           |
+| `INFLUXDB_PORT`        | `8181`    | InfluxDB connection port.           |
 | `INFLUXDB_ORG`         | —         | InfluxDB organization name.         |
 | `INFLUXDB_BUCKET`      | —         | InfluxDB bucket for metrics.        |
 

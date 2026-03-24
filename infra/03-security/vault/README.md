@@ -55,6 +55,14 @@ Check seal status:
 docker exec -it vault vault status
 ```
 
+###
+
+```text
+docker exec -i vault sh -c 'export VAULT_ADDR=<http://127.0.0.1:8200> && \                                          ─╯
+ export VAULT_TOKEN="<token>" && \
+ vault kv put secret/valkey/mng-valkey password=-' < ./secrets/db/valkey/mng_password.txt
+ ```
+
 ## Persistence
 
 | Volume / Mount | Container Path | Mode | Purpose |

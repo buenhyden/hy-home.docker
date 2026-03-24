@@ -56,6 +56,12 @@ datasources:
       implementation: prometheus # Prometheus와 함께 사용하는 표준 Alertmanager
       handleGrafanaManagedAlerts: false # 외부(Prometheus) 알람만 처리할 경우 false
 
+  # - name: Influxdb
+  #   type: grafana-influxdb-datasource
+  #   access: proxy
+  #   url: http://influxdb:8181
+  #   isDefault: false
+
   - name: Pyroscope
     type: grafana-pyroscope-datasource
     access: proxy
