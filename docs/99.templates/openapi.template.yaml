@@ -1,0 +1,44 @@
+# Target: docs/04.specs/<feature-id>/contracts/openapi.yaml
+openapi: 3.1.0
+info:
+  title: Example Feature API
+  version: 0.1.0
+  description: |
+    Contract-first API definition for the feature.
+servers:
+  - url: https://api.example.com
+tags:
+  - name: example
+paths:
+  /example:
+    get:
+      tags: [example]
+      operationId: getExample
+      summary: Get example resource
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExampleResponse"
+        "400":
+          description: Bad request
+components:
+  schemas:
+    ExampleResponse:
+      type: object
+      required: [id, status]
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [ok]
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []

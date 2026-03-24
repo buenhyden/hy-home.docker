@@ -32,7 +32,7 @@ Copy-paste ready commands for common bootstrap stages:
 
 ## 3. Rule Triggers
 
-Identify your task and load the required rule module via [Discovery Hub](docs/agentic/gateway.md):
+Identify your task and load the required rule module via [Discovery Hub](docs/00.agent/gateway.md):
 
 - **Refactoring**: `[LOAD:RULES:REFACTOR]`
 - **Documentation**: `[LOAD:RULES:DOCS]`
@@ -41,8 +41,7 @@ Identify your task and load the required rule module via [Discovery Hub](docs/ag
 
 ## 4. Execution Baseline
 
-1. **Load Gateway**: ALWAYS load [docs/agentic/gateway.md](docs/agentic/gateway.md) at session start.
+1. **Load Gateway**: ALWAYS load [docs/00.agent/gateway.md](docs/00.agent/gateway.md) at session start.
 2. **Skill Autonomy**: Use any tool in your bundle. No skills are restricted.
 3. **Draft Plans**: Use pluralized paths for implementation plans ([docs/plans/](docs/plans/)).
 4. **Validation**: NEVER update infrastructure without running `bash scripts/validate-docker-compose.sh`.
-5. **Safety & Ethics**: Adhere to [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) standards.

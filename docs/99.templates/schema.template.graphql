@@ -1,0 +1,13 @@
+# Target: docs/04.specs/<feature-id>/contracts/schema.graphql
+schema {
+  query: Query
+}
+
+type Query {
+  example(id: ID!): Example!
+}
+
+type Example {
+  id: ID!
+  status: String!
+}
