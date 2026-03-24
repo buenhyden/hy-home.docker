@@ -42,6 +42,6 @@
 - Canonical Reference로 PRD/ARD/ADR/Spec/Plan을 명시한다.
 - 관련 Incident/Postmortem 링크를 둔다.
 
-## 시작 템플릿
+## Templates
 
 - `../99.templates/runbook.template.md`

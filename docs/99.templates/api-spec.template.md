@@ -1,5 +1,6 @@
 <!-- Target: docs/04.specs/<feature-id>/api-spec.md -->
-# [Feature Name] API Specification
+
+# [API Name] Specification
 
 > Use this template for `docs/04.specs/<feature-id>/api-spec.md`.
 >

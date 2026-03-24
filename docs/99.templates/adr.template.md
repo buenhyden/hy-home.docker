@@ -1,5 +1,6 @@
 <!-- Target: docs/03.adr/####-<short-title>.md -->
-# ADR NNNN: [Short Decision Title]
+
+# ADR-####: [Short Title]
 
 > Use this template for `docs/03.adr/####-<short-title>.md`.
 >
@@ -56,7 +57,7 @@
 ## Related Documents
 
 - **PRD**: `[../01.prd/YYYY-MM-DD-<feature-or-system>.md]`
-- **ARD**: `[../02.ard/####-<system-or-domain-name>.md]`
+- **ARD**: `[../02.ard/####-<system-or-domain>.md]`
 - **Spec**: `[../04.specs/<feature-id>/spec.md]`
 - **Plan**: `[../05.plans/YYYY-MM-DD-<feature>.md]`
-- **Related ADR**: `[./0002-related-decision.md]`
+- **Related ADR**: `[./####-<related-decision>.md]`

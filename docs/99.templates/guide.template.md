@@ -1,5 +1,6 @@
-<!-- Target: docs/07.guides/####-<topic>.md -->
-# [Guide Title]
+<!-- Target: docs/07.guides//####-<topic>.md -->
+
+# [Topic Name] Guide
 
 > Use this template for `docs/07.guides/####-<topic>.md`.
 >
@@ -50,5 +51,5 @@
 ## Related Documents
 
 - **Spec**: `[../04.specs/<feature-id>/spec.md]`
-- **Operation**: `[../08.operations/<policy>.md]`
+- **Operation**: `[../08.operations/<policy-or-standard>.md]`
 - **Runbook**: `[../09.runbooks/<topic>.md]`

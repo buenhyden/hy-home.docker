@@ -6,11 +6,8 @@ This template is designed to be modular. It consists of a **Base Structure** (re
 and a **Snippet Library** from which you should pick sections based on the folder's purpose.
 
 ## 1. Metadata Requirement
-Every README MUST include the `layer:` metadata tag at the top.
-Example: 
-  `layer: common` (for root)
-  `layer: architecture` (for docs/agentic/)
-  `layer: infra` (for operations/runbooks/)
+
+# [Project or Component Name]
 
 ## 2. Selection Guide
 - Project Root (/) -> Use 'Base' + 'Root Snippet'

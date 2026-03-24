@@ -1,7 +1,8 @@
-<!-- Target: docs/11.postmortems/YYYY/YYYY-MM-DD-<slug>.md -->
-# Postmortem: [Short Incident Title]
+<!-- Target: docs/11.postmortems/YYYY-MM-DD-<incident-title>.md -->
 
-> Use this template for `docs/11.postmortems/YYYY/YYYY-MM-DD-<slug>.md`.
+# Postmortem: [Incident Title]
+
+> Use this template for `docs/11.postmortems/YYYY/YYYY-MM-DD-<incident-title>.md`.
 
 ---
 
@@ -17,7 +18,7 @@
 | Incident Date | `YYYY-MM-DD` |
 | Analysis Date | `YYYY-MM-DD` |
 | Severity | `SEV-1 | SEV-2 | SEV-3` |
-| Incident Document | `[../../10.incidents/YYYY/YYYY-MM-DD-<slug>.md]` |
+| Incident Document | `[../../10.incidents/YYYY/YYYY-MM-DD-<incident-title>.md]` |
 
 ## Agent Metadata (If Applicable)
 
@@ -85,5 +86,5 @@
 
 ## Related Links
 
-- **Runbook**: `[../../09.runbooks/<topic>.md]`
-- **Operation**: `[../../08.operations/<policy>.md]`
+- **Runbook**: `[../../09.runbooks/####-<topic>.md]`
+- **Operation**: `[../../08.operations/<policy-or-standard>.md]`

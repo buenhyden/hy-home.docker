@@ -1,7 +1,10 @@
-<!-- Target: docs/10.incidents/YYYY/YYYY-MM-DD-<slug>.md -->
-# Incident: INC-YYYYMMDD-XXX / [Short Incident Title]
+<!-- Target: docs/10.incidents/YYYY/YYYY-MM-DD-<incident-title>.md -->
 
-> Use this template for `docs/10.incidents/YYYY/YYYY-MM-DD-<slug>.md`.
+# Incident: [Incident Title]
+
+NC-YYYYMMDD-XXX / [Short Incident Title]
+
+> Use this template for `docs/10.incidents/YYYY/YYYY-MM-DD-<incident-title>.md`.
 >
 > Rules:
 >
@@ -25,7 +28,7 @@
 | Detection Time | `YYYY-MM-DD HH:MM UTC` |
 | Primary Service | [Affected service] |
 | Evidence Source | [Log / dashboard / report] |
-| Runbook Link | `[../../09.runbooks/<topic>.md]` |
+| Runbook Link | `[../../09.runbooks/####-<topic>.md]` |
 
 ## Agent Metadata (If Applicable)
 
@@ -68,4 +71,4 @@
 
 ## Postmortem Link
 
-- `[../../11.postmortems/YYYY/YYYY-MM-DD-<slug>.md]`
+- `[../../11.postmortems/YYYY/YYYY-MM-DD-<incident-title>.md]`

@@ -28,6 +28,6 @@
 
 - `####-<system-or-domain>.md`
 
-## 시작 템플릿
+## Templates
 
 - `../99.templates/ard.template.md`

@@ -1,5 +1,6 @@
 <!-- Target: docs/06.tasks/YYYY-MM-DD-<feature-or-stream>.md -->
-# [Feature or Stream] Tasks
+
+# Task: [Task Name]
 
 > Use this template for `docs/06.tasks/YYYY-MM-DD-<feature-or-stream>.md`.
 >

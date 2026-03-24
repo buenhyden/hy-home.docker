@@ -26,6 +26,6 @@
 - Plan은 PRD/ARD/Spec/ADR를 참조한다.
 - Task는 Plan의 단계 또는 Task ID를 상위 참조로 가진다.
 
-## 시작 템플릿
+## Templates
 
 - `../99.templates/plan.template.md`

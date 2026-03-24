@@ -41,8 +41,8 @@
 
 ## 권장 하위 구조
 
-- `10.incidents/2026/YYYY-MM-DD-<slug>.md`
+- `10.incidents/YYYY/YYYY-MM-DD-<incident-title>.md`
 
-## 시작 템플릿
+## Templates
 
 - `../99.templates/incident.template.md`

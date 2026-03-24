@@ -37,6 +37,6 @@
 - Safety Incident 임계값
 - Trace/Log 보존 기준
 
-## 시작 템플릿
+## Templates
 
 - `../99.templates/operation.template.md`

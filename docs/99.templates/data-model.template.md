@@ -1,4 +1,5 @@
 <!-- Target: docs/04.specs/<feature-id>/data-model.md -->
+
 # [Feature Name] Data Model
 
 > Use this template for `docs/04.specs/<feature-id>/data-model.md`.

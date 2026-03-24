@@ -1,5 +1,6 @@
 <!-- Target: docs/05.plans/YYYY-MM-DD-<feature>.md -->
-# [Feature or Component] Plan
+
+# [Feature Name] Implementation Plan
 
 > Use this template for `docs/05.plans/YYYY-MM-DD-<feature>.md`.
 >
@@ -65,6 +66,6 @@
 ## Related Documents
 
 - **PRD**: `[../01.prd/YYYY-MM-DD-<feature-or-system>.md]`
-- **ARD**: `[../02.ard/####-<system-or-domain-name>.md]`
+- **ARD**: `[../02.ard/####-<system-or-domain>.md]`
 - **Spec**: `[../04.specs/<feature-id>/spec.md]`
 - **ADR**: `[../03.adr/####-<short-title>.md]`

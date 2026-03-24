@@ -36,6 +36,6 @@ ADR은 전역 번호를 사용한다.
 - Planner-Executor 채택 여부
 - Fallback 모델 정책
 
-## 시작 템플릿
+## Templates
 
 - `../99.templates/adr.template.md`

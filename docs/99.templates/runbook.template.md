@@ -1,7 +1,10 @@
-<!-- Target: docs/09.runbooks/<topic>.md -->
-# Runbook: [Service or Workflow Name]
+<!-- Target: docs/09.runbooks/####-<topic>.md -->
 
-> Use this template for `docs/09.runbooks/<topic>.md`.
+# [topic Name] Runbook
+
+: [Service or Workflow Name]
+
+> Use this template for `docs/09.runbooks/####-<topic>.md`.
 >
 > Rules:
 >
@@ -22,10 +25,10 @@
 
 ## Canonical References
 
-- `[../02.ard/0001-system.md]`
-- `[../03.adr/0001-example.md]`
+- `[../02.ard/####-<system-or-domain>.md]`
+- `[../03.adr/####-<short-title>.md]`
 - `[../04.specs/<feature-id>/spec.md]`
-- `[../05.plans/YYYY-MM-DD-feature.md]`
+- `[../05.plans/YYYY-MM-DD-<feature>.md]`
 
 ## When to Use
 
@@ -69,5 +72,5 @@
 
 ## Related Operational Documents
 
-- **Incident examples**: `[../10.incidents/YYYY/YYYY-MM-DD-<slug>.md]`
-- **Postmortem examples**: `[../11.postmortems/YYYY/YYYY-MM-DD-<slug>.md]`
+- **Incident examples**: `[../10.incidents/YYYY/YYYY-MM-DD-<incident-title>.md]`
+- **Postmortem examples**: `[../11.postmortems/YYYY/YYYY-MM-DD-<incident-title>.md]`

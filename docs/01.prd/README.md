@@ -31,8 +31,7 @@
 ## 권장 파일명
 
 - `YYYY-MM-DD-<feature-or-system>.md`
-- 또는 팀 규칙상 feature ID를 붙여 `001-<feature>.md`
 
-## 시작 템플릿
+## Templates
 
 - `../99.templates/prd.template.md`

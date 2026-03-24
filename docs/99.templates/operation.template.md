@@ -1,7 +1,8 @@
-<!-- Target: docs/08.operations/<policy-name>.md -->
-# [Policy Name] Operations Policy
+<!-- Target: docs/08.operations/<policy-or-standard>.md -->
 
-> Use this template for `docs/08.operations/<policy-name>.md`.
+# [Policy or Standard Name] Operations Policy
+
+> Use this template for `docs/08.operations/<policy-or-standard>.md`.
 >
 > Rules:
 >
@@ -53,6 +54,6 @@
 
 ## Related Documents
 
-- **ARD**: `[../02.ard/####-<system-or-domain-name>.md]`
-- **Runbook**: `[../09.runbooks/<topic>.md]`
-- **Postmortem**: `[../11.postmortems/YYYY/YYYY-MM-DD-<slug>.md]`
+- **ARD**: `[../02.ard/####-<system-or-domain>.md]`
+- **Runbook**: `[../09.runbooks/####-<topic>.md]`
+- **Postmortem**: `[../11.postmortems/YYYY/YYYY-MM-DD-<incident-title>.md]`

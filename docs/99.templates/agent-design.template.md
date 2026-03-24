@@ -1,4 +1,5 @@
 <!-- Target: docs/04.specs/<feature-id>/agent-design.md -->
+
 # [Feature Name] Agent Design
 
 > Use this template for `docs/04.specs/<feature-id>/agent-design.md`.

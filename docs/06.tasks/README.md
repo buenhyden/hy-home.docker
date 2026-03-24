@@ -60,6 +60,6 @@
 
 기능 수준에서 밀접한 `tasks.md`는 `04.specs/<feature-id>/`에 둘 수 있다. 그러나 그것은 설계 보조 문서다. 팀 실행용, 스프린트용, 검증 집계용 작업 문서는 `06.tasks/`를 기본 위치이자 정본 위치로 사용한다.
 
-## 시작 템플릿
+## Templates
 
 - `../99.templates/task.template.md`

@@ -40,6 +40,6 @@
 - 일반 가이드는 `07.guides/####-<topic>.md`
 - 장기 유지 가이드는 날짜 없이 주제명 기반 파일명을 사용할 수 있다.
 
-## 시작 템플릿
+## Templates
 
 - `../99.templates/guide.template.md`

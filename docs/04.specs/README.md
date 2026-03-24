@@ -95,7 +95,7 @@
 - 기능 내부의 설계 보조용 `tasks.md` 또는 `tests.md`는 `04.specs/<feature-id>/`에 둘 수 있다.
 - 그러나 실행 추적, 스프린트 관리, 검증·평가 기록의 정본은 `06.tasks/`에 둔다.
 
-## 시작 템플릿
+## Templates
 
 - `../99.templates/spec.template.md`
 - `../99.templates/api-spec.template.md`

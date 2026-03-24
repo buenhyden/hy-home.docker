@@ -1,5 +1,6 @@
 <!-- Target: docs/04.specs/<feature-id>/spec.md -->
-# [Feature Name] Specification
+
+# [Feature Name] Technical Specification (Spec)
 
 > Use this template for `docs/04.specs/<feature-id>/spec.md`.
 >

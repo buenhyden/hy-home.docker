@@ -26,6 +26,6 @@
 - `architecture/`
 - `agents/`
 
-## 시작 템플릿
+## Templates
 
 - `../99.templates/reference.template.md`
