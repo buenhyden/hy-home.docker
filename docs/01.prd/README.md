@@ -1,8 +1,9 @@
-# 01.prd
+# 01. PRD (Product Requirements)
 
 ## 목적
 
-이 폴더는 제품 요구사항(Product Requirements Document, PRD)을 저장한다. PRD는 무엇을 왜 만들어야 하는지, 누구를 위한 기능인지, 어떤 성공 기준을 만족해야 하는지를 정의한다.
+제품의 목표, 사용자 가치, 그리고 성공 기준을 정의한 문서다.
+모든 개발의 시작점이며, '무엇을(What)', '왜(Why)' 개발하는지 설명한다.
 
 ## 포함할 내용
 
@@ -28,9 +29,6 @@
 - Spec은 PRD 요구 ID를 추적한다.
 - Agent 기능인 경우 사용 시나리오, 허용/금지 행동, human-in-the-loop 요구를 포함한다.
 
-## 권장 파일명
-
-- `YYYY-MM-DD-<feature-or-system>.md`
 
 ## Templates
 

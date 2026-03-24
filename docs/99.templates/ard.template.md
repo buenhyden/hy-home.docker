@@ -12,7 +12,7 @@
 
 ---
 
-# [System or Domain Name] Architecture Reference Document
+## [System or Domain Name] Architecture Reference Document
 
 ## Overview (KR)
 

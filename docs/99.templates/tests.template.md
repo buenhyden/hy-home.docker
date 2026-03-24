@@ -9,13 +9,14 @@
 > - This document defines the verification strategy for the feature.
 > - Core behavior defaults to TDD.
 > - Agent functionality must include both software tests and eval coverage when applicable.
-> - Execution-tracking remains in `06.tasks/`; this document defines strategy and test inventory.
+> - Execution-tracking remains in `06.tasks/`.
+> - This document defines strategy and test inventory.
 
 ---
 
 ## Overview (KR)
 
-이 문서는 [기능명]의 테스트 및 평가 전략을 정의한다. 단위 테스트, 통합 테스트, 계약 테스트, 성능 테스트, Agent Eval을 어떤 기준으로 수행할지 정리한다.
+단위, 통합, 계약, 성능 테스트 및 Agent Eval 기준을 정리한다.
 
 ## Parent Documents
 

@@ -1,4 +1,4 @@
-# 02.ard
+# 02.ARD (Architecture Reference Document)
 
 ## 목적
 
@@ -24,9 +24,6 @@
 - PRD를 입력으로 받고, ADR·Spec의 상위 참조가 된다.
 - Agent 시스템인 경우 모델/도구/메모리/컨텍스트/가드레일에 대한 아키텍처 수준 요구를 포함한다.
 
-## 권장 파일명
-
-- `####-<system-or-domain>.md`
 
 ## Templates
 

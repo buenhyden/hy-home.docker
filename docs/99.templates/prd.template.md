@@ -1,6 +1,6 @@
 <!-- Target: docs/01.prd/YYYY-MM-DD-<feature-or-system>.md -->
 
-# [Feature or System Name] Product Requirements Document (PRD)
+# Product Requirements Document
 
 > Use this template for `docs/01.prd/YYYY-MM-DD-<feature-or-system>.md`.
 >
@@ -14,7 +14,7 @@
 
 ---
 
-# [Feature or System Name] Product Requirements Document
+## [Feature or System Name] Product Requirements
 
 ## Overview (KR)
 

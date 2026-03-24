@@ -1,4 +1,5 @@
-<!-- Target: README.md -->
+# README Template — Usage Guidelines
+
 <!--
 # README Template — Usage Guidelines
 
