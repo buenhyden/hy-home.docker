@@ -4,25 +4,23 @@ layer: agentic
 
 # GEMINI.md
 
-Gemini-specific operational triggers and guidance for `hy-home.docker`.
+Gemini-optimized operational patterns for `hy-home.docker`.
 
-## 1. Core Contract
+## 1. CORE DIRECTIVE
+Follow the primary contract in **[AGENTS.md](AGENTS.md)**. Use your large context window to map cross-tier dependencies effectively across all 10 infrastructure blocks.
 
-AI agents MUST follow the primary technical contract and "Day 1" commands defined in [AGENTS.md](AGENTS.md).
+## 2. CONTEXT ANCHORING
+When processing the codebase, anchor your reasoning based on:
+1.  **[System Definition](docs/00.agent/05.system-spec.md)**: Technical boundaries.
+2.  **[Behavioral Policy](docs/00.agent/03.behavior.md)**: Prompting and interaction standards.
+3.  **[Gateway Dispatcher](docs/00.agent/01.gateway.md)**: Document discovery and lazy-loading.
 
-## 2. Gemini Optimized Workflow
+## 3. LAZY-LOADING TRIGGERS
+Execute specialized tasks by loading focused context markers:
+- `[LOAD:RULES:REFACTOR]` — System-wide refactoring logic.
+- `[LOAD:RULES:INFRA]` — Infrastructure lifecycle and validation.
+- `[LOAD:RULES:DOCS]` — Documentation taxonomy (01~99) enforcement.
+- `[LOAD:RULES:OPS]` — Operational procedures and incident handling.
 
-As an agent with a large context window and advanced planning capabilities, prioritize the following:
-
-- **Tiered Orchestration**: The infrastructure is split into 10 logical tiers under `infra/`. Use your ability to map cross-tier dependencies (e.g., how `02-auth` depends on `04-data/postgresql`).
-- **Plan Verification**: When generating implementation plans in `docs/plans/`, ensure they account for the profile-driven nature of the stack (`COMPOSE_PROFILES`).
-- **Interactive Discovery**: Proactively use the [Discovery Hub](docs/agentic/gateway.md) to find specialized rules for complex refactoring or infra tasks.
-
-## 3. Rule Triggers
-
-Identify your task and load the required rule module:
-
-- **Refactoring**: `[LOAD:RULES:REFACTOR]` (Follows [March 2026 Standard](docs/adr/0003-2026-march-agentic-standard.md))
-- **Documentation**: `[LOAD:RULES:DOCS]`
-- **Infrastructure**: `[LOAD:RULES:INFRA]` (See [ARCHITECTURE.md](ARCHITECTURE.md))
-- **Operations**: `[LOAD:RULES:OPS]` (See [OPERATIONS.md](OPERATIONS.md))
+## 4. WORKFLOW ANCHOR
+ALWAYS generate a detailed implementation plan in `docs/05.plans/` before execution. Ensure plans account for `COMPOSE_PROFILES` dependencies.

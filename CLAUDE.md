@@ -4,34 +4,34 @@ layer: agentic
 
 # CLAUDE.md
 
-Claude-specific operational triggers and guidance for `hy-home.docker`.
+<contract>
+Claude-specific operational triggers for `hy-home.docker`.
 
-## 1. Core Contract
+## 1. Session Initialization
+ALWAYS load **[docs/00.agent/01.gateway.md](docs/00.agent/01.gateway.md)** at startup.
 
-AI agents MUST follow the primary technical contract and "Day 1" commands defined in [AGENTS.md](AGENTS.md).
+## 2. Operational XML Rules
+<workflow>
+- **Plan-First**: Create implementation plans in `docs/05.plans/` before any major changes.
+- **SDD Compliance**: Ensure all changes are tracked via PRD -> Spec -> Plan -> Task.
+- **Validation**: NEVER bypass `bash scripts/validate-docker-compose.sh`.
+</workflow>
 
-## 2. Common Commands
-
+## 3. Technical Reference
+<commands>
 | Task | Command |
 | --- | --- |
 | **Validate** | `bash scripts/validate-docker-compose.sh` |
-| **Preflight** | `bash scripts/preflight-compose.sh` |
-| **Certs** | `bash scripts/generate-local-certs.sh` |
-| **Secrets** | `bash scripts/bootstrap-secrets.sh --env-file .env` |
-| **Up** | `docker compose up -d` |
-| **Logs** | `docker compose logs -f` |
+| **Deploy** | `docker compose up -d` |
+| **Secrets** | `bash scripts/bootstrap-secrets.sh` |
+| **Cert-Gen** | `bash scripts/generate-local-certs.sh` |
+</commands>
 
-## 3. Architecture & Gotchas
+## 4. Lazy-Loading Markers
+Use these triggers to load specialized context:
+- `[LOAD:RULES:REFACTOR]` -> Refactoring logic
+- `[LOAD:RULES:DOCS]` -> Documentation standards
+- `[LOAD:RULES:INFRA]` -> Infrastructure lifecycle
+- `[LOAD:RULES:OPS]` -> Operations/Incidents
+</contract>
 
-- **Tiered Structure**: Services are located in `infra/` organized by tier (01-10). The root `docker-compose.yml` includes these via `include`.
-- **Validation-First**: ALWAYS run `bash scripts/validate-docker-compose.sh` before deployment. It handles dummy secrets for static analysis.
-- **FS Policy**: Work strictly within the Linux filesystem (WSL2 requirement) to avoid permission/performance issues.
-
-## 4. Rule Triggers
-
-Identify your task and load the required rule module:
-
-- **Refactoring**: `[LOAD:RULES:REFACTOR]` (Follows [March 2026 Standard](docs/adr/0003-2026-march-agentic-standard.md))
-- **Documentation**: `[LOAD:RULES:DOCS]`
-- **Infrastructure**: `[LOAD:RULES:INFRA]` (See [ARCHITECTURE.md](ARCHITECTURE.md))
-- **Operations**: `[LOAD:RULES:OPS]` (See [OPERATIONS.md](OPERATIONS.md))

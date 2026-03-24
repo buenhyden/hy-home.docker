@@ -7,11 +7,11 @@ layer: 'guides'
 
 ## 1. Spec-Driven Development
 
-All new features require a specification in `docs/specs/`. PRs without an approved spec will be rejected.
+All new features require a specification in `docs/04.specs/`. PRs without an approved spec will be rejected.
 
 ## 2. Template Enforcement
 
-Use `docs/templates/` for all documentation artifacts (ADR, PRD, Runbook, etc.).
+Use `docs/99.templates/` for all documentation artifacts (ADR, PRD, Runbook, etc.).
 
 ## 3. Quality Assurance (Pre-PR Gates)
 
@@ -24,8 +24,8 @@ Use `docs/templates/` for all documentation artifacts (ADR, PRD, Runbook, etc.).
 
 - **Naming**: `feature/`, `fix/`, or `docs/`.
 - **Commits**: Conventional Commits.
-- **Traceability**: PRs must reference the corresponding `docs/specs/` file.
+- **Traceability**: PRs must reference the corresponding `docs/04.specs/` file.
 
 ## 5. Agent Governance
 
-All contributions must comply with rules in `docs/agentic/rules/`.
+All contributions must comply with rules in `docs/00.agent/rules/`.

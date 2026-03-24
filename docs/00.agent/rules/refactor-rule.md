@@ -18,7 +18,7 @@ This rule applies to tasks involving repository structure changes, documentation
 
 1. **Analyze**: Use `ls -R` and `view_file` to map the current state.
 2. **Decompose**: Identify redundant content or misaligned files according to the flat taxonomy in `docs/`.
-3. **Execute**: Move content to specialized directories (`docs/specs/`, `docs/guides/`, etc.).
+3. **Execute**: Move content to specialized directories (`docs/04.specs/`, `docs/07.guides/`, etc.).
 4. **Link Integrity**: Update all relative links in the refactored files.
 5. **Metadata**: Ensure every file has the `layer:` key.
 

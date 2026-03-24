@@ -6,42 +6,43 @@ layer: agentic
 
 **Canonical working contract for all AI agents in `hy-home.docker`.**
 
-`hy-home.docker` is a modular, self-hosted platform stack built on Docker Compose `include` files and profiles. This repository serves as the primary orchestration layer for local and homelab infrastructure.
+`hy-home.docker` is a modular, self-hosted platform stack. This file establishes the base protocol for all AI interactions.
 
-## 1. Technical Prerequisites
+## 1. Operating Protocol (Always, Ask, Never)
 
-Before executing any commands, verify the following are installed and configured:
+### ALWAYS
 
-- **Docker Engine**: 24.x+
-- **Docker Compose**: v2.20+
-- **Host Tools**: `bash`, `git`, `mkcert`, `python3`, `openssl`
-- **FS Policy**: On WSL2, the repository MUST stay inside the Linux filesystem (non-NTFS).
+- Load the **[Agent Gateway](docs/00.agent/01.gateway.md)** at the start of every session.
+- Run `bash scripts/validate-docker-compose.sh` before any infrastructure changes.
+- Use relative paths for all documentation links.
+- Follow the **[SDD/TDD documentation flow](docs/README.md)**.
 
-## 2. Day 1 Commands (Setup & Validation)
+### ASK FIRST
 
-Copy-paste ready commands for common bootstrap stages:
+- Before creating new top-level directories.
+- Before introducing new major dependencies.
+- Before executing potentially destructive shell commands (e.g., `docker system prune`).
 
-| Phase | Command | Purpose |
+### NEVER
+
+- Commit secrets or `.env` files to version control.
+- Modify infrastructure without prior validation.
+- Bypass the established documentation taxonomy (01~99).
+
+## 2. Day 1 Commands
+
+| Task | Command | Purpose |
 | --- | --- | --- |
-| **Setup** | `cp .env.example .env` | Initialize environment defaults |
-| **Certs** | `bash scripts/generate-local-certs.sh` | Bootstrap local TLS (mkcert) |
-| **Secrets** | `bash scripts/bootstrap-secrets.sh` | Generate file-backed Docker secrets |
-| **Validate** | `bash scripts/validate-docker-compose.sh` | Pre-deploy configuration check |
-| **Preflight**| `bash scripts/preflight-compose.sh` | Runtime prerequisite check |
-| **Execute** | `docker compose up -d` | Bring up default profiles |
+| **Setup** | `cp .env.example .env` | Initialize environment |
+| **Certs** | `bash scripts/generate-local-certs.sh` | Bootstrap local TLS |
+| **Validate** | `bash scripts/validate-docker-compose.sh` | Pre-deploy check |
+| **Preflight**| `bash scripts/preflight-compose.sh` | Runtime check |
+| **Execute** | `docker compose up -d` | Deploy stack |
 
-## 3. Rule Triggers
+## 3. Discovery & Lazy Loading
 
-Identify your task and load the required rule module via [Discovery Hub](docs/00.agent/gateway.md):
-
-- **Refactoring**: `[LOAD:RULES:REFACTOR]`
-- **Documentation**: `[LOAD:RULES:DOCS]`
-- **Infrastructure**: `[LOAD:RULES:INFRA]`
-- **Operations**: `[LOAD:RULES:OPS]`
-
-## 4. Execution Baseline
-
-1. **Load Gateway**: ALWAYS load [docs/00.agent/gateway.md](docs/00.agent/gateway.md) at session start.
-2. **Skill Autonomy**: Use any tool in your bundle. No skills are restricted.
-3. **Draft Plans**: Use pluralized paths for implementation plans ([docs/plans/](docs/plans/)).
-4. **Validation**: NEVER update infrastructure without running `bash scripts/validate-docker-compose.sh`.
+For specific tasks, use the **[Dispatcher](docs/00.agent/01.gateway.md)** to load the required rule modules:
+- `[LOAD:RULES:REFACTOR]` — Doc/System Refactoring
+- `[LOAD:RULES:DOCS]` — Documentation Maintenance
+- `[LOAD:RULES:INFRA]` — Infrastructure Lifecycle
+- `[LOAD:RULES:OPS]` — Operations & Incidents

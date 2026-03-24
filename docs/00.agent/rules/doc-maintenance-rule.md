@@ -17,7 +17,7 @@ This rule applies to all tasks involving the creation, modification, or auditing
   ---
   ```
 
-- **Taxonomy**: Strictly follow the flat category-based folders: `adr, ard, prd, specs, plans, runbooks, operations`.
+- **Taxonomy**: Strictly follow the numbered category-based folders: `01.prd, 02.ard, 03.adr, 04.specs, 05.plans, 08.operations, 09.runbooks`.
 - **Naming**: Use kebab-case for filenames (e.g., `my-new-spec.md`).
 
 ## 2. Skill Guidance
