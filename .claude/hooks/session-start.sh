@@ -42,8 +42,6 @@ msg = f'''🏠 **hy-home.docker 프로젝트 컨텍스트**
 
 **주요 규칙 (CLAUDE.md)**
 - 배포 전 반드시 \`bash scripts/validate-docker-compose.sh\` 실행
-- 인프라 변경 시 \`[LOAD:RULES:INFRA]\` 규칙 로드
-- 운영 작업 시 \`[LOAD:RULES:OPS]\` 규칙 로드
 '''
 
 print(json.dumps({'systemMessage': msg.strip()}))

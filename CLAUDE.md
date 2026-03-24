@@ -4,34 +4,20 @@ layer: agentic
 
 # CLAUDE.md
 
-<contract>
-Claude-specific operational triggers for `hy-home.docker`.
+Claude-optimized operational patterns for `hy-home.docker`.
 
-## 1. Session Initialization
-ALWAYS load **[docs/00.agent/01.gateway.md](docs/00.agent/01.gateway.md)** at startup.
+## 1. Shared Protocols (Core)
+@docs/00.agent/claude-provider.md
+@docs/00.agent/README.md
+@docs/00.agent/rules/bootstrap.md
 
-## 2. Operational XML Rules
-<workflow>
-- **Plan-First**: Create implementation plans in `docs/05.plans/` before any major changes.
-- **SDD Compliance**: Ensure all changes are tracked via PRD -> Spec -> Plan -> Task.
-- **Validation**: NEVER bypass `bash scripts/validate-docker-compose.sh`.
-</workflow>
+## 2. Identity Hub
+Always load **[Identity Hub](docs/00.agent/README.md)** at the start of every session to establish governance.
 
-## 3. Technical Reference
-<commands>
-| Task | Command |
-| --- | --- |
-| **Validate** | `bash scripts/validate-docker-compose.sh` |
-| **Deploy** | `docker compose up -d` |
-| **Secrets** | `bash scripts/bootstrap-secrets.sh` |
-| **Cert-Gen** | `bash scripts/generate-local-certs.sh` |
-</commands>
+## 3. Cognitive Patterns
+- **Thinking First**: Describe intended logic in `<thinking>` tags before calling tools.
+- **Task Boundaries**: Encapsulate independent work units within `<task>` boundaries.
+- **JIT Context**: Use `[LOAD:RULES:<CAT>]` markers for Just-In-Time context loading.
 
-## 4. Lazy-Loading Markers
-Use these triggers to load specialized context:
-- `[LOAD:RULES:REFACTOR]` -> Refactoring logic
-- `[LOAD:RULES:DOCS]` -> Documentation standards
-- `[LOAD:RULES:INFRA]` -> Infrastructure lifecycle
-- `[LOAD:RULES:OPS]` -> Operations/Incidents
-</contract>
-
+## 4. Workflow Strategy
+Always generate a detailed implementation plan in `docs/05.plans/` before execution. Follow the governance defined in `docs/00.agent/README.md`.

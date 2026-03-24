@@ -8,41 +8,33 @@ layer: agentic
 
 `hy-home.docker` is a modular, self-hosted platform stack. This file establishes the base protocol for all AI interactions.
 
-## 1. Operating Protocol (Always, Ask, Never)
+## 1. Identity Protocol (Always Load First)
+- **Primary Hub**: Always load **[docs/00.agent/README.md](docs/00.agent/README.md)** at the start of every session to establish identity and governance.
+- **Provider Context**: Load the matching provider file (e.g., `docs/00.agent/claude-provider.md`) for specialized tool/memory guidance.
+
+## 2. Operating Protocol (Always, Ask, Never)
 
 ### ALWAYS
-
-- Load the **[Agent Gateway](docs/00.agent/01.gateway.md)** at the start of every session.
+- Refer to the **[Gateway Dispatcher](docs/00.agent/README.md)** for session-specific context.
 - Run `bash scripts/validate-docker-compose.sh` before any infrastructure changes.
 - Use relative paths for all documentation links.
-- Follow the **[SDD/TDD documentation flow](docs/README.md)**.
+- Follow the established documentation taxonomy (01~99).
 
 ### ASK FIRST
-
 - Before creating new top-level directories.
 - Before introducing new major dependencies.
-- Before executing potentially destructive shell commands (e.g., `docker system prune`).
+- Before executing potentially destructive shell commands.
 
 ### NEVER
-
 - Commit secrets or `.env` files to version control.
 - Modify infrastructure without prior validation.
-- Bypass the established documentation taxonomy (01~99).
+- Bypass the documentation governance defined in `docs/00.agent/`.
 
-## 2. Day 1 Commands
+## 3. Lazy-Loading Dispatcher
+Use the following markers to load specialized rules JIT:
+- `[LOAD:RULES:BOOTSTRAP]` — Core governance, taxonomy, and standards.
+- `[LOAD:RULES:PERSONA]` — Persona-based task matrix.
 
-| Task | Command | Purpose |
-| --- | --- | --- |
-| **Setup** | `cp .env.example .env` | Initialize environment |
-| **Certs** | `bash scripts/generate-local-certs.sh` | Bootstrap local TLS |
-| **Validate** | `bash scripts/validate-docker-compose.sh` | Pre-deploy check |
-| **Preflight**| `bash scripts/preflight-compose.sh` | Runtime check |
-| **Execute** | `docker compose up -d` | Deploy stack |
 
-## 3. Discovery & Lazy Loading
-
-For specific tasks, use the **[Dispatcher](docs/00.agent/01.gateway.md)** to load the required rule modules:
-- `[LOAD:RULES:REFACTOR]` — Doc/System Refactoring
-- `[LOAD:RULES:DOCS]` — Documentation Maintenance
-- `[LOAD:RULES:INFRA]` — Infrastructure Lifecycle
-- `[LOAD:RULES:OPS]` — Operations & Incidents
+## 4. Governance
+All agent governance, persona mappings, and behavioral standards are defined in **[docs/00.agent/](docs/00.agent/README.md)**.

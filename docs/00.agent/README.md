@@ -2,23 +2,42 @@
 layer: agentic
 ---
 
-# AI Agent Instruction Hub (`docs/00.agent/`)
+# AI Agent Governance Hub
 
-This directory is the **authoritative home for all AI agent-specific logic, governance, and Discovery protocols**. Root files reference this hub to ensure consistent behavior across agent providers.
+Welcome to the central governance directory for AI Agents. This folder defines the rules, scopes, and protocols for all automated and assisted development tasks.
 
-## Core Instruction Set
+## Identity Protocol
 
-- [00.index.md](README.md) — This documentation.
-- [01.gateway.md](01.gateway.md) — Session start orientation and Dispatcher.
-- [02.governance.md](02.governance.md) — Persona management and taxonomy.
-- [03.behavior.md](03.behavior.md) — Behavioral and prompting rules.
-- [04.workflow.md](04.workflow.md) — Interaction logic and execution loop.
-- [05.system-spec.md](05.system-spec.md) — Technical boundaries and system definitions.
+AI Agents must establish identity via [AGENTS.md](../../AGENTS.md) and load this hub at session start.
 
-## Maintenance Policy
+## Directory Structure
 
-- **Concise Roots**: `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` are lightweight shims that point here.
-- **No Duplication**: Common operational rules belong here, not scattered across root files.
-- **Relative Linking**: All internal links must remain relative to ensure portability.
-- **Numeric Taxonomy**: All files in this directory must use the `00~99` numeric prefix.
+- `rules/`: Universal core governance, persona mapping, and repository-wide standards.
+- `scopes/`: Layer-specific technical instructions and constraints (Architecture, Backend, Infra, etc.).
+- `claude-provider.md`: Provider-specific configuration for Claude Code.
+- `gemini-provider.md`: Provider-specific configuration for Gemini CLI.
 
+## Gateway Dispatcher
+
+Use the following markers to load task-specific context via external `README.md` files:
+
+| Marker | Target README | Intent |
+| :--- | :--- | :--- |
+| `[LOAD:PRD]` | `docs/01.prd/README.md` | Understanding high-level requirements |
+| `[LOAD:ARD]` | `docs/02.ard/README.md` | Reviewing architectural qualities |
+| `[LOAD:ADR]` | `docs/03.adr/README.md` | Reviewing technical decisions |
+| `[LOAD:SPECS]` | `docs/04.specs/README.md` | Implementing or verifying specifications |
+| `[LOAD:PLANS]` | `docs/05.plans/README.md` | Executing architectural plans |
+| `[LOAD:RUNBOOKS]` | `docs/09.runbooks/README.md` | Operational manual tasks |
+
+## Specialized Rule Dispatcher
+
+| Strategy | Rule File | Dispatcher Marker |
+| :--- | :--- | :--- |
+| **Core Governance** | `rules/bootstrap.md` | `[LOAD:RULES:BOOTSTRAP]` |
+| **Persona Matrix** | `rules/persona-matrix.md` | `[LOAD:RULES:PERSONA]` |
+
+
+## Compliance
+
+All documentation in this project follows the **01-11 Stage-Gate Taxonomy**.
