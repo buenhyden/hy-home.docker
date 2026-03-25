@@ -4,20 +4,20 @@ layer: agentic
 
 # CLAUDE.md
 
-Claude-optimized cognitive patterns.
+**Claude-optimized cognitive patterns and memory briefing.**
 
-## 1. Shared Protocols
+## 1. Core Protocols
 
-- **Identity Hub**: [docs/00.agent-governance/README.md](docs/00.agent-governance/README.md)
-- **Provider Context**: [docs/00.agent-governance/claude-provider.md](docs/00.agent-governance/claude-provider.md)
+- **Governance Hub**: [docs/00.agent-governance/README.md](docs/00.agent-governance/README.md)
+- **Specific Configuration**: [docs/00.agent-governance/claude-provider.md](docs/00.agent-governance/claude-provider.md)
 
-## 2. Cognitive Patterns
+## 2. Interaction & Memory
 
-- **JIT Context**: Use `[LOAD:RULES:<CAT>]` for on-demand knowledge.
-- **Thinking First**: Use `<thinking>` tags for tool-use mapping and plan internal logic.
-- **Progressive Disclosure**: Load layer-level scopes via `docs/00.agent-governance/scopes/`.
+- **Thinking Process**: Use `<thinking>` tags for planning and internal logic mapping.
+- **Progressive Disclosure**: Offload layer-specific rules to `docs/00.agent-governance/scopes/`.
+- **JIT Context**: Use `[LOAD:...]` markers to ingest taxonomy context from `docs/01-11`.
 
-## 3. Workflow Strategy
+## 3. Response Strategy
 
-- **Planning**: Plan first in `docs/05.plans/` using mandatory templates.
 - **Language**: ALWAYS respond to the USER in **Korean**.
+- **Validation**: Verify all work via tests or scripts as defined in the plan.

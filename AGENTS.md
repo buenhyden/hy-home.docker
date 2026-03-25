@@ -6,24 +6,32 @@ layer: agentic
 
 **Universal Working Contract for all AI Agents in `hy-home.docker`.**
 
-## 1. Entry Point & Governance
+## 1. Governance & Entry Point
 
-This project implements a single-source-of-truth governance model based on the **Stage-Gate Taxonomy (01-11)**.
+This project uses a **Stage-Gate Taxonomy (01-11)** for documentation and governance.
 
-1. **Identity Hub**: Establish identity and load core rules from **[docs/00.agent-governance/README.md](docs/00.agent-governance/README.md)**.
-2. **Persona Protocol**: Adopt the required specialist persona via `[LOAD:RULES:PERSONA]`.
-3. **Language Protocol**:
+- **Central Hub**: [docs/00.agent-governance/README.md](docs/00.agent-governance/README.md)
+- **Core Rules**: [docs/00.agent-governance/rules/bootstrap.md](docs/00.agent-governance/rules/bootstrap.md)
+- **Persona Protocol**: Load via `[LOAD:RULES:PERSONA]` from `docs/00.agent-governance/rules/persona-matrix.md`.
 
-   - **Governance**: READ/WRITE all internal 00-11 stage-gate docs in **English**.
-   - **Interaction**: ALWAYS respond to the USER in **Korean** via `notify_user` or chat.
+## 2. Language & Response Policy
 
-## 2. Operating Constraints
+- **Documentation**: All internal governance and agent-facing docs MUST be in **English**.
+- **Interaction**: ALWAYS respond to the **USER** in **Korean** (via `notify_user` or chat).
+- **Human-Facing Docs**: `docs/` READMEs and guides are in **Korean** for human readability.
 
-- Relative Paths: Always use relative paths; never use `file://` URIs or absolute paths.
-- Validation: Architectural changes MUST pass `scripts/validate-docker-compose.sh`.
-- Security: Never commit secrets. Adhere to **[rules/security.md](docs/00.agent-governance/scopes/security.md)**.
-- Lazy Loading: If context is missing, use JIT markers (e.g., `[LOAD:PRD]`, `[LOAD:SPEC]`).
+## 3. Operating Constraints
 
-## 3. Primary Dispatcher
+- **Paths**: Use relative paths only; no `file://` or absolute URIs.
+- **Validation**: Architectural changes must pass `scripts/validate-docker-compose.sh`.
+- **Security**: No secrets in code. Refer to [security.md](docs/00.agent-governance/scopes/security.md).
+- **Lazy Loading**: Use JIT markers (e.g., `[LOAD:PRD]`, `[LOAD:SPEC]`) to ingest context from `docs/01-11`.
 
-For detailed technical scopes, refer to **`docs/00.agent-governance/scopes/`**.
+## 4. Technical Scopes
+
+For detailed constraints by layer, refer to:
+- [Architecture](docs/00.agent-governance/scopes/architecture.md)
+- [Backend](docs/00.agent-governance/scopes/backend.md)
+- [Frontend](docs/00.agent-governance/scopes/frontend.md)
+- [Infrastructure](docs/00.agent-governance/scopes/infra.md)
+- [Documentation](docs/00.agent-governance/scopes/docs.md)
