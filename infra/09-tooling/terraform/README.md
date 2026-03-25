@@ -1,53 +1,52 @@
-# Terraform
+<!-- [ID:09-tooling:terraform] -->
+# Terraform CLI
 
-This directory provides a containerized Terraform CLI runner for managing infrastructure as code. Intended for on-demand execution using `docker compose run`.
+> Infrastructure as Code (IaC) execution environment.
 
-## Service
+## 1. Overview (KR)
 
-| Service     | Image                      | Role                   | Mode    |
-| :---        | :---                       | :---                   | :---    |
-| `terraform` | `hashicorp/terraform:1.14.4` | IaC CLI runner       | Job (no restart) |
+이 서비스는 인프라를 코드(IaC)로 정의하고 관리하는 **Terraform 실행 환경**입니다. 컨테이너화된 환경을 통해 일관된 IaC 실행 및 워크스페이스 관리를 지원합니다.
 
-## Networking
+## 2. Overview
 
-- Connected to `infra_net` for access to internal services (e.g., MinIO for remote state).
-- No port exposure or Traefik routing (job mode only).
+The `terraform` service provides a containerized CLI environment for executing HashiCorp Terraform commands. It ensures a consistent binary version and standardized workspace/credential mounting for infrastructure provisioning in `hy-home.docker`.
 
-## Persistence
+## 3. Tech Stack
 
-- **Workspace**: `./workspace` bind mount → `/workspace` inside container. All `.tf` files and state are stored here.
-- **AWS Credentials**: `$HOME/.aws` → `/root/.aws:ro` (for S3/MinIO backend auth).
-- **Azure Credentials**: `$HOME/.azure` → `/root/.azure:ro` (for Azure provider auth).
+| Service | Technology | Role |
+| :--- | :--- | :--- |
+| **terraform** | Terraform 1.14 | IaC Provisioning CLI |
 
-## Configuration
+## 4. Networking
 
-- **Working Dir**: `/workspace` inside container.
-- **Backend**: Configured per-workspace (S3/MinIO compatible or local filesystem).
-- **Provider**: Manages Docker, Kubernetes, or cloud resources depending on workspace.
+| Service | Protocol | Description |
+| :--- | :--- | :--- |
+| **CLI** | N/A | Job mode only, no persistent exposure. |
+| **Network** | `infra_net` | Access to providers and remote backends (MinIO). |
 
-## Usage
+## 5. Persistence
+
+- **Workspace**: `./workspace` (Code and local state).
+- **Credentials**: `$HOME/.aws`, `$HOME/.azure` (Host mounts).
+
+## 6. Usage
 
 ```bash
-# Initialize workspace
-docker compose run --rm terraform init
-
-# Plan changes
 docker compose run --rm terraform plan
-
-# Apply changes
 docker compose run --rm terraform apply
-
-# Format files
-docker compose run --rm terraform fmt
-
-# Destroy resources
-docker compose run --rm terraform destroy
 ```
 
-## File Map
+## 7. File Map
 
-| Path                | Description                                       |
-| ------------------- | ------------------------------------------------- |
-| `docker-compose.yml`| Terraform CLI job service definition.             |
-| `workspace/`        | Terraform configuration files (user-managed).     |
-| `README.md`         | Usage notes and provider setup (this file).       |
+| Path | Description |
+| :--- | :--- |
+| `docker-compose.yml` | CLI execution service definition. |
+| `workspace/` | Local directory for `.tf` files. |
+| `README.md` | Usage notes and setup (this file). |
+
+---
+
+## Documentation References
+
+- [IaC Deployment Policy](../../../docs/08.operations/09-tooling/iac-deployment-policy.md)
+- [Tooling Context](../../../docs/07.guides/09-tooling/README.md)

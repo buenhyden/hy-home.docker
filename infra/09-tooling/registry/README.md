@@ -1,48 +1,44 @@
-# Registry
+<!-- [ID:09-tooling:registry] -->
+# Docker Registry
 
-A private Docker container image registry based on [Docker Distribution](https://distribution.github.io/distribution/) (formerly Docker Registry v2). Used to store and serve locally-built custom images (e.g., `hy/loki`, `hy/tempo`).
+> Private OCI-compliant image distribution service.
 
-## Services
+## 1. Overview (KR)
 
-| Service    | Image        | Role                        | Resources               |
-| :---       | :---         | :---                        | :---                    |
-| `registry` | `registry:2` | Container image registry    | med (0.5 CPU / 512 MB) |
+이 서비스는 컨테이너 이미지를 내부 네트워크에서 관리하고 배포하는 **프라이빗 도커 레지스트리**입니다. 외부 네트워크 의존성을 줄이고 보안이 강화된 이미지 저장소로 활용됩니다.
 
-## Networking
+## 2. Overview
 
-- **Access Port**: `${REGISTRY_PORT:-5000}` exposed directly on the host (no Traefik proxy).
-- **Protocol**: Plain HTTP (no TLS). Add `localhost:${REGISTRY_PORT}` to Docker daemon `insecure-registries` for local use.
+The `registry` service acts as the internal repository for container images in `hy-home.docker`. It enables fast, local pulls for internal infrastructure and avoids dependency on external public registries for proprietary or sensitive images.
 
-## Persistence
+## 3. Tech Stack
 
-- **Images Volume**: `registry-data-volume` → `${DEFAULT_REGISTRY_DIR}` bind mount, stored at `/var/lib/registry` in container.
+| Service | Technology | Role |
+| :--- | :--- | :--- |
+| **registry** | Registry v2 | Image Distribution |
 
-## Configuration
+## 4. Networking
 
-Key environment variables (from `.env`):
+| Service | Port | Description |
+| :--- | :--- | :--- |
+| **Registry Port** | `5000` | Standard distribution port (via `REGISTRY_PORT`). |
+| **Protocol** | Plain HTTP | Add to `insecure-registries` in Docker daemon. |
 
-| Variable             | Default | Description                          |
-| :---                 | :---    | :---                                 |
-| `REGISTRY_PORT`      | `5000`  | Host and container port.             |
-| `DEFAULT_REGISTRY_DIR` | —     | Host path for image storage.         |
+## 5. Persistence
 
-## Usage
+- **Images Volume**: `registry-data-volume` mapped to `/var/lib/registry`.
+- **Host Path**: `${DEFAULT_REGISTRY_DIR}`.
 
-```bash
-# Tag and push an image
-docker tag my-image:latest localhost:${REGISTRY_PORT:-5000}/my-image:latest
-docker push localhost:${REGISTRY_PORT:-5000}/my-image:latest
+## 6. File Map
 
-# List repositories via API
-curl http://localhost:${REGISTRY_PORT:-5000}/v2/_catalog
+| Path | Description |
+| :--- | :--- |
+| `docker-compose.yml` | Registry service definition. |
+| `README.md` | Service overview (this file). |
 
-# Reference from other containers (within infra_net)
-image: registry:${REGISTRY_PORT:-5000}/my-image:latest
-```
+---
 
-## File Map
+## Documentation References
 
-| Path                | Description                                    |
-| ------------------- | ---------------------------------------------- |
-| `docker-compose.yml`| Service definition with volume and healthcheck.|
-| `README.md`         | Service overview (this file).                  |
+- [DevOps Tooling Guide](../../../docs/07.guides/09-tooling/README.md)
+- [Tooling Operations](../../../docs/08.operations/09-tooling/README.md)

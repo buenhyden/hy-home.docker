@@ -1,46 +1,48 @@
+<!-- [ID:09-tooling:terrakube] -->
 # Terrakube
 
-Terrakube is an open-source alternative to Terraform Cloud and Terraform Enterprise.
+> Open-source alternative to Terraform Cloud/Enterprise.
 
-## Services
+## 1. Overview (KR)
 
-| Service             | Image                       | Role              |
-| :---                | :---                        | :---              |
-| `terrakube-api`     | `api-server:2.29.0`         | Backend API       |
-| `terrakube-ui`      | `terrakube-ui:2.29.0`       | Frontend GUI      |
-| `terrakube-executor`| `executor:2.29.0`           | Task Runner       |
+이 서비스는 Terraform 워크플로우를 자동화하고 관리하는 **Self-hosted IaC 오케스트레이션 플랫폼**입니다. 팀 단위의 인프라 협업 및 상태 관리를 지원합니다.
 
-## Networking
+## 2. Overview
 
-- **UI**: `terrakube-ui.${DEFAULT_URL}`
-- **API**: `terrakube-api.${DEFAULT_URL}`
-- **Runner**: `terrakube-executor.${DEFAULT_URL}`
+The `terrakube` stack provides a complete IaC management platform for `hy-home.docker`. It manages state files, execution policies, and workspace organization, supporting scheduled runs and team-based infrastructure governance.
 
-## Dependencies
+## 3. Tech Stack
 
-- **IdP**: Keycloak (`infra/02-auth/keycloak`) — OIDC/DEX validation.
-- **Store**: MinIO (`infra/04-data/minio`) — Terraform state files and plan output logs.
-- **Cache**: Management Valkey (`infra/04-data/mng-db`) — Distributed job locking.
-- **Database**: Management PostgreSQL (`infra/04-data/mng-db`).
+| Service | Technology | Role |
+| :--- | :--- | :--- |
+| **terrakube-api** | Java/Spring | Platform Logic & API |
+| **terrakube-ui** | React | Management Dashboard |
+| **terrakube-executor** | Docker / TF | Terraform Execution Node |
 
-## Persistence
+## 4. Networking
 
-- **Database**: PostgreSQL (via `infra/04-data/mng-db`). Database: `terrakube`, user: `${TERRAKUBE_DB_USERNAME}`.
-- **Object Storage**: MinIO (`infra/04-data/minio`) for state and plan logs. Bucket: `tfstate`.
+| Service | Port | Description |
+| :--- | :--- | :--- |
+| **API** | `8080` | Backend API (`terrakube-api.${DEFAULT_URL}`). |
+| **UI** | `3000` | Dashboard (`terrakube-ui.${DEFAULT_URL}`). |
+| **Executor** | `8090` | Job processing node (`terrakube-executor.${DEFAULT_URL}`). |
 
-## Secrets
+## 5. Persistence & Dependencies
 
-| Secret                   | Description                                              |
-| :---                     | :---                                                     |
-| `terrakube_db_password`  | PostgreSQL password for the `terrakube` database.        |
-| `terrakube_pat_secret`   | Personal Access Token signing secret.                    |
-| `terrakube_internal_secret` | Shared secret between API and Executor nodes.         |
-| `terrakube_valkey_password` | Password for management Valkey (Redis-compat) cache.  |
-| `minio_app_user_password`| MinIO app-user password for state storage.               |
+- **Volumes**: State stored in MinIO (`tfstate` bucket).
+- **Secrets**: `terrakube_db_password`, `minio_app_user_password`, `terrakube_valkey_password`, `terrakube_pat_secret`.
+- **Integrations**: Keycloak (Auth), MinIO (Storage), Valkey (Cache), PostgreSQL (DB).
 
-## File Map
+## 6. File Map
 
-| Path                | Description                                    |
-| ------------------- | ---------------------------------------------- |
-| `docker-compose.yml`| Service definitions for API, UI, and Executor. |
-| `README.md`         | Service overview and workflow docs.            |
+| Path | Description |
+| :--- | :--- |
+| `docker-compose.yml` | Full Terrakube stack definition. |
+| `README.md` | Service overview (this file). |
+
+---
+
+## Documentation References
+
+- [IaC Deployment Policy](../../../docs/08.operations/09-tooling/iac-deployment-policy.md)
+- [Tooling Context](../../../docs/07.guides/09-tooling/README.md)

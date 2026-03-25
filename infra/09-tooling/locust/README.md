@@ -1,59 +1,48 @@
-# Locust
+<!-- [ID:09-tooling:locust] -->
+# Locust Cluster
 
-Locust is an open-source, Python-based distributed load testing tool. This setup runs a master-worker architecture with integrated InfluxDB metrics reporting.
+> Scalable, distributed user load testing tool.
 
-## Services
+## 1. Overview (KR)
 
-| Service          | Role                    | Resources              |
-| :---             | :---                    | :---                   |
-| `locust-master`  | Test controller / Web UI| med (0.5 CPU / 512 MB) |
-| `locust-worker`  | Load generator (2 replicas) | med (0.5 CPU / 512 MB) |
+이 서비스는 수천 명의 동시 사용자를 시뮬레이션하여 시스템 성능을 측정하는 **분산 부하 테스트 도구**입니다. Python 스크립트를 통해 복잡한 시나리오를 자동화할 수 있습니다.
 
-## Build
+## 2. Overview
 
-The image is built from the local `Dockerfile`:
+The `locust` stack enables performance benchmarking and stress testing for `hy-home.docker`. Running in a master-worker configuration, it provides real-time user simulation and exports performance metrics to InfluxDB for long-term analysis.
 
-| Base Image              | Additional Packages    |
-| :---                    | :---                   |
-| `locustio/locust:2.43.2`| `influxdb-client` (PyPI) |
+## 3. Tech Stack
 
-## Networking
+| Service | Technology | Role |
+| :--- | :--- | :--- |
+| **locust-master** | Python 3 / Locust 2.43 | Test Orchestrator |
+| **locust-worker** | Python 3 / Locust 2.43 | Load generator |
 
-- **Web UI**: `http://localhost:${LOCUST_HOST_PORT:-18089}` (direct port exposure, no Traefik proxy).
-- **Master-Worker**: Workers connect to `locust-master` via Docker internal DNS.
-- **Target Host Resolution**: `extra_hosts` maps `${DEFAULT_URL}` → `host-gateway` so load tests can reach host-network services.
+## 4. Networking
 
-## Persistence
+| Service | Port | Description |
+| :--- | :--- | :--- |
+| **Web UI** | `8089` | Test controller dashboard (`locust.${DEFAULT_URL}`). |
+| **Master-Worker** | `5557` | Internal node communication. |
 
-- **Locustfile Volume**: `locust-data` → `${DEFAULT_TOOLING_DIR}/locust` bind mount, exposed at `/mnt/locust` in both master and worker containers.
-- **Locustfile Path**: `/mnt/locust/locustfile.py` (must be created manually by operator).
+## 5. Persistence & Integration
 
-## Dependencies
+- **Volumes**: `locust-data` → `${DEFAULT_TOOLING_DIR}/locust`.
+- **Integration**: Exports to `influxdb` (04-data) via `influxdb_api_token`.
+- **Secrets**: `influxdb_api_token`.
 
-- **InfluxDB** (`infra/06-observability/influxdb`) — healthcheck dependency, receives metrics from master.
+## 6. File Map
 
-## Secrets
+| Path | Description |
+| :--- | :--- |
+| `Dockerfile` | Custom image built on `locustio/locust:2.43.2`. |
+| `docker-compose.yml` | Master and worker service definitions. |
+| `locustfile.py` | Load test scenario scripts. |
+| `README.md` | Service overview (this file). |
 
-| Secret              | Description                                         |
-| :---                | :---                                                |
-| `influxdb_api_token`| API token for writing metrics to InfluxDB bucket.  |
+---
 
-## Configuration
+## Documentation References
 
-Key environment variables (from `.env`):
-
-| Variable               | Default   | Description                         |
-| :---                   | :---      | :---                                |
-| `LOCUST_HOST_PORT`     | `18089`   | External port for the Web UI.       |
-| `LOCUST_PORT`          | `8089`    | Internal Locust port.               |
-| `INFLUXDB_PORT`        | `8181`    | InfluxDB connection port.           |
-| `INFLUXDB_ORG`         | —         | InfluxDB organization name.         |
-| `INFLUXDB_BUCKET`      | —         | InfluxDB bucket for metrics.        |
-
-## File Map
-
-| Path                | Description                                         |
-| ------------------- | --------------------------------------------------- |
-| `Dockerfile`        | Custom image built on `locustio/locust:2.43.2`.     |
-| `docker-compose.yml`| Master and worker service definitions.              |
-| `README.md`         | Service overview (this file).                       |
+- [Load Testing Guide](../../../docs/07.guides/09-tooling/load-testing-guide.md)
+- [Observability Guide](../../../docs/07.guides/06-observability/README.md)

@@ -54,6 +54,7 @@
 | [06-observability](./06-observability/README.md) | Monitoring, logging, and trace recovery |
 | [07-workflow](./07-workflow/README.md) | Airflow and n8n job recovery |
 | [08-ai](./08-ai/README.md) | AI inference and GPU acceleration recovery |
+| [09-tooling](./09-tooling/README.md) | DevOps and automation tool recovery |
 
 ## Templates
 

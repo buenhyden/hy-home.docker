@@ -47,4 +47,5 @@
 - [06-observability](./06-observability/README.md)
 - [07-workflow](./07-workflow/README.md)
 - [08-ai](./08-ai/README.md)
+- [09-tooling](./09-tooling/README.md)
 - [99.templates](../99.templates/guide.template.md)
