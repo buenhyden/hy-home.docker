@@ -1,33 +1,43 @@
-# Ollama & Open WebUI
+# Ollama Service
 
-This stack provides local LLM inference and a powerful chat interface.
+Local LLM inference server providing standardized API for language models.
 
-## Services
+## 0. Context & SSoT
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `ollama` | `ollama/ollama:0.18.2` | LLM Engine | 4.0 CPU / 8GB RAM / GPU |
-| `exporter`| `ollama-exporter:1.0.1` | Metrics | Default |
+- **Parent Tier**: [infra/08-ai/](../README.md)
+- **Internal API**: `ollama:11434`
+- **Metrics**: `ollama-exporter:11435`
+- **SSO Access**: `ollama.${DEFAULT_URL}`
 
-## Networking
+## 1. Structure
 
-- **Internal DNS**: `ollama:${OLLAMA_PORT:-11434}` (within `infra_net`)
-- **External URL**: `https://ollama.${DEFAULT_URL}` (via Traefik)
-- **Metrics**: `ollama-exporter:${OLLAMA_EXPORTER_PORT:-11435}` (within `infra_net`)
+| Component | Image | Role |
+| :--- | :--- | :--- |
+| `ollama` | `ollama/ollama:0.18.2` | Core inference engine |
+| `exporter` | `lucabecker42/ollama-exporter:1.0.1` | Prometheus metrics |
 
-## Security
+## 2. Tech Stack
 
-- **SSO**: Protected by `sso-auth@file` middleware (Keycloak).
-- **Hardening**: `no-new-privileges:true`.
+- **Runtimes**: C++ (llama.cpp based)
+- **Acceleration**: NVIDIA CUDA
+- **Observability**: Prometheus Metrics via Exporter
 
-## Persistence
+## 3. Configuration
 
-- **Models**: `ollama-data` volume mapped to `${DEFAULT_AI_MODEL_DIR}/ollama` on the host.
-- **GPU**: Enable GPU passthrough on the host (Compose uses a `deploy.resources.reservations.devices` block).
+Key environment variables and settings:
+- `OLLAMA_HOST`: Set to `0.0.0.0` within the container.
+- `OLLAMA_ORIGINS`: Restricted to internal network.
+- `GPU Reservation`: 1 NVIDIA GPU reserved via Docker Compose `reservations`.
 
-## File Map
+## 4. Persistence
 
-| Path                 | Description                              |
-| -------------------- | ---------------------------------------- |
-| `docker-compose.yml` | Ollama + exporter service definitions.   |
-| `README.md`          | Service overview (this file).            |
+- **Model Storage**: `${DEFAULT_AI_MODEL_DIR}/ollama`
+- **Mount Point**: `/root/.ollama` (RW)
+
+## 5. Operational Status
+
+> [!WARNING]
+> High resource usage. GPU memory (VRAM) is the primary bottleneck. Monitor via `nvidia-smi`.
+
+> [!TIP]
+> Use `ollama pull <model>` to download new models. Models are persisted in the host's AI model directory.

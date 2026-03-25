@@ -48,6 +48,7 @@
 | [05-messaging](./05-messaging/README.md) | Event streaming and message brokering policies |
 | [06-observability](./06-observability/README.md) | Retention, alerting, and LGTM stack governance |
 | [07-workflow](./07-workflow/README.md) | Workflow orchestration and automation policies |
+| [08-ai](./08-ai/README.md) | AI model inference and RAG governance |
 
 ## Templates
 

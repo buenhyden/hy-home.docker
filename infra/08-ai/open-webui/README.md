@@ -1,29 +1,41 @@
 # Open WebUI
 
-Open WebUI is an extensible, self-hosted AI interface that operates entirely offline.
+Enterprise-grade chat interface and RAG orchestration layer.
 
-## Services
+## 0. Context & SSoT
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `open-webui` | `open-webui:v0.8.5-cuda`| ChatGPT-like UI | 1.0 CPU / 1GB RAM |
+- **Parent Tier**: [infra/08-ai/](../README.md)
+- **Public URL**: `chat.${DEFAULT_URL}`
+- **Backend API**: `open-webui:8080`
 
-## Networking
+## 1. Structure
 
-- **Internal DNS**: `open-webui:8080` (within `infra_net`)
-- **External URL**: `https://chat.${DEFAULT_URL}` (via Traefik)
+| Component | Image | Role |
+| :--- | :--- | :--- |
+| `open-webui` | `ghcr.io/open-webui/open-webui:v0.8.5-cuda` | Web application & Backend |
 
-## Dependencies
+## 2. Tech Stack
 
-- **Ollama**: `http://ollama:${OLLAMA_PORT}`
-- **Qdrant**: `http://qdrant:${QDRANT_PORT}` (Used for RAG).
+- **Frontend**: SvelteKit
+- **Backend**: Python (FastAPI)
+- **Vector DB**: Qdrant (RAG Storage)
+- **Inference**: Ollama (Primary Engine)
 
-## Persistence
+## 3. Configuration
 
-- **Data**: `open-webui` volume mapped to `/app/backend/data`.
+- `OLLAMA_BASE_URL`: `http://ollama:11434`
+- `VECTOR_DB_URL`: `http://qdrant:6333`
+- `RAG_EMBEDDING_MODEL`: `qwen3-embedding:0.6b`
 
-## File Map
+## 4. Persistence
 
-| Path        | Description                         |
-| ----------- | ----------------------------------- |
-| `README.md` | Service overview and user guides.   |
+- **User Data**: `${DEFAULT_AI_MODEL_DIR}/open-webui`
+- **Mount Point**: `/app/backend/data` (RW)
+
+## 5. Operational Status
+
+> [!NOTE]
+> Initial startup may be slow while the system prepares the internal SQLite database and RAG indices.
+
+> [!IMPORTANT]
+> Ensure Ollama is healthy and models are pulled before attempting to use the UI.
