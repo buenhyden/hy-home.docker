@@ -42,4 +42,5 @@
 
 ## Templates
 
-- `../99.templates/guide.template.md`
+- [04-data](./04-data/README.md)
+- [99.templates](../99.templates/guide.template.md)

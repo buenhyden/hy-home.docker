@@ -42,6 +42,15 @@
 - Canonical Reference로 PRD/ARD/ADR/Spec/Plan을 명시한다.
 - 관련 Incident/Postmortem 링크를 둔다.
 
+## Tier Index
+
+| Tier | Description |
+| :--- | :--- |
+| [01-gateway](./01-gateway/README.md) | Gateway recovery and SSL issues |
+| [02-auth](./02-auth/README.md) | Identity provider and SSO recovery |
+| [03-security](./03-security/README.md) | Security breach and firewall incidents |
+| [04-data](./04-data/README.md) | Data corruption and cluster recovery |
+
 ## Templates
 
 - `../99.templates/runbook.template.md`

@@ -1,32 +1,52 @@
-# CouchDB
+<!-- [ID:04-data:couchdb] -->
+# CouchDB Cluster
 
-Apache CouchDB is an open-source document-oriented NoSQL database, implemented in Erlang.
+> Document-oriented NoSQL database with HTTP API and robust sync.
 
-## Services
+## Overview (KR)
 
-| Service | Image | Role | Profile |
-| :--- | :--- | :--- | :--- |
-| `couchdb-1, 2, 3` | `couchdb:3.5.1` | DB Nodes | `couchdb` |
-| `couchdb-init` | `curlimages/curl` | Cluster Setup | `couchdb` |
+Apache CouchDB는 Erlang으로 구현된 **문서 지향 NoSQL 데이터베이스**입니다. HTTP API를 통해 데이터를 관리하며, 강력한 복제 및 동기화 기능을 제공하여 분산 시스템에 최적화되어 있습니다.
+
+## Overview
+
+The `couchdb` stack provides a 3-node clustered document store for `hy-home.docker`. It features a RESTful HTTP API, ACID properties, and multi-master replication, enabling high availability and partition tolerance (AP in CAP theorem).
+
+## Tech Stack
+
+| Service | Technology | Role |
+| :--- | :--- | :--- |
+| **couchdb-1, 2, 3** | CouchDB 3.5.1 | Cluster Nodes |
+| **couchdb-init** | curl | Cluster Bootstrap Job |
 
 ## Networking
 
-- **URL**: `couchdb.${DEFAULT_URL}` via Traefik.
-- **Load Balancing**: Sticky sessions enabled (`couchdb_sticky` cookie).
-- **Internal Ports**: `5984` (API), `4369` (Epmd), `9100` (Distribution).
+| Service | Access | Description |
+| :--- | :--- | :--- |
+| **API Port** | `5984` | Standard HTTP API access. |
+| **Cluster URL** | `couchdb.${DEFAULT_URL}` | External access via Traefik (Sticky). |
+| **Internal** | `4369, 9100` | Erlang distribution and mapper ports. |
 
 ## Persistence
 
 - **Volumes**: `couchdb1-data`, `couchdb2-data`, `couchdb3-data`.
-- **Mount Point**: `/opt/couchdb/data`.
+- **Path**: `${DEFAULT_DATA_DIR}/couchdb/data-{1,2,3}` on the host.
+- **Mount**: `/opt/couchdb/data` within containers.
 
 ## Configuration
 
-- **Admin User**: `${COUCHDB_USERNAME}`
-- **Secrets**: Uses `couchdb_password` and `couchdb_cookie` Docker secrets.
+- **Authentication**: Uses `couchdb_password` and `couchdb_cookie` Docker secrets.
+- **Initialization**: `couchdb-cluster-init` automatically joins nodes and finishes setup on first run.
 
 ## File Map
 
-| Path        | Description                         |
-| ----------- | ----------------------------------- |
-| `README.md` | Service overview and cluster docs.  |
+| Path | Description |
+| :--- | :--- |
+| `docker-compose.yml` | Cluster and initialization definitions. |
+| `README.md` | Service overview and documentation. |
+
+---
+
+## Documentation References
+
+- [Specialized DB Guide](../../../docs/07.guides/04-data/03.specialized-dbs.md)
+- [Backup Operations](../../../docs/08.operations/04-data/README.md)

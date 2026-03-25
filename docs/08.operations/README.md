@@ -37,6 +37,15 @@
 - Safety Incident 임계값
 - Trace/Log 보존 기준
 
+## Tier Index
+
+| Tier | Description |
+| :--- | :--- |
+| [01-gateway](./01-gateway/README.md) | Ingress and traffic management |
+| [02-auth](./02-auth/README.md) | Identity and access control |
+| [03-security](./03-security/README.md) | Network hardening and auth policies |
+| [04-data](./04-data/README.md) | Database persistence and backup policies |
+
 ## Templates
 
 - `../99.templates/operation.template.md`

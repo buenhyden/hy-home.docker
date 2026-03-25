@@ -1,43 +1,45 @@
+<!-- [ID:04-data:neo4j] -->
 # Neo4j Graph Database
 
-Neo4j is a native property-graph database using the Cypher query language, optimized for highly connected data and relationship traversals.
+> Native property-graph database for connected data.
 
-## Services
+## Overview (KR)
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `neo4j` | `bitnami/neo4j` | Graph Database | 1.0 CPU / 1GB RAM |
+이 서비스는 고도로 연결된 데이터와 관계 탐색에 최적화된 **네이티브 속성 그래프 데이터베이스**입니다. Cypher 쿼리 언어를 사용합니다.
+
+## Overview
+
+The `neo4j` service provides a specialized graph storage layer for relationship-intensive data models. It allows for efficient querying of deep hierarchies and complex netowrk structures.
+
+## Tech Stack
+
+| Service | Technology | Role |
+| :--- | :--- | :--- |
+| **neo4j** | Neo4j Community | Graph Engine |
 
 ## Networking
 
-- **Internal DNS**: `neo4j:7687` (Bolt, within `infra_net`)
-- **External Bolt**: `bolt://localhost:${NEO4J_BOLT_HOST_PORT}` (host-mapped)
-- **Note**: HTTP/HTTPS Browser UI ports (`7474`/`7473`) are commented out by default for security.
+| Port | Protocol | Purpose |
+| :--- | :--- | :--- |
+| `7687` | Bolt | High-performance binary protocol. |
+| `7474` | HTTP | Browser UI (Default: Internal). |
+| `7473` | HTTPS | Browser UI (Default: Internal). |
 
 ## Persistence
 
-- **Data**: `neo4j-volume` → `/bitnami/neo4j`
-
-## Configuration
-
-| Variable / Secret | Description |
-| :--- | :--- |
-| `NEO4J_USERNAME` | Admin username (default: `neo4j`) |
-| `NEO4J_BOLT_HOST_PORT` | Host-mapped Bolt port |
-| `neo4j_password` | Secret at `secrets/db/neo4j/neo4j_password.txt` |
-
-## Enabling the Browser UI
-
-To enable web-based access, uncomment the HTTP/HTTPS port mappings in `docker-compose.yml`.
+- **Data Volume**: `neo4j-volume` mounted to `/bitnami/neo4j`.
+- **Storage Path**: `${DEFAULT_DATA_DIR}/neo4j` on the host.
 
 ## File Map
 
 | Path | Description |
 | :--- | :--- |
-| `docker-compose.yml` | Single-node Neo4j stack definition. |
-| `scripts/` | Helper scripts (if any). |
-| `README.md` | Service overview and access notes. |
+| `docker-compose.yml` | Service definition. |
+| `scripts/` | Data import/export utilities. |
+
+---
 
 ## Documentation References
 
-- **Neo4j Context Guide**: [docs/guides/04-data/neo4j-context.md](../../../docs/guides/04-data/neo4j-context.md)
+- [Specialized DB Guide](../../../docs/07.guides/04-data/03.specialized-dbs.md)
+- [Recovery Runbook](../../../docs/09.runbooks/04-data/README.md)

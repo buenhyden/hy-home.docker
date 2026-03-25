@@ -1,54 +1,49 @@
-# Supabase
+<!-- [ID:04-data:supabase] -->
+# Supabase Stack
 
-Self-hosted Supabase stack provides an open-source Firebase alternative with PostgreSQL, Auth, Realtime, and Storage.
+> Open-source Firebase alternative with PostgreSQL and Auth.
 
-## Stack Overview (Standalone)
+## Overview (KR)
 
-Supabase runs as a complex set of integrated services, typically managed as a standalone stack.
+이 서비스는 PostgreSQL, Auth, Realtime, Storage를 포함한 **오픈 소스 Firebase 대안**입니다. 자체 호스팅 가능한 통합 백엔드 솔루션을 제공합니다.
 
-## Services (Partial List)
+## Overview
 
-| Service | Image | Role |
+The `supabase` stack provides a complete, integrated backend for applications in `hy-home.docker`. It leverages PostgreSQL as the core engine, adding multiple layers for authentication, REST/GraphQL APIs, and file storage.
+
+## Tech Stack
+
+| Service | Technology | Role |
 | :--- | :--- | :--- |
-| `db` | `supabase/postgres:15.14.1...`| Core Database |
-| `auth` | `supabase/gotrue:v2.182.1` | GoTrue Auth |
-| `rest` | `postgrest/postgrest:v13.0.8` | PostgREST API |
-| `studio` | `supabase/studio:2025.11.10...`| Management GUI |
-| `kong` | `kong:3.9.1` | API Gateway |
+| **db** | PostgreSQL 15 | Core Database |
+| **auth** | GoTrue | Authentication |
+| **rest** | PostgREST | API Generator |
+| **studio** | Supabase Studio | Management GUI |
+| **kong** | Kong Gateway | API Proxy |
 
 ## Networking
 
-Accessed via **Kong** bridge:
-
-- **HTTP**: `http://localhost:${SUPABASE_KONG_HTTP_PORT}` (External)
-- **HTTPS**: `https://localhost:${SUPABASE_KONG_HTTPS_PORT}` (External)
-- **Studio**: Port 3000 (Internal)
+| Component | Port | Description |
+| :--- | :--- | :--- |
+| **Kong HTTP** | `8000` | Unified API entrypoint. |
+| **Studio UI** | `3000` | Web management dashboard. |
 
 ## Persistence
 
-- **Database**: `${DEFAULT_DATA_DIR}/supabase/db/data`
-- **Storage**: `${DEFAULT_DATA_DIR}/supabase/storage`
-- **Functions**: `${DEFAULT_DATA_DIR}/supabase/functions`
-
-## Configuration
-
-- **Auth**: Uses `supabase_db_password`, `supabase_jwt_secret`, `supabase_anon_key`, and `supabase_service_key` secrets.
-- **Edge Runtime**: `supabase-edge-functions` runs custom Deno tasks.
-
-### Core Variables
-
-| Variable                | Description              | Value                           |
-| :---------------------- | :----------------------- | :------------------------------ |
-| `POSTGRES_PASSWORD`     | DB Password              | `${POSTGRES_PASSWORD}`          |
-| `JWT_SECRET`            | Auth Token Secret        | `${SUPABASE_JWT_SECRET}`        |
-| `SERVICE_ROLE_KEY`      | Admin API Key            | `${SUPABASE_SERVICE_ROLE_KEY}`  |
-| `ANON_KEY`              | Public API Key           | `${SUPABASE_ANON_KEY}`          |
-| `DB_ENC_KEY`            | Secret Encryption Key    | `(Secret)`                      |
+- **Database**: `${DEFAULT_DATA_DIR}/supabase/db/data`.
+- **Storage**: `${DEFAULT_DATA_DIR}/supabase/storage`.
+- **Functions**: `${DEFAULT_DATA_DIR}/supabase/functions`.
 
 ## File Map
 
-| Path                 | Description                                      |
-| -------------------- | ------------------------------------------------ |
-| `docker-compose.yml` | Full Supabase stack (20+ services).              |
-| `volumes/`           | Default volume mount points for DB and logs.     |
-| `README.md`          | Service overview and self-hosting notes.         |
+| Path | Description |
+| :--- | :--- |
+| `docker-compose.yml` | Comprehensive stack (20+ containers). |
+| `volumes/` | Mounted database and log storage. |
+
+---
+
+## Documentation References
+
+- [Integrated DB Guide](../../../docs/07.guides/04-data/04.integrated-platforms.md)
+- [Backup Operations](../../../docs/08.operations/04-data/README.md)

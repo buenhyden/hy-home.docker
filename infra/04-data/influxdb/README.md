@@ -1,31 +1,50 @@
-# InfluxDB
+<!-- [ID:04-data:influxdb] -->
+# InfluxDB (TSDB)
 
-InfluxDB is an open-source time series database (TSDB) developed by InfluxData.
+> High-performance time series database for metrics and analytics.
 
-## Services
+## Overview (KR)
 
-| Service    | Image          | Role           | Resources         |
-| :--------- | :------------- | :------------- | :---------------- |
-| `influxdb` | `influxdb:3.8.3-core` | Time Series DB | 1.0 CPU / 1GB RAM |
+InfluxDB는 고성능 **시계열 데이터베이스(TSDB)**입니다. 인프라 메트릭, 어플리케이션 이벤트 및 실시간 분석 데이터를 효율적으로 저장하고 쿼리하는 데 최적화되어 있습니다.
+
+## Overview
+
+The `influxdb` service provides the time-series persistence layer for `hy-home.docker`. It is used for storing granular performance metrics and observability data, supporting high-ingest rates and complex analytical queries via Flux/SQL.
+
+## Tech Stack
+
+| Service | Technology | Role |
+| :--- | :--- | :--- |
+| **influxdb** | InfluxDB 3.8.3-core | Time Series Engine |
 
 ## Networking
 
-- **Internal DNS**: `influxdb:${INFLUXDB_PORT:-8181}` (within `infra_net`)
-- **External URL**: `https://influxdb.${DEFAULT_URL}` (via Traefik, if included/routed)
+| Service | Access | Description |
+| :--- | :--- | :--- |
+| **API Port** | `8181` | Standard InfluxDB 3.x API port. |
+| **External URL** | `influxdb.${DEFAULT_URL}` | Secured access via Traefik. |
 
 ## Persistence
 
-- **Data**: `influxdb-data` mapped to `/var/lib/influxdb2`.
+- **Data**: `influxdb-data` volume mapped to `/var/lib/influxdb3/data`.
+- **Plugins**: `influxdb-plugins` volume for engine extensions.
+- **Host Path**: `${DEFAULT_DATA_DIR}/influxdb/data`.
 
 ## Configuration
 
-- **Init Mode**: `setup` (Automatic initialization).
-- **Secrets**: Uses `influxdb_password` and `influxdb_api_token`.
+- **Authentication**: Uses `influxdb_password` and `influxdb_api_token` secrets.
+- **Initialization**: Configured for automatic setup on first deployment.
 
 ## File Map
 
-| Path        | Description                         |
-| ----------- | ----------------------------------- |
-| `README.md` | Service overview and CLI usage.     |
+| Path | Description |
+| :--- | :--- |
+| `docker-compose.yml` | InfluxDB service definition. |
+| `README.md` | Service overview. |
 
-chmod 0777 "/home/hy/volumes/influxdb/data"
+---
+
+## Documentation References
+
+- [Specialized DB Guide](../../../docs/07.guides/04-data/03.specialized-dbs.md)
+- [Observability Guide](../../../docs/07.guides/99.observability/README.md)

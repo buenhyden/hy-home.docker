@@ -1,40 +1,46 @@
+<!-- [ID:04-data:cassandra] -->
 # Apache Cassandra
 
-Apache Cassandra is a distributed wide-column NoSQL database optimized for write-heavy workloads and high-throughput key-value access.
+> Distributed wide-column NoSQL database.
 
-## Services
+## Overview (KR)
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `cassandra-node1` | `bitnami/cassandra:4` | Database node | 1.0 CPU / 2GB RAM |
-| `cassandra-exporter` | `bitnami/cassandra-exporter` | Prometheus metrics | 256MB RAM |
+이 서비스는 쓰기 중심의 워크로드와 높은 처리량의 키-값 액세스에 최적화된 **분산 와이드 컬럼 NoSQL 데이터베이스**입니다.
+
+## Overview
+
+The `cassandra` service provides a linearly scalable, high-throughput storage layer for application data requiring low latency and high availability. It is particularly well-suited for time-series and real-time data processing.
+
+## Tech Stack
+
+| Service | Technology | Role |
+| :--- | :--- | :--- |
+| **cassandra-node1** | Cassandra 4.x | Data Node |
+| **cassandra-exporter**| JMX Exporter | Metrics |
 
 ## Networking
 
-- **Internal DNS**: `cassandra-node1:9042` (CQL, within `infra_net`)
-- **Exporter**: `${CASSANDRA_EXPORTER_PORT}` (host-mapped, Prometheus scrape target)
-- **Note**: The Cassandra host port is commented out by default. Access is internal-only.
+| Port | Protocol | Purpose |
+| :--- | :--- | :--- |
+| `9042` | CQL | Binary client protocol. |
+| `7000` | Intra-node | Inter-node communication. |
+| `9103` | JMX | Monitoring metrics. |
 
 ## Persistence
 
-- **Data**: `cassandra-node1-volume` → `/bitnami/cassandra`
-- **Exporter Config**: `cassandra-exporter-volume`
-
-## Configuration
-
-| Variable / Secret | Description |
-| :--- | :--- |
-| `CASSANDRA_USERNAME` | CQL client username |
-| `cassandra_password` | Secret at `secrets/db/cassandra/cassandra_password.txt` |
-| `CASSANDRA_EXPORTER_PORT` | Prometheus exporter port |
+- **Data Volume**: `cassandra-node1-volume` mounted to `/bitnami/cassandra`.
+- **Storage Path**: `${DEFAULT_DATA_DIR}/cassandra` on the host.
 
 ## File Map
 
 | Path | Description |
 | :--- | :--- |
-| `docker-compose.yml` | Single-node Cassandra + exporter stack. |
-| `README.md` | Service overview and access notes. |
+| `docker-compose.yml` | Single-node deployment script. |
+| `config/` | JMX and Cassandra configurations. |
+
+---
 
 ## Documentation References
 
-- **Cassandra Context Guide**: [docs/guides/04-data/cassandra-context.md](../../../docs/guides/04-data/cassandra-context.md)
+- [Specialized DB Guide](../../../docs/07.guides/04-data/03.specialized-dbs.md)
+- [Backup Operations](../../../docs/08.operations/04-data/README.md)
