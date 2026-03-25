@@ -3,47 +3,43 @@
 
 > S3-compatible high-performance object storage server.
 
-## Overview (KR)
+## 1. Context (SSoT)
 
-MinIO는 고성능 S3 호환 객체 스토리지 서버입니다. 고성능 인프라 데이터(Tempo, Loki 등)와 CDN 에셋을 저장하는 데 사용됩니다.
+MinIO serves as the primary object storage layer. It is used for infrastructure persistence (Loki logs, Tempo traces) and as a public CDN for application assets.
 
-## Overview
+- **Status**: Production / Storage
+- **Protocol**: S3 Compatible
+- **SSoT Documentation**: [docs/07.guides/04-data/02.storage.md](../../../docs/07.guides/04-data/02.storage.md)
 
-MinIO serves as the primary object storage layer for the `hy-home.docker` ecosystem. It is used both for infrastructure persistence (e.g., storing Loki logs and Tempo traces) and as a public CDN for application assets.
+## 2. Structure
 
-## Tech Stack
+```text
+minio/
+├── docker-compose.yml   # Server & MC initialization
+└── README.md            # Service overview
+```
+
+## 3. Tech Stack
 
 | Service | Technology | Role |
 | :--- | :--- | :--- |
 | **minio** | MinIO RELEASE.2025+ | S3 API Server |
-| **minio-init** | MinIO Client (mc) | Bucket & Policy Initialization |
+| **minio-init** | MinIO Client (mc) | Bucket & Policy Init |
 
-## Networking
+## 4. Configuration (Secrets & Env)
 
-- **Internal DNS**: `minio:9000` (API), `minio:9001` (Console)
-- **External URL**:
-  - API: `https://minio.${DEFAULT_URL}`
-  - Console: `https://minio-console.${DEFAULT_URL}`
+- **Secrets**: `MINIO_ROOT_USER_FILE`, `MINIO_ROOT_PASSWORD_FILE`.
+- **Auto-Buckets**: Initializes `tempo`, `loki`, `cdn`, and `doc-intel` on startup.
+- **CDN Policy**: `cdn-bucket` has public anonymous access.
 
-## Persistence
+## 5. Persistence
 
 - **Data**: `minio-data` volume mapped to `${DEFAULT_DATA_DIR}/minio/data-1`.
 
-## Configuration
+## 6. Operational Status
 
-- **Auto-Buckets**: The system automatically initializes buckets for `tempo`, `loki`, `cdn`, and `doc-intel` on first start.
-- **CDN Policy**: The `cdn-bucket` is configured with public anonymous access for static asset hosting.
-
-## File Map
-
-| Path | Description |
-| :--- | :--- |
-| `docker-compose.yml` | MinIO server and initialization logic. |
-| `README.md` | Service overview. |
+- **API**: `minio:9000` / `https://minio.${DEFAULT_URL}`
+- **Console**: `minio:9001` / `https://minio-console.${DEFAULT_URL}`
 
 ---
-
-## Documentation References
-
-- [Storage Guide](../../../docs/07.guides/04-data/02.storage.md)
-- [Backup Operations](../../../docs/08.operations/04-data/README.md)
+Copyright (c) 2026. Licensed under the MIT License.

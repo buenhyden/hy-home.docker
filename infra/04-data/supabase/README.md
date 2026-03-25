@@ -15,17 +15,19 @@ The `supabase` stack provides a complete, integrated backend for applications in
 
 | Service | Technology | Role |
 | :--- | :--- | :--- |
-| **db** | PostgreSQL 15 | Core Database |
-| **auth** | GoTrue | Authentication |
-| **rest** | PostgREST | API Generator |
-| **studio** | Supabase Studio | Management GUI |
-| **kong** | Kong Gateway | API Proxy |
+| **db** | PostgreSQL 15 | Core Database Engine (pgvector) |
+| **auth** | GoTrue | JWT Authentication & Management |
+| **rest** | PostgREST | Automated REST API Generation |
+| **studio** | Supabase Studio | Web Management Dashboard |
+| **kong** | Kong Gateway | API Gateway & Proxy |
+| **realtime** | Realtime | WebSocket Change Propagation |
+| **storage** | Storage API | Object Storage Management |
 
 ## Networking
 
 | Component | Port | Description |
 | :--- | :--- | :--- |
-| **Kong HTTP** | `8000` | Unified API entrypoint. |
+| **Kong HTTP** | `8000` | Unified API entrypoint (`supabase.${DEFAULT_URL}`). |
 | **Studio UI** | `3000` | Web management dashboard. |
 
 ## Persistence
@@ -33,13 +35,14 @@ The `supabase` stack provides a complete, integrated backend for applications in
 - **Database**: `${DEFAULT_DATA_DIR}/supabase/db/data`.
 - **Storage**: `${DEFAULT_DATA_DIR}/supabase/storage`.
 - **Functions**: `${DEFAULT_DATA_DIR}/supabase/functions`.
+- **Logs**: `${DEFAULT_DATA_DIR}/supabase/logs`.
 
 ## File Map
 
 | Path | Description |
 | :--- | :--- |
-| `docker-compose.yml` | Comprehensive stack (20+ containers). |
-| `volumes/` | Mounted database and log storage. |
+| `docker-compose.yml` | Comprehensive stack (13+ services). |
+| `volumes/` | Mounted database, pooler, and log configs. |
 
 ---
 

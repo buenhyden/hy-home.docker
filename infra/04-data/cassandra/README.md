@@ -5,31 +5,32 @@
 
 ## Overview (KR)
 
-이 서비스는 쓰기 중심의 워크로드와 높은 처리량의 키-값 액세스에 최적화된 **분산 와이드 컬럼 NoSQL 데이터베이스**입니다.
+이 서비스는 높은 가용성과 선형적 확장이 가능한 **분산 NoSQL 데이터베이스**로, 대규모 데이터 세트와 빠른 쓰기 성능을 제공합니다.
 
 ## Overview
 
-The `cassandra` service provides a linearly scalable, high-throughput storage layer for application data requiring low latency and high availability. It is particularly well-suited for time-series and real-time data processing.
+The `cassandra` service provides a linearly scalable, high-throughput storage layer for application data requiring low latency and high availability. It is optimized for time-series and real-time data processing in `hy-home.docker`.
 
 ## Tech Stack
 
 | Service | Technology | Role |
 | :--- | :--- | :--- |
-| **cassandra-node1** | Cassandra 4.x | Data Node |
-| **cassandra-exporter**| JMX Exporter | Metrics |
+| **cassandra-node1** | Cassandra 5.0 | Primary Data Node |
+| **cassandra-exporter** | JMX Exporter | Metrics Integration |
 
 ## Networking
 
 | Port | Protocol | Purpose |
 | :--- | :--- | :--- |
-| `9042` | CQL | Binary client protocol. |
-| `7000` | Intra-node | Inter-node communication. |
-| `9103` | JMX | Monitoring metrics. |
+| `9042` | CQL | Main Client Protocol (Binary). |
+| `7000` | Intra-node | Inter-node Communication. |
+| `8080` | HTTP | Metrics scraping. |
 
 ## Persistence
 
-- **Data Volume**: `cassandra-node1-volume` mounted to `/bitnami/cassandra`.
-- **Storage Path**: `${DEFAULT_DATA_DIR}/cassandra` on the host.
+- **Volumes**: `cassandra-node1-volume` for database storage.
+- **Secrets**: `cassandra_password` for secure authentication.
+- **Path**: `${DEFAULT_DATA_DIR}/cassandra` on the host.
 
 ## File Map
 

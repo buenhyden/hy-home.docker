@@ -3,59 +3,66 @@
 
 > Central repository for databases, object storage, and persistence engines.
 
-## Overview (KR)
+## 1. Context (SSoT)
 
-이 계층은 시스템의 모든 영속성 데이터를 관리합니다. 관계형 데이터베이스(PostgreSQL), NoSQL(MongoDB, Cassandra), 벡터 데이터베이스(Qdrant), 시계열 데이터베이스(InfluxDB) 및 객체 스토리지(MinIO)를 포함하는 다중 모드 데이터 인프라를 제공합니다.
+This tier provides a polyglot persistence layer for the `hy-home.docker` ecosystem. It manages all stateful data ranging from transactional SQL to high-velocity time-series and semantic vector data.
 
-## Overview
+- **SSoT Documentation**: [docs/07.guides/04-data/README.md](../../docs/07.guides/04-data/README.md)
+- **Governance**: [docs/08.operations/04-data/README.md](../../docs/08.operations/04-data/README.md)
+- **Status**: Production-Ready / HA Enabled
 
-The `04-data` tier provides a polyglot persistence layer for the `hy-home.docker` ecosystem. It is designed for high availability (HA), scalability, and specialized data workloads (e.g., RAG, Time-series, Graph). All services are integrated into the `infra_net` and utilize standardized secret management and persistence volumes.
-
-## Documentation Navigation Map
-
-| Type | Link | Description |
-| :--- | :--- | :--- |
-| **Guide** | [Data Setup & Management](../../docs/07.guides/04-data/README.md) | Deployment, scaling, and integration guides. |
-| **Operations** | [Data Policies](../../docs/08.operations/04-data/README.md) | Backup, replication, and data residency standards. |
-| **Runbook** | [Data Emergency Recovery](../../docs/09.runbooks/04-data/README.md) | Recovery from corruption, split-brain, or storage exhaustion. |
-
-## Service Matrix
-
-| Service | Category | Profile | Path | Role |
-| :--- | :--- | :--- | :--- | :--- |
-| **mng-db** | Core SQL/Cache | (core) | [`./mng-db`](./mng-db) | Shared Postgres + Valkey |
-| **postgresql-cluster** | HA SQL | (core) | [`./postgresql-cluster`](./postgresql-cluster) | Patroni-based HA PostgreSQL |
-| **valkey-cluster** | HA Cache | (core) | [`./valkey-cluster`](./valkey-cluster) | 6-node distributed Valkey cluster |
-| **minio** | Object Storage | (core) | [`./minio`](./minio) | S3-compatible object storage |
-| **opensearch** | Search / Analytics | (core) | [`./opensearch`](./opensearch) | Search engine + Dashboards |
-| **qdrant** | Vector DB | (core) | [`./qdrant`](./qdrant) | Vector search engine (RAG) |
-| **seaweedfs** | Distributed FS | (standalone) | [`./seaweedfs`](./seaweedfs) | Distributed object storage |
-| **supabase** | Full Stack | (standalone) | [`./supabase`](./supabase) | Self-hosted Supabase stack |
-| **mongodb** | NoSQL Document | (standalone) | [`./mongodb`](./mongodb) | MongoDB replica set |
-| **cassandra** | NoSQL Columnar | (standalone) | [`./cassandra`](./cassandra) | Apache Cassandra single-node |
-| **influxdb** | Time-series | `influxdb` | [`./influxdb`](./influxdb) | Time-series database |
-| **couchdb** | NoSQL Sync | `couchdb` | [`./couchdb`](./couchdb) | CouchDB cluster |
-| **neo4j** | Graph DB | (standalone) | [`./neo4j`](./neo4j) | Graph database |
-
-## Structure
+## 2. Structure
 
 ```text
 04-data/
 ├── mng-db/               # Shared Management DB (Postgres/Valkey)
-├── postgresql-cluster/   # High Availability PG (Patroni)
-├── valkey-cluster/       # Distributed Cache Cluster
-├── minio/                # S3 Object Storage
-├── qdrant/               # Vector Database
-├── opensearch/           # Search & Analytics
-├── supabase/             # Supabase Integrated Stack
-└── ...                   # Specialized Databases
+├── postgresql-cluster/   # HA Patroni-based PostgreSQL
+├── valkey-cluster/       # 6-node Distributed Cache Cluster
+├── minio/                # S3-Compatible Object Storage
+├── qdrant/               # Vector Database (RAG Support)
+├── opensearch/           # Search & Analytics Engine
+├── seaweedfs/            # Distributed Object Storage
+├── supabase/             # Integrated Full-Stack Persistence
+├── mongodb/              # NoSQL Document (Replica Set)
+├── cassandra/            # NoSQL Wide-Column Cluster
+├── influxdb/             # Time-Series Engine (TSDB)
+├── couchdb/              # NoSQL Document Cluster
+└── neo4j/                # Graph Database
 ```
 
-## Governance
+## 3. Service Matrix
 
-- **Persistence**: All data MUST reside in `${DEFAULT_DATA_DIR}` or `${DEFAULT_MANAGEMENT_DIR}`.
-- **Secrets**: Passwords MUST be managed via Docker secrets or injected from Vault JIT.
-- **Networking**: Services MUST connect via the `infra_net` internal bridge.
+| Service | Category | Profile | Role |
+| :--- | :--- | :--- | :--- |
+| **mng-db** | SQL/Cache | `mng-data` | Shared core database and cache |
+| **postgresql-cluster** | HA SQL | `data` | Patroni-based HA PostgreSQL cluster |
+| **valkey-cluster** | HA Cache | `data` | Distributed 6-node Valkey cluster |
+| **minio** | Object Storage | `storage` | Primary S3 object storage |
+| **opensearch** | Search | `data` | Search engine and analytics dashboard |
+| **qdrant** | Vector DB | `ai` | Semantic vector storage for RAG |
+| **seaweedfs** | Dist FS | `data` | Distributed filesystem and filer |
+| **supabase** | Full Stack | `data` | Managed-like Supabase experience |
+| **mongodb** | Document | `data` | NoSQL document storage (Replica Set) |
+| **cassandra** | Wide-Column | `data` | Distributed NoSQL cluster |
+| **influxdb** | TSDB | `data` | High-performance metrics storage |
+| **couchdb** | Document | `data` | Multi-master synced NoSQL cluster |
+| **neo4j** | Graph | `data` | Relationship-intensive data store |
+
+## 4. Tech Stack
+
+- **SQL**: PostgreSQL 17 (Spilo), Supabase
+- **NoSQL**: MongoDB 8.0, Cassandra 5.0, CouchDB 3.5
+- **Caching**: Valkey 8.0 (Redis-compatible)
+- **Vector**: Qdrant v1.12
+- **Storage**: MinIO, SeaweedFS
+- **Graph**: Neo4j 5.26
+- **TSDB**: InfluxDB 3.8
+
+## 5. Governance & Persistence
+
+- **Data Path**: All services MUST store data in `${DEFAULT_DATA_DIR}` or `${DEFAULT_MANAGEMENT_DIR}`.
+- **Secrets**: Passwords MUST be managed via Docker secrets.
+- **HA**: Core services (Postgres, Valkey, MongoDB, CouchDB) use clustering/replication by default.
 
 ---
 

@@ -3,42 +3,44 @@
 
 > High-performance vector similarity search engine.
 
-## Overview (KR)
+## 1. Context (SSoT)
 
-Qdrant는 고성능 벡터 유사도 검색 엔진입니다. AI 기반 애플리케이션의 벡터 임베딩 저장 및 검색에 사용됩니다.
+The `qdrant` service provides the vector database layer for AI/ML applications, enabling fast semantic search for high-dimensional embeddings.
 
-## Overview
+- **Status**: Production / AI
+- **Role**: RAG Persistence
+- **SSoT Documentation**: [docs/07.guides/04-data/03.specialized-dbs.md](../../../docs/07.guides/04-data/03.specialized-dbs.md)
 
-The `qdrant` service provides the vector database layer for AI and ML applications in `hy-home.docker`. It enables fast nearest-neighbor search for high-dimensional embeddings.
+## 2. Structure
 
-## Tech Stack
+```text
+qdrant/
+├── docker-compose.yml   # Service definition
+└── config/              # Engine settings
+```
+
+## 3. Tech Stack
 
 | Service | Technology | Role |
 | :--- | :--- | :--- |
-| **qdrant** | Qdrant latest | Vector Engine |
+| **qdrant** | Qdrant latest | Vector Search Engine |
 
-## Networking
+## 4. Configuration (Secrets & Env)
+
+- **API Key**: Managed via `QDRANT_API_KEY_FILE` secret.
+- **Snapshots**: Automated snapshots enabled via configuration.
+- **Memory**: Optimized for high-throughput vector indexing.
+
+## 5. Persistence
+
+- **Data**: `qdrant-data` volume mapped to `${DEFAULT_DATA_DIR}/qdrant`.
+
+## 6. Operational Status
 
 | Port | Protocol | Purpose |
 | :--- | :--- | :--- |
 | `6333` | HTTP | REST API |
 | `6334` | gRPC | High-performance API |
 
-## Persistence
-
-- **Data Volume**: `qdrant-data` volume mounted to `/qdrant/storage`.
-- **Storage Path**: `${DEFAULT_DATA_DIR}/qdrant` on the host.
-
-## File Map
-
-| Path | Description |
-| :--- | :--- |
-| `docker-compose.yml` | Service definition. |
-| `config/` | Engine settings. |
-
 ---
-
-## Documentation References
-
-- [Specialized DB Guide](../../../docs/07.guides/04-data/03.specialized-dbs.md)
-- [Recovery Runbook](../../../docs/09.runbooks/04-data/README.md)
+Copyright (c) 2026. Licensed under the MIT License.

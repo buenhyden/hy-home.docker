@@ -19,20 +19,21 @@ The `seaweedfs` stack provides a resilient and scalable storage layer for unstru
 | **volume** | SeaweedFS Volume | Data Storage |
 | **filer** | SeaweedFS Filer | File System Interface |
 | **s3** | SeaweedFS S3 | S3 Compatible API |
+| **mount** | SeaweedFS Mount | FUSE Mount Utility |
 
 ## Networking
 
 | Component | Port | Description |
 | :--- | :--- | :--- |
-| **Master** | `9333` | Manager Interface. |
-| **Filer** | `8888` | HTTP File Access (CDN). |
-| **S3** | `8333` | S3 API endpoint. |
+| **Master** | `9333` | Manager Interface (`seaweedfs.${DEFAULT_URL}`). |
+| **Filer** | `8888` | HTTP File Access (`cdn.${DEFAULT_URL}`). |
+| **S3** | `8333` | S3 API endpoint (`s3.${DEFAULT_URL}`). |
 
 ## Persistence
 
 - **Volumes**: `seaweedfs-master-data` and `seaweedfs-volume-data`.
-- **Config**: `security.toml` for JWT-based internal authentication.
-- **Path**: `${DEFAULT_DATA_DIR}/seaweedfs` on the host.
+- **Mount**: `/mnt/seaweedfs` on the host via FUSE.
+- **Path**: `${DEFAULT_DATA_DIR}/seaweedfs` on the host for configuration.
 
 ## Operations
 
