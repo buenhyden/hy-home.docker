@@ -1,44 +1,52 @@
-<!-- [ID:04-data:influxdb] -->
 # InfluxDB (TSDB)
 
 > High-performance time series database for metrics and analytics.
 
-## Overview (KR)
+## 1. Context & Objective
 
-이 서비스는 인프라 메트릭 및 어플리케이션 이벤트 저장에 최적화된 **고성능 시계열 데이터베이스(TSDB)**입니다. 실시간 데이터 분석 및 모니터링 백엔드로 활용됩니다.
+The `influxdb` service provides the time-series persistence layer for `hy-home.docker`. It is designed for storing granular performance metrics and observability data, supporting high-ingest rates and analytical queries via Flux/SQL.
 
-## Overview
+### Role
+- **Observability Backend**: Stores metrics from Telegraf and exporters.
+- **Analytics Engine**: Provides real-time data processing for dashboards.
 
-The `influxdb` service provides the time-series persistence layer for `hy-home.docker`. It is used for storing granular performance metrics and observability data, supporting high-ingest rates and complex analytical queries via Flux/SQL.
+## 2. Requirements & Constraints
 
-## Tech Stack
+- **Engine**: InfluxDB 3.x (Clustered or Single-node configurations).
+- **Secrets**: API tokens and passwords MUST be managed via Docker secrets.
+- **Network**: Standard API port `8181` secured via Traefik.
 
-| Service | Technology | Role |
-| :--- | :--- | :--- |
-| **influxdb** | InfluxDB 3.8 | Time Series Engine |
+## 3. Setup & Installation
 
-## Networking
+### Deployment
+```bash
+# Start the InfluxDB service
+docker compose up -d
+```
 
-| Service | Port | Description |
-| :--- | :--- | :--- |
-| **API Port** | `8181` | Standard InfluxDB 3.x API port. |
-| **External URL** | `influxdb.${DEFAULT_URL}` | Secured access via Traefik. |
+### Verification
+```bash
+# Check service health
+curl -i http://influxdb:8181/health
+```
 
-## Persistence
+## 4. Usage & Integration
 
-- **Volumes**: `influxdb-data`, `influxdb-plugins`.
-- **Secrets**: `influxdb_password`, `influxdb_api_token`.
-- **Path**: `${DEFAULT_DATA_DIR}/influxdb/data` on the host.
+### Operational Status
+- **API Endpoint**: `influxdb:8181` / `https://influxdb.${DEFAULT_URL}`
+- **Persistence**: Data is mapped to `${DEFAULT_DATA_DIR}/influxdb/data`.
 
-## File Map
+### Integration Pointers
+- Consult the [Observability Guide](../../../docs/07.guides/06-observability/README.md) for data forwarding patterns.
+- Use `influx` CLI for bucket management and task scheduling.
 
-| Path | Description |
-| :--- | :--- |
-| `docker-compose.yml` | InfluxDB service definition. |
+## 5. Maintenance & Safety
+
+### Data Integrity
+1. Retention policies MUST be defined to prevent storage saturation.
+2. Regularly monitor `influxdb-data` volume sizing.
+3. API tokens should have the minimal required scopes for each application.
 
 ---
 
-## Documentation References
-
-- [Specialized DB Guide](../../../docs/07.guides/04-data/03.specialized-dbs.md)
-- [Observability Guide](../../../docs/07.guides/06-observability/README.md)
+Copyright (c) 2026. Licensed under the MIT License.

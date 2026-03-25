@@ -1,61 +1,76 @@
-# Data Runbook (04-data)
+# Data Recovery Runbook (04-data)
 
-> Database Recovery & Incident Response (04-data)
+> Incident Response & Emergency Restoration Procedures (04-data)
 
-## Overview
+## 1. Context & Objective
 
-이 런북은 `hy-home.docker`의 데이터 인프라(04-data)에서 발생할 수 있는 주요 장애 상황과 복구 절차를 정의한다.
+This runbook provides step-by-step instructions for responding to critical data infrastructure failures in the `hy-home.docker` ecosystem. Our objective is to minimize Downtime (RTO) and Data Loss (RPO) through structured recovery protocols.
 
-## Purpose
+- **Primary Engine**: PostgreSQL, Valkey, MongoDB, Cassandra
+- **Recovery Level**: Node-level, Cluster-level, and Site-level
 
-데이터 소실을 방지하고, 서비스 중단 시간을 최소화하기 위함이다.
+## 2. Requirements & Constraints
+
+- **Access**: Requires root/sudo access to the cluster hosts and Docker management.
+- **Backups**: Verified daily backups must be available in `${DEFAULT_DATA_DIR}/backups`.
+- **Quorum**: Most HA clusters require a majority of nodes to be online for automatic recovery.
+
+## 3. Setup & Initial Triage
+
+Before attempting deep recovery, perform initial triage:
+
+1. **Check Service Status**: `docker compose ps`
+2. **Review Logs**: `docker compose logs --tail=100 [service]`
+3. **Verify Disk Space**: `df -h`
+
+## 4. Recovery Procedures
+
+### 4.1 PostgreSQL Cluster (Patroni)
+
+**Issue**: No leader elected or split-brain detected.
+
+1. **Status**: `docker exec pg-0 patronictl list`
+2. **Manual Failover**:
+
+   ```bash
+   docker exec -it pg-0 patronictl failover --candidate pg-1 --force
+   ```
+
+3. **Re-initialize Node**: If a node is out of sync:
+
+   ```bash
+   docker exec -it pg-2 patronictl reinit [cluster-name] pg-2
+   ```
+
+### 4.2 Valkey Cluster Recovery
+
+**Issue**: Cluster slots in "fail" state.
+
+1. **Check Slots**: `docker exec valkey-node-0 valkey-cli --cluster check localhost:6379`
+2. **Fix Clusters**:
+
+   ```bash
+   docker exec -it valkey-node-0 valkey-cli --cluster fix localhost:6379
+   ```
+
+### 4.3 Full Restoration from Backup
+For full restoration, refer to the storage-specific sections in the core guides.
+**Issue**: Data corruption or accidental deletion.
+1. **Stop Services**: `docker compose stop [service]`
+2. **Restore Path**: Replace corrupted data in `${DEFAULT_DATA_DIR}/[service]` with the latest verified backup.
+3. **Restart**: `docker compose up -d [service]`
+4. **Validation**: Check service logs for consistent database state.
+
+## 5. Related Documentation
+
+- [Technical Guides](../../07.guides/04-data/README.md)
+- [Operations Policy](../../08.operations/04-data/README.md)
+
+## 6. Maintenance & Safety
+
+- **Vacuuming**: Maintain PostgreSQL performance via periodic `VACUUM ANALYZE`.
+- **Scrubbing**: Perform periodic data integrity checks on MinIO and SeaweedFS volumes.
+- **Failover Testing**: Conduct quarterly simulated failovers to verify cluster resilience.
 
 ---
-
-## Recovery Procedures
-
-### 1. PostgreSQL Master 복구 (Split-Brain 대응)
-
-클러스터 리더가 결정되지 않거나 여러 개일 경우 수행한다.
-
-1. **상태 확인**: `patronictl list`로 현재 상태 파악.
-2. **수동 승격**: 필요한 경우 특정 노드를 강제로 리더로 승격.
-   ```bash
-   docker exec pg-0 patronictl failover --candidate pg-1 --force
-   ```
-3. **HAProxy 확인**: `pg-router`가 새로운 리더를 정상적으로 인식하는지 확인.
-
-### 2. Valkey 클러스터 재구성 (Slot Recovery)
-
-슬롯 할당이 깨져 클러스터가 작동하지 않을 때 수행한다.
-
-1. **상태 진단**: `valkey-cli --cluster check <node_ip>:6379`.
-2. **슬롯 복구 (Fix)**:
-   ```bash
-   docker exec valkey-node-0 valkey-cli --cluster fix localhost:6379
-   ```
-
-### 3. 데이터 복원 (Physical Restore)
-
-손상된 DB를 백업본으로부터 복원한다.
-
-1. **서비스 중단**: 쓰기 작업이 발생하지 않도록 관련 앱 일시 정지.
-2. **데이터 교체**: `${DEFAULT_DATA_DIR}`의 기존 데이터를 백업본으로 교체.
-3. **클러스터 재시작**: `docker compose restart`.
-
----
-
-## Maintenance Tasks
-
-- **Vacuuming**: PostgreSQL의 성능 유지를 위해 주기적인 `VACUUM ANALYZE` 실행 확인.
-- **Object Storage Health**: MinIO 등의 디스크 정합성 검사(Scrubbing).
-
-## Verification Steps
-
-- [ ] `pg_isready` 응답 확인.
-- [ ] 애플리케이션 로그에서 Connection Pool 오류 여부 점검.
-
-## Related Operational Documents
-
-- **Operations Policy**: `[../../08.operations/04-data/README.md]`
-- **PostgreSQL HA Guide**: `[../../07.guides/04-data/01.postgresql-ha.md]`
+Copyright (c) 2026. Licensed under the MIT License.

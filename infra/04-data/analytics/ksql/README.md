@@ -1,60 +1,52 @@
-# ksqlDB (ksql)
+# ksqlDB
 
 > Streaming SQL engine for Apache Kafka.
 
-## Overview
+## 1. Context & Objective (SSoT)
 
-ksqlDB allows building stream processing applications using familiar SQL syntax. It integrates directly with the Kafka cluster and Schema Registry to enable real-time analytics.
+ksqlDB enables building real-time stream processing applications using familiar SQL syntax. It integrates directly with the Kafka cluster and Schema Registry to enable real-time analytics and data transformation.
 
-## Service Matrix
+- **Status**: Production / Streaming
+- **Role**: SQL Stream Processing
+- **SSoT Documentation**: [Analytical Databases Guide](../../../docs/07.guides/04-data/05.analytical-specialized-dbs.md)
 
-| Service | Image | Profile | Purpose |
-| :--- | :--- | :--- | :--- |
-| **ksqldb-server** | `cp-ksqldb-server:8.0.3` | `messaging-option` | Streaming SQL engine |
-| **ksqldb-cli** | `cp-ksqldb-cli:8.0.3` | `ksql` | Interactive management CLI |
-| **ksql-datagen** | `ksqldb-examples:8.0.3` | `ksql` | Sample data generator |
+## 2. Requirements & Constraints
 
-## Setup & Persistence
+- **Dependency**: Kafka (messaging) and Schema Registry must be healthy.
+- **Resources**: JVM Heap set to 512MB by default.
+- **Port**: 8088 (Internal/External).
 
-### 1. Persistence
+## 3. Setup & Installation
 
-- **Data Volume**: `ksqldb-data-volume`
-- **Mount Path**: `/var/lib/ksql`
-- **Host Path**: `${DEFAULT_DATA_DIR}/ksql`
-
-### 2. Startup
-
-The server is part of the `messaging-option` profile and requires the core `messaging` (Kafka) stack to be healthy.
+The server is part of the `messaging-option` profile.
 
 ```bash
 # Start ksqlDB Server
 docker compose --profile messaging-option up -d ksqldb-server
 ```
 
----
+### Persistence
 
-## Usage
+- **Volume**: `ksqldb-data-volume` (`/var/lib/ksql`)
+- **Host Path**: `${DEFAULT_DATA_DIR}/ksql`
+
+## 4. Usage & Integration
 
 ### Interactive CLI
-
 ```bash
 docker compose --profile ksql run --rm ksqldb-cli ksql http://ksqldb-server:8088
 ```
 
-### Example SQL
+### Integration Points
 
-```sql
-CREATE STREAM page_views (viewtime BIGINT, userid VARCHAR, pageid VARCHAR)
-  WITH (KAFKA_TOPIC='page-views', VALUE_FORMAT='JSON');
+- **API**: `http://ksqldb-server:8088`
+- **Schema Registry**: `http://schema-registry:8081`
 
-SELECT userid, COUNT(*) AS view_count
-  FROM page_views
-  WINDOW TUMBLING (SIZE 1 MINUTE)
-  GROUP BY userid
-  EMIT CHANGES;
-```
+## 5. Maintenance & Safety
 
-## Navigation
-- [Messaging Tier Overview](../README.md)
-- [ksqlDB Guide](../../../docs/07.guides/05-messaging/02.ksql-streaming.md)
-- [Operational Policy](../../../docs/08.operations/05-messaging/README.md)
+- **Backups**: Managed via Kafka topic replication and Schema Registry backups.
+- **Logging**: Logs available via `docker logs ksqldb-server`.
+- **Processing**: Processing topics are auto-replicated for high availability.
+
+---
+Copyright (c) 2026. Licensed under the MIT License.

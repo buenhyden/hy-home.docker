@@ -1,57 +1,57 @@
-<!-- [ID:04-data:mongodb] -->
 # MongoDB Replica Set
 
 > Document-based NoSQL database for unstructured data.
 
-## Overview (KR)
+## 1. Context & Objective
 
-이 서비스는 고용량 데이터와 스키마리스 문서 저장에 최적화된 **분산 NoSQL 데이터베이스**입니다. 레플리카 셋 구성을 통해 자동 장애 조치와 데이터 가용성을 보장합니다.
+The `mongodb` stack provides a resilient document storage layer for the `hy-home.docker` ecosystem. It is optimized for high-volume unstructured data and features a 3-node replica set for automated failover and high availability.
 
-## Overview
+### Key Components
+- **Primary/Secondary Nodes**: Data persistence and replication.
+- **Arbiter**: Voting node for leader election (no data storage).
+- **Mongo Express**: Management Web UI.
 
-The `mongodb` stack provides a resilient document storage layer for `hy-home.docker`. It features a 3-node replica set (Primary, Secondary, Arbiter) with automated failover and integrated management via Mongo Express.
+## 2. Requirements & Constraints
 
-## Tech Stack
+- **Storage**: Requires persistent volumes for each data node.
+- **Secrets**: Root credentials MUST be managed via the `mongodb_root_password` secret.
+- **Network**: Standard port `27017` must be reachable within the `infra_net`.
 
-| Service | Technology | Role |
-| :--- | :--- | :--- |
-| **mongodb-rep1, 2** | MongoDB 8.2 | Primary/Secondary Data Nodes |
-| **mongodb-arbiter** | MongoDB 8.2 | Voting Node (No Data) |
-| **mongo-express** | Mongo Express | Management Web UI |
-| **mongodb-exporter** | MongoDB Exporter | Prometheus Compatibility |
+## 3. Setup & Installation
 
-## Networking
-
-| Service | Port | Description |
-| :--- | :--- | :--- |
-| **DB Port** | `27017` | Standard MongoDB connection. |
-| **Express UI** | `8081` | Management Dashboard (`mongo-express.${DEFAULT_URL}`). |
-| **Exporter** | `9216` | Metrics scrape endpoint. |
-
-## Persistence
-
-- **Volumes**: `mongodb1-data`, `mongodb2-data` for data nodes.
-- **Secrets**: `mongodb_root_password` for cluster security.
-- **Path**: `${DEFAULT_DATA_DIR}/mongodb` on the host for static configs.
-
-## Operations
-
-### Checking Cluster Status
-
+### Deployment
 ```bash
+# Start the replica set
+docker compose up -d
+```
+
+### Verification
+```bash
+# Check cluster status
 docker exec -it mongodb-rep1 mongosh -u admin -p <password> --eval "rs.status()"
 ```
 
-## File Map
+## 4. Usage & Integration
 
-| Path | Description |
-| :--- | :--- |
-| `docker-compose.yml` | Replica set and tools definition. |
-| `configdb/` | Security key and configuration files. |
+### Operational Endpoints
+- **DB Port**: `27017`
+- **Management UI**: `mongo-express.${DEFAULT_URL}` (Port `8081`)
+- **Metrics**: `mongodb-exporter:9216`
+
+### Integration Pointers
+- Consult the [Specialized DB Guide](../../../docs/07.guides/04-data/03.specialized-dbs.md) for connection examples.
+- Use the provided exporter for Prometheus-based monitoring.
+
+## 5. Maintenance & Safety
+
+### Backup & Recovery
+1. Automated backups are governed by the [Data Persistence Policy](../../../docs/08.operations/04-data/README.md).
+2. Use the [Recovery Runbook](../../../docs/09.runbooks/04-data/README.md) for replica set re-initialization.
+
+### Safety Warnings
+- Never manually delete `configdb/` files as they contain the replica set's security keys.
+- Ensure the Arbiter is always running to maintain quorum during node failures.
 
 ---
 
-## Documentation References
-
-- [Specialized DB Guide](../../../docs/07.guides/04-data/03.specialized-dbs.md)
-- [Recovery Runbook](../../../docs/09.runbooks/04-data/README.md)
+Copyright (c) 2026. Licensed under the MIT License.

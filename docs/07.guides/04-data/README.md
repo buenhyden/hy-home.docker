@@ -2,17 +2,23 @@
 
 > Persistence, Caching, and Storage Services.
 
-## Overview
+## 1. Overview
 
-이 디렉터리는 `hy-home.docker`의 데이터 인프라(04-data)에 대한 가이드, 운영 정책, 그리고 복구 절차 문서를 포함한다.
+This directory contains technical guides for the `hy-home.docker` data infrastructure layer (04-data). Documentation is organized by database type to facilitate efficient system management and AI-assisted operations.
 
-## Documents
+## 2. Infrastructure Guides
 
-- [01. PostgreSQL HA Guide](./01.postgresql-ha.md) - High-availability database cluster setup.
-- [02. Valkey Cluster Guide](./02.valkey-cluster.md) - Distributed cache cluster maintenance.
+1. [Relational Databases (SQL)](./01.relational-dbs.md) - PostgreSQL (Standalone/HA) and Supabase.
+2. [Cache & Key-Value Stores](./02.cache-kv-dbs.md) - Managed Valkey and Distributed Clusters.
+3. [NoSQL Databases](./03.nosql-dbs.md) - MongoDB, Cassandra, and CouchDB.
+4. [Object & Distributed Storage](./04.storage-systems.md) - MinIO and SeaweedFS.
+5. [Analytical & Specialized Engines](./05.analytical-specialized-dbs.md) - InfluxDB, ksqlDB, OpenSearch, Neo4j, and Qdrant.
 
-## Related References
+## 3. Related Documentation
 
-- [infra/04-data/](../../infra/04-data/README.md) - Infrastructure tier overview.
-- [Operations Policy](../../docs/08.operations/04-data/README.md) - Persistence governance.
-- [Data Runbook](../../docs/09.runbooks/04-data/README.md) - Recovery and backup procedures.
+- [Infrastructure Source](../../../infra/04-data/README.md) - Technical source of truth.
+- [Operations Policy](../../08.operations/04-data/README.md) - Governance and backup rules.
+- [Recovery Runbooks](../../09.runbooks/04-data/README.md) - Incident response and emergency procedures.
+
+---
+Copyright (c) 2026. Licensed under the MIT License.

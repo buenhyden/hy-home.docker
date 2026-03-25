@@ -2,67 +2,39 @@
 
 > High-availability PostgreSQL cluster with Patroni, Etcd, and HAProxy.
 
-## Overview
+## 1. Context & Objective
 
-A robust, failover-capable PostgreSQL cluster based on the Spilo image. It uses Patroni for cluster management, Etcd for distributed consensus, and HAProxy (pg-router) for intelligent routing between the Master and Replica nodes.
+- **Engine**: PostgreSQL 16
+- **Architecture**: Single-Leader HA (Patroni + Etcd + HAProxy)
+- **Scale**: Multi-node production grade
 
-## Audience
+The `postgresql-cluster` provides a robust, failover-capable relational database layer based on the Spilo image. It is designed for mission-critical transactional state within the `hy-home.docker` ecosystem.
 
-- DBAs (Performance & Tuning)
-- SREs (Failover & Clustering)
-- AI Agents (Monitoring & Optimization)
+### Key Components
 
-## Scope
+- **Patroni**: Dynamic cluster management.
+- **Etcd**: Distributed consensus and leader election.
+- **HAProxy (pg-router)**: Intelligent TCP routing for read/write splitting.
 
-### In Scope
+## 2. Requirements & Constraints
 
-- 3-node PostgreSQL Cluster (Patroni)
-- 3-node Etcd Cluster (Consensus)
-- HAProxy Router (Load Balancing)
-- Metrics Exporters (Prometheus)
+- **Storage**: Minimum 10GB persistent storage per node.
+- **Memory**: 1GB minimum allocated to PostgreSQL container.
+- **Networking**: Isolated internal network for replication.
+- **Networking**: Must be accessible via the `infra_net`.
+- **Failover**: Master failover causes ~5s write downtime.
+- **Quorum**: Etcd quorum loss will force the cluster into read-only mode.
 
-### Out of Scope
+## 3. Setup & Installation
 
-- Application-specific DB schemas
-- External DB migrations
-- Long-term WAL archiving (outside this tier's local scope)
+### Deployment
 
-## Structure
-
-```text
-postgresql-cluster/
-├── config/             # HAProxy configuration
-├── init-scripts/       # Initial SQL bootstrap
-├── scripts/            # Spilo entrypoint wrappers
-└── docker-compose.yml  # Cluster orchestration
+```bash
+# Start the cluster
+docker compose up -d
 ```
 
-## How to Work in This Area
-
-1. Read the [PostgreSQL HA Guide](../../../docs/07.guides/04-data/01.postgresql-ha.md) for bootstrapping.
-2. Check `docker-compose.yml` for node environment variables.
-3. Use the [Data Runbook](../../../docs/09.runbooks/04-data/README.md) for master recovery.
-
-## Tech Stack
-
-| Category   | Technology                     | Notes                     |
-| ---------- | ------------------------------ | ------------------------- |
-| Engine     | PostgreSQL 17                  | Spilo 4.0 p3              |
-| HA Agent   | Patroni                        | Python-based cluster mgr  |
-| Consensus  | Etcd v3.6                      | Distributed key-value     |
-| Proxy      | HAProxy v3.3                   | TCP Routing Layer         |
-
-## Configuration
-
-### Connection Endpoints
-
-| Endpoint | Port | Mode | Description |
-| :--- | :--- | :--- | :--- |
-| `pg-router` | 15432 | **RW** | Master node access |
-| `pg-router` | 15433 | **RO** | Replica node access |
-| `pg-haproxy` | 8404 | **Stats** | HAProxy Dashboard |
-
-## Testing
+### Verification
 
 ```bash
 # Check Patroni cluster topology
@@ -72,19 +44,36 @@ docker exec pg-0 patronictl -c /home/postgres/postgres.yml list
 psql -h pg-router -p 15432 -U postgres -d postgres -c "SELECT pg_is_in_recovery();"
 ```
 
-## Change Impact
+## 4. Usage & Integration
 
-- Master failover will cause ~5s write downtime.
-- Modifying `haproxy.cfg` requires a `pg-router` restart.
-- Etcd quorum loss will make the entire cluster read-only.
+### Connection Endpoints
 
-## Related References
+| Endpoint | Port | Mode | Description |
+| :--- | :--- | :--- | :--- |
+| `pg-router` | 15432 | **RW** | Master node access |
+| `pg-router` | 15433 | **RO** | Replica node access |
+| `pg-haproxy` | 8404 | **Stats** | HAProxy Dashboard |
 
-- [03-security](../../03-security/README.md) - Vault integration for DB secrets.
-- [docs/08.operations/04-data](../../../docs/08.operations/04-data/README.md) - Data persistence policy.
+### Integration Pointers
 
-## AI Agent Guidance
+- Read the [Relational Databases Guide](../../../docs/07.guides/04-data/01.relational-dbs.md) for deep integration details.
+- Use `pg-router` instead of direct `pg-0/1/2` hostnames for application traffic.
 
-1. Always use `pg-router` instead of direct `pg-0/1/2` hostnames for app traffic.
-2. Verify `primary` node status via `patronictl` before performing schema changes.
-3. Monitor `etcd_server_has_leader` metrics to ensure cluster health.
+## 5. Maintenance & Safety
+
+- **Backups**: Daily snapshots in `${DEFAULT_DATA_DIR}/backups/postgresql`.
+- **Scaling**: Add new nodes to `docker-compose.yml` to increase read capacity.
+- **Health**: Monitor Patroni via HAProxy dashboard.
+
+### Operational Guardrails
+1. Verify `primary` node status via `patronictl` before performing schema changes.
+2. Monitor `etcd_server_has_leader` metrics to ensure cluster health.
+3. WAL archiving must be verified against the [Data Persistence Policy](../../../docs/08.operations/04-data/README.md).
+
+### Safety Warnings
+- Modifying `haproxy.cfg` requires a `pg-router` service restart.
+- Never manually delete data directories without stopping Patroni first.
+
+---
+
+Copyright (c) 2026. Licensed under the MIT License.

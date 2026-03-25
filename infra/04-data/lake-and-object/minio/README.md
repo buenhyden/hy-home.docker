@@ -1,45 +1,52 @@
-<!-- [ID:04-data:minio] -->
 # MinIO Object Storage
 
 > S3-compatible high-performance object storage server.
 
-## 1. Context (SSoT)
+## 1. Context & Objective
 
-MinIO serves as the primary object storage layer. It is used for infrastructure persistence (Loki logs, Tempo traces) and as a public CDN for application assets.
+MinIO serves as the primary object storage layer for the `hy-home.docker` ecosystem. It provides persistence for infrastructure workloads (Loki logs, Tempo traces) and serves as a public asset repository for applications.
 
-- **Status**: Production / Storage
-- **Protocol**: S3 Compatible
-- **SSoT Documentation**: [docs/07.guides/04-data/02.storage.md](../../../docs/07.guides/04-data/02.storage.md)
+### Role
+- **Infrastructure Persistence**: Backend for observability stacks.
+- **Public CDN**: Distributed asset delivery.
 
-## 2. Structure
+## 2. Requirements & Constraints
 
-```text
-minio/
-├── docker-compose.yml   # Server & MC initialization
-└── README.md            # Service overview
+- **Protocol**: S3 Compatible API.
+- **Secrets**: ROOT credentials MUST be managed via `MINIO_ROOT_USER_FILE` and `MINIO_ROOT_PASSWORD_FILE`.
+- **Persistence**: Data is mapped to `${DEFAULT_DATA_DIR}/minio`.
+
+## 3. Setup & Installation
+
+### Deployment
+```bash
+# Start the MinIO stack
+docker compose up -d
 ```
 
-## 3. Tech Stack
+### Automatic Initialization
+The `minio-init` service automatically creates the following buckets:
+- `tempo`, `loki`: Observability.
+- `cdn`: Public assets (Public/Anonymous access enabled).
+- `doc-intel`: Document processing.
 
-| Service | Technology | Role |
-| :--- | :--- | :--- |
-| **minio** | MinIO RELEASE.2025+ | S3 API Server |
-| **minio-init** | MinIO Client (mc) | Bucket & Policy Init |
+## 4. Usage & Integration
 
-## 4. Configuration (Secrets & Env)
+### Operational Endpoints
+- **API (S3)**: `minio:9000` / `https://minio.${DEFAULT_URL}`
+- **Console (UI)**: `minio:9001` / `https://minio-console.${DEFAULT_URL}`
 
-- **Secrets**: `MINIO_ROOT_USER_FILE`, `MINIO_ROOT_PASSWORD_FILE`.
-- **Auto-Buckets**: Initializes `tempo`, `loki`, `cdn`, and `doc-intel` on startup.
-- **CDN Policy**: `cdn-bucket` has public anonymous access.
+### Integration Pointers
+- Consult the [Object Storage Guide](../../../docs/07.guides/04-data/03.storage.md) for SDK examples.
+- Use `mc` (MinIO Client) for administrative tasks.
 
-## 5. Persistence
+## 5. Maintenance & Safety
 
-- **Data**: `minio-data` volume mapped to `${DEFAULT_DATA_DIR}/minio/data-1`.
-
-## 6. Operational Status
-
-- **API**: `minio:9000` / `https://minio.${DEFAULT_URL}`
-- **Console**: `minio:9001` / `https://minio-console.${DEFAULT_URL}`
+### Health & Safety
+1. Monitor volume usage for `minio-data` to prevent storage exhaustion.
+2. Bucket policies should follow the Principle of Least Privilege (except for `cdn`).
+3. Always rotate root credentials via the defined secret management process.
 
 ---
+
 Copyright (c) 2026. Licensed under the MIT License.
