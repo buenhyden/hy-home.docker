@@ -1,5 +1,5 @@
 x-tier-label: &tier-label
-  hy-home.tier: data
+  hy-home.tier: admin
 
 volumes:
   redisinsight-data:

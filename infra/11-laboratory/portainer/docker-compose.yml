@@ -1,0 +1,29 @@
+x-tier-label: &tier-label
+  hy-home.tier: admin
+
+volumes:
+  portainer-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MANAGEMENT_DIR}/portainer
+
+services:
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:sts
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    networks:
+      - infra_net
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.portainer.rule: Host(`portainer.${DEFAULT_URL}`)
+      traefik.http.routers.portainer.entrypoints: websecure
+      traefik.http.routers.portainer.tls: 'true'
+      traefik.http.routers.portainer.middlewares: sso-errors@file,sso-auth@file
+      traefik.http.services.portainer.loadbalancer.server.port: ${PORTAINER_PORT:-9443}
