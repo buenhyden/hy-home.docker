@@ -12,7 +12,7 @@ Inspired by `@[/claude-md-improver]`, agents are assessed on these criteria:
 
 | Grade | Description | Requirements |
 | :--- | :--- | :--- |
-| **A** | **Elite** | 100% Security compliance + < 200ms SLO awareness + Validated commands + 01-11 Taxonomy integration. |
+| **A** | **Elite** | 100% Security compliance + < 200ms SLO awareness + Validated commands + 01.prd - 11.postmortems Taxonomy integration. |
 | **B** | **Professional** | High security compliance + documented workflows + minor taxonomy gaps. |
 | **C** | **Functional** | Basic security + missing performance SLOs + fragmented documentation. |
 | **D** | **Substandard** | Missing healthchecks + legacy path references + vague instructions. |
@@ -22,7 +22,7 @@ Inspired by `@[/claude-md-improver]`, agents are assessed on these criteria:
 
 - **Actionability**: Every command must be copy-paste ready and tested.
 - **Conciseness**: Avoid generic AI prose; use token-efficient technical English.
-- **Architecture Clarity**: Documentation must accurately reflect the `01-11` taxonomy.
+- **Architecture Clarity**: Documentation must accurately reflect the `01.prd - 11.postmortems` taxonomy.
 
 ## 2. Technical Security Standards
 

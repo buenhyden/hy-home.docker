@@ -70,7 +70,7 @@ Every architectural or cross-cutting structural change must satisfy:
 
 ### Infrastructure Lifecycle
 
-1. **Discover**: Find existing specs, ADRs, runbooks in `01.prd` to `09.runbooks`.
+1. **Discover**: Find existing specs, ADRs, runbooks in `01.prd` to `11.postmortems`.
 2. **Specify**: Create `04.specs/` if missing.
 3. **Plan**: Verify or create `05.plans/`.
 4. **Implement**: Apply smallest correct change.
