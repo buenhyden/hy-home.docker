@@ -6,7 +6,7 @@ layer: agentic
 
 **Boundaries and permissions for agents interacting with project documentation.**
 
-## 1. Domain Boundaries
+## 1. Context & Objective
 
 - **Agentic Hub**: `docs/00.agent-governance/` (Primary Authority for Agents).
 - **Project Docs**: `docs/01.prd/` to `docs/99.templates/`.
