@@ -1,22 +1,18 @@
-# 07-workflow Guides
+# Workflow Tier Documentation (07-workflow)
 
-> How-to guides and technical documentation for the workflow orchestration tier.
+> Automation, DAGs, and Low-code Orchestration.
 
-## Overview (KR)
+## Overview
 
-이 폴더는 워크플로우 자동화 티어(Airflow, n8n)의 사용 가이드와 기술 문서를 관리합니다. DAG 작성법, n8n 노드 사용법 및 일반적인 문제 해결 방법을 다룹니다.
+이 디렉터리는 `hy-home.docker`의 워크플로우 계층(07-workflow)에 대한 개발 가이드, 운영 정책, 그리고 복구 절차 문서를 포함한다.
 
-## Guide Index
+## Documents
 
-### Airflow
-- [Airflow DAG Basics](./airflow-dag-basics.md) — Fundamental patterns for writing Airflow DAGs.
-- [Airflow CLI Guide](./airflow-cli.md) — Common commands for debugging and management.
+- [01. Airflow DAG Dev Guide](./01.airflow-dag-dev.md) - Programmatic Python DAG patterns.
+- [02. n8n Automation Guide](./02.n8n-automation.md) - Low-code workflow automation.
 
-### n8n
-- [n8n Integration Guide](./n8n-integrations.md) — Connecting third-party services via n8n.
-- [Custom Node Development](./n8n-custom-nodes.md) — Building and mounting custom n8n nodes.
+## Related References
 
-## Maintenance
-
-- All guides must follow the [Guide Template](../99.templates/guide.template.md).
-- Ensure relative links to `infra/07-workflow` are validated.
+- [infra/07-workflow/](../../infra/07-workflow/README.md) - Infrastructure tier overview.
+- [Operations Policy](../../docs/08.operations/07-workflow/README.md) - Scaling and retention standards.
+- [Workflow Runbook](../../docs/09.runbooks/07-workflow/README.md) - Recovery and incident response.
