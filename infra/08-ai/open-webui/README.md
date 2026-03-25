@@ -1,41 +1,40 @@
 # Open WebUI
 
-Enterprise-grade chat interface and RAG orchestration layer.
+> Full-featured web interface for LLM interaction and RAG orchestration.
 
-## 0. Context & SSoT
+## Overview
 
-- **Parent Tier**: [infra/08-ai/](../README.md)
-- **Public URL**: `chat.${DEFAULT_URL}`
-- **Backend API**: `open-webui:8080`
+Open WebUI (formerly Ollama WebUI) provides a ChatGPT-like interface for local LLMs. Beyond simple chat, it acts as a RAG (Retrieval-Augmented Generation) orchestrator, integrating with Qdrant for vector document search.
 
-## 1. Structure
+## Audience
 
-| Component | Image | Role |
+- End Users (Chat interface)
+- AI Engineers (RAG & Prompt Engineering)
+
+## Structure
+
+```text
+open-webui/
+├── docker-compose.yml  # Svelte-based interface & RAG backend
+└── README.md           # This file
+```
+
+## How to Work in This Area
+
+1. Read the [RAG Workflow Guide](../../../docs/07.guides/08-ai/02.rag-workflow.md).
+2. Access: `https://chat.${DEFAULT_URL}`.
+3. Admin Login: Managed via Keycloak/OIDC integration.
+
+## Tech Stack
+
+| Component | Technology | Version |
 | :--- | :--- | :--- |
-| `open-webui` | `ghcr.io/open-webui/open-webui:v0.8.5-cuda` | Web application & Backend |
+| Interface | Open WebUI | v0.8.5-cuda |
+| Embedding | Ollama (Local) | qwen3-embedding |
+| Vector Store | Qdrant | v1.11.x (Remote) |
 
-## 2. Tech Stack
+## AI Agent Guidance
 
-- **Frontend**: SvelteKit
-- **Backend**: Python (FastAPI)
-- **Vector DB**: Qdrant (RAG Storage)
-- **Inference**: Ollama (Primary Engine)
-
-## 3. Configuration
-
-- `OLLAMA_BASE_URL`: `http://ollama:11434`
-- `VECTOR_DB_URL`: `http://qdrant:6333`
-- `RAG_EMBEDDING_MODEL`: `qwen3-embedding:0.6b`
-
-## 4. Persistence
-
-- **User Data**: `${DEFAULT_AI_MODEL_DIR}/open-webui`
-- **Mount Point**: `/app/backend/data` (RW)
-
-## 5. Operational Status
-
-> [!NOTE]
-> Initial startup may be slow while the system prepares the internal SQLite database and RAG indices.
-
-> [!IMPORTANT]
-> Ensure Ollama is healthy and models are pulled before attempting to use the UI.
+1. Open WebUI stores chat history and RAG collections in a local SQLite DB (mapped to `${DEFAULT_AI_MODEL_DIR}/open-webui`).
+2. RAG indexing performance depends on the `qwen3-embedding` model speed in Ollama.
+3. Ensure the `VECTOR_DB_URL` correctly points to the Qdrant instance in the `04-data` tier.

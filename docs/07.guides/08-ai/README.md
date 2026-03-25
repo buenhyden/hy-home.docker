@@ -1,16 +1,18 @@
-# 08-ai Guides
+# AI Tier Documentation (08-ai)
 
-Documentation for using and developing with the local AI infrastructure.
+> LLM Inference, RAG Orchestration, and Intelligence Layer.
 
-## Available Guides
+## Overview
 
-### 0. Fundamentals
-- [Local LLM Setup](./local-llm-setup.md) — How to pull, test, and use local models.
+이 디렉터리는 `hy-home.docker`의 AI 계층(08-ai)에 대한 기술 가이드, 운영 정책, 그리고 장애 복구 문서를 포함한다.
 
-### 1. Integration
-- [Open WebUI RAG](./open-webui-rag.md) — Configuring Retrieval-Augmented Generation with Qdrant.
+## Documents
 
-## References
-- [Tier README](../../../infra/08-ai/README.md)
-- [Ollama Service](../../../infra/08-ai/ollama/README.md)
-- [Open WebUI Service](../../../infra/08-ai/open-webui/README.md)
+- [01. LLM Inference Guide](./01.llm-inference.md) - Model lifecycle and GPU optimization.
+- [02. RAG Workflow Guide](./02.rag-workflow.md) - Vector search and retrieval setup.
+
+## Related References
+
+- [infra/08-ai/](../../infra/08-ai/README.md) - Infrastructure tier overview.
+- [Operations Policy](../../docs/08.operations/08-ai/README.md) - Resource management and model governance.
+- [AI Runbook](../../docs/09.runbooks/08-ai/README.md) - GPU and OOM recovery procedures.
