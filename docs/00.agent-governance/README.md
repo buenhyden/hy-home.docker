@@ -15,14 +15,14 @@ Welcome to the central governance directory for AI Agents. This folder defines t
 ## 2. Requirements & Constraints
 
 - **Directory Structure**:
-    - `rules/`: Universal core governance, persona mapping, and repository-wide standards.
-    - `scopes/`: Layer-specific technical instructions and constraints (Architecture, Backend, Infra, etc.).
-    - `claude-provider.md`: Provider-specific configuration for Claude Code.
-    - `gemini-provider.md`: Provider-specific configuration for Gemini CLI.
+  - `rules/`: Universal core governance, persona mapping, and repository-wide standards.
+  - `scopes/`: Layer-specific technical instructions and constraints (Architecture, Backend, Infra, etc.).
+  - `claude-provider.md`: Provider-specific configuration for Claude Code.
+  - `gemini-provider.md`: Provider-specific configuration for Gemini CLI.
 - **Language Policy**:
-    - **Governance Documentation**: All files in this directory MUST be written in **English** (token optimized).
-    - **User Communication**: AI Agents MUST translate all responses and notifications into manual **Korean**.
-    - **Rule Enforcement**: Follow the centralized policy in [language-policy.md](rules/language-policy.md).
+  - **Governance Documentation**: All files in this directory MUST be written in **English** (token optimized).
+  - **User Communication**: AI Agents MUST translate all responses and notifications into manual **Korean**.
+  - **Rule Enforcement**: Follow the centralized policy in [language-policy.md](rules/language-policy.md).
 
 ## 3. Implementation Flow
 
