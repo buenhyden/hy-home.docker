@@ -45,4 +45,5 @@
 - [04-data](./04-data/README.md)
 - [05-messaging](./05-messaging/README.md)
 - [06-observability](./06-observability/README.md)
+- [07-workflow](./07-workflow/README.md)
 - [99.templates](../99.templates/guide.template.md)

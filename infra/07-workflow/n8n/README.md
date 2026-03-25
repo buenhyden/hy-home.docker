@@ -1,46 +1,67 @@
-# n8n
+# n8n (Low-code Automation)
 
-n8n is a low-code workflow automation tool that allows you to connect any app.
+> Low-code workflow automation tool connecting 400+ apps and services.
 
-## Services
+## Overview (KR)
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `n8n` | `n8nio/n8n:2.12.3` | Main engine | 1.0 CPU / 2G |
-| `n8n-worker` | `n8nio/n8n:2.12.3` | Job worker | 1.0 CPU / 2G |
-| `n8n-task-runner` | `n8nio/runners:2.12.3` | External task runner | 0.5 CPU / 1G |
-| `n8n-valkey` | `valkey/valkey:9.0.2-alpine` | Queue broker | 0.5 CPU / 0.5G |
-| `n8n-valkey-exporter` | `oliver006/redis_exporter` | Valkey metrics | - |
+n8n은 로우코드 워크플로우 자동화 도구로, 다양한 앱과 서비스를 코드 없이 연결할 수 있습니다. 자체 호스팅을 통해 데이터 주권을 유지하며, Valkey를 브로커로 사용하는 큐 모드로 고성능 자동화를 지원합니다.
 
-## Networking
+## Overview
 
-Exposed via Traefik at `n8n.${DEFAULT_URL}`.
+n8n provides a visual interface for building automation workflows. It is the designated "rapid prototyping" orchestrator in the `hy-home.docker` stack. This implementation includes a custom Dockerfile with CJK fonts and Python support, and operates in `queue` mode with dedicated Valkey workers for parallel execution.
 
-> [!NOTE]
-> `n8n` is not enabled in the root `docker-compose.yml` by default. Enable it by uncommenting the `infra/07-workflow/n8n/docker-compose.yml` include entry.
+## Structure
+
+```text
+n8n/
+├── custom/              # Custom n8n nodes
+├── Dockerfile          # CJK + Python custom image
+├── docker-compose.yml  # n8n stack with worker and runner
+├── docker-entrypoint.sh # Custom initialization script
+└── README.md           # This file
+```
+
+---
+
+## Tech Stack
+
+| Category | Technology | Notes |
+| :--- | :--- | :--- |
+| Base Image | `n8nio/n8n:2.12.3` | Community edition |
+| Broker | Valkey (9.0.2) | Queue broker for Bull |
+| Task Runner | `n8nio/runners` | External node execution |
+| Runtime | Node.js / Python | Integrated Python support |
+
+## Configuration
+
+### Services & Resources
+
+| Service | Role | Resources |
+| :--- | :--- | :--- |
+| `n8n` | Main UI & Scheduler | 1.0 CPU / 2G |
+| `n8n-worker` | Workflow Execution | 1.0 CPU / 2G |
+| `n8n-task-runner`| Sandbox execution | 0.5 CPU / 1G |
+
+### Environment Variables
+
+| Variable | Description |
+| :--- | :--- |
+| `EXECUTIONS_MODE` | Set to `queue` (scalable) |
+| `WEBHOOK_URL` | `https://n8n.${DEFAULT_URL}` |
 
 ## Persistence
 
-- **Database**: PostgreSQL (`mng-pg`) via `DB_TYPE: postgresdb`.
-- **Data**: `${DEFAULT_WORKFLOW_DIR}/n8n` → `/home/node/.n8n` (volume: `n8n-data`).
-- **Task Runner**: `${DEFAULT_WORKFLOW_DIR}/n8n-task-runner` → `/home/node/.n8n` (volume: `n8n-task-runner-data`).
-- **Valkey**: `${DEFAULT_WORKFLOW_DIR}/valkey` → `/data` (volume: `n8n-valkey-data`).
+- **Database**: PostgreSQL (mng-pg) using the `n8n` database.
+- **Config**: Volume `n8n-data` mounted at `/home/node/.n8n`.
+- **Custom Nodes**: Mounted from `./custom` directory.
 
-## Secrets
+## Operational Status
 
-| Secret | Purpose |
-| :--- | :--- |
-| `n8n_db_password` | PostgreSQL connection |
-| `n8n_encryption_key` | Credential encryption |
-| `n8n_valkey_password` | Valkey queue auth |
-| `n8n_runner_auth_token` | Task runner auth |
+> [!WARNING]
+> n8n is disabled in the root `docker-compose.yml` by default to conserve resources. Enable it by uncommenting the include entry for this directory.
 
-## File Map
+---
 
-| Path                   | Description                              |
-| ---------------------- | ---------------------------------------- |
-| `docker-compose.yml`   | n8n service and env configuration.       |
-| `Dockerfile`           | Custom image with CJK fonts and Python3. |
-| `docker-entrypoint.sh` | Entrypoint with custom cert support.     |
-| `custom/`              | Custom n8n nodes (mounted into container). |
-| `README.md`            | Service overview and usage notes.        |
+## License
+
+Copyright (c) 2026. Licensed under the MIT License.

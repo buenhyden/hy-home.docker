@@ -52,6 +52,7 @@
 | [04-data](./04-data/README.md) | Data corruption and cluster recovery |
 | [05-messaging](./05-messaging/README.md) | Messaging cluster and queue recovery |
 | [06-observability](./06-observability/README.md) | Monitoring, logging, and trace recovery |
+| [07-workflow](./07-workflow/README.md) | Airflow and n8n job recovery |
 
 ## Templates
 
