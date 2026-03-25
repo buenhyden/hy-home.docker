@@ -1,0 +1,72 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+volumes:
+  qdrant-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/qdrant/data
+
+services:
+  qdrant:
+    profiles:
+      - 'ai'
+      - 'data'
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-stateful-med
+    user: '1000:1000'
+    image: qdrant/qdrant:v1.17-unprivileged
+    container_name: qdrant
+    read_only: false
+    tmpfs:
+      - /tmp
+    # Traefik 완전 통합형이면 host ports 제거
+    expose:
+      - '${QDRANT_PORT:-6333}'
+      - '${QDRANT_GRPC_PORT:-6334}'
+    environment:
+      # 텔레메트리 활성화
+      QDRANT__TELEMETRY_DISABLED: "false"
+      # 서비스 포트 명시
+      QDRANT__SERVICE__HTTP_PORT: "${QDRANT_PORT:-6333}"
+      QDRANT__SERVICE__GRPC_PORT: "${QDRANT_GRPC_PORT:-6334}"
+      # 핵심: snapshots를 storage 내부로 이동
+      QDRANT__STORAGE__SNAPSHOTS_PATH: "/qdrant/storage/snapshots"
+
+      # 스냅샷 임시 파일은 tmpfs 사용
+      QDRANT__STORAGE__TEMP_PATH: "/tmp"
+
+    volumes:
+      - qdrant-data:/qdrant/storage:rw
+    networks:
+      - infra_net
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'bash',
+          '-c',
+          "exec 3<>/dev/tcp/127.0.0.1/${QDRANT_PORT:-6333} && printf 'GET /readyz HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '200' <&3",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      # REST
+      traefik.http.routers.qdrant.rule: Host(`qdrant.${DEFAULT_URL}`)
+      traefik.http.routers.qdrant.entrypoints: websecure
+      traefik.http.routers.qdrant.tls: 'true'
+      traefik.http.services.qdrant.loadbalancer.server.port: ${QDRANT_PORT:-6333}
+      # gRPC가 필요하면 TCP router를 별도 구성
+      # 예: qdrant-grpc.${DEFAULT_URL} 로 분리
+      traefik.tcp.routers.qdrant-grpc.rule: HostSNI(`qdrant-grpc.${DEFAULT_URL}`)
+      traefik.tcp.routers.qdrant-grpc.entrypoints: websecure
+      traefik.tcp.routers.qdrant-grpc.tls: 'true'
+      traefik.tcp.routers.qdrant-grpc.service: qdrant-grpc-svc
+      traefik.tcp.services.qdrant-grpc-svc.loadbalancer.server.port: '${QDRANT_GRPC_PORT:-6334}'

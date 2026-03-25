@@ -1,0 +1,149 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+volumes:
+  opensearch-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/opensearch/opensearch1-data
+
+services:
+  opensearch:
+    profiles:
+      - 'data'
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-infra-high
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: opensearch
+    environment:
+      - OPENSEARCH_JAVA_OPTS=${OPENSEARCH_JAVA_OPTS:--Xms1g -Xmx1g}
+      - bootstrap.memory_lock=true
+      - DISABLE_INSTALL_DEMO_CONFIG=true
+      - DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI=true
+    command: >
+      bash -c "
+      export OPENSEARCH_INITIAL_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) &&
+      exec /usr/share/opensearch/opensearch-docker-entrypoint.sh
+      "
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+      nofile: { soft: 65536, hard: 65536 }
+    shm_size: 1g
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data:rw
+      - ../../../secrets/certs:/usr/share/opensearch/config/certs:ro
+      - ./opensearch/config/opensearch-security/config.yml:/usr/share/opensearch/config/opensearch-security/config.yml:ro
+      - ./opensearch/config/opensearch-security/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml:ro
+      - ./opensearch/config/opensearch-security/internal_users.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml:ro
+      - ./opensearch/config/opensearch-security/action_groups.yml:/usr/share/opensearch/config/opensearch-security/action_groups.yml:ro
+      - ./opensearch/config/opensearch-security/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml:ro
+      - ./opensearch/config/opensearch-security/tenants.yml:/usr/share/opensearch/config/opensearch-security/tenants.yml:ro
+      - ./opensearch/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
+      - ./opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
+    networks:
+      - infra_net
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.opensearch.rule: Host(`opensearch.${DEFAULT_URL}`)
+      traefik.http.routers.opensearch.entrypoints: websecure
+      traefik.http.routers.opensearch.tls: 'true'
+      traefik.http.routers.opensearch.middlewares: opensearch-auth@file
+      traefik.http.services.opensearch.loadbalancer.serversTransport: opensearch-transport@file
+      traefik.http.services.opensearch.loadbalancer.server.port: 9200
+      traefik.http.services.opensearch.loadbalancer.server.scheme: https
+    healthcheck:
+      test:
+        - 'CMD-SHELL'
+        - "export OPENSEARCH_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) && curl -k -u admin:$${OPENSEARCH_ADMIN_PASSWORD} --silent --fail 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    secrets:
+      - opensearch_admin_password
+
+  opensearch-dashboards:
+    profiles:
+      - 'data'
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-infra-med
+    image: opensearchproject/opensearch-dashboards:3.4.0
+    container_name: opensearch-dashboards
+    networks:
+      - infra_net
+    expose:
+      - '${KIBANA_PORT:-5601}'
+    volumes:
+      - ../../../../secrets/certs:/usr/share/opensearch-dashboards/config/certs:ro
+      - ./opensearch-dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
+    environment:
+      - OPENSEARCH_USERNAME=${OPENSEARCH_DASHBOARD_USERNAME:-admin}
+    command: >
+      bash -c "
+      export OPENSEARCH_PASSWORD=$$(cat /run/secrets/opensearch_dashboard_password) &&
+      exec /usr/share/opensearch-dashboards/bin/opensearch-dashboards
+      "
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.opensearch-dashboards.rule: Host(`opensearch-dashboard.${DEFAULT_URL}`)
+      traefik.http.routers.opensearch-dashboards.entrypoints: websecure
+      traefik.http.routers.opensearch-dashboards.tls: 'true'
+      traefik.http.services.opensearch-dashboards.loadbalancer.server.port: ${KIBANA_PORT:-5601}
+      traefik.http.services.opensearch-dashboards.loadbalancer.server.scheme: https
+      traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport: opensearch-dashboards-transport@file
+    depends_on:
+      opensearch: { condition: service_healthy }
+
+    tmpfs:
+      - /tmp
+      - /usr/share/opensearch-dashboards/data
+    healthcheck:
+      test:
+        - 'CMD-SHELL'
+        - 'export OS_PASS=$$(cat /run/secrets/opensearch_dashboard_password) && curl -fsSk -u ${OPENSEARCH_DASHBOARD_USERNAME:-admin}:$${OS_PASS} https://localhost:${KIBANA_PORT:-5601}/api/status >/dev/null 2>&1 || exit 1'
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
+    secrets:
+      - opensearch_dashboard_password
+
+  opensearch-exporter:
+    profiles:
+      - 'data'
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-infra-low
+    image: prometheuscommunity/elasticsearch-exporter:v1.10.0
+    container_name: opensearch-exporter
+    environment:
+      - ES_USERNAME=${OPENSEARCH_EXPORTER_USERNAME:-admin}
+    command: >
+      bash -c "
+      export ES_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) &&
+      exec /bin/elasticsearch_exporter --es.uri=https://opensearch:9200 --es.all --es.indices --es.ssl-skip-verify
+      "
+    ports:
+      - '${ES_EXPORTER_HOST_PORT:-9114}:${ES_EXPORTER_PORT:-9114}'
+    networks:
+      - infra_net
+    depends_on:
+      opensearch: { condition: service_healthy }
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -fsS http://localhost:${ES_EXPORTER_PORT:-9114}/metrics || exit 1']
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+    secrets:
+      - opensearch_exporter_password

@@ -1,0 +1,207 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+volumes:
+  couchdb1-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/couchdb/data-1
+  couchdb2-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/couchdb/data-2
+  couchdb3-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/couchdb/data-3
+
+services:
+  couchdb-1:
+    profiles:
+      - 'data'
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-stateful-med
+    image: couchdb:3.5.1
+    container_name: couchdb-1
+    read_only: false
+    environment:
+      - COUCHDB_USER=${COUCHDB_USERNAME}
+      - NODENAME=couchdb-1.infra_net
+    command: >
+      bash -c "
+      export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) &&
+      export ERL_FLAGS="-setcookie $$(cat /run/secrets/couchdb_cookie)" &&
+      exec /opt/couchdb/bin/couchdb
+      "
+    secrets:
+      - couchdb_password
+      - couchdb_cookie
+    volumes:
+      - couchdb1-data:/opt/couchdb/data:rw
+    expose:
+      - ${COUCHDB_PORT:-5984}
+      - ${COUCHDB_ERLANG_MAPPER_PORT:-4369}
+      - ${COUCHDB_ERLANG_DISTRIBUTION_PORT:-9100}
+    networks:
+      infra_net:
+        aliases:
+          - couchdb-1.infra_net
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) && curl -f http://$$COUCHDB_USER:$$COUCHDB_PASSWORD@localhost:${COUCHDB_PORT:-5984}/_up
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.couchdb.rule: Host(`couchdb.${DEFAULT_URL}`)
+      traefik.http.routers.couchdb.entrypoints: websecure
+      traefik.http.routers.couchdb.tls: 'true'
+      traefik.http.routers.couchdb.service: couchdb-cluster
+      traefik.http.services.couchdb-cluster.loadbalancer.server.port: ${COUCHDB_PORT:-5984}
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
+
+  couchdb-2:
+    profiles:
+      - 'data'
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-stateful-med
+    image: couchdb:3.5.1
+    container_name: couchdb-2
+    read_only: false
+    environment:
+      - COUCHDB_USER=${COUCHDB_USERNAME}
+      - NODENAME=couchdb-2.infra_net
+    command: >
+      bash -c "
+      export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) &&
+      export ERL_FLAGS="-setcookie $$(cat /run/secrets/couchdb_cookie)" &&
+      exec /opt/couchdb/bin/couchdb
+      "
+    secrets:
+      - couchdb_password
+      - couchdb_cookie
+    volumes:
+      - couchdb2-data:/opt/couchdb/data:rw
+    expose:
+      - ${COUCHDB_PORT:-5984}
+      - ${COUCHDB_ERLANG_MAPPER_PORT:-4369}
+      - ${COUCHDB_ERLANG_DISTRIBUTION_PORT:-9100}
+    networks:
+      infra_net:
+        aliases:
+          - couchdb-2.infra_net
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) && curl -f http://$$COUCHDB_USER:$$COUCHDB_PASSWORD@localhost:${COUCHDB_PORT:-5984}/_up
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.server.port: ${COUCHDB_PORT:-5984}
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
+
+  couchdb-3:
+    profiles:
+      - 'data'
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-stateful-med
+    image: couchdb:3.5.1
+    container_name: couchdb-3
+    read_only: false
+    environment:
+      - COUCHDB_USER=${COUCHDB_USERNAME}
+      - NODENAME=couchdb-3.infra_net
+    command: >
+      bash -c "
+      export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) &&
+      export ERL_FLAGS="-setcookie $$(cat /run/secrets/couchdb_cookie)" &&
+      exec /opt/couchdb/bin/couchdb
+      "
+    secrets:
+      - couchdb_password
+      - couchdb_cookie
+    volumes:
+      - couchdb3-data:/opt/couchdb/data:rw
+    expose:
+      - ${COUCHDB_PORT:-5984}
+      - ${COUCHDB_ERLANG_MAPPER_PORT:-4369}
+      - ${COUCHDB_ERLANG_DISTRIBUTION_PORT:-9100}
+    networks:
+      infra_net:
+        aliases:
+          - couchdb-3.infra_net
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) && curl -f http://$$COUCHDB_USER:$$COUCHDB_PASSWORD@localhost:${COUCHDB_PORT:-5984}/_up
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.server.port: ${COUCHDB_PORT:-5984}
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
+
+  couchdb-cluster-init:
+    profiles:
+      - 'data'
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-job-low
+    restart: 'no'
+    image: curlimages/curl:8.18.0
+    container_name: couchdb-cluster-init
+    read_only: true
+    tmpfs:
+      - /tmp
+    depends_on:
+      couchdb-1:
+        condition: service_healthy
+      couchdb-2:
+        condition: service_healthy
+      couchdb-3:
+        condition: service_healthy
+    networks:
+      - infra_net
+    secrets:
+      - couchdb_password
+    command: >
+      /bin/sh -c "
+        export COUCHDB_PASSWORD=$$(cat /run/secrets/couchdb_password) &&
+        echo 'Waiting for nodes to start...' &&
+        sleep 10 &&
+        echo 'Joining Node 2...' &&
+        curl -X POST -H 'Content-Type: application/json'           http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT:-5984}/_cluster_setup           -d '{"action": "enable_cluster", "bind_address":"0.0.0.0", "username": "${COUCHDB_USERNAME}", "password":"'$$COUCHDB_PASSWORD'", "port": ${COUCHDB_PORT:-5984}, "node_count": "3", "remote_node": "couchdb@couchdb-2.infra_net", "remote_current_user": "${COUCHDB_USERNAME}", "remote_current_password": "'$$COUCHDB_PASSWORD'"}' || true &&
+        curl -X POST -H 'Content-Type: application/json'           http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT:-5984}/_cluster_setup           -d '{"action": "add_node", "host":"couchdb-2.infra_net", "port": ${COUCHDB_PORT:-5984}, "username": "${COUCHDB_USERNAME}", "password":"'$$COUCHDB_PASSWORD'"}' || true &&
+        echo 'Joining Node 3...' &&
+        curl -X POST -H 'Content-Type: application/json'           http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT:-5984}/_cluster_setup           -d '{"action": "enable_cluster", "bind_address":"0.0.0.0", "username": "${COUCHDB_USERNAME}", "password":"'$$COUCHDB_PASSWORD'", "port": ${COUCHDB_PORT:-5984}, "node_count": "3", "remote_node": "couchdb@couchdb-3.infra_net", "remote_current_user": "${COUCHDB_USERNAME}", "remote_current_password": "'$$COUCHDB_PASSWORD'"}' || true &&
+        curl -X POST -H 'Content-Type: application/json'           http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT:-5984}/_cluster_setup           -d '{"action": "add_node", "host":"couchdb-3.infra_net", "port": ${COUCHDB_PORT:-5984}, "username": "${COUCHDB_USERNAME}", "password":"'$$COUCHDB_PASSWORD'"}' || true &&
+        echo 'Finishing Cluster Setup...' &&
+        curl -X POST -H 'Content-Type: application/json'           http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT:-5984}/_cluster_setup           -d '{"action": "finish_cluster"}' || true &&
+        curl -X PUT http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT:-5984}/_users || true &&
+        curl -X PUT http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT:-5984}/_replicator || true &&
+        curl -X PUT http://${COUCHDB_USERNAME}:$$COUCHDB_PASSWORD@couchdb-1:${COUCHDB_PORT:-5984}/_global_changes || true &&
+        echo 'CouchDB Cluster Setup Complete!';
+      "

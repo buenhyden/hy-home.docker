@@ -178,21 +178,21 @@ include:
   - infra/02-auth/keycloak/docker-compose.yml
   - infra/02-auth/oauth2-proxy/docker-compose.yml
   - infra/03-security/vault/docker-compose.yml
-  # - infra/04-data/cassandra/docker-compose.yml
-  # - infra/04-data/couchdb/docker-compose.yml
-  - infra/04-data/influxdb/docker-compose.yml
-  - infra/04-data/minio/docker-compose.yml
-  - infra/04-data/mng-db/docker-compose.yml
-  # - infra/04-data/mongodb/docker-compose.yml
-  - infra/04-data/neo4j/docker-compose.yml
-  # - infra/04-data/opensearch/docker-compose.yml
-  # - infra/04-data/postgresql-cluster/docker-compose.yml
-  - infra/04-data/qdrant/docker-compose.yml
-  # - infra/04-data/seaweedfs/docker-compose.yml
-  # - infra/04-data/supabase/docker-compose.yml
-  # - infra/04-data/valkey-cluster/docker-compose.yml
+  - infra/04-data/analytics/influxdb/docker-compose.yml
+  # - infra/04-data/analytics/ksql/docker-compose.yml
+  # - infra/04-data/analytics/opensearch/docker-compose.yml
+  # - infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml
+  - infra/04-data/lake-and-object/minio/docker-compose.yml
+  # - infra/04-data/lake-and-object/seaweedfs/docker-compose.yml
+  # - infra/04-data/nosql/cassandra/docker-compose.yml
+  # - infra/04-data/nosql/couchdb/docker-compose.yml
+  # - infra/04-data/nosql/mongodb/docker-compose.yml
+  - infra/04-data/operational/mng-db/docker-compose.yml
+  # - infra/04-data/operational/postgresql-cluster/docker-compose.yml
+  # - infra/04-data/operational/supabase/docker-compose.yml
+  - infra/04-data/specialized/neo4j/docker-compose.yml
+  - infra/04-data/specialized/qdrant/docker-compose.yml
   # - infra/05-messaging/kafka/docker-compose.yml
-  # - infra/05-messaging/ksql/docker-compose.yml
   # - infra/05-messaging/rabbitmq/docker-compose.yml
   - infra/06-observability/docker-compose.yml
   # - infra/07-workflow/n8n/docker-compose.yml
@@ -206,3 +206,4 @@ include:
   - infra/09-tooling/terraform/docker-compose.yml
   # - infra/09-tooling/terrakube/docker-compose.yml
   # - infra/10-communication/mail/docker-compose.yml
+  - infra/11-laboratory/redisinsight/docker-compose.yml

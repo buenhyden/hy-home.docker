@@ -1,0 +1,37 @@
+# ==============================================================================
+# Server Settings
+# ==============================================================================
+server.name: dashboards
+server.host: 0.0.0.0
+server.ssl.enabled: true
+server.ssl.key: <REPLACE_ME>
+server.ssl.certificate: <REPLACE_ME>
+
+# ==============================================================================
+# Security & OIDC Configuration
+# ==============================================================================
+opensearch_security.auth.type: ["basicauth", "openid"]
+opensearch_security.auth.multiple_auth_enabled: true
+opensearch_security.openid.connect_url: "https://keycloak.127.0.0.1.nip.io/realms/hy-home.realm/.well-known/openid-configuration"
+opensearch_security.openid.client_id: "realm-home-client"
+opensearch_security.openid.client_secret: <REPLACE_ME>
+opensearch_security.openid.scope: "openid profile email offline_access groups"
+opensearch_security.openid.base_redirect_url: "https://opensearch-dashboard.127.0.0.1.nip.io"
+opensearch_security.openid.root_ca: /usr/share/opensearch-dashboards/config/certs/rootCA.pem
+# 프록시(Traefik) 헤더 기반으로 redirect URL 계산
+opensearch_security.openid.trust_dynamic_headers: true
+# mkcert 기반 인증서(SAN 없음) 대응: 호스트 검증은 끄고 CA만 검증
+opensearch_security.openid.verify_hostnames: false
+
+opensearch_security.cookie.password: <REPLACE_ME> # 32+ chars recommended
+opensearch_security.cookie.isSameSite: "None"
+opensearch_security.cookie.secure: true
+# ==============================================================================
+# OpenSearch Connection Settings
+# ==============================================================================
+opensearch.hosts: ["https://opensearch:9200"]
+opensearch.username: "kibanaserver"
+opensearch.password: "<REPLACE_ME>" # 초기 비밀번호 (변경했다면 변경된 값 입력)
+opensearch.ssl.certificateAuthorities: <REPLACE_ME>
+opensearch.ssl.verificationMode: certificate
+opensearch.requestHeadersAllowlist: ["Authorization", "security_tenant"]

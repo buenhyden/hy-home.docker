@@ -1,0 +1,15 @@
+_meta:
+  type: "roles"
+  config_version: 2
+exporter_role:
+  description: "Prometheus OpenSearch exporter read-only monitoring"
+  cluster_permissions:
+    - "cluster:monitor/*"
+  index_permissions:
+    - index_patterns:
+        - "*"
+      allowed_actions:
+        - "indices:monitor/*"
+        - "indices:admin/get"
+        - "indices:admin/aliases/get"
+        - "indices:data/read/*"

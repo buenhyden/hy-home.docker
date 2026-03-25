@@ -1,0 +1,32 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+volumes:
+  redisinsight-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MANAGEMENT_DIR}/redisinsight
+
+services:
+  redisinsight:
+    profiles:
+      - admin
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
+    image: redis/redisinsight:3.0.3
+    container_name: redisinsight
+    volumes:
+      - redisinsight-data:/db:rw
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.redisinsight.rule: Host(`redisinsight.${DEFAULT_URL}`)
+      traefik.http.routers.redisinsight.entrypoints: websecure
+      traefik.http.routers.redisinsight.tls: 'true'
+      traefik.http.routers.redisinsight.middlewares: sso-errors@file,sso-auth@file
+      traefik.http.services.redisinsight.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-5540}
+    networks:
+      - infra_net

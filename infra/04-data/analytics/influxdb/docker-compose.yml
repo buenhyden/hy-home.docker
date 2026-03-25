@@ -1,0 +1,61 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+volumes:
+  influxdb-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/influxdb/data
+  influxdb-plugins:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/influxdb/plugins
+
+services:
+  influxdb:
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-stateful-med
+    profiles:
+      - data
+      - obs
+    image: influxdb:3.8.3-core
+    container_name: influxdb
+    hostname: influxdb
+    read_only: false
+    command:
+      - influxdb3
+      - serve
+      - --node-id=node0
+      - --object-store=file
+      - --data-dir=/var/lib/influxdb3/data
+      - --plugin-dir=/var/lib/influxdb3/plugins
+    secrets:
+      - influxdb_password
+      - influxdb_api_token
+    volumes:
+      - influxdb-data:/var/lib/influxdb3/data:rw
+      - influxdb-plugins:/var/lib/influxdb3/plugins:rw
+    networks:
+      - infra_net
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - |
+          code=$$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8181/ || true)
+          [ "$$code" = "200" ] || [ "$$code" = "204" ] || [ "$$code" = "401" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 1m
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.influxdb.rule: Host(`influxdb.${DEFAULT_URL}`)
+      traefik.http.routers.influxdb.entrypoints: websecure
+      traefik.http.routers.influxdb.tls: 'true'
+      traefik.http.services.influxdb.loadbalancer.server.port: ${INFLUXDB_PORT:-8181}
