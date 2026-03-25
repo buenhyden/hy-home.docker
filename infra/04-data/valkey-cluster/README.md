@@ -1,49 +1,75 @@
-<!-- [ID:04-data:valkey-cluster] -->
-# Valkey Cluster
+# Valkey Distributed Cluster
 
-> High-performance, 6-node distributed Valkey cluster.
+> High-performance, 6-node distributed cache cluster (Redis-compatible).
 
-## 1. Context (SSoT)
+## Overview
 
-The `valkey-cluster` provides a distributed caching and session management layer. It uses a 3-master/3-replica configuration to ensure high throughput and fault tolerance.
+A distributed Valkey cluster providing high-throughput, low-latency caching and state storage. It consists of 6 nodes (3 primaries + 3 replicas) with automatic partitioning across hash slots.
 
-- **Status**: Production / Distributed
-- **SSoT Documentation**: [docs/07.guides/04-data/01.core-dbs.md](../../../docs/07.guides/04-data/01.core-dbs.md)
-- **Compatibility**: Redis OSS CLI compatible
+## Audience
 
-## 2. Structure
+- SREs (Cluster balancing)
+- AI Agents (Cache monitoring)
+
+## Scope
+
+- 6-node Valkey Cluster
+- Automatic cluster initialization
+- Redis-compatible protocol support
+
+## Structure
 
 ```text
 valkey-cluster/
-├── docker-compose.yml   # Cluster definition
-├── config/              # Node configuration
-└── scripts/             # Bootstrap scripts
+├── config/             # Valkey configuration (valkey.conf)
+├── scripts/            # Startup and init scripts
+└── docker-compose.yml  # Cluster orchestration
 ```
 
-## 3. Tech Stack
+## How to Work in This Area
 
-| Service | Technology | Role |
+1. Read the [Valkey Cluster Guide](../../../docs/07.guides/04-data/02.valkey-cluster.md) for maintenance.
+2. Check `scripts/valkey-cluster-init.sh` for partitioning logic.
+3. Use the [Data Runbook](../../../docs/09.runbooks/04-data/README.md) for node recovery.
+
+## Tech Stack
+
+| Category   | Technology                     | Notes                     |
+| ---------- | ------------------------------ | ------------------------- |
+| Engine     | Valkey 9.0                     | Alpine-based              |
+| Protocol   | Redis                          | Fully compatible          |
+| Topology   | 3 Master / 3 Replica           | Automatic Failover        |
+
+## Configuration
+
+| Variable | Description | Initial Port |
 | :--- | :--- | :--- |
-| **valkey-node-0..5** | Valkey 9.0 | Cluster nodes |
-| **cluster-init** | Valkey CLI | 3M/3R Bootstrap |
-| **exporter** | Redis Exporter | Metrics collection |
+| `VALKEY0_PORT` | Node 0 Port | 6379 |
+| `VALKEY1_PORT` | Node 1 Port | 6380 |
+| `...` | ... | ... |
 
-## 4. Configuration (Secrets & Env)
+## Testing
 
-- **Bootstrap**: Automated via `valkey-cluster-init.sh`.
-- **Passwords**: Managed via `VALKEY_PASSWORD_FILE`.
-- **Ports**: Client (`6379`), Bus (`16379`).
+```bash
+# Check cluster state
+docker exec valkey-node-0 valkey-cli -p 6379 cluster info
 
-## 5. Persistence
+# List cluster nodes and slots
+docker exec valkey-node-0 valkey-cli -p 6379 cluster nodes
+```
 
-- **Volumes**: `valkey-data-0..5`.
-- **Path**: `${DEFAULT_DATA_DIR}/valkey/...`
+## Change Impact
 
-## 6. Operational Status
+- Adding/removing nodes requires manual `rebalance` operations.
+- Key evictions may occur if memory limits are exceeded without proper tuning.
 
-- **Status**: Distributed HA
-- **Monitoring**: `http://pg-router:9121/metrics` (Exporter)
-- **Check**: `valkey-cli -c -a "$PASSWORD" -h valkey-node-0 cluster info`
+## Related References
 
----
-Copyright (c) 2026. Licensed under the MIT License.
+- [02-auth](../../02-auth/README.md) - Used for session caching.
+- [docs/08.operations/04-data](../../../docs/08.operations/04-data/README.md) - Memory limit policies.
+
+## AI Agent Guidance
+
+1. Use `redis-py` or similar clients with cluster support enabled.
+2. Large `KEYS *` operations are strictly forbidden; use `SCAN`.
+3. Monitor `cluster_slots_assigned` to ensure 16384 slots are covered.

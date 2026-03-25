@@ -1,15 +1,18 @@
-# Data Guides
+# Data Tier Documentation (04-data)
 
-Infrastructure guides for data services in `hy-home.docker`.
+> Persistence, Caching, and Storage Services.
 
-## Tier Overview
+## Overview
 
-| Guide                                            | Description                                     |
-| ------------------------------------------------ | ----------------------------------------------- |
-| [Persistence Best Practices](./persistence-best-practices.md) | Data durability and storage optimization.       |
-| [Specialized DBs](./03.specialized-dbs.md)       | Usage guide for NoSQL and Graph databases.     |
-| [Storage Optimization](./02.storage.md)          | Object storage and block volume management.     |
+이 디렉터리는 `hy-home.docker`의 데이터 인프라(04-data)에 대한 가이드, 운영 정책, 그리고 복구 절차 문서를 포함한다.
 
----
+## Documents
 
-- [Back to Infrastructure](../../README.md)
+- [01. PostgreSQL HA Guide](./01.postgresql-ha.md) - High-availability database cluster setup.
+- [02. Valkey Cluster Guide](./02.valkey-cluster.md) - Distributed cache cluster maintenance.
+
+## Related References
+
+- [infra/04-data/](../../infra/04-data/README.md) - Infrastructure tier overview.
+- [Operations Policy](../../docs/08.operations/04-data/README.md) - Persistence governance.
+- [Data Runbook](../../docs/09.runbooks/04-data/README.md) - Recovery and backup procedures.

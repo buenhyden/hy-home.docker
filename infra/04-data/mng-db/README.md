@@ -1,49 +1,56 @@
-<!-- [ID:04-data:mng-db] -->
-# Management Databases (mng-db)
+# Management Database (mng-db)
 
-> Shared database and cache services for infrastructure components.
+> Shared core database and cache for platform management services.
 
-## 1. Context (SSoT)
+## Overview
 
-The `mng-db` stack provides essential persistence and caching for core infrastructure services (Keycloak, n8n, Airflow). Consolidating these requirements reduces resource overhead and simplifies backup/restore for the platform's control plane.
+A lightweight, shared persistence instance for management tier services (e.g., identity, monitoring meta-data). It provides a standalone PostgreSQL instance and a single-node Valkey cache for non-HA critical management data during the initial bootstrap phase.
 
-- **Status**: Production / Core
-- **Upstream**: `infra/01-management`
-- **SSoT Documentation**: [docs/07.guides/04-data/01.core-dbs.md](../../../docs/07.guides/04-data/01.core-dbs.md)
+## Audience
 
-## 2. Structure
+- Platform Ops (Bootstrap & Management)
+- SREs (Metadata maintenance)
+
+## Scope
+
+- Shared PostgreSQL instance
+- Shared Valkey instance
+- Initial SQL bootstrap for platform accounts
+
+## Structure
 
 ```text
 mng-db/
-├── docker-compose.yml   # Stack definition
-├── pg/                  # PostgreSQL config & init scripts
-└── valkey/              # Valkey configuration
+├── pg/                 # PostgreSQL init scripts
+├── valkey/             # Valkey data (ephemeral cache)
+└── docker-compose.yml  # Service orchestration
 ```
 
-## 3. Tech Stack
+## How to Work in This Area
 
-| Service | Technology | Role |
+1. Check `pg/init-scripts/init_users_dbs.sql` for initial credentials.
+2. Use the [Data Runbook](../../../docs/09.runbooks/04-data/README.md) for backup tasks.
+
+## Configuration
+
+| Variable | Target | Description |
 | :--- | :--- | :--- |
-| **mng-pg** | PostgreSQL 17 | Management SQL |
-| **mng-valkey** | Valkey 9.0 | Shared Session/Cache |
-| **redisinsight** | RedisInsight | Redis/Valkey GUI |
+| `POSTGRES_DB` | pg | Management root DB |
+| `VALKEY_PORT` | valkey | Shared cache port |
 
-## 4. Configuration (Secrets & Env)
+## Testing
 
-- **Secrets**: Uses `POSTGRES_PASSWORD_FILE` and `VALKEY_PASSWORD_FILE`.
-- **Initialization**: `mng-pg-init` executes `init_users_dbs.sql` to prepare app-specific databases.
-- **SSO**: RedisInsight is protected by `sso-auth@file` middleware.
+```bash
+# Test pg connectivity
+docker exec mng-db-pg pg_isready
+```
 
-## 5. Persistence
+## Change Impact
 
-- **Postgres**: `${DEFAULT_MANAGEMENT_DIR}/pg`
-- **Valkey**: `${DEFAULT_MANAGEMENT_DIR}/valkey`
+- Restarting `mng-db` will impact all management services relying on shared state.
+- This is NOT an HA service; use `postgresql-cluster` for production workloads.
 
-## 6. Operational Status
+## AI Agent Guidance
 
-- **Postgres**: `mng-pg:5432`
-- **Valkey**: `mng-valkey:6379`
-- **RedisInsight**: `https://redisinsight.${DEFAULT_URL}`
-
----
-Copyright (c) 2026. Licensed under the MIT License.
+1. This database is primarily for platform metadata; avoid storing large datasets here.
+2. Ensure `mng-db` is healthy before starting `02-auth` services.
