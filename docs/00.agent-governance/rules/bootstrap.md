@@ -37,7 +37,7 @@ This document defines the universal entry point for all AI Agents interacting wi
 
 Before performing any task, the Agent MUST:
 
-1. Identify the target **Layer** (`common, architecture, backend, frontend, infra, mobile, product, qa, security, entry, meta, ops, agentic`).
+1. Identify the target **Layer** (`common, architecture, backend, frontend, infra, mobile, product, qa, security, entry, meta, ops, docs, agentic`).
 2. Locate the SSoT for that layer using `grep -r "layer: <name>" docs/`.
 3. Load the corresponding scope from `docs/00.agent-governance/scopes/<layer>.md`.
 4. Adopt the required Persona (from `persona-matrix.md`) and announce:
@@ -70,7 +70,7 @@ Every architectural or cross-cutting structural change must satisfy:
 
 ### Infrastructure Lifecycle
 
-1. **Discover**: Find existing specs, ADRs, runbooks in `01~09`.
+1. **Discover**: Find existing specs, ADRs, runbooks in `01.prd` to `09.runbooks`.
 2. **Specify**: Create `04.specs/` if missing.
 3. **Plan**: Verify or create `05.plans/`.
 4. **Implement**: Apply smallest correct change.

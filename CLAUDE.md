@@ -14,5 +14,5 @@ layer: agentic
 
 ## 2. Progressive Disclosure
 
-- **Lazy Loading**: Use `[LOAD:...]` markers for taxonomy context from `docs/01-11`.
+- **Lazy Loading**: Use `[LOAD:...]` markers for taxonomy context from `docs/01.prd-11.postmortems`.
 - **Scopes**: Offload layer-specific rules to `docs/00.agent-governance/scopes/`.

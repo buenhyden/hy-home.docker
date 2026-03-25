@@ -32,13 +32,17 @@ Use the following JIT loading markers to ingest task-specific context from the d
 
 | Marker | Target README | Intent |
 | :--- | :--- | :--- |
-| `[LOAD:PRD]` | `docs/01.prd/README.md` | High-level requirements & vision |
-| `[LOAD:ARD]` | `docs/02.ard/README.md` | Architectural reference & qualities |
-| `[LOAD:ADR]` | `docs/03.adr/README.md` | Technical decisions & records |
-| `[LOAD:SPECS]` | `docs/04.specs/README.md` | SSoT technical specifications |
-| `[LOAD:PLANS]` | `docs/05.plans/README.md` | Implementation & validation plans |
-| `[LOAD:TASKS]` | `docs/06.tasks/README.md` | Granular task & progress tracking |
-| `[LOAD:RUNBOOKS]` | `docs/09.runbooks/README.md` | Operational execution procedures |
+| `[LOAD:PRD]` | `docs/01.prd/README.md` | Requirements & Vision |
+| `[LOAD:ARD]` | `docs/02.ard/README.md` | Architecture Reference |
+| `[LOAD:ADR]` | `docs/03.adr/README.md` | Technical Decisions |
+| `[LOAD:SPECS]` | `docs/04.specs/README.md` | Technical Specifications |
+| `[LOAD:PLANS]` | `docs/05.plans/README.md` | Implementation Plans |
+| `[LOAD:TASKS]` | `docs/06.tasks/README.md` | Task Tracking |
+| `[LOAD:GUIDES]` | `docs/07.guides/README.md` | Developer Guides |
+| `[LOAD:OPS]` | `docs/08.operations/README.md` | Operational Policy |
+| `[LOAD:RUNBOOKS]` | `docs/09.runbooks/README.md` | Execution Runbooks |
+| `[LOAD:INCIDENTS]` | `docs/10.incidents/README.md` | Incident Tracking |
+| `[LOAD:POSTMORTEMS]` | `docs/11.postmortems/README.md`| Lessons Learned |
 
 ### Specialized Rule Dispatcher
 
@@ -48,8 +52,6 @@ Use the following JIT loading markers to ingest task-specific context from the d
 | **Persona Matrix** | `rules/persona-matrix.md` | `[LOAD:RULES:PERSONA]` |
 | **Language Policy** | `rules/language-policy.md` | `[LOAD:RULES:LANG]` |
 | **Git Workflow** | `rules/git-workflow.md` | `[LOAD:RULES:GIT]` |
-| **Operations** | `scopes/ops.md` | `[LOAD:RULES:OPS]` |
-| **Documentation** | `scopes/docs.md` | `[LOAD:RULES:DOCS]` |
 
 ## 4. Operational Procedures
 
@@ -66,6 +68,7 @@ Agents MUST load the corresponding scope from `scopes/` before performing work i
 - **QA**: `scopes/qa.md` (`[LOAD:RULES:QA]`)
 - **Security**: `scopes/security.md` (`[LOAD:RULES:SECURITY]`)
 - **Ops**: `scopes/ops.md` (`[LOAD:RULES:OPS]`)
+- **Docs**: `scopes/docs.md` (`[LOAD:RULES:DOCS]`)
 - **Common**: `scopes/common.md` (`[LOAD:RULES:COMMON]`)
 - **Entry**: `scopes/entry.md` (`[LOAD:RULES:ENTRY]`)
 - **Meta**: `scopes/meta.md` (`[LOAD:RULES:META]`)
