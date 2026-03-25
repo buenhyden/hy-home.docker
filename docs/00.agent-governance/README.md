@@ -52,6 +52,7 @@ Use the following JIT loading markers to ingest task-specific context from the d
 | **Persona Matrix** | `rules/persona-matrix.md` | `[LOAD:RULES:PERSONA]` |
 | **Language Policy** | `rules/language-policy.md` | `[LOAD:RULES:LANG]` |
 | **Git Workflow** | `rules/git-workflow.md` | `[LOAD:RULES:GIT]` |
+| **README Policy** | `rules/readme-policy.md` | `[LOAD:RULES:README]` |
 | **Quality Standards** | `rules/quality-standards.md` | `[LOAD:RULES:QUALITY]` |
 
 ## 4. Operational Procedures
