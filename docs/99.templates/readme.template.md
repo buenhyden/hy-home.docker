@@ -7,7 +7,7 @@
 
 ## Selection Guide
 - Repository Root (`/`) -> `Base Structure` + `Root Snippet`
-- Implementation Layer (`web/`, `server/`, `app/`, `packages/`, `infra/`, `infrastructure/`) -> `Base Structure` + `Implementation Snippet`
+- Implementation Layer (`web/`, `server/`, `app/`, `packages/`, `gitops/`, `infra/`, `infrastructure/`) -> `Base Structure` + `Implementation Snippet`
 - Documentation & Governance (`docs/`, `docs/99.templates/`, `.agent/`) -> `Base Structure` + `Docs & Governance Snippet`
 - Operations & Procedures (`docs/08.operations/`, `docs/09.runbooks/`, `scripts/`) -> `Base Structure` + `Ops & Utils Snippet`
 - Incident Learning (`docs/10.incidents/`, `docs/11.postmortems/`) -> `Base Structure` + `Incident / Postmortem Snippet`
