@@ -10,7 +10,7 @@ title: 'Common Engineering Scope'
 ## 1. Context & Objective
 
 - **Goal**: Ensure consistency, maintainability, and readability across the entire `hy-home.docker` codebase.
-- **Standards**: Priority on Clean Code, SOLID principles, and DRY (Don't Repeat Yourself).
+- **Standards**: Priority on Clean Code, SOLID principles, and `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
 

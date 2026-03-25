@@ -19,6 +19,7 @@ Inspired by `@[/claude-md-improver]`, agents are assessed on these criteria:
 | **F** | **FAIL** | **Hardcoded Secrets** OR **Broken Network isolation** OR **Documentation/Code mismatch**. |
 
 ### Quality Dimensions
+
 - **Actionability**: Every command must be copy-paste ready and tested.
 - **Conciseness**: Avoid generic AI prose; use token-efficient technical English.
 - **Architecture Clarity**: Documentation must accurately reflect the `01-11` taxonomy.
@@ -59,6 +60,7 @@ Agents must optimize for and document these Service Level Objectives:
 ## 5. Verification Checklist
 
 Before marking a task as complete, an agent MUST:
+
 1. [ ] Pass `bash scripts/validate-docker-compose.sh`.
 2. [ ] Verify secret synchronization path.
 3. [ ] Confirm performance resource limits are set.

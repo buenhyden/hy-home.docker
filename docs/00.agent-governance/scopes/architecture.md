@@ -11,10 +11,12 @@ title: 'Architecture Strategy Scope'
 
 - **Goal**: Maintain architectural integrity, scalability, and loose coupling in a distributed ecosystem.
 - **Philosophy**: **Clean Architecture** / Ports & Adapters (Hexagonal) pattern.
+- **Standards**: Must comply with `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
 
 - **Boundaries**: Strictly define service boundaries in `04.specs/` to prevent "Big Ball of Mud" anti-patterns.
+- **Taxonomy**: Adhere to the `01.prd - 11.postmortems` lifecycle stage-gates.
 - **Communication Protocol**:
     - **Internal**: Use **gRPC** for synchronous service-to-service calls where performance is critical.
     - **External**: REST or GraphQL via the Gateway layer.

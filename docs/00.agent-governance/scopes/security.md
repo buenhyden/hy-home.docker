@@ -11,6 +11,7 @@ title: 'Security Enforcement Scope'
 
 - **Goal**: Zero-trust architecture implementation and continuous security posture management.
 - **Baseline**: Alignment with **OWASP Top 10** and **ASVS (Application Security Verification Standard) L2**.
+- **Governance**: Strictly follow `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
 

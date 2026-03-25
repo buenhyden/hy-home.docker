@@ -10,7 +10,7 @@ Welcome to the central governance directory for AI Agents. This folder defines t
 
 - **Purpose**: To provide a single source of truth (SSoT) for AI agent behavior, technical constraints, and governance protocols.
 - **Identity Protocol**: AI Agents must establish identity via [AGENTS.md](../../AGENTS.md) and load this hub at session start.
-- **Compliance**: All work must follow the **01-11 Stage-Gate Taxonomy**. Decisions must be anchored in ADRs, and implementations must be grounded in approved Specs.
+- **Compliance**: All work must follow the **01.prd - 11.postmortems** Stage-Gate Taxonomy. Decisions must be anchored in ADRs, and implementations must be grounded in approved Specs.
 
 ## 2. Requirements & Constraints
 
@@ -52,6 +52,7 @@ Use the following JIT loading markers to ingest task-specific context from the d
 | **Persona Matrix** | `rules/persona-matrix.md` | `[LOAD:RULES:PERSONA]` |
 | **Language Policy** | `rules/language-policy.md` | `[LOAD:RULES:LANG]` |
 | **Git Workflow** | `rules/git-workflow.md` | `[LOAD:RULES:GIT]` |
+| **Quality Standards** | `rules/quality-standards.md` | `[LOAD:RULES:QUALITY]` |
 
 ## 4. Operational Procedures
 

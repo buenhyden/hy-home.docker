@@ -11,6 +11,7 @@ title: 'Product Requirements Scope'
 
 - **Goal**: Ensure every technical initiative corresponds to a validated product need.
 - **Reference**: All requirements live in `docs/01.prd/` as the SSoT.
+- **Standards**: Must comply with `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
 

@@ -10,7 +10,7 @@ title: 'Entry & Gateway Engineering Scope'
 ## 1. Context & Objective
 
 - **Goal**: Secure, performant, and reliable routing of external traffic into the internal network.
-- **Standards**: Priority on TLS termination, rate limiting, and header-based security.
+- **Standards**: Priority on TLS termination, rate limiting, and `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
 

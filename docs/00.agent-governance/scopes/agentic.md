@@ -10,7 +10,7 @@ title: 'Agentic Behavior Engineering Scope'
 ## 1. Context & Objective
 
 - **Goal**: Standardize how AI agents plan, execute, and communicate to minimize errors and maximize efficiency.
-- **Standards**: Priority on JIT context loading and explicit reasoning.
+- **Standards**: Priority on JIT context loading, explicit reasoning, and `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
 

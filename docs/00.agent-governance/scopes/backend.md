@@ -10,7 +10,7 @@ title: 'Backend Engineering Scope'
 ## 1. Context & Objective
 
 - **Goal**: Delivery of performant, secure, and highly observable backend APIs.
-- **Standards**: Priority on **Spec-Driven Development** (SDD) and Clean Architecture principles.
+- **Standards**: Priority on **Spec-Driven Development** (SDD) and `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
 

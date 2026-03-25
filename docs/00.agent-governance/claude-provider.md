@@ -37,6 +37,7 @@ Use `@` references in `CLAUDE.md` to import shared fragments:
 ```text
 @docs/00.agent-governance/README.md
 @docs/00.agent-governance/rules/persona-matrix.md
+@docs/00.agent-governance/rules/quality-standards.md
 ```
 
 ## Korean Mandate

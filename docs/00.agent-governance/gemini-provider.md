@@ -35,6 +35,7 @@ Use `@file` references in `GEMINI.md` to import shared fragments:
 ```text
 @file:docs/00.agent-governance/README.md
 @file:docs/00.agent-governance/rules/persona-matrix.md
+@file:docs/00.agent-governance/rules/quality-standards.md
 ```
 
 ## Korean Mandate

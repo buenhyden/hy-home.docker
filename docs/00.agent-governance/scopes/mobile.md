@@ -10,7 +10,7 @@ title: 'Mobile Engineering Scope'
 ## 1. Context & Objective
 
 - **Goal**: Delivery of performant, accessible, and high-quality mobile experiences using React Native/Expo.
-- **Standards**: Priority on native-like feel, responsive layout, and offline-first capabilities.
+- **Standards**: Priority on native-like feel and `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
 

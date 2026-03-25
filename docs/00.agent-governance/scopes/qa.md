@@ -11,6 +11,7 @@ title: 'Quality Assurance Scope'
 
 - **Goal**: Maintain zero-defect production state and verify all technical specs.
 - **Philosophy**: **TDD-First** and measurement-driven validation.
+- **Criteria**: Mandatory compliance with `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
 

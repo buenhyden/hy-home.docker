@@ -11,6 +11,7 @@ title: 'Frontend UI/UX Scope'
 
 - **Goal**: Delivery of premium, "WOW" factor user experiences with a focus on performance and inclusion.
 - **Core Web Vitals**: Target LCP < 2.5s, CLS < 0.1, and FID < 100ms.
+- **Standard**: Adhere to `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
 

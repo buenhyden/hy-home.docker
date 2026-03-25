@@ -12,6 +12,7 @@ title: 'Infrastructure Operational Scope'
 - **Goal**: Maintain a highly available, performant, and secure containerized infrastructure.
 - **Service Stack**: Traefik/Nginx, Keycloak, PostgreSQL (Zalando Spilo Cluster), Kafka, OpenSearch, Ollama, MinIO.
 - **Performance SLO**: Maintain a gateway-level **LATENCY_SLO < 200ms** for all core service requests.
+- **Standard**: Mandatory alignment with `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
 

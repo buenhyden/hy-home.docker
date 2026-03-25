@@ -11,6 +11,7 @@ title: 'Operations & SRE Scope'
 
 - **Goal**: Minimize MTTR (Mean Time To Recovery) and maximize system availability.
 - **Stack**: **LGTM** (Loki, Grafana, Tempo, Mimir/Prometheus) stack.
+- **Criteria**: Mandatory alignment with `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
 
