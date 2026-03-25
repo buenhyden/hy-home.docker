@@ -33,14 +33,14 @@ Claude Code loads `CLAUDE.md` files in this order (lowest to highest precedence)
 Use `@` references in `CLAUDE.md` to import shared fragments:
 
 ```text
-@docs/00.agent/README.md
-@docs/00.agent/rules/persona-matrix.md
+@docs/00.agent-governance/README.md
+@docs/00.agent-governance/rules/persona-matrix.md
 ```
 
 ## Korean Mandate
 
 - **USER interaction**: Summaries and high-level explanations MUST be in Korean.
-- **Internal Docs**: All instructions and technical documentation in `docs/00.agent/` MUST be in English.
+- **Internal Docs**: All instructions and technical documentation in `docs/00.agent-governance/` MUST be in English.
 
 ## References
 

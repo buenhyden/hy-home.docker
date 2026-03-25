@@ -20,7 +20,7 @@ This document defines the universal entry point for all AI Agents interacting wi
 
 | Stage | Path | Purpose | Template |
 | :--- | :--- | :--- | :--- |
-| **00** | `docs/00.agent/` | AI Agent Governance & Scopes | - |
+| **00** | `docs/00.agent-governance/` | AI Agent Governance & Scopes | - |
 | **01** | `docs/01.prd/` | Product Requirements & Intent | `prd.template.md` |
 | **02** | `docs/02.ard/` | Architecture Reference Documents | `ard.template.md` |
 | **03** | `docs/03.adr/` | Architectural Decision Records | `adr.template.md` |
@@ -39,7 +39,7 @@ Before performing any task, the Agent MUST:
 
 1. Identify the target **Layer** (`common, architecture, backend, frontend, infra, mobile, product, qa, security, entry, meta, ops, agentic`).
 2. Locate the SSoT for that layer using `grep -r "layer: <name>" docs/`.
-3. Load the corresponding scope from `docs/00.agent/scopes/<layer>.md`.
+3. Load the corresponding scope from `docs/00.agent-governance/scopes/<layer>.md`.
 4. Adopt the required Persona (from `persona-matrix.md`) and announce:
     > "As your **[Persona Name]**, I am targeting the **[Layer]** layer and adopting the **[Standard ID]** governance."
 
@@ -48,7 +48,7 @@ Before performing any task, the Agent MUST:
 All documentation must adhere to the following rules:
 
 - **Frontmatter**: Every file MUST start with the `layer` metadata.
-- **Language**: All governance and agentic documentation in `docs/00.agent/` MUST be in English.
+- **Language**: All governance and agentic documentation in `docs/00.agent-governance/` MUST be in English.
 - **Taxonomy**: Follow the "Golden 5" pattern for headers:
     1. `## 1. Context & Objective`
     2. `## 2. Requirements & Constraints`
@@ -59,7 +59,9 @@ All documentation must adhere to the following rules:
 ## 5. Infrastructure & Architectural Governance
 
 ### Verification Checklist
+
 Every architectural or cross-cutting structural change must satisfy:
+
 1. **Validation**: Must pass `bash scripts/validate-docker-compose.sh`.
 2. **Secrets**: Use Docker Secrets, never `.env` for plain-text credentials.
 3. **Connectivity**: All inter-service traffic must use `infra_net`.
@@ -67,6 +69,7 @@ Every architectural or cross-cutting structural change must satisfy:
 5. **Traceability**: Reciprocal links between ADR, Spec, and Runbook.
 
 ### Infrastructure Lifecycle
+
 1. **Discover**: Find existing specs, ADRs, runbooks in `01~09`.
 2. **Specify**: Create `04.specs/` if missing.
 3. **Plan**: Verify or create `05.plans/`.

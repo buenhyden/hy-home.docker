@@ -4,20 +4,20 @@ layer: agentic
 
 # CLAUDE.md
 
-Claude-optimized operational patterns for `hy-home.docker`.
+Claude-optimized cognitive patterns.
 
-## 1. Shared Protocols (Core)
-@docs/00.agent/claude-provider.md
-@docs/00.agent/README.md
-@docs/00.agent/rules/bootstrap.md
+## 1. Shared Protocols
 
-## 2. Identity Hub
-Always load **[Identity Hub](docs/00.agent/README.md)** at the start of every session to establish governance.
+- **Identity Hub**: [docs/00.agent-governance/README.md](docs/00.agent-governance/README.md)
+- **Provider Context**: [docs/00.agent-governance/claude-provider.md](docs/00.agent-governance/claude-provider.md)
 
-## 3. Cognitive Patterns
-- **Thinking First**: Describe intended logic in `<thinking>` tags before calling tools.
-- **Task Boundaries**: Encapsulate independent work units within `<task>` boundaries.
-- **JIT Context**: Use `[LOAD:RULES:<CAT>]` markers for Just-In-Time context loading.
+## 2. Cognitive Patterns
 
-## 4. Workflow Strategy
-Always generate a detailed implementation plan in `docs/05.plans/` before execution. Follow the governance defined in `docs/00.agent/README.md`.
+- **JIT Context**: Use `[LOAD:RULES:<CAT>]` for on-demand knowledge.
+- **Thinking First**: Use `<thinking>` tags for tool-use mapping and plan internal logic.
+- **Progressive Disclosure**: Load layer-level scopes via `docs/00.agent-governance/scopes/`.
+
+## 3. Workflow Strategy
+
+- **Planning**: Plan first in `docs/05.plans/` using mandatory templates.
+- **Language**: ALWAYS respond to the USER in **Korean**.

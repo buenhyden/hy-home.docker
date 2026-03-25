@@ -4,20 +4,21 @@ layer: agentic
 
 # GEMINI.md
 
-Gemini-optimized operational patterns for `hy-home.docker`.
+Gemini-optimized cognitive patterns.
 
-## 1. Shared Protocols (Core)
-@file:docs/00.agent/gemini-provider.md
-@file:docs/00.agent/README.md
-@file:docs/00.agent/rules/bootstrap.md
+## 1. Shared Protocols
 
-## 2. Identity Hub
-Always load **[Identity Hub](docs/00.agent/README.md)** at the start of every session to establish governance.
+- **Identity Hub**: [docs/00.agent-governance/README.md](docs/00.agent-governance/README.md)
+- **Provider Context**: [docs/00.agent-governance/gemini-provider.md](docs/00.agent-governance/gemini-provider.md)
 
-## 3. Cognitive Patterns
-- **Token Hygiene**: Prioritize on-demand loading via `docs/00.agent/README.md`.
-- **Reasoning Loop**: Document the "Why" behind command choices in the execution summary.
-- **JIT Context**: Use `[LOAD:RULES:<CAT>]` markers for Just-In-Time knowledge retrieval.
+## 2. Cognitive Patterns
 
-## 4. Workflow Strategy
-Always generate a detailed implementation plan in `docs/05.plans/` before execution. Follow the governance defined in `docs/00.agent/README.md`.
+- **JIT Context**: Use `[LOAD:RULES:<CAT>]` for on-demand knowledge.
+- **Token Hygiene**: Prioritize lazy-loading via `docs/00.agent-governance/`.
+- **Reasoning**: Document the "Why" in execution summaries and plan steps.
+
+## 3. Workflow Strategy
+
+- **Planning**: Plan first in `docs/05.plans/` using mandatory templates.
+- **Governance**: Follow directives in `docs/00.agent-governance/README.md`.
+- **Language**: ALWAYS respond to the USER in **Korean**.

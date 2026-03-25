@@ -31,14 +31,14 @@ Gemini CLI loads context files in this order (lowest to highest precedence):
 Use `@file` references in `GEMINI.md` to import shared fragments:
 
 ```text
-@file:docs/00.agent/README.md
-@file:docs/00.agent/rules/persona-matrix.md
+@file:docs/00.agent-governance/README.md
+@file:docs/00.agent-governance/rules/persona-matrix.md
 ```
 
 ## Korean Mandate
 
 - **USER interaction**: Summaries and high-level explanations MUST be in Korean.
-- **Internal Docs**: All instructions and technical documentation in `docs/00.agent/` MUST be in English.
+- **Internal Docs**: All instructions and technical documentation in `docs/00.agent-governance/` MUST be in English.
 
 ## References
 
