@@ -1,28 +1,38 @@
 ---
-title: 'Architecture Strategy Scope'
 layer: architecture
+title: 'Architecture Strategy Scope'
 ---
 
 # Architecture Strategy Scope
 
-Guidance for high-level system design, service boundaries, and structural patterns.
+**Guidance for high-level system design, service boundaries, and structural patterns across the `hy-home.docker` stack.**
 
 ## 1. Context & Objective
-- **Goal**: Maintain architectural integrity across the distributed stack.
-- **Scope**: Service discovery, inter-service communication, and shared state.
+
+- **Goal**: Maintain architectural integrity, scalability, and loose coupling in a distributed ecosystem.
+- **Philosophy**: **Clean Architecture** / Ports & Adapters (Hexagonal) pattern.
 
 ## 2. Requirements & Constraints
-- **Pattern**: Clean Architecture / Ports & Adapters.
-- **Protocol**: gRPC for internal, REST/GraphQL for external.
+
+- **Boundaries**: Strictly define service boundaries in `04.specs/` to prevent "Big Ball of Mud" anti-patterns.
+- **Communication Protocol**:
+    - **Internal**: Use **gRPC** for synchronous service-to-service calls where performance is critical.
+    - **External**: REST or GraphQL via the Gateway layer.
+    - **Async**: Kafka/RabbitMQ events for eventual consistency.
+- **Traceability**: All architectural trade-offs MUST be captured in `03.adr/` (Architectural Decision Records).
 
 ## 3. Implementation Flow
-1. Define entities and invariants in `02.ard`.
-2. Map service boundaries in `04.specs`.
-3. Validate with `bash scripts/validate-architecture.sh`.
+
+1. **Discover**: Analyze existing system context in `02.ard/`.
+2. **Standardize**: Select or define patterns (e.g., Saga, Event Sourcing) and document in ADR.
+3. **Verify**: Use `scripts/validate-architecture.sh` (if available) to audit dependency directions.
 
 ## 4. Operational Procedures
-- Refer to `docs/08.ops/` for deployment patterns.
+
+- **Evolution**: Refactor monolithic services into micro-services only when domain complexity or scaling needs warrant the move.
+- **Documentation**: Use Mermaid C4 diagrams to visualize system context and container boundaries.
 
 ## 5. Maintenance & Safety
-- Use `adr` skill to document every structural trade-off.
 
+- **Audit**: Conduct quarterly architectural reviews against the original ADPs.
+- **Consistency**: Ensure all layers (Backend, Frontend, Mobile) align with the centralized identity and messaging contracts.

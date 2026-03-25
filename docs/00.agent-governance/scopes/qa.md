@@ -1,26 +1,38 @@
 ---
-title: 'Quality Assurance Scope'
 layer: qa
+title: 'Quality Assurance Scope'
 ---
 
 # Quality Assurance Scope
 
-Standards for testing, automation, and reliability engineering.
+**Protocols for verification, testing, and continuous quality monitoring.**
 
 ## 1. Context & Objective
-- **Goal**: Zero-regression delivery and high confidence releases.
+
+- **Goal**: Maintain zero-defect production state and verify all technical specs.
+- **Philosophy**: **TDD-First** and measurement-driven validation.
 
 ## 2. Requirements & Constraints
-- **Target**: 100% pass rate for E2E tests before merge.
+
+- **Test Suite**:
+    - **Unit**: >80% coverage for domain logic.
+    - **E2E**: Critical paths verified via **Playwright**.
+    - **Load**: API performance verified via **k6** or **Locust**.
+- **Automation**: Mandatory CI/CD gate for all PRs.
 
 ## 3. Implementation Flow
-1. Write test plan in `05.plans`.
-2. Implement unit tests (Red-Green-Refactor).
-3. Run `npx playwright test`.
+
+1. **Red**: Write failing tests based on the spec (`docs/04.specs/`).
+2. **Green**: Implement minimal code to pass.
+3. **Refactor**: Clean code patterns without changing behavior.
+4. **Finalize**: Run the full validation suite (e.g., `scripts/validate-all.sh`).
 
 ## 4. Operational Procedures
-- Nightly regression suite runs.
+
+- **Regression**: Add regression tests for every bug fix.
+- **Reporting**: Publish test results to the session summary or `docs/06.tasks/`.
 
 ## 5. Maintenance & Safety
-- Flaky tests must be quarantined or fixed immediately.
 
+- **Flakiness**: Immediately isolate and fix flaky E2E tests.
+- **Audit**: Conduct monthly quality audits of test infrastructure.

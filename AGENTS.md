@@ -11,27 +11,14 @@ layer: agentic
 This project uses a **Stage-Gate Taxonomy (01-11)** for documentation and governance.
 
 - **Central Hub**: [docs/00.agent-governance/README.md](docs/00.agent-governance/README.md)
-- **Core Rules**: [docs/00.agent-governance/rules/bootstrap.md](docs/00.agent-governance/rules/bootstrap.md)
-- **Persona Protocol**: Load via `[LOAD:RULES:PERSONA]` from `docs/00.agent-governance/rules/persona-matrix.md`.
+- **Bootstrap**: JIT load via `[LOAD:RULES:BOOTSTRAP]` from `docs/00.agent-governance/rules/bootstrap.md`.
 
-## 2. Language & Response Policy
+## 2. Shared Directives
 
-- **Documentation**: All internal governance and agent-facing docs MUST be in **English**.
-- **Interaction**: ALWAYS respond to the **USER** in **Korean** (via `notify_user` or chat).
-- **Human-Facing Docs**: `docs/` READMEs and guides are in **Korean** for human readability.
+- **Language Policy**: Follow [language-policy.md](docs/00.agent-governance/rules/language-policy.md).
+- **Git Workflow**: Follow [git-workflow.md](docs/00.agent-governance/rules/git-workflow.md).
+- **Context Routing**: Load technical scopes from `docs/00.agent-governance/scopes/` JIT.
 
-## 3. Operating Constraints
+## 3. Compliance
 
-- **Paths**: Use relative paths only; no `file://` or absolute URIs.
-- **Validation**: Architectural changes must pass `scripts/validate-docker-compose.sh`.
-- **Security**: No secrets in code. Refer to [security.md](docs/00.agent-governance/scopes/security.md).
-- **Lazy Loading**: Use JIT markers (e.g., `[LOAD:PRD]`, `[LOAD:SPEC]`) to ingest context from `docs/01-11`.
-
-## 4. Technical Scopes
-
-For detailed constraints by layer, refer to:
-- [Architecture](docs/00.agent-governance/scopes/architecture.md)
-- [Backend](docs/00.agent-governance/scopes/backend.md)
-- [Frontend](docs/00.agent-governance/scopes/frontend.md)
-- [Infrastructure](docs/00.agent-governance/scopes/infra.md)
-- [Documentation](docs/00.agent-governance/scopes/docs.md)
+Agents MUST verify all work against the [01-11 Stage-Gate Taxonomy](docs/README.md) and technical runbooks.

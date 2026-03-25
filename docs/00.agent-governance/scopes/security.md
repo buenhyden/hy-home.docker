@@ -1,26 +1,41 @@
 ---
-title: 'Security & Compliance Scope'
 layer: security
+title: 'Security Enforcement Scope'
 ---
 
-# Security & Compliance Scope
+# Security Enforcement Scope
 
-Hardening, secret management, and regulatory compliance.
+**Universal security standards and data protection protocols for the `hy-home.docker` ecosystem.**
 
 ## 1. Context & Objective
-- **Goal**: Protection of user data and infrastructure integrity.
+
+- **Goal**: Zero-trust architecture implementation and continuous security posture management.
+- **Baseline**: Alignment with **OWASP Top 10** and **ASVS (Application Security Verification Standard) L2**.
 
 ## 2. Requirements & Constraints
-- **Secrets**: NEVER commit plain-text secrets. Use `scripts/gen-secrets.sh`.
+
+- **Identity & Access**: 
+    - **Centralized Auth**: All services MUST authenticate via **Keycloak (OIDC/SAML)**.
+    - **Least Privilege**: Enforce RBAC/ABAC at the API and database levels.
+- **Secrets Management**: 
+    - **Prohibited**: Plaintext credentials in `.env`, `docker-compose.yml`, or source code.
+    - **Mandatory**: Use **Docker Secrets** for container orchestration or **HashiCorp Vault** for dynamic secrets.
+- **Network Hardening**: 
+    - Isolation via `infra_net`. 
+    - Forced TLS for all external ingress (Gateway Managed).
 
 ## 3. Implementation Flow
-1. Run `snyk test` / `npm audit`.
-2. Validate Docker Compose with `scripts/validate-docker-compose.sh`.
-3. Encrypt data at rest and in transit.
+
+1. **Threat Model**: Conduct a basic threat assessment for any new service (02.ard).
+2. **Review**: Audit PRs against the `security-checklist.md` in `.agent/rules/`.
+3. **Scan**: Perform automated static analysis (SAST) on all backend logic.
 
 ## 4. Operational Procedures
-- Incident response procedures in `docs/08.ops/incident`.
+
+- **Vulnerabilities**: Patch container images immediately upon CVE discovery.
+- **Auditing**: Log all authentication events and sensitive data access to a centralized secure sink.
 
 ## 5. Maintenance & Safety
-- Monthly security audit with `security-audit` skill.
 
+- **Red Teaming**: Periodically simulate attack vectors to verify the effectiveness of the Keycloak gateway and firewall rules.
+- **Compliance**: Ensure GDPR/CCPA compliance for all PII (Personally Identifiable Information).

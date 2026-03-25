@@ -1,26 +1,34 @@
 ---
-title: 'Product & Vision Scope'
 layer: product
+title: 'Product Requirements Scope'
 ---
 
-# Product & Vision Scope
+# Product Requirements Scope
 
-Governance for roadmap, PRDs, and user experience strategy.
+**Standardized procedures for defining intent, roadmap, and business impact.**
 
 ## 1. Context & Objective
-- **Goal**: Alignment of technical execution with business value.
+
+- **Goal**: Ensure every technical initiative corresponds to a validated product need.
+- **Reference**: All requirements live in `docs/01.prd/` as the SSoT.
 
 ## 2. Requirements & Constraints
-- **Audit**: All features must map to a `01.prd`.
+
+- **Template**: Use `prd.template.md` for all new product definitions.
+- **Impact**: Include a **Business Impact Analysis** (BIA) and success metrics for every major feature.
+- **Visibility**: Stakeholder alignment must be documented via approved PRDs.
 
 ## 3. Implementation Flow
-1. Draft PRD in `docs/01.prd/`.
-2. Sync with Architect for feasibility.
-3. Define success metrics.
+
+1. **Discovery**: Gather raw ideas via `brainstorming` workflow.
+2. **Drafting**: Create PRD in `01.prd/`.
+3. **Approval**: Obtain explicit User/Stakeholder lock before moving to `04.specs/`.
 
 ## 4. Operational Procedures
-- Maintain the high-level roadmap in `docs/README.md`.
+
+- **Iterative Refinement**: Update PRDs to reflect changes in scope or priority during development.
 
 ## 5. Maintenance & Safety
-- Bi-weekly review of success metrics.
 
+- **Archive**: Move deprecated product ideas to an `archive/` subfolder within `01.prd/`.
+- **Glossary**: Maintain a ubiquitous language glossary in the project root README or `docs/common/`.

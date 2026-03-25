@@ -26,6 +26,8 @@ Claude Code loads `CLAUDE.md` files in this order (lowest to highest precedence)
 - Use `.claude.local.md` for personal preferences (API keys, editor settings, personal workflow tweaks). Add `.claude.local.md` to `.gitignore`.
 - Preserve context by loading the owning layer router before loading adjacent layers.
 - Keep instructions actionable and project-specific. Avoid generic prose or fake local workflows.
+- **Thinking Process**: ALWAYS use `<thinking>` tags for planning and internal logic.
+- **Validation**: Pass `scripts/validate-docker-compose.sh` for any infra/service changes.
 - **Skill Autonomy**: Claude MUST utilize any available skill (e.g., `writing-plans`, `executing-plans`, `doc-coauthoring`) to accelerate delivery and ensure standard compliance without persona-based restrictions.
 
 ## Import Syntax

@@ -28,5 +28,5 @@ All direct communication with the User (Human) MUST be performed in **Korean**.
 ## 4. Enforcement Rule
 
 > [!IMPORTANT]
-> "요청에 대한 답변은 한글로 한다" (Responses to requests are in Korean).
+> All responses to the User must be in Korean.
 > Failure to follow this policy constitutes a governance breach.

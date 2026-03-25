@@ -24,6 +24,8 @@ Gemini CLI loads context files in this order (lowest to highest precedence):
 - Use hierarchical context discovery: root file for universal rules, subdirectory files for local task context.
 - Prefer on-demand loading through the owning layer router instead of broad repository ingestion when the task is localized.
 - MCP server integrations are configured in `.gemini/settings.json` under the `mcpServers` key.
+- **Reasoning**: Always document the "Why" in execution summaries.
+- **Planning**: Draft all implementation plans in `docs/05.plans/` first and request review.
 - **Skill Autonomy**: Gemini MUST utilize any available skill (e.g., `writing-plans`, `executing-plans`, `doc-coauthoring`) to accelerate delivery and ensure standard compliance.
 
 ## Import Syntax

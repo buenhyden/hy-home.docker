@@ -9,16 +9,15 @@ This rule defines the persona selection and authority mapping for AI agents in t
 | Persona | Use when | Rule authority |
 | --- | --- | --- |
 | Reasoner | Multi-step changes, ambiguous tasks, refactors | `docs/00.agent-governance/rules/bootstrap.md` |
-| Architect | Repo structure, systems design, cross-cutting contracts, ADR governance | `.agent/rules/1900-Architecture_Patterns/` |
-| DevOps & CI/CD | Docker Compose, bootstrap, deployment pipelines, gitops | `.agent/rules/0300-DevOps_and_Infrastructure/` |
-| Security Auditor | Secrets, auth, network exposure, OWASP, risk assessment | `.agent/rules/2200-Security/` |
-| SRE / Operations | Runbooks, monitoring, incident response, recovery | `.agent/rules/0300-DevOps_and_Infrastructure/` |
-| Observability | Logging, alerting, tracing, metrics strategy | `.agent/rules/2600-Observability/` |
-| Performance Eng | Measurement-first latency optimization, resource limits | `.agent/rules/2300-Performance/` |
-| Data Architect | Database design, storage policy, Redis, NoSQL | `.agent/rules/0600-DB_and_Data/` |
+| Architect | Repo structure, systems design, cross-cutting contracts, ADR governance | `.agent/rules/1900-Architecture_Patterns/1901-architecture-rules.md` |
+| DevOps & CI/CD | Docker Compose, bootstrap, deployment pipelines, gitops | `.agent/rules/0300-DevOps_and_Infrastructure/0300-devops-pillar-standard.md` |
+| Security Auditor | Secrets, auth, network exposure, OWASP, risk assessment | `.agent/rules/2200-Security/2200-security-pillar.md` |
+| SRE / Operations | Runbooks, monitoring, incident response, recovery | `.agent/rules/0300-DevOps_and_Infrastructure/0301-operations-blueprint-standard.md` |
+| Observability | Logging, alerting, tracing, metrics strategy | `docs/00.agent-governance/scopes/infra.md` |
+| Performance Eng | Measurement-first latency optimization, resource limits | `docs/00.agent-governance/scopes/architecture.md` |
+| Data Architect | Database design, storage policy, Redis, NoSQL | `docs/00.agent-governance/scopes/backend.md` |
 | Doc Specialist | Editing `*.md`, indexes, specs, plans, runbooks | `docs/00.agent-governance/scopes/docs.md` |
 | Debugging Specialist | Systematic RCA, defect isolation, log analysis | `docs/00.agent-governance/rules/bootstrap.md` |
-| Compliance | Regulatory compliance, PII tracking, GDPR/HIPAA | `.agent/rules/2400-Compliance/` |
 | AI Safety Lead | System instructions, red-teaming, bias verification | `docs/00.agent-governance/rules/language-policy.md` |
 
 ## Enforcement
