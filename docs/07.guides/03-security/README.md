@@ -1,22 +1,23 @@
-# Security Tier Guides (03-security)
+# Security Documentation (03-security)
 
-<!-- [ID:docs:07:03-security] -->
-: Secret management, unseal procedures, and encryption workflows.
-
----
+> Secrets Management & Encryption Operations.
 
 ## Overview
 
-This section contains step-by-step guides for deploying, managing, and consuming secrets from HashiCorp Vault within the `hy-home.docker` stack.
+이 디렉터리는 `hy-home.docker`의 보안 인프라(03-security)에 대한 가이드, 운영 정책, 그리고 복구 절차 문서를 포함한다.
 
-## Guides
+## Audience
 
-| Guide | Description |
-| :--- | :--- |
-| **[01. Setup & Bootstrap](./01.setup.md)** | Initial deployment, Vault initialization, and first-time unseal. |
+- Security Administrators
+- DevOps Engineers
+- AI Agents
 
-## External References
+## Documents
 
-- **[Infrastructure Branch](../../../infra/03-security/)**: Docker Compose and configuration files.
-- **[HashiCorp Vault Official Docs](https://developer.hashicorp.com/vault/docs)**: Upstream secret engine documentation.
-- **[Vault Raft Storage](https://developer.hashicorp.com/vault/docs/concepts/integrated-storage)**: Technical details on integrated storage.
+- [01. Setup Guide](./01.setup.md) - Initial Vault initialization and unsealing.
+
+## Related References
+
+- [infra/03-security/](../../infra/03-security/README.md) - Infrastructure tier overview.
+- [Operations Policy](../../docs/08.operations/03-security/README.md) - Security governance.
+- [Security Runbook](../../docs/09.runbooks/03-security/README.md) - Emergency procedures.

@@ -1,52 +1,72 @@
-# Security Tier Runbook (03-security)
+# Security Runbook (03-security)
 
-<!-- [ID:docs:09:03-security:README] -->
-: Maintenance and emergency recovery procedures for HashiCorp Vault.
+> Vault Maintenance & Incident Recovery (03-security)
 
----
+## Overview
 
-## Troubleshooting Procedures
+이 런북은 `hy-home.docker`의 보안 인프라(03-security)에서 발생할 수 있는 주요 장애 상황과 정기 유지보수 절차를 정의한다.
 
-### 1. Vault Lockout (MFA/Unseal Loss)
-If quorum for unsealing is lost or the root token is missing:
-1. **Quorum Check**: Verify how many keys are available. 3 of 5 are required.
-2. **Key Rotation**: If a key is lost but quorum exists, initiate a **Rekey** operation immediately after unsealing.
-3. **Storage Access**: If all keys are lost, the data in `${DEFAULT_SECURITY_DIR}/vault/data` is cryptographically inaccessible. You must restore from the latest snapshot.
+## Purpose
 
-### 2. Raft Cluster Drift
-Symptoms: Vault logs `Raft quorum lost` or `Election timeout`.
-1. Check resource usage on the host: `docker stats vault`.
-2. Review HCL configuration for cluster address mismatches (`vault.hcl`).
-3. If a single node is corrupted, remove it from the configuration and re-join it to the cluster.
-
-### 3. Vault Agent Sync Failure
-Symptoms: Dependent services log `Vault: Permission Denied` or fail to read configuration templates.
-1. Check Vault Agent logs: `docker logs vault-agent`.
-2. Verify the `vault-agent.hcl` configuration for correct authentication paths.
-3. Ensure the Vault Agent token has not expired and the AppRole is correctly configured in Vault.
-
-## Routine Maintenance
-
-### Snapshot & Backup
-Weekly snapshots must be verified for integrity.
-```bash
-# Create snapshot
-docker exec vault vault operator raft snapshot save /vault/data/backup-$(date +%F).snap
-
-# Verify file existence
-ls -lh ${DEFAULT_SECURITY_DIR}/vault/data/backup-*.snap
-```
-
-### Unseal Verification
-Ensure the `unseal` process is tested after every scheduled host maintenance.
-1. Restart the container: `docker compose restart vault`.
-2. Manually unseal using keys.
-3. Confirm unsealed status: `docker exec vault vault status`.
+Vault의 가용성을 유지하고, 봉인 상태 해제 및 데이터 복구를 신속하게 수행하기 위함이다.
 
 ---
 
-## Technical Support
+## Recovery Procedures
 
-- **Primary Contact**: Security Support Team
-- **Emergency Channel**: #incident-response
-- **Vault CLI Reference**: `vault -h` or `vault <command> -h`
+### 1. Vault 봉인 해제 (Unseal)
+
+Vault 컨테이너가 재시작되었거나 수동으로 봉인된 경우 수행한다.
+
+1. **상태 확인**:
+   ```bash
+   docker exec vault vault status
+   ```
+2. **키 입력 (3회)**:
+   ```bash
+   docker exec -it vault vault operator unseal <KEY_1>
+   docker exec -it vault vault operator unseal <KEY_2>
+   docker exec -it vault vault operator unseal <KEY_3>
+   ```
+3. **상태 재확인**: `Sealed: false`인지 확인한다.
+
+### 2. Raft 데이터 백업 및 복구
+
+1. **스냅샷 생성**:
+   ```bash
+   docker exec vault vault operator raft snapshot save /vault/data/backup_$(date +%F).snapshot
+   ```
+2. **복구 (Restore)**:
+   ```bash
+   docker exec vault vault operator raft snapshot restore /vault/data/your_snapshot.snapshot
+   ```
+   > [!WARNING]
+   > 복구 작업은 현재의 모든 데이터를 스냅샷 시점으로 덮어쓰므로 극도로 주의해야 함.
+
+### 3. Unseal Key 조각 분실 대응
+
+키 조각 중 일부(2개 이하)를 분실한 경우, 나머지 3개를 사용하여 즉시 **키 재생성(Rekey)**을 수행해야 한다.
+
+1. **Rekey 프로세스 시작**:
+   ```bash
+   docker exec -it vault vault operator rekey -init -key-shares=5 -key-threshold=3
+   ```
+2. **기존 키 입력**: 나머지 관리자들이 각자의 키를 입력한다.
+3. **새 키 생성**: 완료 후 새로 생성된 5개의 조각을 다시 분산 보관한다.
+
+---
+
+## Maintenance Tasks
+
+- **Audit Log 전송 확인**: 로그 파일이 회전되거나 소실되지 않는지 점검.
+- **Raft Peer 상태 점검**: `vault operator raft list-peers` 명령어로 클러스터 건강 상태 확인.
+
+## Verification Steps
+
+- [ ] `wget http://localhost:8200/v1/sys/health` 응답 200 확인.
+- [ ] Vault Dashboard 로그인 및 데이터 접근 테스트.
+
+## Related Operational Documents
+
+- **Operations Policy**: `[../../08.operations/03-security/README.md]`
+- **Setup Guide**: `[../../07.guides/03-security/01.setup.md]`

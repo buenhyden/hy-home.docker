@@ -1,75 +1,90 @@
 # Vault Secret Management
 
-<!-- [ID:03-security:vault] -->
-: Identity-based secrets management and encryption-as-a-service.
-
----
+> Identity-based secrets management and encryption-as-a-service.
 
 ## Overview
 
-HashiCorp Vault is the central secrets engine for the `hy-home.docker` platform. It provides a secure, audited environment for storing sensitive data and performing cryptographic operations.
+HashiCorp Vault is the central secrets engine for the `hy-home.docker` platform. It provides a secure, audited environment for storing sensitive data and performing cryptographic operations. It utilizes the Raft integrated storage for high availability and consistency.
 
-### Service Details
+## Audience
 
-| Service | Image | Profile | Primary Role |
-| :--- | :--- | :--- | :--- |
-| **vault** | `hashicorp/vault:1.21.4` | `core` | Server (Secret Engine) |
-| **vault-agent** | `hashicorp/vault:1.21.4` | `core` | Sidecar (Secret Provider) |
+이 README의 주요 독자:
 
----
+- SRE (Scaling & Maintenance)
+- Security Engineers (Policy & Audit)
+- AI Agents (Automated unsealing & monitoring)
 
-## Features
+## Scope
 
-- **Store Secrets**: Centralized key-value storage for infrastructure and application passwords.
-- **Raft Integrated Storage**: Native storage engine with high availability and replication.
-- **Transit Encryption**: Unified API for data encryption and decryption.
-- **Lease & Audit**: Time-limited access with comprehensive audit logs.
+### In Scope
 
-## Networking
+- Vault Server configuration (`vault.hcl`)
+- Vault Agent configuration (`vault-agent.hcl`)
+- Raft storage management and snapshots
+- Health protocols and monitoring integration
 
-Exposed via Traefik at `vault.${DEFAULT_URL}`.
+### Out of Scope
 
-- **Internal Port**: `8200` (API/Web)
-- **Cluster Port**: `8201` (Raft Internal)
-- **Host Port**: `8200` (Direct CLI access)
+- Application-level business logic
+- Secret content generation (only management is in scope)
+- Network firewalling between services
 
-## Persistence
+## Structure
 
-Mounted from `${DEFAULT_SECURITY_DIR}/vault/`:
-
-| Path | Mode | Purpose |
-| :--- | :--- | :--- |
-| `/vault/data` | `rw` | Raft state, secrets, and encrypted storage. |
-| `/vault/config` | `ro` | HCL configuration (`vault.hcl`, `vault-agent.hcl`). |
-
----
-
-## Operations
-
-### Startup & Unseal Workflow
-
-> [!IMPORTANT]
-> **Vault seals itself on restart.** It must be manually unsealed before dependent services can read secrets.
-
-```bash
-# Verify status
-docker exec -it vault vault status
-
-# Unseal (requires 3 of 5 keys)
-docker exec -it vault vault operator unseal <KEY_1>
-docker exec -it vault vault operator unseal <KEY_2>
-docker exec -it vault vault operator unseal <KEY_3>
+```text
+vault/
+├── config/             # Vault & Agent configuration files
+├── docker-compose.yml  # Vault & Agent orchestration
+└── README.md           # This file
 ```
 
-### Health Verification
+## How to Work in This Area
+
+1. Consult the [Vault Setup Guide](../../../docs/07.guides/03-security/01.setup.md) for bootstrapping.
+2. Check `config/vault.hcl` for specific storage and listener settings.
+3. Use the [Security Runbook](../../../docs/09.runbooks/03-security/README.md) for Raft recovery.
+
+## Tech Stack
+
+| Category   | Technology                     | Notes                     |
+| ---------- | ------------------------------ | ------------------------- |
+| Binary     | Vault (Go)                     | v1.21.4                   |
+| Persistence| Raft                           | Integrated Storage        |
+| Framework  | Alpine                         | Container Runtime         |
+
+## Configuration
+
+### Environment Variables
+
+| Variable | Required | Description |
+| --------- | -------: | ----------- |
+| `VAULT_API_ADDR` | Yes | Internal API address for agents |
+| `SKIP_SETCAP` | No | Disable Linux capability setting (default: true) |
+
+## Testing
 
 ```bash
-# Check readiness
-docker exec vault wget -q -O- "http://127.0.0.1:8200/v1/sys/health"
+# Verify Raft cluster status
+docker exec vault vault operator raft list-peers
+
+# Test unseal state
+docker exec vault vault status | grep "Sealed"
 ```
 
-## Related Documents
+## Change Impact
 
-- **[Setup Guide](../../../docs/07.guides/03-security/01.setup.md)**
-- **[Operations Policy](../../../docs/08.operations/03-security/README.md)**
-- **[Security Runbook](../../../docs/09.runbooks/03-security/README.md)**
+- Modifying `vault.hcl` requires a container restart and subsequent manual unseal.
+- Snapshot operations may briefly impact I/O performance.
+- Changing listener addresses will break communication for Vault Agents.
+
+## Related References
+
+- [03-security](../README.md) - Parent tier overview.
+- [01-gateway](../../01-gateway/README.md) - Ingress for Vault UI.
+- [docs/09.runbooks/03-security](../../../docs/09.runbooks/03-security/README.md) - Operational runbooks.
+
+## AI Agent Guidance
+
+1. Always check the `sealed` status before performing any management tasks.
+2. Automated scripts must handle the `429` (rate limited) response from Vault gracefully.
+3. Follow the [Security Ops Policy](../../../docs/08.operations/03-security/README.md) for data retention.
