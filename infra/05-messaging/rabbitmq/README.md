@@ -1,54 +1,52 @@
-# RabbitMQ
+# RabbitMQ (rabbitmq)
 
-RabbitMQ is a widely deployed open source message broker supporting AMQP 0-9-1.
+> Lightweight, open-source message broker supporting AMQP 0-9-1.
 
-## Services
+## Overview
 
-| Service | Image | Role | Resources | Profile |
-| :--- | :--- | :--- | :--- | :--- |
-| `rabbitmq` | `rabbitmq:4.2.3-management-alpine` | AMQP Broker | 1.0 CPU / 512M | `rabbitmq` |
+RabbitMQ is used for task queuing, background job distribution, and lightweight messaging where high-throughput partitioning is not required.
 
-## Networking
+## Service Matrix
 
-- **AMQP**: `${RABBITMQ_HOST_PORT:-5672}` (host) → `${RABBITMQ_PORT:-5672}` (container).
-- **Management Web UI**: `${RABBITMQ_MANAGEMENT_HOST_PORT:-15672}` (host) → `${RABBITMQ_MANAGEMENT_PORT:-15672}` (container).
-- **Traefik**: Management UI also exposed at `https://rabbitmq.${DEFAULT_URL}`.
+| Service | Image | Port | Role |
+| :--- | :--- | :--- | :--- |
+| **RabbitMQ** | `rabbitmq:4.2.3-management-alpine` | 5672, 15672 | AMQP Broker + Management UI |
 
-## Persistence
+## Connectivity Map
 
-- **Data Volume**: `rabbitmq-data-volume` mapped to `/var/lib/rabbitmq`.
-- **Host Path**: `${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq`.
+- **AMQP**: listen on port `5672`.
+- **Web UI**: [RabbitMQ Management](https://rabbitmq.${DEFAULT_URL}) (Port 15672).
 
-> **⚠️ Permissions**: RabbitMQ requires UID `999` on the host volume directory. If the service fails to start with "Permission Denied":
->
-> ```bash
-> sudo chown -R 999:999 ${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq
-> ```
+## Setup & Persistence
 
-## Secrets
+### 1. Persistence
 
-Credentials are provided via Docker Secrets.
+- **Host Path**: `${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq`
+- **Mount Path**: `/var/lib/rabbitmq`
 
-| Secret | Purpose | Env Variable |
-| --- | --- | --- |
-| `rabbitmq_user` | Admin username | `RABBITMQ_DEFAULT_USER_FILE` |
-| `rabbitmq_password` | Admin password | `RABBITMQ_DEFAULT_PASS_FILE` |
+> [!WARNING]
+> RabbitMQ requires UID `999` on the host volume. Run `sudo chown -R 999:999 ${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq` if you encounter permission errors.
 
-## Configuration
+### 2. Secrets
 
-- **Security**: `no-new-privileges`, `cap_drop: ALL`.
-- **Image**: The `management-alpine` image includes the management plugin pre-enabled.
+Credentials are managed via Docker Secrets:
 
-## File Map
+- `rabbitmq_user`: Admin username.
+- `rabbitmq_password`: Admin password.
 
-| Path | Description |
-| --- | --- |
-| `docker-compose.yml` | RabbitMQ service definition |
-| `README.md` | Service overview and usage notes (this file) |
+---
 
-## Documentation References
+## Operations
 
-| Topic | Guide |
-| --- | --- |
-| Architecture & Blueprint | [rabbitmq-guide.md](../../../docs/guides/05-messaging/rabbitmq-guide.md) |
-| Routine Operations | [rabbitmq-operations.md](../../../docs/guides/05-messaging/rabbitmq-operations.md) |
+### Management Plugin
+
+The `management-alpine` image includes the web dashboard and `rabbitmqadmin` CLI pre-enabled.
+
+### Security
+
+- **Hardening**: Container runs with `cap_drop: ALL` and `no-new-privileges`.
+
+## Navigation
+- [Messaging Tier Overview](../README.md)
+- [RabbitMQ Guide](../../../docs/07.guides/05-messaging/03.rabbitmq-queues.md)
+- [Operational Policy](../../../docs/08.operations/05-messaging/README.md)

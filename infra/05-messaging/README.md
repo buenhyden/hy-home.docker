@@ -1,42 +1,55 @@
 # Messaging (05-messaging)
 
-This category manages message brokers, event streaming, and real-time data processing.
+> Event streaming, message brokering, and real-time data processing tier.
 
-## Services
+## Overview
 
-| Service | Profile | Path | Purpose |
-| --- | --- | --- | --- |
-| Kafka (KRaft Cluster) | `messaging` | `./kafka` | Distributed event streaming platform (3-node KRaft) |
-| Schema Registry | `messaging` | `./kafka` | Confluent schema validation (Avro/JSON/Protobuf) |
-| Kafka Connect | `messaging` | `./kafka` | Distributed connector framework |
-| Kafka REST Proxy | `messaging` | `./kafka` | HTTP interface for Kafka |
-| Kafka Exporter | `messaging` | `./kafka` | Prometheus metrics exporter |
-| Kafbat UI | `messaging` | `./kafka` | Web management UI (SSO-protected) |
-| ksqlDB Server | `messaging-option` | `./ksql` | Streaming SQL engine for Kafka |
-| ksqlDB CLI | `ksql` | `./ksql` | Interactive CLI for ksqlDB |
-| ksql-datagen | `ksql` | `./ksql` | Sample data generator for ksqlDB |
-| RabbitMQ | `rabbitmq` | `./rabbitmq` | AMQP broker for task queues |
+The Messaging tier provides the reactive backbone of `hy-home.docker`. It supports both high-throughput event streaming (Kafka) and lightweight task queuing (RabbitMQ), with integrated streaming SQL (ksqlDB) for real-time analytics.
 
-## Dependencies
+## Service Matrix
 
-- **KRaft**: Kafka runs in KRaft mode (no ZooKeeper). Each broker is also a controller.
-- **Dashboard**: Kafka UI is available at `https://kafbat-ui.${DEFAULT_URL}` (Traefik + SSO middleware).
-- **SSO**: `kafbat-ui` and other UIs require Keycloak (from `02-auth`) for authentication.
+| Service | Profile | Port | Purpose |
+| :--- | :--- | :--- | :--- |
+| **Kafka** | `messaging` | 9092, 19092 | Distributed event streaming (KRaft) |
+| **KSqlDB** | `messaging-option` | 8088 | Streaming SQL engine |
+| **RabbitMQ** | `rabbitmq` | 5672, 15672 | Lightweight AMQP task queues |
 
-## Profile Notes
+## Navigation Map
 
-| Profile | Services Activated |
-| --- | --- |
-| `messaging` | kafka-1, kafka-2, kafka-3, schema-registry, kafka-connect, kafka-rest-proxy, kafka-exporter, kafbat-ui, kafka-init |
-| `messaging-option` | ksqldb-server (requires `messaging` to already be running) |
-| `ksql` | ksqldb-cli, ksql-datagen |
-| `rabbitmq` | rabbitmq |
+### Infrastructure Source
 
-## File Map
+- [Kafka](./kafka/README.md): KRaft cluster + Schema Registry + Connect
+- [ksqlDB](./ksql/README.md): Streaming SQL server and CLI
+- [RabbitMQ](./rabbitmq/README.md): AMQP broker
 
-| Path | Description |
-| --- | --- |
-| `kafka/` | Kafka (KRaft) + Schema Registry + Connect + REST Proxy + UI stack |
-| `ksql/` | ksqlDB server and CLI |
-| `rabbitmq/` | RabbitMQ AMQP broker (optional tier) |
-| `README.md` | Category overview (this file) |
+### Documentation
+
+- [Messaging Guide](../../docs/07.guides/05-messaging/README.md)
+- [Operational Policy](../../docs/08.operations/05-messaging/README.md)
+- [Recovery Runbook](../../docs/09.runbooks/05-messaging/README.md)
+
+## Component Taxonomy
+
+### 1. Event Streaming (Kafka)
+
+- **Engine**: 3-node KRaft cluster (no Zookeeper).
+- **Tooling**: Schema Registry (Avro/JSON), REST Proxy, Kafbat UI.
+- **Persistence**: `${DEFAULT_MESSAGE_BROKER_DIR}/kafka/`.
+
+### 2. Streaming Analytics (ksqlDB)
+
+- **Engine**: ksqlDB Server integrated with Kafka + Schema Registry.
+- **Persistence**: `${DEFAULT_DATA_DIR}/ksql`.
+
+### 3. Task Queuing (RabbitMQ)
+
+- **Engine**: RabbitMQ Management (Alpine).
+- **Persistence**: `${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq`.
+
+---
+
+## Technical Standards
+
+- **Internal Port**: 19092 (Kafka Internal), 5672 (RabbitMQ).
+- **External Port**: 9092/9094/9096 (Kafka), 15672 (RabbitMQ UI).
+- **Governance**: All brokers must use dedicated storage volumes under `${DEFAULT_MESSAGE_BROKER_DIR}`.

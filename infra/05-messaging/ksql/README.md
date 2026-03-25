@@ -1,37 +1,41 @@
-# ksqlDB
+# ksqlDB (ksql)
 
-ksqlDB is the streaming SQL engine for Apache Kafka. It allows you to build stream processing applications using a SQL-like syntax.
+> Streaming SQL engine for Apache Kafka.
 
-## Services
+## Overview
 
-| Service | Image | Profile | Role | Resources |
-| :--- | :--- | :--- | :--- | :--- |
-| `ksqldb-server` | `confluentinc/cp-ksqldb-server:8.0.3` | `messaging-option` | Stream processing engine | 1.0 CPU / 512M RAM |
-| `ksqldb-cli` | `confluentinc/cp-ksqldb-cli:8.0.3` | `ksql` | Interactive management CLI | Default |
-| `ksql-datagen` | `confluentinc/ksqldb-examples:8.0.3` | `ksql` | Sample data generator | 0.5 CPU / 256M RAM |
+ksqlDB allows building stream processing applications using familiar SQL syntax. It integrates directly with the Kafka cluster and Schema Registry to enable real-time analytics.
 
-> **Profile Note**: `ksqldb-server` uses the `messaging-option` profile (not `messaging`). It is NOT started by the standard `messaging` profile. `ksqldb-cli` and `ksql-datagen` use the `ksql` profile.
+## Service Matrix
 
-## Networking
+| Service | Image | Profile | Purpose |
+| :--- | :--- | :--- | :--- |
+| **ksqldb-server** | `cp-ksqldb-server:8.0.3` | `messaging-option` | Streaming SQL engine |
+| **ksqldb-cli** | `cp-ksqldb-cli:8.0.3` | `ksql` | Interactive management CLI |
+| **ksql-datagen** | `ksqldb-examples:8.0.3` | `ksql` | Sample data generator |
 
-- **ksqlDB Server URL**: Port `${KSQLDB_PORT:-8088}` (host-mapped to `${KSQLDB_HOST_PORT:-8088}`).
-- **Dependencies**: Connects to `kafka-1..3` (via `infra_net`) and `schema-registry`.
-- **Kafka Connect**: Integrates with `kafka-connect` at `http://kafka-connect:${KAFKA_CONNECT_PORT:-8083}`.
+## Setup & Persistence
 
-## Persistence
+### 1. Persistence
 
-- **Data Volume**: `ksqldb-data-volume` mapped to `/var/lib/ksql`.
-- **Host Path**: `${DEFAULT_DATA_DIR}/ksql`.
+- **Data Volume**: `ksqldb-data-volume`
+- **Mount Path**: `/var/lib/ksql`
+- **Host Path**: `${DEFAULT_DATA_DIR}/ksql`
 
-## Usage
+### 2. Startup
 
-### Start ksqlDB Server
+The server is part of the `messaging-option` profile and requires the core `messaging` (Kafka) stack to be healthy.
 
 ```bash
+# Start ksqlDB Server
 docker compose --profile messaging-option up -d ksqldb-server
 ```
 
-### Access Interactive CLI
+---
+
+## Usage
+
+### Interactive CLI
 
 ```bash
 docker compose --profile ksql run --rm ksqldb-cli ksql http://ksqldb-server:8088
@@ -40,11 +44,9 @@ docker compose --profile ksql run --rm ksqldb-cli ksql http://ksqldb-server:8088
 ### Example SQL
 
 ```sql
--- Create a stream from a Kafka topic
 CREATE STREAM page_views (viewtime BIGINT, userid VARCHAR, pageid VARCHAR)
   WITH (KAFKA_TOPIC='page-views', VALUE_FORMAT='JSON');
 
--- Query the stream
 SELECT userid, COUNT(*) AS view_count
   FROM page_views
   WINDOW TUMBLING (SIZE 1 MINUTE)
@@ -52,22 +54,7 @@ SELECT userid, COUNT(*) AS view_count
   EMIT CHANGES;
 ```
 
-### Check Server Logs
-
-```bash
-docker compose logs ksqldb-server
-```
-
-## File Map
-
-| Path | Description |
-| --- | --- |
-| `docker-compose.yml` | ksqlDB server, CLI, and datagen service definitions |
-| `README.md` | Service overview and SQL examples (this file) |
-
-## Documentation References
-
-| Topic | Guide |
-| --- | --- |
-| Kafka Operations | [kafka-operations.md](../../../docs/guides/05-messaging/kafka-operations.md) |
-| Messaging Context | [kafka-context.md](../../../docs/guides/05-messaging/kafka-context.md) |
+## Navigation
+- [Messaging Tier Overview](../README.md)
+- [ksqlDB Guide](../../../docs/07.guides/05-messaging/02.ksql-streaming.md)
+- [Operational Policy](../../../docs/08.operations/05-messaging/README.md)

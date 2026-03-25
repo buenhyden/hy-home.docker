@@ -43,4 +43,5 @@
 ## Templates
 
 - [04-data](./04-data/README.md)
+- [05-messaging](./05-messaging/README.md)
 - [99.templates](../99.templates/guide.template.md)
