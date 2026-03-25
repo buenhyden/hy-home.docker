@@ -36,7 +36,7 @@ Every `README.md` MUST adhere to the **Golden 5 Header Pattern**:
 ## 4. Hierarchy of Navigation
 
 - **Global View**: Root `README.md` links to `docs/README.md`.
-- **Infrastructure View**: `infra/README.md` maps all tiers (01-11).
+- **Infrastructure View**: `infra/README.md` maps all tiers (01.prd - 11.postmortems).
 - **Service View**: Individual service directories (e.g., `infra/01-gateway/nginx/`) contain local context.
 
 ## 5. Verification Gate
