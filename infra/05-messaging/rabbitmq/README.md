@@ -1,52 +1,59 @@
-# RabbitMQ (rabbitmq)
+# RabbitMQ Message Broker
 
-> Lightweight, open-source message broker supporting AMQP 0-9-1.
+> Lightweight AMQP broker for task queuing and asynchronous messaging.
 
 ## Overview
 
-RabbitMQ is used for task queuing, background job distribution, and lightweight messaging where high-throughput partitioning is not required.
+A standalone RabbitMQ instance providing reliable AMQP-based message queuing. It is primarily used for background tasks and decoupling lightweight microservices that do not require the high-throughput streaming capabilities of Kafka.
 
-## Service Matrix
+## Audience
 
-| Service | Image | Port | Role |
-| :--- | :--- | :--- | :--- |
-| **RabbitMQ** | `rabbitmq:4.2.3-management-alpine` | 5672, 15672 | AMQP Broker + Management UI |
+- Backend Developers (Task queuing)
+- SREs (Broker maintenance)
 
-## Connectivity Map
+## Scope
 
-- **AMQP**: listen on port `5672`.
-- **Web UI**: [RabbitMQ Management](https://rabbitmq.${DEFAULT_URL}) (Port 15672).
+- RabbitMQ Management Server
+- Virtual Host (VHost) configuration
+- User & Permissions management
 
-## Setup & Persistence
+## Structure
 
-### 1. Persistence
+```text
+rabbitmq/
+├── docker-compose.yml  # RabbitMQ service orchestration
+└── README.md           # This file
+```
 
-- **Host Path**: `${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq`
-- **Mount Path**: `/var/lib/rabbitmq`
+## How to Work in This Area
 
-> [!WARNING]
-> RabbitMQ requires UID `999` on the host volume. Run `sudo chown -R 999:999 ${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq` if you encounter permission errors.
+1. Read the [RabbitMQ Operations Guide](../../../docs/07.guides/05-messaging/02.rabbitmq-ops.md).
+2. Access the UI at `http://rabbitmq-ui.${DEFAULT_URL}` with secret-based credentials.
 
-### 2. Secrets
+## Tech Stack
 
-Credentials are managed via Docker Secrets:
+| Category   | Technology                     | Notes                     |
+| ---------- | ------------------------------ | ------------------------- |
+| Broker     | RabbitMQ                       | Alpine-based              |
+| Interface  | Management Plugin              | Enabled by default        |
+| Protocol   | AMQP 0-9-1                     | Primary interface         |
 
-- `rabbitmq_user`: Admin username.
-- `rabbitmq_password`: Admin password.
+## Configuration
 
----
+| Endpoint | Port | Description |
+| :--- | :--- | :--- |
+| `AMQP` | 5672 | Message producing/consuming |
+| `Management` | 15672 | Web-based management console |
 
-## Operations
+## Testing
 
-### Management Plugin
+```bash
+# Check node status
+docker exec rabbitmq rabbitmqctl status
+```
 
-The `management-alpine` image includes the web dashboard and `rabbitmqadmin` CLI pre-enabled.
+## AI Agent Guidance
 
-### Security
-
-- **Hardening**: Container runs with `cap_drop: ALL` and `no-new-privileges`.
-
-## Navigation
-- [Messaging Tier Overview](../README.md)
-- [RabbitMQ Guide](../../../docs/07.guides/05-messaging/03.rabbitmq-queues.md)
-- [Operational Policy](../../../docs/08.operations/05-messaging/README.md)
+1. Use `Quorum Queues` for critical data that requires durability and replication.
+2. Avoid using the default `guest/guest` credentials; use Vault-injected secrets.
+3. Monitor `Message Rates` to identify bottleneck services.

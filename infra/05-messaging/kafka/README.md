@@ -1,58 +1,80 @@
-# Kafka Messaging (kafka)
+# Kafka Event Streaming Cluster
 
-> Distributed event streaming platform powered by Confluent CP 8.1.1.
+> High-performance, 3-node Kafka cluster in KRaft mode.
 
 ## Overview
 
-High-throughput, low-latency event streaming cluster running in **KRaft mode** (ZooKeeper-less). This stack includes the core cluster, schema validation, connector framework, and management UIs.
+The platform's primary event streaming backbone. This cluster utilizes the Zookeeper-less KRaft architecture for improved scalability and simpler management. It includes a full ecosystem of Schema Registry, Connectors, and a Management UI.
 
-## Service Matrix
+## Audience
 
-| Service | Image | Port | Role |
+- Data Engineers (Pipelines)
+- Backend Developers (Event-sourcing)
+- AI Agents (Real-time monitoring)
+
+## Scope
+
+### In Scope
+
+- 3-node Kafka Broker Cluster (KRaft)
+- Confluent Schema Registry
+- Kafka Connect Service
+- Kafbat UI (Management Dashboard)
+- JMX/Prometheus Monitoring
+
+### Out of Scope
+
+- Custom Kafka Connector development
+- Consumer application logic
+- Producer-side schema definition
+
+## Structure
+
+```text
+kafka/
+├── jmx-exporter/       # JMX to Prometheus metrics config
+├── kafbat-ui/          # UI configuration
+└── docker-compose.yml  # Kafka ecosystem orchestration
+```
+
+## How to Work in This Area
+
+1. Read the [Kafka KRaft Guide](../../../docs/07.guides/05-messaging/01.kafka-kraft.md) for bootstrapping.
+2. Check `docker-compose.yml` for broker ID and port mappings.
+3. Use the [Messaging Runbook](../../../docs/09.runbooks/05-messaging/README.md) for broker recovery.
+
+## Tech Stack
+
+| Category   | Technology                     | Notes                     |
+| ---------- | ------------------------------ | ------------------------- |
+| Engine     | Confluent CP-Kafka             | v8.1.1                    |
+| Mode       | KRaft                          | Integrated Metadata log   |
+| UI         | Kafbat (Kafka UI)              | Web-based management      |
+
+## Configuration
+
+| Variable | Node 1 | Node 2 | Node 3 |
 | :--- | :--- | :--- | :--- |
-| **Kafka 1-3** | `cp-kafka:8.1.1` | 9092, 19092 | KRaft Broker/Controllers |
-| **Schema Registry** | `cp-schema-registry:8.1.1` | 8081 | Avro/JSON/Protobuf validation |
-| **Kafka Connect** | `cp-kafka-connect:8.1.1` | 8083 | Connector framework |
-| **Kafbat UI** | `kafka-ui:main` | 8080 | Web Management UI |
+| `EXTERNAL_PORT` | 9092 | 9094 | 9096 |
+| `NODE_ID` | 1 | 2 | 3 |
 
-## Connectivity Map
+## Testing
 
-- **Internal**: Brokers listen on `19092` (intra-cluster).
-- **External**: host-mapped ports `9092`, `9094`, `9096` for development.
-- **Web UIs**:
-  - [Kafbat UI](https://kafbat-ui.${DEFAULT_URL}) (SSO protected)
-  - [Schema Registry](https://schema-registry.${DEFAULT_URL})
-  - [Kafka Connect](https://kafka-connect.${DEFAULT_URL})
+```bash
+# List internal topics
+docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --list
 
-## Setup & Persistence
+# Verify schema registry connectivity
+curl -s http://schema-registry.localhost/subjects
+```
 
-### 1. Persistence
+## Change Impact
 
-- **Brokers**: `${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka[1-3]-data`
-- **Connect**: `${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka-connect`
+- Reducing the replication factor of a topic will decrease durability.
+- KRaft controller node restarts may cause a brief leadership election delay.
 
-### 2. Initialization
+## AI Agent Guidance
 
-The `kafka-init` service automatically creates the following topics:
-
-- `infra-events`: System-level event stream (3 partitions, factor 3).
-- `application-logs`: Centralized logging stream (6 partitions, factor 3).
-
----
-
-## Operations
-
-### Monitoring
-
-- **Exporter**: Kafka Exporter at port `9308` for Prometheus.
-- **JMX**: JMX Prometheus agent at port `9404` on each broker.
-
-### Security
-
-- **SSO**: `kafbat-ui` uses Keycloak via Traefik middleware (`sso-auth@file`).
-- **OAuth2**: Check `kafbat-ui/dynamic_config.yaml` for client secrets.
-
-## Navigation
-- [Messaging Tier Overview](../README.md)
-- [Kafka Guide](../../../docs/07.guides/05-messaging/01.kafka-kraft.md)
-- [Operational Policy](../../../docs/08.operations/05-messaging/README.md)
+1. Use `kafbat-ui` for visual debugging of message offsets and partitions.
+2. New topics MUST be created via `kafka-init` service in `docker-compose.yml` for standardization.
+3. Always monitor `UnderReplicatedPartitions` during broker maintenance.

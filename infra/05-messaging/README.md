@@ -1,55 +1,102 @@
-# Messaging (05-messaging)
+# Messaging Tier (05-messaging)
 
 > Event streaming, message brokering, and real-time data processing tier.
 
 ## Overview
 
-The Messaging tier provides the reactive backbone of `hy-home.docker`. It supports both high-throughput event streaming (Kafka) and lightweight task queuing (RabbitMQ), with integrated streaming SQL (ksqlDB) for real-time analytics.
+The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` ecosystem. It supports high-throughput event streaming via Kafka and lightweight task queuing via RabbitMQ. Integrated streaming SQL (ksqlDB) enables real-time analytics and transformations as data flows through the platform.
+
+## Audience
+
+이 README의 주요 독자:
+
+- Backend Developers (Event-driven patterns)
+- Data Engineers (Stream processing)
+- SREs (Broker reliability & scaling)
+- AI Agents (Automated topic provisioning)
+
+## Scope
+
+### In Scope
+
+- Apache Kafka Cluster (KRaft mode)
+- Confluent Schema Registry & Kafka Connect
+- ksqlDB Streaming SQL Engine
+- RabbitMQ AMQP Broker
+- Messaging UI & Management consoles
+
+### Out of Scope
+
+- Application-specific consumer logic
+- External cloud messaging (AWS SQS/SNS)
+- Long-term cold storage of events (handled by `04-data`)
+
+## Structure
+
+```text
+05-messaging/
+├── kafka/              # Kafka cluster, Connect, Registry, UI
+├── ksql/               # ksqlDB server configuration
+├── rabbitmq/           # RabbitMQ broker configuration
+└── README.md           # This file
+```
+
+## How to Work in This Area
+
+1. Read the [Kafka KRaft Guide](../../docs/07.guides/05-messaging/01.kafka-kraft.md) for cluster ops.
+2. Follow the [RabbitMQ Operations Guide](../../docs/07.guides/05-messaging/02.rabbitmq-ops.md) for queues.
+3. Check the [Operations Policy](../../docs/08.operations/05-messaging/README.md) for retention.
+4. Consult the [Messaging Runbook](../../docs/09.runbooks/05-messaging/README.md) for recovery.
+
+## Tech Stack
+
+| Category   | Technology                     | Notes                     |
+| ---------- | ------------------------------ | ------------------------- |
+| Streaming  | Apache Kafka                   | v8.1.1 (Confluent Spilo)  |
+| Mode       | KRaft (Zookeeper-less)         | 3-node HA                 |
+| Schema     | Schema Registry                | Avro/JSON support         |
+| AMQP       | RabbitMQ                       | Management-enabled        |
+| Analytics  | ksqlDB                         | Streaming SQL             |
 
 ## Service Matrix
 
-| Service | Profile | Port | Purpose |
+| Service | Protocol | Profile | Port |
 | :--- | :--- | :--- | :--- |
-| **Kafka** | `messaging` | 9092, 19092 | Distributed event streaming (KRaft) |
-| **KSqlDB** | `messaging-option` | 8088 | Streaming SQL engine |
-| **RabbitMQ** | `rabbitmq` | 5672, 15672 | Lightweight AMQP task queues |
+| `kafka-1/2/3` | Kafka/TCP | `messaging` | 9092, 19092 |
+| `schema-registry`| HTTP | `messaging` | 8081 |
+| `rabbitmq` | AMQP/HTTP | `rabbitmq` | 5672, 15672 (UI) |
+| `kafbat-ui` | HTTP | `messaging` | 8080 |
 
-## Navigation Map
+## Configuration
 
-### Infrastructure Source
+- **Data Path**: All broker data MUST be stored in `${DEFAULT_MESSAGE_BROKER_DIR}`.
+- **Secrets**: Security tokens and passwords MUST use Docker secrets.
+- **Networking**: High-throughput traffic is confined to the `infra_net`.
 
-- [Kafka](./kafka/README.md): KRaft cluster + Schema Registry + Connect
-- [ksqlDB](./ksql/README.md): Streaming SQL server and CLI
-- [RabbitMQ](./rabbitmq/README.md): AMQP broker
+## Testing
 
-### Documentation
+```bash
+# Verify Kafka cluster health via Kafbat UI
+docker exec kafka-1 kafka-broker-api-versions --bootstrap-server localhost:19092
 
-- [Messaging Guide](../../docs/07.guides/05-messaging/README.md)
-- [Operational Policy](../../docs/08.operations/05-messaging/README.md)
-- [Recovery Runbook](../../docs/09.runbooks/05-messaging/README.md)
+# Test RabbitMQ connectivity
+docker exec rabbitmq rabbitmq-diagnostics check_running
+```
 
-## Component Taxonomy
+## Change Impact
 
-### 1. Event Streaming (Kafka)
+- Modifying Kafka partition counts is irreversible without data loss/re-balancing.
+- Changing Schema Registry compatibility levels may break downstream consumers.
+- RabbitMQ queue purging will permanently delete non-persistent messages.
 
-- **Engine**: 3-node KRaft cluster (no Zookeeper).
-- **Tooling**: Schema Registry (Avro/JSON), REST Proxy, Kafbat UI.
-- **Persistence**: `${DEFAULT_MESSAGE_BROKER_DIR}/kafka/`.
+## Related References
 
-### 2. Streaming Analytics (ksqlDB)
+- [04-data](../04-data/README.md) - Storing processed events.
+- [01-gateway](../01-gateway/README.md) - routing to Messaging UIs.
 
-- **Engine**: ksqlDB Server integrated with Kafka + Schema Registry.
-- **Persistence**: `${DEFAULT_DATA_DIR}/ksql`.
+## AI Agent Guidance
 
-### 3. Task Queuing (RabbitMQ)
-
-- **Engine**: RabbitMQ Management (Alpine).
-- **Persistence**: `${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq`.
-
----
-
-## Technical Standards
-
-- **Internal Port**: 19092 (Kafka Internal), 5672 (RabbitMQ).
-- **External Port**: 9092/9094/9096 (Kafka), 15672 (RabbitMQ UI).
-- **Governance**: All brokers must use dedicated storage volumes under `${DEFAULT_MESSAGE_BROKER_DIR}`.
+1. Always use the `Schema Registry` for any new topic schemas.
+2. Ensure `replication-factor: 3` for all production-grade topics.
+3. Check consumer lag metrics before scaling producer throughput.
+4. RabbitMQ queues should use TTLs and DLXs as per the messaging policy.

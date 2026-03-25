@@ -1,22 +1,18 @@
-# Messaging Guides (05-messaging)
+# Messaging Tier Documentation (05-messaging)
 
-> System guides for event streaming, message brokering, and real-time data processing.
+> Event Streaming, Message Brokering, and Data Pipelines.
 
 ## Overview
 
-The Messaging tier encompasses high-throughput event streaming via Kafka, real-time analytics with ksqlDB, and reliable task queuing through RabbitMQ. These guides provide technical context and usage patterns for the messaging infrastructure.
+이 디렉터리는 `hy-home.docker`의 메시징 인프라(05-messaging)에 대한 가이드, 운영 정책, 그리고 복구 절차 문서를 포함한다.
 
-## Available Guides
+## Documents
 
-| Guide | Description | Target |
-| :--- | :--- | :--- |
-| **[Kafka - KRaft Cluster](./01.kafka-kraft.md)** | Dedicated guide for Kafka KRaft architecture, Schema Registry, and Connect. | Kafka |
-| **[ksqlDB - Streaming SQL](./02.ksql-streaming.md)** | Real-time stream processing and SQL-based transformations. | ksqlDB |
-| **[RabbitMQ - AMQP Queues](./03.rabbitmq-queues.md)** | Asynchronous task queuing and message distribution patterns. | RabbitMQ |
+- [01. Kafka KRaft Guide](./01.kafka-kraft.md) - Zookeeper-less Kafka cluster operations.
+- [02. RabbitMQ Ops Guide](./02.rabbitmq-ops.md) - Message broker and task queue management.
 
-## Navigation
+## Related References
 
-- [Back to Guides Index](../README.md)
-- [Infrastructure Tier](../../../infra/05-messaging/README.md)
-- [Operations Policy](../../08.operations/05-messaging/README.md)
-- [Recovery Runbook](../../09.runbooks/05-messaging/README.md)
+- [infra/05-messaging/](../../infra/05-messaging/README.md) - Infrastructure tier overview.
+- [Operations Policy](../../docs/08.operations/05-messaging/README.md) - Messaging governance.
+- [Messaging Runbook](../../docs/09.runbooks/05-messaging/README.md) - Recovery and incident response.
