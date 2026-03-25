@@ -29,13 +29,15 @@ volumes:
 
 x-kafka-broker-common: &kafka-broker-common
   image: confluentinc/cp-kafka:8.1.1
-  profiles: ['messaging']
+  profiles:
+    - 'messaging'
   extends:
     file: ../../common-optimizations.yml
     service: template-stateful-high
   read_only: false
   restart: unless-stopped
-  networks: [infra_net]
+  networks:
+    - infra_net
   environment: &kafka-broker-env-common
     CLUSTER_ID: ${KAFKA_CLUSTER_ID}
     KAFKA_PROCESS_ROLES: 'broker,controller'
@@ -57,20 +59,21 @@ x-kafka-broker-common: &kafka-broker-common
     timeout: 30s
     retries: 5
     start_period: 15s
-  labels: { <<: *tier-label }
+  labels:
+    <<: *tier-label
 
 services:
   kafka-1:
     <<: *kafka-broker-common
     container_name: kafka-1
     hostname: kafka-1
-    volumes: [kafka-1-data:/var/lib/kafka/data:rw, ./jmx-exporter:/usr/share/jmx_exporter:ro]
+    volumes:
+      - kafka-1-data:/var/lib/kafka/data:rw
+      - ./jmx-exporter:/usr/share/jmx_exporter:ro
     ports:
-      [
-        '${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}',
-        '${KAFKA_JMX_1_HOST_PORT:-19101}:${KAFKA_JMX_PORT:-9101}',
-        '${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}',
-      ]
+      - '${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}'
+      - '${KAFKA_JMX_1_HOST_PORT:-19101}:${KAFKA_JMX_PORT:-9101}'
+      - '${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}'
     environment:
       <<: *kafka-broker-env-common
       KAFKA_NODE_ID: 1
@@ -81,13 +84,13 @@ services:
     <<: *kafka-broker-common
     container_name: kafka-2
     hostname: kafka-2
-    volumes: [kafka-2-data:/var/lib/kafka/data:rw, ./jmx-exporter:/usr/share/jmx_exporter:ro]
+    volumes:
+      - kafka-2-data:/var/lib/kafka/data:rw
+      - ./jmx-exporter:/usr/share/jmx_exporter:ro
     ports:
-      [
-        '${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}',
-        '${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}',
-        '${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}',
-      ]
+      - '${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}'
+      - '${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}'
+      - '${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}'
     environment:
       <<: *kafka-broker-env-common
       KAFKA_NODE_ID: 2
@@ -98,13 +101,13 @@ services:
     <<: *kafka-broker-common
     container_name: kafka-3
     hostname: kafka-3
-    volumes: [kafka-3-data:/var/lib/kafka/data:rw, ./jmx-exporter:/usr/share/jmx_exporter:ro]
+    volumes:
+      - kafka-3-data:/var/lib/kafka/data:rw
+      - ./jmx-exporter:/usr/share/jmx_exporter:ro
     ports:
-      [
-        '${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}',
-        '${KAFKA_JMX_3_HOST_PORT:-39101}:${KAFKA_JMX_PORT:-9101}',
-        '${KAFKA_JMX_EXPORTER_3_HOST_PORT:-39404}:${KAFKA_JMX_EXPORTER_PORT:-9404}',
-      ]
+      - '${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}'
+      - '${KAFKA_JMX_3_HOST_PORT:-39101}:${KAFKA_JMX_PORT:-9101}'
+      - '${KAFKA_JMX_EXPORTER_3_HOST_PORT:-39404}:${KAFKA_JMX_EXPORTER_PORT:-9404}'
     environment:
       <<: *kafka-broker-env-common
       KAFKA_NODE_ID: 3
@@ -113,18 +116,24 @@ services:
       KAFKA_JMX_HOSTNAME: kafka-3
 
   schema-registry:
-    profiles: ['messaging']
-    extends: { file: ../../common-optimizations.yml, service: template-infra-med }
+    profiles:
+      - 'messaging'
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: confluentinc/cp-schema-registry:8.1.1
     container_name: schema-registry
     read_only: true
-    tmpfs: [/tmp]
-    networks: [infra_net]
+    tmpfs:
+      - /tmp
+    networks:
+      - infra_net
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:${SCHEMA_REGISTRY_PORT:-8081}'
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092'
-    expose: ['${SCHEMA_REGISTRY_PORT:-8081}']
+    expose:
+      - '${SCHEMA_REGISTRY_PORT:-8081}'
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -133,9 +142,12 @@ services:
       traefik.http.routers.schema-registry.tls: 'true'
       traefik.http.services.schema-registry.loadbalancer.server.port: ${SCHEMA_REGISTRY_PORT:-8081}
     depends_on:
-      kafka-1: { condition: service_healthy }
-      kafka-2: { condition: service_healthy }
-      kafka-3: { condition: service_healthy }
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
     healthcheck:
       test:
         ['CMD-SHELL', 'curl -fsS http://localhost:${SCHEMA_REGISTRY_PORT:-8081}/subjects || exit 1']
@@ -145,18 +157,28 @@ services:
       start_period: 15s
 
   kafka-connect:
-    profiles: ['messaging']
-    extends: { file: ../../common-optimizations.yml, service: template-stateful-med }
+    profiles:
+      - 'messaging'
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
     image: confluentinc/cp-kafka-connect:8.1.1
     container_name: kafka-connect
     read_only: false
-    tmpfs: [/tmp, /etc/kafka]
+    tmpfs:
+      - /tmp
+      - /etc/kafka
     depends_on:
-      kafka-1: { condition: service_healthy }
-      kafka-2: { condition: service_healthy }
-      kafka-3: { condition: service_healthy }
-      schema-registry: { condition: service_healthy }
-    networks: [infra_net]
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
+      schema-registry:
+        condition: service_healthy
+    networks:
+      - infra_net
     environment:
       CONNECT_BOOTSTRAP_SERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
       CONNECT_GROUP_ID: 'kafka-connect-cluster'
@@ -177,7 +199,8 @@ services:
       CONNECT_PLUGIN_PATH: '/usr/share/java,/usr/share/confluent-hub-components'
       CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}'
       CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}'
-    volumes: [kafka-connect-data:/var/lib/kafka-connect:rw]
+    volumes:
+      - kafka-connect-data:/var/lib/kafka-connect:rw
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -194,13 +217,18 @@ services:
       start_period: 15s
 
   kafka-rest-proxy:
-    profiles: ['messaging']
-    extends: { file: ../../common-optimizations.yml, service: template-infra-med }
+    profiles:
+      - 'messaging'
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: confluentinc/cp-kafka-rest:8.1.1
     container_name: kafka-rest-proxy
     read_only: true
-    tmpfs: [/tmp]
-    networks: [infra_net]
+    tmpfs:
+      - /tmp
+    networks:
+      - infra_net
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -214,10 +242,14 @@ services:
       KAFKA_REST_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092'
       KAFKA_REST_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}'
     depends_on:
-      kafka-1: { condition: service_healthy }
-      kafka-2: { condition: service_healthy }
-      kafka-3: { condition: service_healthy }
-      schema-registry: { condition: service_healthy }
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
+      schema-registry:
+        condition: service_healthy
     healthcheck:
       test:
         ['CMD-SHELL', 'curl -fsS http://localhost:${KAFKA_REST_PROXY_PORT:-8082}/topics || exit 1']
@@ -227,12 +259,16 @@ services:
       start_period: 15s
 
   kafbat-ui:
-    profiles: ['messaging']
-    extends: { file: ../../common-optimizations.yml, service: template-infra-med }
+    profiles:
+      - 'messaging'
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     image: ghcr.io/kafbat/kafka-ui:main
     container_name: kafbat-ui
     read_only: true
-    tmpfs: [/tmp]
+    tmpfs:
+      - /tmp
     environment:
       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_ID}
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
@@ -251,11 +287,16 @@ services:
       traefik.http.services.kafka-ui.loadbalancer.server.port: ${KAFKA_UI_PORT:-8080}
       traefik.http.routers.kafka-ui.middlewares: sso-errors@file,sso-auth@file
     depends_on:
-      kafka-1: { condition: service_healthy }
-      kafka-2: { condition: service_healthy }
-      kafka-3: { condition: service_healthy }
-      schema-registry: { condition: service_healthy }
-      kafka-connect: { condition: service_healthy }
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
+      schema-registry:
+        condition: service_healthy
+      kafka-connect:
+        condition: service_healthy
     healthcheck:
       test:
         [
@@ -268,19 +309,27 @@ services:
       start_period: 15s
 
   kafka-exporter:
-    profiles: ['messaging']
-    extends: { file: ../../common-optimizations.yml, service: template-infra-low }
+    profiles:
+      - 'messaging'
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: danielqsj/kafka-exporter:v1.9.0
     container_name: kafka-exporter
     read_only: true
-    tmpfs: [/tmp]
+    tmpfs:
+      - /tmp
     command:
       [--kafka.server=kafka-1:19092, --kafka.server=kafka-2:19092, --kafka.server=kafka-3:19092]
-    networks: [infra_net]
+    networks:
+      - infra_net
     depends_on:
-      kafka-1: { condition: service_healthy }
-      kafka-2: { condition: service_healthy }
-      kafka-3: { condition: service_healthy }
+      kafka-1:
+        condition: service_healthy
+      kafka-2:
+        condition: service_healthy
+      kafka-3:
+        condition: service_healthy
     healthcheck:
       test:
         ['CMD-SHELL', 'curl -fsS http://localhost:${KAFKA_EXPORTER_PORT:-9308}/metrics || exit 1']
@@ -290,7 +339,8 @@ services:
       start_period: 15s
 
   kafka-init:
-    profiles: ['messaging']
+    profiles:
+      - 'messaging'
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -298,9 +348,13 @@ services:
     image: confluentinc/cp-kafka:8.1.1
     container_name: kafka-init
     read_only: true
-    tmpfs: [/tmp]
-    networks: [infra_net]
-    depends_on: { kafka-1: { condition: service_healthy } }
+    tmpfs:
+      - /tmp
+    networks:
+      - infra_net
+    depends_on:
+      kafka-1:
+        condition: service_healthy
     entrypoint: ['/bin/sh', '-c']
     command:
       - |

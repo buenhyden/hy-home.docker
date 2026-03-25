@@ -11,7 +11,8 @@ volumes:
 
 services:
   opensearch:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
@@ -68,7 +69,8 @@ services:
       - opensearch_admin_password
 
   opensearch-dashboards:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -115,7 +117,8 @@ services:
       - opensearch_dashboard_password
 
   opensearch-exporter:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

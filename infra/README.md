@@ -1,86 +1,151 @@
 # Hy-Home Infrastructure (infra/)
 
-이 디렉토리는 `Docker Compose`로 구축된 홈 서버/개발 환경 인프라의 **서비스 정의**를 관리합니다. 각 서비스는 `infra/<번호-카테고리>/<서비스명>/docker-compose.yml`에 분리되어 있으며, **저장소 루트의 `docker-compose.yml`에서 `include`** 기능으로 통합됩니다.
+> Unified service definition and orchestration layer for the hy-home.docker ecosystem.
 
-## 🏗️ 전체 구조
+## Overview
 
-```text
-infra/
-├── [01-gateway](01-gateway/)         # Edge/Gateway ([Context](../docs/guides/01-gateway/))
-│   └── traefik/
-│   └── nginx/                 # (Standalone/Optional)
-├── [02-auth](02-auth/)               # 인증/SSO ([Context](../docs/guides/02-auth/))
-│   ├── keycloak/
-│   └── oauth2-proxy/
-├── [03-security](03-security/)           # 시크릿/보안 ([Context](../docs/guides/03-security/))
-│   └── vault/                 # (Standalone/Optional)
-├── [04-data](04-data/)               # DB/Storage ([Context](../docs/guides/04-data/))
-│   ├── mng-db/
-│   ├── minio/
-│   ├── opensearch/
-│   ├── postgresql-cluster/
-│   ├── qdrant/
-│   └── valkey-cluster/
-├── [05-messaging](05-messaging/)          # 메시징/스트리밍 ([Context](../docs/guides/05-messaging/))
-│   └── kafka/
-├── [06-observability](06-observability/)      # LGTM 스택 ([Context](../docs/guides/06-observability/))
-│   ├── docker-compose.yml
-│   └── prometheus/
-├── [07-workflow](07-workflow/)           # 워크플로우 ([Context](../docs/guides/07-workflow/))
-│   ├── airflow/
-│   └── n8n/                   # (Optional, root include 주석 처리)
-├── [08-ai](08-ai/)                 # AI/LLM ([Context](../docs/guides/08-ai/))
-│   ├── ollama/
-│   └── open-webui/
-├── [09-tooling](09-tooling/)            # DevOps/QA/TF ([Context](../docs/guides/09-tooling/))
-│   ├── sonarqube/
-│   └── terrakube/             # (Optional, root include 주석 처리)
-└── [10-communication](10-communication/)      # Mail (Optional) ([Context](../docs/guides/10-communication/))
-    └── mail/                  # (Optional, root include 주석 처리)
-```
+The `infra/` directory manages the **Service Definitions** for the entire home server and AI development environment. It follows a strictly tiered architecture (01-11), where each service is isolated in its own subdirectory containing a `docker-compose.yml`. These definitions are aggregated into the root `docker-compose.yml` using the `include` feature, providing a modular yet unified infrastructure management experience.
 
-## 🧭 실행 흐름
+## Audience
 
-> **실행 진입점은 저장소 루트의 `docker-compose.yml`입니다.**
+이 README의 주요 독자:
+
+- **Operators**: Infrastructure deployment and service lifecycle management.
+- **AI Agents**: System discovery, automated configuration, and scaling.
+- **Developers**: Consuming infrastructure services for application development.
+
+## Scope
+
+### In Scope
+
+- Service definitions across 11 functional tiers.
+- Global orchestration via root `docker-compose.yml`.
+- Standardized execution models using **Docker Profiles** (`core`, `data`, `obs`, etc.).
+- Resource optimization and security hardening templates.
+
+### Out of Scope
+
+- Detailed internal service configuration (see `docs/07.guides/` or sub-module READMEs).
+- Application business logic and frontend source code.
+- Credentials and sensitive variables (managed in `secrets/`).
+
+## Infrastructure Tiers (01-11)
+
+| Tier | Category | Key Services | Status |
+| :--- | :--- | :--- | :--- |
+| **01** | **Gateway** | [Traefik](01-gateway/traefik/), [Cloudflared](01-gateway/cloudflared/), [DDNS](01-gateway/ddns/) | Production |
+| **02** | **Identity** | [Keycloak](02-auth/keycloak/), [OAuth2-Proxy](02-auth/oauth2-proxy/) | Production |
+| **03** | **Security** | [Vault](03-security/vault/), [CrowdSec](03-security/crowdsec/) | Production |
+| **04** | **Observability** | [Grafana](06-observability/grafana/), [Prometheus](06-observability/prometheus/), [Loki](06-observability/loki/) | Production |
+| **05** | **Storage** | [PostgreSQL](04-data/postgresql-cluster/), [MinIO](04-data/minio/), [Valkey](04-data/valkey-cluster/) | Production |
+| **06** | **Search** | [OpenSearch](04-data/opensearch/), [Meilisearch](04-data/meilisearch/) | Production |
+| **07** | **Workflow** | [Airflow](07-workflow/airflow/), [n8n](07-workflow/n8n/) | Production |
+| **08** | **AI** | [Ollama](08-ai/ollama/), [Open WebUI](08-ai/open-webui/) | Production |
+| **09** | **Tooling** | [SonarQube](09-tooling/sonarqube/), [Terrakube](09-tooling/terrakube/) | Dev/Ops |
+| **10** | **Communication** | [Stalwart](10-communication/mail/), [MailHog](10-communication/mailhog/) | Optional |
+| **11** | **Laboratory** | [Portainer](11-laboratory/portainer/), [Homer](11-laboratory/dashboard/) | Admin |
+
+## Tech Stack
+
+| Category | Technology | Notes |
+| :--- | :--- | :--- |
+| Orchestration | Docker Compose v2.20+ | Using `include` & `profiles` |
+| Edge Router | Traefik v3.x | Dynamic service discovery |
+| Identity | Keycloak / OIDC | Centralized IAM |
+| Observability | LGTM Stack | Loki, Grafana, Tempo, Mimir |
+
+## Execution Model
+
+`hy-home.docker`는 Docker Compose의 **Profiles** 기능을 사용하여 서비스 활성화를 제어합니다. 이를 통해 시스템 자원(Memory/CPU)을 효율적으로 관리할 수 있습니다.
+
+### Service Profiles
+
+`hy-home.docker`는 Docker Compose의 **Profiles**를 사용하여 환경별/목적별 서비스 그룹을 제어합니다.
+
+- `profiles: [ "core" ]`: 필수 인프라 (Traefik, Keycloak, Vault)
+- `profiles: [ "data" ]`: 범용 데이터 저장소 (Postgres, InfluxDB, Cassandra, MongoDB 등)
+- `profiles: [ "mng-data" ]`: 시스템 관리용 DB 계층 (mng-db)
+- `profiles: [ "storage" ]`: 오브젝트 및 파일 저장소 (MinIO)
+- `profiles: [ "messaging" ]`: 핵심 메시징 브로커 (Kafka)
+- `profiles: [ "messaging-option" ]`: 부가 메시징 도구 (RabbitMQ, ksql)
+- `profiles: [ "obs" ]`: 모니터링 및 로기 (LGTM Stack)
+- `profiles: [ "workflow" ]`: 워크플로우 엔진 (Airflow, n8n)
+- `profiles: [ "ai" ]`: AI/LLM 엔진 및 Vector DB (Ollama, Open WebUI, Qdrant)
+- `profiles: [ "tooling" ]`: 개발/운영 도구 (SonarQube, Terrakube, K6, Locust 등)
+- `profiles: [ "communication" ]`: 메일 및 통신 (Stalwart)
+
+## Getting Started
+
+### 1. Prerequisites
+
+- **Docker Engine** >= 24.0.0
+- **Docker Compose** >= 2.20.0
+- **NVIDIA Container Toolkit** (Optional, for AI GPU acceleration)
+- **Secret Inventory**: Ensure `scripts/gen-secrets.sh` has been executed.
+
+### 2. Integrated Execution (Standard)
+
+기본 진입점은 저장소 루트의 `docker-compose.yml`입니다.
 
 ```bash
-# 저장소 루트에서
-cp .env.example .env
+# 전체 필수 서비스 실행 (core 프로필)
+docker compose --profile core up -d
+
+# 특정 계층 통합 실행 (예: AI 계층)
+docker compose --profile ai up -d
+```
+
+### 3. Standalone Verification
+
+개별 폴더 내에서 독립적으로 서비스를 실행하고 검증할 수 있습니다.
+
+```bash
+cd infra/01-gateway/traefik
 docker compose up -d
 ```
 
-- `.env`와 `secrets/` 값은 루트 기준으로 관리됩니다.
+## Structure
 
-## 🔒 컨테이너 보안 기준
+```text
+infra/
+├── 01-gateway/        # Edge Routing & SSL Ingress
+├── 02-auth/           # SSO, IAM, and OAuth2 Proxy
+├── 03-security/       # Vault and Security Hardening
+├── 04-data/           # Persistence (SQL, NoSQL, Object)
+├── 05-messaging/      # Event Streaming (Kafka, RabbitMQ)
+├── 06-observability/  # Monitoring, Logging, Tracing
+├── 07-workflow/       # DAG Orchestration & Automation
+├── 08-ai/             # LLM Inference & RAG Engines
+├── 09-tooling/        # DevOps, QA & Performance Tools
+├── 10-communication/  # Mail & Messaging Infrastructure
+├── 11-laboratory/     # Experimental & Admin Dashboards
+├── common-optimizations.yml # Shared Docker templates
+├── docker-compose.yml # (Deprecated/Redirect) -> Root compose
+└── README.md          # This file
+```
 
-- 모든 infra 서비스는 `security_opt: [no-new-privileges:true]`와 `cap_drop: [ALL]`을 기본 적용합니다.
-- 예외(예: `privileged`, `cap_add`, root 필요)는 **compose 파일에 주석으로 사유를 명시**하고, 관련 Spec에 기록합니다.
+## How to Work in This Area
 
-## 🧩 정리 기준 (분류 원칙)
+1. **Service Addition**: `infra/<tier>/<service>/` 디렉토리를 생성하고 `docker-compose.yml`을 작성합니다.
+2. **Global Integration**: 루트 `docker-compose.yml`의 `include`에 새 서비스를 추가합니다.
+3. **Configuration**: 환경 변수가 필요하면 루트 `.env.example`에 추가하고, 민감 값은 `secrets/`에 분리합니다.
+4. **Validation**: `scripts/validate-docker-compose.sh`를 실행하여 구조적 정합성을 확인합니다.
 
-infra 하위 폴더는 실행 방식에 따라 다음 4가지로 분류합니다.
+## Related References
 
-1. **Core (Include)**: 루트 `docker-compose.yml`에 `include`된 기본 스택.
-2. **Optional (Profile)**: `include`는 되어 있으나 `profiles`로 켜는 스택.
-3. **Standalone**: 루트 `include`에 없으며 폴더 단위로 별도 실행.
-4. **Placeholder**: 문서만 존재하며 실행 정의가 아직 없음.
+- [Official Guides](../docs/07.guides/README.md)
+- [Operation Specs](../docs/08.operations/README.md)
+- [Architecture Details](../docs/02.ard/README.md)
+- [Secret Management](../secrets/README.md)
 
-### 분류 요약
+## AI Agent Guidance
 
-- **Core (Profile: `core`)**: traefik, keycloak, oauth2-proxy
-- **Data (Profile: `data`)**: mng-db (valkey, postgres), postgresql-cluster, valkey-cluster, opensearch, minio
-- **Observability (Profile: `obs`)**: prometheus, loki, tempo, grafana, alloy, etc.
-- **Messaging (Profile: `messaging`)**: kafka, schema-registry, etc.
-- **AI (Profile: `ai`)**: ollama, open-webui, qdrant
-- **Workflow (Profile: `workflow`)**: airflow (n8n은 기본 비활성/주석 처리)
-- **Tooling (Profile: `tooling`)**: sonarqube
-- **Standalone**: supabase (manual directory run)
-- **Placeholder**: courier, rabbitmq (정의는 있으나 루트 include에 아직 미통합)
+수정 전에 Agent는 다음을 수행해야 함:
 
-## ➕ 서비스 추가 방법
+1. 타겟 계층과 기존 서비스 패턴을 파악한다.
+2. 새 서비스가 `common-optimizations.yml` 템플릿을 준수하는지 확인한다.
+3. `[LOAD:SPEC]` 등 JIT 마커를 사용하여 상세 컨텍스트를 확보한다.
+4. 이 README의 "Infrastructure Tiers" 테이블을 업데이트하여 추적성을 유지한다.
 
-1. `infra/<번호-카테고리>/<서비스명>/` 디렉토리를 생성하고 `docker-compose.yml`을 작성합니다.
-2. 필요 시 `profiles`를 지정해 선택 실행 가능한 스택으로 분리합니다.
-3. 루트 `docker-compose.yml`의 `include`에 새 서비스를 추가합니다.
-4. 환경 변수가 필요하면 루트 `.env.example`에 추가하고, 민감 값은 `secrets/`에 `*.txt`로 분리합니다.
-5. 문서 반영: `infra/README.md`에 서비스 요약을 추가하고 `docs/README.md` 및 `docs/guides/README.md`에 관련 내용을 업데이트합니다.
+---
+*Maintained by the hy-home.docker Platform Team*

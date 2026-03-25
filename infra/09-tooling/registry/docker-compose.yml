@@ -11,21 +11,25 @@ volumes:
 
 services:
   registry:
-    profiles: ['tooling']
-    restart: unless-stopped
-    extends: { file: ../../common-optimizations.yml, service: template-stateful-med }
+    profiles:
+      - 'tooling'
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
     image: registry:2
     container_name: registry
+    restart: unless-stopped
     read_only: false
-    ports: ['${REGISTRY_PORT:-5000}:${REGISTRY_PORT:-5000}']
-    volumes: [registry-data-volume:/var/lib/registry:rw]
+    ports:
+      - '${REGISTRY_PORT:-5000}:${REGISTRY_PORT:-5000}'
+    volumes:
+      - registry-data-volume:/var/lib/registry:rw
     healthcheck:
-      {
-        test:
-          ['CMD-SHELL', 'wget -q --spider http://localhost:${REGISTRY_PORT:-5000}/v2/ || exit 1'],
-        interval: 30s,
-        timeout: 10s,
-        retries: 5,
-        start_period: 15s,
-      }
-    labels: { <<: *tier-label }
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${REGISTRY_PORT:-5000}/v2/ || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+
+    labels:
+      <<: *tier-label

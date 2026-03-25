@@ -3,7 +3,8 @@ x-tier-label: &tier-label
 
 services:
   terraform:
-    profiles: ['tooling']
+    profiles:
+      - 'tooling'
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low

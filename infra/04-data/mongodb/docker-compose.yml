@@ -9,7 +9,8 @@ volumes:
 
 services:
   mongo-key-generator:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -30,7 +31,8 @@ services:
       "
 
   mongodb-rep1:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -55,14 +57,17 @@ services:
       timeout: 30s
       retries: 5
       start_period: 15s
-    networks: [infra_net]
+    networks:
+      - infra_net
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
-    labels: { <<: *tier-label }
+    labels:
+      <<: *tier-label
 
   mongodb-rep2:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -87,14 +92,17 @@ services:
       timeout: 30s
       retries: 5
       start_period: 15s
-    networks: [infra_net]
+    networks:
+      - infra_net
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
-    labels: { <<: *tier-label }
+    labels:
+      <<: *tier-label
 
   mongodb-arbiter:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -107,14 +115,17 @@ services:
       - mongo-key:/data/configdb:ro
     command:
       ['--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all']
-    networks: [infra_net]
+    networks:
+      - infra_net
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
-    labels: { <<: *tier-label }
+    labels:
+      <<: *tier-label
 
   mongo-init:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -122,11 +133,15 @@ services:
     image: mongo:8.2.3-noble
     container_name: mongo-init
     read_only: true
-    tmpfs: [/tmp]
-    networks: [infra_net]
+    tmpfs:
+      - /tmp
+    networks:
+      - infra_net
     depends_on:
-      mongodb-rep1: { condition: service_healthy }
-      mongodb-rep2: { condition: service_healthy }
+      mongodb-rep1:
+        condition: service_healthy
+      mongodb-rep2:
+        condition: service_healthy
     command: >
       bash -c "
         sleep 5;
@@ -139,7 +154,8 @@ services:
       - mongodb_root_password
 
   mongo-express:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -148,7 +164,8 @@ services:
     hostname: mongo-express
     restart: unless-stopped
     read_only: true
-    tmpfs: [/tmp]
+    tmpfs:
+      - /tmp
     environment:
       ME_CONFIG_MONGODB_ENABLE_ADMIN: 'true'
       ME_CONFIG_MONGODB_AUTH_DATABASE: admin
@@ -167,20 +184,26 @@ services:
       traefik.http.routers.mongo-express.entrypoints: websecure
       traefik.http.routers.mongo-express.tls: 'true'
       traefik.http.services.mongo-express.loadbalancer.server.port: ${MONGO_EXPRESS_PORT:-8081}
-    networks: [infra_net]
+    networks:
+      - infra_net
     depends_on:
-      mongo-init: { condition: service_completed_successfully }
-    secrets: [mongodb_root_password, mongo_express_basicauth_password]
+      mongo-init:
+        condition: service_completed_successfully
+    secrets:
+      - mongodb_root_password
+      - mongo_express_basicauth_password
 
   mongodb-exporter:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
     image: percona/mongodb_exporter:2.37
     container_name: mongodb-exporter
     read_only: true
-    tmpfs: [/tmp]
+    tmpfs:
+      - /tmp
     expose:
       - ${MONGO_EXPORTER_PORT:-9216}
     entrypoint: ['/bin/sh', '-c']
@@ -188,6 +211,9 @@ services:
       export MONGO_ROOT_PASSWORD=$$(cat /run/secrets/mongodb_root_password | tr -d '\n') &&
       exec mongodb_exporter --mongodb.uri="mongodb://${MONGODB_ROOT_USERNAME}:$${MONGO_ROOT_PASSWORD}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin" --collect.collection --collect.database --collect.indexusage
     depends_on:
-      mongo-init: { condition: service_completed_successfully }
-    secrets: [mongodb_root_password]
-    networks: [infra_net]
+      mongo-init:
+        condition: service_completed_successfully
+    secrets:
+      - mongodb_root_password
+    networks:
+      - infra_net

@@ -2,15 +2,15 @@ x-tier-label: &tier-label
   hy-home.tier: tooling
 
 volumes:
-  locust-data:
+  k6-data:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_TOOLING_DIR}/locust
+      device: ${DEFAULT_TOOLING_DIR}/k6
 
 services:
-  locust-master:
+  k6-master:
     profiles:
       - 'tooling'
     extends:
@@ -46,39 +46,5 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    extra_hosts:
-      - '${DEFAULT_URL:-localhost}:host-gateway'
-
-  locust-worker:
-    profiles:
-      - 'tooling'
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-infra-med
-    build: .
-    read_only: false
-    labels:
-      <<: *tier-label
-    environment:
-      - LOCUST_INFLUXDB_HOST=influxdb
-      - LOCUST_INFLUXDB_PORT=${INFLUXDB_PORT:-8181}
-      - LOCUST_INFLUXDB_ORG=${INFLUXDB_ORG}
-      - LOCUST_INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
-    volumes:
-      - locust-data:/mnt/locust:rw
-    networks:
-      - infra_net
-    secrets:
-      - influxdb_api_token
-    command: >
-      /bin/sh -c "
-      export LOCUST_INFLUXDB_TOKEN=$$(cat /run/secrets/influxdb_api_token | tr -d '') &&
-      exec locust -f /mnt/locust/locustfile.py --worker --master-host locust-master
-      "
-    depends_on:
-      locust-master:
-        condition: service_healthy
-    deploy:
-      replicas: 2
     extra_hosts:
       - '${DEFAULT_URL:-localhost}:host-gateway'

@@ -21,9 +21,11 @@ x-airflow-common-env: &airflow-common-env
   AIRFLOW__METRICS__STATSD_PREFIX: 'airflow'
 
 x-airflow-common: &airflow-common
-  profiles: [workflow]
+  profiles:
+    - 'workflow'
   image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:slim-3.1.6}
-  networks: [infra_net]
+  networks:
+    - infra_net
   environment: *airflow-common-env
   volumes:
     - airflow-dags:/opt/airflow/dags
@@ -31,7 +33,11 @@ x-airflow-common: &airflow-common
     - airflow-logs:/opt/airflow/logs
     - airflow-config:/opt/airflow/config
   user: '${AIRFLOW_UID:-50000}:0'
-  secrets: [airflow_db_password, airflow_fernet_key, airflow_www_password, airflow_valkey_password]
+  secrets:
+    - airflow_db_password
+    - airflow_fernet_key
+    - airflow_www_password
+    - airflow_valkey_password
 
 volumes:
   airflow-dags:
@@ -62,20 +68,22 @@ volumes:
 
 services:
   airflow-apiserver:
-    extends: { file: ../../common-optimizations.yml, service: template-stateful-high }
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-high
     <<: *airflow-common
     read_only: false
     command: api-server
     healthcheck:
-      {
-        test: ['CMD', 'curl', '--fail', 'http://localhost:${AIRFLOW_PORT:-8080}/api/v2/version'],
-        interval: 15s,
-        timeout: 30s,
-        retries: 5,
-        start_period: 15s,
-      }
+      test: ['CMD', 'curl', '--fail', 'http://localhost:${AIRFLOW_PORT:-8080}/api/v2/version']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
     restart: unless-stopped
-    depends_on: { airflow-init: { condition: service_completed_successfully } }
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -84,38 +92,43 @@ services:
       traefik.http.routers.airflow.tls: 'true'
       traefik.http.services.airflow.loadbalancer.server.port: ${AIRFLOW_PORT:-8080}
   airflow-scheduler:
-    extends: { file: ../../common-optimizations.yml, service: template-stateful-high }
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-high
     <<: *airflow-common
     read_only: false
     command: scheduler
     healthcheck:
-      {
-        test: ['CMD', 'curl', '--fail', 'http://localhost:8974/health'],
-        interval: 15s,
-        timeout: 30s,
-        retries: 5,
-        start_period: 15s,
-      }
+      test: ['CMD', 'curl', '--fail', 'http://localhost:8974/health']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
     restart: unless-stopped
-    depends_on: { airflow-init: { condition: service_completed_successfully } }
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
   airflow-dag-processor:
-    extends: { file: ../../common-optimizations.yml, service: template-stateful-high }
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-high
     <<: *airflow-common
     read_only: false
     command: dag-processor
     healthcheck:
-      {
-        test:
-          ['CMD-SHELL', 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"'],
-        interval: 15s,
-        timeout: 30s,
-        retries: 5,
-        start_period: 15s,
-      }
+      test: ['CMD-SHELL', 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
     restart: unless-stopped
-    depends_on: { airflow-init: { condition: service_completed_successfully } }
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
   airflow-worker:
-    extends: { file: ../../common-optimizations.yml, service: template-stateful-high }
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-high
     <<: *airflow-common
     read_only: false
     command: celery worker
@@ -134,23 +147,27 @@ services:
       start_period: 15s
     restart: unless-stopped
     depends_on:
-      airflow-apiserver: { condition: service_healthy }
-      airflow-init: { condition: service_completed_successfully }
+      airflow-apiserver:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
   airflow-triggerer:
-    extends: { file: ../../common-optimizations.yml, service: template-stateful-low }
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
     <<: *airflow-common
     read_only: false
     command: triggerer
     healthcheck:
-      {
-        test: ['CMD-SHELL', 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"'],
-        interval: 15s,
-        timeout: 30s,
-        retries: 5,
-        start_period: 15s,
-      }
+      test: ['CMD-SHELL', 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
     restart: unless-stopped
-    depends_on: { airflow-init: { condition: service_completed_successfully } }
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
   airflow-init:
     extends:
       file: ../../common-optimizations.yml
@@ -172,30 +189,36 @@ services:
       _AIRFLOW_WWW_USER_PASSWORD_CMD: cat /run/secrets/airflow_www_password
       _PIP_ADDITIONAL_REQUIREMENTS: ''
   airflow-cli:
-    extends: { file: ../../common-optimizations.yml, service: template-infra-med }
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
     <<: *airflow-common
-    profiles: [debug]
+    profiles:
+      - debug
     read_only: false
     environment:
       <<: *airflow-common-env
       CONNECTION_CHECK_MAX_COUNT: '0'
     command: [bash, -c, airflow]
   flower:
-    extends: { file: ../../common-optimizations.yml, service: template-stateful-low }
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
     <<: *airflow-common
     read_only: false
     command: celery flower
-    profiles: [flower]
+    profiles:
+      - flower
     healthcheck:
-      {
-        test: ['CMD', 'curl', '--fail', 'http://localhost:${FLOWER_PORT:-5555}/'],
-        interval: 15s,
-        timeout: 30s,
-        retries: 5,
-        start_period: 15s,
-      }
+      test: ['CMD', 'curl', '--fail', 'http://localhost:${FLOWER_PORT:-5555}/']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
     restart: unless-stopped
-    depends_on: { airflow-init: { condition: service_completed_successfully } }
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -205,18 +228,26 @@ services:
       traefik.http.services.flower.loadbalancer.server.port: ${FLOWER_PORT:-5555}
       traefik.http.routers.flower.middlewares: sso-errors@file,sso-auth@file
   airflow-valkey:
-    profiles: [workflow]
-    extends: { file: ../../common-optimizations.yml, service: template-stateful-low }
+    profiles:
+      - 'workflow'
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
     image: valkey/valkey:9.0.2-alpine
     container_name: airflow-valkey
     read_only: false
-    secrets: [airflow_valkey_password]
-    networks: [infra_net]
+    secrets:
+      - airflow_valkey_password
+    networks:
+      - infra_net
     restart: unless-stopped
-    volumes: [airflow-valkey-data:/data:rw]
+    volumes:
+      - airflow-valkey-data:/data:rw
     command: >
       sh -c 'valkey-server --requirepass "$$(cat /run/secrets/airflow_valkey_password)" --appendonly yes --port 6379'
-    expose: ['${VALKEY_PORT:-6379}', '${VALKEY_BUS_PORT:-16379}']
+    expose:
+      - '${VALKEY_PORT:-6379}'
+      - '${VALKEY_BUS_PORT:-16379}'
     healthcheck:
       test:
         [
@@ -228,30 +259,49 @@ services:
       retries: 5
       start_period: 15s
   airflow-valkey-exporter:
-    profiles: [workflow]
-    extends: { file: ../../common-optimizations.yml, service: template-infra-low }
+    profiles:
+      - 'workflow'
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: oliver006/redis_exporter:v1.80.1-alpine
     container_name: airflow-valkey-exporter
     read_only: true
-    tmpfs: [/tmp]
-    expose: ['${VALKEY_EXPORTER_PORT:-9121}']
-    networks: [infra_net]
+    tmpfs:
+      - /tmp
+    expose:
+      - '${VALKEY_EXPORTER_PORT:-9121}'
+    networks:
+      - infra_net
     restart: unless-stopped
-    secrets: [airflow_valkey_password]
+    secrets:
+      - airflow_valkey_password
     entrypoint: [/bin/sh, -c]
     command: |
       exec /redis_exporter -redis.addr=redis://airflow-valkey:6379 -redis.password-file=/run/secrets/airflow_valkey_password -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
-    depends_on: { airflow-valkey: { condition: service_healthy } }
+    depends_on:
+      airflow-valkey:
+        condition: service_healthy
   airflow-statsd-exporter:
-    profiles: [workflow]
-    extends: { file: ../../common-optimizations.yml, service: template-infra-low }
+    profiles:
+      - 'workflow'
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
     image: prom/statsd-exporter:v0.28.0
     container_name: airflow-statsd-exporter
     read_only: true
-    tmpfs: [/tmp]
+    tmpfs:
+      - /tmp
     restart: unless-stopped
     command: '--statsd.listen-udp=:${STATSD_AIRFLOW_PORT:-9125} --web.listen-address=:${STATSD_PROMETHEUS_PORT:-9102} --statsd.mapping-config=/tmp/mappings.yml'
-    volumes: [./config/statsd_mapping.yml:/tmp/mappings.yml:ro]
-    depends_on: { airflow-init: { condition: service_completed_successfully } }
-    networks: [infra_net]
-    expose: ['${STATSD_PROMETHEUS_PORT:-9102}', '${STATSD_AIRFLOW_PORT:-9125}']
+    volumes:
+      - ./config/statsd_mapping.yml:/tmp/mappings.yml:ro
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    networks:
+      - infra_net
+    expose:
+      - '${STATSD_PROMETHEUS_PORT:-9102}'
+      - '${STATSD_AIRFLOW_PORT:-9125}'

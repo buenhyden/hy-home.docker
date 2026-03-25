@@ -6,13 +6,11 @@
 
 The `04-data` tier provides a polyglot persistence layer for the `hy-home.docker` ecosystem. It manages all stateful data ranging from transactional SQL to high-velocity time-series and semantic vector data. It is engineered for high availability (HA) and durability, ensuring that platform state is preserved across restarts and failures.
 
-## Audience
-
 이 README의 주요 독자:
 
-- DBAs & SREs (Database reliability)
-- Application Developers (Persistence selection)
-- AI Agents (Automated backup & migration)
+- **Storage Engineers**: Database performance and reliability.
+- **Application Developers**: Selecting the right persistence engine.
+- **AI Agents**: Automated backup, migration, and state management.
 
 ## Scope
 

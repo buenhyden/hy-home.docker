@@ -11,7 +11,8 @@ volumes:
 
 services:
   open-webui:
-    profiles: ['ai']
+    profiles:
+      - 'ai'
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med

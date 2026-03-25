@@ -187,7 +187,7 @@ include:
   - infra/04-data/neo4j/docker-compose.yml
   # - infra/04-data/opensearch/docker-compose.yml
   # - infra/04-data/postgresql-cluster/docker-compose.yml
-  # - infra/04-data/qdrant/docker-compose.yml
+  - infra/04-data/qdrant/docker-compose.yml
   # - infra/04-data/seaweedfs/docker-compose.yml
   # - infra/04-data/supabase/docker-compose.yml
   # - infra/04-data/valkey-cluster/docker-compose.yml
@@ -200,9 +200,9 @@ include:
   # - infra/08-ai/ollama/docker-compose.yml
   # - infra/08-ai/open-webui/docker-compose.yml
   # - infra/09-tooling/locust/docker-compose.yml
-  # - infra/09-tooling/registry/docker-compose.yml
+  - infra/09-tooling/registry/docker-compose.yml
   # - infra/09-tooling/sonarqube/docker-compose.yml
   # - infra/09-tooling/syncthing/docker-compose.yml
-  # - infra/09-tooling/terraform/docker-compose.yml
+  - infra/09-tooling/terraform/docker-compose.yml
   # - infra/09-tooling/terrakube/docker-compose.yml
   # - infra/10-communication/mail/docker-compose.yml

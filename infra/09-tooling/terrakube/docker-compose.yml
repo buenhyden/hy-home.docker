@@ -3,20 +3,19 @@ x-tier-label: &tier-label
 
 services:
   terrakube-api:
-    profiles: ['tooling']
+    profiles:
+      - 'tooling'
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
     image: azbuilder/api-server:2.29.0
     container_name: terrakube-api
     secrets:
-      [
-        terrakube_db_password,
-        minio_app_user_password,
-        terrakube_valkey_password,
-        terrakube_pat_secret,
-        terrakube_internal_secret,
-      ]
+      - terrakube_db_password
+      - minio_app_user_password
+      - terrakube_valkey_password
+      - terrakube_pat_secret
+      - terrakube_internal_secret
     environment:
       ApiDataSourceType: POSTGRESQL
       DatasourceHostname: ${POSTGRES_MNG_HOSTNAME}
@@ -55,15 +54,12 @@ services:
       timeout: 15s
       retries: 5
       start_period: 1m
-    # depends_on:
-    #   mng-pg: { condition: service_healthy }
-    #   mng-valkey: { condition: service_healthy }
-    #   keycloak: { condition: service_healthy }
-    #   minio: { condition: service_healthy }
-    networks: [infra_net]
+    networks:
+      - infra_net
 
   terrakube-ui:
-    profiles: ['tooling']
+    profiles:
+      - 'tooling'
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -90,17 +86,23 @@ services:
       retries: 5
       start_period: 15s
     depends_on:
-      terrakube-api: { condition: service_healthy }
-    networks: [infra_net]
+      terrakube-api:
+        condition: service_healthy
+    networks:
+      - infra_net
 
   terrakube-executor:
-    profiles: ['tooling']
+    profiles:
+      - 'tooling'
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
     image: azbuilder/executor:2.29.0
     container_name: terrakube-executor
-    secrets: [terrakube_internal_secret, minio_app_user_password, terrakube_valkey_password]
+    secrets:
+      - terrakube_internal_secret
+      - minio_app_user_password
+      - terrakube_valkey_password
     environment:
       TerrakubeEnableSecurity: 'true'
       InternalSecret_FILE: /run/secrets/terrakube_internal_secret
@@ -137,8 +139,10 @@ services:
       retries: 5
       start_period: 1m
     depends_on:
-      terrakube-api: { condition: service_healthy }
-    networks: [infra_net]
+      terrakube-api:
+        condition: service_healthy
+    networks:
+      - infra_net
     labels:
       <<: *tier-label
       traefik.enable: 'true'

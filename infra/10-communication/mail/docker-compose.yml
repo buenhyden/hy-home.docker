@@ -15,7 +15,8 @@ secrets:
 
 services:
   stalwart:
-    profiles: ['communication']
+    profiles:
+      - 'communication'
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -57,7 +58,8 @@ services:
       traefik.http.services.stalwart-ui.loadbalancer.server.port: ${STALWART_PORT:-8080}
 
   mailhog:
-    profiles: ['communication']
+    profiles:
+      - 'communication'
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

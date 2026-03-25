@@ -23,7 +23,8 @@ volumes:
 
 services:
   couchdb-1:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -72,7 +73,8 @@ services:
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
 
   couchdb-2:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -117,7 +119,8 @@ services:
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
 
   couchdb-3:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -162,7 +165,8 @@ services:
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
 
   couchdb-cluster-init:
-    profiles: ['data']
+    profiles:
+      - 'data'
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low

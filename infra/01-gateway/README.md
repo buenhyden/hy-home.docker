@@ -2,13 +2,7 @@
 
 > Unified entry point for all traffic, orchestrating routing, TLS, and security.
 
-## Overview
-
-The `01-gateway` tier is the unified entry point for all traffic entering the `hy-home.docker` ecosystem. It orchestrates routing, TLS termination (SSL), and security middleware chains (SSO, Rate Limit, etc.). By combining Traefik as the edge router and Nginx as a specialized path proxy, it provide robust and flexible traffic management.
-
-## Overview (KR)
-
-`01-gateway` 티어는 `hy-home.docker` 생태계로 들어오는 모든 트래픽의 통합 진입점입니다. 트래픽 라우팅, TLS 종료(SSL 처리), 보안 미들웨어 체인(SSO, Rate Limit 등)을 관리하며, Traefik과 Nginx를 조합하여 효율적인 트래픽 제어를 수행합니다.
+The `01-gateway` tier is the unified entry point for all traffic entering the `hy-home.docker` ecosystem. It orchestrates routing, TLS termination (SSL), and security middleware chains (SSO, Rate Limit, etc.). By combining Traefik as the edge router and Nginx as a specialized path proxy, it provides robust and flexible traffic management.
 
 ## Audience
 

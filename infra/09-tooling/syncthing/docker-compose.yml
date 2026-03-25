@@ -17,7 +17,8 @@ volumes:
 
 services:
   syncthing:
-    profiles: ['tooling']
+    profiles:
+      - 'tooling'
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
