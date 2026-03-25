@@ -1,48 +1,40 @@
-<!-- [ID:09-tooling:locust] -->
-# Locust Cluster
+# Locust Load Testing
 
-> Scalable, distributed user load testing tool.
+> Distributed performance benchmarking and user simulation.
 
-## 1. Overview (KR)
+## Overview
 
-이 서비스는 수천 명의 동시 사용자를 시뮬레이션하여 시스템 성능을 측정하는 **분산 부하 테스트 도구**입니다. Python 스크립트를 통해 복잡한 시나리오를 자동화할 수 있습니다.
+Locust is used for load testing the platform's services. It supports distributed execution with a master node orchestrating multiple workers to simulate high concurrent traffic.
 
-## 2. Overview
+## Audience
 
-The `locust` stack enables performance benchmarking and stress testing for `hy-home.docker`. Running in a master-worker configuration, it provides real-time user simulation and exports performance metrics to InfluxDB for long-term analysis.
+- QA Engineers (Load testing)
+- SREs (Capacity planning)
 
-## 3. Tech Stack
+## Structure
 
-| Service | Technology | Role |
+```text
+locust/
+├── locustfile.py       # Default test script
+├── Dockerfile          # Custom Locust build
+├── docker-compose.yml  # Master/Worker orchestration
+└── README.md           # This file
+```
+
+## How to Work in This Area
+
+1. Read the [Performance Testing Guide](../../../docs/07.guides/09-tooling/02.performance-testing.md).
+2. Access the UI at `http://${INTERNAL_IP}:18089`.
+
+## Tech Stack
+
+| Component | Technology | Role |
 | :--- | :--- | :--- |
-| **locust-master** | Python 3 / Locust 2.43 | Test Orchestrator |
-| **locust-worker** | Python 3 / Locust 2.43 | Load generator |
+| Testing | Locust | Distributed testing engine |
+| Reporting | InfluxDB | Metrics backend |
 
-## 4. Networking
+## AI Agent Guidance
 
-| Service | Port | Description |
-| :--- | :--- | :--- |
-| **Web UI** | `8089` | Test controller dashboard (`locust.${DEFAULT_URL}`). |
-| **Master-Worker** | `5557` | Internal node communication. |
-
-## 5. Persistence & Integration
-
-- **Volumes**: `locust-data` → `${DEFAULT_TOOLING_DIR}/locust`.
-- **Integration**: Exports to `influxdb` (04-data) via `influxdb_api_token`.
-- **Secrets**: `influxdb_api_token`.
-
-## 6. File Map
-
-| Path | Description |
-| :--- | :--- |
-| `Dockerfile` | Custom image built on `locustio/locust:2.43.2`. |
-| `docker-compose.yml` | Master and worker service definitions. |
-| `locustfile.py` | Load test scenario scripts. |
-| `README.md` | Service overview (this file). |
-
----
-
-## Documentation References
-
-- [Load Testing Guide](../../../docs/07.guides/09-tooling/load-testing-guide.md)
-- [Observability Guide](../../../docs/07.guides/06-observability/README.md)
+1. Scale workers using `docker compose up --scale locust-worker=N`.
+2. Metrics are automatically pushed to InfluxDB if the API token is correctly mounted.
+3. Custom Python dependencies for `locustfile.py` should be added to the local `Dockerfile`.

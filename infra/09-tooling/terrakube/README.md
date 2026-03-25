@@ -1,48 +1,39 @@
-<!-- [ID:09-tooling:terrakube] -->
-# Terrakube
+# Terrakube IaC Automation
 
-> Open-source alternative to Terraform Cloud/Enterprise.
+> Enterprise-grade Terraform orchestration and remote state management.
 
-## 1. Overview (KR)
+## Overview
 
-이 서비스는 Terraform 워크플로우를 자동화하고 관리하는 **Self-hosted IaC 오케스트레이션 플랫폼**입니다. 팀 단위의 인프라 협업 및 상태 관리를 지원합니다.
+Terrakube provides a centralized platform for managing Terraform workflows. It handles API-driven execution, private registry for modules, and secure remote state storage using MinIO (S3-compatible).
 
-## 2. Overview
+## Audience
 
-The `terrakube` stack provides a complete IaC management platform for `hy-home.docker`. It manages state files, execution policies, and workspace organization, supporting scheduled runs and team-based infrastructure governance.
+- DevOps Engineers (Automation)
+- Platform Engineers (IaC governance)
 
-## 3. Tech Stack
+## Structure
 
-| Service | Technology | Role |
+```text
+terrakube/
+├── docker-compose.yml  # API, UI, and Executor orchestration
+└── README.md           # This file
+```
+
+## How to Work in This Area
+
+1. Read the [IaC Automation Guide](../../../docs/07.guides/09-tooling/01.iac-automation.md).
+2. Access the UI at `https://terrakube-ui.${DEFAULT_URL}`.
+
+## Tech Stack
+
+| Component | Technology | Version |
 | :--- | :--- | :--- |
-| **terrakube-api** | Java/Spring | Platform Logic & API |
-| **terrakube-ui** | React | Management Dashboard |
-| **terrakube-executor** | Docker / TF | Terraform Execution Node |
+| API / UI | Terrakube | v2.29.0 |
+| Storage | MinIO (S3) | State storage |
+| Auth | Keycloak / DEX | SSO Integration |
 
-## 4. Networking
+## AI Agent Guidance
 
-| Service | Port | Description |
-| :--- | :--- | :--- |
-| **API** | `8080` | Backend API (`terrakube-api.${DEFAULT_URL}`). |
-| **UI** | `3000` | Dashboard (`terrakube-ui.${DEFAULT_URL}`). |
-| **Executor** | `8090` | Job processing node (`terrakube-executor.${DEFAULT_URL}`). |
-
-## 5. Persistence & Dependencies
-
-- **Volumes**: State stored in MinIO (`tfstate` bucket).
-- **Secrets**: `terrakube_db_password`, `minio_app_user_password`, `terrakube_valkey_password`, `terrakube_pat_secret`.
-- **Integrations**: Keycloak (Auth), MinIO (Storage), Valkey (Cache), PostgreSQL (DB).
-
-## 6. File Map
-
-| Path | Description |
-| :--- | :--- |
-| `docker-compose.yml` | Full Terrakube stack definition. |
-| `README.md` | Service overview (this file). |
-
----
-
-## Documentation References
-
-- [IaC Deployment Policy](../../../docs/08.operations/09-tooling/iac-deployment-policy.md)
-- [Tooling Context](../../../docs/07.guides/09-tooling/README.md)
+1. The `terrakube-executor` needs access to `/var/run/docker.sock` to spin up ephemeral Terraform containers.
+2. All secrets for Terraform providers should be managed within Terrakube Workspaces.
+3. Monitor the `actuator/health` endpoint for API/Executor drift.

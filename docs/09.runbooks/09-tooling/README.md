@@ -1,13 +1,44 @@
-# Tooling Runbooks
+# Tooling Runbook (09-tooling)
 
-Emergency procedures for developer tools.
+> Toolchain Failure Recovery & Performance Troubleshooting
 
-## Runbooks
+## Overview
 
-| Runbook                                          | Severity | Description                                  |
-| ------------------------------------------------ | -------- | -------------------------------------------- |
-| [SonarQube Recovery](./sonarqube-recovery.md)    | P2       | Restoring SonarQube access and database ties. |
+이 런북은 `09-tooling` 계층에서 발생할 수 있는 주요 도구(SonarQube, Terrakube, Locust)의 장애 상황에 대한 조치 방법을 설명한다.
+
+## Emergency Procedures
+
+### 1. SonarQube DB 연결 장애
+
+SonarQube가 시작되지 않거나 'DB Connection Failure'가 로그에 나타날 때.
+
+1. **스키마 확인**: PostgreSQL(`mng-db`)에 `sonarqube` 스키마가 존재하는지 확인.
+2. **비밀번호 검증**: `docker secret inspect sonarqube_db_password`로 마운트된 비밀번호가 DB 계정과 일치하는지 확인.
+3. **Elasticsearch 인덱스 손상**: 컨테이너 데이터 폴더 내의 `es8` 디렉터리를 삭제하고 재시작하여 인덱스를 다시 구축한다.
+
+### 2. Terrakube 실행기(Executor) 중단
+
+Terraform 작업이 'Pending' 상태에서 진행되지 않을 때.
+
+1. **Docker 소켓 점검**: `terrakube-executor` 컨테이너가 호스트의 `/var/run/docker.sock`을 정상적으로 마운트했는지 확인.
+2. **MinIO 연결성**: 실행기가 원격 상태를 저장하는 MinIO 버킷에 접근 가능한지 로그를 통해 확인.
+3. **Valkey 잠금 해제**: 비정상 종료로 인해 잔류한 Terraform 락이 있다면 DB 또는 Valkey에서 수동으로 제거한다.
+
+### 3. private Registry 푸시 실패 (Forbidden)
+
+이미지 업로드 중 권한 에러가 발생하는 경우.
+
+1. **Auth 확인**: `docker login registry.${DEFAULT_URL}`을 통해 인증 정보 유효성 점검.
+2. **디스크 용량**: 도구 계층의 영구 저장소(`${DEFAULT_TOOLING_DIR}`)가 가득 찼는지 확인.
 
 ---
 
-- [Back to Runbooks](../../README.md)
+## Verification Steps
+
+- [ ] `sonarqube` UI 접속 및 관리 대시보드 상태 확인.
+- [ ] Terrakube API `/actuator/health` 응답 확인.
+
+## Related Operational Documents
+
+- [Operations Policy](../../docs/08.operations/09-tooling/README.md)
+- [IaC Automation Guide](../../docs/07.guides/09-tooling/01.iac-automation.md)

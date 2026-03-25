@@ -1,46 +1,38 @@
-<!-- [ID:09-tooling:sonarqube] -->
-# SonarQube
+# SonarQube Code Quality
 
 > Continuous code quality inspection and security scanning.
 
-## 1. Overview (KR)
+## Overview
 
-이 서비스는 코드 정적 분석을 통해 버그, 취약점, 코드 스멜을 탐지하는 **코드 품질 분석 도구**입니다. 개발 프로세스의 품질 관리를 위해 활용됩니다.
+SonarQube provides static application security testing (SAST) and code quality metrics. It integrates with the platform's PostgreSQL management database for persistence.
 
-## 2. Overview
+## Audience
 
-The `sonarqube` service provides the quality gate for `hy-home.docker`. It performs deep static analysis of source code to identify technical debt, security issues, and compliance violations, ensuring high code standards across the platform.
+- Developers (PR analysis)
+- Security Engineers (Vulnerability scanning)
 
-## 3. Tech Stack
+## Structure
 
-| Service | Technology | Role |
+```text
+sonarqube/
+├── docker-compose.yml  # SonarQube service configuration
+└── README.md           # This file
+```
+
+## How to Work in This Area
+
+1. Access the UI at `https://sonarqube.${DEFAULT_URL}`.
+2. Login using Keycloak SSO.
+
+## Tech Stack
+
+| Component | Technology | Version |
 | :--- | :--- | :--- |
-| **sonarqube** | SonarQube 10.7 | Analysis Engine (Community) |
+| Quality | SonarQube Community | v10.7.0 |
+| DB | PostgreSQL | Management Cluster |
 
-## 4. Networking
+## AI Agent Guidance
 
-| Service | Port | Description |
-| :--- | :--- | :--- |
-| **Web UI** | `9000` | Main analysis dashboard (`sonarqube.${DEFAULT_URL}`). |
-| **Internal** | `${SONARQUBE_PORT}` | Internal service communication. |
-
-## 5. Persistence & Secrets
-
-- **Volumes**: `sonarqube-data-volume`, `sonarqube-logs-volume`.
-- **Secrets**: `sonarqube_db_password`.
-- **Database**: Uses `sonarqube` database in `mng-db` (PostgreSQL).
-- **Host Path**: `${DEFAULT_TOOLING_DIR}/sonarqube/data`.
-
-## 6. File Map
-
-| Path | Description |
-| :--- | :--- |
-| `docker-compose.yml` | SonarQube service definition. |
-| `README.md` | Service overview (this file). |
-
----
-
-## Documentation References
-
-- [DevOps Tooling Guide](../../../docs/07.guides/09-tooling/README.md)
-- [Recovery Runbook](../../../docs/09.runbooks/09-tooling/sonarqube-recovery.md)
+1. The `sonarqube` service requires `vm.max_map_count` to be at least 262144 on the host.
+2. Database credentials are securely passed via Docker secrets (`sonarqube_db_password`).
+3. Use the integrated SonarLint tools in IDEs for pre-commit feedback.
