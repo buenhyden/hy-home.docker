@@ -1,73 +1,66 @@
----
-layer: infra
----
-# Mail (MailHog + Stalwart)
+<!-- [ID:10-communication:mail] -->
+# Mail Services (Stalwart + MailHog)
 
-**Overview (KR):** 개발용 SMTP 트랩(MailHog)과 프로덕션 메일 서버(Stalwart)를 함께 제공하는 서비스 정의입니다.
+> Combined mail infrastructure providing both production-grade services and development traps.
 
-## Services
+## 1. Overview (KR)
 
-| Service | Image | Role | Profile |
-| :--- | :--- | :--- | :--- |
-| `mailhog` | `mailhog/mailhog:v1.0.1` | Dev SMTP trap — captures all mail in memory | `communication` |
-| `stalwart` | `stalwartlabs/stalwart:v0.14` | Production SMTP/IMAP server with TLS and web admin | `communication` |
+이 서비스는 시스템의 이메일 송수신을 담당합니다. **Stalwart**는 실제 운영 및 사용자 메일 서비스를 위한 SMTP/IMAP 서버이며, **MailHog**는 개발 및 테스트 중 외부로 메일이 발송되지 않도록 모든 메일을 캡처하는 안전한 트랩 역할을 합니다.
 
-## Networking
+## 2. Overview
 
-### MailHog (dev)
+The `mail` services manage the full lifecycle of electronic correspondence in `hy-home.docker`. Stalwart provides a modern, high-performance mail server implementation, while MailHog ensures a "no-leak" development environment by capturing all SMTP traffic in memory for inspection.
 
-- **SMTP**: `mailhog:1025` (internal `infra_net`)
-- **Web UI**: `https://mailhog.${DEFAULT_URL}` (via Traefik, SSO-protected)
+## 3. Tech Stack
 
-### Stalwart (production)
-
-| Protocol | Internal Port | Host Port |
+| Service | Technology | Role |
 | :--- | :--- | :--- |
-| SMTP | `25` | `${SMTP_HOST_PORT:-25}` |
-| Submission | `587` | `${SUBMISSION_HOST_PORT:-587}` |
-| SMTPS | `465` | `${SMTPS_HOST_PORT:-465}` |
-| IMAPS | `993` | `${IMAPS_HOST_PORT:-993}` |
-| ManageSieve | `4190` | `${MANAGESIEVE_HOST_PORT:-4190}` |
-| Admin Web UI | `8080` | n/a (via Traefik) |
+| **stalwart** | Stalwart Mail v0.14 | Production SMTP/IMAP/JMAP Server |
+| **mailhog** | MailHog v1.0.1 | Dev SMTP Trap & Web UI |
 
-- **Admin UI**: `https://mail.${DEFAULT_URL}`
+## 4. Networking
 
-## Secrets
+### External Access (Web UI)
 
-| Secret | File | Purpose |
+| Service | Rule | Entrypoint |
 | :--- | :--- | :--- |
-| `stalwart_password` | `secrets/common/stalwart_password.txt` | Stalwart admin password |
+| **stalwart-ui** | `mail.${DEFAULT_URL}` | `websecure` |
+| **mailhog** | `mailhog.${DEFAULT_URL}` | `websecure` |
 
-## Persistence
+### Protocol Ports (Stalwart)
 
-| Volume | Host Path | Notes |
+| Protocol | Port | Description |
 | :--- | :--- | :--- |
-| `stalwart-data` | `${DEFAULT_COMMUNICATION_DIR}/stalwart/data` | Stalwart mail data and config |
+| **SMTP** | `25` | Standard mail exchange |
+| **Submission** | `587` | Message submission (STARTTLS) |
+| **SMTPS** | `465` | Secure SMTP (TLS) |
+| **IMAPS** | `993` | Secure IMAP access |
 
-> MailHog is stateless — all mail is stored in memory and lost on restart.
+### Dev Access (MailHog)
 
-## Key Variables
+- **SMTP Trap**: `mailhog:1025` (internal `infra_net`)
+- **API/UI**: `http://mailhog:8025`
 
-| Variable | Default | Purpose |
-| :--- | :--- | :--- |
-| `SMTP_PORT` / `SMTP_HOST_PORT` | `25` | Stalwart SMTP port |
-| `SUBMISSION_PORT` / `SUBMISSION_HOST_PORT` | `587` | Stalwart submission port |
-| `SMTPS_PORT` / `SMTPS_HOST_PORT` | `465` | Stalwart SMTPS port |
-| `IMAPS_PORT` / `IMAPS_HOST_PORT` | `993` | Stalwart IMAPS port |
-| `MANAGESIEVE_PORT` / `MANAGESIEVE_HOST_PORT` | `4190` | Stalwart sieve port |
-| `STALWART_PORT` | `8080` | Stalwart web admin port |
-| `MAILHOG_UI_PORT` | `8025` | MailHog web UI port |
-| `DEFAULT_COMMUNICATION_DIR` | `${DEFAULT_MOUNT_VOLUME_PATH}/comm` | Host path for Stalwart data |
+## 5. Persistence & Secrets
 
-## File Map
+- **Volumes**: `stalwart-data` -> `${DEFAULT_COMMUNICATION_DIR}/stalwart/data`.
+- **Secrets**: `stalwart_password` (Admin password management).
+- **Statelessness**: MailHog is stateless; no persistent volume is attached.
+- **Certificates**: Mounted from `../../../../secrets/certs`.
+
+## 6. File Map
 
 | Path | Description |
 | :--- | :--- |
-| `docker-compose.yml` | MailHog and Stalwart service definitions. |
-| `README.md` | Service overview (this file). |
+| `docker-compose.yml` | Service definitions for Stalwart and MailHog. |
+| `README.md` | This overview file. |
+
+---
 
 ## Documentation References
 
-- [Mail Relay Guide](../../../docs/guides/10-communication/mail-relay-operations.md) — MailHog operational guide
-- [Mail Server Guide](../../../docs/guides/10-communication/mail-server-operations.md) — Combined MailHog + Stalwart operations
-- [Mail Context](../../../docs/guides/10-communication/mail-context.md) — Architecture, lifecycle, integration points
+- [Mail Services Setup Guide](../../../docs/07.guides/10-communication/mail-services-guide.md)
+- [Mail Operations Policy](../../../docs/08.operations/10-communication/mail-ops-policy.md)
+- [Stalwart Recovery Runbook](../../../docs/09.runbooks/10-communication/stalwart-recovery.md)
+
+Copyright (c) 2026. Licensed under the MIT License.

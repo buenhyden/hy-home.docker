@@ -50,6 +50,7 @@
 | [07-workflow](./07-workflow/README.md) | Workflow orchestration and automation policies |
 | [08-ai](./08-ai/README.md) | AI model inference and RAG governance |
 | [09-tooling](./09-tooling/README.md) | DevOps and automation governance |
+| [10-communication](./10-communication/README.md) | External communication and mail policies |
 
 ## Templates
 
