@@ -1,14 +1,38 @@
-# 🌐 Gateway Tier (01-gateway)
+# Gateway Tier (01-gateway)
 
 > Unified entry point for all traffic, orchestrating routing, TLS, and security.
+
+## Overview
+
+The `01-gateway` tier is the unified entry point for all traffic entering the `hy-home.docker` ecosystem. It orchestrates routing, TLS termination (SSL), and security middleware chains (SSO, Rate Limit, etc.). By combining Traefik as the edge router and Nginx as a specialized path proxy, it provide robust and flexible traffic management.
 
 ## Overview (KR)
 
 `01-gateway` 티어는 `hy-home.docker` 생태계로 들어오는 모든 트래픽의 통합 진입점입니다. 트래픽 라우팅, TLS 종료(SSL 처리), 보안 미들웨어 체인(SSO, Rate Limit 등)을 관리하며, Traefik과 Nginx를 조합하여 효율적인 트래픽 제어를 수행합니다.
 
-## Overview
+## Audience
 
-The `01-gateway` tier is the unified entry point for all traffic entering the `hy-home.docker` ecosystem. It orchestrates routing, TLS termination (SSL), and security middleware chains (SSO, Rate Limit, etc.). By combining Traefik as the edge router and Nginx as a specialized path proxy, it provide robust and flexible traffic management.
+이 README의 주요 독자:
+
+- Infrastructure Engineers
+- Backend Developers
+- Security Auditors
+- AI Agents
+
+## Scope
+
+### In Scope
+
+- Traefik (Edge Router) configuration and deployment.
+- Nginx (Path Proxy) configuration and deployment.
+- TLS termination and certificate management.
+- Dynamic service discovery via Docker provider.
+
+### Out of Scope
+
+- Application-level business logic.
+- Long-term log storage or analysis (handled by Observability tier).
+- Identity provider management (handled by Auth tier).
 
 ## Structure
 
@@ -19,11 +43,7 @@ The `01-gateway` tier is the unified entry point for all traffic entering the `h
 └── README.md        # This file
 ```
 
----
-
-## ⚙️ Infrastructure Details
-
-### Tech Stack
+## Tech Stack
 
 | Category   | Technology                        | Notes                     |
 | ---------- | --------------------------------- | ------------------------- |
@@ -32,7 +52,7 @@ The `01-gateway` tier is the unified entry point for all traffic entering the `h
 | Discovery  | Docker Provider                   | Auto-detection of pods    |
 | Security   | OAuth2 Proxy / Keycloak           | Integrated SSO provider   |
 
-### Networking (Ports)
+## Networking (Ports)
 
 | Port (Host) | Port (Int) | Protocol | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -41,32 +61,21 @@ The `01-gateway` tier is the unified entry point for all traffic entering the `h
 | `8080` | `8080` | TCP | Traefik Dashboard (Internal) |
 | `7687` | `7687` | TCP | Neo4j Bolt (TCP Passthrough) |
 
-## Usage Instructions
+## How to Work in This Area
 
-### Maintenance & Monitoring
+1. Review [CONTEXT.md](../../docs/07.guides/01-gateway/README.md) to understand traffic flow.
+2. Ensure secrets are generated via `scripts/gen-secrets.sh` before deployment.
+3. Follow [SETUP.md](../../docs/07.guides/01-gateway/01.setup.md) for initial deployment.
+4. Verify changes using `docker exec traefik traefik healthcheck --ping`.
 
-- **Restarting Gateway**: `docker compose up -d traefik nginx`
-- **Log location**: `docker compose logs -f traefik`
-- **Health Check**: `docker exec traefik traefik healthcheck --ping`
-- **Incident response**: Refer to [Running Books](../../docs/09.runbooks/01-gateway/)
-
----
-
-## 📚 Documentation Hub
-
-### Navigation Map
-
-| Marker | Entry Point | Use when |
-| :--- | :--- | :--- |
-| `[LOAD:CONTEXT]` | [CONTEXT.md](../../docs/07.guides/01-gateway/README.md) | Understanding traffic flow and architecture |
-| `[LOAD:SETUP]` | [SETUP.md](../../docs/07.guides/01-gateway/01.setup.md) | Initial setup and domain binding |
-| `[LOAD:PROC]` | [PROCEDURAL.md](../../docs/08.operations/01-gateway/README.md) | Operational policies and governance |
-
-### Key Resources
+## Related References
 
 - [🤖 Agent Governance](../../AGENTS.md)
 - [🏛️ System Architecture](../../docs/02.ard/README.md)
 - [🔑 Secret Management](../../secrets/README.md)
+- [📘 Gateway Guides](../../docs/07.guides/01-gateway/README.md)
+- [⚙️ Operations Policy](../../docs/08.operations/01-gateway/README.md)
+- [🚑 Emergency Runbooks](../../docs/09.runbooks/01-gateway/README.md)
 
 ---
 *Maintained by Infra & Gateway Team*

@@ -1,3 +1,5 @@
+<!-- Target: docs/09.runbooks/01-gateway/README.md -->
+
 # 01-gateway Runbook
 
 : Gateway Tier Maintenance & Recovery
@@ -10,7 +12,13 @@
 
 ## Purpose
 
-This runbook addresses common operational tasks and emergency recovery for the Traefik/Nginx gateway stack.
+This runbook addresses common operational problems and provides emergency recovery steps for the Traefik/Nginx gateway stack.
+
+## Canonical References
+
+- **ARD**: [../../02.ard/README.md](../../02.ard/README.md)
+- **Ops Policy**: [../../08.operations/01-gateway/README.md](../../08.operations/01-gateway/README.md)
+- **Setup Guide**: [../../07.guides/01-gateway/01.setup.md](../../07.guides/01-gateway/01.setup.md)
 
 ## When to Use
 
@@ -23,19 +31,18 @@ This runbook addresses common operational tasks and emergency recovery for the T
 
 ### Daily Checklist
 
-- [ ] Check Traefik container status.
-- [ ] Verify Prometheus metric scrape health.
+- [ ] Check Traefik container status (`docker compose ps traefik`).
+- [ ] Verify Prometheus metric scrape health via Traefik metrics endpoint.
 
 ### SSL Certificate Renewal
 
-1. Place new certs in `secrets/certs/`.
-2. Reload Traefik (Dynamic config usually picks up changes, if not):
-
+1. Place new certs (`cert.pem`, `key.pem`) in `secrets/certs/`.
+2. Reload Traefik configuration:
    ```bash
    docker exec traefik kill -HUP 1
    ```
 
-3. Verify expiration date via browser.
+3. Verify expiration date via browser or `openssl s_client`.
 
 ### Troubleshooting 502 Errors
 
@@ -49,12 +56,12 @@ This runbook addresses common operational tasks and emergency recovery for the T
 
 ## Verification Steps
 
-- [ ] `docker exec traefik traefik healthcheck --ping` should return success.
-- [ ] `curl -vI https://your-domain.com` should show valid cert and 200/302.
+- [ ] `docker exec traefik traefik healthcheck --ping` returns success.
+- [ ] `curl -vI https://your-domain.com` shows valid certificate and 200/302 OK.
 
 ## Observability and Evidence Sources
 
-- **Signals**: Traefik dashboard, Grafana dashboard (Traefik metrics).
+- **Signals**: Traefik dashboard, Grafana (Traefik metrics).
 - **Evidence to Capture**: `docker compose logs traefik > traefik_crash.log`.
 
 ## Safe Rollback
@@ -63,5 +70,5 @@ This runbook addresses common operational tasks and emergency recovery for the T
 
 ## Related Operational Documents
 
-- **Operations Policy**: [../../docs/08.operations/01-gateway/README.md]
-- **Setup Guide**: [../../docs/07.guides/01-gateway/01.setup.md]
+- **Incident examples**: [../../10.incidents/README.md](../../10.incidents/README.md)
+- **Postmortem examples**: [../../11.postmortems/README.md](../../11.postmortems/README.md)

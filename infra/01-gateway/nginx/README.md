@@ -1,14 +1,34 @@
-# 🧱 Nginx (Path Proxy)
+# Nginx Proxy
 
-> Specialized path-based proxy and static asset server for the gateway tier.
-
-## Overview (KR)
-
-Nginx는 `01-gateway` 티어 내에서 특정 경로 기반의 프록싱과 정적 자산 서빙을 담당합니다. 특히 MinIO, Keycloak, OAuth2 Proxy와의 연동을 통해 미세한 트래픽 제어 및 인증 체크 레이어를 제공합니다.
+> Specialized path-based proxy and SSO client.
 
 ## Overview
 
-Nginx serves as a specialized path-based proxy and static asset server within the `01-gateway` tier. It handles fine-grained traffic control and authentication check layers through integration with MinIO, Keycloak, and OAuth2 Proxy.
+The Nginx component in the `01-gateway` tier acts as a specialized proxy for complex path-based routing and serves as a client for SSO (OAuth2 Proxy) authentication. It handles specific header transformations and redirects that are more efficiently managed by Nginx.
+
+## Overview (KR)
+
+Nginx 컴포넌트는 복잡한 경로 기반 라우팅과 SSO(OAuth2 Proxy) 인증 클라이언트 역할을 수행합니다. 특정 헤더 변환 및 리다이렉트 처리를 담당하며, Traefik 뒷단에서 정적 자산 서빙 또는 특수 프록시 규칙을 처리합니다.
+
+## Audience
+
+- Infrastructure Engineers
+- Backend Developers
+- AI Agents
+
+## Scope
+
+### In Scope
+
+- Path-based routing rules (e.g., `/minio/`, `/keycloak/`).
+- SSO authentication integration (auth_request).
+- Static asset serving (if configured).
+- SSL/TLS certificate mapping for secondary termination.
+
+### Out of Scope
+
+- Core edge routing (handled by Traefik).
+- Global Load balancing.
 
 ## Structure
 
@@ -20,33 +40,22 @@ nginx/
 └── README.md          # This file
 ```
 
----
+## Configuration
 
-## ⚙️ Configuration
+### Core Files
 
-### Upstream Services
-
-- **OAuth2 Proxy**: `oauth2-proxy:4180`
-- **MinIO**: `minio:9000` (Server) / `minio:9001` (Console)
-- **Keycloak**: `keycloak:8080`
-
-### Integrated Features
-
-- **SSO**: `auth_request` module integrated with `oauth2-proxy`.
-- **Rate Limiting**: Configured in `req_rate_limit` zone (100r/s).
-- **Caching**: Proxy cache configured for `/var/cache/nginx`.
+- `config/nginx.conf`: Defines upstreams, server blocks, and SSO logic.
+- `docker-compose.yml`: Mounts config and certificates, defines networks.
 
 ## Available Scripts
 
-| Command | Description |
-| :--- | :--- |
-| `docker compose up -d nginx` | Start Nginx service |
-| `docker exec -it nginx nginx -t` | Test configuration syntax |
-| `docker exec -it nginx nginx -s reload` | Hot-reload configuration |
+| Command                               | Description |
+| ------------------------------------- | ----------- |
+| `docker compose up -d nginx`          | Start Nginx proxy |
+| `docker compose logs -f nginx`        | View Nginx logs |
+| `docker exec nginx nginx -s reload`   | Reload configuration |
 
-## Documentation Standards
+## Related References
 
-All documents in this folder MUST maintain traceability back to the [Gateway Architecture](../../../docs/07.guides/01-gateway/).
-
----
-*Layer: Infrastructure / Gateway*
+- [01-gateway Root README](../README.md)
+- [SSO Setup Guide](../../../docs/07.guides/02-auth/README.md)

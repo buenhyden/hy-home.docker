@@ -1,3 +1,5 @@
+<!-- Target: docs/08.operations/01-gateway/README.md -->
+
 # Gateway Operations Policy
 
 > Governance and control rules for the edge routing infrastructure.
@@ -15,6 +17,7 @@ This policy governs all traffic ingress points, TLS termination strategies, and 
 ## Applies To
 
 - **Systems**: Traefik, Nginx, OAuth2 Proxy.
+- **Agents**: Infrastructure Maintenance Agents.
 - **Environments**: Production, Staging, Development.
 
 ## Controls
@@ -41,5 +44,5 @@ This policy governs all traffic ingress points, TLS termination strategies, and 
 
 ## Related Documents
 
-- **ARD**: [../02.ard/README.md]
-- **Runbook**: [../09.runbooks/01-gateway/README.md]
+- **ARD**: [../02.ard/README.md](../../02.ard/README.md)
+- **Runbook**: [../09.runbooks/01-gateway/README.md](../../09.runbooks/01-gateway/README.md)
