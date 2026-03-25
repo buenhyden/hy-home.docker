@@ -1,62 +1,87 @@
 # Keycloak IAM
 
-<!-- [ID:02-auth:keycloak] -->
-: Identity and Access Management (IAM) provider based on Quarkus.
-
----
+> Identity and Access Management (IAM) provider based on Quarkus.
 
 ## Overview
 
-Keycloak is the central identity provider for the `hy-home.docker` ecosystem. It handles user authentication, session management, and OIDC/SAML token issuance for protected applications.
+Keycloak is the central identity provider for the `hy-home.docker` ecosystem. It handles user authentication, session management, and OIDC/SAML token issuance for protected applications. It supports multi-tenancy through realms and provides a robust admin console for user management.
 
-### Service Details
+## Audience
 
-| Service | Image / Build | Resources | Port |
-| :--- | :--- | :--- | :--- |
-| **keycloak** | `quay.io/keycloak/keycloak:26.5.4` | 1.0 CPU / 1GB RAM | 8080 (HTTP) |
+이 README의 주요 독자:
 
-## Features
+- Developers (OIDC Client configuration)
+- Operators (Realms & User Management)
+- AI Agents (Service provisioning & Realm exports)
 
-- **SSO**: Centralized login for all services.
-- **Realms**: Multi-tenancy support for organizing users and clients.
-- **Metrics**: Prometheus-compatible metrics at `${MGMT_PORT}/metrics`.
+## Scope
 
-## Networking
+### In Scope
 
-- **URL**: `https://keycloak.${DEFAULT_URL}`
-- **Management Port**: `9000` (Health checks & Metrics)
-- **Service Port**: `8080` (Internal API/Web)
+- Keycloak service configuration (Standard Quarkus distribution)
+- Realm and Client provisioning via GUI or CLI
+- Volume mounts for themes, providers, and static configurations
+- Database connectivity to PostgreSQL
 
-## Persistence
+### Out of Scope
 
-Mounted from `${DEFAULT_AUTH_DIR}/keycloak/`:
+- Forwarding and SSO session handling (delegated to OAuth2 Proxy)
+- SMTP/Email provider configuration (managed externally in `10-communication`)
+- Deep custom Java SPI development (only basic provider management included)
 
-| Path | Description |
-| :--- | :--- |
-| `/opt/keycloak/conf` | Quarkus static configuration. |
-| `/opt/keycloak/providers` | Custom JARs/SPIs for extensions. |
-| `/opt/keycloak/themes` | Custom UI/UX themes. |
+## Structure
 
----
-
-## Operations
-
-### Health Verification
-
-```bash
-# Verify readiness
-docker exec keycloak curl -f http://localhost:9000/health/ready
+```text
+keycloak/
+├── conf/               # Quarkus static configuration
+├── providers/          # Custom JARs/SPIs for extensions
+├── themes/             # Custom UI/UX themes
+├── docker-compose.yml  # Container orchestration
+└── README.md           # This file
 ```
 
-### Key Configuration
+## How to Work in This Area
 
-| Variable | Description | Default |
-| :--- | :--- | :--- |
-| `KC_DB` | Database vendor | `postgres` |
-| `KC_HOSTNAME` | Public access URL | `keycloak.${DEFAULT_URL}` |
+1. Refer to the [Auth Setup Guide](../../../docs/07.guides/02-auth/01.setup.md) for initial realm creation.
+2. Check `opt/keycloak/conf` for static settings.
+3. Use the [Auth Operation Policy](../../../docs/08.operations/02-auth/README.md) for user management procedures.
 
-## Related Documents
+## Tech Stack
 
-- **[Setup Guide](../../../docs/07.guides/02-auth/01.setup.md)**
-- **[Operations Policy](../../../docs/08.operations/02-auth/README.md)**
-- **[Auth Runbook](../../../docs/09.runbooks/02-auth/README.md)**
+| Category   | Technology                     | Notes                     |
+| ---------- | ------------------------------ | ------------------------- |
+| Platform   | Keycloak (Quarkus)             | V26.5.4                   |
+| Database   | PostgreSQL                     | Identity Persistence      |
+| Logging    | Console (Structured)           | JSON format via Quarkus   |
+
+## Configuration
+
+### Environment Variables
+
+| Variable | Required | Description |
+| --------- | -------: | ----------- |
+| `KC_HOSTNAME` | Yes | Public access URL (keycloak.${DEFAULT_URL}) |
+| `KC_DB` | Yes | Database vendor (postgres) |
+| `KEYCLOAK_ADMIN_USER` | Yes | Admin username for bootstrap |
+
+## Testing
+
+```bash
+# Verify health readiness
+docker exec keycloak curl -f http://localhost:9000/health/ready
+
+# Verify metrics endpoint
+docker exec keycloak curl -f http://localhost:9000/metrics
+```
+
+## Related References
+
+- [02-auth](../README.md) - Parent tier overview.
+- [OAuth2 Proxy](../oauth2-proxy/README.md) - Client of Keycloak.
+- [docs/09.runbooks/02-auth](../../../docs/09.runbooks/02-auth/README.md) - Recovery procedures.
+
+## AI Agent Guidance
+
+1. Do not modify `KC_DB_URL` manually in `docker-compose.yml`; check environment variables first.
+2. Use `KC_BOOTSTRAP_ADMIN_PASSWORD` from secrets for initial setup only.
+3. Ensure all new realms follow the `hy-home.{realm-name}` naming convention.

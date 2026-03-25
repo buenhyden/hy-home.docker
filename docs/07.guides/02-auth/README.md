@@ -1,22 +1,23 @@
-# Auth Tier Guides (02-auth)
+# Auth Documentation (02-auth)
 
-<!-- [ID:docs:07:02-auth] -->
-: Identity and Access Management setup and integration guides.
-
----
+> Identity and Access Management & SSO Gateway Guides.
 
 ## Overview
 
-This section contains step-by-step guides for deploying and managing the authentication services in the `hy-home.docker` stack.
+이 디렉터리는 `hy-home.docker`의 인증 시스템(02-auth)에 대한 가이드 및 설정 문서를 포함한다.
 
-## Guides
+## Audience
 
-| Guide | Description |
-| :--- | :--- |
-| **[01. Setup & Bootstrap](./01.setup.md)** | Initial deployment, Keycloak admin creation, and OAuth2 Proxy wiring. |
+- Developers (Authentication Integration)
+- Administrators (User & Realm Management)
+- AI Agents
 
-## External References
+## Documents
 
-- **[Infrastructure Branch](../../../infra/02-auth/)**: Docker Compose and configuration files.
-- **[Keycloak Official Docs](https://www.keycloak.org/documentation)**: Upstream IAM documentation.
-- **[OAuth2 Proxy Docs](https://oauth2-proxy.github.io/oauth2-proxy/docs/)**: Upstream proxy documentation.
+- [01. Setup Guide](./01.setup.md) - Initial bootstrapping and service configuration.
+
+## Related References
+
+- [infra/02-auth/](../../infra/02-auth/README.md) - Infrastructure tier overview.
+- [Operations Policy](../../docs/08.operations/02-auth/README.md) - SSoT for policies.
+- [Auth Runbook](../../docs/09.runbooks/02-auth/README.md) - Operational procedures.
