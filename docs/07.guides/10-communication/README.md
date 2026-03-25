@@ -1,14 +1,13 @@
-# Communication Guides
+<!-- [ID:docs:07:communication:root] -->
+# 📬 Communication Guides
 
-Infrastructure guides for external communication services in `hy-home.docker`.
+이 섹션은 시스템의 메일 서버 및 통신 인프라 구성에 대한 가이드를 제공합니다.
 
-## Tier Overview
-
-| Guide                                            | Description                                     |
-| ------------------------------------------------ | ----------------------------------------------- |
-| [Mail Services Guide](./mail-services-guide.md)  | Setup and usage for Stalwart and MailHog.       |
-| [DevOps Tooling Overview](../../infra/10-communication/README.md) | Access and inventory details for all communication tools. |
+- **[Mail Server Setup](./01.mail-server-setup.md)**: 운영 환경을 위한 Stalwart 메일 서버 설정.
+- **[Development Workflow](./02.development-workflow.md)**: MailHog를 이용한 안전한 이메일 테스트 방법.
 
 ---
 
-- [Back to Infrastructure](../../README.md)
+## 🔗 외부 참조
+- [Stalwart Documentation](https://stalwart.io/docs/)
+- [MailHog Usage](https://github.com/mailhog/MailHog)
