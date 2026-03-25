@@ -1,44 +1,28 @@
-# Pyroscope
+# Pyroscope Continuous Profiling
 
-> Continuous profiling backend for aggregating performance profiles.
+> Continuous profiling platform for analyzing application performance.
 
 ## Overview
 
-Pyroscope is the profiling backend for the hy-home.docker ecosystem. It allows for aggregating and querying performance profiles (CPU, Memory, etc.) to identify bottlenecks in real-time.
+Pyroscope provides continuous profiling of applications to identify performance bottlenecks and resource leaks. It collects profiling data (CPU, memory, etc.) and allows developers to visualize it over time.
 
-## Structure
+## Audience
 
-```text
-pyroscope/
-├── config/
-│   └── pyroscope.yaml   # Master configuration file
-└── README.md           # This file
-```
+- Developers (Code optimization)
+- SREs (Resource leak hunting)
 
 ## Tech Stack
 
-| Component | Technology | Role |
+| Component | Technology | Version |
 | :--- | :--- | :--- |
-| Engine | grafana/pyroscope:1.18.1 | Profiling backend |
-| Storage | Filesystem (local) | Profile persistence |
-| Ingestion | Alloy | Profile forwarding |
+| Profiling | Pyroscope | v1.18.1 |
 
 ## Configuration
 
-- **Config File**: `config/pyroscope.yaml`.
-- **Backend**: Local filesystem (configured to `${DEFAULT_OBSERVABILITY_DIR}/pyroscope`).
-- **Multitenancy**: Disabled (single-tenant).
-- **Self-profiling**: Disabled by default.
+- **Inspiration**: Alloy collects profiling data and sends it to Pyroscope.
+- **Persistence**: Local storage with S3-compatible backend support.
 
-## Persistence
+## AI Agent Guidance
 
-- **Data**: Persistent volume `pyroscope-data` (mounted to `/var/lib/pyroscope`).
-
-## Operational Status
-
-> [!NOTE]
-> Alloy acts as the primary profile collector. Ensure Alloy is healthy to receive profiles from protected applications.
-
----
-
-Copyright (c) 2026. Licensed under the MIT License.
+1. Use `Flame Graphs` to identify hot code paths.
+2. Monitor `Pyroscope` resource usage as profiling can be CPU-intensive.

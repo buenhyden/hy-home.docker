@@ -1,46 +1,40 @@
-# Grafana Alloy
+# Grafana Alloy Unified Collector
 
-> Vendor-neutral OpenTelemetry Collector optimized for the LGTM stack.
+> Advanced telemetry pipeline and OTLP gateway.
 
 ## Overview
 
-Alloy is the central telemetry hub for the hy-home.docker ecosystem. It handles log collection, metric scraping, trace ingestion, and profile forwarding in a single, unified pipeline.
+Alloy is the unified collection agent for the platform. It replaces legacy agents by providing a programmable configuration (Alloy HCL) to collect, process, and export metrics, logs, and traces. It acts as the OTLP gateway for all applications.
+
+## Audience
+
+- Developers (Data ingestion)
+- SREs (Pipeline tuning)
 
 ## Structure
 
 ```text
 alloy/
 ├── config/
-│   └── config.alloy     # Telemetry pipeline configuration
-└── README.md           # This file
+│   └── config.alloy  # Telemetry pipeline definition
+└── README.md
 ```
+
+## How to Work in This Area
+
+1. Follow the [Alloy Collector Guide](../../../docs/07.guides/06-observability/02.alloy-collector.md).
+2. Modify `config.alloy` to add new pipeline components.
+3. Access the Alloy UI at `http://alloy.${DEFAULT_URL}` to debug pipelines.
 
 ## Tech Stack
 
-| Component | Technology | Role |
+| Component | Technology | Version |
 | :--- | :--- | :--- |
-| Collector | grafana/alloy:v1.13.1 | Telemetry orchestration |
-| Protocols | OTLP, Prometheus, LogQL | Multi-protocol ingestion |
-| Security | Docker Socket (RO) | Log discovery |
+| Collector | Grafana Alloy | v1.13.1 |
+| Protocol | OTLP (gRPC/HTTP) | Standard interface |
 
-## Configuration
+## AI Agent Guidance
 
-- **Pipeline Config**: `config/config.alloy`.
-- **Active Streams**:
-  - **Logs**: Docker container logs → Loki.
-  - **Metrics**: Self-scraping → Prometheus.
-  - **Traces**: OTLP (4317/4318) → Tempo.
-  - **Profiling**: Profile forwarding → Pyroscope.
-
-## Persistence
-
-- **State**: Alloy is primarily stateless. Transient state for batching is stored in memory.
-
-## Operational Status
-
-> [!IMPORTANT]
-> Alloy requires read-only access to the Docker socket (`/var/run/docker.sock`) and container log paths to perform automatic service discovery and log tailing.
-
----
-
-Copyright (c) 2026. Licensed under the MIT License.
+1. Prefer `OTLP` ingestion for all new application instrumentation.
+2. Use Alloy's `discovery.docker` for automatic container metadata enrichment.
+3. Monitor `batch` processing metrics to prevent data loss during high load.

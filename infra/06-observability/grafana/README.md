@@ -1,48 +1,47 @@
-# Grafana
+# Grafana Visualization & Dashboards
 
-> Unified visualization and dashboarding platform for metrics, logs, and traces.
+> Unified visualization hub for metrics, logs, traces, and profiling.
 
 ## Overview
 
-Grafana is the central UI for the observability tier, providing a single pane of glass for Prometheus metrics, Loki logs, Tempo traces, and Pyroscope profiles. It is integrated with Keycloak for secure SSO.
+Grafana serves as the primary observability portal. It integrates multiple data sources (Prometheus, Loki, Tempo, Pyroscope) into cohesive dashboards. Access is secured via Keycloak SSO with role-based access control (RBAC).
+
+## Audience
+
+- All users (Monitoring & Debugging)
+- SREs (Dashboard provisioning)
 
 ## Structure
 
 ```text
 grafana/
-├── dashboards/      # Pre-provisioned dashboard JSON files
-├── provisioning/    # Auto-loaded datasources and alert rules
-└── README.md        # This file
+├── dashboards/      # Provisioned JSON dashboards
+├── provisioning/    # Datasource & dashboard YAMLs
+└── README.md
 ```
+
+## How to Work in This Area
+
+1. Add new dashboards by placing JSON files in `dashboards/`.
+2. Configure datasources in `provisioning/datasources/`.
+3. Refer to the [SSO Setup](../../../docs/07.guides/02-auth/01.keycloak-setup.md) for auth issues.
 
 ## Tech Stack
 
-| Component | Technology | Role |
+| Component | Technology | Version |
 | :--- | :--- | :--- |
-| UI | Grafana v12.3.3 | Visualization & Dashboards |
-| Auth | Keycloak (OAuth2) | SSO & Role-based Access |
-| Storage | SQLite (Internal) | Metadata & Dashboard storage |
+| Frontend | Grafana | v12.3.3 |
+| Auth | Generic OAuth2 | Keycloak Integration |
 
-## Security (SSO)
+## Configuration
 
-Grafana utilizes **Generic OAuth with PKCE (S256)** for authentication via Keycloak.
+| Feature | Status | Notes |
+| :--- | :--- | :--- |
+| `OAuth2` | Enabled | Auto-assign Editor/Viewer |
+| `S3 Backend` | Enabled | For remote caching (experimental) |
 
-- **Client ID**: Managed via `${OAUTH2_PROXY_CLIENT_ID}`.
-- **Role Mapping**:
-  - `/admins` → Admin
-  - `/editors` → Editor
-  - Default → Viewer
+## AI Agent Guidance
 
-## Provisioning
-
-- **Datasources**: Automatically configured for Prometheus, Loki, Tempo, and Pyroscope via `provisioning/datasources/`.
-- **Dashboards**: System-level dashboards are version-controlled in `dashboards/` and auto-imported.
-
-## Persistence
-
-- **Data Volume**: `grafana-data` (mounted to `/var/lib/grafana`).
-- **Backup**: Database is stored as `grafana.db` (SQLite).
-
----
-
-Copyright (c) 2026. Licensed under the MIT License.
+1. Dashboards MUST NOT be edit-locked in production; use code-based provisioning.
+2. Use Variables (Template tags) for cluster/node/service filtering.
+3. Consistently use the `hy-home.docker` color palette for consistency.

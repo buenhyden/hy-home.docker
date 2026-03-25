@@ -1,42 +1,29 @@
-# Alertmanager
+# Alertmanager Notification Routing
 
-> Alert routing and notification management engine.
+> Centralized alert routing, deduplication, and notification gateway.
 
 ## Overview
 
-Alertmanager handles alerts sent by Prometheus, grouping and routing them to the appropriate notification channels (Slack, Email).
+Alertmanager handles alerts sent by client applications such as Prometheus. It takes care of deduplicating, grouping, and routing them to the correct receiver integration such as Slack or E-mail. It also takes care of silencing and inhibition of alerts.
 
-## Structure
+## Audience
 
-```text
-alertmanager/
-├── config/
-│   └── config.yml       # Alert routing & receiver configuration
-└── README.md           # This file
-```
+- SREs (Alert routing & integration)
+- On-call Engineers (Silencing & troubleshooting)
 
 ## Tech Stack
 
-| Component | Technology | Role |
+| Component | Technology | Version |
 | :--- | :--- | :--- |
-| Routing | prom/alertmanager:v0.30.0 | Alert grouping & delivery |
-| Receivers | Slack, SMTP | Notification channels |
+| Alerting | Alertmanager | v0.30.0 |
 
 ## Configuration
 
-- **Config File**: `config/config.yml`.
-- **Integrations**: Uses Docker Secrets for SMTP and Slack credentials.
-- **Routes**: Grouped by severity and service, routing to `team-notifications` by default.
+- **Routing**: Defined in `alertmanager/config/config.yml.template`.
+- **Integrations**: Slack Webhooks and SMTP credentials (injected via secrets).
 
-## Persistence
+## AI Agent Guidance
 
-- **State**: Persistent volume (not explicitly defined in the provided scope, typically handles silence/notification state internally).
-
-## Operational Status
-
-> [!WARNING]
-> Ensure SMTP credentials and Slack webhooks are correctly configured in Docker Secrets to prevent silence on critical failures.
-
----
-
-Copyright (c) 2026. Licensed under the MIT License.
+1. Use `Silences` during planned maintenance to prevent alert fatigue.
+2. Group alerts by `alertname` and `service` to minimize notification noise.
+3. Ensure the `slack_webhook` secret is updated in Vault before deployment.

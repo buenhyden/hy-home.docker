@@ -1,47 +1,29 @@
-# Loki
+# Loki Log Aggregation System
 
-> High-availability log aggregation system inspired by Prometheus.
+> Cloud-native log aggregation system inspired by Prometheus.
 
 ## Overview
 
-Loki is the log storage engine for the hy-home.docker ecosystem. It is designed to be cost-effective by indexing only metadata (labels) and storing compressed log chunks in an S3-compatible backend (MinIO).
+Loki is optimized for high-volume logs, indexing labels rather than content to maintain low storage costs. It uses MinIO for long-term persistence and is tightly integrated with Grafana for LogQL querying.
 
-## Structure
+## Audience
 
-```text
-loki/
-├── config/
-│   └── loki-config.yaml # Master configuration file
-├── Dockerfile          # Custom Loki image build
-├── docker-entrypoint.sh # Entrypoint wrapper
-└── README.md           # This file
-```
+- Developers (Debugging)
+- SREs (Log retention)
 
 ## Tech Stack
 
-| Component | Technology | Role |
-| :--- | :--- | :--- |
-| Engine | hy/loki:3.6.6-custom | Log storage & query |
-| Storage | MinIO (S3) | Chunk/Index persistence |
-| Query | LogQL | Advanced log filtering |
+| Component | Technology | Version | Backend |
+| :--- | :--- | :--- | :--- |
+| Logging | Loki | v3.6.6 | MinIO (S3) |
 
 ## Configuration
 
-- **Config File**: `config/loki-config.yaml`.
-- **Backend**: Configured to use the `04-data` tier's MinIO service.
-- **Retention**: 7 days (configured in YAML).
-- **Secrets**: Uses `minio_app_user_password` for S3 authentication.
+- **Ingestion**: Handled by Alloy or Docker log drivers.
+- **Persistence**: Bucket `loki` in MinIO.
 
-## Persistence
+## AI Agent Guidance
 
-- **Chunks/Index**: Stored in MinIO buckets (`loki-bucket`).
-- **Local Data**: Persistent volume `loki-data` (mounted to `/loki`) for WAL/temp files.
-
-## Operational Status
-
-> [!IMPORTANT]
-> Ensure MinIO is healthy before starting Loki, as it depends on S3 availability for operation.
-
----
-
-Copyright (c) 2026. Licensed under the MIT License.
+1. Use `LogQL` for structured log analysis.
+2. Ensure log labels are consistent with Prometheus metrics for easy correlation.
+3. Check `Retention` policies before archiving large log volumes.

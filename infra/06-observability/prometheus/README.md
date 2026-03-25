@@ -1,45 +1,54 @@
-# Prometheus
+# Prometheus Metrics Storage
 
-> Core metrics collection and time-series database for the hy-home.docker ecosystem.
+> High-performance time-series database for system and application metrics.
 
 ## Overview
 
-Prometheus is the primary metrics engine, responsible for scraping targets, evaluating alert rules, and storing time-series data. It supports advanced querying via PromQL and integrates with Alertmanager for routing notifications.
+Prometheus is the core metrics engine for the `hy-home.docker` platform. It scrapes targets defined via service discovery, stores time-series data, and evaluates alerting rules. It supports high-cardinality data and provides a powerful query language (PromQL).
+
+## Audience
+
+- SREs (Monitoring architecture)
+- Developers (Metric instrumentation)
 
 ## Structure
 
 ```text
 prometheus/
 ├── config/
-│   ├── alert_rules/    # Directory for alerting and recording rules
-│   └── prometheus.yml  # Master scrape configuration (template)
-└── README.md           # This file
+│   ├── alert_rules/    # YAML alerting rules
+│   └── prometheus.yml  # Main configuration template
+└── README.md
 ```
+
+## How to Work in This Area
+
+1. Add scrape targets to `prometheus.yml`.
+2. Define alerting rules in `config/alert_rules/`.
+3. Check the [Operations Guide](../../../docs/07.guides/06-observability/01.lgtm-stack.md).
 
 ## Tech Stack
 
-| Component | Technology | Role |
+| Component | Technology | Version |
 | :--- | :--- | :--- |
-| Engine | Prometheus v3.9.0 | Metrics storage & query |
-| Scraping | Prometheus Scraper | HTTP-based pull model |
-| Alerting | PromQL Rules | Threshold-based alerting |
+| Engine | Prometheus | v3.9.0 |
+| Storage | TSDB | Persistent Volume |
 
 ## Configuration
 
-- **Scrape Config**: Defined in `config/prometheus.yml`. Secrets (e.g., OpenSearch password) are injected at startup via template substitution.
-- **Alerting Rules**: Managed in `config/alert_rules/` and automatically reloaded via `--web.enable-lifecycle`.
+| Variable | Default | Description |
+| :--- | :--- | :--- |
+| `PROMETHEUS_PORT` | 9090 | Internal API/UI port |
 
-## Persistence
+## Testing
 
-- **Data Volume**: `prometheus-data` (mounted to `/prometheus`).
-- **Retention**: 15 days (default).
-- **Cleanup**: Handled via Docker volume management.
+```bash
+# Check config syntax
+docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml
+```
 
-## Operational Status
+## AI Agent Guidance
 
-> [!TIP]
-> Use `curl -X POST http://prometheus:9090/-/reload` to trigger a configuration reload without restarting the container.
-
----
-
-Copyright (c) 2026. Licensed under the MIT License.
+1. Use `Recording Rules` for expensive queries to optimize dashboard performance.
+2. Scrape intervals should follow the standard (15s for infra, 30s-60s for apps).
+3. Ensure all scrape targets are reachable via the `infra_net`.
