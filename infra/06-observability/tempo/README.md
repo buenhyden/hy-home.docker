@@ -1,41 +1,47 @@
 # Tempo
 
-Tempo is a high-volume, low-cost distributed tracing backend.
+> High-volume, low-cost distributed tracing backend.
 
-## Services
+## Overview
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `tempo` | `hy/tempo:2.10.1-custom` | Trace storage | 1.0 CPU / 1GB RAM |
+Tempo is the distributed tracing backend for the hy-home.docker ecosystem. It is optimized for high-volume trace ingestion and cost-effective storage by utilizing an S3-compatible backend (MinIO).
 
-> Built from a custom Dockerfile (`tempo/Dockerfile`) layered on `grafana/tempo:2.10.1` with an Alpine base for a minimal image.
+## Structure
 
-## Networking
+```text
+tempo/
+├── config/
+│   └── tempo.yaml       # Master configuration file
+├── Dockerfile          # Custom Tempo image build
+├── docker-entrypoint.sh # Entrypoint wrapper
+└── README.md           # This file
+```
 
-| Port | Protocol | Purpose              |
-| :--- | :------- | :------------------- |
-| 3200 | HTTP     | Query API / Web UI   |
+## Tech Stack
 
-> OTLP ingestion (gRPC 4317 / HTTP 4318) is handled by **Alloy**, which batches and forwards to Tempo's internal distributor. Applications should target Alloy, not Tempo directly.
-
-## Persistence
-
-- **Data**: `/var/tempo` (mounted to `tempo-data` volume).
-- **WAL**: Written locally to `/var/tempo/wal` before flushing to S3.
-- **Cold storage**: S3 bucket `tempo-bucket` via MinIO.
+| Component | Technology | Role |
+| :--- | :--- | :--- |
+| Engine | hy/tempo:2.10.1-custom | Trace storage & query |
+| Storage | MinIO (S3) | Block/Index persistence |
+| Ingestion | Alloy (OTLP) | Trace collection pipeline |
 
 ## Configuration
 
-- **Config**: Defined in `config/tempo.yaml`.
-- **Retention**: 24h — configured via `compactor.compaction.block_retention`.
-- **MetricsGenerator**: Span metrics and service-graph metrics are remote-written to Prometheus (`http://prometheus:9090/api/v1/write`).
-- **Secret**: `minio_app_user_password` — injected via Docker Secret and read as `${MINIO_APP_USER_PASSWORD}` in the config.
+- **Config File**: `config/tempo.yaml`.
+- **Backend**: Configured to use the `04-data` tier's MinIO service.
+- **Retention**: 24h (configured via `compactor`).
+- **Secrets**: Uses `minio_app_user_password` for S3 authentication.
 
-## File Map
+## Persistence
 
-| Path                 | Description               |
-| -------------------- | ------------------------- |
-| `Dockerfile`         | Custom image build.       |
-| `docker-entrypoint.sh` | Entrypoint wrapper.     |
-| `config/tempo.yaml`  | Master Tempo configuration. |
-| `README.md`          | Service notes.            |
+- **Traces**: Stored in MinIO buckets (`tempo-bucket`).
+- **Local Data**: Persistent volume `tempo-data` (mounted to `/var/tempo`) for WAL.
+
+## Operational Status
+
+> [!TIP]
+> Use **Alloy** as the primary OTLP ingestion point. Applications should not target Tempo directly to allow for better batching and load balancing.
+
+---
+
+Copyright (c) 2026. Licensed under the MIT License.

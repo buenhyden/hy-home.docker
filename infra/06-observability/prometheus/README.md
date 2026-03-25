@@ -1,33 +1,45 @@
 # Prometheus
 
-Prometheus is the core metrics collection and time-series database.
+> Core metrics collection and time-series database for the hy-home.docker ecosystem.
 
-## Services
+## Overview
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `prometheus` | `prom/prometheus:v3.9.0`| Time-Series DB | 2.0 CPU / 2GB RAM |
+Prometheus is the primary metrics engine, responsible for scraping targets, evaluating alert rules, and storing time-series data. It supports advanced querying via PromQL and integrates with Alertmanager for routing notifications.
 
-## Networking
+## Structure
 
-| Endpoint                   | Port | Purpose                |
-| :------------------------- | :--- | :--------------------- |
-| `prometheus.${DEFAULT_URL}`| 9090 | Web UI / Query API     |
+```text
+prometheus/
+├── config/
+│   ├── alert_rules/    # Directory for alerting and recording rules
+│   └── prometheus.yml  # Master scrape configuration (template)
+└── README.md           # This file
+```
 
-## Persistence
+## Tech Stack
 
-- **Data**: `/prometheus` (mounted to `prometheus-data` volume).
-- **Retention**: 15 days (default).
+| Component | Technology | Role |
+| :--- | :--- | :--- |
+| Engine | Prometheus v3.9.0 | Metrics storage & query |
+| Scraping | Prometheus Scraper | HTTP-based pull model |
+| Alerting | PromQL Rules | Threshold-based alerting |
 
 ## Configuration
 
-- **Scrape Config**: Defined in `config/prometheus.yml`. Secrets are injected at startup via template substitution (`prometheus.yml.template`).
-- **Rules**: Alerting and recording rules in `config/alert_rules/` (directory with multiple YAML files).
+- **Scrape Config**: Defined in `config/prometheus.yml`. Secrets (e.g., OpenSearch password) are injected at startup via template substitution.
+- **Alerting Rules**: Managed in `config/alert_rules/` and automatically reloaded via `--web.enable-lifecycle`.
 
-## File Map
+## Persistence
 
-| Path                       | Description                             |
-| -------------------------- | --------------------------------------- |
-| `config/prometheus.yml`    | Master scrape configuration (template). |
-| `config/alert_rules/`      | Alerting/Recording rules (directory).   |
-| `README.md`                | Service notes.                          |
+- **Data Volume**: `prometheus-data` (mounted to `/prometheus`).
+- **Retention**: 15 days (default).
+- **Cleanup**: Handled via Docker volume management.
+
+## Operational Status
+
+> [!TIP]
+> Use `curl -X POST http://prometheus:9090/-/reload` to trigger a configuration reload without restarting the container.
+
+---
+
+Copyright (c) 2026. Licensed under the MIT License.

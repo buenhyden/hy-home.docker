@@ -1,39 +1,47 @@
 # Loki
 
-Loki is a horizontally-scalable, highly-available log aggregation system inspired by Prometheus.
+> High-availability log aggregation system inspired by Prometheus.
 
-## Services
+## Overview
 
-| Service | Image | Role | Resources |
-| :--- | :--- | :--- | :--- |
-| `loki` | `hy/loki:3.6.6-custom` | Log storage | 1.0 CPU / 1GB RAM |
+Loki is the log storage engine for the hy-home.docker ecosystem. It is designed to be cost-effective by indexing only metadata (labels) and storing compressed log chunks in an S3-compatible backend (MinIO).
 
-> Built from a custom Dockerfile (`loki/Dockerfile`) layered on `grafana/loki:3.6.6` with an Alpine base for a minimal image.
+## Structure
 
-## Networking
+```text
+loki/
+├── config/
+│   └── loki-config.yaml # Master configuration file
+├── Dockerfile          # Custom Loki image build
+├── docker-entrypoint.sh # Entrypoint wrapper
+└── README.md           # This file
+```
 
-| Port | Purpose                 |
-| :--- | :---------------------- |
-| 3100 | HTTP API (Ingest/Query) |
-| 9096 | gRPC (internal)         |
+## Tech Stack
 
-## Persistence
-
-- **Data**: `/loki` (mounted to `loki-data` volume).
-- **Index**: TSDB (schema v13, persisted in the data volume).
-- **Cold storage**: S3 bucket `loki-bucket` via MinIO.
+| Component | Technology | Role |
+| :--- | :--- | :--- |
+| Engine | hy/loki:3.6.6-custom | Log storage & query |
+| Storage | MinIO (S3) | Chunk/Index persistence |
+| Query | LogQL | Advanced log filtering |
 
 ## Configuration
 
-- **Config**: Defined in `config/loki-config.yaml`.
-- **Retention**: 7 days — configured via `limits_config.retention_period` in the YAML.
-- **Secret**: `minio_app_user_password` — injected via Docker Secret and read as `${MINIO_APP_USER_PASSWORD}` in the config.
+- **Config File**: `config/loki-config.yaml`.
+- **Backend**: Configured to use the `04-data` tier's MinIO service.
+- **Retention**: 7 days (configured in YAML).
+- **Secrets**: Uses `minio_app_user_password` for S3 authentication.
 
-## File Map
+## Persistence
 
-| Path                      | Description                |
-| ------------------------- | -------------------------- |
-| `Dockerfile`              | Custom image build.        |
-| `docker-entrypoint.sh`    | Entrypoint wrapper.        |
-| `config/loki-config.yaml` | Master Loki configuration. |
-| `README.md`               | Service notes.             |
+- **Chunks/Index**: Stored in MinIO buckets (`loki-bucket`).
+- **Local Data**: Persistent volume `loki-data` (mounted to `/loki`) for WAL/temp files.
+
+## Operational Status
+
+> [!IMPORTANT]
+> Ensure MinIO is healthy before starting Loki, as it depends on S3 availability for operation.
+
+---
+
+Copyright (c) 2026. Licensed under the MIT License.

@@ -51,6 +51,7 @@
 | [03-security](./03-security/README.md) | Security breach and firewall incidents |
 | [04-data](./04-data/README.md) | Data corruption and cluster recovery |
 | [05-messaging](./05-messaging/README.md) | Messaging cluster and queue recovery |
+| [06-observability](./06-observability/README.md) | Monitoring, logging, and trace recovery |
 
 ## Templates
 

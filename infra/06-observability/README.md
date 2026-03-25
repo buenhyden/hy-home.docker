@@ -1,38 +1,51 @@
 # Observability Stack (06-observability)
 
-This category manages the LGTM (Loki, Grafana, Tempo, Mimir/Prometheus) stack for monitoring, logging, and tracing.
+> Centralized telemetry and monitoring hub for the hy-home.docker ecosystem.
 
-## Stack Overview
+## Overview
 
-| Service | Image | Role |
+The `06-observability` tier implements the LGTM stack (Loki, Grafana, Tempo, Mimir/Prometheus) combined with Grafana Alloy and Pyroscope to provide comprehensive monitoring, logging, tracing, and profiling capabilities. It acts as the "Single Source of Truth" for system health and performance data.
+
+## Structure
+
+```text
+06-observability/
+├── alertmanager/    # Alert routing and notification logic
+├── alloy/          # Unified telemetry collector (OTLP endpoint)
+├── grafana/        # Visualization, dashboards, and provisioning
+├── loki/           # Log aggregation and storage (S3 backend)
+├── prometheus/     # Metrics storage and alerting rules
+├── pushgateway/    # Ephemeral/short-lived metrics gateway
+├── pyroscope/      # Continuous profiling backend
+├── tempo/          # Distributed tracing storage (S3 backend)
+├── docker-compose.yml
+└── README.md
+```
+
+## Tech Stack
+
+| Component | Technology | Role |
 | :--- | :--- | :--- |
-| `prometheus` | `prom/prometheus:v3.9.0` | Metrics storage |
-| `loki` | `hy/loki:3.6.6-custom` | Log storage (S3 backend via MinIO) |
-| `tempo` | `hy/tempo:2.10.1-custom` | Trace storage (S3 backend via MinIO) |
-| `grafana` | `grafana/grafana:12.3.3` | Dashboards / UI |
-| `alloy` | `grafana/alloy:v1.13.1` | Telemetry collector / OTLP endpoint |
-| `alertmanager`| `prom/alertmanager:v0.30.0`| Alert routing |
-| `pushgateway` | `prom/pushgateway:v1.11.2`| Ephemeral metrics |
-| `cadvisor` | `gcr.io/cadvisor/cadvisor:v0.55.1` | Container metrics |
-| `pyroscope` | `grafana/pyroscope:1.18.1` | Continuous profiling |
+| Metrics | Prometheus v3.9.0 | Time-series storage & query |
+| Logs | Loki v3.6.6 | Log aggregation (S3 via MinIO) |
+| Traces | Tempo v2.10.1 | Distributed tracing (S3 via MinIO) |
+| Profiling | Pyroscope v1.18.1 | Continuous performance profiling |
+| Collector | Alloy v1.13.1 | Telemetry pipeline & OTLP gateway |
+| Visualization | Grafana v12.3.3 | Unified dashboarding & SSO |
+| Alerting | Alertmanager v0.30.0 | Multi-channel alert routing |
 
-## Dependencies
+## Operational Status
 
-- **Storage**: Loki and Tempo use MinIO (S3) buckets; Prometheus/Grafana/etc. persist to bind-mounted volumes under `${DEFAULT_OBSERVABILITY_DIR}`.
-- **Network**: All services communicate via Docker DNS on `infra_net` (no static IP assumptions).
-- **Auth**: Grafana is protected via Traefik SSO middleware and integrates with Keycloak (generic OAuth).
+> [!NOTE]
+> This tier requires the `04-data` tier (MinIO) for Loki and Tempo persistence. Authentication is integrated with the `02-auth` tier (Keycloak).
 
-## File Map
+## SSoT References
 
-| Path             | Description                                   |
-| ---------------- | --------------------------------------------- |
-| `docker-compose.yml` | Integrated observability stack definition. |
-| `prometheus/`     | Prometheus config and rules.                  |
-| `grafana/`        | Dashboards, datasources, and provisioning.    |
-| `loki/`           | Loki configuration.                           |
-| `tempo/`          | Tempo configuration.                          |
-| `alloy/`          | Alloy pipeline config.                        |
-| `alertmanager/`   | Alertmanager routing config.                  |
-| `pushgateway/`    | Pushgateway service (no config dir).          |
-| `pyroscope/`      | Pyroscope profiling backend config.           |
-| `README.md`       | Category overview.                            |
+- [LGTM Stack Guide](../../docs/07.guides/06-observability/01.lgtm-stack.md)
+- [Querying Data](../../docs/07.guides/06-observability/02.querying-data.md)
+- [Retention Policies](../../docs/08.operations/06-observability/README.md)
+- [Emergency Recovery](../../docs/09.runbooks/06-observability/README.md)
+
+---
+
+Copyright (c) 2026. Licensed under the MIT License.

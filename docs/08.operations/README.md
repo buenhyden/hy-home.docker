@@ -46,6 +46,7 @@
 | [03-security](./03-security/README.md) | Network hardening and auth policies |
 | [04-data](./04-data/README.md) | Database persistence and backup policies |
 | [05-messaging](./05-messaging/README.md) | Event streaming and message brokering policies |
+| [06-observability](./06-observability/README.md) | Retention, alerting, and LGTM stack governance |
 
 ## Templates
 

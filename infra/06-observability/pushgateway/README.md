@@ -1,29 +1,39 @@
 # Pushgateway
 
-Pushgateway allows ephemeral and batch jobs to expose metrics to Prometheus.
+> Metrics buffer for ephemeral and batch jobs.
 
-## Services
+## Overview
 
-| Service       | Image                      | Role           | Resources      |
-| :------------ | :------------------------- | :------------- | :------------- |
-| `pushgateway` | `prom/pushgateway:v1.11.2` | Metrics buffer | 0.1 CPU / 64MB |
+Pushgateway allows ephemeral and batch jobs to expose metrics to Prometheus in cases where the standard pull model is not feasible (e.g., short-lived CI/CD tasks).
 
-## Networking
+## Structure
 
-| Endpoint                        | Port | Purpose               |
-| :------------------------------ | :--- | :-------------------- |
-| `pushgateway.${DEFAULT_URL}`    | 9091 | Metrics ingestion API |
+```text
+pushgateway/
+└── README.md           # This file
+```
 
-> Port is exposed via Traefik (not published directly to the host). Prometheus scrapes it over `infra_net`.
+## Tech Stack
 
-## Notes
+| Component | Technology | Role |
+| :--- | :--- | :--- |
+| Buffer | prom/pushgateway:v1.11.2 | Metrics ingestion buffer |
+| Scraper | Prometheus | Periodic push-to-pull bridge |
 
-- **Use case**: Short-lived batch jobs or CI pipelines that cannot be scraped by Prometheus directly.
-- **Caution**: Pushgateway is not a general-purpose metrics proxy. For long-running services, use the standard Prometheus pull model.
-- **Retention**: Metrics remain in Pushgateway until deleted explicitly or the container restarts. There is no automatic expiry.
+## Configuration
 
-## File Map
+- **Ingestion**: Standard Prometheus Pushgateway API.
+- **Exposure**: Exists only within the `infra_net` for Prometheus to scrape, or published via Traefik for external pushers.
 
-| Path        | Description                       |
-| ----------- | --------------------------------- |
-| `README.md` | Service overview and usage notes. |
+## Persistence
+
+- **State**: In-memory by default. Metrics will be lost upon container restart unless a persistent storage backend is configured.
+
+## Operational Status
+
+> [!CAUTION]
+> Pushgateway is not a general-purpose metric proxy. Use only for batch jobs that cannot be scraped directly by Prometheus.
+
+---
+
+Copyright (c) 2026. Licensed under the MIT License.

@@ -1,35 +1,44 @@
 # Pyroscope
 
-Pyroscope is a continuous profiling backend for aggregating and querying performance profiles.
+> Continuous profiling backend for aggregating performance profiles.
 
-## Services
+## Overview
 
-| Service     | Image                      | Role                | Resources       |
-| :---------- | :------------------------- | :------------------ | :-------------- |
-| `pyroscope` | `grafana/pyroscope:1.18.1` | Profiling backend   | 0.5 CPU / 512MB |
+Pyroscope is the profiling backend for the hy-home.docker ecosystem. It allows for aggregating and querying performance profiles (CPU, Memory, etc.) to identify bottlenecks in real-time.
 
-## Networking
+## Structure
 
-| Port | Purpose             |
-| :--- | :------------------ |
-| 4040 | HTTP API / UI       |
+```text
+pyroscope/
+├── config/
+│   └── pyroscope.yaml   # Master configuration file
+└── README.md           # This file
+```
 
-> Port 4040 is published to the host (`${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}`). Alloy forwards profiles to `http://pyroscope:4040`.
+## Tech Stack
 
-## Persistence
-
-- **Data**: `/var/lib/pyroscope` (mounted to `pyroscope-data` volume, bind-mounted to `${DEFAULT_OBSERVABILITY_DIR}/pyroscope`).
+| Component | Technology | Role |
+| :--- | :--- | :--- |
+| Engine | grafana/pyroscope:1.18.1 | Profiling backend |
+| Storage | Filesystem (local) | Profile persistence |
+| Ingestion | Alloy | Profile forwarding |
 
 ## Configuration
 
-- **Config**: `config/pyroscope.yaml`.
-- **Storage**: Filesystem backend (local disk, not S3).
-- **Multitenancy**: Disabled — single-tenant setup.
-- **Self-profiling**: `self_profiling.disable_push: true` (Pyroscope does not push its own profiles).
+- **Config File**: `config/pyroscope.yaml`.
+- **Backend**: Local filesystem (configured to `${DEFAULT_OBSERVABILITY_DIR}/pyroscope`).
+- **Multitenancy**: Disabled (single-tenant).
+- **Self-profiling**: Disabled by default.
 
-## File Map
+## Persistence
 
-| Path                        | Description                    |
-| --------------------------- | ------------------------------ |
-| `config/pyroscope.yaml`     | Pyroscope server configuration.|
-| `README.md`                 | Service notes.                 |
+- **Data**: Persistent volume `pyroscope-data` (mounted to `/var/lib/pyroscope`).
+
+## Operational Status
+
+> [!NOTE]
+> Alloy acts as the primary profile collector. Ensure Alloy is healthy to receive profiles from protected applications.
+
+---
+
+Copyright (c) 2026. Licensed under the MIT License.

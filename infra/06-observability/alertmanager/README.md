@@ -1,35 +1,42 @@
 # Alertmanager
 
-Alertmanager handles alerts sent by Prometheus and routes them to configured notification channels.
+> Alert routing and notification management engine.
 
-## Services
+## Overview
 
-| Service        | Image                       | Role         | Resources       |
-| :------------- | :-------------------------- | :----------- | :-------------- |
-| `alertmanager` | `prom/alertmanager:v0.30.0` | Alert router | 0.1 CPU / 128MB |
+Alertmanager handles alerts sent by Prometheus, grouping and routing them to the appropriate notification channels (Slack, Email).
 
-## Networking
+## Structure
 
-| Endpoint                      | Port | Purpose        |
-| :---------------------------- | :--- | :------------- |
-| `alertmanager.${DEFAULT_URL}` | 9093 | Web UI / API   |
+```text
+alertmanager/
+├── config/
+│   └── config.yml       # Alert routing & receiver configuration
+└── README.md           # This file
+```
+
+## Tech Stack
+
+| Component | Technology | Role |
+| :--- | :--- | :--- |
+| Routing | prom/alertmanager:v0.30.0 | Alert grouping & delivery |
+| Receivers | Slack, SMTP | Notification channels |
 
 ## Configuration
 
-- **Config**: Defined in `config/config.yml`. The file uses `__SMTP_USERNAME__`, `__SMTP_PASSWORD__`, and `__SLACK_WEBHOOK_URL__` placeholders that are substituted at container startup from Docker Secrets.
-- **Routes**: Configured to route all alerts to the `team-notifications` receiver (Slack + Email).
+- **Config File**: `config/config.yml`.
+- **Integrations**: Uses Docker Secrets for SMTP and Slack credentials.
+- **Routes**: Grouped by severity and service, routing to `team-notifications` by default.
 
-## Secrets
+## Persistence
 
-| Secret name       | Purpose                               |
-| :---------------- | :------------------------------------ |
-| `smtp_username`   | Gmail SMTP account for email alerts.  |
-| `smtp_password`   | Gmail app password (16-character).    |
-| `slack_webhook`   | Slack Incoming Webhook URL.           |
+- **State**: Persistent volume (not explicitly defined in the provided scope, typically handles silence/notification state internally).
 
-## File Map
+## Operational Status
 
-| Path               | Description                       |
-| ------------------ | --------------------------------- |
-| `config/config.yml`| Alert routing configuration.      |
-| `README.md`        | Service notes.                    |
+> [!WARNING]
+> Ensure SMTP credentials and Slack webhooks are correctly configured in Docker Secrets to prevent silence on critical failures.
+
+---
+
+Copyright (c) 2026. Licensed under the MIT License.
