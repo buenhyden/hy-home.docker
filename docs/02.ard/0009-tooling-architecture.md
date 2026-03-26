@@ -40,6 +40,7 @@
 ## System Overview & Context
 
 시스템은 '관리형 도구(Managed Tools)'와 '실행형 도구(Execution Tools)'로 나뉜다.
+
 1. **Management**: SonarQube, Terrakube API 등은 지속적으로 구동되며 중앙 상태를 관리한다.
 2. **Execution**: Terrakube Worker, Locust Worker 등은 작업 발생 시 리소스를 점유하며 실제 연산을 수행한다.
 

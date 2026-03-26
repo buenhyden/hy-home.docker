@@ -24,7 +24,7 @@
   - 서비스별 비즈니스 토픽 네이밍 규약 (Spec 담당)
   - 메트릭 시각화 (06-observability 담당)
 - **Non-goals**:
-    - 메시징 계층에서 대용량 BLOB 데이터 직접 저장.
+  - 메시징 계층에서 대용량 BLOB 데이터 직접 저장.
 
 ## Quality Attributes
 

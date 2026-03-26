@@ -66,11 +66,13 @@ psql -h pg-router -p 15432 -U postgres -d postgres -c "SELECT pg_is_in_recovery(
 - **Health**: Monitor Patroni via HAProxy dashboard.
 
 ### Operational Guardrails
+
 1. Verify `primary` node status via `patronictl` before performing schema changes.
 2. Monitor `etcd_server_has_leader` metrics to ensure cluster health.
 3. WAL archiving must be verified against the [Data Persistence Policy](../../../docs/08.operations/04-data/README.md).
 
 ### Safety Warnings
+
 - Modifying `haproxy.cfg` requires a `pg-router` service restart.
 - Never manually delete data directories without stopping Patroni first.
 

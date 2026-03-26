@@ -16,9 +16,9 @@ title: 'Quality Assurance Scope'
 ## 2. Requirements & Constraints
 
 - **Test Suite**:
-    - **Unit**: >80% coverage for domain logic.
-    - **E2E**: Critical paths verified via **Playwright**.
-    - **Load**: API performance verified via **k6** or **Locust**.
+  - **Unit**: >80% coverage for domain logic.
+  - **E2E**: Critical paths verified via **Playwright**.
+  - **Load**: API performance verified via **k6** or **Locust**.
 - **Automation**: Mandatory CI/CD gate for all PRs.
 
 ## 3. Implementation Flow

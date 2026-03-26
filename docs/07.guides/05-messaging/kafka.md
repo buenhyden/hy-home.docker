@@ -31,6 +31,7 @@
 ## Step-by-step Instructions
 
 ### 1. Cluster Execution
+
 ```bash
 # Infrastructure root에서 실행
 cd infra/05-messaging/kafka

@@ -17,7 +17,7 @@
 | Incident ID | `INC-YYYYMMDD-XXX` |
 | Incident Date | `YYYY-MM-DD` |
 | Analysis Date | `YYYY-MM-DD` |
-| Severity | `SEV-1 | SEV-2 | SEV-3` |
+| Severity | `SEV-1 / SEV-2 / SEV-3` |
 | Incident Document | `[../../10.incidents/YYYY/YYYY-MM-DD-<incident-title>.md]` |
 
 ## Agent Metadata (If Applicable)

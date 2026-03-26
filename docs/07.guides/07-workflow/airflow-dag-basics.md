@@ -29,6 +29,7 @@ To ensure all DAGs written for the project follow consistent patterns and utiliz
 ## Step-by-step Instructions
 
 ### 1. DAG Definition Pattern
+
 Use the `@dag` decorator for modern, readable pipelines.
 
 ```python
@@ -52,6 +53,7 @@ my_workflow()
 ```
 
 ### 2. File Placement
+
 Place your `.py` files in `${DEFAULT_WORKFLOW_DIR}/airflow/dags`. The `airflow-scheduler` and `airflow-worker` will pick them up automatically via volume mounts.
 
 ## Common Pitfalls

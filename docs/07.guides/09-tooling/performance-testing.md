@@ -60,7 +60,8 @@ class WebsiteUser(HttpUser):
 3. 실시간 통계 및 차트를 확인합니다.
 
 ### 4. 결과 분석 (Analysis)
-- Locust UI에서 실시간 데이터를 확인하거나, 
+
+- Locust UI에서 실시간 데이터를 확인하거나,
 - **Grafana**의 `Load Testing Dashboard`를 통해 InfluxDB에 저장된 이력 데이터를 심도 있게 분석합니다.
 
 ## Common Pitfalls

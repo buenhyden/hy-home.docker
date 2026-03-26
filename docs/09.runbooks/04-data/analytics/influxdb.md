@@ -42,6 +42,7 @@ Restore metrics ingestion and analytical querying capabilities during service ou
 ### Procedure 2: Storage Cleanup
 
 If the disk is full and service fails to start:
+
 1. Temporarily move stale Parquet/data files to backup.
 2. Start service.
 3. Lower retention periods on non-critical buckets.

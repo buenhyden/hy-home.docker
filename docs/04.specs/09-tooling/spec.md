@@ -11,32 +11,38 @@
 ## Components
 
 ### 1. Terrakube (IaC Platform)
+
 - **API**: 애플리케이션 프레임워크 및 워크플로우 엔진.
 - **Executor**: 실제 Terraform 바이너리를 실행하는 워커.
 - **Registry**: 테라폼 모듈 및 프로바이더 관리.
 - **Dependency**: PostgreSQL (metadata), MinIO (state files).
 
 ### 2. SonarQube (Static Analysis)
+
 - **Server**: 분석 결과 전시 및 설정 관리용 웹 UI.
 - **Database**: 분석 이력 및 품질 게이트 규정 저장 (PostgreSQL).
 - **Scanner**: CI/CD 파이프라인 또는 로컬에서 실행되는 분석 에이전트.
 
 ### 3. Locust (Load Testing)
+
 - **Master**: 부하 테스트 제어 및 실시간 통계 수집.
 - **Worker**: 실제 시나리오를 실행하여 대상 서비스에 트래픽 생성.
 - **Scripting**: Python 기반 `locustfile.py`.
 
 ### 4. Registry (OCI Container Storage)
+
 - **Backend**: 이미지 데이터 저장을 위한 S3-compatible 스토리지 (MinIO).
 - **Auth**: `htpasswd` 또는 OIDC 프록시를 통한 접근 제어.
 
 ### 5. Syncthing (File Sync)
+
 - **Discovery**: 로컬/글로벌 노드 탐색.
 - **Protocol**: Block-level 동기화 프로토콜 (BEP).
 
 ## Interface Definition
 
 ### Network Ports
+
 | Service | Internal Port | External Port | Auth Required |
 | :--- | :--- | :--- | :--- |
 | Terrakube API | 8080 | 10080 | OIDC |
@@ -46,19 +52,21 @@
 | Syncthing UI | 8384 | 18384 | Local Auth |
 
 ### Common Variables
+
 - `DEFAULT_TOOLING_DB`: Tooling 전용 DB 인스턴스 정보.
 - `DEFAULT_TOOLING_STORAGE`: MinIO 내 전용 버킷 정보.
 
 ## Sequence Diagrams
 
 ### IaC automation Flow
+
 ```mermaid
 sequenceDiagram
     participant User as DevOps Engineer
     participant TK as Terrakube API
     participant Worker as Terrakube Executor
     participant S3 as MinIO (State)
-    
+
     User->>TK: Trigger Plan/Apply
     TK->>Worker: Dispatch Job
     Worker->>S3: Fetch Current State
@@ -70,6 +78,7 @@ sequenceDiagram
 ## Data Models
 
 ### Database Schema (Abstract)
+
 - **Terrakube**: workspaces, jobs, states, organizations.
 - **SonarQube**: projects, issues, measures, snapshots, users.
 

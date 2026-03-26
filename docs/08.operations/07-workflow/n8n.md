@@ -23,10 +23,12 @@
 ## Maintenance and Updates
 
 ### Backup and Restore
+
 - PostgreSQL 메타데이터 DB는 매일 자정에 스냅샷 백업을 수행한다.
 - 주요 워크플로우는 `n8n-cli` 또는 UI의 `Export` 기능을 사용하여 주기적으로 JSON 백업을 수행한다.
 
 ### Version Upgrades
+
 - n8n 이미지 업데이트 전, 현재 활성화된 워크플로우를 일시 중지하거나 작업이 없는 시간을 확인하여 진행한다.
 - 업그레이드 후 `healthz` 엔드포인트를 통해 서비스 정상 여부를 확인한다.
 

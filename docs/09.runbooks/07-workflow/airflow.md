@@ -37,17 +37,21 @@
 ### Procedure
 
 #### 시나리오 1: 태스크 지연 (Task stuck in Queued)
+
 1. Valkey 브로커 상태 확인: `docker compose exec airflow-valkey valkey-cli ping`
 2. 워커 재배포: `docker compose restart airflow-worker`
 3. Flower(`flower.${DEFAULT_URL}`)를 통해 큐에 쌓인 작업량 확인.
 
 #### 시나리오 2: 메타데이터 DB 오류
+
 1. DB 연결 정보 확인: `docker compose exec airflow-webserver airflow db check`
 2. 비밀번호/시크릿 로드 여부 확인: `/run/secrets/airflow_db_password` 파일 존재 여부 확인.
 3. 서비스 재시작: `docker compose restart airflow-apiserver airflow-scheduler`
 
 #### 시나리오 3: 관리자 패스워드 분실
+
 1. 사용자 재생성/업데이트:
+
    ```bash
    docker compose run --rm airflow-cli users reset-password \
      --username admin \

@@ -27,11 +27,13 @@
 ## Consequences
 
 ### Positive
+
 - 모든 비밀 정보의 중앙 집중화 및 암호화 저장.
 - 상세한 Audit 로그를 통한 보안 준수(Compliance) 강화.
 - 시크릿 노출 없이 인프라 코드를 공용 저장소에 안전하게 보관 가능.
 
 ### Negative
+
 - Vault 서버의 초기 Unseal 등 운영 복잡도 증가.
 - Vault 서버 장애가 전체 서비스의 "Single Point of Failure"가 될 수 있으므로 HA 구성이 필수적임.
 

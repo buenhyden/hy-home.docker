@@ -35,33 +35,35 @@ Nginx 서비스 가용성 유지 및 복잡한 라우팅 이슈의 신속한 해
 - [ ] `infra_net` 상의 타겟 업스트림 핑 응답 확인
 - [ ] OAuth2 Proxy 서비스 상태 확인
 
-
 ### Procedure: Configuration Reload
 
 설정 파일 수정 후 서비스 중단 없이 반영하는 단계:
 
 1. 설정 파일 문법 검사:
+
    ```bash
    docker exec nginx nginx -t
    ```
+
 2. 오류가 없을 경우 리로드 실행:
+
    ```bash
    docker exec nginx nginx -s reload
    ```
-
 
 ### Procedure: Debugging SSO Integration
 
 인증 문제가 발생할 경우 다음을 순차적으로 확인:
 
 1. Nginx 에러 로그 확인:
+
    ```bash
    docker compose logs -f nginx
    ```
+
 2. `/_oauth2_auth_check` 내부 요청의 응답 코드 확인.
 3. Upstream 서비스가 정상 작동 중인지 확인 (`docker compose ps`).
 4. `X-Forwarded-Proto`가 `https`로 설정되어 있는지 확인.
-
 
 ### Procedure: Recovery from Healthcheck Failure
 

@@ -49,6 +49,7 @@ location /my-service/ {
 
 1. **Auth Check 엔드포인트**:
    `nginx.conf`에 내부 API 엔드포인트가 정의되어 있어야 한다:
+
    ```nginx
    location = /_oauth2_auth_check {
        internal;
@@ -59,6 +60,7 @@ location /my-service/ {
    ```
 
 2. **Location 보호 적용**:
+
    ```nginx
    location /protected-app/ {
        auth_request /_oauth2_auth_check;

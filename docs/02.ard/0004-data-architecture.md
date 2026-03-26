@@ -17,7 +17,7 @@ graph TD
         V_CLSTR[Valkey Cluster 6-nodes]
         MINIO[MinIO S3]
         QDRANT[Qdrant Vector]
-        
+
         subgraph "PostgreSQL HA Cluster"
             PG0[PostgreSQL Primary]
             PG1[PostgreSQL Replica]
@@ -30,11 +30,11 @@ graph TD
     APP --> V_CLSTR
     APP --> MINIO
     APP --> QDRANT
-    
+
     ROUTER --> PG0
     ROUTER --> PG1
     ROUTER --> PG2
-    
+
     PG0 --- ETCD
     PG1 --- ETCD
     PG2 --- ETCD
@@ -43,19 +43,23 @@ graph TD
 ## Core Components
 
 ### 1. Relational Database (PostgreSQL 17)
+
 - **Engine**: Spilo (Zalando's PostgreSQL + Patroni).
 - **Consensus**: Etcd (3-node)를 사용한 리더 선출 및 구성 관리.
 - **Routing**: HAProxy(pg-router)를 통해 RW(15432) / RO(15433) 트래픽 분산.
 
 ### 2. Cache & Key-Value (Valkey 8.0)
+
 - **Mode**: Distributed Cluster (3 Master + 3 Replica).
 - **Auth**: 비밀번호 기반 인증 (Valkey 9.x+ 가이드 준수).
 
 ### 3. Object Storage (MinIO)
+
 - **Port**: 9000 (API) / 9001 (Console).
 - **Provisioning**: `minio-create-buckets` 잡을 통한 초기 버킷 생성 자동화.
 
 ### 4. Specialized Engines
+
 - **Qdrant**: RAG 아키텍처를 위한 고성능 벡터 데이타베이스.
 - **MongoDB/CouchDB**: 문서 지향 데이터 수용.
 

@@ -44,6 +44,7 @@ mysql -u root -h starrocks-fe -P 9030
 ### 2. Creating Tables
 
 StarRocks는 여러 데이터 모델(Duplicate, Aggregate, Primary Key)을 지원한다.
+
 ```sql
 CREATE DATABASE demo;
 USE demo;

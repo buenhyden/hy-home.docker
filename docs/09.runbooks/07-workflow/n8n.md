@@ -37,16 +37,19 @@
 ### Procedure
 
 #### 시나리오 1: 워커 노드 중단 (Worker Down)
+
 1. 워커 로그 확인: `docker compose logs --tail=50 n8n-worker`
 2. 워커 재시작: `docker compose restart n8n-worker`
 3. Valkey 큐 상태 확인: `docker compose exec n8n-valkey valkey-cli info keyspace`
 
 #### 시나리오 2: 데이터베이스 연결 오류
+
 1. DB 호스트(`POSTGRES_MNG_HOSTNAME`)가 가용한지 확인.
 2. n8n 메인 서비스 재시작: `docker compose restart n8n`
 3. 시크릿 파일 권한 확인: `docker compose exec n8n ls -l /run/secrets/n8n_db_password`
 
 #### 시나리오 3: 텐서플로우/Task Runner 오류
+
 1. Task Runner 로그 확인: `docker compose logs n8n-task-runner`
 2. Task Runner 재시작: `docker compose restart n8n-task-runner`
 

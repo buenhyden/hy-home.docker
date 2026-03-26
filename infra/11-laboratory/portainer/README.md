@@ -28,11 +28,13 @@ Portainer is a lightweight management UI which allows you to easily manage your 
 ## How to Work
 
 ### 1. Initial Setup
+
 1. Deploy the stack: `docker compose up -d`.
 2. Access `https://portainer.${DEFAULT_URL}`.
 3. Set the initial admin password.
 
 ### 2. Environment Management
+
 - Use the local endpoint to manage containers on the current host.
 - Add remote agents for multi-host management.
 

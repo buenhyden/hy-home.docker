@@ -10,9 +10,10 @@
 
 ---
 
-### Task 1: Optimize Root Shims
+## Task 1: Optimize Root Shims
 
 **Files:**
+
 - Modify: `AGENTS.md`
 - Modify: `CLAUDE.md`
 - Modify: `GEMINI.md`
@@ -31,9 +32,10 @@ Remove redundant instructions and point to `docs/00.agent-governance/gemini-prov
 
 ---
 
-### Task 2: Standardize Governance Hub README
+## Task 2: Standardize Governance Hub README
 
 **Files:**
+
 - Modify: `docs/00.agent-governance/README.md`
 
 **Step 1: Apply "Golden 5" pattern to README**
@@ -47,9 +49,10 @@ Ensure all 13 layers are listed and linked correctly.
 
 ---
 
-### Task 4: Complete Missing Scopes
+## Task 4: Complete Missing Scopes
 
 **Files:**
+
 - Create: `docs/00.agent-governance/scopes/common.md`
 - Create: `docs/00.agent-governance/scopes/mobile.md`
 - Create: `docs/00.agent-governance/scopes/entry.md`
@@ -76,9 +79,10 @@ Consolidate agent behavior protocols (e.g., `<thinking>` usage, tool usage).
 
 ---
 
-### Task 5: Align Provider Configurations
+## Task 5: Align Provider Configurations
 
 **Files:**
+
 - Modify: `docs/00.agent-governance/claude-provider.md`
 - Modify: `docs/00.agent-governance/gemini-provider.md`
 
@@ -93,7 +97,7 @@ Incorporate instructions moved from `GEMINI.md`.
 
 ---
 
-### Task 6: Final Quality Audit
+## Task 6: Final Quality Audit
 
 **Step 1: Run Quality Report**
 Use `@[/claude-md-improver]` principles to evaluate the new structure.
@@ -109,6 +113,7 @@ Fix any broken links or inconsistent headers.
 ## Verification Plan
 
 ### Manual Verification
+
 1. Verify all links in `AGENTS.md`, `CLAUDE.md`, and `GEMINI.md` work.
 2. Verify all 13 scopes are present in `docs/00.agent-governance/scopes/`.
 3. Verify all files start with `layer: <name>` frontmatter.

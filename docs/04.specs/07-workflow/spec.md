@@ -80,6 +80,7 @@ docker exec airflow-webserver airflow db check
 ```
 
 ### n8n Status Check
+
 ```bash
 # 헬스체크 엔드포인트 확인
 curl -f http://localhost:5678/healthz

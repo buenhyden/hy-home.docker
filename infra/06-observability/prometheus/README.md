@@ -31,6 +31,7 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 - **Scrape Targets**: Update `scrape_configs` in `prometheus.yml`.
 - **Alerting Rules**: Add/Modify YAML files in `config/alert_rules/`.
 - **Validation**:
+
   ```bash
   docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml
   ```

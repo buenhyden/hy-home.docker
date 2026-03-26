@@ -12,12 +12,12 @@
 
 ## Goals & In-Scope
 
-- **Goals**: 
-    - 06-observability 관련 모든 문서(PRD~Task)의 March 2026 표준 준수.
-    - 리포지토리 전반의 교차 레이어 링크(Cross-layer links) 무결성 확보.
+- **Goals**:
+  - 06-observability 관련 모든 문서(PRD~Task)의 March 2026 표준 준수.
+  - 리포지토리 전반의 교차 레이어 링크(Cross-layer links) 무결성 확보.
 - **In Scope**:
-    - `docs/01.prd` ~ `docs/06.tasks` 내 관련 파일 생성 및 수정.
-    - 레이어별 `README.md` 인덱스 업데이트.
+  - `docs/01.prd` ~ `docs/06.tasks` 내 관련 파일 생성 및 수정.
+  - 레이어별 `README.md` 인덱스 업데이트.
 
 ## Non-Goals & Out-of-Scope
 

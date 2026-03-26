@@ -15,10 +15,10 @@ title: 'Operations & SRE Scope'
 
 ## 2. Requirements & Constraints
 
-- **Observability**: 
-    - **Metrics**: Standardized Prometheus exporters for all infra services.
-    - **Logging**: JSON-structured logs with correlated Trace IDs.
-    - **Tracing**: End-to-end distributed tracing via Tempo.
+- **Observability**:
+  - **Metrics**: Standardized Prometheus exporters for all infra services.
+  - **Logging**: JSON-structured logs with correlated Trace IDs.
+  - **Tracing**: End-to-end distributed tracing via Tempo.
 - **Reliability**: Automated health checks and restart policies for all production containers.
 
 ## 3. Implementation Flow

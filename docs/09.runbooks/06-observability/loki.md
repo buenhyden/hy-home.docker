@@ -30,9 +30,11 @@ docker compose ps loki
 
 1. **Verify Alloy Status**: Check `https://alloy.${DEFAULT_URL}`. Ensure `loki.write` components are healthy.
 2. **Check Loki Ingestion**: Look for `entry out of order` or `rate limit exceeded` errors in Loki logs:
+
    ```bash
    docker compose logs --tail=100 loki
    ```
+
 3. **Verify Labels**: Ensure the LogQL query labels match exactly what Alloy is sending.
 
 ### Scenario B: MinIO Connection Failure
@@ -54,12 +56,14 @@ docker compose -f infra/06-observability/docker-compose.yml restart loki
 ```
 
 ### 2. Check S3/MinIO Connectivity
-2. **Root Cause**: Check for a specific service emitting massive log volume (log spikes).
-3. **Mitigation**: Use `limits_config` in `loki-config.yaml` to throttle high-volume streams.
+
+1. **Root Cause**: Check for a specific service emitting massive log volume (log spikes).
+2. **Mitigation**: Use `limits_config` in `loki-config.yaml` to throttle high-volume streams.
 
 ## 3. Emergency Maintenance
 
 ### Force Compaction
+
 If storage is full and retention cleanup is pending:
 
 ```bash
@@ -68,9 +72,12 @@ docker compose -f infra/06-observability/docker-compose.yml logs -f loki | grep 
 ```
 
 ### Flush Chunks
+
 If Loki needs to be shut down gracefully while ensuring all logs are committed to S3:
+
 - Loki handles this automatically on `SIGTERM`. Ensure `stop_grace_period` is sufficient (min 30s).
 
 ---
+
 - [Loki System Guide](file:///home/hy/projects/hy-home.docker/docs/07.guides/06-observability/loki.md)
  | [Operational Policy](../../08.operations/06-observability/loki.md)

@@ -8,13 +8,13 @@
 
 ## Strategic Boundaries & Non-goals
 
-- **Owns**: 
-    - 텔레메트리 수집기(Alloy) 설정
-    - 데이터 저장소(Loki/Tempo/Prometheus) 라이프사이클 관리
-    - 시각화(Grafana) 및 알람(Alertmanager) 프로비저닝
-- **Does Not Own**: 
-    - MinIO 버킷 자체의 관리 (04-data 영역)
-    - Keycloak의 SSO 세션 관리 (02-auth 영역)
+- **Owns**:
+  - 텔레메트리 수집기(Alloy) 설정
+  - 데이터 저장소(Loki/Tempo/Prometheus) 라이프사이클 관리
+  - 시각화(Grafana) 및 알람(Alertmanager) 프로비저닝
+- **Does Not Own**:
+  - MinIO 버킷 자체의 관리 (04-data 영역)
+  - Keycloak의 SSO 세션 관리 (02-auth 영역)
 
 ## Related Inputs
 
@@ -24,14 +24,14 @@
 
 ## Contracts
 
-- **Config Contract**: 
-    - 모든 설정 파일은 `/etc/<service>/<config>` 경로에 위치하며 읽기 전용(`:ro`)으로 마운트된다.
-    - 민감한 정보(비밀번호, 토큰)는 Docker Secrets를 통해 주입된다.
-- **Data Contract**: 
-    - 텔레메트리 데이터는 OTLP(gRPC/4317, HTTP/4318) 프로토콜을 사용한다.
-    - Loki와 Tempo는 MinIO S3 API를 통해 버킷에 접근한다.
-- **Governance Contract**: 
-    - Grafana 대시보드는 `provisioning/dashboards` 설정을 통해 코드 기반으로 동기화되어야 한다.
+- **Config Contract**:
+  - 모든 설정 파일은 `/etc/<service>/<config>` 경로에 위치하며 읽기 전용(`:ro`)으로 마운트된다.
+  - 민감한 정보(비밀번호, 토큰)는 Docker Secrets를 통해 주입된다.
+- **Data Contract**:
+  - 텔레메트리 데이터는 OTLP(gRPC/4317, HTTP/4318) 프로토콜을 사용한다.
+  - Loki와 Tempo는 MinIO S3 API를 통해 버킷에 접근한다.
+- **Governance Contract**:
+  - Grafana 대시보드는 `provisioning/dashboards` 설정을 통해 코드 기반으로 동기화되어야 한다.
 
 ## Core Design
 
@@ -57,14 +57,15 @@
 ## Data Modeling & Storage Strategy
 
 - **MinIO S3 Integration**:
-    - Loki/Tempo는 MinIO 컨테이너 아이디나 Traefik 엔드포인트를 통해 접근한다.
-    - 인증 정보는 `minio_app_user_password` 시크릿을 공유한다.
-- **Local Persistence**: 
-    - Prometheus TSDB 데이터는 `${DEFAULT_OBSERVABILITY_DIR}/prometheus`에 마운트된다.
+  - Loki/Tempo는 MinIO 컨테이너 아이디나 Traefik 엔드포인트를 통해 접근한다.
+  - 인증 정보는 `minio_app_user_password` 시크릿을 공유한다.
+- **Local Persistence**:
+  - Prometheus TSDB 데이터는 `${DEFAULT_OBSERVABILITY_DIR}/prometheus`에 마운트된다.
 
 ## Interfaces & Data Structures
 
 ### Alloy OTLP Configuration (Concept)
+
 ```hcl
 otlp.receiver "default" {
   grpc { endpoint = "0.0.0.0:4317" }
@@ -80,6 +81,7 @@ otlp.receiver "default" {
 ## Verification
 
 ### Service Health Check
+
 ```bash
 # Prometheus health check
 wget -qO- http://localhost:9090/-/healthy

@@ -13,6 +13,7 @@
 ## Context
 
 We need an authentication system that is:
+
 1. Centrally managed.
 2. Protocol-standard (OIDC, SAML).
 3. Easily integrable with Traefik.
@@ -21,6 +22,7 @@ We need an authentication system that is:
 ## Decision
 
 We decided to use:
+
 - **Keycloak**: As the primary Identity/OIDC Provider.
 - **OAuth2 Proxy**: As the ForwardAuth middleware provider.
 

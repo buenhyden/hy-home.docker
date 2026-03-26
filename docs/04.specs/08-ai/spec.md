@@ -10,11 +10,11 @@
 
 ## Strategic Boundaries & Non-goals
 
-- **Owns**: 
+- **Owns**:
   - Docker Compose 서비스 정의 (`ollama`, `open-webui`, `ollama-exporter`)
   - 모델 영속 데이터 레이아웃 및 볼륨 매핑
   - RAG 환경 설정 및 임베딩 정책
-- **Does Not Own**: 
+- **Does Not Own**:
   - NVIDIA 드라이버 설치 (Host OS 영역)
   - Qdrant 컬렉션 관리 (Data 계층 Spec 영역)
 
@@ -26,12 +26,12 @@
 
 ## Contracts
 
-- **Config Contract**: 
+- **Config Contract**:
   - `${DEFAULT_AI_MODEL_DIR}`: 모델 데이터가 저장될 호스트 경로
   - `${OLLAMA_PORT}`: 내부 11434 포트를 외부에 노출할 규격
-- **Data / Interface Contract**: 
+- **Data / Interface Contract**:
   - OpenAI Compatible API (Ollama/WebUI 양방향)
-- **Governance Contract**: 
+- **Governance Contract**:
   - 모든 AI 트래픽은 `sso-auth` 미들웨어를 경유해야 함.
 
 ## Core Design
@@ -69,16 +69,19 @@ RAG_EMBEDDING_MODEL: qwen3-embedding:0.6b
 ## Verification
 
 ### GPU Support Check
+
 ```bash
 docker exec -it ollama nvidia-smi
 ```
 
 ### Model Availability Check
+
 ```bash
 curl http://localhost:11434/api/tags
 ```
 
 ### RAG Integration Test
+
 Open WebUI 설정 창에서 Qdrant 연결 상태 확인 및 임베딩 모델 테스트 수행.
 
 ## Success Criteria & Verification Plan

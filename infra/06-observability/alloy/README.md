@@ -21,11 +21,11 @@ Alloy is the unified collection agent for the `hy-home.docker` platform. It repl
 
 - **Ingestion**: OTLP (gRPC/HTTP), Docker socket discovery.
 - **Processing**: Target relabeling, metadata enrichment, batching.
-- **Exporting**: 
-    - Metrics -> Prometheus
-    - Logs -> Loki
-    - Traces -> Tempo
-    - Profiling -> Pyroscope
+- **Exporting**:
+  - Metrics -> Prometheus
+  - Logs -> Loki
+  - Traces -> Tempo
+  - Profiling -> Pyroscope
 - **Status**: Live pipeline debugging via Alloy UI.
 
 ### Out of Scope

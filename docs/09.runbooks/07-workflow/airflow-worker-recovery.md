@@ -23,18 +23,25 @@ To resolve issues where Airflow tasks remain in `queued` or `running` state inde
 ### Procedure
 
 1. **Check Disk Space**: Ensure the log volume is not full.
+
    ```bash
    df -h /opt/airflow/logs
    ```
+
 2. **Inspect Broker**: Check if Valkey is reachable and has pending messages.
+
    ```bash
    docker exec airflow-valkey valkey-cli info keyspace
    ```
+
 3. **Restart Workers**: Force a restart of the worker nodes.
+
    ```bash
    docker compose restart airflow-worker
    ```
+
 4. **Verify Log Streaming**: Check the logs of the restarted worker.
+
    ```bash
    docker compose logs -f airflow-worker
    ```

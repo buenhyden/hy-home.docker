@@ -9,6 +9,7 @@
 ## Task List
 
 ### Governance & Spec
+
 - [x] TASK-DOC-09-01: Create 09-tooling PRD
 - [x] TASK-DOC-09-02: Create 09-tooling ARD
 - [x] TASK-DOC-09-03: Create 09-tooling ADR
@@ -16,11 +17,13 @@
 - [x] TASK-DOC-09-05: Update PRD/ARD index READMEs
 
 ### Operations & Guides
+
 - [ ] TASK-DOC-09-06: Create User Guide for Tooling Ecosystem
 - [ ] TASK-DOC-09-07: Formalize Tooling Operational Policy
 - [ ] TASK-DOC-09-08: Document Maintenance Runbooks
 
 ### Infrastructure Refactoring
+
 - [ ] TASK-DOC-09-09: Refactor infra/09-tooling README to Golden 5
 - [ ] TASK-DOC-09-10: Cross-link documentation in service READMEs
 

@@ -28,6 +28,7 @@
 04-data/
 ├── backup-policy.md
 ├── valkey-cluster.md     # Valkey Cluster 운영 정책
+├── minio.md              # MinIO Object Storage 운영 정책
 └── README.md
 ```
 

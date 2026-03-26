@@ -12,10 +12,10 @@
 
 ## Goals & In-Scope
 
-- **Goals**: 
+- **Goals**:
   - `08-ai` 계층 전용 PRD, ARD, ADR, Spec 문서 구축.
   - 각 문서 계층별 README 갱신 및 상호 참조 링크 무결성 확보.
-- **In Scope**: 
+- **In Scope**:
   - `docs/01.prd` ~ `docs/06.tasks` 내 관련 문서 생성.
   - 상위 템플릿 준수 및 린트 오류 수정.
 

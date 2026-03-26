@@ -12,12 +12,12 @@
 
 ## Goals & In-Scope
 
-- **Goals**: 
-    - 메시징 계층 문서의 표준 템플릿 적용 및 상호 참조 완성.
-    - AI Agent 및 개발자가 즉시 이해 가능한 인프라 명세 제공.
+- **Goals**:
+  - 메시징 계층 문서의 표준 템플릿 적용 및 상호 참조 완성.
+  - AI Agent 및 개발자가 즉시 이해 가능한 인프라 명세 제공.
 - **In Scope**:
-    - docs/01.prd ~ 06.tasks 내의 메시징 관련 문서 생성/수정.
-    - infra/05-messaging README 리팩토링.
+  - docs/01.prd ~ 06.tasks 내의 메시징 관련 문서 생성/수정.
+  - infra/05-messaging README 리팩토링.
 
 ## Non-Goals & Out-of-Scope
 

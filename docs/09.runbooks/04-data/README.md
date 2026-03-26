@@ -28,6 +28,7 @@
 04-data/
 ├── storage-exhaustion.md
 ├── valkey-cluster.md     # Valkey Cluster 긴급 복구 런북
+├── minio.md              # MinIO Object Storage 긴급 복구 런북
 └── README.md
 ```
 

@@ -15,10 +15,10 @@ title: 'Frontend UI/UX Scope'
 
 ## 2. Requirements & Constraints
 
-- **Stack**: 
-    - **Framework**: Next.js 15+ (App Router), React 19+.
-    - **Styling**: Tailwind CSS v4 (Modern Patterns), Framer Motion for animations.
-    - **State**: TanStack Query (Server State), Zustand (Client State).
+- **Stack**:
+  - **Framework**: Next.js 15+ (App Router), React 19+.
+  - **Styling**: Tailwind CSS v4 (Modern Patterns), Framer Motion for animations.
+  - **State**: TanStack Query (Server State), Zustand (Client State).
 - **Accessibility**: Mandatory compliance with **WCAG 2.2 Level AA**.
 - **Design System**: Use predefined design tokens; avoid ad-hoc utility hacks.
 

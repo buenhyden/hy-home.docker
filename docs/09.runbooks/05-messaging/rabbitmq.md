@@ -1,67 +1,61 @@
-# RabbitMQ Recovery Runbook (05-messaging)
+# RabbitMQ Recovery Runbook
 
-> Step-by-step procedures for broker recovery, maintenance, and troubleshooting.
+: Emergency procedures for RabbitMQ service failures.
+
+---
 
 ## Overview (KR)
 
-이 문서는 RabbitMQ 서비스 장애 시 신속한 복구를 위한 실행 절차를 제공한다. 브로커 프로세스 복구, 메시지 폭주 대응(Purge), 그리고 성능 최적화(Rebalance) 절차를 포함한다.
+이 런북은 RabbitMQ 서비스 장애 시 장애 복구 절차를 정의한다. 메시지 누적(Message Backlog), 메모리 부족(Memory Alarm), 서비스 응답 없음 등의 상황에서 즉각적인 복구 단계를 제공한다.
 
-## Traceability (Golden 5)
+## Purpose
 
-- **PRD**: [05-messaging (2026-03-26)](../../01.prd/2026-03-26-05-messaging.md)
-- **ARD**: [Messaging Architecture (0005)](../../02.ard/0005-messaging-architecture.md)
-- **Spec**: [Messaging Specification](../../04.specs/05-messaging/spec.md)
-- **Operation**: [RabbitMQ Operation Policy](../../08.operations/05-messaging/rabbitmq.md)
+- RabbitMQ 메시지 처리 성능 회복
+- 장애 노드 복구 및 데이터 정합성 유지
+- 메시지 폭주 상황에서의 시스템 보호
 
-## Recovery Procedures
+## Canonical References
 
-### 1. Broker Process Recovery
+- `[../../../infra/05-messaging/rabbitmq/README.md]`
+- `[../08.operations/05-messaging/rabbitmq.md]`
 
-브로커가 응답하지 않거나 중단된 경우:
+## When to Use
 
-```bash
-# 1. Container status check
-docker ps -f name=rabbitmq
+- "Message Backlog": 큐에 메시지가 수만 개 이상 쌓여 처리가 지연될 때.
+- "Memory Alarm": RabbitMQ가 메모리 부족으로 인해 퍼블리셔 차단 상태일 때.
+- "Service Down": 컨테이너 장애로 인해 서비스에 접속할 수 없을 때.
 
-# 2. Restart service
-cd infra/05-messaging/rabbitmq
-docker compose restart rabbitmq
+## Procedure or Checklist
 
-# 3. Verify health
-docker exec rabbitmq rabbitmq-diagnostics check_running
-```
+### Checklist
 
-### 2. High Queue Depth / Message Spike
+- [ ] RabbitMQ Management UI 접속 가능 여부 확인.
+- [ ] `docker exec rabbitmq rabbitmqctl list_queues` 명령으로 큐 상태 확인.
 
-특정 큐에 메시지가 수만 건 이상 쌓여 시스템이 느려진 경우:
+### Procedure
 
-```bash
-# 1. Identify problematic queue
-docker exec rabbitmq rabbitmqctl list_queues name messages_ready
+1. **Service Downtime (서비스 중단 시)**
+   - 컨테이너 상태 확인: `docker compose ps rabbitmq`
+   - 로그 확인: `docker compose logs -f rabbitmq`
+   - 서비스 재시작: `docker compose restart rabbitmq`
 
-# 2. Purge messages (CAUTION: Data Loss)
-docker exec rabbitmq rabbitmqctl purge_queue <queue_name>
-```
+2. **Memory Alarm (메모리 경고 시)**
+   - 메모리 소모가 심한 큐 식별.
+   - 불필요한 연결 강제 종료: UI 또는 `rabbitmqctl close_connection [connection-name]`
+   - 중요도가 낮은 큐의 메시지 퍼지(Purge) 검토: `rabbitmqctl purge_queue [queue-name]`
 
-### 3. Blocked Producers
+3. **High CPU / Message Backlog (메처리 지연 시)**
+   - Consumer 수 확인 및 확장 검토.
+   - 메시지 처리 로직의 병목 지점(DB connection, external API call 등) 확인.
+   - `x-max-priority` 설정이 있는 큐의 우선순위 처리 상태 점색.
 
-메모리/디스크 임계치 초과로 생산이 중단된 경우:
+## Verification Steps
 
-1. `rabbitmq-diagnostics status` 명령으로 원인이 `Memory`인지 `Disk`인지 확인한다.
-2. 디스크 부족 시 `${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq` 경로의 로그 또는 오래된 데이터를 정리한다.
+- [ ] `rabbitmq-diagnostics check_running`: 서비스 정상 실행 확인.
+- [ ] `rabbitmqctl status`: 메모리 및 디스크 알람 해제 여부 확인.
+- [ ] 웹 콘솔 (`https://rabbitmq.${DEFAULT_URL}`) 접속 및 대시보드 정상 출력 확인.
 
-## Performance Troubleshooting
+## Related Operational Documents
 
-### Consumer Lag
-소비자 처리 속도가 느린 경우:
-1. `rabbitmqctl list_consumers`를 통해 활성 소비자 수를 확인한다.
-2. 소비자 파드(Pod)의 스케일아웃(Scale-out)을 수행한다.
-3. Prefetch Count 설정을 조정하여 처리 효율을 높인다.
-
-## Maintenance Operations
-
-### Credential Rotation
-비밀번호 변경 시:
-1. Vault 또는 `.env` 파일의 `RABBITMQ_PASSWORD`를 업데이트한다.
-2. 컨테이너를 재시작하여 새로운 비밀번호를 적용한다.
-3. 기존 연결(Connection)을 강제 종료하여 재인증을 유도한다.
+- **Operation Policy**: `[../08.operations/05-messaging/rabbitmq.md]`
+- **System Guide**: `[../07.guides/05-messaging/rabbitmq.md]`

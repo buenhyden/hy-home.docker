@@ -13,17 +13,20 @@ updated: 2026-03-25
 ## 1. Diagnosis
 
 Check the logs of the Prometheus container:
+
 ```bash
 docker logs <prometheus_container_id>
 ```
 
 ## 2. Immediate Action (Safe)
+
 If the error is related to memory or locks:
 
 1. Restart the container: `docker restart prometheus`.
 2. Ensure the volume mount has correct permissions (`nobody:nogroup`).
 
 ## 3. Advanced Recovery (Data Loss Risk)
+
 If the TSDB index is corrupted:
 
 1. **Stop** Prometheus: `docker compose stop prometheus`.
@@ -32,6 +35,7 @@ If the TSDB index is corrupted:
 4. **Restart** Prometheus.
 
 ## 4. Verification
+
 Check if the metrics are visible in Grafana. If not, verify that Alloy is successfully pushing metrics.
 
 ---

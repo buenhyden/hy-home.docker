@@ -9,27 +9,32 @@
 ## Work Breakdown
 
 ### Phase 1: Governance Documentation
+
 - [x] PRD 작성: 서비스 가치 및 주요 요구사항 정의.
 - [x] ARD 작성: 참조 아키텍처 및 품질 속성 정의.
 - [x] ADR 작성: Terrakube, SonarQube 등 도구 선정 근거 기록.
 - [x] 기술 사양서(Spec) 작성: 포트, 데이터 흐름, 보안 요건 상세화.
 
 ### Phase 2: Operational Documentation
+
 - [ ] 사용자 가이드 작성 (`docs/07.guides/`): Terrakube 워크스페이스 생성, SonarQube 프로젝트 연동 등.
 - [ ] 운영 정책 작성 (`docs/08.operations/`): 성능 테스트 주기, IaC 승인 프로세스, 이미지 보관 정책.
 - [ ] 런북 작성 (`docs/09.runbooks/`): Terrakube 상태 복구, SonarQube DB 마이그레이션 등.
 
 ### Phase 3: Infrastructure README Refactoring
+
 - [ ] `infra/09-tooling/README.md`를 [Golden 5] 패턴으로 리팩토링.
 - [ ] 계층 내 하부 서비스 README(SonarQube, Terrakube 등) 표준화.
 
 ## Verification Plan
 
 ### Automated Tests
+
 - [ ] 모든 문서의 마운트 링크 및 상대 경로 무결성 검사.
 - [ ] Markdown Lint (`markdownlint`)를 통한 스타일 및 문법 검증.
 
 ### Manual Verification
+
 - [ ] 가이드라인에 따라 Terrakube 워크스페이스가 정상적으로 생성되는지 확인.
 - [ ] SonarQube 품질 게이트가 파이프라인에서 정상 작동하는지 재검증.
 

@@ -41,12 +41,12 @@
 ## Scope and Non-goals
 
 - **In Scope**:
-    - LGTM Stack (Loki, Grafana, Tempo, Prometheus) 구성
-    - Grafana Alloy 및 Pyroscope 통합
-    - Alertmanager 연동 및 대시보드 자동 프로비저닝
+  - LGTM Stack (Loki, Grafana, Tempo, Prometheus) 구성
+  - Grafana Alloy 및 Pyroscope 통합
+  - Alertmanager 연동 및 대시보드 자동 프로비저닝
 - **Out of Scope**:
-    - 비즈니스 로그의 상시 분석 및 통계 (ELK Stack 영역)
-    - 외부 클라우드 모니터링 서비스와의 연동
+  - 비즈니스 로그의 상시 분석 및 통계 (ELK Stack 영역)
+  - 외부 클라우드 모니터링 서비스와의 연동
 
 ## Risks, Dependencies, and Assumptions
 

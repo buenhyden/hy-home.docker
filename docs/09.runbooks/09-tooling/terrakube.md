@@ -13,13 +13,17 @@
 ## Diagnostic Steps
 
 ### 1. Check API and Executor Health
+
 Terrakube provides Spring Actuator endpoints for health checks.
+
 ```bash
 curl -I https://terrakube-api.${DEFAULT_URL}/actuator/health
 ```
 
 ### 2. Verify Docker Socket Access
+
 The executor requires a healthy Docker socket to spawn Terraform runs.
+
 ```bash
 docker exec terrakube-executor docker info
 ```
@@ -33,6 +37,7 @@ If the UI shows a job as running but the host has no associated container:
 1. Locate the `terrakube-executor` logs to find the orphan job ID.
 2. Manually kill the subprocess if it exists on the host.
 3. Restart the executor service to reset internal queue state:
+
    ```bash
    cd ${DEFAULT_TOOLING_DIR}/terrakube
    docker compose restart terrakube-executor
@@ -52,6 +57,7 @@ If a workspace is stuck in a locked state and "Force Unlock" in the UI fails:
 
 1. Connect to the `terrakube` database in PostgreSQL.
 2. Update the workspace record status manually.
+
    ```sql
    UPDATE workspace SET locked = false WHERE name = '<workspace_name>';
    ```

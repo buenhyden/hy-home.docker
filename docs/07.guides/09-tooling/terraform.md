@@ -12,6 +12,7 @@ Terraform is used in `hy-home.docker` to provision and manage cloud resources (A
 ### 1. Job-based Execution
 
 Instead of a long-running service, Terraform is treated as a **job**.
+
 - Always use `docker compose run --rm terraform` to clean up containers after execution.
 - Profiles: Ensure the `tooling` profile is active or specified if needed.
 
@@ -23,6 +24,7 @@ Instead of a long-running service, Terraform is treated as a **job**.
 ### 3. Credential Handling
 
 Credentials are not stored in the container. They are mounted from the host:
+
 - AWS: `/root/.aws` maps to your host `$HOME/.aws`.
 - Azure: `/root/.azure` maps to your host `$HOME/.azure`.
 
@@ -60,9 +62,11 @@ docker compose run --rm terraform validate
 ## Troubleshooting
 
 ### Lock File Issues
+
 If Terraform fails with "Error acquiring the state lock", ensure no other group members are applying changes. If a process crashed, refer to the [Runbook](./terraform.md#state-lock-recovery).
 
 ### Network Connectivity
+
 The container uses `infra_net`. If you cannot reach local services (like MinIO), verify the network labels in `docker-compose.yml`.
 
 ## Related References

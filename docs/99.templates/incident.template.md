@@ -23,8 +23,8 @@ NC-YYYYMMDD-XXX / [Short Incident Title]
 | Field | Value |
 | --- | --- |
 | Incident ID | `INC-YYYYMMDD-XXX` |
-| Severity | `SEV-1 | SEV-2 | SEV-3` |
-| Status | `Investigating | Identified | Mitigating | Monitoring | Resolved | Closed` |
+| Severity | `SEV-1 / SEV-2 / SEV-3` |
+| Status | `Investigating / Identified / Mitigating / Monitoring / Resolved / Closed` |
 | Detection Time | `YYYY-MM-DD HH:MM UTC` |
 | Primary Service | [Affected service] |
 | Evidence Source | [Log / dashboard / report] |

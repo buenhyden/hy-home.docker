@@ -16,11 +16,13 @@
 ## Scope
 
 ### In Scope
+
 - **Locust Master/Worker**: 분산 부하 생성 및 관리 UI.
 - **Custom Docker Build**: `influxdb-client` 등 필수 플러그인이 포함된 빌드.
 - **Scenario Orchestration**: `locustfile.py`를 통한 테스트 로직 관리.
 
 ### Out of Scope
+
 - **Metric Visualization**: Grafana 대시보드 구성은 관여하지 않음.
 - **Long-term Metric Storage**: InfluxDB 자체의 클러스터링 및 백업은 Data 계층 담당.
 

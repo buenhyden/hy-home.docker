@@ -13,13 +13,17 @@
 ## Diagnostic Steps
 
 ### 1. Check Execution Context
+
 Ensure you are running the command from the correct directory:
+
 ```bash
 cd ${DEFAULT_TOOLING_DIR}/terraform
 ```
 
 ### 2. Verify Backend Access
+
 If using a remote backend, verify that MinIO/S3 is up:
+
 ```bash
 # Check MinIO status if applicable
 cd ${DEFAULT_DATA_DIR}/minio
@@ -34,6 +38,7 @@ If a previous execution crashed and left the state locked:
 
 1. Identify the **Lock ID** from the error message.
 2. Run the force-unlock command:
+
    ```bash
    docker compose run --rm terraform force-unlock <LOCK_ID>
    ```
@@ -47,10 +52,12 @@ If the `.tfstate` file is unreadable:
 
 1. Check for the `terraform.tfstate.backup` file.
 2. If the backup exists and is valid, swap it:
+
    ```bash
    mv terraform.tfstate terraform.tfstate.corrupted
    cp terraform.tfstate.backup terraform.tfstate
    ```
+
 3. Run `terraform plan` to verify consistency.
 
 ### 3. Resolving Provider Credential Failures
@@ -59,10 +66,12 @@ If credentials expired or are invalid:
 
 1. Verify the host mounts in `docker-compose.yml` point to valid directories.
 2. Refresh tokens on the host:
+
    ```bash
    # For AWS
    aws sso login --profile <your-profile>
    ```
+
 3. Re-run `terraform init`.
 
 ## Escalation Policy

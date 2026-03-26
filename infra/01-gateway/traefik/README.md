@@ -64,12 +64,15 @@ traefik/
 ## Configuration
 
 ### Core Files
+
 - `config/traefik.yml`: Static configuration (entrypoints, providers, API).
 - `dynamic/middleware.yml`: Shared middlewares (SSO/ForwardAuth, RateLimit, BasicAuth).
 - `dynamic/tls.yaml`: TLS certificate mapping and stores.
 
 ### Docker Healthcheck
+
 Traefik is configured with a built-in healthcheck using its internal ping endpoint:
+
 ```yaml
 healthcheck:
   test: ['CMD', 'traefik', 'healthcheck', '--ping']
@@ -79,12 +82,15 @@ healthcheck:
 ```
 
 ### Keycloak & OAuth2 Proxy Integration
+
 Traefik uses the `ForwardAuth` middleware (`sso-auth@file`) to delegate authentication to OAuth2 Proxy:
+
 1. Entrypoint: `websecure` (Port 443).
 2. Middleware: `sso-auth@file` -> `http://oauth2-proxy:4180/oauth2/auth`.
 3. Error Redirect: `sso-errors@file` handles 401/403 redirects to `/oauth2/sign_in`.
 
 ## AI Agent Operation Policy
+
 - **Required**: Any dynamic routing change must be verified via the Traefik Dashboard.
 - **Caution**: Do not modify `traefik.yml` entrypoints without a full cluster impact analysis.
 - **Validation**: Use `docker logs traefik` to verify configuration hot-reloads.

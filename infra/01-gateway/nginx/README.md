@@ -49,6 +49,7 @@ nginx/
 2. When adding a new path-based route, ensure it is added to the main `server` block in `nginx.conf`.
 3. If the route requires SSO, include the `auth_request /_oauth2_auth_check;` directive.
 4. After any configuration change, reload Nginx:
+
    ```bash
    docker exec nginx nginx -s reload
    ```
@@ -73,6 +74,7 @@ nginx/
 ### Docker Healthcheck
 
 Nginx includes a healthcheck that verifies the availability of the `/ping` endpoint on port 80:
+
 ```yaml
 healthcheck:
   test: ['CMD-SHELL', 'wget -q --spider http://localhost:${HTTP_PORT:-80}/ping || exit 1']

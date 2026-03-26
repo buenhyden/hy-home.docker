@@ -27,16 +27,19 @@
 ## Step-by-Step Instructions
 
 ### 1. Initialization
+
 Keycloak 컨테이너를 실행하고 관리자 콘솔에 접속한다.
 
 ```bash
 cd infra/02-auth/keycloak
 docker compose up -d
 ```
+
 - **Access**: `https://keycloak.${DEFAULT_URL}`
 - **Admin Login**: `KEYCLOAK_ADMIN_USER` 및 `keycloak_admin_password` (Secrets 참조).
 
 ### 2. Realm Configuration (`hy-home`)
+
 플랫폼 루트 렐름인 `hy-home`을 생성하고 기본 보안 설정을 적용한다.
 
 1. **Create Realm**: 드롭다운에서 'Create Realm' 선택 후 `hy-home` 입력.
@@ -49,6 +52,7 @@ docker compose up -d
    - SSO Session Idle: 7 Days
 
 ### 3. OIDC Clients Setup
+
 애플리케이션 연동을 위한 클라이언트를 생성한다.
 
 - **`oauth2-proxy` (Global Auth)**:
@@ -60,10 +64,12 @@ docker compose up -d
   - Valid Redirect URIs: `https://grafana.${DEFAULT_URL}/login/generic_oauth`
 
 ### 4. Client Scopes & Groups
+
 1. **Client Scopes**: `openid`, `profile`, `email` 외에 `groups` (Mapper: Group Membership) 커스텀 스코프를 추가하여 토큰에 그룹 정보를 포함함.
 2. **User Groups**: `/admins`, `/operators`, `/users` 계층을 생성하고 롤 매핑을 수행함.
 
 ### 5. Identity Provider (Google)
+
 1. **Google Cloud Console**: OAuth 2.0 클라이언트 ID 및 Secret 발급.
 2. **Keycloak**: 'Identity Providers' 메뉴에서 'Google' 추가.
 3. **Configuration**: 발급된 ID/Secret 입력 및 `Redirect URI`를 Google 콘솔에 등록.

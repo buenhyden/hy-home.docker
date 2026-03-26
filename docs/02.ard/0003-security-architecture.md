@@ -18,7 +18,7 @@
 graph TD
     User((User)) -->|HTTPS| Traefik[01-gateway: Traefik]
     Traefik -->|HTTP| Vault[03-security: Vault Server]
-    
+
     subgraph "03-security Tier"
         Vault <-->|Raft Protocol| VaultData[(Raft Storage)]
         VaultAgent[Vault Agent] -->|AppRole Auth| Vault
@@ -34,16 +34,19 @@ graph TD
 ## Component Architecture
 
 ### 1. Vault Server
+
 - **Role**: 비밀 정보 저장, 암호화, 정책 엔진, 감사 로그 제공.
 - **Storage**: Raft (`/vault/data`).
 - **Ingress**: `vault.${DEFAULT_URL}`를 통해 UI 및 API 제공.
 
 ### 2. Vault Agent
+
 - **Role**: 인증 관리, 토큰 갱신, 템플릿 기반 비밀 정보 주입.
 - **Pattern**: Sidecar/Dedicated agent service.
 - **Auth Method**: `approle` (RoleID/SecretID 기반).
 
 ### 3. Templating System
+
 - **Process**: Vault Agent가 Consul Template 구문을 사용하여 Vault의 시크릿을 로컬 파일로 렌더링.
 - **Targets**: PostgreSQL Password, Keycloak Credentials, Grafana Secrets 등.
 

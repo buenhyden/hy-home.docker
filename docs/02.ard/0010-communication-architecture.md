@@ -39,13 +39,14 @@
 ## System Overview & Context
 
 시스템은 '가상화된 샌드박스'와 '신뢰할 수 있는 백엔드'로 이원화되어 운영된다.
+
 1. **Sandbox (MailHog)**: 컨테이너 내부에서 SMTP 1025 포트를 통해 유입되는 모든 메일을 가로채며, 외부 인터넷으로 릴레이하지 않고 메모리/UI에만 노출한다.
 2. **Backend (Stalwart)**: 실제 도메인과 연결되어 외부 SMTP 서버와 통신하며, JMAP 및 IMAP 프로토콜을 통한 메시지 접근을 제공한다.
 
 ## Data Architecture
 
 - **Key Flows**: Application → SMTP (25/1025) → Communication Tier → (Sink/Storage) → External Mail Server.
-- **Storage Strategy**: 
+- **Storage Strategy**:
   - MailHog는 휘발성 저장소(In-memory)를 사용하여 데이터 누적 방지.
   - Stalwart는 `/opt/stalwart` 볼륨에 메일 데이터, 인덱스, 설정 정보를 암호화된 상태로 보관.
 

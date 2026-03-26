@@ -42,6 +42,7 @@ Every `README.md` MUST adhere to the **Golden 5 Header Pattern**:
 ## 5. Verification Gate
 
 Before any PR or task completion:
+
 - [ ] Verify all links in the modified README are valid.
 - [ ] Ensure any new `[LOAD:...]` markers are correctly pointed to the governance hub.
 - [ ] Confirm no legacy taxonomy references (`01-11`, `01~11`) exist.

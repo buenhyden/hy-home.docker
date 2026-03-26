@@ -21,6 +21,7 @@
 ## Incident Response
 
 ### 1. Internal Server Error (500)
+
 - **Problem**: OAuth2 Proxy가 500 에러를 반환함.
 - **Diagnosis**: `docker logs oauth2-proxy`를 통해 로그 확인.
 - **Solution**:
@@ -28,6 +29,7 @@
   - OIDC Issuer (Keycloak) 연결 오류인 경우: Keycloak 서비스 가용성 확인.
 
 ### 2. Login Loop (Infinite Redirect)
+
 - **Problem**: 로그인 후 계속해서 로그인 페이지로 리다이렉트됨.
 - **Diagnosis**: 브라우저 개발자 도구의 Network 탭에서 쿠키 전송 여부 확인.
 - **Solution**:
@@ -35,6 +37,7 @@
   - `cookie_secure`가 `true`인데 HTTP로 접근 중인지 확인 (HTTPS 필수).
 
 ### 3. Invalid Cookie / Session Expired
+
 - **Problem**: 유효한 세션임에도 불구하고 인증이 거부됨.
 - **Solution**:
   - `cookie_secret`이 변경되었는지 확인 (변경 시 기존 모든 세션 무효화됨).
@@ -43,7 +46,9 @@
 ## Maintenance Tasks
 
 ### Session Clearing
+
 Valkey에서 특정 유저의 세션을 강제로 만료시켜야 하는 경우:
+
 ```bash
 docker exec -it mng-valkey valkey-cli
 > KEYS "oauth2_proxy_session:*"

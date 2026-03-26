@@ -33,13 +33,17 @@ Help users built real-time analytical applications on top of Kafka streams using
 ## Step-by-step Instructions
 
 ### 1. Connecting to ksqlDB CLI
+
 Use the interactive CLI to run SQL queries against the stream processor.
+
 ```bash
 docker compose --profile ksql run --rm ksqldb-cli ksql http://ksqldb-server:8088
 ```
 
 ### 2. Creating a Stream
+
 Define a schema over an existing Kafka topic.
+
 ```sql
 CREATE STREAM events (
   id VARCHAR,
@@ -53,7 +57,9 @@ CREATE STREAM events (
 ```
 
 ### 3. Creating a Materialized Table
+
 Aggregating stream data into a stateful queryable table.
+
 ```sql
 CREATE TABLE event_counts AS
   SELECT id, COUNT(*) AS total

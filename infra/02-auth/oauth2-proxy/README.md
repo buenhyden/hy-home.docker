@@ -69,6 +69,7 @@ oauth2-proxy/
 ### Secrets Injection
 
 Secrets are injected via `docker-entrypoint.sh` from `/run/secrets/`:
+
 - `oauth2_proxy_cookie_secret`
 - `oauth2_proxy_client_secret`
 - `mng_valkey_password`

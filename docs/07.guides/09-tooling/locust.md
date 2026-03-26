@@ -33,7 +33,9 @@
 ## Step-by-step Instructions
 
 ### 1. 테스트 시나리오 작성 (Scripting)
+
 `locustfile.py` 파일을 생성하고 테스트 로직을 정의합니다.
+
 ```python
 from locust import HttpUser, task, between
 
@@ -46,16 +48,19 @@ class BenchmarkUser(HttpUser):
 ```
 
 ### 2. 인프라 실행 (Deployment)
+
 1. `infra/09-tooling/locust` 디렉토리로 이동합니다.
 2. 서비스 시작: `docker-compose --profile tooling up -d`
 3. 워커 확장 (최대 부하 시): `docker compose up --scale locust-worker=5 -d`
 
 ### 3. 테스트 실행 및 UI 관리 (Execution)
+
 1. 브라우저에서 `https://locust.${DEFAULT_URL}` (또는 `18089` 포트)로 접속합니다.
 2. **Setup**: 수행할 가상 사용자 수(Users)와 초당 증가율(Spawn rate)을 입력합니다.
 3. **Run**: `Start swarming`을 클릭하여 시나리오를 가동합니다.
 
 ### 4. 지표 수집 확인 (Monitoring)
+
 - 지표는 실시간으로 InfluxDB에 전송됩니다.
 - Grafana의 `Load Testing Dashboard`를 연동하여 시계열 추이를 확인하십시오.
 

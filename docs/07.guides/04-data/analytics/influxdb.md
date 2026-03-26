@@ -33,11 +33,14 @@ This guide helps operators and developers understand how InfluxDB is configured 
 ## Step-by-step Instructions
 
 ### 1. Version Selection
+
 The environment supports two versions:
+
 - **v3 (Core)**: Preferred for high performance and SQL support. Use `docker-compose.yml`.
 - **v2 (Legacy)**: Used for compatibility with older Flux scripts. Use `docker-compose.v2.yml`.
 
 ### 2. Basic Bucket Management
+
 Buckets are used to store data with specific retention policies.
 
 ```bash

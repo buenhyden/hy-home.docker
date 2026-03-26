@@ -20,8 +20,8 @@ title: 'Infrastructure Operational Scope'
 - **Storage**: Use named volumes following the `[Service]-[Data]-[Volume]` convention.
 - **Security**: Mandatory `no-new-privileges: true` for all containers. Use Docker Secrets for production credentials.
 - **Service Integrations**:
-    - **Messaging**: Kafka (standard) or RabbitMQ for async events.
-    - **AI**: Ollama for local LLM inference, Open-WebUI for interaction.
+  - **Messaging**: Kafka (standard) or RabbitMQ for async events.
+  - **AI**: Ollama for local LLM inference, Open-WebUI for interaction.
 
 ## 3. Implementation Flow
 

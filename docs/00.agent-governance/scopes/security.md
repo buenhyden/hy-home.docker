@@ -15,15 +15,15 @@ title: 'Security Enforcement Scope'
 
 ## 2. Requirements & Constraints
 
-- **Identity & Access**: 
-    - **Centralized Auth**: All services MUST authenticate via **Keycloak (OIDC/SAML)**.
-    - **Least Privilege**: Enforce RBAC/ABAC at the API and database levels.
-- **Secrets Management**: 
-    - **Prohibited**: Plaintext credentials in `.env`, `docker-compose.yml`, or source code.
-    - **Mandatory**: Use **Docker Secrets** for container orchestration or **HashiCorp Vault** for dynamic secrets.
-- **Network Hardening**: 
-    - Isolation via `infra_net`. 
-    - Forced TLS for all external ingress (Gateway Managed).
+- **Identity & Access**:
+  - **Centralized Auth**: All services MUST authenticate via **Keycloak (OIDC/SAML)**.
+  - **Least Privilege**: Enforce RBAC/ABAC at the API and database levels.
+- **Secrets Management**:
+  - **Prohibited**: Plaintext credentials in `.env`, `docker-compose.yml`, or source code.
+  - **Mandatory**: Use **Docker Secrets** for container orchestration or **HashiCorp Vault** for dynamic secrets.
+- **Network Hardening**:
+  - Isolation via `infra_net`.
+  - Forced TLS for all external ingress (Gateway Managed).
 
 ## 3. Implementation Flow
 

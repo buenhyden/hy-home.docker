@@ -28,11 +28,13 @@ RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, 
 ## How to Work
 
 ### 1. Initial Setup
+
 1. Deploy the stack: `docker compose up -d`.
 2. Access `https://redisinsight.${DEFAULT_URL}`.
 3. Accept the EULA and set up your initial connection to a Redis instance.
 
 ### 2. Basic Usage
+
 - Add a new database by providing the hostname (e.g., `redis` for local containers) and port (6379).
 - Use the 'Browser' tab to explore keys and values.
 - Use 'Memory Analysis' to find memory-intensive keys.

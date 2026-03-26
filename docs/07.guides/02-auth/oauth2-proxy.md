@@ -31,6 +31,7 @@
 ## Step-by-step Instructions
 
 ### 1. Keycloak Client Configuration
+
 1. Keycloak Admin 콘솔에서 `hy-home` Realm을 선택한다.
 2. **Clients** -> **Create client**를 클릭한다.
 3. **Client ID**: `oauth2-proxy` 입력.
@@ -39,12 +40,14 @@
 6. **Credentials** 탭에서 **Client Secret**을 복사하여 저장한다.
 
 ### 2. OAuth2 Proxy Configuration (`oauth2-proxy.cfg`)
+
 1. `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg` 파일을 수정한다.
 2. `oidc_issuer_url`을 Keycloak의 Realm URL로 설정한다.
 3. `cookie_domains`를 서비스가 사용하는 도메인(예: `.127.0.0.1.nip.io`)으로 설정한다.
 4. `cookie_secret`은 32바이트 이상의 임의의 문자열로 생성하여 등록한다.
 
 ### 3. Traefik ForwardAuth Middleware Integration
+
 백엔드 서비스의 `docker-compose.yml` 레이블에 다음을 추가한다:
 
 ```yaml

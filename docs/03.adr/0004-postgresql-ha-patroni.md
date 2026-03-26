@@ -1,6 +1,7 @@
 # ADR: Choice of Spilo/Patroni for PostgreSQL HA (0004-data)
 
 ## Status
+
 - **Proposed**: 2026-03-26
 - **Status**: Decided
 

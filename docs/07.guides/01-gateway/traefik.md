@@ -48,6 +48,7 @@ labels:
 Traefik은 `ForwardAuth` 미들웨어를 사용하여 OAuth2 Proxy와 연동하며, OAuth2 Proxy는 다시 Keycloak과 OIDC로 통신한다.
 
 #### Middleware Configuration (`dynamic/middleware.yml`)
+
 ```yaml
 middlewares:
   sso-auth:
@@ -60,7 +61,9 @@ middlewares:
 ```
 
 #### Service Label Application
+
 보호를 원하는 서비스 라벨에 `sso-auth@file`과 `sso-errors@file`을 추가한다:
+
 ```yaml
 labels:
   traefik.http.routers.my-app.middlewares: "sso-auth@file, sso-errors@file"
@@ -69,6 +72,7 @@ labels:
 ### 3. Docker Healthcheck Configuration
 
 Traefik 자체의 헬스체크는 컨테이너 내부의 `ping` 엔드포인트를 사용한다.
+
 - **Static Config**: `ping` 활성화 및 엔드포인트 지정.
 - **Compose**: `traefik healthcheck --ping` 명령 실행.
 

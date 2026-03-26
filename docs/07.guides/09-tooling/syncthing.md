@@ -46,7 +46,7 @@ To sync files with another device:
 
 **Symptom**: Folder status shows "Out of Sync" even after recent changes.
 
-**Solution**: 
+**Solution**:
 
 1. Check the **Failed Items** link for specific file errors (e.g., permissions).
 2. Use **Actions** -> **Rescan All** to force a file system check.

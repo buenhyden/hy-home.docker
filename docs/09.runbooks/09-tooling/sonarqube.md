@@ -45,6 +45,7 @@ sudo rm -rf ${DEFAULT_TOOLING_DIR}/sonarqube/data/es7
 # 3. Restart service
 docker compose start sonarqube
 ```
+
 > [!NOTE]
 > This will trigger a full re-analysis on the next scan for all projects. This is normal and expected.
 
@@ -61,6 +62,7 @@ If logs show `OutOfMemoryError`, increase the JVM heap in `docker-compose.yml`.
 ### 3. Log Inspection
 
 Monitor these files for specific error patterns:
+
 - `${DEFAULT_TOOLING_DIR}/sonarqube/logs/web.log`: Web server and API issues.
 - `${DEFAULT_TOOLING_DIR}/sonarqube/logs/ce.log`: Compute Engine (scan task) issues.
 - `${DEFAULT_TOOLING_DIR}/sonarqube/logs/es.log`: ElasticSearch internal issues.

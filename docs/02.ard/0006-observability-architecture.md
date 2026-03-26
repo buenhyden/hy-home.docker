@@ -13,20 +13,20 @@ Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시
 ## Boundaries & Non-goals
 
 - **Owns**:
-    - 중앙 집중형 로깅 (Loki)
-    - 시계열 메트릭 수집 및 알람 (Prometheus/Alertmanager)
-    - 분산 트레이싱 (Tempo)
-    - 지속적 프로파일링 (Pyroscope)
-    - 통합 대시보드 (Grafana)
-    - 통합 텔레메트리 수집 (Alloy)
+  - 중앙 집중형 로깅 (Loki)
+  - 시계열 메트릭 수집 및 알람 (Prometheus/Alertmanager)
+  - 분산 트레이싱 (Tempo)
+  - 지속적 프로파일링 (Pyroscope)
+  - 통합 대시보드 (Grafana)
+  - 통합 텔레메트리 수집 (Alloy)
 - **Consumes**:
-    - **MinIO (04-data)**: 로그 및 트레이스 데이터 저장을 위한 S3 스토리지.
-    - **Keycloak (02-auth)**: Grafana SSO 로그인을 위한 OIDC 공급자.
-- **Does Not Own**: 
-    - 애플리케이션 보안 로그 (03-security 소관)
-    - 비즈니스 통계 데이터 (Data Warehouse 소관)
+  - **MinIO (04-data)**: 로그 및 트레이스 데이터 저장을 위한 S3 스토리지.
+  - **Keycloak (02-auth)**: Grafana SSO 로그인을 위한 OIDC 공급자.
+- **Does Not Own**:
+  - 애플리케이션 보안 로그 (03-security 소관)
+  - 비즈니스 통계 데이터 (Data Warehouse 소관)
 - **Non-goals**:
-    - 외부 클라우드 모니터링 벤더에 대한 종속성 (완전한 Self-hosted 지향)
+  - 외부 클라우드 모니터링 벤더에 대한 종속성 (완전한 Self-hosted 지향)
 
 ## Quality Attributes
 
@@ -43,13 +43,13 @@ Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시
 ## Data Architecture
 
 - **Key Entities / Flows**:
-    - **Metrics Flow**: cAdvisor/Exporters -> Alloy -> Prometheus
-    - **Logs Flow**: Docker Logs -> Alloy -> Loki -> MinIO
-    - **Traces Flow**: App (OTLP) -> Alloy -> Tempo -> MinIO
-    - **Profiles Flow**: App -> Alloy -> Pyroscope
+  - **Metrics Flow**: cAdvisor/Exporters -> Alloy -> Prometheus
+  - **Logs Flow**: Docker Logs -> Alloy -> Loki -> MinIO
+  - **Traces Flow**: App (OTLP) -> Alloy -> Tempo -> MinIO
+  - **Profiles Flow**: App -> Alloy -> Pyroscope
 - **Storage Strategy**:
-    - 메트릭: Prometheus Local TSDB (7일 보관)
-    - 로그/트레이스: MinIO S3 Buckets (15일~30일 보관 정책)
+  - 메트릭: Prometheus Local TSDB (7일 보관)
+  - 로그/트레이스: MinIO S3 Buckets (15일~30일 보관 정책)
 - **Data Boundaries**: 모든 텔레메트리 데이터는 `infra_net` 내부망에서만 소통함을 원칙으로 한다.
 
 ## Infrastructure & Deployment

@@ -13,8 +13,8 @@
   - RabbitMQ (Management node).
   - Messaging Dynamic Config (`dynamic_config.yaml`).
 - **Does Not Own**:
-    - Consumer/Producer 비즈니스 로직.
-    - 데이터 계층의 RDBMS 저장소.
+  - Consumer/Producer 비즈니스 로직.
+  - 데이터 계층의 RDBMS 저장소.
 
 ## Related Inputs
 
@@ -75,9 +75,9 @@ KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:9093,2@kafka-2:9093,3@kafka-3:9093'
 ## Edge Cases & Error Handling
 
 - **Error 1**: Broker Partition Offline.
-    - **Fallback**: ISR(In-Sync Replicas) 내의 리더 선출 자동 수행.
+  - **Fallback**: ISR(In-Sync Replicas) 내의 리더 선출 자동 수행.
 - **Error 2**: RabbitMQ Queue Full.
-    - **Fallback**: Max-length 정책에 따른 Rejected Message 처리 (Dead Letter Exchange).
+  - **Fallback**: Max-length 정책에 따른 Rejected Message 처리 (Dead Letter Exchange).
 
 ## Verification
 

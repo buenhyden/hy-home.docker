@@ -23,15 +23,15 @@
 ## Controls
 
 - **Required**:
-    - 모든 DAG은 `Idempotent`(멱등성)를 유지해야 함.
-    - 민감 정보는 반드시 Secret Backend(Docker Secrets/Vault) 및 Airflow Connections를 통해 관리함.
-    - `AIRFLOW__CORE__LOAD_EXAMPLES`는 운영 환경에서 반드시 `false`여야 함.
+  - 모든 DAG은 `Idempotent`(멱등성)를 유지해야 함.
+  - 민감 정보는 반드시 Secret Backend(Docker Secrets/Vault) 및 Airflow Connections를 통해 관리함.
+  - `AIRFLOW__CORE__LOAD_EXAMPLES`는 운영 환경에서 반드시 `false`여야 함.
 - **Allowed**:
-    - 워커 노드의 동적 확장 (부하에 따른 Replica 조정).
-    - 읽기 전용 UI 접근 (GUEST 권한).
+  - 워커 노드의 동적 확장 (부하에 따른 Replica 조정).
+  - 읽기 전용 UI 접근 (GUEST 권한).
 - **Disallowed**:
-    - Scheduler 노드에서의 직접적인 대용량 외부 API 호출 또는 파일 입출력.
-    - 사용자 인증(FAB)이 비활성화된 상태에서의 Web UI 노출.
+  - Scheduler 노드에서의 직접적인 대용량 외부 API 호출 또는 파일 입출력.
+  - 사용자 인증(FAB)이 비활성화된 상태에서의 Web UI 노출.
 
 ## Exceptions
 

@@ -33,12 +33,14 @@
 ## Step-by-step Instructions
 
 ### 1. Stalwart 운영 서버 설정 (Production)
+
 1. `infra/10-communication/mail` 디렉토리로 이동합니다.
 2. 서비스를 시작합니다: `docker-compose --profile communication up -d stalwart`
 3. 관리자 UI(`https://mail.${DEFAULT_URL}`)에 접속하여 로그인이 정상적으로 수행되는지 확인합니다.
 4. **DNS 연동**: 관리자 UI의 `Settings > Domains` 메뉴에서 제공하는 MX, SPF, DKIM, DMARC 레코드를 DNS 공급자에 등록합니다.
 
 ### 2. MailHog 개발 워크플로우 (Development)
+
 1. 안전한 테스트를 위해 애플리케이션의 SMTP 설정을 다음과 같이 구성합니다:
    - **Host**: `mailhog`
    - **Port**: `1025`

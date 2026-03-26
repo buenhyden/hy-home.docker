@@ -15,16 +15,19 @@
 ## Step-by-step Instructions
 
 ### 1. Initial Admin Setup
+
 1. `https://portainer.${DEFAULT_URL}`에 처음 접속하면 관리자 계정 생성 화면이 나타난다.
 2. 강력한 비밀번호를 설정한다 (최소 12자 권장).
 3. 'Get Started'를 클릭하여 로컬 환경을 자동으로 연결한다.
 
 ### 2. Managing Containers
+
 1. 왼쪽 메뉴에서 'Containers'를 선택한다.
 2. 특정 컨테이너를 클릭하여 'Logs', 'Inspect', 'Stats' 기능을 활용한다.
 3. 'Add container' 기능을 사용하여 임시 어위(Ad-hoc) 컨테이너를 생성할 수 있다 (운영 시에는 주로 Docker Compose 사용 권장).
 
 ### 3. Stack Deployment
+
 1. 'Stacks' 메뉴에서 Docker Compose 파일을 직접 업로드하거나 붙여넣어 배포할 수 있다.
 2. `infra/` 폴더의 서비스 수정 시에는 터미널에서 `docker compose` 명령을 사용하는 것이 형상 관리 측면에서 권장된다.
 

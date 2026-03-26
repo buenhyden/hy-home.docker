@@ -14,11 +14,11 @@ title: 'Backend Engineering Scope'
 
 ## 2. Requirements & Constraints
 
-- **Stack**: 
-    - **Node.js**: 22+ (LTS), Prisma ORM, Zod Validation, TypeScript.
-    - **Python**: 3.12+, SQLAlchemy, Pydantic, FastAPI/Flask.
+- **Stack**:
+  - **Node.js**: 22+ (LTS), Prisma ORM, Zod Validation, TypeScript.
+  - **Python**: 3.12+, SQLAlchemy, Pydantic, FastAPI/Flask.
 - **Security**: Compliance with **OWASP ASVS L2** (Level 2) for all public-facing APIs.
-    - Mandatory input sanitization and strict JWT verification via Keycloak.
+  - Mandatory input sanitization and strict JWT verification via Keycloak.
 - **Performance**: Service-level logic should contribute no more than 50ms to the overall 200ms SLO.
 
 ## 3. Implementation Flow

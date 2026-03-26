@@ -19,16 +19,19 @@
 ## Work Breakdown (WBS)
 
 ### Phase 1: Investigation & Planning
+
 - [x] PLN-001: Investigate infra/02-auth components.
 - [x] PLN-002: Create implementation plan (this document).
 
 ### Phase 2: Core Document Creation
+
 - [x] PLN-003: Create PRD (docs/01.prd/).
 - [x] PLN-004: Create ARD (docs/02.ard/).
 - [x] PLN-005: Create ADR (docs/03.adr/).
 - [ ] PLN-006: Create Technical Spec (docs/04.specs/).
 
 ### Phase 3: Layer Refactoring
+
 - [x] PLN-007: Refactor docs/01.prd/README.md.
 - [x] PLN-008: Refactor docs/02.ard/README.md.
 - [x] PLN-009: Refactor docs/03.adr/README.md.
@@ -37,15 +40,18 @@
 - [ ] PLN-012: Refactor docs/06.tasks/README.md.
 
 ### Phase 4: Execution Tracking
+
 - [ ] PLN-013: Generate docs/06.tasks/2026-03-26-02-auth-tasks.md.
 
 ## Verification Plan
 
 ### Automated Verification
+
 - Run markdown-lint on all new documents.
 - Verify cross-layer relative links integrity.
 
 ### Manual Verification
+
 - Review content against standard templates.
 
 ## Rollout Strategy

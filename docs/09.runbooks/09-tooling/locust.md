@@ -25,23 +25,30 @@
 ## Recovery Procedures
 
 ### 1. 즉각 중단 (Emergency Stop)
+
 동작 중인 모든 부하 생성을 중단합니다.
+
 - UI: `Stop` 버튼 클릭.
 - CLI: `docker-compose -f infra/09-tooling/locust/docker-compose.yml stop`
 
 ### 2. 워커 노드 재동기화 (Worker Resync)
+
 마스터 노드가 재시작된 후 워커가 연결되지 않는 경우:
+
 1. 마스터 상태 확인: `docker compose ps locust-master`
 2. 워커 전체 재시공: `docker compose up --force-recreate -d locust-worker`
 3. 로그 확인: `docker compose logs -f locust-worker` 에서 마스터 연결 시도 메시지 확인.
 
 ### 3. InfluxDB 지표 유실 대응 (Data Link Recovery)
+
 1. InfluxDB 가용성 점검: `mng-db` 또는 InfluxDB 컨테이너 헬스체크 확인.
 2. 비밀번호/토큰 유효성 검증: `influxdb_api_token` 시크릿이 최신인지 확인.
 3. 데이터 수동 플러시: 테스트 스크립트 내의 Buffer 설정을 조정하여 재시도.
 
 ### 4. 테스트 결과 수동 아카이빙 (Manual Archiving)
+
 InfluxDB가 장애일 때 로컬에서 결과를 내려받아야 하는 경우:
+
 - Locust UI의 `Download Data` 메뉴를 사용하여 `Requests`, `Failures`, `Exceptions` CSV를 수동으로 백업함.
 
 ## Post-Mortem Tasks

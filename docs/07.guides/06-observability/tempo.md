@@ -31,16 +31,21 @@
 ## Step-by-step Instructions
 
 ### 1. 분산 추적 데이터 조회 (TraceQL)
+
 Grafana의 `Explore` 메뉴에서 `Tempo` 데이터 소스를 선택한다. `TraceQL` 쿼리 언어를 사용하여 특정 조건의 트레이스를 검색할 수 있다.
+
 - 예: `{ duration > 100ms && resource.service.name = "api-gateway" }`
 
 ### 2. Trace-to-Metrics Correlation
+
 Tempo는 수집된 트레이스를 기반으로 메트릭(Span Metrics)을 생성하여 Prometheus로 전송한다. 트레이스 상세 뷰에서 관련 메트릭 대시보드로 바로 이동할 수 있다.
 
 ### 3. Service Graphs 및 Dependency Map
+
 `Metrics Generator`가 활성화된 경우, 서비스 간의 호출 관계와 에러율, 지연 시간을 시각화한 서비스 그래프를 확인할 수 있다.
 
 ### 4. 로그와 연동 (Trace ID Correlation)
+
 Loki 로그와 연동되어 있는 경우, 특정 로그 라인에 포함된 Trace ID를 클릭하여 해당 요청의 전체 트레이스 뷰로 전환할 수 있다.
 
 ## Common Pitfalls

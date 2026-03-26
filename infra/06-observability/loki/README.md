@@ -11,12 +11,12 @@
 ## Scope
 
 - **In-Scope**:
-    - Log ingestion via Alloy (OTLP/Docker).
-    - Log storage and indexing in MinIO.
-    - Log querying using LogQL.
+  - Log ingestion via Alloy (OTLP/Docker).
+  - Log storage and indexing in MinIO.
+  - Log querying using LogQL.
 - **Out-of-Scope**:
-    - Direct syslog ingestion (handled by collectors).
-    - Long-term audit archiving beyond 90 days.
+  - Direct syslog ingestion (handled by collectors).
+  - Long-term audit archiving beyond 90 days.
 
 ## Tech Stack
 
@@ -58,6 +58,7 @@
 ### 1. Storage Integration
 
 Loki is configured to use MinIO as its primary storage backend for both index and chunks.
+
 - **Bucket**: `loki-bucket`
 - **Primary URL**: `https://loki.${DEFAULT_URL}`
 - **Storage Backend**: MinIO (S3 compatible)
@@ -68,19 +69,23 @@ Loki is configured to use MinIO as its primary storage backend for both index an
 ### 2. Retention Policy
 
 Retention is enabled and currently set to **7 days (168h)** by default.
+
 - **Compactor**: Automatically cleans up expired logs in MinIO.
 
 ## AI Agent Guidance
 
 ### 1. Querying Strategy
-- Use **LogQL** for structured log analysis. 
+
+- Use **LogQL** for structured log analysis.
 - Filter by `app` or `container_name` to reduce query load.
 
 ### 2. Troubleshooting
+
 - If logs are missing, check **Alloy** collector status first.
 - For high latency queries, check **Ingester** memory usage.
 
 ### 3. Contextual Retrieval
+
 - Correlate logs with metrics using common labels (e.g., `service_name`).
 
 ---

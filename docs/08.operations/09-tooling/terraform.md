@@ -10,10 +10,12 @@ All infrastructure changes in `hy-home.docker` must be managed via Terraform to 
 ## State Management Policy
 
 ### 1. Remote State Requirement
+
 - For any environment with more than one contributor, a **Remote Backend** (S3/MinIO) is mandatory.
 - State locking must be enabled (via DynamoDB or MinIO Object Lock).
 
 ### 2. State Backups
+
 - Remote states are automatically versioned by the backend.
 - Monthly exports of the `.tfstate` to the `04-data/backups` tier are required for disaster recovery.
 
@@ -32,10 +34,12 @@ All infrastructure changes in `hy-home.docker` must be managed via Terraform to 
 ## Maintenance Cycles
 
 ### Provider Updates
+
 - Check for provider updates (AWS, Docker, Kubernetes) every **quarter**.
 - Test updates in a non-production workspace before merging.
 
 ### Credential Rotation
+
 - Host-level cloud credentials mounted to the Terraform container must be rotated every **90 days**.
 
 ## Compliance & Security

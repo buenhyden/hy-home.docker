@@ -37,6 +37,7 @@ Terrakube provides a centralized platform for managing Terraform workflows at sc
 ## 6. Usage
 
 Access the platform via the following URLs:
+
 - **Dashboard**: `https://terrakube-ui.${DEFAULT_URL}`
 - **API Docs**: `https://terrakube-api.${DEFAULT_URL}/swagger-ui.html`
 

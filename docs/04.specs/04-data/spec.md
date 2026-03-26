@@ -7,32 +7,37 @@
 ## 1. Relational Database: PostgreSQL HA
 
 ### 1.1 Cluster Components
+
 - **Primary Image**: `ghcr.io/zalando/spilo-17:4.0-p3`
 - **Orchestration**: Patroni v4.0
 - **Consensus**: Etcd v3.6.7 (3-node)
 - **Routing**: HAProxy v3.3.1 (pg-router)
 
 ### 1.2 Configuration Details
+
 - **Patroni Listener**: `0.0.0.0:8008`
 - **Postgres Listener**: `0.0.0.0:5432`
 - **Router Entrypoints**:
-    - **Write (Primary)**: 15432
-    - **Read (Replicas)**: 15433
+  - **Write (Primary)**: 15432
+  - **Read (Replicas)**: 15433
 - **Storage**: `${DEFAULT_DATA_DIR}/pg/pg[0-2]-data`
 
 ## 2. Distributed Cache: Valkey Cluster
 
 ### 2.1 Cluster Topology
+
 - **Image**: `valkey/valkey:9.0.2-alpine`
 - **Structure**: 6-node distributed cluster (3 Master, 3 Slave).
 - **Communication**: Port 6379-6384 (Client) / 16379-16384 (Bus).
 
 ### 2.2 Initialization
+
 - `valkey-cluster-init` 컨테이너가 부팅 시 `valkey-cli --cluster create` 명령을 통해 샤딩 구성을 수행함.
 
 ## 3. Object Storage: MinIO
 
 ### 3.1 Server Config
+
 - **Console Port**: 9001
 - **API Port**: 9000
 - **Buckets**: `tempo-bucket`, `loki-bucket`, `cdn-bucket`, `doc-intel-assets`.
@@ -40,12 +45,14 @@
 ## 4. Resource & Security
 
 ### 4.1 Secrets Management
+
 - `/run/secrets/` 경로를 통해 비밀번호 주입:
-    - `patroni_superuser_password`
-    - `service_valkey_password`
-    - `minio_root_password`
+  - `patroni_superuser_password`
+  - `service_valkey_password`
+  - `minio_root_password`
 
 ### 4.2 Network Mapping
+
 | Service | Internal Host | External Port | Network |
 | --- | --- | --- | --- |
 | pg-router | pg-router | 15432, 15433 | infra_net |

@@ -5,10 +5,10 @@
 
 ## Overview
 
-이 서비스 유닛은 플랫폼의 서비스를 로드 테스팅하기 위한 분산 부하 테스트 엔진을 제공합니다. 
+이 서비스 유닛은 플랫폼의 서비스를 로드 테스팅하기 위한 분산 부하 테스트 엔진을 제공합니다.
 
 > [!NOTE]
-> **Implementation Detail**: 현재 이 디렉토리(`infra/09-tooling/k6`)는 **Locust** 엔진을 통해 마스터-워커 분산 부하 구조를 구현하고 있습니다. 
+> **Implementation Detail**: 현재 이 디렉토리(`infra/09-tooling/k6`)는 **Locust** 엔진을 통해 마스터-워커 분산 부하 구조를 구현하고 있습니다.
 
 ## Audience
 
@@ -19,11 +19,13 @@
 ## Scope
 
 ### In Scope
+
 - **Benchmark Orchestration**: 마스터 노드를 통한 분산 부하 생성 시나리오 관리.
 - **Metric Exporting**: InfluxDB 연동을 통한 성능 지표 실시간 전송.
 - **Worker Scaling**: `k6-worker`(Locust 기반) 노드의 동적 확장.
 
 ### Out of Scope
+
 - **Metric Storage Layer**: InfluxDB 자체의 운영 및 백업은 Data 계층 담당.
 - **Visualization**: Grafana 대시보드 연동 작업.
 

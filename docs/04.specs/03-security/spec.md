@@ -13,33 +13,37 @@
 ## Component Specification
 
 ### 1. Vault Server (`vault`)
+
 - **Image**: `hashicorp/vault:1.21.4`
 - **Config**: `/vault/config/vault.hcl`
 - **Port**: 8200 (API/UI), 8201 (Cluster)
 - **Features**:
-    - Raft Storage enabled (`/vault/data`).
-    - TLS Termination at Traefik (Internal HTTP).
-    - UI enabled for admin management.
+  - Raft Storage enabled (`/vault/data`).
+  - TLS Termination at Traefik (Internal HTTP).
+  - UI enabled for admin management.
 
 ### 2. Vault Agent (`vault-agent`)
+
 - **Role**: 인증 캐싱 및 템플릿 렌더링.
 - **Auth Method**: `approle`
-    - RoleID Location: `/vault/agent/role_id`
-    - SecretID Location: `/vault/agent/secret_id`
+  - RoleID Location: `/vault/agent/role_id`
+  - SecretID Location: `/vault/agent/secret_id`
 - **Rendering Targets**:
-    - `postgres/postgres_password`
-    - `keycloak/kc_db_password`, `admin_username`, `admin_password`
-    - `oauth2-proxy/client_secret`, `cookie_secret`
-    - `grafana/admin_password`, `db_password`, `oauth_client_secret`
+  - `postgres/postgres_password`
+  - `keycloak/kc_db_password`, `admin_username`, `admin_password`
+  - `oauth2-proxy/client_secret`, `cookie_secret`
+  - `grafana/admin_password`, `db_password`, `oauth_client_secret`
 
 ## Interface and Security
 
 ### Traefik Ingress Labels
+
 - `traefik.http.routers.vault.rule`: `Host(\`vault.\${DEFAULT_URL}\`)`
 - `traefik.http.routers.vault.entrypoints`: `websecure`
 - `traefik.http.routers.vault.tls`: `true`
 
 ### Security Hardening
+
 - **IPC_LOCK**: 하드웨어 메모리 락 기능을 사용하여 시크릿이 스왑 메모리로 빠져나가는 것을 방지.
 - **Policy Enforcement**: 모든 AppRole은 최소 권한 원칙(Principle of Least Privilege)에 따라 전용 ACL 정책 할당.
 
@@ -51,9 +55,11 @@
 ## Verification Plan
 
 ### Automated Verification
+
 - `docker exec vault vault status`: Unseal 및 HA 상태 확인.
 - `docker exec vault-agent ls /vault/out/app/app.env`: 템플릿 렌더링 결과 파일 존재 확인.
 
 ### Manual Verification
+
 - Vault UI 접속 (`https://vault.${DEFAULT_URL}`) 및 로그인 확인.
 - 감사 로그 활성화 확인: `vault audit list`.

@@ -51,7 +51,8 @@ get_env_val() {
     local var_name=$1
     [ -z "$var_name" ] || [ "$var_name" == "-" ] && return 1
     # Find the variable and extract value, removing quotes and tailing comments
-    local val=$(grep "^[[:space:]]*${var_name}=" "$TEMP_ENV" | head -n 1 | cut -d'=' -f2- | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//" -e 's/[[:space:]]*#.*$//')
+    local val
+    val=$(grep "^[[:space:]]*${var_name}=" "$TEMP_ENV" | head -n 1 | cut -d'=' -f2- | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//" -e 's/[[:space:]]*#.*$//')
     if [ -n "$val" ]; then
         echo -n "$val"
         return 0
@@ -69,7 +70,7 @@ echo -e "${BLUE}Processing secrets...${NC}"
 while IFS= read -r line; do
     if [[ "$line" =~ ^[[:space:]]*"|" ]]; then
         # Skip header and separator rows specifically
-        if [[ "$line" =~ "| ID |" ]] || [[ "$line" =~ "| :---" ]]; then
+        if [[ "$line" =~ \|[[:space:]]ID[[:space:]]\| ]] || [[ "$line" =~ \|[[:space:]]:--- ]]; then
             echo "$line" >> /dev/null # just to keep IFS consistent if needed
             continue
         fi
@@ -130,16 +131,20 @@ process_htpasswd() {
     local pass_id=$3
     local target_file_path=$4
 
-    local user_val=$(cat "$VAL_DIR/$user_id" 2>/dev/null || echo "")
-    local pass_val=$(cat "$VAL_DIR/$pass_id" 2>/dev/null || echo "")
+    local user_val
+    user_val=$(cat "$VAL_DIR/$user_id" 2>/dev/null || echo "")
+    local pass_val
+    pass_val=$(cat "$VAL_DIR/$pass_id" 2>/dev/null || echo "")
 
     if [ -n "$user_val" ] && [ -n "$pass_val" ]; then
         local full_path="${REPO_ROOT}/${target_file_path}"
-        local hashed=$(htpasswd -nb "$user_val" "$pass_val" | xargs)
-        
+        local hashed
+        hashed=$(htpasswd -nb "$user_val" "$pass_val" | xargs)
+
         # If the file already exists, we MUST check if it matches our new hash
         if [ -f "$full_path" ] && [ -s "$full_path" ]; then
-            local existing=$(cat "$full_path")
+            local existing
+            existing=$(cat "$full_path")
             # If they differ, we overwrite both the file and the registry to maintain consistency
             if [ "$hashed" != "$existing" ]; then
                 echo -e "${YELLOW}Updating htpasswd hash for $target_id to match current ID/PW...${NC}"
@@ -149,7 +154,7 @@ process_htpasswd() {
             mkdir -p "$(dirname "$full_path")"
             echo -n "$hashed" > "$full_path"
         fi
-        
+
         echo -n "$hashed" > "$VAL_DIR/$target_id"
     fi
 }
@@ -163,7 +168,7 @@ FINAL_TEMP=$(mktemp)
 
 while IFS= read -r line; do
     if [[ "$line" =~ ^[[:space:]]*"|" ]]; then
-        if [[ "$line" =~ "| ID |" ]] || [[ "$line" =~ "| :---" ]]; then
+        if [[ "$line" =~ \|[[:space:]]ID[[:space:]]\| ]] || [[ "$line" =~ \|[[:space:]]:--- ]]; then
             echo "$line" >> "$FINAL_TEMP"
             continue
         fi
@@ -173,10 +178,10 @@ while IFS= read -r line; do
         # Check if we have a value for this ID
         if [ -n "$ID" ] && [ -f "$VAL_DIR/$ID" ]; then
             VAL=$(cat "$VAL_DIR/$ID")
-            
+
             # Extract current value from the line to see if it changed
             CURRENT_VAL=$(echo "$line" | cut -d'|' -f5 | xargs | tr -d '`')
-            
+
             # If value changed OR it was a placeholder OR if it's a derived hash that might have changed
             # we update row and date.
             if [[ "$VAL" != "$CURRENT_VAL" ]] || [[ "$CURRENT_VAL" == *"비어있음"* ]]; then

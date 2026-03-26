@@ -33,19 +33,24 @@
 ## Step-by-step Instructions
 
 ### 1. 시스템 아키텍처 이해
+
 Airflow는 다음과 같은 분산 컴포넌트로 구성됩니다:
+
 - **Scheduler & DAG Processor**: 작업 예약 및 DAG 파일 해석 (독립 실행으로 안정성 확보)
 - **Celery Workers**: 실제 태스크가 실행되는 동적 확장 노드
 - **Valkey Broker**: 스케줄러와 워커 간의 메시지 교환 (Redis 호환)
 - **API Server**: UI 및 외부 통합을 위한 통합 엔드포인트
 
 ### 2. UI 접근 및 모니터링
+
 - **Main UI**: `https://airflow.${DEFAULT_URL}` (작업 모니터링, 로그 확인)
 - **Flower Dashboard**: `https://flower.${DEFAULT_URL}` (Celery 워커 부하 상태 확인)
 - **Metrics**: Prometheus/Grafana를 통해 StatsD 지표 확인 가능
 
 ### 3. 개발 환경 검증
+
 새로운 DAG를 추가하기 전에 다음 명령으로 시스템 상태를 확인합니다:
+
 ```bash
 # 컨테이너 상태 확인
 docker compose ps workflow

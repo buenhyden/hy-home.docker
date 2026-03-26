@@ -10,11 +10,13 @@ Terrakube serves as the authoritative source for infrastructure state. Strict ac
 ## Access Control Policy
 
 ### 1. Workspace RBAC
+
 - **Admin**: Full control over organization settings and workspace secrets (Senior DevOps only).
 - **Maintainer**: Can trigger plans and applies for specific workspaces.
 - **Reader**: View-only access to execution logs.
 
 ### 2. SSO Authentication
+
 - All users must authenticate via Keycloak.
 - Local admin accounts are disabled in production to ensure auditability.
 
@@ -39,10 +41,12 @@ Terrakube serves as the authoritative source for infrastructure state. Strict ac
 ## Routine Maintenance
 
 ### Weekly
+
 - Monitor `terrakube-api` logs for worker drift or storage connectivity errors.
 - Verify `tfstate` bucket health in MinIO.
 
 ### Monthly
+
 - Perform a manual backup of the Terrakube metadata database (PostgreSQL).
 - Update the base Docker images for executors to include the latest security patches.
 

@@ -26,6 +26,7 @@
 ## Operational Procedures
 
 ### 1. Session Management
+
 - **Storage**: Sessions are stored in Valkey Cluster (`infra/04-data/valkey`).
 - **Timeout**:
   - `cookie_expire`: 168h (7 days)
@@ -33,10 +34,12 @@
 - **Security**: `cookie_httponly`, `cookie_secure` 옵션은 반드시 `true`로 설정되어야 함.
 
 ### 2. Whitelist & Access Control
+
 - **Allowed Domains**: 프로젝트의 메인 도메인 및 하위 도메인으로 제한.
 - **Authenticated Emails**: 특정 도메인(예: `hy-home.com`) 이외의 이메일은 기본적으로 거부함 (`--email-domain` 설정).
 
 ### 3. Upstream Security
+
 - **Trust**: 백엔드 서비스로 전달되는 `X-Auth-Request-User`, `X-Auth-Request-Email` 헤더의 신뢰성을 보장하기 위해 Traefik 미들웨어에서 헤더 주입을 엄격히 통제함.
 
 ## Security Controls

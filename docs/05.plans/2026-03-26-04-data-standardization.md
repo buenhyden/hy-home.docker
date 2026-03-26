@@ -12,30 +12,37 @@
 ## Proposed Changes
 
 ### 1. Document Creation
+
 - **PRD**: [2026-03-26-04-data.md](../01.prd/2026-03-26-04-data.md)
 - **ARD**: [0004-data-architecture.md](../02.ard/0004-data-architecture.md)
 - **ADR**: [0004-postgresql-ha-patroni.md](../03.adr/0004-postgresql-ha-patroni.md)
 - **Spec**: [04-data/spec.md](../04.specs/04-data/spec.md)
 
 ### 2. README Refactoring
+
 - 레이어 01~06의 `README.md`에 `04-data` 항목 추가.
 
 ## Work Breakdown
 
 ### Phase 1: Reverse Engineering & Technical Design (Done)
+
 - `infra/04-data` 구성 파일 분석 및 핵심 문서 생성.
 
 ### Phase 2: Traceability & Integration (In Progress)
+
 - 레이어별 README 리팩토링 및 상호 참조 링크 검증.
 
 ### Phase 3: Final Audit (Planned)
+
 - 문서 무결성 검사 및 최종 walkthrough 업데이트.
 
 ## Verification Plan
 
 ### Automated Verification
+
 - `grep`을 통한 모든 문서의 `Overview (KR)` 섹션 존재 확인.
 - 상대 경로 링크 유효성 검사.
 
 ### Manual Verification
+
 - AI 에이전트가 생성된 문서를 통해 04-data의 HA 구성을 완벽히 설명할 수 있는지 확인.

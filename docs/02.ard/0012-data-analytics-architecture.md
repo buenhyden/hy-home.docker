@@ -27,6 +27,7 @@
 - **OLAP Warehousing**: 대규모 정형 데이터의 분석용 실시간 집계.
 
 ### Consumes (Dependencies)
+
 - **Core Data**: PostgreSQL/Redis 등 핵심 스토리지의 변경 데이터(CDC).
 - **Messaging Layer**: ksqlDB/StarRocks로 인입되는 Kafka 토픽 데이터.
 - **Infrastructure**: Docker Compose 오케스트레이션 및 NVMe 기반 영구 스토리지.

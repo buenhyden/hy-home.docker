@@ -36,8 +36,10 @@ Vault의 가용성 상실(Sealed) 또는 Raft 합의 실패 상황에서 보안 
 ### Procedure
 
 #### 1. Unexpected Seal Recovery
+
 1. Vault 상태를 확인한다: `docker exec vault vault status`
 2. 보관된 Unseal 키를 3회 입력한다:
+
    ```bash
    docker exec -it vault vault operator unseal <KEY_1>
    docker exec -it vault vault operator unseal <KEY_2>
@@ -45,8 +47,10 @@ Vault의 가용성 상실(Sealed) 또는 Raft 합의 실패 상황에서 보안 
    ```
 
 #### 2. Raft Cluster Partition Recovery
+
 1. 피어 리스트를 확인한다: `docker exec vault vault operator raft list-peers`
 2. 응답이 없는 구형 노드를 제거한다:
+
    ```bash
    vault operator raft remove-peer <NODE_ID>
    ```
@@ -64,6 +68,7 @@ Vault의 가용성 상실(Sealed) 또는 Raft 합의 실패 상황에서 보안 
 ## Safe Rollback or Recovery Procedure
 
 - 장애 복구 실패 시 직전 생성된 Raft 스냅샷을 사용하여 데이터 복구:
+
   ```bash
   vault operator raft snapshot restore /vault/data/backup.snapshot
   ```

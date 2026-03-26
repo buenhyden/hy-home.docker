@@ -15,15 +15,19 @@
 ## Potential Issues & Symptoms
 
 ### 1. Broken Trace Ingestion (트레이스 누락)
+
 - **Symptom**: Grafana에서 최근 트레이스가 검색되지 않음.
 - **Check**: `infra-tempo` 로그 및 `distributor` 지표 확인.
 - **Resolution**:
+
   ```bash
   docker compose restart tempo- [Tempo](./tempo.md)
   ```
+
   Alloy와 Tempo 간의 OTLP 엔드포인트(4317/4318) 도달 가능성 확인.
 
 ### 2. Backend Storage Connection (MinIO 오류)
+
 - **Symptom**: `Failed to write blocks to storage`, `S3 bucket access denied` 오류 로그 발생.
 - **Check**: MinIO 버킷 권한 및 네트워크 연결 상태.
 - **Resolution**:
@@ -31,12 +35,14 @@
   - MinIO 인터페이스에서 `tempo-bucket` 존재 여부 확인.
 
 ### 3. WAL Corruption (쓰기 버퍼 손상)
+
 - **Symptom**: Tempo 재시작 시 `corrupt WAL` 오류와 함께 기동 실패.
 - **Check**: `/var/tempo/wal` 디렉토리 파일 상태.
 - **Resolution**:
   - WAL 파일 백업 후 해당 디렉토리 정리 (데이터 유실 주의).
 
 ### 4. Metrics Generator Failure
+
 - **Symptom**: 서비스 그래프나 Span Metrics가 대시보드에서 보이지 않음.
 - **Check**: `tempo.yaml` 내 `remote_write` 설정 및 Prometheus 상태.
 - **Resolution**:
@@ -46,6 +52,7 @@
 ## Recovery Steps
 
 ### Emergency Full Restart
+
 ```bash
 # Move to infra directory
 cd infra/06-observability
@@ -55,6 +62,7 @@ docker compose restart minio tempo alloy
 ```
 
 ### Manual Bucket Check
+
 MinIO 클라이언트(`mc`)를 사용하여 스토리지 상태를 점검한다.
 
 ## Post-Mortem Guidelines

@@ -14,18 +14,18 @@
 
 ## Boundaries & Non-goals
 
-- **Owns**: 
+- **Owns**:
   - LLM 추론 엔진 (`Ollama`)
   - AI 사용자 인터페이스 및 RAG 오케스트레이터 (`Open WebUI`)
   - 로컬 모델 가중치 및 설정 관리
-- **Consumes**: 
+- **Consumes**:
   - GPU 하드웨어 자원 (via NVIDIA Container Toolkit)
   - 벡터 데이터베이스 (`04-data/qdrant`)
   - 사용자 인증 및 SSO (`02-auth/keycloak`)
-- **Does Not Own**: 
+- **Does Not Own**:
   - 벡터 처리 서버 자체 (Qdrant 인스턴스는 Data 계층 소유)
   - 서비스 모니터링 수집기 (Observability 계층 소유)
-- **Non-goals**: 
+- **Non-goals**:
   - 고사양 GPU 클러스터 컴퓨팅 (단일 노드 또는 단일 리소스 그룹 최적화 중심)
   - 모델의 직접적인 학습(Training) 환경 제공
 
@@ -40,6 +40,7 @@
 ## System Overview & Context
 
 시스템은 하이브리드 구조로 운영된다.
+
 1. **Inference Layer (Backend)**: Ollama가 모델 저장소와 GPU를 직접 제어하며 OpenAI 호환 API를 제공한다.
 2. **Interaction Layer (Frontend/Orchestrator)**: Open WebUI가 채팅 UI와 더불어 Qdrant와 연동된 RAG 로직(Embedding → Search → Augment)을 수행한다.
 

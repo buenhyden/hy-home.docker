@@ -24,6 +24,7 @@
 
 - **Emergency**: 브로커 쿼럼 붕괴 (`No Leader found` 발생 시).
 - **Incident**: `UnderReplicatedPartitions` 지표가 0보다 클
+
 ### 1. Quorum Failure (KRaft)
 
 - **Issue**: 클러스터 내 브로커 과반수 이상 다운되어 리더 선출이 불가능한 경우.
@@ -39,6 +40,7 @@
 ### Procedure
 
 #### 1. Broker Quorum Recovery (Single node down)
+
 1. 실패한 노드 식별: `docker compose ps`
 2. 컨테이너 재시작: `docker compose restart kafka-X`
 3. 복제 상태 확인: `docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --describe --under-replicated-partitions`
@@ -46,12 +48,14 @@
 #### 2. Partition Rebalancing
 
 - **Issue**: 특정 브로커에 파티션이 몰려 부하가 불균형한 경우.
+
 1. 리더 선출 강제: `kafka-leader-election --bootstrap-server localhost:19092 --election-type PREFERRED --all-topic-partitions`
 2. 지표 확인: `UnderReplicatedPartitions`가 0으로 수렴하는지 관찰.
 
 #### 3. Schema Registry Incompatibility
 
 - **Issue**: 잘못된 스키마 업데이트로 인해 생산/소비가 중단된 경우.
+
 1. 레지스트리 상태 체크: `curl -fsS http://schema-registry.localhost/subjects`
 2. 연결 실패 시 레지스트리 노드 재시작: `docker compose restart schema-registry`
 3. 메타데이터 토픽(`_schemas`)의 가용성 확인.

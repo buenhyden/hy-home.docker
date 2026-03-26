@@ -15,15 +15,18 @@
 ## Potential Issues & Symptoms
 
 ### 1. Ingestion Gaps (데이터 수집 중단)
+
 - **Symptom**: Grafana 플레임그래프에 데이터가 표시되지 않음.
 - **Check**: `infra-pyroscope` 컨테이너 로그 및 `infra-alloy` 송신 로그 확인.
 - **Resolution**:
+
   ```bash
   docker compose restart pyroscope
   docker compose restart alloy
   ```
 
 ### 2. Disk Space Pressure (저장소 부족)
+
 - **Symptom**: 컨테이너가 `Read-only` 모드로 전환되거나 비정상 종료됨.
 - **Check**: `df -h`로 `/var/lib/pyroscope` 마운트 지점 확인.
 - **Resolution**:
@@ -31,8 +34,9 @@
   - 오래된 데이터 수동 삭제 (주의: 서비스 중단 후 수행 권장).
 
 ### 3. High CPU Usage (수집 부하)
+
 - **Symptom**: 호스트 시스템 CPU 사용률 급증.
-- **Check**: `docker stats pyroscope`. 
+- **Check**: `docker stats pyroscope`.
 - **Resolution**:
   - `pyroscope.yaml`의 `ingestion_rate_limit` 조정.
   - Alloy에서 수집 대상 서비스 필터링 강화.
@@ -40,6 +44,7 @@
 ## Recovery Steps
 
 ### Emergency Restart
+
 ```bash
 # Move to infra directory
 cd infra/06-observability
@@ -52,6 +57,7 @@ curl -f http://localhost:4040/health
 ```
 
 ### Configuration Rollback
+
 설정 변경 후 장애 발생 시 `infra/06-observability/pyroscope/config/pyroscope.yaml`을 이전 버전으로 복구하고 재시작한다.
 
 ## Post-Mortem Guidelines

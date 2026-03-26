@@ -11,11 +11,13 @@
 ## Components
 
 ### 1. MailHog (Development Sandbox)
+
 - **SMTP Server**: 1025 포트에서 메일을 수신하며 외부로 전달하지 않음.
 - **Web UI**: 소모성 서버(Stateless)로 작동하며 8025 포트에서 캡처된 메일 전시.
 - **Storage**: In-memory (기본 설정).
 
 ### 2. Stalwart (Production Backend)
+
 - **SMTP/Submit**: 메일 발송 및 수신용 서비스 (25, 465, 587 포트).
 - **IMAP/JMAP**: 메일 클라이언트 접근 프로토콜 (993, 8080 포트).
 - **Admin UI**: 웹 기반 서버 관리 및 도메인 설정 도구.
@@ -24,6 +26,7 @@
 ## Interface Definition
 
 ### Network Ports
+
 | Service | Internal Port | External Port | Protocol | Auth Required |
 | :--- | :--- | :--- | :--- | :--- |
 | MailHog SMTP | 1025 | 1025 | SMTP | No (Whitelist) |
@@ -33,18 +36,20 @@
 | Stalwart IMAP | 993 | 993 | IMAPS | Mandatory Auth |
 
 ### Common Variables
+
 - `DEFAULT_MAIL_DOMAIN`: 시스템 대표 메일 도메인.
 - `MAIL_SENDER_NAME`: 기본 발신자 명칭.
 
 ## Sequence Diagrams
 
 ### Development Mail Trapping Flow
+
 ```mermaid
 sequenceDiagram
     participant App as Application Core
     participant MH as MailHog (Sandbox)
     participant UI as Developer Browser
-    
+
     App->>MH: Send Email (SMTP:1025)
     MH->>MH: Capture & Store in Memory
     Note right of MH: Do NOT relay to Internet

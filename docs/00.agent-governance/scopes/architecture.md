@@ -18,9 +18,9 @@ title: 'Architecture Strategy Scope'
 - **Boundaries**: Strictly define service boundaries in `04.specs/` to prevent "Big Ball of Mud" anti-patterns.
 - **Taxonomy**: Adhere to the `01.prd - 11.postmortems` lifecycle stage-gates.
 - **Communication Protocol**:
-    - **Internal**: Use **gRPC** for synchronous service-to-service calls where performance is critical.
-    - **External**: REST or GraphQL via the Gateway layer.
-    - **Async**: Kafka/RabbitMQ events for eventual consistency.
+  - **Internal**: Use **gRPC** for synchronous service-to-service calls where performance is critical.
+  - **External**: REST or GraphQL via the Gateway layer.
+  - **Async**: Kafka/RabbitMQ events for eventual consistency.
 - **Traceability**: All architectural trade-offs MUST be captured in `03.adr/` (Architectural Decision Records).
 
 ## 3. Implementation Flow

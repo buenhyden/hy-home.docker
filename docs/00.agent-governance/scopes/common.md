@@ -15,11 +15,11 @@ title: 'Common Engineering Scope'
 ## 2. Requirements & Constraints
 
 - **Language**: Use English for all code, comments, and internal documentation.
-- **Naming**: 
-    - Variables/Functions: `camelCase`
-    - Classes/Types: `PascalCase`
-    - Constants: `SCREAMING_SNAKE_CASE`
-    - Files: `kebab-case.ext`
+- **Naming**:
+  - Variables/Functions: `camelCase`
+  - Classes/Types: `PascalCase`
+  - Constants: `SCREAMING_SNAKE_CASE`
+  - Files: `kebab-case.ext`
 - **Formatting**: Adhere to Prettier/ESLint defaults for the project.
 
 ## 3. Implementation Flow
