@@ -1,43 +1,62 @@
-# Messaging Operations Policy (05-messaging)
+# Messaging Operations Policy (08.operations/05-messaging)
 
-> Messaging Governance, Data Retention & Standard Procedures.
+> Governance, Reliability Standards, and Maintenance Policies for the Messaging Tier.
 
-## Overview (KR)
+## Overview
 
-이 문서는 `hy-home.docker` 메시징 티어(05-messaging)의 운영 원칙과 데이터 관리 기준을 정의한다. 시스템 가용성 보장과 데이터 정합성을 위한 SSoT(Single Source of Truth) 정책을 다룬다.
+이 디렉터리는 `hy-home.docker` 메시징 티어(05-messaging)의 운영 원칙과 데이터 관리 기준을 정의하는 정책 문서들을 포함한다. 시스템 가용성 보장과 데이터 정합성을 위한 표준 절차(Standard Procedures)를 규정한다.
 
-## Reliability Standards
+## Audience
 
-- **Quorum Requirement**: Kafka/RabbitMQ 클러스터는 항상 과반수(Quorum) 이상의 노드가 활성 상태여야 한다.
-- **Backpressure Policy**: 소비자의 처리 속도가 생산량을 따라가지 못할 경우, 생산자 속도 제한(Throttling)을 적용한다.
+이 README의 주요 독자:
 
-## Operational Standards
+- **Operators**: 시스템 정책 수립 및 규준 준수 여부 점검.
+- **Architects**: 메시징 아키텍처의 품질 속성(QA) 보장 확인.
+- **AI Agents**: 운영 자동화 및 제어 정책 참조.
 
-### 1. 데이터 보관 정책 (Retention)
-- **Kafka Topics**: 
-  - 기본 보관: `retention.ms=604800000` (7일).
-  - 최대 크기: `retention.bytes=10737418240` (10GB/Partition).
-- **RabbitMQ Queues**: 
-  - 메시지 TTL 설정 권장 (무한 대기 방지).
-  - `Dead Letter Exchange(DLX)` 필수 구성을 통한 처리 실패 메시지 격리.
+## Scope
 
-### 2. 스키마 거버넌스
-- 모든 Kafka 메시지는 `Schema Registry`를 통해 검증되어야 한다.
-- **Compatibility**: `BACKWARD`를 기본으로 하며, 변경 시 소비자 영향도를 사전 평가한다.
+### In Scope
 
-### 3. 모니터링 임계치
-- **Kafka**: `UnderReplicatedPartitions` > 0 발생 시 즉시 점검.
-- **RabbitMQ**: `Memory Alarm` 발생 시 생산 중단 자동화 연동.
+- **Governance**: 데이터 보관(Retention), 스키마 거버넌스(Compatibility).
+- **Standards**: 클러스터 가용성(Quorum) 유지 정책, 백프레셔(Backpressure) 통제.
+- **Verification**: 정책 준수 여부 주기적 감사 절차.
 
-## Verification Procedures
+### Out of Scope
 
-- [ ] 분기별 메시지 처리 지연(Lag) 통계 분석 및 하드웨어 리소스 최적화.
-- [ ] 스키마 레지스트리 백업 본의 정기 복구 테스트.
-- [ ] 비정상 노드 탈퇴 시 쿼럼 유지 여부 시뮬레이션.
+- 개별 마이그레이션 실행 절차 (Runbook 영역).
+- 개발 가이드 및 튜토리얼 (Guides 영역).
 
-## Traceability
+## Structure
 
-- **PRD**: [2026-03-26-05-messaging.md](../../01.prd/2026-03-26-05-messaging.md)
-- **ARD**: [0005-messaging-architecture.md](../../02.ard/0005-messaging-architecture.md)
-- **Guide**: [Messaging Guide](../../07.guides/05-messaging/README.md)
-- **Runbook**: [Messaging Runbook](../../09.runbooks/05-messaging/README.md)
+```text
+05-messaging/
+├── kafka.md           # Kafka Operations Policy
+├── rabbitmq.md        # RabbitMQ Operations Policy
+└── README.md          # This file
+```
+
+## How to Work in This Area
+
+1. **Policy Updates**: 기존 정책의 변경이 필요할 경우 `ARD`와의 일치 여부를 먼저 검토한다.
+2. **Compliance**: 새로운 메시징 기술 도입 시 `operation.template.md`를 사용하여 운영 표준을 수립한다.
+3. **Traceability**: 정책 문서는 가이드(`07.guides`) 및 런북(`09.runbooks`)과 상호 참조되어야 한다.
+
+## Usage Instructions
+
+이 경로의 문서는 운영자가 시스템 설정 시 준수해야 할 '규준(Policy)'을 제공한다. 구체적인 명령어 실행은 본 문서가 아닌 `09.runbooks`를 참조한다.
+
+## Verification and Monitoring
+
+- **Status Check**: [Grafana Dashboard]를 통해 실시간 정책 준수 상태(Lag, Replica 등)를 확인한다.
+- **Audit**: `UnderReplicatedPartitions > 0` 발생 시 운영 정책 위반으로 간주하고 장애 대응 절차를 시작한다.
+
+## Incident and Recovery Links
+
+- **Runbooks**: [../../09.runbooks/05-messaging/README.md]
+- **Guides**: [../../07.guides/05-messaging/README.md]
+
+## AI Agent Guidance
+
+1. 이 영역의 정책 수정 시 리드 타임 및 장애 영향도를 평가하는 워크플로를 우선 실행할 것.
+2. 새 가용성 기준 설정 시 `spec.md`의 성능 목표치와 상충하지 않는지 확인할 것.

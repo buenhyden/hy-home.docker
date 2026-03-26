@@ -1,12 +1,3 @@
-# RabbitMQ Message Broker
-
-> Lightweight AMQP broker for task queuing and asynchronous messaging.
-
-## Overview
-
-A standalone RabbitMQ instance providing reliable AMQP-based message queuing. It is primarily used for background tasks and decoupling lightweight microservices that do not require the high-throughput streaming capabilities of Kafka.
-
-## Audience
 
 - Backend Developers (Task queuing)
 - SREs (Broker maintenance)
@@ -21,8 +12,9 @@ A standalone RabbitMQ instance providing reliable AMQP-based message queuing. It
 
 ```text
 rabbitmq/
-├── docker-compose.yml  # RabbitMQ service orchestration
-└── README.md           # This file
+├── docker-compose.yml  # RabbitMQ Infrastructure (05-messaging)
+
+> Standardized AMQP message broker for task queuing and asynchronous messaging.
 ```
 
 ## How to Work in This Area

@@ -8,8 +8,14 @@
 
 ## Documents
 
-- [01. LGTM Stack Guide](./01.lgtm-stack.md) - Metrics, Logs, and Traces architecture.
-- [02. Alloy Collector Guide](./02.alloy-collector.md) - Unified telemetry collection pipeline.
+- [LGTM Stack](./01.lgtm-stack.md)
+- [Grafana Alloy](./alloy.md)
+- [Loki](./loki.md)
+- [Prometheus](./prometheus.md)
+- [Pushgateway](./pushgateway.md)
+- [Pyroscope](./pyroscope.md)
+- [Tempo](./tempo.md)
+- [Grafana](grafana.md): Visualization and dashboarding platform.
 
 ## Related References
 

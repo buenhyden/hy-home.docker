@@ -9,7 +9,13 @@
 ## Recovery Procedures
 
 - [01. LGTM Stack Recovery](./01.lgtm-recovery.md) - Standard recovery steps for Loki, Grafana, Tempo.
-- [02. Alloy troubleshooting](./02.alloy-troubleshooting.md) - Telemetry pipeline debug guide.
+- [02. Alloy- [Grafana Alloy](./alloy.md)
+- [Loki Recovery Runbo- [Loki](./loki.md)
+- [Prometheus](./prometheus.md)
+- [Pushgateway](./pushgateway.md)
+- [Pyroscope](./pyroscope.md)
+- [Tempo](./tempo.md)
+- [Prometheus Alertmanager](./alertmanager.md)
 
 ## Incident Response Flow
 

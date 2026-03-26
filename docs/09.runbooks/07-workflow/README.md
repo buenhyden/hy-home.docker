@@ -1,44 +1,50 @@
-# Workflow Runbook (07-workflow)
+# Workflow & Orchestration Runbooks
 
-> Workflow Failure Recovery & Orchestrator Troubleshooting
+> 장애 복구 및 반복 운영 작업을 위한 단계별 실행 지침(Step-by-step).
 
 ## Overview
 
-이 런북은 `07-workflow` 계층(Airflow, n8n)의 장애 상황에 대한 즉각적인 조치 방법을 설명한다.
+이 디렉터리는 `hy-home.docker` 워크플로 엔진(Airflow, n8n 등)의 장애 상황 대응과 정기적인 관리 작업을 위한 런북을 포함합니다. 운영자가 긴급 상황에서 고민 없이 즉시 실행할 수 있는 실질적인 절차를 제공합니다.
 
-## Emergency Procedures
+## Audience
 
-### 1. Airflow 스케줄러 먹통 (Stalled Scheduler)
+이 README의 주요 독자:
 
-DAG가 실행되지 않고 'Scheduled' 상태에 머물러 있는 경우.
+- **Site Reliability Engineers (SREs)**: 시스템 복구 및 긴급 장애 대응 담당자
+- **Maintenance Teams**: 정기 점검 및 사용자 관리 수행자
+- **AI Agents**: 장애 자동 탐지 및 복구 시나리오 실행 에이전트
 
-1. **로그 확인**: `docker logs airflow-scheduler`를 통해 DB 연결 오류나 교착 상태 식별.
-2. **프로세스 재시작**: 스케줄러 컨테이너를 재시작하여 메타데이터 파싱 재유도.
-3. **DB 상태 확인**: PostgreSQL의 락(Lock) 상태를 점검하고 장시간 지속되는 트랜잭션 종료.
+## Scope
 
-### 2. Celery Worker 연결 오류
+### In Scope
 
-워커가 태스크를 가져가지 못하거나 'Lost' 상태인 경우.
+- **Incident Recovery**: 핵심 서비스(WebUI, Scheduler, Workers) 복구 절차
+- **Administrative Tasks**: 계정 관리, 비밀번호 초기화, 권한 설정
+- **Maintenance**: DB 영구 볼륨 정리 및 마이그레이션 작업
 
-1. **Broker 확인**: `valkey-workflow` 서비스의 연결 가능 여부 및 메모리 부족 여부 확인.
-2. **Worker 재기동**: Flower (`https://flower.${DEFAULT_URL}`)에서 워커 상태를 확인하고 필요시 강제 재시작.
-3. **Queue 정화**: 브로커에 잘못된 메시지가 쌓인 경우 큐를 비우고 재시도 (데이터 유실 주의).
+### Out of Scope
 
-### 3. n8n 워크플로우 중단
+- 파이프라인 개발 가이드 (07.guides 담당)
+- 시스템 아키텍처 및 설계 원칙 (02.ard 담당)
 
-특정 자동화 작업이 멈추거나 동작하지 않는 경우.
+## Structure
 
-1. **Execution Log 확인**: n8n 내부의 실행 로그에서 실패한 노드와 에러 메시지 확인.
-2. **트레이시 확인**: `06-observability` (Loki/Tempo)를 통해 연동된 외부 API와의 통신 에러 정보 수집.
+```text
+09.runbooks/07-workflow/
+├── airflow.md               # Airflow 서비스 복구 및 관리 런북 (런북)
+├── n8n.md                   # n8n 서비스 복구 및 관리 런북 (런북)
+├── airflow-worker-recovery.md # Airflow 워커 리소스 복구 심화
+└── README.md                # 이 파일
+```
 
----
+## How to Work in This Area
 
-## Verification Steps
+1. [v2026.03 표준 템플릿](../../99.templates/runbook.template.md)에 따라 절차를 단계별로 작성합니다.
+2. 모든 명령어는 복사하여 즉시 실행 가능한 형태여야 합니다.
+3. 복구 후 반드시 **Verification Steps**를 통해 정상화 여부를 확인하도록 구성합니다.
 
-- [ ] `airflow db check` 명령을 통한 메타데이터 DB 연결 확인.
-- [ ] n8n `/healthz` 엔드포인트 응답 확인.
+## Related References
 
-## Related Operational Documents
-
-- [Operations Policy](../../docs/08.operations/07-workflow/README.md)
-- [DAG Development Guide](../../docs/07.guides/07-workflow/01.airflow-dag-dev.md)
+- **Operations**: [Workflow Operations](../../08.operations/07-workflow/README.md)
+- **Incidents**: [Incident Records](../../10.incidents/README.md)
+- **Architecture**: [Workflow Architecture ARD](../../02.ard/07-workflow.md)

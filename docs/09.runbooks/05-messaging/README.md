@@ -1,45 +1,63 @@
-# Messaging Runbook (05-messaging)
+# Messaging Runbooks (09.runbooks/05-messaging)
 
-> Messaging Infrastructure Recovery & Incident Response.
+> Executable procedures for incident response, recovery, and recurring maintenance.
 
-## Overview (KR)
+## Overview
 
-이 런북은 `hy-home.docker`의 메시징 인프라(05-messaging)에서 발생할 수 있는 주요 장애 상황과 복구 절차를 정의한다. 데이터 손실 최소화와 신속한 서비스 가동을 최우선 목표로 한다.
+이 디렉터리는 `hy-home.docker`의 메시징 인프라(05-messaging)에서 발생할 수 있는 주요 장애 상황의 복구 절차와 정기 점검 단계를 정의한 런북들을 포함한다. 운영자가 장애 상황에서 신속하고 정확하게 기술적 조치를 취할 수 있도록 단계별 안내를 제공한다.
 
-## Incident Response Priorities
+## Audience
 
-1. **Service Resumption**: 브로커 쿼럼 복구 및 클라이언트 연결 재개.
-2. **Data Consistency**: 스키마 오류 해결 및 누락된 데이터 재처리.
-3. **Performance Recovery**: 백래그(Back-log) 해소 및 소비자 스케일 아웃.
+이 README의 주요 독자:
 
-## Recovery Procedures
+- **Site Reliability Engineers (SRE)**: 장애 대응 및 인프라 복구 실행.
+- **DevOps Engineers**: 정기 유지보수 및 클러스터 튜닝.
+- **AI Agents**: 자가 복구 워크플로 실행 및 장애 증거 수집.
 
-### 1. Kafka Cluster Quorum Failure
-- **Symptom**: `No Leader found` 에러 및 생산/소비 중단.
-- **Action**:
-  1. 문제가 발생한 노드의 컨테이너 로그에서 `Fatal Error` 확인.
-  2. 서비스 재시작: `docker compose restart kafka-X`.
-  3. 상태 확인: `docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --describe --under-replicated-partitions`.
+## Scope
 
-### 2. Schema Registry Sync Error
-- **Symptom**: 생산자가 스키마를 유효화하지 못해 전송 실패.
-- **Action**:
-  1. `schema-registry` 서비스와 브로커 간의 연결 확인.
-  2. 레지스트리 재시작 후 메타데이터 토픽(`_schemas`)의 리더가 정상인지 확인.
+### In Scope
 
-### 3. RabbitMQ Message Spike (Backpressure)
-- **Symptom**: 처리되지 않은 메시지가 큐에 쌓여 메모리 경고 발생.
-- **Action**:
-  1. **Scale-Out**: 해당 큐를 구독하는 소비자 컨테이너를 증설한다.
-  2. **Temporary Purge**: 테스트나 루프에 의한 무의미한 대량 메시지인 경우 관리 UI에서 `Purge` 한다 (주의: 데이터 실 가용성 확인).
+- **Recovery**: 브로커 쿼럼 복구, 스키마 오류 해결, 소비 지연(Lag) 해소 절차.
+- **Maintenance**: 노드 순차 재시작, 파티션 재분산, 로그 세그먼트 정리.
+- **Emergency**: 긴급 서비스 중단 및 롤백 절차.
 
-## Maintenance Tasks
+### Out of Scope
 
-- **Log Cleanup**: Kafka 로그 세그먼트 정책 작동 여부 정기 점검.
-- **Version Upgrades**: 순차적(Rolling) 업데이트를 통해 서비스 중단 없이 최신 패치 적용.
+- 운영 정책 및 규준 정의 (08.operations 계층 담당).
+- 애플리케이션 코드 레벨의 버그 수정.
 
-## Related Documents
+## Structure
+
+```text
+05-messaging/
+├── kafka.md           # Kafka Recovery & Maintenance
+├── rabbitmq.md        # RabbitMQ Recovery & Maintenance
+└── README.md          # This file
+```
+
+## How to Work in This Area
+
+1. **Immediate Execution**: 런북은 장황한 설명보다 즉시 실행 가능한 명령어 위주로 작성한다.
+2. **Standardization**: 모든 런북은 [runbook.template.md](docs/99.templates/runbook.template.md) 형식을 준용한다.
+3. **Evidence**: 복구 과정에서 수집해야 할 증거(Evidence)와 검증 기준을 명확히 명시한다.
+
+## Usage Instructions
+
+이 디렉터리의 문서는 사고 발생 시 가장 먼저 참조해야 하는 '행동 지침'이다. 각 런북은 특정 서비스나 상황에 대응하므로, 발생한 사건의 유형에 맞는 파일을 선택하여 `Procedure` 항목을 순서대로 수행한다.
+
+## Verification and Monitoring
+
+- **Signals**: 모니터링 시스템의 경고 발생 시 해당 런북의 `When to Use` 섹션을 확인한다.
+- **Evidence**: 모든 작업 완료 후 `Verification Steps`를 수행하여 시스템 정상을 확정한다.
+
+## Incident and Recovery Links
 
 - **Operations Policy**: [../../08.operations/05-messaging/README.md]
-- **Messaging Guide**: [../../07.guides/05-messaging/README.md]
-- **Infrastructure Source**: [../../../infra/05-messaging/README.md]
+- **Guides**: [../../07.guides/05-messaging/README.md]
+
+## AI Agent Guidance
+
+1. 장애 감지 시 적절한 런북을 식별하고 `Procedure`에 따른 환경 조사를 자율적으로 수행할 것.
+2. 작업 수행 전후의 클러스터 상태를 캡처하여 `docs/10.incidents`에 보고서를 생성할 것.
+3. 위험도가 높은 조치(예: Purge, Force 삭제) 전에는 반드시 사람의 명시적 승인을 요청할 것.

@@ -1,30 +1,13 @@
 # Grafana Visualization & Dashboards
 
-> Unified visualization hub for metrics, logs, traces, and profiling.
+Unified visualization hub for metrics, logs, traces, and profiling.
 
-## Overview
+## Scope
 
-Grafana serves as the primary observability portal. It integrates multiple data sources (Prometheus, Loki, Tempo, Pyroscope) into cohesive dashboards. Access is secured via Keycloak SSO with role-based access control (RBAC).
+Grafana serves as the primary observability portal for the `hy-home.docker` ecosystem. It integrates multiple data sources including Prometheus, Loki, Tempo, and Pyroscope into cohesive dashboards, providing a single pane of glass for monitoring, alerting, and debugging.
 
-## Audience
-
-- All users (Monitoring & Debugging)
-- SREs (Dashboard provisioning)
-
-## Structure
-
-```text
-grafana/
-├── dashboards/      # Provisioned JSON dashboards
-├── provisioning/    # Datasource & dashboard YAMLs
-└── README.md
-```
-
-## How to Work in This Area
-
-1. Add new dashboards by placing JSON files in `dashboards/`.
-2. Configure datasources in `provisioning/datasources/`.
-3. Refer to the [SSO Setup](../../../docs/07.guides/02-auth/01.keycloak-setup.md) for auth issues.
+- **Primary URL**: `https://grafana.${DEFAULT_URL}`
+- **Authentication**: Keycloak SSO (OIDC) with automatic role mapping.
 
 ## Tech Stack
 
@@ -33,15 +16,27 @@ grafana/
 | Frontend | Grafana | v12.3.3 |
 | Auth | Generic OAuth2 | Keycloak Integration |
 
-## Configuration
+## System Components
 
-| Feature | Status | Notes |
-| :--- | :--- | :--- |
-| `OAuth2` | Enabled | Auto-assign Editor/Viewer |
-| `S3 Backend` | Enabled | For remote caching (experimental) |
+- **Dashboards**: 34+ provisioned JSON dashboards across domains.
+  - **Infrastructure**: Node Exporter, cAdvisor, Docker, Linux Hosts.
+  - **Middleware**: PostgreSQL, Redis, Kafka, MinIO.
+  - **AI/ML**: Ollama, Qdrant.
+  - **Services**: Application-specific metrics and SLI/SLO views.
+- **Datasources**: Pre-integrated Prometheus (metrics), Loki (logs), Tempo (traces), and Pyroscope (profiles).
+- **Provisioning**: Entirely code-based configuration for datasources and dashboards.
+
+## Documentation
+
+| Document | Description |
+| :--- | :--- |
+| [System Guide](file:///home/hy/projects/hy-home.docker/docs/07.guides/06-observability/grafana.md) | Architecture, SSO mapping, and datasource integration details. |
+| [Operational Policy](file:///home/hy/projects/hy-home.docker/docs/08.operations/06-observability/grafana.md) | Dashboard provisioning, RBAC, and datasource maintenance. |
+| [Recovery Runbook](file:///home/hy/projects/hy-home.docker/docs/09.runbooks/06-observability/grafana.md) | Troubleshooting failing logins, dashboards, or service unavailability. |
 
 ## AI Agent Guidance
 
-1. Dashboards MUST NOT be edit-locked in production; use code-based provisioning.
-2. Use Variables (Template tags) for cluster/node/service filtering.
-3. Consistently use the `hy-home.docker` color palette for consistency.
+1. **Provisioning**: Dashboards MUST NOT be edit-locked in production. Always use code-based provisioning in the `dashboards/` directory.
+2. **SSO Mapping**: Role mapping is managed via `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH` in `docker-compose.yml`. Groups starting with `/admins` map to `Admin`.
+3. **Variables**: Use Variables (Template tags) for cluster/node/service filtering to keep dashboards portable.
+4. **Color Palette**: Adhere to the `hy-home.docker` visual standards for dashboard consistency.

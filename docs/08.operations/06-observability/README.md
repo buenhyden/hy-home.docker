@@ -8,12 +8,18 @@
 
 ## Data Retention Policy
 
-| Data Type | Storage Period | Backend | Notes |
-| :--- | :--- | :--- | :--- |
-| **Metrics** | 15 Days | Prometheus TSDB | Raw metrics |
-| **Logs** | 7 Days | Loki (MinIO) | Application & Infra logs |
-| **Traces** | 3 Days | Tempo (MinIO) | Distributed tracing spans |
 | **Profiling** | 7 Days | Pyroscope | Continous profiling data |
+
+## Operational Policies
+
+- [Loki Recovery Runbook](./loki.md)
+- [Prometheus](./prometheus.md)
+- [Pushgateway](./pushgateway.md)
+- [Pyroscope](./pyroscope.md)
+- [Tempo](./tempo.md)
+- [Grafana Recovery Runbook](./grafana.md)
+- [Alloy Recovery Runbook](./alloy.md)
+- [Alertmanager Recovery](./alertmanager.md)
 
 ## Alerting Standards
 
