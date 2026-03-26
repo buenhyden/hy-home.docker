@@ -41,6 +41,6 @@ Gemini CLI-specific guidance for this repository.
 
 ## References
 
-- https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/gemini-md.md
-- https://google-gemini.github.io/gemini-cli/docs/get-started/configuration.html
-- https://google-gemini.github.io/gemini-cli/docs/cli/commands.html
+- <https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/gemini-md.md>
+- <https://google-gemini.github.io/gemini-cli/docs/get-started/configuration.html>
+- <https://google-gemini.github.io/gemini-cli/docs/cli/commands.html>

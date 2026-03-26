@@ -39,4 +39,4 @@ Claude-specific guidance for this repository. Shared governance stays in `rules/
 
 ## References
 
-- https://code.claude.com/docs/en/memory
+- <https://code.claude.com/docs/en/memory>
