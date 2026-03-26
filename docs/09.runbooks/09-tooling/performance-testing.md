@@ -52,5 +52,5 @@
 
 ## Related Documents
 
-- **Guide**: [Performance Testing Guide](../07.guides/09-tooling/performance-testing.md)
-- **Operation**: [Performance Testing Operations Policy](../08.operations/09-tooling/performance-testing.md)
+- **Guide**: [Performance Testing Guide](../../07.guides/09-tooling/performance-testing.md)
+- **Operation**: [Performance Testing Operations Policy](../../08.operations/09-tooling/performance-testing.md)

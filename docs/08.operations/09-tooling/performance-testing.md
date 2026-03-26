@@ -50,5 +50,5 @@
 
 ## Related Documents
 
-- **Guide**: [Performance Testing Guide](../07.guides/09-tooling/performance-testing.md)
-- **Runbook**: [Performance Testing Recovery Runbook](../09.runbooks/09-tooling/performance-testing.md)
+- **Guide**: [Performance Testing Guide](../../07.guides/09-tooling/performance-testing.md)
+- **Runbook**: [Performance Testing Recovery Runbook](../../09.runbooks/09-tooling/performance-testing.md)

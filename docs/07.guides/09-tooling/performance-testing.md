@@ -71,5 +71,5 @@ class WebsiteUser(HttpUser):
 
 ## Related Documents
 
-- **Operation**: [Performance Testing Operations Policy](../08.operations/09-tooling/performance-testing.md)
-- **Runbook**: [Performance Testing Recovery Runbook](../09.runbooks/09-tooling/performance-testing.md)
+- **Operation**: [Performance Testing Operations Policy](../../08.operations/09-tooling/performance-testing.md)
+- **Runbook**: [Performance Testing Recovery Runbook](../../09.runbooks/09-tooling/performance-testing.md)

@@ -23,9 +23,9 @@
 ## How to Work in This Area
 
 1. 모든 운영 정책은 `operation.template.md`를 준수해야 한다.
-2. 정책 변경 시 관련 런북([09.runbooks](../09.runbooks/08-ai/README.md))과의 정렬을 확인한다.
+2. 정책 변경 시 관련 런북([09.runbooks](../../09.runbooks/08-ai/README.md))과의 정렬을 확인한다.
 
 ## Related References
 
-- [07. Guides](../../docs/07.guides/08-ai/README.md) - Technical implementation details.
-- [09. Runbooks](../../docs/09.runbooks/08-ai/README.md) - Emergency procedures and tasks.
+- [07. Guides](../../07.guides/08-ai/README.md) - Technical implementation details.
+- [09. Runbooks](../../09.runbooks/08-ai/README.md) - Emergency procedures and tasks.

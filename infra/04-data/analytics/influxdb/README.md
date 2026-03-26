@@ -2,51 +2,55 @@
 
 > High-performance time series database for metrics and analytics.
 
-## 1. Context & Objective
+## Overview
 
-The `influxdb` service provides the time-series persistence layer for `hy-home.docker`. It is designed for storing granular performance metrics and observability data, supporting high-ingest rates and analytical queries via Flux/SQL.
+The `influxdb` service provides the time-series persistence layer for `hy-home.docker`. It is designed for storing granular performance metrics and observability data, supporting high-ingest rates and analytical queries via Flux/SQL. This implementation supports both InfluxDB 3.x (Core) and 2.x (Legacy) via conditional configurations.
 
-### Role
-- **Observability Backend**: Stores metrics from Telegraf and exporters.
-- **Analytics Engine**: Provides real-time data processing for dashboards.
+## Audience
 
-## 2. Requirements & Constraints
+이 README의 주요 독자:
 
-- **Engine**: InfluxDB 3.x (Clustered or Single-node configurations).
-- **Secrets**: API tokens and passwords MUST be managed via Docker secrets.
-- **Network**: Standard API port `8181` secured via Traefik.
+- Developers (Metrics integration)
+- Operators (Resource management)
+- AI Agents (Infrastructure discovery)
 
-## 3. Setup & Installation
+## Scope
 
-### Deployment
-```bash
-# Start the InfluxDB service
-docker compose up -d
+### In Scope
+
+- Time-series data persistence for observability.
+- Metrics ingestion via Telegraf, k6, and Locust.
+- Dashboarding data source for Grafana.
+- Management of InfluxDB buckets and retention policies.
+
+### Out of Scope
+
+- Long-term log storage (handled by Loki).
+- Object storage (handled by MinIO).
+- Real-time stream processing (handled by ksqlDB).
+
+## Structure
+
+```text
+influxdb/
+├── docker-compose.yml       # Primary Deployment (InfluxDB 3.x)
+├── docker-compose.v2.yml    # Legacy Deployment (InfluxDB 2.x)
+└── README.md                # This file
 ```
 
-### Verification
-```bash
-# Check service health
-curl -i http://influxdb:8181/health
-```
+## How to Work in This Area
 
-## 4. Usage & Integration
+1. Read the [InfluxDB System Guide](../../../docs/07.guides/04-data/analytics/influxdb.md) for architecture details.
+2. Follow the [Operations Policy](../../../docs/08.operations/04-data/analytics/influxdb.md) for data retention and security.
+3. In case of ingestion failures, refer to the [Recovery Runbook](../../../docs/09.runbooks/04-data/analytics/influxdb.md).
+4. All API tokens must be defined in `secrets/influxdb_api_token`.
 
-### Operational Status
-- **API Endpoint**: `influxdb:8181` / `https://influxdb.${DEFAULT_URL}`
-- **Persistence**: Data is mapped to `${DEFAULT_DATA_DIR}/influxdb/data`.
+## Related References
 
-### Integration Pointers
-- Consult the [Observability Guide](../../../docs/07.guides/06-observability/README.md) for data forwarding patterns.
-- Use `influx` CLI for bucket management and task scheduling.
-
-## 5. Maintenance & Safety
-
-### Data Integrity
-1. Retention policies MUST be defined to prevent storage saturation.
-2. Regularly monitor `influxdb-data` volume sizing.
-3. API tokens should have the minimal required scopes for each application.
+- **System Guide**: [docs/07.guides/04-data/analytics/influxdb.md](../../../docs/07.guides/04-data/analytics/influxdb.md)
+- **Operations**: [docs/08.operations/04-data/analytics/influxdb.md](../../../docs/08.operations/04-data/analytics/influxdb.md)
+- **Runbook**: [docs/09.runbooks/04-data/analytics/influxdb.md](../../../docs/09.runbooks/04-data/analytics/influxdb.md)
+- **Monitoring**: `https://grafana.${DEFAULT_URL}`
 
 ---
-
 Copyright (c) 2026. Licensed under the MIT License.

@@ -28,5 +28,5 @@
 
 ## Related Operational Documents
 
-- [Operations Policy](../../docs/08.operations/08-ai/README.md) - Resource management rules.
-- [Inference Guide](../../docs/07.guides/08-ai/ollama.md) - System context and details.
+- [Operations Policy](../../08.operations/08-ai/README.md) - Resource management rules.
+- [Inference Guide](../../07.guides/08-ai/ollama.md) - System context and details.

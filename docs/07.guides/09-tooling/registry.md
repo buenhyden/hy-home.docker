@@ -70,5 +70,5 @@ docker pull registry.hy-home.docker:5000/<project>/<image>:<tag>
 ## Related Documents
 
 - **Spec**: [infra/09-tooling/registry/README.md](../../../infra/09-tooling/registry/README.md)
-- **Operation**: [../08.operations/09-tooling/registry.md](../08.operations/09-tooling/registry.md)
-- **Runbook**: [../09.runbooks/09-tooling/registry.md](../09.runbooks/09-tooling/registry.md)
+- **Operation**: [../08.operations/09-tooling/registry.md](../../08.operations/09-tooling/registry.md)
+- **Runbook**: [../09.runbooks/09-tooling/registry.md](../../09.runbooks/09-tooling/registry.md)

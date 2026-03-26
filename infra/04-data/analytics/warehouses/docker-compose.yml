@@ -1,0 +1,78 @@
+x-tier-label: &tier-label
+  hy-home.tier: analytics
+
+volumes:
+  starrocks-fe-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/starrocks/fe
+  starrocks-be-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/starrocks/be
+
+services:
+  starrocks-fe:
+    profiles:
+      - data
+    labels:
+      <<: *tier-label
+    image: starrocks/fe-ubuntu:3.3.5
+    hostname: starrocks-fe
+    container_name: starrocks-fe
+    user: root
+    command: |
+      bash /opt/starrocks/fe/bin/start_fe.sh --host_type FQDN
+    ports:
+      - '9030:9030'
+      - '8030:8030'
+    volumes:
+      - starrocks-fe-data:/opt/starrocks/fe/meta:rw
+    networks:
+      - infra_net
+    healthcheck:
+      test: 'mysql -u root -h 127.0.0.1 -P 9030 -e "SHOW FRONTENDS\G" | grep "Alive: true"'
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  starrocks-be:
+    profiles:
+      - data
+    labels:
+      <<: *tier-label
+    image: starrocks/be-ubuntu:3.3.5
+    hostname: starrocks-be
+    container_name: starrocks-be
+    user: root
+    depends_on:
+      starrocks-fe:
+        condition: service_healthy
+    command:
+      - /bin/bash
+      - -c
+      - |
+        ulimit -n 65535;
+        mysql --connect-timeout 2 -h starrocks-fe -P 9030 -u root -e "ALTER SYSTEM ADD BACKEND \"starrocks-be:9050\";" || true
+        bash /opt/starrocks/be/bin/start_be.sh
+    ports:
+      - '8040:8040'
+    volumes:
+      - starrocks-be-data:/opt/starrocks/be/storage:rw
+    networks:
+      - infra_net
+    healthcheck:
+      test: 'mysql -u root -h starrocks-fe -P 9030 -e "SHOW BACKENDS\G" | grep "Alive: true"'
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+networks:
+  infra_net:
+    external: true

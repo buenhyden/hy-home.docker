@@ -15,8 +15,8 @@
 ## Canonical References
 
 - `[../02.ard/08-ai/llm-inference.md]` (TBD)
-- [Ollama Operations Policy](../08.operations/08-ai/ollama.md)
-- [Ollama System Guide](../07.guides/08-ai/ollama.md)
+- [Ollama Operations Policy](../../08.operations/08-ai/ollama.md)
+- [Ollama System Guide](../../07.guides/08-ai/ollama.md)
 
 ## When to Use
 

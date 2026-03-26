@@ -51,5 +51,5 @@ InfluxDB가 장애일 때 로컬에서 결과를 내려받아야 하는 경우:
 
 ## Related Documents
 
-- **Guide**: [Locust Load Testing Guide](../07.guides/09-tooling/locust.md)
-- **Operation**: [Locust Operations Policy](../08.operations/09-tooling/locust.md)
+- **Guide**: [Locust Load Testing Guide](../../07.guides/09-tooling/locust.md)
+- **Operation**: [Locust Operations Policy](../../08.operations/09-tooling/locust.md)

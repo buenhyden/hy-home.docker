@@ -20,6 +20,6 @@
 
 ## Related References
 
-- [infra/09-tooling/](../../infra/09-tooling/README.md) - Infrastructure tier overview.
-- [Operations Policy](../../docs/08.operations/09-tooling/README.md) - Maintenance and lifecycle governance.
-- [Tooling Runbook](../../docs/09.runbooks/09-tooling/README.md) - Incident response and recovery procedures.
+- [infra/09-tooling/](../../../infra/09-tooling/README.md) - Infrastructure tier overview.
+- [Operations Policy](../../08.operations/09-tooling/README.md) - Maintenance and lifecycle governance.
+- [Tooling Runbook](../../09.runbooks/09-tooling/README.md) - Incident response and recovery procedures.

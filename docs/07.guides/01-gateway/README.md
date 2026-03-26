@@ -43,8 +43,8 @@ This directory contains architectural guides, initial setup instructions, and ge
 ## Related Documents
 
 - [01-gateway Root README](../../../infra/01-gateway/README.md)
-- [Gateway Operations](../../../docs/08.operations/01-gateway/README.md)
-- [Gateway Runbooks](../../../docs/09.runbooks/01-gateway/README.md)
+- [Gateway Operations](../../08.operations/01-gateway/README.md)
+- [Gateway Runbooks](../../09.runbooks/01-gateway/README.md)
 
 ---
 

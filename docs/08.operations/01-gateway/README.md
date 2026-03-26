@@ -46,8 +46,8 @@ This directory defines the operational policies for the `01-gateway` tier. It re
 ## Related Documents
 
 - [01-gateway Root README](../../../infra/01-gateway/README.md)
-- [Gateway Runbooks](../../../docs/09.runbooks/01-gateway/README.md)
-- [Incident Records](../../../docs/10.incidents/README.md)
+- [Gateway Runbooks](../../09.runbooks/01-gateway/README.md)
+- [Incident Records](../../10.incidents/README.md)
 
 ---
 

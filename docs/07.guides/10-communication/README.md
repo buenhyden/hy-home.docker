@@ -24,8 +24,8 @@ Stalwart 메일 서버의 운영 설정, 보안 강화 작업, 그리고 MailHog
 
 ### Out of Scope
 
-- **Operations Policy**: 운영 정책은 [08.operations](../08.operations/10-communication/README.md)에서 관리합니다.
-- **Runbooks**: 긴급 대응 절차는 [09.runbooks](../09.runbooks/10-communication/README.md)에서 관리합니다.
+- **Operations Policy**: 운영 정책은 [08.operations](../../08.operations/10-communication/README.md)에서 관리합니다.
+- **Runbooks**: 긴급 대응 절차는 [09.runbooks](../../09.runbooks/10-communication/README.md)에서 관리합니다.
 
 ## Structure
 
@@ -43,8 +43,8 @@ Stalwart 메일 서버의 운영 설정, 보안 강화 작업, 그리고 MailHog
 ## Related References
 
 - **Infra Layer**: [infra/10-communication/mail/](../../../infra/10-communication/mail/README.md)
-- **Operation**: [08.operations/10-communication/mail.md](../08.operations/10-communication/mail.md)
-- **Runbook**: [09.runbooks/10-communication/mail.md](../09.runbooks/10-communication/mail.md)
+- **Operation**: [08.operations/10-communication/mail.md](../../08.operations/10-communication/mail.md)
+- **Runbook**: [09.runbooks/10-communication/mail.md](../../09.runbooks/10-communication/mail.md)
 
 ---
 

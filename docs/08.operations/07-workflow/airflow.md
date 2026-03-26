@@ -49,5 +49,5 @@
 
 ## Related Documents
 
-- **ARD**: [07-workflow Architecture](../../02.ard/07-workflow.md)
+- **ARD**: [07-workflow Architecture](../../02.ard/0007-workflow-architecture.md)
 - **Runbook**: [Airflow Recovery Runbook](../../09.runbooks/07-workflow/airflow.md)

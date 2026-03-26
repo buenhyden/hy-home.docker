@@ -18,10 +18,10 @@
 
 1. 새 가이드는 `guide.template.md`를 사용하여 작성한다.
 2. 시스템 전반의 아키텍처는 [ARD](../../docs/02.ard/README.md)를 참조한다.
-3. 운영 및 장애 대응은 각각 [08.operations](../08.operations/08-ai/README.md) 및 [09.runbooks](../09.runbooks/08-ai/README.md)를 참조한다.
+3. 운영 및 장애 대응은 각각 [08.operations](../../08.operations/08-ai/README.md) 및 [09.runbooks](../../09.runbooks/08-ai/README.md)를 참조한다.
 
 ## Related References
 
-- [infra/08-ai/](../../infra/08-ai/README.md) - Infrastructure tier overview.
-- [Operations Policy](../../docs/08.operations/08-ai/README.md) - Resource management.
-- [AI Runbook](../../docs/09.runbooks/08-ai/README.md) - Recovery procedures.
+- [infra/08-ai/](../../../infra/08-ai/README.md) - Infrastructure tier overview.
+- [Operations Policy](../../08.operations/08-ai/README.md) - Resource management.
+- [AI Runbook](../../09.runbooks/08-ai/README.md) - Recovery procedures.

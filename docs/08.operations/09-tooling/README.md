@@ -37,5 +37,5 @@
 
 ## Related Documents
 
-- [07. Guides](../../docs/07.guides/09-tooling/README.md)
-- [09. Runbooks](../../docs/09.runbooks/09-tooling/README.md)
+- [07. Guides](../../07.guides/09-tooling/README.md)
+- [09. Runbooks](../../09.runbooks/09-tooling/README.md)

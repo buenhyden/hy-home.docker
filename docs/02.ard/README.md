@@ -35,15 +35,10 @@
 
 ```text
 02.ard/
-├── 0001-gateway-architecture.md     # Gateway Tier 아키텍처
-├── 0002-auth-architecture.md        # Auth Tier 아키텍처
-├── 0003-security-architecture.md    # Security Tier 아키텍처
-├── 0004-data-architecture.md        # Data Tier 아키텍처
-├── 0005-messaging-architecture.md   # Messaging Tier 아키텍처
-├── 0006-observability-architecture.md # Observability Tier 아키텍처
-├── 0007-airflow-n8n-hybrid-workflow.md  # Workflow 티어 기술 스택 선택
-├── 0008-ollama-openwebui-local-ai.md    # AI 티어 기술 스택 선택
-└── README.md                        # This file
+├── 0010-communication-architecture.md
+├── 0011-laboratory-architecture.md
+├── 0012-data-analytics-architecture.md
+└── README.md
 ```
 
 ## How to Work in This Area

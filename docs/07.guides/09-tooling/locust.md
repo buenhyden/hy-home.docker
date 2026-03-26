@@ -68,5 +68,5 @@ class BenchmarkUser(HttpUser):
 ## Related Documents
 
 - **Infrastructure**: [Locust Infra Layer](../../../infra/09-tooling/locust/README.md)
-- **Operation**: [Locust Operations Policy](../08.operations/09-tooling/locust.md)
-- **Runbook**: [Locust Recovery Runbook](../09.runbooks/09-tooling/locust.md)
+- **Operation**: [Locust Operations Policy](../../08.operations/09-tooling/locust.md)
+- **Runbook**: [Locust Recovery Runbook](../../09.runbooks/09-tooling/locust.md)

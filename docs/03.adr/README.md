@@ -45,6 +45,8 @@
 ├── 0008-ai-services.md               # AI Tier 서비스 선정
 ├── 0009-tooling-services.md          # Tooling Tier 서비스 선정
 ├── 0010-communication-services.md     # Communication Tier 서비스 선정
+├── 0011-laboratory-services.md        # Laboratory Tier 서비스 선정
+├── 0015-analytics-engine-selection.md # Analytics Tier 서비스 선정
 └── README.md                            # This file
 ```
 

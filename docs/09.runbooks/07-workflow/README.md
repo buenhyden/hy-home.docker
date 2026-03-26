@@ -47,4 +47,4 @@
 
 - **Operations**: [Workflow Operations](../../08.operations/07-workflow/README.md)
 - **Incidents**: [Incident Records](../../10.incidents/README.md)
-- **Architecture**: [Workflow Architecture ARD](../../02.ard/07-workflow.md)
+- **Architecture**: [Workflow Architecture ARD](../../02.ard/0007-workflow-architecture.md)

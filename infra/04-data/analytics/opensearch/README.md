@@ -1,57 +1,47 @@
-<!-- [ID:04-data:opensearch] -->
+<!-- [ID:04-data:analytics:opensearch] -->
 # OpenSearch
-
 > Distributed search and analytics engine with Dashboards.
 
-## 1. Context & Objective (SSoT)
-
+## Overview
 The `opensearch` stack provides a scalable search backend for log aggregation, full-text search, and real-time visualization. It is designed for high-availability observability and analytical workloads.
 
-- **Status**: Production / Search
-- **SSoT Documentation**: [03.specialized-dbs.md](../../../docs/07.guides/04-data/03.specialized-dbs.md)
-- **Monitoring**: Prometheus integration via `os-exporter`.
+## Audience
+- Developers
+- Operators
+- AI Agents
 
-## 2. Requirements & Constraints
+## Scope
 
-- **Resources**: JVM Heap settings (default 1GB) must be monitored.
-- **Security**: Admin credentials managed via Docker secrets.
-- **Ports**:
-  - `9200`: Search API (HTTPS)
-  - `5601`: Dashboards UI
+### In Scope
+- Docker infrastructure for OpenSearch 2.18 and Dashboards 3.4.0.
+- Resource allocation (JVM Heap) and volume persistence.
+- Security configurations (Docker Secrets, HTTPS).
 
-## 3. Setup & Installation
+### Out of Scope
+- Detailed search query logic (see System Guide).
+- Index retention policies (see Operations Policy).
+- Node recovery procedures (see Runbook).
 
-The stack consists of the engine, visualization, and metric exporter.
-
-```bash
-docker compose up -d opensearch opensearch-dashboards
+## Structure
+```text
+opensearch/
+├── opensearch/             # Engine configuration
+├── opensearch-dashboards/  # Visualization configuration
+├── Dockerfile              # Custom build for security
+├── docker-compose.yml      # Standard stack
+└── README.md               # This file
 ```
 
-### Persistence
+## How to Work in This Area
+1. Read the [System Guide](../../../../docs/07.guides/04-data/analytics/opensearch.md) for architectural context.
+2. Check [Operations Policy](../../../../docs/08.operations/04-data/analytics/opensearch.md) for resource governance.
+3. Use the [Recovery Runbook](../../../../docs/09.runbooks/04-data/analytics/opensearch.md) for maintenance.
 
-- **Volume**: `opensearch-data` (`/usr/share/opensearch/data`)
-- **Host Path**: `${DEFAULT_DATA_DIR}/opensearch/opensearch1-data`
-
-## 4. Usage & Integration
-
-### Service Matrix
-
-| Service | Technology | Role |
-| :--- | :--- | :--- |
-| **opensearch** | OpenSearch 2.18 | Search Engine |
-| **os-dashboards** | OS Dashboards 3.4.0 | Visualization UI |
-| **os-exporter** | Prometheus Exporter | Metrics |
-
-### Integration Points
-- **API**: `https://opensearch:9200`
-- **Dashboards**: `https://opensearch-dashboard.${DEFAULT_URL}`
-- **Metrics**: `http://opensearch-exporter:9114/metrics`
-
-## 5. Maintenance & Safety
-
-- **Identity**: Security settings in `config/opensearch-security/` must be synchronized across nodes.
-- **Backups**: Use OpenSearch snapshots to S3 (MinIO) or local shared storage.
-- **Health**: Monitor cluster state via `/_cluster/health` (Healthy: green/yellow).
+## Related References
+- **System Guide**: [opensearch.md](../../../../docs/07.guides/04-data/analytics/opensearch.md)
+- **Operations Policy**: [opensearch.md](../../../../docs/08.operations/04-data/analytics/opensearch.md)
+- **Recovery Runbook**: [opensearch.md](../../../../docs/09.runbooks/04-data/analytics/opensearch.md)
+- **Monitoring**: `opensearch-exporter:9114/metrics`
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

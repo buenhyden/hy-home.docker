@@ -18,8 +18,8 @@
 
 ## Canonical References
 
-- **ARD**: [Communication Infrastructure](../../02.ard/10-communication.md) (If exists)
-- **Operation**: [Mail Operations Policy](../08.operations/10-communication/mail.md)
+- **ARD**: [Communication Infrastructure](../../02.ard/0010-communication-architecture.md) (If exists)
+- **Operation**: [Mail Operations Policy](../../08.operations/10-communication/mail.md)
 
 ## When to Use
 

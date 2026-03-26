@@ -39,6 +39,7 @@
 ├── 2026-03-26-02-auth.md       # Auth Tier 요구사항
 ├── 2026-03-26-03-security.md   # Security Tier 요구사항
 ├── 2026-03-26-04-data.md       # Data Tier 요구사항
+├── 2026-03-26-04-data-analytics.md # Analytics Tier 요구사항
 ├── 2026-03-26-05-messaging.md  # Messaging Tier 요구사항
 ├── 2026-03-26-06-observability.md # Observability Tier 요구사항
 ├── 2026-03-26-07-workflow.md    # Workflow Tier 요구사항

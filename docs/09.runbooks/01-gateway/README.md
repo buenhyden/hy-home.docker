@@ -41,8 +41,8 @@
 ## Related Documents
 
 - [01-gateway Root README](../../../infra/01-gateway/README.md)
-- [Gateway Operations](../../../docs/08.operations/01-gateway/README.md)
-- [Incident Records](../../../docs/10.incidents/README.md)
+- [Gateway Operations](../../08.operations/01-gateway/README.md)
+- [Incident Records](../../10.incidents/README.md)
 
 ## Verification and Monitoring
 

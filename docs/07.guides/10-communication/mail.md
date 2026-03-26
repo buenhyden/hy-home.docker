@@ -62,5 +62,5 @@
 
 ## Related Documents
 
-- **Operation**: [Mail Operations Policy](../08.operations/10-communication/mail.md)
-- **Runbook**: [Mail Recovery Runbook](../09.runbooks/10-communication/mail.md)
+- **Operation**: [Mail Operations Policy](../../08.operations/10-communication/mail.md)
+- **Runbook**: [Mail Recovery Runbook](../../09.runbooks/10-communication/mail.md)

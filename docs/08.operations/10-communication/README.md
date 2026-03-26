@@ -24,8 +24,8 @@
 
 ### Out of Scope
 
-- **Standard Guide**: 가용 가이드는 [07.guides](../07.guides/10-communication/README.md)에서 관리합니다.
-- **Step-by-step Runbooks**: 실행 지침은 [09.runbooks](../09.runbooks/10-communication/README.md)에서 관리합니다.
+- **Standard Guide**: 가용 가이드는 [07.guides](../../07.guides/10-communication/README.md)에서 관리합니다.
+- **Step-by-step Runbooks**: 실행 지침은 [09.runbooks](../../09.runbooks/10-communication/README.md)에서 관리합니다.
 
 ## Structure
 
@@ -43,8 +43,8 @@
 ## Related References
 
 - **Infra Layer**: [infra/10-communication/mail/](../../../infra/10-communication/mail/README.md)
-- **Guide**: [07.guides/10-communication/mail.md](../07.guides/10-communication/mail.md)
-- **Runbook**: [09.runbooks/10-communication/mail.md](../09.runbooks/10-communication/mail.md)
+- **Guide**: [07.guides/10-communication/mail.md](../../07.guides/10-communication/mail.md)
+- **Runbook**: [09.runbooks/10-communication/mail.md](../../09.runbooks/10-communication/mail.md)
 
 ---
 

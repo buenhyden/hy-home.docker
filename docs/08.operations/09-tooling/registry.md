@@ -51,4 +51,4 @@
 ## Related Documents
 
 - **ARD**: [infra/09-tooling/registry/README.md](../../../infra/09-tooling/registry/README.md)
-- **Runbook**: [../09.runbooks/09-tooling/registry.md](../09.runbooks/09-tooling/registry.md)
+- **Runbook**: [../09.runbooks/09-tooling/registry.md](../../09.runbooks/09-tooling/registry.md)

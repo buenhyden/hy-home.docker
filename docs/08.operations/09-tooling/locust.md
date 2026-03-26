@@ -43,5 +43,5 @@
 
 ## Related Documents
 
-- **Guide**: [Locust Load Testing Guide](../07.guides/09-tooling/locust.md)
-- **Runbook**: [Locust Recovery Runbook](../09.runbooks/09-tooling/locust.md)
+- **Guide**: [Locust Load Testing Guide](../../07.guides/09-tooling/locust.md)
+- **Runbook**: [Locust Recovery Runbook](../../09.runbooks/09-tooling/locust.md)

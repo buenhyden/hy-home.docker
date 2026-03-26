@@ -65,5 +65,5 @@ Alloy의 파이프라인은 다음과 같은 단계로 구성된다.
 ## Related Documents
 
 - **Documentation**: [infra/06-observability/alloy/README.md](../../../infra/06-observability/alloy/README.md)
-- **Operation**: [../08.operations/06-observability/alloy.md](../08.operations/06-observability/alloy.md)
-- **Runbook**: [../09.runbooks/06-observability/alloy.md](../09.runbooks/06-observability/alloy.md)
+- **Operation**: [../08.operations/06-observability/alloy.md](../../08.operations/06-observability/alloy.md)
+- **Runbook**: [../09.runbooks/06-observability/alloy.md](../../09.runbooks/06-observability/alloy.md)

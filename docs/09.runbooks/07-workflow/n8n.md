@@ -16,7 +16,7 @@
 
 ## Canonical References
 
-- ARD: [07-workflow Architecture](../../02.ard/07-workflow.md)
+- ARD: [07-workflow Architecture](../../02.ard/0007-workflow-architecture.md)
 - Guide: [n8n System Guide](../../07.guides/07-workflow/n8n.md)
 - Policy: [n8n Operations Policy](../../08.operations/07-workflow/n8n.md)
 

@@ -58,5 +58,5 @@ Terraform 작업이 'Pending' 상태에서 진행되지 않을 때.
 
 ## Related Operational Documents
 
-- [Operations Policy](../../docs/08.operations/09-tooling/README.md)
-- [IaC Automation Guide](../../docs/07.guides/09-tooling/01.iac-automation.md)
+- [Operations Policy](../../08.operations/09-tooling/README.md)
+- [IaC Automation Guide](../../07.guides/09-tooling/01.iac-automation.md)

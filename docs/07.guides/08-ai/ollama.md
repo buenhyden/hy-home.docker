@@ -71,7 +71,7 @@ curl http://localhost:11434/api/generate -d '{
 
 ## Common Pitfalls
 
-- **VRAM OOM**: 너무 큰 모델(70B+)을 로드할 경우 GPU 메모리 부족으로 서비스가 중단될 수 있다. [Operations Policy](../08.operations/08-ai/ollama.md)에 따라 적절한 양자화 모델을 선택해야 한다.
+- **VRAM OOM**: 너무 큰 모델(70B+)을 로드할 경우 GPU 메모리 부족으로 서비스가 중단될 수 있다. [Operations Policy](../../08.operations/08-ai/ollama.md)에 따라 적절한 양자화 모델을 선택해야 한다.
 - **SSO Authentication**: 외부에서 호출할 경우 Traefik의 SSO 미들웨어를 거치게 되므로, 내부 서비스 간 통신 시에는 `infra_net` 내부 도메인(`ollama:11434`)을 사용한다.
 
 ## Related Documents
@@ -79,4 +79,4 @@ curl http://localhost:11434/api/generate -d '{
 - **Spec**: `[../04.specs/08-ai/ollama-spec.md]` (TBD)
 - **Operation**: `[../08.operations/08-ai/ollama.md]`
 - **Runbook**: `[../09.runbooks/08-ai/ollama.md]`
-- **Infrastructure**: [infra/08-ai/ollama/](../../infra/08-ai/ollama/README.md)
+- **Infrastructure**: [infra/08-ai/ollama/](../../../infra/08-ai/ollama/README.md)

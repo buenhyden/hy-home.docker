@@ -45,5 +45,5 @@
 
 ## Related References
 
-- **ARD**: [Workflow Infrastructure ARD](../../02.ard/07-workflow.md)
+- **ARD**: [Workflow Infrastructure ARD](../../02.ard/0007-workflow-architecture.md)
 - **Runbook**: [Workflow Recovery Runbooks](../../09.runbooks/07-workflow/README.md)
