@@ -1,16 +1,51 @@
 <!-- [ID:docs:08:communication:root] -->
-# 🔐 Communication Operations Policy
+# 🔐 Communication Operations Policies
 
-메일 인프라의 안정성과 보안을 유지하기 위한 운영 정책입니다.
+> 이 폴더는 메일 인프라 및 통신 자산의 운영 정책과 거버넌스를 관리합니다.
 
-## 1. 보안 정책
-- **SPF/DKIM/DMARC**: 모든 발신 도메인은 필수적으로 해당 레코드를 DNS에 유지해야 합니다.
-- **TLS 강제**: SMTP Submission(587) 및 IMAPS(993)는 반드시 암호화된 연결을 사용해야 합니다.
+## Overview
 
-## 2. 계정 및 패스워드 관리
-- 관리자 계정 패스워드는 Docker Secrets를 통해 주기적으로 갱신합니다.
-- 불필요한 메일박스 생성을 제한하고 정기적으로 휴면 계정을 정리합니다.
+`10-communication` 티어의 가용성, 보안, 데이터 무결성을 보장하기 위한 정책 기준을 수립합니다.
 
-## 3. 백업 및 모니터링
-- `/opt/stalwart` 가 탑재된 볼륨 데이터는 일 단위로 백업해야 합니다.
-- SMTP 큐의 적체 상태를 모니터링하여 평소보다 높은 발송 지연 발생 시 원인을 파악합니다.
+## Audience
+
+이 README의 주요 독자:
+
+- Operators
+- Security Officers
+- AI Agents
+
+## Scope
+
+### In Scope
+
+- **Operations Policy**: [Mail Operations Policy](./mail.md)
+- **Security Standards**: SPF/DKIM/DMARC 설정 및 인증 정책.
+
+### Out of Scope
+
+- **Standard Guide**: 가용 가이드는 [07.guides](../07.guides/10-communication/README.md)에서 관리합니다.
+- **Step-by-step Runbooks**: 실행 지침은 [09.runbooks](../09.runbooks/10-communication/README.md)에서 관리합니다.
+
+## Structure
+
+```text
+10-communication/
+├── mail.md            # [Operations Policy] Mail Infrastructure Security & Governance
+└── README.md          # This file
+```
+
+## How to Work in This Area
+
+1. 새로운 운영 정책 수립 시 [operation.template.md](../../99.templates/operation.template.md)를 사용합니다.
+2. 보안 정책 변경 시 반드시 관련 인프라 설정과 함께 갱신되어야 합니다.
+
+## Related References
+
+- **Infra Layer**: [infra/10-communication/mail/](../../../infra/10-communication/mail/README.md)
+- **Guide**: [07.guides/10-communication/mail.md](../07.guides/10-communication/mail.md)
+- **Runbook**: [09.runbooks/10-communication/mail.md](../09.runbooks/10-communication/mail.md)
+
+---
+
+Copyright (c) 2026. Licensed under the MIT License.

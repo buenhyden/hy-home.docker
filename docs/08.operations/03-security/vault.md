@@ -1,51 +1,51 @@
 # Vault Operations Policy
 
-> Operational and security policies for the Vault authentication and secrets management layer.
+> Operational and security policies for the Vault authentication and secrets management layer in `hy-home.docker`.
 
 ---
 
 ## Overview (KR)
 
-이 문서는 `hy-home.docker` 플랫폼의 보안 심장부인 Vault의 운영 정책을 정의한다. Unseal Key의 관리 체계, 토큰 수명(TTL), 그리고 보안 감사(Audit Logging) 절차를 포함하여 시스템의 무결성을 보장한다.
+이 문서는 `hy-home.docker` 플랫폼의 보안 심장부인 Vault의 운영 정책을 정의한다. Unseal Key의 관리 체계, 토큰 수명(TTL), 그리고 보안 감사(Audit Logging) 절차를 규정하여 시스템의 무결성과 기밀성을 보장한다.
 
-## Policy Type
+## Policy Scope
 
-`security-policy | operational-standard`
+Vault 서버(`vault`) 및 에이전트(`vault-agent`)의 런타임 보안 설정, 인증 방식(AppRole, OIDC), 그리고 비밀 보관 주기를 규정한다.
 
-## Target Audience
+## Applies To
 
-- Security Administrators
-- SRE / Platform Engineers
-- Compliance Auditors
+- **Systems**: Vault Raft Cluster, Vault Agent Sidecars
+- **Agents**: AI Agents (Automated unsealing & monitoring)
+- **Environments**: Production (Strict), Staging (Standard)
 
-## Service SLOs
+## Controls
 
-- **Availability**: 99.99% (Raft Cluster 가용성 유지)
-- **Data Integrity**: Zero data loss (Raft 스냅샷 및 분산 합의 보장)
+- **Required**:
+  - 초기화 시 생성된 5개의 Unseal 키는 독립된 3명 이상의 관리자 또는 보안 스토리지에 분산 보관해야 함.
+  - 모든 Vault API 요청은 `/vault/logs/audit.log`에 JSON 형태로 기록되어야 함.
+- **Allowed**:
+  - 내부망(`infra_net`)에서의 HTTP(L7) 통신 (Traefik이 외부 TLS 종료).
+  - AppRole을 통한 애플리케이션 서비스의 자동 인증 및 토큰 갱신.
+- **Disallowed**:
+  - Root Token의 운영 환경 상시 보관 및 사용 (부트스트래핑 후 즉시 파기 권고).
+  - Unseal 키의 일반 텍스트 파일 저장 또는 Git 저장소 포함.
 
-## Operational Procedures
+## Exceptions
 
-### 1. Unseal Key Management
-- **Key Division**: 초기화 시 생성된 5개의 Unseal 키는 서로 다른 관리자(또는 독립된 보안 스토리지)에 분산 보관해야 함.
-- **Quorum**: Vault 기동 시 최소 3개의 키가 제공되어야 봉인이 해제됨.
-- **Rotation**: 정기적인 운영 점검 시 Unseal 키의 상태를 확인하고 필요 시 리키(Rekey) 수행.
+- 초기 구축 및 복구 단계에서의 임시 Root Token 사용 (SRE 파트장 승인 필요).
+- 테스트용 Dev 모드 Vault 실행 (운영 데이터 접근 금지).
 
-### 2. Token & AppRole TTL Policy
-- **Root Token**: 초기 부트스트래핑 완료 후 즉시 파기하거나 엄격히 격리함.
-- **AppRole**: 애플리케이션용 AppRole의 토큰 TTL은 최대 24시간을 초과할 수 없으며, 자동 갱신(Renewable) 정책을 적용함.
-- **User Token**: OIDC를 통해 발급된 유저 토크느은 1시간 단위로 갱신을 요구함.
+## Verification
 
-### 3. Audit Logging Strategy
-- **File Audit**: 모든 Vault API 요청은 `/vault/logs/audit.log`에 JSON 형태로 기록됨.
-- **Integrity**: 감사 로그는 수정 불가능한 상태로 보관되어야 하며, 외부 SIEM 또는 중앙 로그 시스템으로 즉시 전송됨.
+- `vault audit list` 명령을 통해 감사 로그 활성화 상태를 매월 점검함.
+- `vault token lookup`을 통해 AppRole 토큰의 TTL 준수 여부를 확인함.
 
-## Security Controls
+## Review Cadence
 
-- **Encryption at Rest**: 모든 데이터는 Raft 스토리지에 암호화되어 저장됨.
-- **Network Isolation**: Vault API는 내부망(`infra_net`)에서만 직접 접근이 가능하며, 외부는 Traefik의 Strict TLS를 통해서만 허용됨.
+- **Quarterly**: 실무자 권한 복기 및 Unseal 키 보관 상태 점검.
 
 ## Related Documents
 
-- **Guide**: `[../../07.guides/03-security/vault.md]`
-- **Runbook**: `[../../09.runbooks/03-security/vault.md]`
-- **Spec**: `[../../04.specs/03-security/spec.md]`
+- **ARD**: [spec.md](../../04.specs/03-security/spec.md)
+- **Runbook**: [vault.md](../../09.runbooks/03-security/vault.md)
+- **Guide**: [vault.md](../../07.guides/03-security/vault.md)

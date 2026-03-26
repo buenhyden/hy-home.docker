@@ -1,23 +1,51 @@
 <!-- [ID:docs:09:communication:root] -->
-# 🆘 Communication Recovery Runbook
+# 🆘 Communication Recovery Runbooks
 
-메일 서비스 장애 시 대응 절차를 안내합니다.
+> 이 폴더는 메일 서비스 및 통신 장애 시 즉각적으로 대응하여 서비스를 복구하기 위한 단계별 실행 지침(Runbooks)을 관리합니다.
 
-## 1. 메일 발송/수신 실패
-- **증상**: 앱에서 메일 발송 시 에러 발생 또는 수신 지연.
-- **조치**:
-  1. `docker logs stalwart` 명령으로 SMTP 로그 확인.
-  2. 스팸 필터 레이팅에 의한 차단 여부 검토.
-  3. 포트 25가 ISP 등에 의해 차단되었는지 확인 (`telnet` 등 이용).
+## Overview
 
-## 2. Stalwart 서비스 불능
-- **증상**: UI 접속 불가 및 모든 메일 프로토콜 응답 없음.
-- **조치**:
-  1. 컨테이너 상태 확인: `docker ps | grep stalwart`
-  2. 재시작 시도: `docker-compose restart stalwart`
-  3. 데이터 볼륨 권한 이슈 확인.
+Stalwart 메일 서버의 중단, 메일 수신 불능, SMTP 전송 지연 등 운영 중 발생할 수 있는 주요 장애 시나리오에 대한 복구 절차를 포함합니다.
 
-## 3. MailHog 큐 포화
-- **증상**: MailHog UI가 매우 느리거나 메일 캡처가 누락됨.
-- **조치**:
-  - MailHog는 인메모리 저장소를 사용하므로 컨테이너를 재시작하여 메모리를 비웁니다.
+## Audience
+
+이 README의 주요 독자:
+
+- Operators
+- Incident Responders
+- AI Agents
+
+## Scope
+
+### In Scope
+
+- **Runbook**: [Mail Recovery Runbook](./mail.md)
+- **Troubleshooting**: 서비스 재시작, 로그 분석, 인증서 전파 점검 지침.
+
+### Out of Scope
+
+- **Standard Guide**: 가용 가이드는 [07.guides](../07.guides/10-communication/README.md)에서 관리합니다.
+- **Operations Policy**: 운영 정책은 [08.operations](../08.operations/10-communication/README.md)에서 관리합니다.
+
+## Structure
+
+```text
+10-communication/
+├── mail.md            # [Runbook] Mail Service Recovery (Stalwart, MailHog)
+└── README.md          # This file
+```
+
+## How to Work in This Area
+
+1. 장애 발생 시 [Mail Recovery Runbook](./mail.md)의 체크리스트를 즉시 확인합니다.
+2. 런북 작성 시 [runbook.template.md](../../99.templates/runbook.template.md)를 준수합니다.
+
+## Related References
+
+- **Infra Layer**: [infra/10-communication/mail/](../../../infra/10-communication/mail/README.md)
+- **Guide**: [07.guides/10-communication/mail.md](../07.guides/10-communication/mail.md)
+- **Operation**: [08.operations/10-communication/mail.md](../08.operations/10-communication/mail.md)
+
+---
+
+Copyright (c) 2026. Licensed under the MIT License.

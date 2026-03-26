@@ -19,21 +19,19 @@
 
 ## When to Use
 
-- Portainer 관리자 비밀번호 망실 시.
-- Homer 대시보드 설정 파일(YAML) 오류로 페이지가 깨진 경우.
-- RedisInsight 연결 설정 초기화가 필요한 경우.
+- [Portainer Runbook](./portainer.md): 관리자 비밀번호 망실 시.
+- [RedisInsight Runbook](./redisinsight.md): 연결 설정 초기화가 필요한 경우.
+- [Homer Dashboard](./dashboard.md) 설정 파일(YAML) 오류로 페이지가 깨진 경우.
 
 ## Procedure or Checklist
 
 ### Portainer Admin Reset
-1. Portainer 컨테이너를 중단한다: `docker compose down`
-2. `portainer-password-reset` 도구 또는 `helper` 이미지를 사용하여 볼륨 내 데이터베이스를 수정한다.
-3. 컨테이너를 다시 시작한다.
+
+1. [Portainer Runbook](./portainer.md)을 참고하여 복구 절차를 수행한다.
 
 ### Homer Configuration Recovery
-1. 이전에 백업된 `config.yml.bak`이 있는지 확인한다.
-2. 구문 오류 발생 시 `ymllint`를 사용하여 오류 위치를 찾는다.
-3. 기본 템플릿으로 복원 후 설정을 하나씩 재적용한다.
+
+1. [Dashboard Runbook](./dashboard.md)을 참고하여 복구 절차를 수행한다.
 
 ## Verification Steps
 
@@ -49,4 +47,7 @@
 
 ## Related Operational Documents
 
+- **Portainer Runbook**: `[./portainer.md]`
+- **RedisInsight Runbook**: `[./redisinsight.md]`
+- **Dashboard Runbook**: `[./dashboard.md]`
 - **Postmortem**: `[../../11.postmortems/2026/03-26-homer-config-corruption.md]` (가상 예시)

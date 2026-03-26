@@ -20,9 +20,9 @@
 
 ## Purpose
 
-- Portainer를 통한 컨테이너 리소스 관리 최적화.
-- RedisInsight를 활용한 데이터 분석 및 스트림 모니터링 활성화.
-- Homer 대시보드를 통한 직관적인 서비스 네비게이션 구축.
+- [Portainer Guide](./portainer.md): Docker environment and container management.
+- [RedisInsight Guide](./redisinsight.md): Redis visualization and analysis.
+- [Homer Dashboard](./dashboard.md)를 통한 직관적인 서비스 네비게이션 구축.
 
 ## Prerequisites
 
@@ -31,21 +31,12 @@
 
 ## Step-by-step Instructions
 
-### 1. Adding New Services to Homer
-1. `infra/11-laboratory/dashboard/config/config.yml` 파일을 연다.
-2. `services` 섹션에 새로운 그룹 또는 아이템을 추가한다:
-   ```yaml
-   - name: "My New Service"
-     icon: "fas fa-server"
-     url: "https://newservice.home.local"
-   ```
-3. 변경 사항을 저장하면 Homer 컨테이너가 볼륨 바인딩을 통해 자동으로 반영한다.
+1. [Portainer Guide](./portainer.md)를 참고하여 컨테이너 환경을 연결한다.
+2. [Dashboard Guide](./dashboard.md)를 참고하여 `config.yml` 파일을 수정한다.
 
 ### 2. Monitoring Redis with RedisInsight
-1. 브라우저에서 `redisinsight.${DEFAULT_URL}`에 접속한다.
-2. 'Add Redis Database'를 클릭한다.
-3. 호스트명(예: `redis` 또는 IP), 포트(6379)를 입력하고 연결을 저장한다.
-4. 'Key Analyzer'를 실행하여 메모리 사용량을 분석한다.
+
+1. [RedisInsight Guide](./redisinsight.md)를 참고하여 데이터베이스를 연결하고 분석한다.
 
 ## Common Pitfalls
 
@@ -55,5 +46,8 @@
 ## Related Documents
 
 - **Implementation**: `[../../../infra/11-laboratory/README.md]`
+- **Portainer Guide**: `[./portainer.md]`
+- **RedisInsight Guide**: `[./redisinsight.md]`
+- **Dashboard Guide**: `[./dashboard.md]`
 - **Operation**: `[../../08.operations/11-laboratory/README.md]`
 - **Runbook**: `[../../09.runbooks/11-laboratory/README.md]`

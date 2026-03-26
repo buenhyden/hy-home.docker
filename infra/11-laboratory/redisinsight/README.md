@@ -1,28 +1,69 @@
-# RedisInsight
+# Laboratory RedisInsight
 
 > Redis visualization, analysis, and management tool.
 
 ## Overview
 
-RedisInsight는 Redis 데이터베이스의 키-값 조회, 스트림 분석, 메모리 프로파일링을 제공하는 GUI 도구다. `admin` 프로필을 사용하여 관리 환경에서 로드된다.
+RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, and manage your Redis data. It provides features like key browsing, memory profiling, and real-time monitoring.
 
-## Implementation Details
+## Audience
 
-| Category   | Technology   | Notes |
-| ---------- | ------------ | ----- |
-| Image      | redis/redisinsight:3.0.3 | |
-| Profile    | admin        | |
-| Storage    | ${DEFAULT_MANAGEMENT_DIR}/redisinsight | Saved connections and settings |
+- **Operators**: Monitoring Redis health and memory usage.
+- **Developers**: Analyzing data structures and debugging application state.
+- **Data Engineers**: Profiling Redis performance and identifying bottlenecks.
 
-## Configuration
+## Scope
 
-### Environment Variables
+- **Included**: Redis key browsing, stream analysis, memory profiling, and CLI access via web UI.
+- **Excluded**: Direct Redis server OS management, hardware-level performance tuning.
 
-| Variable | Required | Description |
-| -------- | -------- | ----------- |
-| `REDIS_INSIGHT_PORT` | No | Default: 5540 |
+## Structure
 
-## Related References
+```text
+.
+├── docker-compose.yml       # Service definition
+└── README.md                # Entry point
+```
 
-- **Guide**: [Redis Analysis Guide](../../../docs/07.guides/11-laboratory/README.md#using-redisinsight)
-- **Tier**: [11-laboratory](../README.md)
+## How to Work
+
+### 1. Initial Setup
+1. Deploy the stack: `docker compose up -d`.
+2. Access `https://redisinsight.${DEFAULT_URL}`.
+3. Accept the EULA and set up your initial connection to a Redis instance.
+
+### 2. Basic Usage
+- Add a new database by providing the hostname (e.g., `redis` for local containers) and port (6379).
+- Use the 'Browser' tab to explore keys and values.
+- Use 'Memory Analysis' to find memory-intensive keys.
+
+## Implementation Snippet
+
+### Service Configuration
+
+| Category | Technology | Notes |
+| :--- | :--- | :--- |
+| Image | `redis/redisinsight:3.0.3` | Specific stable version |
+| Port | `5540` (Internal) | Managed by Traefik |
+| Storage | `redisinsight_data` | Persistent volume for connections |
+
+### Traefik Integration
+
+```yaml
+labels:
+  traefik.enable: 'true'
+  traefik.http.routers.redisinsight.rule: Host(`redisinsight.${DEFAULT_URL}`)
+  traefik.http.routers.redisinsight.middlewares: sso-auth@file
+```
+
+## Available Scripts
+
+- `docker compose up -d`: Start the service.
+- `docker compose down`: Stop the service.
+- `docker compose logs -f`: View service logs.
+
+## Related Documentation
+
+- **System Guide**: [RedisInsight Guide](../../../docs/07.guides/11-laboratory/redisinsight.md)
+- **Operations Policy**: [RedisInsight Operations](../../../docs/08.operations/11-laboratory/redisinsight.md)
+- **Runbook**: [RedisInsight Runbook](../../../docs/09.runbooks/11-laboratory/redisinsight.md)

@@ -1,28 +1,68 @@
-# Portainer
+# Laboratory Portainer
 
 > Docker environment management and container orchestration UI.
 
 ## Overview
 
-Portainer는 Docker 호스트와 컨테이너 리소스를 웹 인터페이스를 통해 관리할 수 있게 해주는 도구다. `/var/run/docker.sock`에 접근하여 실시간 모니터링 및 관리를 수행한다.
+Portainer is a lightweight management UI which allows you to easily manage your different Docker environments (Docker hosts or Swarm clusters). It provides a high-level overview of your containers, images, networks, and volumes.
 
-## Implementation Details
+## Audience
 
-| Category   | Technology | Notes |
-| ---------- | ---------- | ----- |
-| Image      | portainer/portainer-ce:sts | Latest Short Term Support version |
-| Port       | 9443 (Internal) | Exposed via Traefik |
-| Storage    | ${DEFAULT_MANAGEMENT_DIR}/portainer | Persistent data for users/configs |
+- **Operators**: Managing local and remote Docker environments.
+- **Developers**: Monitoring container logs and performance.
+- **SREs**: Ensuring resource isolation and security compliance.
 
-## Configuration
+## Scope
 
-### Labels & Traefik
+- **Included**: Local Docker socket management, stack deployments, volume/network administration.
+- **Excluded**: Direct host-level OS management, underlying hardware monitoring.
 
-- **Rule**: `portainer.${DEFAULT_URL}`
-- **Auth**: `sso-auth@file` 미들웨어 적용 필수.
-- **TLS**: Enabled.
+## Structure
 
-## Related References
+```text
+.
+├── docker-compose.yml       # Service definition
+└── README.md                # Entry point
+```
 
-- **Runbook**: [Resetting Portainer Admin](../../../docs/09.runbooks/11-laboratory/README.md#resetting-portainer-admin)
-- **Official Docs**: [Portainer Documentation](https://docs.portainer.io/)
+## How to Work
+
+### 1. Initial Setup
+1. Deploy the stack: `docker compose up -d`.
+2. Access `https://portainer.${DEFAULT_URL}`.
+3. Set the initial admin password.
+
+### 2. Environment Management
+- Use the local endpoint to manage containers on the current host.
+- Add remote agents for multi-host management.
+
+## Implementation Snippet
+
+### Service Configuration
+
+| Category | Technology | Notes |
+| :--- | :--- | :--- |
+| Image | `portainer/portainer-ce:sts` | Short Term Support version |
+| Port | `9443` (Internal) | Managed by Traefik |
+| Storage | `portainer_data` | Persistent volume for config |
+
+### Traefik Integration
+
+```yaml
+labels:
+  traefik.enable: 'true'
+  traefik.http.routers.portainer.rule: Host(`portainer.${DEFAULT_URL}`)
+  traefik.http.routers.portainer.middlewares: sso-auth@file
+```
+
+## Available Scripts
+
+- `docker compose up -d`: Start the service.
+- `docker compose down`: Stop the service.
+- `docker compose logs -f`: View service logs.
+
+## Related Documentation
+
+- **System Guide**: [Portainer Guide](../../../docs/07.guides/11-laboratory/portainer.md)
+- **Operations Policy**: [Portainer Operations](../../../docs/08.operations/11-laboratory/portainer.md)
+- **Runbook**: [Portainer Runbook](../../../docs/09.runbooks/11-laboratory/portainer.md)

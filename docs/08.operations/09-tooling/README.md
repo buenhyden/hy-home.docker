@@ -15,13 +15,20 @@
 
 ### 1. 성능 및 리소스 관리
 
-- **Locust Benchmarking**: 대규모 부스트 테스트는 공식 유지보수 시간(Maintenance Window) 내에 수행하는 것을 원칙으로 한다.
+- [Performance Testing Operations Policy](./performance-testing.md) - General benchmarking and scaling policies.
+- [Locust Operations Policy](./locust.md) - Specific governance for Locust service units.
+- [k6 Operations Policy](./k6.md) - Specific governance for k6 infrastructure units.
+- [Registry Operations Policy](./registry.md) - Governance for internal OCI image distribution.
+- [SonarQube Operations Policy](./sonarqube.md) - Governance for code quality and security scanning.
+- [07. Syncthing Operations](./syncthing.md) - P2P sync integrity and conflict management.
+- [08. Terraform Operations](./terraform.md) - IaC state policy and deployment workflow.
+- [09. Terrakube Operations](./terrakube.md) - Collaborative IaC governance and registry policy.chronization.
 - **Memory Limits**: SonarQube는 높은 메모리 할당을 요구하므로, `common-optimizations.yml`의 `high` 최적화 템플릿을 준수한다.
 
 ### 2. 접근 제어 (Access Control)
 
 - 모든 도구(SonarQube, Terrakube)는 Keycloak SSO를 기반으로 한 RBAC 정책을 적용한다.
-- `registry`는 개인 토큰(PAT) 또는 기본 인증을 통해 엄격히 관리한다.
+- `registry`는 [Registry Operations Policy](./registry.md)에 따라 내부 네트워크에서 관리한다.
 
 ## Database & Persistence
 
