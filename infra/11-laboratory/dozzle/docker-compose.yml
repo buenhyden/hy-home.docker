@@ -1,0 +1,35 @@
+x-tier-label: &tier-label
+  hy-home.tier: admin
+
+volumes:
+  dozzle-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MANAGEMENT_DIR}/dozzle
+
+services:
+  dozzle:
+    profiles:
+      - admin
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
+    container_name: dozzle
+    image: amir20/dozzle:v10.2.0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - dozzle-data:/data
+    expose:
+      - ${DOZZLE_PORT:-8080}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.dozzle.rule: Host(`dozzle.${DEFAULT_URL}`)
+      traefik.http.routers.dozzle.entrypoints: websecure
+      traefik.http.routers.dozzle.tls: 'true'
+      traefik.http.routers.dozzle.middlewares: sso-errors@file,sso-auth@file
+      traefik.http.services.dozzle.loadbalancer.server.port: ${DOZZLE_PORT:-8080}
+    networks:
+      - infra_net

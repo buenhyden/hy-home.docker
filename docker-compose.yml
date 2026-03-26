@@ -206,4 +206,8 @@ include:
   - infra/09-tooling/terraform/docker-compose.yml
   # - infra/09-tooling/terrakube/docker-compose.yml
   # - infra/10-communication/mail/docker-compose.yml
+  # - infra/11-laboratory/dashboard/docker-compose.yml
+  - infra/11-laboratory/dozzle/docker-compose.yml
+  # - infra/11-laboratory/portainer/docker-compose.yml
   - infra/11-laboratory/redisinsight/docker-compose.yml
+
