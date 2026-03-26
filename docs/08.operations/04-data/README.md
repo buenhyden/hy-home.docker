@@ -1,64 +1,46 @@
 # Data Operations Policy (04-data)
 
-> Governance for Persistence, Backup, and Security (04-data)
+> Persistence, Backup, and Security (04-data) 운영 정책
 
-## 1. Context & Objective
+## Overview
 
-This policy defines the operational standards and data protection requirements for the `hy-home.docker` data infrastructure layer (04-data). Our goal is to ensure maximum durability, availability, and security for all persistent workloads.
+이 디렉터리는 `hy-home.docker` 데이터 인프라 계층(04-data)의 운영 표준 및 데이터 보호 요구 사항을 정의합니다. 모든 서비스의 지속성, 가용성 및 보안을 보장하는 것이 목적입니다.
 
-- **Primary Goal**: Zero data loss for core databases.
-- **Availability Target**: 99.9% uptime for HA clusters.
-- **Security Mandate**: End-to-end encryption and secret management.
+## Audience
 
-## 2. Infrastructure Standards
+이 README의 주요 독자:
 
-### 2.1 Persistence Hierarchy
+- 운영 정책을 수립하는 **Operators**
+- 보안 통제를 적용하는 **Security Engineers**
+- 정책 준수 여부를 확인하는 **AI Agents**
 
-All persistent data must be stored within the standardized `${DEFAULT_DATA_DIR}` hierarchy, isolated by service name.
+## Scope
 
-- **High-Performance (SSD)**: PostgreSQL, OpenSearch, and Qdrant must utilize direct host SSD mounts.
-- **Distributed (HDD/Hybrid)**: SeaweedFS and Cassandra may utilize larger volume mounts.
+### In Scope
 
-### 2.2 Volume Isolation
+- 데이터 저장 표준 및 볼륨 격리 정책
+- 백업 전략 및 보관 기간
+- 보안 및 규정 준수 통제
 
-Docker volumes must be named following the pattern `${SERVICE_NAME}-data` to ensure clear mapping during migration or backup.
+## Structure
 
-## 3. Maintenance & Safety
+```text
+04-data/
+├── backup-policy.md
+├── valkey-cluster.md     # Valkey Cluster 운영 정책
+└── README.md
+```
 
-### 3.1 Backup Strategy
+## How to Work in This Area
 
-- **SQL (PostgreSQL)**: Daily logical dumps (`pg_dump`) at 03:00 KST, complemented by weekly physical snapshots.
-- **NoSQL & Object Storage**: Incremental snapshots or integrated replication jobs.
-- **Retention**: Minimum 30-day retention period for all production database backups.
+1. 전역 시스템 운영 원칙은 [Operations](../../08.operations/README.md) 메인 페이지를 참조합니다.
+2. 각 데이터 서비스별 개별 정책은 이 디렉터리의 개별 문서를 따릅니다.
+3. 정책 변경 시 아키텍처 팀의 승인이 필요합니다.
 
-### 3.2 Secret Management
+## Related References
 
-Database credentials must **NEVER** be exposed as plain-text environment variables. Use Docker secrets or Vault integration provided by the `03-security` tier.
-
-## 4. Operational Procedures
-
-### Health Monitoring
-
-Infrastructure monitoring (Prometheus/Grafana) must track:
-
-- **Disk Usage**: Alert at 80% capacity.
-- **IOPS/Latency**: Detect storage bottlenecks early.
-- **Replication Lag**: Monitor HA clusters for consistency synchronization.
-
-### Scaling & Migration
-
-Vertical scaling (Resource limits) should be performed during maintenance windows. Horizontal scaling (Clustering) is the preferred method for increasing throughput.
-
-## 5. Security & Compliance
-
-- **Encryption at Rest**: Mandatory for PII and sensitive application data.
-- **TLS 1.3**: Required for all internal and external data traffic.
-- **Audit Logging**: Enable access logs for administrative operations on core databases.
-
-## 6. Related Documentation
-
-- [Technical Guides](../../07.guides/04-data/README.md)
-- [Recovery Runbooks](../../09.runbooks/04-data/README.md)
+- **Guides**: [Technical Guides](../../07.guides/04-data/README.md)
+- **Runbooks**: [Recovery Runbooks](../../09.runbooks/04-data/README.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

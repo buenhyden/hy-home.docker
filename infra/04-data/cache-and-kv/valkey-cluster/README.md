@@ -1,66 +1,80 @@
 # Valkey Distributed Cluster
 
-> High-performance, 6-node distributed cache cluster (Redis-compatible).
+> 고성능, 6노드 분산 캐시 클러스터 (Redis 호환 가능)
 
-## 1. Context & Objective
+## Overview
 
-The `valkey-cluster` provides a high-throughput, low-latency caching and state storage layer for the `hy-home.docker` ecosystem. It is engineered for automatic partitioning and high availability.
+`valkey-cluster`는 `hy-home.docker` 에코시스템을 위한 고처리량, 저지연 캐싱 및 상태 저장소 계층을 제공합니다. 3개의 프라이머리 노드와 3개의 복제본(Replica) 노드로 구성되어 자동 파티셔닝과 고가용성을 보장하도록 설계되었습니다.
 
-### Topology
+## Audience
 
-- **Structure**: 6 nodes total (3 Primaries + 3 Replicas).
-- **Partitioning**: Automated hash slot distribution (16384 slots).
+이 README의 주요 독자:
 
-## 2. Requirements & Constraints
+- 인프라를 배포하고 관리하는 **Operators**
+- 클러스터와 연결되는 서비스를 개발하는 **Developers**
+- 자동화된 운영 작업을 수행하는 **AI Agents**
 
-- **Compatibility**: Fully compatible with the Redis protocol.
-- **Failover**: Supports automatic master-to-replica promotion.
-- **Scaling**: Adding or removing nodes requires manual `rebalance` operations.
-- **Resources**: Key evictions may occur if memory limits are exceeded.
+## Scope
 
-## 3. Setup & Installation
+### In Scope
 
-### Deployment
+- 6노드 Valkey 클러스터 구성 및 관리
+- Docker Compose 기반 배포 및 헬스체크
+- 클러스터 초기화 및 상태 검증 스크립트
 
-```bash
-# Start the cluster nodes
-docker compose up -d
+### Out of Scope
+
+- 클러스터 외부의 개별 Valkey 인스턴스 (`mng-valkey`)
+- 애플리케이션 레벨의 데이터 모델링 설계
+- 다중 리전 복제 및 재해 복구 구성
+
+## Structure
+
+```text
+valkey-cluster/
+├── config/
+│   └── valkey.conf          # 공통 Valkey 설정
+├── scripts/
+│   ├── valkey-start.sh      # 노드 시작 스크립트
+│   └── valkey-cluster-init.sh # 클러스터 구성 스크립트
+├── docker-compose.yml       # 클러스터 오케스트레이션
+└── README.md                # 이 파일
 ```
 
-### Verification
+## Available Scripts
 
-```bash
-# Check cluster state
-docker exec valkey-node-0 valkey-cli -p 6379 cluster info
+| Command | Description |
+| :--- | :--- |
+| `docker compose up -d` | 클러스터 전체 노드 시작 |
+| `docker compose ps` | 노드별 상태 및 헬스체크 확인 |
+| `docker compose logs -f` | 실시간 로그 모니터링 |
 
-# List cluster nodes and slots
-docker exec valkey-node-0 valkey-cli -p 6379 cluster nodes
-```
+## Configuration
 
-## 4. Usage & Integration
+### Environment Variables
 
-### Configuration
-Endpoints are exposed on ports `6379` through `6384`.
+| Variable | Required | Description |
+| :--- | :--- | :--- |
+| `DEFAULT_DATA_DIR` | Yes | 데이터 저장 기본 경로 |
+| `VALKEYn_PORT` | No | 각 노드별 포트 (기본: 6379-6384) |
 
-### Integration Pointers
+### Secrets
 
-- Use `redis-py` or similar clients with cluster support enabled.
-- Large `KEYS *` operations are strictly forbidden; use `SCAN`.
-- Consult the [Cache & KV Stores Guide](../../../docs/07.guides/04-data/02.cache-kv-dbs.md) for maintenance procedures.
+| Secret | Description |
+| :--- | :--- |
+| `service_valkey_password` | 클러스터 인증에 사용되는 마스터 패스워드 |
 
-## 5. Maintenance & Safety
+## Testing & Verification
 
-### Operational Guardrails
+1. **상태 확인**: `docker exec valkey-node-0 valkey-cli -a $PASS cluster info`
+2. **노드 확인**: `docker exec valkey-node-0 valkey-cli -a $PASS cluster nodes`
+3. **슬롯 확인**: `docker exec valkey-node-0 valkey-cli -a $PASS cluster slots`
 
-1. Monitor `cluster_slots_assigned` to ensure all 16384 slots are covered.
-2. Memory limit policies are defined in [Operations Policy](../../../docs/08.operations/04-data/README.md).
-3. Use the [Data Runbook](../../../docs/09.runbooks/04-data/README.md) for node recovery flows.
+## Related References
 
-### Safety Warnings
-
-- Never manually edit `nodes.conf`; this is managed by the engine.
-- Ensure all 6 nodes can communicate with each other over the cluster bus port (Port + 10000).
+- **Guide**: [valkey-cluster.md](../../07.guides/04-data/valkey-cluster.md)
+- **Operation**: [valkey-cluster.md](../../08.operations/04-data/valkey-cluster.md)
+- **Runbook**: [valkey-cluster.md](../../09.runbooks/04-data/valkey-cluster.md)
 
 ---
-
 Copyright (c) 2026. Licensed under the MIT License.

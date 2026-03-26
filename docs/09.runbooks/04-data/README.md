@@ -2,75 +2,55 @@
 
 > Incident Response & Emergency Restoration Procedures (04-data)
 
-## 1. Context & Objective
+## Overview
 
-This runbook provides step-by-step instructions for responding to critical data infrastructure failures in the `hy-home.docker` ecosystem. Our objective is to minimize Downtime (RTO) and Data Loss (RPO) through structured recovery protocols.
+이 디렉터리는 `hy-home.docker` 데이터 인프라 계층(04-data)에서 발생할 수 있는 긴급 장애에 대응하기 위한 단계별 실행 지침(Runbook)을 포함합니다. 서비스의 가동 시간을 극대화하고 데이터 손실을 최소화하는 것이 목적입니다.
 
-- **Primary Engine**: PostgreSQL, Valkey, MongoDB, Cassandra
-- **Recovery Level**: Node-level, Cluster-level, and Site-level
+## Audience
 
-## 2. Requirements & Constraints
+이 README의 주요 독자:
 
-- **Access**: Requires root/sudo access to the cluster hosts and Docker management.
-- **Backups**: Verified daily backups must be available in `${DEFAULT_DATA_DIR}/backups`.
-- **Quorum**: Most HA clusters require a majority of nodes to be online for automatic recovery.
+- 장애 대응을 수행하는 **Operators / SRE**
+- 복구 절차를 검증하는 **QA Engineers**
+- 실시간 장애 조치를 돕는 **AI Agents**
 
-## 3. Setup & Initial Triage
+## Scope
 
-Before attempting deep recovery, perform initial triage:
+### In Scope
 
-1. **Check Service Status**: `docker compose ps`
-2. **Review Logs**: `docker compose logs --tail=100 [service]`
-3. **Verify Disk Space**: `df -h`
+- 데이터베이스 노드 및 클러스터 레벨 복구 절차
+- 백업 데이터로부터의 완전 복구 프로세스
+- 슬롯 수리 및 정족수(Quorum) 복구 지침
 
-## 4. Recovery Procedures
+## Structure
 
-### 4.1 PostgreSQL Cluster (Patroni)
+```text
+04-data/
+├── storage-exhaustion.md
+├── valkey-cluster.md     # Valkey Cluster 긴급 복구 런북
+└── README.md
+```
 
-**Issue**: No leader elected or split-brain detected.
+## How to Work in This Area
 
-1. **Status**: `docker exec pg-0 patronictl list`
-2. **Manual Failover**:
+1. 장애 발생 시 가장 먼저 [Initial Triage](./README.md#setup--initial-triage) 절차를 확인합니다.
+2. 특정 서비스 장애의 경우 해당 서비스의 개별 런북 문서를 즉시 실행합니다.
+3. 복구 완료 후에는 반드시 `VERIFICATION` 단계를 거쳐야 합니다.
 
-   ```bash
-   docker exec -it pg-0 patronictl failover --candidate pg-1 --force
-   ```
+## Related References
 
-3. **Re-initialize Node**: If a node is out of sync:
+- **Guides**: [Technical Guides](../../07.guides/04-data/README.md)
+- **Operations**: [Operations Policy](../../08.operations/04-data/README.md)
 
-   ```bash
-   docker exec -it pg-2 patronictl reinit [cluster-name] pg-2
-   ```
+---
 
-### 4.2 Valkey Cluster Recovery
+## Setup & Initial Triage
 
-**Issue**: Cluster slots in "fail" state.
+장애 대응 시 다음 단계를 가장 먼저 수행합니다.
 
-1. **Check Slots**: `docker exec valkey-node-0 valkey-cli --cluster check localhost:6379`
-2. **Fix Clusters**:
-
-   ```bash
-   docker exec -it valkey-node-0 valkey-cli --cluster fix localhost:6379
-   ```
-
-### 4.3 Full Restoration from Backup
-For full restoration, refer to the storage-specific sections in the core guides.
-**Issue**: Data corruption or accidental deletion.
-1. **Stop Services**: `docker compose stop [service]`
-2. **Restore Path**: Replace corrupted data in `${DEFAULT_DATA_DIR}/[service]` with the latest verified backup.
-3. **Restart**: `docker compose up -d [service]`
-4. **Validation**: Check service logs for consistent database state.
-
-## 5. Related Documentation
-
-- [Technical Guides](../../07.guides/04-data/README.md)
-- [Operations Policy](../../08.operations/04-data/README.md)
-
-## 6. Maintenance & Safety
-
-- **Vacuuming**: Maintain PostgreSQL performance via periodic `VACUUM ANALYZE`.
-- **Scrubbing**: Perform periodic data integrity checks on MinIO and SeaweedFS volumes.
-- **Failover Testing**: Conduct quarterly simulated failovers to verify cluster resilience.
+1. **서비스 상태 확인**: `docker compose ps`
+2. **로그 리뷰**: `docker compose logs --tail=100 [service]`
+3. **디스크 공간 확인**: `df -h`
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

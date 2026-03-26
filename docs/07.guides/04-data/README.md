@@ -1,24 +1,48 @@
-# Data Tier Documentation (04-data)
+# Data Tier Guides (04-data)
 
-> Persistence, Caching, and Storage Services.
+> Persistence, Caching, and Storage Services 가이드
 
-## 1. Overview
+## Overview
 
-This directory contains technical guides for the `hy-home.docker` data infrastructure layer (04-data). Documentation is organized by database type to facilitate efficient system management and AI-assisted operations.
+이 디렉터리는 `hy-home.docker` 데이터 인프라 계층(04-data)을 위한 기술 가이드를 포함합니다. 각 가이드는 데이터베이스 유형별로 정리되어 효율적인 시스템 이해와 운영을 돕습니다.
 
-## 2. Infrastructure Guides
+## Audience
 
-1. [Relational Databases (SQL)](./01.relational-dbs.md) - PostgreSQL (Standalone/HA) and Supabase.
-2. [Cache & Key-Value Stores](./02.cache-kv-dbs.md) - Managed Valkey and Distributed Clusters.
-3. [NoSQL Databases](./03.nosql-dbs.md) - MongoDB, Cassandra, and CouchDB.
-4. [Object & Distributed Storage](./04.storage-systems.md) - MinIO and SeaweedFS.
-5. [Analytical & Specialized Engines](./05.analytical-specialized-dbs.md) - InfluxDB, ksqlDB, OpenSearch, Neo4j, and Qdrant.
+이 README의 주요 독자:
 
-## 3. Related Documentation
+- 시스템을 사용하는 **Developers**
+- 인프라를 관리하는 **Operators**
+- 문서 구조를 학습하는 **AI Agents**
 
-- [Infrastructure Source](../../../infra/04-data/README.md) - Technical source of truth.
-- [Operations Policy](../../08.operations/04-data/README.md) - Governance and backup rules.
-- [Recovery Runbooks](../../09.runbooks/04-data/README.md) - Incident response and emergency procedures.
+## Scope
+
+### In Scope
+
+- 관계형 데이터베이스(PostgreSQL) 사용 가이드
+- 캐시 및 Key-Value 저장소(Valkey) 사용 가이드
+- NoSQL 및 오브젝트 스토리지 가이드
+
+## Structure
+
+```text
+04-data/
+├── 01.relational-dbs.md
+├── 02.cache-kv-dbs.md
+├── valkey-cluster.md     # Valkey Cluster 세부 가이드
+└── README.md
+```
+
+## How to Work in This Area
+
+1. 전반적인 데이터 아키텍처는 [Architecture](../../02.ard/README.md) 문서를 먼저 확인합니다.
+2. 특정 엔진의 구현 세부 사항은 `infra/04-data/` 경로의 소스 코드를 참조합니다.
+3. 새로운 가이드 추가 시 `docs/99.templates/guide.template.md`를 사용합니다.
+
+## Related References
+
+- **Operations**: [Data Operations Policy](../../08.operations/04-data/README.md)
+- **Runbooks**: [Data Recovery Runbooks](../../09.runbooks/04-data/README.md)
+- **Source**: [Infrastructure Source](../../../infra/04-data/README.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
