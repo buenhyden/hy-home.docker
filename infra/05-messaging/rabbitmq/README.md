@@ -63,6 +63,6 @@ mc admin definitions export ...
 
 ## Related References
 
-- **ARD**: `[../../../docs/02.ard/0004-data-architecture.md]`
+- **ARD**: `[../../../docs/02.ard/0005-messaging-architecture.md]`
 - **Runbook**: `[../../../docs/09.runbooks/05-messaging/rabbitmq.md]`
 - **Monitoring**: `Grafana - Messaging Dashboard`

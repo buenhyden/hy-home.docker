@@ -40,6 +40,7 @@
 ### 2. Management UI 접속
 
 웹 브라우저에서 `https://rabbitmq.${DEFAULT_URL}`에 접속하여 브로커 상태를 모니터링할 수 있다.
+
 - **Connections**: 활성 클라이언트 연결 확인
 - **Channels**: 활성 채널 및 처리량 확인
 - **Exchanges**: 메시지 라우팅 규칙 설정
