@@ -1,74 +1,55 @@
-<!-- Target: docs/09.runbooks/01-gateway/README.md -->
-
-# 01-gateway Runbook
+# Gateway Tier Runbooks
 
 : Gateway Tier Maintenance & Recovery
 
----
+> Step-by-step procedures for managing and troubleshooting the gateway infrastructure.
+
+## Overview
+
+This directory houses the runbooks for the `01-gateway` tier. It provides infrastructure operators and AI agents with clear, executable instructions for routine maintenance and emergency recovery of the Traefik and Nginx stack.
 
 ## Overview (KR)
 
-이 런북은 `01-gateway` 티어의 유지보수 및 즉각적인 장애 대응을 위한 실행 절차를 정의한다. 서비스 재시작, 로그 분석, 상태 점검 절차를 포함한다.
+이 디렉토리는 `01-gateway` 티어의 유지보수 및 즉각적인 장애 대응을 위한 실행 절차(런북)를 포함한다. 서비스 재시작, 로그 분석, 상태 점검 절차 등 운영자가 즉시 따라 할 수 있는 가이드를 제공한다.
 
-## Purpose
+## Audience
 
-This runbook addresses common operational problems and provides emergency recovery steps for the Traefik/Nginx gateway stack.
+이 문서의 주요 독자:
 
-## Canonical References
+- Operators
+- On-call Engineers
+- AI Agents
 
-- **ARD**: [../../02.ard/README.md](../../02.ard/README.md)
-- **Ops Policy**: [../../08.operations/01-gateway/README.md](../../08.operations/01-gateway/README.md)
-- **Setup Guide**: [../../07.guides/01-gateway/01.setup.md](../../07.guides/01-gateway/01.setup.md)
+## Runbook Table
 
-## When to Use
 
-- System start/stop/restart.
-- SSL/TLS certificate updates.
-- Unexpected 502/504 Bad Gateway errors.
-- High latency observations at the edge.
+| [README.md](./README.md) | Tier-level maintenance summary and daily checks |
+| [traefik.md](./traefik.md) | Specific procedures for Traefik routing and TLS management |
+| [nginx.md](./nginx.md) | Specific procedures for Nginx proxying and SSO integration |
 
-## Procedure or Checklist
+## Usage Instructions
 
-### Daily Checklist
+1. Identify the operational problem (e.g., 502 error, SSL expiry).
+2. Locate the corresponding runbook in the table above.
+3. Follow the **Procedure** steps sequentially.
+4. Execute **Verification Steps** to confirm the fix.
 
-- [ ] Check Traefik container status (`docker compose ps traefik`).
-- [ ] Verify Prometheus metric scrape health via Traefik metrics endpoint.
-
-### SSL Certificate Renewal
-
-1. Place new certs (`cert.pem`, `key.pem`) in `secrets/certs/`.
-2. Reload Traefik configuration:
-   ```bash
-   docker exec traefik kill -HUP 1
-   ```
-
-3. Verify expiration date via browser or `openssl s_client`.
-
-### Troubleshooting 502 Errors
-
-1. Check if the backend service is running.
-2. Verify backend service is in `infra_net`.
-3. Check Traefik logs for upstream resolution errors:
-
-   ```bash
-   docker compose logs -f traefik
-   ```
-
-## Verification Steps
-
-- [ ] `docker exec traefik traefik healthcheck --ping` returns success.
-- [ ] `curl -vI https://your-domain.com` shows valid certificate and 200/302 OK.
-
-## Observability and Evidence Sources
+## Verification and Monitoring
 
 - **Signals**: Traefik dashboard, Grafana (Traefik metrics).
-- **Evidence to Capture**: `docker compose logs traefik > traefik_crash.log`.
+- **Daily Check**: Verify container health and log consistency.
+- **Recovery**: Refer to the "Safe Rollback" section in each runbook if a procedure fails.
 
-## Safe Rollback
+## Related References
 
-- Revert `traefik.yml` or `dynamic/*.yml` to the previous git version and restart.
+- **Ops Policy**: [../../08.operations/01-gateway/README.md](../../08.operations/01-gateway/README.md)
+- **Setup Guide**: [../../07.guides/01-gateway/01.setup.md](../../07.guides/01-gateway/01.setup.md)
+- **Incident Records**: [../../10.incidents/README.md](../../10.incidents/README.md)
 
-## Related Operational Documents
+---
 
-- **Incident examples**: [../../10.incidents/README.md](../../10.incidents/README.md)
-- **Postmortem examples**: [../../11.postmortems/README.md](../../11.postmortems/README.md)
+## AI Agent Guidance
+
+1. Always use the `runbook.template.md` for new entries.
+2. Ensure all commands are formatted in code blocks for direct execution.
+3. Link each runbook to its corresponding Operation Policy.
