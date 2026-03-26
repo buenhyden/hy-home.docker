@@ -12,31 +12,39 @@ This directory contains architectural guides, initial setup instructions, and ge
 
 ## Audience
 
-이 문서의 주요 독자:
+이 README의 주요 독자:
 
-- Infrastructure Operators
-- Backend Developers
+- Operators
+- Developers
 - AI Agents
 
-## Documentation Standards
+## Scope
 
-- All guides must follow the `guide.template.md`.
-- Ensure Single Source of Truth by referencing the `infra/` configuration directly when explaining setups.
-- Maintain traceability to PRDs and ARDs.
+### In Scope
 
-## Guide Table
+- Service onboarding guides
+- Nginx & Traefik configuration tutorials
+- SSO integration patterns for gateway
 
-| Document | Purpose |
-| :--- | :--- |
-| [01.setup.md](./01.setup.md) | Step-by-step instructions for initial gateway deployment |
-| [traefik.md](./traefik.md) | Deep dive into Traefik configuration and service discovery |
-| [nginx.md](./nginx.md) | Detailed guide for Nginx path-based routing and SSO |
+### Out of Scope
 
-## Related References
+- Operational policies (handled in `docs/08.operations`)
+- Step-by-step recovery procedures (handled in `docs/09.runbooks`)
 
-- [Infrastructure Source](../../../infra/01-gateway/README.md)
-- [Operational Policies](../../../docs/08.operations/01-gateway/README.md)
-- [Troubleshooting Runbooks](../../../docs/09.runbooks/01-gateway/README.md)
+## Structure
+
+```text
+01-gateway/
+├── nginx.md       #- [Nginx](nginx.md): Nginx Gateway guide.
+- [Traefik](traefik.md): Traefik Edge Router guide.
+└── README.md       # This file
+```
+
+## Related Documents
+
+- [01-gateway Root README](../../../infra/01-gateway/README.md)
+- [Gateway Operations](../../../docs/08.operations/01-gateway/README.md)
+- [Gateway Runbooks](../../../docs/09.runbooks/01-gateway/README.md)
 
 ---
 

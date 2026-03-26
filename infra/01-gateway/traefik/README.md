@@ -2,13 +2,11 @@
 
 > Primary edge router with dynamic service discovery and TLS orchestration for the hy-home.docker ecosystem.
 
-## Overview
-
-Traefik acts as the primary ingress controller for the `hy-home.docker` cluster. It provides dynamic service discovery via the Docker provider, automatic TLS termination, and a comprehensive dashboard for traffic monitoring and management.
-
 ## Overview (KR)
 
 Traefik은 `hy-home.docker` 생태계의 주 에지 라우터입니다. Docker 프로바이더를 통한 동적 서비스 탐색, 자동 TLS 종료, 그리고 트래픽 모니터링 및 관리를 위한 대시보드를 제공합니다.
+
+---
 
 ## Audience
 
@@ -56,14 +54,40 @@ traefik/
 
 ## Available Scripts
 
-| Command                               | Description |
-| ------------------------------------- | ----------- |
-| `docker compose up -d`                | Start Traefik router |
-| `docker compose down`                 | Stop Traefik router |
-| `docker compose logs -f`              | View Traefik logs |
-| `docker exec traefik traefik healthcheck --ping` | Health check |
+| Command                                          | Description               |
+| ------------------------------------------------ | ------------------------- |
+| `docker compose up -d`                           | Start Traefik router      |
+| `docker compose down`                            | Stop Traefik router       |
+| `docker compose logs -f`                         | View Traefik logs         |
+| `docker exec traefik traefik healthcheck --ping` | Health check (Ping API)   |
 
 ## Configuration
+
+### Core Files
+- `config/traefik.yml`: Static configuration (entrypoints, providers, API).
+- `dynamic/middleware.yml`: Shared middlewares (SSO/ForwardAuth, RateLimit, BasicAuth).
+- `dynamic/tls.yaml`: TLS certificate mapping and stores.
+
+### Docker Healthcheck
+Traefik is configured with a built-in healthcheck using its internal ping endpoint:
+```yaml
+healthcheck:
+  test: ['CMD', 'traefik', 'healthcheck', '--ping']
+  interval: 15s
+  timeout: 30s
+  retries: 5
+```
+
+### Keycloak & OAuth2 Proxy Integration
+Traefik uses the `ForwardAuth` middleware (`sso-auth@file`) to delegate authentication to OAuth2 Proxy:
+1. Entrypoint: `websecure` (Port 443).
+2. Middleware: `sso-auth@file` -> `http://oauth2-proxy:4180/oauth2/auth`.
+3. Error Redirect: `sso-errors@file` handles 401/403 redirects to `/oauth2/sign_in`.
+
+## AI Agent Operation Policy
+- **Required**: Any dynamic routing change must be verified via the Traefik Dashboard.
+- **Caution**: Do not modify `traefik.yml` entrypoints without a full cluster impact analysis.
+- **Validation**: Use `docker logs traefik` to verify configuration hot-reloads.
 
 ### Environment Variables
 

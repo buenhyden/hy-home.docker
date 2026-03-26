@@ -30,6 +30,7 @@
 
 - **Required**: 새로운 업스트림 추가 시 명확한 서비스 이름 정의와 `keepalive` 설정을 포함해야 한다.
 - **Required**: 업로드 기능이 있는 서비스(예: MinIO)의 경우 `client_max_body_size`를 명시적으로 제어해야 한다.
+- **Required**: 모든 `proxy_pass` 설정 시 `X-Forwarded-Proto $scheme` 헤더를 포함하여 리다이렉트 루프를 방지한다.
 
 ## Exceptions
 
@@ -44,6 +45,11 @@
 ## Review Cadence
 
 - Quarterly (분기별 1회 점검)
+
+## AI Agent Policy Section
+
+- **Model / Prompt Change Process**: 배포 에이전트는 `nginx.conf` 수정 시 반드시 `nginx -t` 검증을 통과해야 하며, 실패 시 자동 롤백을 수행한다.
+- **Log / Trace Retention**: 모든 4xx/5xx 에러 로그는 최소 30일간 보관되어야 한다.
 
 ## Related Documents
 

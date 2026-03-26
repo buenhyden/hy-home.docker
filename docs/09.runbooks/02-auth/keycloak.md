@@ -1,75 +1,66 @@
 # Keycloak Runbook
 
-: Identity and Access Management (IAM)
+> Step-by-step procedures for troubleshooting and maintaining the Keycloak security layer.
 
 ---
 
 ## Overview (KR)
 
-이 런북은 Keycloak 서비스의 일상적인 운영 작업, 유지보수, 그리고 긴급 복구 절차를 정의한다. 시스템 관리자와 운영자가 즉시 실행할 수 있는 명령형 가이드를 제공한다.
+이 런북은 Keycloak 서비스의 장애 상황(Healthcheck Failure, OIDC Redirect Mismatch, IdP Sync Error)에 대한 대응 절차와 복구 방법을 다룬다.
 
-## Purpose
+## Runbook Type
 
-- Keycloak 서비스 가동 및 중지 절차 확립
-- 관리자 계정 분실 및 잠금 해제 등 긴급 대응
-- 렐름 데이터 백업 및 복구 프로세스 표준화
+`incident-response | maintenance`
 
-## Canonical References
+## Target Audience
 
-- ARD: `[../../docs/02.ard/02-auth-architecture.md]`
-- Setup Guide: `[../../docs/07.guides/02-auth/keycloak.md]`
-- Operations Policy: `[../../docs/08.operations/02-auth/keycloak.md]`
+- SRE / Platform Engineers
+- Auth Feature Developers
+- On-call Responders
 
-## When to Use
+## Incident Response
 
-- 서비스 초기 기동 및 재시작 시
-- 관리자 패스워드 재설정이 필요한 경우
-- 시스템 업그레이드 전후 데이터 백업 시
+### 1. Health Readiness Failure
+- **Problem**: Keycloak이 `9000/health/ready`에서 `Down` 상태를 반환함.
+- **Diagnosis**: 
+  ```bash
+  docker logs keycloak
+  # Check PostgreSQL connection status
+  docker exec keycloak curl -f http://localhost:9000/health/live
+  ```
+- **Solution**: 
+  - DB 연결 문제 시 `mng-pg` 상태 확인.
+  - OOM 또는 리소스 부족 시 컨테이너 재시작.
 
-## Procedure or Checklist
+### 2. OIDC Redirect Mismatch
+- **Problem**: 로그인 시도 시 `Invalid parameter: redirect_uri` 오류 발생.
+- **Diagnosis**: 브라우저 주소창의 `redirect_uri`와 Keycloak Client 설정 비교.
+- **Solution**: Keycloak 콘솔 -> Clients -> 해당 Client -> **Valid Redirect URIs**에 정확한 도메인(와일드카드 주의) 추가.
 
-### Checklist
+### 3. External IdP Reconciliation
+- **Problem**: Google 로그인 등이 작동하지 않음.
+- **Diagnosis**: 
+  - Keycloak 서버 로그에서 401/403 오류 확인.
+  - IdP 제공자(Google Cloud)의 Client ID/Secret 유효성 확인.
+- **Solution**: Identity Providers 메뉴에서 IdP 재연동 및 시크릿 업데이트.
 
-- [ ] `infra/04-data/mng-db` (PostgreSQL) 정상 상태 확인
-- [ ] `keycloak` 컨테이너 로그의 에러 메세지 유무 확인
-- [ ] 관리 콘솔(`https://keycloak.${DEFAULT_URL}`) 접속 가능 여부
+## Maintenance Tasks
 
-### Procedure
-
-#### 1. 서비스 재시작 및 상태 확인
-
+### 1. Realm Configuration Export/Import
+데이터 백업 및 레이아웃 동기화를 위해 수동 엑스포트를 권장함:
 ```bash
-cd infra/02-auth/keycloak
+# Export Realm with Users
+docker exec keycloak /opt/keycloak/bin/kc.sh export --realm hy-home --file /tmp/hy-home-realm.json --users same_file
+```
+
+### 2. Theme & Provider Update
+신규 테마 또는 JAR 파일을 반영하려면 볼륨 마운트 확인 후 서비스를 재시작함:
+```bash
 docker compose restart keycloak
-docker logs -f keycloak
 ```
 
-#### 2. 임시 관리자 계정 생성 (Password Lost)
+## Related Documents
 
-```bash
-# Keycloak 컨테이너 내에서 임시 관리자 생성 (Quarkus distribution)
-docker exec -it keycloak /opt/keycloak/bin/kc.sh bootstrap-admin --user emergency-admin --password temp-password-123
-```
-
-> 생성 후 브라우저에서 로그인하여 기존 계정 복구 후 임시 계정 삭제 권장.
-
-#### 3. 렐름 데이터 익스포트 (Backup)
-
-```bash
-docker exec keycloak /opt/keycloak/bin/kc.sh export --dir /opt/keycloak/conf/backups --realm hy-home.realm
-```
-
-## Verification Steps
-
-- [ ] `docker exec keycloak /opt/keycloak/bin/kc.sh show-config` 실행 시 오류 없음 확인.
-- [ ] `curl -f https://keycloak.${DEFAULT_URL}/health/live` 응답 확인.
-
-## Safe Rollback or Recovery Procedure
-
-- **DB Recovery**: Keycloak 데이터 정합성 오류 시 `infra/04-data/mng-db`의 PostgreSQL 스냅샷으로 복구.
-- **Config Rollback**: `infra/02-auth/keycloak/conf/`의 이전 설정 파일 복원 후 재시작.
-
-## Related Operational Documents
-
-- **Incident Table**: `[../../docs/10.incidents/README.md]`
-- **Postmortem**: `[../../docs/11.postmortems/README.md]`
+- **Guide**: `[../../07.guides/02-auth/keycloak.md]`
+- **Operation**: `[../../08.operations/02-auth/keycloak.md]`
+- **Spec**: `[../../04.specs/02-auth/keycloak.md]`

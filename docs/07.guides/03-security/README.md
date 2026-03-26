@@ -1,23 +1,28 @@
-# Security Documentation (03-security)
+# 03-security Guides
 
-> Secrets Management & Encryption Operations.
+> Operational and setup guides for the security infrastructure tier.
 
-## Overview
+---
 
-이 디렉터리는 `hy-home.docker`의 보안 인프라(03-security)에 대한 가이드, 운영 정책, 그리고 복구 절차 문서를 포함한다.
+## Overview (KR)
 
-## Audience
+이 디렉토리는 `03-security` 계층(Vault 등)의 설정, 연동 및 활용을 위한 상세 가이드를 포함한다.
 
-- Security Administrators
-- DevOps Engineers
-- AI Agents
+## Structure
 
-## Documents
+```text
+03-security/
+├── 01.setup.md # Initial bootstrapping
+├── vault.md    # Comprehensive Vault Guide (OIDC, Secrets Migration)
+└── README.md   # This file
+```
 
-- [01. Setup Guide](./01.setup.md) - Initial Vault initialization and unsealing.
+## Available Guides
 
-## Related References
+- **[Vault Guide](vault.md)**: Vault 초기화, 봉인 해제, Keycloak 연동 및 비밀 마이그레이션 방법.
+- **[Setup Guide](01.setup.md)**: 보안 티어의 전반적인 초기 구축 절차.
 
-- [infra/03-security/](../../infra/03-security/README.md) - Infrastructure tier overview.
-- [Operations Policy](../../docs/08.operations/03-security/README.md) - Security governance.
-- [Security Runbook](../../docs/09.runbooks/03-security/README.md) - Emergency procedures.
+## AI Agent Guidance
+
+1. **Task Context**: 보안 관련 작업 시 반드시 `vault.md`의 Unseal 절차를 우선 참조하시오.
+2. **Migration**: 비밀 정보의 영구 저장소로 Vault KV-v2 엔진을 사용함을 원칙으로 함.

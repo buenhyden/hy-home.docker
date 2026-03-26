@@ -1,38 +1,48 @@
 # Gateway Tier Runbooks
 
-: Gateway Tier Maintenance & Recovery
+# Gateway Runbooks
 
-> Step-by-step procedures for managing and troubleshooting the gateway infrastructure.
+> Immediate operational procedures and recovery steps for Gateway infrastructure (01-gateway).
 
 ## Overview
 
-This directory houses the runbooks for the `01-gateway` tier. It provides infrastructure operators and AI agents with clear, executable instructions for routine maintenance and emergency recovery of the Traefik and Nginx stack.
-
-## Overview (KR)
-
-이 디렉토리는 `01-gateway` 티어의 유지보수 및 즉각적인 장애 대응을 위한 실행 절차(런북)를 포함한다. 서비스 재시작, 로그 분석, 상태 점검 절차 등 운영자가 즉시 따라 할 수 있는 가이드를 제공한다.
+이 디렉토리는 `01-gateway` 계층(Traefik, Nginx)의 운영 이슈 발생 시 즉시 실행 가능한 런북을 관리한다. 설정 리로드, 인증 문제 해결, 파일 업로드 최적화, 그리고 상태 진단을 위한 단계별 절차를 제공한다.
 
 ## Audience
 
-이 문서의 주요 독자:
+이 README의 주요 독자:
 
 - Operators
-- On-call Engineers
+- SRE / DevOps Engineers
 - AI Agents
 
-## Runbook Table
+## Scope
 
+### In Scope
 
-| [README.md](./README.md) | Tier-level maintenance summary and daily checks |
-| [traefik.md](./traefik.md) | Specific procedures for Traefik routing and TLS management |
-| [nginx.md](./nginx.md) | Specific procedures for Nginx proxying and SSO integration |
+- Step-by-step recovery procedures
+- Configuration reload checklists
+- Healthcheck failure diagnostic steps
 
-## Usage Instructions
+### Out of Scope
 
-1. Identify the operational problem (e.g., 502 error, SSL expiry).
-2. Locate the corresponding runbook in the table above.
-3. Follow the **Procedure** steps sequentially.
-4. Execute **Verification Steps** to confirm the fix.
+- General system guides (handled in `docs/07.guides`)
+- Governance and approval standards (handled in `docs/08.operations`)
+
+## Structure
+
+```text
+01-gateway/
+├── nginx.md       # [Nginx](nginx.md): Nginx Gateway runbook.
+├── traefik.md     # [Traefik](traefik.md): Traefik Edge Router runbook.
+└── README.md       # This file
+```
+
+## Related Documents
+
+- [01-gateway Root README](../../../infra/01-gateway/README.md)
+- [Gateway Operations](../../../docs/08.operations/01-gateway/README.md)
+- [Incident Records](../../../docs/10.incidents/README.md)
 
 ## Verification and Monitoring
 

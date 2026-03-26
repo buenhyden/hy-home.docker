@@ -1,55 +1,50 @@
 # Keycloak Operations Policy
 
-> Identity & Access Management Governance (02-auth)
+> Operational and security policies for the central identity and access management system (02-auth).
 
 ---
 
 ## Overview (KR)
 
-이 문서는 `hy-home.docker` 플랫폼의 중앙 인증 시스템인 Keycloak의 운영 정책을 정의한다. 아이덴티티 관리의 일관성, 보안 통제 기준, 그리고 운영 규준을 명시한다.
+이 문서는 Keycloak IAM 서버의 운영 정책을 정의한다. 사용자 계정 관리, 렐름(Realm) 및 클라이언트 설정의 변경 통제, 그리고 보안 감사(Audit Logging) 기준을 규정하여 인증 시스템의 무결성을 보장한다.
 
-## Policy Scope
+## Policy Type
 
-- Keycloak 서비스 인스턴스 (Quarkus distribution)
-- 렐름(Realm) 구성 및 관리 권한
-- 클라이언트(Client) 등록 및 시크릿 관리 정책
-- 사용자 데이터 및 감사 로그(Audit Log) 보존
+`security-policy | operational-standard`
 
-## Applies To
+## Target Audience
 
-- **Systems**: Keycloak Container, PostgreSQL (Auth Data)
-- **Agents**: Identity-aware agents, Audit agents
-- **Environments**: Production, Staging, Local Development
+- Security Administrators
+- SRE / Platform Engineers
+- Compliance Auditors
 
-## Controls
+## Service SLOs
 
-- **Required**:
-  - 모든 외부 접속은 Traefik을 통한 HTTPS(TLS 1.2+) 필수.
-  - 관리자 접근은 전용 관리 네트워크 또는 지정된 IP에서만 허용 (권장).
-  - 렐름당 최소 1회 이상의 정기 설정 백업 (JSON export).
-- **Allowed**:
-  - `hy-home.realm` 내의 신규 클라이언트 생성 (운영팀 승인 시).
-  - 커스텀 테마를 통한 브랜드 아이덴티티 적용.
-- **Disallowed**:
-  - `master` 렐름에 직접적인 서비스 클라이언트 등록 금지.
-  - 컨테이너 내 root 권한으로 프로세스 실행 금지.
+- **Availability**: 99.9% (LDAP/AD 연동 시 의존성 포함)
+- **Token Validity**: Access Token(1H), Refresh Token(30D)
+- **Audit Retention**: 90 Days (JSON Structured Logs)
 
-## Exceptions
+## Operational Procedures
 
-- 로컬 개발 환경에서는 HTTP 접속 허용.
-- 응급 복구 시 `bootstrap-admin`을 통한 임시 계정 생성 허용.
+### 1. User & Group Management
+- **Provisioning**: 정규 사용자 계정은 관리자에 의해 생성되어야 하며, `hy-home` 렐름의 표준 그룹 구조(`/admins`, `/operators`, `/users`)를 따라야 함.
+- **Self-service**: 유저는 본인의 계정 정보만 수정 가능하며, 비밀번호 찾기(Forgot Password) 기능은 SMTP 서버 연동 후 활성화됨.
 
-## Verification
+### 2. Realm & Client Controls
+- **Change Management**: 렐름 설정 및 클라이언트 등록은 사전에 스테이징 환경에서 검증되어야 함.
+- **Secret Management**: `confidential` 클라이언트의 Secret은 `/run/secrets` 경로에 안전하게 보관되며, 정기적으로 갱신되어야 함.
 
-- `keycloak/health/live` 및 `keycloak/health/ready` 엔드포인트 상시 모니터링.
-- 월간 감사 로그 검토 (비정상 로그인 시도 확인).
+### 3. Identity Provider Trust
+- **External IdP**: Google OAuth2 등 외부 IdP 연동 시 `first broker login` 플로우를 통해 플랫폼 계정과의 정합성을 유지함.
+- **Security Check**: 외부 IdP의 클라이언트 ID/Secret은 유출 즉시 폐기하고 재발급 절차를 밟아야 함.
 
-## Review Cadence
+## Security Controls
 
-- Quarterly (분기별 정책 및 권한 검토)
+- **Encryption**: 모든 토큰 서명(Signing)은 RS256 알고리즘을 사용하며, 키 회전(Key Rotation) 정책을 적용함.
+- **Audit**: 모든 성공/실패 로그인 시도 및 설정 변경은 `/opt/keycloak/data/log` 또는 Graylog/Loki로 전송되어 상시 모니터링됨.
 
 ## Related Documents
 
-- **ARD**: `[../../docs/02.ard/02-auth-architecture.md]`
-- **Runbook**: `[../../docs/09.runbooks/02-auth/keycloak.md]`
-- **Postmortem**: `[../../docs/11.postmortems/README.md]`
+- **Guide**: `[../../07.guides/02-auth/keycloak.md]`
+- **Runbook**: `[../../09.runbooks/02-auth/keycloak.md]`
+- **Spec**: `[../../04.specs/02-auth/keycloak.md]`

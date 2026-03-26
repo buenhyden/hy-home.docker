@@ -48,7 +48,10 @@ nginx/
 1. Review `config/nginx.conf` to understand current `location` blocks and `upstream` definitions.
 2. When adding a new path-based route, ensure it is added to the main `server` block in `nginx.conf`.
 3. If the route requires SSO, include the `auth_request /_oauth2_auth_check;` directive.
-4. After any configuration change, reload Nginx to apply changes without downtime.
+4. After any configuration change, reload Nginx:
+   ```bash
+   docker exec nginx nginx -s reload
+   ```
 
 ## Available Scripts
 
@@ -57,6 +60,7 @@ nginx/
 | `docker compose up -d`                | Start Nginx proxy |
 | `docker compose down`                 | Stop Nginx proxy |
 | `docker compose logs -f`              | View Nginx logs |
+| `docker exec nginx nginx -t`          | Test configuration syntax |
 | `docker exec nginx nginx -s reload`   | Hot-reload configuration |
 
 ## Configuration
@@ -66,6 +70,14 @@ nginx/
 - `config/nginx.conf`: Defines routing logic, SSO integration, and buffer optimizations.
 - `docker-compose.yml`: Mounts certificates and configuration files into the container.
 
+### Docker Healthcheck
+
+Nginx includes a healthcheck that verifies the availability of the `/ping` endpoint on port 80:
+```yaml
+healthcheck:
+  test: ['CMD-SHELL', 'wget -q --spider http://localhost:${HTTP_PORT:-80}/ping || exit 1']
+```
+
 ## Related References
 
 - [01-gateway Root README](../README.md)
@@ -73,3 +85,9 @@ nginx/
 - [Gateway Operations Policy](../../../docs/08.operations/01-gateway/nginx.md)
 - [Nginx Runbook](../../../docs/09.runbooks/01-gateway/nginx.md)
 - [SSO Setup Guide](../../../docs/07.guides/02-auth/README.md)
+
+## AI Agent Guidance
+
+1. Always run `nginx -t` before reloading configuration.
+2. Ensure `X-Forwarded-Proto https` is set for upstreams to avoid redirect loops.
+3. Update specific path guides in `docs/07.guides/01-gateway/nginx.md` when adding new routing logic.

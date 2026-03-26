@@ -39,33 +39,59 @@ location /my-service/ {
     proxy_pass http://my-service-upstream/;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
 }
 ```
 
-### 2. Enabling SSO for a Location
+### 2. Enabling SSO (OAuth2 Proxy) for a Location
 
-특정 경로를 SSO 인증으로 보호하려면 `auth_request` 설정을 포함한다:
+특정 경로를 SSO 인증으로 보호하려면 OAuth2 Proxy 시스템과 연동한다. Nginx는 `auth_request` 모듈을 사용하여 인증 수행 여부를 결정한다.
 
-```nginx
-location /protected-app/ {
-    auth_request /_oauth2_auth_check;
-    error_page 401 = /oauth2/sign_in;
+1. **Auth Check 엔드포인트**:
+   `nginx.conf`에 내부 API 엔드포인트가 정의되어 있어야 한다:
+   ```nginx
+   location = /_oauth2_auth_check {
+       internal;
+       proxy_pass http://oauth2-proxy:4180/oauth2/auth;
+       proxy_pass_request_body off;
+       proxy_set_header Content-Length "";
+   }
+   ```
 
-    # 유저 정보 추출 (선택)
-    auth_request_set $user $upstream_http_x_auth_request_user;
-    proxy_set_header X-User $user;
+2. **Location 보호 적용**:
+   ```nginx
+   location /protected-app/ {
+       auth_request /_oauth2_auth_check;
+       error_page 401 = /oauth2/sign_in;
 
-    proxy_pass http://protected-app-upstream/;
-}
+       auth_request_set $user $upstream_http_x_auth_request_user;
+       proxy_set_header X-Auth-Request-User $user;
+
+       proxy_pass http://protected-app-upstream/;
+   }
+   ```
+
+### 3. Keycloak Integration
+
+Keycloak을 Nginx 뒷단에 배치할 때는 정적 자산 및 리다이렉트 처리를 위해 다음 설정을 준수한다:
+
+- **Realm 설정**: 기본 렐름은 `hy-home`을 사용한다.
+- **Client 설정**: `oauth2-proxy` 클라이언트가 `confidential` 타입으로 생성되어야 한다.
+- **Header 설정**: `X-Forwarded-Proto https`와 `X-Forwarded-Port 443`을 명시하여 Keycloak이 올바른 리다이렉트 URI를 생성하도록 한다.
+
+### 4. Docker Healthcheck Configuration
+
+Nginx 컨테이너의 상태 확인을 위해 `docker-compose.yml`에 다음과 같이 설정한다:
+
+```yaml
+healthcheck:
+  test: ["CMD-SHELL", "wget -q --spider http://localhost:80/ping || exit 1"]
+  interval: 15s
+  timeout: 30s
+  retries: 5
 ```
 
-### 3. Reloading Configuration
-
-설정 변경 후 다운타임 없이 반영하려면 다음 명령을 실행한다:
-
-```bash
-docker exec nginx nginx -s reload
-```
+이 설정은 Nginx 내부의 `/ping` 로케이션(200 OK 응답)을 주기적으로 점검한다.
 
 ## Common Pitfalls
 

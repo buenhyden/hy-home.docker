@@ -21,25 +21,33 @@ This directory defines the operational policies for the `01-gateway` tier. It re
 
 ## Policy Table
 
-| [README.md](./README.md) | Tier-level operational overview and global controls |
-| [traefik.md](./traefik.md) | Specific operational policy for the Traefik router |
-| [nginx.md](./nginx.md) | Specific operational policy for the Nginx secondary proxy |
+## Scope
 
-## Usage Instructions
+### In Scope
 
-This area contains governance documents. Before making infrastructure changes in `infra/01-gateway`, verify that the proposed changes comply with the policies defined here.
+- SSO enforcement policies
+- Traffic management standards
+- Configuration compliance rules for gateway components
 
-## Verification and Monitoring
+### Out of Scope
 
-- **Status Check**: Use the [Traefik Dashboard](https://dashboard.${DEFAULT_URL}) for real-time routing status.
-- **Security Check**: Verify TLS termination and certificate validity regularly.
-- **Runbooks**: Refer to [09.runbooks/01-gateway/README.md](../../09.runbooks/01-gateway/README.md) for execution steps during deviations.
+- Step-by-step recovery procedures (handled in `docs/09.runbooks`)
+- How-to guides (handled in `docs/07.guides`)
 
-## Related References
+## Structure
 
-- **ARD**: [../../02.ard/README.md](../../02.ard/README.md)
-- **Guides**: [../../07.guides/01-gateway/README.md](../../07.guides/01-gateway/README.md)
-- **Runbooks**: [../../09.runbooks/01-gateway/README.md](../../09.runbooks/01-gateway/README.md)
+```text
+01-gateway/
+├──- [Nginx](nginx.md): Nginx Gateway operations policy.
+- [Traefik](traefik.md): Traefik Edge Router operations policy.
+└── README.md       # This file
+```
+
+## Related Documents
+
+- [01-gateway Root README](../../../infra/01-gateway/README.md)
+- [Gateway Runbooks](../../../docs/09.runbooks/01-gateway/README.md)
+- [Incident Records](../../../docs/10.incidents/README.md)
 
 ---
 
