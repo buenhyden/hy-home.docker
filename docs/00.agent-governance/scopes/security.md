@@ -5,38 +5,39 @@ title: 'Security Enforcement Scope'
 
 # Security Enforcement Scope
 
-**Universal security standards and data protection protocols for the `hy-home.docker` ecosystem.**
+Universal security standards and data protection protocols for `hy-home.docker`.
 
-## 1. Context & Objective
+## 1. Context and Objective
 
-- **Goal**: Zero-trust architecture implementation and continuous security posture management.
-- **Baseline**: Alignment with **OWASP Top 10** and **ASVS (Application Security Verification Standard) L2**.
-- **Governance**: Strictly follow `docs/00.agent-governance/rules/quality-standards.md`.
+- Goal: zero-trust implementation and continuous security posture management.
+- Baseline: OWASP Top 10 and ASVS L2 alignment.
+- Governance: follow `docs/00.agent-governance/rules/quality-standards.md`.
 
-## 2. Requirements & Constraints
+## 2. Requirements and Constraints
 
-- **Identity & Access**:
-  - **Centralized Auth**: All services MUST authenticate via **Keycloak (OIDC/SAML)**.
-  - **Least Privilege**: Enforce RBAC/ABAC at the API and database levels.
-- **Secrets Management**:
-  - **Prohibited**: Plaintext credentials in `.env`, `docker-compose.yml`, or source code.
-  - **Mandatory**: Use **Docker Secrets** for container orchestration or **HashiCorp Vault** for dynamic secrets.
-- **Network Hardening**:
-  - Isolation via `infra_net`.
-  - Forced TLS for all external ingress (Gateway Managed).
+- Identity and access:
+  - centralized authentication via Keycloak (OIDC/SAML),
+  - least-privilege RBAC/ABAC at API and data layers.
+- Secrets management:
+  - prohibited: plaintext credentials in source-controlled configs,
+  - mandatory: Docker secrets and/or Vault-backed secret flow.
+- Network hardening:
+  - isolate traffic on intended networks,
+  - enforce TLS at ingress boundaries.
 
 ## 3. Implementation Flow
 
-1. **Threat Model**: Conduct a basic threat assessment for any new service (02.ard).
-2. **Review**: Audit PRs against the `security-checklist.md` in `.agent/rules/`.
-3. **Scan**: Perform automated static analysis (SAST) on all backend logic.
+1. Perform lightweight threat modeling for new/changed services.
+2. Run security checks defined in active scope plus `rules/task-checklists.md`.
+3. Apply static analysis and dependency risk checks where available.
 
 ## 4. Operational Procedures
 
-- **Vulnerabilities**: Patch container images immediately upon CVE discovery.
-- **Auditing**: Log all authentication events and sensitive data access to a centralized secure sink.
+- Patch critical CVEs in images and dependencies with priority handling.
+- Log authentication events and sensitive access operations centrally.
+- Ensure incident and postmortem links are captured for high-severity events.
 
-## 5. Maintenance & Safety
+## 5. Maintenance and Safety
 
-- **Red Teaming**: Periodically simulate attack vectors to verify the effectiveness of the Keycloak gateway and firewall rules.
-- **Compliance**: Ensure GDPR/CCPA compliance for all PII (Personally Identifiable Information).
+- Periodically validate guardrails and access controls through controlled exercises.
+- Keep security guidance repository-realistic; remove references to nonexistent local paths.

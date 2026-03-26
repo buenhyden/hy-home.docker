@@ -1,42 +1,56 @@
 # hy-home.docker
 
-> **hy-home.docker**: 단순한 설정 파일을 넘어, 우리 집만의 디지털 생태계를 구축하고 관리하는 스펙 중심의 인프라 저장소입니다.
+> **hy-home.docker**: 홈 인프라를 스펙 기반으로 설계·운영·검증하기 위한 문서 중심 저장소
 
 ## 1. 프로젝트 소개
 
-이곳은 제각각 흩어져 있던 홈 서버의 기능들을 Docker로 표준화하고, 한곳에서 투명하게 관리하기 위해 만들어진 공간입니다. 단순히 코드를 저장하는 것을 넘어, 왜 이런 결정을 내렸는지(ADR)부터 문제가 생겼을 때 어떻게 해결해야 하는지(Runbook)까지, 인프라의 모든 생애주기를 기록하고 추적하는 것을 원칙으로 삼고 있습니다.
+이 저장소는 분산된 홈 서버 구성을 Docker 중심으로 표준화하고, 요구사항부터 운영/사고 대응까지 전 수명주기를 문서 체계로 관리합니다.
 
-## 2. AI 에이전트를 위한 가이드
+핵심 원칙은 다음과 같습니다.
 
-이 저장소는 AI 에이전트가 더 똑똑하고 효율적으로 일할 수 있도록 설계되었습니다. 에이전트 여러분은 다음의 약속을 꼭 지켜주세요.
+1. 추적성: 요구사항(What/Why)부터 구현/운영 증거까지 연결 가능해야 한다.
+2. 검증성: 계획과 작업은 검증 가능한 형태로 기록되어야 한다.
+3. 에이전트 협업성: AI Agent가 규칙 기반으로 안정적으로 작업할 수 있어야 한다.
 
-### 페르소나와 언어 약속
+## 2. AI Agent 작업 원칙
 
-- **Identity First**: 작업을 시작하기 전에는 반드시 [AGENTS.md](AGENTS.md)를 먼저 읽고, 현재 프로젝트의 거버넌스를 완벽히 숙지해 주세요.
-- **Role Selection**: [persona.md](docs/00.agent-governance/rules/persona.md)에서 현재 작업 레이어에 맞는 페르소나와 규칙을 활성화합니다.
-- **Language Policy**: **우리는 한국어로 소통합니다.** 에이전트가 내놓는 모든 답변과 요약은 한국어여야 합니다.
+### 작업 시작 전 필수
 
-### 어떻게 작업하나요?
+1. [AGENTS.md](./AGENTS.md) 진입 규칙을 먼저 로드한다.
+2. [docs/00.agent-governance/rules/bootstrap.md](./docs/00.agent-governance/rules/bootstrap.md)와 [persona.md](./docs/00.agent-governance/rules/persona.md)로 레이어/페르소나를 확정한다.
+3. [task-checklists.md](./docs/00.agent-governance/rules/task-checklists.md)의 Pre-Task 체크리스트를 완료한다.
+4. 문서 작성/갱신 작업이면 [stage-authoring-matrix.md](./docs/00.agent-governance/rules/stage-authoring-matrix.md)를 기준으로 작성한다.
 
-- **지연 로딩 (Lazy Loading)**: 한 번에 모든 것을 보려고 하지 마세요. `[LOAD:...]` 마커를 활용해 꼭 필요한 정보만 그때그때 불러오는 것이 토큰 효율과 정확도 면에서 훨씬 유리합니다.
-- **명세에 근거한 구현**: "아마 이럴 거야"라는 추측은 금물입니다. 모든 수정 사항은 `docs/01.prd/`와 `docs/04.specs/`에 정의된 명확한 근거를 바탕으로 이루어져야 합니다.
-- **안전 제일**: 인프라 설정을 바꾸기 전에는 늘 `bash scripts/validate-docker-compose.sh`를 실행해 시스템에 무리가 없는지 미리 확인해 주세요.
+### 문서 수정 범위 정책
 
-### 문서 언어 정책 (docs)
+- `docs/00.agent-governance/`와 루트 지시 파일(`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`)은 에이전트 거버넌스 영역이다.
+- `docs/01~99`는 프로젝트 SSoT이며 기본적으로 읽기 전용이다.
+- `docs/01~99` 수정은 사용자의 명시적 지시가 있을 때만 수행한다.
 
-- **AI 에이전트 작업용 문서**: `docs/00.agent-governance/` 및 루트 지시 파일(`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`)은 영어로 작성합니다.
-- **사람이 읽는 운영/기획 문서**: `docs/01~99`와 일반 README/가이드는 한국어를 기본으로 작성합니다.
-- **원칙**: AI 추론 정확도와 토큰 효율은 영어 규칙 문서로 확보하고, 사용자/운영자 가독성은 한국어 문서로 확보합니다.
+## 3. 문서 언어 정책
 
-## 📁 저장소 한눈에 보기
+- AI Agent 작업용 규칙 문서: **영어(English)**
+  - 대상: `docs/00.agent-governance/**`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`
+- 사람이 읽는 운영/기획 문서: **한국어(Korean)**
+  - 대상: 일반 README, 가이드, 운영/회고 문서 등
+- 기본 응답 언어: 사용자와의 상호작용 결과는 한국어를 우선한다.
 
-- `docs/` - 프로젝트의 모든 기록이 담긴 표준 문서 체계 (01-11 Taxonomy)
-- `infra/` - 실제 서버를 돌리는 설정들 (Docker Compose, Configs)
-- `scripts/` - 반복되는 작업을 자동화하고 검증하는 도구들
-- `docs/00.agent-governance/` - AI 에이전트의 행동 지침과 작업 스코프
+## 4. 빠른 네비게이션
 
-## 바로 시작하기
+- 문서 체계 허브: [docs/README.md](./docs/README.md)
+- 에이전트 거버넌스 허브: [docs/00.agent-governance/README.md](./docs/00.agent-governance/README.md)
+- 통합 체크리스트: [docs/00.agent-governance/rules/task-checklists.md](./docs/00.agent-governance/rules/task-checklists.md)
+- 00~11 작성 매트릭스: [docs/00.agent-governance/rules/stage-authoring-matrix.md](./docs/00.agent-governance/rules/stage-authoring-matrix.md)
 
-1. [AGENTS.md](./AGENTS.md)를 통해 에이전트로서 지켜야 할 기본 매너를 확인하세요.
-2. [docs/README.md](./docs/README.md)에서 이 프로젝트가 문서를 어떻게 다루는지 익히세요.
-3. 무언가 바꾸고 싶다면, [docs/05.plans/](./docs/05.plans/)에 먼저 근사한 계획을 세우고 사용자(Human)의 검토를 받으세요.
+## 5. 저장소 구조
+
+- `docs/` - 00~11, 90, 99 단계 기반 표준 문서 체계
+- `infra/` - Docker Compose 및 서비스별 인프라 설정
+- `scripts/` - 검증/자동화 스크립트
+- `.agent/` - 로컬 워크플로 및 스킬 자산
+
+## 6. 시작 순서
+
+1. [AGENTS.md](./AGENTS.md) 확인
+2. [docs/00.agent-governance/README.md](./docs/00.agent-governance/README.md) 확인
+3. 필요한 경우 [docs/05.plans/](./docs/05.plans/)에서 계획 문서 검토 후 작업 시작

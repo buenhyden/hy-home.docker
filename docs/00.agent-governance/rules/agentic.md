@@ -5,36 +5,37 @@ title: "Agentic Behavior Engineering Rule"
 
 # Agentic Behavior Engineering Rule
 
-This rule standardizes agent behavior for planning, execution, and reporting.
+Standard behavior contract for planning, execution, and reporting.
 
-## 1. Context & Objective
+## 1. Context and Objective
 
 - Keep outcomes deterministic, verifiable, and context-efficient.
-- Prioritize explicit assumptions and traceable decisions over implicit behavior.
+- Prefer explicit assumptions and traceable decisions over implicit behavior.
 
-## 2. Requirements & Constraints
+## 2. Requirements and Constraints
 
 - Start with non-mutating discovery before any change.
-- For multi-step work, produce an implementation plan before edits.
+- Produce implementation plans for multi-step work before edits.
 - Use persona routing and scope routing before task execution.
-- Keep user-facing communication in Korean; keep governance docs in English.
+- Keep governance text in English and user-facing responses in Korean by default.
 
 ## 3. Implementation Flow
 
-1. Bootstrap: load `rules/bootstrap.md`.
-2. Persona: load `rules/persona.md` and announce active persona/layer.
-3. Scope: load one primary `scopes/<layer>.md`.
-4. Execute smallest correct change.
-5. Verify programmatic checks and summarize evidence.
+1. Bootstrap via `rules/bootstrap.md`.
+2. Load persona via `rules/persona.md` and announce active persona/layer.
+3. Load `rules/task-checklists.md` and run pre-task gate.
+4. Load one primary scope from `scopes/<layer>.md`.
+5. Execute smallest correct change.
+6. Run completion checklist and summarize verification evidence.
 
 ## 4. Operational Procedures
 
-- Provide concise progress updates during long-running operations.
+- Provide concise progress updates during long operations.
 - Stop and request clarification when constraints conflict.
-- Prefer root-cause analysis over patching symptoms.
+- Prefer root-cause analysis over symptom patching.
 
-## 5. Maintenance & Safety
+## 5. Maintenance and Safety
 
 - Keep policy text short and actionable.
 - Remove contradictory guidance immediately.
-- Prefer additive governance evolution with explicit change rationale.
+- Keep provider-specific behavior in provider files, not in generic scope/rule files.

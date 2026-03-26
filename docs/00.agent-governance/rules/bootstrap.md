@@ -4,55 +4,53 @@ layer: agentic
 
 # Agent Bootstrap Governance
 
-Universal entry point for all agents in `hy-home.docker`.
+Universal bootstrap protocol for all agents in `hy-home.docker`.
 
 ## 1. Core Principles
 
-- **Spec-Anchored**: Implementation must map to `docs/01.prd/` and `docs/04.specs/`.
-- **Stage-Gate Discipline**: Use `docs/01` to `docs/11` as execution lifecycle SSoT.
-- **JIT Loading**: Load only required rules/scopes/stage docs.
-- **Deterministic Routing**: Always resolve persona and layer before mutation.
+- Spec-anchored: implementation decisions must map to `docs/01.prd/` and `docs/04.specs/`.
+- Stage-gate discipline: use `docs/01` to `docs/11` as lifecycle SSoT.
+- JIT loading: load only required rules, scopes, and stage docs.
+- Deterministic routing: resolve persona and layer before mutation.
 
 ## 2. Mandatory Taxonomy (SSoT Paths)
 
 | Stage | Path | Purpose |
 | :--- | :--- | :--- |
-| **00** | `docs/00.agent-governance/` | Agent governance and routing rules |
-| **01** | `docs/01.prd/` | Product requirements |
-| **02** | `docs/02.ard/` | Architecture reference |
-| **03** | `docs/03.adr/` | Architecture decisions |
-| **04** | `docs/04.specs/` | Technical specifications |
-| **05** | `docs/05.plans/` | Implementation plans |
-| **06** | `docs/06.tasks/` | Task execution and evidence |
-| **07** | `docs/07.guides/` | Human guides |
-| **08** | `docs/08.operations/` | Operations policy |
-| **09** | `docs/09.runbooks/` | Operational procedures |
-| **10** | `docs/10.incidents/` | Incident records |
-| **11** | `docs/11.postmortems/` | Post-incident learning |
-| **90** | `docs/90.references/` | Stable references |
-| **99** | `docs/99.templates/` | Document templates |
+| 00 | `docs/00.agent-governance/` | Agent governance and routing rules |
+| 01 | `docs/01.prd/` | Product requirements |
+| 02 | `docs/02.ard/` | Architecture reference |
+| 03 | `docs/03.adr/` | Architecture decisions |
+| 04 | `docs/04.specs/` | Technical specifications |
+| 05 | `docs/05.plans/` | Implementation plans |
+| 06 | `docs/06.tasks/` | Task execution evidence |
+| 07 | `docs/07.guides/` | Human guides |
+| 08 | `docs/08.operations/` | Operations policy |
+| 09 | `docs/09.runbooks/` | Operational procedures |
+| 10 | `docs/10.incidents/` | Incident records |
+| 11 | `docs/11.postmortems/` | Post-incident learning |
+| 90 | `docs/90.references/` | Stable references |
+| 99 | `docs/99.templates/` | Document templates |
 
-## 3. Layer Identification Protocol
+## 3. Bootstrap Loading Sequence
 
-Before performing any task:
+1. Load `[LOAD:RULES:PERSONA]` from `rules/persona.md`.
+2. Load `[LOAD:RULES:CHECKLISTS]` from `rules/task-checklists.md`.
+3. Resolve task layer and load one primary scope from `scopes/<layer>.md`.
+4. For docs authoring work, load `[LOAD:RULES:STAGE-MATRIX]` from `rules/stage-authoring-matrix.md`.
+5. Load stage docs JIT only when required by the active task.
 
-1. Identify the target layer.
-2. Load `rules/persona.md`.
-3. Load one primary scope from `scopes/<layer>.md`.
-4. Announce active persona/layer/rule.
-5. Load required stage docs JIT.
+## 4. Hard Constraints
 
-## 4. Documentation Standards
-
-- All files in `docs/00.agent-governance/` must be English-only.
-- Every governance markdown file must include `layer` frontmatter.
-- Keep root shim files minimal and delegate details to `rules/`, `scopes/`, and `providers/`.
+- `docs/00.agent-governance/` must stay English-only.
+- `docs/01` to `docs/99` are read-only by default unless the user explicitly allows mutation.
+- Root shim files must remain concise and delegate details to this hub.
 
 ## 5. Verification Gate
 
-For infra or cross-cutting structural changes:
+For structural or cross-cutting changes:
 
-1. Run `bash scripts/validate-docker-compose.sh`.
-2. Ensure secrets are not stored in plaintext files.
-3. Validate link integrity for changed governance files.
-4. Confirm updated guidance reflects current repository reality.
+1. Run applicable repository checks (for infra, include `bash scripts/validate-docker-compose.sh`).
+2. Validate link integrity for changed governance/root files.
+3. Confirm policy text matches current workspace reality.
+4. Record out-of-scope breakages in `docs/00.agent-governance/memory/`.

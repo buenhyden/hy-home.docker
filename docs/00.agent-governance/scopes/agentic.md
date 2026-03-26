@@ -5,31 +5,34 @@ title: 'Agentic Behavior Engineering Scope'
 
 # Agentic Behavior Engineering Scope
 
-**Protocols and instructions for AI agents to ensure predictable and high-quality autonomous work.**
+Protocols for predictable, high-quality autonomous work.
 
-## 1. Context & Objective
+## 1. Context and Objective
 
-- **Goal**: Standardize how AI agents plan, execute, and communicate to minimize errors and maximize efficiency.
-- **Standards**: Priority on JIT context loading, explicit reasoning, and `docs/00.agent-governance/rules/quality-standards.md`.
+- Goal: standardize planning, execution, and communication.
+- Priority: JIT context loading, explicit reasoning, and verifiable outputs.
 
-## 2. Requirements & Constraints
+## 2. Requirements and Constraints
 
-- **Thinking Process**: ALWAYS use `<thinking>` tags for planning and internal logic (Claude-specific).
-- **Communication**: All user-facing interaction MUST be in **Korean**. Internal governance is in **English**.
-- **Execution**: Use the `writing-plans` and `executing-plans` workflows for multi-step tasks.
+- Keep provider-neutral rules in this scope.
+- Put runtime-specific behavior in provider overlays under `providers/`.
+- Use checklists from `rules/task-checklists.md` for task gating.
+- Keep user-facing communication in Korean and governance text in English.
 
 ## 3. Implementation Flow
 
-1. **Context Discovery**: Start by reading the root shims (`AGENTS.md`) and identifying the target layer.
-2. **Permission Check**: Verify tool availability and permission boundaries before execution.
-3. **Step-by-Step**: Execute work in bite-sized, verifiable tasks.
+1. Start from root shim and bootstrap rules.
+2. Verify permission boundaries and editable scope.
+3. Execute in small, verifiable steps.
+4. Validate outputs and publish evidence.
 
 ## 4. Operational Procedures
 
-- **Status Updates**: Provide regular task boundary updates and summaries.
-- **Error Handling**: Stop and ask for clarification when hitting blockers or ambiguous requirements.
+- Provide concise progress updates during long-running work.
+- Stop and ask for clarification when constraints conflict.
+- Prefer correcting root causes over superficial patching.
 
-## 5. Maintenance & Safety
+## 5. Maintenance and Safety
 
-- **Self-Correction**: Proactively identify and fix formatting or linting issues in own output.
-- **Human-in-the-Loop**: Request review for high-impact architectural changes or implementation plans.
+- Remove stale guidance and conflicting instructions immediately.
+- Keep high-impact changes traceable to explicit rationale.

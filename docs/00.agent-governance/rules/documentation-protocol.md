@@ -4,38 +4,43 @@ layer: agentic
 
 # Documentation Protocol
 
-This protocol defines how agents maintain documentation consistency across the repository.
+Protocol for maintaining documentation consistency and governance traceability.
 
-## 1. Context & Objective
+## 1. Context and Objective
 
-- Preserve Stage-Gate integrity.
+- Preserve stage-gate integrity.
 - Keep documentation synchronized with implementation state.
-- Ensure language and template policies are applied consistently.
+- Enforce language, template, and traceability standards.
 
-## 2. Requirements & Constraints
+## 2. Requirements and Constraints
 
 - Use templates from `docs/99.templates/` for new stage documents.
-- Maintain relative links only; do not use absolute `file://` links.
+- Use only relative links; never use absolute `file://` links.
 - Keep `docs/00.agent-governance/` English-only.
-- Keep human-facing docs in Korean unless technical interoperability requires English terms.
+- Keep human-facing docs in Korean unless interoperability requires English terms.
+- `docs/01` to `docs/99` are read-only by default; modify only with explicit user approval.
 
-## 3. Implementation Flow
+## 3. Authoring Protocol
 
-1. Identify target stage and corresponding template.
-2. Draft or update the document with required metadata and references.
-3. Cross-link related PRD/ARD/ADR/Spec/Plan/Task/Runbook artifacts.
-4. Verify links and command examples.
+1. Identify target stage.
+2. Load `rules/stage-authoring-matrix.md` and follow its stage row.
+3. Draft or update using the mapped template and required input documents.
+4. Cross-link related PRD, ARD, ADR, Spec, Plan, Task, Guide, Operation, and Runbook files.
+5. Run checklist gates from `rules/task-checklists.md`.
 
 ## 4. Operational Procedures
 
-- Trigger documentation updates when:
-  - service topology changes
-  - commands or workflow steps change
-  - ownership/scope of a module changes
-- For task completion, ensure affected README files remain accurate.
+Trigger documentation updates when:
 
-## 5. Maintenance & Safety
+- service topology changes,
+- commands/workflows change,
+- module ownership/scope changes,
+- policy and repository reality diverge.
 
-- Remove obsolete instructions quickly.
-- Do not modify `docs/01` to `docs/99` unless explicitly requested.
-- If policy and reality diverge, update policy references in `docs/00.agent-governance`.
+For completion, ensure affected README files and governance pointers remain accurate.
+
+## 5. Maintenance and Safety
+
+- Remove obsolete instructions quickly in editable scope.
+- If breakages are found in read-only stages (`docs/01` to `docs/99`), log them in `docs/00.agent-governance/memory/` with recommended fixes.
+- Keep policy wording concise, explicit, and conflict-free.
