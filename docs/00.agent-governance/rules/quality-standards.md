@@ -2,66 +2,49 @@
 layer: agentic
 ---
 
-# Agent Quality & Security Standards (March 2026)
+# Agent Quality and Security Standards
 
-This document defines the universal "Standard of Excellence" for all AI Agents interacting with `hy-home.docker`. It integrates documentation quality rubrics with technical security and performance mandates.
+Universal quality gate for agent-driven changes in this repository.
 
-## 1. Documentation Quality Rubric (A-F)
-
-Inspired by `@[/claude-md-improver]`, agents are assessed on these criteria:
+## 1. Documentation Quality Rubric
 
 | Grade | Description | Requirements |
 | :--- | :--- | :--- |
-| **A** | **Elite** | 100% Security compliance + < 200ms SLO awareness + Validated commands + 01.prd - 11.postmortems Taxonomy integration. |
-| **B** | **Professional** | High security compliance + documented workflows + minor taxonomy gaps. |
-| **C** | **Functional** | Basic security + missing performance SLOs + fragmented documentation. |
-| **D** | **Substandard** | Missing healthchecks + legacy path references + vague instructions. |
-| **F** | **FAIL** | **Hardcoded Secrets** OR **Broken Network isolation** OR **Documentation/Code mismatch**. |
+| **A** | Elite | Accurate routing, valid commands, no policy conflicts, SSoT alignment |
+| **B** | Strong | Mostly aligned with minor omissions |
+| **C** | Functional | Works but contains clarity or coverage gaps |
+| **D** | Weak | Multiple stale references or ambiguous guidance |
+| **F** | Failing | Hardcoded secrets, broken governance links, or contradictory instructions |
 
-### Quality Dimensions
+Quality dimensions:
 
-- **Actionability**: Every command must be copy-paste ready and tested.
-- **Conciseness**: Avoid generic AI prose; use token-efficient technical English.
-- **Architecture Clarity**: Documentation must accurately reflect the `01.prd - 11.postmortems` taxonomy.
+- Actionability: instructions are concrete and testable.
+- Conciseness: avoid generic filler.
+- Accuracy: references match real repository structure.
 
-## 2. Technical Security Standards
+## 2. Security Baseline
 
-All service and infrastructure changes MUST adhere to these mandates:
+- Never commit plaintext credentials.
+- Prefer secret managers or mounted secret files.
+- Keep inter-service networking restricted by intended network boundaries.
+- Use least-privilege runtime defaults when modifying infrastructure.
 
-- **Secrets Management**:
-  - NEVER commit plain-text credentials in `.env` or `docker-compose.yml`.
-  - Use **Docker Secrets** (`/run/secrets/`) for production-grade security.
-- **Network Isolation**:
-  - All inter-service traffic MUST use the `infra_net` bridge.
-  - External exposure is restricted to the **01-gateway** tier.
-- **Process Hardening**:
-  - Enforce `security_opt: [no-new-privileges:true]`.
-  - Prefer non-root users inside containers (`user: "1000:1000"`).
+## 3. Reliability and Performance Baseline
 
-## 3. Performance SLO Standard
+- Include health checks for long-running services when applicable.
+- Keep service-level validation explicit in plans and task evidence.
+- Avoid introducing commands that do not exist in this repository.
 
-Agents must optimize for and document these Service Level Objectives:
+## 4. Workflow Compliance
 
-- **Latency**:
-  - Internal API/Service-to-Service: **< 200ms (p95)**.
-  - User-facing Gateway Response: **< 500ms (p95)**.
-- **Resource Efficiency**:
-  - Every service MUST define `deploy: resources: limits` (CPU/Memory) to prevent OOM.
-  - Optimize `healthcheck` intervals to minimize CPU overhead on idle nodes.
-- **Availability**:
-  - Every service MUST have a functional `healthcheck` and `restart: always/unless-stopped` policy.
-
-## 4. Workflow & Taxonomy Compliance
-
-- **JIT Loading**: Load specific `scopes/<layer>.md` ONLY when the task targets that layer.
-- **Stage-Gate Hierarchy**: Follow the `01.prd` to `11.postmortems` folder naming convention strictly.
-- **Human-Centric UI**: All User notifications MUST be in **Korean**, while internal logic stays in **English**.
+- Use JIT routing: bootstrap -> persona -> one scope -> needed stage docs.
+- Keep governance files English-only.
+- Keep user-facing communication Korean-first.
 
 ## 5. Verification Checklist
 
-Before marking a task as complete, an agent MUST:
+Before completion:
 
-1. [ ] Pass `bash scripts/validate-docker-compose.sh`.
-2. [ ] Verify secret synchronization path.
-3. [ ] Confirm performance resource limits are set.
-4. [ ] Audit all links for dotted taxonomy compliance.
+1. Run relevant checks for changed layers.
+2. Confirm no stale links or nonexistent command references remain.
+3. Validate that modified guidance reflects repository reality.

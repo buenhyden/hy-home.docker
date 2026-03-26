@@ -4,21 +4,26 @@ layer: agentic
 
 # AGENTS.md
 
-**Universal Working Contract for all AI Agents in `hy-home.docker`.**
+Universal working contract for all coding agents in `hy-home.docker`.
 
-## 1. Governance & Entry Point
+## Entry Protocol
 
-This project uses a **Stage-Gate Taxonomy (01-11)** for documentation and governance.
+1. Load `[LOAD:RULES:BOOTSTRAP]` from `docs/00.agent-governance/rules/bootstrap.md`.
+2. Load `[LOAD:RULES:PERSONA]` from `docs/00.agent-governance/rules/persona.md`.
+3. Identify task layer and load exactly one primary scope from `docs/00.agent-governance/scopes/`.
+4. Use JIT loading for stage docs in `docs/01` to `docs/11` plus `docs/90` and `docs/99` only when needed.
 
-- **Central Hub**: [docs/00.agent-governance/README.md](docs/00.agent-governance/README.md)
-- **Bootstrap**: JIT load via `[LOAD:RULES:BOOTSTRAP]` from `docs/00.agent-governance/rules/bootstrap.md`.
+## Mandatory Constraints
 
-## 2. Shared Directives
+- Keep root instruction files thin; put detailed rules in `docs/00.agent-governance`.
+- Treat `docs/01` to `docs/99` as project SSoT; do not mutate those stages unless explicitly requested.
+- Run all relevant programmatic checks listed by the active scope/rules before completion.
+- If multiple instruction files apply by directory depth, the most specific in-scope file wins.
+- System, developer, and direct user instructions always override repository instruction files.
 
-- **Language Policy**: Follow [language-policy.md](docs/00.agent-governance/rules/language-policy.md).
-- **Git Workflow**: Follow [git-workflow.md](docs/00.agent-governance/rules/git-workflow.md).
-- **Context Routing**: Load technical scopes from `docs/00.agent-governance/scopes/` JIT.
+## Canonical References
 
-## 3. Compliance
-
-Agents MUST verify all work against the [01-11 Stage-Gate Taxonomy](docs/README.md) and technical runbooks.
+- Governance hub: `docs/00.agent-governance/README.md`
+- Shared standards: `docs/00.agent-governance/rules/standards.md`
+- Quality/security gate: `docs/00.agent-governance/rules/quality-standards.md`
+- Git workflow: `docs/00.agent-governance/rules/git-workflow.md`

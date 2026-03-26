@@ -26,7 +26,7 @@ title: 'Quality Assurance Scope'
 1. **Red**: Write failing tests based on the spec (`docs/04.specs/`).
 2. **Green**: Implement minimal code to pass.
 3. **Refactor**: Clean code patterns without changing behavior.
-4. **Finalize**: Run the full validation suite (e.g., `scripts/validate-all.sh`).
+4. **Finalize**: Run all repository-available test and validation commands relevant to the touched area.
 
 ## 4. Operational Procedures
 

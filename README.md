@@ -13,14 +13,20 @@
 ### 페르소나와 언어 약속
 
 - **Identity First**: 작업을 시작하기 전에는 반드시 [AGENTS.md](AGENTS.md)를 먼저 읽고, 현재 프로젝트의 거버넌스를 완벽히 숙지해 주세요.
-- **Role Selection**: [persona-matrix.md](docs/00.agent-governance/rules/persona-matrix.md)에서 현재 작업에 가장 어울리는 전문가 역할을 찾아 해당 규칙을 활성화합니다.
-- **Language Policy**: **우리는 한국어로 소통합니다.** 에이전트가 내놓는 모든 답변과 요약은 한국어여야 합니다. 다만, `docs/00.agent-governance` 내부에 있는 에이전트 전용 규칙이나 기술 분석은 효율성을 위해 영어를 기본으로 사용합니다.
+- **Role Selection**: [persona.md](docs/00.agent-governance/rules/persona.md)에서 현재 작업 레이어에 맞는 페르소나와 규칙을 활성화합니다.
+- **Language Policy**: **우리는 한국어로 소통합니다.** 에이전트가 내놓는 모든 답변과 요약은 한국어여야 합니다.
 
 ### 어떻게 작업하나요?
 
 - **지연 로딩 (Lazy Loading)**: 한 번에 모든 것을 보려고 하지 마세요. `[LOAD:...]` 마커를 활용해 꼭 필요한 정보만 그때그때 불러오는 것이 토큰 효율과 정확도 면에서 훨씬 유리합니다.
 - **명세에 근거한 구현**: "아마 이럴 거야"라는 추측은 금물입니다. 모든 수정 사항은 `docs/01.prd/`와 `docs/04.specs/`에 정의된 명확한 근거를 바탕으로 이루어져야 합니다.
 - **안전 제일**: 인프라 설정을 바꾸기 전에는 늘 `bash scripts/validate-docker-compose.sh`를 실행해 시스템에 무리가 없는지 미리 확인해 주세요.
+
+### 문서 언어 정책 (docs)
+
+- **AI 에이전트 작업용 문서**: `docs/00.agent-governance/` 및 루트 지시 파일(`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`)은 영어로 작성합니다.
+- **사람이 읽는 운영/기획 문서**: `docs/01~99`와 일반 README/가이드는 한국어를 기본으로 작성합니다.
+- **원칙**: AI 추론 정확도와 토큰 효율은 영어 규칙 문서로 확보하고, 사용자/운영자 가독성은 한국어 문서로 확보합니다.
 
 ## 📁 저장소 한눈에 보기
 

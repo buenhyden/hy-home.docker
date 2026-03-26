@@ -21,6 +21,10 @@ ignores:
   - 'dist/'
   - 'coverage/'
   - 'storybook-static/'
+  - "AGENTS.md"
+  - "CLAUDE.md"
+  - "GEMINI.md"
+  - "docs/00.agent-governance/memory/template.md"
 # 자동 고침 활성화
 fix: true
 # 출력 포맷(선택)

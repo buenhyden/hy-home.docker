@@ -27,7 +27,7 @@ title: 'Architecture Strategy Scope'
 
 1. **Discover**: Analyze existing system context in `02.ard/`.
 2. **Standardize**: Select or define patterns (e.g., Saga, Event Sourcing) and document in ADR.
-3. **Verify**: Use `scripts/validate-architecture.sh` (if available) to audit dependency directions.
+3. **Verify**: Run repository-available validation commands relevant to the changed architecture surfaces.
 
 ## 4. Operational Procedures
 

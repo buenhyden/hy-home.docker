@@ -4,79 +4,65 @@ layer: agentic
 
 # AI Agent Governance Hub
 
-Welcome to the central governance directory for AI Agents. This folder defines the rules, scopes, and protocols for all automated and assisted development tasks.
+This directory is the canonical governance system for coding agents in this repository.
 
 ## 1. Context & Objective
 
-- **Purpose**: To provide a single source of truth (SSoT) for AI agent behavior, technical constraints, and governance protocols.
-- **Identity Protocol**: AI Agents must establish identity via [AGENTS.md](../../AGENTS.md) and load this hub at session start.
-- **Compliance**: All work must follow the **01.prd - 11.postmortems** Stage-Gate Taxonomy. Decisions must be anchored in ADRs, and implementations must be grounded in approved Specs.
+- **Purpose**: Define deterministic rules for planning, implementation, and documentation workflows.
+- **Entry Point**: Agents start from [AGENTS.md](../../AGENTS.md), then load this hub JIT.
+- **Compliance Boundary**: Work must align with the Stage-Gate taxonomy in `docs/01` to `docs/11`, plus `docs/90` and `docs/99`.
 
 ## 2. Requirements & Constraints
 
-- **Directory Structure**:
-  - `rules/`: Universal core governance, persona mapping, and repository-wide standards.
-  - `scopes/`: Layer-specific technical instructions and constraints (Architecture, Backend, Infra, etc.).
-  - `claude-provider.md`: Provider-specific configuration for Claude Code.
-  - `gemini-provider.md`: Provider-specific configuration for Gemini CLI.
-- **Language Policy**:
-  - **Governance Documentation**: All files in this directory MUST be written in **English** (token optimized).
-  - **User Communication**: AI Agents MUST translate all responses and notifications into manual **Korean**.
-  - **Rule Enforcement**: Follow the centralized policy in [language-policy.md](rules/language-policy.md).
+- **Language**: Every file in `docs/00.agent-governance/` must be English-only.
+- **Structure**:
+  - `rules/`: Shared governance policies and execution standards.
+  - `scopes/`: Layer-specific constraints.
+  - `providers/`: Agent-runtime-specific overlays.
+  - `memory/`: Templates and operating protocol for reusable governance memory.
+- **No Duplicate Authority**: Root files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) are thin shims. Detailed policies live here.
 
 ## 3. Implementation Flow
 
-### Gateway Dispatcher (JIT Context)
+### Stage-Gate JIT Markers
 
-Use the following JIT loading markers to ingest task-specific context from the documentation taxonomy:
-
-| Marker | Target README | Intent |
+| Marker | Target | Purpose |
 | :--- | :--- | :--- |
-| `[LOAD:PRD]` | `docs/01.prd/README.md` | Requirements & Vision |
-| `[LOAD:ARD]` | `docs/02.ard/README.md` | Architecture Reference |
-| `[LOAD:ADR]` | `docs/03.adr/README.md` | Technical Decisions |
-| `[LOAD:SPECS]` | `docs/04.specs/README.md` | Technical Specifications |
-| `[LOAD:PLANS]` | `docs/05.plans/README.md` | Implementation Plans |
-| `[LOAD:TASKS]` | `docs/06.tasks/README.md` | Task Tracking |
-| `[LOAD:GUIDES]` | `docs/07.guides/README.md` | Developer Guides |
-| `[LOAD:OPS]` | `docs/08.operations/README.md` | Operational Policy |
-| `[LOAD:RUNBOOKS]` | `docs/09.runbooks/README.md` | Execution Runbooks |
-| `[LOAD:INCIDENTS]` | `docs/10.incidents/README.md` | Incident Tracking |
-| `[LOAD:POSTMORTEMS]` | `docs/11.postmortems/README.md`| Lessons Learned |
+| `[LOAD:PRD]` | `docs/01.prd/README.md` | Product intent and requirements |
+| `[LOAD:ARD]` | `docs/02.ard/README.md` | Architecture reference |
+| `[LOAD:ADR]` | `docs/03.adr/README.md` | Decision history |
+| `[LOAD:SPECS]` | `docs/04.specs/README.md` | Technical source of truth |
+| `[LOAD:PLANS]` | `docs/05.plans/README.md` | Implementation planning |
+| `[LOAD:TASKS]` | `docs/06.tasks/README.md` | Execution evidence and tracking |
+| `[LOAD:GUIDES]` | `docs/07.guides/README.md` | Human-facing guidance |
+| `[LOAD:OPS]` | `docs/08.operations/README.md` | Operational policy |
+| `[LOAD:RUNBOOKS]` | `docs/09.runbooks/README.md` | Operational procedures |
+| `[LOAD:INCIDENTS]` | `docs/10.incidents/README.md` | Incident records |
+| `[LOAD:POSTMORTEMS]` | `docs/11.postmortems/README.md` | Lessons learned |
+| `[LOAD:REFERENCES]` | `docs/90.references/README.md` | Stable references |
+| `[LOAD:TEMPLATES]` | `docs/99.templates/README.md` | Document templates |
 
-### Specialized Rule Dispatcher
+### Rule Dispatch Markers
 
-| Strategy | Rule File | Dispatcher Marker |
-| :--- | :--- | :--- |
-| **Core Governance** | `rules/bootstrap.md` | `[LOAD:RULES:BOOTSTRAP]` |
-| **Persona Matrix** | `rules/persona-matrix.md` | `[LOAD:RULES:PERSONA]` |
-| **Language Policy** | `rules/language-policy.md` | `[LOAD:RULES:LANG]` |
-| **Git Workflow** | `rules/git-workflow.md` | `[LOAD:RULES:GIT]` |
-| **README Policy** | `rules/readme-policy.md` | `[LOAD:RULES:README]` |
-| **Quality Standards** | `rules/quality-standards.md` | `[LOAD:RULES:QUALITY]` |
+| Marker | Rule |
+| :--- | :--- |
+| `[LOAD:RULES:BOOTSTRAP]` | `rules/bootstrap.md` |
+| `[LOAD:RULES:PERSONA]` | `rules/persona.md` |
+| `[LOAD:RULES:STANDARDS]` | `rules/standards.md` |
+| `[LOAD:RULES:GIT]` | `rules/git-workflow.md` |
+| `[LOAD:RULES:DOCS]` | `rules/documentation-protocol.md` |
+| `[LOAD:RULES:QUALITY]` | `rules/quality-standards.md` |
+| `[LOAD:RULES:AGENTIC]` | `rules/agentic.md` |
 
 ## 4. Operational Procedures
 
-### Technical Scopes (Layer Map)
-
-Agents MUST load the corresponding scope from `scopes/` before performing work in a specific layer:
-
-- **Architecture**: `scopes/architecture.md` (`[LOAD:RULES:ARCH]`)
-- **Backend**: `scopes/backend.md` (`[LOAD:RULES:BACKEND]`)
-- **Frontend**: `scopes/frontend.md` (`[LOAD:RULES:FRONTEND]`)
-- **Infrastructure**: `scopes/infra.md` (`[LOAD:RULES:INFRA]`)
-- **Mobile**: `scopes/mobile.md` (`[LOAD:RULES:MOBILE]`)
-- **Product**: `scopes/product.md` (`[LOAD:RULES:PRODUCT]`)
-- **QA**: `scopes/qa.md` (`[LOAD:RULES:QA]`)
-- **Security**: `scopes/security.md` (`[LOAD:RULES:SECURITY]`)
-- **Ops**: `scopes/ops.md` (`[LOAD:RULES:OPS]`)
-- **Docs**: `scopes/docs.md` (`[LOAD:RULES:DOCS]`)
-- **Common**: `scopes/common.md` (`[LOAD:RULES:COMMON]`)
-- **Entry**: `scopes/entry.md` (`[LOAD:RULES:ENTRY]`)
-- **Meta**: `scopes/meta.md` (`[LOAD:RULES:META]`)
-- **Agentic**: `scopes/agentic.md` (`[LOAD:RULES:AGENTIC]`)
+1. Resolve target layer and stage before any mutation.
+2. Activate persona through `rules/persona.md`.
+3. Load one primary scope from `scopes/` and only adjacent scopes when required.
+4. Validate completion using relevant checks and document evidence in stage docs.
 
 ## 5. Maintenance & Safety
 
-- **Updating Governance**: All changes to files in this directory must be documented in an ADR if they significantly alter agent behavior or repository taxonomy.
-- **Validation**: Ensure any changes to dispatcher markers are reflected in root shims.
+- Keep policy files concise, explicit, and conflict-free.
+- Remove stale commands and dead links immediately.
+- Any major governance change should be traceable to an ADR or an explicit user directive.

@@ -24,7 +24,7 @@ title: 'Frontend UI/UX Scope'
 
 ## 3. Implementation Flow
 
-1. **Prototypes**: Verify design intent via `scripts/vibe-check.sh` or visual regression tools.
+1. **Prototypes**: Verify design intent with visual regression tools when UI changes are significant.
 2. **Componentry**: Build modular, reusable components with strict TypeScript types.
 3. **Validation**: Run `npm run lint` and `npm run build` before pushing to verify bundle optimization.
 

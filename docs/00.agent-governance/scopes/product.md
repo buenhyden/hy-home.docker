@@ -32,4 +32,4 @@ title: 'Product Requirements Scope'
 ## 5. Maintenance & Safety
 
 - **Archive**: Move deprecated product ideas to an `archive/` subfolder within `01.prd/`.
-- **Glossary**: Maintain a ubiquitous language glossary in the project root README or `docs/common/`.
+- **Glossary**: Maintain a ubiquitous language glossary in project documentation under `docs/90.references/`.
