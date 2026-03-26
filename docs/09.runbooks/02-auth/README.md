@@ -14,6 +14,10 @@
 
 ---
 
+## Procedures
+
+- [Keycloak Runbook](./keycloak.md) - IAM maintenance and recovery procedures.
+
 ## Recovery Procedures
 
 ### 1. Keycloak 관리자 계정 복구
@@ -21,9 +25,11 @@
 관리자 비밀번호를 분실했거나 계정이 잠긴 경우 다음 단계를 거친다.
 
 1. **임시 관리자 생성**:
+
    ```bash
    docker exec -it keycloak /opt/keycloak/bin/kc.sh bootstrap-admin --user new-admin --password temp-password
    ```
+
 2. **관리자 로그인**: `https://keycloak.${DEFAULT_URL}`에 `new-admin`으로 접속.
 3. **기존 계정 수정**: `master` 렐름에서 기존 관리자 계정의 비밀번호를 재설정한다.
 
@@ -34,19 +40,23 @@
 1. **Secret 생성**: 32바이트 랜덤 문자열 생성.
 2. **Secret 업데이트**: `secrets/oauth2_proxy_cookie_secret` 파일 내용 수정.
 3. **서비스 재시작**:
+
    ```bash
    cd infra/02-auth/oauth2-proxy
    docker compose restart oauth2-proxy
    ```
+
    > [!WARNING]
    > 이 작업은 모든 활성 세션을 즉시 무효화하며 사용자는 다시 로그인해야 함.
 
 ### 3. Keycloak 렐름 설정 백업 (Export)
 
 1. **익스포트 실행**:
+
    ```bash
    docker exec keycloak /opt/keycloak/bin/kc.sh export --dir /opt/keycloak/conf/backups --realm hy-home.realm
    ```
+
 2. **백업 파일 확인**: `/opt/keycloak/conf/backups` 폴더에 JSON 파일이 생성되었는지 확인.
 
 ---

@@ -22,10 +22,12 @@
 
 ### 2. 세션 및 쿠키 정책 (SSO)
 
-- **OAuth2 Proxy**: 
+- **OAuth2 Proxy**:
+
   - `cookie_secure`는 항상 `true`여야 함 (HTTPS 필수).
   - 세션 만료 시간은 기본 12시간, 리프레시 주기는 1시간으로 설정한다.
-- **Keycloak**: 
+- **Keycloak**:
+
   - SSO 및 세션 타임아웃 설정을 통해 유휴 세션을 자동 정리한다.
   - 보안을 위해 `Proxy Headers` 설정을 `xforwarded`로 유지한다.
 
@@ -41,5 +43,6 @@
 
 ## Related Documents
 
-- **Setup Guide**: `[../07.guides/02-auth/01.setup.md]`
+- **Setup Guide**: `[../07.guides/02-auth/keycloak.md]`
+- **Keycloak Policy**: `[./keycloak.md]`
 - **Runbook**: `[../09.runbooks/02-auth/README.md]`

@@ -31,6 +31,7 @@
 ## Step-by-step Instructions
 
 ### 1. Adding a New Path-based Route
+
 새로운 서비스를 특정 경로(예: `/my-service/`)로 노출하려면 `nginx.conf`의 `server` 블록 내에 `location`을 추가한다:
 
 ```nginx
@@ -42,6 +43,7 @@ location /my-service/ {
 ```
 
 ### 2. Enabling SSO for a Location
+
 특정 경로를 SSO 인증으로 보호하려면 `auth_request` 설정을 포함한다:
 
 ```nginx
@@ -57,8 +59,8 @@ location /protected-app/ {
 }
 ```
 
-
 ### 3. Reloading Configuration
+
 설정 변경 후 다운타임 없이 반영하려면 다음 명령을 실행한다:
 
 ```bash

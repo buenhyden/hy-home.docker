@@ -21,7 +21,6 @@ This directory defines the operational policies for the `01-gateway` tier. It re
 
 ## Policy Table
 
-
 | [README.md](./README.md) | Tier-level operational overview and global controls |
 | [traefik.md](./traefik.md) | Specific operational policy for the Traefik router |
 | [nginx.md](./nginx.md) | Specific operational policy for the Nginx secondary proxy |

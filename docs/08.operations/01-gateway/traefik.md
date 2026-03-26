@@ -18,7 +18,6 @@
 - **Agents**: Gateway Maintenance Agents.
 - **Environments**: All environments (Production, Staging, Dev).
 
-
 ## Controls
 
 ### 1. Security & Compliance

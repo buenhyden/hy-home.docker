@@ -1,45 +1,29 @@
-# Observability Runbook (06-observability)
+# Observability Runbooks
 
-> Telemetry Infrastructure Recovery & Troubleshooting
+> Incident Response & Recovery Procedures for the LGTM Stack.
 
-## Overview
+## Overview (KR)
 
-이 런북은 `06-observability` 계층의 장애 상황에 대한 즉각적인 대응 절차를 안내한다.
+이 디렉터리는 `hy-home.docker`의 가시성 체계(06-observability) 장애 발생 시 복구 절차를 포함한다. 데이터 소실 방지와 고가용성 유지를 위한 핵심 대응 매뉴얼이다.
 
-## Incident Response Procedures
+## Recovery Procedures
 
-### 1. Prometheus Scraping 장애
+- [01. LGTM Stack Recovery](./01.lgtm-recovery.md) - Standard recovery steps for Loki, Grafana, Tempo.
+- [02. Alloy troubleshooting](./02.alloy-troubleshooting.md) - Telemetry pipeline debug guide.
 
-지표가 수집되지 않거나 그래프가 끊기는 경우.
+## Incident Response Flow
 
-1. **Alloy 상태 확인**: Alloy UI (`https://alloy.${DEFAULT_URL}`)에서 커넥터 파이프라인 점검.
-2. **Prometheus Targets 확인**: `https://prometheus.${DEFAULT_URL}/targets`에서 'Down' 상태의 타겟 식별.
-3. **네트워크 점검**: `infra_net` 상에서 타겟 호스트와의 통신 확인.
+1. **Detection**: Prometheus Alertmanager 또는 Grafana On-call 알람 수신.
+2. **Triaging**: 영향도 파악 (데이터 수집 중단 vs 시각화 중단).
+3. **Mitigation**: Runbook 절차에 따른 서비스 재시작 또는 로그 분석.
+4. **Resolution**: 정상 상태 확인 및 Post-mortem 작성.
 
-### 2. Loki/Tempo 저장소 오류 (S3 Connectivity)
+## Emergency Contacts
 
-로그나 트레이스를 읽지 못하거나 쓰기 오류가 발생하는 경우.
-
-1. **상태 코드 확인**: `500 Internal Server Error` 또는 `MinIO Connection Timeout` 여부 확인.
-2. **MinIO 상태 확인**: `04-data` 계층의 MinIO 서비스 및 버킷(`loki`, `tempo`) 존재 여부 확인.
-3. **Secret 확인**: `minio_app_user_password`가 정확히 주입되었는지 확인.
-
-### 3. Grafana SSO(Keycloak) 로그인 실패
-
-'Unauthorized' 또는 OAuth2 관련 에러 발생 시.
-
-1. **Keycloak 상태 확인**: `02-auth` 계층의 Keycloak 서비스가 정상인지 확인.
-2. **Secret 동기화**: `oauth2_proxy_client_secret`이 Keycloak 설정과 일치하는지 재발급 및 적용 검토.
-3. **시간 동기화**: 호스트 머신의 시간이 어긋나면 토큰 검증이 실패할 수 있으므로 NTP 상태 확인.
-
----
-
-## Verification Steps
-
-- [ ] `docker exec infra-alloy alloy run --test ...` 로 설정 유효성 검사.
-- [ ] `promtool check rules ...` 로 알람 규칙 문법 검사.
+- **Infrastructure Lead**: `@infra-oncall`
+- **SRE Team**: `#ops-observability` (Slack)
 
 ## Related Documents
 
-- [Operations Policy](../../docs/08.operations/06-observability/README.md)
-- [LGTM Stack Guide](../../docs/07.guides/06-observability/01.lgtm-stack.md)
+- **Guides**: `[../../07.guides/06-observability/README.md]`
+- **Operations**: `[../../08.operations/06-observability/README.md]`

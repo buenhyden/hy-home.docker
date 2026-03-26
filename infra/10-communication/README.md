@@ -1,56 +1,73 @@
-<!-- [ID:10-communication:root] -->
-# 📬 Communication Tier (10-communication)
+# 10-communication - Communication Tier
 
-> Centralized communication infrastructure providing development-safe SMTP trapping and production-grade mail services.
+## Overview
+`10-communication` 계층은 시스템의 고성능 전자우편 수발신 및 개발 단계의 안전한 메일 트래핑(Trapping) 환경을 제공한다. Rust 기반의 현대적인 메일 서버인 Stalwart와 개발용 샌드박스인 MailHog를 핵심 구성 요소로 사용한다.
 
-## 1. 개요 (KR)
-이 티어는 시스템의 외부 통신 인프라를 관리합니다. 개발 및 테스트를 위한 이메일 캡처 서비스인 **MailHog**와 실운영 환경을 위한 고성능 메일 서버인 **Stalwart**를 제공합니다. 모든 통신은 중앙 집중식 인증서와 보안 정책을 따르도록 설계되었습니다.
+## Architecture
 
-## 2. Infrastructure Overview
-The `10-communication` tier balances high-fidelity mail processing with testing safety. It ensures that outgoing notifications are either trapped for inspection (Dev) or securely delivered to external recipients (Prod) via modern authenticated protocols.
-
-## 3. Technology Stack
-
-| Component | Technology | Role | Persistence |
-| :--- | :--- | :--- | :--- |
-| **SMTP Trap** | `MailHog v1.0.1` | Dev SMTP Interface | Stateless (In-memory) |
-| **Mail Server** | `Stalwart v0.14` | IMAP/SMTP/JMAP | Local Bind Mount |
-| **Security** | `SSO / TLS` | Auth & Encryption | secrets/certs |
-
-## 4. Implementation Snippet
-
-```yaml
-# 10-communication core services
-services:
-  stalwart:
-    image: stalwartlabs/stalwart:v0.14
-    volumes:
-      - stalwart-data:/opt/stalwart
-      - ../../../secrets/certs:/opt/stalwart/certs:ro
-    # Port 25 for SMTP, 587/465 for Submission, 993 for IMAPS
-  
-  mailhog:
-    image: mailhog/mailhog:v1.0.1
-    # SSO protected UI for dev testing
+### Component Diagram
+```mermaid
+graph TD
+    subgraph "External"
+        Internet[Internet Mail Servers]
+    end
+    
+    subgraph "10-communication"
+        MH[MailHog: Dev SMTP Trap]
+        SW[Stalwart: Prod Mail Server]
+    end
+    
+    subgraph "01-gateway"
+        TF[Traefik: Reverse Proxy]
+    end
+    
+    subgraph "02-auth"
+        KC[Keycloak: Identity Provider]
+    end
+    
+    TF --- MH
+    TF --- SW
+    SW --- KC
+    SW --- Internet
 ```
 
-## 5. Directory Structure
-```text
-10-communication/
-├── mail/             # Core mail services (docker-compose)
-└── README.md         # This entry point
+- **MailHog**: 개발 모드에서 모든 아웃바운드 SMTP 연결을 캡처하여 메모리에 보관.
+- **Stalwart**: 운영 모드에서 JMAP, IMAP, SMTP 프로토콜을 통한 실제 메일 수발신 처리.
+
+## Integration
+
+### Upstream Dependencies
+- **02-auth**: Keycloak을 통한 관리자 및 사용자 계정 통합 인증 (OIDC/LDAP).
+- **01-gateway**: Traefik을 통한 SSL/TLS 종단 및 가상 호스트 라우팅.
+
+### Downstream Consumers
+- **Applications**: 시스템 알림, 비밀번호 재설정 메일 등 SMTP 클라이언트로 연동.
+- **Developers**: Web UI를 통한 메일 발송 결과 실시간 모니터링.
+
+## Operations
+
+### Deployment
+```bash
+# 서비스 시작
+docker compose up -d
+
+# 로그 확인
+docker compose logs -f
 ```
 
-## 6. Persistence & Security
-- **Stateless Debugging**: MailHog captures are lost on restart, preventing sensitive data accumulation.
-- **Encrypted Storage**: Stalwart volumes store encrypted mail data and account configurations.
-- **Edge Protection**: MailHog is protected by Traefik SSO middleware; Stalwart exposes native SSL ports.
+### Key Ports
+- **SMTP (Dev)**: 1025
+- **SMTP (Prod)**: 25, 465, 587
+- **Web UI**: 8025 (MailHog), 8080 (Stalwart Admin)
 
----
+## Governance
 
-## 🔗 Documentation Links
-- **Guides**: [Mail Setup & Logic](../../docs/07.guides/10-communication/README.md)
-- **Operations**: [SPF/DKIM/DMARC Policy](../../docs/08.operations/10-communication/README.md)
-- **Runbooks**: [Delivery Recovery](../../docs/09.runbooks/10-communication/README.md)
+### Standard Compliance
+- **Architecture**: March 2026 "Thin Root" 규격을 준수한다.
+- **Documentation**: [docs/README.md](../../docs/README.md) 기반의 Stage-Gate Taxonomy를 따른다.
 
-Copyright (c) 2026. Licensed under the MIT License.
+### Related Documents
+- [PRD](../../docs/01.prd/2026-03-26-10-communication.md)
+- [ARD](../../docs/02.ard/0010-communication-architecture.md)
+- [ADR](../../docs/03.adr/0010-communication-services.md)
+- [Technical Spec](../../docs/04.specs/10-communication/spec.md)

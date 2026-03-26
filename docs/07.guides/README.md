@@ -40,8 +40,13 @@
 - 일반 가이드는 `07.guides/####-<topic>.md`
 - 장기 유지 가이드는 날짜 없이 주제명 기반 파일명을 사용할 수 있다.
 
-## Templates
+## Tier Guides
 
+이 프로젝트의 인프라 계층별 가이드 목록이다.
+
+- [01-gateway](./01-gateway/README.md)
+- [02-auth](./02-auth/README.md)
+- [03-security](./03-security/README.md)
 - [04-data](./04-data/README.md)
 - [05-messaging](./05-messaging/README.md)
 - [06-observability](./06-observability/README.md)
@@ -49,4 +54,8 @@
 - [08-ai](./08-ai/README.md)
 - [09-tooling](./09-tooling/README.md)
 - [10-communication](./10-communication/README.md)
-- [99.templates](../99.templates/guide.template.md)
+- [11-laboratory](./11-laboratory/README.md)
+
+## Templates
+
+- `../99.templates/guide.template.md`

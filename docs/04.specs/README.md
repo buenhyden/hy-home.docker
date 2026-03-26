@@ -95,6 +95,17 @@
 - 기능 내부의 설계 보조용 `tasks.md` 또는 `tests.md`는 `04.specs/<feature-id>/`에 둘 수 있다.
 - 그러나 실행 추적, 스프린트 관리, 검증·평가 기록의 정본은 `06.tasks/`에 둔다.
 
+## Specifications
+
+이 디렉터리는 인프라 각 계층(Tier) 및 핵심 기능에 대한 상세 기술 명세를 관리한다.
+
+- [01-gateway](./01-gateway/spec.md)
+- [02-auth](./02-auth/spec.md)
+- [03-security](./03-security/spec.md)
+- [04-data](./04-data/spec.md)
+- [06-observability](./06-observability/spec.md)
+- [07-workflow](./07-workflow/spec.md)
+
 ## Templates
 
 - `../99.templates/spec.template.md`

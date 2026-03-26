@@ -1,30 +1,70 @@
-# 02.ARD (Architecture Reference Document)
+# 02. ARD (Architecture Reference Document)
 
-## 목적
+> 시스템의 구조적 경계, 품질 속성 및 참조 모델을 정의하는 문서 저장소
 
-이 폴더는 아키텍처 참조 문서(Architecture Reference Document, ARD)를 저장한다. ARD는 시스템 수준의 경계, 품질 속성, 참조 구조, 데이터 흐름, 보안·관측성·운영성 요구를 정의한다.
+## Overview
 
-## 포함할 내용
+`docs/02.ard/` 경로는 `hy-home.docker` 에코시스템의 기술적 뼈대를 정의하는 아키텍처 참조 문서들을 관리한다. 각 문서는 특정 시스템이나 도메인이 맡은 책임 범위, 타 시스템과의 상호작용 방식, 그리고 달성해야 할 핵심 품질 속성(성능, 보안, 확장성 등)을 아키텍처 관점에서 기술한다.
 
-- 시스템 경계와 책임
-- 품질 속성(성능, 보안, 신뢰성, 확장성, 운영성)
-- 참조 아키텍처
-- 데이터 흐름
-- 배포 및 인프라 관점
-- 소유권과 근거 문서 링크
+## Audience
 
-## 포함하지 말아야 할 내용
+이 README의 주요 독자:
 
-- 한 번의 구체 결정 자체
-- 세부 구현 파일 설계
-- 운영 명령 절차
+- Software Architects
+- Senior Developers
+- Infrastructure Engineers
+- AI Agents (Architectural guardrails & context)
 
-## 연결 규칙
+## Scope
 
-- PRD를 입력으로 받고, ADR·Spec의 상위 참조가 된다.
-- Agent 시스템인 경우 모델/도구/메모리/컨텍스트/가드레일에 대한 아키텍처 수준 요구를 포함한다.
+### In Scope
 
+- 시스템/도메인별 참조 아키텍처 모델 (`####-<name>.md`)
+- 시스템 경계 및 책임 (Owns / Consumes)
+- 품질 속성 요구사항 (Performance, Security, etc.)
+- 인프라 배포 모델 및 데이터 흐름도
 
-## Templates
+### Out of Scope
 
-- `../99.templates/ard.template.md`
+- 비즈니스 요구사항 정의 (-> `01.prd/`)
+- 구체적인 개별 기술 결정의 배경 (-> `03.adr/`)
+- 함수/클래스 수준의 상세 설계 (-> `04.specs/`)
+- 운영 매뉴얼 및 절차 (-> `09.runbooks/`)
+
+## Structure
+
+```text
+02.ard/
+├── 0001-gateway-architecture.md     # Gateway Tier 아키텍처
+├── 0002-auth-architecture.md        # Auth Tier 아키텍처
+├── 0003-security-architecture.md    # Security Tier 아키텍처
+├── 0004-data-architecture.md        # Data Tier 아키텍처
+├── 0005-messaging-architecture.md   # Messaging Tier 아키텍처
+├── 0006-observability-architecture.md # Observability Tier 아키텍처
+├── 0007-airflow-n8n-hybrid-workflow.md  # Workflow 티어 기술 스택 선택
+├── 0008-ollama-openwebui-local-ai.md    # AI 티어 기술 스택 선택
+└── README.md                        # This file
+```
+
+## How to Work in This Area
+
+1. 시스템 아키텍처를 설계하거나 변경할 때 `docs/99.templates/ard.template.md`를 사용한다.
+2. 파일명은 `####-<system-name>.md` 순차 번호 형식을 권장한다.
+3. PRD의 요구사항이 어떻게 아키텍처적으로 해결되는지 매핑한다.
+4. 변경 시 관련된 ADR 및 Spec 문서의 링크를 최신 상태로 유지한다.
+
+## Documentation Standards
+
+- 파일 단위의 세부 구현보다는 시스템 수준의 경계와 흐름에 집중한다.
+- 상단에 `Overview (KR)` 요약을 포함한다.
+- Mermaid 등을 활용한 시각적 다이어그램 포함을 지향한다 (권장).
+
+## Related References
+
+- [01.prd (Requirements)](../01.prd/README.md)
+- [03.adr (Decisions)](../03.adr/README.md)
+- [04.specs (Specifications)](../04.specs/README.md)
+- [99.templates (Templates)](../99.templates/README.md)
+
+---
+*Maintained by Engineering Architecture Team*

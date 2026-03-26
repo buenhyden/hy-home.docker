@@ -43,8 +43,9 @@ keycloak/
 ## How to Work in This Area
 
 1. Refer to the [Auth Setup Guide](../../../docs/07.guides/02-auth/01.setup.md) for initial realm creation.
-2. Check `opt/keycloak/conf` for static settings.
-3. Use the [Auth Operation Policy](../../../docs/08.operations/02-auth/README.md) for user management procedures.
+2. Check the [Keycloak Configuration Guide](../../../docs/07.guides/02-auth/keycloak-config.md) for specific realm/client settings.
+3. Check `opt/keycloak/conf` for static settings.
+4. Use the [Auth Operation Policy](../../../docs/08.operations/02-auth/README.md) for user management procedures.
 
 ## Tech Stack
 

@@ -21,11 +21,13 @@
 ## Controls
 
 ### 1. Routing & Security
+
 - **Required**: 모든 `/app/` 하위 경로는 반드시 SSO(`auth_request`)를 통한 인증을 거쳐야 한다.
 - **Required**: 서비스 노출 시 불필요한 헤더 노출을 방지하기 위해 `server_tokens off;` 설정을 유지한다.
 - **Allowed**: 정적인 자산(Static Assets) 서빙 시 Nginx 캐싱 설정을 적용하여 백엔드 부하를 줄이는 것을 권장한다.
 
 ### 2. Configuration Standards
+
 - **Required**: 새로운 업스트림 추가 시 명확한 서비스 이름 정의와 `keepalive` 설정을 포함해야 한다.
 - **Required**: 업로드 기능이 있는 서비스(예: MinIO)의 경우 `client_max_body_size`를 명시적으로 제어해야 한다.
 

@@ -31,6 +31,7 @@
 ## Step-by-step Instructions
 
 ### 1. New Service Registration
+
 새로운 서비스를 Traefik에 등록하려면 해당 서비스의 `docker-compose.yml`에 다음과 같은 라벨을 추가한다:
 
 ```yaml
@@ -43,6 +44,7 @@ labels:
 ```
 
 ### 2. Applying Shared Middlewares
+
 `dynamic/middleware.yml`에 정의된 공통 미들웨어(예: SSO)를 적용하려면 라벨에 추가한다:
 
 ```yaml
@@ -51,9 +53,8 @@ labels:
 ```
 
 ### 3. Monitoring via Dashboard
+
 Traefik 대시보드는 `dashboard.${DEFAULT_URL}`에서 접근 가능하다. 상호 요약 정보와 라우팅 규칙의 상태를 실시간으로 확인할 수 있다.
-
-
 
 ## Common Pitfalls
 
