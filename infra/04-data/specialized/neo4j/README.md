@@ -2,54 +2,63 @@
 
 > Native property-graph database for connected data.
 
-## 1. Context & Objective (SSoT)
+## Overview
 
-The `neo4j` service provides a specialized graph storage layer for relationship-intensive data models. It allows for efficient querying of deep hierarchies and complex network structures using the Cypher query language.
+The `neo4j` service provides a specialized graph storage layer for relationship-intensive data models. It enables efficient querying of deep hierarchies and complex network structures using the Cypher query language. This infrastructure is localized within the `04-data/specialized` tier and is optimized for the Community edition.
 
-- **Status**: Production / Graph
-- **Role**: Relationship-intensive Storage
-- **SSoT Documentation**: [03.specialized-dbs.md](../../../docs/07.guides/04-data/03.specialized-dbs.md)
+## Audience
 
-## 2. Requirements & Constraints
+이 README의 주요 독자:
 
-- **Resources**: JVM Heap settings (128M initial/256M max) and page cache (128M) are optimized for the Community edition.
-- **Security**: Admin password managed via Docker secrets.
-- **Protocols**:
-  - `Bolt` (7687): Binary protocol for drivers.
-  - `HTTP/S` (7474/7473): Browser UI and REST API.
+- Operators (Database Administrators)
+- Backend Developers (Graph modeling)
+- Documentation Writers
+- AI Agents
 
-## 3. Setup & Installation
+## Scope
 
-The service is part of the `data` profile.
+### In Scope
 
-```bash
-docker compose up -d neo4j
+- Neo4j Community Edition container configuration (`docker-compose.yml`)
+- Service-specific security (Secret-based authentication)
+- Graph-specific networking (Bolt and HTTP/S protocols)
+- JVM memory tuning for graph workloads
+
+### Out of Scope
+
+- Application-level graph modeling (See [Technical Guide](../../../docs/07.guides/04-data/specialized/neo4j.md))
+- Global backup policies (See [Operations Policy](../../../docs/08.operations/04-data/specialized/neo4j.md))
+- Disaster recovery procedures (See [Recovery Runbook](../../../docs/09.runbooks/04-data/specialized/neo4j.md))
+
+## Structure
+
+```text
+neo4j/
+├── scripts/
+│   └── neo4j-entrypoint-with-secrets.sh   # Secret-aware entrypoint
+├── docker-compose.yml                     # Service definition
+└── README.md                              # This file
 ```
 
-### Persistence
+## How to Work in This Area
 
-- **Volume**: `neo4j-data` (`/data`)
-- **Host Path**: `${DEFAULT_DATA_DIR}/neo4j/data`
+1. Start by reviewing the [Technical Guide](../../../docs/07.guides/04-data/specialized/neo4j.md) for architectural context.
+2. Ensure the `neo4j_password` secret is provisioned before starting the service.
+3. Follow the `template-stateful-med` service extension in `docker-compose.yml` for resource consistency.
+4. Verify connectivity via the Cypher Shell or Neo4j Browser.
 
-## 4. Usage & Integration
+## Tech Stack
 
-### Integration Points
+| Category   | Technology        | Notes                     |
+| ---------- | ----------------- | ------------------------- |
+| Engine     | Neo4j Community   | Version 5.26.23           |
+| Protocol   | Bolt / HTTP / S   | Port 7687 / 7474 / 7473   |
+| Security   | Docker Secrets    | `neo4j_password`          |
+| Extension  | APOC (Optional)   | Mount to `/plugins`       |
 
-- **Bolt URL**: `bolt://neo4j.${DEFAULT_URL}:7687` (requires TLS)
-- **Browser UI**: `https://neo4j.${DEFAULT_URL}`
+## Related References
 
-### Cypher Example
-
-```cypher
-CREATE (a:Person {name: 'Alice'})-[r:KNOWS]->(b:Person {name: 'Bob'})
-RETURN a, r, b;
-```
-
-## 5. Maintenance & Safety
-
-- **Backups**: Use `neo4j-admin database dump` for offline backups or specialized online backup tools (Enterprise).
-- **Health**: Monitor via `/_cluster/health` or `cypher-shell` health checks.
-- **Plugins**: APOC and other plugins can be mounted to `/plugins`.
-
----
-Copyright (c) 2026. Licensed under the MIT License.
+- [05.analytical-specialized-dbs.md](../../../docs/07.guides/04-data/05.analytical-specialized-dbs.md)
+- [Neo4j Technical Guide](../../../docs/07.guides/04-data/specialized/neo4j.md)
+- [Neo4j Operations Policy](../../../docs/08.operations/04-data/specialized/neo4j.md)
+- [Neo4j Recovery Runbook](../../../docs/09.runbooks/04-data/specialized/neo4j.md)

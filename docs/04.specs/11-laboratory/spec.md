@@ -1,51 +1,77 @@
 <!-- Target: docs/04.specs/11-laboratory/spec.md -->
 
-# Laboratory Tier Technical Specification
-
-## Technical Specification
+# 11-laboratory Technical Specification (Spec)
 
 ## Overview (KR)
 
-이 문서는 `11-laboratory` 계층의 기술 사양을 정의한다. 통합 대시보드, 컨테이너 관리 도구, 데이터베이스 조회 도구의 네트워크 구성 및 보안 설정을 포함한다.
+이 문서는 `11-laboratory` 계층의 기술 설계와 구현 계약을 정의하는 명세서다. 통합 대시보드, 컨테이너 관리 도구, 데이터베이스 조회 도구의 네트워크 구성 및 보안 설정을 구체화한다.
 
-## Components
+## Strategic Boundaries & Non-goals
+
+- **Owns**: Service definition labels for Traefik, Docker socket integration, SSO middleware assignment.
+- **Does Not Own**: Keycloak realm configuration, Traefik entrypoint definitions.
+
+## Related Inputs
+
+- **PRD**: `[../../01.prd/2026-03-26-11-laboratory.md]`
+- **ARD**: `[../../02.ard/0011-laboratory-architecture.md]`
+- **Related ADRs**: `[../../03.adr/0011-laboratory-services.md]`
+
+## Contracts
+
+- **Config Contract**: Services must be defined in `infra/11-laboratory/<service>/docker-compose.yml`.
+- **Governance Contract**: Must include label `hy-home.tier: admin`.
+
+## Core Design
 
 ### 1. Homer (Dashboard)
-
-- **Role**: 인프라 서비스 내비게이션 게이트웨이.
-- **Configuration**: `/www/assets/config.yml`을 통한 정적 서비스 매핑.
-- **Endpoint**: `homer.${DEFAULT_URL}`
+- **Image**: `b4bz/homer`
+- **Internal Port**: 8080
+- **Volume**: `./config:/www/assets`
 
 ### 2. Portainer (Orchestration UI)
-
-- **Role**: Docker 엔진 리소스 관리.
-- **Security**: `/var/run/docker.sock` 마운트를 통한 로컬 소켓 통신.
-- **Endpoint**: `portainer.${DEFAULT_URL}`
+- **Image**: `portainer/portainer-ce:sts`
+- **Internal Port**: 9443
+- **Volume**: `/var/run/docker.sock:/var/run/docker.sock`
 
 ### 3. RedisInsight (Data Ops)
+- **Image**: `redis/redisinsight:3.0.3`
+- **Internal Port**: 5540
+- **Network**: `infra_net`
 
-- **Role**: Redis 클러스터 모니터링 및 데이터 조회.
-- **Connection**: `infra_net` 가상 네트워크를 통해 `04-data` 티어의 Redis 노드에 접속.
-- **Endpoint**: `redisinsight.${DEFAULT_URL}`
+### 4. Dozzle (Log Viewer)
+- **Image**: `amir20/dozzle:v10.2.0`
+- **Internal Port**: 8080
+- **Volume**: `/var/run/docker.sock:/var/run/docker.sock`
 
-## Interface Definition
+## Interfaces & Data Structures
 
-### Network Ports
+### Traefik Label Contract (Example)
+```yaml
+labels:
+  hy-home.tier: admin
+  traefik.enable: 'true'
+  traefik.http.routers.dozzle.rule: Host(`dozzle.${DEFAULT_URL}`)
+  traefik.http.routers.dozzle.entrypoints: websecure
+  traefik.http.routers.dozzle.tls: 'true'
+  traefik.http.routers.dozzle.middlewares: sso-errors@file,sso-auth@file
+```
 
-| Service | Internal Port | External Port (Traefik) | Protocol | Auth |
-| :--- | :--- | :--- | :--- | :--- |
-| Homer | 8080 | 443 (websecure) | HTTP | SSO |
-| Portainer | 9443 | 443 (websecure) | HTTPS/TCP | SSO |
-| RedisInsight | 5540 | 443 (websecure) | HTTP | SSO |
+## Verification
 
-## Security & Compliance
+```bash
+# Check if services are running
+docker compose -f infra/11-laboratory/dozzle/docker-compose.yml ps
+# Verify Traefik accessibility
+curl -Ik https://dozzle.${DEFAULT_URL}
+```
 
-- **SSO Integration**: 모든 대시보드 서비스는 Traefik 미들웨어(`sso-auth`)를 경유하며, Keycloak에서 인증된 세션이 없을 경우 접근이 차단됨.
-- **Labeling Policy**: `hy-home.tier: admin` 레이블을 부여하여 인프라 관리 서비스임을 명시함.
-- **Data Persistence**: Portainer와 RedisInsight는 바인드 마운트 볼륨을 사용하여 설정 정보를 영구 보관함.
+## Success Criteria & Verification Plan
+
+- **VAL-SPC-001**: All services must return 302/401 when accessed without a valid SSO session.
+- **VAL-SPC-002**: Portainer and Dozzle must correctly display the local Docker engine's resources.
 
 ## Related Documents
 
-- **PRD**: [2026-03-26-11-laboratory.md](../../01.prd/2026-03-26-11-laboratory.md)
-- **ARD**: [0011-laboratory-architecture.md](../../02.ard/0011-laboratory-architecture.md)
-- **ADR**: [0011-laboratory-services.md](../../03.adr/0011-laboratory-services.md)
+- **Plan**: `[../../05.plans/2026-03-26-11-laboratory-standardization.md]`
+- **Tasks**: `[../../06.tasks/2026-03-26-11-laboratory-tasks.md]`

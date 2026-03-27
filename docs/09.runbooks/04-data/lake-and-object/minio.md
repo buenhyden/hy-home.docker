@@ -16,15 +16,15 @@
 
 ## Canonical References
 
-- `[../02.ard/0004-data-architecture.md]`
-- `[../04.specs/04-data/spec.md]`
-- `[../../../infra/04-data/lake-and-object/minio/README.md]`
+- **ARD**: [../02.ard/0004-data-architecture.md](../../../02.ard/README.md)
+- **Spec**: [../04.specs/04-data/spec.md](../../../04.specs/README.md)
+- **Infra README**: [../../../../infra/04-data/lake-and-object/minio/README.md](../../../../infra/04-data/lake-and-object/minio/README.md)
 
 ## When to Use
 
-- "Storage Exhaustion": 디스크 공간 부족으로 인한 API 쓰기 거부
-- "Credential Loss": Root 사용자 비밀번호 분실 또는 노출 시
-- "Node Failure": 클러스터 내 특정 노드 다운 시
+- **Storage Exhaustion**: 디스크 공간 부족으로 인한 API 쓰기 거부
+- **Credential Loss**: Root 사용자 비밀번호 분실 또는 노출 시
+- **Node Failure**: 클러스터 내 특정 노드 장애 (Service Down)
 
 ## Procedure or Checklist
 
@@ -40,7 +40,7 @@
    - 필요시 볼륨 크기 확장 (인프라 재배포 필요).
 
 2. **Root Credential Reset (비밀번호 초기화)**
-   - `infra/04-data/lake-and-object/minio/secrets/` 경로의 비밀번호 파일 수정.
+   - `infra/04-data/lake-and-object/minio/` 하위의 비밀번호 설정 확인.
    - `docker compose restart minio` 명령어로 서비스 재시작.
    - `mc` (MinIO Client) 설정 업데이트 확인.
 
@@ -56,8 +56,17 @@
 - [ ] `mc ls myminio`: 버킷 및 객체 브라우징 가능 여부 확인.
 - [ ] `curl -f http://minio:9000/minio/health/live`: 헬스체크 응답 확인.
 
+## Observability and Evidence Sources
+
+- **Signals**: Grafana MinIO Dashboard, Traefik error logs.
+- **Evidence to Capture**: `docker compose logs minio`, `mc admin info myminio` output.
+
+## Safe Rollback or Recovery Procedure
+
+- 데이터 삭제 시 반드시 백업 상태를 먼저 확인한다.
+- 비밀번호 변경 후 연동된 모든 서비스의 설정을 동기화하여 서비스 장애가 전파되지 않도록 한다.
+
 ## Related Operational Documents
 
-- **Backup Policy**: `[../08.operations/04-data/backup-policy.md]`
-- **Operation Policy**: `[../08.operations/04-data/minio.md]`
-- **System Guide**: `[../07.guides/04-data/minio.md]`
+- **Operation Policy**: [../08.operations/04-data/lake-and-object/minio.md](../../../08.operations/04-data/lake-and-object/minio.md)
+- **System Guide**: [../07.guides/04-data/lake-and-object/minio.md](../../../07.guides/04-data/lake-and-object/minio.md)

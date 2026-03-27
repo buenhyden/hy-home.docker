@@ -48,6 +48,7 @@
 - [02-auth](./02-auth/README.md)
 - [03-security](./03-security/README.md)
 - [04-data](./04-data/README.md)
+  - [lake-and-object](./04-data/lake-and-object/README.md)
 - [05-messaging](./05-messaging/README.md)
 - [06-observability](./06-observability/README.md)
 - [07-workflow](./07-workflow/README.md)

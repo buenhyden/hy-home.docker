@@ -4,7 +4,7 @@
 
 ## Overview
 
-`valkey-cluster`는 `hy-home.docker` 에코시스템을 위한 고처리량, 저지연 캐싱 및 상태 저장소 계층을 제공합니다. 3개의 프라이머리 노드와 3개의 복제본(Replica) 노드로 구성되어 자동 파티셔닝과 고가용성을 보장하도록 설계되었습니다.
+`valkey-cluster`는 `hy-home.docker` 에코시스템을 위한 고처리량, 저지연 캐싱 및 상태 저장소 계층을 제공한다. 3개의 프라이머리 노드와 3개의 복제본(Replica) 노드로 구성되어 자동 파티셔닝과 고가용성을 보장하도록 설계되었다.
 
 ## Audience
 
@@ -41,6 +41,22 @@ valkey-cluster/
 └── README.md                # 이 파일
 ```
 
+## How to Work in This Area
+
+1. [docker-compose.yml](./docker-compose.yml)을 통해 클러스터 노드 구성을 확인한다.
+2. [scripts/valkey-cluster-init.sh](./scripts/valkey-cluster-init.sh)를 통해 초기화 로직을 이해한다.
+3. 가이드 문서는 [docs/07.guides/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/07.guides/04-data/cache-and-kv/valkey-cluster.md)를 참조한다.
+4. 운영 정책은 [docs/08.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/08.operations/04-data/cache-and-kv/valkey-cluster.md)를 확인한다.
+5. 장애 조치 지침은 [docs/09.runbooks/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/09.runbooks/04-data/cache-and-kv/valkey-cluster.md)를 따른다.
+
+## Tech Stack
+
+| Category   | Technology   | Notes                     |
+| ---------- | ------------ | ------------------------- |
+| Image      | valkey/valkey| v9.0.2-alpine             |
+| Interface  | valkey-cli   | Cluster protocol          |
+| Clustering | 3P + 3R      | 6 nodes architecture      |
+
 ## Available Scripts
 
 | Command | Description |
@@ -72,9 +88,6 @@ valkey-cluster/
 
 ## Related References
 
-- **Guide**: [valkey-cluster.md](../../07.guides/04-data/valkey-cluster.md)
-- **Operation**: [valkey-cluster.md](../../08.operations/04-data/valkey-cluster.md)
-- **Runbook**: [valkey-cluster.md](../../09.runbooks/04-data/valkey-cluster.md)
-
----
-Copyright (c) 2026. Licensed under the MIT License.
+- **Guide**: [../../../../docs/07.guides/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/07.guides/04-data/cache-and-kv/valkey-cluster.md)
+- **Operation**: [../../../../docs/08.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/08.operations/04-data/cache-and-kv/valkey-cluster.md)
+- **Runbook**: [../../../../docs/09.runbooks/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/09.runbooks/04-data/cache-and-kv/valkey-cluster.md)

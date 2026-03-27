@@ -64,10 +64,10 @@ minio/
 
 ## Related References
 
-- **Guide**: [Technical Guide](../../../docs/07.guides/04-data/minio.md)
-- **Operation**: [Operations Policy](../../../docs/08.operations/04-data/minio.md)
-- **Runbook**: [Recovery Runbook](../../../docs/09.runbooks/04-data/minio.md)
-- **Related Spec**: [Data Persistence Spec](../../../docs/04.specs/04-data/spec.md)
+- **Guide**: [Technical Guide](../../../../docs/07.guides/04-data/lake-and-object/minio.md)
+- **Operation**: [Operations Policy](../../../../docs/08.operations/04-data/lake-and-object/minio.md)
+- **Runbook**: [Recovery Runbook](../../../../docs/09.runbooks/04-data/lake-and-object/minio.md)
+- **Related Spec**: [Data Persistence Spec](../../../../docs/04.specs/04-data/spec.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

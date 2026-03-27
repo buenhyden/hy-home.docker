@@ -37,8 +37,9 @@
 02.ard/
 ├── 0010-communication-architecture.md
 ├── 0011-laboratory-architecture.md
-├── 0012-data-analytics-architecture.md
-└── README.md
+├── 2026-03-26-10-communication-standardization.md # Communication 문서 표준화 계획
+├── 2026-03-26-11-laboratory-standardization.md # Laboratory 문서 표준화 계획
+└── README.md                                 # This file
 ```
 
 ## How to Work in This Area
@@ -58,6 +59,8 @@
 
 - [01.prd (Requirements)](../01.prd/README.md)
 - [03.adr (Decisions)](../03.adr/README.md)
+- [07-workflow](./07-workflow/spec.md)
+- [11-laboratory](./11-laboratory/spec.md)
 - [04.specs (Specifications)](../04.specs/README.md)
 - [99.templates (Templates)](../99.templates/README.md)
 

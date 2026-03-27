@@ -21,6 +21,7 @@
 
 - [Portainer Runbook](./portainer.md): 관리자 비밀번호 망실 시.
 - [RedisInsight Runbook](./redisinsight.md): 연결 설정 초기화가 필요한 경우.
+- [Dozzle Runbook](./dozzle.md): 로그 스트림 끊김 또는 서비스 오류 발생 시.
 - [Homer Dashboard](./dashboard.md) 설정 파일(YAML) 오류로 페이지가 깨진 경우.
 
 ## Procedure or Checklist
@@ -33,10 +34,15 @@
 
 1. [Dashboard Runbook](./dashboard.md)을 참고하여 복구 절차를 수행한다.
 
+### Dozzle Service Recovery
+
+1. [Dozzle Runbook](./dozzle.md)을 참고하여 복구 절차를 수행한다.
+
 ## Verification Steps
 
 - [ ] `curl -I https://portainer.${DEFAULT_URL}` 호출 시 200 또는 302(Redirect to SSO) 확인.
 - [ ] Homer 대시보드에서 각 아이콘이 정상적으로 렌더링되는지 확인.
+- [ ] `https://dozzle.${DEFAULT_URL}` 접속 후 실시간 로그 스트림 확인.
 
 ## Safe Rollback Procedure
 
@@ -49,5 +55,6 @@
 
 - **Portainer Runbook**: `[./portainer.md]`
 - **RedisInsight Runbook**: `[./redisinsight.md]`
+- **Dozzle Runbook**: `[./dozzle.md]`
 - **Dashboard Runbook**: `[./dashboard.md]`
 - **Postmortem**: `[../../11.postmortems/2026/03-26-homer-config-corruption.md]` (가상 예시)

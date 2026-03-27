@@ -26,9 +26,21 @@
 
 ```text
 04-data/
+├── cache-and-kv/         # 분산 캐시 및 KV 저장소 가이드
+│   ├── valkey-cluster.md
+│   ├── valkey-standalone.md
+│   └── README.md
+├── lake-and-object/       # 데이터 레이크 및 오브젝트 스토리지 가이드
+│   ├── minio.md
+│   └── README.md
+├── nosql/                 # NoSQL 데이터베이스 가이드
+│   ├── cassandra.md
+│   └── README.md
+├── operational/           # 운영 및 관리용 데이터베이스 가이드
+│   ├── mng-db.md
+│   └── README.md
 ├── 01.relational-dbs.md
 ├── 02.cache-kv-dbs.md
-├── valkey-cluster.md     # Valkey Cluster 세부 가이드
 └── README.md
 ```
 

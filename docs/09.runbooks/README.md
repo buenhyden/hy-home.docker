@@ -49,7 +49,7 @@
 | [01-gateway](./01-gateway/README.md) | Gateway recovery and SSL issues |
 | [02-auth](./02-auth/README.md) | Identity provider and SSO recovery |
 | [03-security](./03-security/README.md) | Security breach and firewall incidents |
-| [04-data](./04-data/README.md) | Data corruption and cluster recovery |
+| [04-data](./04-data/README.md) | Database, cluster, and lake/object storage recovery |
 | [05-messaging](./05-messaging/README.md) | Messaging cluster and queue recovery |
 | [06-observability](./06-observability/README.md) | Monitoring, logging, and trace recovery |
 | [07-workflow](./07-workflow/README.md) | Airflow and n8n job recovery |

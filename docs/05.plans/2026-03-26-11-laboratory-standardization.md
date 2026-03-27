@@ -1,37 +1,44 @@
-<!-- Target: docs/05.plans/2026-03-26-11-laboratory-standardization.md -->
+# 11-laboratory Implementation Plan
 
-# Implementation Plan - 11-laboratory Standardization
+## Overview (KR)
 
-## Goal Description
+이 문서는 `11-laboratory` 계층의 표준화 및 문서화 실행 계획서다. 작업 분해, 검증, 완료 기준을 정의한다.
 
-`11-laboratory` 계층의 문서 체계를 "Thin Root" 아키텍처 및 "Golden 5" 택소노미에 맞춰 표준화한다.
+## Context
 
-## Proposed Changes
+`11-laboratory` 서비스들(Homer, Dozzle, Portainer, RedisInsight)에 대한 파편화된 정보를 통합하고, 리포지토리의 "Thin Root" 아키텍처 및 "Golden 5" 택소노미 표준에 정렬하기 위함이다.
 
-### Documentation Layer
+## Goals & In-Scope
 
-#### [NEW] [2026-03-26-11-laboratory.md](../../01.prd/2026-03-26-11-laboratory.md)
+- **Goals**: 11-laboratory 계층의 문서 표준화 및 최신화.
+- **In Scope**: PRD, ARD, ADR, Spec, Plan, Task 문서 작성 및 README 연동.
 
-#### [NEW] [0011-laboratory-architecture.md](../../02.ard/0011-laboratory-architecture.md)
+## Work Breakdown
 
-#### [NEW] [0011-laboratory-services.md](../../03.adr/0011-laboratory-services.md)
-
-#### [NEW] [spec.md](../../04.specs/11-laboratory/spec.md)
-
-#### [NEW] [2026-03-26-11-laboratory-tasks.md](../../06.tasks/2026-03-26-11-laboratory-tasks.md)
-
-### Infrastructure Layer
-
-#### [MODIFY] [README.md](../../../infra/11-laboratory/README.md)
-
-- "Golden 5" 패턴으로 리팩토링 및 최신 서비스 리스트 업데이트.
+| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
+| --- | --- | --- | --- | --- |
+| PLN-001 | PRD Update | `docs/01.prd/2026-03-26-11-laboratory.md` | REQ-PRD-FUN-01 | Template compliance |
+| PLN-002 | ARD Update | `docs/02.ard/0011-laboratory-architecture.md` | REQ-PRD-FUN-02 | Mermaid diagram accuracy |
+| PLN-003 | ADR Update | `docs/03.adr/0011-laboratory-services.md` | REQ-PRD-FUN-03 | Service stack justification |
+| PLN-004 | Spec Update | `docs/04.specs/11-laboratory/spec.md` | REQ-PRD-FUN-01 | Label/Port accuracy |
+| PLN-005 | Task List Create | `docs/06.tasks/2026-03-26-11-laboratory-tasks.md` | N/A | Traceability to spec |
 
 ## Verification Plan
 
-### Automated Tests
+| ID | Level | Description | Command / How to Run | Pass Criteria |
+| --- | --- | --- | --- | --- |
+| VAL-PLN-001 | Structural | Template Compliance | Manual Revie | All placeholders removed |
+| VAL-PLN-002 | Functional | Link Validation | `grep -r "\[.*\](.*\..*)" docs/` | No broken relative links |
 
-- `markdownlint` 검사 및 링크 유효성 확인.
+## Completion Criteria
 
-### Manual Verification
+- [x] Scoped work completed
+- [x] Verification passed
+- [x] Required docs updated
 
-- Homer 대시보드에 모든 신규 서비스 링크가 정상적으로 포함되어 있는지 확인.
+## Related Documents
+
+- **PRD**: `[../01.prd/2026-03-26-11-laboratory.md]`
+- **ARD**: `[../02.ard/0011-laboratory-architecture.md]`
+- **Spec**: `[../04.specs/11-laboratory/spec.md]`
+- **ADR**: `[../03.adr/0011-laboratory-services.md]`

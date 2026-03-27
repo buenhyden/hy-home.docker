@@ -1,40 +1,75 @@
-# MongoDB Replica Set
+# MongoDB infrastructure
 
-> Document-based NoSQL database for unstructured data.
+MongoDB NoSQL Infrastructure for the `hy-home.docker` ecosystem.
 
-## 1. Context & Objective
+## Audience
 
-The `mongodb` stack provides a resilient document storage layer for the `hy-home.docker` ecosystem. It is optimized for high-volume unstructured data and features a 3-node replica set for automated failover and high availability.
+-   **System Architects**: For understanding the data persistence layer.
+-   **DevOps/SRE**: For cluster lifecycle management and scaling.
+-   **Developers**: For connection string patterns and data modeling.
 
-### Key Components
+## Scope
 
-- **Primary/Secondary Nodes**: Data persistence and replication.
-- **Arbiter**: Voting node for leader election (no data storage).
-- **Mongo Express**: Management Web UI.
+-   **Primary/Secondary/Arbiter Replica Set**: Core persistence cluster.
+-   **Mongo Express**: Administrative GUI.
+-   **MongoDB Exporter**: Performance metrics for Prometheus.
+-   **Key Generator**: Automated internal authentication management.
 
-## 2. Requirements & Constraints
+## Tech Stack
 
-- **Storage**: Requires persistent volumes for each data node.
-- **Secrets**: Root credentials MUST be managed via the `mongodb_root_password` secret.
-- **Network**: Standard port `27017` must be reachable within the `infra_net`.
+| Component | Technology | Version | Description |
+| :--- | :--- | :--- | :--- |
+| Database | MongoDB | 8.0-rc | Core NoSQL engine |
+| Management | Mongo Express | 1.0.0 | Web-based GUI |
+| Monitoring | MongoDB Exporter | 0.40 | Prometheus metrics |
+| Security | SCRAM-SHA-256 | Default | Standard internal auth |
 
-## 3. Setup & Installation
+## How to Work in This Area
 
-### Deployment
+### Available Scripts
+
+| Script | description |
+| :--- | :--- |
+| `docker-compose up -d` | Start the full MongoDB stack |
+| `docker-compose down` | Stop and remove containers |
+| `docker-compose logs -f` | Follow service logs |
+| `docker exec -it mongodb-rep1 mongosh -u root -p <password>` | Access MongoDB shell |
+
+### Common Operations
 
 ```bash
-# Start the replica set
-docker compose up -d
+# Verify Replica Set Status
+docker exec -it mongodb-rep1 mongosh --eval "rs.status()"
+
+# Check Arbiter Connectivity
+docker exec -it mongodb-arbiter mongosh --eval "db.hello()"
 ```
 
-### Verification
+## Related Documents
 
-```bash
-# Check cluster status
-docker exec -it mongodb-rep1 mongosh -u admin -p <password> --eval "rs.status()"
-```
+### Guides
 
-## 4. Usage & Integration
+-   [MongoDB Guide](../../../../docs/07.guides/04-data/nosql/mongodb.md): System architecture and usage guide.
+
+### Operations
+
+-   [MongoDB Operations](../../../../docs/08.operations/04-data/nosql/mongodb.md): Maintenance policies and backup standards.
+
+### Runbooks
+
+-   [MongoDB Runbook](../../../../docs/09.runbooks/04-data/nosql/mongodb.md): Recovery procedures and troubleshooting.
+
+## Deployment Details
+
+### Networking
+
+-   **Mongo Express**: Accessible via `mongo-express.local.hy-home.tech` (Auth: `admin:mongodb`).
+-   **Internal Communication**: Uses a dedicated `mongodb.key` file for replica set authentication.
+
+### Storage
+
+-   Persistent data is stored in Docker volumes: `mongodb_data1`, `mongodb_data2`.
+-   Arbiter node uses `mongodb_arbiter_data`.
 
 ### Operational Endpoints
 

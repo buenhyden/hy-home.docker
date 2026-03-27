@@ -38,6 +38,7 @@ graph TD
 - **Homer**: 인프라 전용 서비스 진입점 대시보드.
 - **Portainer**: 시각적 컨테이너 오케스트레이션 및 상태 관리.
 - **RedisInsight**: 데이터 저장소(Valkey/Redis)의 데이터 탐색 및 성능 분석.
+- **Dozzle**: 실시간 컨테이너 로그 스트리밍 및 모니터링.
 
 ## Integration
 

@@ -1,0 +1,65 @@
+<!-- Target: docs/09.runbooks/04-data/operational/supabase.md -->
+
+# Supabase Platform Runbook
+
+: Supabase Stack
+
+> Operational procedures for common Supabase maintenance and recovery tasks.
+
+---
+
+## Overview (KR)
+
+이 런북은 Supabase 플랫폼 운영 중 발생하는 일반적인 작업(재해 복구, 비밀번호 초기화, 로그 분석 등)에 대한 실행 절차를 정의한다. 
+
+## Purpose
+
+- Provide step-by-step recovery procedures for database failure.
+- Define manual management tasks for Auth and Storage.
+- Standardize log troubleshooting across the stack.
+
+## Canonical References
+
+- `[../../02.ard/04-data/operational-data-architecture.md]`
+- `[../../../infra/04-data/operational/supabase/docker-compose.yml]`
+
+## When to Use
+
+- Database container fails to start due to corruption.
+- JWT secret rotation is required.
+- Storage volume reaches capacity.
+
+## Procedure or Checklist
+
+### Database Recovery
+1. Stop the stack: `docker compose down`.
+2. Locate the last healthy backup in `${DEFAULT_DATA_DIR}/backups/supabase/`.
+3. Restore the SQL dump to the database volume.
+4. Restart the stack: `docker compose up -d`.
+
+### Password Reset (Initial)
+
+1. Access Studio at `http://localhost:3000`.
+2. Navigate to Authentication -> Users.
+3. Manually trigger a password reset or change the email direct in the `auth.users` table.
+
+## Verification Steps
+
+- [ ] Check service health: `docker compose ps`.
+- [ ] Verify Kong Gateway: `curl http://localhost:8000/rest/v1/`.
+- [ ] Verify Studio UI: Login and browse tables.
+
+## Observability and Evidence Sources
+
+- **Signals**: High CPU on `db` container, 502 errors from `kong`.
+- **Evidence to Capture**: `docker compose logs --tail 100`.
+
+## Safe Rollback or Recovery Procedure
+
+- If a configuration change fails, revert to the last committed version in Git.
+- Use `git restore .env` if secrets were incorrectly modified.
+
+## Related Operational Documents
+
+- **Operations**: `[../../08.operations/04-data/operational/supabase.md]`
+- **Guide**: `[../../07.guides/04-data/operational/supabase.md]`

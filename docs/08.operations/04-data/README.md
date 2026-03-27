@@ -26,10 +26,19 @@
 
 ```text
 04-data/
-├── backup-policy.md
-├── valkey-cluster.md     # Valkey Cluster 운영 정책
-├── minio.md              # MinIO Object Storage 운영 정책
-└── README.md
+├── cache-and-kv/         # 분산 캐시 및 KV 저장소 운영 정책
+│   ├── valkey-cluster.md
+│   ├── valkey-standalone.md
+│   └── README.md
+├── lake-and-object/       # 데이터 레이크 및 오브젝트 스토리지 운영 정책
+│   └── README.md
+├── nosql/                 # NoSQL 데이터베이스 운영 정책
+│   ├── cassandra.md
+│   └── README.md
+├── operational/           # 운영 및 관리용 데이터베이스 운영 정책
+│   ├── mng-db.md
+│   └── README.md
+├── backup-policy.md       # 공통 백업 표준
 ```
 
 ## How to Work in This Area

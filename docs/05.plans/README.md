@@ -44,6 +44,7 @@
 ├── 2026-03-26-08-ai-standardization.md      # AI Tier 표준화 계획
 ├── 2026-03-26-09-tooling-standardization.md # Tooling Tier 표준화 계획
 ├── 2026-03-26-10-communication-standardization.md # Communication 문서 표준화 계획
+├── 2026-03-26-11-laboratory-standardization.md # Laboratory 문서 표준화 계획
 └── README.md                                 # This file
 ```
 

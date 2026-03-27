@@ -50,6 +50,6 @@
 
 ## Related Documents
 
-- **ARD**: `[../02.ard/0004-data-architecture.md]`
-- **Runbook**: `[../09.runbooks/04-data/minio.md]`
-- **Guide**: `[../07.guides/04-data/minio.md]`
+- **ARD**: [../02.ard/0004-data-architecture.md](../../../02.ard/README.md)
+- **Runbook**: [../09.runbooks/04-data/lake-and-object/minio.md](../../../09.runbooks/04-data/lake-and-object/minio.md)
+- **Guide**: [../07.guides/04-data/lake-and-object/minio.md](../../../07.guides/04-data/lake-and-object/minio.md)

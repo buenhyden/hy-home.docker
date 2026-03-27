@@ -1,81 +1,55 @@
-# PostgreSQL HA Cluster
+# postgresql-cluster
 
-> High-availability PostgreSQL cluster with Patroni, Etcd, and HAProxy.
+> [!NOTE]
+> **Base Structure**: Relational Database Cluster (HA)
+> **Tier**: 04-data (Operational)
+> **Engine**: PostgreSQL 17 (Spilo)
 
-## 1. Context & Objective
+---
 
-- **Engine**: PostgreSQL 16
-- **Architecture**: Single-Leader HA (Patroni + Etcd + HAProxy)
-- **Scale**: Multi-node production grade
+## Overview (개요)
 
-The `postgresql-cluster` provides a robust, failover-capable relational database layer based on the Spilo image. It is designed for mission-critical transactional state within the `hy-home.docker` ecosystem.
+`postgresql-cluster`는 Patroni와 etcd를 사용하여 고가용성(High Availability)을 보장하는 관계형 데이타베이스 클러스터이다. 3개 노드(Leader/Replica)와 DCS(Distributed Configuration Store)용 etcd 클러스터로 구성되어 있으며, HAProxy(`pg-router`)를 통해 읽기/쓰기 부하 분산 및 자동 페일오버를 지원한다.
 
-### Key Components
+---
 
-- **Patroni**: Dynamic cluster management.
-- **Etcd**: Distributed consensus and leader election.
-- **HAProxy (pg-router)**: Intelligent TCP routing for read/write splitting.
+## Implementation Snippet
 
-## 2. Requirements & Constraints
+### Architecture Info
+- **Type**: High-Availability Cluster (Patroni)
+- **Consensus**: etcd (3-node Quorum)
+- **Routing**: HAProxy (Read/Write Splitting)
+- **Storage**: Bind mounts to `${DEFAULT_DATA_DIR}/pg` and `/etcd`
 
-- **Storage**: Minimum 10GB persistent storage per node.
-- **Memory**: 1GB minimum allocated to PostgreSQL container.
-- **Networking**: Isolated internal network for replication.
-- **Networking**: Must be accessible via the `infra_net`.
-- **Failover**: Master failover causes ~5s write downtime.
-- **Quorum**: Etcd quorum loss will force the cluster into read-only mode.
+### System Links
+- **Guide**: [docs/07.guides/04-data/operational/postgresql-cluster.md](../../../../docs/07.guides/04-data/operational/postgresql-cluster.md)
+- **Operations**: [docs/08.operations/04-data/operational/postgresql-cluster.md](../../../../docs/08.operations/04-data/operational/postgresql-cluster.md)
+- **Runbook**: [docs/09.runbooks/04-data/operational/postgresql-cluster.md](../../../../docs/09.runbooks/04-data/operational/postgresql-cluster.md)
 
-## 3. Setup & Installation
+### Key Configuration
+- `SCOPE`: `pg-ha`
+- `pg-router`: Port `15432` (Master/Write), `15433` (Replica/Read)
+- `postgres-exporter`: Node-level metrics on port `9187`
 
-### Deployment
+---
+
+## Quick Start
 
 ```bash
-# Start the cluster
+# Start cluster
 docker compose up -d
-```
 
-### Verification
-
-```bash
-# Check Patroni cluster topology
+# Check cluster status
 docker exec pg-0 patronictl -c /home/postgres/postgres.yml list
-
-# Test reachability (Master)
-psql -h pg-router -p 15432 -U postgres -d postgres -c "SELECT pg_is_in_recovery();"
 ```
 
-## 4. Usage & Integration
+---
 
-### Connection Endpoints
-
-| Endpoint | Port | Mode | Description |
-| :--- | :--- | :--- | :--- |
-| `pg-router` | 15432 | **RW** | Master node access |
-| `pg-router` | 15433 | **RO** | Replica node access |
-| `pg-haproxy` | 8404 | **Stats** | HAProxy Dashboard |
-
-### Integration Pointers
-
-- Read the [Relational Databases Guide](../../../docs/07.guides/04-data/01.relational-dbs.md) for deep integration details.
-- Use `pg-router` instead of direct `pg-0/1/2` hostnames for application traffic.
-
-## 5. Maintenance & Safety
-
-- **Backups**: Daily snapshots in `${DEFAULT_DATA_DIR}/backups/postgresql`.
-- **Scaling**: Add new nodes to `docker-compose.yml` to increase read capacity.
-- **Health**: Monitor Patroni via HAProxy dashboard.
-
-### Operational Guardrails
-
-1. Verify `primary` node status via `patronictl` before performing schema changes.
-2. Monitor `etcd_server_has_leader` metrics to ensure cluster health.
-3. WAL archiving must be verified against the [Data Persistence Policy](../../../docs/08.operations/04-data/README.md).
-
-### Safety Warnings
-
-- Modifying `haproxy.cfg` requires a `pg-router` service restart.
-- Never manually delete data directories without stopping Patroni first.
+## Canonical References
+- [ARD: 0004-data-architecture.md](../../../../docs/02.ard/0004-data-architecture.md)
+- [Spec: 04-data/spec.md](../../../../docs/04.specs/04-data/spec.md)
 
 ---
 
 Copyright (c) 2026. Licensed under the MIT License.
+

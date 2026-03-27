@@ -22,6 +22,7 @@
 
 - [Portainer Guide](./portainer.md): Docker environment and container management.
 - [RedisInsight Guide](./redisinsight.md): Redis visualization and analysis.
+- [Dozzle Guide](./dozzle.md): Real-time log viewer for Docker containers.
 - [Homer Dashboard](./dashboard.md)를 통한 직관적인 서비스 네비게이션 구축.
 
 ## Prerequisites
@@ -33,6 +34,7 @@
 
 1. [Portainer Guide](./portainer.md)를 참고하여 컨테이너 환경을 연결한다.
 2. [Dashboard Guide](./dashboard.md)를 참고하여 `config.yml` 파일을 수정한다.
+3. [Dozzle Guide](./dozzle.md)를 참고하여 실시간 로그를 모니터링한다.
 
 ### 2. Monitoring Redis with RedisInsight
 
@@ -48,6 +50,7 @@
 - **Implementation**: `[../../../infra/11-laboratory/README.md]`
 - **Portainer Guide**: `[./portainer.md]`
 - **RedisInsight Guide**: `[./redisinsight.md]`
+- **Dozzle Guide**: `[./dozzle.md]`
 - **Dashboard Guide**: `[./dashboard.md]`
 - **Operation**: `[../../08.operations/11-laboratory/README.md]`
 - **Runbook**: `[../../09.runbooks/11-laboratory/README.md]`
