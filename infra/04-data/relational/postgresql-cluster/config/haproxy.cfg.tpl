@@ -19,6 +19,7 @@ frontend prometheus
   # /metrics 경로로 요청이 오면 내장된 프로메테우스 익스포터 사용
   http-request use-service prometheus-exporter if { path /metrics }
   no log
+  option socket-stats
 
 # Writer (Primary 전용) - 포트 15432
 frontend pg-write
@@ -28,8 +29,8 @@ frontend pg-write
 backend pg-primary
   mode tcp
   balance roundrobin
-  # Patroni REST API로 /master 헬스체크
-  option httpchk GET /master
+  # Patroni REST API로 /primary 헬스체크
+  option httpchk GET /primary
   http-check expect status 200
   # 서버 공통 헬스체크 옵션
   default-server inter 2s fall 3 rise 2 on-marked-down shutdown-sessions
