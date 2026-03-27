@@ -70,10 +70,11 @@ services:
       - etcd1-data:/etcd-data:rw
     healthcheck:
       test:
-        [
-          'CMD-SHELL',
-          'etcdctl endpoint health --endpoints=http://localhost:${ETCD_CLIENT_PORT:-2379}',
-        ]
+        - CMD
+        - etcdctl
+        - endpoint
+        - health
+        - --endpoints=http://127.0.0.1:${ETCD_CLIENT_PORT:-2379}
       interval: 15s
       timeout: 10s
       retries: 5
@@ -104,10 +105,11 @@ services:
       - etcd2-data:/etcd-data:rw
     healthcheck:
       test:
-        [
-          'CMD-SHELL',
-          'etcdctl endpoint health --endpoints=http://localhost:${ETCD_CLIENT_PORT:-2379}',
-        ]
+        - CMD
+        - etcdctl
+        - endpoint
+        - health
+        - --endpoints=http://127.0.0.1:${ETCD_CLIENT_PORT:-2379}
       interval: 15s
       timeout: 10s
       retries: 5
@@ -138,10 +140,11 @@ services:
       - etcd3-data:/etcd-data:rw
     healthcheck:
       test:
-        [
-          'CMD-SHELL',
-          'etcdctl endpoint health --endpoints=http://localhost:${ETCD_CLIENT_PORT:-2379}',
-        ]
+        - CMD
+        - etcdctl
+        - endpoint
+        - health
+        - --endpoints=http://127.0.0.1:${ETCD_CLIENT_PORT:-2379}
       interval: 15s
       timeout: 10s
       retries: 5

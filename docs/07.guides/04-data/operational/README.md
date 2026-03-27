@@ -11,30 +11,43 @@
 이 README의 주요 독자:
 - 개발자, 운영자, AI 에이전트
 
+- 데이터 서비스 연결이 필요한 **Developers**
+- 인프라 상태를 점검하는 **Operators**
+- 문서 간 추적성을 유지하는 **AI Agents**
+
 ## Scope
 
 ### In Scope
-- [Management Database (mng-db)](./mng-db.md)
-- [PostgreSQL HA Cluster (postgresql-cluster)](./postgresql-cluster.md)
-- [Supabase Platform (supabase)](./supabase.md)
- 가이드
-- 운영 데이타 서비스 활용 지침
+
+- `postgresql-cluster`(HA) 사용 및 구성 가이드
+- `mng-db` 운영 관리 데이터베이스 가이드
+- `supabase` 로컬 스택 및 외부 연동 가이드
 
 ### Out of Scope
-- NoSQL 또는 캐시 전용 가이드 (다른 하위 디렉토리 참조)
+
+- 캐시 및 Key-Value 엔진 가이드 (-> `../cache-and-kv/`)
+- 분석용 및 특수 데이터베이스 가이드 (-> `../specialized/`)
 
 ## Structure
 
 ```text
 operational/
-├── mng-db.md              # Management Database Guide
-├── postgresql-cluster.md  # PostgreSQL HA Cluster Guide
-├── supabase.md            # Supabase Platform Guide
-└── README.md              # This file
+├── mng-db.md                 # 운영 관리용 DB 기술 가이드
+├── supabase.md               # Supabase 스택 기술 가이드
+└── README.md                 # This file
 ```
+
+## How to Work in This Area
+
+1. 새 가이드를 작성할 때는 `docs/99.templates/guide.template.md`를 사용한다.
+2. 각 문서는 하위 구현인 `infra/04-data/relational/`과 1:1 대응 관계를 유지해야 한다.
+3. 아키텍처 수준의 결정 사항은 `docs/03.adr/`을 먼저 참조한다.
 
 ## Related References
 
-- [04-data Guides](../README.md)
-- [Operational Operations](../../../08.operations/04-data/operational/README.md)
-- [Operational Runbooks](../../../09.runbooks/04-data/operational/README.md)
+- **Operations**: [Data Operations Policy](../../08.operations/04-data/operational/README.md)
+- **Runbooks**: [Data Recovery Runbooks](../../09.runbooks/04-data/operational/README.md)
+- **Infra**: [Relational Infra Source](../../../../infra/04-data/relational/README.md)
+
+---
+Copyright (c) 2026. Licensed under the MIT License.

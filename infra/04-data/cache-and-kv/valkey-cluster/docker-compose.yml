@@ -34,7 +34,7 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_DATA_DIR}/valkey/data-1
+      device: ${DEFAULT_DATA_DIR}/valkey/data-0
   valkey1-data:
     driver: local
     driver_opts:
@@ -186,3 +186,49 @@ services:
       <<: *tier-label
     networks:
       - infra_net
+  valkey-cluster-exporter:
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: oliver006/redis_exporter:v1.81.0-alpine
+    container_name: valkey-cluster-exporter
+    expose:
+      - '${VALKEY_EXPORTER_PORT:-9121}'
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        export VALKEY_PASSWORD=$$(cat /run/secrets/mng_valkey_password | tr -d '\n')
+        exec /redis_exporter \
+          -redis.addr=redis://mng-valkey:$${VALKEY_PORT} \
+          -redis.password="$$VALKEY_PASSWORD" \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
+    networks:
+      - infra_net
+    secrets:
+      - service_valkey_password
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget -qO- http://localhost:${VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      valkey-node-0:
+        condition: service_healthy
+      valkey-node-1:
+        condition: service_healthy
+      valkey-node-2:
+        condition: service_healthy
+      valkey-node-3:
+        condition: service_healthy
+      valkey-node-4:
+        condition: service_healthy
+      valkey-node-5:
+        condition: service_healthy
+    labels:
+      <<: *tier-label

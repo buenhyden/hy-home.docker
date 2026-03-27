@@ -117,7 +117,7 @@ scrape_configs:
         target_label: addr
       - target_label: __address__
         # Docker Compose에서 실행 중인 Exporter의 서비스명:포트
-        replacement: valkey-exporter:9121
+        replacement: valkey-cluster-exporter:9121
   - job_name: 'oauth2-proxy-valkey-exporter'
     static_configs:
       - targets: ['oauth2-proxy-valkey-exporter:9121']
