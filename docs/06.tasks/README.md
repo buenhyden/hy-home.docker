@@ -42,6 +42,7 @@
 ├── 2026-03-26-06-observability-tasks.md # Observability 문서 표준화 작업 현황
 ├── 2026-03-26-07-workflow-tasks.md      # Workflow 문서 표준화 작업 현황
 ├── 2026-03-26-11-laboratory-tasks.md      # Laboratory 문서 표준화 작업 현황
+├── 2026-03-27-08-ai-open-webui-tasks.md   # Open WebUI 문서 표준화 작업 현황
 └── README.md                          # This file
 ```
 

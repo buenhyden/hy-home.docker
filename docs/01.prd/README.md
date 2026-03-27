@@ -44,6 +44,7 @@
 ├── 2026-03-26-06-observability.md # Observability Tier 요구사항
 ├── 2026-03-26-07-workflow.md    # Workflow Tier 요구사항
 ├── 2026-03-26-08-ai.md            # AI Tier 제품 요구사항
+├── 2026-03-27-08-ai-open-webui.md # Open WebUI 제품 요구사항
 ├── 2026-03-26-09-tooling.md       # Tooling Tier 제품 요구사항
 ├── 2026-03-26-10-communication.md  # Communication Tier 제품 요구사항
 ├── 2026-03-26-11-laboratory.md     # Laboratory Tier 제품 요구사항

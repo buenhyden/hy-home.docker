@@ -37,6 +37,7 @@
 02.ard/
 ├── 0010-communication-architecture.md
 ├── 0011-laboratory-architecture.md
+├── 0013-open-webui-architecture.md
 ├── 2026-03-26-10-communication-standardization.md # Communication 문서 표준화 계획
 ├── 2026-03-26-11-laboratory-standardization.md # Laboratory 문서 표준화 계획
 └── README.md                                 # This file

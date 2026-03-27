@@ -105,6 +105,7 @@
 - [04-data](./04-data/spec.md)
 - [06-observability](./06-observability/spec.md)
 - [07-workflow](./07-workflow/spec.md)
+- [08-ai](./08-ai/open-webui.md)
 - [11-laboratory](./11-laboratory/spec.md)
 
 ## Templates

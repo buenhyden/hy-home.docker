@@ -47,6 +47,7 @@
 ├── 0010-communication-services.md     # Communication Tier 서비스 선정
 ├── 0011-laboratory-services.md        # Laboratory Tier 서비스 선정
 ├── 0015-analytics-engine-selection.md # Analytics Tier 서비스 선정
+├── 0016-open-webui-implementation.md # Open WebUI 구현 결정
 └── README.md                            # This file
 ```
 
