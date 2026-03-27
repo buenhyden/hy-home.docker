@@ -1,3 +1,5 @@
+<!-- Target: docs/09.runbooks/08-ai/ollama.md -->
+
 # Ollama Maintenance & Recovery Runbook
 
 : Ollama Inference Service
@@ -6,81 +8,121 @@
 
 ## Overview (KR)
 
-이 런북은 Ollama 추론 엔진에서 발생할 수 있는 GPU 가속 실패, 메모리 부족(OOM), 그리고 API 통신 장애에 대한 즉각적인 대응 절차를 정의한다.
+이 런북은 Ollama 추론 계층 장애에 대한 즉시 실행 절차를 제공한다. GPU 미인식, VRAM OOM, API 장애를 신속히 진단·복구하고 상위 서비스(Open WebUI) 영향도를 최소화한다.
 
 ## Purpose
 
-추론 서비스의 가용성을 유지하고, 장애 발생 시 최단 시간 내에 GPU 가속 기능을 복구한다.
+- Ollama 추론 가용성을 빠르게 복구한다.
+- GPU 경로 이상과 리소스 고갈 문제를 표준 절차로 처리한다.
+- 복구 후 Open WebUI 연동 상태를 검증한다.
 
 ## Canonical References
 
-- `[../02.ard/08-ai/llm-inference.md]` (TBD)
-- [Ollama Operations Policy](../../08.operations/08-ai/ollama.md)
-- [Ollama System Guide](../../07.guides/08-ai/ollama.md)
+- `[../../02.ard/0008-ai-architecture.md]`
+- `[../../03.adr/0008-ollama-openwebui-local-ai.md]`
+- `[../../04.specs/08-ai/spec.md]`
+- `[../../05.plans/2026-03-26-08-ai-standardization.md]`
 
 ## When to Use
 
-- 컨테이너 내부에서 GPU를 인식하지 못할 때 (CPU 추론으로 전환됨)
-- 모델 로드 중 `Out of Memory` 에러가 발생할 때
-- `Open WebUI` 등 상위 서비스에서 Ollama로의 연결이 실패할 때
+- Ollama API(`/api/tags`, `/api/generate`) 호출 실패.
+- 컨테이너 내부 GPU 미인식 또는 CPU fallback 발생.
+- 모델 로드 시 VRAM OOM으로 추론 실패.
+- Open WebUI에서 모델 목록 미표시.
 
 ## Procedure or Checklist
 
 ### Checklist
 
-- [ ] 호스트의 `nvidia-smi` 결과가 정상인가?
-- [ ] `ollama` 컨테이너의 헬스체크 상태가 `healthy` 인가?
-- [ ] VRAM 잔여 용량이 로드하려는 모델 크기보다 충분한가?
+- [ ] 호스트 `nvidia-smi` 정상 여부 확인
+- [ ] `ollama` 컨테이너 healthcheck 확인
+- [ ] 최근 모델 변경/배포 이력 확인
+- [ ] Open WebUI 영향 범위 확인
 
 ### Procedure
 
-#### 1. GPU 가속 복구 (GPU Lost)
+#### 1. Initial Health & API Check
 
 ```bash
-# 1. 호스트 드라이버 상태 확인
-nvidia-smi
-
-# 2. 컨테이너 GPU 인식 재시도 (재생성)
-cd infra/08-ai/ollama
-docker compose up -d --force-recreate
-
-# 3. 내부 인식 확인
-docker exec -it ollama nvidia-smi
+docker ps --filter name=ollama
+docker logs --tail 200 ollama
+curl -f http://localhost:${OLLAMA_PORT:-11434}/api/tags
 ```
 
-#### 2. VRAM OOM 강제 해제
-
-모델이 메모리에 상주하여 새로운 모델을 로드할 수 없는 경우:
+#### 2. GPU Recognition Recovery
 
 ```bash
-# 특정 모델 언로드 (API 호출)
-curl -X POST http://localhost:11434/api/generate -d '{"model": "llama3", "keep_alive": 0}'
+# 호스트 GPU 상태
+nvidia-smi
 
-# 또는 Ollama 서비스 재시작 (모든 모델 언로드)
+# 컨테이너 내부 GPU 상태
+docker exec ollama nvidia-smi
+
+# 필요 시 컨테이너 재기동
 docker restart ollama
 ```
 
-#### 3. API 통신 장애 점검
+#### 3. VRAM OOM Mitigation
 
 ```bash
-# 컨테이너 네트워크 로그 확인
-docker logs ollama
+# keep_alive=0으로 상주 모델 언로드(예시)
+curl -X POST http://localhost:${OLLAMA_PORT:-11434}/api/generate -d '{
+  "model": "llama3",
+  "prompt": "release memory",
+  "keep_alive": 0
+}'
+```
 
-# 로컬 API 호출 테스트
-curl -i http://localhost:11434/api/tags
+- 고부하 모델 사용 중이면 임시로 경량 모델로 fallback한다.
+
+#### 4. Model Integrity Check
+
+```bash
+docker exec ollama ollama list
+```
+
+- 운영 기준 모델 태그가 존재하는지 확인한다.
+
+#### 5. Open WebUI Dependency Recheck
+
+```bash
+# Open WebUI 컨테이너에서 Ollama 접근 확인
+docker exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 ```
 
 ## Verification Steps
 
-- [x] `nvidia-smi` 명령어 결과에 `ollama` 프로세스가 표시되는지 확인.
-- [x] `ollama list` 결과에 대상 모델이 존재하는지 확인.
+- [ ] `curl -f http://localhost:${OLLAMA_PORT:-11434}/api/tags` 성공
+- [ ] `docker exec ollama nvidia-smi` 성공
+- [ ] 기본 추론 요청(`/api/generate`) 성공
+- [ ] Open WebUI에서 모델 조회/채팅 성공
+
+## Observability and Evidence Sources
+
+- **Signals**:
+  - GPU 사용률 급락(미인식), VRAM 과점유, API 에러율 증가
+- **Evidence to Capture**:
+  - `ollama`/`open-webui` 로그
+  - 수행 명령과 결과
+  - 복구 전후 지표 스냅샷
 
 ## Safe Rollback or Recovery Procedure
 
-- 장애 복구 실패 시, `01-gateway`에서 해당 경로를 유지보수 페이지로 전환한다.
-- 하드웨어 장애(GPU Fault)가 의심될 경우 시스템 로그(`dmesg`)를 확인하고 호스트 재부팅을 검토한다.
+- [ ] 직전 안정 모델 세트로 복원
+- [ ] 임시 변경(대형 모델 상주, 디버그 설정) 제거
+- [ ] 운영 정책 기준으로 자원 제한/모델 목록 재정렬
+
+## Agent Operations (If Applicable)
+
+- **Prompt Rollback**: 모델별 기본 프롬프트를 직전 안정값으로 복원
+- **Model Fallback**: 장애 시 경량 모델로 자동/수동 전환
+- **Tool Disable / Revoke**: 문제 모델 호출 경로 일시 차단
+- **Eval Re-run**: 추론 smoke test + Open WebUI 연동 테스트 재실행
+- **Trace Capture**: 장애 시간대 API/리소스 로그 보존
 
 ## Related Operational Documents
 
-- **Incident examples**: `[../10.incidents/README.md]`
-- **Postmortem examples**: `[../11.postmortems/README.md]`
+- **Operations Policy**: `[../../08.operations/08-ai/ollama.md]`
+- **Guide**: `[../../07.guides/08-ai/ollama.md]`
+- **Incident examples**: `[../../10.incidents/README.md]`
+- **Postmortem examples**: `[../../11.postmortems/README.md]`

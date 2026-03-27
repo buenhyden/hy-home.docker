@@ -1,31 +1,57 @@
 # AI Tier Operations (08-ai)
 
-> GPU Management, Model Governance & Capacity Planning
+> `08-ai` 계층 운영 정책과 통제 기준 문서 모음.
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` AI 계층(08-ai)의 운영 정책 및 거버넌스 표준을 관리한다. 하드웨어 리소스 최적화와 모델 라이프사이클 통제를 목적으로 한다.
+이 디렉터리는 AI 계층의 정책 문서를 관리한다. 모델/자원/보안/변경 통제를 정의하며, 실행 절차 자체는 런북으로 분리한다.
 
 ## Audience
 
 이 README의 주요 독자:
 
-- **Site Reliability Engineers (SRE)**: 시스템 안정성 및 리소스 관리
-- **AI Operators**: 모델 배포 및 성능 모니터링
-- **AI Agents**: 운영 정책 준수 및 자동화 대응
+- SRE / Platform Engineer
+- AI Operator
+- Security Reviewer
+- AI Agent
+
+## Scope
+
+### In Scope
+
+- Ollama 운영 정책 (모델/VRAM/승격 기준)
+- Open WebUI 운영 정책 (SSO, RAG 데이터 취급, 변경 게이트)
+- AI Agent 변경 통제 및 증적 보존 기준
+
+### Out of Scope
+
+- 단계별 복구 커맨드 (09.runbooks)
+- 사용/학습 가이드 (07.guides)
+
+## Structure
+
+```text
+08-ai/
+├── ollama.md
+├── open-webui.md
+└── README.md
+```
 
 ## Documents
 
-- [Ollama Operations Policy](./ollama.md) - Model governance and VRAM management.
-- [Open WebUI Operations Policy](./open-webui.md) - User access and document management standards.
-- [AI Resource Policy](./README.md#gpu-resource-management) - Base GPU allocation rules.
+- [Ollama Operations Policy](./ollama.md)
+- [Open WebUI Operations Policy](./open-webui.md)
 
 ## How to Work in This Area
 
-1. 모든 운영 정책은 `operation.template.md`를 준수해야 한다.
-2. 정책 변경 시 관련 런북([09.runbooks](../../09.runbooks/08-ai/README.md))과의 정렬을 확인한다.
+1. 새 정책 문서는 `docs/99.templates/operation.template.md`를 따른다.
+2. 정책 변경 시 해당 런북/가이드를 동시 점검한다.
+3. 예외 규칙은 승인 경로와 종료 조건을 함께 기록한다.
+4. AI Agent 정책 섹션(변경 프로세스/가드레일/보존/안전 임계치)을 누락하지 않는다.
 
 ## Related References
 
-- [07. Guides](../../07.guides/08-ai/README.md) - Technical implementation details.
-- [09. Runbooks](../../09.runbooks/08-ai/README.md) - Emergency procedures and tasks.
+- [AI Guides](../../07.guides/08-ai/README.md)
+- [AI Runbooks](../../09.runbooks/08-ai/README.md)
+- [AI Spec (공통)](../../04.specs/08-ai/spec.md)
+- [Open WebUI Spec](../../04.specs/08-ai/open-webui.md)

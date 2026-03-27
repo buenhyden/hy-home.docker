@@ -8,78 +8,119 @@
 
 ## Overview (KR)
 
-이 런북은 Open WebUI 서비스 장애 또는 성능 저하 시의 대응 절차를 정의한다. 데이터베이스 손상 복구, RAG 인덱스 초기화, 그리고 백엔드(Ollama/Qdrant) 연결 이슈를 즉시 해결하기 위한 단계별 가이드를 제공한다.
+이 런북은 Open WebUI 장애 및 성능 저하 상황에서 즉시 실행 가능한 복구 절차를 제공한다. SQLite 데이터 복구, RAG 인덱스 재동기화, Ollama/Qdrant 연결 복구를 표준화한다.
 
 ## Purpose
 
-UI 접속 불가, 문서 검색(RAG) 응답 없음, 또는 컨테이너 충돌 시 서비스 연속성을 확보하는 것을 목표로 한다.
+- Open WebUI 가용성을 신속히 복구한다.
+- RAG 기능(인덱싱/검색) 정상 상태를 재확인한다.
+- 동일 장애 재발 시 일관된 증적을 남긴다.
 
 ## Canonical References
 
-- **PRD**: `[../../01.prd/2026-03-27-08-ai-open-webui.md]`
-- **ARD**: `[../../02.ard/0013-open-webui-architecture.md]`
-- **ADR**: `[../../03.adr/0016-open-webui-implementation.md]`
-- **Spec**: `[../../04.specs/08-ai/open-webui.md]`
-- **Guide**: `[../../07.guides/08-ai/open-webui.md]`
-- **Operations Policy**: `[../../08.operations/08-ai/open-webui.md]`
+- `[../../02.ard/0013-open-webui-architecture.md]`
+- `[../../03.adr/0016-open-webui-implementation.md]`
+- `[../../04.specs/08-ai/open-webui.md]`
+- `[../../05.plans/2026-03-27-08-ai-open-webui-plan.md]`
 
 ## When to Use
 
-- UI 로딩 실패 (`502 Bad Gateway` 또는 무한 로딩).
-- 문서 업로드 후 인덱싱이 완료되지 않음.
-- 모델 리스트가 표시되지 않음 (Ollama 연결 실패).
+- `https://chat.${DEFAULT_URL}` 접속 실패 또는 5xx 증가.
+- 모델 목록 미표시, 채팅 응답 실패.
+- 문서 업로드 후 RAG 인덱싱 실패.
+- Open WebUI healthcheck 실패.
 
 ## Procedure or Checklist
 
 ### Checklist
 
-- [ ] `open-webui` 컨테이너 로그 확인 (`docker logs open-webui`)
-- [ ] `ollama` 및 `qdrant` 서비스 상태 확인
-- [ ] 브라우저 캐시 및 SSO 세션 증명 확인
+- [ ] `open-webui` 컨테이너 상태/로그 확인
+- [ ] `ollama`, `qdrant` 상태 및 health 확인
+- [ ] 인증(SSO) 경로 정상 여부 확인
+- [ ] 데이터 디렉터리 백업 가능 여부 확인
 
 ### Procedure
 
-#### 1. Database Corruption Recovery (SQLite)
+#### 1. Initial Triage
 
-1. 컨테이너 중지: `docker compose down open-webui`
-2. 데이터 디렉토리 백업: `cp -r ${DEFAULT_AI_MODEL_DIR}/open-webui ${DEFAULT_AI_MODEL_DIR}/open-webui.bak`
-3. SQLite 데이터베이스 복구 (필요시 전용 도구 사용) 또는 이전 백업본에서 `webui.db` 교체.
-4. 컨테이너 재시작: `docker compose up -d open-webui`
+```bash
+docker ps --filter name=open-webui
+docker logs --tail 200 open-webui
+curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health
+```
 
-#### 2. Reset RAG Index
+#### 2. Dependency Connectivity Check
 
-1. UI 내에서 'Document' 섹션의 모든 인덱스 삭제 시도.
-2. 강제 초기화 필요 시: Qdrant의 해당 컬렉션을 삭제하고 Open WebUI 내부에서 인덱스 재스캔 수행.
+```bash
+# Open WebUI -> Ollama
+docker exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 
-#### 3. Fix Connection to Ollama/Qdrant
+# Open WebUI -> Qdrant
+docker exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
+```
 
-1. `docker-compose.yml` 내 `OLLAMA_BASE_URL` 및 `VECTOR_DB_URL` 환경 변수 값 확인.
-2. `infra_net` 내에서 각 서비스로의 `curl` 명령어를 통한 네트워크 도달성 확인.
+#### 3. SQLite Backup and Recovery
+
+```bash
+# 1) 데이터 백업
+cp -a ${DEFAULT_AI_MODEL_DIR}/open-webui ${DEFAULT_AI_MODEL_DIR}/open-webui.bak.$(date +%Y%m%d%H%M%S)
+
+# 2) 서비스 재기동
+docker restart open-webui
+```
+
+- DB 손상 의심 시, 최신 백업본으로 `webui.db` 복구 후 재기동한다.
+
+#### 4. RAG Index Re-sync
+
+1. Open WebUI 문서 관리에서 실패한 인덱스를 식별한다.
+2. 문제 문서를 삭제 후 재업로드하여 재인덱싱한다.
+3. 필요 시 Qdrant 해당 컬렉션 상태를 점검하고 재동기화한다.
+
+#### 5. Service Restart Path
+
+```bash
+docker restart ollama
+docker restart open-webui
+```
+
+- 의존 서비스 정상화 후 Open WebUI를 마지막에 재시작한다.
 
 ## Verification Steps
 
-- [ ] `https://chat.${DEFAULT_URL}` 접속 후 로그인 성공 여부 확인.
-- [ ] `/api/v1/models` 엔드포인트 응답 확인.
-- [ ] 테스트 문서 업로드 및 RAG 응답 수신 확인.
+- [ ] `curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health` 성공
+- [ ] UI 로그인 및 모델 목록 조회 성공
+- [ ] 테스트 채팅 응답 성공
+- [ ] 테스트 문서 업로드 후 RAG 질의 성공
 
 ## Observability and Evidence Sources
 
-- **Signals**: 컨테이너 CPU/Memory 급증, `5xx` 에러 빈도 증가.
-- **Evidence to Capture**: `open-webui` 에러 로그 스니펫, Qdrant 원격 측정 데이터.
+- **Signals**:
+  - Open WebUI healthcheck 실패율
+  - 5xx 응답률 상승
+  - 인덱싱 실패율 증가
+- **Evidence to Capture**:
+  - `open-webui`/`ollama`/`qdrant` 로그 스니펫
+  - 수행 명령 및 결과
+  - 복구 전후 확인 화면/지표
 
 ## Safe Rollback or Recovery Procedure
 
-- [ ] 비정상 상태 지속 시 `open-webui.bak` 디렉토리를 원위치시킨 후 재시작.
-- [ ] Ollama 임베딩 모델을 이전 버전으로 롤백하여 호환성 확인.
+- [ ] Open WebUI 변경 직후 이상 발생 시 이전 설정으로 되돌린다.
+- [ ] 데이터 손상 시 최신 백업 디렉터리에서 DB 복구한다.
+- [ ] 재기동 후 최소 기능(로그인/채팅/인덱싱) 확인까지 완료한다.
 
 ## Agent Operations (If Applicable)
 
-- **Prompt Rollback**: N/A
-- **Model Fallback**: Ollama에서 기본 모델(`qwen3`) 외 스페어 모델로 전환.
-- **Tool Disable / Revoke**: N/A
-- **Eval Re-run**: RAG 성능 저하 시 테스트 데이터셋 재평가.
-- **Trace Capture**: Open WebUI 디버그 로그 활성화 및 수집.
+- **Prompt Rollback**: 최근 프롬프트/설정 변경을 직전 안정 버전으로 복원
+- **Model Fallback**: 고부하 모델에서 안정 모델로 임시 전환
+- **Tool Disable / Revoke**: 문서 업로드/자동 인덱싱 기능 임시 비활성
+- **Eval Re-run**: 기본 채팅 + RAG smoke test 재실행
+- **Trace Capture**: 장애 시간대 로그/지표를 증적으로 보존
 
 ## Related Operational Documents
 
-- **Incident examples**: `[../10.incidents/]`
+- **Operations Policy**: `[../../08.operations/08-ai/open-webui.md]`
+- **Guide**: `[../../07.guides/08-ai/open-webui.md]`
+- **Incident examples**: `[../../10.incidents/README.md]`
+- **Postmortem examples**: `[../../11.postmortems/README.md]`

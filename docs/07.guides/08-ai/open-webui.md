@@ -2,13 +2,13 @@
 
 # Open WebUI Interface & RAG Guide
 
-> Full-featured web interface for LLM interaction and RAG orchestration.
+> Open WebUI 기반 로컬 LLM 채팅 및 RAG 운영 가이드.
 
 ---
 
 ## Overview (KR)
 
-이 문서는 Open WebUI에 대한 시스템 가이드다. 사용자 인터페이스 활용 방법, 로컬 LLM(Ollama) 연동, 그리고 Qdrant를 이용한 RAG(Retrieval-Augmented Generation) 워크플로우를 이해하고 설정하는 방법을 제공한다.
+이 문서는 `hy-home.docker` 환경에서 Open WebUI를 통해 Ollama 모델과 대화하고, 문서 기반 RAG를 사용하는 방법을 설명한다. 운영자가 재현 가능한 절차로 접근/인증, 모델 선택, 문서 인덱싱, 기본 점검을 수행할 수 있도록 정리한다.
 
 ## Guide Type
 
@@ -16,54 +16,82 @@
 
 ## Target Audience
 
-- End Users
-- AI Engineers
-- Operators
+- AI Engineer
+- Operator
+- Internal User
 - Agent-tuner
 
 ## Purpose
 
-Open WebUI의 주요 기능을 파악하고, 로컬 환경에서 ChatGPT와 유사한 사용자 경험을 구축하며, 문서 기반 답변(RAG) 기능을 활성화하는 것을 목표로 한다.
+- Open WebUI의 핵심 사용 흐름(접속, 인증, 모델 선택, 채팅)을 표준화한다.
+- RAG 인덱싱 및 질의 흐름을 `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_MODEL` 기준으로 이해한다.
+- 장애 징후를 빠르게 식별하고 런북으로 연결한다.
 
 ## Prerequisites
 
-- **Ollama**: `08-ai/ollama` 서비스 정상 작동 (Embedding 모델 포함).
-- **Qdrant**: `04-data/qdrant` 서비스 정상 작동 (Vector DB).
-- **SSO**: Keycloak을 통한 사용자 인증 권한.
+- `open-webui` 컨테이너가 기동 가능해야 한다.
+- `ollama` 컨테이너가 `http://ollama:${OLLAMA_PORT:-11434}`로 접근 가능해야 한다.
+- `qdrant` 컨테이너가 `http://qdrant:${QDRANT_PORT:-6333}`로 접근 가능해야 한다.
+- Open WebUI 환경변수 확인:
+  - `OLLAMA_BASE_URL`
+  - `VECTOR_DB_URL`
+  - `RAG_EMBEDDING_MODEL` (기본값: `qwen3-embedding:0.6b`)
+- SSO 환경(예: Keycloak + `sso-auth@file`)이 정상이어야 한다.
 
 ## Step-by-step Instructions
 
 ### 1. Access & Authentication
 
-1. `https://chat.${DEFAULT_URL}`에 접속한다.
-2. SSO(Keycloak)를 통해 로그인한다. 첫 로그인 시 관리자 권한 부여가 필요할 수 있다.
+1. 브라우저에서 `https://chat.${DEFAULT_URL}` 접속.
+2. SSO 로그인 완료 후 Open WebUI 대시보드 진입 확인.
+3. 로그인 루프 또는 401 발생 시 먼저 인증 계층 상태를 확인한다.
 
 ### 2. Model Selection & Chat
 
-1. 상단 모델 선택 메뉴에서 사용할 LLM을 선택한다 (Ollama에서 서빙 중인 모델).
-2. 채팅창에 메시지를 입력하여 대화를 시작한다.
+1. 상단 모델 선택기에서 Ollama 모델을 선택한다.
+2. 간단한 프롬프트(예: `hello`)로 응답 확인.
+3. 모델 목록이 비어 있으면 Open WebUI에서 Ollama 연결 상태를 점검한다.
 
-### 3. RAG (Document Indexing)
+### 3. RAG Document Indexing
 
-1. 채팅창 왼쪽의 `+` 버튼 또는 설정 메뉴에서 문서를 업로드한다.
-2. 업로드된 문서는 `qwen3-embedding` 모델을 통해 벡터화되어 Qdrant에 저장된다.
-3. 질문 시 `#` 기호를 사용하여 특정 문서를 참조하거나, 전체 문서를 대상으로 RAG를 수행한다.
+1. 문서 업로드 메뉴에서 PDF/TXT 문서를 업로드한다.
+2. Open WebUI가 `RAG_EMBEDDING_MODEL`로 임베딩 생성 후 Qdrant에 저장하는지 확인한다.
+3. 업로드된 문서를 지정하여 질의하고, 답변에 문서 근거가 반영되는지 확인한다.
 
-### 4. Advanced Settings
+### 4. Quick Connectivity Checks
 
-1. **System Prompt**: 각 모델별로 커스텀 시스템 프롬프트를 설정할 수 있다.
-2. **Parameters**: Temperature, Top-K 등 추론 파라미터를 조정한다.
+```bash
+# Open WebUI health
+curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health
+
+# Open WebUI -> Ollama connectivity (컨테이너 내부)
+docker exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
+
+# Open WebUI -> Qdrant connectivity (컨테이너 내부)
+docker exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
+```
+
+### 5. Advanced Settings
+
+1. 모델별 시스템 프롬프트(System Prompt)를 워크로드에 맞게 분리한다.
+2. Temperature, Top-K, Top-P를 모델 특성에 맞춰 조정한다.
+3. 임베딩 모델 변경 시 기존 인덱스 재생성 계획을 먼저 수립한다.
 
 ## Common Pitfalls
 
-- **Connection Error**: Ollama 또는 Qdrant 컨테이너가 중지된 경우 UI에서 에러가 발생한다.
-- **Embedding Mismatch**: RAG용 임베딩 모델이 Ollama에 로드되지 않으면 문서 처리가 실패한다.
-- **VRAM OOM**: 대규모 RAG 처리 시 GPU 메모리 부족으로 인해 속도가 저하될 수 있다.
+- **Ollama 연결 실패**: `OLLAMA_BASE_URL` 오타 또는 `ollama` 비정상 상태.
+- **Qdrant 연결 실패**: `VECTOR_DB_URL` 오타, 네트워크 미연결, Qdrant 다운.
+- **임베딩 모델 누락**: `RAG_EMBEDDING_MODEL`이 Ollama에 준비되지 않아 인덱싱 실패.
+- **VRAM OOM**: 동시 인덱싱/추론 증가로 응답 지연 또는 실패.
+- **SSO 문제**: 인증 미들웨어/리디렉션 설정 불일치로 접근 실패.
 
 ## Related Documents
 
-- **PRD**: `[../../01.prd/2026-03-27-08-ai-open-webui.md]`
-- **ARD**: `[../../02.ard/0013-open-webui-architecture.md]`
-- **Spec**: `[../../04.specs/08-ai/open-webui.md]`
+- **PRD (Open WebUI)**: `[../../01.prd/2026-03-27-08-ai-open-webui.md]`
+- **ARD (Open WebUI)**: `[../../02.ard/0013-open-webui-architecture.md]`
+- **ADR (Open WebUI)**: `[../../03.adr/0016-open-webui-implementation.md]`
+- **Spec (Open WebUI)**: `[../../04.specs/08-ai/open-webui.md]`
+- **Plan (Open WebUI)**: `[../../05.plans/2026-03-27-08-ai-open-webui-plan.md]`
+- **Task (Open WebUI)**: `[../../06.tasks/2026-03-27-08-ai-open-webui-tasks.md]`
 - **Operation**: `[../../08.operations/08-ai/open-webui.md]`
 - **Runbook**: `[../../09.runbooks/08-ai/open-webui.md]`

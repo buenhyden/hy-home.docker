@@ -1,12 +1,14 @@
-# Ollama System Guide
+<!-- Target: docs/07.guides/08-ai/ollama.md -->
 
-> LLM Inference Engine & Model Management
+# Ollama Inference Engine Guide
+
+> 로컬 LLM 추론 엔진(Ollama) 운영 및 연동 가이드.
 
 ---
 
 ## Overview (KR)
 
-이 문서는 `hy-home.docker` 플랫폼의 핵심 추론 엔진인 Ollama에 대한 가이드다. NVIDIA GPU 가속을 활용한 모델 실행, 모델 라이프사이클 관리, 그리고 타 서비스와의 연동 방법을 설명한다.
+이 문서는 `hy-home.docker` AI 계층의 핵심 추론 엔진인 Ollama 사용 방법을 설명한다. 모델 라이프사이클(풀/조회/호출), GPU 가속 확인, Open WebUI 연동, exporter 관측 흐름을 표준 절차로 제공한다.
 
 ## Guide Type
 
@@ -17,66 +19,87 @@
 - AI Engineer
 - Developer
 - Operator
-- AI Agent
+- Agent-tuner
 
 ## Purpose
 
-Ollama를 통해 로컬 환경에서 오픈소스 LLM을 효율적으로 구동하고, 플랫폼 내 인텔리전스 계층을 구축하는 방법을 이해한다.
+- Ollama 모델 운용 절차를 표준화한다.
+- API/CLI/관측(Exporter) 경로를 일관된 방식으로 점검한다.
+- Open WebUI/RAG 연동 전에 필요한 추론 계층 준비 상태를 확보한다.
 
 ## Prerequisites
 
-- NVIDIA GPU (Pascal 아키텍처 이상 권장)
-- NVIDIA Container Toolkit 설치 및 Docker 연동
-- 충분한 시스템 메모리 및 VRAM (7B 모델 기준 최소 8GB VRAM 권장)
+- NVIDIA GPU 및 NVIDIA Container Toolkit이 정상 설치되어야 한다.
+- `ollama` 컨테이너가 기동 가능해야 한다.
+- 모델 영속 저장 경로 `${DEFAULT_AI_MODEL_DIR}/ollama`가 준비되어야 한다.
+- 기본 포트/엔드포인트:
+  - API: `${OLLAMA_PORT:-11434}`
+  - Exporter: `${OLLAMA_EXPORTER_PORT:-11435}`
 
 ## Step-by-step Instructions
 
-### 1. 서비스 상태 확인
-
-Ollama 컨테이너가 정상적으로 GPU를 인식하고 있는지 확인한다.
+### 1. Service & GPU Health Check
 
 ```bash
-docker exec -it ollama nvidia-smi
+# 호스트 GPU 상태
+nvidia-smi
+
+# Ollama health endpoint
+curl -f http://localhost:${OLLAMA_PORT:-11434}/api/tags
+
+# 컨테이너 내부 GPU 인식 확인
+docker exec ollama nvidia-smi
 ```
 
-### 2. 모델 관리 (CLI)
-
-Ollama 내부 CLI를 사용하여 모델을 다운로드하거나 확인한다.
+### 2. Model Lifecycle (CLI)
 
 ```bash
 # 모델 다운로드
-docker exec -it ollama ollama pull llama3
+docker exec ollama ollama pull llama3
 
-# 모델 리스트 확인
-docker exec -it ollama ollama list
+# 모델 목록 확인
+docker exec ollama ollama list
 ```
 
-### 3. API 사용 (Inference)
-
-플랫폼 내부에서 `http://ollama:11434/api` 엔드포인트를 통해 추론을 수행한다.
+### 3. Inference API Check
 
 ```bash
-curl http://localhost:11434/api/generate -d '{
+curl http://localhost:${OLLAMA_PORT:-11434}/api/generate -d '{
   "model": "llama3",
-  "prompt": "Hello!"
+  "prompt": "Hello from hy-home"
 }'
 ```
 
-### 4. 리소스 모니터링
+### 4. Open WebUI Integration Check
 
-`ollama-exporter`에서 제공하는 프로메테우스 포맷의 지표를 확인한다.
+1. Open WebUI 환경변수 `OLLAMA_BASE_URL`가 `http://ollama:${OLLAMA_PORT:-11434}`를 가리키는지 확인.
+2. Open WebUI UI에서 모델 목록이 정상 조회되는지 확인.
+3. 모델 미노출 시 `ollama` health/log를 먼저 확인.
 
-- Endpoint: `http://ollama-exporter:11435/metrics`
-- 주요 지표: `ollama_vram_usage_bytes`, `ollama_tokens_per_second`
+### 5. Exporter Observability Check
+
+```bash
+# exporter metrics endpoint
+curl -f http://localhost:${OLLAMA_EXPORTER_PORT:-11435}/metrics
+```
+
+- 주요 관측 대상: 모델 로드 수, 메모리 사용량, scrape 상태.
 
 ## Common Pitfalls
 
-- **VRAM OOM**: 너무 큰 모델(70B+)을 로드할 경우 GPU 메모리 부족으로 서비스가 중단될 수 있다. [Operations Policy](../../08.operations/08-ai/ollama.md)에 따라 적절한 양자화 모델을 선택해야 한다.
-- **SSO Authentication**: 외부에서 호출할 경우 Traefik의 SSO 미들웨어를 거치게 되므로, 내부 서비스 간 통신 시에는 `infra_net` 내부 도메인(`ollama:11434`)을 사용한다.
+- **GPU 미인식**: 컨테이너는 실행되지만 CPU 추론으로 강등됨.
+- **VRAM OOM**: 대형 모델 동시 로드 시 응답 실패/지연.
+- **모델 태그 불일치**: Open WebUI 설정 모델명과 Ollama 실제 태그 불일치.
+- **Exporter 미수집**: 관측 포트 설정 불일치로 지표 공백 발생.
 
 ## Related Documents
 
-- **Spec**: `[../04.specs/08-ai/ollama-spec.md]` (TBD)
-- **Operation**: `[../08.operations/08-ai/ollama.md]`
-- **Runbook**: `[../09.runbooks/08-ai/ollama.md]`
-- **Infrastructure**: [infra/08-ai/ollama/](../../../infra/08-ai/ollama/README.md)
+- **PRD (AI 공통)**: `[../../01.prd/2026-03-26-08-ai.md]`
+- **ARD (AI 공통)**: `[../../02.ard/0008-ai-architecture.md]`
+- **ADR (AI 공통)**: `[../../03.adr/0008-ollama-openwebui-local-ai.md]`
+- **Spec (AI 공통)**: `[../../04.specs/08-ai/spec.md]`
+- **Plan (AI 공통)**: `[../../05.plans/2026-03-26-08-ai-standardization.md]`
+- **Task (AI 공통)**: `[../../06.tasks/2026-03-26-08-ai-tasks.md]`
+- **Operation**: `[../../08.operations/08-ai/ollama.md]`
+- **Runbook**: `[../../09.runbooks/08-ai/ollama.md]`
+- **Infrastructure**: `[../../../infra/08-ai/ollama/README.md]`
