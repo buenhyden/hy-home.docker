@@ -45,9 +45,21 @@ operational/
 
 ## Related References
 
-- **Operations**: [Data Operations Policy](../../08.operations/04-data/operational/README.md)
-- **Runbooks**: [Data Recovery Runbooks](../../09.runbooks/04-data/operational/README.md)
-- **Infra**: [Relational Infra Source](../../../../infra/04-data/relational/README.md)
+- **# Operational Data Guides
+
+> Technical guides for management and shared backend platforms.
+
+## Overview
+
+이 디렉터리는 플랫폼 운영에 필수적인 핵심 데이터베이스 및 공통 백엔드 서비스에 대한 기술 가이드를 포함합니다.
+
+## Services
+
+| Service | Category | Guide |
+| :--- | :--- | :--- |
+| **mng-db** | Management DB | [mng-db.md](./mng-db.md) |
+| **supabase** | Backend Platform | [supabase.md](./supabase.md) |
+| **postgresql-cluster** | Relational DB | [relational/README.md](../relational/README.md) |
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

@@ -1,85 +1,86 @@
+<!-- Target: docs/09.runbooks/04-data/nosql/mongodb.md -->
+
 # MongoDB Recovery Runbook
 
-Step-by-step procedures for resolving critical failures in the MongoDB infrastructure.
+> Emergency recovery procedures for MongoDB Replica Set and failover incidents.
 
-## Canonical References
+---
 
--   **Incident Management**: [Global Incident Protocol](../../../00.governance/protocols/incident.md)
--   **Operations Policy**: [MongoDB Operations](./mongodb.md)
+## Overview (KR)
 
-## Emergency Contact
+이 문서는 MongoDB 레플리카 셋의 Primary 부재, 과도한 데이터 지연(Lag), 또는 Arbiter 장애 발생 시의 신속한 복구 절차를 설명한다.
 
--   **Primary**: Data Platform Team (@data-sre)
--   **Secondary**: Infrastructure Lead (@infra-lead)
+## Runbook Type
 
-## Incident Classification
+`disaster-recovery`
 
--   **L1 (Information)**: High read latency on secondary.
--   **L2 (Warning)**: Single node failure (Replica set still has quorum).
--   **L3 (Critical)**: Majority loss or Primary unavailable (No quorum).
+## Target Audience
 
-## Diagnostic Procedures
+- On-call Engineer
+- SRE
+- DBA
 
-### 1. Check Replica Set Health
+## Purpose
 
-```bash
-docker exec -it mongodb-rep1 mongosh -u root -p <password> --eval "rs.status()"
-```
+레플리카 셋의 Primary를 재선출하고, Secondary 노드를 최신 상태로 재동기화하며, 클러스터의 정족수를 보호하여 쓰기 가용성을 확보한다.
 
-**What to look for:**
--   `members[].stateStr`: Look for `(not reachable/maybe down)` or `REMOVED`.
--   `members[].health`: Should be `1` for all nodes.
+## Pre-remediation Checklist
 
-### 2. Verify KeyFile Synchronization
+- [ ] `rs.status()` 명령으로 멤버 상태 확인 (`PRIMARY` 유무 확인)
+- [ ] `docker logs`를 통해 Election 로그 분석
+- [ ] 네트워크 분리(Split-brain) 가능성 검토
+- [ ] Oplog window 내 최신 데이터 존재 여부 확인
 
-If nodes cannot communicate, check the key file:
-```bash
-docker exec mongodb-rep1 ls -l /data/configdb/mongodb.key
-```
+## Remediation Steps
 
-## Recovery Procedures
+### Scenario 1: No Primary Elected
 
-### Scenario A: Master Election Failure (No Primary)
+정족수 부족으로 Primary가 선출되지 않는 경우.
 
-1.  Check the Arbiter node: `docker logs mongodb-arbiter`.
-2.  If the Arbiter is down, restart it: `docker-compose restart mongodb-arbiter`.
-3.  If a Primary is not elected within 30 seconds, manually force a step down:
-    ```bash
-    rs.stepDown(60)
-    ```
+1. 죽은 노드(Secondary 또는 Arbiter) 우선 복구:
+   ```bash
+   docker-compose restart mongodb-rep2
+   ```
+2. 최소 2개 노드가 살아나면 자동으로 Election이 시작됨.
+3. 강제 선출 (긴급 상황):
+   Primary로 만들고자 하는 노드에서 `rs.stepDown()` 또는 Priority 조정을 통해 선출 유도.
 
-### Scenario B: Data Corruption on a Single Node
+### Scenario 2: Stale Secondary (Re-sync required)
 
-1.  Stop the corrupted node: `docker-compose stop mongodb-rep2`.
-2.  Delete the corrupted volume: `docker volume rm mongodb_data2`.
-3.  Restart the node: `docker-compose up -d mongodb-rep2`.
-4.  The node will perform an **Initial Sync** from the current Primary.
+Secondary 노드 데이터가 너무 오래되어 Oplog로 추적이 불가능한 경우.
 
-### Scenario C: Full Cluster Re-initialization
+1. Secondary 노드 중지 및 데이터 초기화:
+   ```bash
+   docker-compose stop mongodb-rep2
+   rm -rf ${DEFAULT_DATA_DIR}/mongodb/data2/*
+   ```
+2. 컨테이너 시작:
+   ```bash
+   docker-compose start mongodb-rep2
+   ```
+3. Initial Sync 시작 확인:
+   ```bash
+   rs.status() # stateStr: 'STARTUP2' 확인
+   ```
 
-1.  Bring down all services.
-2.  Ensure volumes are cleared (if data is sacrificial).
-3.  Start data nodes.
-4.  Execute `mongo-init` or manual initiation:
-    ```javascript
-    rs.initiate({
-      _id: "MyReplicaSet",
-      members: [
-        { _id: 0, host: "mongodb-rep1:27017" },
-        { _id: 1, host: "mongodb-rep2:27017" },
-        { _id: 2, host: "mongodb-arbiter:27017", arbiterOnly: true }
-      ]
-    })
-    ```
+## Verification Steps
 
-## Post-Mortem and Evidence Capture
+1. 클러스터 멤버십 확인:
+   ```bash
+   rs.conf()
+   ```
+2. 쓰기 테스트:
+   ```bash
+   db.test.insertOne({status: "recovered", date: new Date()})
+   ```
 
--   **Diagnostic Logs**: `docker-compose logs > diagnostic_logs_$(date +%s).txt`
--   **Metric Snapshots**: Capture Grafana dashboard screenshots.
--   **Final Status**: Record the output of `rs.conf()`.
+## Post-remediation Tasks
 
-## Validation Checklist
+- Oplog 사이즈 증설 필요성 검토
+- Arbiter 배치 위치 물리적 격리 확인
+- 펜싱(Fencing) 로직 및 타이머 값(ElectionTimeout) 조정 검토
 
--   [ ] Primary node is identified via `db.isMaster().ismaster`.
--   [ ] `mongo-express` management UI is reachable.
--   [ ] `mongodb-exporter` shows all members as healthy.
+## Related Documents
+
+- **Guide**: [MongoDB Replica Set Guide](../../../docs/07.guides/04-data/nosql/mongodb.md)
+- **Operation**: [MongoDB Operation Policy](../../../docs/08.operations/04-data/nosql/mongodb.md)

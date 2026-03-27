@@ -2,49 +2,56 @@
 
 # ksqlDB Operations Policy
 
-> Governance standards for real-time stream processing.
+> Operational policy for real-time stream processing and lifecycle.
 
 ---
 
 ## Overview (KR)
 
-이 문서는 ksqlDB 운영 정책을 정의한다. 프로세싱 로그 보존, JVM 힙 관리, 그리고 자동 토픽 생성 정책을 규정한다.
+이 문서는 ksqlDB 운영 정책을 정의한다. 스트림 및 테이블의 생성 주명 주기, Kafka 컨슈머 오프셋 관리, 그리고 스트림 프로세싱 자원 할당 기준을 규정한다.
 
 ## Policy Scope
 
-Governs all stream processing workloads running on the ksqlDB server.
+이 정책은 ksqlDB 서버 클러스터, 스트림 처리 쿼리, 그리고 연관된 Kafka 브로커 인터페이스를 관리한다.
 
 ## Applies To
 
-- **Systems**: ksqldb-server
-- **Agents**: Developers, AI agents creating streams
-- **Environments**: Production, Lab
+- **Systems**: ksqlDB Server, ksqlDB CLI
+- **Agents**: Stream Logic Optimizers, Event-driven Workflow Agents
+- **Environments**: Production, Staging
 
 ## Controls
 
 - **Required**:
-  - `KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR` must be at least 3 for production.
-  - All permanent streams/tables MUST be documented in the technical spec.
+  - 모든 스트림 처리는 `AUTO_OFFSET_RESET='earliest'`를 기본값으로 하되, 비즈니스 로직에 따라 명시적으로 설정해야 함.
+  - 복잡한 조인(Join) 쿼리는 실행 전 성능 영향을 검토해야 함.
+  - 모든 쿼리는 `EMIT CHANGES`를 사용하여 스트리밍 결과의 무결성을 보장해야 함.
 - **Allowed**:
-  - Auto-creation of internal processing topics.
-  - Use of `ksql-datagen` for lab and staging environments.
+  - 임시 디버깅용 스트림 및 테이블 생성 (24시간 이내 삭제 권고).
+  - Schema Registry를 통한 스키마 진화(Evolution).
 - **Disallowed**:
-  - Running ksqlDB with less than 512MB heap in production.
-  - Deleting underlying Kafka topics without dropping the associated ksqlDB stream/table first.
+  - 무한 루프를 유발할 수 있는 자기 참조 쿼리 금지.
+  - 가용한 JVM 메모리의 90%를 초과하는 대규모 쿼리 실행 제안 금지.
 
-## Resource Management
+## Exceptions
 
-| Metric | Target Value | Action on Threshold |
-|--------|--------------|---------------------|
-| JVM Heap Usage | < 80% | Scale memory or optimize queries |
-| Stream Lag | < 1000 records | Check consumer group health |
-| Error Rate | < 1/min | Investigate Processing Log |
+- 재해 복구 또는 데이터 재처리(Reprocessing) 시, 기존 오프셋을 무시하고 특정 시점부터의 재처리를 승인 하에 허용.
+
+## Verification
+
+- `LIST QUERIES;`를 통한 실행 중인 쿼리 목록 모니터링.
+- Kafka 컨슈머 그룹 지연(Lag) 상태 실시간 감지.
 
 ## Review Cadence
 
-- Per major release or schema change.
+- Per release (변경 시마다)
+
+## AI Agent Policy Section
+
+- **Eval / Guardrail Threshold**: 쿼리 복잡도 지수가 임계치를 초과할 경우 실행 전 경고 발생.
+- **Trace Retention**: ksqlDB 처리 로그는 30일간 보관.
 
 ## Related Documents
 
-- **ARD**: `[../../02.ard/04-data/analytics-tier.md]`
-- **Runbook**: `[../../../09.runbooks/04-data/analytics/ksqldb.md]`
+- **ARD**: [0012-data-analytics-architecture.md](../../../02.ard/0012-data-analytics-architecture.md)
+- **Runbook**: [ksqldb.md](../../../09.runbooks/04-data/analytics/ksqldb.md)

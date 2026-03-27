@@ -1,82 +1,91 @@
 <!-- Target: docs/09.runbooks/04-data/nosql/cassandra.md -->
 
-# Apache Cassandra Recovery Runbook
+# Cassandra Recovery Runbook
 
-: `cassandra-node1`
-
-> Cassandra 서비스 장애 상황 발생 시 즉각적인 복구 및 데이터 복원을 위한 실행 절차.
+> Emergency recovery procedures for Apache Cassandra single-node instance.
 
 ---
 
 ## Overview (KR)
 
-이 런북은 Cassandra 노드 다운, 데이터 오염 또는 패스워드 분실 등의 긴급 상황에서 운영자가 즉시 수행해야 할 단계를 정의한다.
+이 문서는 Cassandra 서비스 중단, 데이터 오염 또는 노드 장애 시 신속하게 서비스를 정상화하기 위한 긴급 대응 절차를 설명한다.
+
+## Runbook Type
+
+`disaster-recovery`
+
+## Target Audience
+
+- On-call Engineer
+- SRE
+- AI-Operator
 
 ## Purpose
 
-서비스 중단 시간을 최소화하고 데이터 손실 없이 Cassandra 엔진을 정상 상태로 복구한다.
+Cassandra 서비스 장애 발생 시 다운타임을 최소화하고, 데이터 손실 없이 최단 시간 내에 서비스를 복구하는 것을 목표로 한다.
 
-## Canonical References
+## Pre-remediation Checklist
 
-- **ARD**: [04-data Architecture](../../../docs/02.ard/0004-data-architecture.md)
-- **Operation**: [Cassandra Operations Policy](../../../docs/08.operations/04-data/nosql/cassandra.md)
-- **Guide**: [Cassandra System Guide](../../../docs/07.guides/04-data/nosql/cassandra.md)
+- [ ] `docker ps`를 통해 컨테이너 상태 확인
+- [ ] `docker logs cassandra-node1`에서 "Error" 키워드 검색
+- [ ] `${DEFAULT_DATA_DIR}/cassandra` 볼륨 접근 가능 여부 확인
+- [ ] 사용 가능한 최근 백업본(Snapshot) 존재 여부 확인
 
-## When to Use
+## Remediation Steps
 
-- `cassandra-node1` 컨테이너가 비정상 종료되었거나 재시작이 반복될 때.
-- `nodetool status` 결과 노드가 `DN` (Down) 상태로 표시될 때.
-- 디스크 공간 부족으로 쓰기 작업이 거부될 때.
+### Scenario 1: Service Down (Container Crash)
 
-## Procedure or Checklist
+컨테이너가 비정상 종료된 경우 재시작을 시도한다.
 
-### Checklist
+1. 컨테이너 재시작:
+   ```bash
+   cd infra/04-data/nosql/cassandra
+   docker-compose up -d
+   ```
+2. 시작 로그 확인 (Status 'Ready' 확인):
+   ```bash
+   docker logs -f cassandra-node1
+   ```
 
-- [ ] `docker logs cassandra-node1` 명령으로 에러 메시지 확인.
-- [ ] 호스트 시스템의 남은 디스크 용량 확인 (`df -h`).
-- [ ] Docker Secret `cassandra_password` 파일 존재 여부 확인.
+### Scenario 2: Data Corruption (Restore from Snapshot)
 
-### Procedure
+데이터 오염 시 스냅샷을 기반으로 복원한다.
 
-#### 1. 노드 재시작 및 상태 강제 동기화
-
-일시적인 네트워크 지연이나 메모리 부족 시 컨테이너를 재배포한다.
-
-```bash
-docker compose -f infra/04-data/nosql/cassandra/docker-compose.yml restart cassandra-node1
-```
-
-#### 2. 데이터 손상 시 스냅샷 복구
-
-호스트 볼륨의 데이터를 백업 시점으로 복원한다.
-
-1. 서비스 중지: `docker compose stop cassandra-node1`
-2. 데이터 디렉터리(`node1/data`)를 백업본으로 교체.
-3. 서비스 시작 및 리페어 수행: `docker exec -it cassandra-node1 nodetool repair`
-
-#### 3. 디스크 공간 부족 대응
-
-불필요한 스냅샷을 제거하여 공간을 확보한다.
-
-```bash
-docker exec -it cassandra-node1 nodetool clearsnapshot
-```
+1. 서비스 중지:
+   ```bash
+   docker-compose stop cassandra-node1
+   ```
+2. 기존 데이터 백업 (안전을 위해):
+   ```bash
+   mv ${DEFAULT_DATA_DIR}/cassandra/data ${DEFAULT_DATA_DIR}/cassandra/data_broken
+   ```
+3. 스냅샷 복사:
+   (백업 스토리지에서 최근 스냅샷을 `${DEFAULT_DATA_DIR}/cassandra/data` 위치로 복구)
+4. 권한 확인 및 시작:
+   ```bash
+   chown -R 999:999 ${DEFAULT_DATA_DIR}/cassandra/data
+   docker-compose start cassandra-node1
+   ```
 
 ## Verification Steps
 
-- [ ] `nodetool status` 결과에서 `UN` (Up Normal) 상태 확인.
-- [ ] `cqlsh` 접속 후 간단한 `DESCRIBE KEYSPACES` 쿼리 가능 여부 체크.
+1. 노드 상태 확인:
+   ```bash
+   docker exec -it cassandra-node1 nodetool status
+   ```
+   (상태가 `UN`이어야 함)
+2. 데이터 샘플 쿼리:
+   ```bash
+   docker exec -it cassandra-node1 cqlsh -u ${CASSANDRA_USER} -p ${CASSANDRA_PASSWORD} -e "SELECT * FROM system.local;"
+   ```
 
-## Observability and Evidence Sources
+## Post-remediation Tasks
 
-- **Signals**: Prometheus Alert `CassandraNodeDown` / `CassandraHighHeapUsage`.
-- **Evidence to Capture**: `docker logs --tail 200 cassandra-node1` 출력물, `nodetool info` 결과.
+- 장애 원인 분석 (Post-mortem) 작성 및 공유
+- 모니터링 임계값 조정 필요성 검토
+- 백업 무결성 추가 점검
 
-## Safe Rollback or Recovery Procedure
+## Related Documents
 
-- 복구 실패 시, `infra/` 경로의 `docker-compose.yml` 설정을 초기 상태로 되돌리고 `DEFAULT_DATA_DIR`의 완전한 이전 백업본을 사용하여 복원한다.
-
-## Related Operational Documents
-
-- **Runbook Index**: [Data Tier Runbooks](../README.md)
-- **Monitoring**: Grafana Cassandra Dashboard
+- **Guide**: [Cassandra System Guide](../../../docs/07.guides/04-data/nosql/cassandra.md)
+- **Operation**: [Cassandra Operation Policy](../../../docs/08.operations/04-data/nosql/cassandra.md)

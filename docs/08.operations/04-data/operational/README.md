@@ -43,6 +43,22 @@ operational/
 2. 모든 정책은 `docs/02.ard/`에 정의된 아키텍처 원칙과 일치해야 한다.
 3. 중요 정책 변경 시에는 영향도 평가 및 승인 절차를 거쳐야 한다.
 
+## Operational Data Policies
+
+> Governance and operational standards for management data services.
+
+## Overview
+
+이 디렉터리는 플랫폼 데이터 계층의 운영 가용성, 보안 및 백업에 대한 정책 문서를 포함합니다.
+
+## Policies
+
+| Service | Category | Policy |
+| :--- | :--- | :--- |
+| **mng-db** | Management DB | [mng-db.md](./mng-db.md) |
+| **supabase** | Backend Platform | [supabase.md](./supabase.md) |
+| **postgresql-cluster** | Relational DB | [relational/README.md](../relational/README.md) |
+
 ## Related References
 
 - **Guides**: [Technical Guides](../../07.guides/04-data/operational/README.md)

@@ -26,31 +26,4 @@
 ## Controls
 
 - **Required**:
-  - Daily backups of the core PostgreSQL database.
-  - Encryption at rest for sensitive volumes.
-  - JWT expiry must be strictly enforced (default 1 hour).
-- **Allowed**:
-  - Local Studio access for schema design in development.
-  - Horizontal scaling of the `rest` and `auth` containers.
-- **Disallowed**:
-  - Direct root access to the database via public network.
-  - Disabling SSL for the Kong API gateway.
-
-## Exceptions
-
-- Emergency schema fixes during incidents require Lead Architect approval and a following ADR.
-
-## Verification
-
-- Monthly audit of JWT logs and failed login attempts.
-- Weekly verification of backup consistency.
-
-## Review Cadence
-
-- Quarterly.
-
-## Related Documents
-
-- **ARD**: `[../../02.ard/04-data/operational-data-architecture.md]`
-- **Runbook**: `[../../09.runbooks/04-data/operational/supabase.md]`
-- **Guide**: `[../../07.guides/04-data/operational/supabase.md]`
+Copyright (c) 2026. Licensed under the MIT License.

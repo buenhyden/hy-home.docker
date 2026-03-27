@@ -26,27 +26,17 @@
 
 ```text
 04-data/
-├── cache-and-kv/         # 분산 캐시 및 KV 저장소 가이드
-│   ├── valkey-cluster.md
-│   ├── valkey-standalone.md
-│   └── README.md
+├── cache-and-kv/         # 분산 캐시 및 KV 저장소 가이드 (Valkey Cluster)
 ├── lake-and-object/       # 데이터 레이크 및 오브젝트 스토리지 가이드
-│   ├── minio.md
-│   └── README.md
 ├── nosql/                 # NoSQL 데이터베이스 가이드
-│   ├── cassandra.md
-│   └── README.md
 ├── operational/           # 운영 및 관리용 데이터베이스 가이드
-│   ├── mng-db.md
-│   └── README.md
-├── 01.relational-dbs.md
-├── 02.cache-kv-dbs.md
-└── README.md
+├── relational/            # 관계형 데이터베이스(PostgreSQL) 가이드
+└── README.md              # This file
 ```
 
 ## How to Work in This Area
 
-1. 전반적인 데이터 아키텍처는 [Architecture](../../02.ard/README.md) 문서를 먼저 확인합니다.
+1. 전반적인 데이터 아키텍처는 [Architecture](../../02.ard/0004-data-architecture.md) 문서를 먼저 확인합니다.
 2. 특정 엔진의 구현 세부 사항은 `infra/04-data/` 경로의 소스 코드를 참조합니다.
 3. 새로운 가이드 추가 시 `docs/99.templates/guide.template.md`를 사용합니다.
 

@@ -28,26 +28,24 @@
 
 ## Step-by-step Instructions
 
-### 1. 연결 정보 확인
+### 1. 연결 정보 확인 (Connection Info)
 
-- **Endpoint (External)**: `https://minio.${DEFAULT_URL}`
-- **Console (External)**: `https://minio-console.${DEFAULT_URL}`
 - **Internal API**: `http://minio:9000`
 - **Internal Console**: `http://minio:9001`
+- **External API**: `https://minio.${DEFAULT_URL}`
+- **External Console**: `https://minio-console.${DEFAULT_URL}`
 
-### 2. 버킷 초기화 및 자동화
+### 2. 버킷 초기화 및 자동화 (Bucket Initialization)
 
 MinIO 배포 시 `minio-create-buckets` 작업이 자동으로 실행되어 다음 버킷을 생성한다.
-
 - `tempo-bucket`: Tempo 분산 추적 데이터 저장
 - `loki-bucket`: Loki 로그 데이터 저장
 - `cdn-bucket`: 공개 에셋 저장소 (Public/Anonymous Read 활성화)
 - `doc-intel-assets`: 문서 지능화 작업을 위한 자산 저장소
 
-### 3. MinIO Client (mc) 사용
+### 3. MinIO Client (mc) 사용 (Using mc)
 
 원격 관리를 위해 `mc`를 설정한다.
-
 ```bash
 # 별칭 설정
 mc alias set myminio https://minio.${DEFAULT_URL} [ACCESS_KEY] [SECRET_KEY]
@@ -59,10 +57,9 @@ mc ls myminio
 mc cp local-file.txt myminio/cdn-bucket/
 ```
 
-### 4. 애플리케이션 연동 (S3 SDK)
+### 4. 애플리케이션 연동 (App Integration)
 
 애플리케이션에서 AWS SDK 등을 사용하여 연결할 때는 `path-style` 접근 방식을 활성화해야 한다.
-
 ```javascript
 const s3 = new AWS.S3({
   endpoint: 'http://minio:9000',
@@ -78,6 +75,7 @@ const s3 = new AWS.S3({
 
 ## Related Documents
 
-- **Spec**: [../04.specs/04-data/spec.md](../../../04.specs/README.md)
-- **Operation**: [../08.operations/04-data/lake-and-object/minio.md](../../../08.operations/04-data/lake-and-object/minio.md)
-- **Runbook**: [../09.runbooks/04-data/lake-and-object/minio.md](../../../09.runbooks/04-data/lake-and-object/minio.md)
+- **Spec**: [Data Persistence Spec](../../../../docs/04.specs/04-data/spec.md)
+- **Operation**: [MinIO Operations Policy](../../../../docs/08.operations/04-data/lake-and-object/minio.md)
+- **Runbook**: [MinIO Recovery Runbook](../../../../docs/09.runbooks/04-data/lake-and-object/minio.md)
+

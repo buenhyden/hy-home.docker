@@ -29,35 +29,30 @@
 
 ## Step-by-step Instructions
 
-### 1. S3 API 활용
+### 1. S3 API 활용 (Using S3 API)
 
 MinIO와 동일한 S3 호환 API를 제공한다.
-
 - **Endpoint**: `https://s3.${DEFAULT_URL}`
 - **Bucket 생성**: `mc mb myseaweed/bucket-name`
 
-### 2. Filer API (CDN) 활용
+### 2. Filer API (CDN) 활용 (Using Filer API)
 
 파일시스템 수준의 정적 자원 서빙에 최적화되어 있다.
-
 - **Endpoint**: `https://cdn.${DEFAULT_URL}`
 - **파일 업로드 예시**:
-
   ```bash
   curl -F file=@picture.jpg http://seaweedfs-filer:8888/path/to/save/
   ```
 
-### 3. FUSE 호스트 마운트
+### 3. FUSE 호스트 마운트 (FUSE Host Mount)
 
 컨테이너 외부 호스트 환경에서 SeaweedFS를 로컬 디렉토리처럼 사용할 수 있다.
-
 - **Mount Point**: `/mnt/seaweedfs`
 - **사용 사례**: 대용량 로그 분석, 미디어 파일 직접 편집 등.
 
-### 4. 클러스터 모니터링
+### 4. 클러스터 모니터링 (Cluster Monitoring)
 
 Master UI를 통해 볼륨 서버 상태와 복제 상태를 확인한다.
-
 - **Dashboard**: `https://seaweedfs.${DEFAULT_URL}`
 
 ## Common Pitfalls
@@ -67,6 +62,7 @@ Master UI를 통해 볼륨 서버 상태와 복제 상태를 확인한다.
 
 ## Related Documents
 
-- **Spec**: [../04.specs/04-data/spec.md](../../../04.specs/README.md)
-- **Operation**: [../08.operations/04-data/lake-and-object/seaweedfs.md](../../../08.operations/04-data/lake-and-object/seaweedfs.md)
-- **Runbook**: [../09.runbooks/04-data/lake-and-object/seaweedfs.md](../../../09.runbooks/04-data/lake-and-object/seaweedfs.md)
+- **Spec**: [Data Persistence Spec](../../../../docs/04.specs/04-data/spec.md)
+- **Operation**: [SeaweedFS Operations Policy](../../../../docs/08.operations/04-data/lake-and-object/seaweedfs.md)
+- **Runbook**: [SeaweedFS Recovery Runbook](../../../../docs/09.runbooks/04-data/lake-and-object/seaweedfs.md)
+

@@ -39,15 +39,15 @@ operational/
 
 ## How to Work in This Area
 
-1. 새 런북을 작성할 때는 `docs/99.templates/runbook.template.md`를 사용한다.
-2. 모든 절차는 실제 환경에서 검증되어야 하며, 위험한 단계에는 반드시 경고 문구를 포함한다.
-3. 복구 완료 후에는 `docs/10.incidents/`에 기록을 남기는 것을 원칙으로 한다.
+이 디렉터리는 플랫폼 핵심 데이터 서비스의 장애 복구 및 트러블슈팅을 위한 단계별 절차서를 포함합니다.
 
-## Related References
+## Runbooks
 
-- **Guides**: [Technical Guides](../../07.guides/04-data/operational/README.md)
-- **Operations**: [Operations Policy](../../08.operations/04-data/operational/README.md)
-- **Infra**: [Relational Infra Source](../../../../infra/04-data/relational/README.md)
+| Service | Category | Runbook |
+| :--- | :--- | :--- |
+| **mng-db** | Management DB | [mng-db.md](./mng-db.md) |
+| **supabase** | Backend Platform | [supabase.md](./supabase.md) |
+| **postgresql-cluster** | Relational DB | [relational/README.md](../relational/README.md) |
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

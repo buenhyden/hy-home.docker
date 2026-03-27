@@ -27,19 +27,12 @@
 ```text
 04-data/
 ├── cache-and-kv/         # 분산 캐시 및 KV 저장소 긴급 복구 런북
-│   ├── valkey-cluster.md
-│   ├── valkey-standalone.md
-│   └── README.md
 ├── lake-and-object/       # 데이터 레이크 및 오브젝트 스토리지 긴급 복구 런북
-│   ├── minio.md
-│   └── README.md
 ├── nosql/                 # NoSQL 데이터베이스 복구 런북
-│   ├── cassandra.md
-│   └── README.md
 ├── operational/           # 운영 및 관리용 데이터베이스 복구 런북
-│   ├── mng-db.md
-│   └── README.md
 ├── storage-exhaustion.md   # 용량 부족 대응 공통 런북
+├── relational/            # 관계형 데이터베이스(PostgreSQL) 복구 런북
+└── README.md              # This file
 ```
 
 ## How to Work in This Area
@@ -47,6 +40,7 @@
 1. 장애 발생 시 가장 먼저 [Initial Triage](./README.md#setup--initial-triage) 절차를 확인합니다.
 2. 특정 서비스 장애의 경우 해당 서비스의 개별 런북 문서를 즉시 실행합니다.
 3. 복구 완료 후에는 반드시 `VERIFICATION` 단계를 거쳐야 합니다.
+4. 관계형 데이터베이스 복구는 [Relational Runbook](./relational.md)을 따릅니다.
 
 ## Related References
 

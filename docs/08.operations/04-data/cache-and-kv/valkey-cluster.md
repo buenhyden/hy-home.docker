@@ -1,58 +1,50 @@
 # Valkey Cluster Operations Policy
 
-> Global Operations and Maintenance Standards for Valkey Cluster
+> Performance and Persistence Controls for Distributed Caching / 분산 캐싱을 위한 성능 및 영속성 통제 정책
 
-## Overview
+## Overview (KR)
 
-This policy defines the operational standards for the distributed Valkey cluster, focusing on monitoring, data integrity, and security.
+이 문서는 Valkey Cluster의 운영 표준, 데이터 보호 정책 및 성능 관리 기준을 정의합니다. 시스템의 안정성과 고가용성을 유지하기 위한 통제 항목을 포함합니다.
 
-## Monitoring Standards
+This document defines the operational standards, data protection policies, and performance management criteria for the Valkey Cluster. It includes control items to maintain system stability and high availability.
 
-### Key Metrics (SLIs)
+## Policy Scope
 
-| Metric | Threshold | Action |
-| :--- | :--- | :--- |
-| `cluster_state` | `ok` | Critical Alert if `fail` |
-| `connected_clients` | > 5000 | Investigate connection leaks |
-| `used_memory_rss` | > 85% limit | Scale up or evict items |
-| `evicted_keys` | > 100/sec | Increase memory |
+Valkey 6노드 분산 클러스터의 영속성(Persistence), 메모리 관리, 보안 및 모니터링 정책을 관리합니다.
 
-### Health Checks
+## Applies To
 
-- **Automated**: Traefik and Docker Compose healthchecks (`valkey-cli ping`).
-- **Manual Check**: `valkey-cli -p 6379 cluster info`.
+- **Systems**: `valkey-cluster` (node 0-5)
+- **Agents**: Data Infrastructure Agents, SRE Agents
+- **Environments**: Production, Staging
 
-## Data Governance
+## Controls
 
-### Persistence Policy
-- **AOF**: `appendfsync everysec` enabled for durability.
-- **RDB**: Snapshots every 900s (if 1 change) to ensure point-in-time recovery.
+- **Required**:
+  - `appendonly yes`: 데이터 영속성을 위해 AOF 활성화 필수
+  - `maxmemory-policy allkeys-lru`: 메모리 부족 시 LRU 기반 키 제거 정책 적용
+  - Docker Secrets을 통한 패스워드 주입 및 인증 필수
+- **Allowed**:
+  - 특정 노드에 대한 Read-only 복제본 추가 확장
+- **Disallowed**:
+  - 패스워드 없는 노드 노출 금지
+  - 승인되지 않은 외부 네트워크에서의 직접 접속 차단
 
-### Memory Management
-- **Maxmemory Policy**: `allkeys-lru` (Least Recently Used) is the default evacuation strategy.
-- **Eviction**: Monitor `evicted_keys` to ensure capacity planning.
+## Exceptions
 
-## Security Controls
+- 대량 데이터 마이그레이션 시 초기 속도 향상을 위해 일시적으로 AOF를 끌 수 있으나, 작업 완료 후 즉시 재활성화해야 함.
 
-### Access Control
-- **Authentication**: Mandatory password protection via Docker Secrets.
-- **Network**: Only accessible within `infra_net`. Management access via SSH/Internal VPN only.
+## Verification
 
-### Encryption
-- **At Rest**: Volume encryption at host level (if required).
-- **In Transit**: internal cluster bus communication is non-encrypted by default (trusted network). External TLS can be layered via Traefik.
+- **Metrics**: Grafana 대시보드에서 `cluster_state:ok` 유무를 실시간 감시합니다.
+- **Audit**: 정기적으로 `cluster nodes` 명령을 통해 모든 노드의 연결 상태를 확인합니다.
 
-## Maintenance Procedures
+## Review Cadence
 
-### Updating Configuration
-1. Modify `infra/04-data/cache-and-kv/valkey-cluster/config/valkey.conf`.
-2. Perform rolling restart: `docker compose restart valkey-node-0`, etc.
-3. Verify cluster state after each node restart.
-
-### Scaling
-- **Vertical**: Update `common-optimizations.yml` resources.
-- **Horizontal**: Requires manual slot rebalancing (use `valkey-cli --cluster reshard`).
+- Quarterly (분기별 운영 데이터 및 장애 이력 검토)
 
 ## Related Documents
-- **Guide**: [Technical Guide](../../../07.guides/04-data/cache-and-kv/valkey-cluster.md)
-- **Runbook**: [Emergency Recovery](../../../09.runbooks/04-data/cache-and-kv/valkey-cluster.md)
+
+- **ARD**: [Data Architecture Model](../../02.ard/0004-data-architecture.md)
+- **Runbook**: [Valkey Recovery Runbook](../../09.runbooks/04-data/cache-and-kv/valkey-cluster.md)
+- **Guide**: [Valkey Cluster Guide](../../07.guides/04-data/cache-and-kv/valkey-cluster.md)

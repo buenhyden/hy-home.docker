@@ -1,73 +1,72 @@
+<!-- [ID:04-data:minio] -->
 # MinIO Object Storage
 
 > S3-compatible high-performance object storage server.
 
-## Overview
+---
 
-MinIO serves as the primary object storage layer for the `hy-home.docker` ecosystem. It provides persistence for infrastructure workloads (Loki logs, Tempo traces) and serves as a public asset repository for applications.
+## 1. Context & Objective (KR)
 
-## Audience
+MinIO는 `hy-home.docker` 에코시스템의 기본 오브젝트 스토리지 계층이다. 인프라 워크로드(Loki 로그, Tempo 트레이스)의 영속성을 보장하고, 애플리케이션의 공개 에셋 저장소(CDN) 역할을 수행한다. S3 호환 API를 통해 높은 호환성과 성능을 제공하며, 내부 및 외부 데이터 가용성을 통합 관리한다.
 
-이 README의 주요 독자:
+## 2. Requirements & Constraints
 
-- 인프라를 배포하고 관리하는 **Operators**
-- S3 저장소를 사용하는 **Developers**
-- 시스템 상태를 점검하는 **AI Agents**
+- **Engine**: MinIO RELEASE.2025-09-07T16-13-09Z
+- **Protocol**: Standard S3-compatible API
+- **Deployment**: Docker Compose (Single-node or 4-node cluster)
+- **Secrets**: `MINIO_ROOT_USER_FILE` 및 `MINIO_ROOT_PASSWORD_FILE` 필수 사용
+- **Ports**: 9000 (API), 9001 (Console)
 
-## Scope
+## 3. Setup & Installation
 
-### In Scope
-
-- MinIO 단일 노드 및 클러스터 배포 구성
-- `minio-init`을 통한 버킷 자동 초기화 (Loki, Tempo, CDN)
-- S3 호환 API 및 Console 액세스 설정
-
-### Out of Scope
-
-- 개별 버킷 내 데이터의 애플리케이션 레벨 관리
-- MinIO Client (`mc`)의 상세 사용법 (Technical Guide 참조)
-- 세부 백업 및 복구 절차 (Operation/Runbook 참조)
-
-## Structure
-
-```text
-minio/
-├── README.md                  # This file
-├── docker-compose.yml         # Single-node deployment
-└── docker-compose.cluster.yaml # 4-node cluster deployment
+### 3.1. Single-node Deployment
+```bash
+# 기본(단일 노드) 서비스 시작
+docker compose up -d
 ```
 
-## How to Work in This Area
+### 3.2. Cluster Deployment
+```bash
+# 4노드 클러스터 구성 시작
+docker compose -f docker-compose.cluster.yaml up -d
+```
 
-1. 배포 전 `MINIO_ROOT_USER_FILE` 및 `MINIO_ROOT_PASSWORD_FILE` 비밀번호 파일이 준비되었는지 확인합니다.
-2. 단일 노드 테스트 시 `docker compose up -d`를 사용합니다.
-3. 운영 환경 클러스터 배포 시 `docker-compose.cluster.yaml` 설정을 검토합니다.
-4. 버킷 정책 변경 시 `minio-create-buckets` 서비스의 로직을 수정합니다.
+## 4. Usage & Integration
 
-## Available Scripts
+### 4.1. Entrypoints
+- **API (Internal)**: `http://minio:9000`
+- **Dashboard (External)**: `https://minio-console.${DEFAULT_URL}`
+- **API (External)**: `https://minio.${DEFAULT_URL}`
 
-| Command                               | Description                     |
-| ------------------------------------- | ------------------------------- |
-| `docker compose up -d`                | 단일 노드 MinIO 서비스 시작     |
-| `docker compose -f docker-compose.cluster.yaml up -d` | 4노드 클러스터 MinIO 시작 |
-| `docker compose logs -f minio`        | MinIO 서버 로그 실시간 확인     |
-| `docker compose ps`                   | 서비스 상태 및 헬스체크 확인    |
+### 4.2. Initialized Buckets
+배포 시 `minio-create-buckets` 서비스를 통해 다음 버킷이 자동 생성된다:
+- `tempo-bucket`, `loki-bucket`: 관측성 데이터
+- `cdn-bucket`: 공개 에셋 (Anonymous Read 활성화)
+- `doc-intel-assets`: 문서 분석 데이터
 
-## Tech Stack
+## 5. Maintenance & Safety (Maintenance & Safety)
 
-| Category   | Technology   | Notes                               |
-| ---------- | ------------ | ----------------------------------- |
-| Engine     | MinIO        | RELEASE.2025-09-07T16-13-09Z        |
-| Protocol   | S3           | Standard S3-compatible API          |
-| Deployment | Docker       | Compose-based deployment            |
-| UI         | Console      | Port 9001 (Internal/External entry) |
+- **Secrets Management**: 루트 자격 증명은 `.env` 및 `.secrets/` 폴더를 통해 안전하게 관리해야 한다.
+- **Monitoring**: Prometheus 엔드포인트(`:9000/minio/v2/metrics/cluster`)가 활성화되어 있으며 전역 Grafana 대시보드에서 지표를 확인한다.
+- **Health Check**: `curl`을 사용하여 `/minio/health/live` 경로로 상태를 점검한다.
 
-## Related References
+## 6. Known Issues & Troubleshooting
+
+- **Path-Style Access**: 클라이언트가 가상 호스트 기반 접근을 시도할 경우 연결이 실패할 수 있으므로, 반드시 `path-style` 접근을 활성화해야 한다.
+- **Quota Management**: 버킷 용량 제한이 설정되지 않았으므로 호스트 디스크 사용량을 주의 깊게 모니터링해야 한다.
+
+## 7. Canonical References
+
+- **Official MinIO Docs**: [https://docs.min.io/](https://docs.min.io/)
+- **S3 API Compatibility**: [https://min.io/docs/minio/linux/index.html](https://min.io/docs/minio/linux/index.html)
+
+## 8. Related Documents
 
 - **Guide**: [Technical Guide](../../../../docs/07.guides/04-data/lake-and-object/minio.md)
 - **Operation**: [Operations Policy](../../../../docs/08.operations/04-data/lake-and-object/minio.md)
 - **Runbook**: [Recovery Runbook](../../../../docs/09.runbooks/04-data/lake-and-object/minio.md)
-- **Related Spec**: [Data Persistence Spec](../../../../docs/04.specs/04-data/spec.md)
+- **Spec**: [Data Persistence Spec](../../../../docs/04.specs/04-data/spec.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
+

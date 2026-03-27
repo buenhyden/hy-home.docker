@@ -1,70 +1,59 @@
-# MongoDB Operations Policy
+<!-- Target: docs/08.operations/04-data/nosql/mongodb.md -->
 
-Operational standards and maintenance procedures for the MongoDB persistence layer.
+# MongoDB Operation Policy
 
-## Canonical References
+> Operational standards for MongoDB Replica Set (3.2 GA) high availability and security.
 
--   **Policy**: [04-data Operations Policy](../../../00.governance/policies/data-ops.md)
--   **System Guide**: [MongoDB Guide](../../07.guides/04-data/nosql/mongodb.md)
+---
 
-## Lifecycle Management
+## Overview (KR)
 
-### Bootstrap Sequence
+이 문서는 MongoDB 레플리카 셋의 안정적인 복제 상태 유지, 백업 절차, 보안 패치 및 모니터링 운영 정책을 정의한다.
 
-1.  `mongo-key-generator` runs once to ensure `mongodb.key` exists.
-2.  Data nodes (`rep1`, `rep2`) and arbiter start.
-3.  `mongo-init` executes `rs.initiate()` and creates management users.
+## Policy Type
 
-### Maintenance Windows
+`operational-standard`
 
--   **Non-disruptive**: Upgrades can be performed via rolling restarts (Secondary first, then step down Primary).
--   **Disruptive**: Changes to `replicaSet` name or major version upgrades.
+## Target Audience
 
-## Security Standard
+- Operator
+- SRE
+- DBA
 
--   **Authentication**: SCRAM-SHA-256 mandatory.
--   **Authorization**: RBAC (Role-Based Access Control) must be enforced.
--   **Network**: MongoDB ports (27017) are NOT exposed to the public internet; access via internal network or jump host only.
+## Purpose
 
-## Backup and Recovery
+레플리카 셋의 정족수(Quorum)를 안정적으로 유지하고, 장애 발생 시 자동 페일오버 프로세스를 보장하며, 데이터 유출 방지를 위한 보안 준수 사항을 관리한다.
 
-### Backup Strategy (mongodump)
+## Service Level Objectives (SLO)
 
--   **Frequency**: Daily logical backups.
--   **Retention**: 7 days local, 30 days off-site.
+- **Availability**: 99.95% (Replica Set failover capability)
+- **Replication Lag**: Primary/Secondary 간 지연 < 10 seconds
+- **Data Durability**: W:MAJORITY 설정 준수 시 손실 방지
 
-```bash
-# Example Manual Backup
-docker exec mongodb-rep1 mongodump --archive --gzip -u root -p <password> > /backups/mongo_$(date +%F).gz
-```
+## Operational Procedures
 
-## Performance & Monitoring
+### 1. Monitoring & Alerting
 
-### Health Indicators
+- **Replication Health**: `rs.status()`의 `optimeDate` 차이를 주기적으로 감시하여 지연(Lag)을 추적한다.
+- **Disk Pressure**: 데이터 볼륨(`mongodb_data1`, `data2`) 사용량이 85%를 초과할 경우 디스크 확장을 계획한다.
 
-| Metric | Threshold | Action |
-| :--- | :--- | :--- |
-| `mongodb_rs_members_state` | != 1 (Primary) or 2 (Secondary) | Investigate election lag |
-| `mongodb_op_counters_total` | Spikes > 200% baseline | Check for unindexed queries |
-| `mongodb_memory_resident` | > 80% RAM | Scale horizontal or vertical |
+### 2. Backup & Restoration
 
-## Capacity Planning
+- **Oplog Tail**: `mongodb-exporter`를 통해 Oplog 사이즈와 가용 시간을 모니터링하여 갑작스러운 데이터 증가에 대비한다.
+- **Consistent Backups**: `mongodump` 수행 시 `--oplog` 옵션을 사용하여 백업 시점의 일치성을 보장한다.
 
--   **Vertical**: Increase memory to fit the working set (indexes + hot data).
--   **Horizontal**: Add more secondary nodes to scale read capacity.
+### 3. Security Maintenance
 
-## Audit and Compliance
+- **Auth Audit**: 모든 접속은 RBAC(Role-Based Access Control)를 거쳐야 하며, 주기적으로 미사용 계정을 정리한다.
+- **Key Rotation**: 클러스터 내부 인증용 `mongo-keyfile`을 정기적으로 교체할 수 있는 프로세스를 수립한다.
 
--   **Logs**: Audit logs are captured at `/var/log/mongodb/audit.log`.
--   **Access Review**: Quarterly review of `mongo-express` users.
+## Common Pitfalls
 
-## Change Management
+- **Arbiter Risk**: Arbiter 노드가 다운되면 3노드 클러스터에서 2노드만 남게 되어 데이터 노드 하나만 더 장애가 나도 Primary 선출이 불가능해진다. Arbiter 가용성 역시 중요하다.
+- **Oplog Window**: Oplog가 너무 작으면 보관 주기가 짧아져 Secondary 노드 재동기화(Initial Sync)가 불가능해질 수 있다.
 
--   Configuration changes must be applied via Docker environment variables or custom `mongod.conf`.
--   Always verify `rs.status()` after any infrastructure change.
+## Related Documents
 
-## Decommissioning
-
-1.  Export final data via `mongodump`.
-2.  Remove DNS entries for `mongo-express`.
-3.  Purge persistent volumes `mongodb_data*`.
+- **Infrastructure**: [MongoDB Infrastructure](../../../infra/04-data/nosql/mongodb/README.md)
+- **Guide**: [MongoDB Replica Set Guide](../../../docs/07.guides/04-data/nosql/mongodb.md)
+- **Runbook**: [MongoDB Recovery Runbook](../../../docs/09.runbooks/04-data/nosql/mongodb.md)

@@ -1,55 +1,57 @@
 # MinIO Object Storage Operations Policy
 
 > S3-compatible object storage operations and governance.
+> S3 호환 오브젝트 스토리지 운영 및 거버넌스 정책.
 
 ---
 
-## Overview (KR)
+## Overview
 
-이 문서는 MinIO 오브젝트 스토리지의 운영 정책을 정의한다. 데이터 지속성 보장을 위한 백업 전략, 보안 통제 기준, 그리고 시스템 가용성 유지 및 성능 모니터링 방법을 규정한다.
+### English
+This document defines the operational policies for MinIO Object Storage. It regulates backup strategies for data persistence, security control standards, system availability maintenance, and performance monitoring methods within the `hy-home.docker` environment.
 
-## Policy Scope
+### Korean
+이 문서는 MinIO 오브젝트 스토리지의 운영 정책을 정의한다. `hy-home.docker` 환경 내에서 데이터 지속성 보장을 위한 백업 전략, 보안 통제 기준, 시스템 가용성 유지 및 성능 모니터링 방법을 규정한다.
 
-- MinIO 데이터 볼륨 및 메타데이터 보호
-- 전역 및 애플리케이션 레벨의 액세스 통제 (IAM)
-- 저장소 할당량 및 모니터링 기준
+## Policy ID
 
-## Applies To
+`OP-DATA-LAKE-MINIO-001`
 
-- **Systems**: MinIO Cluster, MinIO Single Node
-- **Agents**: Operators, Backup Jobs
-- **Environments**: Production, Staging
+## Scope
 
-## Controls
+- MinIO Cluster and Single Node data volume protection.
+- Global and application-level Access Control (IAM).
+- Storage quota management and monitoring thresholds.
+- Manual and automated bucket lifecycle management.
 
-- **Required**:
-  - `MINIO_ROOT_USER_FILE` 및 `MINIO_ROOT_PASSWORD_FILE` 필수 사용 (Secret Management).
-  - Prometheus 엔드포인트 활성화 및 전역 모니터링 시스템 연동.
-  - 중요 데이터 버킷에 대한 주기적 백업 (mc mirror).
-- **Allowed**:
-  - `cdn-bucket`에 대한 익명(Anonymous) 읽기 권한.
-  - 개발 환경에서의 Console 직접 액세스.
-- **Disallowed**:
-  - Root 자격 증명을 애플리케이션 연동에 직접 사용 금지.
-  - 공개되지 않은 버킷에 대한 퍼블릭 액세스 활성화 금지.
+## Controls & Standards
 
-## Exceptions
+- **Secret Management**: Must use `MINIO_ROOT_USER_FILE` and `MINIO_ROOT_PASSWORD_FILE`. Direct use of plaintext credentials in environment variables is prohibited in production.
+- **Monitoring**: Prometheus endpoint must be enabled and integrated with the global monitoring system (Grafana/Prometheus).
+- **Data Protection**: Critical data buckets must have periodic backups enabled using `mc mirror` or server-side replication.
+- **Access Control**: Follow the Principle of Least Privilege (PoLP). Application-specific service accounts must be used instead of root credentials.
 
-- **CDN Assets**: 공개 정적 에셋의 경우 별도의 승인 없이 익명 읽기 권한을 허용한다.
-- **Temporary Buckets**: 24시간 이내의 임시 작업용 버킷은 백업 대상에서 예외 처리할 수 있다.
+## Monitoring & Alerting
 
-## Verification
+- **Health Check**: Monitor `/_minio/health/live` and `/_minio/health/ready` endpoints.
+- **Metrics**: Track `minio_disk_storage_used_bytes` and `minio_disk_storage_free_bytes`. Alert if free space is less than 15%.
+- **Uptime**: Alert if the MinIO service is unresponsive for more than 5 minutes.
 
-- `mc admin prometheus metrics`를 통한 헬스체크 및 성능 지표 검증.
-- 주기적인 백업 완료 로그 확인.
-- IAM 정책 검토 (최소 권한 원칙 준수 여부).
+## Backup & Lifecycle
 
-## Review Cadence
+- **Volume Backup**: Nightly backups of the `/data` volume using filesystem snapshots or `mc mirror` to an offsite location.
+- **Version Control**: Enable Object Locking and Versioning for critical production buckets to prevent accidental deletion.
+- **Retention**: Define lifecycle rules for temporary buckets (e.g., auto-delete after 24 hours for `tmp-` prefix).
 
-- Quarterly (분기별) 정책 및 보안 통제 검토.
+## Compliance Requirements
+
+- **Audit Logs**: Access logs must be retained for at least 90 days for compliance auditing.
+- **Encryption**: Enable Server-Side Encryption (SSE) for sensitive data buckets.
+- **Public Access**: Public access remains disabled by default. Exceptions for CDN/Public assets require explicit approval.
 
 ## Related Documents
 
-- **ARD**: [../02.ard/0004-data-architecture.md](../../../02.ard/README.md)
-- **Runbook**: [../09.runbooks/04-data/lake-and-object/minio.md](../../../09.runbooks/04-data/lake-and-object/minio.md)
-- **Guide**: [../07.guides/04-data/lake-and-object/minio.md](../../../07.guides/04-data/lake-and-object/minio.md)
+- **Technical Guide**: [minio.md](../../07.guides/04-data/lake-and-object/minio.md)
+- **Recovery Runbook**: [minio.md](../../09.runbooks/04-data/lake-and-object/minio.md)
+- **Infrastructure**: [minio/README.md](../../../infra/04-data/lake-and-object/minio/README.md)
+

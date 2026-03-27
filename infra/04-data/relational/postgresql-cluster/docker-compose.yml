@@ -3,10 +3,14 @@ x-tier-label: &tier-label
 
 x-pg-common-env: &pg-common-env
   SCOPE: 'pg-ha'
-  ETCD3_HOSTS: 'etcd-1:${ETCD_CLIENT_PORT:-2379},etcd-2:${ETCD_CLIENT_PORT:-2379},etcd-3:${ETCD_CLIENT_PORT:-2379}'
+  PATRONI_NAMESPACE: /service/
+  ETCD3_HOSTS: >-
+    etcd-1:${ETCD_CLIENT_PORT:-2379},
+    etcd-2:${ETCD_CLIENT_PORT:-2379},
+    etcd-3:${ETCD_CLIENT_PORT:-2379}
   PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
   PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
-  PATRONI_NAMESPACE: /service/
+  PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
   PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT:-8008}
   PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
 
@@ -173,12 +177,12 @@ services:
     expose:
       - '${HAPROXY_METRICS_PORT:-8404}'
     command:
-    - /bin/sh
-    - -ec
-    - |
-      HAPROXY_STATS_PASSWORD="$(cat /run/secrets/pg_haproxy_stats_password | tr -d '\n')"
-      sed "s|\$${HAPROXY_STATS_PASSWORD}|$${HAPROXY_STATS_PASSWORD}|g" /tmp/haproxy.cfg.tpl > /tmp/haproxy.cfg
-      exec haproxy -W -db -f /tmp/haproxy.cfg
+      - /bin/sh
+      - -ec
+      - |
+        HAPROXY_STATS_PASSWORD="$(cat /run/secrets/pg_haproxy_stats_password | tr -d '\n')"
+        sed "s|\$${HAPROXY_STATS_PASSWORD}|$${HAPROXY_STATS_PASSWORD}|g" /tmp/haproxy.cfg.tpl > /tmp/haproxy.cfg
+        exec haproxy -W -db -f /tmp/haproxy.cfg
     depends_on:
       pg-0:
         condition: service_healthy
@@ -220,8 +224,28 @@ services:
       POSTGRES_READ_PORT: ${POSTGRES_READ_PORT:-15433}
       POSTGRES_USER: ${PATRONI_SUPERUSER_USERNAME:-postgres}
       POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
-    command: >
-      sh -c "until pg_isready -h $$POSTGRES_ROUTER_HOSTNAME -p $$POSTGRES_WRITE_PORT -U $$POSTGRES_USER; do sleep 2; done; export PGPASSWORD=$$(cat /run/secrets/patroni_superuser_password | tr -d '\n'); psql -h \"$$POSTGRES_ROUTER_HOSTNAME\" -p \"$$POSTGRES_WRITE_PORT\" -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\" -v patroni_superuser_password=\"$$PGPASSWORD\" \ -f /work/init_users_dbs.sql;"
+      PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
+      SERVICE_POSTGRES_USERNAME: ${SERVICE_POSTGRES_USERNAME:-app_user}
+      SERVICE_POSTGRES_DB: ${SERVICE_POSTGRES_DB:-app_db}
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        until pg_isready -h "$$POSTGRES_ROUTER_HOSTNAME" -p "$$POSTGRES_WRITE_PORT" -U "$$POSTGRES_USER"; do
+          sleep 2
+        done
+        export PGPASSWORD="$(cat /run/secrets/patroni_superuser_password | tr -d '\n')"
+        psql \
+          -h "$$POSTGRES_ROUTER_HOSTNAME" \
+          -p "$$POSTGRES_WRITE_PORT" \
+          -U "$$POSTGRES_USER" \
+          -d "$$POSTGRES_DB" \
+          -v patroni_exporter_username="$$PATRONI_EXPORTER_USERNAME" \
+          -v patroni_exporter_password="$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')" \
+          -v service_postgres_username="$$SERVICE_POSTGRES_USERNAME" \
+          -v service_postgres_password="$$(cat /run/secrets/service_postgres_password | tr -d '\n')" \
+          -v service_postgres_db="$$SERVICE_POSTGRES_DB" \
+          -f /work/init_users_dbs.sql
     volumes:
       - ./init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro
     depends_on:
@@ -229,6 +253,8 @@ services:
         condition: service_started
     secrets:
       - patroni_superuser_password
+      - patroni_exporter_password
+      - service_postgres_password
     networks:
       - infra_net
     labels:
@@ -253,6 +279,7 @@ services:
     secrets:
       - patroni_superuser_password
       - patroni_replication_password
+      - patroni_exporter_password
     depends_on:
       etcd-1:
         condition: service_healthy
@@ -261,11 +288,13 @@ services:
       etcd-3:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${PATRONI_SUPERUSER_USERNAME:-postgres} -h localhost']
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U $${PATRONI_SUPERUSER_USERNAME:-postgres} -h 127.0.0.1 -p $${POSTGRES_PORT:-5432}'
       interval: 15s
       timeout: 10s
-      retries: 5
-      start_period: 15s
+      retries: 10
+      start_period: 120s
     labels:
       <<: *tier-label
     networks:
@@ -290,6 +319,7 @@ services:
     secrets:
       - patroni_superuser_password
       - patroni_replication_password
+      - patroni_exporter_password
     depends_on:
       etcd-1:
         condition: service_healthy
@@ -298,11 +328,13 @@ services:
       etcd-3:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${PATRONI_SUPERUSER_USERNAME:-postgres} -h localhost']
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U $${PATRONI_SUPERUSER_USERNAME:-postgres} -h 127.0.0.1 -p $${POSTGRES_PORT:-5432}'
       interval: 15s
       timeout: 10s
-      retries: 5
-      start_period: 15s
+      retries: 10
+      start_period: 120s
     labels:
       <<: *tier-label
     networks:
@@ -327,6 +359,7 @@ services:
     secrets:
       - patroni_superuser_password
       - patroni_replication_password
+      - patroni_exporter_password
     depends_on:
       etcd-1:
         condition: service_healthy
@@ -335,11 +368,13 @@ services:
       etcd-3:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${PATRONI_SUPERUSER_USERNAME:-postgres} -h localhost']
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U $${PATRONI_SUPERUSER_USERNAME:-postgres} -h 127.0.0.1 -p $${POSTGRES_PORT:-5432}'
       interval: 15s
       timeout: 10s
-      retries: 5
-      start_period: 15s
+      retries: 10
+      start_period: 120s
     labels:
       <<: *tier-label
     networks:
@@ -357,12 +392,14 @@ services:
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
-      - patroni_superuser_password
+      - patroni_exporter_password
+    environment:
+      PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
     entrypoint: [/bin/sh, -c]
     command:
       - |
-        export PGPASSWORD=$$(cat /run/secrets/patroni_superuser_password | tr -d '\n')
-        export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-0:$${POSTGRES_PORT:-5432}/postgres?sslmode=require"
+        export PGPASSWORD=$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')
+        export DATA_SOURCE_NAME="postgresql://$${PATRONI_EXPORTER_USERNAME:-exporter}:$$PGPASSWORD@pg-0:$${POSTGRES_PORT:-5432}/postgres?sslmode=require"
         exec /bin/postgres_exporter
     depends_on:
       pg-0:
@@ -394,12 +431,14 @@ services:
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
-      - patroni_superuser_password
+      - patroni_exporter_password
+    environment:
+      PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
     entrypoint: [/bin/sh, -c]
     command:
       - |
-        export PGPASSWORD=$$(cat /run/secrets/patroni_superuser_password | tr -d '\n')
-        export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-1:$${POSTGRES_PORT:-5432}/postgres?sslmode=require"
+        export PGPASSWORD=$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')
+        export DATA_SOURCE_NAME="postgresql://$${PATRONI_EXPORTER_USERNAME:-exporter}:$$PGPASSWORD@pg-1:$${POSTGRES_PORT:-5432}/postgres?sslmode=require"
         exec /bin/postgres_exporter
     depends_on:
       pg-1:
@@ -431,12 +470,14 @@ services:
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     secrets:
-      - patroni_superuser_password
+      - patroni_exporter_password
+    environment:
+      PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
     entrypoint: [/bin/sh, -c]
     command:
       - |
-        export PGPASSWORD=$$(cat /run/secrets/patroni_superuser_password | tr -d '\n')
-        export DATA_SOURCE_NAME="postgresql://postgres:$$PGPASSWORD@pg-2:$${POSTGRES_PORT:-5432}/postgres?sslmode=require"
+        export PGPASSWORD=$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')
+        export DATA_SOURCE_NAME="postgresql://$${PATRONI_EXPORTER_USERNAME:-exporter}:$$PGPASSWORD@pg-2:$${POSTGRES_PORT:-5432}/postgres?sslmode=require"
         exec /bin/postgres_exporter
     depends_on:
       pg-2:

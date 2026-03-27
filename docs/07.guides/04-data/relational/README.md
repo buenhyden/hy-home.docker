@@ -1,52 +1,61 @@
-# Relational Data Guides
+# Relational Database Guides (04-data/relational)
 
-> 관계형 데이터베이스(RDB) 시스템 기술 가이드
+> High-Availability Relational Database (PostgreSQL) 사용 및 최적화 가이드
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` 플랫폼에서 사용하는 관계형 데이터베이스 서비스의 기술적 세부 사항, 아키텍처, 그리고 연결 방법을 설명하는 가이드를 포함한다. 단순히 설정을 나열하는 것이 아니라, 클러스터링 원리와 장애 대응 논리를 기술적으로 기술하여 개발자와 운영자가 시스템을 깊이 이해하도록 돕는 것을 목적으로 한다.
+이 디렉터리는 `hy-home.docker` 데이터 티어의 관계형 데이터베이스(RDBMS) 기술 가이드를 포함합니다. Patroni 기반의 고가용성 PostgreSQL 클러스터 연결 방법, 쿼리 최적화, 그리고 클러스터 관리 지침을 제공합니다.
 
 ## Audience
 
 이 README의 주요 독자:
 
-- 데이터베이스 연결 및 쿼리 작성이 필요한 **Developers**
-- 클러스터 상태 및 설정을 관리하는 **Operators**
-- 시스템 구조를 분석하고 검증하는 **AI Agents**
+- 데이터베이스 연결이 필요한 **Backend Developers**
+- 클러스터 아키텍처를 관리하는 **Ops Engineers**
+- 문서 구조를 학습하는 **AI Agents**
 
 ## Scope
 
 ### In Scope
 
-- `postgresql-cluster`(Patroni/HA) 아키텍처 및 연결 방법
-- 관계형 데이터베이스의 고가용성 설계 원칙
-- 데이터 복제 및 일관성 보장 메커니즘
+- PostgreSQL HA 클러스터 접속 및 인증 방법
+- 읽기/쓰기 분리를 위한 HAProxy 엔드포인트 활용
+- 데이터베이스 초기화 및 사용자 계정 관리 절차
+- 주요 성능 메트릭 및 모니터링 대시보드 사용법
 
 ### Out of Scope
 
-- 캐시 및 NoSQL 기술 가이드 (-> `../cache-and-kv/`, `../nosql/`)
-- 개별 애플리케이션의 비즈니스 도메인 모델 설계
-- 단순 운영 작업 절차 (-> `docs/09.runbooks/04-data/relational/`)
+- NoSQL 및 캐시 서비스 가이드 (-> `docs/07.guides/04-data/nosql/` 등)
+- 애플리케이션 프레임워크별 ORM 최적화 (별도 가이드 참조)
+- 개별 도메인별 ERD 설계 및 비즈니스 모델 정의
 
 ## Structure
 
 ```text
 relational/
-├── postgresql-cluster.md     # HA PostgreSQL 클러스터 기술 가이드
-└── README.md                 # This file
+├── postgresql-cluster.md # PostgreSQL HA Cluster Guide
+└── README.md             # This file
 ```
 
 ## How to Work in This Area
 
-1. 새 가이드를 작성할 때는 `docs/99.templates/guide.template.md`를 사용한다.
-2. 모든 가이드는 추적 가능성을 위해 `infra/04-data/relational/` 하위의 실제 구현과 연결되어야 한다.
-3. 운영 정책이나 복구 절차는 각각 `08.operations/`와 `09.runbooks/` 디렉터리를 참조하도록 작성한다.
+1. 전반적인 데이터 아키텍처는 [Data Spec](../../../../docs/04.specs/04-data/spec.md) 문서를 먼저 확인합니다.
+2. 각 서비스의 배포 및 실행 방법은 `infra/04-data/relational/` 경로를 참조합니다.
+3. 새로운 가이드 추가 시 `docs/99.templates/guide.template.md`를 사용합니다.
+
+## Documentation Standards
+
+이 영역의 모든 문서는 다음 기준을 따릅니다:
+
+- 리포지토리 표준 8개 섹션 스켈레톤 준수
+- 한글(KR) 개요 및 영문(EN) 상세 내용 병기 (Bilingual Policy)
+- Single Source of Truth(SSoT) 유지 및 중복 방지
 
 ## Related References
 
-- **Operations**: [Operations Policy](../../08.operations/04-data/relational/README.md)
-- **Runbooks**: [Recovery Runbooks](../../09.runbooks/04-data/relational/README.md)
-- **Infra**: [Relational Infra Source](../../../../infra/04-data/relational/README.md)
+- **Operations**: [Relational Operations](../../../../docs/08.operations/04-data/relational/README.md)
+- **Runbooks**: [Relational Runbooks](../../../../docs/09.runbooks/04-data/relational/README.md)
+- **Source**: [Infrastructure README](../../../../infra/04-data/relational/README.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

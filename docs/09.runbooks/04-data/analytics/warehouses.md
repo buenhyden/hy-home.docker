@@ -1,76 +1,79 @@
 <!-- Target: docs/09.runbooks/04-data/analytics/warehouses.md -->
 
-# Warehouse (StarRocks) Recovery Runbook
+# StarRocks Recovery Runbook
 
-: StarRocks Node Maintenance & Health Recovery
+: StarRocks Cluster & Load Job Recovery
 
 ---
 
 ## Overview (KR)
 
-이 런북은 StarRocks 클러스터 장애 발생 시 대응 절차를 정의한다. FE/BE 노드 상태 복구, 메타데이터 손상 해결, 디스크 부족에 따른 데이터 재배치 단계를 제공한다.
+이 런북은 StarRocks FE/BE 노드 장애, 데이터 로드 실패 및 분석 쿼리 타임아웃 상황에 대한 대응 절차를 정의한다. 분산 분석 엔진의 가용성을 복원하고 일관성 있는 쿼리 환경을 유지하기 위한 단계를 제공한다.
 
 ## Purpose
 
-StarRocks 서비스 중단 또는 쿼리 실패 발생 시 운영자가 신속하게 노드 상태를 복구하고 데이터 무결성을 확보하도록 돕는다.
+OLAP 워크로드의 가동 중단을 방지하고, 대규모 데이터 세트의 수집 및 쿼리 무결성을 복구하는 것을 목적으로 한다.
 
 ## Canonical References
 
-- `[../../02.ard/0004-data-architecture.md]`
-- `[../../../07.guides/04-data/analytics/warehouses.md]`
-- `[../../../08.operations/04-data/analytics/warehouses.md]`
+- `[../../02.ard/0012-data-analytics-architecture.md]`
+- `[../../07.guides/04-data/analytics/warehouses.md]`
+- `[../../08.operations/04-data/analytics/warehouses.md]`
 
 ## When to Use
 
-- `SHOW FRONTENDS;` 결과 `Alive: false` 일 때.
-- `SHOW BACKENDS;` 결과 BE 노드가 정상적으로 등록되지 않거나 `Alive: false` 일 때.
-- 쿼리 수행 시 `No alive backends` 에러가 발생할 때.
+- `SHOW BACKENDS;` 결과 BE 노드 상태가 `Alive: false`인 경우.
+- `Stream Load` 작업이 `CANCELLED` 상태로 종료되거나 멱등성 에러 발생 시.
+- FE 노드(9030 포트)에 접속이 불가능할 때.
 
 ## Procedure or Checklist
 
 ### Checklist
 
-- [ ] `mysql -u root -h starrocks-fe -P 9030 -e "SHOW FRONTENDS; SHOW BACKENDS;"` 확인.
-- [ ] Docker logs (`docker compose logs starrocks-fe`) 확인.
-- [ ] 디스크 공간 및 BE 스토리지 경로 (`/opt/starrocks/be/storage`) 읽기/쓰기 권한 확인.
+- [ ] FE 노드와 BE 노드 프로세스 생존 확인
+- [ ] BE 노드의 `storage_root_path` 디스크 용량 확인
+- [ ] FE 노드 메타데이터(`fe/meta`)의 정합성 확인
 
 ### Procedure
 
-#### 1. FE Cluster Metadata Recovery
+1. **클러스터 상태 확인 (MySQL 접속)**:
+   ```sql
+   SHOW FRONTENDS;
+   SHOW BACKENDS;
+   ```
 
-FE 노드가 시작되지 않는 경우 메타데이터 디렉토리를 확인한다.
+2. **BE 노드 재활성화**:
+   BE 노드가 중단되었다면 재시작 후 상태를 확인한다.
+   ```bash
+   docker compose restart starrocks-be
+   -- MySQL에서 확인
+   SHOW BACKENDS;
+   ```
 
-```bash
-# FE 메타데이터 디렉토리 상태 확인
-ls -la ${DEFAULT_DATA_DIR}/starrocks/fe/meta
-# 비정상 종료 시 이미지 재생성 또는 볼륨 복구 수행
-```
+3. **데이터 로드 작업 재시도**:
+   실패한 로드를 새 레이블로 다시 시도하거나 원인을 분석한다.
+   ```sql
+   SHOW LOAD FROM demo WHERE label = 'my_failed_label';
+   ```
 
-#### 2. BE Node Re-registration
-
-BE 노드가 FE에 자동으로 연결되지 않는 경우 수동으로 추가한다.
-
-```sql
--- FE 접속 후 수행
-ALTER SYSTEM ADD BACKEND "starrocks-be:9050";
-```
-
-#### 3. Data Balancing and Disk Cleanup
-
-BE 노드 디스크 잔량이 부족한 경우 불필요한 태블릿을 정리하거나 노드를 추가한다.
-
-```sql
--- 데이터 재배치 상태 확인
-SHOW PROC '/cluster_balance';
-```
+4. **FE 메타데이터 복구 (임계 상황)**:
+   FE 노드가 시작되지 않을 경우 백업된 메타데이터를 사용하여 복구 모드로 시작한다.
 
 ## Verification Steps
 
-- [ ] `SHOW FRONTENDS;` 결과에 FE 노드가 `Alive: true`인가?
-- [ ] `SHOW BACKENDS;` 결과에 모든 BE 노드가 `Alive: true`인가?
-- [ ] 9030 포트를 통한 SQL 쿼리가 정상적으로 수행되는가?
+- [ ] `SELECT 1;` 또는 샘플 테이블 조회를 통해 쿼리 가능 여부 확인.
+- [ ] `SHOW BACKENDS;`에서 모든 BE 노드가 `Alive: true`인지 확인.
+
+## Observability and Evidence Sources
+
+- **Signals**: StarRocks `be_healthy`, `fe_healthy`, `query_latency`.
+- **Evidence to Capture**: BE 노드 `be.INFO` 로그, FE 노드 `fe.log`.
+
+## Safe Rollback or Recovery Procedure
+
+- [ ] 메타데이터 변경 전 `meta` 디렉터리 압축 백업.
+- [ ] BE 노드 추가/삭제 전 반드시 `ALTER SYSTEM DROP BACKEND` 등 정식 절차 준수.
 
 ## Related Operational Documents
 
-- **Incident examples**: `[N/A]`
-- **Postmortem examples**: `[N/A]`
+- **Operations**: [docs/08.operations/04-data/analytics/warehouses.md](../../08.operations/04-data/analytics/warehouses.md)

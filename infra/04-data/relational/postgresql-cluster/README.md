@@ -45,9 +45,18 @@ postgresql-cluster/
 
 ## How to Work in This Area
 
-1. 클러스터 아키텍처 및 연결 방법은 [Technical Guide](../../../../docs/07.guides/04-data/relational/postgresql-cluster.md)를 먼저 확인합니다.
+1. 클러스터 아키텍처 및 연결 방법은 [Technical Guide](../../../../docs/07.guides/04-data/relational.md)를 먼저 확인합니다.
 2. 로컬 테스트를 위해 `docker compose up -d`를 실행한 후 `patronictl list`로 상태를 모니터링합니다.
-3. 운영 변경 사항은 반드시 [Operations Policy](../../../../docs/08.operations/04-data/relational/postgresql-cluster.md) 준수 여부를 확인합니다.
+3. 운영 변경 사항은 반드시 [Operations Policy](../../../../docs/08.operations/04-data/relational.md) 준수 여부를 확인합니다.
+4. 장애 대응 절차는 [Recovery Runbook](../../../../docs/09.runbooks/04-data/relational.md)를 참조합니다.
+
+## Available Scripts
+
+| Command                               | Description               |
+| ------------------------------------- | ------------------------- |
+| `docker compose up -d`                | 클러스터 전체 스택 시작   |
+| `patronictl list`                     | 클러스터 상태 및 역할 확인|
+| `docker compose logs -f`              | 실시간 로그 모니터링      |
 
 ## Configuration
 
@@ -59,7 +68,7 @@ postgresql-cluster/
 | `PATRONI_SUPERUSER_USERNAME` | Yes | 슈퍼유저 계정명 (Default: `postgres`) |
 | `ETCD3_HOSTS` | Yes | etcd 엔드포인트 리스트 |
 
-## Quick Start
+## Getting Started
 
 ```bash
 # 클러스터 및 데이터 저장소 시작
@@ -71,12 +80,10 @@ docker exec -it pg-0 patronictl -c /home/postgres/postgres.yml list
 
 ## Related References
 
-- **Guide**: [docs/07.guides/04-data/relational/postgresql-cluster.md](../../../../docs/07.guides/04-data/relational/postgresql-cluster.md)
-- **Operations**: [docs/08.operations/04-data/relational/postgresql-cluster.md](../../../../docs/08.operations/04-data/relational/postgresql-cluster.md)
-- **Runbook**: [docs/09.runbooks/04-data/relational/postgresql-cluster.md](../../../../docs/09.runbooks/04-data/relational/postgresql-cluster.md)
-- **ARD**: [0004-data-architecture.md](../../../../docs/02.ard/0004-data-architecture.md)
+- **Guide**: [docs/07.guides/04-data/relational.md](../../../../docs/07.guides/04-data/relational.md)
+- **Operations**: [docs/08.operations/04-data/relational.md](../../../../docs/08.operations/04-data/relational.md)
+- **Runbook**: [docs/09.runbooks/04-data/relational.md](../../../../docs/09.runbooks/04-data/relational.md)
+- **ARD**: [docs/02.ard/0004-data-architecture.md](../../../../docs/02.ard/0004-data-architecture.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
-
-

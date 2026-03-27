@@ -50,25 +50,4 @@
    ```bash
    docker-compose logs -f mng-pg
    docker-compose logs -f mng-valkey
-   ```
-
-## Verification Steps
-
-- [ ] `docker exec mng-pg pg_isready -h 127.0.0.1` 결과가 `accepting connections`인가?
-- [ ] `docker exec mng-valkey valkey-cli -a <pass> ping` 결과가 `PONG`인가?
-- [ ] Exporter 메트릭이 노출되는가? `curl localhost:9187/metrics`
-
-## Observability and Evidence Sources
-
-- **Signals**: Prometheus Alertmanager (DB Down), Grafana Dashboard (Management Health)
-- **Evidence to Capture**: `docker-compose logs`, `pg_log`, `valkey` 스냅샷 상태
-
-## Safe Rollback or Recovery Procedure
-
-- [ ] 데이타 정합성 문제 발생 시 `${DEFAULT_MANAGEMENT_DIR}` 백업 스냅샷을 복원한다.
-- [ ] 설정 오류 시 `git checkout`으로 `docker-compose.yml` 원복 후 재배포한다.
-
-## Related Operational Documents
-
-- **Operations Policy**: [../08.operations/04-data/operational/mng-db.md](../../../08.operations/04-data/operational/mng-db.md)
-- **Guides**: [../07.guides/04-data/operational/mng-db.md](../../../07.guides/04-data/operational/mng-db.md)
+Copyright (c) 2026. Licensed under the MIT License.

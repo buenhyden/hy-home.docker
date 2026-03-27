@@ -41,25 +41,4 @@
 
 1. Access Studio at `http://localhost:3000`.
 2. Navigate to Authentication -> Users.
-3. Manually trigger a password reset or change the email direct in the `auth.users` table.
-
-## Verification Steps
-
-- [ ] Check service health: `docker compose ps`.
-- [ ] Verify Kong Gateway: `curl http://localhost:8000/rest/v1/`.
-- [ ] Verify Studio UI: Login and browse tables.
-
-## Observability and Evidence Sources
-
-- **Signals**: High CPU on `db` container, 502 errors from `kong`.
-- **Evidence to Capture**: `docker compose logs --tail 100`.
-
-## Safe Rollback or Recovery Procedure
-
-- If a configuration change fails, revert to the last committed version in Git.
-- Use `git restore .env` if secrets were incorrectly modified.
-
-## Related Operational Documents
-
-- **Operations**: `[../../08.operations/04-data/operational/supabase.md]`
-- **Guide**: `[../../07.guides/04-data/operational/supabase.md]`
+Copyright (c) 2026. Licensed under the MIT License.

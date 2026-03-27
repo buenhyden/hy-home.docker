@@ -1,75 +1,59 @@
-# Valkey Distributed Cluster Guide
+# Valkey Cluster Guide
 
-> High-Performance, 6-Node Distributed Cache Cluster (Redis Compatible)
+> Distributed Caching and Fast Key-Value Storage System / 분산 캐싱 및 고성능 키-밸류 저장소 시스템
 
-## Overview
+## Overview (KR)
 
-Valkey Cluster provides a high-throughput, low-latency caching and state storage layer for the `hy-home.docker` ecosystem. It is designed with 3 primary nodes and 3 replicas to ensure automatic partitioning and high availability.
+이 문서는 Valkey Cluster의 아키텍처, 설정 및 사용 방법에 대한 기술 가이드입니다. 6노드 기반의 고가용성 캐시 클러스터를 이해하고 애플리케이션에 통합하는 데 필요한 정보를 제공합니다.
 
-### Key Features
+This document is a technical guide for the architecture, configuration, and usage of the Valkey Cluster. It provides the necessary information to understand and integrate a 6-node based high-availability cache cluster into applications.
 
-- **Scalability**: Automatic data sharding across 3 shards (16,384 slots).
-- **High Availability**: Automatic failover from primary to replica.
-- **Compatibility**: Fully compatible with Redis OSS cluster protocol.
+## Guide Type
 
-## Setup & Configuration
+`system-guide`
 
-### Prerequisites
-- `hy-home.docker` internal network (`infra_net`) must be available.
-- `DEFAULT_DATA_DIR` environment variable must be set.
+## Target Audience
 
-### Deployment
-The cluster is deployed using Docker Compose:
+- Developer
+- Operator
+- AI Agents
 
+## Purpose
+
+애플리케이션 개발자와 시스템 운영자가 Valkey Cluster의 구조를 이해하고, 클라이언트를 올바르게 연결하며, 성능 최적화 기법을 적용할 수 있도록 돕습니다.
+
+Helps application developers and system operators understand the structure of the Valkey Cluster, correctly connect clients, and apply performance optimization techniques.
+
+## Prerequisites
+
+- [valkey-cluster Infrastructure README](../../../infra/04-data/cache-and-kv/valkey-cluster/README.md)
+- Docker 및 Docker Compose 실행 환경
+- Redis Cluster 호환 프로토콜 사용 가능 클라이언트 라이브러리
+
+## Step-by-step Instructions
+
+### 1. 클러스터 초기화 및 상태 확인
+클러스터는 처음 배포 시 `valkey-init` 컨테이너에 의해 자동으로 구성됩니다.
 ```bash
-cd infra/04-data/cache-and-kv/valkey-cluster
-docker compose up -d
+# 클러스터 구성 상태 확인
+docker exec valkey-node-0 valkey-cli -a $(cat nodes_password) cluster info
 ```
 
-### Initializing the Cluster
-The `valkey-cluster-init` container automatically handles the initial handshake. If you need to re-initialize manually:
-```bash
-./scripts/valkey-cluster-init.sh
-```
+### 2. 클라이언트 연결 설정 (Cluster Mode)
+Valkey Cluster는 샤딩된 환경이므로 모든 노드 정보를 클라이언트에 제공해야 합니다.
+- **Seed Nodes**: `valkey-node-0:6379` to `valkey-node-5:6384`
+- **Auth**: Docker Secrets에 정의된 패스워드를 사용합니다.
 
-## Developer Guide
+### 3. 데이터 파티셔닝 이해
+총 16,384개의 해시 슬롯이 3개의 마스터 노드에 분산되어 있습니다.
 
-### Connection String
-Applications should use the following seeding nodes:
-- `valkey-node-0:6379`
-- `valkey-node-1:6380`
-- `valkey-node-2:6381`
+## Common Pitfalls
 
-### Authentication
-Authentication is required using the secret `service_valkey_password`.
-
-### Client Configuration
-Use a cluster-aware client (e.g., `redis-py` with `RedisCluster`, `ioredis` with `Cluster`).
-
-## Technical Architecture
-
-### Node Layout
-| Node | Role | Port | Bus Port |
-| :--- | :--- | :--- | :--- |
-| `valkey-node-0` | Primary | 6379 | 16379 |
-| `valkey-node-1` | Primary | 6380 | 16380 |
-| `valkey-node-2` | Primary | 6381 | 16381 |
-| `valkey-node-3` | Replica (0) | 6382 | 16382 |
-| `valkey-node-4` | Replica (1) | 6383 | 16383 |
-| `valkey-node-5` | Replica (2) | 6384 | 16384 |
-
-### Connectivity Flow
-```mermaid
-graph TD
-    App[Applications] --> LB[Traefik/Internal Network]
-    LB --> V0[valkey-node-0]
-    LB --> V1[valkey-node-1]
-    LB --> V2[valkey-node-2]
-    V0 <--> V3[valkey-node-3]
-    V1 <--> V4[valkey-node-4]
-    V2 <--> V5[valkey-node-5]
-```
+- **Single Node Access**: 클러스터 지원이 없는 라이브러리로 특정 노드에만 접속할 경우, 슬롯 불일치 시 `MOVED` 오류가 발생합니다.
+- **Large Keys / Operations**: 단일 Key에 과도한 데이터를 담거나 `KEYS *` 등의 전체 스캔 명령은 지양해야 합니다.
 
 ## Related Documents
-- **Operations**: [Valkey Cluster Operations](../../../08.operations/04-data/cache-and-kv/valkey-cluster.md)
-- **Runbooks**: [Valkey Cluster Recovery](../../../09.runbooks/04-data/cache-and-kv/valkey-cluster.md)
+
+- **Spec**: [04-data Spec](../../04.specs/04-data/spec.md)
+- **Operation**: [Valkey Operations Policy](../../08.operations/04-data/cache-and-kv/valkey-cluster.md)
+- **Runbook**: [Valkey Recovery Runbook](../../09.runbooks/04-data/cache-and-kv/valkey-cluster.md)

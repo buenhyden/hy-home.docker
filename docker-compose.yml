@@ -71,6 +71,8 @@ secrets:
     file: ./secrets/db/postgres/patroni_superuser_password.txt
   patroni_replication_password:
     file: ./secrets/db/postgres/patroni_replication_password.txt
+  patroni_exporter_password:
+    file: ./secrets/db/postgres/patroni_exporter_password.txt
   # ── Cassandra ───────────────────────────────────────────
   cassandra_password:
     file: ./secrets/db/cassandra/cassandra_password.txt

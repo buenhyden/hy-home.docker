@@ -181,6 +181,8 @@ services:
       --appendonly yes
       --port 6379
       '
+    ports:
+      - ${VALKEY_MNG_HOST_POST-26379}:${VALKEY_PORT:-6379}
     expose:
       - '${VALKEY_PORT:-6379}'
     healthcheck:

@@ -8,7 +8,7 @@
 
 ## Overview (KR)
 
-이 문서는 ksqlDB 스트리밍 SQL 엔진에 대한 가이드다. Kafka 스트림과 테이블의 개념, CLI 사용법, 그리고 데이터 생성 패턴을 설명한다.
+이 문서는 ksqlDB 스트리밍 SQL 엔진에 대한 가이드다. Kafka 스트림과 테이블의 개념, CLI 사용법, 그리고 데이터 생성 패턴을 설명한다. 실시간 데이터 분석 및 변환을 위한 스트림 처리 애플리케이션 구축의 핵심 지침을 제공한다.
 
 ## Guide Type
 
@@ -22,27 +22,27 @@
 
 ## Purpose
 
-Help users built real-time analytical applications on top of Kafka streams using SQL.
+이 가이드는 사용자가 SQL을 사용하여 Kafka 스트림 위에 실시간 분석 애플리케이션을 구축하도록 돕는다.
 
 ## Prerequisites
 
-- Healthy Kafka cluster (brokers reachable at `kafka-1:19092`).
-- Healthy Schema Registry (reachable at `schema-registry:8081`).
-- `data` profile active in Docker Compose.
+- 정상 작동하는 Kafka 클러스터 (`kafka-1:19092` 접근 가능).
+- 정상 작동하는 Schema Registry (`schema-registry:8081` 접근 가능).
+- Docker Compose의 `data` 프로필 활성화.
 
 ## Step-by-step Instructions
 
-### 1. Connecting to ksqlDB CLI
+### 1. ksqlDB CLI 연결 (Connecting to ksqlDB CLI)
 
-Use the interactive CLI to run SQL queries against the stream processor.
+대화형 CLI를 사용하여 스트림 프로세서에 대해 SQL 쿼리를 실행한다.
 
 ```bash
 docker compose --profile ksql run --rm ksqldb-cli ksql http://ksqldb-server:8088
 ```
 
-### 2. Creating a Stream
+### 2. 스트림 생성 (Creating a Stream)
 
-Define a schema over an existing Kafka topic.
+기존 Kafka 토픽에 대해 스키마를 정의한다.
 
 ```sql
 CREATE STREAM events (
@@ -56,9 +56,9 @@ CREATE STREAM events (
 );
 ```
 
-### 3. Creating a Materialized Table
+### 3. 실체화된 테이블 생성 (Creating a Materialized Table)
 
-Aggregating stream data into a stateful queryable table.
+스트림 데이터를 상태가 있는 쿼리 가능한 테이블로 집계한다.
 
 ```sql
 CREATE TABLE event_counts AS
@@ -70,9 +70,9 @@ CREATE TABLE event_counts AS
 
 ## Common Pitfalls
 
-- **Serialization Mismatch**: Ensure `VALUE_FORMAT` matches the actual data in Kafka.
-- **Consumer Group Lag**: Monitor `KSQL_KSQL_LOGGING_PROCESSING_TOPIC` for errors.
-- **Resource Exhaustion**: ksqlDB consumes significant memory; monitor JVM Heap closely.
+- **직렬화 불일치 (Serialization Mismatch)**: `VALUE_FORMAT`이 Kafka의 실제 데이터와 일치하는지 확인한다.
+- **컨슈머 그룹 지연 (Consumer Group Lag)**: 에러 확인을 위해 `KSQL_KSQL_LOGGING_PROCESSING_TOPIC`을 모니터링한다.
+- **자원 고갈 (Resource Exhaustion)**: ksqlDB는 상당한 메모리를 소비하므로 JVM Heap을 면밀히 모니터링한다.
 
 ## Related Documents
 
