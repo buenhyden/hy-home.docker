@@ -8,6 +8,8 @@
 
 이 문서는 관계형 데이터베이스(`relational`) 계층의 운영 정책을 정의한다. 데이터 정합성 유지, 백업 주기, 보안 통제 및 가용성 보장을 위한 표준을 규정한다.
 
+This document defines the operational policy for the Relational Database (`relational`) tier. It establishes standards for maintaining data integrity, backup cycles, security controls, and ensuring availability.
+
 ## Policy Scope
 
 - PostgreSQL HA 클러스터(`postgresql-cluster`) 운영
@@ -26,8 +28,9 @@
   - 모든 클러스터는 최소 3노드(Primary 1, Replica 2) 구성을 유지해야 함.
   - 리더 선출을 위한 etcd 정족수(Quorum)는 홀수 개(최소 3개)여야 함.
   - 모든 연결은 Docker Secrets를 통한 인증을 필수적으로 수행해야 함.
+  - `pg-router`를 통한 엔드포인트 접근만 허용함.
 - **Allowed**:
-  - 읽기 전용 트래픽의 복제본 분산 처리.
+  - 읽기 전용 트래픽의 복제본 분산 처리 (Port 15433).
   - 비정기적 수동 스냅샷 생성.
 - **Disallowed**:
   - `postgres` 슈퍼유저 계정의 애플리케이션 직접 사용 금지.

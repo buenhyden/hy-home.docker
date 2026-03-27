@@ -1,12 +1,19 @@
 # postgresql-cluster Guide
 
 > Patroni 및 etcd 기반 고가용성(HA) PostgreSQL 클러스터 가이드
+> High-Availability (HA) PostgreSQL Cluster Guide based on Patroni and etcd
 
 ---
 
-## Overview (KR)
+## Overview (KR/EN)
+
+### KR
 
 이 문서는 `postgresql-cluster`의 아키텍처를 이해하고, 데이타베이스 노드 상태 확인 및 애플리케이션 연결 방법을 익히기 위한 시스템 가이드다. Patroni와 etcd가 어떻게 협력하여 고가용성을 유지하는지, 그리고 HAProxy(`pg-router`)를 통한 트래픽 라우팅 원리를 설명한다.
+
+### EN
+
+This document is a system guide for understanding the architecture of `postgresql-cluster` and learning how to check database node status and connect applications. It explains how Patroni and etcd work together to maintain high availability and the principles of traffic routing through HAProxy (`pg-router`).
 
 ## Guide Type
 
@@ -33,6 +40,7 @@
 ## Step-by-step Instructions
 
 ### 1. 클러스터 상태 모니터링
+
 Patroni CLI를 사용하여 현재 리더(Leader) 노드와 복제본(Replica) 노드들의 상태를 확인한다.
 
 ```bash
@@ -41,12 +49,14 @@ docker exec -it pg-0 patronictl -c /home/postgres/postgres.yml list
 ```
 
 ### 2. 애플리케이션 연결 정의
+
 모든 애플리케이션은 개별 PostgreSQL 노드 주소가 아닌, `pg-router` 엔드포인트를 사용해야 한다.
 
 - **Write (Master)**: `pg-router:15432` (리더 노드 자동 연결)
 - **Read (Replica)**: `pg-router:15433` (레플리카들 간 라운드 로빈 분산)
 
 ### 3. 초기화 작업 (pg-cluster-init)
+
 시스템 구동 시 `pg-cluster-init` 컨테이너가 자동으로 실행되어 서비스에 필요한 기본 DB와 사용자를 생성한다. 수동 재실행이 필요한 경우:
 
 ```bash

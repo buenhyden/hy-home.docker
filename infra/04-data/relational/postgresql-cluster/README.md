@@ -1,10 +1,19 @@
 # postgresql-cluster
 
 > Patroni 및 etcd를 이용한 고가용성(HA) PostgreSQL 17 관계형 데이터베이스 클러스터
+> High-Availability (HA) PostgreSQL 17 Relational Database Cluster using Patroni and etcd
 
-## Overview
+---
+
+## Overview (KR/EN)
+
+### KR
 
 `postgresql-cluster`는 지속성과 가용성이 핵심인 서비스들을 위한 관계형 데이터베이스 인프라입니다. Spilo(Zalando) 이미지를 기반으로 Patroni가 클러스터 생명주기를 관리하며, etcd를 DCS(Distributed Configuration Store)로 사용하여 리더 선출 및 장애 복구를 자동화합니다. HAProxy(`pg-router`)를 통해 애플리케이션에 단일 접속 지점 및 읽기/쓰기 분산 기능을 제공합니다.
+
+### EN
+
+`postgresql-cluster` is a relational database infrastructure for services where durability and availability are critical. Based on the Spilo (Zalando) image, Patroni manages the cluster lifecycle, and etcd is used as the DCS (Distributed Configuration Store) to automate leader election and failover. It provides a single point of access and read/write distribution to applications through HAProxy (`pg-router`).
 
 ## Audience
 
@@ -25,7 +34,7 @@
 
 ### Out of Scope
 
-- 개별 서비스 애플리케이션의 데이터 스네마(Schema) 정의
+- 개별 서비스 애플리케이션의 데이터 스키마(Schema) 정의
 - 외부망 직접 노출 (반드시 `infra_net` 내부망 사용)
 - 클러스터 외부 수동 백업 저장소 관리
 
@@ -45,10 +54,10 @@ postgresql-cluster/
 
 ## How to Work in This Area
 
-1. 클러스터 아키텍처 및 연결 방법은 [Technical Guide](../../../../docs/07.guides/04-data/relational.md)를 먼저 확인합니다.
+1. 클러스터 아키텍처 및 연결 방법은 [Technical Guide](../../../../docs/07.guides/04-data/relational/postgresql-cluster.md)를 먼저 확인합니다.
 2. 로컬 테스트를 위해 `docker compose up -d`를 실행한 후 `patronictl list`로 상태를 모니터링합니다.
-3. 운영 변경 사항은 반드시 [Operations Policy](../../../../docs/08.operations/04-data/relational.md) 준수 여부를 확인합니다.
-4. 장애 대응 절차는 [Recovery Runbook](../../../../docs/09.runbooks/04-data/relational.md)를 참조합니다.
+3. 운영 변경 사항은 반드시 [Operations Policy](../../../../docs/08.operations/04-data/relational/postgresql-cluster.md) 준수 여부를 확인합니다.
+4. 장애 대응 절차는 [Recovery Runbook](../../../../docs/09.runbooks/04-data/relational/postgresql-cluster.md)를 참조합니다.
 
 ## Available Scripts
 
@@ -68,21 +77,17 @@ postgresql-cluster/
 | `PATRONI_SUPERUSER_USERNAME` | Yes | 슈퍼유저 계정명 (Default: `postgres`) |
 | `ETCD3_HOSTS` | Yes | etcd 엔드포인트 리스트 |
 
-## Getting Started
+## Documentation Standards
 
-```bash
-# 클러스터 및 데이터 저장소 시작
-docker compose up -d
-
-# 클러스터 상태 및 노드 역할(Leader/Replica) 확인
-docker exec -it pg-0 patronictl -c /home/postgres/postgres.yml list
-```
+- 모든 기술 문서는 `docs/99.templates/`의 표준 스켈레톤을 준수해야 함
+- Overview 섹션은 반드시 한글(KR)과 영문(EN)을 병기함
+- 모든 링크는 상대 경로를 사용하여 리포지토리 내 무결성을 유지함
 
 ## Related References
 
-- **Guide**: [docs/07.guides/04-data/relational.md](../../../../docs/07.guides/04-data/relational.md)
-- **Operations**: [docs/08.operations/04-data/relational.md](../../../../docs/08.operations/04-data/relational.md)
-- **Runbook**: [docs/09.runbooks/04-data/relational.md](../../../../docs/09.runbooks/04-data/relational.md)
+- **Guide**: [docs/07.guides/04-data/relational/postgresql-cluster.md](../../../../docs/07.guides/04-data/relational/postgresql-cluster.md)
+- **Operations**: [docs/08.operations/04-data/relational/postgresql-cluster.md](../../../../docs/08.operations/04-data/relational/postgresql-cluster.md)
+- **Runbook**: [docs/09.runbooks/04-data/relational/postgresql-cluster.md](../../../../docs/09.runbooks/04-data/relational/postgresql-cluster.md)
 - **ARD**: [docs/02.ard/0004-data-architecture.md](../../../../docs/02.ard/0004-data-architecture.md)
 
 ---

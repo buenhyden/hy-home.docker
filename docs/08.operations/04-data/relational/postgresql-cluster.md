@@ -1,12 +1,19 @@
 # postgresql-cluster Operations Policy
 
 > Patroni 기반 PostgreSQL 클러스터의 데이터 무결성 및 가용성 운영 표준
+> Operational Standards for Data Integrity and Availability of Patroni-based PostgreSQL Clusters
 
 ---
 
-## Overview (KR)
+## Overview (KR/EN)
+
+### KR
 
 이 문서는 `postgresql-cluster` 운영 정책을 정의한다. Patroni 기반 클러스터의 데이터 무결성 보호, 가용성 보장, 그리고 장애 대응 성능 유지를 위한 통제 기준과 검증 방법을 규정한다.
+
+### EN
+
+This document defines the operational policy for `postgresql-cluster`. It establishes control standards and verification methods for protecting data integrity, ensuring availability, and maintaining incident response performance of the Patroni-based cluster.
 
 ## Policy Scope
 

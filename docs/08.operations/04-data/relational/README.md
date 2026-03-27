@@ -53,7 +53,7 @@ relational/
 
 - **Guides**: [Relational Guides](../../../../docs/07.guides/04-data/relational/README.md)
 - **Runbooks**: [Relational Runbooks](../../../../docs/09.runbooks/04-data/relational/README.md)
-- **Source**: [Infrastructure README](../../../../infra/04-data/relational/README.md)
+- **Source**: [Infrastructure README](../../../../infra/04-data/relational/postgresql-cluster/README.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

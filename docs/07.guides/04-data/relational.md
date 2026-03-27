@@ -8,6 +8,8 @@
 
 이 문서는 `hy-home.docker` 인프라의 관계형 데이터베이스(`relational`) 계층에 대한 가이드다. Patroni와 etcd를 이용한 고가용성(HA) 클러스터 구조를 이해하고, 애플리케이션에서 안전하게 연결하는 방법과 관리 절차를 제공한다.
 
+This document serves as a guide for the Relational Database (`relational`) tier of the `hy-home.docker` infrastructure. It provides an understanding of the High Availability (HA) cluster structure using Patroni and etcd, along with instructions for secure application connection and management procedures.
+
 ## Guide Type
 
 `system-guide`
@@ -16,6 +18,7 @@
 
 - Developer
 - Operator
+- AI Agent
 
 ## Purpose
 
@@ -36,8 +39,15 @@
 - **HAProxy (pg-router)**: 애플리케이션의 접속 지점이며, 읽기/쓰기 트래픽을 분산한다.
 
 ### 2. 애플리케이션 연결 방법
+
 - **Write (Primary)**: `pg-router:15432`로 연결한다. 리더 노드로 트래픽이 전달된다.
 - **Read (Replica)**: `pg-router:15433`으로 연결한다. 가용한 모든 복제본 노드로 라운드 로빈 분산된다.
+
+| Endpoint Type | Host      | Port  | Notes                      |
+| ------------- | --------- | ----- | -------------------------- |
+| Master (RW)   | pg-router | 15432 | Primary Node Only          |
+| Replica (RO)  | pg-router | 15433 | All Available Replicas     |
+| HAProxy Stats | pg-router | 8404  | Read-only Stats Interface  |
 
 ### 3. 클러스터 상태 확인
 

@@ -6,6 +6,8 @@
 
 이 디렉터리는 `hy-home.docker` 인프라의 관계형 데이터베이스(RDBMS) 계층을 관리합니다. 고가용성(HA), 데이터 정합성, 그리고 확장성을 보장하기 위해 Patroni와 etcd 기반의 클러스터 아키텍처를 표준으로 사용하며, HAProxy를 통해 애플리케이션에 안정적인 엔드포인트를 제공합니다.
 
+This directory manages the Relational Database (RDBMS) tier of the `hy-home.docker` infrastructure. It uses Patroni and etcd-based cluster architecture as a standard to ensure High Availability (HA), data consistency, and scalability, providing reliable endpoints to applications via HAProxy.
+
 ## Audience
 
 이 README의 주요 독자:
@@ -43,6 +45,14 @@ relational/
 2. 새 클러스터 추가 시 `postgresql-cluster` 구조를 템플릿으로 활용합니다.
 3. 운영 정책은 [Relational Operations](../../docs/08.operations/04-data/relational.md)를 반드시 준수해야 합니다.
 4. 장애 대응 및 복구는 [Relational Runbooks](../../docs/09.runbooks/04-data/relational.md)를 따릅니다.
+
+## Available Scripts
+
+| Command | Description |
+| ------- | ----------- |
+| `docker compose up -d` | 전체 관계형 데이터베이스 스택 시작 (Start the full RDBMS stack) |
+| `docker compose ps` | 서비스 상태 확인 (Check service status) |
+| `docker compose logs -f` | 실시간 로그 확인 (View real-time logs) |
 
 ## Tech Stack
 

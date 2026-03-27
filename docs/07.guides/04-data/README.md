@@ -6,6 +6,8 @@
 
 이 디렉터리는 `hy-home.docker` 데이터 인프라 계층(04-data)을 위한 기술 가이드를 포함합니다. 각 가이드는 데이터베이스 유형별로 정리되어 효율적인 시스템 이해와 운영을 돕습니다.
 
+This directory contains technical guides for the `hy-home.docker` data infrastructure tier (04-data). Each guide is organized by database type to facilitate efficient system understanding and operation.
+
 ## Audience
 
 이 README의 주요 독자:
@@ -22,6 +24,11 @@
 - 캐시 및 Key-Value 저장소(Valkey) 사용 가이드
 - NoSQL 및 오브젝트 스토리지 가이드
 
+### Out of Scope
+
+- 개별 비즈니스 로직에 특화된 쿼리 최적화 가이드
+- 인프라 외부의 클라우드 매니지드 DB 가이드
+
 ## Structure
 
 ```text
@@ -31,6 +38,7 @@
 ├── nosql/                 # NoSQL 데이터베이스 가이드
 ├── operational/           # 운영 및 관리용 데이터베이스 가이드
 ├── relational/            # 관계형 데이터베이스(PostgreSQL) 가이드
+├── relational.md          # Relational Database Overview Guide
 └── README.md              # This file
 ```
 
@@ -39,6 +47,13 @@
 1. 전반적인 데이터 아키텍처는 [Architecture](../../02.ard/0004-data-architecture.md) 문서를 먼저 확인합니다.
 2. 특정 엔진의 구현 세부 사항은 `infra/04-data/` 경로의 소스 코드를 참조합니다.
 3. 새로운 가이드 추가 시 `docs/99.templates/guide.template.md`를 사용합니다.
+
+## Traceability Rules
+
+이 영역의 모든 문서는 다음 항목 중 하나 이상과 연결되어야 합니다.
+- Architecture Requirements Document (ARD)
+- Operations Policy
+- Runbook
 
 ## Related References
 

@@ -40,22 +40,20 @@ relational/
 ## How to Work in This Area
 
 1. 전반적인 데이터 아키텍처는 [Data Spec](../../../../docs/04.specs/04-data/spec.md) 문서를 먼저 확인합니다.
-2. 각 서비스의 배포 및 실행 방법은 `infra/04-data/relational/` 경로를 참조합니다.
+2. 각 서비스의 배포 및 실행 방법은 `infra/04-data/relational/postgresql-cluster/` 경로를 참조합니다.
 3. 새로운 가이드 추가 시 `docs/99.templates/guide.template.md`를 사용합니다.
 
 ## Documentation Standards
 
-이 영역의 모든 문서는 다음 기준을 따릅니다:
-
-- 리포지토리 표준 8개 섹션 스켈레톤 준수
-- 한글(KR) 개요 및 영문(EN) 상세 내용 병기 (Bilingual Policy)
+- 모든 기술 문서는 `docs/99.templates/`의 표준 스켈레톤을 준수해야 함
+- Overview 섹션은 반드시 한글(KR)과 영문(EN)을 병기함 (Bilingual Policy)
 - Single Source of Truth(SSoT) 유지 및 중복 방지
 
 ## Related References
 
 - **Operations**: [Relational Operations](../../../../docs/08.operations/04-data/relational/README.md)
 - **Runbooks**: [Relational Runbooks](../../../../docs/09.runbooks/04-data/relational/README.md)
-- **Source**: [Infrastructure README](../../../../infra/04-data/relational/README.md)
+- **Source**: [Infrastructure README](../../../../infra/04-data/relational/postgresql-cluster/README.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
