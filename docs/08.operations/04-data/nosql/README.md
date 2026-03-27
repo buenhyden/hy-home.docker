@@ -47,9 +47,9 @@ nosql/
 
 ## Related References
 
-- **Infrastructure**: [NoSQL Infrastructure](../../../infra/04-data/nosql/README.md)
-- **Guides**: [NoSQL Technical Guides](../../../docs/07.guides/04-data/nosql/README.md)
-- **Runbooks**: [NoSQL Runbooks](../../../docs/09.runbooks/04-data/nosql/README.md)
+- **Infrastructure**: [NoSQL Infrastructure](../../../../infra/04-data/nosql/README.md)
+- **Guides**: [NoSQL Technical Guides](../../../07.guides/04-data/nosql/README.md)
+- **Runbooks**: [NoSQL Runbooks](../../../09.runbooks/04-data/nosql/README.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

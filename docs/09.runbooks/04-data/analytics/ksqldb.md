@@ -78,4 +78,4 @@
 
 ## Related Operational Documents
 
-- **Operations**: [docs/08.operations/04-data/analytics/ksqldb.md](../../08.operations/04-data/analytics/ksqldb.md)
+- **Operations**: [docs/08.operations/04-data/analytics/ksqldb.md](../../../08.operations/04-data/analytics/ksqldb.md)

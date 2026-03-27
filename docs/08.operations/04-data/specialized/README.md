@@ -9,4 +9,4 @@
 ## Related Documents
 
 - [Backup Policy](../backup-policy.md)
-- [ARD](../../02.ard/0004-data-architecture.md)
+- [ARD](../../../02.ard/0004-data-architecture.md)

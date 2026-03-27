@@ -9,4 +9,4 @@
 ## Related Documents
 
 - [Storage Exhaustion Runbook](../storage-exhaustion.md)
-- [ARD](../../02.ard/0004-data-architecture.md)
+- [ARD](../../../02.ard/0004-data-architecture.md)

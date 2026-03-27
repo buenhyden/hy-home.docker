@@ -87,5 +87,5 @@ Cassandra 서비스 장애 발생 시 다운타임을 최소화하고, 데이터
 
 ## Related Documents
 
-- **Guide**: [Cassandra System Guide](../../../docs/07.guides/04-data/nosql/cassandra.md)
-- **Operation**: [Cassandra Operation Policy](../../../docs/08.operations/04-data/nosql/cassandra.md)
+- **Guide**: [Cassandra System Guide](../../../07.guides/04-data/nosql/cassandra.md)
+- **Operation**: [Cassandra Operation Policy](../../../08.operations/04-data/nosql/cassandra.md)

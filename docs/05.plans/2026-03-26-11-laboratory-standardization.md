@@ -28,7 +28,7 @@
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
 | VAL-PLN-001 | Structural | Template Compliance | Manual Revie | All placeholders removed |
-| VAL-PLN-002 | Functional | Link Validation | `grep -r "\[.*\](.*\..*)" docs/` | No broken relative links |
+| VAL-PLN-002 | Functional | Link Validation | `grep -r "\\[.*\\](.*\\.md)" docs/` | No broken relative links |
 
 ## Completion Criteria
 

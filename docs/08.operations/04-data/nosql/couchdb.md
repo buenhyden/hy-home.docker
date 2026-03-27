@@ -55,6 +55,6 @@ CouchDB는 Append-only 데이터베이스이므로 정기적인 압축 작업이
 
 ## Related Documents
 
-- **Infrastructure**: [CouchDB Infrastructure](../../../infra/04-data/nosql/couchdb/README.md)
-- **Guide**: [CouchDB Cluster Guide](../../../docs/07.guides/04-data/nosql/couchdb.md)
-- **Runbook**: [CouchDB Recovery Runbook](../../../docs/09.runbooks/04-data/nosql/couchdb.md)
+- **Infrastructure**: [CouchDB Infrastructure](../../../../infra/04-data/nosql/couchdb/README.md)
+- **Guide**: [CouchDB Cluster Guide](../../../07.guides/04-data/nosql/couchdb.md)
+- **Runbook**: [CouchDB Recovery Runbook](../../../09.runbooks/04-data/nosql/couchdb.md)

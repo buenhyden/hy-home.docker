@@ -54,7 +54,7 @@ analytics/
 - **ARD**: [0012-data-analytics-architecture.md](../../../02.ard/0012-data-analytics-architecture.md)
 - **ADR**: [0015-analytics-engine-selection.md](../../../03.adr/0015-analytics-engine-selection.md)
 - **Spec**: [spec.md](../../../04.specs/04-data-analytics/spec.md)
-- **Implementation**: [infra/04-data/analytics/](../../../infra/04-data/analytics/)
+- **Implementation**: [infra/04-data/analytics/](../../../../infra/04-data/analytics/)
 - **Operations**: [docs/08.operations/04-data/analytics/](../../../08.operations/04-data/analytics/README.md)
 - **Runbooks**: [docs/09.runbooks/04-data/analytics/](../../../09.runbooks/04-data/analytics/README.md)
 

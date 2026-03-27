@@ -53,5 +53,5 @@ To resolve issues where Airflow tasks remain in `queued` or `running` state inde
 
 ## Related Operational Documents
 
-- **Operation**: [Resource Allocation Policy](../../08.operations/07-workflow/02.resource-allocation.md)
-- **Guide**: [Airflow CLI Guide](../../07.guides/07-workflow/airflow-cli.md)
+- **Operation**: [DAG Deployment Policy](../../08.operations/07-workflow/01.dag-deployment.md)
+- **Guide**: [Airflow System Guide](../../07.guides/07-workflow/airflow.md)

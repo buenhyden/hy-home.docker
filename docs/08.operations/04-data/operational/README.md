@@ -61,8 +61,8 @@ operational/
 
 ## Related References
 
-- **Guides**: [Technical Guides](../../07.guides/04-data/operational/README.md)
-- **Runbooks**: [Recovery Runbooks](../../09.runbooks/04-data/operational/README.md)
+- **Guides**: [Technical Guides](../../../07.guides/04-data/operational/README.md)
+- **Runbooks**: [Recovery Runbooks](../../../09.runbooks/04-data/operational/README.md)
 - **Infra**: [Relational Infra Source](../../../../infra/04-data/relational/README.md)
 
 ---

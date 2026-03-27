@@ -72,4 +72,4 @@
 
 ## Related Operational Documents
 
-- **Operations**: [docs/08.operations/04-data/analytics/opensearch.md](../../08.operations/04-data/analytics/opensearch.md)
+- **Operations**: [docs/08.operations/04-data/analytics/opensearch.md](../../../08.operations/04-data/analytics/opensearch.md)

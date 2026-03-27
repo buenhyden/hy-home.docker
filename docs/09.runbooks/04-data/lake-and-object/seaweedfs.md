@@ -79,7 +79,7 @@ If the host mount point is unresponsive:
 
 ## Related Documents
 
-- **Technical Guide**: [seaweedfs.md](../../07.guides/04-data/lake-and-object/seaweedfs.md)
-- **Operations Policy**: [seaweedfs.md](../../08.operations/04-data/lake-and-object/seaweedfs.md)
-- **Infrastructure**: [seaweedfs/README.md](../../../infra/04-data/lake-and-object/seaweedfs/README.md)
+- **Technical Guide**: [seaweedfs.md](../../../07.guides/04-data/lake-and-object/seaweedfs.md)
+- **Operations Policy**: [seaweedfs.md](../../../08.operations/04-data/lake-and-object/seaweedfs.md)
+- **Infrastructure**: [seaweedfs/README.md](../../../../infra/04-data/lake-and-object/seaweedfs/README.md)
 

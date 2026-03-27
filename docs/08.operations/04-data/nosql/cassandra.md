@@ -44,7 +44,7 @@
 
 - **Manual Snapshots**: 주요 업그레이드 또는 데이터 이관 전 `nodetool snapshot`을 수행한다.
 - **Automated Backup**: `${DEFAULT_DATA_DIR}/cassandra` 볼륨의 일일 증분 백업을 수행한다. (External Storage 연동)
-- **Recovery**: [Cassandra Recovery Runbook](../../../docs/09.runbooks/04-data/nosql/cassandra.md)을 참조하여 복권 수행.
+- **Recovery**: [Cassandra Recovery Runbook](../../../09.runbooks/04-data/nosql/cassandra.md)을 참조하여 복권 수행.
 
 ### 3. Resource Management
 
@@ -58,6 +58,6 @@
 
 ## Related Documents
 
-- **Infrastructure**: [Cassandra Infrastructure](../../../infra/04-data/nosql/cassandra/README.md)
-- **Guide**: [Cassandra System Guide](../../../docs/07.guides/04-data/nosql/cassandra.md)
-- **Runbook**: [Cassandra Recovery Runbook](../../../docs/09.runbooks/04-data/nosql/cassandra.md)
+- **Infrastructure**: [Cassandra Infrastructure](../../../../infra/04-data/nosql/cassandra/README.md)
+- **Guide**: [Cassandra System Guide](../../../07.guides/04-data/nosql/cassandra.md)
+- **Runbook**: [Cassandra Recovery Runbook](../../../09.runbooks/04-data/nosql/cassandra.md)

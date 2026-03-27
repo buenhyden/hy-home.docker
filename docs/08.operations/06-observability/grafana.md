@@ -38,5 +38,5 @@ Grafana version updates are managed via `docker-compose.yml`. Before upgrading, 
 
 ## References
 
-- [Grafana System Guide](file:///home/hy/projects/hy-home.docker/docs/07.guides/06-observability/grafana.md)
-- [Loki Operational Policy (Retention)](file:///home/hy/projects/hy-home.docker/docs/08.operations/06-observability/loki.md)
+- [Grafana System Guide](../../07.guides/06-observability/grafana.md)
+- [Loki Operational Policy (Retention)](loki.md)

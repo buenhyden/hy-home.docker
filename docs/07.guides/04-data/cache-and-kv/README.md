@@ -39,7 +39,7 @@ cache-and-kv/
 
 1. [valkey-cluster.md](./valkey-cluster.md)를 통해 클러스터 모드 연결 방법을 숙지합니다.
 2. 새로운 가이드 추가 시 `docs/99.templates/guide.template.md`를 사용합니다.
-3. 관련 운영 정책은 [08.operations/04-data/cache-and-kv/README.md](../../08.operations/04-data/cache-and-kv/README.md)를 확인합니다.
+3. 관련 운영 정책은 [08.operations/04-data/cache-and-kv/README.md](../../../08.operations/04-data/cache-and-kv/README.md)를 확인합니다.
 
 ## Available Guides
 
@@ -48,5 +48,5 @@ cache-and-kv/
 ## Related References
 
 - **Implementation**: [infra/04-data/cache-and-kv/README.md](../../../../infra/04-data/cache-and-kv/README.md)
-- **Operation**: [04-data Operations](../../08.operations/04-data/cache-and-kv/README.md)
-- **Runbook**: [04-data Runbooks](../../09.runbooks/04-data/cache-and-kv/README.md)
+- **Operation**: [04-data Operations](../../../08.operations/04-data/cache-and-kv/README.md)
+- **Runbook**: [04-data Runbooks](../../../09.runbooks/04-data/cache-and-kv/README.md)

@@ -24,9 +24,9 @@
 
 ## Prerequisites
 
-- [Grafana Alloy](../alloy.md) OTLP 수집 설정 완료
-- [MinIO](../../04-data/minio/README.md) `tempo-bucket` 생성을 통한 스토리지 확보
-- [Grafana](../grafana.md) Tempo 및 Prometheus 데이터 소스 연결
+- [Grafana Alloy](alloy.md) OTLP 수집 설정 완료
+- [MinIO](../../../infra/04-data/lake-and-object/minio/README.md) `tempo-bucket` 생성을 통한 스토리지 확보
+- [Grafana](grafana.md) Tempo 및 Prometheus 데이터 소스 연결
 
 ## Step-by-step Instructions
 

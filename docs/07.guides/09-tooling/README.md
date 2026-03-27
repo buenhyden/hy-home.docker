@@ -13,7 +13,7 @@
 - [03. Locust Guide](./locust.md) - Dedicated Locust service guide.
 - [04. k6 Guide](./k6.md) - Dedicated k6 (Performance Testing unit) service guide.
 - [05. Registry Guide](./registry.md) - Private OCI image distribution service.
-- [06. SonarQube Guide](./sonarQube.md) - Continuous code quality and security scanning.
+- [06. SonarQube Guide](./sonarqube.md) - Continuous code quality and security scanning.
 - [07. Syncthing Guide](./syncthing.md) - P2P file synchronization and device pairing.
 - [08. Terraform Guide](./terraform.md) - Infrastructure as Code (IaC) execution and state management.
 - [09. Terrakube Guide](./terrakube.md) - Collaborative IaC automation and private module registry.

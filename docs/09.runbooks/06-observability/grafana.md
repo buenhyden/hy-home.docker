@@ -49,5 +49,5 @@ Standardized procedures for resolving common Grafana service disruptions.
 
 ## References
 
-- [Grafana System Guide](file:///home/hy/projects/hy-home.docker/docs/07.guides/06-observability/grafana.md)
-- [Keycloak Recovery Runbook](file:///home/hy/projects/hy-home.docker/docs/09.runbooks/02-auth/keycloak.md)
+- [Grafana System Guide](../../07.guides/06-observability/grafana.md)
+- [Keycloak Recovery Runbook](../02-auth/keycloak.md)

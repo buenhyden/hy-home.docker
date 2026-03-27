@@ -60,8 +60,8 @@
 
 - [01.prd (Requirements)](../01.prd/README.md)
 - [03.adr (Decisions)](../03.adr/README.md)
-- [07-workflow](./07-workflow/spec.md)
-- [11-laboratory](./11-laboratory/spec.md)
+- [07-workflow Spec](../04.specs/07-workflow/spec.md)
+- [11-laboratory Spec](../04.specs/11-laboratory/spec.md)
 - [04.specs (Specifications)](../04.specs/README.md)
 - [99.templates (Templates)](../99.templates/README.md)
 

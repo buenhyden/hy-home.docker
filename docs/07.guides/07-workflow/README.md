@@ -1,52 +1,57 @@
 # Workflow & Orchestration Guides
 
-> 데이터 파이프라인 및 자동화 워크플로 관리 가이드 모음.
+> Airflow, n8n, Airbyte 사용/이해 중심 문서 인덱스.
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` 플랫폼에서 사용하는 워크플로 엔진(Airflow, n8n 등)의 사용법과 개발 가이드를 포함합니다. 파이프라인 설계, 노드 활용, 그리고 플랫폼 특정 도구와의 연동 방법을 설명합니다.
+이 디렉터리는 `07-workflow` 계층의 사용자 가이드를 제공한다. 목적은 시스템 이해, 온보딩, 실무 사용 흐름 정리이며 정책 정의나 장애 복구 절차는 포함하지 않는다.
 
 ## Audience
 
 이 README의 주요 독자:
 
-- **Developers**: 자동화 시나리오 및 DAG 개발자
-- **Data Engineers**: 데이터 수집 및 처리 프로세스 설계자
-- **AI Agents**: 워크플로 분석 및 최적화 에이전트
+- Developers
+- Data Engineers
+- Operators
+- AI Agents
 
 ## Scope
 
 ### In Scope
 
-- **Apache Airflow**: Python 기반의 복잡한 데이터 파이프라인 개발 가이드
-- **n8n**: 노드 기반의 로우코드 자동화 워크플로 활용법
-- 시스템 아키텍처 이해 및 로컬 개발 환경 설정 가이드
+- Airflow 시스템 이해 및 DAG 개발 가이드
+- n8n 자동화 설계/운영 가이드
+- Airbyte 도입 및 동기화 운영 준비 가이드
 
 ### Out of Scope
 
-- 운영 서버의 커스터마이징 설정 (08.operations 권한)
-- 클러스터 복구 및 백업 절차 (09.runbooks 권한)
+- 운영 정책/통제 기준 (08.operations 담당)
+- 장애 대응/복구 절차 (09.runbooks 담당)
 
 ## Structure
 
 ```text
 07-workflow/
-├── 01.airflow-dag-dev.md  # Airflow DAG 개발 표준 및 기법
-├── 02.n8n-automation.md   # n8n 노드 활용 가이드
-├── airflow.md               # Airflow 시스템 가이드 (시스템 가이드)
-├── n8n.md                   # n8n 시스템 가이드 (시스템 가이드)
-├── 01.airflow-dag-dev.md    # Airflow DAG 개발 및 배포 절차
-└── 02.n8n-automation.md     # n8n을 이용한 자동화 워크플로우 구성
+├── 01.airflow-dag-dev.md    # Airflow DAG 개발 가이드
+├── 02.n8n-automation.md     # n8n 자동화 가이드
+├── airflow-dag-basics.md    # Airflow DAG 기초
+├── airflow.md               # Airflow 시스템 가이드
+├── n8n.md                   # n8n 시스템 가이드
+├── airbyte.md               # Airbyte 운영 준비 가이드
+└── README.md                # This file
 ```
 
 ## How to Work in This Area
 
-1. [v2026.03 표준 템플릿](../../99.templates/guide.template.md)을 사용하여 문서를 작성합니다.
-2. 각 문서 최상단에는 **Overview (KR)** 섹션을 필수로 포함합니다.
-3. 관련 [운영 정책](../../08.operations/07-workflow/README.md) 및 [런북](../../09.runbooks/07-workflow/README.md)과의 링크를 유지합니다.
+1. 새 가이드는 `../../99.templates/guide.template.md`를 사용한다.
+2. 문서에는 `Overview (KR)`, `Prerequisites`, `Step-by-step Instructions`, `Common Pitfalls`를 포함한다.
+3. 각 가이드에서 대응되는 Operation/Runbook 링크를 함께 유지한다.
 
 ## Related References
 
-- **PRD**: [07-workflow PRD](../../01.prd/README.md)
-- **Spec**: [07-workflow Spec](../../04.specs/README.md)
-- **Operation**: [Workflow Operations](../../08.operations/07-workflow/README.md)
+- **PRD**: [2026-03-26-07-workflow.md](../../01.prd/2026-03-26-07-workflow.md)
+- **ARD**: [0007-workflow-architecture.md](../../02.ard/0007-workflow-architecture.md)
+- **ADR**: [0007-airflow-n8n-hybrid-workflow.md](../../03.adr/0007-airflow-n8n-hybrid-workflow.md)
+- **Spec**: [07-workflow/spec.md](../../04.specs/07-workflow/spec.md)
+- **Operations**: [07-workflow Operations](../../08.operations/07-workflow/README.md)
+- **Runbooks**: [07-workflow Runbooks](../../09.runbooks/07-workflow/README.md)

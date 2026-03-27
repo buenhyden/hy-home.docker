@@ -63,5 +63,5 @@ curl -X POST "https://qdrant.${DEFAULT_URL}/collections/my_collection/points/sea
 ## Related Documents
 
 - **Spec**: `[infra/04-data/specialized/qdrant/README.md](../../../../infra/04-data/specialized/qdrant/README.md)`
-- **Operation**: `[../../08.operations/04-data/specialized/qdrant.md](../../08.operations/04-data/specialized/qdrant.md)`
-- **Runbook**: `[../../09.runbooks/04-data/specialized/qdrant.md](../../09.runbooks/04-data/specialized/qdrant.md)`
+- **Operation**: `[../../08.operations/04-data/specialized/qdrant.md](../../../08.operations/04-data/specialized/qdrant.md)`
+- **Runbook**: `[../../09.runbooks/04-data/specialized/qdrant.md](../../../09.runbooks/04-data/specialized/qdrant.md)`

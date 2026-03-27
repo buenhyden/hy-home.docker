@@ -51,7 +51,7 @@ This document defines the operational policies for MinIO Object Storage. It regu
 
 ## Related Documents
 
-- **Technical Guide**: [minio.md](../../07.guides/04-data/lake-and-object/minio.md)
-- **Recovery Runbook**: [minio.md](../../09.runbooks/04-data/lake-and-object/minio.md)
-- **Infrastructure**: [minio/README.md](../../../infra/04-data/lake-and-object/minio/README.md)
+- **Technical Guide**: [minio.md](../../../07.guides/04-data/lake-and-object/minio.md)
+- **Recovery Runbook**: [minio.md](../../../09.runbooks/04-data/lake-and-object/minio.md)
+- **Infrastructure**: [minio/README.md](../../../../infra/04-data/lake-and-object/minio/README.md)
 

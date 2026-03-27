@@ -38,7 +38,7 @@ cache-and-kv/
 ## How to Work in This Area
 
 1. 전역 데이터 보안 정책은 [backup-policy.md](../backup-policy.md)를 먼저 확인합니다.
-2. 정책 위반 사항 발견 시 즉시 담당자에게 보고하고 [Runbook](../../09.runbooks/04-data/cache-and-kv/README.md)을 참조합니다.
+2. 정책 위반 사항 발견 시 즉시 담당자에게 보고하고 [Runbook](../../../09.runbooks/04-data/cache-and-kv/README.md)을 참조합니다.
 
 ## Available Policies
 
@@ -47,5 +47,5 @@ cache-and-kv/
 ## Related References
 
 - **Implementation**: [infra/04-data/cache-and-kv/README.md](../../../../infra/04-data/cache-and-kv/README.md)
-- **Guide**: [04-data Guides](../../07.guides/04-data/cache-and-kv/README.md)
-- **Runbook**: [04-data Runbooks](../../09.runbooks/04-data/cache-and-kv/README.md)
+- **Guide**: [04-data Guides](../../../07.guides/04-data/cache-and-kv/README.md)
+- **Runbook**: [04-data Runbooks](../../../09.runbooks/04-data/cache-and-kv/README.md)

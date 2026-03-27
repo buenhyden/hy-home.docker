@@ -63,5 +63,5 @@ CREATE (a)-[:COLLEAGUE]->(b);
 ## Related Documents
 
 - **Spec**: `[infra/04-data/specialized/neo4j/README.md](../../../../infra/04-data/specialized/neo4j/README.md)`
-- **Operation**: `[../../08.operations/04-data/specialized/neo4j.md](../../08.operations/04-data/specialized/neo4j.md)`
-- **Runbook**: `[../../09.runbooks/04-data/specialized/neo4j.md](../../09.runbooks/04-data/specialized/neo4j.md)`
+- **Operation**: `[../../08.operations/04-data/specialized/neo4j.md](../../../08.operations/04-data/specialized/neo4j.md)`
+- **Runbook**: `[../../09.runbooks/04-data/specialized/neo4j.md](../../../09.runbooks/04-data/specialized/neo4j.md)`

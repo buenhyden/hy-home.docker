@@ -10,19 +10,19 @@
 
 ### Documentation Layer
 
-#### [NEW] [2026-03-26-10-communication.md](../../01.prd/2026-03-26-10-communication.md)
+#### [NEW] [2026-03-26-10-communication.md](../01.prd/2026-03-26-10-communication.md)
 
-#### [NEW] [0010-communication-architecture.md](../../02.ard/0010-communication-architecture.md)
+#### [NEW] [0010-communication-architecture.md](../02.ard/0010-communication-architecture.md)
 
-#### [NEW] [0010-communication-services.md](../../03.adr/0010-communication-services.md)
+#### [NEW] [0010-communication-services.md](../03.adr/0010-communication-services.md)
 
-#### [NEW] [spec.md](../../04.specs/10-communication/spec.md)
+#### [NEW] [spec.md](../04.specs/10-communication/spec.md)
 
-#### [NEW] [2026-03-26-10-communication-tasks.md](../../06.tasks/2026-03-26-10-communication-tasks.md)
+#### [NEW] [2026-03-26-10-communication-tasks.md](../06.tasks/2026-03-26-10-communication-tasks.md)
 
 ### Infrastructure Layer
 
-#### [MODIFY] [README.md](../../../infra/10-communication/README.md)
+#### [MODIFY] [README.md](../../infra/10-communication/README.md)
 
 - "Golden 5" 패턴(Overview, Architecture, Integration, Operations, Governance)으로 리팩토링.
 

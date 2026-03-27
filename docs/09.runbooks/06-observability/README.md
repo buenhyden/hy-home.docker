@@ -1,35 +1,60 @@
 # Observability Runbooks
 
-> Incident Response & Recovery Procedures for the LGTM Stack.
+> LGTM stack and telemetry pipeline incident recovery procedures.
 
-## Overview (KR)
+## Overview
 
-이 디렉터리는 `hy-home.docker`의 가시성 체계(06-observability) 장애 발생 시 복구 절차를 포함한다. 데이터 소실 방지와 고가용성 유지를 위한 핵심 대응 매뉴얼이다.
+이 디렉터리는 `06-observability` 계층 장애 상황에서 즉시 실행할 복구 절차를 제공한다. 정책 정의가 아니라 장애 완화, 원인 확인, 증적 수집, 안전 롤백을 목적으로 한다.
 
-## Recovery Procedures
+## Audience
 
-- [01. LGTM Stack Recovery](./01.lgtm-recovery.md) - Standard recovery steps for Loki, Grafana, Tempo.
-- [02. Alloy- [Grafana Alloy](./alloy.md)
-- [Loki Recovery Runbo- [Loki](./loki.md)
-- [Prometheus](./prometheus.md)
-- [Pushgateway](./pushgateway.md)
-- [Pyroscope](./pyroscope.md)
-- [Tempo](./tempo.md)
-- [Prometheus Alertmanager](./alertmanager.md)
+이 README의 주요 독자:
 
-## Incident Response Flow
+- SRE / On-call Operators
+- Platform Engineers
+- Incident Commander
+- AI Agents executing runbooks with human approval
 
-1. **Detection**: Prometheus Alertmanager 또는 Grafana On-call 알람 수신.
-2. **Triaging**: 영향도 파악 (데이터 수집 중단 vs 시각화 중단).
-3. **Mitigation**: Runbook 절차에 따른 서비스 재시작 또는 로그 분석.
-4. **Resolution**: 정상 상태 확인 및 Post-mortem 작성.
+## Scope
 
-## Emergency Contacts
+### In Scope
 
-- **Infrastructure Lead**: `@infra-oncall`
-- **SRE Team**: `#ops-observability` (Slack)
+- Grafana, Loki, Tempo, Prometheus, Alloy, Pushgateway, Pyroscope, Alertmanager 장애 복구
+- 로그/메트릭/트레이스 파이프라인 상태 점검
+- 복구 후 검증 및 증적 수집 절차
 
-## Related Documents
+### Out of Scope
 
-- **Guides**: `[../../07.guides/06-observability/README.md]`
-- **Operations**: `[../../08.operations/06-observability/README.md]`
+- 운영 정책 및 보존 기준 정의 (08.operations 담당)
+- 도구 사용법/온보딩 문서 (07.guides 담당)
+- 사고 회고 및 재발 방지 분석 (11.postmortems 담당)
+
+## Structure
+
+```text
+06-observability/
+├── alertmanager.md        # Alertmanager 장애 및 알림 경로 복구
+├── alloy.md               # Grafana Alloy 수집 파이프라인 복구
+├── grafana.md             # Grafana UI/API 및 datasource 복구
+├── loki.md                # Loki ingestion/query 장애 복구
+├── prometheus.md          # Prometheus 서비스 복구
+├── prometheus-recovery.md # Prometheus 심화 복구 절차
+├── pushgateway.md         # Pushgateway 수집 경로 복구
+├── pyroscope.md           # Pyroscope 프로파일 수집 복구
+├── tempo.md               # Tempo trace 저장/조회 복구
+└── README.md              # This file
+```
+
+## How to Work in This Area
+
+1. 장애 신호를 수신하면 대상 서비스 런북을 먼저 선택한다.
+2. 명령 실행 전 영향 범위와 롤백 조건을 확인한다.
+3. 절차 완료 후 Verification 섹션 기준으로 정상화 여부를 판단한다.
+4. 필요 시 Incident/Postmortem 문서로 연결해 후속 조치를 기록한다.
+
+## Related References
+
+- **Guides**: [06-observability Guides](../../07.guides/06-observability/README.md)
+- **Operations**: [06-observability Operations](../../08.operations/06-observability/README.md)
+- **Incidents**: [Incident Records](../../10.incidents/README.md)
+- **Postmortems**: [Postmortems](../../11.postmortems/README.md)

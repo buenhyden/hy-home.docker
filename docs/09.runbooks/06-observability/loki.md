@@ -79,5 +79,5 @@ If Loki needs to be shut down gracefully while ensuring all logs are committed t
 
 ---
 
-- [Loki System Guide](file:///home/hy/projects/hy-home.docker/docs/07.guides/06-observability/loki.md)
+- [Loki System Guide](../../07.guides/06-observability/loki.md)
  | [Operational Policy](../../08.operations/06-observability/loki.md)

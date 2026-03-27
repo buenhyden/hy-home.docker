@@ -35,7 +35,7 @@
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
 | VAL-PLN-001 | Structural | 모든 문서의 `Overview (KR)` 존재 확인 | `grep -r "Overview (KR)" docs/` | 전 문서 포함 |
-| VAL-PLN-002 | Traceability | 문서 간 상호 참조 링크 유효성 검사 | `find docs -name "*.md" -exec grep -l "\[.*\](.*\.md)" {} +` | 깨진 링크 없음 |
+| VAL-PLN-002 | Traceability | 문서 간 상호 참조 링크 유효성 검사 | `find docs -name "*.md" -exec grep -l "\\[.*\\](.*\\.md)" {} +` | 깨진 링크 없음 |
 
 ## Risks & Mitigations
 

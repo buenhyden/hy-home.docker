@@ -54,6 +54,6 @@
 
 ## Related Documents
 
-- **Infrastructure**: [MongoDB Infrastructure](../../../infra/04-data/nosql/mongodb/README.md)
-- **Guide**: [MongoDB Replica Set Guide](../../../docs/07.guides/04-data/nosql/mongodb.md)
-- **Runbook**: [MongoDB Recovery Runbook](../../../docs/09.runbooks/04-data/nosql/mongodb.md)
+- **Infrastructure**: [MongoDB Infrastructure](../../../../infra/04-data/nosql/mongodb/README.md)
+- **Guide**: [MongoDB Replica Set Guide](../../../07.guides/04-data/nosql/mongodb.md)
+- **Runbook**: [MongoDB Recovery Runbook](../../../09.runbooks/04-data/nosql/mongodb.md)

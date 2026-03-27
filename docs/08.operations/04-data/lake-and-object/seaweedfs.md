@@ -49,7 +49,7 @@ This document defines the operational policies and guidelines to ensure the stab
 
 ## Related Documents
 
-- **Technical Guide**: [seaweedfs.md](../../07.guides/04-data/lake-and-object/seaweedfs.md)
-- **Recovery Runbook**: [seaweedfs.md](../../09.runbooks/04-data/lake-and-object/seaweedfs.md)
-- **Infrastructure**: [seaweedfs/README.md](../../../infra/04-data/lake-and-object/seaweedfs/README.md)
+- **Technical Guide**: [seaweedfs.md](../../../07.guides/04-data/lake-and-object/seaweedfs.md)
+- **Recovery Runbook**: [seaweedfs.md](../../../09.runbooks/04-data/lake-and-object/seaweedfs.md)
+- **Infrastructure**: [seaweedfs/README.md](../../../../infra/04-data/lake-and-object/seaweedfs/README.md)
 

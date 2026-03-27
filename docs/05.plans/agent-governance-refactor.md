@@ -16,18 +16,18 @@ Analyze and refactor the project's agent governance infrastructure to align with
 
 Consolidate redundant information and implement strict JIT redirection.
 
-#### [MODIFY] [AGENTS.md](../../../AGENTS.md)
+#### [MODIFY] [AGENTS.md](../../AGENTS.md)
 
 - Remove redundant language policy sections.
 - Focus on the "Universal Contract" and "Entry Point".
 - Use `[LOAD:RULES:BOOTSTRAP]` as the primary JIT trigger.
 
-#### [MODIFY] [CLAUDE.md](../../../CLAUDE.md)
+#### [MODIFY] [CLAUDE.md](../../CLAUDE.md)
 
 - Optimize for Claude Code specific features (thinking process, tool use).
 - Link to specialized Claude configuration in `docs/00.agent-governance/claude-provider.md`.
 
-#### [MODIFY] [GEMINI.md](../../../GEMINI.md)
+#### [MODIFY] [GEMINI.md](../../GEMINI.md)
 
 - Optimize for Gemini CLI specific patterns (reasoning summaries).
 - Link to specialized Gemini configuration in `docs/00.agent-governance/gemini-provider.md`.
@@ -43,7 +43,7 @@ Enhance the central hub to act as a high-performance dispatcher.
 - Standardize the "Dispatcher Table" for all `docs/01-11` layers.
 - Ensure 100% English content for token efficiency.
 
-#### [MODIFY] [docs/00.agent-governance/rules/persona-matrix.md](../00.agent-governance/rules/persona-matrix.md)
+#### [MODIFY] [docs/00.agent-governance/rules/persona.md](../00.agent-governance/rules/persona.md)
 
 - Fix generic directory links to point to specific pillar files in `.agent/rules/` (e.g., `.agent/rules/1900-Architecture_Patterns/1901-architecture-rules.md`).
 

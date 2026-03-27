@@ -39,7 +39,7 @@
 ## How to Work in This Area
 
 1. **Immediate Execution**: 런북은 장황한 설명보다 즉시 실행 가능한 명령어 위주로 작성한다.
-2. **Standardization**: 모든 런북은 [runbook.template.md](docs/99.templates/runbook.template.md) 형식을 준용한다.
+2. **Standardization**: 모든 런북은 [runbook.template.md](../../../docs/99.templates/runbook.template.md) 형식을 준용한다.
 3. **Evidence**: 복구 과정에서 수집해야 할 증거(Evidence)와 검증 기준을 명확히 명시한다.
 
 ## Usage Instructions

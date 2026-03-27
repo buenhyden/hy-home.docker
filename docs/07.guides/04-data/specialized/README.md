@@ -11,5 +11,5 @@
 ## Related Documents
 
 - [Analytical & Specialized Databases Guide](../05.analytical-specialized-dbs.md)
-- [PRD](../../01.prd/2026-03-26-04-data.md)
-- [ARD](../../02.ard/0004-data-architecture.md)
+- [PRD](../../../01.prd/2026-03-26-04-data.md)
+- [ARD](../../../02.ard/0004-data-architecture.md)

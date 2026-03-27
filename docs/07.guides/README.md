@@ -52,6 +52,7 @@
 - [05-messaging](./05-messaging/README.md)
 - [06-observability](./06-observability/README.md)
 - [07-workflow](./07-workflow/README.md)
+  - [airbyte](./07-workflow/airbyte.md)
 - [08-ai](./08-ai/README.md)
 - [09-tooling](./09-tooling/README.md)
 - [10-communication](./10-communication/README.md)

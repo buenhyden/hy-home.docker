@@ -45,6 +45,6 @@ Valkey 6노드 분산 클러스터의 영속성(Persistence), 메모리 관리, 
 
 ## Related Documents
 
-- **ARD**: [Data Architecture Model](../../02.ard/0004-data-architecture.md)
-- **Runbook**: [Valkey Recovery Runbook](../../09.runbooks/04-data/cache-and-kv/valkey-cluster.md)
-- **Guide**: [Valkey Cluster Guide](../../07.guides/04-data/cache-and-kv/valkey-cluster.md)
+- **ARD**: [Data Architecture Model](../../../02.ard/0004-data-architecture.md)
+- **Runbook**: [Valkey Recovery Runbook](../../../09.runbooks/04-data/cache-and-kv/valkey-cluster.md)
+- **Guide**: [Valkey Cluster Guide](../../../07.guides/04-data/cache-and-kv/valkey-cluster.md)

@@ -14,7 +14,7 @@
 
 ## Canonical References
 
-- `[../../02.ard/0004-data-architecture.md](../../02.ard/0004-data-architecture.md)`
+- `[../../02.ard/0004-data-architecture.md](../../../02.ard/0004-data-architecture.md)`
 - `[infra/04-data/specialized/neo4j/README.md](../../../../infra/04-data/specialized/neo4j/README.md)`
 
 ## When to Use

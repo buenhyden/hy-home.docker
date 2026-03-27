@@ -84,6 +84,6 @@ This runbook defines implementation procedures for responding to failure situati
 
 ## Related Documents
 
-- **Technical Guide**: [minio.md](../../07.guides/04-data/lake-and-object/minio.md)
-- **Operations Policy**: [minio.md](../../08.operations/04-data/lake-and-object/minio.md)
-- **Infrastructure**: [minio/README.md](../../../infra/04-data/lake-and-object/minio/README.md)
+- **Technical Guide**: [minio.md](../../../07.guides/04-data/lake-and-object/minio.md)
+- **Operations Policy**: [minio.md](../../../08.operations/04-data/lake-and-object/minio.md)
+- **Infrastructure**: [minio/README.md](../../../../infra/04-data/lake-and-object/minio/README.md)

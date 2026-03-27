@@ -26,7 +26,7 @@ Helps application developers and system operators understand the structure of th
 
 ## Prerequisites
 
-- [valkey-cluster Infrastructure README](../../../infra/04-data/cache-and-kv/valkey-cluster/README.md)
+- [valkey-cluster Infrastructure README](../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md)
 - Docker 및 Docker Compose 실행 환경
 - Redis Cluster 호환 프로토콜 사용 가능 클라이언트 라이브러리
 
@@ -54,6 +54,6 @@ Valkey Cluster는 샤딩된 환경이므로 모든 노드 정보를 클라이언
 
 ## Related Documents
 
-- **Spec**: [04-data Spec](../../04.specs/04-data/spec.md)
-- **Operation**: [Valkey Operations Policy](../../08.operations/04-data/cache-and-kv/valkey-cluster.md)
-- **Runbook**: [Valkey Recovery Runbook](../../09.runbooks/04-data/cache-and-kv/valkey-cluster.md)
+- **Spec**: [04-data Spec](../../../04.specs/04-data/spec.md)
+- **Operation**: [Valkey Operations Policy](../../../08.operations/04-data/cache-and-kv/valkey-cluster.md)
+- **Runbook**: [Valkey Recovery Runbook](../../../09.runbooks/04-data/cache-and-kv/valkey-cluster.md)

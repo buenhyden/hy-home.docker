@@ -54,7 +54,7 @@
 - **PRD**: [05-messaging](../../01.prd/2026-03-26-05-messaging.md)
 - **ARD**: [Messaging Architecture](../../02.ard/0005-messaging-architecture.md)
 - **Spec**: [05-messaging Spec](../../04.specs/05-messaging/spec.md)
-- **Plan**: [Messaging Plan](../../05.plans/2026-03-26-05-messaging.md)
+- **Plan**: [Messaging Plan](../../01.prd/2026-03-26-05-messaging.md)
 
 ## AI Agent Guidance
 

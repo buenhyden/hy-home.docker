@@ -25,6 +25,6 @@ lake-and-object/
 ## Related References
 
 - **Parent**: [04-data Guides](../README.md)
-- **Implementation**: [lake-and-object Infrastructure](../../../../infra/04-data/lake-and-object/README.md)
-- **Operations**: [lake-and-object Operations](../../../../docs/08.operations/04-data/lake-and-object/README.md)
-- **Runbooks**: [lake-and-object Runbooks](../../../../docs/09.runbooks/04-data/lake-and-object/README.md)
+- **Implementation**: [lake-and-object Infrastructure](../../../../infra/04-data/lake-and-object/minio/README.md)
+- **Operations**: [lake-and-object Operations](../../../08.operations/04-data/lake-and-object/README.md)
+- **Runbooks**: [lake-and-object Runbooks](../../../09.runbooks/04-data/lake-and-object/README.md)

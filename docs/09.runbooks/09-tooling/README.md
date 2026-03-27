@@ -6,7 +6,7 @@
 
 이 런북은 `09-tooling` 계층에서 발생할 수 있는 주요 도구(SonarQube, Terrakube, Locust)의 장애 상황에 대한 조치 방법을 설명한다.
 
-- [01. IaC Automation Guide](./01.iac-automation.md) - Managed Terraform workflows with Terrakube.
+- [01. IaC Automation Guide](../../07.guides/09-tooling/01.iac-automation.md) - Managed Terraform workflows with Terrakube.
 - [02. Performance Testing Guide](./performance-testing.md) - Context-level load testing (Locust).
 - [03. Locust Guide](./locust.md) - Dedicated Locust service guide.
 - [04. k6 Guide](./k6.md) - Dedicated k6 (Performance Testing unit) service guide.

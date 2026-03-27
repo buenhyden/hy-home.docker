@@ -38,7 +38,7 @@ cache-and-kv/
 ## How to Work in This Area
 
 1. 장애 발생 시 [valkey-cluster.md](./valkey-cluster.md)의 진단 단계를 즉시 수행합니다.
-2. 모든 복구 작업은 수행 전후로 [Operations](../../08.operations/04-data/cache-and-kv/README.md) 정책을 준수하는지 확인합니다.
+2. 모든 복구 작업은 수행 전후로 [Operations](../../../08.operations/04-data/cache-and-kv/README.md) 정책을 준수하는지 확인합니다.
 
 ## Available Runbooks
 
@@ -47,5 +47,5 @@ cache-and-kv/
 ## Related References
 
 - **Implementation**: [infra/04-data/cache-and-kv/README.md](../../../../infra/04-data/cache-and-kv/README.md)
-- **Guide**: [04-data Guides](../../07.guides/04-data/cache-and-kv/README.md)
-- **Operation**: [04-data Operations](../../08.operations/04-data/cache-and-kv/README.md)
+- **Guide**: [04-data Guides](../../../07.guides/04-data/cache-and-kv/README.md)
+- **Operation**: [04-data Operations](../../../08.operations/04-data/cache-and-kv/README.md)

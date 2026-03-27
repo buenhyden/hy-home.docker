@@ -71,6 +71,6 @@ mongodb://${USER}:${PASS}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyRe
 
 ## Related Documents
 
-- **Infrastructure**: [MongoDB Infrastructure](../../../infra/04-data/nosql/mongodb/README.md)
-- **Operation**: [MongoDB Operations Policy](../../../docs/08.operations/04-data/nosql/mongodb.md)
-- **Runbook**: [MongoDB Recovery Runbook](../../../docs/09.runbooks/04-data/nosql/mongodb.md)
+- **Infrastructure**: [MongoDB Infrastructure](../../../../infra/04-data/nosql/mongodb/README.md)
+- **Operation**: [MongoDB Operations Policy](../../../08.operations/04-data/nosql/mongodb.md)
+- **Runbook**: [MongoDB Recovery Runbook](../../../09.runbooks/04-data/nosql/mongodb.md)

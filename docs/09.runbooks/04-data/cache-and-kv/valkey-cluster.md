@@ -16,9 +16,9 @@ This runbook defines the emergency recovery procedures for node failures, slot i
 
 ## Canonical References
 
-- [Data Architecture Document](../../02.ard/0004-data-architecture.md)
-- [04-data Specification](../../04.specs/04-data/spec.md)
-- [Valkey Operations Policy](../../08.operations/04-data/cache-and-kv/valkey-cluster.md)
+- [Data Architecture Document](../../../02.ard/0004-data-architecture.md)
+- [04-data Specification](../../../04.specs/04-data/spec.md)
+- [Valkey Operations Policy](../../../08.operations/04-data/cache-and-kv/valkey-cluster.md)
 
 ## When to Use
 
@@ -58,5 +58,5 @@ docker exec valkey-node-0 valkey-cli -a $PASS --cluster fix localhost:6379
 
 ## Related Operational Documents
 
-- **Operations**: [Valkey Operations Policy](../../08.operations/04-data/cache-and-kv/valkey-cluster.md)
-- **Guide**: [Valkey Cluster Guide](../../07.guides/04-data/cache-and-kv/valkey-cluster.md)
+- **Operations**: [Valkey Operations Policy](../../../08.operations/04-data/cache-and-kv/valkey-cluster.md)
+- **Guide**: [Valkey Cluster Guide](../../../07.guides/04-data/cache-and-kv/valkey-cluster.md)
