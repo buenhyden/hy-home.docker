@@ -1,5 +1,5 @@
 x-tier-label: &tier-label
-  hy-home.tier: messaging
+  hy-home.tier: data
 
 volumes:
   ksqldb-data-volume:

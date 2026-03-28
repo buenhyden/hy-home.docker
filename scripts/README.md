@@ -19,6 +19,7 @@
 | Gateway Hardening Check | [check-gateway-hardening.sh](check-gateway-hardening.sh) | Enforce 01-gateway Traefik/Nginx hardening baseline |
 | Auth Hardening Check | [check-auth-hardening.sh](check-auth-hardening.sh) | Enforce 02-auth Keycloak/OAuth2 Proxy hardening baseline |
 | Security Hardening Check | [check-security-hardening.sh](check-security-hardening.sh) | Enforce 03-security Vault hardening baseline |
+| Data Hardening Check | [check-data-hardening.sh](check-data-hardening.sh) | Enforce 04-data service hardening baseline |
 | Preflight Check | [preflight-compose.sh](preflight-compose.sh) | Bootstrap prerequisite validation |
 | Cert Generation | [generate-local-certs.sh](generate-local-certs.sh) | Generate local TLS files |
 
@@ -55,6 +56,9 @@
 
 # Enforce 03-security hardening baseline
 ./scripts/check-security-hardening.sh
+
+# Enforce 04-data hardening baseline
+./scripts/check-data-hardening.sh
 
 # Bootstrap secrets
 ./scripts/bootstrap-secrets.sh --force

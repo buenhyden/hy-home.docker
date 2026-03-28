@@ -50,6 +50,16 @@ jobs:
       - name: Check 03-security hardening baseline
         run: bash scripts/check-security-hardening.sh
 
+  # ── Data Hardening Baseline ─────────────────────────────────
+  data-hardening:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check 04-data hardening baseline
+        run: bash scripts/check-data-hardening.sh
+
   # ── Template/Security Baseline ──────────────────────────────
   template-security-baseline:
     permissions:

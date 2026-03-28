@@ -36,6 +36,7 @@ This directory contains technical guides for the `hy-home.docker` data infrastru
 ├── cache-and-kv/         # 분산 캐시 및 KV 저장소 가이드 (Valkey Cluster)
 ├── lake-and-object/       # 데이터 레이크 및 오브젝트 스토리지 가이드
 ├── nosql/                 # NoSQL 데이터베이스 가이드
+├── optimization-hardening.md # 04-data 최적화/하드닝 가이드
 ├── operational/           # 운영 및 관리용 데이터베이스 가이드
 ├── relational/            # 관계형 데이터베이스(PostgreSQL) 가이드
 ├── relational.md          # Relational Database Overview Guide
@@ -59,6 +60,7 @@ This directory contains technical guides for the `hy-home.docker` data infrastru
 
 - **Operations**: [Data Operations Policy](../../08.operations/04-data/README.md)
 - **Runbooks**: [Data Recovery Runbooks](../../09.runbooks/04-data/README.md)
+- **Hardening Guide**: [04-data Optimization Hardening Guide](./optimization-hardening.md)
 - **Source**: [Infrastructure Source](../../../infra/04-data/README.md)
 
 ---

@@ -199,7 +199,7 @@ services:
       - -c
     command:
       - |
-        export VALKEY_PASSWORD=$$(cat /run/secrets/mng_valkey_password | tr -d '\n')
+        export VALKEY_PASSWORD=$$(cat /run/secrets/service_valkey_password | tr -d '\n')
         exec /redis_exporter \
           -redis.addr=redis://mng-valkey:$${VALKEY_PORT} \
           -redis.password="$$VALKEY_PASSWORD" \

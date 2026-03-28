@@ -21,6 +21,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   kong:
     profiles:
@@ -43,6 +49,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   auth:
     profiles:
@@ -64,6 +76,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   rest:
     profiles:
@@ -85,6 +103,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   realtime:
     profiles:
@@ -104,6 +128,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   storage:
     profiles:
@@ -128,6 +158,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   imgproxy:
     profiles:
@@ -146,6 +182,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   meta:
     profiles:
@@ -165,6 +207,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   functions:
     profiles:
@@ -184,6 +232,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   analytics:
     profiles:
@@ -203,6 +257,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   db:
     profiles:
@@ -231,6 +291,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5432 -U postgres || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   vector:
     profiles:
@@ -249,6 +315,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   supavisor:
     profiles:
@@ -273,3 +345,9 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    healthcheck:
+      test: ['CMD-SHELL', 'kill -0 1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s

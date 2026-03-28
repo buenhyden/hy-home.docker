@@ -1,81 +1,130 @@
-<!-- Target: docs/04.specs/04-data/spec.md -->
-
-# Data Tier (04-data) Technical Specification (Spec)
+# 04-Data Optimization Hardening Specification
 
 ## Overview (KR)
 
-이 문서는 `04-data` 티어의 기술 설계와 구현 계약을 정의하는 명세서다. PRD 요구를 기술적으로 구체화하고, PostgreSQL Patroni 클러스터, Valkey 분산 클러스터, MinIO 오브젝트 스토리지의 구체적인 설정값과 검증 방법을 정의한다.
+이 문서는 `infra/04-data` 계층의 최적화/하드닝 구현 계약을 정의한다. 즉시 적용 가능한 compose 정합성, healthcheck, 시크릿 경로 계약, 검증 자동화를 우선 반영하고, 카탈로그 기반 확장 항목은 운영 정책/런북과 연결한다.
 
 ## Strategic Boundaries & Non-goals
 
-- **Owns**: 데이터베이스 엔진 설정, 스토리지 토폴로지, 클러스터링 로직, `infra_net` 내 포트 매핑.
-- **Does Not Own**: 애플리케이션 레벨의 SQL 쿼리 최적화, 비즈니스 엔티티 정의.
+- 본 Spec은 04-data 인프라 구성 하드닝과 검증 계약을 소유한다.
+- 엔진별 대규모 토폴로지 확장(예: 멀티클러스터 전환)은 후속 단계로 이관한다.
 
 ## Related Inputs
 
-- **PRD**: `[../../01.prd/2026-03-26-04-data.md]`
-- **ARD**: `[../../02.ard/0004-data-architecture.md]`
-- **Related ADRs**: `[../../03.adr/0004-postgresql-ha-patroni.md]`
+- **PRD**: [../../01.prd/2026-03-28-04-data-optimization-hardening.md](../../01.prd/2026-03-28-04-data-optimization-hardening.md)
+- **ARD**: [../../02.ard/0019-data-optimization-hardening-architecture.md](../../02.ard/0019-data-optimization-hardening-architecture.md)
+- **Related ADRs**:
+  - [../../03.adr/0004-postgresql-ha-patroni.md](../../03.adr/0004-postgresql-ha-patroni.md)
+  - [../../03.adr/0019-04-data-hardening-and-ha-expansion-strategy.md](../../03.adr/0019-04-data-hardening-and-ha-expansion-strategy.md)
 
 ## Contracts
 
-- **Config Contract**: `${DEFAULT_DATA_DIR}` 환경 변수 필수, Docker Secrets를 통한 시크릿 주입.
-- **Data / Interface Contract**: S3 API (MinIO), PostgreSQL Wire Protocol, Valkey Cluster Protocol.
-- **Governance Contract**: 모든 데이터 서비스는 `infra_net` 외부로의 직접 노출을 금지함.
+- **Config Contract**:
+  - 04-data compose는 `infra/common-optimizations.yml` 템플릿 상속을 유지한다.
+  - `supabase` 핵심 서비스는 healthcheck를 필수로 제공한다.
+  - `ksql` tier 라벨은 `hy-home.tier: data`를 사용한다.
+- **Data / Interface Contract**:
+  - `valkey-cluster-exporter` 시크릿 파일 경로는 `/run/secrets/service_valkey_password`를 사용한다.
+  - `seaweedfs` expose 정의는 유효한 포트 토큰만 허용한다.
+- **Governance Contract**:
+  - `scripts/check-data-hardening.sh`를 CI `data-hardening` job으로 강제한다.
+  - `scripts/check-template-security-baseline.sh`, `scripts/check-doc-traceability.sh`와 함께 운영 게이트를 구성한다.
 
 ## Core Design
 
-### 1. Relational Database: PostgreSQL HA
-
-- **Image**: `ghcr.io/zalando/spilo-17:4.0-p3`
-- **Orchestration**: Patroni v4.0 / Etcd v3.6.7
-- **Routing (pg-router)**:
-  - **Write (15432)** -> Primary 노드
-  - **Read (15433)** -> Replica 노드들
-
-### 2. Distributed Cache: Valkey Cluster
-
-- **Image**: `valkey/valkey:9.0.2-alpine`
-- **Topology**: 6-node (3 Master, 3 Slave)
-- **Ports**: 6379 (Client), 16379 (Bus)
-
-### 3. Object Storage: MinIO
-
-- **API Port**: 9000
-- **Console Port**: 9001
-- **Buckets**: `tempo-bucket`, `loki-bucket`, `cdn-bucket`.
+- **Component Boundary**:
+  - 대상 범위: `infra/04-data/{analytics,cache-and-kv,lake-and-object,nosql,operational,relational,specialized}`
+  - 즉시 하드닝 대상:
+    - `operational/supabase`
+    - `cache-and-kv/valkey-cluster`
+    - `lake-and-object/seaweedfs`
+    - `analytics/ksql`
+- **Key Dependencies**:
+  - `03-security` 시크릿 운영 정책
+  - `01-gateway` 노출/라우팅 정책
+  - `06-observability` 모니터링 정책
+- **Tech Stack**:
+  - Docker Compose
+  - 공통 최적화 템플릿(`template-infra-*`, `template-stateful-*`)
 
 ## Data Modeling & Storage Strategy
 
-- **Schema / Entity Strategy**: 각 서비스는 독립된 `/data` 서브 디렉토리를 사용함.
-- **Migration / Transition Plan**: `infra/04-data/` 하위의 개별 Compose 파일을 통한 점진적 배포.
+- **Schema / Entity Strategy**:
+  - `${DEFAULT_DATA_DIR}` 기반 서비스별 데이터 분리
+- **Migration / Transition Plan**:
+  - Phase 1: compose 정합성 및 healthcheck 계약 고정
+  - Phase 2: 카탈로그 확장 항목(backup/retention/failover/reindex) 정책화
+  - Phase 3: 승인 기반 서비스별 확장 실행
 
-## Resource & Security
+## Interfaces & Data Structures
 
-- **Secrets List**:
-  - `patroni_superuser_password`
-  - `service_valkey_password`
-  - `minio_root_password`
+### Core Interfaces
+
+```typescript
+interface DataHardeningContract {
+  composePath: string;
+  templateInherited: true;
+  hasHealthcheck: boolean;
+  secretsPathPolicy: 'service_valkey_password';
+  malformedExposeForbidden: true;
+}
+```
+
+## Catalog-aligned Expansion Targets
+
+- Analytics: retention tiering, schema compatibility gate, ISM/rollover, batch window governance
+- Cache & KV: failover drill, eviction policy split, exporter standardization
+- Lake & Object: lifecycle/versioning/KMS policy, quorum/recovery automation
+- NoSQL: compaction/repair, shard/replica balance, election/backup drill
+- Operational: DB baseline + slow-query gate, supabase exposure/resource review
+- Relational: failover SLA, vacuum tuning, PITR drill
+- Specialized: graph/query guardrail, vector indexing/reindex policy
+
+## Edge Cases & Error Handling
+
+- `service_healthy` 의존인데 healthcheck 미구성 시 시작 순서 실패 위험
+- 시크릿 파일 경로 불일치 시 exporter 인증 실패
+- compose 토큰 오타(`]`)로 정적 검증 실패 또는 런타임 오류
+
+## Failure Modes & Fallback / Human Escalation
+
+- **Failure Mode**: `supabase` 스택의 의존 서비스 비정상 순환 재시작
+- **Fallback**: healthcheck 계약 복원 후 `docker compose config` 및 runbook 절차로 재기동
+- **Human Escalation**: Data Platform Operator + DevOps on-call 동시 호출
 
 ## Verification
 
-### PostgreSQL HA Check
 ```bash
-docker exec pg-0 patronictl -c /home/postgres/postgres.yml list
+docker compose -f infra/04-data/operational/supabase/docker-compose.yml config
+docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml config
+docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml config
+docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config
+bash scripts/check-data-hardening.sh
+bash scripts/check-template-security-baseline.sh
+bash scripts/check-doc-traceability.sh
 ```
 
-### Valkey Cluster Check
+가능 환경에서 runtime 검증:
+
 ```bash
-docker exec valkey-node-0 valkey-cli -p 6379 cluster nodes
+docker compose -f infra/04-data/operational/supabase/docker-compose.yml up -d
+docker inspect --format '{{json .State.Health}}' supabase-analytics
+docker inspect --format '{{json .State.Health}}' supabase-db
+docker inspect --format '{{json .State.Health}}' supabase-pooler
 ```
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-001**: 모든 DB 컨테이너가 `infra_net`에 정상적으로 연결되어야 함.
-- **VAL-SPC-002**: `pg-router`를 통한 Primary 노드로의 쓰기 작업이 성공해야 함.
+- **VAL-SPC-DATA-001**: `check-data-hardening` 실패 0건
+- **VAL-SPC-DATA-002**: `supabase` 핵심 서비스 healthcheck 존재
+- **VAL-SPC-DATA-003**: `valkey-cluster-exporter` 시크릿 경로 계약 정합화
+- **VAL-SPC-DATA-004**: `seaweedfs` expose 토큰 오타 제거
+- **VAL-SPC-DATA-005**: 04-data 문서 레이어 추적성 링크 동기화
 
 ## Related Documents
 
-- **Plan**: `[../../05.plans/2026-03-26-04-data-standardization.md]`
-- **Tasks**: `[../../06.tasks/04-data-tasks.md]`
-- **Runbook**: `[../../09.runbooks/04-data/README.md]`
+- **Plan**: [../../05.plans/2026-03-28-04-data-optimization-hardening-plan.md](../../05.plans/2026-03-28-04-data-optimization-hardening-plan.md)
+- **Tasks**: [../../06.tasks/2026-03-28-04-data-optimization-hardening-tasks.md](../../06.tasks/2026-03-28-04-data-optimization-hardening-tasks.md)
+- **Guide**: [../../07.guides/04-data/optimization-hardening.md](../../07.guides/04-data/optimization-hardening.md)
+- **Operations**: [../../08.operations/04-data/optimization-hardening.md](../../08.operations/04-data/optimization-hardening.md)
+- **Runbook**: [../../09.runbooks/04-data/optimization-hardening.md](../../09.runbooks/04-data/optimization-hardening.md)

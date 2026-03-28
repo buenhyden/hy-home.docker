@@ -17,7 +17,7 @@ services:
     read_only: false
     expose:
       - ${SEAWEEDFS_MASTER_HTTP_PORT:-9333}
-      - ${SEAWEEDFS_MASTER_GRPC_PORT:-19333}]
+      - ${SEAWEEDFS_MASTER_GRPC_PORT:-19333}
     command: '-v=1 master -ip=seaweedfs-master -volumeSizeLimitMB=1024'
     volumes:
       - seaweedfs-master-data:/data:rw
@@ -52,7 +52,7 @@ services:
     read_only: false
     expose:
       - ${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}
-      - ${SEAWEEDFS_VOLUME_GRPC_PORT:-18085}]
+      - ${SEAWEEDFS_VOLUME_GRPC_PORT:-18085}
     command: '-v=1 volume -mserver=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333} -port=${SEAWEEDFS_VOLUME_HTTP_PORT:-8085} -ip=seaweedfs-volume -preStopSeconds=1 -max=10000'
     volumes:
       - seaweedfs-volume-data:/data:rw
@@ -85,7 +85,7 @@ services:
     read_only: false
     expose:
       - ${SEAWEEDFS_FILER_HTTP_PORT:-8888}
-      - ${SEAWEEDFS_FILER_GRPC_PORT:-18888}]
+      - ${SEAWEEDFS_FILER_GRPC_PORT:-18888}
     command: '-v=1 filer -ip.bind=0.0.0.0 -master=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}'
     depends_on:
       seaweedfs-master:

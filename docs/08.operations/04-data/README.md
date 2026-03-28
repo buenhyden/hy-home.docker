@@ -36,6 +36,7 @@ This directory defines the operational standards and data protection requirement
 ├── cache-and-kv/         # 분산 캐시 및 KV 저장소 운영 정책
 ├── lake-and-object/       # 데이터 레이크 및 오브젝트 스토리지 운영 정책
 ├── nosql/                 # NoSQL 데이터베이스 운영 정책
+├── optimization-hardening.md # 04-data 최적화/하드닝 운영 정책
 ├── operational/           # 운영 및 관리용 데이터베이스 운영 정책
 ├── backup-policy.md       # 공통 백업 표준
 ├── relational/            # 관계형 데이터베이스 운영 정책
@@ -63,6 +64,7 @@ This directory defines the operational standards and data protection requirement
 
 - **Guides**: [Technical Guides](../../07.guides/04-data/README.md)
 - **Runbooks**: [Recovery Runbooks](../../09.runbooks/04-data/README.md)
+- **Hardening Policy**: [04-data Optimization Hardening Policy](./optimization-hardening.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

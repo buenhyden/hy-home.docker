@@ -36,6 +36,7 @@ This directory contains step-by-step execution guidelines (Runbooks) for respond
 ├── cache-and-kv/         # 분산 캐시 및 KV 저장소 긴급 복구 런북
 ├── lake-and-object/       # 데이터 레이크 및 오브젝트 스토리지 긴급 복구 런북
 ├── nosql/                 # NoSQL 데이터베이스 복구 런북
+├── optimization-hardening.md # 04-data 하드닝 회귀 복구 런북
 ├── operational/           # 운영 및 관리용 데이터베이스 복구 런북
 ├── storage-exhaustion.md   # 용량 부족 대응 공통 런북
 ├── relational/            # 관계형 데이터베이스(PostgreSQL) 복구 런북
@@ -58,6 +59,7 @@ This directory contains step-by-step execution guidelines (Runbooks) for respond
 
 - **Guides**: [Technical Guides](../../07.guides/04-data/README.md)
 - **Operations**: [Operations Policy](../../08.operations/04-data/README.md)
+- **Hardening Runbook**: [04-data Optimization Hardening Runbook](./optimization-hardening.md)
 
 ---
 

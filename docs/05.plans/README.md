@@ -47,6 +47,7 @@
 ├── 2026-03-28-01-gateway-optimization-hardening-plan.md # 01-gateway 최적화/하드닝 실행 계획
 ├── 2026-03-28-02-auth-optimization-hardening-plan.md # 02-auth 최적화/하드닝 실행 계획
 ├── 2026-03-28-03-security-optimization-hardening-plan.md # 03-security(Vault) 최적화/하드닝 실행 계획
+├── 2026-03-28-04-data-optimization-hardening-plan.md # 04-data 최적화/하드닝 실행 계획
 ├── 2026-03-26-09-tooling-standardization.md # Tooling Tier 표준화 계획
 ├── 2026-03-26-10-communication-standardization.md # Communication 문서 표준화 계획
 ├── 2026-03-26-11-laboratory-standardization.md # Laboratory 문서 표준화 계획

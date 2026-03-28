@@ -47,6 +47,7 @@
 ├── 2026-03-27-08-ai-open-webui.md # Open WebUI 제품 요구사항
 ├── 2026-03-28-02-auth-optimization-hardening.md # 02-auth 최적화/하드닝 요구사항
 ├── 2026-03-28-03-security-optimization-hardening.md # 03-security(Vault) 최적화/하드닝 요구사항
+├── 2026-03-28-04-data-optimization-hardening.md # 04-data 최적화/하드닝 요구사항
 ├── 2026-03-26-09-tooling.md       # Tooling Tier 제품 요구사항
 ├── 2026-03-26-10-communication.md  # Communication Tier 제품 요구사항
 ├── 2026-03-26-11-laboratory.md     # Laboratory Tier 제품 요구사항
