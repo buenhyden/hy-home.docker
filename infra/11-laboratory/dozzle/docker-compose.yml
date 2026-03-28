@@ -28,11 +28,11 @@ services:
     expose:
       - ${DOZZLE_PORT:-8080}
     healthcheck:
-      test: ['CMD-SHELL', 'test -S /var/run/docker.sock']
-      interval: 30s
-      timeout: 5s
+      test: ['CMD', '/dozzle', 'healthcheck']
+      interval: 3s
+      timeout: 30s
       retries: 5
-      start_period: 10s
+      start_period: 30s
     labels:
       <<: *tier-label
       traefik.enable: 'true'

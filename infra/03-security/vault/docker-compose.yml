@@ -109,11 +109,7 @@ services:
       - agent
       - -config=/vault/config/vault-agent.hcl
     healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'pid="$$(cat /tmp/vault-agent.pid 2>/dev/null || true)"; [ -n "$$pid" ] && kill -0 "$$pid" 2>/dev/null || exit 1',
-        ]
+      test: ['CMD-SHELL', "pgrep -f 'vault agent' > /dev/null || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
