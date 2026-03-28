@@ -49,6 +49,7 @@
 ├── 0015-analytics-engine-selection.md # Analytics Tier 서비스 선정
 ├── 0016-open-webui-implementation.md # Open WebUI 구현 결정
 ├── 0017-auth-hardening-runtime-and-fail-closed.md # 02-auth 런타임 하드닝/Fail-closed 결정
+├── 0018-vault-hardening-and-ha-expansion-strategy.md # 03-security 단계적 하드닝/HA 확장 전략 결정
 └── README.md                            # This file
 ```
 

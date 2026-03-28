@@ -49,8 +49,7 @@ if [[ "$failures" -eq 0 ]]; then
 
   # OAuth2 Proxy compose/runtime checks.
   check_contains "$oauth_compose" "service: template-infra-readonly-med" "oauth2-proxy compose template mismatch"
-  check_contains "$oauth_compose" "- --config" "oauth2-proxy command flag missing"
-  check_contains "$oauth_compose" "- /etc/oauth2-proxy.cfg" "oauth2-proxy config path command missing"
+  check_contains "$oauth_compose" "OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://mng-valkey:6379" "oauth2-proxy redis endpoint contract missing"
   check_contains "$oauth_compose" "OAUTH2_PROXY_OIDC_ISSUER_URL=https://keycloak.\${DEFAULT_URL}/realms/hy-home.realm" "oauth2-proxy dynamic oidc issuer missing"
   check_contains "$oauth_compose" "OAUTH2_PROXY_REDIRECT_URL=https://auth.\${DEFAULT_URL}/oauth2/callback" "oauth2-proxy dynamic redirect url missing"
   check_contains "$oauth_compose" "OAUTH2_PROXY_COOKIE_DOMAINS=.\${DEFAULT_URL}" "oauth2-proxy cookie domains env missing"
@@ -67,9 +66,7 @@ if [[ "$failures" -eq 0 ]]; then
 
   # OAuth2 Proxy entrypoint secret handling checks.
   check_contains "$oauth_entrypoint" "read_secret()" "oauth2-proxy read_secret helper missing"
-  check_contains "$oauth_entrypoint" "OAUTH2_PROXY_COOKIE_SECRET" "oauth2-proxy cookie secret export missing"
-  check_contains "$oauth_entrypoint" "OAUTH2_PROXY_CLIENT_SECRET" "oauth2-proxy client secret export missing"
-  check_contains "$oauth_entrypoint" "OAUTH2_PROXY_REDIS_CONNECTION_URL" "oauth2-proxy redis connection export missing"
+  check_contains "$oauth_entrypoint" "OAUTH2_PROXY_REDIS_PASSWORD" "oauth2-proxy redis password export missing"
   check_contains "$oauth_entrypoint" "set -- --config /etc/oauth2-proxy.cfg" "oauth2-proxy default command fallback missing"
 
   # OAuth2 Proxy config security/session defaults.
@@ -79,7 +76,8 @@ if [[ "$failures" -eq 0 ]]; then
   check_contains "$oauth_cfg" "cookie_samesite = \"lax\"" "oauth2-proxy cookie_samesite mismatch"
   check_contains "$oauth_cfg" "cookie_refresh = \"1h\"" "oauth2-proxy cookie_refresh mismatch"
   check_contains "$oauth_cfg" "cookie_expire = \"12h\"" "oauth2-proxy cookie_expire mismatch"
-  check_contains "$oauth_cfg" "client_secret_file=\"/run/secrets/oauth2_proxy_client_secret\"" "oauth2-proxy client secret file contract missing"
+  check_contains "$oauth_cfg" "client_secret_file = \"/run/secrets/oauth2_proxy_client_secret\"" "oauth2-proxy client secret file contract missing"
+  check_contains "$oauth_cfg" "cookie_secret_file = \"/run/secrets/oauth2_proxy_cookie_secret\"" "oauth2-proxy cookie secret file contract missing"
 fi
 
 echo "Auth hardening check"

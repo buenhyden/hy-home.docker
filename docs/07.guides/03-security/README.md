@@ -1,28 +1,29 @@
-# 03-security Guides
+# 03-Security Guides
 
-> Operational and setup guides for the security infrastructure tier.
-
----
+> Vault 운영/개발 가이드 모음
 
 ## Overview (KR)
 
-이 디렉토리는 `03-security` 계층(Vault 등)의 설정, 연동 및 활용을 위한 상세 가이드를 포함한다.
+이 디렉터리는 `03-security` 계층의 Vault 사용 가이드를 제공한다. 시크릿 경로 규약, AppRole 부트스트랩, 렌더 출력 확인 절차를 중심으로 optimization/hardening 기준을 설명한다.
 
 ## Structure
 
 ```text
 03-security/
-├── 01.setup.md # Initial bootstrapping
-├── vault.md    # Comprehensive Vault Guide (OIDC, Secrets Migration)
-└── README.md   # This file
+├── 01.setup.md  # 초기 셋업 절차
+├── vault.md     # Vault 운영/개발 가이드(최적화/하드닝 반영)
+└── README.md    # This file
 ```
 
 ## Available Guides
 
-- **[Vault Guide](vault.md)**: Vault 초기화, 봉인 해제, Keycloak 연동 및 비밀 마이그레이션 방법.
-- **[Setup Guide](01.setup.md)**: 보안 티어의 전반적인 초기 구축 절차.
+- [Vault Guide](vault.md): 템플릿 경로 계약, AppRole bootstrap, 렌더 검증 절차
+- [Setup Guide](01.setup.md): 보안 티어 초기 구성 절차
 
-## AI Agent Guidance
+## Related References
 
-1. **Task Context**: 보안 관련 작업 시 반드시 `vault.md`의 Unseal 절차를 우선 참조하시오.
-2. **Migration**: 비밀 정보의 영구 저장소로 Vault KV-v2 엔진을 사용함을 원칙으로 함.
+- [03-security Spec](../../04.specs/03-security/spec.md)
+- [03-security Plan](../../05.plans/2026-03-28-03-security-optimization-hardening-plan.md)
+- [03-security Tasks](../../06.tasks/2026-03-28-03-security-optimization-hardening-tasks.md)
+- [03-security Operation](../../08.operations/03-security/vault.md)
+- [03-security Runbook](../../09.runbooks/03-security/vault.md)

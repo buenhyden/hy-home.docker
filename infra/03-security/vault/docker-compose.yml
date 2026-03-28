@@ -14,6 +14,12 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_SECURITY_DIR}/vault/agent
+  vault-agent-out:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_SECURITY_DIR}/vault/out
 
 services:
   vault:
@@ -27,7 +33,6 @@ services:
     restart: unless-stopped
     cap_add:
       - IPC_LOCK
-      - SETFCAP
       - SETGID # su-exec: setgroups 에러 해결용
       - SETUID # 사용자 ID 전환 권한
     ports:
@@ -70,6 +75,7 @@ services:
       traefik.http.routers.vault.entrypoints: websecure
       traefik.http.routers.vault.tls: 'true'
       traefik.http.services.vault.loadbalancer.server.port: ${VAULT_PORT:-8200}
+
   vault-agent:
     profiles:
       - core
@@ -81,7 +87,6 @@ services:
     restart: unless-stopped
     cap_add:
       - IPC_LOCK
-      - SETFCAP
       - SETGID # su-exec: setgroups 에러 해결용
       - SETUID # 사용자 ID 전환 권한
     depends_on:
@@ -95,9 +100,20 @@ services:
       - ./config/vault-agent.hcl:/vault/config/vault-agent.hcl:ro
       - ./config/templates:/vault/config/templates:ro
       - vault-agent-data:/vault/agent
+      - vault-agent-out:/vault/out
     command:
       - vault
       - agent
       - -config=/vault/config/vault-agent.hcl
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pid="$$(cat /tmp/vault-agent.pid 2>/dev/null || true)"; [ -n "$$pid" ] && kill -0 "$$pid" 2>/dev/null || exit 1',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
     networks:
       - infra_net

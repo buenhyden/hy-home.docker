@@ -1,26 +1,27 @@
-# 08-operations Security
+# 03-Security Operations
 
-> Security and compliance operational policies for the 03-security tier.
-
----
+> Vault 운영 정책 문서 모음
 
 ## Overview (KR)
 
-이 디렉토리는 보안 계층(Vault 등)의 운영 표준 및 보안 준수 사항을 정의하는 문서를 포함한다.
+이 디렉터리는 `03-security` 계층의 운영 정책을 관리한다. Vault 하드닝 기준, 단계적 auto-unseal/원격 audit 도입 조건, 검증 기준을 정의한다.
 
 ## Structure
 
 ```text
 03-security/
-├── vault.md    # Vault Operations Policy (Unseal, Token TTL, Audit)
-└── README.md   # This file
+├── vault.md   # Vault Operations Policy (hardening + phase adoption)
+└── README.md  # This file
 ```
 
 ## Available Policies
 
-- **[Vault Operations Policy](vault.md)**: Unseal Key 관리, 토큰 만료 정책, 그리고 시스템 감사 체계.
+- [Vault Operations Policy](vault.md): Required/Allowed/Disallowed, 승인 조건, 검증 기준
 
-## AI Agent Guidance
+## Related References
 
-1. **Policy Enforcement**: 모든 자동화 프로세스는 `vault.md`에 명시된 토큰 TTL 및 인증 정책을 준수해야 함.
-2. **Access Audit**: 권한 상승(Privilege Escalation) 작업 시 반드시 감사 로그가 생성되는지 확인하시오.
+- [03-security Spec](../../04.specs/03-security/spec.md)
+- [03-security Plan](../../05.plans/2026-03-28-03-security-optimization-hardening-plan.md)
+- [03-security Tasks](../../06.tasks/2026-03-28-03-security-optimization-hardening-tasks.md)
+- [03-security Guide](../../07.guides/03-security/vault.md)
+- [03-security Runbook](../../09.runbooks/03-security/vault.md)

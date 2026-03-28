@@ -18,6 +18,7 @@
 | Documentation Traceability Check | [check-doc-traceability.sh](check-doc-traceability.sh) | Enforce sync links across 05.plans ↔ 08.operations ↔ 09.runbooks |
 | Gateway Hardening Check | [check-gateway-hardening.sh](check-gateway-hardening.sh) | Enforce 01-gateway Traefik/Nginx hardening baseline |
 | Auth Hardening Check | [check-auth-hardening.sh](check-auth-hardening.sh) | Enforce 02-auth Keycloak/OAuth2 Proxy hardening baseline |
+| Security Hardening Check | [check-security-hardening.sh](check-security-hardening.sh) | Enforce 03-security Vault hardening baseline |
 | Preflight Check | [preflight-compose.sh](preflight-compose.sh) | Bootstrap prerequisite validation |
 | Cert Generation | [generate-local-certs.sh](generate-local-certs.sh) | Generate local TLS files |
 
@@ -51,6 +52,9 @@
 
 # Enforce 02-auth hardening baseline
 ./scripts/check-auth-hardening.sh
+
+# Enforce 03-security hardening baseline
+./scripts/check-security-hardening.sh
 
 # Bootstrap secrets
 ./scripts/bootstrap-secrets.sh --force

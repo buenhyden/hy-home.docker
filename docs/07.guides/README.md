@@ -46,7 +46,7 @@
 
 - [01-gateway](./01-gateway/README.md)
 - [02-auth](./02-auth/README.md) (updated: 2026-03-28 optimization hardening)
-- [03-security](./03-security/README.md)
+- [03-security](./03-security/README.md) (updated: 2026-03-28 vault optimization hardening)
 - [04-data](./04-data/README.md)
   - [lake-and-object](./04-data/lake-and-object/README.md)
 - [05-messaging](./05-messaging/README.md)

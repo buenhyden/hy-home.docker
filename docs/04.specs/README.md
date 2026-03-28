@@ -101,7 +101,7 @@
 
 - [01-gateway](./01-gateway/spec.md)
 - [02-auth](./02-auth/spec.md) (updated: 2026-03-28 optimization hardening)
-- [03-security](./03-security/spec.md)
+- [03-security](./03-security/spec.md) (updated: 2026-03-28 optimization hardening)
 - [04-data](./04-data/spec.md)
 - [06-observability](./06-observability/spec.md)
 - [07-workflow](./07-workflow/spec.md)

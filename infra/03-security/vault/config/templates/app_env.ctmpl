@@ -1,4 +1,17 @@
-{{- with secret "secret/data/example" -}}
-username={{ .Data.data.username }}
-password={{ .Data.data.password }}
+{{- with secret "secret/data/hy-home/04-data/mng-db" -}}
+POSTGRES_PASSWORD={{ .Data.data.password }}
+{{- end }}
+{{- with secret "secret/data/hy-home/02-auth/keycloak" -}}
+KEYCLOAK_DB_PASSWORD={{ .Data.data.db_password }}
+KEYCLOAK_ADMIN_USERNAME={{ .Data.data.admin_username }}
+KEYCLOAK_ADMIN_PASSWORD={{ .Data.data.admin_password }}
+{{- end }}
+{{- with secret "secret/data/hy-home/02-auth/oauth2-proxy" -}}
+OAUTH2_PROXY_CLIENT_SECRET={{ .Data.data.client_secret }}
+OAUTH2_PROXY_COOKIE_SECRET={{ .Data.data.cookie_secret }}
+{{- end }}
+{{- with secret "secret/data/hy-home/06-observability/grafana" -}}
+GRAFANA_ADMIN_PASSWORD={{ .Data.data.admin_password }}
+GRAFANA_DB_PASSWORD={{ .Data.data.db_password }}
+GRAFANA_OAUTH_CLIENT_SECRET={{ .Data.data.oauth_client_secret }}
 {{- end -}}

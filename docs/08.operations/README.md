@@ -50,7 +50,7 @@
 | [13-common-optimizations-template-exceptions](./13-common-optimizations-template-exceptions.md) | Official exception registry policy for common optimization templates |
 | [01-gateway](./01-gateway/README.md) | Ingress and traffic management |
 | [02-auth](./02-auth/README.md) | Identity and access control (hardening + degraded-mode policy updated) |
-| [03-security](./03-security/README.md) | Network hardening and auth policies |
+| [03-security](./03-security/README.md) | Vault hardening policy, phased auto-unseal/remote-audit adoption |
 | [04-data](./04-data/README.md) | Database persistence, backups, and lake/object storage policies |
 | [05-messaging](./05-messaging/README.md) | Event streaming and message brokering policies |
 | [06-observability](./06-observability/README.md) | Retention, alerting, and LGTM stack governance |

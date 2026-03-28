@@ -1,4 +1,3 @@
-{{- with secret "secret/data/example" -}}
-username={{ .Data.data.username }}
-password={{ .Data.data.password }}
+{{- with secret "secret/data/hy-home/02-auth/keycloak" -}}
+{{ .Data.data.admin_username }}
 {{- end -}}

@@ -40,6 +40,16 @@ jobs:
       - name: Check 02-auth hardening baseline
         run: bash scripts/check-auth-hardening.sh
 
+  # ── Security Hardening Baseline ─────────────────────────────
+  security-hardening:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check 03-security hardening baseline
+        run: bash scripts/check-security-hardening.sh
+
   # ── Template/Security Baseline ──────────────────────────────
   template-security-baseline:
     permissions:

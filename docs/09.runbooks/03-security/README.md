@@ -1,26 +1,27 @@
-# 03-security Runbooks
+# 03-Security Runbooks
 
-> Incident response and maintenance runbooks for the security tier.
-
----
+> Vault 장애 대응 및 복구 실행 절차
 
 ## Overview (KR)
 
-이 디렉토리는 보안 계층(Vault 등)의 장애 대응 및 정기 유지보수를 위한 실행 지침서를 포함한다.
+이 디렉터리는 `03-security` 계층의 실행형 복구 문서를 제공한다. Vault seal/unseal, raft 상태 점검, audit 점검, agent 렌더 실패 복구 절차를 포함한다.
 
 ## Structure
 
 ```text
 03-security/
-├── vault.md    # Vault Runbook (Seal Recovery, Raft Maintenance)
-└── README.md   # This file
+├── vault.md   # Vault recovery and maintenance runbook
+└── README.md  # This file
 ```
 
 ## Available Runbooks
 
-- **[Vault Runbook](vault.md)**: 예기치 않은 봉인 해제 절차, Raft 클러스터 복구, 그리고 스냅샷 백업 방법.
+- [Vault Runbook](vault.md): seal/unseal, raft, audit, render 복구, 안전 롤백 절차
 
-## AI Agent Guidance
+## Related References
 
-1. **Urgency**: `Sealed: true` 상태 감지 시 즉시 이 런북의 봉인 해제 섹션을 가이드하시오.
-2. **Safety**: 스냅샷 복구(Restore) 작업은 데이터 유실 위험이 크므로 반드시 수동 확인 절차를 거치시오.
+- [03-security Spec](../../04.specs/03-security/spec.md)
+- [03-security Plan](../../05.plans/2026-03-28-03-security-optimization-hardening-plan.md)
+- [03-security Tasks](../../06.tasks/2026-03-28-03-security-optimization-hardening-tasks.md)
+- [03-security Guide](../../07.guides/03-security/vault.md)
+- [03-security Operation](../../08.operations/03-security/vault.md)
