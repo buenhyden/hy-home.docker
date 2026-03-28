@@ -49,7 +49,7 @@
 | [12-infra-service-optimization-catalog](./12-infra-service-optimization-catalog.md) | Cross-tier optimization and expansion recommendations for all infra services |
 | [13-common-optimizations-template-exceptions](./13-common-optimizations-template-exceptions.md) | Official exception registry policy for common optimization templates |
 | [01-gateway](./01-gateway/README.md) | Ingress and traffic management |
-| [02-auth](./02-auth/README.md) | Identity and access control |
+| [02-auth](./02-auth/README.md) | Identity and access control (hardening + degraded-mode policy updated) |
 | [03-security](./03-security/README.md) | Network hardening and auth policies |
 | [04-data](./04-data/README.md) | Database persistence, backups, and lake/object storage policies |
 | [05-messaging](./05-messaging/README.md) | Event streaming and message brokering policies |

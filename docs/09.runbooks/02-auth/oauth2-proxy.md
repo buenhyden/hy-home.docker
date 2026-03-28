@@ -1,62 +1,91 @@
-# OAuth2 Proxy Runbook
+# 02-Auth OAuth2 Proxy Runbook
 
-> Step-by-step procedures for troubleshooting and maintaining the OAuth2 Proxy service.
-
----
+: OAuth2 Proxy ForwardAuth Recovery
 
 ## Overview (KR)
 
-이 문서는 OAuth2 Proxy 서비스의 장애 대응 및 복구를 위한 실행 지침서다. 세션 저장소 연결 오류, 인증 루프, 그리고 쿠키 유효성 문제에 대한 해결 방법을 다룬다.
+이 런북은 OAuth2 Proxy 인증 루프, OIDC 장애, readonly/tmpfs 관련 오류, 설정 검증 실패 상황에 대한 복구 절차를 정의한다.
 
-## Runbook Type
+## Purpose
 
-`incident-response | maintenance`
+- 인증 경로 장애를 신속히 복구한다.
+- degraded-mode 수행/종료를 통제한다.
+- config lint 실패 시 안전하게 롤백한다.
 
-## Target Audience
+## Canonical References
 
-- Operator
-- SRE
-- Agent-tuner
+- [Operations Policy](../../08.operations/02-auth/oauth2-proxy.md)
+- [Plan](../../05.plans/2026-03-28-02-auth-optimization-hardening-plan.md)
+- [Tasks](../../06.tasks/2026-03-28-02-auth-optimization-hardening-tasks.md)
 
-## Incident Response
+## When to Use
 
-### 1. Internal Server Error (500)
+- 로그인 루프(무한 redirect)
+- OIDC issuer 접근 실패
+- `/ping` healthcheck 실패
+- readonly/tmpfs 관련 쓰기 오류
+- compose/config 변경 후 런타임 부팅 실패
 
-- **Problem**: OAuth2 Proxy가 500 에러를 반환함.
-- **Diagnosis**: `docker logs oauth2-proxy`를 통해 로그 확인.
-- **Solution**:
-  - Valkey 세션 저장소 연결 오류인 경우: `infra/04-data/valkey` 서비스 상태 확인 및 재시작.
-  - OIDC Issuer (Keycloak) 연결 오류인 경우: Keycloak 서비스 가용성 확인.
+## Procedure or Checklist
 
-### 2. Login Loop (Infinite Redirect)
+### Checklist
 
-- **Problem**: 로그인 후 계속해서 로그인 페이지로 리다이렉트됨.
-- **Diagnosis**: 브라우저 개발자 도구의 Network 탭에서 쿠키 전송 여부 확인.
-- **Solution**:
-  - `cookie_domains` 설정이 현재 접근하는 도메인과 일치하는지 확인.
-  - `cookie_secure`가 `true`인데 HTTP로 접근 중인지 확인 (HTTPS 필수).
+- [ ] `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config` 성공
+- [ ] `bash scripts/check-auth-hardening.sh` 실행
+- [ ] `docker logs oauth2-proxy --tail=200` 오류 패턴 확인
 
-### 3. Invalid Cookie / Session Expired
+### Procedure
 
-- **Problem**: 유효한 세션임에도 불구하고 인증이 거부됨.
-- **Solution**:
-  - `cookie_secret`이 변경되었는지 확인 (변경 시 기존 모든 세션 무효화됨).
-  - 클라이언트 시스템 시계 동기화 여부 확인.
+1. 기본 진단
+   - `/ping` 확인: `docker exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
+   - OIDC issuer 확인: `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`
+2. 로그인 루프 대응
+   - `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS`, `redirect_url` 정합성 확인
+   - `cookie_secure=true` 환경에서 HTTPS 진입 여부 확인
+3. readonly/tmpfs 장애 복구
+   - 쓰기 대상 경로가 `/tmp`, `/run` 내인지 점검
+   - 엔트리포인트/인증서 마운트 경로 권한 확인
+4. degraded-mode 절차(승인 필요)
+   - OIDC 장기 장애 시 운영 승인 후 제한적 degraded-mode 적용
+   - 적용 시간/범위/종료 조건을 티켓에 기록
+   - Keycloak 정상화 즉시 기본 fail-closed로 복귀
+5. config lint 실패 롤백
+   - 직전 정상 커밋으로 compose/config 복원
+   - 재기동 후 `/ping` 및 인증 플로우 재검증
 
-## Maintenance Tasks
+## Verification Steps
 
-### Session Clearing
+- [ ] `bash scripts/check-auth-hardening.sh` 통과
+- [ ] `docker exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping` 성공
+- [ ] 인증 콜백(`/oauth2/callback`) 정상 동작
 
-Valkey에서 특정 유저의 세션을 강제로 만료시켜야 하는 경우:
+## Observability and Evidence Sources
 
-```bash
-docker exec -it mng-valkey valkey-cli
-> KEYS "oauth2_proxy_session:*"
-> DEL "oauth2_proxy_session:<session_id>"
-```
+- **Signals**: `/ping`, oauth2-proxy 로그, Keycloak 연결 오류율
+- **Evidence to Capture**:
+  - `docker logs oauth2-proxy --tail=200`
+  - `docker logs keycloak --tail=200`
+  - auth-hardening 스크립트 출력
 
-## Related Documents
+## Safe Rollback or Recovery Procedure
 
-- **Guide**: `[../../07.guides/02-auth/oauth2-proxy.md]`
-- **Operation**: `[../../08.operations/02-auth/oauth2-proxy.md]`
-- **Spec**: `[../../04.specs/02-auth/oauth2-proxy.md]`
+- [ ] 아래 파일을 직전 정상 커밋으로 복원
+  - `infra/02-auth/oauth2-proxy/docker-compose.yml`
+  - `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`
+  - `infra/02-auth/oauth2-proxy/Dockerfile`
+  - `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg`
+- [ ] `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml up -d oauth2-proxy`
+- [ ] `/ping` + 로그인 시나리오 재검증
+
+## Agent Operations (If Applicable)
+
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: N/A
+- **Eval Re-run**: `bash scripts/check-auth-hardening.sh`
+- **Trace Capture**: oauth2-proxy/keycloak 로그 + CI job 로그
+
+## Related Operational Documents
+
+- **Guide**: [../../07.guides/02-auth/oauth2-proxy.md](../../07.guides/02-auth/oauth2-proxy.md)
+- **Keycloak Runbook**: [./keycloak.md](./keycloak.md)

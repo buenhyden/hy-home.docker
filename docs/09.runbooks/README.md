@@ -52,7 +52,7 @@
 | Tier | Description |
 | :--- | :--- |
 | [01-gateway](./01-gateway/README.md) | Gateway recovery and SSL issues |
-| [02-auth](./02-auth/README.md) | Identity provider and SSO recovery |
+| [02-auth](./02-auth/README.md) | Identity provider and SSO recovery (degraded-mode and rollback recovery updated) |
 | [03-security](./03-security/README.md) | Security breach and firewall incidents |
 | [04-data](./04-data/README.md) | Database, cluster, and lake/object storage recovery |
 | [05-messaging](./05-messaging/README.md) | Messaging cluster and queue recovery |

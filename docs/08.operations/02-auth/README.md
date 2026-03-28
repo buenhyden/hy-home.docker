@@ -1,28 +1,38 @@
-# 08-operations Auth
+# 02-Auth Operations Policies
 
-> Operational and security policies for the 02-auth tier.
-
----
+> `02-auth` 티어(Keycloak/OAuth2 Proxy) 운영 정책 인덱스.
 
 ## Overview (KR)
 
-이 디렉토리는 인증 계층(Keycloak, OAuth2 Proxy 등)의 운영 표준 및 거버넌스 사항을 정의하는 문서를 포함한다.
+이 디렉터리는 인증 계층의 운영 통제 기준을 정의한다. 기본 정책은 fail-closed이며, degraded-mode는 승인된 절차에서만 제한적으로 허용한다.
+
+## Scope
+
+### In Scope
+
+- Keycloak 시크릿/헬스체크/운영 변경 통제
+- OAuth2 Proxy 시크릿 주입/non-root/세션 정책 통제
+- 인증 계층 변경 승인 및 검증 기준
+
+### Out of Scope
+
+- 즉시 복구 절차(런북)
+- 구현 튜토리얼(가이드)
 
 ## Structure
 
 ```text
 02-auth/
-├── keycloak.md     # Keycloak Operations Policy (User, Realm, IdP)
-├── oauth2-proxy.md  # OAuth2 Proxy Operational Controls & Sessions
-└── README.md        # This file
+├── keycloak.md      # Keycloak operations policy
+├── oauth2-proxy.md  # OAuth2 Proxy operations policy
+└── README.md
 ```
 
-## Available Policies
+## Related Documents
 
-- **[Keycloak Operations Policy](keycloak.md)**: 사용자 계정 관리, 렐름 변경 통제 및 보안 감사 기준.
-- **[OAuth2 Proxy Operational Policy](oauth2-proxy.md)**: 세션 저장소(Valkey) 및 쿠키 만료 정책.
-
-## AI Agent Guidance
-
-1. **Policy Enforcement**: 모든 자동화된 사용자 생성 절차는 `keycloak.md`에 명시된 그룹 계층을 따라야 함.
-2. **Access Control**: 비밀번호 초기화 또는 시크릿 갱신 작업 시 승인된 절차를 준수하시오.
+- [Auth Plan](../../05.plans/2026-03-28-02-auth-optimization-hardening-plan.md)
+- [Auth Tasks](../../06.tasks/2026-03-28-02-auth-optimization-hardening-tasks.md)
+- [Auth Spec](../../04.specs/02-auth/spec.md)
+- [Auth Runbooks](../../09.runbooks/02-auth/README.md)
+- [Auth Guides](../../07.guides/02-auth/README.md)
+- [Infra Source](../../../infra/02-auth/README.md)

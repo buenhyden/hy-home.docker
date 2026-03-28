@@ -1,12 +1,8 @@
-# OAuth2 Proxy Guide
-
-> Comprehensive guide for setting up and configuring OAuth2 Proxy as a ForwardAuth provider within the `hy-home.docker` ecosystem.
-
----
+# 02-Auth OAuth2 Proxy Guide
 
 ## Overview (KR)
 
-이 문서는 OAuth2 Proxy의 설정 및 운영에 대한 가이드다. Traefik의 ForwardAuth 미들웨어 연동 방법, `oauth2-proxy.cfg` 설정, 그리고 Keycloak OIDC Client와의 연동 구성을 단계별로 제공한다.
+이 문서는 OAuth2 Proxy를 `ForwardAuth` 표준으로 운영하는 방법을 설명한다. 시크릿 엔트리포인트 주입, non-root 실행, 도메인 파라미터화, 세션 정책 점검 절차를 포함한다.
 
 ## Guide Type
 
@@ -14,56 +10,44 @@
 
 ## Target Audience
 
-- Developer
-- Operator
-- Agent-tuner
+- Infra/DevOps Engineers
+- Operators
+- Contributors
 
 ## Purpose
 
-이 가이드는 사용자가 OIDC를 기본적으로 지원하지 않는 백엔드 서비스에 대해 OAuth2 Proxy를 사용하여 중앙 집중식 SSO(Single Sign-On)를 구현할 수 있도록 돕는다.
+- 인증 프록시를 표준 하드닝 상태로 유지한다.
+- 신규 서비스의 SSO 연동 시 회귀를 줄인다.
 
 ## Prerequisites
 
-- `infra/02-auth/keycloak` 서비스가 정상 실행 중이어야 함.
-- `infra/02-auth/oauth2-proxy` 서비스 빌드 및 실행 완료.
-- Keycloak에서 OAuth2 Proxy를 위한 OIDC Client 생성 완료.
+- `infra/02-auth/keycloak` 정상 동작
+- `infra/02-auth/oauth2-proxy` 구성 파일 접근
+- `mng-valkey` 세션 저장소 준비
 
 ## Step-by-step Instructions
 
-### 1. Keycloak Client Configuration
-
-1. Keycloak Admin 콘솔에서 `hy-home` Realm을 선택한다.
-2. **Clients** -> **Create client**를 클릭한다.
-3. **Client ID**: `oauth2-proxy` 입력.
-4. **Root URL**: `https://auth.${DEFAULT_URL}` 입력.
-5. **Valid Redirect URIs**: `https://auth.${DEFAULT_URL}/oauth2/callback` 추가.
-6. **Credentials** 탭에서 **Client Secret**을 복사하여 저장한다.
-
-### 2. OAuth2 Proxy Configuration (`oauth2-proxy.cfg`)
-
-1. `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg` 파일을 수정한다.
-2. `oidc_issuer_url`을 Keycloak의 Realm URL로 설정한다.
-3. `cookie_domains`를 서비스가 사용하는 도메인(예: `.127.0.0.1.nip.io`)으로 설정한다.
-4. `cookie_secret`은 32바이트 이상의 임의의 문자열로 생성하여 등록한다.
-
-### 3. Traefik ForwardAuth Middleware Integration
-
-백엔드 서비스의 `docker-compose.yml` 레이블에 다음을 추가한다:
-
-```yaml
-labels:
-  - "traefik.http.routers.my-app.middlewares=sso-auth@file"
-```
-
-*(참고: `sso-auth` 미들웨어는 Traefik 동적 설정 파일에서 `auth.${DEFAULT_URL}/oauth2/auth`를 가리키도록 정의되어야 함)*
+1. Compose 런타임 계약 확인
+   - `template-infra-readonly-med` 사용
+   - command가 `--config /etc/oauth2-proxy.cfg`인지 확인
+   - `OAUTH2_PROXY_OIDC_ISSUER_URL`, `OAUTH2_PROXY_REDIRECT_URL`, `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS` 확인
+2. 엔트리포인트 시크릿 주입 확인
+   - `docker-entrypoint.sh`에서 `oauth2_proxy_cookie_secret`, `oauth2_proxy_client_secret`, `mng_valkey_password`를 읽어 환경 변수에 export하는지 확인
+3. 이미지 권한 모델 확인
+   - Dockerfile의 `USER oauth2proxy:oauth2proxy` 적용 확인
+4. 정적 검증
+   - `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config`
+   - `bash scripts/check-auth-hardening.sh`
 
 ## Common Pitfalls
 
-- **Cookie Domain Mismatch**: 쿠키 도메인이 백엔드 서비스 도메인과 일치하지 않으면 무한 로그인 루프가 발생할 수 있음.
-- **Client Secret 노출**: `client_secret_file`을 사용하여 런타임에 주입하는 방식을 권장함.
+- `DEFAULT_URL`과 Keycloak realm/callback 도메인 불일치
+- 세션 비밀 변경 후 기존 쿠키 재사용으로 인한 인증 실패
+- `/ping` 헬스체크 통과 전 트래픽 유입
 
 ## Related Documents
 
-- **Spec**: `[../../../docs/04.specs/02-auth/oauth2-proxy.md]`
-- **Operation**: `[../../08.operations/02-auth/oauth2-proxy.md]`
-- **Runbook**: `[../../09.runbooks/02-auth/oauth2-proxy.md]`
+- **Spec**: [../../04.specs/02-auth/spec.md](../../04.specs/02-auth/spec.md)
+- **Operation**: [../../08.operations/02-auth/oauth2-proxy.md](../../08.operations/02-auth/oauth2-proxy.md)
+- **Runbook**: [../../09.runbooks/02-auth/oauth2-proxy.md](../../09.runbooks/02-auth/oauth2-proxy.md)
+- **Plan**: [../../05.plans/2026-03-28-02-auth-optimization-hardening-plan.md](../../05.plans/2026-03-28-02-auth-optimization-hardening-plan.md)

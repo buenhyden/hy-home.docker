@@ -48,6 +48,7 @@
 ├── 0011-laboratory-services.md        # Laboratory Tier 서비스 선정
 ├── 0015-analytics-engine-selection.md # Analytics Tier 서비스 선정
 ├── 0016-open-webui-implementation.md # Open WebUI 구현 결정
+├── 0017-auth-hardening-runtime-and-fail-closed.md # 02-auth 런타임 하드닝/Fail-closed 결정
 └── README.md                            # This file
 ```
 

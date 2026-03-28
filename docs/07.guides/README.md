@@ -45,7 +45,7 @@
 이 프로젝트의 인프라 계층별 가이드 목록이다.
 
 - [01-gateway](./01-gateway/README.md)
-- [02-auth](./02-auth/README.md)
+- [02-auth](./02-auth/README.md) (updated: 2026-03-28 optimization hardening)
 - [03-security](./03-security/README.md)
 - [04-data](./04-data/README.md)
   - [lake-and-object](./04-data/lake-and-object/README.md)

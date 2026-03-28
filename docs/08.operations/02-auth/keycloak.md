@@ -1,53 +1,60 @@
-# Keycloak Operations Policy
-
-> Operational and security policies for the central identity and access management system (02-auth).
-
----
+# 02-Auth Keycloak Operations Policy
 
 ## Overview (KR)
 
-이 문서는 Keycloak IAM 서버의 운영 정책을 정의한다. 사용자 계정 관리, 렐름(Realm) 및 클라이언트 설정의 변경 통제, 그리고 보안 감사(Audit Logging) 기준을 규정하여 인증 시스템의 무결성을 보장한다.
+이 문서는 `02-auth` Keycloak 운영 정책을 정의한다. DB/관리자 시크릿 처리, readiness 검증, 변경 통제 기준을 명시한다.
 
-## Policy Type
+## Policy Scope
 
-`security-policy | operational-standard`
+- `infra/02-auth/keycloak/docker-compose.yml`
+- Keycloak secret injection and healthcheck contract
+- Realm/client 운영 변경 승인 정책
 
-## Target Audience
+## Applies To
 
-- Security Administrators
-- SRE / Platform Engineers
-- Compliance Auditors
+- **Systems**: Keycloak (Quarkus)
+- **Agents**: Infra/DevOps/Ops agents
+- **Environments**: Local, Dev, Stage, Production-like
 
-## Service SLOs
+## Controls
 
-- **Availability**: 99.9% (LDAP/AD 연동 시 의존성 포함)
-- **Token Validity**: Access Token(1H), Refresh Token(30D)
-- **Audit Retention**: 90 Days (JSON Structured Logs)
+- **Required**:
+  - Keycloak은 `template-infra-med`를 사용한다.
+  - DB/Admin 비밀은 `/run/secrets` 파일에서 읽어 환경 변수로 주입한다.
+  - readiness healthcheck(`/health/ready`)를 유지한다.
+  - 시크릿 길이/값 등 민감한 디버그 출력은 금지한다.
+- **Allowed**:
+  - 기동 안정화를 위한 healthcheck 타이밍 조정
+  - 운영 승인 하의 realm/client 설정 변경
+- **Disallowed**:
+  - 시크릿 평문 하드코딩
+  - 인증 우회 목적 설정 변경
 
-## Operational Procedures
+## Exceptions
 
-### 1. User & Group Management
+- 긴급 장애 대응 시 임시 설정 변경은 가능하나, 동일 작업 윈도우 내 원복 계획과 변경 기록을 남겨야 한다.
 
-- **Provisioning**: 정규 사용자 계정은 관리자에 의해 생성되어야 하며, `hy-home` 렐름의 표준 그룹 구조(`/admins`, `/operators`, `/users`)를 따라야 함.
-- **Self-service**: 유저는 본인의 계정 정보만 수정 가능하며, 비밀번호 찾기(Forgot Password) 기능은 SMTP 서버 연동 후 활성화됨.
+## Verification
 
-### 2. Realm & Client Controls
+- `bash scripts/check-auth-hardening.sh`
+- `docker compose -f infra/02-auth/keycloak/docker-compose.yml config`
 
-- **Change Management**: 렐름 설정 및 클라이언트 등록은 사전에 스테이징 환경에서 검증되어야 함.
-- **Secret Management**: `confidential` 클라이언트의 Secret은 `/run/secrets` 경로에 안전하게 보관되며, 정기적으로 갱신되어야 함.
+## Review Cadence
 
-### 3. Identity Provider Trust
+- 월 1회 정기 점검
+- Keycloak 버전/realm 정책 변경 시 수시 점검
 
-- **External IdP**: Google OAuth2 등 외부 IdP 연동 시 `first broker login` 플로우를 통해 플랫폼 계정과의 정합성을 유지함.
-- **Security Check**: 외부 IdP의 클라이언트 ID/Secret은 유출 즉시 폐기하고 재발급 절차를 밟아야 함.
+## AI Agent Policy Section (If Applicable)
 
-## Security Controls
-
-- **Encryption**: 모든 토큰 서명(Signing)은 RS256 알고리즘을 사용하며, 키 회전(Key Rotation) 정책을 적용함.
-- **Audit**: 모든 성공/실패 로그인 시도 및 설정 변경은 `/opt/keycloak/data/log` 또는 Graylog/Loki로 전송되어 상시 모니터링됨.
+- **Model / Prompt Change Process**: N/A
+- **Eval / Guardrail Threshold**: auth-hardening 스크립트 실패 0건
+- **Log / Trace Retention**: 인증 로그 보존 정책은 관측성 기준 준수
+- **Safety Incident Thresholds**: readiness 실패 지속, 로그인 실패 급증, realm 설정 오류 시 런북 절차 수행
 
 ## Related Documents
 
-- **Guide**: `[../../07.guides/02-auth/keycloak.md]`
-- **Runbook**: `[../../09.runbooks/02-auth/keycloak.md]`
-- **Spec**: `[../../04.specs/02-auth/keycloak.md]`
+- **Plan**: [../../05.plans/2026-03-28-02-auth-optimization-hardening-plan.md](../../05.plans/2026-03-28-02-auth-optimization-hardening-plan.md)
+- **Task**: [../../06.tasks/2026-03-28-02-auth-optimization-hardening-tasks.md](../../06.tasks/2026-03-28-02-auth-optimization-hardening-tasks.md)
+- **Spec**: [../../04.specs/02-auth/spec.md](../../04.specs/02-auth/spec.md)
+- **Runbook**: [../../09.runbooks/02-auth/keycloak.md](../../09.runbooks/02-auth/keycloak.md)
+- **Guide**: [../../07.guides/02-auth/keycloak.md](../../07.guides/02-auth/keycloak.md)

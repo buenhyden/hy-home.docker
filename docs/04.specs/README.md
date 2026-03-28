@@ -100,7 +100,7 @@
 이 디렉터리는 인프라 각 계층(Tier) 및 핵심 기능에 대한 상세 기술 명세를 관리한다.
 
 - [01-gateway](./01-gateway/spec.md)
-- [02-auth](./02-auth/spec.md)
+- [02-auth](./02-auth/spec.md) (updated: 2026-03-28 optimization hardening)
 - [03-security](./03-security/spec.md)
 - [04-data](./04-data/spec.md)
 - [06-observability](./06-observability/spec.md)

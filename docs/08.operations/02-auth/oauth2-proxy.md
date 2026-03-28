@@ -1,54 +1,64 @@
-# OAuth2 Proxy Operations
-
-> Operational policies and security controls for the OAuth2 Proxy authentication layer.
-
----
+# 02-Auth OAuth2 Proxy Operations Policy
 
 ## Overview (KR)
 
-이 문서는 OAuth2 Proxy의 운영 정책과 보안 관리 지침을 제공한다. 세션 관리, 화이트리스트 정책, 그리고 업스트림 보안 설정을 포함한다.
+이 문서는 `02-auth` OAuth2 Proxy 운영 정책을 정의한다. 시크릿 주입 경로, 세션/쿠키 표준, fail-closed 및 degraded-mode 운영 통제를 명시한다.
 
-## Policy Type
+## Policy Scope
 
-`security-policy | operational-standard`
+- `infra/02-auth/oauth2-proxy/docker-compose.yml`
+- `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`
+- `infra/02-auth/oauth2-proxy/Dockerfile`
+- `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg`
 
-## Target Audience
+## Applies To
 
-- Operator
-- Security-auditor
-- Agent-tuner
+- **Systems**: OAuth2 Proxy ForwardAuth gateway
+- **Agents**: Infra/DevOps/Ops agents
+- **Environments**: Local, Dev, Stage, Production-like
 
-## Service SLOs
+## Controls
 
-- **Availability**: 99.9% (ForwardAuth 경로의 가용성 보장)
-- **Latency**: `< 50ms` (인증 체크 오버헤드 최소화)
+- **Required**:
+  - 서비스는 `template-infra-readonly-med`를 사용해야 한다.
+  - 런타임 시크릿 주입은 엔트리포인트 스크립트에서 `/run/secrets` 파일로 처리한다.
+  - 이미지 실행 계정은 non-root(`oauth2proxy`)여야 한다.
+  - 세션 정책은 `cookie_secure=true`, `cookie_httponly=true`, `cookie_samesite=lax`, `cookie_refresh=1h`, `cookie_expire=12h`를 유지한다.
+  - 기본 운영 모드는 fail-closed다.
+- **Allowed**:
+  - 운영 승인 하에 degraded-mode를 제한적으로 수행(원복 절차 필수)
+  - 환경별 도메인 변수(`DEFAULT_URL`) 조정
+- **Disallowed**:
+  - fail-open 상시 운영
+  - 시크릿을 Compose/문서에 평문으로 저장
 
-## Operational Procedures
+## Exceptions
 
-### 1. Session Management
+- OIDC 공급자 장애가 장기화될 때 한시적 degraded-mode 허용 가능.
+- 단, 승인자 기록과 종료 조건(원복 기준)을 사전에 명시해야 한다.
 
-- **Storage**: Sessions are stored in Valkey Cluster (`infra/04-data/valkey`).
-- **Timeout**:
-  - `cookie_expire`: 168h (7 days)
-  - `cookie_refresh`: 1h
-- **Security**: `cookie_httponly`, `cookie_secure` 옵션은 반드시 `true`로 설정되어야 함.
+## Verification
 
-### 2. Whitelist & Access Control
+- `bash scripts/check-auth-hardening.sh`
+- `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config`
+- `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
 
-- **Allowed Domains**: 프로젝트의 메인 도메인 및 하위 도메인으로 제한.
-- **Authenticated Emails**: 특정 도메인(예: `hy-home.com`) 이외의 이메일은 기본적으로 거부함 (`--email-domain` 설정).
+## Review Cadence
 
-### 3. Upstream Security
+- 월 1회 정기 점검
+- OAuth2 Proxy/Keycloak 버전 변경 시 수시 점검
 
-- **Trust**: 백엔드 서비스로 전달되는 `X-Auth-Request-User`, `X-Auth-Request-Email` 헤더의 신뢰성을 보장하기 위해 Traefik 미들웨어에서 헤더 주입을 엄격히 통제함.
+## AI Agent Policy Section (If Applicable)
 
-## Security Controls
-
-- **Secret Rotation**: `cookie_secret` 및 `client_secret`은 주기적으로 교체되어야 하며, Docker Secrets를 통해 관리됨.
-- **Audit Logging**: 모든 인증 요청 및 콜백 로그는 표준 출력으로 기록되어 fluent-bit을 통해 수집됨.
+- **Model / Prompt Change Process**: N/A
+- **Eval / Guardrail Threshold**: auth-hardening 스크립트 실패 0건
+- **Log / Trace Retention**: 인증 요청/에러 로그는 관측성 보존 정책 준수
+- **Safety Incident Thresholds**: 로그인 루프, 콜백 실패 급증, `/ping` 실패 지속 시 런북 수행
 
 ## Related Documents
 
-- **Guide**: `[../../07.guides/02-auth/oauth2-proxy.md]`
-- **Runbook**: `[../../09.runbooks/02-auth/oauth2-proxy.md]`
-- **Spec**: `[../../04.specs/02-auth/oauth2-proxy.md]`
+- **Plan**: [../../05.plans/2026-03-28-02-auth-optimization-hardening-plan.md](../../05.plans/2026-03-28-02-auth-optimization-hardening-plan.md)
+- **Task**: [../../06.tasks/2026-03-28-02-auth-optimization-hardening-tasks.md](../../06.tasks/2026-03-28-02-auth-optimization-hardening-tasks.md)
+- **Spec**: [../../04.specs/02-auth/spec.md](../../04.specs/02-auth/spec.md)
+- **Runbook**: [../../09.runbooks/02-auth/oauth2-proxy.md](../../09.runbooks/02-auth/oauth2-proxy.md)
+- **Guide**: [../../07.guides/02-auth/oauth2-proxy.md](../../07.guides/02-auth/oauth2-proxy.md)

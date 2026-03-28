@@ -45,10 +45,6 @@ services:
         KC_DB_PASSWORD="$$(tr -d '\r\n' </run/secrets/keycloak_db_password)"
         export KC_BOOTSTRAP_ADMIN_PASSWORD
         export KC_DB_PASSWORD
-        echo "BOOTSTRAP_ADMIN_USERNAME=$$KC_BOOTSTRAP_ADMIN_USERNAME"
-        echo "BOOTSTRAP_ADMIN_PASSWORD_LEN=$$(printf %s "$$KC_BOOTSTRAP_ADMIN_PASSWORD" | wc -c)"
-        echo "KC_DB_USERNAME=$$KC_DB_USERNAME"
-        echo "KC_DB_PASSWORD_LEN=$$(printf %s "$$KC_DB_PASSWORD" | wc -c)"
         exec /opt/keycloak/bin/kc.sh start
     environment:
       KC_DB: ${KEYCLOAK_DATABASE}

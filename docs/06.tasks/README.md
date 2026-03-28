@@ -44,6 +44,7 @@
 ├── 2026-03-26-11-laboratory-tasks.md      # Laboratory 문서 표준화 작업 현황
 ├── 2026-03-27-08-ai-open-webui-tasks.md   # Open WebUI 문서 표준화 작업 현황
 ├── 2026-03-28-01-gateway-optimization-hardening-tasks.md # 01-gateway 최적화/하드닝 작업 현황
+├── 2026-03-28-02-auth-optimization-hardening-tasks.md # 02-auth 최적화/하드닝 작업 현황
 └── README.md                          # This file
 ```
 

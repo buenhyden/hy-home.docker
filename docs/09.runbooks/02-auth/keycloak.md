@@ -1,75 +1,78 @@
-# Keycloak Runbook
+# 02-Auth Keycloak Runbook
 
-> Step-by-step procedures for troubleshooting and maintaining the Keycloak security layer.
-
----
+: Keycloak Runtime Recovery
 
 ## Overview (KR)
 
-이 런북은 Keycloak 서비스의 장애 상황(Healthcheck Failure, OIDC Redirect Mismatch, IdP Sync Error)에 대한 대응 절차와 복구 방법을 다룬다.
+이 런북은 Keycloak readiness 실패, DB 연결 오류, 시크릿 회전 후 인증 장애 상황의 복구 절차를 정의한다.
 
-## Runbook Type
+## Purpose
 
-`incident-response | maintenance`
+- Keycloak 가용성을 빠르게 복구한다.
+- 시크릿/설정 회귀 시 안전하게 롤백한다.
 
-## Target Audience
+## Canonical References
 
-- SRE / Platform Engineers
-- Auth Feature Developers
-- On-call Responders
+- [Operations Policy](../../08.operations/02-auth/keycloak.md)
+- [Plan](../../05.plans/2026-03-28-02-auth-optimization-hardening-plan.md)
+- [Tasks](../../06.tasks/2026-03-28-02-auth-optimization-hardening-tasks.md)
 
-## Incident Response
+## When to Use
 
-### 1. Health Readiness Failure
+- `/health/ready` 실패 지속
+- DB 인증 오류 또는 연결 오류
+- 관리자/DB 비밀 회전 직후 로그인 실패
 
-- **Problem**: Keycloak이 `9000/health/ready`에서 `Down` 상태를 반환함.
-- **Diagnosis**:
+## Procedure or Checklist
 
-  ```bash
-  docker logs keycloak
-  # Check PostgreSQL connection status
-  docker exec keycloak curl -f http://localhost:9000/health/live
-  ```
+### Checklist
 
-- **Solution**:
-  - DB 연결 문제 시 `mng-pg` 상태 확인.
-  - OOM 또는 리소스 부족 시 컨테이너 재시작.
+- [ ] `docker compose -f infra/02-auth/keycloak/docker-compose.yml config` 성공
+- [ ] `bash scripts/check-auth-hardening.sh` 결과 확인
+- [ ] `docker compose ps`에서 `keycloak`, `mng-pg` 상태 확인
 
-### 2. OIDC Redirect Mismatch
+### Procedure
 
-- **Problem**: 로그인 시도 시 `Invalid parameter: redirect_uri` 오류 발생.
-- **Diagnosis**: 브라우저 주소창의 `redirect_uri`와 Keycloak Client 설정 비교.
-- **Solution**: Keycloak 콘솔 -> Clients -> 해당 Client -> **Valid Redirect URIs**에 정확한 도메인(와일드카드 주의) 추가.
+1. 설정/로그 확인
+   - `docker logs keycloak --tail=200`
+   - `docker compose -f infra/02-auth/keycloak/docker-compose.yml config`
+2. readiness 실패 대응
+   - DB 연결 상태 확인(`mng-pg` 로그/상태)
+   - Keycloak 재기동: `docker compose -f infra/02-auth/keycloak/docker-compose.yml up -d keycloak`
+3. 시크릿 회전 장애 대응
+   - `/run/secrets/keycloak_admin_password`, `/run/secrets/keycloak_db_password` 값 유효성 확인
+   - 환경 변수/secret 파일 매핑 오타 여부 점검
+4. 사후 검증
+   - readiness 재확인
+   - OAuth2 Proxy 연동 로그인 테스트
 
-### 3. External IdP Reconciliation
+## Verification Steps
 
-- **Problem**: Google 로그인 등이 작동하지 않음.
-- **Diagnosis**:
-  - Keycloak 서버 로그에서 401/403 오류 확인.
-  - IdP 제공자(Google Cloud)의 Client ID/Secret 유효성 확인.
-- **Solution**: Identity Providers 메뉴에서 IdP 재연동 및 시크릿 업데이트.
+- [ ] `bash scripts/check-auth-hardening.sh` 통과
+- [ ] `docker exec keycloak sh -c 'exec 3<>/dev/tcp/127.0.0.1/9000; printf \"GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3; cat <&3'`에서 `\"status\":\"UP\"` 확인
 
-## Maintenance Tasks
+## Observability and Evidence Sources
 
-### 1. Realm Configuration Export/Import
+- **Signals**: readiness 상태, Keycloak 로그의 DB/OIDC 오류
+- **Evidence to Capture**:
+  - `docker logs keycloak --tail=200`
+  - `check-auth-hardening.sh` 실행 결과
 
-데이터 백업 및 레이아웃 동기화를 위해 수동 엑스포트를 권장함:
+## Safe Rollback or Recovery Procedure
 
-```bash
-# Export Realm with Users
-docker exec keycloak /opt/keycloak/bin/kc.sh export --realm hy-home --file /tmp/hy-home-realm.json --users same_file
-```
+- [ ] 직전 정상 커밋으로 `infra/02-auth/keycloak/docker-compose.yml` 복원
+- [ ] `docker compose -f infra/02-auth/keycloak/docker-compose.yml up -d keycloak`
+- [ ] readiness 및 로그인 플로우 재검증
 
-### 2. Theme & Provider Update
+## Agent Operations (If Applicable)
 
-신규 테마 또는 JAR 파일을 반영하려면 볼륨 마운트 확인 후 서비스를 재시작함:
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: N/A
+- **Eval Re-run**: `bash scripts/check-auth-hardening.sh`
+- **Trace Capture**: Keycloak 로그 + CI job 로그
 
-```bash
-docker compose restart keycloak
-```
+## Related Operational Documents
 
-## Related Documents
-
-- **Guide**: `[../../07.guides/02-auth/keycloak.md]`
-- **Operation**: `[../../08.operations/02-auth/keycloak.md]`
-- **Spec**: `[../../04.specs/02-auth/keycloak.md]`
+- **Guide**: [../../07.guides/02-auth/keycloak.md](../../07.guides/02-auth/keycloak.md)
+- **OAuth2 Proxy Runbook**: [./oauth2-proxy.md](./oauth2-proxy.md)

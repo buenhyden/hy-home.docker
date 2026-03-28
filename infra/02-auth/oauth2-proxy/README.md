@@ -42,7 +42,7 @@ oauth2-proxy/
 
 ## How to Work in This Area
 
-1. Read the [Auth Setup Guide](../../../docs/07.guides/02-auth/01.setup.md) for OIDC client configuration.
+1. Read the [Auth Guides](../../../docs/07.guides/02-auth/README.md) for OIDC/ForwardAuth configuration.
 2. Refer to the [OAuth2 Proxy Guide](../../../docs/07.guides/02-auth/oauth2-proxy.md) for detailed configuration steps.
 3. Check `config/oauth2-proxy.cfg` for runtime provider and cookie settings.
 4. Use the [Auth Runbook](../../../docs/09.runbooks/02-auth/README.md) for cookie secret rotation procedures.
