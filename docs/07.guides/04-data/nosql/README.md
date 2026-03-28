@@ -4,9 +4,9 @@
 
 ## Resource Catalog
 
--   [Apache Cassandra](./cassandra.md): Wide-column distributed store.
--   [MongoDB](./mongodb.md): Document-based replica set cluster.
--   [README.md](./README.md): This file
+- [Apache Cassandra](./cassandra.md): Wide-column distributed store.
+- [MongoDB](./mongodb.md): Document-based replica set cluster.
+- [README.md](./README.md): This file
 
 ## Overview
 
@@ -47,9 +47,9 @@ nosql/
 
 ## How to Work in This Area
 
-1.  **Templates**: 새 가이드 추가 시 `docs/99.templates/guide.template.md`를 사용한다.
-2.  **SSoT**: 인프라 변경 사항이 가이드에 즉시 반영되도록 유지한다.
-3.  **Traceability**: 각 가이드는 관련 `Spec`, `Operation`, `Runbook` 문서와 연결되어야 한다.
+1. **Templates**: 새 가이드 추가 시 `docs/99.templates/guide.template.md`를 사용한다.
+2. **SSoT**: 인프라 변경 사항이 가이드에 즉시 반영되도록 유지한다.
+3. **Traceability**: 각 가이드는 관련 `Spec`, `Operation`, `Runbook` 문서와 연결되어야 한다.
 
 ## Related References
 

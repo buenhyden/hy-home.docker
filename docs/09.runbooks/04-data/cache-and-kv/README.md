@@ -11,6 +11,7 @@ This path contains operational instructions for responding to failure situations
 ## Audience
 
 이 README의 주요 독자:
+
 - 긴급 장애 조치를 수행하는 **Operators / SRE**
 - 복구 절차를 학습하는 **AI Agents**
 - 시스템 안정성을 검증하는 **QA Engineers**
@@ -18,11 +19,13 @@ This path contains operational instructions for responding to failure situations
 ## Scope
 
 ### In Scope
+
 - Valkey Cluster 노드 장애 복구
 - 클러스터 슬롯 불일치 해결 절차
 - 네트워크 파티션 및 정족수 복구
 
 ### Out of Scope
+
 - 관계형 DB 복구 (relational/ 참조)
 - 애플리케이션 코드 버그 수정
 - 클라우드 인프라(AWS/GCP) 레벨 복구

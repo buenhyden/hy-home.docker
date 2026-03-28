@@ -27,16 +27,22 @@
 ## Procedure or Checklist
 
 ### 1. Collection Snapshot Execution
+
 실행 중인 상태에서 컬렉션별 스냅샷을 생성한다.
+
 1. 스냅샷 요청:
+
    ```bash
    curl -X POST "https://qdrant.${DEFAULT_URL}/collections/my_collection/snapshots"
    ```
+
 2. 생성 결과 확인: `/qdrant/storage/snapshots` 디렉토리 내 `.snapshot` 파일 생성 여부 점검.
 
 ### 2. Restoration from Snapshot
+
 1. 컬렉션 삭제 (필요시): `curl -X DELETE "https://qdrant.${DEFAULT_URL}/collections/my_collection"`
 2. 스냅샷 복원 요청:
+
    ```bash
    curl -X POST "https://qdrant.${DEFAULT_URL}/collections/my_collection/snapshots/recover" \
         -H "Content-Type: application/json" \
@@ -44,6 +50,7 @@
    ```
 
 ### 3. Emergency Health Recovery
+
 1. 로그 확인: `docker compose logs -f qdrant`
 2. 데이터 디렉토리 권한 점검: `1000:1000` (Unprivileged user) 소유 확인.
 3. 임시 파일 정리: `/tmp` (tmpfs) 용량 확인 및 정리.

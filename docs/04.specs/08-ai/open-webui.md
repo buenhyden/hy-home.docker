@@ -24,22 +24,22 @@
 ## Contracts
 
 - **Config Contract**:
-    - `OLLAMA_BASE_URL`: External API endpoint for inference.
-    - `VECTOR_DB_URL`: External API endpoint for vector operations.
-    - `RAG_EMBEDDING_MODEL`: Specified embedding model (default: `qwen3-embedding:0.6b`).
+  - `OLLAMA_BASE_URL`: External API endpoint for inference.
+  - `VECTOR_DB_URL`: External API endpoint for vector operations.
+  - `RAG_EMBEDDING_MODEL`: Specified embedding model (default: `qwen3-embedding:0.6b`).
 - **Data / Interface Contract**:
-    - Users interact via HTTPS (Port 443 via Traefik).
-    - Internal communication on Port 8080.
+  - Users interact via HTTPS (Port 443 via Traefik).
+  - Internal communication on Port 8080.
 - **Governance Contract**:
-    - Must use `sso-auth@file` middleware for all web routes.
+  - Must use `sso-auth@file` middleware for all web routes.
 
 ## Core Design
 
 - **Component Boundary**: Dockerized SvelteKit frontend + Python FastAPI backend.
 - **Key Dependencies**:
-    - `ghcr.io/open-webui/open-webui:v0.8.5-cuda`
-    - `ollama` (inference)
-    - `qdrant` (vector storage)
+  - `ghcr.io/open-webui/open-webui:v0.8.5-cuda`
+  - `ollama` (inference)
+  - `qdrant` (vector storage)
 - **SPEC-OPENWEBUI-01**: Open WebUI Docker Image: `ghcr.io/open-webui/open-webui:main`
 - **SPEC-OPENWEBUI-02**: Ollama Integration via `OLLAMA_BASE_URL` env.
 - **SPEC-OPENWEBUI-03**: Qdrant Integration via `VECTOR_DB_URL` env.

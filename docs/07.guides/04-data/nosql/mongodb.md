@@ -55,6 +55,7 @@ mongodb://${USER}:${PASS}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyRe
 ### 3. 관리 UI 접근
 
 **Mongo Express**를 통해 웹 기반으로 데이터를 관리할 수 있다.
+
 - **URL**: `https://mongo-express.${DEFAULT_URL}`
 - **Auth**: 배포 시 설정된 Basic Auth 정보를 확인한다.
 

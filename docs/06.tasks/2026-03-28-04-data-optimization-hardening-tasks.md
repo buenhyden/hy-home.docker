@@ -21,7 +21,7 @@
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-DATA-001 | `supabase` 핵심 서비스 healthcheck 추가 | impl | 04-data/spec.md / Contracts | PLN-DATA-001 | `docker compose ...supabase... config` | DevOps | Done |
 | T-DATA-002 | Valkey exporter 시크릿 경로 정합화 | impl | 04-data/spec.md / Contracts | PLN-DATA-002 | `rg mng_valkey_password` 미검출 | DevOps | Done |
-| T-DATA-003 | SeaweedFS expose 오타 제거 | impl | 04-data/spec.md / Contracts | PLN-DATA-003 | `rg ':-19333}]|:-18085}]|:-18888}]'` 미검출 | DevOps | Done |
+| T-DATA-003 | SeaweedFS expose 오타 제거 | impl | 04-data/spec.md / Contracts | PLN-DATA-003 | `rg ':-19333}]\|:-18085}]\|:-18888}]'` 미검출 | DevOps | Done |
 | T-DATA-004 | ksql tier 라벨 정규화 | impl | 04-data/spec.md / Contracts | PLN-DATA-004 | `hy-home.tier: data` 확인 | DevOps | Done |
 | T-DATA-005 | `check-data-hardening.sh` 신규 작성 | ops | 04-data/spec.md / Governance | PLN-DATA-005 | `bash scripts/check-data-hardening.sh` | DevOps | Done |
 | T-DATA-006 | CI `data-hardening` job 추가 | ops | 04-data/spec.md / Governance | PLN-DATA-006 | workflow 변경 확인 | DevOps | Done |

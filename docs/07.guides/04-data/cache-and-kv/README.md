@@ -11,6 +11,7 @@ This path contains user guides for services in the cache and KV storage layer, s
 ## Audience
 
 이 README의 주요 독자:
+
 - 시스템을 연동하는 **Developers**
 - 캐시 상태를 점검하는 **Operators**
 - 가이드 구조를 파악하는 **AI Agents**
@@ -18,11 +19,13 @@ This path contains user guides for services in the cache and KV storage layer, s
 ## Scope
 
 ### In Scope
+
 - Valkey Cluster 연동 가이드
 - Redis 호환 클라이언트 설정 지침
 - 캐싱 전략 및 모범 사례
 
 ### Out of Scope
+
 - 인프라 배포 스크립트 (infra/ 참조)
 - 개별 애플리케이션의 비즈니스 로직
 - 데이터베이스 쿼리 튜닝 (relational/ 참조)

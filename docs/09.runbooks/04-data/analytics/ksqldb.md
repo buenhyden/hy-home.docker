@@ -38,18 +38,21 @@
 
 1. **쿼리 상태 점검**:
    CLI에 접속하여 비정상 쿼리를 식별한다.
+
    ```sql
    SHOW QUERIES;
    DESCRIBE <QUERY_ID>;
    ```
 
 2. **서버 상태 확인**:
+
    ```bash
    docker compose logs ksqldb-server --tail 50
    ```
 
 3. **실패한 쿼리 재시작**:
    문제 있는 쿼리를 종료하고 다시 등록한다. (상태 보존 주의)
+
    ```sql
    TERMINATE <QUERY_ID>;
    -- 기존 CREATE 문 실행
@@ -57,6 +60,7 @@
 
 4. **연결성 강제 갱신**:
    Kafka 브로커와의 메타데이터 갱신을 위해 서버를 재시작한다.
+
    ```bash
    docker compose restart ksqldb-server
    ```

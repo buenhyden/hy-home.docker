@@ -21,6 +21,7 @@ Local LLM interaction requires a user-friendly, feature-complete interface that 
 - **Decision 4**: Use Ollama as primary inference engine.
 
 ## Related ADRs
+
 performance.
 
 ## Explicit Non-goals
@@ -31,20 +32,22 @@ performance.
 ## Consequences
 
 - **Positive**:
-    - Unified, aesthetic interface for all local models.
-    - Out-of-the-box support for RAG with PDF/Text/Web sources.
-    - Active community and frequent updates.
+  - Unified, aesthetic interface for all local models.
+  - Out-of-the-box support for RAG with PDF/Text/Web sources.
+  - Active community and frequent updates.
 - **Trade-offs**:
-    - Increased GPU/System memory consumption for the Svelte/Python backend.
-    - Dependency on external vector stores for production-grade scaling.
+  - Increased GPU/System memory consumption for the Svelte/Python backend.
+  - Dependency on external vector stores for production-grade scaling.
 
 ## Alternatives
 
 ### [LibreChat]
+
 - Good: Highly customizable, supports many providers.
 - Bad: More complex setup for local RAG compared to Open WebUI's native Ollama integration.
 
 ### [Ollama CLI]
+
 - Good: Extremely lightweight.
 - Bad: No visual RAG, no multi-user history, high barrier for non-technical users.
 

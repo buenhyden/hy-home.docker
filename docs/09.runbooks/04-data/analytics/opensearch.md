@@ -37,17 +37,20 @@
 ### Procedure
 
 1. **클러스터 상태 진단**:
+
    ```bash
    curl -X GET "https://opensearch:9200/_cluster/health?pretty" --insecure -u admin:<password>
    ```
 
 2. **미할당 샤드 원인 파악**:
+
    ```bash
    curl -X GET "https://opensearch:9200/_cluster/allocation/explain?pretty" --insecure -u admin:<password>
    ```
 
 3. **노드 강제 동기화**:
    중단된 노드를 재시작하고 샤드 재배치를 기다린다.
+
    ```bash
    docker compose restart opensearch
    ```

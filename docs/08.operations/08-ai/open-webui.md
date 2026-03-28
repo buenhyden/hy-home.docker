@@ -13,6 +13,7 @@
 ## Policy Scope
 
 Open WebUI 서비스 운영 전반:
+
 - 사용자 접근 및 세션 관리
 - 문서 업로드/인덱싱/삭제 기준
 - Open WebUI와 Ollama/Qdrant 연동 구성 변경 관리

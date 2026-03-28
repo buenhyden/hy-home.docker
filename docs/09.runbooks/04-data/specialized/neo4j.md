@@ -27,9 +27,12 @@
 ## Procedure or Checklist
 
 ### 1. Database Dump (Backup)
+
 Neo4j Community Edition은 인스턴스를 중지한 후 오프라인 덤프를 수행해야 한다.
+
 1. 인스턴스 중지: `docker compose stop neo4j`
 2. 덤프 생성:
+
    ```bash
    docker run --rm \
      --volumes-from neo4j \
@@ -37,11 +40,14 @@ Neo4j Community Edition은 인스턴스를 중지한 후 오프라인 덤프를 
      neo4j:5.26.23-community \
      neo4j-admin database dump neo4j --to-path=/backups
    ```
+
 3. 인스턴스 시작: `docker compose start neo4j`
 
 ### 2. Database Load (Restore)
+
 1. 인스턴스 중지: `docker compose stop neo4j`
 2. 데이터 복구:
+
    ```bash
    docker run --rm \
      --volumes-from neo4j \
@@ -49,9 +55,11 @@ Neo4j Community Edition은 인스턴스를 중지한 후 오프라인 덤프를 
      neo4j:5.26.23-community \
      neo4j-admin database load neo4j --from-path=/backups --overwrite-destination=true
    ```
+
 3. 인스턴스 시작: `docker compose start neo4j`
 
 ### 3. Password Rotation
+
 1. Docker Secret `neo4j_password` 값 업데이트.
 2. 서비스 재시작: `docker compose up -d --force-recreate neo4j`
 

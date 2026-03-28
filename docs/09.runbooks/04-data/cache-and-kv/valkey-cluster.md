@@ -29,15 +29,20 @@ This runbook defines the emergency recovery procedures for node failures, slot i
 ## Procedure or Checklist
 
 ### Checklist
+
 - [ ] 모든 Valkey 노드 컨테이너가 Running 상태인지 확인
 - [ ] 노드 간 네트워크 통신이 가능한지 확인
 
 ### Procedure
+
 #### 1. 클러스터 상태 진단
+
 ```bash
 docker exec valkey-node-0 valkey-cli -a $PASS --cluster check localhost:6379
 ```
+
 #### 2. 슬롯 자동 복구
+
 ```bash
 docker exec valkey-node-0 valkey-cli -a $PASS --cluster fix localhost:6379
 ```

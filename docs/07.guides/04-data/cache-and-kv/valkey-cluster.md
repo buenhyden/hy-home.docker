@@ -33,18 +33,23 @@ Helps application developers and system operators understand the structure of th
 ## Step-by-step Instructions
 
 ### 1. 클러스터 초기화 및 상태 확인
+
 클러스터는 처음 배포 시 `valkey-init` 컨테이너에 의해 자동으로 구성됩니다.
+
 ```bash
 # 클러스터 구성 상태 확인
 docker exec valkey-node-0 valkey-cli -a $(cat nodes_password) cluster info
 ```
 
 ### 2. 클라이언트 연결 설정 (Cluster Mode)
+
 Valkey Cluster는 샤딩된 환경이므로 모든 노드 정보를 클라이언트에 제공해야 합니다.
+
 - **Seed Nodes**: `valkey-node-0:6379` to `valkey-node-5:6384`
 - **Auth**: Docker Secrets에 정의된 패스워드를 사용합니다.
 
 ### 3. 데이터 파티셔닝 이해
+
 총 16,384개의 해시 슬롯이 3개의 마스터 노드에 분산되어 있습니다.
 
 ## Common Pitfalls

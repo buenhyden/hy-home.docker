@@ -11,6 +11,7 @@
 ## Audience
 
 이 README의 주요 독자:
+
 - 인프라를 배포하고 관리하는 **Operators**
 - 클러스터와 연결되는 서비스를 개발하는 **Developers**
 - 자동화된 운영 작업을 수행하는 **AI Agents**
@@ -18,11 +19,13 @@
 ## Scope
 
 ### In Scope
+
 - 6노드 Valkey 클러스터 구성 및 관리
 - Docker Compose 기반 배포 및 헬스체크
 - 클러스터 초기화 및 상태 검증 스크립트
 
 ### Out of Scope
+
 - 클러스터 외부의 개별 Valkey 인스턴스 (`mng-valkey`)
 - 애플리케이션 레벨의 데이터 모델링 설계
 - 다중 리전 복제 및 재해 복구 구성

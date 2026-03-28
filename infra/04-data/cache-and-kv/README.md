@@ -11,6 +11,7 @@ This directory contains infrastructure configurations for caching and key-value 
 ## Audience
 
 이 README의 주요 독자:
+
 - 인프라를 배포하고 관리하는 **Operators**
 - 캐시 서비스를 연동하는 **Developers**
 - 자동화된 운영 작업을 수행하는 **AI Agents**
@@ -18,11 +19,13 @@ This directory contains infrastructure configurations for caching and key-value 
 ## Scope
 
 ### In Scope
+
 - Valkey Cluster (6-node) 구성 및 관리
 - 분산 캐싱 인프라 프로비저닝
 - 클러스터 헬스체크 및 성능 모니터링 구성
 
 ### Out of Scope
+
 - 애플리케이션 레벨의 데이터 모델링
 - 캐시 무효화 로직 구현
 - 개별(Stand-alone) Valkey 인스턴스 관리

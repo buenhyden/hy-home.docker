@@ -4,7 +4,7 @@
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` NoSQL 데이터 계층에서 발생할 수 있는 주요 장애 상황(데이터 유실, 노드 다운, 성능 저하 등)에 대한 구체적인 대응 절차(Runbooks)를 포함한다. 
+이 디렉터리는 `hy-home.docker` NoSQL 데이터 계층에서 발생할 수 있는 주요 장애 상황(데이터 유실, 노드 다운, 성능 저하 등)에 대한 구체적인 대응 절차(Runbooks)를 포함한다.
 
 ## Audience
 

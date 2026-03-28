@@ -31,7 +31,9 @@
 ## Step-by-step Instructions
 
 ### 1. 서비스 가동 및 상태 확인
+
 `mng-db`는 플랫폼 초기화 시 가장 먼저 가동되어야 하는 서비스 중 하나이다.
+
 ```bash
 # infra/04-data/operational/mng-db 경로에서 실행
 docker-compose up -d
@@ -39,7 +41,9 @@ docker-compose ps
 ```
 
 ### 2. PostgreSQL 데이타베이스 접근
+
 `mng-pg` 인스턴스 내에는 다음과 같은 논리적 데이타베이스가 생성된다.
+
 - `postgres`: 관리용 루트 DB
 - `n8n`: 워크플로우 자동화용
 - `keycloak`: 자격 증명 관리용

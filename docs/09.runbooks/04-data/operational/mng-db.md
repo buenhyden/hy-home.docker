@@ -35,6 +35,7 @@
 ### Procedure
 
 1. **서비스 가동**
+
    ```bash
    cd infra/04-data/operational/mng-db
    docker-compose up -d
@@ -42,11 +43,13 @@
 
 2. **초기화 작업 강제 실행**
    기존에 생성되지 않은 DB 유저나 스키마를 동기화해야 하는 경우 `mng-pg-init`을 재실행한다.
+
    ```bash
    docker-compose run --rm mng-pg-init
    ```
 
 3. **서비스 로그 감시**
+
    ```bash
    docker-compose logs -f mng-pg
    docker-compose logs -f mng-valkey

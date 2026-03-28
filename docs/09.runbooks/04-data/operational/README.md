@@ -4,11 +4,12 @@
 
 ## Overview
 
-이 디렉토리는 `04-data` 티어의 운영 계층 서비스(Management DB 등)에 대한 실행 절차 문서를 포함한다. 
+이 디렉토리는 `04-data` 티어의 운영 계층 서비스(Management DB 등)에 대한 실행 절차 문서를 포함한다.
 
 ## Audience
 
 이 README의 주요 독자:
+
 - 온콜 엔지니어, 플랫폼 관리자, AI 에이전트
 
 - 장애 대응을 수행하는 **Operators / SRE**

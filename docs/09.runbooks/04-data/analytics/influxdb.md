@@ -37,6 +37,7 @@
 ### Procedure
 
 1. **서비스 요상 확인**:
+
    ```bash
    docker compose ps influxdb
    docker logs influxdb --tail 100
@@ -44,11 +45,13 @@
 
 2. **토큰 검증**:
    API 호출을 통해 토큰이 활성 상태인지 확인한다.
+
    ```bash
    curl -i http://influxdb:8181/health -H "Authorization: Token $(cat secrets/influxdb_api_token)"
    ```
 
 3. **강제 재시작 (필요 시)**:
+
    ```bash
    docker compose restart influxdb
    ```

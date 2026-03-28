@@ -8,9 +8,11 @@
 ## Overview
 
 ### English
+
 This document defines the operational policies and guidelines to ensure the stability of SeaweedFS. It covers data integrity protection, performance monitoring, backup, and security governance, providing core operational standards for SeaweedFS in the `hy-home.docker` data layer.
 
 ### Korean
+
 이 문서는 SeaweedFS의 안정성을 보장하기 위한 운영 정책과 가이드라인을 정의한다. 데이터 무결성 보호, 성능 모니터링, 백업 및 보안 거버넌스를 아우르며, `hy-home.docker` 데이터 레이어의 핵심 운영 기준을 제시한다.
 
 ## Policy ID
@@ -52,4 +54,3 @@ This document defines the operational policies and guidelines to ensure the stab
 - **Technical Guide**: [seaweedfs.md](../../../07.guides/04-data/lake-and-object/seaweedfs.md)
 - **Recovery Runbook**: [seaweedfs.md](../../../09.runbooks/04-data/lake-and-object/seaweedfs.md)
 - **Infrastructure**: [seaweedfs/README.md](../../../../infra/04-data/lake-and-object/seaweedfs/README.md)
-

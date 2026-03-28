@@ -38,11 +38,14 @@ Cassandra 서비스 장애 발생 시 다운타임을 최소화하고, 데이터
 컨테이너가 비정상 종료된 경우 재시작을 시도한다.
 
 1. 컨테이너 재시작:
+
    ```bash
    cd infra/04-data/nosql/cassandra
    docker-compose up -d
    ```
+
 2. 시작 로그 확인 (Status 'Ready' 확인):
+
    ```bash
    docker logs -f cassandra-node1
    ```
@@ -52,16 +55,21 @@ Cassandra 서비스 장애 발생 시 다운타임을 최소화하고, 데이터
 데이터 오염 시 스냅샷을 기반으로 복원한다.
 
 1. 서비스 중지:
+
    ```bash
    docker-compose stop cassandra-node1
    ```
+
 2. 기존 데이터 백업 (안전을 위해):
+
    ```bash
    mv ${DEFAULT_DATA_DIR}/cassandra/data ${DEFAULT_DATA_DIR}/cassandra/data_broken
    ```
+
 3. 스냅샷 복사:
    (백업 스토리지에서 최근 스냅샷을 `${DEFAULT_DATA_DIR}/cassandra/data` 위치로 복구)
 4. 권한 확인 및 시작:
+
    ```bash
    chown -R 999:999 ${DEFAULT_DATA_DIR}/cassandra/data
    docker-compose start cassandra-node1
@@ -70,11 +78,14 @@ Cassandra 서비스 장애 발생 시 다운타임을 최소화하고, 데이터
 ## Verification Steps
 
 1. 노드 상태 확인:
+
    ```bash
    docker exec -it cassandra-node1 nodetool status
    ```
+
    (상태가 `UN`이어야 함)
 2. 데이터 샘플 쿼리:
+
    ```bash
    docker exec -it cassandra-node1 cqlsh -u ${CASSANDRA_USER} -p ${CASSANDRA_PASSWORD} -e "SELECT * FROM system.local;"
    ```

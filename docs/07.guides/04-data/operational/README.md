@@ -9,6 +9,7 @@
 ## Audience
 
 이 README의 주요 독자:
+
 - 개발자, 운영자, AI 에이전트
 
 - 데이터 서비스 연결이 필요한 **Developers**

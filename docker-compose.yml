@@ -212,4 +212,3 @@ include:
   - infra/11-laboratory/dozzle/docker-compose.yml
   # - infra/11-laboratory/portainer/docker-compose.yml
   - infra/11-laboratory/redisinsight/docker-compose.yml
-

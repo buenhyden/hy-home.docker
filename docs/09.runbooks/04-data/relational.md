@@ -44,10 +44,12 @@ This runbook defines emergency response and recovery procedures for potential fa
 3. 상태 복구 대기: `patronictl list`로 리플리케이션 상태 확인
 
 #### 2. etcd 정족수 복구
+
 1. 모든 etcd 노드 상태 확인: `etcdctl endpoint health --cluster`
 2. 과반수 미만 가동 시 클러스터 재구성 (스냅샷/백업 활용)
 
 #### 3. 수동 페일오버 (Switchover)
+
 1. 리더 교체가 필요한 경우: `docker exec -it pg-0 patronictl -c /home/postgres/postgres.yml switchover`
 2. 대상 노드 선택 및 실행 컨펌
 

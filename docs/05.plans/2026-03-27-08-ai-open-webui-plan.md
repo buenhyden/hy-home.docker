@@ -16,13 +16,13 @@ Open WebUI is a critical component for the AI tier, providing the primary interf
 
 ## Goals & In-Scope
 
-- **Goals**: 
-    - Standardize Open WebUI deployment config.
-    - Establish a complete documentation chain.
-    - Enable RAG with local Ollama/Qdrant integration.
+- **Goals**:
+  - Standardize Open WebUI deployment config.
+  - Establish a complete documentation chain.
+  - Enable RAG with local Ollama/Qdrant integration.
 - **In Scope**:
-    - `docs/` hierarchy standardization.
-    - `infra/08-ai/open-webui/docker-compose.yml` validation.
+  - `docs/` hierarchy standardization.
+  - `infra/08-ai/open-webui/docker-compose.yml` validation.
 
 ## Non-Goals & Out-of-Scope
 
@@ -41,7 +41,7 @@ Open WebUI is a critical component for the AI tier, providing the primary interf
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-PLN-001 | Structural | Verify relative links | `find docs/ -name "*.md" | xargs -n1 grep "\[..\/.*\]"` | All links resolve |
+| VAL-PLN-001 | Structural | Verify relative links | `find docs/ -name "*.md" \| xargs -n1 grep "\[..\/.*\]"` | All links resolve |
 | VAL-PLN-002 | Functional | Check container health | `docker inspect -f '{{.State.Health.Status}}' open-webui` | Status: healthy |
 
 ## Risks & Mitigations

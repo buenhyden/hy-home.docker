@@ -21,4 +21,3 @@ This directory contains recovery runbooks for data lake and object storage syste
 - [04-data Runbooks Index](../README.md)
 - [Lake and Object Technical Guides](../../../07.guides/04-data/lake-and-object/README.md)
 - [Lake and Object Operations Policies](../../../08.operations/04-data/lake-and-object/README.md)
-

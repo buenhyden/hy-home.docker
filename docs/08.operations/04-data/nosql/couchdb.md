@@ -40,6 +40,7 @@
 ### 2. Disk Management (Compaction)
 
 CouchDB는 Append-only 데이터베이스이므로 정기적인 압축 작업이 필수적이다.
+
 - **Auto-compaction**: 배포 시 설정된 자동 압축 정책(Fragmentation threshold 30%)이 정상 작동하는지 모니터링한다.
 - **Manual Trigger**: 디스크 부족 경고 시 `/database/_compact` API를 통해 강제 압축을 수행한다.
 

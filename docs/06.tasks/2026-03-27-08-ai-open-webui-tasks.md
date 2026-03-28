@@ -32,7 +32,7 @@
 ## Verification Summary
 
 - **Test Commands**:
-    - `grep -r "\[..\/.*\]" docs/` (Link verification)
-    - `docker exec open-webui curl -f localhost:8080/health`
+  - `grep -r "\[..\/.*\]" docs/` (Link verification)
+  - `docker exec open-webui curl -f localhost:8080/health`
 - **Eval Commands**:
-    - [Self-eval] Check documentation completeness against mandatory templates.
+  - [Self-eval] Check documentation completeness against mandatory templates.

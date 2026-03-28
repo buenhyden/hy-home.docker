@@ -17,18 +17,18 @@ Open WebUI acts as the presentation layer and orchestration hub for AI services.
 ## Boundaries & Non-goals
 
 - **Owns**:
-    - Web UI (Frontend/Backend).
-    - RAG orchestration logic.
-    - User/Chat metadata storage (SQLite).
+  - Web UI (Frontend/Backend).
+  - RAG orchestration logic.
+  - User/Chat metadata storage (SQLite).
 - **Consumes**:
-    - Model Inference APIs (`ollama`).
-    - Vector Search APIs (`qdrant`).
-    - SSO Authentication (`oauth2-proxy` / `traefik`).
+  - Model Inference APIs (`ollama`).
+  - Vector Search APIs (`qdrant`).
+  - SSO Authentication (`oauth2-proxy` / `traefik`).
 - **Does Not Own**:
-    - LLM Model Weights.
-    - Persistent Vector Data.
+  - LLM Model Weights.
+  - Persistent Vector Data.
 - **Non-goals**:
-    - Handling raw model training or fine-tuning.
+  - Handling raw model training or fine-tuning.
 
 ## Quality Attributes
 
@@ -46,13 +46,13 @@ Open WebUI is deployed as a Docker container within the `ai` tier. It sits behin
 ## Data Architecture
 
 - **Key Entities / Flows**:
-    - User Input -> Open WebUI -> Ollama (Inference).
-    - Document Upload -> Open WebUI -> Ollama (Embedding) -> Qdrant (Storage).
-    - Query -> Open WebUI -> Qdrant (Retrieval) -> Context + Prompt -> Ollama (Generation).
+  - User Input -> Open WebUI -> Ollama (Inference).
+  - Document Upload -> Open WebUI -> Ollama (Embedding) -> Qdrant (Storage).
+  - Query -> Open WebUI -> Qdrant (Retrieval) -> Context + Prompt -> Ollama (Generation).
 - **Storage Strategy**:
-    - `/app/backend/data` (Volumes: Chat history, locally indexed Lite DB).
+  - `/app/backend/data` (Volumes: Chat history, locally indexed Lite DB).
 - **Data Boundaries**:
-    - Vector data is strictly owned by Qdrant.
+  - Vector data is strictly owned by Qdrant.
 
 ## Infrastructure & Deployment
 

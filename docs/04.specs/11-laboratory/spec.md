@@ -25,21 +25,25 @@
 ## Core Design
 
 ### 1. Homer (Dashboard)
+
 - **Image**: `b4bz/homer`
 - **Internal Port**: 8080
 - **Volume**: `./config:/www/assets`
 
 ### 2. Portainer (Orchestration UI)
+
 - **Image**: `portainer/portainer-ce:sts`
 - **Internal Port**: 9443
 - **Volume**: `/var/run/docker.sock:/var/run/docker.sock`
 
 ### 3. RedisInsight (Data Ops)
+
 - **Image**: `redis/redisinsight:3.0.3`
 - **Internal Port**: 5540
 - **Network**: `infra_net`
 
 ### 4. Dozzle (Log Viewer)
+
 - **Image**: `amir20/dozzle:v10.2.0`
 - **Internal Port**: 8080
 - **Volume**: `/var/run/docker.sock:/var/run/docker.sock`
@@ -47,6 +51,7 @@
 ## Interfaces & Data Structures
 
 ### Traefik Label Contract (Example)
+
 ```yaml
 labels:
   hy-home.tier: admin

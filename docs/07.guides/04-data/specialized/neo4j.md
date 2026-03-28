@@ -30,6 +30,7 @@
 ## Step-by-step Instructions
 
 ### 1. Accessing Neo4j Browser
+
 Neo4j Browser는 시각적 쿼리 도구이다.
 
 1. 웹 브라우저에서 `https://neo4j.${DEFAULT_URL}` 접속
@@ -50,6 +51,7 @@ CREATE (a)-[:COLLEAGUE]->(b);
 ```
 
 ### 3. Connection via Bolt
+
 애플리케이션 드라이버는 Bolt 프로토콜을 사용한다.
 
 - **URL**: `bolt://neo4j.${DEFAULT_URL}:7687`

@@ -9,6 +9,7 @@
 ## Audience
 
 이 README의 주요 독자:
+
 - Developers using S3 or Filer APIs
 - Operators managing storage clusters
 - AI Agents looking for storage integration metadata

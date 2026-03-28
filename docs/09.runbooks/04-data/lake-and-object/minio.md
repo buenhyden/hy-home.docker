@@ -8,9 +8,11 @@
 ## Overview
 
 ### English
+
 This runbook defines implementation procedures for responding to failure situations in MinIO Object Storage. It provides step-by-step processes for operators to take immediate action in cases of storage exhaustion, loss of administrator credentials, and cluster node failures.
 
 ### Korean
+
 이 런북은 MinIO 오브젝트 스토리지의 장애 상황에 대응하기 위한 실행 절차를 정의한다. 디스크 공간 부족, 관리자 자격 증명 분실, 그리고 클러스터 노드 장애 발생 시 운영자가 즉각적으로 수행할 수 있는 단계별 프로세스를 제공한다.
 
 ## Runbook ID
@@ -33,18 +35,25 @@ This runbook defines implementation procedures for responding to failure situati
 ## Diagnosis Steps
 
 1. **Check Physical Storage**:
+
    ```bash
    df -h
    ```
+
 2. **Analyze Bucket Usage**:
+
    ```bash
    mc du myminio
    ```
+
 3. **Verify Cluster Health**:
+
    ```bash
    mc admin info myminio
    ```
+
 4. **Check Service Logs**:
+
    ```bash
    docker compose logs --tail=100 minio
    ```
@@ -52,19 +61,24 @@ This runbook defines implementation procedures for responding to failure situati
 ## Remediation Procedures
 
 ### 1. Storage Exhaustion (디스크 공간 부족)
+
 - Identify and delete unnecessary logs or non-critical data.
 - Check and clear `tempo-bucket` or `loki-bucket` retention if applicable.
 - For permanent resolution, increase the volume size in `docker-compose.yml` and redeploy.
 
 ### 2. Root Credential Reset (비밀번호 초기화)
+
 - Verify the credentials defined in `infra/04-data/lake-and-object/minio/.env` or secrets.
 - If lost, update the secret files and restart the service:
+
   ```bash
   docker compose restart minio
   ```
+
 - Update the `mc` (MinIO Client) configuration to match new credentials.
 
 ### 3. Node Failure (클러스터 노드 장애)
+
 - Identify the failed node: `docker compose ps`.
 - Check logs for the specific node: `docker compose logs [node-name]`.
 - Attempt restart: `docker compose start [node-name]`.

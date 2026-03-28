@@ -52,6 +52,7 @@ This directory contains technical guides for the `hy-home.docker` data infrastru
 ## Traceability Rules
 
 이 영역의 모든 문서는 다음 항목 중 하나 이상과 연결되어야 합니다.
+
 - Architecture Requirements Document (ARD)
 - Operations Policy
 - Runbook

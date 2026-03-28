@@ -8,9 +8,11 @@
 ## Overview
 
 ### English
+
 This document defines the operational policies for MinIO Object Storage. It regulates backup strategies for data persistence, security control standards, system availability maintenance, and performance monitoring methods within the `hy-home.docker` environment.
 
 ### Korean
+
 이 문서는 MinIO 오브젝트 스토리지의 운영 정책을 정의한다. `hy-home.docker` 환경 내에서 데이터 지속성 보장을 위한 백업 전략, 보안 통제 기준, 시스템 가용성 유지 및 성능 모니터링 방법을 규정한다.
 
 ## Policy ID
@@ -54,4 +56,3 @@ This document defines the operational policies for MinIO Object Storage. It regu
 - **Technical Guide**: [minio.md](../../../07.guides/04-data/lake-and-object/minio.md)
 - **Recovery Runbook**: [minio.md](../../../09.runbooks/04-data/lake-and-object/minio.md)
 - **Infrastructure**: [minio/README.md](../../../../infra/04-data/lake-and-object/minio/README.md)
-

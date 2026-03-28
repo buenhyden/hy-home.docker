@@ -30,12 +30,16 @@
 ## Step-by-step Instructions
 
 ### 1. Connecting to Qdrant
+
 Qdrant는 REST와 gRPC 프로토콜을 모두 지원한다.
+
 - **REST URL**: `https://qdrant.${DEFAULT_URL}`
 - **gRPC URL**: `qdrant-grpc.${DEFAULT_URL}:6334`
 
 ### 2. Collection Management (REST)
+
 컬렉션을 생성하여 벡터 데이터를 격리한다.
+
 ```bash
 curl -X PUT "https://qdrant.${DEFAULT_URL}/collections/my_collection" \
      -H "Content-Type: application/json" \
@@ -45,7 +49,9 @@ curl -X PUT "https://qdrant.${DEFAULT_URL}/collections/my_collection" \
 ```
 
 ### 3. Vector Similarity Search
+
 임베딩을 사용하여 유사한 문서를 검색한다.
+
 ```bash
 curl -X POST "https://qdrant.${DEFAULT_URL}/collections/my_collection/points/search" \
      -H "Content-Type: application/json" \

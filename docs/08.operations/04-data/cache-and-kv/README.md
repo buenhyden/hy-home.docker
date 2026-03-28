@@ -11,6 +11,7 @@ This path contains operational standards and security policies for services in t
 ## Audience
 
 이 README의 주요 독자:
+
 - 운영 표준을 관리하는 **Operators**
 - 보안 통제를 감사하는 **Security Engineers**
 - 정책 준수 가이드를 읽는 **AI Agents**
@@ -18,11 +19,13 @@ This path contains operational standards and security policies for services in t
 ## Scope
 
 ### In Scope
+
 - Valkey Cluster 운영 및 보안 정책
 - 캐시 메모리 할당 및 제거(Eviction) 기준
 - 데이터 영속성(AOF/RDB) 설정 표준
 
 ### Out of Scope
+
 - NoSQL 데이터베이스 정책 (nosql/ 참조)
 - 백업 시스템 구현 세부 사항
 - 개별 애플리케이션 권한 관리
