@@ -5,18 +5,16 @@
     "priority": "medium",
     "promptTriggers": {
       "keywords": [
-        "generate learning guide",
+        "learning guide",
         "CS/CE roadmap",
-        "CS/CE learning roadmap",
-        "software engineering study guide",
-        "analyze repo for learning topics",
-        "Create a learning roadmap",
-        "tech stack study guide"
+        "bridge theory and practice",
+        "학습 가이드",
+        "이론과 실무 연결"
       ],
       "intentPatterns": [
-        "(create|generate|analyze).*?(roadmap|study guide|learning topics)",
-        "what should I learn about this repo",
-        "teach me about the infrastructure"
+        "(create|generate|provide).*?(learning guide|roadmap|학습 로드맵)",
+        "(explain|analyze) (CS/CE|theory|infrastructure).*?(k3d|ArgoCD|vLLM)",
+        "연결.*?(이론|실무|인프라)"
       ]
     }
   }
