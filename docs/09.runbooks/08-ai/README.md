@@ -38,6 +38,7 @@
 ├── gpu-recovery.md
 ├── ollama.md
 ├── open-webui.md
+├── optimization-hardening.md
 └── README.md
 ```
 
@@ -46,6 +47,7 @@
 - [Open WebUI Maintenance & Recovery Runbook](./open-webui.md)
 - [Ollama Maintenance & Recovery Runbook](./ollama.md)
 - [GPU Recovery Runbook](./gpu-recovery.md)
+- [08-AI Optimization Hardening Runbook](./optimization-hardening.md)
 
 ## How to Work in This Area
 
@@ -53,6 +55,7 @@
 2. 모든 런북은 체크리스트/절차/검증/롤백 단계를 포함한다.
 3. Canonical References에 ARD/ADR/Spec/Plan을 명시한다.
 4. 관련 정책(08)과 가이드(07) 링크를 항상 유지한다.
+5. 최적화/하드닝 회귀 복구 시 `check-ai-hardening.sh` 결과를 증적으로 남긴다.
 
 ## Related Operational Documents
 
@@ -60,3 +63,5 @@
 - [AI Guides](../../07.guides/08-ai/README.md)
 - [Incidents](../../10.incidents/README.md)
 - [Postmortems](../../11.postmortems/README.md)
+- [AI Optimization Plan](../../05.plans/2026-03-28-08-ai-optimization-hardening-plan.md)
+- [AI Optimization Tasks](../../06.tasks/2026-03-28-08-ai-optimization-hardening-tasks.md)

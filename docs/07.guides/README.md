@@ -53,7 +53,7 @@
 - [06-observability](./06-observability/README.md) (updated: 2026-03-28 optimization hardening)
 - [07-workflow](./07-workflow/README.md) (updated: 2026-03-28 optimization hardening)
   - [airbyte](./07-workflow/airbyte.md)
-- [08-ai](./08-ai/README.md)
+- [08-ai](./08-ai/README.md) (updated: 2026-03-28 optimization hardening)
 - [09-tooling](./09-tooling/README.md)
 - [10-communication](./10-communication/README.md)
 - [11-laboratory](./11-laboratory/README.md)

@@ -1,96 +1,122 @@
-<!-- Target: docs/04.specs/08-ai/spec.md -->
-
-# AI Infrastructure Technical Specification (Spec)
-
-## AI Infrastructure Specification
+# 08-AI Optimization Hardening Technical Specification
 
 ## Overview (KR)
 
-이 문서는 `08-ai` 계층의 기술 설계와 구현 상세를 정의한다. Ollama 추론 엔진과 Open WebUI의 인터페이스 계약, 환경 변수 설정, 그리고 NVIDIA GPU 가속을 위한 인프라 명세를 다룬다.
+이 문서는 `infra/08-ai`(Ollama, Open WebUI) 계층의 최적화/하드닝 기술 명세다. gateway 경계 보안, GPU concurrency 제어, exporter health-gating, stateful 운영 일관성, CI 정책 게이트, 카탈로그 기반 확장 요구를 구현 계약으로 정의한다.
 
 ## Strategic Boundaries & Non-goals
 
 - **Owns**:
-  - Docker Compose 서비스 정의 (`ollama`, `open-webui`, `ollama-exporter`)
-  - 모델 영속 데이터 레이아웃 및 볼륨 매핑
-  - RAG 환경 설정 및 임베딩 정책
+  - Ollama/Open WebUI Traefik middleware 계약
+  - Ollama concurrency/queue/resource 보호 계약
+  - Open WebUI stateful template 계약
+  - `ollama-exporter` dependency/healthcheck 계약
+  - `check-ai-hardening.sh` 정책 게이트 계약
 - **Does Not Own**:
-  - NVIDIA 드라이버 설치 (Host OS 영역)
-  - Qdrant 컬렉션 관리 (Data 계층 Spec 영역)
+  - 모델 학습/파인튜닝 파이프라인
+  - Qdrant 내부 운영 정책/스키마
+  - 외부 LLM provider 통합 정책
 
 ## Related Inputs
 
-- **PRD**: [../../01.prd/2026-03-26-08-ai.md](../../01.prd/2026-03-26-08-ai.md)
-- **ARD**: [../../02.ard/0008-ai-architecture.md](../../02.ard/0008-ai-architecture.md)
-- **Related ADRs**: [../../03.adr/0008-ollama-openwebui-local-ai.md](../../03.adr/0008-ollama-openwebui-local-ai.md)
+- **PRD**: [../../01.prd/2026-03-28-08-ai-optimization-hardening.md](../../01.prd/2026-03-28-08-ai-optimization-hardening.md)
+- **ARD**: [../../02.ard/0023-ai-optimization-hardening-architecture.md](../../02.ard/0023-ai-optimization-hardening-architecture.md)
+- **Related ADRs**:
+  - [../../03.adr/0008-ollama-openwebui-local-ai.md](../../03.adr/0008-ollama-openwebui-local-ai.md)
+  - [../../03.adr/0023-ai-hardening-and-ha-expansion-strategy.md](../../03.adr/0023-ai-hardening-and-ha-expansion-strategy.md)
 
 ## Contracts
 
 - **Config Contract**:
-  - `${DEFAULT_AI_MODEL_DIR}`: 모델 데이터가 저장될 호스트 경로
-  - `${OLLAMA_PORT}`: 내부 11434 포트를 외부에 노출할 규격
+  - Ollama/Open WebUI 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용한다.
+  - Ollama는 `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`를 명시한다.
+  - Open WebUI는 `template-stateful-med`를 사용한다.
+  - `ollama-exporter`는 `ollama`의 `service_healthy` dependency와 metrics healthcheck를 가진다.
+  - 두 compose는 `infra_net` external network 선언을 포함한다.
 - **Data / Interface Contract**:
-  - OpenAI Compatible API (Ollama/WebUI 양방향)
+  - Open WebUI -> Ollama(`OLLAMA_BASE_URL`) + Qdrant(`VECTOR_DB_URL`) 연결을 유지한다.
+  - Embedding 모델 기본값은 `qwen3-embedding:0.6b`를 유지한다.
 - **Governance Contract**:
-  - 모든 AI 트래픽은 `sso-auth` 미들웨어를 경유해야 함.
+  - `scripts/check-ai-hardening.sh` 통과가 AI tier 하드닝 기준선이다.
+  - CI `ai-hardening` job이 PR 단계에서 회귀를 차단한다.
 
 ## Core Design
 
-### Inference Engine (Ollama)
+- **Gateway Security Plane**:
+  - AI 공개 경로는 TLS 종료 후 gateway 표준 체인 + SSO 체인을 강제한다.
+- **Inference Runtime Plane**:
+  - Ollama는 concurrency/queue 상한으로 GPU 과부하를 억제한다.
+- **Stateful Control Plane**:
+  - Open WebUI는 상태 저장 서비스로 stateful 템플릿 정책을 따른다.
+- **Observability Plane**:
+  - exporter는 health 기반으로 기동하며 metrics endpoint를 healthcheck로 검증한다.
 
-- **Execution Mode**: Local Binary via Docker.
-- **Resource Limits**: 4 CPU Cores, 8GB Memory (Limit), 1 GPU (Reservation).
-- **GPU Path**: `nvidia-container-runtime`을 통한 호스트 커널 직접 연결.
+## Data Modeling & Storage Strategy
 
-### UI & RAG (Open WebUI)
+- Ollama 모델 데이터는 `${DEFAULT_AI_MODEL_DIR}/ollama` 바인드 볼륨을 사용한다.
+- Open WebUI 상태 데이터는 `${DEFAULT_AI_MODEL_DIR}/open-webui` 바인드 볼륨을 사용한다.
+- 대화/RAG 데이터 보존 정책은 운영 정책 문서(`08.operations/08-ai/optimization-hardening.md`)에서 통제한다.
 
-- **Backend**: Python (FastAPI based).
-- **RAG Engine**: Ollama (Embedding) + Qdrant (Vector Store).
-- **Embedding Model**: `qwen3-embedding:0.6b` (Standard across project).
+## Interfaces & Data Structures
 
-## Interfaces
+### AI Hardening Control Surface
 
 ```yaml
-# Ollama Interface Example
-OLLAMA_BASE_URL: http://ollama:11434
-
-# Open WebUI Environment
-VECTOR_DB_URL: http://qdrant:6333
-RAG_EMBEDDING_ENGINE: ollama
-RAG_EMBEDDING_MODEL: qwen3-embedding:0.6b
+ai_hardening_controls:
+  ingress_security:
+    ollama: gateway-standard-chain + sso-errors + sso-auth
+    open_webui: gateway-standard-chain + sso-errors + sso-auth
+  gpu_safeguards:
+    ollama_num_parallel: required
+    ollama_max_loaded_models: required
+    ollama_max_queue: required
+  startup_health_contract:
+    ollama_exporter_depends_on_ollama_health: required
+    ollama_exporter_metrics_healthcheck: required
+  stateful_policy:
+    open_webui_template: template-stateful-med
 ```
 
-## Agent Role & IO Contract (If Applicable)
+## Edge Cases & Error Handling
 
-- **Agent Role**: LLM 추론 대행 및 지식 베이스 검색.
-- **Inputs**: Text Prompt, Multi-modal Image (Optional), Document Path (for RAG).
-- **Outputs**: Streaming Text Response, JSON structured data.
+- concurrency 상한이 과도하게 낮으면 응답 지연이 증가할 수 있어 운영 지표 기반 튜닝이 필요하다.
+- middleware 체인 누락 시 인증 우회 경로가 생길 수 있으므로 CI 게이트에서 즉시 차단한다.
+- exporter healthcheck 실패 시 metrics 경로/포트 및 `OLLAMA_EXPORTER_PORT` 값을 점검한다.
+
+## Failure Modes & Fallback / Human Escalation
+
+- **Failure Mode**: AI 라우터 접근 정책 회귀
+  - **Fallback**: 최근 정상 compose 라우팅 설정으로 롤백
+  - **Human Escalation**: Gateway/Auth 운영 승인자
+- **Failure Mode**: Ollama GPU 과부하/queue 적체
+  - **Fallback**: concurrency/queue 상한 보수적 값으로 재조정
+  - **Human Escalation**: AI Platform Owner
+- **Failure Mode**: exporter metrics 관측 실패
+  - **Fallback**: healthcheck/depends_on 계약 복구 후 재기동
+  - **Human Escalation**: SRE on-call
 
 ## Verification
 
-### GPU Support Check
-
 ```bash
-docker exec -it ollama nvidia-smi
+docker compose -f infra/08-ai/ollama/docker-compose.yml config
+docker compose -f infra/08-ai/open-webui/docker-compose.yml config
+bash scripts/check-ai-hardening.sh
+bash scripts/check-template-security-baseline.sh
+bash scripts/check-doc-traceability.sh
 ```
-
-### Model Availability Check
-
-```bash
-curl http://localhost:11434/api/tags
-```
-
-### RAG Integration Test
-
-Open WebUI 설정 창에서 Qdrant 연결 상태 확인 및 임베딩 모델 테스트 수행.
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-AI-01**: Ollama 컨테이너가 GPU를 인식하고 가속 추론이 가능한가.
-- **VAL-SPC-AI-02**: chat.DOMAIN 주소로 SSO 로그인 후 대화가 가능한가.
-- **VAL-SPC-AI-03**: 문서 업로드 시 Qdrant에 벡터 데이터가 정상 생성되는가.
+- **VAL-AI-001**: AI compose static validation 통과
+- **VAL-AI-002**: AI hardening baseline script 실패 0건
+- **VAL-AI-003**: PRD~Runbook optimization-hardening 문서 링크 정합성 유지
+- **VAL-AI-004**: 카탈로그 `08-ai` 확장 항목(모델 승격, 접근 분리, 로그 정책)이 Plan/Tasks/Operations에 반영
 
 ## Related Documents
 
-- **Plan**: [../../05.plans/2026-03-26-08-ai-standardization.md](../../05.plans/2026-03-26-08-ai-standardization.md)
-- **Tasks**: [../../06.tasks/2026-03-26-08-ai-tasks.md](../../06.tasks/2026-03-26-08-ai-tasks.md)
+- **Plan**: [../../05.plans/2026-03-28-08-ai-optimization-hardening-plan.md](../../05.plans/2026-03-28-08-ai-optimization-hardening-plan.md)
+- **Tasks**: [../../06.tasks/2026-03-28-08-ai-optimization-hardening-tasks.md](../../06.tasks/2026-03-28-08-ai-optimization-hardening-tasks.md)
+- **Guide**: [../../07.guides/08-ai/optimization-hardening.md](../../07.guides/08-ai/optimization-hardening.md)
+- **Operation**: [../../08.operations/08-ai/optimization-hardening.md](../../08.operations/08-ai/optimization-hardening.md)
+- **Runbook**: [../../09.runbooks/08-ai/optimization-hardening.md](../../09.runbooks/08-ai/optimization-hardening.md)
+- **Catalog**: [../../08.operations/12-infra-service-optimization-catalog.md](../../08.operations/12-infra-service-optimization-catalog.md)

@@ -55,7 +55,7 @@
 | [05-messaging](./05-messaging/README.md) | Event streaming and message brokering policies (updated: 2026-03-28 optimization hardening) |
 | [06-observability](./06-observability/README.md) | Retention, alerting, and LGTM stack governance (updated: 2026-03-28 optimization hardening) |
 | [07-workflow](./07-workflow/README.md) | Workflow orchestration and automation policies (updated: 2026-03-28 optimization hardening) |
-| [08-ai](./08-ai/README.md) | AI model inference and RAG governance |
+| [08-ai](./08-ai/README.md) | AI model inference and RAG governance (updated: 2026-03-28 optimization hardening) |
 | [09-tooling](./09-tooling/README.md) | DevOps and automation governance |
 | [10-communication](./10-communication/README.md) | External communication and mail policies |
 

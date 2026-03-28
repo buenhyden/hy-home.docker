@@ -11,9 +11,9 @@ networks:
   project_net:
     external: true
     name: ${PROJECT_NET_NAME:-project_net}
-  kind:
+  k3d-hyhome:
     external: true
-    name: ${KIND_NET_NAME:-kind}
+    name: ${K3D_HYHOME_NET_NAME:-k3d-hyhome}
 
 secrets:
   # ── Common ─────────────────────────────────────────────

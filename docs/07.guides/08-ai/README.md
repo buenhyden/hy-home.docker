@@ -39,6 +39,7 @@
 ├── local-llm-setup.md
 ├── ollama.md
 ├── open-webui.md
+├── optimization-hardening.md
 └── README.md
 ```
 
@@ -49,6 +50,7 @@
 - [01. LLM Inference Guide](./01.llm-inference.md)
 - [02. RAG Workflow Guide](./02.rag-workflow.md)
 - [Local LLM Setup](./local-llm-setup.md)
+- [08-AI Optimization Hardening Guide](./optimization-hardening.md)
 
 ## How to Work in This Area
 
@@ -56,6 +58,7 @@
 2. Open WebUI와 Ollama의 역할을 분리해서 문서를 작성한다.
 3. 가이드 변경 시 대응 Operation/Runbook 링크를 함께 점검한다.
 4. 상대 경로만 사용하고 깨진 링크를 남기지 않는다.
+5. 최적화/하드닝 변경 시 `optimization-hardening.md`와 상위 Plan/Task 문서를 함께 갱신한다.
 
 ## Related References
 
@@ -63,6 +66,9 @@
 - [Open WebUI PRD](../../01.prd/2026-03-27-08-ai-open-webui.md)
 - [AI ARD (공통)](../../02.ard/0008-ai-architecture.md)
 - [Open WebUI ARD](../../02.ard/0013-open-webui-architecture.md)
+- [AI Optimization PRD](../../01.prd/2026-03-28-08-ai-optimization-hardening.md)
+- [AI Optimization Plan](../../05.plans/2026-03-28-08-ai-optimization-hardening-plan.md)
+- [AI Optimization Tasks](../../06.tasks/2026-03-28-08-ai-optimization-hardening-tasks.md)
 - [AI Operations](../../08.operations/08-ai/README.md)
 - [AI Runbooks](../../09.runbooks/08-ai/README.md)
 - [AI Infra](../../../infra/08-ai/README.md)

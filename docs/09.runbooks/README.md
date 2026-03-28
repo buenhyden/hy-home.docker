@@ -58,7 +58,7 @@
 | [05-messaging](./05-messaging/README.md) | Messaging cluster, queue, and optimization baseline recovery |
 | [06-observability](./06-observability/README.md) | Monitoring, logging, trace recovery, and optimization baseline restoration |
 | [07-workflow](./07-workflow/README.md) | Airflow, n8n, and airbyte job recovery (updated: 2026-03-28 optimization hardening) |
-| [08-ai](./08-ai/README.md) | AI inference and GPU acceleration recovery |
+| [08-ai](./08-ai/README.md) | AI inference and GPU acceleration recovery (updated: 2026-03-28 optimization hardening) |
 | [09-tooling](./09-tooling/README.md) | DevOps and automation tool recovery |
 | [10-communication](./10-communication/README.md) | Mail server and SMTP relay recovery |
 

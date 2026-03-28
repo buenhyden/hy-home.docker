@@ -23,6 +23,7 @@
 | Messaging Hardening Check | [check-messaging-hardening.sh](check-messaging-hardening.sh) | Enforce 05-messaging service hardening baseline |
 | Observability Hardening Check | [check-observability-hardening.sh](check-observability-hardening.sh) | Enforce 06-observability service hardening baseline |
 | Workflow Hardening Check | [check-workflow-hardening.sh](check-workflow-hardening.sh) | Enforce 07-workflow service hardening baseline |
+| AI Hardening Check | [check-ai-hardening.sh](check-ai-hardening.sh) | Enforce 08-ai service hardening baseline |
 | Preflight Check | [preflight-compose.sh](preflight-compose.sh) | Bootstrap prerequisite validation |
 | Cert Generation | [generate-local-certs.sh](generate-local-certs.sh) | Generate local TLS files |
 
@@ -71,6 +72,9 @@
 
 # Enforce 07-workflow hardening baseline
 ./scripts/check-workflow-hardening.sh
+
+# Enforce 08-ai hardening baseline
+./scripts/check-ai-hardening.sh
 
 # Bootstrap secrets
 ./scripts/bootstrap-secrets.sh --force

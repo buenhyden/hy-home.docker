@@ -51,6 +51,7 @@
 ├── 2026-03-28-05-messaging-optimization-hardening.md # 05-messaging 최적화/하드닝 요구사항
 ├── 2026-03-28-06-observability-optimization-hardening.md # 06-observability 최적화/하드닝 요구사항
 ├── 2026-03-28-07-workflow-optimization-hardening.md # 07-workflow 최적화/하드닝 요구사항
+├── 2026-03-28-08-ai-optimization-hardening.md # 08-ai 최적화/하드닝 요구사항
 ├── 2026-03-26-09-tooling.md       # Tooling Tier 제품 요구사항
 ├── 2026-03-26-10-communication.md  # Communication Tier 제품 요구사항
 ├── 2026-03-26-11-laboratory.md     # Laboratory Tier 제품 요구사항

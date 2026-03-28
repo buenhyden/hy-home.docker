@@ -9,6 +9,10 @@ volumes:
       type: none
       device: ${DEFAULT_AI_MODEL_DIR}/ollama
 
+networks:
+  infra_net:
+    external: true
+
 services:
   ollama:
     profiles:
@@ -19,6 +23,10 @@ services:
     image: ollama/ollama:0.18.2
     container_name: ollama
     read_only: false
+    environment:
+      - OLLAMA_NUM_PARALLEL=${OLLAMA_NUM_PARALLEL:-2}
+      - OLLAMA_MAX_LOADED_MODELS=${OLLAMA_MAX_LOADED_MODELS:-1}
+      - OLLAMA_MAX_QUEUE=${OLLAMA_MAX_QUEUE:-128}
     volumes:
       - ollama-data:/root/.ollama:rw
     deploy:
@@ -39,7 +47,7 @@ services:
       traefik.http.routers.ollama.entrypoints: websecure
       traefik.http.routers.ollama.tls: 'true'
       traefik.http.services.ollama.loadbalancer.server.port: ${OLLAMA_PORT:-11434}
-      traefik.http.routers.ollama.middlewares: sso-errors@file,sso-auth@file
+      traefik.http.routers.ollama.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
     networks:
       - infra_net
     healthcheck:
@@ -68,3 +76,12 @@ services:
       - infra_net
     labels:
       <<: *tier-label
+    depends_on:
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q -O- http://localhost:${OLLAMA_EXPORTER_PORT:-11435}/metrics >/dev/null 2>&1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
