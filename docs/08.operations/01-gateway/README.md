@@ -1,58 +1,37 @@
-# Gateway Tier Operations
+# 01-Gateway Operations Policies
 
-> Governance and control rules for the edge routing infrastructure.
-
-## Overview
-
-This directory defines the operational policies for the `01-gateway` tier. It regulates security controls, availability standards, and change management processes for the ingress traffic paths of the `hy-home.docker` ecosystem.
+> `01-gateway` 티어(Traefik/Nginx) 운영 정책 인덱스.
 
 ## Overview (KR)
 
-이 디렉토리는 `01-gateway` 티어의 운영 정책을 정의한다. 트래픽 인입 경로의 보안성, 가용성, 그리고 변경 관리 프로세스에 대한 통제 기준을 규정한다.
-
-## Audience
-
-이 문서의 주요 독자:
-
-- Operators
-- SREs
-- Security Auditors
-- AI Agents
-
-## Policy Table
+이 디렉터리는 `infra/01-gateway`의 운영 통제 기준을 정의한다. 기본 진입점은 Traefik이며, Nginx는 특수 경로 프록시로 운용한다.
 
 ## Scope
 
 ### In Scope
 
-- SSO enforcement policies
-- Traffic management standards
-- Configuration compliance rules for gateway components
+- Traefik 라우터/미들웨어 표준 정책
+- Nginx readonly/timeout/failover 정책
+- 변경 승인 및 검증 기준
 
 ### Out of Scope
 
-- Step-by-step recovery procedures (handled in `docs/09.runbooks`)
-- How-to guides (handled in `docs/07.guides`)
+- 즉시 실행 절차(런북)
+- 튜토리얼/온보딩 가이드
 
 ## Structure
 
 ```text
 01-gateway/
-├──- [Nginx](nginx.md): Nginx Gateway operations policy.
-- [Traefik](traefik.md): Traefik Edge Router operations policy.
-└── README.md       # This file
+├── traefik.md   # Traefik primary gateway operations policy
+├── nginx.md     # Nginx special-path proxy operations policy
+└── README.md
 ```
 
 ## Related Documents
 
-- [01-gateway Root README](../../../infra/01-gateway/README.md)
+- [Gateway Plan](../../05.plans/2026-03-28-01-gateway-optimization-hardening-plan.md)
+- [Gateway Tasks](../../06.tasks/2026-03-28-01-gateway-optimization-hardening-tasks.md)
 - [Gateway Runbooks](../../09.runbooks/01-gateway/README.md)
-- [Incident Records](../../10.incidents/README.md)
-
----
-
-## AI Agent Guidance
-
-1. Follow the `operation.template.md` for any new policy document.
-2. Link policies to their corresponding ARDs and Runbooks.
-3. Do not create redundant policy documents if a higher-level policy already covers the scope.
+- [Gateway Guides](../../07.guides/01-gateway/README.md)
+- [Infra Source](../../../infra/01-gateway/README.md)

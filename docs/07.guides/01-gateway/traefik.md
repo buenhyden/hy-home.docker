@@ -1,12 +1,8 @@
-# Traefik Guide
-
-> Detailed guide for managing and understanding the Traefik Edge Router in the hy-home.docker ecosystem.
-
----
+# 01-Gateway Traefik Guide
 
 ## Overview (KR)
 
-이 문서는 Traefik 에지 라우터에 대한 가이드다. `hy-home.docker` 클러스터 내부에서 동적 서비스 탐색, TLS 종료, 그리고 미들웨어 설정을 이해하고 관리할 수 있도록 단계별 절차와 주요 개념을 제공한다.
+이 문서는 `Traefik Primary` 모델에서 01-gateway 소유 라우터를 운영하는 방법을 설명한다. 표준 미들웨어 체인 적용과 검증 흐름을 중심으로 다룬다.
 
 ## Guide Type
 
@@ -14,89 +10,43 @@
 
 ## Target Audience
 
-- Infrastructure Operators
-- Backend Developers
-- AI Agents
+- Infra/DevOps Engineers
+- Operators
+- Contributors
 
 ## Purpose
 
-이 가이드는 사용자가 Traefik의 작동 방식을 이해하고, 새로운 서비스를 관문에 등록하며, 기존 설정을 유지보수하는 것을 돕는다.
+- Traefik dashboard 라우터 하드닝 정책을 일관되게 적용한다.
+- `gateway-standard-chain` 구성요소와 적용 범위를 이해한다.
 
 ## Prerequisites
 
-- Docker 및 Docker Compose 설치
-- `infra_net` 네트워크 생성 확인
-- SSL 인증서 (`/certs` 볼륨에 위치)
+- Docker/Docker Compose 사용 가능
+- `infra/01-gateway/traefik` 구성 파일 접근 가능
+- `scripts/check-gateway-hardening.sh` 실행 가능
 
 ## Step-by-step Instructions
 
-### 1. New Service Registration
-
-새로운 서비스를 Traefik에 등록하려면 해당 서비스의 `docker-compose.yml`에 다음과 같은 라벨을 추가한다:
-
-```yaml
-labels:
-  traefik.enable: "true"
-  traefik.http.routers.my-app.rule: "Host(`app.${DEFAULT_URL}`)"
-  traefik.http.routers.my-app.entrypoints: "websecure"
-  traefik.http.routers.my-app.tls: "true"
-  traefik.http.services.my-app.loadbalancer.server.port: "8080"
-```
-
-### 2. SSO Integration (OAuth2 Proxy & Keycloak)
-
-Traefik은 `ForwardAuth` 미들웨어를 사용하여 OAuth2 Proxy와 연동하며, OAuth2 Proxy는 다시 Keycloak과 OIDC로 통신한다.
-
-#### Middleware Configuration (`dynamic/middleware.yml`)
-
-```yaml
-middlewares:
-  sso-auth:
-    forwardAuth:
-      address: "http://oauth2-proxy:4180/oauth2/auth"
-      trustForwardHeader: true
-      authResponseHeaders:
-        - "X-Auth-Request-User"
-        - "X-Auth-Request-Email"
-```
-
-#### Service Label Application
-
-보호를 원하는 서비스 라벨에 `sso-auth@file`과 `sso-errors@file`을 추가한다:
-
-```yaml
-labels:
-  traefik.http.routers.my-app.middlewares: "sso-auth@file, sso-errors@file"
-```
-
-### 3. Docker Healthcheck Configuration
-
-Traefik 자체의 헬스체크는 컨테이너 내부의 `ping` 엔드포인트를 사용한다.
-
-- **Static Config**: `ping` 활성화 및 엔드포인트 지정.
-- **Compose**: `traefik healthcheck --ping` 명령 실행.
-
-### 2. Applying Shared Middlewares
-
-`dynamic/middleware.yml`에 정의된 공통 미들웨어(예: SSO)를 적용하려면 라벨에 추가한다:
-
-```yaml
-labels:
-  traefik.http.routers.my-app.middlewares: "sso-auth@file"
-```
-
-### 3. Monitoring via Dashboard
-
-Traefik 대시보드는 `dashboard.${DEFAULT_URL}`에서 접근 가능하다. 상호 요약 정보와 라우팅 규칙의 상태를 실시간으로 확인할 수 있다.
+1. 미들웨어 파일 확인
+   - `infra/01-gateway/traefik/dynamic/middleware.yml`
+   - 필수 블록 확인: `req-rate-limit`, `req-retry`, `req-circuit-breaker`, `gateway-standard-chain`
+2. 라우터 라벨 확인
+   - `infra/01-gateway/traefik/docker-compose.yml`
+   - dashboard 라우터에 `dashboard-auth@file,gateway-standard-chain@file` 적용 확인
+3. 설정 정적 검증
+   - `docker compose -f infra/01-gateway/traefik/docker-compose.yml config`
+4. 하드닝 검증
+   - `bash scripts/check-gateway-hardening.sh`
 
 ## Common Pitfalls
 
-- **Network Mismatch**: 서비스가 `infra_net` 외부에서 실행되면 Traefik이 백엔드에 접근할 수 없다 (504 Gateway Timeout 발생).
-- **Certificate Path**: `dynamic/tls.yaml`의 경로가 실제 컨테이너 내부의 `/certs` 위치와 다를 경우 SSL 오류가 발생한다.
-- **Label Typo**: 라벨 이름에 오타가 있으면 Traefik이 서비스를 무시한다.
+- `gateway-standard-chain` 이름 오타로 middleware resolve 실패
+- dashboard middleware 순서/구분자(`,`) 오류
+- 비게이트웨이 소유 라우터까지 무분별하게 체인 확장 적용
 
 ## Related Documents
 
-- **Spec**: `[../04.specs/01-gateway/traefik.md]`
-- **Operation**: `[../08.operations/01-gateway/traefik.md]`
-- **Runbook**: `[../09.runbooks/01-gateway/traefik.md]`
+- **Spec**: [../../04.specs/01-gateway/spec.md](../../04.specs/01-gateway/spec.md)
+- **Operation**: [../../08.operations/01-gateway/traefik.md](../../08.operations/01-gateway/traefik.md)
+- **Runbook**: [../../09.runbooks/01-gateway/traefik.md](../../09.runbooks/01-gateway/traefik.md)
+- **Plan**: [../../05.plans/2026-03-28-01-gateway-optimization-hardening-plan.md](../../05.plans/2026-03-28-01-gateway-optimization-hardening-plan.md)

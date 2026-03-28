@@ -1,98 +1,90 @@
-# Nginx Runbook
+# 01-Gateway Nginx Runbook
 
-: Path-based Routing & SSO Integration Management
-
-> Runbook for immediate operational tasks and troubleshooting for Nginx.
-
----
+: Nginx Special-path Proxy Recovery
 
 ## Overview (KR)
 
-이 런북은 Nginx 프록시의 운영 절차를 정의한다. 설정 오류로 인한 서비스 중단 대응, SSO 연동 문제 해결, 그리고 성능 최적화를 위한 튜닝 절차를 제공한다.
+이 런북은 Nginx readonly/tmpfs 전환 이후 발생 가능한 장애, `nginx -t` 실패, `/ping` 헬스체크 실패 상황의 복구 절차를 정의한다.
 
 ## Purpose
 
-Nginx 서비스 가용성 유지 및 복잡한 라우팅 이슈의 신속한 해결.
+- readonly/tmpfs 운영 안정성 확보
+- config lint 실패 시 안전 롤백
+- 특수 경로 프록시(`/oauth2/`, `/keycloak/`, `/minio/`, `/minio-console/`) 정상성 회복
 
 ## Canonical References
 
-- **ARD**: `[../../02.ard/README.md]`
-- **Ops Policy**: `[../../08.operations/01-gateway/nginx.md]`
-- **Guide**: `[../../07.guides/01-gateway/nginx.md]`
+- [Operations Policy](../../08.operations/01-gateway/nginx.md)
+- [Plan](../../05.plans/2026-03-28-01-gateway-optimization-hardening-plan.md)
+- [Tasks](../../06.tasks/2026-03-28-01-gateway-optimization-hardening-tasks.md)
 
 ## When to Use
 
-- Nginx 설정 변경 후 즉시 반영이 필요할 때.
-- SSO 인증 후 앱 접근 시 401/403/502 에러가 반복될 때.
-- 대용량 파일 업로드 실패 시 (`413 Request Entity Too Large`).
-- Healthcheck 실패로 인한 컨테이너 재시작 발생 시.
+- `nginx -t` 실패
+- `/ping` healthcheck 반복 실패
+- readonly 전환 후 캐시/로그/PID 쓰기 오류
+- 백엔드 장애 전환(failover) 동작 이상
 
 ## Procedure or Checklist
 
 ### Checklist
 
-- [ ] `docker exec nginx nginx -t` 성공 여부 확인
-- [ ] `infra_net` 상의 타겟 업스트림 핑 응답 확인
-- [ ] OAuth2 Proxy 서비스 상태 확인
+- [ ] `docker compose -f infra/01-gateway/nginx/docker-compose.yml config` 성공
+- [ ] `bash scripts/check-gateway-hardening.sh` 실행
+- [ ] `docker compose -f infra/01-gateway/nginx/docker-compose.yml ps` 상태 확인
 
-### Procedure: Configuration Reload
+### Procedure
 
-설정 파일 수정 후 서비스 중단 없이 반영하는 단계:
-
-1. 설정 파일 문법 검사:
-
-   ```bash
-   docker exec nginx nginx -t
-   ```
-
-2. 오류가 없을 경우 리로드 실행:
-
-   ```bash
-   docker exec nginx nginx -s reload
-   ```
-
-### Procedure: Debugging SSO Integration
-
-인증 문제가 발생할 경우 다음을 순차적으로 확인:
-
-1. Nginx 에러 로그 확인:
-
-   ```bash
-   docker compose logs -f nginx
-   ```
-
-2. `/_oauth2_auth_check` 내부 요청의 응답 코드 확인.
-3. Upstream 서비스가 정상 작동 중인지 확인 (`docker compose ps`).
-4. `X-Forwarded-Proto`가 `https`로 설정되어 있는지 확인.
-
-### Procedure: Recovery from Healthcheck Failure
-
-Healthcheck 실패 시(`wget` spider 에러):
-
-1. `/ping` 로케이션 설정 확인 (`nginx.conf`).
-2. 포트 바인딩 및 컨테이너 내부 80포트 리스닝 상태 확인.
-3. `/etc/nginx/certs` 내 인증서 만료 여부 확인.
+1. 설정 검증
+   - `bash scripts/check-gateway-hardening.sh`
+   - `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t`
+2. readonly/tmpfs 장애 복구
+   - compose에 아래 tmpfs 3개가 있는지 확인:
+     - `/var/cache/nginx`
+     - `/var/log/nginx`
+     - `/var/run`
+   - 누락 시 compose 수정 후 재기동:
+     - `docker compose -f infra/01-gateway/nginx/docker-compose.yml up -d nginx`
+3. config lint 실패 대응
+   - 실패 로그에서 오류 지점 수정
+   - `nginx -t` 재통과 확인 후 `nginx -s reload` 또는 재기동
+4. 특수 경로 정상성 확인
+   - `/ping` 200 응답
+   - `/oauth2/`, `/keycloak/`, `/minio/`, `/minio-console/` 경로 응답 확인
+5. failover 정책 확인
+   - `proxy_next_upstream` 정책/업스트림 `max_fails`, `fail_timeout` 존재 확인
 
 ## Verification Steps
 
-- [ ] `wget -q --spider http://localhost:80/ping` 명령 성공 확인.
-- [ ] 브라우저에서 `/app/` 경로 진입 시 SSO 로그인 페이지로 리다이렉트되는지 확인.
+- [ ] `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t` 통과
+- [ ] `/ping` 200
+- [ ] 인증 플로우 정상 동작 (`/oauth2/`)
+- [ ] 하드닝 검증 스크립트 통과
 
 ## Observability and Evidence Sources
 
-- **Signals**: Nginx Access/Error Logs (`/var/log/nginx/`).
-- **Evidence**: `docker exec nginx nginx -V` (컴파일 옵션 및 모듈 확인).
+- **Signals**: nginx healthcheck, 4xx/5xx 비율, upstream error 로그
+- **Evidence to Capture**:
+  - `docker compose -f infra/01-gateway/nginx/docker-compose.yml logs --tail=200 nginx`
+  - `nginx -t` 결과
 
-## Safe Rollback
+## Safe Rollback or Recovery Procedure
 
-- `/infra/01-gateway/nginx/config/nginx.conf` 파일을 Git 이전 버전으로 복구 후 리로드.
+- [ ] 직전 정상 커밋으로 아래 파일 복원
+  - `infra/01-gateway/nginx/docker-compose.yml`
+  - `infra/01-gateway/nginx/config/nginx.conf`
+- [ ] `docker compose -f infra/01-gateway/nginx/docker-compose.yml up -d nginx`
+- [ ] `nginx -t` 및 `/ping` 재검증
 
-## Agent Operations
+## Agent Operations (If Applicable)
 
-- **Prompt Rollback**: `git checkout config/nginx.conf` 후 리로드 요청.
-- **Trace Capture**: `docker logs nginx --since 5m` 덤프 생성.
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: N/A
+- **Eval Re-run**: `bash scripts/check-gateway-hardening.sh`
+- **Trace Capture**: nginx logs + CI job logs
 
 ## Related Operational Documents
 
-- **Incident examples**: `[../../10.incidents/README.md]`
-- **Postmortem examples**: `[../../11.postmortems/README.md]`
+- **Guide**: [../../07.guides/01-gateway/nginx.md](../../07.guides/01-gateway/nginx.md)
+- **Traefik Runbook**: [./traefik.md](./traefik.md)

@@ -1,65 +1,84 @@
-# Traefik Runbook
+# 01-Gateway Traefik Runbook
 
-: Gateway Routing & TLS Management
-
-> Runbook for immediate operational tasks and troubleshooting for Traefik.
-
----
+: Traefik Primary Gateway Recovery
 
 ## Overview (KR)
 
-이 런북은 Traefik 에지 라우터의 운영 절차를 정의한다. 인증서 갱신, 서비스 장애 발생 시의 문제 해결 절차, 그리고 비상 복구 단계를 제공한다.
+이 런북은 Traefik 미들웨어 회귀, dashboard 접근 장애, 라우팅 이상 상황에서 복구 절차를 정의한다.
 
 ## Purpose
 
-Traefik 서비스 가용성 확보 및 SSL/TLS 관련 운영 이슈 해결.
+- `gateway-standard-chain` 회귀 시 신속 복구
+- Dashboard 인증/접근 장애 진단
+- Traefik 서비스 정상성 복원
 
 ## Canonical References
 
-- **ARD**: `[../../02.ard/README.md]`
-- **Ops Policy**: `[../../08.operations/01-gateway/traefik.md]`
-- **Guide**: `[../../07.guides/01-gateway/traefik.md]`
+- [Operations Policy](../../08.operations/01-gateway/traefik.md)
+- [Plan](../../05.plans/2026-03-28-01-gateway-optimization-hardening-plan.md)
+- [Tasks](../../06.tasks/2026-03-28-01-gateway-optimization-hardening-tasks.md)
 
 ## When to Use
 
-- Traefik 컨테이너 중단 또는 재시작 필요 시.
-- SSL 인증서 만료 임박 및 수동 갱신 시.
-- 특정 도메인으로의 접근이 불가능할 경우(502/504 Bad Gateway).
+- dashboard 접근 실패(401 loop, 429 burst, 5xx)
+- 미들웨어 체인 누락/오타/잘못된 순서
+- Traefik healthcheck 실패
 
 ## Procedure or Checklist
 
-### Procedure: Recovery from Healthcheck Failure
+### Checklist
 
-Traefik 헬스체크 실패(Ping 응답 없음) 시:
+- [ ] `docker compose -f infra/01-gateway/traefik/docker-compose.yml config` 성공
+- [ ] `docker compose -f infra/01-gateway/traefik/docker-compose.yml ps`에서 상태 정상
+- [ ] `bash scripts/check-gateway-hardening.sh` 실패 원인 확인
 
-1. `config/traefik.yml` 내 `ping` 엔드포인트 설정 확인.
-2. `metrics` 엔드포인트(Port 8082) 리스닝 상태 확인.
-3. Docker Socket 접근 권한 (`traefik.yml`의 `endpoint`) 확인.
+### Procedure
 
-### Procedure: Debugging ForwardAuth SSO
-
-SSO 인증 중단 시 체크리스트:
-
-1. OAuth2 Proxy 서비스 상태 확인 (`docker compose ps oauth2-proxy`).
-2. `dynamic/middleware.yml`의 `address` 오타 여부 확인.
-3. 브라우저 개발자 도구의 `Authorization` 헤더 포함 여부 확인.
+1. 설정 검증
+   - `bash scripts/check-gateway-hardening.sh`
+   - `docker compose -f infra/01-gateway/traefik/docker-compose.yml config`
+2. middleware 회귀 대응
+   - `infra/01-gateway/traefik/dynamic/middleware.yml`에서 아래 4개 블록 존재 확인:
+     - `req-rate-limit`
+     - `req-retry`
+     - `req-circuit-breaker`
+     - `gateway-standard-chain`
+3. dashboard 라우터 체인 확인
+   - `infra/01-gateway/traefik/docker-compose.yml`의 dashboard middleware 라벨이
+     `dashboard-auth@file,gateway-standard-chain@file`인지 확인
+4. 서비스 재기동
+   - `docker compose -f infra/01-gateway/traefik/docker-compose.yml up -d traefik`
+5. 사후 확인
+   - `docker compose -f infra/01-gateway/traefik/docker-compose.yml exec traefik traefik healthcheck --ping`
 
 ## Verification Steps
 
-- [ ] `docker exec traefik traefik healthcheck --ping` 결과가 `OK`인지 확인.
-- [ ] 브라우저에서 `https://dashboard.${DEFAULT_URL}` 접속 및 인증서 유효성 확인.
-- [ ] 특정 보호 경로 진입 시 Keycloak 로그인 창으로 리다이렉트되는지 확인.
+- [ ] `bash scripts/check-gateway-hardening.sh` 통과
+- [ ] dashboard 접근 시 BasicAuth 요구 및 인증 성공
+- [ ] 기존 라우팅 규칙 회귀 없음
 
 ## Observability and Evidence Sources
 
-- **Signals**: Traefik Dashboard, Prometheus Metrics (`:8082/metrics`).
-- **Evidence**: `docker compose logs --tail=100 traefik`.
+- **Signals**: Traefik healthcheck, gateway access/error logs
+- **Evidence to Capture**:
+  - `docker compose -f infra/01-gateway/traefik/docker-compose.yml logs --tail=200 traefik`
+  - 검증 스크립트 출력
 
-## Safe Rollback
+## Safe Rollback or Recovery Procedure
 
-- `/infra/01-gateway/traefik` 폴더에서 Git 커밋을 이전 상태로 되돌리고 `docker compose up -d --force-recreate`를 실행한다.
+- [ ] 직전 정상 커밋으로 `infra/01-gateway/traefik/*` 복원
+- [ ] `docker compose -f infra/01-gateway/traefik/docker-compose.yml up -d traefik`
+- [ ] 롤백 후 `check-gateway-hardening.sh` 재실행
+
+## Agent Operations (If Applicable)
+
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: N/A
+- **Eval Re-run**: `bash scripts/check-gateway-hardening.sh`
+- **Trace Capture**: Traefik logs + CI job logs
 
 ## Related Operational Documents
 
-- **Incident examples**: `[../../10.incidents/README.md]`
-- **Postmortem examples**: `[../../11.postmortems/README.md]`
+- **Guide**: [../../07.guides/01-gateway/traefik.md](../../07.guides/01-gateway/traefik.md)
+- **Nginx Runbook**: [./nginx.md](./nginx.md)

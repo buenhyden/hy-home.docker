@@ -1,55 +1,24 @@
-# Gateway Tier Guides
+# 01-Gateway Guides
 
-> Comprehensive guides for understanding and setting up the entry point infrastructure.
-
-## Overview
-
-This directory contains architectural guides, initial setup instructions, and general usage patterns for the `01-gateway` tier. Our goal is the harmonious operation of Traefik and Nginx acting as the dual-gateways for the `hy-home.docker` ecosystem.
+> `01-gateway`(Traefik/Nginx) 설정/운영 이해를 위한 가이드 인덱스.
 
 ## Overview (KR)
 
-이 디렉토리는 `01-gateway` 티어의 아키텍처 이해, 초기 설정, 그리고 일반적인 사용법에 대한 가이드 문서를 포함합니다. `hy-home.docker`의 관문 역할을 하는 Traefik과 Nginx의 조화로운 운영을 목표로 합니다.
-
-## Audience
-
-이 README의 주요 독자:
-
-- Operators
-- Developers
-- AI Agents
-
-## Scope
-
-### In Scope
-
-- Service onboarding guides
-- Nginx & Traefik configuration tutorials
-- SSO integration patterns for gateway
-
-### Out of Scope
-
-- Operational policies (handled in `docs/08.operations`)
-- Step-by-step recovery procedures (handled in `docs/09.runbooks`)
+이 디렉터리는 게이트웨이 구성 이해와 변경 작업 방법을 설명한다. 정책은 `08.operations`, 즉시 복구 절차는 `09.runbooks`를 참조한다.
 
 ## Structure
 
 ```text
 01-gateway/
-├── nginx.md       #- [Nginx](nginx.md): Nginx Gateway guide.
-- [Traefik](traefik.md): Traefik Edge Router guide.
-└── README.md       # This file
+├── 01.setup.md   # 초기 구성 및 실행 절차
+├── traefik.md    # Traefik primary gateway guide
+├── nginx.md      # Nginx special-path proxy guide
+└── README.md
 ```
 
 ## Related Documents
 
-- [01-gateway Root README](../../../infra/01-gateway/README.md)
-- [Gateway Operations](../../08.operations/01-gateway/README.md)
-- [Gateway Runbooks](../../09.runbooks/01-gateway/README.md)
-
----
-
-## AI Agent Guidance
-
-1. Read this README first to understand the guide structure.
-2. When creating a new guide, use `docs/99.templates/guide.template.md`.
-3. Ensure all internal links are relative and validated.
+- [Spec](../../04.specs/01-gateway/spec.md)
+- [Operations](../../08.operations/01-gateway/README.md)
+- [Runbooks](../../09.runbooks/01-gateway/README.md)
+- [Plan](../../05.plans/2026-03-28-01-gateway-optimization-hardening-plan.md)

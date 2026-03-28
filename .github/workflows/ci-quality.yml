@@ -20,6 +20,36 @@ jobs:
       - name: Check docs traceability sync
         run: bash scripts/check-doc-traceability.sh
 
+  # ── Gateway Hardening Baseline ──────────────────────────────
+  gateway-hardening:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check 01-gateway hardening baseline
+        run: bash scripts/check-gateway-hardening.sh
+
+  # ── Template/Security Baseline ──────────────────────────────
+  template-security-baseline:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check template adoption + security baseline
+        run: bash scripts/check-template-security-baseline.sh
+
+  # ── QuickWin Baseline ───────────────────────────────────────
+  quickwin-baseline:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check QuickWin baseline
+        run: bash scripts/check-quickwin-baseline.sh
+
   # ── Pre-commit Hooks ──────────────────────────────────────────
   pre-commit:
     permissions:

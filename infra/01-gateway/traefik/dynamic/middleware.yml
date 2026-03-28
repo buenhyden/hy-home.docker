@@ -53,3 +53,19 @@ http:
         burst: 50 # 최대 50개까지 버스트 허용
         sourceCriterion:
           requestHost: true
+
+    req-retry:
+      retry:
+        attempts: 2
+        initialInterval: 100ms
+
+    req-circuit-breaker:
+      circuitBreaker:
+        expression: "NetworkErrorRatio() > 0.30"
+
+    gateway-standard-chain:
+      chain:
+        middlewares:
+          - req-rate-limit
+          - req-retry
+          - req-circuit-breaker

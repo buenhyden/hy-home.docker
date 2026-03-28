@@ -16,6 +16,7 @@
 | QuickWin Baseline Check | [check-quickwin-baseline.sh](check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
 | Template & Security Baseline Check | [check-template-security-baseline.sh](check-template-security-baseline.sh) | Enforce template adoption and required security controls |
 | Documentation Traceability Check | [check-doc-traceability.sh](check-doc-traceability.sh) | Enforce sync links across 05.plans ↔ 08.operations ↔ 09.runbooks |
+| Gateway Hardening Check | [check-gateway-hardening.sh](check-gateway-hardening.sh) | Enforce 01-gateway Traefik/Nginx hardening baseline |
 | Preflight Check | [preflight-compose.sh](preflight-compose.sh) | Bootstrap prerequisite validation |
 | Cert Generation | [generate-local-certs.sh](generate-local-certs.sh) | Generate local TLS files |
 
@@ -43,6 +44,9 @@
 
 # Enforce documentation traceability sync
 ./scripts/check-doc-traceability.sh
+
+# Enforce 01-gateway hardening baseline
+./scripts/check-gateway-hardening.sh
 
 # Bootstrap secrets
 ./scripts/bootstrap-secrets.sh --force

@@ -1,12 +1,8 @@
-# Nginx Guide
-
-> Detailed guide for managing and understanding the Nginx Proxy in the hy-home.docker ecosystem.
-
----
+# 01-Gateway Nginx Guide
 
 ## Overview (KR)
 
-이 문서는 Nginx 프록시에 대한 가이드다. `hy-home.docker` 클러스터 내부에서 경로 기반(Path-based) 라우팅 설정, SSO(OAuth2 Proxy) 연동 방식, 그리고 업스트림 서비스 구성을 이해하고 관리할 수 있도록 단계별 절차와 주요 개념을 제공한다.
+이 문서는 01-gateway의 Nginx 특수 경로 프록시 구성과 하드닝 포인트를 설명한다. readonly/tmpfs 운영, timeout/failover, 정적 캐시 정책의 의도를 중심으로 다룬다.
 
 ## Guide Type
 
@@ -14,95 +10,43 @@
 
 ## Target Audience
 
-- Infrastructure Operators
-- Backend Developers
-- AI Agents
+- Infra/DevOps Engineers
+- Operators
+- Contributors
 
 ## Purpose
 
-이 가이드는 사용자가 Nginx의 특수 프록시 규칙을 이해하고, 새로운 경로를 등록하며, SSO 인증을 앱에 적용하는 것을 돕는다.
+- Nginx를 `template-infra-readonly-low` 기반으로 안정적으로 운영한다.
+- `/oauth2/`, `/keycloak/`, `/minio/`, `/minio-console/` 경로 흐름을 유지하면서 하드닝 변경을 적용한다.
 
 ## Prerequisites
 
-- Traefik 에지 라우터 정상 작동
-- SSL 인증서 (`/etc/nginx/certs` 볼륨에 위치)
-- `infra_net` 네트워크 내의 업스트림 서비스 실행 중
+- Docker/Docker Compose 사용 가능
+- `infra/01-gateway/nginx` 구성 파일 접근 가능
+- `scripts/check-gateway-hardening.sh` 실행 가능
 
 ## Step-by-step Instructions
 
-### 1. Adding a New Path-based Route
-
-새로운 서비스를 특정 경로(예: `/my-service/`)로 노출하려면 `nginx.conf`의 `server` 블록 내에 `location`을 추가한다:
-
-```nginx
-location /my-service/ {
-    proxy_pass http://my-service-upstream/;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-Proto $scheme;
-}
-```
-
-### 2. Enabling SSO (OAuth2 Proxy) for a Location
-
-특정 경로를 SSO 인증으로 보호하려면 OAuth2 Proxy 시스템과 연동한다. Nginx는 `auth_request` 모듈을 사용하여 인증 수행 여부를 결정한다.
-
-1. **Auth Check 엔드포인트**:
-   `nginx.conf`에 내부 API 엔드포인트가 정의되어 있어야 한다:
-
-   ```nginx
-   location = /_oauth2_auth_check {
-       internal;
-       proxy_pass http://oauth2-proxy:4180/oauth2/auth;
-       proxy_pass_request_body off;
-       proxy_set_header Content-Length "";
-   }
-   ```
-
-2. **Location 보호 적용**:
-
-   ```nginx
-   location /protected-app/ {
-       auth_request /_oauth2_auth_check;
-       error_page 401 = /oauth2/sign_in;
-
-       auth_request_set $user $upstream_http_x_auth_request_user;
-       proxy_set_header X-Auth-Request-User $user;
-
-       proxy_pass http://protected-app-upstream/;
-   }
-   ```
-
-### 3. Keycloak Integration
-
-Keycloak을 Nginx 뒷단에 배치할 때는 정적 자산 및 리다이렉트 처리를 위해 다음 설정을 준수한다:
-
-- **Realm 설정**: 기본 렐름은 `hy-home`을 사용한다.
-- **Client 설정**: `oauth2-proxy` 클라이언트가 `confidential` 타입으로 생성되어야 한다.
-- **Header 설정**: `X-Forwarded-Proto https`와 `X-Forwarded-Port 443`을 명시하여 Keycloak이 올바른 리다이렉트 URI를 생성하도록 한다.
-
-### 4. Docker Healthcheck Configuration
-
-Nginx 컨테이너의 상태 확인을 위해 `docker-compose.yml`에 다음과 같이 설정한다:
-
-```yaml
-healthcheck:
-  test: ["CMD-SHELL", "wget -q --spider http://localhost:80/ping || exit 1"]
-  interval: 15s
-  timeout: 30s
-  retries: 5
-```
-
-이 설정은 Nginx 내부의 `/ping` 로케이션(200 OK 응답)을 주기적으로 점검한다.
+1. Compose 하드닝 확인
+   - `infra/01-gateway/nginx/docker-compose.yml`
+   - readonly 템플릿/필수 tmpfs/`/ping` healthcheck 존재 확인
+2. Nginx config 하드닝 확인
+   - `infra/01-gateway/nginx/config/nginx.conf`
+   - `server_tokens off`, timeout 3종, `proxy_next_upstream`, upstream `max_fails/fail_timeout`, 정적 캐시 location 확인
+3. 설정 검증
+   - `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t`
+4. 하드닝 검증
+   - `bash scripts/check-gateway-hardening.sh`
 
 ## Common Pitfalls
 
-- **Trailing Slash**: `proxy_pass http://service/;`와 `proxy_pass http://service;`의 차이로 인해 경로 맵핑이 어긋날 수 있다.
-- **Buffer Size**: 대용량 헤더(SSO 토큰 등) 사용 시 `proxy_buffer_size` 부족으로 502 에러가 발생할 수 있다.
-- **SSL Loop**: `X-Forwarded-Proto` 헤더가 올바르지 않으면 백엔드에서 무한 리다이렉트가 발생할 수 있다.
+- readonly 전환 후 `/var/cache/nginx`/`/var/log/nginx`/`/var/run` tmpfs 누락
+- `proxy_pass` trailing slash 처리 실수로 경로 재작성 오류
+- timeout 전역값/특정 location override 충돌
 
 ## Related Documents
 
-- **Spec**: `[../04.specs/01-gateway/nginx.md]`
-- **Operation**: `[../08.operations/01-gateway/nginx.md]`
-- **Runbook**: `[../09.runbooks/01-gateway/nginx.md]`
+- **Spec**: [../../04.specs/01-gateway/spec.md](../../04.specs/01-gateway/spec.md)
+- **Operation**: [../../08.operations/01-gateway/nginx.md](../../08.operations/01-gateway/nginx.md)
+- **Runbook**: [../../09.runbooks/01-gateway/nginx.md](../../09.runbooks/01-gateway/nginx.md)
+- **Plan**: [../../05.plans/2026-03-28-01-gateway-optimization-hardening-plan.md](../../05.plans/2026-03-28-01-gateway-optimization-hardening-plan.md)
