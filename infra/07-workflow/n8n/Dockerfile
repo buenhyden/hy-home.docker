@@ -60,5 +60,7 @@ RUN mkdir -p /home/node/.n8n/custom && \
 # Copy custom nodes (if any) from local context
 COPY --chown=node:node ./custom /home/node/.n8n/custom
 
+COPY --chown=node:node ./docker-entrypoint.sh /home/node/docker-entrypoint.sh
+RUN chmod 0755 /home/node/docker-entrypoint.sh
 
-# The official n8n image already has proper ENTRYPOINT configured
+ENTRYPOINT ["./docker-entrypoint.sh"]

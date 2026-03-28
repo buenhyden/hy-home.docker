@@ -51,7 +51,7 @@
   - [lake-and-object](./04-data/lake-and-object/README.md)
 - [05-messaging](./05-messaging/README.md) (updated: 2026-03-28 optimization hardening)
 - [06-observability](./06-observability/README.md) (updated: 2026-03-28 optimization hardening)
-- [07-workflow](./07-workflow/README.md)
+- [07-workflow](./07-workflow/README.md) (updated: 2026-03-28 optimization hardening)
   - [airbyte](./07-workflow/airbyte.md)
 - [08-ai](./08-ai/README.md)
 - [09-tooling](./09-tooling/README.md)

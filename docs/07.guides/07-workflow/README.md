@@ -38,6 +38,7 @@
 ├── airflow.md               # Airflow 시스템 가이드
 ├── n8n.md                   # n8n 시스템 가이드
 ├── airbyte.md               # Airbyte 운영 준비 가이드
+├── optimization-hardening.md # 07-workflow 최적화/하드닝 가이드
 └── README.md                # This file
 ```
 
@@ -46,6 +47,7 @@
 1. 새 가이드는 `../../99.templates/guide.template.md`를 사용한다.
 2. 문서에는 `Overview (KR)`, `Prerequisites`, `Step-by-step Instructions`, `Common Pitfalls`를 포함한다.
 3. 각 가이드에서 대응되는 Operation/Runbook 링크를 함께 유지한다.
+4. 최적화/하드닝 변경은 `optimization-hardening.md`와 상위 Plan/Task 문서를 함께 갱신한다.
 
 ## Related References
 
@@ -55,3 +57,5 @@
 - **Spec**: [07-workflow/spec.md](../../04.specs/07-workflow/spec.md)
 - **Operations**: [07-workflow Operations](../../08.operations/07-workflow/README.md)
 - **Runbooks**: [07-workflow Runbooks](../../09.runbooks/07-workflow/README.md)
+- **Optimization PRD**: [2026-03-28-07-workflow-optimization-hardening.md](../../01.prd/2026-03-28-07-workflow-optimization-hardening.md)
+- **Optimization Plan**: [2026-03-28-07-workflow-optimization-hardening-plan.md](../../05.plans/2026-03-28-07-workflow-optimization-hardening-plan.md)

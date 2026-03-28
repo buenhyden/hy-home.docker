@@ -37,6 +37,7 @@
 ├── airflow-worker-recovery.md # Airflow Worker 장애 심화 대응
 ├── n8n.md                     # n8n 서비스 복구 런북
 ├── airbyte.md                 # Airbyte 동기화/워커 복구 런북
+├── optimization-hardening.md  # 07-workflow 최적화/하드닝 복구 런북
 └── README.md                  # This file
 ```
 
@@ -45,6 +46,7 @@
 1. 새 런북은 `../../99.templates/runbook.template.md`를 사용한다.
 2. `When to Use`, `Procedure`, `Verification`, `Safe Rollback`을 항상 채운다.
 3. 복구 종료 후 Incident/Postmortem 링크를 남긴다.
+4. 최적화/하드닝 회귀 복구 시 `check-workflow-hardening.sh` 결과를 증적으로 남긴다.
 
 ## Related References
 
@@ -54,3 +56,5 @@
 - **Guides**: [07-workflow Guides](../../07.guides/07-workflow/README.md)
 - **Operations**: [07-workflow Operations](../../08.operations/07-workflow/README.md)
 - **Incidents**: [Incidents README](../../10.incidents/README.md)
+- **Optimization Plan**: [2026-03-28-07-workflow-optimization-hardening-plan.md](../../05.plans/2026-03-28-07-workflow-optimization-hardening-plan.md)
+- **Optimization Tasks**: [2026-03-28-07-workflow-optimization-hardening-tasks.md](../../06.tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md)

@@ -36,6 +36,7 @@
 ├── airflow.md           # Airflow 운영 정책
 ├── n8n.md               # n8n 운영 정책
 ├── airbyte.md           # Airbyte 운영 정책
+├── optimization-hardening.md # 07-workflow 최적화/하드닝 운영 정책
 └── README.md            # This file
 ```
 
@@ -44,6 +45,7 @@
 1. 새 정책 문서는 `../../99.templates/operation.template.md`를 사용한다.
 2. `Controls`와 `AI Agent Policy Section`은 필수로 채운다.
 3. 정책 변경 시 대응 Runbook과 Plan/Task 링크를 함께 갱신한다.
+4. 카탈로그 확장 항목(Airflow/n8n/airbyte)의 승인 게이트를 최신 상태로 유지한다.
 
 ## Related References
 
@@ -52,3 +54,5 @@
 - **Spec**: [07-workflow/spec.md](../../04.specs/07-workflow/spec.md)
 - **Guides**: [07-workflow Guides](../../07.guides/07-workflow/README.md)
 - **Runbooks**: [07-workflow Runbooks](../../09.runbooks/07-workflow/README.md)
+- **Optimization PRD**: [2026-03-28-07-workflow-optimization-hardening.md](../../01.prd/2026-03-28-07-workflow-optimization-hardening.md)
+- **Optimization Tasks**: [2026-03-28-07-workflow-optimization-hardening-tasks.md](../../06.tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md)

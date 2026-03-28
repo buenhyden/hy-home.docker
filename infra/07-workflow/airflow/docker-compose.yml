@@ -66,6 +66,20 @@ volumes:
       device: ${DEFAULT_WORKFLOW_DIR}/airflow/plugins
   airflow-valkey-data:
 
+secrets:
+  airflow_db_password:
+    external: true
+  airflow_fernet_key:
+    external: true
+  airflow_www_password:
+    external: true
+  airflow_valkey_password:
+    external: true
+
+networks:
+  infra_net:
+    external: true
+
 services:
   airflow-apiserver:
     extends:
@@ -84,13 +98,15 @@ services:
     depends_on:
       airflow-init:
         condition: service_completed_successfully
+      airflow-valkey:
+        condition: service_healthy
     labels:
       <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.airflow.rule: Host(`airflow.${DEFAULT_URL}`)
       traefik.http.routers.airflow.entrypoints: websecure
       traefik.http.routers.airflow.tls: 'true'
-      traefik.http.routers.airflow.middlewares: gateway-standard-chain@file
+      traefik.http.routers.airflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.airflow.loadbalancer.server.port: ${AIRFLOW_PORT:-8080}
   airflow-scheduler:
     extends:
@@ -109,6 +125,8 @@ services:
     depends_on:
       airflow-init:
         condition: service_completed_successfully
+      airflow-valkey:
+        condition: service_healthy
   airflow-dag-processor:
     extends:
       file: ../../common-optimizations.yml
@@ -126,6 +144,8 @@ services:
     depends_on:
       airflow-init:
         condition: service_completed_successfully
+      airflow-valkey:
+        condition: service_healthy
   airflow-worker:
     extends:
       file: ../../common-optimizations.yml
@@ -152,6 +172,8 @@ services:
         condition: service_healthy
       airflow-init:
         condition: service_completed_successfully
+      airflow-valkey:
+        condition: service_healthy
   airflow-triggerer:
     extends:
       file: ../../common-optimizations.yml
@@ -169,6 +191,8 @@ services:
     depends_on:
       airflow-init:
         condition: service_completed_successfully
+      airflow-valkey:
+        condition: service_healthy
   airflow-init:
     extends:
       file: ../../common-optimizations.yml
@@ -220,6 +244,10 @@ services:
     depends_on:
       airflow-init:
         condition: service_completed_successfully
+      airflow-apiserver:
+        condition: service_healthy
+      airflow-valkey:
+        condition: service_healthy
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -227,7 +255,7 @@ services:
       traefik.http.routers.flower.entrypoints: websecure
       traefik.http.routers.flower.tls: 'true'
       traefik.http.services.flower.loadbalancer.server.port: ${FLOWER_PORT:-5555}
-      traefik.http.routers.flower.middlewares: sso-errors@file,sso-auth@file
+      traefik.http.routers.flower.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
   airflow-valkey:
     profiles:
       - 'workflow'

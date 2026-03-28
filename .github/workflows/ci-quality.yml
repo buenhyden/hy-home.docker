@@ -80,6 +80,16 @@ jobs:
       - name: Check 06-observability hardening baseline
         run: bash scripts/check-observability-hardening.sh
 
+  # ── Workflow Hardening Baseline ─────────────────────────────
+  workflow-hardening:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check 07-workflow hardening baseline
+        run: bash scripts/check-workflow-hardening.sh
+
   # ── Template/Security Baseline ──────────────────────────────
   template-security-baseline:
     permissions:
