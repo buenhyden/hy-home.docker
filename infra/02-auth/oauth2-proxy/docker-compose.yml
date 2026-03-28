@@ -21,20 +21,15 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: oauth2-proxy
-    entrypoint:
-      - /bin/sh
-      - -c
-    command:
-      - |
-        export OAUTH2_PROXY_COOKIE_SECRET=$$(cat /run/secrets/oauth2_proxy_cookie_secret | tr -d '\n')
-        export OAUTH2_PROXY_CLIENT_SECRET=$$(cat /run/secrets/oauth2_proxy_client_secret | tr -d '\n')
-        export OAUTH2_PROXY_REDIS_PASSWORD=$$(cat /run/secrets/mng_valkey_password | tr -d '\n')
-        exec /bin/oauth2-proxy --config /etc/oauth2-proxy.cfg
     environment:
       - SSL_CERT_FILE=/etc/ssl/certs/rootCA.pem
       - OAUTH2_PROXY_SESSION_STORE_TYPE=redis
       - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://mng-valkey:6379
       - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}
+      - OAUTH2_PROXY_OIDC_ISSUER_URL=https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
+      - OAUTH2_PROXY_REDIRECT_URL=https://auth.${DEFAULT_URL}/oauth2/callback
+      - OAUTH2_PROXY_COOKIE_DOMAINS=.${DEFAULT_URL}
+      - OAUTH2_PROXY_WHITELIST_DOMAINS=*.${DEFAULT_URL}
     volumes:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
@@ -62,9 +57,10 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 20s
     extra_hosts:
-      - 'keycloak.127.0.0.1.nip.io:host-gateway'
-      - 'auth.127.0.0.1.nip.io:host-gateway'
+      - 'keycloak.${DEFAULT_URL}:host-gateway'
+      - 'auth.${DEFAULT_URL}:host-gateway'
 
   # oauth2-proxy-valkey:
   #   deploy:
