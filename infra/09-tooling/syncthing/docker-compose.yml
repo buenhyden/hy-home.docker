@@ -1,6 +1,10 @@
 x-tier-label: &tier-label
   hy-home.tier: tooling
 
+networks:
+  infra_net:
+    external: true
+
 volumes:
   syncthing-volume:
     driver: local
@@ -57,7 +61,7 @@ services:
       traefik.http.routers.syncthing.rule: Host(`syncthing.${DEFAULT_URL}`)
       traefik.http.routers.syncthing.entrypoints: websecure
       traefik.http.routers.syncthing.tls: 'true'
-      traefik.http.routers.syncthing.middlewares: gateway-standard-chain@file
+      traefik.http.routers.syncthing.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.syncthing.loadbalancer.server.port: ${SYNCTHING_GUI_PORT:-8384}
     networks:
       - infra_net

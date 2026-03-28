@@ -100,6 +100,16 @@ jobs:
       - name: Check 08-ai hardening baseline
         run: bash scripts/check-ai-hardening.sh
 
+  # ── Tooling Hardening Baseline ──────────────────────────────
+  tooling-hardening:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check 09-tooling hardening baseline
+        run: bash scripts/check-tooling-hardening.sh
+
   # ── Template/Security Baseline ──────────────────────────────
   template-security-baseline:
     permissions:

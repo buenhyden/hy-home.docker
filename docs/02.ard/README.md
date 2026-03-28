@@ -45,6 +45,7 @@
 ├── 0021-observability-optimization-hardening-architecture.md
 ├── 0022-workflow-optimization-hardening-architecture.md
 ├── 0023-ai-optimization-hardening-architecture.md
+├── 0024-tooling-optimization-hardening-architecture.md
 ├── 2026-03-26-10-communication-standardization.md # Communication 문서 표준화 계획
 ├── 2026-03-26-11-laboratory-standardization.md # Laboratory 문서 표준화 계획
 └── README.md                                 # This file

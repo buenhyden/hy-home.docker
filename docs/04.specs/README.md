@@ -107,6 +107,7 @@
 - [06-observability](./06-observability/spec.md) (updated: 2026-03-28 optimization hardening)
 - [07-workflow](./07-workflow/spec.md) (updated: 2026-03-28 optimization hardening)
 - [08-ai](./08-ai/spec.md) (updated: 2026-03-28 optimization hardening)
+- [09-tooling](./09-tooling/spec.md) (updated: 2026-03-28 optimization hardening)
 - [11-laboratory](./11-laboratory/spec.md)
 
 ## Templates

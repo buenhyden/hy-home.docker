@@ -1,41 +1,35 @@
-# Tooling Operations Policy (09-tooling)
+# Tooling Tier Operations (09-tooling)
 
-> Toolchain Lifecycle, Database Maintenance & CI/CD Governance
+> `09-tooling` 계층 운영 정책과 통제 기준 문서 모음.
 
 ## Overview
 
-이 정책은 `hy-home.docker` 도구 계층(09-tooling)의 안정적인 운영과 데이터 관리를 위한 기준을 정의한다.
+이 디렉터리는 Tooling 계층의 운영 거버넌스를 관리한다. 도구별 정책(terraform, terrakube, registry, sonarqube, k6, locust, syncthing)과 최적화/하드닝 기준을 정의하며, 실행 절차는 runbook으로 분리한다.
 
-## Toolchain Maintenance
+## Documents
 
-- **SonarQube Upgrades**: 코드 품질 규칙 업데이트를 위해 주기적으로 최신 Community 버전을 유지한다. 엘라스틱서치(Elasticsearch) 인덱스 재구축이 필요한 경우 무중단 업데이트가 불가능할 수 있음을 인지한다.
-- **Terrakube Backups**: Terraform 상태(tfstate)는 MinIO에서 버전 관리를 수행하며, Terrakube 메타데이터 DB는 매일 백업을 수행한다.
+- [Performance Testing Operations Policy](./performance-testing.md)
+- [Locust Operations Policy](./locust.md)
+- [k6 Operations Policy](./k6.md)
+- [Registry Operations Policy](./registry.md)
+- [SonarQube Operations Policy](./sonarqube.md)
+- [Syncthing Operations Policy](./syncthing.md)
+- [Terraform Operations Policy](./terraform.md)
+- [Terrakube Operations Policy](./terrakube.md)
+- [Optimization Hardening Operations Policy](./optimization-hardening.md)
 
 ## Operational Standards
 
-### 1. 성능 및 리소스 관리
+- 공개 tooling 라우터는 gateway 표준 체인 + SSO 체인을 강제한다.
+- compose 네트워크 경계(`infra_net` external)를 유지한다.
+- tooling 하드닝 회귀는 script/CI 게이트로 차단한다.
+- 카탈로그 확장 항목은 승인 게이트와 함께 단계적으로 도입한다.
 
-- [Performance Testing Operations Policy](./performance-testing.md) - General benchmarking and scaling policies.
-- [Locust Operations Policy](./locust.md) - Specific governance for Locust service units.
-- [k6 Operations Policy](./k6.md) - Specific governance for k6 infrastructure units.
-- [Registry Operations Policy](./registry.md) - Governance for internal OCI image distribution.
-- [SonarQube Operations Policy](./sonarqube.md) - Governance for code quality and security scanning.
-- [07. Syncthing Operations](./syncthing.md) - P2P sync integrity and conflict management.
-- [08. Terraform Operations](./terraform.md) - IaC state policy and deployment workflow.
-- [09. Terrakube Operations](./terrakube.md) - Collaborative IaC governance and registry policy.chronization.
-- **Memory Limits**: SonarQube는 높은 메모리 할당을 요구하므로, `common-optimizations.yml`의 `high` 최적화 템플릿을 준수한다.
+## Related References
 
-### 2. 접근 제어 (Access Control)
-
-- 모든 도구(SonarQube, Terrakube)는 Keycloak SSO를 기반으로 한 RBAC 정책을 적용한다.
-- `registry`는 [Registry Operations Policy](./registry.md)에 따라 내부 네트워크에서 관리한다.
-
-## Database & Persistence
-
-- 도구별 전용 데이터베이스 스키마는 `04-data`의 매니지먼트 PostgreSQL 클러스터에서 독립적으로 관리한다.
-- 불필요한 테스트 실행 기록은 60일 경과 시 자동 아카이빙 처리한다.
-
-## Related Documents
-
-- [07. Guides](../../07.guides/09-tooling/README.md)
-- [09. Runbooks](../../09.runbooks/09-tooling/README.md)
+- [Tooling Guide Index](../../07.guides/09-tooling/README.md)
+- [Tooling Runbook Index](../../09.runbooks/09-tooling/README.md)
+- [Tooling PRD](../../01.prd/2026-03-28-09-tooling-optimization-hardening.md)
+- [Tooling Plan](../../05.plans/2026-03-28-09-tooling-optimization-hardening-plan.md)
+- [Tooling Tasks](../../06.tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md)
+- [Optimization Catalog](../12-infra-service-optimization-catalog.md)
