@@ -23,6 +23,7 @@ services:
   syncthing:
     profiles:
       - 'tooling'
+      - sync
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med

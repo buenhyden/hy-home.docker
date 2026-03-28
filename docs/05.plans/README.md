@@ -56,6 +56,7 @@
 ├── 2026-03-28-09-tooling-optimization-hardening-plan.md # 09-tooling 최적화/하드닝 실행 계획
 ├── 2026-03-26-10-communication-standardization.md # Communication 문서 표준화 계획
 ├── 2026-03-26-11-laboratory-standardization.md # Laboratory 문서 표준화 계획
+├── 2026-03-28-11-laboratory-optimization-hardening-plan.md # 11-laboratory 최적화/하드닝 실행 계획
 └── README.md                                 # This file
 ```
 

@@ -56,6 +56,7 @@
 ├── 0022-workflow-hardening-and-ha-expansion-strategy.md # 07-workflow 단계적 하드닝/확장 전략 결정
 ├── 0023-ai-hardening-and-ha-expansion-strategy.md # 08-ai 단계적 하드닝/확장 전략 결정
 ├── 0024-tooling-hardening-and-ha-expansion-strategy.md # 09-tooling 단계적 하드닝/확장 전략 결정
+├── 0025-laboratory-hardening-and-ha-expansion-strategy.md # 11-laboratory 단계적 하드닝/확장 전략 결정
 └── README.md                            # This file
 ```
 

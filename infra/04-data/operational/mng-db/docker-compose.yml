@@ -58,6 +58,7 @@ services:
   mng-pg-init:
     profiles:
       - mng-data
+      - dev
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
@@ -117,6 +118,8 @@ services:
   mng-pg-exporter:
     profiles:
       - mng-data
+      - dev
+      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low
@@ -201,6 +204,8 @@ services:
   mng-valkey-exporter:
     profiles:
       - mng-data
+      - dev
+      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low

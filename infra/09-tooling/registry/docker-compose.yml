@@ -17,6 +17,7 @@ services:
   registry:
     profiles:
       - 'tooling'
+      - registry
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med

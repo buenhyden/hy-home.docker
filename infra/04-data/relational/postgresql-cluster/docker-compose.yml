@@ -54,6 +54,9 @@ volumes:
 
 services:
   etcd-1:
+    profiles:
+      - data
+      - service
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
@@ -89,6 +92,9 @@ services:
       <<: *tier-label
 
   etcd-2:
+    profiles:
+      - data
+      - service
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
@@ -124,6 +130,9 @@ services:
       <<: *tier-label
 
   etcd-3:
+    profiles:
+      - data
+      - service
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
@@ -159,6 +168,9 @@ services:
       - infra_net
 
   pg-router:
+    profiles:
+      - data
+      - service
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
@@ -213,6 +225,9 @@ services:
       - infra_net
 
   pg-cluster-init:
+    profiles:
+      - data
+      - service
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
@@ -262,6 +277,9 @@ services:
       <<: *tier-label
 
   pg-0:
+    profiles:
+      - data
+      - service
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-high
@@ -302,6 +320,9 @@ services:
       - infra_net
 
   pg-1:
+    profiles:
+      - data
+      - service
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-high
@@ -342,6 +363,9 @@ services:
       - infra_net
 
   pg-2:
+    profiles:
+      - data
+      - service
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-high
@@ -382,6 +406,10 @@ services:
       - infra_net
 
   pg-0-exporter:
+    profiles:
+      - data
+      - service
+      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -421,6 +449,10 @@ services:
       - infra_net
 
   pg-1-exporter:
+    profiles:
+      - data
+      - service
+      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -460,6 +492,10 @@ services:
       - infra_net
 
   pg-2-exporter:
+    profiles:
+      - data
+      - service
+      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low

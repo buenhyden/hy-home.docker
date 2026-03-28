@@ -9,6 +9,7 @@ services:
   terraform:
     profiles:
       - 'tooling'
+      - iac
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low

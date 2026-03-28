@@ -1,12 +1,10 @@
 # Laboratory (11-laboratory) Guide
 
-> 실험 및 관리용 서비스 그룹인 Laboratory 티어의 효율적인 활용 및 구성 가이드.
-
----
+> 실험 및 관리 서비스(Laboratory tier) 사용/구성/하드닝 적용 가이드 모음.
 
 ## Overview (KR)
 
-이 문서는 `11-laboratory` 티어에 포함된 관리 도구(Portainer, RedisInsight)와 서비스 대시보드(Homer)의 설정 및 활용 방법을 설명한다. 운영 환경 내 도구 접근성을 높이고 데이터를 시각화하는 절차를 제공한다.
+이 문서는 `11-laboratory` 계층의 운영자 UI(dashboard, dozzle, portainer, redisinsight)를 안전하게 사용하고 유지하기 위한 가이드 인덱스다. 기본 사용 가이드와 최적화/하드닝 가이드를 함께 제공한다.
 
 ## Guide Type
 
@@ -15,42 +13,33 @@
 ## Target Audience
 
 - Operator (인프라 관리)
-- Developer (데이터 조회 및 컨테이너 분석)
-- AI Agent (인프라 매핑 및 자동화)
+- DevOps Engineer
+- Security Reviewer
+- AI Agent
 
-## Purpose
+## Guide Index
 
-- [Portainer Guide](./portainer.md): Docker environment and container management.
-- [RedisInsight Guide](./redisinsight.md): Redis visualization and analysis.
-- [Dozzle Guide](./dozzle.md): Real-time log viewer for Docker containers.
-- [Homer Dashboard](./dashboard.md)를 통한 직관적인 서비스 네비게이션 구축.
-
-## Prerequisites
-
-- [Traefik](../01-gateway/README.md) 활성화 및 로컬 도메인 설정.
-- [SSO Auth](../02-auth/README.md) 미들웨어 구성 완료.
-
-## Step-by-step Instructions
-
-1. [Portainer Guide](./portainer.md)를 참고하여 컨테이너 환경을 연결한다.
-2. [Dashboard Guide](./dashboard.md)를 참고하여 `config.yml` 파일을 수정한다.
-3. [Dozzle Guide](./dozzle.md)를 참고하여 실시간 로그를 모니터링한다.
-
-### 2. Monitoring Redis with RedisInsight
-
-1. [RedisInsight Guide](./redisinsight.md)를 참고하여 데이터베이스를 연결하고 분석한다.
+- [Optimization Hardening Guide](./optimization-hardening.md): gateway+allowlist+SSO 경계, 최소권한, 정책 게이트 적용 절차
+- [Portainer Guide](./portainer.md): 컨테이너 관리 UI 사용
+- [RedisInsight Guide](./redisinsight.md): Redis 데이터 시각화/분석
+- [Dozzle Guide](./dozzle.md): Docker 로그 모니터링
+- [Dashboard Guide](./dashboard.md): Homer 서비스 대시보드 구성
 
 ## Common Pitfalls
 
-- **Homer Config Syntax**: YAML 문법이 틀릴 경우 대시보드가 로드되지 않는다. 정적 분석기로 유효성을 먼저 검증하라.
-- **Portainer Sock Permission**: `/var/run/docker.sock` 접근 권한 속성 문제로 컨테이너가 시작되지 않을 수 있다.
+- allowlist CIDR 미설정으로 운영자 접근이 차단됨
+- dashboard `ports` 재노출로 인증 우회 경로가 생김
+- dozzle docker.sock 쓰기 권한으로 최소권한 원칙이 깨짐
+- 문서 인덱스/링크를 업데이트하지 않아 추적성이 깨짐
 
 ## Related Documents
 
-- **Implementation**: `[../../../infra/11-laboratory/README.md]`
-- **Portainer Guide**: `[./portainer.md]`
-- **RedisInsight Guide**: `[./redisinsight.md]`
-- **Dozzle Guide**: `[./dozzle.md]`
-- **Dashboard Guide**: `[./dashboard.md]`
-- **Operation**: `[../../08.operations/11-laboratory/README.md]`
-- **Runbook**: `[../../09.runbooks/11-laboratory/README.md]`
+- **Infra Source**: [../../../infra/11-laboratory/README.md](../../../infra/11-laboratory/README.md)
+- **PRD**: [../../01.prd/2026-03-28-11-laboratory-optimization-hardening.md](../../01.prd/2026-03-28-11-laboratory-optimization-hardening.md)
+- **ARD**: [../../02.ard/0025-laboratory-optimization-hardening-architecture.md](../../02.ard/0025-laboratory-optimization-hardening-architecture.md)
+- **ADR**: [../../03.adr/0025-laboratory-hardening-and-ha-expansion-strategy.md](../../03.adr/0025-laboratory-hardening-and-ha-expansion-strategy.md)
+- **Spec**: [../../04.specs/11-laboratory/spec.md](../../04.specs/11-laboratory/spec.md)
+- **Plan**: [../../05.plans/2026-03-28-11-laboratory-optimization-hardening-plan.md](../../05.plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
+- **Tasks**: [../../06.tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md](../../06.tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md)
+- **Operations**: [../../08.operations/11-laboratory/optimization-hardening.md](../../08.operations/11-laboratory/optimization-hardening.md)
+- **Runbook**: [../../09.runbooks/11-laboratory/optimization-hardening.md](../../09.runbooks/11-laboratory/optimization-hardening.md)

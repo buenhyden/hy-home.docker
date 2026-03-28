@@ -56,6 +56,7 @@
 ├── 2026-03-28-09-tooling-optimization-hardening.md # 09-tooling 최적화/하드닝 요구사항
 ├── 2026-03-26-10-communication.md  # Communication Tier 제품 요구사항
 ├── 2026-03-26-11-laboratory.md     # Laboratory Tier 제품 요구사항
+├── 2026-03-28-11-laboratory-optimization-hardening.md # 11-laboratory 최적화/하드닝 요구사항
 └── README.md                       # This file
 ```
 

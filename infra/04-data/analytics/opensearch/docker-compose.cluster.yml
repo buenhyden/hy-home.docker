@@ -249,6 +249,8 @@ services:
         condition: service_healthy
 
   opensearch-exporter:
+    profiles:
+      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low

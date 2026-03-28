@@ -302,6 +302,9 @@ services:
       - ALL
 
   kafka-exporter:
+    profiles:
+      - messaging
+      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

@@ -1,6 +1,10 @@
 x-tier-label: &tier-label
   hy-home.tier: admin
 
+networks:
+  infra_net:
+    external: true
+
 volumes:
   dozzle-data:
     driver: local
@@ -19,17 +23,24 @@ services:
     container_name: dozzle
     image: amir20/dozzle:v10.2.0
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - dozzle-data:/data
     expose:
       - ${DOZZLE_PORT:-8080}
+    healthcheck:
+      test: ['CMD-SHELL', 'test -S /var/run/docker.sock']
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     labels:
       <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.dozzle.rule: Host(`dozzle.${DEFAULT_URL}`)
       traefik.http.routers.dozzle.entrypoints: websecure
       traefik.http.routers.dozzle.tls: 'true'
-      traefik.http.routers.dozzle.middlewares: sso-errors@file,sso-auth@file
+      traefik.http.middlewares.dozzle-admin-ip.ipallowlist.sourcerange: ${LAB_ALLOWED_CIDRS:-127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
+      traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker,sso-errors@file,sso-auth@file
       traefik.http.services.dozzle.loadbalancer.server.port: ${DOZZLE_PORT:-8080}
     networks:
       - infra_net

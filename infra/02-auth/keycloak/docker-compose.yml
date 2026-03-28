@@ -25,6 +25,7 @@ services:
   keycloak:
     profiles:
       - core
+      - auth
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med

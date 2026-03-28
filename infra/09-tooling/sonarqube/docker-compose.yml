@@ -23,6 +23,7 @@ services:
   sonarqube:
     profiles:
       - 'tooling'
+      - sast
     extends: { file: ../../common-optimizations.yml, service: template-stateful-high }
     image: sonarqube:10.7.0-community
     container_name: sonarqube

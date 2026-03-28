@@ -17,6 +17,7 @@ services:
   locust-master:
     profiles:
       - 'tooling'
+      - testing
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med

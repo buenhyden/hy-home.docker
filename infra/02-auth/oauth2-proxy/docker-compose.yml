@@ -13,6 +13,7 @@ services:
   oauth2-proxy:
     profiles:
       - core
+      - auth
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-med

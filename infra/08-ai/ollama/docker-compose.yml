@@ -60,6 +60,7 @@ services:
   ollama-exporter:
     profiles:
       - 'ai'
+      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

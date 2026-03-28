@@ -13,6 +13,7 @@ services:
   neo4j:
     profiles:
       - data
+      - graph
     cap_drop:
       - ALL
     cap_add:

@@ -290,6 +290,7 @@ services:
   airflow-valkey-exporter:
     profiles:
       - 'workflow'
+      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -314,6 +315,7 @@ services:
   airflow-statsd-exporter:
     profiles:
       - 'workflow'
+      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

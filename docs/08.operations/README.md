@@ -58,6 +58,7 @@
 | [08-ai](./08-ai/README.md) | AI model inference and RAG governance (updated: 2026-03-28 optimization hardening) |
 | [09-tooling](./09-tooling/README.md) | DevOps and automation governance (updated: 2026-03-28 optimization hardening) |
 | [10-communication](./10-communication/README.md) | External communication and mail policies |
+| [11-laboratory](./11-laboratory/README.md) | Laboratory management and experimental service governance (updated: 2026-03-28 optimization hardening) |
 
 ## Templates
 

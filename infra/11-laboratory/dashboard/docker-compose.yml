@@ -1,6 +1,10 @@
 x-tier-label: &tier-label
   hy-home.tier: admin
 
+networks:
+  infra_net:
+    external: true
+
 # volumes:
 #   homer-data:
 #     driver: local
@@ -11,6 +15,8 @@ x-tier-label: &tier-label
 
 services:
   homer:
+    profiles:
+      - admin
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -18,11 +24,17 @@ services:
     container_name: homer
     volumes:
       - ./config:/www/assets # Make sure your local config directory exists
-    ports:
-      - ${HOMER_HOST_PORT:-8080}:${HOMER_PORT:-8080}
+    expose:
+      - ${HOMER_PORT:-8080}
     user: 1000:1000 # default
     environment:
       - INIT_ASSETS=1 # default, requires the config directory to be writable for the container user (see user option)
+    healthcheck:
+      test: ['CMD-SHELL', 'test -d /www/assets']
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - infra_net
     labels:
@@ -31,5 +43,6 @@ services:
       traefik.http.routers.homer.rule: Host(`homer.${DEFAULT_URL}`)
       traefik.http.routers.homer.entrypoints: websecure
       traefik.http.routers.homer.tls: 'true'
-      traefik.http.routers.homer.middlewares: sso-errors@file,sso-auth@file
+      traefik.http.middlewares.homer-admin-ip.ipallowlist.sourcerange: ${LAB_ALLOWED_CIDRS:-127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
+      traefik.http.routers.homer.middlewares: gateway-standard-chain@file,homer-admin-ip@docker,sso-errors@file,sso-auth@file
       traefik.http.services.homer.loadbalancer.server.port: ${HOMER_PORT:-8080}

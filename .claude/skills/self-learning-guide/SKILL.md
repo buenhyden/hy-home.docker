@@ -1,0 +1,1 @@
+/home/hy/projects/hy-home.docker/.agent/skills/self-learning-guide/SKILL.md

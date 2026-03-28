@@ -1,52 +1,37 @@
 # Laboratory (11-laboratory) Operations Policy
 
-> 실험 및 관리 서비스의 노출 기준과 통제 정책 정의.
-
----
+> 실험 및 관리 서비스 노출/인증/권한/감사 정책 인덱스.
 
 ## Overview (KR)
 
-이 문서는 `11-laboratory` 티어 서비스들의 운영 정책을 정의한다. 실험적 도구들이 시스템 안정성과 보안을 해치지 않도록 서비스 노출 범위(Exposure)와 인증 기준을 규정한다.
+이 문서는 `11-laboratory` 계층의 운영 통제 정책을 정의한다. 관리 UI를 안전 경계 뒤에 유지하고, 실험성 서비스의 예외/권한/감사 절차를 표준화한다.
 
-## Policy Scope
+## Policy Index
 
-관리용 UI 및 실험적 어플리케이션의 런타임 정책 및 보안 가드레일.
+- [Optimization Hardening Policy](./optimization-hardening.md): gateway+allowlist+SSO, 최소권한, CI 게이트, 카탈로그 확장 승인 조건
+- [Portainer Policy](./portainer.md)
+- [RedisInsight Policy](./redisinsight.md)
+- [Dozzle Policy](./dozzle.md)
+- [Dashboard Policy](./dashboard.md)
 
 ## Applies To
 
-- **Systems**: [Portainer](./portainer.md), [RedisInsight](./redisinsight.md), [Homer](./dashboard.md), [Dozzle](./dozzle.md)
-- **Agents**: AI-Ops Agents
-- **Environments**: Production-Management Area
-
-## Controls
-
-- **Required**:
-  - 모든 UI 서비스는 Traefik `sso-auth` 미들웨어를 통해 보호되어야 한다.
-  - 관리 데이터 볼륨(`.management_dir`)은 정기적으로 백업되어야 한다.
-- **Allowed**:
-  - 로컬 네트워크 환경에서의 임시 테스트용 비보안 노출 (단, `lab` 프리픽스 사용 필수).
-- **Disallowed**:
-  - `/var/run/docker.sock`을 외부(Internet-facing) 망에 직접 노출하는 행위.
-  - 인증 없는 데이터베이스 GUI 노출.
-
-## Exceptions
-
-- 초기 부트스트래핑 단계에서의 일시적 비인증 접근은 1시간 이내로 제한한다.
-
-## Verification
-
-- Traefik 대시보드에서 `sso-auth` 미들웨어 적용 여부 확인.
-- `infra/11-laboratory` 하위 `docker-compose.yml` 파일의 레이블 리뷰.
+- **Systems**: dashboard, dozzle, portainer, redisinsight
+- **Agents**: Infra/DevOps/Operations agents
+- **Environments**: Local, Dev, Stage, Production-like management plane
 
 ## Review Cadence
 
-- Quarterly (매 분기 보안 감시 기록과 함께 리뷰)
+- 월 1회 정책 점검
+- 접근권한/노출 정책 변경 시 즉시 리뷰
 
 ## Related Documents
 
-- **ARD**: `[../../02.ard/03-security.md]`
-- **Portainer Policy**: `[./portainer.md]`
-- **RedisInsight Policy**: `[./redisinsight.md]`
-- **Dozzle Policy**: `[./dozzle.md]`
-- **Dashboard Policy**: `[./dashboard.md]`
-- **Runbook**: `[../../09.runbooks/11-laboratory/README.md]`
+- **PRD**: [../../01.prd/2026-03-28-11-laboratory-optimization-hardening.md](../../01.prd/2026-03-28-11-laboratory-optimization-hardening.md)
+- **ARD**: [../../02.ard/0025-laboratory-optimization-hardening-architecture.md](../../02.ard/0025-laboratory-optimization-hardening-architecture.md)
+- **ADR**: [../../03.adr/0025-laboratory-hardening-and-ha-expansion-strategy.md](../../03.adr/0025-laboratory-hardening-and-ha-expansion-strategy.md)
+- **Spec**: [../../04.specs/11-laboratory/spec.md](../../04.specs/11-laboratory/spec.md)
+- **Plan**: [../../05.plans/2026-03-28-11-laboratory-optimization-hardening-plan.md](../../05.plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
+- **Tasks**: [../../06.tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md](../../06.tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md)
+- **Guide**: [../../07.guides/11-laboratory/optimization-hardening.md](../../07.guides/11-laboratory/optimization-hardening.md)
+- **Runbook**: [../../09.runbooks/11-laboratory/optimization-hardening.md](../../09.runbooks/11-laboratory/optimization-hardening.md)

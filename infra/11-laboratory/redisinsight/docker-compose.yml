@@ -1,6 +1,10 @@
 x-tier-label: &tier-label
   hy-home.tier: admin
 
+networks:
+  infra_net:
+    external: true
+
 volumes:
   redisinsight-data:
     driver: local
@@ -20,13 +24,20 @@ services:
     container_name: redisinsight
     volumes:
       - redisinsight-data:/db:rw
+    healthcheck:
+      test: ['CMD-SHELL', 'test -d /db']
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     labels:
       <<: *tier-label
       traefik.enable: 'true'
       traefik.http.routers.redisinsight.rule: Host(`redisinsight.${DEFAULT_URL}`)
       traefik.http.routers.redisinsight.entrypoints: websecure
       traefik.http.routers.redisinsight.tls: 'true'
-      traefik.http.routers.redisinsight.middlewares: sso-errors@file,sso-auth@file
+      traefik.http.middlewares.redisinsight-admin-ip.ipallowlist.sourcerange: ${LAB_ALLOWED_CIDRS:-127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
+      traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file
       traefik.http.services.redisinsight.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-5540}
     networks:
       - infra_net

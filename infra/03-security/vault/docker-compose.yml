@@ -25,6 +25,7 @@ services:
   vault:
     profiles:
       - core
+      - security
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
@@ -80,6 +81,7 @@ services:
   vault-agent:
     profiles:
       - core
+      - security
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med

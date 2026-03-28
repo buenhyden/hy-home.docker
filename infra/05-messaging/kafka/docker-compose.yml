@@ -30,7 +30,7 @@ volumes:
 x-kafka-broker-common: &kafka-broker-common
   image: confluentinc/cp-kafka:8.1.1
   profiles:
-    - 'messaging'
+    - messaging
   extends:
     file: ../../common-optimizations.yml
     service: template-stateful-high
@@ -314,6 +314,7 @@ services:
   kafka-exporter:
     profiles:
       - 'messaging'
+      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

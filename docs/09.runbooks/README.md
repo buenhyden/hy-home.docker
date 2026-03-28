@@ -61,6 +61,7 @@
 | [08-ai](./08-ai/README.md) | AI inference and GPU acceleration recovery (updated: 2026-03-28 optimization hardening) |
 | [09-tooling](./09-tooling/README.md) | DevOps and automation tool recovery (updated: 2026-03-28 optimization hardening) |
 | [10-communication](./10-communication/README.md) | Mail server and SMTP relay recovery |
+| [11-laboratory](./11-laboratory/README.md) | Laboratory management UI and policy-gate recovery (updated: 2026-03-28 optimization hardening) |
 
 ## Templates
 

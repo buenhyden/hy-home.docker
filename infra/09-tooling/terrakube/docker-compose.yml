@@ -9,6 +9,7 @@ services:
   terrakube-api:
     profiles:
       - 'tooling'
+      - iac
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -65,6 +66,7 @@ services:
   terrakube-ui:
     profiles:
       - 'tooling'
+      - iac
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
@@ -100,6 +102,7 @@ services:
   terrakube-executor:
     profiles:
       - 'tooling'
+      - iac
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high

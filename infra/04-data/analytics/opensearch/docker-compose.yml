@@ -119,6 +119,7 @@ services:
   opensearch-exporter:
     profiles:
       - 'data'
+      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low

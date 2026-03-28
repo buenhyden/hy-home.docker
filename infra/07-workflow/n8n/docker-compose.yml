@@ -60,6 +60,8 @@ networks:
 
 services:
   n8n:
+    profiles:
+      - 'workflow'
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -118,6 +120,8 @@ services:
       start_period: 15s
 
   n8n-worker:
+    profiles:
+      - 'workflow'
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
@@ -155,6 +159,8 @@ services:
       <<: *tier-label
 
   n8n-task-runner:
+    profiles:
+      - 'workflow'
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -180,6 +186,8 @@ services:
       <<: *tier-label
 
   n8n-valkey:
+    profiles:
+      - 'workflow'
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
@@ -213,6 +221,9 @@ services:
       <<: *tier-label
 
   n8n-valkey-exporter:
+    profiles:
+      - 'workflow'
+      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

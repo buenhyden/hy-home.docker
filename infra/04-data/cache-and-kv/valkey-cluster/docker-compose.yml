@@ -2,6 +2,9 @@ x-tier-label: &tier-label
   hy-home.tier: data
 
 x-valkey-node-base: &valkey-node-base
+  profiles:
+    - data
+    - service
   extends:
     file: ../../../common-optimizations.yml
     service: template-stateful-med
@@ -158,6 +161,9 @@ services:
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
 
   valkey-cluster-init:
+    profiles:
+      - data
+      - service
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
@@ -187,6 +193,9 @@ services:
     networks:
       - infra_net
   valkey-cluster-exporter:
+    profiles:
+      - data
+      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low

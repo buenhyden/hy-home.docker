@@ -1,0 +1,23 @@
+{
+  "self-learning-guide": {
+    "type": "domain",
+    "enforcement": "suggest",
+    "priority": "medium",
+    "promptTriggers": {
+      "keywords": [
+        "generate learning guide",
+        "CS/CE roadmap",
+        "CS/CE learning roadmap",
+        "software engineering study guide",
+        "analyze repo for learning topics",
+        "Create a learning roadmap",
+        "tech stack study guide"
+      ],
+      "intentPatterns": [
+        "(create|generate|analyze).*?(roadmap|study guide|learning topics)",
+        "what should I learn about this repo",
+        "teach me about the infrastructure"
+      ]
+    }
+  }
+}

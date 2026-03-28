@@ -56,7 +56,7 @@
 - [08-ai](./08-ai/README.md) (updated: 2026-03-28 optimization hardening)
 - [09-tooling](./09-tooling/README.md) (updated: 2026-03-28 optimization hardening)
 - [10-communication](./10-communication/README.md)
-- [11-laboratory](./11-laboratory/README.md)
+- [11-laboratory](./11-laboratory/README.md) (updated: 2026-03-28 optimization hardening)
 
 ## Templates
 
