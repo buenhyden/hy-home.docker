@@ -50,4 +50,11 @@
    ```bash
    docker-compose logs -f mng-pg
    docker-compose logs -f mng-valkey
+   ```
+
+## Related Operational Documents
+
+- **Operation**: [mng-db.md](../../../08.operations/04-data/operational/mng-db.md)
+- **Plan**: [2026-03-26-04-data-standardization.md](../../../05.plans/2026-03-26-04-data-standardization.md)
+
 Copyright (c) 2026. Licensed under the MIT License.

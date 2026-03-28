@@ -42,6 +42,11 @@
 - Canonical Reference로 PRD/ARD/ADR/Spec/Plan을 명시한다.
 - 관련 Incident/Postmortem 링크를 둔다.
 
+## Traceability Links
+
+- [05.plans (Implementation Plan Index)](../05.plans/README.md)
+- [08.operations (Operational Policy Index)](../08.operations/README.md)
+
 ## Tier Index
 
 | Tier | Description |

@@ -10,6 +10,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # ── Documentation Traceability ──────────────────────────────
+  docs-traceability:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check docs traceability sync
+        run: bash scripts/check-doc-traceability.sh
+
   # ── Pre-commit Hooks ──────────────────────────────────────────
   pre-commit:
     permissions:

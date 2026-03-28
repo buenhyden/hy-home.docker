@@ -19,6 +19,9 @@ services:
   starrocks-fe:
     profiles:
       - data
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-stateful-db-high
     labels:
       <<: *tier-label
     image: starrocks/fe-ubuntu:3.3.5
@@ -44,6 +47,9 @@ services:
   starrocks-be:
     profiles:
       - data
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-stateful-db-high
     labels:
       <<: *tier-label
     image: starrocks/be-ubuntu:3.3.5

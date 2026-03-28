@@ -51,3 +51,8 @@ To add a new service for monitoring:
 
 ---
 **AI Agent Note**: AI agents must verify that every new infrastructure component includes a corresponding scrape configuration and basic "up" alert.
+
+## Related Documents
+
+- **Runbook**: [prometheus.md](../../09.runbooks/06-observability/prometheus.md)
+- **Plan**: [2026-03-26-06-observability-standardization.md](../../05.plans/2026-03-26-06-observability-standardization.md)

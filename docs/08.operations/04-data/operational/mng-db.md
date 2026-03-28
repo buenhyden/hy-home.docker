@@ -34,4 +34,12 @@
   - 허가되지 않은 계정의 `postgres` 루트 DB 직접 접근을 금지한다.
 
 ## Exceptions
+
+- 긴급 복구 작업은 사후 승인 기록을 남긴다.
+
+## Related Documents
+
+- **Runbook**: [mng-db.md](../../../09.runbooks/04-data/operational/mng-db.md)
+- **Plan**: [2026-03-26-04-data-standardization.md](../../../05.plans/2026-03-26-04-data-standardization.md)
+
 Copyright (c) 2026. Licensed under the MIT License.

@@ -37,10 +37,17 @@
 - Safety Incident 임계값
 - Trace/Log 보존 기준
 
+## Traceability Links
+
+- [05.plans (Implementation Plan Index)](../05.plans/README.md)
+- [09.runbooks (Operational Procedure Index)](../09.runbooks/README.md)
+
 ## Tier Index
 
 | Tier | Description |
 | :--- | :--- |
+| [12-infra-service-optimization-catalog](./12-infra-service-optimization-catalog.md) | Cross-tier optimization and expansion recommendations for all infra services |
+| [13-common-optimizations-template-exceptions](./13-common-optimizations-template-exceptions.md) | Official exception registry policy for common optimization templates |
 | [01-gateway](./01-gateway/README.md) | Ingress and traffic management |
 | [02-auth](./02-auth/README.md) | Identity and access control |
 | [03-security](./03-security/README.md) | Network hardening and auth policies |

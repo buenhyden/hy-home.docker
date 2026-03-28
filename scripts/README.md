@@ -13,6 +13,9 @@
 | :--- | :--- | :--- |
 | Secrets Bootstrap | [bootstrap-secrets.sh](bootstrap-secrets.sh) | Create file-based secrets |
 | Docker Validation | [validate-docker-compose.sh](validate-docker-compose.sh) | Validate root compose config |
+| QuickWin Baseline Check | [check-quickwin-baseline.sh](check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
+| Template & Security Baseline Check | [check-template-security-baseline.sh](check-template-security-baseline.sh) | Enforce template adoption and required security controls |
+| Documentation Traceability Check | [check-doc-traceability.sh](check-doc-traceability.sh) | Enforce sync links across 05.plans ↔ 08.operations ↔ 09.runbooks |
 | Preflight Check | [preflight-compose.sh](preflight-compose.sh) | Bootstrap prerequisite validation |
 | Cert Generation | [generate-local-certs.sh](generate-local-certs.sh) | Generate local TLS files |
 
@@ -32,6 +35,15 @@
 # Run preflight check
 ./scripts/preflight-compose.sh
 
+# Enforce Quick Win baseline
+./scripts/check-quickwin-baseline.sh
+
+# Enforce template + security baseline
+./scripts/check-template-security-baseline.sh
+
+# Enforce documentation traceability sync
+./scripts/check-doc-traceability.sh
+
 # Bootstrap secrets
 ./scripts/bootstrap-secrets.sh --force
 ```
@@ -45,3 +57,5 @@
 
 ---
 *Maintained by DevOps & Automation Team*
+
+Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.

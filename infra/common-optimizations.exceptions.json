@@ -1,0 +1,92 @@
+{
+  "policy_id": "OPS-TPL-EXCEPTIONS-001",
+  "effective_date": "2026-03-28",
+  "template_source": "infra/common-optimizations.yml",
+  "owner_role": "Infra Lead",
+  "review_cadence": "monthly",
+  "template_exceptions": [
+    {
+      "template": "template-stateful-db-med",
+      "control": "cap_drop",
+      "reason": "DB and related runtime compatibility constraints"
+    },
+    {
+      "template": "template-stateful-db-high",
+      "control": "cap_drop",
+      "reason": "DB and related runtime compatibility constraints"
+    },
+    {
+      "template": "template-job-low",
+      "control": "restart",
+      "value": "no",
+      "reason": "One-shot initialization and migration jobs"
+    },
+    {
+      "template": "template-job-med",
+      "control": "restart",
+      "value": "no",
+      "reason": "One-shot initialization and migration jobs"
+    },
+    {
+      "template": "template-dev-tiny",
+      "control": "healthcheck",
+      "reason": "Developer bootstrap preset"
+    },
+    {
+      "template": "template-dev-small",
+      "control": "healthcheck",
+      "reason": "Developer bootstrap preset"
+    }
+  ],
+  "quickwin_baseline": {
+    "healthcheck_exceptions": [
+      {
+        "service": "pg-cluster-init",
+        "reason": "One-shot init job"
+      },
+      {
+        "service": "valkey-cluster-init",
+        "reason": "One-shot init job"
+      }
+    ],
+    "secrets_exceptions": [
+      {
+        "service": "etcd-1",
+        "reason": "Auth-disabled etcd cluster bootstrap mode"
+      },
+      {
+        "service": "etcd-2",
+        "reason": "Auth-disabled etcd cluster bootstrap mode"
+      },
+      {
+        "service": "etcd-3",
+        "reason": "Auth-disabled etcd cluster bootstrap mode"
+      }
+    ]
+  },
+  "template_adoption": {
+    "required_reference": "common-optimizations.yml",
+    "file_exceptions": []
+  },
+  "security_baseline": {
+    "required_controls": [
+      "no-new-privileges:true",
+      "cap_drop:ALL"
+    ],
+    "no_new_privileges_exceptions": [],
+    "cap_drop_all_exceptions": [
+      {
+        "service": "pg-0",
+        "reason": "Patroni/Spilo runtime compatibility in DB template"
+      },
+      {
+        "service": "pg-1",
+        "reason": "Patroni/Spilo runtime compatibility in DB template"
+      },
+      {
+        "service": "pg-2",
+        "reason": "Patroni/Spilo runtime compatibility in DB template"
+      }
+    ]
+  }
+}

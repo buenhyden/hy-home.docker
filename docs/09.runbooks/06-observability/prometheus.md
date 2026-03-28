@@ -60,3 +60,8 @@ Recovery procedures for common Prometheus service disruptions and metrics collec
 
 ---
 **AI Agent Note**: AI agents should use the `promtool` command to verify any proposed changes to Prometheus or Alerting configurations before applying them.
+
+## Related Operational Documents
+
+- **Operation**: [prometheus.md](../../08.operations/06-observability/prometheus.md)
+- **Plan**: [2026-03-26-06-observability-standardization.md](../../05.plans/2026-03-26-06-observability-standardization.md)

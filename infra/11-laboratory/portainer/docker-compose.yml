@@ -11,9 +11,11 @@ volumes:
 
 services:
   portainer:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
     container_name: portainer
     image: portainer/portainer-ce:sts
-    restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer-data:/data

@@ -24,12 +24,14 @@ services:
   # OpenSearch 노드 1 (cluster_manager + data + ingest)
   # ######################################################
   opensearch-node1:
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-stateful-db-high
     # image: opensearchproject/opensearch:3.4.0  # 2025-11 기준 최신 3.x 안정 버전
     build:
       context: . ## build Docker file location
       dockerfile: Dockerfile ## build file name
     container_name: opensearch-node1
-    restart: unless-stopped
     # 비밀번호, 클러스터 이름, JVM 옵션 등은 env 파일에서 주입
     environment:
       # 노드/클러스터 기본 설정
@@ -103,12 +105,14 @@ services:
   # # OpenSearch 노드 2
   # #######################################################
   opensearch-node2:
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-stateful-db-high
     # image: opensearchproject/opensearch:3.4.0  # 2025-11 기준 최신 3.x 안정 버전
     build:
       context: . ## build Docker file location
       dockerfile: Dockerfile ## build file name
     container_name: opensearch-node2
-    restart: unless-stopped
     environment:
       - node.name=opensearch-node2
       - cluster.name=${OPENSEARCH_CLUSTER_NAME}
@@ -152,12 +156,14 @@ services:
   # # OpenSearch 노드 3
   # #######################################################
   opensearch-node3:
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-stateful-db-high
     # image: opensearchproject/opensearch:3.4.0  # 2025-11 기준 최신 3.x 안정 버전
     build:
       context: . ## build Docker file location
       dockerfile: Dockerfile ## build file name
     container_name: opensearch-node3
-    restart: unless-stopped
     environment:
       - node.name=opensearch-node3
       - cluster.name=${OPENSEARCH_CLUSTER_NAME}
@@ -198,9 +204,11 @@ services:
       - no-new-privileges:true
 
   opensearch-dashboards:
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-stateful-med
     image: opensearchproject/opensearch-dashboards:3.4.0
     container_name: opensearch-dashboards
-    restart: unless-stopped
     networks:
       - infra_net
     expose:
@@ -222,10 +230,6 @@ services:
       "
     secrets:
       - opensearch_dashboard_password
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
     labels:
       - 'traefik.enable=true'
       # 2. Dashboards 라우터 (https://dashboards.opensearch.${DEFAULT_URL})
@@ -245,9 +249,11 @@ services:
         condition: service_healthy
 
   opensearch-exporter:
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-infra-readonly-low
     image: prometheuscommunity/elasticsearch-exporter:v1.10.0
     container_name: opensearch-exporter
-    restart: unless-stopped
     command: >
       bash -c "
       export ES_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) &&

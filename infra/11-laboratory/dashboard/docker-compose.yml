@@ -11,6 +11,9 @@ x-tier-label: &tier-label
 
 services:
   homer:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
     image: b4bz/homer
     container_name: homer
     volumes:
@@ -20,7 +23,6 @@ services:
     user: 1000:1000 # default
     environment:
       - INIT_ASSETS=1 # default, requires the config directory to be writable for the container user (see user option)
-    restart: unless-stopped
     networks:
       - infra_net
     labels:
