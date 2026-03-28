@@ -33,7 +33,7 @@
    - `docker compose -f infra/03-security/vault/docker-compose.yml up -d vault vault-agent`
    - `docker exec vault vault status`
 2. AppRole bootstrap
-   - `role_id`와 `secret_id`를 `/vault/agent/role_id`, `/vault/agent/secret_id`로 주입
+   - `bash scripts/bootstrap-vault-approle.sh`를 실행하여 Agent 인증 및 접근 권한 설정
    - token sink(`/vault/agent/token`) 생성 확인
 3. 시크릿 경로 규약 적용
    - `secret/data/hy-home/04-data/mng-db` -> `password`

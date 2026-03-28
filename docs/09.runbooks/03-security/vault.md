@@ -48,6 +48,7 @@
 4. Vault Agent 렌더 실패 복구
    - `docker logs vault-agent --tail=200`
    - `/vault/agent/role_id`, `/vault/agent/secret_id`, `/vault/agent/token` 확인
+   - 인증 정보(role_id/secret_id) 부재/오류 시 `bash scripts/bootstrap-vault-approle.sh` 실행 후 재시도
    - `docker exec vault-agent ls -la /vault/out`로 출력 파일 재검증
 5. 재검증
    - `bash scripts/check-security-hardening.sh`
