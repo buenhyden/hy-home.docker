@@ -60,6 +60,26 @@ jobs:
       - name: Check 04-data hardening baseline
         run: bash scripts/check-data-hardening.sh
 
+  # ── Messaging Hardening Baseline ────────────────────────────
+  messaging-hardening:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check 05-messaging hardening baseline
+        run: bash scripts/check-messaging-hardening.sh
+
+  # ── Observability Hardening Baseline ────────────────────────
+  observability-hardening:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check 06-observability hardening baseline
+        run: bash scripts/check-observability-hardening.sh
+
   # ── Template/Security Baseline ──────────────────────────────
   template-security-baseline:
     permissions:

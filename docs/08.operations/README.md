@@ -52,8 +52,8 @@
 | [02-auth](./02-auth/README.md) | Identity and access control (hardening + degraded-mode policy updated) |
 | [03-security](./03-security/README.md) | Vault hardening policy, phased auto-unseal/remote-audit adoption |
 | [04-data](./04-data/README.md) | Database persistence, backups, lake/object storage policies, and hardening baseline |
-| [05-messaging](./05-messaging/README.md) | Event streaming and message brokering policies |
-| [06-observability](./06-observability/README.md) | Retention, alerting, and LGTM stack governance |
+| [05-messaging](./05-messaging/README.md) | Event streaming and message brokering policies (updated: 2026-03-28 optimization hardening) |
+| [06-observability](./06-observability/README.md) | Retention, alerting, and LGTM stack governance (updated: 2026-03-28 optimization hardening) |
 | [07-workflow](./07-workflow/README.md) | Workflow orchestration and automation policies (Airflow, n8n, airbyte) |
 | [08-ai](./08-ai/README.md) | AI model inference and RAG governance |
 | [09-tooling](./09-tooling/README.md) | DevOps and automation governance |

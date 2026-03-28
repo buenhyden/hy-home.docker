@@ -20,6 +20,8 @@
 | Auth Hardening Check | [check-auth-hardening.sh](check-auth-hardening.sh) | Enforce 02-auth Keycloak/OAuth2 Proxy hardening baseline |
 | Security Hardening Check | [check-security-hardening.sh](check-security-hardening.sh) | Enforce 03-security Vault hardening baseline |
 | Data Hardening Check | [check-data-hardening.sh](check-data-hardening.sh) | Enforce 04-data service hardening baseline |
+| Messaging Hardening Check | [check-messaging-hardening.sh](check-messaging-hardening.sh) | Enforce 05-messaging service hardening baseline |
+| Observability Hardening Check | [check-observability-hardening.sh](check-observability-hardening.sh) | Enforce 06-observability service hardening baseline |
 | Preflight Check | [preflight-compose.sh](preflight-compose.sh) | Bootstrap prerequisite validation |
 | Cert Generation | [generate-local-certs.sh](generate-local-certs.sh) | Generate local TLS files |
 
@@ -59,6 +61,12 @@
 
 # Enforce 04-data hardening baseline
 ./scripts/check-data-hardening.sh
+
+# Enforce 05-messaging hardening baseline
+./scripts/check-messaging-hardening.sh
+
+# Enforce 06-observability hardening baseline
+./scripts/check-observability-hardening.sh
 
 # Bootstrap secrets
 ./scripts/bootstrap-secrets.sh --force

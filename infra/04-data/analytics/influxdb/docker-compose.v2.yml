@@ -52,4 +52,5 @@ services:
       traefik.http.routers.influxdb.rule: Host(`influxdb.${DEFAULT_URL}`)
       traefik.http.routers.influxdb.entrypoints: websecure
       traefik.http.routers.influxdb.tls: 'true'
+      traefik.http.routers.influxdb.middlewares: gateway-standard-chain@file
       traefik.http.services.influxdb.loadbalancer.server.port: ${INFLUXDB_PORT:-8086}

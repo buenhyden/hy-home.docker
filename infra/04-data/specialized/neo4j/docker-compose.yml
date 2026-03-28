@@ -71,6 +71,7 @@ services:
       traefik.http.routers.neo4j.entrypoints: websecure
       traefik.http.routers.neo4j.tls: 'true'
       traefik.http.services.neo4j.loadbalancer.server.port: ${NEO4J_HTTP_PORT:-7474}
+      traefik.http.routers.neo4j.middlewares: gateway-standard-chain@file
       # -----------------------------
       # TCP Router: Neo4j Bolt
       # neo4j.${DEFAULT_URL}:7687 -> neo4j:7687
@@ -80,6 +81,7 @@ services:
       traefik.tcp.routers.neo4j-bolt.rule: "HostSNI(`*`)"
       traefik.tcp.routers.neo4j-bolt.service: neo4j-bolt-svc
       traefik.tcp.services.neo4j-bolt-svc.loadbalancer.server.port: "${NEO4J_BOLT_PORT:-7687}"
+      traefik.http.routers.neo4j-bolt.middlewares: gateway-standard-chain@file
     healthcheck:
       test:
         [

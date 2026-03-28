@@ -74,6 +74,7 @@ services:
       traefik.http.routers.vault.rule: Host(`vault.${DEFAULT_URL}`)
       traefik.http.routers.vault.entrypoints: websecure
       traefik.http.routers.vault.tls: 'true'
+      traefik.http.routers.vault.middlewares: gateway-standard-chain@file
       traefik.http.services.vault.loadbalancer.server.port: ${VAULT_PORT:-8200}
 
   vault-agent:

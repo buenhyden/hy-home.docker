@@ -184,6 +184,7 @@ services:
       traefik.http.routers.mongo-express.entrypoints: websecure
       traefik.http.routers.mongo-express.tls: 'true'
       traefik.http.services.mongo-express.loadbalancer.server.port: ${MONGO_EXPRESS_PORT:-8081}
+      traefik.http.routers.mongo-express.middlewares: gateway-standard-chain@file
     networks:
       - infra_net
     depends_on:

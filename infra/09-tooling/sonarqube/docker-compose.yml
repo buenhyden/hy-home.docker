@@ -54,4 +54,5 @@ services:
       traefik.http.routers.sonarqube.rule: Host(`sonarqube.${DEFAULT_URL}`)
       traefik.http.routers.sonarqube.entrypoints: websecure
       traefik.http.routers.sonarqube.tls: 'true'
+      traefik.http.routers.sonarqube.middlewares: gateway-standard-chain@file
       traefik.http.services.sonarqube.loadbalancer.server.port: ${SONARQUBE_PORT:-9000}

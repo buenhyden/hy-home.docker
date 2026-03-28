@@ -90,6 +90,7 @@ services:
       traefik.http.routers.airflow.rule: Host(`airflow.${DEFAULT_URL}`)
       traefik.http.routers.airflow.entrypoints: websecure
       traefik.http.routers.airflow.tls: 'true'
+      traefik.http.routers.airflow.middlewares: gateway-standard-chain@file
       traefik.http.services.airflow.loadbalancer.server.port: ${AIRFLOW_PORT:-8080}
   airflow-scheduler:
     extends:

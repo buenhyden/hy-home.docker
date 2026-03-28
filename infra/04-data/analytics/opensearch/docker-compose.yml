@@ -53,7 +53,7 @@ services:
       traefik.http.routers.opensearch.rule: Host(`opensearch.${DEFAULT_URL}`)
       traefik.http.routers.opensearch.entrypoints: websecure
       traefik.http.routers.opensearch.tls: 'true'
-      traefik.http.routers.opensearch.middlewares: opensearch-auth@file
+      traefik.http.routers.opensearch.middlewares: opensearch-auth@file,gateway-standard-chain@file
       traefik.http.services.opensearch.loadbalancer.serversTransport: opensearch-transport@file
       traefik.http.services.opensearch.loadbalancer.server.port: 9200
       traefik.http.services.opensearch.loadbalancer.server.scheme: https
@@ -98,7 +98,7 @@ services:
       traefik.http.routers.opensearch-dashboards.tls: 'true'
       traefik.http.services.opensearch-dashboards.loadbalancer.server.port: ${KIBANA_PORT:-5601}
       traefik.http.services.opensearch-dashboards.loadbalancer.server.scheme: https
-      traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport: opensearch-dashboards-transport@file
+      traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport: opensearch-dashboards-transport@file,gateway-standard-chain@file
     depends_on:
       opensearch: { condition: service_healthy }
 

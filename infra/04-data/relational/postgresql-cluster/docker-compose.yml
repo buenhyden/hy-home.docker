@@ -208,6 +208,7 @@ services:
       traefik.http.routers.haproxy-stats.entrypoints: websecure
       traefik.http.routers.haproxy-stats.tls: 'true'
       traefik.http.services.haproxy-stats.loadbalancer.server.port: ${HAPROXY_PORT:-7000}
+      traefik.http.routers.haproxy-stats.middlewares: gateway-standard-chain@file
     networks:
       - infra_net
 

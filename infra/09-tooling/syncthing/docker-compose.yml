@@ -57,6 +57,7 @@ services:
       traefik.http.routers.syncthing.rule: Host(`syncthing.${DEFAULT_URL}`)
       traefik.http.routers.syncthing.entrypoints: websecure
       traefik.http.routers.syncthing.tls: 'true'
+      traefik.http.routers.syncthing.middlewares: gateway-standard-chain@file
       traefik.http.services.syncthing.loadbalancer.server.port: ${SYNCTHING_GUI_PORT:-8384}
     networks:
       - infra_net

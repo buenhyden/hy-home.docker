@@ -85,6 +85,7 @@ services:
       traefik.enable: 'true'
       traefik.http.routers.n8n.rule: Host(`n8n.${DEFAULT_URL}`)
       traefik.http.routers.n8n.entrypoints: websecure
+      traefik.http.routers.n8n.middlewares: gateway-standard-chain@file
       traefik.http.routers.n8n.tls: 'true'
       traefik.http.routers.n8n.service: n8n
       traefik.http.services.n8n.loadbalancer.server.port: ${N8N_PORT:-5678}

@@ -45,6 +45,7 @@ services:
       traefik.http.routers.oauth2-proxy.entrypoints: websecure
       traefik.http.routers.oauth2-proxy.service: oauth2-proxy-svc
       traefik.http.routers.oauth2-proxy.tls: 'true'
+      traefik.http.routers.oauth2-proxy.middlewares: gateway-standard-chain@file
       traefik.http.services.oauth2-proxy-svc.loadbalancer.server.port: ${OAUTH2_PROXY_PORT:-4180}
     networks:
       - infra_net

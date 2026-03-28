@@ -54,7 +54,7 @@ services:
         -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=9404:/usr/share/jmx_exporter/kafka-config.yaml
     volumes:
       - kafka-dev-data:/var/lib/kafka/data:rw
-      - ./infra/05-messaging/kafka/jmx-exporter:/usr/share/jmx_exporter:ro
+      - ./jmx-exporter:/usr/share/jmx_exporter:ro
     ports:
       - ${KAFKA_DEV_EXTERNAL_HOST_PORT:-9092}:9092
       - ${KAFKA_DEV_JMX_HOST_PORT:-19101}:9101
@@ -104,6 +104,7 @@ services:
       traefik.http.routers.schema-registry-dev.rule: Host(`schema-registry-dev.${DEFAULT_URL}`)
       traefik.http.routers.schema-registry-dev.entrypoints: websecure
       traefik.http.routers.schema-registry-dev.tls: 'true'
+      traefik.http.routers.schema-registry-dev.middlewares: gateway-standard-chain@file
       traefik.http.services.schema-registry-dev.loadbalancer.server.port: '8081'
     networks:
       - infra_net
@@ -157,6 +158,7 @@ services:
       traefik.http.routers.kafka-connect-dev.rule: Host(`kafka-connect-dev.${DEFAULT_URL}`)
       traefik.http.routers.kafka-connect-dev.entrypoints: websecure
       traefik.http.routers.kafka-connect-dev.tls: 'true'
+      traefik.http.routers.kafka-connect-dev.middlewares: gateway-standard-chain@file
       traefik.http.services.kafka-connect-dev.loadbalancer.server.port: '8083'
     networks:
       - infra_net
@@ -165,7 +167,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
-    image: ghcr.io/kafbat/kafka-ui:main
+    image: provectuslabs/kafka-ui:v0.7.2
     container_name: kafbat-ui-dev
     read_only: true
     tmpfs:
@@ -178,7 +180,7 @@ services:
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect-dev:8083
       DYNAMIC_CONFIG_ENABLED: 'true'
     volumes:
-      - ./infra/05-messaging/kafbat-ui/dynamic_config.yaml:/etc/kafkaui/dynamic_config.yaml:ro
+      - ./kafbat-ui/dynamic_config.yaml:/etc/kafkaui/dynamic_config.yaml:ro
     depends_on:
       kafka-dev:
         condition: service_healthy
@@ -203,7 +205,7 @@ services:
       traefik.http.routers.kafbat-ui-dev.entrypoints: websecure
       traefik.http.routers.kafbat-ui-dev.tls: 'true'
       traefik.http.services.kafbat-ui-dev.loadbalancer.server.port: '8080'
-      traefik.http.routers.kafbat-ui-dev.middlewares: sso-errors@file,sso-auth@file
+      traefik.http.routers.kafbat-ui-dev.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
     networks:
       - infra_net
 
@@ -251,3 +253,7 @@ services:
       <<: *tier-label
     networks:
       - infra_net
+
+networks:
+  infra_net:
+    external: true

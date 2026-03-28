@@ -51,6 +51,8 @@
 ├── 0017-auth-hardening-runtime-and-fail-closed.md # 02-auth 런타임 하드닝/Fail-closed 결정
 ├── 0018-vault-hardening-and-ha-expansion-strategy.md # 03-security 단계적 하드닝/HA 확장 전략 결정
 ├── 0019-04-data-hardening-and-ha-expansion-strategy.md # 04-data 단계적 하드닝/확장 전략 결정
+├── 0020-messaging-hardening-and-ha-expansion-strategy.md # 05-messaging 단계적 하드닝/확장 전략 결정
+├── 0021-observability-hardening-and-ha-expansion-strategy.md # 06-observability 단계적 하드닝/확장 전략 결정
 └── README.md                            # This file
 ```
 

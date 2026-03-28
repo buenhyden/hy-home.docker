@@ -75,6 +75,7 @@ services:
       traefik.http.routers.keycloak.rule: Host(`keycloak.${DEFAULT_URL}`)
       traefik.http.routers.keycloak.entrypoints: websecure
       traefik.http.routers.keycloak.tls: 'true'
+      traefik.http.routers.keycloak.middlewares: gateway-standard-chain@file
       traefik.http.services.keycloak.loadbalancer.server.port: ${KEYCLOAK_PORT:-8080}
     healthcheck:
       test:

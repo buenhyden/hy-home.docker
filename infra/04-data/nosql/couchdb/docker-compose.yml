@@ -68,6 +68,7 @@ services:
       traefik.http.routers.couchdb.entrypoints: websecure
       traefik.http.routers.couchdb.tls: 'true'
       traefik.http.routers.couchdb.service: couchdb-cluster
+      traefik.http.routers.couchdb.middlewares: gateway-standard-chain@file
       traefik.http.services.couchdb-cluster.loadbalancer.server.port: ${COUCHDB_PORT:-5984}
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
       traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky

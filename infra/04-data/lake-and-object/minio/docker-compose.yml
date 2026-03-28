@@ -43,11 +43,13 @@ services:
       traefik.http.routers.minio-api.tls: 'true'
       traefik.http.routers.minio-api.service: minio-api
       traefik.http.services.minio-api.loadbalancer.server.port: ${MINIO_PORT:-9000}
+      traefik.http.routers.minio-api.middlewares: gateway-standard-chain@file
       traefik.http.routers.minio-console.rule: Host(`minio-console.${DEFAULT_URL}`)
       traefik.http.routers.minio-console.entrypoints: websecure
       traefik.http.routers.minio-console.tls: 'true'
       traefik.http.routers.minio-console.service: minio-console
       traefik.http.services.minio-console.loadbalancer.server.port: ${MINIO_CONSOLE_PORT:-9001}
+      traefik.http.routers.minio-console.middlewares: gateway-standard-chain@file
     networks:
       - infra_net
 

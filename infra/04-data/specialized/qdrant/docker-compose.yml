@@ -29,15 +29,15 @@ services:
       - '${QDRANT_GRPC_PORT:-6334}'
     environment:
       # 텔레메트리 활성화
-      QDRANT__TELEMETRY_DISABLED: "false"
+      QDRANT__TELEMETRY_DISABLED: 'false'
       # 서비스 포트 명시
-      QDRANT__SERVICE__HTTP_PORT: "${QDRANT_PORT:-6333}"
-      QDRANT__SERVICE__GRPC_PORT: "${QDRANT_GRPC_PORT:-6334}"
+      QDRANT__SERVICE__HTTP_PORT: '${QDRANT_PORT:-6333}'
+      QDRANT__SERVICE__GRPC_PORT: '${QDRANT_GRPC_PORT:-6334}'
       # 핵심: snapshots를 storage 내부로 이동
-      QDRANT__STORAGE__SNAPSHOTS_PATH: "/qdrant/storage/snapshots"
+      QDRANT__STORAGE__SNAPSHOTS_PATH: '/qdrant/storage/snapshots'
 
       # 스냅샷 임시 파일은 tmpfs 사용
-      QDRANT__STORAGE__TEMP_PATH: "/tmp"
+      QDRANT__STORAGE__TEMP_PATH: '/tmp'
 
     volumes:
       - qdrant-data:/qdrant/storage:rw
@@ -62,6 +62,7 @@ services:
       traefik.http.routers.qdrant.rule: Host(`qdrant.${DEFAULT_URL}`)
       traefik.http.routers.qdrant.entrypoints: websecure
       traefik.http.routers.qdrant.tls: 'true'
+      traefik.http.routers.qdrant.middlewares: gateway-standard-chain@file
       traefik.http.services.qdrant.loadbalancer.server.port: ${QDRANT_PORT:-6333}
       # gRPC가 필요하면 TCP router를 별도 구성
       # 예: qdrant-grpc.${DEFAULT_URL} 로 분리
@@ -69,4 +70,5 @@ services:
       traefik.tcp.routers.qdrant-grpc.entrypoints: websecure
       traefik.tcp.routers.qdrant-grpc.tls: 'true'
       traefik.tcp.routers.qdrant-grpc.service: qdrant-grpc-svc
+      traefik.tcp.routers.qdrant-grpc.middlewares: gateway-standard-chain@file
       traefik.tcp.services.qdrant-grpc-svc.loadbalancer.server.port: '${QDRANT_GRPC_PORT:-6334}'
