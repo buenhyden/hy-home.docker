@@ -40,4 +40,5 @@ services:
       traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file
       traefik.http.services.redisinsight.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-5540}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.5

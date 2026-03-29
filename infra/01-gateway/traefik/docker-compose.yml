@@ -40,6 +40,7 @@ services:
     networks:
       k3d-hyhome:
       infra_net:
+        ipv4_address: 172.19.0.2
         aliases:
           - keycloak.${DEFAULT_URL}
           - auth.${DEFAULT_URL}

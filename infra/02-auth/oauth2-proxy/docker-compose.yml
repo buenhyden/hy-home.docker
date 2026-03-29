@@ -49,7 +49,8 @@ services:
       traefik.http.routers.oauth2-proxy.middlewares: gateway-standard-chain@file
       traefik.http.services.oauth2-proxy-svc.loadbalancer.server.port: ${OAUTH2_PROXY_PORT:-4180}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.4
     healthcheck:
       test:
         [

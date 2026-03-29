@@ -87,7 +87,8 @@ services:
       retries: 5
       start_period: 15s
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.50
     labels:
       <<: *tier-label
 
@@ -125,7 +126,8 @@ services:
       retries: 5
       start_period: 15s
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.51
     labels:
       <<: *tier-label
 
@@ -165,7 +167,8 @@ services:
     labels:
       <<: *tier-label
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.52
 
   pg-router:
     profiles:
@@ -222,7 +225,8 @@ services:
       traefik.http.services.haproxy-stats.loadbalancer.server.port: ${HAPROXY_PORT:-7000}
       traefik.http.routers.haproxy-stats.middlewares: gateway-standard-chain@file
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.11
 
   pg-cluster-init:
     profiles:
@@ -272,7 +276,8 @@ services:
       - patroni_exporter_password
       - service_postgres_password
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.53
     labels:
       <<: *tier-label
 
@@ -317,7 +322,8 @@ services:
     labels:
       <<: *tier-label
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.54
 
   pg-1:
     profiles:
@@ -360,7 +366,8 @@ services:
     labels:
       <<: *tier-label
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.55
 
   pg-2:
     profiles:
@@ -403,13 +410,13 @@ services:
     labels:
       <<: *tier-label
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.56
 
   pg-0-exporter:
     profiles:
       - data
       - service
-      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -446,13 +453,13 @@ services:
     labels:
       <<: *tier-label
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.57
 
   pg-1-exporter:
     profiles:
       - data
       - service
-      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -489,13 +496,13 @@ services:
     labels:
       <<: *tier-label
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.58
 
   pg-2-exporter:
     profiles:
       - data
       - service
-      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
@@ -532,4 +539,5 @@ services:
     labels:
       <<: *tier-label
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.59

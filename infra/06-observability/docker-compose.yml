@@ -92,7 +92,8 @@ services:
       traefik.http.routers.prometheus.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.prometheus.loadbalancer.server.port: ${PROMETHEUS_PORT:-9090}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.20
 
   loki:
     profiles:
@@ -135,7 +136,8 @@ services:
       traefik.http.routers.loki.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.loki.loadbalancer.server.port: ${LOKI_PORT:-3100}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.21
 
   tempo:
     profiles:
@@ -178,7 +180,8 @@ services:
       traefik.http.routers.tempo.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.tempo.loadbalancer.server.port: ${TEMPO_PORT:-3200}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.22
 
   alloy:
     profiles:
@@ -229,7 +232,8 @@ services:
       traefik.http.routers.alloy.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.alloy.loadbalancer.server.port: ${ALLOY_PORT:-12345}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.23
 
   grafana:
     profiles:
@@ -314,7 +318,8 @@ services:
       traefik.http.services.grafana.loadbalancer.server.port: ${GRAFANA_PORT:-3000}
       traefik.http.routers.grafana.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.24
 
   cadvisor:
     profiles:
@@ -337,10 +342,7 @@ services:
       - '${CADVISOR_PORT:-8080}'
     healthcheck:
       test:
-        [
-          'CMD-SHELL',
-          'wget -q --spider http://localhost:${CADVISOR_PORT:-8080}/healthz || exit 1',
-        ]
+        ['CMD-SHELL', 'wget -q --spider http://localhost:${CADVISOR_PORT:-8080}/healthz || exit 1']
       interval: 30s
       timeout: 15s
       retries: 5
@@ -361,7 +363,8 @@ services:
       traefik.http.routers.pyroscope.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.pyroscope.loadbalancer.server.port: ${PYROSCOPE_PORT:-4040}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.25
 
   pyroscope:
     profiles:
@@ -388,7 +391,8 @@ services:
     labels:
       <<: *tier-label
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.26
 
   alertmanager:
     profiles:
@@ -435,7 +439,8 @@ services:
       traefik.http.routers.alertmanager.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.alertmanager.loadbalancer.server.port: ${ALERTMANAGER_PORT:-9093}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.27
 
   pushgateway:
     profiles:
@@ -462,7 +467,6 @@ services:
       timeout: 15s
       retries: 5
       start_period: 15s
-
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -472,4 +476,5 @@ services:
       traefik.http.routers.pushgateway.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.pushgateway.loadbalancer.server.port: ${PUSHGATEWAY_PORT:-9091}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.28

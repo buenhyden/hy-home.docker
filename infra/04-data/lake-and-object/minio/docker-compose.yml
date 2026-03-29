@@ -51,7 +51,8 @@ services:
       traefik.http.services.minio-console.loadbalancer.server.port: ${MINIO_CONSOLE_PORT:-9001}
       traefik.http.routers.minio-console.middlewares: gateway-standard-chain@file
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.29
 
   minio-create-buckets:
     profiles:

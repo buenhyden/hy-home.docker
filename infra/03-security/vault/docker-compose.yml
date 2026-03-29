@@ -58,7 +58,8 @@ services:
       - server
       - -config=/vault/config/vault.hcl
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.9
     healthcheck:
       test:
         [
@@ -115,4 +116,5 @@ services:
       retries: 5
       start_period: 20s
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.10

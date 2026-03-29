@@ -28,8 +28,7 @@ x-valkey-node-base: &valkey-node-base
     start_period: 20s
   labels:
     <<: *tier-label
-  networks:
-    - infra_net
+
 
 volumes:
   valkey0-data:
@@ -84,6 +83,9 @@ services:
       - valkey0-data:/data:rw
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.41
 
   valkey-node-1:
     <<: *valkey-node-base
@@ -99,6 +101,9 @@ services:
       - valkey1-data:/data:rw
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.42
 
   valkey-node-2:
     <<: *valkey-node-base
@@ -114,6 +119,9 @@ services:
       - valkey2-data:/data:rw
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.43
 
   valkey-node-3:
     <<: *valkey-node-base
@@ -129,6 +137,9 @@ services:
       - valkey3-data:/data:rw
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.44
 
   valkey-node-4:
     <<: *valkey-node-base
@@ -144,6 +155,9 @@ services:
       - valkey4-data:/data:rw
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.45
 
   valkey-node-5:
     <<: *valkey-node-base
@@ -159,6 +173,9 @@ services:
       - valkey5-data:/data:rw
       - ./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
       - ./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.46
 
   valkey-cluster-init:
     profiles:
@@ -195,7 +212,6 @@ services:
   valkey-cluster-exporter:
     profiles:
       - data
-      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low
@@ -213,8 +229,6 @@ services:
           -redis.addr=redis://mng-valkey:$${VALKEY_PORT} \
           -redis.password="$$VALKEY_PASSWORD" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
-    networks:
-      - infra_net
     secrets:
       - service_valkey_password
     healthcheck:
@@ -239,5 +253,8 @@ services:
         condition: service_healthy
       valkey-node-5:
         condition: service_healthy
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.47
     labels:
       <<: *tier-label

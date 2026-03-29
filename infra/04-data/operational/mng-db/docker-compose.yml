@@ -22,9 +22,92 @@ volumes:
       device: ${DEFAULT_MANAGEMENT_DIR}/redisinsight
 
 services:
+  mng-valkey:
+    profiles:
+      - mng
+      - dev
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-stateful-low
+    image: valkey/valkey:9.0.2-alpine
+    container_name: mng-valkey
+    hostname: mng-valkey
+    user: '999:999'
+    volumes:
+      - mng-valkey-data:/data:rw
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+    secrets:
+      - mng_valkey_password
+    command: >
+      sh -c '
+      exec valkey-server
+      --requirepass "$$(cat /run/secrets/mng_valkey_password)"
+      --appendonly yes
+      --port 6379
+      '
+    ports:
+      - ${VALKEY_MNG_HOST_POST-26379}:${VALKEY_PORT:-6379}
+    expose:
+      - '${VALKEY_PORT:-6379}'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'V_PASS=$$(cat /run/secrets/mng_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p ${VALKEY_PORT:-6379} ping | grep PONG',
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.12
+
+  mng-valkey-exporter:
+    profiles:
+      - mng
+      - dev
+    extends:
+      file: ../../../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: oliver006/redis_exporter:v1.81.0-alpine
+    container_name: mng-valkey-exporter
+    expose:
+      - '${VALKEY_EXPORTER_PORT:-9121}'
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        export VALKEY_PASSWORD=$$(cat /run/secrets/mng_valkey_password | tr -d '\n')
+        exec /redis_exporter \
+          -redis.addr=redis://mng-valkey:$${VALKEY_PORT} \
+          -redis.password="$$VALKEY_PASSWORD" \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
+    secrets:
+      - mng_valkey_password
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'wget -qO- http://localhost:${VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1',
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      mng-valkey:
+        condition: service_healthy
+    labels:
+      <<: *tier-label
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.13
   mng-pg:
     profiles:
-      - mng-data
+      - mng
       - dev
     extends:
       file: ../../../common-optimizations.yml
@@ -53,11 +136,12 @@ services:
       retries: 5
       start_period: 20s
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.14
 
   mng-pg-init:
     profiles:
-      - mng-data
+      - mng
       - dev
     extends:
       file: ../../../common-optimizations.yml
@@ -111,15 +195,15 @@ services:
       - terrakube_db_password
       - sonarqube_db_password
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.15
     labels:
       <<: *tier-label
 
   mng-pg-exporter:
     profiles:
-      - mng-data
+      - mng
       - dev
-      - obs
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low
@@ -157,87 +241,7 @@ services:
       retries: 5
       start_period: 15s
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.16
 
-  mng-valkey:
-    profiles:
-      - mng-data
-      - dev
-    extends:
-      file: ../../../common-optimizations.yml
-      service: template-stateful-low
-    image: valkey/valkey:9.0.2-alpine
-    container_name: mng-valkey
-    hostname: mng-valkey
-    user: '999:999'
-    volumes:
-      - mng-valkey-data:/data:rw
-    labels:
-      <<: *tier-label
-      traefik.enable: 'false'
-    secrets:
-      - mng_valkey_password
-    command: >
-      sh -c '
-      exec valkey-server
-      --requirepass "$$(cat /run/secrets/mng_valkey_password)"
-      --appendonly yes
-      --port 6379
-      '
-    ports:
-      - ${VALKEY_MNG_HOST_POST-26379}:${VALKEY_PORT:-6379}
-    expose:
-      - '${VALKEY_PORT:-6379}'
-    healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'V_PASS=$$(cat /run/secrets/mng_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p ${VALKEY_PORT:-6379} ping | grep PONG',
-        ]
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 15s
-    networks:
-      - infra_net
 
-  mng-valkey-exporter:
-    profiles:
-      - mng-data
-      - dev
-      - obs
-    extends:
-      file: ../../../common-optimizations.yml
-      service: template-infra-readonly-low
-    image: oliver006/redis_exporter:v1.81.0-alpine
-    container_name: mng-valkey-exporter
-    expose:
-      - '${VALKEY_EXPORTER_PORT:-9121}'
-    entrypoint:
-      - /bin/sh
-      - -c
-    command:
-      - |
-        export VALKEY_PASSWORD=$$(cat /run/secrets/mng_valkey_password | tr -d '\n')
-        exec /redis_exporter \
-          -redis.addr=redis://mng-valkey:$${VALKEY_PORT} \
-          -redis.password="$$VALKEY_PASSWORD" \
-          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
-    networks:
-      - infra_net
-    secrets:
-      - mng_valkey_password
-    healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'wget -qO- http://localhost:${VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1',
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    depends_on:
-      mng-valkey:
-        condition: service_healthy
-    labels:
-      <<: *tier-label

@@ -43,4 +43,5 @@ services:
       traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker,sso-errors@file,sso-auth@file
       traefik.http.services.dozzle.loadbalancer.server.port: ${DOZZLE_PORT:-8080}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.6
