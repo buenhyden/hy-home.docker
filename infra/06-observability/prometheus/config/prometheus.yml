@@ -123,18 +123,18 @@ scrape_configs:
         labels:
           domain: "datastores"
 
-  - job_name: "opensearch"
-    metrics_path: "/_prometheus/metrics"
-    scheme: https
-    static_configs:
-      - targets: ["opensearch:9200"]
-        labels:
-          domain: "datastores"
-    basic_auth:
-      username: "exporter"
-      password_file: "/run/secrets/opensearch_exporter_password"
-    tls_config:
-      insecure_skip_verify: true
+  # - job_name: "opensearch"
+  #   metrics_path: "/_prometheus/metrics"
+  #   scheme: https
+  #   static_configs:
+  #     - targets: ["opensearch:9200"]
+  #       labels:
+  #         domain: "datastores"
+  #   basic_auth:
+  #     username: "exporter"
+  #     password_file: "/run/secrets/opensearch_exporter_password"
+  #   tls_config:
+  #     insecure_skip_verify: true
 
   - job_name: etcd
     static_configs:
@@ -142,17 +142,17 @@ scrape_configs:
   # ============================================================================
   # MESSAGING
   # ============================================================================
-  - job_name: "kafka"
-    static_configs:
-      - targets: ["kafka-1:9404", "kafka-2:9404", "kafka-3:9404"]
-        labels:
-          domain: "messaging"
+  # - job_name: "kafka"
+  #   static_configs:
+  #     - targets: ["kafka-1:9404", "kafka-2:9404", "kafka-3:9404"]
+  #       labels:
+  #         domain: "messaging"
 
-  - job_name: "kafka-exporter"
-    static_configs:
-      - targets: ["kafka-exporter:9308"]
-        labels:
-          domain: "messaging"
+  # - job_name: "kafka-exporter"
+  #   static_configs:
+  #     - targets: ["kafka-exporter:9308"]
+  #       labels:
+  #         domain: "messaging"
 
   # ============================================================================
   # APPLICATIONS
@@ -163,11 +163,11 @@ scrape_configs:
         labels:
           domain: "auth"
 
-  - job_name: "n8n-monitor"
-    static_configs:
-      - targets: ["n8n:5678"]
-        labels:
-          domain: "apps"
+  # - job_name: "n8n-monitor"
+  #   static_configs:
+  #     - targets: ["n8n:5678"]
+  #       labels:
+  #         domain: "apps"
 
   - job_name: "vault"
     metrics_path: /v1/sys/metrics

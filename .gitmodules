@@ -1,3 +1,6 @@
 [submodule "projects/storybook/mcp"]
 	path = projects/storybook/mcp
 	url = https://github.com/storybookjs/mcp.git
+[submodule "infra/08-ai/agent-office"]
+	path = infra/08-ai/agent-office
+	url = https://github.com/harishkotra/agent-office.git
