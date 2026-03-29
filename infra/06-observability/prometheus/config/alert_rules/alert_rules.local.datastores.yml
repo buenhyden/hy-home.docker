@@ -7,34 +7,25 @@ groups:
       # NOTE: valkey-exporter는 redis_exporter 기반이므로 메트릭 prefix가 redis_* 입니다.
       # job 라벨로 Valkey 관련 exporter만 필터링합니다.
       - alert: ValkeyDown
-        expr:
-          # redis_up{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
-          # == 0
-          redis_up{job=~"valkey-cluster|mng-valkey-exporter"}
-          == 0
+        expr: |
+          (up{job=~"valkey-cluster|mng-valkey-exporter"} == 0)
+          or
+          (redis_up{job=~"valkey-cluster|mng-valkey-exporter"} == 0)
         for: 2m
         labels:
           severity: critical
           domain: datastores
         annotations:
           summary: 'Valkey 다운: {{ $labels.instance }}'
-          description: 'Valkey 인스턴스 {{ $labels.instance }} 가 2분 이상 down 상태입니다.'
+          description: 'Valkey 인스턴스 {{ $labels.instance }} 가 2분 이상 down 상태입니다. (Exporter Down 또는 Database 연결 불가)'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/valkey-down.md'
 
       - alert: ValkeyMemoryCritical
-        expr:
-          # redis_memory_max_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
-          # > 0 and on(instance, job)
-          # (redis_memory_used_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
-          # /
-          # redis_memory_max_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
-          # > 0.9)
-          redis_memory_max_bytes{job=~"valkey-cluster|mng-valkey-exporter"}
-          > 0 and on(instance, job)
+        expr: |
           (redis_memory_used_bytes{job=~"valkey-cluster|mng-valkey-exporter"}
           /
-          redis_memory_max_bytes{job=~"valkey-cluster|mng-valkey-exporter"}
-          > 0.9)
+          (redis_memory_max_bytes{job=~"valkey-cluster|mng-valkey-exporter"} > 0))
+          > 0.9
         for: 2m
         labels:
           severity: critical

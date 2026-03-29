@@ -62,13 +62,14 @@ services:
       - '/bin/sh'
       - '-c'
     command: >
-      "OPENSEARCH_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) && sed \"s|__OPENSEARCH_PASSWORD__|$$OPENSEARCH_PASSWORD|g\" /etc/prometheus/prometheus.yml.template > /tmp/prometheus.yml && exec /bin/prometheus --config.file=/tmp/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.enable-lifecycle --web.enable-remote-write-receiver"
+      "exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.enable-lifecycle --web.enable-remote-write-receiver"
     volumes:
-      - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml.template:ro
+      - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/config/alert_rules:/etc/prometheus/alert_rules:ro
       - prometheus-data:/prometheus:rw
     secrets:
       - opensearch_exporter_password
+      - vault_token
     healthcheck:
       test:
         [

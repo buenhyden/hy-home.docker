@@ -47,6 +47,9 @@ secrets:
   pg_haproxy_stats_password:
     file: ./secrets/auth/pg_haproxy_stats_password.txt
 
+  # ── Security ───────────────────────────────────────
+  vault_token:
+    file: ./secrets/security/vault_token.txt
   # ── Observability ───────────────────────────────────────
   grafana_admin_password:
     file: ./secrets/observability/grafana_admin_password.txt

@@ -132,10 +132,13 @@ scrape_configs:
           domain: "datastores"
     basic_auth:
       username: "exporter"
-      password: "__OPENSEARCH_PASSWORD__"
+      password_file: "/run/secrets/opensearch_exporter_password"
     tls_config:
       insecure_skip_verify: true
 
+  - job_name: etcd
+    static_configs:
+      - targets: ["etcd-1:2379", "etcd-2:2379", "etcd-3:2379"]
   # ============================================================================
   # MESSAGING
   # ============================================================================
@@ -165,3 +168,13 @@ scrape_configs:
       - targets: ["n8n:5678"]
         labels:
           domain: "apps"
+
+  - job_name: "vault"
+    metrics_path: /v1/sys/metrics
+    params:
+      format: ["prometheus"]
+    scheme: http
+    bearer_token_file: /run/secrets/vault_token
+    static_configs:
+      - targets:
+          - "vault:8200"
