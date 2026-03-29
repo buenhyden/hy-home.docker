@@ -83,7 +83,7 @@ services:
       - |
         export VALKEY_PASSWORD=$$(cat /run/secrets/mng_valkey_password | tr -d '\n')
         exec /redis_exporter \
-          -redis.addr=redis://mng-valkey:$${VALKEY_PORT} \
+          -redis.addr=redis://mng-valkey:${VALKEY_PORT} \
           -redis.password="$$VALKEY_PASSWORD" \
           -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     secrets:

@@ -28,7 +28,7 @@ services:
       - auth
     extends:
       file: ../../common-optimizations.yml
-      service: template-infra-med
+      service: template-infra-high
     image: quay.io/keycloak/keycloak:26.5.4
     container_name: keycloak
     hostname: keycloak
