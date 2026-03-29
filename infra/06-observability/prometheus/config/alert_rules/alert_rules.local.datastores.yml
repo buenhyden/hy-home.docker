@@ -8,40 +8,54 @@ groups:
       # job 라벨로 Valkey 관련 exporter만 필터링합니다.
       - alert: ValkeyDown
         expr:
-          redis_up{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
+          # redis_up{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
+          # == 0
+          redis_up{job=~"valkey-cluster|mng-valkey-exporter"}
           == 0
-        for: 1m
+        for: 2m
         labels:
           severity: critical
+          domain: datastores
         annotations:
           summary: 'Valkey 다운: {{ $labels.instance }}'
-          description: 'Valkey 인스턴스 {{ $labels.instance }} 가 1분 이상 down 상태입니다.'
+          description: 'Valkey 인스턴스 {{ $labels.instance }} 가 2분 이상 down 상태입니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/valkey-down.md'
 
       - alert: ValkeyMemoryCritical
         expr:
-          redis_memory_max_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
+          # redis_memory_max_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
+          # > 0 and on(instance, job)
+          # (redis_memory_used_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
+          # /
+          # redis_memory_max_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
+          # > 0.9)
+          redis_memory_max_bytes{job=~"valkey-cluster|mng-valkey-exporter"}
           > 0 and on(instance, job)
-          (redis_memory_used_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
+          (redis_memory_used_bytes{job=~"valkey-cluster|mng-valkey-exporter"}
           /
-          redis_memory_max_bytes{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}
+          redis_memory_max_bytes{job=~"valkey-cluster|mng-valkey-exporter"}
           > 0.9)
-        for: 1m
+        for: 2m
         labels:
           severity: critical
+          domain: datastores
         annotations:
           summary: 'Valkey 메모리 90% 초과: {{ $labels.instance }}'
           description: 'Valkey 인스턴스 메모리 사용률이 90%를 초과했습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/valkey-memory-critical.md'
 
       - alert: ValkeyRejectedConnections
         expr:
-          increase(redis_rejected_connections_total{job=~"valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter"}[1m])
+          increase(redis_rejected_connections_total{job=~"valkey-cluster|mng-valkey-exporter"}[1m])
           > 0
-        for: 0m
+        for: 2m
         labels:
           severity: critical
+          domain: datastores
         annotations:
           summary: 'Valkey 연결 거부 발생: {{ $labels.instance }}'
           description: 'Valkey가 연결을 거부하고 있습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/valkey-rejected-connections.md'
 
   # ============================================================================
   # [4] Databases (PostgreSQL)
@@ -50,31 +64,47 @@ groups:
     rules:
       - alert: PostgresDown
         expr: pg_up == 0
-        for: 1m
+        for: 2m
         labels:
           severity: critical
+          domain: datastores
         annotations:
-          summary: 'PostgreSQL 다운: {{ $labels.instance }}'
-          description: 'PostgreSQL 인스턴스 {{ $labels.instance }} 가 1분 이상 down
-            상태입니다.'
+          summary: 'PostgreSQL 다운'
+          description: 'PostgreSQL 데이터베이스가 응답하지 않습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/postgres-down.md'
+
+      - alert: PostgresConnectionsExhausted
+        expr: (sum(pg_stat_activity_count) by (datname) / sum(pg_settings_max_connections) by (datname)) > 0.8
+        for: 5m
+        labels:
+          severity: critical
+          domain: datastores
+        annotations:
+          summary: 'Postgres 연결 고갈 위험: {{ $labels.datname }}'
+          description: '데이터베이스 {{ $labels.datname }}의 활성 연결 수가 80%를 초과했습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/postgres-connections.md'
 
       - alert: PostgresqlRestarted
         expr: time() - pg_postmaster_start_time_seconds < 60
-        for: 0m
+        for: 1m
         labels:
           severity: critical
+          domain: datastores
         annotations:
           summary: 'PostgreSQL 재시작됨: {{ $labels.instance }}'
           description: 'PostgreSQL이 최근 재시작되었습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/postgres-restarted.md'
 
       - alert: PostgresqlExporterError
         expr: pg_exporter_last_scrape_error > 0
-        for: 0m
+        for: 2m
         labels:
           severity: critical
+          domain: datastores
         annotations:
           summary: 'PostgreSQL 익스포터 에러: {{ $labels.instance }}'
           description: 'PostgreSQL 익스포터에서 에러가 발생했습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/postgres-exporter-error.md'
 
       - alert: PostgresTooManyConnections
         expr: sum by (instance, job, server) (pg_stat_activity_count) > min by
@@ -90,12 +120,14 @@ groups:
       - alert: PostgresDeadlocks
         expr: increase(pg_stat_database_deadlocks{datname!~"template.*|postgres"}[1m])
           > 5
-        for: 0m
+        for: 1m
         labels:
           severity: warning
+          domain: datastores
         annotations:
           summary: 'Postgres 교착 상태 발생: {{ $labels.instance }}'
           description: '최근 1분간 {{ $value }} 개의 데드락이 발생했습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/postgres-deadlocks.md'
 
       - alert: PostgresHighRollbackRate
         expr: >
@@ -128,12 +160,14 @@ groups:
           pg_stat_user_tables_n_tup_hot_upd) >
           pg_settings_autovacuum_vacuum_threshold) and (time() -
           pg_stat_user_tables_last_autovacuum) > 60 * 60 * 24 * 10
-        for: 0m
+        for: 5m
         labels:
           severity: warning
+          domain: datastores
         annotations:
           summary: 'PostgreSQL 테이블 VACUUM 미수행'
           description: '테이블 {{ $labels.relname }}이 10일간 자동 VACUUM되지 않았습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/postgres-vacuum.md'
 
   # ============================================================================
   # [5] Object Storage (MinIO)
@@ -142,12 +176,14 @@ groups:
     rules:
       - alert: MinioServiceDown
         expr: up{job="minio"} == 0
-        for: 1m
+        for: 2m
         labels:
           severity: critical
+          domain: datastores
         annotations:
           summary: 'MinIO 서비스 다운: {{ $labels.instance }}'
           description: 'MinIO 인스턴스가 응답하지 않습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/minio-down.md'
 
       - alert: MinioClusterDiskOffline
         expr: minio_cluster_drive_offline_total > 0
@@ -167,38 +203,43 @@ groups:
         annotations:
           summary: 'MinIO 디스크 공간 부족'
           description: 'MinIO 클러스터 사용률이 85%를 초과했습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/minio-disk-space.md'
 
   # ============================================================================
   # [6] Vector DB (Qdrant)
   # ============================================================================
   - name: Qdrant_alerts
     rules:
+
       - alert: QdrantDown
         expr: up{job="qdrant-monitor"} == 0
-        for: 1m
+        for: 2m
         labels:
           severity: critical
+          domain: datastore
         annotations:
           summary: 'Qdrant 서비스 다운'
-          description: 'Qdrant 인스턴스 {{ $labels.instance }} 가 1분 이상 응답하지
-            않습니다.'
+          description: 'Qdrant 인스턴스 {{ $labels.instance }} 가 2분 이상 응답하지 않습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/qdrant-down.md'
 
       - alert: QdrantHighMemoryUsage
         expr: memory_resident_bytes > 2 * 1024 * 1024 * 1024
         for: 5m
         labels:
           severity: warning
+          domain: datastore
         annotations:
           summary: 'Qdrant 메모리 사용량 높음'
-          description: >
-            Qdrant 프로세스 메모리(resident)가 2GiB를 초과했습니다. 현재 값: {{
-            $value | humanize1024 }}
+          description: "Qdrant 프로세스 메모리(resident)가 2GiB를 초과했습니다. 현재 값: {{ $value | humanize1024 }}"
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/qdrant-memory.md'
 
       - alert: QdrantHighOpenFds
         expr: process_open_fds / process_max_fds > 0.8
         for: 5m
         labels:
           severity: warning
+          domain: datastore
         annotations:
           summary: 'Qdrant 파일 디스크립터 사용률 80% 초과'
           description: 'Qdrant 프로세스의 FD 사용률이 80%를 초과했습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/qdrant-fd.md'

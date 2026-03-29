@@ -1,0 +1,27 @@
+groups:
+  # ============================================================================
+  # Recording Rules (Optimization)
+  # ============================================================================
+  - name: infrastructure_recording_rules
+    rules:
+      - record: container_cpu_usage_seconds:rate5m
+        expr: sum(rate(container_cpu_usage_seconds_total{name!=""}[5m])) by (name, instance)
+
+      - record: container_memory_working_set_bytes:sum
+        expr: sum(container_memory_working_set_bytes{name!=""}) by (name, instance)
+
+  - name: istio_recording_rules
+    rules:
+      - record: istio_request_duration_milliseconds:p99
+        expr: histogram_quantile(0.99, sum(rate(istio_request_duration_milliseconds_bucket[5m])) by (le, destination_service, response_code))
+
+      - record: istio_requests:error_rate5m
+        expr: sum(rate(istio_requests_total{response_code=~"5.."}[5m])) by (destination_service) / sum(rate(istio_requests_total[5m])) by (destination_service) * 100
+
+  - name: observability_recording_rules
+    rules:
+      - record: loki_request_duration_seconds:p99
+        expr: histogram_quantile(0.99, sum(rate(loki_request_duration_seconds_bucket[5m])) by (le, route))
+
+      - record: loki_request:error_rate5m
+        expr: sum(rate(loki_request_duration_seconds_count{status_code=~"5.."}[5m])) by (route) / sum(rate(loki_request_duration_seconds_count[5m])) by (route) * 100

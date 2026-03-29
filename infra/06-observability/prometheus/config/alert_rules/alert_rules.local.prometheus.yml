@@ -16,10 +16,11 @@ groups:
         for: 5m
         labels:
           severity: warning
+          domain: prometheus
         annotations:
           summary: Prometheus job missing (instance {{ $labels.instance }})
-          description: "프로메테우스 잡이 사라졌습니다.\n  VALUE = {{ $value }}\n  LABELS =
-            {{ $labels }}"
+          description: "프로메테우스 잡이 사라졌습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/prometheus-job-missing.md'
 
       # [What] All Targets Missing / 모든 타겟 다운
       - alert: PrometheusAllTargetsMissing
@@ -28,15 +29,19 @@ groups:
         for: 3m
         labels:
           severity: critical
+          domain: prometheus
         annotations:
           summary: Prometheus all targets missing (job {{ $labels.job }})
-          description: "프로메테우스 잡에 활성 타겟이 없습니다.\n  VALUE = {{ $value
-            }}\n  LABELS = {{ $labels }}"
+          description: "프로메테우스 잡에 활성 타겟이 없습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/prometheus-all-targets-missing.md'
 
       # [What] Infra Targets Missing (Optional Tier) / 인프라 잡 타겟 다운(옵션)
       - alert: PrometheusInfraTargetsMissing
+        # expr: sum by (job) (up{job=~"postgres-cluster|manage
+        #   postgres|valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter|kafka-exporter|minio|n8n-monitor|qdrant-monitor|haproxy|keycloak|opensearch-exporter"})
+        #   == 0
         expr: sum by (job) (up{job=~"postgres-cluster|manage
-          postgres|valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter|kafka-exporter|minio|n8n-monitor|qdrant-monitor|haproxy|keycloak|opensearch-exporter"})
+          postgres|valkey-cluster|mng-valkey-exporter|kafka-exporter|minio|n8n-monitor|qdrant-monitor|haproxy|keycloak|opensearch-exporter"})
           == 0
         for: 10m
         labels:
@@ -64,11 +69,11 @@ groups:
         for: 5m
         labels:
           severity: critical
+          domain: prometheus
         annotations:
-          summary: Prometheus not connected to alertmanager (instance {{
-            $labels.instance }})
-          description: "프로메테우스가 얼럿매니저에 연결할 수 없습니다.\n  VALUE = {{
-            $value }}\n  LABELS = {{ $labels }}"
+          summary: Prometheus not connected to alertmanager (instance {{ $labels.instance }})
+          description: "프로메테우스가 얼럿매니저에 연결할 수 없습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/prometheus-alertmanager-connection.md'
 
       # [What] Prometheus Too Many Restarts / 프로메테우스 과다 재시작
       - alert: PrometheusTooManyRestarts
