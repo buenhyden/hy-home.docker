@@ -64,6 +64,8 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.12
+      hyhome-external-net:
+        ipv4_address: 172.30.0.12
 
   mng-valkey-exporter:
     profiles:
@@ -243,5 +245,6 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.16
+
 
 

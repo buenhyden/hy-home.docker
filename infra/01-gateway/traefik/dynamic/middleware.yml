@@ -49,10 +49,12 @@ http:
 
     req-rate-limit:
       rateLimit:
-        average: 100 # 초당 평균 100개 요청
-        burst: 50 # 최대 50개까지 버스트 허용
+        average: 1000 # 초당 평균 100개 요청
+        burst: 300 # 최대 50개까지 버스트 허용
         sourceCriterion:
-          requestHost: true
+          ipStrategy:
+            depth: 0 # Direct client IP (adjust if behind another proxy)
+          # requestHost: true
 
     req-retry:
       retry:

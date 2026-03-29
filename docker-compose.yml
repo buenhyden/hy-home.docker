@@ -11,6 +11,9 @@ networks:
   project_net:
     external: true
     name: ${PROJECT_NET_NAME:-project_net}
+  hyhome-external-net:
+    external: true
+    name: ${HYHOME_EXTERNAL_NET_NAME:-hyhome-external-net}
   k3d-hyhome:
     external: true
     name: ${K3D_HYHOME_NET_NAME:-k3d-hyhome}
