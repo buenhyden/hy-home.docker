@@ -1,6 +1,6 @@
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+  scrape_interval: 30s
+  evaluation_interval: 30s
   external_labels:
     env: dev
     stack: hy-homedocker
@@ -10,36 +10,37 @@ alerting:
     - static_configs:
         - targets: ["alertmanager:9093"]
 
-# [NEW] 알람 규칙 파일 로드 (local)
 rule_files:
   - "/etc/prometheus/alert_rules/alert_rules.local.*.yml"
-# - "alert_rules.k8s.yml"  # K8S 전용 (필요 시 별도 Prometheus 설정에서 로드)
+  - "/etc/prometheus/alert_rules/recording_rules.yml"
 
 scrape_configs:
+  # ============================================================================
+  # CORE SERVICES
+  # ============================================================================
   - job_name: "prometheus"
+    scrape_interval: 15s
     static_configs:
       - targets: ["localhost:9090"]
 
+  - job_name: "alertmanager"
+    static_configs:
+      - targets: ["alertmanager:9093"]
+
   - job_name: "alloy"
-    scrape_interval: 30s
     static_configs:
       - targets: ["alloy:12345"]
 
-  - job_name: "loki"
-    scrape_interval: 30s
-    metrics_path: /metrics
+  # ============================================================================
+  # INFRASTRUCTURE & OBSERVABILITY
+  # ============================================================================
+  - job_name: "traefik"
     static_configs:
-      - targets: ["loki:3100"]
-
-  - job_name: "tempo"
-    scrape_interval: 30s
-    metrics_path: /metrics
-    static_configs:
-      - targets: ["tempo:3200"]
+      - targets: ["traefik:8082"]
 
   - job_name: "cadvisor"
-    scrape_interval: 1m # 15s → 60s 등
-    scrape_timeout: 50s # fsHandler 지연을 고려해 크게 잡기
+    scrape_interval: 1m
+    scrape_timeout: 50s
     static_configs:
       - targets: ["cadvisor:8080"]
     metric_relabel_configs:
@@ -51,43 +52,47 @@ scrape_configs:
       - action: labeldrop
         regex: "container_label_desktop_docker_io_ports_scheme"
 
-  - job_name: "alertmanager"
-    scrape_interval: 30s
+  - job_name: "loki"
     static_configs:
-      - targets: ["alertmanager:9093"]
+      - targets: ["loki:3100"]
 
-  - job_name: "traefik"
-    scrape_interval: 30s
+  - job_name: "tempo"
     static_configs:
-      - targets: ["traefik:8082"] # 도커 서비스명:메트릭포트
-  # -----------------------------------------------
-  # Infra Components (별도 Docker Compose 파일에 정의된 서비스들)
-  # infra_net 네트워크를 통해 이름으로 접근
-  # -----------------------------------------------
+      - targets: ["tempo:3200"]
+
+  - job_name: "haproxy"
+    static_configs:
+      - targets: ["pg-router:8404"]
+
+  # ============================================================================
+  # DATASTORES
+  # ============================================================================
   - job_name: "postgres-cluster"
     static_configs:
-      # Docker 네트워크 내부 포트(9187) 사용
       - targets:
           ["pg-0-exporter:9187", "pg-1-exporter:9187", "pg-2-exporter:9187"]
         labels:
           cluster: "pg-ha-cluster"
+          domain: "datastores"
 
   - job_name: "manage-postgres"
     static_configs:
-      # Docker 네트워크 내부 포트(9187) 사용
       - targets: ["mng-pg-exporter:9187"]
+        labels:
+          domain: "datastores"
 
   - job_name: "valkey-cluster"
+    metrics_path: /scrape
     static_configs:
       - targets:
-          # 여기에 6개 노드의 주소를 모두 적습니다.
           - redis://valkey-node-0:6379
           - redis://valkey-node-1:6380
           - redis://valkey-node-2:6381
           - redis://valkey-node-3:6382
           - redis://valkey-node-4:6383
           - redis://valkey-node-5:6384
-    metrics_path: /scrape
+        labels:
+          domain: "datastores"
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -96,94 +101,67 @@ scrape_configs:
       - source_labels: [__address__]
         target_label: addr
       - target_label: __address__
-        # Docker Compose에서 실행 중인 Exporter의 서비스명:포트
         replacement: valkey-cluster-exporter:9121
 
   - job_name: "mng-valkey-exporter"
     static_configs:
       - targets: ["mng-valkey-exporter:9121"]
+        labels:
+          domain: "datastores"
 
-  # - job_name: "oauth2-proxy-valkey-exporter"
-  #   static_configs:
-  #     - targets: ["oauth2-proxy-valkey-exporter:9121"]
+  - job_name: "minio"
+    metrics_path: /minio/v2/metrics/cluster
+    static_configs:
+      - targets: ["minio:9000"]
+        labels:
+          domain: "datastores"
 
-  # - job_name: "n8n-valkey-exporter"
-  #   static_configs:
-  #     - targets: ["n8n-valkey-exporter:9121"]
+  - job_name: "qdrant"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["qdrant:6333"]
+        labels:
+          domain: "datastores"
 
+  - job_name: "opensearch"
+    metrics_path: "/_prometheus/metrics"
+    scheme: https
+    static_configs:
+      - targets: ["opensearch:9200"]
+        labels:
+          domain: "datastores"
+    basic_auth:
+      username: "exporter"
+      password: "__OPENSEARCH_PASSWORD__"
+    tls_config:
+      insecure_skip_verify: true
+
+  # ============================================================================
+  # MESSAGING
+  # ============================================================================
   - job_name: "kafka"
-    scrape_interval: 30s
     static_configs:
       - targets: ["kafka-1:9404", "kafka-2:9404", "kafka-3:9404"]
+        labels:
+          domain: "messaging"
 
   - job_name: "kafka-exporter"
     static_configs:
       - targets: ["kafka-exporter:9308"]
+        labels:
+          domain: "messaging"
 
-  - job_name: "minio"
-    scrape_interval: 30s
-    metrics_path: /minio/v2/metrics/cluster
-    scheme: http
-    static_configs:
-      - targets: ["minio:9000"]
-
-  - job_name: "n8n-monitor"
-    scrape_interval: 30s
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ["n8n:5678"] # 도커 네트워크 내부에서 n8n 컨테이너를 찾음
-
-  - job_name: "qdrant-monitor"
-    scrape_interval: 30s
-    metrics_path: "/metrics"
-    static_configs:
-      - targets: ["qdrant:6333"] # Qdrant는 기본적으로 6333/metrics를 엽니다.
-
-  # - job_name: "ollama"
-  #   static_configs:
-  #     - targets: ["ollama-exporter:8000"]
-
-  - job_name: "haproxy"
-    static_configs:
-      - targets: ["pg-router:8404"] # 도커 내부 통신
-
+  # ============================================================================
+  # APPLICATIONS
+  # ============================================================================
   - job_name: "keycloak"
-    scrape_interval: 30s
-    metrics_path: /metrics
-    scheme: http
     static_configs:
       - targets: ["keycloak:9000"]
+        labels:
+          domain: "auth"
 
-  # - job_name: "opensearch-exporter"
-  #   metrics_path: /metrics
-  #   static_configs:
-  #     # Docker 네트워크 내부 통신이므로 서비스 이름 사용
-  #     - targets: ["opensearch-exporter:9114"]
-  - job_name: opensearch
-    scrape_interval: 30s
-    metrics_path: "/_prometheus/metrics"
-    scheme: https
+  - job_name: "n8n-monitor"
     static_configs:
-      - targets:
-          - opensearch:9200
-    basic_auth:
-      username: "exporter" # OpenSearch 사용자 ID (기본값: admin)
-      password: "__OPENSEARCH_PASSWORD__"
-    tls_config:
-      # 인증서 검증을 건너뜁니다.
-      insecure_skip_verify: true
-      # 인증서 검증은 수행하되, 기대하는 서버 이름을 인증서 내 도메인으로 지정합니다.
-      # server_name: "hy-home.local"
-
-  # - job_name: 'airflow'
-  #   static_configs:
-  #     - targets: ['airflow-statsd-exporter:9102']
-
-  # - job_name: 'couchdb'
-  #   metrics_path: /_node/_local/_prometheus
-  #   static_configs:
-  #     - targets: ['couchdb:5984']
-  #   # CouchDB는 메트릭 접근 시에도 인증이 필요합니다.
-  #   basic_auth:
-  #     username: 'admin' # .env의 COUCHDB_USER
-  #     password: 'uZFst8vzfwxsbTz' # .env의 COUCHDB_PASSWORD
+      - targets: ["n8n:5678"]
+        labels:
+          domain: "apps"
