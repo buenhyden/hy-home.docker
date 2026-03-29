@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 8,
   "links": [],
   "panels": [
     {
@@ -106,7 +106,10 @@
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -117,7 +120,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.3.0",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -219,7 +222,10 @@
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -230,7 +236,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.3.0",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -319,7 +325,10 @@
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -330,7 +339,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.3.0",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -432,7 +441,10 @@
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -443,7 +455,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.3.0",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -532,7 +544,10 @@
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": ["mean", "max"],
+          "calcs": [
+            "mean",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -543,7 +558,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.3.0",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -707,7 +722,10 @@
   "preload": false,
   "refresh": "",
   "schemaVersion": 42,
-  "tags": ["cadvisor", "docker"],
+  "tags": [
+    "cadvisor",
+    "docker"
+  ],
   "templating": {
     "list": [
       {

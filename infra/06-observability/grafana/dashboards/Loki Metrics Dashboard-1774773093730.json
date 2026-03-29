@@ -1,47 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_PROMETHEUS",
-      "label": "Prometheus",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "9.3.2"
-    },
-    {
-      "type": "panel",
-      "id": "heatmap",
-      "name": "Heatmap",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -69,9 +26,8 @@
   "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": null,
+  "id": 32,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
@@ -113,7 +69,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -135,14 +91,19 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "/.*/",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -213,7 +174,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -234,14 +195,19 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -283,7 +249,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -304,14 +270,19 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -366,7 +337,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "semi-dark-red",
@@ -391,14 +362,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -440,7 +416,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "semi-dark-red",
@@ -469,14 +445,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -521,7 +502,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -543,14 +524,19 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "/.*/",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -634,7 +620,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "semi-dark-red",
@@ -658,14 +644,19 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -684,7 +675,6 @@
         }
       ],
       "title": "Total Goroutines",
-      "transformations": [],
       "type": "stat"
     },
     {
@@ -715,7 +705,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "semi-dark-red",
@@ -739,14 +729,19 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -765,7 +760,6 @@
         }
       ],
       "title": "Total Threads",
-      "transformations": [],
       "type": "stat"
     },
     {
@@ -792,7 +786,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -813,14 +807,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -879,7 +878,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -900,14 +899,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -973,7 +977,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -994,14 +998,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -1073,7 +1082,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -1094,14 +1103,19 @@
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -1159,7 +1173,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -1180,14 +1194,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -1246,7 +1265,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -1267,14 +1286,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -1333,7 +1357,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -1354,14 +1378,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -1420,7 +1449,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -1441,14 +1470,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -1465,7 +1499,6 @@
         }
       ],
       "title": "Ingester Chunks In Memory",
-      "transformations": [],
       "type": "stat"
     },
     {
@@ -1492,7 +1525,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -1513,14 +1546,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -1584,7 +1622,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -1605,14 +1643,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -1686,7 +1729,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -1707,14 +1750,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -1777,7 +1825,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -1798,14 +1846,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -1868,7 +1921,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -1889,14 +1942,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -1913,7 +1971,6 @@
         }
       ],
       "title": "Ingester Chunk Size",
-      "transformations": [],
       "type": "stat"
     },
     {
@@ -1940,7 +1997,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -1961,14 +2018,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -1985,7 +2047,6 @@
         }
       ],
       "title": "Ingester Chunk Compression",
-      "transformations": [],
       "type": "stat"
     },
     {
@@ -2012,7 +2073,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -2033,14 +2094,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -2103,7 +2169,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -2124,14 +2190,19 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["last"],
+          "calcs": [
+            "last"
+          ],
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.3.3",
       "targets": [
         {
           "datasource": {
@@ -2226,8 +2297,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -2244,7 +2314,12 @@
           "id": 151,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -2270,7 +2345,6 @@
             }
           ],
           "title": "Loki API - Request Duration",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -2319,8 +2393,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -2337,7 +2410,12 @@
           "id": 128,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -2363,7 +2441,6 @@
             }
           ],
           "title": "Loki API - Request Current",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -2412,8 +2489,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -2430,7 +2506,12 @@
           "id": 153,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -2456,7 +2537,6 @@
             }
           ],
           "title": "Loki API - Response Size",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -2505,8 +2585,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -2523,7 +2602,12 @@
           "id": 152,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -2549,7 +2633,6 @@
             }
           ],
           "title": "Loki API - Request Size",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -2598,8 +2681,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -2616,7 +2698,12 @@
           "id": 96,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -2648,7 +2735,10 @@
               "options": {
                 "mode": "reduceRow",
                 "reduce": {
-                  "include": ["grpc", "http"],
+                  "include": [
+                    "grpc",
+                    "http"
+                  ],
                   "reducer": "sum"
                 }
               }
@@ -2732,8 +2822,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -2750,7 +2839,12 @@
           "id": 115,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -2776,7 +2870,6 @@
             }
           ],
           "title": "Loki Cache - Hits",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -2825,8 +2918,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -2843,7 +2935,12 @@
           "id": 116,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -2869,7 +2966,6 @@
             }
           ],
           "title": "Loki Cache - Fetched Keys",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -2918,8 +3014,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -2936,7 +3031,12 @@
           "id": 118,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -3019,8 +3119,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -3037,7 +3136,12 @@
           "id": 119,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -3063,7 +3167,6 @@
             }
           ],
           "title": "Loki Cache - Value Size",
-          "transformations": [],
           "type": "timeseries"
         }
       ],
@@ -3126,8 +3229,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -3144,7 +3246,12 @@
           "id": 109,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -3230,8 +3337,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -3248,7 +3354,12 @@
           "id": 110,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -3334,8 +3445,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -3352,7 +3462,12 @@
           "id": 111,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -3452,8 +3567,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -3470,7 +3584,12 @@
           "id": 130,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -3553,8 +3672,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -3571,7 +3689,12 @@
           "id": 138,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -3603,7 +3726,12 @@
               "options": {
                 "mode": "reduceRow",
                 "reduce": {
-                  "include": ["debug", "error", "info", "warn"],
+                  "include": [
+                    "debug",
+                    "error",
+                    "info",
+                    "warn"
+                  ],
                   "reducer": "sum"
                 }
               }
@@ -3679,8 +3807,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -3697,7 +3824,12 @@
           "id": 201,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -3723,7 +3855,6 @@
             }
           ],
           "title": "Loki KV - Request Duration",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -3772,8 +3903,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -3790,7 +3920,12 @@
           "id": 202,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -3816,7 +3951,6 @@
             }
           ],
           "title": "Cortex KV - Request Duration",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -3865,8 +3999,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -3883,7 +4016,12 @@
           "id": 228,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -3909,7 +4047,6 @@
             }
           ],
           "title": "Cortex KV - Request Duration",
-          "transformations": [],
           "type": "timeseries"
         }
       ],
@@ -3972,8 +4109,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -3990,7 +4126,12 @@
           "id": 189,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -4016,7 +4157,6 @@
             }
           ],
           "title": "Loki Ingester - Client Request Duration",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -4065,8 +4205,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -4083,7 +4222,12 @@
           "id": 185,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -4192,8 +4336,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -4210,7 +4353,12 @@
           "id": 175,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -4332,8 +4480,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -4350,7 +4497,12 @@
           "id": 177,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -4433,8 +4585,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -4451,7 +4602,12 @@
           "id": 183,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -4503,7 +4659,6 @@
             }
           ],
           "title": "Loki Ingester - Checkpoint Duration",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -4552,8 +4707,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -4570,7 +4724,12 @@
           "id": 176,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -4596,7 +4755,6 @@
             }
           ],
           "title": "Loki Ingester - Blocks Per Chunk",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -4645,8 +4803,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -4663,7 +4820,12 @@
           "id": 180,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -4689,7 +4851,6 @@
             }
           ],
           "title": "Loki Ingester - Chunk Compression Ratio",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -4738,8 +4899,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -4756,7 +4916,12 @@
           "id": 190,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -4782,7 +4947,6 @@
             }
           ],
           "title": "Loki Ingester - Chunks In Memory",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -4831,8 +4995,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -4849,7 +5012,12 @@
           "id": 184,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -4875,7 +5043,6 @@
             }
           ],
           "title": "Loki Ingester - Chunk Size",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -4924,8 +5091,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -4942,7 +5108,12 @@
           "id": 178,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -4968,7 +5139,6 @@
             }
           ],
           "title": "Loki Ingester - Chunk Age",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -5017,8 +5187,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -5035,7 +5204,12 @@
           "id": 186,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -5061,7 +5235,6 @@
             }
           ],
           "title": "Loki Ingester - Chunk Usage",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -5110,8 +5283,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -5128,7 +5300,12 @@
           "id": 187,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -5211,8 +5388,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -5229,7 +5405,12 @@
           "id": 194,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -5255,7 +5436,6 @@
             }
           ],
           "title": "Loki Ingester - Samples Per Chunk",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -5304,8 +5484,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -5322,7 +5501,12 @@
           "id": 179,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -5348,7 +5532,6 @@
             }
           ],
           "title": "Loki Ingester - Chunk Bounds (Hours)",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -5397,8 +5580,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -5415,7 +5597,12 @@
           "id": 181,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -5441,7 +5628,6 @@
             }
           ],
           "title": "Loki Ingester - Chunk Encoding Time",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -5490,8 +5676,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -5508,7 +5693,12 @@
           "id": 182,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -5534,7 +5724,6 @@
             }
           ],
           "title": "Loki Ingester - Lines Per Chunk",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -5583,8 +5772,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -5601,7 +5789,12 @@
           "id": 196,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -5697,8 +5890,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -5715,7 +5907,12 @@
           "id": 193,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -5798,8 +5995,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -5816,7 +6012,12 @@
           "id": 197,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -5938,8 +6139,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -5956,7 +6156,12 @@
           "id": 200,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -6077,8 +6282,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -6095,7 +6299,12 @@
           "id": 198,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -6204,8 +6413,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -6222,7 +6430,12 @@
           "id": 199,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -6318,8 +6531,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -6336,7 +6548,12 @@
           "id": 218,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -6362,7 +6579,6 @@
             }
           ],
           "title": "Cortex Ingester - Flush Queue",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -6411,8 +6627,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -6429,7 +6644,12 @@
           "id": 229,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -6455,7 +6675,6 @@
             }
           ],
           "title": "Cortex Ingester - Clients",
-          "transformations": [],
           "type": "timeseries"
         }
       ],
@@ -6518,8 +6737,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -6536,7 +6754,12 @@
           "id": 124,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -6568,7 +6791,12 @@
               "options": {
                 "mode": "reduceRow",
                 "reduce": {
-                  "include": ["debug", "error", "info", "warn"],
+                  "include": [
+                    "debug",
+                    "error",
+                    "info",
+                    "warn"
+                  ],
                   "reducer": "sum"
                 }
               }
@@ -6642,8 +6870,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -6660,7 +6887,12 @@
           "id": 217,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -6686,7 +6918,6 @@
             }
           ],
           "title": "Loki Line - Log Flushes",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -6845,8 +7076,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -6863,7 +7093,12 @@
           "id": 123,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -6960,8 +7195,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -6978,7 +7212,12 @@
           "id": 148,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -7004,7 +7243,6 @@
             }
           ],
           "title": "Loki LogQL - Lines Received From Ingester",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -7053,8 +7291,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -7071,7 +7308,12 @@
           "id": 150,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -7097,7 +7339,6 @@
             }
           ],
           "title": "Loki LogQL - Duplicates Found",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -7146,8 +7387,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -7164,7 +7404,12 @@
           "id": 125,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -7190,7 +7435,6 @@
             }
           ],
           "title": "Loki LogQL - Query Duration",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -7239,8 +7483,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -7257,7 +7500,12 @@
           "id": 147,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -7283,7 +7531,6 @@
             }
           ],
           "title": "Loki LogQL - Query Latency",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -7332,8 +7579,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -7350,7 +7596,12 @@
           "id": 141,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -7376,7 +7627,6 @@
             }
           ],
           "title": "Loki LogQL - Query Volume Processed",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -7425,8 +7675,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -7443,7 +7692,12 @@
           "id": 149,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -7469,7 +7723,6 @@
             }
           ],
           "title": "Loki LogQL - Downloaded Chunks",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -7518,8 +7771,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -7536,7 +7788,12 @@
           "id": 146,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -7562,7 +7819,6 @@
             }
           ],
           "title": "Loki LogQL - Chunk Download Latency",
-          "transformations": [],
           "type": "timeseries"
         }
       ],
@@ -7625,8 +7881,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -7643,7 +7898,12 @@
           "id": 206,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -7669,7 +7929,6 @@
             }
           ],
           "title": "Loki Querier - Frontend Request Duration",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -7718,8 +7977,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -7736,7 +7994,12 @@
           "id": 210,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -7775,7 +8038,6 @@
             }
           ],
           "title": "Loki Querier - Frontend Cache",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -7824,8 +8086,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -7842,7 +8103,12 @@
           "id": 211,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -7868,7 +8134,6 @@
             }
           ],
           "title": "Loki Querier - Frontend Partitions",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -7917,8 +8182,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -7935,7 +8199,12 @@
           "id": 212,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -7961,7 +8230,6 @@
             }
           ],
           "title": "Loki Querier - Frontend Shard Factor",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -8010,8 +8278,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -8028,7 +8295,12 @@
           "id": 213,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -8067,7 +8339,6 @@
             }
           ],
           "title": "Loki Querier - Frontend Shards",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -8116,8 +8387,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -8134,7 +8404,12 @@
           "id": 209,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -8212,7 +8487,6 @@
             }
           ],
           "title": "Loki Querier - Index Cache Clients / Workers",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -8261,8 +8535,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -8279,7 +8552,12 @@
           "id": 208,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -8357,7 +8635,6 @@
             }
           ],
           "title": "Loki Querier - Index Cache Operations",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -8406,8 +8683,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -8424,7 +8700,12 @@
           "id": 219,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -8476,7 +8757,6 @@
             }
           ],
           "title": "Cortex Query - Frontend Connections",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -8525,8 +8805,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -8543,7 +8822,12 @@
           "id": 215,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -8621,7 +8905,6 @@
             }
           ],
           "title": "Loki Query Cache - Throughput",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -8670,8 +8953,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -8688,7 +8970,12 @@
           "id": 214,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -8714,7 +9001,6 @@
             }
           ],
           "title": "Loki Query Cache - Entries",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -8763,8 +9049,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -8781,7 +9066,12 @@
           "id": 216,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -8863,8 +9153,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -8881,7 +9170,12 @@
           "id": 207,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -8907,7 +9201,6 @@
             }
           ],
           "title": "Cortex Query - Frontend Retries",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -8956,8 +9249,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -8974,7 +9266,12 @@
           "id": 205,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -9000,7 +9297,6 @@
             }
           ],
           "title": "Cortex Query - Frontend Range Request Duration",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -9049,8 +9345,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -9067,7 +9362,12 @@
           "id": 220,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -9093,7 +9393,6 @@
             }
           ],
           "title": "Cortex Query - Frontend Operations",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -9142,8 +9441,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -9160,7 +9458,12 @@
           "id": 221,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -9251,7 +9554,6 @@
             }
           ],
           "title": "Cortex Query - Scheduler Inflight Requests",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -9300,8 +9602,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -9318,7 +9619,12 @@
           "id": 222,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -9344,7 +9650,6 @@
             }
           ],
           "title": "Cortex Query - Scheduler Queue Duration",
-          "transformations": [],
           "type": "timeseries"
         }
       ],
@@ -9407,8 +9712,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -9425,7 +9729,12 @@
           "id": 225,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -9451,7 +9760,6 @@
             }
           ],
           "title": "Loki Ring - Heathbeats",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -9500,8 +9808,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -9518,7 +9825,12 @@
           "id": 226,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -9557,7 +9869,6 @@
             }
           ],
           "title": "Loki Ring - Tokens",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -9606,8 +9917,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -9624,7 +9934,12 @@
           "id": 227,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -9650,7 +9965,6 @@
             }
           ],
           "title": "Cortex Ring Member - Heathbeats",
-          "transformations": [],
           "type": "timeseries"
         }
       ],
@@ -9713,8 +10027,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -9731,7 +10044,12 @@
           "id": 135,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -9763,7 +10081,12 @@
               "options": {
                 "mode": "reduceRow",
                 "reduce": {
-                  "include": ["debug", "error", "info", "warn"],
+                  "include": [
+                    "debug",
+                    "error",
+                    "info",
+                    "warn"
+                  ],
                   "reducer": "sum"
                 }
               }
@@ -9839,8 +10162,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -9857,7 +10179,12 @@
           "id": 134,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -9889,7 +10216,12 @@
               "options": {
                 "mode": "reduceRow",
                 "reduce": {
-                  "include": ["debug", "error", "info", "warn"],
+                  "include": [
+                    "debug",
+                    "error",
+                    "info",
+                    "warn"
+                  ],
                   "reducer": "sum"
                 }
               }
@@ -9965,8 +10297,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -9983,7 +10314,12 @@
           "id": 136,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -10009,7 +10345,6 @@
             }
           ],
           "title": "Loki Store - Chunk Batch Size",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -10058,8 +10393,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -10076,7 +10410,12 @@
           "id": 165,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -10128,7 +10467,6 @@
             }
           ],
           "title": "Loki Store - Chunk Fetcher Cache",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -10177,8 +10515,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -10195,7 +10532,12 @@
           "id": 166,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -10291,8 +10633,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -10309,7 +10650,12 @@
           "id": 167,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -10526,8 +10872,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -10544,7 +10889,12 @@
           "id": 156,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -10570,7 +10920,6 @@
             }
           ],
           "title": "Loki Store - Chunks Per Query",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -10740,8 +11089,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -10758,7 +11106,12 @@
           "id": 164,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -10784,7 +11137,6 @@
             }
           ],
           "title": "Loki Store - Index Entries Per Chunk",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -10954,8 +11306,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -10972,7 +11323,12 @@
           "id": 160,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -10998,7 +11354,6 @@
             }
           ],
           "title": "Loki Store - Index Lookups Per Query",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -11168,8 +11523,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -11186,7 +11540,12 @@
           "id": 158,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -11212,7 +11571,6 @@
             }
           ],
           "title": "Loki Store - Series (Pre Intersection) Per Chunk",
-          "transformations": [],
           "type": "timeseries"
         },
         {
@@ -11382,8 +11740,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -11400,7 +11757,12 @@
           "id": 162,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -11426,7 +11788,6 @@
             }
           ],
           "title": "Loki Store - Series (Post Intersection) Per Chunk",
-          "transformations": [],
           "type": "timeseries"
         }
       ],
@@ -11489,8 +11850,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -11507,7 +11867,12 @@
           "id": 171,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -11603,8 +11968,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -11621,7 +11985,12 @@
           "id": 172,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -11718,8 +12087,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -11736,7 +12104,12 @@
           "id": 168,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -11832,8 +12205,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -11850,7 +12222,12 @@
           "id": 91,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -12060,8 +12437,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -12082,7 +12458,12 @@
           "id": 92,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -12207,8 +12588,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -12229,7 +12609,12 @@
           "id": 93,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -12393,8 +12778,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -12411,7 +12795,12 @@
           "id": 95,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -12739,8 +13128,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -12757,7 +13145,12 @@
           "id": 84,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -12856,8 +13249,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -12874,7 +13266,12 @@
           "id": 85,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -13085,8 +13482,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -13107,7 +13503,12 @@
           "id": 78,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -13181,8 +13582,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -13203,7 +13603,12 @@
           "id": 79,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -13289,8 +13694,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -13311,7 +13715,12 @@
           "id": 77,
           "options": {
             "legend": {
-              "calcs": ["min", "max", "mean", "last"],
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "last"
+              ],
               "displayMode": "table",
               "placement": "bottom",
               "showLegend": true
@@ -13356,41 +13765,41 @@
       "type": "row"
     }
   ],
+  "preload": false,
   "refresh": "1m",
-  "schemaVersion": 37,
-  "style": "dark",
-  "tags": ["loki"],
+  "schemaVersion": 42,
+  "tags": [
+    "loki"
+  ],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": false,
-          "text": "default",
-          "value": "default"
+          "text": "Prometheus",
+          "value": "Prometheus"
         },
         "hide": 2,
         "includeAll": false,
         "label": "Datasource",
-        "multi": false,
         "name": "DS_PROMETHEUS",
         "options": [],
         "query": "prometheus",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       },
       {
-        "current": {},
+        "current": {
+          "text": "loki",
+          "value": "loki"
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
         "definition": "label_values(loki_build_info,job)",
-        "hide": 0,
         "includeAll": false,
         "label": "Job",
-        "multi": false,
         "name": "jobs",
         "options": [],
         "query": {
@@ -13399,22 +13808,21 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 1,
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "text": "loki",
+          "value": "loki"
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
         "definition": "up{job=~\"$jobs\"}",
-        "hide": 0,
         "includeAll": false,
         "label": "Host",
-        "multi": false,
         "name": "host",
         "options": [],
         "query": {
@@ -13423,21 +13831,21 @@
         },
         "refresh": 1,
         "regex": ".*instance=\"(.*?):.*\".*",
-        "skipUrlSync": false,
         "sort": 1,
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "text": "3100",
+          "value": "3100"
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
         "definition": "up{job=~\"$jobs\"}",
-        "hide": 0,
         "includeAll": false,
         "label": "Instance",
-        "multi": false,
         "name": "instance",
         "options": [],
         "query": {
@@ -13446,7 +13854,6 @@
         },
         "refresh": 1,
         "regex": ".*instance=\".*:(.*?)\".*",
-        "skipUrlSync": false,
         "sort": 3,
         "type": "query"
       },
@@ -13455,19 +13862,12 @@
         "auto_count": 30,
         "auto_min": "10s",
         "current": {
-          "selected": false,
           "text": "30s",
           "value": "30s"
         },
-        "hide": 0,
         "label": "Interval",
         "name": "interval",
         "options": [
-          {
-            "selected": false,
-            "text": "auto",
-            "value": "$__auto_interval_interval"
-          },
           {
             "selected": true,
             "text": "30s",
@@ -13501,7 +13901,6 @@
         ],
         "query": "30s,1m,5m,1h,6h,1d",
         "refresh": 2,
-        "skipUrlSync": false,
         "type": "interval"
       }
     ]
@@ -13510,14 +13909,9 @@
     "from": "now-24h",
     "to": "now"
   },
-  "timepicker": {
-    "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"],
-    "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
-  },
+  "timepicker": {},
   "timezone": "browser",
   "title": "Loki Metrics Dashboard",
-  "uid": "",
-  "version": 13,
-  "weekStart": "",
-  "gnetId": 17781
+  "uid": "94e030e6-507d-4956-b72d-3322f1f1a4a1",
+  "version": 1
 }
