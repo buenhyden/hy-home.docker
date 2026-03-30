@@ -212,6 +212,7 @@ services:
   valkey-cluster-exporter:
     profiles:
       - data
+      - service
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low
