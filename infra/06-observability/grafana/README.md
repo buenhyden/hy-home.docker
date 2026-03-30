@@ -30,9 +30,9 @@ Grafana serves as the primary observability portal for the `hy-home.docker` ecos
 
 | Document | Description |
 | :--- | :--- |
-| [System Guide](file:///home/hy/projects/hy-home.docker/docs/07.guides/06-observability/grafana.md) | Architecture, SSO mapping, and datasource integration details. |
-| [Operational Policy](file:///home/hy/projects/hy-home.docker/docs/08.operations/06-observability/grafana.md) | Dashboard provisioning, RBAC, and datasource maintenance. |
-| [Recovery Runbook](file:///home/hy/projects/hy-home.docker/docs/09.runbooks/06-observability/grafana.md) | Troubleshooting failing logins, dashboards, or service unavailability. |
+| [System Guide](file:///home/hy/project-infra/hy-home.docker/docs/07.guides/06-observability/grafana.md) | Architecture, SSO mapping, and datasource integration details. |
+| [Operational Policy](file:///home/hy/project-infra/hy-home.docker/docs/08.operations/06-observability/grafana.md) | Dashboard provisioning, RBAC, and datasource maintenance. |
+| [Recovery Runbook](file:///home/hy/project-infra/hy-home.docker/docs/09.runbooks/06-observability/grafana.md) | Troubleshooting failing logins, dashboards, or service unavailability. |
 
 ## AI Agent Guidance
 
