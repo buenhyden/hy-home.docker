@@ -40,6 +40,8 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+    # ports:
+    #   - ${OLLAMA_HOST_PORT}:${OLLAMA_PORT}
     labels:
       <<: *tier-label
       traefik.enable: 'true'
