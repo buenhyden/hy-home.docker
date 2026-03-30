@@ -178,3 +178,7 @@ scrape_configs:
     static_configs:
       - targets:
           - "vault:8200"
+
+  - job_name: "ollama-exporter"
+    static_configs:
+      - targets: ["ollama-exporter:8000"]

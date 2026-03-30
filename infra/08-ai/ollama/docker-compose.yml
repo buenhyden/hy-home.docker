@@ -19,7 +19,7 @@ services:
       - 'ai'
     extends:
       file: ../../common-optimizations.yml
-      service: template-stateful-high
+      service: template-stateful-ai-high
     image: ollama/ollama:0.18.2
     container_name: ollama
     read_only: false
@@ -51,16 +51,15 @@ services:
     networks:
       - infra_net
     healthcheck:
-      test: ['CMD-SHELL', 'curl -f http://localhost:11434/api/tags || exit 1']
+      test: ['CMD-SHELL', 'ollama list >/dev/null 2>&1 || exit 1']
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 15s
+      start_period: 30s
 
   ollama-exporter:
     profiles:
       - 'ai'
-      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -72,7 +71,7 @@ services:
     environment:
       - OLLAMA_HOST=ollama:${OLLAMA_PORT:-11434}
     expose:
-      - '${OLLAMA_EXPORTER_PORT:-11435}'
+      - '${OLLAMA_EXPORTER_PORT:-8000}'
     networks:
       - infra_net
     labels:
@@ -81,7 +80,11 @@ services:
       ollama:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'wget -q -O- http://localhost:${OLLAMA_EXPORTER_PORT:-11435}/metrics >/dev/null 2>&1 || exit 1']
+      test:
+        [
+          'CMD-SHELL',
+          'wget -q -O- http://localhost:${OLLAMA_EXPORTER_PORT:-8000}/metrics >/dev/null 2>&1 || exit 1',
+        ]
       interval: 30s
       timeout: 10s
       retries: 5

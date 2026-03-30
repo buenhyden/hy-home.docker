@@ -102,6 +102,11 @@ services:
     <<: [*service-defaults, *resource-db]
     read_only: false
 
+  template-stateful-ai-high:
+    restart: unless-stopped
+    logging: *default-logging
+    read_only: false
+
   template-job-low:
     <<: [*security-base, *resource-low]
     restart: "no"

@@ -58,6 +58,8 @@ services:
       - server
       - -config=/vault/config/vault.hcl
     networks:
+      k3d-hyhome:
+        ipv4_address: 172.18.0.8
       infra_net:
         ipv4_address: 172.19.0.9
     healthcheck:

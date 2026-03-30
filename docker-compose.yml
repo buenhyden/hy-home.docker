@@ -97,6 +97,8 @@ secrets:
     file: ./secrets/db/valkey/service_password.txt
   mng_valkey_password:
     file: ./secrets/db/valkey/mng_password.txt
+  agent_office_valkey_password:
+    file: ./secrets/db/valkey/agent_office_password.txt
   # oauth2_valkey_password:
   #   file: ./secrets/db/valkey/oauth2_password.txt
   terrakube_valkey_password:
@@ -205,7 +207,8 @@ include:
   - infra/06-observability/docker-compose.yml
   # - infra/07-workflow/n8n/docker-compose.yml
   # - infra/07-workflow/airflow/docker-compose.yml
-  # - infra/08-ai/ollama/docker-compose.yml
+  - infra/08-ai/agent-office/docker-compose.custom.yml
+  - infra/08-ai/ollama/docker-compose.yml
   # - infra/08-ai/open-webui/docker-compose.yml
   # - infra/09-tooling/locust/docker-compose.yml
   - infra/09-tooling/registry/docker-compose.yml
