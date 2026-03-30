@@ -8,80 +8,79 @@ global:
 alerting:
   alertmanagers:
     - static_configs:
-        - targets: ["alertmanager:9093"]
+        - targets: ['alertmanager:9093']
 
 rule_files:
-  - "/etc/prometheus/alert_rules/alert_rules.local.*.yml"
-  - "/etc/prometheus/alert_rules/recording_rules.yml"
+  - '/etc/prometheus/alert_rules/alert_rules.local.*.yml'
+  - '/etc/prometheus/alert_rules/recording_rules.yml'
 
 scrape_configs:
   # ============================================================================
   # CORE SERVICES
   # ============================================================================
-  - job_name: "prometheus"
+  - job_name: 'prometheus'
     scrape_interval: 15s
     static_configs:
-      - targets: ["localhost:9090"]
+      - targets: ['localhost:9090']
 
-  - job_name: "alertmanager"
+  - job_name: 'alertmanager'
     static_configs:
-      - targets: ["alertmanager:9093"]
+      - targets: ['alertmanager:9093']
 
-  - job_name: "alloy"
+  - job_name: 'alloy'
     static_configs:
-      - targets: ["alloy:12345"]
+      - targets: ['alloy:12345']
 
   # ============================================================================
   # INFRASTRUCTURE & OBSERVABILITY
   # ============================================================================
-  - job_name: "traefik"
+  - job_name: 'traefik'
     static_configs:
-      - targets: ["traefik:8082"]
+      - targets: ['traefik:8082']
 
-  - job_name: "cadvisor"
+  - job_name: 'cadvisor'
     scrape_interval: 1m
     scrape_timeout: 50s
     static_configs:
-      - targets: ["cadvisor:8080"]
+      - targets: ['cadvisor:8080']
     metric_relabel_configs:
       - source_labels: [id]
-        regex: "^/$"
+        regex: '^/$'
         action: drop
       - action: labeldrop
-        regex: "container_label_com_docker_compose_(config_hash|project_working_dir|project_config_files|replace|container_number|oneoff|version|depends_on)"
+        regex: 'container_label_com_docker_compose_(config_hash|project_working_dir|project_config_files|replace|container_number|oneoff|version|depends_on)'
       - action: labeldrop
-        regex: "container_label_desktop_docker_io_ports_scheme"
+        regex: 'container_label_desktop_docker_io_ports_scheme'
 
-  - job_name: "loki"
+  - job_name: 'loki'
     static_configs:
-      - targets: ["loki:3100"]
+      - targets: ['loki:3100']
 
-  - job_name: "tempo"
+  - job_name: 'tempo'
     static_configs:
-      - targets: ["tempo:3200"]
+      - targets: ['tempo:3200']
 
-  - job_name: "haproxy"
+  - job_name: 'haproxy'
     static_configs:
-      - targets: ["pg-router:8404"]
+      - targets: ['pg-router:8404']
 
   # ============================================================================
   # DATASTORES
   # ============================================================================
-  - job_name: "postgres-cluster"
+  - job_name: 'postgres-cluster'
     static_configs:
-      - targets:
-          ["pg-0-exporter:9187", "pg-1-exporter:9187", "pg-2-exporter:9187"]
+      - targets: ['pg-0-exporter:9187', 'pg-1-exporter:9187', 'pg-2-exporter:9187']
         labels:
-          cluster: "pg-ha-cluster"
-          domain: "datastores"
+          cluster: 'pg-ha-cluster'
+          domain: 'datastores'
 
-  - job_name: "manage-postgres"
+  - job_name: 'manage-postgres'
     static_configs:
-      - targets: ["mng-pg-exporter:9187"]
+      - targets: ['mng-pg-exporter:9187']
         labels:
-          domain: "datastores"
+          domain: 'datastores'
 
-  - job_name: "valkey-cluster"
+  - job_name: 'valkey-cluster'
     metrics_path: /scrape
     static_configs:
       - targets:
@@ -92,7 +91,7 @@ scrape_configs:
           - redis://valkey-node-4:6383
           - redis://valkey-node-5:6384
         labels:
-          domain: "datastores"
+          domain: 'datastores'
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -103,25 +102,25 @@ scrape_configs:
       - target_label: __address__
         replacement: valkey-cluster-exporter:9121
 
-  - job_name: "mng-valkey-exporter"
+  - job_name: 'mng-valkey-exporter'
     static_configs:
-      - targets: ["mng-valkey-exporter:9121"]
+      - targets: ['mng-valkey-exporter:9121']
         labels:
-          domain: "datastores"
+          domain: 'datastores'
 
-  - job_name: "minio"
+  - job_name: 'minio'
     metrics_path: /minio/v2/metrics/cluster
     static_configs:
-      - targets: ["minio:9000"]
+      - targets: ['minio:9000']
         labels:
-          domain: "datastores"
+          domain: 'datastores'
 
-  - job_name: "qdrant"
+  - job_name: 'qdrant'
     metrics_path: /metrics
     static_configs:
-      - targets: ["qdrant:6333"]
+      - targets: ['qdrant:6333']
         labels:
-          domain: "datastores"
+          domain: 'datastores'
 
   # - job_name: "opensearch"
   #   metrics_path: "/_prometheus/metrics"
@@ -138,7 +137,7 @@ scrape_configs:
 
   - job_name: etcd
     static_configs:
-      - targets: ["etcd-1:2379", "etcd-2:2379", "etcd-3:2379"]
+      - targets: ['etcd-1:2379', 'etcd-2:2379', 'etcd-3:2379']
   # ============================================================================
   # MESSAGING
   # ============================================================================
@@ -155,13 +154,52 @@ scrape_configs:
   #         domain: "messaging"
 
   # ============================================================================
+  # KUBERNETES / GITOPS
+  # ============================================================================
+  # ArgoCD metrics via NodePort (k3d-hyhome-server-0: 172.18.0.2)
+  - job_name: 'argocd-application-controller'
+    static_configs:
+      - targets: ['172.18.0.2:30082']
+        labels:
+          component: 'application-controller'
+          domain: 'gitops'
+
+  - job_name: 'argocd-server'
+    static_configs:
+      - targets: ['172.18.0.2:30083']
+        labels:
+          component: 'server'
+          domain: 'gitops'
+
+  - job_name: 'argocd-repo-server'
+    static_configs:
+      - targets: ['172.18.0.2:30084']
+        labels:
+          component: 'repo-server'
+          domain: 'gitops'
+
+  - job_name: 'argocd-applicationset-controller'
+    static_configs:
+      - targets: ['172.18.0.2:30085']
+        labels:
+          component: 'applicationset-controller'
+          domain: 'gitops'
+
+  - job_name: 'argocd-notifications-controller'
+    static_configs:
+      - targets: ['172.18.0.2:30086']
+        labels:
+          component: 'notifications-controller'
+          domain: 'gitops'
+
+  # ============================================================================
   # APPLICATIONS
   # ============================================================================
-  - job_name: "keycloak"
+  - job_name: 'keycloak'
     static_configs:
-      - targets: ["keycloak:9000"]
+      - targets: ['keycloak:9000']
         labels:
-          domain: "auth"
+          domain: 'auth'
 
   # - job_name: "n8n-monitor"
   #   static_configs:
@@ -169,16 +207,16 @@ scrape_configs:
   #       labels:
   #         domain: "apps"
 
-  - job_name: "vault"
+  - job_name: 'vault'
     metrics_path: /v1/sys/metrics
     params:
-      format: ["prometheus"]
+      format: ['prometheus']
     scheme: http
     bearer_token_file: /run/secrets/vault_token
     static_configs:
       - targets:
-          - "vault:8200"
+          - 'vault:8200'
 
-  - job_name: "ollama-exporter"
+  - job_name: 'ollama-exporter'
     static_configs:
-      - targets: ["ollama-exporter:8000"]
+      - targets: ['ollama-exporter:8000']
