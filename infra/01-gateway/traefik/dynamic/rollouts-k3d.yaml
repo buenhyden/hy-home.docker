@@ -1,10 +1,10 @@
-# Traefik dynamic configuration for Kiali via k3d ingress-nginx
+# Traefik dynamic configuration for Argo Rollouts Dashboard via k3d ingress-nginx
 # Apply this file to your external Traefik dynamic config directory.
 # Pattern mirrors argocd-k3d.yaml.
 #
 # Traffic flow:
 #   Browser → Traefik (websecure/443) → k3d-hyhome-serverlb:443
-#     → ingress-nginx LoadBalancer → Kiali service (istio-system:20001)
+#     → ingress-nginx LoadBalancer → Rollouts Dashboard service (argo-rollouts:3100)
 #
 # TLS: Traefik terminates with its own cert (nip.io wildcard or mkcert).
 #      insecureSkipVerify=true skips validation of the ingress-nginx
@@ -12,21 +12,21 @@
 
 http:
   serversTransports:
-    kiali-k3d-transport:
+    rollouts-k3d-transport:
       insecureSkipVerify: true
 
   services:
-    kiali-k3d:
+    rollouts-k3d:
       loadBalancer:
         passHostHeader: true
-        serversTransport: kiali-k3d-transport
+        serversTransport: rollouts-k3d-transport
         servers:
           - url: 'https://k3d-hyhome-serverlb:443'
 
   routers:
-    kiali-k3d:
-      rule: 'Host(`kiali.127.0.0.1.nip.io`)'
+    rollouts-k3d:
+      rule: 'Host(`rollouts.127.0.0.1.nip.io`)'
       entryPoints:
         - websecure
-      service: kiali-k3d
+      service: rollouts-k3d
       tls: {}
