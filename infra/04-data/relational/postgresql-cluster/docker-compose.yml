@@ -227,6 +227,8 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.11
+      k3d-hyhome:
+        ipv4_address: 172.18.0.15
 
   pg-cluster-init:
     profiles:
