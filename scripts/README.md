@@ -11,7 +11,6 @@
 
 | Component | Path | Purpose |
 | :--- | :--- | :--- |
-| Secrets Bootstrap | [bootstrap-secrets.sh](bootstrap-secrets.sh) | Create file-based secrets |
 | Docker Validation | [validate-docker-compose.sh](validate-docker-compose.sh) | Validate root compose config |
 | QuickWin Baseline Check | [check-quickwin-baseline.sh](check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
 | Template & Security Baseline Check | [check-template-security-baseline.sh](check-template-security-baseline.sh) | Enforce template adoption and required security controls |
@@ -84,8 +83,6 @@
 # Enforce 11-laboratory hardening baseline
 ./scripts/check-laboratory-hardening.sh
 
-# Bootstrap secrets
-./scripts/bootstrap-secrets.sh --force
 ```
 
 ---
