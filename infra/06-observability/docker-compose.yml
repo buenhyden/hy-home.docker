@@ -294,6 +294,10 @@ services:
       GF_AUTH_GENERIC_OAUTH_USE_PKCE: 'true'
       # S256 방식을 명시적으로 지정 (필요 시)
       GF_AUTH_GENERIC_OAUTH_CODE_CHALLENGE_METHOD: 'S256'
+      # [추가] Anonymous Viewer 접근 활성화: Kiali 등 내부 서비스의 API 헬스체크 허용
+      # 브라우저 접근은 GF_AUTH_OAUTH_AUTO_LOGIN=true 로 Keycloak OAuth 유지됨
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ORG_ROLE: 'Viewer'
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/etc/grafana/dashboards:ro

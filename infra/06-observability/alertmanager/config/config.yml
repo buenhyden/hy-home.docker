@@ -63,8 +63,8 @@ receivers:
            *Description:* {{ .Annotations.description }}
            *Runbook:* {{ .Annotations.runbook_url }}
           {{ end }}
-    email_configs:
-      - to: "oncall@example.com"
-        send_resolved: true
-        headers:
-          subject: '[CRITICAL] {{ .CommonLabels.alertname }} firing on {{ .CommonLabels.instance }}'
+    # email_configs:
+    #   - to: "oncall@example.com"
+    #     send_resolved: true
+    #     headers:
+    #       subject: '[CRITICAL] {{ .CommonLabels.alertname }} firing on {{ .CommonLabels.instance }}'
