@@ -13,6 +13,7 @@ if [[ ! -f "$LIB_PATH" ]]; then
     exit 1
 fi
 
+# shellcheck source=lib/hardening-lib.sh
 source "$LIB_PATH"
 
 # --- Tier 01: Gateway ---
@@ -196,4 +197,4 @@ main() {
 main "$@"
 
 
-k3s 전환 준비: Docker Compose 설정을 Kubernetes(k3s)로 옮기기 위한 리소스 및 네트워크 정책 최적화
+# k3s 전환 준비: Docker Compose 설정을 Kubernetes(k3s)로 옮기기 위한 리소스 및 네트워크 정책 최적화
