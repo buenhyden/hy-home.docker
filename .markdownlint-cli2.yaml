@@ -3,8 +3,7 @@ config:
   MD025: false
   MD028: false
   MD036: false
-  MD060:
-    style: consistent
+  MD060: false
   MD033:
     allowed_elements:
       - div
