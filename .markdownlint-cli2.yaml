@@ -12,15 +12,15 @@ config:
       - p
   MD024: false
 ignores:
-  - '.agent/'
-  - '.git/'
-  - '.history/'
-  - '.mypy_cache/'
-  - '.vscode/'
-  - 'node_modules/'
-  - 'dist/'
-  - 'coverage/'
-  - 'storybook-static/'
+  - ".agent/"
+  - ".git/"
+  - ".history/"
+  - ".mypy_cache/"
+  - ".vscode/"
+  - "node_modules/"
+  - "dist/"
+  - "coverage/"
+  - "storybook-static/"
   - "AGENTS.md"
   - "CLAUDE.md"
   - "GEMINI.md"
