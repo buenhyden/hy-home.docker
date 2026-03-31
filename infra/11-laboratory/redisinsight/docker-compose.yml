@@ -23,9 +23,9 @@ services:
     image: redis/redisinsight:3.0.3
     container_name: redisinsight
     volumes:
-      - redisinsight-data:/db:rw
+      - redisinsight-data:/data:rw
     healthcheck:
-      test: ['CMD-SHELL', 'test -d /db']
+      test: ['CMD-SHELL', 'test -d /data']
       interval: 30s
       timeout: 5s
       retries: 5
@@ -33,12 +33,22 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
+      # 1) 정적/부가 요청 전용 라우터
+      traefik.http.routers.redisinsight-static.rule: Host(`redisinsight.${DEFAULT_URL}`) && (Path(`/favicon.ico`) || Path(`/robots.txt`))
+      traefik.http.routers.redisinsight-static.entrypoints: websecure
+      traefik.http.routers.redisinsight-static.tls: true
+      traefik.http.routers.redisinsight-static.priority: 200
+      traefik.http.routers.redisinsight-static.service: redisinsight-svc
+      # 2) 일반 앱 라우터
       traefik.http.routers.redisinsight.rule: Host(`redisinsight.${DEFAULT_URL}`)
       traefik.http.routers.redisinsight.entrypoints: websecure
       traefik.http.routers.redisinsight.tls: 'true'
+      traefik.http.routers.redisinsight.priority: 100
       traefik.http.middlewares.redisinsight-admin-ip.ipallowlist.sourcerange: ${LAB_ALLOWED_CIDRS:-127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
       traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file
-      traefik.http.services.redisinsight.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-5540}
+      traefik.http.routers.redisinsight.service: redisinsight-svc
+      # 3) 공통 서비스 포트
+      traefik.http.services.redisinsight-svc.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-5540}
     networks:
       infra_net:
         ipv4_address: 172.19.0.5

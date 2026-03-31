@@ -41,7 +41,7 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      traefik.http.routers.oauth2-proxy.rule: Host(`auth.${DEFAULT_URL}`)
+      traefik.http.routers.oauth2-proxy.rule: Host(`auth.${DEFAULT_URL}`) && PathPrefix(`/oauth2`)
       traefik.docker.network: infra_net
       traefik.http.routers.oauth2-proxy.entrypoints: websecure
       traefik.http.routers.oauth2-proxy.service: oauth2-proxy-svc
