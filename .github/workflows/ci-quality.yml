@@ -27,6 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Check 01-gateway hardening baseline
         run: bash scripts/check-gateway-hardening.sh
 
@@ -37,6 +39,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Check 02-auth hardening baseline
         run: bash scripts/check-auth-hardening.sh
 
@@ -47,6 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Check 03-security hardening baseline
         run: bash scripts/check-security-hardening.sh
 
@@ -57,6 +63,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Check 04-data hardening baseline
         run: bash scripts/check-data-hardening.sh
 
@@ -67,6 +75,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Check 05-messaging hardening baseline
         run: bash scripts/check-messaging-hardening.sh
 
@@ -77,6 +87,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Check 06-observability hardening baseline
         run: bash scripts/check-observability-hardening.sh
 
@@ -87,6 +99,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Check 07-workflow hardening baseline
         run: bash scripts/check-workflow-hardening.sh
 
@@ -97,6 +111,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Check 08-ai hardening baseline
         run: bash scripts/check-ai-hardening.sh
 
@@ -107,6 +123,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Check 09-tooling hardening baseline
         run: bash scripts/check-tooling-hardening.sh
 
@@ -117,6 +135,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Check 11-laboratory hardening baseline
         run: bash scripts/check-laboratory-hardening.sh
 
@@ -127,6 +147,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Check template adoption + security baseline
         run: bash scripts/check-template-security-baseline.sh
 
@@ -137,6 +159,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Prepare environment
+        run: cp .env.example .env
       - name: Check QuickWin baseline
         run: bash scripts/check-quickwin-baseline.sh
 

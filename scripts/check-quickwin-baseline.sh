@@ -13,6 +13,15 @@ if ! command -v jq >/dev/null 2>&1; then
   exit 2
 fi
 
+# Ensure running from repository root
+BASE_DIR="$(git rev-parse --show-toplevel)"
+cd "$BASE_DIR"
+
+if [[ ! -f .env ]] && [[ -f .env.example ]]; then
+  echo "INFO: .env not found, using .env.example for baseline validation."
+  cp .env.example .env
+fi
+
 exceptions_file="infra/common-optimizations.exceptions.json"
 if [[ ! -f "$exceptions_file" ]]; then
   echo "ERROR: exceptions registry not found: $exceptions_file" >&2
