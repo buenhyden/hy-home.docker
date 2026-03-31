@@ -9,9 +9,6 @@ volumes:
       o: bind
       device: ${DEFAULT_COMMUNICATION_DIR}/stalwart/data
 
-secrets:
-  stalwart_password:
-    external: true
 
 services:
   stalwart:

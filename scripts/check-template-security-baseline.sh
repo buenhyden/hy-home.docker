@@ -54,7 +54,7 @@ for f in "${compose_files[@]}"; do
   if [[ "$is_exception" == "yes" ]]; then
     continue
   fi
-  if ! rg -q "$required_ref" "$f"; then
+  if ! grep -Fq "$required_ref" "$f"; then
     template_violations+=("$f")
   fi
 done

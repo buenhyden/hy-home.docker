@@ -44,19 +44,6 @@ volumes:
       type: none
       device: ${DEFAULT_WORKFLOW_DIR}/n8n-task-runner
 
-secrets:
-  n8n_valkey_password:
-    external: true
-  n8n_db_password:
-    external: true
-  n8n_encryption_key:
-    external: true
-  n8n_runner_auth_token:
-    external: true
-
-networks:
-  infra_net:
-    external: true
 
 services:
   n8n:

@@ -1,9 +1,6 @@
 x-tier-label: &tier-label
   hy-home.tier: admin
 
-networks:
-  infra_net:
-    external: true
 
 # volumes:
 #   homer-data:

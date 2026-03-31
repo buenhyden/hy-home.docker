@@ -254,6 +254,3 @@ services:
     networks:
       - infra_net
 
-networks:
-  infra_net:
-    external: true

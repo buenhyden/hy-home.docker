@@ -66,19 +66,6 @@ volumes:
       device: ${DEFAULT_WORKFLOW_DIR}/airflow/plugins
   airflow-valkey-data:
 
-secrets:
-  airflow_db_password:
-    external: true
-  airflow_fernet_key:
-    external: true
-  airflow_www_password:
-    external: true
-  airflow_valkey_password:
-    external: true
-
-networks:
-  infra_net:
-    external: true
 
 services:
   airflow-apiserver:

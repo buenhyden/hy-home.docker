@@ -384,6 +384,3 @@ services:
       infra_net:
         ipv4_address: 172.19.0.38
 
-networks:
-  infra_net:
-    external: true

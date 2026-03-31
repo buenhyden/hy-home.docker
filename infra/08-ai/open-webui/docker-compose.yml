@@ -9,9 +9,6 @@ volumes:
       type: none
       device: ${DEFAULT_AI_MODEL_DIR}/open-webui
 
-networks:
-  infra_net:
-    external: true
 
 services:
   open-webui:
