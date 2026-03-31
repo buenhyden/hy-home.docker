@@ -20,8 +20,8 @@ jobs:
       - name: Check docs traceability sync
         run: bash scripts/check-doc-traceability.sh
 
-  # ── Gateway Hardening Baseline ──────────────────────────────
-  gateway-hardening:
+  # ── Infrastructure Hardening Baseline ──────────────────────────
+  infrastructure-hardening:
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -29,116 +29,8 @@ jobs:
       - uses: actions/checkout@v6
       - name: Prepare environment
         run: cp .env.example .env
-      - name: Check 01-gateway hardening baseline
-        run: bash scripts/check-gateway-hardening.sh
-
-  # ── Auth Hardening Baseline ─────────────────────────────────
-  auth-hardening:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Prepare environment
-        run: cp .env.example .env
-      - name: Check 02-auth hardening baseline
-        run: bash scripts/check-auth-hardening.sh
-
-  # ── Security Hardening Baseline ─────────────────────────────
-  security-hardening:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Prepare environment
-        run: cp .env.example .env
-      - name: Check 03-security hardening baseline
-        run: bash scripts/check-security-hardening.sh
-
-  # ── Data Hardening Baseline ─────────────────────────────────
-  data-hardening:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Prepare environment
-        run: cp .env.example .env
-      - name: Check 04-data hardening baseline
-        run: bash scripts/check-data-hardening.sh
-
-  # ── Messaging Hardening Baseline ────────────────────────────
-  messaging-hardening:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Prepare environment
-        run: cp .env.example .env
-      - name: Check 05-messaging hardening baseline
-        run: bash scripts/check-messaging-hardening.sh
-
-  # ── Observability Hardening Baseline ────────────────────────
-  observability-hardening:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Prepare environment
-        run: cp .env.example .env
-      - name: Check 06-observability hardening baseline
-        run: bash scripts/check-observability-hardening.sh
-
-  # ── Workflow Hardening Baseline ─────────────────────────────
-  workflow-hardening:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Prepare environment
-        run: cp .env.example .env
-      - name: Check 07-workflow hardening baseline
-        run: bash scripts/check-workflow-hardening.sh
-
-  # ── AI Hardening Baseline ───────────────────────────────────
-  ai-hardening:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Prepare environment
-        run: cp .env.example .env
-      - name: Check 08-ai hardening baseline
-        run: bash scripts/check-ai-hardening.sh
-
-  # ── Tooling Hardening Baseline ──────────────────────────────
-  tooling-hardening:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Prepare environment
-        run: cp .env.example .env
-      - name: Check 09-tooling hardening baseline
-        run: bash scripts/check-tooling-hardening.sh
-
-  # ── Laboratory Hardening Baseline ───────────────────────────
-  laboratory-hardening:
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Prepare environment
-        run: cp .env.example .env
-      - name: Check 11-laboratory hardening baseline
-        run: bash scripts/check-laboratory-hardening.sh
+      - name: Check all tiers hardening baseline
+        run: bash scripts/check-all-hardening.sh
 
   # ── Template/Security Baseline ──────────────────────────────
   template-security-baseline:

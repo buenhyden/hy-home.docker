@@ -39,6 +39,26 @@ x-service-defaults: &service-defaults
   labels:
     <<: *labels-managed
 
+x-labels-traefik-enable: &labels-traefik-enable
+  traefik.enable: "true"
+
+x-traefik-standard-middlewares: &traefik-standard-middlewares "gateway-standard-chain@file"
+x-traefik-sso-middlewares: &traefik-sso-middlewares "gateway-standard-chain@file,sso-errors@file,sso-auth@file"
+
+x-healthcheck-ping: &healthcheck-ping
+  test: ["CMD-SHELL", "/usr/bin/curl -f http://localhost:8080/ping || exit 1"]
+  interval: 10s
+  timeout: 5s
+  retries: 3
+  start_period: 10s
+
+x-healthcheck-http: &healthcheck-http
+  test: ["CMD-SHELL", "/usr/bin/curl -f http://localhost:8080/health || exit 1"]
+  interval: 10s
+  timeout: 5s
+  retries: 3
+  start_period: 20s
+
 x-service-readonly: &service-readonly
   <<: *service-defaults
   read_only: true
