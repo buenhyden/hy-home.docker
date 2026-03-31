@@ -5,7 +5,8 @@
         "$$hashKey": "object:948",
         "builtIn": 1,
         "datasource": {
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -24,8 +25,8 @@
   "panels": [
     {
       "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "dfhmwo26u5hxce"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -104,7 +105,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Conclusão"
+                "value": "Conclus\u00e3o"
               },
               {
                 "id": "unit",
@@ -236,7 +237,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Percentual_Conclusão"
+                "value": "Percentual_Conclus\u00e3o"
               },
               {
                 "id": "unit",
@@ -503,7 +504,7 @@
             "properties": [
               {
                 "id": "displayName",
-                "value": "Crítico"
+                "value": "Cr\u00edtico"
               },
               {
                 "id": "unit",
@@ -623,15 +624,15 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "dfhmwo26u5hxce"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "format": "table",
           "group": [],
           "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "with \ndags_processar as (\n\tselect * from public.dag where dag_id in ($Dags)),\ntask_avg as (\n\t-- media de duracao por task\n\tselect ti.dag_id, ti.task_id, round(avg(ti.duration)) avg_duration_seconds, count(1) total_execution_times \n\tfrom dags_processar dp \n\tinner join task_instance  ti on ti.dag_id  = dp.dag_id\n\twhere ti.execution_date  >= execution_date -  interval '60 day'\n\tand   ti.state  = 'success'\n\tgroup by ti.dag_id, ti.task_id\n\torder by 1, 2),\ntmp as(\n\tselect dr.*, rank() over (partition by dr.dag_id  order by id desc) as rk from dag_run dr \n\tinner join dags_processar dp on dp.dag_id = dr.dag_id ),\ndags_last_execution as (\n\tselect * from tmp where rk = 1),\nlast_execution_tasks as (\t\n--- tasks da ultima execucao\n\tselect ti.dag_id \n\t\t  ,ti.task_id \n\t\t  ,ti.state \n\t\t  ,ti.start_date \n\t\t  ,round(EXTRACT(EPOCH FROM (coalesce(ti.end_date, current_timestamp) - ti.start_date ))) as last_duration \n\tfrom dags_last_execution dle \n\tinner join task_instance ti on dle.dag_id = ti.dag_id  and ti.execution_date  = dle.execution_date),\ntemp_last_execution_rules as (\n\tselect let.dag_id, let.task_id, let.state,\n\t\tcase when  let.last_duration> 900 and let.last_duration >= ta.avg_duration_seconds*1.3 and total_execution_times > 10 then 'CRITICAL'\n                     when  let.last_duration> 180 and let.last_duration >= ta.avg_duration_seconds*1.3 and total_execution_times > 10 then 'WARNING'\n\t\t     \t\telse 'OK'\n\t\tend message,\n\t\tlet.last_duration,\n\t\tta.avg_duration_seconds,\n\t\ttotal_execution_times,\n\t\tcase when  let.state = 'success' then ta.avg_duration_seconds- let.last_duration  else 0 end dif_between_avg_and_last\n\tfrom last_execution_tasks let \n\tleft join task_avg ta on let.dag_id = ta.dag_id and let.task_id = ta.task_id)\n--- ultima execuçao status das tasks\nselect ti.dag_id, \n\t   dle.execution_date +  interval '1 day' start_date , \n\t   dle.state,\n\t    sum(avg_duration_seconds)   FILTER (WHERE ti.state = 'success') / sum(avg_duration_seconds) as percentual_conclusao,\n\t   sum(avg_duration_seconds)   FILTER (WHERE ti.state = 'success') / sum(avg_duration_seconds) as percentual_conclusao_num,\n\t   count(1)    as total_tasks,\n\t   count(1)   FILTER (WHERE ti.state = 'running') as running,\n\t   count(1)   FILTER (WHERE ti.state = 'success') as success,\n\t   count(1)   FILTER (WHERE ti.state = 'failed') as failed,\n\t   count(1)   FILTER (WHERE ti.state = 'failed') as failed2,\n\t   count(1)   FILTER (WHERE ti.state not in ('failed', 'success' ,'failed' )    ) as other_status,\n\t   count(1)   filter (where ti.message = 'WARNING') as waring,\n\t   count(1)   filter (where ti.message = 'CRITICAL') as critical,\n\t   cast(avg(dif_between_avg_and_last) FILTER (WHERE ti.state = 'success')  as Integer) as speed\n\t \nfrom dags_last_execution dle \ninner join temp_last_execution_rules ti on dle.dag_id = ti.dag_id \ngroup by ti.dag_id, dle.execution_date,  dle.state",
+          "rawSql": "with \ndags_processar as (\n\tselect * from public.dag where dag_id in ($Dags)),\ntask_avg as (\n\t-- media de duracao por task\n\tselect ti.dag_id, ti.task_id, round(avg(ti.duration)) avg_duration_seconds, count(1) total_execution_times \n\tfrom dags_processar dp \n\tinner join task_instance  ti on ti.dag_id  = dp.dag_id\n\twhere ti.execution_date  >= execution_date -  interval '60 day'\n\tand   ti.state  = 'success'\n\tgroup by ti.dag_id, ti.task_id\n\torder by 1, 2),\ntmp as(\n\tselect dr.*, rank() over (partition by dr.dag_id  order by id desc) as rk from dag_run dr \n\tinner join dags_processar dp on dp.dag_id = dr.dag_id ),\ndags_last_execution as (\n\tselect * from tmp where rk = 1),\nlast_execution_tasks as (\t\n--- tasks da ultima execucao\n\tselect ti.dag_id \n\t\t  ,ti.task_id \n\t\t  ,ti.state \n\t\t  ,ti.start_date \n\t\t  ,round(EXTRACT(EPOCH FROM (coalesce(ti.end_date, current_timestamp) - ti.start_date ))) as last_duration \n\tfrom dags_last_execution dle \n\tinner join task_instance ti on dle.dag_id = ti.dag_id  and ti.execution_date  = dle.execution_date),\ntemp_last_execution_rules as (\n\tselect let.dag_id, let.task_id, let.state,\n\t\tcase when  let.last_duration> 900 and let.last_duration >= ta.avg_duration_seconds*1.3 and total_execution_times > 10 then 'CRITICAL'\n                     when  let.last_duration> 180 and let.last_duration >= ta.avg_duration_seconds*1.3 and total_execution_times > 10 then 'WARNING'\n\t\t     \t\telse 'OK'\n\t\tend message,\n\t\tlet.last_duration,\n\t\tta.avg_duration_seconds,\n\t\ttotal_execution_times,\n\t\tcase when  let.state = 'success' then ta.avg_duration_seconds- let.last_duration  else 0 end dif_between_avg_and_last\n\tfrom last_execution_tasks let \n\tleft join task_avg ta on let.dag_id = ta.dag_id and let.task_id = ta.task_id)\n--- ultima execu\u00e7ao status das tasks\nselect ti.dag_id, \n\t   dle.execution_date +  interval '1 day' start_date , \n\t   dle.state,\n\t    sum(avg_duration_seconds)   FILTER (WHERE ti.state = 'success') / sum(avg_duration_seconds) as percentual_conclusao,\n\t   sum(avg_duration_seconds)   FILTER (WHERE ti.state = 'success') / sum(avg_duration_seconds) as percentual_conclusao_num,\n\t   count(1)    as total_tasks,\n\t   count(1)   FILTER (WHERE ti.state = 'running') as running,\n\t   count(1)   FILTER (WHERE ti.state = 'success') as success,\n\t   count(1)   FILTER (WHERE ti.state = 'failed') as failed,\n\t   count(1)   FILTER (WHERE ti.state = 'failed') as failed2,\n\t   count(1)   FILTER (WHERE ti.state not in ('failed', 'success' ,'failed' )    ) as other_status,\n\t   count(1)   filter (where ti.message = 'WARNING') as waring,\n\t   count(1)   filter (where ti.message = 'CRITICAL') as critical,\n\t   cast(avg(dif_between_avg_and_last) FILTER (WHERE ti.state = 'success')  as Integer) as speed\n\t \nfrom dags_last_execution dle \ninner join temp_last_execution_rules ti on dle.dag_id = ti.dag_id \ngroup by ti.dag_id, dle.execution_date,  dle.state",
           "refId": "A",
           "select": [
             [
@@ -655,7 +656,7 @@
           ]
         }
       ],
-      "title": "Dags Status (Se há jobs falhados)",
+      "title": "Dags Status (Se h\u00e1 jobs falhados)",
       "transformations": [
         {
           "id": "merge",
@@ -669,8 +670,8 @@
     },
     {
       "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "dfhmwo26u5hxce"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -743,15 +744,15 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "dfhmwo26u5hxce"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "format": "table",
           "group": [],
           "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "with \r\ndags_processar as (\r\n\tselect * from public.dag where dag_id in ($Dags)),\r\ntask_avg as (\r\n\t-- media de duracao por task\r\n\tselect ti.dag_id, ti.task_id, round(avg(ti.duration)) avg_duration_seconds, count(1) total_execution_times \r\n\tfrom dags_processar dp \r\n\tinner join task_instance  ti on ti.dag_id  = dp.dag_id\r\n\twhere ti.execution_date  >= execution_date -  interval '60 day'\r\n\tand   ti.state  = 'success'\r\n\tgroup by ti.dag_id, ti.task_id\r\n\torder by 1, 2),\r\ntmp as(\r\n\tselect dr.*, rank() over (partition by dr.dag_id  order by id desc) as rk from dag_run dr \r\n\tinner join dags_processar dp on dp.dag_id = dr.dag_id ),\r\ndags_last_execution as (\r\n\tselect * from tmp where rk = 1),\r\nlast_execution_tasks as (\t\r\n--- tasks da ultima execucao\r\n\tselect ti.dag_id \r\n\t\t  ,ti.task_id \r\n\t\t  ,ti.state \r\n\t\t  ,ti.start_date \r\n\t\t  ,round(EXTRACT(EPOCH FROM (coalesce(ti.end_date, current_timestamp) - ti.start_date ))) as last_duration \r\n\tfrom dags_last_execution dle \r\n\tinner join task_instance ti on dle.dag_id = ti.dag_id  and ti.execution_date  = dle.execution_date),\r\ntemp_last_execution_rules as (\r\n\tselect let.dag_id, let.task_id, let.state,\r\n\t\tcase when  let.last_duration> 900 and let.last_duration >= ta.avg_duration_seconds*1.3 and total_execution_times > 10 then 'CRITICAL'\r\n                     when  let.last_duration> 180 and let.last_duration >= ta.avg_duration_seconds*1.3 and total_execution_times > 10 then 'WARNING'\r\n\t\t     \t\telse 'OK'\r\n\t\tend message,\r\n\t\tlet.last_duration,\r\n\t\tta.avg_duration_seconds,\r\n\t\ttotal_execution_times,\r\n\t\tcase when  let.state = 'success' then ta.avg_duration_seconds- let.last_duration  else 0 end dif_between_avg_and_last\r\n\tfrom last_execution_tasks let \r\n\tleft join task_avg ta on let.dag_id = ta.dag_id and let.task_id = ta.task_id)\r\n--- ultima execuçao status das tasks\r\nselect ti.dag_id, \r\n\t    sum(avg_duration_seconds)   FILTER (WHERE ti.state = 'success') / sum(avg_duration_seconds) as Percentual\r\n\t    --  sum(avg_duration_seconds)   FILTER (WHERE ti.state = 'success') / sum(avg_duration_seconds) as percentual_conclusao_num\r\nfrom dags_last_execution dle \r\ninner join temp_last_execution_rules ti on dle.dag_id = ti.dag_id \r\ngroup by ti.dag_id, dle.execution_date,  dle.state",
+          "rawSql": "with \r\ndags_processar as (\r\n\tselect * from public.dag where dag_id in ($Dags)),\r\ntask_avg as (\r\n\t-- media de duracao por task\r\n\tselect ti.dag_id, ti.task_id, round(avg(ti.duration)) avg_duration_seconds, count(1) total_execution_times \r\n\tfrom dags_processar dp \r\n\tinner join task_instance  ti on ti.dag_id  = dp.dag_id\r\n\twhere ti.execution_date  >= execution_date -  interval '60 day'\r\n\tand   ti.state  = 'success'\r\n\tgroup by ti.dag_id, ti.task_id\r\n\torder by 1, 2),\r\ntmp as(\r\n\tselect dr.*, rank() over (partition by dr.dag_id  order by id desc) as rk from dag_run dr \r\n\tinner join dags_processar dp on dp.dag_id = dr.dag_id ),\r\ndags_last_execution as (\r\n\tselect * from tmp where rk = 1),\r\nlast_execution_tasks as (\t\r\n--- tasks da ultima execucao\r\n\tselect ti.dag_id \r\n\t\t  ,ti.task_id \r\n\t\t  ,ti.state \r\n\t\t  ,ti.start_date \r\n\t\t  ,round(EXTRACT(EPOCH FROM (coalesce(ti.end_date, current_timestamp) - ti.start_date ))) as last_duration \r\n\tfrom dags_last_execution dle \r\n\tinner join task_instance ti on dle.dag_id = ti.dag_id  and ti.execution_date  = dle.execution_date),\r\ntemp_last_execution_rules as (\r\n\tselect let.dag_id, let.task_id, let.state,\r\n\t\tcase when  let.last_duration> 900 and let.last_duration >= ta.avg_duration_seconds*1.3 and total_execution_times > 10 then 'CRITICAL'\r\n                     when  let.last_duration> 180 and let.last_duration >= ta.avg_duration_seconds*1.3 and total_execution_times > 10 then 'WARNING'\r\n\t\t     \t\telse 'OK'\r\n\t\tend message,\r\n\t\tlet.last_duration,\r\n\t\tta.avg_duration_seconds,\r\n\t\ttotal_execution_times,\r\n\t\tcase when  let.state = 'success' then ta.avg_duration_seconds- let.last_duration  else 0 end dif_between_avg_and_last\r\n\tfrom last_execution_tasks let \r\n\tleft join task_avg ta on let.dag_id = ta.dag_id and let.task_id = ta.task_id)\r\n--- ultima execu\u00e7ao status das tasks\r\nselect ti.dag_id, \r\n\t    sum(avg_duration_seconds)   FILTER (WHERE ti.state = 'success') / sum(avg_duration_seconds) as Percentual\r\n\t    --  sum(avg_duration_seconds)   FILTER (WHERE ti.state = 'success') / sum(avg_duration_seconds) as percentual_conclusao_num\r\nfrom dags_last_execution dle \r\ninner join temp_last_execution_rules ti on dle.dag_id = ti.dag_id \r\ngroup by ti.dag_id, dle.execution_date,  dle.state",
           "refId": "A",
           "select": [
             [
@@ -775,13 +776,13 @@
           ]
         }
       ],
-      "title": "Percentual de conclusão",
+      "title": "Percentual de conclus\u00e3o",
       "type": "bargauge"
     },
     {
       "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "dfhmwo26u5hxce"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -999,8 +1000,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "dfhmwo26u5hxce"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "format": "table",
           "group": [],
@@ -1031,7 +1032,7 @@
           ]
         }
       ],
-      "title": "Duração das Execuções por dia",
+      "title": "Dura\u00e7\u00e3o das Execu\u00e7\u00f5es por dia",
       "transformations": [
         {
           "id": "merge",
@@ -1045,8 +1046,8 @@
     },
     {
       "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "dfhmwo26u5hxce"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1182,15 +1183,15 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "dfhmwo26u5hxce"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "format": "table",
           "group": [],
           "hide": false,
           "metricColumn": "none",
           "rawQuery": true,
-          "rawSql": "\r\nwith \r\ndags_processar as (\r\n\tselect * from public.dag\r\n\twhere dag_id  in ($Dags)),\r\ntask_avg as (\r\n\t-- media de duracao por task\r\n\tselect ti.dag_id, ti.task_id, round(avg(ti.duration)) avg_duration_seconds, count(1) total_execution_times \r\n\tfrom dags_processar dp \r\n\tinner join task_instance  ti on ti.dag_id  = dp.dag_id\r\n\twhere ti.execution_date  >= execution_date -  interval '7 day'\r\n\tand   ti.state  = 'success'\r\n\tgroup by ti.dag_id, ti.task_id\r\n\torder by 1, 2),\r\ntmp as(\r\n\tselect dr.*, rank() over (partition by dr.dag_id  order by id desc) as rk from dag_run dr \r\n\tinner join dags_processar dp on dp.dag_id = dr.dag_id ),\r\ndags_last_execution as (\r\n\tselect * from tmp where rk = 1),\r\nlast_execution_tasks as (\t\r\n--- tasks da ultima execucao\r\n\tselect ti.dag_id \r\n\t\t  ,ti.task_id \r\n\t\t  ,ti.state \r\n\t\t  ,ti.start_date \r\n\t\t  ,round(EXTRACT(EPOCH FROM (coalesce(ti.end_date, current_timestamp) - ti.start_date ))) as last_duration \r\n\tfrom dags_last_execution dle \r\n\tinner join task_instance ti on dle.dag_id = ti.dag_id  and ti.execution_date  = dle.execution_date),\r\ntemp_last_execution_rules as (\r\n\tselect let.dag_id, let.task_id, let.state,\r\n\t\t--case when  let.last_duration> 900 and let.last_duration >= ta.avg_duration_seconds*1.3 and total_execution_times > 10 then 'CRITICAL' \r\n\t--\t\t when  let.last_duration> 180 and let.last_duration >= ta.avg_duration_seconds*1.3 and total_execution_times > 10 then 'WARNING'\r\n\t--\telse 'OK'\r\n\t--\tend message,\r\n\t\tlet.last_duration,\r\n\t\tta.avg_duration_seconds,\r\n\t\ttotal_execution_times,\r\n\t\tcase when  let.state = 'success' then ta.avg_duration_seconds- let.last_duration  else 0 end dif_between_avg_and_last\r\n\tfrom last_execution_tasks let \r\n\tleft join task_avg ta on let.dag_id = ta.dag_id and let.task_id = ta.task_id)\r\n--- ultima execuçao status das tasks\r\nselect * from temp_last_execution_rules\r\nwhere dag_id in ($Dags) and state = 'running'",
+          "rawSql": "\r\nwith \r\ndags_processar as (\r\n\tselect * from public.dag\r\n\twhere dag_id  in ($Dags)),\r\ntask_avg as (\r\n\t-- media de duracao por task\r\n\tselect ti.dag_id, ti.task_id, round(avg(ti.duration)) avg_duration_seconds, count(1) total_execution_times \r\n\tfrom dags_processar dp \r\n\tinner join task_instance  ti on ti.dag_id  = dp.dag_id\r\n\twhere ti.execution_date  >= execution_date -  interval '7 day'\r\n\tand   ti.state  = 'success'\r\n\tgroup by ti.dag_id, ti.task_id\r\n\torder by 1, 2),\r\ntmp as(\r\n\tselect dr.*, rank() over (partition by dr.dag_id  order by id desc) as rk from dag_run dr \r\n\tinner join dags_processar dp on dp.dag_id = dr.dag_id ),\r\ndags_last_execution as (\r\n\tselect * from tmp where rk = 1),\r\nlast_execution_tasks as (\t\r\n--- tasks da ultima execucao\r\n\tselect ti.dag_id \r\n\t\t  ,ti.task_id \r\n\t\t  ,ti.state \r\n\t\t  ,ti.start_date \r\n\t\t  ,round(EXTRACT(EPOCH FROM (coalesce(ti.end_date, current_timestamp) - ti.start_date ))) as last_duration \r\n\tfrom dags_last_execution dle \r\n\tinner join task_instance ti on dle.dag_id = ti.dag_id  and ti.execution_date  = dle.execution_date),\r\ntemp_last_execution_rules as (\r\n\tselect let.dag_id, let.task_id, let.state,\r\n\t\t--case when  let.last_duration> 900 and let.last_duration >= ta.avg_duration_seconds*1.3 and total_execution_times > 10 then 'CRITICAL' \r\n\t--\t\t when  let.last_duration> 180 and let.last_duration >= ta.avg_duration_seconds*1.3 and total_execution_times > 10 then 'WARNING'\r\n\t--\telse 'OK'\r\n\t--\tend message,\r\n\t\tlet.last_duration,\r\n\t\tta.avg_duration_seconds,\r\n\t\ttotal_execution_times,\r\n\t\tcase when  let.state = 'success' then ta.avg_duration_seconds- let.last_duration  else 0 end dif_between_avg_and_last\r\n\tfrom last_execution_tasks let \r\n\tleft join task_avg ta on let.dag_id = ta.dag_id and let.task_id = ta.task_id)\r\n--- ultima execu\u00e7ao status das tasks\r\nselect * from temp_last_execution_rules\r\nwhere dag_id in ($Dags) and state = 'running'",
           "refId": "A",
           "select": [
             [
@@ -1228,8 +1229,8 @@
     },
     {
       "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "dfhmwo26u5hxce"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1373,8 +1374,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "dfhmwo26u5hxce"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "format": "table",
           "group": [],
@@ -1419,8 +1420,8 @@
     },
     {
       "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "dfhmwo26u5hxce"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {},
@@ -1437,8 +1438,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "dfhmwo26u5hxce"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "format": "table",
           "group": [],
@@ -1469,7 +1470,7 @@
           ]
         }
       ],
-      "title": "Duração de cada job",
+      "title": "Dura\u00e7\u00e3o de cada job",
       "transparent": true,
       "type": "table"
     }
@@ -1485,7 +1486,10 @@
           "text": "",
           "value": ""
         },
-        "datasource": "dfhmwo26u5hxce",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "select dag_id from public.dag ",
         "includeAll": true,
         "label": "Pesquisar por Dags",
@@ -1507,6 +1511,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "Airflow monitoring",
-  "uid": "e9JMc2CZz",
+  "uid": "applications-airflow-monitoring",
   "version": 2
 }

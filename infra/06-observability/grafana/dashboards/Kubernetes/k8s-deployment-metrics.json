@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -1245,7 +1245,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "includeAll": true,
         "name": "Deployment",
         "options": [],
@@ -1259,7 +1262,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "includeAll": true,
         "name": "Node",
         "options": [],
@@ -1276,6 +1282,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Kubernetes Deployment metrics",
-  "uid": "4de89135-3ec6-41b1-a554-654f5234994c",
+  "uid": "kubernetes-k8s-deployment-metrics",
   "version": 2
 }

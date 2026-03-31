@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -51,7 +51,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A timeseries panel showing the health status of applications managed by ArgoCD.",
       "fieldConfig": {
@@ -143,7 +143,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "exemplar": false,
           "expr": "sum(\n  argocd_app_info{\n    cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n,\ndest_server=~\"$kubernetes_cluster\",\nproject=~\"$project\"\n\n  }\n) by (job, project, health_status)\n",
@@ -157,7 +157,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A timeseries panel showing the sync status of applications managed by ArgoCD.",
       "fieldConfig": {
@@ -249,7 +249,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "exemplar": false,
           "expr": "sum(\n  argocd_app_info{\n    cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n,\ndest_server=~\"$kubernetes_cluster\",\nproject=~\"$project\"\n\n  }\n) by (job, project, sync_status)\n",
@@ -263,7 +263,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A timeseries panel showing the sync results of applications managed by ArgoCD.",
       "fieldConfig": {
@@ -355,7 +355,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "exemplar": false,
           "expr": "sum(\n  round(\n    increase(\n      argocd_app_sync_total{\n        cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n,\ndest_server=~\"$kubernetes_cluster\",\nproject=~\"$project\"\n\n      }[$__rate_interval]\n    )\n  )\n) by (job, project, phase)\n",
@@ -369,7 +369,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A timeseries panel showing whether auto sync is enabled for applications managed by ArgoCD.",
       "fieldConfig": {
@@ -461,7 +461,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "exemplar": false,
           "expr": "sum(\n  argocd_app_info{\n    cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n,\ndest_server=~\"$kubernetes_cluster\",\nproject=~\"$project\"\n\n  }\n) by (job, project, autosync_enabled)\n",
@@ -488,7 +488,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A table listing all unhealthy applications managed by ArgoCD.",
       "fieldConfig": {
@@ -564,7 +564,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "expr": "sum(\n  argocd_app_info{\n    cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n,\ndest_server=~\"$kubernetes_cluster\",\nproject=~\"$project\"\n,\n    health_status!~\"Healthy|Progressing\"\n  }\n) by (job, dest_server, project, name, exported_namespace, health_status) > 0\n",
           "format": "table",
@@ -605,7 +605,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A table listing all unhealthy applications managed by ArgoCD.",
       "fieldConfig": {
@@ -681,7 +681,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "expr": "sum(\n  argocd_app_info{\n    cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n,\ndest_server=~\"$kubernetes_cluster\",\nproject=~\"$project\"\n,\n    sync_status!=\"Synced\"\n  }\n) by (job, dest_server, project, name, exported_namespace, sync_status) > 0\n",
           "format": "table",
@@ -722,7 +722,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A table listing all applications that failed to sync in the last 7 days managed by ArgoCD.",
       "fieldConfig": {
@@ -786,7 +786,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "expr": "sum(\n  round(\n    increase(\n      argocd_app_sync_total{\n        cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n,\ndest_server=~\"$kubernetes_cluster\",\nproject=~\"$project\"\n,\n        phase!=\"Succeeded\"\n      }[7d]\n    )\n  )\n) by (job, dest_server, project, name, exported_namespace, phase) > 0\n",
           "format": "table",
@@ -827,7 +827,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A table listing all applications with auto sync disabled managed by ArgoCD.",
       "fieldConfig": {
@@ -891,7 +891,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "expr": "sum(\n  argocd_app_info{\n    cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n,\ndest_server=~\"$kubernetes_cluster\",\nproject=~\"$project\"\n,\n    autosync_enabled!=\"true\"\n  }\n) by (job, dest_server, project, name, exported_namespace, autosync_enabled) > 0\n",
           "format": "table",
@@ -946,7 +946,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A timeseries panel showing the health status of each application managed by ArgoCD.",
       "fieldConfig": {
@@ -993,7 +993,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "exemplar": false,
           "expr": "sum(\n  argocd_app_info{\n    cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n,\ndest_server=~\"$kubernetes_cluster\",\nproject=~\"$project\"\n,\nexported_namespace=~\"$application_namespace\",\nname=~\"$application\"\n\n  }\n) by (namespace, job, dest_server, project, name, exported_namespace, health_status)\n",
@@ -1007,7 +1007,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A timeseries panel showing the sync status of each application managed by ArgoCD.",
       "fieldConfig": {
@@ -1054,7 +1054,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "exemplar": false,
           "expr": "sum(\n  argocd_app_info{\n    cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n,\ndest_server=~\"$kubernetes_cluster\",\nproject=~\"$project\"\n,\nexported_namespace=~\"$application_namespace\",\nname=~\"$application\"\n\n  }\n) by (namespace, job, dest_server, project, name, exported_namespace, sync_status)\n",
@@ -1068,7 +1068,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A timeseries panel showing the sync result of each application managed by ArgoCD.",
       "fieldConfig": {
@@ -1115,7 +1115,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "exemplar": false,
           "expr": "sum(\n  round(\n    increase(\n      argocd_app_sync_total{\n        cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n,\ndest_server=~\"$kubernetes_cluster\",\nproject=~\"$project\"\n,\nexported_namespace=~\"$application_namespace\",\nname=~\"$application\"\n\n      }[$__rate_interval]\n    )\n  )\n) by (namespace, job, dest_server, project, name, exported_namespace, phase)\n",
@@ -1155,7 +1155,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${datasource}"
+          "uid": "Prometheus"
         },
         "hide": 2,
         "label": "Cluster",
@@ -1173,7 +1173,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${datasource}"
+          "uid": "Prometheus"
         },
         "includeAll": false,
         "label": "Namespace",
@@ -1196,7 +1196,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${datasource}"
+          "uid": "Prometheus"
         },
         "includeAll": true,
         "label": "Job",
@@ -1220,7 +1220,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${datasource}"
+          "uid": "Prometheus"
         },
         "includeAll": true,
         "label": "Kubernetes Cluster",
@@ -1243,7 +1243,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${datasource}"
+          "uid": "Prometheus"
         },
         "includeAll": true,
         "label": "Project",
@@ -1262,7 +1262,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${datasource}"
+          "uid": "Prometheus"
         },
         "includeAll": true,
         "label": "Application Namespace",
@@ -1285,7 +1285,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${datasource}"
+          "uid": "Prometheus"
         },
         "label": "Application",
         "multi": true,
@@ -1305,6 +1305,6 @@
   "timepicker": {},
   "timezone": "utc",
   "title": "ArgoCD / Application / Overview",
-  "uid": "argo-cd-application-overview-kask",
+  "uid": "applications-argocd-app-overview",
   "version": 2
 }

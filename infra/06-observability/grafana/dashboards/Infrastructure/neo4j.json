@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "datasource",
-          "uid": "grafana"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -25,7 +25,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -92,7 +92,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "up{job=\"neo4j-prometheus\"}",
           "interval": "",
@@ -107,7 +107,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "This is in reality the change in neo4j ids.\nIf the transaction is rolled-back nodes will not be created but will increase this gauge.\n\nMaximum speed is set to 30k nodes/sec\nEmpirically we saw this is the maximum handled by the production machine",
       "fieldConfig": {
@@ -177,7 +177,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "irate(neo4j_database_neo4j_ids_in_use_relationship[$interval])",
@@ -196,7 +196,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "This is in reality the change in neo4j ids.\nIf the transaction is rolled-back nodes will not be created but will increase this gauge.\n\nMaximum speed is set to 30k nodes/sec\nEmpirically we saw this is the maximum handled by the production machine",
       "fieldConfig": {
@@ -266,7 +266,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "irate(neo4j_database_neo4j_ids_in_use_property[$interval])",
@@ -285,7 +285,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "This is in reality the change in neo4j ids.\nIf the transaction is rolled-back nodes will not be created but will increase this gauge.\n\nMaximum speed is set to 30k nodes/sec\nEmpirically we saw this is the maximum handled by the production machine",
       "fieldConfig": {
@@ -355,7 +355,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "irate(neo4j_database_neo4j_ids_in_use_node[$interval])",
@@ -374,7 +374,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Total number of graph items: node, relationships, ...",
       "fieldConfig": {
@@ -462,7 +462,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "label_replace({__name__=~\"neo4j_database_neo4j_ids_in_use_(node|property|relationship|relationship_type)\"}, \"label\", \"$1\", \"__name__\", \"neo4j_database_neo4j_ids_in_use_(.+)\")",
@@ -475,7 +475,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "neo4j_database_neo4j_ids_in_use_relationship_type",
           "interval": "",
@@ -491,7 +491,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Per-second Average Rate of Increase of Data Counters",
       "fieldConfig": {
@@ -579,7 +579,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "rate(neo4j_database_neo4j_ids_in_use_node[$interval])",
@@ -592,7 +592,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "rate(neo4j_database_neo4j_ids_in_use_relationship[$interval])",
           "interval": "",
@@ -603,7 +603,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "rate(neo4j_database_neo4j_ids_in_use_property[$interval])",
           "interval": "",
@@ -618,7 +618,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Messages received - Messages started",
       "fieldConfig": {
@@ -719,7 +719,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "rate(neo4j_dbms_bolt_messages_received_total[$interval]) - rate(neo4j_dbms_bolt_messages_started_total[$interval])",
@@ -734,7 +734,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "label_replace({__name__=~\"neo4j_dbms_bolt_messages_(received|started)_total\"}, \"label\", \"$1\", \"__name__\", \"neo4j_dbms_bolt_messages_(.+)\")",
           "format": "time_series",
@@ -748,7 +748,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "rate(neo4j_dbms_bolt_messages_received_total[$interval])",
           "format": "time_series",
@@ -762,7 +762,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "rate(neo4j_dbms_bolt_messages_started_total[$interval])",
           "format": "time_series",
@@ -781,7 +781,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -868,7 +868,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "label_replace({__name__=~\"neo4j_dbms_bolt_connections_.+\"}, \"label\", \"$1\", \"__name__\", \"neo4j_dbms_bolt_connections_(.+)\")",
@@ -888,7 +888,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -974,7 +974,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "label_replace({__name__=~\"neo4j_dbms_bolt_messages_(done|failed)_total\"}, \"label\", \"$1\", \"__name__\", \"neo4j_dbms_bolt_messages_(.+)\")",
@@ -993,7 +993,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -1081,7 +1081,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "rate(neo4j_dbms_bolt_accumulated_queue_time_total[$interval])",
           "format": "time_series",
@@ -1098,7 +1098,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Processing and Queuing time per bolt message",
       "fieldConfig": {
@@ -1180,7 +1180,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "rate(neo4j_dbms_bolt_accumulated_processing_time_total[$interval])",
           "format": "time_series",
@@ -1199,7 +1199,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1280,7 +1280,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "label_replace({__name__=~\"neo4j_dbms_bolt_connections_running.+\"}, \"label\", \"$1\", \"__name__\", \"neo4j_dbms_bolt_connections_running\")",
@@ -1300,7 +1300,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "The total number of seconds waited between query replans",
       "fieldConfig": {
@@ -1382,7 +1382,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "neo4j_database_neo4j_cypher_replan_wait_time_total",
           "format": "time_series",
@@ -1399,7 +1399,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1480,7 +1480,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "neo4j_database_neo4j_cypher_replan_events_total",
@@ -1499,7 +1499,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1580,7 +1580,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "neo4j_dbms_vm_memory_buffer_direct_used",
@@ -1594,7 +1594,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "neo4j_dbms_vm_memory_buffer_mapped_used",
           "format": "time_series",
@@ -1611,7 +1611,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1692,7 +1692,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "neo4j_dbms_vm_threads",
@@ -1711,7 +1711,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Time and counters",
       "fieldConfig": {
@@ -1814,7 +1814,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "{__name__=~\"neo4j_dbms_vm_gc_time_g1_.+_generation_total\"}",
@@ -1829,7 +1829,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "delta(neo4j_dbms_vm_gc_time_g1_old_generation_total[$interval])",
           "format": "time_series",
@@ -1842,7 +1842,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "delta(neo4j_dbms_vm_gc_time_g1_young_generation_total[$interval])",
           "format": "time_series",
@@ -1855,7 +1855,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "neo4j_dbms_vm_gc_count_g1_old_generation_total",
           "format": "time_series",
@@ -1867,7 +1867,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "neo4j_dbms_vm_gc_count_g1_young_generation_total",
           "format": "time_series",
@@ -1884,7 +1884,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Heap memory (eden space, old generation, survivor space)\nNon-heap memory (metaspace, compressed class space, code cache)",
       "fieldConfig": {
@@ -1969,7 +1969,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum({__name__=~\"neo4j_dbms_vm_memory_pool_g1_(eden|old|survivor).*\"})",
@@ -1983,7 +1983,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "sum({__name__=~\"neo4j_dbms_vm_memory_pool_(code|compressed|metaspace).*\"}) ",
           "format": "time_series",
@@ -2000,7 +2000,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2081,7 +2081,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "neo4j_dbms_page_cache_page_faults_total",
@@ -2100,7 +2100,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2181,7 +2181,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "rate(neo4j_dbms_page_cache_page_faults_total[$interval])",
@@ -2200,7 +2200,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2281,7 +2281,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "rate(neo4j_dbms_page_cache_page_faults_total[$interval])",
@@ -2295,7 +2295,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "rate(neo4j_dbms_page_cache_eviction_exceptions_total[$interval])",
           "format": "time_series",
@@ -2312,7 +2312,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Faults in the page cache",
       "fieldConfig": {
@@ -2394,7 +2394,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "neo4j_dbms_page_cache_page_faults_total",
@@ -2413,7 +2413,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "The total number of page hits happened in the page cache",
       "fieldConfig": {
@@ -2495,7 +2495,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "neo4j_dbms_page_cache_hits_total",
@@ -2514,7 +2514,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Per-second Neo4j Page Cache Hits",
       "fieldConfig": {
@@ -2596,7 +2596,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "rate(neo4j_dbms_page_cache_hits_total[$interval])",
@@ -2615,7 +2615,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -2695,7 +2695,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "rate(neo4j_dbms_page_cache_pins_total[$interval])",
           "format": "time_series",
@@ -2707,7 +2707,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "rate(neo4j_dbms_page_cache_unpins_total[$interval])",
           "format": "time_series",
@@ -2724,7 +2724,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "The ratio of hits to the total number of lookups in the page cache",
       "fieldConfig": {
@@ -2806,7 +2806,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "neo4j_dbms_page_cache_hit_ratio",
@@ -2825,7 +2825,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "The total number of flushes executed by the page cache",
       "fieldConfig": {
@@ -2907,7 +2907,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "neo4j_dbms_page_cache_flushes_total",
           "format": "time_series",
@@ -2924,7 +2924,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -3005,7 +3005,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "rate(neo4j_dbms_page_cache_flushes_total[$interval])",
           "format": "time_series",
@@ -3022,7 +3022,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Neo4j Checkpoints. \nCheckpointing is the process of flushing all pending page updates from the page cache to the store files",
       "fieldConfig": {
@@ -3115,7 +3115,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "label_replace({__name__=~\"neo4j_database_neo4j_check_point_(events|total_time)_total\"}, \"label\", \"$1\", \"__name__\", \"neo4j_(.*)\")",
@@ -3135,7 +3135,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -3215,7 +3215,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "neo4j_database_neo4j_check_point_duration",
@@ -3234,7 +3234,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -3257,7 +3257,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "label_replace({__name__=~\"neo4j_database_neo4j_log_.+\"}, \"label\", \"$1\", \"__name__\", \"neo4j_(.*)\")",
           "format": "time_series",
@@ -3274,7 +3274,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -3335,7 +3335,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "neo4j_database_neo4j_transaction_last_closed_tx_id_total",
@@ -3354,7 +3354,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Instant rate",
       "fieldConfig": {
@@ -3420,7 +3420,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "irate(neo4j_database_neo4j_transaction_committed_total[$interval])",
@@ -3439,7 +3439,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Instant rate",
       "fieldConfig": {
@@ -3505,7 +3505,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "irate(neo4j_database_neo4j_transaction_rollbacks_total[$interval])",
@@ -3524,7 +3524,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Active Transactions - Read and Write - \nand Peak concurrent",
       "fieldConfig": {
@@ -3606,7 +3606,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "neo4j_database_neo4j_transaction_active_read",
@@ -3621,7 +3621,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "neo4j_database_neo4j_transaction_active_write",
           "format": "time_series",
@@ -3634,7 +3634,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "neo4j_database_neo4j_transaction_peak_concurrent_total",
           "format": "time_series",
@@ -3651,7 +3651,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -3712,7 +3712,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "neo4j_database_neo4j_transaction_last_committed_tx_id_total",
@@ -3731,7 +3731,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Per-second average rate of increase of Committed Transactions",
       "fieldConfig": {
@@ -3813,7 +3813,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "rate(neo4j_database_neo4j_transaction_committed_total[$interval])",
@@ -3827,7 +3827,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "irate(neo4j_database_neo4j_transaction_committed_total[$interval])",
           "format": "time_series",
@@ -3844,7 +3844,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "All transaction metrics",
       "fieldConfig": {
@@ -3927,7 +3927,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "label_replace({__name__=~\"neo4j_database_neo4j_transaction_(started|committed|rollbacks|terminated)_total\"}, \"label\", \"$1\", \"__name__\", \"neo4j_database_neo4j_transaction_(.+)\")",
@@ -3947,7 +3947,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Per-second average rate of increase of Committed Transactions",
       "fieldConfig": {
@@ -4029,7 +4029,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "rate(neo4j_database_neo4j_transaction_committed_read_total[$interval])",
@@ -4048,7 +4048,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -4127,7 +4127,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "neo4j_database_neo4j_transaction_committed_total",
@@ -4142,7 +4142,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "neo4j_database_neo4j_transaction_committed_read_total",
           "format": "time_series",
@@ -4155,7 +4155,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "expr": "neo4j_database_neo4j_transaction_committed_write_total",
           "format": "time_series",
@@ -4173,7 +4173,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
+        "uid": "Prometheus"
       },
       "description": "Per-second average rate of increase of Committed Transactions",
       "fieldConfig": {
@@ -4255,7 +4255,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "PBFA97CFB590B2093"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "rate(neo4j_database_neo4j_transaction_committed_write_total[$interval])",
@@ -4372,6 +4372,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "neo4j version 5 dashboard - patched",
-  "uid": "252345345",
+  "uid": "infrastructure-neo4j",
   "version": 1
 }

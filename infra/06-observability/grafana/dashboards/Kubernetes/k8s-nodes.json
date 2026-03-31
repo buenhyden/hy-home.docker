@@ -4,7 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -981,7 +982,10 @@
           "text": "",
           "value": ""
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "includeAll": false,
         "name": "server",
         "options": [],
@@ -999,6 +1003,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Kubernetes Nodes",
-  "uid": "dUMN5x0mk",
+  "uid": "kubernetes-k8s-nodes",
   "version": 2
 }

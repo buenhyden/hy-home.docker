@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -988,6 +988,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Kubernetes Cluster Autoscaler (via Prometheus)",
-  "uid": "6da59e6b-d35f-457c-b06b-2d8807ebbeca",
+  "uid": "kubernetes-k8s-autoscaler",
   "version": 2
 }

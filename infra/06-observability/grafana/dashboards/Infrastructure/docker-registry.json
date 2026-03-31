@@ -4,7 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -1221,7 +1222,7 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1e-9
+          "le": 1e-09
         },
         "legend": {
           "show": false
@@ -1303,7 +1304,7 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1e-9
+          "le": 1e-09
         },
         "legend": {
           "show": false
@@ -1452,7 +1453,10 @@
           "text": "",
           "value": ""
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "includeAll": false,
         "name": "namespace",
         "options": [],
@@ -1466,7 +1470,10 @@
           "text": "",
           "value": ""
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "includeAll": false,
         "name": "app",
         "options": [],
@@ -1480,7 +1487,10 @@
           "text": "alertmanager:9093",
           "value": "alertmanager:9093"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "includeAll": false,
         "name": "instance",
         "options": [],
@@ -1498,6 +1508,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "Docker Registry",
-  "uid": "CoBSgj8iz",
+  "uid": "infrastructure-docker-registry",
   "version": 2
 }

@@ -4,7 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -171,7 +172,10 @@
           "text": "argo-rollouts",
           "value": "argo-rollouts"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(kube_pod_info, namespace)",
         "includeAll": false,
         "name": "namespace",
@@ -187,7 +191,10 @@
           "text": "",
           "value": ""
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(mixin_pod_workload{namespace=\"$namespace\"}, workload)",
         "includeAll": false,
         "name": "workload",
@@ -204,7 +211,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(mixin_pod_workload{namespace=\"$namespace\", workload=\"$workload\"}, pod)",
         "includeAll": true,
         "name": "pod",
@@ -251,6 +261,6 @@
   },
   "timezone": "",
   "title": "Loki Dashboard",
-  "uid": "liz0yRCZz",
+  "uid": "observability-loki-dashboard",
   "version": 2
 }

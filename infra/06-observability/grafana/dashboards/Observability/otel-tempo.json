@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -37,6 +37,7 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "Prometheus"
       },
       "fieldConfig": {
@@ -99,6 +100,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "Prometheus"
           },
           "editorMode": "code",
@@ -3571,7 +3573,7 @@
           "refId": "A"
         }
       ],
-      "title": "🚨 receiver refused spans",
+      "title": "\ud83d\udea8 receiver refused spans",
       "type": "timeseries"
     },
     {
@@ -3831,7 +3833,7 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1e-9
+          "le": 1e-09
         },
         "legend": {
           "show": true
@@ -4525,7 +4527,7 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1e-9
+          "le": 1e-09
         },
         "legend": {
           "show": true
@@ -5529,6 +5531,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "OpenTelemetry & Tempo",
-  "uid": "fe6ry0t5qk0zkb",
+  "uid": "observability-otel-tempo",
   "version": 1
 }

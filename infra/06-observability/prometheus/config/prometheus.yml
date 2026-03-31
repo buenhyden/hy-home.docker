@@ -143,23 +143,20 @@ scrape_configs:
     static_configs:
       - targets: ["etcd-1:2379", "etcd-2:2379", "etcd-3:2379"]
 
-  # - job_name: "neo4j"
-  #   static_configs:
-  #     - targets: ["neo4j:2004"]
   # ============================================================================
   # MESSAGING
   # ============================================================================
-  # - job_name: "kafka"
-  #   static_configs:
-  #     - targets: ["kafka-1:9404", "kafka-2:9404", "kafka-3:9404"]
-  #       labels:
-  #         domain: "messaging"
+  - job_name: "kafka"
+    static_configs:
+      - targets: ["kafka-1:9404", "kafka-2:9404", "kafka-3:9404"]
+        labels:
+          domain: "messaging"
 
-  # - job_name: "kafka-exporter"
-  #   static_configs:
-  #     - targets: ["kafka-exporter:9308"]
-  #       labels:
-  #         domain: "messaging"
+  - job_name: "kafka-exporter"
+    static_configs:
+      - targets: ["kafka-exporter:9308"]
+        labels:
+          domain: "messaging"
 
   # ============================================================================
   # KUBERNETES / GITOPS
@@ -239,11 +236,11 @@ scrape_configs:
         labels:
           domain: "auth"
 
-  # - job_name: "n8n-monitor"
-  #   static_configs:
-  #     - targets: ["n8n:5678"]
-  #       labels:
-  #         domain: "apps"
+  - job_name: "n8n-monitor"
+    static_configs:
+      - targets: ["n8n:5678"]
+        labels:
+          domain: "apps"
 
   - job_name: "vault"
     metrics_path: /v1/sys/metrics

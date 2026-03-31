@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "datasource",
-          "uid": "grafana"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -2107,6 +2107,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "Redis Overview",
-  "uid": "R7HGKm27k",
+  "uid": "infrastructure-redis-overview",
   "version": 2
 }

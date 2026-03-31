@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -1212,7 +1212,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "includeAll": true,
         "name": "Node",
         "options": [],
@@ -1226,7 +1229,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "includeAll": true,
         "label": "Pod",
         "name": "Pod",
@@ -1241,7 +1247,10 @@
           "text": "10.42.0.22",
           "value": "10.42.0.22"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "hide": 2,
         "includeAll": false,
         "name": "Pod_ip",
@@ -1256,7 +1265,10 @@
           "text": "Failed",
           "value": "Failed"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "hide": 2,
         "includeAll": false,
         "name": "phase",
@@ -1270,7 +1282,10 @@
           "text": "alloy",
           "value": "alloy"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "hide": 2,
         "includeAll": false,
         "name": "container",
@@ -1288,6 +1303,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Kubernetes Pod Metrics",
-  "uid": "72a85bcb-02d5-44c4-b280-86aaca0d6c63",
+  "uid": "kubernetes-k8s-pod-metrics",
   "version": 2
 }

@@ -4,7 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -1907,7 +1908,10 @@
           "text": "cadvisor",
           "value": "cadvisor"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(container_cpu_user_seconds_total, job)",
         "includeAll": false,
         "label": "Job",
@@ -1929,7 +1933,10 @@
             "$__all"
           ]
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(container_cpu_user_seconds_total{job=~\"$job\"}, instance)",
         "includeAll": true,
         "label": "Host:",
@@ -1947,7 +1954,10 @@
           "text": "",
           "value": ""
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(container_cpu_user_seconds_total{instance=~\"$node:(.*)\"}, instance)",
         "includeAll": false,
         "label": "Port",
@@ -1965,7 +1975,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(container_cpu_user_seconds_total{instance=~\"10.115.220.32:8080|10.115.220.33:8080\", name!=\"cadvisor\"}, name)",
         "includeAll": true,
         "label": "Prod",
@@ -1984,7 +1997,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(container_cpu_user_seconds_total{instance=~\"10.115.222.21:8080|10.115.222.22:8080\", name!=\"cadvisor\"}, name)",
         "includeAll": true,
         "label": "NonProd",
@@ -2005,6 +2021,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Docker Container & Host Metrics",
-  "uid": "4dMaCsRZz",
+  "uid": "infrastructure-docker-metrics",
   "version": 2
 }

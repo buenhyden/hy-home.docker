@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -37,7 +37,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -110,7 +111,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "max(opensearch_cluster_status{cluster=\"$cluster\"})",
           "format": "time_series",
@@ -124,7 +126,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -254,7 +257,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "(opensearch_cluster_status{cluster=\"$cluster\"} == 0) + 1",
           "format": "time_series",
@@ -264,7 +268,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "(opensearch_cluster_status{cluster=\"$cluster\"} == 1)",
           "format": "time_series",
@@ -274,7 +279,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "(opensearch_cluster_status{cluster=\"$cluster\"} == 2) - 1",
           "format": "time_series",
@@ -288,7 +294,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -352,7 +359,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "max(opensearch_cluster_nodes_number{cluster=\"$cluster\"})",
           "format": "time_series",
@@ -366,7 +374,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -430,7 +439,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "max(opensearch_cluster_datanodes_number{cluster=\"$cluster\"})",
           "format": "time_series",
@@ -444,7 +454,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -508,7 +519,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "max(opensearch_cluster_pending_tasks_number{cluster=\"$cluster\"})",
           "format": "time_series",
@@ -536,7 +548,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -626,7 +638,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "opensearch_os_cpu_percent{cluster=\"$cluster\", node=~\"$node\"}",
@@ -643,7 +656,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -732,7 +745,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "opensearch_os_mem_used_bytes{cluster=\"$cluster\", node=~\"$node\"}",
@@ -748,7 +762,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -842,7 +857,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "1 - opensearch_fs_path_available_bytes{cluster=\"$cluster\",node=~\"$node\"} / opensearch_fs_path_total_bytes{cluster=\"$cluster\",node=~\"$node\"}",
           "format": "time_series",
@@ -869,7 +885,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -957,7 +974,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "opensearch_indices_fielddata_memory_size_bytes{cluster=\"$cluster\", node=~\"$node\"}",
           "format": "time_series",
@@ -971,7 +989,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1059,7 +1078,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_indices_fielddata_evictions_count{cluster=\"$cluster\", node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -1073,7 +1093,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1157,7 +1178,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "opensearch_indices_querycache_cache_size_bytes{cluster=\"$cluster\", node=~\"$node\"}",
           "format": "time_series",
@@ -1171,7 +1193,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1255,7 +1278,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_indices_querycache_evictions_count{cluster=\"$cluster\", node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -1269,7 +1293,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1353,7 +1378,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_indices_querycache_hit_count{cluster=\"$cluster\", node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -1367,7 +1393,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1451,7 +1478,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_indices_querycache_miss_number{cluster=\"$cluster\", node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -1478,7 +1506,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1559,7 +1588,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "max(opensearch_cluster_shards_number{cluster=\"$cluster\",type=\"$shard_type\"})",
           "format": "time_series",
@@ -1574,7 +1604,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1652,7 +1682,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "max(opensearch_cluster_shards_number{cluster=\"opensearch\",type=\"active_primary\"})",
@@ -1680,7 +1710,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1764,7 +1795,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_indices_indexing_index_count{cluster=\"$cluster\", node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -1778,7 +1810,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1862,7 +1895,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_indices_indexing_index_time_seconds{cluster=\"$cluster\", node=~\"$node\"}[$interval]) / rate(opensearch_indices_indexing_index_count{cluster=\"$cluster\", node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -1876,7 +1910,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1960,7 +1995,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_indices_search_query_count{cluster=\"$cluster\", node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -1974,7 +2010,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2058,7 +2095,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_indices_search_query_time_seconds{cluster=\"$cluster\", node=~\"$node\"}[$interval]) / rate(opensearch_indices_search_query_count{cluster=\"$cluster\", node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -2072,7 +2110,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2156,7 +2195,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "opensearch_indices_doc_number{cluster=\"$cluster\", node=~\"$node\"}",
           "format": "time_series",
@@ -2170,7 +2210,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2254,7 +2295,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_indices_doc_deleted_number{cluster=\"$cluster\", node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -2268,7 +2310,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2352,7 +2395,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_indices_merges_total_docs_count{cluster=\"$cluster\",node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -2379,7 +2423,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2463,7 +2508,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_indices_indexing_throttle_time_seconds{cluster=\"$cluster\", node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -2477,7 +2523,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2561,7 +2608,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_indices_merges_total_throttled_time_seconds{cluster=\"$cluster\", node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -2588,7 +2636,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2669,7 +2718,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "max(opensearch_threadpool_tasks_number{cluster=\"$cluster\",name=\"$pool_name\"})",
           "format": "time_series",
@@ -2696,7 +2746,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2780,7 +2831,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "opensearch_jvm_mem_heap_used_bytes{cluster=\"$cluster\", node=~\"$node\"}",
           "format": "time_series",
@@ -2794,7 +2846,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2878,7 +2931,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_jvm_gc_collection_count{cluster=\"$cluster\",node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -2892,7 +2946,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -2976,7 +3031,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "rate(opensearch_jvm_gc_collection_time_seconds{cluster=\"$cluster\", node=~\"$node\"}[$interval])",
           "format": "time_series",
@@ -3063,7 +3119,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "$datasource"
+          "uid": "Prometheus"
         },
         "definition": "",
         "includeAll": false,
@@ -3083,7 +3139,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "$datasource"
+          "uid": "Prometheus"
         },
         "definition": "",
         "includeAll": true,
@@ -3103,7 +3159,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "$datasource"
+          "uid": "Prometheus"
         },
         "definition": "",
         "hide": 2,
@@ -3124,7 +3180,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "$datasource"
+          "uid": "Prometheus"
         },
         "definition": "",
         "hide": 2,
@@ -3147,6 +3203,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "OpenSearch",
-  "uid": "a5dd282c-afe6-45d4-9bba-81cf2e3adaaa",
+  "uid": "infrastructure-opensearch",
   "version": 1
 }

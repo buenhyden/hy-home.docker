@@ -4,7 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -468,7 +469,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "",
         "includeAll": true,
         "label": "Hostnames",
@@ -489,6 +493,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "Airflow operators metrics",
-  "uid": "MzCdJLfik",
+  "uid": "applications-airflow-operators",
   "version": 2
 }

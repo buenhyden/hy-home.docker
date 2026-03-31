@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -37,7 +37,8 @@
     },
     {
       "datasource": {
-        "uid": "$DS_OPENSHIFT_PROMETHEUS"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -102,7 +103,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "(\n  count (\n    (kubelet_volume_stats_available_bytes {namespace=~\"(openshift-.*|kube-.*|default|logging)\"})\n    and\n    (predict_linear(kubelet_volume_stats_available_bytes {namespace=~\"(openshift-.*|kube-.*|default|logging)\"}[1d], 7 * 24 * 60 * 60) < 0)\n  )\n)\nor\nvector(0)",
           "instant": false,
@@ -116,7 +118,8 @@
     },
     {
       "datasource": {
-        "uid": "$DS_OPENSHIFT_PROMETHEUS"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -181,7 +184,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "(\n  count (\n    (\n      (kubelet_volume_stats_available_bytes {namespace!~\"(openshift-.*|kube-.*|default|logging)\"})\n    )\n    and\n    (predict_linear(kubelet_volume_stats_available_bytes[1d], 7 * 24 * 60 * 60) < 0)\n  )\n)\nor\nvector(0)",
           "instant": false,
@@ -230,7 +234,8 @@
     },
     {
       "datasource": {
-        "uid": "$DS_OPENSHIFT_PROMETHEUS"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -296,7 +301,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "count (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes ) and (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes )) / (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_capacity_bytes )) >= ($pvc_percent_used_warning_threshold / 100)) or vector (0)",
           "format": "time_series",
@@ -309,7 +315,8 @@
     },
     {
       "datasource": {
-        "uid": "$DS_OPENSHIFT_PROMETHEUS"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -375,7 +382,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "(max (sum by (exported_namespace) (pv_collector_unbound_pvc_count))) or (vector(0))",
           "format": "table",
@@ -398,7 +406,8 @@
       "panels": [
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -415,7 +424,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(\n  (\n    (kubelet_volume_stats_available_bytes {namespace=~\"(openshift-.*|kube-.*|default|logging)\"} ) \n    and\n    (predict_linear(kubelet_volume_stats_available_bytes {namespace=~\"(openshift-.*|kube-.*|default|logging)\"}[1w], 7 * 24 * 60 * 60) < 0)\n  )\n)",
               "format": "table",
@@ -465,7 +475,8 @@
         },
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -484,7 +495,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(\n  (predict_linear(kubelet_volume_stats_available_bytes {namespace=~\"(openshift-.*|kube-.*|default|logging)\"}[1d], 7 * 24 * 60 * 60) < 0)\n)",
               "format": "time_series",
@@ -500,7 +512,8 @@
         },
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -517,7 +530,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(\n  (\n    (\n      (kubelet_volume_stats_used_bytes {namespace!~\"(openshift-.*|kube-.*|default|logging)\"})\n    )\n    and\n    (predict_linear(kubelet_volume_stats_available_bytes[1d], 7 * 24 * 60 * 60) < 0)\n  )\n)",
               "format": "table",
@@ -567,7 +581,8 @@
         },
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -586,7 +601,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(\n  (predict_linear(kubelet_volume_stats_available_bytes {namespace!~\"(openshift-.*|kube-.*|default|logging)\"}[1d], 7 * 24 * 60 * 60) < 0)\n)",
               "format": "time_series",
@@ -602,7 +618,8 @@
         },
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -619,7 +636,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(kube_persistentvolumeclaim_info) and ((max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes )) / (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_capacity_bytes )) >= ($pvc_percent_used_warning_threshold / 100))",
               "format": "table",
@@ -628,7 +646,8 @@
             },
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes)) and ((max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes )) / (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_capacity_bytes )) >= ($pvc_percent_used_warning_threshold / 100))",
               "format": "table",
@@ -638,7 +657,8 @@
             },
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_capacity_bytes )) and ((max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes )) / (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_capacity_bytes )) >= ($pvc_percent_used_warning_threshold / 100))",
               "format": "table",
@@ -647,7 +667,8 @@
             },
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_available_bytes )) and ((max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes )) / (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_capacity_bytes )) >= ($pvc_percent_used_warning_threshold / 100))",
               "format": "table",
@@ -656,7 +677,8 @@
             },
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes )) / (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_capacity_bytes )) >= ($pvc_percent_used_warning_threshold / 100)",
               "format": "table",
@@ -669,7 +691,8 @@
         },
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -688,7 +711,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(\n  ((max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes )) * 0 +1)\n  and\n  (\n    (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes )) / (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_capacity_bytes ))\n  ) >= ($pvc_percent_used_warning_threshold / 100)\n)",
               "format": "time_series",
@@ -716,7 +740,8 @@
       "panels": [
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -734,7 +759,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(sum (pv_collector_bound_pvc_count)) or vector(0)",
               "format": "table",
@@ -747,7 +773,8 @@
         },
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -772,7 +799,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "kube_persistentvolumeclaim_info",
               "format": "table",
@@ -781,7 +809,8 @@
             },
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(1-max by (persistentvolumeclaim, namespace) (kube_persistentvolumeclaim_info ) ) unless (max by (namespace, persistentvolumeclaim) (kubelet_volume_stats_used_bytes )) or ((max by (persistentvolumeclaim, namespace) (kube_persistentvolumeclaim_info ) ) and (max by (namespace, persistentvolumeclaim) (kubelet_volume_stats_used_bytes )))",
               "format": "table",
@@ -790,7 +819,8 @@
             },
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes)",
               "format": "table",
@@ -800,7 +830,8 @@
             },
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_capacity_bytes )",
               "format": "table",
@@ -809,7 +840,8 @@
             },
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_available_bytes )",
               "format": "table",
@@ -818,7 +850,8 @@
             },
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes )) / (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_capacity_bytes ))",
               "format": "table",
@@ -845,7 +878,8 @@
       "panels": [
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "description": "WARNING: Any PVCs that are not bound to a running pod will not show up in this state.",
           "fieldConfig": {
@@ -865,7 +899,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes ))",
               "instant": false,
@@ -879,7 +914,8 @@
         },
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "description": "WARNING: Any PVCs that are not bound to a running pod will not show up in this state.",
           "fieldConfig": {
@@ -899,7 +935,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "(max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes )) / (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_capacity_bytes )) * 100",
               "intervalFactor": 1,
@@ -926,7 +963,8 @@
       "panels": [
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "description": "WARNING: Any PVCs that are not bound to a running pod will not show up in this state.",
           "fieldConfig": {
@@ -946,7 +984,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "rate(kubelet_volume_stats_used_bytes [1h])",
               "format": "time_series",
@@ -961,7 +1000,8 @@
         },
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "description": "WARNING: Any PVCs that are not bound to a running pod will not show up in this state.",
           "fieldConfig": {
@@ -981,7 +1021,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "rate(kubelet_volume_stats_used_bytes [1d])",
               "format": "time_series",
@@ -996,7 +1037,8 @@
         },
         {
           "datasource": {
-            "uid": "$DS_OPENSHIFT_PROMETHEUS"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "description": "WARNING: Any PVCs that are not bound to a running pod will not show up in this state.",
           "fieldConfig": {
@@ -1016,7 +1058,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$DS_OPENSHIFT_PROMETHEUS"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "rate(kubelet_volume_stats_used_bytes [1w])",
               "format": "time_series",
@@ -1084,6 +1127,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "K8s / Storage / Volumes / Cluster",
-  "uid": "4f14140e-4f7a-48f3-a1c4-66460649570e",
+  "uid": "kubernetes-k8s-storage",
   "version": 2
 }

@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -51,7 +51,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A timeseries panel showing the count of notification deliveries by exported service and success status.",
       "fieldConfig": {
@@ -142,7 +142,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "exemplar": false,
           "expr": "sum(\n  increase(\n    argocd_notifications_deliveries_total{\n      cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n,\nexported_service=~\"$exported_service\"\n\n    }[$__rate_interval]\n  )\n) by (exported_service, succeeded)\n",
@@ -156,7 +156,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "$datasource"
+        "uid": "Prometheus"
       },
       "description": "A timeseries panel showing the count of trigger evaluations by name and triggered status.",
       "fieldConfig": {
@@ -247,7 +247,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "$datasource"
+            "uid": "Prometheus"
           },
           "exemplar": false,
           "expr": "sum(\n  increase(\n    argocd_notifications_trigger_eval_total{\n      cluster=\"$cluster\",\nnamespace=~\"$namespace\",\njob=~\"$job\"\n\n\n    }[$__rate_interval]\n  )\n) by (name, triggered)\n",
@@ -287,7 +287,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${datasource}"
+          "uid": "Prometheus"
         },
         "hide": 2,
         "label": "Cluster",
@@ -305,7 +305,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${datasource}"
+          "uid": "Prometheus"
         },
         "includeAll": false,
         "label": "Namespace",
@@ -323,7 +323,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${datasource}"
+          "uid": "Prometheus"
         },
         "includeAll": true,
         "label": "Job",
@@ -342,7 +342,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${datasource}"
+          "uid": "Prometheus"
         },
         "includeAll": true,
         "label": "Notifications Service",
@@ -363,6 +363,6 @@
   "timepicker": {},
   "timezone": "utc",
   "title": "ArgoCD / Notifications / Overview",
-  "uid": "argo-cd-notifications-overview-kask",
+  "uid": "applications-argocd-notifications",
   "version": 2
 }

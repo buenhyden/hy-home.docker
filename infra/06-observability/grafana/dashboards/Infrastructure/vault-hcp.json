@@ -1343,7 +1343,10 @@
           "text": "",
           "value": ""
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(cluster_id)",
         "includeAll": false,
         "label": "Cluster:",
@@ -1363,7 +1366,10 @@
           "text": "",
           "value": ""
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(vault_runtime_alloc_bytes{cluster_id=\"$cluster\"}, project_id)",
         "includeAll": false,
         "name": "project",
@@ -1397,6 +1403,6 @@
   },
   "timezone": "",
   "title": "HCP Vault",
-  "uid": "9nUSfrWnk",
+  "uid": "infrastructure-vault-hcp",
   "version": 2
 }

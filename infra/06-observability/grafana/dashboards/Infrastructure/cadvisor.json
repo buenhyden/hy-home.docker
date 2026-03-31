@@ -4,7 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -37,7 +38,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -125,7 +126,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "Prometheus"
           },
           "expr": "sum(rate(container_cpu_usage_seconds_total{instance=~\"$host\",name=~\"$container\",name=~\".+\"}[5m])) by (name) *100",
           "hide": false,
@@ -153,7 +154,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -241,7 +242,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "Prometheus"
           },
           "expr": "sum(container_memory_rss{instance=~\"$host\",name=~\"$container\",name=~\".+\"}) by (name)",
           "hide": false,
@@ -256,7 +257,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -344,7 +345,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "Prometheus"
           },
           "expr": "sum(container_memory_cache{instance=~\"$host\",name=~\"$container\",name=~\".+\"}) by (name)",
           "hide": false,
@@ -372,7 +373,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -460,7 +461,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "Prometheus"
           },
           "expr": "sum(rate(container_network_receive_bytes_total{instance=~\"$host\",name=~\"$container\",name=~\".+\"}[5m])) by (name)",
           "hide": false,
@@ -475,7 +476,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -563,7 +564,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "Prometheus"
           },
           "expr": "sum(rate(container_network_transmit_bytes_total{instance=~\"$host\",name=~\"$container\",name=~\".+\"}[5m])) by (name)",
           "interval": "",
@@ -590,7 +591,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${datasource}"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -671,7 +672,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${datasource}"
+            "uid": "Prometheus"
           },
           "expr": "(time() - container_start_time_seconds{instance=~\"$host\",name=~\"$container\",name=~\".+\"})/86400",
           "format": "table",
@@ -748,7 +749,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "${datasource}",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values({__name__=~\"container.*\"},instance)",
         "includeAll": true,
         "label": "Host",
@@ -769,7 +773,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "${datasource}",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values({__name__=~\"container.*\", instance=~\"$host\"},name)",
         "includeAll": true,
         "label": "Container",
@@ -792,6 +799,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "Cadvisor exporter",
-  "uid": "pMEd7m0Mz",
+  "uid": "infrastructure-cadvisor",
   "version": 1
 }

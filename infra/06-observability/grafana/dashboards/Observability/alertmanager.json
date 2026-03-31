@@ -4,7 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -14,7 +15,8 @@
       },
       {
         "datasource": {
-          "uid": "$datasource"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "expr": "changes(process_start_time_seconds{ instance=~\"$instance\"}[2m]) > 0",
@@ -96,7 +98,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -162,7 +165,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "count(alertmanager_build_info{instance=~\"$instance\"})",
           "format": "time_series",
@@ -175,7 +179,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "description": "Table containing list of Alertmanager instances showing it's version, up time, last reload time and if it was successful.",
       "fieldConfig": {
@@ -385,7 +390,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "time() - (alertmanager_build_info{instance=~\"$instance\"} * on (instance, cluster) group_left process_start_time_seconds{instance=~\"$instance\"})",
           "format": "table",
@@ -395,7 +401,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "time() - alertmanager_config_last_reload_success_timestamp_seconds{instance=~\"$instance\"}",
           "format": "table",
@@ -405,7 +412,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "alertmanager_config_last_reload_successful{instance=~\"$instance\"}",
           "format": "table",
@@ -427,7 +435,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "description": "Number of peers in the Alertmanager cluster.",
       "fieldConfig": {
@@ -494,7 +503,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "max(alertmanager_cluster_members{instance=~\"$instance\"})",
           "format": "time_series",
@@ -507,7 +517,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "description": "Current number of active alerts.",
       "fieldConfig": {
@@ -573,7 +584,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "max(alertmanager_alerts{state=\"active\", instance=~\"$instance\"})",
           "format": "time_series",
@@ -586,7 +598,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "description": "Current number of suppressed alerts.",
       "fieldConfig": {
@@ -652,7 +665,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "max(alertmanager_alerts{state=\"suppressed\", instance=~\"$instance\"})",
           "format": "time_series",
@@ -665,7 +679,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "description": "Current number of active silences.",
       "fieldConfig": {
@@ -731,7 +746,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "max(alertmanager_silences{state=\"active\", instance=~\"$instance\"})",
           "format": "time_series",
@@ -757,7 +773,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "description": "Number of sent notifications to distinct integrations such as PagerDuty, Slack and so on. On negative axis are displayed failed notifications.",
       "fieldConfig": {
@@ -906,7 +923,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "sum(increase(alertmanager_notifications_total{instance=~\"$instance\"}[$__interval])) by (integration)",
           "format": "time_series",
@@ -916,7 +934,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "sum(increase(alertmanager_notifications_failed_total{instance=~\"$instance\"}[$__interval])) by (integration)",
           "format": "time_series",
@@ -932,7 +951,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "description": "Duration of notification sends in 0.99 and 0.9 quantiles per integration.",
       "fieldConfig": {
@@ -1085,7 +1105,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "sum(histogram_quantile(0.9,rate(alertmanager_notification_latency_seconds_bucket{instance=~\"$instance\"}[$__interval]))) by (integration)",
           "format": "time_series",
@@ -1095,7 +1116,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "sum(histogram_quantile(0.99,rate(alertmanager_notification_latency_seconds_bucket{instance=~\"$instance\"}[$__interval]))) by (integration)",
           "format": "time_series",
@@ -1123,7 +1145,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "description": "Number of alerts by state such as `active`, `suppressed` etc.",
       "fieldConfig": {
@@ -1240,7 +1263,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "sum(alertmanager_alerts{instance=~\"$instance\"}) by (state)",
           "format": "time_series",
@@ -1254,7 +1278,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "description": "Number of received alerts from Prometheus by status `firing` on positive axis and `resolved` on negative axis.",
       "fieldConfig": {
@@ -1274,7 +1299,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "sum(increase(alertmanager_alerts_received_total{instance=~\"$instance\"}[$__interval])) by (status)",
           "format": "time_series",
@@ -1299,7 +1325,8 @@
       "panels": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "description": "Shows cluster score representing cluster health. From Hashicorps official documentation: \n> This metric describes a node's perception of its own health based on how well it is meeting the soft real-time requirements of the protocol. This metric ranges from 0 to 8, where 0 indicates \"totally healthy\".\n\nFor more info see https://www.consul.io/docs/agent/telemetry.html#cluster-health",
           "fieldConfig": {
@@ -1319,7 +1346,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "alertmanager_cluster_health_score{instance=~\"$instance\"}",
               "format": "time_series",
@@ -1333,7 +1361,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "description": "Shows gossip cluster members count in time and failing peers in case of any in red color.",
           "fieldConfig": {
@@ -1353,7 +1382,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "alertmanager_cluster_members{instance=~\"$instance\"}",
               "format": "time_series",
@@ -1363,7 +1393,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "alertmanager_cluster_failed_peers{instance=~\"$instance\"}",
               "format": "time_series",
@@ -1377,7 +1408,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "description": "On positive axis shows number of peers that joined the cluster and on negative axis number of peers that left the cluster.",
           "fieldConfig": {
@@ -1397,7 +1429,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_cluster_peers_left_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -1407,7 +1440,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_cluster_peers_joined_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -1421,7 +1455,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "description": "On positive axis is number of attempts to reconnect the cluster. On negative axis if number of failed attempts.",
           "fieldConfig": {
@@ -1441,7 +1476,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_cluster_reconnections_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -1451,7 +1487,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_cluster_reconnections_failed_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -1465,7 +1502,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "description": "On positive axis is number of sent cluster messages by type `update`  or `full_state` and on negative axis the same for received messages.",
           "fieldConfig": {
@@ -1485,7 +1523,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "sum(increase(alertmanager_cluster_messages_sent_total{instance=~\"$instance\"}[$__interval])) by (msg_type)",
               "format": "time_series",
@@ -1495,7 +1534,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "sum(increase(alertmanager_cluster_messages_received_total{instance=~\"$instance\"}[$__interval])) by (msg_type)",
               "format": "time_series",
@@ -1509,7 +1549,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "description": "On positive axis is size of sent cluster messages by type `update`  or `full_state` and on negative axis the same for received messages.",
           "fieldConfig": {
@@ -1529,7 +1570,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "sum(increase(alertmanager_cluster_messages_sent_size_total{instance=~\"$instance\"}[$__interval])) by (msg_type)",
               "format": "time_series",
@@ -1539,7 +1581,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "sum(increase(alertmanager_cluster_messages_received_size_total{instance=~\"$instance\"}[$__interval])) by (msg_type)",
               "format": "time_series",
@@ -1553,7 +1596,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "description": "On positive axis is number of queued cluster messages and on negative axis number of pruned messages.",
           "fieldConfig": {
@@ -1573,7 +1617,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "alertmanager_cluster_messages_pruned_total{instance=~\"$instance\"}",
               "format": "time_series",
@@ -1583,7 +1628,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "alertmanager_cluster_messages_queued{instance=~\"$instance\"}",
               "format": "time_series",
@@ -1611,7 +1657,8 @@
       "panels": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -1630,7 +1677,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_oversized_gossip_message_sent_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -1641,7 +1689,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_oversized_gossip_message_dropped_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -1651,7 +1700,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_oversized_gossip_message_failure_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -1665,7 +1715,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -1684,7 +1735,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "histogram_quantile(1,rate(alertmanager_oversize_gossip_message_duration_seconds_bucket{instance=~\"$instance\"}[$__interval]))",
               "format": "time_series",
@@ -1699,7 +1751,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -1718,7 +1771,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_silences_gossip_messages_propagated_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -1729,7 +1783,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_nflog_gossip_messages_propagated_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -1757,7 +1812,8 @@
       "panels": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -1776,7 +1832,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_nflog_queries_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -1786,7 +1843,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_nflog_query_errors_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -1800,7 +1858,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -1819,7 +1878,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "histogram_quantile(1,rate(alertmanager_nflog_query_duration_seconds_bucket{instance=~\"$instance\"}[$__interval]))",
               "format": "time_series",
@@ -1833,7 +1893,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -1852,7 +1913,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "alertmanager_nflog_snapshot_size_bytes{instance=~\"$instance\"}",
               "format": "time_series",
@@ -1866,7 +1928,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -1885,7 +1948,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "rate(alertmanager_nflog_snapshot_duration_seconds_sum{instance=~\"$instance\"}[$__interval]) / rate(alertmanager_nflog_snapshot_duration_seconds_sum{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -1900,7 +1964,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -1919,7 +1984,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "alertmanager_nflog_gc_duration_seconds{instance=~\"$instance\"}",
               "format": "time_series",
@@ -1947,7 +2013,8 @@
       "panels": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -1966,7 +2033,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "alertmanager_silences{instance=~\"$instance\"}",
               "format": "time_series",
@@ -1981,7 +2049,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -2000,7 +2069,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_silences_queries_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -2011,7 +2081,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "increase(alertmanager_silences_query_errors_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -2025,7 +2096,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -2044,7 +2116,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "histogram_quantile(1,rate(alertmanager_silences_query_duration_seconds_bucket{instance=~\"$instance\"}[$__interval]))",
               "format": "time_series",
@@ -2059,7 +2132,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -2078,7 +2152,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "alertmanager_silences_snapshot_size_bytes{instance=~\"$instance\"}",
               "format": "time_series",
@@ -2093,7 +2168,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -2112,7 +2188,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "alertmanager_silences_snapshot_duration_seconds{instance=~\"$instance\", quantile=\"0.99\"}",
               "format": "time_series",
@@ -2127,7 +2204,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -2146,7 +2224,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "alertmanager_silences_gc_duration_seconds{instance=~\"$instance\"}",
               "format": "time_series",
@@ -2175,7 +2254,8 @@
       "panels": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -2194,7 +2274,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "rate(process_cpu_seconds_total{instance=~\"$instance\"}[$__interval])",
               "format": "time_series",
@@ -2237,7 +2318,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "max(kube_pod_container_resource_limits_cpu_cores{pod=~\"$instance\"}) by (pod)",
               "format": "time_series",
@@ -2251,7 +2333,8 @@
         },
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {},
@@ -2270,7 +2353,8 @@
           "targets": [
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "process_resident_memory_bytes{instance=~\"$instance\"}",
               "format": "time_series",
@@ -2282,7 +2366,8 @@
             },
             {
               "datasource": {
-                "uid": "$datasource"
+                "type": "prometheus",
+                "uid": "Prometheus"
               },
               "expr": "max(kube_pod_container_resource_limits_memory_bytes{pod=~\"$instance\"}) by (pod)",
               "format": "time_series",
@@ -2332,7 +2417,10 @@
             "$__all"
           ]
         },
-        "datasource": "$datasource",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "query_result(alertmanager_build_info)",
         "includeAll": true,
         "label": "Instance",
@@ -2354,6 +2442,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "Alertmanager",
-  "uid": "eea-9_sik",
+  "uid": "observability-alertmanager",
   "version": 1
 }

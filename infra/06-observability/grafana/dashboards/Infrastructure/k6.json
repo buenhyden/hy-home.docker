@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -2037,6 +2037,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "k6 Prometheus",
-  "uid": "ccbb2351-2ae2-462f-ae0e-f2c893ad1028",
+  "uid": "infrastructure-k6",
   "version": 2
 }

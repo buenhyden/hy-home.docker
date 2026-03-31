@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -685,6 +685,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Kafka Overview",
-  "uid": "b7d5e25a-d5e9-4fbd-b2e9-12f3a2a3528e",
+  "uid": "infrastructure-kafka-overview",
   "version": 1
 }

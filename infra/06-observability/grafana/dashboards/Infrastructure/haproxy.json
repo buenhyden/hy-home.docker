@@ -5,8 +5,8 @@
         "$$hashKey": "object:257",
         "builtIn": 1,
         "datasource": {
-          "type": "datasource",
-          "uid": "grafana"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -70,7 +70,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "Prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -332,7 +332,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(haproxy_frontend_http_responses_total{proxy=~\"$frontend\",code=~\"$code\",instance=\"$host\"}[$__rate_interval])) by (code)",
@@ -346,7 +346,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(haproxy_backend_http_responses_total{proxy=~\"$backend\",code=~\"$code\",instance=\"$host\"}[$__rate_interval])) by (code)",
@@ -360,7 +360,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(haproxy_frontend_http_requests_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])) by (instance)",
@@ -374,7 +374,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(haproxy_backend_http_requests_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])) by (instance)",
@@ -392,7 +392,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "Prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -491,7 +491,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(haproxy_frontend_bytes_in_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])*8) by (instance)",
@@ -505,7 +505,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(haproxy_frontend_bytes_out_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])*8) by (instance)",
@@ -522,7 +522,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "Prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -621,7 +621,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(haproxy_backend_bytes_in_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])*8) by (instance)",
@@ -633,7 +633,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(haproxy_backend_bytes_out_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])*8) by (instance)",
@@ -649,7 +649,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "Prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -748,7 +748,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(haproxy_frontend_sessions_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])) by (instance)",
@@ -762,7 +762,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(haproxy_backend_sessions_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])) by (instance)",
@@ -780,7 +780,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "Prometheus"
       },
       "description": "",
       "fieldConfig": {
@@ -879,7 +879,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(haproxy_frontend_connections_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])) by (instance)",
@@ -893,7 +893,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(rate(haproxy_backend_connection_attempts_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])) by (instance)",
@@ -911,7 +911,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -994,7 +994,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(haproxy_frontend_status{instance=\"$host\",state=\"UP\"} == 1)",
@@ -1007,7 +1007,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "sum(haproxy_backend_status{instance=\"$host\",state=\"UP\"} ==1)",
@@ -1024,7 +1024,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1085,7 +1085,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "editorMode": "code",
           "expr": "time() - haproxy_process_start_time_seconds{instance=\"$host\"}",
@@ -1110,7 +1110,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -1219,7 +1219,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_http_requests_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])",
@@ -1233,7 +1233,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_request_errors_total{proxy=~\"$frontend\", instance=\"$host\"}[$__rate_interval])",
@@ -1246,7 +1246,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_requests_denied_total{proxy=~\"$frontend\", instance=\"$host\"}[$__rate_interval])",
@@ -1263,7 +1263,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -1360,7 +1360,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_http_requests_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])",
@@ -1374,7 +1374,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_requests_denied_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])",
@@ -1391,7 +1391,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -1475,7 +1475,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "sum(rate(haproxy_frontend_http_responses_total{proxy=~\"$frontend\", code=~\"$code\",instance=\"$host\"}[$__rate_interval])) by (proxy)",
@@ -1493,7 +1493,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -1577,7 +1577,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "sum(rate(haproxy_backend_http_responses_total{proxy=~\"$backend\", code=~\"$code\",instance=\"$host\"}[$__rate_interval])) by (proxy)",
@@ -1595,7 +1595,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -1681,7 +1681,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "sum(rate(haproxy_server_http_responses_total{proxy=~\"$backend\",server=~\"$server\",code=~\"$code\",instance=\"$host\"}[$__rate_interval])) by (proxy, server)",
@@ -1699,7 +1699,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -1783,7 +1783,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_http_responses_total{proxy=~\"$frontend\", code=~\"$code\",instance=\"$host\"}[$__rate_interval])",
@@ -1801,7 +1801,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -1885,7 +1885,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_http_responses_total{proxy=~\"$backend\", code=~\"$code\",instance=\"$host\"}[$__rate_interval])",
@@ -1903,7 +1903,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -1989,7 +1989,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_http_responses_total{proxy=~\"$backend\",server=~\"$server\",code=~\"$code\",instance=\"$host\"}[$__rate_interval])",
@@ -2007,7 +2007,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -2104,7 +2104,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_responses_denied_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])",
@@ -2122,7 +2122,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -2206,7 +2206,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_responses_denied_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])",
@@ -2224,7 +2224,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -2309,7 +2309,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_responses_denied_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])",
@@ -2327,7 +2327,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -2424,7 +2424,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_redispatch_warnings_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])",
@@ -2438,7 +2438,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_retry_warnings_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])",
@@ -2451,7 +2451,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_response_errors_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])",
@@ -2468,7 +2468,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -2566,7 +2566,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_redispatch_warnings_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])",
@@ -2579,7 +2579,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_retry_warnings_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])",
@@ -2593,7 +2593,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_response_errors_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])",
@@ -2624,7 +2624,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -2721,7 +2721,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_bytes_in_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])*8",
@@ -2735,7 +2735,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_bytes_out_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])*8",
@@ -2752,7 +2752,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -2849,7 +2849,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_bytes_in_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])*8",
@@ -2863,7 +2863,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_bytes_out_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])*8",
@@ -2880,7 +2880,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -2978,7 +2978,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_bytes_in_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])*8",
@@ -2992,7 +2992,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_bytes_out_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])*8",
@@ -3009,7 +3009,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -3106,7 +3106,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_connections_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])",
@@ -3120,7 +3120,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_denied_connections_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])",
@@ -3138,7 +3138,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -3235,7 +3235,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_connection_attempts_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])",
@@ -3249,7 +3249,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_connection_errors_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])",
@@ -3266,7 +3266,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -3364,7 +3364,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_connection_attempts_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])",
@@ -3378,7 +3378,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_connection_errors_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])",
@@ -3395,7 +3395,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -3479,7 +3479,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_connection_reuses_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])",
@@ -3496,7 +3496,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -3581,7 +3581,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_connection_reuses_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])",
@@ -3612,7 +3612,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -3709,7 +3709,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_sessions_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])",
@@ -3723,7 +3723,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_denied_sessions_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])",
@@ -3737,7 +3737,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_frontend_current_sessions{proxy=~\"$frontend\",instance=\"$host\"}",
@@ -3756,7 +3756,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -3840,7 +3840,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_sessions_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])",
@@ -3854,7 +3854,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_backend_current_sessions{proxy=~\"$backend\",instance=\"$host\"}",
@@ -3873,7 +3873,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -3958,7 +3958,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_sessions_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])",
@@ -3976,7 +3976,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -4071,7 +4071,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "max_over_time(haproxy_frontend_current_sessions{proxy=~\"$frontend\", instance=\"$host\"}[$__rate_interval]) / haproxy_frontend_limit_sessions{proxy=~\"$frontend\", instance=\"$host\"} * 100",
@@ -4088,7 +4088,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -4183,7 +4183,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "max_over_time(haproxy_backend_current_sessions{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval]) / haproxy_backend_limit_sessions{proxy=~\"$backend\", instance=\"$host\"} * 100",
@@ -4200,7 +4200,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -4284,7 +4284,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_frontend_max_sessions{proxy=~\"$frontend\",instance=\"$host\"}",
@@ -4298,7 +4298,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_frontend_current_sessions{proxy=~\"$frontend\",instance=\"$host\"}",
@@ -4317,7 +4317,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -4401,7 +4401,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_backend_max_sessions{proxy=~\"$backend\",instance=\"$host\"}",
@@ -4415,7 +4415,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_backend_current_sessions{proxy=~\"$backend\",instance=\"$host\"}",
@@ -4434,7 +4434,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -4519,7 +4519,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_server_max_sessions{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}",
@@ -4537,7 +4537,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -4621,7 +4621,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_failed_header_rewriting_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])",
@@ -4639,7 +4639,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -4723,7 +4723,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_failed_header_rewriting_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])",
@@ -4741,7 +4741,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -4826,7 +4826,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_failed_header_rewriting_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])",
@@ -4844,7 +4844,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -4941,7 +4941,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_client_aborts_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])",
@@ -4955,7 +4955,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_server_aborts_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])",
@@ -4973,7 +4973,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -5071,7 +5071,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_client_aborts_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])",
@@ -5085,7 +5085,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_server_aborts_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])",
@@ -5117,7 +5117,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -5201,7 +5201,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_backend_connect_time_average_seconds{proxy=~\"$backend\",instance=\"$host\"}",
@@ -5219,7 +5219,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -5303,7 +5303,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_backend_total_time_average_seconds{proxy=~\"$backend\",instance=\"$host\"}",
@@ -5321,7 +5321,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -5405,7 +5405,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_server_connect_time_average_seconds{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}",
@@ -5423,7 +5423,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -5507,7 +5507,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_server_total_time_average_seconds{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}",
@@ -5525,7 +5525,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -5609,7 +5609,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_backend_response_time_average_seconds{proxy=~\"$backend\",instance=\"$host\"}",
@@ -5627,7 +5627,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -5711,7 +5711,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_backend_queue_time_average_seconds{proxy=~\"$backend\",instance=\"$host\"}",
@@ -5729,7 +5729,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -5813,7 +5813,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_server_response_time_average_seconds{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}",
@@ -5831,7 +5831,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -5915,7 +5915,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_server_queue_time_average_seconds{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}",
@@ -5947,7 +5947,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -6031,7 +6031,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_check_up_down_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])",
@@ -6049,7 +6049,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -6146,7 +6146,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_backend_weight{proxy=~\"$backend\", instance=\"$host\"}",
@@ -6160,7 +6160,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_backend_uweight{proxy=~\"$backend\", instance=\"$host\"} - haproxy_backend_weight{proxy=~\"$backend\", instance=\"$host\"}",
@@ -6178,7 +6178,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -6263,7 +6263,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_check_up_down_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])",
@@ -6281,7 +6281,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -6378,7 +6378,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_server_weight{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}",
@@ -6392,7 +6392,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_server_uweight{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"} - haproxy_server_weight{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}",
@@ -6410,7 +6410,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -6495,7 +6495,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_check_failures_total{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}[$__rate_interval])",
@@ -6513,7 +6513,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -6597,7 +6597,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_server_check_duration_seconds{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\"}",
@@ -6615,7 +6615,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -6700,7 +6700,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_server_last_session_seconds{proxy=~\"$backend\", server=~\"$server\",instance=\"$host\"}",
@@ -6732,7 +6732,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -6829,7 +6829,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_http_cache_lookups_total{proxy=~\"$frontend\", instance=\"$host\"}[$__rate_interval])",
@@ -6843,7 +6843,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_http_cache_hits_total{proxy=~\"$frontend\", instance=\"$host\"}[$__rate_interval])",
@@ -6861,7 +6861,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -6958,7 +6958,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_http_cache_lookups_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])",
@@ -6972,7 +6972,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_http_cache_hits_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])",
@@ -6990,7 +6990,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -7099,7 +7099,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_http_comp_bytes_in_total{proxy=~\"$frontend\", instance=\"$host\"}[$__rate_interval])*8",
@@ -7113,7 +7113,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_http_comp_bytes_out_total{proxy=~\"$frontend\", instance=\"$host\"}[$__rate_interval])*8",
@@ -7127,7 +7127,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_http_comp_bytes_bypassed_total{proxy=~\"$frontend\", instance=\"$host\"}[$__rate_interval])*8",
@@ -7145,7 +7145,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -7254,7 +7254,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_http_comp_bytes_in_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])*8",
@@ -7268,7 +7268,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_http_comp_bytes_out_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])*8",
@@ -7282,7 +7282,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_http_comp_bytes_bypassed_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])*8",
@@ -7300,7 +7300,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -7384,7 +7384,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_http_comp_responses_total{proxy=~\"$frontend\", instance=\"$host\"}[$__rate_interval])",
@@ -7402,7 +7402,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -7487,7 +7487,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_http_comp_responses_total{proxy=~\"$backend\", instance=\"$host\"}[$__rate_interval])",
@@ -7519,7 +7519,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -7616,7 +7616,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_frontend_status{proxy=~\"$frontend\",instance=\"$host\",state=\"UP\"}",
@@ -7634,7 +7634,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -7731,7 +7731,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_backend_status{proxy=~\"$backend\",instance=\"$host\",state=\"UP\"}",
@@ -7749,7 +7749,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -7849,7 +7849,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_server_status{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\",state=\"UP\"}",
@@ -7867,7 +7867,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -7956,7 +7956,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_server_status{proxy=~\"$backend\",server=~\"$server\",instance=\"$host\",state!~\"UP|DOWN\"}",
@@ -7974,7 +7974,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -8058,7 +8058,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_frontend_internal_errors_total{proxy=~\"$frontend\",instance=\"$host\"}[$__rate_interval])",
@@ -8076,7 +8076,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -8160,7 +8160,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_backend_internal_errors_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])",
@@ -8178,7 +8178,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -8261,7 +8261,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_server_internal_errors_total{proxy=~\"$backend\",instance=\"$host\"}[$__rate_interval])",
@@ -8279,7 +8279,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -8362,7 +8362,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_sticktable_size{proxy=~\"$backend\",instance=\"$host\"}",
@@ -8376,7 +8376,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_sticktable_used{proxy=~\"$backend\",instance=\"$host\"}",
@@ -8394,7 +8394,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -8477,7 +8477,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_backend_active_servers{proxy=~\"$backend\",instance=\"$host\"}",
@@ -8495,7 +8495,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -8578,7 +8578,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_backend_backup_servers{proxy=~\"$backend\",instance=\"$host\"}",
@@ -8608,7 +8608,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -8722,7 +8722,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_max_connection_rate{instance=\"$host\"}",
@@ -8736,7 +8736,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_limit_connection_rate{instance=\"$host\"}",
@@ -8754,7 +8754,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -8868,7 +8868,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_current_connections{instance=\"$host\"}",
@@ -8882,7 +8882,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_hard_max_connections{instance=\"$host\"}",
@@ -8900,7 +8900,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -9013,7 +9013,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_max_session_rate{instance=\"$host\"}",
@@ -9027,7 +9027,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_limit_session_rate{instance=\"$host\"}",
@@ -9045,7 +9045,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -9163,7 +9163,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_max_ssl_rate{instance=\"$host\"}",
@@ -9177,7 +9177,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_limit_ssl_rate{instance=\"$host\"}",
@@ -9195,7 +9195,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -9313,7 +9313,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_current_ssl_connections{instance=\"$host\"}",
@@ -9327,7 +9327,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_max_ssl_connections{instance=\"$host\"}",
@@ -9345,7 +9345,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -9453,7 +9453,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_current_frontend_ssl_key_rate{instance=\"$host\"}",
@@ -9467,7 +9467,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_current_backend_ssl_key_rate{instance=\"$host\"}",
@@ -9485,7 +9485,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -9593,7 +9593,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_process_ssl_cache_lookups_total{instance=\"$host\"}[$__rate_interval])",
@@ -9607,7 +9607,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_process_ssl_cache_misses_total{instance=\"$host\"}[$__rate_interval])",
@@ -9621,7 +9621,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_process_ssl_connections_total{instance=\"$host\"}[$__rate_interval])",
@@ -9639,7 +9639,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -9722,7 +9722,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_frontend_ssl_reuse{instance=\"$host\"}",
@@ -9740,7 +9740,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -9858,7 +9858,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_current_zlib_memory{instance=\"$host\"}",
@@ -9872,7 +9872,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_max_zlib_memory{instance=\"$host\"}",
@@ -9904,7 +9904,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "description": "",
           "fieldConfig": {
@@ -10004,7 +10004,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_process_failed_resolutions{instance=\"$host\"}[$__rate_interval])",
@@ -10022,7 +10022,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -10146,7 +10146,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_max_pipes{instance=\"$host\"}",
@@ -10160,7 +10160,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_process_pipes_used_total{instance=\"$host\"}[$__rate_interval])",
@@ -10174,7 +10174,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_process_pipes_free_total{instance=\"$host\"}[$__rate_interval])",
@@ -10192,7 +10192,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -10276,7 +10276,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_listeners{instance=\"$host\"}",
@@ -10294,7 +10294,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -10407,7 +10407,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_max_memory_bytes{instance=\"$host\"}",
@@ -10421,7 +10421,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_pool_allocated_bytes{instance=\"$host\"}",
@@ -10435,7 +10435,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_pool_used_bytes{instance=\"$host\"}",
@@ -10453,7 +10453,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -10537,7 +10537,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_process_pool_failures_total{instance=\"$host\"}[$__rate_interval])",
@@ -10555,7 +10555,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -10639,7 +10639,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_jobs{instance=\"$host\"}",
@@ -10653,7 +10653,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_unstoppable_jobs{instance=\"$host\"}",
@@ -10671,7 +10671,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -10754,7 +10754,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_nbthread{instance=\"$host\"}",
@@ -10768,7 +10768,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_nbproc{instance=\"$host\"}",
@@ -10786,7 +10786,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -10869,7 +10869,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_process_dropped_logs_total{instance=\"$host\"}[$__rate_interval])",
@@ -10883,7 +10883,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "rate(haproxy_process_recv_logs_total{instance=\"$host\"}[$__rate_interval])",
@@ -10901,7 +10901,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -10984,7 +10984,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_active_peers{instance=\"$host\"}",
@@ -10998,7 +10998,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_connected_peers{instance=\"$host\"}",
@@ -11016,7 +11016,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -11099,7 +11099,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_current_tasks{instance=\"$host\"}",
@@ -11113,7 +11113,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_current_run_queue{instance=\"$host\"}",
@@ -11131,7 +11131,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -11215,7 +11215,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_idle_time_percent{instance=\"$host\"}",
@@ -11229,7 +11229,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_stopping{instance=\"$host\"}",
@@ -11247,7 +11247,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "Prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -11330,7 +11330,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
               },
               "editorMode": "code",
               "expr": "haproxy_process_uptime_seconds{instance=\"$host\"}",
@@ -11380,7 +11380,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "Prometheus"
         },
         "definition": "",
         "includeAll": false,
@@ -11407,7 +11407,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "Prometheus"
         },
         "definition": "",
         "includeAll": true,
@@ -11435,7 +11435,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "Prometheus"
         },
         "definition": "",
         "includeAll": true,
@@ -11463,7 +11463,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "Prometheus"
         },
         "definition": "",
         "includeAll": true,
@@ -11487,7 +11487,7 @@
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "Prometheus"
         },
         "definition": "",
         "includeAll": true,
@@ -11559,6 +11559,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "HAProxy",
-  "uid": "rEqu1u5ue",
+  "uid": "infrastructure-haproxy",
   "version": 1
 }

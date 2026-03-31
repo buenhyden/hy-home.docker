@@ -4,7 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -1581,7 +1582,7 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1e-9
+          "le": 1e-09
         },
         "legend": {
           "show": true
@@ -2030,7 +2031,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(nginx_ingress_controller_config_hash, controller_class) ",
         "includeAll": true,
         "label": "Controller Class",
@@ -2052,7 +2056,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(nginx_ingress_controller_requests{ controller_class=~\"$controller_class\"},namespace)",
         "includeAll": true,
         "label": "Namespace",
@@ -2073,7 +2080,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(nginx_ingress_controller_requests{namespace=~\"$namespace\",controller_class=~\"$controller_class\"}, ingress) ",
         "includeAll": true,
         "label": "Ingress",
@@ -2095,7 +2105,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(nginx_ingress_controller_config_hash{controller_class=~\"$controller_class\"}, controller_pod) ",
         "includeAll": true,
         "label": "Ingress Pod",
@@ -2132,6 +2145,6 @@
   },
   "timezone": "",
   "title": "Kubernetes Nginx Ingress Prometheus NextGen",
-  "uid": "k8s-nginx-ingress-prometheus-ng",
+  "uid": "kubernetes-k8s-nginx-ingress",
   "version": 2
 }

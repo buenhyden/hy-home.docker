@@ -7,7 +7,7 @@ datasources:
     uid: Prometheus
     access: proxy
     url: http://prometheus:9090
-    isDefault: false
+    isDefault: true
     jsonData:
       timeInterval: 15s
 
@@ -27,7 +27,7 @@ datasources:
     access: proxy
     url: http://tempo:3200
     basicAuth: false
-    isDefault: true
+    isDefault: false
     jsonData:
       # Trace에서 Log로 바로 가기 위한 설정
       tracesToLogsV2:

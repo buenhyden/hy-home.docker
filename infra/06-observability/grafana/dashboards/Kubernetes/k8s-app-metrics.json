@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana",
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -1126,7 +1126,10 @@
           "text": "",
           "value": ""
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "includeAll": false,
         "name": "namespace",
         "options": [],
@@ -1142,7 +1145,10 @@
           "text": "",
           "value": ""
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "includeAll": false,
         "name": "container",
         "options": [],
@@ -1161,6 +1167,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Kubernetes App Metrics",
-  "uid": "6b996d02-6694-4746-9030-dd1cccb8e786",
+  "uid": "kubernetes-k8s-app-metrics",
   "version": 2
 }

@@ -4,7 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -1506,6 +1507,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "Kubernetes Cluster",
-  "uid": "os6Bh8Omk",
+  "uid": "kubernetes-k8s-cluster",
   "version": 2
 }

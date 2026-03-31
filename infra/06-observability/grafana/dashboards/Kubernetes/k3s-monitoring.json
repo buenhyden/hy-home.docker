@@ -4,7 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -2211,7 +2212,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(node)",
         "includeAll": true,
         "name": "Node",
@@ -2234,7 +2238,10 @@
             "$__all"
           ]
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "",
         "includeAll": true,
         "multi": true,
@@ -2257,6 +2264,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "K3S cluster monitoring",
-  "uid": "1bI4P-xiz",
+  "uid": "kubernetes-k3s-monitoring",
   "version": 2
 }

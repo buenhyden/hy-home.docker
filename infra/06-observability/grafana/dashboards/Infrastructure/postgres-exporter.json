@@ -4,7 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "uid": "-- Grafana --"
+          "type": "prometheus",
+          "uid": "Prometheus"
         },
         "enable": true,
         "hide": true,
@@ -23,7 +24,8 @@
   "panels": [
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -112,7 +114,8 @@
         {
           "alias": "fetched",
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "sum(irate(pg_stat_database_tup_fetched{datname=~\"$db\",instance=~\"$instance\"}[5m]))",
@@ -169,7 +172,8 @@
         {
           "alias": "fetched",
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "sum(irate(pg_stat_database_tup_returned{datname=~\"$db\",instance=~\"$instance\"}[5m]))",
@@ -226,7 +230,8 @@
         {
           "alias": "fetched",
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "sum(irate(pg_stat_database_tup_inserted{datname=~\"$db\",instance=~\"$instance\"}[5m]))",
@@ -283,7 +288,8 @@
         {
           "alias": "fetched",
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "sum(irate(pg_stat_database_tup_updated{datname=~\"$db\",instance=~\"$instance\"}[5m]))",
@@ -340,7 +346,8 @@
         {
           "alias": "fetched",
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "sum(irate(pg_stat_database_tup_deleted{datname=~\"$db\",instance=~\"$instance\"}[5m]))",
@@ -400,7 +407,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -466,7 +474,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "sum(irate(pg_stat_database_xact_commit{datname=~\"$db\",instance=~\"$instance\"}[5m])) + sum(irate(pg_stat_database_xact_rollback{datname=~\"$db\",instance=~\"$instance\"}[5m]))",
@@ -526,7 +535,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -637,7 +647,8 @@
         {
           "alias": "Buffers Allocated",
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "irate(pg_stat_bgwriter_buffers_alloc{instance=~'$instance'}[5m])",
@@ -692,7 +703,8 @@
         {
           "alias": "Buffers Allocated",
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "irate(pg_stat_bgwriter_buffers_backend_fsync{instance=~'$instance'}[5m])",
@@ -747,7 +759,8 @@
         {
           "alias": "Buffers Allocated",
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "irate(pg_stat_bgwriter_buffers_backend{instance=~'$instance'}[5m])",
@@ -802,7 +815,8 @@
         {
           "alias": "Buffers Allocated",
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "irate(pg_stat_bgwriter_buffers_clean{instance=~'$instance'}[5m])",
@@ -857,7 +871,8 @@
         {
           "alias": "Buffers Allocated",
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "irate(pg_stat_bgwriter_buffers_checkpoint{instance=~'$instance'}[5m])",
@@ -915,7 +930,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1001,7 +1017,8 @@
         {
           "alias": "conflicts",
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "sum(rate(pg_stat_database_deadlocks{datname=~\"$db\",instance=~\"$instance\"}[5m]))",
@@ -1056,7 +1073,8 @@
         {
           "alias": "deadlocks",
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "dsType": "prometheus",
           "expr": "sum(rate(pg_stat_database_conflicts{datname=~\"$db\",instance=~\"$instance\"}[5m]))",
@@ -1114,7 +1132,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1198,7 +1217,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "sum(pg_stat_database_blks_hit{datname=~\"$db\",instance=~\"$instance\"}) / (sum(pg_stat_database_blks_hit{datname=~\"$db\",instance=~\"$instance\"}) + sum(pg_stat_database_blks_read{datname=~\"$db\",instance=~\"$instance\"}))",
           "format": "time_series",
@@ -1213,7 +1233,8 @@
     },
     {
       "datasource": {
-        "uid": "$datasource"
+        "type": "prometheus",
+        "uid": "Prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -1297,7 +1318,8 @@
       "targets": [
         {
           "datasource": {
-            "uid": "$datasource"
+            "type": "prometheus",
+            "uid": "Prometheus"
           },
           "expr": "pg_stat_database_numbackends{datname=~\"$db\",instance=~\"$instance\"}",
           "format": "time_series",
@@ -1325,7 +1347,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "$datasource",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "",
         "includeAll": true,
         "name": "instance",
@@ -1341,7 +1366,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "$datasource",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(pg_stat_database_tup_fetched{instance=~\"$instance\",datname!~\"template.*|postgres\"},datname)",
         "includeAll": true,
         "label": "db",
@@ -1371,7 +1399,10 @@
           "text": "manage postgres",
           "value": "manage postgres"
         },
-        "datasource": "$datasource",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "Prometheus"
+        },
         "definition": "label_values(pg_up, job)",
         "includeAll": false,
         "label": "job",
@@ -1391,6 +1422,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "PostgreSQL Exporter Quickstart and Dashboard",
-  "uid": "wGgaPlciz",
+  "uid": "infrastructure-postgres-exporter",
   "version": 1
 }
