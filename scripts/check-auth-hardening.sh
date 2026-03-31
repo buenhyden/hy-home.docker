@@ -40,7 +40,7 @@ check_file "$oauth_entrypoint" || true
 
 if [[ "$failures" -eq 0 ]]; then
   # Keycloak baseline checks.
-  check_contains "$keycloak_compose" "service: template-infra-med" "keycloak compose template mismatch"
+  check_contains "$keycloak_compose" "service: template-infra-high" "keycloak compose template mismatch"
   check_contains "$keycloak_compose" "KC_DB_PASSWORD_FILE: /run/secrets/keycloak_db_password" "keycloak db password file contract missing"
   check_contains "$keycloak_compose" 'KC_BOOTSTRAP_ADMIN_PASSWORD="$$(tr -d '\''\r\n'\'' </run/secrets/keycloak_admin_password)"' "keycloak admin secret injection missing"
   check_contains "$keycloak_compose" "/health/ready HTTP/1.1" "keycloak readiness healthcheck missing"

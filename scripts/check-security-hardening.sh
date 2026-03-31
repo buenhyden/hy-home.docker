@@ -56,8 +56,8 @@ if [[ "$failures" -eq 0 ]]; then
   check_contains "$compose_file" "/vault/out" "vault-agent output mount missing"
   check_contains "$compose_file" "vault-agent:" "vault-agent service missing"
   check_contains "$compose_file" "healthcheck:" "healthcheck block missing"
-  check_contains "$compose_file" "/tmp/vault-agent.pid" "vault-agent pid healthcheck contract missing"
-  check_contains "$compose_file" "kill -0" "vault-agent process liveness check missing"
+  check_contains "$compose_file" "pgrep -f" "vault-agent pid healthcheck contract missing"
+  check_contains "$compose_file" "exit 1" "vault-agent process liveness check missing"
 
   if ! awk '
     /^  vault-agent:/ {in_agent=1; next}

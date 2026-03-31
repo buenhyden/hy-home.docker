@@ -27,7 +27,6 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-high
-    # image: opensearchproject/opensearch:3.4.0  # 2025-11 기준 최신 3.x 안정 버전
     build:
       context: . ## build Docker file location
       dockerfile: Dockerfile ## build file name
@@ -247,4 +246,3 @@ services:
         condition: service_healthy
       opensearch-node3:
         condition: service_healthy
-

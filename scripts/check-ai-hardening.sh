@@ -60,7 +60,7 @@ if [[ "$failures" -eq 0 ]]; then
   check_contains "$ollama_compose" "OLLAMA_MAX_QUEUE=" "ollama queue cap missing"
   check_contains "$ollama_compose" "depends_on:" "ollama-exporter dependency contract missing"
   check_contains "$ollama_compose" "condition: service_healthy" "ollama-exporter health dependency missing"
-  check_contains "$ollama_compose" 'http://localhost:${OLLAMA_EXPORTER_PORT:-11435}/metrics' "ollama-exporter healthcheck missing"
+  check_contains "$ollama_compose" 'http://localhost:${OLLAMA_EXPORTER_PORT:-8000}/metrics' "ollama-exporter healthcheck missing"
   check_contains "$ollama_compose" "networks:" "ollama compose networks block missing"
   check_contains "$ollama_compose" "infra_net:" "ollama compose infra_net declaration missing"
   check_contains "$ollama_compose" "external: true" "ollama compose infra_net external contract missing"
