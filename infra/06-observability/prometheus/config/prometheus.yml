@@ -126,18 +126,18 @@ scrape_configs:
         labels:
           domain: "datastores"
 
-  # - job_name: "opensearch"
-  #   metrics_path: "/_prometheus/metrics"
-  #   scheme: https
-  #   static_configs:
-  #     - targets: ["opensearch:9200"]
-  #       labels:
-  #         domain: "datastores"
-  #   basic_auth:
-  #     username: "exporter"
-  #     password_file: "/run/secrets/opensearch_exporter_password"
-  #   tls_config:
-  #     insecure_skip_verify: true
+  - job_name: "opensearch"
+    metrics_path: "/_prometheus/metrics"
+    scheme: https
+    static_configs:
+      - targets: ["opensearch:9200"]
+        labels:
+          domain: "datastores"
+    basic_auth:
+      username: "exporter"
+      password_file: "/run/secrets/opensearch_exporter_password"
+    tls_config:
+      insecure_skip_verify: true
 
   - job_name: etcd
     static_configs:

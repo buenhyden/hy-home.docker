@@ -190,7 +190,7 @@ include:
   - infra/03-security/vault/docker-compose.yml
   - infra/04-data/analytics/influxdb/docker-compose.yml
   # - infra/04-data/analytics/ksql/docker-compose.yml
-  # - infra/04-data/analytics/opensearch/docker-compose.yml
+  - infra/04-data/analytics/opensearch/docker-compose.yml
   - infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml
   - infra/04-data/lake-and-object/minio/docker-compose.yml
   # - infra/04-data/lake-and-object/seaweedfs/docker-compose.yml

@@ -248,31 +248,3 @@ services:
       opensearch-node3:
         condition: service_healthy
 
-  opensearch-exporter:
-    profiles:
-      - obs
-    extends:
-      file: ../../../common-optimizations.yml
-      service: template-infra-readonly-low
-    image: prometheuscommunity/elasticsearch-exporter:v1.10.0
-    container_name: opensearch-exporter
-    command: >
-      bash -c "
-      export ES_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) &&
-      exec /bin/elasticsearch_exporter --es.uri=https://opensearch-node1:9200 --es.all --es.indices --es.ssl-skip-verify
-      "
-    environment:
-      - ES_USERNAME=${ELASTIC_USERNAME}
-    secrets:
-      - opensearch_exporter_password
-    ports:
-      - '${ES_EXPORTER_HOST_PORT:-9114}:${ES_EXPORTER_PORT:-9114}' # 9114
-    networks:
-      - infra_net
-    depends_on:
-      opensearch-node1:
-        condition: service_healthy
-      opensearch-node2:
-        condition: service_healthy
-      opensearch-node3:
-        condition: service_healthy

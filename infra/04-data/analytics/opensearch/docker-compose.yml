@@ -74,7 +74,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
-    image: opensearchproject/opensearch-dashboards:3.4.0
+    image: opensearchproject/opensearch-dashboards:3.5.0
     container_name: opensearch-dashboards
     networks:
       - infra_net
@@ -115,36 +115,3 @@ services:
       start_period: 60s
     secrets:
       - opensearch_dashboard_password
-
-  opensearch-exporter:
-    profiles:
-      - 'data'
-      - obs
-    extends:
-      file: ../../../common-optimizations.yml
-      service: template-infra-low
-    image: prometheuscommunity/elasticsearch-exporter:v1.10.0
-    container_name: opensearch-exporter
-    environment:
-      - ES_USERNAME=${OPENSEARCH_EXPORTER_USERNAME:-admin}
-    command: >
-      bash -c "
-      export ES_PASSWORD=$$(cat /run/secrets/opensearch_exporter_password) &&
-      exec /bin/elasticsearch_exporter --es.uri=https://opensearch:9200 --es.all --es.indices --es.ssl-skip-verify
-      "
-    ports:
-      - '${ES_EXPORTER_HOST_PORT:-9114}:${ES_EXPORTER_PORT:-9114}'
-    networks:
-      - infra_net
-    depends_on:
-      opensearch: { condition: service_healthy }
-    healthcheck:
-      test: ['CMD-SHELL', 'curl -fsS http://localhost:${ES_EXPORTER_PORT:-9114}/metrics || exit 1']
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 15s
-    labels:
-      <<: *tier-label
-    secrets:
-      - opensearch_exporter_password
