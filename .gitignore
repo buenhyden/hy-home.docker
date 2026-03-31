@@ -71,7 +71,7 @@ infra/**/.env.*
 # 04-data
 infra/04-data/opensearch/opensearch/config/opensearch.yml
 infra/04-data/opensearch/opensearch/config/opensearch-security/*.yml
-infra/04-data/opensearch/opensearch-dashboards/config/opensearch_dashboards.yml
+
 # 05-messaging
 infra/05-messaging/kafka/kafbat-ui/dynamic_config.yaml
 # 06-observability

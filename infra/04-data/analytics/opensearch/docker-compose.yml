@@ -8,6 +8,12 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_DATA_DIR}/opensearch/opensearch1-data
+  opensearch-dashboards-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/opensearch/opensearch-dashboards-data
 
 services:
   opensearch:
@@ -21,25 +27,30 @@ services:
       dockerfile: Dockerfile
     container_name: opensearch
     environment:
-      - OPENSEARCH_JAVA_OPTS=${OPENSEARCH_JAVA_OPTS:--Xms1g -Xmx1g}
-      - bootstrap.memory_lock=true
-      - DISABLE_INSTALL_DEMO_CONFIG=true
-      - DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI=true
-    command: >
-      bash -c "
-      export OPENSEARCH_INITIAL_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) &&
-      exec /usr/share/opensearch/opensearch-docker-entrypoint.sh
-      "
+      OPENSEARCH_JAVA_OPTS: '${OPENSEARCH_JAVA_OPTS:--Xms1g -Xmx1g}'
+      bootstrap.memory_lock: 'true'
+      DISABLE_INSTALL_DEMO_CONFIG: 'true'
+    entrypoint:
+      - /usr/local/bin/opensearch-entrypoint.sh
     ulimits:
-      memlock: { soft: -1, hard: -1 }
-      nofile: { soft: 65536, hard: 65536 }
-    shm_size: 1g
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    shm_size: '1g'
+    secrets:
+      - opensearch_admin_password
+      - opensearch_dashboard_password
+      - opensearch_exporter_password
+      - opensearch_security_cookie
     volumes:
       - opensearch-data:/usr/share/opensearch/data:rw
-      - ../../../secrets/certs:/usr/share/opensearch/config/certs:ro
+      - ../../../../secrets/certs:/usr/share/opensearch/config/certs:ro
       - ./opensearch/config/opensearch-security/config.yml:/usr/share/opensearch/config/opensearch-security/config.yml:ro
       - ./opensearch/config/opensearch-security/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml:ro
-      - ./opensearch/config/opensearch-security/internal_users.yml:/usr/share/opensearch/config/opensearch-security/internal_users.yml:ro
+      - ./opensearch/config/opensearch-security/internal_users.template.yml:/usr/share/opensearch/config/opensearch-security/internal_users.template.yml:ro
       - ./opensearch/config/opensearch-security/action_groups.yml:/usr/share/opensearch/config/opensearch-security/action_groups.yml:ro
       - ./opensearch/config/opensearch-security/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml:ro
       - ./opensearch/config/opensearch-security/tenants.yml:/usr/share/opensearch/config/opensearch-security/tenants.yml:ro
@@ -47,6 +58,16 @@ services:
       - ./opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
     networks:
       - infra_net
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -57,16 +78,6 @@ services:
       traefik.http.services.opensearch.loadbalancer.serversTransport: opensearch-transport@file
       traefik.http.services.opensearch.loadbalancer.server.port: 9200
       traefik.http.services.opensearch.loadbalancer.server.scheme: https
-    healthcheck:
-      test:
-        - 'CMD-SHELL'
-        - "export OPENSEARCH_ADMIN_PASSWORD=$$(cat /run/secrets/opensearch_admin_password) && curl -k -u admin:$${OPENSEARCH_ADMIN_PASSWORD} --silent --fail 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' || exit 1"
-      interval: 15s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-    secrets:
-      - opensearch_admin_password
 
   opensearch-dashboards:
     profiles:
@@ -83,13 +94,18 @@ services:
     volumes:
       - ../../../../secrets/certs:/usr/share/opensearch-dashboards/config/certs:ro
       - ./opensearch-dashboards/config/opensearch_dashboards.yml:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
+      - opensearch-dashboards-data:/usr/share/opensearch-dashboards/data
     environment:
-      - OPENSEARCH_USERNAME=${OPENSEARCH_DASHBOARD_USERNAME:-admin}
-    command: >
-      bash -c "
-      export OPENSEARCH_PASSWORD=$$(cat /run/secrets/opensearch_dashboard_password) &&
-      exec /usr/share/opensearch-dashboards/bin/opensearch-dashboards
-      "
+      - OPENSEARCH_USERNAME=${OPENSEARCH_DASHBOARD_USERNAME:-kibanaserver}
+    command:
+      - bash
+      - -c
+      - |
+        export OPENSEARCH_PASSWORD="$(cat /run/secrets/opensearch_dashboard_password)"
+        export OPENSEARCH_SECURITY_COOKIE="$(tr -d '\r\n' < /run/secrets/opensearch_security_cookie)"
+        export OPENSEARCH_CLIENT_SECRET="$(tr -d '\r\n' < /run/secrets/oauth2_proxy_client_secret)"
+
+        exec /usr/share/opensearch-dashboards/bin/opensearch-dashboards
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -98,20 +114,23 @@ services:
       traefik.http.routers.opensearch-dashboards.tls: 'true'
       traefik.http.services.opensearch-dashboards.loadbalancer.server.port: ${KIBANA_PORT:-5601}
       traefik.http.services.opensearch-dashboards.loadbalancer.server.scheme: https
-      traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport: opensearch-dashboards-transport@file,gateway-standard-chain@file
+      traefik.http.routers.opensearch-dashboards.middlewares: gateway-standard-chain@file
+      traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport: opensearch-dashboards-transport@file
     depends_on:
       opensearch: { condition: service_healthy }
-
     tmpfs:
       - /tmp
-      - /usr/share/opensearch-dashboards/data
     healthcheck:
       test:
-        - 'CMD-SHELL'
-        - 'export OS_PASS=$$(cat /run/secrets/opensearch_dashboard_password) && curl -fsSk -u ${OPENSEARCH_DASHBOARD_USERNAME:-admin}:$${OS_PASS} https://localhost:${KIBANA_PORT:-5601}/api/status >/dev/null 2>&1 || exit 1'
+        - CMD-SHELL
+        - |
+          code=$$(curl -ks -o /dev/null -w "%{http_code}" https://localhost:${KIBANA_PORT:-5601}/api/status); \
+          [ "$$code" = "200" ] || [ "$$code" = "401" ]
       interval: 15s
       timeout: 30s
       retries: 5
       start_period: 60s
     secrets:
+      - oauth2_proxy_client_secret
       - opensearch_dashboard_password
+      - opensearch_security_cookie

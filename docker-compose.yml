@@ -122,6 +122,8 @@ secrets:
     file: ./secrets/data/opensearch_dashboard_password.txt
   opensearch_exporter_password:
     file: ./secrets/data/opensearch_exporter_password.txt
+  opensearch_security_cookie:
+    file: ./secrets/data/opensearch_security_cookie.txt
 
   # ── Workflow: Airflow ───────────────────────────────────
   airflow_fernet_key:

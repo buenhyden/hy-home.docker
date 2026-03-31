@@ -253,4 +253,3 @@ services:
       <<: *tier-label
     networks:
       - infra_net
-

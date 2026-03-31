@@ -47,4 +47,3 @@ services:
       traefik.http.routers.rabbitmq.tls: 'true'
       traefik.http.routers.rabbitmq.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.rabbitmq.loadbalancer.server.port: ${RABBITMQ_MANAGEMENT_PORT:-15672}
-

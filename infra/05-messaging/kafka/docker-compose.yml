@@ -383,4 +383,3 @@ services:
     networks:
       infra_net:
         ipv4_address: 172.19.0.38
-
