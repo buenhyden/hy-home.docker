@@ -204,7 +204,7 @@ include:
   - infra/04-data/relational/postgresql-cluster/docker-compose.yml
   - infra/04-data/specialized/neo4j/docker-compose.yml
   - infra/04-data/specialized/qdrant/docker-compose.yml
-  # - infra/05-messaging/kafka/docker-compose.yml
+  - infra/05-messaging/kafka/docker-compose.yml
   # - infra/05-messaging/rabbitmq/docker-compose.yml
   - infra/06-observability/docker-compose.yml
   # - infra/07-workflow/n8n/docker-compose.yml

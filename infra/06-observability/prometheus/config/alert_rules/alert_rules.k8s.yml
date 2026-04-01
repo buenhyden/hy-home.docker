@@ -1,4 +1,4 @@
-# K8S 전용 규칙 파일입니다. 로컬 Prometheus에서는 로드하지 않습니다.
+# K8S 전용 규칙 파일입니다. prometheus.yml rule_files 섹션에서 로드됩니다.
 groups:
   # ============================================================================
   # [Optional] Kubernetes Cluster Monitoring
@@ -49,7 +49,8 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/kube-pod-not-ready.md'
 
       - alert: KubeCPUThrottlingHigh
-        expr: sum(increase(container_cpu_cfs_throttled_periods_total{container!=""}[5m])) by (container, pod, namespace)
+        expr:
+          sum(increase(container_cpu_cfs_throttled_periods_total{container!=""}[5m])) by (container, pod, namespace)
           / sum(increase(container_cpu_cfs_periods_total[5m])) by (container, pod, namespace) > 0.25
         for: 15m
         labels:

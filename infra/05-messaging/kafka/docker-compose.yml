@@ -46,17 +46,25 @@ x-kafka-broker-common: &kafka-broker-common
     KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
     KAFKA_LOG_DIRS: '/var/lib/kafka/data'
     KAFKA_HEAP_OPTS: '-Xms1G -Xmx1G'
-    KAFKA_JMX_OPTS: '-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost} -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101} -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=9404:/usr/share/jmx_exporter/kafka-config.yaml'
+    KAFKA_JMX_OPTS: >-
+      -Dcom.sun.management.jmxremote
+      -Dcom.sun.management.jmxremote.authenticate=false
+      -Dcom.sun.management.jmxremote.ssl=false
+      -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost}
+      -Dcom.sun.management.jmxremote.port=${KAFKA_JMX_PORT:-9101}
+      -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101}
+    KAFKA_OPTS: >-
+      -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka-config.yaml
   healthcheck:
     test:
       [
         'CMD-SHELL',
-        'unset KAFKA_JMX_OPTS; kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT:-19092} >/dev/null 2>&1 || exit 1',
+        'unset KAFKA_JMX_OPTS KAFKA_OPTS; kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT:-19092} >/dev/null || exit 1',
       ]
     interval: 15s
     timeout: 30s
-    retries: 5
-    start_period: 15s
+    retries: 10
+    start_period: 45s
   labels:
     <<: *tier-label
 
@@ -133,9 +141,11 @@ services:
     read_only: true
     tmpfs:
       - /tmp
+      - /etc/schema-registry:uid=1000,gid=1000,mode=0775
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:${SCHEMA_REGISTRY_PORT:-8081}'
+      SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: 'http'
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka-1:19092,PLAINTEXT://kafka-2:19092,PLAINTEXT://kafka-3:19092'
     expose:
       - '${SCHEMA_REGISTRY_PORT:-8081}'
@@ -156,11 +166,17 @@ services:
         condition: service_healthy
     healthcheck:
       test:
-        ['CMD-SHELL', 'curl -fsS http://localhost:${SCHEMA_REGISTRY_PORT:-8081}/subjects || exit 1']
+        - CMD-SHELL
+        - |
+          bash -ec '
+            exec 3<>/dev/tcp/127.0.0.1/${SCHEMA_REGISTRY_PORT:-8081}
+            printf "GET /subjects HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3
+            timeout 5 cat <&3 | grep -qE "HTTP/1\.[01] 200"
+          '
       interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
     networks:
       infra_net:
         ipv4_address: 172.19.0.33
@@ -170,13 +186,14 @@ services:
       - 'messaging'
     extends:
       file: ../../common-optimizations.yml
-      service: template-stateful-med
+      service: template-stateful-high
     image: confluentinc/cp-kafka-connect:8.1.1
     container_name: kafka-connect
-    read_only: false
+    read_only: true
     tmpfs:
       - /tmp
-      - /etc/kafka
+      - /etc/kafka-connect:uid=1000,gid=1000,mode=0775
+      - /etc/kafka:uid=1000,gid=1000,mode=0775
     depends_on:
       kafka-1:
         condition: service_healthy
@@ -188,24 +205,35 @@ services:
         condition: service_healthy
     environment:
       CONNECT_BOOTSTRAP_SERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
+      CONNECT_REST_PORT: ${KAFKA_CONNECT_PORT:-8083}
+      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
       CONNECT_GROUP_ID: 'kafka-connect-cluster'
+
       CONNECT_CONFIG_STORAGE_TOPIC: _connect-configs
       CONNECT_OFFSET_STORAGE_TOPIC: _connect-offsets
       CONNECT_STATUS_STORAGE_TOPIC: _connect-status
       CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3
       CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
       CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
+
       CONNECT_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
       CONNECT_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
       CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
+
       CONNECT_INTERNAL_KEY_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
       CONNECT_INTERNAL_VALUE_CONVERTER: 'org.apache.kafka.connect.json.JsonConverter'
-      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
-      CONNECT_REST_PORT: ${KAFKA_CONNECT_PORT:-8083}
+      CONNECT_INTERNAL_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
+      CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMAS_ENABLE: 'false'
+
       CONNECT_PLUGIN_PATH: '/usr/share/java,/usr/share/confluent-hub-components'
+
       CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}'
       CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:${SCHEMA_REGISTRY_PORT:-8081}'
+
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: 'false'
+      CONNECT_CONFIG_PROVIDERS: file
+      CONNECT_CONFIG_PROVIDERS_FILE_CLASS: org.apache.kafka.common.config.provider.FileConfigProvider
+
     volumes:
       - kafka-connect-data:/var/lib/kafka-connect:rw
     labels:
@@ -238,6 +266,7 @@ services:
     read_only: true
     tmpfs:
       - /tmp
+      - /etc/kafka-rest:uid=1000,gid=1000,mode=0775
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -277,11 +306,12 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
-    image: provectuslabs/kafka-ui:v0.7.2
+    image: kafbat/kafka-ui:main
     container_name: kafbat-ui
-    read_only: true
+    read_only: false
     tmpfs:
       - /tmp
+      - /etc/kafkaui:uid=100,gid=101,mode=0775
     environment:
       KAFKA_CLUSTERS_0_NAME: ${KAFKA_CLUSTER_ID}
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka-1:19092,kafka-2:19092,kafka-3:19092'
@@ -289,8 +319,17 @@ services:
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: kafka-connect
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:${KAFKA_CONNECT_PORT:-8083}
       DYNAMIC_CONFIG_ENABLED: 'true'
+      KAFBAT_OAUTH_CLIENT_ID: ${OAUTH2_PROXY_CLIENT_ID}
     volumes:
-      - ./kafbat-ui/dynamic_config.yaml:/etc/kafkaui/dynamic_config.yaml:ro
+      - ./kafbat-ui/dynamic_config.template.yaml:/tmp/dynamic_config.template.yaml:ro
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        cat /tmp/dynamic_config.template.yaml > /etc/kafkaui/dynamic_config.yaml
+        sed -i "s|PLACEHOLDER_CLIENT_ID|$${KAFBAT_OAUTH_CLIENT_ID}|g" /etc/kafkaui/dynamic_config.yaml
+        sed -i "s|PLACEHOLDER_CLIENT_SECRET|$$(tr -d '\r\n' </run/secrets/oauth2_proxy_client_secret)|g" /etc/kafkaui/dynamic_config.yaml
+        exec java --add-opens java.rmi/javax.rmi.ssl=ALL-UNNAMED $${JAVA_OPTS} -jar /api.jar
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -310,6 +349,8 @@ services:
         condition: service_healthy
       kafka-connect:
         condition: service_healthy
+    secrets:
+      - oauth2_proxy_client_secret
     healthcheck:
       test:
         [
@@ -327,7 +368,6 @@ services:
   kafka-exporter:
     profiles:
       - 'messaging'
-      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -347,7 +387,10 @@ services:
         condition: service_healthy
     healthcheck:
       test:
-        ['CMD-SHELL', 'curl -fsS http://localhost:${KAFKA_EXPORTER_PORT:-9308}/metrics || exit 1']
+        [
+          'CMD-SHELL',
+          'wget --quiet --tries=1 --spider http://localhost:${KAFKA_EXPORTER_PORT:-9308}/metrics || exit 1',
+        ]
       interval: 15s
       timeout: 30s
       retries: 5
