@@ -207,8 +207,8 @@ include:
   - infra/05-messaging/kafka/docker-compose.yml
   # - infra/05-messaging/rabbitmq/docker-compose.yml
   - infra/06-observability/docker-compose.yml
-  # - infra/07-workflow/n8n/docker-compose.yml
-  # - infra/07-workflow/airflow/docker-compose.yml
+  - infra/07-workflow/n8n/docker-compose.yml
+  - infra/07-workflow/airflow/docker-compose.yml
   # - infra/08-ai/agent-office/docker-compose.custom.yml
   - infra/08-ai/ollama/docker-compose.yml
   # - infra/08-ai/open-webui/docker-compose.yml

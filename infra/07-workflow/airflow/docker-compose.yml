@@ -65,6 +65,11 @@ volumes:
       type: none
       device: ${DEFAULT_WORKFLOW_DIR}/airflow/plugins
   airflow-valkey-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_WORKFLOW_DIR}/airflow-valkey
 
 
 services:
@@ -251,7 +256,7 @@ services:
       service: template-stateful-low
     image: valkey/valkey:9.0.2-alpine
     container_name: airflow-valkey
-    read_only: false
+    user: '999:999'
     secrets:
       - airflow_valkey_password
     networks:
@@ -259,6 +264,8 @@ services:
     restart: unless-stopped
     volumes:
       - airflow-valkey-data:/data:rw
+    labels:
+      <<: *tier-label
     command: >
       sh -c 'valkey-server --requirepass "$$(cat /run/secrets/airflow_valkey_password)" --appendonly yes --port 6379'
     expose:
@@ -277,7 +284,6 @@ services:
   airflow-valkey-exporter:
     profiles:
       - 'workflow'
-      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -293,16 +299,22 @@ services:
     restart: unless-stopped
     secrets:
       - airflow_valkey_password
-    entrypoint: [/bin/sh, -c]
-    command: |
-      exec /redis_exporter -redis.addr=redis://airflow-valkey:6379 -redis.password-file=/run/secrets/airflow_valkey_password -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        export VALKEY_PASSWORD=$$(cat /run/secrets/airflow_valkey_password | tr -d '\n')
+        exec /redis_exporter \
+          -redis.addr=redis://airflow-valkey:${VALKEY_PORT} \
+          -redis.password="$$VALKEY_PASSWORD" \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on:
       airflow-valkey:
         condition: service_healthy
   airflow-statsd-exporter:
     profiles:
       - 'workflow'
-      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low

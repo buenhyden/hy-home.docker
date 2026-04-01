@@ -68,7 +68,7 @@ services:
     volumes:
       # 데이터 영속화 볼륨
       - opensearch-data1:/usr/share/opensearch/data
-      - ../../../secrets/certs:/usr/share/opensearch/config/certs:ro
+      - ../../../../secrets/certs:/usr/share/opensearch/config/certs:ro
       - ./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
     secrets:
       - opensearch_admin_password
@@ -215,7 +215,7 @@ services:
     # ports:
     #   - "${KIBANA_HOST_PORT}:${KIBANA_PORT}"
     volumes:
-      - ../../../secrets/certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro
+      - ../../../../secrets/certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro
     environment:
       - 'OPENSEARCH_HOSTS=["https://opensearch-node1:9200","https://opensearch-node2:9200","https://opensearch-node3:9200"]'
       - OPENSEARCH_USERNAME=${ELASTIC_USERNAME}

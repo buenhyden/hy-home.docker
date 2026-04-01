@@ -15,14 +15,17 @@ x-n8n-common-env: &n8n-common-env
   QUEUE_BULL_REDIS_PORT: ${VALKEY_PORT:-6379}
   QUEUE_BULL_PREFIX: n8n
   QUEUE_BULL_REDIS_PASSWORD_FILE: /run/secrets/n8n_valkey_password
+
   N8N_RUNNERS_ENABLED: true
   N8N_RUNNERS_MODE: external
   N8N_RUNNERS_BROKER_LISTEN_ADDRESS: 0.0.0.0
   N8N_NATIVE_PYTHON_RUNNER: true
   N8N_RUNNERS_AUTH_TOKEN_FILE: /run/secrets/n8n_runner_auth_token
   N8N_RUNNER_TASK_TIMEOUT: 300
+
   N8N_ENCRYPTION_KEY_FILE: /run/secrets/n8n_encryption_key
   N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: true
+  OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS: true
 
 volumes:
   n8n-data:
@@ -36,14 +39,19 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_WORKFLOW_DIR}/valkey
+      device: ${DEFAULT_WORKFLOW_DIR}/n8n-valkey
   n8n-task-runner-data:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: ${DEFAULT_WORKFLOW_DIR}/n8n-task-runner
-
+  n8n-task-runner-worker-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_WORKFLOW_DIR}/n8n-task-runner-worker
 
 services:
   n8n:
@@ -56,12 +64,13 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        N8N_VERSION: 2.12.3
-    image: hyhome/n8n:2.12.3-local
+        N8N_VERSION: 2.15.0
+    image: hyhome/n8n:2.15.0-local
     container_name: n8n
     read_only: false
     expose:
       - ${N8N_PORT:-5678}
+      - ${N8N_BROKER_PORT:-5679}
     secrets:
       - n8n_valkey_password
       - n8n_db_password
@@ -116,10 +125,13 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        N8N_VERSION: 2.12.3
-    image: hyhome/n8n:2.12.3-local
+        N8N_VERSION: 2.15.0
+    image: hyhome/n8n:2.15.0-local
     container_name: n8n-worker
     read_only: false
+    expose:
+      - ${N8N_PORT:-5678}
+      - ${N8N_BROKER_PORT:-5679}
     depends_on:
       n8n: { condition: service_healthy }
       n8n-valkey: { condition: service_healthy }
@@ -137,7 +149,7 @@ services:
       - infra_net
     command: worker
     healthcheck:
-      test: ['CMD-SHELL', 'ps -ef | grep -q "[n]8n worker"']
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${N8N_BROKER_PORT:-5679}/healthz || exit 1']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -151,12 +163,17 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: n8nio/runners:2.12.3
+    image: n8nio/runners:2.15.0
     container_name: n8n-task-runner
     read_only: false
     depends_on:
       n8n: { condition: service_healthy }
       n8n-valkey: { condition: service_healthy }
+    environment:
+      N8N_RUNNERS_TASK_BROKER_URI: http://n8n:${N8N_BROKER_PORT:-5679}
+      N8N_RUNNERS_AUTH_TOKEN_FILE: /run/secrets/n8n_runner_auth_token
+    expose:
+      - ${N8N_TASK_RUNNER_PORT:-5680}
     volumes:
       - n8n-task-runner-data:/home/node/.n8n:rw
     networks:
@@ -164,7 +181,38 @@ services:
     secrets:
       - n8n_runner_auth_token
     healthcheck:
-      test: ['CMD-SHELL', 'ps -ef | grep -q "[n]ode" && test -s /run/secrets/n8n_runner_auth_token']
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${N8N_TASK_RUNNER_PORT:-5680}/healthz || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    labels:
+      <<: *tier-label
+
+  n8n-task-runner-worker:
+    profiles:
+      - 'workflow'
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
+    image: n8nio/runners:2.15.0
+    container_name: n8n-task-runner-worker
+    read_only: false
+    depends_on:
+      n8n-worker: { condition: service_healthy }
+    environment:
+      N8N_RUNNERS_TASK_BROKER_URI: http://n8n-worker:${N8N_BROKER_PORT:-5679}
+      N8N_RUNNERS_AUTH_TOKEN_FILE: /run/secrets/n8n_runner_auth_token
+    expose:
+      - ${N8N_TASK_RUNNER_PORT:-5680}
+    networks:
+      - infra_net
+    secrets:
+      - n8n_runner_auth_token
+    volumes:
+      - n8n-task-runner-worker-data:/home/node/.n8n:rw
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:${N8N_TASK_RUNNER_PORT:-5680}/healthz || exit 1']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -180,7 +228,7 @@ services:
       service: template-stateful-low
     image: valkey/valkey:9.0.2-alpine
     container_name: n8n-valkey
-    read_only: false
+    user: '999:999'
     secrets:
       - n8n_valkey_password
     networks:
@@ -210,7 +258,6 @@ services:
   n8n-valkey-exporter:
     profiles:
       - 'workflow'
-      - obs
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -226,10 +273,16 @@ services:
     restart: unless-stopped
     secrets:
       - n8n_valkey_password
-    entrypoint: [/bin/sh, -c]
+    entrypoint:
+      - /bin/sh
+      - -c
     command:
       - |
-        exec /redis_exporter           -redis.addr=redis://n8n-valkey:6379           -redis.password-file=/run/secrets/n8n_valkey_password           -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
+        export VALKEY_PASSWORD=$$(cat /run/secrets/n8n_valkey_password | tr -d '\n')
+        exec /redis_exporter \
+          -redis.addr=redis://mng-n8n-valkey:${VALKEY_PORT} \
+          -redis.password="$$VALKEY_PASSWORD" \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
     depends_on:
       n8n-valkey: { condition: service_healthy }
     labels:

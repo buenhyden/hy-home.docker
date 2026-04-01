@@ -112,6 +112,18 @@ scrape_configs:
         labels:
           domain: "datastores"
 
+  - job_name: "airflow-valkey-exporter"
+    static_configs:
+      - targets: ["airflow-valkey-exporter:9121"]
+        labels:
+          domain: "datastores"
+
+  - job_name: "n8n-valkey-exporter"
+    static_configs:
+      - targets: ["n8n-valkey-exporter:9121"]
+        labels:
+          domain: "datastores"
+
   - job_name: "minio"
     metrics_path: /minio/v2/metrics/cluster
     static_configs:
@@ -147,12 +159,6 @@ scrape_configs:
   # MESSAGING
   # ============================================================================
   - job_name: "kafka"
-    static_configs:
-      - targets: ["kafka-1:9404", "kafka-2:9404", "kafka-3:9404"]
-        labels:
-          domain: "messaging"
-
-  - job_name: "kafka-jmx"
     static_configs:
       - targets: ["kafka-1:9404", "kafka-2:9404", "kafka-3:9404"]
         labels:
@@ -246,7 +252,13 @@ scrape_configs:
     static_configs:
       - targets: ["n8n:5678"]
         labels:
-          domain: "apps"
+          domain: "workflow"
+
+  - job_name: "airflow-monitor"
+    static_configs:
+      - targets: ["airflow-statsd-exporter:9102"]
+        labels:
+          domain: "workflow"
 
   - job_name: "vault"
     metrics_path: /v1/sys/metrics

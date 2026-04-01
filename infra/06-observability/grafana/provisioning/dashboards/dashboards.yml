@@ -6,7 +6,7 @@ providers:
     folder: 'Infrastructure'
     type: file
     disableDeletion: false
-    editable: true
+    editable: false
     options:
       path: /etc/grafana/dashboards/Infrastructure
 
@@ -15,7 +15,7 @@ providers:
     folder: 'Observability'
     type: file
     disableDeletion: false
-    editable: true
+    editable: false
     options:
       path: /etc/grafana/dashboards/Observability
 
@@ -24,7 +24,7 @@ providers:
     folder: 'Applications'
     type: file
     disableDeletion: false
-    editable: true
+    editable: false
     options:
       path: /etc/grafana/dashboards/Applications
 
@@ -33,7 +33,7 @@ providers:
     folder: 'Gateway'
     type: file
     disableDeletion: false
-    editable: true
+    editable: false
     options:
       path: /etc/grafana/dashboards/Gateway
 
@@ -42,7 +42,7 @@ providers:
     folder: 'Security'
     type: file
     disableDeletion: false
-    editable: true
+    editable: false
     options:
       path: /etc/grafana/dashboards/Security
 
@@ -51,6 +51,6 @@ providers:
     folder: 'Kubernetes'
     type: file
     disableDeletion: false
-    editable: true
+    editable: false
     options:
       path: /etc/grafana/dashboards/Kubernetes
