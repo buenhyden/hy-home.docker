@@ -85,7 +85,7 @@ services:
       N8N_PROTOCOL: https
       N8N_HOST: n8n.${DEFAULT_URL}
       N8N_PORT: ${N8N_PORT:-5678}
-      WEBHOOK_URL: https://n8n.${DEFAULT_URL}
+      WEBHOOK_URL: https://n8n.${DEFAULT_URL}/
       N8N_PUSH_BACKEND: websocket
       N8N_PUBLIC_API_DISABLED: false
       N8N_API_KEY_GENERATED_ENABLED: true
