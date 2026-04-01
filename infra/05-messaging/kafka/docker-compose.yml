@@ -319,7 +319,7 @@ services:
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME: kafka-connect
       KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS: http://kafka-connect:${KAFKA_CONNECT_PORT:-8083}
       DYNAMIC_CONFIG_ENABLED: 'true'
-      KAFBAT_OAUTH_CLIENT_ID: ${OAUTH2_PROXY_CLIENT_ID}
+      KAFBAT_OAUTH_CLIENT_ID: ${KAFBAT_OAUTH_CLIENT_ID}
     volumes:
       - ./kafbat-ui/dynamic_config.template.yaml:/tmp/dynamic_config.template.yaml:ro
     entrypoint:
@@ -328,7 +328,7 @@ services:
       - |
         cat /tmp/dynamic_config.template.yaml > /etc/kafkaui/dynamic_config.yaml
         sed -i "s|PLACEHOLDER_CLIENT_ID|$${KAFBAT_OAUTH_CLIENT_ID}|g" /etc/kafkaui/dynamic_config.yaml
-        sed -i "s|PLACEHOLDER_CLIENT_SECRET|$$(tr -d '\r\n' </run/secrets/oauth2_proxy_client_secret)|g" /etc/kafkaui/dynamic_config.yaml
+        sed -i "s|PLACEHOLDER_CLIENT_SECRET|$$(tr -d '\r\n' </run/secrets/kafbat_client_secret)|g" /etc/kafkaui/dynamic_config.yaml
         exec java --add-opens java.rmi/javax.rmi.ssl=ALL-UNNAMED $${JAVA_OPTS} -jar /api.jar
     labels:
       <<: *tier-label
@@ -350,7 +350,7 @@ services:
       kafka-connect:
         condition: service_healthy
     secrets:
-      - oauth2_proxy_client_secret
+      - kafbat_client_secret
     healthcheck:
       test:
         [

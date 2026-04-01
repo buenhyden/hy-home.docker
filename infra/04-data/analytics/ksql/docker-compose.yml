@@ -41,7 +41,8 @@ services:
     volumes:
       - ksqldb-data-volume:/var/lib/ksql:rw
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.130
     healthcheck:
       test:
         [
@@ -69,7 +70,8 @@ services:
     stdin_open: true
     tty: true
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.132
 
   ksql-datagen:
     profiles:
@@ -92,4 +94,5 @@ services:
       STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
       STREAMS_SCHEMA_REGISTRY_PORT: ${SCHEMA_REGISTRY_PORT:-8081}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.131

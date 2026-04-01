@@ -58,7 +58,8 @@ services:
       retries: 5
       start_period: 15s
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.170
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
@@ -93,7 +94,8 @@ services:
       retries: 5
       start_period: 15s
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.171
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
@@ -116,7 +118,8 @@ services:
     command:
       ['--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all']
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.172
     depends_on:
       mongo-key-generator:
         condition: service_completed_successfully
@@ -136,7 +139,8 @@ services:
     tmpfs:
       - /tmp
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.173
     depends_on:
       mongodb-rep1:
         condition: service_healthy
@@ -186,7 +190,8 @@ services:
       traefik.http.services.mongo-express.loadbalancer.server.port: ${MONGO_EXPRESS_PORT:-8081}
       traefik.http.routers.mongo-express.middlewares: gateway-standard-chain@file
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.174
     depends_on:
       mongo-init:
         condition: service_completed_successfully
@@ -218,4 +223,5 @@ services:
     secrets:
       - mongodb_root_password
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.175

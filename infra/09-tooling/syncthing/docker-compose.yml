@@ -62,4 +62,5 @@ services:
       traefik.http.routers.syncthing.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.syncthing.loadbalancer.server.port: ${SYNCTHING_GUI_PORT:-8384}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.224

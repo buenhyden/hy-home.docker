@@ -39,7 +39,7 @@
    - `secret/data/hy-home/04-data/mng-db` -> `password`
    - `secret/data/hy-home/02-auth/keycloak` -> `db_password`, `admin_username`, `admin_password`
    - `secret/data/hy-home/02-auth/oauth2-proxy` -> `client_secret`, `cookie_secret`
-   - `secret/data/hy-home/06-observability/grafana` -> `admin_password`, `db_password`, `oauth_client_secret`
+   - `secret/data/hy-home/06-observability/grafana` -> `admin_password`, `db_password`, `grafana_client_secret`
 4. 렌더 출력 확인
    - `docker exec vault-agent ls -la /vault/out`
    - 서비스별 파일 존재/권한(0600) 점검

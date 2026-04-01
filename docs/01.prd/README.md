@@ -1,85 +1,76 @@
-# 01. PRD (Product Requirements)
+# Product Requirements Documents (PRD)
 
-> 제품의 목표, 사용자 가치, 그리고 성공 기준을 정의한 문서 저장소
+> 이 경로는 제품 요구사항 정의(Vision, Use Case, Requirements)를 관리한다.
 
 ## Overview
 
-`docs/01.prd/` 경로는 `hy-home.docker` 프로젝트의 모든 기능 및 시스템에 대한 제품 요구사항 문서(PRD)를 관리한다. PRD는 모든 개발 작업의 출발점(SSoT)이며, '무엇을(What)' 개발하고 '왜(Why)' 필요한지에 집중하여 정의한다. 구체적인 구현 방법이나 기술 스택보다는 사용자 가치와 비즈니스 요구사항을 우선적으로 다룬다.
+`docs/01.prd`는 시스템이나 기능의 "Why"와 "What"을 정의하는 문서가 보관되는 장소다. 비즈니스 가치, 사용자 시나리오, 기능적/비기능적 요구사항을 기술하며 모든 설계와 구현의 출발점이 된다.
 
 ## Audience
 
 이 README의 주요 독자:
 
-- Product Managers / Planners
-- Software Architects
 - Developers
-- AI Agents (Context for 'What' and 'Why')
+- Product Owners
+- System Architects
+- AI Agents
 
 ## Scope
 
 ### In Scope
 
-- 시스템 및 기능별 제품 요구사항 정의서 (`YYYY-MM-DD-<name>.md`)
-- 사용자 페르소나 및 유즈케이스 정의
-- 기능적/비기능적 요구사항 및 성공 지표(KPI)
-- 에이전트 동작 요구사항 (Agentic features)
+- 제품 비전 및 목표 정의서
+- 사용자 스토리 및 유즈케이스 명세
+- 기능적 / 비기능적 요구사항 정의 (PRD)
+- 핵심 성공 지표 (KPI/Metrics)
 
 ### Out of Scope
 
-- 상세 아키텍처 설계 (-> `02.ard/`)
-- 기술적 의사결정 기록 (-> `03.adr/`)
-- 상세 기술 명세 및 API 설계 (-> `04.specs/`)
-- 구현 및 검증 계획 (-> `05.plans/`, `06.tasks/`)
+- 상세 기술 설계 (Spec 담당)
+- 아키렉처 참조 모델 (ARD 담당)
+- 상세 구현 코드
+- 운영 및 유지보수 절차
 
 ## Structure
 
 ```text
-01.prd/
-├── 2026-03-26-01-gateway.md    # Gateway Tier 요구사항
-├── 2026-03-26-02-auth.md       # Auth Tier 요구사항
-├── 2026-03-26-03-security.md   # Security Tier 요구사항
-├── 2026-03-26-04-data.md       # Data Tier 요구사항
-├── 2026-03-26-04-data-analytics.md # Analytics Tier 요구사항
-├── 2026-03-26-05-messaging.md  # Messaging Tier 요구사항
-├── 2026-03-26-06-observability.md # Observability Tier 요구사항
-├── 2026-03-26-07-workflow.md    # Workflow Tier 요구사항
-├── 2026-03-26-08-ai.md            # AI Tier 제품 요구사항
-├── 2026-03-27-08-ai-open-webui.md # Open WebUI 제품 요구사항
-├── 2026-03-28-02-auth-optimization-hardening.md # 02-auth 최적화/하드닝 요구사항
-├── 2026-03-28-03-security-optimization-hardening.md # 03-security(Vault) 최적화/하드닝 요구사항
-├── 2026-03-28-04-data-optimization-hardening.md # 04-data 최적화/하드닝 요구사항
-├── 2026-03-28-05-messaging-optimization-hardening.md # 05-messaging 최적화/하드닝 요구사항
-├── 2026-03-28-06-observability-optimization-hardening.md # 06-observability 최적화/하드닝 요구사항
-├── 2026-03-28-07-workflow-optimization-hardening.md # 07-workflow 최적화/하드닝 요구사항
-├── 2026-03-28-08-ai-optimization-hardening.md # 08-ai 최적화/하드닝 요구사항
-├── 2026-03-26-09-tooling.md       # Tooling Tier 제품 요구사항
-├── 2026-03-28-09-tooling-optimization-hardening.md # 09-tooling 최적화/하드닝 요구사항
-├── 2026-03-26-10-communication.md  # Communication Tier 제품 요구사항
-├── 2026-03-26-11-laboratory.md     # Laboratory Tier 제품 요구사항
-├── 2026-03-28-11-laboratory-optimization-hardening.md # 11-laboratory 최적화/하드닝 요구사항
-└── README.md                       # This file
+docs/01.prd/
+├── 2026-03-26-01-gateway-prd.md
+├── 2026-03-26-02-auth-prd.md
+├── 2026-03-26-03-security-prd.md
+├── 2026-03-26-04-data-prd.md
+├── 2026-03-26-05-messaging-prd.md
+├── 2026-03-26-06-observability-prd.md
+├── 2026-03-26-07-workflow-prd.md
+├── 2026-03-26-08-ai-prd.md
+├── 2026-03-26-09-tooling-prd.md
+├── 2026-03-26-10-communication-prd.md
+├── 2026-03-26-11-laboratory-prd.md
+├── 2026-04-01-standardize-infra-net.md  # Latest: infra_net 표준화 요구사항
+└── README.md                               # This file
 ```
 
 ## How to Work in This Area
 
-1. 새 기능을 기획하거나 시스템 요구사항을 정의할 때 `docs/99.templates/prd.template.md`를 복사하여 시작한다.
-2. 파일명은 `YYYY-MM-DD-<feature-name>.md` 형식을 준수한다.
-3. 요구사항 ID(`REQ-PRD-FUN-XX`)를 명확히 부여하여 하위 문서(Spec, Task)에서 추적 가능하게 한다.
-4. 작성이 완료되면 관련 `02.ard/`, `04.specs/` 문서와 상호 참조 링크를 갱신한다.
+1. 새 기능 제안 시 [prd.template.md](../99.templates/prd.template.md)를 사용하여 문서를 생성함.
+2. 상위 비전이나 비즈니스 목표와 일치하는지 검토함.
+3. 문서 상태(`draft`, `approved`, `deprecated`)를 명확히 관리함.
+4. 승인 후에는 관련 `ARD`, `Spec`, `Plan` 문서를 생성하여 추적성을 유지함.
 
 ## Documentation Standards
 
-- 정확히 하나의 의미 있는 H1 제목을 사용한다.
-- 모든 링크는 상대 경로를 사용한다.
-- 구현 세부 사항(Implementation details)은 포함하지 않는다.
-- 상단에 `Overview (KR)` 요약을 반드시 포함한다.
+- 가능한 경우 승인된 템플릿에서 시작한다.
+- 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성한다.
+- 상위 문서와 하위 산출물 간 추적성을 유지한다.
+
+## AI Agent Guidance
+
+1. 이 README를 먼저 읽는다.
+2. 기존 PRD 문서를 확인하여 중복 기능 정의를 피한다.
+3. 요구사항 변경 시 연관된 `Spec`과 `Plan` 문서도 함께 검토하여 불일치를 방지한다.
 
 ## Related References
 
-- [02.ard (Architecture)](../02.ard/README.md)
-- [03.adr (Decisions)](../03.adr/README.md)
-- [04.specs (Specifications)](../04.specs/README.md)
-- [99.templates (Templates)](../99.templates/README.md)
-
----
-*Maintained by Product & Planning Team*
+- **ARD**: [../02.ard/README.md]
+- **Spec**: [../04.specs/README.md]
+- **Plan**: [../05.plans/README.md]

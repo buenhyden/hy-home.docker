@@ -48,7 +48,8 @@ services:
       traefik.http.services.ollama.loadbalancer.server.port: ${OLLAMA_PORT:-11434}
       traefik.http.routers.ollama.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.201
     healthcheck:
       test: ['CMD-SHELL', 'ollama list >/dev/null 2>&1 || exit 1']
       interval: 30s
@@ -72,7 +73,8 @@ services:
     expose:
       - '${OLLAMA_EXPORTER_PORT:-8000}'
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.211
     labels:
       <<: *tier-label
     depends_on:

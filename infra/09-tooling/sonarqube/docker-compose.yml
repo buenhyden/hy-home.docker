@@ -42,7 +42,8 @@ services:
       - sonarqube-data-volume:/opt/sonarqube/data:rw
       - sonarqube-logs-volume:/opt/sonarqube/logs:rw
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.223
     secrets: [sonarqube_db_password]
     environment:
       - SONAR_JDBC_URL=jdbc:postgresql://${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/${SONARQUBE_DBNAME}

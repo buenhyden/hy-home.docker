@@ -22,7 +22,8 @@ services:
     volumes:
       - seaweedfs-master-data:/data:rw
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.140
     healthcheck:
       test:
         [
@@ -61,7 +62,8 @@ services:
       seaweedfs-master:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.141
     healthcheck:
       test:
         [
@@ -102,7 +104,8 @@ services:
       traefik.http.services.cdn.loadbalancer.server.port: ${SEAWEEDFS_FILER_HTTP_PORT:-8888}
       traefik.http.routers.cdn.middlewares: gateway-standard-chain@file
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.142
     healthcheck:
       test:
         [
@@ -137,7 +140,8 @@ services:
       seaweedfs-filer:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.143
     healthcheck:
       test:
         [
@@ -162,7 +166,8 @@ services:
       - SYS_ADMIN
     command: '-v=4 mount -filer="seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888}" -dirAutoCreate -dir=/mnt/seaweedfs -cacheCapacityMB=100 -concurrentWriters=128'
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.144
     depends_on:
       seaweedfs-master:
         condition: service_healthy

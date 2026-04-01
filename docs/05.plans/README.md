@@ -1,86 +1,77 @@
-# 05. plans
+# Execution Plans
 
-> 프로젝트의 실행 계획(Implementation Plan)과 마일스톤을 관리하는 저장소
+> 이 경로는 실행 계획 및 마일스톤(Work Breakdown, Risks)을 관리한다.
 
 ## Overview
 
-`docs/05.plans/` 경로는 `hy-home.docker` 에코시스템의 모든 작업 단위에 대한 구체적인 실행 계획서들을 관리한다. 각 계획서는 특정 기능의 구현이나 시스템 변경이 어떤 순서로 진행되는지, 발생 가능한 위험은 무엇인지, 그리고 완료를 어떻게 검증할 것인지를 상세히 기술하여 작업의 가시성과 안정성을 확보한다.
+`docs/05.plans`는 특정 기능의 개발이나 인프라 수정 작업의 구체적인 실행 계획을 보관한다. 작업 단계(Phases), 예상 일정, 리스크 관리 및 자원 할당 등 구현에 필요한 로드맵을 정의하여 실행의 신뢰성을 확보한다.
 
 ## Audience
 
 이 README의 주요 독자:
 
-- Project Managers / Leads
-- Developers (Execution reference)
-- QA Engineers (Verification criteria)
-- AI Agents (Step-by-step task orchestration)
+- Project Managers
+- Developers
+- System Architects
+- AI Agents
 
 ## Scope
 
 ### In Scope
 
-- 기능/시스템별 실행 계획서 (`YYYY-MM-DD-<name>.md`)
-- 작업 분해 구조 (Work Breakdown Structure, WBS)
-- 검증 계획 (Verification Plan) 및 마일스톤
-- 위험 요소 및 완화 전략 (Risks & Mitigations)
+- 프로젝트별 상세 작업 분할 구조 (WBS)
+- 마일스톤 및 주요 일정 계획 (Phases)
+- 리스크 식별 및 완화 전략 (Mitigation)
+- 네트워크 및 서비스 수정 실행 계획 (Plan)
 
 ### Out of Scope
 
-- 상위 요구사항 정의 (-> `01.prd/`)
-- 아키텍처 참조 모델 (-> `02.ard/`)
-- 실제 구현 완료 증적 기록 (-> `06.tasks/`)
-- 운영 중 발생한 사건 기록 (-> `10.incidents/`)
+- 상세 설계 명세 (Spec 담당)
+- 실제 구현 작업 내역 (Task 담당)
+- 중장기 전략 로드맵 (Roadmap 담당)
+- 운영 정책 및 통제 (Operations 담당)
 
 ## Structure
 
 ```text
-05.plans/
-├── 2026-03-26-01-gateway-standardization.md    # Gateway 문서 표준화 계획
-├── 2026-03-26-02-auth-standardization.md       # Auth 문서 표준화 계획
-├── 2026-03-26-03-security-standardization.md   # Security 문서 표준화 계획
-├── 2026-03-26-04-data-standardization.md       # Data 문서 표준화 계획
-├── 2026-03-26-05-messaging-standardization.md  # Messaging 문서 표준화 계획
-├── 2026-03-26-06-observability-standardization.md # Observability 문서 표준화 계획
-├── 2026-03-26-08-ai-standardization.md      # AI Tier 표준화 계획
-├── 2026-03-27-08-ai-open-webui-plan.md     # Open WebUI 실행 계획
-├── 2026-03-27-infra-service-optimization-priority-plan.md # 인프라 최적화 우선순위 통합 실행 계획
-├── 2026-03-28-01-gateway-optimization-hardening-plan.md # 01-gateway 최적화/하드닝 실행 계획
-├── 2026-03-28-02-auth-optimization-hardening-plan.md # 02-auth 최적화/하드닝 실행 계획
-├── 2026-03-28-03-security-optimization-hardening-plan.md # 03-security(Vault) 최적화/하드닝 실행 계획
-├── 2026-03-28-04-data-optimization-hardening-plan.md # 04-data 최적화/하드닝 실행 계획
-├── 2026-03-28-05-messaging-optimization-hardening-plan.md # 05-messaging 최적화/하드닝 실행 계획
-├── 2026-03-28-06-observability-optimization-hardening-plan.md # 06-observability 최적화/하드닝 실행 계획
-├── 2026-03-28-07-workflow-optimization-hardening-plan.md # 07-workflow 최적화/하드닝 실행 계획
-├── 2026-03-28-08-ai-optimization-hardening-plan.md # 08-ai 최적화/하드닝 실행 계획
-├── 2026-03-26-09-tooling-standardization.md # Tooling Tier 표준화 계획
-├── 2026-03-28-09-tooling-optimization-hardening-plan.md # 09-tooling 최적화/하드닝 실행 계획
-├── 2026-03-26-10-communication-standardization.md # Communication 문서 표준화 계획
-├── 2026-03-26-11-laboratory-standardization.md # Laboratory 문서 표준화 계획
-├── 2026-03-28-11-laboratory-optimization-hardening-plan.md # 11-laboratory 최적화/하드닝 실행 계획
-└── README.md                                 # This file
+docs/05.plans/
+├── 2026-03-26-01-gateway-plan.md
+├── 2026-03-26-02-auth-plan.md
+├── 2026-03-26-03-security-plan.md
+├── 2026-03-26-04-data-plan.md
+├── 2026-03-26-05-messaging-plan.md
+├── 2026-03-26-06-observability-plan.md
+├── 2026-03-26-07-workflow-plan.md
+├── 2026-03-26-08-ai-plan.md
+├── 2026-03-26-09-tooling-plan.md
+├── 2026-03-26-10-communication-plan.md
+├── 2026-03-26-11-laboratory-plan.md
+├── 2026-04-01-standardize-infra-net.md  # Latest: infra_net 표준화 실행 계획
+└── README.md                               # This file
 ```
 
 ## How to Work in This Area
 
-1. 새로운 작업을 시작하거나 대규모 변경을 계획할 때 `docs/99.templates/plan.template.md`를 복사하여 작성한다.
-2. 파일명은 `YYYY-MM-DD-<feature-name>.md` 형식을 준수한다.
-3. 모든 계획서에는 명확한 **검증 기준(Verification Criteria)**이 포함되어야 한다.
-4. 작업 진행 상황에 따라 계획서의 완료 기준(Completion Criteria) 항목을 체크하여 상태를 표시한다.
+1. 구현 전 [plan.template.md](../99.templates/plan.template.md)를 활용하여 작업 계획을 수립함.
+2. 각 단계가 상세 명세(Spec)를 충분히 반영하고 있는지 확인함.
+3. 문서 상태(`refining`, `approved`, `completed`)를 명확히 관리함.
+4. 예기치 않은 이슈 발생 시 계획을 수정하고 히스토리를 남김.
 
 ## Documentation Standards
 
-- 모든 활성 계획(Active Plan)은 명시적인 검증 명령어나 방법을 포함해야 한다.
-- 실행 순서, 위험 제어, 롤아웃 전략이 상세히 기술되어야 한다.
-- 상위 PRD/ARD/Spec 문서와의 연결 고리를 명확히 한다.
+- 가능한 경우 승인된 템플릿에서 시작한다.
+- 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성한다.
+- 상위 문서와 하위 산출물 간 추적성을 유지한다.
+
+## AI Agent Guidance
+
+1. 이 README를 먼저 읽는다.
+2. 실행 전 계획 단계에서 정의된 작업 분할(WBS)과 리스크 요인을 반드시 숙지한다.
+3. 작업 수행 중 계획에서 벗어난 상황이 발생하면 계획 문서를 즉시 업데이트한다.
 
 ## Related References
 
-- [01.prd (Requirements)](../01.prd/README.md)
-- [04.specs (Specifications)](../04.specs/README.md)
-- [06.tasks (Tasks)](../06.tasks/README.md)
-- [08.operations (Operational Policy)](../08.operations/README.md)
-- [09.runbooks (Operational Procedures)](../09.runbooks/README.md)
-- [99.templates (Templates)](../99.templates/README.md)
-
----
-*Maintained by Project Management Team*
+- **PRD**: [../01.prd/README.md]
+- **Spec**: [../04.specs/README.md]
+- **Task**: [../06.tasks/README.md]
+- **ADR**: [../03.adr/README.md]

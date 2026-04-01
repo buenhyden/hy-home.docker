@@ -267,8 +267,8 @@ services:
       GF_AUTH_GENERIC_OAUTH_LOGIN_ATTRIBUTE_PATH: 'preferred_username'
       GF_AUTH_GENERIC_OAUTH_EMAIL_ATTRIBUTE_PATH: 'email'
       GF_AUTH_GENERIC_OAUTH_NAME_ATTRIBUTE_PATH: 'name'
-      GF_AUTH_GENERIC_OAUTH_CLIENT_ID: ${OAUTH2_PROXY_CLIENT_ID}
-      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE: /run/secrets/oauth2_proxy_client_secret
+      GF_AUTH_GENERIC_OAUTH_CLIENT_ID: ${GRAFANA_PROXY_CLIENT_ID}
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE: /run/secrets/grafana_client_secret
       GF_AUTH_GENERIC_OAUTH_SCOPES: 'openid profile email offline_access groups'
       GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE: 'true'
       GF_DATAPROXY_TIMEOUT: 300
@@ -304,7 +304,7 @@ services:
       - grafana-data:/var/lib/grafana:rw
     secrets:
       - grafana_admin_password
-      - oauth2_proxy_client_secret
+      - grafana_client_secret
     depends_on:
       prometheus:
         condition: service_healthy

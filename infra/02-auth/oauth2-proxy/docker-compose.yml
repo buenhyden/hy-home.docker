@@ -1,13 +1,13 @@
 x-tier-label: &tier-label
   hy-home.tier: auth
 
-# volumes:
-#   oauth2-proxy-valkey-data:
-#     driver: local
-#     driver_opts:
-#       o: bind
-#       type: none
-#       device: ${DEFAULT_AUTH_DIR}/valkey
+volumes:
+  oauth2-proxy-valkey-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_AUTH_DIR}/valkey
 
 services:
   oauth2-proxy:
@@ -25,7 +25,7 @@ services:
     environment:
       - SSL_CERT_FILE=/etc/ssl/certs/rootCA.pem
       - OAUTH2_PROXY_SESSION_STORE_TYPE=redis
-      - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://mng-valkey:6379
+      - OAUTH2_PROXY_REDIS_CONNECTION_URL=redis://oauth2-proxy-valkey:6379
       - OAUTH2_PROXY_CLIENT_ID=${OAUTH2_PROXY_CLIENT_ID}
       - OAUTH2_PROXY_OIDC_ISSUER_URL=https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
       - OAUTH2_PROXY_REDIRECT_URL=https://auth.${DEFAULT_URL}/oauth2/callback
@@ -35,7 +35,7 @@ services:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
     secrets:
-      - mng_valkey_password
+      - oauth2_valkey_password
       - oauth2_proxy_client_secret
       - oauth2_proxy_cookie_secret
     labels:
@@ -65,77 +65,82 @@ services:
       - 'keycloak.${DEFAULT_URL}:host-gateway'
       - 'auth.${DEFAULT_URL}:host-gateway'
 
-  # oauth2-proxy-valkey:
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '0.5'
-  #         memory: 256M
-  #   image: valkey/valkey:9.0.1-alpine # Valkey 9.0.x
-  #   container_name: oauth2-proxy-valkey
-  #   secrets:
-  #     - oauth2_valkey_password
-  #   networks:
-  #     - infra_net
-  #   restart: unless-stopped
-  #   volumes:
-  #     # 공통 valkey.conf
-  #     - oauth2-proxy-valkey-data:/data
-  #   command: >
-  #     sh -c '
-  #     valkey-server
-  #     --requirepass "$(cat /run/secrets/oauth2_valkey_password)"
-  #     --appendonly yes
-  #     --port 6379
-  #     '
-  #   # 클러스터 내부 통신 포트는 expose
-  #   expose:
-  #     - '${VALKEY_PORT}'
-  #     - '${VALKEY_BUS_PORT}'
-  #   healthcheck:
-  #     test:
-  #       [
-  #         'CMD-SHELL',
-  #         'V_PASS=$$(cat /run/secrets/oauth2_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p 6379 ping | grep PONG',
-  #       ]
-  #     interval: 15s
-  #     timeout: 30s
-  #     retries: 5
-  #     start_period: 15s
-  #   labels:
-  #     <<: *tier-label
+  oauth2-proxy-valkey:
+    profiles:
+      - core
+      - auth
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
+    image: valkey/valkey:9.0.2-alpine
+    container_name: oauth2-proxy-valkey
+    user: '999:999'
+    secrets:
+      - oauth2_valkey_password
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.5
+    restart: unless-stopped
+    volumes:
+      # 공통 valkey.conf
+      - oauth2-proxy-valkey-data:/data
+    command: >
+      sh -c '
+      valkey-server
+      --requirepass "$(cat /run/secrets/oauth2_valkey_password)"
+      --appendonly yes
+      --port 6379
+      '
+    expose:
+      - '${VALKEY_PORT:-6379}'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'V_PASS=$$(cat /run/secrets/oauth2_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p ${VALKEY_PORT:-6379} ping | grep PONG',
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
 
-  # oauth2-proxy-valkey-exporter:
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '0.1'
-  #         memory: 128M
-  #   image: oliver006/redis_exporter:v1.80.1-alpine
-  #   container_name: oauth2-proxy-redis-exporter
-  #   expose:
-  #     - '${VALKEY_EXPORTER_PORT}'
-  #   networks:
-  #     - infra_net
-  #   restart: unless-stopped
-  #   secrets:
-  #     - oauth2_valkey_password
-  #   entrypoint:
-  #     - /bin/sh
-  #     - -c
-  #   command:
-  #     - |
-  #       echo "Reading password from secret..."
-  #       export VALKEY_PASSWORD=$(cat /run/secrets/oauth2_valkey_password | tr -d '\n')
+  oauth2-proxy-valkey-exporter:
+    profiles:
+      - core
+      - auth
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: oliver006/redis_exporter:v1.80.1-alpine
+    container_name: oauth2-proxy-redis-exporter
+    expose:
+      - '${VALKEY_EXPORTER_PORT:-9121}'
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.6
+    restart: unless-stopped
+    secrets:
+      - oauth2_valkey_password
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        echo "Reading password from secret..."
+        export VALKEY_PASSWORD=$(cat /run/secrets/oauth2_valkey_password | tr -d '\n')
 
-  #       echo "Starting Valkey Exporter..."
-  #       # -redis.password-file 대신 -redis.password 사용
-  #       exec /redis_exporter \
-  #         -redis.addr=redis://oauth2-proxy-valkey:6379 \
-  #         -redis.password="$VALKEY_PASSWORD" \
-  #         -web.listen-address=:${VALKEY_EXPORTER_PORT}
-  #   depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
-  #     oauth2-proxy-valkey:
-  #       condition: service_healthy
-  #   labels:
-  #     <<: *tier-label
+        echo "Starting Valkey Exporter..."
+        # -redis.password-file 대신 -redis.password 사용
+        exec /redis_exporter \
+          -redis.addr=redis://oauth2-proxy-valkey:6379 \
+          -redis.password="$$VALKEY_PASSWORD" \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT}
+    depends_on: # healthcheck를 사용하므로 condition으로 변경 (더 안정적)
+      oauth2-proxy-valkey:
+        condition: service_healthy
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'

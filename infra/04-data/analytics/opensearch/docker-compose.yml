@@ -57,7 +57,8 @@ services:
       - ./opensearch/config/opensearch.yml:/usr/share/opensearch/config/opensearch.yml:ro
       - ./opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.70
     healthcheck:
       test:
         [
@@ -86,9 +87,9 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     image: opensearchproject/opensearch-dashboards:3.5.0
-    container_name: opensearch-dashboards
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.71
     expose:
       - '${KIBANA_PORT:-5601}'
     volumes:

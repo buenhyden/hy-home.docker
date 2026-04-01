@@ -36,7 +36,8 @@ services:
       cassandra-node1:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.151
     volumes:
       - cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf:rw
     command: java -jar ./cassandra_exporter.jar ./conf/config.yml
@@ -57,7 +58,8 @@ services:
       - ${CASSANDRA_INTER_NODE_PORT:-7000}
       - ${CASSANDRA_CLIENT_PORT:-9042}
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.150
     environment:
       - CASSANDRA_SEEDS=cassandra-node1
       - CASSANDRA_PASSWORD_SEEDER=yes

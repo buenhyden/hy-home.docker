@@ -1,65 +1,76 @@
-# 08.operations
+# Operations Policies
 
-## 목적
+> 이 경로는 시스템 운영 정책 및 거버넌스(Controls, Policy, Monitoring)를 관리한다.
 
-이 폴더는 운영 정책(Operations Policy)과 공통 기준을 저장한다. 이곳의 문서는 무엇을 허용하고 금지하는지, 어떤 기준과 통제를 지켜야 하는지를 정의한다.
+## Overview
 
-## 문서 책임
+`docs/08.operations`는 시스템의 안정적인 운영과 보안을 보장하기 위한 정책 문서를 보관한다. 기술적인 세부 사항보다는 통제 기준, 승인 프로세스, 예외 처리 및 법규 준수 등을 정의한다.
 
-- 운영 기준과 통제 정의
-- 환경 및 배포 승격 조건 정의
-- 보안·로그·증적·보존 기준 정의
-- AI Agent 변경 통제 정의
+## Audience
 
-## 포함할 내용
+이 README의 주요 독자:
 
-- 운영 정책
-- SLO/SLI 기준
-- 보안 기준
-- 배포 승격 기준
-- 로그/증적/보존 정책
-- 모델/프롬프트 변경 관리 정책
-- 예외 승인 절차
+- Operators
+- Security Officers
+- System Architects
+- AI Agents
 
-## 포함하지 말아야 할 내용
+## Scope
 
-- 실제 명령 절차
-- 장애 타임라인
-- 근본 원인 분석
-- 온보딩 또는 how-to 설명
+### In Scope
 
-위 내용은 각각 `09.runbooks/`, `10.incidents/`, `11.postmortems/`, `07.guides/`로 분리한다.
+- 권한 및 계정 관리 정책
+- 자원 할당 및 백업 정책
+- 보안 및 암호화 거버넌스
+- 네트워크 IP 할당 및 관리 정책 (Operation)
 
-## Agent 운영 정책 예시
+### Out of Scope
 
-- Model/Prompt 변경 프로세스
-- Eval·Guardrail 통과 기준
-- Safety Incident 임계값
-- Trace/Log 보존 기준
+- 실시간 장애 복구 단계 (Runbook 담당)
+- 일반적인 사용자 사용법 (Guide 담당)
+- 상세 설계 명세 (Spec 담당)
+- 특정 사고의 사후 분석 (Postmortem 담당)
 
-## Traceability Links
+## Structure
 
-- [05.plans (Implementation Plan Index)](../05.plans/README.md)
-- [09.runbooks (Operational Procedure Index)](../09.runbooks/README.md)
+```text
+docs/08.operations/
+├── 01-gateway/
+├── 02-auth/
+├── 03-security/
+├── 04-data/
+├── 05-messaging/
+├── 06-observability/
+├── 07-workflow/
+├── 08-ai/
+├── 09-tooling/
+├── 10-communication/
+├── 11-laboratory/
+├── standardize-infra-net.md  # Latest: infra_net 운영 정책
+└── README.md                 # This file
+```
 
-## Tier Index
+## How to Work in This Area
 
-| Tier | Description |
-| :--- | :--- |
-| [12-infra-service-optimization-catalog](./12-infra-service-optimization-catalog.md) | Cross-tier optimization and expansion recommendations for all infra services |
-| [13-common-optimizations-template-exceptions](./13-common-optimizations-template-exceptions.md) | Official exception registry policy for common optimization templates |
-| [01-gateway](./01-gateway/README.md) | Ingress and traffic management |
-| [02-auth](./02-auth/README.md) | Identity and access control (hardening + degraded-mode policy updated) |
-| [03-security](./03-security/README.md) | Vault hardening policy, phased auto-unseal/remote-audit adoption |
-| [04-data](./04-data/README.md) | Database persistence, backups, lake/object storage policies, and hardening baseline |
-| [05-messaging](./05-messaging/README.md) | Event streaming and message brokering policies (updated: 2026-03-28 optimization hardening) |
-| [06-observability](./06-observability/README.md) | Retention, alerting, and LGTM stack governance (updated: 2026-03-28 optimization hardening) |
-| [07-workflow](./07-workflow/README.md) | Workflow orchestration and automation policies (updated: 2026-03-28 optimization hardening) |
-| [08-ai](./08-ai/README.md) | AI model inference and RAG governance (updated: 2026-03-28 optimization hardening) |
-| [09-tooling](./09-tooling/README.md) | DevOps and automation governance (updated: 2026-03-28 optimization hardening) |
-| [10-communication](./10-communication/README.md) | External communication and mail policies |
-| [11-laboratory](./11-laboratory/README.md) | Laboratory management and experimental service governance (updated: 2026-03-28 optimization hardening) |
+1. 정책 제안 시 [operation.template.md](../99.templates/operation.template.md)를 활용함.
+2. 적용 범위(Applies To)와 통제 항목(Controls)을 명확히 정의함.
+3. 문서 상태(`proposed`, `enforced`, `archived`)를 관리함.
+4. 주기적인 점검(Review Cadence) 주기를 명시하여 실효성을 확보함.
 
-## Templates
+## Documentation Standards
 
-- `../99.templates/operation.template.md`
+- 가능한 경우 승인된 템플릿에서 시작한다.
+- 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성한다.
+- 상위 문서와 하위 산출물 간 추적성을 유지한다.
+
+## AI Agent Guidance
+
+1. 이 README를 먼저 읽는다.
+2. 인프라 변경 시 이 영역의 운영 정책에 위배되지 않는지 사전에 검토한다.
+3. 정책 준수 여부를 정기적으로 확인하고 위반 사례가 있을 경우 보고한다.
+
+## Related References
+
+- **ARD**: [../02.ard/README.md]
+- **Runbook**: [../09.runbooks/README.md]
+- **Postmortem**: [../11.postmortems/README.md]

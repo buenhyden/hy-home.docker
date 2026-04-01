@@ -29,7 +29,7 @@
     - `04-data/mng-db`: `password`
     - `02-auth/keycloak`: `db_password`, `admin_username`, `admin_password`
     - `02-auth/oauth2-proxy`: `client_secret`, `cookie_secret`
-    - `06-observability/grafana`: `admin_password`, `db_password`, `oauth_client_secret`
+    - `06-observability/grafana`: `admin_password`, `db_password`, `grafana_client_secret`
 - **Governance Contract**:
   - `scripts/check-security-hardening.sh`를 CI `security-hardening` job으로 강제한다.
   - `scripts/check-auth-hardening.sh`는 최신 02-auth 계약 기준으로 유지한다.

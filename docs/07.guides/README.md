@@ -1,63 +1,77 @@
-# 07.guides
+# System Guides
 
-## 목적
+> 이 경로는 시스템 가이드(Onboarding, How-to, Style-Guide)를 관리한다.
 
-이 폴더는 how-to, 온보딩, 사용 가이드, 스타일 가이드를 저장한다. Guide는 이해와 사용을 돕는 문서이지, 운영 정책이나 장애 대응 절차를 담는 문서가 아니다.
+## Overview
 
-## 문서 책임
+`docs/07.guides`는 프로젝트의 사용자와 관리자가 시스템을 올바르게 이해하고 작업을 수행하는 데 필요한 지침을 제공한다. 단계별 절차와 예제, 모범 사례를 포함하여 지식의 전파를 돕는다.
 
-- 독자가 반복 가능한 방법으로 작업을 수행하도록 돕는다.
-- 시스템, 기능, 도구 사용법을 설명한다.
-- 흔한 실수와 준비 조건을 정리한다.
+## Audience
 
-## Guide 타입
+이 README의 주요 독자:
 
-- onboarding
-- how-to
-- style-guide
-- troubleshooting-guide
-- system-guide
+- Developers
+- Operators
+- Contributors
+- AI Agents
 
-## 포함할 내용
+## Scope
 
-- 대상 독자
-- 선행 조건
-- 단계별 절차
-- 흔한 실수
-- 관련 Spec/Operation/Runbook 링크
+### In Scope
 
-## 포함하지 말아야 할 내용
+- 서비스별 초기 설정 및 온보딩 가이드 (Onboarding)
+- 특정 작업 수행을 위한 단계별 매뉴얼 (How-to)
+- 코드 스타일 또는 문서 작성 표준 (Style-Guide)
+- 일반적인 장애 및 이슈 해결 지침 (Troubleshooting-Guide)
+- 네트워크 표준화 구현 가이드 (Guide)
 
-- 조직 공통 정책
-- 운영 통제 기준
-- 실시간 사고 대응 절차
-- 사고 사후 원인 분석
+### Out of Scope
 
-위 내용은 각각 `08.operations/`, `09.runbooks/`, `11.postmortems/`로 분리한다.
+- 실시간 장애 복구 절차 (Runbook 담당)
+- 공식 운영 정책 (Operations 담당)
+- 상세 제품 요구사항 (PRD 담당)
+- 시스템 구현 명세 (Spec 담당)
 
-## 배치 규칙
+## Structure
 
-- 일반 가이드는 `07.guides/####-<topic>.md`
-- 장기 유지 가이드는 날짜 없이 주제명 기반 파일명을 사용할 수 있다.
+```text
+docs/07.guides/
+├── 01-gateway/
+├── 02-auth/
+├── 03-security/
+├── 04-data/
+├── 05-messaging/
+├── 06-observability/
+├── 07-workflow/
+├── 08-ai/
+├── 09-tooling/
+├── 10-communication/
+├── 11-laboratory/
+├── 0012-standardize-infra-net.md  # Latest: infra_net 표준 구현 가이드
+└── README.md                       # This file
+```
 
-## Tier Guides
+## How to Work in This Area
 
-이 프로젝트의 인프라 계층별 가이드 목록이다.
+1. 새로운 가이드 작성 시 [guide.template.md](../99.templates/guide.template.md)를 상속받음.
+2. 대상 독자(Audience)를 명확히 정의하고 눈높이에 맞게 서술함.
+3. 문서 상태(`draft`, `stable`, `archived`)를 관리함.
+4. 예제 코드와 스크린샷 덤프 등 시각적 자료를 충실히 활용함.
 
-- [01-gateway](./01-gateway/README.md)
-- [02-auth](./02-auth/README.md) (updated: 2026-03-28 optimization hardening)
-- [03-security](./03-security/README.md) (updated: 2026-03-28 vault optimization hardening)
-- [04-data](./04-data/README.md) (updated: 2026-03-28 optimization hardening)
-  - [lake-and-object](./04-data/lake-and-object/README.md)
-- [05-messaging](./05-messaging/README.md) (updated: 2026-03-28 optimization hardening)
-- [06-observability](./06-observability/README.md) (updated: 2026-03-28 optimization hardening)
-- [07-workflow](./07-workflow/README.md) (updated: 2026-03-28 optimization hardening)
-  - [airbyte](./07-workflow/airbyte.md)
-- [08-ai](./08-ai/README.md) (updated: 2026-03-28 optimization hardening)
-- [09-tooling](./09-tooling/README.md) (updated: 2026-03-28 optimization hardening)
-- [10-communication](./10-communication/README.md)
-- [11-laboratory](./11-laboratory/README.md) (updated: 2026-03-28 optimization hardening)
+## Documentation Standards
 
-## Templates
+- 가능한 경우 승인된 템플릿에서 시작한다.
+- 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성한다.
+- 상위 문서와 하위 산출물 간 추적성을 유지한다.
 
-- `../99.templates/guide.template.md`
+## AI Agent Guidance
+
+1. 이 README를 먼저 읽는다.
+2. 특정 작업을 요청받았을 때, 이 가이드 문서를 먼저 검색하여 표준화된 절차를 따른다.
+3. 가이드 문서의 절차가 최신 상태가 아니라고 판단될 경우 즉시 갱신을 제안한다.
+
+## Related References
+
+- **Spec**: [../04.specs/README.md]
+- **Operation**: [../08.operations/README.md]
+- **Runbook**: [../09.runbooks/README.md]

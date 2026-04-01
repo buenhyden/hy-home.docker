@@ -32,7 +32,8 @@ services:
     volumes:
       - locust-data:/mnt/locust:rw
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.250
     secrets:
       - influxdb_api_token
     command: >
@@ -69,7 +70,8 @@ services:
     volumes:
       - locust-data:/mnt/locust:rw
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.253
     secrets:
       - influxdb_api_token
     command: >

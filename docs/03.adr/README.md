@@ -1,84 +1,76 @@
-# 03. ADR (Architecture Decision Records)
+# Architecture Decision Records (ADR)
 
-> 프로젝트의 중요한 기술적/아키텍처적 의사결정의 배경과 결과를 기록하는 저장소
+> 이 경로는 기술적 의사결정 기록(Decision, Status, Context, Consequence)을 관리한다.
 
 ## Overview
 
-`docs/03.adr/` 경로는 `hy-home.docker` 프로젝트에서 이루어진 주요 기술적 결정 사항들을 관리한다. ADR은 단순한 결과 기록이 아니라, "왜(Why)" 해당 결정을 내렸는지, 어떤 대안(Alternatives)이 있었는지, 그리고 그로 인한 결과(Consequences)가 무엇인지를 투명하게 공개하여 프로젝트의 아키텍처적 무결성을 유지하고 지식 전파를 돕는다.
+`docs/03.adr`은 프로젝트 전반의 아키텍처 및 기술 스택 선택에 대한 결정 과정을 기록한다. 왜 특정 기술을 선택했는지, 어떤 대안이 있었는지, 그리고 그 결정에 따른 결과가 무엇인지 투명하게 공유하여 히스토리 관리를 용이하게 한다.
 
 ## Audience
 
 이 README의 주요 독자:
 
-- Architects & Lead Engineers
-- New Team Members (Onboarding)
-- Documentation Writers
-- AI Agents (Historical context and decision constraints)
+- System Architects
+- Developers
+- Reviewers
+- AI Agents
 
 ## Scope
 
 ### In Scope
 
-- 아키텍처 결정 기록문 (`####-<name>.md`)
-- 결정의 맥락(Context) 및 비즈니스/기술적 배경
-- 고려된 대안 및 각 대안의 장단점 분석
-- 결정에 따른 긍정적 효과 및 트레이드 오프(Trade-offs)
+- 주요 프레임워크 및 라이브러리 선정 결정
+- 시스템 통신 프로토콜 결정
+- 데이터베이스 엔진 및 스키마 설계 원칙
+- 네트워크 표준화 정책 결정 (ADR)
 
 ### Out of Scope
 
-- 제품 요구사항 (-> `01.prd/`)
-- 시스템 아키텍처 참조 모델 (-> `02.ard/`)
-- 세부 구현 명세서 (-> `04.specs/`)
-- 일시적이거나 사소한 코드 수준의 결정
+- 상세 규격서 (Spec 담당)
+- 단순한 코드 변경 로그
+- 일반적인 가이드 문서
+- 일시적인 트러블슈팅 기록
 
 ## Structure
 
 ```text
-03.adr/
-├── 0001-traefik-nginx-hybrid.md         # Gateway 하이브리드 구성 결정
-├── 0002-keycloak-oauth2-proxy-choice.md # Auth 티어 기술 스택 선택
-├── 0003-vault-as-secrets-manager.md     # Security 티어 비밀 정보 관리 결정
-├── 0004-postgresql-ha-patroni.md        # Data 티어 HA 솔루션 선택
-├── 0005-kafka-vs-rabbitmq-selection.md  # Messaging 티어 기술 스택 선택
-├── 0006-lgtm-stack-selection.md         # Observability 기술 스택 선택
-├── 0007-airflow-n8n-hybrid-workflow.md  # Workflow 티어 기술 스택 선택
-├── 0008-ai-services.md               # AI Tier 서비스 선정
-├── 0009-tooling-services.md          # Tooling Tier 서비스 선정
-├── 0010-communication-services.md     # Communication Tier 서비스 선정
-├── 0011-laboratory-services.md        # Laboratory Tier 서비스 선정
-├── 0015-analytics-engine-selection.md # Analytics Tier 서비스 선정
-├── 0016-open-webui-implementation.md # Open WebUI 구현 결정
-├── 0017-auth-hardening-runtime-and-fail-closed.md # 02-auth 런타임 하드닝/Fail-closed 결정
-├── 0018-vault-hardening-and-ha-expansion-strategy.md # 03-security 단계적 하드닝/HA 확장 전략 결정
-├── 0019-04-data-hardening-and-ha-expansion-strategy.md # 04-data 단계적 하드닝/확장 전략 결정
-├── 0020-messaging-hardening-and-ha-expansion-strategy.md # 05-messaging 단계적 하드닝/확장 전략 결정
-├── 0021-observability-hardening-and-ha-expansion-strategy.md # 06-observability 단계적 하드닝/확장 전략 결정
-├── 0022-workflow-hardening-and-ha-expansion-strategy.md # 07-workflow 단계적 하드닝/확장 전략 결정
-├── 0023-ai-hardening-and-ha-expansion-strategy.md # 08-ai 단계적 하드닝/확장 전략 결정
-├── 0024-tooling-hardening-and-ha-expansion-strategy.md # 09-tooling 단계적 하드닝/확장 전략 결정
-├── 0025-laboratory-hardening-and-ha-expansion-strategy.md # 11-laboratory 단계적 하드닝/확장 전략 결정
-└── README.md                            # This file
+docs/03.adr/
+├── 2026-03-26-01-gateway-adr.md
+├── 2026-03-26-02-auth-adr.md
+├── 2026-03-26-03-security-adr.md
+├── 2026-03-26-04-data-adr.md
+├── 2026-03-26-05-messaging-adr.md
+├── 2026-03-26-06-observability-adr.md
+├── 2026-03-26-07-workflow-adr.md
+├── 2026-03-26-08-ai-adr.md
+├── 2026-03-26-09-tooling-adr.md
+├── 2026-03-26-10-communication-adr.md
+├── 2026-03-26-11-laboratory-adr.md
+├── 2026-04-01-standardize-infra-net.md  # Latest: infra_net 표준화 결정 기록
+└── README.md                               # This file
 ```
 
 ## How to Work in This Area
 
-1. 중대한 기술적 변경이나 아키텍처 결정이 필요할 때 `docs/99.templates/adr.template.md`를 사용한다.
-2. 파일명은 `####-<short-title>.md` 순차 번호 형식을 유지한다. (예: `0001-choice-of-db.md`)
-3. 한 문서 당 하나의 결정 사항만 다룬다.
-4. 결정 상태(Status: Proposed, Accepted, Deprecated, Superseded)를 명확히 관리한다 (필요 시 YAML Frontmatter 활용).
+1. 기술적 대안 비교 및 결정이 필요할 때 [adr.template.md](../99.templates/adr.template.md)를 활용함.
+2. 각 ADR은 하나의 독립된 결정을 다뤄야 함.
+3. 문서 상태(`proposed`, `accepted`, `deprecated`, `superseded`)를 명확히 함.
+4. 결정된 사항은 `ARD` 또는 `Spec`에 반영하여 정합성을 유지함.
 
 ## Documentation Standards
 
-- 결정을 내린 시점의 상황을 객관적으로 서술한다.
-- 트레이드 오프를 숨기지 않고 명확히 기술한다.
-- 가능한 경우 결정에 서명한 사람(Owner)과 날짜를 포함한다.
+- 가능한 경우 승인된 템플릿에서 시작한다.
+- 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성한다.
+- 상위 문서와 하위 산출물 간 추적성을 유지한다.
+
+## AI Agent Guidance
+
+1. 이 README를 먼저 읽는다.
+2. 특정 기술이나 설계를 제안하기 전에 기존 ADR을 검토하여 시스템의 일관성을 저해하는지 확인한다.
+3. 결정된 사항에 반하는 변경을 수행하기 전에는 반드시 새로운 ADR 제안이 선행되어야 한다.
 
 ## Related References
 
-- [01.prd (Requirements)](../01.prd/README.md)
-- [02.ard (Architecture)](../02.ard/README.md)
-- [04.specs (Specifications)](../04.specs/README.md)
-- [99.templates (Templates)](../99.templates/README.md)
-
----
-*Maintained by Technical Decision Committee*
+- **PRD**: [../01.prd/README.md]
+- **ARD**: [../02.ard/README.md]
+- **Spec**: [../04.specs/README.md]

@@ -1,122 +1,79 @@
-# 04.specs
+# Component Specifications (Specs)
 
-## 목적
+> 이 경로는 컴포넌트/기능별 상세 설계 명세(Data, API, Logic, Agent-Design)를 관리한다.
 
-이 폴더는 설계 명세(Specification)의 중심이다. SDD(Software Design Description) 관점에서 기능, 서비스, API, 데이터 모델, AI Agent 설계를 구체화한다.
+## Overview
 
-## 문서 책임
+`docs/04.specs`는 시스템의 세부 구현을 위한 구체적인 명세를 보관한다. 아키텍처(ARD)와 결정(ADR)을 바탕으로 실제 데이터 스키마, API 인터페이스, 비즈니스 로직 및 에이전트 설계 방식을 상세히 기술한다.
 
-- 기능 또는 서비스의 기술 설계
-- 인터페이스와 데이터 계약
-- 비기능 요구와 운영성
-- AI Agent 역할, 도구, 평가, 안전 제약
-- API 계약 문서의 부모 위치
+## Audience
 
-## 포함할 내용
+이 README의 주요 독자:
 
-- 설계 범위와 비목표
-- 관련 PRD / ARD / ADR 입력 링크
-- 핵심 설계
-- 데이터 모델
-- 인터페이스와 계약
-- Verification
-- 필요 시 API Spec, Agent 설계, 계약 파일
+- Developers
+- System Architects
+- AI Agents
+- QA Engineers
 
-## 포함하지 말아야 할 내용
+## Scope
 
-- 제품 우선순위와 사용자 가치 중심 설명
-- 전사 운영 정책
-- 실시간 장애 대응 절차
-- 실행 추적의 정본 작업 목록
+### In Scope
 
-위 내용은 각각 `01.prd/`, `08.operations/`, `09.runbooks/`, `06.tasks/`로 분리한다.
+- 데이터 모델링 및 DB 스키마 정의
+- API 엔드포인트 및 요청/응답 형식 명세
+- 주요 비즈니스 로직 순서도 및 알고리즘
+- 에이전트 도구(Tool) 및 페르소나 설계
+- 네트워크 인프라 상세 요구사항 (Spec)
 
-## 권장 내부 구조
+### Out of Scope
+
+- 상위 요구사항 (PRD 담당)
+- 상위 아키텍처 비전 (ARD 담당)
+- 실행 계획 (Plan 담당)
+- 실제 소스 코드 구현
+
+## Structure
 
 ```text
-04.specs/
-  001-feature-name/
-    spec.md
-    api-spec.md
-    agent-design.md
-    data-model.md
-    tests.md
-    contracts/
-      openapi.yaml
+docs/04.specs/
+├── 01-gateway-specs.md
+├── 02-auth-specs.md
+├── 03-security-specs.md
+├── 04-data-specs.md
+├── 05-messaging-specs.md
+├── 06-observability-specs.md
+├── 07-workflow-specs.md
+├── 08-ai-specs.md
+├── 09-tooling-specs.md
+├── 10-communication-specs.md
+├── 11-laboratory-specs.md
+├── standardize-infra-net/
+│   └── spec.md              # Latest: infra_net 상세 설계 명세
+└── README.md                # This file
 ```
 
-## 기본 문서 역할
+## How to Work in This Area
 
-- `spec.md`: 기능 전체 설계, 계약, 비기능 요구, 검증 기준
-- `api-spec.md`: API 계약 상세
-- `agent-design.md`: Agent 역할, 도구, 메모리, 정책, 오케스트레이션
-- `data-model.md`: 데이터 구조와 저장 전략
-- `tests.md`: TDD 기반 테스트 전략, 테스트 케이스, 평가 항목
-- `contracts/`: OpenAPI, gRPC proto, GraphQL schema 등 기계 가독 계약 파일
+1. 기능 구현 전 [spec.template.md](../99.templates/spec.template.md)를 활용하여 명세서를 작성함.
+2. 데이터 모델이나 API 변경 시 영향도를 미리 분석하여 명시함.
+3. 문서 상태(`refining`, `finalized`, `deprecated`)를 명확히 함.
+4. 구현 완료 후 변경된 사항이 있다면 실제 코드와 일치하도록 갱신함.
 
-## API Specifications
+## Documentation Standards
 
-이 디렉터리의 기능 또는 서비스 Spec 중 API 계약이 필요한 경우, 별도의 API Spec 문서를 사용한다.
+- 가능한 경우 승인된 템플릿에서 시작한다.
+- 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성한다.
+- 상위 문서와 하위 산출물 간 추적성을 유지한다.
 
-- 위치 예시:
-  - `docs/04.specs/<feature-id>/api-spec.md`
-- 사용 템플릿:
-  - `docs/99.templates/api-spec.template.md`
+## AI Agent Guidance
 
-### 역할 구분
+1. 이 README를 먼저 읽는다.
+2. 코드 변경 전 이 영역의 스펙 문서를 우선 참조하여 설계 의도를 파악한다.
+3. 스펙과 실제 구현 사이의 불일치를 발견하면 즉시 보고하거나 문서를 수정한다.
 
-- 메인 Spec:
-  - 기능/서비스 전체 설계, 데이터 모델, 비기능 요구, 운영성, 관측성을 다룬다.
-- API Spec:
-  - HTTP/GraphQL/gRPC 계약, 엔드포인트, 스키마, 인증, 에러, 버저닝, 거버넌스를 상세히 정의한다.
+## Related References
 
-### 금지 규칙
-
-- API Spec을 `docs/api/` 같은 별도 최상위 문서 체계로 분리하지 않는다.
-- API Spec은 `04.specs` 아래 기능 단위 하위 문서로 유지한다.
-
-## Spec 작성 규칙
-
-1. 모든 활성 Spec은 관련 PRD와 ARD를 링크하거나 부재를 명시한다.
-2. Verification은 필수다.
-3. Acceptance Criteria와 테스트는 PRD에서 이어지고, 구현 검증은 Task와 연결된다.
-4. API가 있다면 API Spec 또는 계약 파일을 함께 둔다.
-5. Agent 설계가 있다면 아래 항목을 명시한다.
-   - Agent Role & IO Contract
-   - Tools & Tool Contract
-   - Prompt/Policy Contract
-   - Memory & Context Strategy
-   - Guardrails
-   - Evaluation
-   - Failure Modes / Fallback / Human Escalation
-
-## `06.tasks`와의 관계
-
-- 기능 내부의 설계 보조용 `tasks.md` 또는 `tests.md`는 `04.specs/<feature-id>/`에 둘 수 있다.
-- 그러나 실행 추적, 스프린트 관리, 검증·평가 기록의 정본은 `06.tasks/`에 둔다.
-
-## Specifications
-
-이 디렉터리는 인프라 각 계층(Tier) 및 핵심 기능에 대한 상세 기술 명세를 관리한다.
-
-- [01-gateway](./01-gateway/spec.md)
-- [02-auth](./02-auth/spec.md) (updated: 2026-03-28 optimization hardening)
-- [03-security](./03-security/spec.md) (updated: 2026-03-28 optimization hardening)
-- [04-data](./04-data/spec.md) (updated: 2026-03-28 optimization hardening)
-- [05-messaging](./05-messaging/spec.md) (updated: 2026-03-28 optimization hardening)
-- [06-observability](./06-observability/spec.md) (updated: 2026-03-28 optimization hardening)
-- [07-workflow](./07-workflow/spec.md) (updated: 2026-03-28 optimization hardening)
-- [08-ai](./08-ai/spec.md) (updated: 2026-03-28 optimization hardening)
-- [09-tooling](./09-tooling/spec.md) (updated: 2026-03-28 optimization hardening)
-- [11-laboratory](./11-laboratory/spec.md) (updated: 2026-03-28 optimization hardening)
-
-## Templates
-
-- `../99.templates/spec.template.md`
-- `../99.templates/api-spec.template.md`
-- `../99.templates/agent-design.template.md`
-- `../99.templates/data-model.template.md`
-- `../99.templates/tests.template.md`
-- `../99.templates/openapi.template.yaml`
-- `../99.templates/service.template.proto`
-- `../99.templates/schema.template.graphql`
+- **PRD**: [../01.prd/README.md]
+- **ARD**: [../02.ard/README.md]
+- **ADR**: [../03.adr/README.md]
+- **Plan**: [../05.plans/README.md]

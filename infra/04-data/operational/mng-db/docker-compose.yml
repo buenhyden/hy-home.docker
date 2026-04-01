@@ -104,6 +104,7 @@ services:
         condition: service_healthy
     labels:
       <<: *tier-label
+      traefik.enable: 'false'
     networks:
       infra_net:
         ipv4_address: 172.19.0.13
@@ -201,6 +202,7 @@ services:
         ipv4_address: 172.19.0.15
     labels:
       <<: *tier-label
+      traefik.enable: 'false'
 
   mng-pg-exporter:
     profiles:
@@ -232,6 +234,7 @@ services:
       - mng_postgres_password
     labels:
       <<: *tier-label
+      traefik.enable: 'false'
     healthcheck:
       test:
         [

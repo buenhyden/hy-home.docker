@@ -30,7 +30,8 @@ services:
       - stalwart-data:/opt/stalwart:rw
       - ../../../secrets/certs:/opt/stalwart/certs:ro
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.260
     secrets:
       - stalwart_password
     environment:
@@ -67,7 +68,8 @@ services:
     tmpfs:
       - /tmp
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.261
     healthcheck:
       test: ['CMD', 'wget', '-qO-', 'http://localhost:8025/']
       interval: 30s

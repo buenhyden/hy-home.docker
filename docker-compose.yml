@@ -44,6 +44,10 @@ secrets:
     file: ./secrets/auth/oauth2_proxy_client_secret.txt
   oauth2_proxy_cookie_secret:
     file: ./secrets/auth/oauth2_proxy_cookie_secret.txt
+  kafbat_client_secret:
+    file: ./secrets/auth/kafbat_client_secret.txt
+  grafana_client_secret:
+    file: ./secrets/auth/grafana_client_secret.txt
   pg_haproxy_stats_password:
     file: ./secrets/auth/pg_haproxy_stats_password.txt
 
@@ -99,8 +103,8 @@ secrets:
     file: ./secrets/db/valkey/mng_password.txt
   agent_office_valkey_password:
     file: ./secrets/db/valkey/agent_office_password.txt
-  # oauth2_valkey_password:
-  #   file: ./secrets/db/valkey/oauth2_password.txt
+  oauth2_valkey_password:
+    file: ./secrets/db/valkey/oauth2_password.txt
   terrakube_valkey_password:
     file: ./secrets/db/valkey/terrakube_password.txt
   airflow_valkey_password:

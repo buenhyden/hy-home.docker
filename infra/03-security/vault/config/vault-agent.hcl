@@ -86,8 +86,8 @@ template {
 }
 
 template {
-  source      = "/vault/config/templates/grafana_oauth_client_secret.ctmpl"
-  destination = "/vault/out/grafana/oauth_client_secret"
+  source      = "/vault/config/templates/grafana_client_secret.ctmpl"
+  destination = "/vault/out/grafana/grafana_client_secret"
   perms       = 0600
 }
 

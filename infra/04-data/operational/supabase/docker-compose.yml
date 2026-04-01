@@ -18,7 +18,8 @@ services:
       analytics:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.179
     labels:
       <<: *tier-label
     healthcheck:
@@ -46,7 +47,8 @@ services:
     volumes:
       - ${DEFAULT_DATA_DIR}/supabase/api/kong.yml:/home/kong/temp.yml:ro
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.180
     labels:
       <<: *tier-label
     healthcheck:
@@ -73,7 +75,8 @@ services:
       analytics:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.181
     labels:
       <<: *tier-label
     healthcheck:
@@ -100,7 +103,8 @@ services:
       analytics:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.182
     labels:
       <<: *tier-label
     healthcheck:
@@ -125,7 +129,8 @@ services:
       analytics:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.183
     labels:
       <<: *tier-label
     healthcheck:
@@ -155,7 +160,8 @@ services:
       imgproxy:
         condition: service_started
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.184
     labels:
       <<: *tier-label
     healthcheck:
@@ -179,7 +185,8 @@ services:
     volumes:
       - ${DEFAULT_DATA_DIR}/supabase/storage:/var/lib/storage
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.185
     labels:
       <<: *tier-label
     healthcheck:
@@ -204,7 +211,8 @@ services:
       analytics:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.186
     labels:
       <<: *tier-label
     healthcheck:
@@ -229,7 +237,8 @@ services:
       analytics:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.187
     labels:
       <<: *tier-label
     healthcheck:
@@ -254,7 +263,8 @@ services:
       db:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.188
     labels:
       <<: *tier-label
     healthcheck:
@@ -288,7 +298,8 @@ services:
       vector:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.189
     labels:
       <<: *tier-label
     healthcheck:
@@ -312,7 +323,8 @@ services:
       - ${DOCKER_SOCKET_LOCATION:-/var/run/docker.sock}:/var/run/docker.sock:ro
     command: ['--config', '/etc/vector/vector.yml']
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.190
     labels:
       <<: *tier-label
     healthcheck:
@@ -342,7 +354,8 @@ services:
       analytics:
         condition: service_healthy
     networks:
-      - infra_net
+      infra_net:
+        ipv4_address: 172.19.0.191
     labels:
       <<: *tier-label
     healthcheck:

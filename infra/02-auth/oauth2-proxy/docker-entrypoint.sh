@@ -8,8 +8,8 @@ read_secret() {
   fi
 }
 
-if [ -f /run/secrets/mng_valkey_password ]; then
-  valkey_password="$(read_secret /run/secrets/mng_valkey_password)"
+if [ -f /run/secrets/oauth2_valkey_password ]; then
+  valkey_password="$(read_secret /run/secrets/oauth2_valkey_password)"
   if [ -n "$valkey_password" ] && [ -z "${OAUTH2_PROXY_REDIS_PASSWORD:-}" ]; then
     export OAUTH2_PROXY_REDIS_PASSWORD="$valkey_password"
   fi
