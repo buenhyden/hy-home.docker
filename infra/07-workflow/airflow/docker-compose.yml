@@ -186,6 +186,8 @@ services:
       airflow-valkey:
         condition: service_healthy
   airflow-init:
+    profiles:
+      - workflow
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -211,21 +213,21 @@ services:
       service: template-infra-med
     <<: *airflow-common
     profiles:
-      - debug
+      - workflow
     read_only: false
     environment:
       <<: *airflow-common-env
       CONNECTION_CHECK_MAX_COUNT: '0'
     command: [bash, -c, airflow]
   flower:
+    profiles:
+      - workflow
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
     <<: *airflow-common
     read_only: false
     command: celery flower
-    profiles:
-      - flower
     healthcheck:
       test: ['CMD', 'curl', '--fail', 'http://localhost:${FLOWER_PORT:-5555}/']
       interval: 15s

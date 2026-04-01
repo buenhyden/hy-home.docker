@@ -1,7 +1,6 @@
 x-tier-label: &tier-label
   hy-home.tier: admin
 
-
 volumes:
   redisinsight-data:
     driver: local
@@ -48,4 +47,3 @@ services:
       traefik.http.services.redisinsight-svc.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-5540}
     networks:
       infra_net:
-        ipv4_address: 172.19.0.5
