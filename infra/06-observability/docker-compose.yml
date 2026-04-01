@@ -380,7 +380,7 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      traefik.http.routers.pyroscope.rule: Host(`pyroscope.${DEFAULT_URL}`)
+      traefik.http.routers.pyroscope.rule: Host(`cadvisor.${DEFAULT_URL}`)
       traefik.http.routers.pyroscope.entrypoints: websecure
       traefik.http.routers.pyroscope.tls: 'true'
       traefik.http.routers.pyroscope.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
