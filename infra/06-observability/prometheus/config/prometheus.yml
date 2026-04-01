@@ -260,6 +260,12 @@ scrape_configs:
         labels:
           domain: "workflow"
 
+  - job_name: "airflow-exporter"
+    static_configs:
+      - targets: ["airflow-statsd-exporter:9102"]
+        labels:
+          domain: "workflow"
+
   - job_name: "vault"
     metrics_path: /v1/sys/metrics
     params:
