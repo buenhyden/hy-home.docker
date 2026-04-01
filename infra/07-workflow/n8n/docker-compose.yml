@@ -145,6 +145,7 @@ services:
       - n8n_valkey_password
       - n8n_db_password
       - n8n_encryption_key
+      - n8n_runner_auth_token
     networks:
       infra_net:
         ipv4_address: 172.19.0.81
@@ -210,6 +211,7 @@ services:
       n8n-worker: { condition: service_healthy }
     environment:
       N8N_RUNNERS_TASK_BROKER_URI: http://n8n-worker:${N8N_BROKER_PORT:-5679}
+      N8N_RUNNERS_AUTH_TOKEN_FILE: /run/secrets/n8n_runner_auth_token
     networks:
       infra_net:
         ipv4_address: 172.19.0.83
@@ -239,6 +241,8 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-low
     image: valkey/valkey:9.0.2-alpine
+    container_name: n8n-valkey
+    user: '999:999'
     networks:
       infra_net:
         ipv4_address: 172.19.0.84

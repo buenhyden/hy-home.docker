@@ -4,9 +4,13 @@ x-tier-label: &tier-label
 x-airflow-common-env: &airflow-common-env
   AIRFLOW__CORE__EXECUTOR: CeleryExecutor
   AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
-  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: echo "postgresql+psycopg2://${AIRFLOW_DB_USER}:$$(cat /run/secrets/airflow_db_password)@${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/airflow"
-  AIRFLOW__CELERY__RESULT_BACKEND_CMD: echo "db+postgresql://${AIRFLOW_DB_USER}:$$(cat /run/secrets/airflow_db_password)@${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/airflow"
-  AIRFLOW__CELERY__BROKER_URL_CMD: echo "redis://:$$(cat /run/secrets/airflow_valkey_password)@airflow-valkey:${VALKEY_PORT:-6379}/0"
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: >-
+    /usr/bin/env bash -c 'printf "%s" "postgresql+psycopg2://airflow:$(tr -d "\n" < /run/secrets/airflow_db_password)@mng-pg:5432/airflow"'
+  AIRFLOW__CELERY__RESULT_BACKEND_CMD: >-
+    /usr/bin/env bash -c 'printf "%s" "db+postgresql+psycopg2://airflow:$(tr -d "\n" < /run/secrets/airflow_db_password)@mng-pg:5432/airflow"'
+  AIRFLOW__CELERY__BROKER_URL_CMD:
+     >-
+    /usr/bin/env bash -c 'printf "%s" "redis://:$(cat /run/secrets/airflow_valkey_password | tr -d '\n')@airflow-valkey:6379/0"'
   AIRFLOW__CORE__FERNET_KEY_CMD: cat /run/secrets/airflow_fernet_key
   AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
   AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
@@ -19,11 +23,12 @@ x-airflow-common-env: &airflow-common-env
   AIRFLOW__METRICS__STATSD_HOST: 'airflow-statsd-exporter'
   AIRFLOW__METRICS__STATSD_PORT: '${STATSD_AIRFLOW_PORT:-9125}'
   AIRFLOW__METRICS__STATSD_PREFIX: 'airflow'
+  _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
 
 x-airflow-common: &airflow-common
   profiles:
     - 'workflow'
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:slim-3.1.6}
+  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.1.8}
   environment: *airflow-common-env
   volumes:
     - airflow-dags:/opt/airflow/dags
@@ -69,20 +74,20 @@ volumes:
       type: none
       device: ${DEFAULT_WORKFLOW_DIR}/airflow-valkey
 
-
 services:
   airflow-apiserver:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-high
     <<: *airflow-common
+    container_name: airflow-apiserver
     read_only: false
     command: api-server
     networks:
       infra_net:
         ipv4_address: 172.19.0.90
     healthcheck:
-      test: ['CMD', 'curl', '--fail', 'http://localhost:${AIRFLOW_PORT:-8080}/api/v2/version']
+      test: ['CMD', 'curl', '--fail', 'http://localhost:${AIRFLOW_PORT:-8080}/api/v2/monitor/health']
       interval: 15s
       timeout: 30s
       retries: 5
@@ -106,6 +111,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-high
     <<: *airflow-common
+    container_name: airflow-scheduler
     read_only: false
     command: scheduler
     networks:
@@ -128,6 +134,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-high
     <<: *airflow-common
+    container_name: airflow-dag-processor
     read_only: false
     command: dag-processor
     networks:
@@ -150,6 +157,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-high
     <<: *airflow-common
+    container_name: airflow-worker
     read_only: false
     command: celery worker
     networks:
@@ -181,6 +189,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-low
     <<: *airflow-common
+    container_name: airflow-triggerer
     read_only: false
     command: triggerer
     networks:
@@ -198,9 +207,11 @@ services:
         condition: service_completed_successfully
       airflow-valkey:
         condition: service_healthy
+
   airflow-init:
     profiles:
       - workflow
+    container_name: airflow-init
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -208,36 +219,107 @@ services:
     <<: *airflow-common
     read_only: false
     entrypoint: /bin/bash
+    # yamllint disable rule:line-length
     command:
-      [
-        -c,
-        'mkdir -p /opt/airflow/{logs,dags,plugins,config}; /entrypoint airflow config list >/dev/null; chown -R "${AIRFLOW_UID:-50000}:0" /opt/airflow/{logs,dags,plugins,config}; ls -la /opt/airflow/{logs,dags,plugins,config}',
-      ]
+      - -c
+      - |
+        if [[ -z "${AIRFLOW_UID}" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: AIRFLOW_UID not set!\e[0m"
+          echo "If you are on Linux, you SHOULD follow the instructions below to set "
+          echo "AIRFLOW_UID environment variable, otherwise files will be owned by root."
+          echo "For other operating systems you can get rid of the warning with manually created .env file:"
+          echo "    See: https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#setting-the-right-airflow-user"
+          echo
+          export AIRFLOW_UID=$$(id -u)
+        fi
+        one_meg=1048576
+        mem_available=$$(($$(getconf _PHYS_PAGES) * $$(getconf PAGE_SIZE) / one_meg))
+        cpus_available=$$(grep -cE 'cpu[0-9]+' /proc/stat)
+        disk_available=$$(df / | tail -1 | awk '{print $$4}')
+        warning_resources="false"
+        if (( mem_available < 4000 )) ; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough memory available for Docker.\e[0m"
+          echo "At least 4GB of memory required. You have $$(numfmt --to iec $$((mem_available * one_meg)))"
+          echo
+          warning_resources="true"
+        fi
+        if (( cpus_available < 2 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough CPUS available for Docker.\e[0m"
+          echo "At least 2 CPUs recommended. You have $${cpus_available}"
+          echo
+          warning_resources="true"
+        fi
+        if (( disk_available < one_meg * 10 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough Disk space available for Docker.\e[0m"
+          echo "At least 10 GBs recommended. You have $$(numfmt --to iec $$((disk_available * 1024 )))"
+          echo
+          warning_resources="true"
+        fi
+        if [[ $${warning_resources} == "true" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: You have not enough resources to run Airflow (see above)!\e[0m"
+          echo "Please follow the instructions to increase amount of resources available:"
+          echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin"
+          echo
+        fi
+        echo
+        echo "Creating missing opt dirs if missing:"
+        echo
+        mkdir -v -p /opt/airflow/{logs,dags,plugins,config}
+        echo
+        echo "Airflow version:"
+        /entrypoint airflow version
+        echo
+        echo "Files in shared volumes:"
+        echo
+        ls -la /opt/airflow/{logs,dags,plugins,config}
+        echo
+        echo "Running airflow config list to create default config file if missing."
+        echo
+        /entrypoint airflow config list >/dev/null
+        echo
+        echo "Files in shared volumes:"
+        echo
+        ls -la /opt/airflow/{logs,dags,plugins,config}
+        echo
+        echo "Files in shared volumes:"
+        echo
+        ls -la /opt/airflow/{logs,dags,plugins,config}
+    # yamllint enable rule:line-length
     environment:
       <<: *airflow-common-env
       _AIRFLOW_DB_MIGRATE: 'true'
       _AIRFLOW_WWW_USER_CREATE: 'true'
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
       _AIRFLOW_WWW_USER_PASSWORD_CMD: cat /run/secrets/airflow_www_password
-      _PIP_ADDITIONAL_REQUIREMENTS: ''
+    user: '0:0'
     networks:
       infra_net:
         ipv4_address: 172.19.0.95
-  airflow-cli:
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-infra-med
-    <<: *airflow-common
-    profiles:
-      - workflow
-    read_only: false
-    environment:
-      <<: *airflow-common-env
-      CONNECTION_CHECK_MAX_COUNT: '0'
-    command: [bash, -c, airflow]
-    networks:
-      infra_net:
-        ipv4_address: 172.19.0.96
+  # airflow-cli:
+  #   extends:
+  #     file: ../../common-optimizations.yml
+  #     service: template-infra-med
+  #   <<: *airflow-common
+  #   container_name: airflow-cli
+  #   profiles:
+  #     - workflow
+  #   read_only: false
+  #   environment:
+  #     <<: *airflow-common-env
+  #     CONNECTION_CHECK_MAX_COUNT: '0'
+  #   # Workaround for entrypoint issue. See: https://github.com/apache/airflow/issues/16252
+  #   command:
+  #     - bash
+  #     - -c
+  #     - airflow
+  #   networks:
+  #     infra_net:
+  #       ipv4_address: 172.19.0.96
   flower:
     profiles:
       - workflow
@@ -245,6 +327,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-low
     <<: *airflow-common
+    container_name: flower
     read_only: false
     command: celery flower
     networks:
