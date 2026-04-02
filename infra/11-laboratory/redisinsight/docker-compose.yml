@@ -13,6 +13,7 @@ services:
   redisinsight:
     profiles:
       - admin
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med

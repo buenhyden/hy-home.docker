@@ -157,6 +157,8 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
       POSTGRES_USER: ${POSTGRES_DEFAULT_USER}
       POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
+      SERVICE_POSTGRES_USERNAME: ${SERVICE_POSTGRES_USERNAME:-app_user}
+      SERVICE_POSTGRES_DB: ${SERVICE_POSTGRES_DB:-app_db}
     entrypoint:
       - /bin/sh
       - -ec
@@ -172,6 +174,7 @@ services:
         AIRFLOW_DB_PASSWORD="$$(tr -d '\n' </run/secrets/airflow_db_password)"
         TERRAKUBE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/terrakube_db_password)"
         SONARQUBE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/sonarqube_db_password)"
+        SERVICE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/service_postgres_password)"
 
         psql \
           -h "$$POSTGRES_HOSTNAME" \
@@ -184,6 +187,9 @@ services:
           -v airflow_db_password="$$AIRFLOW_DB_PASSWORD" \
           -v terrakube_db_password="$$TERRAKUBE_DB_PASSWORD" \
           -v sonarqube_db_password="$$SONARQUBE_DB_PASSWORD" \
+          -v service_postgres_username="$$SERVICE_POSTGRES_USERNAME" \
+          -v service_postgres_password="$$SERVICE_DB_PASSWORD" \
+          -v service_postgres_db="$$SERVICE_POSTGRES_DB" \
           -f /work/init_users_dbs.sql
     volumes:
       - ./pg/init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro
@@ -192,6 +198,7 @@ services:
         condition: service_healthy
     secrets:
       - mng_postgres_password
+      - service_postgres_password
       - n8n_db_password
       - keycloak_db_password
       - airflow_db_password

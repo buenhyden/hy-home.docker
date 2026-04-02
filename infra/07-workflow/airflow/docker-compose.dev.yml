@@ -1,0 +1,373 @@
+x-tier-label: &tier-label
+  hy-home.tier: workflow
+
+x-airflow-common-env: &airflow-common-env
+  AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+  AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD: >-
+    /usr/bin/env bash -c "printf '%s' \"postgresql+psycopg2://airflow:$(tr -d '\r\n' < /run/secrets/airflow_db_password)@mng-pg:5432/airflow\""
+  AIRFLOW__CELERY__RESULT_BACKEND_CMD: >-
+    /usr/bin/env bash -c "printf '%s' \"db+postgresql+psycopg2://airflow:$(tr -d '\r\n' < /run/secrets/airflow_db_password)@mng-pg:5432/airflow\""
+  AIRFLOW__CELERY__BROKER_URL_CMD: >-
+    /usr/bin/env bash -c "printf '%s' \"redis://:$(tr -d '\r\n' < /run/secrets/mng_valkey_password)@mng-valkey:6379/0\""
+  AIRFLOW__CORE__FERNET_KEY_CMD: cat /run/secrets/airflow_fernet_key
+  AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+  AIRFLOW__CORE__LOAD_EXAMPLES: 'true'
+  AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-apiserver:8080/execution/'
+  AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
+  AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
+  AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: 'true'
+  AIRFLOW__WEBSERVER__BASE_URL: 'https://airflow.${DEFAULT_URL}'
+  AIRFLOW__METRICS__STATSD_ON: 'true'
+  AIRFLOW__METRICS__STATSD_HOST: 'airflow-statsd-exporter'
+  AIRFLOW__METRICS__STATSD_PORT: '${STATSD_AIRFLOW_PORT:-9125}'
+  AIRFLOW__METRICS__STATSD_PREFIX: 'airflow'
+  _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+
+x-airflow-common: &airflow-common
+  profiles:
+    - 'workflow'
+    - dev
+  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.1.8}
+  environment: *airflow-common-env
+  volumes:
+    - airflow-dags:/opt/airflow/dags
+    - airflow-plugins:/opt/airflow/plugins
+    - airflow-logs:/opt/airflow/logs
+    - airflow-config:/opt/airflow/config
+  user: '${AIRFLOW_UID:-50000}:0'
+  secrets:
+    - airflow_db_password
+    - airflow_fernet_key
+    - airflow_www_password
+    - mng_valkey_password
+
+volumes:
+  airflow-dags:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_WORKFLOW_DIR}/airflow/dags
+  airflow-logs:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_WORKFLOW_DIR}/airflow/logs
+  airflow-config:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_WORKFLOW_DIR}/airflow/config
+  airflow-plugins:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_WORKFLOW_DIR}/airflow/plugins
+
+
+services:
+  airflow-apiserver:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-high
+    <<: *airflow-common
+    container_name: airflow-apiserver
+    read_only: false
+    command: api-server
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.90
+    healthcheck:
+      test:
+        ['CMD', 'curl', '--fail', 'http://localhost:${AIRFLOW_PORT:-8080}/api/v2/monitor/health']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.airflow.rule: Host(`airflow.${DEFAULT_URL}`)
+      traefik.http.routers.airflow.entrypoints: websecure
+      traefik.http.routers.airflow.tls: 'true'
+      traefik.http.routers.airflow.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      traefik.http.services.airflow.loadbalancer.server.port: ${AIRFLOW_PORT:-8080}
+  airflow-scheduler:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-high
+    <<: *airflow-common
+    container_name: airflow-scheduler
+    read_only: false
+    command: scheduler
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.91
+    healthcheck:
+      test: ['CMD', 'curl', '--fail', 'http://localhost:8974/health']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-dag-processor:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-high
+    <<: *airflow-common
+    container_name: airflow-dag-processor
+    read_only: false
+    command: dag-processor
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.92
+    healthcheck:
+      test: ['CMD-SHELL', 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-worker:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-high
+    <<: *airflow-common
+    container_name: airflow-worker
+    read_only: false
+    command: celery worker
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.93
+    environment:
+      <<: *airflow-common-env
+      DUMB_INIT_SETSID: '0'
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"',
+        ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    depends_on:
+      airflow-apiserver:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-triggerer:
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
+    <<: *airflow-common
+    container_name: airflow-triggerer
+    read_only: false
+    command: triggerer
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.94
+    healthcheck:
+      test: ['CMD-SHELL', 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-init:
+    profiles:
+      - workflow
+      - dev
+    container_name: airflow-init
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    restart: 'no'
+    <<: *airflow-common
+    read_only: false
+    entrypoint: /bin/bash
+    # yamllint disable rule:line-length
+    command:
+      - -c
+      - |
+        if [[ -z "${AIRFLOW_UID}" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: AIRFLOW_UID not set!\e[0m"
+          echo "If you are on Linux, you SHOULD follow the instructions below to set "
+          echo "AIRFLOW_UID environment variable, otherwise files will be owned by root."
+          echo "For other operating systems you can get rid of the warning with manually created .env file:"
+          echo "    See: https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#setting-the-right-airflow-user"
+          echo
+          export AIRFLOW_UID=$$(id -u)
+        fi
+        one_meg=1048576
+        mem_available=$$(($$(getconf _PHYS_PAGES) * $$(getconf PAGE_SIZE) / one_meg))
+        cpus_available=$$(grep -cE 'cpu[0-9]+' /proc/stat)
+        disk_available=$$(df / | tail -1 | awk '{print $$4}')
+        warning_resources="false"
+        if (( mem_available < 4000 )) ; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough memory available for Docker.\e[0m"
+          echo "At least 4GB of memory required. You have $$(numfmt --to iec $$((mem_available * one_meg)))"
+          echo
+          warning_resources="true"
+        fi
+        if (( cpus_available < 2 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough CPUS available for Docker.\e[0m"
+          echo "At least 2 CPUs recommended. You have $${cpus_available}"
+          echo
+          warning_resources="true"
+        fi
+        if (( disk_available < one_meg * 10 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough Disk space available for Docker.\e[0m"
+          echo "At least 10 GBs recommended. You have $$(numfmt --to iec $$((disk_available * 1024 )))"
+          echo
+          warning_resources="true"
+        fi
+        if [[ $${warning_resources} == "true" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: You have not enough resources to run Airflow (see above)!\e[0m"
+          echo "Please follow the instructions to increase amount of resources available:"
+          echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin"
+          echo
+        fi
+        echo
+        echo "Creating missing opt dirs if missing:"
+        echo
+        mkdir -v -p /opt/airflow/{logs,dags,plugins,config}
+        echo
+        echo "Airflow version:"
+        /entrypoint airflow version
+        echo
+        echo "Files in shared volumes:"
+        echo
+        ls -la /opt/airflow/{logs,dags,plugins,config}
+        echo
+        echo "Running airflow config list to create default config file if missing."
+        echo
+        /entrypoint airflow config list >/dev/null
+        echo
+        echo "Files in shared volumes:"
+        echo
+        ls -la /opt/airflow/{logs,dags,plugins,config}
+        echo
+        echo "Files in shared volumes:"
+        echo
+        ls -la /opt/airflow/{logs,dags,plugins,config}
+    # yamllint enable rule:line-length
+    environment:
+      <<: *airflow-common-env
+      _AIRFLOW_DB_MIGRATE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
+      _AIRFLOW_WWW_USER_PASSWORD_CMD: cat /run/secrets/airflow_www_password
+    user: '0:0'
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.95
+  # airflow-cli:
+  #   extends:
+  #     file: ../../common-optimizations.yml
+  #     service: template-infra-med
+  #   <<: *airflow-common
+  #   container_name: airflow-cli
+  #   profiles:
+  #     - workflow
+  #   read_only: false
+  #   environment:
+  #     <<: *airflow-common-env
+  #     CONNECTION_CHECK_MAX_COUNT: '0'
+  #   # Workaround for entrypoint issue. See: https://github.com/apache/airflow/issues/16252
+  #   command:
+  #     - bash
+  #     - -c
+  #     - airflow
+  #   networks:
+  #     infra_net:
+  #       ipv4_address: 172.19.0.96
+  flower:
+    profiles:
+      - workflow
+      - dev
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
+    <<: *airflow-common
+    container_name: flower
+    read_only: false
+    command: celery flower
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.97
+    healthcheck:
+      test: ['CMD', 'curl', '--fail', 'http://localhost:${FLOWER_PORT:-5555}/']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+      airflow-apiserver:
+        condition: service_healthy
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.flower.rule: Host(`flower.${DEFAULT_URL}`)
+      traefik.http.routers.flower.entrypoints: websecure
+      traefik.http.routers.flower.tls: 'true'
+      traefik.http.services.flower.loadbalancer.server.port: ${FLOWER_PORT:-5555}
+      traefik.http.routers.flower.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+
+  airflow-statsd-exporter:
+    profiles:
+      - 'workflow'
+      - dev
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
+    image: prom/statsd-exporter:v0.28.0
+    container_name: airflow-statsd-exporter
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+    command: '--statsd.listen-udp=:${STATSD_AIRFLOW_PORT:-9125} --web.listen-address=:${STATSD_PROMETHEUS_PORT:-9102} --statsd.mapping-config=/tmp/mappings.yml'
+    volumes:
+      - ./config/statsd_mapping.yml:/tmp/mappings.yml:ro
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.100
+    expose:
+      - '${STATSD_PROMETHEUS_PORT:-9102}'
+      - '${STATSD_AIRFLOW_PORT:-9125}'

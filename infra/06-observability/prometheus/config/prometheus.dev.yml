@@ -1,0 +1,233 @@
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+  external_labels:
+    env: dev
+    stack: hy-homedocker
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+rule_files:
+  - "/etc/prometheus/alert_rules/alert_rules.local.*.yml"
+  - "/etc/prometheus/alert_rules/alert_rules.k8s.yml"
+  - "/etc/prometheus/alert_rules/alert_rules.keycloak.yml"
+  - "/etc/prometheus/alert_rules/alert_rules.vault.yml"
+  - "/etc/prometheus/alert_rules/recording_rules.yml"
+
+scrape_configs:
+  # ============================================================================
+  # CORE SERVICES
+  # ============================================================================
+  - job_name: "prometheus"
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "alertmanager"
+    static_configs:
+      - targets: ["alertmanager:9093"]
+
+  - job_name: "alloy"
+    static_configs:
+      - targets: ["alloy:12345"]
+
+  # ============================================================================
+  # INFRASTRUCTURE & OBSERVABILITY
+  # ============================================================================
+  - job_name: "traefik"
+    static_configs:
+      - targets: ["traefik:8082"]
+
+  - job_name: "cadvisor"
+    scrape_interval: 1m
+    scrape_timeout: 50s
+    static_configs:
+      - targets: ["cadvisor:8080"]
+    metric_relabel_configs:
+      - source_labels: [id]
+        regex: "^/$"
+        action: drop
+      - action: labeldrop
+        regex: "container_label_com_docker_compose_(config_hash|project_working_dir|project_config_files|replace|container_number|oneoff|version|depends_on)"
+      - action: labeldrop
+        regex: "container_label_desktop_docker_io_ports_scheme"
+
+  - job_name: "loki"
+    static_configs:
+      - targets: ["loki:3100"]
+
+  - job_name: "tempo"
+    static_configs:
+      - targets: ["tempo:3200"]
+
+  # ============================================================================
+  # DATASTORES
+  # ============================================================================
+
+  - job_name: "manage-postgres"
+    static_configs:
+      - targets: ["mng-pg-exporter:9187"]
+        labels:
+          domain: "datastores"
+
+  - job_name: "mng-valkey-exporter"
+    static_configs:
+      - targets: ["mng-valkey-exporter:9121"]
+        labels:
+          domain: "datastores"
+
+  - job_name: "minio"
+    metrics_path: /minio/v2/metrics/cluster
+    static_configs:
+      - targets: ["minio:9000"]
+        labels:
+          domain: "datastores"
+
+  - job_name: "qdrant"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["qdrant:6333"]
+        labels:
+          domain: "datastores"
+
+  - job_name: "opensearch"
+    metrics_path: "/_prometheus/metrics"
+    scheme: https
+    static_configs:
+      - targets: ["opensearch:9200"]
+        labels:
+          domain: "datastores"
+    basic_auth:
+      username: "exporter"
+      password_file: "/run/secrets/opensearch_exporter_password"
+    tls_config:
+      insecure_skip_verify: true
+
+
+  # ============================================================================
+  # MESSAGING
+  # ============================================================================
+  - job_name: "kafka"
+    static_configs:
+      - targets: ["kafka-1:9404"]
+        labels:
+          domain: "messaging"
+
+  - job_name: "kafka-exporter"
+    static_configs:
+      - targets: ["kafka-exporter:9308"]
+        labels:
+          domain: "messaging"
+
+  # ============================================================================
+  # KUBERNETES / GITOPS
+  # ============================================================================
+  # ArgoCD metrics via NodePort (k3d-hyhome-server-0: 172.18.0.2)
+  - job_name: "argocd-application-controller"
+    static_configs:
+      - targets: ["172.18.0.2:30082"]
+        labels:
+          component: "application-controller"
+          domain: "gitops"
+
+  - job_name: "argocd-server"
+    static_configs:
+      - targets: ["172.18.0.2:30083"]
+        labels:
+          component: "server"
+          domain: "gitops"
+
+  - job_name: "argocd-repo-server"
+    static_configs:
+      - targets: ["172.18.0.2:30084"]
+        labels:
+          component: "repo-server"
+          domain: "gitops"
+
+  - job_name: "argocd-applicationset-controller"
+    static_configs:
+      - targets: ["172.18.0.2:30085"]
+        labels:
+          component: "applicationset-controller"
+          domain: "gitops"
+
+  - job_name: "argocd-notifications-controller"
+    static_configs:
+      - targets: ["172.18.0.2:30086"]
+        labels:
+          component: "notifications-controller"
+          domain: "gitops"
+
+  # ============================================================================
+  # KUBERNETES CLUSTER (k3d-hyhome)
+  # ============================================================================
+  # kube-state-metrics via NodePort (k3d-hyhome-server-0: 172.18.0.2)
+  # kube_pod_*, kube_deployment_*, kube_node_*, kube_namespace_* 등 제공
+  - job_name: "kube-state-metrics"
+    static_configs:
+      - targets: ["172.18.0.2:30091"]
+        labels:
+          cluster: "k3d-hyhome"
+          domain: "kubernetes"
+
+  # istiod 메트릭 via NodePort (Istio control plane: xDS push, pilot_k8s_cfg_events 등)
+  - job_name: "istiod"
+    static_configs:
+      - targets: ["172.18.0.2:30090"]
+        labels:
+          component: "istiod"
+          cluster: "k3d-hyhome"
+          domain: "mesh"
+
+  # Argo Rollouts 메트릭 via NodePort (rollout_phase, analysis_run_info 등)
+  - job_name: "argo-rollouts"
+    static_configs:
+      - targets: ["172.18.0.2:30092"]
+        labels:
+          component: "argo-rollouts"
+          cluster: "k3d-hyhome"
+          domain: "gitops"
+
+  # ============================================================================
+  # APPLICATIONS
+  # ============================================================================
+  - job_name: "keycloak"
+    static_configs:
+      - targets: ["keycloak:9000"]
+        labels:
+          domain: "auth"
+
+  - job_name: "n8n-monitor"
+    static_configs:
+      - targets: ["n8n:5678"]
+        labels:
+          domain: "workflow"
+
+  - job_name: "airflow-monitor"
+    static_configs:
+      - targets: ["airflow-statsd-exporter:9102"]
+        labels:
+          domain: "workflow"
+
+  - job_name: "airflow-exporter"
+    static_configs:
+      - targets: ["airflow-statsd-exporter:9102"]
+        labels:
+          domain: "workflow"
+
+  - job_name: "vault"
+    metrics_path: /v1/sys/metrics
+    params:
+      format: ["prometheus"]
+    scheme: http
+    bearer_token_file: /run/secrets/vault_token
+    static_configs:
+      - targets:
+          - "vault:8200"
+
+  - job_name: "ollama-exporter"
+    static_configs:
+      - targets: ["ollama-exporter:8000"]

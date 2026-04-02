@@ -26,6 +26,7 @@ services:
     profiles:
       - core
       - auth
+      - dev
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
