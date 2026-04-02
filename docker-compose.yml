@@ -210,7 +210,7 @@ include:
   - infra/04-data/specialized/qdrant/docker-compose.yml
   - infra/05-messaging/kafka/docker-compose.dev.yml
   # - infra/05-messaging/rabbitmq/docker-compose.yml
-  # - infra/06-observability/docker-compose.yml
+  - infra/06-observability/docker-compose.dev.yml
   - infra/07-workflow/n8n/docker-compose.dev.yml
   - infra/07-workflow/airflow/docker-compose.dev.yml
   - infra/08-ai/ollama/docker-compose.yml

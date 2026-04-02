@@ -44,6 +44,7 @@ services:
   prometheus:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
@@ -95,6 +96,7 @@ services:
   loki:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
@@ -141,6 +143,7 @@ services:
   tempo:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
@@ -187,6 +190,7 @@ services:
   alloy:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
@@ -241,6 +245,7 @@ services:
   grafana:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-med
@@ -331,7 +336,6 @@ services:
       traefik.http.routers.grafana.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.routers.grafana.service: grafana-svc
       traefik.http.services.grafana-svc.loadbalancer.server.port: ${GRAFANA_PORT:-3000}
-
     networks:
       infra_net:
         ipv4_address: 172.19.0.24
@@ -341,6 +345,7 @@ services:
   cadvisor:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-host-observer-med
@@ -386,6 +391,7 @@ services:
   alertmanager:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-low
@@ -434,6 +440,7 @@ services:
   pushgateway:
     profiles:
       - obs
+      - dev
     extends:
       file: ../common-optimizations.yml
       service: template-infra-readonly-low
