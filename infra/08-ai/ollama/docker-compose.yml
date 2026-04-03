@@ -1,6 +1,11 @@
 x-tier-label: &tier-label
   hy-home.tier: ai
 
+networks:
+  openclaw_default:
+    external: true
+    name: openclaw_default
+
 volumes:
   ollama-data:
     driver: local
@@ -22,6 +27,7 @@ services:
     container_name: ollama
     read_only: false
     environment:
+      - OLLAMA_HOST=0.0.0.0  # 모든 네트워크 인터페이스에서 수신 허용
       - OLLAMA_NUM_PARALLEL=${OLLAMA_NUM_PARALLEL:-2}
       - OLLAMA_MAX_LOADED_MODELS=${OLLAMA_MAX_LOADED_MODELS:-1}
       - OLLAMA_MAX_QUEUE=${OLLAMA_MAX_QUEUE:-128}
@@ -40,6 +46,7 @@ services:
               capabilities: [gpu]
     ports:
       - ${OLLAMA_HOST_PORT}:${OLLAMA_PORT}
+      - ${OPENCLAW_GATEWAY_HOST_PORT}:${OPENCLAW_GATEWAY_PORT}
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -49,6 +56,7 @@ services:
       traefik.http.services.ollama.loadbalancer.server.port: ${OLLAMA_PORT:-11434}
       traefik.http.routers.ollama.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
     networks:
+      openclaw_default:
       infra_net:
         ipv4_address: 172.19.0.201
     healthcheck:
