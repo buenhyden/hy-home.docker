@@ -17,7 +17,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: redis/redisinsight:3.0.3
+    image: redis/redisinsight:3.2.0
     container_name: redisinsight
     volumes:
       - redisinsight-data:/data:rw

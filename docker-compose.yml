@@ -17,6 +17,9 @@ networks:
   k3d-hyhome:
     external: true
     name: ${K3D_HYHOME_NET_NAME:-k3d-hyhome}
+  openclaw_default:
+    external: true
+    name: ${OPENCLAW_DEFAULT_NAME:-openclaw_default}
 
 secrets:
   # ── Common ─────────────────────────────────────────────

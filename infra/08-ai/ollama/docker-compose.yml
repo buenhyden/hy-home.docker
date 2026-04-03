@@ -23,7 +23,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-ai-high
-    image: ollama/ollama:0.19.0
+    image: ollama/ollama:0.20.0
     container_name: ollama
     read_only: false
     environment:

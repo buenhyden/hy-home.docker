@@ -38,7 +38,7 @@
    - Airflow 핵심 서비스가 `airflow-valkey` `service_healthy`를 사용하도록 확인한다.
    - n8n worker/task-runner healthcheck와 task-runner dependency gating을 확인한다.
 4. n8n 이미지 하드닝 확인
-   - compose가 custom image(`hyhome/n8n:2.12.3-local`)를 사용하도록 확인한다.
+   - compose가 custom image(`hyhome/n8n:2.15.0-local`)를 사용하도록 확인한다.
    - Dockerfile non-root runtime(`USER node`)와 entrypoint secret guard를 확인한다.
 5. 기준선 검증 실행
    - `bash scripts/check-workflow-hardening.sh`

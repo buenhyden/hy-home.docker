@@ -248,7 +248,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-med
-    image: kafbat/kafka-ui:71315d1
+    image: kafbat/kafka-ui:main
     container_name: kafbat-ui
     read_only: true
     tmpfs:

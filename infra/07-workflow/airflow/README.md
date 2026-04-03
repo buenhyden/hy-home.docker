@@ -49,7 +49,7 @@ airflow/
 
 | Category | Technology | Version | Notes |
 | :--- | :--- | :--- | :--- |
-| Engine | Apache Airflow | v2.10.3 (slim-3.1.6) | Python 3.12 기반 |
+| Engine | Apache Airflow | v2.10.3 (3.1.8) | Python 3.12 기반 |
 | Executor | CeleryExecutor | Distributed | 분산 워커 노드 확장 |
 | Broker | Valkey (Redis-compatible) | v9.0.2 | 태스크 큐 및 메시지 브로커 |
 | DB | PostgreSQL | v16+ | 메타데이터 및 상태 저장 |

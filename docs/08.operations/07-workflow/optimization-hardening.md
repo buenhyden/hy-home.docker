@@ -23,7 +23,7 @@
   - Airflow 핵심 서비스는 `airflow-valkey` `service_healthy` dependency를 사용한다.
   - n8n worker/task-runner healthcheck를 필수로 유지한다.
   - n8n task-runner는 `n8n`/`n8n-valkey` health 기반 의존성을 유지한다.
-  - n8n compose 기본 이미지는 custom image(`hyhome/n8n:2.12.3-local`)를 사용한다.
+  - n8n compose 기본 이미지는 custom image(`hyhome/n8n:2.15.0-local`)를 사용한다.
   - n8n runtime은 non-root이며 entrypoint secret guard를 유지한다.
   - workflow 변경은 `check-workflow-hardening.sh` 및 CI `workflow-hardening`을 통과해야 한다.
   - 문서(PRD~Runbook)는 optimization-hardening 링크를 유지한다.
