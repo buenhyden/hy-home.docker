@@ -54,6 +54,10 @@ x-resource-med: &resource-med
   cpus: "1.00"
   mem_limit: 512m
 
+x-resource-obs-high: &resource-obs-high
+  cpus: "1.50"
+  mem_limit: 1g
+
 x-resource-high: &resource-high
   cpus: "2.00"
   mem_limit: 2g
@@ -131,6 +135,9 @@ services:
 
   template-host-observer-med:
     <<: [*service-defaults, *resource-med]
+
+  template-host-observer-high:
+    <<: [*service-defaults, *resource-obs-high]
 
   template-stateful-db-med:
     init: true

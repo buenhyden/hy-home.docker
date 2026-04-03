@@ -46,7 +46,7 @@ services:
               capabilities: [gpu]
     ports:
       - ${OLLAMA_HOST_PORT}:${OLLAMA_PORT}
-      - ${OPENCLAW_GATEWAY_HOST_PORT}:${OPENCLAW_GATEWAY_PORT}
+      # - ${OPENCLAW_GATEWAY_HOST_PORT}:${OPENCLAW_GATEWAY_PORT}
     labels:
       <<: *tier-label
       traefik.enable: 'true'

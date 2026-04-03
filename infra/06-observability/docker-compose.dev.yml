@@ -348,7 +348,7 @@ services:
       - dev
     extends:
       file: ../common-optimizations.yml
-      service: template-host-observer-med
+      service: template-host-observer-high
     image: gcr.io/cadvisor/cadvisor:v0.55.1
     container_name: cadvisor
     privileged: true
