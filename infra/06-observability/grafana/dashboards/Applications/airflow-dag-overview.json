@@ -57,9 +57,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": ["lastNotNull"],
           "fields": "",
           "values": false
         },
@@ -247,18 +245,13 @@
               "id": "byNames",
               "options": {
                 "mode": "include",
-                "names": [
-                  "Value #TOTAL_SUCCESS",
-                  "Value #TOTAL_FAILED"
-                ]
+                "names": ["Value #TOTAL_SUCCESS", "Value #TOTAL_FAILED"]
               }
             },
             "properties": [
               {
                 "id": "custom.footer.reducers",
-                "value": [
-                  "sum"
-                ]
+                "value": ["sum"]
               }
             ]
           }

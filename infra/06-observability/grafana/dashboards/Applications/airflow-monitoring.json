@@ -637,9 +637,7 @@
           "select": [
             [
               {
-                "params": [
-                  "duration"
-                ],
+                "params": ["duration"],
                 "type": "column"
               }
             ]
@@ -729,9 +727,7 @@
         "namePlacement": "auto",
         "orientation": "horizontal",
         "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
+          "calcs": ["last"],
           "fields": "",
           "values": true
         },
@@ -757,9 +753,7 @@
           "select": [
             [
               {
-                "params": [
-                  "duration"
-                ],
+                "params": ["duration"],
                 "type": "column"
               }
             ]
@@ -1013,9 +1007,7 @@
           "select": [
             [
               {
-                "params": [
-                  "duration"
-                ],
+                "params": ["duration"],
                 "type": "column"
               }
             ]
@@ -1196,9 +1188,7 @@
           "select": [
             [
               {
-                "params": [
-                  "duration"
-                ],
+                "params": ["duration"],
                 "type": "column"
               }
             ]
@@ -1387,9 +1377,7 @@
           "select": [
             [
               {
-                "params": [
-                  "duration"
-                ],
+                "params": ["duration"],
                 "type": "column"
               }
             ]
@@ -1451,9 +1439,7 @@
           "select": [
             [
               {
-                "params": [
-                  "duration"
-                ],
+                "params": ["duration"],
                 "type": "column"
               }
             ]

@@ -31,9 +31,7 @@
         "target": {
           "limit": 100,
           "matchAny": false,
-          "tags": [
-            "terraform"
-          ],
+          "tags": ["terraform"],
           "type": "tags"
         }
       },
@@ -49,9 +47,7 @@
         "target": {
           "limit": 100,
           "matchAny": false,
-          "tags": [
-            "oncall"
-          ],
+          "tags": ["oncall"],
           "type": "tags"
         }
       }
@@ -113,9 +109,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -184,9 +178,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -249,9 +241,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -314,9 +304,7 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -642,9 +630,7 @@
         "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
+          "calcs": ["last"],
           "fields": "",
           "values": false
         },
@@ -715,9 +701,7 @@
         "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
+          "calcs": ["last"],
           "fields": "",
           "values": false
         },
@@ -792,9 +776,7 @@
         "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
+          "calcs": ["last"],
           "fields": "",
           "values": false
         },
@@ -865,9 +847,7 @@
         "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
+          "calcs": ["last"],
           "fields": "",
           "values": false
         },
@@ -1521,11 +1501,7 @@
       "id": 29,
       "options": {
         "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "mean"
-          ],
+          "calcs": ["min", "max", "mean"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -1630,11 +1606,7 @@
       "id": 51,
       "options": {
         "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "mean"
-          ],
+          "calcs": ["min", "max", "mean"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -1740,11 +1712,7 @@
       "id": 59,
       "options": {
         "legend": {
-          "calcs": [
-            "min",
-            "max",
-            "mean"
-          ],
+          "calcs": ["min", "max", "mean"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
@@ -2111,12 +2079,7 @@
         {
           "id": "labelsToFields",
           "options": {
-            "keepLabels": [
-              "namespace",
-              "pod",
-              "reason",
-              "container"
-            ],
+            "keepLabels": ["namespace", "pod", "reason", "container"],
             "mode": "columns"
           }
         },
@@ -2124,12 +2087,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "namespace",
-                "pod",
-                "reason",
-                "container"
-              ]
+              "names": ["namespace", "pod", "reason", "container"]
             }
           }
         },
@@ -2272,12 +2230,7 @@
         {
           "id": "labelsToFields",
           "options": {
-            "keepLabels": [
-              "namespace",
-              "pod",
-              "reason",
-              "container"
-            ],
+            "keepLabels": ["namespace", "pod", "reason", "container"],
             "mode": "columns"
           }
         },
@@ -2285,12 +2238,7 @@
           "id": "filterFieldsByName",
           "options": {
             "include": {
-              "names": [
-                "container",
-                "namespace",
-                "pod",
-                "condition"
-              ]
+              "names": ["container", "namespace", "pod", "condition"]
             }
           }
         },
@@ -2773,10 +2721,7 @@
   "preload": false,
   "refresh": "30s",
   "schemaVersion": 42,
-  "tags": [
-    "Kubernetes",
-    "Prometheus"
-  ],
+  "tags": ["Kubernetes", "Prometheus"],
   "templating": {
     "list": [
       {
@@ -2840,12 +2785,8 @@
       {
         "allValue": ".*",
         "current": {
-          "text": [
-            "All"
-          ],
-          "value": [
-            "$__all"
-          ]
+          "text": ["All"],
+          "value": ["$__all"]
         },
         "datasource": {
           "type": "prometheus",
@@ -2909,12 +2850,8 @@
       },
       {
         "current": {
-          "text": [
-            "kube-state-metrics"
-          ],
-          "value": [
-            "kube-state-metrics"
-          ]
+          "text": ["kube-state-metrics"],
+          "value": ["kube-state-metrics"]
         },
         "datasource": {
           "type": "prometheus",

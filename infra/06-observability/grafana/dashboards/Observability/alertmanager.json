@@ -151,9 +151,7 @@
         "orientation": "horizontal",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -489,9 +487,7 @@
         "orientation": "horizontal",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -570,9 +566,7 @@
         "orientation": "horizontal",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -651,9 +645,7 @@
         "orientation": "horizontal",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -732,9 +724,7 @@
         "orientation": "horizontal",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "fields": "",
           "values": false
         },
@@ -903,10 +893,7 @@
       "id": 118,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "sum"
-          ],
+          "calcs": ["mean", "sum"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -1086,9 +1073,7 @@
       "id": 115,
       "options": {
         "legend": {
-          "calcs": [
-            "mean"
-          ],
+          "calcs": ["mean"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -2281,15 +2266,11 @@
               "format": "time_series",
               "groupBy": [
                 {
-                  "params": [
-                    "$__interval"
-                  ],
+                  "params": ["$__interval"],
                   "type": "time"
                 },
                 {
-                  "params": [
-                    "null"
-                  ],
+                  "params": ["null"],
                   "type": "fill"
                 }
               ],
@@ -2303,9 +2284,7 @@
               "select": [
                 [
                   {
-                    "params": [
-                      "value"
-                    ],
+                    "params": ["value"],
                     "type": "field"
                   },
                   {
@@ -2387,11 +2366,7 @@
   "preload": false,
   "refresh": "5m",
   "schemaVersion": 42,
-  "tags": [
-    "alertmanager",
-    "prometheus",
-    "alerting"
-  ],
+  "tags": ["alertmanager", "prometheus", "alerting"],
   "templating": {
     "list": [
       {
@@ -2410,12 +2385,8 @@
       },
       {
         "current": {
-          "text": [
-            "All"
-          ],
-          "value": [
-            "$__all"
-          ]
+          "text": ["All"],
+          "value": ["$__all"]
         },
         "datasource": {
           "type": "prometheus",

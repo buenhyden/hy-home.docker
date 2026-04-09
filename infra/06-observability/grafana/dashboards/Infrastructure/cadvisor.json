@@ -107,10 +107,7 @@
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -223,10 +220,7 @@
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -326,10 +320,7 @@
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -442,10 +433,7 @@
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -545,10 +533,7 @@
       "options": {
         "alertThreshold": true,
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true
@@ -723,10 +708,7 @@
   "preload": false,
   "refresh": "",
   "schemaVersion": 42,
-  "tags": [
-    "cadvisor",
-    "docker"
-  ],
+  "tags": ["cadvisor", "docker"],
   "templating": {
     "list": [
       {

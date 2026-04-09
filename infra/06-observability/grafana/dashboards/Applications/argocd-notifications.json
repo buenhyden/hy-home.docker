@@ -25,10 +25,7 @@
       "asDropdown": true,
       "includeVars": false,
       "keepTime": true,
-      "tags": [
-        "ci/cd",
-        "argo-cd"
-      ],
+      "tags": ["ci/cd", "argo-cd"],
       "targetBlank": true,
       "title": "ArgoCD",
       "type": "dashboards"
@@ -121,10 +118,7 @@
       "id": 2,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
@@ -226,10 +220,7 @@
       "id": 3,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
+          "calcs": ["mean", "max"],
           "displayMode": "table",
           "placement": "right",
           "showLegend": true,
@@ -262,10 +253,7 @@
   "preload": false,
   "refresh": "",
   "schemaVersion": 42,
-  "tags": [
-    "ci/cd",
-    "argo-cd"
-  ],
+  "tags": ["ci/cd", "argo-cd"],
   "templating": {
     "list": [
       {

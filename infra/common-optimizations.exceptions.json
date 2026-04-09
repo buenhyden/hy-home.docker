@@ -69,10 +69,7 @@
     "file_exceptions": []
   },
   "security_baseline": {
-    "required_controls": [
-      "no-new-privileges:true",
-      "cap_drop:ALL"
-    ],
+    "required_controls": ["no-new-privileges:true", "cap_drop:ALL"],
     "no_new_privileges_exceptions": [],
     "cap_drop_all_exceptions": [
       {
