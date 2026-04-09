@@ -38,7 +38,8 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 2. Load `[LOAD:RULES:CHECKLISTS]` from `rules/task-checklists.md`.
 3. Resolve task layer and load one primary scope from `scopes/<layer>.md`.
 4. For docs authoring work, load `[LOAD:RULES:STAGE-MATRIX]` from `rules/stage-authoring-matrix.md`.
-5. Load stage docs JIT only when required by the active task.
+5. For PR creation, merge, or review tasks, load `[LOAD:RULES:GITHUB]` from `rules/github-governance.md`.
+6. Load stage docs JIT only when required by the active task.
 
 ## 4. Hard Constraints
 

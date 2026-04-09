@@ -25,6 +25,7 @@ Use Conventional Commits with explicit scopes where possible.
 1. Self-review changes before opening or updating a PR.
 2. Run relevant programmatic checks before requesting review.
 3. For governance work, ensure linked stage docs remain accurate.
+4. Apply the GitHub completion gate from `rules/github-governance.md` §6 before declaring the PR done.
 
 ## 4. Operational Best Practices
 
@@ -35,3 +36,9 @@ Use Conventional Commits with explicit scopes where possible.
 ## 5. Enforcement
 
 Changes that bypass checks or violate secret safety must not be merged.
+GitHub-specific enforcement rules (branch protection, required checks, CODEOWNERS, Actions security) are governed by `rules/github-governance.md`.
+
+## Related Documents
+
+- `docs/00.agent-governance/rules/github-governance.md`
+- `docs/00.agent-governance/rules/quality-standards.md`

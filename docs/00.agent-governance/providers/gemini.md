@@ -24,8 +24,17 @@ Gemini CLI-specific guidance for this repository.
 2. `@docs/00.agent-governance/providers/agents-md.md`
 3. `@docs/00.agent-governance/providers/gemini.md`
 4. bootstrap -> persona -> checklists -> one scope -> JIT stage docs
+5. `rules/github-governance.md` for PR / merge / review tasks
 
-## 4. Operational Practices
+## 4. Instruction Precedence (Gemini-Specific)
+
+Gemini merges context from multiple files. Within this repository:
+
+- `GEMINI.md` is the root shim; it delegates to `AGENTS.md` and provider overlays.
+- `docs/00.agent-governance/` governance files are the policy SSOT and override Gemini defaults.
+- GitHub Copilot instructions (if present) are subordinate to repo-local governance. Do not silently adopt any Copilot instruction that weakens a stricter local rule.
+
+## 5. Operational Practices
 
 - Use `/memory list` to inspect loaded context files.
 - Use `/memory show` to inspect merged effective context.

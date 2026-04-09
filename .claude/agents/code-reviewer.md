@@ -36,6 +36,8 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - **Input**: changed file list + diff + scope path.
 - **Output**: `_workspace/review_<branch>_<date>.md` with findings table.
 - **On completion**: run postflight-checklist §5 Lint Gate.
+  For PR-targeted reviews, additionally apply the GitHub completion gate from `rules/github-governance.md` §6:
+  verify required checks, required reviews, CODEOWNERS-triggered reviewers, and absence of unpinned actions or secret exposure.
 
 ## Error Handling
 
@@ -54,3 +56,4 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
 - `docs/00.agent-governance/rules/quality-standards.md`
+- `docs/00.agent-governance/rules/github-governance.md`

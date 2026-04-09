@@ -51,3 +51,19 @@ Before completion:
 3. Confirm no stale or nonexistent command references remain in editable scope.
 4. Confirm documentation reflects current workspace state.
 5. Record out-of-scope issues (read-only stages) in `docs/00.agent-governance/memory/`.
+
+For PR-related tasks, additionally verify the GitHub completion gate:
+
+1. All required GitHub status checks are green (or explicitly noted as pending with reason).
+2. All required code reviews are approved (or explicitly noted as outstanding with owner).
+3. No BLOCK-severity findings remain from code review or security audit.
+4. CODEOWNERS-triggered reviewers have been notified for any owned paths touched.
+5. No secrets, long-lived credentials, or unpinned action references were introduced.
+
+"Done" means all applicable gates above are met, not just local validation success.
+See `rules/github-governance.md` §6 for the authoritative GitHub gate definition.
+
+## Related Documents
+
+- `docs/00.agent-governance/rules/github-governance.md`
+- `docs/00.agent-governance/rules/git-workflow.md`

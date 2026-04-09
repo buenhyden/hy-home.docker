@@ -30,8 +30,9 @@ title: 'Common Engineering Scope'
 
 ## 4. Operational Procedures
 
-- **Linting**: Run `npm run lint` before committing.
-- **Formatting**: Run `npm run format` (if available) or ensure editor auto-format is on.
+- **Linting and Formatting**: All lint and format checks are managed by `.pre-commit-config.yaml` — never invoke them manually.
+  Hooks run automatically on commit. Agents must not run `npm run lint`, `npm run format`, or equivalent commands directly.
+  See `AGENTS.md §6` for the authoritative statement.
 
 ## 5. Maintenance & Safety
 

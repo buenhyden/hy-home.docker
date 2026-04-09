@@ -24,6 +24,7 @@ This directory is the canonical governance system for coding agents in this repo
   - `bootstrap.md` · `persona.md` · `task-checklists.md` · `stage-authoring-matrix.md`
   - `documentation-protocol.md` (§6 DOCS 3 RULES HALT)
   - `postflight-checklist.md` — run after every task before declaring completion
+  - `github-governance.md` — GitHub-aligned policy baseline (branch protection, PR contracts, Actions security, AI instruction hierarchy)
 - `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge (§6 §7 per scope).
 - `providers/`: runtime-specific overlays (`claude`, `gemini`, provider-neutral `agents-md`).
 - `memory/`: durable governance notes and audit findings.
@@ -63,6 +64,7 @@ This directory is the canonical governance system for coding agents in this repo
 | `[LOAD:RULES:QUALITY]`      | `rules/quality-standards.md`      |
 | `[LOAD:RULES:AGENTIC]`      | `rules/agentic.md`                |
 | `[LOAD:RULES:GIT]`          | `rules/git-workflow.md`           |
+| `[LOAD:RULES:GITHUB]`       | `rules/github-governance.md`      |
 
 ## 5. Operational Procedure
 
@@ -70,7 +72,8 @@ This directory is the canonical governance system for coding agents in this repo
 2. Load exactly one primary scope.
 3. Run pre-task checklist before implementation.
 4. Use stage authoring matrix for any documentation authoring/refactoring task.
-5. Run completion checklist and record out-of-scope findings in `memory/`.
+5. For PR-related tasks, load `[LOAD:RULES:GITHUB]` and verify GitHub completion gate (§6 of that rule) before declaring done.
+6. Run completion checklist and record out-of-scope findings in `memory/`.
 
 ## 6. Maintenance and Safety
 

@@ -24,13 +24,23 @@ Claude Code-specific guidance for this repository.
 2. `@docs/00.agent-governance/providers/agents-md.md`
 3. `@docs/00.agent-governance/providers/claude.md`
 4. bootstrap -> persona -> checklists -> one scope -> JIT stage docs
+5. `rules/github-governance.md` for PR / merge / review tasks
 
-## 4. Operational Practices
+## 4. Instruction Precedence (Claude-Specific)
+
+Claude Code loads instruction files in a defined precedence order. Within this repository:
+
+- `CLAUDE.md` is the root shim; it delegates to `AGENTS.md` and provider overlays.
+- `docs/00.agent-governance/` governance files are the policy SSOT and override provider defaults.
+- GitHub Copilot instructions (if present) are subordinate to repo-local governance. Do not silently adopt any Copilot instruction that weakens a stricter local rule.
+- Personal `settings.local.json` may not override team policy in `settings.json`.
+
+## 5. Operational Practices
 
 - Keep instructions short, specific, and executable.
 - Prefer path-scoped instruction files instead of large monolithic root files.
 - After instruction updates, start a fresh run or reload context so new guidance is effective.
 
-## 5. References
+## 6. References
 
 - <https://docs.anthropic.com/en/docs/claude-code/memory>

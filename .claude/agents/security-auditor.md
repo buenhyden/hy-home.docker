@@ -30,6 +30,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 2. **Threat-model first**: lightweight threat model before scanning new/changed services.
 3. **Evidence-based**: cite file:line for every finding.
 4. **No false negatives on secrets**: any credential-like string is CRIT until proven safe.
+5. **GitHub Actions scope**: when auditing workflow files (`.github/workflows/`), apply the Actions security baseline from `rules/github-governance.md` §4 — flag unpinned actions, long-lived cloud secrets, and untrusted input injection as BLOCK/CRIT findings.
 
 ## Input / Output Protocol
 
@@ -53,4 +54,5 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - `docs/00.agent-governance/scopes/security.md`
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
+- `docs/00.agent-governance/rules/github-governance.md`
 - `docs/10.incidents/` (incident tracking)
