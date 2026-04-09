@@ -75,3 +75,5 @@ docs/05.plans/
 - **Spec**: [../04.specs/README.md]
 - **Task**: [../06.tasks/README.md]
 - **ADR**: [../03.adr/README.md]
+- **Operation**: [../08.operations/README.md]
+- **Runbook**: [../09.runbooks/README.md]

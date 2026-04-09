@@ -34,6 +34,7 @@ repos:
             (.*/)?yarn\.lock|
             (.*/)?bun\.lockb?|
             projects/storybook/mcp/|
+            projects/storybook/nextjs/|
             archive/|
             artifacts/
           )

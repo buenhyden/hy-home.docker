@@ -20,6 +20,9 @@ services:
     profiles:
       - admin
       - dev
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-db-med
     build:
       context: ./surrealdb
       dockerfile: Dockerfile
@@ -47,6 +50,9 @@ services:
     profiles:
       - admin
       - dev
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
     image: lfnovo/open_notebook:v1-latest-single
     pull_policy: always
     ports:

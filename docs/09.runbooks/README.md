@@ -74,5 +74,6 @@ docs/09.runbooks/
 - **ARD**: [../02.ard/README.md]
 - **ADR**: [../03.adr/README.md]
 - **Spec**: [../04.specs/README.md]
+- **Plan**: [../05.plans/README.md]
 - **Operation**: [../08.operations/README.md]
 - **Incident**: [../10.incidents/README.md]

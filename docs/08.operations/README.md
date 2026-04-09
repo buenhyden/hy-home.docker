@@ -72,5 +72,6 @@ docs/08.operations/
 ## Related References
 
 - **ARD**: [../02.ard/README.md]
+- **Plan**: [../05.plans/README.md]
 - **Runbook**: [../09.runbooks/README.md]
 - **Postmortem**: [../11.postmortems/README.md]

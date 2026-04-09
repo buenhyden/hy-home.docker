@@ -12,6 +12,7 @@ config:
   MD024: false
 # Shared markdownlint-cli2 rules for docs and root markdown files.
 ignores:
+  # Local-only agent state and generated working directories.
   - ".agent/"
   - ".claude/"
   - ".git/"
@@ -24,6 +25,8 @@ ignores:
   - "dist/"
   - "coverage/"
   - "storybook-static/"
+
+  # Root shim files and templates that intentionally diverge from doc lint norms.
   - "AGENTS.md"
   - "CLAUDE.md"
   - "GEMINI.md"

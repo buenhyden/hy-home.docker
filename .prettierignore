@@ -1,3 +1,4 @@
+# Shared generated directories and local-only agent state.
 .agent/
 .claude/
 .codex/
@@ -12,6 +13,11 @@ dist/
 coverage/
 storybook-static/
 projects/storybook/mcp/
+
+# App workspaces that keep their own local formatting conventions.
+projects/storybook/nextjs/
+
+# Bundled or generated assets that should not be rewritten.
 *.min.js
 package-lock.json
 pnpm-lock.yaml
