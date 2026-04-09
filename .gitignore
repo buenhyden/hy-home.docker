@@ -102,3 +102,4 @@ secrets/SENSITIVE_ENV_VARS.md
 .agent/
 
 volumes/
+.worktrees/
