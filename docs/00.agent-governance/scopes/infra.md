@@ -39,3 +39,26 @@ title: 'Infrastructure Operational Scope'
 
 - **Backups**: Ensure automated backup tags are present for all persistent data volumes.
 - **Pruning**: `docker system prune` is PROVISIONS-ONLY. Never run without explicit user consent.
+
+## 6. File Ownership SSOT
+
+| Path Pattern                   | Owner Agent         | Read-Only For                |
+| ------------------------------ | ------------------- | ---------------------------- |
+| `docker-compose*.yml`          | `infra-implementer` | all other agents             |
+| `infra/*/`                     | `infra-implementer` | `security-auditor` (read)    |
+| `.env*`, `secrets/`            | `infra-implementer` | all — plaintext forbidden    |
+| `scripts/validate-*.sh`        | `infra-implementer` | all other agents             |
+| `docs/02.ard/`, `docs/03.adr/` | `infra-implementer` | `doc-writer` (template fill) |
+
+Conflicts: the most specific scope wins. Raises to user if ambiguous.
+
+## 7. Subagent Bridge
+
+```text
+# infra-implementer agent preamble
+@import docs/00.agent-governance/scopes/infra.md
+# H100:26 IaC pattern — validate → change → verify
+# SLO: LATENCY < 200ms · Network: infra_net · Secrets: Docker Secrets only
+```
+
+Spawn via Task tool. Pass `scopes/infra.md` path in context. Do not embed policy inline.

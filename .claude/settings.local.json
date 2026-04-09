@@ -1,51 +1,8 @@
 {
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh",
-            "timeout": 15
-          }
-        ]
-      }
-    ]
-  },
   "permissions": {
     "allow": [
-      "Bash(ls:*)",
-      "Bash(grep:*)",
-      "Bash(python:*)",
-      "Bash(npm run:*)",
-      "Bash(cat:*)",
-      "Bash(python3:*)",
-      "Bash(git:*)",
-      "Bash(bash scripts/validate-docker-compose.sh:*)"
+      "Bash(chmod +x:*)"
     ]
   },
-  "deniedMcpServers": [
-    {
-      "serverName": "MCP_DOCKER"
-    },
-    {
-      "serverName": "notebooklm"
-    },
-    {
-      "serverName": "github-mcp-server"
-    }
-  ]
+  "_comment": "Personal overrides only. All team settings live in settings.json (git tracked)."
 }

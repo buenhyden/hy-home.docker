@@ -35,3 +35,23 @@ If breakages are found in read-only stages (`docs/01` to `docs/99`):
 1. Do not patch those files.
 2. Record findings in `docs/00.agent-governance/memory/` with recommended fixes and priorities.
 3. Reference the report in completion notes.
+
+## 5. File Ownership SSOT
+
+| Path Pattern                          | Owner Agent  | Read-Only For                           |
+| ------------------------------------- | ------------ | --------------------------------------- |
+| `docs/00.agent-governance/`           | `doc-writer` | governance rules — all agents read      |
+| `docs/99.templates/`                  | `doc-writer` | all — template edits need user approval |
+| `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | `doc-writer` | all other agents                        |
+| `docs/07.guides/`                     | `doc-writer` | all other agents                        |
+
+## 6. Subagent Bridge
+
+```text
+# doc-writer agent preamble
+@import docs/00.agent-governance/scopes/docs.md
+# H100:81 Docs pattern — template → draft → link
+# DOCS 3 RULES enforced (R1 template · R2 README · R3 related-docs)
+```
+
+Spawn via Task tool. Do not embed documentation policy inline in agent files.

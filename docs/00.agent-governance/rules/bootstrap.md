@@ -15,22 +15,22 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 
 ## 2. Mandatory Taxonomy (SSoT Paths)
 
-| Stage | Path | Purpose |
-| :--- | :--- | :--- |
-| 00 | `docs/00.agent-governance/` | Agent governance and routing rules |
-| 01 | `docs/01.prd/` | Product requirements |
-| 02 | `docs/02.ard/` | Architecture reference |
-| 03 | `docs/03.adr/` | Architecture decisions |
-| 04 | `docs/04.specs/` | Technical specifications |
-| 05 | `docs/05.plans/` | Implementation plans |
-| 06 | `docs/06.tasks/` | Task execution evidence |
-| 07 | `docs/07.guides/` | Human guides |
-| 08 | `docs/08.operations/` | Operations policy |
-| 09 | `docs/09.runbooks/` | Operational procedures |
-| 10 | `docs/10.incidents/` | Incident records |
-| 11 | `docs/11.postmortems/` | Post-incident learning |
-| 90 | `docs/90.references/` | Stable references |
-| 99 | `docs/99.templates/` | Document templates |
+| Stage | Path                        | Purpose                            |
+| :---- | :-------------------------- | :--------------------------------- |
+| 00    | `docs/00.agent-governance/` | Agent governance and routing rules |
+| 01    | `docs/01.prd/`              | Product requirements               |
+| 02    | `docs/02.ard/`              | Architecture reference             |
+| 03    | `docs/03.adr/`              | Architecture decisions             |
+| 04    | `docs/04.specs/`            | Technical specifications           |
+| 05    | `docs/05.plans/`            | Implementation plans               |
+| 06    | `docs/06.tasks/`            | Task execution evidence            |
+| 07    | `docs/07.guides/`           | Human guides                       |
+| 08    | `docs/08.operations/`       | Operations policy                  |
+| 09    | `docs/09.runbooks/`         | Operational procedures             |
+| 10    | `docs/10.incidents/`        | Incident records                   |
+| 11    | `docs/11.postmortems/`      | Post-incident learning             |
+| 90    | `docs/90.references/`       | Stable references                  |
+| 99    | `docs/99.templates/`        | Document templates                 |
 
 ## 3. Bootstrap Loading Sequence
 
@@ -45,6 +45,9 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 - `docs/00.agent-governance/` must stay English-only.
 - `docs/01` to `docs/99` are read-only by default unless the user explicitly allows mutation.
 - Root shim files must remain concise and delegate details to this hub.
+- **In-place refactor only** — edit the canonical file directly; do not create parallel or renamed copies.
+- **Settings SSOT** — team settings in `settings.json` (git tracked); personal overrides in `settings.local.json` only; no duplication across both files.
+- **Secrets** — never write plaintext credentials; use Docker Secrets or `secrets/` bind-mounts exclusively.
 
 ## 5. Verification Gate
 

@@ -21,43 +21,48 @@ This directory is the canonical governance system for coding agents in this repo
 ## 3. Directory Structure
 
 - `rules/`: shared governance policies and completion gates.
-- `scopes/`: layer-specific boundaries and execution rules.
+  - `bootstrap.md` · `persona.md` · `task-checklists.md` · `stage-authoring-matrix.md`
+  - `documentation-protocol.md` (§6 DOCS 3 RULES HALT)
+  - `postflight-checklist.md` — run after every task before declaring completion
+- `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge (§6 §7 per scope).
 - `providers/`: runtime-specific overlays (`claude`, `gemini`, provider-neutral `agents-md`).
-- `memory/`: durable governance notes, templates, and audit findings.
+- `memory/`: durable governance notes and audit findings.
+  - `progress.md` — phase tracker and L1–L7 layer audit status
+- `subagent-protocol.md` — spawn rules, communication protocol, and agent lifecycle.
 
 ## 4. JIT Markers
 
 ### Stage Markers
 
-| Marker | Target | Purpose |
-| :--- | :--- | :--- |
-| `[LOAD:PRD]` | `docs/01.prd/README.md` | Product intent and requirements |
-| `[LOAD:ARD]` | `docs/02.ard/README.md` | Architecture reference |
-| `[LOAD:ADR]` | `docs/03.adr/README.md` | Decision history |
-| `[LOAD:SPECS]` | `docs/04.specs/README.md` | Technical source of truth |
-| `[LOAD:PLANS]` | `docs/05.plans/README.md` | Implementation planning |
-| `[LOAD:TASKS]` | `docs/06.tasks/README.md` | Execution evidence |
-| `[LOAD:GUIDES]` | `docs/07.guides/README.md` | Human-facing guidance |
-| `[LOAD:OPS]` | `docs/08.operations/README.md` | Operational policy |
-| `[LOAD:RUNBOOKS]` | `docs/09.runbooks/README.md` | Operational procedures |
-| `[LOAD:INCIDENTS]` | `docs/10.incidents/README.md` | Incident records |
-| `[LOAD:POSTMORTEMS]` | `docs/11.postmortems/README.md` | Lessons learned |
-| `[LOAD:REFERENCES]` | `docs/90.references/README.md` | Stable references |
-| `[LOAD:TEMPLATES]` | `docs/99.templates/README.md` | Document templates |
+| Marker               | Target                          | Purpose                         |
+| :------------------- | :------------------------------ | :------------------------------ |
+| `[LOAD:PRD]`         | `docs/01.prd/README.md`         | Product intent and requirements |
+| `[LOAD:ARD]`         | `docs/02.ard/README.md`         | Architecture reference          |
+| `[LOAD:ADR]`         | `docs/03.adr/README.md`         | Decision history                |
+| `[LOAD:SPECS]`       | `docs/04.specs/README.md`       | Technical source of truth       |
+| `[LOAD:PLANS]`       | `docs/05.plans/README.md`       | Implementation planning         |
+| `[LOAD:TASKS]`       | `docs/06.tasks/README.md`       | Execution evidence              |
+| `[LOAD:GUIDES]`      | `docs/07.guides/README.md`      | Human-facing guidance           |
+| `[LOAD:OPS]`         | `docs/08.operations/README.md`  | Operational policy              |
+| `[LOAD:RUNBOOKS]`    | `docs/09.runbooks/README.md`    | Operational procedures          |
+| `[LOAD:INCIDENTS]`   | `docs/10.incidents/README.md`   | Incident records                |
+| `[LOAD:POSTMORTEMS]` | `docs/11.postmortems/README.md` | Lessons learned                 |
+| `[LOAD:REFERENCES]`  | `docs/90.references/README.md`  | Stable references               |
+| `[LOAD:TEMPLATES]`   | `docs/99.templates/README.md`   | Document templates              |
 
 ### Rule Markers
 
-| Marker | Rule |
-| :--- | :--- |
-| `[LOAD:RULES:BOOTSTRAP]` | `rules/bootstrap.md` |
-| `[LOAD:RULES:PERSONA]` | `rules/persona.md` |
-| `[LOAD:RULES:CHECKLISTS]` | `rules/task-checklists.md` |
+| Marker                      | Rule                              |
+| :-------------------------- | :-------------------------------- |
+| `[LOAD:RULES:BOOTSTRAP]`    | `rules/bootstrap.md`              |
+| `[LOAD:RULES:PERSONA]`      | `rules/persona.md`                |
+| `[LOAD:RULES:CHECKLISTS]`   | `rules/task-checklists.md`        |
 | `[LOAD:RULES:STAGE-MATRIX]` | `rules/stage-authoring-matrix.md` |
-| `[LOAD:RULES:STANDARDS]` | `rules/standards.md` |
-| `[LOAD:RULES:DOCS]` | `rules/documentation-protocol.md` |
-| `[LOAD:RULES:QUALITY]` | `rules/quality-standards.md` |
-| `[LOAD:RULES:AGENTIC]` | `rules/agentic.md` |
-| `[LOAD:RULES:GIT]` | `rules/git-workflow.md` |
+| `[LOAD:RULES:STANDARDS]`    | `rules/standards.md`              |
+| `[LOAD:RULES:DOCS]`         | `rules/documentation-protocol.md` |
+| `[LOAD:RULES:QUALITY]`      | `rules/quality-standards.md`      |
+| `[LOAD:RULES:AGENTIC]`      | `rules/agentic.md`                |
+| `[LOAD:RULES:GIT]`          | `rules/git-workflow.md`           |
 
 ## 5. Operational Procedure
 

@@ -41,3 +41,23 @@ Universal security standards and data protection protocols for `hy-home.docker`.
 
 - Periodically validate guardrails and access controls through controlled exercises.
 - Keep security guidance repository-realistic; remove references to nonexistent local paths.
+
+## 6. File Ownership SSOT
+
+| Path Pattern                     | Owner Agent        | Read-Only For                                    |
+| -------------------------------- | ------------------ | ------------------------------------------------ |
+| `scripts/check-all-hardening.sh` | `security-auditor` | all other agents                                 |
+| `scripts/check-*-baseline.sh`    | `security-auditor` | all other agents                                 |
+| `docs/10.incidents/`             | `security-auditor` | `incident-responder` (read)                      |
+| `infra/*/`                       | read-only          | audit only; changes owned by `infra-implementer` |
+
+## 7. Subagent Bridge
+
+```text
+# security-auditor agent preamble
+@import docs/00.agent-governance/scopes/security.md
+# H100:28 Audit pattern — threat-model → scan → report
+# OWASP Top 10 · ASVS L2 · Docker Secrets mandatory
+```
+
+Spawn via Task tool. Do not embed security policy inline in agent files.

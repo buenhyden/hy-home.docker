@@ -6,27 +6,88 @@ layer: agentic
 
 Universal entry shim for agent execution in `hy-home.docker`.
 
-## Bootstrap Sequence
+## §1 Bootstrap Sequence
 
 1. Load `[LOAD:RULES:BOOTSTRAP]` from `docs/00.agent-governance/rules/bootstrap.md`.
 2. Load `[LOAD:RULES:PERSONA]` from `docs/00.agent-governance/rules/persona.md`.
 3. Load `[LOAD:RULES:CHECKLISTS]` from `docs/00.agent-governance/rules/task-checklists.md`.
-4. Resolve task layer and load exactly one primary scope from `docs/00.agent-governance/scopes/`.
-5. For documentation authoring workflows, load `[LOAD:RULES:STAGE-MATRIX]` from `docs/00.agent-governance/rules/stage-authoring-matrix.md`.
-6. Use JIT loading for stage docs (`docs/01` to `docs/11`, `docs/90`, `docs/99`) only when required by the active task.
+4. Resolve task layer → load exactly one primary scope from `docs/00.agent-governance/scopes/`.
+5. For documentation workflows, load `[LOAD:RULES:STAGE-MATRIX]` from `docs/00.agent-governance/rules/stage-authoring-matrix.md`.
+6. JIT-load stage docs (`docs/01`–`docs/11`, `docs/90`, `docs/99`) only when required by the active task.
 
-## Hard Constraints
+## §2 Hard Constraints
 
-- Keep root instruction files thin; detailed policy must live in `docs/00.agent-governance/`.
-- Treat `docs/01` to `docs/99` as read-only by default; modify only with explicit user instruction.
-- Run relevant checks listed by active rules and scope before completion.
-- If multiple instruction files apply, the most specific in-scope file wins.
+- Root instruction files must stay thin; detailed policy lives in `docs/00.agent-governance/`.
+- `docs/01`–`docs/99` are read-only by default; modify only with explicit user instruction.
+- Run all checks listed by active rules and scope before declaring completion.
+- Most-specific in-scope instruction file wins when multiple apply.
 - System, developer, and direct user instructions always override repository instruction files.
+- **In-place refactor only** — do not create parallel files; edit the canonical file.
+- **Secrets** — never write plaintext; use Docker Secrets / `secrets/` mounts only.
+
+## §3 Agent Catalog
+
+| Agent                | File                                   | Scope Import         | H100 Pattern                   |
+| -------------------- | -------------------------------------- | -------------------- | ------------------------------ |
+| `infra-implementer`  | `.claude/agents/infra-implementer.md`  | `scopes/infra.md`    | H100:26 infra-architect        |
+| `iac-reviewer`       | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | H100:26 drift-detector (r/o)   |
+| `security-auditor`   | `.claude/agents/security-auditor.md`   | `scopes/security.md` | H100:28 vuln-scanner (r/o)     |
+| `incident-responder` | `.claude/agents/incident-responder.md` | `scopes/ops.md`      | H100:25 timeline-reconstructor |
+| `code-reviewer`      | `.claude/agents/code-reviewer.md`      | `scopes/common.md`   | H100:21 review (r/o)           |
+| `doc-writer`         | `.claude/agents/doc-writer.md`         | `scopes/docs.md`     | H100:81,92 docs                |
+
+Each agent `@imports` its scope file for project-specific constraints (SLO, network policy, secrets rules).
+
+**Skills** (orchestration — all agents may invoke):
+
+| Skill               | File                                  | H100 Pattern        |
+| ------------------- | ------------------------------------- | ------------------- |
+| `infra-validate`    | `.claude/skills/infra-validate.md`    | H100:20+26 pipeline |
+| `incident-response` | `.claude/skills/incident-response.md` | H100:25 response    |
+
+## §4 Orchestration Protocol
+
+```
+validate → change → verify
+```
+
+1. `bash scripts/validate-docker-compose.sh` — BEFORE any infra change.
+2. Apply change (in-place).
+3. `docker compose ps` — AFTER change to confirm service health.
+4. Run postflight: `docs/00.agent-governance/rules/postflight-checklist.md`.
+
+## §5 Documentation
+
+- Protocol: `docs/00.agent-governance/rules/documentation-protocol.md`
+- Templates: `docs/99.templates/<type>.template.md`
+- **DOCS 3 RULES (HALT):**
+  - R1: Read template → fill → `status:draft`. Infra trigger: service→ARD, network→ADR, prod→OPER first.
+  - R2: Folder change → README updated. BLOCKED until done.
+  - R3: `## Related Documents` required in every doc. INCOMPLETE without upstream links.
+
+## §6 Lint
+
+- All lint/format managed by `.pre-commit-config.yaml` — never run manually.
+
+## §7 Settings
+
+| File                          | Purpose                                            | Git Tracked         |
+| ----------------------------- | -------------------------------------------------- | ------------------- |
+| `.claude/settings.json`       | Team-shared permissions, hooks, denied MCP servers | ✅ Yes              |
+| `.claude/settings.local.json` | Personal overrides only                            | ❌ No (.gitignored) |
+
+**No duplication** — team settings must not appear in `settings.local.json`.
+
+## §8 Role Separation
+
+- **`scopes/*.md`** = policy SSOT (boundaries, permissions, SLOs, file ownership)
+- **`.claude/agents/*.md`** = runtime bridge (`@import` scope + H100 pattern)
+- Agents must not embed policy directly; they delegate to their imported scope.
 
 ## Canonical Governance
 
 - Hub: `docs/00.agent-governance/README.md`
 - Shared standards: `docs/00.agent-governance/rules/standards.md`
-- Documentation protocol: `docs/00.agent-governance/rules/documentation-protocol.md`
 - Quality gate: `docs/00.agent-governance/rules/quality-standards.md`
 - Git workflow: `docs/00.agent-governance/rules/git-workflow.md`
+- Subagent protocol: `docs/00.agent-governance/subagent-protocol.md`

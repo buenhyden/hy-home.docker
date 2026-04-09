@@ -37,3 +37,22 @@ title: 'Common Engineering Scope'
 
 - **Refactoring**: Proactively extract shared logic into common utilities when spotted in multiple layers.
 - **Legacy Code**: When touching legacy files, apply "Boy Scout Rule" (leave it cleaner than you found it).
+
+## 6. File Ownership SSOT
+
+| Path Pattern                 | Owner Agent     | Read-Only For                  |
+| ---------------------------- | --------------- | ------------------------------ |
+| `common/`, `lib/`, `shared/` | `code-reviewer` | read; changes by layer agent   |
+| `docs/04.specs/`             | `code-reviewer` | `infra-implementer` (read)     |
+| `.pre-commit-config.yaml`    | `code-reviewer` | all — never run hooks manually |
+
+## 7. Subagent Bridge
+
+```text
+# code-reviewer agent preamble
+@import docs/00.agent-governance/scopes/common.md
+# H100:21 Review pattern — read → assess → report
+# Clean Code · SOLID · no plaintext secrets
+```
+
+Spawn via Task tool. Do not embed common standards inline in agent files.

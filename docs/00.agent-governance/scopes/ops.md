@@ -36,3 +36,23 @@ title: 'Operations & SRE Scope'
 
 - **Backups**: Verified daily off-site backups for `04-data` volumes.
 - **Drills**: Periodically perform disaster recovery drills (Chaos Engineering).
+
+## 6. File Ownership SSOT
+
+| Path Pattern              | Owner Agent          | Read-Only For                |
+| ------------------------- | -------------------- | ---------------------------- |
+| `docs/09.runbooks/`       | `incident-responder` | all other agents             |
+| `docs/10.incidents/`      | `incident-responder` | `security-auditor` (read)    |
+| `docs/11.postmortems/`    | `incident-responder` | `doc-writer` (template fill) |
+| `infra/06-observability/` | `incident-responder` | read-only for others         |
+
+## 7. Subagent Bridge
+
+```text
+# incident-responder agent preamble
+@import docs/00.agent-governance/scopes/ops.md
+# H100:25 Postmortem pattern — timeline → RCA → remediation
+# MTTR target · LGTM stack · SEV1/SEV2 mandatory postmortem
+```
+
+Spawn via Task tool. Do not embed ops policy inline in agent files.

@@ -44,3 +44,19 @@ For completion, ensure affected README files and governance pointers remain accu
 - Remove obsolete instructions quickly in editable scope.
 - If breakages are found in read-only stages (`docs/01` to `docs/99`), log them in `docs/00.agent-governance/memory/` with recommended fixes.
 - Keep policy wording concise, explicit, and conflict-free.
+
+## 6. DOCS 3 RULES — HALT CONDITIONS
+
+These rules are blocking. Completion is **PROHIBITED** until all three pass.
+
+**R1 — Template First:**
+Read the matching template from `docs/99.templates/` → fill every section → set `status: draft`.
+Infrastructure triggers: new service → ARD first; network change → ADR first; production procedure → OPER first.
+
+**R2 — README Sync:**
+Any folder-level change (file added, moved, or removed) → the parent `README.md` MUST be updated.
+Agent is **BLOCKED** from marking task complete until this is done.
+
+**R3 — Related Documents:**
+Every document MUST contain a `## Related Documents` section with upstream links.
+A document without this section is **INCOMPLETE** regardless of content quality.

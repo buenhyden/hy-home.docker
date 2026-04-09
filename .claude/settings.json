@@ -1,0 +1,54 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "Bash(cat:*)",
+      "Bash(git:*)",
+      "Bash(python3:*)",
+      "Bash(bash scripts/validate-docker-compose.sh:*)",
+      "Bash(docker compose ps:*)",
+      "Bash(docker ps:*)"
+    ],
+    "deny": ["Bash(docker system prune:*)", "Bash(rm -rf:*)"]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/docker-compose-pre.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-validate.sh",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  },
+  "deniedMcpServers": [{ "serverName": "MCP_DOCKER" }, { "serverName": "notebooklm" }]
+}
