@@ -44,7 +44,8 @@ iac-reviewer (H100:26 + H100:29 integrated)
         ▼
 infra-implementer
   ① Receive result → record to memory/progress.md
-  ② BLOCK items → escalate to user
+  ② BLOCK (from security-auditor) → roll back change → escalate to user
+  ③ WARN (from iac-reviewer) → record findings → optional user notification
 ```
 
 ### 2.2 Skill Relationships
@@ -75,7 +76,15 @@ Add `## Team Communication Protocol` section:
 - **Sends (CRIT)**: `infra-implementer` — `"BLOCK: <reason>"` → pipeline halts
 - **Sends (PASS)**: `iac-reviewer` — `"validate-request: <file-list>"`
 
+Add image audit checklist item to Task Principles (required for `docker image ls` permission):
+
+- **Image audit**: for changed services, run `docker image ls <image>` to confirm pinned digest
+  or known tag; flag unpinned `latest` as WARN.
+
 ### 3.3 `iac-reviewer.md`
+
+Update frontmatter `h100_pattern` from `'26-infra-as-code/drift-detector'` to `'26+29'`.
+Update `AGENTS.md` catalog row for `iac-reviewer` to show `H100:26+29`.
 
 Add `## Team Communication Protocol` section + H100:29 Performance Check extension:
 
@@ -115,15 +124,23 @@ File: `.claude/skills/infra-cross-validate.md`
 
 ### 5.1 Additions
 
-| Permission                                                 | Rationale                           |
-| ---------------------------------------------------------- | ----------------------------------- |
-| `Bash(docker compose config:*)`                            | infra-validate Phase 2 static check |
-| `Bash(docker compose logs:*)`                              | infra-validate Phase 5 post-flight  |
-| `Bash(bash scripts/check-all-hardening.sh:*)`              | security-auditor H100:28            |
-| `Bash(bash scripts/check-doc-traceability.sh:*)`           | CI/CD H100:20                       |
-| `Bash(bash scripts/check-template-security-baseline.sh:*)` | CI/CD H100:20                       |
-| `Bash(docker inspect:*)`                                   | iac-reviewer drift detection        |
-| `Bash(docker image ls:*)`                                  | security-auditor image audit        |
+| Permission                                                 | Rationale                                                          |
+| ---------------------------------------------------------- | ------------------------------------------------------------------ |
+| `Bash(docker compose config:*)`                            | infra-validate Phase 2 static check                                |
+| `Bash(docker compose logs:*)`                              | infra-validate Phase 5 post-flight                                 |
+| `Bash(bash scripts/check-all-hardening.sh:*)`              | security-auditor H100:28                                           |
+| `Bash(bash scripts/check-doc-traceability.sh:*)`           | CI/CD H100:20                                                      |
+| `Bash(bash scripts/check-template-security-baseline.sh:*)` | CI/CD H100:20                                                      |
+| `Bash(docker inspect:*)`                                   | iac-reviewer drift detection                                       |
+| `Bash(docker image ls:*)`                                  | security-auditor image audit (see §3.2 image-audit checklist item) |
+
+**Retained (already present, not removed):**
+
+| Permission                  | Used by                                                    |
+| --------------------------- | ---------------------------------------------------------- |
+| `Bash(python3:*)`           | infra-validate Phase 3 drift parse                         |
+| `Bash(grep:*)`              | infra-validate secrets guard pattern                       |
+| `Bash(docker compose ps:*)` | infra-validate Phase 3+5 (wildcard covers `--format json`) |
 
 ### 5.2 Removals
 
@@ -143,19 +160,22 @@ File: `.claude/skills/infra-cross-validate.md`
 
 - No plaintext secrets under any circumstance.
 - `validate-docker-compose.sh` must run before every infra change; result recorded in `memory/progress.md`.
-- All checks operate via `.pre-commit-config.yaml` hooks — never invoked manually.
+- Lint/format checks are managed by `.pre-commit-config.yaml` — never invoked manually by agents.
+  Runtime validation scripts (`validate-docker-compose.sh`, `check-all-hardening.sh`, etc.) are
+  invoked directly by agents as part of infra-validate and infra-cross-validate workflows.
 - Domain policy for all infra-layer agents sourced from `scopes/infra.md` via `@import`.
 
 ## 7. Files Changed
 
-| File                                          | Action                                            |
-| --------------------------------------------- | ------------------------------------------------- |
-| `.claude/agents/infra-implementer.md`         | Add team communication protocol section           |
-| `.claude/agents/security-auditor.md`          | Add team communication protocol section           |
-| `.claude/agents/iac-reviewer.md`              | Add team protocol + H100:29 performance checklist |
-| `.claude/skills/infra-cross-validate.md`      | Create (pipeline orchestrator)                    |
-| `.claude/settings.json`                       | Full permission audit and reconstruct             |
-| `docs/00.agent-governance/memory/progress.md` | Append P5 alignment record                        |
+| File                                          | Action                                                                                           |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `.claude/agents/infra-implementer.md`         | Add team communication protocol section                                                          |
+| `.claude/agents/security-auditor.md`          | Add team communication protocol section                                                          |
+| `.claude/agents/iac-reviewer.md`              | Add team protocol + H100:29 performance checklist; update frontmatter to `h100_pattern: '26+29'` |
+| `AGENTS.md`                                   | Update `iac-reviewer` catalog row to `H100:26+29`                                                |
+| `.claude/skills/infra-cross-validate.md`      | Create (pipeline orchestrator)                                                                   |
+| `.claude/settings.json`                       | Full permission audit and reconstruct                                                            |
+| `docs/00.agent-governance/memory/progress.md` | Append P5 alignment record                                                                       |
 
 ## Related Documents
 
