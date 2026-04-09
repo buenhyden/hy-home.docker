@@ -141,6 +141,7 @@ File: `.claude/skills/infra-cross-validate.md`
 | `Bash(python3:*)`           | infra-validate Phase 3 drift parse                         |
 | `Bash(grep:*)`              | infra-validate secrets guard pattern                       |
 | `Bash(docker compose ps:*)` | infra-validate Phase 3+5 (wildcard covers `--format json`) |
+| `Bash(docker ps:*)`         | iac-reviewer live container snapshot comparison            |
 
 ### 5.2 Removals
 
