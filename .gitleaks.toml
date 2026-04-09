@@ -1,0 +1,8 @@
+title = "hy-home.docker gitleaks configuration"
+
+[extend]
+useDefault = true
+
+# Start from the upstream default ruleset and keep repo-specific tuning minimal.
+# Add narrowly scoped allowlists here only when the default detector produces
+# verified false positives for committed source files.

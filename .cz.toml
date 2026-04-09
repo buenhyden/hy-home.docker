@@ -1,0 +1,74 @@
+[tool.commitizen]
+  name            ="cz_customize"
+  version_provider="scm"
+
+  [tool.commitizen.customize]
+    example  ="feat(auth): Add login guard"
+    info_path=".gitmessage"
+    schema   ="<type>(<scope>): <subject>"
+
+    message_template="""{{change_type}}{% if scope %}({{scope}}){% endif %}: {{subject}}{% if body %}\n\n{{body}}{% endif %}{% if footer %}\n\n{{footer}}{% endif %}"""
+
+    bump_map={break="MAJOR", feat="MINOR", fix="PATCH", perf="PATCH", refactor="PATCH"}
+    bump_pattern='^(break|feat|fix|perf|refactor)'
+    change_type_map={feat="Feat", fix="Fix", refactor="Refactor", style="Style", docs="Docs", test="Test", build="Build", ci="CI", perf="Perf", revert="Revert", chore="Chore", release="Release", deps="Deps"}
+    change_type_order=[
+      "Build",
+      "CI",
+      "Chore",
+      "Deps",
+      "Docs",
+      "Feat",
+      "Fix",
+      "Perf",
+      "Refactor",
+      "Release",
+      "Revert",
+      "Style",
+      "Test",
+    ]
+    changelog_pattern='^(feat|fix|refactor|style|docs|test|build|ci|perf|revert|chore|release|deps)(\(.+\))?(!)?:'
+    commit_parser='''^(?P<change_type>feat|fix|refactor|style|docs|test|build|ci|perf|revert|chore|release|deps)(?:\((?P<scope>[^\)\r\n]+)\))?(?P<breaking>!)?: (?P<message>[^\r\n]*)(?:\n\n(?P<body>[\s\S]*))?$'''
+    schema_pattern='''^(feat|fix|refactor|style|docs|test|build|ci|perf|revert|chore|release|deps)(\([^\)\r\n]+\))?(!)?: [A-Z][^\r\n]*[^.\r\n](?:\n\n(?:BREAKING CHANGE|[A-Za-z-]+(?:\s#)?): [\s\S]+|\n\n(?:(?!(?:BREAKING CHANGE|[A-Za-z-]+(?:\s#)?): )[^\n]+(?:\n(?!\n)(?!(?:BREAKING CHANGE|[A-Za-z-]+(?:\s#)?): )[^\n]+)*)\n\n(?:BREAKING CHANGE|[A-Za-z-]+(?:\s#)?): [\s\S]+|\n\n(?:(?!(?:BREAKING CHANGE|[A-Za-z-]+(?:\s#)?): )[^\n]+(?:\n(?!\n)(?!(?:BREAKING CHANGE|[A-Za-z-]+(?:\s#)?): )[^\n]+)*))?$'''
+
+    [[tool.commitizen.customize.questions]]
+      choices=[
+        {value="build", name="build: Build system or dependency changes"},
+        {value="chore", name="chore: Miscellaneous maintenance work"},
+        {value="ci", name="ci: CI workflow or automation changes"},
+        {value="deps", name="deps: Dependency updates"},
+        {value="docs", name="docs: Documentation only changes"},
+        {value="feat", name="feat: A new feature"},
+        {value="fix", name="fix: A bug fix"},
+        {value="perf", name="perf: Performance improvements"},
+        {value="refactor", name="refactor: Code restructuring without behavior change"},
+        {value="release", name="release: Version or release changes"},
+        {value="revert", name="revert: Revert a previous commit"},
+        {value="style", name="style: Non-functional formatting or style updates"},
+        {value="test", name="test: Add, update, or remove tests"},
+      ]
+      message="Select the type of change you are committing"
+      name="change_type"
+      type="list"
+
+    [[tool.commitizen.customize.questions]]
+      message="Scope (optional, e.g. auth, api, ui)"
+      name   ="scope"
+      type   ="input"
+
+    [[tool.commitizen.customize.questions]]
+      message="Subject (uppercase first letter, no trailing period, max 75 chars)"
+      name   ="subject"
+      type   ="input"
+
+    [[tool.commitizen.customize.questions]]
+      message  ="Body (optional; explain what and why, use '-' bullets for multiple lines)"
+      multiline=true
+      name     ="body"
+      type     ="input"
+
+    [[tool.commitizen.customize.questions]]
+      message  ="Footer (optional; issue references or BREAKING CHANGE)"
+      multiline=true
+      name     ="footer"
+      type     ="input"

@@ -17,9 +17,9 @@ networks:
   k3d-hyhome:
     external: true
     name: ${K3D_HYHOME_NET_NAME:-k3d-hyhome}
-  openclaw_default:
-    external: true
-    name: ${OPENCLAW_DEFAULT_NAME:-openclaw_default}
+  # openclaw_default:
+  #   external: true
+  #   name: ${OPENCLAW_DEFAULT_NAME:-openclaw_default}
 
 secrets:
   # ── Common ─────────────────────────────────────────────
@@ -179,6 +179,10 @@ secrets:
   supabase_db_enc_key:
     file: ./secrets/data/supabase_db_enc_key.txt
 
+  # ── Data: SURREAL DB ──────────────────────────────────────
+  surreal_db_password:
+    file: ./secrets/db/surreal_db/surreal_db_password.txt
+
   # ── InfluxDB ─────────────────────────────────────────────
   influxdb_password:
     file: ./secrets/db/influxdb/influxdb_password.txt
@@ -190,6 +194,9 @@ secrets:
     file: ./secrets/db/couchdb/couchdb_password.txt
   couchdb_cookie:
     file: ./secrets/db/couchdb/couchdb_cookie.txt
+  # ── Open Notebook ──────────────────────────────────────────────
+  open_notebook_password:
+    file: ./secrets/tools/open_notebook_password.txt
 
 include:
   # Core stack
@@ -216,7 +223,7 @@ include:
   - infra/06-observability/docker-compose.dev.yml
   - infra/07-workflow/n8n/docker-compose.dev.yml
   - infra/07-workflow/airflow/docker-compose.dev.yml
-  - infra/08-ai/ollama/docker-compose.yml
+  # - infra/08-ai/ollama/docker-compose.yml
   # - infra/08-ai/open-webui/docker-compose.yml
   # - infra/09-tooling/locust/docker-compose.yml
   # - infra/09-tooling/registry/docker-compose.yml
@@ -229,3 +236,4 @@ include:
   - infra/11-laboratory/dozzle/docker-compose.yml
   # - infra/11-laboratory/portainer/docker-compose.yml
   - infra/11-laboratory/redisinsight/docker-compose.yml
+  - infra/11-laboratory/open-notebook/docker-compose.yml

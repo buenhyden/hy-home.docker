@@ -100,3 +100,5 @@ secrets/SENSITIVE_ENV_VARS.md
 
 .claude/settings.local.json
 .agent/
+
+volumes/

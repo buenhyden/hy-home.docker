@@ -1,0 +1,95 @@
+x-tier-label: &tier-label
+  hy-home.tier: admin
+
+volumes:
+  open-notebook-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MANAGEMENT_DIR}/open-notebook/data
+  surrealdb-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MANAGEMENT_DIR}/surrealdb/data
+
+services:
+  surrealdb:
+    profiles:
+      - admin
+      - dev
+    build:
+      context: ./surrealdb
+      dockerfile: Dockerfile
+    environment:
+      SURREALDB_USERNAME: ${SURREALDB_USERNAME}
+    ports:
+      - '${SURREALDB_HOST_PORT:-8000}:8000'
+    volumes:
+      - surrealdb-data:/mydata
+    labels:
+      <<: *tier-label
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.122
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/surreal", "isready", "--conn", "http://127.0.0.1:8000"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    secrets:
+      - surreal_db_password
+
+  open_notebook:
+    profiles:
+      - admin
+      - dev
+    image: lfnovo/open_notebook:v1-latest-single
+    pull_policy: always
+    ports:
+      - '${OPEN_NOTEBOOK_API_URL:-5055}:5055' # API (required!)
+    expose:
+      - ${OPEN_NOTEBOOK_WEB_URL:-8502}
+    environment:
+      - OPEN_NOTEBOOK_PASSWORD_FILE=/run/secrets/open_notebook_password
+      # Encryption key for credential storage (required)
+      - OPEN_NOTEBOOK_ENCRYPTION_KEY=${OPEN_NOTEBOOK_ENCRYPTION_KEY}
+
+      - API_URL=https://open-notebook.${DEFAULT_URL}
+
+      # Database (required)
+      - SURREAL_URL=ws://surrealdb:8000/rpc
+      - SURREAL_USER=${SURREALDB_USERNAME}
+      - SURREAL_NAMESPACE=${SURREALDB_NAMESPACE}
+      - SURREAL_DATABASE=${SURREALDB_DATABASE}
+    volumes:
+      - open-notebook-data:/app/data
+    secrets:
+      - surreal_db_password
+      - open_notebook_password
+    depends_on:
+      surrealdb:
+        condition: service_healthy
+    restart: unless-stopped
+    command:
+      - '/bin/sh'
+      - '-c'
+      - |
+        export SURREAL_PASSWORD=$$(cat /run/secrets/surreal_db_password | tr -d '\n');
+        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf;
+    extra_hosts:
+      - 'host.docker.internal:172.21.224.1'
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.123
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.open-notebook.rule: Host(`open-notebook.${DEFAULT_URL}`)
+      traefik.http.routers.open-notebook.entrypoints: websecure
+      traefik.http.routers.open-notebook.tls: 'true'
+      traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,large-body@file,sso-errors@file
+      traefik.http.services.open-notebook.loadbalancer.server.port: ${OPEN_NOTEBOOK_WEB_URL:-8502}

@@ -1,0 +1,6 @@
+# Shared shellcheck defaults for local runs and pre-commit.
+# Keep severity aligned with `.pre-commit-config.yaml`.
+
+severity=warning
+external-sources=true
+source-path=SCRIPTDIR

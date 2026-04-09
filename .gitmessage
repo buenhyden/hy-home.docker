@@ -1,6 +1,6 @@
 ################
 # <type>(<scope>): <subject> 의 형식으로 제목을 아래 공백줄에 작성
-# 제목은 50자 이내 / 변경사항이 "무엇"인지 명확히 작성 / 끝에 마침표 X
+# 제목은 75자 이내 / 변경사항이 "무엇"인지 명확히 작성 / 끝에 마침표 X
 # 타입과 제목은 필수 / 범위(scope)는 선택
 # 예) feat(auth): 로그인 기능 추가
 <type>(<scope>): <subject>
@@ -44,6 +44,8 @@
 #             ex) chore(git): .gitignore 설정 추가
 #   release : 버전 릴리즈
 #             ex) release: v1.0.0 배포
+#   deps    : 의존성 변경
+#             ex) deps(pre-commit): commitizen 훅 추가
 # ------------------
 # Remember me ~
 #   Capitalize the subject line

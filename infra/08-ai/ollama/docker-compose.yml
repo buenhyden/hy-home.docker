@@ -1,10 +1,10 @@
 x-tier-label: &tier-label
   hy-home.tier: ai
 
-networks:
-  openclaw_default:
-    external: true
-    name: openclaw_default
+# networks:
+#   openclaw_default:
+#     external: true
+#     name: openclaw_default
 
 volumes:
   ollama-data:
@@ -56,7 +56,7 @@ services:
       traefik.http.services.ollama.loadbalancer.server.port: ${OLLAMA_PORT:-11434}
       traefik.http.routers.ollama.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
     networks:
-      openclaw_default:
+      # openclaw_default:
       infra_net:
         ipv4_address: 172.19.0.201
     healthcheck:

@@ -47,6 +47,10 @@ http:
         removeHeader: false
         usersFile: "/run/secrets/traefik_opensearch_basicauth_password"
 
+    large-body:
+      buffering:
+        maxRequestBodyBytes: 104857600  # 100MB
+
     req-rate-limit:
       rateLimit:
         average: 1000 # 초당 평균 100개 요청
@@ -71,6 +75,7 @@ http:
           - req-rate-limit
           - req-retry
           - req-circuit-breaker
+
     openclaw-secure-headers:
       headers:
         stsSeconds: 31536000

@@ -21,7 +21,7 @@ repos:
       - id: yamllint
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.21.0
+    rev: v0.22.0
     hooks:
       - id: markdownlint-cli2
         require_serial: true
@@ -34,12 +34,12 @@ repos:
 
   # --- 3. Actions & CI Configuration ---
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.11
+    rev: v1.7.12
     hooks:
       - id: actionlint
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.37.0
+    rev: 0.37.1
     hooks:
       - id: check-dependabot
 
@@ -56,9 +56,10 @@ repos:
 
   # --- 5. Security ---
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.30.1
+    rev: v8.30.0
     hooks:
       - id: gitleaks
+        args: ["--config=.gitleaks.toml"]
 
   # --- 6. Local Project Specific ---
   - repo: local
@@ -86,3 +87,10 @@ repos:
         files: (docker-compose\.yml|\.env\.example|infra/.*)
         pass_filenames: false
         stages: [pre-push]
+  # --- 7. 커밋 및 메시지 (Release) ---
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.13.9
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+        args: [--allow-abort, --message-length-limit=75]

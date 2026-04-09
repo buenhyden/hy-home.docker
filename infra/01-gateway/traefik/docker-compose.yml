@@ -40,8 +40,8 @@ services:
     networks:
       k3d-hyhome:
         ipv4_address: 172.18.0.2
-      openclaw_default:
-        ipv4_address: 172.20.0.5
+      # openclaw_default:
+      #   ipv4_address: 172.20.0.5
       infra_net:
         ipv4_address: 172.19.0.2
         aliases:
