@@ -13,10 +13,13 @@ config:
 # Shared markdownlint-cli2 rules for docs and root markdown files.
 ignores:
   - ".agent/"
+  - ".claude/"
   - ".git/"
   - ".history/"
   - ".mypy_cache/"
   - ".vscode/"
+  - "archive/"
+  - "artifacts/"
   - "node_modules/"
   - "dist/"
   - "coverage/"
@@ -25,7 +28,7 @@ ignores:
   - "CLAUDE.md"
   - "GEMINI.md"
   - "docs/00.agent-governance/memory/template.md"
-# 자동 고침 활성화
+# Markdown auto-fix remains the canonical document formatter in pre-commit.
 fix: true
 # 출력 포맷(선택)
 # outputFormatters:

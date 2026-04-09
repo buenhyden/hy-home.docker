@@ -1,3 +1,6 @@
+minimum_pre_commit_version: '3.7.0'
+default_install_hook_types: [pre-commit, pre-push, commit-msg]
+
 repos:
   # --- 1. Basic Format & File System ---
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -14,45 +17,73 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
 
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        name: prettier (json/js/ts/css)
+        files: >-
+          (?x)^(
+            [^/]+\.json|
+            .*\.(?:json|[cm]?js|jsx|[cm]?ts|tsx|css|scss|mjs|cjs)
+          )$
+        exclude: >-
+          (?x)^(
+            (.*/)?package-lock\.json|
+            (.*/)?pnpm-lock\.yaml|
+            (.*/)?yarn\.lock|
+            (.*/)?bun\.lockb?|
+            projects/storybook/mcp/|
+            archive/|
+            artifacts/
+          )
+
   # --- 2. Linting (YAML, Markdown, Shell) ---
   - repo: https://github.com/adrienverge/yamllint.git
     rev: v1.38.0
     hooks:
       - id: yamllint
+        files: \.(yml|yaml)$
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
     rev: v0.22.0
     hooks:
       - id: markdownlint-cli2
         require_serial: true
+        files: \.md$
 
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.11.0.1
     hooks:
       - id: shellcheck
         args: ["--severity=warning"]
+        files: \.sh$
 
   # --- 3. Actions & CI Configuration ---
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.12
     hooks:
       - id: actionlint
+        files: ^\.github/workflows/.*\.(yml|yaml)$
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 0.37.1
     hooks:
       - id: check-dependabot
+        files: ^\.github/dependabot\.yml$
 
   - repo: https://github.com/zizmorcore/zizmor-pre-commit
     rev: v1.23.1
     hooks:
       - id: zizmor
+        files: ^\.github/workflows/.*\.(yml|yaml)$
 
   # --- 4. Infrastructure & Docker ---
   - repo: https://github.com/hadolint/hadolint
     rev: v2.14.0
     hooks:
       - id: hadolint-docker
+        files: (^|/)(Dockerfile|Dockerfile\.[^/]+)$
 
   # --- 5. Security ---
   - repo: https://github.com/gitleaks/gitleaks
@@ -76,7 +107,7 @@ repos:
         name: Validate Docker Compose
         entry: ./scripts/validate-docker-compose.sh
         language: script
-        files: (docker-compose\.yml|\.env\.example|infra/.*)
+        files: ^(docker-compose\.yml|\.env\.example|infra/.*|scripts/validate-docker-compose\.sh)$
         pass_filenames: false
         stages: [pre-push]
   # --- 7. 커밋 및 메시지 (Release) ---

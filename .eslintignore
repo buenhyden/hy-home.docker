@@ -1,3 +1,6 @@
+# Shared fallback ignores for repository-level ESLint runs.
+# App-specific flat configs should declare their own canonical ignores.
+
 # Dependencies
 node_modules/
 .venv/
