@@ -1,0 +1,167 @@
+---
+title: Infra Team Agent Cross-Validation Design
+date: 2026-04-10
+status: approved
+---
+
+# Infra Team Agent Cross-Validation Design
+
+## 1. Context and Objective
+
+This spec defines the implementation of a **Pipeline Team Agent** pattern for
+`hy-home.docker` that auto-triggers cross-validation between `infra-implementer`
+and `security-auditor` on every infrastructure change, integrates H100:29
+(Performance) into `iac-reviewer`, and performs a full audit of `settings.json`
+permissions.
+
+## 2. Architecture
+
+### 2.1 Pipeline Flow
+
+```text
+[Infrastructure Change]
+        │
+        ▼
+infra-implementer
+  ① infra-validate skill (pre-flight)
+  ② Apply change (in-place)
+  ③ Post-flight check
+  ④ SendMessage → security-auditor ("audit-request: <file-list>")
+        │
+        ▼
+security-auditor
+  ① Security audit (OWASP/ASVS L2 + GitHub Actions §4)
+  ② CRIT found → SendMessage → infra-implementer ("BLOCK: <reason>") → HALT
+  ③ CRIT clear  → SendMessage → iac-reviewer ("validate-request: <file-list>")
+        │
+        ▼
+iac-reviewer (H100:26 + H100:29 integrated)
+  ① Drift detection (existing)
+  ② Performance checks (new): SLO · resource limits · health-check gaps
+  ③ Write _workspace/cross-validate_<date>.md
+  ④ SendMessage → infra-implementer ("validate-complete: PASS|WARN <summary>")
+        │
+        ▼
+infra-implementer
+  ① Receive result → record to memory/progress.md
+  ② BLOCK items → escalate to user
+```
+
+### 2.2 Skill Relationships
+
+| Skill                        | Purpose                                | Trigger                        |
+| ---------------------------- | -------------------------------------- | ------------------------------ |
+| `infra-validate`             | Single-agent pre/post-flight           | Before and after every change  |
+| `infra-cross-validate` (new) | Team orchestrator for cross-validation | After infra-validate completes |
+
+Execution order: `infra-validate` → apply change → `infra-cross-validate`
+
+## 3. Agent Changes
+
+### 3.1 `infra-implementer.md`
+
+Add `## Team Communication Protocol` section:
+
+- **Sends to**: `security-auditor` — `"audit-request: <file-list>"` after change applied
+- **Receives from**: `security-auditor` — `"BLOCK: <reason>"` or `"audit-complete"`
+- **Receives from**: `iac-reviewer` — `"validate-complete: PASS|WARN <summary>"`
+- **On BLOCK**: roll back change → escalate to user
+
+### 3.2 `security-auditor.md`
+
+Add `## Team Communication Protocol` section:
+
+- **Receives from**: `infra-implementer` — `"audit-request: <file-list>"`
+- **Sends (CRIT)**: `infra-implementer` — `"BLOCK: <reason>"` → pipeline halts
+- **Sends (PASS)**: `iac-reviewer` — `"validate-request: <file-list>"`
+
+### 3.3 `iac-reviewer.md`
+
+Add `## Team Communication Protocol` section + H100:29 Performance Check extension:
+
+- **Receives from**: `security-auditor` — `"validate-request: <file-list>"`
+- **Sends to**: `infra-implementer` — `"validate-complete: PASS|WARN <summary>"`
+
+Performance checklist additions (H100:29):
+
+- `LATENCY_SLO < 200ms` — flag services missing health-check definition
+- `mem_limit` / `cpus` undeclared → WARN
+- `restart` policy unset → WARN
+- Resource ceiling absent on stateful services → WARN
+
+## 4. New Skill: `infra-cross-validate`
+
+File: `.claude/skills/infra-cross-validate.md`
+
+**Phases:**
+
+| Phase | Actor             | Action                    | Exit                        |
+| ----- | ----------------- | ------------------------- | --------------------------- |
+| 1     | security-auditor  | Security audit            | CRIT → HALT, PASS → Phase 2 |
+| 2     | iac-reviewer      | Drift + performance check | WARN collected → Phase 3    |
+| 3     | infra-implementer | Consolidate results       | Write workspace + progress  |
+
+**Error handling:**
+
+| Condition         | Action                                                     |
+| ----------------- | ---------------------------------------------------------- |
+| Phase 1 CRIT      | Immediate HALT + rollback instruction to infra-implementer |
+| Phase 2 WARN      | Continue; include in summary report                        |
+| Agent unreachable | Note in report; escalate to user                           |
+
+**Output:** `_workspace/cross-validate_<YYYY-MM-DD>.md` + append to `memory/progress.md`
+
+## 5. settings.json Permission Audit
+
+### 5.1 Additions
+
+| Permission                                                 | Rationale                           |
+| ---------------------------------------------------------- | ----------------------------------- |
+| `Bash(docker compose config:*)`                            | infra-validate Phase 2 static check |
+| `Bash(docker compose logs:*)`                              | infra-validate Phase 5 post-flight  |
+| `Bash(bash scripts/check-all-hardening.sh:*)`              | security-auditor H100:28            |
+| `Bash(bash scripts/check-doc-traceability.sh:*)`           | CI/CD H100:20                       |
+| `Bash(bash scripts/check-template-security-baseline.sh:*)` | CI/CD H100:20                       |
+| `Bash(docker inspect:*)`                                   | iac-reviewer drift detection        |
+| `Bash(docker image ls:*)`                                  | security-auditor image audit        |
+
+### 5.2 Removals
+
+| Permission    | Reason                  |
+| ------------- | ----------------------- |
+| `Bash(cat:*)` | Replaced by `Read` tool |
+| `Bash(ls:*)`  | Replaced by `Glob` tool |
+
+### 5.3 Deny List Additions
+
+| Deny                          | Reason                                       |
+| ----------------------------- | -------------------------------------------- |
+| `Bash(docker compose down:*)` | Destructive — requires explicit user consent |
+| `Bash(docker volume rm:*)`    | Destructive — requires explicit user consent |
+
+## 6. Constraints
+
+- No plaintext secrets under any circumstance.
+- `validate-docker-compose.sh` must run before every infra change; result recorded in `memory/progress.md`.
+- All checks operate via `.pre-commit-config.yaml` hooks — never invoked manually.
+- Domain policy for all infra-layer agents sourced from `scopes/infra.md` via `@import`.
+
+## 7. Files Changed
+
+| File                                          | Action                                            |
+| --------------------------------------------- | ------------------------------------------------- |
+| `.claude/agents/infra-implementer.md`         | Add team communication protocol section           |
+| `.claude/agents/security-auditor.md`          | Add team communication protocol section           |
+| `.claude/agents/iac-reviewer.md`              | Add team protocol + H100:29 performance checklist |
+| `.claude/skills/infra-cross-validate.md`      | Create (pipeline orchestrator)                    |
+| `.claude/settings.json`                       | Full permission audit and reconstruct             |
+| `docs/00.agent-governance/memory/progress.md` | Append P5 alignment record                        |
+
+## Related Documents
+
+- `docs/00.agent-governance/scopes/infra.md`
+- `docs/00.agent-governance/scopes/security.md`
+- `docs/00.agent-governance/rules/github-governance.md`
+- `docs/00.agent-governance/rules/quality-standards.md`
+- `.claude/skills/infra-validate.md`
+- `docs/00.agent-governance/memory/progress.md`
