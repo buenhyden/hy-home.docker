@@ -1,4 +1,5 @@
 extends: relaxed
+# Shared yamllint baseline for repository YAML files.
 rules:
   line-length: disable
   document-start: disable

@@ -1,5 +1,6 @@
 # Hadolint configuration shared by CI and pre-commit
 # https://github.com/hadolint/hadolint#configure
+# Keep this file intentionally small and add only repo-verified exceptions.
 ignored:
   - DL3008
   - DL3018

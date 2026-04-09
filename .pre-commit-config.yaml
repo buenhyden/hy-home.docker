@@ -64,14 +64,6 @@ repos:
   # --- 6. Local Project Specific ---
   - repo: local
     hooks:
-      - id: eslint-react-ts
-        name: eslint (react-ts)
-        entry: npm run lint --prefix projects/storybook/react-ts
-        language: system
-        types: [javascript, jsx, ts, tsx]
-        files: ^projects/storybook/react-ts/
-        pass_filenames: false
-
       - id: eslint-nextjs
         name: eslint (nextjs)
         entry: npm run lint --prefix projects/storybook/nextjs

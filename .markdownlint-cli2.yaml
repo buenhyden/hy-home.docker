@@ -10,6 +10,7 @@ config:
       - br
       - p
   MD024: false
+# Shared markdownlint-cli2 rules for docs and root markdown files.
 ignores:
   - ".agent/"
   - ".git/"
