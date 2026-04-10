@@ -41,7 +41,13 @@ Gemini merges context from multiple files. Within this repository:
 - Use `/memory refresh` after editing instruction files.
 - Keep imports explicit and remove stale references quickly.
 
-## 5. References
+## Related Documents
+
+- `docs/00.agent-governance/providers/agents-md.md`
+- `docs/00.agent-governance/rules/github-governance.md`
+- `docs/00.agent-governance/rules/bootstrap.md`
+
+## References
 
 - <https://google-gemini.github.io/gemini-cli/docs/cli/gemini-md.html>
 - <https://google-gemini.github.io/gemini-cli/docs/get-started/configuration.html>

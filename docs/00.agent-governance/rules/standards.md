@@ -48,3 +48,9 @@ This section is intentionally thin to avoid duplication. Refer to that document 
 - PR completion gate (required checks, required reviews, CODEOWNERS).
 - GitHub Actions security baseline (least-privilege, OIDC, pinned actions, secret safety).
 - AI instruction precedence (Copilot instructions vs. repo-local governance).
+
+## Related Documents
+
+- `docs/00.agent-governance/rules/bootstrap.md`
+- `docs/00.agent-governance/rules/github-governance.md`
+- `docs/00.agent-governance/rules/quality-standards.md`

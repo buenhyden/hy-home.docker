@@ -58,3 +58,10 @@ For structural or cross-cutting changes:
 2. Validate link integrity for changed governance/root files.
 3. Confirm policy text matches current workspace reality.
 4. Record out-of-scope breakages in `docs/00.agent-governance/memory/`.
+
+## Related Documents
+
+- `docs/00.agent-governance/README.md`
+- `docs/00.agent-governance/rules/task-checklists.md`
+- `docs/00.agent-governance/rules/github-governance.md`
+- `docs/00.agent-governance/scopes/docs.md`

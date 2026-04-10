@@ -20,7 +20,7 @@ title: 'Common Engineering Scope'
   - Classes/Types: `PascalCase`
   - Constants: `SCREAMING_SNAKE_CASE`
   - Files: `kebab-case.ext`
-- **Formatting**: Adhere to Prettier/ESLint defaults for the project.
+- **Formatting**: Follow repository-configured lint/format behavior mediated by `.pre-commit-config.yaml`; do not rely on ad hoc manual commands.
 
 ## 3. Implementation Flow
 
@@ -57,3 +57,9 @@ title: 'Common Engineering Scope'
 ```
 
 Spawn via Task tool. Do not embed common standards inline in agent files.
+
+## Related Documents
+
+- `docs/00.agent-governance/rules/quality-standards.md`
+- `docs/00.agent-governance/rules/github-governance.md`
+- `docs/00.agent-governance/rules/postflight-checklist.md`

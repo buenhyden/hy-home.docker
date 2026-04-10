@@ -15,7 +15,7 @@ Running record of harness gap remediation. Updated by agents after each phase.
 | P1 — scopes + governance files | ✅ Done | 2026-04-09 | All 5 scopes: §6 File Ownership + §7 Subagent Bridge added; subagent-protocol.md + postflight-checklist.md + memory/progress.md created      |
 | P2 — agents/ (5 files)         | ✅ Done | 2026-04-09 | infra-implementer · security-auditor · incident-responder · code-reviewer · doc-writer — all @import scope + H100 pattern                    |
 | P3 — validate + final verify   | ✅ Done | 2026-04-09 | validate-docker-compose.sh ✅ · settings.json git-tracked ✅ · settings.local personal-only ✅ · no duplication ✅                           |
-| P4 — GitHub governance alignment | ✅ Done | 2026-04-10 | github-governance.md created; README/bootstrap/standards/git-workflow/quality-standards updated; common.md lint fix; provider overlays clarified; code-reviewer + security-auditor updated |
+| P4 — GitHub governance alignment | ✅ Done | 2026-04-10 | github-governance.md created; README/bootstrap/standards/git-workflow/quality-standards updated; common/frontend scope validation text normalized; provider overlays clarified; code-reviewer + security-auditor updated |
 
 ## Layer Audit (L1–L7)
 
@@ -40,9 +40,11 @@ Running record of harness gap remediation. Updated by agents after each phase.
 | git-workflow.md — PR protocol | ✅ Updated | §3 step 4 added; §5 reference to github-governance.md |
 | quality-standards.md — "done" gate | ✅ Updated | §5 extended with 10-gate GitHub checklist |
 | scopes/common.md — lint/format contradiction | ✅ Updated | Replaced `npm run lint/format` with pre-commit-config.yaml discipline |
+| scopes/frontend.md — validation contradiction | ✅ Updated | Removed manual lint instruction; clarified repo verification path |
 | providers/agents-md.md — hierarchy | ✅ Updated | §4 Instruction Hierarchy and Precedence added |
 | providers/claude.md — hierarchy | ✅ Updated | §4 Instruction Precedence added; §3 step 5 added |
 | providers/gemini.md — hierarchy | ✅ Updated | §4 Instruction Precedence added; §3 step 5 added |
+| Governance docs traceability | ✅ Updated | Added `## Related Documents` to newly touched governance/provider/scope files |
 | .claude/agents/code-reviewer.md | ✅ Updated | GitHub completion gate added to completion protocol |
 | .claude/agents/security-auditor.md | ✅ Updated | GitHub Actions scope added as Task Principle 5 |
 | .claude/agents/infra-implementer.md | ✅ Aligned | No PR-related behavior; no update needed |

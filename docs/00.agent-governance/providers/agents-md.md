@@ -37,7 +37,14 @@ This repository uses multiple overlapping instruction file conventions. Preceden
 When a Copilot-style instruction conflicts with repo-local governance, the stricter repo-local rule wins.
 When it supplements without conflict, it may be followed.
 
-## 5. References
+## Related Documents
+
+- `docs/00.agent-governance/rules/github-governance.md`
+- `docs/00.agent-governance/rules/standards.md`
+- `docs/00.agent-governance/providers/claude.md`
+- `docs/00.agent-governance/providers/gemini.md`
+
+## References
 
 - <https://openai.com/index/introducing-codex/>
 - <https://agents.md/>

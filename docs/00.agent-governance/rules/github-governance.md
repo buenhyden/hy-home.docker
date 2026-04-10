@@ -67,3 +67,9 @@ If any gate is unmet, the task status is "blocked" not "done."
 - `docs/00.agent-governance/providers/claude.md`
 - `docs/00.agent-governance/providers/gemini.md`
 - `docs/00.agent-governance/memory/progress.md`
+
+## References
+
+- <https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets>
+- <https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions>
+- <https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions>

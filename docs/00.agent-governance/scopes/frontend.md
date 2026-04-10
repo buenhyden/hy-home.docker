@@ -26,7 +26,9 @@ title: 'Frontend UI/UX Scope'
 
 1. **Prototypes**: Verify design intent with visual regression tools when UI changes are significant.
 2. **Componentry**: Build modular, reusable components with strict TypeScript types.
-3. **Validation**: Run `npm run lint` and `npm run build` before pushing to verify bundle optimization.
+3. **Validation**: Use the repository verification path for frontend changes.
+   Local build or type-check commands may be run when they validate frontend behavior,
+   but lint/format discipline remains governed by `.pre-commit-config.yaml` and must not be replaced with ad hoc manual lint commands.
 
 ## 4. Operational Procedures
 
@@ -37,3 +39,9 @@ title: 'Frontend UI/UX Scope'
 
 - **Visual Regression**: Use Playwright or similar for visual verification of UI changes.
 - **Theming**: Support Dark Mode by default using Tailwind's `class` or `media` strategy.
+
+## Related Documents
+
+- `docs/00.agent-governance/scopes/common.md`
+- `docs/00.agent-governance/rules/quality-standards.md`
+- `docs/00.agent-governance/rules/github-governance.md`

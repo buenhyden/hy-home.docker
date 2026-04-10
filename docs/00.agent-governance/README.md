@@ -80,3 +80,10 @@ This directory is the canonical governance system for coding agents in this repo
 - Keep policy concise and non-contradictory.
 - Remove stale links and nonexistent command references immediately in editable scope.
 - For out-of-scope breakages, record findings in an English memory note with remediation guidance.
+
+## Related Documents
+
+- `docs/00.agent-governance/rules/bootstrap.md`
+- `docs/00.agent-governance/rules/github-governance.md`
+- `docs/00.agent-governance/rules/standards.md`
+- `docs/00.agent-governance/subagent-protocol.md`

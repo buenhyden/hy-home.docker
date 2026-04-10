@@ -41,6 +41,12 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 - Prefer path-scoped instruction files instead of large monolithic root files.
 - After instruction updates, start a fresh run or reload context so new guidance is effective.
 
-## 6. References
+## Related Documents
+
+- `docs/00.agent-governance/providers/agents-md.md`
+- `docs/00.agent-governance/rules/github-governance.md`
+- `docs/00.agent-governance/rules/bootstrap.md`
+
+## References
 
 - <https://docs.anthropic.com/en/docs/claude-code/memory>
