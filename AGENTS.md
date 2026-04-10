@@ -30,7 +30,7 @@ Universal entry shim for agent execution in `hy-home.docker`.
 | Agent                | File                                   | Scope Import         | H100 Pattern                   |
 | -------------------- | -------------------------------------- | -------------------- | ------------------------------ |
 | `infra-implementer`  | `.claude/agents/infra-implementer.md`  | `scopes/infra.md`    | H100:26 infra-architect        |
-| `iac-reviewer`       | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | H100:26 drift-detector (r/o)   |
+| `iac-reviewer`       | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | H100:26+29 drift+perf (r/o)    |
 | `security-auditor`   | `.claude/agents/security-auditor.md`   | `scopes/security.md` | H100:28 vuln-scanner (r/o)     |
 | `incident-responder` | `.claude/agents/incident-responder.md` | `scopes/ops.md`      | H100:25 timeline-reconstructor |
 | `code-reviewer`      | `.claude/agents/code-reviewer.md`      | `scopes/common.md`   | H100:21 review (r/o)           |
