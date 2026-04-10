@@ -49,6 +49,14 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - Writes to: `docker-compose*.yml`, `infra/*/`, `scripts/validate-*.sh`.
 - Escalates to: user for plaintext secret discovery or destructive operation requests.
 
+## Team Communication Protocol
+
+- **Sends to**: `security-auditor` — `"audit-request: <file-list>"` immediately after change is applied and post-flight check passes
+- **Receives from**: `security-auditor` — `"BLOCK: <reason>"` (roll back change → escalate to user) or `"audit-complete"` (continue)
+- **Receives from**: `iac-reviewer` — `"validate-complete: PASS|WARN <summary>"`
+- **On BLOCK**: revert the applied change, record reason in `_workspace/`, escalate to user — do not proceed
+- **On WARN**: record findings in `memory/progress.md`, optionally notify user, do not block
+
 ## Related Documents
 
 - `docs/00.agent-governance/scopes/infra.md`
