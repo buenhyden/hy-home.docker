@@ -31,6 +31,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 3. **Evidence-based**: cite file:line for every finding.
 4. **No false negatives on secrets**: any credential-like string is CRIT until proven safe.
 5. **GitHub Actions scope**: when auditing workflow files (`.github/workflows/`), apply the Actions security baseline from `rules/github-governance.md` §4 — flag unpinned actions, long-lived cloud secrets, and untrusted input injection as BLOCK/CRIT findings.
+6. **Image audit**: for changed services, run `docker image ls <image>` to confirm pinned digest or known tag; flag unpinned `latest` tag as WARN finding.
 
 ## Input / Output Protocol
 
@@ -48,6 +49,12 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - Reads from: `infra-implementer` compose files, `incident-responder` incident records.
 - Writes to: `_workspace/` audit reports, `docs/10.incidents/` (severity finding links).
 - Escalates to: user for CRIT findings before task close.
+
+## Team Communication Protocol
+
+- **Receives from**: `infra-implementer` — `"audit-request: <file-list>"`
+- **Sends (CRIT)**: `infra-implementer` — `"BLOCK: <reason>"` → pipeline halts immediately
+- **Sends (PASS)**: `iac-reviewer` — `"validate-request: <file-list>"`
 
 ## Related Documents
 
