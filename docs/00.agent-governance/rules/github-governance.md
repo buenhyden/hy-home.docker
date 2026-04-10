@@ -37,13 +37,15 @@ Repo-local stricter rules always override this document; never weaken them on th
 - Untrusted input into `$GITHUB_ENV`, `$GITHUB_OUTPUT`, or `run:` interpolation is a security injection risk — flag as BLOCK.
 - Reusable workflows called from external repositories must be pinned and reviewed before use.
 
-## 5. AI Instruction Hierarchy and Copilot Compatibility
+## 5. Local Instruction Authority
 
-- GitHub Copilot repository instructions (`.github/copilot-instructions.md` or path-level files) are advisory inputs.
-- When Copilot-style instructions conflict with this repository's governance, the stricter repo-local rule wins.
-- Agents must not silently adopt Copilot instructions that contradict `docs/00.agent-governance/` policy.
-- If a Copilot instruction supplements rather than conflicts with local governance, it may be followed.
-- Root shim files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) remain the primary entry points; Copilot instruction files do not replace them.
+- This repository does not adopt a GitHub-native instruction hierarchy for agent execution.
+- Instruction authority lives in repo-local assets only:
+  - root shims: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`
+  - governance SSoT: `docs/00.agent-governance/`
+  - runtime controls: `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, `.claude/skills/`
+- GitHub is used here for repository protection, PR workflow, and Actions execution; it is not the canonical home of agent instruction policy.
+- Any future GitHub-native instruction file must be treated as out-of-scope until the repository governance explicitly adopts it.
 
 ## 6. Completion Gate (GitHub-Specific)
 
@@ -72,4 +74,3 @@ If any gate is unmet, the task status is "blocked" not "done."
 
 - <https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets>
 - <https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions>
-- <https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions>

@@ -32,7 +32,8 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 
 - `CLAUDE.md` is the root shim; it delegates to `AGENTS.md` and provider overlays.
 - `docs/00.agent-governance/` governance files are the policy SSOT and override provider defaults.
-- GitHub Copilot instructions (if present) are subordinate to repo-local governance. Do not silently adopt any Copilot instruction that weakens a stricter local rule.
+- `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, and `.claude/skills/` are the runtime enforcement layer for Claude-specific behavior.
+- GitHub-native instruction files are not part of this repository's active instruction hierarchy.
 - Personal `settings.local.json` may not override team policy in `settings.json`.
 
 ## 5. Operational Practices

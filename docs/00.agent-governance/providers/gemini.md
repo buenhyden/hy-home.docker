@@ -32,7 +32,8 @@ Gemini merges context from multiple files. Within this repository:
 
 - `GEMINI.md` is the root shim; it delegates to `AGENTS.md` and provider overlays.
 - `docs/00.agent-governance/` governance files are the policy SSOT and override Gemini defaults.
-- GitHub Copilot instructions (if present) are subordinate to repo-local governance. Do not silently adopt any Copilot instruction that weakens a stricter local rule.
+- `.claude/agents/`, `.claude/skills/`, and the shared governance docs define the repo-local behavior Gemini must follow when operating in this workspace.
+- GitHub-native instruction files are not part of this repository's active instruction hierarchy.
 
 ## 5. Operational Practices
 

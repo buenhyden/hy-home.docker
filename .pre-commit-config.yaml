@@ -33,6 +33,7 @@ repos:
             (.*/)?pnpm-lock\.yaml|
             (.*/)?yarn\.lock|
             (.*/)?bun\.lockb?|
+            \.claude/|
             projects/storybook/mcp/|
             projects/storybook/nextjs/|
             archive/|
@@ -57,7 +58,7 @@ repos:
     rev: v0.11.0.1
     hooks:
       - id: shellcheck
-        args: ["--severity=warning"]
+        args: ['--severity=warning']
         files: \.sh$
 
   # --- 3. Actions & CI Configuration ---
@@ -91,7 +92,7 @@ repos:
     rev: v8.30.0
     hooks:
       - id: gitleaks
-        args: ["--config=.gitleaks.toml"]
+        args: ['--config=.gitleaks.toml']
 
   # --- 6. Local Project Specific ---
   - repo: local

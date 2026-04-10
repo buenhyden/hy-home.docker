@@ -24,9 +24,10 @@ This directory is the canonical governance system for coding agents in this repo
   - `bootstrap.md` · `persona.md` · `task-checklists.md` · `stage-authoring-matrix.md`
   - `documentation-protocol.md` (§6 DOCS 3 RULES HALT)
   - `postflight-checklist.md` — run after every task before declaring completion
-  - `github-governance.md` — GitHub-aligned policy baseline (branch protection, PR contracts, Actions security, AI instruction hierarchy)
+  - `github-governance.md` — GitHub-aligned policy baseline (branch protection, PR contracts, Actions security, local-instruction boundary)
 - `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge (§6 §7 per scope).
 - `providers/`: runtime-specific overlays (`claude`, `gemini`, provider-neutral `agents-md`).
+- `.claude/`: runtime enforcement layer for local agent execution (`settings.json`, hooks, agents, skills).
 - `memory/`: durable governance notes and audit findings.
   - `progress.md` — phase tracker and L1–L7 layer audit status
 - `subagent-protocol.md` — spawn rules, communication protocol, and agent lifecycle.

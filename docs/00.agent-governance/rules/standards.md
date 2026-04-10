@@ -47,7 +47,7 @@ This section is intentionally thin to avoid duplication. Refer to that document 
 - Branch protection and ruleset expectations.
 - PR completion gate (required checks, required reviews, CODEOWNERS).
 - GitHub Actions security baseline (least-privilege, OIDC, pinned actions, secret safety).
-- AI instruction precedence (Copilot instructions vs. repo-local governance).
+- Local instruction authority boundary (`docs/00.agent-governance/` + `.claude/` vs. GitHub-native instruction files).
 
 ## Related Documents
 
