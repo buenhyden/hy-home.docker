@@ -3,12 +3,12 @@ name: incident-response
 description: >
   Docker 인프라 장애 대응 절차서. 서비스 다운, SLO 위반, 시크릿 노출, 컨테이너 크래시 등
   모든 인프라 인시던트 발생 시 반드시 이 스킬을 사용할 것.
-  H100:25 timeline-reconstructor · rca-investigator · remediation-planner 패턴 적용.
+  타임라인 재구성 → RCA → 복구 계획 순서로 진행. MTTD/MTTR 측정.
 ---
 
 # incident-response
 
-H100:25 — 장애 대응 절차서 (docker-specific).
+장애 대응 절차서 (docker-specific). 타임라인 우선 → 증거 기반 RCA → MTTD/MTTR 기록.
 `incident-responder` 에이전트의 오케스트레이션 스킬.
 
 ## 심각도 분류

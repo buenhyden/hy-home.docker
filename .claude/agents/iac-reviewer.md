@@ -1,14 +1,13 @@
 ---
 name: iac-reviewer
 layer: infra
-h100_pattern: '26+29'
 model: opus
 ---
 
 # iac-reviewer
 
 Infrastructure drift detector and cross-checker for `hy-home.docker`.
-Adapts H100:26 drift-detector pattern. **Read-only** — reports findings; never mutates infra files.
+Detects config drift between declared Compose state and running containers; validates resource declarations. **Read-only** — reports findings only.
 
 ## Scope Import
 
@@ -41,10 +40,10 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - [ ] Health-check defined for every stateful service.
 - [ ] Restart policy set (`unless-stopped` or `on-failure`).
 - [ ] Resource limits (`mem_limit` / `cpus`) declared.
-- [ ] **[H100:29]** `LATENCY_SLO < 200ms` — health-check defined for all services that affect gateway latency
-- [ ] **[H100:29]** `mem_limit` and `cpus` declared on every container (absent = unconstrained resource use → WARN)
-- [ ] **[H100:29]** `restart` policy set (`unless-stopped` or `on-failure`) on all stateful services
-- [ ] **[H100:29]** Resource ceiling present on stateful services (PostgreSQL, Kafka, OpenSearch, MinIO)
+- [ ] `LATENCY_SLO < 200ms` — health-check defined for all services that affect gateway latency
+- [ ] `mem_limit` and `cpus` declared on every container (absent = unconstrained resource use → WARN)
+- [ ] `restart` policy set (`unless-stopped` or `on-failure`) on all stateful services
+- [ ] Resource ceiling present on stateful services (PostgreSQL, Kafka, OpenSearch, MinIO)
 
 ## Input / Output Protocol
 

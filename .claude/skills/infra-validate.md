@@ -8,7 +8,7 @@ description: >
 
 # infra-validate
 
-H100:20+26 — Compose 검증 파이프라인 (progressive disclosure).
+Compose 검증 파이프라인. pre-flight 정적 검사 → 드리프트 감지 → post-flight 상태 확인 순서로 실행.
 `infra-implementer`와 `iac-reviewer`가 공유하는 오케스트레이션 스킬.
 
 ## 실행 순서

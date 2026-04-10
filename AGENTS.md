@@ -27,23 +27,24 @@ Universal entry shim for agent execution in `hy-home.docker`.
 
 ## §3 Agent Catalog
 
-| Agent                | File                                   | Scope Import         | H100 Pattern                   |
-| -------------------- | -------------------------------------- | -------------------- | ------------------------------ |
-| `infra-implementer`  | `.claude/agents/infra-implementer.md`  | `scopes/infra.md`    | H100:26 infra-architect        |
-| `iac-reviewer`       | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | H100:26+29 drift+perf (r/o)    |
-| `security-auditor`   | `.claude/agents/security-auditor.md`   | `scopes/security.md` | H100:28 vuln-scanner (r/o)     |
-| `incident-responder` | `.claude/agents/incident-responder.md` | `scopes/ops.md`      | H100:25 timeline-reconstructor |
-| `code-reviewer`      | `.claude/agents/code-reviewer.md`      | `scopes/common.md`   | H100:21 review (r/o)           |
-| `doc-writer`         | `.claude/agents/doc-writer.md`         | `scopes/docs.md`     | H100:81,92 docs                |
+| Agent                | File                                   | Scope Import         | Role                                      |
+| -------------------- | -------------------------------------- | -------------------- | ----------------------------------------- |
+| `infra-implementer`  | `.claude/agents/infra-implementer.md`  | `scopes/infra.md`    | Immutable IaC, blast-radius-aware         |
+| `iac-reviewer`       | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | Drift detector + resource validator (r/o) |
+| `security-auditor`   | `.claude/agents/security-auditor.md`   | `scopes/security.md` | CVSS container auditor (r/o)              |
+| `incident-responder` | `.claude/agents/incident-responder.md` | `scopes/ops.md`      | MTTD/MTTR timeline & RCA                  |
+| `code-reviewer`      | `.claude/agents/code-reviewer.md`      | `scopes/common.md`   | Style + security + arch review (r/o)      |
+| `doc-writer`         | `.claude/agents/doc-writer.md`         | `scopes/docs.md`     | Tech writer + ops manual authoring        |
 
 Each agent `@imports` its scope file for project-specific constraints (SLO, network policy, secrets rules).
 
 **Skills** (orchestration — all agents may invoke):
 
-| Skill               | File                                  | H100 Pattern        |
-| ------------------- | ------------------------------------- | ------------------- |
-| `infra-validate`    | `.claude/skills/infra-validate.md`    | H100:20+26 pipeline |
-| `incident-response` | `.claude/skills/incident-response.md` | H100:25 response    |
+| Skill                  | File                                     | Purpose                                   |
+| ---------------------- | ---------------------------------------- | ----------------------------------------- |
+| `infra-validate`       | `.claude/skills/infra-validate.md`       | pre/post-flight Compose 검증 파이프라인   |
+| `incident-response`    | `.claude/skills/incident-response.md`    | 타임라인 재구성 → RCA → MTTD/MTTR 측정    |
+| `infra-cross-validate` | `.claude/skills/infra-cross-validate.md` | security-auditor → iac-reviewer 교차 검증 |
 
 ## §4 Orchestration Protocol
 
@@ -81,7 +82,7 @@ validate → change → verify
 ## §8 Role Separation
 
 - **`scopes/*.md`** = policy SSOT (boundaries, permissions, SLOs, file ownership)
-- **`.claude/agents/*.md`** = runtime bridge (`@import` scope + H100 pattern)
+- **`.claude/agents/*.md`** = runtime bridge (`@import` scope + role-specific capabilities)
 - Agents must not embed policy directly; they delegate to their imported scope.
 
 ## Canonical Governance

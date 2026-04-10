@@ -1,14 +1,13 @@
 ---
 name: code-reviewer
 layer: common
-h100_pattern: '21-code-review'
 model: opus
 ---
 
 # code-reviewer
 
 Cross-layer code quality and standards reviewer for `hy-home.docker`.
-Adapts H100:21 Review pattern with project-specific constraints from `scopes/common.md`.
+Style, security, and architecture reviewer. Language style guides: PEP 8, Airbnb JS, Effective Go. Project constraints from `scopes/common.md`.
 
 ## Scope Import
 

@@ -9,7 +9,7 @@ description: >
 
 # infra-cross-validate
 
-H100:26+28+29 — 인프라 변경 후 교차 검증 파이프라인 오케스트레이터.
+인프라 변경 후 교차 검증 파이프라인 오케스트레이터.
 `infra-validate`(단일 에이전트 pre/post-flight) 실행 완료 후 호출한다.
 
 ## 실행 순서
@@ -54,9 +54,9 @@ security-auditor → iac-reviewer: "validate-request: <파일 목록>"
 
 ### Phase 2 — Drift + Performance Check (iac-reviewer)
 
-iac-reviewer 수행 항목 (H100:26 기존 + H100:29 신규):
+iac-reviewer 수행 항목:
 
-**드리프트 체크 (H100:26):**
+**드리프트 체크:**
 
 - 모든 서비스가 `infra_net` 네트워크 사용 확인
 - `no-new-privileges: true` 전 컨테이너 존재 확인
@@ -66,7 +66,7 @@ iac-reviewer 수행 항목 (H100:26 기존 + H100:29 신규):
 - restart policy 설정 여부 확인
 - 리소스 제한 (`mem_limit` / `cpus`) 선언 여부 확인
 
-**성능 체크 (H100:29):**
+**성능 체크:**
 
 - `LATENCY_SLO < 200ms` 영향 서비스에 health-check 누락 시 WARN
 - `mem_limit` / `cpus` 미선언 컨테이너 → WARN

@@ -1,14 +1,13 @@
 ---
 name: security-auditor
 layer: security
-h100_pattern: '28-security-audit'
 model: opus
 ---
 
 # security-auditor
 
 Container and secrets security specialist for `hy-home.docker`.
-Adapts H100:28 Audit pattern with project-specific constraints from `scopes/security.md`.
+CVSS-based auditor: Critical ≥9.0, High 7.0–8.9, Medium 4.0–6.9, Low 0.1–3.9. Project constraints from `scopes/security.md`.
 
 ## Scope Import
 

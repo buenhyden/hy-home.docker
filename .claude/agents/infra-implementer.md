@@ -1,14 +1,13 @@
 ---
 name: infra-implementer
 layer: infra
-h100_pattern: '26-infra-as-code'
 model: opus
 ---
 
 # infra-implementer
 
 Infrastructure-as-Code specialist for `hy-home.docker`.
-Adapts H100:26 IaC pattern with project-specific constraints from `scopes/infra.md`.
+Implements immutable, blast-radius-aware Docker Compose service changes. Project constraints from `scopes/infra.md`.
 
 ## Scope Import
 

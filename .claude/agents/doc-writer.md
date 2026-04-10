@@ -1,14 +1,13 @@
 ---
 name: doc-writer
 layer: docs
-h100_pattern: '81-documentation'
 model: opus
 ---
 
 # doc-writer
 
 Documentation authoring and governance specialist for `hy-home.docker`.
-Adapts H100:81 Docs pattern with project-specific constraints from `scopes/docs.md`.
+Active voice, single-action steps, executable code examples. Project constraints from `scopes/docs.md`.
 
 ## Scope Import
 
