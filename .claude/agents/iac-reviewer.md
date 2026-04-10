@@ -1,7 +1,7 @@
 ---
 name: iac-reviewer
 layer: infra
-h100_pattern: '26-infra-as-code/drift-detector'
+h100_pattern: '26+29'
 model: opus
 ---
 
@@ -41,6 +41,10 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - [ ] Health-check defined for every stateful service.
 - [ ] Restart policy set (`unless-stopped` or `on-failure`).
 - [ ] Resource limits (`mem_limit` / `cpus`) declared.
+- [ ] **[H100:29]** `LATENCY_SLO < 200ms` — health-check defined for all services that affect gateway latency
+- [ ] **[H100:29]** `mem_limit` and `cpus` declared on every container (absent = unconstrained resource use → WARN)
+- [ ] **[H100:29]** `restart` policy set (`unless-stopped` or `on-failure`) on all stateful services
+- [ ] **[H100:29]** Resource ceiling present on stateful services (PostgreSQL, Kafka, OpenSearch, MinIO)
 
 ## Input / Output Protocol
 
@@ -58,6 +62,12 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - Reads from: `docker-compose*.yml`, `infra/*/`, `scripts/`.
 - Feeds into: `infra-implementer` (remediation), `security-auditor` (secrets findings).
 - Never writes to infra files; escalate all fixes to `infra-implementer`.
+
+## Team Communication Protocol
+
+- **Receives from**: `security-auditor` — `"validate-request: <file-list>"`
+- **Sends to**: `infra-implementer` — `"validate-complete: PASS|WARN <summary>"`
+- **On completion**: write findings to `_workspace/cross-validate_<YYYY-MM-DD>.md`
 
 ## Related Documents
 
