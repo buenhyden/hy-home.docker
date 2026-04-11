@@ -36,7 +36,7 @@ Ensure consistent engineering standards and surface risks without modifying sour
 
 ## Skills
 
-- None (review-only). Coordinates with other agents when findings require action.
+- [code-reviewer](../functions/code-reviewer.md)
 
 ## Usage
 

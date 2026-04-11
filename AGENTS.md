@@ -29,8 +29,9 @@ Universal entry shim for agent execution in `hy-home.docker`.
 
 | Agent                | File                                   | Scope Import         | Role                                      |
 | -------------------- | -------------------------------------- | -------------------- | ----------------------------------------- |
+| `workflow-supervisor`| `.claude/agents/workflow-supervisor.md`| `scopes/agentic.md`  | Opus orchestration, routing, and synthesis |
 | `infra-implementer`  | `.claude/agents/infra-implementer.md`  | `scopes/infra.md`    | Immutable IaC, blast-radius-aware         |
-| `iac-reviewer`       | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | Drift detector + resource validator (r/o) |
+| `iac-reviewer`       | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | Drift + performance validator (r/o)       |
 | `security-auditor`   | `.claude/agents/security-auditor.md`   | `scopes/security.md` | CVSS container auditor (r/o)              |
 | `incident-responder` | `.claude/agents/incident-responder.md` | `scopes/ops.md`      | MTTD/MTTR timeline & RCA                  |
 | `code-reviewer`      | `.claude/agents/code-reviewer.md`      | `scopes/common.md`   | Style + security + arch review (r/o)      |
@@ -44,9 +45,11 @@ Model policy: subagents use `sonnet`; the supervising/orchestrating agent uses `
 
 | Skill                  | File                                     | Purpose                                   |
 | ---------------------- | ---------------------------------------- | ----------------------------------------- |
-| `infra-validate`       | `.claude/skills/infra-validate.md`       | Pre/post-flight Compose validation pipeline   |
-| `incident-response`    | `.claude/skills/incident-response.md`    | Timeline reconstruction → RCA → MTTD/MTTR measurement    |
-| `infra-cross-validate` | `.claude/skills/infra-cross-validate.md` | security-auditor → iac-reviewer cross-validation |
+| `infra-validate`       | `.claude/skills/infra-validate/skill.md`       | Pre/post-flight Compose validation pipeline   |
+| `infra-cross-validate` | `.claude/skills/infra-cross-validate/skill.md` | security-auditor → iac-reviewer cross-validation |
+| `incident-response`    | `.claude/skills/incident-response/skill.md`    | Timeline reconstruction → RCA → MTTD/MTTR measurement    |
+| `code-reviewer`        | `.claude/skills/code-reviewer/skill.md`        | Style, security, performance, and architecture review orchestration |
+| `security-audit`       | `.claude/skills/security-audit/skill.md`       | Threat-model-first security audit orchestration |
 
 ## §4 Orchestration Protocol
 

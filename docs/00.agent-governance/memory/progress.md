@@ -18,6 +18,7 @@ Running record of harness gap remediation. Updated by agents after each phase.
 | P4 — GitHub governance alignment         | ✅ Done | 2026-04-10 | github-governance.md created; README/bootstrap/standards/git-workflow/quality-standards updated; common/frontend scope validation text normalized; provider overlays clarified; code-reviewer + security-auditor updated |
 | P5 — Local instruction authority cleanup | ✅ Done | 2026-04-10 | Removed GitHub-native instruction hierarchy assumptions; normalized authority to `docs/00.agent-governance/` + `.claude/`; provider overlays and audit notes updated                                                     |
 | P6 — Infra Team Agent cross-validation   | ✅ Done | 2026-04-10 | Pipeline Team Agent: infra-implementer→security-auditor→iac-reviewer; drift + performance checks in iac-reviewer; infra-cross-validate skill created; settings.json reconstructed                                                        |
+| P7 — Runtime harness normalization       | ✅ Done | 2026-04-11 | Added `workflow-supervisor` (`opus`), created `.claude/CLAUDE.md`, normalized active runtime skills to `.claude/skills/<name>/skill.md`, added code-reviewer and security-audit runtime skills, confirmed the Infra governance set as the active source set, and removed source-example identifiers from canonical runtime/governance files |
 
 ## Layer Audit (L1–L7)
 
@@ -30,6 +31,19 @@ Running record of harness gap remediation. Updated by agents after each phase.
 | L5 pre-commit + validate          | ✅     | Existing; post-tool-validate.sh added      |
 | L6 subagent-protocol.md           | ✅     | Created                                    |
 | L7 postflight-checklist.md        | ✅     | Created                                    |
+
+## Runtime Harness Normalization Audit (P7 — 2026-04-11)
+
+| Area                                  | Status     | Notes                                                                 |
+| ------------------------------------- | ---------- | --------------------------------------------------------------------- |
+| Active harness scope decision         | ✅ Locked  | Runtime/governance sources: code review, incident response, infra, security, performance; ADR patterns used for governance only |
+| `.claude/CLAUDE.md` runtime bootstrap | ✅ Created | Claude-specific runtime routing moved into `.claude/` while root shims stayed thin |
+| `workflow-supervisor`                 | ✅ Created | Added as the explicit `opus` supervisor for runtime routing and synthesis |
+| Worker model hierarchy                | ✅ Aligned | All domain/task agents remain `sonnet`                                |
+| Nested skill normalization            | ✅ Done    | Active runtime skills now use `.claude/skills/<name>/skill.md`        |
+| New runtime review skills             | ✅ Done    | Added `code-reviewer` and `security-audit`                            |
+| Governance catalog alignment          | ✅ Done    | Agent and function catalog updated to match runtime inventory          |
+| Source leakage cleanup                | ✅ Done    | Canonical runtime and governance files no longer reference source example identifiers |
 
 ## GitHub Governance Alignment Audit (P4 — 2026-04-10)
 

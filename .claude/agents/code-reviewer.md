@@ -56,3 +56,4 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - `docs/00.agent-governance/rules/postflight-checklist.md`
 - `docs/00.agent-governance/rules/quality-standards.md`
 - `docs/00.agent-governance/rules/github-governance.md`
+- `.claude/skills/code-reviewer/skill.md`

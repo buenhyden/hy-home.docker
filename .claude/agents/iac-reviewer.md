@@ -73,4 +73,5 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - `docs/00.agent-governance/scopes/infra.md`
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
-- `.claude/skills/infra-validate.md`
+- `.claude/skills/infra-validate/skill.md`
+- `.claude/skills/infra-cross-validate/skill.md`

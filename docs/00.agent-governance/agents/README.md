@@ -6,7 +6,7 @@ layer: agentic
 
 ## Overview
 
-This catalog documents the agents and orchestration functions used in the current workspace. It consolidates responsibilities, inputs/outputs, and linkage to governance rules without referencing external harness sources.
+This catalog documents the agents and orchestration functions used in the current workspace. It consolidates responsibilities, inputs and outputs, and linkage to governance rules without referencing any source example set.
 
 ## Purpose
 
@@ -17,7 +17,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 **Covers:**
 
 - Agent definitions used in this workspace
-- Orchestration functions (skills) used by agents
+- Orchestration functions mirrored from runtime skills
 - Links to governing scopes and rules
 
 **Excludes:**
@@ -28,10 +28,11 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 ## Structure
 
 - `agents/` — per-agent role documentation
-- `functions/` — per-function (skill) documentation
+- `functions/` — per-function documentation mirrored from `.claude/skills/<name>/skill.md`
 
 ## Agents
 
+- [workflow-supervisor](agents/workflow-supervisor.md)
 - [code-reviewer](agents/code-reviewer.md)
 - [doc-writer](agents/doc-writer.md)
 - [iac-reviewer](agents/iac-reviewer.md)
@@ -41,13 +42,15 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 
 ## Functions
 
+- [code-reviewer](functions/code-reviewer.md)
+- [security-audit](functions/security-audit.md)
 - [infra-validate](functions/infra-validate.md)
 - [infra-cross-validate](functions/infra-cross-validate.md)
 - [incident-response](functions/incident-response.md)
 
 ## Usage
 
-- Use this catalog when updating `.claude/agents/` or `.claude/skills/`.
+- Use this catalog when updating `.claude/agents/` or `.claude/skills/<name>/skill.md`.
 - Keep agent docs aligned with their scope files under `docs/00.agent-governance/scopes/`.
 
 ## Artifacts
@@ -60,3 +63,4 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 - `../subagent-protocol.md`
 - `../rules/documentation-protocol.md`
 - `../scopes/`
+- `../../../.claude/CLAUDE.md`

@@ -57,3 +57,4 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
 - `docs/09.runbooks/` · `docs/10.incidents/` · `docs/11.postmortems/`
+- `.claude/skills/incident-response/skill.md`

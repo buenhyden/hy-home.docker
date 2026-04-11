@@ -35,7 +35,8 @@ Prevent security regressions by detecting plaintext secrets, unsafe access patte
 
 ## Skills
 
-- None (audit-only). Supports infra cross-validation.
+- [security-audit](../functions/security-audit.md)
+- [infra-cross-validate](../functions/infra-cross-validate.md)
 
 ## Usage
 

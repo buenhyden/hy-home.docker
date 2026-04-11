@@ -9,10 +9,11 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 ## 1. Spawn Rules
 
 - Spawn subagents via the **Task tool** only — never via inline prompt embedding.
+- The local runtime supervisor is `.claude/agents/workflow-supervisor.md`.
 - Each subagent MUST `@import` exactly one primary scope file before acting.
 - Pass the scope path explicitly in the task prompt; do not rely on ambient context.
 - All subagent model calls use `model: "sonnet"` for cost-efficient execution.
-- The supervising/orchestrating agent uses `model: "opus"` for final decisions and coordination.
+- The supervising/orchestrating agent uses `model: "opus"` for routing, final decisions, and coordination.
 
 ## 2. Required Preamble (per agent)
 
@@ -24,6 +25,16 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 
 ## 3. Agent Catalog Reference
 
+### Supervising Runtime Agent
+
+| Agent File                                  | Scope Import          | Runtime Role |
+| ------------------------------------------- | --------------------- | ------------ |
+| `.claude/agents/workflow-supervisor.md`     | `scopes/agentic.md`   | Final routing and synthesis |
+
+The supervisor coordinates workers and should not be treated as a generic worker replacement.
+
+### Worker Agents
+
 | Agent File                             | Scope Import         | Task Tool Name       |
 | -------------------------------------- | -------------------- | -------------------- |
 | `.claude/agents/infra-implementer.md`  | `scopes/infra.md`    | `infra-implementer`  |
@@ -31,6 +42,7 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 | `.claude/agents/incident-responder.md` | `scopes/ops.md`      | `incident-responder` |
 | `.claude/agents/code-reviewer.md`      | `scopes/common.md`   | `code-reviewer`      |
 | `.claude/agents/doc-writer.md`         | `scopes/docs.md`     | `doc-writer`         |
+| `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | `iac-reviewer`       |
 
 ## 4. Communication Protocol
 
@@ -58,3 +70,4 @@ Dead `_workspace/` files are preserved for audit; do not delete without user app
 - `docs/00.agent-governance/rules/task-checklists.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
 - `AGENTS.md` §3 Agent Catalog · §4 Orchestration Protocol
+- `.claude/agents/workflow-supervisor.md`
