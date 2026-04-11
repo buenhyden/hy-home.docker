@@ -52,7 +52,7 @@ title: 'Common Engineering Scope'
 ```text
 # code-reviewer agent preamble
 @import docs/00.agent-governance/scopes/common.md
-# H100:21 Review pattern — read → assess → report
+# Review pattern — read → assess → report
 # Clean Code · SOLID · no plaintext secrets
 ```
 

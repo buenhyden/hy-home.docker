@@ -1,7 +1,7 @@
 ---
 name: doc-writer
 layer: docs
-model: opus
+model: sonnet
 ---
 
 # doc-writer

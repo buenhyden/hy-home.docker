@@ -56,7 +56,7 @@ Universal security standards and data protection protocols for `hy-home.docker`.
 ```text
 # security-auditor agent preamble
 @import docs/00.agent-governance/scopes/security.md
-# H100:28 Audit pattern — threat-model → scan → report
+# Audit pattern — threat-model → scan → report
 # OWASP Top 10 · ASVS L2 · Docker Secrets mandatory
 ```
 

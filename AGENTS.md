@@ -38,13 +38,15 @@ Universal entry shim for agent execution in `hy-home.docker`.
 
 Each agent `@imports` its scope file for project-specific constraints (SLO, network policy, secrets rules).
 
+Model policy: subagents use `sonnet`; the supervising/orchestrating agent uses `opus`.
+
 **Skills** (orchestration — all agents may invoke):
 
 | Skill                  | File                                     | Purpose                                   |
 | ---------------------- | ---------------------------------------- | ----------------------------------------- |
-| `infra-validate`       | `.claude/skills/infra-validate.md`       | pre/post-flight Compose 검증 파이프라인   |
-| `incident-response`    | `.claude/skills/incident-response.md`    | 타임라인 재구성 → RCA → MTTD/MTTR 측정    |
-| `infra-cross-validate` | `.claude/skills/infra-cross-validate.md` | security-auditor → iac-reviewer 교차 검증 |
+| `infra-validate`       | `.claude/skills/infra-validate.md`       | Pre/post-flight Compose validation pipeline   |
+| `incident-response`    | `.claude/skills/incident-response.md`    | Timeline reconstruction → RCA → MTTD/MTTR measurement    |
+| `infra-cross-validate` | `.claude/skills/infra-cross-validate.md` | security-auditor → iac-reviewer cross-validation |
 
 ## §4 Orchestration Protocol
 

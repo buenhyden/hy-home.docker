@@ -33,6 +33,28 @@
 4. **Markdown 표준**: 모든 문서는 상대 경로를 사용하며 Markdown 형식을 준수합니다. (절대 경로 및 `file://` 사용 금지)
 5. **명확한 위치 설정**: 결정 사항은 ADR에, 상세 설계는 Spec에, 작업 절차는 Runbook에 기록하여 파편화를 방지합니다.
 
+## 문서 유형-템플릿 매핑
+
+| 문서 유형 | 위치 | 템플릿 |
+| --- | --- | --- |
+| PRD | `01.prd/` | `99.templates/prd.template.md` |
+| ARD | `02.ard/` | `99.templates/ard.template.md` |
+| ADR | `03.adr/` | `99.templates/adr.template.md` |
+| Spec | `04.specs/` | `99.templates/spec.template.md` |
+| API Spec | `04.specs/<feature-id>/api-spec.md` | `99.templates/api-spec.template.md` |
+| Agent Design | `04.specs/<feature-id>/agent-design.md` | `99.templates/agent-design.template.md` |
+| Plan | `05.plans/` | `99.templates/plan.template.md` |
+| Task | `06.tasks/` | `99.templates/task.template.md` |
+| Guide | `07.guides/` | `99.templates/guide.template.md` |
+| Operation | `08.operations/` | `99.templates/operation.template.md` |
+| Runbook | `09.runbooks/` | `99.templates/runbook.template.md` |
+| Incident | `10.incidents/` | `99.templates/incident.template.md` |
+| Postmortem | `11.postmortems/` | `99.templates/postmortem.template.md` |
+| Reference | `90.references/` | `99.templates/reference.template.md` |
+| README | 각 폴더 | `99.templates/readme.template.md` |
+
+자세한 규칙은 `99.templates/README.md`를 참고하세요.
+
 ## 하위 폴더별 README 필수 항목
 
 각 하위 폴더의 `README.md`는 다음 내용을 포함해야 합니다. (모두 **한국어** 작성)

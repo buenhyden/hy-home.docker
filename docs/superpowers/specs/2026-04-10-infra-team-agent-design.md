@@ -10,7 +10,7 @@ status: approved
 
 This spec defines the implementation of a **Pipeline Team Agent** pattern for
 `hy-home.docker` that auto-triggers cross-validation between `infra-implementer`
-and `security-auditor` on every infrastructure change, integrates H100:29
+and `security-auditor` on every infrastructure change, integrates performance checks
 (Performance) into `iac-reviewer`, and performs a full audit of `settings.json`
 permissions.
 
@@ -35,7 +35,7 @@ security-auditor
   ③ CRIT clear  → SendMessage → iac-reviewer ("validate-request: <file-list>")
         │
         ▼
-iac-reviewer (H100:26 + H100:29 integrated)
+iac-reviewer (drift checks + performance checks integrated)
   ① Drift detection (existing)
   ② Performance checks (new): SLO · resource limits · health-check gaps
   ③ Write _workspace/cross-validate_<date>.md
@@ -83,15 +83,15 @@ Add image audit checklist item to Task Principles (required for `docker image ls
 
 ### 3.3 `iac-reviewer.md`
 
-Update frontmatter `h100_pattern` from `'26-infra-as-code/drift-detector'` to `'26+29'`.
-Update `AGENTS.md` catalog row for `iac-reviewer` to show `H100:26+29`.
+Update frontmatter `pattern` from `'26-infra-as-code/drift-detector'` to `'26+29'`.
+Update `AGENTS.md` catalog row for `iac-reviewer` to show `drift + performance checks`.
 
-Add `## Team Communication Protocol` section + H100:29 Performance Check extension:
+Add `## Team Communication Protocol` section + performance checks Performance Check extension:
 
 - **Receives from**: `security-auditor` — `"validate-request: <file-list>"`
 - **Sends to**: `infra-implementer` — `"validate-complete: PASS|WARN <summary>"`
 
-Performance checklist additions (H100:29):
+Performance checklist additions (performance checks):
 
 - `LATENCY_SLO < 200ms` — flag services missing health-check definition
 - `mem_limit` / `cpus` undeclared → WARN
@@ -128,9 +128,9 @@ File: `.claude/skills/infra-cross-validate.md`
 | ---------------------------------------------------------- | ------------------------------------------------------------------ |
 | `Bash(docker compose config:*)`                            | infra-validate Phase 2 static check                                |
 | `Bash(docker compose logs:*)`                              | infra-validate Phase 5 post-flight                                 |
-| `Bash(bash scripts/check-all-hardening.sh:*)`              | security-auditor H100:28                                           |
-| `Bash(bash scripts/check-doc-traceability.sh:*)`           | CI/CD H100:20                                                      |
-| `Bash(bash scripts/check-template-security-baseline.sh:*)` | CI/CD H100:20                                                      |
+| `Bash(bash scripts/check-all-hardening.sh:*)`              | security-auditor security audit checks                                           |
+| `Bash(bash scripts/check-doc-traceability.sh:*)`           | CI/CD CI/CD checks                                                      |
+| `Bash(bash scripts/check-template-security-baseline.sh:*)` | CI/CD CI/CD checks                                                      |
 | `Bash(docker inspect:*)`                                   | iac-reviewer drift detection                                       |
 | `Bash(docker image ls:*)`                                  | security-auditor image audit (see §3.2 image-audit checklist item) |
 
@@ -172,8 +172,8 @@ File: `.claude/skills/infra-cross-validate.md`
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | `.claude/agents/infra-implementer.md`         | Add team communication protocol section                                                          |
 | `.claude/agents/security-auditor.md`          | Add team communication protocol section                                                          |
-| `.claude/agents/iac-reviewer.md`              | Add team protocol + H100:29 performance checklist; update frontmatter to `h100_pattern: '26+29'` |
-| `AGENTS.md`                                   | Update `iac-reviewer` catalog row to `H100:26+29`                                                |
+| `.claude/agents/iac-reviewer.md`              | Add team protocol + performance checks performance checklist; update frontmatter to `pattern: '26+29'` |
+| `AGENTS.md`                                   | Update `iac-reviewer` catalog row to `drift + performance checks`                                                |
 | `.claude/skills/infra-cross-validate.md`      | Create (pipeline orchestrator)                                                                   |
 | `.claude/settings.json`                       | Full permission audit and reconstruct                                                            |
 | `docs/00.agent-governance/memory/progress.md` | Append P5 alignment record                                                                       |

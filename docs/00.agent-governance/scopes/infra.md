@@ -57,7 +57,7 @@ Conflicts: the most specific scope wins. Raises to user if ambiguous.
 ```text
 # infra-implementer agent preamble
 @import docs/00.agent-governance/scopes/infra.md
-# H100:26 IaC pattern — validate → change → verify
+# IaC pattern — validate → change → verify
 # SLO: LATENCY < 200ms · Network: infra_net · Secrets: Docker Secrets only
 ```
 

@@ -27,6 +27,7 @@ This directory is the canonical governance system for coding agents in this repo
   - `github-governance.md` — GitHub-aligned policy baseline (branch protection, PR contracts, Actions security, local-instruction boundary)
 - `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge (§6 §7 per scope).
 - `providers/`: runtime-specific overlays (`claude`, `gemini`, provider-neutral `agents-md`).
+- `agents/`: catalog of workspace agents and orchestration functions.
 - `.claude/`: runtime enforcement layer for local agent execution (`settings.json`, hooks, agents, skills).
 - `memory/`: durable governance notes and audit findings.
   - `progress.md` — phase tracker and L1–L7 layer audit status

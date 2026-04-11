@@ -1,7 +1,7 @@
 ---
 name: security-auditor
 layer: security
-model: opus
+model: sonnet
 ---
 
 # security-auditor

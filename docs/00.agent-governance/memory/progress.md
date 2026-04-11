@@ -13,11 +13,11 @@ Running record of harness gap remediation. Updated by agents after each phase.
 | ---------------------------------------- | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | P0 — Settings + AGENTS.md                | ✅ Done | 2026-04-09 | settings.json created; AGENTS.md §1–§8; CLAUDE.md ≤15 lines; post-tool-validate.sh created; bootstrap.md + documentation-protocol.md updated                                                                             |
 | P1 — scopes + governance files           | ✅ Done | 2026-04-09 | All 5 scopes: §6 File Ownership + §7 Subagent Bridge added; subagent-protocol.md + postflight-checklist.md + memory/progress.md created                                                                                  |
-| P2 — agents/ (5 files)                   | ✅ Done | 2026-04-09 | infra-implementer · security-auditor · incident-responder · code-reviewer · doc-writer — all @import scope + H100 pattern                                                                                                |
+| P2 — agents/ (5 files)                   | ✅ Done | 2026-04-09 | infra-implementer · security-auditor · incident-responder · code-reviewer · doc-writer — all @import scope + documented pattern                                                                                                |
 | P3 — validate + final verify             | ✅ Done | 2026-04-09 | validate-docker-compose.sh ✅ · settings.json git-tracked ✅ · settings.local personal-only ✅ · no duplication ✅                                                                                                       |
 | P4 — GitHub governance alignment         | ✅ Done | 2026-04-10 | github-governance.md created; README/bootstrap/standards/git-workflow/quality-standards updated; common/frontend scope validation text normalized; provider overlays clarified; code-reviewer + security-auditor updated |
 | P5 — Local instruction authority cleanup | ✅ Done | 2026-04-10 | Removed GitHub-native instruction hierarchy assumptions; normalized authority to `docs/00.agent-governance/` + `.claude/`; provider overlays and audit notes updated                                                     |
-| P6 — Infra Team Agent cross-validation   | ✅ Done | 2026-04-10 | Pipeline Team Agent: infra-implementer→security-auditor→iac-reviewer; H100:26+29 in iac-reviewer; infra-cross-validate skill created; settings.json reconstructed                                                        |
+| P6 — Infra Team Agent cross-validation   | ✅ Done | 2026-04-10 | Pipeline Team Agent: infra-implementer→security-auditor→iac-reviewer; drift + performance checks in iac-reviewer; infra-cross-validate skill created; settings.json reconstructed                                                        |
 
 ## Layer Audit (L1–L7)
 
@@ -72,8 +72,8 @@ Running record of harness gap remediation. Updated by agents after each phase.
 | ------------------------------- | ---------------- | --------------------------------------------------------------------- |
 | infra-implementer team protocol | ✅ Updated       | SendMessage contracts for audit-request / BLOCK / WARN                |
 | security-auditor team protocol  | ✅ Updated       | audit-request receiver; BLOCK/PASS sender; image-audit principle      |
-| iac-reviewer H100:26+29         | ✅ Updated       | Frontmatter updated; performance checklist added; team protocol added |
-| AGENTS.md catalog               | ✅ Updated       | iac-reviewer row updated to H100:26+29                                |
+| iac-reviewer drift + performance checks         | ✅ Updated       | Frontmatter updated; performance checklist added; team protocol added |
+| AGENTS.md catalog               | ✅ Updated       | iac-reviewer row updated to drift + performance checks                                |
 | infra-cross-validate skill      | ✅ Created       | Pipeline orchestrator with error handling and test scenarios          |
 | settings.json permissions       | ✅ Reconstructed | 13 allow (net +5), 4 deny (net +2); cat/ls removed                    |
 

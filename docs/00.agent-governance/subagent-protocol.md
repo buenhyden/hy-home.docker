@@ -11,14 +11,15 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 - Spawn subagents via the **Task tool** only — never via inline prompt embedding.
 - Each subagent MUST `@import` exactly one primary scope file before acting.
 - Pass the scope path explicitly in the task prompt; do not rely on ambient context.
-- All subagent model calls use `model: "opus"` for production quality.
+- All subagent model calls use `model: "sonnet"` for cost-efficient execution.
+- The supervising/orchestrating agent uses `model: "opus"` for final decisions and coordination.
 
 ## 2. Required Preamble (per agent)
 
 ```text
 @import docs/00.agent-governance/scopes/<layer>.md
 # Role: <agent-name> — <one-line purpose>
-# H100 Pattern: <pattern-id> <pattern-name>
+# Pattern: <pattern-name>
 ```
 
 ## 3. Agent Catalog Reference

@@ -1,7 +1,7 @@
 ---
 name: infra-implementer
 layer: infra
-model: opus
+model: sonnet
 ---
 
 # infra-implementer

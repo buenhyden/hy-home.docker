@@ -1,7 +1,7 @@
 ---
 name: iac-reviewer
 layer: infra
-model: opus
+model: sonnet
 ---
 
 # iac-reviewer

@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 layer: common
-model: opus
+model: sonnet
 ---
 
 # code-reviewer

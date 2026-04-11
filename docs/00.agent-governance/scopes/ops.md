@@ -51,7 +51,7 @@ title: 'Operations & SRE Scope'
 ```text
 # incident-responder agent preamble
 @import docs/00.agent-governance/scopes/ops.md
-# H100:25 Postmortem pattern — timeline → RCA → remediation
+# Postmortem pattern — timeline → RCA → remediation
 # MTTR target · LGTM stack · SEV1/SEV2 mandatory postmortem
 ```
 

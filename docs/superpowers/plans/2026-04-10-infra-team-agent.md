@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Implement a Pipeline Team Agent pattern where every infrastructure change automatically triggers security-auditor then iac-reviewer cross-validation, while integrating H100:29 performance checks and hardening settings.json permissions.
+**Goal:** Implement a Pipeline Team Agent pattern where every infrastructure change automatically triggers security-auditor then iac-reviewer cross-validation, while integrating performance checks performance checks and hardening settings.json permissions.
 
 **Architecture:** Three existing agents gain a `## Team Communication Protocol` section that defines SendMessage contracts. A new orchestrator skill `infra-cross-validate` wires the pipeline. `settings.json` is reconstructed with a full permission audit. No new agents are created.
 
@@ -112,7 +112,7 @@ git commit -m "feat(agents): add team protocol and image-audit principle to secu
 
 ---
 
-### Task 3: Update `iac-reviewer.md` — frontmatter, team protocol, H100:29 performance checklist
+### Task 3: Update `iac-reviewer.md` — frontmatter, team protocol, performance checks performance checklist
 
 **Files:**
 
@@ -124,20 +124,20 @@ git commit -m "feat(agents): add team protocol and image-audit principle to secu
 head -6 .claude/agents/iac-reviewer.md
 ```
 
-Expected: `h100_pattern: '26-infra-as-code/drift-detector'`
+Expected: `pattern: '26-infra-as-code/drift-detector'`
 
-- [ ] **Step 2: Update frontmatter h100_pattern**
+- [ ] **Step 2: Update frontmatter pattern**
 
 Change line:
 
 ```yaml
-h100_pattern: '26-infra-as-code/drift-detector'
+pattern: '26-infra-as-code/drift-detector'
 ```
 
 To:
 
 ```yaml
-h100_pattern: '26+29'
+pattern: '26+29'
 ```
 
 - [ ] **Step 3: Add team communication protocol section**
@@ -152,21 +152,21 @@ Append before `## Related Documents`:
 - **On completion**: write findings to `_workspace/cross-validate_<YYYY-MM-DD>.md`
 ```
 
-- [ ] **Step 4: Extend Drift Detection Checklist with H100:29 performance items**
+- [ ] **Step 4: Extend Drift Detection Checklist with performance checks performance items**
 
 In the `## Drift Detection Checklist` section, append after the existing items:
 
 ```markdown
-- [ ] **[H100:29]** `LATENCY_SLO < 200ms` — health-check defined for all services that affect gateway latency
-- [ ] **[H100:29]** `mem_limit` and `cpus` declared on every container (absent = unconstrained resource use → WARN)
-- [ ] **[H100:29]** `restart` policy set (`unless-stopped` or `on-failure`) on all stateful services
-- [ ] **[H100:29]** Resource ceiling present on stateful services (PostgreSQL, Kafka, OpenSearch, MinIO)
+- [ ] **[performance checks]** `LATENCY_SLO < 200ms` — health-check defined for all services that affect gateway latency
+- [ ] **[performance checks]** `mem_limit` and `cpus` declared on every container (absent = unconstrained resource use → WARN)
+- [ ] **[performance checks]** `restart` policy set (`unless-stopped` or `on-failure`) on all stateful services
+- [ ] **[performance checks]** Resource ceiling present on stateful services (PostgreSQL, Kafka, OpenSearch, MinIO)
 ```
 
 - [ ] **Step 5: Verify all changes**
 
 ```bash
-grep -n "h100_pattern\|Team Communication\|validate-request\|H100:29\|mem_limit\|LATENCY_SLO" .claude/agents/iac-reviewer.md
+grep -n "pattern\|Team Communication\|validate-request\|performance checks\|mem_limit\|LATENCY_SLO" .claude/agents/iac-reviewer.md
 ```
 
 Expected: 8+ matches covering all changes
@@ -175,7 +175,7 @@ Expected: 8+ matches covering all changes
 
 ```bash
 git add .claude/agents/iac-reviewer.md
-git commit -m "feat(agents): add H100:29 performance checks and team protocol to iac-reviewer"
+git commit -m "feat(agents): add performance checks performance checks and team protocol to iac-reviewer"
 ```
 
 ---
@@ -192,20 +192,20 @@ git commit -m "feat(agents): add H100:29 performance checks and team protocol to
 grep -n "iac-reviewer" AGENTS.md
 ```
 
-Expected: line containing `H100:26 drift-detector (r/o)`
+Expected: line containing `drift checks drift-detector (r/o)`
 
 - [ ] **Step 2: Update catalog row**
 
 Change the `iac-reviewer` row from:
 
 ```text
-| `iac-reviewer`       | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | H100:26 drift-detector (r/o)   |
+| `iac-reviewer`       | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | drift checks drift-detector (r/o)   |
 ```
 
 To:
 
 ```text
-| `iac-reviewer`       | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | H100:26+29 drift+perf (r/o)    |
+| `iac-reviewer`       | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | drift + performance checks drift+perf (r/o)    |
 ```
 
 - [ ] **Step 3: Verify**
@@ -214,13 +214,13 @@ To:
 grep -n "iac-reviewer" AGENTS.md
 ```
 
-Expected: `H100:26+29 drift+perf (r/o)` visible
+Expected: `drift + performance checks drift+perf (r/o)` visible
 
 - [ ] **Step 4: Commit**
 
 ```bash
 git add AGENTS.md
-git commit -m "docs(agents): update iac-reviewer catalog to H100:26+29"
+git commit -m "docs(agents): update iac-reviewer catalog to drift + performance checks"
 ```
 
 ---
@@ -257,7 +257,7 @@ description: >
 
 # infra-cross-validate
 
-H100:26+28+29 — 인프라 변경 후 교차 검증 파이프라인 오케스트레이터.
+security + drift + performance checks — 인프라 변경 후 교차 검증 파이프라인 오케스트레이터.
 `infra-validate`(단일 에이전트 pre/post-flight) 실행 완료 후 호출한다.
 
 ## 실행 순서
@@ -302,9 +302,9 @@ security-auditor → iac-reviewer: "validate-request: <파일 목록>"
 
 ### Phase 2 — Drift + Performance Check (iac-reviewer)
 
-iac-reviewer 수행 항목 (H100:26 기존 + H100:29 신규):
+iac-reviewer 수행 항목 (drift checks 기존 + performance checks 신규):
 
-**드리프트 체크 (H100:26):**
+**드리프트 체크 (drift checks):**
 
 - 모든 서비스가 `infra_net` 네트워크 사용 확인
 - `no-new-privileges: true` 전 컨테이너 존재 확인
@@ -314,7 +314,7 @@ iac-reviewer 수행 항목 (H100:26 기존 + H100:29 신규):
 - restart policy 설정 여부 확인
 - 리소스 제한 (`mem_limit` / `cpus`) 선언 여부 확인
 
-**성능 체크 (H100:29):**
+**성능 체크 (performance checks):**
 
 - `LATENCY_SLO < 200ms` 영향 서비스에 health-check 누락 시 WARN
 - `mem_limit` / `cpus` 미선언 컨테이너 → WARN
@@ -543,7 +543,7 @@ Expected: last entry is `P4 — GitHub governance alignment`
 Append to the Phase Tracker table:
 
 ```markdown
-| P5 — Infra Team Agent cross-validation | ✅ Done | 2026-04-10 | Pipeline Team Agent: infra-implementer→security-auditor→iac-reviewer; H100:26+29 in iac-reviewer; infra-cross-validate skill created; settings.json reconstructed |
+| P5 — Infra Team Agent cross-validation | ✅ Done | 2026-04-10 | Pipeline Team Agent: infra-implementer→security-auditor→iac-reviewer; drift + performance checks in iac-reviewer; infra-cross-validate skill created; settings.json reconstructed |
 ```
 
 - [ ] **Step 3: Add P5 audit section**
@@ -557,8 +557,8 @@ Append after the GitHub Governance Alignment Audit section:
 | ---- | ------ | ----- |
 | infra-implementer team protocol | ✅ Updated | SendMessage contracts for audit-request / BLOCK / WARN |
 | security-auditor team protocol | ✅ Updated | audit-request receiver; BLOCK/PASS sender; image-audit principle |
-| iac-reviewer H100:26+29 | ✅ Updated | Frontmatter updated; performance checklist added; team protocol added |
-| AGENTS.md catalog | ✅ Updated | iac-reviewer row updated to H100:26+29 |
+| iac-reviewer drift + performance checks | ✅ Updated | Frontmatter updated; performance checklist added; team protocol added |
+| AGENTS.md catalog | ✅ Updated | iac-reviewer row updated to drift + performance checks |
 | infra-cross-validate skill | ✅ Created | Pipeline orchestrator with error handling and test scenarios |
 | settings.json permissions | ✅ Reconstructed | 13 allow (net +5), 4 deny (net +2); cat/ls removed |
 ```
@@ -566,7 +566,7 @@ Append after the GitHub Governance Alignment Audit section:
 - [ ] **Step 4: Verify**
 
 ```bash
-grep -n "P5\|infra-cross-validate\|H100:26+29" docs/00.agent-governance/memory/progress.md
+grep -n "P5\|infra-cross-validate\|drift + performance checks" docs/00.agent-governance/memory/progress.md
 ```
 
 Expected: 4+ matches

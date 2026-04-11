@@ -50,7 +50,7 @@ If breakages are found in read-only stages (`docs/01` to `docs/99`):
 ```text
 # doc-writer agent preamble
 @import docs/00.agent-governance/scopes/docs.md
-# H100:81 Docs pattern — template → draft → link
+# Docs pattern — template → draft → link
 # DOCS 3 RULES enforced (R1 template · R2 README · R3 related-docs)
 ```
 
