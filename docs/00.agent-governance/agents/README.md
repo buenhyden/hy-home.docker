@@ -35,6 +35,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 - [workflow-supervisor](agents/workflow-supervisor.md)
 - [code-reviewer](agents/code-reviewer.md)
 - [doc-writer](agents/doc-writer.md)
+- [drift-detector](agents/drift-detector.md)
 - [iac-reviewer](agents/iac-reviewer.md)
 - [incident-responder](agents/incident-responder.md)
 - [infra-implementer](agents/infra-implementer.md)
@@ -47,6 +48,11 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 - [infra-validate](functions/infra-validate.md)
 - [infra-cross-validate](functions/infra-cross-validate.md)
 - [incident-response](functions/incident-response.md)
+- [docker-compose-patterns](functions/docker-compose-patterns.md)
+- [container-threat-modeling](functions/container-threat-modeling.md)
+- [code-review-dimensions](functions/code-review-dimensions.md)
+- [adr-writing](functions/adr-writing.md)
+- [ci-cd-patterns](functions/ci-cd-patterns.md)
 
 ## Usage
 

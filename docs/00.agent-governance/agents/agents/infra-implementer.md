@@ -38,6 +38,7 @@ Apply infrastructure changes while preserving SLOs, network isolation, and secre
 
 - [infra-validate](../functions/infra-validate.md)
 - [infra-cross-validate](../functions/infra-cross-validate.md)
+- [docker-compose-patterns](../functions/docker-compose-patterns.md)
 
 ## Usage
 

@@ -37,6 +37,7 @@ Ensure consistent engineering standards and surface risks without modifying sour
 ## Skills
 
 - [code-reviewer](../functions/code-reviewer.md)
+- [code-review-dimensions](../functions/code-review-dimensions.md)
 
 ## Usage
 

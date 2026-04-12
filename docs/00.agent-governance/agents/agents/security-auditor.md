@@ -37,6 +37,8 @@ Prevent security regressions by detecting plaintext secrets, unsafe access patte
 
 - [security-audit](../functions/security-audit.md)
 - [infra-cross-validate](../functions/infra-cross-validate.md)
+- [container-threat-modeling](../functions/container-threat-modeling.md)
+- [ci-cd-patterns](../functions/ci-cd-patterns.md)
 
 ## Usage
 

@@ -27,15 +27,16 @@ Universal entry shim for agent execution in `hy-home.docker`.
 
 ## §3 Agent Catalog
 
-| Agent                | File                                   | Scope Import         | Role                                      |
-| -------------------- | -------------------------------------- | -------------------- | ----------------------------------------- |
-| `workflow-supervisor`| `.claude/agents/workflow-supervisor.md`| `scopes/agentic.md`  | Opus orchestration, routing, and synthesis |
-| `infra-implementer`  | `.claude/agents/infra-implementer.md`  | `scopes/infra.md`    | Immutable IaC, blast-radius-aware         |
-| `iac-reviewer`       | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | Drift + performance validator (r/o)       |
-| `security-auditor`   | `.claude/agents/security-auditor.md`   | `scopes/security.md` | CVSS container auditor (r/o)              |
-| `incident-responder` | `.claude/agents/incident-responder.md` | `scopes/ops.md`      | MTTD/MTTR timeline & RCA                  |
-| `code-reviewer`      | `.claude/agents/code-reviewer.md`      | `scopes/common.md`   | Style + security + arch review (r/o)      |
-| `doc-writer`         | `.claude/agents/doc-writer.md`         | `scopes/docs.md`     | Tech writer + ops manual authoring        |
+| Agent                 | File                                    | Scope Import         | Role                                                         |
+| --------------------- | --------------------------------------- | -------------------- | ------------------------------------------------------------ |
+| `workflow-supervisor` | `.claude/agents/workflow-supervisor.md` | `scopes/agentic.md`  | Opus orchestration, routing, and synthesis                   |
+| `infra-implementer`   | `.claude/agents/infra-implementer.md`   | `scopes/infra.md`    | Immutable IaC, blast-radius-aware                            |
+| `drift-detector`      | `.claude/agents/drift-detector.md`      | `scopes/infra.md`    | Container config drift detection and policy compliance (r/o) |
+| `iac-reviewer`        | `.claude/agents/iac-reviewer.md`        | `scopes/infra.md`    | Drift + performance validator (r/o)                          |
+| `security-auditor`    | `.claude/agents/security-auditor.md`    | `scopes/security.md` | CVSS container auditor (r/o)                                 |
+| `incident-responder`  | `.claude/agents/incident-responder.md`  | `scopes/ops.md`      | MTTD/MTTR timeline & RCA                                     |
+| `code-reviewer`       | `.claude/agents/code-reviewer.md`       | `scopes/common.md`   | Style + security + arch review (r/o)                         |
+| `doc-writer`          | `.claude/agents/doc-writer.md`          | `scopes/docs.md`     | Tech writer + ops manual authoring                           |
 
 Each agent `@imports` its scope file for project-specific constraints (SLO, network policy, secrets rules).
 
@@ -43,13 +44,18 @@ Model policy: subagents use `sonnet`; the supervising/orchestrating agent uses `
 
 **Skills** (orchestration — all agents may invoke):
 
-| Skill                  | File                                     | Purpose                                   |
-| ---------------------- | ---------------------------------------- | ----------------------------------------- |
-| `infra-validate`       | `.claude/skills/infra-validate/skill.md`       | Pre/post-flight Compose validation pipeline   |
-| `infra-cross-validate` | `.claude/skills/infra-cross-validate/skill.md` | security-auditor → iac-reviewer cross-validation |
-| `incident-response`    | `.claude/skills/incident-response/skill.md`    | Timeline reconstruction → RCA → MTTD/MTTR measurement    |
-| `code-reviewer`        | `.claude/skills/code-reviewer/skill.md`        | Style, security, performance, and architecture review orchestration |
-| `security-audit`       | `.claude/skills/security-audit/skill.md`       | Threat-model-first security audit orchestration |
+| Skill                       | File                                                | Purpose                                                                |
+| --------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------- |
+| `infra-validate`            | `.claude/skills/infra-validate/skill.md`            | Pre/post-flight Compose validation pipeline                            |
+| `infra-cross-validate`      | `.claude/skills/infra-cross-validate/skill.md`      | security-auditor → iac-reviewer cross-validation                       |
+| `incident-response`         | `.claude/skills/incident-response/skill.md`         | Timeline reconstruction → RCA → MTTD/MTTR measurement                  |
+| `code-reviewer`             | `.claude/skills/code-reviewer/skill.md`             | Style, security, performance, and architecture review orchestration    |
+| `security-audit`            | `.claude/skills/security-audit/skill.md`            | Threat-model-first security audit orchestration                        |
+| `docker-compose-patterns`   | `.claude/skills/docker-compose-patterns/skill.md`   | Rolling, Blue-Green, Canary deployment patterns for Docker Compose     |
+| `container-threat-modeling` | `.claude/skills/container-threat-modeling/skill.md` | STRIDE/DREAD threat modeling for Docker container trust boundaries     |
+| `code-review-dimensions`    | `.claude/skills/code-review-dimensions/skill.md`    | OWASP/CWE/SOLID/complexity reference patterns for code-reviewer        |
+| `adr-writing`               | `.claude/skills/adr-writing/skill.md`               | MADR format, CAP theorem, ATAM, and quality attribute scoring for ADRs |
+| `ci-cd-patterns`            | `.claude/skills/ci-cd-patterns/skill.md`            | CI/CD deployment strategies, security gates, and DORA metrics          |
 
 ## §4 Orchestration Protocol
 

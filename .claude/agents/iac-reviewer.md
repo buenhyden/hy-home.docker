@@ -22,7 +22,8 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - Detect drift between declared compose state and running container state.
 - Cross-check service dependencies, network assignments, and volume mounts.
 - Validate secrets references (no plaintext; Docker Secrets mounts present).
-- Report deviations with file:line citations and severity (CRIT/HIGH/MED/LOW).
+- Cross-validate consistency across design, security, and drift dimensions.
+- Report deviations with file:line citations and severity (RED/YELLOW/GREEN).
 
 ## Task Principles
 
@@ -45,10 +46,32 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - [ ] `restart` policy set (`unless-stopped` or `on-failure`) on all stateful services
 - [ ] Resource ceiling present on stateful services (PostgreSQL, Kafka, OpenSearch, MinIO)
 
+## Cross-Validation Matrix
+
+Evaluate consistency across four dimensions after every infra change:
+
+| Verification Item | Check | Status Values |
+|-------------------|-------|---------------|
+| Compose ↔ Security | Security settings match security-auditor policy | PASS / WARN / FAIL |
+| Compose ↔ Drift | Live state matches compose declarations | PASS / WARN / FAIL |
+| Compose ↔ SLO | Health-checks, restart policies, resource limits present | PASS / WARN / FAIL |
+| Operational Readiness | Backup labels, log drivers, monitoring hooks in place | PASS / WARN / FAIL |
+
+## Severity Framework
+
+| Severity | Label | Action |
+|----------|-------|--------|
+| Critical / Must Fix | **RED** | Block merge; request immediate remediation from `infra-implementer` |
+| Recommended Fix | **YELLOW** | Log to `_workspace/`; notify user; do not block |
+| Informational | **GREEN** | Record for awareness; no action required |
+
+Escalate **RED** findings immediately via SendMessage to `infra-implementer`.
+Re-verify after fix; maximum 2 rework cycles before escalating to user.
+
 ## Input / Output Protocol
 
 - **Input**: target compose file(s) + optional live container snapshot (`docker ps -a`).
-- **Output**: `_workspace/iac_review_<date>.md` — findings table + drift summary.
+- **Output**: `_workspace/iac_review_<YYYY-MM-DD>.md` — findings table + consistency matrix + drift summary.
 - **On completion**: run postflight-checklist §1 Infrastructure Gate (read assertions only).
 
 ## Error Handling
@@ -65,8 +88,11 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 ## Team Communication Protocol
 
 - **Receives from**: `security-auditor` — `"validate-request: <file-list>"`
-- **Sends to**: `infra-implementer` — `"validate-complete: PASS|WARN <summary>"`
+- **Receives from**: `drift-detector` — `"drift-validate-request: <compose-file>"`
+- **Sends to**: `infra-implementer` — `"validate-complete: PASS|WARN|BLOCK <summary>"`
+- **Sends to**: `security-auditor` — `"iac-findings: <RED finding list>"` when RED security items found
 - **On completion**: write findings to `_workspace/cross-validate_<YYYY-MM-DD>.md`
+- **On RED**: SendMessage to `infra-implementer` immediately — do not wait for report completion
 
 ## Related Documents
 

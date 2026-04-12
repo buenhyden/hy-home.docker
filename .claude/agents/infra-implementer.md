@@ -44,7 +44,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 
 ## Collaboration
 
-- Reads from: `security-auditor` audit reports, `code-reviewer` findings.
+- Reads from: `security-auditor` audit reports, `code-reviewer` findings, `drift-detector` drift reports.
 - Writes to: `docker-compose*.yml`, `infra/*/`, `scripts/validate-*.sh`.
 - Escalates to: user for plaintext secret discovery or destructive operation requests.
 
@@ -64,3 +64,4 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - `docs/02.ard/` (architecture reference)
 - `.claude/skills/infra-validate/skill.md`
 - `.claude/skills/infra-cross-validate/skill.md`
+- `.claude/skills/docker-compose-patterns/skill.md`

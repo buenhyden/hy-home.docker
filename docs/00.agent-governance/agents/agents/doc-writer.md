@@ -35,7 +35,7 @@ Keep documentation consistent, traceable, and aligned with governance policies.
 
 ## Skills
 
-- None (workflow governed by templates and checklists)
+- [adr-writing](../functions/adr-writing.md)
 
 ## Usage
 

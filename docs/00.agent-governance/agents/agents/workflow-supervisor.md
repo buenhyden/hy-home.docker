@@ -38,10 +38,15 @@ Make runtime execution predictable by separating high-level routing and final de
 ## Skills
 
 - [code-reviewer](../functions/code-reviewer.md)
+- [code-review-dimensions](../functions/code-review-dimensions.md)
 - [security-audit](../functions/security-audit.md)
+- [container-threat-modeling](../functions/container-threat-modeling.md)
+- [ci-cd-patterns](../functions/ci-cd-patterns.md)
 - [infra-validate](../functions/infra-validate.md)
 - [infra-cross-validate](../functions/infra-cross-validate.md)
+- [docker-compose-patterns](../functions/docker-compose-patterns.md)
 - [incident-response](../functions/incident-response.md)
+- [adr-writing](../functions/adr-writing.md)
 
 ## Usage
 
