@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/06.tasks/YYYY-MM-DD-<feature-or-stream>.md -->
 
 # Task: [Task Name]

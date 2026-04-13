@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/01.prd/YYYY-MM-DD-<feature-or-system>.md -->
 
 # Product Requirements Document

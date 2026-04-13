@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/04.specs/<feature-id>/agent-design.md -->
 
 # [Feature Name] Agent Design

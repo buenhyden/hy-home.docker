@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/04.specs/<feature-id>/data-model.md -->
 
 # [Feature Name] Data Model

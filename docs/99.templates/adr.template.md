@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/03.adr/####-<short-title>.md -->
 
 # ADR-####: [Short Title]

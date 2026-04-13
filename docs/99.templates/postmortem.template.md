@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/11.postmortems/YYYY-MM-DD-<incident-title>.md -->
 
 # Postmortem: [Incident Title]

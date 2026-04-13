@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!--
 # README Template — Repository-wide Usage Guide
 

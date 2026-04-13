@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/05.plans/YYYY-MM-DD-<feature>.md -->
 
 # [Feature Name] Implementation Plan

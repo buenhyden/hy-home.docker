@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/02.ard/####-<system-or-domain>.md -->
 
 # [System or Domain Name] Architecture Reference Document (ARD)

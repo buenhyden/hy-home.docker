@@ -94,7 +94,7 @@ Running record of harness gap remediation. Updated by agents after each phase.
 
 ## Open Issues
 
-- `docs/99.templates/` frontmatter audit (`status: draft` on all templates) — deferred, low priority.
+None.
 
 ## Related Documents
 

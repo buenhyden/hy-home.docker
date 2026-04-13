@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/10.incidents/YYYY/YYYY-MM-DD-<incident-title>.md -->
 
 # Incident: [Incident Title]

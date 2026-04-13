@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/09.runbooks/####-<topic>.md -->
 
 # [topic Name] Runbook

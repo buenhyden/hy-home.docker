@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/04.specs/<feature-id>/spec.md -->
 
 # [Feature Name] Technical Specification (Spec)

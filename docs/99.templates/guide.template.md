@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/07.guides//####-<topic>.md -->
 
 # [Topic Name] Guide

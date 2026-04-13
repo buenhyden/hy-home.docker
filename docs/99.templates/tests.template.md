@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/04.specs/<feature-id>/tests.md -->
 
 # [Feature Name] Test & Evaluation Strategy

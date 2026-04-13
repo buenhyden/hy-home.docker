@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/08.operations/<policy-or-standard>.md -->
 
 # [Policy or Standard Name] Operations Policy
