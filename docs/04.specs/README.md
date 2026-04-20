@@ -36,28 +36,25 @@
 
 ```text
 docs/04.specs/
-├── 01-gateway-specs.md
-├── 02-auth-specs.md
-├── 03-security-specs.md
-├── 04-data-specs.md
-├── 05-messaging-specs.md
-├── 06-observability-specs.md
-├── 07-workflow-specs.md
-├── 08-ai-specs.md
-├── 09-tooling-specs.md
-├── 10-communication-specs.md
-├── 11-laboratory-specs.md
+├── 01-gateway/
+│   └── spec.md
+├── ...
+├── 07-workflow/
+│   ├── spec.md
+│   └── agent-design.md    # Workflow cross-validation agent behavior contract
+├── ...
 ├── standardize-infra-net/
-│   └── spec.md              # Latest: infra_net 상세 설계 명세
-└── README.md                # This file
+│   └── spec.md            # Latest: infra_net 상세 설계 명세
+└── README.md              # This file
 ```
 
 ## How to Work in This Area
 
 1. 기능 구현 전 [spec.template.md](../99.templates/spec.template.md)를 활용하여 명세서를 작성함.
-2. 데이터 모델이나 API 변경 시 영향도를 미리 분석하여 명시함.
-3. 문서 상태(`refining`, `finalized`, `deprecated`)를 명확히 함.
-4. 구현 완료 후 변경된 사항이 있다면 실제 코드와 일치하도록 갱신함.
+2. Agent 전용 세부 설계가 필요하면 `docs/04.specs/<feature-id>/agent-design.md`에 child document로 작성함.
+3. 데이터 모델이나 API 변경 시 영향도를 미리 분석하여 명시함.
+4. 문서 상태(`draft`, `approved`, `deprecated`)를 명확히 함.
+5. 구현 완료 후 변경된 사항이 있다면 실제 코드와 일치하도록 갱신함.
 
 ## Documentation Standards
 
@@ -71,7 +68,7 @@ docs/04.specs/
 2. 코드 변경 전 이 영역의 스펙 문서를 우선 참조하여 설계 의도를 파악한다.
 3. 스펙과 실제 구현 사이의 불일치를 발견하면 즉시 보고하거나 문서를 수정한다.
 
-## Related References
+## Related Documents
 
 - **PRD**: [../01.prd/README.md]
 - **ARD**: [../02.ard/README.md]

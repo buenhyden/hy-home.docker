@@ -27,6 +27,7 @@ Boundaries and permissions for agents interacting with repository documentation.
   - Human-facing docs (README, guides, runbooks, reports): Korean by default.
 - Link integrity: no broken links, no absolute filesystem links, no `file://` URIs.
 - Taxonomy compliance: follow stage mapping in `rules/stage-authoring-matrix.md`.
+- Active stage artifacts must live only in canonical stage paths; non-stage `docs/*` paths are not valid targets for active specs, plans, or tasks.
 
 ## 4. Out-of-Scope Handling
 
@@ -35,6 +36,12 @@ If breakages are found in read-only stages (`docs/01` to `docs/99`):
 1. Do not patch those files.
 2. Record findings in `docs/00.agent-governance/memory/` with recommended fixes and priorities.
 3. Reference the report in completion notes.
+
+If legacy active-stage content is found in a non-stage `docs/*` path:
+
+1. Migrate the content into the canonical stage path.
+2. Remove the legacy file after README and link synchronization.
+3. Do not leave redirect-style active artifacts in non-stage locations.
 
 ## 5. File Ownership SSOT
 
@@ -55,3 +62,10 @@ If breakages are found in read-only stages (`docs/01` to `docs/99`):
 ```
 
 Spawn via Task tool. Do not embed documentation policy inline in agent files.
+
+## Related Documents
+
+- `docs/00.agent-governance/rules/documentation-protocol.md`
+- `docs/00.agent-governance/rules/stage-authoring-matrix.md`
+- `docs/00.agent-governance/rules/task-checklists.md`
+- `AGENTS.md`

@@ -19,6 +19,7 @@ Universal entry shim for agent execution in `hy-home.docker`.
 
 - Root instruction files must stay thin; detailed policy lives in `docs/00.agent-governance/`.
 - `docs/01`–`docs/99` are read-only by default; modify only with explicit user instruction.
+- Active stage artifacts may be created only under `docs/01`–`docs/11`, `docs/90`, and `docs/99`; non-stage `docs/*` paths must not hold active specs or plans.
 - Run all checks listed by active rules and scope before declaring completion.
 - Most-specific in-scope instruction file wins when multiple apply.
 - System, developer, and direct user instructions always override repository instruction files.
@@ -96,7 +97,7 @@ validate → change → verify
 - **`.claude/agents/*.md`** = runtime bridge (`@import` scope + role-specific capabilities)
 - Agents must not embed policy directly; they delegate to their imported scope.
 
-## Canonical Governance
+## Related Documents
 
 - Hub: `docs/00.agent-governance/README.md`
 - Shared standards: `docs/00.agent-governance/rules/standards.md`

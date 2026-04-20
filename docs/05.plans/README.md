@@ -35,27 +35,21 @@
 
 ```text
 docs/05.plans/
-├── 2026-03-26-01-gateway-plan.md
-├── 2026-03-26-02-auth-plan.md
-├── 2026-03-26-03-security-plan.md
-├── 2026-03-26-04-data-plan.md
-├── 2026-03-26-05-messaging-plan.md
-├── 2026-03-26-06-observability-plan.md
-├── 2026-03-26-07-workflow-plan.md
-├── 2026-03-26-08-ai-plan.md
-├── 2026-03-26-09-tooling-plan.md
-├── 2026-03-26-10-communication-plan.md
-├── 2026-03-26-11-laboratory-plan.md
+├── 2026-03-26-01-gateway-standardization.md
+├── 2026-03-26-02-auth-standardization.md
+├── ...
+├── 2026-04-10-infra-team-agent-cross-validation.md
 ├── 2026-04-01-standardize-infra-net.md  # Latest: infra_net 표준화 실행 계획
-└── README.md                               # This file
+└── README.md                              # This file
 ```
 
 ## How to Work in This Area
 
 1. 구현 전 [plan.template.md](../99.templates/plan.template.md)를 활용하여 작업 계획을 수립함.
 2. 각 단계가 상세 명세(Spec)를 충분히 반영하고 있는지 확인함.
-3. 문서 상태(`refining`, `approved`, `completed`)를 명확히 관리함.
-4. 예기치 않은 이슈 발생 시 계획을 수정하고 히스토리를 남김.
+3. 활성 plan은 `docs/05.plans/` 아래의 canonical 경로에만 둠. 비표준 `docs/*` 경로에는 active plan을 두지 않음.
+4. 문서 상태(`draft`, `approved`, `completed`)를 명확히 관리함.
+5. 예기치 않은 이슈 발생 시 계획을 수정하고 히스토리를 남김.
 
 ## Documentation Standards
 
@@ -69,7 +63,7 @@ docs/05.plans/
 2. 실행 전 계획 단계에서 정의된 작업 분할(WBS)과 리스크 요인을 반드시 숙지한다.
 3. 작업 수행 중 계획에서 벗어난 상황이 발생하면 계획 문서를 즉시 업데이트한다.
 
-## Related References
+## Related Documents
 
 - **PRD**: [../01.prd/README.md]
 - **Spec**: [../04.specs/README.md]

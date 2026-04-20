@@ -108,7 +108,9 @@ bash scripts/check-doc-traceability.sh
 
 ## Related Documents
 
+- **Agent Design**: [./agent-design.md](./agent-design.md)
 - **Plan**: [../../05.plans/2026-03-28-07-workflow-optimization-hardening-plan.md](../../05.plans/2026-03-28-07-workflow-optimization-hardening-plan.md)
+- **Cross-Validation Plan**: [../../05.plans/2026-04-10-infra-team-agent-cross-validation.md](../../05.plans/2026-04-10-infra-team-agent-cross-validation.md)
 - **Tasks**: [../../06.tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md](../../06.tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md)
 - **Guide**: [../../07.guides/07-workflow/optimization-hardening.md](../../07.guides/07-workflow/optimization-hardening.md)
 - **Operation**: [../../08.operations/07-workflow/optimization-hardening.md](../../08.operations/07-workflow/optimization-hardening.md)

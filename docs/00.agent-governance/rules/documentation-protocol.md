@@ -19,6 +19,8 @@ Protocol for maintaining documentation consistency and governance traceability.
 - Keep `docs/00.agent-governance/` English-only.
 - Keep human-facing docs in Korean unless interoperability requires English terms.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user approval.
+- Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/11`, `docs/90`, `docs/99`).
+- Non-stage `docs/*` paths such as `docs/superpowers/` must not contain active specs or plans.
 
 ## 3. Document Type ↔ Template Mapping
 
@@ -69,6 +71,12 @@ Trigger documentation updates when:
 
 For completion, ensure affected README files and governance pointers remain accurate.
 
+When legacy active-stage content is discovered in a non-stage `docs/*` path:
+
+1. Rewrite it into the canonical stage document using the mapped template.
+2. Sync parent README files to the canonical path.
+3. Remove the legacy file and directory once no active references remain.
+
 ## 6. Maintenance and Safety
 
 - Remove obsolete instructions quickly in editable scope.
@@ -90,3 +98,10 @@ Agent is **BLOCKED** from marking task complete until this is done.
 **R3 — Related Documents:**
 Every document MUST contain a `## Related Documents` section with upstream links.
 A document without this section is **INCOMPLETE** regardless of content quality.
+
+## Related Documents
+
+- `docs/00.agent-governance/rules/stage-authoring-matrix.md`
+- `docs/00.agent-governance/rules/task-checklists.md`
+- `docs/00.agent-governance/scopes/docs.md`
+- `docs/99.templates/README.md`

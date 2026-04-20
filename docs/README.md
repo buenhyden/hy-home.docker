@@ -32,6 +32,7 @@
    - 내부적인 사고(Thinking)나 기술적 분석은 영어를 사용할 수 있으나, 최종 결과물은 한국어여야 합니다.
 4. **Markdown 표준**: 모든 문서는 상대 경로를 사용하며 Markdown 형식을 준수합니다. (절대 경로 및 `file://` 사용 금지)
 5. **명확한 위치 설정**: 결정 사항은 ADR에, 상세 설계는 Spec에, 작업 절차는 Runbook에 기록하여 파편화를 방지합니다.
+6. **정식 경로 강제**: 활성 stage 문서는 반드시 `docs/01`~`docs/11`, `docs/90`, `docs/99` 체계 안에 둡니다. `docs/superpowers/` 같은 비표준 경로에는 활성 Spec/Plan을 두지 않습니다.
 
 ## 문서 유형-템플릿 매핑
 
@@ -106,3 +107,10 @@
 ### [11.postmortems](11.postmortems/README.md)
 
 사고 구조 분석 및 재발 방지 대책
+
+## Related Documents
+
+- [00.agent-governance/README.md](00.agent-governance/README.md)
+- [04.specs/README.md](04.specs/README.md)
+- [05.plans/README.md](05.plans/README.md)
+- [99.templates/README.md](99.templates/README.md)
