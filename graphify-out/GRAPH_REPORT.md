@@ -804,9 +804,11 @@ Nodes (0):
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `N()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 11`?**
-  _High betweenness centrality (0.550) - this node is a cross-community bridge._
+  _High betweenness centrality (0.551) - this node is a cross-community bridge._
 - **Why does `d()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 11`?**
-  _High betweenness centrality (0.251) - this node is a cross-community bridge._
+  _High betweenness centrality (0.237) - this node is a cross-community bridge._
+- **Why does `12741()` connect `Community 5` to `Community 0`, `Community 1`?**
+  _High betweenness centrality (0.110) - this node is a cross-community bridge._
 - **Are the 1166 inferred relationships involving `N()` (e.g. with `38516()` and `36946()`) actually correct?**
   _`N()` has 1166 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 625 inferred relationships involving `d()` (e.g. with `34623()` and `67411()`) actually correct?**
@@ -815,5 +817,3 @@ _Questions this graph is uniquely positioned to answer:_
   _`A()` has 206 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 77 inferred relationships involving `u()` (e.g. with `83743()` and `74006()`) actually correct?**
   _`u()` has 77 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 45 inferred relationships involving `h()` (e.g. with `40354()` and `32900()`) actually correct?**
-  _`h()` has 45 INFERRED edges - model-reasoned connections that need verification._
