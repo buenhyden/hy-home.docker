@@ -1,8 +1,8 @@
-# Graph Report - /home/hy/project-infra/hy-home.docker  (2026-04-20)
+# Graph Report - /home/hy/project-infra/hy-home.docker  (2026-04-21)
 
 ## Corpus Check
 
-- 296 files · ~1,257,868 words
+- 296 files · ~1,258,830 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -804,11 +804,11 @@ Nodes (0):
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `N()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 11`?**
-  _High betweenness centrality (0.551) - this node is a cross-community bridge._
+  _High betweenness centrality (0.513) - this node is a cross-community bridge._
 - **Why does `d()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 11`?**
-  _High betweenness centrality (0.237) - this node is a cross-community bridge._
+  _High betweenness centrality (0.303) - this node is a cross-community bridge._
 - **Why does `12741()` connect `Community 5` to `Community 0`, `Community 1`?**
-  _High betweenness centrality (0.110) - this node is a cross-community bridge._
+  _High betweenness centrality (0.090) - this node is a cross-community bridge._
 - **Are the 1166 inferred relationships involving `N()` (e.g. with `38516()` and `36946()`) actually correct?**
   _`N()` has 1166 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 625 inferred relationships involving `d()` (e.g. with `34623()` and `67411()`) actually correct?**

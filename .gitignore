@@ -103,3 +103,4 @@ secrets/SENSITIVE_ENV_VARS.md
 
 volumes/
 .worktrees/
+.gstack/
