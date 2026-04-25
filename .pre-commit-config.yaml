@@ -1,5 +1,5 @@
 minimum_pre_commit_version: '3.7.0'
-default_install_hook_types: [pre-commit, commit-msg]
+default_install_hook_types: [pre-commit, pre-push, commit-msg]
 
 repos:
   # --- 1. Basic Format & File System ---
