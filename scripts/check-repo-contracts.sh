@@ -153,6 +153,38 @@ for path in workflow_files:
         print(f"FAIL: duplicate workflow step names in {path}: {duplicate_steps}", file=sys.stderr)
         failures += 1
 
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        stripped = line.lstrip()
+        if not re.match(r"^-\s+", stripped):
+            continue
+        if re.match(r"^-\s+\*[A-Za-z0-9_-]+\s*$", stripped):
+            continue
+
+        indent = len(line) - len(stripped)
+        block = [line]
+        for next_line in lines[index + 1 :]:
+            next_stripped = next_line.lstrip()
+            next_indent = len(next_line) - len(next_stripped)
+            if next_stripped and next_indent <= indent and re.match(r"^-\s+", next_stripped):
+                break
+            if next_stripped and next_indent < indent:
+                break
+            block.append(next_line)
+
+        block_text = "\n".join(block)
+        has_uses = bool(
+            re.search(r"(?m)^\s*uses:\s*", block_text)
+            or re.search(r"(?m)^\s*-\s+(?:&[A-Za-z0-9_-]+\s+)?uses:\s*", block_text)
+        )
+        has_name = bool(
+            re.search(r"(?m)^\s*name:\s*\S", block_text)
+            or re.search(r"(?m)^\s*-\s+(?:&[A-Za-z0-9_-]+\s+)?name:\s*\S", block_text)
+        )
+        if has_uses and not has_name:
+            print(f"FAIL: unnamed action step in {path}:{index + 1}", file=sys.stderr)
+            failures += 1
+
     in_jobs = False
     job_ids: list[str] = []
     for line in text.splitlines():
