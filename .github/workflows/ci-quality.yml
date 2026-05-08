@@ -85,6 +85,20 @@ jobs:
       - name: Validate Docker Compose config
         run: bash scripts/validate-docker-compose.sh
 
+  # ── Full Profile Compose Contract Validation ────────────────
+  compose-all-profiles-validation:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      HYHOME_COMPOSE_PROFILES: core data obs workflow ai tooling messaging security communication service storage admin iac registry sast sync testing graph mng ksql nginx
+    steps:
+      - *checkout
+      - *prepare-env
+      - name: Validate all Docker Compose profiles
+        run: bash scripts/validate-docker-compose.sh
+
   # ── Infrastructure Hardening Baseline ──────────────────────────
   infrastructure-hardening:
     permissions:

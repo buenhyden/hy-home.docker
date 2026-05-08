@@ -7,6 +7,8 @@ on:
   issues:
     types: [opened]
 
+permissions: {}
+
 jobs:
   issue-greeting:
     if: github.event_name == 'issues'

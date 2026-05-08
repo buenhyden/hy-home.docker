@@ -236,6 +236,8 @@ for path in workflow_files:
     jobs = data.get("jobs") or {}
     top_permissions = data.get("permissions")
 
+    if top_permissions is None:
+        failures.append(f"{path}: workflow is missing top-level permissions")
     if "pull_request_target:" in text:
         failures.append(f"{path}: pull_request_target is not allowed")
     if re.search(r"(?m)^\s*contents:\s*write\s*(#.*)?$", text):
@@ -261,6 +263,28 @@ for path in workflow_files:
         for job_id, job in jobs.items():
             if isinstance(job, dict) and "permissions" not in job:
                 failures.append(f"{path}: job {job_id!r} is missing explicit permissions")
+
+ci_quality = pathlib.Path(".github/workflows/ci-quality.yml")
+if ci_quality.is_file():
+    data = yaml.safe_load(ci_quality.read_text()) or {}
+    jobs = set((data.get("jobs") or {}).keys())
+    required_jobs = {
+        "docs-traceability",
+        "repo-contracts",
+        "git-flow-contract",
+        "compose-validation",
+        "compose-all-profiles-validation",
+        "infrastructure-hardening",
+        "template-security-baseline",
+        "quickwin-baseline",
+        "pre-commit",
+        "zizmor",
+    }
+    missing_jobs = sorted(required_jobs - jobs)
+    for job_id in missing_jobs:
+        failures.append(f"{ci_quality}: missing required QA/CI job: {job_id}")
+else:
+    failures.append("missing required workflow: .github/workflows/ci-quality.yml")
 
 if failures:
     for failure in failures:
