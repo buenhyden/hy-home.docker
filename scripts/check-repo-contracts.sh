@@ -489,7 +489,7 @@ then
   failures=$((failures + 1))
 fi
 
-section "Root script inventory"
+section "Script usage contract"
 if ! python3 - <<'PY'
 from __future__ import annotations
 
@@ -503,12 +503,88 @@ if not readme.is_file():
 
 readme_text = readme.read_text()
 failures: list[str] = []
+manual_root_scripts = {
+    pathlib.Path("scripts/generate-local-certs.sh"),
+}
+root_scripts = sorted(path for path in pathlib.Path("scripts").glob("*.sh") if path.is_file())
+lib_scripts = sorted(path for path in pathlib.Path("scripts/lib").glob("*.sh") if path.is_file())
 
-for path in sorted(pathlib.Path("scripts").glob("*.sh")):
+for path in manual_root_scripts:
     if not path.is_file():
-        continue
+        failures.append(f"manual script allowlist points to missing root script: {path}")
+
+for path in root_scripts:
     if path.name not in readme_text and str(path) not in readme_text:
         failures.append(f"scripts/README.md missing root script inventory entry: {path}")
+
+scan_roots = [
+    pathlib.Path(p)
+    for p in [
+        "README.md",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "GEMINI.md",
+        "docs",
+        "infra",
+        "scripts",
+        ".github",
+        ".claude",
+        ".codex",
+        ".pre-commit-config.yaml",
+        "docker-compose.yml",
+    ]
+    if pathlib.Path(p).exists()
+]
+
+def iter_files(root: pathlib.Path) -> list[pathlib.Path]:
+    if root.is_file():
+        return [root]
+    return [
+        path
+        for path in root.rglob("*")
+        if path.is_file() and "graphify-out" not in path.parts
+    ]
+
+scanned_files: list[tuple[pathlib.Path, str]] = []
+for root in scan_roots:
+    for path in iter_files(root):
+        try:
+            scanned_files.append((path, path.read_text(errors="ignore")))
+        except Exception:
+            continue
+
+for script in root_scripts:
+    if script in manual_root_scripts:
+        continue
+    candidates = {str(script), f"./{script}", script.name}
+    referenced = False
+    for path, text in scanned_files:
+        if path in {script, readme}:
+            continue
+        if any(candidate in text for candidate in candidates):
+            referenced = True
+            break
+    if not referenced:
+        failures.append(
+            "root script is not externally referenced and is not in the manual allowlist: "
+            f"{script}"
+        )
+
+root_script_texts: list[tuple[pathlib.Path, str]] = []
+for script in root_scripts:
+    try:
+        root_script_texts.append((script, script.read_text(errors="ignore")))
+    except Exception:
+        continue
+
+for lib_script in lib_scripts:
+    candidates = {str(lib_script), f"./{lib_script}", str(lib_script.relative_to("scripts")), lib_script.name}
+    referenced = any(
+        any(candidate in text for candidate in candidates)
+        for _script, text in root_script_texts
+    )
+    if not referenced:
+        failures.append(f"library script is not referenced by any root script: {lib_script}")
 
 if failures:
     for failure in failures:

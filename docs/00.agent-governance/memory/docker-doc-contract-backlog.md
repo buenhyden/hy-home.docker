@@ -71,6 +71,24 @@ Deferred work:
 - Avoid mass front matter insertion until each stage folder has an explicit
   owner and review scope.
 
+## 2026-05-09 Script Usage Audit
+
+The `scripts/` audit found 21 root shell scripts and one library script. No
+unused root script was identified as a deletion candidate. The low-risk gap was
+discoverability for the manual local TLS utility.
+
+Current disposition:
+
+- Keep all existing root scripts.
+- Keep tier hardening wrappers as stable user, document, and CI entrypoints;
+  they are not treated as duplicate implementations.
+- Classify `generate-local-certs.sh` as a manual operations script and document
+  it in the developer setup flow.
+- Enforce future script hygiene through `scripts/check-repo-contracts.sh`:
+  root scripts must be listed in `scripts/README.md`, non-manual root scripts
+  must have an external repository reference, and library scripts must be
+  referenced by root scripts.
+
 ## Prevention
 
 When a stage subfolder is created or materially changed, update the nearest

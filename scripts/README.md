@@ -33,6 +33,20 @@
 | Cert Generation | [generate-local-certs.sh](generate-local-certs.sh) | Generate local TLS files |
 | Vault AppRole Bootstrap | [bootstrap-vault-approle.sh](bootstrap-vault-approle.sh) | Configure Vault Agent AppRole credentials after Vault is running and unsealed |
 
+## Script Lifecycle
+
+| Lifecycle | Scripts |
+| :--- | :--- |
+| CI / quality gate | `check-repo-contracts.sh`, `validate-docker-compose.sh`, `check-doc-traceability.sh`, `check-quickwin-baseline.sh`, `check-template-security-baseline.sh`, `check-all-hardening.sh` |
+| Runtime hook | `post-tool-validate.sh` |
+| Tier wrapper | `check-gateway-hardening.sh`, `check-auth-hardening.sh`, `check-security-hardening.sh`, `check-data-hardening.sh`, `check-messaging-hardening.sh`, `check-observability-hardening.sh`, `check-workflow-hardening.sh`, `check-ai-hardening.sh`, `check-tooling-hardening.sh`, `check-laboratory-hardening.sh` |
+| Manual operations | `preflight-compose.sh`, `gen-secrets.sh`, `generate-local-certs.sh`, `bootstrap-vault-approle.sh` |
+| Internal library | `scripts/lib/hardening-lib.sh` |
+
+Root scripts must stay listed in this README. Any root script that is not an
+explicit manual utility must also be referenced by a repository entrypoint,
+stage document, runtime hook, or CI workflow.
+
 ---
 
 ## 🛠️ Utilities & Automation
@@ -103,6 +117,9 @@ HYHOME_COMPOSE_PROFILES="core dev" ./scripts/check-quickwin-baseline.sh
 
 # Enforce 11-laboratory hardening baseline
 ./scripts/check-laboratory-hardening.sh
+
+# Generate local TLS certificates
+bash scripts/generate-local-certs.sh
 
 ```
 

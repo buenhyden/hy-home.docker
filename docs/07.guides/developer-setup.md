@@ -49,7 +49,11 @@ All scripts assume a bash-compatible shell. If you are on Windows, use WSL2.
 
 1. Clone the repository.
 2. Ensure Docker and Docker Compose (v2.x) are installed.
-3. Run `bash scripts/validate-docker-compose.sh` to verify your local setup.
+3. Copy `.env.example` to `.env` and fill only local values required by the
+   selected profiles.
+4. For local TLS development, install `mkcert` and run
+   `bash scripts/generate-local-certs.sh`.
+5. Run `bash scripts/validate-docker-compose.sh` to verify your local setup.
 
 ## 5. Maintenance & Safety
 
