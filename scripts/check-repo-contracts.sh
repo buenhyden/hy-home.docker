@@ -286,6 +286,70 @@ then
   failures=$((failures + 1))
 fi
 
+section "Runtime harness catalog"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+
+runtime_agents = sorted(p.stem for p in pathlib.Path(".claude/agents").glob("*.md"))
+governance_agents = sorted(p.stem for p in pathlib.Path("docs/00.agent-governance/agents/agents").glob("*.md"))
+if runtime_agents != governance_agents:
+    failures.append(f"runtime agent catalog mismatch: .claude={runtime_agents} governance={governance_agents}")
+
+runtime_functions = sorted(p.parent.name for p in pathlib.Path(".claude/skills").glob("*/skill.md"))
+governance_functions = sorted(p.stem for p in pathlib.Path("docs/00.agent-governance/agents/functions").glob("*.md"))
+if runtime_functions != governance_functions:
+    failures.append(f"runtime function catalog mismatch: .claude={runtime_functions} governance={governance_functions}")
+
+protocol = pathlib.Path("docs/00.agent-governance/subagent-protocol.md").read_text()
+for agent in runtime_agents:
+    path = f".claude/agents/{agent}.md"
+    if path not in protocol:
+        failures.append(f"subagent protocol missing runtime agent: {path}")
+
+stale_patterns = [
+    re.compile(r"H100|h100_pattern|examples/harness-100"),
+    re.compile(r"AGENTS\.md §3 Agent Catalog|AGENTS\.md §4 Orchestration"),
+]
+scan_roots = [
+    pathlib.Path("AGENTS.md"),
+    pathlib.Path("CLAUDE.md"),
+    pathlib.Path("GEMINI.md"),
+    pathlib.Path(".claude"),
+    pathlib.Path(".codex"),
+    pathlib.Path("docs/00.agent-governance"),
+]
+
+files: list[pathlib.Path] = []
+for root in scan_roots:
+    if root.is_file():
+        files.append(root)
+    elif root.exists():
+        files.extend(p for p in root.rglob("*") if p.is_file() and "memory" not in p.parts)
+
+for path in files:
+    try:
+        text = path.read_text(errors="ignore")
+    except Exception:
+        continue
+    for pattern in stale_patterns:
+        for match in pattern.finditer(text):
+            failures.append(f"{path}: stale runtime/governance reference: {match.group(0)}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
 section "Script reference integrity"
 if ! python3 - <<'PY'
 from __future__ import annotations

@@ -14,10 +14,11 @@ Shared standards for instruction design, token efficiency, and execution quality
   1. `rules/bootstrap.md`
   2. `rules/persona.md`
   3. `rules/task-checklists.md`
-  4. one primary `scopes/<layer>.md`
-  5. `rules/stage-authoring-matrix.md` (docs authoring only)
-  6. `rules/github-governance.md` (PR / merge / review tasks only)
-  7. stage docs JIT (`docs/01` to `docs/10`, then `docs/90` or `docs/99`)
+  4. `rules/agentic.md`
+  5. one primary `scopes/<layer>.md`
+  6. `rules/stage-authoring-matrix.md` (docs authoring only)
+  7. `rules/github-governance.md` (PR / merge / review tasks only)
+  8. stage docs JIT (`docs/01` to `docs/10`, then `docs/90` or `docs/99`)
 - Avoid duplicated instructions across root shims and rule files.
 
 ## 2. Language Standard
@@ -52,5 +53,6 @@ This section is intentionally thin to avoid duplication. Refer to that document 
 ## Related Documents
 
 - `docs/00.agent-governance/rules/bootstrap.md`
+- `docs/00.agent-governance/rules/agentic.md`
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/rules/quality-standards.md`

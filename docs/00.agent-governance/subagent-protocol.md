@@ -43,6 +43,7 @@ The supervisor coordinates workers and should not be treated as a generic worker
 | `.claude/agents/code-reviewer.md`      | `scopes/common.md`   | `code-reviewer`      |
 | `.claude/agents/doc-writer.md`         | `scopes/docs.md`     | `doc-writer`         |
 | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | `iac-reviewer`       |
+| `.claude/agents/drift-detector.md`     | `scopes/infra.md`    | `drift-detector`     |
 
 ## 4. Communication Protocol
 
@@ -69,5 +70,6 @@ Dead `_workspace/` files are preserved for audit; do not delete without user app
 - `docs/00.agent-governance/rules/bootstrap.md`
 - `docs/00.agent-governance/rules/task-checklists.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
-- `AGENTS.md` §3 Agent Catalog · §4 Orchestration Protocol
+- `AGENTS.md` §3 Runtime Surfaces
+- `docs/00.agent-governance/agents/README.md`
 - `.claude/agents/workflow-supervisor.md`

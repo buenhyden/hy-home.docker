@@ -27,7 +27,8 @@ This directory is the canonical governance system for coding agents in this repo
   - `github-governance.md` — GitHub-aligned policy baseline (branch protection, PR contracts, Actions security, local-instruction boundary)
 - `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge (§6 §7 per scope).
 - `providers/`: runtime-specific overlays (`claude`, `gemini`, `codex`, provider-neutral `agents-md`).
-- `agents/`: catalog of workspace agents and orchestration functions.
+- `agents/`: local harness catalog of workspace agents and orchestration functions.
+  - Runtime mirror: 8 Claude agents in `.claude/agents/` and 10 functions in `.claude/skills/`.
 - `.claude/`: Claude runtime enforcement layer (`CLAUDE.md`, `settings.json`, hooks, agent files, nested skills).
 - `.codex/`: Codex runtime hook/context layer (`hooks.json`, `README.md`).
 - `memory/`: durable governance notes and audit findings.
@@ -71,11 +72,13 @@ This directory is the canonical governance system for coding agents in this repo
 ## 5. Operational Procedure
 
 1. Resolve layer and load persona before any mutation.
-2. Load exactly one primary scope.
-3. Run pre-task checklist before implementation.
-4. Use stage authoring matrix for any documentation authoring/refactoring task.
-5. For PR-related tasks, load `[LOAD:RULES:GITHUB]` and verify GitHub completion gate (§6 of that rule) before declaring done.
-6. Run completion checklist and record out-of-scope findings in `memory/`.
+2. Load the pre-task checklist and `[LOAD:RULES:AGENTIC]`.
+3. Load exactly one primary scope.
+4. Run pre-task checklist before implementation.
+5. Use `subagent-protocol.md` and `workflow-supervisor` for cross-domain or delegated work.
+6. Use stage authoring matrix for any documentation authoring/refactoring task.
+7. For PR-related tasks, load `[LOAD:RULES:GITHUB]` and verify GitHub completion gate (§6 of that rule) before declaring done.
+8. Run completion checklist and record out-of-scope findings in `memory/`.
 
 ## 6. Maintenance and Safety
 
@@ -86,6 +89,7 @@ This directory is the canonical governance system for coding agents in this repo
 ## Related Documents
 
 - `docs/00.agent-governance/rules/bootstrap.md`
+- `docs/00.agent-governance/rules/agentic.md`
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/rules/standards.md`
 - `docs/00.agent-governance/subagent-protocol.md`

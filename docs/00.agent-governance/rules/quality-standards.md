@@ -37,7 +37,7 @@ Quality dimensions:
 
 ## 4. Workflow Compliance
 
-- Use JIT routing: bootstrap -> persona -> checklists -> one scope -> stage docs.
+- Use JIT routing: bootstrap -> persona -> checklists -> agentic rule -> one scope -> stage docs.
 - Keep governance docs English-only.
 - Keep user-facing communication Korean-first.
 - Treat `docs/01` to `docs/99` as read-only unless explicitly approved.
@@ -67,3 +67,4 @@ See `rules/github-governance.md` §6 for the authoritative GitHub gate definitio
 
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/rules/git-workflow.md`
+- `docs/00.agent-governance/rules/agentic.md`

@@ -11,10 +11,11 @@ Universal entry shim for agent execution in `hy-home.docker`.
 1. Load `[LOAD:RULES:BOOTSTRAP]` from `docs/00.agent-governance/rules/bootstrap.md`.
 2. Load `[LOAD:RULES:PERSONA]` from `docs/00.agent-governance/rules/persona.md`.
 3. Load `[LOAD:RULES:CHECKLISTS]` from `docs/00.agent-governance/rules/task-checklists.md`.
-4. Resolve task layer and load exactly one primary scope from `docs/00.agent-governance/scopes/`.
-5. For documentation workflows, load `[LOAD:RULES:STAGE-MATRIX]`.
-6. For PR, merge, review, or workflow tasks, load `[LOAD:RULES:GITHUB]`.
-7. JIT-load stage docs only when required by the active task.
+4. Load `[LOAD:RULES:AGENTIC]` from `docs/00.agent-governance/rules/agentic.md`.
+5. Resolve task layer and load exactly one primary scope from `docs/00.agent-governance/scopes/`.
+6. For documentation workflows, load `[LOAD:RULES:STAGE-MATRIX]`.
+7. For PR, merge, review, or workflow tasks, load `[LOAD:RULES:GITHUB]`.
+8. JIT-load stage docs only when required by the active task.
 
 ## 2. Hard Constraints
 
@@ -57,6 +58,7 @@ This project has a graphify knowledge graph at `graphify-out/`.
 
 - `docs/00.agent-governance/README.md`
 - `docs/00.agent-governance/rules/bootstrap.md`
+- `docs/00.agent-governance/rules/agentic.md`
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/rules/quality-standards.md`
 - `docs/00.agent-governance/subagent-protocol.md`

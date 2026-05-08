@@ -13,6 +13,8 @@
       "Bash(bash scripts/validate-docker-compose.sh:*)",
       "Bash(bash scripts/check-all-hardening.sh:*)",
       "Bash(bash scripts/check-doc-traceability.sh:*)",
+      "Bash(bash scripts/check-repo-contracts.sh:*)",
+      "Bash(bash scripts/check-quickwin-baseline.sh:*)",
       "Bash(bash scripts/check-template-security-baseline.sh:*)"
     ],
     "deny": [

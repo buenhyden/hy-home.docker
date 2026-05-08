@@ -35,10 +35,11 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 
 1. Load `[LOAD:RULES:PERSONA]` from `rules/persona.md`.
 2. Load `[LOAD:RULES:CHECKLISTS]` from `rules/task-checklists.md`.
-3. Resolve task layer and load one primary scope from `scopes/<layer>.md`.
-4. For docs authoring work, load `[LOAD:RULES:STAGE-MATRIX]` from `rules/stage-authoring-matrix.md`.
-5. For PR creation, merge, or review tasks, load `[LOAD:RULES:GITHUB]` from `rules/github-governance.md`.
-6. Load stage docs JIT only when required by the active task.
+3. Load `[LOAD:RULES:AGENTIC]` from `rules/agentic.md`.
+4. Resolve task layer and load one primary scope from `scopes/<layer>.md`.
+5. For docs authoring work, load `[LOAD:RULES:STAGE-MATRIX]` from `rules/stage-authoring-matrix.md`.
+6. For PR creation, merge, or review tasks, load `[LOAD:RULES:GITHUB]` from `rules/github-governance.md`.
+7. Load stage docs JIT only when required by the active task.
 
 ## 4. Hard Constraints
 
@@ -62,6 +63,7 @@ For structural or cross-cutting changes:
 ## Related Documents
 
 - `docs/00.agent-governance/README.md`
+- `docs/00.agent-governance/rules/agentic.md`
 - `docs/00.agent-governance/rules/task-checklists.md`
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/scopes/docs.md`

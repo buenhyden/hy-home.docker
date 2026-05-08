@@ -9,7 +9,7 @@ description: >
 # security-audit
 
 Workspace security audit orchestration skill.
-Adapt the selected harness logic to the current runtime inventory without creating extra runtime agent teams.
+Use the repo-local agent/function catalog and current runtime inventory without creating extra runtime agent teams.
 
 ## Primary Actor
 

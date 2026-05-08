@@ -38,7 +38,7 @@ msg = (
     '- Run `bash scripts/validate-docker-compose.sh`\n'
     '- Check port conflicts, volume paths, and missing environment variables\n'
     '- Ensure the network name matches the existing configuration\n\n'
-    '> The PostToolUse hook will run validation after the edit.'
+    '> The PostToolUse hook will run relevant validation after the edit.'
 )
 print(json.dumps({'systemMessage': msg}))
 " "$SHORT_PATH"

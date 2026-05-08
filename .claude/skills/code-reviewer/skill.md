@@ -9,8 +9,8 @@ description: >
 # code-reviewer
 
 Workspace code review orchestration skill.
-Use the review taxonomy from the active governance harness set: style, security,
-performance, and architecture.
+Use the review taxonomy from the repo-local agent/function catalog: style,
+security, performance, and architecture.
 
 ## Review Modes
 
