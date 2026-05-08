@@ -56,7 +56,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 
 ## Usage
 
-- Use this catalog when updating `.claude/agents/` or `.claude/skills/<name>/skill.md`.
+- Use this catalog when updating `.claude/agents/`, `.claude/skills/<name>/skill.md`, or provider runtime notes.
 - Keep agent docs aligned with their scope files under `docs/00.agent-governance/scopes/`.
 
 ## Artifacts

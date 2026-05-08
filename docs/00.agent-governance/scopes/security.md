@@ -60,4 +60,4 @@ Universal security standards and data protection protocols for `hy-home.docker`.
 # OWASP Top 10 · ASVS L2 · Docker Secrets mandatory
 ```
 
-Spawn via Task tool. Do not embed security policy inline in agent files.
+Spawn via the active runtime's delegated-agent facility. Do not embed security policy inline in agent files.

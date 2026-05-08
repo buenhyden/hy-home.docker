@@ -61,7 +61,7 @@ If legacy active-stage content is found in a non-stage `docs/*` path:
 # DOCS 3 RULES enforced (R1 template · R2 README · R3 related-docs)
 ```
 
-Spawn via Task tool. Do not embed documentation policy inline in agent files.
+Spawn via the active runtime's delegated-agent facility. Do not embed documentation policy inline in agent files.
 
 ## Related Documents
 

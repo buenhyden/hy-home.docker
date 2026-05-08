@@ -61,4 +61,4 @@ Conflicts: the most specific scope wins. Raises to user if ambiguous.
 # SLO: LATENCY < 200ms · Network: infra_net · Secrets: Docker Secrets only
 ```
 
-Spawn via Task tool. Pass `scopes/infra.md` path in context. Do not embed policy inline.
+Spawn via the active runtime's delegated-agent facility. Pass `scopes/infra.md` path in context. Do not embed policy inline.

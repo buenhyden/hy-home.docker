@@ -56,7 +56,7 @@ title: 'Common Engineering Scope'
 # Clean Code · SOLID · no plaintext secrets
 ```
 
-Spawn via Task tool. Do not embed common standards inline in agent files.
+Spawn via the active runtime's delegated-agent facility. Do not embed common standards inline in agent files.
 
 ## Related Documents
 

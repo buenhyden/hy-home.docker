@@ -8,7 +8,7 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 
 ## 1. Spawn Rules
 
-- Spawn subagents via the **Task tool** only — never via inline prompt embedding.
+- Spawn subagents through the active runtime's delegated-agent facility — never via inline prompt embedding.
 - The local runtime supervisor is `.claude/agents/workflow-supervisor.md`.
 - Each subagent MUST `@import` exactly one primary scope file before acting.
 - Pass the scope path explicitly in the task prompt; do not rely on ambient context.
@@ -35,7 +35,7 @@ The supervisor coordinates workers and should not be treated as a generic worker
 
 ### Worker Agents
 
-| Agent File                             | Scope Import         | Task Tool Name       |
+| Agent File                             | Scope Import         | Delegated Agent Name |
 | -------------------------------------- | -------------------- | -------------------- |
 | `.claude/agents/infra-implementer.md`  | `scopes/infra.md`    | `infra-implementer`  |
 | `.claude/agents/security-auditor.md`   | `scopes/security.md` | `security-auditor`   |

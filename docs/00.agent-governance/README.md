@@ -9,7 +9,7 @@ This directory is the canonical governance system for coding agents in this repo
 ## 1. Context and Objective
 
 - Purpose: deterministic, auditable, token-efficient agent execution.
-- Entry point: root shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) route agents into this hub.
+- Entry point: root shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) route agents into this hub; Codex uses `AGENTS.md` plus `.codex/`.
 - Compliance boundary: stage-gate lifecycle in `docs/01` to `docs/11`, plus `docs/90` and `docs/99`.
 
 ## 2. Requirements and Constraints
@@ -26,9 +26,10 @@ This directory is the canonical governance system for coding agents in this repo
   - `postflight-checklist.md` — run after every task before declaring completion
   - `github-governance.md` — GitHub-aligned policy baseline (branch protection, PR contracts, Actions security, local-instruction boundary)
 - `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge (§6 §7 per scope).
-- `providers/`: runtime-specific overlays (`claude`, `gemini`, provider-neutral `agents-md`).
+- `providers/`: runtime-specific overlays (`claude`, `gemini`, `codex`, provider-neutral `agents-md`).
 - `agents/`: catalog of workspace agents and orchestration functions.
-- `.claude/`: runtime enforcement layer for local agent execution (`CLAUDE.md`, `settings.json`, hooks, flat agent files, nested skills).
+- `.claude/`: Claude runtime enforcement layer (`CLAUDE.md`, `settings.json`, hooks, agent files, nested skills).
+- `.codex/`: Codex runtime hook/context layer (`hooks.json`, `README.md`).
 - `memory/`: durable governance notes and audit findings.
   - `progress.md` — phase tracker and L1–L7 layer audit status
 - `subagent-protocol.md` — spawn rules, communication protocol, and agent lifecycle.
@@ -89,4 +90,6 @@ This directory is the canonical governance system for coding agents in this repo
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/rules/standards.md`
 - `docs/00.agent-governance/subagent-protocol.md`
+- `docs/00.agent-governance/providers/codex.md`
 - `.claude/CLAUDE.md`
+- `.codex/README.md`

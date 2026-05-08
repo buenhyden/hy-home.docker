@@ -46,6 +46,7 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 - `docs/00.agent-governance/` must stay English-only.
 - `docs/01` to `docs/99` are read-only by default unless the user explicitly allows mutation.
 - Root shim files must remain concise and delegate details to this hub.
+- Provider-specific runtime behavior belongs in `providers/claude.md`, `providers/gemini.md`, `providers/codex.md`, `.claude/`, or `.codex/`.
 - **In-place refactor only** — edit the canonical file directly; do not create parallel or renamed copies.
 - **Settings SSOT** — team settings in `settings.json` (git tracked); personal overrides in `settings.local.json` only; no duplication across both files.
 - **Secrets** — never write plaintext credentials; use Docker Secrets or `secrets/` bind-mounts exclusively.
@@ -65,3 +66,4 @@ For structural or cross-cutting changes:
 - `docs/00.agent-governance/rules/task-checklists.md`
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/scopes/docs.md`
+- `docs/00.agent-governance/providers/codex.md`

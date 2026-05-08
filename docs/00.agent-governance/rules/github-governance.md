@@ -44,6 +44,7 @@ Repo-local stricter rules always override this document; never weaken them on th
   - root shims: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`
   - governance SSoT: `docs/00.agent-governance/`
   - runtime controls: `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, `.claude/skills/`
+  - Codex runtime hooks: `.codex/hooks.json`
 - GitHub is used here for repository protection, PR workflow, and Actions execution; it is not the canonical home of agent instruction policy.
 - Any future GitHub-native instruction file must be treated as out-of-scope until the repository governance explicitly adopts it.
 
@@ -68,6 +69,7 @@ If any gate is unmet, the task status is "blocked" not "done."
 - `docs/00.agent-governance/providers/agents-md.md`
 - `docs/00.agent-governance/providers/claude.md`
 - `docs/00.agent-governance/providers/gemini.md`
+- `docs/00.agent-governance/providers/codex.md`
 - `docs/00.agent-governance/memory/progress.md`
 
 ## References

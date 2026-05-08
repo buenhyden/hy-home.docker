@@ -55,4 +55,4 @@ title: 'Operations & SRE Scope'
 # MTTR target · LGTM stack · SEV1/SEV2 mandatory postmortem
 ```
 
-Spawn via Task tool. Do not embed ops policy inline in agent files.
+Spawn via the active runtime's delegated-agent facility. Do not embed ops policy inline in agent files.

@@ -15,9 +15,9 @@ This file keeps Claude-specific runtime routing local to `.claude/` while the sh
 
 ## Local Runtime Structure
 
-- Runtime supervisor: `.claude/agents/workflow-supervisor.md`
-- Domain agents: `.claude/agents/*.md`
-- Runtime skills: `.claude/skills/<skill>/skill.md`
+- Runtime supervisor: `.claude/agents/workflow-supervisor.md` (`model: opus`)
+- Domain agents: `.claude/agents/*.md` (7 workers, `model: sonnet`)
+- Runtime skills: `.claude/skills/<skill>/skill.md` (10 functions)
 - Runtime hooks: `.claude/hooks/*.sh`
 - Shared team permissions: `.claude/settings.json`
 
@@ -26,6 +26,7 @@ This file keeps Claude-specific runtime routing local to `.claude/` while the sh
 - `workflow-supervisor` owns orchestration, routing, and final coordination.
 - All domain/task agents remain specialized workers and use `model: sonnet`.
 - Runtime skills are invoked from their nested canonical paths only.
+- In Claude Code, use the delegated-agent facility and pass the primary scope path explicitly.
 - Keep runtime behavior aligned with `docs/00.agent-governance/agents/` and `docs/00.agent-governance/subagent-protocol.md`.
 
 ## Related Documents
