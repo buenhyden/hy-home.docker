@@ -61,8 +61,11 @@
 # Generate/Sync all missing secrets
 ./scripts/gen-secrets.sh
 
-# Force regenerate all secrets (creates .bak files)
-./scripts/gen-secrets.sh --force
+# Generate local TLS certificates with mkcert
+./scripts/generate-local-certs.sh
+
+# Re-sync the registry after manual secret changes
+./scripts/gen-secrets.sh
 
 # Update a specific secret manually
 echo "new_password" > secrets/db/postgres/mng_password.txt
@@ -75,15 +78,15 @@ docker compose restart mng-postgres
 
 - **Git Exclusion**: All `.txt` files are ignored by Git via `.gitignore`.
 - **Encryption at Rest**: Ensure the host filesystem is encrypted. Docker Secrets are mounted as in-memory files (tmpfs) within containers.
-- **Backup**: `gen-secrets.sh` creates `.bak` copies before overwriting existing secrets.
+- **Registry Sync**: Run `gen-secrets.sh` after secret file changes to keep `SENSITIVE_ENV_VARS.md` current.
 
 ---
 
 ## Extensibility & References
 
-- [🤖 Agent Governance](/AGENTS.md)
-- [🏛️ System Architecture](/ARCHITECTURE.md)
-- [⚙️ Operations](/OPERATION.md)
+- [🤖 Agent Governance](../AGENTS.md)
+- [🏛️ Architecture References](../docs/02.ard/README.md)
+- [⚙️ Operations](../docs/08.operations/README.md)
 - [📜 Secrets Registry](SENSITIVE_ENV_VARS.md)
 
 ---

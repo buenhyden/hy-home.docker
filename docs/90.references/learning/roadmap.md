@@ -58,7 +58,7 @@
 
 - **관측 가능성 및 SRE Golden Signals**
   - **패턴 뿌리**: Latency, Traffic, Errors, Saturation 네 가지 핵심 지표를 통한 시스템 건전성 측정.
-  - **저장소 연결**: `infra/06-observability/`의 **LGTM Stack** (Loki, Grafana, Tempo, Mimir).
+  - **저장소 연결**: `infra/06-observability/`의 **LGTM Stack** (Loki, Grafana, Tempo, Prometheus).
   - **학습 목표**: 분산 트레이싱(Tempo)과 로그(Loki), 메트릭(Prometheus)을 하나의 대시보드에서 통합 분석하는 현대적 모니터링 체계를 구축합니다.
 
 - **Zero Trust 및 중앙 집중식 인증 (OIDC/OAuth2)**
@@ -98,10 +98,15 @@
 
 ## 🪜 심층 분석 링크 (Deep-Dive Links)
 
-- [01-network/theory.md](../../.agent/skills/self-learning-guide/references/01-network/theory.md): 라우팅 및 DNS 패턴
-- [02-os-virtualization/theory.md](../../.agent/skills/self-learning-guide/references/02-os-virtualization/theory.md): 커널 격리 기술
-- [03-data-management/theory.md](../../.agent/skills/self-learning-guide/references/03-data-management/theory.md): CAP/ACID/분산 트랜잭션
-- [04-security-identity/theory.md](../../.agent/skills/self-learning-guide/references/04-security-identity/theory.md): 암호화 및 신원 관리
-- [05-observability/theory.md](../../.agent/skills/self-learning-guide/references/05-observability/theory.md): Golden Signals 및 분산 트레이싱
-- [06-ai-infrastructure/theory.md](../../.agent/skills/self-learning-guide/references/06-ai-infrastructure/theory.md): 벡터 검색 및 RAG 설계
-- [07-distributed-messaging/theory.md](../../.agent/skills/self-learning-guide/references/07-distributed-messaging/theory.md): EDA 및 Saga 패턴
+- [01-network/theory.md](../../../.agent/skills/self-learning-guide/references/01-network/theory.md): 라우팅 및 DNS 패턴
+- [02-os-virtualization/theory.md](../../../.agent/skills/self-learning-guide/references/02-os-virtualization/theory.md): 커널 격리 기술
+- [03-data-management/theory.md](../../../.agent/skills/self-learning-guide/references/03-data-management/theory.md): CAP/ACID/분산 트랜잭션
+- [04-security-identity/theory.md](../../../.agent/skills/self-learning-guide/references/04-security-identity/theory.md): 암호화 및 신원 관리
+- [05-observability/theory.md](../../../.agent/skills/self-learning-guide/references/05-observability/theory.md): Golden Signals 및 분산 트레이싱
+- [06-ai-infrastructure/theory.md](../../../.agent/skills/self-learning-guide/references/06-ai-infrastructure/theory.md): 벡터 검색 및 RAG 설계
+- [07-distributed-messaging/theory.md](../../../.agent/skills/self-learning-guide/references/07-distributed-messaging/theory.md): EDA 및 Saga 패턴
+
+## Related Documents
+
+- [Learning reference index](README.md)
+- [90.references](../README.md)

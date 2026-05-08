@@ -12,6 +12,7 @@
 - 아키텍처 개념 참고
 - 공통 FAQ
 - Agent 관련 개념 요약
+- 학습 로드맵과 이론 참고 문서
 
 ## 포함하지 말아야 할 내용
 
@@ -25,7 +26,17 @@
 - `standards/`
 - `architecture/`
 - `agents/`
+- `learning/`
 
 ## Templates
 
 - `../99.templates/reference.template.md`
+
+## Current References
+
+- [learning/README.md](learning/README.md) - Docker 기반 인프라 학습 로드맵과 이론 참고
+
+## Related Documents
+
+- [docs index](../README.md)
+- [reference template](../99.templates/reference.template.md)

@@ -33,16 +33,16 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 
 | Tier | Category | Key Services | Status |
 | :--- | :--- | :--- | :--- |
-| **01** | **Gateway** | [Traefik](01-gateway/traefik/), [Cloudflared](01-gateway/cloudflared/), [DDNS](01-gateway/ddns/) | Production |
+| **01** | **Gateway** | [Traefik](01-gateway/traefik/), [Nginx](01-gateway/nginx/) | Production |
 | **02** | **Identity** | [Keycloak](02-auth/keycloak/), [OAuth2-Proxy](02-auth/oauth2-proxy/) | Production |
-| **03** | **Security** | [Vault](03-security/vault/), [CrowdSec](03-security/crowdsec/) | Production |
-| **04** | **Observability** | [Grafana](06-observability/grafana/), [Prometheus](06-observability/prometheus/), [Loki](06-observability/loki/) | Production |
-| **05** | **Storage** | [PostgreSQL](04-data/postgresql-cluster/), [MinIO](04-data/minio/), [Valkey](04-data/valkey-cluster/) | Production |
-| **06** | **Search** | [OpenSearch](04-data/opensearch/), [Meilisearch](04-data/meilisearch/) | Production |
+| **03** | **Security** | [Vault](03-security/vault/) | Production |
+| **04** | **Data** | [mng-db](04-data/operational/mng-db/), [MinIO](04-data/lake-and-object/minio/), [Qdrant](04-data/specialized/qdrant/) | Production |
+| **05** | **Messaging** | [Kafka](05-messaging/kafka/), [RabbitMQ](05-messaging/rabbitmq/) | Production / Optional |
+| **06** | **Observability** | [Grafana](06-observability/grafana/), [Prometheus](06-observability/prometheus/), [Loki](06-observability/loki/), [Tempo](06-observability/tempo/) | Production |
 | **07** | **Workflow** | [Airflow](07-workflow/airflow/), [n8n](07-workflow/n8n/) | Production |
 | **08** | **AI** | [Ollama](08-ai/ollama/), [Open WebUI](08-ai/open-webui/) | Production |
 | **09** | **Tooling** | [SonarQube](09-tooling/sonarqube/), [Terrakube](09-tooling/terrakube/) | Dev/Ops |
-| **10** | **Communication** | [Stalwart](10-communication/mail/), [MailHog](10-communication/mailhog/) | Optional |
+| **10** | **Communication** | [Stalwart / MailHog](10-communication/mail/) | Optional |
 | **11** | **Laboratory** | [Portainer](11-laboratory/portainer/), [Homer](11-laboratory/dashboard/) | Admin |
 
 ## Tech Stack
@@ -52,7 +52,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 | Orchestration | Docker Compose v2.20+ | Using `include` & `profiles` |
 | Edge Router | Traefik v3.x | Dynamic service discovery |
 | Identity | Keycloak / OIDC | Centralized IAM |
-| Observability | LGTM Stack | Loki, Grafana, Tempo, Mimir |
+| Observability | LGTM Stack | Loki, Grafana, Tempo, Prometheus |
 
 ## Execution Model
 
@@ -62,17 +62,18 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 
 `hy-home.docker`는 Docker Compose의 **Profiles**를 사용하여 환경별/목적별 서비스 그룹을 제어합니다.
 
-- `profiles: [ "core" ]`: 필수 인프라 (Traefik, Keycloak, Vault)
-- `profiles: [ "data" ]`: 범용 데이터 저장소 (Postgres, InfluxDB, Cassandra, MongoDB 등)
-- `profiles: [ "mng-data" ]`: 시스템 관리용 DB 계층 (mng-db)
+- `profiles: [ "core" ]`: 필수 인프라 (Traefik, Keycloak, OAuth2 Proxy, Vault)
+- `profiles: [ "dev" ]`: 루트 통합 개발 스택
+- `profiles: [ "auth" ]`: 인증 계층
+- `profiles: [ "security" ]`: Vault 보안 계층
+- `profiles: [ "data" ]`: 범용 데이터 저장소 (Qdrant 등)
+- `profiles: [ "mng" ]`: 시스템 관리용 DB 계층 (mng-db)
 - `profiles: [ "storage" ]`: 오브젝트 및 파일 저장소 (MinIO)
 - `profiles: [ "messaging" ]`: 핵심 메시징 브로커 (Kafka)
-- `profiles: [ "messaging-option" ]`: 부가 메시징 도구 (RabbitMQ, ksql)
 - `profiles: [ "obs" ]`: 모니터링 및 로기 (LGTM Stack)
 - `profiles: [ "workflow" ]`: 워크플로우 엔진 (Airflow, n8n)
-- `profiles: [ "ai" ]`: AI/LLM 엔진 및 Vector DB (Ollama, Open WebUI, Qdrant)
-- `profiles: [ "tooling" ]`: 개발/운영 도구 (SonarQube, Terrakube, K6, Locust 등)
-- `profiles: [ "communication" ]`: 메일 및 통신 (Stalwart)
+- `profiles: [ "ai" ]`: AI/LLM 엔진 및 Vector DB
+- `profiles: [ "admin" ]`: 관리 대시보드 및 운영 보조 도구
 
 ## Getting Started
 
@@ -120,7 +121,6 @@ infra/
 ├── 10-communication/  # Mail & Messaging Infrastructure
 ├── 11-laboratory/     # Experimental & Admin Dashboards
 ├── common-optimizations.yml # Shared Docker templates
-├── docker-compose.yml # (Deprecated/Redirect) -> Root compose
 └── README.md          # This file
 ```
 

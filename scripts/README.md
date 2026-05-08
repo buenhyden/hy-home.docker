@@ -15,6 +15,7 @@
 | QuickWin Baseline Check | [check-quickwin-baseline.sh](check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
 | Template & Security Baseline Check | [check-template-security-baseline.sh](check-template-security-baseline.sh) | Enforce template adoption and required security controls |
 | Documentation Traceability Check | [check-doc-traceability.sh](check-doc-traceability.sh) | Enforce sync links across 05.plans ↔ 08.operations ↔ 09.runbooks |
+| Unified Hardening Check | [check-all-hardening.sh](check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
 | Gateway Hardening Check | [check-gateway-hardening.sh](check-gateway-hardening.sh) | Enforce 01-gateway Traefik/Nginx hardening baseline |
 | Auth Hardening Check | [check-auth-hardening.sh](check-auth-hardening.sh) | Enforce 02-auth Keycloak/OAuth2 Proxy hardening baseline |
 | Security Hardening Check | [check-security-hardening.sh](check-security-hardening.sh) | Enforce 03-security Vault hardening baseline |
@@ -47,11 +48,21 @@
 # Enforce Quick Win baseline
 ./scripts/check-quickwin-baseline.sh
 
+# Enforce Quick Win baseline for an explicit compose profile set
+# Fails when any selected profile has baseline violations.
+HYHOME_COMPOSE_PROFILES="core dev" ./scripts/check-quickwin-baseline.sh
+
 # Enforce template + security baseline
 ./scripts/check-template-security-baseline.sh
 
 # Enforce documentation traceability sync
 ./scripts/check-doc-traceability.sh
+
+# Enforce all tier hardening baselines
+./scripts/check-all-hardening.sh
+
+# Enforce one selected tier
+./scripts/check-all-hardening.sh 01-gateway
 
 # Enforce 01-gateway hardening baseline
 ./scripts/check-gateway-hardening.sh
@@ -89,8 +100,9 @@
 
 ## Extensibility & References
 
-- [🤖 Agent Governance](/AGENTS.md)
-- [⚙️ Operations Baseline](/OPERATION.md)
+- [🤖 Agent Governance](../AGENTS.md)
+- [⚙️ Operations Baseline](../docs/08.operations/README.md)
+- [📘 Runbooks](../docs/09.runbooks/README.md)
 
 ---
 *Maintained by DevOps & Automation Team*

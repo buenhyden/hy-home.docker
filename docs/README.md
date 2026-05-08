@@ -19,6 +19,7 @@
 도움이 되는 보조 문서는 다음과 같습니다.
 
 - `99.templates`: 모든 문서의 표준 템플릿 모음
+- `90.references`: 느리게 변하는 참고 지식, 표준, 학습 로드맵
 - `00.agent-governance`: AI 에이전트 전용 실행 지침 (토큰 절약을 위한 Lazy Loading 구조)
 
 ## 작성 원칙
@@ -92,6 +93,10 @@
 
 실제 구현 및 검증 작업 단위 (Task Table, Evidence)
 
+### [07.guides](07.guides/README.md)
+
+사용자와 운영자를 위한 재현 가능한 사용 가이드
+
 ### [08.operations](08.operations/README.md)
 
 시스템 운영 정책 및 거버넌스
@@ -108,9 +113,18 @@
 
 사고 구조 분석 및 재발 방지 대책
 
+### [90.references](90.references/README.md)
+
+느리게 변하는 참고 지식, 표준, 인벤토리, 학습 로드맵
+
+### [99.templates](99.templates/README.md)
+
+stage 문서 작성을 위한 표준 템플릿
+
 ## Related Documents
 
 - [00.agent-governance/README.md](00.agent-governance/README.md)
 - [04.specs/README.md](04.specs/README.md)
 - [05.plans/README.md](05.plans/README.md)
+- [90.references/README.md](90.references/README.md)
 - [99.templates/README.md](99.templates/README.md)

@@ -92,10 +92,15 @@ Verified learning through coding.
 
 ## 🪜 Deep-Dive Links (References)
 
-- [01-network/theory.md](../../.agent/skills/self-learning-guide/references/01-network/theory.md): Routing/DNS patterns
-- [02-os-virtualization/theory.md](../../.agent/skills/self-learning-guide/references/02-os-virtualization/theory.md): Kernel isolation
-- [03-data-management/theory.md](../../.agent/skills/self-learning-guide/references/03-data-management/theory.md): CAP/ACID/Distributed Transactions
-- [04-security-identity/theory.md](../../.agent/skills/self-learning-guide/references/04-security-identity/theory.md): Cryptography/Vaults/RBAC
-- [05-observability/theory.md](../../.agent/skills/self-learning-guide/references/05-observability/theory.md): Golden Signals/OpenTelemetry
-- [06-ai-infrastructure/theory.md](../../.agent/skills/self-learning-guide/references/06-ai-infrastructure/theory.md): Vector Search/RAG
-- [07-distributed-messaging/theory.md](../../.agent/skills/self-learning-guide/references/07-distributed-messaging/theory.md): EDA/Saga/At-Least-Once Delivery
+- [01-network/theory.md](../../../.agent/skills/self-learning-guide/references/01-network/theory.md): Routing/DNS patterns
+- [02-os-virtualization/theory.md](../../../.agent/skills/self-learning-guide/references/02-os-virtualization/theory.md): Kernel isolation
+- [03-data-management/theory.md](../../../.agent/skills/self-learning-guide/references/03-data-management/theory.md): CAP/ACID/Distributed Transactions
+- [04-security-identity/theory.md](../../../.agent/skills/self-learning-guide/references/04-security-identity/theory.md): Cryptography/Vaults/RBAC
+- [05-observability/theory.md](../../../.agent/skills/self-learning-guide/references/05-observability/theory.md): Golden Signals/OpenTelemetry
+- [06-ai-infrastructure/theory.md](../../../.agent/skills/self-learning-guide/references/06-ai-infrastructure/theory.md): Vector Search/RAG
+- [07-distributed-messaging/theory.md](../../../.agent/skills/self-learning-guide/references/07-distributed-messaging/theory.md): EDA/Saga/At-Least-Once Delivery
+
+## Related Documents
+
+- [Learning reference index](README.md)
+- [90.references](../README.md)
