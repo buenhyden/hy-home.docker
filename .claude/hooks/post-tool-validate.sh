@@ -70,13 +70,13 @@ for path in "${CHANGED_PATHS[@]}"; do
   esac
 
   case "$rel" in
-    AGENTS.md|CLAUDE.md|GEMINI.md|docs/00.agent-governance/*|.github/*|.claude/*|.codex/*|scripts/check-repo-contracts.sh)
+    AGENTS.md|CLAUDE.md|GEMINI.md|docs/00.agent-governance/*|docs/90.references/docker/*|.github/*|.claude/*|.codex/*|scripts/README.md|scripts/check-repo-contracts.sh|infra/tech-stack.versions.json)
       run_governance=1
       ;;
   esac
 
   case "$rel" in
-    .claude/settings.json|.codex/hooks.json)
+    .claude/settings.json|.codex/hooks.json|infra/tech-stack.versions.json)
       run_json=1
       ;;
   esac
@@ -89,7 +89,7 @@ for path in "${CHANGED_PATHS[@]}"; do
 done
 
 if [[ "$run_json" -eq 1 ]]; then
-  python3 -c 'import json, pathlib; [json.loads(pathlib.Path(p).read_text()) for p in [".claude/settings.json", ".codex/hooks.json"]]'
+  python3 -c 'import json, pathlib; [json.loads(pathlib.Path(p).read_text()) for p in [".claude/settings.json", ".codex/hooks.json", "infra/tech-stack.versions.json"]]'
 fi
 
 if [[ "$run_bash" -eq 1 ]]; then

@@ -1,0 +1,131 @@
+{
+  "policy_id": "OPS-TECH-STACK-VERSIONS-001",
+  "effective_date": "2026-05-09",
+  "owner_role": "Infra Lead",
+  "review_cadence": "monthly",
+  "source_of_truth": "Docker Compose image declarations",
+  "description": "Curated registry for important Docker runtime images. This file is a drift gate, not a deployment manifest.",
+  "entries": [
+    {
+      "component": "Traefik",
+      "tier": "01-gateway",
+      "images": ["traefik:v3.6.12"],
+      "compose_files": ["infra/01-gateway/traefik/docker-compose.yml"]
+    },
+    {
+      "component": "Keycloak",
+      "tier": "02-auth",
+      "images": ["quay.io/keycloak/keycloak:26.5.4"],
+      "compose_files": ["infra/02-auth/keycloak/docker-compose.yml"]
+    },
+    {
+      "component": "Vault",
+      "tier": "03-security",
+      "images": ["hashicorp/vault:1.21.4"],
+      "compose_files": ["infra/03-security/vault/docker-compose.yml"]
+    },
+    {
+      "component": "PostgreSQL",
+      "tier": "04-data",
+      "images": [
+        "postgres:17-alpine",
+        "ghcr.io/zalando/spilo-17:4.0-p3",
+        "supabase/postgres:15.14.1.068"
+      ],
+      "compose_files": [
+        "infra/04-data/operational/mng-db/docker-compose.yml",
+        "infra/04-data/relational/postgresql-cluster/docker-compose.yml",
+        "infra/04-data/operational/supabase/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "Valkey",
+      "tier": "04-data",
+      "images": ["valkey/valkey:9.0.2-alpine"],
+      "compose_files": [
+        "infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml",
+        "infra/04-data/operational/mng-db/docker-compose.yml",
+        "infra/07-workflow/airflow/docker-compose.yml",
+        "infra/07-workflow/n8n/docker-compose.yml"
+      ]
+    },
+    {
+      "component": "Kafka",
+      "tier": "05-messaging",
+      "images": ["confluentinc/cp-kafka:8.1.1"],
+      "compose_files": ["infra/05-messaging/kafka/docker-compose.yml"]
+    },
+    {
+      "component": "Kafbat UI",
+      "tier": "05-messaging",
+      "images": ["kafbat/kafka-ui:v1.4.2"],
+      "compose_files": ["infra/05-messaging/kafka/docker-compose.yml"]
+    },
+    {
+      "component": "Prometheus",
+      "tier": "06-observability",
+      "images": ["prom/prometheus:v3.9.0"],
+      "compose_files": ["infra/06-observability/docker-compose.yml"]
+    },
+    {
+      "component": "Grafana",
+      "tier": "06-observability",
+      "images": ["grafana/grafana:12.3.3"],
+      "compose_files": ["infra/06-observability/docker-compose.yml"]
+    },
+    {
+      "component": "Loki",
+      "tier": "06-observability",
+      "images": ["hy/loki:3.6.6-custom"],
+      "compose_files": ["infra/06-observability/docker-compose.yml"]
+    },
+    {
+      "component": "Tempo",
+      "tier": "06-observability",
+      "images": ["hy/tempo:2.10.1-custom"],
+      "compose_files": ["infra/06-observability/docker-compose.yml"]
+    },
+    {
+      "component": "Alloy",
+      "tier": "06-observability",
+      "images": ["grafana/alloy:v1.13.1"],
+      "compose_files": ["infra/06-observability/docker-compose.yml"]
+    },
+    {
+      "component": "Airflow",
+      "tier": "07-workflow",
+      "images": ["apache/airflow:3.1.8"],
+      "compose_files": ["infra/07-workflow/airflow/docker-compose.yml"]
+    },
+    {
+      "component": "n8n",
+      "tier": "07-workflow",
+      "images": ["hyhome/n8n:2.15.0-local", "n8nio/runners:2.15.0"],
+      "compose_files": ["infra/07-workflow/n8n/docker-compose.yml"]
+    },
+    {
+      "component": "Ollama",
+      "tier": "08-ai",
+      "images": ["ollama/ollama:0.20.0"],
+      "compose_files": ["infra/08-ai/ollama/docker-compose.yml"]
+    },
+    {
+      "component": "Open WebUI",
+      "tier": "08-ai",
+      "images": ["ghcr.io/open-webui/open-webui:v0.8.5-cuda"],
+      "compose_files": ["infra/08-ai/open-webui/docker-compose.yml"]
+    },
+    {
+      "component": "RedisInsight",
+      "tier": "11-laboratory",
+      "images": ["redis/redisinsight:3.2.0"],
+      "compose_files": ["infra/11-laboratory/redisinsight/docker-compose.yml"]
+    },
+    {
+      "component": "Open Notebook",
+      "tier": "11-laboratory",
+      "images": ["lfnovo/open_notebook:v1-latest-single"],
+      "compose_files": ["infra/11-laboratory/open-notebook/docker-compose.yml"]
+    }
+  ]
+}

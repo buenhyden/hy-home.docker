@@ -407,6 +407,36 @@ then
   failures=$((failures + 1))
 fi
 
+section "Root script inventory"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import sys
+
+readme = pathlib.Path("scripts/README.md")
+if not readme.is_file():
+    print("FAIL: missing scripts/README.md", file=sys.stderr)
+    sys.exit(1)
+
+readme_text = readme.read_text()
+failures: list[str] = []
+
+for path in sorted(pathlib.Path("scripts").glob("*.sh")):
+    if not path.is_file():
+        continue
+    if path.name not in readme_text and str(path) not in readme_text:
+        failures.append(f"scripts/README.md missing root script inventory entry: {path}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
 section "Floating image tag policy"
 if ! python3 - <<'PY'
 from __future__ import annotations
@@ -460,6 +490,76 @@ for path in sorted(pathlib.Path("infra").rglob("*")):
                 image = match.group(1)
                 if is_floating(image) and image not in exceptions:
                     failures.append(f"{path}:{line_no}: floating base image tag requires exception or pinned tag: {image}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section "Tech-stack version drift"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import json
+import pathlib
+import re
+import sys
+
+registry_path = pathlib.Path("infra/tech-stack.versions.json")
+if not registry_path.is_file():
+    print(f"FAIL: missing tech-stack version registry: {registry_path}", file=sys.stderr)
+    sys.exit(1)
+
+try:
+    registry = json.loads(registry_path.read_text())
+except Exception as exc:
+    print(f"FAIL: invalid JSON in {registry_path}: {exc}", file=sys.stderr)
+    sys.exit(1)
+
+entries = registry.get("entries")
+if not isinstance(entries, list) or not entries:
+    print(f"FAIL: {registry_path} must define a non-empty entries list", file=sys.stderr)
+    sys.exit(1)
+
+failures: list[str] = []
+image_line_re = re.compile(r"(?m)^\s*image:\s*['\"]?([^'\"\s#]+)")
+default_image_re = re.compile(r"\$\{[^}:]+:-([^}]+)\}")
+
+def declared_images(path: pathlib.Path) -> set[str]:
+    text = path.read_text(errors="ignore")
+    images: set[str] = set()
+    for match in image_line_re.finditer(text):
+        raw = match.group(1)
+        images.add(raw)
+        default_match = default_image_re.search(raw)
+        if default_match:
+            images.add(default_match.group(1))
+    return images
+
+for index, entry in enumerate(entries, start=1):
+    component = entry.get("component")
+    images = entry.get("images")
+    compose_files = entry.get("compose_files")
+
+    if not component or not isinstance(images, list) or not images or not isinstance(compose_files, list) or not compose_files:
+        failures.append(f"{registry_path}: entry #{index} must include component, images, and compose_files")
+        continue
+
+    discovered: set[str] = set()
+    for compose_file in compose_files:
+        compose_path = pathlib.Path(compose_file)
+        if not compose_path.is_file():
+            failures.append(f"{registry_path}: {component} references missing compose file: {compose_file}")
+            continue
+        discovered.update(declared_images(compose_path))
+
+    for image in images:
+        if image not in discovered:
+            failures.append(f"{registry_path}: {component} expected image not declared in listed compose files: {image}")
 
 if failures:
     for failure in failures:

@@ -12,6 +12,7 @@
 | Component | Path | Purpose |
 | :--- | :--- | :--- |
 | Docker Validation | [validate-docker-compose.sh](validate-docker-compose.sh) | Validate root compose config |
+| Repo Contract Check | [check-repo-contracts.sh](check-repo-contracts.sh) | Enforce docs, GitHub, script, image, and runtime governance contracts |
 | QuickWin Baseline Check | [check-quickwin-baseline.sh](check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
 | Template & Security Baseline Check | [check-template-security-baseline.sh](check-template-security-baseline.sh) | Enforce template adoption and required security controls |
 | Documentation Traceability Check | [check-doc-traceability.sh](check-doc-traceability.sh) | Enforce sync links across 05.plans ↔ 08.operations ↔ 09.runbooks |
@@ -27,7 +28,9 @@
 | Tooling Hardening Check | [check-tooling-hardening.sh](check-tooling-hardening.sh) | Enforce 09-tooling service hardening baseline |
 | Laboratory Hardening Check | [check-laboratory-hardening.sh](check-laboratory-hardening.sh) | Enforce 11-laboratory service hardening baseline |
 | Preflight Check | [preflight-compose.sh](preflight-compose.sh) | Bootstrap prerequisite validation |
+| Secret Generation | [gen-secrets.sh](gen-secrets.sh) | Generate local Docker secret files from `.env` defaults |
 | Cert Generation | [generate-local-certs.sh](generate-local-certs.sh) | Generate local TLS files |
+| Vault AppRole Bootstrap | [bootstrap-vault-approle.sh](bootstrap-vault-approle.sh) | Configure Vault Agent AppRole credentials after Vault is running and unsealed |
 
 ---
 
@@ -44,6 +47,9 @@
 ```bash
 # Run preflight check
 ./scripts/preflight-compose.sh
+
+# Enforce repository contracts
+./scripts/check-repo-contracts.sh
 
 # Enforce Quick Win baseline
 ./scripts/check-quickwin-baseline.sh

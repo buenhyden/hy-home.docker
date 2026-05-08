@@ -26,6 +26,7 @@
 - `standards/`
 - `architecture/`
 - `agents/`
+- `docker/`
 - `learning/`
 
 ## Templates
@@ -34,6 +35,7 @@
 
 ## Current References
 
+- [docker/README.md](docker/README.md) - Docker 이미지 버전 drift 검증 기준
 - [learning/README.md](learning/README.md) - Docker 기반 인프라 학습 로드맵과 이론 참고
 
 ## Related Documents
