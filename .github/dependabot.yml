@@ -23,176 +23,83 @@ updates:
         patterns:
           - "*"
 
-  # 2. Docker (Root)
-  # 루트 디렉토리의 Dockerfile 및 Docker Compose 파일의 베이스 이미지를 감시합니다.
+  # 2. Docker
+  # 루트 및 infra 하위의 Dockerfile / Compose 이미지 의존성을 감시합니다.
   - package-ecosystem: "docker"
-    directory: "/"
+    directories:
+      - "/"
+      - "/infra/01-gateway/nginx"
+      - "/infra/01-gateway/traefik"
+      - "/infra/02-auth/keycloak"
+      - "/infra/02-auth/oauth2-proxy"
+      - "/infra/03-security/vault"
+      - "/infra/04-data/analytics/influxdb"
+      - "/infra/04-data/analytics/ksql"
+      - "/infra/04-data/analytics/opensearch"
+      - "/infra/04-data/analytics/warehouses"
+      - "/infra/04-data/cache-and-kv/valkey-cluster"
+      - "/infra/04-data/lake-and-object/minio"
+      - "/infra/04-data/lake-and-object/seaweedfs"
+      - "/infra/04-data/nosql/cassandra"
+      - "/infra/04-data/nosql/couchdb"
+      - "/infra/04-data/nosql/mongodb"
+      - "/infra/04-data/operational/mng-db"
+      - "/infra/04-data/operational/supabase"
+      - "/infra/04-data/relational/postgresql-cluster"
+      - "/infra/04-data/specialized/neo4j"
+      - "/infra/04-data/specialized/qdrant"
+      - "/infra/05-messaging/kafka"
+      - "/infra/05-messaging/rabbitmq"
+      - "/infra/06-observability"
+      - "/infra/06-observability/loki"
+      - "/infra/06-observability/tempo"
+      - "/infra/07-workflow/airflow"
+      - "/infra/07-workflow/n8n"
+      - "/infra/08-ai/ollama"
+      - "/infra/08-ai/open-webui"
+      - "/infra/09-tooling/k6"
+      - "/infra/09-tooling/locust"
+      - "/infra/09-tooling/registry"
+      - "/infra/09-tooling/sonarqube"
+      - "/infra/09-tooling/syncthing"
+      - "/infra/09-tooling/terraform"
+      - "/infra/09-tooling/terrakube"
+      - "/infra/10-communication/mail"
+      - "/infra/11-laboratory/dashboard"
+      - "/infra/11-laboratory/dozzle"
+      - "/infra/11-laboratory/open-notebook"
+      - "/infra/11-laboratory/open-notebook/surrealdb"
+      - "/infra/11-laboratory/portainer"
+      - "/infra/11-laboratory/redisinsight"
     schedule:
       interval: "weekly"
       day: "monday"
     open-pull-requests-limit: 10
+    cooldown:
+      default-days: 7
     labels:
       - "dependencies"
       - "docker"
     groups:
-      actions:
+      docker-images:
         patterns:
           - "*"
-    cooldown:
-      default-days: 7
 
-  # 3. Docker (Infra Layer)
-  # infra/ 디렉토리 하위의 인프라 서비스 관련 Docker 의존성을 감시합니다.
-  - package-ecosystem: "docker"
-    directory: "/infra/01-gateway/traefik"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/02-auth/keycloak"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/02-auth/oauth2-proxy"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/04-data/mng-db"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/04-data/minio"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/04-data/qdrant"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/04-data/postgresql-cluster"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/04-data/valkey-cluster"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/04-data/opensearch"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/05-messaging/kafka"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/06-observability"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/07-workflow/n8n"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/07-workflow/airflow"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/08-ai/ollama"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/08-ai/open-webui"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/09-tooling/sonarqube"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/09-tooling/terrakube"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  - package-ecosystem: "docker"
-    directory: "/infra/10-communication/mail"
-    schedule: { interval: "weekly", day: "monday" }
-    open-pull-requests-limit: 10
-    cooldown: { default-days: 7 }
-    groups:
-      infra-dependencies: { patterns: ["*"] }
-
-  # 4. Terraform (If applicable)
-  # infra/ 디렉토리 내에 Terraform 파일이 존재할 경우 활성화됩니다.
-  - package-ecosystem: "terraform"
-    directory: "/infra"
+  # 3. Storybook Next.js
+  # CI에서 설치되는 Storybook Next.js npm 의존성을 감시합니다.
+  - package-ecosystem: "npm"
+    directory: "/projects/storybook/nextjs"
     schedule:
       interval: "weekly"
+      day: "monday"
     open-pull-requests-limit: 10
     cooldown:
       default-days: 7
+    labels:
+      - "dependencies"
+      - "npm"
+      - "storybook"
+    groups:
+      storybook-nextjs:
+        patterns:
+          - "*"

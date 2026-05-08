@@ -11,6 +11,10 @@ area/infra/auth:
   - changed-files:
       - any-glob-to-any-file: "infra/02-auth/**/*"
 
+area/infra/security:
+  - changed-files:
+      - any-glob-to-any-file: "infra/03-security/**/*"
+
 area/infra/data:
   - changed-files:
       - any-glob-to-any-file: "infra/04-data/**/*"
@@ -31,6 +35,18 @@ area/infra/ai:
   - changed-files:
       - any-glob-to-any-file: "infra/08-ai/**/*"
 
+area/infra/tooling:
+  - changed-files:
+      - any-glob-to-any-file: "infra/09-tooling/**/*"
+
+area/infra/communication:
+  - changed-files:
+      - any-glob-to-any-file: "infra/10-communication/**/*"
+
+area/infra/laboratory:
+  - changed-files:
+      - any-glob-to-any-file: "infra/11-laboratory/**/*"
+
 # Documentation
 area/docs:
   - changed-files:
@@ -41,6 +57,18 @@ area/docs:
 area/scripts:
   - changed-files:
       - any-glob-to-any-file: "scripts/**/*"
+
+area/secrets:
+  - changed-files:
+      - any-glob-to-any-file: "secrets/**/*"
+
+area/governance:
+  - changed-files:
+      - any-glob-to-any-file: "AGENTS.md"
+      - any-glob-to-any-file: "CLAUDE.md"
+      - any-glob-to-any-file: "GEMINI.md"
+      - any-glob-to-any-file: ".claude/**/*"
+      - any-glob-to-any-file: "docs/00.agent-governance/**/*"
 
 # GitHub & Workflow
 area/github:

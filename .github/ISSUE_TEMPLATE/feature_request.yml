@@ -13,7 +13,7 @@ body:
     attributes:
       label: PRD / ARD Link
       description:
-        Provide a link to the PRD (docs/prd) or ARD (docs/ard) for this feature.
+        Provide a link to the PRD (`docs/01.prd`) or ARD (`docs/02.ard`) for this feature.
     validations:
       required: true
   - type: textarea

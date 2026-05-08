@@ -1,10 +1,10 @@
 # Pull Request
 
-> **Warning**: Your PR Title MUST follow the **Conventional Commits** format (`feat:`, `fix:`, `docs:`, etc.) as mandated by `.agent/rules/0401-git-workflow-standard.md`!
+> **Warning**: Your PR title MUST follow the **Conventional Commits** format (`feat:`, `fix:`, `docs:`, etc.) as mandated by `docs/00.agent-governance/rules/git-workflow.md`.
 
 ## Related Specification
 
-- **Spec File:** [Link to the file in `specs/`]
+- **Spec File:** [Link to the file in `docs/04.specs`]
 - **Issue:** Resolves #
 
 ## Change Type
@@ -43,11 +43,11 @@ List exact commands used and outcome.
 
 ## Validations
 
-- [ ] I have read the `CONTRIBUTING.md` document.
+- [ ] I have reviewed the relevant governance rules under `docs/00.agent-governance/rules`.
 - [ ] My code strictly follows the Implementation Specification.
-- [ ] Documentation has been added/updated utilizing the `docs/templates/` folder (if applicable).
+- [ ] Documentation has been added/updated using `docs/99.templates` (if applicable).
 - [ ] **Commit Standard**: My Pull Request title uses Conventional Commits format.
 - [ ] I have run tests locally.
-- [ ] **Test Coverage Baseline:** I have verified unit test lines coverage is > 80% (`npm run test:coverage` or equivalent).
+- [ ] I have listed exact validation commands and outcomes above.
 - [ ] No secrets or credentials are included in this PR.
-- [ ] If operational behavior changed, runbook updates were added under `runbooks/`.
+- [ ] If operational behavior changed, runbook updates were added under `docs/09.runbooks`.

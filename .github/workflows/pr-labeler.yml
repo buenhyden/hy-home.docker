@@ -1,7 +1,8 @@
 name: "Pull Request Labeler"
 on:
   pull_request:
-    types: [opened, synchronize]
+    branches: [main]
+    types: [opened, synchronize, reopened]
 
 jobs:
   triage:
@@ -11,6 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/labeler@v6
+      - uses: actions/labeler@f27b608878404679385c85cfa523b85ccb86e213
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"

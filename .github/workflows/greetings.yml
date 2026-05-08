@@ -2,6 +2,7 @@ name: Greeting
 
 on:
   pull_request:
+    branches: [main]
     types: [opened]
   issues:
     types: [opened]
@@ -13,8 +14,9 @@ jobs:
       pull-requests: write # PR에 코멘트 남길 때
       contents: read
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - uses: actions/first-interaction@v3
+      - uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           issue_message:
