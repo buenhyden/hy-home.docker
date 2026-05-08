@@ -43,6 +43,34 @@ Defer scoped README generation for `docs/04.specs/*` as a follow-up backlog
 item. The current implementation keeps the taxonomy intact and repairs broken
 runtime/documentation contracts without expanding into broad docs consolidation.
 
+## 2026-05-09 Follow-up Audit
+
+A wider template-shape audit found broad legacy drift across stage documents:
+many existing `docs/01` to `docs/10` and `docs/90` markdown files predate the
+current templates and therefore lack `status: draft` front matter, while some
+older README files do not yet expose the full `readme.template.md` base section
+set. The active remediation pass intentionally limits edits to the current
+service coverage and runtime-hook gaps.
+
+Immediate corrections in this pass:
+
+- Add missing Open Notebook guide, operations policy, and runbook under the
+  `11-laboratory` stage paths.
+- Add repository-contract validation for service-level 07/08/09 documentation
+  coverage.
+- Keep `infra/04-data/analytics/ksql` to `ksqldb.md` as an explicit
+  implementation-name-to-document-name mapping.
+- Keep `infra/06-observability` as an explicit aggregate compose exception.
+
+Deferred work:
+
+- Normalize legacy stage documents to include template front matter where
+  appropriate.
+- Normalize older nested README files to the complete `readme.template.md`
+  base section set.
+- Avoid mass front matter insertion until each stage folder has an explicit
+  owner and review scope.
+
 ## Prevention
 
 When a stage subfolder is created or materially changed, update the nearest

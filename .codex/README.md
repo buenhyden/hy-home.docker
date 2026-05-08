@@ -15,6 +15,7 @@ Shared policy remains in `AGENTS.md` and `docs/00.agent-governance/`.
 ## Current Hook Contract
 
 - `PreToolUse` emits graphify additional context when `graphify-out/graph.json` exists.
+- `PostToolUse` runs `scripts/post-tool-validate.sh` after file edits when the hook payload includes changed paths.
 - The hook is advisory and must not be treated as the policy source of truth.
 - Agents still follow `AGENTS.md`, provider notes, scope rules, and active sandbox approvals.
 
@@ -30,3 +31,4 @@ Shared policy remains in `AGENTS.md` and `docs/00.agent-governance/`.
 - `../docs/00.agent-governance/providers/codex.md`
 - `../docs/00.agent-governance/providers/agents-md.md`
 - `../docs/00.agent-governance/rules/bootstrap.md`
+- `../scripts/post-tool-validate.sh`

@@ -34,6 +34,7 @@ Codex-specific guidance for this repository.
 
 - `.codex/hooks.json` provides Codex-local hooks.
 - The current hook emits graphify context when `graphify-out/graph.json` exists.
+- The post-edit hook delegates to `scripts/post-tool-validate.sh` for path-aware repository validation.
 - Hook output is advisory context. Governance remains in `docs/00.agent-governance/`.
 
 ## 5. Operational Practices
@@ -51,3 +52,4 @@ Codex-specific guidance for this repository.
 - `docs/00.agent-governance/providers/agents-md.md`
 - `docs/00.agent-governance/rules/bootstrap.md`
 - `docs/00.agent-governance/rules/github-governance.md`
+- `scripts/post-tool-validate.sh`

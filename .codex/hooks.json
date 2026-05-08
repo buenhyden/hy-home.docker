@@ -10,6 +10,18 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|apply_patch|ApplyPatch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash scripts/post-tool-validate.sh",
+            "timeout": 30
+          }
+        ]
+      }
     ]
   }
 }

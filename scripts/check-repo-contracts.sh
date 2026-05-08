@@ -439,6 +439,56 @@ then
   failures=$((failures + 1))
 fi
 
+section "Service documentation coverage"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import sys
+
+stages = ["07.guides", "08.operations", "09.runbooks"]
+
+# Implementation path names sometimes differ from product names. Keep those
+# differences explicit so missing docs do not get hidden by ad-hoc conventions.
+document_path_overrides = {
+    pathlib.Path("04-data/analytics/ksql"): pathlib.Path("04-data/analytics/ksqldb.md"),
+}
+
+# Aggregate compose files are documented by component-level docs in the same
+# stage folder, not by a single service markdown file.
+aggregate_compose_dirs = {
+    pathlib.Path("06-observability"),
+}
+
+service_dirs = sorted(
+    {
+        path.parent.relative_to("infra")
+        for path in pathlib.Path("infra").rglob("docker-compose*.yml")
+        if path.is_file()
+    }
+)
+
+failures: list[str] = []
+
+for service_dir in service_dirs:
+    if service_dir in aggregate_compose_dirs:
+        continue
+
+    doc_rel = document_path_overrides.get(service_dir, pathlib.Path(f"{service_dir}.md"))
+    for stage in stages:
+        doc_path = pathlib.Path("docs") / stage / doc_rel
+        if not doc_path.is_file():
+            failures.append(f"missing {stage} service documentation for infra/{service_dir}: expected {doc_path}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
 section "Root script inventory"
 if ! python3 - <<'PY'
 from __future__ import annotations
