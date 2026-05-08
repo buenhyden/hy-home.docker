@@ -6,6 +6,21 @@ cd "$BASE_DIR"
 
 echo "Validating Docker Compose configuration..."
 
+COMPOSE_PROFILES="${HYHOME_COMPOSE_PROFILES:-core}"
+COMPOSE_PROFILE_ARGS=()
+for profile in ${COMPOSE_PROFILES//,/ }; do
+  if [ -n "$profile" ]; then
+    COMPOSE_PROFILE_ARGS+=(--profile "$profile")
+  fi
+done
+
+if [ "${#COMPOSE_PROFILE_ARGS[@]}" -eq 0 ]; then
+  echo "No Docker Compose profiles resolved for validation."
+  exit 1
+fi
+
+echo "Compose profiles: $COMPOSE_PROFILES"
+
 CREATED_FILES=()
 CLEANUP_ENV=false
 
@@ -38,9 +53,21 @@ for secret_file in "${SECRET_FILES[@]}"; do
   fi
 done
 
-if ! docker compose config > /dev/null; then
+if ! docker compose "${COMPOSE_PROFILE_ARGS[@]}" config > /dev/null; then
   echo "Docker Compose validation failed."
   exit 1
 fi
 
-echo "Docker Compose validation passed."
+SERVICE_COUNT="$(
+  docker compose "${COMPOSE_PROFILE_ARGS[@]}" config --services \
+    | sed '/^[[:space:]]*$/d' \
+    | wc -l \
+    | tr -d ' '
+)"
+
+if [ "$SERVICE_COUNT" -eq 0 ]; then
+  echo "Docker Compose validation failed: resolved service count is 0."
+  exit 1
+fi
+
+echo "Docker Compose validation passed. services_total=$SERVICE_COUNT"

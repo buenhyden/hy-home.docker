@@ -29630,9 +29630,9 @@
       "source_file": "projects/storybook/mcp/apps/internal-storybook/tests/mcp-endpoint.e2e.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_apps_internal_storybook_tests_mcp_endpoint_e2e_test_ts",
-      "target": "tests_helpers_createmcprequestbody",
-      "confidence_score": 1.0
+      "target": "tests_helpers_createmcprequestbody"
     },
     {
       "relation": "imports",
@@ -29641,9 +29641,9 @@
       "source_file": "projects/storybook/mcp/apps/internal-storybook/tests/mcp-endpoint.e2e.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_apps_internal_storybook_tests_mcp_endpoint_e2e_test_ts",
-      "target": "tests_helpers_parsemcpresponse",
-      "confidence_score": 1.0
+      "target": "tests_helpers_parsemcpresponse"
     },
     {
       "relation": "imports",
@@ -29652,9 +29652,9 @@
       "source_file": "projects/storybook/mcp/apps/internal-storybook/tests/mcp-endpoint.e2e.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_apps_internal_storybook_tests_mcp_endpoint_e2e_test_ts",
-      "target": "tests_helpers_waitformcpendpoint",
-      "confidence_score": 1.0
+      "target": "tests_helpers_waitformcpendpoint"
     },
     {
       "relation": "imports",
@@ -29663,9 +29663,9 @@
       "source_file": "projects/storybook/mcp/apps/internal-storybook/tests/mcp-endpoint.e2e.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_apps_internal_storybook_tests_mcp_endpoint_e2e_test_ts",
-      "target": "tests_helpers_killport",
-      "confidence_score": 1.0
+      "target": "tests_helpers_killport"
     },
     {
       "relation": "imports",
@@ -29674,9 +29674,9 @@
       "source_file": "projects/storybook/mcp/apps/internal-storybook/tests/mcp-endpoint.e2e.test.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_apps_internal_storybook_tests_mcp_endpoint_e2e_test_ts",
-      "target": "tests_helpers_stopstorybook",
-      "confidence_score": 1.0
+      "target": "tests_helpers_stopstorybook"
     },
     {
       "relation": "contains",
@@ -29684,9 +29684,9 @@
       "source_file": "projects/storybook/mcp/apps/internal-storybook/tests/mcp-endpoint.e2e.test.ts",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_apps_internal_storybook_tests_mcp_endpoint_e2e_test_ts",
-      "target": "tests_mcp_endpoint_e2e_test_mcprequest",
-      "confidence_score": 1.0
+      "target": "tests_mcp_endpoint_e2e_test_mcprequest"
     },
     {
       "relation": "contains",
@@ -29832,9 +29832,9 @@
       "source_file": "projects/storybook/mcp/apps/internal-storybook/tests/helpers.ts",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_apps_internal_storybook_tests_helpers_ts",
-      "target": "tests_helpers_createmcprequestbody",
-      "confidence_score": 1.0
+      "target": "tests_helpers_createmcprequestbody"
     },
     {
       "relation": "contains",
@@ -29842,9 +29842,9 @@
       "source_file": "projects/storybook/mcp/apps/internal-storybook/tests/helpers.ts",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_apps_internal_storybook_tests_helpers_ts",
-      "target": "tests_helpers_parsemcpresponse",
-      "confidence_score": 1.0
+      "target": "tests_helpers_parsemcpresponse"
     },
     {
       "relation": "contains",
@@ -29852,9 +29852,9 @@
       "source_file": "projects/storybook/mcp/apps/internal-storybook/tests/helpers.ts",
       "source_location": "L21",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_apps_internal_storybook_tests_helpers_ts",
-      "target": "tests_helpers_waitformcpendpoint",
-      "confidence_score": 1.0
+      "target": "tests_helpers_waitformcpendpoint"
     },
     {
       "relation": "contains",
@@ -29862,9 +29862,9 @@
       "source_file": "projects/storybook/mcp/apps/internal-storybook/tests/helpers.ts",
       "source_location": "L55",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_apps_internal_storybook_tests_helpers_ts",
-      "target": "tests_helpers_killport",
-      "confidence_score": 1.0
+      "target": "tests_helpers_killport"
     },
     {
       "relation": "contains",
@@ -29872,9 +29872,9 @@
       "source_file": "projects/storybook/mcp/apps/internal-storybook/tests/helpers.ts",
       "source_location": "L71",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_apps_internal_storybook_tests_helpers_ts",
-      "target": "tests_helpers_startstorybook",
-      "confidence_score": 1.0
+      "target": "tests_helpers_startstorybook"
     },
     {
       "relation": "contains",
@@ -29882,9 +29882,9 @@
       "source_file": "projects/storybook/mcp/apps/internal-storybook/tests/helpers.ts",
       "source_location": "L79",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_apps_internal_storybook_tests_helpers_ts",
-      "target": "tests_helpers_stopstorybook",
-      "confidence_score": 1.0
+      "target": "tests_helpers_stopstorybook"
     },
     {
       "relation": "contains",
@@ -30075,9 +30075,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_ts",
-      "target": "projects_storybook_mcp_packages_addon_mcp_src_telemetry_ts",
-      "confidence_score": 1.0
+      "target": "projects_storybook_mcp_packages_addon_mcp_src_telemetry_ts"
     },
     {
       "relation": "contains",
@@ -30148,9 +30148,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.test.ts",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_test_ts",
-      "target": "projects_storybook_mcp_packages_addon_mcp_src_types_ts",
-      "confidence_score": 1.0
+      "target": "projects_storybook_mcp_packages_addon_mcp_src_types_ts"
     },
     {
       "relation": "imports_from",
@@ -30210,9 +30210,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_ts",
-      "target": "projects_storybook_mcp_packages_addon_mcp_src_types_ts",
-      "confidence_score": 1.0
+      "target": "projects_storybook_mcp_packages_addon_mcp_src_types_ts"
     },
     {
       "relation": "imports_from",
@@ -30352,9 +30352,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_mcp_handler_ts",
-      "target": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_ts",
-      "confidence_score": 1.0
+      "target": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_ts"
     },
     {
       "relation": "imports",
@@ -30363,9 +30363,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_mcp_handler_ts",
-      "target": "tools_get_changed_stories_addgetchangedstoriestool",
-      "confidence_score": 1.0
+      "target": "tools_get_changed_stories_addgetchangedstoriestool"
     },
     {
       "relation": "imports_from",
@@ -30385,9 +30385,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_mcp_handler_ts",
-      "target": "tools_get_storybook_story_instructions_addgetuibuildinginstructionstool",
-      "confidence_score": 1.0
+      "target": "tools_get_storybook_story_instructions_addgetuibuildinginstructionstool"
     },
     {
       "relation": "imports_from",
@@ -30451,9 +30451,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_mcp_handler_ts",
-      "target": "instructions_build_server_instructions_buildserverinstructions",
-      "confidence_score": 1.0
+      "target": "instructions_build_server_instructions_buildserverinstructions"
     },
     {
       "relation": "contains",
@@ -30461,9 +30461,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L34",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_mcp_handler_ts",
-      "target": "src_mcp_handler_initializemcpserver",
-      "confidence_score": 1.0
+      "target": "src_mcp_handler_initializemcpserver"
     },
     {
       "relation": "contains",
@@ -30471,9 +30471,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L126",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_mcp_handler_ts",
-      "target": "src_mcp_handler_mcpserverhandler",
-      "confidence_score": 1.0
+      "target": "src_mcp_handler_mcpserverhandler"
     },
     {
       "relation": "contains",
@@ -30481,9 +30481,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L206",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_mcp_handler_ts",
-      "target": "src_mcp_handler_incomingmessagetowebrequest",
-      "confidence_score": 1.0
+      "target": "src_mcp_handler_incomingmessagetowebrequest"
     },
     {
       "relation": "contains",
@@ -30491,9 +30491,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L225",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_mcp_handler_ts",
-      "target": "src_mcp_handler_webresponsetoserverresponse",
-      "confidence_score": 1.0
+      "target": "src_mcp_handler_webresponsetoserverresponse"
     },
     {
       "relation": "contains",
@@ -30501,9 +30501,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L253",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_mcp_handler_ts",
-      "target": "src_mcp_handler_gettoolsets",
-      "confidence_score": 1.0
+      "target": "src_mcp_handler_gettoolsets"
     },
     {
       "relation": "imports_from",
@@ -30572,9 +30572,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L137",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_handler_mcpserverhandler",
-      "target": "src_mcp_handler_initializemcpserver",
-      "confidence_score": 1.0
+      "target": "src_mcp_handler_initializemcpserver"
     },
     {
       "relation": "calls",
@@ -30693,9 +30693,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L145",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_handler_mcpserverhandler",
-      "target": "src_mcp_handler_incomingmessagetowebrequest",
-      "confidence_score": 1.0
+      "target": "src_mcp_handler_incomingmessagetowebrequest"
     },
     {
       "relation": "calls",
@@ -30704,9 +30704,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L149",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_handler_mcpserverhandler",
-      "target": "src_mcp_handler_gettoolsets",
-      "confidence_score": 1.0
+      "target": "src_mcp_handler_gettoolsets"
     },
     {
       "relation": "calls",
@@ -30715,9 +30715,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts",
       "source_location": "L199",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_mcp_handler_mcpserverhandler",
-      "target": "src_mcp_handler_webresponsetoserverresponse",
-      "confidence_score": 1.0
+      "target": "src_mcp_handler_webresponsetoserverresponse"
     },
     {
       "relation": "imports_from",
@@ -31257,9 +31257,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-storybook-story-instructions.test.ts",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_storybook_story_instructions_test_ts",
-      "target": "tools_get_storybook_story_instructions_addgetuibuildinginstructionstool",
-      "confidence_score": 1.0
+      "target": "tools_get_storybook_story_instructions_addgetuibuildinginstructionstool"
     },
     {
       "relation": "imports_from",
@@ -31278,9 +31278,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-storybook-story-instructions.test.ts",
       "source_location": "L61",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_storybook_story_instructions_test_ts",
-      "target": "tools_get_storybook_story_instructions_test_gettooldescription",
-      "confidence_score": 1.0
+      "target": "tools_get_storybook_story_instructions_test_gettooldescription"
     },
     {
       "relation": "contains",
@@ -31299,9 +31299,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.test.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_test_ts",
-      "target": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_ts",
-      "confidence_score": 1.0
+      "target": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_ts"
     },
     {
       "relation": "imports",
@@ -31310,9 +31310,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.test.ts",
       "source_location": "L4",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_test_ts",
-      "target": "tools_get_changed_stories_addgetchangedstoriestool",
-      "confidence_score": 1.0
+      "target": "tools_get_changed_stories_addgetchangedstoriestool"
     },
     {
       "relation": "imports_from",
@@ -31321,9 +31321,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.test.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_test_ts",
-      "target": "projects_storybook_mcp_packages_addon_mcp_src_utils_fetch_story_index_ts",
-      "confidence_score": 1.0
+      "target": "projects_storybook_mcp_packages_addon_mcp_src_utils_fetch_story_index_ts"
     },
     {
       "relation": "imports_from",
@@ -31332,9 +31332,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.test.ts",
       "source_location": "L8",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_test_ts",
-      "target": "projects_storybook_mcp_packages_addon_mcp_src_tools_tool_names_ts",
-      "confidence_score": 1.0
+      "target": "projects_storybook_mcp_packages_addon_mcp_src_tools_tool_names_ts"
     },
     {
       "relation": "contains",
@@ -31342,9 +31342,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.test.ts",
       "source_location": "L66",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_test_ts",
-      "target": "tools_get_changed_stories_test_calltool",
-      "confidence_score": 1.0
+      "target": "tools_get_changed_stories_test_calltool"
     },
     {
       "relation": "contains",
@@ -31352,9 +31352,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.test.ts",
       "source_location": "L84",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_test_ts",
-      "target": "tools_get_changed_stories_test_getresulttext",
-      "confidence_score": 1.0
+      "target": "tools_get_changed_stories_test_getresulttext"
     },
     {
       "relation": "imports_from",
@@ -31971,9 +31971,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.ts",
       "source_location": "L7",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_ts",
-      "target": "projects_storybook_mcp_packages_addon_mcp_src_tools_tool_names_ts",
-      "confidence_score": 1.0
+      "target": "projects_storybook_mcp_packages_addon_mcp_src_tools_tool_names_ts"
     },
     {
       "relation": "imports_from",
@@ -32092,9 +32092,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-storybook-story-instructions.ts",
       "source_location": "L16",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_storybook_story_instructions_ts",
-      "target": "tools_get_storybook_story_instructions_addgetuibuildinginstructionstool",
-      "confidence_score": 1.0
+      "target": "tools_get_storybook_story_instructions_addgetuibuildinginstructionstool"
     },
     {
       "relation": "imports_from",
@@ -32123,9 +32123,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.ts",
       "source_location": "L5",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_ts",
-      "target": "projects_storybook_mcp_packages_addon_mcp_src_utils_errors_ts",
-      "confidence_score": 1.0
+      "target": "projects_storybook_mcp_packages_addon_mcp_src_utils_errors_ts"
     },
     {
       "relation": "imports_from",
@@ -32134,9 +32134,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.ts",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_ts",
-      "target": "projects_storybook_mcp_packages_addon_mcp_src_utils_fetch_story_index_ts",
-      "confidence_score": 1.0
+      "target": "projects_storybook_mcp_packages_addon_mcp_src_utils_fetch_story_index_ts"
     },
     {
       "relation": "contains",
@@ -32144,9 +32144,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.ts",
       "source_location": "L46",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_ts",
-      "target": "tools_get_changed_stories_statuspriority",
-      "confidence_score": 1.0
+      "target": "tools_get_changed_stories_statuspriority"
     },
     {
       "relation": "contains",
@@ -32154,9 +32154,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.ts",
       "source_location": "L52",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_tools_get_changed_stories_ts",
-      "target": "tools_get_changed_stories_addgetchangedstoriestool",
-      "confidence_score": 1.0
+      "target": "tools_get_changed_stories_addgetchangedstoriestool"
     },
     {
       "relation": "contains",
@@ -32326,9 +32326,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/instructions/build-server-instructions.test.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_instructions_build_server_instructions_test_ts",
-      "target": "instructions_build_server_instructions_buildserverinstructions",
-      "confidence_score": 1.0
+      "target": "instructions_build_server_instructions_buildserverinstructions"
     },
     {
       "relation": "contains",
@@ -32336,9 +32336,9 @@
       "source_file": "projects/storybook/mcp/packages/addon-mcp/src/instructions/build-server-instructions.ts",
       "source_location": "L12",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "projects_storybook_mcp_packages_addon_mcp_src_instructions_build_server_instructions_ts",
-      "target": "instructions_build_server_instructions_buildserverinstructions",
-      "confidence_score": 1.0
+      "target": "instructions_build_server_instructions_buildserverinstructions"
     },
     {
       "relation": "contains",

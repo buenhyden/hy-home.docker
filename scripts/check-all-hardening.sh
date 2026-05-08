@@ -16,6 +16,21 @@ fi
 # shellcheck source=lib/hardening-lib.sh
 source "$LIB_PATH"
 
+usage() {
+    cat <<'EOF'
+Usage: bash scripts/check-all-hardening.sh [TIER...]
+
+Run infrastructure hardening checks.
+
+Without arguments, all supported tiers are checked. With arguments, only the
+requested tiers are checked.
+
+Supported tiers:
+  01-gateway, 02-auth, 03-security, 04-data, 05-messaging,
+  06-observability, 07-workflow, 08-ai, 09-tooling, 11-laboratory
+EOF
+}
+
 # --- Tier 01: Gateway ---
 check_01_gateway() {
     local tier="01-gateway"
@@ -169,19 +184,72 @@ check_11_laboratory() {
 }
 
 # Main Execution
+run_tier() {
+    local tier="$1"
+
+    case "$tier" in
+        01-gateway|gateway)
+            check_01_gateway
+            ;;
+        02-auth|auth)
+            check_02_auth
+            ;;
+        03-security|security)
+            check_03_security
+            ;;
+        04-data|data)
+            check_04_data
+            ;;
+        05-messaging|messaging)
+            check_05_messaging
+            ;;
+        06-observability|observability|obs)
+            check_06_observability
+            ;;
+        07-workflow|workflow)
+            check_07_workflow
+            ;;
+        08-ai|ai)
+            check_08_ai
+            ;;
+        09-tooling|tooling)
+            check_09_tooling
+            ;;
+        11-laboratory|laboratory|lab)
+            check_11_laboratory
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown hardening tier: $tier" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+}
+
 main() {
     local exit_code=0
 
-    check_01_gateway
-    check_02_auth
-    check_03_security
-    check_04_data
-    check_05_messaging
-    check_06_observability
-    check_07_workflow
-    check_08_ai
-    check_09_tooling
-    check_11_laboratory
+    if [[ "$#" -eq 0 ]]; then
+        run_tier 01-gateway
+        run_tier 02-auth
+        run_tier 03-security
+        run_tier 04-data
+        run_tier 05-messaging
+        run_tier 06-observability
+        run_tier 07-workflow
+        run_tier 08-ai
+        run_tier 09-tooling
+        run_tier 11-laboratory
+    else
+        local tier
+        for tier in "$@"; do
+            run_tier "$tier"
+        done
+    fi
 
     echo ""
     echo "-----------------------------------"

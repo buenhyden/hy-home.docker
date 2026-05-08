@@ -42,6 +42,19 @@ capdrop_exceptions="$(
   jq -c '.security_baseline.cap_drop_all_exceptions // [] | map(.service // .)' "$exceptions_file"
 )"
 
+compose_profiles="${HYHOME_COMPOSE_PROFILES:-core}"
+compose_profile_args=()
+for profile in ${compose_profiles//,/ }; do
+  if [[ -n "$profile" ]]; then
+    compose_profile_args+=(--profile "$profile")
+  fi
+done
+
+if [[ "${#compose_profile_args[@]}" -eq 0 ]]; then
+  echo "ERROR: no Docker Compose profiles resolved for baseline check." >&2
+  exit 2
+fi
+
 mapfile -t compose_files < <(
   find infra -type f \( -name 'docker-compose.yml' -o -name 'docker-compose.*.yml' -o -name 'docker-compose-*.yml' \) | sort
 )
@@ -61,7 +74,13 @@ done
 
 tmp_json="$(mktemp)"
 trap 'rm -f "$tmp_json"' EXIT
-docker compose config --format json >"$tmp_json"
+docker compose "${compose_profile_args[@]}" config --format json >"$tmp_json"
+
+service_total="$(jq '.services | length' "$tmp_json")"
+if [[ "$service_total" -eq 0 ]]; then
+  echo "ERROR: resolved Docker Compose service count is 0 for profiles: $compose_profiles" >&2
+  exit 1
+fi
 
 nnp_violations="$(
   jq -r --argjson ex "$nnp_exceptions" '
@@ -97,6 +116,8 @@ nnp_fail_count="$(wc -w <<<"$nnp_violations" | tr -d ' ')"
 capdrop_fail_count="$(wc -w <<<"$capdrop_violations" | tr -d ' ')"
 
 echo "Template & security baseline check"
+echo "compose_profiles=$compose_profiles"
+echo "services_total=$service_total"
 echo "compose_files_total=$total_files"
 echo "template_adoption_missing=$template_fail_count"
 echo "missing_no_new_privileges=$nnp_fail_count"
