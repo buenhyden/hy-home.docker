@@ -1208,8 +1208,8 @@
     "hash": "c5b89985034076ce1ee9b135a8c3803f"
   },
   "/home/hy/project-infra/hy-home.docker/AGENTS.md": {
-    "mtime": 1778268988.3040597,
-    "hash": "7a072cc6f573f26bf90833a6ad6cb522"
+    "mtime": 1778277121.346492,
+    "hash": "fc32bce5ed2544da9fdaedf139c354b1"
   },
   "/home/hy/project-infra/hy-home.docker/RTK.md": {
     "mtime": 1776670585.083921,
@@ -4019,6 +4019,10 @@
     "mtime": 1776034409.7169633,
     "hash": "bacd67bbde4c225c7ef730ea273fda64"
   },
+  "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/harness-agent-first-gap-audit.md": {
+    "mtime": 1778277121.839292,
+    "hash": "dc23f22af076b23156f567a14959c768"
+  },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/agentic-harness-contract-hardening.md": {
     "mtime": 1778276258.8641243,
     "hash": "7ae15c57ad93ba91b28c819f463f548b"
@@ -4036,8 +4040,8 @@
     "hash": "f9b197deb562b0f2cc3dba8dfc7ff3b6"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1778276249.4113364,
-    "hash": "b106d4b9084fe65f3459b3ff68a8ea00"
+    "mtime": 1778277121.760092,
+    "hash": "94077ad127d8558420e822d1da0b629d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/template.md": {
     "mtime": 1774506244.4675376,
