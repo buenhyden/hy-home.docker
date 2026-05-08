@@ -2,13 +2,13 @@
 
 ## Corpus Check
 
-- 298 files · ~1,286,952 words
+- 300 files · ~1,288,730 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
 
-- 3206 nodes · 8292 edges · 52 communities detected
-- Extraction: 72% EXTRACTED · 28% INFERRED · 0% AMBIGUOUS · INFERRED: 2349 edges (avg confidence: 0.8)
+- 3227 nodes · 8353 edges · 54 communities detected
+- Extraction: 72% EXTRACTED · 28% INFERRED · 0% AMBIGUOUS · INFERRED: 2366 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -40,8 +40,8 @@
 - [[_COMMUNITY_Community 24|Community 24]]
 - [[_COMMUNITY_Community 25|Community 25]]
 - [[_COMMUNITY_Community 26|Community 26]]
+- [[_COMMUNITY_Community 27|Community 27]]
 - [[_COMMUNITY_Community 28|Community 28]]
-- [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
 - [[_COMMUNITY_Community 31|Community 31]]
 - [[_COMMUNITY_Community 32|Community 32]]
@@ -65,6 +65,8 @@
 - [[_COMMUNITY_Community 50|Community 50]]
 - [[_COMMUNITY_Community 51|Community 51]]
 - [[_COMMUNITY_Community 52|Community 52]]
+- [[_COMMUNITY_Community 53|Community 53]]
+- [[_COMMUNITY_Community 54|Community 54]]
 
 ## God Nodes (most connected - your core abstractions)
 
@@ -89,8 +91,8 @@
   projects/storybook/mcp/eval/tasks/911-fix-failing-tests/post-prepare-trial/src/components/Button.tsx → volumes/obs/grafana/plugins/grafana-pyroscope-app/512.js
 - `fetch()` --calls--> `64996()`  [INFERRED]
   projects/storybook/mcp/apps/self-host-mcp/server.ts → volumes/obs/grafana/plugins/grafana-lokiexplore-app/996.js
-- `fetch()` --calls--> `defaultManifestProvider()`  [INFERRED]
-  projects/storybook/mcp/apps/self-host-mcp/server.ts → projects/storybook/mcp/packages/mcp/src/utils/get-manifest.ts
+- `createMcpHandler()` --calls--> `createStorybookMcpHandler()`  [INFERRED]
+  projects/storybook/mcp/apps/self-host-mcp/server.ts → projects/storybook/mcp/packages/mcp/src/index.ts
 
 ## Communities
 
@@ -102,7 +104,7 @@ Nodes (577): 10183(), 10402(), 10587(), 10651(), 1080(), 11060(), 11106(), 11258
 ### Community 1 - "Community 1"
 
 Cohesion: 0.01
-Nodes (429): 17032(), 40677(), 78824(), 96919(), 44470(), 10129(), 11015(), 11060() (+421 more)
+Nodes (426): 17032(), 40677(), 78824(), 96919(), 44470(), 10129(), 11060(), 11625() (+418 more)
 
 ### Community 2 - "Community 2"
 
@@ -117,7 +119,7 @@ Nodes (363): 10030(), 10183(), 10402(), 10412(), 10587(), 10651(), 11106(), 1128
 ### Community 4 - "Community 4"
 
 Cohesion: 0.01
-Nodes (343): 10183(), 10587(), 10651(), 1080(), 11282(), 11566(), 11738(), 12366() (+335 more)
+Nodes (343): 10183(), 10587(), 10651(), 1080(), 11015(), 11282(), 11298(), 11566() (+335 more)
 
 ### Community 5 - "Community 5"
 
@@ -126,8 +128,8 @@ Nodes (106): build(), buildStorybook(), uploadToChromatic(), calculateMessageTok
 
 ### Community 6 - "Community 6"
 
-Cohesion: 0.03
-Nodes (71): 64996(), buildArgsParam(), decodeKnownQueryChar(), encodeSpecialValues(), buildServerInstructions(), AuthenticationError, CompositionAuth, extractBearerToken() (+63 more)
+Cohesion: 0.04
+Nodes (58): buildArgsParam(), decodeKnownQueryChar(), encodeSpecialValues(), buildServerInstructions(), errorToMCPContent(), fetchStoryIndex(), findStoryIds(), isStoryIdInput() (+50 more)
 
 ### Community 7 - "Community 7"
 
@@ -137,37 +139,37 @@ Nodes (116): 11824(), 12110(), 24182(), 262(), 28075(), 2894(), 32900(), 39726()
 ### Community 8 - "Community 8"
 
 Cohesion: 0.06
-Nodes (36): dedent(), extractDocsSummary(), defaultManifestProvider(), errorToMCPContent(), getManifests(), getManifestUrlFromRequest(), getMultiSourceManifests(), ManifestGetError (+28 more)
+Nodes (35): dedent(), extractDocsSummary(), defaultManifestProvider(), errorToMCPContent(), getManifests(), getManifestUrlFromRequest(), getMultiSourceManifests(), ManifestGetError (+27 more)
 
 ### Community 9 - "Community 9"
 
-Cohesion: 0.1
-Nodes (54): 12344(), 14919(), 18531(), 211(), 25953(), 28057(), 30200(), 3069() (+46 more)
+Cohesion: 0.05
+Nodes (28): 64996(), AuthenticationError, CompositionAuth, extractBearerToken(), createMCPRequestBody(), killPort(), parseMCPResponse(), startStorybook() (+20 more)
 
 ### Community 10 - "Community 10"
 
 Cohesion: 0.1
-Nodes (30): askIterations(), askParallelism(), askUploadId(), chooseConfig(), chooseDesignSystem(), chooseModel(), chooseTaskName(), chooseVariants() (+22 more)
+Nodes (54): 12344(), 14919(), 18531(), 211(), 25953(), 28057(), 30200(), 3069() (+46 more)
 
 ### Community 11 - "Community 11"
 
 Cohesion: 0.1
-Nodes (2): 93469(), Button()
+Nodes (30): askIterations(), askParallelism(), askUploadId(), chooseConfig(), chooseDesignSystem(), chooseModel(), chooseTaskName(), chooseVariants() (+22 more)
 
 ### Community 12 - "Community 12"
+
+Cohesion: 0.1
+Nodes (2): 93469(), Button()
+
+### Community 13 - "Community 13"
 
 Cohesion: 0.49
 Nodes (8): appendRow(), authorize(), copyToUploadIdSheet(), debugPost(), doPost(), ensureHeaders(), prepareRowData(), toTitleCase()
 
-### Community 13 - "Community 13"
+### Community 14 - "Community 14"
 
 Cohesion: 0.22
 Nodes (1): looseGetInteractiveElements()
-
-### Community 14 - "Community 14"
-
-Cohesion: 0.29
-Nodes (1): 94156()
 
 ### Community 15 - "Community 15"
 
@@ -176,273 +178,283 @@ Nodes (1): transform()
 
 ### Community 16 - "Community 16"
 
+Cohesion: 0.29
+Nodes (1): 94156()
+
+### Community 17 - "Community 17"
+
 Cohesion: 0.73
 Nodes (4): listTrialCandidates(), main(), parseTrialTimestampMs(), resolveTaskPattern()
 
-### Community 17 - "Community 17"
+### Community 18 - "Community 18"
 
 Cohesion: 0.53
 Nodes (4): 36946(), 38516(), 81797(), 81834()
 
-### Community 18 - "Community 18"
-
-Cohesion: 0.67
-Nodes (2): debouncedSendSize(), sendSizeToParent()
-
 ### Community 19 - "Community 19"
 
-Cohesion: 0.67
-Nodes (2): getValidationIcon(), StatusBadge()
+Cohesion: 0.6
+Nodes (3): 2192(), 22051(), 62540()
 
 ### Community 20 - "Community 20"
 
 Cohesion: 0.67
-Nodes (2): 54944(), 73131()
+Nodes (2): getValidationIcon(), StatusBadge()
 
 ### Community 21 - "Community 21"
 
 Cohesion: 0.67
-Nodes (2): 36209(), 82087()
+Nodes (2): 54944(), 73131()
 
 ### Community 22 - "Community 22"
 
 Cohesion: 0.67
-Nodes (2): 16944(), 82011()
+Nodes (2): 36209(), 82087()
 
 ### Community 23 - "Community 23"
 
 Cohesion: 0.67
-Nodes (2): 12781(), 81854()
+Nodes (2): 16944(), 82011()
 
 ### Community 24 - "Community 24"
 
 Cohesion: 0.67
-Nodes (1): Document()
+Nodes (2): 12781(), 81854()
 
 ### Community 25 - "Community 25"
 
 Cohesion: 0.67
-Nodes (1): App()
+Nodes (2): debouncedSendSize(), sendSizeToParent()
 
 ### Community 26 - "Community 26"
 
 Cohesion: 0.67
-Nodes (1): handler()
+Nodes (1): Document()
+
+### Community 27 - "Community 27"
+
+Cohesion: 0.67
+Nodes (1): App()
 
 ### Community 28 - "Community 28"
 
 Cohesion: 0.67
-Nodes (1): Card()
-
-### Community 29 - "Community 29"
-
-Cohesion: 0.67
-Nodes (1): sendRequest()
+Nodes (1): handler()
 
 ### Community 30 - "Community 30"
 
 Cohesion: 0.67
-Nodes (1): DiagnosticItem()
+Nodes (1): Card()
 
 ### Community 31 - "Community 31"
 
 Cohesion: 0.67
-Nodes (1): handleClose()
+Nodes (1): sendRequest()
 
 ### Community 32 - "Community 32"
 
 Cohesion: 0.67
-Nodes (1): ReviewCard()
+Nodes (1): DiagnosticItem()
 
 ### Community 33 - "Community 33"
 
 Cohesion: 0.67
-Nodes (1): StatusPill()
+Nodes (1): handleClose()
 
 ### Community 34 - "Community 34"
 
 Cohesion: 0.67
-Nodes (1): 49417()
+Nodes (1): ReviewCard()
 
 ### Community 35 - "Community 35"
 
 Cohesion: 0.67
-Nodes (1): 33981()
+Nodes (1): StatusPill()
 
 ### Community 36 - "Community 36"
 
 Cohesion: 0.67
-Nodes (1): 96425()
+Nodes (1): 49417()
 
 ### Community 37 - "Community 37"
 
 Cohesion: 0.67
-Nodes (1): 37826()
+Nodes (1): 33981()
 
 ### Community 38 - "Community 38"
 
 Cohesion: 0.67
-Nodes (1): 14624()
+Nodes (1): 96425()
 
 ### Community 39 - "Community 39"
 
 Cohesion: 0.67
-Nodes (1): 51266()
+Nodes (1): 37826()
 
 ### Community 40 - "Community 40"
 
 Cohesion: 0.67
-Nodes (1): 71261()
+Nodes (1): 14624()
 
 ### Community 41 - "Community 41"
 
 Cohesion: 0.67
-Nodes (1): 70273()
+Nodes (1): 51266()
 
 ### Community 42 - "Community 42"
 
 Cohesion: 0.67
-Nodes (1): 22379()
+Nodes (1): 71261()
 
 ### Community 43 - "Community 43"
 
 Cohesion: 0.67
-Nodes (1): 35497()
+Nodes (1): 70273()
 
 ### Community 44 - "Community 44"
 
 Cohesion: 0.67
-Nodes (1): 19027()
+Nodes (1): 22379()
 
 ### Community 45 - "Community 45"
 
 Cohesion: 0.67
-Nodes (1): 67951()
+Nodes (1): 35497()
 
 ### Community 46 - "Community 46"
 
 Cohesion: 0.67
-Nodes (1): 50472()
+Nodes (1): 19027()
 
 ### Community 47 - "Community 47"
 
 Cohesion: 0.67
-Nodes (1): 45395()
+Nodes (1): 67951()
 
 ### Community 48 - "Community 48"
 
 Cohesion: 0.67
-Nodes (1): 73259()
+Nodes (1): 50472()
 
 ### Community 49 - "Community 49"
 
 Cohesion: 0.67
-Nodes (1): 78612()
+Nodes (1): 45395()
 
 ### Community 50 - "Community 50"
 
 Cohesion: 0.67
-Nodes (1): 83120()
+Nodes (1): 73259()
 
 ### Community 51 - "Community 51"
 
 Cohesion: 0.67
-Nodes (1): 97349()
+Nodes (1): 78612()
 
 ### Community 52 - "Community 52"
+
+Cohesion: 0.67
+Nodes (1): 83120()
+
+### Community 53 - "Community 53"
+
+Cohesion: 0.67
+Nodes (1): 97349()
+
+### Community 54 - "Community 54"
 
 Cohesion: 0.67
 Nodes (1): 68555()
 
 ## Knowledge Gaps
 
-- **Thin community `Community 11`** (20 nodes): `93469()`, `Button()`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`
+- **Thin community `Community 12`** (20 nodes): `93469()`, `Button()`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`, `Button.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 13`** (9 nodes): `looseGetInteractiveElements()`, `FlightBooking.stories.ts`, `FlightBooking.stories.tsx`, `FlightBooking.stories.tsx`, `FlightBooking.stories.tsx`, `FlightBooking.stories.ts`, `FlightBooking.stories.tsx`, `FlightBooking.stories.tsx`, `FlightBooking.stories.tsx`
-  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 14`** (7 nodes): `94156()`, `156.js`, `156.js`, `156.js`, `156.js`, `156.js`, `156.js`
+- **Thin community `Community 14`** (9 nodes): `looseGetInteractiveElements()`, `FlightBooking.stories.ts`, `FlightBooking.stories.tsx`, `FlightBooking.stories.tsx`, `FlightBooking.stories.tsx`, `FlightBooking.stories.ts`, `FlightBooking.stories.tsx`, `FlightBooking.stories.tsx`, `FlightBooking.stories.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 15`** (7 nodes): `vitest.config.ts`, `vitest.config.ts`, `vitest.config.ts`, `vitest.config.ts`, `vitest.config.ts`, `vitest.config.ts`, `transform()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 18`** (4 nodes): `preview.ts`, `debouncedSendSize()`, `sendSizeToParent()`, `preview.ts`
+- **Thin community `Community 16`** (7 nodes): `94156()`, `156.js`, `156.js`, `156.js`, `156.js`, `156.js`, `156.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 19`** (4 nodes): `summary.tsx`, `summary.tsx`, `getValidationIcon()`, `StatusBadge()`
+- **Thin community `Community 20`** (4 nodes): `summary.tsx`, `summary.tsx`, `getValidationIcon()`, `StatusBadge()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 20`** (4 nodes): `54944()`, `73131()`, `944.js`, `944.js`
+- **Thin community `Community 21`** (4 nodes): `54944()`, `73131()`, `944.js`, `944.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 21`** (4 nodes): `36209()`, `82087()`, `209.js`, `209.js`
+- **Thin community `Community 22`** (4 nodes): `36209()`, `82087()`, `209.js`, `209.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 22`** (4 nodes): `16944()`, `82011()`, `944.js`, `944.js`
+- **Thin community `Community 23`** (4 nodes): `16944()`, `82011()`, `944.js`, `944.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 23`** (4 nodes): `12781()`, `81854()`, `854.js`, `854.js`
+- **Thin community `Community 24`** (4 nodes): `12781()`, `81854()`, `854.js`, `854.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 24`** (3 nodes): `Document()`, `_document.tsx`, `_document.tsx`
+- **Thin community `Community 25`** (4 nodes): `preview.ts`, `debouncedSendSize()`, `sendSizeToParent()`, `preview.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 25`** (3 nodes): `App()`, `_app.tsx`, `_app.tsx`
+- **Thin community `Community 26`** (3 nodes): `Document()`, `_document.tsx`, `_document.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 26`** (3 nodes): `handler()`, `hello.ts`, `hello.ts`
+- **Thin community `Community 27`** (3 nodes): `App()`, `_app.tsx`, `_app.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 28`** (3 nodes): `Card()`, `Card.tsx`, `Card.tsx`
+- **Thin community `Community 28`** (3 nodes): `handler()`, `hello.ts`, `hello.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 29`** (3 nodes): `sendRequest()`, `bin.test.ts`, `bin.test.ts`
+- **Thin community `Community 30`** (3 nodes): `Card()`, `Card.tsx`, `Card.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 30`** (3 nodes): `typecheck.tsx`, `typecheck.tsx`, `DiagnosticItem()`
+- **Thin community `Community 31`** (3 nodes): `sendRequest()`, `bin.test.ts`, `bin.test.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 31`** (3 nodes): `handleClose()`, `AlertBanner.tsx`, `AlertBanner.tsx`
+- **Thin community `Community 32`** (3 nodes): `typecheck.tsx`, `typecheck.tsx`, `DiagnosticItem()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 32`** (3 nodes): `ReviewCard.tsx`, `ReviewCard.tsx`, `ReviewCard()`
+- **Thin community `Community 33`** (3 nodes): `handleClose()`, `AlertBanner.tsx`, `AlertBanner.tsx`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (3 nodes): `StatusPill.tsx`, `StatusPill.tsx`, `StatusPill()`
+- **Thin community `Community 34`** (3 nodes): `ReviewCard.tsx`, `ReviewCard.tsx`, `ReviewCard()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 34`** (3 nodes): `49417()`, `417.js`, `417.js`
+- **Thin community `Community 35`** (3 nodes): `StatusPill.tsx`, `StatusPill.tsx`, `StatusPill()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 35`** (3 nodes): `33981()`, `981.js`, `981.js`
+- **Thin community `Community 36`** (3 nodes): `49417()`, `417.js`, `417.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 36`** (3 nodes): `96425()`, `425.js`, `425.js`
+- **Thin community `Community 37`** (3 nodes): `33981()`, `981.js`, `981.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 37`** (3 nodes): `37826()`, `826.js`, `826.js`
+- **Thin community `Community 38`** (3 nodes): `96425()`, `425.js`, `425.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (3 nodes): `14624()`, `624.js`, `624.js`
+- **Thin community `Community 39`** (3 nodes): `37826()`, `826.js`, `826.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 39`** (3 nodes): `51266()`, `266.js`, `266.js`
+- **Thin community `Community 40`** (3 nodes): `14624()`, `624.js`, `624.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 40`** (3 nodes): `71261()`, `261.js`, `261.js`
+- **Thin community `Community 41`** (3 nodes): `51266()`, `266.js`, `266.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 41`** (3 nodes): `70273()`, `273.js`, `273.js`
+- **Thin community `Community 42`** (3 nodes): `71261()`, `261.js`, `261.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 42`** (3 nodes): `22379()`, `379.js`, `379.js`
+- **Thin community `Community 43`** (3 nodes): `70273()`, `273.js`, `273.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (3 nodes): `35497()`, `497.js`, `497.js`
+- **Thin community `Community 44`** (3 nodes): `22379()`, `379.js`, `379.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (3 nodes): `19027()`, `27.js`, `27.js`
+- **Thin community `Community 45`** (3 nodes): `35497()`, `497.js`, `497.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (3 nodes): `67951()`, `951.js`, `951.js`
+- **Thin community `Community 46`** (3 nodes): `19027()`, `27.js`, `27.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 46`** (3 nodes): `50472()`, `472.js`, `472.js`
+- **Thin community `Community 47`** (3 nodes): `67951()`, `951.js`, `951.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (3 nodes): `45395()`, `395.js`, `395.js`
+- **Thin community `Community 48`** (3 nodes): `50472()`, `472.js`, `472.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (3 nodes): `73259()`, `259.js`, `259.js`
+- **Thin community `Community 49`** (3 nodes): `45395()`, `395.js`, `395.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 49`** (3 nodes): `78612()`, `612.js`, `612.js`
+- **Thin community `Community 50`** (3 nodes): `73259()`, `259.js`, `259.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 50`** (3 nodes): `83120()`, `120.js`, `120.js`
+- **Thin community `Community 51`** (3 nodes): `78612()`, `612.js`, `612.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 51`** (3 nodes): `97349()`, `349.js`, `349.js`
+- **Thin community `Community 52`** (3 nodes): `83120()`, `120.js`, `120.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 52`** (3 nodes): `68555()`, `555.js`, `555.js`
+- **Thin community `Community 53`** (3 nodes): `97349()`, `349.js`, `349.js`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 54`** (3 nodes): `68555()`, `555.js`, `555.js`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 
 ## Suggested Questions
 
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `N()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 6`, `Community 7`, `Community 9`, `Community 11`, `Community 17`?**
-  _High betweenness centrality (0.470) - this node is a cross-community bridge._
-- **Why does `d()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 6`, `Community 7`, `Community 9`, `Community 11`, `Community 14`, `Community 17`, `Community 20`, `Community 21`, `Community 22`, `Community 23`?**
-  _High betweenness centrality (0.254) - this node is a cross-community bridge._
+- **Why does `N()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 7`, `Community 9`, `Community 10`, `Community 12`, `Community 18`?**
+  _High betweenness centrality (0.482) - this node is a cross-community bridge._
+- **Why does `d()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 7`, `Community 9`, `Community 10`, `Community 12`, `Community 16`, `Community 18`, `Community 19`, `Community 21`, `Community 22`, `Community 23`, `Community 24`?**
+  _High betweenness centrality (0.258) - this node is a cross-community bridge._
 - **Why does `save()` connect `Community 5` to `Community 1`?**
-  _High betweenness centrality (0.171) - this node is a cross-community bridge._
+  _High betweenness centrality (0.154) - this node is a cross-community bridge._
 - **Are the 1166 inferred relationships involving `N()` (e.g. with `38516()` and `36946()`) actually correct?**
   _`N()` has 1166 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 625 inferred relationships involving `d()` (e.g. with `34623()` and `67411()`) actually correct?**

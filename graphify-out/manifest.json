@@ -132,8 +132,8 @@
     "hash": "45a312acfb9481689ace6f9e58072a86"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/apps/internal-storybook/tests/mcp-endpoint.e2e.test.ts": {
-    "mtime": 1773822738.5855227,
-    "hash": "81c4d80801caff39f327362d1b7a22fd"
+    "mtime": 1778260533.3208869,
+    "hash": "57e155d4eb2c774e15b07f5e710ed509"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/apps/internal-storybook/tests/mcp-composition-auth.e2e.test.ts": {
     "mtime": 1773822738.5855227,
@@ -144,8 +144,8 @@
     "hash": "a6ea1c21d2b7e9644b47d0cf5cc29b22"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/apps/internal-storybook/tests/helpers.ts": {
-    "mtime": 1773822738.5855227,
-    "hash": "7603eafba5961d13c1af166362adca01"
+    "mtime": 1778260533.3208869,
+    "hash": "5f20da1c8ba930be0a1c0e057e84a2fc"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/vitest.setup.ts": {
     "mtime": 1773822738.699949,
@@ -188,8 +188,8 @@
     "hash": "006e1d4b6dfc180bcc7f3f0198332f75"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/mcp-handler.ts": {
-    "mtime": 1773822738.6957111,
-    "hash": "84cfddc359e9d8785db1a134b1808ddb"
+    "mtime": 1778260533.3208869,
+    "hash": "8f13ddfe5ba5a68b876716c597840ff5"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/preset.ts": {
     "mtime": 1775174681.3574424,
@@ -216,8 +216,12 @@
     "hash": "afec7c2d5d12ae3961144228e000a2b0"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/tools/get-storybook-story-instructions.test.ts": {
-    "mtime": 1773822738.6957111,
-    "hash": "b2ca60bfb13fa39c3d6e1fe223f00adb"
+    "mtime": 1778260533.3208869,
+    "hash": "c3a4a3b15e9c9016b645d7145d50742b"
+  },
+  "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.test.ts": {
+    "mtime": 1778260533.3208869,
+    "hash": "2e7b51f33f1b76a7e8e072159fc3390a"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/tools/preview-stories.ts": {
     "mtime": 1773822738.6957111,
@@ -236,8 +240,8 @@
     "hash": "ff05a718d89de0ce54d2255a8aaafc9a"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/tools/tool-names.ts": {
-    "mtime": 1773822738.6957111,
-    "hash": "bdb379a18a87b8b51bf0d3c4da629193"
+    "mtime": 1778260533.3208869,
+    "hash": "16c94d10bd5bba6696366088ae6f3fb4"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/tools/preview-stories.test.ts": {
     "mtime": 1773822738.6957111,
@@ -248,20 +252,24 @@
     "hash": "6c5ddc31b892b8f8614a3468941989c4"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/tools/get-storybook-story-instructions.ts": {
-    "mtime": 1773822738.6957111,
-    "hash": "2e28475960ac8948e7c72b6f04db0d67"
+    "mtime": 1778260533.3208869,
+    "hash": "5891e03f9b45ebf35e32e5ec6b8fb997"
+  },
+  "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/tools/get-changed-stories.ts": {
+    "mtime": 1778260533.3208869,
+    "hash": "5576a3fd4fd98243cda2bf0ee53d6180"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/tools/preview-stories/preview-stories-app-script.ts": {
     "mtime": 1773822738.6957111,
     "hash": "5975021915a145b513af2c00a1cba223"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/instructions/build-server-instructions.test.ts": {
-    "mtime": 1773822738.6957111,
-    "hash": "fb56d435ab63d2dad70791cb9d2c76e0"
+    "mtime": 1778260533.3208869,
+    "hash": "b4efc68c7ff096b73adbd7c39d1b6871"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/instructions/build-server-instructions.ts": {
-    "mtime": 1773822738.6957111,
-    "hash": "0a800af5e48d847d8bb44c76422c1020"
+    "mtime": 1778260533.3208869,
+    "hash": "aa221d7f3bcdfa79b1df1dc7ab4b2630"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/utils/is-addon-a11y-enabled.ts": {
     "mtime": 1773822738.699949,
@@ -1860,8 +1868,8 @@
     "hash": "9c46769a96679b411c1a3735a188cb4c"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/pnpm-workspace.yaml": {
-    "mtime": 1776579495.1110306,
-    "hash": "b0c8ca0ede2c486e1a7e2cbc97df48dd"
+    "mtime": 1778260533.3252869,
+    "hash": "9bdf8f05b50d44938700f21a43ec5695"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/README.md": {
     "mtime": 1773822738.5812848,
@@ -1900,16 +1908,16 @@
     "hash": "340424c885b93238d3783eb13d1e4388"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/instructions/dev-instructions.md": {
-    "mtime": 1773822738.6957111,
-    "hash": "fe204e0fcf2915e3331022e07b4b71c2"
+    "mtime": 1778260533.3208869,
+    "hash": "296ce0756e2afd8191202fd75382f686"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/instructions/story-testing-instructions.md": {
-    "mtime": 1773822738.6957111,
-    "hash": "9c5aa05ae256997d10421e9beda9a9f4"
+    "mtime": 1778260533.3208869,
+    "hash": "a29cfebbf749b706dece7b9686adbdbb"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/instructions/storybook-story-instructions.md": {
-    "mtime": 1773822738.6957111,
-    "hash": "80d6a333e8e16e46760878a336b6b37d"
+    "mtime": 1778260533.3208869,
+    "hash": "c27691a9e3194818335a3b476abfbcb0"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/mcp/packages/addon-mcp/src/instructions/a11y-instructions.md": {
     "mtime": 1773822738.6957111,
