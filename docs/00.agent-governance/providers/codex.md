@@ -36,6 +36,10 @@ Codex-specific guidance for this repository.
 - The current hook emits graphify context when `graphify-out/graph.json` exists.
 - The post-edit hook delegates to `scripts/post-tool-validate.sh` for path-aware repository validation.
 - Hook output is advisory context. Governance remains in `docs/00.agent-governance/`.
+- Codex does not maintain a parallel delegated-agent catalog in this repository.
+- The canonical delegated-agent catalog is the `.claude` runtime mirror
+  documented in `docs/00.agent-governance/agents/` and
+  `docs/00.agent-governance/subagent-protocol.md`.
 
 ## 5. Operational Practices
 
@@ -49,7 +53,11 @@ Codex-specific guidance for this repository.
 - `AGENTS.md`
 - `RTK.md`
 - `.codex/README.md`
+- `.codex/hooks.json`
+- `.claude/CLAUDE.md`
+- `docs/00.agent-governance/agents/`
 - `docs/00.agent-governance/providers/agents-md.md`
 - `docs/00.agent-governance/rules/bootstrap.md`
 - `docs/00.agent-governance/rules/github-governance.md`
+- `docs/00.agent-governance/subagent-protocol.md`
 - `scripts/post-tool-validate.sh`

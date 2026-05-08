@@ -352,6 +352,16 @@ import sys
 
 failures: list[str] = []
 
+def read(path: pathlib.Path) -> str:
+    try:
+        return path.read_text(errors="ignore")
+    except Exception:
+        return ""
+
+def frontmatter_value(text: str, key: str) -> str | None:
+    match = re.search(rf"^{re.escape(key)}:\s*['\"]?([^'\"\n]+)['\"]?\s*$", text, re.M)
+    return match.group(1).strip() if match else None
+
 runtime_agents = sorted(p.stem for p in pathlib.Path(".claude/agents").glob("*.md"))
 governance_agents = sorted(p.stem for p in pathlib.Path("docs/00.agent-governance/agents/agents").glob("*.md"))
 if runtime_agents != governance_agents:
@@ -364,12 +374,41 @@ if runtime_functions != governance_functions:
 
 protocol = pathlib.Path("docs/00.agent-governance/subagent-protocol.md").read_text()
 for agent in runtime_agents:
-    path = f".claude/agents/{agent}.md"
-    if path not in protocol:
-        failures.append(f"subagent protocol missing runtime agent: {path}")
+    agent_path = pathlib.Path(f".claude/agents/{agent}.md")
+    text = read(agent_path)
+    protocol_path = f".claude/agents/{agent}.md"
+    model = frontmatter_value(text, "model")
+    layer = frontmatter_value(text, "layer")
+    expected_model = "opus" if agent == "workflow-supervisor" else "sonnet"
+    expected_scope = f"@import docs/00.agent-governance/scopes/{layer}.md" if layer else None
+
+    if protocol_path not in protocol:
+        failures.append(f"subagent protocol missing runtime agent: {protocol_path}")
+    if model != expected_model:
+        failures.append(f"{agent_path}: expected model {expected_model!r}, found {model!r}")
+    if not layer:
+        failures.append(f"{agent_path}: missing layer front matter")
+    elif expected_scope not in text:
+        failures.append(f"{agent_path}: missing exact scope import {expected_scope!r}")
+
+codex_readme = pathlib.Path(".codex/README.md")
+codex_provider = pathlib.Path("docs/00.agent-governance/providers/codex.md")
+for path in [codex_readme, codex_provider]:
+    text = read(path)
+    if not text:
+        failures.append(f"missing Codex runtime/provider document: {path}")
+        continue
+    for required in [
+        "AGENTS.md",
+        ".codex/hooks.json",
+        "docs/00.agent-governance/agents/",
+        ".claude",
+    ]:
+        if required not in text:
+            failures.append(f"{path}: missing Codex runtime boundary reference: {required}")
 
 stale_patterns = [
-    re.compile(r"H100|h100_pattern|examples/harness-100"),
+    re.compile(r"H100|Harness-100|harness-100|h100_pattern|examples/harness-100"),
     re.compile(r"AGENTS\.md §3 Agent Catalog|AGENTS\.md §4 Orchestration"),
 ]
 scan_roots = [

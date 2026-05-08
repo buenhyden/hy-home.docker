@@ -12,6 +12,16 @@ Shared policy remains in `AGENTS.md` and `docs/00.agent-governance/`.
 
 - `hooks.json` — Codex-local hook configuration.
 
+## Runtime Boundary
+
+- Codex uses `AGENTS.md` plus `docs/00.agent-governance/providers/codex.md`
+  as its repository entry contract.
+- `.codex/hooks.json` provides Codex-local context and post-edit validation.
+- The canonical delegated-agent catalog remains the `.claude` runtime mirror
+  documented in `docs/00.agent-governance/agents/`.
+- Do not create a parallel Codex agent catalog unless repository governance
+  explicitly adopts one.
+
 ## Current Hook Contract
 
 - `PreToolUse` emits graphify additional context when `graphify-out/graph.json` exists.
@@ -30,5 +40,7 @@ Shared policy remains in `AGENTS.md` and `docs/00.agent-governance/`.
 - `../AGENTS.md`
 - `../docs/00.agent-governance/providers/codex.md`
 - `../docs/00.agent-governance/providers/agents-md.md`
+- `../docs/00.agent-governance/agents/`
 - `../docs/00.agent-governance/rules/bootstrap.md`
+- `../.claude/CLAUDE.md`
 - `../scripts/post-tool-validate.sh`
