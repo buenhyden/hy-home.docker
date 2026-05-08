@@ -3936,8 +3936,8 @@
     "hash": "73875d4d1c4a2766ec5bddd18c59c344"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/providers/codex.md": {
-    "mtime": 1778274114.907382,
-    "hash": "ca99ba654b2315f107cc87f3cfbfca73"
+    "mtime": 1778276235.2653363,
+    "hash": "3d2c72a026836e301afa12394817cf66"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/providers/claude.md": {
     "mtime": 1775816304.375158,
@@ -4019,6 +4019,10 @@
     "mtime": 1776034409.7169633,
     "hash": "bacd67bbde4c225c7ef730ea273fda64"
   },
+  "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/agentic-harness-contract-hardening.md": {
+    "mtime": 1778276258.8641243,
+    "hash": "7ae15c57ad93ba91b28c819f463f548b"
+  },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/docker-doc-contract-backlog.md": {
     "mtime": 1778274802.0942543,
     "hash": "9e7b2b603c9c6c9722ad5f02c03dad0f"
@@ -4032,8 +4036,8 @@
     "hash": "f9b197deb562b0f2cc3dba8dfc7ff3b6"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1778262960.0995762,
-    "hash": "161be424e7cf65fdde719e307e220e02"
+    "mtime": 1778276249.4113364,
+    "hash": "b106d4b9084fe65f3459b3ff68a8ea00"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/template.md": {
     "mtime": 1774506244.4675376,
