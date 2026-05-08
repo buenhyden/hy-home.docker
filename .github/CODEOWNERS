@@ -3,7 +3,13 @@
 
 * @buenhyden
 
+AGENTS.md @buenhyden
+CLAUDE.md @buenhyden
+GEMINI.md @buenhyden
+RTK.md @buenhyden
 .github/** @buenhyden
+.claude/** @buenhyden
+.codex/** @buenhyden
 infra/** @buenhyden
 scripts/** @buenhyden
 secrets/** @buenhyden

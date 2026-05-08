@@ -2,7 +2,8 @@
 
 ## Supported Versions
 
-Use this table to define currently supported versions for security fixes.
+Security fixes are supported on the protected `main` branch unless a release
+branch is explicitly declared.
 
 | Version | Supported |
 | ------- | --------- |

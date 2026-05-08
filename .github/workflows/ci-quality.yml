@@ -40,6 +40,36 @@ jobs:
       - name: Check repository contracts
         run: bash scripts/check-repo-contracts.sh
 
+  # ── Git Flow Contract ───────────────────────────────────────
+  git-flow-contract:
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      HEAD_REF: ${{ github.head_ref }}
+    steps:
+      - name: Check PR title and source branch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          title_re='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([A-Za-z0-9._-]+\))?!?: .+'
+          branch_re='^(feat|fix|docs|refactor|chore|dependabot|codex)/.+'
+
+          if ! [[ "$PR_TITLE" =~ $title_re ]]; then
+            echo "PR title must follow Conventional Commits." >&2
+            echo "Allowed examples: feat(scope): add thing, fix: repair thing" >&2
+            exit 1
+          fi
+
+          if ! [[ "$HEAD_REF" =~ $branch_re ]]; then
+            echo "Source branch must start with feat/, fix/, docs/, refactor/, chore/, dependabot/, or codex/." >&2
+            exit 1
+          fi
+
   # ── Compose Contract Validation ───────────────────────────────
   compose-validation:
     permissions:

@@ -44,9 +44,12 @@ List exact commands used and outcome.
 ## Validations
 
 - [ ] I have reviewed the relevant governance rules under `docs/00.agent-governance/rules`.
+- [ ] My source branch follows `feat/`, `fix/`, `docs/`, `refactor/`, `chore/`, `dependabot/`, or `codex/`.
 - [ ] My code strictly follows the Implementation Specification.
 - [ ] Documentation has been added/updated using `docs/99.templates` (if applicable).
 - [ ] **Commit Standard**: My Pull Request title uses Conventional Commits format.
+- [ ] Required GitHub Actions checks are passing or pending checks are explained above.
+- [ ] CODEOWNERS-triggered reviewers have been requested for owned paths.
 - [ ] I have run tests locally.
 - [ ] I have listed exact validation commands and outcomes above.
 - [ ] No secrets or credentials are included in this PR.

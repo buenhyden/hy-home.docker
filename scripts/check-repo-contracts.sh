@@ -129,8 +129,14 @@ except Exception as exc:
     sys.exit(1)
 
 failures = 0
-workflow_files = sorted(pathlib.Path(".github/workflows").glob("*.yml"))
-yaml_files = sorted(pathlib.Path(".github").glob("*.yml")) + workflow_files
+workflow_files = sorted(
+    list(pathlib.Path(".github/workflows").glob("*.yml"))
+    + list(pathlib.Path(".github/workflows").glob("*.yaml"))
+)
+yaml_files = sorted(
+    list(pathlib.Path(".github").rglob("*.yml"))
+    + list(pathlib.Path(".github").rglob("*.yaml"))
+)
 
 for path in yaml_files:
     try:
@@ -165,6 +171,115 @@ for path in workflow_files:
         failures += 1
 
 if failures:
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section "GitHub workflow security contracts"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+try:
+    import yaml
+except Exception as exc:
+    print(f"FAIL: PyYAML is required for GitHub workflow contract checks: {exc}", file=sys.stderr)
+    sys.exit(1)
+
+failures: list[str] = []
+workflow_files = sorted(
+    list(pathlib.Path(".github/workflows").glob("*.yml"))
+    + list(pathlib.Path(".github/workflows").glob("*.yaml"))
+)
+sha_re = re.compile(r"^[0-9a-f]{40}$")
+
+for path in workflow_files:
+    text = path.read_text()
+    data = yaml.safe_load(text) or {}
+    jobs = data.get("jobs") or {}
+    top_permissions = data.get("permissions")
+
+    if "pull_request_target:" in text:
+        failures.append(f"{path}: pull_request_target is not allowed")
+    if re.search(r"(?m)^\s*contents:\s*write\s*(#.*)?$", text):
+        failures.append(f"{path}: contents: write is not allowed")
+    if "git push origin main" in text:
+        failures.append(f"{path}: direct push to main is not allowed")
+
+    for line_no, line in enumerate(text.splitlines(), start=1):
+        match = re.match(r"^\s*uses:\s*([^#\s]+)", line)
+        if not match:
+            continue
+        action = match.group(1).strip("'\"")
+        if action.startswith("./"):
+            continue
+        if "@" not in action:
+            failures.append(f"{path}:{line_no}: action reference is missing a pinned ref: {action}")
+            continue
+        ref = action.rsplit("@", 1)[1]
+        if not sha_re.fullmatch(ref):
+            failures.append(f"{path}:{line_no}: action reference must use a full commit SHA: {action}")
+
+    if top_permissions is None:
+        for job_id, job in jobs.items():
+            if isinstance(job, dict) and "permissions" not in job:
+                failures.append(f"{path}: job {job_id!r} is missing explicit permissions")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section "GitHub governance surface"
+if [[ -f ".github/copilot-instructions.md" || -d ".github/instructions" ]]; then
+  fail "GitHub-native instruction files are not adopted in this repository"
+fi
+
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import sys
+
+codeowners = pathlib.Path(".github/CODEOWNERS")
+if not codeowners.is_file():
+    print("FAIL: missing .github/CODEOWNERS", file=sys.stderr)
+    sys.exit(1)
+
+required_patterns = {
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    "RTK.md",
+    ".github/**",
+    ".claude/**",
+    ".codex/**",
+    "infra/**",
+    "scripts/**",
+    "secrets/**",
+    "docs/00.agent-governance/**",
+}
+
+patterns = set()
+for line in codeowners.read_text().splitlines():
+    stripped = line.strip()
+    if not stripped or stripped.startswith("#"):
+        continue
+    patterns.add(stripped.split()[0])
+
+missing = sorted(required_patterns - patterns)
+if missing:
+    for pattern in missing:
+        print(f"FAIL: CODEOWNERS missing required governance pattern: {pattern}", file=sys.stderr)
     sys.exit(1)
 PY
 then

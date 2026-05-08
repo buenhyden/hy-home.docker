@@ -8,20 +8,34 @@ on:
     types: [opened]
 
 jobs:
-  greeting:
+  issue-greeting:
+    if: github.event_name == 'issues'
     permissions:
-      issues: write # 코멘트/라벨 정도만 필요
-      pull-requests: write # PR에 코멘트 남길 때
+      issues: write
       contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d
+      - name: Greet first issue
+        uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           issue_message:
             "Welcome to the project! Thank you for opening your first issue. We
             will review it shortly."
+
+  pull-request-greeting:
+    if: github.event_name == 'pull_request'
+    permissions:
+      issues: write
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Greet first pull request
+        uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           pr_message:
             "Welcome to the project! Thank you for your first Pull Request.
             We'll review your changes as soon as possible."
