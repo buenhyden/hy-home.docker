@@ -18,9 +18,31 @@
 
 도움이 되는 보조 문서는 다음과 같습니다.
 
+- `00.agent-governance`: AI 에이전트 실행 정책, provider 계약, scope, rule, runtime catalog
 - `99.templates`: 모든 문서의 표준 템플릿 모음
 - `90.references`: 느리게 변하는 참고 지식, 표준, 학습 로드맵
-- `00.agent-governance`: AI 에이전트 전용 실행 지침 (토큰 절약을 위한 Lazy Loading 구조)
+
+## 허용되는 최상위 폴더
+
+`docs/` 아래의 활성 최상위 폴더는 다음 목록으로 고정합니다.
+
+```text
+00.agent-governance
+01.prd
+02.ard
+03.adr
+04.specs
+05.plans
+06.tasks
+07.guides
+08.operations
+09.runbooks
+10.incidents
+90.references
+99.templates
+```
+
+새 stage 번호나 임시 top-level 폴더를 추가하지 않습니다. 임시 초안은 사용자 지시가 있을 때만 별도 scratch 영역에서 다루고, 활성 문서는 반드시 위 taxonomy 안으로 이동해야 합니다.
 
 ## 작성 원칙
 
@@ -34,6 +56,7 @@
 4. **Markdown 표준**: 모든 문서는 상대 경로를 사용하며 Markdown 형식을 준수합니다. (절대 경로 및 `file://` 사용 금지)
 5. **명확한 위치 설정**: 결정 사항은 ADR에, 상세 설계는 Spec에, 작업 절차는 Runbook에 기록하여 파편화를 방지합니다.
 6. **정식 경로 강제**: 활성 stage 문서는 반드시 `docs/01`~`docs/10`, `docs/90`, `docs/99` 체계 안에 둡니다. `docs/superpowers/` 같은 비표준 경로에는 활성 Spec/Plan을 두지 않습니다.
+7. **거버넌스 분리**: `00.agent-governance`는 Agent runtime과 workspace policy를 관리하며, PRD/ARD/ADR/Spec/Plan 같은 제품 산출물 stage를 대체하지 않습니다.
 
 ## 문서 유형-템플릿 매핑
 
@@ -65,9 +88,29 @@
 - 권장되는 파일명 명명 규칙 및 하위 구조
 - 참조할 표준 템플릿 링크
 
+## 문서 계약 검증
+
+문서 체계와 repository contract는 다음 검증으로 유지합니다.
+
+- `bash scripts/check-repo-contracts.sh`
+  - 허용된 docs 최상위 폴더 목록
+  - 각 허용 폴더의 required README
+  - `docs/99.templates/` template inventory
+  - GitHub Actions YAML parse 및 duplicate job/step 검증
+  - 직접 작성한 workflow action step의 `name` 누락 검증
+  - script reference integrity
+  - Docker image tag policy와 tech-stack version drift
+  - Agent runtime catalog 동기화
+- `bash scripts/check-doc-traceability.sh`
+  - `05.plans` ↔ `08.operations` ↔ `09.runbooks` 추적성 동기화
+
 ---
 
 ## 디렉터리 상세 역할
+
+### [00.agent-governance](00.agent-governance/README.md)
+
+AI Agent 실행 정책, provider 계약, scope, rule, runtime catalog, repository governance 기준
 
 ### [01.prd](01.prd/README.md)
 
@@ -120,7 +163,11 @@ stage 문서 작성을 위한 표준 템플릿
 ## Related Documents
 
 - [00.agent-governance/README.md](00.agent-governance/README.md)
+- [00.agent-governance/rules/github-governance.md](00.agent-governance/rules/github-governance.md)
+- [00.agent-governance/rules/git-workflow.md](00.agent-governance/rules/git-workflow.md)
 - [04.specs/README.md](04.specs/README.md)
 - [05.plans/README.md](05.plans/README.md)
 - [90.references/README.md](90.references/README.md)
+- [90.references/docker/README.md](90.references/docker/README.md)
 - [99.templates/README.md](99.templates/README.md)
+- [../scripts/README.md](../scripts/README.md)
