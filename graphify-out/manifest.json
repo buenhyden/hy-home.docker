@@ -1852,8 +1852,8 @@
     "hash": "990f6e90b805e342dccb5519fb12998f"
   },
   "/home/hy/project-infra/hy-home.docker/scripts/README.md": {
-    "mtime": 1778269783.004354,
-    "hash": "ee59948fb7432088b3b3f847251b4063"
+    "mtime": 1778273944.4707973,
+    "hash": "780f623f36c38b806b686daf4d5eecde"
   },
   "/home/hy/project-infra/hy-home.docker/projects/README.md": {
     "mtime": 1771840597.9449992,
@@ -2643,6 +2643,10 @@
     "mtime": 1774682476.6644268,
     "hash": "45f564e87b87a1bcdf7f42b441e3d9c3"
   },
+  "/home/hy/project-infra/hy-home.docker/docs/08.operations/11-laboratory/open-notebook.md": {
+    "mtime": 1778274090.9997392,
+    "hash": "8b36e9995f8b0b55ed050276257eee07"
+  },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/11-laboratory/portainer.md": {
     "mtime": 1774496742.5694258,
     "hash": "8a5c159b288854e2043dac7bc7af670f"
@@ -2656,8 +2660,8 @@
     "hash": "9087fba3c14ec94ddd85b9ccecf5a9f6"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/11-laboratory/README.md": {
-    "mtime": 1774682726.779133,
-    "hash": "0993659c4ca976714575fe05e95995e4"
+    "mtime": 1778274091.395739,
+    "hash": "f73fdd0ba4fc998d6e923dbd8ce0e1f7"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/11-laboratory/redisinsight.md": {
     "mtime": 1774496841.8638825,
@@ -3203,6 +3207,10 @@
     "mtime": 1774682476.6644268,
     "hash": "3fb428e7ade71c53272544685b541dc9"
   },
+  "/home/hy/project-infra/hy-home.docker/docs/07.guides/11-laboratory/open-notebook.md": {
+    "mtime": 1778274090.9381392,
+    "hash": "7a0aefdc22506879009347c789c0f006"
+  },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/11-laboratory/portainer.md": {
     "mtime": 1774502600.7042677,
     "hash": "1330b3f8f89a4ef4ec45b3f4e8816b35"
@@ -3216,8 +3224,8 @@
     "hash": "22386da4d5e9540944d0543245b1fb83"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/11-laboratory/README.md": {
-    "mtime": 1774682701.7134583,
-    "hash": "8db818a09954cf8d942621e2af0d8c11"
+    "mtime": 1778274091.2241392,
+    "hash": "c90fbdd7c6037f1f01344528351813c3"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/11-laboratory/redisinsight.md": {
     "mtime": 1774502600.7042677,
@@ -3655,6 +3663,10 @@
     "mtime": 1774682476.6644268,
     "hash": "678cdde6740a468e31d741f2b9cac9f2"
   },
+  "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/11-laboratory/open-notebook.md": {
+    "mtime": 1778274091.0569391,
+    "hash": "9d05d591dcaaf5c604327a8c6a7509cb"
+  },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/11-laboratory/portainer.md": {
     "mtime": 1774502600.7042677,
     "hash": "f22f85b5afe3069422a0202e8eb2695a"
@@ -3668,8 +3680,8 @@
     "hash": "e32726d5c5ac1c3837aea0ba9c97fb78"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/11-laboratory/README.md": {
-    "mtime": 1774682753.2608075,
-    "hash": "d4254c29673480b0abda82a31668cc93"
+    "mtime": 1778274091.5761392,
+    "hash": "764c506eeb28b4b7aaa4bca7c5dea03e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/11-laboratory/redisinsight.md": {
     "mtime": 1774496844.7544696,
@@ -3924,8 +3936,8 @@
     "hash": "73875d4d1c4a2766ec5bddd18c59c344"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/providers/codex.md": {
-    "mtime": 1778263025.6571157,
-    "hash": "53baa5103f276675ea6f07bed719ac7f"
+    "mtime": 1778274114.907382,
+    "hash": "ca99ba654b2315f107cc87f3cfbfca73"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/providers/claude.md": {
     "mtime": 1775816304.375158,
@@ -4008,8 +4020,8 @@
     "hash": "bacd67bbde4c225c7ef730ea273fda64"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/docker-doc-contract-backlog.md": {
-    "mtime": 1778261032.1311605,
-    "hash": "2128d927c207b95e847ea1fa2bb84464"
+    "mtime": 1778274115.039382,
+    "hash": "be72309b34740e4d81f4b3376d1a7b1d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/README.md": {
     "mtime": 1774506239.7692509,
