@@ -1228,8 +1228,8 @@
     "hash": "69fa3d47e1aee8acf237201b21e48873"
   },
   "/home/hy/project-infra/hy-home.docker/infra/README.md": {
-    "mtime": 1774407024.5164516,
-    "hash": "8eaba98ea216b4dce04f67dd3580ddf5"
+    "mtime": 1778260858.9279397,
+    "hash": "5f0381c544851511abaa856b91193eb5"
   },
   "/home/hy/project-infra/hy-home.docker/infra/common-optimizations.yml": {
     "mtime": 1775199604.3660989,
@@ -1848,8 +1848,8 @@
     "hash": "990f6e90b805e342dccb5519fb12998f"
   },
   "/home/hy/project-infra/hy-home.docker/scripts/README.md": {
-    "mtime": 1774849642.835811,
-    "hash": "c89e053892ce39f403383d625d452c35"
+    "mtime": 1778261156.5146132,
+    "hash": "0c95b5076069b41dffc515c8ffac7a2b"
   },
   "/home/hy/project-infra/hy-home.docker/projects/README.md": {
     "mtime": 1771840597.9449992,
@@ -2272,8 +2272,8 @@
     "hash": "76a17e1130029696b855bfe8e094d474"
   },
   "/home/hy/project-infra/hy-home.docker/docs/README.md": {
-    "mtime": 1776650224.8291574,
-    "hash": "b82f8ad08548d5561fefb86a70bb9c57"
+    "mtime": 1778260824.5055885,
+    "hash": "6db434240c665961b419806683637dbd"
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.ard/0010-communication-architecture.md": {
     "mtime": 1774502600.7081194,
@@ -3380,8 +3380,20 @@
     "hash": "c6e4964574b43807d723c8899d0473ea"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/README.md": {
-    "mtime": 1774355639.6025043,
-    "hash": "dd9d09e82afd6b78bac21c1967ce9fe5"
+    "mtime": 1778260824.6331885,
+    "hash": "82addef41d70346ffa8d5e82e7570399"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/90.references/learning/roadmap-v1.md": {
+    "mtime": 1778260776.0194538,
+    "hash": "c0b3c06c1435629600851ef30d737fca"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/90.references/learning/README.md": {
+    "mtime": 1778260775.5354538,
+    "hash": "0d1ed935ee3bce31a52f81237158af8d"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/90.references/learning/roadmap.md": {
+    "mtime": 1778260875.71834,
+    "hash": "c3a9131ab5d562be7df7ef5f140d13eb"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/0012-standardize-infra-net.md": {
     "mtime": 1775028101.004518,
@@ -3707,18 +3719,6 @@
     "mtime": 1774659961.1848245,
     "hash": "2d5f8ee9f935859b07cf011c325b83eb"
   },
-  "/home/hy/project-infra/hy-home.docker/docs/50.learning/roadmap-v1.md": {
-    "mtime": 1774872156.0908039,
-    "hash": "4a390984c6b5ecd8145c7b4745ff27dc"
-  },
-  "/home/hy/project-infra/hy-home.docker/docs/50.learning/README.md": {
-    "mtime": 1775086032.8475544,
-    "hash": "686381166a9924062b5dd65850736b9a"
-  },
-  "/home/hy/project-infra/hy-home.docker/docs/50.learning/roadmap.md": {
-    "mtime": 1775086032.8475544,
-    "hash": "b71765476fb64486b9558ef5d92bf752"
-  },
   "/home/hy/project-infra/hy-home.docker/docs/10.incidents/README.md": {
     "mtime": 1774355639.563545,
     "hash": "90d9021ebccad389adb9ca7f5e93377f"
@@ -3999,6 +3999,10 @@
     "mtime": 1776034409.7169633,
     "hash": "bacd67bbde4c225c7ef730ea273fda64"
   },
+  "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/docker-doc-contract-backlog.md": {
+    "mtime": 1778261032.1311605,
+    "hash": "2128d927c207b95e847ea1fa2bb84464"
+  },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/README.md": {
     "mtime": 1774506239.7692509,
     "hash": "d92a3b6947fe2a818bf4c20126525a51"
@@ -4176,8 +4180,8 @@
     "hash": "784b76c7226cac27f847b186acca7664"
   },
   "/home/hy/project-infra/hy-home.docker/secrets/README.md": {
-    "mtime": 1774336255.199036,
-    "hash": "3b3cc21013c2e75741401c82d93bd331"
+    "mtime": 1778261535.6553516,
+    "hash": "a2e46b279f692d989e6759c77e59ff68"
   },
   "/home/hy/project-infra/hy-home.docker/secrets/security/unseal_keys.txt": {
     "mtime": 1774255581.5606918,
