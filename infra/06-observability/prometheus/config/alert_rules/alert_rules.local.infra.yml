@@ -17,7 +17,7 @@ groups:
         annotations:
           summary: 'CPU 과부하 지속: {{ $labels.name }}'
           description: "{{ $labels.name }} 컨테이너가 CPU 90% 이상을 점유 중입니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/container-high-cpu.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'
 
       # [What] High Memory Usage / 메모리 사용률 높음
       - alert: ContainerHighMemoryUsage
@@ -31,7 +31,7 @@ groups:
         annotations:
           summary: '메모리 사용량 높음: {{ $labels.name }}'
           description: "{{ $labels.name }} 컨테이너가 메모리 리밋의 90% 이상을 사용 중입니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/container-high-memory.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'
 
       # [What] Container Memory Critical / 메모리 위험 수준
       - alert: ContainerMemoryCritical
@@ -45,7 +45,7 @@ groups:
         annotations:
           summary: '메모리 부족 임박: {{ $labels.name }}'
           description: "{{ $labels.name }} 컨테이너가 메모리 리밋의 95% 이상을 사용 중입니다. OOM 위험이 있습니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/container-memory-critical.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'
 
       # [What] Container Volume Usage High / 볼륨 사용량 높음
       - alert: ContainerVolumeUsage
@@ -58,7 +58,7 @@ groups:
         annotations:
           summary: '컨테이너 볼륨 사용량 높음: {{ $labels.instance }}'
           description: "컨테이너 볼륨 사용량이 80%를 초과했습니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/container-volume.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'
 
       # [What] Container CPU Throttled / CPU 쓰로틀링
       - alert: ContainerHighThrottleRate
@@ -73,7 +73,7 @@ groups:
         annotations:
           summary: '컨테이너 CPU 쓰로틀링: {{ $labels.container }}'
           description: "컨테이너가 25% 이상 CPU 쓰로틀링되고 있습니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/container-throttling.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'
 
   # ============================================================================
   # [2] n8n Automation
@@ -90,7 +90,7 @@ groups:
         annotations:
           summary: 'n8n 워크플로우 실패 감지'
           description: 'workflow_id={{ $labels.workflow_id }} 실행 중 에러가 발생했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/n8n-workflow-failed.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'
 
       - alert: N8nLeaderMissing
         expr: max(n8n_instance_role_leader) < 1
@@ -101,4 +101,4 @@ groups:
         annotations:
           summary: 'n8n 리더 인스턴스 없음'
           description: 'n8n 리더가 감지되지 않습니다. (HA 구성/리더 선출/메트릭 노출 상태를 확인하세요.)'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/n8n-leader-missing.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'

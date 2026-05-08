@@ -74,4 +74,4 @@
 - **ADR**: [0007-airflow-n8n-hybrid-workflow.md](../../03.adr/0007-airflow-n8n-hybrid-workflow.md)
 - **Spec**: [07-workflow/spec.md](../../04.specs/07-workflow/spec.md)
 - **Runbook**: [airbyte.md](../../09.runbooks/07-workflow/airbyte.md)
-- **Postmortem**: [Postmortems README](../../11.postmortems/README.md)
+- **Postmortem**: [Postmortems README](../../10.incidents/README.md)

@@ -29,7 +29,7 @@
 - 실시간 장애 복구 단계 (Runbook 담당)
 - 일반적인 사용자 사용법 (Guide 담당)
 - 상세 설계 명세 (Spec 담당)
-- 특정 사고의 사후 분석 (Postmortem 담당)
+- 특정 사고의 실행 절차 (Runbook 담당)
 
 ## Structure
 
@@ -74,4 +74,4 @@ docs/08.operations/
 - **ARD**: [../02.ard/README.md]
 - **Plan**: [../05.plans/README.md]
 - **Runbook**: [../09.runbooks/README.md]
-- **Postmortem**: [../11.postmortems/README.md]
+- **Incident / Postmortem**: [../10.incidents/README.md]

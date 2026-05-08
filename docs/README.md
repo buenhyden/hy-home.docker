@@ -14,7 +14,7 @@
 
 기본적인 문서 작업 흐름은 다음과 같습니다.
 
-`01.prd → 02.ard → 03.adr → 04.specs → 05.plans → 06.tasks → 07.guides / 08.operations / 09.runbooks → 10.incidents → 11.postmortems`
+`01.prd → 02.ard → 03.adr → 04.specs → 05.plans → 06.tasks → 07.guides / 08.operations / 09.runbooks → 10.incidents`
 
 도움이 되는 보조 문서는 다음과 같습니다.
 
@@ -33,7 +33,7 @@
    - 내부적인 사고(Thinking)나 기술적 분석은 영어를 사용할 수 있으나, 최종 결과물은 한국어여야 합니다.
 4. **Markdown 표준**: 모든 문서는 상대 경로를 사용하며 Markdown 형식을 준수합니다. (절대 경로 및 `file://` 사용 금지)
 5. **명확한 위치 설정**: 결정 사항은 ADR에, 상세 설계는 Spec에, 작업 절차는 Runbook에 기록하여 파편화를 방지합니다.
-6. **정식 경로 강제**: 활성 stage 문서는 반드시 `docs/01`~`docs/11`, `docs/90`, `docs/99` 체계 안에 둡니다. `docs/superpowers/` 같은 비표준 경로에는 활성 Spec/Plan을 두지 않습니다.
+6. **정식 경로 강제**: 활성 stage 문서는 반드시 `docs/01`~`docs/10`, `docs/90`, `docs/99` 체계 안에 둡니다. `docs/superpowers/` 같은 비표준 경로에는 활성 Spec/Plan을 두지 않습니다.
 
 ## 문서 유형-템플릿 매핑
 
@@ -51,7 +51,7 @@
 | Operation | `08.operations/` | `99.templates/operation.template.md` |
 | Runbook | `09.runbooks/` | `99.templates/runbook.template.md` |
 | Incident | `10.incidents/` | `99.templates/incident.template.md` |
-| Postmortem | `11.postmortems/` | `99.templates/postmortem.template.md` |
+| Postmortem | `10.incidents/` | `99.templates/postmortem.template.md` |
 | Reference | `90.references/` | `99.templates/reference.template.md` |
 | README | 각 폴더 | `99.templates/readme.template.md` |
 
@@ -107,11 +107,7 @@
 
 ### [10.incidents](10.incidents/README.md)
 
-발생한 사고의 사실 기록 (Timeline, Mitigation)
-
-### [11.postmortems](11.postmortems/README.md)
-
-사고 구조 분석 및 재발 방지 대책
+발생한 사고의 사실 기록, 사후 분석, 재발 방지 대책
 
 ### [90.references](90.references/README.md)
 

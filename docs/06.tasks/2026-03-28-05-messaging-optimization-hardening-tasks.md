@@ -19,7 +19,7 @@
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-MSG-001 | Kafka UI 이미지 태그 고정 | impl | 05-messaging/spec.md / Contracts | PLN-MSG-001 | `rg 'kafka-ui:main' infra/05-messaging/kafka` 미검출 | DevOps | Done |
+| T-MSG-001 | Kafka UI 이미지 태그 고정 | impl | 05-messaging/spec.md / Contracts | PLN-MSG-001 | `rg 'kafbat/kafka-ui:v1.4.2' infra/05-messaging/kafka` 확인 | DevOps | Done |
 | T-MSG-002 | Kafka 관리 라우터 gateway chain 적용 | impl | 05-messaging/spec.md / Core Design | PLN-MSG-001 | 라벨 문자열 확인 | DevOps | Done |
 | T-MSG-003 | Kafka dev compose 볼륨 경로 정합성 보강 | impl | 05-messaging/spec.md / Contracts | PLN-MSG-002 | dev compose config 통과 | DevOps | Done |
 | T-MSG-004 | Kafka dev 라우터 chain+SSO 적용 | impl | 05-messaging/spec.md / Core Design | PLN-MSG-002 | 라벨 문자열 확인 | DevOps | Done |

@@ -61,4 +61,4 @@ This document defines the operational policy for `postgresql-cluster`. It establ
 - **Guide**: `docs/07.guides/04-data/relational/postgresql-cluster.md`
 - **Runbook**: `docs/09.runbooks/04-data/relational/postgresql-cluster.md`
 - **Infra**: `infra/04-data/relational/postgresql-cluster/README.md`
-- **Postmortem**: `docs/11.postmortems/`
+- **Postmortem**: `docs/10.incidents/`

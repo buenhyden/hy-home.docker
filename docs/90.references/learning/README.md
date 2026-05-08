@@ -19,8 +19,7 @@
 
 ## 참고 문서 (References)
 
-심층 학습을 위해 다음 경로의 이론 가이드를 참조하십시오.
-(참조: `.agent/skills/self-learning-guide/references/`)
+심층 학습 주제는 이 디렉터리의 로드맵 문서에서 관리합니다.
 
 - 네트워크 이론 (L4/L7, DNS, ACME)
 - OS 및 가상화 (Namespace, Cgroup)

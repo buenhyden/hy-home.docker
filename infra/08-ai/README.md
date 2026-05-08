@@ -49,7 +49,7 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| Inference | Ollama | v0.18.2 (CUDA enabled) |
+| Inference | Ollama | v0.20.0 (CUDA enabled) |
 | Interface | Open WebUI | v0.8.5-cuda |
 | Acceleration | NVIDIA CUDA | Requires NVIDIA Container Toolkit |
 | Vector DB | Qdrant | External dependency in `04-data` |

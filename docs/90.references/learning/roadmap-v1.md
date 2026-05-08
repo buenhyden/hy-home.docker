@@ -90,15 +90,15 @@ Verified learning through coding.
 - **[HNSW Paper]**: [https://arxiv.org/abs/1603.09320](https://arxiv.org/abs/1603.09320) - Algorithmic basis for Qdrant's high-performance search.
 - **[OIDC Specs]**: [https://openid.net/developers/specs/](https://openid.net/developers/specs/) - Standard foundation for Keycloak security.
 
-## 🪜 Deep-Dive Links (References)
+## 🪜 Deep-Dive Topics
 
-- [01-network/theory.md](../../../.agent/skills/self-learning-guide/references/01-network/theory.md): Routing/DNS patterns
-- [02-os-virtualization/theory.md](../../../.agent/skills/self-learning-guide/references/02-os-virtualization/theory.md): Kernel isolation
-- [03-data-management/theory.md](../../../.agent/skills/self-learning-guide/references/03-data-management/theory.md): CAP/ACID/Distributed Transactions
-- [04-security-identity/theory.md](../../../.agent/skills/self-learning-guide/references/04-security-identity/theory.md): Cryptography/Vaults/RBAC
-- [05-observability/theory.md](../../../.agent/skills/self-learning-guide/references/05-observability/theory.md): Golden Signals/OpenTelemetry
-- [06-ai-infrastructure/theory.md](../../../.agent/skills/self-learning-guide/references/06-ai-infrastructure/theory.md): Vector Search/RAG
-- [07-distributed-messaging/theory.md](../../../.agent/skills/self-learning-guide/references/07-distributed-messaging/theory.md): EDA/Saga/At-Least-Once Delivery
+- Routing/DNS patterns
+- Kernel isolation
+- CAP/ACID/Distributed Transactions
+- Cryptography/Vaults/RBAC
+- Golden Signals/OpenTelemetry
+- Vector Search/RAG
+- EDA/Saga/At-Least-Once Delivery
 
 ## Related Documents
 

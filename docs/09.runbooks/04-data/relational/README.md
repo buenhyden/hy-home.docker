@@ -40,7 +40,7 @@ relational/
 ## How to Work in This Area
 
 1. 장애 복구 시 [Operational Policy](../../../../docs/08.operations/04-data/relational/postgresql-cluster.md)를 먼저 확인하여 통제 및 승인 기준을 준수합니다.
-2. 모든 실행 결과는 [Incident/Postmortem](../../../../docs/11.postmortems/README.md) 문서화를 통해 학습 자산으로 남깁니다.
+2. 모든 실행 결과는 [Incident/Postmortem](../../../10.incidents/README.md) 문서화를 통해 학습 자산으로 남깁니다.
 3. 새로운 실행 지침 추가 시 `docs/99.templates/runbook.template.md`를 사용합니다.
 
 ## Usage Instructions

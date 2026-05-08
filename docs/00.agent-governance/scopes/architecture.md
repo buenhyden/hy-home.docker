@@ -16,7 +16,7 @@ title: 'Architecture Strategy Scope'
 ## 2. Requirements & Constraints
 
 - **Boundaries**: Strictly define service boundaries in `04.specs/` to prevent "Big Ball of Mud" anti-patterns.
-- **Taxonomy**: Adhere to the `01.prd - 11.postmortems` lifecycle stage-gates.
+- **Taxonomy**: Adhere to the `01.prd - 10.incidents` lifecycle stage-gates, plus `90.references` and `99.templates`.
 - **Communication Protocol**:
   - **Internal**: Use **gRPC** for synchronous service-to-service calls where performance is critical.
   - **External**: REST or GraphQL via the Gateway layer.

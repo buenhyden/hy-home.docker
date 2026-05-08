@@ -41,7 +41,7 @@ pyroscope/
 | Category | Technology | Version | Role |
 | :--- | :--- | :--- | :--- |
 | Profiling | [Grafana Pyroscope](https://github.com/grafana/pyroscope) | v1.18.1 | Continuous Profiling Engine |
-| Collector | [Grafana Alloy](../alloy/README.md) | v1.6.1 | Profile Scraping & Remapping |
+| Collector | [Grafana Alloy](../alloy/README.md) | v1.13.1 | Profile Scraping & Remapping |
 | Visualization | [Grafana](../grafana/README.md) | v12.3.3 | Unified Dashboards |
 
 ## Available Scripts

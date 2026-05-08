@@ -20,7 +20,7 @@ groups:
         annotations:
           summary: Prometheus job missing (instance {{ $labels.instance }})
           description: "프로메테우스 잡이 사라졌습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/prometheus-job-missing.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'
 
       # [What] All Targets Missing / 모든 타겟 다운
       - alert: PrometheusAllTargetsMissing
@@ -33,7 +33,7 @@ groups:
         annotations:
           summary: Prometheus all targets missing (job {{ $labels.job }})
           description: "프로메테우스 잡에 활성 타겟이 없습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/prometheus-all-targets-missing.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'
 
       # [What] Infra Targets Missing (Optional Tier) / 인프라 잡 타겟 다운(옵션)
       - alert: PrometheusInfraTargetsMissing
@@ -73,7 +73,7 @@ groups:
         annotations:
           summary: Prometheus not connected to alertmanager (instance {{ $labels.instance }})
           description: "프로메테우스가 얼럿매니저에 연결할 수 없습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/prometheus-alertmanager-connection.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'
 
       # [What] Prometheus Too Many Restarts / 프로메테우스 과다 재시작
       - alert: PrometheusTooManyRestarts

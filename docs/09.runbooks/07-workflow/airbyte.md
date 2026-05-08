@@ -105,4 +105,4 @@
 - **Guide**: [airbyte.md](../../07.guides/07-workflow/airbyte.md)
 - **Operation**: [airbyte.md](../../08.operations/07-workflow/airbyte.md)
 - **Incident examples**: [Incidents README](../../10.incidents/README.md)
-- **Postmortem examples**: [Postmortems README](../../11.postmortems/README.md)
+- **Postmortem examples**: [Postmortems README](../../10.incidents/README.md)

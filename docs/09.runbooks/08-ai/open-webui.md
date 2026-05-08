@@ -123,4 +123,4 @@ docker restart open-webui
 - **Operations Policy**: `[../../08.operations/08-ai/open-webui.md]`
 - **Guide**: `[../../07.guides/08-ai/open-webui.md]`
 - **Incident examples**: `[../../10.incidents/README.md]`
-- **Postmortem examples**: `[../../11.postmortems/README.md]`
+- **Postmortem examples**: `[../../10.incidents/README.md]`

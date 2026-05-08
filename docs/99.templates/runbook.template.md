@@ -14,7 +14,7 @@ status: draft
 > - This document exists for immediate execution.
 > - This document is not a policy definition.
 > - This document is not a tutorial-first guide.
-> - If the main purpose is analysis after the event, write a Postmortem instead.
+> - If the main purpose is analysis after the event, write a Postmortem under `docs/10.incidents/` instead.
 
 ---
 
@@ -76,4 +76,4 @@ status: draft
 ## Related Operational Documents
 
 - **Incident examples**: `[../10.incidents/YYYY/YYYY-MM-DD-<incident-title>.md]`
-- **Postmortem examples**: `[../11.postmortems/YYYY/YYYY-MM-DD-<incident-title>.md]`
+- **Postmortem examples**: `[../10.incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md]`

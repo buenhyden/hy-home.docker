@@ -49,8 +49,8 @@ The `07-workflow` tier provides the infrastructure for automating repetitive tas
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Orchestration | Apache Airflow              | v2.10.3 (CeleryExecutor)  |
-| Automation  | n8n                          | v1.64.3                   |
+| Orchestration | Apache Airflow              | v3.1.8 (CeleryExecutor)   |
+| Automation  | n8n                          | v2.15.0-local             |
 | Broker      | Valkey                       | Dedicated for Celery      |
 | Database    | PostgreSQL                   | Management Cluster        |
 

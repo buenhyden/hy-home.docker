@@ -19,7 +19,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 - Keep `docs/00.agent-governance/` English-only.
 - Keep human-facing docs in Korean unless interoperability requires English terms.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user approval.
-- Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/11`, `docs/90`, `docs/99`).
+- Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/10`, `docs/90`, `docs/99`).
 - Non-stage `docs/*` paths such as `docs/superpowers/` must not contain active specs or plans.
 
 ## 3. Document Type ↔ Template Mapping
@@ -38,7 +38,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 | `docs/08.operations/` | Operation | `docs/99.templates/operation.template.md` |
 | `docs/09.runbooks/` | Runbook | `docs/99.templates/runbook.template.md` |
 | `docs/10.incidents/` | Incident | `docs/99.templates/incident.template.md` |
-| `docs/11.postmortems/` | Postmortem | `docs/99.templates/postmortem.template.md` |
+| `docs/10.incidents/` | Postmortem | `docs/99.templates/postmortem.template.md` |
 | `docs/90.references/` | Reference | `docs/99.templates/reference.template.md` |
 | `README.md` (per folder) | README | `docs/99.templates/readme.template.md` |
 

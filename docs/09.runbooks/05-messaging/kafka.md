@@ -83,4 +83,4 @@
 ## Related Operational Documents
 
 - **Incident examples**: `[../../10.incidents/2026/2026-03-26-kafka-quorum-loss.md]` (예시)
-- **Postmortem examples**: `[../../11.postmortems/2026/2026-03-26-kafka-balancing-failure.md]` (예시)
+- **Postmortem examples**: `[../../10.incidents/2026/2026-03-26-kafka-balancing-failure-postmortem.md]` (예시)

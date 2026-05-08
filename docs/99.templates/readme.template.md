@@ -11,9 +11,9 @@ status: draft
 ## Selection Guide
 - Repository Root (`/`) -> `Base Structure` + `Root Snippet`
 - Implementation Layer (`web/`, `server/`, `app/`, `packages/`, `gitops/`, `infra/`, `infrastructure/`) -> `Base Structure` + `Implementation Snippet`
-- Documentation & Governance (`docs/`, `docs/99.templates/`, `.agent/`) -> `Base Structure` + `Docs & Governance Snippet`
+- Documentation & Governance (`docs/`, `docs/99.templates/`, `docs/00.agent-governance/`) -> `Base Structure` + `Docs & Governance Snippet`
 - Operations & Procedures (`docs/08.operations/`, `docs/09.runbooks/`, `scripts/`) -> `Base Structure` + `Ops & Utils Snippet`
-- Incident Learning (`docs/10.incidents/`, `docs/11.postmortems/`) -> `Base Structure` + `Incident / Postmortem Snippet`
+- Incident Learning (`docs/10.incidents/`) -> `Base Structure` + `Incident / Postmortem Snippet`
 
 ## docs 디렉터리 상세 역할
 - [01.prd](01.prd/README.md): 제품 요구사항 정의 (Vision, Use Case, Requirements)
@@ -24,8 +24,7 @@ status: draft
 - [06.tasks](06.tasks/README.md): 실제 구현 및 검증 작업 단위 (Task Table, Evidence)
 - [08.operations](08.operations/README.md): 시스템 운영 정책 및 거버넌스
 - [09.runbooks](09.runbooks/README.md): 반복적 운영 작업의 실행 지침 (Step-by-step)
-- [10.incidents](10.incidents/README.md): 발생한 사고의 사실 기록 (Timeline, Mitigation)
-- [11.postmortems](11.postmortems/README.md): 사고 구조 분석 및 재발 방지 대책
+- [10.incidents](10.incidents/README.md): 발생한 사고의 사실 기록, 사고 구조 분석, 재발 방지 대책
 
 ## Assembly Rules
 1. 아래의 `Base Structure`를 먼저 복사한다.
@@ -111,7 +110,7 @@ SNIPPET: ROOT
 - `docs/` - 공식 문서 체계, 요구사항, 아키텍처, 스펙, 운영 지식
 - `{implementation-dir}/` - 구현 코드와 런타임 구성
 - `{ops-dir}/` - 운영 자산, 스크립트, 절차
-- `.agent/` - 에이전트 규칙, 워크플로, 실행 가이드
+- `docs/00.agent-governance/` - 에이전트 규칙, 워크플로, 실행 가이드
 
 ## Tech Stack
 

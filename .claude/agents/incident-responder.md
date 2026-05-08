@@ -100,7 +100,7 @@ For SEV1/SEV2, add impact assessment to the incident record:
 - **Input**: incident trigger + severity + affected services + time window.
 - **Output**:
   - `docs/10.incidents/<id>.md` (live incident record).
-  - `docs/11.postmortems/<id>.md` (postmortem, SEV1/2 mandatory).
+  - `docs/10.incidents/<id>-postmortem.md` (postmortem, SEV1/2 mandatory).
   - `_workspace/incident_timeline_<id>.md` (working notes).
 - **On completion**: run postflight-checklist §3 Documentation Gate (R1/R2/R3).
 
@@ -112,7 +112,7 @@ For SEV1/SEV2, add impact assessment to the incident record:
 ## Collaboration
 
 - Reads from: `security-auditor` findings, Grafana dashboards, Loki logs.
-- Writes to: `docs/10.incidents/`, `docs/11.postmortems/`, `docs/09.runbooks/`.
+- Writes to: `docs/10.incidents/`, `docs/09.runbooks/`.
 - Escalates to: user for SEV1 active incidents requiring live infra changes.
 
 ## Related Documents
@@ -120,5 +120,5 @@ For SEV1/SEV2, add impact assessment to the incident record:
 - `docs/00.agent-governance/scopes/ops.md`
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
-- `docs/09.runbooks/` · `docs/10.incidents/` · `docs/11.postmortems/`
+- `docs/09.runbooks/` · `docs/10.incidents/`
 - `.claude/skills/incident-response/skill.md`

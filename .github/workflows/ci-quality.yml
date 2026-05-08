@@ -29,6 +29,17 @@ jobs:
       - name: Check docs traceability sync
         run: bash scripts/check-doc-traceability.sh
 
+  # ── Repository Contract Validation ──────────────────────
+  repo-contracts:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - *checkout
+      - name: Check repository contracts
+        run: bash scripts/check-repo-contracts.sh
+
   # ── Compose Contract Validation ───────────────────────────────
   compose-validation:
     permissions:

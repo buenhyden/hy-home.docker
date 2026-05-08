@@ -2,7 +2,7 @@
 layer: agentic
 ---
 
-# Stage Authoring Matrix (00-11)
+# Stage Authoring Matrix (00-10, 90, 99)
 
 Single source of truth for stage-level authoring expectations.
 
@@ -20,8 +20,7 @@ Single source of truth for stage-level authoring expectations.
 | 07 | Human guides | After capability is implemented or changed | Documentation Specialist | Specs, Plans, Tasks, Operations context | Guide docs | `docs/99.templates/guide.template.md` | Steps are reproducible and linked to authoritative sources |
 | 08 | Operations policy | When operational controls or standards change | Operations/SRE Engineer | Specs, ADRs, compliance constraints | Operations docs | `docs/99.templates/operation.template.md` | Policy is enforceable, scoped, and linked to runbooks |
 | 09 | Runbook procedures | When repeatable operational execution is required | Operations/SRE Engineer | Operations policy, system behavior | Runbook docs | `docs/99.templates/runbook.template.md` | Procedure is executable with validation and rollback paths |
-| 10 | Incident records | During/after incidents | Operations/SRE Engineer | Monitoring evidence, runbook execution logs | Incident docs | `docs/99.templates/incident.template.md` | Timeline, impact, and mitigation are recorded with evidence links |
-| 11 | Postmortems | After incident stabilization | Operations/SRE Engineer / Security Auditor | Incident records, root-cause analysis data | Postmortem docs | `docs/99.templates/postmortem.template.md` | Root cause and prevention actions are complete and assigned |
+| 10 | Incident records and postmortems | During/after incidents and after stabilization | Operations/SRE Engineer / Security Auditor | Monitoring evidence, runbook execution logs, root-cause analysis data | Incident and postmortem docs | `docs/99.templates/incident.template.md`, `docs/99.templates/postmortem.template.md` | Timeline, impact, mitigation, root cause, and prevention actions are complete and assigned |
 
 ## 2. Appendix: Supporting Stages
 

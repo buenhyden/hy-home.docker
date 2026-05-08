@@ -13,7 +13,7 @@ groups:
         annotations:
           summary: 'HAProxy 다운'
           description: '로드밸런서(HAProxy)가 응답하지 않습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/haproxy-down.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'
 
       - alert: HAProxyBackendConnectionErrors
         expr: sum by (proxy) (rate(haproxy_backend_connection_errors_total[1m])) >
@@ -65,7 +65,7 @@ groups:
         annotations:
           summary: 'Traefik 다운'
           description: 'Traefik 로드밸런서가 응답하지 않습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/traefik-down.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'
 
       - alert: TraefikServiceDown
         expr: max by (service) (traefik_service_server_up) == 0
@@ -100,5 +100,5 @@ groups:
         annotations:
           summary: 'Traefik 5xx 에러율 높음: {{ $labels.service }}'
           description: 'Traefik 서비스 {{ $labels.service }}의 5xx 에러율이 5%를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/docs/06-observability/runbooks/traefik-5xx-errors.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/09.runbooks/06-observability/README.md'
           dashboard_url: 'https://grafana.example.com/d/traefik'

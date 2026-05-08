@@ -83,4 +83,4 @@ docker compose up pg-cluster-init
 ## Related Operational Documents
 
 - **Incident examples**: `docs/10.incidents/`
-- **Postmortem examples**: `docs/11.postmortems/`
+- **Postmortem examples**: `docs/10.incidents/`

@@ -13,7 +13,7 @@ NC-YYYYMMDD-XXX / [Short Incident Title]
 >
 > - Record facts, status, and response state.
 > - Separate confirmed facts from current hypotheses.
-> - Do not place the final root cause analysis here; move that to the Postmortem.
+> - Keep final root cause analysis in a paired Postmortem under `docs/10.incidents/`.
 
 ---
 
@@ -74,4 +74,4 @@ NC-YYYYMMDD-XXX / [Short Incident Title]
 
 ## Postmortem Link
 
-- `[../../11.postmortems/YYYY/YYYY-MM-DD-<incident-title>.md]`
+- `[YYYY-MM-DD-<incident-title>-postmortem.md]`

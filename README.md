@@ -64,7 +64,7 @@ hy-home.docker/
 | --- | --- | --- |
 | Orchestration | Docker Compose | 루트 `include` 기반 통합 실행 |
 | Infrastructure | 계층형 Compose 스택 | `infra/01`~`infra/11` 서비스 정의 |
-| Documentation | Markdown + stage-based docs | `docs/00`~`docs/11`, `docs/90`, `docs/99` |
+| Documentation | Markdown + stage-based docs | `docs/00`~`docs/10`, `docs/90`, `docs/99` |
 | Automation | Bash scripts | 사전 점검, 검증, 하드닝, 추적성 검사 |
 | CI / Quality | GitHub Actions + pre-commit + zizmor | 문서/보안/품질 게이트 자동화 |
 

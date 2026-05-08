@@ -22,7 +22,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 
 **Excludes:**
 
-- Product, architecture, or implementation details (see `docs/01`–`docs/11`)
+- Product, architecture, or implementation details (see `docs/01`–`docs/10`, `docs/90`, `docs/99`)
 - External harness references or identifiers
 
 ## Structure

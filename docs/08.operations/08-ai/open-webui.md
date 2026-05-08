@@ -78,4 +78,4 @@ Open WebUI 서비스 운영 전반:
 - **Spec**: `[../../04.specs/08-ai/open-webui.md]`
 - **Guide**: `[../../07.guides/08-ai/open-webui.md]`
 - **Runbook**: `[../../09.runbooks/08-ai/open-webui.md]`
-- **Postmortem**: `[../../11.postmortems/README.md]`
+- **Postmortem**: `[../../10.incidents/README.md]`

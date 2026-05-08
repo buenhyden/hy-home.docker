@@ -41,7 +41,7 @@ The `01-gateway` tier is the unified entry point for all traffic entering the `h
 
 | Category   | Technology                        | Notes                     |
 | ---------- | --------------------------------- | ------------------------- |
-| Router     | Traefik v3.6.8                    | Primary dynamic router    |
+| Router     | Traefik v3.6.12                   | Primary dynamic router    |
 | Proxy      | Nginx Alpine                      | Specialized path proxy    |
 | Discovery  | Docker Provider                   | Auto-detection of pods    |
 | Security   | OAuth2 Proxy / Keycloak           | Integrated SSO provider   |

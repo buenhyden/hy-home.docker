@@ -46,7 +46,7 @@
 
 ### Tech Stack
 
-- Traefik v3.6.8
+- Traefik v3.6.12
 - Nginx Alpine
 - TLS 1.2/1.3
 

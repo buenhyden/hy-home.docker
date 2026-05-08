@@ -1,11 +1,11 @@
 ---
 status: draft
 ---
-<!-- Target: docs/11.postmortems/YYYY-MM-DD-<incident-title>.md -->
+<!-- Target: docs/10.incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md -->
 
 # Postmortem: [Incident Title]
 
-> Use this template for `docs/11.postmortems/YYYY/YYYY-MM-DD-<incident-title>.md`.
+> Use this template for `docs/10.incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md`.
 
 ---
 
@@ -21,7 +21,7 @@ status: draft
 | Incident Date | `YYYY-MM-DD` |
 | Analysis Date | `YYYY-MM-DD` |
 | Severity | `SEV-1 / SEV-2 / SEV-3` |
-| Incident Document | `[../../10.incidents/YYYY/YYYY-MM-DD-<incident-title>.md]` |
+| Incident Document | `[YYYY-MM-DD-<incident-title>.md]` |
 
 ## Agent Metadata (If Applicable)
 

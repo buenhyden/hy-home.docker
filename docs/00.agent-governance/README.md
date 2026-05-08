@@ -10,7 +10,7 @@ This directory is the canonical governance system for coding agents in this repo
 
 - Purpose: deterministic, auditable, token-efficient agent execution.
 - Entry point: root shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) route agents into this hub; Codex uses `AGENTS.md` plus `.codex/`.
-- Compliance boundary: stage-gate lifecycle in `docs/01` to `docs/11`, plus `docs/90` and `docs/99`.
+- Compliance boundary: stage-gate lifecycle in `docs/01` to `docs/10`, plus `docs/90` and `docs/99`.
 
 ## 2. Requirements and Constraints
 
@@ -49,8 +49,7 @@ This directory is the canonical governance system for coding agents in this repo
 | `[LOAD:GUIDES]`      | `docs/07.guides/README.md`      | Human-facing guidance           |
 | `[LOAD:OPS]`         | `docs/08.operations/README.md`  | Operational policy              |
 | `[LOAD:RUNBOOKS]`    | `docs/09.runbooks/README.md`    | Operational procedures          |
-| `[LOAD:INCIDENTS]`   | `docs/10.incidents/README.md`   | Incident records                |
-| `[LOAD:POSTMORTEMS]` | `docs/11.postmortems/README.md` | Lessons learned                 |
+| `[LOAD:INCIDENTS]`   | `docs/10.incidents/README.md`   | Incident records and postmortems |
 | `[LOAD:REFERENCES]`  | `docs/90.references/README.md`  | Stable references               |
 | `[LOAD:TEMPLATES]`   | `docs/99.templates/README.md`   | Document templates              |
 

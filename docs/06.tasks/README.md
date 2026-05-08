@@ -74,4 +74,4 @@ docs/06.tasks/
 - **Plan**: [../05.plans/README.md]
 - **Spec**: [../04.specs/README.md]
 - **Runbook**: [../09.runbooks/README.md]
-- **Postmortem**: [../11.postmortems/README.md]
+- **Postmortem**: [../10.incidents/README.md]

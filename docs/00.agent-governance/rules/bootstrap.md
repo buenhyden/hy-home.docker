@@ -9,7 +9,7 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 ## 1. Core Principles
 
 - Spec-anchored: implementation decisions must map to `docs/01.prd/` and `docs/04.specs/`.
-- Stage-gate discipline: use `docs/01` to `docs/11` as lifecycle SSoT.
+- Stage-gate discipline: use `docs/01` to `docs/10` as lifecycle SSoT, plus `docs/90` and `docs/99`.
 - JIT loading: load only required rules, scopes, and stage docs.
 - Deterministic routing: resolve persona and layer before mutation.
 
@@ -27,8 +27,7 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 | 07    | `docs/07.guides/`           | Human guides                       |
 | 08    | `docs/08.operations/`       | Operations policy                  |
 | 09    | `docs/09.runbooks/`         | Operational procedures             |
-| 10    | `docs/10.incidents/`        | Incident records                   |
-| 11    | `docs/11.postmortems/`      | Post-incident learning             |
+| 10    | `docs/10.incidents/`        | Incident records and postmortems   |
 | 90    | `docs/90.references/`       | Stable references                  |
 | 99    | `docs/99.templates/`        | Document templates                 |
 

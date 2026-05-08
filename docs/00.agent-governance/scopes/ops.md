@@ -30,7 +30,7 @@ title: 'Operations & SRE Scope'
 ## 4. Operational Procedures
 
 - **Incident Response**: Follow the `docs/10.incidents/` protocol for live tracking.
-- **Post-mortems**: Mandatory retrospective in `docs/11.postmortems/` for any SEV1/SEV2 incident.
+- **Post-mortems**: Mandatory retrospective in `docs/10.incidents/` for any SEV1/SEV2 incident.
 
 ## 5. Maintenance & Safety
 
@@ -42,8 +42,7 @@ title: 'Operations & SRE Scope'
 | Path Pattern              | Owner Agent          | Read-Only For                |
 | ------------------------- | -------------------- | ---------------------------- |
 | `docs/09.runbooks/`       | `incident-responder` | all other agents             |
-| `docs/10.incidents/`      | `incident-responder` | `security-auditor` (read)    |
-| `docs/11.postmortems/`    | `incident-responder` | `doc-writer` (template fill) |
+| `docs/10.incidents/`      | `incident-responder` | `security-auditor` (read), `doc-writer` (template fill) |
 | `infra/06-observability/` | `incident-responder` | read-only for others         |
 
 ## 7. Subagent Bridge

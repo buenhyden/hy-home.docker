@@ -10,7 +10,7 @@ title: 'Metadata & Taxonomy Engineering Scope'
 ## 1. Context & Objective
 
 - **Goal**: Maintain a highly organized, searchable, and AI-optimized documentation ecosystem.
-- **Standards**: Strict adherence to the `01.prd - 11.postmortems` Stage-Gate Taxonomy.
+- **Standards**: Strict adherence to the `01.prd - 10.incidents` Stage-Gate Taxonomy, plus `90.references` and `99.templates`.
 
 ## 2. Requirements & Constraints
 
@@ -20,7 +20,7 @@ title: 'Metadata & Taxonomy Engineering Scope'
 
 ## 3. Implementation Flow
 
-1. **Placement**: Determine the correct taxonomy folder (`01.prd - 11.postmortems`) for new documents.
+1. **Placement**: Determine the correct taxonomy folder (`01.prd - 10.incidents`, `90.references`, or `99.templates`) for new documents.
 2. **Template**: Use the corresponding template from `docs/99.templates/`.
 3. **Linking**: Update the parent README and any related cross-links (e.g., ADR <-> Spec).
 

@@ -9,7 +9,7 @@ Boundaries and permissions for agents interacting with repository documentation.
 ## 1. Context and Objective
 
 - Agentic hub: `docs/00.agent-governance/` (primary authority for agents).
-- Project docs: `docs/01.prd/` to `docs/11.postmortems/`, plus `docs/90.references/` and `docs/99.templates/`.
+- Project docs: `docs/01.prd/` to `docs/10.incidents/`, plus `docs/90.references/` and `docs/99.templates/`.
 - Root instructions: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`.
 
 ## 2. Operational Permissions

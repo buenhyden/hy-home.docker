@@ -125,4 +125,4 @@ docker exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 - **Operations Policy**: `[../../08.operations/08-ai/ollama.md]`
 - **Guide**: `[../../07.guides/08-ai/ollama.md]`
 - **Incident examples**: `[../../10.incidents/README.md]`
-- **Postmortem examples**: `[../../11.postmortems/README.md]`
+- **Postmortem examples**: `[../../10.incidents/README.md]`

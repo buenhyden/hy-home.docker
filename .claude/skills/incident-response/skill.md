@@ -81,7 +81,7 @@ Confirm the service returns to the workspace SLO baseline.
 
 ## Phase 6 — Postmortem
 
-For SEV1 and SEV2 incidents, create `docs/11.postmortems/PM-<INC-ID>.md`.
+For SEV1 and SEV2 incidents, create `docs/10.incidents/PM-<INC-ID>-postmortem.md`.
 Include the incident link in `## Related Documents`.
 
 ## Error Handling
@@ -98,5 +98,5 @@ Include the incident link in `## Related Documents`.
 - `docs/00.agent-governance/rules/postflight-checklist.md`
 - `docs/09.runbooks/`
 - `docs/10.incidents/`
-- `docs/11.postmortems/`
+- `docs/10.incidents/`
 - `.claude/agents/incident-responder.md`

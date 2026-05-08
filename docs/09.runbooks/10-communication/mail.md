@@ -68,4 +68,4 @@
 ## Related Operational Documents
 
 - **Incident Record**: `[../10.incidents/]`
-- **Postmortem**: `[../11.postmortems/]`
+- **Postmortem**: `[../../10.incidents/README.md]`

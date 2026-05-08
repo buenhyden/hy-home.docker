@@ -1,0 +1,32 @@
+{
+  "policy_id": "OPS-IMAGE-TAG-EXCEPTIONS-001",
+  "effective_date": "2026-05-09",
+  "owner_role": "Infra Lead",
+  "review_cadence": "monthly",
+  "floating_image_exceptions": [
+    {
+      "image": "nginx:alpine",
+      "owner": "Gateway Operator",
+      "reason": "Uses the official nginx Alpine channel for the lightweight static gateway helper; runtime hardening is enforced by readonly template, healthcheck, and nginx config validation.",
+      "review_cadence": "monthly"
+    },
+    {
+      "image": "portainer/portainer-ce:sts",
+      "owner": "Laboratory Operator",
+      "reason": "Portainer is an admin/laboratory service intentionally tracking the vendor STS channel; it is not part of the core profile.",
+      "review_cadence": "monthly"
+    },
+    {
+      "image": "lfnovo/open_notebook:v1-latest-single",
+      "owner": "Laboratory Operator",
+      "reason": "Open Notebook publishes a v1 latest single-user channel for local laboratory use; the service is outside the core profile and requires periodic review before production promotion.",
+      "review_cadence": "monthly"
+    },
+    {
+      "image": "b4bz/homer",
+      "owner": "Laboratory Operator",
+      "reason": "Homer is a static admin dashboard in the laboratory tier and currently uses the vendor default tag; pin before promoting beyond local admin use.",
+      "review_cadence": "monthly"
+    }
+  ]
+}

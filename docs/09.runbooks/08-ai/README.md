@@ -62,6 +62,6 @@
 - [AI Operations](../../08.operations/08-ai/README.md)
 - [AI Guides](../../07.guides/08-ai/README.md)
 - [Incidents](../../10.incidents/README.md)
-- [Postmortems](../../11.postmortems/README.md)
+- [Postmortems](../../10.incidents/README.md)
 - [AI Optimization Plan](../../05.plans/2026-03-28-08-ai-optimization-hardening-plan.md)
 - [AI Optimization Tasks](../../06.tasks/2026-03-28-08-ai-optimization-hardening-tasks.md)

@@ -96,15 +96,15 @@
 - **[OIDC Specs]**: [https://openid.net/developers/specs/](https://openid.net/developers/specs/) - 현대적 인증 보안 표준.
 - **[Google SRE Book]**: [https://sre.google/sre-book/monitoring-distributed-systems/](https://sre.google/sre-book/monitoring-distributed-systems/) - Golden Signals 이론.
 
-## 🪜 심층 분석 링크 (Deep-Dive Links)
+## 🪜 심층 분석 주제 (Deep-Dive Topics)
 
-- [01-network/theory.md](../../../.agent/skills/self-learning-guide/references/01-network/theory.md): 라우팅 및 DNS 패턴
-- [02-os-virtualization/theory.md](../../../.agent/skills/self-learning-guide/references/02-os-virtualization/theory.md): 커널 격리 기술
-- [03-data-management/theory.md](../../../.agent/skills/self-learning-guide/references/03-data-management/theory.md): CAP/ACID/분산 트랜잭션
-- [04-security-identity/theory.md](../../../.agent/skills/self-learning-guide/references/04-security-identity/theory.md): 암호화 및 신원 관리
-- [05-observability/theory.md](../../../.agent/skills/self-learning-guide/references/05-observability/theory.md): Golden Signals 및 분산 트레이싱
-- [06-ai-infrastructure/theory.md](../../../.agent/skills/self-learning-guide/references/06-ai-infrastructure/theory.md): 벡터 검색 및 RAG 설계
-- [07-distributed-messaging/theory.md](../../../.agent/skills/self-learning-guide/references/07-distributed-messaging/theory.md): EDA 및 Saga 패턴
+- 라우팅 및 DNS 패턴
+- 커널 격리 기술
+- CAP/ACID/분산 트랜잭션
+- 암호화 및 신원 관리
+- Golden Signals 및 분산 트레이싱
+- 벡터 검색 및 RAG 설계
+- EDA 및 Saga 패턴
 
 ## Related Documents
 
