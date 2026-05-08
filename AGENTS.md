@@ -52,7 +52,7 @@ This project has a graphify knowledge graph at `graphify-out/`.
 
 - Before architecture or codebase answers, read `graphify-out/GRAPH_REPORT.md`.
 - If `graphify-out/wiki/index.md` exists, prefer it over raw-file browsing.
-- After modifying code files, run `graphify update .` to refresh the graph.
+- After modifying code files, run `graphify update .` when the CLI is available; if `graphify` is unavailable, report that graph refresh was skipped.
 
 ## Related Documents
 

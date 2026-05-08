@@ -4,6 +4,7 @@
       "Bash(git:*)",
       "Bash(python3:*)",
       "Bash(grep:*)",
+      "Bash(rg:*)",
       "Bash(docker ps:*)",
       "Bash(docker compose ps:*)",
       "Bash(docker compose config:*)",

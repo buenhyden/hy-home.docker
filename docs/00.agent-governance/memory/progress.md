@@ -22,6 +22,7 @@ Running record of harness gap remediation. Updated by agents after each phase.
 | P8 — Designated harness migration        | ✅ Done | 2026-04-12 | Migrated 7 designated harnesses: drift-detector agent; 5 new skills (docker-compose-patterns, container-threat-modeling, code-review-dimensions, adr-writing, ci-cd-patterns); code-reviewer and doc-writer agents extended; AGENTS.md catalog and governance agents/functions catalog fully synced                                         |
 | P9 — Runtime surface alignment           | ✅ Done | 2026-05-09 | Thinned root `AGENTS.md` and `CLAUDE.md`, added Codex provider docs and `.codex/README.md`, aligned provider-neutral delegation wording, and kept detailed runtime policy under `.claude/` plus `docs/00.agent-governance/`                                                   |
 | P10 — Harness contract hardening         | ✅ Done | 2026-05-09 | Preserved thin root shims, clarified Codex as hook/context surface, kept `.claude` as the canonical runtime mirror, and strengthened `check-repo-contracts.sh` to enforce agent/function mirror, model hierarchy, scope imports, subagent protocol coverage, and source-leak prevention |
+| P11 — Harness / Agent-first gap closure  | ✅ Done | 2026-05-09 | Recorded the harness and Agent-first gap audit, added a graphify CLI-unavailable fallback to the thin root shim, allowed Claude `rg` discovery, and extended repo contracts without adding a Codex agent catalog, GitHub-native instruction layer, global config, or stage docs |
 
 ## Layer Audit (L1–L7)
 

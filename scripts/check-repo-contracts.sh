@@ -407,6 +407,17 @@ for path in [codex_readme, codex_provider]:
         if required not in text:
             failures.append(f"{path}: missing Codex runtime boundary reference: {required}")
 
+claude_settings = read(pathlib.Path(".claude/settings.json"))
+if '"Bash(rg:*)"' not in claude_settings:
+    failures.append(".claude/settings.json: missing read-only discovery permission Bash(rg:*)")
+
+agents_md = read(pathlib.Path("AGENTS.md"))
+if "graphify update ." not in agents_md:
+    failures.append("AGENTS.md: missing graphify update command in Graphify contract")
+graphify_contract = agents_md.lower()
+if "unavailable" not in graphify_contract or "skipped" not in graphify_contract:
+    failures.append("AGENTS.md: missing graphify unavailable/skipped fallback in Graphify contract")
+
 stale_patterns = [
     re.compile(r"H100|Harness-100|harness-100|h100_pattern|examples/harness-100"),
     re.compile(r"AGENTS\.md §3 Agent Catalog|AGENTS\.md §4 Orchestration"),
