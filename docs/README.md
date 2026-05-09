@@ -127,6 +127,21 @@ bash scripts/check-doc-traceability.sh
 
 `check-repo-contracts.sh`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime catalog 동기화를 확인합니다. `check-doc-traceability.sh`는 plans, operations, runbooks의 추적성 동기화를 확인합니다.
 
+## Current Refresh Evidence
+
+현재 infra/secrets/docs refresh 작업은 기존 spec/plan/task 문서를 in-place로 재사용합니다.
+
+| Evidence | Current State |
+| --- | --- |
+| Spec | [04.specs/infra-secrets-docs-refresh/spec.md](04.specs/infra-secrets-docs-refresh/spec.md) |
+| Plan | [05.plans/2026-05-09-infra-secrets-docs-refresh.md](05.plans/2026-05-09-infra-secrets-docs-refresh.md) |
+| Task evidence | [06.tasks/2026-05-09-infra-secrets-docs-refresh.md](06.tasks/2026-05-09-infra-secrets-docs-refresh.md) |
+| README audit | 127 README files, heading gaps 0 |
+| Stage audit | 208 non-README stage docs, heading gaps 0 |
+| Runtime scope | Docker Compose runtime, secret values, cert contents, agent runtime unchanged |
+
+Heading audit 통과는 구조 검증입니다. 문서 품질 검토에서는 중복 legacy/template 블록, 실제 Markdown 링크가 아닌 참조, secret 값을 읽도록 오해될 수 있는 문장, shell history에 민감값을 남길 수 있는 예시를 별도로 확인합니다.
+
 ## Related References
 
 - [00.agent-governance/README.md](00.agent-governance/README.md)
@@ -140,4 +155,6 @@ bash scripts/check-doc-traceability.sh
 - [90.references/README.md](90.references/README.md)
 - [99.templates/README.md](99.templates/README.md)
 - [../README.md](../README.md)
+- [../infra/README.md](../infra/README.md)
+- [../secrets/README.md](../secrets/README.md)
 - [../scripts/README.md](../scripts/README.md)

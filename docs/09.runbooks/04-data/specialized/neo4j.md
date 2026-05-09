@@ -60,13 +60,19 @@ Neo4j Community Edition은 인스턴스를 중지한 후 오프라인 덤프를 
 
 ### 3. Password Rotation
 
-1. Docker Secret `neo4j_password` 값 업데이트.
+1. 승인된 secret rotation 절차로 Docker Secret `neo4j_password`를 갱신한다. 값은 문서나 로그에 남기지 않는다.
 2. 서비스 재시작: `docker compose up -d --force-recreate neo4j`
 
 ## Verification Steps
 
 - [ ] `docker compose ps` 결과 `neo4j` 상태가 `Up (healthy)`인지 확인.
-- [ ] `cypher-shell -u neo4j -p <password> "RETURN 1;"` 실행 결과 성공 확인.
+- [ ] 아래 방식으로 secret 값을 history에 남기지 않고 연결 확인.
+
+  ```bash
+  read -rsp "Neo4j password: " NEO4J_PASSWORD; echo
+  cypher-shell -u neo4j -p "$NEO4J_PASSWORD" "RETURN 1;"
+  unset NEO4J_PASSWORD
+  ```
 
 ## Observability and Evidence Sources
 

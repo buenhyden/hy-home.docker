@@ -1,5 +1,5 @@
 ---
-status: draft
+status: completed
 ---
 
 # Infra / Secrets / Docs Refresh Plan
@@ -10,7 +10,7 @@ status: draft
 
 ## Context
 
-현재 저장소는 계층형 Docker Compose 인프라와 stage-based docs taxonomy를 갖추고 있으며 repository contract 검증은 통과한다. 다만 일부 README와 오래된 guide/operation/runbook/reference 문서는 `docs/99.templates/`의 최신 필수 섹션을 모두 포함하지 않는다. 이번 작업은 런타임 변경 없이 문서 계약과 분석 결과를 맞추는 문서 중심 보강이다.
+현재 저장소는 계층형 Docker Compose 인프라와 stage-based docs taxonomy를 갖추고 있으며 repository contract 검증은 통과한다. README와 stage heading audit도 현재 gap 0이다. 이번 작업은 heading 통과를 품질 완료로 오해하지 않도록 root-active Compose 범위, secret 분류, semantic QA 결과를 문서에 보강하는 문서 중심 갱신이다.
 
 ## Goals & In-Scope
 
@@ -18,6 +18,9 @@ status: draft
   - 대상 경로의 구현 요소, compose/config/related file, 문서 gap을 공식 stage 문서에 기록한다.
   - README를 `readme.template.md` base structure에 맞춘다.
   - `docs/07`, `docs/08`, `docs/09`, `docs/90` 문서가 대응 템플릿 필수 섹션을 포함하도록 보강한다.
+  - root-active, optional, standalone, variant Compose 상태를 구분한다.
+  - secret 값 열람 없이 root Compose 선언, bind-mounted cert, registry/local-only 파일을 분류한다.
+  - heading audit과 semantic QA를 분리해 검증한다.
   - root `README.md`와 `docs/README.md`를 최신 분석 범위와 연결한다.
 - **In Scope**:
   - 문서와 README 갱신
@@ -41,8 +44,8 @@ status: draft
 | --- | --- | --- | --- | --- |
 | PLN-001 | 분석 spec/plan/task 생성 | `docs/04.specs`, `docs/05.plans`, `docs/06.tasks` | REQ-DOC-001 | 템플릿 필수 섹션 존재 |
 | PLN-002 | root/docs/secrets README 최신화 | `README.md`, `docs/README.md`, `secrets/README.md` | REQ-RDM-001 | README base heading audit 통과 |
-| PLN-003 | infra 및 docs stage README 보강 | `infra/**/README.md`, `docs/07-09/**/README.md`, `docs/90.references/**/README.md` | REQ-RDM-002 | 누락 heading 0 |
-| PLN-004 | guide/operation/runbook/reference 문서 보강 | `docs/07`, `docs/08`, `docs/09`, `docs/90` | REQ-STG-001 | stage heading audit 통과 |
+| PLN-003 | infra 및 docs stage README 보강 | `infra/**/README.md`, `docs/07-09/**/README.md`, `docs/90.references/**/README.md` | REQ-RDM-002 | 누락 heading 0, 비링크 참조 정리 |
+| PLN-004 | guide/operation/runbook/reference 문서 보강 | `docs/07`, `docs/08`, `docs/09`, `docs/90` | REQ-STG-001 | stage heading audit 통과, semantic QA 통과 |
 | PLN-005 | 검증 및 evidence 갱신 | `docs/06.tasks/2026-05-09-infra-secrets-docs-refresh.md` | REQ-VAL-001 | 검증 명령 결과 기록 |
 
 ## Verification Plan
@@ -65,6 +68,9 @@ status: draft
 | secret 값이 문서에 노출됨 | High | `secrets/**/*.txt`는 열람하지 않고 경로와 example만 사용 |
 | 문서 보강 범위가 너무 넓어짐 | Medium | 런타임/compose/governance 변경은 제외하고 template alignment에 집중 |
 | `ksql`/`ksqldb` 명칭 차이를 누락으로 오판 | Low | README에 alias로 설명하고 파일 rename은 하지 않음 |
+| 보유 Compose와 root-active Compose를 혼동함 | Medium | `root-active`, `root-commented-optional`, `standalone-only`, `dev/cluster variant` 상태를 문서화 |
+| 검증 결과가 전체 profile 통과처럼 읽힘 | Medium | `validate-docker-compose.sh`의 기본 `core` profile 범위와 임시 파일 생성 가능성을 evidence에 기록 |
+| heading audit 통과를 문서 품질 완료로 오해함 | Medium | semantic QA 항목을 task evidence와 README에 별도로 기록 |
 
 ## Agent Rollout & Evaluation Gates (If Applicable)
 
@@ -76,9 +82,9 @@ status: draft
 
 ## Completion Criteria
 
-- [ ] Scoped work completed
-- [ ] Verification passed
-- [ ] Required docs updated
+- [x] Scoped work completed
+- [x] Verification passed
+- [x] Required docs updated
 
 ## Related Documents
 

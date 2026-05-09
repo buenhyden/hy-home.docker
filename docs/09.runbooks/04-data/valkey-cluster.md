@@ -32,14 +32,16 @@
 
 - [ ] 모든 Valkey 노드 컨테이너가 Running 상태인지 확인
 - [ ] 노드 간 네트워크 통신이 가능한지 확인
-- [ ] 마스터 패스워드(`service_valkey_password`)가 유효한지 확인
+- [ ] 마스터 패스워드 secret(`service_valkey_password`) 파일 존재와 mount 상태 확인. 값은 출력하지 않는다.
 
 ### Procedure
 
 #### 1. 클러스터 상태 진단
 
 ```bash
-docker exec valkey-node-0 valkey-cli -a $PASS --cluster check localhost:6379
+read -rsp "Valkey password: " VALKEY_PASSWORD; echo
+docker exec valkey-node-0 valkey-cli -a "$VALKEY_PASSWORD" --cluster check localhost:6379
+unset VALKEY_PASSWORD
 ```
 
 #### 2. 슬롯 자동 복구 (Inconsistent Slots)
@@ -47,7 +49,9 @@ docker exec valkey-node-0 valkey-cli -a $PASS --cluster check localhost:6379
 슬롯 할당 불일치 시 다음 명령을 통해 자동으로 슬롯을 재할당하거나 수정합니다.
 
 ```bash
-docker exec valkey-node-0 valkey-cli -a $PASS --cluster fix localhost:6379
+read -rsp "Valkey password: " VALKEY_PASSWORD; echo
+docker exec valkey-node-0 valkey-cli -a "$VALKEY_PASSWORD" --cluster fix localhost:6379
+unset VALKEY_PASSWORD
 ```
 
 #### 3. 실패한 노드 수동 리셋 (Node Recovery)
@@ -56,9 +60,11 @@ docker exec valkey-node-0 valkey-cli -a $PASS --cluster fix localhost:6379
 
 ```bash
 # 해당 노드에서
-docker exec [failed-node] valkey-cli -a $PASS cluster reset soft
+read -rsp "Valkey password: " VALKEY_PASSWORD; echo
+docker exec [failed-node] valkey-cli -a "$VALKEY_PASSWORD" cluster reset soft
 # 마스터 노드에서 다시 추가
-docker exec valkey-node-0 valkey-cli -a $PASS --cluster add-node [new-ip]:[port] [master-ip]:[port]
+docker exec valkey-node-0 valkey-cli -a "$VALKEY_PASSWORD" --cluster add-node [new-ip]:[port] [master-ip]:[port]
+unset VALKEY_PASSWORD
 ```
 
 ## Verification Steps

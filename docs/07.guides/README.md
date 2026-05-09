@@ -73,7 +73,7 @@ docs/07.guides/
 
 ## Related References
 
-- **Spec**: [../04.specs/README.md]
-- **Operation**: [../08.operations/README.md]
-- **Runbook**: [../09.runbooks/README.md]
+- **Spec**: [../04.specs/README.md](../04.specs/README.md)
+- **Operation**: [../08.operations/README.md](../08.operations/README.md)
+- **Runbook**: [../09.runbooks/README.md](../09.runbooks/README.md)
 - **Harness / Agent-first Engineering Guide**: [harness-agent-first-engineering.md](harness-agent-first-engineering.md)

@@ -40,8 +40,8 @@
    - DB 연결 상태 확인(`mng-pg` 로그/상태)
    - Keycloak 재기동: `docker compose -f infra/02-auth/keycloak/docker-compose.yml up -d keycloak`
 3. 시크릿 회전 장애 대응
-   - `/run/secrets/keycloak_admin_password`, `/run/secrets/keycloak_db_password` 값 유효성 확인
-   - 환경 변수/secret 파일 매핑 오타 여부 점검
+   - `/run/secrets/keycloak_admin_password`, `/run/secrets/keycloak_db_password` 파일 존재와 mount 상태 확인
+   - secret 값은 출력하지 않고 환경 변수/secret 파일 매핑 오타, rotation timestamp, 관련 서비스 재시작 여부 점검
 4. 사후 검증
    - readiness 재확인
    - OAuth2 Proxy 연동 로그인 테스트

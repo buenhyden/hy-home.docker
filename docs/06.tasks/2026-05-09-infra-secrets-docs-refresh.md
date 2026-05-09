@@ -1,5 +1,5 @@
 ---
-status: draft
+status: completed
 ---
 
 # Task: Infra / Secrets / Docs Refresh
@@ -19,6 +19,7 @@ status: draft
 - Secret value files under `secrets/**/*.txt` must not be opened or copied.
 - Existing document content should be preserved unless it is unsafe or stale.
 - Runtime files are analysis inputs only unless a separate user approval changes scope.
+- Heading audit is structural only; semantic QA checks duplicated template blocks, non-link references, secret-value wording, and shell-history-sensitive examples.
 
 ## Task Table
 
@@ -29,6 +30,7 @@ status: draft
 | T-003 | Align target README files under infra/docs/90 with base template headings | doc | Interfaces | PLN-003 | README heading audit missing=0 | Codex | Done |
 | T-004 | Align guide/operation/runbook/reference docs with their templates | doc | Interfaces | PLN-004 | Stage heading audit missing=0 | Codex | Done |
 | T-005 | Run repository validation commands and record results | test | Verification | PLN-005 | Command output summary recorded below | Codex | Done |
+| T-006 | Classify Compose activation state and secret inventory without reading values | doc | Current Baseline | PLN-002/PLN-003 | README/spec/plan/task evidence updated | Codex | Done |
 
 ## Suggested Types
 
@@ -62,6 +64,7 @@ status: draft
 ### Phase 3
 
 - [x] T-005 Run validation and capture evidence.
+- [x] T-006 Capture activation state, secret classification, and semantic QA evidence.
 
 ## Verification Summary
 
@@ -77,6 +80,14 @@ status: draft
   - README heading audit over `infra`, `secrets`, `docs/07.guides`, `docs/08.operations`, `docs/09.runbooks`, `docs/90.references`
   - Stage heading audit over non-README Markdown in `docs/07.guides`, `docs/08.operations`, `docs/09.runbooks`, `docs/90.references`
 - **Logs / Evidence Location**:
+  - `INFRA_COMPOSE_FILES=47`
+  - `INFRA_COMPOSE_SERVICE_DIRS=40`
+  - `MISSING_SERVICE_README=0`
+  - `ACTIVE_ROOT_INCLUDES=14`
+  - `ROOT_SECRET_DECLARATIONS=69`
+  - `SECRET_VALUE_OR_CERT_FILES=76`
+  - `MISSING_DECLARED_SECRET_FILES=0`
+  - `UNDECLARED_SECRET_FILES=7`, classified as bind-mounted cert or registry/local-only without value reads
   - `README_HEADING_GAPS=0`
   - `STAGE_HEADING_GAPS=0`
   - `MARKDOWN_LINK_GAPS=0`
@@ -87,3 +98,4 @@ status: draft
   - `bash scripts/check-quickwin-baseline.sh`: pass
   - `bash scripts/check-all-hardening.sh`: pass
   - `git diff --check`: pass
+  - Semantic QA: fixed malformed stage README links, removed duplicate `docs/90.references/README.md` legacy/template split, and reworded secret-value or shell-history-sensitive examples.

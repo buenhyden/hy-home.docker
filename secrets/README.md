@@ -75,6 +75,20 @@ secrets/
 | Storage | `storage/` | MinIO and object storage credentials |
 | Tools | `tools/` | SonarQube, Syncthing, utility service secret |
 
+## Inventory Classification
+
+현재 인벤토리는 secret 값이나 인증서 원문을 열람하지 않고 파일명, 디렉터리, 루트 Compose 선언, registry 예시만 기준으로 분류합니다.
+
+| Classification | Current Evidence | Handling Rule |
+| --- | --- | --- |
+| `compose-declared` | 루트 `docker-compose.yml`의 `secrets:` 선언 69개, 누락 파일 0개 | Docker Secret mount 계약으로 관리 |
+| `bind-mounted-cert` | `certs/cert.pem`, `certs/key.pem`, `certs/rootCA.pem`, `certs/rootCA-key.pem` | canonical certificate path는 `secrets/certs/`; 값/원문은 문서화하지 않음 |
+| `registry/local-only` | `security/unseal_keys.txt`, `auth/traefik_admin_password.txt`, `tools/terrakube_minio_secret_key.txt` | root Compose secret 선언과 별개로 registry 또는 운영 절차에서 분류 |
+| `private-registry` | `SENSITIVE_ENV_VARS.md` | 개인 gitignored registry로 취급하고 내용은 열람하지 않음 |
+| `example-registry` | `SENSITIVE_ENV_VARS.md.example` | 새 환경과 문서 검토용 예시 mapping |
+
+`infra/secrets/certs/` 같은 비표준 local-only 경로가 보이더라도 문서 진입점이나 인증서 절차의 기준으로 사용하지 않습니다. 인증서 기준 경로는 항상 `secrets/certs/`입니다.
+
 ## Secret Management System
 
 ### Registry

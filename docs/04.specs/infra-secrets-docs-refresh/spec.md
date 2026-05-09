@@ -1,5 +1,5 @@
 ---
-status: draft
+status: completed
 ---
 
 # Infra / Secrets / Docs Refresh Specification
@@ -7,6 +7,8 @@ status: draft
 ## Overview (KR)
 
 이 문서는 `infra/`, `secrets/`, `docs/07.guides/`, `docs/08.operations/`, `docs/09.runbooks/`, `docs/90.references/`의 실제 파일 내용을 기준으로 운영 문서와 README를 최신화하기 위한 명세다. 목표는 Docker Compose 런타임이나 secret 값 파일을 변경하지 않고, 구현 요소와 운영 문서가 `docs/99.templates/`의 계약을 따르도록 보강하는 것이다.
+
+현재 기준 구조 검증은 통과 상태다. `infra/`에는 47개 Compose 파일과 40개 Compose service directory가 있으며 service README 누락은 0개다. 루트 Compose 활성 include는 14개이므로 보유 Compose와 root-active Compose를 분리해 문서화한다. `secrets/`는 secret/cert 파일명 기준 76개, 루트 Compose 선언 69개, 선언된 secret 누락 0개이며 값은 열람하지 않는다.
 
 ## Strategic Boundaries & Non-goals
 
@@ -23,6 +25,18 @@ status: draft
 - **Config Contract**: `infra/**/docker-compose*.yml`, config 파일, 루트 `docker-compose.yml`은 분석 대상이며 기본적으로 수정하지 않는다.
 - **Data / Interface Contract**: `secrets/**/*.txt` 값은 열람하지 않는다. 파일명, 디렉터리, README, `.example` 파일만 문서화 입력으로 사용한다.
 - **Governance Contract**: 새 stage 문서는 대응 템플릿을 따른다. README는 `docs/99.templates/readme.template.md`의 base structure를 따른다.
+
+## Current Baseline
+
+| Area | Baseline |
+| --- | --- |
+| Infra inventory | 47 Compose files, 40 Compose service directories, 0 missing service README files |
+| Root include state | 14 active include files; commented optional and standalone files are not treated as active runtime |
+| Secret inventory | 69 root Compose declarations, 76 value/cert filenames, 0 missing declared files |
+| Secret classification | `compose-declared`, `bind-mounted-cert`, `registry/local-only`, `private-registry`, `example-registry` |
+| README audit | 127 README files, heading gaps 0 |
+| Stage audit | 208 non-README docs under `docs/07`, `docs/08`, `docs/09`, `docs/90`, heading gaps 0 |
+| Semantic QA | Duplicate legacy/template blocks, non-link references, secret-value wording, and shell-history-sensitive examples are reviewed separately from heading audit |
 
 ## Core Design
 
@@ -98,7 +112,7 @@ Stage document template families:
 ## Evaluation (If Applicable)
 
 - **Eval Types**: structural heading audit, repository contract checks, traceability checks, compose config validation.
-- **Metrics**: README missing heading count 0, stage missing heading count 0, repository checks pass.
+- **Metrics**: README missing heading count 0, stage missing heading count 0, repository checks pass, semantic QA findings resolved without runtime or secret value changes.
 - **Datasets / Fixtures**: live repository files under target paths.
 - **How to Run**: 아래 Verification 명령과 문서 audit를 실행한다.
 
@@ -132,6 +146,8 @@ git diff --check
 - **VAL-SPC-003**: `docs/07`, `docs/08`, `docs/09`, `docs/90`의 non-README Markdown이 대응 템플릿 heading을 포함한다.
 - **VAL-SPC-004**: secret 값 파일을 열람하거나 수정하지 않는다.
 - **VAL-SPC-005**: repository validation scripts가 통과한다.
+- **VAL-SPC-006**: root-active, optional, standalone, variant Compose 상태를 문서에서 혼동하지 않는다.
+- **VAL-SPC-007**: secret 값 확인을 유도하거나 shell history에 민감값을 남길 수 있는 예시를 제거하거나 안전하게 재표현한다.
 
 ## Related Documents
 

@@ -44,10 +44,11 @@
    ```
 
 2. **토큰 검증**:
-   API 호출을 통해 토큰이 활성 상태인지 확인한다.
+   토큰 파일 존재와 mount 상태를 확인한다. 토큰 값은 출력하거나 command history에 남기지 않는다.
 
    ```bash
-   curl -i http://influxdb:8181/health -H "Authorization: Token $(cat secrets/influxdb_api_token)"
+   docker compose exec influxdb test -r /run/secrets/influxdb_api_token
+   curl -i http://influxdb:8181/health
    ```
 
 3. **강제 재시작 (필요 시)**:

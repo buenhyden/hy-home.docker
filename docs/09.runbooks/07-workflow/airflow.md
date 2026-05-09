@@ -53,9 +53,11 @@
 1. 사용자 재생성/업데이트:
 
    ```bash
+   read -rsp "New Airflow admin password: " AIRFLOW_NEW_PASSWORD; echo
    docker compose run --rm airflow-cli users reset-password \
      --username admin \
-     --password <new_password>
+     --password "$AIRFLOW_NEW_PASSWORD"
+   unset AIRFLOW_NEW_PASSWORD
    ```
 
 ## Verification Steps

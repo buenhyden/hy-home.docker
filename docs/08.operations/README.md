@@ -72,8 +72,8 @@ docs/08.operations/
 
 ## Related References
 
-- **ARD**: [../02.ard/README.md]
-- **Plan**: [../05.plans/README.md]
-- **Runbook**: [../09.runbooks/README.md]
-- **Incident / Postmortem**: [../10.incidents/README.md]
+- **ARD**: [../02.ard/README.md](../02.ard/README.md)
+- **Plan**: [../05.plans/README.md](../05.plans/README.md)
+- **Runbook**: [../09.runbooks/README.md](../09.runbooks/README.md)
+- **Incident / Postmortem**: [../10.incidents/README.md](../10.incidents/README.md)
 - **Harness / Agent-first Engineering Policy**: [harness-agent-first-engineering.md](harness-agent-first-engineering.md)

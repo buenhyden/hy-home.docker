@@ -72,10 +72,10 @@ docs/09.runbooks/
 
 ## Related References
 
-- **ARD**: [../02.ard/README.md]
-- **ADR**: [../03.adr/README.md]
-- **Spec**: [../04.specs/README.md]
-- **Plan**: [../05.plans/README.md]
-- **Operation**: [../08.operations/README.md]
-- **Incident**: [../10.incidents/README.md]
+- **ARD**: [../02.ard/README.md](../02.ard/README.md)
+- **ADR**: [../03.adr/README.md](../03.adr/README.md)
+- **Spec**: [../04.specs/README.md](../04.specs/README.md)
+- **Plan**: [../05.plans/README.md](../05.plans/README.md)
+- **Operation**: [../08.operations/README.md](../08.operations/README.md)
+- **Incident**: [../10.incidents/README.md](../10.incidents/README.md)
 - **Harness / Agent-first Engineering Validation Runbook**: [harness-agent-first-engineering-validation.md](harness-agent-first-engineering-validation.md)

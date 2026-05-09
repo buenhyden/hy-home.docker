@@ -38,7 +38,9 @@ Helps application developers and system operators understand the structure of th
 
 ```bash
 # 클러스터 구성 상태 확인
-docker exec valkey-node-0 valkey-cli -a $(cat nodes_password) cluster info
+read -rsp "Valkey password: " VALKEY_PASSWORD; echo
+docker exec valkey-node-0 valkey-cli -a "$VALKEY_PASSWORD" cluster info
+unset VALKEY_PASSWORD
 ```
 
 ### 2. 클라이언트 연결 설정 (Cluster Mode)

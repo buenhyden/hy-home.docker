@@ -20,6 +20,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 
 - Service definitions across 11 functional tiers.
 - Global orchestration via root `docker-compose.yml`.
+- Inventory status for root-active, optional, standalone, and variant Compose files.
 - Standardized execution models using **Docker Profiles** (`core`, `data`, `obs`, etc.).
 - Resource optimization and security hardening templates.
 
@@ -44,6 +45,19 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 | **09** | **Tooling** | [SonarQube](09-tooling/sonarqube/), [Terrakube](09-tooling/terrakube/) | Dev/Ops |
 | **10** | **Communication** | [Stalwart / MailHog](10-communication/mail/) | Optional |
 | **11** | **Laboratory** | [Portainer](11-laboratory/portainer/), [Homer](11-laboratory/dashboard/) | Admin |
+
+## Compose Inventory Snapshot
+
+`infra/`에는 현재 47개의 `docker-compose*.yml` 파일과 40개의 Compose service directory가 있습니다. 루트 `docker-compose.yml`이 활성 include로 직접 묶는 파일은 14개이며, 나머지는 optional, standalone, 또는 variant로 분류합니다.
+
+| Status | Meaning | Documentation Rule |
+| --- | --- | --- |
+| `root-active` | 루트 `include`에 주석 없이 포함된 Compose 파일 | 루트 실행면으로 문서화할 수 있음 |
+| `root-commented-optional` | 루트 `include`에 주석 처리된 optional Compose 파일 | 보유 구성으로만 설명하고 기본 실행면으로 과장하지 않음 |
+| `standalone-only` | `infra/`에 존재하지만 루트 include 목록에 없는 Compose 파일 | service README와 직접 실행 절차를 기준으로 설명 |
+| `dev/cluster variant` | `.dev.yml`, `.cluster.yml`, v2 등 대체 실행 파일 | 대상 profile과 검증 범위를 함께 기록 |
+
+현재 `root-active` 파일은 gateway/auth/security, MinIO, mng-db, Qdrant, Kafka dev, observability dev, n8n dev, Airflow dev, Dozzle, RedisInsight, Open Notebook으로 제한됩니다. 전체 보유 Compose 수와 root-active 수를 혼동하지 않습니다.
 
 ## Tech Stack
 
@@ -127,7 +141,7 @@ infra/
 ## How to Work in This Area
 
 1. **Service Addition**: `infra/<tier>/<service>/` 디렉토리를 생성하고 `docker-compose.yml`을 작성합니다.
-2. **Global Integration**: 루트 `docker-compose.yml`의 `include`에 새 서비스를 추가합니다.
+2. **Global Integration**: 루트 `docker-compose.yml`의 `include`에 새 서비스를 추가할 때 `root-active`, `root-commented-optional`, `standalone-only`, `dev/cluster variant` 상태를 함께 갱신합니다.
 3. **Configuration**: 환경 변수가 필요하면 루트 `.env.example`에 추가하고, 민감 값은 `secrets/`에 분리합니다.
 4. **Validation**: `scripts/validate-docker-compose.sh`를 실행하여 구조적 정합성을 확인합니다.
 
@@ -137,6 +151,8 @@ infra/
 - [Operation Specs](../docs/08.operations/README.md)
 - [Architecture Details](../docs/02.ard/README.md)
 - [Secret Management](../secrets/README.md)
+- [Root Compose](../docker-compose.yml)
+- [Tech Stack Versions](tech-stack.versions.json)
 
 ## AI Agent Guidance
 

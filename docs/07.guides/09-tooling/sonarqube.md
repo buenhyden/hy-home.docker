@@ -36,15 +36,17 @@ Standard scan using the `sonar-scanner` CLI:
 
 ```bash
 # Set environment variables
-export SONAR_TOKEN="your_project_token"
+read -rsp "Sonar token: " SONAR_TOKEN; echo
+export SONAR_TOKEN
 export SONAR_HOST_URL="https://sonarqube.${DEFAULT_URL}"
 
 # Execute scan
 sonar-scanner \
   -Dsonar.projectKey=hy-home:my-service \
   -Dsonar.sources=. \
-  -Dsonar.host.url=${SONAR_HOST_URL} \
-  -Dsonar.login=${SONAR_TOKEN}
+  -Dsonar.host.url=${SONAR_HOST_URL}
+
+unset SONAR_TOKEN
 ```
 
 ## Troubleshooting & Pitfalls

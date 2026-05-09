@@ -38,7 +38,9 @@ OpenSearch는 `9200` 포트를 통해 검색 API를 제공한다.
 
 ```bash
 # 클러스터 헬스 체크
-curl -X GET "https://opensearch:9200/_cluster/health" -u admin:<password> --insecure
+read -rsp "OpenSearch admin password: " OPENSEARCH_ADMIN_PASSWORD; echo
+curl -X GET "https://opensearch:9200/_cluster/health" -u "admin:${OPENSEARCH_ADMIN_PASSWORD}" --insecure
+unset OPENSEARCH_ADMIN_PASSWORD
 ```
 
 ### 2. Dashboards Usage
@@ -53,7 +55,8 @@ curl -X GET "https://opensearch:9200/_cluster/health" -u admin:<password> --inse
 매핑 설정 및 인덱스 생성을 수행한다.
 
 ```bash
-curl -X PUT "https://opensearch:9200/my-index" -u admin:<password> --insecure -H 'Content-Type: application/json' -d'
+read -rsp "OpenSearch admin password: " OPENSEARCH_ADMIN_PASSWORD; echo
+curl -X PUT "https://opensearch:9200/my-index" -u "admin:${OPENSEARCH_ADMIN_PASSWORD}" --insecure -H 'Content-Type: application/json' -d'
 {
   "settings": {
     "index": {
@@ -62,6 +65,7 @@ curl -X PUT "https://opensearch:9200/my-index" -u admin:<password> --insecure -H
     }
   }
 }'
+unset OPENSEARCH_ADMIN_PASSWORD
 ```
 
 ## Common Pitfalls

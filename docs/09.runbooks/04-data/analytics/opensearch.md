@@ -39,13 +39,17 @@
 1. **클러스터 상태 진단**:
 
    ```bash
-   curl -X GET "https://opensearch:9200/_cluster/health?pretty" --insecure -u admin:<password>
+   read -rsp "OpenSearch admin password: " OPENSEARCH_ADMIN_PASSWORD; echo
+   curl -X GET "https://opensearch:9200/_cluster/health?pretty" --insecure -u "admin:${OPENSEARCH_ADMIN_PASSWORD}"
+   unset OPENSEARCH_ADMIN_PASSWORD
    ```
 
 2. **미할당 샤드 원인 파악**:
 
    ```bash
-   curl -X GET "https://opensearch:9200/_cluster/allocation/explain?pretty" --insecure -u admin:<password>
+   read -rsp "OpenSearch admin password: " OPENSEARCH_ADMIN_PASSWORD; echo
+   curl -X GET "https://opensearch:9200/_cluster/allocation/explain?pretty" --insecure -u "admin:${OPENSEARCH_ADMIN_PASSWORD}"
+   unset OPENSEARCH_ADMIN_PASSWORD
    ```
 
 3. **노드 강제 동기화**:

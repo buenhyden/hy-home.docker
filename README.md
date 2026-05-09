@@ -52,6 +52,10 @@ hy-home.docker/
 ## Repository Map
 
 - [`docs/`](docs) - 요구사항, 아키텍처, 계획, 운영, 사고 대응까지 포함하는 공식 문서 체계
+- [`docs/07.guides/`](docs/07.guides) - 사용자와 운영자를 위한 재현 가능한 사용 가이드
+- [`docs/08.operations/`](docs/08.operations) - 운영 정책, 통제, 예외 처리 기준
+- [`docs/09.runbooks/`](docs/09.runbooks) - 반복 운영 작업과 장애 복구 실행 절차
+- [`docs/90.references/`](docs/90.references) - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
 - [`infra/`](infra) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
 - [`scripts/`](./scripts/) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
 - [`secrets/`](./secrets/) - Docker secrets 파일 구조와 민감 정보 관리 기준
@@ -70,6 +74,20 @@ hy-home.docker/
 | Automation | Bash scripts | 사전 점검, 검증, 하드닝, 추적성 검사 |
 | CI / Quality | GitHub Actions + pre-commit + zizmor | 문서/보안/품질 게이트 자동화 |
 | Version Drift Gate | [`infra/tech-stack.versions.json`](infra/tech-stack.versions.json) | 주요 Docker image 선언과 Compose source of truth 동기화 |
+
+## Current Infrastructure Snapshot
+
+현재 문서 갱신 기준의 운영 인벤토리는 다음과 같습니다.
+
+| Area | Current Evidence | Notes |
+| --- | --- | --- |
+| `infra/` Compose files | 47 | 루트 Compose 활성 include와 standalone/variant Compose를 구분해야 함 |
+| `infra/` Compose service directories | 40 | service README 누락 0개 |
+| Root active includes | 14 | 주석 처리된 optional include는 실행면으로 과장하지 않음 |
+| Root Compose secret declarations | 69 | 선언된 secret 파일 누락 0개 |
+| `secrets/` value/cert files | 76 | 값은 열람하지 않고 파일명과 경로만 기준으로 분류 |
+| README heading audit | 127 README files, gaps 0 | heading 통과는 구조 검증이며 semantic QA와 별도 |
+| Stage heading audit | 208 non-README stage docs, gaps 0 | `docs/07`, `docs/08`, `docs/09`, `docs/90` 대상 |
 
 ## Prerequisites
 
@@ -110,7 +128,7 @@ bash scripts/preflight-compose.sh
 bash scripts/validate-docker-compose.sh
 ```
 
-이 검증은 기본 `core` profile을 기준으로 `docker compose config`가 성공하는지 확인하고, resolved service count가 0이면 실패합니다. 필요한 경우 `HYHOME_COMPOSE_PROFILES="core dev"`처럼 검증 profile을 명시할 수 있습니다.
+이 검증은 기본 `core` profile을 기준으로 `docker compose config`가 성공하는지 확인하고, resolved service count가 0이면 실패합니다. 필요한 경우 `HYHOME_COMPOSE_PROFILES="core dev"`처럼 검증 profile을 명시할 수 있습니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
 
 ### 5. Repository contract 검증
 
@@ -203,6 +221,10 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 - [`docs/00.agent-governance/rules/github-governance.md`](docs/00.agent-governance/rules/github-governance.md)
 - [`docs/00.agent-governance/rules/git-workflow.md`](docs/00.agent-governance/rules/git-workflow.md)
 - [`docs/00.agent-governance/rules/stage-authoring-matrix.md`](docs/00.agent-governance/rules/stage-authoring-matrix.md)
+- [`docs/07.guides/README.md`](docs/07.guides/README.md)
+- [`docs/08.operations/README.md`](docs/08.operations/README.md)
+- [`docs/09.runbooks/README.md`](docs/09.runbooks/README.md)
+- [`docs/90.references/README.md`](docs/90.references/README.md)
 - [`docs/90.references/docker/README.md`](docs/90.references/docker/README.md)
 - [`docs/04.specs/infra-secrets-docs-refresh/spec.md`](docs/04.specs/infra-secrets-docs-refresh/spec.md)
 - [`docs/05.plans/2026-05-09-infra-secrets-docs-refresh.md`](docs/05.plans/2026-05-09-infra-secrets-docs-refresh.md)
