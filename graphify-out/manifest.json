@@ -1220,16 +1220,16 @@
     "hash": "a81ae41417f89a8869c20473d26e3cc8"
   },
   "/home/hy/project-infra/hy-home.docker/README.md": {
-    "mtime": 1778315469.1359076,
-    "hash": "6a5b89e0cc5562f61176f7d51f33c115"
+    "mtime": 1778329431.637883,
+    "hash": "8076803dfc28b33f933e452b2c001ada"
   },
   "/home/hy/project-infra/hy-home.docker/archive/Windows-Network-IP.md": {
     "mtime": 1771840597.8729992,
     "hash": "69fa3d47e1aee8acf237201b21e48873"
   },
   "/home/hy/project-infra/hy-home.docker/infra/README.md": {
-    "mtime": 1778315469.428501,
-    "hash": "ebbb79e2c9fb44bdfd2dad3dd209d34b"
+    "mtime": 1778330392.8056874,
+    "hash": "c30840a29a33d6787bf1f373f68e0541"
   },
   "/home/hy/project-infra/hy-home.docker/infra/common-optimizations.yml": {
     "mtime": 1775199604.3660989,
@@ -1244,8 +1244,8 @@
     "hash": "be2cc5b4ae5c0b64b89e770906146203"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/locust/README.md": {
-    "mtime": 1778296181.4768457,
-    "hash": "e8e049464cc6f15d97eed674c6a91bd4"
+    "mtime": 1778330453.92967,
+    "hash": "94ee36a1525b75e4f2870a48421862f7"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/registry/docker-compose.yml": {
     "mtime": 1774929984.9338,
@@ -1260,8 +1260,8 @@
     "hash": "45661c23b6c0a3f7384157542a9394c0"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/terraform/README.md": {
-    "mtime": 1778296460.8168561,
-    "hash": "b815c9a27fc9127cbf84fb23ae80c2fb"
+    "mtime": 1778330354.7496881,
+    "hash": "26701e9573c300c138c5029fad8d7670"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/sonarqube/docker-compose.yml": {
     "mtime": 1775026843.7953098,
@@ -1276,8 +1276,8 @@
     "hash": "a8ac0040da0955565521dbfea1bdfb64"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/terrakube/README.md": {
-    "mtime": 1778296460.8168561,
-    "hash": "df95f547352ac007d8732ba4bd801d83"
+    "mtime": 1778330355.1256874,
+    "hash": "c550442d5879d33c54ebda89b4c3c261"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/syncthing/docker-compose.yml": {
     "mtime": 1775026854.1648684,
@@ -1292,8 +1292,8 @@
     "hash": "98945c682652931102f1a16f65932286"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/k6/README.md": {
-    "mtime": 1778296181.4768457,
-    "hash": "57794bd8cdf7d3a91551d81d81a30fa3"
+    "mtime": 1778330453.7776701,
+    "hash": "7badc0d4588ac62c0238a0ac8a693b90"
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/README.md": {
     "mtime": 1778264280.0958915,
@@ -1492,8 +1492,8 @@
     "hash": "376a9da1ef05d269062065b60bce2262"
   },
   "/home/hy/project-infra/hy-home.docker/infra/03-security/vault/README.md": {
-    "mtime": 1778296181.4592457,
-    "hash": "2d72e0c45921d8cc9064afe185927b0e"
+    "mtime": 1778330627.241644,
+    "hash": "e849a3c6a3fdd239831a74e1f38168ca"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/README.md": {
     "mtime": 1778296460.8036563,
@@ -1696,16 +1696,16 @@
     "hash": "cd5fa6d5e9170ebbd4fd3ee26ca2ea23"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/open-notebook/README.md": {
-    "mtime": 1778296181.4812458,
-    "hash": "61b4f406a5271fc148f58f8400b7f3ac"
+    "mtime": 1778330311.081703,
+    "hash": "b8dcd80759c5f463951428919aedca0a"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/portainer/docker-compose.yml": {
     "mtime": 1775026716.6135728,
     "hash": "53685d595d848aa2a19fc5f436c43726"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/portainer/README.md": {
-    "mtime": 1778296181.4812458,
-    "hash": "c565bbbdf179319bf781f04839506247"
+    "mtime": 1778330310.789703,
+    "hash": "444c75bbd9b4af53fd8c77a1a52cc42e"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/dozzle/docker-compose.yml": {
     "mtime": 1775519601.6176064,
@@ -1720,8 +1720,8 @@
     "hash": "113d507b20cab3728e8c0f34f82d862f"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/redisinsight/README.md": {
-    "mtime": 1778296181.4812458,
-    "hash": "8f601eff51df97271085daa58af0a93f"
+    "mtime": 1778330310.929703,
+    "hash": "1c586ba9eff7a1d33bbae354ec8d37dc"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/dashboard/docker-compose.yml": {
     "mtime": 1775026925.7024114,
@@ -1756,8 +1756,8 @@
     "hash": "32c1d1b34c22ff76cac2cbda90966021"
   },
   "/home/hy/project-infra/hy-home.docker/infra/01-gateway/README.md": {
-    "mtime": 1778296181.4592457,
-    "hash": "2cabd2bb08111ffea01369870e2b842b"
+    "mtime": 1778330384.8976905,
+    "hash": "eac8138a17851efe634fb71074458aa3"
   },
   "/home/hy/project-infra/hy-home.docker/infra/01-gateway/nginx/docker-compose.yml": {
     "mtime": 1774658673.4600217,
@@ -1824,8 +1824,8 @@
     "hash": "5acb78726f09f6da66db303c1152b60e"
   },
   "/home/hy/project-infra/hy-home.docker/infra/10-communication/mail/README.md": {
-    "mtime": 1778296181.4812458,
-    "hash": "f3f52d654b01ed2b6435ed0c84407d29"
+    "mtime": 1778330453.63367,
+    "hash": "ad77b03c728c2ea3d8f62ab8245240f4"
   },
   "/home/hy/project-infra/hy-home.docker/infra/02-auth/README.md": {
     "mtime": 1774659972.962481,
@@ -1852,20 +1852,20 @@
     "hash": "990f6e90b805e342dccb5519fb12998f"
   },
   "/home/hy/project-infra/hy-home.docker/scripts/README.md": {
-    "mtime": 1778314291.1471026,
-    "hash": "5fe723c46aeacc46b36dfec6c8a64f96"
+    "mtime": 1778330392.9616873,
+    "hash": "287700b3696ec6a17bea231e187c4670"
   },
   "/home/hy/project-infra/hy-home.docker/projects/README.md": {
-    "mtime": 1771840597.9449992,
-    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+    "mtime": 1778329448.5178676,
+    "hash": "edd665653d2acb26e7bfe02162b9f7b4"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/README.md": {
-    "mtime": 1773845834.7207856,
-    "hash": "f17583ceda9a15eb4bb59016f27afd32"
+    "mtime": 1778330270.9777026,
+    "hash": "e38b83a4437c341c1b99afc7ac8a5f61"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/nextjs/README.md": {
-    "mtime": 1773914557.43904,
-    "hash": "614f232d9fe3a6492ad7b78c3291be33"
+    "mtime": 1778330519.6976607,
+    "hash": "09c47426adc746fa03a7bbcd943bed69"
   },
   "/home/hy/project-infra/hy-home.docker/projects/storybook/nextjs/src/stories/Configure.mdx": {
     "mtime": 1773903598.3481002,
@@ -2272,12 +2272,12 @@
     "hash": "2a61a7c27eed2a1cee899cdaaf0f4235"
   },
   "/home/hy/project-infra/hy-home.docker/tests/README.md": {
-    "mtime": 1771840597.9649992,
-    "hash": "76a17e1130029696b855bfe8e094d474"
+    "mtime": 1778330236.6417134,
+    "hash": "f3c4c9dcf73aee628498a7bd7840157f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/README.md": {
-    "mtime": 1778315469.2822042,
-    "hash": "c199017e8417182f989c982ddd248480"
+    "mtime": 1778329431.8018813,
+    "hash": "c7c6f86549452d511f5feebd001aa12d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.ard/0010-communication-architecture.md": {
     "mtime": 1774502600.7081194,
@@ -3764,8 +3764,8 @@
     "hash": "2d5f8ee9f935859b07cf011c325b83eb"
   },
   "/home/hy/project-infra/hy-home.docker/docs/10.incidents/README.md": {
-    "mtime": 1778264402.40706,
-    "hash": "cb1cc3641b858077b62fe492780f7611"
+    "mtime": 1778330221.5497208,
+    "hash": "17c6c1c312d099341b58c54975c33706"
   },
   "/home/hy/project-infra/hy-home.docker/docs/99.templates/tests.template.md": {
     "mtime": 1776049656.0118697,
@@ -3812,8 +3812,8 @@
     "hash": "ae6d8be6e1cee1ec2f0078dd752b0a84"
   },
   "/home/hy/project-infra/hy-home.docker/docs/99.templates/README.md": {
-    "mtime": 1778264402.5214598,
-    "hash": "fa325db9f1efdb52cdd6e0f2a11e76db"
+    "mtime": 1778330221.701721,
+    "hash": "3520b89fcec9ec0a341c9d07e9fcc5ed"
   },
   "/home/hy/project-infra/hy-home.docker/docs/99.templates/runbook.template.md": {
     "mtime": 1778263983.103349,
@@ -3844,8 +3844,8 @@
     "hash": "834afeb24f42cea1f6b90d7ce1ca8d27"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/README.md": {
-    "mtime": 1778269169.686573,
-    "hash": "ad69e5ab593d142617eb3cc53f9a5670"
+    "mtime": 1778330190.3257189,
+    "hash": "d2205b1c16c4e30e7ad28f5ed47b80ab"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/subagent-protocol.md": {
     "mtime": 1778269169.831773,
@@ -3968,8 +3968,8 @@
     "hash": "2d237fa59ef0627e4d40feb910bc2443"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/agents/README.md": {
-    "mtime": 1778264032.007612,
-    "hash": "fb85ae549ef0c2198c03b85b2d7e7ded"
+    "mtime": 1778330190.4737191,
+    "hash": "4916f750e65c44061a2daa117d793c21"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/agents/functions/incident-response.md": {
     "mtime": 1778264032.245212,
@@ -4056,8 +4056,8 @@
     "hash": "9e7b2b603c9c6c9722ad5f02c03dad0f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/README.md": {
-    "mtime": 1774506239.7692509,
-    "hash": "d92a3b6947fe2a818bf4c20126525a51"
+    "mtime": 1778330190.6177192,
+    "hash": "2f3a139331cd7918fb1fb836d8b2554a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/github-ci-contract-audit.md": {
     "mtime": 1778275556.9065633,
