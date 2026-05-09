@@ -47,7 +47,8 @@ docs/07.guides/
 ├── 09-tooling/
 ├── 10-communication/
 ├── 11-laboratory/
-├── 0012-standardize-infra-net.md  # Latest: infra_net 표준 구현 가이드
+├── 0012-standardize-infra-net.md  # infra_net 표준 구현 가이드
+├── harness-agent-first-engineering.md  # Latest: Harness / Agent-first Engineering 가이드
 └── README.md                       # This file
 ```
 
@@ -75,3 +76,4 @@ docs/07.guides/
 - **Spec**: [../04.specs/README.md]
 - **Operation**: [../08.operations/README.md]
 - **Runbook**: [../09.runbooks/README.md]
+- **Harness / Agent-first Engineering Guide**: [harness-agent-first-engineering.md](harness-agent-first-engineering.md)

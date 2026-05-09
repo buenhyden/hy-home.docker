@@ -46,7 +46,8 @@ docs/08.operations/
 ├── 09-tooling/
 ├── 10-communication/
 ├── 11-laboratory/
-├── standardize-infra-net.md  # Latest: infra_net 운영 정책
+├── standardize-infra-net.md  # infra_net 운영 정책
+├── harness-agent-first-engineering.md  # Latest: Harness / Agent-first Engineering 운영 정책
 └── README.md                 # This file
 ```
 
@@ -75,3 +76,4 @@ docs/08.operations/
 - **Plan**: [../05.plans/README.md]
 - **Runbook**: [../09.runbooks/README.md]
 - **Incident / Postmortem**: [../10.incidents/README.md]
+- **Harness / Agent-first Engineering Policy**: [harness-agent-first-engineering.md](harness-agent-first-engineering.md)

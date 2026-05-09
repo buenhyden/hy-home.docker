@@ -44,7 +44,9 @@ docs/04.specs/
 │   └── agent-design.md    # Workflow cross-validation agent behavior contract
 ├── ...
 ├── standardize-infra-net/
-│   └── spec.md            # Latest: infra_net 상세 설계 명세
+│   └── spec.md            # infra_net 상세 설계 명세
+├── harness-agent-first-engineering/
+│   └── spec.md            # Latest: Harness / Agent-first Engineering 분석 명세
 └── README.md              # This file
 ```
 
@@ -74,3 +76,4 @@ docs/04.specs/
 - **ARD**: [../02.ard/README.md]
 - **ADR**: [../03.adr/README.md]
 - **Plan**: [../05.plans/README.md]
+- **Harness / Agent-first Engineering Spec**: [harness-agent-first-engineering/spec.md](harness-agent-first-engineering/spec.md)

@@ -46,7 +46,8 @@ docs/09.runbooks/
 ├── 09-tooling/
 ├── 10-communication/
 ├── 11-laboratory/
-├── 0012-standardize-infra-net.md  # Latest: infra_net IP 할당 검증 런북
+├── 0012-standardize-infra-net.md  # infra_net IP 할당 검증 런북
+├── harness-agent-first-engineering-validation.md  # Latest: Harness / Agent-first Engineering 검증 런북
 └── README.md                       # This file
 ```
 
@@ -77,3 +78,4 @@ docs/09.runbooks/
 - **Plan**: [../05.plans/README.md]
 - **Operation**: [../08.operations/README.md]
 - **Incident**: [../10.incidents/README.md]
+- **Harness / Agent-first Engineering Validation Runbook**: [harness-agent-first-engineering-validation.md](harness-agent-first-engineering-validation.md)
