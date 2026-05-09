@@ -5,15 +5,18 @@
 
 INPUT=$(cat)
 
-FILE_PATH=$(echo "$INPUT" | python3 -c "
-import json, sys
+FILE_PATH=$(INPUT_JSON="$INPUT" python3 - <<'PY' 2>/dev/null
+import json
+import os
+
 try:
-    data = json.load(sys.stdin)
-    inp = data.get('tool_input', {})
-    print(inp.get('file_path') or inp.get('path', ''))
-except:
-    print('')
-" 2>/dev/null)
+    data = json.loads(os.environ.get("INPUT_JSON", ""))
+    inp = data.get("tool_input", {})
+    print(inp.get("file_path") or inp.get("path", ""))
+except Exception:
+    print("")
+PY
+)
 
 [ -z "$FILE_PATH" ] && exit 0
 
@@ -26,14 +29,21 @@ case "$FILE_PATH" in
         ;;
 esac
 
-SHORT_PATH="${FILE_PATH/#$CLAUDE_PROJECT_DIR\/}"
+SHORT_PATH="$FILE_PATH"
+if [ -n "${CLAUDE_PROJECT_DIR:-}" ]; then
+    case "$FILE_PATH" in
+        "$CLAUDE_PROJECT_DIR"/*)
+            SHORT_PATH="${FILE_PATH#"$CLAUDE_PROJECT_DIR"/}"
+            ;;
+    esac
+fi
 
-python3 -c "
+python3 - "$SHORT_PATH" <<'PY'
 import json, sys
 path = sys.argv[1]
 msg = (
     '🐳 **Docker Compose file edit detected**\n\n'
-    f'You are about to edit `${path}`.\n\n'
+    f'You are about to edit `{path}`.\n\n'
     '**After editing, verify:**\n'
     '- Run `bash scripts/validate-docker-compose.sh`\n'
     '- Check port conflicts, volume paths, and missing environment variables\n'
@@ -41,6 +51,6 @@ msg = (
     '> The PostToolUse hook will run relevant validation after the edit.'
 )
 print(json.dumps({'systemMessage': msg}))
-" "$SHORT_PATH"
+PY
 
 exit 0

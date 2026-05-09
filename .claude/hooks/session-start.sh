@@ -17,7 +17,7 @@ CONTAINER_COUNT=$(docker ps -q 2>/dev/null | wc -l | tr -d ' ' || echo "0")
 # Infra directory summary
 INFRA_DIRS=$(ls "$PROJECT_DIR/infra/" 2>/dev/null | tr '\n' ', ' | sed 's/,$//' || echo "none")
 
-python3 -c "
+python3 - "$GIT_BRANCH" "$GIT_STATUS" "$LAST_COMMIT" "$RUNNING_CONTAINERS" "$CONTAINER_COUNT" "$INFRA_DIRS" <<'PY'
 import json, sys
 
 branch = sys.argv[1]
@@ -30,9 +30,9 @@ infra_dirs = sys.argv[6]
 msg = f'''🏠 **hy-home.docker project context**
 
 **Git status**
-- Branch: `${branch}`
-- Changed files: `${git_changes}`
-- Last commit: `${last_commit}`
+- Branch: `{branch}`
+- Changed files: `{git_changes}`
+- Last commit: `{last_commit}`
 
 **Docker services**
 - Running: {container_count}
@@ -46,6 +46,6 @@ msg = f'''🏠 **hy-home.docker project context**
 '''
 
 print(json.dumps({'systemMessage': msg.strip()}))
-" "$GIT_BRANCH" "$GIT_STATUS" "$LAST_COMMIT" "$RUNNING_CONTAINERS" "$CONTAINER_COUNT" "$INFRA_DIRS"
+PY
 
 exit 0

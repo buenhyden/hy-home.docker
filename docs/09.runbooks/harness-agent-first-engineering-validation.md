@@ -1,5 +1,5 @@
 ---
-status: draft
+status: verified
 ---
 
 # Harness / Agent-first Engineering Validation Runbook
@@ -36,6 +36,7 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
 - [ ] Run `bash scripts/report-graphify-health.sh`.
 - [ ] Confirm no runtime policy change is needed before editing docs.
 - [ ] Confirm new stage docs use templates and parent README files are updated.
+- [ ] Run hook payload simulations after any hook quoting or parsing change.
 - [ ] Run all verification commands below.
 
 ### Procedure
@@ -57,11 +58,24 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
 3. Run governance and docs checks.
 
    ```bash
+   python3 -m json.tool .codex/hooks.json >/dev/null
+   python3 -m json.tool .claude/settings.json >/dev/null
+   bash -n .claude/hooks/*.sh scripts/*.sh
    bash scripts/check-repo-contracts.sh
    bash scripts/check-doc-traceability.sh
    ```
 
-4. Run infrastructure and baseline checks.
+4. Run hook payload simulations.
+
+   ```bash
+   printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
+   CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
+   printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/post-tool-validate.sh
+   ```
+
+   These commands validate local script behavior and JSON/system-message output. They do not prove external Claude/Codex platform event delivery.
+
+5. Run infrastructure and baseline checks.
 
    ```bash
    bash scripts/validate-docker-compose.sh
@@ -70,17 +84,19 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
    bash scripts/check-all-hardening.sh
    ```
 
-5. Run source-label scan.
+   Treat these as default/core Compose and supported hardening tier checks. Do not claim full workspace Docker coverage from `services_total=5`.
+
+6. Run source-label scan.
 
    ```bash
-   rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md GEMINI.md .claude .codex docs/00.agent-governance --glob '!docs/00.agent-governance/memory/**'
+   ! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md GEMINI.md .claude .codex docs/00.agent-governance --glob '!docs/00.agent-governance/memory/**'
    ```
 
-6. Report changed files, command outcomes, Graphify health status, and any residual risk.
+7. Report changed files, command outcomes, Graphify health status, and any residual risk, including out-of-scope infra profile failures such as `10-communication`.
 
 ## Verification Steps
 
-The runbook is successful when JSON parsing, Graphify health reporting, repository validators, and Docker checks exit with status 0, and the source-label scan returns no active matches. `report-graphify-health.sh` is non-failing advisory evidence; `status=advisory` requires corroboration but does not fail the repository gate.
+The runbook is successful when JSON parsing, hook payload simulation, Graphify health reporting, repository validators, default/core Docker checks, supported hardening tier checks, and the source-label scan all complete as expected. `report-graphify-health.sh` is non-failing advisory evidence; `status=advisory` requires corroboration but does not fail the repository gate.
 
 ## Observability and Evidence Sources
 
@@ -88,6 +104,7 @@ The runbook is successful when JSON parsing, Graphify health reporting, reposito
 - `git diff --stat`.
 - `scripts/report-graphify-health.sh` status and contamination counts.
 - `scripts/check-repo-contracts.sh` runtime harness catalog section.
+- Hook payload simulation output.
 - `docs/06.tasks/2026-05-09-harness-agent-first-engineering.md` task evidence.
 
 ## Safe Rollback or Recovery Procedure
@@ -95,6 +112,7 @@ The runbook is successful when JSON parsing, Graphify health reporting, reposito
 - For documentation mistakes, revert only the affected stage doc or README hunk.
 - For runtime catalog drift, restore parity between `.claude/**` and `docs/00.agent-governance/agents/**`.
 - For Compose validation failures, inspect the changed `infra/**/docker-compose*.yml` files before editing unrelated files.
+- For `10-communication` failures, open a separate infra remediation path unless that profile is explicitly in scope.
 
 ## Agent Operations (If Applicable)
 

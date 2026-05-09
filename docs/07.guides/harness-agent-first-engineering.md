@@ -1,5 +1,5 @@
 ---
-status: draft
+status: stable
 ---
 
 # Harness / Agent-first Engineering Guide
@@ -40,14 +40,20 @@ How-to / audit guide.
 5. Inspect runtime surfaces: `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/skill.md`, `.codex/README.md`, `.codex/hooks.json`.
 6. Compare runtime mirror against `docs/00.agent-governance/agents/**` and `subagent-protocol.md`.
 7. Review validators: `scripts/check-repo-contracts.sh`, `scripts/check-doc-traceability.sh`, `scripts/validate-docker-compose.sh`.
-8. If new stage docs are needed, start from `docs/99.templates/` and update the parent README in the same change.
-9. Run the validation commands listed in the runbook before declaring completion.
+8. Simulate hook payloads when `.claude/hooks/*.sh`, `.codex/hooks.json`, or `scripts/post-tool-validate.sh` changes; syntax checks alone do not prove `tool_input` parsing.
+9. If new stage docs are needed, start from `docs/99.templates/` and update the parent README in the same change.
+10. Run the validation commands listed in the runbook before declaring completion.
 
 ## Common Pitfalls
 
 - Treating `.codex` as a delegated-agent catalog. It is only a hook/context surface in this repository.
 - Editing root shims instead of the governance hub.
 - Treating contaminated Graphify output as authoritative architecture evidence.
+- Treating `status=advisory` Graphify health as a failure or as architecture authority; it is downgraded navigation context only.
+- Claiming full workspace Docker validation when only default/core profile and supported hardening tiers were checked.
+- Treating catalog parity checks as semantic parity across all agent/skill content.
+- Pulling `10-communication` Compose remediation into a Harness / Agent-first pass without a separate infra scope.
+- Skipping hook payload simulation after hook quoting or parsing changes.
 - Adding stage documents without updating the parent README.
 - Claiming graph refresh when the `graphify` CLI is unavailable.
 - Running `pre-commit` manually despite repository guidance.
