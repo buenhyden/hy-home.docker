@@ -2392,8 +2392,12 @@
     "hash": "e7fac3ce6ab9a13e9330ca02d8044312"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/README.md": {
-    "mtime": 1778264072.1015153,
-    "hash": "50e205e6997edaf00a67d179ea75fe1b"
+    "mtime": 1778295217.7716975,
+    "hash": "124d95398bcb99cd695b3b17eec566ed"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/08.operations/harness-agent-first-engineering.md": {
+    "mtime": 1778295102.6043756,
+    "hash": "93dc4a2575e45216e82b8e8f9fb52a7a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/09-tooling/optimization-hardening.md": {
     "mtime": 1774668356.586956,
@@ -2719,6 +2723,10 @@
     "mtime": 1774663424.8615751,
     "hash": "df117dd1224e44a147ccdf4bbeaf63f5"
   },
+  "/home/hy/project-infra/hy-home.docker/docs/06.tasks/2026-05-09-harness-agent-first-engineering.md": {
+    "mtime": 1778295286.4062064,
+    "hash": "a796576146d7f477ae88ef5e1c09a482"
+  },
   "/home/hy/project-infra/hy-home.docker/docs/06.tasks/2026-03-26-06-observability-tasks.md": {
     "mtime": 1774493861.2842288,
     "hash": "b1a7ddd8c105a9ad5b059d273ab1a18e"
@@ -2776,8 +2784,8 @@
     "hash": "a7598b3ec9daa989b48f2f42f7ccf6ae"
   },
   "/home/hy/project-infra/hy-home.docker/docs/06.tasks/README.md": {
-    "mtime": 1778264071.9695153,
-    "hash": "6032a73356f4134ef44cf706b6b75298"
+    "mtime": 1778295217.4416976,
+    "hash": "88bf26e235716f0d6174deff0b06d35d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/06.tasks/2026-04-01-standardize-infra-net.md": {
     "mtime": 1775028978.5404947,
@@ -2834,6 +2842,10 @@
   "/home/hy/project-infra/hy-home.docker/docs/05.plans/2026-03-28-07-workflow-optimization-hardening-plan.md": {
     "mtime": 1774666883.3533087,
     "hash": "f1fd8c97dd01e6fa05520d4ee4039090"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/05.plans/2026-05-09-harness-agent-first-engineering.md": {
+    "mtime": 1778295102.1115756,
+    "hash": "5aeb296cd8927b2bebdeed16906b3ac0"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.plans/2026-03-29-k8s-migration-strategy.md": {
     "mtime": 1774928166.947053,
@@ -2892,8 +2904,8 @@
     "hash": "f09ba423ba74811e363155a1d8aa5aff"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.plans/README.md": {
-    "mtime": 1776650224.4233801,
-    "hash": "94ba457fa0767c417c0761b64816f812"
+    "mtime": 1778295217.2436976,
+    "hash": "f8bc39bc79857d545dce754b4a9c680c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.plans/2026-04-01-standardize-infra-net.md": {
     "mtime": 1775028970.625219,
@@ -2928,8 +2940,12 @@
     "hash": "3a03740e694977ec3ca2cc143fd21fdf"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/README.md": {
-    "mtime": 1775027739.0972357,
-    "hash": "3598d16c9bc2b837152fdea9b2d9c56a"
+    "mtime": 1778295217.6088974,
+    "hash": "5bec38d6c1341ff1b400ab7eb4cddc59"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/07.guides/harness-agent-first-engineering.md": {
+    "mtime": 1778295102.4371755,
+    "hash": "ea8b773e6d4a5d857442b5bd3fe855a9"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/09-tooling/optimization-hardening.md": {
     "mtime": 1774668356.5829613,
@@ -3416,8 +3432,12 @@
     "hash": "02b324f0e35d3b249bc36ec1476d6a46"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/README.md": {
-    "mtime": 1775719414.6265452,
-    "hash": "1326002f6cb5f8ae907d27140df7bbbf"
+    "mtime": 1778295217.9564974,
+    "hash": "030c529ab5d97d62aa1a66e86280369b"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/harness-agent-first-engineering-validation.md": {
+    "mtime": 1778295102.7715757,
+    "hash": "7633d3382812204f343c9b3cd693b84d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/09-tooling/optimization-hardening.md": {
     "mtime": 1774668356.586956,
@@ -4048,8 +4068,8 @@
     "hash": "2b56af6ede0d06c59bbb6a0f31cd4754"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.specs/README.md": {
-    "mtime": 1776650224.013504,
-    "hash": "59b06c9f779bf8068d91d6048da1fe41"
+    "mtime": 1778295217.0720975,
+    "hash": "ba41c6f9316606eb844474bb9e99469c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.specs/09-tooling/spec.md": {
     "mtime": 1774668356.5789666,
@@ -4062,6 +4082,10 @@
   "/home/hy/project-infra/hy-home.docker/docs/04.specs/07-workflow/spec.md": {
     "mtime": 1776650176.5526845,
     "hash": "dbd65274a468d0165b42a00f77d1c974"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/04.specs/harness-agent-first-engineering/spec.md": {
+    "mtime": 1778295101.9443755,
+    "hash": "8f699daf4e0607b25695521632d09690"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.specs/05-messaging/spec.md": {
     "mtime": 1774665005.1791458,
