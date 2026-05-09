@@ -1220,16 +1220,16 @@
     "hash": "a81ae41417f89a8869c20473d26e3cc8"
   },
   "/home/hy/project-infra/hy-home.docker/README.md": {
-    "mtime": 1778313118.841127,
-    "hash": "2bad31281abdeae4e71539abdcc5b5eb"
+    "mtime": 1778315469.1359076,
+    "hash": "6a5b89e0cc5562f61176f7d51f33c115"
   },
   "/home/hy/project-infra/hy-home.docker/archive/Windows-Network-IP.md": {
     "mtime": 1771840597.8729992,
     "hash": "69fa3d47e1aee8acf237201b21e48873"
   },
   "/home/hy/project-infra/hy-home.docker/infra/README.md": {
-    "mtime": 1778260858.9279397,
-    "hash": "5f0381c544851511abaa856b91193eb5"
+    "mtime": 1778315469.428501,
+    "hash": "ebbb79e2c9fb44bdfd2dad3dd209d34b"
   },
   "/home/hy/project-infra/hy-home.docker/infra/common-optimizations.yml": {
     "mtime": 1775199604.3660989,
@@ -2276,8 +2276,8 @@
     "hash": "76a17e1130029696b855bfe8e094d474"
   },
   "/home/hy/project-infra/hy-home.docker/docs/README.md": {
-    "mtime": 1778296258.0971735,
-    "hash": "cc3d19be1f07395c40d6a804babee8bd"
+    "mtime": 1778315469.2822042,
+    "hash": "c199017e8417182f989c982ddd248480"
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.ard/0010-communication-architecture.md": {
     "mtime": 1774502600.7081194,
@@ -2392,8 +2392,8 @@
     "hash": "584ca5dd4a0c2563deb4c05c852a833a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/README.md": {
-    "mtime": 1778295217.7716975,
-    "hash": "124d95398bcb99cd695b3b17eec566ed"
+    "mtime": 1778315470.6080503,
+    "hash": "6960fc34f75664ef17af2d5da20108fb"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/harness-agent-first-engineering.md": {
     "mtime": 1778311117.775804,
@@ -2944,8 +2944,8 @@
     "hash": "cf52ec5c46204d8dc5f19a23faf5fdae"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/README.md": {
-    "mtime": 1778295217.6088974,
-    "hash": "5bec38d6c1341ff1b400ab7eb4cddc59"
+    "mtime": 1778315470.4352944,
+    "hash": "96ee003d9944fe715fea76cb176442ac"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/harness-agent-first-engineering.md": {
     "mtime": 1778311117.6319835,
@@ -2992,8 +2992,8 @@
     "hash": "062233e74b93e01106bf5f9cb151975d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/09-tooling/sonarqube.md": {
-    "mtime": 1778296181.5120456,
-    "hash": "d01485e29db415fc766e6e82709120b7"
+    "mtime": 1778315576.8968487,
+    "hash": "af30528cdb702b077121fd1761344bef"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/07-workflow/optimization-hardening.md": {
     "mtime": 1775208126.2572656,
@@ -3108,12 +3108,12 @@
     "hash": "749972756caef3de427e2ae89427f3a5"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/04.storage-systems.md": {
-    "mtime": 1778296181.4988456,
-    "hash": "77ec01364569ac393a4f4a587f7b7e85"
+    "mtime": 1778315471.3030913,
+    "hash": "f84cfa67b68993618253d00f87bb88ed"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/valkey-cluster.md": {
-    "mtime": 1774502486.9479227,
-    "hash": "97e503348d4c49d31c0eedcc3dab5506"
+    "mtime": 1778315471.6124446,
+    "hash": "87b47552b83417a861d7763b963b02bd"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/relational.md": {
     "mtime": 1774603470.3625135,
@@ -3168,8 +3168,8 @@
     "hash": "b6acbdaee72afb209514830edbc6c193"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/lake-and-object/minio.md": {
-    "mtime": 1778296460.8256562,
-    "hash": "d1a6eb2d30de715c1092c5cf71c83ca6"
+    "mtime": 1778315576.5984025,
+    "hash": "defd8269e801461731ac7f46171e10fd"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/lake-and-object/README.md": {
     "mtime": 1778296181.4812458,
@@ -3192,8 +3192,8 @@
     "hash": "2c4c3f85088367af7f223f816acfc3e8"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/analytics/opensearch.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "50e0d345fc3f98e261426794984d20e8"
+    "mtime": 1778315576.7476256,
+    "hash": "b467599308cdd3f75edc86815ea127da"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/analytics/ksqldb.md": {
     "mtime": 1774595931.4538186,
@@ -3216,8 +3216,8 @@
     "hash": "06f41a97bb48a04e992a3783d5cb4a31"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/cache-and-kv/valkey-cluster.md": {
-    "mtime": 1774671942.6919816,
-    "hash": "a99665de7376b49a83fcb7bd56e25e6d"
+    "mtime": 1778315471.455759,
+    "hash": "b30ce91071270464375da91878f753ae"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/cache-and-kv/README.md": {
     "mtime": 1778296181.4812458,
@@ -3228,8 +3228,8 @@
     "hash": "3fb428e7ade71c53272544685b541dc9"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/11-laboratory/open-notebook.md": {
-    "mtime": 1778274090.9381392,
-    "hash": "7a0aefdc22506879009347c789c0f006"
+    "mtime": 1778315471.142388,
+    "hash": "5f6e2125309121259f6bedad990534ac"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/11-laboratory/portainer.md": {
     "mtime": 1778296181.5120456,
@@ -3412,8 +3412,8 @@
     "hash": "c6e4964574b43807d723c8899d0473ea"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/README.md": {
-    "mtime": 1778296181.4944456,
-    "hash": "cc067c654c308315cfe79e25a2eef7d4"
+    "mtime": 1778315470.1955698,
+    "hash": "da91e70e0caecd1fb1c2e06f7ada0185"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/learning/roadmap-v1.md": {
     "mtime": 1778296181.5560455,
@@ -3436,8 +3436,8 @@
     "hash": "261769438b45dc98ce79e9e7b92f3b54"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/README.md": {
-    "mtime": 1778295217.9564974,
-    "hash": "030c529ab5d97d62aa1a66e86280369b"
+    "mtime": 1778315470.7848237,
+    "hash": "69e858e844796cb96c544ba75678d0a3"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/harness-agent-first-engineering-validation.md": {
     "mtime": 1778311117.9157374,
@@ -3492,8 +3492,8 @@
     "hash": "0944e1545983cbd3606a4031834d1fcb"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/07-workflow/airflow.md": {
-    "mtime": 1778296181.5472457,
-    "hash": "cfb2b4325d282e40f7e8f88b49689071"
+    "mtime": 1778315472.689196,
+    "hash": "6327ee1d9ae7aa4a4c2569d511824e49"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/07-workflow/README.md": {
     "mtime": 1774666971.3472104,
@@ -3580,8 +3580,8 @@
     "hash": "3883bd7ca31029ccd3e7b1ec354ba36f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/valkey-cluster.md": {
-    "mtime": 1778296181.5428457,
-    "hash": "8f81320d4308fbea82c294ba343ab755"
+    "mtime": 1778315472.1025891,
+    "hash": "0ced0a2175694312f4ddec1150ed9bf5"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/storage-exhaustion.md": {
     "mtime": 1778296181.5428457,
@@ -3600,8 +3600,8 @@
     "hash": "62d02f735bd69ed1c9becf72e0bc9184"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/specialized/neo4j.md": {
-    "mtime": 1778296460.8564563,
-    "hash": "b89b69377cb66a0bbab05cf28278ecb6"
+    "mtime": 1778315577.0382178,
+    "hash": "28f862a8d8c547c30e90a57d109310aa"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/specialized/README.md": {
     "mtime": 1778296181.4944456,
@@ -3652,8 +3652,8 @@
     "hash": "461e2706a50ce586c82b96421f197117"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/analytics/opensearch.md": {
-    "mtime": 1778296181.5340457,
-    "hash": "8a68e61cb93f370ae6064c7c85eb7668"
+    "mtime": 1778315471.941886,
+    "hash": "b71c6e2ac49b141da2628f6932199b0d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/analytics/ksqldb.md": {
     "mtime": 1778296181.5340457,
@@ -3664,8 +3664,8 @@
     "hash": "11d8c705af53dee6eb91549c4cf7368d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/analytics/influxdb.md": {
-    "mtime": 1778296181.5340457,
-    "hash": "98cf390ff1014d2f87ee6118cd97c356"
+    "mtime": 1778315471.7811828,
+    "hash": "002cefd868fd47441447f4db1bb23b47"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/relational/postgresql-cluster.md": {
     "mtime": 1778296181.5384457,
@@ -3752,8 +3752,8 @@
     "hash": "42184c4d325e5e4112b64979ccbee176"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/02-auth/keycloak.md": {
-    "mtime": 1774659933.4041867,
-    "hash": "223b3328f702c626784b16595f1674c4"
+    "mtime": 1778315470.9776673,
+    "hash": "3aa6e3c5d2b4da76e46130cc46eab0ea"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/02-auth/README.md": {
     "mtime": 1778296181.4900455,
@@ -4076,8 +4076,8 @@
     "hash": "c67428f60056852111bcf0f377da6ec5"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.specs/infra-secrets-docs-refresh/spec.md": {
-    "mtime": 1778296071.4671056,
-    "hash": "3a71bad480e58f060b69458ab23ca825"
+    "mtime": 1778315469.7092323,
+    "hash": "de89a12cad55a463b7897eee8139c3f9"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.specs/09-tooling/spec.md": {
     "mtime": 1774668356.5789666,
@@ -4244,8 +4244,8 @@
     "hash": "784b76c7226cac27f847b186acca7664"
   },
   "/home/hy/project-infra/hy-home.docker/secrets/README.md": {
-    "mtime": 1778296258.5503736,
-    "hash": "4dc84f2c06dae023758f5283f22f2296"
+    "mtime": 1778315469.5708435,
+    "hash": "e6077122c82b4358658137bfc3ca7da3"
   },
   "/home/hy/project-infra/hy-home.docker/secrets/security/unseal_keys.txt": {
     "mtime": 1774255581.5606918,
