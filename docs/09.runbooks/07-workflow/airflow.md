@@ -72,3 +72,19 @@
 
 - [ ] 비정상 상태의 컨테이너를 강제 종료(`kill`)하기 전, 반드시 현재 실행 중인 태스크를 `Task Instance > Clear` 하여 재실행 가능하도록 조치하십시오.
 - [ ] DB 마이그레이션 실패 시, `_AIRFLOW_DB_MIGRATE: 'false'`로 일시 전환 후 롤백을 고려하십시오.
+
+---
+
+## Agent Operations (If Applicable)
+
+- **Prompt Rollback**: 적용하지 않음
+- **Model Fallback**: 적용하지 않음
+- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
+- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
+- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+
+## Related Operational Documents
+
+- [../README.md](../README.md)
+- [../../08.operations/README.md](../../08.operations/README.md)
+- [../../10.incidents/README.md](../../10.incidents/README.md)

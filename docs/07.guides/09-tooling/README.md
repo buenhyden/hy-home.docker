@@ -34,3 +34,45 @@
 - [Tooling Tasks](../../06.tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md)
 - [Tooling Operations](../../08.operations/09-tooling/README.md)
 - [Tooling Runbooks](../../09.runbooks/09-tooling/README.md)
+
+---
+
+## Audience
+
+이 README의 주요 독자:
+
+- Developers
+- Operators
+- Documentation Writers
+- AI Agents
+
+## Scope
+
+### In Scope
+
+- how-to, onboarding, troubleshooting guide
+- 관련 infra/operation/runbook 링크
+- 작업 전제조건과 흔한 실수
+
+### Out of Scope
+
+- 운영 통제 정책 원문
+- 실시간 장애 대응 절차
+- secret 값 또는 credential 원문
+
+## Structure
+
+```text
+docs/07.guides/09-tooling/
+├── 01.iac-automation.md  # 문서
+├── k6.md  # 문서
+├── locust.md  # 문서
+├── optimization-hardening.md  # 문서
+├── performance-testing.md  # 문서
+├── README.md  # This file
+├── registry.md  # 문서
+├── sonarqube.md  # 문서
+├── syncthing.md  # 문서
+├── terraform.md  # 문서
+└── terrakube.md  # 문서
+```

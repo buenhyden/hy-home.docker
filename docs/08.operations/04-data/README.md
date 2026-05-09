@@ -46,7 +46,7 @@ This directory defines the operational standards and data protection requirement
 
 ## How to Work in This Area
 
-1. 전역 시스템 운영 원칙은 [Operations](../../08.operations/README.md) 메인 페이지를 참조합니다.
+1. 전역 시스템 운영 원칙은 [Operations](../README.md) 메인 페이지를 참조합니다.
 2. 각 데이터 서비스별 개별 정책은 이 디렉터리의 개별 문서를 따릅니다.
 3. 정책 변경 시 아키텍처 팀의 승인이 필요합니다.
 

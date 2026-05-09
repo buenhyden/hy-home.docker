@@ -76,3 +76,19 @@ Neo4j Community Edition은 인스턴스를 중지한 후 오프라인 덤프를 
 ## Safe Rollback or Recovery Procedure
 
 - 복구 실패 시, 기존 `neo4j-data` 볼륨의 백업 디렉토리를 보존하고 이전 시점의 덤프 파일을 사용하여 재시도한다.
+
+---
+
+## Agent Operations (If Applicable)
+
+- **Prompt Rollback**: 적용하지 않음
+- **Model Fallback**: 적용하지 않음
+- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
+- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
+- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+
+## Related Operational Documents
+
+- [../README.md](../README.md)
+- [../../08.operations/README.md](../../../08.operations/README.md)
+- [../../10.incidents/README.md](../../../10.incidents/README.md)

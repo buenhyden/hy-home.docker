@@ -63,3 +63,9 @@ analytics/
 
 ---
 Copyright (c) 2026. Analytics Tier Runbooks.
+
+---
+
+## Overview
+
+`docs/09.runbooks/04-data/analytics`는 운영자가 즉시 실행할 수 있는 runbook 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.

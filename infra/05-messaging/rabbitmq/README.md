@@ -66,3 +66,18 @@ mc admin definitions export ...
 - **ARD**: `[../../../docs/02.ard/0005-messaging-architecture.md]`
 - **Runbook**: `[../../../docs/09.runbooks/05-messaging/rabbitmq.md]`
 - **Monitoring**: `Grafana - Messaging Dashboard`
+
+---
+
+## Overview
+
+`infra/05-messaging/rabbitmq`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.
+
+## Audience
+
+이 README의 주요 독자:
+
+- Developers
+- Operators
+- Documentation Writers
+- AI Agents

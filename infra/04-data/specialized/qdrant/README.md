@@ -27,9 +27,9 @@ The `qdrant` service provides the vector database layer for AI/ML applications, 
 ### Out of Scope
 
 - Vector embedding generation (Handled by upstream models)
-- Collection-level schema design (See [Technical Guide](../../../docs/07.guides/04-data/specialized/qdrant.md))
-- Global backup policies (See [Operations Policy](../../../docs/08.operations/04-data/specialized/qdrant.md))
-- Disaster recovery procedures (See [Recovery Runbook](../../../docs/09.runbooks/04-data/specialized/qdrant.md))
+- Collection-level schema design (See [Technical Guide](../../../../docs/07.guides/04-data/specialized/qdrant.md))
+- Global backup policies (See [Operations Policy](../../../../docs/08.operations/04-data/specialized/qdrant.md))
+- Disaster recovery procedures (See [Recovery Runbook](../../../../docs/09.runbooks/04-data/specialized/qdrant.md))
 
 ## Structure
 
@@ -41,7 +41,7 @@ qdrant/
 
 ## How to Work in This Area
 
-1. Review the [Technical Guide](../../../docs/07.guides/04-data/specialized/qdrant.md) for RAG integration patterns.
+1. Review the [Technical Guide](../../../../docs/07.guides/04-data/specialized/qdrant.md) for RAG integration patterns.
 2. Ensure the `ai` or `data` profiles are active when deploying.
 3. Snapshots are stored within the persistent volume; verify path mapping before backup operations.
 4. Monitor health via the `/readyz` endpoint.
@@ -57,7 +57,7 @@ qdrant/
 
 ## Related References
 
-- [05.analytical-specialized-dbs.md](../../../docs/07.guides/04-data/05.analytical-specialized-dbs.md)
-- [Qdrant Technical Guide](../../../docs/07.guides/04-data/specialized/qdrant.md)
-- [Qdrant Operations Policy](../../../docs/08.operations/04-data/specialized/qdrant.md)
-- [Qdrant Recovery Runbook](../../../docs/09.runbooks/04-data/specialized/qdrant.md)
+- [05.analytical-specialized-dbs.md](../../../../docs/07.guides/04-data/05.analytical-specialized-dbs.md)
+- [Qdrant Technical Guide](../../../../docs/07.guides/04-data/specialized/qdrant.md)
+- [Qdrant Operations Policy](../../../../docs/08.operations/04-data/specialized/qdrant.md)
+- [Qdrant Recovery Runbook](../../../../docs/09.runbooks/04-data/specialized/qdrant.md)

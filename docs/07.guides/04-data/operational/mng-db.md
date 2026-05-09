@@ -48,3 +48,17 @@ docker-compose ps
 - `n8n`: 워크플로우 자동화용
 - `keycloak`: 자격 증명 관리용
 Copyright (c) 2026. Licensed under the MIT License.
+
+---
+
+## Common Pitfalls
+
+- guide 문서에 운영 정책이나 incident timeline을 섞지 않는다.
+- secret 값, token, 인증서 원문을 열람하거나 문서화하지 않는다.
+- runtime 변경이 필요한 경우 문서 보강과 별도 작업으로 분리한다.
+
+## Related Documents
+
+- [../README.md](../README.md)
+- [../../08.operations/README.md](../../../08.operations/README.md)
+- [../../09.runbooks/README.md](../../../09.runbooks/README.md)

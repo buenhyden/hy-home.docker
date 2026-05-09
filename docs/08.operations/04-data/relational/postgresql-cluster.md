@@ -62,3 +62,16 @@ This document defines the operational policy for `postgresql-cluster`. It establ
 - **Runbook**: `docs/09.runbooks/04-data/relational/postgresql-cluster.md`
 - **Infra**: `infra/04-data/relational/postgresql-cluster/README.md`
 - **Postmortem**: `docs/10.incidents/`
+
+---
+
+## Overview (KR)
+
+이 문서는 `docs/08.operations/04-data/relational/postgresql-cluster.md` 주제의 운영 정책을 정의한다. 기존 운영 내용을 유지하면서 적용 범위, 통제, 검증 기준을 명시한다.
+
+## AI Agent Policy Section (If Applicable)
+
+- **Model / Prompt Change Process**: agent runtime 변경은 이 문서에서 직접 수행하지 않고 governance 문서로 분리한다.
+- **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
+- **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
+- **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.

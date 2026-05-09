@@ -54,7 +54,7 @@ analytics/
 - **ARD**: [0012-data-analytics-architecture.md](../../../02.ard/0012-data-analytics-architecture.md)
 - **ADR**: [0015-analytics-engine-selection.md](../../../03.adr/0015-analytics-engine-selection.md)
 - **Spec**: [spec.md](../../../04.specs/04-data-analytics/spec.md)
-- **Implementation**: [infra/04-data/analytics/](../../../../infra/04-data/analytics/)
+- **Implementation**: [infra/04-data/analytics/](../../../../infra/04-data/analytics)
 - **Operations**: [docs/08.operations/04-data/analytics/](../../../08.operations/04-data/analytics/README.md)
 - **Runbooks**: [docs/09.runbooks/04-data/analytics/](../../../09.runbooks/04-data/analytics/README.md)
 
@@ -66,3 +66,9 @@ analytics/
 
 ---
 Copyright (c) 2026. Analytics Tier Documentation.
+
+---
+
+## Overview
+
+`docs/07.guides/04-data/analytics`는 사용자와 운영자가 재현 가능한 작업 방법을 이해하도록 돕는 guide 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.

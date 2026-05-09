@@ -74,3 +74,19 @@ docker exec valkey-node-0 valkey-cli -a $PASS --cluster add-node [new-ip]:[port]
 ## Safe Rollback or Recovery Procedure
 
 - 클러스터 데이터 손상이 심각할 경우, 모든 노드를 중지하고 데이터 볼륨의 백업본(RDB/AOF)을 복원한 후 클러스터를 재구성합니다.
+
+---
+
+## Agent Operations (If Applicable)
+
+- **Prompt Rollback**: 적용하지 않음
+- **Model Fallback**: 적용하지 않음
+- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
+- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
+- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+
+## Related Operational Documents
+
+- [../README.md](../README.md)
+- [../../08.operations/README.md](../../08.operations/README.md)
+- [../../10.incidents/README.md](../../10.incidents/README.md)

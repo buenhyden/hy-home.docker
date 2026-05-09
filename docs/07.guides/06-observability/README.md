@@ -73,3 +73,11 @@
 
 1. 가이드 변경 시 optimization-hardening 문서와 상호 링크를 유지한다.
 2. gateway/SSO 설명은 `08.operations` 정책과 충돌하지 않아야 한다.
+
+---
+
+## Related References
+
+- [docs/07.guides/README.md](../README.md)
+- [docs/08.operations/README.md](../../08.operations/README.md)
+- [docs/09.runbooks/README.md](../../09.runbooks/README.md)

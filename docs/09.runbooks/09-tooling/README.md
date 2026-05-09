@@ -32,3 +32,51 @@
 - [Tooling Spec](../../04.specs/09-tooling/spec.md)
 - [Tooling Plan](../../05.plans/2026-03-28-09-tooling-optimization-hardening-plan.md)
 - [Tooling Tasks](../../06.tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md)
+
+---
+
+## Audience
+
+이 README의 주요 독자:
+
+- Developers
+- Operators
+- Documentation Writers
+- AI Agents
+
+## Scope
+
+### In Scope
+
+- 실행 절차와 checklist
+- 검증 명령과 evidence source
+- rollback 또는 recovery 기준
+
+### Out of Scope
+
+- 정책 결정 자체
+- 학습용 튜토리얼
+- postmortem 분석
+
+## Structure
+
+```text
+docs/09.runbooks/09-tooling/
+├── k6.md  # 문서
+├── locust.md  # 문서
+├── optimization-hardening.md  # 문서
+├── performance-testing.md  # 문서
+├── README.md  # This file
+├── registry.md  # 문서
+├── sonarqube.md  # 문서
+├── syncthing.md  # 문서
+├── terraform.md  # 문서
+└── terrakube.md  # 문서
+```
+
+## How to Work in This Area
+
+1. 관련 operation policy를 확인한 뒤 절차, 검증, rollback 항목을 갱신한다.
+2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
+3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
+4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.

@@ -67,6 +67,6 @@ Master UI를 통해 볼륨 서버 상태와 복제 상태를 확인한다.
 
 ## Related Documents
 
-- **Spec**: [Data Persistence Spec](../../../../docs/04.specs/04-data/spec.md)
-- **Operation**: [SeaweedFS Operations Policy](../../../../docs/08.operations/04-data/lake-and-object/seaweedfs.md)
-- **Runbook**: [SeaweedFS Recovery Runbook](../../../../docs/09.runbooks/04-data/lake-and-object/seaweedfs.md)
+- **Spec**: [Data Persistence Spec](../../../04.specs/04-data/spec.md)
+- **Operation**: [SeaweedFS Operations Policy](../../../08.operations/04-data/lake-and-object/seaweedfs.md)
+- **Runbook**: [SeaweedFS Recovery Runbook](../../../09.runbooks/04-data/lake-and-object/seaweedfs.md)

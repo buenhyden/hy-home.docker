@@ -25,8 +25,8 @@
 
 ### Out of Scope
 
-- **HA Production Data**: 고가용성이 필요한 서비스 데이터는 [postgresql-cluster](../postgresql-cluster/README.md) 사용.
-- **Large Volumetric Data**: 분석용 대용량 데이터는 [lake-and-object](../lake-and-object/README.md) 참조.
+- **HA Production Data**: 고가용성이 필요한 서비스 데이터는 [postgresql-cluster](../../relational/postgresql-cluster/README.md) 사용.
+- **Large Volumetric Data**: 분석용 대용량 데이터는 [MinIO](../../lake-and-object/minio/README.md) 또는 [SeaweedFS](../../lake-and-object/seaweedfs/README.md) 참조.
 
 ## Structure
 
@@ -64,11 +64,11 @@ mng-db/
 
 ## Related References
 
-- **ARD**: [0004-data-architecture.md](../../../docs/02.ard/0004-data-architecture.md)
-- **Spec**: [spec.md](../../../docs/04.specs/04-data/spec.md)
-- **Guide**: [mng-db.md](../../../docs/07.guides/04-data/operational/mng-db.md)
-- **Operation**: [mng-db.md](../../../docs/08.operations/04-data/operational/mng-db.md)
-- **Runbook**: [mng-db.md](../../../docs/09.runbooks/04-data/operational/mng-db.md)
+- **ARD**: [0004-data-architecture.md](../../../../docs/02.ard/0004-data-architecture.md)
+- **Spec**: [spec.md](../../../../docs/04.specs/04-data/spec.md)
+- **Guide**: [mng-db.md](../../../../docs/07.guides/04-data/operational/mng-db.md)
+- **Operation**: [mng-db.md](../../../../docs/08.operations/04-data/operational/mng-db.md)
+- **Runbook**: [mng-db.md](../../../../docs/09.runbooks/04-data/operational/mng-db.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

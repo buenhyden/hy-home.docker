@@ -35,14 +35,71 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 
 ## Traceability (Golden 5)
 
-- **PRD**: [07-workflow PRD](../../../docs/01.prd/07-workflow.md)
-- **ARD**: [07-workflow ARD](../../../docs/02.ard/07-workflow.md)
-- **ADR**: [N8N Integration ADR](../../../docs/03.adr/07-workflow/n8n-decision.md)
-- **Spec**: [N8N Technical Spec](../../../docs/04.specs/07-workflow/n8n-spec.md)
-- **Plan**: [N8N Implementation Plan](../../../docs/05.plans/07-workflow/n8n-setup.md)
+- **PRD**: [07-workflow PRD](../../../docs/01.prd/2026-03-26-07-workflow.md)
+- **ARD**: [07-workflow ARD](../../../docs/02.ard/0007-workflow-architecture.md)
+- **ADR**: [N8N Integration ADR](../../../docs/03.adr/0007-airflow-n8n-hybrid-workflow.md)
+- **Spec**: [07-workflow Technical Spec](../../../docs/04.specs/07-workflow/spec.md)
+- **Plan**: [07-workflow Implementation Plan](../../../docs/05.plans/2026-03-26-07-workflow-standardization.md)
 
 ## Operational Documentation
 
 - **System Guide**: [n8n System Guide](../../../docs/07.guides/07-workflow/n8n.md)
 - **Operations Policy**: [n8n Operations Policy](../../../docs/08.operations/07-workflow/n8n.md)
 - **Recovery Runbook**: [n8n Recovery Runbook](../../../docs/09.runbooks/07-workflow/n8n.md)
+
+---
+
+## Overview
+
+`infra/07-workflow/n8n`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.
+
+## Audience
+
+이 README의 주요 독자:
+
+- Developers
+- Operators
+- Documentation Writers
+- AI Agents
+
+## Scope
+
+### In Scope
+
+- Compose 서비스 정의와 관련 설정 설명
+- 서비스별 README와 운영 문서 연결
+- 검증 시 참고해야 할 구성 파일 인벤토리
+
+### Out of Scope
+
+- secret 값 원문
+- 사용자 승인 없는 runtime 동작 변경
+- 다른 tier의 서비스 정책 중복 정의
+
+## Structure
+
+```text
+infra/07-workflow/n8n/
+├── custom/  # 하위 구성 영역
+├── dev.Dockerfile  # 구성 파일
+├── docker-compose.dev.yml  # Docker Compose 정의
+├── docker-compose.yml  # Docker Compose 정의
+├── docker-entrypoint.dev.sh  # 구성 파일
+├── docker-entrypoint.sh  # 구성 파일
+├── Dockerfile  # 구성 파일
+└── README.md  # This file
+```
+
+## How to Work in This Area
+
+1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
+2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
+3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
+4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
+
+## Related References
+
+- [infra/README.md](../../README.md)
+- [docs/07.guides/README.md](../../../docs/07.guides/README.md)
+- [docs/08.operations/README.md](../../../docs/08.operations/README.md)
+- [docs/09.runbooks/README.md](../../../docs/09.runbooks/README.md)

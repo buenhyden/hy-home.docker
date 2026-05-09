@@ -27,7 +27,7 @@ Open WebUI (formerly Ollama WebUI) provides a ChatGPT-like interface for local L
 ### Out of Scope
 
 - Model weights: Managed in [ollama](../ollama/README.md).
-- Vector persistence: Managed in [qdrant](../../04-data/qdrant/README.md).
+- Vector persistence: Managed in [qdrant](../../04-data/specialized/qdrant/README.md).
 
 ## Structure
 
@@ -46,7 +46,7 @@ open-webui/
 ## Related References
 
 - [Ollama Implementation](../ollama/README.md)
-- [Qdrant Implementation](../../04-data/qdrant/README.md)
+- [Qdrant Implementation](../../04-data/specialized/qdrant/README.md)
 - [Open WebUI System Guide](../../../docs/07.guides/08-ai/open-webui.md)
 - [Open WebUI Operations Policy](../../../docs/08.operations/08-ai/open-webui.md)
 - [Open WebUI Runbook](../../../docs/09.runbooks/08-ai/open-webui.md)

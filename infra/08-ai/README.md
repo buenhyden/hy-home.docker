@@ -83,3 +83,12 @@ docker exec -it ollama ollama list
 1. Always pull models explicitly via `ollama pull <model>` before referencing them in RAG.
 2. Monitor VRAM usage via `ollama-exporter` to prevent OOM during concurrent inference.
 3. For RAG tasks, ensure `qwen3-embedding:0.6b` (or current standard) is available for vectorization.
+
+---
+
+## Related References
+
+- [infra/README.md](../README.md)
+- [docs/07.guides/README.md](../../docs/07.guides/README.md)
+- [docs/08.operations/README.md](../../docs/08.operations/README.md)
+- [docs/09.runbooks/README.md](../../docs/09.runbooks/README.md)

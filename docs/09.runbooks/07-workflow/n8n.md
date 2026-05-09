@@ -67,3 +67,19 @@
 
 - [ ] 서비스를 재시작하기 전, `database` 볼륨의 데이터 유실 가능성이 낮으므로 안심하고 재시작을 시도하십시오.
 - [ ] 만약 `N8N_ENCRYPTION_KEY`가 변경되어 이전 데이터 복호화가 불가능한 경우, 이전 키로 롤백하거나 자격 증명을 재설정해야 합니다.
+
+---
+
+## Agent Operations (If Applicable)
+
+- **Prompt Rollback**: 적용하지 않음
+- **Model Fallback**: 적용하지 않음
+- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
+- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
+- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+
+## Related Operational Documents
+
+- [../README.md](../README.md)
+- [../../08.operations/README.md](../../08.operations/README.md)
+- [../../10.incidents/README.md](../../10.incidents/README.md)

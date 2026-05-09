@@ -74,9 +74,9 @@ cassandra/
 
 ## Related References
 
-- **Guide**: [Cassandra Guide](../../docs/07.guides/04-data/nosql/cassandra.md)
-- **Operation**: [Cassandra Operation](../../docs/08.operations/04-data/nosql/cassandra.md)
-- **Runbook**: [Cassandra Runbook](../../docs/09.runbooks/04-data/nosql/cassandra.md)
+- **Guide**: [Cassandra Guide](../../../../docs/07.guides/04-data/nosql/cassandra.md)
+- **Operation**: [Cassandra Operation](../../../../docs/08.operations/04-data/nosql/cassandra.md)
+- **Runbook**: [Cassandra Runbook](../../../../docs/09.runbooks/04-data/nosql/cassandra.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

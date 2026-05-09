@@ -75,9 +75,9 @@ mongodb/
 
 ## Related References
 
-- **Guide**: [MongoDB Guide](../../docs/07.guides/04-data/nosql/mongodb.md)
-- **Operation**: [MongoDB Operation](../../docs/08.operations/04-data/nosql/mongodb.md)
-- **Runbook**: [MongoDB Runbook](../../docs/09.runbooks/04-data/nosql/mongodb.md)
+- **Guide**: [MongoDB Guide](../../../../docs/07.guides/04-data/nosql/mongodb.md)
+- **Operation**: [MongoDB Operation](../../../../docs/08.operations/04-data/nosql/mongodb.md)
+- **Runbook**: [MongoDB Runbook](../../../../docs/09.runbooks/04-data/nosql/mongodb.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

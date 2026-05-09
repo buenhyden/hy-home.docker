@@ -110,3 +110,9 @@ Traefik uses the `ForwardAuth` middleware (`sso-auth@file`) to delegate authenti
 - [Gateway Operations Policy](../../../docs/08.operations/01-gateway/traefik.md)
 - [Traefik Runbook](../../../docs/09.runbooks/01-gateway/traefik.md)
 - [Traefik Dashboard](https://dashboard.${DEFAULT_URL:-localhost}) (Internal)
+
+---
+
+## Overview
+
+`infra/01-gateway/traefik`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.

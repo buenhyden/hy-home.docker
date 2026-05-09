@@ -110,3 +110,28 @@
 
 - [Learning reference index](README.md)
 - [90.references](../README.md)
+
+---
+
+## Overview (KR)
+
+이 문서는 `docs/90.references/learning/roadmap.md`에 대한 참고 문서다. 느리게 변하는 기준 정보와 관련 출처를 정리한다.
+
+## Purpose
+
+운영 문서와 구현 문서가 참고할 수 있는 안정적인 배경 정보를 제공한다.
+
+## Scope
+
+- 포함: 용어, 기준, roadmap, 외부 또는 repo-local 참고 정보
+- 제외: 실시간 운영 절차, incident timeline, secret 값
+
+## Definitions / Facts
+
+- 이 문서는 active policy나 runbook을 대체하지 않는다.
+- 변경 시 관련 stage 문서의 링크를 함께 확인한다.
+
+## Sources
+
+- Repository-local docs and README files
+- Linked references already present in this document

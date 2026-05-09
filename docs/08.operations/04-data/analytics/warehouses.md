@@ -55,3 +55,12 @@
 
 - **ARD**: [0012-data-analytics-architecture.md](../../../02.ard/0012-data-analytics-architecture.md)
 - **Runbook**: [warehouses.md](../../../09.runbooks/04-data/analytics/warehouses.md)
+
+---
+
+## AI Agent Policy Section (If Applicable)
+
+- **Model / Prompt Change Process**: agent runtime 변경은 이 문서에서 직접 수행하지 않고 governance 문서로 분리한다.
+- **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
+- **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
+- **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.

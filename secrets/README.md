@@ -1,93 +1,114 @@
-# 🔐 Secrets Management
+# Secrets Management
 
-> Centralized repository for all sensitive environment variables and Docker secrets.
+> Docker Secrets 포맷의 민감 정보 파일 경로와 운영 규칙을 관리하는 보안 진입 문서
 
 ## Overview
 
-**KR**: `hy-home.docker` 인프라에서 사용하는 모든 민감 정보(비밀번호, 키, 토큰)를 Docker Secrets 포맷(`.txt`)으로 관리하는 저장소입니다. 중앙 집중형 레지스트리와 자동화 스크립트를 통해 보안과 일관성을 유지합니다.
-**EN**: Centralized repository for managing all sensitive information (passwords, keys, tokens) used in the `hy-home.docker` infrastructure in Docker Secrets format (`.txt`). It maintains security and consistency through a centralized registry and automation scripts.
+`secrets/`는 `hy-home.docker` 인프라에서 사용하는 비밀번호, 키, 토큰, 인증서 관련 파일 경로를 Docker Secrets 포맷으로 배치하는 공간입니다. 이 README는 secret 값 자체가 아니라 디렉터리 구조, registry, 생성/검증 절차, 안전한 운영 원칙을 설명합니다.
+
+이 작업 범위에서는 `secrets/**/*.txt` 값 파일을 열람하지 않습니다. 분석과 문서화는 파일명, 디렉터리 구조, `SENSITIVE_ENV_VARS.md.example`, 관련 README와 스크립트 설명만 기준으로 수행합니다.
+
+## Audience
+
+이 README의 주요 독자:
+
+- Operators
+- Security Maintainers
+- Developers
+- AI Agents
+
+## Scope
+
+### In Scope
+
+- Docker secret 파일의 경로 체계와 책임 범위
+- secret registry와 example 파일의 사용 방식
+- secret 생성/동기화 스크립트 안내
+- 문서 작성 시 민감값을 노출하지 않는 기준
+
+### Out of Scope
+
+- secret 값, token, private key, 인증서 원문
+- 운영 승인 없는 secret 교체 또는 재생성
+- 외부 secret manager 마이그레이션
+- Docker Compose runtime 동작 변경
+
+## Structure
+
+```text
+secrets/
+├── auth/                 # Traefik, Keycloak, proxy 관련 인증 secret
+├── automation/           # Airflow, n8n 등 자동화 서비스 secret
+├── certs/                # 로컬 TLS 인증서 파일 경로
+├── common/               # SMTP, webhook 등 공통 secret
+├── data/                 # OpenSearch, Supabase, AI 도구 관련 secret
+├── db/                   # PostgreSQL, Valkey, NoSQL 등 DB secret
+├── observability/        # Grafana와 monitoring stack secret
+├── security/             # Vault 등 보안 계층 secret
+├── storage/              # MinIO 등 object storage secret
+├── tools/                # SonarQube, Syncthing 등 도구 secret
+├── SENSITIVE_ENV_VARS.md.example  # registry 예시
+└── README.md             # This file
+```
+
+## How to Work in This Area
+
+1. secret 값 파일을 열지 말고, 먼저 이 README와 `SENSITIVE_ENV_VARS.md.example`를 확인합니다.
+2. 새 secret 경로가 필요하면 대응 서비스의 `infra/` Compose 정의와 registry mapping을 함께 확인합니다.
+3. secret 생성 또는 누락 파일 보강은 `./scripts/gen-secrets.sh` 같은 승인된 스크립트를 우선 사용합니다.
+4. 인증서 파일은 `./scripts/generate-local-certs.sh` 절차와 관련 runbook을 따릅니다.
+5. 문서, 로그, commit, PR 설명에는 secret 값 원문을 쓰지 않습니다.
 
 ## Navigation / Inventory
 
 | Component | Path | Purpose |
-| :--- | :--- | :--- |
-| **Registry** | `SENSITIVE_ENV_VARS.md` | Source of truth for all secrets mapping and metadata |
-| **Auth** | `auth/` | Credentials for Traefik, Keycloak, and proxies |
-| **Automation** | `automation/` | Keys and passwords for Airflow, n8n, etc. |
-| **Certs** | `certs/` | Local TLS certificates (managed by mkcert) |
-| **Common** | `common/` | Shared credentials like SMTP and Slack webhooks |
-| **Data** | `data/` | Secrets for OpenSearch, Supabase, and AI tools |
-| **DB** | `db/` | Database-specific passwords (Postgres, Valkey, NoSQL) |
-| **Observability**| `observability/` | Credentials for Grafana and monitoring tools |
-| **Storage** | `storage/` | MinIO root and application credentials |
-| **Tools** | `tools/` | Internal secrets for SonarQube, Syncthing, etc. |
+| --- | --- | --- |
+| Registry example | `SENSITIVE_ENV_VARS.md.example` | secret mapping과 metadata 예시 |
+| Auth | `auth/` | Traefik, Keycloak, proxy credentials |
+| Automation | `automation/` | Airflow, n8n 등 workflow secret |
+| Certs | `certs/` | local TLS certificate file paths |
+| Common | `common/` | SMTP, Slack webhook 등 공통 secret |
+| Data | `data/` | OpenSearch, Supabase, AI service secret |
+| DB | `db/` | PostgreSQL, Valkey, Cassandra, CouchDB, MongoDB 등 DB secret |
+| Observability | `observability/` | Grafana and monitoring credentials |
+| Security | `security/` | Vault and security-layer secret |
+| Storage | `storage/` | MinIO and object storage credentials |
+| Tools | `tools/` | SonarQube, Syncthing, utility service secret |
 
----
+## Secret Management System
 
-## 🏛️ Secret Management System
+### Registry
 
-### 1. Registry (Source of Truth)
+- `SENSITIVE_ENV_VARS.md`가 존재하는 환경에서는 secret mapping의 source of truth로 사용합니다.
+- 새 환경이나 문서 검토에서는 `SENSITIVE_ENV_VARS.md.example`을 사용합니다.
+- registry는 파일 경로, 대응 `.env` 변수, 자동화 상태, 갱신 이력을 추적해야 합니다.
 
-- **[SENSITIVE_ENV_VARS.md](SENSITIVE_ENV_VARS.md)**: Master list of all secrets.
-- Tracks automation status, file paths, corresponding `.env` variables, and modification dates.
-- For new environments, refer to **[SENSITIVE_ENV_VARS.md.example](SENSITIVE_ENV_VARS.md.example)**.
-
-### 2. Automation Script
-
-- **`gen-secrets.sh`**: Automatically generates password files based on the registry.
-- **Key Features**:
-  - Secure random password generation (16 characters).
-  - `htpasswd` generation for Traefik/OpenSearch.
-  - Real-time registry synchronization.
-
----
-
-## ⚙️ Infrastructure / Component Details
-
-### Standard Service Secrets (Samples)
-
-| Service | Category | Docker Secret File | Purpose |
-| :--- | :--- | :--- | :--- |
-| `traefik` | Auth | `auth/traefik_admin_password.txt` | Dashboard Access |
-| `keycloak` | Auth | `auth/keycloak_admin_password.txt` | IAM Admin Password |
-| `postgres` | DB | `db/postgres/mng_password.txt` | Management DB Root |
-| `airflow` | Automation | `automation/airflow_fernet_key.txt` | Data Encryption |
-| `minio` | Storage | `storage/minio_root_password.txt` | S3 Storage Root |
-| `supabase` | Data | `data/supabase_jwt_secret.txt` | JWT Signing Secret |
-
-### Operational Commands
+### Automation
 
 ```bash
-# Generate/Sync all missing secrets
+# Generate or sync missing secrets using the approved script
 ./scripts/gen-secrets.sh
 
-# Generate local TLS certificates with mkcert
+# Generate local TLS certificates when certificate material is required
 ./scripts/generate-local-certs.sh
-
-# Re-sync the registry after manual secret changes
-./scripts/gen-secrets.sh
-
-# Update a specific secret manually
-echo "new_password" > secrets/db/postgres/mng_password.txt
-docker compose restart mng-postgres
 ```
 
----
+특정 secret을 교체해야 할 때는 값을 문서에 쓰지 말고, 승인된 운영 절차에 따라 secure input 또는 스크립트 기반 생성 방식으로 처리합니다. 교체 후에는 해당 서비스의 runbook에 따라 재시작과 검증을 수행합니다.
 
-## 🛡️ Security Policy
+## Security Policy
 
-- **Git Exclusion**: All `.txt` files are ignored by Git via `.gitignore`.
-- **Encryption at Rest**: Ensure the host filesystem is encrypted. Docker Secrets are mounted as in-memory files (tmpfs) within containers.
-- **Registry Sync**: Run `gen-secrets.sh` after secret file changes to keep `SENSITIVE_ENV_VARS.md` current.
+- `.txt` secret 값 파일은 Git에 커밋하지 않습니다.
+- secret 값 파일, private key, token, 인증서 원문을 응답이나 문서에 노출하지 않습니다.
+- host filesystem encryption과 Docker secret mount 정책을 운영 환경 기준에 맞게 유지합니다.
+- registry와 실제 파일 경로가 달라지면 문서와 검증 절차를 함께 갱신합니다.
+- AI Agent는 secret 값 파일 열람이 필요해 보이는 상황에서도 먼저 사용자 승인과 안전한 대체 절차를 요청해야 합니다.
 
----
+## Related References
 
-## Extensibility & References
-
-- [🤖 Agent Governance](../AGENTS.md)
-- [🏛️ Architecture References](../docs/02.ard/README.md)
-- [⚙️ Operations](../docs/08.operations/README.md)
-- [📜 Secrets Registry](SENSITIVE_ENV_VARS.md)
-
----
-*Maintained by Senior DevOps & Security Team*
+- [../README.md](../README.md)
+- [../AGENTS.md](../AGENTS.md)
+- [../docs/04.specs/infra-secrets-docs-refresh/spec.md](../docs/04.specs/infra-secrets-docs-refresh/spec.md)
+- [../docs/08.operations/README.md](../docs/08.operations/README.md)
+- [../docs/09.runbooks/README.md](../docs/09.runbooks/README.md)
+- [../docs/99.templates/readme.template.md](../docs/99.templates/readme.template.md)
+- [SENSITIVE_ENV_VARS.md.example](SENSITIVE_ENV_VARS.md.example)

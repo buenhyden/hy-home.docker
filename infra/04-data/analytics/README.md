@@ -50,9 +50,9 @@ analytics/
 
 ## Related References
 
-- **System Guide**: [docs/07.guides/04-data/analytics/](../../docs/07.guides/04-data/analytics/README.md)
-- **Operations**: [docs/08.operations/04-data/analytics/](../../docs/08.operations/04-data/analytics/README.md)
-- **Runbooks**: [docs/09.runbooks/04-data/analytics/](../../docs/09.runbooks/04-data/analytics/README.md)
+- **System Guide**: [docs/07.guides/04-data/analytics/](../../../docs/07.guides/04-data/analytics/README.md)
+- **Operations**: [docs/08.operations/04-data/analytics/](../../../docs/08.operations/04-data/analytics/README.md)
+- **Runbooks**: [docs/09.runbooks/04-data/analytics/](../../../docs/09.runbooks/04-data/analytics/README.md)
 
 ## AI Agent Guidance
 
@@ -62,3 +62,9 @@ analytics/
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.
+
+---
+
+## Overview
+
+`infra/04-data/analytics`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.

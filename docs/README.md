@@ -1,64 +1,93 @@
-# docs/ 문서 체계 안내
+# docs
 
-## 목적
+> 요구사항, 아키텍처, 계획, 작업, 운영 절차, 참고 지식을 stage taxonomy로 관리하는 공식 문서 공간
 
-이 디렉터리는 프로젝트의 모든 요구사항, 아키텍처, 결정 사항, 운영 절차 등을 통합 관리하는 표준 공간입니다.
+## Overview
 
-이 체계는 다음 세 가지 핵심 가치를 지향합니다.
+`docs/`는 프로젝트의 모든 요구사항, 아키텍처, 결정 사항, 운영 절차, 참고 지식을 통합 관리하는 표준 공간입니다. 이 체계는 추적성, 검증 가능성, AI Agent 협업 가능성을 중심으로 설계되어 있으며, 활성 문서는 허용된 stage taxonomy 안에서만 관리합니다.
 
-1. **추적성**: 모든 기술적 결정은 명확히 기록되어 언제든 이유를 확인할 수 있어야 합니다.
-2. **검증 가능성**: TDD 원칙에 따라 검증 가능한 구현 단위와 작업을 관리합니다.
-3. **AI 통합**: 에이전트가 문서를 통해 맥락을 파악하고 협업할 수 있도록 구조화합니다.
+기본 문서 흐름은 `01.prd -> 02.ard -> 03.adr -> 04.specs -> 05.plans -> 06.tasks -> 07.guides / 08.operations / 09.runbooks -> 10.incidents`입니다. 보조 공간으로 `00.agent-governance`, `90.references`, `99.templates`를 사용합니다.
 
-## 문서 흐름
+## Audience
 
-기본적인 문서 작업 흐름은 다음과 같습니다.
+이 README의 주요 독자:
 
-`01.prd → 02.ard → 03.adr → 04.specs → 05.plans → 06.tasks → 07.guides / 08.operations / 09.runbooks → 10.incidents`
+- Developers
+- Operators
+- Documentation Writers
+- AI Agents
 
-도움이 되는 보조 문서는 다음과 같습니다.
+## Scope
 
-- `00.agent-governance`: AI 에이전트 실행 정책, provider 계약, scope, rule, runtime catalog
-- `99.templates`: 모든 문서의 표준 템플릿 모음
-- `90.references`: 느리게 변하는 참고 지식, 표준, 학습 로드맵
+### In Scope
 
-## 허용되는 최상위 폴더
+- 공식 stage 문서 taxonomy와 작성 원칙
+- 문서 유형별 템플릿 매핑
+- 문서 추적성, 검증, README 작성 기준
+- Agent governance와 사람 대상 문서의 경계
 
-`docs/` 아래의 활성 최상위 폴더는 다음 목록으로 고정합니다.
+### Out of Scope
+
+- Docker Compose runtime 설정 원문
+- secret 값, credential, token, 인증서 원문
+- 임시 scratch 문서나 비표준 active stage 폴더
+- 개별 서비스의 상세 운영 절차 본문
+
+## Structure
 
 ```text
-00.agent-governance
-01.prd
-02.ard
-03.adr
-04.specs
-05.plans
-06.tasks
-07.guides
-08.operations
-09.runbooks
-10.incidents
-90.references
-99.templates
+docs/
+├── 00.agent-governance/  # AI Agent 실행 정책, provider 계약, scope, rule, runtime catalog
+├── 01.prd/               # 제품 요구사항 정의
+├── 02.ard/               # 아키텍처 참조 모델 및 품질 속성 정의
+├── 03.adr/               # 기술적 의사결정 기록
+├── 04.specs/             # 컴포넌트/기능별 상세 설계 명세
+├── 05.plans/             # 실행 계획 및 마일스톤
+├── 06.tasks/             # 실제 구현 및 검증 작업 단위
+├── 07.guides/            # 사용자와 운영자를 위한 재현 가능한 사용 가이드
+├── 08.operations/        # 시스템 운영 정책 및 거버넌스
+├── 09.runbooks/          # 반복적 운영 작업의 실행 지침
+├── 10.incidents/         # 사고 사실 기록, 사후 분석, 재발 방지 대책
+├── 90.references/        # 느리게 변하는 참고 지식, 표준, 학습 로드맵
+├── 99.templates/         # stage 문서 작성을 위한 표준 템플릿
+└── README.md             # This file
 ```
 
-새 stage 번호나 임시 top-level 폴더를 추가하지 않습니다. 임시 초안은 사용자 지시가 있을 때만 별도 scratch 영역에서 다루고, 활성 문서는 반드시 위 taxonomy 안으로 이동해야 합니다.
+## How to Work in This Area
 
-## 작성 원칙
+1. 새 문서를 만들기 전에 이 README와 대상 stage의 `README.md`를 먼저 읽습니다.
+2. 새 active stage 문서는 반드시 `01.prd`, `02.ard`, `03.adr`, `04.specs`, `05.plans`, `06.tasks`, `07.guides`, `08.operations`, `09.runbooks`, `10.incidents`, `90.references`, `99.templates` 아래에 둡니다.
+3. 새 문서는 [99.templates](99.templates/README.md)의 대응 템플릿을 사용하고, README는 [99.templates/readme.template.md](99.templates/readme.template.md)를 따릅니다.
+4. 문서 변경 후 상위 README, 관련 stage 문서, traceability 링크를 함께 갱신합니다.
+5. secret 값, token, 인증서 원문은 문서에 쓰지 않습니다.
 
-1. **상단 요약 제공**: 모든 문서는 최상단에 한국어 요약(Overview (KR))을 배치하여 빠르게 내용을 파악할 수 있게 합니다.
-2. **이원화 언어 정책**:
-   - **에이전트 전용 문서** (`docs/00.agent-governance/`, `AGENTS.md` 등): 토큰 효율과 분석 정확도를 위해 **영어(English)** 작성을 원칙으로 합니다.
-   - **인간 전용 문서** (README, 가이드, 리포트 등): 사용자의 가독성을 위해 **한국어(Korean)**로 작성합니다.
-3. **AI 에이전트 응답 정책**:
-   - 에이전트는 모든 답변, 요약, 알림을 반드시 **한국어**로 수행해야 합니다.
-   - 내부적인 사고(Thinking)나 기술적 분석은 영어를 사용할 수 있으나, 최종 결과물은 한국어여야 합니다.
-4. **Markdown 표준**: 모든 문서는 상대 경로를 사용하며 Markdown 형식을 준수합니다. (절대 경로 및 `file://` 사용 금지)
-5. **명확한 위치 설정**: 결정 사항은 ADR에, 상세 설계는 Spec에, 작업 절차는 Runbook에 기록하여 파편화를 방지합니다.
-6. **정식 경로 강제**: 활성 stage 문서는 반드시 `docs/01`~`docs/10`, `docs/90`, `docs/99` 체계 안에 둡니다. `docs/superpowers/` 같은 비표준 경로에는 활성 Spec/Plan을 두지 않습니다.
-7. **거버넌스 분리**: `00.agent-governance`는 Agent runtime과 workspace policy를 관리하며, PRD/ARD/ADR/Spec/Plan 같은 제품 산출물 stage를 대체하지 않습니다.
+## Documentation Standards
 
-## 문서 유형-템플릿 매핑
+이 영역의 문서는 다음 기준을 따라야 합니다.
+
+- 가능한 경우 승인된 템플릿에서 시작합니다.
+- 기존 SSoT 문서를 중복 생성하지 않습니다.
+- 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성합니다.
+- 상위 문서와 하위 산출물 간 추적성을 유지합니다.
+- Agent 전용 문서(`docs/00.agent-governance/`, `AGENTS.md` 등)는 영어를 원칙으로 하고, 사람 대상 README/guide/operation/runbook/reference 문서는 한국어를 기본으로 합니다.
+- Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
+
+## Traceability Rules
+
+이 영역의 각 문서는 가능한 경우 다음 중 하나 이상과 연결되어야 합니다.
+
+- Product Requirements Document (PRD)
+- Architecture Requirements Document (ARD)
+- Architecture Decision Record (ADR)
+- Specification (Spec)
+- Plan
+- Task
+- Guide
+- Operation
+- Runbook
+- Incident / Postmortem
+
+## Template Usage
 
 | 문서 유형 | 위치 | 템플릿 |
 | --- | --- | --- |
@@ -78,96 +107,37 @@
 | Reference | `90.references/` | `99.templates/reference.template.md` |
 | README | 각 폴더 | `99.templates/readme.template.md` |
 
-자세한 규칙은 `99.templates/README.md`를 참고하세요.
+템플릿 없이 새 형식을 임의로 추가하기 전에 기존 문서 체계를 먼저 검토합니다. 동일 목적의 문서가 이미 존재하면 새 문서를 만들기보다 기존 문서를 확장하는 방식을 우선합니다.
 
-## 하위 폴더별 README 필수 항목
+## Metadata Expectations
 
-각 하위 폴더의 `README.md`는 다음 내용을 포함해야 합니다. (모두 **한국어** 작성)
+- 새 stage 문서는 가능한 경우 front matter `status`를 포함합니다.
+- 문서 상단에는 빠른 이해를 위한 한국어 Overview를 둡니다.
+- 완료 또는 검증이 필요한 문서는 명령, 결과, evidence 위치를 기록합니다.
+- AI Agent가 수정한 문서는 관련 task 또는 plan에 검증 흔적을 남깁니다.
 
-- 해당 단계가 프로젝트에서 갖는 의미와 역할
-- 권장되는 파일명 명명 규칙 및 하위 구조
-- 참조할 표준 템플릿 링크
-
-## 문서 계약 검증
+## Document Contract Validation
 
 문서 체계와 repository contract는 다음 검증으로 유지합니다.
 
-- `bash scripts/check-repo-contracts.sh`
-  - 허용된 docs 최상위 폴더 목록
-  - 각 허용 폴더의 required README
-  - `docs/99.templates/` template inventory
-  - GitHub Actions YAML parse 및 duplicate job/step 검증
-  - 직접 작성한 workflow action step의 `name` 누락 검증
-  - script reference integrity
-  - Docker image tag policy와 tech-stack version drift
-  - Agent runtime catalog 동기화
-- `bash scripts/check-doc-traceability.sh`
-  - `05.plans` ↔ `08.operations` ↔ `09.runbooks` 추적성 동기화
+```bash
+bash scripts/check-repo-contracts.sh
+bash scripts/check-doc-traceability.sh
+```
 
----
+`check-repo-contracts.sh`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime catalog 동기화를 확인합니다. `check-doc-traceability.sh`는 plans, operations, runbooks의 추적성 동기화를 확인합니다.
 
-## 디렉터리 상세 역할
-
-### [00.agent-governance](00.agent-governance/README.md)
-
-AI Agent 실행 정책, provider 계약, scope, rule, runtime catalog, repository governance 기준
-
-### [01.prd](01.prd/README.md)
-
-제품 요구사항 정의 (Vision, Use Case, Requirements)
-
-### [02.ard](02.ard/README.md)
-
-아키텍처 참조 모델 및 품질 속성 정의
-
-### [03.adr](03.adr/README.md)
-
-기술적 의사결정 기록 (Decision, Status, Context, Consequence)
-
-### [04.specs](04.specs/README.md)
-
-컴포넌트/기능별 상세 설계 명세 (Data, API, Logic, Agent-Design)
-
-### [05.plans](05.plans/README.md)
-
-실행 계획 및 마일스톤 (Work Breakdown, Risks)
-
-### [06.tasks](06.tasks/README.md)
-
-실제 구현 및 검증 작업 단위 (Task Table, Evidence)
-
-### [07.guides](07.guides/README.md)
-
-사용자와 운영자를 위한 재현 가능한 사용 가이드
-
-### [08.operations](08.operations/README.md)
-
-시스템 운영 정책 및 거버넌스
-
-### [09.runbooks](09.runbooks/README.md)
-
-반복적 운영 작업의 실행 지침 (Step-by-step)
-
-### [10.incidents](10.incidents/README.md)
-
-발생한 사고의 사실 기록, 사후 분석, 재발 방지 대책
-
-### [90.references](90.references/README.md)
-
-느리게 변하는 참고 지식, 표준, 인벤토리, 학습 로드맵
-
-### [99.templates](99.templates/README.md)
-
-stage 문서 작성을 위한 표준 템플릿
-
-## Related Documents
+## Related References
 
 - [00.agent-governance/README.md](00.agent-governance/README.md)
-- [00.agent-governance/rules/github-governance.md](00.agent-governance/rules/github-governance.md)
-- [00.agent-governance/rules/git-workflow.md](00.agent-governance/rules/git-workflow.md)
 - [04.specs/README.md](04.specs/README.md)
-- [05.plans/README.md](05.plans/README.md)
+- [04.specs/infra-secrets-docs-refresh/spec.md](04.specs/infra-secrets-docs-refresh/spec.md)
+- [05.plans/2026-05-09-infra-secrets-docs-refresh.md](05.plans/2026-05-09-infra-secrets-docs-refresh.md)
+- [06.tasks/2026-05-09-infra-secrets-docs-refresh.md](06.tasks/2026-05-09-infra-secrets-docs-refresh.md)
+- [07.guides/README.md](07.guides/README.md)
+- [08.operations/README.md](08.operations/README.md)
+- [09.runbooks/README.md](09.runbooks/README.md)
 - [90.references/README.md](90.references/README.md)
-- [90.references/docker/README.md](90.references/docker/README.md)
 - [99.templates/README.md](99.templates/README.md)
+- [../README.md](../README.md)
 - [../scripts/README.md](../scripts/README.md)

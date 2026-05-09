@@ -39,7 +39,7 @@ relational/
 
 ## How to Work in This Area
 
-1. 전반적인 데이터 아키텍처는 [Data Spec](../../../../docs/04.specs/04-data/spec.md) 문서를 먼저 확인합니다.
+1. 전반적인 데이터 아키텍처는 [Data Spec](../../../04.specs/04-data/spec.md) 문서를 먼저 확인합니다.
 2. 각 서비스의 배포 및 실행 방법은 `infra/04-data/relational/postgresql-cluster/` 경로를 참조합니다.
 3. 새로운 가이드 추가 시 `docs/99.templates/guide.template.md`를 사용합니다.
 
@@ -51,8 +51,8 @@ relational/
 
 ## Related References
 
-- **Operations**: [Relational Operations](../../../../docs/08.operations/04-data/relational/README.md)
-- **Runbooks**: [Relational Runbooks](../../../../docs/09.runbooks/04-data/relational/README.md)
+- **Operations**: [Relational Operations](../../../08.operations/04-data/relational/README.md)
+- **Runbooks**: [Relational Runbooks](../../../09.runbooks/04-data/relational/README.md)
 - **Source**: [Infrastructure README](../../../../infra/04-data/relational/postgresql-cluster/README.md)
 
 ---

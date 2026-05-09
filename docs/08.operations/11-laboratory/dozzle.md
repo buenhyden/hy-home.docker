@@ -46,3 +46,12 @@ Dozzle 서비스의 노출 범위, 인증 방식 및 리소스 접근 통제.
 - **ARD**: `[../../02.ard/03-security.md]`
 - **Guide**: `[../../07.guides/11-laboratory/dozzle.md]`
 - **Runbook**: `[../../09.runbooks/11-laboratory/dozzle.md]`
+
+---
+
+## AI Agent Policy Section (If Applicable)
+
+- **Model / Prompt Change Process**: agent runtime 변경은 이 문서에서 직접 수행하지 않고 governance 문서로 분리한다.
+- **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
+- **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
+- **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.

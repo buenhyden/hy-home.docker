@@ -51,13 +51,14 @@ hy-home.docker/
 
 ## Repository Map
 
-- [`docs/`](./docs/) - 요구사항, 아키텍처, 계획, 운영, 사고 대응까지 포함하는 공식 문서 체계
-- [`infra/`](./infra/) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
+- [`docs/`](docs) - 요구사항, 아키텍처, 계획, 운영, 사고 대응까지 포함하는 공식 문서 체계
+- [`infra/`](infra) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
 - [`scripts/`](./scripts/) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
 - [`secrets/`](./secrets/) - Docker secrets 파일 구조와 민감 정보 관리 기준
 - [`projects/`](./projects/) - 보조 앱, 스토리북, MCP 관련 프로젝트 공간
 - [`.github/workflows/`](./.github/workflows/) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
-- [`docs/90.references/docker/`](./docs/90.references/docker/) - Docker image/version drift 기준과 참고 규칙
+- [`docs/90.references/docker/`](docs/90.references/docker) - Docker image/version drift 기준과 참고 규칙
+- [`docs/04.specs/infra-secrets-docs-refresh/`](docs/04.specs/infra-secrets-docs-refresh) - infra, secrets, 운영 문서 최신화 분석 명세
 
 ## Tech Stack
 
@@ -68,7 +69,7 @@ hy-home.docker/
 | Documentation | Markdown + stage-based docs | `docs/00`~`docs/10`, `docs/90`, `docs/99` |
 | Automation | Bash scripts | 사전 점검, 검증, 하드닝, 추적성 검사 |
 | CI / Quality | GitHub Actions + pre-commit + zizmor | 문서/보안/품질 게이트 자동화 |
-| Version Drift Gate | [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json) | 주요 Docker image 선언과 Compose source of truth 동기화 |
+| Version Drift Gate | [`infra/tech-stack.versions.json`](infra/tech-stack.versions.json) | 주요 Docker image 선언과 Compose source of truth 동기화 |
 
 ## Prerequisites
 
@@ -130,9 +131,9 @@ docker compose --profile core up -d
 ### 7. 주요 진입 문서 확인
 
 1. [`AGENTS.md`](./AGENTS.md) - Agent 작업 진입 규칙
-2. [`docs/README.md`](./docs/README.md) - 문서 체계 개요
-3. [`docs/00.agent-governance/README.md`](./docs/00.agent-governance/README.md) - 거버넌스 허브
-4. [`infra/README.md`](./infra/README.md) - 계층별 인프라 구조
+2. [`docs/README.md`](docs/README.md) - 문서 체계 개요
+3. [`docs/00.agent-governance/README.md`](docs/00.agent-governance/README.md) - 거버넌스 허브
+4. [`infra/README.md`](infra/README.md) - 계층별 인프라 구조
 5. [`scripts/README.md`](./scripts/README.md) - 검증 및 자동화 스크립트
 
 ## Documentation Standards
@@ -141,14 +142,14 @@ docker compose --profile core up -d
 
 - Agent 전용 규칙 문서는 영어를 사용합니다.
 - 사람이 읽는 README, 가이드, 운영 문서는 한국어를 기본으로 사용합니다.
-- 문서 작성 작업은 가능한 경우 [`docs/99.templates/`](./docs/99.templates/)의 템플릿을 출발점으로 사용합니다.
+- 문서 작성 작업은 가능한 경우 [`docs/99.templates/`](docs/99.templates)의 템플릿을 출발점으로 사용합니다.
 - 상위 문서와 하위 산출물 사이의 추적성을 유지하고, 중복된 SSoT 문서를 만들지 않습니다.
 
 ## Agent Working Rules
 
 - 작업 시작 전 [`AGENTS.md`](./AGENTS.md)를 먼저 확인합니다.
 - Bootstrap 순서는 `bootstrap.md` → `persona.md` → `task-checklists.md` → 해당 scope 순서를 따릅니다.
-- 문서 작성/갱신 작업은 [`docs/00.agent-governance/rules/stage-authoring-matrix.md`](./docs/00.agent-governance/rules/stage-authoring-matrix.md)를 기준으로 작성합니다.
+- 문서 작성/갱신 작업은 [`docs/00.agent-governance/rules/stage-authoring-matrix.md`](docs/00.agent-governance/rules/stage-authoring-matrix.md)를 기준으로 작성합니다.
 - 공식 stage 문서는 기본적으로 읽기 전용이며, 명시적 사용자 지시가 있을 때만 수정합니다.
 
 ## Verification and Quality Gates
@@ -181,24 +182,26 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 
 ## How to Work in This Area
 
-1. 이 저장소에서 작업을 시작할 때는 먼저 [`AGENTS.md`](./AGENTS.md), [`docs/README.md`](./docs/README.md), [`infra/README.md`](./infra/README.md)를 읽어 전체 구조를 파악합니다.
+1. 이 저장소에서 작업을 시작할 때는 먼저 [`AGENTS.md`](./AGENTS.md), [`docs/README.md`](docs/README.md), [`infra/README.md`](infra/README.md)를 읽어 전체 구조를 파악합니다.
 2. 새 서비스를 추가할 때는 `infra/<tier>/<service>/` 패턴을 따르고, 루트 [`docker-compose.yml`](./docker-compose.yml)의 `include` 및 관련 문서를 함께 검토합니다.
-3. 새 문서나 루트 문서를 갱신할 때는 [`docs/99.templates/readme.template.md`](./docs/99.templates/readme.template.md) 같은 승인된 템플릿과 [`docs/00.agent-governance/rules/documentation-protocol.md`](./docs/00.agent-governance/rules/documentation-protocol.md)을 기준으로 삼습니다.
-4. Docker image나 주요 runtime 버전을 바꿀 때는 Compose 선언과 [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json)을 함께 점검합니다.
-5. GitHub workflow를 바꿀 때는 [`docs/00.agent-governance/rules/github-governance.md`](./docs/00.agent-governance/rules/github-governance.md)와 [`docs/00.agent-governance/rules/git-workflow.md`](./docs/00.agent-governance/rules/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
+3. 새 문서나 루트 문서를 갱신할 때는 [`docs/99.templates/readme.template.md`](docs/99.templates/readme.template.md) 같은 승인된 템플릿과 [`docs/00.agent-governance/rules/documentation-protocol.md`](docs/00.agent-governance/rules/documentation-protocol.md)을 기준으로 삼습니다.
+4. Docker image나 주요 runtime 버전을 바꿀 때는 Compose 선언과 [`infra/tech-stack.versions.json`](infra/tech-stack.versions.json)을 함께 점검합니다.
+5. GitHub workflow를 바꿀 때는 [`docs/00.agent-governance/rules/github-governance.md`](docs/00.agent-governance/rules/github-governance.md)와 [`docs/00.agent-governance/rules/git-workflow.md`](docs/00.agent-governance/rules/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
 6. 변경 후에는 관련 링크, 검증 명령, 문서 정책, CI 영향 범위를 함께 점검하고 필요한 경우 검증 스크립트를 실행합니다.
 
 ## Related References
 
-- [`docs/README.md`](./docs/README.md)
-- [`docs/00.agent-governance/README.md`](./docs/00.agent-governance/README.md)
-- [`docs/00.agent-governance/scopes/docs.md`](./docs/00.agent-governance/scopes/docs.md)
-- [`docs/00.agent-governance/rules/documentation-protocol.md`](./docs/00.agent-governance/rules/documentation-protocol.md)
-- [`docs/00.agent-governance/rules/github-governance.md`](./docs/00.agent-governance/rules/github-governance.md)
-- [`docs/00.agent-governance/rules/git-workflow.md`](./docs/00.agent-governance/rules/git-workflow.md)
-- [`docs/00.agent-governance/rules/stage-authoring-matrix.md`](./docs/00.agent-governance/rules/stage-authoring-matrix.md)
-- [`docs/90.references/docker/README.md`](./docs/90.references/docker/README.md)
-- [`infra/README.md`](./infra/README.md)
-- [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json)
+- [`docs/README.md`](docs/README.md)
+- [`docs/00.agent-governance/README.md`](docs/00.agent-governance/README.md)
+- [`docs/00.agent-governance/scopes/docs.md`](docs/00.agent-governance/scopes/docs.md)
+- [`docs/00.agent-governance/rules/documentation-protocol.md`](docs/00.agent-governance/rules/documentation-protocol.md)
+- [`docs/00.agent-governance/rules/github-governance.md`](docs/00.agent-governance/rules/github-governance.md)
+- [`docs/00.agent-governance/rules/git-workflow.md`](docs/00.agent-governance/rules/git-workflow.md)
+- [`docs/00.agent-governance/rules/stage-authoring-matrix.md`](docs/00.agent-governance/rules/stage-authoring-matrix.md)
+- [`docs/90.references/docker/README.md`](docs/90.references/docker/README.md)
+- [`docs/04.specs/infra-secrets-docs-refresh/spec.md`](docs/04.specs/infra-secrets-docs-refresh/spec.md)
+- [`docs/05.plans/2026-05-09-infra-secrets-docs-refresh.md`](docs/05.plans/2026-05-09-infra-secrets-docs-refresh.md)
+- [`infra/README.md`](infra/README.md)
+- [`infra/tech-stack.versions.json`](infra/tech-stack.versions.json)
 - [`scripts/README.md`](./scripts/README.md)
 - [`secrets/README.md`](./secrets/README.md)

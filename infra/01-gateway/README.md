@@ -73,3 +73,9 @@ The `01-gateway` tier is the unified entry point for all traffic entering the `h
 
 ---
 *Maintained by Infra & Gateway Team*
+
+---
+
+## Overview
+
+`infra/01-gateway`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.

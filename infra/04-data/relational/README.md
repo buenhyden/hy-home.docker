@@ -41,10 +41,10 @@ relational/
 
 ## How to Work in This Area
 
-1. 서비스 요구사항에 맞는 데이터베이스 기술 가이드는 [Relational DB Guides](../../docs/07.guides/04-data/relational.md)를 참조합니다.
+1. 서비스 요구사항에 맞는 데이터베이스 기술 가이드는 [Relational DB Guides](../../../docs/07.guides/04-data/relational.md)를 참조합니다.
 2. 새 클러스터 추가 시 `postgresql-cluster` 구조를 템플릿으로 활용합니다.
-3. 운영 정책은 [Relational Operations](../../docs/08.operations/04-data/relational.md)를 반드시 준수해야 합니다.
-4. 장애 대응 및 복구는 [Relational Runbooks](../../docs/09.runbooks/04-data/relational.md)를 따릅니다.
+3. 운영 정책은 [Relational Operations](../../../docs/08.operations/04-data/relational.md)를 반드시 준수해야 합니다.
+4. 장애 대응 및 복구는 [Relational Runbooks](../../../docs/09.runbooks/04-data/relational.md)를 따릅니다.
 
 ## Available Scripts
 
@@ -72,10 +72,10 @@ docker compose up -d
 
 ## Related References
 
-- **Guide**: [docs/07.guides/04-data/relational.md](../../docs/07.guides/04-data/relational.md)
-- **Operations**: [docs/08.operations/04-data/relational.md](../../docs/08.operations/04-data/relational.md)
-- **Runbook**: [docs/09.runbooks/04-data/relational.md](../../docs/09.runbooks/04-data/relational.md)
-- **ARD**: [docs/02.ard/0004-data-architecture.md](../../docs/02.ard/0004-data-architecture.md)
+- **Guide**: [docs/07.guides/04-data/relational.md](../../../docs/07.guides/04-data/relational.md)
+- **Operations**: [docs/08.operations/04-data/relational.md](../../../docs/08.operations/04-data/relational.md)
+- **Runbook**: [docs/09.runbooks/04-data/relational.md](../../../docs/09.runbooks/04-data/relational.md)
+- **ARD**: [docs/02.ard/0004-data-architecture.md](../../../docs/02.ard/0004-data-architecture.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

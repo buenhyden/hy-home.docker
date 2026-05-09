@@ -39,21 +39,29 @@ relational/
 
 ## How to Work in This Area
 
-1. 전반적인 운영 계획은 [Data Optimization Plan](../../../../docs/05.plans/2026-03-26-04-data-standardization.md)을 참조합니다.
-2. 모든 운영 정책은 [Data Specification](../../../../docs/04.specs/04-data/spec.md)의 기술 제약 사항을 준수해야 합니다.
+1. 전반적인 운영 계획은 [Data Optimization Plan](../../../05.plans/2026-03-26-04-data-standardization.md)을 참조합니다.
+2. 모든 운영 정책은 [Data Specification](../../../04.specs/04-data/spec.md)의 기술 제약 사항을 준수해야 합니다.
 3. 새로운 정책 정의 시 `docs/99.templates/operation.template.md`를 사용합니다.
 
 ## Usage Instructions
 
 - 이 영역의 정책 문서는 정기적으로 검토되어야 하며, 인프라 변경 시 실시간으로 갱신되어야 합니다.
 - 정책 위반 사례 발생 시 [Incident Records](../../../10.incidents/README.md)와 연계하여 원인을 분석합니다.
-- 상세 실행 절차는 [Relational Runbooks](../../../../docs/09.runbooks/04-data/relational/README.md)를 참조하십시오.
+- 상세 실행 절차는 [Relational Runbooks](../../../09.runbooks/04-data/relational/README.md)를 참조하십시오.
 
 ## Incident and Recovery Links
 
-- **Guides**: [Relational Guides](../../../../docs/07.guides/04-data/relational/README.md)
-- **Runbooks**: [Relational Runbooks](../../../../docs/09.runbooks/04-data/relational/README.md)
+- **Guides**: [Relational Guides](../../../07.guides/04-data/relational/README.md)
+- **Runbooks**: [Relational Runbooks](../../../09.runbooks/04-data/relational/README.md)
 - **Source**: [Infrastructure README](../../../../infra/04-data/relational/postgresql-cluster/README.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
+
+---
+
+## Related References
+
+- [docs/08.operations/README.md](../README.md)
+- [docs/07.guides/README.md](../../../07.guides/README.md)
+- [docs/09.runbooks/README.md](../../../09.runbooks/README.md)

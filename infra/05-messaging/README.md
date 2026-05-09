@@ -43,8 +43,8 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 
 ## How to Work in This Area
 
-1. Read the [Kafka KRaft Guide](../../docs/07.guides/05-messaging/01.kafka-kraft.md) for cluster ops.
-2. Follow the [RabbitMQ Operations Guide](../../docs/07.guides/05-messaging/02.rabbitmq-ops.md) for queues.
+1. Read the [Kafka Guide](../../docs/07.guides/05-messaging/kafka.md) for cluster ops.
+2. Follow the [RabbitMQ Guide](../../docs/07.guides/05-messaging/rabbitmq.md) for queues.
 3. Check the [Operations Policy](../../docs/08.operations/05-messaging/README.md) for retention.
 4. Consult the [Messaging Runbook](../../docs/09.runbooks/05-messaging/README.md) for recovery.
 

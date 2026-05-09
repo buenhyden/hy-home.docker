@@ -52,3 +52,11 @@ operational/
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
+
+---
+
+## Related References
+
+- [docs/09.runbooks/README.md](../README.md)
+- [docs/08.operations/README.md](../../../08.operations/README.md)
+- [docs/10.incidents/README.md](../../../10.incidents/README.md)

@@ -25,10 +25,10 @@ status: draft
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-001 | Create spec/plan/task documents for this refresh | doc | Contracts | PLN-001 | Stage docs include template sections | Codex | Done |
-| T-002 | Refresh root, docs, and secrets README files | doc | Core Design | PLN-002 | README heading audit | Codex | Todo |
-| T-003 | Align target README files under infra/docs/90 with base template headings | doc | Interfaces | PLN-003 | README heading audit missing=0 | Codex | Todo |
-| T-004 | Align guide/operation/runbook/reference docs with their templates | doc | Interfaces | PLN-004 | Stage heading audit missing=0 | Codex | Todo |
-| T-005 | Run repository validation commands and record results | test | Verification | PLN-005 | Command output summary | Codex | Todo |
+| T-002 | Refresh root, docs, and secrets README files | doc | Core Design | PLN-002 | README heading audit missing=0 | Codex | Done |
+| T-003 | Align target README files under infra/docs/90 with base template headings | doc | Interfaces | PLN-003 | README heading audit missing=0 | Codex | Done |
+| T-004 | Align guide/operation/runbook/reference docs with their templates | doc | Interfaces | PLN-004 | Stage heading audit missing=0 | Codex | Done |
+| T-005 | Run repository validation commands and record results | test | Verification | PLN-005 | Command output summary recorded below | Codex | Done |
 
 ## Suggested Types
 
@@ -52,16 +52,16 @@ status: draft
 ### Phase 1
 
 - [x] T-001 Create spec/plan/task documents.
-- [ ] T-002 Refresh root, docs, and secrets README files.
+- [x] T-002 Refresh root, docs, and secrets README files.
 
 ### Phase 2
 
-- [ ] T-003 Align target README files.
-- [ ] T-004 Align stage documents.
+- [x] T-003 Align target README files.
+- [x] T-004 Align stage documents.
 
 ### Phase 3
 
-- [ ] T-005 Run validation and capture evidence.
+- [x] T-005 Run validation and capture evidence.
 
 ## Verification Summary
 
@@ -77,4 +77,13 @@ status: draft
   - README heading audit over `infra`, `secrets`, `docs/07.guides`, `docs/08.operations`, `docs/09.runbooks`, `docs/90.references`
   - Stage heading audit over non-README Markdown in `docs/07.guides`, `docs/08.operations`, `docs/09.runbooks`, `docs/90.references`
 - **Logs / Evidence Location**:
-  - This section is updated after validation.
+  - `README_HEADING_GAPS=0`
+  - `STAGE_HEADING_GAPS=0`
+  - `MARKDOWN_LINK_GAPS=0`
+  - `bash scripts/check-repo-contracts.sh`: `failures=0`
+  - `bash scripts/check-doc-traceability.sh`: `failures=0`
+  - `bash scripts/validate-docker-compose.sh`: `Docker Compose validation passed. services_total=5`
+  - `bash scripts/check-template-security-baseline.sh`: pass
+  - `bash scripts/check-quickwin-baseline.sh`: pass
+  - `bash scripts/check-all-hardening.sh`: pass
+  - `git diff --check`: pass

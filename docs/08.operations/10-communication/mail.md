@@ -50,3 +50,16 @@
 - **ARD**: [Communication Infrastructure](../../02.ard/0010-communication-architecture.md) (If exists)
 - **Guide**: [Mail Services Guide](../../07.guides/10-communication/mail.md)
 - **Runbook**: [Mail Recovery Runbook](../../09.runbooks/10-communication/mail.md)
+
+---
+
+## Exceptions
+
+- 정책 예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
+
+## AI Agent Policy Section (If Applicable)
+
+- **Model / Prompt Change Process**: agent runtime 변경은 이 문서에서 직접 수행하지 않고 governance 문서로 분리한다.
+- **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
+- **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
+- **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.

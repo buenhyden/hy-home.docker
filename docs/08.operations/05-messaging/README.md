@@ -80,3 +80,11 @@
 
 1. 라우팅/접근제어 변경 시 `optimization-hardening.md` 정책을 우선 기준으로 적용한다.
 2. 정책 문서에서 정한 Required 통제를 compose 변경에서 누락하면 안 된다.
+
+---
+
+## Related References
+
+- [docs/08.operations/README.md](../README.md)
+- [docs/07.guides/README.md](../../07.guides/README.md)
+- [docs/09.runbooks/README.md](../../09.runbooks/README.md)

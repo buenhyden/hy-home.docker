@@ -78,6 +78,6 @@ const s3 = new AWS.S3({
 
 ## Related Documents
 
-- **Spec**: [Data Persistence Spec](../../../../docs/04.specs/04-data/spec.md)
-- **Operation**: [MinIO Operations Policy](../../../../docs/08.operations/04-data/lake-and-object/minio.md)
-- **Runbook**: [MinIO Recovery Runbook](../../../../docs/09.runbooks/04-data/lake-and-object/minio.md)
+- **Spec**: [Data Persistence Spec](../../../04.specs/04-data/spec.md)
+- **Operation**: [MinIO Operations Policy](../../../08.operations/04-data/lake-and-object/minio.md)
+- **Runbook**: [MinIO Recovery Runbook](../../../09.runbooks/04-data/lake-and-object/minio.md)

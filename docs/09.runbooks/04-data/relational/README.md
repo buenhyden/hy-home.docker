@@ -39,7 +39,7 @@ relational/
 
 ## How to Work in This Area
 
-1. 장애 복구 시 [Operational Policy](../../../../docs/08.operations/04-data/relational/postgresql-cluster.md)를 먼저 확인하여 통제 및 승인 기준을 준수합니다.
+1. 장애 복구 시 [Operational Policy](../../../08.operations/04-data/relational/postgresql-cluster.md)를 먼저 확인하여 통제 및 승인 기준을 준수합니다.
 2. 모든 실행 결과는 [Incident/Postmortem](../../../10.incidents/README.md) 문서화를 통해 학습 자산으로 남깁니다.
 3. 새로운 실행 지침 추가 시 `docs/99.templates/runbook.template.md`를 사용합니다.
 
@@ -51,9 +51,17 @@ relational/
 
 ## Incident and Recovery Links
 
-- **Guides**: [Relational Guides](../../../../docs/07.guides/04-data/relational/README.md)
-- **Operations**: [Relational Operations](../../../../docs/08.operations/04-data/relational/README.md)
+- **Guides**: [Relational Guides](../../../07.guides/04-data/relational/README.md)
+- **Operations**: [Relational Operations](../../../08.operations/04-data/relational/README.md)
 - **Source**: [Infrastructure README](../../../../infra/04-data/relational/postgresql-cluster/README.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
+
+---
+
+## Related References
+
+- [docs/09.runbooks/README.md](../README.md)
+- [docs/08.operations/README.md](../../../08.operations/README.md)
+- [docs/10.incidents/README.md](../../../10.incidents/README.md)

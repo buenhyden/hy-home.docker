@@ -52,3 +52,9 @@ cache-and-kv/
 - **Implementation**: [infra/04-data/cache-and-kv/README.md](../../../../infra/04-data/cache-and-kv/README.md)
 - **Guide**: [04-data Guides](../../../07.guides/04-data/cache-and-kv/README.md)
 - **Runbook**: [04-data Runbooks](../../../09.runbooks/04-data/cache-and-kv/README.md)
+
+---
+
+## Overview
+
+`docs/08.operations/04-data/cache-and-kv`는 운영 정책, 통제 기준, 검증 방법을 정의하는 operation 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.

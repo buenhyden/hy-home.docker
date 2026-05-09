@@ -80,3 +80,13 @@
 - **Guide**: [../../07.guides/11-laboratory/optimization-hardening.md](../../07.guides/11-laboratory/optimization-hardening.md)
 - **Operation**: [../../08.operations/11-laboratory/optimization-hardening.md](../../08.operations/11-laboratory/optimization-hardening.md)
 - **Catalog**: [../../08.operations/12-infra-service-optimization-catalog.md](../../08.operations/12-infra-service-optimization-catalog.md)
+
+---
+
+## Agent Operations (If Applicable)
+
+- **Prompt Rollback**: 적용하지 않음
+- **Model Fallback**: 적용하지 않음
+- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
+- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
+- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.

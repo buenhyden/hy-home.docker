@@ -75,3 +75,11 @@
 
 1. 고위험 조치(큐 purge, 강제 재배치, 접근제어 완화) 전 사람 승인 필요.
 2. 수행 전후 상태 증적(health, logs, config diff)을 남기고 incident 기록으로 연결한다.
+
+---
+
+## Related References
+
+- [docs/09.runbooks/README.md](../README.md)
+- [docs/08.operations/README.md](../../08.operations/README.md)
+- [docs/10.incidents/README.md](../../10.incidents/README.md)

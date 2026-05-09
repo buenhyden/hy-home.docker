@@ -27,7 +27,7 @@
 ### Out of Scope
 
 - **High-Availability Production Data**: 플랫폼 핵심 메타데이터 외의 서비스 데이터는 [relational](../relational/README.md) 활용.
-- **Specialized Analytics**: 벡터 검색이나 그래프 데이터는 [specialized](../specialized/README.md) 참조.
+- **Specialized Analytics**: 벡터 검색이나 그래프 데이터는 [Qdrant](../specialized/qdrant/README.md) 또는 [Neo4j](../specialized/neo4j/README.md) 참조.
 
 ## Structure
 
@@ -55,9 +55,9 @@ operational/
 
 ## Related References
 
-- **Guide**: [Operational Guides](../../docs/07.guides/04-data/operational/README.md)
-- **Operation**: [Operational Policies](../../docs/08.operations/04-data/operational/README.md)
-- **Runbook**: [Operational Runbooks](../../docs/09.runbooks/04-data/operational/README.md)
+- **Guide**: [Operational Guides](../../../docs/07.guides/04-data/operational/README.md)
+- **Operation**: [Operational Policies](../../../docs/08.operations/04-data/operational/README.md)
+- **Runbook**: [Operational Runbooks](../../../docs/09.runbooks/04-data/operational/README.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

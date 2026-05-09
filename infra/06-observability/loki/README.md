@@ -89,4 +89,34 @@ Retention is enabled and currently set to **7 days (168h)** by default.
 - Correlate logs with metrics using common labels (e.g., `service_name`).
 
 ---
-[System Guide](../../docs/07.guides/06-observability/loki.md) | [Operational Policy](../../docs/08.operations/06-observability/loki.md) | [Recovery Runbook](../../docs/09.runbooks/06-observability/loki.md)
+[System Guide](../../../docs/07.guides/06-observability/loki.md) | [Operational Policy](../../../docs/08.operations/06-observability/loki.md) | [Recovery Runbook](../../../docs/09.runbooks/06-observability/loki.md)
+
+---
+
+## Overview
+
+`infra/06-observability/loki`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.
+
+## Structure
+
+```text
+infra/06-observability/loki/
+├── config/  # 하위 구성 영역
+├── docker-entrypoint.sh  # 구성 파일
+├── Dockerfile  # 구성 파일
+└── README.md  # This file
+```
+
+## How to Work in This Area
+
+1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
+2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
+3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
+4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
+
+## Related References
+
+- [infra/README.md](../../README.md)
+- [docs/07.guides/README.md](../../../docs/07.guides/README.md)
+- [docs/08.operations/README.md](../../../docs/08.operations/README.md)
+- [docs/09.runbooks/README.md](../../../docs/09.runbooks/README.md)

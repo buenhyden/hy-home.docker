@@ -93,3 +93,12 @@ docker exec vault-agent ls -la /vault/agent/
 - **Technical Spec**: [spec.md](../../../docs/04.specs/03-security/spec.md)
 - **Ops Policy**: [vault.md](../../../docs/08.operations/03-security/vault.md)
 - **Runbook**: [vault.md](../../../docs/09.runbooks/03-security/vault.md)
+
+---
+
+## How to Work in This Area
+
+1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
+2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
+3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
+4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.

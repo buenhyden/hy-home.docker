@@ -48,3 +48,21 @@
 - **Implementation**: `[../../../infra/11-laboratory/redisinsight/README.md]`
 - **Operation**: `[../../08.operations/11-laboratory/redisinsight.md]`
 - **Runbook**: `[../../09.runbooks/11-laboratory/redisinsight.md]`
+
+---
+
+## Target Audience
+
+- Developer
+- Operator
+- AI Agent
+
+## Purpose
+
+관련 인프라 서비스나 문서 영역을 이해하고 안전하게 변경 또는 운영할 수 있도록 돕는다.
+
+## Prerequisites
+
+- Repository root README 확인
+- 관련 `infra/` 서비스 README 확인
+- 필요한 경우 대응 operation/runbook 문서 확인

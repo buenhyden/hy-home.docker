@@ -40,16 +40,16 @@ ksql/
 
 ## How to Work in This Area
 
-1. 아키텍처 및 사용법은 [ksqlDB 시스템 가이드](../../../docs/07.guides/04-data/analytics/ksqldb.md)를 참조한다.
-2. 처리 규약 및 자원 할당은 [운영 정책](../../../docs/08.operations/04-data/analytics/ksqldb.md)을 따른다.
-3. 스트림 지연이나 연결 이슈 발생 시 [복구 런북](../../../docs/09.runbooks/04-data/analytics/ksqldb.md)을 참조한다.
+1. 아키텍처 및 사용법은 [ksqlDB 시스템 가이드](../../../../docs/07.guides/04-data/analytics/ksqldb.md)를 참조한다.
+2. 처리 규약 및 자원 할당은 [운영 정책](../../../../docs/08.operations/04-data/analytics/ksqldb.md)을 따른다.
+3. 스트림 지연이나 연결 이슈 발생 시 [복구 런북](../../../../docs/09.runbooks/04-data/analytics/ksqldb.md)을 참조한다.
 4. ksqlDB를 시작하기 전에 Kafka 브로커와 Schema Registry의 상태를 확인한다.
 
 ## Related References
 
-- **System Guide**: [docs/07.guides/04-data/analytics/ksqldb.md](../../../docs/07.guides/04-data/analytics/ksqldb.md)
-- **Operations**: [docs/08.operations/04-data/analytics/ksqldb.md](../../../docs/08.operations/04-data/analytics/ksqldb.md)
-- **Runbook**: [docs/09.runbooks/04-data/analytics/ksqldb.md](../../../docs/09.runbooks/04-data/analytics/ksqldb.md)
+- **System Guide**: [docs/07.guides/04-data/analytics/ksqldb.md](../../../../docs/07.guides/04-data/analytics/ksqldb.md)
+- **Operations**: [docs/08.operations/04-data/analytics/ksqldb.md](../../../../docs/08.operations/04-data/analytics/ksqldb.md)
+- **Runbook**: [docs/09.runbooks/04-data/analytics/ksqldb.md](../../../../docs/09.runbooks/04-data/analytics/ksqldb.md)
 - **Kafka Status**: `infra/05-messaging/kafka/README.md`
 
 ## AI Agent Guidance
@@ -60,3 +60,9 @@ ksql/
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.
+
+---
+
+## Overview
+
+`infra/04-data/analytics/ksql`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.
