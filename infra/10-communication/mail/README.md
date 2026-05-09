@@ -43,9 +43,9 @@ mail/
 
 | Command                                        | Description                |
 | ---------------------------------------------- | -------------------------- |
-| `docker-compose --profile communication up -d` | 통신 티어 서비스 전체 시작 |
-| `docker-compose logs -f stalwart`              | Stalwart 로그 모니터링     |
-| `docker-compose restart mailhog`               | MailHog 큐 초기화 및 재시작 |
+| `docker compose --profile communication up -d` | 통신 티어 서비스 전체 시작 |
+| `docker compose logs -f stalwart`              | Stalwart 로그 모니터링     |
+| `docker compose restart mailhog`               | MailHog 큐 초기화 및 재시작 |
 
 ## Configuration
 

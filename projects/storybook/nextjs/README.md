@@ -1,42 +1,76 @@
-# Storybook - Next.js
+# Storybook Next.js Workspace
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+> Next.js 16, React 19, Storybook 10 기반 UI 개발 및 검증 package
 
-## Getting Started
+## Overview
 
-First, run the development server:
+`projects/storybook/nextjs/`는 Storybook UI 템플릿을 검증하는 Next.js workspace입니다. npm lockfile을 기준으로 의존성을 고정하고, Next.js pages router, Storybook stories, Vitest/Playwright 기반 브라우저 테스트 설정을 함께 보유합니다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+이 README는 초기 scaffold 안내가 아니라 현재 package manifest와 repository contract에 맞춘 작업 진입점입니다.
+
+## Audience
+
+이 README의 주요 독자:
+
+- Frontend Developers
+- QA Engineers
+- Documentation Writers
+- AI Agents
+
+## Scope
+
+### In Scope
+
+- `package.json` scripts와 npm lockfile 기반 작업 절차
+- Next.js pages, Storybook stories, Storybook/Vitest 설정 위치
+- 로컬 개발, lint, build, Storybook build 검증 명령
+
+### Out of Scope
+
+- Vercel 배포 절차
+- `projects/storybook/mcp` gitlink 내부 MCP 구현
+- `node_modules/`, `.next/`, Storybook 정적 build output
+- 루트 Docker Compose 서비스 운영 절차
+
+## Structure
+
+```text
+nextjs/
+├── .storybook/        # Storybook framework and test setup
+├── public/            # Static public assets
+├── src/
+│   ├── pages/         # Next.js pages router and API route sample
+│   ├── stories/       # Storybook example components and stories
+│   └── styles/        # Global CSS
+├── package.json       # npm scripts and dependency contract
+├── package-lock.json  # npm lockfile
+├── vitest.config.ts   # Vitest browser test configuration
+└── README.md          # This file
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Available Scripts
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+| Command | Description |
+| --- | --- |
+| `npm ci` | lockfile 기반 의존성 설치 |
+| `npm run dev` | Next.js 개발 서버 실행 |
+| `npm run storybook` | Storybook 개발 서버 실행 |
+| `npm run build` | Next.js production build |
+| `npm run build-storybook` | Storybook 정적 산출물 빌드 |
+| `npm run lint` | ESLint 실행 |
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Parent repo 루트에서 실행할 때는 `npm --prefix projects/storybook/nextjs <command>`를 사용합니다.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## How to Work in This Area
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. 의존성을 바꾸면 `package.json`과 `package-lock.json`을 함께 갱신합니다.
+2. UI component 예제는 `src/stories/`에 두고 Storybook story와 함께 검증합니다.
+3. Next.js app shell이나 API route 예시는 `src/pages/` 아래에서 관리합니다.
+4. README 또는 package script를 바꾼 뒤에는 최소 `npm --prefix projects/storybook/nextjs run lint`와 관련 build/test 명령을 검토합니다.
 
-## Learn More
+## Related References
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+- [Storybook workspace](../README.md)
+- [Projects README](../../README.md)
+- [Root README](../../../README.md)
+- [README template](../../../docs/99.templates/readme.template.md)

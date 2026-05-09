@@ -8,6 +8,14 @@ layer: agentic
 
 This catalog documents the agents and orchestration functions used in the current workspace. It consolidates responsibilities, inputs and outputs, and linkage to governance rules without referencing any source example set.
 
+## Audience
+
+This README is for:
+
+- AI Agents
+- Documentation Writers
+- Repository Maintainers
+
 ## Purpose
 
 Provide a single, English-only source of truth for agent roles and reusable orchestration functions so that governance, routing, and documentation stay consistent.
@@ -54,14 +62,12 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 - [adr-writing](functions/adr-writing.md)
 - [ci-cd-patterns](functions/ci-cd-patterns.md)
 
-## Usage
+## How to Work in This Area
 
 - Use this catalog when updating `.claude/agents/`, `.claude/skills/<name>/skill.md`, or provider runtime notes.
 - Keep agent docs aligned with their scope files under `docs/00.agent-governance/scopes/`.
-
-## Artifacts
-
-- `_workspace/` (agent- and function-specific outputs)
+- Keep this catalog free of external harness identifiers.
+- Update links here when agent or function files are added, moved, or removed.
 
 ## Related Documents
 

@@ -1,110 +1,67 @@
-# Design System Infrastructure (Storybook)
+# Storybook Workspace
+
+> Next.js와 Storybook 기반 UI 실험 및 디자인 시스템 템플릿 작업 공간
 
 ## Overview
 
-This directory acts as the **Design System Monorepo** foundation, providing standardized templates for building, documenting, and testing React 19 component libraries. It uses **Storybook 8+** for UI development and **Vite** for high-performance builds.
+`projects/storybook/`는 parent repo가 직접 관리하는 Storybook 관련 작업 공간입니다. 현재 직접 추적되는 구현 표면은 [`nextjs/`](nextjs/README.md)이며, Next.js 16, React 19, Storybook 10, Vitest, Playwright 기반 UI 개발과 검증을 다룹니다.
 
-```mermaid
-graph LR
-    subgraph "Design"
-        Figma[Figma Assets]
-    end
+`projects/storybook/mcp`는 gitlink/submodule로 연결된 별도 소스입니다. parent repo README 최신화에서는 해당 내부 README를 직접 수정하지 않고, 필요한 경우 별도 저장소 작업으로 분리합니다.
 
-    subgraph "Development (Storybook)"
-        Code[React Components]
-        Docs[Documentation.mdx]
-        Test[Interaction Tests]
-    end
+## Audience
 
-    subgraph "Output"
-        Static[Static Site<br/>(Nginx)]
-        Lib[NPM Package<br/>(ESM/UMD)]
-    end
+이 README의 주요 독자:
 
-    subgraph "Production"
-        App[Consumer App]
-        GW[Traefik<br/>(design.${DEFAULT_URL})]
-    end
+- Frontend Developers
+- Design System Maintainers
+- Documentation Writers
+- AI Agents
 
-    Figma -.-> Code
-    Code --> Docs
-    Code --> Test
+## Scope
 
-    Docs --> Static
-    Test --> Static
+### In Scope
 
-    Code --> Lib
-    Lib --> App
+- parent repo가 직접 추적하는 Storybook/Next.js 예제 작업 공간
+- npm lockfile 기반 설치, 개발, 빌드, Storybook 실행 명령
+- 하위 `nextjs/` README와 루트 프로젝트 문서 사이의 연결
 
-    Static --> GW
+### Out of Scope
+
+- `projects/storybook/mcp` gitlink 내부 파일 직접 수정
+- Docker Compose 서비스 정의와 Traefik production exposure
+- Storybook 정적 산출물, coverage 결과, `node_modules/`
+- 공식 제품 요구사항, 운영 정책, runbook 본문
+
+## Structure
+
+```text
+storybook/
+├── nextjs/    # Next.js 16 + React 19 + Storybook 10 workspace
+├── mcp/       # Gitlink/submodule; edit in its own repository
+└── README.md  # This file
 ```
 
-## 📂 Project Templates
+## How to Work in This Area
 
-| Directory                     | Stack                            | Features                                                | Recommended For                       |
-| :---------------------------- | :------------------------------- | :------------------------------------------------------ | :------------------------------------ |
-| **[`nextjs/`](./nextjs)**     | **Next.js 16 + React 19 + Vite** | Tailwind/PostCSS + hybrid routing with Storybook (Vite) | Production-ready Next.js UI libraries |
+1. Node 작업은 `projects/storybook/nextjs/`의 `package.json`과 lockfile을 기준으로 수행합니다.
+2. parent repo에서 실행할 때는 `npm --prefix projects/storybook/nextjs <command>` 형태를 사용합니다.
+3. Storybook MCP 관련 파일은 gitlink 내부 범위이므로 이 저장소의 README refresh diff에 포함하지 않습니다.
+4. UI 템플릿이나 package script가 바뀌면 이 README와 [`nextjs/README.md`](nextjs/README.md)를 함께 갱신합니다.
 
-## 🚀 Key Features
+## Available Scripts
 
-- **⚡ Vite Build**: Instant dev server start and optimized library bundling (ESM/CJS).
-- **🧪 Interaction Testing**: Run user simulation tests (`play` function) directly in the browser via Storybook.
-- **♿ Accessibility (A11y)**: integrated `addon-a11y` for strict WCAG compliance checks.
-- **🎨 Theming**: Native Dark/Light mode support compatible with Tailwind or CSS Modules.
-- **🤝 Figma Integration**: Embed live Figma design frames into component docs.
-- **📦 Dual Export**: Builds both an interactive Documentation Site (`storybook-static/`) and a consumable Library (`dist/`).
+| Command | Description |
+| --- | --- |
+| `npm ci --prefix projects/storybook/nextjs` | lockfile 기반 의존성 설치 |
+| `npm --prefix projects/storybook/nextjs run dev` | Next.js 개발 서버 실행 |
+| `npm --prefix projects/storybook/nextjs run storybook` | Storybook 개발 서버 실행 |
+| `npm --prefix projects/storybook/nextjs run build` | Next.js production build |
+| `npm --prefix projects/storybook/nextjs run build-storybook` | Storybook 정적 산출물 빌드 |
+| `npm --prefix projects/storybook/nextjs run lint` | ESLint 실행 |
 
-## 🛠 Local Development via Docker
+## Related References
 
-Each template includes a `docker-compose.yml` for isolated development.
-
-```bash
-cd nextjs
-
-# Start Storybook on http://localhost:6006
-docker-compose up -d --build
-```
-
-### Docker Services
-
-| Service     | Context      | Internal Port | Host Port | Role                |
-| :---------- | :----------- | :------------ | :-------- | :------------------ |
-| `storybook` | `./nextjs` | `80` (Nginx)  | `6006`    | Serves static build |
-
-## 🚢 Production Deployment
-
-To expose the Design System via the infrastructure's Traefik gateway (e.g., `https://design.${DEFAULT_URL}`):
-
-1. **Build**: `npm run build-storybook` inside the container.
-2. **Serve**: The Dockerfile uses Nginx to serve the `storybook-static` folder.
-3. **Traefik Config**: Add the following labels to `docker-compose.yml`:
-
-```yaml
-labels:
-  - 'traefik.enable=true'
-  - 'traefik.http.routers.storybook.rule=Host(`design.${DEFAULT_URL}`)'
-  - 'traefik.http.routers.storybook.tls=true'
-  - 'traefik.http.routers.storybook.middlewares=sso-auth@file' # Optional: Protect with Keycloak
-```
-
-## 🔗 Reference Documentation
-
-## 🪝 Git Hooks (Local)
-
-Commit-time checks are available via a repo-level `pre-commit` hook that runs Storybook lint plus repo-wide format/markdownlint on every commit (includes `docs/`, `README.md`, etc).
-
-```bash
-# Enable hooks for this repo
-git config core.hooksPath .githooks
-```
-
-Notes:
-
-- Run `npm install` inside both templates (`nextjs/`) once so the checks can execute.
-
-## File Map
-
-| Path        | Description                                                |
-| ----------- | ---------------------------------------------------------- |
-| `nextjs/`   | Next.js Storybook template (Vite, Nginx, CI workflows).    |
-| `README.md` | Monorepo-level overview and usage notes.                   |
+- [Projects README](../README.md)
+- [Next.js Storybook workspace](nextjs/README.md)
+- [Root README](../../README.md)
+- [README template](../../docs/99.templates/readme.template.md)

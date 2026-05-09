@@ -50,7 +50,7 @@ vault/
 | Sidecar     | Vault Agent     | Auto-auth & Templating |
 | OS          | Alpine          | Minimal Footprint      |
 
-## Implementation Snippet
+## Implementation Details
 
 ### Healthcheck Protocol
 
@@ -87,14 +87,12 @@ docker exec vault-agent ls -la /vault/agent/
 2. **Template Path Verification**: `.ctmpl` 파일 수정 시 `vault-agent.hcl`의 `template` 섹션과 경로가 일치하는지 확인한다.
 3. **AppRole ID Access**: 자동화 작업 시 `/vault/agent/role_id` 및 `secret_id` 파일을 통해 토큰을 획득한다.
 
-## Related Documents
+## Related References
 
 - **System Guide**: [vault.md](../../../docs/07.guides/03-security/vault.md)
 - **Technical Spec**: [spec.md](../../../docs/04.specs/03-security/spec.md)
 - **Ops Policy**: [vault.md](../../../docs/08.operations/03-security/vault.md)
 - **Runbook**: [vault.md](../../../docs/09.runbooks/03-security/vault.md)
-
----
 
 ## How to Work in This Area
 

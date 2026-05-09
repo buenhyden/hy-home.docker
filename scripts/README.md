@@ -182,7 +182,4 @@ bash scripts/generate-local-certs.sh
 - [📘 Runbooks](../docs/09.runbooks/README.md)
 - [Scripts Lifecycle Contract Cleanup Plan](../docs/05.plans/2026-05-09-scripts-lifecycle-contract-cleanup.md)
 
----
-*Maintained by DevOps & Automation Team*
-
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.

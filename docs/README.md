@@ -136,11 +136,11 @@ bash scripts/check-doc-traceability.sh
 | Spec | [04.specs/infra-secrets-docs-refresh/spec.md](04.specs/infra-secrets-docs-refresh/spec.md) |
 | Plan | [05.plans/2026-05-09-infra-secrets-docs-refresh.md](05.plans/2026-05-09-infra-secrets-docs-refresh.md) |
 | Task evidence | [06.tasks/2026-05-09-infra-secrets-docs-refresh.md](06.tasks/2026-05-09-infra-secrets-docs-refresh.md) |
-| README audit | 127 README files, heading gaps 0 |
-| Stage audit | 208 non-README stage docs, heading gaps 0 |
+| README audit | 146 parent-repo tracked README files |
+| Gitlink boundary | `projects/storybook/mcp` 내부 README는 parent repo diff 범위에서 제외 |
 | Runtime scope | Docker Compose runtime, secret values, cert contents, agent runtime unchanged |
 
-Heading audit 통과는 구조 검증입니다. 문서 품질 검토에서는 중복 legacy/template 블록, 실제 Markdown 링크가 아닌 참조, secret 값을 읽도록 오해될 수 있는 문장, shell history에 민감값을 남길 수 있는 예시를 별도로 확인합니다.
+README audit은 구조 검증입니다. 문서 품질 검토에서는 중복 legacy/template 블록, 실제 Markdown 링크가 아닌 참조, secret 값을 읽도록 오해될 수 있는 문장, shell history에 민감값을 남길 수 있는 예시를 별도로 확인합니다.
 
 ## Related References
 

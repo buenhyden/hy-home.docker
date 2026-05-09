@@ -5,12 +5,43 @@ runtime: codex
 
 # Codex Runtime Surface
 
-This directory contains Codex-specific runtime support for `hy-home.docker`.
-Shared policy remains in `AGENTS.md` and `docs/00.agent-governance/`.
+> Codex-specific runtime hooks and provider notes for `hy-home.docker`.
 
-## Files
+## Overview
 
-- `hooks.json` — Codex-local hook configuration.
+This directory contains the Codex runtime surface for the repository. Shared
+policy remains in `AGENTS.md` and `docs/00.agent-governance/`; `.codex/`
+contains only Codex-local hook configuration and routing notes.
+
+## Audience
+
+This README is for:
+
+- AI Agents
+- Documentation Writers
+- Repository Maintainers
+
+## Scope
+
+### In Scope
+
+- Codex-local hook configuration
+- Provider-specific runtime boundary notes
+- References back to the shared governance hub
+
+### Out of Scope
+
+- User-global Codex settings
+- Secrets, tokens, credentials, shell history, or logs
+- A parallel Codex agent catalog
+
+## Structure
+
+```text
+.codex/
+├── hooks.json  # Codex-local hook configuration
+└── README.md   # This file
+```
 
 ## Runtime Boundary
 
@@ -34,6 +65,13 @@ Shared policy remains in `AGENTS.md` and `docs/00.agent-governance/`.
 - Do not store secrets, tokens, credentials, personal settings, shell history, or logs here.
 - Do not add user-global Codex configuration under this repository.
 - Keep tracked `.codex/` files minimal and auditable.
+
+## How to Work in This Area
+
+1. Read `AGENTS.md` and the Codex provider overlay before changing Codex behavior.
+2. Keep shared policy in `docs/00.agent-governance/` instead of duplicating it here.
+3. Update this README when `hooks.json` gains or loses a repository-level behavior.
+4. Run the repository contract checks after changing tracked runtime files.
 
 ## Related Documents
 

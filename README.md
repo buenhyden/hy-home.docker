@@ -85,9 +85,9 @@ hy-home.docker/
 | `infra/` Compose service directories | 40 | service README 누락 0개 |
 | Root active includes | 14 | 주석 처리된 optional include는 실행면으로 과장하지 않음 |
 | Root Compose secret declarations | 69 | 선언된 secret 파일 누락 0개 |
-| `secrets/` value/cert files | 76 | 값은 열람하지 않고 파일명과 경로만 기준으로 분류 |
-| README heading audit | 127 README files, gaps 0 | heading 통과는 구조 검증이며 semantic QA와 별도 |
-| Stage heading audit | 208 non-README stage docs, gaps 0 | `docs/07`, `docs/08`, `docs/09`, `docs/90` 대상 |
+| `secrets/` value/cert files | 94 | 값은 열람하지 않고 파일명과 경로만 기준으로 분류 |
+| Parent-repo tracked README files | 146 | `projects/storybook/mcp` gitlink 내부 README는 parent repo diff 범위에서 제외 |
+| README refresh contract | path-appropriate template coverage | `docs/99.templates/readme.template.md`의 공통 구조와 경로별 snippet을 기준으로 갱신 |
 
 ## Prerequisites
 

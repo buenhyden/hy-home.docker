@@ -4,21 +4,37 @@ layer: agentic
 
 # AI Agent Governance Hub
 
-This directory is the canonical governance system for coding agents in this repository.
+> Canonical governance system for coding agents in this repository.
 
-## 1. Context and Objective
+## Overview
 
 - Purpose: deterministic, auditable, token-efficient agent execution.
 - Entry point: root shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) route agents into this hub; Codex uses `AGENTS.md` plus `.codex/`.
 - Compliance boundary: stage-gate lifecycle in `docs/01` to `docs/10`, plus `docs/90` and `docs/99`.
 
-## 2. Requirements and Constraints
+## Audience
+
+This README is for:
+
+- AI Agents
+- Documentation Writers
+- Repository Maintainers
+
+## Scope
+
+### In Scope
 
 - Language: every file in `docs/00.agent-governance/` must be English-only.
 - Root files must stay thin; detailed policy must live under this directory.
 - `docs/01` to `docs/99` are read-only by default and require explicit user approval for mutation.
 
-## 3. Directory Structure
+### Out of Scope
+
+- Product, architecture, operation, runbook, or incident content owned by `docs/01` to `docs/10`.
+- User-global runtime settings and personal credentials.
+- Provider-specific policy duplicated outside the provider overlays.
+
+## Structure
 
 - `rules/`: shared governance policies and completion gates.
   - `bootstrap.md` · `persona.md` · `task-checklists.md` · `stage-authoring-matrix.md`
@@ -69,7 +85,7 @@ This directory is the canonical governance system for coding agents in this repo
 | `[LOAD:RULES:GIT]`          | `rules/git-workflow.md`           |
 | `[LOAD:RULES:GITHUB]`       | `rules/github-governance.md`      |
 
-## 5. Operational Procedure
+## How to Work in This Area
 
 1. Resolve layer and load persona before any mutation.
 2. Load the pre-task checklist and `[LOAD:RULES:AGENTIC]`.
@@ -80,7 +96,7 @@ This directory is the canonical governance system for coding agents in this repo
 7. For PR-related tasks, load `[LOAD:RULES:GITHUB]` and verify GitHub completion gate (§6 of that rule) before declaring done.
 8. Run completion checklist and record out-of-scope findings in `memory/`.
 
-## 6. Maintenance and Safety
+## Maintenance and Safety
 
 - Keep policy concise and non-contradictory.
 - Remove stale links and nonexistent command references immediately in editable scope.

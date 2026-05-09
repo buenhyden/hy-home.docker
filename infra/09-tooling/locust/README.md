@@ -40,7 +40,7 @@ locust/
 
 | Command                                                    | Description                      |
 | ---------------------------------------------------------- | -------------------------------- |
-| `docker-compose --profile tooling up -d`                   | Locust 인프라 전체(Master/Worker) 시작 |
+| `docker compose --profile tooling up -d`                   | Locust 인프라 전체(Master/Worker) 시작 |
 | `docker compose up --scale locust-worker=N -d`             | 워커 노드 수 확장 (N개 지정)     |
 | `docker compose logs -f locust-master`                     | 마스터 노드 로그 실시간 확인     |
 

@@ -43,7 +43,7 @@ k6/
 
 | Command                                                    | Description                      |
 | ---------------------------------------------------------- | -------------------------------- |
-| `docker-compose --profile tooling up -d`                   | 테스팅 인프라 전체 시작          |
+| `docker compose --profile tooling up -d`                   | 테스팅 인프라 전체 시작          |
 | `docker compose up --scale k6-worker=N -d`                | 워커 노드 수 확장 (N개 지정)     |
 | `docker compose logs -f k6-master`                        | 마스터 노드 로그 및 상태 모니터링 |
 
