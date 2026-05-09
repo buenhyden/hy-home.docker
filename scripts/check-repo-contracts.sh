@@ -577,15 +577,18 @@ if not readme.is_file():
 
 readme_text = readme.read_text()
 failures: list[str] = []
-manual_root_scripts = {
+# Root scripts in this set are intentionally allowed to be standalone: they
+# must be inventoried in scripts/README.md, but do not need another repository
+# entrypoint, stage document, runtime hook, or CI workflow reference.
+external_reference_exemptions = {
     pathlib.Path("scripts/generate-local-certs.sh"),
 }
 root_scripts = sorted(path for path in pathlib.Path("scripts").glob("*.sh") if path.is_file())
 lib_scripts = sorted(path for path in pathlib.Path("scripts/lib").glob("*.sh") if path.is_file())
 
-for path in manual_root_scripts:
+for path in external_reference_exemptions:
     if not path.is_file():
-        failures.append(f"manual script allowlist points to missing root script: {path}")
+        failures.append(f"external-reference exemption points to missing root script: {path}")
 
 for path in root_scripts:
     if path.name not in readme_text and str(path) not in readme_text:
@@ -628,7 +631,7 @@ for root in scan_roots:
             continue
 
 for script in root_scripts:
-    if script in manual_root_scripts:
+    if script in external_reference_exemptions:
         continue
     candidates = {str(script), f"./{script}", script.name}
     referenced = False
@@ -640,7 +643,7 @@ for script in root_scripts:
             break
     if not referenced:
         failures.append(
-            "root script is not externally referenced and is not in the manual allowlist: "
+            "root script is not externally referenced and is not in the external-reference exemption set: "
             f"{script}"
         )
 

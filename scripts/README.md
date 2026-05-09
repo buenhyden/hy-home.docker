@@ -7,6 +7,49 @@
 **KR**: 빌드, 테스트, 환경 구성 등에 필요한 보조 스크립트와 자동화 툴을 포함하는 디렉토리입니다.
 **EN**: Directory containing helper scripts and automation tools for build, test, and environment setup.
 
+## Audience
+
+이 README의 주요 독자:
+
+- Operators
+- Developers
+- Documentation Writers
+- AI Agents
+
+## Scope
+
+### In Scope
+
+- Repository validation, contract checks, and post-edit automation scripts.
+- Tier hardening checks and their shared helper library.
+- Local manual utility scripts for preflight checks, safe secret file generation, local certificate generation, and Vault AppRole bootstrap.
+- Script inventory and lifecycle ownership rules for root-level `scripts/*.sh` files.
+
+### Out of Scope
+
+- Plaintext secret values, credentials, tokens, private keys, and generated certificate contents.
+- Long-form operating procedures that belong in `docs/08.operations/` or `docs/09.runbooks/`.
+- Generated Graphify output under `graphify-out/`.
+- Service-specific Docker Compose source files under `infra/`.
+
+## Structure
+
+```text
+scripts/
+├── *.sh                 # Root validation, hook, hardening, and manual utility entrypoints
+├── lib/
+│   └── hardening-lib.sh # Shared implementation for tier hardening checks
+└── README.md            # This file
+```
+
+## How to Work in This Area
+
+1. Read this README before adding, renaming, or removing a root script.
+2. Keep every root `scripts/*.sh` file listed in the inventory below.
+3. Reference non-standalone root scripts from a repository entrypoint, stage document, runtime hook, or CI workflow.
+4. Use `scripts/check-repo-contracts.sh` to verify script inventory, external references, and library usage.
+5. Keep secret-related examples procedural only; do not print or document generated secret values.
+
 ## Navigation / Inventory
 
 | Component | Path | Purpose |
@@ -45,9 +88,11 @@
 | Manual operations | `preflight-compose.sh`, `gen-secrets.sh`, `generate-local-certs.sh`, `bootstrap-vault-approle.sh` |
 | Internal library | `scripts/lib/hardening-lib.sh` |
 
-Root scripts must stay listed in this README. Any root script that is not an
-explicit manual utility must also be referenced by a repository entrypoint,
-stage document, runtime hook, or CI workflow.
+Root scripts must stay listed in this README. A root script that is intended to
+remain standalone without an external repository reference must be explicitly
+listed in the external-reference exemption set in `check-repo-contracts.sh`.
+All other root scripts must be referenced by a repository entrypoint, stage
+document, runtime hook, or CI workflow.
 
 ---
 
@@ -130,11 +175,12 @@ bash scripts/generate-local-certs.sh
 
 ---
 
-## Extensibility & References
+## Related References
 
 - [🤖 Agent Governance](../AGENTS.md)
 - [⚙️ Operations Baseline](../docs/08.operations/README.md)
 - [📘 Runbooks](../docs/09.runbooks/README.md)
+- [Scripts Lifecycle Contract Cleanup Plan](../docs/05.plans/2026-05-09-scripts-lifecycle-contract-cleanup.md)
 
 ---
 *Maintained by DevOps & Automation Team*
