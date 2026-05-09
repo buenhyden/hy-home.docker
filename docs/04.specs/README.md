@@ -47,6 +47,8 @@ docs/04.specs/
 │   └── spec.md            # infra_net 상세 설계 명세
 ├── harness-agent-first-engineering/
 │   └── spec.md            # Latest: Harness / Agent-first Engineering 분석 명세
+├── infra-secrets-docs-refresh/
+│   └── spec.md            # Infra, secrets, docs 운영 문서 최신화 명세
 └── README.md              # This file
 ```
 
@@ -77,3 +79,4 @@ docs/04.specs/
 - **ADR**: [../03.adr/README.md]
 - **Plan**: [../05.plans/README.md]
 - **Harness / Agent-first Engineering Spec**: [harness-agent-first-engineering/spec.md](harness-agent-first-engineering/spec.md)
+- **Infra / Secrets / Docs Refresh Spec**: [infra-secrets-docs-refresh/spec.md](infra-secrets-docs-refresh/spec.md)

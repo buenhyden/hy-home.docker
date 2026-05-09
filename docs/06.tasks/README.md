@@ -48,6 +48,7 @@ docs/06.tasks/
 ├── 2026-03-26-11-laboratory-tasks.md
 ├── 2026-04-01-standardize-infra-net.md  # infra_net 표준화 작업 기록
 ├── 2026-05-09-harness-agent-first-engineering.md  # Latest: Harness / Agent-first Engineering 작업 기록
+├── 2026-05-09-infra-secrets-docs-refresh.md  # Infra, secrets, docs 운영 문서 최신화 작업 기록
 └── README.md                               # This file
 ```
 
@@ -77,3 +78,4 @@ docs/06.tasks/
 - **Runbook**: [../09.runbooks/README.md]
 - **Postmortem**: [../10.incidents/README.md]
 - **Harness / Agent-first Engineering Task**: [2026-05-09-harness-agent-first-engineering.md](2026-05-09-harness-agent-first-engineering.md)
+- **Infra / Secrets / Docs Refresh Task**: [2026-05-09-infra-secrets-docs-refresh.md](2026-05-09-infra-secrets-docs-refresh.md)
