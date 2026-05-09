@@ -1220,8 +1220,8 @@
     "hash": "a81ae41417f89a8869c20473d26e3cc8"
   },
   "/home/hy/project-infra/hy-home.docker/README.md": {
-    "mtime": 1778271354.8517847,
-    "hash": "c5df0877d51c41096f25fd79c07aa016"
+    "mtime": 1778296460.8652563,
+    "hash": "08ab6036e76131391a201d525f31ac19"
   },
   "/home/hy/project-infra/hy-home.docker/archive/Windows-Network-IP.md": {
     "mtime": 1771840597.8729992,
@@ -1236,64 +1236,64 @@
     "hash": "668a3bfeae3c833ade1ccb8c9616e33b"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/README.md": {
-    "mtime": 1774494548.3984256,
-    "hash": "053713559ebd6926a06c1cb534afdd4f"
+    "mtime": 1778296630.4367924,
+    "hash": "fe9cfd09f68a2d94d638d92c7076c9cd"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/locust/docker-compose.yml": {
     "mtime": 1775026915.3764896,
     "hash": "be2cc5b4ae5c0b64b89e770906146203"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/locust/README.md": {
-    "mtime": 1774502600.7004163,
-    "hash": "9432b2e9046bd571916835e5fa1c6323"
+    "mtime": 1778296181.4768457,
+    "hash": "e8e049464cc6f15d97eed674c6a91bd4"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/registry/docker-compose.yml": {
     "mtime": 1774929984.9338,
     "hash": "e900d8bce5f353ac4661afb4955f662f"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/registry/README.md": {
-    "mtime": 1774497551.9387505,
-    "hash": "b8571cd4506b322e7a150481fecbcf83"
+    "mtime": 1778296181.4768457,
+    "hash": "7b7dfd7b9e2e7966bee08895a7aa196e"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/terraform/docker-compose.yml": {
     "mtime": 1775024508.6350486,
     "hash": "45661c23b6c0a3f7384157542a9394c0"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/terraform/README.md": {
-    "mtime": 1774497906.1270757,
-    "hash": "0eea7fe199804a848b367a8e3f9e54a8"
+    "mtime": 1778296460.8168561,
+    "hash": "b815c9a27fc9127cbf84fb23ae80c2fb"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/sonarqube/docker-compose.yml": {
     "mtime": 1775026843.7953098,
     "hash": "d23f98d7a5bd8050dcc4c4906e0675f5"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/sonarqube/README.md": {
-    "mtime": 1774497712.4710782,
-    "hash": "3237ec437db95f167348ad6fc465fc92"
+    "mtime": 1778296181.4768457,
+    "hash": "9bd27057a14ccc3ad932413c41df8b0b"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/terrakube/docker-compose.yml": {
     "mtime": 1775026905.1979067,
     "hash": "a8ac0040da0955565521dbfea1bdfb64"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/terrakube/README.md": {
-    "mtime": 1774502600.7004163,
-    "hash": "93d6c4356b3d0ad073c69a2231e9e655"
+    "mtime": 1778296460.8168561,
+    "hash": "df95f547352ac007d8732ba4bd801d83"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/syncthing/docker-compose.yml": {
     "mtime": 1775026854.1648684,
     "hash": "6d6faff51df89df71930f6a51af066a2"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/syncthing/README.md": {
-    "mtime": 1774497800.285252,
-    "hash": "ea4491585c6c02883dd83e60dd5b28cb"
+    "mtime": 1778296181.4768457,
+    "hash": "493a271ae6a4dead46694255ebff63a0"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/k6/docker-compose.yml": {
     "mtime": 1774929997.54728,
     "hash": "98945c682652931102f1a16f65932286"
   },
   "/home/hy/project-infra/hy-home.docker/infra/09-tooling/k6/README.md": {
-    "mtime": 1774502600.7004163,
-    "hash": "c3a060130253fd941dd84cb33d733dec"
+    "mtime": 1778296181.4768457,
+    "hash": "57794bd8cdf7d3a91551d81d81a30fa3"
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/README.md": {
     "mtime": 1778264280.0958915,
@@ -1308,8 +1308,8 @@
     "hash": "453c9a4a7d05481b2bec9d35ffed8fd2"
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/airflow/README.md": {
-    "mtime": 1778264279.9770916,
-    "hash": "703c28d353457219034ee1673db2112d"
+    "mtime": 1778296629.8735924,
+    "hash": "70d6e6ec6d015e981122e42814a82c15"
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/airflow/config/statsd_mapping.yml": {
     "mtime": 1771922249.8997815,
@@ -1324,12 +1324,12 @@
     "hash": "f91462dccd2a32405bff7356f6a2e682"
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/n8n/README.md": {
-    "mtime": 1775208140.399026,
-    "hash": "45fee97136b4817c6f76a54a29e56f89"
+    "mtime": 1778296630.0671923,
+    "hash": "dc4478ae2473d4dd73361cab87ab4d36"
   },
   "/home/hy/project-infra/hy-home.docker/infra/05-messaging/README.md": {
-    "mtime": 1774401977.6305537,
-    "hash": "e799bab660f939a9bc7c75ad6fb64581"
+    "mtime": 1778296629.2927923,
+    "hash": "e67af1b583b9f78f1d3ce790b565ba6d"
   },
   "/home/hy/project-infra/hy-home.docker/infra/05-messaging/kafka/docker-compose.dev.yml": {
     "mtime": 1778264279.3434916,
@@ -1356,8 +1356,8 @@
     "hash": "581a5377a72171900006f93e3bc90e6d"
   },
   "/home/hy/project-infra/hy-home.docker/infra/05-messaging/rabbitmq/README.md": {
-    "mtime": 1774503047.2306833,
-    "hash": "12b257edb896389d72361bfa40622d46"
+    "mtime": 1778296181.4724457,
+    "hash": "07a932a789c31562a692a625b835f64c"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/docker-compose.dev.yml": {
     "mtime": 1775199574.344386,
@@ -1368,28 +1368,28 @@
     "hash": "37a2bdc6bdec35d974b19662ee59d36f"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/README.md": {
-    "mtime": 1774402067.3291337,
-    "hash": "57ae28a720d1c6fb40133d85b4c87d73"
+    "mtime": 1778296629.4863923,
+    "hash": "2eb2a33022cf4b2da73d81cd4940d113"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/tempo/README.md": {
-    "mtime": 1778264280.3378916,
-    "hash": "4845989864b4fdb910b8b1df04841ecb"
+    "mtime": 1778296629.6799922,
+    "hash": "744fc5d656f46252459b01e73c19e270"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/tempo/config/tempo.yaml": {
     "mtime": 1771999636.2038693,
     "hash": "791b5ce7c630ac734fc50096ac36e438"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/loki/README.md": {
-    "mtime": 1774502600.7004163,
-    "hash": "159fce0119a8ec6839c4b912d5c64174"
+    "mtime": 1778296460.8124564,
+    "hash": "0c79442759c9d359d2f25ae9735b3e3f"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/loki/config/loki-config.yaml": {
     "mtime": 1771999597.9362383,
     "hash": "74b295253511358f67da6524bbe50bdc"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/grafana/README.md": {
-    "mtime": 1774863123.6947055,
-    "hash": "cbc2ca8e664ee8404da2b939135d9895"
+    "mtime": 1778296460.8124564,
+    "hash": "ad8f501118c83a4e2e142f33fbd3b6f4"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/grafana/provisioning/datasources/datasource.yml": {
     "mtime": 1774932262.5027614,
@@ -1404,28 +1404,28 @@
     "hash": "f5e20da4d2da30d6ff7ad84d0d8e338c"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/pushgateway/README.md": {
-    "mtime": 1774500017.266031,
-    "hash": "e7a2868ac7969b18ab9fb70e42c9397a"
+    "mtime": 1778296181.4724457,
+    "hash": "fb1f28b4bd3b19bfe790e58c8d652e8c"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/pyroscope/README.md": {
-    "mtime": 1778264280.2146916,
-    "hash": "95f0517a5087ffaea7b9ed890dc4644f"
+    "mtime": 1778296181.4724457,
+    "hash": "33e0a19f78cb0d3953af9a620946442e"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/pyroscope/config/pyroscope.yaml": {
     "mtime": 1773864365.815876,
     "hash": "d39e1b0c25d8aa3032ba0f0e29a5a881"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/alertmanager/README.md": {
-    "mtime": 1774499102.7387218,
-    "hash": "467b3677ce77a4321a1fb853f86b69c5"
+    "mtime": 1778296460.8124564,
+    "hash": "21300b89ec344a2ff798218da527bcf8"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/alertmanager/config/config.yml": {
     "mtime": 1774873431.6884518,
     "hash": "17a495beafee386005ebc8c8a4273d20"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/prometheus/README.md": {
-    "mtime": 1774502600.7004163,
-    "hash": "7b396776cd6bf77ed0a29dd5e87f88b4"
+    "mtime": 1778296460.8168561,
+    "hash": "c3ddc9861a71bd58b32e449bef20586c"
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/prometheus/config/prometheus.yml": {
     "mtime": 1775038449.687642,
@@ -1492,56 +1492,56 @@
     "hash": "376a9da1ef05d269062065b60bce2262"
   },
   "/home/hy/project-infra/hy-home.docker/infra/03-security/vault/README.md": {
-    "mtime": 1774496396.5243855,
-    "hash": "056a7dd5ea0d0ca55092d79d20f6d33b"
+    "mtime": 1778296181.4592457,
+    "hash": "2d72e0c45921d8cc9064afe185927b0e"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/README.md": {
-    "mtime": 1774433038.595873,
-    "hash": "3af032daae799f1129e057bfe34ed091"
+    "mtime": 1778296460.8036563,
+    "hash": "ac7d4f161032a24a54c3d8a4e5443001"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/specialized/neo4j/docker-compose.yml": {
     "mtime": 1774923763.6790898,
     "hash": "7baf77f20914149558afbb80e9c61362"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/specialized/neo4j/README.md": {
-    "mtime": 1774581307.7440577,
-    "hash": "7ac41260592a6e0c50e8771084624dde"
+    "mtime": 1778296460.8124564,
+    "hash": "f7b47edea293321972c0d5c7ddce5225"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/specialized/qdrant/docker-compose.yml": {
     "mtime": 1775120577.5054252,
     "hash": "829e071b2e063dc2232fd3631d1bc8a8"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/specialized/qdrant/README.md": {
-    "mtime": 1774581399.737804,
-    "hash": "4b8ea7cfca72c9e471f205f3427ca75e"
+    "mtime": 1778296460.8124564,
+    "hash": "3409224b98ac29b463f846d954ce9643"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/README.md": {
-    "mtime": 1774594241.9138074,
-    "hash": "7b34f4ecbcebbdc6586f524fc8544e69"
+    "mtime": 1778296460.8080564,
+    "hash": "f3ae9b7ef38e29f40d2bd3e8da008459"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/mongodb/docker-compose.yml": {
     "mtime": 1775025487.7161803,
     "hash": "e1781092a80a30befa583d8d0776788b"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/mongodb/README.md": {
-    "mtime": 1774594310.5271156,
-    "hash": "c586f99bed520aa2c5ba9e535fdf430a"
+    "mtime": 1778296460.8080564,
+    "hash": "2a340c1ef45139325da438aaeb66699e"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/couchdb/docker-compose.yml": {
     "mtime": 1775025451.7328906,
     "hash": "7815a2cc88ea3d895d5873eeb1b70db3"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/couchdb/README.md": {
-    "mtime": 1774594308.5255525,
-    "hash": "169ac4449c22bd4cf1e12848438b4a7f"
+    "mtime": 1778296460.8080564,
+    "hash": "e34ca5e68601a62d92a6ed35c9cdaa27"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/cassandra/docker-compose.yml": {
     "mtime": 1775025438.5898595,
     "hash": "705bdbaa6dcb5609b2ac44f78255c21f"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/cassandra/README.md": {
-    "mtime": 1774594284.523819,
-    "hash": "a98838e666751e354db475d9c693b326"
+    "mtime": 1778296460.8080564,
+    "hash": "e1a2f85f41b5eba22532b03308b50e8f"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml": {
     "mtime": 1773903598.156118,
@@ -1552,56 +1552,56 @@
     "hash": "b7704ab019535ca3ea2b8ce7e13751da"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/lake-and-object/minio/README.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "ff2d430f9cf3261b3dcd4e79be4c2984"
+    "mtime": 1778296460.8036563,
+    "hash": "ea15eeb4e99f5205c8ee51e2da14d575"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/lake-and-object/seaweedfs/docker-compose.yml": {
     "mtime": 1775025419.0647378,
     "hash": "92a99af751b5443da485527fc7fa6d2e"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/lake-and-object/seaweedfs/README.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "dc94643d74db1952df6fc122e65c8e4e"
+    "mtime": 1778296460.8080564,
+    "hash": "0af9a32897259ba32e365dc7be935f44"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/operational/README.md": {
-    "mtime": 1774593993.573647,
-    "hash": "6914a53fdb9ed18288afb964247cddf1"
+    "mtime": 1778296628.8967922,
+    "hash": "6ac190c8efb99d34a5788c6a57213770"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/operational/supabase/docker-compose.yml": {
     "mtime": 1775026046.2530136,
     "hash": "4297c22021cd6da4554bfee8df38444e"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/operational/supabase/README.md": {
-    "mtime": 1774594020.170107,
-    "hash": "919c671d7b1c0fff861ee0c2fd70f823"
+    "mtime": 1778296460.8080564,
+    "hash": "7e09a1816cf6c02ee3416a4bfe68d8f7"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/operational/mng-db/docker-compose.yml": {
     "mtime": 1775621251.7727818,
     "hash": "590cb5228b8f77db464681923293e569"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/operational/mng-db/README.md": {
-    "mtime": 1774593706.1302474,
-    "hash": "ddf6655b973c1bf45e4fa54151194079"
+    "mtime": 1778296629.1035924,
+    "hash": "38382e974905412cf3c55983fb2d6309"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/README.md": {
-    "mtime": 1774595876.308504,
-    "hash": "c12a6434bc18dad2db0466fc66621d53"
+    "mtime": 1778296460.8036563,
+    "hash": "dd78640bba26d89b19aa401209b67f20"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/ksql/docker-compose.yml": {
     "mtime": 1775025398.9804173,
     "hash": "5b872c01a7efdf64a4f0efb827e79b85"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/ksql/README.md": {
-    "mtime": 1774595893.4545746,
-    "hash": "c5b2ad4953aababce6fcdd6947a57316"
+    "mtime": 1778296460.8036563,
+    "hash": "ed346f0026e7f82446cb09380c63f3b9"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/influxdb/docker-compose.yml": {
     "mtime": 1774863167.137402,
     "hash": "fa5a44de92fc648a474e739d47216a55"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/influxdb/README.md": {
-    "mtime": 1774595888.8439753,
-    "hash": "b740be3fc3f2a577fa01aae372875a16"
+    "mtime": 1778296460.8036563,
+    "hash": "428842e707e89216eb75fb6bdc57f24e"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/influxdb/docker-compose.v2.yml": {
     "mtime": 1774665125.8805711,
@@ -1612,8 +1612,8 @@
     "hash": "f3127627ca91f176351909fdba967ad7"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/opensearch/README.md": {
-    "mtime": 1774595897.882998,
-    "hash": "b55827eef01086ab5e9f9fde9928373f"
+    "mtime": 1778296181.4680457,
+    "hash": "5afeaf431c98072a62722e0882e27e1f"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/opensearch/docker-compose.cluster.yml": {
     "mtime": 1775013149.4120698,
@@ -1660,20 +1660,20 @@
     "hash": "1d567a103c03c0078152401af1a41723"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/warehouses/README.md": {
-    "mtime": 1774595899.8871315,
-    "hash": "2133f413189cd58b0711214a27935107"
+    "mtime": 1778296181.4680457,
+    "hash": "5012b1af419ab72f9c1418431e2df6b1"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/relational/README.md": {
-    "mtime": 1774603466.7105129,
-    "hash": "c35065fc220e6f63966c7ed90272941c"
+    "mtime": 1778296460.8124564,
+    "hash": "b4ed2cb3e18185ca5af7af1523d0b3bd"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/relational/postgresql-cluster/docker-compose.yml": {
     "mtime": 1774865079.5407987,
     "hash": "cce250c6f9e63cdd93f753df5ec14eda"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/relational/postgresql-cluster/README.md": {
-    "mtime": 1774603751.3064868,
-    "hash": "6e865f27f374575a49dbdda2902220de"
+    "mtime": 1778296181.4680457,
+    "hash": "d8cc5246d356e7d845ad06e7e4fb5e55"
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/cache-and-kv/README.md": {
     "mtime": 1774671942.6879814,
@@ -1688,24 +1688,24 @@
     "hash": "aa069b66a6bc4039332d6ffe14ba4cd9"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/README.md": {
-    "mtime": 1774579368.9652495,
-    "hash": "dbf1284e7dfc9e40e8b0515d0db2bda9"
+    "mtime": 1778296460.8212562,
+    "hash": "b6b8996025fdfae5a300003168d38a21"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/open-notebook/docker-compose.yml": {
     "mtime": 1775719211.5075617,
     "hash": "cd5fa6d5e9170ebbd4fd3ee26ca2ea23"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/open-notebook/README.md": {
-    "mtime": 1778264298.0854273,
-    "hash": "524d24b1f722f8446f154240947166db"
+    "mtime": 1778296181.4812458,
+    "hash": "61b4f406a5271fc148f58f8400b7f3ac"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/portainer/docker-compose.yml": {
     "mtime": 1775026716.6135728,
     "hash": "53685d595d848aa2a19fc5f436c43726"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/portainer/README.md": {
-    "mtime": 1774502600.7004163,
-    "hash": "27c177d97676bedf015b597de449155b"
+    "mtime": 1778296181.4812458,
+    "hash": "c565bbbdf179319bf781f04839506247"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/dozzle/docker-compose.yml": {
     "mtime": 1775519601.6176064,
@@ -1720,8 +1720,8 @@
     "hash": "113d507b20cab3728e8c0f34f82d862f"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/redisinsight/README.md": {
-    "mtime": 1778264280.4654915,
-    "hash": "4bc79ce0bea6a5662e7940470dddf9c0"
+    "mtime": 1778296181.4812458,
+    "hash": "8f601eff51df97271085daa58af0a93f"
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/dashboard/docker-compose.yml": {
     "mtime": 1775026925.7024114,
@@ -1736,16 +1736,16 @@
     "hash": "c484f41ba2d6bffaa14e7b159c5e5d8f"
   },
   "/home/hy/project-infra/hy-home.docker/infra/08-ai/README.md": {
-    "mtime": 1778264279.8538916,
-    "hash": "7ce1ff1213f2329ee5da222fcb9f8645"
+    "mtime": 1778296460.8168561,
+    "hash": "cecea168484e7329b3daeb2a7bf38fd5"
   },
   "/home/hy/project-infra/hy-home.docker/infra/08-ai/open-webui/docker-compose.yml": {
     "mtime": 1775026955.0190444,
     "hash": "257ae3c3ceefcca0eb397a2483451bc2"
   },
   "/home/hy/project-infra/hy-home.docker/infra/08-ai/open-webui/README.md": {
-    "mtime": 1774498276.125122,
-    "hash": "05d5d1803869f0b6acbeb029d88b0b4f"
+    "mtime": 1778296630.2519922,
+    "hash": "520811bb7c97772f2cdce517bad8f0aa"
   },
   "/home/hy/project-infra/hy-home.docker/infra/08-ai/ollama/docker-compose.yml": {
     "mtime": 1775616862.3451836,
@@ -1756,8 +1756,8 @@
     "hash": "32c1d1b34c22ff76cac2cbda90966021"
   },
   "/home/hy/project-infra/hy-home.docker/infra/01-gateway/README.md": {
-    "mtime": 1778264279.5854917,
-    "hash": "854e1551e0091edaa7282ab32c284cd4"
+    "mtime": 1778296181.4592457,
+    "hash": "2cabd2bb08111ffea01369870e2b842b"
   },
   "/home/hy/project-infra/hy-home.docker/infra/01-gateway/nginx/docker-compose.yml": {
     "mtime": 1774658673.4600217,
@@ -1772,16 +1772,16 @@
     "hash": "30a612592b8333a4565636d8865bcfe9"
   },
   "/home/hy/project-infra/hy-home.docker/infra/01-gateway/traefik/README.md": {
-    "mtime": 1774502600.7004163,
-    "hash": "7f8f1503f1941c1ba5338a80585ed179"
+    "mtime": 1778296181.4592457,
+    "hash": "d64932f550e946e1921297da45c2f65d"
   },
   "/home/hy/project-infra/hy-home.docker/infra/01-gateway/traefik/config/traefik.yml": {
     "mtime": 1774334027.0828776,
     "hash": "c1c4b7638b32536ed6394a65474d5dd8"
   },
   "/home/hy/project-infra/hy-home.docker/infra/01-gateway/traefik/config/README.md": {
-    "mtime": 1774332339.6050055,
-    "hash": "2ea716e75acb1cb33007e9b330984f8d"
+    "mtime": 1778296460.7992563,
+    "hash": "0df37c13824b108e5d8b9d639331a3a8"
   },
   "/home/hy/project-infra/hy-home.docker/infra/01-gateway/traefik/dynamic/middleware.yml": {
     "mtime": 1775624707.6113997,
@@ -1792,8 +1792,8 @@
     "hash": "3ca931b2c6b03f049584d3dc7908bb93"
   },
   "/home/hy/project-infra/hy-home.docker/infra/01-gateway/traefik/dynamic/README.md": {
-    "mtime": 1774332341.6140149,
-    "hash": "a0ee2ff410155c2b22f9ef13a25ea287"
+    "mtime": 1778296460.8036563,
+    "hash": "4c82d5ea7fc8453c14f04f7474e0c4f9"
   },
   "/home/hy/project-infra/hy-home.docker/infra/01-gateway/traefik/dynamic/tls.yaml": {
     "mtime": 1773843032.1455524,
@@ -1816,16 +1816,16 @@
     "hash": "5227bc36c3b064bbc0723099f792aa92"
   },
   "/home/hy/project-infra/hy-home.docker/infra/10-communication/README.md": {
-    "mtime": 1774502600.7004163,
-    "hash": "332e56af491324f5863c4c8b601846fd"
+    "mtime": 1778296460.8212562,
+    "hash": "5b92eb7a05fabaa814054997ee39d505"
   },
   "/home/hy/project-infra/hy-home.docker/infra/10-communication/mail/docker-compose.yml": {
     "mtime": 1775026944.1893225,
     "hash": "5acb78726f09f6da66db303c1152b60e"
   },
   "/home/hy/project-infra/hy-home.docker/infra/10-communication/mail/README.md": {
-    "mtime": 1774496990.8734026,
-    "hash": "175d10626a9fdfea3b81b2a6c2efceb3"
+    "mtime": 1778296181.4812458,
+    "hash": "f3f52d654b01ed2b6435ed0c84407d29"
   },
   "/home/hy/project-infra/hy-home.docker/infra/02-auth/README.md": {
     "mtime": 1774659972.962481,
@@ -1836,8 +1836,8 @@
     "hash": "4ee7dedabd0bcd86f2440b21d8743c1d"
   },
   "/home/hy/project-infra/hy-home.docker/infra/02-auth/keycloak/README.md": {
-    "mtime": 1774659978.0116093,
-    "hash": "3234f73b5be974554390d169c5efebbe"
+    "mtime": 1778296181.4592457,
+    "hash": "1b4763749f9915c890940fb24775b13a"
   },
   "/home/hy/project-infra/hy-home.docker/infra/02-auth/oauth2-proxy/docker-compose.dev.yml": {
     "mtime": 1775119988.8199422,
@@ -2276,8 +2276,8 @@
     "hash": "76a17e1130029696b855bfe8e094d474"
   },
   "/home/hy/project-infra/hy-home.docker/docs/README.md": {
-    "mtime": 1778271377.9042861,
-    "hash": "e945cb9eb71d1c9e7330f8867f3b2948"
+    "mtime": 1778296258.0971735,
+    "hash": "cc3d19be1f07395c40d6a804babee8bd"
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.ard/0010-communication-architecture.md": {
     "mtime": 1774502600.7081194,
@@ -2380,16 +2380,16 @@
     "hash": "c4bf20d33784ec1cc97fd45848b00b8b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/standardize-infra-net.md": {
-    "mtime": 1775027623.6086583,
-    "hash": "045ae3a856069ff6efa0b42e8bb48b96"
+    "mtime": 1778296181.5296457,
+    "hash": "c4cc10dd5d90b805d42f4e91f734c84c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/12-infra-service-optimization-catalog.md": {
     "mtime": 1774671940.6959815,
     "hash": "27113822f24553938c49f1022d40e42b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/13-common-optimizations-template-exceptions.md": {
-    "mtime": 1774671940.6919816,
-    "hash": "e7fac3ce6ab9a13e9330ca02d8044312"
+    "mtime": 1778296181.5296457,
+    "hash": "584ca5dd4a0c2563deb4c05c852a833a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/README.md": {
     "mtime": 1778295217.7716975,
@@ -2404,44 +2404,44 @@
     "hash": "26b77e2a0e1985e00848fd891a97e411"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/09-tooling/performance-testing.md": {
-    "mtime": 1774501839.8910728,
-    "hash": "e147c0f46b6178745ffc9683056e9e83"
+    "mtime": 1778296181.5252457,
+    "hash": "a8a488e135e2f5a1ab698a157000b307"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/09-tooling/locust.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "164de61cd69dd6add22b19ab011ba46c"
+    "mtime": 1778296181.5252457,
+    "hash": "e30f0131d4ca1a551664073921e07db2"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/09-tooling/terrakube.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "839ffe38540eea65b98a4e0704881921"
+    "mtime": 1778296181.5296457,
+    "hash": "4657742c4f29b08f0281a05efe01e7a8"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/09-tooling/iac-deployment-policy.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "8016cbabf909ca24b2b896e97fe88455"
+    "mtime": 1778296181.5252457,
+    "hash": "8308bbbf2710a646668cb99ca09b5263"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/09-tooling/syncthing.md": {
-    "mtime": 1774497835.6158159,
-    "hash": "3855eea4c307c0f40113a089d84853bc"
+    "mtime": 1778296181.5252457,
+    "hash": "2cd8edb6ba386fa3a72f8b49fa5a950f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/09-tooling/terraform.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "94cb9cef2f8d0d45095921afa166b28d"
+    "mtime": 1778296181.5296457,
+    "hash": "2eb369a503f965a7bfc6ebf26da0cd49"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/09-tooling/k6.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "4069bfd6d09bb5ce6f912a21986e9b82"
+    "mtime": 1778296181.5252457,
+    "hash": "fc82a12bd22fa165e0c1575a7ccc738d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/09-tooling/README.md": {
-    "mtime": 1774668574.2474852,
-    "hash": "7c25f4ab3439129c2c8abcefa475afe2"
+    "mtime": 1778296181.4900455,
+    "hash": "ed10d1ae0658850cd128d7ac7e294dcd"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/09-tooling/registry.md": {
     "mtime": 1774501839.8910728,
     "hash": "15dc9ce54927e09215d2967d6c35275a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/09-tooling/sonarqube.md": {
-    "mtime": 1774497732.3337262,
-    "hash": "600a93cc3c0f6e3dabe97fe774c566c9"
+    "mtime": 1778296181.5252457,
+    "hash": "9328f1e85a39975d3c857e2bd86f39f0"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/07-workflow/optimization-hardening.md": {
     "mtime": 1775208134.0595648,
@@ -2452,84 +2452,84 @@
     "hash": "91b610fa758097a3f7e194632297c517"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/07-workflow/airflow.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "02693398ba2408dd9c4296517c5cdb46"
+    "mtime": 1778296181.5252457,
+    "hash": "432d87cf154986194e2c72402c0e1f07"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/07-workflow/README.md": {
     "mtime": 1774666959.0730262,
     "hash": "3521f236f68f2615bd1198600513d84b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/07-workflow/01.dag-deployment.md": {
-    "mtime": 1778264305.7150276,
-    "hash": "bfcefd88da8751ab29fa3258e972ef80"
+    "mtime": 1778296181.5252457,
+    "hash": "223817b7a8f35df6bd7f55f9d537eb37"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/07-workflow/n8n.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "11bc4d9d00d907a3c41867ca00209387"
+    "mtime": 1778296181.5252457,
+    "hash": "c33e05217b69adce4c7f03a78d7130bb"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/05-messaging/optimization-hardening.md": {
     "mtime": 1774665207.1879616,
     "hash": "926a43999ac129ea7666305f83c483a8"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/05-messaging/README.md": {
-    "mtime": 1774665276.8079643,
-    "hash": "a6bc7f0ea257ad8231995209071e798e"
+    "mtime": 1778296181.4900455,
+    "hash": "18cfb7068788bd333eee55adde35d37d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/05-messaging/rabbitmq.md": {
-    "mtime": 1774502859.5552208,
-    "hash": "a8bf8de7eac401c5f36e454a779e7c1d"
+    "mtime": 1778296181.5252457,
+    "hash": "bc57ba3d9194da859d27092150380254"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/05-messaging/kafka.md": {
-    "mtime": 1774498967.5457058,
-    "hash": "e4e587dda53ede37e12d19676e277845"
+    "mtime": 1778296181.5208457,
+    "hash": "ca0a179928eda60651b7dbf5ac3232cf"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/06-observability/optimization-hardening.md": {
     "mtime": 1774666104.4668238,
     "hash": "2bf0be5e393089b843706c792436a9fc"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/06-observability/01.retention.md": {
-    "mtime": 1774397252.1695113,
-    "hash": "36c340589b59add04581d3279d26ec10"
+    "mtime": 1778296181.5252457,
+    "hash": "c4fcef71a6cd1c4226f830a8e5f8a3e1"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/06-observability/tempo.md": {
-    "mtime": 1774500249.1619675,
-    "hash": "73ef4e8a498e4076a3c3a5a9acfcad90"
+    "mtime": 1778296181.5252457,
+    "hash": "cfe9288574c1938aa5383dcc92d99815"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/06-observability/pushgateway.md": {
-    "mtime": 1774501839.8910728,
-    "hash": "5dc6d0260995e47a7209d7a99cfa9ef2"
+    "mtime": 1778296181.5252457,
+    "hash": "6fa65af8b2cf075dcdc555a7a0876dbf"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/06-observability/grafana.md": {
-    "mtime": 1774606205.1582859,
-    "hash": "519cb98655550c0dd64c94af22493a89"
+    "mtime": 1778296181.5252457,
+    "hash": "dd4104d69902154e53c853a771a9eac6"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/06-observability/README.md": {
-    "mtime": 1774666233.941341,
-    "hash": "b27c179b530940c04cdd986a4364573f"
+    "mtime": 1778296181.4900455,
+    "hash": "0d67663362cfa1367225ce2bd02efa4e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/06-observability/loki.md": {
-    "mtime": 1774499408.1881394,
-    "hash": "b7b0aa406f33782555f1cb79cada84cf"
+    "mtime": 1778296181.5252457,
+    "hash": "26695bcbcf36fe30771b08a40276a005"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/06-observability/pyroscope.md": {
-    "mtime": 1774501839.8910728,
-    "hash": "46f6cef95022b9ba5f0b41bc3f1e2d83"
+    "mtime": 1778296181.5252457,
+    "hash": "8180e182dcf9b0f95ba335ed7d8fb81b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/06-observability/prometheus.md": {
-    "mtime": 1774658076.8017175,
-    "hash": "dedd52c5f9ec7aa140305df319c38df3"
+    "mtime": 1778296181.5252457,
+    "hash": "0edc15a678004195126b702fcf85d249"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/06-observability/alertmanager.md": {
-    "mtime": 1774499127.5473375,
-    "hash": "6cc8b132b66505d888ffd819647db929"
+    "mtime": 1778296181.5252457,
+    "hash": "865e404bd2c99b62a96602b07e0f05a8"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/06-observability/alloy.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "9f4edb065d735b7d6c714226861ed1f0"
+    "mtime": 1778296181.5252457,
+    "hash": "3595944353b67c7fb6893728f8b1e538"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/03-security/README.md": {
-    "mtime": 1774663494.5688174,
-    "hash": "c0be8b3a0660c2b90b0314feb92f6ea4"
+    "mtime": 1778296181.4856455,
+    "hash": "dd351c0208ab476f07d2dd160552d7a6"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/03-security/vault.md": {
     "mtime": 1774663424.865541,
@@ -2540,136 +2540,136 @@
     "hash": "2862d4e433abea29202547bb4e12c52f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/valkey-cluster.md": {
-    "mtime": 1774502439.282612,
-    "hash": "7bea97500564a318b7fbdd000e79f515"
+    "mtime": 1778296181.5208457,
+    "hash": "73da7e96733157c815861c34151e28ae"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/relational.md": {
-    "mtime": 1774603483.4305108,
-    "hash": "60c412fa632ce944754531f3e5728d67"
+    "mtime": 1778296181.5208457,
+    "hash": "25491b06bd7b8cd2ba672e076f1406a8"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/backup-policy.md": {
-    "mtime": 1774397862.6945572,
-    "hash": "7f924402d0f5c38f4563e974b795c67c"
+    "mtime": 1778296181.5164456,
+    "hash": "ba0215ab1efb2a322375708c3cfc669a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/README.md": {
-    "mtime": 1774664291.0972686,
-    "hash": "c37bdcb86554a516bff905b84e58beb5"
+    "mtime": 1778296460.8344562,
+    "hash": "c07e742e6fd4e911b6ede8a5b0469dc2"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/specialized/qdrant.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "b436e60f5b2a7914c5bb0ec6d7646a1f"
+    "mtime": 1778296181.5208457,
+    "hash": "aa7c213360410b1a4d522b038787d6a5"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/specialized/neo4j.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "ac6338b82b0e3a54e1f4ee109e4d0adf"
+    "mtime": 1778296181.5208457,
+    "hash": "be8b773f526ecbf8acfa82f34fe6ef5e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/specialized/README.md": {
-    "mtime": 1774606205.1622858,
-    "hash": "655002d94dbf268b4a5e49ec74ed3d6c"
+    "mtime": 1778296181.4856455,
+    "hash": "4b5f64c20c775d0c94955c04c92b5c2a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/nosql/mongodb.md": {
-    "mtime": 1774606205.166286,
-    "hash": "d4f023b561ee74b55330415b34211558"
+    "mtime": 1778296181.5208457,
+    "hash": "6b83b8ca6dd2870067f4fc80790a8ceb"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/nosql/couchdb.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "13d6dbb9cffa4f885a01074efb6f6221"
+    "mtime": 1778296181.5164456,
+    "hash": "24574fd58ea23a76bacfb32bd1e23650"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/nosql/README.md": {
     "mtime": 1774671940.6919816,
     "hash": "1795fb33b4c81ca1bb77b9a42578cd59"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/nosql/cassandra.md": {
-    "mtime": 1774606205.166286,
-    "hash": "e6335b5432b22af5c038aaedd95ab315"
+    "mtime": 1778296181.5164456,
+    "hash": "b6bf619389c629bd52cb480771348d0c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/lake-and-object/seaweedfs.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "0cd04407a9887410510d0990979ca14d"
+    "mtime": 1778296181.5164456,
+    "hash": "111bbb1062d67d7640c45e8895bc20e4"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/lake-and-object/minio.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "2e9a103a3eb7ab24059e6c91141e903d"
+    "mtime": 1778296181.5164456,
+    "hash": "dcda97489366132594e932f190483b8c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/lake-and-object/README.md": {
-    "mtime": 1774606205.170286,
-    "hash": "c06ffe810c2fd9b2415fac5dc8c09bf3"
+    "mtime": 1778296181.4856455,
+    "hash": "7936504603f41a39b290cb6639d0eeb3"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/operational/mng-db.md": {
-    "mtime": 1774658055.7572603,
-    "hash": "541a90f401b4d12ab9117e8424f62a8b"
+    "mtime": 1778296181.5208457,
+    "hash": "9ce97f6114ba3ef89191a19f71557691"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/operational/README.md": {
     "mtime": 1774671942.6879814,
     "hash": "b8209030c4a0a66df258c9b9f1d708f0"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/operational/supabase.md": {
-    "mtime": 1774593830.496924,
-    "hash": "18f6e4625d8201b99f6eee8dd0683a0c"
+    "mtime": 1778296460.8344562,
+    "hash": "749975ddefaa08a1db78db9179f63e4c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/analytics/warehouses.md": {
-    "mtime": 1774595980.8900516,
-    "hash": "808dc22e392d5ffa131c3f30bdb71157"
+    "mtime": 1778296181.5164456,
+    "hash": "75a2855789c0465cabe06f15f3c1d1ef"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/analytics/opensearch.md": {
-    "mtime": 1774595975.5498583,
-    "hash": "40d9d54906188f846ea360c155413ad1"
+    "mtime": 1778296181.5164456,
+    "hash": "b8c257fa6d0d6507b04e99b571ed4c80"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/analytics/ksqldb.md": {
-    "mtime": 1774595956.8123546,
-    "hash": "7064758a7cefa532e7291876b2df986e"
+    "mtime": 1778296181.5164456,
+    "hash": "fc03e4abf1f1343b3c0d34ecf92e307b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/analytics/README.md": {
-    "mtime": 1774595950.4687064,
-    "hash": "cb9aef88c4cd4a4ba727e99a139f3c75"
+    "mtime": 1778296181.4856455,
+    "hash": "f586d586d3a3dd341e9980338e680835"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/analytics/influxdb.md": {
-    "mtime": 1774595954.8057547,
-    "hash": "3340190ee9fd2fee733ca3e6a5c1ef21"
+    "mtime": 1778296181.5164456,
+    "hash": "f3ffb0311bea0a538ab5c0392a652793"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/relational/postgresql-cluster.md": {
-    "mtime": 1778264072.3655152,
-    "hash": "4bc59f1f5e211627c4338da49879f9d2"
+    "mtime": 1778296181.5208457,
+    "hash": "f2f2f6660ccf4c47691b279fab43ddd7"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/relational/README.md": {
-    "mtime": 1774603642.3744977,
-    "hash": "00dfce7ccc406b904220e38a8fabc9ef"
+    "mtime": 1778296460.8344562,
+    "hash": "9cbc58e7f0a51f58d62d39e73f790084"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/cache-and-kv/valkey-cluster.md": {
-    "mtime": 1774606205.174286,
-    "hash": "b0c64bf8a12846a090270821b2184a67"
+    "mtime": 1778296181.5164456,
+    "hash": "e0a4d99d0a06796b062ed7263d99b230"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/04-data/cache-and-kv/README.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "5e802e4ce4b3685ed58aed54b3939bc9"
+    "mtime": 1778296181.4856455,
+    "hash": "50b5ccbcd8405c2d85b06df18dd390a3"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/11-laboratory/optimization-hardening.md": {
-    "mtime": 1774682476.6644268,
-    "hash": "45f564e87b87a1bcdf7f42b441e3d9c3"
+    "mtime": 1778296181.5296457,
+    "hash": "e819d825ac11e9f07257419509dc54d7"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/11-laboratory/open-notebook.md": {
-    "mtime": 1778274090.9997392,
-    "hash": "8b36e9995f8b0b55ed050276257eee07"
+    "mtime": 1778296181.5296457,
+    "hash": "f8513d99ff98203127e8788b7e5081e2"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/11-laboratory/portainer.md": {
-    "mtime": 1774496742.5694258,
-    "hash": "8a5c159b288854e2043dac7bc7af670f"
+    "mtime": 1778296181.5296457,
+    "hash": "4b071c337bf7dc1eacd2d0208cf81e5f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/11-laboratory/dashboard.md": {
-    "mtime": 1774496591.8371763,
-    "hash": "7a28f36e9f0bc0009f4fd1d068d0d1af"
+    "mtime": 1778296181.5296457,
+    "hash": "e7238e1b680598bb2b77852a4dfeb06a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/11-laboratory/dozzle.md": {
-    "mtime": 1774577304.700241,
-    "hash": "9087fba3c14ec94ddd85b9ccecf5a9f6"
+    "mtime": 1778296181.5296457,
+    "hash": "cdc9f61fbb3a7e5289298f179a9b6a3b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/11-laboratory/README.md": {
     "mtime": 1778274091.395739,
     "hash": "f73fdd0ba4fc998d6e923dbd8ce0e1f7"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/11-laboratory/redisinsight.md": {
-    "mtime": 1774496841.8638825,
-    "hash": "e6b05bd5d9466ffb69e12bac76144b90"
+    "mtime": 1778296181.5296457,
+    "hash": "08694954eec56d9f9f3f7160310a0023"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/08-ai/optimization-hardening.md": {
     "mtime": 1774667667.3819778,
@@ -2696,12 +2696,12 @@
     "hash": "e54133d1c7278099796f412c7bf04e3b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/01-gateway/README.md": {
-    "mtime": 1774658807.7656755,
-    "hash": "5522f4e8ea40b5fb8b71295a129e3c1e"
+    "mtime": 1778296181.4856455,
+    "hash": "849b7e1b71b2dbbae8fdacc90d00003c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/10-communication/mail.md": {
-    "mtime": 1774501839.8950727,
-    "hash": "26cbf17c625eb87beff62276d8cc4e65"
+    "mtime": 1778296181.5296457,
+    "hash": "8eb7b60aae72bf90b539b0a1875c85db"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/10-communication/README.md": {
     "mtime": 1774501839.8950727,
@@ -2712,8 +2712,8 @@
     "hash": "2af36c86a2ef5588334f05426f78db8a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/02-auth/README.md": {
-    "mtime": 1774659857.570976,
-    "hash": "cbf0eb6b84b0623c5f5436d799a05f71"
+    "mtime": 1778296181.4856455,
+    "hash": "94b8bd516efffa81b556dc798bea8839"
   },
   "/home/hy/project-infra/hy-home.docker/docs/08.operations/02-auth/oauth2-proxy.md": {
     "mtime": 1774659898.7434309,
@@ -2936,8 +2936,8 @@
     "hash": "8c204efea7f5ee319c6fe9fb62a7ba8c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/developer-setup.md": {
-    "mtime": 1778274796.059572,
-    "hash": "3a03740e694977ec3ca2cc143fd21fdf"
+    "mtime": 1778296460.8344562,
+    "hash": "cf52ec5c46204d8dc5f19a23faf5fdae"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/README.md": {
     "mtime": 1778295217.6088974,
@@ -2952,8 +2952,8 @@
     "hash": "f82b6643a00fdc46523303a41e2d4861"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/09-tooling/01.iac-automation.md": {
-    "mtime": 1774606205.130286,
-    "hash": "dc39c302b925dd6166c1460f9932234d"
+    "mtime": 1778296181.5076456,
+    "hash": "f8d5c9f9046c560a3535a796d3acd617"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/09-tooling/performance-testing.md": {
     "mtime": 1774502600.7042677,
@@ -2964,32 +2964,32 @@
     "hash": "f7de34de7901d20b2b4c5f9f98bd8db9"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/09-tooling/terrakube.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "d4406837088873b9b04b9e9647647a7e"
+    "mtime": 1778296181.5120456,
+    "hash": "ccf09fcfac16816f9f9db3a39e9563ce"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/09-tooling/syncthing.md": {
-    "mtime": 1774502599.1289792,
-    "hash": "8d5c71e9a183429e8e14ffe6551d25e9"
+    "mtime": 1778296181.5120456,
+    "hash": "241f8f8626d1f0999b3c49ba902cb65b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/09-tooling/terraform.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "2a021b569f1ad2bd4b0646ba2fbbddf2"
+    "mtime": 1778296181.5120456,
+    "hash": "858b64066a7f8121197f0b2c9e835767"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/09-tooling/k6.md": {
     "mtime": 1774502600.7042677,
     "hash": "8b6290cbd67b7f74d6b25d8db93ad7d2"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/09-tooling/README.md": {
-    "mtime": 1774668557.160933,
-    "hash": "01a76bd0966f3fdc9867313edfe8269d"
+    "mtime": 1778296181.4812458,
+    "hash": "8f576f22776188b98ad4f9d2a3c1b3cb"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/09-tooling/registry.md": {
     "mtime": 1774501839.8830726,
     "hash": "062233e74b93e01106bf5f9cb151975d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/09-tooling/sonarqube.md": {
-    "mtime": 1774497830.5521498,
-    "hash": "3314fb32bfd0347202731e8dc75af043"
+    "mtime": 1778296181.5120456,
+    "hash": "d01485e29db415fc766e6e82709120b7"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/07-workflow/optimization-hardening.md": {
     "mtime": 1775208126.2572656,
@@ -3004,36 +3004,36 @@
     "hash": "9471ec8e6287631b6f33452983f4142d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/07-workflow/02.n8n-automation.md": {
-    "mtime": 1774501992.3868988,
-    "hash": "9ad5e64412fbb8ab304669cbf6973b56"
+    "mtime": 1778296181.5076456,
+    "hash": "802cd88ee9c59c7127ee9444a496ff8d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/07-workflow/airflow-dag-basics.md": {
     "mtime": 1774502600.7042677,
     "hash": "4f316d17fcdba16664f58756501a3a72"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/07-workflow/01.airflow-dag-dev.md": {
-    "mtime": 1774501992.3868988,
-    "hash": "09e4fab49556457dea91354afdca8bbb"
+    "mtime": 1778296181.5076456,
+    "hash": "4de0d24b924effc54f197abc945f50bd"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/07-workflow/README.md": {
     "mtime": 1774666951.4085503,
     "hash": "3f9f90c347de56518fcc2d0a0e11ac21"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/07-workflow/n8n.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "a223cb77837ce4b51e4588dd491f6c94"
+    "mtime": 1778296181.5076456,
+    "hash": "746e4c4d0730742e09b675c8092dc64e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/05-messaging/optimization-hardening.md": {
     "mtime": 1774665182.406607,
     "hash": "055b25e20f5b3506996361717fb33adf"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/05-messaging/03.ksql-streaming.md": {
-    "mtime": 1774606398.6703522,
-    "hash": "c09effb3ea9f8a4eb539f6ccc75b8696"
+    "mtime": 1778296181.5032456,
+    "hash": "f1c459b4e1aa4c6f5830cbb473c1c63e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/05-messaging/README.md": {
-    "mtime": 1774665254.2372968,
-    "hash": "c81e75a4679d94479b52b840509d9495"
+    "mtime": 1778296181.4812458,
+    "hash": "15f337fc386400ec52d88a40cec3723f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/05-messaging/rabbitmq.md": {
     "mtime": 1774502935.867981,
@@ -3048,8 +3048,8 @@
     "hash": "d9dee67f116997e9ed9054b0382c4e59"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/06-observability/01.lgtm-stack.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "a52030d5a0edf41b98bc1e4319c954d2"
+    "mtime": 1778296181.5032456,
+    "hash": "2e2c9c891b411034426ca46157e606d5"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/06-observability/tempo.md": {
     "mtime": 1774606262.9222786,
@@ -3060,24 +3060,24 @@
     "hash": "db05bea6cfeb26569ab81b66ebd56654"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/06-observability/grafana.md": {
-    "mtime": 1774606205.1382859,
-    "hash": "875130f2911980cf9c8fc8f25162151d"
+    "mtime": 1778296181.5076456,
+    "hash": "7824240630f38c07b6294cdc3f5eeccc"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/06-observability/README.md": {
-    "mtime": 1774666211.2330952,
-    "hash": "2d225aeb849b15fadf5c36fbf8c17e34"
+    "mtime": 1778296181.4812458,
+    "hash": "fae8daeb11571f5f9adaec65d49611d0"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/06-observability/loki.md": {
-    "mtime": 1774499389.7634559,
-    "hash": "d973ecfe73e668564559fcc9252479cd"
+    "mtime": 1778296181.5076456,
+    "hash": "4a62e7918d506dad890602841be49498"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/06-observability/pyroscope.md": {
     "mtime": 1774606205.1382859,
     "hash": "fad6610d293f80710a7342fd9580591f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/06-observability/prometheus.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "3e19e4cab5ab9cbc120b74283ec67053"
+    "mtime": 1778296181.5076456,
+    "hash": "e4fc7a056fe665283f297ec2560f31d1"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/06-observability/alertmanager.md": {
     "mtime": 1774499115.129467,
@@ -3088,12 +3088,12 @@
     "hash": "c6993f99e027a0ab2cf752b8e788b8e0"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/03-security/01.setup.md": {
-    "mtime": 1774692865.1147096,
-    "hash": "9e958d592965e384d50662c840928134"
+    "mtime": 1778296181.4988456,
+    "hash": "61346cbcfb883cd389018a6a2f983d85"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/03-security/README.md": {
-    "mtime": 1774663494.5688174,
-    "hash": "5a4d06664aebd027aefcf027732b774a"
+    "mtime": 1778296181.4812458,
+    "hash": "a32c99a42ea92a1f14606abd1e490a8c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/03-security/vault.md": {
     "mtime": 1775027734.866678,
@@ -3104,8 +3104,8 @@
     "hash": "749972756caef3de427e2ae89427f3a5"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/04.storage-systems.md": {
-    "mtime": 1774432627.2674785,
-    "hash": "54bd6750717e4e80841e697b9fe8dd69"
+    "mtime": 1778296181.4988456,
+    "hash": "77ec01364569ac393a4f4a587f7b7e85"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/valkey-cluster.md": {
     "mtime": 1774502486.9479227,
@@ -3116,16 +3116,16 @@
     "hash": "a59d2ec8fe10d81ded61307d53de9dd7"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/02.cache-kv-dbs.md": {
-    "mtime": 1774432624.6124303,
-    "hash": "de09afb28d3a72f3670bc641117f8ef5"
+    "mtime": 1778296181.4988456,
+    "hash": "593e3bc8b68d132d9679e5266c343ea8"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/README.md": {
     "mtime": 1774671942.6919816,
     "hash": "499f829e6eb3bd9ede3b9841c524e953"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/05.analytical-specialized-dbs.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "d9fa7f11c7ac030639a881b9e030ae7a"
+    "mtime": 1778296181.4988456,
+    "hash": "e08e3d2561cd4bd2338901f8cdbb0fc3"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/01.relational-dbs.md": {
     "mtime": 1774671942.6919816,
@@ -3140,8 +3140,8 @@
     "hash": "a97765fd79a0012aa97111d091526d46"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/specialized/README.md": {
-    "mtime": 1774606205.1422858,
-    "hash": "5b87140d538ef920c80ce25d11927fc4"
+    "mtime": 1778296181.4812458,
+    "hash": "0eec693f5042c8577037ddebc26fe251"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/nosql/mongodb.md": {
     "mtime": 1774671942.6919816,
@@ -3160,28 +3160,28 @@
     "hash": "556936dc8e11c40d890ab2ab99121412"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/lake-and-object/seaweedfs.md": {
-    "mtime": 1774671942.6919816,
-    "hash": "54c9e62cafdc5ce9f0f19bf1cd9c1902"
+    "mtime": 1778296460.8256562,
+    "hash": "b6acbdaee72afb209514830edbc6c193"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/lake-and-object/minio.md": {
-    "mtime": 1774671942.6919816,
-    "hash": "cba8c639a0119d0086a3faa76a1b4f8b"
+    "mtime": 1778296460.8256562,
+    "hash": "d1a6eb2d30de715c1092c5cf71c83ca6"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/lake-and-object/README.md": {
-    "mtime": 1774671942.6919816,
-    "hash": "e86995e89db9a021845a79dd6dc522ba"
+    "mtime": 1778296181.4812458,
+    "hash": "adad1c950250c73970c8477f72255daa"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/operational/mng-db.md": {
-    "mtime": 1774671942.6919816,
-    "hash": "e578e4c81189170ee50596f08d208b20"
+    "mtime": 1778296460.8256562,
+    "hash": "142016144b7b36b6eac5aa9f79f75db1"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/operational/README.md": {
     "mtime": 1774671942.6919816,
     "hash": "be74e991c43f07bfda212ef8475cae31"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/operational/supabase.md": {
-    "mtime": 1774593774.1678991,
-    "hash": "1e3080ae3d309203125f9b50eb6ac555"
+    "mtime": 1778296460.8256562,
+    "hash": "60ae583167cdebd08865926aecb3f039"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/analytics/warehouses.md": {
     "mtime": 1774502600.7042677,
@@ -3196,28 +3196,28 @@
     "hash": "4dff63ae2c4d643aaa7ea68fd44fa87c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/analytics/README.md": {
-    "mtime": 1774606205.150286,
-    "hash": "3c9025b11b21ba5182c899c6ba905d13"
+    "mtime": 1778296460.8212562,
+    "hash": "54e5f9f638508fb65922165c8ad29df0"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/analytics/influxdb.md": {
     "mtime": 1774595921.1739407,
     "hash": "14c908d201f1228ff0426c99cb016419"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/relational/postgresql-cluster.md": {
-    "mtime": 1774603759.3064833,
-    "hash": "380275823969bb34740e82ad4ffd7078"
+    "mtime": 1778296181.5032456,
+    "hash": "4f452203306dbb6801e750136bd45842"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/relational/README.md": {
-    "mtime": 1774603775.882482,
-    "hash": "6e627735d2a32f07b16a375bea0d5f56"
+    "mtime": 1778296460.8256562,
+    "hash": "06f41a97bb48a04e992a3783d5cb4a31"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/cache-and-kv/valkey-cluster.md": {
     "mtime": 1774671942.6919816,
     "hash": "a99665de7376b49a83fcb7bd56e25e6d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/04-data/cache-and-kv/README.md": {
-    "mtime": 1774671942.6919816,
-    "hash": "5725f68694054075bcf661856864b193"
+    "mtime": 1778296181.4812458,
+    "hash": "57d064dda0fc18799353cfaa78b6272b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/11-laboratory/optimization-hardening.md": {
     "mtime": 1774682476.6644268,
@@ -3228,8 +3228,8 @@
     "hash": "7a0aefdc22506879009347c789c0f006"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/11-laboratory/portainer.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "1330b3f8f89a4ef4ec45b3f4e8816b35"
+    "mtime": 1778296181.5120456,
+    "hash": "505bffa96211a67f7b46b7f85458e01c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/11-laboratory/dashboard.md": {
     "mtime": 1774496590.355843,
@@ -3244,24 +3244,24 @@
     "hash": "c90fbdd7c6037f1f01344528351813c3"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/11-laboratory/redisinsight.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "7137f1826f4dfd91aa5a2b340ef9c093"
+    "mtime": 1778296181.5120456,
+    "hash": "f7b21158024d027d0ab9bc23af3f5011"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/08-ai/optimization-hardening.md": {
     "mtime": 1774667667.3819778,
     "hash": "a0623c7a72a0e75e6c9dc945d6225223"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/08-ai/02.rag-workflow.md": {
-    "mtime": 1774606205.154286,
-    "hash": "41a36a542d99c718dab92dc9a5607349"
+    "mtime": 1778296181.5076456,
+    "hash": "ef5bee726b9972a56032e1b5f7021a0d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/08-ai/README.md": {
     "mtime": 1774667736.9791617,
     "hash": "74b986b6d0bccf3d80ce8fb00cc8e2ca"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/08-ai/01.llm-inference.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "7ab28d4ee025fd09e25a25870e13abc8"
+    "mtime": 1778296181.5076456,
+    "hash": "b9ef75364589d8e289205586c5254261"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/08-ai/ollama.md": {
     "mtime": 1774605538.1743486,
@@ -3272,8 +3272,8 @@
     "hash": "6070b1c95d06849ba87414040c445f24"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/08-ai/local-llm-setup.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "aff5ea45b10c3ad68bc112a85dd566e6"
+    "mtime": 1778296181.5076456,
+    "hash": "9d4e6e4dc2d70263d9097e8d8dd7dddd"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/01-gateway/01.setup.md": {
     "mtime": 1774401510.2577024,
@@ -3288,8 +3288,8 @@
     "hash": "9402cfae9f4df49fd78326a50c1030d7"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/01-gateway/README.md": {
-    "mtime": 1774658901.8939111,
-    "hash": "79b831e5d79329629cf2a1b85ccd533e"
+    "mtime": 1778296181.4812458,
+    "hash": "239ec1755737f7553c9ee707a8fb55e5"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/10-communication/mail.md": {
     "mtime": 1774502600.7042677,
@@ -3304,8 +3304,8 @@
     "hash": "281ac70e5e6f8b071171876aa2886088"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/02-auth/README.md": {
-    "mtime": 1774659806.3459148,
-    "hash": "a5461b7797509244b9128fb41a743b0b"
+    "mtime": 1778296181.4812458,
+    "hash": "b5c8fa220aebf092f2d2dbf91fbefabf"
   },
   "/home/hy/project-infra/hy-home.docker/docs/07.guides/02-auth/oauth2-proxy.md": {
     "mtime": 1774659840.9461386,
@@ -3408,28 +3408,28 @@
     "hash": "c6e4964574b43807d723c8899d0473ea"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/README.md": {
-    "mtime": 1778269782.859154,
-    "hash": "4ec776968cba4ac459dd3b672430b822"
+    "mtime": 1778296181.4944456,
+    "hash": "cc067c654c308315cfe79e25a2eef7d4"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/learning/roadmap-v1.md": {
-    "mtime": 1778264129.479075,
-    "hash": "5e64aa0679ee990ec9187dd7add9b1ab"
+    "mtime": 1778296181.5560455,
+    "hash": "6779bf96c59ce89b2d6eb6e05709fe74"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/learning/README.md": {
-    "mtime": 1778264129.254675,
-    "hash": "f02a57979c834dceed0e40f52687e97c"
+    "mtime": 1778296181.4988456,
+    "hash": "9f2fb545ea5aa79b87d5f2cd74a63b61"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/learning/roadmap.md": {
-    "mtime": 1778264129.360275,
-    "hash": "461735157c92c2e5959769966e83f359"
+    "mtime": 1778296181.5560455,
+    "hash": "03a812ec48bbdab5eb522de27c0cfdb4"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/docker/README.md": {
-    "mtime": 1778269782.727154,
-    "hash": "c12f3ba2b0366dfc8cf37bed0cd29bab"
+    "mtime": 1778296181.4988456,
+    "hash": "1e381dea314b548c6399daaa20cfc612"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/0012-standardize-infra-net.md": {
-    "mtime": 1775028101.004518,
-    "hash": "02b324f0e35d3b249bc36ec1476d6a46"
+    "mtime": 1778296181.5340457,
+    "hash": "261769438b45dc98ce79e9e7b92f3b54"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/README.md": {
     "mtime": 1778295217.9564974,
@@ -3444,40 +3444,40 @@
     "hash": "97aa5a0c315ef0b38d1ee47d2a5c3bff"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/09-tooling/performance-testing.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "15e62e2479a8465d7f8e8c35346e08d8"
+    "mtime": 1778296181.5516458,
+    "hash": "7a60675f3422b25547fb90dee69ecb0d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/09-tooling/locust.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "40d0b754dbf6f06c840e5367e2175bdf"
+    "mtime": 1778296181.5472457,
+    "hash": "041cbb03d59988cc5f60f83f8b27c0d4"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/09-tooling/terrakube.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "cef5df6ed360513c22d16032f874081f"
+    "mtime": 1778296181.5516458,
+    "hash": "f4624f3a9275e219ec969d2243c5904b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/09-tooling/syncthing.md": {
-    "mtime": 1774497853.6195595,
-    "hash": "e7f8e1796c7b90fe2ca07fc16dff5961"
+    "mtime": 1778296181.5516458,
+    "hash": "242e903da9966be4d642dcd1b58eb46b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/09-tooling/terraform.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "0c8455de2489c47a408a95fc19cc9c68"
+    "mtime": 1778296181.5516458,
+    "hash": "9fd29921cc14dc134bdc0aac6bb63526"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/09-tooling/k6.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "779663dc1ac576f537f4ea5c45d3c5ce"
+    "mtime": 1778296181.5472457,
+    "hash": "aa200cb49d688d5c48e03f1e0d33607b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/09-tooling/README.md": {
-    "mtime": 1774668588.5847242,
-    "hash": "686c88218b1ca29f9cfb9014b1b45b02"
+    "mtime": 1778296181.4944456,
+    "hash": "983881cf18018ad830c585fadb96e262"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/09-tooling/registry.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "70bcbefc52248223d9e1d4733daff40c"
+    "mtime": 1778296181.5516458,
+    "hash": "1d4dfa2d4ad5fd36d0f40e496cfeabe1"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/09-tooling/sonarqube.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "e5cb0e1ed1681b4a38167159ce438714"
+    "mtime": 1778296181.5516458,
+    "hash": "bc82be29b5afcb8570a44e4fc6e79eeb"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/07-workflow/optimization-hardening.md": {
     "mtime": 1774666883.35729,
@@ -3488,84 +3488,84 @@
     "hash": "0944e1545983cbd3606a4031834d1fcb"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/07-workflow/airflow.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "0a4859b22b01ff4c9b46b7036756ea7a"
+    "mtime": 1778296181.5472457,
+    "hash": "cfb2b4325d282e40f7e8f88b49689071"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/07-workflow/README.md": {
     "mtime": 1774666971.3472104,
     "hash": "9bbccf01e310a881909ac3a9a222a45b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/07-workflow/airflow-worker-recovery.md": {
-    "mtime": 1774606410.5104268,
-    "hash": "decc156027a6f57dc32d9bfe23fbbe51"
+    "mtime": 1778296181.5472457,
+    "hash": "b10dca08e57463342881d03e5edd6cdf"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/07-workflow/n8n.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "4832e156f6336bcbef54321ce2ffd09e"
+    "mtime": 1778296181.5472457,
+    "hash": "1a7c9a3fac75efadd3e72bbaae343ae9"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/05-messaging/optimization-hardening.md": {
     "mtime": 1774665230.9134705,
     "hash": "20cc28d2de963990eeb00768f593d64b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/05-messaging/README.md": {
-    "mtime": 1774665300.0937328,
-    "hash": "4a0dee21436044f870f64bc26bcbb287"
+    "mtime": 1778296181.4944456,
+    "hash": "a07bedb5766fcf4b6abfb5c04850df0d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/05-messaging/rabbitmq.md": {
-    "mtime": 1774502863.3230712,
-    "hash": "865246ebf27cb55d3db349ef17d283cb"
+    "mtime": 1778296181.5428457,
+    "hash": "d4f7433c3ede914c28a7077837ac26a9"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/05-messaging/kafka.md": {
-    "mtime": 1778264071.2875154,
-    "hash": "c7d9e5e9f997f757598a9916fcf5c71e"
+    "mtime": 1778296181.5428457,
+    "hash": "5cd2156aae66aeed1cd586fec5f87e15"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/06-observability/optimization-hardening.md": {
     "mtime": 1774666104.4668238,
     "hash": "348e2379f734d5e29173c895b001a891"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/06-observability/tempo.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "bc4abde64b74a00bdcc0df1ead1b5a03"
+    "mtime": 1778296181.5472457,
+    "hash": "cfb368ed5a41dcfbcd571aaedd8691c5"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/06-observability/pushgateway.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "8f320e58d9e6b010d3e4a1a35fcb6d38"
+    "mtime": 1778296181.5472457,
+    "hash": "cf332b1e382092e644ab973fc8907303"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/06-observability/grafana.md": {
-    "mtime": 1774606205.182286,
-    "hash": "715e6b83233a759b1bfd8194e24bce68"
+    "mtime": 1778296181.5428457,
+    "hash": "d9a4c926b0fa0f8bc2f0987a679a883a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/06-observability/prometheus-recovery.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "142da8283eb28950281bed9d31a60752"
+    "mtime": 1778296181.5428457,
+    "hash": "885e940bd240198b3caa04623d80abba"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/06-observability/README.md": {
-    "mtime": 1774666254.7691755,
-    "hash": "c6ca37a5abc5150ec880256eac644c81"
+    "mtime": 1778296181.4944456,
+    "hash": "c777515eedd58d058bf6a4285e005696"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/06-observability/loki.md": {
-    "mtime": 1774606205.182286,
-    "hash": "12cdbaa7015491e47cc24b5087dfcf53"
+    "mtime": 1778296181.5428457,
+    "hash": "bd4b79176b13fe8e345f389d553a8cf8"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/06-observability/pyroscope.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "8f0a04c20ae1a159b6837a812e21e614"
+    "mtime": 1778296181.5472457,
+    "hash": "698fb47659f8bc370c9b0447ec29570c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/06-observability/prometheus.md": {
-    "mtime": 1774658082.529932,
-    "hash": "707affe9dc12fa44e647081350ce5311"
+    "mtime": 1778296181.5472457,
+    "hash": "2ac512268ab0baeca4bf813d53d61664"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/06-observability/alertmanager.md": {
-    "mtime": 1774499198.5320055,
-    "hash": "f89a422be0eef1c7a6880a433109fbf1"
+    "mtime": 1778296181.5428457,
+    "hash": "2bc937c7183a672c9c49b237219506fa"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/06-observability/alloy.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "0d88a78488a5dca84c40733a4188a5ac"
+    "mtime": 1778296181.5428457,
+    "hash": "ed00853d0465ada0237ec952f9c65609"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/03-security/README.md": {
-    "mtime": 1774663494.5728662,
-    "hash": "624b7ad6062e22e494b58a54dc2b944c"
+    "mtime": 1778296181.4900455,
+    "hash": "8062f9cce279e97e79d1d7f7470fe88f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/03-security/vault.md": {
     "mtime": 1774692876.119607,
@@ -3576,144 +3576,144 @@
     "hash": "3883bd7ca31029ccd3e7b1ec354ba36f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/valkey-cluster.md": {
-    "mtime": 1774502441.2894893,
-    "hash": "e89ef4e112e49df0709cb5a3fd24cb77"
+    "mtime": 1778296181.5428457,
+    "hash": "8f81320d4308fbea82c294ba343ab755"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/storage-exhaustion.md": {
-    "mtime": 1774397864.7215292,
-    "hash": "385fae084da1f167c557d2f399d0de20"
+    "mtime": 1778296181.5428457,
+    "hash": "147ab92661748adabfd39878d06e3fd2"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/relational.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "400bcaa64b6020fd184fefdca02b09c3"
+    "mtime": 1778296181.5384457,
+    "hash": "ccfc97ed3e2dccd9a2ce73d98a09bbc2"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/README.md": {
     "mtime": 1774664296.3544211,
     "hash": "3ec30d3930619042c07ac4f526cc32c0"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/specialized/qdrant.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "e246009783af4c7c2e924a591ee88221"
+    "mtime": 1778296460.8564563,
+    "hash": "62d02f735bd69ed1c9becf72e0bc9184"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/specialized/neo4j.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "6e8b5a103981d1be90ab2160ebfdb00a"
+    "mtime": 1778296460.8564563,
+    "hash": "b89b69377cb66a0bbab05cf28278ecb6"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/specialized/README.md": {
-    "mtime": 1774606205.186286,
-    "hash": "989d051657e1f19ab9adbf906eb64762"
+    "mtime": 1778296181.4944456,
+    "hash": "df3748ebadd8af1f4dc35843a46e4cd4"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/nosql/mongodb.md": {
-    "mtime": 1774671942.6919816,
-    "hash": "98768556c38c8d9111d93ad8c960a534"
+    "mtime": 1778296460.8520563,
+    "hash": "a0dc5d9f5b434a89ec52b95b4aec9d49"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/nosql/couchdb.md": {
-    "mtime": 1774671942.6919816,
-    "hash": "8bc324cc4d03191870ad1102aade52fc"
+    "mtime": 1778296460.8520563,
+    "hash": "4e6c6592de506257188c2a692622715c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/nosql/README.md": {
     "mtime": 1774671940.6879816,
     "hash": "10eda16199bb3a8e33048921ce3f1a3d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/nosql/cassandra.md": {
-    "mtime": 1774671942.6919816,
-    "hash": "73fbab1b6e5a3d4e96488b0e69a8c00b"
+    "mtime": 1778296460.8520563,
+    "hash": "8f298ae7aa57d50d554ac7a7666de324"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/lake-and-object/seaweedfs.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "7127eecbd68051df8ea99cd1606405bc"
+    "mtime": 1778296460.8520563,
+    "hash": "ca3db21630c17f3555cec2253b223c98"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/lake-and-object/minio.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "727ef87509235e82e2c5581e10f0695f"
+    "mtime": 1778296460.8476562,
+    "hash": "7671d77ff39072531255eef5dec2c62e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/lake-and-object/README.md": {
-    "mtime": 1774671940.5279815,
-    "hash": "132e6c27c2030e1df3db5fc0726216ac"
+    "mtime": 1778296181.4944456,
+    "hash": "d843af6539caa956f512274aba390a5e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/operational/mng-db.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "507b7ae4b922b694436a32f7e11f0871"
+    "mtime": 1778296181.5384457,
+    "hash": "e6643d2e331c00724b68d07cb9253433"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/operational/README.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "6927536b6ff4a37cd9c02eb0acea71ef"
+    "mtime": 1778296460.8520563,
+    "hash": "c12d46b4f903eec28f1a6e4c39cd2609"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/operational/supabase.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "a271f5c241ebb895f0a4d5ae2d4ecb40"
+    "mtime": 1778296460.8520563,
+    "hash": "7e9113ebd774f5c18a41f63e420504ff"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/analytics/warehouses.md": {
-    "mtime": 1774671942.6919816,
-    "hash": "7210ec11c8a3b5b500e679de87d3a268"
+    "mtime": 1778296181.5340457,
+    "hash": "461e2706a50ce586c82b96421f197117"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/analytics/opensearch.md": {
-    "mtime": 1774671942.6919816,
-    "hash": "9ae854bd8fe9bff5788939d6794dfa08"
+    "mtime": 1778296181.5340457,
+    "hash": "8a68e61cb93f370ae6064c7c85eb7668"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/analytics/ksqldb.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "5b3bf2c9748c8d956e0ae9ab87fd2649"
+    "mtime": 1778296181.5340457,
+    "hash": "baba341df6908c6f3a46c6efb11ca987"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/analytics/README.md": {
-    "mtime": 1774595982.8968623,
-    "hash": "9b898c9ca9be69bf978c7e3a8e0f4acc"
+    "mtime": 1778296181.4900455,
+    "hash": "11d8c705af53dee6eb91549c4cf7368d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/analytics/influxdb.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "7b34325e6c2f532a3822f5d22209a474"
+    "mtime": 1778296181.5340457,
+    "hash": "98cf390ff1014d2f87ee6118cd97c356"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/relational/postgresql-cluster.md": {
-    "mtime": 1778264071.8375154,
-    "hash": "d9d8af8e2f930637a4d85bc57762de27"
+    "mtime": 1778296181.5384457,
+    "hash": "e7eb3e0a2deebe5d12a6dbd6d6398df4"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/relational/README.md": {
-    "mtime": 1778264071.6967154,
-    "hash": "16fef1a70ce109467ef7895ab3dedad7"
+    "mtime": 1778296460.8520563,
+    "hash": "364b2499bfdd9d87bcb9781d97f9207a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/cache-and-kv/valkey-cluster.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "492bd307c2fb819c86be686dc6b7941c"
+    "mtime": 1778296181.5340457,
+    "hash": "07b1d7b584da30f52b2f66b6c9d19f8f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/04-data/cache-and-kv/README.md": {
-    "mtime": 1774671942.6879814,
-    "hash": "93ace1f4ffc18506076183280e4b3cb8"
+    "mtime": 1778296181.4944456,
+    "hash": "c951c233142595512dd08ae20b5847a4"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/11-laboratory/optimization-hardening.md": {
-    "mtime": 1774682476.6644268,
-    "hash": "678cdde6740a468e31d741f2b9cac9f2"
+    "mtime": 1778296181.5516458,
+    "hash": "555ea4171760e3dc80f505b58b6ea80f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/11-laboratory/open-notebook.md": {
-    "mtime": 1778274091.0569391,
-    "hash": "9d05d591dcaaf5c604327a8c6a7509cb"
+    "mtime": 1778296181.5516458,
+    "hash": "c565add7741ac89a34e23ad2e4fa2e01"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/11-laboratory/portainer.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "f22f85b5afe3069422a0202e8eb2695a"
+    "mtime": 1778296181.5560455,
+    "hash": "d428ec68466a8734ee86889cf37cb204"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/11-laboratory/dashboard.md": {
-    "mtime": 1774496625.4115593,
-    "hash": "70293b24ded6969c339b393fbee80b59"
+    "mtime": 1778296181.5516458,
+    "hash": "87308f70878c239bb681d1881053b42c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/11-laboratory/dozzle.md": {
-    "mtime": 1778264071.5515153,
-    "hash": "e32726d5c5ac1c3837aea0ba9c97fb78"
+    "mtime": 1778296181.5516458,
+    "hash": "f40d9fff6086ef9ef1890e87888872da"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/11-laboratory/README.md": {
     "mtime": 1778274091.5761392,
     "hash": "764c506eeb28b4b7aaa4bca7c5dea03e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/11-laboratory/redisinsight.md": {
-    "mtime": 1774496844.7544696,
-    "hash": "d86973a3647270b3e4b5e9854e238e95"
+    "mtime": 1778296181.5560455,
+    "hash": "6fa113febbc018041adf06dc4bd422dc"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/08-ai/optimization-hardening.md": {
     "mtime": 1774667667.3819778,
     "hash": "8182f9f583316522d318b3711f5c374e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/08-ai/gpu-recovery.md": {
-    "mtime": 1774502600.7042677,
-    "hash": "bbda5d4f590dc76683e9b177e3b10395"
+    "mtime": 1778296181.5472457,
+    "hash": "ccfb249cce8a4a7a15a27ccd2d3a8cfd"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/08-ai/README.md": {
     "mtime": 1778264071.1555152,
@@ -3736,12 +3736,12 @@
     "hash": "79c2b8b1a371d954e8e681e9ba8e92fb"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/01-gateway/README.md": {
-    "mtime": 1774658851.8103678,
-    "hash": "32b734eba64e092c1f6e03c69b59a957"
+    "mtime": 1778296181.4900455,
+    "hash": "b065344ad4bd44500f51a6eb1d42f169"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/10-communication/mail.md": {
-    "mtime": 1778264070.7507153,
-    "hash": "875488da0288137c6b2ac0c93888eda7"
+    "mtime": 1778296181.5516458,
+    "hash": "553de232286a5f2c210d7f500a943dfe"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/10-communication/README.md": {
     "mtime": 1774501839.8990726,
@@ -3752,8 +3752,8 @@
     "hash": "223b3328f702c626784b16595f1674c4"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/02-auth/README.md": {
-    "mtime": 1774659911.7776127,
-    "hash": "8f72c98d2f108a3ebdf1b92bf0c18c1c"
+    "mtime": 1778296181.4900455,
+    "hash": "b7955ca11ce5d39fd807b3160df3449a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/09.runbooks/02-auth/oauth2-proxy.md": {
     "mtime": 1774659961.1848245,
@@ -4240,8 +4240,8 @@
     "hash": "784b76c7226cac27f847b186acca7664"
   },
   "/home/hy/project-infra/hy-home.docker/secrets/README.md": {
-    "mtime": 1778261535.6553516,
-    "hash": "a2e46b279f692d989e6759c77e59ff68"
+    "mtime": 1778296258.5503736,
+    "hash": "4dc84f2c06dae023758f5283f22f2296"
   },
   "/home/hy/project-infra/hy-home.docker/secrets/security/unseal_keys.txt": {
     "mtime": 1774255581.5606918,
