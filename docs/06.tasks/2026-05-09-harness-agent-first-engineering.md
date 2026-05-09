@@ -31,6 +31,7 @@ status: draft
 | HAFE-003 | Sync | Update parent README files for new artifacts. | Done | README structure and related links updated. |
 | HAFE-004 | Verify | Run governance, docs, runtime, Compose, and hardening checks. | Done | All planned validation commands passed on 2026-05-09. |
 | HAFE-005 | Scan | Confirm no external source-label references in active runtime/governance surfaces. | Done | `rg` returned no matches in active runtime/governance surfaces. |
+| HAFE-006 | Context Quality | Add Graphify health fallback so contaminated graph output remains advisory. | Done | `bash scripts/report-graphify-health.sh` exits 0 and reports `status=advisory` for current generated corpus. |
 
 ## Suggested Types
 
@@ -63,6 +64,7 @@ Executed commands:
 ```bash
 bash scripts/check-repo-contracts.sh
 bash scripts/check-doc-traceability.sh
+bash scripts/report-graphify-health.sh
 bash scripts/validate-docker-compose.sh
 bash scripts/check-template-security-baseline.sh
 bash scripts/check-quickwin-baseline.sh
@@ -74,6 +76,7 @@ Results:
 
 - `check-repo-contracts.sh`: PASS, `failures=0`.
 - `check-doc-traceability.sh`: PASS, `catalog_pairs_total=46`, `failures=0`.
+- `report-graphify-health.sh`: PASS/non-failing advisory, `status=advisory`, `manifest_volume_paths=223`, `manifest_gitlink_paths=309`, `graph_source_file_contamination_count=282`.
 - `validate-docker-compose.sh`: PASS, `services_total=5`.
 - `check-template-security-baseline.sh`: PASS, `template_adoption_missing=0`, required security controls enforced.
 - `check-quickwin-baseline.sh`: PASS, `services_total=5`, baseline violations all zero.

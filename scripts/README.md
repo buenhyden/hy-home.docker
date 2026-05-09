@@ -16,6 +16,7 @@
 | QuickWin Baseline Check | [check-quickwin-baseline.sh](check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
 | Template & Security Baseline Check | [check-template-security-baseline.sh](check-template-security-baseline.sh) | Enforce template adoption and required security controls |
 | Documentation Traceability Check | [check-doc-traceability.sh](check-doc-traceability.sh) | Enforce sync links across 05.plans ↔ 08.operations ↔ 09.runbooks |
+| Graphify Health Report | [report-graphify-health.sh](report-graphify-health.sh) | Report advisory health of generated Graphify corpus without blocking validation |
 | Post Tool Validation | [post-tool-validate.sh](post-tool-validate.sh) | Run path-aware validation after Claude/Codex file edits |
 | Unified Hardening Check | [check-all-hardening.sh](check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
 | Gateway Hardening Check | [check-gateway-hardening.sh](check-gateway-hardening.sh) | Enforce 01-gateway Traefik/Nginx hardening baseline |
@@ -38,6 +39,7 @@
 | Lifecycle | Scripts |
 | :--- | :--- |
 | CI / quality gate | `check-repo-contracts.sh`, `validate-docker-compose.sh`, `check-doc-traceability.sh`, `check-quickwin-baseline.sh`, `check-template-security-baseline.sh`, `check-all-hardening.sh` |
+| Advisory evidence | `report-graphify-health.sh` |
 | Runtime hook | `post-tool-validate.sh` |
 | Tier wrapper | `check-gateway-hardening.sh`, `check-auth-hardening.sh`, `check-security-hardening.sh`, `check-data-hardening.sh`, `check-messaging-hardening.sh`, `check-observability-hardening.sh`, `check-workflow-hardening.sh`, `check-ai-hardening.sh`, `check-tooling-hardening.sh`, `check-laboratory-hardening.sh` |
 | Manual operations | `preflight-compose.sh`, `gen-secrets.sh`, `generate-local-certs.sh`, `bootstrap-vault-approle.sh` |
@@ -78,6 +80,9 @@ HYHOME_COMPOSE_PROFILES="core dev" ./scripts/check-quickwin-baseline.sh
 
 # Enforce documentation traceability sync
 ./scripts/check-doc-traceability.sh
+
+# Report advisory Graphify corpus health
+./scripts/report-graphify-health.sh
 
 # Run provider-neutral post-edit validation from hook payload
 ./scripts/post-tool-validate.sh

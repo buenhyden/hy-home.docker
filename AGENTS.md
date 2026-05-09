@@ -52,6 +52,9 @@ This project has a graphify knowledge graph at `graphify-out/`.
 
 - Before architecture or codebase answers, read `graphify-out/GRAPH_REPORT.md`.
 - If `graphify-out/wiki/index.md` exists, prefer it over raw-file browsing.
+- Use Graphify as a navigation aid only when corpus health is clean.
+- If Graphify output includes `volumes/`, gitlink/submodule content, minified/generated artifacts, meaningless god nodes, or unrelated cross-root inferred edges, treat it as advisory only.
+- Corroborate architecture and codebase conclusions against tracked source files, `docs/00.agent-governance/`, and active stage docs.
 - After modifying code files, run `graphify update .` when the CLI is available; if `graphify` is unavailable, report that graph refresh was skipped.
 
 ## Related Documents

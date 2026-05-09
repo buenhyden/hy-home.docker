@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "[ -f graphify-out/graph.json ] && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"graphify: Knowledge graph exists. Read graphify-out/GRAPH_REPORT.md for god nodes and community structure before searching raw files.\"}}' || true"
+            "command": "[ -f graphify-out/graph.json ] && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"graphify: Knowledge graph exists. Read graphify-out/GRAPH_REPORT.md first; if report health is contaminated by ignored volumes, gitlink/submodule content, generated/minified artifacts, meaningless god nodes, or unrelated cross-root inferred edges, treat it as advisory and corroborate against tracked source files, docs/00.agent-governance, and stage docs.\"}}' || true"
           }
         ]
       }

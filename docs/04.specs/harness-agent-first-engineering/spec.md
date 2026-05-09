@@ -13,6 +13,7 @@ status: draft
 - 이 명세는 agent/runtime/governance 계약 분석을 다룬다.
 - 새 agent catalog, parallel Codex catalog, root instruction 확장은 만들지 않는다.
 - `docs/01.prd`, `docs/02.ard`, `docs/03.adr`, `docs/10.incidents`에는 새 산출물을 만들지 않는다.
+- PRD/ARD/ADR은 새 product feature, architecture replacement, or durable decision이 아니라 existing harness context-quality fallback 보완이므로 생성하지 않는다.
 - 런타임 정책 변경은 현재 검증에서 gap이 발견될 때만 별도 최소 변경으로 다룬다.
 
 ## Related Inputs
@@ -32,6 +33,7 @@ status: draft
 - `.codex/README.md`
 - `scripts/check-repo-contracts.sh`
 - `scripts/check-doc-traceability.sh`
+- `scripts/report-graphify-health.sh`
 - `scripts/validate-docker-compose.sh`
 
 ## Contracts
@@ -44,6 +46,7 @@ status: draft
 | Governance SSOT | `docs/00.agent-governance/` | shared rules, scopes, providers, agents catalog, memory, delegation protocol을 소유한다. |
 | Runtime mirror | `.claude/agents`, `.claude/skills`, `docs/00.agent-governance/agents` | runtime agent/function catalog가 governance catalog와 동기화되어야 한다. |
 | Codex boundary | `.codex/README.md`, `.codex/hooks.json` | Codex는 hook/context surface이며 parallel delegated-agent catalog를 만들지 않는다. |
+| Graphify context health | `AGENTS.md`, runtime hooks, `scripts/report-graphify-health.sh` | Graphify는 clean corpus일 때 navigation aid이며, contamination이 있으면 advisory로 낮추고 tracked source와 canonical docs로 재확인한다. |
 | Verification | `scripts/check-*.sh` | repository contract, docs traceability, Compose, security/hardening baseline으로 완료를 증명한다. |
 
 ## Core Design
@@ -69,7 +72,7 @@ status: draft
 - Provider overlays: `docs/00.agent-governance/providers/*.md`.
 - Hooks: `.claude/hooks/*.sh`, `.codex/hooks.json`, `scripts/post-tool-validate.sh`.
 - Validation gates: `scripts/check-repo-contracts.sh`, `scripts/check-doc-traceability.sh`, `scripts/validate-docker-compose.sh`, security/hardening baseline scripts.
-- Context graph: `graphify-out/GRAPH_REPORT.md`.
+- Context graph: `graphify-out/GRAPH_REPORT.md`, with advisory health evidence from `scripts/report-graphify-health.sh`.
 
 ### Agent-first Engineering Components
 
@@ -110,6 +113,7 @@ Not applicable. This change does not add or modify service APIs.
 - Use `rg` for discovery where available.
 - Use `bash scripts/check-repo-contracts.sh` for repository and runtime catalog drift.
 - Use `bash scripts/check-doc-traceability.sh` for 05/08/09 traceability.
+- Use `bash scripts/report-graphify-health.sh` for non-failing Graphify corpus health evidence.
 - Use `bash scripts/validate-docker-compose.sh` for Compose structural validation.
 - Use security and hardening baseline scripts for operational confidence.
 
@@ -123,6 +127,8 @@ Not applicable. This change does not add or modify service APIs.
 ## Memory & Context Strategy (If Applicable)
 
 - Load `graphify-out/GRAPH_REPORT.md` before architecture or codebase answers.
+- Use Graphify as a navigation aid only when corpus health is clean.
+- If Graphify includes `volumes/`, gitlink/submodule content, generated/minified artifacts, meaningless god nodes, or unrelated cross-root inferred edges, treat it as advisory and corroborate with tracked source, `docs/00.agent-governance/`, and active stage docs.
 - Use `docs/00.agent-governance/memory/` for historical audit notes only.
 - Use live repository files and validators as the current source of truth.
 
@@ -132,6 +138,7 @@ Not applicable. This change does not add or modify service APIs.
 - Use in-place refactors only.
 - Preserve `.claude` as the canonical delegated-agent runtime mirror.
 - Keep `.codex` limited to hooks and context wiring.
+- Do not treat contaminated Graphify output as authority for architecture or codebase conclusions.
 - Enforce zero external source-label references in runtime/governance files.
 
 ## Evaluation (If Applicable)
@@ -142,11 +149,13 @@ Evaluation is command-based:
 - Documentation traceability passes.
 - Compose validation passes.
 - Template/security, QuickWin, and hardening baselines pass.
+- Graphify health report exits 0 and records `status=clean|advisory` without blocking existing validation gates.
 - Source-label scan returns no matches in active runtime/governance surfaces.
 
 ## Edge Cases & Error Handling
 
 - If a validator fails, update the relevant stage task evidence and patch only the failing contract.
+- If Graphify health is `advisory`, read it for navigation only and re-check claims against tracked files and canonical docs.
 - If `graphify` CLI is unavailable after code changes, report graph refresh as skipped rather than claiming success.
 - If `rtk` is unavailable in Codex shell, run the underlying shell commands directly and record the fallback.
 - If a new stage artifact is added, update the parent README in the same change.
@@ -158,12 +167,16 @@ Evaluation is command-based:
 | Runtime catalog mismatch | Repair mirror parity between `.claude/` and `docs/00.agent-governance/agents/`. |
 | Missing scope import or model split | Restore exact scope import and `opus`/`sonnet` hierarchy. |
 | Stale source-label reference | Rewrite content to be self-contained, then rerun scans. |
+| Contaminated Graphify context | Downgrade Graphify to advisory context and corroborate against tracked source and canonical docs. |
 | Docs traceability failure | Add missing parent README or 05/08/09 reciprocal links. |
 | Compose validation failure | Treat as infra blocker and inspect affected `infra/**/docker-compose*.yml`. |
 
 ## Verification
 
 ```bash
+python3 -m json.tool .codex/hooks.json >/dev/null
+python3 -m json.tool .claude/settings.json >/dev/null
+bash scripts/report-graphify-health.sh
 bash scripts/check-repo-contracts.sh
 bash scripts/check-doc-traceability.sh
 bash scripts/validate-docker-compose.sh

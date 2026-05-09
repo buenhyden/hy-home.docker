@@ -36,16 +36,21 @@ status: draft
 | Codex boundary | `.codex` remains hooks/context only unless governance explicitly adopts a Codex catalog. |
 | Template-first docs | New stage docs use `docs/99.templates/` and update parent README files. |
 | Source-label prevention | Active runtime/governance files must not reference external harness source labels. |
+| Graph context health | Graphify is a navigation aid only when health is clean; contaminated output remains advisory and must be corroborated against tracked source and canonical docs. |
 
 ## Exceptions
 
 - Historical notes under `docs/00.agent-governance/memory/` may mention prior source labels for audit context.
+- `bash scripts/report-graphify-health.sh` may report `status=advisory`; that is evidence for downgraded confidence, not a repository validation failure.
 - `graphify` refresh may be skipped when the CLI is unavailable, but the skip must be reported.
 - `rtk` may be bypassed when it is unavailable in the active shell.
 
 ## Verification
 
 ```bash
+python3 -m json.tool .codex/hooks.json >/dev/null
+python3 -m json.tool .claude/settings.json >/dev/null
+bash scripts/report-graphify-health.sh
 bash scripts/check-repo-contracts.sh
 bash scripts/check-doc-traceability.sh
 bash scripts/validate-docker-compose.sh
