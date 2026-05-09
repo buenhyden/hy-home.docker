@@ -1,7 +1,8 @@
 # Main Branch Protection Ruleset Proposal
 
-This file is a local GitHub settings proposal. It is not an agent instruction
-surface, and it does not apply remote repository settings by itself.
+This file is a local GitHub settings proposal only. It is not an agent
+instruction surface, and it does not apply remote repository settings by
+itself.
 
 ## Current Remote State
 
@@ -39,8 +40,10 @@ Use the CI Quality Gates workflow job names as required checks:
 
 ## Application Boundary
 
-Apply this proposal only after explicit owner approval. Remote changes should be
-performed through GitHub UI or an audited `gh api` command, then re-check:
+Apply this proposal only after explicit owner approval. Until that approval and
+remote application happen, this document is not evidence that branch protection
+is enabled. Remote changes should be performed through GitHub UI or an audited
+`gh api` command, then re-check:
 
 - `gh api repos/buenhyden/hy-home.docker/rulesets --paginate`
 - `gh api repos/buenhyden/hy-home.docker/branches/main/protection`

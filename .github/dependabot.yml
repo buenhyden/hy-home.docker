@@ -26,9 +26,38 @@ updates:
         patterns:
           - "*"
 
-  # 2. Docker
-  # 루트 및 infra 하위의 Dockerfile / Compose 이미지 의존성을 감시합니다.
+  # 2. Dockerfile / Containerfile
+  # Dockerfile 기반 이미지 의존성을 감시합니다.
   - package-ecosystem: "docker"
+    directories:
+      - "/infra/02-auth/keycloak"
+      - "/infra/02-auth/oauth2-proxy"
+      - "/infra/04-data/analytics/opensearch"
+      - "/infra/06-observability/loki"
+      - "/infra/06-observability/tempo"
+      - "/infra/07-workflow/n8n"
+      - "/infra/09-tooling/locust"
+      - "/infra/11-laboratory/open-notebook/surrealdb"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+    groups:
+      docker-images:
+        patterns:
+          - "*"
+
+  # 3. Docker Compose
+  # Compose 파일에 선언된 이미지 의존성을 감시합니다.
+  - package-ecosystem: "docker-compose"
     directories:
       - "/"
       - "/infra/01-gateway/nginx"
@@ -54,8 +83,6 @@ updates:
       - "/infra/05-messaging/kafka"
       - "/infra/05-messaging/rabbitmq"
       - "/infra/06-observability"
-      - "/infra/06-observability/loki"
-      - "/infra/06-observability/tempo"
       - "/infra/07-workflow/airflow"
       - "/infra/07-workflow/n8n"
       - "/infra/08-ai/ollama"
@@ -71,7 +98,6 @@ updates:
       - "/infra/11-laboratory/dashboard"
       - "/infra/11-laboratory/dozzle"
       - "/infra/11-laboratory/open-notebook"
-      - "/infra/11-laboratory/open-notebook/surrealdb"
       - "/infra/11-laboratory/portainer"
       - "/infra/11-laboratory/redisinsight"
     schedule:
@@ -85,13 +111,13 @@ updates:
       include: "scope"
     labels:
       - "dependencies"
-      - "docker"
+      - "docker-compose"
     groups:
-      docker-images:
+      docker-compose-images:
         patterns:
           - "*"
 
-  # 3. Storybook Next.js
+  # 4. Storybook Next.js
   # CI에서 설치되는 Storybook Next.js npm 의존성을 감시합니다.
   - package-ecosystem: "npm"
     directory: "/projects/storybook/nextjs"

@@ -172,11 +172,16 @@ GitHub Actions에서는 다음 품질 게이트를 사용합니다.
 - `repo-contracts` - docs taxonomy, GitHub workflow, script reference, image/version drift, runtime catalog 검사
 - `git-flow-contract` - PR 제목 Conventional Commits와 source branch prefix 검사
 - `compose-validation` - Docker Compose 구조 검사
+- `compose-all-profiles-validation` - 전체 Compose profile 구조 검사
 - `infrastructure-hardening` - 계층별 하드닝 baseline 검사
 - `template-security-baseline` - 템플릿/보안 baseline 검사
 - `quickwin-baseline` - QuickWin baseline 검사
 - `pre-commit` - hook 기반 포맷/린트/품질 검사
 - `zizmor` - GitHub Actions 보안 분석
+
+`pre-commit` job은 공통 hook 정책을 CI에서 재현하고, 별도 `zizmor` job은
+GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
+`pr-labeler` workflow는 필수 품질 게이트가 아니라 triage/community 자동화입니다.
 
 Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 action step에는 명시적 `name`을 둡니다.
 

@@ -18,7 +18,9 @@ Use Conventional Commits with explicit scopes where possible.
 - Protected baseline: `main`
 - Feature branch naming: `feat/<issue-id>-<short-description>`
 - Fix branch naming: `fix/<issue-id>-<short-description>`
-- Docs/refactor/chore branch naming may use matching prefixes.
+- Other human-authored branch naming may use a matching Conventional Commit
+  type prefix: `docs/`, `style/`, `refactor/`, `perf/`, `test/`, `build/`,
+  `ci/`, `chore/`, or `revert/`.
 - Automation branch exceptions: `dependabot/**` and `codex/**` are allowed for
   tool-generated PR branches only. They must still merge through the PR
   protocol and required checks.

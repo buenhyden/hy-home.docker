@@ -1,6 +1,7 @@
 # Pull Request
 
 > **Warning**: Your PR title MUST follow the **Conventional Commits** format (`feat:`, `fix:`, `docs:`, etc.) as mandated by `docs/00.agent-governance/rules/git-workflow.md`.
+> Human `feat/` and `fix/` source branches MUST include an issue ID segment, for example `feat/123-add-service`.
 
 ## Related Specification
 
@@ -44,9 +45,9 @@ List exact commands used and outcome.
 ## Validations
 
 - [ ] I have reviewed the relevant governance rules under `docs/00.agent-governance/rules`.
-- [ ] My source branch follows `feat/`, `fix/`, `docs/`, `refactor/`, `chore/`, `dependabot/`, or `codex/`.
+- [ ] My source branch follows the governed branch policy in `docs/00.agent-governance/rules/git-workflow.md`.
 - [ ] My code strictly follows the Implementation Specification.
-- [ ] Documentation has been added/updated using `docs/99.templates` (if applicable).
+- [ ] Documentation has been added/updated using `docs/99.templates`, or marked N/A with a reason.
 - [ ] **Commit Standard**: My Pull Request title uses Conventional Commits format.
 - [ ] Required GitHub Actions checks are passing or pending checks are explained above.
 - [ ] CODEOWNERS-triggered reviewers have been requested for owned paths.
