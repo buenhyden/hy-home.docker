@@ -2784,8 +2784,8 @@
     "hash": "a7598b3ec9daa989b48f2f42f7ccf6ae"
   },
   "/home/hy/project-infra/hy-home.docker/docs/06.tasks/README.md": {
-    "mtime": 1778295217.4416976,
-    "hash": "88bf26e235716f0d6174deff0b06d35d"
+    "mtime": 1778296072.4175057,
+    "hash": "ad99103dd826cff0011a0d615399c272"
   },
   "/home/hy/project-infra/hy-home.docker/docs/06.tasks/2026-04-01-standardize-infra-net.md": {
     "mtime": 1775028978.5404947,
@@ -2904,8 +2904,8 @@
     "hash": "f09ba423ba74811e363155a1d8aa5aff"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.plans/README.md": {
-    "mtime": 1778295217.2436976,
-    "hash": "f8bc39bc79857d545dce754b4a9c680c"
+    "mtime": 1778296072.2327056,
+    "hash": "04143cfe76f63471243be83277da82db"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.plans/2026-04-01-standardize-infra-net.md": {
     "mtime": 1775028970.625219,
@@ -4068,8 +4068,12 @@
     "hash": "2b56af6ede0d06c59bbb6a0f31cd4754"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.specs/README.md": {
-    "mtime": 1778295217.0720975,
-    "hash": "ba41c6f9316606eb844474bb9e99469c"
+    "mtime": 1778296072.0347056,
+    "hash": "c67428f60056852111bcf0f377da6ec5"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/04.specs/infra-secrets-docs-refresh/spec.md": {
+    "mtime": 1778296071.4671056,
+    "hash": "3a71bad480e58f060b69458ab23ca825"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.specs/09-tooling/spec.md": {
     "mtime": 1774668356.5789666,
