@@ -450,6 +450,76 @@ then
   failures=$((failures + 1))
 fi
 
+section "Governance memory contract"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import sys
+
+failures: list[str] = []
+
+required_files = [
+    pathlib.Path("docs/00.agent-governance/memory/README.md"),
+    pathlib.Path("docs/00.agent-governance/memory/template.md"),
+    pathlib.Path("docs/00.agent-governance/memory/progress.md"),
+]
+
+for path in required_files:
+    if not path.is_file():
+        failures.append(f"missing governance memory file: {path}")
+
+checks = {
+    pathlib.Path("AGENTS.md"): [
+        "[LOAD:MEMORY]",
+        "docs/00.agent-governance/memory/",
+    ],
+    pathlib.Path("docs/00.agent-governance/README.md"): [
+        "[LOAD:MEMORY]",
+        "memory/README.md",
+    ],
+    pathlib.Path("docs/00.agent-governance/rules/bootstrap.md"): [
+        "[LOAD:MEMORY]",
+        "Memory is advisory",
+    ],
+    pathlib.Path("docs/00.agent-governance/rules/agentic.md"): [
+        "advisory retrieval context",
+        "Memory notes must not",
+    ],
+    pathlib.Path("docs/00.agent-governance/rules/task-checklists.md"): [
+        "progress.md",
+        "durable finding report",
+    ],
+    pathlib.Path("docs/00.agent-governance/memory/README.md"): [
+        "advisory retrieval context",
+        "do not define active policy",
+        "Retrieve relevant notes",
+    ],
+    pathlib.Path("docs/00.agent-governance/memory/template.md"): [
+        "Retrieval Keywords",
+        "Last Verified",
+        "Evidence",
+    ],
+}
+
+for path, literals in checks.items():
+    if not path.is_file():
+        failures.append(f"missing file for memory contract check: {path}")
+        continue
+    text = path.read_text(errors="ignore")
+    for literal in literals:
+        if literal not in text:
+            failures.append(f"{path}: missing memory contract literal: {literal}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
 section "Script reference integrity"
 if ! python3 - <<'PY'
 from __future__ import annotations

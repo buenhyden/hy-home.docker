@@ -12,16 +12,17 @@ Universal entry shim for agent execution in `hy-home.docker`.
 2. Load `[LOAD:RULES:PERSONA]` from `docs/00.agent-governance/rules/persona.md`.
 3. Load `[LOAD:RULES:CHECKLISTS]` from `docs/00.agent-governance/rules/task-checklists.md`.
 4. Load `[LOAD:RULES:AGENTIC]` from `docs/00.agent-governance/rules/agentic.md`.
-5. Resolve task layer and load exactly one primary scope from `docs/00.agent-governance/scopes/`.
-6. For documentation workflows, load `[LOAD:RULES:STAGE-MATRIX]`.
-7. For PR, merge, review, or workflow tasks, load `[LOAD:RULES:GITHUB]`.
-8. JIT-load stage docs only when required by the active task.
+5. Review `[LOAD:MEMORY]` from `docs/00.agent-governance/memory/README.md` when the task touches governance, docs, runtime, or repeated failures.
+6. Resolve task layer and load exactly one primary scope from `docs/00.agent-governance/scopes/`.
+7. For documentation workflows, load `[LOAD:RULES:STAGE-MATRIX]`.
+8. For PR, merge, review, or workflow tasks, load `[LOAD:RULES:GITHUB]`.
+9. JIT-load stage docs only when required by the active task.
 
 ## 2. Hard Constraints
 
 - Root instruction files stay thin; detailed policy lives in `docs/00.agent-governance/`.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user instruction.
-- Active stage artifacts belong only under `docs/01` to `docs/10`, `docs/90`, and `docs/99`.
+- Active stage artifacts belong only under `docs/01` to `docs/05`, `docs/90`, and `docs/99`.
 - Run checks listed by the active rules and primary scope before declaring completion.
 - Most-specific in-scope instruction file wins when multiple repository instructions apply.
 - System, developer, and direct user instructions always override repository instruction files.
@@ -38,6 +39,7 @@ Universal entry shim for agent execution in `hy-home.docker`.
 - Codex runtime hooks: `.codex/hooks.json`
 - Agent/function catalog: `docs/00.agent-governance/agents/`
 - Delegation protocol: `docs/00.agent-governance/subagent-protocol.md`
+- Governance memory: `docs/00.agent-governance/memory/`
 
 ## 4. Verification
 

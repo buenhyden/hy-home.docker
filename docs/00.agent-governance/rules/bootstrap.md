@@ -9,7 +9,7 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 ## 1. Core Principles
 
 - Spec-anchored: implementation decisions must map to `docs/01.requirements/` and `docs/03.specs/`.
-- Stage-gate discipline: use `docs/01` to `docs/10` as lifecycle SSoT, plus `docs/90` and `docs/99`.
+- Stage-gate discipline: use `docs/01` to `docs/05` as lifecycle SSoT, plus `docs/90` and `docs/99`.
 - JIT loading: load only required rules, scopes, and stage docs.
 - Deterministic routing: resolve persona and layer before mutation.
 
@@ -34,10 +34,11 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 1. Load `[LOAD:RULES:PERSONA]` from `rules/persona.md`.
 2. Load `[LOAD:RULES:CHECKLISTS]` from `rules/task-checklists.md`.
 3. Load `[LOAD:RULES:AGENTIC]` from `rules/agentic.md`.
-4. Resolve task layer and load one primary scope from `scopes/<layer>.md`.
-5. For docs authoring work, load `[LOAD:RULES:STAGE-MATRIX]` from `rules/stage-authoring-matrix.md`.
-6. For PR creation, merge, or review tasks, load `[LOAD:RULES:GITHUB]` from `rules/github-governance.md`.
-7. Load stage docs JIT only when required by the active task.
+4. For governance, docs, runtime, or repeated-failure work, review `[LOAD:MEMORY]` from `memory/README.md` and retrieve relevant memory notes.
+5. Resolve task layer and load one primary scope from `scopes/<layer>.md`.
+6. For docs authoring work, load `[LOAD:RULES:STAGE-MATRIX]` from `rules/stage-authoring-matrix.md`.
+7. For PR creation, merge, or review tasks, load `[LOAD:RULES:GITHUB]` from `rules/github-governance.md`.
+8. Load stage docs JIT only when required by the active task.
 
 ## 4. Hard Constraints
 
@@ -45,6 +46,7 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 - `docs/01` to `docs/99` are read-only by default unless the user explicitly allows mutation.
 - Root shim files must remain concise and delegate details to this hub.
 - Provider-specific runtime behavior belongs in `providers/claude.md`, `providers/gemini.md`, `providers/codex.md`, `.claude/`, or `.codex/`.
+- **Memory is advisory** — use `docs/00.agent-governance/memory/` for durable findings and retrieval context only; active policy still belongs in rules, scopes, providers, and runtime files.
 - **In-place refactor only** — edit the canonical file directly; do not create parallel or renamed copies.
 - **Settings SSOT** — team settings in `settings.json` (git tracked); personal overrides in `settings.local.json` only; no duplication across both files.
 - **Secrets** — never write plaintext credentials; use Docker Secrets or `secrets/` bind-mounts exclusively.

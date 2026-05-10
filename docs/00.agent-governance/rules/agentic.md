@@ -28,6 +28,10 @@ Standard behavior contract for repo-local, auditable agent execution.
   - `docs/00.agent-governance/subagent-protocol.md` defines delegation rules.
 - Do not import external harness identities or create GitHub-native instruction
   layers for local execution policy.
+- Use `docs/00.agent-governance/memory/` as advisory retrieval context for
+  governance, docs, runtime, and repeated-failure work. Memory notes must not
+  override current rules, scopes, provider overlays, direct user instructions,
+  or live repository evidence.
 - Keep governance text in English and user-facing responses in Korean by default.
 
 ## 3. Implementation Flow
@@ -37,11 +41,13 @@ Standard behavior contract for repo-local, auditable agent execution.
 3. Load `rules/task-checklists.md` and run pre-task gate.
 4. Load this Agent-first rule.
 5. Load one primary scope from `scopes/<layer>.md`.
-6. Discover current repository state with read-only commands.
-7. Plan the smallest scoped change and name the verification gate.
-8. Execute the change in place.
-9. Verify with the smallest checks that prove the contract.
-10. Report changed files, checks run, and any residual risk or out-of-scope gap.
+6. Review governance memory when the task matches the memory triggers, using
+   `rg` to retrieve only relevant notes.
+7. Discover current repository state with read-only commands.
+8. Plan the smallest scoped change and name the verification gate.
+9. Execute the change in place.
+10. Verify with the smallest checks that prove the contract.
+11. Report changed files, checks run, and any residual risk or out-of-scope gap.
 
 ## 4. Operational Procedures
 

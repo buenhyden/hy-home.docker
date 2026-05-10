@@ -67,6 +67,7 @@ This README is for:
 | `[LOAD:INCIDENTS]`   | `docs/05.operations/incidents/README.md`   | Incident records and postmortems |
 | `[LOAD:REFERENCES]`  | `docs/90.references/README.md`  | Stable references               |
 | `[LOAD:TEMPLATES]`   | `docs/99.templates/README.md`   | Document templates              |
+| `[LOAD:MEMORY]`      | `docs/00.agent-governance/memory/README.md` | Advisory governance memory       |
 
 ### Rule Markers
 
@@ -92,7 +93,8 @@ This README is for:
 5. Use `subagent-protocol.md` and `workflow-supervisor` for cross-domain or delegated work.
 6. Use stage authoring matrix for any documentation authoring/refactoring task.
 7. For PR-related tasks, load `[LOAD:RULES:GITHUB]` and verify GitHub completion gate (§6 of that rule) before declaring done.
-8. Run completion checklist and record out-of-scope findings in `memory/`.
+8. For governance, docs, runtime, or repeated-failure work, review `memory/README.md`, `memory/progress.md`, and one or more relevant memory notes before editing.
+9. Run completion checklist and record durable out-of-scope findings in `memory/`.
 
 ## Maintenance and Safety
 
