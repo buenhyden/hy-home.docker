@@ -315,26 +315,57 @@ for path in workflow_files:
                 failures.append(f"{path}: job {job_id!r} is missing explicit permissions")
 
 ci_quality = pathlib.Path(".github/workflows/ci-quality.yml")
+required_jobs = {
+    "docs-traceability",
+    "repo-contracts",
+    "git-flow-contract",
+    "compose-validation",
+    "compose-all-profiles-validation",
+    "infrastructure-hardening",
+    "template-security-baseline",
+    "quickwin-baseline",
+    "pre-commit",
+    "zizmor",
+}
+ci_jobs: set[str] = set()
 if ci_quality.is_file():
     data = yaml.safe_load(ci_quality.read_text()) or {}
-    jobs = set((data.get("jobs") or {}).keys())
-    required_jobs = {
-        "docs-traceability",
-        "repo-contracts",
-        "git-flow-contract",
-        "compose-validation",
-        "compose-all-profiles-validation",
-        "infrastructure-hardening",
-        "template-security-baseline",
-        "quickwin-baseline",
-        "pre-commit",
-        "zizmor",
-    }
-    missing_jobs = sorted(required_jobs - jobs)
+    ci_jobs = set((data.get("jobs") or {}).keys())
+    missing_jobs = sorted(required_jobs - ci_jobs)
     for job_id in missing_jobs:
         failures.append(f"{ci_quality}: missing required QA/CI job: {job_id}")
+    unexpected_jobs = sorted(ci_jobs - required_jobs)
+    for job_id in unexpected_jobs:
+        failures.append(f"{ci_quality}: unexpected QA/CI job outside the ruleset contract: {job_id}")
 else:
     failures.append("missing required workflow: .github/workflows/ci-quality.yml")
+
+ruleset = pathlib.Path(".github/rulesets/main-protection.md")
+if ruleset.is_file():
+    text = ruleset.read_text()
+    for literal in [
+        "local GitHub settings proposal only",
+        "does not apply remote repository settings by",
+        "explicit owner approval",
+        "not evidence that branch protection",
+    ]:
+        if literal not in text:
+            failures.append(f"{ruleset}: missing remote enforcement boundary literal: {literal}")
+
+    match = re.search(r"(?ms)^## Required Status Checks\s*(.*?)(?:\n## |\Z)", text)
+    if not match:
+        failures.append(f"{ruleset}: missing Required Status Checks section")
+    else:
+        listed_checks = set(re.findall(r"(?m)^-\s+`([^`]+)`\s*$", match.group(1)))
+        expected_checks = ci_jobs or required_jobs
+        missing_checks = sorted(expected_checks - listed_checks)
+        extra_checks = sorted(listed_checks - expected_checks)
+        for check in missing_checks:
+            failures.append(f"{ruleset}: missing required status check from CI Quality Gates: {check}")
+        for check in extra_checks:
+            failures.append(f"{ruleset}: status check is not a CI Quality Gates job: {check}")
+else:
+    failures.append("missing local branch protection proposal: .github/rulesets/main-protection.md")
 
 if failures:
     for failure in failures:

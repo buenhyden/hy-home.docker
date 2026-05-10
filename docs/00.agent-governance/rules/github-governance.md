@@ -10,8 +10,10 @@ Repo-local stricter rules always override this document; never weaken them on th
 ## 1. Repository Protection Contract
 
 - Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks.
-- Branch protection is enforced via GitHub rulesets. Agents reading or reviewing workflow files must assume ruleset enforcement is active unless explicitly told otherwise.
-- Required status checks must pass before any PR is considered ready to merge. Agents must not declare "done" until required checks are green.
+- This is an agent behavior contract, not evidence that remote branch protection is enabled.
+- Remote branch protection and ruleset state must be verified from GitHub before claiming enforcement is active. The local target-state proposal lives in `.github/rulesets/main-protection.md`.
+- If remote enforcement is absent or unknown, agents must still follow protected-branch discipline locally and report the remote enforcement state as blocked or unverified.
+- Required status checks listed in `.github/rulesets/main-protection.md` must pass before any PR is considered ready to merge. Agents must not declare "done" until those checks are green or explicitly report why remote enforcement could not be verified.
 - CODEOWNERS-triggered reviews are mandatory. If a changed path is owned by a CODEOWNERS entry, that review must be obtained before merge — agents must note this requirement when completing PR review tasks.
 
 ## 2. Pull Request and Review Contract
@@ -52,7 +54,7 @@ Repo-local stricter rules always override this document; never weaken them on th
 
 Before an agent declares any PR-related task complete, it must confirm:
 
-1. All required status checks are green (or note which are pending and why).
+1. All required status checks are green (or note which are pending and why), and remote branch protection state is verified or explicitly reported as unverified.
 2. All required reviews are approved (or note which are outstanding and who owns them).
 3. No BLOCK-severity findings remain from code review or security audit.
 4. CODEOWNERS-triggered reviewers have been notified if paths are owned.
