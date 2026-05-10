@@ -46,6 +46,8 @@ if isinstance(tool_input, dict):
 
 for match in re.finditer(r"^\*\*\* (?:Add|Update|Delete) File: (.+)$", raw, re.M):
     add(match.group(1).strip())
+for match in re.finditer(r"^\*\*\* Move to: (.+)$", raw, re.M):
+    add(match.group(1).strip())
 
 seen = set()
 for path in paths:
@@ -75,7 +77,7 @@ for path in "${CHANGED_PATHS[@]}"; do
   esac
 
   case "$rel" in
-    AGENTS.md|CLAUDE.md|GEMINI.md|README.md|docs/*|.github/*|.claude/*|.codex/*|scripts/*|infra/tech-stack.versions.json)
+    AGENTS.md|CLAUDE.md|GEMINI.md|README.md|llms.txt|docs/*|.github/*|.claude/*|.codex/*|scripts/*|infra/tech-stack.versions.json)
       run_governance=1
       ;;
   esac
@@ -100,7 +102,12 @@ if [[ "$run_json" -eq 1 ]]; then
 fi
 
 if [[ "$run_bash" -eq 1 ]]; then
-  bash -n .claude/hooks/*.sh scripts/*.sh
+  shopt -s nullglob
+  bash_files=(.claude/hooks/*.sh scripts/*.sh scripts/lib/*.sh)
+  shopt -u nullglob
+  if [[ "${#bash_files[@]}" -gt 0 ]]; then
+    bash -n "${bash_files[@]}"
+  fi
 fi
 
 if [[ "$run_compose" -eq 1 ]]; then

@@ -1,12 +1,25 @@
 {
   "hooks": {
-    "PreToolUse": [
+    "SessionStart": [
       {
-        "matcher": "Bash",
+        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "[ -f graphify-out/graph.json ] && echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"graphify: Knowledge graph exists. Read graphify-out/GRAPH_REPORT.md first; if report health is contaminated by ignored volumes, gitlink/submodule content, generated/minified artifacts, meaningless god nodes, or unrelated cross-root inferred edges, treat it as advisory and corroborate against tracked source files, docs/00.agent-governance, and stage docs.\"}}' || true"
+            "command": "bash scripts/agent-event-hook.sh SessionStart",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|Read|Glob|Grep|LS|Edit|Write|MultiEdit|apply_patch|ApplyPatch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash scripts/agent-event-hook.sh PreToolUse",
+            "timeout": 10
           }
         ]
       }
@@ -17,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash scripts/post-tool-validate.sh",
+            "command": "bash scripts/agent-event-hook.sh PostToolUse",
             "timeout": 30
           }
         ]

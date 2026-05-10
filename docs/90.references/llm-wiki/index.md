@@ -732,6 +732,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | Path | Role |
 | --- | --- |
 | [scripts/README.md](../../../scripts/README.md) | folder index |
+| [scripts/agent-event-hook.sh](../../../scripts/agent-event-hook.sh) | script |
 | [scripts/bootstrap-vault-approle.sh](../../../scripts/bootstrap-vault-approle.sh) | script |
 | [scripts/check-ai-hardening.sh](../../../scripts/check-ai-hardening.sh) | script |
 | [scripts/check-all-hardening.sh](../../../scripts/check-all-hardening.sh) | script |

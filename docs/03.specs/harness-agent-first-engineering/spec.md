@@ -35,6 +35,7 @@ status: approved
 - `scripts/check-repo-contracts.sh`
 - `scripts/check-doc-traceability.sh`
 - `scripts/report-graphify-health.sh`
+- `scripts/agent-event-hook.sh`
 - `scripts/validate-docker-compose.sh`
 
 ## Contracts
@@ -71,7 +72,7 @@ status: approved
 - Runtime mirror: `.claude/agents/*.md`, `.claude/skills/*/skill.md`, `docs/00.agent-governance/agents/**`.
 - Delegation protocol: `docs/00.agent-governance/subagent-protocol.md`.
 - Provider overlays: `docs/00.agent-governance/providers/*.md`.
-- Hooks: `.claude/hooks/*.sh`, `.codex/hooks.json`, `scripts/post-tool-validate.sh`; hook scripts must be validated with real `tool_input` payloads, not only JSON and shell syntax checks.
+- Hooks: `.claude/hooks/*.sh`, `.codex/hooks.json`, `scripts/agent-event-hook.sh`, `scripts/post-tool-validate.sh`; hook scripts must be validated with real event and `tool_input` payloads, not only JSON and shell syntax checks.
 - Validation gates: `scripts/check-repo-contracts.sh`, `scripts/check-doc-traceability.sh`, `scripts/validate-docker-compose.sh`, security/hardening baseline scripts.
 - Context graph: `graphify-out/GRAPH_REPORT.md`, with advisory health evidence from `scripts/report-graphify-health.sh`.
 
@@ -183,7 +184,9 @@ Evaluation is command-based:
 ```bash
 python3 -m json.tool .codex/hooks.json >/dev/null
 python3 -m json.tool .claude/settings.json >/dev/null
-bash -n .claude/hooks/*.sh scripts/*.sh
+bash -n .claude/hooks/*.sh scripts/*.sh scripts/lib/*.sh
+CLAUDE_PROJECT_DIR="$PWD" bash scripts/agent-event-hook.sh SessionStart
+printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/agent-event-hook.sh PreToolUse
 printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
 CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
 printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/post-tool-validate.sh

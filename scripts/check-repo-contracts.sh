@@ -126,6 +126,7 @@ if ! python3 - <<'PY'
 from __future__ import annotations
 
 import pathlib
+import json
 import re
 import sys
 
@@ -263,6 +264,7 @@ section "GitHub workflow security contracts"
 if ! python3 - <<'PY'
 from __future__ import annotations
 
+import json
 import pathlib
 import re
 import sys
@@ -427,6 +429,7 @@ section "Runtime agent/function catalog"
 if ! python3 - <<'PY'
 from __future__ import annotations
 
+import json
 import pathlib
 import re
 import sys
@@ -482,11 +485,73 @@ for path in [codex_readme, codex_provider]:
     for required in [
         "AGENTS.md",
         ".codex/hooks.json",
+        "scripts/agent-event-hook.sh",
         "docs/00.agent-governance/agents/",
         ".claude",
     ]:
         if required not in text:
             failures.append(f"{path}: missing Codex runtime boundary reference: {required}")
+
+event_hook = pathlib.Path("scripts/agent-event-hook.sh")
+if not event_hook.is_file():
+    failures.append("missing provider-neutral agent event hook: scripts/agent-event-hook.sh")
+else:
+    event_hook_text = read(event_hook)
+    for literal in [
+        "SessionStart",
+        "PreToolUse",
+        "PostToolUse",
+        "scripts/post-tool-validate.sh",
+        "graphify-out",
+    ]:
+        if literal not in event_hook_text:
+            failures.append(f"{event_hook}: missing event hook literal: {literal}")
+
+for wrapper, event in {
+    pathlib.Path(".claude/hooks/session-start.sh"): "SessionStart",
+    pathlib.Path(".claude/hooks/docker-compose-pre.sh"): "PreToolUse",
+    pathlib.Path(".claude/hooks/post-tool-validate.sh"): "PostToolUse",
+}.items():
+    text = read(wrapper)
+    if not text:
+        failures.append(f"missing Claude hook wrapper: {wrapper}")
+        continue
+    if "scripts/agent-event-hook.sh" not in text or event not in text:
+        failures.append(f"{wrapper}: must delegate {event} to scripts/agent-event-hook.sh")
+
+hook_configs = {
+    pathlib.Path(".codex/hooks.json"): "scripts/agent-event-hook.sh",
+    pathlib.Path(".claude/settings.json"): ".claude/hooks/",
+}
+for path, required_command_literal in hook_configs.items():
+    text = read(path)
+    if not text:
+        failures.append(f"missing hook config: {path}")
+        continue
+    try:
+        data = json.loads(text)
+    except Exception as exc:
+        failures.append(f"{path}: JSON parse failed for hook contract: {exc}")
+        continue
+    hooks = data.get("hooks", {}) if isinstance(data, dict) else {}
+    for event in ["SessionStart", "PreToolUse", "PostToolUse"]:
+        if event not in hooks:
+            failures.append(f"{path}: missing hook event: {event}")
+    if required_command_literal not in text:
+        failures.append(f"{path}: missing hook command reference: {required_command_literal}")
+    if path == pathlib.Path(".codex/hooks.json"):
+        pre_tool_entries = hooks.get("PreToolUse") if isinstance(hooks, dict) else None
+        pre_tool_matchers = []
+        if isinstance(pre_tool_entries, list):
+            pre_tool_matchers = [
+                entry.get("matcher", "")
+                for entry in pre_tool_entries
+                if isinstance(entry, dict)
+            ]
+        matcher_text = "|".join(pre_tool_matchers)
+        for matcher_literal in ["Bash", "Read", "Edit", "Write", "apply_patch"]:
+            if matcher_literal not in matcher_text:
+                failures.append(f"{path}: PreToolUse matcher must cover {matcher_literal!r}")
 
 claude_settings = read(pathlib.Path(".claude/settings.json"))
 if '"Bash(rg:*)"' not in claude_settings:

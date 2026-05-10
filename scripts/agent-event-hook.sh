@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+# agent-event-hook.sh - provider-neutral event hook dispatcher.
+set -euo pipefail
+
+EVENT="${1:-}"
+INPUT="$(cat || true)"
+PROJECT_DIR="${CODEX_PROJECT_DIR:-${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}}"
+
+cd "$PROJECT_DIR"
+
+if [[ -z "$EVENT" ]]; then
+  EVENT="$(
+    HOOK_INPUT="$INPUT" python3 - <<'PY'
+import json
+import os
+
+try:
+    data = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
+except Exception:
+    data = {}
+
+print(data.get("hook_event_name", "") if isinstance(data, dict) else "")
+PY
+  )"
+fi
+
+session_start() {
+  python3 - "$PROJECT_DIR" <<'PY'
+import json
+import pathlib
+import subprocess
+import sys
+
+project = pathlib.Path(sys.argv[1])
+
+def run(command, fallback="unknown", timeout=3):
+    try:
+        result = subprocess.run(
+            command,
+            cwd=project,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=False,
+        )
+    except Exception:
+        return fallback
+    text = result.stdout.strip()
+    return text if result.returncode == 0 and text else fallback
+
+branch = run(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+changed = run(["git", "status", "--short"], fallback="")
+changed_count = len([line for line in changed.splitlines() if line.strip()]) if changed else 0
+last_commit = run(["git", "log", "-1", "--format=%h %s"])
+containers = run(["docker", "ps", "--format", "{{.Names}}"], fallback="docker not running")
+container_lines = [line for line in containers.splitlines() if line.strip() and line != "docker not running"]
+infra_dir = project / "infra"
+infra_entries = ", ".join(sorted(path.name for path in infra_dir.iterdir())) if infra_dir.is_dir() else "none"
+
+message = f"""hy-home.docker project context
+
+Git status:
+- Branch: `{branch}`
+- Changed files: `{changed_count}`
+- Last commit: `{last_commit}`
+
+Docker services:
+- Running: {len(container_lines)}
+- Services: {', '.join(container_lines) if container_lines else containers}
+
+Infra layer:
+{infra_entries}
+
+Key rules:
+- Use `AGENTS.md` and `docs/00.agent-governance/` as governance entry points.
+- Treat Graphify as advisory when `scripts/report-graphify-health.sh` reports contamination.
+- Run `bash scripts/validate-docker-compose.sh` before deployment-related completion.
+"""
+
+print(json.dumps({"systemMessage": message.strip()}))
+PY
+}
+
+pre_tool_use() {
+  HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" <<'PY'
+import json
+import os
+import pathlib
+import re
+import sys
+
+project = pathlib.Path(sys.argv[1])
+raw = os.environ.get("HOOK_INPUT", "")
+
+try:
+    data = json.loads(raw) if raw.strip() else {}
+except Exception:
+    data = {}
+
+if not isinstance(data, dict):
+    data = {}
+
+tool_name = str(data.get("tool_name") or "")
+tool_input = data.get("tool_input", {})
+if not isinstance(tool_input, dict):
+    tool_input = {}
+
+paths = []
+
+def add(value):
+    if isinstance(value, str) and value:
+        paths.append(value)
+
+for key in ("file_path", "path"):
+    add(tool_input.get(key))
+
+for key in ("files", "paths"):
+    value = tool_input.get(key)
+    if isinstance(value, list):
+        for item in value:
+            if isinstance(item, str):
+                add(item)
+            elif isinstance(item, dict):
+                add(item.get("file_path") or item.get("path"))
+
+edits = tool_input.get("edits")
+if isinstance(edits, list):
+    for edit in edits:
+        if isinstance(edit, dict):
+            add(edit.get("file_path") or edit.get("path"))
+
+for match in re.finditer(r"^\*\*\* (?:Add|Update|Delete) File: (.+)$", raw, re.M):
+    add(match.group(1).strip())
+for match in re.finditer(r"^\*\*\* Move to: (.+)$", raw, re.M):
+    add(match.group(1).strip())
+
+seen = set()
+paths = [path for path in paths if not (path in seen or seen.add(path))]
+
+system_messages = []
+additional_context = []
+
+graph_tools = {"Bash", "Glob", "Grep", "Read", "LS"}
+if (project / "graphify-out" / "graph.json").is_file() and (not tool_name or tool_name in graph_tools):
+    additional_context.append(
+        "graphify: Knowledge graph exists. Read graphify-out/GRAPH_REPORT.md first; "
+        "if report health is contaminated by ignored volumes, gitlink/submodule content, "
+        "generated/minified artifacts, meaningless god nodes, or unrelated cross-root inferred edges, "
+        "treat it as advisory and corroborate against tracked source files, docs/00.agent-governance, and stage docs."
+    )
+
+edit_tools = {"Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch"}
+if not tool_name or tool_name in edit_tools:
+    for path in paths:
+        short_path = path
+        project_prefix = str(project) + "/"
+        if short_path.startswith(project_prefix):
+            short_path = short_path[len(project_prefix):]
+        if re.search(r"docker-compose.*\.ya?ml$", short_path):
+            system_messages.append(
+                "Docker Compose file edit detected.\n\n"
+                f"Path: `{short_path}`\n\n"
+                "After editing, verify with `bash scripts/validate-docker-compose.sh` "
+                "and check port conflicts, volume paths, missing environment variables, "
+                "and existing network names."
+            )
+            break
+
+if not system_messages and not additional_context:
+    sys.exit(0)
+
+output = {}
+if system_messages:
+    output["systemMessage"] = "\n\n".join(system_messages)
+if additional_context:
+    output["hookSpecificOutput"] = {
+        "hookEventName": "PreToolUse",
+        "additionalContext": "\n\n".join(additional_context),
+    }
+
+print(json.dumps(output))
+PY
+}
+
+post_tool_use() {
+  printf '%s' "$INPUT" | CODEX_PROJECT_DIR="$PROJECT_DIR" CLAUDE_PROJECT_DIR="$PROJECT_DIR" bash scripts/post-tool-validate.sh
+}
+
+case "$EVENT" in
+  SessionStart)
+    session_start
+    ;;
+  PreToolUse)
+    pre_tool_use
+    ;;
+  PostToolUse)
+    post_tool_use
+    ;;
+  *)
+    exit 0
+    ;;
+esac

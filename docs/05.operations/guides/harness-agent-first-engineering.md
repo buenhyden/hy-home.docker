@@ -38,7 +38,7 @@ How-to / audit guide.
 2. Read environment and docs maps: `docs/README.md`, `infra/README.md`, `scripts/README.md`.
 3. Check Graphify health with `bash scripts/report-graphify-health.sh`; if it reports `status=advisory`, use Graphify only for navigation and corroborate claims against tracked files and canonical docs.
 4. Read governance rules: `docs/00.agent-governance/README.md`, `rules/agentic.md`, `rules/documentation-protocol.md`, `rules/stage-authoring-matrix.md`, `scopes/agentic.md`.
-5. Inspect runtime surfaces: `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/skill.md`, `.codex/README.md`, `.codex/hooks.json`.
+5. Inspect runtime surfaces: `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/skill.md`, `.codex/README.md`, `.codex/hooks.json`, `scripts/agent-event-hook.sh`.
 6. Compare runtime mirror against `docs/00.agent-governance/agents/**` and `subagent-protocol.md`.
 7. Review validators: `scripts/check-repo-contracts.sh`, `scripts/check-doc-traceability.sh`, `scripts/validate-docker-compose.sh`.
 8. Simulate hook payloads when `.claude/hooks/*.sh`, `.codex/hooks.json`, or `scripts/post-tool-validate.sh` changes; syntax checks alone do not prove `tool_input` parsing.
@@ -54,7 +54,7 @@ How-to / audit guide.
 - Claiming full workspace Docker validation when only default/core profile and supported hardening tiers were checked.
 - Treating catalog parity checks as semantic parity across all agent/skill content.
 - Pulling `10-communication` Compose remediation into a Harness / Agent-first pass without a separate infra scope.
-- Skipping hook payload simulation after hook quoting or parsing changes.
+- Skipping hook event and payload simulation after hook quoting, event dispatch, or parsing changes.
 - Adding stage documents without updating the parent README.
 - Claiming graph refresh when the `graphify` CLI is unavailable.
 - Running `pre-commit` manually despite repository guidance.

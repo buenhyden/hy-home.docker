@@ -33,8 +33,8 @@ Codex-specific guidance for this repository.
 ## 4. Runtime Surface
 
 - `.codex/hooks.json` provides Codex-local hooks.
-- The current hook emits graphify context when `graphify-out/graph.json` exists.
-- The post-edit hook delegates to `scripts/post-tool-validate.sh` for path-aware repository validation.
+- The current hooks call `scripts/agent-event-hook.sh` by event (`SessionStart`, `PreToolUse`, `PostToolUse`) when the runtime supports that event.
+- The event dispatcher emits Graphify context when `graphify-out/graph.json` exists, emits Docker Compose guardrail context before matching edits, and delegates post-edit validation to `scripts/post-tool-validate.sh`.
 - Hook output is advisory context. Governance remains in `docs/00.agent-governance/`.
 - Codex does not maintain a parallel delegated-agent catalog in this repository.
 - The canonical delegated-agent catalog is the `.claude` runtime mirror
@@ -60,4 +60,5 @@ Codex-specific guidance for this repository.
 - `docs/00.agent-governance/rules/bootstrap.md`
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/subagent-protocol.md`
+- `scripts/agent-event-hook.sh`
 - `scripts/post-tool-validate.sh`

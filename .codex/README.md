@@ -55,8 +55,9 @@ This README is for:
 
 ## Current Hook Contract
 
-- `PreToolUse` emits graphify additional context when `graphify-out/graph.json` exists.
-- `PostToolUse` runs `scripts/post-tool-validate.sh` after file edits when the hook payload includes changed paths.
+- `SessionStart` uses `scripts/agent-event-hook.sh` to emit project context when the event is supported.
+- `PreToolUse` uses `scripts/agent-event-hook.sh` to emit Graphify advisory context when relevant and Docker Compose guardrail context before matching edits.
+- `PostToolUse` uses `scripts/agent-event-hook.sh`, which delegates to `scripts/post-tool-validate.sh` after file edits when the hook payload includes changed paths.
 - The hook is advisory and must not be treated as the policy source of truth.
 - Agents still follow `AGENTS.md`, provider notes, scope rules, and active sandbox approvals.
 
@@ -81,4 +82,5 @@ This README is for:
 - `../docs/00.agent-governance/agents/`
 - `../docs/00.agent-governance/rules/bootstrap.md`
 - `../.claude/CLAUDE.md`
+- `../scripts/agent-event-hook.sh`
 - `../scripts/post-tool-validate.sh`

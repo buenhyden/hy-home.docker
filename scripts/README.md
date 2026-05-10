@@ -20,7 +20,7 @@
 
 ### In Scope
 
-- Repository validation, contract checks, and post-edit automation scripts.
+- Repository validation, contract checks, and agent event hook automation scripts.
 - Repo-local LLM Wiki index generation and freshness checks.
 - Tier hardening checks and their shared helper library.
 - Local manual utility scripts for preflight checks, safe secret file generation, local certificate generation, and Vault AppRole bootstrap.
@@ -62,6 +62,7 @@ scripts/
 | Documentation Traceability Check | [check-doc-traceability.sh](./check-doc-traceability.sh) | Enforce sync links across 04.execution/plans ↔ 05.operations |
 | LLM Wiki Index Generator | [generate-llm-wiki-index.sh](./generate-llm-wiki-index.sh) | Generate and check the repo-local LLM Wiki path index |
 | Graphify Health Report | [report-graphify-health.sh](./report-graphify-health.sh) | Report advisory health of generated Graphify corpus without blocking validation |
+| Agent Event Hook | [agent-event-hook.sh](./agent-event-hook.sh) | Dispatch Claude/Codex hook events to provider-neutral repository behavior |
 | Post Tool Validation | [post-tool-validate.sh](./post-tool-validate.sh) | Run path-aware validation after Claude/Codex file edits |
 | Unified Hardening Check | [check-all-hardening.sh](./check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
 | Gateway Hardening Check | [check-gateway-hardening.sh](./check-gateway-hardening.sh) | Enforce 01-gateway Traefik/Nginx hardening baseline |
@@ -85,7 +86,7 @@ scripts/
 | :--- | :--- |
 | CI / quality gate | `check-repo-contracts.sh`, `validate-docker-compose.sh`, `check-doc-traceability.sh`, `check-quickwin-baseline.sh`, `check-template-security-baseline.sh`, `check-all-hardening.sh`, `generate-llm-wiki-index.sh --check` |
 | Advisory evidence | `report-graphify-health.sh` |
-| Runtime hook | `post-tool-validate.sh` |
+| Runtime hook | `agent-event-hook.sh`, `post-tool-validate.sh` |
 | Tier wrapper | `check-gateway-hardening.sh`, `check-auth-hardening.sh`, `check-security-hardening.sh`, `check-data-hardening.sh`, `check-messaging-hardening.sh`, `check-observability-hardening.sh`, `check-workflow-hardening.sh`, `check-ai-hardening.sh`, `check-tooling-hardening.sh`, `check-laboratory-hardening.sh` |
 | Manual operations | `preflight-compose.sh`, `gen-secrets.sh`, `generate-local-certs.sh`, `bootstrap-vault-approle.sh` |
 | Generated index maintenance | `generate-llm-wiki-index.sh` |
@@ -137,6 +138,9 @@ bash scripts/generate-llm-wiki-index.sh --check
 
 # Report advisory Graphify corpus health
 ./scripts/report-graphify-health.sh
+
+# Dispatch a provider-neutral PreToolUse hook event
+printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | bash scripts/agent-event-hook.sh PreToolUse
 
 # Run provider-neutral post-edit validation from hook payload
 ./scripts/post-tool-validate.sh

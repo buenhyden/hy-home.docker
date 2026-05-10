@@ -25,7 +25,7 @@ repos:
         files: \.(yml|yaml)$
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.22.0
+    rev: v0.22.1
     hooks:
       - id: markdownlint-cli2
         require_serial: true
@@ -46,7 +46,7 @@ repos:
         files: ^\.github/workflows/.*\.(yml|yaml)$
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.37.1
+    rev: 0.37.2
     hooks:
       - id: check-dependabot
         files: ^\.github/dependabot\.yml$
@@ -91,7 +91,7 @@ repos:
         stages: [pre-push]
   # --- 7. 커밋 및 메시지 (Release) ---
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.13.10
+    rev: v4.15.1
     hooks:
       - id: commitizen
         stages: [commit-msg]

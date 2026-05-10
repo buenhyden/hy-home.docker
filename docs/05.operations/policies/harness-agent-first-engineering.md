@@ -59,7 +59,9 @@ status: enforced
 ```bash
 python3 -m json.tool .codex/hooks.json >/dev/null
 python3 -m json.tool .claude/settings.json >/dev/null
-bash -n .claude/hooks/*.sh scripts/*.sh
+bash -n .claude/hooks/*.sh scripts/*.sh scripts/lib/*.sh
+CLAUDE_PROJECT_DIR="$PWD" bash scripts/agent-event-hook.sh SessionStart
+printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/agent-event-hook.sh PreToolUse
 printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
 CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
 printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/post-tool-validate.sh
