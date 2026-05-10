@@ -1,11 +1,11 @@
 ---
 layer: agentic
 ---
-<!-- Local mirror of docs/99.templates/memory.template.md -->
+<!-- Target: docs/00.agent-governance/memory/{short-title}.md -->
 
 # Memory: {short-title}
 
-> Use `docs/99.templates/memory.template.md` as the canonical template for durable advisory memory notes.
+> Use this template for durable advisory memory notes under `docs/00.agent-governance/memory/`.
 >
 > Rules:
 >

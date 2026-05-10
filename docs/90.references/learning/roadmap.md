@@ -12,6 +12,10 @@ status: active
 
 운영 문서와 구현 문서가 반복해서 참고할 수 있는 안정적인 학습 배경을 제공한다.
 
+## Repository Role
+
+이 reference는 Docker 기반 홈 인프라를 학습 주제와 연결하는 stable context로 사용한다. 운영 절차, 구현 계획, task evidence, 최신 runtime truth를 대체하지 않는다.
+
 ## Scope
 
 ### In Scope

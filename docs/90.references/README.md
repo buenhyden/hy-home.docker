@@ -8,6 +8,16 @@
 
 Reference 문서는 결정을 내리거나 절차를 실행하는 문서가 아닙니다. 정책은 `docs/00.agent-governance/` 또는 `docs/05.operations/policies/`, 실행 절차는 `docs/05.operations/runbooks/`, 최신 runtime truth는 `infra/`, `scripts/`, registry 파일이 담당합니다.
 
+## Repository Role
+
+`docs/90.references`의 역할은 다음 세 가지입니다.
+
+1. **Stable Context Registry**: 여러 active stage 문서가 반복해서 참조하는 느리게 변하는 배경 지식과 용어를 보관합니다.
+2. **Source-Backed Reference Index**: 외부 표준, 논문, 책, repo-local canonical 파일이 어떤 사실을 뒷받침하는지 짧게 연결합니다.
+3. **Routing Guard**: 요구사항, 설계 결정, 실행 계획, 운영 절차, incident 기록으로 가야 할 내용을 reference stage에 섞지 않도록 분리 기준을 제공합니다.
+
+이 stage는 active decision authority가 아닙니다. 최신 정책, 실행 명령, 운영 절차, runtime 설정 원문은 해당 canonical stage 또는 runtime 파일에서만 관리합니다.
+
 ## Audience
 
 이 README의 주요 독자:
@@ -43,18 +53,28 @@ docs/90.references/
 └── README.md     # This file
 ```
 
-## Authoring Contract
+## Required Format
 
 Reference 문서는 다음 조건을 만족해야 합니다.
 
 - `docs/99.templates/reference.template.md`의 필수 섹션을 따른다.
-- `status`, `Overview (KR)`, `Purpose`, `Scope`, `Definitions / Facts`, `Sources`, `Maintenance`, `Related Documents`를 포함한다.
+- `status`, `Overview (KR)`, `Purpose`, `Repository Role`, `Scope`, `Definitions / Facts`, `Sources`, `Maintenance`, `Related Documents`를 포함한다.
+- 제목은 `# Reference: <item name>` 형식을 사용한다.
 - source가 외부 문서라면 링크와 함께 어떤 사실을 가져왔는지 요약한다.
 - source가 repo-local 파일이라면 상대 경로를 사용한다.
 - active policy나 runbook을 대체하는 문장을 쓰지 않는다.
 - 민감값, token, credential, private key, shell history, raw secret log를 쓰지 않는다.
 
 README 파일은 `docs/99.templates/readme.template.md`의 기본 구조를 따르고, 하위 reference 문서를 찾기 위한 index 역할을 합니다.
+
+## Naming and Lifecycle Rules
+
+- Category folder는 `docs/90.references/<category>/` 형태의 lower-kebab-case를 사용한다.
+- Non-README 문서는 `docs/90.references/<category>/<item>.md`에 둔다.
+- `status`는 `draft`, `active`, `archived` 중 하나를 사용한다.
+- Archived reference는 현재 판단 기준이 아니라 history/context 보존용으로만 둔다.
+- 새 category나 reference를 추가하면 이 README와 category README를 함께 갱신한다.
+- Redirect 파일이나 compatibility shim은 만들지 않는다.
 
 ## Placement Rules
 

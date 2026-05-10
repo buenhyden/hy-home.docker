@@ -5,7 +5,26 @@ status: active
 
 # Agent Progress Log
 
-Running record of harness gap remediation. Updated by agents after each phase.
+Running repo-local log for agent work, progress, verification, and durable memory pointers.
+
+This file follows `docs/99.templates/progress.template.md`.
+
+## Usage Contract
+
+- AI agents must update this file during repository work.
+- Record task progress as concise entries; do not paste transcripts, raw logs, shell history, or secrets.
+- Link durable reusable findings to separate memory notes created from `docs/00.agent-governance/memory/template.md`.
+- Keep active policy in `rules/`, `scopes/`, provider overlays, runtime files, and root shims; use this file as an audit log and memory index.
+- Update the final entry before declaring completion.
+
+## Current Work Log
+
+| Date | Task | Status | Progress | Memory | Evidence |
+| --- | --- | --- | --- | --- | --- |
+| 2026-05-10 | Governance memory progress contract | Done | Added a progress template contract, wired progress updates into agent governance, and verified the repo contract. | `docs/00.agent-governance/memory/governance-memory-usage-contract.md` | `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; edited-doc link scan |
+| 2026-05-10 | 90.references role and format contract | Done | Clarified reference stage role, required format, naming/lifecycle rules, category roles, and validator enforcement. | N/A | `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; edited-reference link scan |
+| 2026-05-10 | Governance memory template contract | Done | Added canonical `memory.template.md`, aligned memory note authoring rules, normalized existing memory notes, and enforced progress updates through the repo contract. | `docs/00.agent-governance/memory/governance-memory-usage-contract.md` | `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; edited-memory link scan |
+| 2026-05-10 | Template MD033 placeholder cleanup | Done | Replaced angle-bracket placeholders in memory/progress templates with brace placeholders to avoid inline-HTML markdownlint errors. | N/A | `bash scripts/check-repo-contracts.sh`; `git diff --check`; placeholder scan |
 
 ## Phase Tracker
 
@@ -24,6 +43,7 @@ Running record of harness gap remediation. Updated by agents after each phase.
 | P10 — Harness contract hardening         | ✅ Done | 2026-05-09 | Preserved thin root shims, clarified Codex as hook/context surface, kept `.claude` as the canonical runtime mirror, and strengthened `check-repo-contracts.sh` to enforce agent/function mirror, model hierarchy, scope imports, subagent protocol coverage, and source-leak prevention |
 | P11 — Harness / Agent-first gap closure  | ✅ Done | 2026-05-09 | Recorded the harness and Agent-first gap audit, added a graphify CLI-unavailable fallback to the thin root shim, allowed Claude `rg` discovery, and extended repo contracts without adding a Codex agent catalog, GitHub-native instruction layer, global config, or stage docs |
 | P12 — Docs operations taxonomy consolidation | ✅ Done | 2026-05-10 | Consolidated the former guide, operations, and procedure stages into canonical `docs/05.operations`; deleted legacy stage folders and split templates after link rewriting; updated repo contracts to enforce the reduced taxonomy |
+| P13 — Governance memory progress contract | ✅ Done | 2026-05-10 | Added `docs/99.templates/progress.template.md`, made `progress.md` the required agent work log, and extended repo contracts to enforce the progress template and update workflow |
 
 ## Layer Audit (L1–L7)
 

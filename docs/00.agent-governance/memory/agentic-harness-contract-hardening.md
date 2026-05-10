@@ -6,7 +6,11 @@ layer: agentic
 
 - Date: 2026-05-09
 - Layer: agentic
+- Status: active
+- Applies To: `.claude/`, `.codex/`, `docs/00.agent-governance/agents/`, runtime contract validators
 - Tags: #harness #agentic #runtime #governance
+- Retrieval Keywords: harness hardening, agent catalog mirror, codex boundary, runtime contract, H100 references
+- Last Verified: 2026-05-10
 
 ## Problem
 
@@ -42,3 +46,10 @@ being caught by the repository contract check.
 - Do not reintroduce external harness source labels or `H100` references.
 - Run `bash scripts/check-repo-contracts.sh` after any runtime, provider, or
   governance edit.
+
+## Evidence
+
+- `AGENTS.md`
+- `.codex/README.md`
+- `docs/00.agent-governance/agents/`
+- `scripts/check-repo-contracts.sh`

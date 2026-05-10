@@ -6,6 +6,12 @@
 
 `docs/90.references/learning`은 `hy-home.docker` 인프라를 학습 대상으로 해석하기 위한 이론적 배경과 로드맵을 관리합니다. 이 폴더는 설치 가이드나 운영 절차가 아니라, 관련 개념을 장기적으로 참조하기 위한 학습 reference입니다.
 
+## Category Role
+
+`docs/90.references/learning` connects repo-local infrastructure concepts to durable CS, CE, and SE learning topics. It is a learning map and theory index, not a service setup guide, curriculum task tracker, or operations runbook.
+
+Use this category to preserve source-backed learning context and roadmap history. Use active stage docs for implementation decisions, operations procedures, and verification evidence.
+
 ## Audience
 
 이 README의 주요 독자:

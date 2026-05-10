@@ -24,6 +24,10 @@ status: draft
 
 [Why this reference exists and which active docs it supports.]
 
+## Repository Role
+
+[How this reference supports the repository, which active docs may use it, and what it must not replace.]
+
 ## Scope
 
 ### In Scope

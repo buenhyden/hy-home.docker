@@ -69,10 +69,12 @@ required_templates=(
   "ard.template.md"
   "data-model.template.md"
   "incident.template.md"
+  "memory.template.md"
   "openapi.template.yaml"
   "operation.template.md"
   "plan.template.md"
   "postmortem.template.md"
+  "progress.template.md"
   "prd.template.md"
   "readme.template.md"
   "reference.template.md"
@@ -463,6 +465,8 @@ required_files = [
     pathlib.Path("docs/00.agent-governance/memory/README.md"),
     pathlib.Path("docs/00.agent-governance/memory/template.md"),
     pathlib.Path("docs/00.agent-governance/memory/progress.md"),
+    pathlib.Path("docs/99.templates/memory.template.md"),
+    pathlib.Path("docs/99.templates/progress.template.md"),
 ]
 
 for path in required_files:
@@ -473,32 +477,67 @@ checks = {
     pathlib.Path("AGENTS.md"): [
         "[LOAD:MEMORY]",
         "docs/00.agent-governance/memory/",
+        "update `progress.md` during repository work",
     ],
     pathlib.Path("docs/00.agent-governance/README.md"): [
         "[LOAD:MEMORY]",
         "memory/README.md",
+        "mandatory work progress log",
     ],
     pathlib.Path("docs/00.agent-governance/rules/bootstrap.md"): [
         "[LOAD:MEMORY]",
         "Memory is advisory",
+        "memory/progress.md",
+        "progress logging",
+        "docs/99.templates/memory.template.md",
     ],
     pathlib.Path("docs/00.agent-governance/rules/agentic.md"): [
         "advisory retrieval context",
         "Memory notes must not",
+        "running work log",
+        "docs/99.templates/memory.template.md",
     ],
     pathlib.Path("docs/00.agent-governance/rules/task-checklists.md"): [
         "progress.md",
         "durable finding report",
+        "material task progress",
+        "final status",
+    ],
+    pathlib.Path("docs/00.agent-governance/rules/stage-authoring-matrix.md"): [
+        "docs/99.templates/memory.template.md",
+        "docs/99.templates/progress.template.md",
+        "progress log updated",
     ],
     pathlib.Path("docs/00.agent-governance/memory/README.md"): [
         "advisory retrieval context",
         "do not define active policy",
         "Retrieve relevant notes",
+        "docs/99.templates/memory.template.md",
+        "mandatory agent progress log",
+        "docs/99.templates/progress.template.md",
     ],
     pathlib.Path("docs/00.agent-governance/memory/template.md"): [
+        "docs/99.templates/memory.template.md",
         "Retrieval Keywords",
         "Last Verified",
         "Evidence",
+    ],
+    pathlib.Path("docs/99.templates/memory.template.md"): [
+        "Memory notes are advisory retrieval context",
+        "Retrieval Keywords",
+        "Last Verified",
+        "## Evidence",
+    ],
+    pathlib.Path("docs/00.agent-governance/memory/progress.md"): [
+        "docs/99.templates/progress.template.md",
+        "## Usage Contract",
+        "## Current Work Log",
+    ],
+    pathlib.Path("docs/99.templates/progress.template.md"): [
+        "AI agents must update",
+        "## Current Work Log",
+        "## Phase Tracker",
+        "## Related Documents",
     ],
 }
 
@@ -510,6 +549,29 @@ for path, literals in checks.items():
     for literal in literals:
         if literal not in text:
             failures.append(f"{path}: missing memory contract literal: {literal}")
+
+memory_note_required = [
+    "- Date:",
+    "- Layer:",
+    "- Status:",
+    "- Applies To:",
+    "- Tags:",
+    "- Retrieval Keywords:",
+    "- Last Verified:",
+    "## Problem",
+    "## Context",
+    "## Resolution",
+    "## Prevention",
+    "## Evidence",
+]
+memory_dir = pathlib.Path("docs/00.agent-governance/memory")
+for path in sorted(memory_dir.glob("*.md")) if memory_dir.exists() else []:
+    if path.name in {"README.md", "progress.md", "template.md"}:
+        continue
+    text = path.read_text(errors="ignore")
+    for literal in memory_note_required:
+        if literal not in text:
+            failures.append(f"{path}: missing memory note template literal: {literal}")
 
 if failures:
     for failure in failures:
@@ -538,6 +600,7 @@ template_required = [
     "Reference docs provide stable context",
     "## Overview (KR)",
     "## Purpose",
+    "## Repository Role",
     "## Scope",
     "## Definitions / Facts",
     "## Source Rules",
@@ -568,10 +631,22 @@ for path in sorted(root.rglob("README.md")) if root.exists() else []:
     for heading in readme_required:
         if heading not in text:
             failures.append(f"{path}: missing reference README heading: {heading}")
+    if path == root / "README.md":
+        for heading in [
+            "## Repository Role",
+            "## Required Format",
+            "## Naming and Lifecycle Rules",
+            "## Placement Rules",
+        ]:
+            if heading not in text:
+                failures.append(f"{path}: missing reference root README heading: {heading}")
+    elif "## Category Role" not in text:
+        failures.append(f"{path}: missing reference category README heading: ## Category Role")
 
 reference_required = [
     "## Overview (KR)",
     "## Purpose",
+    "## Repository Role",
     "## Scope",
     "## Definitions / Facts",
     "## Sources",
@@ -581,6 +656,7 @@ reference_required = [
 placeholder_markers = [
     "[Item Name]",
     "[Why this reference exists",
+    "[How this reference supports",
     "[What is covered]",
     "[What is not covered]",
     "[Source 1]",

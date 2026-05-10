@@ -12,7 +12,7 @@ Universal entry shim for agent execution in `hy-home.docker`.
 2. Load `[LOAD:RULES:PERSONA]` from `docs/00.agent-governance/rules/persona.md`.
 3. Load `[LOAD:RULES:CHECKLISTS]` from `docs/00.agent-governance/rules/task-checklists.md`.
 4. Load `[LOAD:RULES:AGENTIC]` from `docs/00.agent-governance/rules/agentic.md`.
-5. Review `[LOAD:MEMORY]` from `docs/00.agent-governance/memory/README.md` when the task touches governance, docs, runtime, or repeated failures.
+5. Review `[LOAD:MEMORY]` from `docs/00.agent-governance/memory/README.md` and `docs/00.agent-governance/memory/progress.md`; update `progress.md` during repository work.
 6. Resolve task layer and load exactly one primary scope from `docs/00.agent-governance/scopes/`.
 7. For documentation workflows, load `[LOAD:RULES:STAGE-MATRIX]`.
 8. For PR, merge, review, or workflow tasks, load `[LOAD:RULES:GITHUB]`.

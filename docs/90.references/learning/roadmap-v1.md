@@ -12,6 +12,10 @@ status: archived
 
 초기 학습 로드맵과 이후 로드맵 변화의 맥락을 보존한다.
 
+## Repository Role
+
+이 archived reference는 초기 학습 분류와 현재 roadmap의 변화 맥락을 비교하기 위한 history/context로 사용한다. 현재 학습 기준, 운영 절차, runtime truth를 대체하지 않는다.
+
 ## Scope
 
 ### In Scope

@@ -10,7 +10,7 @@ Single source of truth for stage-level authoring expectations.
 
 | Stage | Purpose | Authoring Timing | Primary Persona | Input Docs | Output Docs | Required Template | Done Criteria |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 00 | Agent governance and routing rules | Before implementation and whenever governance drifts | Agentic Workflow Specialist / Documentation Specialist | Root shims, provider docs, active workflow constraints | Rules, scopes, providers, memory notes | N/A (governance style), `memory/template.md` for memory entries | Governance stays English-only, links valid, no contradictory policy |
+| 00 | Agent governance and routing rules | Before implementation and whenever governance drifts | Agentic Workflow Specialist / Documentation Specialist | Root shims, provider docs, active workflow constraints | Rules, scopes, providers, memory notes, progress log | N/A (governance style), `docs/99.templates/memory.template.md` for memory entries, `docs/99.templates/progress.template.md` for `memory/progress.md` | Governance stays English-only, links valid, no contradictory policy, progress log updated |
 | 01 | Product intent and requirements | At discovery and scope definition | Product Manager | Stakeholder intent, problem statements, constraints | PRD docs | `docs/99.templates/prd.template.md` | Requirements are testable, traceable, and linked to downstream artifacts |
 | 02 | Architecture reference | After PRD baseline | System Architect | PRD, existing architecture context | ARD docs | `docs/99.templates/ard.template.md` | Boundaries and quality attributes are explicit and aligned with PRD |
 | 03 | Architecture decisions | When a non-trivial architectural trade-off is made | System Architect | PRD, ARD, alternative options | ADR docs | `docs/99.templates/adr.template.md` | Decision, alternatives, and consequences are explicitly documented |
@@ -24,7 +24,7 @@ Single source of truth for stage-level authoring expectations.
 
 | Stage | Purpose | Template |
 | :--- | :--- | :--- |
-| 90 | Stable references, glossary, source-backed facts, inventories, and evergreen learning context. This stage supports active docs but does not replace policy, plans, runbooks, incidents, or runtime truth. | `docs/99.templates/reference.template.md` |
+| 90 | Stable references, glossary, source-backed facts, inventories, and evergreen learning context. This stage supports active docs, must state repository role and lifecycle, and does not replace policy, plans, runbooks, incidents, or runtime truth. | `docs/99.templates/reference.template.md` |
 | 99 | Source templates for all stages | `docs/99.templates/readme.template.md` and stage templates |
 
 ## 3. Usage Rules

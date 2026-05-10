@@ -6,7 +6,11 @@ layer: agentic
 
 - Date: 2026-05-09
 - Layer: agentic
+- Status: active
+- Applies To: `AGENTS.md`, `.claude/settings.json`, graphify workflow, agent-first runtime surfaces
 - Tags: #harness #agent-first #runtime #governance
+- Retrieval Keywords: agent-first gap audit, graphify CLI fallback, rg permission, runtime governance surface
+- Last Verified: 2026-05-10
 
 ## Problem
 
@@ -14,6 +18,11 @@ The workspace already implements most of the harness and Agent-first engineering
 surface, but the audit found two operational gaps that could cause agents to
 either skip a useful repository discovery tool or claim an impossible graph
 refresh.
+
+## Context
+
+The audit compared root shims, governance docs, runtime mirrors, hooks, and
+repository contract checks against the intended agent-first execution model.
 
 ## Harness Engineering Components
 
@@ -63,6 +72,19 @@ refresh.
   covered by the existing repository contract gate.
 - Do not add stage docs, GitHub-native instruction files, global configuration,
   or a parallel Codex agent catalog.
+
+## Prevention
+
+- Keep graphify usage advisory when the CLI is unavailable or output is noisy.
+- Keep read-only discovery commands such as `rg` available to runtime agents.
+- Verify runtime-surface assumptions through `scripts/check-repo-contracts.sh`.
+
+## Evidence
+
+- `AGENTS.md`
+- `.claude/settings.json`
+- `scripts/check-repo-contracts.sh`
+- `docs/00.agent-governance/memory/progress.md`
 
 ## Related Documents
 

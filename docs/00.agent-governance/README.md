@@ -10,7 +10,7 @@ layer: agentic
 
 - Purpose: deterministic, auditable, token-efficient agent execution.
 - Entry point: root shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) route agents into this hub; Codex uses `AGENTS.md` plus `.codex/`.
-- Compliance boundary: stage-gate lifecycle in `docs/01` to `docs/10`, plus `docs/90` and `docs/99`.
+- Compliance boundary: stage-gate lifecycle in `docs/01` to `docs/05`, plus `docs/90` and `docs/99`.
 
 ## Audience
 
@@ -30,7 +30,7 @@ This README is for:
 
 ### Out of Scope
 
-- Product, architecture, operation, runbook, or incident content owned by `docs/01` to `docs/10`.
+- Product, architecture, operation, runbook, or incident content owned by `docs/01` to `docs/05`.
 - User-global runtime settings and personal credentials.
 - Provider-specific policy duplicated outside the provider overlays.
 
@@ -47,8 +47,9 @@ This README is for:
   - Runtime mirror: 8 Claude agents in `.claude/agents/` and 10 functions in `.claude/skills/`.
 - `.claude/`: Claude runtime enforcement layer (`CLAUDE.md`, `settings.json`, hooks, agent files, nested skills).
 - `.codex/`: Codex runtime hook/context layer (`hooks.json`, `README.md`).
-- `memory/`: durable governance notes and audit findings.
-  - `progress.md` — phase tracker and L1–L7 layer audit status
+- `memory/`: durable governance notes, audit findings, and the agent progress log.
+  - `progress.md` — mandatory work progress log, verification index, and durable memory pointer list
+  - `template.md` — local mirror of `docs/99.templates/memory.template.md`
 - `subagent-protocol.md` — spawn rules, communication protocol, and agent lifecycle.
 
 ## 4. JIT Markers
@@ -93,8 +94,8 @@ This README is for:
 5. Use `subagent-protocol.md` and `workflow-supervisor` for cross-domain or delegated work.
 6. Use stage authoring matrix for any documentation authoring/refactoring task.
 7. For PR-related tasks, load `[LOAD:RULES:GITHUB]` and verify GitHub completion gate (§6 of that rule) before declaring done.
-8. For governance, docs, runtime, or repeated-failure work, review `memory/README.md`, `memory/progress.md`, and one or more relevant memory notes before editing.
-9. Run completion checklist and record durable out-of-scope findings in `memory/`.
+8. Review `memory/README.md` and `memory/progress.md` before editing; retrieve one or more relevant memory notes for governance, docs, runtime, or repeated-failure work.
+9. Run completion checklist, update `memory/progress.md`, and record durable out-of-scope findings in `memory/` from `docs/99.templates/memory.template.md`.
 
 ## Maintenance and Safety
 

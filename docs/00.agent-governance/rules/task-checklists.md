@@ -12,7 +12,7 @@ Unified task execution checklists for all agent work.
 - [ ] Confirm editable scope for this task.
 - [ ] Confirm whether `docs/01` to `docs/99` are in read-only mode.
 - [ ] Identify required input documents (PRD, ARD, ADR, Specs, Plans, Tasks).
-- [ ] Review `docs/00.agent-governance/memory/README.md`, `progress.md`, and relevant memory notes when the task touches governance, docs, runtime, or repeated failures.
+- [ ] Review `docs/00.agent-governance/memory/README.md` and `progress.md`; retrieve relevant memory notes when the task touches governance, docs, runtime, or repeated failures.
 - [ ] Identify key risks (security, data loss, breaking changes, governance drift).
 - [ ] Define verification commands and acceptance criteria before edits.
 
@@ -23,6 +23,7 @@ Unified task execution checklists for all agent work.
 - [ ] Maintain language policy consistency (English governance, Korean human-facing docs).
 - [ ] Validate new/changed links as edits are made.
 - [ ] Remove stale, conflicting, or nonexistent references in editable scope.
+- [ ] Update `docs/00.agent-governance/memory/progress.md` for material task progress.
 - [ ] Record out-of-scope issues instead of patching read-only stages.
 
 ## 3. Completion Checklist
@@ -31,5 +32,6 @@ Unified task execution checklists for all agent work.
 - [ ] Validate link integrity for changed root/governance files.
 - [ ] Confirm no contradictory policy statements were introduced.
 - [ ] Confirm completion criteria are satisfied for the affected stage(s).
-- [ ] Create/update out-of-scope or durable finding report in `docs/00.agent-governance/memory/` when needed.
+- [ ] Update `docs/00.agent-governance/memory/progress.md` with final status, verification evidence, and memory note links.
+- [ ] Create/update out-of-scope or durable finding reports from `docs/99.templates/memory.template.md` when needed.
 - [ ] Summarize what changed, what was verified, and what remains out-of-scope.

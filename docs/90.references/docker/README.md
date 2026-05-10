@@ -8,6 +8,12 @@
 
 This folder does not replace Compose files or registry JSON files. Runtime truth remains in `infra/**/docker-compose*.yml`, `infra/tech-stack.versions.json`, and `infra/image-tag-policy.exceptions.json`.
 
+## Category Role
+
+`docs/90.references/docker` explains durable Docker image and version-reference rules. It helps readers understand how Compose image declarations, registry JSON files, and floating-tag exceptions relate to each other without replacing those runtime files.
+
+Use this category for stable interpretation rules and inventory context. Use `docs/05.operations/` for operational procedures and `infra/` for the current runtime source of truth.
+
 ## Audience
 
 이 README의 주요 독자:

@@ -28,8 +28,8 @@ Standard behavior contract for repo-local, auditable agent execution.
   - `docs/00.agent-governance/subagent-protocol.md` defines delegation rules.
 - Do not import external harness identities or create GitHub-native instruction
   layers for local execution policy.
-- Use `docs/00.agent-governance/memory/` as advisory retrieval context for
-  governance, docs, runtime, and repeated-failure work. Memory notes must not
+- Use `docs/00.agent-governance/memory/` as advisory retrieval context and
+  `memory/progress.md` as the running work log. Memory notes must not
   override current rules, scopes, provider overlays, direct user instructions,
   or live repository evidence.
 - Keep governance text in English and user-facing responses in Korean by default.
@@ -41,13 +41,15 @@ Standard behavior contract for repo-local, auditable agent execution.
 3. Load `rules/task-checklists.md` and run pre-task gate.
 4. Load this Agent-first rule.
 5. Load one primary scope from `scopes/<layer>.md`.
-6. Review governance memory when the task matches the memory triggers, using
-   `rg` to retrieve only relevant notes.
+6. Review governance memory and `memory/progress.md`; use `rg` to retrieve
+   only relevant notes when the task matches memory triggers.
 7. Discover current repository state with read-only commands.
 8. Plan the smallest scoped change and name the verification gate.
 9. Execute the change in place.
 10. Verify with the smallest checks that prove the contract.
-11. Report changed files, checks run, and any residual risk or out-of-scope gap.
+11. Update `memory/progress.md` with final progress, verification evidence,
+    and durable memory pointers.
+12. Report changed files, checks run, and any residual risk or out-of-scope gap.
 
 ## 4. Operational Procedures
 
@@ -66,5 +68,6 @@ Standard behavior contract for repo-local, auditable agent execution.
 - Keep provider-specific behavior in provider files, not in generic scope/rule files.
 - Keep the runtime harness mirror synchronized across `.claude/` and
   `docs/00.agent-governance/agents/`.
-- Record historical notes under `docs/00.agent-governance/memory/`; do not use
-  memory notes as active policy.
+- Record work progress in `docs/00.agent-governance/memory/progress.md`.
+- Record historical notes under `docs/00.agent-governance/memory/` from
+  `docs/99.templates/memory.template.md`; do not use memory notes as active policy.

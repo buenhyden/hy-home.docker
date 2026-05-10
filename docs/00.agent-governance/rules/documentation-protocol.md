@@ -37,6 +37,8 @@ Protocol for maintaining documentation consistency and governance traceability.
 | `docs/05.operations/` | Operations Knowledge | `docs/99.templates/operation.template.md` |
 | `docs/05.operations/incidents/` | Incident | `docs/99.templates/incident.template.md` |
 | `docs/05.operations/incidents/` | Postmortem | `docs/99.templates/postmortem.template.md` |
+| `docs/00.agent-governance/memory/<note>.md` | Governance Memory Note | `docs/99.templates/memory.template.md` |
+| `docs/00.agent-governance/memory/progress.md` | Agent Progress Log | `docs/99.templates/progress.template.md` |
 | `docs/90.references/` | Reference | `docs/99.templates/reference.template.md` |
 | `README.md` (per folder) | README | `docs/99.templates/readme.template.md` |
 

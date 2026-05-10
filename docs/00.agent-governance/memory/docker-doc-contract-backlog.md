@@ -6,7 +6,11 @@ layer: agentic
 
 - Date: 2026-05-09
 - Layer: docs
+- Status: active
+- Applies To: `docs/03.specs/`, `docs/90.references/`, Docker docs, script contract checks
 - Tags: #docker #documentation #quality
+- Retrieval Keywords: docker docs backlog, README coverage, stage templates, script usage audit, service documentation coverage
+- Last Verified: 2026-05-10
 
 ## Problem
 
@@ -95,6 +99,13 @@ When a stage subfolder is created or materially changed, update the nearest
 stage README or add a local README in the same change. Future README generation
 should be a separate docs pass with a clear template and folder-by-folder
 ownership.
+
+## Evidence
+
+- `docs/03.specs/README.md`
+- `docs/90.references/docker/README.md`
+- `scripts/README.md`
+- `scripts/check-repo-contracts.sh`
 
 ## Related Documents
 

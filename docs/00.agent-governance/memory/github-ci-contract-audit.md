@@ -6,7 +6,11 @@ layer: agentic
 
 - Date: 2026-05-09
 - Layer: infra
+- Status: active
+- Applies To: `.github/workflows/`, `.github/rulesets/`, CI contract checks
 - Tags: #github #ci #qa #governance
+- Retrieval Keywords: GitHub CI contract, workflow permissions, branch ruleset, compose profile validation
+- Last Verified: 2026-05-10
 
 ## Problem
 
@@ -44,3 +48,10 @@ resolved by Docker Compose.
 - Apply remote branch protection or rulesets only after explicit owner approval.
 - Treat all-profile QuickWin/security failures as separate infra hardening work,
   not as hidden CI contract drift.
+
+## Evidence
+
+- `.github/workflows/ci-quality.yml`
+- `.github/rulesets/`
+- `scripts/check-repo-contracts.sh`
+- `scripts/validate-docker-compose.sh`
