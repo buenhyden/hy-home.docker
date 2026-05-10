@@ -1208,8 +1208,8 @@
     "hash": "c5b89985034076ce1ee9b135a8c3803f"
   },
   "/home/hy/project-infra/hy-home.docker/AGENTS.md": {
-    "mtime": 1778307508.6899405,
-    "hash": "38ccbfd823680ab178c90355dd02d3b0"
+    "mtime": 1778378369.7354147,
+    "hash": "b91fd58beccbe98bb4cfe295be647cdd"
   },
   "/home/hy/project-infra/hy-home.docker/RTK.md": {
     "mtime": 1776670585.083921,
@@ -3184,8 +3184,8 @@
     "hash": "495e15349df5046cd8a41144db06f834"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/README.md": {
-    "mtime": 1778377794.2007813,
-    "hash": "57ba3cc160d5c20c0739edf345b920d7"
+    "mtime": 1778378289.5073354,
+    "hash": "ca29b7aa2d55b967691bf90a5521148b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/subagent-protocol.md": {
     "mtime": 1778269169.831773,
@@ -3252,8 +3252,8 @@
     "hash": "2cdf4564359120bc081053aab0b0d911"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/agentic.md": {
-    "mtime": 1778377794.3567812,
-    "hash": "a7724f491e6590c025b8f6c969b7d13d"
+    "mtime": 1778378290.0403354,
+    "hash": "457565dd3c9645fb5516e957398bda3b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/git-workflow.md": {
     "mtime": 1778313118.5422966,
@@ -3280,12 +3280,12 @@
     "hash": "3e3f95d3dd9fbdc806167b4613dd0236"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/task-checklists.md": {
-    "mtime": 1774526063.411789,
-    "hash": "e4e3e4b17719d6d95953a4b9515d4d6a"
+    "mtime": 1778378289.854002,
+    "hash": "d4c6fc38782d31e6845257f5c8f0767d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/bootstrap.md": {
-    "mtime": 1778377492.738529,
-    "hash": "54b8eb3eb66efe7210c089c3fbe134ca"
+    "mtime": 1778378289.6806688,
+    "hash": "4de7075e45719d32b47a229db4562b6d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/standards.md": {
     "mtime": 1778377492.738529,
@@ -3395,9 +3395,13 @@
     "mtime": 1778377492.742529,
     "hash": "253c9edccf7b12cc03755da228431bd3"
   },
+  "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/governance-memory-usage-contract.md": {
+    "mtime": 1778378316.766891,
+    "hash": "e143e578c3db84bf4b47647095b9e02f"
+  },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/README.md": {
-    "mtime": 1778377492.742529,
-    "hash": "606ee0421b116212e91c0b82419c2ae4"
+    "mtime": 1778378316.4462245,
+    "hash": "b0b4281cd4b525f0397f154f38bce623"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/github-ci-contract-audit.md": {
     "mtime": 1778275556.9065633,
@@ -3408,8 +3412,8 @@
     "hash": "9d268c1d300b5ec1b5c7d1327871a7ab"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/template.md": {
-    "mtime": 1774506244.4675376,
-    "hash": "2b56af6ede0d06c59bbb6a0f31cd4754"
+    "mtime": 1778378316.6065576,
+    "hash": "999fde8fa66a4af3e0d533419630532e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/README.md": {
     "mtime": 1778377563.2273912,
