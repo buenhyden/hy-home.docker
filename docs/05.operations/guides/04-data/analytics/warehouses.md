@@ -1,4 +1,4 @@
-<!-- Target: docs/05.operations/04-data/analytics/warehouses.md -->
+<!-- Target: docs/05.operations/guides/04-data/analytics/warehouses.md -->
 
 # StarRocks Operations Policy
 

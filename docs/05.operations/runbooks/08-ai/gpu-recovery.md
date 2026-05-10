@@ -1,7 +1,7 @@
 ---
 status: migrated
 ---
-<!-- Target: docs/05.operations/08-ai/gpu-recovery.md -->
+<!-- Target: docs/05.operations/runbooks/08-ai/gpu-recovery.md -->
 
 # Gpu Recovery Operations
 

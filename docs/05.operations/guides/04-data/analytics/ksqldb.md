@@ -1,4 +1,4 @@
-<!-- Target: docs/05.operations/04-data/analytics/ksqldb.md -->
+<!-- Target: docs/05.operations/guides/04-data/analytics/ksqldb.md -->
 
 # ksqlDB Operations Policy
 

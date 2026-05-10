@@ -24,11 +24,16 @@
 
 ```text
 policies/
+├── harness-agent-first-engineering.md
 ├── 04-data/
 ├── 06-observability/
 ├── ...
 └── README.md
 ```
+
+## Current Governance Policies
+
+- [Harness / Agent-first Engineering Operations Policy](./harness-agent-first-engineering.md)
 
 ## Related References
 

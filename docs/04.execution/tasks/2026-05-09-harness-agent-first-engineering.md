@@ -27,13 +27,14 @@ status: completed
 | ID | Type | Task | Status | Validation / Evidence |
 | --- | --- | --- | --- | --- |
 | HAFE-001 | Analyze | Review root, docs, infra, scripts, governance, runtime, template, and validator files. | Done | Captured in the specification file analysis table. |
-| HAFE-002 | Document | Create Spec, Plan, Task, Guide, Operation, and Runbook stage docs. | Done | New docs under `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations`, `docs/05.operations`, `docs/05.operations`. |
+| HAFE-002 | Document | Create Spec, Plan, Task, Guide, Policy, and Runbook stage docs. | Done | New docs under `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations/guides`, `docs/05.operations/policies`, and `docs/05.operations/runbooks`. |
 | HAFE-003 | Sync | Update parent README files for new artifacts. | Done | README structure and related links updated. |
 | HAFE-004 | Verify | Run governance, docs, runtime, default/core Compose, and supported hardening checks. | Done | Scoped validation commands passed on 2026-05-09; `10-communication` remediation is separate infra scope. |
 | HAFE-005 | Scan | Confirm no external source-label references in active runtime/governance surfaces. | Done | `rg` returned no matches in active runtime/governance surfaces. |
 | HAFE-006 | Context Quality | Add Graphify health fallback so contaminated graph output remains advisory. | Done | `bash scripts/report-graphify-health.sh` exits 0 and reports `status=advisory` for current generated corpus. |
 | HAFE-007 | Runtime Hook | Fix Claude hook quoting so markdown backticks are not executed by the shell. | Done | `.claude/hooks/docker-compose-pre.sh` and `.claude/hooks/session-start.sh` use heredoc/argv Python invocation. |
 | HAFE-008 | Evidence Scope | Tighten evidence wording for catalog parity, scoped infra validation, and Graphify authority. | Done | Stage docs distinguish catalog parity from semantic parity and `core`/supported-tier validation from full workspace validation. |
+| HAFE-009 | Taxonomy Hardening | Split HAFE guide/policy/runbook content and add stricter stale taxonomy drift checks. | Done | Guide content moved to `docs/05.operations/guides`; repo contract now checks active stale taxonomy shorthand. |
 
 ## Suggested Types
 
@@ -82,7 +83,7 @@ bash scripts/check-all-hardening.sh
 
 Results:
 
-- `check-repo-contracts.sh`: PASS, `failures=0`.
+- `check-repo-contracts.sh`: PASS, `failures=0`; includes active taxonomy shorthand and operations target-comment checks.
 - `check-doc-traceability.sh`: PASS, `catalog_pairs_total=46`, `failures=0`.
 - `report-graphify-health.sh`: PASS/non-failing advisory, `status=advisory`, `manifest_volume_paths=223`, `manifest_gitlink_paths=309`, `graph_source_file_contamination_count=282`.
 - JSON and shell syntax checks: PASS.
@@ -92,6 +93,8 @@ Results:
 - `check-quickwin-baseline.sh`: PASS, default/core scoped validation, `services_total=5`, baseline violations all zero.
 - `check-all-hardening.sh`: PASS, supported tier checks passed.
 - Source-label scan: no matches in active runtime/governance surfaces.
+- Active taxonomy shorthand scan: no matches outside the allowed `docs/README.md` migration map and validator implementation.
+- Operations target-comment scan: all `docs/05.operations` target comments point to `guides/`, `policies/`, `runbooks/`, or `incidents/`.
 - `graphify update .`: skipped because `graphify` CLI is unavailable in the active shell.
 - Residual risk: `10-communication` compose/include/IP remediation is intentionally out of scope for this HAFE pass.
 
@@ -99,6 +102,6 @@ Results:
 
 - [Specification](../../03.specs/harness-agent-first-engineering/spec.md)
 - [Plan](../plans/2026-05-09-harness-agent-first-engineering.md)
-- [Guide](../../05.operations/policies/harness-agent-first-engineering.md)
+- [Guide](../../05.operations/guides/harness-agent-first-engineering.md)
 - [Operations Policy](../../05.operations/policies/harness-agent-first-engineering.md)
 - [Validation Runbook](../../05.operations/runbooks/harness-agent-first-engineering-validation.md)

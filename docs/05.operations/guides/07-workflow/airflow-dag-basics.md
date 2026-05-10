@@ -1,7 +1,7 @@
 ---
 status: migrated
 ---
-<!-- Target: docs/05.operations/07-workflow/airflow-dag-basics.md -->
+<!-- Target: docs/05.operations/guides/07-workflow/airflow-dag-basics.md -->
 
 # Airflow Dag Basics Operations
 

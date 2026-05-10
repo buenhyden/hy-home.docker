@@ -8,7 +8,7 @@
 
 - 기준 카탈로그: [../05.operations/12-infra-service-optimization-catalog.md](../../05.operations/policies/12-infra-service-optimization-catalog.md)
 - 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 대상 구성: `infra/11-laboratory/**/*`, `scripts/`, `.github/workflows/`, `docs/01~09`
+- 대상 구성: `infra/11-laboratory/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
 
 ## Goals & In-Scope
 
@@ -24,7 +24,7 @@
   - `.env.example`
   - `scripts/check-laboratory-hardening.sh`
   - `.github/workflows/ci-quality.yml`
-  - `docs/01~09` optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서/README
 
 ## Non-Goals & Out-of-Scope
 
@@ -44,7 +44,7 @@
 | PLN-LAB-003 | dashboard direct host 노출 제거 | `infra/11-laboratory/dashboard/docker-compose.yml` | REQ-PRD-LAB-FUN-03 | `ports:` 제거/`expose` 확인 |
 | PLN-LAB-004 | dozzle socket 최소권한 적용 | `infra/11-laboratory/dozzle/docker-compose.yml` | REQ-PRD-LAB-FUN-05 | `docker.sock:ro` 확인 |
 | PLN-LAB-005 | lab hardening script + CI gate 추가 | `scripts/check-laboratory-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-LAB-FUN-06 | script/CI job 확인 |
-| PLN-LAB-006 | PRD~Runbook 문서 세트/README 인덱스 동기화 | `docs/01~09/**` | REQ-PRD-LAB-FUN-07 | 링크 정합성 확인 |
+| PLN-LAB-006 | PRD~Runbook 문서 세트/README 인덱스 동기화 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-LAB-FUN-07 | 링크 정합성 확인 |
 | PLN-LAB-007 | 카탈로그 확장 항목 roadmap 문서화 | Plan/Task/Ops/Guide docs | REQ-PRD-LAB-FUN-08 | 정책/태스크 반영 확인 |
 
 ## Verification Plan

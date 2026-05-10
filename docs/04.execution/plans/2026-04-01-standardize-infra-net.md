@@ -25,7 +25,7 @@
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-001 | SSoT 문서 작성 (9개 폴더) | `docs/01-09/` | REQ-GOV | 모든 템플릿 준수 및 링크 완료 |
+| PLN-001 | SSoT 문서 작성 (9개 폴더) | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/` | REQ-GOV | 모든 템플릿 준수 및 링크 완료 |
 | PLN-002 | 루트 Compose 네트워크 정의 수정 | `docker-compose.yml` | REQ-FUN-02 | `docker compose config` 서브넷 확인 |
 | PLN-003 | 개별 서비스 네트워크 할당 수정 | `infra/**/docker-compose.yml` | REQ-FUN-01 | 서비스별 `infra_net` 존재 여부 |
 

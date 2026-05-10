@@ -24,11 +24,16 @@
 
 ```text
 runbooks/
+├── harness-agent-first-engineering-validation.md
 ├── 04-data/
 ├── 06-observability/
 ├── ...
 └── README.md
 ```
+
+## Current Governance Runbooks
+
+- [Harness Agent First Engineering Validation Operations](./harness-agent-first-engineering-validation.md)
 
 ## Related References
 

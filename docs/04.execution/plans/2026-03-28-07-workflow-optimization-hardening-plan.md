@@ -8,7 +8,7 @@
 
 - 기준 카탈로그: [../05.operations/12-infra-service-optimization-catalog.md](../../05.operations/policies/12-infra-service-optimization-catalog.md)
 - 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 대상 구성: `infra/07-workflow/**/*`, `scripts/`, `.github/workflows/`, `docs/01~09`
+- 대상 구성: `infra/07-workflow/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
 
 ## Goals & In-Scope
 
@@ -24,7 +24,7 @@
   - `scripts/check-workflow-hardening.sh`
   - `scripts/README.md`
   - `.github/workflows/ci-quality.yml`
-  - `docs/01~09` workflow optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` workflow optimization-hardening 문서/README
 
 ## Non-Goals & Out-of-Scope
 
@@ -44,7 +44,7 @@
 | PLN-WRK-003 | n8n worker/task-runner health/dependency 보강 | `infra/07-workflow/n8n/docker-compose.yml` | REQ-PRD-WRK-FUN-03 | healthcheck/depends_on 확인 |
 | PLN-WRK-004 | n8n custom image 및 entrypoint hardening 반영 | `infra/07-workflow/n8n/{Dockerfile,docker-entrypoint.sh,docker-compose.yml}` | REQ-PRD-WRK-FUN-04 | non-root/secret guard 확인 |
 | PLN-WRK-005 | workflow hardening script + CI 게이트 추가 | `scripts/check-workflow-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-WRK-FUN-05 | script/CI job 확인 |
-| PLN-WRK-006 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/01~09/**` | REQ-PRD-WRK-FUN-06 | 링크 정합성 확인 |
+| PLN-WRK-006 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-WRK-FUN-06 | 링크 정합성 확인 |
 | PLN-WRK-007 | 카탈로그 확장 항목 작업 분해(Airflow/n8n/airbyte) | Plan/Task/Ops/Guide docs | REQ-PRD-WRK-FUN-07 | 태스크/정책 반영 확인 |
 
 ## Verification Plan

@@ -42,7 +42,7 @@ status: approved
 | Contract | Source | Required Behavior |
 | --- | --- | --- |
 | Workspace purpose | `README.md`, `infra/README.md` | Docker Compose 기반 홈/개발 인프라를 계층형 `infra/`와 stage 문서로 운영한다. |
-| Docs taxonomy | `docs/README.md`, `documentation-protocol.md` | 활성 문서는 `docs/01`-`docs/10`, `docs/90`, `docs/99`에만 둔다. |
+| Docs taxonomy | `docs/README.md`, `documentation-protocol.md` | 활성 문서는 `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, `docs/99.templates` 아래에만 둔다. |
 | Thin root shims | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | 루트 파일은 진입과 import만 담당하고 세부 정책은 governance/runtime 문서로 위임한다. |
 | Governance SSOT | `docs/00.agent-governance/` | shared rules, scopes, providers, agents catalog, memory, delegation protocol을 소유한다. |
 | Runtime mirror | `.claude/agents`, `.claude/skills`, `docs/00.agent-governance/agents` | runtime agent/function catalog, model front matter, scope imports, protocol references가 governance catalog와 동기화되어야 한다. 이 검증은 semantic content parity가 아니라 catalog parity를 증명한다. |
@@ -113,7 +113,7 @@ Not applicable. This change does not add or modify service APIs.
 
 - Use `rg` for discovery where available.
 - Use `bash scripts/check-repo-contracts.sh` for repository and runtime catalog drift.
-- Use `bash scripts/check-doc-traceability.sh` for 05/08/09 traceability.
+- Use `bash scripts/check-doc-traceability.sh` for execution and operations traceability.
 - Use `bash scripts/report-graphify-health.sh` for non-failing Graphify corpus health evidence.
 - Use `bash scripts/validate-docker-compose.sh` for default/core Compose structural validation.
 - Use security and hardening baseline scripts for supported tier operational confidence.
@@ -173,7 +173,7 @@ Evaluation is command-based:
 | Missing scope import or model split | Restore exact scope import and `opus`/`sonnet` hierarchy. |
 | Stale source-label reference | Rewrite content to be self-contained, then rerun scans. |
 | Contaminated Graphify context | Downgrade Graphify to advisory context and corroborate against tracked source and canonical docs. |
-| Docs traceability failure | Add missing parent README or 05/08/09 reciprocal links. |
+| Docs traceability failure | Add missing parent README or reciprocal execution/operations links. |
 | Scoped Compose validation failure | Treat as infra blocker and inspect affected in-scope `infra/**/docker-compose*.yml`. |
 | `10-communication` profile failure | Track separately as infra remediation; do not block HAFE completion. |
 | Hook payload failure | Fix hook quoting/parsing and rerun the exact payload simulation. |
@@ -210,7 +210,7 @@ bash scripts/check-all-hardening.sh
 
 - [Plan](../../04.execution/plans/2026-05-09-harness-agent-first-engineering.md)
 - [Task Evidence](../../04.execution/tasks/2026-05-09-harness-agent-first-engineering.md)
-- [Guide](../../05.operations/policies/harness-agent-first-engineering.md)
+- [Guide](../../05.operations/guides/harness-agent-first-engineering.md)
 - [Operations Policy](../../05.operations/policies/harness-agent-first-engineering.md)
 - [Validation Runbook](../../05.operations/runbooks/harness-agent-first-engineering-validation.md)
 - [Agent Governance Hub](../../00.agent-governance/README.md)

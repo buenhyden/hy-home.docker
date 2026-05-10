@@ -1,7 +1,7 @@
 ---
 status: migrated
 ---
-<!-- Target: docs/05.operations/04-data/storage-exhaustion.md -->
+<!-- Target: docs/05.operations/runbooks/04-data/storage-exhaustion.md -->
 
 # Storage Exhaustion Operations
 

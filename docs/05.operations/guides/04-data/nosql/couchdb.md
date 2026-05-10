@@ -1,4 +1,4 @@
-<!-- Target: docs/05.operations/04-data/nosql/couchdb.md -->
+<!-- Target: docs/05.operations/guides/04-data/nosql/couchdb.md -->
 
 # CouchDB Operation Policy
 

@@ -49,7 +49,7 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
   - Open WebUI -> Ollama (generation + embedding)
   - Open WebUI -> Qdrant (vector retrieval)
 - **Control plane**:
-  - SSO middleware, 정책 게이트 script/CI, 운영 문서(07/08/09)
+  - SSO middleware, 정책 게이트 script/CI, 운영 문서(guides/policies/runbooks)
 
 ## Data Architecture
 

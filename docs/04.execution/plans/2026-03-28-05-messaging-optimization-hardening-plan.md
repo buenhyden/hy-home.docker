@@ -23,7 +23,7 @@
   - `infra/05-messaging/rabbitmq/docker-compose.yml`
   - `scripts/check-messaging-hardening.sh`
   - `.github/workflows/ci-quality.yml`
-  - `docs/01~09` 메시징 optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 메시징 optimization-hardening 문서/README
 
 ## Non-Goals & Out-of-Scope
 
@@ -44,7 +44,7 @@
 | PLN-MSG-004 | 메시징 하드닝 기준선 스크립트 작성 | `scripts/check-messaging-hardening.sh` | REQ-PRD-MSG-FUN-05 | script pass/fail 동작 |
 | PLN-MSG-005 | CI `messaging-hardening` job 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-MSG-FUN-05 | workflow 정의 확인 |
 | PLN-MSG-006 | scripts 인덱스 갱신 | `scripts/README.md` | REQ-PRD-MSG-FUN-05 | README 항목/예시 반영 |
-| PLN-MSG-007 | PRD~Runbook optimization 문서 세트 생성/갱신 | `docs/01~09/**` | REQ-PRD-MSG-FUN-06 | 상호 링크/README 반영 |
+| PLN-MSG-007 | PRD~Runbook optimization 문서 세트 생성/갱신 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-MSG-FUN-06 | 상호 링크/README 반영 |
 
 ## Verification Plan
 

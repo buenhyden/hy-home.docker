@@ -60,7 +60,7 @@ Immediate corrections in this pass:
 
 - Add missing Open Notebook guide, operations policy, and runbook under the
   `11-laboratory` stage paths.
-- Add repository-contract validation for service-level 07/08/09 documentation
+- Add repository-contract validation for service-level guides/policies/runbooks documentation
   coverage.
 - Keep `infra/04-data/analytics/ksql` to `ksqldb.md` as an explicit
   implementation-name-to-document-name mapping.

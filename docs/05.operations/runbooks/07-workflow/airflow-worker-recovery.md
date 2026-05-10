@@ -1,7 +1,7 @@
 ---
 status: migrated
 ---
-<!-- Target: docs/05.operations/07-workflow/airflow-worker-recovery.md -->
+<!-- Target: docs/05.operations/runbooks/07-workflow/airflow-worker-recovery.md -->
 
 # Airflow Worker Recovery Operations
 

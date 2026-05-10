@@ -8,7 +8,7 @@
 
 - 기준 카탈로그: [../05.operations/12-infra-service-optimization-catalog.md](../../05.operations/policies/12-infra-service-optimization-catalog.md)
 - 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 대상 구성: `infra/08-ai/**/*`, `scripts/`, `.github/workflows/`, `docs/01~09`
+- 대상 구성: `infra/08-ai/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
 
 ## Goals & In-Scope
 
@@ -25,7 +25,7 @@
   - `scripts/check-ai-hardening.sh`
   - `scripts/README.md`
   - `.github/workflows/ci-quality.yml`
-  - `docs/01~09` AI optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` AI optimization-hardening 문서/README
 
 ## Non-Goals & Out-of-Scope
 
@@ -45,7 +45,7 @@
 | PLN-AI-003 | Open WebUI stateful 템플릿 정렬 | `infra/08-ai/open-webui/docker-compose.yml` | REQ-PRD-AI-FUN-03 | `template-stateful-med` 확인 |
 | PLN-AI-004 | exporter health-gated dependency 및 healthcheck 보강 | `infra/08-ai/ollama/docker-compose.yml` | REQ-PRD-AI-FUN-04 | `depends_on`/healthcheck 확인 |
 | PLN-AI-005 | AI hardening script + CI 게이트 추가 | `scripts/check-ai-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-AI-FUN-05 | script/CI job 확인 |
-| PLN-AI-006 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/01~09/**` | REQ-PRD-AI-FUN-06 | 링크 정합성 확인 |
+| PLN-AI-006 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-AI-FUN-06 | 링크 정합성 확인 |
 | PLN-AI-007 | 카탈로그 확장 정책 작업 분해(모델 승격/접근 분리/로그 정책) | Plan/Task/Ops/Guide docs | REQ-PRD-AI-FUN-07 | 태스크/정책 반영 확인 |
 
 ## Verification Plan

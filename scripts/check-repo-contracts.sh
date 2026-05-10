@@ -109,6 +109,58 @@ if rg -n 'docs/11|11\.postmortems|\.agent/|docs/(01\.prd|02\.ard|03\.adr|04\.spe
 fi
 rm -f /tmp/check-repo-contracts-banned.txt
 
+section "Active docs taxonomy shorthand"
+if rg -n 'docs/(0[1-9]~0?9|01~09|01~10|01-03|01-09)|docs/07([^[:alnum:]_.-]|$)|docs/08([^[:alnum:]_.-]|$)|docs/09([^[:alnum:]_.-]|$)|05/08/09|07/08/09' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
+  --glob '!graphify-out/**' \
+  --glob '!docs/README.md' \
+  --glob '!scripts/check-repo-contracts.sh' >/tmp/check-repo-contracts-taxonomy-shorthand.txt; then
+  fail "active docs taxonomy shorthand or legacy stage shorthand remains"
+  cat /tmp/check-repo-contracts-taxonomy-shorthand.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-taxonomy-shorthand.txt
+
+section "Operations target comments"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+allowed_prefixes = (
+    "docs/05.operations/guides/",
+    "docs/05.operations/policies/",
+    "docs/05.operations/runbooks/",
+    "docs/05.operations/incidents/",
+    "docs/05.operations/{guides,policies,runbooks}/",
+)
+pattern = re.compile(r"<!--\s*Target:\s*(docs/05\.operations/[^ >]+)\s*-->")
+
+for path in sorted(pathlib.Path("docs").rglob("*.md")):
+    if "graphify-out" in path.parts:
+        continue
+    try:
+        text = path.read_text(errors="ignore")
+    except Exception:
+        continue
+    for line_no, line in enumerate(text.splitlines(), start=1):
+        match = pattern.search(line)
+        if not match:
+            continue
+        target = match.group(1)
+        if not target.startswith(allowed_prefixes):
+            failures.append(f"{path}:{line_no}: operations target must use guides/policies/runbooks/incidents: {target}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
 section "GitHub Actions YAML and duplicate workflow steps"
 if ! python3 - <<'PY'
 from __future__ import annotations

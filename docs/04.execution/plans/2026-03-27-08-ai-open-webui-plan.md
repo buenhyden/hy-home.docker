@@ -33,7 +33,7 @@ Open WebUI is a critical component for the AI tier, providing the primary interf
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-001 | Create PRD, ARD, ADR | `docs/01-03/` | REQ-PRD-FUN-01 | Files created & indexed |
+| PLN-001 | Create PRD, ARD, ADR | `docs/01.requirements + docs/02.architecture/` | REQ-PRD-FUN-01 | Files created & indexed |
 | PLN-002 | Create Technical Spec | `docs/03.specs/` | REQ-PRD-FUN-02 | Contract defined |
 | PLN-003 | Create Task List | `docs/04.execution/tasks/` | REQ-PRD-FUN-03 | Maintenance tasks ready |
 

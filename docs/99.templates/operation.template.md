@@ -1,23 +1,23 @@
 ---
 status: draft
 ---
-<!-- Target: docs/05.operations/<policy-or-standard>.md -->
+<!-- Target: docs/05.operations/{guides,policies,runbooks}/<topic>.md -->
 
 # [Topic Name] Operations
 
-> Use this template for `docs/05.operations/<policy-or-standard>.md`.
+> Use this template for `docs/05.operations/guides/<topic>.md`, `docs/05.operations/policies/<topic>.md`, or `docs/05.operations/runbooks/<topic>.md`.
 >
 > Rules:
 >
-> - This document may include usage guidance, controls, and executable procedures.
-> - Keep policy and procedure sections distinct.
+> - Pick one operational purpose per document: guide, policy, or runbook.
+> - Use `guides/` for usage, `policies/` for controls, and `runbooks/` for repeatable procedures.
 > - This document is not an incident timeline or a postmortem.
 
 ---
 
 ## Overview (KR)
 
-이 문서는 [주제명] 운영 지식을 정의한다. 사용 맥락, 적용 범위, 통제 기준, 실행 절차, 검증 방법을 규정한다.
+이 문서는 [주제명] 운영 지식을 정의한다. 대상 하위 폴더에 맞춰 사용 맥락, 통제 기준, 실행 절차 중 필요한 내용을 규정한다.
 
 ## Policy Scope
 

@@ -24,7 +24,7 @@
   - `infra/02-auth/keycloak/docker-compose.yml`
   - `infra/02-auth/oauth2-proxy/{docker-compose.yml,Dockerfile,docker-entrypoint.sh,config/oauth2-proxy.cfg}`
   - `scripts/check-auth-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md`
-  - `docs/01~09`의 02-auth 관련 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`의 02-auth 관련 문서/README
 
 ## Non-Goals & Out-of-Scope
 
@@ -44,7 +44,7 @@
 | PLN-AUTH-003 | Keycloak 시크릿 로그 노출 최소화 | `infra/02-auth/keycloak/docker-compose.yml` | REQ-PRD-FUN-01 | 시크릿 길이 echo 제거 |
 | PLN-AUTH-004 | 02-auth 하드닝 검증 스크립트 추가 | `scripts/check-auth-hardening.sh` | REQ-PRD-FUN-03 | 실패시 non-zero, 통과시 zero |
 | PLN-AUTH-005 | CI에 `auth-hardening` 게이트 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-FUN-03 | PR/Push 시 job 실행 |
-| PLN-AUTH-006 | PRD~Runbook 문서 세트 생성/정비 | `docs/01~09` 관련 파일 | REQ-PRD-FUN-04 | 양방향 링크 및 README 인덱스 반영 |
+| PLN-AUTH-006 | PRD~Runbook 문서 세트 생성/정비 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 관련 파일 | REQ-PRD-FUN-04 | 양방향 링크 및 README 인덱스 반영 |
 | PLN-AUTH-007 | degraded-mode 운영/복구 절차 명문화 | `docs/05.operations/02-auth/*.md`, `docs/05.operations/02-auth/*.md` | REQ-PRD-FUN-05 | 정책+절차 문서 일치 |
 
 ## Verification Plan
@@ -53,7 +53,7 @@
 | --- | --- | --- | --- | --- |
 | VAL-AUTH-001 | Structural | 02-auth 하드닝 정적 검증 | `bash scripts/check-auth-hardening.sh` | 실패 0건 |
 | VAL-AUTH-002 | Compliance | 템플릿/보안 기준선 검증 | `bash scripts/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-AUTH-003 | Traceability | 05/08/09 추적성 검증 | `bash scripts/check-doc-traceability.sh` | 실패 0건 |
+| VAL-AUTH-003 | Traceability | execution/operations 추적성 검증 | `bash scripts/check-doc-traceability.sh` | 실패 0건 |
 | VAL-AUTH-004 | Compose | Compose 해석 검증 | `docker compose config` | 오류 없이 출력 |
 | VAL-AUTH-005 | Service Compose | 서비스별 compose 검증 | `docker compose -f infra/02-auth/keycloak/docker-compose.yml config` and `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config` | 오류 없이 출력 |
 

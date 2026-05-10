@@ -1,4 +1,4 @@
-<!-- Target: docs/05.operations/09-tooling/registry.md -->
+<!-- Target: docs/05.operations/guides/09-tooling/registry.md -->
 
 # Docker Registry Operations Policy
 

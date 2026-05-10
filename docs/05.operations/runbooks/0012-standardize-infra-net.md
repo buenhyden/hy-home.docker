@@ -1,7 +1,7 @@
 ---
 status: migrated
 ---
-<!-- Target: docs/05.operations/0012-standardize-infra-net.md -->
+<!-- Target: docs/05.operations/runbooks/0012-standardize-infra-net.md -->
 
 # 0012 Standardize Infra Net Operations
 

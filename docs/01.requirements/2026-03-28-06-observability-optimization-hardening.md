@@ -53,7 +53,7 @@
   - `infra/06-observability/loki/docker-entrypoint.sh`, `infra/06-observability/tempo/docker-entrypoint.sh`
   - `scripts/check-observability-hardening.sh`
   - `.github/workflows/ci-quality.yml`
-  - `docs/01~09` observability optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` observability optimization-hardening 문서/README
 - **Out of Scope**:
   - 애플리케이션 OpenTelemetry SDK 코드 변경
   - 장기 저장소/클라우드 관리형 observability 스택 이전

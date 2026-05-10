@@ -83,7 +83,10 @@ docs/
 | `docs/04.specs/` | `docs/03.specs/` |
 | `docs/05.plans/` | `docs/04.execution/plans/` |
 | `docs/06.tasks/` | `docs/04.execution/tasks/` |
-| `docs/07.operations/` | `docs/05.operations/{guides,policies,runbooks}/` |
+| `docs/07.guides/` | `docs/05.operations/guides/` |
+| `docs/07.operations/` | `docs/05.operations/guides/` |
+| `docs/08.operations/` | `docs/05.operations/policies/` |
+| `docs/09.runbooks/` | `docs/05.operations/runbooks/` |
 | `docs/10.incidents/` | `docs/05.operations/incidents/` |
 
 이 표는 과거 경로 해석을 돕기 위한 compatibility note입니다. 새 active artifact는 반드시 새 경로에 작성합니다.

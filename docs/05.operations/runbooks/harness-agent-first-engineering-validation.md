@@ -1,11 +1,11 @@
 ---
 status: migrated
 ---
-<!-- Target: docs/05.operations/harness-agent-first-engineering-validation.md -->
+<!-- Target: docs/05.operations/runbooks/harness-agent-first-engineering-validation.md -->
 
 # Harness Agent First Engineering Validation Operations
 
-> Migrated from `docs/05.operations/harness-agent-first-engineering-validation.md` during the 2026-05-10 operations taxonomy consolidation.
+> Normalized under `docs/05.operations/runbooks/` during the 2026-05-10 operations taxonomy consolidation.
 
 ## Procedure
 
@@ -22,6 +22,7 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
 #### Canonical References
 
 - [Specification](../../03.specs/harness-agent-first-engineering/spec.md)
+- [Usage Guide](../guides/harness-agent-first-engineering.md)
 - [Operations Policy](../policies/harness-agent-first-engineering.md)
 - [Agent Governance Hub](../../00.agent-governance/README.md)
 - [Subagent Protocol](../../00.agent-governance/subagent-protocol.md)
@@ -131,7 +132,7 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 #### Related Operational Documents
 
 - [Operations Policy](../policies/harness-agent-first-engineering.md)
-- [Usage](../policies/harness-agent-first-engineering.md)
+- [Usage Guide](../guides/harness-agent-first-engineering.md)
 - [Plan](../../04.execution/plans/2026-05-09-harness-agent-first-engineering.md)
 - [Task Evidence](../../04.execution/tasks/2026-05-09-harness-agent-first-engineering.md)
 - [Agent Governance Hub](../../00.agent-governance/README.md)

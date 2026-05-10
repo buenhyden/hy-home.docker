@@ -8,7 +8,7 @@
 
 - 기준 카탈로그: [../05.operations/12-infra-service-optimization-catalog.md](../../05.operations/policies/12-infra-service-optimization-catalog.md)
 - 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 대상 구성: `infra/09-tooling/**/*`, `scripts/`, `.github/workflows/`, `docs/01~09`
+- 대상 구성: `infra/09-tooling/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
 
 ## Goals & In-Scope
 
@@ -23,7 +23,7 @@
   - `scripts/check-tooling-hardening.sh`
   - `scripts/README.md`
   - `.github/workflows/ci-quality.yml`
-  - `docs/01~09` tooling optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` tooling optimization-hardening 문서/README
 
 ## Non-Goals & Out-of-Scope
 
@@ -42,7 +42,7 @@
 | PLN-TLG-002 | tooling compose `infra_net` external 선언 표준화 | `infra/09-tooling/*/docker-compose.yml` | REQ-PRD-TLG-FUN-02 | network contract 확인 |
 | PLN-TLG-003 | locust worker healthcheck + k6 volume 참조 정렬 | `infra/09-tooling/{locust,k6}/docker-compose.yml` | REQ-PRD-TLG-FUN-03 | health/volume 계약 확인 |
 | PLN-TLG-004 | tooling hardening script + CI 게이트 추가 | `scripts/check-tooling-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-TLG-FUN-04 | script/CI job 확인 |
-| PLN-TLG-005 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/01~09/**` | REQ-PRD-TLG-FUN-05 | 링크 정합성 확인 |
+| PLN-TLG-005 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-TLG-FUN-05 | 링크 정합성 확인 |
 | PLN-TLG-006 | 카탈로그 확장 항목 작업 분해(도구별) | Plan/Task/Ops/Guide docs | REQ-PRD-TLG-FUN-06 | 태스크/정책 반영 확인 |
 
 ## Verification Plan

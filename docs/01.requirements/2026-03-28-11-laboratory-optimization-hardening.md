@@ -36,7 +36,7 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 - **REQ-PRD-LAB-FUN-04**: `infra/11-laboratory` compose는 `infra_net` external 경계를 명시해야 한다.
 - **REQ-PRD-LAB-FUN-05**: dozzle은 `docker.sock`을 read-only로 마운트해야 한다.
 - **REQ-PRD-LAB-FUN-06**: `scripts/check-laboratory-hardening.sh` 및 CI `laboratory-hardening` job을 제공해야 한다.
-- **REQ-PRD-LAB-FUN-07**: `docs/01~09` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **REQ-PRD-LAB-FUN-07**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
 - **REQ-PRD-LAB-FUN-08**: 카탈로그 기반 확장 항목을 운영 로드맵에 반영해야 한다.
 
 ## Success Criteria
@@ -53,7 +53,7 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
   - `.env.example` (allowlist 변수)
   - `scripts/check-laboratory-hardening.sh`
   - `.github/workflows/ci-quality.yml`
-  - `docs/01~09` optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서/README
 - **Out of Scope**:
   - 신규 Laboratory 서비스 도입
   - 관리 도구 major version migration

@@ -1,4 +1,4 @@
-<!-- Target: docs/05.operations/08-ai/ollama.md -->
+<!-- Target: docs/05.operations/guides/08-ai/ollama.md -->
 
 # Ollama Operations Policy
 

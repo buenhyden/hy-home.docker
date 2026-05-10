@@ -22,7 +22,7 @@ Universal entry shim for agent execution in `hy-home.docker`.
 
 - Root instruction files stay thin; detailed policy lives in `docs/00.agent-governance/`.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user instruction.
-- Active stage artifacts belong only under `docs/01` to `docs/05`, `docs/90`, and `docs/99`.
+- Active stage artifacts belong only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`.
 - Run checks listed by the active rules and primary scope before declaring completion.
 - Most-specific in-scope instruction file wins when multiple repository instructions apply.
 - System, developer, and direct user instructions always override repository instruction files.

@@ -35,7 +35,7 @@
 - **REQ-PRD-WRK-FUN-03**: n8n worker/task-runner는 healthcheck를 제공하고 task-runner는 n8n/valkey health 의존성을 사용해야 한다.
 - **REQ-PRD-WRK-FUN-04**: n8n 서비스는 multi-stage/custom image 기반 비루트 실행 및 secret guard를 제공해야 한다.
 - **REQ-PRD-WRK-FUN-05**: `scripts/check-workflow-hardening.sh`와 CI `workflow-hardening` job을 제공해야 한다.
-- **REQ-PRD-WRK-FUN-06**: `docs/01~09` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
+- **REQ-PRD-WRK-FUN-06**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
 - **REQ-PRD-WRK-FUN-07**: 카탈로그 기준으로 Airflow DAG 품질 게이트/워커 오토스케일 기준, n8n Git backup/Vault 연계, airbyte artifact 보강 태스크를 정의해야 한다.
 
 ## Success Criteria
@@ -52,7 +52,7 @@
   - `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,docker-entrypoint.sh}`
   - `scripts/check-workflow-hardening.sh`
   - `.github/workflows/ci-quality.yml`
-  - `docs/01~09` workflow optimization-hardening 문서 및 README 인덱스
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` workflow optimization-hardening 문서 및 README 인덱스
 - **Out of Scope**:
   - 개별 DAG/워크플로 비즈니스 로직 구현
   - Airbyte 프로덕션 컨테이너/compose 신규 도입

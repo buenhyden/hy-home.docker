@@ -31,7 +31,7 @@
 - **REQ-PRD-FUN-01**: OAuth2 Proxy 시크릿 주입은 엔트리포인트 스크립트 기반으로 표준화해야 한다.
 - **REQ-PRD-FUN-02**: OAuth2 Proxy 컨테이너는 비루트(non-root) 실행을 기본값으로 해야 한다.
 - **REQ-PRD-FUN-03**: Keycloak/OAuth2 Proxy 하드닝 정적 검증 스크립트를 제공하고 CI 필수 게이트로 적용해야 한다.
-- **REQ-PRD-FUN-04**: `docs/01~09` 문서 레이어는 상호 참조 링크를 통해 양방향 추적성을 보장해야 한다.
+- **REQ-PRD-FUN-04**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 문서 레이어는 상호 참조 링크를 통해 양방향 추적성을 보장해야 한다.
 - **REQ-PRD-FUN-05**: OIDC 장애 시 degraded-mode 운영 판단 및 복구 절차를 문서화해야 한다.
 
 ## Success Criteria

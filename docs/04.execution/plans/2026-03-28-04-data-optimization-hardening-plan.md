@@ -24,7 +24,7 @@
   - `scripts/check-data-hardening.sh`
   - `.github/workflows/ci-quality.yml`
   - `scripts/README.md`
-  - `docs/01~09` + 관련 README 인덱스
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` + 관련 README 인덱스
 
 ## Non-Goals & Out-of-Scope
 
@@ -46,7 +46,7 @@
 | PLN-DATA-005 | 04-data 하드닝 검증 스크립트 추가 | `scripts/check-data-hardening.sh` | REQ-PRD-DATA-FUN-05 | 스크립트 pass/fail 정상 동작 |
 | PLN-DATA-006 | CI `data-hardening` job 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-DATA-FUN-05 | workflow 정적 점검 |
 | PLN-DATA-007 | scripts 인덱스 갱신 | `scripts/README.md` | REQ-PRD-DATA-FUN-05 | README 항목/사용 예시 반영 |
-| PLN-DATA-008 | PRD~Runbook 문서 생성/갱신 + 상호 링크 정합화 | `docs/01~09/**` | REQ-PRD-DATA-FUN-06 | 링크/인덱스 반영 확인 |
+| PLN-DATA-008 | PRD~Runbook 문서 생성/갱신 + 상호 링크 정합화 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-DATA-FUN-06 | 링크/인덱스 반영 확인 |
 
 ## Verification Plan
 

@@ -28,7 +28,7 @@
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-001 | PRD/ARD/ADR 생성 | `docs/01-03` | REQ-PRD-FUN-01 | 모든 링크 정상 작동 |
+| PLN-001 | PRD/ARD/ADR 생성 | `docs/01.requirements + docs/02.architecture` | REQ-PRD-FUN-01 | 모든 링크 정상 작동 |
 | PLN-002 | 기술 명세(Spec) 작성 | `docs/03.specs` | REQ-PRD-FUN-01 | 포트/볼륨 명세 일치 |
 | PLN-003 | README 리팩토링 | `infra/05-messaging` | REQ-PRD-FUN-04 | 템플릿 준수 확인 |
 | PLN-004 | 작업 목록(Task) 생성 | `docs/04.execution/tasks` | N/A | 완료 상태 추적 가능 |

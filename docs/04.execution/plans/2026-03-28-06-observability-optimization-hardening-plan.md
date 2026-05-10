@@ -24,7 +24,7 @@
   - `infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
   - `scripts/check-observability-hardening.sh`
   - `.github/workflows/ci-quality.yml`
-  - `docs/01~09/**` observability optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` observability optimization-hardening 문서/README
 
 ## Non-Goals & Out-of-Scope
 
@@ -45,7 +45,7 @@
 | PLN-OBS-004 | Loki/Tempo 커스텀 이미지 하드닝 | `infra/06-observability/loki/*`, `infra/06-observability/tempo/*` | REQ-PRD-OBS-FUN-05 | Dockerfile/entrypoint 패턴 확인 |
 | PLN-OBS-005 | observability 하드닝 기준선 스크립트 추가 | `scripts/check-observability-hardening.sh` | REQ-PRD-OBS-FUN-06 | script pass/fail 동작 |
 | PLN-OBS-006 | CI `observability-hardening` job 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-OBS-FUN-06 | workflow job 확인 |
-| PLN-OBS-007 | PRD~Runbook 문서 세트 생성/갱신 | `docs/01~09/**` | REQ-PRD-OBS-FUN-07 | 상호 링크/README 반영 |
+| PLN-OBS-007 | PRD~Runbook 문서 세트 생성/갱신 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-OBS-FUN-07 | 상호 링크/README 반영 |
 
 ## Verification Plan
 

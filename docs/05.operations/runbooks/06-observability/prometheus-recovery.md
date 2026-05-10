@@ -1,7 +1,7 @@
 ---
 status: migrated
 ---
-<!-- Target: docs/05.operations/06-observability/prometheus-recovery.md -->
+<!-- Target: docs/05.operations/runbooks/06-observability/prometheus-recovery.md -->
 
 # Prometheus Recovery Operations
 

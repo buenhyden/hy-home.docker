@@ -52,7 +52,7 @@
   - `infra/05-messaging/rabbitmq/docker-compose.yml`
   - `scripts/check-messaging-hardening.sh`
   - `.github/workflows/ci-quality.yml`
-  - `docs/01~09` 메시징 optimization-hardening 문서
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 메시징 optimization-hardening 문서
 - **Out of Scope**:
   - 애플리케이션 Producer/Consumer 코드
   - Kafka/RabbitMQ 토폴로지의 즉시 대규모 재구성

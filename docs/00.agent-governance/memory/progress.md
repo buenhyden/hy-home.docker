@@ -25,6 +25,7 @@ This file follows `docs/99.templates/progress.template.md`.
 | 2026-05-10 | 90.references role and format contract | Done | Clarified reference stage role, required format, naming/lifecycle rules, category roles, and validator enforcement. | N/A | `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; edited-reference link scan |
 | 2026-05-10 | Governance memory template contract | Done | Added canonical `memory.template.md`, aligned memory note authoring rules, normalized existing memory notes, and enforced progress updates through the repo contract. | `docs/00.agent-governance/memory/governance-memory-usage-contract.md` | `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; edited-memory link scan |
 | 2026-05-10 | Template MD033 placeholder cleanup | Done | Replaced angle-bracket placeholders in memory/progress templates with brace placeholders to avoid inline-HTML markdownlint errors. | N/A | `bash scripts/check-repo-contracts.sh`; `git diff --check`; placeholder scan |
+| 2026-05-10 | Harness Agent-first taxonomy hardening | Done | Split HAFE guide/policy/runbook content, normalized operations target comments, and strengthened active taxonomy shorthand validation. | N/A | `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; explicit stale taxonomy and H100 scans; baseline validation bundle |
 
 ## Phase Tracker
 
@@ -44,6 +45,7 @@ This file follows `docs/99.templates/progress.template.md`.
 | P11 — Harness / Agent-first gap closure  | ✅ Done | 2026-05-09 | Recorded the harness and Agent-first gap audit, added a graphify CLI-unavailable fallback to the thin root shim, allowed Claude `rg` discovery, and extended repo contracts without adding a Codex agent catalog, GitHub-native instruction layer, global config, or stage docs |
 | P12 — Docs operations taxonomy consolidation | ✅ Done | 2026-05-10 | Consolidated the former guide, operations, and procedure stages into canonical `docs/05.operations`; deleted legacy stage folders and split templates after link rewriting; updated repo contracts to enforce the reduced taxonomy |
 | P13 — Governance memory progress contract | ✅ Done | 2026-05-10 | Added `docs/99.templates/progress.template.md`, made `progress.md` the required agent work log, and extended repo contracts to enforce the progress template and update workflow |
+| P14 — HAFE taxonomy hardening | ✅ Done | 2026-05-10 | Split HAFE operations docs by guide/policy/runbook purpose and added active stale-taxonomy shorthand checks |
 
 ## Layer Audit (L1–L7)
 

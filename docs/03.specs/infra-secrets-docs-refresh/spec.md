@@ -6,7 +6,7 @@ status: completed
 
 ## Overview (KR)
 
-이 문서는 `infra/`, `secrets/`, `docs/05.operations/`, `docs/05.operations/`, `docs/05.operations/`, `docs/90.references/`의 실제 파일 내용을 기준으로 운영 문서와 README를 최신화하기 위한 명세다. 목표는 Docker Compose 런타임이나 secret 값 파일을 변경하지 않고, 구현 요소와 운영 문서가 `docs/99.templates/`의 계약을 따르도록 보강하는 것이다.
+이 문서는 `infra/`, `secrets/`, `docs/05.operations/guides/`, `docs/05.operations/policies/`, `docs/05.operations/runbooks/`, `docs/90.references/`의 실제 파일 내용을 기준으로 운영 문서와 README를 최신화하기 위한 명세다. 목표는 Docker Compose 런타임이나 secret 값 파일을 변경하지 않고, 구현 요소와 운영 문서가 `docs/99.templates/`의 계약을 따르도록 보강하는 것이다.
 
 현재 기준 구조 검증은 통과 상태다. `infra/`에는 47개 Compose 파일과 40개 Compose service directory가 있으며 service README 누락은 0개다. 루트 Compose 활성 include는 14개이므로 보유 Compose와 root-active Compose를 분리해 문서화한다. `secrets/`는 secret/cert 파일명 기준 76개, 루트 Compose 선언 69개, 선언된 secret 누락 0개이며 값은 열람하지 않는다.
 
@@ -35,12 +35,12 @@ status: completed
 | Secret inventory | 69 root Compose declarations, 76 value/cert filenames, 0 missing declared files |
 | Secret classification | `compose-declared`, `bind-mounted-cert`, `registry/local-only`, `private-registry`, `example-registry` |
 | README audit | 127 README files, heading gaps 0 |
-| Stage audit | 208 non-README docs under `docs/07`, `docs/08`, `docs/09`, `docs/90`, heading gaps 0 |
+| Stage audit | 208 non-README docs under `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, `docs/90.references`, heading gaps 0 |
 | Semantic QA | Duplicate legacy/template blocks, non-link references, secret-value wording, and shell-history-sensitive examples are reviewed separately from heading audit |
 
 ## Core Design
 
-- **Component Boundary**: 문서 보강 대상은 `README.md`, `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations`, `docs/05.operations`, `docs/05.operations`, `docs/90.references`로 제한한다.
+- **Component Boundary**: 문서 보강 대상은 `README.md`, `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, `docs/90.references`로 제한한다.
 - **Key Dependencies**: `docs/99.templates/`, `docs/00.agent-governance/rules/documentation-protocol.md`, `scripts/check-repo-contracts.sh`, `scripts/check-doc-traceability.sh`, `scripts/validate-docker-compose.sh`.
 - **Tech Stack**: Markdown, Docker Compose, Bash validation scripts.
 
@@ -63,9 +63,9 @@ README base headings:
 - Related References or Related Documents
 
 Stage document template families:
-- docs/05.operations -> operation.template.md
-- docs/05.operations -> operation.template.md
-- docs/05.operations -> operation.template.md
+- docs/05.operations/guides -> operation.template.md
+- docs/05.operations/policies -> operation.template.md
+- docs/05.operations/runbooks -> operation.template.md
 - docs/90.references -> reference.template.md
 ```
 
@@ -143,7 +143,7 @@ git diff --check
 
 - **VAL-SPC-001**: 새 stage 문서가 대응 템플릿의 필수 섹션을 포함한다.
 - **VAL-SPC-002**: 대상 README가 base heading을 포함한다.
-- **VAL-SPC-003**: `docs/07`, `docs/08`, `docs/09`, `docs/90`의 non-README Markdown이 대응 템플릿 heading을 포함한다.
+- **VAL-SPC-003**: `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, `docs/90.references`의 non-README Markdown이 대응 템플릿 heading을 포함한다.
 - **VAL-SPC-004**: secret 값 파일을 열람하거나 수정하지 않는다.
 - **VAL-SPC-005**: repository validation scripts가 통과한다.
 - **VAL-SPC-006**: root-active, optional, standalone, variant Compose 상태를 문서에서 혼동하지 않는다.

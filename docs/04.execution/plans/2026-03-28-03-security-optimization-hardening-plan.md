@@ -23,7 +23,7 @@
   - `scripts/check-security-hardening.sh`
   - `.github/workflows/ci-quality.yml`
   - `scripts/check-auth-hardening.sh`, `scripts/README.md`
-  - `docs/01~09` 및 README 인덱스
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 및 README 인덱스
 
 ## Non-Goals & Out-of-Scope
 
@@ -44,7 +44,7 @@
 | PLN-SEC-004 | CI `security-hardening` job 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-FUN-04 | PR/Push job 실행 |
 | PLN-SEC-005 | scripts README 인벤토리 반영 | `scripts/README.md` | REQ-PRD-FUN-04 | README 항목/예시 존재 |
 | PLN-SEC-006 | auth hardening 검증 스크립트 최신화 | `scripts/check-auth-hardening.sh` | REQ-PRD-FUN-06 | 최신 02-auth 계약 기준 통과 |
-| PLN-SEC-007 | PRD~Runbook 문서 생성/갱신 + README 인덱스 동기화 | `docs/01~09/**` | REQ-PRD-FUN-05 | 상호 링크/인덱스 반영 |
+| PLN-SEC-007 | PRD~Runbook 문서 생성/갱신 + README 인덱스 동기화 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-FUN-05 | 상호 링크/인덱스 반영 |
 
 ## Verification Plan
 

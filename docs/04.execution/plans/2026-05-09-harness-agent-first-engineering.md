@@ -43,7 +43,7 @@ status: completed
 | P2 | `AGENTS.md`, provider shims, governance rules 분석 | agent entry/rule contract 요약 |
 | P3 | `.claude`, `.codex`, governance agent catalog 분석 | harness component와 runtime mirror 요약 |
 | P4 | templates와 validators 분석 | Agent-first guardrail와 verification map 요약 |
-| P5 | stage docs 작성/갱신 | Spec, Plan, Task, Guide, Operation, Runbook |
+| P5 | stage docs 작성/갱신 | Spec, Plan, Task, Guide, Policy, Runbook |
 | P6 | parent README traceability 확인 | 문서 링크와 structure 동기화 유지 |
 | P7 | Claude hook quoting 보완 | heredoc/argv 기반 JSON output과 payload simulation |
 | P8 | Graphify/context-quality 및 evidence 범위 보완 | advisory health wording, scoped infra evidence, residual risk |
@@ -100,7 +100,7 @@ bash scripts/check-all-hardening.sh
 
 - [Specification](../../03.specs/harness-agent-first-engineering/spec.md)
 - [Task Evidence](../tasks/2026-05-09-harness-agent-first-engineering.md)
-- [Guide](../../05.operations/policies/harness-agent-first-engineering.md)
+- [Guide](../../05.operations/guides/harness-agent-first-engineering.md)
 - [Operations Policy](../../05.operations/policies/harness-agent-first-engineering.md)
 - [Validation Runbook](../../05.operations/runbooks/harness-agent-first-engineering-validation.md)
 - [Agent Governance Hub](../../00.agent-governance/README.md)

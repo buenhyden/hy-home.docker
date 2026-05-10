@@ -24,11 +24,16 @@
 
 ```text
 guides/
+├── harness-agent-first-engineering.md
 ├── 01-gateway/
 ├── 02-auth/
 ├── ...
 └── README.md
 ```
+
+## Current Governance Guides
+
+- [Harness / Agent-first Engineering Usage Guide](./harness-agent-first-engineering.md)
 
 ## Related References
 

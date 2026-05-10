@@ -6,7 +6,7 @@ status: completed
 
 ## Overview (KR)
 
-이 문서는 `infra`, `secrets`, `docs/05.operations`, `docs/05.operations`, `docs/05.operations`, `docs/90.references`의 분석 결과를 바탕으로 README와 stage 문서를 템플릿에 맞춰 최신화하는 실행 계획서다.
+이 문서는 `infra`, `secrets`, `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, `docs/90.references`의 분석 결과를 바탕으로 README와 stage 문서를 템플릿에 맞춰 최신화하는 실행 계획서다.
 
 ## Context
 
@@ -17,7 +17,7 @@ status: completed
 - **Goals**:
   - 대상 경로의 구현 요소, compose/config/related file, 문서 gap을 공식 stage 문서에 기록한다.
   - README를 `readme.template.md` base structure에 맞춘다.
-  - `docs/07`, `docs/08`, `docs/09`, `docs/90` 문서가 대응 템플릿 필수 섹션을 포함하도록 보강한다.
+  - `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, `docs/90.references` 문서가 대응 템플릿 필수 섹션을 포함하도록 보강한다.
   - root-active, optional, standalone, variant Compose 상태를 구분한다.
   - secret 값 열람 없이 root Compose 선언, bind-mounted cert, registry/local-only 파일을 분류한다.
   - heading audit과 semantic QA를 분리해 검증한다.
@@ -44,8 +44,8 @@ status: completed
 | --- | --- | --- | --- | --- |
 | PLN-001 | 분석 spec/plan/task 생성 | `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks` | REQ-DOC-001 | 템플릿 필수 섹션 존재 |
 | PLN-002 | root/docs/secrets README 최신화 | `README.md`, `docs/README.md`, `secrets/README.md` | REQ-RDM-001 | README base heading audit 통과 |
-| PLN-003 | infra 및 docs stage README 보강 | `infra/**/README.md`, `docs/07-09/**/README.md`, `docs/90.references/**/README.md` | REQ-RDM-002 | 누락 heading 0, 비링크 참조 정리 |
-| PLN-004 | guide/operation/runbook/reference 문서 보강 | `docs/07`, `docs/08`, `docs/09`, `docs/90` | REQ-STG-001 | stage heading audit 통과, semantic QA 통과 |
+| PLN-003 | infra 및 docs stage README 보강 | `infra/**/README.md`, `docs/05.operations/{guides,policies,runbooks}/**/README.md`, `docs/90.references/**/README.md` | REQ-RDM-002 | 누락 heading 0, 비링크 참조 정리 |
+| PLN-004 | guide/operation/runbook/reference 문서 보강 | `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, `docs/90.references` | REQ-STG-001 | stage heading audit 통과, semantic QA 통과 |
 | PLN-005 | 검증 및 evidence 갱신 | `docs/04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md` | REQ-VAL-001 | 검증 명령 결과 기록 |
 
 ## Verification Plan

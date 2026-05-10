@@ -1,7 +1,7 @@
 ---
 status: migrated
 ---
-<!-- Target: docs/05.operations/08-ai/local-llm-setup.md -->
+<!-- Target: docs/05.operations/guides/08-ai/local-llm-setup.md -->
 
 # Local Llm Setup Operations
 

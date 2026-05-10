@@ -50,7 +50,7 @@
   - `infra/03-security/vault/*` 구성 하드닝
   - `scripts/check-security-hardening.sh`, CI job 추가
   - `scripts/check-auth-hardening.sh` 회귀 수정
-  - `docs/01~09` 03-security 문서/인덱스 동기화
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 03-security 문서/인덱스 동기화
 - **Out of Scope**:
   - 즉시 auto-unseal 실구현(KMS/HSM 연동)
   - 즉시 원격 audit sink 실구현

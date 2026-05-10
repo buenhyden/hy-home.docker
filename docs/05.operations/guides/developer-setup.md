@@ -1,7 +1,7 @@
 ---
 status: migrated
 ---
-<!-- Target: docs/05.operations/developer-setup.md -->
+<!-- Target: docs/05.operations/guides/developer-setup.md -->
 
 # Developer Setup Operations
 
