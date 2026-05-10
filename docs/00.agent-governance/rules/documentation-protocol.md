@@ -19,7 +19,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 - Keep `docs/00.agent-governance/` English-only.
 - Keep human-facing docs in Korean unless interoperability requires English terms.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user approval.
-- Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/10`, `docs/90`, `docs/99`).
+- Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/05`, `docs/90`, `docs/99`).
 - Non-stage `docs/*` paths such as `docs/superpowers/` must not contain active specs or plans.
 
 ## 3. Document Type ↔ Template Mapping
@@ -55,8 +55,10 @@ See `docs/99.templates/README.md` for the full catalog and usage rules.
 1. Identify target stage.
 2. Load `rules/stage-authoring-matrix.md` and follow its stage row.
 3. Draft or update using the mapped template and required input documents.
-4. Cross-link related PRD, ARD, ADR, Spec, Plan, Task, Operations, and Incident files.
+4. Cross-link related Requirements, Architecture, Spec, Plan, Task, Operations, Reference, and Incident files.
 5. Run checklist gates from `rules/task-checklists.md`.
+
+For `docs/90.references/`, verify that the document is stable reference context, contains source-backed facts, and does not define active policy, runtime truth, runbook procedure, plan, task evidence, or incident timeline.
 
 ## 5. Operational Procedures
 

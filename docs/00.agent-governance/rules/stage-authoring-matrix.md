@@ -2,7 +2,7 @@
 layer: agentic
 ---
 
-# Stage Authoring Matrix (00-10, 90, 99)
+# Stage Authoring Matrix (00-05, 90, 99)
 
 Single source of truth for stage-level authoring expectations.
 
@@ -24,7 +24,7 @@ Single source of truth for stage-level authoring expectations.
 
 | Stage | Purpose | Template |
 | :--- | :--- | :--- |
-| 90 | Stable references and evergreen knowledge | `docs/99.templates/reference.template.md` |
+| 90 | Stable references, glossary, source-backed facts, inventories, and evergreen learning context. This stage supports active docs but does not replace policy, plans, runbooks, incidents, or runtime truth. | `docs/99.templates/reference.template.md` |
 | 99 | Source templates for all stages | `docs/99.templates/readme.template.md` and stage templates |
 
 ## 3. Usage Rules

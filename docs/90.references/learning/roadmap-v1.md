@@ -1,4 +1,38 @@
-# 🎓 Self-Learning Guide: CS, CE & SE Roadmap (v1)
+---
+status: archived
+---
+
+# Reference: CS, CE & SE Self-Learning Roadmap (v1)
+
+## Overview (KR)
+
+이 문서는 `hy-home.docker` 인프라 학습 로드맵의 초기 버전을 보존하는 reference 문서다. 현재 기준은 `roadmap.md`를 우선한다.
+
+## Purpose
+
+초기 학습 로드맵과 이후 로드맵 변화의 맥락을 보존한다.
+
+## Scope
+
+### In Scope
+
+- 초기 CS/CE/SE 학습 주제
+- 초기 repo-local infrastructure mapping
+- 현재 roadmap과 비교할 수 있는 reference history
+
+### Out of Scope
+
+- 최신 학습 기준의 SSoT
+- 실시간 운영 절차
+- incident timeline 또는 postmortem
+- secret 값, credential, token
+
+## Definitions / Facts
+
+- 이 문서는 archived reference이며 active policy나 runbook을 대체하지 않는다.
+- 최신 학습 로드맵은 `roadmap.md`다.
+
+## Reference Body
 
 ## 📝 Describe Changes
 
@@ -100,32 +134,20 @@ Verified learning through coding.
 - Vector Search/RAG
 - EDA/Saga/At-Least-Once Delivery
 
-## Related Documents
-
-- [Learning reference index](../../../README.md)
-- [90.references](../README.md)
-
----
-
-## Overview (KR)
-
-이 문서는 `docs/90.references/learning/roadmap-v1.md`에 대한 참고 문서다. 느리게 변하는 기준 정보와 관련 출처를 정리한다.
-
-## Purpose
-
-운영 문서와 구현 문서가 참고할 수 있는 안정적인 배경 정보를 제공한다.
-
-## Scope
-
-- 포함: 용어, 기준, roadmap, 외부 또는 repo-local 참고 정보
-- 제외: 실시간 운영 절차, incident timeline, secret 값
-
-## Definitions / Facts
-
-- 이 문서는 active policy나 runbook을 대체하지 않는다.
-- 변경 시 관련 stage 문서의 링크를 함께 확인한다.
-
 ## Sources
 
 - Repository-local docs and README files
 - Linked references already present in this document
+
+## Maintenance
+
+- **Owner**: Documentation maintainers
+- **Review Cadence**: Archived; review only when links break or archive context becomes misleading
+- **Update Trigger**: Update only for link repair or archive-context correction
+
+## Related Documents
+
+- [Learning reference index](./README.md)
+- [Current learning roadmap](./roadmap.md)
+- [90.references](../README.md)
+- [docs index](../../README.md)

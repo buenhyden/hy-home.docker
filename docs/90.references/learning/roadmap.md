@@ -1,4 +1,38 @@
-# 🎓 Self-Learning Guide: CS, CE & SE Roadmap (v2)
+---
+status: active
+---
+
+# Reference: CS, CE & SE Self-Learning Roadmap (v2)
+
+## Overview (KR)
+
+이 문서는 `hy-home.docker` 인프라를 CS, CE, SE 관점으로 학습하기 위한 현재 로드맵 참고 문서다. 느리게 변하는 이론 배경과 repo-local 예시를 연결한다.
+
+## Purpose
+
+운영 문서와 구현 문서가 반복해서 참고할 수 있는 안정적인 학습 배경을 제공한다.
+
+## Scope
+
+### In Scope
+
+- Docker 기반 홈 인프라의 이론 학습 지도
+- CS/CE/SE 주제와 repo-local service tier의 연결
+- 외부 논문, 표준, 책 링크
+
+### Out of Scope
+
+- 실시간 운영 절차
+- incident timeline 또는 postmortem
+- secret 값, credential, token
+- 최신 외부 릴리스 상태의 무검증 복사본
+
+## Definitions / Facts
+
+- 이 문서는 active policy나 runbook을 대체하지 않는다.
+- repo-local 연결은 학습을 돕기 위한 예시이며, runtime truth는 `infra/`와 관련 validators가 담당한다.
+
+## Reference Body
 
 ## 📝 변경 사항 요약 (Describe Changes)
 
@@ -106,32 +140,19 @@
 - 벡터 검색 및 RAG 설계
 - EDA 및 Saga 패턴
 
-## Related Documents
-
-- [Learning reference index](../../../README.md)
-- [90.references](../README.md)
-
----
-
-## Overview (KR)
-
-이 문서는 `docs/90.references/learning/roadmap.md`에 대한 참고 문서다. 느리게 변하는 기준 정보와 관련 출처를 정리한다.
-
-## Purpose
-
-운영 문서와 구현 문서가 참고할 수 있는 안정적인 배경 정보를 제공한다.
-
-## Scope
-
-- 포함: 용어, 기준, roadmap, 외부 또는 repo-local 참고 정보
-- 제외: 실시간 운영 절차, incident timeline, secret 값
-
-## Definitions / Facts
-
-- 이 문서는 active policy나 runbook을 대체하지 않는다.
-- 변경 시 관련 stage 문서의 링크를 함께 확인한다.
-
 ## Sources
 
 - Repository-local docs and README files
 - Linked references already present in this document
+
+## Maintenance
+
+- **Owner**: Documentation maintainers
+- **Review Cadence**: Review when infrastructure tiers, learning goals, or major reference sources change
+- **Update Trigger**: Update when active infrastructure docs add or remove major systems that affect the learning map
+
+## Related Documents
+
+- [Learning reference index](./README.md)
+- [90.references](../README.md)
+- [docs index](../../README.md)

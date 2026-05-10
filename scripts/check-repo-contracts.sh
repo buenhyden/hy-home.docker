@@ -520,6 +520,102 @@ then
   failures=$((failures + 1))
 fi
 
+section "Reference stage contract"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import sys
+
+failures: list[str] = []
+root = pathlib.Path("docs/90.references")
+template = pathlib.Path("docs/99.templates/reference.template.md")
+
+if not root.is_dir():
+    failures.append("missing reference stage folder: docs/90.references")
+
+template_required = [
+    "Reference docs provide stable context",
+    "## Overview (KR)",
+    "## Purpose",
+    "## Scope",
+    "## Definitions / Facts",
+    "## Source Rules",
+    "## Sources",
+    "## Maintenance",
+    "## Related Documents",
+    "do not define active policy",
+    "secret values",
+]
+if not template.is_file():
+    failures.append(f"missing reference template: {template}")
+else:
+    text = template.read_text(errors="ignore")
+    for literal in template_required:
+        if literal not in text:
+            failures.append(f"{template}: missing reference-template literal: {literal}")
+
+readme_required = [
+    "## Overview",
+    "## Audience",
+    "## Scope",
+    "## Structure",
+    "## How to Work in This Area",
+    "## Related Documents",
+]
+for path in sorted(root.rglob("README.md")) if root.exists() else []:
+    text = path.read_text(errors="ignore")
+    for heading in readme_required:
+        if heading not in text:
+            failures.append(f"{path}: missing reference README heading: {heading}")
+
+reference_required = [
+    "## Overview (KR)",
+    "## Purpose",
+    "## Scope",
+    "## Definitions / Facts",
+    "## Sources",
+    "## Maintenance",
+    "## Related Documents",
+]
+placeholder_markers = [
+    "[Item Name]",
+    "[Why this reference exists",
+    "[What is covered]",
+    "[What is not covered]",
+    "[Source 1]",
+    "<category>",
+    "<item>",
+    "<topic>",
+]
+for path in sorted(root.rglob("*.md")) if root.exists() else []:
+    if path.name == "README.md":
+        continue
+    text = path.read_text(errors="ignore")
+    lines = text.splitlines()
+    has_status = (
+        len(lines) >= 3
+        and lines[0].strip() == "---"
+        and any(line.startswith("status:") and line.split(":", 1)[1].strip() for line in lines[1:12])
+    )
+    if not has_status:
+        failures.append(f"{path}: missing frontmatter status")
+    for heading in reference_required:
+        if heading not in text:
+            failures.append(f"{path}: missing reference heading: {heading}")
+    for marker in placeholder_markers:
+        if marker in text:
+            failures.append(f"{path}: unresolved reference-template marker: {marker}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
 section "Script reference integrity"
 if ! python3 - <<'PY'
 from __future__ import annotations
