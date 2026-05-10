@@ -51,7 +51,7 @@ docs/
 │   ├── policies/
 │   ├── runbooks/
 │   └── incidents/
-├── 90.references/              # 느리게 변하는 참고 지식, 표준, 학습 로드맵
+├── 90.references/              # 느리게 변하는 참고 지식, 표준, 학습 로드맵, LLM Wiki
 ├── 99.templates/               # stage 문서 작성을 위한 표준 템플릿
 └── README.md                   # This file
 ```
@@ -70,6 +70,7 @@ docs/
 | define operational controls | `05.operations/policies/` |
 | execute recovery or repeatable procedures | `05.operations/runbooks/` |
 | record incidents or postmortems | `05.operations/incidents/` |
+| provide LLM-facing repository navigation | `90.references/llm-wiki/` |
 
 ## Migration Map
 
@@ -139,7 +140,7 @@ bash scripts/check-repo-contracts.sh
 bash scripts/check-doc-traceability.sh
 ```
 
-`check-repo-contracts.sh`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime agent/function catalog 동기화를 확인합니다. `check-doc-traceability.sh`는 execution plans와 operations 문서 간 추적성 동기화를 확인합니다.
+`check-repo-contracts.sh`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime agent/function catalog, LLM Wiki contract 동기화를 확인합니다. `check-doc-traceability.sh`는 execution plans와 operations 문서 간 추적성 동기화를 확인합니다.
 
 ## Current Refresh Evidence
 
@@ -161,6 +162,7 @@ bash scripts/check-doc-traceability.sh
 - [04.execution/README.md](04.execution/README.md)
 - [05.operations/README.md](05.operations/README.md)
 - [90.references/README.md](90.references/README.md)
+- [90.references/llm-wiki/README.md](90.references/llm-wiki/README.md)
 - [99.templates/README.md](99.templates/README.md)
 - [../README.md](../README.md)
 - [../infra/README.md](../infra/README.md)

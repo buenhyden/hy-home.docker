@@ -44,6 +44,7 @@ hy-home.docker/
 ├── projects/             # 보조 프로젝트 및 예제 작업 공간
 ├── tests/                # 테스트 관련 문서와 자산
 ├── docker-compose.yml    # 통합 Compose 진입점
+├── llms.txt              # LLM용 repo-local 탐색 진입점
 ├── .env.example          # 환경 변수 예시
 ├── AGENTS.md             # Agent 진입 규칙
 └── README.md             # 이 문서
@@ -54,6 +55,8 @@ hy-home.docker/
 - [`docs/`](./docs) - 요구사항, 아키텍처, 명세, 실행, 운영 지식까지 포함하는 공식 문서 체계
 - [`docs/05.operations/`](./docs/05.operations) - 사용 가이드, 운영 정책, 런북, 사고 기록을 분리해 관리하는 운영 지식 베이스
 - [`docs/90.references/`](./docs/90.references) - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
+- [`llms.txt`](./llms.txt) - LLM 에이전트용 repo-local 탐색 진입점
+- [`docs/90.references/llm-wiki/`](./docs/90.references/llm-wiki) - tracked source files 기반 LLM Wiki reference map
 - [`infra/`](./infra) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
 - [`scripts/`](./scripts) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
 - [`secrets/`](./secrets) - Docker secrets 파일 구조와 민감 정보 관리 기준
@@ -151,6 +154,7 @@ docker compose --profile core up -d
 3. [`docs/00.agent-governance/README.md`](./docs/00.agent-governance/README.md) - 거버넌스 허브
 4. [`infra/README.md`](./infra/README.md) - 계층별 인프라 구조
 5. [`scripts/README.md`](./scripts/README.md) - 검증 및 자동화 스크립트
+6. [`llms.txt`](./llms.txt) - LLM 에이전트용 repo-local 탐색 진입점
 
 ## Documentation Standards
 
@@ -173,7 +177,7 @@ docker compose --profile core up -d
 로컬 또는 CI에서 자주 사용되는 검증 진입점은 다음과 같습니다.
 
 - `bash scripts/preflight-compose.sh` - 실행 전 필수 파일과 디렉터리 점검
-- `bash scripts/check-repo-contracts.sh` - repository/docs/GitHub/runtime/Docker contract 검증
+- `bash scripts/check-repo-contracts.sh` - repository/docs/GitHub/runtime/Docker/LLM Wiki contract 검증
 - `bash scripts/validate-docker-compose.sh` - profile-aware Compose 구조 검증
 - `bash scripts/check-doc-traceability.sh` - 문서 추적성 검사
 - `bash scripts/check-quickwin-baseline.sh` - QuickWin baseline 검사
@@ -222,6 +226,8 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 - [`docs/05.operations/README.md`](./docs/05.operations/README.md)
 - [`docs/90.references/README.md`](./docs/90.references/README.md)
 - [`docs/90.references/docker/README.md`](./docs/90.references/docker/README.md)
+- [`docs/90.references/llm-wiki/README.md`](./docs/90.references/llm-wiki/README.md)
+- [`llms.txt`](./llms.txt)
 - [`docs/03.specs/infra-secrets-docs-refresh/spec.md`](./docs/03.specs/infra-secrets-docs-refresh/spec.md)
 - [`docs/04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md`](./docs/04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md)
 - [`infra/README.md`](./infra/README.md)

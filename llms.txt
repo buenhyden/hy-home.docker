@@ -1,0 +1,29 @@
+# hy-home.docker LLM Wiki
+
+## Purpose
+
+This file is the repo-local LLM entrypoint for `hy-home.docker`. It points agents to canonical tracked source files and reference docs without replacing the repository runtime truth.
+
+## Canonical Entry Points
+
+- [Repository overview](README.md)
+- [Agent execution rules](AGENTS.md)
+- [Documentation index](docs/README.md)
+- [Agent governance hub](docs/00.agent-governance/README.md)
+- [Infrastructure index](infra/README.md)
+- [Script and validator index](scripts/README.md)
+- [Secret handling index](secrets/README.md)
+- [LLM Wiki repository map](docs/90.references/llm-wiki/repository-map.md)
+
+## Boundaries
+
+- Use tracked source files as the evidence boundary.
+- Runtime truth remains in `infra/`, `scripts/`, registry JSON files, Docker Compose files, and governance docs.
+- Do not include or disclose secret values, credentials, private keys, tokens, shell history, or log databases.
+- Treat `secrets/` as path and policy context only unless a direct user request explicitly requires otherwise.
+- Exclude `volumes/`, generated or minified artifacts, and dependency trees from LLM Wiki evidence.
+- Treat `graphify-out/` as advisory navigation context only when present; it is not authoritative source material.
+
+## Scope
+
+This LLM Wiki is repo-local only. It does not define a public website, `llms-full.txt`, Graphify publication pipeline, external model call, deployment workflow, or Docker runtime behavior.

@@ -26,6 +26,7 @@ This file follows `docs/99.templates/progress.template.md`.
 | 2026-05-10 | Governance memory template contract | Done | Added canonical `memory.template.md`, aligned memory note authoring rules, normalized existing memory notes, and enforced progress updates through the repo contract. | `docs/00.agent-governance/memory/governance-memory-usage-contract.md` | `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; edited-memory link scan |
 | 2026-05-10 | Template MD033 placeholder cleanup | Done | Replaced angle-bracket placeholders in memory/progress templates with brace placeholders to avoid inline-HTML markdownlint errors. | N/A | `bash scripts/check-repo-contracts.sh`; `git diff --check`; placeholder scan |
 | 2026-05-10 | Harness Agent-first taxonomy hardening | Done | Split HAFE guide/policy/runbook content, normalized operations target comments, and strengthened active taxonomy shorthand validation. | N/A | `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; explicit stale taxonomy and H100 scans; baseline validation bundle |
+| 2026-05-10 | Repo-local LLM Wiki contract | Done | Added root `llms.txt`, `docs/90.references/llm-wiki/`, README discoverability links, and repository contract validation for tracked-source LLM navigation. | N/A | `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; `bash scripts/report-graphify-health.sh`; `bash scripts/validate-docker-compose.sh`; LLM Wiki safety scans |
 
 ## Phase Tracker
 

@@ -744,6 +744,121 @@ then
   failures=$((failures + 1))
 fi
 
+section "LLM Wiki contract"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+
+required_files = [
+    pathlib.Path("llms.txt"),
+    pathlib.Path("docs/90.references/llm-wiki/README.md"),
+    pathlib.Path("docs/90.references/llm-wiki/repository-map.md"),
+]
+
+for path in required_files:
+    if not path.is_file():
+        failures.append(f"missing LLM Wiki file: {path}")
+
+llms_path = pathlib.Path("llms.txt")
+if llms_path.is_file():
+    text = llms_path.read_text(errors="ignore")
+    required_literals = [
+        "docs/90.references/llm-wiki/repository-map.md",
+        "tracked source files",
+        "Runtime truth",
+        "secrets/",
+        "volumes/",
+        "graphify-out/",
+        "advisory",
+        "not authoritative source material",
+        "llms-full.txt",
+        "public website",
+    ]
+    for literal in required_literals:
+        if literal not in text:
+            failures.append(f"{llms_path}: missing LLM Wiki boundary literal: {literal}")
+
+readme_checks = {
+    pathlib.Path("README.md"): [
+        "llms.txt",
+        "docs/90.references/llm-wiki/",
+    ],
+    pathlib.Path("docs/README.md"): [
+        "90.references/llm-wiki/",
+        "LLM Wiki contract",
+    ],
+    pathlib.Path("docs/90.references/README.md"): [
+        "llm-wiki/README.md",
+    ],
+}
+for path, literals in readme_checks.items():
+    if not path.is_file():
+        failures.append(f"missing file for LLM Wiki README registration: {path}")
+        continue
+    text = path.read_text(errors="ignore")
+    for literal in literals:
+        if literal not in text:
+            failures.append(f"{path}: missing LLM Wiki registration literal: {literal}")
+
+wiki_files = [
+    path for path in pathlib.Path("docs/90.references/llm-wiki").glob("*.md")
+]
+for path in [llms_path, *wiki_files]:
+    if not path.is_file():
+        continue
+    text = path.read_text(errors="ignore")
+    lower_text = text.lower()
+    if "file://" in text:
+        failures.append(f"{path}: file:// links are not allowed in LLM Wiki")
+    unsafe_phrases = [
+        "read secret values",
+        "quote secret values",
+        "dump secrets",
+        "print secrets",
+        "graphify-out/ is authoritative",
+        "graphify-out is authoritative",
+        "graphify-out/ as authoritative",
+        "graphify-out as authoritative",
+    ]
+    for phrase in unsafe_phrases:
+        if phrase in lower_text:
+            failures.append(f"{path}: unsafe LLM Wiki wording: {phrase}")
+    if (
+        re.search(r"(?i)\bpublic\s+(site|website|wiki)\b", text)
+        and "Out of Scope" not in text
+        and "does not define a public website" not in text
+    ):
+        failures.append(f"{path}: public wiki/site wording must be explicitly out of scope")
+
+map_path = pathlib.Path("docs/90.references/llm-wiki/repository-map.md")
+if map_path.is_file():
+    text = map_path.read_text(errors="ignore")
+    for literal in [
+        "tracked source files",
+        "Runtime truth",
+        "secrets/",
+        "volumes/",
+        "graphify-out/",
+        "authoritative source",
+        "## Repository Map",
+    ]:
+        if literal not in text:
+            failures.append(f"{map_path}: missing repository map boundary literal: {literal}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
 section "Script reference integrity"
 if ! python3 - <<'PY'
 from __future__ import annotations
