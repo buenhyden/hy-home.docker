@@ -77,8 +77,8 @@ status: completed
   - `bash scripts/check-all-hardening.sh`
   - `git diff --check`
 - **Eval Commands**:
-  - README heading audit over `infra`, `secrets`, `docs/07.guides`, `docs/08.operations`, `docs/09.runbooks`, `docs/90.references`
-  - Stage heading audit over non-README Markdown in `docs/07.guides`, `docs/08.operations`, `docs/09.runbooks`, `docs/90.references`
+  - README heading audit over `infra`, `secrets`, `docs/07.operations`, `docs/07.operations`, `docs/07.operations`, `docs/90.references`
+  - Stage heading audit over non-README Markdown in `docs/07.operations`, `docs/07.operations`, `docs/07.operations`, `docs/90.references`
 - **Logs / Evidence Location**:
   - `INFRA_COMPOSE_FILES=47`
   - `INFRA_COMPOSE_SERVICE_DIRS=40`

@@ -30,7 +30,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 1. **Timeline first**: establish facts before assigning cause. All events in UTC.
 2. **Blameless**: focus on system and process failures, not individuals.
 3. **Evidence-cited**: every RCA finding must reference log/metric/trace source (file:line or query).
-4. **Runbook-driven**: follow `docs/09.runbooks/` for known failure modes.
+4. **Operations-procedure-driven**: follow `docs/07.operations/` for known failure modes.
 5. **No single-cause trap**: always check for compound causes and contributing factors.
 6. **Error budget aware**: every SEV1/SEV2 must include SLO error budget impact calculation.
 
@@ -112,7 +112,7 @@ For SEV1/SEV2, add impact assessment to the incident record:
 ## Collaboration
 
 - Reads from: `security-auditor` findings, Grafana dashboards, Loki logs.
-- Writes to: `docs/10.incidents/`, `docs/09.runbooks/`.
+- Writes to: `docs/10.incidents/`, `docs/07.operations/`.
 - Escalates to: user for SEV1 active incidents requiring live infra changes.
 
 ## Related Documents
@@ -120,5 +120,5 @@ For SEV1/SEV2, add impact assessment to the incident record:
 - `docs/00.agent-governance/scopes/ops.md`
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
-- `docs/09.runbooks/` · `docs/10.incidents/`
+- `docs/07.operations/` · `docs/10.incidents/`
 - `.claude/skills/incident-response/skill.md`

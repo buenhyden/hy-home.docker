@@ -24,9 +24,7 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 | 04    | `docs/04.specs/`            | Technical specifications           |
 | 05    | `docs/05.plans/`            | Implementation plans               |
 | 06    | `docs/06.tasks/`            | Task execution evidence            |
-| 07    | `docs/07.guides/`           | Human guides                       |
-| 08    | `docs/08.operations/`       | Operations policy                  |
-| 09    | `docs/09.runbooks/`         | Operational procedures             |
+| 07    | `docs/07.operations/`       | Operations knowledge base          |
 | 10    | `docs/10.incidents/`        | Incident records and postmortems   |
 | 90    | `docs/90.references/`       | Stable references                  |
 | 99    | `docs/99.templates/`        | Document templates                 |

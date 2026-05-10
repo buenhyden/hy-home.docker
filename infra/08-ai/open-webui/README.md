@@ -39,7 +39,7 @@ open-webui/
 
 ## How to Work in This Area
 
-1. Read the [Open WebUI Interface & RAG Guide](../../../docs/07.guides/08-ai/open-webui.md).
+1. Read the [Open WebUI Interface & RAG Guide](../../../docs/07.operations/08-ai/open-webui.md).
 2. Access the UI at `https://chat.${DEFAULT_URL}` with SSO.
 3. Verify connection to Ollama and Qdrant before document indexing.
 
@@ -47,9 +47,9 @@ open-webui/
 
 - [Ollama Implementation](../ollama/README.md)
 - [Qdrant Implementation](../../04-data/specialized/qdrant/README.md)
-- [Open WebUI System Guide](../../../docs/07.guides/08-ai/open-webui.md)
-- [Open WebUI Operations Policy](../../../docs/08.operations/08-ai/open-webui.md)
-- [Open WebUI Runbook](../../../docs/09.runbooks/08-ai/open-webui.md)
+- [Open WebUI System Guide](../../../docs/07.operations/08-ai/open-webui.md)
+- [Open WebUI Operations Policy](../../../docs/07.operations/08-ai/open-webui.md)
+- [Open WebUI Runbook](../../../docs/07.operations/08-ai/open-webui.md)
 
 ---
 

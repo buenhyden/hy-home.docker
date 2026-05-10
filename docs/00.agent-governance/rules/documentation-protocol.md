@@ -34,9 +34,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 | `docs/04.specs/<feature-id>/agent-design.md` | Agent Design | `docs/99.templates/agent-design.template.md` |
 | `docs/05.plans/` | Plan | `docs/99.templates/plan.template.md` |
 | `docs/06.tasks/` | Task | `docs/99.templates/task.template.md` |
-| `docs/07.guides/` | Guide | `docs/99.templates/guide.template.md` |
-| `docs/08.operations/` | Operation | `docs/99.templates/operation.template.md` |
-| `docs/09.runbooks/` | Runbook | `docs/99.templates/runbook.template.md` |
+| `docs/07.operations/` | Operations Knowledge | `docs/99.templates/operation.template.md` |
 | `docs/10.incidents/` | Incident | `docs/99.templates/incident.template.md` |
 | `docs/10.incidents/` | Postmortem | `docs/99.templates/postmortem.template.md` |
 | `docs/90.references/` | Reference | `docs/99.templates/reference.template.md` |
@@ -57,7 +55,7 @@ See `docs/99.templates/README.md` for the full catalog and usage rules.
 1. Identify target stage.
 2. Load `rules/stage-authoring-matrix.md` and follow its stage row.
 3. Draft or update using the mapped template and required input documents.
-4. Cross-link related PRD, ARD, ADR, Spec, Plan, Task, Guide, Operation, and Runbook files.
+4. Cross-link related PRD, ARD, ADR, Spec, Plan, Task, Operations, and Incident files.
 5. Run checklist gates from `rules/task-checklists.md`.
 
 ## 5. Operational Procedures
@@ -89,7 +87,7 @@ These rules are blocking. Completion is **PROHIBITED** until all three pass.
 
 **R1 — Template First:**
 Read the matching template from `docs/99.templates/` → fill every section → set `status: draft`.
-Infrastructure triggers: new service → ARD first; network change → ADR first; production procedure → OPER first.
+Infrastructure triggers: new service → ARD first; network change → ADR first; production procedure → `07.operations` first.
 
 **R2 — README Sync:**
 Any folder-level change (file added, moved, or removed) → the parent `README.md` MUST be updated.

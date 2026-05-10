@@ -59,9 +59,9 @@ k6/
 
 ## Related References
 
-- **Guide**: [k6 Performance Testing Guide](../../../docs/07.guides/09-tooling/k6.md)
-- **Operation**: [k6 Operations Policy](../../../docs/08.operations/09-tooling/k6.md)
-- **Runbook**: [k6 Recovery Runbook](../../../docs/09.runbooks/09-tooling/k6.md)
+- **Guide**: [k6 Performance Testing Guide](../../../docs/07.operations/09-tooling/k6.md)
+- **Operation**: [k6 Operations Policy](../../../docs/07.operations/09-tooling/k6.md)
+- **Runbook**: [k6 Recovery Runbook](../../../docs/07.operations/09-tooling/k6.md)
 
 ---
 

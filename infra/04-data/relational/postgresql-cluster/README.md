@@ -54,10 +54,10 @@ postgresql-cluster/
 
 ## How to Work in This Area
 
-1. 클러스터 아키텍처 및 연결 방법은 [Technical Guide](../../../../docs/07.guides/04-data/relational/postgresql-cluster.md)를 먼저 확인합니다.
+1. 클러스터 아키텍처 및 연결 방법은 [Technical Guide](../../../../docs/07.operations/04-data/relational/postgresql-cluster.md)를 먼저 확인합니다.
 2. 로컬 테스트를 위해 `docker compose up -d`를 실행한 후 `patronictl list`로 상태를 모니터링합니다.
-3. 운영 변경 사항은 반드시 [Operations Policy](../../../../docs/08.operations/04-data/relational/postgresql-cluster.md) 준수 여부를 확인합니다.
-4. 장애 대응 절차는 [Recovery Runbook](../../../../docs/09.runbooks/04-data/relational/postgresql-cluster.md)를 참조합니다.
+3. 운영 변경 사항은 반드시 [Operations Policy](../../../../docs/07.operations/04-data/relational/postgresql-cluster.md) 준수 여부를 확인합니다.
+4. 장애 대응 절차는 [Recovery Runbook](../../../../docs/07.operations/04-data/relational/postgresql-cluster.md)를 참조합니다.
 
 ## Available Scripts
 
@@ -85,9 +85,9 @@ postgresql-cluster/
 
 ## Related References
 
-- **Guide**: [docs/07.guides/04-data/relational/postgresql-cluster.md](../../../../docs/07.guides/04-data/relational/postgresql-cluster.md)
-- **Operations**: [docs/08.operations/04-data/relational/postgresql-cluster.md](../../../../docs/08.operations/04-data/relational/postgresql-cluster.md)
-- **Runbook**: [docs/09.runbooks/04-data/relational/postgresql-cluster.md](../../../../docs/09.runbooks/04-data/relational/postgresql-cluster.md)
+- **Guide**: [docs/07.operations/04-data/relational/postgresql-cluster.md](../../../../docs/07.operations/04-data/relational/postgresql-cluster.md)
+- **Operations**: [docs/07.operations/04-data/relational/postgresql-cluster.md](../../../../docs/07.operations/04-data/relational/postgresql-cluster.md)
+- **Runbook**: [docs/07.operations/04-data/relational/postgresql-cluster.md](../../../../docs/07.operations/04-data/relational/postgresql-cluster.md)
 - **ARD**: [docs/02.ard/0004-data-architecture.md](../../../../docs/02.ard/0004-data-architecture.md)
 
 ---

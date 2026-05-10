@@ -1,24 +1,23 @@
 ---
 status: draft
 ---
-<!-- Target: docs/08.operations/<policy-or-standard>.md -->
+<!-- Target: docs/07.operations/<policy-or-standard>.md -->
 
-# [Policy or Standard Name] Operations Policy
+# [Topic Name] Operations
 
-> Use this template for `docs/08.operations/<policy-or-standard>.md`.
+> Use this template for `docs/07.operations/<policy-or-standard>.md`.
 >
 > Rules:
 >
-> - This document defines policy, controls, and approval rules.
-> - This document is not a step-by-step recovery procedure.
-> - This document is not an onboarding or how-to guide.
+> - This document may include usage guidance, controls, and executable procedures.
+> - Keep policy and procedure sections distinct.
 > - This document is not an incident timeline or a postmortem.
 
 ---
 
 ## Overview (KR)
 
-이 문서는 [정책명] 운영 정책을 정의한다. 적용 범위, 통제 기준, 예외, 검증 방법을 규정한다.
+이 문서는 [주제명] 운영 지식을 정의한다. 사용 맥락, 적용 범위, 통제 기준, 실행 절차, 검증 방법을 규정한다.
 
 ## Policy Scope
 
@@ -30,11 +29,22 @@ status: draft
 - **Agents**:
 - **Environments**:
 
+## Usage
+
+- [When to use this system or procedure]
+- [Required context before operation]
+
 ## Controls
 
 - **Required**:
 - **Allowed**:
 - **Disallowed**:
+
+## Procedure
+
+1. [Step]
+2. [Expected result]
+3. [Failure handling]
 
 ## Exceptions
 
@@ -58,5 +68,4 @@ status: draft
 ## Related Documents
 
 - **ARD**: `[../02.ard/####-<system-or-domain>.md]`
-- **Runbook**: `[../09.runbooks/####-<topic>.md]`
 - **Postmortem**: `[../10.incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md]`

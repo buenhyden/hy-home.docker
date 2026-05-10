@@ -52,7 +52,7 @@ docker compose ps <service>
 docker compose logs --tail=20 <service>
 ```
 
-If restart fails, follow the relevant runbook under `docs/09.runbooks/`.
+If restart fails, follow the relevant runbook under `docs/07.operations/`.
 If secret exposure is suspected, halt and escalate to `security-auditor`.
 
 ## Phase 4 — Root Cause Analysis
@@ -96,7 +96,7 @@ Include the incident link in `## Related Documents`.
 
 - `docs/00.agent-governance/scopes/ops.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
-- `docs/09.runbooks/`
+- `docs/07.operations/`
 - `docs/10.incidents/`
 - `docs/10.incidents/`
 - `.claude/agents/incident-responder.md`

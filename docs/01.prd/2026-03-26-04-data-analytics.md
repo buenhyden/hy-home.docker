@@ -66,4 +66,4 @@
 - **ARD**: [0012-data-analytics-architecture.md](../02.ard/0012-data-analytics-architecture.md)
 - **ADR**: [0015-analytics-engine-selection.md](../03.adr/0015-analytics-engine-selection.md)
 - **Spec**: [spec.md](../04.specs/04-data-analytics/spec.md)
-- **Guide**: [README.md](../07.guides/04-data/analytics/README.md)
+- **Guide**: [README.md](../07.operations/04-data/analytics/README.md)

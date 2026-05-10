@@ -36,9 +36,9 @@
 - **PRD**: [2026-03-26-09-tooling.md](../../docs/01.prd/2026-03-26-09-tooling.md)
 - **ARD**: [0009-tooling-architecture.md](../../docs/02.ard/0009-tooling-architecture.md)
 - **Spec**: [09-tooling/spec.md](../../docs/04.specs/09-tooling/spec.md)
-- **User Guide**: [09-tooling README](../../docs/07.guides/09-tooling/README.md)
-- **Operational Policy**: [09-tooling operations](../../docs/08.operations/09-tooling/README.md)
-- **Runbook**: [09-tooling runbooks](../../docs/09.runbooks/09-tooling/README.md)
+- **User Guide**: [09-tooling README](../../docs/07.operations/09-tooling/README.md)
+- **Operational Policy**: [09-tooling operations](../../docs/07.operations/09-tooling/README.md)
+- **Runbook**: [09-tooling runbooks](../../docs/07.operations/09-tooling/README.md)
 
 ---
 

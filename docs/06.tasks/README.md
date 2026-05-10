@@ -75,7 +75,7 @@ docs/06.tasks/
 
 - **Plan**: [../05.plans/README.md]
 - **Spec**: [../04.specs/README.md]
-- **Runbook**: [../09.runbooks/README.md]
+- **Runbook**: [../07.operations/README.md]
 - **Postmortem**: [../10.incidents/README.md]
 - **Harness / Agent-first Engineering Task**: [2026-05-09-harness-agent-first-engineering.md](2026-05-09-harness-agent-first-engineering.md)
 - **Infra / Secrets / Docs Refresh Task**: [2026-05-09-infra-secrets-docs-refresh.md](2026-05-09-infra-secrets-docs-refresh.md)

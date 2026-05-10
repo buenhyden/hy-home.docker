@@ -169,7 +169,7 @@ status: draft
 
 - **Workflow Spec**: [./spec.md](./spec.md)
 - **Implementation Plan**: [../../05.plans/2026-04-10-infra-team-agent-cross-validation.md](../../05.plans/2026-04-10-infra-team-agent-cross-validation.md)
-- **Operations**: [../../08.operations/07-workflow/optimization-hardening.md](../../08.operations/07-workflow/optimization-hardening.md)
-- **Runbook**: [../../09.runbooks/07-workflow/optimization-hardening.md](../../09.runbooks/07-workflow/optimization-hardening.md)
+- **Operations**: [../../07.operations/07-workflow/optimization-hardening.md](../../07.operations/07-workflow/optimization-hardening.md)
+- **Runbook**: [../../07.operations/07-workflow/optimization-hardening.md](../../07.operations/07-workflow/optimization-hardening.md)
 - **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
 - **Subagent Protocol**: [../../00.agent-governance/subagent-protocol.md](../../00.agent-governance/subagent-protocol.md)

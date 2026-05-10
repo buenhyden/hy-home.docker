@@ -43,10 +43,10 @@ kafka/
 
 ## How to Work in This Area
 
-1. **Bootstrap**: [Kafka KRaft Guide](../../../docs/07.guides/05-messaging/kafka.md)를 읽고 클러스터 초기 구성 방식을 파악한다.
+1. **Bootstrap**: [Kafka KRaft Guide](../../../docs/07.operations/05-messaging/kafka.md)를 읽고 클러스터 초기 구성 방식을 파악한다.
 2. **Configuration**: `docker-compose.yml`의 Broker ID 및 포트 맵핑 설정을 확인한다.
 3. **Execution**: 변경 사항 적용 후 `docker compose up -d`로 반영한다.
-4. **Validation**: [Messaging Runbook](../../../docs/09.runbooks/05-messaging/kafka.md)의 점검 절차를 수행한다.
+4. **Validation**: [Messaging Runbook](../../../docs/07.operations/05-messaging/kafka.md)의 점검 절차를 수행한다.
 
 ## Tech Stack
 
@@ -95,6 +95,6 @@ curl -fsS http://schema-registry.localhost/subjects
 
 - **PRD**: [05-messaging](../../../docs/01.prd/2026-03-26-05-messaging.md)
 - **ARD**: [Messaging Architecture](../../../docs/02.ard/0005-messaging-architecture.md)
-- **Guide**: [Kafka Guide](../../../docs/07.guides/05-messaging/kafka.md)
-- **Ops**: [Messaging Ops](../../../docs/08.operations/05-messaging/kafka.md)
-- **Runbook**: [Messaging Recovery](../../../docs/09.runbooks/05-messaging/kafka.md)
+- **Guide**: [Kafka Guide](../../../docs/07.operations/05-messaging/kafka.md)
+- **Ops**: [Messaging Ops](../../../docs/07.operations/05-messaging/kafka.md)
+- **Runbook**: [Messaging Recovery](../../../docs/07.operations/05-messaging/kafka.md)

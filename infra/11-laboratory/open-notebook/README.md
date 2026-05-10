@@ -53,7 +53,7 @@ open-notebook/
 
 ## Related References
 
-- [Laboratory guides](../../../docs/07.guides/11-laboratory/README.md)
-- [Laboratory operations](../../../docs/08.operations/11-laboratory/README.md)
-- [Laboratory runbooks](../../../docs/09.runbooks/11-laboratory/README.md)
+- [Laboratory guides](../../../docs/07.operations/11-laboratory/README.md)
+- [Laboratory operations](../../../docs/07.operations/11-laboratory/README.md)
+- [Laboratory runbooks](../../../docs/07.operations/11-laboratory/README.md)
 - [Image tag exceptions](../../image-tag-policy.exceptions.json)

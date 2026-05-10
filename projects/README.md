@@ -44,7 +44,7 @@ projects/
 1. 하위 프로젝트를 수정하기 전에 해당 프로젝트의 `README.md`와 package manifest를 먼저 확인합니다.
 2. parent repo가 직접 추적하지 않는 gitlink/submodule 내부 파일은 별도 저장소 작업으로 분리합니다.
 3. README를 갱신할 때는 [`../docs/99.templates/readme.template.md`](../docs/99.templates/readme.template.md)의 공통 구조를 따릅니다.
-4. 인프라 노출, gateway, secret, 운영 절차가 바뀌면 관련 `infra/`, `docs/07.guides/`, `docs/08.operations/`, `docs/09.runbooks/` 문서도 함께 점검합니다.
+4. 인프라 노출, gateway, secret, 운영 절차가 바뀌면 관련 `infra/`, `docs/07.operations/`, `docs/07.operations/`, `docs/07.operations/` 문서도 함께 점검합니다.
 
 ## Related References
 

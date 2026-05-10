@@ -100,7 +100,7 @@ bash scripts/check-all-hardening.sh
 
 - [Specification](../04.specs/harness-agent-first-engineering/spec.md)
 - [Task Evidence](../06.tasks/2026-05-09-harness-agent-first-engineering.md)
-- [Guide](../07.guides/harness-agent-first-engineering.md)
-- [Operations Policy](../08.operations/harness-agent-first-engineering.md)
-- [Validation Runbook](../09.runbooks/harness-agent-first-engineering-validation.md)
+- [Guide](../07.operations/harness-agent-first-engineering.md)
+- [Operations Policy](../07.operations/harness-agent-first-engineering.md)
+- [Validation Runbook](../07.operations/harness-agent-first-engineering-validation.md)
 - [Agent Governance Hub](../00.agent-governance/README.md)

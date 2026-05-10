@@ -68,9 +68,9 @@ curl http://seaweedfs-master:9333/cluster/status
 
 ## 8. Related Documents
 
-- **Guide**: [Technical Guide](../../../../docs/07.guides/04-data/lake-and-object/seaweedfs.md)
-- **Operation**: [Operations Policy](../../../../docs/08.operations/04-data/lake-and-object/seaweedfs.md)
-- **Runbook**: [Recovery Runbook](../../../../docs/09.runbooks/04-data/lake-and-object/seaweedfs.md)
+- **Guide**: [Technical Guide](../../../../docs/07.operations/04-data/lake-and-object/seaweedfs.md)
+- **Operation**: [Operations Policy](../../../../docs/07.operations/04-data/lake-and-object/seaweedfs.md)
+- **Runbook**: [Recovery Runbook](../../../../docs/07.operations/04-data/lake-and-object/seaweedfs.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
@@ -123,6 +123,6 @@ infra/04-data/lake-and-object/seaweedfs/
 ## Related References
 
 - [infra/README.md](../../../README.md)
-- [docs/07.guides/README.md](../../../../docs/07.guides/README.md)
-- [docs/08.operations/README.md](../../../../docs/08.operations/README.md)
-- [docs/09.runbooks/README.md](../../../../docs/09.runbooks/README.md)
+- [docs/07.operations/README.md](../../../../docs/07.operations/README.md)
+- [docs/07.operations/README.md](../../../../docs/07.operations/README.md)
+- [docs/07.operations/README.md](../../../../docs/07.operations/README.md)

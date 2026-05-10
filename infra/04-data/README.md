@@ -65,15 +65,15 @@ docker exec valkey-node-0 valkey-cli -p 6379 cluster nodes
 
 ### Integration Guidelines
 
-1. Read the [Relational Databases Guide](../../docs/07.guides/04-data/01.relational-dbs.md) for cluster setup.
-2. Follow the [Cache & KV Stores Guide](../../docs/07.guides/04-data/02.cache-kv-dbs.md) for cache management.
+1. Read the [Relational Databases Guide](../../docs/07.operations/04-data/01.relational-dbs.md) for cluster setup.
+2. Follow the [Cache & KV Stores Guide](../../docs/07.operations/04-data/02.cache-kv-dbs.md) for cache management.
 
 ## 5. Maintenance & Safety
 
 ### Health & Monitoring
 
-- Check [Operations Policy](../../docs/08.operations/04-data/README.md) for backup standards.
-- Consult the [Data Runbook](../../docs/09.runbooks/04-data/README.md) for recovery.
+- Check [Operations Policy](../../docs/07.operations/04-data/README.md) for backup standards.
+- Consult the [Data Runbook](../../docs/07.operations/04-data/README.md) for recovery.
 
 ### Safety Protocols
 
@@ -138,6 +138,6 @@ infra/04-data/
 ## Related References
 
 - [infra/README.md](../README.md)
-- [docs/07.guides/README.md](../../docs/07.guides/README.md)
-- [docs/08.operations/README.md](../../docs/08.operations/README.md)
-- [docs/09.runbooks/README.md](../../docs/09.runbooks/README.md)
+- [docs/07.operations/README.md](../../docs/07.operations/README.md)
+- [docs/07.operations/README.md](../../docs/07.operations/README.md)
+- [docs/07.operations/README.md](../../docs/07.operations/README.md)

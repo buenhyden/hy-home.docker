@@ -52,9 +52,7 @@ hy-home.docker/
 ## Repository Map
 
 - [`docs/`](docs) - 요구사항, 아키텍처, 계획, 운영, 사고 대응까지 포함하는 공식 문서 체계
-- [`docs/07.guides/`](docs/07.guides) - 사용자와 운영자를 위한 재현 가능한 사용 가이드
-- [`docs/08.operations/`](docs/08.operations) - 운영 정책, 통제, 예외 처리 기준
-- [`docs/09.runbooks/`](docs/09.runbooks) - 반복 운영 작업과 장애 복구 실행 절차
+- [`docs/07.operations/`](docs/07.operations) - 사용 가이드, 운영 정책, 반복 실행 절차를 통합한 운영 지식 베이스
 - [`docs/90.references/`](docs/90.references) - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
 - [`infra/`](infra) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
 - [`scripts/`](./scripts/) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
@@ -86,7 +84,7 @@ hy-home.docker/
 | Root active includes | 14 | 주석 처리된 optional include는 실행면으로 과장하지 않음 |
 | Root Compose secret declarations | 69 | 선언된 secret 파일 누락 0개 |
 | `secrets/` value/cert files | 94 | 값은 열람하지 않고 파일명과 경로만 기준으로 분류 |
-| Parent-repo tracked README files | 146 | `projects/storybook/mcp` gitlink 내부 README는 parent repo diff 범위에서 제외 |
+| Parent-repo tracked README files | 108 | `projects/storybook/mcp` gitlink 내부 README는 parent repo diff 범위에서 제외 |
 | README refresh contract | path-appropriate template coverage | `docs/99.templates/readme.template.md`의 공통 구조와 경로별 snippet을 기준으로 갱신 |
 
 ## Prerequisites
@@ -221,9 +219,7 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 - [`docs/00.agent-governance/rules/github-governance.md`](docs/00.agent-governance/rules/github-governance.md)
 - [`docs/00.agent-governance/rules/git-workflow.md`](docs/00.agent-governance/rules/git-workflow.md)
 - [`docs/00.agent-governance/rules/stage-authoring-matrix.md`](docs/00.agent-governance/rules/stage-authoring-matrix.md)
-- [`docs/07.guides/README.md`](docs/07.guides/README.md)
-- [`docs/08.operations/README.md`](docs/08.operations/README.md)
-- [`docs/09.runbooks/README.md`](docs/09.runbooks/README.md)
+- [`docs/07.operations/README.md`](docs/07.operations/README.md)
 - [`docs/90.references/README.md`](docs/90.references/README.md)
 - [`docs/90.references/docker/README.md`](docs/90.references/docker/README.md)
 - [`docs/04.specs/infra-secrets-docs-refresh/spec.md`](docs/04.specs/infra-secrets-docs-refresh/spec.md)

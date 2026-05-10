@@ -59,9 +59,9 @@ The `01-gateway` tier is the unified entry point for all traffic entering the `h
 
 ## How to Work in This Area
 
-1. Review [CONTEXT.md](../../docs/07.guides/01-gateway/README.md) to understand traffic flow.
+1. Review [CONTEXT.md](../../docs/07.operations/01-gateway/README.md) to understand traffic flow.
 2. Ensure secrets are generated via `scripts/gen-secrets.sh` before deployment.
-3. Follow [SETUP.md](../../docs/07.guides/01-gateway/01.setup.md) for initial deployment.
+3. Follow [SETUP.md](../../docs/07.operations/01-gateway/01.setup.md) for initial deployment.
 4. Verify changes using `docker exec traefik traefik healthcheck --ping`.
 
 ## Related References
@@ -69,6 +69,6 @@ The `01-gateway` tier is the unified entry point for all traffic entering the `h
 - [🤖 Agent Governance](../../AGENTS.md)
 - [🏛️ System Architecture](../../docs/02.ard/README.md)
 - [🔑 Secret Management](../../secrets/README.md)
-- [📘 Gateway Guides](../../docs/07.guides/01-gateway/README.md)
-- [⚙️ Operations Policy](../../docs/08.operations/01-gateway/README.md)
-- [🚑 Emergency Runbooks](../../docs/09.runbooks/01-gateway/README.md)
+- [📘 Gateway Guides](../../docs/07.operations/01-gateway/README.md)
+- [⚙️ Operations Policy](../../docs/07.operations/01-gateway/README.md)
+- [🚑 Emergency Runbooks](../../docs/07.operations/01-gateway/README.md)

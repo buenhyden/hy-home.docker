@@ -6,7 +6,7 @@ status: completed
 
 ## Overview (KR)
 
-이 문서는 `infra/`, `secrets/`, `docs/07.guides/`, `docs/08.operations/`, `docs/09.runbooks/`, `docs/90.references/`의 실제 파일 내용을 기준으로 운영 문서와 README를 최신화하기 위한 명세다. 목표는 Docker Compose 런타임이나 secret 값 파일을 변경하지 않고, 구현 요소와 운영 문서가 `docs/99.templates/`의 계약을 따르도록 보강하는 것이다.
+이 문서는 `infra/`, `secrets/`, `docs/07.operations/`, `docs/07.operations/`, `docs/07.operations/`, `docs/90.references/`의 실제 파일 내용을 기준으로 운영 문서와 README를 최신화하기 위한 명세다. 목표는 Docker Compose 런타임이나 secret 값 파일을 변경하지 않고, 구현 요소와 운영 문서가 `docs/99.templates/`의 계약을 따르도록 보강하는 것이다.
 
 현재 기준 구조 검증은 통과 상태다. `infra/`에는 47개 Compose 파일과 40개 Compose service directory가 있으며 service README 누락은 0개다. 루트 Compose 활성 include는 14개이므로 보유 Compose와 root-active Compose를 분리해 문서화한다. `secrets/`는 secret/cert 파일명 기준 76개, 루트 Compose 선언 69개, 선언된 secret 누락 0개이며 값은 열람하지 않는다.
 
@@ -40,7 +40,7 @@ status: completed
 
 ## Core Design
 
-- **Component Boundary**: 문서 보강 대상은 `README.md`, `docs/04.specs`, `docs/05.plans`, `docs/06.tasks`, `docs/07.guides`, `docs/08.operations`, `docs/09.runbooks`, `docs/90.references`로 제한한다.
+- **Component Boundary**: 문서 보강 대상은 `README.md`, `docs/04.specs`, `docs/05.plans`, `docs/06.tasks`, `docs/07.operations`, `docs/07.operations`, `docs/07.operations`, `docs/90.references`로 제한한다.
 - **Key Dependencies**: `docs/99.templates/`, `docs/00.agent-governance/rules/documentation-protocol.md`, `scripts/check-repo-contracts.sh`, `scripts/check-doc-traceability.sh`, `scripts/validate-docker-compose.sh`.
 - **Tech Stack**: Markdown, Docker Compose, Bash validation scripts.
 
@@ -63,9 +63,9 @@ README base headings:
 - Related References or Related Documents
 
 Stage document template families:
-- docs/07.guides -> guide.template.md
-- docs/08.operations -> operation.template.md
-- docs/09.runbooks -> runbook.template.md
+- docs/07.operations -> operation.template.md
+- docs/07.operations -> operation.template.md
+- docs/07.operations -> operation.template.md
 - docs/90.references -> reference.template.md
 ```
 
@@ -153,7 +153,7 @@ git diff --check
 
 - **Plan**: [../../05.plans/2026-05-09-infra-secrets-docs-refresh.md](../../05.plans/2026-05-09-infra-secrets-docs-refresh.md)
 - **Tasks**: [../../06.tasks/2026-05-09-infra-secrets-docs-refresh.md](../../06.tasks/2026-05-09-infra-secrets-docs-refresh.md)
-- **Guide**: [../../07.guides/README.md](../../07.guides/README.md)
-- **Operation**: [../../08.operations/README.md](../../08.operations/README.md)
-- **Runbook**: [../../09.runbooks/README.md](../../09.runbooks/README.md)
+- **Guide**: [../../07.operations/README.md](../../07.operations/README.md)
+- **Operation**: [../../07.operations/README.md](../../07.operations/README.md)
+- **Runbook**: [../../07.operations/README.md](../../07.operations/README.md)
 - **References**: [../../90.references/README.md](../../90.references/README.md)

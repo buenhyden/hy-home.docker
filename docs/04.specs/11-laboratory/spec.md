@@ -103,7 +103,7 @@ bash scripts/check-doc-traceability.sh
 
 - **Plan**: [../../05.plans/2026-03-28-11-laboratory-optimization-hardening-plan.md](../../05.plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
 - **Tasks**: [../../06.tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md](../../06.tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md)
-- **Guide**: [../../07.guides/11-laboratory/optimization-hardening.md](../../07.guides/11-laboratory/optimization-hardening.md)
-- **Operation**: [../../08.operations/11-laboratory/optimization-hardening.md](../../08.operations/11-laboratory/optimization-hardening.md)
-- **Runbook**: [../../09.runbooks/11-laboratory/optimization-hardening.md](../../09.runbooks/11-laboratory/optimization-hardening.md)
-- **Catalog**: [../../08.operations/12-infra-service-optimization-catalog.md](../../08.operations/12-infra-service-optimization-catalog.md)
+- **Guide**: [../../07.operations/11-laboratory/optimization-hardening.md](../../07.operations/11-laboratory/optimization-hardening.md)
+- **Operation**: [../../07.operations/11-laboratory/optimization-hardening.md](../../07.operations/11-laboratory/optimization-hardening.md)
+- **Runbook**: [../../07.operations/11-laboratory/optimization-hardening.md](../../07.operations/11-laboratory/optimization-hardening.md)
+- **Catalog**: [../../07.operations/12-infra-service-optimization-catalog.md](../../07.operations/12-infra-service-optimization-catalog.md)

@@ -2,11 +2,11 @@
 
 ## Overview (KR)
 
-이 문서는 `infra/01-gateway`의 Traefik/Nginx를 `Traefik Primary, Balanced Hardening` 기준으로 최적화하는 실행 계획서다. 설정 변경, 검증 자동화, CI 게이트, 문서 추적성(`05.plans ↔ 08.operations ↔ 09.runbooks`) 동기화를 포함한다.
+이 문서는 `infra/01-gateway`의 Traefik/Nginx를 `Traefik Primary, Balanced Hardening` 기준으로 최적화하는 실행 계획서다. 설정 변경, 검증 자동화, CI 게이트, 문서 추적성(`05.plans ↔ 07.operations ↔ 07.operations`) 동기화를 포함한다.
 
 ## Context
 
-- 기준 카탈로그: [12-infra-service-optimization-catalog.md](../08.operations/12-infra-service-optimization-catalog.md)
+- 기준 카탈로그: [12-infra-service-optimization-catalog.md](../07.operations/12-infra-service-optimization-catalog.md)
 - 기준 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
 - 범위 결정:
   - Scope: `Config+Docs`
@@ -25,7 +25,7 @@
 - **In Scope**:
   - `infra/01-gateway/traefik/**`, `infra/01-gateway/nginx/**`
   - `scripts/check-gateway-hardening.sh`, `.github/workflows/ci-quality.yml`
-  - `docs/05.plans`, `docs/06.tasks`, `docs/08.operations/01-gateway`, `docs/09.runbooks/01-gateway`, `docs/07.guides/01-gateway`
+  - `docs/05.plans`, `docs/06.tasks`, `docs/07.operations/01-gateway`, `docs/07.operations/01-gateway`, `docs/07.operations/01-gateway`
 
 ## Non-Goals & Out-of-Scope
 
@@ -46,7 +46,7 @@
 | PLN-GW-004 | Nginx timeout/failover/cache 하드닝 | `infra/01-gateway/nginx/config/nginx.conf` | REQ-GW-NGINX-HARDEN | `server_tokens`, timeout, upstream fail params, `proxy_next_upstream`, static cache 정책 적용 |
 | PLN-GW-005 | Gateway hardening 검증 스크립트 추가 | `scripts/check-gateway-hardening.sh`, `scripts/README.md` | REQ-GW-VERIFY-AUTO | 스크립트 non-zero fail/zero pass 동작 |
 | PLN-GW-006 | CI Strict Gate 연결 | `.github/workflows/ci-quality.yml` | REQ-GW-CI-GATE | `gateway-hardening` job 필수 실행 |
-| PLN-GW-007 | 문서 추적성 동기화 | `docs/05.plans/**`, `docs/06.tasks/**`, `docs/08.operations/01-gateway/**`, `docs/09.runbooks/01-gateway/**`, `docs/07.guides/01-gateway/**` | REQ-GW-DOC-TRACE | 상호 링크/README 인덱스 반영 |
+| PLN-GW-007 | 문서 추적성 동기화 | `docs/05.plans/**`, `docs/06.tasks/**`, `docs/07.operations/01-gateway/**`, `docs/07.operations/01-gateway/**`, `docs/07.operations/01-gateway/**` | REQ-GW-DOC-TRACE | 상호 링크/README 인덱스 반영 |
 
 ## Verification Plan
 
@@ -85,8 +85,8 @@
 
 ## Related Documents
 
-- **Operations Catalog**: [12-infra-service-optimization-catalog.md](../08.operations/12-infra-service-optimization-catalog.md)
+- **Operations Catalog**: [12-infra-service-optimization-catalog.md](../07.operations/12-infra-service-optimization-catalog.md)
 - **Parent Priority Plan**: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
 - **Task**: [2026-03-28-01-gateway-optimization-hardening-tasks.md](../06.tasks/2026-03-28-01-gateway-optimization-hardening-tasks.md)
-- **Gateway Operations**: [01-gateway/README.md](../08.operations/01-gateway/README.md)
-- **Gateway Runbooks**: [01-gateway/README.md](../09.runbooks/01-gateway/README.md)
+- **Gateway Operations**: [01-gateway/README.md](../07.operations/01-gateway/README.md)
+- **Gateway Runbooks**: [01-gateway/README.md](../07.operations/01-gateway/README.md)

@@ -28,7 +28,7 @@
 ### Out of Scope
 
 - Plaintext secret values, credentials, tokens, private keys, and generated certificate contents.
-- Long-form operating procedures that belong in `docs/08.operations/` or `docs/09.runbooks/`.
+- Long-form operating procedures that belong in `docs/07.operations/`.
 - Generated Graphify output under `graphify-out/`.
 - Service-specific Docker Compose source files under `infra/`.
 
@@ -58,7 +58,7 @@ scripts/
 | Repo Contract Check | [check-repo-contracts.sh](check-repo-contracts.sh) | Enforce docs, GitHub, script, image, and runtime governance contracts |
 | QuickWin Baseline Check | [check-quickwin-baseline.sh](check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
 | Template & Security Baseline Check | [check-template-security-baseline.sh](check-template-security-baseline.sh) | Enforce template adoption and required security controls |
-| Documentation Traceability Check | [check-doc-traceability.sh](check-doc-traceability.sh) | Enforce sync links across 05.plans ↔ 08.operations ↔ 09.runbooks |
+| Documentation Traceability Check | [check-doc-traceability.sh](check-doc-traceability.sh) | Enforce sync links across 05.plans ↔ 07.operations |
 | Graphify Health Report | [report-graphify-health.sh](report-graphify-health.sh) | Report advisory health of generated Graphify corpus without blocking validation |
 | Post Tool Validation | [post-tool-validate.sh](post-tool-validate.sh) | Run path-aware validation after Claude/Codex file edits |
 | Unified Hardening Check | [check-all-hardening.sh](check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
@@ -178,8 +178,8 @@ bash scripts/generate-local-certs.sh
 ## Related References
 
 - [🤖 Agent Governance](../AGENTS.md)
-- [⚙️ Operations Baseline](../docs/08.operations/README.md)
-- [📘 Runbooks](../docs/09.runbooks/README.md)
+- [⚙️ Operations Baseline](../docs/07.operations/README.md)
+- [📘 Runbooks](../docs/07.operations/README.md)
 - [Scripts Lifecycle Contract Cleanup Plan](../docs/05.plans/2026-05-09-scripts-lifecycle-contract-cleanup.md)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.

@@ -23,6 +23,7 @@ Running record of harness gap remediation. Updated by agents after each phase.
 | P9 — Runtime surface alignment           | ✅ Done | 2026-05-09 | Thinned root `AGENTS.md` and `CLAUDE.md`, added Codex provider docs and `.codex/README.md`, aligned provider-neutral delegation wording, and kept detailed runtime policy under `.claude/` plus `docs/00.agent-governance/`                                                   |
 | P10 — Harness contract hardening         | ✅ Done | 2026-05-09 | Preserved thin root shims, clarified Codex as hook/context surface, kept `.claude` as the canonical runtime mirror, and strengthened `check-repo-contracts.sh` to enforce agent/function mirror, model hierarchy, scope imports, subagent protocol coverage, and source-leak prevention |
 | P11 — Harness / Agent-first gap closure  | ✅ Done | 2026-05-09 | Recorded the harness and Agent-first gap audit, added a graphify CLI-unavailable fallback to the thin root shim, allowed Claude `rg` discovery, and extended repo contracts without adding a Codex agent catalog, GitHub-native instruction layer, global config, or stage docs |
+| P12 — Docs operations taxonomy consolidation | ✅ Done | 2026-05-10 | Consolidated the former guide, operations, and procedure stages into canonical `docs/07.operations`; deleted legacy stage folders and split templates after link rewriting; updated repo contracts to enforce the reduced taxonomy |
 
 ## Layer Audit (L1–L7)
 
@@ -97,7 +98,7 @@ Running record of harness gap remediation. Updated by agents after each phase.
 
 ## Open Issues
 
-None.
+None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/07.operations` documents after the 2026-05-10 taxonomy consolidation.
 
 ## Related Documents
 

@@ -58,4 +58,4 @@
 - **PRD**: [2026-03-26-04-data-analytics.md](../01.prd/2026-03-26-04-data-analytics.md)
 - **ARD**: [0012-data-analytics-architecture.md](../02.ard/0012-data-analytics-architecture.md)
 - **Spec**: [spec.md](../04.specs/04-data-analytics/spec.md)
-- **Guide**: [README.md](../07.guides/04-data/analytics/README.md)
+- **Guide**: [README.md](../07.operations/04-data/analytics/README.md)

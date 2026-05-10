@@ -1,0 +1,268 @@
+---
+status: draft
+---
+<!-- Target: docs/07.operations/11-laboratory/open-notebook.md -->
+
+# Open Notebook Operations Policy
+
+> Operational policy for Open Notebook and its SurrealDB dependency in the laboratory tier.
+
+---
+
+## Overview (KR)
+
+이 문서는 `open-notebook` 서비스의 운영 정책을 정의한다. Open Notebook은 노트북형 지식 작업과 로컬 실험을 지원하지만 인증, secret, 데이터 볼륨, Traefik 노출 경계를 지켜야 하는 관리 계층 서비스다.
+
+## Policy Scope
+
+이 정책은 `open_notebook` 애플리케이션, `surrealdb` 의존 서비스, 관련 Docker Secrets, Traefik 라우팅, 관리 데이터 볼륨을 관리한다.
+
+## Applies To
+
+- **Systems**: Open Notebook, SurrealDB, Traefik
+- **Agents**: Infra/DevOps agents, Operations agents, AI Agents
+- **Environments**: Local, Dev, Production-like management plane
+
+## Controls
+
+- **Required**:
+  - `open_notebook_password`와 `surreal_db_password`는 Docker Secrets로만 주입해야 한다.
+  - UI 접근은 `open-notebook.${DEFAULT_URL}` Traefik route와 표준 gateway middleware chain 뒤에 둔다.
+  - `OPEN_NOTEBOOK_ENCRYPTION_KEY`는 credential storage 보호에 필요한 비밀값으로 관리한다.
+  - Open Notebook 데이터와 SurrealDB 데이터는 `DEFAULT_MANAGEMENT_DIR` 하위 bind-backed named volume에 저장한다.
+- **Allowed**:
+  - `admin` 또는 `dev` profile에서 로컬 실험/관리 목적으로 실행한다.
+  - SurrealDB healthcheck 결과를 서비스 준비 상태 판단에 사용한다.
+- **Disallowed**:
+  - password, encryption key, SurrealDB credential을 문서, 로그, PR 설명, commit message에 노출하지 않는다.
+  - Traefik 인증/allowlist 경계 없이 공개 인터넷에 직접 노출하지 않는다.
+  - 운영 데이터 볼륨을 임의 삭제하거나 `docker compose down -v`로 제거하지 않는다.
+
+## Exceptions
+
+- SSO/gateway 장애로 긴급 접근이 필요한 경우, 사용자가 승인한 로컬 포트 접근만 일시 허용하고 작업 후 즉시 차단한다.
+- 이미지 pull이 제한된 오프라인 환경에서는 기존 로컬 이미지를 사용하되, drift와 보안 검토 결과를 작업 기록에 남긴다.
+
+## Verification
+
+- `bash scripts/check-laboratory-hardening.sh`
+- `bash scripts/check-template-security-baseline.sh`
+- `docker compose --profile admin config`
+- `docker compose --profile admin ps open_notebook surrealdb`
+
+## Review Cadence
+
+- 월 1회
+- Open Notebook 이미지, secret, Traefik middleware, SurrealDB schema/storage 변경 시 즉시
+
+## AI Agent Policy Section
+
+- **Model / Prompt Change Process**: Open Notebook 내부 AI 기능이나 외부 모델 연결을 추가하기 전 별도 Spec 또는 Operation 문서를 작성한다.
+- **Eval / Guardrail Threshold**: 외부 모델/API 연동은 prompt injection, secret leakage, credential persistence 검토를 통과해야 한다.
+- **Log / Trace Retention**: 서비스 로그에는 secret 값을 남기지 않고, 장애 분석에는 path, status, container state만 기록한다.
+- **Safety Incident Thresholds**: secret 노출, 공개 route 노출, 데이터 볼륨 손상은 즉시 incident 후보로 기록한다.
+
+## Related Documents
+
+- **Infra Source**: [../../../infra/11-laboratory/open-notebook/docker-compose.yml](../../../infra/11-laboratory/open-notebook/docker-compose.yml)
+- **ARD**: [../../02.ard/0025-laboratory-optimization-hardening-architecture.md](../../02.ard/0025-laboratory-optimization-hardening-architecture.md)
+- **Spec**: [../../04.specs/11-laboratory/spec.md](../../04.specs/11-laboratory/spec.md)
+- **Usage**: [../../07.operations/11-laboratory/open-notebook.md](../../07.operations/11-laboratory/open-notebook.md)
+- **Procedure**: [../../07.operations/11-laboratory/open-notebook.md](../../07.operations/11-laboratory/open-notebook.md)
+
+---
+
+## AI Agent Policy Section (If Applicable)
+
+- **Model / Prompt Change Process**: agent runtime 변경은 이 문서에서 직접 수행하지 않고 governance 문서로 분리한다.
+- **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
+- **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
+- **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
+
+## Usage
+
+> Migrated from `docs/07.operations/11-laboratory/open-notebook.md` during the 2026-05-10 operations taxonomy consolidation.
+
+### Open Notebook Usage
+
+> Open Notebook and SurrealDB usage guide for the laboratory management tier.
+
+---
+
+#### Overview (KR)
+
+이 문서는 `open-notebook` 서비스를 사용해 로컬 노트북형 지식 작업 환경에 접근하고, 연결된 SurrealDB 상태를 확인하는 방법을 설명하는 가이드다. 이 서비스는 `11-laboratory` 계층의 관리/실험 도구로 분류되며, 운영 경계와 복구 절차는 별도 operations/runbook 문서를 따른다.
+
+#### Usage Type
+
+`how-to | system-guide`
+
+#### Target Audience
+
+- Operator
+- Developer
+- AI Agent
+
+#### Purpose
+
+Open Notebook UI에 접속해 개인/로컬 노트북 작업을 수행하고, 서비스가 Traefik, Docker Secrets, SurrealDB 의존성을 통해 정상 동작하는지 확인한다.
+
+#### Prerequisites
+
+- `core` 또는 `admin` 실행에 필요한 gateway/SSO 경계가 준비되어 있어야 한다.
+- `open_notebook_password`, `surreal_db_password` Docker Secret 파일이 준비되어 있어야 한다.
+- `OPEN_NOTEBOOK_ENCRYPTION_KEY`, `SURREALDB_USERNAME`, `SURREALDB_NAMESPACE`, `SURREALDB_DATABASE` 값이 `.env`에 정의되어 있어야 한다.
+- `DEFAULT_MANAGEMENT_DIR` 아래 `open-notebook` 및 `surrealdb` 데이터 디렉터리를 쓸 수 있어야 한다.
+
+#### Step-by-step Instructions
+
+1. 루트 Compose 진입점에서 `admin` 또는 `dev` profile을 포함해 서비스를 실행한다.
+
+   ```bash
+   docker compose --profile admin up -d open_notebook surrealdb
+   ```
+
+2. 브라우저에서 `https://open-notebook.${DEFAULT_URL}`에 접속한다.
+3. 승인된 운영 절차로 전달받은 사용자 credential로 UI 로그인을 확인한다. `open_notebook_password` secret 값 자체는 출력하거나 문서화하지 않는다.
+4. 노트북 생성, 검색, 저장 같은 기본 작업을 수행해 `/app/data` 볼륨 쓰기가 정상인지 확인한다.
+5. SurrealDB 의존성 문제가 의심되면 `surrealdb` 컨테이너 health 상태와 `SURREAL_*` 환경값을 우선 점검한다.
+
+#### Common Pitfalls
+
+- `OPEN_NOTEBOOK_ENCRYPTION_KEY`가 비어 있으면 credential 저장 기능이 정상 동작하지 않을 수 있다.
+- `SURREAL_URL`은 컨테이너 내부 네트워크 주소인 `ws://surrealdb:8000/rpc`를 사용해야 한다.
+- `OPEN_NOTEBOOK_API_URL`은 host port 값이고, Traefik 서비스 포트는 `OPEN_NOTEBOOK_WEB_URL` 기본값 `8502`를 사용한다.
+- `pull_policy: always` 때문에 네트워크가 제한된 환경에서는 이미지 갱신 단계가 실패할 수 있다.
+
+#### Related Documents
+
+- **Infra Source**: [../../../infra/11-laboratory/open-notebook/docker-compose.yml](../../../infra/11-laboratory/open-notebook/docker-compose.yml)
+- **Spec**: [../../04.specs/11-laboratory/spec.md](../../04.specs/11-laboratory/spec.md)
+- **Operation**: [../../07.operations/11-laboratory/open-notebook.md](../../07.operations/11-laboratory/open-notebook.md)
+- **Procedure**: [../../07.operations/11-laboratory/open-notebook.md](../../07.operations/11-laboratory/open-notebook.md)
+
+## Procedure
+
+> Migrated from `docs/07.operations/11-laboratory/open-notebook.md` during the 2026-05-10 operations taxonomy consolidation.
+
+### Open Notebook Procedure
+
+: Open Notebook and SurrealDB
+
+---
+
+#### Overview (KR)
+
+이 런북은 `open-notebook` UI 접속 실패, SurrealDB 의존성 장애, secret 또는 볼륨 문제를 진단하고 복구하기 위한 실행 절차를 정의한다.
+
+#### Purpose
+
+Open Notebook 관리/실험 작업 환경의 가용성을 회복하고, 데이터 손상이나 secret 노출 없이 문제를 좁혀 복구한다.
+
+#### Canonical References
+
+- [../../../infra/11-laboratory/open-notebook/docker-compose.yml](../../../infra/11-laboratory/open-notebook/docker-compose.yml)
+- [../../04.specs/11-laboratory/spec.md](../../04.specs/11-laboratory/spec.md)
+- [../../07.operations/11-laboratory/open-notebook.md](../../07.operations/11-laboratory/open-notebook.md)
+- [../../07.operations/11-laboratory/open-notebook.md](../../07.operations/11-laboratory/open-notebook.md)
+
+#### When to Use
+
+- `https://open-notebook.${DEFAULT_URL}` 접속이 실패한다.
+- `open_notebook` 컨테이너가 재시작 루프에 빠진다.
+- `surrealdb` healthcheck가 실패한다.
+- 로그인 또는 credential storage 오류가 발생한다.
+- 관리 데이터 볼륨 경로 또는 권한 문제가 의심된다.
+
+#### Procedure or Checklist
+
+##### Checklist
+
+- [ ] `open_notebook`과 `surrealdb`가 같은 profile에서 resolve되는가?
+- [ ] `surrealdb` healthcheck가 `healthy` 상태인가?
+- [ ] `open_notebook_password`, `surreal_db_password` secret 파일이 존재하는가?
+- [ ] `OPEN_NOTEBOOK_ENCRYPTION_KEY`와 `SURREALDB_*` 환경값이 비어 있지 않은가?
+- [ ] Traefik route와 middleware chain이 유지되는가?
+
+##### Procedure
+
+###### Case 1: UI 접속 실패
+
+1. Compose config가 서비스와 Traefik label을 정상 resolve하는지 확인한다.
+
+   ```bash
+   docker compose --profile admin config
+   ```
+
+2. 서비스 상태를 확인한다.
+
+   ```bash
+   docker compose --profile admin ps open_notebook surrealdb
+   ```
+
+3. `open_notebook` 로그에서 password, token, key 값이 출력되지 않도록 주의하며 오류 유형만 확인한다.
+
+   ```bash
+   docker compose --profile admin logs --tail=100 open_notebook
+   ```
+
+###### Case 2: SurrealDB 준비 실패
+
+1. `surrealdb` 컨테이너 health 상태와 로그를 확인한다.
+
+   ```bash
+   docker compose --profile admin ps surrealdb
+   docker compose --profile admin logs --tail=100 surrealdb
+   ```
+
+2. `surreal_db_password` secret 파일 존재 여부와 `SURREALDB_USERNAME` 값을 확인한다. secret 값 자체는 출력하지 않는다.
+3. `DEFAULT_MANAGEMENT_DIR` 하위 SurrealDB data path의 존재와 쓰기 권한을 확인한다.
+
+###### Case 3: 로그인 또는 credential storage 오류
+
+1. `open_notebook_password` secret 파일이 존재하는지 확인한다.
+2. `OPEN_NOTEBOOK_ENCRYPTION_KEY`가 비어 있지 않은지 확인한다.
+3. 키를 변경한 직후라면 기존 credential storage와 호환되지 않을 수 있으므로 운영 정책에 따라 복구 또는 재초기화 여부를 결정한다.
+
+#### Verification Steps
+
+- [ ] `docker compose --profile admin ps open_notebook surrealdb`에서 두 서비스가 정상 상태다.
+- [ ] `https://open-notebook.${DEFAULT_URL}` 접속과 로그인이 성공한다.
+- [ ] 새 노트북 생성/저장이 성공한다.
+- [ ] `bash scripts/check-laboratory-hardening.sh`가 통과한다.
+
+#### Observability and Evidence Sources
+
+- **Signals**: container status, SurrealDB healthcheck, Traefik route status, Open Notebook UI login result
+- **Evidence to Capture**: command names, service states, redacted log snippets, changed environment key names
+
+#### Safe Rollback or Recovery Procedure
+
+- [ ] 이미지 갱신 후 장애가 발생하면 직전 검증된 image tag 또는 local image로 되돌린다.
+- [ ] secret/key 변경 후 장애가 발생하면 변경 전 secret inventory 기록을 기준으로 복구하되 값은 문서화하지 않는다.
+- [ ] 데이터 볼륨 손상이 의심되면 사용자의 명시적 승인 없이 삭제하거나 재초기화하지 않는다.
+
+#### Agent Operations
+
+- **Prompt Rollback**: Open Notebook 내부 prompt 또는 model setting 변경은 별도 변경 기록이 있을 때만 되돌린다.
+- **Model Fallback**: 외부 AI provider 장애 시 로컬/오프라인 모드로 degrade하고 secret 노출 없이 원인을 기록한다.
+- **Tool Disable / Revoke**: 공개 route 노출 또는 credential leak 의심 시 Open Notebook 외부 접근을 먼저 차단한다.
+- **Eval Re-run**: AI 기능 변경 후 prompt injection, secret leakage, credential persistence 검토를 재실행한다.
+- **Trace Capture**: secret 값 없이 service state, route, profile, image tag만 기록한다.
+
+#### Related Operational Documents
+
+- **Operation**: [../../07.operations/11-laboratory/open-notebook.md](../../07.operations/11-laboratory/open-notebook.md)
+- **Usage**: [../../07.operations/11-laboratory/open-notebook.md](../../07.operations/11-laboratory/open-notebook.md)
+- **Incident examples**: [../../10.incidents/README.md](../../10.incidents/README.md)
+- **Postmortem examples**: [../../10.incidents/README.md](../../10.incidents/README.md)
+
+---
+
+#### Agent Operations (If Applicable)
+
+- **Prompt Rollback**: 적용하지 않음
+- **Model Fallback**: 적용하지 않음
+- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
+- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
+- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.

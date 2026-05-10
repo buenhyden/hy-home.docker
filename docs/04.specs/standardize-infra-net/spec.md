@@ -124,4 +124,4 @@ docker compose config | grep "k3d-hyhome"
 
 - **Plan**: `[../../05.plans/2026-04-01-standardize-infra-net.md]`
 - **Tasks**: `[../../06.tasks/2026-04-01-standardize-infra-net.md]`
-- **Runbook**: `[../../09.runbooks/0012-standardize-infra-net.md]`
+- **Runbook**: `[../../07.operations/0012-standardize-infra-net.md]`

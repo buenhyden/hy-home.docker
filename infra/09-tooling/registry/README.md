@@ -65,9 +65,9 @@ registry/
 
 ## Related References
 
-- **Guide**: [Registry Guide](../../../docs/07.guides/09-tooling/registry.md)
-- **Operation**: [Registry Operations](../../../docs/08.operations/09-tooling/registry.md)
-- **Runbook**: [Registry Runbook](../../../docs/09.runbooks/09-tooling/registry.md)
+- **Guide**: [Registry Guide](../../../docs/07.operations/09-tooling/registry.md)
+- **Operation**: [Registry Operations](../../../docs/07.operations/09-tooling/registry.md)
+- **Runbook**: [Registry Runbook](../../../docs/07.operations/09-tooling/registry.md)
 
 ---
 

@@ -26,7 +26,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 
 ### Out of Scope
 
-- Detailed internal service configuration (see `docs/07.guides/` or sub-module READMEs).
+- Detailed internal service configuration (see `docs/07.operations/` or sub-module READMEs).
 - Application business logic and frontend source code.
 - Credentials and sensitive variables (managed in `secrets/`).
 
@@ -147,8 +147,8 @@ infra/
 
 ## Related References
 
-- [Official Guides](../docs/07.guides/README.md)
-- [Operation Specs](../docs/08.operations/README.md)
+- [Official Guides](../docs/07.operations/README.md)
+- [Operation Specs](../docs/07.operations/README.md)
 - [Architecture Details](../docs/02.ard/README.md)
 - [Secret Management](../secrets/README.md)
 - [Root Compose](../docker-compose.yml)

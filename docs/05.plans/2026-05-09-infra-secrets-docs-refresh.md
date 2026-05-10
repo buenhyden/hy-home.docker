@@ -6,7 +6,7 @@ status: completed
 
 ## Overview (KR)
 
-이 문서는 `infra`, `secrets`, `docs/07.guides`, `docs/08.operations`, `docs/09.runbooks`, `docs/90.references`의 분석 결과를 바탕으로 README와 stage 문서를 템플릿에 맞춰 최신화하는 실행 계획서다.
+이 문서는 `infra`, `secrets`, `docs/07.operations`, `docs/07.operations`, `docs/07.operations`, `docs/90.references`의 분석 결과를 바탕으로 README와 stage 문서를 템플릿에 맞춰 최신화하는 실행 계획서다.
 
 ## Context
 
@@ -93,5 +93,5 @@ status: completed
 - **Spec**: [../04.specs/infra-secrets-docs-refresh/spec.md](../04.specs/infra-secrets-docs-refresh/spec.md)
 - **ADR**: 명시적 ADR 없음
 - **Task**: [../06.tasks/2026-05-09-infra-secrets-docs-refresh.md](../06.tasks/2026-05-09-infra-secrets-docs-refresh.md)
-- **Operation**: [../08.operations/README.md](../08.operations/README.md)
-- **Runbook**: [../09.runbooks/README.md](../09.runbooks/README.md)
+- **Operation**: [../07.operations/README.md](../07.operations/README.md)
+- **Runbook**: [../07.operations/README.md](../07.operations/README.md)

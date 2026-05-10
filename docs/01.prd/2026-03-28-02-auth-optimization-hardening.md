@@ -37,7 +37,7 @@
 ## Success Criteria
 
 - **REQ-PRD-MET-01**: `bash scripts/check-auth-hardening.sh`가 로컬/CI에서 모두 성공한다.
-- **REQ-PRD-MET-02**: `docs/05.plans`, `docs/08.operations`, `docs/09.runbooks` 추적성 검증이 성공한다.
+- **REQ-PRD-MET-02**: `docs/05.plans`, `docs/07.operations`, `docs/07.operations` 추적성 검증이 성공한다.
 - **REQ-PRD-MET-03**: 인증 경로 주요 장애 유형(세션 루프, OIDC 연결 실패, 설정 회귀)에 대한 실행 가능한 런북이 최신 상태다.
 
 ## Scope and Non-goals

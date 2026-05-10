@@ -12,7 +12,7 @@ status: draft
 - Repository Root (`/`) -> `Base Structure` + `Root Snippet`
 - Implementation Layer (`web/`, `server/`, `app/`, `packages/`, `gitops/`, `infra/`, `infrastructure/`) -> `Base Structure` + `Implementation Snippet`
 - Documentation & Governance (`docs/`, `docs/99.templates/`, `docs/00.agent-governance/`) -> `Base Structure` + `Docs & Governance Snippet`
-- Operations & Procedures (`docs/08.operations/`, `docs/09.runbooks/`, `scripts/`) -> `Base Structure` + `Ops & Utils Snippet`
+- Operations & Procedures (`docs/07.operations/`, `scripts/`) -> `Base Structure` + `Ops & Utils Snippet`
 - Incident Learning (`docs/10.incidents/`) -> `Base Structure` + `Incident / Postmortem Snippet`
 
 ## docs 디렉터리 상세 역할
@@ -22,8 +22,7 @@ status: draft
 - [04.specs](04.specs/README.md): 컴포넌트/기능별 상세 설계 명세 (Data, API, Logic, Agent-Design)
 - [05.plans](05.plans/README.md): 실행 계획 및 마일스톤 (Work Breakdown, Risks)
 - [06.tasks](06.tasks/README.md): 실제 구현 및 검증 작업 단위 (Task Table, Evidence)
-- [08.operations](08.operations/README.md): 시스템 운영 정책 및 거버넌스
-- [09.runbooks](09.runbooks/README.md): 반복적 운영 작업의 실행 지침 (Step-by-step)
+- [07.operations](07.operations/README.md): 사용 가이드, 운영 정책, 반복 실행 절차를 통합한 운영 지식 베이스
 - [10.incidents](10.incidents/README.md): 발생한 사고의 사실 기록, 사고 구조 분석, 재발 방지 대책
 
 ## Assembly Rules
@@ -208,7 +207,7 @@ SNIPPET: DOCS & GOVERNANCE
 - Specification (Spec)
 - Plan
 - Task
-- Runbook
+- Operations Procedure
 - Incident / Postmortem
 
 ## Template Usage
@@ -273,11 +272,11 @@ SNIPPET: OPS & UTILS
 - 로그 위치: `{log-path}`
 - 상태 점검 방법: `{command-or-dashboard}`
 - 모니터링 또는 알림 기준: `{monitoring-location}`
-- 운영 이상 징후 발생 시 참조 문서: `{runbook-link}`
+- 운영 이상 징후 발생 시 참조 문서: `{operations-procedure-link}`
 
 ## Incident and Recovery Links
 
-- Runbooks: {runbook-link}
+- Operations Procedures: {operations-procedure-link}
 - Incident Records: {incident-link}
 - Postmortems: {postmortem-link}
 
@@ -305,7 +304,7 @@ SNIPPET: INCIDENT / POSTMORTEM
 - Root Cause
 - Immediate Remediation
 - Follow-up Actions
-- Related Specs / ADRs / Runbooks / Policies
+- Related Specs / ADRs / Operations Procedures / Policies
 
 ## Review Expectations
 
@@ -331,7 +330,7 @@ SNIPPET: AI AGENT GUIDANCE
 ### Allowed Outputs
 
 - {이 경로에서 생성 가능한 문서 또는 코드 산출물}
-- {예: requirement docs, specs, plans, tasks, runbooks}
+- {예: requirement docs, specs, plans, tasks, operations procedures}
 
 ### Guardrails
 

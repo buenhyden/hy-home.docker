@@ -89,5 +89,5 @@ status: draft
 
 ## Related Links
 
-- **Runbook**: `[../../09.runbooks/####-<topic>.md]`
-- **Operation**: `[../../08.operations/<policy-or-standard>.md]`
+- **Runbook**: `[../../07.operations/####-<topic>.md]`
+- **Operation**: `[../../07.operations/<policy-or-standard>.md]`

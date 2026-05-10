@@ -106,9 +106,9 @@ Traefik uses the `ForwardAuth` middleware (`sso-auth@file`) to delegate authenti
 ## Related References
 
 - [01-gateway Root README](../README.md)
-- [Traefik Guide](../../../docs/07.guides/01-gateway/traefik.md)
-- [Gateway Operations Policy](../../../docs/08.operations/01-gateway/traefik.md)
-- [Traefik Runbook](../../../docs/09.runbooks/01-gateway/traefik.md)
+- [Traefik Guide](../../../docs/07.operations/01-gateway/traefik.md)
+- [Gateway Operations Policy](../../../docs/07.operations/01-gateway/traefik.md)
+- [Traefik Runbook](../../../docs/07.operations/01-gateway/traefik.md)
 - [Traefik Dashboard](https://dashboard.${DEFAULT_URL:-localhost}) (Internal)
 
 ---

@@ -75,9 +75,9 @@ syncthing/
 
 ## Related References
 
-- **Guide**: [Syncthing Guide](../../../docs/07.guides/09-tooling/syncthing.md)
-- **Operation**: [Syncthing Operations](../../../docs/08.operations/09-tooling/syncthing.md)
-- **Runbook**: [Syncthing Runbook](../../../docs/09.runbooks/09-tooling/syncthing.md)
+- **Guide**: [Syncthing Guide](../../../docs/07.operations/09-tooling/syncthing.md)
+- **Operation**: [Syncthing Operations](../../../docs/07.operations/09-tooling/syncthing.md)
+- **Runbook**: [Syncthing Runbook](../../../docs/07.operations/09-tooling/syncthing.md)
 
 ---
 

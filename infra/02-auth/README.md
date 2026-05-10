@@ -40,10 +40,10 @@ The `02-auth` tier provides the security foundation for the `hy-home.docker` eco
 
 ## How to Work in This Area
 
-1. Read the [Auth Guides](../../docs/07.guides/02-auth/README.md) for bootstrap and integration steps.
+1. Read the [Auth Guides](../../docs/07.operations/02-auth/README.md) for bootstrap and integration steps.
 2. Review the `docker-compose.yml` in subdirectories for specific service configurations.
-3. Follow the [Operations Policy](../../docs/08.operations/02-auth/README.md) for user and realm management.
-4. Use the [Auth Runbook](../../docs/09.runbooks/02-auth/README.md) for maintenance and recovery tasks.
+3. Follow the [Operations Policy](../../docs/07.operations/02-auth/README.md) for user and realm management.
+4. Use the [Auth Runbook](../../docs/07.operations/02-auth/README.md) for maintenance and recovery tasks.
 
 ## Tech Stack
 
@@ -85,7 +85,7 @@ docker exec oauth2-proxy wget -qO- http://localhost:4180/ping
 
 - [01-gateway](../01-gateway/README.md) - Handles ingress and ForwardAuth routing.
 - [04-data](../04-data/README.md) - Provides persistence and caching layers.
-- [docs/07.guides/02-auth](../../docs/07.guides/02-auth/README.md) - Conceptual and setup guides.
+- [docs/07.operations/02-auth](../../docs/07.operations/02-auth/README.md) - Conceptual and setup guides.
 
 ## AI Agent Guidance
 

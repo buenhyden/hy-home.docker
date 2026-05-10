@@ -25,7 +25,7 @@ title: 'Operations & SRE Scope'
 
 1. **Monitor**: Configure dashboards in `infra/06-observability/grafana/`.
 2. **Alert**: Define SLI/SLO and alert rules in Prometheus/AlertManager.
-3. **Recover**: Create and maintain runbooks in `docs/09.runbooks/`.
+3. **Recover**: Create and maintain operations procedures in `docs/07.operations/`.
 
 ## 4. Operational Procedures
 
@@ -41,7 +41,7 @@ title: 'Operations & SRE Scope'
 
 | Path Pattern              | Owner Agent          | Read-Only For                |
 | ------------------------- | -------------------- | ---------------------------- |
-| `docs/09.runbooks/`       | `incident-responder` | all other agents             |
+| `docs/07.operations/`       | `incident-responder` | all other agents             |
 | `docs/10.incidents/`      | `incident-responder` | `security-auditor` (read), `doc-writer` (template fill) |
 | `infra/06-observability/` | `incident-responder` | read-only for others         |
 

@@ -99,5 +99,5 @@ status: draft
 ## Related Documents
 
 - **Tests**: `[./tests.md]`
-- **Operation**: `[../../08.operations/<policy>.md]`
-- **Runbook**: `[../../09.runbooks/<topic>.md]`
+- **Operation**: `[../../07.operations/<policy>.md]`
+- **Runbook**: `[../../07.operations/<topic>.md]`

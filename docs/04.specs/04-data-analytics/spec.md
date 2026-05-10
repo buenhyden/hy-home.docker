@@ -75,5 +75,5 @@ mysql -h starrocks -P 9030 -u root
 
 ## Related Documents
 
-- **Guide**: `[../../07.guides/04-data/analytics/README.md]`
-- **Runbook**: `[../../09.runbooks/04-data/analytics/influxdb.md]`
+- **Guide**: `[../../07.operations/04-data/analytics/README.md]`
+- **Runbook**: `[../../07.operations/04-data/analytics/influxdb.md]`

@@ -57,9 +57,9 @@
 
 - **Spec**: `[../04.specs/standardize-infra-net/spec.md]`
 - **Plan**: `[../05.plans/2026-04-01-standardize-infra-net.md]`
-- **Guide**: `[../07.guides/0012-standardize-infra-net.md]`
-- **Runbook**: `[../09.runbooks/0012-standardize-infra-net.md]`
+- **Guide**: `[../07.operations/0012-standardize-infra-net.md]`
+- **Runbook**: `[../07.operations/0012-standardize-infra-net.md]`
 - **ARD**: `[../02.ard/2026-04-01-standardize-infra-net.md]`
 - **ADR**: `[../03.adr/2026-04-01-standardize-infra-net.md]`
-- **Operation**: `[../08.operations/standardize-infra-net.md]`
+- **Operation**: `[../07.operations/standardize-infra-net.md]`
 - **PRD**: `[../01.prd/2026-04-01-standardize-infra-net.md]`

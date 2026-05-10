@@ -29,7 +29,7 @@
   - 신규 기능 추가 또는 아키텍처 변경.
 - **Out of Scope**:
   - 상세 기술 명세서(`docs/04.specs/`) 작성 (별도 작업으로 분리).
-  - 운영 가이드(`docs/07.guides/`) 및 런북(`docs/09.runbooks/`) 작성.
+  - 운영 가이드(`docs/07.operations/`) 및 런북(`docs/07.operations/`) 작성.
 
 ## Work Breakdown
 

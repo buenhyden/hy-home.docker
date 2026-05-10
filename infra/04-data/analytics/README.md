@@ -45,14 +45,14 @@ analytics/
 
 1. 신규 분석 엔진 추가 시 반드시 **ADR-0015** 기술 선택 기록을 먼저 확인한다.
 2. 각 엔진 구성 변경 시 `infra_net` 보안 규약을 준수한다.
-3. 운영 절차 변경 시 관련 런북(`docs/09.runbooks/04-data/analytics/`)을 함께 갱신한다.
+3. 운영 절차 변경 시 관련 런북(`docs/07.operations/04-data/analytics/`)을 함께 갱신한다.
 4. 모든 비밀번호 및 토큰은 Docker Secrets( `secrets/` )로 관리한다.
 
 ## Related References
 
-- **System Guide**: [docs/07.guides/04-data/analytics/](../../../docs/07.guides/04-data/analytics/README.md)
-- **Operations**: [docs/08.operations/04-data/analytics/](../../../docs/08.operations/04-data/analytics/README.md)
-- **Runbooks**: [docs/09.runbooks/04-data/analytics/](../../../docs/09.runbooks/04-data/analytics/README.md)
+- **System Guide**: [docs/07.operations/04-data/analytics/](../../../docs/07.operations/04-data/analytics/README.md)
+- **Operations**: [docs/07.operations/04-data/analytics/](../../../docs/07.operations/04-data/analytics/README.md)
+- **Runbooks**: [docs/07.operations/04-data/analytics/](../../../docs/07.operations/04-data/analytics/README.md)
 
 ## AI Agent Guidance
 

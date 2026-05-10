@@ -2,11 +2,11 @@
 
 ## Overview (KR)
 
-이 문서는 `infra/02-auth`(Keycloak, OAuth2 Proxy)의 최적화/하드닝 실행 계획서다. 설정 개선, CI 검증 게이트, 그리고 `01.prd~09.runbooks` 문서 추적성 동기화를 포함한다.
+이 문서는 `infra/02-auth`(Keycloak, OAuth2 Proxy)의 최적화/하드닝 실행 계획서다. 설정 개선, CI 검증 게이트, 그리고 `01.prd~07.operations` 문서 추적성 동기화를 포함한다.
 
 ## Context
 
-- 기준 카탈로그: [12-infra-service-optimization-catalog.md](../08.operations/12-infra-service-optimization-catalog.md)
+- 기준 카탈로그: [12-infra-service-optimization-catalog.md](../07.operations/12-infra-service-optimization-catalog.md)
 - 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
 - 적용 원칙:
   - Scope: `Config+Docs`
@@ -45,7 +45,7 @@
 | PLN-AUTH-004 | 02-auth 하드닝 검증 스크립트 추가 | `scripts/check-auth-hardening.sh` | REQ-PRD-FUN-03 | 실패시 non-zero, 통과시 zero |
 | PLN-AUTH-005 | CI에 `auth-hardening` 게이트 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-FUN-03 | PR/Push 시 job 실행 |
 | PLN-AUTH-006 | PRD~Runbook 문서 세트 생성/정비 | `docs/01~09` 관련 파일 | REQ-PRD-FUN-04 | 양방향 링크 및 README 인덱스 반영 |
-| PLN-AUTH-007 | degraded-mode 운영/복구 절차 명문화 | `docs/08.operations/02-auth/*.md`, `docs/09.runbooks/02-auth/*.md` | REQ-PRD-FUN-05 | 정책+절차 문서 일치 |
+| PLN-AUTH-007 | degraded-mode 운영/복구 절차 명문화 | `docs/07.operations/02-auth/*.md`, `docs/07.operations/02-auth/*.md` | REQ-PRD-FUN-05 | 정책+절차 문서 일치 |
 
 ## Verification Plan
 
@@ -89,5 +89,5 @@
 - **ADR**: [../03.adr/0017-auth-hardening-runtime-and-fail-closed.md](../03.adr/0017-auth-hardening-runtime-and-fail-closed.md)
 - **Spec**: [../04.specs/02-auth/spec.md](../04.specs/02-auth/spec.md)
 - **Tasks**: [../06.tasks/2026-03-28-02-auth-optimization-hardening-tasks.md](../06.tasks/2026-03-28-02-auth-optimization-hardening-tasks.md)
-- **Operations**: [../08.operations/02-auth/README.md](../08.operations/02-auth/README.md)
-- **Runbooks**: [../09.runbooks/02-auth/README.md](../09.runbooks/02-auth/README.md)
+- **Operations**: [../07.operations/02-auth/README.md](../07.operations/02-auth/README.md)
+- **Runbooks**: [../07.operations/02-auth/README.md](../07.operations/02-auth/README.md)

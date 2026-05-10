@@ -6,7 +6,7 @@
 
 `docs/`는 프로젝트의 모든 요구사항, 아키텍처, 결정 사항, 운영 절차, 참고 지식을 통합 관리하는 표준 공간입니다. 이 체계는 추적성, 검증 가능성, AI Agent 협업 가능성을 중심으로 설계되어 있으며, 활성 문서는 허용된 stage taxonomy 안에서만 관리합니다.
 
-기본 문서 흐름은 `01.prd -> 02.ard -> 03.adr -> 04.specs -> 05.plans -> 06.tasks -> 07.guides / 08.operations / 09.runbooks -> 10.incidents`입니다. 보조 공간으로 `00.agent-governance`, `90.references`, `99.templates`를 사용합니다.
+기본 문서 흐름은 `01.prd -> 02.ard -> 03.adr -> 04.specs -> 05.plans -> 06.tasks -> 07.operations -> 10.incidents`입니다. 보조 공간으로 `00.agent-governance`, `90.references`, `99.templates`를 사용합니다.
 
 ## Audience
 
@@ -44,9 +44,7 @@ docs/
 ├── 04.specs/             # 컴포넌트/기능별 상세 설계 명세
 ├── 05.plans/             # 실행 계획 및 마일스톤
 ├── 06.tasks/             # 실제 구현 및 검증 작업 단위
-├── 07.guides/            # 사용자와 운영자를 위한 재현 가능한 사용 가이드
-├── 08.operations/        # 시스템 운영 정책 및 거버넌스
-├── 09.runbooks/          # 반복적 운영 작업의 실행 지침
+├── 07.operations/        # 사용 가이드, 운영 정책, 실행 절차를 통합한 운영 지식 베이스
 ├── 10.incidents/         # 사고 사실 기록, 사후 분석, 재발 방지 대책
 ├── 90.references/        # 느리게 변하는 참고 지식, 표준, 학습 로드맵
 ├── 99.templates/         # stage 문서 작성을 위한 표준 템플릿
@@ -56,7 +54,7 @@ docs/
 ## How to Work in This Area
 
 1. 새 문서를 만들기 전에 이 README와 대상 stage의 `README.md`를 먼저 읽습니다.
-2. 새 active stage 문서는 반드시 `01.prd`, `02.ard`, `03.adr`, `04.specs`, `05.plans`, `06.tasks`, `07.guides`, `08.operations`, `09.runbooks`, `10.incidents`, `90.references`, `99.templates` 아래에 둡니다.
+2. 새 active stage 문서는 반드시 `01.prd`, `02.ard`, `03.adr`, `04.specs`, `05.plans`, `06.tasks`, `07.operations`, `10.incidents`, `90.references`, `99.templates` 아래에 둡니다.
 3. 새 문서는 [99.templates](99.templates/README.md)의 대응 템플릿을 사용하고, README는 [99.templates/readme.template.md](99.templates/readme.template.md)를 따릅니다.
 4. 문서 변경 후 상위 README, 관련 stage 문서, traceability 링크를 함께 갱신합니다.
 5. secret 값, token, 인증서 원문은 문서에 쓰지 않습니다.
@@ -69,7 +67,7 @@ docs/
 - 기존 SSoT 문서를 중복 생성하지 않습니다.
 - 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성합니다.
 - 상위 문서와 하위 산출물 간 추적성을 유지합니다.
-- Agent 전용 문서(`docs/00.agent-governance/`, `AGENTS.md` 등)는 영어를 원칙으로 하고, 사람 대상 README/guide/operation/runbook/reference 문서는 한국어를 기본으로 합니다.
+- Agent 전용 문서(`docs/00.agent-governance/`, `AGENTS.md` 등)는 영어를 원칙으로 하고, 사람 대상 README/operations/reference 문서는 한국어를 기본으로 합니다.
 - Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
 
 ## Traceability Rules
@@ -82,9 +80,7 @@ docs/
 - Specification (Spec)
 - Plan
 - Task
-- Guide
-- Operation
-- Runbook
+- Operations
 - Incident / Postmortem
 
 ## Template Usage
@@ -99,9 +95,7 @@ docs/
 | Agent Design | `04.specs/<feature-id>/agent-design.md` | `99.templates/agent-design.template.md` |
 | Plan | `05.plans/` | `99.templates/plan.template.md` |
 | Task | `06.tasks/` | `99.templates/task.template.md` |
-| Guide | `07.guides/` | `99.templates/guide.template.md` |
-| Operation | `08.operations/` | `99.templates/operation.template.md` |
-| Runbook | `09.runbooks/` | `99.templates/runbook.template.md` |
+| Operations Knowledge | `07.operations/` | `99.templates/operation.template.md` |
 | Incident | `10.incidents/` | `99.templates/incident.template.md` |
 | Postmortem | `10.incidents/` | `99.templates/postmortem.template.md` |
 | Reference | `90.references/` | `99.templates/reference.template.md` |
@@ -125,7 +119,7 @@ bash scripts/check-repo-contracts.sh
 bash scripts/check-doc-traceability.sh
 ```
 
-`check-repo-contracts.sh`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime catalog 동기화를 확인합니다. `check-doc-traceability.sh`는 plans, operations, runbooks의 추적성 동기화를 확인합니다.
+`check-repo-contracts.sh`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime catalog 동기화를 확인합니다. `check-doc-traceability.sh`는 plans와 consolidated operations stage의 추적성 동기화를 확인합니다.
 
 ## Current Refresh Evidence
 
@@ -136,7 +130,7 @@ bash scripts/check-doc-traceability.sh
 | Spec | [04.specs/infra-secrets-docs-refresh/spec.md](04.specs/infra-secrets-docs-refresh/spec.md) |
 | Plan | [05.plans/2026-05-09-infra-secrets-docs-refresh.md](05.plans/2026-05-09-infra-secrets-docs-refresh.md) |
 | Task evidence | [06.tasks/2026-05-09-infra-secrets-docs-refresh.md](06.tasks/2026-05-09-infra-secrets-docs-refresh.md) |
-| README audit | 146 parent-repo tracked README files |
+| README audit | 108 parent-repo tracked README files |
 | Gitlink boundary | `projects/storybook/mcp` 내부 README는 parent repo diff 범위에서 제외 |
 | Runtime scope | Docker Compose runtime, secret values, cert contents, agent runtime unchanged |
 
@@ -149,9 +143,7 @@ README audit은 구조 검증입니다. 문서 품질 검토에서는 중복 leg
 - [04.specs/infra-secrets-docs-refresh/spec.md](04.specs/infra-secrets-docs-refresh/spec.md)
 - [05.plans/2026-05-09-infra-secrets-docs-refresh.md](05.plans/2026-05-09-infra-secrets-docs-refresh.md)
 - [06.tasks/2026-05-09-infra-secrets-docs-refresh.md](06.tasks/2026-05-09-infra-secrets-docs-refresh.md)
-- [07.guides/README.md](07.guides/README.md)
-- [08.operations/README.md](08.operations/README.md)
-- [09.runbooks/README.md](09.runbooks/README.md)
+- [07.operations/README.md](07.operations/README.md)
 - [90.references/README.md](90.references/README.md)
 - [99.templates/README.md](99.templates/README.md)
 - [../README.md](../README.md)

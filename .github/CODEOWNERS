@@ -15,5 +15,5 @@ scripts/** @buenhyden
 secrets/** @buenhyden
 docs/00.agent-governance/** @buenhyden
 docs/04.specs/** @buenhyden
-docs/09.runbooks/** @buenhyden
+docs/07.operations/** @buenhyden
 docs/99.templates/** @buenhyden

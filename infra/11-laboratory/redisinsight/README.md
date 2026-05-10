@@ -66,6 +66,6 @@ labels:
 
 ## Related References
 
-- **System Guide**: [RedisInsight Guide](../../../docs/07.guides/11-laboratory/redisinsight.md)
-- **Operations Policy**: [RedisInsight Operations](../../../docs/08.operations/11-laboratory/redisinsight.md)
-- **Runbook**: [RedisInsight Runbook](../../../docs/09.runbooks/11-laboratory/redisinsight.md)
+- **System Guide**: [RedisInsight Guide](../../../docs/07.operations/11-laboratory/redisinsight.md)
+- **Operations Policy**: [RedisInsight Operations](../../../docs/07.operations/11-laboratory/redisinsight.md)
+- **Runbook**: [RedisInsight Runbook](../../../docs/07.operations/11-laboratory/redisinsight.md)

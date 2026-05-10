@@ -6,7 +6,7 @@
 
 ## Context
 
-- 기준 카탈로그: [../08.operations/12-infra-service-optimization-catalog.md](../08.operations/12-infra-service-optimization-catalog.md)
+- 기준 카탈로그: [../07.operations/12-infra-service-optimization-catalog.md](../07.operations/12-infra-service-optimization-catalog.md)
 - 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
 - 대상 구성: `infra/08-ai/**/*`, `scripts/`, `.github/workflows/`, `docs/01~09`
 
@@ -81,6 +81,6 @@
 - **ADR**: [../03.adr/0023-ai-hardening-and-ha-expansion-strategy.md](../03.adr/0023-ai-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../04.specs/08-ai/spec.md](../04.specs/08-ai/spec.md)
 - **Tasks**: [../06.tasks/2026-03-28-08-ai-optimization-hardening-tasks.md](../06.tasks/2026-03-28-08-ai-optimization-hardening-tasks.md)
-- **Guide**: [../07.guides/08-ai/optimization-hardening.md](../07.guides/08-ai/optimization-hardening.md)
-- **Operations**: [../08.operations/08-ai/optimization-hardening.md](../08.operations/08-ai/optimization-hardening.md)
-- **Runbooks**: [../09.runbooks/08-ai/optimization-hardening.md](../09.runbooks/08-ai/optimization-hardening.md)
+- **Guide**: [../07.operations/08-ai/optimization-hardening.md](../07.operations/08-ai/optimization-hardening.md)
+- **Operations**: [../07.operations/08-ai/optimization-hardening.md](../07.operations/08-ai/optimization-hardening.md)
+- **Runbooks**: [../07.operations/08-ai/optimization-hardening.md](../07.operations/08-ai/optimization-hardening.md)

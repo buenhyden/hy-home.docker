@@ -40,9 +40,9 @@ The `03-security` tier serves as the platform's root of trust. It provides Hashi
 
 ## How to Work in This Area
 
-1. Read the [Security Setup Guide](../../docs/07.guides/03-security/01.setup.md) for initialization.
-2. Follow the [Operations Policy](../../docs/08.operations/03-security/README.md) for unseal protocols.
-3. Use the [Security Runbook](../../docs/09.runbooks/03-security/README.md) for emergency recovery.
+1. Read the [Security Setup Guide](../../docs/07.operations/03-security/01.setup.md) for initialization.
+2. Follow the [Operations Policy](../../docs/07.operations/03-security/README.md) for unseal protocols.
+3. Use the [Security Runbook](../../docs/07.operations/03-security/README.md) for emergency recovery.
 4. Vault must be manually unsealed after each restart.
 
 ## Tech Stack
@@ -84,7 +84,7 @@ docker exec vault wget -q -O- "http://127.0.0.1:8200/v1/sys/health"
 
 - [02-auth](../02-auth/README.md) - Integrating Vault with OIDC.
 - [01-gateway](../01-gateway/README.md) - Vault UI ingress routing.
-- [docs/08.operations/03-security](../../docs/08.operations/03-security/README.md) - Governance standards.
+- [docs/07.operations/03-security](../../docs/07.operations/03-security/README.md) - Governance standards.
 
 ## AI Agent Guidance
 

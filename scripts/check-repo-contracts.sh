@@ -25,9 +25,7 @@ allowed_docs=(
   "04.specs"
   "05.plans"
   "06.tasks"
-  "07.guides"
-  "08.operations"
-  "09.runbooks"
+  "07.operations"
   "10.incidents"
   "90.references"
   "99.templates"
@@ -73,7 +71,6 @@ required_templates=(
   "api-spec.template.md"
   "ard.template.md"
   "data-model.template.md"
-  "guide.template.md"
   "incident.template.md"
   "openapi.template.yaml"
   "operation.template.md"
@@ -82,7 +79,6 @@ required_templates=(
   "prd.template.md"
   "readme.template.md"
   "reference.template.md"
-  "runbook.template.md"
   "schema.template.graphql"
   "service.template.proto"
   "spec.template.md"
@@ -105,10 +101,10 @@ if [[ "${#misplaced_templates[@]}" -gt 0 ]]; then
 fi
 
 section "Banned stale references"
-if rg -n 'docs/11|11\.postmortems|\.agent/' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
+if rg -n 'docs/11|11\.postmortems|\.agent/|07\.guides|08\.operations|09\.runbooks|guide\.template\.md|runbook\.template\.md' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
   --glob '!graphify-out/**' \
   --glob '!scripts/check-repo-contracts.sh' >/tmp/check-repo-contracts-banned.txt; then
-  fail "stale docs/11, 11.postmortems, or .agent references remain"
+  fail "stale docs/11, removed operations-stage, guide/runbook template, or .agent references remain"
   cat /tmp/check-repo-contracts-banned.txt >&2
 fi
 rm -f /tmp/check-repo-contracts-banned.txt
@@ -520,7 +516,7 @@ from __future__ import annotations
 import pathlib
 import sys
 
-stages = ["07.guides", "08.operations", "09.runbooks"]
+stages = ["07.operations"]
 
 # Implementation path names sometimes differ from product names. Keep those
 # differences explicit so missing docs do not get hidden by ad-hoc conventions.

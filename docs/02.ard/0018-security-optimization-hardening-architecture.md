@@ -90,5 +90,5 @@
 - **Plan**: [../05.plans/2026-03-28-03-security-optimization-hardening-plan.md](../05.plans/2026-03-28-03-security-optimization-hardening-plan.md)
 - **ADR**: [../03.adr/0018-vault-hardening-and-ha-expansion-strategy.md](../03.adr/0018-vault-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../06.tasks/2026-03-28-03-security-optimization-hardening-tasks.md](../06.tasks/2026-03-28-03-security-optimization-hardening-tasks.md)
-- **Operation**: [../08.operations/03-security/vault.md](../08.operations/03-security/vault.md)
-- **Runbook**: [../09.runbooks/03-security/vault.md](../09.runbooks/03-security/vault.md)
+- **Operation**: [../07.operations/03-security/vault.md](../07.operations/03-security/vault.md)
+- **Runbook**: [../07.operations/03-security/vault.md](../07.operations/03-security/vault.md)

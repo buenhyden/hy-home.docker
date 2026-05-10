@@ -43,9 +43,9 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 
 ## Operational Documentation
 
-- **System Guide**: [n8n System Guide](../../../docs/07.guides/07-workflow/n8n.md)
-- **Operations Policy**: [n8n Operations Policy](../../../docs/08.operations/07-workflow/n8n.md)
-- **Recovery Runbook**: [n8n Recovery Runbook](../../../docs/09.runbooks/07-workflow/n8n.md)
+- **System Guide**: [n8n System Guide](../../../docs/07.operations/07-workflow/n8n.md)
+- **Operations Policy**: [n8n Operations Policy](../../../docs/07.operations/07-workflow/n8n.md)
+- **Recovery Runbook**: [n8n Recovery Runbook](../../../docs/07.operations/07-workflow/n8n.md)
 
 ---
 
@@ -100,6 +100,6 @@ infra/07-workflow/n8n/
 ## Related References
 
 - [infra/README.md](../../README.md)
-- [docs/07.guides/README.md](../../../docs/07.guides/README.md)
-- [docs/08.operations/README.md](../../../docs/08.operations/README.md)
-- [docs/09.runbooks/README.md](../../../docs/09.runbooks/README.md)
+- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
+- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
+- [docs/07.operations/README.md](../../../docs/07.operations/README.md)

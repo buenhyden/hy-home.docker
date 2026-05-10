@@ -94,4 +94,4 @@ graph LR
 - **PRD**: [2026-03-26-04-data-analytics.md](../01.prd/2026-03-26-04-data-analytics.md)
 - **ADR**: [0015-analytics-engine-selection.md](../03.adr/0015-analytics-engine-selection.md)
 - **Specs**: [spec.md](../04.specs/04-data-analytics/spec.md)
-- **Guides**: [README.md](../07.guides/04-data/analytics/README.md)
+- **Guides**: [README.md](../07.operations/04-data/analytics/README.md)

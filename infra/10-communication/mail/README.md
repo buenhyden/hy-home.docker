@@ -60,9 +60,9 @@ mail/
 
 ## Related References
 
-- **Guide**: [Mail Services Guide](../../../docs/07.guides/10-communication/mail.md)
-- **Operation**: [Mail Operations Policy](../../../docs/08.operations/10-communication/mail.md)
-- **Runbook**: [Mail Recovery Runbook](../../../docs/09.runbooks/10-communication/mail.md)
+- **Guide**: [Mail Services Guide](../../../docs/07.operations/10-communication/mail.md)
+- **Operation**: [Mail Operations Policy](../../../docs/07.operations/10-communication/mail.md)
+- **Runbook**: [Mail Recovery Runbook](../../../docs/07.operations/10-communication/mail.md)
 
 ---
 

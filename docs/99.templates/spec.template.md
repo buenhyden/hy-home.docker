@@ -142,4 +142,4 @@ python evals/run_[feature]_eval.py
 
 - **Plan**: `[../../05.plans/YYYY-MM-DD-<feature>.md]`
 - **Tasks**: `[../../06.tasks/YYYY-MM-DD-<feature-or-stream>.md]`
-- **Runbook**: `[../../09.runbooks/<topic>.md]`
+- **Runbook**: `[../../07.operations/<topic>.md]`

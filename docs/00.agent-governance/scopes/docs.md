@@ -24,7 +24,7 @@ Boundaries and permissions for agents interacting with repository documentation.
 
 - Language policy:
   - AI-focused docs (rules/scopes/providers/root shims): English.
-  - Human-facing docs (README, guides, runbooks, reports): Korean by default.
+  - Human-facing docs (README, operations, reports): Korean by default.
 - Link integrity: no broken links, no absolute filesystem links, no `file://` URIs.
 - Taxonomy compliance: follow stage mapping in `rules/stage-authoring-matrix.md`.
 - Active stage artifacts must live only in canonical stage paths; non-stage `docs/*` paths are not valid targets for active specs, plans, or tasks.
@@ -50,7 +50,7 @@ If legacy active-stage content is found in a non-stage `docs/*` path:
 | `docs/00.agent-governance/`           | `doc-writer` | governance rules — all agents read      |
 | `docs/99.templates/`                  | `doc-writer` | all — template edits need user approval |
 | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | `doc-writer` | all other agents                        |
-| `docs/07.guides/`                     | `doc-writer` | all other agents                        |
+| `docs/07.operations/`                     | `doc-writer` | all other agents                        |
 
 ## 6. Subagent Bridge
 

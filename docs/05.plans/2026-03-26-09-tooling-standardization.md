@@ -17,9 +17,9 @@
 
 ### Phase 2: Operational Documentation
 
-- [ ] 사용자 가이드 작성 (`docs/07.guides/`): Terrakube 워크스페이스 생성, SonarQube 프로젝트 연동 등.
-- [ ] 운영 정책 작성 (`docs/08.operations/`): 성능 테스트 주기, IaC 승인 프로세스, 이미지 보관 정책.
-- [ ] 런북 작성 (`docs/09.runbooks/`): Terrakube 상태 복구, SonarQube DB 마이그레이션 등.
+- [ ] 사용자 가이드 작성 (`docs/07.operations/`): Terrakube 워크스페이스 생성, SonarQube 프로젝트 연동 등.
+- [ ] 운영 정책 작성 (`docs/07.operations/`): 성능 테스트 주기, IaC 승인 프로세스, 이미지 보관 정책.
+- [ ] 런북 작성 (`docs/07.operations/`): Terrakube 상태 복구, SonarQube DB 마이그레이션 등.
 
 ### Phase 3: Infrastructure README Refactoring
 

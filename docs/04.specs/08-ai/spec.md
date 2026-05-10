@@ -55,7 +55,7 @@
 
 - Ollama 모델 데이터는 `${DEFAULT_AI_MODEL_DIR}/ollama` 바인드 볼륨을 사용한다.
 - Open WebUI 상태 데이터는 `${DEFAULT_AI_MODEL_DIR}/open-webui` 바인드 볼륨을 사용한다.
-- 대화/RAG 데이터 보존 정책은 운영 정책 문서(`08.operations/08-ai/optimization-hardening.md`)에서 통제한다.
+- 대화/RAG 데이터 보존 정책은 운영 정책 문서(`07.operations/08-ai/optimization-hardening.md`)에서 통제한다.
 
 ## Interfaces & Data Structures
 
@@ -116,7 +116,7 @@ bash scripts/check-doc-traceability.sh
 
 - **Plan**: [../../05.plans/2026-03-28-08-ai-optimization-hardening-plan.md](../../05.plans/2026-03-28-08-ai-optimization-hardening-plan.md)
 - **Tasks**: [../../06.tasks/2026-03-28-08-ai-optimization-hardening-tasks.md](../../06.tasks/2026-03-28-08-ai-optimization-hardening-tasks.md)
-- **Guide**: [../../07.guides/08-ai/optimization-hardening.md](../../07.guides/08-ai/optimization-hardening.md)
-- **Operation**: [../../08.operations/08-ai/optimization-hardening.md](../../08.operations/08-ai/optimization-hardening.md)
-- **Runbook**: [../../09.runbooks/08-ai/optimization-hardening.md](../../09.runbooks/08-ai/optimization-hardening.md)
-- **Catalog**: [../../08.operations/12-infra-service-optimization-catalog.md](../../08.operations/12-infra-service-optimization-catalog.md)
+- **Guide**: [../../07.operations/08-ai/optimization-hardening.md](../../07.operations/08-ai/optimization-hardening.md)
+- **Operation**: [../../07.operations/08-ai/optimization-hardening.md](../../07.operations/08-ai/optimization-hardening.md)
+- **Runbook**: [../../07.operations/08-ai/optimization-hardening.md](../../07.operations/08-ai/optimization-hardening.md)
+- **Catalog**: [../../07.operations/12-infra-service-optimization-catalog.md](../../07.operations/12-infra-service-optimization-catalog.md)

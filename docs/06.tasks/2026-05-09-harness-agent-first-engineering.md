@@ -27,7 +27,7 @@ status: completed
 | ID | Type | Task | Status | Validation / Evidence |
 | --- | --- | --- | --- | --- |
 | HAFE-001 | Analyze | Review root, docs, infra, scripts, governance, runtime, template, and validator files. | Done | Captured in the specification file analysis table. |
-| HAFE-002 | Document | Create Spec, Plan, Task, Guide, Operation, and Runbook stage docs. | Done | New docs under `docs/04.specs`, `docs/05.plans`, `docs/06.tasks`, `docs/07.guides`, `docs/08.operations`, `docs/09.runbooks`. |
+| HAFE-002 | Document | Create Spec, Plan, Task, Guide, Operation, and Runbook stage docs. | Done | New docs under `docs/04.specs`, `docs/05.plans`, `docs/06.tasks`, `docs/07.operations`, `docs/07.operations`, `docs/07.operations`. |
 | HAFE-003 | Sync | Update parent README files for new artifacts. | Done | README structure and related links updated. |
 | HAFE-004 | Verify | Run governance, docs, runtime, default/core Compose, and supported hardening checks. | Done | Scoped validation commands passed on 2026-05-09; `10-communication` remediation is separate infra scope. |
 | HAFE-005 | Scan | Confirm no external source-label references in active runtime/governance surfaces. | Done | `rg` returned no matches in active runtime/governance surfaces. |
@@ -99,6 +99,6 @@ Results:
 
 - [Specification](../04.specs/harness-agent-first-engineering/spec.md)
 - [Plan](../05.plans/2026-05-09-harness-agent-first-engineering.md)
-- [Guide](../07.guides/harness-agent-first-engineering.md)
-- [Operations Policy](../08.operations/harness-agent-first-engineering.md)
-- [Validation Runbook](../09.runbooks/harness-agent-first-engineering-validation.md)
+- [Guide](../07.operations/harness-agent-first-engineering.md)
+- [Operations Policy](../07.operations/harness-agent-first-engineering.md)
+- [Validation Runbook](../07.operations/harness-agent-first-engineering-validation.md)

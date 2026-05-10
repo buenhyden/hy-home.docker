@@ -40,16 +40,16 @@ influxdb/
 
 ## How to Work in This Area
 
-1. 아키텍처 세부 사항은 [InfluxDB 시스템 가이드](../../../../docs/07.guides/04-data/analytics/influxdb.md)를 참조한다.
-2. 데이터 보존 및 보안 규약은 [운영 정책](../../../../docs/08.operations/04-data/analytics/influxdb.md)을 따른다.
-3. 수집 장애 발생 시 [복구 런북](../../../../docs/09.runbooks/04-data/analytics/influxdb.md)을 참조한다.
+1. 아키텍처 세부 사항은 [InfluxDB 시스템 가이드](../../../../docs/07.operations/04-data/analytics/influxdb.md)를 참조한다.
+2. 데이터 보존 및 보안 규약은 [운영 정책](../../../../docs/07.operations/04-data/analytics/influxdb.md)을 따른다.
+3. 수집 장애 발생 시 [복구 런북](../../../../docs/07.operations/04-data/analytics/influxdb.md)을 참조한다.
 4. 모든 API 토큰은 `secrets/influxdb_api_token`에 정의되어야 한다.
 
 ## Related References
 
-- **System Guide**: [docs/07.guides/04-data/analytics/influxdb.md](../../../../docs/07.guides/04-data/analytics/influxdb.md)
-- **Operations**: [docs/08.operations/04-data/analytics/influxdb.md](../../../../docs/08.operations/04-data/analytics/influxdb.md)
-- **Runbook**: [docs/09.runbooks/04-data/analytics/influxdb.md](../../../../docs/09.runbooks/04-data/analytics/influxdb.md)
+- **System Guide**: [docs/07.operations/04-data/analytics/influxdb.md](../../../../docs/07.operations/04-data/analytics/influxdb.md)
+- **Operations**: [docs/07.operations/04-data/analytics/influxdb.md](../../../../docs/07.operations/04-data/analytics/influxdb.md)
+- **Runbook**: [docs/07.operations/04-data/analytics/influxdb.md](../../../../docs/07.operations/04-data/analytics/influxdb.md)
 - **Monitoring**: `https://grafana.${DEFAULT_URL}`
 
 ## AI Agent Guidance

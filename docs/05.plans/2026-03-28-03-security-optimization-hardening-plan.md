@@ -6,7 +6,7 @@
 
 ## Context
 
-- 기준 카탈로그: [12-infra-service-optimization-catalog.md](../08.operations/12-infra-service-optimization-catalog.md)
+- 기준 카탈로그: [12-infra-service-optimization-catalog.md](../07.operations/12-infra-service-optimization-catalog.md)
 - 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
 - 적용 전략: Phase 적용(즉시 하드닝 -> 정책/전환 설계 -> 문서 추적성 동기화)
 
@@ -88,6 +88,6 @@
 - **ADR**: [../03.adr/0018-vault-hardening-and-ha-expansion-strategy.md](../03.adr/0018-vault-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../04.specs/03-security/spec.md](../04.specs/03-security/spec.md)
 - **Tasks**: [../06.tasks/2026-03-28-03-security-optimization-hardening-tasks.md](../06.tasks/2026-03-28-03-security-optimization-hardening-tasks.md)
-- **Guide**: [../07.guides/03-security/vault.md](../07.guides/03-security/vault.md)
-- **Operations**: [../08.operations/03-security/vault.md](../08.operations/03-security/vault.md)
-- **Runbooks**: [../09.runbooks/03-security/vault.md](../09.runbooks/03-security/vault.md)
+- **Guide**: [../07.operations/03-security/vault.md](../07.operations/03-security/vault.md)
+- **Operations**: [../07.operations/03-security/vault.md](../07.operations/03-security/vault.md)
+- **Runbooks**: [../07.operations/03-security/vault.md](../07.operations/03-security/vault.md)

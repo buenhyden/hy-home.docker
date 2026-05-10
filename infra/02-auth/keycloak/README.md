@@ -42,9 +42,9 @@ healthcheck:
 
 ## Related Documents
 
-- **Guide**: `[../../../docs/07.guides/02-auth/keycloak.md]`
-- **Operation**: `[../../../docs/08.operations/02-auth/keycloak.md]`
-- **Runbook**: `[../../../docs/09.runbooks/02-auth/keycloak.md]`
+- **Guide**: `[../../../docs/07.operations/02-auth/keycloak.md]`
+- **Operation**: `[../../../docs/07.operations/02-auth/keycloak.md]`
+- **Runbook**: `[../../../docs/07.operations/02-auth/keycloak.md]`
 - **Spec**: `[../../../docs/04.specs/02-auth/spec.md]`
 
 ## AI Agent Guidance

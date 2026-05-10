@@ -65,4 +65,4 @@ curl -f http://localhost:${OLLAMA_WEB_UI_PORT:-8080}/health
 
 - **Plan**: `[../../05.plans/2026-03-27-08-ai-open-webui-plan.md]`
 - **Tasks**: `[../../06.tasks/2026-03-27-08-ai-open-webui-tasks.md]`
-- **Runbook**: `[../../09.runbooks/08-ai/open-webui.md]`
+- **Runbook**: `[../../07.operations/08-ai/open-webui.md]`

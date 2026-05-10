@@ -102,7 +102,7 @@ Use Mermaid diagrams for all architecture, flow, and sequence documentation.
 ## Collaboration
 
 - Reads from: all agent outputs, stage templates, governance rules.
-- Writes to: `docs/00.agent-governance/`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `docs/07.guides/`.
+- Writes to: `docs/00.agent-governance/`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `docs/07.operations/`.
 - Escalates to: user for any `docs/01`–`docs/99` modification request.
 
 ## Related Documents

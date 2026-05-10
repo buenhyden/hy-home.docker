@@ -41,15 +41,15 @@ warehouses/
 
 ## How to Work in This Area
 
-1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/07.guides/04-data/analytics/warehouses.md)를 참조한다.
-2. 자원 거버넌스는 [운영 정책](../../../../docs/08.operations/04-data/analytics/warehouses.md)을 확인한다.
-3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/09.runbooks/04-data/analytics/warehouses.md)을 사용한다.
+1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/07.operations/04-data/analytics/warehouses.md)를 참조한다.
+2. 자원 거버넌스는 [운영 정책](../../../../docs/07.operations/04-data/analytics/warehouses.md)을 확인한다.
+3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/07.operations/04-data/analytics/warehouses.md)을 사용한다.
 
 ## Related References
 
-- **System Guide**: [docs/07.guides/04-data/analytics/warehouses.md](../../../../docs/07.guides/04-data/analytics/warehouses.md)
-- **Operations**: [docs/08.operations/04-data/analytics/warehouses.md](../../../../docs/08.operations/04-data/analytics/warehouses.md)
-- **Runbook**: [docs/09.runbooks/04-data/analytics/warehouses.md](../../../../docs/09.runbooks/04-data/analytics/warehouses.md)
+- **System Guide**: [docs/07.operations/04-data/analytics/warehouses.md](../../../../docs/07.operations/04-data/analytics/warehouses.md)
+- **Operations**: [docs/07.operations/04-data/analytics/warehouses.md](../../../../docs/07.operations/04-data/analytics/warehouses.md)
+- **Runbook**: [docs/07.operations/04-data/analytics/warehouses.md](../../../../docs/07.operations/04-data/analytics/warehouses.md)
 - **Monitoring**: `starrocks-fe:8030/metrics`
 
 ## AI Agent Guidance

@@ -71,9 +71,9 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway.local/metrics/j
 
 ## Related References
 
-- [System Guide](../../../docs/07.guides/06-observability/pushgateway.md)
-- [Operational Policy](../../../docs/08.operations/06-observability/pushgateway.md)
-- [Recovery Runbook](../../../docs/09.runbooks/06-observability/pushgateway.md)
+- [System Guide](../../../docs/07.operations/06-observability/pushgateway.md)
+- [Operational Policy](../../../docs/07.operations/06-observability/pushgateway.md)
+- [Recovery Runbook](../../../docs/07.operations/06-observability/pushgateway.md)
 
 ---
 

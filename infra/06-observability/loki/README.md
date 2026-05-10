@@ -89,7 +89,7 @@ Retention is enabled and currently set to **7 days (168h)** by default.
 - Correlate logs with metrics using common labels (e.g., `service_name`).
 
 ---
-[System Guide](../../../docs/07.guides/06-observability/loki.md) | [Operational Policy](../../../docs/08.operations/06-observability/loki.md) | [Recovery Runbook](../../../docs/09.runbooks/06-observability/loki.md)
+[System Guide](../../../docs/07.operations/06-observability/loki.md) | [Operational Policy](../../../docs/07.operations/06-observability/loki.md) | [Recovery Runbook](../../../docs/07.operations/06-observability/loki.md)
 
 ---
 
@@ -117,6 +117,6 @@ infra/06-observability/loki/
 ## Related References
 
 - [infra/README.md](../../README.md)
-- [docs/07.guides/README.md](../../../docs/07.guides/README.md)
-- [docs/08.operations/README.md](../../../docs/08.operations/README.md)
-- [docs/09.runbooks/README.md](../../../docs/09.runbooks/README.md)
+- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
+- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
+- [docs/07.operations/README.md](../../../docs/07.operations/README.md)

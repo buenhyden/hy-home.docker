@@ -72,8 +72,8 @@ docs/05.plans/
 - **Spec**: [../04.specs/README.md]
 - **Task**: [../06.tasks/README.md]
 - **ADR**: [../03.adr/README.md]
-- **Operation**: [../08.operations/README.md]
-- **Runbook**: [../09.runbooks/README.md]
+- **Operation**: [../07.operations/README.md]
+- **Runbook**: [../07.operations/README.md]
 - **Harness / Agent-first Engineering Plan**: [2026-05-09-harness-agent-first-engineering.md](2026-05-09-harness-agent-first-engineering.md)
 - **Infra / Secrets / Docs Refresh Plan**: [2026-05-09-infra-secrets-docs-refresh.md](2026-05-09-infra-secrets-docs-refresh.md)
 - **Scripts Lifecycle Contract Cleanup Plan**: [2026-05-09-scripts-lifecycle-contract-cleanup.md](2026-05-09-scripts-lifecycle-contract-cleanup.md)

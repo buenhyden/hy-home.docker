@@ -123,6 +123,6 @@ infra/10-communication/
 ## Related References
 
 - [infra/README.md](../README.md)
-- [docs/07.guides/README.md](../../docs/07.guides/README.md)
-- [docs/08.operations/README.md](../../docs/08.operations/README.md)
-- [docs/09.runbooks/README.md](../../docs/09.runbooks/README.md)
+- [docs/07.operations/README.md](../../docs/07.operations/README.md)
+- [docs/07.operations/README.md](../../docs/07.operations/README.md)
+- [docs/07.operations/README.md](../../docs/07.operations/README.md)

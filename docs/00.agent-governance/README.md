@@ -63,9 +63,7 @@ This README is for:
 | `[LOAD:SPECS]`       | `docs/04.specs/README.md`       | Technical source of truth       |
 | `[LOAD:PLANS]`       | `docs/05.plans/README.md`       | Implementation planning         |
 | `[LOAD:TASKS]`       | `docs/06.tasks/README.md`       | Execution evidence              |
-| `[LOAD:GUIDES]`      | `docs/07.guides/README.md`      | Human-facing guidance           |
-| `[LOAD:OPS]`         | `docs/08.operations/README.md`  | Operational policy              |
-| `[LOAD:RUNBOOKS]`    | `docs/09.runbooks/README.md`    | Operational procedures          |
+| `[LOAD:OPERATIONS]`  | `docs/07.operations/README.md`   | Operations knowledge base        |
 | `[LOAD:INCIDENTS]`   | `docs/10.incidents/README.md`   | Incident records and postmortems |
 | `[LOAD:REFERENCES]`  | `docs/90.references/README.md`  | Stable references               |
 | `[LOAD:TEMPLATES]`   | `docs/99.templates/README.md`   | Document templates              |
