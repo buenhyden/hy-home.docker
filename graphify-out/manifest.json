@@ -1219,9 +1219,13 @@
     "mtime": 1775620326.1535509,
     "hash": "a81ae41417f89a8869c20473d26e3cc8"
   },
+  "/home/hy/project-infra/hy-home.docker/llms.txt": {
+    "mtime": 1778387682.1436589,
+    "hash": "1ac810e2ee7d79807e6e543778a50840"
+  },
   "/home/hy/project-infra/hy-home.docker/README.md": {
-    "mtime": 1778377794.6861145,
-    "hash": "59f4b8012eef90abcd3e86687efc8436"
+    "mtime": 1778387573.5931585,
+    "hash": "1392eff9096e774283ff36fe3aec8752"
   },
   "/home/hy/project-infra/hy-home.docker/archive/Windows-Network-IP.md": {
     "mtime": 1771840597.8729992,
@@ -2276,8 +2280,8 @@
     "hash": "f3c4c9dcf73aee628498a7bd7840157f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/README.md": {
-    "mtime": 1778381807.5101697,
-    "hash": "ed9cbe855e7cb66bbabc5991b8372fe1"
+    "mtime": 1778387584.351928,
+    "hash": "290e32555d00d89f173d4c97e908273d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/README.md": {
     "mtime": 1778377492.610529,
@@ -2652,8 +2656,16 @@
     "hash": "12269a9df6756937008edb93fa7bfd12"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/README.md": {
-    "mtime": 1778379692.762582,
-    "hash": "3a68c8077688658398fa6400667976e1"
+    "mtime": 1778387590.8190846,
+    "hash": "cc205716b966b1a6215861c99f2db5d1"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/90.references/llm-wiki/README.md": {
+    "mtime": 1778387978.303559,
+    "hash": "03e7a3a6830c9855f52cbd5ede67ffed"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/90.references/llm-wiki/repository-map.md": {
+    "mtime": 1778387559.3068128,
+    "hash": "22fddd689f7061de8d10c52d4a93ca5e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/learning/roadmap-v1.md": {
     "mtime": 1778379693.6665819,
@@ -3420,8 +3432,8 @@
     "hash": "b258f2646fe403958048502cd43d13d1"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1778382088.4606135,
-    "hash": "d2798f5e91b24687e7649fe2f45b5ab7"
+    "mtime": 1778387708.119081,
+    "hash": "66df5144ef2478b5b90d5344ac6882b7"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/template.md": {
     "mtime": 1778380480.437619,
