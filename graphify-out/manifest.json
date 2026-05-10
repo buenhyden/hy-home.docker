@@ -1856,8 +1856,8 @@
     "hash": "94d7873a1c52b5f86653432b20b33819"
   },
   "/home/hy/project-infra/hy-home.docker/scripts/README.md": {
-    "mtime": 1778389392.3320506,
-    "hash": "4ac63b3616873ba7bd8278fa5618bceb"
+    "mtime": 1778392263.2558944,
+    "hash": "bae299a8ea2fbb40ee3a3c89535c66e3"
   },
   "/home/hy/project-infra/hy-home.docker/projects/README.md": {
     "mtime": 1778376501.424058,
@@ -2304,8 +2304,8 @@
     "hash": "b4a59b9820d23e63fe6ffaf585ab7bd3"
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/harness-agent-first-engineering/spec.md": {
-    "mtime": 1778381806.6301699,
-    "hash": "cf60b02d3a1e3efbb028514d8ba6966d"
+    "mtime": 1778392264.2826252,
+    "hash": "e97f7095e54f8fa72902edf98ac763e3"
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/05-messaging/spec.md": {
     "mtime": 1778377492.630529,
@@ -2664,8 +2664,8 @@
     "hash": "6980fcb4c50c2a3773d9a7eae02d239b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/llm-wiki/index.md": {
-    "mtime": 1778389576.8834999,
-    "hash": "373a03b2e261cf65a5cfdb985d0ed8fa"
+    "mtime": 1778392329.7678256,
+    "hash": "e7cb86a2afe3fad51e4c91aed1c9b43e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/llm-wiki/README.md": {
     "mtime": 1778389392.0006347,
@@ -2712,8 +2712,8 @@
     "hash": "50a33ed7f3f92aaa9fe71930c085f5d1"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/harness-agent-first-engineering.md": {
-    "mtime": 1778381767.2829463,
-    "hash": "734a67c29c07a25c401a59c8fc33ecab"
+    "mtime": 1778392264.4743383,
+    "hash": "7d00f73c9664bec20a48092e8f743f73"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/09-tooling/01.iac-automation.md": {
     "mtime": 1778381959.7832363,
@@ -3064,8 +3064,8 @@
     "hash": "4ef14911eafb2e9257b8f81ca78f9e30"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/harness-agent-first-engineering-validation.md": {
-    "mtime": 1778381767.5869465,
-    "hash": "062c5c178550a158e9000aa4fec38670"
+    "mtime": 1778392264.9301898,
+    "hash": "5d627f966966c0b9f7577319f44387e1"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/07-workflow/airflow-worker-recovery.md": {
     "mtime": 1778381959.7872362,
@@ -3100,8 +3100,8 @@
     "hash": "b7d648dd5c8454c42634b614dd7cc61d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/harness-agent-first-engineering.md": {
-    "mtime": 1778381767.4269464,
-    "hash": "67e3286c8046c67d899a0708281b79cf"
+    "mtime": 1778392264.6788325,
+    "hash": "d1edd8888a45336ef949bbcf6d6cba3f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/09-tooling/optimization-hardening.md": {
     "mtime": 1778377492.7265291,
@@ -3336,12 +3336,12 @@
     "hash": "73875d4d1c4a2766ec5bddd18c59c344"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/providers/codex.md": {
-    "mtime": 1778276235.2653363,
-    "hash": "3d2c72a026836e301afa12394817cf66"
+    "mtime": 1778392676.0436206,
+    "hash": "f2192dbd5a98e25aba43794b866c4cdb"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/providers/claude.md": {
-    "mtime": 1775816304.375158,
-    "hash": "2d237fa59ef0627e4d40feb910bc2443"
+    "mtime": 1778392263.8991988,
+    "hash": "7460ba29f4ba941c09adf2646543dc2c"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/agents/README.md": {
     "mtime": 1778389392.8786716,
@@ -3448,8 +3448,8 @@
     "hash": "b258f2646fe403958048502cd43d13d1"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1778390763.0140069,
-    "hash": "32fd05391b1468e47750873af27292ce"
+    "mtime": 1778392408.6931083,
+    "hash": "801a253ad638bc33562cca059a686f2e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/template.md": {
     "mtime": 1778380480.437619,
