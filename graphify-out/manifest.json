@@ -2652,24 +2652,24 @@
     "hash": "27b3d3fc722ae375f2f7de009af67d78"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/README.md": {
-    "mtime": 1778377492.622529,
-    "hash": "0b540611ce77b7686c5e3371d5ceaec8"
+    "mtime": 1778378746.9942265,
+    "hash": "f39d6a30bd80ab5f0961b4be9cc0f38b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/learning/roadmap-v1.md": {
-    "mtime": 1778377492.658529,
-    "hash": "95f71e3ad205a8abb8a561e83555a2c4"
+    "mtime": 1778378650.8959203,
+    "hash": "d1296d7b97877523376c06296714efc0"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/learning/README.md": {
-    "mtime": 1778377492.658529,
-    "hash": "903d30b9fc7214c42cfab64c56006897"
+    "mtime": 1778378585.6190116,
+    "hash": "a7bb17c34afc73df0d1fa7c0bab09454"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/learning/roadmap.md": {
-    "mtime": 1778377492.658529,
-    "hash": "fe7d353a946adbb92c47e013e78f1b6b"
+    "mtime": 1778378650.7052538,
+    "hash": "39ec42ac952b7e019d39b3def3b6ab6d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/docker/README.md": {
-    "mtime": 1778296181.4988456,
-    "hash": "1e381dea314b548c6399daaa20cfc612"
+    "mtime": 1778378585.2550116,
+    "hash": "52a9ccdd6cd59fbdabfba8a910a925d1"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/README.md": {
     "mtime": 1778377562.8893914,
@@ -3140,8 +3140,8 @@
     "hash": "7195dcdf40277b79b11e4a2be29784c2"
   },
   "/home/hy/project-infra/hy-home.docker/docs/99.templates/reference.template.md": {
-    "mtime": 1778377492.622529,
-    "hash": "413cc659eb683e9476e4ae5e10012285"
+    "mtime": 1778378741.1942961,
+    "hash": "cc39a5a14b1443c0c161c7a14c6d3f93"
   },
   "/home/hy/project-infra/hy-home.docker/docs/99.templates/incident.template.md": {
     "mtime": 1778377492.622529,
@@ -3160,8 +3160,8 @@
     "hash": "af98bcf197253c48045811b65fc6f4b4"
   },
   "/home/hy/project-infra/hy-home.docker/docs/99.templates/README.md": {
-    "mtime": 1778377492.626529,
-    "hash": "b4eb18f4243db4b1275ecf4e22f6d04a"
+    "mtime": 1778378639.8364313,
+    "hash": "ff6909347a684be0559fd74a45f13b21"
   },
   "/home/hy/project-infra/hy-home.docker/docs/99.templates/openapi.template.yaml": {
     "mtime": 1778377492.626529,
@@ -3260,8 +3260,8 @@
     "hash": "23e84bb33e9706848557a2993049e422"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/stage-authoring-matrix.md": {
-    "mtime": 1778376253.7271678,
-    "hash": "a1660c38993cebf979d48bb293dde71c"
+    "mtime": 1778378639.4952145,
+    "hash": "54014154daf26d62785bea03023cecec"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/github-governance.md": {
     "mtime": 1778262951.8185678,
@@ -3276,8 +3276,8 @@
     "hash": "35aa065b49ed3406e35d7d8887e1c12d"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/documentation-protocol.md": {
-    "mtime": 1778377492.738529,
-    "hash": "3e3f95d3dd9fbdc806167b4613dd0236"
+    "mtime": 1778378639.6685479,
+    "hash": "07d76979aca25e890c6ceee4d5e8c4c0"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/task-checklists.md": {
     "mtime": 1778378289.854002,
