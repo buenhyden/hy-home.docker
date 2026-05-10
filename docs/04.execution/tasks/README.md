@@ -49,6 +49,7 @@ docs/04.execution/tasks/
 ├── 2026-04-01-standardize-infra-net.md  # infra_net 표준화 작업 기록
 ├── 2026-05-09-harness-agent-first-engineering.md  # Latest: Harness / Agent-first Engineering 작업 기록
 ├── 2026-05-09-infra-secrets-docs-refresh.md  # Infra, secrets, docs 운영 문서 최신화 작업 기록
+├── 2026-05-10-llm-wiki-agent-first-completion.md  # LLM Wiki generator/index/curator 작업 기록
 └── README.md                               # This file
 ```
 
@@ -80,3 +81,4 @@ docs/04.execution/tasks/
 - **Postmortem**: [../../05.operations/incidents/README.md](../../05.operations/incidents/README.md)
 - **Harness / Agent-first Engineering Task**: [2026-05-09-harness-agent-first-engineering.md](./2026-05-09-harness-agent-first-engineering.md)
 - **Infra / Secrets / Docs Refresh Task**: [2026-05-09-infra-secrets-docs-refresh.md](./2026-05-09-infra-secrets-docs-refresh.md)
+- **LLM Wiki Agent-first Completion Task**: [2026-05-10-llm-wiki-agent-first-completion.md](./2026-05-10-llm-wiki-agent-first-completion.md)

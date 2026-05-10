@@ -21,6 +21,7 @@
 ### In Scope
 
 - Repository validation, contract checks, and post-edit automation scripts.
+- Repo-local LLM Wiki index generation and freshness checks.
 - Tier hardening checks and their shared helper library.
 - Local manual utility scripts for preflight checks, safe secret file generation, local certificate generation, and Vault AppRole bootstrap.
 - Script inventory and lifecycle ownership rules for root-level `scripts/*.sh` files.
@@ -59,6 +60,7 @@ scripts/
 | QuickWin Baseline Check | [check-quickwin-baseline.sh](./check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
 | Template & Security Baseline Check | [check-template-security-baseline.sh](./check-template-security-baseline.sh) | Enforce template adoption and required security controls |
 | Documentation Traceability Check | [check-doc-traceability.sh](./check-doc-traceability.sh) | Enforce sync links across 04.execution/plans ↔ 05.operations |
+| LLM Wiki Index Generator | [generate-llm-wiki-index.sh](./generate-llm-wiki-index.sh) | Generate and check the repo-local LLM Wiki path index |
 | Graphify Health Report | [report-graphify-health.sh](./report-graphify-health.sh) | Report advisory health of generated Graphify corpus without blocking validation |
 | Post Tool Validation | [post-tool-validate.sh](./post-tool-validate.sh) | Run path-aware validation after Claude/Codex file edits |
 | Unified Hardening Check | [check-all-hardening.sh](./check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
@@ -81,11 +83,12 @@ scripts/
 
 | Lifecycle | Scripts |
 | :--- | :--- |
-| CI / quality gate | `check-repo-contracts.sh`, `validate-docker-compose.sh`, `check-doc-traceability.sh`, `check-quickwin-baseline.sh`, `check-template-security-baseline.sh`, `check-all-hardening.sh` |
+| CI / quality gate | `check-repo-contracts.sh`, `validate-docker-compose.sh`, `check-doc-traceability.sh`, `check-quickwin-baseline.sh`, `check-template-security-baseline.sh`, `check-all-hardening.sh`, `generate-llm-wiki-index.sh --check` |
 | Advisory evidence | `report-graphify-health.sh` |
 | Runtime hook | `post-tool-validate.sh` |
 | Tier wrapper | `check-gateway-hardening.sh`, `check-auth-hardening.sh`, `check-security-hardening.sh`, `check-data-hardening.sh`, `check-messaging-hardening.sh`, `check-observability-hardening.sh`, `check-workflow-hardening.sh`, `check-ai-hardening.sh`, `check-tooling-hardening.sh`, `check-laboratory-hardening.sh` |
 | Manual operations | `preflight-compose.sh`, `gen-secrets.sh`, `generate-local-certs.sh`, `bootstrap-vault-approle.sh` |
+| Generated index maintenance | `generate-llm-wiki-index.sh` |
 | Internal library | `scripts/lib/hardening-lib.sh` |
 
 Root scripts must stay listed in this README. A root script that is intended to
@@ -125,6 +128,12 @@ HYHOME_COMPOSE_PROFILES="core dev" ./scripts/check-quickwin-baseline.sh
 
 # Enforce documentation traceability sync
 ./scripts/check-doc-traceability.sh
+
+# Generate the repo-local LLM Wiki path index
+bash scripts/generate-llm-wiki-index.sh
+
+# Verify the repo-local LLM Wiki path index is fresh
+bash scripts/generate-llm-wiki-index.sh --check
 
 # Report advisory Graphify corpus health
 ./scripts/report-graphify-health.sh
@@ -180,6 +189,8 @@ bash scripts/generate-local-certs.sh
 - [🤖 Agent Governance](../AGENTS.md)
 - [⚙️ Operations Baseline](../docs/05.operations/README.md)
 - [📘 Runbooks](../docs/05.operations/README.md)
+- [LLM Wiki Maintenance](../docs/05.operations/guides/llm-wiki-maintenance.md)
+- [LLM Wiki Generated Index](../docs/90.references/llm-wiki/index.md)
 - [Scripts Lifecycle Contract Cleanup Plan](../docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.

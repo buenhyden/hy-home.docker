@@ -140,7 +140,7 @@ bash scripts/check-repo-contracts.sh
 bash scripts/check-doc-traceability.sh
 ```
 
-`check-repo-contracts.sh`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime agent/function catalog, LLM Wiki contract 동기화를 확인합니다. `check-doc-traceability.sh`는 execution plans와 operations 문서 간 추적성 동기화를 확인합니다.
+`check-repo-contracts.sh`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime agent/function catalog, LLM Wiki contract 동기화와 generated index freshness를 확인합니다. `check-doc-traceability.sh`는 execution plans와 operations 문서 간 추적성 동기화를 확인합니다.
 
 ## Current Refresh Evidence
 
@@ -153,6 +153,16 @@ bash scripts/check-doc-traceability.sh
 | Task evidence | [04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md](04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md) |
 | Runtime scope | Docker Compose runtime, secret values, cert contents, agent runtime unchanged |
 
+## Current LLM Wiki Evidence
+
+| Evidence | Current State |
+| --- | --- |
+| Spec | [03.specs/llm-wiki-agent-first-completion/spec.md](03.specs/llm-wiki-agent-first-completion/spec.md) |
+| Plan | [04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md](04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md) |
+| Task evidence | [04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md](04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md) |
+| Generated index | [90.references/llm-wiki/index.md](90.references/llm-wiki/index.md) |
+| Operations guide | [05.operations/guides/llm-wiki-maintenance.md](05.operations/guides/llm-wiki-maintenance.md) |
+
 ## Related References
 
 - [00.agent-governance/README.md](00.agent-governance/README.md)
@@ -163,6 +173,7 @@ bash scripts/check-doc-traceability.sh
 - [05.operations/README.md](05.operations/README.md)
 - [90.references/README.md](90.references/README.md)
 - [90.references/llm-wiki/README.md](90.references/llm-wiki/README.md)
+- [90.references/llm-wiki/index.md](90.references/llm-wiki/index.md)
 - [99.templates/README.md](99.templates/README.md)
 - [../README.md](../README.md)
 - [../infra/README.md](../infra/README.md)

@@ -34,6 +34,7 @@ guides/
 ## Current Governance Guides
 
 - [Harness / Agent-first Engineering Usage Guide](./harness-agent-first-engineering.md)
+- [LLM Wiki Maintenance Guide](./llm-wiki-maintenance.md)
 
 ## Related References
 

@@ -103,6 +103,7 @@ section "Banned stale references"
 if rg -n 'docs/11|11\.postmortems|\.agent/|docs/(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)|(^|[^[:alnum:]_/-])(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)([^[:alnum:]_/-]|$)|guide\.template\.md|runbook\.template\.md|harness catalog|Runtime harness catalog' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
   --glob '!graphify-out/**' \
   --glob '!docs/README.md' \
+  --glob '!docs/00.agent-governance/memory/**' \
   --glob '!scripts/check-repo-contracts.sh' >/tmp/check-repo-contracts-banned.txt; then
   fail "stale docs taxonomy, removed operations-stage, guide/runbook template, harness-catalog, or .agent references remain"
   cat /tmp/check-repo-contracts-banned.txt >&2
@@ -110,9 +111,10 @@ fi
 rm -f /tmp/check-repo-contracts-banned.txt
 
 section "Active docs taxonomy shorthand"
-if rg -n 'docs/(0[1-9]~0?9|01~09|01~10|01-03|01-09)|docs/07([^[:alnum:]_.-]|$)|docs/08([^[:alnum:]_.-]|$)|docs/09([^[:alnum:]_.-]|$)|05/08/09|07/08/09' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
+if rg -n 'docs/(0[1-9]~0?9|01~09|01~10|01-03|01-09)|docs/01[[:space:]]*[–-][[:space:]]*docs/10|docs/01.?to.?docs/10|Stage (06|07|10)|docs/07([^[:alnum:]_.-]|$)|docs/08([^[:alnum:]_.-]|$)|docs/09([^[:alnum:]_.-]|$)|05/08/09|07/08/09' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
   --glob '!graphify-out/**' \
   --glob '!docs/README.md' \
+  --glob '!docs/00.agent-governance/memory/**' \
   --glob '!scripts/check-repo-contracts.sh' >/tmp/check-repo-contracts-taxonomy-shorthand.txt; then
   fail "active docs taxonomy shorthand or legacy stage shorthand remains"
   cat /tmp/check-repo-contracts-taxonomy-shorthand.txt >&2
@@ -750,14 +752,23 @@ from __future__ import annotations
 
 import pathlib
 import re
+import subprocess
 import sys
 
 failures: list[str] = []
 
 required_files = [
     pathlib.Path("llms.txt"),
+    pathlib.Path("scripts/generate-llm-wiki-index.sh"),
+    pathlib.Path("docs/05.operations/guides/llm-wiki-maintenance.md"),
     pathlib.Path("docs/90.references/llm-wiki/README.md"),
+    pathlib.Path("docs/90.references/llm-wiki/index.md"),
     pathlib.Path("docs/90.references/llm-wiki/repository-map.md"),
+    pathlib.Path(".claude/agents/wiki-curator.md"),
+    pathlib.Path("docs/00.agent-governance/agents/agents/wiki-curator.md"),
+    pathlib.Path("docs/03.specs/llm-wiki-agent-first-completion/spec.md"),
+    pathlib.Path("docs/04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md"),
+    pathlib.Path("docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md"),
 ]
 
 for path in required_files:
@@ -768,7 +779,9 @@ llms_path = pathlib.Path("llms.txt")
 if llms_path.is_file():
     text = llms_path.read_text(errors="ignore")
     required_literals = [
+        "docs/90.references/llm-wiki/index.md",
         "docs/90.references/llm-wiki/repository-map.md",
+        "generated tracked repo-local path index",
         "tracked source files",
         "Runtime truth",
         "secrets/",
@@ -787,13 +800,33 @@ readme_checks = {
     pathlib.Path("README.md"): [
         "llms.txt",
         "docs/90.references/llm-wiki/",
+        "docs/90.references/llm-wiki/index.md",
     ],
     pathlib.Path("docs/README.md"): [
         "90.references/llm-wiki/",
         "LLM Wiki contract",
+        "generated index freshness",
     ],
     pathlib.Path("docs/90.references/README.md"): [
         "llm-wiki/README.md",
+        "llm-wiki/index.md",
+    ],
+    pathlib.Path("docs/05.operations/guides/README.md"): [
+        "llm-wiki-maintenance.md",
+    ],
+    pathlib.Path("scripts/README.md"): [
+        "generate-llm-wiki-index.sh",
+        "--check",
+    ],
+    pathlib.Path("docs/00.agent-governance/agents/README.md"): [
+        "wiki-curator",
+    ],
+    pathlib.Path("docs/00.agent-governance/subagent-protocol.md"): [
+        ".claude/agents/wiki-curator.md",
+        "wiki-curator",
+    ],
+    pathlib.Path(".claude/CLAUDE.md"): [
+        "8 workers",
     ],
 }
 for path, literals in readme_checks.items():
@@ -805,10 +838,13 @@ for path, literals in readme_checks.items():
         if literal not in text:
             failures.append(f"{path}: missing LLM Wiki registration literal: {literal}")
 
-wiki_files = [
-    path for path in pathlib.Path("docs/90.references/llm-wiki").glob("*.md")
+wiki_files = [path for path in pathlib.Path("docs/90.references/llm-wiki").glob("*.md")]
+safety_files = [
+    llms_path,
+    pathlib.Path("docs/05.operations/guides/llm-wiki-maintenance.md"),
+    *wiki_files,
 ]
-for path in [llms_path, *wiki_files]:
+for path in safety_files:
     if not path.is_file():
         continue
     text = path.read_text(errors="ignore")
@@ -831,6 +867,7 @@ for path in [llms_path, *wiki_files]:
     if (
         re.search(r"(?i)\bpublic\s+(site|website|wiki)\b", text)
         and "Out of Scope" not in text
+        and "Disallowed" not in text
         and "does not define a public website" not in text
     ):
         failures.append(f"{path}: public wiki/site wording must be explicitly out of scope")
@@ -849,6 +886,49 @@ if map_path.is_file():
     ]:
         if literal not in text:
             failures.append(f"{map_path}: missing repository map boundary literal: {literal}")
+
+index_path = pathlib.Path("docs/90.references/llm-wiki/index.md")
+if index_path.is_file():
+    text = index_path.read_text(errors="ignore")
+    for literal in [
+        "generated_by: scripts/generate-llm-wiki-index.sh",
+        "Generated tracked repo-local index",
+        "## Generated Index",
+        "scripts/generate-llm-wiki-index.sh --check",
+        "wiki-curator",
+    ]:
+        if literal not in text:
+            failures.append(f"{index_path}: missing generated index literal: {literal}")
+
+    generated_section = text.split("## Generated Index", 1)[-1].split("## Sources", 1)[0]
+    for forbidden in [
+        "volumes/",
+        "graphify-out/",
+        "node_modules/",
+        ".min.js",
+        ".min.css",
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "yarn.lock",
+    ]:
+        if forbidden in generated_section:
+            failures.append(f"{index_path}: generated index includes excluded path marker: {forbidden}")
+    for match in re.finditer(r"\[([^\]]+)\]\(", generated_section):
+        linked_path = match.group(1)
+        if linked_path.startswith("secrets/") and linked_path != "secrets/README.md":
+            failures.append(f"{index_path}: generated index includes secret content path: {linked_path}")
+
+generator = pathlib.Path("scripts/generate-llm-wiki-index.sh")
+if generator.is_file() and index_path.is_file():
+    result = subprocess.run(
+        ["bash", "scripts/generate-llm-wiki-index.sh", "--check"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        failures.append("generated LLM Wiki index is stale or generator check failed")
+        for line in (result.stderr or result.stdout).splitlines():
+            failures.append(f"generate-llm-wiki-index.sh --check: {line}")
 
 if failures:
     for failure in failures:

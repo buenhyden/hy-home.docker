@@ -15,19 +15,18 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 
 ## 2. Mandatory Taxonomy (SSoT Paths)
 
-| Stage | Path                        | Purpose                            |
-| :---- | :-------------------------- | :--------------------------------- |
-| 00    | `docs/00.agent-governance/` | Agent governance and routing rules |
-| 01    | `docs/01.requirements/`              | Product requirements               |
-| 02    | `docs/02.architecture/requirements/`              | Architecture reference             |
-| 03    | `docs/02.architecture/decisions/`              | Architecture decisions             |
-| 04    | `docs/03.specs/`            | Technical specifications           |
-| 05    | `docs/04.execution/plans/`            | Implementation plans               |
-| 06    | `docs/04.execution/tasks/`            | Task execution evidence            |
-| 07    | `docs/05.operations/`       | Operations knowledge base          |
-| 10    | `docs/05.operations/incidents/`        | Incident records and postmortems   |
-| 90    | `docs/90.references/`       | Stable references                  |
-| 99    | `docs/99.templates/`        | Document templates                 |
+| Area | Path | Purpose |
+| :--- | :--- | :--- |
+| Agent governance | `docs/00.agent-governance/` | Agent governance and routing rules |
+| Requirements | `docs/01.requirements/` | Product requirements |
+| Architecture requirements | `docs/02.architecture/requirements/` | Architecture reference |
+| Architecture decisions | `docs/02.architecture/decisions/` | Architecture decisions |
+| Specifications | `docs/03.specs/` | Technical specifications |
+| Execution plans | `docs/04.execution/plans/` | Implementation plans |
+| Execution tasks | `docs/04.execution/tasks/` | Task execution evidence |
+| Operations | `docs/05.operations/` | Guides, policies, runbooks, incidents |
+| References | `docs/90.references/` | Stable references |
+| Templates | `docs/99.templates/` | Document templates |
 
 ## 3. Bootstrap Loading Sequence
 

@@ -42,6 +42,7 @@ The supervisor coordinates workers and should not be treated as a generic worker
 | `.claude/agents/incident-responder.md` | `scopes/ops.md`      | `incident-responder` |
 | `.claude/agents/code-reviewer.md`      | `scopes/common.md`   | `code-reviewer`      |
 | `.claude/agents/doc-writer.md`         | `scopes/docs.md`     | `doc-writer`         |
+| `.claude/agents/wiki-curator.md`       | `scopes/docs.md`     | `wiki-curator`       |
 | `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | `iac-reviewer`       |
 | `.claude/agents/drift-detector.md`     | `scopes/infra.md`    | `drift-detector`     |
 

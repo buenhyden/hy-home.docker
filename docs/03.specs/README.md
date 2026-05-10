@@ -49,6 +49,8 @@ docs/03.specs/
 │   └── spec.md            # Latest: Harness / Agent-first Engineering 분석 명세
 ├── infra-secrets-docs-refresh/
 │   └── spec.md            # Infra, secrets, docs 운영 문서 최신화 명세
+├── llm-wiki-agent-first-completion/
+│   └── spec.md            # LLM Wiki generator/index/curator completion 명세
 └── README.md              # This file
 ```
 
@@ -80,3 +82,4 @@ docs/03.specs/
 - **Plan**: [../04.execution/plans/README.md]
 - **Harness / Agent-first Engineering Spec**: [harness-agent-first-engineering/spec.md](./harness-agent-first-engineering/spec.md)
 - **Infra / Secrets / Docs Refresh Spec**: [infra-secrets-docs-refresh/spec.md](./infra-secrets-docs-refresh/spec.md)
+- **LLM Wiki Agent-first Completion Spec**: [llm-wiki-agent-first-completion/spec.md](./llm-wiki-agent-first-completion/spec.md)

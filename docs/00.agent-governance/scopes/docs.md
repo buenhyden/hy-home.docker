@@ -47,10 +47,11 @@ If legacy active-stage content is found in a non-stage `docs/*` path:
 
 | Path Pattern                          | Owner Agent  | Read-Only For                           |
 | ------------------------------------- | ------------ | --------------------------------------- |
-| `docs/00.agent-governance/`           | `doc-writer` | governance rules — all agents read      |
-| `docs/99.templates/`                  | `doc-writer` | all — template edits need user approval |
-| `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | `doc-writer` | all other agents                        |
-| `docs/05.operations/`                     | `doc-writer` | all other agents                        |
+| `docs/00.agent-governance/`           | `doc-writer`   | governance rules — all agents read      |
+| `docs/90.references/llm-wiki/`        | `wiki-curator` | `doc-writer` (style and template review) |
+| `docs/99.templates/`                  | `doc-writer`   | all — template edits need user approval |
+| `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | `doc-writer`   | all other agents                        |
+| `docs/05.operations/`                 | `doc-writer`   | all other agents                        |
 
 ## 6. Subagent Bridge
 

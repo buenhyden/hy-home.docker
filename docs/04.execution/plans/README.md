@@ -43,6 +43,7 @@ docs/04.execution/plans/
 ├── 2026-05-09-harness-agent-first-engineering.md  # Latest: Harness / Agent-first Engineering 계획
 ├── 2026-05-09-infra-secrets-docs-refresh.md  # Infra, secrets, docs 운영 문서 최신화 계획
 ├── 2026-05-09-scripts-lifecycle-contract-cleanup.md  # scripts lifecycle contract cleanup 계획
+├── 2026-05-10-llm-wiki-agent-first-completion.md  # LLM Wiki generator/index/curator completion 계획
 └── README.md                              # This file
 ```
 
@@ -77,3 +78,4 @@ docs/04.execution/plans/
 - **Harness / Agent-first Engineering Plan**: [2026-05-09-harness-agent-first-engineering.md](./2026-05-09-harness-agent-first-engineering.md)
 - **Infra / Secrets / Docs Refresh Plan**: [2026-05-09-infra-secrets-docs-refresh.md](./2026-05-09-infra-secrets-docs-refresh.md)
 - **Scripts Lifecycle Contract Cleanup Plan**: [2026-05-09-scripts-lifecycle-contract-cleanup.md](./2026-05-09-scripts-lifecycle-contract-cleanup.md)
+- **LLM Wiki Agent-first Completion Plan**: [2026-05-10-llm-wiki-agent-first-completion.md](./2026-05-10-llm-wiki-agent-first-completion.md)

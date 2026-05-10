@@ -27,6 +27,7 @@ This file follows `docs/99.templates/progress.template.md`.
 | 2026-05-10 | Template MD033 placeholder cleanup | Done | Replaced angle-bracket placeholders in memory/progress templates with brace placeholders to avoid inline-HTML markdownlint errors. | N/A | `bash scripts/check-repo-contracts.sh`; `git diff --check`; placeholder scan |
 | 2026-05-10 | Harness Agent-first taxonomy hardening | Done | Split HAFE guide/policy/runbook content, normalized operations target comments, and strengthened active taxonomy shorthand validation. | N/A | `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; explicit stale taxonomy and H100 scans; baseline validation bundle |
 | 2026-05-10 | Repo-local LLM Wiki contract | Done | Added root `llms.txt`, `docs/90.references/llm-wiki/`, README discoverability links, and repository contract validation for tracked-source LLM navigation. | N/A | `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; `bash scripts/report-graphify-health.sh`; `bash scripts/validate-docker-compose.sh`; LLM Wiki safety scans |
+| 2026-05-10 | LLM Wiki agent-first completion | Done | Added deterministic LLM Wiki generator/index, `wiki-curator` mirrored worker, maintenance guide, focused spec/plan/task, and freshness/safety enforcement in repo contracts. | N/A | `bash scripts/generate-llm-wiki-index.sh --check`; `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; syntax/JSON checks; compose and hardening validation bundle; Graphify advisory report; stale taxonomy and source-label scans |
 
 ## Phase Tracker
 
@@ -47,6 +48,7 @@ This file follows `docs/99.templates/progress.template.md`.
 | P12 — Docs operations taxonomy consolidation | ✅ Done | 2026-05-10 | Consolidated the former guide, operations, and procedure stages into canonical `docs/05.operations`; deleted legacy stage folders and split templates after link rewriting; updated repo contracts to enforce the reduced taxonomy |
 | P13 — Governance memory progress contract | ✅ Done | 2026-05-10 | Added `docs/99.templates/progress.template.md`, made `progress.md` the required agent work log, and extended repo contracts to enforce the progress template and update workflow |
 | P14 — HAFE taxonomy hardening | ✅ Done | 2026-05-10 | Split HAFE operations docs by guide/policy/runbook purpose and added active stale-taxonomy shorthand checks |
+| P15 — LLM Wiki agent-first completion | ✅ Done | 2026-05-10 | Added generated tracked repo-local LLM Wiki index, `wiki-curator` worker parity, maintenance guide, and repo-contract freshness enforcement |
 
 ## Layer Audit (L1–L7)
 

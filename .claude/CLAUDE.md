@@ -16,7 +16,7 @@ This file keeps Claude-specific runtime routing local to `.claude/` while the sh
 ## Local Runtime Structure
 
 - Runtime supervisor: `.claude/agents/workflow-supervisor.md` (`model: opus`)
-- Domain agents: `.claude/agents/*.md` (7 workers, `model: sonnet`)
+- Domain agents: `.claude/agents/*.md` (8 workers, `model: sonnet`)
 - Runtime skills: `.claude/skills/<skill>/skill.md` (10 functions)
 - Runtime hooks: `.claude/hooks/*.sh`
 - Shared team permissions: `.claude/settings.json`

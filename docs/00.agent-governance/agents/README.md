@@ -30,7 +30,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 
 **Excludes:**
 
-- Product, architecture, or implementation details (see `docs/01`–`docs/10`, `docs/90`, `docs/99`)
+- Product, architecture, or implementation details (see `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, `docs/99.templates`)
 - External harness references or identifiers
 
 ## Structure
@@ -48,6 +48,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 - [incident-responder](./agents/incident-responder.md)
 - [infra-implementer](./agents/infra-implementer.md)
 - [security-auditor](./agents/security-auditor.md)
+- [wiki-curator](./agents/wiki-curator.md)
 
 ## Functions
 

@@ -44,7 +44,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 
 ## Collaboration
 
-- Delegates to: `infra-implementer`, `drift-detector`, `iac-reviewer`, `security-auditor`, `incident-responder`, `code-reviewer`, `doc-writer`.
+- Delegates to: `infra-implementer`, `drift-detector`, `iac-reviewer`, `security-auditor`, `incident-responder`, `code-reviewer`, `doc-writer`, `wiki-curator`.
 - Uses skills from: `.claude/skills/<skill>/skill.md`.
 - Writes no domain artifacts directly when delegation is the safer path.
 
