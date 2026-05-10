@@ -1220,12 +1220,12 @@
     "hash": "a81ae41417f89a8869c20473d26e3cc8"
   },
   "/home/hy/project-infra/hy-home.docker/llms.txt": {
-    "mtime": 1778387682.1436589,
-    "hash": "1ac810e2ee7d79807e6e543778a50840"
+    "mtime": 1778389391.8284705,
+    "hash": "435e1636048d35b6cf736f0053d8d3ac"
   },
   "/home/hy/project-infra/hy-home.docker/README.md": {
-    "mtime": 1778387573.5931585,
-    "hash": "1392eff9096e774283ff36fe3aec8752"
+    "mtime": 1778389432.2356155,
+    "hash": "62fa25ecf8de6076e7ab85953288d750"
   },
   "/home/hy/project-infra/hy-home.docker/archive/Windows-Network-IP.md": {
     "mtime": 1771840597.8729992,
@@ -1856,8 +1856,8 @@
     "hash": "94d7873a1c52b5f86653432b20b33819"
   },
   "/home/hy/project-infra/hy-home.docker/scripts/README.md": {
-    "mtime": 1778377492.898529,
-    "hash": "2b501bf81c8135f54294f984be17eabf"
+    "mtime": 1778389392.3320506,
+    "hash": "4ac63b3616873ba7bd8278fa5618bceb"
   },
   "/home/hy/project-infra/hy-home.docker/projects/README.md": {
     "mtime": 1778376501.424058,
@@ -2280,12 +2280,12 @@
     "hash": "f3c4c9dcf73aee628498a7bd7840157f"
   },
   "/home/hy/project-infra/hy-home.docker/docs/README.md": {
-    "mtime": 1778387584.351928,
-    "hash": "290e32555d00d89f173d4c97e908273d"
+    "mtime": 1778389432.4160154,
+    "hash": "db62ed71db5c47eb66fba3abe5538ac3"
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/README.md": {
-    "mtime": 1778377492.610529,
-    "hash": "8c9207c3a6853588b59fe2938fca32f5"
+    "mtime": 1778389432.9572153,
+    "hash": "02bd5b1c3faa6ba9f707c2de1ecac60a"
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/infra-secrets-docs-refresh/spec.md": {
     "mtime": 1778381904.6896992,
@@ -2350,6 +2350,10 @@
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/10-communication/spec.md": {
     "mtime": 1778377492.634529,
     "hash": "c939898685609e212d1ae53b7e80bd5c"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/03.specs/llm-wiki-agent-first-completion/spec.md": {
+    "mtime": 1778389303.4367242,
+    "hash": "c0111e496dc03f625c538312cc7f2732"
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/02-auth/spec.md": {
     "mtime": 1778377492.638529,
@@ -2656,16 +2660,20 @@
     "hash": "12269a9df6756937008edb93fa7bfd12"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/README.md": {
-    "mtime": 1778387590.8190846,
-    "hash": "cc205716b966b1a6215861c99f2db5d1"
+    "mtime": 1778389432.5876155,
+    "hash": "6980fcb4c50c2a3773d9a7eae02d239b"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/90.references/llm-wiki/index.md": {
+    "mtime": 1778389576.8834999,
+    "hash": "373a03b2e261cf65a5cfdb985d0ed8fa"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/llm-wiki/README.md": {
-    "mtime": 1778387978.303559,
-    "hash": "03e7a3a6830c9855f52cbd5ede67ffed"
+    "mtime": 1778389392.0006347,
+    "hash": "13f2371e1f14bb33503659895d07b22b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/llm-wiki/repository-map.md": {
-    "mtime": 1778387559.3068128,
-    "hash": "22fddd689f7061de8d10c52d4a93ca5e"
+    "mtime": 1778389392.1641905,
+    "hash": "bc5c2014e36d94e8d41f25ad9259c5c8"
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/learning/roadmap-v1.md": {
     "mtime": 1778379693.6665819,
@@ -2691,13 +2699,17 @@
     "mtime": 1778377492.658529,
     "hash": "656678f1155a0ca224374331cfb64b7c"
   },
+  "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/llm-wiki-maintenance.md": {
+    "mtime": 1778389571.5478024,
+    "hash": "ca12c16057c6e1723453e8707a53dbf7"
+  },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/developer-setup.md": {
     "mtime": 1778381959.7832363,
     "hash": "4b950b5497fba3b4474f931c8cb6c7a8"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/README.md": {
-    "mtime": 1778381807.0781698,
-    "hash": "f39769aa84527042658a1102793fa55c"
+    "mtime": 1778389432.7724154,
+    "hash": "50a33ed7f3f92aaa9fe71930c085f5d1"
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/harness-agent-first-engineering.md": {
     "mtime": 1778381767.2829463,
@@ -3208,12 +3220,12 @@
     "hash": "495e15349df5046cd8a41144db06f834"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/README.md": {
-    "mtime": 1778380043.2111144,
-    "hash": "cd4d4da503941874ed8e834701ab3504"
+    "mtime": 1778389393.0422275,
+    "hash": "05103338e7cf0755f087460ff07fc6ad"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/subagent-protocol.md": {
-    "mtime": 1778269169.831773,
-    "hash": "816f5897711f5e05773c274e16e75073"
+    "mtime": 1778389392.7022035,
+    "hash": "489f37f31ccf953a0275b3eb49d4f6c2"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/scopes/ops.md": {
     "mtime": 1778377492.734529,
@@ -3268,8 +3280,8 @@
     "hash": "e35746af5dcd75b0d526a8140bdb4d41"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/scopes/docs.md": {
-    "mtime": 1778377492.738529,
-    "hash": "771dbba6edc4453222c6bb390fdcf53b"
+    "mtime": 1778389393.2100875,
+    "hash": "358589513e1b701126c02ed7b99587d3"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/quality-standards.md": {
     "mtime": 1778269170.236573,
@@ -3284,8 +3296,8 @@
     "hash": "23e84bb33e9706848557a2993049e422"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/stage-authoring-matrix.md": {
-    "mtime": 1778380043.5664477,
-    "hash": "3506c736e0b1ddefc85404e29d6e4a75"
+    "mtime": 1778389470.852374,
+    "hash": "f63930759014b9a3b4911638e1289cc3"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/github-governance.md": {
     "mtime": 1778262951.8185678,
@@ -3308,8 +3320,8 @@
     "hash": "3a188633202b2717784ae1c1617b63f9"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/bootstrap.md": {
-    "mtime": 1778380042.9597812,
-    "hash": "ddd53837006bc310caa68db33a5c01d9"
+    "mtime": 1778389470.6739957,
+    "hash": "ef4692a92e8c03c7a4a4271a12954380"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/rules/standards.md": {
     "mtime": 1778377492.738529,
@@ -3332,8 +3344,8 @@
     "hash": "2d237fa59ef0627e4d40feb910bc2443"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/agents/README.md": {
-    "mtime": 1778377492.742529,
-    "hash": "6b384e7d4b4bcc2136714fb3fe80c331"
+    "mtime": 1778389392.8786716,
+    "hash": "099939ede5782964016baf5b2d800f6e"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/agents/functions/incident-response.md": {
     "mtime": 1778377492.746529,
@@ -3407,6 +3419,10 @@
     "mtime": 1776034409.7169633,
     "hash": "bacd67bbde4c225c7ef730ea273fda64"
   },
+  "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/agents/agents/wiki-curator.md": {
+    "mtime": 1778389303.0106726,
+    "hash": "3f1c74dd8a3203a535064cc56387b1e2"
+  },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/harness-agent-first-gap-audit.md": {
     "mtime": 1778380081.6909015,
     "hash": "d779a80ac8433390f47a2d96c0af6d98"
@@ -3432,8 +3448,8 @@
     "hash": "b258f2646fe403958048502cd43d13d1"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1778387708.119081,
-    "hash": "66df5144ef2478b5b90d5344ac6882b7"
+    "mtime": 1778389659.3922856,
+    "hash": "342a5cd816c9d93d67d7ca6326ee049b"
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/template.md": {
     "mtime": 1778380480.437619,
@@ -3466,6 +3482,10 @@
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md": {
     "mtime": 1778377492.754529,
     "hash": "dd7292d6920da1f72a1f1fbad23e68d5"
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md": {
+    "mtime": 1778389659.2111447,
+    "hash": "ce33654fb14f6fa6b888afe780293fcf"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-03-26-05-messaging-tasks.md": {
     "mtime": 1778377492.754529,
@@ -3512,8 +3532,8 @@
     "hash": "29bc4d638adeaeabe02506c9f888dfcf"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/README.md": {
-    "mtime": 1778377760.9137862,
-    "hash": "20879406c17568ccf3950f65b7c69460"
+    "mtime": 1778389433.2960155,
+    "hash": "7c745690714510223c8e8da2b61fa684"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-04-01-standardize-infra-net.md": {
     "mtime": 1778377492.758529,
@@ -3595,6 +3615,10 @@
     "mtime": 1778377492.766529,
     "hash": "0aa0cdffb21e2cd56e711579a80d6fb4"
   },
+  "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md": {
+    "mtime": 1778389659.0343168,
+    "hash": "49f5a54e05aa9bef1c90c49cb7d60651"
+  },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-26-05-messaging-standardization.md": {
     "mtime": 1778381837.798686,
     "hash": "d7be177a1c2b2e7b37c24826bb3f60b7"
@@ -3640,8 +3664,8 @@
     "hash": "6b2668dd5b67300f7d84675f37847252"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/README.md": {
-    "mtime": 1778377724.9401271,
-    "hash": "584f254cca1f16e55b09608c050d0a82"
+    "mtime": 1778389433.1288154,
+    "hash": "87898c9f5e1c4f7426ffa24f3d902b65"
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-04-01-standardize-infra-net.md": {
     "mtime": 1778381837.8073528,
