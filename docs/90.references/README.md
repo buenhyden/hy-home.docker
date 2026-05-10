@@ -46,8 +46,8 @@ docs/90.references/
 
 ## Current References
 
-- [docker/README.md](docker/README.md) - Docker 이미지 버전 drift 검증 기준
-- [learning/README.md](learning/README.md) - Docker 기반 인프라 학습 로드맵과 이론 참고
+- [docker/README.md](./docker/README.md) - Docker 이미지 버전 drift 검증 기준
+- [learning/README.md](./learning/README.md) - Docker 기반 인프라 학습 로드맵과 이론 참고
 
 ## Templates
 
@@ -64,5 +64,5 @@ docs/90.references/
 
 - [docs index](../README.md)
 - [reference template](../99.templates/reference.template.md)
-- [docker reference](docker/README.md)
-- [learning reference](learning/README.md)
+- [docker reference](./docker/README.md)
+- [learning reference](./learning/README.md)

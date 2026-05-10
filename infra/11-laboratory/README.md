@@ -77,10 +77,10 @@ docker compose up -d
 
 ### Related Documents
 
-- [PRD](../../docs/01.prd/2026-03-26-11-laboratory.md)
-- [ARD](../../docs/02.ard/0011-laboratory-architecture.md)
-- [ADR](../../docs/03.adr/0011-laboratory-services.md)
-- [Technical Spec](../../docs/04.specs/11-laboratory/spec.md)
+- [PRD](../../docs/01.requirements/2026-03-26-11-laboratory.md)
+- [ARD](../../docs/02.architecture/requirements/0011-laboratory-architecture.md)
+- [ADR](../../docs/02.architecture/decisions/0011-laboratory-services.md)
+- [Technical Spec](../../docs/03.specs/11-laboratory/spec.md)
 
 ---
 
@@ -129,6 +129,6 @@ infra/11-laboratory/
 ## Related References
 
 - [infra/README.md](../README.md)
-- [docs/07.operations/README.md](../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../docs/07.operations/README.md)
+- [docs/05.operations/README.md](../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../docs/05.operations/README.md)

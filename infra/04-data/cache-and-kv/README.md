@@ -41,14 +41,14 @@ cache-and-kv/
 ## How to Work in This Area
 
 1. [valkey-cluster/README.md](./valkey-cluster/README.md)를 통해 세부 클러스터 구성을 확인합니다.
-2. 실행 가이드는 [Valkey Cluster Guide](../../../docs/07.operations/04-data/cache-and-kv/valkey-cluster.md)를 참조합니다.
-3. 운영 정책은 [Valkey Operations Policy](../../../docs/07.operations/04-data/cache-and-kv/valkey-cluster.md)를 확인합니다.
+2. 실행 가이드는 [Valkey Cluster Guide](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 참조합니다.
+3. 운영 정책은 [Valkey Operations Policy](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 확인합니다.
 
 ## Related References
 
-- **Guides**: [docs/07.operations/04-data/cache-and-kv/valkey-cluster.md](../../../docs/07.operations/04-data/cache-and-kv/valkey-cluster.md)
-- **Operations**: [docs/07.operations/04-data/cache-and-kv/valkey-cluster.md](../../../docs/07.operations/04-data/cache-and-kv/valkey-cluster.md)
-- **Runbooks**: [docs/07.operations/04-data/cache-and-kv/valkey-cluster.md](../../../docs/07.operations/04-data/cache-and-kv/valkey-cluster.md)
+- **Guides**: [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
+- **Operations**: [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
+- **Runbooks**: [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
 
 ## Tech Stack
 

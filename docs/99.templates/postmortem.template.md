@@ -1,11 +1,11 @@
 ---
 status: draft
 ---
-<!-- Target: docs/10.incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md -->
+<!-- Target: docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md -->
 
 # Postmortem: [Incident Title]
 
-> Use this template for `docs/10.incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md`.
+> Use this template for `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md`.
 
 ---
 
@@ -89,5 +89,5 @@ status: draft
 
 ## Related Links
 
-- **Runbook**: `[../../07.operations/####-<topic>.md]`
-- **Operation**: `[../../07.operations/<policy-or-standard>.md]`
+- **Runbook**: `[../../05.operations/####-<topic>.md]`
+- **Operation**: `[../../05.operations/<policy-or-standard>.md]`

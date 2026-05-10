@@ -13,7 +13,7 @@ groups:
         annotations:
           summary: 'Kafka 브로커 다운 감지'
           description: 'Kafka 브로커 수가 기대값보다 적습니다. 현재 {{ $value }} 개입니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       - alert: KafkaTopicUnderReplicatedPartition
         expr: sum(kafka_topic_partition_under_replicated_partition) by (topic) > 0
@@ -24,7 +24,7 @@ groups:
         annotations:
           summary: 'Kafka 복제 미달 파티션: {{ $labels.topic }}'
           description: '토픽 {{ $labels.topic }} 의 복제본 수가 부족합니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       - alert: KafkaTopicsReplicas
         expr: min(kafka_topic_partition_in_sync_replica) by (topic) <
@@ -36,7 +36,7 @@ groups:
         annotations:
           summary: 'Kafka ISR 부족: {{ $labels.topic }}'
           description: '토픽 {{ $labels.topic }}의 ISR이 설정된 복제본 수보다 작습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       - alert: KafkaConsumersGroupLag
         expr: sum(kafka_consumergroup_lag) by (consumergroup) > 50
@@ -47,4 +47,4 @@ groups:
         annotations:
           summary: 'Kafka 컨슈머 그룹 지연: {{ $labels.consumergroup }}'
           description: '컨슈머 그룹 {{ $labels.consumergroup }}의 지연이 50을 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'

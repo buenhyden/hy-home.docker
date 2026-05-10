@@ -71,9 +71,9 @@ alertmanager/
 
 ## Related References
 
-- **Guides**: [docs/07.operations/06-observability/alertmanager.md](../../../docs/07.operations/06-observability/alertmanager.md)
-- **Operations**: [docs/07.operations/06-observability/alertmanager.md](../../../docs/07.operations/06-observability/alertmanager.md)
-- **Runbook**: [docs/07.operations/06-observability/alertmanager.md](../../../docs/07.operations/06-observability/alertmanager.md)
+- **Guides**: [docs/05.operations/06-observability/alertmanager.md](../../../docs/05.operations/guides/06-observability/alertmanager.md)
+- **Operations**: [docs/05.operations/06-observability/alertmanager.md](../../../docs/05.operations/guides/06-observability/alertmanager.md)
+- **Runbook**: [docs/05.operations/06-observability/alertmanager.md](../../../docs/05.operations/guides/06-observability/alertmanager.md)
 
 ---
 

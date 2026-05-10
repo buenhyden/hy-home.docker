@@ -40,10 +40,10 @@ airflow/
 
 ## How to Work in This Area
 
-1. [진입 가이드](../../../docs/07.operations/07-workflow/airflow.md)를 읽고 시스템 전반을 이해합니다.
-2. [DAG 개발 가이드](../../../docs/07.operations/07-workflow/01.airflow-dag-dev.md)를 참조하여 파이프라인을 작성합니다.
-3. [운영 정책](../../../docs/07.operations/07-workflow/airflow.md)에 따라 리소스 할당 및 보안 설정을 확인합니다.
-4. 장애 발생 시 [장애 조치 런북](../../../docs/07.operations/07-workflow/airflow.md)을 따릅니다.
+1. [진입 가이드](../../../docs/05.operations/guides/07-workflow/airflow.md)를 읽고 시스템 전반을 이해합니다.
+2. [DAG 개발 가이드](../../../docs/05.operations/guides/07-workflow/01.airflow-dag-dev.md)를 참조하여 파이프라인을 작성합니다.
+3. [운영 정책](../../../docs/05.operations/guides/07-workflow/airflow.md)에 따라 리소스 할당 및 보안 설정을 확인합니다.
+4. 장애 발생 시 [장애 조치 런북](../../../docs/05.operations/guides/07-workflow/airflow.md)을 따릅니다.
 
 ## Tech Stack
 
@@ -75,11 +75,11 @@ airflow/
 
 1. **Idempotency**: 모든 DAG 및 태스크는 멱등성을 보장해야 하며, Scheduler에서 무거운 계산을 수행하지 않아야 합니다.
 2. **Secrets**: 민감한 정보는 `Variables`나 `Connections`를 통해 관리하며, 환경 변수에 직접 노출하지 않습니다.
-3. **Traceability**: 모든 변경 사항은 관련 [ARD](../../../docs/02.ard/0007-workflow-architecture.md) 또는 [Spec](../../../docs/04.specs/07-workflow/spec.md)과 연결되어야 합니다.
+3. **Traceability**: 모든 변경 사항은 관련 [ARD](../../../docs/02.architecture/requirements/0007-workflow-architecture.md) 또는 [Spec](../../../docs/03.specs/07-workflow/spec.md)과 연결되어야 합니다.
 
 ## Related References
 
-- **ARD**: [07-workflow Architecture](../../../docs/02.ard/0007-workflow-architecture.md)
-- **Guide**: [Airflow System Guide](../../../docs/07.operations/07-workflow/airflow.md)
-- **Operation**: [Airflow Operations Policy](../../../docs/07.operations/07-workflow/airflow.md)
-- **Runbook**: [Airflow Recovery Runbook](../../../docs/07.operations/07-workflow/airflow.md)
+- **ARD**: [07-workflow Architecture](../../../docs/02.architecture/requirements/0007-workflow-architecture.md)
+- **Guide**: [Airflow System Guide](../../../docs/05.operations/guides/07-workflow/airflow.md)
+- **Operation**: [Airflow Operations Policy](../../../docs/05.operations/guides/07-workflow/airflow.md)
+- **Runbook**: [Airflow Recovery Runbook](../../../docs/05.operations/guides/07-workflow/airflow.md)

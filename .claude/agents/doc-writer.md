@@ -64,7 +64,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - Minimum three alternatives must be compared; rejection reasons are mandatory.
 - Include quality attribute tradeoff analysis from `.claude/skills/adr-writing/skill.md`.
 - For infrastructure decisions: complete the INFRA category quality attribute matrix (Performance, Availability, Maintainability, Deployability, Cost).
-- Output path: `docs/03.adr/NNNN-<category>-<short-title>.md`.
+- Output path: `docs/02.architecture/decisions/NNNN-<category>-<short-title>.md`.
 
 ## Diagram Standards (Mermaid)
 
@@ -102,7 +102,7 @@ Use Mermaid diagrams for all architecture, flow, and sequence documentation.
 ## Collaboration
 
 - Reads from: all agent outputs, stage templates, governance rules.
-- Writes to: `docs/00.agent-governance/`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `docs/07.operations/`.
+- Writes to: `docs/00.agent-governance/`, `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `docs/05.operations/`.
 - Escalates to: user for any `docs/01`–`docs/99` modification request.
 
 ## Related Documents

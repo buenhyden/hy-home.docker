@@ -26,7 +26,7 @@ Ensure architecture decisions are captured with rigorous tradeoff analysis, trac
 
 **Excludes:**
 
-- Modifying existing ADR files in `docs/03.adr/` (read-only without explicit user approval)
+- Modifying existing ADR files in `docs/02.architecture/decisions/` (read-only without explicit user approval)
 - Implementation of the decision (handled by domain agents)
 
 ## Structure
@@ -45,11 +45,11 @@ Ensure architecture decisions are captured with rigorous tradeoff analysis, trac
 
 - Trigger for any significant architectural or infrastructure decision.
 - **Inputs:** decision topic + context + alternatives considered
-- **Outputs:** `docs/03.adr/NNNN-<category>-<short-title>.md`
+- **Outputs:** `docs/02.architecture/decisions/NNNN-<category>-<short-title>.md`
 
 ## Artifacts
 
-- `docs/03.adr/NNNN-<category>-<short-title>.md`
+- `docs/02.architecture/decisions/NNNN-<category>-<short-title>.md`
 
 ## Related Documents
 

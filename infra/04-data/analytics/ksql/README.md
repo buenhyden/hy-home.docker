@@ -40,16 +40,16 @@ ksql/
 
 ## How to Work in This Area
 
-1. 아키텍처 및 사용법은 [ksqlDB 시스템 가이드](../../../../docs/07.operations/04-data/analytics/ksqldb.md)를 참조한다.
-2. 처리 규약 및 자원 할당은 [운영 정책](../../../../docs/07.operations/04-data/analytics/ksqldb.md)을 따른다.
-3. 스트림 지연이나 연결 이슈 발생 시 [복구 런북](../../../../docs/07.operations/04-data/analytics/ksqldb.md)을 참조한다.
+1. 아키텍처 및 사용법은 [ksqlDB 시스템 가이드](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md)를 참조한다.
+2. 처리 규약 및 자원 할당은 [운영 정책](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md)을 따른다.
+3. 스트림 지연이나 연결 이슈 발생 시 [복구 런북](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md)을 참조한다.
 4. ksqlDB를 시작하기 전에 Kafka 브로커와 Schema Registry의 상태를 확인한다.
 
 ## Related References
 
-- **System Guide**: [docs/07.operations/04-data/analytics/ksqldb.md](../../../../docs/07.operations/04-data/analytics/ksqldb.md)
-- **Operations**: [docs/07.operations/04-data/analytics/ksqldb.md](../../../../docs/07.operations/04-data/analytics/ksqldb.md)
-- **Runbook**: [docs/07.operations/04-data/analytics/ksqldb.md](../../../../docs/07.operations/04-data/analytics/ksqldb.md)
+- **System Guide**: [docs/05.operations/04-data/analytics/ksqldb.md](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md)
+- **Operations**: [docs/05.operations/04-data/analytics/ksqldb.md](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md)
+- **Runbook**: [docs/05.operations/04-data/analytics/ksqldb.md](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md)
 - **Kafka Status**: `infra/05-messaging/kafka/README.md`
 
 ## AI Agent Guidance

@@ -1,11 +1,11 @@
 ---
 status: draft
 ---
-<!-- Target: docs/01.prd/YYYY-MM-DD-<feature-or-system>.md -->
+<!-- Target: docs/01.requirements/YYYY-MM-DD-<feature-or-system>.md -->
 
 # Product Requirements Document
 
-> Use this template for `docs/01.prd/YYYY-MM-DD-<feature-or-system>.md`.
+> Use this template for `docs/01.requirements/YYYY-MM-DD-<feature-or-system>.md`.
 >
 > Rules:
 >
@@ -70,7 +70,7 @@ status: draft
 
 ## Related Documents
 
-- **ARD**: `[../02.ard/####-system-or-domain.md]`
-- **Spec**: `[../04.specs/<feature-id>/spec.md]`
-- **Plan**: `[../05.plans/YYYY-MM-DD-<feature>.md]`
-- **ADR**: `[../03.adr/####-<short-title>.md]`
+- **ARD**: `[../02.architecture/requirements/####-system-or-domain.md]`
+- **Spec**: `[../03.specs/<feature-id>/spec.md]`
+- **Plan**: `[../04.execution/plans/YYYY-MM-DD-<feature>.md]`
+- **ADR**: `[../02.architecture/decisions/####-<short-title>.md]`

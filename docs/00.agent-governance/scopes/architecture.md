@@ -15,17 +15,17 @@ title: 'Architecture Strategy Scope'
 
 ## 2. Requirements & Constraints
 
-- **Boundaries**: Strictly define service boundaries in `04.specs/` to prevent "Big Ball of Mud" anti-patterns.
-- **Taxonomy**: Adhere to the `01.prd - 10.incidents` lifecycle stage-gates, plus `90.references` and `99.templates`.
+- **Boundaries**: Strictly define service boundaries in `03.specs/` to prevent "Big Ball of Mud" anti-patterns.
+- **Taxonomy**: Adhere to the `01.requirements - 05.operations/incidents` lifecycle stage-gates, plus `90.references` and `99.templates`.
 - **Communication Protocol**:
   - **Internal**: Use **gRPC** for synchronous service-to-service calls where performance is critical.
   - **External**: REST or GraphQL via the Gateway layer.
   - **Async**: Kafka/RabbitMQ events for eventual consistency.
-- **Traceability**: All architectural trade-offs MUST be captured in `03.adr/` (Architectural Decision Records).
+- **Traceability**: All architectural trade-offs MUST be captured in `02.architecture/decisions/` (Architectural Decision Records).
 
 ## 3. Implementation Flow
 
-1. **Discover**: Analyze existing system context in `02.ard/`.
+1. **Discover**: Analyze existing system context in `02.architecture/requirements/`.
 2. **Standardize**: Select or define patterns (e.g., Saga, Event Sourcing) and document in ADR.
 3. **Verify**: Run repository-available validation commands relevant to the changed architecture surfaces.
 

@@ -44,8 +44,8 @@ Provide a repeatable response workflow for outages, SLO breaches, and security i
 
 ## Artifacts
 
-- `docs/10.incidents/<id>.md`
-- `docs/10.incidents/<id>-postmortem.md`
+- `docs/05.operations/incidents/<id>.md`
+- `docs/05.operations/incidents/<id>-postmortem.md`
 - `_workspace/incident_timeline_<id>.md`
 
 ## Related Documents

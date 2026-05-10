@@ -23,7 +23,7 @@ title: 'Backend Engineering Scope'
 
 ## 3. Implementation Flow
 
-1. **Spec Alignment**: Ingest specification from `docs/04.specs/` before coding.
+1. **Spec Alignment**: Ingest specification from `docs/03.specs/` before coding.
 2. **Data Layer**: Define Prisma/SQLAlchemy models first to establish the SSoT.
 3. **Logic**: Implement services/use-cases using Dependency Injection.
 4. **Integration**: Connect to Kafka for async events or Ollama for AI features via standard SDKs.

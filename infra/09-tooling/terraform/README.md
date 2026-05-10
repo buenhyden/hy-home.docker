@@ -70,7 +70,7 @@ docker compose run --rm terraform apply
 ## Related References
 
 - [Tooling tier README](../README.md)
-- [Terraform guide](../../../docs/07.operations/09-tooling/terraform.md)
-- [IaC operations policy](../../../docs/07.operations/09-tooling/terraform.md)
-- [Terraform recovery runbook](../../../docs/07.operations/09-tooling/terraform.md)
+- [Terraform guide](../../../docs/05.operations/guides/09-tooling/terraform.md)
+- [IaC operations policy](../../../docs/05.operations/guides/09-tooling/terraform.md)
+- [Terraform recovery runbook](../../../docs/05.operations/guides/09-tooling/terraform.md)
 - [Root infra README](../../README.md)

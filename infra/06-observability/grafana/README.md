@@ -30,9 +30,9 @@ Grafana serves as the primary observability portal for the `hy-home.docker` ecos
 
 | Document | Description |
 | :--- | :--- |
-| [System Guide](../../../docs/07.operations/06-observability/grafana.md) | Architecture, SSO mapping, and datasource integration details. |
-| [Operational Policy](../../../docs/07.operations/06-observability/grafana.md) | Dashboard provisioning, RBAC, and datasource maintenance. |
-| [Recovery Runbook](../../../docs/07.operations/06-observability/grafana.md) | Troubleshooting failing logins, dashboards, or service unavailability. |
+| [System Guide](../../../docs/05.operations/guides/06-observability/grafana.md) | Architecture, SSO mapping, and datasource integration details. |
+| [Operational Policy](../../../docs/05.operations/guides/06-observability/grafana.md) | Dashboard provisioning, RBAC, and datasource maintenance. |
+| [Recovery Runbook](../../../docs/05.operations/guides/06-observability/grafana.md) | Troubleshooting failing logins, dashboards, or service unavailability. |
 
 ## AI Agent Guidance
 
@@ -75,6 +75,6 @@ infra/06-observability/grafana/
 ## Related References
 
 - [infra/README.md](../../README.md)
-- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
+- [docs/05.operations/README.md](../../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../../docs/05.operations/README.md)

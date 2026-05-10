@@ -121,8 +121,8 @@ secrets/
 
 - [../README.md](../README.md)
 - [../AGENTS.md](../AGENTS.md)
-- [../docs/04.specs/infra-secrets-docs-refresh/spec.md](../docs/04.specs/infra-secrets-docs-refresh/spec.md)
-- [../docs/07.operations/README.md](../docs/07.operations/README.md)
-- [../docs/07.operations/README.md](../docs/07.operations/README.md)
+- [../docs/03.specs/infra-secrets-docs-refresh/spec.md](../docs/03.specs/infra-secrets-docs-refresh/spec.md)
+- [../docs/05.operations/README.md](../docs/05.operations/README.md)
+- [../docs/05.operations/README.md](../docs/05.operations/README.md)
 - [../docs/99.templates/readme.template.md](../docs/99.templates/readme.template.md)
-- [SENSITIVE_ENV_VARS.md.example](SENSITIVE_ENV_VARS.md.example)
+- [SENSITIVE_ENV_VARS.md.example](./SENSITIVE_ENV_VARS.md.example)

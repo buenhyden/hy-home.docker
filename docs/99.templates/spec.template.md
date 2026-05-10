@@ -1,11 +1,11 @@
 ---
 status: draft
 ---
-<!-- Target: docs/04.specs/<feature-id>/spec.md -->
+<!-- Target: docs/03.specs/<feature-id>/spec.md -->
 
 # [Feature Name] Technical Specification (Spec)
 
-> Use this template for `docs/04.specs/<feature-id>/spec.md`.
+> Use this template for `docs/03.specs/<feature-id>/spec.md`.
 >
 > Rules:
 >
@@ -29,9 +29,9 @@ status: draft
 
 ## Related Inputs
 
-- **PRD**: `[../../01.prd/YYYY-MM-DD-<feature-or-system>.md]`
-- **ARD**: `[../../02.ard/####-<system-or-domain-name>.md]`
-- **Related ADRs**: `[../../03.adr/####-<short-title>.md]`
+- **PRD**: `[../../01.requirements/YYYY-MM-DD-<feature-or-system>.md]`
+- **ARD**: `[../../02.architecture/requirements/####-<system-or-domain-name>.md]`
+- **Related ADRs**: `[../../02.architecture/decisions/####-<short-title>.md]`
 
 ## Contracts
 
@@ -140,6 +140,6 @@ python evals/run_[feature]_eval.py
 
 ## Related Documents
 
-- **Plan**: `[../../05.plans/YYYY-MM-DD-<feature>.md]`
-- **Tasks**: `[../../06.tasks/YYYY-MM-DD-<feature-or-stream>.md]`
-- **Runbook**: `[../../07.operations/<topic>.md]`
+- **Plan**: `[../../04.execution/plans/YYYY-MM-DD-<feature>.md]`
+- **Tasks**: `[../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md]`
+- **Runbook**: `[../../05.operations/<topic>.md]`

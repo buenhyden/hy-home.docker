@@ -49,9 +49,9 @@ nosql/
 
 ## Related References
 
-- **Architecture**: [Data Tier ARD](../../../docs/02.ard/0004-data-architecture.md)
-- **Guides**: [NoSQL Guides](../../../docs/07.operations/04-data/nosql/README.md)
-- **Operations**: [NoSQL Operations](../../../docs/07.operations/04-data/nosql/README.md)
+- **Architecture**: [Data Tier ARD](../../../docs/02.architecture/requirements/0004-data-architecture.md)
+- **Guides**: [NoSQL Guides](../../../docs/05.operations/guides/04-data/nosql/README.md)
+- **Operations**: [NoSQL Operations](../../../docs/05.operations/guides/04-data/nosql/README.md)
 - **Source**: [Data Tier Root](../README.md)
 
 ---

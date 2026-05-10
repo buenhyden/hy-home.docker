@@ -102,7 +102,7 @@ Verified learning through coding.
 
 ## Related Documents
 
-- [Learning reference index](README.md)
+- [Learning reference index](../../../README.md)
 - [90.references](../README.md)
 
 ---

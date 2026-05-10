@@ -1,4 +1,4 @@
-# Target: docs/04.specs/<feature-id>/contracts/schema.graphql
+# Target: docs/03.specs/<feature-id>/contracts/schema.graphql
 schema {
   query: Query
 }

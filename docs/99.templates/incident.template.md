@@ -1,19 +1,19 @@
 ---
 status: draft
 ---
-<!-- Target: docs/10.incidents/YYYY/YYYY-MM-DD-<incident-title>.md -->
+<!-- Target: docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>.md -->
 
 # Incident: [Incident Title]
 
 NC-YYYYMMDD-XXX / [Short Incident Title]
 
-> Use this template for `docs/10.incidents/YYYY/YYYY-MM-DD-<incident-title>.md`.
+> Use this template for `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>.md`.
 >
 > Rules:
 >
 > - Record facts, status, and response state.
 > - Separate confirmed facts from current hypotheses.
-> - Keep final root cause analysis in a paired Postmortem under `docs/10.incidents/`.
+> - Keep final root cause analysis in a paired Postmortem under `docs/05.operations/incidents/`.
 
 ---
 
@@ -31,7 +31,7 @@ NC-YYYYMMDD-XXX / [Short Incident Title]
 | Detection Time | `YYYY-MM-DD HH:MM UTC` |
 | Primary Service | [Affected service] |
 | Evidence Source | [Log / dashboard / report] |
-| Runbook Link | `[../../07.operations/####-<topic>.md]` |
+| Runbook Link | `[../../05.operations/####-<topic>.md]` |
 
 ## Agent Metadata (If Applicable)
 

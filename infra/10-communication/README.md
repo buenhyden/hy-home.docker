@@ -75,10 +75,10 @@ docker compose logs -f
 
 ### Related Documents
 
-- [PRD](../../docs/01.prd/2026-03-26-10-communication.md)
-- [ARD](../../docs/02.ard/0010-communication-architecture.md)
-- [ADR](../../docs/03.adr/0010-communication-services.md)
-- [Technical Spec](../../docs/04.specs/10-communication/spec.md)
+- [PRD](../../docs/01.requirements/2026-03-26-10-communication.md)
+- [ARD](../../docs/02.architecture/requirements/0010-communication-architecture.md)
+- [ADR](../../docs/02.architecture/decisions/0010-communication-services.md)
+- [Technical Spec](../../docs/03.specs/10-communication/spec.md)
 
 ---
 
@@ -123,6 +123,6 @@ infra/10-communication/
 ## Related References
 
 - [infra/README.md](../README.md)
-- [docs/07.operations/README.md](../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../docs/07.operations/README.md)
+- [docs/05.operations/README.md](../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../docs/05.operations/README.md)

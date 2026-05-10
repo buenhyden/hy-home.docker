@@ -57,9 +57,9 @@ locust/
 
 ## Related References
 
-- **Guide**: [Locust Load Testing Guide](../../../docs/07.operations/09-tooling/locust.md)
-- **Operation**: [Locust Operations Policy](../../../docs/07.operations/09-tooling/locust.md)
-- **Runbook**: [Locust Recovery Runbook](../../../docs/07.operations/09-tooling/locust.md)
+- **Guide**: [Locust Load Testing Guide](../../../docs/05.operations/guides/09-tooling/locust.md)
+- **Operation**: [Locust Operations Policy](../../../docs/05.operations/guides/09-tooling/locust.md)
+- **Runbook**: [Locust Recovery Runbook](../../../docs/05.operations/guides/09-tooling/locust.md)
 
 ---
 

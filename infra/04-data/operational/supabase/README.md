@@ -65,9 +65,9 @@ supabase/
 
 ## Related References
 
-- **Guide**: [supabase.md](../../../../docs/07.operations/04-data/operational/supabase.md)
-- **Operation**: [supabase.md](../../../../docs/07.operations/04-data/operational/supabase.md)
-- **Runbook**: [supabase.md](../../../../docs/07.operations/04-data/operational/supabase.md)
+- **Guide**: [supabase.md](../../../../docs/05.operations/guides/04-data/operational/supabase.md)
+- **Operation**: [supabase.md](../../../../docs/05.operations/guides/04-data/operational/supabase.md)
+- **Runbook**: [supabase.md](../../../../docs/05.operations/guides/04-data/operational/supabase.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

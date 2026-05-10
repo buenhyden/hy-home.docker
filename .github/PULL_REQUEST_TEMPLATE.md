@@ -5,7 +5,7 @@
 
 ## Related Specification
 
-- **Spec File:** [Link to the file in `docs/04.specs`]
+- **Spec File:** [Link to the file in `docs/03.specs`]
 - **Issue:** Resolves #
 
 ## Change Type
@@ -54,4 +54,4 @@ List exact commands used and outcome.
 - [ ] I have run tests locally.
 - [ ] I have listed exact validation commands and outcomes above.
 - [ ] No secrets or credentials are included in this PR.
-- [ ] If operational behavior changed, runbook updates were added under `docs/07.operations`.
+- [ ] If operational behavior changed, runbook updates were added under `docs/05.operations`.

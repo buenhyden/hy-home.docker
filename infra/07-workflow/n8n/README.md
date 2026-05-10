@@ -35,17 +35,17 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 
 ## Traceability (Golden 5)
 
-- **PRD**: [07-workflow PRD](../../../docs/01.prd/2026-03-26-07-workflow.md)
-- **ARD**: [07-workflow ARD](../../../docs/02.ard/0007-workflow-architecture.md)
-- **ADR**: [N8N Integration ADR](../../../docs/03.adr/0007-airflow-n8n-hybrid-workflow.md)
-- **Spec**: [07-workflow Technical Spec](../../../docs/04.specs/07-workflow/spec.md)
-- **Plan**: [07-workflow Implementation Plan](../../../docs/05.plans/2026-03-26-07-workflow-standardization.md)
+- **PRD**: [07-workflow PRD](../../../docs/01.requirements/2026-03-26-07-workflow.md)
+- **ARD**: [07-workflow ARD](../../../docs/02.architecture/requirements/0007-workflow-architecture.md)
+- **ADR**: [N8N Integration ADR](../../../docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md)
+- **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/07-workflow/spec.md)
+- **Plan**: [07-workflow Implementation Plan](../../../docs/04.execution/plans/2026-03-26-07-workflow-standardization.md)
 
 ## Operational Documentation
 
-- **System Guide**: [n8n System Guide](../../../docs/07.operations/07-workflow/n8n.md)
-- **Operations Policy**: [n8n Operations Policy](../../../docs/07.operations/07-workflow/n8n.md)
-- **Recovery Runbook**: [n8n Recovery Runbook](../../../docs/07.operations/07-workflow/n8n.md)
+- **System Guide**: [n8n System Guide](../../../docs/05.operations/guides/07-workflow/n8n.md)
+- **Operations Policy**: [n8n Operations Policy](../../../docs/05.operations/guides/07-workflow/n8n.md)
+- **Recovery Runbook**: [n8n Recovery Runbook](../../../docs/05.operations/guides/07-workflow/n8n.md)
 
 ---
 
@@ -100,6 +100,6 @@ infra/07-workflow/n8n/
 ## Related References
 
 - [infra/README.md](../../README.md)
-- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
+- [docs/05.operations/README.md](../../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../../docs/05.operations/README.md)

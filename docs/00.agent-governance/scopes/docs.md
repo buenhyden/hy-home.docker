@@ -9,7 +9,7 @@ Boundaries and permissions for agents interacting with repository documentation.
 ## 1. Context and Objective
 
 - Agentic hub: `docs/00.agent-governance/` (primary authority for agents).
-- Project docs: `docs/01.prd/` to `docs/10.incidents/`, plus `docs/90.references/` and `docs/99.templates/`.
+- Project docs: `docs/01.requirements/` to `docs/05.operations/incidents/`, plus `docs/90.references/` and `docs/99.templates/`.
 - Root instructions: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`.
 
 ## 2. Operational Permissions
@@ -50,7 +50,7 @@ If legacy active-stage content is found in a non-stage `docs/*` path:
 | `docs/00.agent-governance/`           | `doc-writer` | governance rules — all agents read      |
 | `docs/99.templates/`                  | `doc-writer` | all — template edits need user approval |
 | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | `doc-writer` | all other agents                        |
-| `docs/07.operations/`                     | `doc-writer` | all other agents                        |
+| `docs/05.operations/`                     | `doc-writer` | all other agents                        |
 
 ## 6. Subagent Bridge
 

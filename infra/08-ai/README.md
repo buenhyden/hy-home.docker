@@ -40,10 +40,10 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 
 ## How to Work in This Area
 
-1. Read the [LLM Inference Guide](../../docs/07.operations/08-ai/01.llm-inference.md).
-2. Follow the [RAG Workflow Guide](../../docs/07.operations/08-ai/02.rag-workflow.md).
-3. Check the [Operations Policy](../../docs/07.operations/08-ai/README.md) for GPU resource management.
-4. Consult the [AI Runbook](../../docs/07.operations/08-ai/README.md) for NVIDIA driver or OOM troubleshooting.
+1. Read the [LLM Inference Guide](../../docs/05.operations/guides/08-ai/01.llm-inference.md).
+2. Follow the [RAG Workflow Guide](../../docs/05.operations/guides/08-ai/02.rag-workflow.md).
+3. Check the [Operations Policy](../../docs/05.operations/guides/08-ai/README.md) for GPU resource management.
+4. Consult the [AI Runbook](../../docs/05.operations/guides/08-ai/README.md) for NVIDIA driver or OOM troubleshooting.
 
 ## Tech Stack
 
@@ -89,6 +89,6 @@ docker exec -it ollama ollama list
 ## Related References
 
 - [infra/README.md](../README.md)
-- [docs/07.operations/README.md](../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../docs/07.operations/README.md)
+- [docs/05.operations/README.md](../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../docs/05.operations/README.md)

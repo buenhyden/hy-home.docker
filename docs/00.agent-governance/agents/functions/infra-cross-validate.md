@@ -38,7 +38,7 @@ Ensure infrastructure changes are validated by independent security and drift/pe
 
 ## Skills
 
-- Depends on [infra-validate](infra-validate.md)
+- Depends on [infra-validate](./infra-validate.md)
 
 ## Usage
 

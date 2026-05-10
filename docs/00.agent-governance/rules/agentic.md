@@ -22,7 +22,7 @@ Standard behavior contract for repo-local, auditable agent execution.
   already supplied an implementation-ready plan.
 - Use persona routing, checklist routing, this rule, and one primary scope before
   task execution.
-- Use the local harness catalog as the runtime boundary:
+- Use the local agent/function catalog as the runtime boundary:
   - `.claude/agents/*.md` mirrors `docs/00.agent-governance/agents/agents/*.md`.
   - `.claude/skills/*/skill.md` mirrors `docs/00.agent-governance/agents/functions/*.md`.
   - `docs/00.agent-governance/subagent-protocol.md` defines delegation rules.

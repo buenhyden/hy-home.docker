@@ -23,7 +23,7 @@ title: 'Quality Assurance Scope'
 
 ## 3. Implementation Flow
 
-1. **Red**: Write failing tests based on the spec (`docs/04.specs/`).
+1. **Red**: Write failing tests based on the spec (`docs/03.specs/`).
 2. **Green**: Implement minimal code to pass.
 3. **Refactor**: Clean code patterns without changing behavior.
 4. **Finalize**: Run all repository-available test and validation commands relevant to the touched area.
@@ -31,7 +31,7 @@ title: 'Quality Assurance Scope'
 ## 4. Operational Procedures
 
 - **Regression**: Add regression tests for every bug fix.
-- **Reporting**: Publish test results to the session summary or `docs/06.tasks/`.
+- **Reporting**: Publish test results to the session summary or `docs/04.execution/tasks/`.
 
 ## 5. Maintenance & Safety
 

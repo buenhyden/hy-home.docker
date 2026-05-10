@@ -10,7 +10,7 @@ title: 'Product Requirements Scope'
 ## 1. Context & Objective
 
 - **Goal**: Ensure every technical initiative corresponds to a validated product need.
-- **Reference**: All requirements live in `docs/01.prd/` as the SSoT.
+- **Reference**: All requirements live in `docs/01.requirements/` as the SSoT.
 - **Standards**: Must comply with `docs/00.agent-governance/rules/quality-standards.md`.
 
 ## 2. Requirements & Constraints
@@ -22,8 +22,8 @@ title: 'Product Requirements Scope'
 ## 3. Implementation Flow
 
 1. **Discovery**: Gather raw ideas via `brainstorming` workflow.
-2. **Drafting**: Create PRD in `01.prd/`.
-3. **Approval**: Obtain explicit User/Stakeholder lock before moving to `04.specs/`.
+2. **Drafting**: Create PRD in `01.requirements/`.
+3. **Approval**: Obtain explicit User/Stakeholder lock before moving to `03.specs/`.
 
 ## 4. Operational Procedures
 
@@ -31,5 +31,5 @@ title: 'Product Requirements Scope'
 
 ## 5. Maintenance & Safety
 
-- **Archive**: Move deprecated product ideas to an `archive/` subfolder within `01.prd/`.
+- **Archive**: Move deprecated product ideas to an `archive/` subfolder within `01.requirements/`.
 - **Glossary**: Maintain a ubiquitous language glossary in project documentation under `docs/90.references/`.

@@ -19,14 +19,11 @@ section() {
 section "Docs top-level structure"
 allowed_docs=(
   "00.agent-governance"
-  "01.prd"
-  "02.ard"
-  "03.adr"
-  "04.specs"
-  "05.plans"
-  "06.tasks"
-  "07.operations"
-  "10.incidents"
+  "01.requirements"
+  "02.architecture"
+  "03.specs"
+  "04.execution"
+  "05.operations"
   "90.references"
   "99.templates"
 )
@@ -101,10 +98,11 @@ if [[ "${#misplaced_templates[@]}" -gt 0 ]]; then
 fi
 
 section "Banned stale references"
-if rg -n 'docs/11|11\.postmortems|\.agent/|07\.guides|08\.operations|09\.runbooks|guide\.template\.md|runbook\.template\.md' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
+if rg -n 'docs/11|11\.postmortems|\.agent/|docs/(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)|(^|[^[:alnum:]_/-])(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)([^[:alnum:]_/-]|$)|guide\.template\.md|runbook\.template\.md|harness catalog|Runtime harness catalog' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
   --glob '!graphify-out/**' \
+  --glob '!docs/README.md' \
   --glob '!scripts/check-repo-contracts.sh' >/tmp/check-repo-contracts-banned.txt; then
-  fail "stale docs/11, removed operations-stage, guide/runbook template, or .agent references remain"
+  fail "stale docs taxonomy, removed operations-stage, guide/runbook template, harness-catalog, or .agent references remain"
   cat /tmp/check-repo-contracts-banned.txt >&2
 fi
 rm -f /tmp/check-repo-contracts-banned.txt
@@ -338,7 +336,7 @@ then
   failures=$((failures + 1))
 fi
 
-section "Runtime harness catalog"
+section "Runtime agent/function catalog"
 if ! python3 - <<'PY'
 from __future__ import annotations
 
@@ -516,7 +514,7 @@ from __future__ import annotations
 import pathlib
 import sys
 
-stages = ["07.operations"]
+stages = ["05.operations/guides"]
 
 # Implementation path names sometimes differ from product names. Keep those
 # differences explicit so missing docs do not get hidden by ad-hoc conventions.

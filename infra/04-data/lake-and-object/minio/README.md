@@ -67,10 +67,10 @@ docker compose -f docker-compose.cluster.yaml up -d
 
 ## 8. Related Documents
 
-- **Guide**: [Technical Guide](../../../../docs/07.operations/04-data/lake-and-object/minio.md)
-- **Operation**: [Operations Policy](../../../../docs/07.operations/04-data/lake-and-object/minio.md)
-- **Runbook**: [Recovery Runbook](../../../../docs/07.operations/04-data/lake-and-object/minio.md)
-- **Spec**: [Data Persistence Spec](../../../../docs/04.specs/04-data/spec.md)
+- **Guide**: [Technical Guide](../../../../docs/05.operations/guides/04-data/lake-and-object/minio.md)
+- **Operation**: [Operations Policy](../../../../docs/05.operations/guides/04-data/lake-and-object/minio.md)
+- **Runbook**: [Recovery Runbook](../../../../docs/05.operations/guides/04-data/lake-and-object/minio.md)
+- **Spec**: [Data Persistence Spec](../../../../docs/03.specs/04-data/spec.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
@@ -123,6 +123,6 @@ infra/04-data/lake-and-object/minio/
 ## Related References
 
 - [infra/README.md](../../../README.md)
-- [docs/07.operations/README.md](../../../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../../../docs/07.operations/README.md)
+- [docs/05.operations/README.md](../../../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../../../docs/05.operations/README.md)

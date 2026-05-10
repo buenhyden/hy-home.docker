@@ -26,21 +26,21 @@ Protocol for maintaining documentation consistency and governance traceability.
 
 | Stage/Folder | Document Type | Template |
 | --- | --- | --- |
-| `docs/01.prd/` | PRD | `docs/99.templates/prd.template.md` |
-| `docs/02.ard/` | ARD | `docs/99.templates/ard.template.md` |
-| `docs/03.adr/` | ADR | `docs/99.templates/adr.template.md` |
-| `docs/04.specs/` | Spec | `docs/99.templates/spec.template.md` |
-| `docs/04.specs/<feature-id>/api-spec.md` | API Spec | `docs/99.templates/api-spec.template.md` |
-| `docs/04.specs/<feature-id>/agent-design.md` | Agent Design | `docs/99.templates/agent-design.template.md` |
-| `docs/05.plans/` | Plan | `docs/99.templates/plan.template.md` |
-| `docs/06.tasks/` | Task | `docs/99.templates/task.template.md` |
-| `docs/07.operations/` | Operations Knowledge | `docs/99.templates/operation.template.md` |
-| `docs/10.incidents/` | Incident | `docs/99.templates/incident.template.md` |
-| `docs/10.incidents/` | Postmortem | `docs/99.templates/postmortem.template.md` |
+| `docs/01.requirements/` | PRD | `docs/99.templates/prd.template.md` |
+| `docs/02.architecture/requirements/` | ARD | `docs/99.templates/ard.template.md` |
+| `docs/02.architecture/decisions/` | ADR | `docs/99.templates/adr.template.md` |
+| `docs/03.specs/` | Spec | `docs/99.templates/spec.template.md` |
+| `docs/03.specs/<feature-id>/api-spec.md` | API Spec | `docs/99.templates/api-spec.template.md` |
+| `docs/03.specs/<feature-id>/agent-design.md` | Agent Design | `docs/99.templates/agent-design.template.md` |
+| `docs/04.execution/plans/` | Plan | `docs/99.templates/plan.template.md` |
+| `docs/04.execution/tasks/` | Task | `docs/99.templates/task.template.md` |
+| `docs/05.operations/` | Operations Knowledge | `docs/99.templates/operation.template.md` |
+| `docs/05.operations/incidents/` | Incident | `docs/99.templates/incident.template.md` |
+| `docs/05.operations/incidents/` | Postmortem | `docs/99.templates/postmortem.template.md` |
 | `docs/90.references/` | Reference | `docs/99.templates/reference.template.md` |
 | `README.md` (per folder) | README | `docs/99.templates/readme.template.md` |
 
-For supporting contracts under `docs/04.specs/<feature-id>/`, use:
+For supporting contracts under `docs/03.specs/<feature-id>/`, use:
 
 - `docs/99.templates/data-model.template.md`
 - `docs/99.templates/tests.template.md`
@@ -87,7 +87,7 @@ These rules are blocking. Completion is **PROHIBITED** until all three pass.
 
 **R1 — Template First:**
 Read the matching template from `docs/99.templates/` → fill every section → set `status: draft`.
-Infrastructure triggers: new service → ARD first; network change → ADR first; production procedure → `07.operations` first.
+Infrastructure triggers: new service → ARD first; network change → ADR first; production procedure → `05.operations` first.
 
 **R2 — README Sync:**
 Any folder-level change (file added, moved, or removed) → the parent `README.md` MUST be updated.

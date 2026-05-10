@@ -62,4 +62,4 @@ memory/
 - [Governance hub](../README.md)
 - [Documentation protocol](../rules/documentation-protocol.md)
 - [Task checklists](../rules/task-checklists.md)
-- [Memory template](template.md)
+- [Memory template](./template.md)

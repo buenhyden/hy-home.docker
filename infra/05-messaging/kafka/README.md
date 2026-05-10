@@ -43,10 +43,10 @@ kafka/
 
 ## How to Work in This Area
 
-1. **Bootstrap**: [Kafka KRaft Guide](../../../docs/07.operations/05-messaging/kafka.md)를 읽고 클러스터 초기 구성 방식을 파악한다.
+1. **Bootstrap**: [Kafka KRaft Guide](../../../docs/05.operations/guides/05-messaging/kafka.md)를 읽고 클러스터 초기 구성 방식을 파악한다.
 2. **Configuration**: `docker-compose.yml`의 Broker ID 및 포트 맵핑 설정을 확인한다.
 3. **Execution**: 변경 사항 적용 후 `docker compose up -d`로 반영한다.
-4. **Validation**: [Messaging Runbook](../../../docs/07.operations/05-messaging/kafka.md)의 점검 절차를 수행한다.
+4. **Validation**: [Messaging Runbook](../../../docs/05.operations/guides/05-messaging/kafka.md)의 점검 절차를 수행한다.
 
 ## Tech Stack
 
@@ -89,12 +89,12 @@ curl -fsS http://schema-registry.localhost/subjects
 
 1. **Initialize Topics**: 새 토픽은 반드시 `docker-compose.yml`의 `kafka-init` 서비스를 통해 관리되도록 설정한다.
 2. **Monitor Health**: 브로커 점검 시 `UnderReplicatedPartitions` 지표가 0인지 항상 확인한다.
-3. **SSoT Linkage**: 토픽 스펙 변경 시 `docs/04.specs/05-messaging/spec.md`를 함께 갱신한다.
+3. **SSoT Linkage**: 토픽 스펙 변경 시 `docs/03.specs/05-messaging/spec.md`를 함께 갱신한다.
 
 ## Related References
 
-- **PRD**: [05-messaging](../../../docs/01.prd/2026-03-26-05-messaging.md)
-- **ARD**: [Messaging Architecture](../../../docs/02.ard/0005-messaging-architecture.md)
-- **Guide**: [Kafka Guide](../../../docs/07.operations/05-messaging/kafka.md)
-- **Ops**: [Messaging Ops](../../../docs/07.operations/05-messaging/kafka.md)
-- **Runbook**: [Messaging Recovery](../../../docs/07.operations/05-messaging/kafka.md)
+- **PRD**: [05-messaging](../../../docs/01.requirements/2026-03-26-05-messaging.md)
+- **ARD**: [Messaging Architecture](../../../docs/02.architecture/requirements/0005-messaging-architecture.md)
+- **Guide**: [Kafka Guide](../../../docs/05.operations/guides/05-messaging/kafka.md)
+- **Ops**: [Messaging Ops](../../../docs/05.operations/guides/05-messaging/kafka.md)
+- **Runbook**: [Messaging Recovery](../../../docs/05.operations/guides/05-messaging/kafka.md)

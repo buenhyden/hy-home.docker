@@ -83,13 +83,13 @@ healthcheck:
 ## Related References
 
 - [01-gateway Root README](../README.md)
-- [Nginx Guide](../../../docs/07.operations/01-gateway/nginx.md)
-- [Gateway Operations Policy](../../../docs/07.operations/01-gateway/nginx.md)
-- [Nginx Runbook](../../../docs/07.operations/01-gateway/nginx.md)
-- [SSO Setup Guide](../../../docs/07.operations/02-auth/README.md)
+- [Nginx Guide](../../../docs/05.operations/guides/01-gateway/nginx.md)
+- [Gateway Operations Policy](../../../docs/05.operations/guides/01-gateway/nginx.md)
+- [Nginx Runbook](../../../docs/05.operations/guides/01-gateway/nginx.md)
+- [SSO Setup Guide](../../../docs/05.operations/guides/02-auth/README.md)
 
 ## AI Agent Guidance
 
 1. Always run `nginx -t` before reloading configuration.
 2. Ensure `X-Forwarded-Proto https` is set for upstreams to avoid redirect loops.
-3. Update specific path guides in `docs/07.operations/01-gateway/nginx.md` when adding new routing logic.
+3. Update specific path guides in `docs/05.operations/01-gateway/nginx.md` when adding new routing logic.

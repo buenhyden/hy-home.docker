@@ -8,7 +8,7 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 
 ## 1. Core Principles
 
-- Spec-anchored: implementation decisions must map to `docs/01.prd/` and `docs/04.specs/`.
+- Spec-anchored: implementation decisions must map to `docs/01.requirements/` and `docs/03.specs/`.
 - Stage-gate discipline: use `docs/01` to `docs/10` as lifecycle SSoT, plus `docs/90` and `docs/99`.
 - JIT loading: load only required rules, scopes, and stage docs.
 - Deterministic routing: resolve persona and layer before mutation.
@@ -18,14 +18,14 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 | Stage | Path                        | Purpose                            |
 | :---- | :-------------------------- | :--------------------------------- |
 | 00    | `docs/00.agent-governance/` | Agent governance and routing rules |
-| 01    | `docs/01.prd/`              | Product requirements               |
-| 02    | `docs/02.ard/`              | Architecture reference             |
-| 03    | `docs/03.adr/`              | Architecture decisions             |
-| 04    | `docs/04.specs/`            | Technical specifications           |
-| 05    | `docs/05.plans/`            | Implementation plans               |
-| 06    | `docs/06.tasks/`            | Task execution evidence            |
-| 07    | `docs/07.operations/`       | Operations knowledge base          |
-| 10    | `docs/10.incidents/`        | Incident records and postmortems   |
+| 01    | `docs/01.requirements/`              | Product requirements               |
+| 02    | `docs/02.architecture/requirements/`              | Architecture reference             |
+| 03    | `docs/02.architecture/decisions/`              | Architecture decisions             |
+| 04    | `docs/03.specs/`            | Technical specifications           |
+| 05    | `docs/04.execution/plans/`            | Implementation plans               |
+| 06    | `docs/04.execution/tasks/`            | Task execution evidence            |
+| 07    | `docs/05.operations/`       | Operations knowledge base          |
+| 10    | `docs/05.operations/incidents/`        | Incident records and postmortems   |
 | 90    | `docs/90.references/`       | Stable references                  |
 | 99    | `docs/99.templates/`        | Document templates                 |
 

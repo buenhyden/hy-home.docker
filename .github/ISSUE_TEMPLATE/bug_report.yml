@@ -12,8 +12,8 @@ body:
     id: spec_link
     attributes:
       label: Related Spec Link
-      description: Link to the spec under `docs/04.specs` (if available)
-      placeholder: https://github.com/buenhyden/hy-home.docker/blob/main/docs/04.specs/<feature-id>/spec.md
+      description: Link to the spec under `docs/03.specs` (if available)
+      placeholder: https://github.com/buenhyden/hy-home.docker/blob/main/docs/03.specs/<feature-id>/spec.md
     validations:
       required: false
   - type: textarea

@@ -1,4 +1,4 @@
-// Target: docs/04.specs/<feature-id>/contracts/service.proto
+// Target: docs/03.specs/<feature-id>/contracts/service.proto
 syntax = "proto3";
 
 package example.v1;

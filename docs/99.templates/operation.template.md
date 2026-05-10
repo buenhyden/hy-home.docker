@@ -1,11 +1,11 @@
 ---
 status: draft
 ---
-<!-- Target: docs/07.operations/<policy-or-standard>.md -->
+<!-- Target: docs/05.operations/<policy-or-standard>.md -->
 
 # [Topic Name] Operations
 
-> Use this template for `docs/07.operations/<policy-or-standard>.md`.
+> Use this template for `docs/05.operations/<policy-or-standard>.md`.
 >
 > Rules:
 >
@@ -67,5 +67,5 @@ status: draft
 
 ## Related Documents
 
-- **ARD**: `[../02.ard/####-<system-or-domain>.md]`
-- **Postmortem**: `[../10.incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md]`
+- **ARD**: `[../02.architecture/requirements/####-<system-or-domain>.md]`
+- **Postmortem**: `[../05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md]`

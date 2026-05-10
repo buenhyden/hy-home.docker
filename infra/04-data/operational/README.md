@@ -55,9 +55,9 @@ operational/
 
 ## Related References
 
-- **Guide**: [Operational Guides](../../../docs/07.operations/04-data/operational/README.md)
-- **Operation**: [Operational Policies](../../../docs/07.operations/04-data/operational/README.md)
-- **Runbook**: [Operational Runbooks](../../../docs/07.operations/04-data/operational/README.md)
+- **Guide**: [Operational Guides](../../../docs/05.operations/guides/04-data/operational/README.md)
+- **Operation**: [Operational Policies](../../../docs/05.operations/guides/04-data/operational/README.md)
+- **Runbook**: [Operational Runbooks](../../../docs/05.operations/guides/04-data/operational/README.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

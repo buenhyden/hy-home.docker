@@ -6,8 +6,8 @@
 
 ## 주요 문서 (Highlights)
 
-- **[Self-Learning Roadmap](roadmap.md)**: 전체 인프라를 이론적으로 매핑한 핵심 로드맵 (v2)
-- **[Roadmap v1 (Archive)](roadmap-v1.md)**: 초기 버전의 로드맵 (기록용)
+- **[Self-Learning Roadmap](./roadmap.md)**: 전체 인프라를 이론적으로 매핑한 핵심 로드맵 (v2)
+- **[Roadmap v1 (Archive)](./roadmap-v1.md)**: 초기 버전의 로드맵 (기록용)
 
 ## 학습 영역 (Learning Domains)
 

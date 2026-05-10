@@ -89,10 +89,10 @@ docker exec vault-agent ls -la /vault/agent/
 
 ## Related References
 
-- **System Guide**: [vault.md](../../../docs/07.operations/03-security/vault.md)
-- **Technical Spec**: [spec.md](../../../docs/04.specs/03-security/spec.md)
-- **Ops Policy**: [vault.md](../../../docs/07.operations/03-security/vault.md)
-- **Runbook**: [vault.md](../../../docs/07.operations/03-security/vault.md)
+- **System Guide**: [vault.md](../../../docs/05.operations/guides/03-security/vault.md)
+- **Technical Spec**: [spec.md](../../../docs/03.specs/03-security/spec.md)
+- **Ops Policy**: [vault.md](../../../docs/05.operations/guides/03-security/vault.md)
+- **Runbook**: [vault.md](../../../docs/05.operations/guides/03-security/vault.md)
 
 ## How to Work in This Area
 

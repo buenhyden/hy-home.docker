@@ -14,6 +14,6 @@ infra/** @buenhyden
 scripts/** @buenhyden
 secrets/** @buenhyden
 docs/00.agent-governance/** @buenhyden
-docs/04.specs/** @buenhyden
-docs/07.operations/** @buenhyden
+docs/03.specs/** @buenhyden
+docs/05.operations/** @buenhyden
 docs/99.templates/** @buenhyden

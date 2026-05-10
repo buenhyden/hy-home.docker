@@ -43,7 +43,7 @@ This README is for:
   - `github-governance.md` — GitHub-aligned policy baseline (branch protection, PR contracts, Actions security, local-instruction boundary)
 - `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge (§6 §7 per scope).
 - `providers/`: runtime-specific overlays (`claude`, `gemini`, `codex`, provider-neutral `agents-md`).
-- `agents/`: local harness catalog of workspace agents and orchestration functions.
+- `agents/`: local agent/function catalog of workspace agents and orchestration functions.
   - Runtime mirror: 8 Claude agents in `.claude/agents/` and 10 functions in `.claude/skills/`.
 - `.claude/`: Claude runtime enforcement layer (`CLAUDE.md`, `settings.json`, hooks, agent files, nested skills).
 - `.codex/`: Codex runtime hook/context layer (`hooks.json`, `README.md`).
@@ -57,14 +57,14 @@ This README is for:
 
 | Marker               | Target                          | Purpose                         |
 | :------------------- | :------------------------------ | :------------------------------ |
-| `[LOAD:PRD]`         | `docs/01.prd/README.md`         | Product intent and requirements |
-| `[LOAD:ARD]`         | `docs/02.ard/README.md`         | Architecture reference          |
-| `[LOAD:ADR]`         | `docs/03.adr/README.md`         | Decision history                |
-| `[LOAD:SPECS]`       | `docs/04.specs/README.md`       | Technical source of truth       |
-| `[LOAD:PLANS]`       | `docs/05.plans/README.md`       | Implementation planning         |
-| `[LOAD:TASKS]`       | `docs/06.tasks/README.md`       | Execution evidence              |
-| `[LOAD:OPERATIONS]`  | `docs/07.operations/README.md`   | Operations knowledge base        |
-| `[LOAD:INCIDENTS]`   | `docs/10.incidents/README.md`   | Incident records and postmortems |
+| `[LOAD:PRD]`         | `docs/01.requirements/README.md`         | Product intent and requirements |
+| `[LOAD:ARD]`         | `docs/02.architecture/requirements/README.md`         | Architecture reference          |
+| `[LOAD:ADR]`         | `docs/02.architecture/decisions/README.md`         | Decision history                |
+| `[LOAD:SPECS]`       | `docs/03.specs/README.md`       | Technical source of truth       |
+| `[LOAD:PLANS]`       | `docs/04.execution/plans/README.md`       | Implementation planning         |
+| `[LOAD:TASKS]`       | `docs/04.execution/tasks/README.md`       | Execution evidence              |
+| `[LOAD:OPERATIONS]`  | `docs/05.operations/README.md`   | Operations knowledge base        |
+| `[LOAD:INCIDENTS]`   | `docs/05.operations/incidents/README.md`   | Incident records and postmortems |
 | `[LOAD:REFERENCES]`  | `docs/90.references/README.md`  | Stable references               |
 | `[LOAD:TEMPLATES]`   | `docs/99.templates/README.md`   | Document templates              |
 

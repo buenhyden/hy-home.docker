@@ -78,7 +78,7 @@ check_03_security() {
 
     local compose_file="infra/03-security/vault/docker-compose.yml"
     local agent_hcl="infra/03-security/vault/config/vault-agent.hcl"
-    local spec_file="docs/04.specs/03-security/spec.md"
+    local spec_file="docs/03.specs/03-security/spec.md"
 
     check_file "$compose_file"
     check_file "$agent_hcl"
@@ -86,7 +86,7 @@ check_03_security() {
 
     check_contains "$compose_file" "service: template-stateful-med" "vault compose template inheritance missing"
     check_contains "$compose_file" "vault-agent:" "vault-agent service missing"
-    check_contains "$spec_file" "../../01.prd/2026-03-28-03-security-optimization-hardening.md" "tier 03 spec trace link missing"
+    check_contains "$spec_file" "../../01.requirements/2026-03-28-03-security-optimization-hardening.md" "tier 03 spec trace link missing"
 }
 
 # --- Tier 04: Data ---

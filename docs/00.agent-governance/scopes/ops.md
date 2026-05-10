@@ -25,12 +25,12 @@ title: 'Operations & SRE Scope'
 
 1. **Monitor**: Configure dashboards in `infra/06-observability/grafana/`.
 2. **Alert**: Define SLI/SLO and alert rules in Prometheus/AlertManager.
-3. **Recover**: Create and maintain operations procedures in `docs/07.operations/`.
+3. **Recover**: Create and maintain operations procedures in `docs/05.operations/`.
 
 ## 4. Operational Procedures
 
-- **Incident Response**: Follow the `docs/10.incidents/` protocol for live tracking.
-- **Post-mortems**: Mandatory retrospective in `docs/10.incidents/` for any SEV1/SEV2 incident.
+- **Incident Response**: Follow the `docs/05.operations/incidents/` protocol for live tracking.
+- **Post-mortems**: Mandatory retrospective in `docs/05.operations/incidents/` for any SEV1/SEV2 incident.
 
 ## 5. Maintenance & Safety
 
@@ -41,8 +41,8 @@ title: 'Operations & SRE Scope'
 
 | Path Pattern              | Owner Agent          | Read-Only For                |
 | ------------------------- | -------------------- | ---------------------------- |
-| `docs/07.operations/`       | `incident-responder` | all other agents             |
-| `docs/10.incidents/`      | `incident-responder` | `security-auditor` (read), `doc-writer` (template fill) |
+| `docs/05.operations/`       | `incident-responder` | all other agents             |
+| `docs/05.operations/incidents/`      | `incident-responder` | `security-auditor` (read), `doc-writer` (template fill) |
 | `infra/06-observability/` | `incident-responder` | read-only for others         |
 
 ## 7. Subagent Bridge

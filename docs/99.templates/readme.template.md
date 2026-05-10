@@ -12,18 +12,18 @@ status: draft
 - Repository Root (`/`) -> `Base Structure` + `Root Snippet`
 - Implementation Layer (`web/`, `server/`, `app/`, `packages/`, `gitops/`, `infra/`, `infrastructure/`) -> `Base Structure` + `Implementation Snippet`
 - Documentation & Governance (`docs/`, `docs/99.templates/`, `docs/00.agent-governance/`) -> `Base Structure` + `Docs & Governance Snippet`
-- Operations & Procedures (`docs/07.operations/`, `scripts/`) -> `Base Structure` + `Ops & Utils Snippet`
-- Incident Learning (`docs/10.incidents/`) -> `Base Structure` + `Incident / Postmortem Snippet`
+- Operations & Procedures (`docs/05.operations/`, `scripts/`) -> `Base Structure` + `Ops & Utils Snippet`
+- Incident Learning (`docs/05.operations/incidents/`) -> `Base Structure` + `Incident / Postmortem Snippet`
 
 ## docs 디렉터리 상세 역할
-- [01.prd](01.prd/README.md): 제품 요구사항 정의 (Vision, Use Case, Requirements)
-- [02.ard](02.ard/README.md): 아키텍처 참조 모델 및 품질 속성 정의
-- [03.adr](03.adr/README.md): 기술적 의사결정 기록 (Decision, Status, Context, Consequence)
-- [04.specs](04.specs/README.md): 컴포넌트/기능별 상세 설계 명세 (Data, API, Logic, Agent-Design)
-- [05.plans](05.plans/README.md): 실행 계획 및 마일스톤 (Work Breakdown, Risks)
-- [06.tasks](06.tasks/README.md): 실제 구현 및 검증 작업 단위 (Task Table, Evidence)
-- [07.operations](07.operations/README.md): 사용 가이드, 운영 정책, 반복 실행 절차를 통합한 운영 지식 베이스
-- [10.incidents](10.incidents/README.md): 발생한 사고의 사실 기록, 사고 구조 분석, 재발 방지 대책
+- [01.requirements](01.requirements/README.md): 제품 요구사항 정의 (Vision, Use Case, Requirements)
+- [02.architecture/requirements](02.architecture/requirements/README.md): 아키텍처 참조 모델 및 품질 속성 정의
+- [02.architecture/decisions](02.architecture/decisions/README.md): 기술적 의사결정 기록 (Decision, Status, Context, Consequence)
+- [03.specs](03.specs/README.md): 컴포넌트/기능별 상세 설계 명세 (Data, API, Logic, Agent-Design)
+- [04.execution/plans](04.execution/plans/README.md): 실행 계획 및 마일스톤 (Work Breakdown, Risks)
+- [04.execution/tasks](04.execution/tasks/README.md): 실제 구현 및 검증 작업 단위 (Task Table, Evidence)
+- [05.operations](05.operations/README.md): 사용 가이드, 운영 정책, 반복 실행 절차를 통합한 운영 지식 베이스
+- [05.operations/incidents](05.operations/incidents/README.md): 발생한 사고의 사실 기록, 사고 구조 분석, 재발 방지 대책
 
 ## Assembly Rules
 1. 아래의 `Base Structure`를 먼저 복사한다.

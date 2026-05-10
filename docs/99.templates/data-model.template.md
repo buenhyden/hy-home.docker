@@ -1,11 +1,11 @@
 ---
 status: draft
 ---
-<!-- Target: docs/04.specs/<feature-id>/data-model.md -->
+<!-- Target: docs/03.specs/<feature-id>/data-model.md -->
 
 # [Feature Name] Data Model
 
-> Use this template for `docs/04.specs/<feature-id>/data-model.md`.
+> Use this template for `docs/03.specs/<feature-id>/data-model.md`.
 >
 > Rules:
 >
@@ -81,5 +81,5 @@ CREATE TABLE example (
 ## Related Documents
 
 - **Spec**: `[./spec.md]`
-- **Plan**: `[../../05.plans/YYYY-MM-DD-<feature>.md]`
-- **Runbook**: `[../../07.operations/####-<topic>.md]`
+- **Plan**: `[../../04.execution/plans/YYYY-MM-DD-<feature>.md]`
+- **Runbook**: `[../../05.operations/####-<topic>.md]`

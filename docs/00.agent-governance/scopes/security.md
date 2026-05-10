@@ -48,7 +48,7 @@ Universal security standards and data protection protocols for `hy-home.docker`.
 | -------------------------------- | ------------------ | ------------------------------------------------ |
 | `scripts/check-all-hardening.sh` | `security-auditor` | all other agents                                 |
 | `scripts/check-*-baseline.sh`    | `security-auditor` | all other agents                                 |
-| `docs/10.incidents/`             | `security-auditor` | `incident-responder` (read)                      |
+| `docs/05.operations/incidents/`             | `security-auditor` | `incident-responder` (read)                      |
 | `infra/*/`                       | read-only          | audit only; changes owned by `infra-implementer` |
 
 ## 7. Subagent Bridge

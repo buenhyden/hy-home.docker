@@ -29,9 +29,9 @@ rabbitmq/
 
 ## How to Work in This Area
 
-1. **Service Guide**: 상세 아키텍처 및 연결 설정은 `[../../../docs/07.operations/05-messaging/rabbitmq.md]`를 참조한다.
-2. **Operations**: 보안 규정 및 가용성 정책은 `[../../../docs/07.operations/05-messaging/rabbitmq.md]`에 정의되어 있다.
-3. **Emergency**: 서비스 장애 상황 발생 시 `[../../../docs/07.operations/05-messaging/rabbitmq.md]`의 복구 절차를 따른다.
+1. **Service Guide**: 상세 아키텍처 및 연결 설정은 `[../../../docs/05.operations/05-messaging/rabbitmq.md]`를 참조한다.
+2. **Operations**: 보안 규정 및 가용성 정책은 `[../../../docs/05.operations/05-messaging/rabbitmq.md]`에 정의되어 있다.
+3. **Emergency**: 서비스 장애 상황 발생 시 `[../../../docs/05.operations/05-messaging/rabbitmq.md]`의 복구 절차를 따른다.
 
 ## Tech Stack
 
@@ -63,8 +63,8 @@ mc admin definitions export ...
 
 ## Related References
 
-- **ARD**: `[../../../docs/02.ard/0005-messaging-architecture.md]`
-- **Runbook**: `[../../../docs/07.operations/05-messaging/rabbitmq.md]`
+- **ARD**: `[../../../docs/02.architecture/requirements/0005-messaging-architecture.md]`
+- **Runbook**: `[../../../docs/05.operations/05-messaging/rabbitmq.md]`
 - **Monitoring**: `Grafana - Messaging Dashboard`
 
 ---

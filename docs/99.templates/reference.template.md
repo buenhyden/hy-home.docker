@@ -34,5 +34,5 @@ status: draft
 
 ## Related Documents
 
-- **ARD**: `[../02.ard/####-<system-or-domain-name>.md]`
-- **Spec**: `[../04.specs/<feature-id>/spec.md]`
+- **ARD**: `[../02.architecture/requirements/####-<system-or-domain-name>.md]`
+- **Spec**: `[../03.specs/<feature-id>/spec.md]`

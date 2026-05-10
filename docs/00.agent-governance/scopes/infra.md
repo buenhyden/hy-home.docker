@@ -48,7 +48,7 @@ title: 'Infrastructure Operational Scope'
 | `infra/*/`                     | `infra-implementer` | `security-auditor` (read)    |
 | `.env*`, `secrets/`            | `infra-implementer` | all — plaintext forbidden    |
 | `scripts/validate-*.sh`        | `infra-implementer` | all other agents             |
-| `docs/02.ard/`, `docs/03.adr/` | `infra-implementer` | `doc-writer` (template fill) |
+| `docs/02.architecture/requirements/`, `docs/02.architecture/decisions/` | `infra-implementer` | `doc-writer` (template fill) |
 
 Conflicts: the most specific scope wins. Raises to user if ambiguous.
 

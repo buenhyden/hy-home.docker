@@ -42,10 +42,10 @@ oauth2-proxy/
 
 ## How to Work in This Area
 
-1. Read the [Auth Guides](../../../docs/07.operations/02-auth/README.md) for OIDC/ForwardAuth configuration.
-2. Refer to the [OAuth2 Proxy Guide](../../../docs/07.operations/02-auth/oauth2-proxy.md) for detailed configuration steps.
+1. Read the [Auth Guides](../../../docs/05.operations/guides/02-auth/README.md) for OIDC/ForwardAuth configuration.
+2. Refer to the [OAuth2 Proxy Guide](../../../docs/05.operations/guides/02-auth/oauth2-proxy.md) for detailed configuration steps.
 3. Check `config/oauth2-proxy.cfg` for runtime provider and cookie settings.
-4. Use the [Auth Runbook](../../../docs/07.operations/02-auth/README.md) for cookie secret rotation procedures.
+4. Use the [Auth Runbook](../../../docs/05.operations/guides/02-auth/README.md) for cookie secret rotation procedures.
 
 ## Tech Stack
 
@@ -102,7 +102,7 @@ docker logs oauth2-proxy | grep "OIDC"
 
 - [Keycloak](../keycloak/README.md) - The Identity Provider.
 - [01-gateway](../../01-gateway/README.md) - Traefik route configuration.
-- [docs/07.operations/02-auth/oauth2-proxy.md](../../../docs/07.operations/02-auth/oauth2-proxy.md) - Session policies.
+- [docs/05.operations/02-auth/oauth2-proxy.md](../../../docs/05.operations/guides/02-auth/oauth2-proxy.md) - Session policies.
 
 ## AI Agent Guidance
 

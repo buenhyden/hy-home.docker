@@ -40,27 +40,27 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 
 ## Agents
 
-- [workflow-supervisor](agents/workflow-supervisor.md)
-- [code-reviewer](agents/code-reviewer.md)
-- [doc-writer](agents/doc-writer.md)
-- [drift-detector](agents/drift-detector.md)
-- [iac-reviewer](agents/iac-reviewer.md)
-- [incident-responder](agents/incident-responder.md)
-- [infra-implementer](agents/infra-implementer.md)
-- [security-auditor](agents/security-auditor.md)
+- [workflow-supervisor](./agents/workflow-supervisor.md)
+- [code-reviewer](./agents/code-reviewer.md)
+- [doc-writer](./agents/doc-writer.md)
+- [drift-detector](./agents/drift-detector.md)
+- [iac-reviewer](./agents/iac-reviewer.md)
+- [incident-responder](./agents/incident-responder.md)
+- [infra-implementer](./agents/infra-implementer.md)
+- [security-auditor](./agents/security-auditor.md)
 
 ## Functions
 
-- [code-reviewer](functions/code-reviewer.md)
-- [security-audit](functions/security-audit.md)
-- [infra-validate](functions/infra-validate.md)
-- [infra-cross-validate](functions/infra-cross-validate.md)
-- [incident-response](functions/incident-response.md)
-- [docker-compose-patterns](functions/docker-compose-patterns.md)
-- [container-threat-modeling](functions/container-threat-modeling.md)
-- [code-review-dimensions](functions/code-review-dimensions.md)
-- [adr-writing](functions/adr-writing.md)
-- [ci-cd-patterns](functions/ci-cd-patterns.md)
+- [code-reviewer](./functions/code-reviewer.md)
+- [security-audit](./functions/security-audit.md)
+- [infra-validate](./functions/infra-validate.md)
+- [infra-cross-validate](./functions/infra-cross-validate.md)
+- [incident-response](./functions/incident-response.md)
+- [docker-compose-patterns](./functions/docker-compose-patterns.md)
+- [container-threat-modeling](./functions/container-threat-modeling.md)
+- [code-review-dimensions](./functions/code-review-dimensions.md)
+- [adr-writing](./functions/adr-writing.md)
+- [ci-cd-patterns](./functions/ci-cd-patterns.md)
 
 ## How to Work in This Area
 

@@ -18,12 +18,12 @@ Running record of harness gap remediation. Updated by agents after each phase.
 | P4 — GitHub governance alignment         | ✅ Done | 2026-04-10 | github-governance.md created; README/bootstrap/standards/git-workflow/quality-standards updated; common/frontend scope validation text normalized; provider overlays clarified; code-reviewer + security-auditor updated                                                                                                                    |
 | P5 — Local instruction authority cleanup | ✅ Done | 2026-04-10 | Removed GitHub-native instruction hierarchy assumptions; normalized authority to `docs/00.agent-governance/` + `.claude/`; provider overlays and audit notes updated                                                                                                                                                                        |
 | P6 — Infra Team Agent cross-validation   | ✅ Done | 2026-04-10 | Pipeline Team Agent: infra-implementer→security-auditor→iac-reviewer; drift + performance checks in iac-reviewer; infra-cross-validate skill created; settings.json reconstructed                                                                                                                                                           |
-| P7 — Runtime harness normalization       | ✅ Done | 2026-04-11 | Added `workflow-supervisor` (`opus`), created `.claude/CLAUDE.md`, normalized active runtime skills to `.claude/skills/<name>/skill.md`, added code-reviewer and security-audit runtime skills, confirmed the Infra governance set as the active source set, and removed source-example identifiers from canonical runtime/governance files |
+| P7 — Runtime agent normalization         | ✅ Done | 2026-04-11 | Added `workflow-supervisor` (`opus`), created `.claude/CLAUDE.md`, normalized active runtime skills to `.claude/skills/<name>/skill.md`, added code-reviewer and security-audit runtime skills, confirmed the Infra governance set as the active source set, and removed source-example identifiers from canonical runtime/governance files |
 | P8 — Designated harness migration        | ✅ Done | 2026-04-12 | Migrated 7 designated harnesses: drift-detector agent; 5 new skills (docker-compose-patterns, container-threat-modeling, code-review-dimensions, adr-writing, ci-cd-patterns); code-reviewer and doc-writer agents extended; AGENTS.md catalog and governance agents/functions catalog fully synced                                         |
 | P9 — Runtime surface alignment           | ✅ Done | 2026-05-09 | Thinned root `AGENTS.md` and `CLAUDE.md`, added Codex provider docs and `.codex/README.md`, aligned provider-neutral delegation wording, and kept detailed runtime policy under `.claude/` plus `docs/00.agent-governance/`                                                   |
 | P10 — Harness contract hardening         | ✅ Done | 2026-05-09 | Preserved thin root shims, clarified Codex as hook/context surface, kept `.claude` as the canonical runtime mirror, and strengthened `check-repo-contracts.sh` to enforce agent/function mirror, model hierarchy, scope imports, subagent protocol coverage, and source-leak prevention |
 | P11 — Harness / Agent-first gap closure  | ✅ Done | 2026-05-09 | Recorded the harness and Agent-first gap audit, added a graphify CLI-unavailable fallback to the thin root shim, allowed Claude `rg` discovery, and extended repo contracts without adding a Codex agent catalog, GitHub-native instruction layer, global config, or stage docs |
-| P12 — Docs operations taxonomy consolidation | ✅ Done | 2026-05-10 | Consolidated the former guide, operations, and procedure stages into canonical `docs/07.operations`; deleted legacy stage folders and split templates after link rewriting; updated repo contracts to enforce the reduced taxonomy |
+| P12 — Docs operations taxonomy consolidation | ✅ Done | 2026-05-10 | Consolidated the former guide, operations, and procedure stages into canonical `docs/05.operations`; deleted legacy stage folders and split templates after link rewriting; updated repo contracts to enforce the reduced taxonomy |
 
 ## Layer Audit (L1–L7)
 
@@ -98,7 +98,7 @@ Running record of harness gap remediation. Updated by agents after each phase.
 
 ## Open Issues
 
-None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/07.operations` documents after the 2026-05-10 taxonomy consolidation.
+None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
 
 ## Related Documents
 

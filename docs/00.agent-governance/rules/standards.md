@@ -30,7 +30,7 @@ Shared standards for instruction design, token efficiency, and execution quality
 ## 3. Stage-Gate Compliance
 
 - Treat `docs/01` to `docs/99` as project SSoT.
-- Do not bypass `docs/01.prd` and `docs/04.specs` for implementation work.
+- Do not bypass `docs/01.requirements` and `docs/03.specs` for implementation work.
 - Keep reciprocal traceability across PRD, ARD, ADR, Spec, Plan, Task, Guide, Operations, and Runbook artifacts.
 
 ## 4. Execution Discipline

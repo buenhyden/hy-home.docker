@@ -28,7 +28,7 @@
 ### Out of Scope
 
 - Plaintext secret values, credentials, tokens, private keys, and generated certificate contents.
-- Long-form operating procedures that belong in `docs/07.operations/`.
+- Long-form operating procedures that belong in `docs/05.operations/`.
 - Generated Graphify output under `graphify-out/`.
 - Service-specific Docker Compose source files under `infra/`.
 
@@ -54,28 +54,28 @@ scripts/
 
 | Component | Path | Purpose |
 | :--- | :--- | :--- |
-| Docker Validation | [validate-docker-compose.sh](validate-docker-compose.sh) | Validate root compose config |
-| Repo Contract Check | [check-repo-contracts.sh](check-repo-contracts.sh) | Enforce docs, GitHub, script, image, and runtime governance contracts |
-| QuickWin Baseline Check | [check-quickwin-baseline.sh](check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
-| Template & Security Baseline Check | [check-template-security-baseline.sh](check-template-security-baseline.sh) | Enforce template adoption and required security controls |
-| Documentation Traceability Check | [check-doc-traceability.sh](check-doc-traceability.sh) | Enforce sync links across 05.plans ↔ 07.operations |
-| Graphify Health Report | [report-graphify-health.sh](report-graphify-health.sh) | Report advisory health of generated Graphify corpus without blocking validation |
-| Post Tool Validation | [post-tool-validate.sh](post-tool-validate.sh) | Run path-aware validation after Claude/Codex file edits |
-| Unified Hardening Check | [check-all-hardening.sh](check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
-| Gateway Hardening Check | [check-gateway-hardening.sh](check-gateway-hardening.sh) | Enforce 01-gateway Traefik/Nginx hardening baseline |
-| Auth Hardening Check | [check-auth-hardening.sh](check-auth-hardening.sh) | Enforce 02-auth Keycloak/OAuth2 Proxy hardening baseline |
-| Security Hardening Check | [check-security-hardening.sh](check-security-hardening.sh) | Enforce 03-security Vault hardening baseline |
-| Data Hardening Check | [check-data-hardening.sh](check-data-hardening.sh) | Enforce 04-data service hardening baseline |
-| Messaging Hardening Check | [check-messaging-hardening.sh](check-messaging-hardening.sh) | Enforce 05-messaging service hardening baseline |
-| Observability Hardening Check | [check-observability-hardening.sh](check-observability-hardening.sh) | Enforce 06-observability service hardening baseline |
-| Workflow Hardening Check | [check-workflow-hardening.sh](check-workflow-hardening.sh) | Enforce 07-workflow service hardening baseline |
-| AI Hardening Check | [check-ai-hardening.sh](check-ai-hardening.sh) | Enforce 08-ai service hardening baseline |
-| Tooling Hardening Check | [check-tooling-hardening.sh](check-tooling-hardening.sh) | Enforce 09-tooling service hardening baseline |
-| Laboratory Hardening Check | [check-laboratory-hardening.sh](check-laboratory-hardening.sh) | Enforce 11-laboratory service hardening baseline |
-| Preflight Check | [preflight-compose.sh](preflight-compose.sh) | Bootstrap prerequisite validation |
-| Secret Generation | [gen-secrets.sh](gen-secrets.sh) | Generate local Docker secret files from `.env` defaults |
-| Cert Generation | [generate-local-certs.sh](generate-local-certs.sh) | Generate local TLS files |
-| Vault AppRole Bootstrap | [bootstrap-vault-approle.sh](bootstrap-vault-approle.sh) | Configure Vault Agent AppRole credentials after Vault is running and unsealed |
+| Docker Validation | [validate-docker-compose.sh](./validate-docker-compose.sh) | Validate root compose config |
+| Repo Contract Check | [check-repo-contracts.sh](./check-repo-contracts.sh) | Enforce docs, GitHub, script, image, and runtime governance contracts |
+| QuickWin Baseline Check | [check-quickwin-baseline.sh](./check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
+| Template & Security Baseline Check | [check-template-security-baseline.sh](./check-template-security-baseline.sh) | Enforce template adoption and required security controls |
+| Documentation Traceability Check | [check-doc-traceability.sh](./check-doc-traceability.sh) | Enforce sync links across 04.execution/plans ↔ 05.operations |
+| Graphify Health Report | [report-graphify-health.sh](./report-graphify-health.sh) | Report advisory health of generated Graphify corpus without blocking validation |
+| Post Tool Validation | [post-tool-validate.sh](./post-tool-validate.sh) | Run path-aware validation after Claude/Codex file edits |
+| Unified Hardening Check | [check-all-hardening.sh](./check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
+| Gateway Hardening Check | [check-gateway-hardening.sh](./check-gateway-hardening.sh) | Enforce 01-gateway Traefik/Nginx hardening baseline |
+| Auth Hardening Check | [check-auth-hardening.sh](./check-auth-hardening.sh) | Enforce 02-auth Keycloak/OAuth2 Proxy hardening baseline |
+| Security Hardening Check | [check-security-hardening.sh](./check-security-hardening.sh) | Enforce 03-security Vault hardening baseline |
+| Data Hardening Check | [check-data-hardening.sh](./check-data-hardening.sh) | Enforce 04-data service hardening baseline |
+| Messaging Hardening Check | [check-messaging-hardening.sh](./check-messaging-hardening.sh) | Enforce 05-messaging service hardening baseline |
+| Observability Hardening Check | [check-observability-hardening.sh](./check-observability-hardening.sh) | Enforce 06-observability service hardening baseline |
+| Workflow Hardening Check | [check-workflow-hardening.sh](./check-workflow-hardening.sh) | Enforce 07-workflow service hardening baseline |
+| AI Hardening Check | [check-ai-hardening.sh](./check-ai-hardening.sh) | Enforce 08-ai service hardening baseline |
+| Tooling Hardening Check | [check-tooling-hardening.sh](./check-tooling-hardening.sh) | Enforce 09-tooling service hardening baseline |
+| Laboratory Hardening Check | [check-laboratory-hardening.sh](./check-laboratory-hardening.sh) | Enforce 11-laboratory service hardening baseline |
+| Preflight Check | [preflight-compose.sh](./preflight-compose.sh) | Bootstrap prerequisite validation |
+| Secret Generation | [gen-secrets.sh](./gen-secrets.sh) | Generate local Docker secret files from `.env` defaults |
+| Cert Generation | [generate-local-certs.sh](./generate-local-certs.sh) | Generate local TLS files |
+| Vault AppRole Bootstrap | [bootstrap-vault-approle.sh](./bootstrap-vault-approle.sh) | Configure Vault Agent AppRole credentials after Vault is running and unsealed |
 
 ## Script Lifecycle
 
@@ -178,8 +178,8 @@ bash scripts/generate-local-certs.sh
 ## Related References
 
 - [🤖 Agent Governance](../AGENTS.md)
-- [⚙️ Operations Baseline](../docs/07.operations/README.md)
-- [📘 Runbooks](../docs/07.operations/README.md)
-- [Scripts Lifecycle Contract Cleanup Plan](../docs/05.plans/2026-05-09-scripts-lifecycle-contract-cleanup.md)
+- [⚙️ Operations Baseline](../docs/05.operations/README.md)
+- [📘 Runbooks](../docs/05.operations/README.md)
+- [Scripts Lifecycle Contract Cleanup Plan](../docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.

@@ -26,7 +26,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 
 ### Out of Scope
 
-- Detailed internal service configuration (see `docs/07.operations/` or sub-module READMEs).
+- Detailed internal service configuration (see `docs/05.operations/` or sub-module READMEs).
 - Application business logic and frontend source code.
 - Credentials and sensitive variables (managed in `secrets/`).
 
@@ -34,17 +34,17 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 
 | Tier | Category | Key Services | Status |
 | :--- | :--- | :--- | :--- |
-| **01** | **Gateway** | [Traefik](01-gateway/traefik/), [Nginx](01-gateway/nginx/) | Production |
-| **02** | **Identity** | [Keycloak](02-auth/keycloak/), [OAuth2-Proxy](02-auth/oauth2-proxy/) | Production |
-| **03** | **Security** | [Vault](03-security/vault/) | Production |
-| **04** | **Data** | [mng-db](04-data/operational/mng-db/), [MinIO](04-data/lake-and-object/minio/), [Qdrant](04-data/specialized/qdrant/) | Production |
-| **05** | **Messaging** | [Kafka](05-messaging/kafka/), [RabbitMQ](05-messaging/rabbitmq/) | Production / Optional |
-| **06** | **Observability** | [Grafana](06-observability/grafana/), [Prometheus](06-observability/prometheus/), [Loki](06-observability/loki/), [Tempo](06-observability/tempo/) | Production |
-| **07** | **Workflow** | [Airflow](07-workflow/airflow/), [n8n](07-workflow/n8n/) | Production |
-| **08** | **AI** | [Ollama](08-ai/ollama/), [Open WebUI](08-ai/open-webui/) | Production |
-| **09** | **Tooling** | [SonarQube](09-tooling/sonarqube/), [Terrakube](09-tooling/terrakube/) | Dev/Ops |
-| **10** | **Communication** | [Stalwart / MailHog](10-communication/mail/) | Optional |
-| **11** | **Laboratory** | [Portainer](11-laboratory/portainer/), [Homer](11-laboratory/dashboard/) | Admin |
+| **01** | **Gateway** | [Traefik](./01-gateway/traefik), [Nginx](./01-gateway/nginx) | Production |
+| **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | Production |
+| **03** | **Security** | [Vault](./03-security/vault) | Production |
+| **04** | **Data** | [mng-db](./04-data/operational/mng-db), [MinIO](./04-data/lake-and-object/minio), [Qdrant](./04-data/specialized/qdrant) | Production |
+| **05** | **Messaging** | [Kafka](./05-messaging/kafka), [RabbitMQ](./05-messaging/rabbitmq) | Production / Optional |
+| **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo) | Production |
+| **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | Production |
+| **08** | **AI** | [Ollama](./08-ai/ollama), [Open WebUI](./08-ai/open-webui) | Production |
+| **09** | **Tooling** | [SonarQube](./09-tooling/sonarqube), [Terrakube](./09-tooling/terrakube) | Dev/Ops |
+| **10** | **Communication** | [Stalwart / MailHog](./10-communication/mail) | Optional |
+| **11** | **Laboratory** | [Portainer](./11-laboratory/portainer), [Homer](./11-laboratory/dashboard) | Admin |
 
 ## Compose Inventory Snapshot
 
@@ -147,12 +147,12 @@ infra/
 
 ## Related References
 
-- [Official Guides](../docs/07.operations/README.md)
-- [Operation Specs](../docs/07.operations/README.md)
-- [Architecture Details](../docs/02.ard/README.md)
+- [Official Guides](../docs/05.operations/README.md)
+- [Operation Specs](../docs/05.operations/README.md)
+- [Architecture Details](../docs/02.architecture/requirements/README.md)
 - [Secret Management](../secrets/README.md)
 - [Root Compose](../docker-compose.yml)
-- [Tech Stack Versions](tech-stack.versions.json)
+- [Tech Stack Versions](./tech-stack.versions.json)
 
 ## AI Agent Guidance
 

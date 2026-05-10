@@ -44,7 +44,7 @@ title: 'Common Engineering Scope'
 | Path Pattern                 | Owner Agent     | Read-Only For                  |
 | ---------------------------- | --------------- | ------------------------------ |
 | `common/`, `lib/`, `shared/` | `code-reviewer` | read; changes by layer agent   |
-| `docs/04.specs/`             | `code-reviewer` | `infra-implementer` (read)     |
+| `docs/03.specs/`             | `code-reviewer` | `infra-implementer` (read)     |
 | `.pre-commit-config.yaml`    | `code-reviewer` | all — never run hooks manually |
 
 ## 7. Subagent Bridge

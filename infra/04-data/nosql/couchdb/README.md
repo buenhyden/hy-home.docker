@@ -74,9 +74,9 @@ couchdb/
 
 ## Related References
 
-- **Guide**: [CouchDB Guide](../../../../docs/07.operations/04-data/nosql/couchdb.md)
-- **Operation**: [CouchDB Operation](../../../../docs/07.operations/04-data/nosql/couchdb.md)
-- **Runbook**: [CouchDB Runbook](../../../../docs/07.operations/04-data/nosql/couchdb.md)
+- **Guide**: [CouchDB Guide](../../../../docs/05.operations/guides/04-data/nosql/couchdb.md)
+- **Operation**: [CouchDB Operation](../../../../docs/05.operations/guides/04-data/nosql/couchdb.md)
+- **Runbook**: [CouchDB Runbook](../../../../docs/05.operations/guides/04-data/nosql/couchdb.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

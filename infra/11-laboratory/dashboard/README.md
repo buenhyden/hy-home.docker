@@ -70,7 +70,7 @@ dashboard/
 
 ## Related References
 
-- **Guide**: [Dashboard Management Guide](../../../docs/07.operations/11-laboratory/dashboard.md)
-- **Operation**: [Laboratory Operations Policy](../../../docs/07.operations/11-laboratory/dashboard.md)
-- **Runbook**: [Dashboard Recovery Runbook](../../../docs/07.operations/11-laboratory/dashboard.md)
+- **Guide**: [Dashboard Management Guide](../../../docs/05.operations/guides/11-laboratory/dashboard.md)
+- **Operation**: [Laboratory Operations Policy](../../../docs/05.operations/guides/11-laboratory/dashboard.md)
+- **Runbook**: [Dashboard Recovery Runbook](../../../docs/05.operations/guides/11-laboratory/dashboard.md)
 - **Official**: [Homer Documentation](https://github.com/bastienwirtz/homer)

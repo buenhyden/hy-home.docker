@@ -71,7 +71,7 @@ After the stack is enabled with the `tooling` or `iac` profile, use these routed
 ## Related References
 
 - [Tooling tier README](../README.md)
-- [Terrakube guide](../../../docs/07.operations/09-tooling/terrakube.md)
-- [Terrakube operations policy](../../../docs/07.operations/09-tooling/terrakube.md)
-- [Terrakube recovery runbook](../../../docs/07.operations/09-tooling/terrakube.md)
+- [Terrakube guide](../../../docs/05.operations/guides/09-tooling/terrakube.md)
+- [Terrakube operations policy](../../../docs/05.operations/guides/09-tooling/terrakube.md)
+- [Terrakube recovery runbook](../../../docs/05.operations/guides/09-tooling/terrakube.md)
 - [Root infra README](../../README.md)

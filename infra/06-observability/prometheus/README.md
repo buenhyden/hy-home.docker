@@ -38,9 +38,9 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 
 ### 2. Traceability
 
-- **System Guide**: [docs/07.operations/06-observability/prometheus.md](../../../docs/07.operations/06-observability/prometheus.md)
-- **Operations Guide**: [docs/07.operations/06-observability/prometheus.md](../../../docs/07.operations/06-observability/prometheus.md)
-- **Runbook**: [docs/07.operations/06-observability/prometheus.md](../../../docs/07.operations/06-observability/prometheus.md)
+- **System Guide**: [docs/05.operations/06-observability/prometheus.md](../../../docs/05.operations/guides/06-observability/prometheus.md)
+- **Operations Guide**: [docs/05.operations/06-observability/prometheus.md](../../../docs/05.operations/guides/06-observability/prometheus.md)
+- **Runbook**: [docs/05.operations/06-observability/prometheus.md](../../../docs/05.operations/guides/06-observability/prometheus.md)
 
 ## AI Agent Guidance
 
@@ -82,6 +82,6 @@ infra/06-observability/prometheus/
 ## Related References
 
 - [infra/README.md](../../README.md)
-- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
-- [docs/07.operations/README.md](../../../docs/07.operations/README.md)
+- [docs/05.operations/README.md](../../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../../docs/05.operations/README.md)
+- [docs/05.operations/README.md](../../../docs/05.operations/README.md)

@@ -90,7 +90,7 @@ Include a brief NIST CSF gap table in each audit report:
 ## Collaboration
 
 - Reads from: `infra-implementer` compose files, `incident-responder` incident records.
-- Writes to: `_workspace/` audit reports, `docs/10.incidents/` (severity finding links).
+- Writes to: `_workspace/` audit reports, `docs/05.operations/incidents/` (severity finding links).
 - Escalates to: user for CRIT findings before task close.
 
 ## Team Communication Protocol
@@ -105,7 +105,7 @@ Include a brief NIST CSF gap table in each audit report:
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
 - `docs/00.agent-governance/rules/github-governance.md`
-- `docs/10.incidents/` (incident tracking)
+- `docs/05.operations/incidents/` (incident tracking)
 - `.claude/skills/security-audit/skill.md`
 - `.claude/skills/container-threat-modeling/skill.md`
 - `.claude/skills/ci-cd-patterns/skill.md`

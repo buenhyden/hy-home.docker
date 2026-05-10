@@ -1,11 +1,11 @@
 ---
 status: draft
 ---
-<!-- Target: docs/05.plans/YYYY-MM-DD-<feature>.md -->
+<!-- Target: docs/04.execution/plans/YYYY-MM-DD-<feature>.md -->
 
 # [Feature Name] Implementation Plan
 
-> Use this template for `docs/05.plans/YYYY-MM-DD-<feature>.md`.
+> Use this template for `docs/04.execution/plans/YYYY-MM-DD-<feature>.md`.
 >
 > Rules:
 >
@@ -68,7 +68,7 @@ status: draft
 
 ## Related Documents
 
-- **PRD**: `[../01.prd/YYYY-MM-DD-<feature-or-system>.md]`
-- **ARD**: `[../02.ard/####-<system-or-domain>.md]`
-- **Spec**: `[../04.specs/<feature-id>/spec.md]`
-- **ADR**: `[../03.adr/####-<short-title>.md]`
+- **PRD**: `[../01.requirements/YYYY-MM-DD-<feature-or-system>.md]`
+- **ARD**: `[../02.architecture/requirements/####-<system-or-domain>.md]`
+- **Spec**: `[../03.specs/<feature-id>/spec.md]`
+- **ADR**: `[../02.architecture/decisions/####-<short-title>.md]`

@@ -45,10 +45,10 @@ alloy/
 
 ## How to Work in This Area
 
-1. Follow the [Alloy Guide](../../../docs/07.operations/06-observability/alloy.md).
+1. Follow the [Alloy Guide](../../../docs/05.operations/guides/06-observability/alloy.md).
 2. Modify `config.alloy` to add new pipeline components or relabeling rules.
 3. Access the Alloy UI at `http://alloy.${DEFAULT_URL}` to debug pipelines and check component status.
-4. Verify changes in the [Alloy Operation Policy](../../../docs/07.operations/06-observability/alloy.md).
+4. Verify changes in the [Alloy Operation Policy](../../../docs/05.operations/guides/06-observability/alloy.md).
 
 ## Tech Stack
 
@@ -84,6 +84,6 @@ alloy/
 
 ## Related References
 
-- **System Guide**: [docs/07.operations/06-observability/alloy.md](../../../docs/07.operations/06-observability/alloy.md)
-- **Operations**: [docs/07.operations/06-observability/alloy.md](../../../docs/07.operations/06-observability/alloy.md)
-- **Runbooks**: [docs/07.operations/06-observability/alloy.md](../../../docs/07.operations/06-observability/alloy.md)
+- **System Guide**: [docs/05.operations/06-observability/alloy.md](../../../docs/05.operations/guides/06-observability/alloy.md)
+- **Operations**: [docs/05.operations/06-observability/alloy.md](../../../docs/05.operations/guides/06-observability/alloy.md)
+- **Runbooks**: [docs/05.operations/06-observability/alloy.md](../../../docs/05.operations/guides/06-observability/alloy.md)

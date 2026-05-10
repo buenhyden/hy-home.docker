@@ -34,7 +34,7 @@ Update the Status field and add a Change History entry whenever the status trans
 ## Category-Prefixed Numbering System
 
 ```
-docs/03.adr/NNNN-<category>-<short-title>.md
+docs/02.architecture/decisions/NNNN-<category>-<short-title>.md
 
 Category codes (hy-home.docker):
   INFRA  — Docker Compose, networking, resource allocation
@@ -50,7 +50,7 @@ Examples:
 - `0003-ops-log-aggregation-loki-vs-elk.md`
 - `0004-data-postgres-high-availability.md`
 
-Always check the highest existing sequence number in `docs/03.adr/` before assigning a new one.
+Always check the highest existing sequence number in `docs/02.architecture/decisions/` before assigning a new one.
 
 ## MADR-Extended Template (hy-home.docker)
 

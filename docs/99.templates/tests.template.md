@@ -1,18 +1,18 @@
 ---
 status: draft
 ---
-<!-- Target: docs/04.specs/<feature-id>/tests.md -->
+<!-- Target: docs/03.specs/<feature-id>/tests.md -->
 
 # [Feature Name] Test & Evaluation Strategy
 
-> Use this template for `docs/04.specs/<feature-id>/tests.md`.
+> Use this template for `docs/03.specs/<feature-id>/tests.md`.
 >
 > Rules:
 >
 > - This document defines the verification strategy for the feature.
 > - Core behavior defaults to TDD.
 > - Agent functionality must include both software tests and eval coverage when applicable.
-> - Execution-tracking remains in `06.tasks/`.
+> - Execution-tracking remains in `04.execution/tasks/`.
 > - This document defines strategy and test inventory.
 
 ---
@@ -79,4 +79,4 @@ python evals/run_feature_eval.py
 
 - **Where results are stored**:
 - **Failure triage rule**:
-- **Linked execution tasks**: `[../../06.tasks/YYYY-MM-DD-<feature-or-stream>.md]`
+- **Linked execution tasks**: `[../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md]`

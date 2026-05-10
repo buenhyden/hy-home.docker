@@ -65,6 +65,6 @@ labels:
 
 ## Related References
 
-- **System Guide**: [Portainer Guide](../../../docs/07.operations/11-laboratory/portainer.md)
-- **Operations Policy**: [Portainer Operations](../../../docs/07.operations/11-laboratory/portainer.md)
-- **Runbook**: [Portainer Runbook](../../../docs/07.operations/11-laboratory/portainer.md)
+- **System Guide**: [Portainer Guide](../../../docs/05.operations/guides/11-laboratory/portainer.md)
+- **Operations Policy**: [Portainer Operations](../../../docs/05.operations/guides/11-laboratory/portainer.md)
+- **Runbook**: [Portainer Runbook](../../../docs/05.operations/guides/11-laboratory/portainer.md)

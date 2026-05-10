@@ -64,11 +64,11 @@ mng-db/
 
 ## Related References
 
-- **ARD**: [0004-data-architecture.md](../../../../docs/02.ard/0004-data-architecture.md)
-- **Spec**: [spec.md](../../../../docs/04.specs/04-data/spec.md)
-- **Guide**: [mng-db.md](../../../../docs/07.operations/04-data/operational/mng-db.md)
-- **Operation**: [mng-db.md](../../../../docs/07.operations/04-data/operational/mng-db.md)
-- **Runbook**: [mng-db.md](../../../../docs/07.operations/04-data/operational/mng-db.md)
+- **ARD**: [0004-data-architecture.md](../../../../docs/02.architecture/requirements/0004-data-architecture.md)
+- **Spec**: [spec.md](../../../../docs/03.specs/04-data/spec.md)
+- **Guide**: [mng-db.md](../../../../docs/05.operations/guides/04-data/operational/mng-db.md)
+- **Operation**: [mng-db.md](../../../../docs/05.operations/guides/04-data/operational/mng-db.md)
+- **Runbook**: [mng-db.md](../../../../docs/05.operations/guides/04-data/operational/mng-db.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

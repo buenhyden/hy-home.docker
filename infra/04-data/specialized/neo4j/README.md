@@ -26,9 +26,9 @@ The `neo4j` service provides a specialized graph storage layer for relationship-
 
 ### Out of Scope
 
-- Application-level graph modeling (See [Technical Guide](../../../../docs/07.operations/04-data/specialized/neo4j.md))
-- Global backup policies (See [Operations Policy](../../../../docs/07.operations/04-data/specialized/neo4j.md))
-- Disaster recovery procedures (See [Recovery Runbook](../../../../docs/07.operations/04-data/specialized/neo4j.md))
+- Application-level graph modeling (See [Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md))
+- Global backup policies (See [Operations Policy](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md))
+- Disaster recovery procedures (See [Recovery Runbook](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md))
 
 ## Structure
 
@@ -42,7 +42,7 @@ neo4j/
 
 ## How to Work in This Area
 
-1. Start by reviewing the [Technical Guide](../../../../docs/07.operations/04-data/specialized/neo4j.md) for architectural context.
+1. Start by reviewing the [Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md) for architectural context.
 2. Ensure the `neo4j_password` secret is provisioned before starting the service.
 3. Follow the `template-stateful-med` service extension in `docker-compose.yml` for resource consistency.
 4. Verify connectivity via the Cypher Shell or Neo4j Browser.
@@ -58,7 +58,7 @@ neo4j/
 
 ## Related References
 
-- [05.analytical-specialized-dbs.md](../../../../docs/07.operations/04-data/05.analytical-specialized-dbs.md)
-- [Neo4j Technical Guide](../../../../docs/07.operations/04-data/specialized/neo4j.md)
-- [Neo4j Operations Policy](../../../../docs/07.operations/04-data/specialized/neo4j.md)
-- [Neo4j Recovery Runbook](../../../../docs/07.operations/04-data/specialized/neo4j.md)
+- [05.analytical-specialized-dbs.md](../../../../docs/05.operations/guides/04-data/05.analytical-specialized-dbs.md)
+- [Neo4j Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md)
+- [Neo4j Operations Policy](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md)
+- [Neo4j Recovery Runbook](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md)

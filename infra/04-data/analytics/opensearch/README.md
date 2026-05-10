@@ -42,15 +42,15 @@ opensearch/
 
 ## How to Work in This Area
 
-1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/07.operations/04-data/analytics/opensearch.md)를 참조한다.
-2. 자원 거버넌스는 [운영 정책](../../../../docs/07.operations/04-data/analytics/opensearch.md)을 확인한다.
-3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/07.operations/04-data/analytics/opensearch.md)을 사용한다.
+1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)를 참조한다.
+2. 자원 거버넌스는 [운영 정책](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)을 확인한다.
+3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)을 사용한다.
 
 ## Related References
 
-- **System Guide**: [docs/07.operations/04-data/analytics/opensearch.md](../../../../docs/07.operations/04-data/analytics/opensearch.md)
-- **Operations**: [docs/07.operations/04-data/analytics/opensearch.md](../../../../docs/07.operations/04-data/analytics/opensearch.md)
-- **Runbook**: [docs/07.operations/04-data/analytics/opensearch.md](../../../../docs/07.operations/04-data/analytics/opensearch.md)
+- **System Guide**: [docs/05.operations/04-data/analytics/opensearch.md](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)
+- **Operations**: [docs/05.operations/04-data/analytics/opensearch.md](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)
+- **Runbook**: [docs/05.operations/04-data/analytics/opensearch.md](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)
 - **Monitoring**: `opensearch-exporter:9114/metrics`
 
 ## AI Agent Guidance

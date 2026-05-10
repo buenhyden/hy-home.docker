@@ -17,7 +17,7 @@ groups:
         annotations:
           summary: 'Kubernetes pod crash looping ({{ $labels.namespace }}/{{ $labels.pod }})'
           description: "파드 {{ $labels.pod }}가 크래시 루프 상태입니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
           dashboard_url: 'https://grafana.hy-home.local/d/kubernetes-pods'
 
       # [What] API Server Latency High / API 서버 지연 높음
@@ -33,7 +33,7 @@ groups:
         annotations:
           summary: 'Kubernetes API server latency high (instance {{ $labels.instance }})'
           description: "Kubernetes API Server 99th 퍼센타일 지연시간이 1초를 초과했습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       # [What] Pod Not Healthy / 파드 비정상
       # [Why] Pod has been in non-ready state for too long. / 파드가 오랜 시간 Ready 상태가 아닙니다.
@@ -46,7 +46,7 @@ groups:
         annotations:
           summary: 'K8s Pod 준비 안 됨: {{ $labels.pod }}'
           description: 'Pod {{ $labels.namespace }}/{{ $labels.pod }}가 15분 이상 Ready 상태가 아닙니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       - alert: KubeCPUThrottlingHigh
         expr:
@@ -59,7 +59,7 @@ groups:
         annotations:
           summary: 'K8s CPU Throttling 높음: {{ $labels.pod }}'
           description: 'Pod {{ $labels.namespace }}/{{ $labels.pod }}의 컨테이너 {{ $labels.container }}가 25% 이상 쓰로틀링 중입니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       # [What] Deployment Generation Mismatch / 디플로이먼트 세대 불일치
       # [Why] Deployment has not matched its generation for too long. / 디플로이먼트가 업데이트 상태를 반영하지 못하고 있습니다.
@@ -73,7 +73,7 @@ groups:
         annotations:
           summary: 'Kubernetes 디플로이먼트 세대 불일치: {{ $labels.deployment }}'
           description: '디플로이먼트 {{ $labels.deployment }}가 업데이트 상태를 반영하지 못하고 있습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       # [What] Deployment Replicas Mismatch / 디플로이먼트 복제본 불일치
       # [Why] Desired replicas don't match available replicas. / 원하는 복제본 수와 사용 가능한 복제본 수가 일치하지 않습니다.
@@ -159,7 +159,7 @@ groups:
         annotations:
           summary: 'Kubernetes CronJob 중지됨: {{ $labels.cronjob }}'
           description: 'CronJob {{ $labels.namespace }}/{{ $labels.cronjob }}이 중지되었습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       # [What] HPA Scaling Issues / HPA 스케일링 문제
       # [Why] HPA is not working correctly. / HPA가 제대로 작동하지 않습니다.
@@ -191,7 +191,7 @@ groups:
         annotations:
           summary: 'Etcd no leader (instance {{ $labels.instance }})'
           description: "Etcd 멤버가 리더를 잃었습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       # [What] Etcd High Commit Duration / Etcd 커밋 지연 높음
       # [Why] Disk performance is bottling etcd performance. / 디스크 성능 문제로 etcd 성능이 저하되고 있습니다.
@@ -217,7 +217,7 @@ groups:
         annotations:
           summary: 'Etcd 멤버 부족'
           description: 'Etcd 클러스터 멤버가 3개 미만입니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       - alert: KubeJobFailed
         expr: kube_job_status_failed > 0
@@ -228,7 +228,7 @@ groups:
         annotations:
           summary: 'K8s Job 실패: {{ $labels.job_name }}'
           description: 'Kubernetes Job {{ $labels.namespace }}/{{ $labels.job_name }}가 실패했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       # [What] Etcd High WAL Fsync Duration / Etcd WAL fsync 지연 높음
       # [Why] WAL fsync is taking too long. / WAL fsync에 시간이 오래 걸립니다.
@@ -280,7 +280,7 @@ groups:
         annotations:
           summary: 'Etcd 리더 변경 빈번'
           description: '10분 내 Etcd 리더가 2회 이상 변경되었습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
   # ============================================================================
   # [Optional] Istio Service Mesh
@@ -301,7 +301,7 @@ groups:
         annotations:
           summary: 'Istio high 5xx error rate'
           description: "Istio 5xx 에러율이 5%를 초과했습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       # [What] Istio High 4xx Error Rate / Istio 4xx 에러율 높음
       # [Why] Too many 4xx errors in the mesh. / 메쉬에서 4xx 에러가 너무 많습니다.
@@ -343,7 +343,7 @@ groups:
         annotations:
           summary: 'Istio Pilot 푸시 에러율 높음'
           description: 'Istio Pilot XDS 푸시 에러율이 5%를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       # [What] Istio Gateway Availability Drop / 게이트웨이 가용성 저하
       # [Why] Gateway is experiencing availability issues. / 게이트웨이 가용성에 문제가 있습니다.
@@ -368,7 +368,7 @@ groups:
         annotations:
           summary: 'Istio 사이드카 인젝션 실패'
           description: 'Istio 사이드카 인젝션이 실패하고 있습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
   # ============================================================================
   # [Optional] ArgoCD GitOps
@@ -387,7 +387,7 @@ groups:
         annotations:
           summary: 'ArgoCD application not synced ({{ $labels.name }})'
           description: "애플리케이션 {{ $labels.name }}이 동기화되지 않았습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       # [What] Application Unhealthy / 애플리케이션 비정상
       # [Why] Application health check failed. / 애플리케이션 상태 검사에 실패했습니다.
@@ -400,7 +400,7 @@ groups:
         annotations:
           summary: 'ArgoCD application unhealthy ({{ $labels.name }})'
           description: "애플리케이션 {{ $labels.name }}이 비정상 상태입니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       # [What] ArgoCD Sync Failed / ArgoCD 동기화 실패
       # [Why] Sync operation failed. / 동기화 작업이 실패했습니다.
@@ -413,7 +413,7 @@ groups:
         annotations:
           summary: 'ArgoCD 동기화 실패: {{ $labels.name }}'
           description: '애플리케이션 {{ $labels.name }}의 동기화가 실패했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/07.operations/06-observability/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/06-observability/README.md'
 
       # [What] ArgoCD Out of Sync / ArgoCD 동기화 안됨
       # [Why] Application is out of sync for too long. / 애플리케이션이 오랜 시간 동기화되지 않았습니다.
