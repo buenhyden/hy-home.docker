@@ -35,3 +35,11 @@ Unified task execution checklists for all agent work.
 - [ ] Update `docs/00.agent-governance/memory/progress.md` with final status, verification evidence, and memory note links.
 - [ ] Create/update out-of-scope or durable finding reports from `docs/99.templates/memory.template.md` when needed.
 - [ ] Summarize what changed, what was verified, and what remains out-of-scope.
+
+## Related Documents
+
+- `docs/00.agent-governance/rules/bootstrap.md`
+- `docs/00.agent-governance/rules/agentic.md`
+- `docs/00.agent-governance/rules/persona.md`
+- `docs/00.agent-governance/rules/stage-authoring-matrix.md`
+- `docs/00.agent-governance/rules/documentation-protocol.md`

@@ -20,22 +20,22 @@ Announcement template:
 
 ## 2. Persona-to-Layer Mapping
 
-| Persona | Primary Layer | Primary Governance |
-| :--- | :--- | :--- |
-| Product Manager | product | `scopes/product.md` |
-| System Architect | architecture | `scopes/architecture.md` |
-| Backend Engineer | backend | `scopes/backend.md` |
-| Frontend Engineer | frontend | `scopes/frontend.md` |
-| Infra/DevOps Engineer | infra | `scopes/infra.md` |
-| Security Auditor | security | `scopes/security.md` |
-| QA Engineer | qa | `scopes/qa.md` |
-| Operations/SRE Engineer | ops | `scopes/ops.md` |
-| Mobile Engineer | mobile | `scopes/mobile.md` |
-| Documentation Specialist | docs | `scopes/docs.md` |
-| Metadata Steward | meta | `scopes/meta.md` |
-| Entry/Gateway Engineer | entry | `scopes/entry.md` |
-| Common Standards Reviewer | common | `scopes/common.md` |
-| Agentic Workflow Specialist | agentic | `scopes/agentic.md` |
+| Persona                     | Primary Layer | Primary Governance       |
+| :-------------------------- | :------------ | :----------------------- |
+| Product Manager             | product       | `scopes/product.md`      |
+| System Architect            | architecture  | `scopes/architecture.md` |
+| Backend Engineer            | backend       | `scopes/backend.md`      |
+| Frontend Engineer           | frontend      | `scopes/frontend.md`     |
+| Infra/DevOps Engineer       | infra         | `scopes/infra.md`        |
+| Security Auditor            | security      | `scopes/security.md`     |
+| QA Engineer                 | qa            | `scopes/qa.md`           |
+| Operations/SRE Engineer     | ops           | `scopes/ops.md`          |
+| Mobile Engineer             | mobile        | `scopes/mobile.md`       |
+| Documentation Specialist    | docs          | `scopes/docs.md`         |
+| Metadata Steward            | meta          | `scopes/meta.md`         |
+| Entry/Gateway Engineer      | entry         | `scopes/entry.md`        |
+| Common Standards Reviewer   | common        | `scopes/common.md`       |
+| Agentic Workflow Specialist | agentic       | `scopes/agentic.md`      |
 
 ## 3. Multi-Persona Rule
 
@@ -46,3 +46,10 @@ Announcement template:
 
 - Persona routing does not restrict skill usage.
 - Agents should use relevant skills to improve speed and quality when available.
+
+## Related Documents
+
+- `docs/00.agent-governance/rules/bootstrap.md`
+- `docs/00.agent-governance/rules/agentic.md`
+- `docs/00.agent-governance/rules/task-checklists.md`
+- `docs/00.agent-governance/scopes/`

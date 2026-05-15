@@ -3,7 +3,7 @@ name: Release Changelog Check
 on:
   push:
     tags:
-      - "v*.*.*"
+      - 'v*.*.*'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,6 +28,12 @@ jobs:
         run: |
           set -euo pipefail
           RELEASE_TAG="${GITHUB_REF_NAME:?missing release tag}"
+
+          if [[ ! -f CHANGELOG.md ]]; then
+            echo "CHANGELOG.md does not exist." >&2
+            echo "Create CHANGELOG.md and add an entry for $RELEASE_TAG before pushing the tag." >&2
+            exit 1
+          fi
 
           if ! grep -F -- "$RELEASE_TAG" CHANGELOG.md >/dev/null; then
             echo "CHANGELOG.md does not contain release tag: $RELEASE_TAG" >&2

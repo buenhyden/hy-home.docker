@@ -1,6 +1,6 @@
 ---
 layer: agentic
-title: "AI Agent-first Engineering Rule"
+title: 'AI Agent-first Engineering Rule'
 ---
 
 # AI Agent-first Engineering Rule
@@ -71,3 +71,11 @@ Standard behavior contract for repo-local, auditable agent execution.
 - Record work progress in `docs/00.agent-governance/memory/progress.md`.
 - Record historical notes under `docs/00.agent-governance/memory/` from
   `docs/99.templates/memory.template.md`; do not use memory notes as active policy.
+
+## Related Documents
+
+- `docs/00.agent-governance/rules/bootstrap.md`
+- `docs/00.agent-governance/rules/persona.md`
+- `docs/00.agent-governance/rules/task-checklists.md`
+- `docs/00.agent-governance/rules/stage-authoring-matrix.md`
+- `docs/00.agent-governance/subagent-protocol.md`
