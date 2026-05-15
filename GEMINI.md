@@ -8,6 +8,12 @@ layer: agentic
 @docs/00.agent-governance/providers/agents-md.md
 @docs/00.agent-governance/providers/gemini.md
 
+## Related Documents
+
+- `AGENTS.md`
+- `docs/00.agent-governance/README.md`
+- `docs/00.agent-governance/providers/gemini.md`
+
 <!-- Thin Gemini root shim. Shared policy lives in docs/00.agent-governance/. -->
 <!-- scopes/*.md JIT; agent/function catalog: docs/00.agent-governance/agents/ -->
 <!-- Models: subagents=sonnet · supervisor/orchestrator=opus -->

@@ -10,6 +10,7 @@ Unified task execution checklists for all agent work.
 
 - [ ] Confirm active persona, layer, and primary scope.
 - [ ] Confirm editable scope for this task.
+- [ ] For implementation-agent work, confirm the approved plan exists and every planned edit maps to it.
 - [ ] Confirm whether `docs/01` to `docs/99` are in read-only mode.
 - [ ] Identify required input documents (PRD, ARD, ADR, Specs, Plans, Tasks).
 - [ ] Review `docs/00.agent-governance/memory/README.md` and `progress.md`; retrieve relevant memory notes when the task touches governance, docs, runtime, or repeated failures.
@@ -19,6 +20,7 @@ Unified task execution checklists for all agent work.
 ## 2. In-Task Checklist
 
 - [ ] Keep changes within declared editable scope.
+- [ ] Preserve audit/planning/implementation/verification separation when the workflow defines those roles.
 - [ ] Preserve SSoT traceability across affected documentation artifacts.
 - [ ] Maintain language policy consistency (English governance, Korean human-facing docs).
 - [ ] Validate new/changed links as edits are made.
@@ -29,6 +31,7 @@ Unified task execution checklists for all agent work.
 ## 3. Completion Checklist
 
 - [ ] Run relevant repository checks for changed layers.
+- [ ] Confirm each implemented change is traceable to the approved plan when an approved-plan gate applies.
 - [ ] Validate link integrity for changed root/governance files.
 - [ ] Confirm no contradictory policy statements were introduced.
 - [ ] Confirm completion criteria are satisfied for the affected stage(s).

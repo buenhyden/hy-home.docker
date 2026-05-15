@@ -33,7 +33,7 @@ Codex-specific guidance for this repository.
 ## 4. Runtime Surface
 
 - `.codex/hooks.json` provides Codex-local hooks.
-- The current hooks call `scripts/agent-event-hook.sh` by event (`SessionStart`, `PreToolUse`, `PostToolUse`) when the runtime supports that event.
+- The current hooks call `scripts/agent-event-hook.sh` by event (`SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`, `Stop`, `PreCompact`) when the runtime supports that event.
 - The event dispatcher emits Graphify context when `graphify-out/graph.json` exists, emits Docker Compose guardrail context before matching edits, and delegates post-edit validation to `scripts/post-tool-validate.sh`.
 - Hook output is advisory context. Governance remains in `docs/00.agent-governance/`.
 - Codex does not maintain a parallel delegated-agent catalog in this repository.

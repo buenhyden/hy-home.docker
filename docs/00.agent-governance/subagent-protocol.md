@@ -48,7 +48,8 @@ The supervisor coordinates workers and should not be treated as a generic worker
 
 ## 4. Communication Protocol
 
-- **Data handoff**: write intermediate artifacts to `_workspace/<phase>_<agent>_<artifact>.<ext>`.
+- **Data handoff**: write runtime intermediate artifacts to `_workspace/<phase>_<agent>_<artifact>.<ext>`.
+- **Audit handoff**: write orchestration reports, matrices, plans, and approval handoffs to `.agent-work/report/` when a workflow prompt requires that location.
 - **Status updates**: use TaskUpdate (`in_progress` → `completed` | `failed`).
 - **Conflict**: if file ownership conflicts arise, halt and escalate to user — do not overwrite.
 

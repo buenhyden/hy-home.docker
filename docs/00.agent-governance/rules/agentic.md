@@ -20,6 +20,10 @@ Standard behavior contract for repo-local, auditable agent execution.
 - Start with non-mutating discovery before any change.
 - Produce implementation plans for multi-step work before edits, unless the user
   already supplied an implementation-ready plan.
+- Keep audit, planning, implementation, and verification roles separate when a
+  workflow prompt defines those phases.
+- Do not execute implementation-agent changes until the approved plan path
+  required by the workflow exists and the requested edits map to that plan.
 - Use persona routing, checklist routing, this rule, and one primary scope before
   task execution.
 - Use the local agent/function catalog as the runtime boundary:
