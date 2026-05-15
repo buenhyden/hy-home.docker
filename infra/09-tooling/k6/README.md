@@ -57,6 +57,16 @@ k6/
 | `INFLUXDB_ORG`    | Yes      | InfluxDB v2 조직 명칭                        |
 | `INFLUXDB_BUCKET` | Yes      | 지표를 저장할 버켓 명칭                      |
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect k6.
+- Run `bash scripts/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm k6 network, volume, and metric sink references render.
+- Check k6 run output and the linked runbook before changing test scripts or metric destinations.
+
 ## Related Documents
 
 - **Guide**: [k6 Performance Testing Guide](../../../docs/05.operations/guides/09-tooling/k6.md)

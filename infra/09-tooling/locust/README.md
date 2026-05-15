@@ -55,6 +55,16 @@ locust/
 | `INFLUXDB_BUCKET` | Yes      | 지표를 저장할 버켓 명칭                      |
 | `DEFAULT_TOOLING_DIR` | Yes  | Locust 데이터 마운트 경로                    |
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Locust.
+- Run `bash scripts/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Locust network, port, and mounted test references render.
+- Check Locust logs and the linked runbook before changing test runners or target URLs.
+
 ## Related Documents
 
 - **Guide**: [Locust Load Testing Guide](../../../docs/05.operations/guides/09-tooling/locust.md)

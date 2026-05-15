@@ -95,6 +95,16 @@ docker exec infra-alloy alloy run --test /etc/alloy/config.alloy
 - Changes in Alloy OTLP endpoints will break telemetry for all downstream services.
 - Grafana plugin updates may require manual dashboard migration.
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect the observability stack.
+- Run `bash scripts/check-all-hardening.sh` before marking observability documentation ready.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm LGTM service, network, volume, and secret references render.
+- Check service-specific logs first, then follow the linked observability runbook for data-path failures.
+
 ## Related Documents
 
 - [04-data](../04-data/README.md) - MinIO for telemetry storage.

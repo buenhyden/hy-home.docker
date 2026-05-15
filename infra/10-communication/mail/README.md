@@ -58,6 +58,16 @@ mail/
 | `SMTP_HOST_PORT`        | No       | 외부 SMTP 수신 포트 (기본: 25)               |
 | `STALWART_PORT`         | No       | Stalwart 관리 UI 내부 포트 (기본: 8080)       |
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect mail services.
+- Run `bash scripts/check-all-hardening.sh` before marking mail documentation ready.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm mail service ports, volumes, and secret references render.
+- Check mail service logs and the linked runbook before changing SMTP, IMAP, JMAP, or credential settings.
+
 ## Related Documents
 
 - **Guide**: [Mail Services Guide](../../../docs/05.operations/guides/10-communication/mail.md)

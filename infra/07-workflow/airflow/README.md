@@ -77,6 +77,11 @@ airflow/
 2. **Secrets**: 민감한 정보는 `Variables`나 `Connections`를 통해 관리하며, 환경 변수에 직접 노출하지 않습니다.
 3. **Traceability**: 모든 변경 사항은 관련 [ARD](../../../docs/02.architecture/requirements/0007-workflow-architecture.md) 또는 [Spec](../../../docs/03.specs/07-workflow/spec.md)과 연결되어야 합니다.
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Airflow.
+- Run `bash scripts/check-all-hardening.sh` before marking Airflow documentation ready.
+
 ## Related Documents
 
 - **ARD**: [07-workflow Architecture](../../../docs/02.architecture/requirements/0007-workflow-architecture.md)

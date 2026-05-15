@@ -73,6 +73,11 @@ mongodb/
 | `MONGO_EXPRESS_PORT` | No | UI 접속 포트 (Default: 8081) |
 | `MONGODB_REPLICA_SET_NAME`| No | 레플리카 셋 명칭 (Default: MyReplicaSet) |
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect MongoDB.
+- Run `bash scripts/check-all-hardening.sh` before marking MongoDB documentation ready.
+
 ## Related Documents
 
 - **Guide**: [MongoDB Guide](../../../../docs/05.operations/guides/04-data/nosql/mongodb.md)

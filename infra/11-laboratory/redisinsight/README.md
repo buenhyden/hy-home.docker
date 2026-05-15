@@ -64,6 +64,16 @@ labels:
 - `docker compose down`: Stop the service.
 - `docker compose logs -f`: View service logs.
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect RedisInsight.
+- Run `bash scripts/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm RedisInsight network, volume, and label references render.
+- Check RedisInsight logs and the linked runbook before changing admin routing or connection settings.
+
 ## Related Documents
 
 - **System Guide**: [RedisInsight Guide](../../../docs/05.operations/guides/11-laboratory/redisinsight.md)

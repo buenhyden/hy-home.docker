@@ -63,6 +63,16 @@ labels:
 - `docker compose down`: Stop the service.
 - `docker compose logs -f`: View service logs.
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Portainer.
+- Run `bash scripts/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Portainer socket, volume, and label references render.
+- Check Portainer logs and the linked runbook before changing admin routing or Docker access settings.
+
 ## Related Documents
 
 - **System Guide**: [Portainer Guide](../../../docs/05.operations/guides/11-laboratory/portainer.md)

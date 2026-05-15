@@ -55,6 +55,16 @@ qdrant/
 | gRPC API   | gRPC         | Port 6334                      |
 | Persistence| Local Bind   | `${DEFAULT_DATA_DIR}/qdrant`   |
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Qdrant.
+- Run `bash scripts/check-repo-contracts.sh` to keep Qdrant documentation and operation links synchronized.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Qdrant volume, network, and label references render.
+- Check Qdrant logs and the linked runbook before changing collection, snapshot, or persistence settings.
+
 ## Related Documents
 
 - [05.analytical-specialized-dbs.md](../../../../docs/05.operations/guides/04-data/05.analytical-specialized-dbs.md)

@@ -42,6 +42,11 @@ ollama/
 2. 리소스 예약 및 모델 거버넌스는 [Ollama Operations Policy](../../../docs/05.operations/guides/08-ai/ollama.md)를 따른다.
 3. 장애 발생 시 [Ollama Runbook](../../../docs/05.operations/guides/08-ai/ollama.md)에 따라 복구를 수행한다.
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Ollama.
+- Run `bash scripts/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+
 ## Related Documents
 
 - **Guide**: [docs/05.operations/08-ai/ollama.md](../../../docs/05.operations/guides/08-ai/ollama.md)

@@ -46,6 +46,12 @@ opensearch/
 2. 자원 거버넌스는 [운영 정책](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)을 확인한다.
 3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)을 사용한다.
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect OpenSearch.
+- Run `bash scripts/check-all-hardening.sh` before marking OpenSearch documentation ready.
+- `docker-compose.cluster.yml` is `NEEDS_REVALIDATION`: do not add a cluster healthcheck until the cluster variant is validated separately from the default compose file.
+
 ## Related Documents
 
 - **System Guide**: [docs/05.operations/04-data/analytics/opensearch.md](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)

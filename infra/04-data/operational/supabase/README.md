@@ -63,6 +63,16 @@ supabase/
 | `POSTGRES_PASSWORD` | Yes | 핵심 DB 루트 패스워드 |
 | `SUPABASE_PUBLIC_URL` | Yes | 플랫폼 외부 노출 URL |
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Supabase.
+- Run `bash scripts/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Supabase service, secret, and database references render.
+- Check Supabase service logs and the linked runbook before changing JWT, database, or dashboard settings.
+
 ## Related Documents
 
 - **Guide**: [supabase.md](../../../../docs/05.operations/guides/04-data/operational/supabase.md)

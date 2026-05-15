@@ -43,6 +43,11 @@ open-webui/
 2. Access the UI at `https://chat.${DEFAULT_URL}` with SSO.
 3. Verify connection to Ollama and Qdrant before document indexing.
 
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Open WebUI, model backend, network, and volume references render.
+- Check Open WebUI logs and the linked runbook before changing RAG, auth, or model endpoint settings.
+
 ## Related Documents
 
 - [Ollama Implementation](../ollama/README.md)

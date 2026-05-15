@@ -83,6 +83,11 @@ postgresql-cluster/
 - Overview 섹션은 반드시 한글(KR)과 영문(EN)을 병기함
 - 모든 링크는 상대 경로를 사용하여 리포지토리 내 무결성을 유지함
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect PostgreSQL cluster services.
+- Run `bash scripts/check-all-hardening.sh` before marking PostgreSQL cluster documentation ready.
+
 ## Related Documents
 
 - **Guide**: [docs/05.operations/04-data/relational/postgresql-cluster.md](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)

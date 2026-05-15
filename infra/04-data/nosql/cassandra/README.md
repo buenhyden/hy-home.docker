@@ -72,6 +72,16 @@ cassandra/
 | `CASSANDRA_USERNAME` | Yes | 관리자 계정 이름 |
 | `CASSANDRA_CLIENT_PORT` | No | CQL 접속 포트 (Default: 9042) |
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Cassandra.
+- Run `bash scripts/check-all-hardening.sh` before marking Cassandra documentation ready.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Cassandra network, volume, and secret references render.
+- Check Cassandra logs and `nodetool` status before changing cluster or persistence settings.
+
 ## Related Documents
 
 - **Guide**: [Cassandra Guide](../../../../docs/05.operations/guides/04-data/nosql/cassandra.md)

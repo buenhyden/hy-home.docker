@@ -56,6 +56,16 @@ neo4j/
 | Security   | Docker Secrets    | `neo4j_password`          |
 | Extension  | APOC (Optional)   | Mount to `/plugins`       |
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Neo4j.
+- Run `bash scripts/check-all-hardening.sh` before marking Neo4j documentation ready.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Neo4j volume, network, and secret references render.
+- Check Neo4j logs and the linked runbook before changing graph persistence or password settings.
+
 ## Related Documents
 
 - [05.analytical-specialized-dbs.md](../../../../docs/05.operations/guides/04-data/05.analytical-specialized-dbs.md)

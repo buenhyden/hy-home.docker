@@ -65,6 +65,16 @@ sonarqube/
 | `docker compose up -d` | Start the SonarQube service. |
 | `docker compose logs -f` | View real-time service logs. |
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect SonarQube.
+- Run `bash scripts/check-all-hardening.sh` before marking SonarQube documentation ready.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm SonarQube DB, network, and secret references render.
+- Check SonarQube logs and the linked runbook before changing database or quality-gate settings.
+
 ## Related Documents
 
 - **Guide**: [SonarQube Guide](../../../docs/05.operations/guides/09-tooling/sonarqube.md)

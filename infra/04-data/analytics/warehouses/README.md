@@ -45,6 +45,16 @@ warehouses/
 2. 자원 거버넌스는 [운영 정책](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)을 확인한다.
 3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)을 사용한다.
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect warehouse services.
+- Run `bash scripts/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm warehouse service networks, ports, and volume references render.
+- Check warehouse container logs and the linked runbook before changing retention or persistence settings.
+
 ## Related Documents
 
 - **System Guide**: [docs/05.operations/04-data/analytics/warehouses.md](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)

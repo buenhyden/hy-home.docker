@@ -62,6 +62,11 @@ mng-db/
 | `POSTGRES_DEFAULT_DB` | Yes | 기본 관리용 DB 이름 (mng-pg) |
 | `VALKEY_PORT` | No | 노출 포트 (Default: 6379) |
 
+## Troubleshooting
+
+- Start with `docker compose config` to confirm PostgreSQL, Valkey, network, and secret references render.
+- Check the database and cache container logs before changing persistence, password, or bootstrap settings.
+
 ## Related Documents
 
 - **ARD**: [0004-data-architecture.md](../../../../docs/02.architecture/requirements/0004-data-architecture.md)

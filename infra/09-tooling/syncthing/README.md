@@ -73,6 +73,16 @@ syncthing/
 | `docker compose up -d` | Start the Syncthing service. |
 | `docker compose logs -f` | View real-time service logs. |
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Syncthing.
+- Run `bash scripts/check-all-hardening.sh` before marking Syncthing documentation ready.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Syncthing network, volume, and secret references render.
+- Check Syncthing logs and the linked runbook before changing sync folder or credential settings.
+
 ## Related Documents
 
 - **Guide**: [Syncthing Guide](../../../docs/05.operations/guides/09-tooling/syncthing.md)

@@ -63,6 +63,16 @@ registry/
 | `docker compose up -d` | Start the registry service. |
 | `docker pause registry` | Pause the registry service. |
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect the registry.
+- Run `bash scripts/check-all-hardening.sh` before marking registry documentation ready.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm registry network, volume, and label references render.
+- Check registry logs and the linked runbook before changing storage or access settings.
+
 ## Related Documents
 
 - **Guide**: [Registry Guide](../../../docs/05.operations/guides/09-tooling/registry.md)

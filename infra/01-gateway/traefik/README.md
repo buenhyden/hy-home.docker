@@ -103,6 +103,11 @@ Traefik uses the `ForwardAuth` middleware (`sso-auth@file`) to delegate authenti
 | `HTTP_HOST_PORT`  |       No | Host port for HTTP (default: 80) |
 | `HTTPS_HOST_PORT` |       No | Host port for HTTPS (default: 443) |
 
+## Troubleshooting
+
+- Start with `docker compose config` to confirm routers, networks, and mounted dynamic config paths render.
+- Check `traefik` container logs, then compare router or middleware failures with the linked gateway operations guide.
+
 ## Related Documents
 
 - [01-gateway Root README](../README.md)

@@ -61,6 +61,11 @@ docker exec rabbitmq rabbitmqctl list_queues
 mc admin definitions export ...
 ```
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect RabbitMQ.
+- Run `bash scripts/check-all-hardening.sh` before marking RabbitMQ documentation ready.
+
 ## Related Documents
 
 - **ARD**: `[../../../docs/02.architecture/requirements/0005-messaging-architecture.md]`

@@ -80,6 +80,16 @@ healthcheck:
   test: ['CMD-SHELL', 'wget -q --spider http://localhost:${HTTP_PORT:-80}/ping || exit 1']
 ```
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose changes that affect this service.
+- Run `bash scripts/check-repo-contracts.sh` before marking the service documentation ready.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm the root include graph still renders.
+- Check `nginx` container logs and compare routing errors with the linked operations guide.
+
 ## Related Documents
 
 - [01-gateway Root README](../README.md)

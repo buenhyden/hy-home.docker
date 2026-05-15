@@ -46,3 +46,13 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 - **System Guide**: [n8n System Guide](../../../docs/05.operations/guides/07-workflow/n8n.md)
 - **Operations Policy**: [n8n Operations Policy](../../../docs/05.operations/guides/07-workflow/n8n.md)
 - **Recovery Runbook**: [n8n Recovery Runbook](../../../docs/05.operations/guides/07-workflow/n8n.md)
+
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect n8n.
+- Run `bash scripts/check-all-hardening.sh` before marking n8n documentation ready.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm n8n, worker, task runner, Valkey, and secret references render.
+- Check n8n service logs and the linked runbook before changing queue or credential settings.

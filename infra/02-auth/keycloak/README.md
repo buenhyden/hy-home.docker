@@ -40,6 +40,11 @@ healthcheck:
   retries: 5
 ```
 
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Keycloak DB, secret, and Traefik label wiring.
+- Check the `keycloak` container health endpoint and logs before changing realm, client, or secret references.
+
 ## Related Documents
 
 - **Guide**: [Keycloak Operations Guide](../../../docs/05.operations/guides/02-auth/keycloak.md)

@@ -51,6 +51,16 @@ open-notebook/
 | `open_notebook` | `lfnovo/open_notebook:v1-latest-single` | Notebook UI and API runtime |
 | `surrealdb` | `./surrealdb/Dockerfile` | Local metadata and notebook persistence |
 
+## Image Tag Review
+
+- `infra/11-laboratory/open-notebook/docker-compose.yml` currently uses `lfnovo/open_notebook:v1-latest-single`, which is a latest-like tag.
+- Keep the tag unchanged until an owner-approved pass pins a stable tag or records an explicit exception.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Open Notebook, SurrealDB, network, and secret references render.
+- Check Open Notebook and SurrealDB logs before changing API URL, encryption, or database settings.
+
 ## Related Documents
 
 - [Laboratory guides](../../../docs/05.operations/guides/11-laboratory/README.md)

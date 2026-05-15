@@ -68,6 +68,11 @@ After the stack is enabled with the `tooling` or `iac` profile, use these routed
 - UI: `https://terrakube-ui.${DEFAULT_URL}`
 - API docs: `https://terrakube-api.${DEFAULT_URL}/swagger-ui.html`
 
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Terrakube network, database, and secret references render.
+- Check Terrakube logs and the linked runbook before changing executor, PAT, or persistence settings.
+
 ## Related Documents
 
 - [Tooling tier README](../README.md)

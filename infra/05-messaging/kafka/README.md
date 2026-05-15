@@ -91,6 +91,11 @@ curl -fsS http://schema-registry.localhost/subjects
 2. **Monitor Health**: 브로커 점검 시 `UnderReplicatedPartitions` 지표가 0인지 항상 확인한다.
 3. **SSoT Linkage**: 토픽 스펙 변경 시 `docs/03.specs/05-messaging/spec.md`를 함께 갱신한다.
 
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Kafka listeners, broker identity, and network references render.
+- Check Kafka logs and broker health before changing listener, storage, or KRaft settings.
+
 ## Related Documents
 
 - **PRD**: [05-messaging](../../../docs/01.requirements/2026-03-26-05-messaging.md)

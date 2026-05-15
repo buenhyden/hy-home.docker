@@ -45,6 +45,16 @@ ksql/
 3. 스트림 지연이나 연결 이슈 발생 시 [복구 런북](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md)을 참조한다.
 4. ksqlDB를 시작하기 전에 Kafka 브로커와 Schema Registry의 상태를 확인한다.
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect ksqlDB.
+- Run `bash scripts/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm Kafka, network, and environment references render.
+- Check ksqlDB logs for broker connectivity or stream startup errors before changing Compose settings.
+
 ## Related Documents
 
 - **System Guide**: [docs/05.operations/04-data/analytics/ksqldb.md](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md)

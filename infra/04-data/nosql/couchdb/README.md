@@ -72,6 +72,16 @@ couchdb/
 | `COUCHDB_USERNAME` | Yes | 관리자 계정 이름 |
 | `COUCHDB_PORT` | No | HTTP API 포트 (Default: 5984) |
 
+## Validation
+
+- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect CouchDB.
+- Run `bash scripts/check-all-hardening.sh` before marking CouchDB documentation ready.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm CouchDB network, volume, and secret references render.
+- Check CouchDB logs and the linked runbook before changing clustering, cookie, or admin-secret settings.
+
 ## Related Documents
 
 - **Guide**: [CouchDB Guide](../../../../docs/05.operations/guides/04-data/nosql/couchdb.md)
