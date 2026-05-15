@@ -43,6 +43,21 @@ scripts/
 └── README.md            # This file
 ```
 
+## Purpose Folder Plan
+
+Root `scripts/*.sh` files remain stable compatibility entrypoints until all
+workflow, hook, documentation, and CI references migrate. Future approved
+refactors should use this purpose-based layout:
+
+| Purpose | Future folder | Current entrypoints |
+| :--- | :--- | :--- |
+| Validation | `scripts/validation/` | `validate-docker-compose.sh`, `check-repo-contracts.sh`, `check-doc-traceability.sh`, `check-quickwin-baseline.sh`, `check-template-security-baseline.sh`, `preflight-compose.sh` |
+| Hardening | `scripts/hardening/` | `check-all-hardening.sh`, `check-*-hardening.sh` |
+| Hooks | `scripts/hooks/` | `agent-event-hook.sh`, `post-tool-validate.sh` |
+| Knowledge | `scripts/knowledge/` | `generate-llm-wiki-index.sh`, `report-graphify-health.sh` |
+| Operations | `scripts/operations/` | `generate-local-certs.sh`, `bootstrap-vault-approle.sh`, `gen-secrets.sh` |
+| Libraries | `scripts/lib/` | `lib/hardening-lib.sh` |
+
 ## How to Work in This Area
 
 1. Read this README before adding, renaming, or removing a root script.
@@ -50,6 +65,7 @@ scripts/
 3. Reference non-standalone root scripts from a repository entrypoint, stage document, runtime hook, or CI workflow.
 4. Use `scripts/check-repo-contracts.sh` to verify script inventory, external references, and library usage.
 5. Keep secret-related examples procedural only; do not print or document generated secret values.
+6. Preserve root compatibility wrappers until `scripts/check-repo-contracts.sh`, hooks, workflows, and docs all point to the approved purpose-folder paths.
 
 ## Navigation / Inventory
 
@@ -188,7 +204,7 @@ bash scripts/generate-local-certs.sh
 
 ---
 
-## Related References
+## Related Documents
 
 - [🤖 Agent Governance](../AGENTS.md)
 - [⚙️ Operations Baseline](../docs/05.operations/README.md)

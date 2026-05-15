@@ -1156,6 +1156,20 @@ if not readme.is_file():
 
 readme_text = readme.read_text()
 failures: list[str] = []
+required_readme_fragments = [
+    "## Purpose Folder Plan",
+    "scripts/validation/",
+    "scripts/hardening/",
+    "scripts/hooks/",
+    "scripts/knowledge/",
+    "scripts/operations/",
+    "scripts/lib/",
+    "root compatibility wrappers",
+]
+for fragment in required_readme_fragments:
+    if fragment not in readme_text:
+        failures.append(f"scripts/README.md missing script purpose-folder plan fragment: {fragment}")
+
 # Root scripts in this set are intentionally allowed to be standalone: they
 # must be inventoried in scripts/README.md, but do not need another repository
 # entrypoint, stage document, runtime hook, or CI workflow reference.
