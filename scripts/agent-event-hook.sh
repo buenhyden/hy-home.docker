@@ -186,6 +186,85 @@ post_tool_use() {
   printf '%s' "$INPUT" | CODEX_PROJECT_DIR="$PROJECT_DIR" CLAUDE_PROJECT_DIR="$PROJECT_DIR" bash scripts/post-tool-validate.sh
 }
 
+session_end() {
+  python3 - "$PROJECT_DIR" <<'PY' || true
+import json
+import pathlib
+import subprocess
+import sys
+
+project = pathlib.Path(sys.argv[1])
+
+def run(cmd, fallback="unknown", timeout=3):
+    try:
+        r = subprocess.run(cmd, cwd=project, capture_output=True, text=True, timeout=timeout, check=False)
+        t = r.stdout.strip()
+        return t if r.returncode == 0 and t else fallback
+    except Exception:
+        return fallback
+
+branch = run(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+last_commit = run(["git", "log", "-1", "--format=%h %s"])
+
+msg = f"""Session ending — governance reminder:
+
+- Update `docs/00.agent-governance/memory/progress.md` with a work log entry before this session closes.
+- Record changed files, verification evidence, and any residual risk or open gap.
+
+Current state:
+- Branch: `{branch}`
+- Last commit: `{last_commit}`"""
+
+print(json.dumps({"systemMessage": msg.strip()}))
+PY
+}
+
+stop() {
+  session_end
+}
+
+pre_compact() {
+  python3 - "$PROJECT_DIR" <<'PY' || true
+import json
+import pathlib
+import subprocess
+import sys
+
+project = pathlib.Path(sys.argv[1])
+
+def run(cmd, fallback="unknown", timeout=3):
+    try:
+        r = subprocess.run(cmd, cwd=project, capture_output=True, text=True, timeout=timeout, check=False)
+        t = r.stdout.strip()
+        return t if r.returncode == 0 and t else fallback
+    except Exception:
+        return fallback
+
+branch = run(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+last_commit = run(["git", "log", "-1", "--format=%h %s"])
+changed = run(["git", "status", "--short"], fallback="")
+changed_count = len([l for l in changed.splitlines() if l.strip()]) if changed else 0
+
+msg = f"""Context compaction imminent — state snapshot:
+
+- Branch: `{branch}`
+- Last commit: `{last_commit}`
+- Uncommitted changes: `{changed_count}` files
+
+Before compaction, ensure:
+- Active work is committed or stashed.
+- `docs/00.agent-governance/memory/progress.md` reflects current progress.
+- Any in-flight plan or decision is recorded in a memory note."""
+
+print(json.dumps({
+    "hookSpecificOutput": {
+        "hookEventName": "PreCompact",
+        "additionalContext": msg.strip(),
+    }
+}))
+PY
+}
+
 case "$EVENT" in
   SessionStart)
     session_start
@@ -195,6 +274,15 @@ case "$EVENT" in
     ;;
   PostToolUse)
     post_tool_use
+    ;;
+  SessionEnd)
+    session_end
+    ;;
+  Stop)
+    stop
+    ;;
+  PreCompact)
+    pre_compact
     ;;
   *)
     exit 0

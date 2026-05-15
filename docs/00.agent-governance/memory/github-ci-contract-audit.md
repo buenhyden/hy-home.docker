@@ -10,7 +10,7 @@ layer: agentic
 - Applies To: `.github/workflows/`, `.github/rulesets/`, CI contract checks
 - Tags: #github #ci #qa #governance
 - Retrieval Keywords: GitHub CI contract, workflow permissions, branch ruleset, compose profile validation
-- Last Verified: 2026-05-10
+- Last Verified: 2026-05-15
 
 ## Problem
 
@@ -39,6 +39,13 @@ resolved by Docker Compose.
   `scripts/check-repo-contracts.sh`.
 - Kept community automation workflows and made their default token permissions
   explicit.
+
+## Open Items (2026-05-15 re-audit)
+
+| Item                                      | Status                            | Evidence                                                                                                                                                                                                                                        |
+| ----------------------------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Non-default Compose profile CI gap        | **RESOLVED** (2026-05-15)         | `compose-all-profiles-validation` job in `ci-quality.yml` covers all profiles: core, data, obs, workflow, ai, tooling, messaging, security, communication, service, storage, admin, iac, registry, sast, sync, testing, graph, mng, ksql, nginx |
+| Branch protection remote enforcement (G1) | **OPEN** — user decision required | `.github/rulesets/main-protection.md` is a local proposal only; no API-enforced ruleset or classic branch protection rule exists in GitHub repository settings; force-push and direct-to-main are not blocked at the GitHub layer               |
 
 ## Prevention
 

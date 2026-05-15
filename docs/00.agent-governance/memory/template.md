@@ -1,7 +1,8 @@
 ---
 layer: agentic
 ---
-<!-- Local mirror of docs/99.templates/memory.template.md -->
+
+<!-- Mirror of docs/99.templates/memory.template.md — do not edit independently -->
 
 # Memory: {short-title}
 
