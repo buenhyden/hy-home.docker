@@ -1,213 +1,542 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # ==============================================================================
 # gen-secrets.sh - hy-home.docker Secret Management Script
 # ==============================================================================
 
-set -e
+set -euo pipefail
+IFS=$'\n\t'
+umask 077
 
-# Configuration
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 EXAMPLE_FILE="${REPO_ROOT}/secrets/SENSITIVE_ENV_VARS.md.example"
 TARGET_FILE="${REPO_ROOT}/secrets/SENSITIVE_ENV_VARS.md"
 ENV_FILE="${REPO_ROOT}/.env"
-CURRENT_DATE=$(date +%Y-%m-%d)
+ROOT_WRAPPER="${REPO_ROOT}/scripts/gen-secrets.sh"
+IMPLEMENTATION_FILE="${REPO_ROOT}/scripts/operations/gen-secrets.sh"
+CURRENT_DATE="$(date +%Y-%m-%d)"
 
-# Colors for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo -e "${BLUE}=== hy-home.docker Secret Management System ===${NC}"
+MODE="run"
+declare -A ENV_VALUES=()
+declare -A SECRET_VALUES=()
+declare -a TEMP_PATHS=()
 
-# Check for required tools
-for tool in htpasswd openssl tr head awk grep sed; do
-    if ! command -v $tool &> /dev/null; then
-        echo -e "${RED}Error: Required tool '$tool' not found.${NC}"
-        exit 1
+ROW_ID=""
+ROW_AUTO=""
+ROW_VALUE=""
+ROW_ENV_VAR=""
+ROW_FILE_PATH=""
+
+usage() {
+    cat <<'USAGE'
+Usage: bash scripts/gen-secrets.sh [--help|--check|--dry-run]
+
+Generate local Docker secret files from repository secret registry metadata.
+
+Modes:
+  --help     Show this help without reading secret value sources.
+  --check    Verify required tools and path layout without reading or writing
+             secret values, .env, or secret files.
+  --dry-run  Report planned actions from the example registry by ID/path only.
+             Does not read .env, SENSITIVE_ENV_VARS.md, or secret files.
+
+No-argument mode preserves the existing operator workflow and may read/write
+local secret registry and secret files. Do not use no-argument mode for audit
+or verification.
+USAGE
+}
+
+info() {
+    printf '%b%s%b\n' "$BLUE" "$1" "$NC"
+}
+
+warn() {
+    printf '%b%s%b\n' "$YELLOW" "$1" "$NC"
+}
+
+error() {
+    printf '%bError:%b %s\n' "$RED" "$NC" "$1" >&2
+}
+
+die() {
+    error "$1"
+    exit 1
+}
+
+cleanup() {
+    local path
+    for path in "${TEMP_PATHS[@]}"; do
+        if [[ -n "$path" && -e "$path" ]]; then
+            rm -rf -- "$path"
+        fi
+    done
+}
+trap cleanup EXIT
+
+parse_args() {
+    if [[ "$#" -gt 1 ]]; then
+        usage >&2
+        exit 2
     fi
-done
 
-# Initialize target file if not exists
-if [ ! -f "$TARGET_FILE" ]; then
-    echo -e "${YELLOW}Initializing ${TARGET_FILE} from example...${NC}"
-    cp "$EXAMPLE_FILE" "$TARGET_FILE"
-fi
+    case "${1-}" in
+        "")
+            MODE="run"
+            ;;
+        --help|-h)
+            MODE="help"
+            ;;
+        --check)
+            MODE="check"
+            ;;
+        --dry-run)
+            MODE="dry-run"
+            ;;
+        *)
+            usage >&2
+            exit 2
+            ;;
+    esac
+}
 
-# Load .env variables into a temporary file
-TEMP_ENV=$(mktemp)
-if [ -f "$ENV_FILE" ]; then
-    # Clean up .env: remove comments, empty lines, and trim spaces
-    grep -v '^[[:space:]]*#' "$ENV_FILE" | grep -v '^[[:space:]]*$' | sed 's/[[:space:]]*=[[:space:]]*/=/' > "$TEMP_ENV" || true
-fi
+trim() {
+    local value="${1-}"
+    value="${value#"${value%%[![:space:]]*}"}"
+    value="${value%"${value##*[![:space:]]}"}"
+    printf '%s' "$value"
+}
 
-# Store values in a temporary directory
-VAL_DIR=$(mktemp -d)
-trap 'rm -rf "$VAL_DIR" "$TEMP_ENV"' EXIT
+strip_surrounding_quotes() {
+    local value="$1"
+    if [[ "${#value}" -ge 2 && "$value" == \"*\" && "$value" == *\" ]]; then
+        value="${value:1:${#value}-2}"
+    elif [[ "${#value}" -ge 2 && "$value" == \'*\' && "$value" == *\' ]]; then
+        value="${value:1:${#value}-2}"
+    fi
+    printf '%s' "$value"
+}
+
+clean_cell() {
+    local value
+    value="$(trim "${1-}")"
+    value="${value//\`/}"
+    value="${value//\*/}"
+    printf '%s' "$value"
+}
+
+clean_value_cell() {
+    local value
+    value="$(trim "${1-}")"
+    value="${value//\`/}"
+    printf '%s' "$value"
+}
+
+is_table_row() {
+    [[ "${1-}" =~ ^[[:space:]]*\| ]]
+}
+
+is_header_or_separator() {
+    local line="$1"
+    [[ "$line" =~ \|[[:space:]]ID[[:space:]]\| ]] || [[ "$line" =~ \|[[:space:]]:--- ]]
+}
+
+parse_row() {
+    local line="$1"
+    local _lead id auto _kind value env_var file_path _date _purpose _tail
+    ROW_ID=""
+    ROW_AUTO=""
+    ROW_VALUE=""
+    ROW_ENV_VAR=""
+    ROW_FILE_PATH=""
+
+    IFS='|' read -r _lead id auto _kind value env_var file_path _date _purpose _tail <<< "$line"
+    ROW_ID="$(clean_cell "$id")"
+    ROW_AUTO="$(clean_cell "$auto")"
+    ROW_VALUE="$(clean_value_cell "$value")"
+    ROW_ENV_VAR="$(clean_cell "$env_var")"
+    ROW_FILE_PATH="$(clean_cell "$file_path")"
+}
+
+is_placeholder_value() {
+    local value="$1"
+    [[ -z "$value" || "$value" == *"비어있음"* || "$value" == "(empty)" ]]
+}
+
+resolve_repo_path() {
+    local rel_path="$1"
+    if [[ -z "$rel_path" || "$rel_path" == "-" ]]; then
+        printf '%s' ""
+        return 0
+    fi
+    if [[ "$rel_path" == /* ]]; then
+        die "absolute secret paths are not supported: ${rel_path}"
+    fi
+    printf '%s/%s' "$REPO_ROOT" "$rel_path"
+}
+
+make_temp_file() {
+    local path
+    path="$(mktemp)"
+    chmod 600 "$path"
+    TEMP_PATHS+=("$path")
+    printf '%s' "$path"
+}
+
+check_required_tools() {
+    local missing=0
+    local tool
+    for tool in git date mktemp rm cp mkdir chmod dirname mv tr head htpasswd; do
+        if ! command -v "$tool" >/dev/null 2>&1; then
+            error "Required tool '${tool}' not found."
+            missing=1
+        fi
+    done
+    return "$missing"
+}
+
+check_layout() {
+    local failures=0
+    local wrapper_text=""
+
+    check_required_tools || failures=1
+
+    printf 'CHECK repo_root=%s\n' "$REPO_ROOT"
+
+    if [[ -f "$EXAMPLE_FILE" ]]; then
+        printf 'CHECK example_registry=present path=%s\n' "$EXAMPLE_FILE"
+    else
+        printf 'CHECK example_registry=missing path=%s\n' "$EXAMPLE_FILE"
+        failures=1
+    fi
+
+    if [[ -e "$TARGET_FILE" ]]; then
+        printf 'CHECK target_registry=present path=%s\n' "$TARGET_FILE"
+    else
+        printf 'CHECK target_registry=absent path=%s\n' "$TARGET_FILE"
+    fi
+
+    if [[ -e "$ENV_FILE" ]]; then
+        printf 'CHECK env_file=present path=%s\n' "$ENV_FILE"
+    else
+        printf 'CHECK env_file=absent path=%s\n' "$ENV_FILE"
+    fi
+
+    if [[ -f "$ROOT_WRAPPER" ]]; then
+        wrapper_text="$(<"$ROOT_WRAPPER")"
+        if [[ "$wrapper_text" == *'operations/gen-secrets.sh'* ]]; then
+            printf 'CHECK root_wrapper=ok path=%s\n' "$ROOT_WRAPPER"
+        else
+            printf 'CHECK root_wrapper=missing-target path=%s\n' "$ROOT_WRAPPER"
+            failures=1
+        fi
+    else
+        printf 'CHECK root_wrapper=missing path=%s\n' "$ROOT_WRAPPER"
+        failures=1
+    fi
+
+    if [[ -f "$IMPLEMENTATION_FILE" ]]; then
+        printf 'CHECK implementation=present path=%s\n' "$IMPLEMENTATION_FILE"
+    else
+        printf 'CHECK implementation=missing path=%s\n' "$IMPLEMENTATION_FILE"
+        failures=1
+    fi
+
+    return "$failures"
+}
+
+load_env_values() {
+    local line stripped key value
+    [[ -f "$ENV_FILE" ]] || return 0
+
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        stripped="$(trim "$line")"
+        [[ -z "$stripped" || "$stripped" == \#* ]] && continue
+        [[ "$stripped" == *=* ]] || continue
+
+        key="$(trim "${stripped%%=*}")"
+        value="$(trim "${stripped#*=}")"
+        value="${value%%[[:space:]]#*}"
+        value="$(trim "$value")"
+        value="$(strip_surrounding_quotes "$value")"
+
+        if [[ -n "$key" ]]; then
+            ENV_VALUES["$key"]="$value"
+        fi
+    done < "$ENV_FILE"
+}
 
 get_env_val() {
-    local var_name=$1
-    [ -z "$var_name" ] || [ "$var_name" == "-" ] && return 1
-    # Find the variable and extract value, removing quotes and tailing comments
-    local val
-    val=$(grep "^[[:space:]]*${var_name}=" "$TEMP_ENV" | head -n 1 | cut -d'=' -f2- | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//" -e 's/[[:space:]]*#.*$//')
-    if [ -n "$val" ]; then
-        echo -n "$val"
+    local var_name="${1-}"
+    if [[ -z "$var_name" || "$var_name" == "-" ]]; then
+        return 1
+    fi
+    if [[ -v "ENV_VALUES[$var_name]" && -n "${ENV_VALUES[$var_name]}" ]]; then
+        printf '%s' "${ENV_VALUES[$var_name]}"
         return 0
     fi
     return 1
 }
 
 gen_password() {
-    LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 16
+    local password=""
+    local chunk=""
+    while [[ "${#password}" -lt 16 ]]; do
+        chunk="$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c "$((16 - ${#password}))" || true)"
+        password+="$chunk"
+    done
+    printf '%s' "$password"
 }
 
-echo -e "${BLUE}Processing secrets...${NC}"
+read_secret_file() {
+    local path="$1"
+    local value
+    [[ -s "$path" ]] || return 1
+    value="$(<"$path")"
+    printf '%s' "$value"
+}
 
-# First pass: Collect metadata and generate/sync values
-while IFS= read -r line; do
-    if [[ "$line" =~ ^[[:space:]]*"|" ]]; then
-        # Skip header and separator rows specifically
-        if [[ "$line" =~ \|[[:space:]]ID[[:space:]]\| ]] || [[ "$line" =~ \|[[:space:]]:--- ]]; then
-            echo "$line" >> /dev/null # just to keep IFS consistent if needed
+write_secret_file() {
+    local path="$1"
+    local value="$2"
+    mkdir -p -- "$(dirname "$path")"
+    printf '%s' "$value" > "$path"
+    chmod 600 "$path" 2>/dev/null || true
+}
+
+generate_htpasswd_hash() {
+    local user_value="$1"
+    local pass_value="$2"
+    local hashed
+
+    if ! htpasswd -ni "$user_value" >/dev/null 2>&1 <<< "probe"; then
+        die "htpasswd stdin mode is unavailable; refusing to expose password via argv."
+    fi
+
+    hashed="$(printf '%s\n' "$pass_value" | htpasswd -ni "$user_value")"
+    printf '%s' "$(trim "$hashed")"
+}
+
+ensure_target_registry() {
+    if [[ ! -f "$TARGET_FILE" ]]; then
+        [[ -f "$EXAMPLE_FILE" ]] || die "example registry not found: ${EXAMPLE_FILE}"
+        warn "Initializing registry from example: ${TARGET_FILE}"
+        cp -- "$EXAMPLE_FILE" "$TARGET_FILE"
+        chmod 600 "$TARGET_FILE" 2>/dev/null || true
+    fi
+}
+
+collect_secret_values() {
+    local line full_path new_value env_value
+
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        if ! is_table_row "$line" || is_header_or_separator "$line"; then
             continue
         fi
 
-        # Extract columns
-        ID=$(echo "$line" | cut -d'|' -f2 | xargs | tr -d '*')
-        AUTO=$(echo "$line" | cut -d'|' -f3 | xargs | tr -d '`')
-        VALUE_RAW=$(echo "$line" | cut -d'|' -f5 | xargs)
-        VALUE=$(echo "$VALUE_RAW" | tr -d '`')
-        ENV_VAR=$(echo "$line" | cut -d'|' -f6 | xargs | tr -d '`')
-        FILE_PATH=$(echo "$line" | cut -d'|' -f7 | xargs | tr -d '`')
+        parse_row "$line"
+        [[ -n "$ROW_ID" ]] || continue
+        [[ "$ROW_ID" == "INFRA-003" || "$ROW_ID" == "INFRA-004" ]] && continue
 
-        [ -z "$ID" ] && continue
-        # htpasswd entries are handled separately because they depend on other values
-        [[ "$ID" == "INFRA-003" || "$ID" == "INFRA-004" ]] && continue
+        full_path="$(resolve_repo_path "$ROW_FILE_PATH")"
+        new_value=""
 
-        NEW_VALUE=""
-        FULL_PATH=""
-        if [ -n "$FILE_PATH" ] && [ "$FILE_PATH" != "-" ]; then
-            FULL_PATH="${REPO_ROOT}/${FILE_PATH}"
-        fi
-
-        # 1. NEW LOGIC: Always check VAL_DIR if we already processed it (should not happen in pass 1 but good for safety)
-        # 2. Check if file exists and has content - prioritize THIS over generation
-        if [ -n "$FULL_PATH" ] && [ -s "$FULL_PATH" ]; then
-            NEW_VALUE=$(cat "$FULL_PATH")
-        # Match placeholder if value starts with '(' and contains '비어있음'
-        elif [[ -z "$VALUE" ]] || [[ "$VALUE" == *"비어있음"* ]] || [[ "$VALUE" == "(empty)" ]]; then
-            # Priority 1: .env check
-            ENV_VAL=$(get_env_val "$ENV_VAR" || echo "")
-            if [ -n "$ENV_VAL" ]; then
-                NEW_VALUE="$ENV_VAL"
-            elif [ "$AUTO" == "O" ]; then
-                NEW_VALUE=$(gen_password)
+        if [[ -n "$full_path" && -s "$full_path" ]]; then
+            new_value="$(read_secret_file "$full_path")"
+        elif is_placeholder_value "$ROW_VALUE"; then
+            env_value="$(get_env_val "$ROW_ENV_VAR" || true)"
+            if [[ -n "$env_value" ]]; then
+                new_value="$env_value"
+            elif [[ "$ROW_AUTO" == "O" ]]; then
+                new_value="$(gen_password)"
             fi
         else
-            # Keep existing value in the Markdown
-            NEW_VALUE="$VALUE"
+            new_value="$ROW_VALUE"
         fi
 
-        if [ -n "$NEW_VALUE" ]; then
-            echo -n "$NEW_VALUE" > "$VAL_DIR/$ID"
-            if [ -n "$FULL_PATH" ]; then
-                if [ ! -f "$FULL_PATH" ] || [ ! -s "$FULL_PATH" ]; then
-                    mkdir -p "$(dirname "$FULL_PATH")"
-                    echo -n "$NEW_VALUE" > "$FULL_PATH"
-                fi
+        if [[ -n "$new_value" ]]; then
+            SECRET_VALUES["$ROW_ID"]="$new_value"
+            if [[ -n "$full_path" && ( ! -f "$full_path" || ! -s "$full_path" ) ]]; then
+                write_secret_file "$full_path" "$new_value"
             fi
         fi
-    fi
-done < "$TARGET_FILE"
+    done < "$TARGET_FILE"
+}
 
-# Second pass: Handle special dependencies (htpasswd)
-# CRITICAL: Always regenerate hash if source values (ID/PW) are available in VAL_DIR
 process_htpasswd() {
-    local target_id=$1
-    local user_id=$2
-    local pass_id=$3
-    local target_file_path=$4
+    local target_id="$1"
+    local user_id="$2"
+    local pass_id="$3"
+    local target_file_path="$4"
+    local user_value="${SECRET_VALUES[$user_id]-}"
+    local pass_value="${SECRET_VALUES[$pass_id]-}"
+    local full_path hashed existing
 
-    local user_val
-    user_val=$(cat "$VAL_DIR/$user_id" 2>/dev/null || echo "")
-    local pass_val
-    pass_val=$(cat "$VAL_DIR/$pass_id" 2>/dev/null || echo "")
-
-    if [ -n "$user_val" ] && [ -n "$pass_val" ]; then
-        local full_path="${REPO_ROOT}/${target_file_path}"
-        local hashed
-        hashed=$(htpasswd -nb "$user_val" "$pass_val" | xargs)
-
-        # If the file already exists, we MUST check if it matches our new hash
-        if [ -f "$full_path" ] && [ -s "$full_path" ]; then
-            local existing
-            existing=$(cat "$full_path")
-            # If they differ, we overwrite both the file and the registry to maintain consistency
-            if [ "$hashed" != "$existing" ]; then
-                echo -e "${YELLOW}Updating htpasswd hash for $target_id to match current ID/PW...${NC}"
-                echo -n "$hashed" > "$full_path"
-            fi
-        else
-            mkdir -p "$(dirname "$full_path")"
-            echo -n "$hashed" > "$full_path"
-        fi
-
-        echo -n "$hashed" > "$VAL_DIR/$target_id"
+    if [[ -z "$user_value" || -z "$pass_value" ]]; then
+        return 0
     fi
-}
 
-process_htpasswd "INFRA-003" "INFRA-001" "INFRA-002" "secrets/auth/traefik_basicauth_password.txt"
-process_htpasswd "INFRA-004" "OBS-003" "OBS-004" "secrets/auth/traefik_opensearch_basicauth_password.txt"
+    full_path="${REPO_ROOT}/${target_file_path}"
+    hashed="$(generate_htpasswd_hash "$user_value" "$pass_value")"
 
-# Third pass: Update the Markdown target file
-echo -e "${BLUE}Updating Markdown registry...${NC}"
-FINAL_TEMP=$(mktemp)
-
-while IFS= read -r line; do
-    if [[ "$line" =~ ^[[:space:]]*"|" ]]; then
-        if [[ "$line" =~ \|[[:space:]]ID[[:space:]]\| ]] || [[ "$line" =~ \|[[:space:]]:--- ]]; then
-            echo "$line" >> "$FINAL_TEMP"
-            continue
-        fi
-
-        ID=$(echo "$line" | cut -d'|' -f2 | xargs | tr -d '*')
-
-        # Check if we have a value for this ID
-        if [ -n "$ID" ] && [ -f "$VAL_DIR/$ID" ]; then
-            VAL=$(cat "$VAL_DIR/$ID")
-
-            # Extract current value from the line to see if it changed
-            CURRENT_VAL=$(echo "$line" | cut -d'|' -f5 | xargs | tr -d '`')
-
-            # If value changed OR it was a placeholder OR if it's a derived hash that might have changed
-            # we update row and date.
-            if [[ "$VAL" != "$CURRENT_VAL" ]] || [[ "$CURRENT_VAL" == *"비어있음"* ]]; then
-                echo "$line" | awk -F'|' -v v="$VAL" -v d="$CURRENT_DATE" 'BEGIN {OFS="|"} {
-                    if (length(v) > 0) { $5 = " `"v"` "; }
-                    else { $5 = " (비어있음) "; }
-                    $8 = " "d" ";
-                    print $0;
-                }' >> "$FINAL_TEMP"
-            else
-                # Value matches existing non-placeholder, keep row as is (don't update date)
-                echo "$line" >> "$FINAL_TEMP"
-            fi
-        else
-            echo "$line" >> "$FINAL_TEMP"
+    if [[ -f "$full_path" && -s "$full_path" ]]; then
+        existing="$(read_secret_file "$full_path")"
+        if [[ "$hashed" != "$existing" ]]; then
+            warn "Updating htpasswd hash for ${target_id} to match current source IDs."
+            write_secret_file "$full_path" "$hashed"
         fi
     else
-        if [[ "$line" =~ "마지막 업데이트:" ]]; then
-            echo "*마지막 업데이트: ${CURRENT_DATE}* (스크립트 자동 갱신 완료)" >> "$FINAL_TEMP"
-        else
-            echo "$line" >> "$FINAL_TEMP"
-        fi
+        write_secret_file "$full_path" "$hashed"
     fi
-done < "$TARGET_FILE"
 
-mv "$FINAL_TEMP" "$TARGET_FILE"
+    SECRET_VALUES["$target_id"]="$hashed"
+}
 
-echo -e "${GREEN}Processing complete!${NC}"
-echo -e "Registry updated: ${TARGET_FILE}"
+render_row_with_value() {
+    local line="$1"
+    local value="$2"
+    local date="$3"
+    local lead id auto kind _old_value env_var file_path _old_date purpose tail
+
+    IFS='|' read -r lead id auto kind _old_value env_var file_path _old_date purpose tail <<< "$line"
+    printf '%s|%s|%s|%s| `%s` |%s|%s| %s |%s|%s\n' \
+        "$lead" "$id" "$auto" "$kind" "$value" "$env_var" "$file_path" "$date" "$purpose" "$tail"
+}
+
+rewrite_registry() {
+    local final_temp line current_value value
+    final_temp="$(make_temp_file)"
+
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        if is_table_row "$line" && ! is_header_or_separator "$line"; then
+            parse_row "$line"
+            if [[ -n "$ROW_ID" && -v "SECRET_VALUES[$ROW_ID]" ]]; then
+                value="${SECRET_VALUES[$ROW_ID]}"
+                current_value="$ROW_VALUE"
+                if [[ "$value" != "$current_value" ]] || is_placeholder_value "$current_value"; then
+                    render_row_with_value "$line" "$value" "$CURRENT_DATE" >> "$final_temp"
+                else
+                    printf '%s\n' "$line" >> "$final_temp"
+                fi
+            else
+                printf '%s\n' "$line" >> "$final_temp"
+            fi
+        elif [[ "$line" == *"마지막 업데이트:"* ]]; then
+            printf '*마지막 업데이트: %s* (스크립트 자동 갱신 완료)\n' "$CURRENT_DATE" >> "$final_temp"
+        else
+            printf '%s\n' "$line" >> "$final_temp"
+        fi
+    done < "$TARGET_FILE"
+
+    mv -- "$final_temp" "$TARGET_FILE"
+}
+
+run_generation() {
+    printf '%b=== hy-home.docker Secret Management System ===%b\n' "$BLUE" "$NC"
+    check_required_tools
+    ensure_target_registry
+    load_env_values
+
+    info "Processing secrets..."
+    collect_secret_values
+
+    process_htpasswd "INFRA-003" "INFRA-001" "INFRA-002" "secrets/auth/traefik_basicauth_password.txt"
+    process_htpasswd "INFRA-004" "OBS-003" "OBS-004" "secrets/auth/traefik_opensearch_basicauth_password.txt"
+
+    info "Updating Markdown registry..."
+    rewrite_registry
+
+    printf '%bProcessing complete!%b\n' "$GREEN" "$NC"
+    printf 'Registry updated: %s\n' "$TARGET_FILE"
+}
+
+dry_run_action_for_row() {
+    local full_path="$1"
+    local action
+
+    if [[ "$ROW_ID" == "INFRA-003" || "$ROW_ID" == "INFRA-004" ]]; then
+        printf '%s' "derive-htpasswd"
+        return 0
+    fi
+
+    if [[ -n "$full_path" ]]; then
+        if [[ -s "$full_path" ]]; then
+            action="keep-existing-file"
+        elif [[ -e "$full_path" ]]; then
+            action="fill-empty-file"
+        elif [[ "$ROW_AUTO" == "O" ]]; then
+            action="create-generated-file"
+        elif [[ -n "$ROW_ENV_VAR" && "$ROW_ENV_VAR" != "-" ]]; then
+            action="create-from-env-if-set"
+        else
+            action="manual-file-required"
+        fi
+    elif [[ "$ROW_AUTO" == "O" ]]; then
+        action="update-registry-generated-value"
+    elif [[ -n "$ROW_ENV_VAR" && "$ROW_ENV_VAR" != "-" ]]; then
+        action="update-registry-from-env-if-set"
+    else
+        action="manual-registry-required"
+    fi
+
+    printf '%s' "$action"
+}
+
+run_dry_run() {
+    local line full_path action total=0
+
+    check_required_tools
+    [[ -f "$EXAMPLE_FILE" ]] || die "example registry not found: ${EXAMPLE_FILE}"
+
+    printf 'DRY-RUN source=example-registry path=%s\n' "$EXAMPLE_FILE"
+    printf 'DRY-RUN target_registry_path=%s\n' "$TARGET_FILE"
+    printf 'DRY-RUN note=values-not-read-or-written\n'
+
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        if ! is_table_row "$line" || is_header_or_separator "$line"; then
+            continue
+        fi
+
+        parse_row "$line"
+        [[ -n "$ROW_ID" ]] || continue
+        full_path="$(resolve_repo_path "$ROW_FILE_PATH")"
+        action="$(dry_run_action_for_row "$full_path")"
+        total=$((total + 1))
+
+        if [[ -n "$ROW_FILE_PATH" && "$ROW_FILE_PATH" != "-" ]]; then
+            printf 'DRY-RUN id=%s action=%s path=%s\n' "$ROW_ID" "$action" "$ROW_FILE_PATH"
+        else
+            printf 'DRY-RUN id=%s action=%s path=-\n' "$ROW_ID" "$action"
+        fi
+    done < "$EXAMPLE_FILE"
+
+    printf 'DRY-RUN summary rows=%d\n' "$total"
+}
+
+main() {
+    parse_args "$@"
+    case "$MODE" in
+        help)
+            usage
+            ;;
+        check)
+            check_layout
+            ;;
+        dry-run)
+            run_dry_run
+            ;;
+        run)
+            run_generation
+            ;;
+        *)
+            die "unsupported mode: ${MODE}"
+            ;;
+    esac
+}
+
+main "$@"

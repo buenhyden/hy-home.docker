@@ -98,7 +98,7 @@ continue to use root compatibility wrappers.
 | Tooling Hardening Check | [check-tooling-hardening.sh](./check-tooling-hardening.sh) | Enforce 09-tooling service hardening baseline |
 | Laboratory Hardening Check | [check-laboratory-hardening.sh](./check-laboratory-hardening.sh) | Enforce 11-laboratory service hardening baseline |
 | Preflight Check | [preflight-compose.sh](./preflight-compose.sh) | Bootstrap prerequisite validation |
-| Secret Generation | [gen-secrets.sh](./gen-secrets.sh) | Generate local Docker secret files from `.env` defaults |
+| Secret Generation | [gen-secrets.sh](./gen-secrets.sh) | Generate local Docker secret files; use safe modes before default generation |
 | Cert Generation | [generate-local-certs.sh](./generate-local-certs.sh) | Generate local TLS files |
 | Vault AppRole Bootstrap | [bootstrap-vault-approle.sh](./bootstrap-vault-approle.sh) | Configure Vault Agent AppRole credentials after Vault is running and unsealed |
 
@@ -223,6 +223,12 @@ printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"comman
 
 # Enforce 11-laboratory hardening baseline
 ./scripts/check-laboratory-hardening.sh
+
+# Inspect secret-generation readiness without reading or writing secret values
+./scripts/gen-secrets.sh --check
+
+# Preview secret-generation actions by ID/path only
+./scripts/gen-secrets.sh --dry-run
 
 # Generate local TLS certificates
 bash scripts/generate-local-certs.sh
