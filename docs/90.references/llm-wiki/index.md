@@ -245,25 +245,42 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/02.architecture/requirements/0026-standardize-infra-net.md](../../02.architecture/requirements/0026-standardize-infra-net.md) | Markdown reference |
 | [docs/02.architecture/requirements/2026-04-01-standardize-infra-net.md](../../02.architecture/requirements/2026-04-01-standardize-infra-net.md) | Markdown reference |
 | [docs/02.architecture/requirements/README.md](../../02.architecture/requirements/README.md) | folder index |
+| [docs/03.specs/01-gateway/README.md](../../03.specs/01-gateway/README.md) | folder index |
 | [docs/03.specs/01-gateway/spec.md](../../03.specs/01-gateway/spec.md) | Markdown reference |
+| [docs/03.specs/02-auth/README.md](../../03.specs/02-auth/README.md) | folder index |
 | [docs/03.specs/02-auth/spec.md](../../03.specs/02-auth/spec.md) | Markdown reference |
+| [docs/03.specs/03-security/README.md](../../03.specs/03-security/README.md) | folder index |
 | [docs/03.specs/03-security/spec.md](../../03.specs/03-security/spec.md) | Markdown reference |
+| [docs/03.specs/04-data-analytics/README.md](../../03.specs/04-data-analytics/README.md) | folder index |
 | [docs/03.specs/04-data-analytics/spec.md](../../03.specs/04-data-analytics/spec.md) | Markdown reference |
+| [docs/03.specs/04-data/README.md](../../03.specs/04-data/README.md) | folder index |
 | [docs/03.specs/04-data/spec.md](../../03.specs/04-data/spec.md) | Markdown reference |
+| [docs/03.specs/05-messaging/README.md](../../03.specs/05-messaging/README.md) | folder index |
 | [docs/03.specs/05-messaging/spec.md](../../03.specs/05-messaging/spec.md) | Markdown reference |
+| [docs/03.specs/06-observability/README.md](../../03.specs/06-observability/README.md) | folder index |
 | [docs/03.specs/06-observability/spec.md](../../03.specs/06-observability/spec.md) | Markdown reference |
+| [docs/03.specs/07-workflow/README.md](../../03.specs/07-workflow/README.md) | folder index |
 | [docs/03.specs/07-workflow/agent-design.md](../../03.specs/07-workflow/agent-design.md) | Markdown reference |
 | [docs/03.specs/07-workflow/spec.md](../../03.specs/07-workflow/spec.md) | Markdown reference |
+| [docs/03.specs/08-ai/README.md](../../03.specs/08-ai/README.md) | folder index |
 | [docs/03.specs/08-ai/open-webui.md](../../03.specs/08-ai/open-webui.md) | Markdown reference |
 | [docs/03.specs/08-ai/spec.md](../../03.specs/08-ai/spec.md) | Markdown reference |
+| [docs/03.specs/09-tooling/README.md](../../03.specs/09-tooling/README.md) | folder index |
 | [docs/03.specs/09-tooling/spec.md](../../03.specs/09-tooling/spec.md) | Markdown reference |
+| [docs/03.specs/10-communication/README.md](../../03.specs/10-communication/README.md) | folder index |
 | [docs/03.specs/10-communication/spec.md](../../03.specs/10-communication/spec.md) | Markdown reference |
+| [docs/03.specs/11-laboratory/README.md](../../03.specs/11-laboratory/README.md) | folder index |
 | [docs/03.specs/11-laboratory/spec.md](../../03.specs/11-laboratory/spec.md) | Markdown reference |
 | [docs/03.specs/README.md](../../03.specs/README.md) | folder index |
+| [docs/03.specs/docs-taxonomy-agent-first-migration/README.md](../../03.specs/docs-taxonomy-agent-first-migration/README.md) | folder index |
 | [docs/03.specs/docs-taxonomy-agent-first-migration/spec.md](../../03.specs/docs-taxonomy-agent-first-migration/spec.md) | Markdown reference |
+| [docs/03.specs/harness-agent-first-engineering/README.md](../../03.specs/harness-agent-first-engineering/README.md) | folder index |
 | [docs/03.specs/harness-agent-first-engineering/spec.md](../../03.specs/harness-agent-first-engineering/spec.md) | Markdown reference |
+| [docs/03.specs/infra-secrets-docs-refresh/README.md](../../03.specs/infra-secrets-docs-refresh/README.md) | folder index |
 | [docs/03.specs/infra-secrets-docs-refresh/spec.md](../../03.specs/infra-secrets-docs-refresh/spec.md) | Markdown reference |
+| [docs/03.specs/llm-wiki-agent-first-completion/README.md](../../03.specs/llm-wiki-agent-first-completion/README.md) | folder index |
 | [docs/03.specs/llm-wiki-agent-first-completion/spec.md](../../03.specs/llm-wiki-agent-first-completion/spec.md) | Markdown reference |
+| [docs/03.specs/standardize-infra-net/README.md](../../03.specs/standardize-infra-net/README.md) | folder index |
 | [docs/03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md) | Markdown reference |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -422,15 +439,22 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/harness-agent-first-engineering.md](../../05.operations/guides/harness-agent-first-engineering.md) | Markdown reference |
 | [docs/05.operations/guides/llm-wiki-maintenance.md](../../05.operations/guides/llm-wiki-maintenance.md) | Markdown reference |
 | [docs/05.operations/incidents/README.md](../../05.operations/incidents/README.md) | folder index |
+| [docs/05.operations/policies/04-data/README.md](../../05.operations/policies/04-data/README.md) | folder index |
 | [docs/05.operations/policies/04-data/backup-policy.md](../../05.operations/policies/04-data/backup-policy.md) | Markdown reference |
 | [docs/05.operations/policies/04-data/optimization-hardening.md](../../05.operations/policies/04-data/optimization-hardening.md) | Markdown reference |
+| [docs/05.operations/policies/05-messaging/README.md](../../05.operations/policies/05-messaging/README.md) | folder index |
 | [docs/05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/policies/06-observability/01.retention.md](../../05.operations/policies/06-observability/01.retention.md) | Markdown reference |
+| [docs/05.operations/policies/06-observability/README.md](../../05.operations/policies/06-observability/README.md) | folder index |
 | [docs/05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md) | Markdown reference |
+| [docs/05.operations/policies/07-workflow/README.md](../../05.operations/policies/07-workflow/README.md) | folder index |
 | [docs/05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/policies/07-workflow/optimization-hardening.md) | Markdown reference |
+| [docs/05.operations/policies/08-ai/README.md](../../05.operations/policies/08-ai/README.md) | folder index |
 | [docs/05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/policies/08-ai/optimization-hardening.md) | Markdown reference |
+| [docs/05.operations/policies/09-tooling/README.md](../../05.operations/policies/09-tooling/README.md) | folder index |
 | [docs/05.operations/policies/09-tooling/iac-deployment-policy.md](../../05.operations/policies/09-tooling/iac-deployment-policy.md) | Markdown reference |
 | [docs/05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/policies/09-tooling/optimization-hardening.md) | Markdown reference |
+| [docs/05.operations/policies/11-laboratory/README.md](../../05.operations/policies/11-laboratory/README.md) | folder index |
 | [docs/05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/policies/12-infra-service-optimization-catalog.md](../../05.operations/policies/12-infra-service-optimization-catalog.md) | Markdown reference |
 | [docs/05.operations/policies/13-common-optimizations-template-exceptions.md](../../05.operations/policies/13-common-optimizations-template-exceptions.md) | Markdown reference |
@@ -438,9 +462,13 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/policies/harness-agent-first-engineering.md](../../05.operations/policies/harness-agent-first-engineering.md) | Markdown reference |
 | [docs/05.operations/policies/standardize-infra-net.md](../../05.operations/policies/standardize-infra-net.md) | Markdown reference |
 | [docs/05.operations/runbooks/0012-standardize-infra-net.md](../../05.operations/runbooks/0012-standardize-infra-net.md) | Markdown reference |
+| [docs/05.operations/runbooks/04-data/README.md](../../05.operations/runbooks/04-data/README.md) | folder index |
 | [docs/05.operations/runbooks/04-data/storage-exhaustion.md](../../05.operations/runbooks/04-data/storage-exhaustion.md) | Markdown reference |
+| [docs/05.operations/runbooks/06-observability/README.md](../../05.operations/runbooks/06-observability/README.md) | folder index |
 | [docs/05.operations/runbooks/06-observability/prometheus-recovery.md](../../05.operations/runbooks/06-observability/prometheus-recovery.md) | Markdown reference |
+| [docs/05.operations/runbooks/07-workflow/README.md](../../05.operations/runbooks/07-workflow/README.md) | folder index |
 | [docs/05.operations/runbooks/07-workflow/airflow-worker-recovery.md](../../05.operations/runbooks/07-workflow/airflow-worker-recovery.md) | Markdown reference |
+| [docs/05.operations/runbooks/08-ai/README.md](../../05.operations/runbooks/08-ai/README.md) | folder index |
 | [docs/05.operations/runbooks/08-ai/gpu-recovery.md](../../05.operations/runbooks/08-ai/gpu-recovery.md) | Markdown reference |
 | [docs/05.operations/runbooks/README.md](../../05.operations/runbooks/README.md) | folder index |
 | [docs/05.operations/runbooks/harness-agent-first-engineering-validation.md](../../05.operations/runbooks/harness-agent-first-engineering-validation.md) | Markdown reference |
@@ -539,6 +567,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml](../../../infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml) | YAML config |
 | [infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-cluster-init.sh](../../../infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-cluster-init.sh) | script |
 | [infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-start.sh](../../../infra/04-data/cache-and-kv/valkey-cluster/scripts/valkey-start.sh) | script |
+| [infra/04-data/lake-and-object/README.md](../../../infra/04-data/lake-and-object/README.md) | folder index |
 | [infra/04-data/lake-and-object/minio/README.md](../../../infra/04-data/lake-and-object/minio/README.md) | folder index |
 | [infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml](../../../infra/04-data/lake-and-object/minio/docker-compose.cluster.yaml) | YAML config |
 | [infra/04-data/lake-and-object/minio/docker-compose.yml](../../../infra/04-data/lake-and-object/minio/docker-compose.yml) | YAML config |
@@ -561,6 +590,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [infra/04-data/relational/postgresql-cluster/README.md](../../../infra/04-data/relational/postgresql-cluster/README.md) | folder index |
 | [infra/04-data/relational/postgresql-cluster/docker-compose.yml](../../../infra/04-data/relational/postgresql-cluster/docker-compose.yml) | YAML config |
 | [infra/04-data/relational/postgresql-cluster/scripts/spilo-entrypoint-with-secrets.sh](../../../infra/04-data/relational/postgresql-cluster/scripts/spilo-entrypoint-with-secrets.sh) | script |
+| [infra/04-data/specialized/README.md](../../../infra/04-data/specialized/README.md) | folder index |
 | [infra/04-data/specialized/neo4j/README.md](../../../infra/04-data/specialized/neo4j/README.md) | folder index |
 | [infra/04-data/specialized/neo4j/docker-compose.yml](../../../infra/04-data/specialized/neo4j/docker-compose.yml) | YAML config |
 | [infra/04-data/specialized/neo4j/scripts/neo4j-entrypoint-with-secrets.sh](../../../infra/04-data/specialized/neo4j/scripts/neo4j-entrypoint-with-secrets.sh) | script |
