@@ -37,19 +37,25 @@
 
 ```text
 scripts/
-├── *.sh                 # Root validation, hook, hardening, and manual utility entrypoints
+├── *.sh                 # Root compatibility wrappers for public commands
+├── validation/          # Compose, repo, docs, template, quickwin, and preflight implementations
+├── hardening/           # Unified and tier-specific hardening implementations
+├── hooks/               # Provider-neutral hook dispatcher and post-tool validation
+├── knowledge/           # LLM Wiki and Graphify advisory utilities
+├── operations/          # Manual local cert, Vault AppRole, and secret-generation utilities
 ├── lib/
 │   └── hardening-lib.sh # Shared implementation for tier hardening checks
 └── README.md            # This file
 ```
 
-## Purpose Folder Plan
+## Purpose Folder Implementation
 
-Root `scripts/*.sh` files remain stable compatibility entrypoints until all
-workflow, hook, documentation, and CI references migrate. Future approved
-refactors should use this purpose-based layout:
+Root `scripts/*.sh` files are stable compatibility wrappers. They preserve the
+existing public command surface while purpose-folder implementations carry the
+actual logic. Workflow, hook, documentation, CI, and pre-commit references may
+continue to use root compatibility wrappers.
 
-| Purpose | Future folder | Current entrypoints |
+| Purpose | Implementation folder | Root compatibility wrappers |
 | :--- | :--- | :--- |
 | Validation | `scripts/validation/` | `validate-docker-compose.sh`, `check-repo-contracts.sh`, `check-doc-traceability.sh`, `check-quickwin-baseline.sh`, `check-template-security-baseline.sh`, `preflight-compose.sh` |
 | Hardening | `scripts/hardening/` | `check-all-hardening.sh`, `check-*-hardening.sh` |
@@ -65,7 +71,7 @@ refactors should use this purpose-based layout:
 3. Reference non-standalone root scripts from a repository entrypoint, stage document, runtime hook, or CI workflow.
 4. Use `scripts/check-repo-contracts.sh` to verify script inventory, external references, and library usage.
 5. Keep secret-related examples procedural only; do not print or document generated secret values.
-6. Preserve root compatibility wrappers until `scripts/check-repo-contracts.sh`, hooks, workflows, and docs all point to the approved purpose-folder paths.
+6. Preserve root compatibility wrappers unless an approved follow-up migrates all hooks, workflows, docs, pre-commit entries, and user-facing command examples.
 
 ## Navigation / Inventory
 
@@ -96,6 +102,26 @@ refactors should use this purpose-based layout:
 | Cert Generation | [generate-local-certs.sh](./generate-local-certs.sh) | Generate local TLS files |
 | Vault AppRole Bootstrap | [bootstrap-vault-approle.sh](./bootstrap-vault-approle.sh) | Configure Vault Agent AppRole credentials after Vault is running and unsealed |
 
+## Implementation Layout
+
+| Root wrapper | Implementation path |
+| :--- | :--- |
+| `scripts/validate-docker-compose.sh` | `scripts/validation/validate-docker-compose.sh` |
+| `scripts/check-repo-contracts.sh` | `scripts/validation/check-repo-contracts.sh` |
+| `scripts/check-doc-traceability.sh` | `scripts/validation/check-doc-traceability.sh` |
+| `scripts/check-quickwin-baseline.sh` | `scripts/validation/check-quickwin-baseline.sh` |
+| `scripts/check-template-security-baseline.sh` | `scripts/validation/check-template-security-baseline.sh` |
+| `scripts/preflight-compose.sh` | `scripts/validation/preflight-compose.sh` |
+| `scripts/check-all-hardening.sh` | `scripts/hardening/check-all-hardening.sh` |
+| `scripts/check-*-hardening.sh` | `scripts/hardening/check-*-hardening.sh` |
+| `scripts/agent-event-hook.sh` | `scripts/hooks/agent-event-hook.sh` |
+| `scripts/post-tool-validate.sh` | `scripts/hooks/post-tool-validate.sh` |
+| `scripts/generate-llm-wiki-index.sh` | `scripts/knowledge/generate-llm-wiki-index.sh` |
+| `scripts/report-graphify-health.sh` | `scripts/knowledge/report-graphify-health.sh` |
+| `scripts/generate-local-certs.sh` | `scripts/operations/generate-local-certs.sh` |
+| `scripts/bootstrap-vault-approle.sh` | `scripts/operations/bootstrap-vault-approle.sh` |
+| `scripts/gen-secrets.sh` | `scripts/operations/gen-secrets.sh` |
+
 ## Script Lifecycle
 
 | Lifecycle | Scripts |
@@ -108,11 +134,12 @@ refactors should use this purpose-based layout:
 | Generated index maintenance | `generate-llm-wiki-index.sh` |
 | Internal library | `scripts/lib/hardening-lib.sh` |
 
-Root scripts must stay listed in this README. A root script that is intended to
-remain standalone without an external repository reference must be explicitly
-listed in the external-reference exemption set in `check-repo-contracts.sh`.
-All other root scripts must be referenced by a repository entrypoint, stage
-document, runtime hook, or CI workflow.
+Root scripts must stay listed in this README and must remain wrappers for their
+purpose-folder implementation. A root script that is intended to remain
+standalone without an external repository reference must be explicitly listed in
+the external-reference exemption set in `check-repo-contracts.sh`. All other root
+scripts must be referenced by a repository entrypoint, stage document, runtime
+hook, or CI workflow.
 
 ---
 

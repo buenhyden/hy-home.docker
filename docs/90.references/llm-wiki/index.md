@@ -782,11 +782,35 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/gen-secrets.sh](../../../scripts/gen-secrets.sh) | script |
 | [scripts/generate-llm-wiki-index.sh](../../../scripts/generate-llm-wiki-index.sh) | script |
 | [scripts/generate-local-certs.sh](../../../scripts/generate-local-certs.sh) | script |
+| [scripts/hardening/check-ai-hardening.sh](../../../scripts/hardening/check-ai-hardening.sh) | script |
+| [scripts/hardening/check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) | script |
+| [scripts/hardening/check-auth-hardening.sh](../../../scripts/hardening/check-auth-hardening.sh) | script |
+| [scripts/hardening/check-data-hardening.sh](../../../scripts/hardening/check-data-hardening.sh) | script |
+| [scripts/hardening/check-gateway-hardening.sh](../../../scripts/hardening/check-gateway-hardening.sh) | script |
+| [scripts/hardening/check-laboratory-hardening.sh](../../../scripts/hardening/check-laboratory-hardening.sh) | script |
+| [scripts/hardening/check-messaging-hardening.sh](../../../scripts/hardening/check-messaging-hardening.sh) | script |
+| [scripts/hardening/check-observability-hardening.sh](../../../scripts/hardening/check-observability-hardening.sh) | script |
+| [scripts/hardening/check-security-hardening.sh](../../../scripts/hardening/check-security-hardening.sh) | script |
+| [scripts/hardening/check-tooling-hardening.sh](../../../scripts/hardening/check-tooling-hardening.sh) | script |
+| [scripts/hardening/check-workflow-hardening.sh](../../../scripts/hardening/check-workflow-hardening.sh) | script |
+| [scripts/hooks/agent-event-hook.sh](../../../scripts/hooks/agent-event-hook.sh) | script |
+| [scripts/hooks/post-tool-validate.sh](../../../scripts/hooks/post-tool-validate.sh) | script |
+| [scripts/knowledge/generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) | script |
+| [scripts/knowledge/report-graphify-health.sh](../../../scripts/knowledge/report-graphify-health.sh) | script |
 | [scripts/lib/hardening-lib.sh](../../../scripts/lib/hardening-lib.sh) | script |
+| [scripts/operations/bootstrap-vault-approle.sh](../../../scripts/operations/bootstrap-vault-approle.sh) | script |
+| [scripts/operations/gen-secrets.sh](../../../scripts/operations/gen-secrets.sh) | script |
+| [scripts/operations/generate-local-certs.sh](../../../scripts/operations/generate-local-certs.sh) | script |
 | [scripts/post-tool-validate.sh](../../../scripts/post-tool-validate.sh) | script |
 | [scripts/preflight-compose.sh](../../../scripts/preflight-compose.sh) | script |
 | [scripts/report-graphify-health.sh](../../../scripts/report-graphify-health.sh) | script |
 | [scripts/validate-docker-compose.sh](../../../scripts/validate-docker-compose.sh) | script |
+| [scripts/validation/check-doc-traceability.sh](../../../scripts/validation/check-doc-traceability.sh) | script |
+| [scripts/validation/check-quickwin-baseline.sh](../../../scripts/validation/check-quickwin-baseline.sh) | script |
+| [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |
+| [scripts/validation/check-template-security-baseline.sh](../../../scripts/validation/check-template-security-baseline.sh) | script |
+| [scripts/validation/preflight-compose.sh](../../../scripts/validation/preflight-compose.sh) | script |
+| [scripts/validation/validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) | script |
 
 ### GitHub workflow surface
 
