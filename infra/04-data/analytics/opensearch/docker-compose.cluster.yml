@@ -1,3 +1,18 @@
+networks:
+  infra_net:
+    name: infra_net
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${INFRA_SUBNET:-172.19.0.0/16}
+          gateway: ${INFRA_GATEWAY:-172.19.0.1}
+
+secrets:
+  opensearch_admin_password:
+    file: ../../../../secrets/data/opensearch_admin_password.txt
+  opensearch_dashboard_password:
+    file: ../../../../secrets/data/opensearch_dashboard_password.txt
+
 volumes:
   opensearch-data1:
     # driver: local
@@ -92,13 +107,21 @@ services:
       - 'traefik.http.services.opensearch.loadbalancer.server.scheme=https' # 백엔드 통신 스킴 지정
     networks:
       - infra_net
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
     # memlock 사용을 위해 IPC_LOCK만 허용
     cap_drop:
       - ALL
     cap_add:
       - IPC_LOCK
-    security_opt:
-      - no-new-privileges:true
 
   # #######################################################
   # # OpenSearch 노드 2
@@ -143,13 +166,21 @@ services:
       - '9600'
     networks:
       - infra_net
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
     # memlock 사용을 위해 IPC_LOCK만 허용
     cap_drop:
       - ALL
     cap_add:
       - IPC_LOCK
-    security_opt:
-      - no-new-privileges:true
 
   # #######################################################
   # # OpenSearch 노드 3
@@ -194,13 +225,21 @@ services:
       - '9600'
     networks:
       - infra_net
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "AUTH=\"admin:$$(tr -d '\\r\\n' < /run/secrets/opensearch_admin_password)\"; curl -fsSk -u \"$$AUTH\" 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' > /dev/null",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
     # memlock 사용을 위해 IPC_LOCK만 허용
     cap_drop:
       - ALL
     cap_add:
       - IPC_LOCK
-    security_opt:
-      - no-new-privileges:true
 
   opensearch-dashboards:
     extends:
@@ -239,6 +278,16 @@ services:
       - 'traefik.http.services.opensearch-dashboards.loadbalancer.server.port=5601'
       - 'traefik.http.services.opensearch-dashboards.loadbalancer.server.scheme=https'
       - 'traefik.http.services.opensearch-dashboards.loadbalancer.serversTransport=opensearch-dashboards-transport@file'
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - |
+          code=$$(curl -ks -o /dev/null -w "%{http_code}" https://localhost:${KIBANA_PORT:-5601}/api/status); \
+          [ "$$code" = "200" ] || [ "$$code" = "401" ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
     depends_on:
       opensearch-node1:
         condition: service_healthy

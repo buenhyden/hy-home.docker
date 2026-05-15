@@ -50,7 +50,7 @@ opensearch/
 
 - Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect OpenSearch.
 - Run `bash scripts/check-all-hardening.sh` before marking OpenSearch documentation ready.
-- `docker-compose.cluster.yml` is `NEEDS_REVALIDATION`: do not add a cluster healthcheck until the cluster variant is validated separately from the default compose file.
+- `docker-compose.cluster.yml` includes node and dashboard healthchecks; validate it from this service directory with `docker compose --env-file ../../../../.env.example -f docker-compose.cluster.yml config --services`.
 
 ## Related Documents
 

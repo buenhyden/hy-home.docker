@@ -54,7 +54,7 @@ open-notebook/
 ## Image Tag Review
 
 - `infra/11-laboratory/open-notebook/docker-compose.yml` currently uses `lfnovo/open_notebook:v1-latest-single`, which is a latest-like tag.
-- Keep the tag unchanged until an owner-approved pass pins a stable tag or records an explicit exception.
+- The tag is registered in `infra/image-tag-policy.exceptions.json` for monthly Laboratory Operator review; keep it unchanged unless a later approved pass pins a stable tag or removes the exception.
 
 ## Troubleshooting
 
