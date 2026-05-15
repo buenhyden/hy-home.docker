@@ -30,8 +30,8 @@
   - 보조 Compose: `04-data/analytics/opensearch/docker-compose.cluster.yml` 적용 완료
   - 의도된 템플릿 예외 SSoT: `infra/common-optimizations.exceptions.json`
 - `PLN-QW-001~005` 기준선 강제 적용 상태(2026-03-28):
-  - 검증 명령: `bash scripts/check-quickwin-baseline.sh`
-  - 템플릿/보안 검증 명령: `bash scripts/check-template-security-baseline.sh`
+  - 검증 명령: `bash scripts/validation/check-quickwin-baseline.sh`
+  - 템플릿/보안 검증 명령: `bash scripts/validation/check-template-security-baseline.sh`
   - 결과: `restart/healthcheck/no-new-privileges/cpus/mem_limit/secrets` 누락 `0` (승인 예외 반영)
   - 승인 예외 SSoT: `infra/common-optimizations.exceptions.json`
 - 일정 고정:
@@ -102,7 +102,7 @@
 | VAL-PLN-002 | Compliance | 템플릿 필수 섹션 준수 (`Overview (KR)`, `Work Breakdown`, `Verification`, `Completion`) | 문서 섹션 체크리스트 검토 | 필수 섹션 누락 0건 |
 | VAL-PLN-003 | Traceability | 기준 카탈로그와 항목 일치성(Quick Wins/Quarterly 매핑) | 카탈로그 대비 항목 매핑 리뷰 | 누락/중복 없이 1:1 매핑 |
 | VAL-PLN-004 | Indexing | `docs/04.execution/plans/README.md` 인덱스 반영 확인 | README Structure 섹션 검토 | 신규 계획서 항목 존재 |
-| VAL-PLN-005 | Automation | `04.execution/plans ↔ 05.operations ↔ 05.operations` 링크 동기화 자동 검증 | `bash scripts/check-doc-traceability.sh` | 실패 0건 |
+| VAL-PLN-005 | Automation | `04.execution/plans ↔ 05.operations ↔ 05.operations` 링크 동기화 자동 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
 
 ## Test Cases / Scenarios
 

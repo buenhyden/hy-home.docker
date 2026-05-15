@@ -24,7 +24,7 @@
 | T-OBS-003 | Alloy/Grafana depends_on health 계약 강화 | impl | 06-observability/spec.md / Core Design | PLN-OBS-003 | compose config 통과 | DevOps | Done |
 | T-OBS-004 | cAdvisor healthcheck 추가 | impl | 06-observability/spec.md / Verification | PLN-OBS-003 | healthcheck 정의 확인 | DevOps | Done |
 | T-OBS-005 | Loki/Tempo 커스텀 이미지 비루트/secret guard 보강 | impl | 06-observability/spec.md / Contracts | PLN-OBS-004 | Dockerfile/entrypoint 확인 | DevOps | Done |
-| T-OBS-006 | observability 하드닝 검증 스크립트 추가 | ops | 06-observability/spec.md / Governance | PLN-OBS-005 | `bash scripts/check-observability-hardening.sh` | DevOps | Done |
+| T-OBS-006 | observability 하드닝 검증 스크립트 추가 | ops | 06-observability/spec.md / Governance | PLN-OBS-005 | `bash scripts/hardening/check-observability-hardening.sh` | DevOps | Done |
 | T-OBS-007 | CI `observability-hardening` job 추가 | ops | 06-observability/spec.md / Governance | PLN-OBS-006 | workflow 정의 확인 | DevOps | Done |
 | T-OBS-008 | scripts README 인덱스 갱신 | doc | 06-observability/spec.md / Related Docs | PLN-OBS-006 | README 항목/예시 반영 | Docs | Done |
 | T-OBS-009 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 반영 | doc | 06-observability/spec.md / Related Docs | PLN-OBS-007 | 문서 링크/README 동기화 확인 | Docs | Done |
@@ -61,9 +61,9 @@
 
 - **Test Commands**:
   - `docker compose -f infra/06-observability/docker-compose.yml config`
-  - `bash scripts/check-observability-hardening.sh`
-  - `bash scripts/check-template-security-baseline.sh`
-  - `bash scripts/check-doc-traceability.sh`
+  - `bash scripts/hardening/check-observability-hardening.sh`
+  - `bash scripts/validation/check-template-security-baseline.sh`
+  - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 검증 로그 + CI `observability-hardening` job
 

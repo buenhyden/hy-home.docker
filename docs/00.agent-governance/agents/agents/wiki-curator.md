@@ -19,7 +19,7 @@ Keep `llms.txt` and `docs/90.references/llm-wiki/` fresh, safe, and aligned with
 - LLM Wiki entrypoint and generated tracked repo-local index maintenance
 - `docs/90.references/llm-wiki/` reference boundary updates
 - LLM Wiki maintenance guide synchronization
-- Freshness checks through `scripts/generate-llm-wiki-index.sh --check`
+- Freshness checks through `scripts/knowledge/generate-llm-wiki-index.sh --check`
 
 **Excludes:**
 

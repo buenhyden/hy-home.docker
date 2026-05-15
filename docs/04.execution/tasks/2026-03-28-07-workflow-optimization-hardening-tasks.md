@@ -23,7 +23,7 @@
 | T-WRK-002 | Airflow service dependency를 valkey health 기반으로 강화 | impl | Contracts / Config | PLN-WRK-002 | compose `service_healthy` 확인 | DevOps | Done |
 | T-WRK-003 | n8n worker/task-runner healthcheck 및 dependency gating 추가 | impl | Contracts / Config | PLN-WRK-003 | healthcheck/depends_on 확인 | DevOps | Done |
 | T-WRK-004 | n8n custom image compose 승격 + entrypoint secret guard 적용 | impl | Core Design / Image Hardening | PLN-WRK-004 | Dockerfile/entrypoint 확인 | DevOps | Done |
-| T-WRK-005 | workflow hardening script 추가 | ops | Governance Contract | PLN-WRK-005 | `bash scripts/check-workflow-hardening.sh` | DevOps | Done |
+| T-WRK-005 | workflow hardening script 추가 | ops | Governance Contract | PLN-WRK-005 | `bash scripts/hardening/check-workflow-hardening.sh` | DevOps | Done |
 | T-WRK-006 | CI `workflow-hardening` job 추가 | ops | Governance Contract | PLN-WRK-005 | workflow job 확인 | DevOps | Done |
 | T-WRK-007 | scripts inventory/usage README 갱신 | doc | Related Docs | PLN-WRK-005 | README 항목 반영 | Docs | Done |
 | T-WRK-008 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 생성 | doc | Related Docs | PLN-WRK-006 | 링크/인덱스 동기화 | Docs | Done |
@@ -66,9 +66,9 @@
 - **Test Commands**:
   - `docker compose -f infra/07-workflow/airflow/docker-compose.yml config`
   - `docker compose -f infra/07-workflow/n8n/docker-compose.yml config`
-  - `bash scripts/check-workflow-hardening.sh`
-  - `bash scripts/check-template-security-baseline.sh`
-  - `bash scripts/check-doc-traceability.sh`
+  - `bash scripts/hardening/check-workflow-hardening.sh`
+  - `bash scripts/validation/check-template-security-baseline.sh`
+  - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 검증 로그 + CI `workflow-hardening` job
 

@@ -35,13 +35,13 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 - **REQ-PRD-LAB-FUN-03**: dashboard는 direct host `ports` 노출을 제거하고 Traefik 경유 노출만 허용해야 한다.
 - **REQ-PRD-LAB-FUN-04**: `infra/11-laboratory` compose는 `infra_net` external 경계를 명시해야 한다.
 - **REQ-PRD-LAB-FUN-05**: dozzle은 `docker.sock`을 read-only로 마운트해야 한다.
-- **REQ-PRD-LAB-FUN-06**: `scripts/check-laboratory-hardening.sh` 및 CI `laboratory-hardening` job을 제공해야 한다.
+- **REQ-PRD-LAB-FUN-06**: `scripts/hardening/check-laboratory-hardening.sh` 및 CI `laboratory-hardening` job을 제공해야 한다.
 - **REQ-PRD-LAB-FUN-07**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
 - **REQ-PRD-LAB-FUN-08**: 카탈로그 기반 확장 항목을 운영 로드맵에 반영해야 한다.
 
 ## Success Criteria
 
-- **REQ-PRD-LAB-MET-01**: `bash scripts/check-laboratory-hardening.sh` 실패 0건.
+- **REQ-PRD-LAB-MET-01**: `bash scripts/hardening/check-laboratory-hardening.sh` 실패 0건.
 - **REQ-PRD-LAB-MET-02**: `infra/11-laboratory` compose 정적 검증 통과.
 - **REQ-PRD-LAB-MET-03**: PRD~Runbook optimization 문서 간 양방향 링크 정합성 확보.
 - **REQ-PRD-LAB-MET-04**: 카탈로그 `11-laboratory` 항목이 Plan/Tasks/Operations에 반영.
@@ -51,7 +51,7 @@ Laboratory tier를 "운영자 생산성은 높이고, 프로덕션 영향 반경
 - **In Scope**:
   - `infra/11-laboratory/*/docker-compose.yml`
   - `.env.example` (allowlist 변수)
-  - `scripts/check-laboratory-hardening.sh`
+  - `scripts/hardening/check-laboratory-hardening.sh`
   - `.github/workflows/ci-quality.yml`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서/README
 - **Out of Scope**:

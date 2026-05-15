@@ -24,7 +24,7 @@
 | T-LAB-003 | dashboard direct host `ports` 제거 및 `expose` 전환 | impl | Least Privilege | PLN-LAB-003 | ports 제거 확인 | DevOps | Done |
 | T-LAB-004 | dozzle docker socket read-only 적용 | impl | Least Privilege | PLN-LAB-004 | `docker.sock:ro` 확인 | DevOps | Done |
 | T-LAB-005 | service mount 기반 healthcheck 추가 | impl | Runtime Stability | PLN-LAB-001~004 | healthcheck block 확인 | DevOps | Done |
-| T-LAB-006 | laboratory hardening script 추가 | ops | Governance Contract | PLN-LAB-005 | `bash scripts/check-laboratory-hardening.sh` | DevOps | Done |
+| T-LAB-006 | laboratory hardening script 추가 | ops | Governance Contract | PLN-LAB-005 | `bash scripts/hardening/check-laboratory-hardening.sh` | DevOps | Done |
 | T-LAB-007 | CI `laboratory-hardening` job 추가 | ops | Governance Contract | PLN-LAB-005 | workflow job 확인 | DevOps | Done |
 | T-LAB-008 | scripts inventory/usage README 갱신 | doc | Related Docs | PLN-LAB-005 | README 항목 반영 | Docs | Done |
 | T-LAB-009 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 생성 | doc | Related Docs | PLN-LAB-006 | 링크/인덱스 동기화 | Docs | Done |
@@ -69,9 +69,9 @@
 
 - **Test Commands**:
   - `for f in infra/11-laboratory/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
-  - `bash scripts/check-laboratory-hardening.sh`
-  - `bash scripts/check-template-security-baseline.sh`
-  - `bash scripts/check-doc-traceability.sh`
+  - `bash scripts/hardening/check-laboratory-hardening.sh`
+  - `bash scripts/validation/check-template-security-baseline.sh`
+  - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 검증 로그 + CI `laboratory-hardening` job
 

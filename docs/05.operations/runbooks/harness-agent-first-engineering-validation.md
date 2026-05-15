@@ -41,7 +41,7 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
 
 - [ ] Confirm `git status --short --branch`.
 - [ ] Read `graphify-out/GRAPH_REPORT.md`.
-- [ ] Run `bash scripts/report-graphify-health.sh`.
+- [ ] Run `bash scripts/knowledge/report-graphify-health.sh`.
 - [ ] Confirm no runtime policy change is needed before editing docs.
 - [ ] Confirm new stage docs use templates and parent README files are updated.
 - [ ] Run hook payload simulations after any hook quoting or parsing change.
@@ -54,7 +54,7 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
    ```bash
    git status --short --branch
    sed -n '1,120p' graphify-out/GRAPH_REPORT.md
-   bash scripts/report-graphify-health.sh
+   bash scripts/knowledge/report-graphify-health.sh
    ```
 
 2. Interpret Graphify health.
@@ -69,8 +69,8 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
    python3 -m json.tool .codex/hooks.json >/dev/null
    python3 -m json.tool .claude/settings.json >/dev/null
    bash -n .claude/hooks/*.sh scripts/*.sh scripts/lib/*.sh
-   bash scripts/check-repo-contracts.sh
-   bash scripts/check-doc-traceability.sh
+   bash scripts/validation/check-repo-contracts.sh
+   bash scripts/validation/check-doc-traceability.sh
    ```
 
 4. Run hook payload simulations.
@@ -78,9 +78,9 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
    ```bash
    printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
    CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
-   CLAUDE_PROJECT_DIR="$PWD" bash scripts/agent-event-hook.sh SessionStart
-   printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/agent-event-hook.sh PreToolUse
-   printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/post-tool-validate.sh
+   CLAUDE_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh SessionStart
+   printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh PreToolUse
+   printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
    ```
 
    These commands validate local script behavior and JSON/system-message output. They do not prove external Claude/Codex platform event delivery.
@@ -88,10 +88,10 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
 5. Run infrastructure and baseline checks.
 
    ```bash
-   bash scripts/validate-docker-compose.sh
-   bash scripts/check-template-security-baseline.sh
-   bash scripts/check-quickwin-baseline.sh
-   bash scripts/check-all-hardening.sh
+   bash scripts/validation/validate-docker-compose.sh
+   bash scripts/validation/check-template-security-baseline.sh
+   bash scripts/validation/check-quickwin-baseline.sh
+   bash scripts/hardening/check-all-hardening.sh
    ```
 
    Treat these as default/core Compose and supported hardening tier checks. Do not claim full workspace Docker coverage from `services_total=5`.
@@ -112,8 +112,8 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 
 - Command output from validation scripts.
 - `git diff --stat`.
-- `scripts/report-graphify-health.sh` status and contamination counts.
-- `scripts/check-repo-contracts.sh` runtime agent/function catalog section.
+- `scripts/knowledge/report-graphify-health.sh` status and contamination counts.
+- `scripts/validation/check-repo-contracts.sh` runtime agent/function catalog section.
 - Hook payload simulation output.
 - `docs/04.execution/tasks/2026-05-09-harness-agent-first-engineering.md` task evidence.
 

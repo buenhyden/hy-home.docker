@@ -34,7 +34,7 @@ status: completed
 | PLN-001 | Move stage docs to the new taxonomy | `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations` | REQ-TAX-001 | top-level docs contract passes |
 | PLN-002 | Split operations docs by purpose | `docs/05.operations/{guides,policies,runbooks,incidents}` | REQ-OPS-001 | service coverage and traceability pass |
 | PLN-003 | Update governance and runtime references | `docs/00.agent-governance`, `.claude`, `.codex`, `.github`, `infra` | REQ-AGENT-001 | stale-reference scan passes |
-| PLN-004 | Update validators | `scripts/check-repo-contracts.sh`, `scripts/check-doc-traceability.sh` | REQ-VAL-001 | validators pass |
+| PLN-004 | Update validators | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh` | REQ-VAL-001 | validators pass |
 | PLN-005 | Record migration evidence | this plan, spec, task evidence | REQ-EVD-001 | evidence docs exist and link back |
 
 ## Verification Plan
@@ -42,10 +42,10 @@ status: completed
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
 | VAL-PLN-001 | Syntax | Bash and JSON syntax | `bash -n ...`; `python3 -m json.tool ...` | exit 0 |
-| VAL-PLN-002 | Contract | Repository docs/runtime contract | `bash scripts/check-repo-contracts.sh` | failures=0 |
-| VAL-PLN-003 | Traceability | Execution to operations links | `bash scripts/check-doc-traceability.sh` | failures=0 |
-| VAL-PLN-004 | Runtime | Docker Compose config remains valid | `bash scripts/validate-docker-compose.sh` | pass |
-| VAL-PLN-005 | Advisory graph | Graphify state reported | `bash scripts/report-graphify-health.sh` | status reported |
+| VAL-PLN-002 | Contract | Repository docs/runtime contract | `bash scripts/validation/check-repo-contracts.sh` | failures=0 |
+| VAL-PLN-003 | Traceability | Execution to operations links | `bash scripts/validation/check-doc-traceability.sh` | failures=0 |
+| VAL-PLN-004 | Runtime | Docker Compose config remains valid | `bash scripts/validation/validate-docker-compose.sh` | pass |
+| VAL-PLN-005 | Advisory graph | Graphify state reported | `bash scripts/knowledge/report-graphify-health.sh` | status reported |
 
 ## Risks & Mitigations
 

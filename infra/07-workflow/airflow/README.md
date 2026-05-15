@@ -79,8 +79,8 @@ airflow/
 
 ## Validation
 
-- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Airflow.
-- Run `bash scripts/check-all-hardening.sh` before marking Airflow documentation ready.
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Airflow.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking Airflow documentation ready.
 
 ## Related Documents
 

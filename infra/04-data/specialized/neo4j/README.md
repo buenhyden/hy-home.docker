@@ -58,8 +58,8 @@ neo4j/
 
 ## Validation
 
-- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Neo4j.
-- Run `bash scripts/check-all-hardening.sh` before marking Neo4j documentation ready.
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Neo4j.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking Neo4j documentation ready.
 
 ## Troubleshooting
 

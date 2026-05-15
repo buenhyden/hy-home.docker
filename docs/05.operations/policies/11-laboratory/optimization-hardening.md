@@ -8,7 +8,7 @@
 
 - `infra/11-laboratory/*/docker-compose.yml`
 - `.env.example` (`LAB_ALLOWED_CIDRS`)
-- `scripts/check-laboratory-hardening.sh`
+- `scripts/hardening/check-laboratory-hardening.sh`
 
 ## Applies To
 
@@ -40,9 +40,9 @@
 ## Verification
 
 - `for f in infra/11-laboratory/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
-- `bash scripts/check-laboratory-hardening.sh`
-- `bash scripts/check-template-security-baseline.sh`
-- `bash scripts/check-doc-traceability.sh`
+- `bash scripts/hardening/check-laboratory-hardening.sh`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
 
 ## Review Cadence
 
@@ -130,9 +130,9 @@
    - dashboard `ports` 제거 후 `expose`만 사용한다.
    - dozzle docker socket을 `:ro`로 전환한다.
 5. 기준선 검증 실행
-   - `bash scripts/check-laboratory-hardening.sh`
-   - `bash scripts/check-template-security-baseline.sh`
-   - `bash scripts/check-doc-traceability.sh`
+   - `bash scripts/hardening/check-laboratory-hardening.sh`
+   - `bash scripts/validation/check-template-security-baseline.sh`
+   - `bash scripts/validation/check-doc-traceability.sh`
 6. 카탈로그 확장 로드맵 반영
    - dashboard 만료 정책, dozzle 로그 제한, portainer 승인 정책, redisinsight 감사 정책을 tasks/operations에 반영한다.
 
@@ -195,7 +195,7 @@
 1. 정적 구성 점검
    - `for f in infra/11-laboratory/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
 2. 하드닝 기준 점검
-   - `bash scripts/check-laboratory-hardening.sh`
+   - `bash scripts/hardening/check-laboratory-hardening.sh`
 3. 증상별 복구
    - middleware/allowlist 회귀:
      - 각 서비스 라우터 체인을 `gateway-standard-chain + <service>-admin-ip + sso-errors + sso-auth`로 복원
@@ -206,9 +206,9 @@
    - dozzle 권한 드리프트:
      - `/var/run/docker.sock` 마운트를 `:ro`로 복원
 4. 재검증
-   - `bash scripts/check-laboratory-hardening.sh`
-   - `bash scripts/check-template-security-baseline.sh`
-   - `bash scripts/check-doc-traceability.sh`
+   - `bash scripts/hardening/check-laboratory-hardening.sh`
+   - `bash scripts/validation/check-template-security-baseline.sh`
+   - `bash scripts/validation/check-doc-traceability.sh`
 
 #### Verification Steps
 
@@ -229,7 +229,7 @@
 - [ ] 롤백 대상 파일
   - `infra/11-laboratory/*/docker-compose.yml`
   - `.env.example`
-  - `scripts/check-laboratory-hardening.sh`
+  - `scripts/hardening/check-laboratory-hardening.sh`
   - `.github/workflows/ci-quality.yml`
 - [ ] 롤백 후 정적 검증 재실행
 - [ ] 정책/가이드/태스크 문서 링크 재확인

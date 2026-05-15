@@ -75,8 +75,8 @@ mongodb/
 
 ## Validation
 
-- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect MongoDB.
-- Run `bash scripts/check-all-hardening.sh` before marking MongoDB documentation ready.
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect MongoDB.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking MongoDB documentation ready.
 
 ## Related Documents
 

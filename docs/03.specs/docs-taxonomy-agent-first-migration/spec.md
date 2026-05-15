@@ -48,10 +48,10 @@ status: approved
 bash -n scripts/*.sh scripts/lib/*.sh .claude/hooks/*.sh
 python3 -m json.tool .claude/settings.json
 python3 -m json.tool .codex/hooks.json
-bash scripts/check-repo-contracts.sh
-bash scripts/check-doc-traceability.sh
-bash scripts/validate-docker-compose.sh
-bash scripts/report-graphify-health.sh
+bash scripts/validation/check-repo-contracts.sh
+bash scripts/validation/check-doc-traceability.sh
+bash scripts/validation/validate-docker-compose.sh
+bash scripts/knowledge/report-graphify-health.sh
 ```
 
 ## Success Criteria & Verification Plan

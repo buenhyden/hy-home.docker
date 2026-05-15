@@ -10,7 +10,7 @@
 - `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml`
 - `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`
 - `infra/04-data/analytics/ksql/docker-compose.yml`
-- `scripts/check-data-hardening.sh`
+- `scripts/hardening/check-data-hardening.sh`
 
 ## Applies To
 
@@ -41,9 +41,9 @@
 
 ## Verification
 
-- `bash scripts/check-data-hardening.sh`
-- `bash scripts/check-template-security-baseline.sh`
-- `bash scripts/check-doc-traceability.sh`
+- `bash scripts/hardening/check-data-hardening.sh`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
 - `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config`
 
 ## Review Cadence
@@ -129,9 +129,9 @@
 5. ksql tier 라벨 확인
    - `hy-home.tier: data` 적용 여부 확인
 6. 하드닝/추적성 검증 실행
-   - `bash scripts/check-data-hardening.sh`
-   - `bash scripts/check-template-security-baseline.sh`
-   - `bash scripts/check-doc-traceability.sh`
+   - `bash scripts/hardening/check-data-hardening.sh`
+   - `bash scripts/validation/check-template-security-baseline.sh`
+   - `bash scripts/validation/check-doc-traceability.sh`
 
 #### Common Pitfalls
 
@@ -196,7 +196,7 @@
    - `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml config`
    - `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config`
 2. 하드닝 기준 점검
-   - `bash scripts/check-data-hardening.sh`
+   - `bash scripts/hardening/check-data-hardening.sh`
 3. 증상별 복구
    - Supabase healthcheck 누락/오류:
      - 대상 서비스 블록에 healthcheck 복원
@@ -208,9 +208,9 @@
    - ksql 라벨 회귀:
      - `hy-home.tier: data`로 복원
 4. 재검증
-   - `bash scripts/check-data-hardening.sh`
-   - `bash scripts/check-template-security-baseline.sh`
-   - `bash scripts/check-doc-traceability.sh`
+   - `bash scripts/hardening/check-data-hardening.sh`
+   - `bash scripts/validation/check-template-security-baseline.sh`
+   - `bash scripts/validation/check-doc-traceability.sh`
 
 #### Verification Steps
 
@@ -233,7 +233,7 @@
   - `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml`
   - `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`
   - `infra/04-data/analytics/ksql/docker-compose.yml`
-  - `scripts/check-data-hardening.sh`
+  - `scripts/hardening/check-data-hardening.sh`
   - `.github/workflows/ci-quality.yml`
 - [ ] 롤백 후 정적 검증 재실행
 - [ ] 운영 정책/가이드/태스크 문서 동기화 재확인

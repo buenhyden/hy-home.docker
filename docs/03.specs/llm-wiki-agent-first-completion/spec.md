@@ -22,7 +22,7 @@ status: approved
 
 ## Contracts
 
-- **Config Contract**: `scripts/generate-llm-wiki-index.sh` supports default write mode and `--check` freshness mode.
+- **Config Contract**: `scripts/knowledge/generate-llm-wiki-index.sh` supports default write mode and `--check` freshness mode.
 - **Data / Interface Contract**: `docs/90.references/llm-wiki/index.md` is a generated tracked repo-local Markdown path index.
 - **Governance Contract**: `wiki-curator` is mirrored across `.claude/agents/` and `docs/00.agent-governance/agents/agents/`, and `check-repo-contracts.sh` enforces parity and freshness.
 
@@ -42,8 +42,8 @@ status: approved
 ### Core Interfaces
 
 ```text
-bash scripts/generate-llm-wiki-index.sh
-bash scripts/generate-llm-wiki-index.sh --check
+bash scripts/knowledge/generate-llm-wiki-index.sh
+bash scripts/knowledge/generate-llm-wiki-index.sh --check
 ```
 
 ## Agent Role & IO Contract
@@ -99,10 +99,10 @@ bash scripts/generate-llm-wiki-index.sh --check
 ## Verification
 
 ```bash
-bash scripts/generate-llm-wiki-index.sh
-bash scripts/generate-llm-wiki-index.sh --check
-bash scripts/check-repo-contracts.sh
-bash scripts/check-doc-traceability.sh
+bash scripts/knowledge/generate-llm-wiki-index.sh
+bash scripts/knowledge/generate-llm-wiki-index.sh --check
+bash scripts/validation/check-repo-contracts.sh
+bash scripts/validation/check-doc-traceability.sh
 ```
 
 ## Success Criteria & Verification Plan

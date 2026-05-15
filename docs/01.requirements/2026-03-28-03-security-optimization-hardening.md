@@ -34,22 +34,22 @@
 - **REQ-PRD-FUN-03**: Vault Agent 렌더 출력은 지속 볼륨(`/vault/out`)에 기록되어야 한다.
 - **REQ-PRD-FUN-04**: 03-security 하드닝 정적 검증 스크립트와 CI 게이트(`security-hardening`)를 제공해야 한다.
 - **REQ-PRD-FUN-05**: auto-unseal/원격 audit 적재는 즉시 구현 대신 정책/아키텍처/런북에 단계적 전환 절차를 명시해야 한다.
-- **REQ-PRD-FUN-06**: `scripts/check-auth-hardening.sh`를 최신 02-auth 계약으로 정합화해 기존 회귀를 복구해야 한다.
+- **REQ-PRD-FUN-06**: `scripts/hardening/check-auth-hardening.sh`를 최신 02-auth 계약으로 정합화해 기존 회귀를 복구해야 한다.
 
 ## Success Criteria
 
-- **REQ-PRD-MET-01**: `bash scripts/check-security-hardening.sh`가 로컬/CI에서 성공한다.
+- **REQ-PRD-MET-01**: `bash scripts/hardening/check-security-hardening.sh`가 로컬/CI에서 성공한다.
 - **REQ-PRD-MET-02**: `.ctmpl` 파일에서 `secret/data/example` 검출이 0건이다.
 - **REQ-PRD-MET-03**: `vault-agent` 헬스 상태를 컨테이너 healthcheck로 확인할 수 있다.
-- **REQ-PRD-MET-04**: `bash scripts/check-auth-hardening.sh`가 최신 계약 기준으로 성공한다.
+- **REQ-PRD-MET-04**: `bash scripts/hardening/check-auth-hardening.sh`가 최신 계약 기준으로 성공한다.
 - **REQ-PRD-MET-05**: 01~09 문서와 README 인덱스가 상호 링크로 동기화되어 있다.
 
 ## Scope and Non-goals
 
 - **In Scope**:
   - `infra/03-security/vault/*` 구성 하드닝
-  - `scripts/check-security-hardening.sh`, CI job 추가
-  - `scripts/check-auth-hardening.sh` 회귀 수정
+  - `scripts/hardening/check-security-hardening.sh`, CI job 추가
+  - `scripts/hardening/check-auth-hardening.sh` 회귀 수정
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 03-security 문서/인덱스 동기화
 - **Out of Scope**:
   - 즉시 auto-unseal 실구현(KMS/HSM 연동)

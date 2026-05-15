@@ -27,8 +27,8 @@
   - `valkey-cluster-exporter` 시크릿 파일 경로는 `/run/secrets/service_valkey_password`를 사용한다.
   - `seaweedfs` expose 정의는 유효한 포트 토큰만 허용한다.
 - **Governance Contract**:
-  - `scripts/check-data-hardening.sh`를 CI `data-hardening` job으로 강제한다.
-  - `scripts/check-template-security-baseline.sh`, `scripts/check-doc-traceability.sh`와 함께 운영 게이트를 구성한다.
+  - `scripts/hardening/check-data-hardening.sh`를 CI `data-hardening` job으로 강제한다.
+  - `scripts/validation/check-template-security-baseline.sh`, `scripts/validation/check-doc-traceability.sh`와 함께 운영 게이트를 구성한다.
 
 ## Core Design
 
@@ -99,9 +99,9 @@ docker compose -f infra/04-data/operational/supabase/docker-compose.yml config
 docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml config
 docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml config
 docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config
-bash scripts/check-data-hardening.sh
-bash scripts/check-template-security-baseline.sh
-bash scripts/check-doc-traceability.sh
+bash scripts/hardening/check-data-hardening.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-doc-traceability.sh
 ```
 
 가능 환경에서 runtime 검증:

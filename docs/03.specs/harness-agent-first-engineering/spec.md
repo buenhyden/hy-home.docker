@@ -32,11 +32,11 @@ status: approved
 - `docs/00.agent-governance/rules/documentation-protocol.md`
 - `.claude/CLAUDE.md`
 - `.codex/README.md`
-- `scripts/check-repo-contracts.sh`
-- `scripts/check-doc-traceability.sh`
-- `scripts/report-graphify-health.sh`
-- `scripts/agent-event-hook.sh`
-- `scripts/validate-docker-compose.sh`
+- `scripts/validation/check-repo-contracts.sh`
+- `scripts/validation/check-doc-traceability.sh`
+- `scripts/knowledge/report-graphify-health.sh`
+- `scripts/hooks/agent-event-hook.sh`
+- `scripts/validation/validate-docker-compose.sh`
 
 ## Contracts
 
@@ -48,7 +48,7 @@ status: approved
 | Governance SSOT | `docs/00.agent-governance/` | shared rules, scopes, providers, agents catalog, memory, delegation protocol을 소유한다. |
 | Runtime mirror | `.claude/agents`, `.claude/skills`, `docs/00.agent-governance/agents` | runtime agent/function catalog, model front matter, scope imports, protocol references가 governance catalog와 동기화되어야 한다. 이 검증은 semantic content parity가 아니라 catalog parity를 증명한다. |
 | Codex boundary | `.codex/README.md`, `.codex/hooks.json` | Codex는 hook/context surface이며 parallel delegated-agent catalog를 만들지 않는다. |
-| Graphify context health | `AGENTS.md`, runtime hooks, `scripts/report-graphify-health.sh` | Graphify는 clean corpus일 때 navigation aid이며, contamination이 있으면 advisory로 낮추고 tracked source와 canonical docs로 재확인한다. |
+| Graphify context health | `AGENTS.md`, runtime hooks, `scripts/knowledge/report-graphify-health.sh` | Graphify는 clean corpus일 때 navigation aid이며, contamination이 있으면 advisory로 낮추고 tracked source와 canonical docs로 재확인한다. |
 | Verification | `scripts/check-*.sh` | repository contract, docs traceability, default/core Compose profile, supported hardening tiers, hook payload simulation으로 완료를 증명한다. |
 
 ## Core Design
@@ -63,7 +63,7 @@ status: approved
 | Harness runtime | `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/agents/*.md`, `.claude/skills/*/skill.md`, `.claude/hooks/*.sh` | supervisor는 `opus`, workers는 `sonnet`, agents는 단일 scope import를 가진다. Claude hooks must preserve JSON output without shell command substitution. |
 | Codex runtime | `.codex/README.md`, `.codex/hooks.json`, `providers/codex.md` | Codex hook은 graphify context와 post-edit validation을 제공하고 policy source가 아니다. |
 | Agent/function catalog | `docs/00.agent-governance/agents/**`, `subagent-protocol.md` | 8 agents와 10 functions가 runtime mirror와 연결되어 있다. |
-| Templates and validators | `docs/99.templates/*.md`, `scripts/check-repo-contracts.sh`, `scripts/check-doc-traceability.sh`, `scripts/validate-docker-compose.sh` | stage template contract와 runtime drift checks가 repository validation에 포함되어 있다. |
+| Templates and validators | `docs/99.templates/*.md`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh` | stage template contract와 runtime drift checks가 repository validation에 포함되어 있다. |
 
 ### Harness Engineering Components
 
@@ -72,9 +72,9 @@ status: approved
 - Runtime mirror: `.claude/agents/*.md`, `.claude/skills/*/skill.md`, `docs/00.agent-governance/agents/**`.
 - Delegation protocol: `docs/00.agent-governance/subagent-protocol.md`.
 - Provider overlays: `docs/00.agent-governance/providers/*.md`.
-- Hooks: `.claude/hooks/*.sh`, `.codex/hooks.json`, `scripts/agent-event-hook.sh`, `scripts/post-tool-validate.sh`; hook scripts must be validated with real event and `tool_input` payloads, not only JSON and shell syntax checks.
-- Validation gates: `scripts/check-repo-contracts.sh`, `scripts/check-doc-traceability.sh`, `scripts/validate-docker-compose.sh`, security/hardening baseline scripts.
-- Context graph: `graphify-out/GRAPH_REPORT.md`, with advisory health evidence from `scripts/report-graphify-health.sh`.
+- Hooks: `.claude/hooks/*.sh`, `.codex/hooks.json`, `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`; hook scripts must be validated with real event and `tool_input` payloads, not only JSON and shell syntax checks.
+- Validation gates: `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh`, security/hardening baseline scripts.
+- Context graph: `graphify-out/GRAPH_REPORT.md`, with advisory health evidence from `scripts/knowledge/report-graphify-health.sh`.
 
 ### Agent-first Engineering Components
 
@@ -113,10 +113,10 @@ Not applicable. This change does not add or modify service APIs.
 ## Tools & Tool Contract (If Applicable)
 
 - Use `rg` for discovery where available.
-- Use `bash scripts/check-repo-contracts.sh` for repository and runtime catalog drift.
-- Use `bash scripts/check-doc-traceability.sh` for execution and operations traceability.
-- Use `bash scripts/report-graphify-health.sh` for non-failing Graphify corpus health evidence.
-- Use `bash scripts/validate-docker-compose.sh` for default/core Compose structural validation.
+- Use `bash scripts/validation/check-repo-contracts.sh` for repository and runtime catalog drift.
+- Use `bash scripts/validation/check-doc-traceability.sh` for execution and operations traceability.
+- Use `bash scripts/knowledge/report-graphify-health.sh` for non-failing Graphify corpus health evidence.
+- Use `bash scripts/validation/validate-docker-compose.sh` for default/core Compose structural validation.
 - Use security and hardening baseline scripts for supported tier operational confidence.
 - Use hook payload simulation commands for Claude/Codex hook behavior.
 
@@ -185,18 +185,18 @@ Evaluation is command-based:
 python3 -m json.tool .codex/hooks.json >/dev/null
 python3 -m json.tool .claude/settings.json >/dev/null
 bash -n .claude/hooks/*.sh scripts/*.sh scripts/lib/*.sh
-CLAUDE_PROJECT_DIR="$PWD" bash scripts/agent-event-hook.sh SessionStart
-printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/agent-event-hook.sh PreToolUse
+CLAUDE_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh SessionStart
+printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh PreToolUse
 printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
 CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
-printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/post-tool-validate.sh
-bash scripts/report-graphify-health.sh
-bash scripts/check-repo-contracts.sh
-bash scripts/check-doc-traceability.sh
-bash scripts/validate-docker-compose.sh
-bash scripts/check-template-security-baseline.sh
-bash scripts/check-quickwin-baseline.sh
-bash scripts/check-all-hardening.sh
+printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
+bash scripts/knowledge/report-graphify-health.sh
+bash scripts/validation/check-repo-contracts.sh
+bash scripts/validation/check-doc-traceability.sh
+bash scripts/validation/validate-docker-compose.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-quickwin-baseline.sh
+bash scripts/hardening/check-all-hardening.sh
 ! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md GEMINI.md .claude .codex docs/00.agent-governance --glob '!docs/00.agent-governance/memory/**'
 ```
 

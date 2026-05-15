@@ -24,7 +24,7 @@
 | T-MSG-003 | Kafka dev compose 볼륨 경로 정합성 보강 | impl | 05-messaging/spec.md / Contracts | PLN-MSG-002 | dev compose config 통과 | DevOps | Done |
 | T-MSG-004 | Kafka dev 라우터 chain+SSO 적용 | impl | 05-messaging/spec.md / Core Design | PLN-MSG-002 | 라벨 문자열 확인 | DevOps | Done |
 | T-MSG-005 | RabbitMQ 관리 라우터 chain+SSO 적용 | impl | 05-messaging/spec.md / Contracts | PLN-MSG-003 | 라벨 문자열 확인 | DevOps | Done |
-| T-MSG-006 | 메시징 하드닝 검증 스크립트 추가 | ops | 05-messaging/spec.md / Governance | PLN-MSG-004 | `bash scripts/check-messaging-hardening.sh` | DevOps | Done |
+| T-MSG-006 | 메시징 하드닝 검증 스크립트 추가 | ops | 05-messaging/spec.md / Governance | PLN-MSG-004 | `bash scripts/hardening/check-messaging-hardening.sh` | DevOps | Done |
 | T-MSG-007 | CI `messaging-hardening` job 추가 | ops | 05-messaging/spec.md / Governance | PLN-MSG-005 | workflow 정의 확인 | DevOps | Done |
 | T-MSG-008 | scripts README 인덱스 갱신 | doc | 05-messaging/spec.md / Related Docs | PLN-MSG-006 | README 항목/예시 확인 | Docs | Done |
 | T-MSG-009 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 반영 | doc | 05-messaging/spec.md / Related Docs | PLN-MSG-007 | 문서 링크/README 동기화 확인 | Docs | Done |
@@ -63,9 +63,9 @@
   - `docker compose -f infra/05-messaging/kafka/docker-compose.yml config`
   - `docker compose -f infra/05-messaging/kafka/docker-compose.dev.yml config`
   - `docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config`
-  - `bash scripts/check-messaging-hardening.sh`
-  - `bash scripts/check-template-security-baseline.sh`
-  - `bash scripts/check-doc-traceability.sh`
+  - `bash scripts/hardening/check-messaging-hardening.sh`
+  - `bash scripts/validation/check-template-security-baseline.sh`
+  - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 검증 로그 + CI `messaging-hardening` job
 

@@ -52,11 +52,11 @@ status: completed
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-PLN-001 | Structural | repository contract 확인 | `bash scripts/check-repo-contracts.sh` | failures=0 |
-| VAL-PLN-002 | Structural | docs traceability 확인 | `bash scripts/check-doc-traceability.sh` | failures=0 |
-| VAL-PLN-003 | Runtime config | Compose config 확인 | `bash scripts/validate-docker-compose.sh` | service count > 0 |
-| VAL-PLN-004 | Security baseline | template/security baseline 확인 | `bash scripts/check-template-security-baseline.sh` | pass |
-| VAL-PLN-005 | Hardening | baseline hardening 확인 | `bash scripts/check-quickwin-baseline.sh` and `bash scripts/check-all-hardening.sh` | pass |
+| VAL-PLN-001 | Structural | repository contract 확인 | `bash scripts/validation/check-repo-contracts.sh` | failures=0 |
+| VAL-PLN-002 | Structural | docs traceability 확인 | `bash scripts/validation/check-doc-traceability.sh` | failures=0 |
+| VAL-PLN-003 | Runtime config | Compose config 확인 | `bash scripts/validation/validate-docker-compose.sh` | service count > 0 |
+| VAL-PLN-004 | Security baseline | template/security baseline 확인 | `bash scripts/validation/check-template-security-baseline.sh` | pass |
+| VAL-PLN-005 | Hardening | baseline hardening 확인 | `bash scripts/validation/check-quickwin-baseline.sh` and `bash scripts/hardening/check-all-hardening.sh` | pass |
 | VAL-PLN-006 | Docs template | README/stage heading audit | local `python3` audit | missing=0 |
 | VAL-PLN-007 | Diff hygiene | Markdown whitespace 확인 | `git diff --check` | no errors |
 

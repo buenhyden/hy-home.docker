@@ -51,7 +51,7 @@
 1. 정책 문서는 `docs/99.templates/operation.template.md` 기준으로 작성한다.
 2. 정책 변경 시 대응 guide/runbook 링크를 함께 갱신한다.
 3. 카탈로그 항목과 정책 통제를 매핑해 변경 근거를 남긴다.
-4. 변경 후 `scripts/check-doc-traceability.sh`를 실행한다.
+4. 변경 후 `scripts/validation/check-doc-traceability.sh`를 실행한다.
 
 ## Usage Instructions
 
@@ -60,9 +60,9 @@
 ## Verification and Monitoring
 
 - 정책 준수 검증:
-  - `bash scripts/check-observability-hardening.sh`
-  - `bash scripts/check-template-security-baseline.sh`
-  - `bash scripts/check-doc-traceability.sh`
+  - `bash scripts/hardening/check-observability-hardening.sh`
+  - `bash scripts/validation/check-template-security-baseline.sh`
+  - `bash scripts/validation/check-doc-traceability.sh`
 - 운영 지표:
   - scrape success ratio
   - ingestion latency/log backlog
@@ -251,8 +251,8 @@
 
 - 런북 수행 후 `Verification Steps`를 완료한다.
 - 필요 시 다음 검증을 병행한다.
-  - `bash scripts/check-observability-hardening.sh`
-  - `bash scripts/check-doc-traceability.sh`
+  - `bash scripts/hardening/check-observability-hardening.sh`
+  - `bash scripts/validation/check-doc-traceability.sh`
 
 #### Incident and Recovery Links
 

@@ -57,8 +57,8 @@ locust/
 
 ## Validation
 
-- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Locust.
-- Run `bash scripts/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Locust.
+- Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 

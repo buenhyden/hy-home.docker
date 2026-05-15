@@ -25,7 +25,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 
 ## Task Principles
 
-1. **Validate first**: `bash scripts/validate-docker-compose.sh` before any change.
+1. **Validate first**: `bash scripts/validation/validate-docker-compose.sh` before any change.
 2. **Atomic change**: smallest correct modification; no speculative additions.
 3. **Verify after**: `docker compose ps` confirms service health post-change.
 4. **Secrets**: Docker Secrets / `secrets/` mounts only — never plaintext.

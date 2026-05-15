@@ -226,4 +226,4 @@ Before applying any compose change, verify:
 - [ ] Health-check defined for stateful services
 - [ ] `restart: unless-stopped` on stateful services
 - [ ] `depends_on` with `condition: service_healthy` for dependent services
-- [ ] Run `bash scripts/validate-docker-compose.sh` before applying
+- [ ] Run `bash scripts/validation/validate-docker-compose.sh` before applying

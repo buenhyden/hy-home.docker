@@ -45,8 +45,8 @@ Workspace purpose: shared harness-engineering and agent-first engineering over m
 
 ## 4. Verification
 
-- For infra changes, run `bash scripts/validate-docker-compose.sh`.
-- For governance/root changes, run `bash scripts/check-doc-traceability.sh` and link/stale-reference checks for edited files.
+- For infra changes, run `bash scripts/validation/validate-docker-compose.sh`.
+- For governance/root changes, run `bash scripts/validation/check-doc-traceability.sh` and link/stale-reference checks for edited files.
 - Lint and format are managed by `.pre-commit-config.yaml`; do not run `pre-commit` manually.
 - Run the completion checklist in `docs/00.agent-governance/rules/task-checklists.md` before declaring done.
 

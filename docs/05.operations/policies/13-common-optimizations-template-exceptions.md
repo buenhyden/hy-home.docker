@@ -20,7 +20,7 @@
 
 - **Required**:
   - 예외 목록 SSoT는 [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json) 단일 파일로 유지
-  - `scripts/check-quickwin-baseline.sh`는 해당 레지스트리를 직접 읽어 검증
+  - `scripts/validation/check-quickwin-baseline.sh`는 해당 레지스트리를 직접 읽어 검증
   - 신규 예외 추가 시 `reason`, `owner_role`, `review_cadence`와 함께 갱신
 - **Allowed**:
   - one-shot init job의 `healthcheck` 생략
@@ -39,10 +39,10 @@
 
 ## Verification
 
-- `bash scripts/check-quickwin-baseline.sh`
-- `bash scripts/check-template-security-baseline.sh`
-- `bash scripts/check-doc-traceability.sh`
-- `bash scripts/validate-docker-compose.sh`
+- `bash scripts/validation/check-quickwin-baseline.sh`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
+- `bash scripts/validation/validate-docker-compose.sh`
 
 ## Review Cadence
 

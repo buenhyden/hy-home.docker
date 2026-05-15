@@ -33,7 +33,7 @@ being caught by the repository contract check.
 - Preserved the thin root shim structure.
 - Clarified the Codex runtime boundary in `.codex/README.md` and
   `providers/codex.md`.
-- Strengthened `scripts/check-repo-contracts.sh` to verify agent/function mirror
+- Strengthened `scripts/validation/check-repo-contracts.sh` to verify agent/function mirror
   parity, runtime model hierarchy, exact scope imports, subagent protocol
   coverage, Codex boundary references, and stale source-reference prevention.
 
@@ -44,7 +44,7 @@ being caught by the repository contract check.
 - Keep `.codex` limited to hooks, context wiring, and provider notes unless the
   repository explicitly adopts a separate Codex runtime catalog.
 - Do not reintroduce external harness source labels or `H100` references.
-- Run `bash scripts/check-repo-contracts.sh` after any runtime, provider, or
+- Run `bash scripts/validation/check-repo-contracts.sh` after any runtime, provider, or
   governance edit.
 
 ## Evidence
@@ -52,4 +52,4 @@ being caught by the repository contract check.
 - `AGENTS.md`
 - `.codex/README.md`
 - `docs/00.agent-governance/agents/`
-- `scripts/check-repo-contracts.sh`
+- `scripts/validation/check-repo-contracts.sh`

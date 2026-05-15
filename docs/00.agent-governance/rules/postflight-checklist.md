@@ -8,7 +8,7 @@ Run after every agent task before declaring completion.
 
 ## §1 Infrastructure Gate (infra layer only)
 
-- [ ] `bash scripts/validate-docker-compose.sh` exits 0
+- [ ] `bash scripts/validation/validate-docker-compose.sh` exits 0
 - [ ] `docker compose ps` shows all expected services UP
 - [ ] No plaintext secrets introduced in any changed file
 - [ ] Named volumes follow `[Service]-[Data]-[Volume]` convention

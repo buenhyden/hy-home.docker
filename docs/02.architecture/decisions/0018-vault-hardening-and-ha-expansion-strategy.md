@@ -14,12 +14,12 @@
   - template placeholder 제거 및 `secret/data/hy-home/...` 경로 계약 고정
   - `vault-agent` 프로세스 기반 healthcheck 추가
   - `/vault/out` 지속 볼륨 추가
-  - `scripts/check-security-hardening.sh` + CI `security-hardening` 게이트 도입
+  - `scripts/hardening/check-security-hardening.sh` + CI `security-hardening` 게이트 도입
 - auto-unseal/원격 audit 적재는 이번 단계에서 정책/아키텍처/런북 전환 절차로만 명시한다.
 - 내부 통신 모델은 현행 유지한다.
   - 외부 TLS 종료: Traefik
   - 내부 `infra_net`: HTTP
-- 기존 회귀(`scripts/check-auth-hardening.sh`)는 같은 변경 세트에서 복구한다.
+- 기존 회귀(`scripts/hardening/check-auth-hardening.sh`)는 같은 변경 세트에서 복구한다.
 
 ## Explicit Non-goals
 

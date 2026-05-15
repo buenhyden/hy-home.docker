@@ -65,7 +65,7 @@
   - 정적 검증 후 단계적 반영(인증 계층 단위)
   - CI에서 `auth-hardening` 필수 게이트 적용
 - **Operational Evidence**:
-  - `scripts/check-auth-hardening.sh`
+  - `scripts/hardening/check-auth-hardening.sh`
   - `docker compose config`
   - 서비스별 healthcheck 결과
 

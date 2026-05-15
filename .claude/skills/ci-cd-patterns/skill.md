@@ -234,7 +234,7 @@ labels:
 
 # Compose validation gate
 - name: Validate docker-compose
-  run: bash scripts/validate-docker-compose.sh
+  run: bash scripts/validation/validate-docker-compose.sh
 ```
 
 ### Vulnerability SLA (CVSS v3.1)
@@ -276,4 +276,4 @@ hotfix/*   -> PR -> main     (expedited: security review only + emergency approv
 
 - `docs/00.agent-governance/rules/github-governance.md` §4 — GitHub Actions security baseline (unpinned actions, secret exposure, OIDC)
 - `.pre-commit-config.yaml` — Pre-commit hooks (linting, secret detection)
-- `scripts/validate-docker-compose.sh` — Compose validation gate
+- `scripts/validation/validate-docker-compose.sh` — Compose validation gate

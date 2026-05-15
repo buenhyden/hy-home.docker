@@ -15,7 +15,7 @@
   - `valkey-cluster-exporter` 시크릿 경로를 `service_valkey_password`로 정규화
   - `seaweedfs` malformed expose 토큰 제거
   - `ksql` tier 라벨 `data` 정규화
-  - `scripts/check-data-hardening.sh` + CI `data-hardening` 게이트 추가
+  - `scripts/hardening/check-data-hardening.sh` + CI `data-hardening` 게이트 추가
 - 카탈로그 확장 항목(HA, lifecycle, backup/recovery drill)은 정책/런북에서 승인 가능한 전환 절차로 관리한다.
 - 기존 `template-stateful-*`, `template-infra-*` 상속 모델은 유지한다.
 

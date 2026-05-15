@@ -28,7 +28,7 @@ status: enforced
 - `docs/05.operations/guides/**`
 - `docs/05.operations/policies/**`
 - `docs/05.operations/runbooks/**`
-- `scripts/check-*.sh`, `scripts/validate-docker-compose.sh`
+- `scripts/check-*.sh`, `scripts/validation/validate-docker-compose.sh`
 
 ## Controls
 
@@ -49,7 +49,7 @@ status: enforced
 ## Exceptions
 
 - Historical notes under `docs/00.agent-governance/memory/` may mention prior source labels for audit context.
-- `bash scripts/report-graphify-health.sh` may report `status=advisory`; that is evidence for downgraded confidence, not a repository validation failure.
+- `bash scripts/knowledge/report-graphify-health.sh` may report `status=advisory`; that is evidence for downgraded confidence, not a repository validation failure.
 - `graphify` refresh may be skipped when the CLI is unavailable, but the skip must be reported.
 - `rtk` may be bypassed when it is unavailable in the active shell.
 - `10-communication` compose/include/IP remediation is outside HAFE unless explicitly scoped into an infra change.
@@ -60,18 +60,18 @@ status: enforced
 python3 -m json.tool .codex/hooks.json >/dev/null
 python3 -m json.tool .claude/settings.json >/dev/null
 bash -n .claude/hooks/*.sh scripts/*.sh scripts/lib/*.sh
-CLAUDE_PROJECT_DIR="$PWD" bash scripts/agent-event-hook.sh SessionStart
-printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/agent-event-hook.sh PreToolUse
+CLAUDE_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh SessionStart
+printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh PreToolUse
 printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
 CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
-printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/post-tool-validate.sh
-bash scripts/report-graphify-health.sh
-bash scripts/check-repo-contracts.sh
-bash scripts/check-doc-traceability.sh
-bash scripts/validate-docker-compose.sh
-bash scripts/check-template-security-baseline.sh
-bash scripts/check-quickwin-baseline.sh
-bash scripts/check-all-hardening.sh
+printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
+bash scripts/knowledge/report-graphify-health.sh
+bash scripts/validation/check-repo-contracts.sh
+bash scripts/validation/check-doc-traceability.sh
+bash scripts/validation/validate-docker-compose.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-quickwin-baseline.sh
+bash scripts/hardening/check-all-hardening.sh
 ```
 
 ## Review Cadence

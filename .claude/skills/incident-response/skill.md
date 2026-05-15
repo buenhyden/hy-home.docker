@@ -72,7 +72,7 @@ Detection delay:
 ## Phase 5 — Recovery and Verification
 
 ```bash
-bash scripts/validate-docker-compose.sh
+bash scripts/validation/validate-docker-compose.sh
 docker compose up -d <service>
 docker compose ps
 ```

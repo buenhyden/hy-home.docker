@@ -20,7 +20,7 @@
   - 카탈로그 확장 항목을 문서/태스크 기반으로 실행 가능하게 만든다.
 - **In Scope**:
   - `infra/09-tooling/*/docker-compose.yml`
-  - `scripts/check-tooling-hardening.sh`
+  - `scripts/hardening/check-tooling-hardening.sh`
   - `scripts/README.md`
   - `.github/workflows/ci-quality.yml`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` tooling optimization-hardening 문서/README
@@ -41,7 +41,7 @@
 | PLN-TLG-001 | SonarQube/Terrakube/Syncthing middleware를 gateway+SSO 체인으로 정렬 | `infra/09-tooling/{sonarqube,terrakube,syncthing}/docker-compose.yml` | REQ-PRD-TLG-FUN-01 | compose label 확인 |
 | PLN-TLG-002 | tooling compose `infra_net` external 선언 표준화 | `infra/09-tooling/*/docker-compose.yml` | REQ-PRD-TLG-FUN-02 | network contract 확인 |
 | PLN-TLG-003 | locust worker healthcheck + k6 volume 참조 정렬 | `infra/09-tooling/{locust,k6}/docker-compose.yml` | REQ-PRD-TLG-FUN-03 | health/volume 계약 확인 |
-| PLN-TLG-004 | tooling hardening script + CI 게이트 추가 | `scripts/check-tooling-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-TLG-FUN-04 | script/CI job 확인 |
+| PLN-TLG-004 | tooling hardening script + CI 게이트 추가 | `scripts/hardening/check-tooling-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-TLG-FUN-04 | script/CI job 확인 |
 | PLN-TLG-005 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-TLG-FUN-05 | 링크 정합성 확인 |
 | PLN-TLG-006 | 카탈로그 확장 항목 작업 분해(도구별) | Plan/Task/Ops/Guide docs | REQ-PRD-TLG-FUN-06 | 태스크/정책 반영 확인 |
 
@@ -50,9 +50,9 @@
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
 | VAL-TLG-001 | Structural | tooling compose 정적 검증 | `for f in infra/09-tooling/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done` | 오류 없음 |
-| VAL-TLG-002 | Compliance | tooling 하드닝 기준선 검증 | `bash scripts/check-tooling-hardening.sh` | 실패 0건 |
-| VAL-TLG-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-TLG-004 | Traceability | 문서 추적성 검증 | `bash scripts/check-doc-traceability.sh` | 실패 0건 |
+| VAL-TLG-002 | Compliance | tooling 하드닝 기준선 검증 | `bash scripts/hardening/check-tooling-hardening.sh` | 실패 0건 |
+| VAL-TLG-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
+| VAL-TLG-004 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
 
 ## Risks & Mitigations
 

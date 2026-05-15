@@ -68,7 +68,7 @@ repository contract checks against the intended agent-first execution model.
 
 - Keep root shims thin and update only the Graphify fallback wording.
 - Add `Bash(rg:*)` as a read-only Claude discovery permission.
-- Extend `scripts/check-repo-contracts.sh` so these two runtime expectations are
+- Extend `scripts/validation/check-repo-contracts.sh` so these two runtime expectations are
   covered by the existing repository contract gate.
 - Do not add stage docs, GitHub-native instruction files, global configuration,
   or a parallel Codex agent catalog.
@@ -77,19 +77,19 @@ repository contract checks against the intended agent-first execution model.
 
 - Keep graphify usage advisory when the CLI is unavailable or output is noisy.
 - Keep read-only discovery commands such as `rg` available to runtime agents.
-- Verify runtime-surface assumptions through `scripts/check-repo-contracts.sh`.
+- Verify runtime-surface assumptions through `scripts/validation/check-repo-contracts.sh`.
 
 ## Evidence
 
 - `AGENTS.md`
 - `.claude/settings.json`
-- `scripts/check-repo-contracts.sh`
+- `scripts/validation/check-repo-contracts.sh`
 - `docs/00.agent-governance/memory/progress.md`
 
 ## Related Documents
 
 - `AGENTS.md`
 - `.claude/settings.json`
-- `scripts/check-repo-contracts.sh`
+- `scripts/validation/check-repo-contracts.sh`
 - `docs/00.agent-governance/memory/progress.md`
 - `docs/00.agent-governance/memory/agentic-harness-contract-hardening.md`

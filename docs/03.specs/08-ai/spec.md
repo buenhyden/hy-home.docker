@@ -37,7 +37,7 @@
   - Open WebUI -> Ollama(`OLLAMA_BASE_URL`) + Qdrant(`VECTOR_DB_URL`) 연결을 유지한다.
   - Embedding 모델 기본값은 `qwen3-embedding:0.6b`를 유지한다.
 - **Governance Contract**:
-  - `scripts/check-ai-hardening.sh` 통과가 AI tier 하드닝 기준선이다.
+  - `scripts/hardening/check-ai-hardening.sh` 통과가 AI tier 하드닝 기준선이다.
   - CI `ai-hardening` job이 PR 단계에서 회귀를 차단한다.
 
 ## Core Design
@@ -100,9 +100,9 @@ ai_hardening_controls:
 ```bash
 docker compose -f infra/08-ai/ollama/docker-compose.yml config
 docker compose -f infra/08-ai/open-webui/docker-compose.yml config
-bash scripts/check-ai-hardening.sh
-bash scripts/check-template-security-baseline.sh
-bash scripts/check-doc-traceability.sh
+bash scripts/hardening/check-ai-hardening.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-doc-traceability.sh
 ```
 
 ## Success Criteria & Verification Plan

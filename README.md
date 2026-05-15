@@ -118,7 +118,7 @@ cp .env.example .env
 ### 3. 사전 점검 실행
 
 ```bash
-bash scripts/preflight-compose.sh
+bash scripts/validation/preflight-compose.sh
 ```
 
 이 스크립트는 `.env`, 필수 secret 파일, 인증서 파일, 주요 디렉터리, 외부 Docker 네트워크 존재 여부를 점검합니다.
@@ -126,7 +126,7 @@ bash scripts/preflight-compose.sh
 ### 4. Compose 구조 검증
 
 ```bash
-bash scripts/validate-docker-compose.sh
+bash scripts/validation/validate-docker-compose.sh
 ```
 
 이 검증은 기본 `core` profile을 기준으로 `docker compose config`가 성공하는지 확인하고, resolved service count가 0이면 실패합니다. 필요한 경우 `HYHOME_COMPOSE_PROFILES="core dev"`처럼 검증 profile을 명시할 수 있습니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
@@ -134,7 +134,7 @@ bash scripts/validate-docker-compose.sh
 ### 5. Repository contract 검증
 
 ```bash
-bash scripts/check-repo-contracts.sh
+bash scripts/validation/check-repo-contracts.sh
 ```
 
 이 검증은 docs taxonomy, required README, template inventory, GitHub Actions YAML, duplicate workflow step, script reference, runtime agent/function catalog, Docker image tag policy, tech-stack version drift를 함께 확인합니다.
@@ -176,14 +176,14 @@ docker compose --profile core up -d
 
 로컬 또는 CI에서 자주 사용되는 검증 진입점은 다음과 같습니다.
 
-- `bash scripts/preflight-compose.sh` - 실행 전 필수 파일과 디렉터리 점검
-- `bash scripts/check-repo-contracts.sh` - repository/docs/GitHub/runtime/Docker/LLM Wiki contract 검증
-- `bash scripts/validate-docker-compose.sh` - profile-aware Compose 구조 검증
-- `bash scripts/check-doc-traceability.sh` - 문서 추적성 검사
-- `bash scripts/generate-llm-wiki-index.sh --check` - LLM Wiki generated path index freshness 검사
-- `bash scripts/check-quickwin-baseline.sh` - QuickWin baseline 검사
-- `bash scripts/check-template-security-baseline.sh` - 템플릿 채택 및 필수 보안 baseline 검사
-- `bash scripts/check-all-hardening.sh` - 계층별 하드닝 기준 검사
+- `bash scripts/validation/preflight-compose.sh` - 실행 전 필수 파일과 디렉터리 점검
+- `bash scripts/validation/check-repo-contracts.sh` - repository/docs/GitHub/runtime/Docker/LLM Wiki contract 검증
+- `bash scripts/validation/validate-docker-compose.sh` - profile-aware Compose 구조 검증
+- `bash scripts/validation/check-doc-traceability.sh` - 문서 추적성 검사
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` - LLM Wiki generated path index freshness 검사
+- `bash scripts/validation/check-quickwin-baseline.sh` - QuickWin baseline 검사
+- `bash scripts/validation/check-template-security-baseline.sh` - 템플릿 채택 및 필수 보안 baseline 검사
+- `bash scripts/hardening/check-all-hardening.sh` - 계층별 하드닝 기준 검사
 
 `pre-commit`은 CI와 hook 정책에서 관리하며, 이 저장소 지시가 바뀌지 않는 한 수동 실행을 기본 절차로 두지 않습니다.
 

@@ -12,18 +12,18 @@ status: completed
 
 사용자 요청이 `docs/04.execution/plans` 작성 권한을 명시적으로 부여했다. Live audit 기준 `scripts/`에는 root shell script 22개와 `scripts/lib/hardening-lib.sh` 1개가 있으며, 각 root script는 inventory, lifecycle category, repository reference, 또는 explicit standalone exemption으로 설명되어야 한다.
 
-Graphify output is advisory for this task. `graphify-out/GRAPH_REPORT.md` includes generated-volume contamination and meaningless god nodes, so conclusions must be corroborated against tracked source files, `scripts/README.md`, `scripts/check-repo-contracts.sh`, and repository validators.
+Graphify output is advisory for this task. `graphify-out/GRAPH_REPORT.md` includes generated-volume contamination and meaningless god nodes, so conclusions must be corroborated against tracked source files, `scripts/README.md`, `scripts/validation/check-repo-contracts.sh`, and repository validators.
 
 ## Goals & In-Scope
 
 - **Goals**:
   - `scripts/README.md`를 `docs/99.templates/readme.template.md`의 base structure에 맞춘다.
   - script lifecycle table과 usage examples는 유지한다.
-  - `scripts/check-repo-contracts.sh`의 external-reference exemption 의미를 명확히 한다.
+  - `scripts/validation/check-repo-contracts.sh`의 external-reference exemption 의미를 명확히 한다.
   - 새 plan과 parent README traceability를 유지한다.
 - **In Scope**:
   - `scripts/README.md`
-  - `scripts/check-repo-contracts.sh`
+  - `scripts/validation/check-repo-contracts.sh`
   - `docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md`
   - `docs/04.execution/plans/README.md`
 
@@ -45,7 +45,7 @@ Graphify output is advisory for this task. `graphify-out/GRAPH_REPORT.md` includ
 | --- | --- | --- | --- | --- |
 | PLN-001 | README base sections 추가 | `scripts/README.md` | REQ-SCRIPT-001 | `Audience`, `Scope`, `Structure`, `How to Work in This Area` 존재 |
 | PLN-002 | Script lifecycle contract wording 정리 | `scripts/README.md` | REQ-SCRIPT-002 | manual operation과 standalone exemption 의미가 분리됨 |
-| PLN-003 | External-reference exemption naming 정리 | `scripts/check-repo-contracts.sh` | REQ-SCRIPT-003 | `manual_root_scripts` naming이 제거되고 동작은 동일함 |
+| PLN-003 | External-reference exemption naming 정리 | `scripts/validation/check-repo-contracts.sh` | REQ-SCRIPT-003 | `manual_root_scripts` naming이 제거되고 동작은 동일함 |
 | PLN-004 | Plan artifact 추가 | `docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md` | REQ-DOC-001 | plan template 필수 섹션과 실제 related links 포함 |
 | PLN-005 | Parent README sync | `docs/04.execution/plans/README.md` | REQ-DOC-002 | 새 plan이 structure와 related documents에 연결됨 |
 
@@ -53,10 +53,10 @@ Graphify output is advisory for this task. `graphify-out/GRAPH_REPORT.md` includ
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-PLN-001 | Structural | Repository contract 확인 | `bash scripts/check-repo-contracts.sh` | failures=0 |
-| VAL-PLN-002 | Structural | Docs traceability 확인 | `bash scripts/check-doc-traceability.sh` | failures=0 |
+| VAL-PLN-001 | Structural | Repository contract 확인 | `bash scripts/validation/check-repo-contracts.sh` | failures=0 |
+| VAL-PLN-002 | Structural | Docs traceability 확인 | `bash scripts/validation/check-doc-traceability.sh` | failures=0 |
 | VAL-PLN-003 | Syntax | Bash syntax 확인 | `bash -n scripts/*.sh scripts/lib/*.sh .claude/hooks/*.sh` | no syntax errors |
-| VAL-PLN-004 | Advisory | Graphify corpus health 확인 | `bash scripts/report-graphify-health.sh` | exits 0; advisory status is not treated as architecture authority |
+| VAL-PLN-004 | Advisory | Graphify corpus health 확인 | `bash scripts/knowledge/report-graphify-health.sh` | exits 0; advisory status is not treated as architecture authority |
 | VAL-PLN-005 | Optional | Graphify refresh | `graphify update .` | run only if CLI is available after script code changes; otherwise report skipped |
 
 ## Risks & Mitigations
@@ -80,14 +80,14 @@ Graphify output is advisory for this task. `graphify-out/GRAPH_REPORT.md` includ
 ## Completion Criteria
 
 - [x] `scripts/README.md` includes the required README base sections.
-- [x] `scripts/check-repo-contracts.sh` uses clear external-reference exemption wording without behavior changes.
+- [x] `scripts/validation/check-repo-contracts.sh` uses clear external-reference exemption wording without behavior changes.
 - [x] The new plan is linked from `docs/04.execution/plans/README.md`.
 - [x] Required verification commands pass or are explicitly reported as skipped with reason.
 
 ## Related Documents
 
 - [scripts README](../../../scripts/README.md)
-- [Repository contract checker](../../../scripts/check-repo-contracts.sh)
+- [Repository contract checker](../../../scripts/validation/check-repo-contracts.sh)
 - [Plan template](../../99.templates/plan.template.md)
 - [README template](../../99.templates/readme.template.md)
 - [Documentation protocol](../../00.agent-governance/rules/documentation-protocol.md)

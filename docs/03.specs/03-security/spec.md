@@ -31,8 +31,8 @@
     - `02-auth/oauth2-proxy`: `client_secret`, `cookie_secret`
     - `06-observability/grafana`: `admin_password`, `db_password`, `grafana_client_secret`
 - **Governance Contract**:
-  - `scripts/check-security-hardening.sh`를 CI `security-hardening` job으로 강제한다.
-  - `scripts/check-auth-hardening.sh`는 최신 02-auth 계약 기준으로 유지한다.
+  - `scripts/hardening/check-security-hardening.sh`를 CI `security-hardening` job으로 강제한다.
+  - `scripts/hardening/check-auth-hardening.sh`는 최신 02-auth 계약 기준으로 유지한다.
 
 ## Core Design
 
@@ -83,10 +83,10 @@ interface VaultTemplateContract {
 
 ```bash
 docker compose -f infra/03-security/vault/docker-compose.yml config
-bash scripts/check-security-hardening.sh
-bash scripts/check-template-security-baseline.sh
-bash scripts/check-doc-traceability.sh
-bash scripts/check-auth-hardening.sh
+bash scripts/hardening/check-security-hardening.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-doc-traceability.sh
+bash scripts/hardening/check-auth-hardening.sh
 ```
 
 가능 환경에서 runtime 검증:

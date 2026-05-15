@@ -20,7 +20,7 @@ Pre-flight → Static validate → Drift check → Apply → Post-flight
 ### Phase 1 — Pre-flight
 
 ```bash
-bash scripts/validate-docker-compose.sh
+bash scripts/validation/validate-docker-compose.sh
 ```
 
 On failure, halt. Do not apply infra changes until the baseline is clean.

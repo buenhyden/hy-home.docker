@@ -69,7 +69,7 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
   - Open WebUI (stateful) + ollama/qdrant dependency
 - **Operational Evidence**:
   - `docker compose config` checks
-  - `scripts/check-ai-hardening.sh`
+  - `scripts/hardening/check-ai-hardening.sh`
   - CI `ai-hardening` job
 
 ## Catalog-aligned Expansion Targets

@@ -20,9 +20,9 @@
 - **In Scope**:
   - `infra/03-security/vault/docker-compose.yml`
   - `infra/03-security/vault/config/templates/*.ctmpl`
-  - `scripts/check-security-hardening.sh`
+  - `scripts/hardening/check-security-hardening.sh`
   - `.github/workflows/ci-quality.yml`
-  - `scripts/check-auth-hardening.sh`, `scripts/README.md`
+  - `scripts/hardening/check-auth-hardening.sh`, `scripts/README.md`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 및 README 인덱스
 
 ## Non-Goals & Out-of-Scope
@@ -40,10 +40,10 @@
 | --- | --- | --- | --- | --- |
 | PLN-SEC-001 | `vault-agent` healthcheck + `/vault/out` 볼륨 + cap 정리 | `infra/03-security/vault/docker-compose.yml` | REQ-PRD-FUN-02,03 | compose config + healthcheck contract 확인 |
 | PLN-SEC-002 | Vault Agent 템플릿 placeholder 제거 및 경로/키 정규화 | `infra/03-security/vault/config/templates/*.ctmpl` | REQ-PRD-FUN-01 | placeholder 0건, source/destination 무결성 |
-| PLN-SEC-003 | 03-security 하드닝 검증 스크립트 추가 | `scripts/check-security-hardening.sh` | REQ-PRD-FUN-04 | 스크립트 pass/fail 동작 검증 |
+| PLN-SEC-003 | 03-security 하드닝 검증 스크립트 추가 | `scripts/hardening/check-security-hardening.sh` | REQ-PRD-FUN-04 | 스크립트 pass/fail 동작 검증 |
 | PLN-SEC-004 | CI `security-hardening` job 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-FUN-04 | PR/Push job 실행 |
 | PLN-SEC-005 | scripts README 인벤토리 반영 | `scripts/README.md` | REQ-PRD-FUN-04 | README 항목/예시 존재 |
-| PLN-SEC-006 | auth hardening 검증 스크립트 최신화 | `scripts/check-auth-hardening.sh` | REQ-PRD-FUN-06 | 최신 02-auth 계약 기준 통과 |
+| PLN-SEC-006 | auth hardening 검증 스크립트 최신화 | `scripts/hardening/check-auth-hardening.sh` | REQ-PRD-FUN-06 | 최신 02-auth 계약 기준 통과 |
 | PLN-SEC-007 | PRD~Runbook 문서 생성/갱신 + README 인덱스 동기화 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-FUN-05 | 상호 링크/인덱스 반영 |
 
 ## Verification Plan
@@ -51,10 +51,10 @@
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
 | VAL-SEC-001 | Structural | Vault compose 정적 검증 | `docker compose -f infra/03-security/vault/docker-compose.yml config` | 오류 없음 |
-| VAL-SEC-002 | Compliance | 03-security 하드닝 검증 | `bash scripts/check-security-hardening.sh` | 실패 0건 |
-| VAL-SEC-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-SEC-004 | Traceability | 문서 추적성 검증 | `bash scripts/check-doc-traceability.sh` | 실패 0건 |
-| VAL-SEC-005 | Regression | auth 하드닝 회귀 복구 확인 | `bash scripts/check-auth-hardening.sh` | 실패 0건 |
+| VAL-SEC-002 | Compliance | 03-security 하드닝 검증 | `bash scripts/hardening/check-security-hardening.sh` | 실패 0건 |
+| VAL-SEC-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
+| VAL-SEC-004 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
+| VAL-SEC-005 | Regression | auth 하드닝 회귀 복구 확인 | `bash scripts/hardening/check-auth-hardening.sh` | 실패 0건 |
 
 ## Risks & Mitigations
 

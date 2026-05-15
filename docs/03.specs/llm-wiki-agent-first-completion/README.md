@@ -23,4 +23,4 @@ llm-wiki-agent-first-completion/
 - [spec.md](./spec.md)
 - [docs/03.specs/README.md](../README.md)
 - [docs/90.references/llm-wiki/README.md](../../90.references/llm-wiki/README.md)
-- [scripts/generate-llm-wiki-index.sh](../../../scripts/generate-llm-wiki-index.sh)
+- [scripts/knowledge/generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh)

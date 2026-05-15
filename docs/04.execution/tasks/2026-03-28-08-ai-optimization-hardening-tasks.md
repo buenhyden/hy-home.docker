@@ -23,7 +23,7 @@
 | T-AI-002 | Ollama concurrency/queue 상한 환경 변수 추가 | impl | Contracts / Config | PLN-AI-002 | env contract 확인 | DevOps | Done |
 | T-AI-003 | Open WebUI stateful 템플릿 정렬 | impl | Contracts / Config | PLN-AI-003 | template 확인 | DevOps | Done |
 | T-AI-004 | exporter health-gated dependency + healthcheck 추가 | impl | Contracts / Config | PLN-AI-004 | dependency/healthcheck 확인 | DevOps | Done |
-| T-AI-005 | AI hardening script 추가/수정 | ops | Governance Contract | PLN-AI-005 | `bash scripts/check-ai-hardening.sh` | DevOps | Done |
+| T-AI-005 | AI hardening script 추가/수정 | ops | Governance Contract | PLN-AI-005 | `bash scripts/hardening/check-ai-hardening.sh` | DevOps | Done |
 | T-AI-006 | CI `ai-hardening` job 추가 | ops | Governance Contract | PLN-AI-005 | workflow job 확인 | DevOps | Done |
 | T-AI-007 | scripts inventory/usage README 갱신 | doc | Related Docs | PLN-AI-005 | README 항목 반영 | Docs | Done |
 | T-AI-008 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 생성 | doc | Related Docs | PLN-AI-006 | 링크/인덱스 동기화 | Docs | Done |
@@ -66,9 +66,9 @@
 - **Test Commands**:
   - `docker compose -f infra/08-ai/ollama/docker-compose.yml config`
   - `docker compose -f infra/08-ai/open-webui/docker-compose.yml config`
-  - `bash scripts/check-ai-hardening.sh`
-  - `bash scripts/check-template-security-baseline.sh`
-  - `bash scripts/check-doc-traceability.sh`
+  - `bash scripts/hardening/check-ai-hardening.sh`
+  - `bash scripts/validation/check-template-security-baseline.sh`
+  - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 검증 로그 + CI `ai-hardening` job
 

@@ -24,9 +24,9 @@ status: completed
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-001 | Add generator and generated index | impl | Contracts | PLN-001 | `bash scripts/generate-llm-wiki-index.sh --check` passed | wiki-curator | Done |
-| T-002 | Add mirrored `wiki-curator` role | impl | Agent Role & IO Contract | PLN-002 | `bash scripts/check-repo-contracts.sh` passed | wiki-curator | Done |
-| T-003 | Add maintenance guide and reference links | doc | Prompt / Policy Contract | PLN-003 | `bash scripts/check-doc-traceability.sh` passed | doc-writer | Done |
+| T-001 | Add generator and generated index | impl | Contracts | PLN-001 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` passed | wiki-curator | Done |
+| T-002 | Add mirrored `wiki-curator` role | impl | Agent Role & IO Contract | PLN-002 | `bash scripts/validation/check-repo-contracts.sh` passed | wiki-curator | Done |
+| T-003 | Add maintenance guide and reference links | doc | Prompt / Policy Contract | PLN-003 | `bash scripts/validation/check-doc-traceability.sh` passed | doc-writer | Done |
 | T-004 | Strengthen repo validator | test | Guardrails | PLN-004 | repo contract enforces stale/missing LLM Wiki pieces | wiki-curator | Done |
 | T-005 | Record final evidence | ops | Verification | PLN-005 | validation bundle completed | doc-writer | Done |
 
@@ -56,8 +56,8 @@ status: completed
 
 ## Verification Summary
 
-- **Test Commands**: `bash -n scripts/*.sh scripts/lib/*.sh .claude/hooks/*.sh`; `python3 -m json.tool .claude/settings.json`; `python3 -m json.tool .codex/hooks.json`; `bash scripts/check-repo-contracts.sh`; `bash scripts/check-doc-traceability.sh`; `bash scripts/validate-docker-compose.sh`; `bash scripts/check-template-security-baseline.sh`; `bash scripts/check-quickwin-baseline.sh`; `bash scripts/check-all-hardening.sh`; `git diff --check`
-- **Eval Commands**: `bash scripts/generate-llm-wiki-index.sh --check`; H100/source-label scan; stale taxonomy scan
+- **Test Commands**: `bash -n scripts/*.sh scripts/lib/*.sh .claude/hooks/*.sh`; `python3 -m json.tool .claude/settings.json`; `python3 -m json.tool .codex/hooks.json`; `bash scripts/validation/check-repo-contracts.sh`; `bash scripts/validation/check-doc-traceability.sh`; `bash scripts/validation/validate-docker-compose.sh`; `bash scripts/validation/check-template-security-baseline.sh`; `bash scripts/validation/check-quickwin-baseline.sh`; `bash scripts/hardening/check-all-hardening.sh`; `git diff --check`
+- **Eval Commands**: `bash scripts/knowledge/generate-llm-wiki-index.sh --check`; H100/source-label scan; stale taxonomy scan
 - **Logs / Evidence Location**: This task file and `docs/00.agent-governance/memory/progress.md`
 
 ## Related Documents

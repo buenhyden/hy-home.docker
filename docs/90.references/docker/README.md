@@ -58,7 +58,7 @@ docs/90.references/docker/
 1. Use this folder for stable Docker reference rules only.
 2. Update `infra/tech-stack.versions.json` when a major operational image is added to the validated registry.
 3. Update `infra/image-tag-policy.exceptions.json` when a floating image tag is intentionally approved.
-4. Run `bash scripts/check-repo-contracts.sh` after changing Docker reference docs or registry files.
+4. Run `bash scripts/validation/check-repo-contracts.sh` after changing Docker reference docs or registry files.
 
 ## Examples
 
@@ -70,4 +70,4 @@ docs/90.references/docker/
 - [references index](../README.md)
 - [image tag exceptions](../../../infra/image-tag-policy.exceptions.json)
 - [tech stack versions](../../../infra/tech-stack.versions.json)
-- [repo contract checker](../../../scripts/check-repo-contracts.sh)
+- [repo contract checker](../../../scripts/validation/check-repo-contracts.sh)

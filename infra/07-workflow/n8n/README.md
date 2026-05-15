@@ -49,8 +49,8 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 
 ## Validation
 
-- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect n8n.
-- Run `bash scripts/check-all-hardening.sh` before marking n8n documentation ready.
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect n8n.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking n8n documentation ready.
 
 ## Troubleshooting
 

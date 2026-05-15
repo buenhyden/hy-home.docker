@@ -26,19 +26,19 @@ status: completed
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-001 | Add deterministic LLM Wiki generator and generated index | `scripts/generate-llm-wiki-index.sh`, `docs/90.references/llm-wiki/index.md` | VAL-SPC-001 | Generator and `--check` pass |
+| PLN-001 | Add deterministic LLM Wiki generator and generated index | `scripts/knowledge/generate-llm-wiki-index.sh`, `docs/90.references/llm-wiki/index.md` | VAL-SPC-001 | Generator and `--check` pass |
 | PLN-002 | Add first-class `wiki-curator` role | `.claude/agents/`, `docs/00.agent-governance/agents/`, `subagent-protocol.md` | VAL-SPC-002 | Runtime/governance catalog parity passes |
 | PLN-003 | Add maintenance guide and update LLM Wiki references | `docs/05.operations/guides/llm-wiki-maintenance.md`, `llms.txt`, reference READMEs | VAL-SPC-003 | Link and repo contract checks pass |
-| PLN-004 | Strengthen repository contracts | `scripts/check-repo-contracts.sh`, `scripts/README.md` | VAL-SPC-003 | Missing or stale LLM Wiki assets fail validation |
+| PLN-004 | Strengthen repository contracts | `scripts/validation/check-repo-contracts.sh`, `scripts/README.md` | VAL-SPC-003 | Missing or stale LLM Wiki assets fail validation |
 | PLN-005 | Record implementation evidence | stage task docs and progress log | VAL-SPC-003 | Completion evidence is current |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-PLN-001 | Generated artifact | LLM Wiki index freshness | `bash scripts/generate-llm-wiki-index.sh --check` | PASS |
-| VAL-PLN-002 | Governance | Repo contract enforcement | `bash scripts/check-repo-contracts.sh` | PASS |
-| VAL-PLN-003 | Traceability | Plan/operations traceability | `bash scripts/check-doc-traceability.sh` | PASS |
+| VAL-PLN-001 | Generated artifact | LLM Wiki index freshness | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS |
+| VAL-PLN-002 | Governance | Repo contract enforcement | `bash scripts/validation/check-repo-contracts.sh` | PASS |
+| VAL-PLN-003 | Traceability | Plan/operations traceability | `bash scripts/validation/check-doc-traceability.sh` | PASS |
 | VAL-PLN-004 | Runtime | Syntax and catalog validity | `bash -n scripts/*.sh scripts/lib/*.sh .claude/hooks/*.sh` | PASS |
 | VAL-PLN-005 | Infra baseline | Compose and hardening unaffected | Baseline validation bundle | PASS |
 

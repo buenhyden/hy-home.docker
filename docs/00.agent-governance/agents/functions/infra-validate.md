@@ -28,7 +28,7 @@ Provide a repeatable, auditable validation sequence around infrastructure change
 ## Structure
 
 - Phases: Pre-flight → Static validate → Drift check → Apply → Post-flight
-- Uses `bash scripts/validate-docker-compose.sh` and `docker compose` commands
+- Uses `bash scripts/validation/validate-docker-compose.sh` and `docker compose` commands
 
 ## Agents
 

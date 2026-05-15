@@ -60,7 +60,7 @@ The `01-gateway` tier is the unified entry point for all traffic entering the `h
 ## How to Work in This Area
 
 1. Review [CONTEXT.md](../../docs/05.operations/guides/01-gateway/README.md) to understand traffic flow.
-2. Ensure secrets are generated via `scripts/gen-secrets.sh` before deployment.
+2. Ensure secrets are generated via `scripts/operations/gen-secrets.sh` before deployment.
 3. Follow [SETUP.md](../../docs/05.operations/guides/01-gateway/01.setup.md) for initial deployment.
 4. Verify changes using `docker exec traefik traefik healthcheck --ping`.
 

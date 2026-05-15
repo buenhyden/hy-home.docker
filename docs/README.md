@@ -136,8 +136,8 @@ docs/
 문서 체계와 repository contract는 다음 검증으로 유지합니다.
 
 ```bash
-bash scripts/check-repo-contracts.sh
-bash scripts/check-doc-traceability.sh
+bash scripts/validation/check-repo-contracts.sh
+bash scripts/validation/check-doc-traceability.sh
 ```
 
 `check-repo-contracts.sh`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime agent/function catalog, LLM Wiki contract 동기화와 generated index freshness를 확인합니다. `check-doc-traceability.sh`는 execution plans와 operations 문서 간 추적성 동기화를 확인합니다.

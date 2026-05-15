@@ -57,8 +57,8 @@ qdrant/
 
 ## Validation
 
-- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Qdrant.
-- Run `bash scripts/check-repo-contracts.sh` to keep Qdrant documentation and operation links synchronized.
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Qdrant.
+- Run `bash scripts/validation/check-repo-contracts.sh` to keep Qdrant documentation and operation links synchronized.
 
 ## Troubleshooting
 

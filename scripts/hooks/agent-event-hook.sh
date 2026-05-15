@@ -73,8 +73,8 @@ Infra layer:
 
 Key rules:
 - Use `AGENTS.md` and `docs/00.agent-governance/` as governance entry points.
-- Treat Graphify as advisory when `scripts/report-graphify-health.sh` reports contamination.
-- Run `bash scripts/validate-docker-compose.sh` before deployment-related completion.
+- Treat Graphify as advisory when `scripts/knowledge/report-graphify-health.sh` reports contamination.
+- Run `bash scripts/validation/validate-docker-compose.sh` before deployment-related completion.
 """
 
 print(json.dumps({"systemMessage": message.strip()}))
@@ -160,7 +160,7 @@ if not tool_name or tool_name in edit_tools:
             system_messages.append(
                 "Docker Compose file edit detected.\n\n"
                 f"Path: `{short_path}`\n\n"
-                "After editing, verify with `bash scripts/validate-docker-compose.sh` "
+                "After editing, verify with `bash scripts/validation/validate-docker-compose.sh` "
                 "and check port conflicts, volume paths, missing environment variables, "
                 "and existing network names."
             )
@@ -183,7 +183,7 @@ PY
 }
 
 post_tool_use() {
-  printf '%s' "$INPUT" | CODEX_PROJECT_DIR="$PROJECT_DIR" CLAUDE_PROJECT_DIR="$PROJECT_DIR" bash scripts/post-tool-validate.sh
+  printf '%s' "$INPUT" | CODEX_PROJECT_DIR="$PROJECT_DIR" CLAUDE_PROJECT_DIR="$PROJECT_DIR" bash scripts/hooks/post-tool-validate.sh
 }
 
 session_end() {

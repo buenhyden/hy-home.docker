@@ -12,7 +12,6 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 EXAMPLE_FILE="${REPO_ROOT}/secrets/SENSITIVE_ENV_VARS.md.example"
 TARGET_FILE="${REPO_ROOT}/secrets/SENSITIVE_ENV_VARS.md"
 ENV_FILE="${REPO_ROOT}/.env"
-ROOT_WRAPPER="${REPO_ROOT}/scripts/gen-secrets.sh"
 IMPLEMENTATION_FILE="${REPO_ROOT}/scripts/operations/gen-secrets.sh"
 CURRENT_DATE="$(date +%Y-%m-%d)"
 
@@ -35,7 +34,7 @@ ROW_FILE_PATH=""
 
 usage() {
     cat <<'USAGE'
-Usage: bash scripts/gen-secrets.sh [--help|--check|--dry-run]
+Usage: bash scripts/operations/gen-secrets.sh [--help|--check|--dry-run]
 
 Generate local Docker secret files from repository secret registry metadata.
 
@@ -202,7 +201,6 @@ check_required_tools() {
 
 check_layout() {
     local failures=0
-    local wrapper_text=""
 
     check_required_tools || failures=1
 
@@ -227,17 +225,11 @@ check_layout() {
         printf 'CHECK env_file=absent path=%s\n' "$ENV_FILE"
     fi
 
-    if [[ -f "$ROOT_WRAPPER" ]]; then
-        wrapper_text="$(<"$ROOT_WRAPPER")"
-        if [[ "$wrapper_text" == *'operations/gen-secrets.sh'* ]]; then
-            printf 'CHECK root_wrapper=ok path=%s\n' "$ROOT_WRAPPER"
-        else
-            printf 'CHECK root_wrapper=missing-target path=%s\n' "$ROOT_WRAPPER"
-            failures=1
-        fi
-    else
-        printf 'CHECK root_wrapper=missing path=%s\n' "$ROOT_WRAPPER"
+    if [[ -e "${REPO_ROOT}/scripts/gen-secrets.sh" ]]; then
+        printf 'CHECK root_duplicate=present path=%s\n' "${REPO_ROOT}/scripts/gen-secrets.sh"
         failures=1
+    else
+        printf 'CHECK root_duplicate=absent path=%s\n' "${REPO_ROOT}/scripts/gen-secrets.sh"
     fi
 
     if [[ -f "$IMPLEMENTATION_FILE" ]]; then

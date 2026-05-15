@@ -36,7 +36,7 @@ resolved by Docker Compose.
   full-profile hardening baselines to required checks.
 - Added a local `main` branch ruleset proposal under `.github/rulesets/`.
 - Required top-level workflow permissions and the expected CI job inventory in
-  `scripts/check-repo-contracts.sh`.
+  `scripts/validation/check-repo-contracts.sh`.
 - Kept community automation workflows and made their default token permissions
   explicit.
 
@@ -60,5 +60,5 @@ resolved by Docker Compose.
 
 - `.github/workflows/ci-quality.yml`
 - `.github/rulesets/`
-- `scripts/check-repo-contracts.sh`
-- `scripts/validate-docker-compose.sh`
+- `scripts/validation/check-repo-contracts.sh`
+- `scripts/validation/validate-docker-compose.sh`

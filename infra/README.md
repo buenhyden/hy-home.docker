@@ -96,7 +96,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 - **Docker Engine** >= 24.0.0
 - **Docker Compose** >= 2.20.0
 - **NVIDIA Container Toolkit** (Optional, for AI GPU acceleration)
-- **Secret Inventory**: Ensure `scripts/gen-secrets.sh` has been executed.
+- **Secret Inventory**: Ensure `scripts/operations/gen-secrets.sh` has been executed.
 
 ### 2. Integrated Execution (Standard)
 
@@ -164,7 +164,7 @@ service directory and cover the following agent-verifiable fields:
 1. **Service Addition**: `infra/<tier>/<service>/` 디렉토리를 생성하고 `docker-compose.yml`을 작성합니다.
 2. **Global Integration**: 루트 `docker-compose.yml`의 `include`에 새 서비스를 추가할 때 `root-active`, `root-commented-optional`, `standalone-only`, `dev/cluster variant` 상태를 함께 갱신합니다.
 3. **Configuration**: 환경 변수가 필요하면 루트 `.env.example`에 추가하고, 민감 값은 `secrets/`에 분리합니다.
-4. **Validation**: `scripts/validate-docker-compose.sh`를 실행하여 구조적 정합성을 확인합니다.
+4. **Validation**: `scripts/validation/validate-docker-compose.sh`를 실행하여 구조적 정합성을 확인합니다.
 
 ## Related Documents
 

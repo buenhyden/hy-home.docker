@@ -57,7 +57,7 @@ docs/90.references/learning/
 2. Use [reference.template.md](../../99.templates/reference.template.md) for new non-README reference docs.
 3. Link repo-local examples to active docs or `infra/` paths with relative links.
 4. Preserve archived roadmaps as reference history unless explicitly asked to remove them.
-5. Run `bash scripts/check-repo-contracts.sh` after changing learning reference docs.
+5. Run `bash scripts/validation/check-repo-contracts.sh` after changing learning reference docs.
 
 ## Related Documents
 

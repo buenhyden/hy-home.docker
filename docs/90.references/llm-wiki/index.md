@@ -1,6 +1,6 @@
 ---
 status: active
-generated_by: scripts/generate-llm-wiki-index.sh
+generated_by: scripts/knowledge/generate-llm-wiki-index.sh
 ---
 
 # Reference: LLM Wiki Generated Index
@@ -25,7 +25,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 
 - Repo-relative path links for safe tracked source entrypoints.
 - Governance, runtime, documentation, infrastructure, script, and secret-handling policy surfaces.
-- Deterministic refresh through `bash scripts/generate-llm-wiki-index.sh`.
+- Deterministic refresh through `bash scripts/knowledge/generate-llm-wiki-index.sh`.
 
 ### Out of Scope
 
@@ -762,26 +762,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | Path | Role |
 | --- | --- |
 | [scripts/README.md](../../../scripts/README.md) | folder index |
-| [scripts/agent-event-hook.sh](../../../scripts/agent-event-hook.sh) | script |
-| [scripts/bootstrap-vault-approle.sh](../../../scripts/bootstrap-vault-approle.sh) | script |
-| [scripts/check-ai-hardening.sh](../../../scripts/check-ai-hardening.sh) | script |
-| [scripts/check-all-hardening.sh](../../../scripts/check-all-hardening.sh) | script |
-| [scripts/check-auth-hardening.sh](../../../scripts/check-auth-hardening.sh) | script |
-| [scripts/check-data-hardening.sh](../../../scripts/check-data-hardening.sh) | script |
-| [scripts/check-doc-traceability.sh](../../../scripts/check-doc-traceability.sh) | script |
-| [scripts/check-gateway-hardening.sh](../../../scripts/check-gateway-hardening.sh) | script |
-| [scripts/check-laboratory-hardening.sh](../../../scripts/check-laboratory-hardening.sh) | script |
-| [scripts/check-messaging-hardening.sh](../../../scripts/check-messaging-hardening.sh) | script |
-| [scripts/check-observability-hardening.sh](../../../scripts/check-observability-hardening.sh) | script |
-| [scripts/check-quickwin-baseline.sh](../../../scripts/check-quickwin-baseline.sh) | script |
-| [scripts/check-repo-contracts.sh](../../../scripts/check-repo-contracts.sh) | script |
-| [scripts/check-security-hardening.sh](../../../scripts/check-security-hardening.sh) | script |
-| [scripts/check-template-security-baseline.sh](../../../scripts/check-template-security-baseline.sh) | script |
-| [scripts/check-tooling-hardening.sh](../../../scripts/check-tooling-hardening.sh) | script |
-| [scripts/check-workflow-hardening.sh](../../../scripts/check-workflow-hardening.sh) | script |
-| [scripts/gen-secrets.sh](../../../scripts/gen-secrets.sh) | script |
-| [scripts/generate-llm-wiki-index.sh](../../../scripts/generate-llm-wiki-index.sh) | script |
-| [scripts/generate-local-certs.sh](../../../scripts/generate-local-certs.sh) | script |
 | [scripts/hardening/check-ai-hardening.sh](../../../scripts/hardening/check-ai-hardening.sh) | script |
 | [scripts/hardening/check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) | script |
 | [scripts/hardening/check-auth-hardening.sh](../../../scripts/hardening/check-auth-hardening.sh) | script |
@@ -801,10 +781,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/operations/bootstrap-vault-approle.sh](../../../scripts/operations/bootstrap-vault-approle.sh) | script |
 | [scripts/operations/gen-secrets.sh](../../../scripts/operations/gen-secrets.sh) | script |
 | [scripts/operations/generate-local-certs.sh](../../../scripts/operations/generate-local-certs.sh) | script |
-| [scripts/post-tool-validate.sh](../../../scripts/post-tool-validate.sh) | script |
-| [scripts/preflight-compose.sh](../../../scripts/preflight-compose.sh) | script |
-| [scripts/report-graphify-health.sh](../../../scripts/report-graphify-health.sh) | script |
-| [scripts/validate-docker-compose.sh](../../../scripts/validate-docker-compose.sh) | script |
 | [scripts/validation/check-doc-traceability.sh](../../../scripts/validation/check-doc-traceability.sh) | script |
 | [scripts/validation/check-quickwin-baseline.sh](../../../scripts/validation/check-quickwin-baseline.sh) | script |
 | [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |
@@ -840,14 +816,14 @@ Graphify output is advisory navigation context only. This index is generated fro
 
 - [llms.txt](../../../llms.txt) - root LLM entrypoint and boundary statement
 - [repository-map.md](./repository-map.md) - curated canonical source map
-- [generate-llm-wiki-index.sh](../../../scripts/generate-llm-wiki-index.sh) - deterministic generator
-- [check-repo-contracts.sh](../../../scripts/check-repo-contracts.sh) - freshness and safety validator
+- [generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) - deterministic generator
+- [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) - freshness and safety validator
 
 ## Maintenance
 
 - **Owner**: `wiki-curator`
 - **Review Cadence**: Review when root entrypoints, governance, operations docs, script inventory, infrastructure indexes, or LLM Wiki files change
-- **Update Trigger**: Run `bash scripts/generate-llm-wiki-index.sh` after in-scope path changes and `bash scripts/generate-llm-wiki-index.sh --check` during validation
+- **Update Trigger**: Run `bash scripts/knowledge/generate-llm-wiki-index.sh` after in-scope path changes and `bash scripts/knowledge/generate-llm-wiki-index.sh --check` during validation
 
 ## Related Documents
 

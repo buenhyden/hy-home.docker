@@ -37,10 +37,10 @@
 
 ## Verification
 
-- Compose 정적 점검: `bash scripts/validate-docker-compose.sh`
-- Quick Win 기준선 점검: `bash scripts/check-quickwin-baseline.sh`
-- 템플릿/보안 기준선 점검: `bash scripts/check-template-security-baseline.sh`
-- 문서 추적성 점검: `bash scripts/check-doc-traceability.sh`
+- Compose 정적 점검: `bash scripts/validation/validate-docker-compose.sh`
+- Quick Win 기준선 점검: `bash scripts/validation/check-quickwin-baseline.sh`
+- 템플릿/보안 기준선 점검: `bash scripts/validation/check-template-security-baseline.sh`
+- 문서 추적성 점검: `bash scripts/validation/check-doc-traceability.sh`
 - 운영 갭 점검(예시):
   - `healthcheck`/`restart`/`security_opt`/`secrets`/`limits` 유무를 정기 스캔
 - 문서 추적성 점검:
@@ -90,7 +90,7 @@
 ## Quick Win Enforcement Snapshot (2026-03-28)
 
 - 기준: `PLN-QW-001 ~ PLN-QW-005`
-- 검증 명령: `bash scripts/check-quickwin-baseline.sh`
+- 검증 명령: `bash scripts/validation/check-quickwin-baseline.sh`
 - 통합 Compose 기준 결과(`total services=19`):
   - `restart` 누락: `0`
   - `healthcheck` 누락: `0` (예외 반영 후)

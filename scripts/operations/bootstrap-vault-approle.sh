@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# scripts/bootstrap-vault-approle.sh
+# scripts/operations/bootstrap-vault-approle.sh
 # Automates the creation of Vault Agent policies, AppRole authentication, and credential extraction.
 
 set -euo pipefail
 
-# Ensure we're at the root of the project
-cd "$(dirname "$0")/.."
+# Ensure we're at the root of the project.
+BASE_DIR="$(git rev-parse --show-toplevel)"
+cd "$BASE_DIR"
 
 # Load environment variables to resolve DEFAULT_SECURITY_DIR
 set +u

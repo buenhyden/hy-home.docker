@@ -69,12 +69,12 @@ status: completed
 ## Verification Summary
 
 - **Test Commands**:
-  - `bash scripts/check-repo-contracts.sh`
-  - `bash scripts/check-doc-traceability.sh`
-  - `bash scripts/validate-docker-compose.sh`
-  - `bash scripts/check-template-security-baseline.sh`
-  - `bash scripts/check-quickwin-baseline.sh`
-  - `bash scripts/check-all-hardening.sh`
+  - `bash scripts/validation/check-repo-contracts.sh`
+  - `bash scripts/validation/check-doc-traceability.sh`
+  - `bash scripts/validation/validate-docker-compose.sh`
+  - `bash scripts/validation/check-template-security-baseline.sh`
+  - `bash scripts/validation/check-quickwin-baseline.sh`
+  - `bash scripts/hardening/check-all-hardening.sh`
   - `git diff --check`
 - **Eval Commands**:
   - README heading audit over `infra`, `secrets`, `docs/05.operations`, `docs/05.operations`, `docs/05.operations`, `docs/90.references`
@@ -91,11 +91,11 @@ status: completed
   - `README_HEADING_GAPS=0`
   - `STAGE_HEADING_GAPS=0`
   - `MARKDOWN_LINK_GAPS=0`
-  - `bash scripts/check-repo-contracts.sh`: `failures=0`
-  - `bash scripts/check-doc-traceability.sh`: `failures=0`
-  - `bash scripts/validate-docker-compose.sh`: `Docker Compose validation passed. services_total=5`
-  - `bash scripts/check-template-security-baseline.sh`: pass
-  - `bash scripts/check-quickwin-baseline.sh`: pass
-  - `bash scripts/check-all-hardening.sh`: pass
+  - `bash scripts/validation/check-repo-contracts.sh`: `failures=0`
+  - `bash scripts/validation/check-doc-traceability.sh`: `failures=0`
+  - `bash scripts/validation/validate-docker-compose.sh`: `Docker Compose validation passed. services_total=5`
+  - `bash scripts/validation/check-template-security-baseline.sh`: pass
+  - `bash scripts/validation/check-quickwin-baseline.sh`: pass
+  - `bash scripts/hardening/check-all-hardening.sh`: pass
   - `git diff --check`: pass
   - Semantic QA: fixed malformed stage README links, removed duplicate `docs/90.references/README.md` legacy/template split, and reworded secret-value or shell-history-sensitive examples.

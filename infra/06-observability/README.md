@@ -97,8 +97,8 @@ docker exec infra-alloy alloy run --test /etc/alloy/config.alloy
 
 ## Validation
 
-- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect the observability stack.
-- Run `bash scripts/check-all-hardening.sh` before marking observability documentation ready.
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect the observability stack.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking observability documentation ready.
 
 ## Troubleshooting
 

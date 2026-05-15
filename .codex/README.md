@@ -55,10 +55,10 @@ This README is for:
 
 ## Current Hook Contract
 
-- `SessionStart` uses `scripts/agent-event-hook.sh` to emit project context when the event is supported.
-- `PreToolUse` uses `scripts/agent-event-hook.sh` to emit Graphify advisory context when relevant and Docker Compose guardrail context before matching edits.
-- `PostToolUse` uses `scripts/agent-event-hook.sh`, which delegates to `scripts/post-tool-validate.sh` after file edits when the hook payload includes changed paths.
-- `SessionEnd`, `Stop`, and `PreCompact` route through `scripts/agent-event-hook.sh` for lifecycle-safe advisory context when the runtime supports those events.
+- `SessionStart` uses `scripts/hooks/agent-event-hook.sh` to emit project context when the event is supported.
+- `PreToolUse` uses `scripts/hooks/agent-event-hook.sh` to emit Graphify advisory context when relevant and Docker Compose guardrail context before matching edits.
+- `PostToolUse` uses `scripts/hooks/agent-event-hook.sh`, which delegates to `scripts/hooks/post-tool-validate.sh` after file edits when the hook payload includes changed paths.
+- `SessionEnd`, `Stop`, and `PreCompact` route through `scripts/hooks/agent-event-hook.sh` for lifecycle-safe advisory context when the runtime supports those events.
 - The hook is advisory and must not be treated as the policy source of truth.
 - Agents still follow `AGENTS.md`, provider notes, scope rules, and active sandbox approvals.
 
@@ -83,5 +83,5 @@ This README is for:
 - `../docs/00.agent-governance/agents/`
 - `../docs/00.agent-governance/rules/bootstrap.md`
 - `../.claude/CLAUDE.md`
-- `../scripts/agent-event-hook.sh`
-- `../scripts/post-tool-validate.sh`
+- `../scripts/hooks/agent-event-hook.sh`
+- `../scripts/hooks/post-tool-validate.sh`

@@ -56,7 +56,7 @@ status: draft
 | VAL-PLN-002 | Structural | canonical plan exists in the stage path | `test -f docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md` | exit code 0 |
 | VAL-PLN-003 | Content | changed docs include required related-doc sections | `rg -n "^## Related Documents" AGENTS.md docs/00.agent-governance/scopes/docs.md docs/00.agent-governance/rules/documentation-protocol.md docs/03.specs/07-workflow/agent-design.md docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md` | every changed doc matched |
 | VAL-PLN-004 | Hygiene | no active `docs/superpowers` references remain | `rg -n "docs/superpowers" docs AGENTS.md CLAUDE.md .claude \|\| true` | no matches |
-| VAL-PLN-005 | Traceability | repository doc traceability check passes | `bash scripts/check-doc-traceability.sh` | script exits successfully |
+| VAL-PLN-005 | Traceability | repository doc traceability check passes | `bash scripts/validation/check-doc-traceability.sh` | script exits successfully |
 | VAL-PLN-006 | Filesystem | legacy directory removed | `test ! -d docs/superpowers` | exit code 0 |
 
 ## Risks & Mitigations

@@ -22,7 +22,7 @@
   - `infra/06-observability/docker-compose.yml`
   - `infra/06-observability/loki/{Dockerfile,docker-entrypoint.sh}`
   - `infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
-  - `scripts/check-observability-hardening.sh`
+  - `scripts/hardening/check-observability-hardening.sh`
   - `.github/workflows/ci-quality.yml`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` observability optimization-hardening 문서/README
 
@@ -43,7 +43,7 @@
 | PLN-OBS-002 | Loki/Tempo/Pyroscope 라우팅 경계 명시 | `infra/06-observability/docker-compose.yml` | REQ-PRD-OBS-FUN-01,02 | router/service 라벨 확인 |
 | PLN-OBS-003 | health 기반 의존성 및 cAdvisor healthcheck 보강 | `infra/06-observability/docker-compose.yml` | REQ-PRD-OBS-FUN-03,04 | compose static check |
 | PLN-OBS-004 | Loki/Tempo 커스텀 이미지 하드닝 | `infra/06-observability/loki/*`, `infra/06-observability/tempo/*` | REQ-PRD-OBS-FUN-05 | Dockerfile/entrypoint 패턴 확인 |
-| PLN-OBS-005 | observability 하드닝 기준선 스크립트 추가 | `scripts/check-observability-hardening.sh` | REQ-PRD-OBS-FUN-06 | script pass/fail 동작 |
+| PLN-OBS-005 | observability 하드닝 기준선 스크립트 추가 | `scripts/hardening/check-observability-hardening.sh` | REQ-PRD-OBS-FUN-06 | script pass/fail 동작 |
 | PLN-OBS-006 | CI `observability-hardening` job 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-OBS-FUN-06 | workflow job 확인 |
 | PLN-OBS-007 | PRD~Runbook 문서 세트 생성/갱신 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-OBS-FUN-07 | 상호 링크/README 반영 |
 
@@ -52,9 +52,9 @@
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
 | VAL-OBS-001 | Structural | Observability compose 정적 검증 | `docker compose -f infra/06-observability/docker-compose.yml config` | 오류 없음 |
-| VAL-OBS-002 | Compliance | 관측성 하드닝 기준선 검증 | `bash scripts/check-observability-hardening.sh` | 실패 0건 |
-| VAL-OBS-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-OBS-004 | Traceability | 문서 추적성 검증 | `bash scripts/check-doc-traceability.sh` | 실패 0건 |
+| VAL-OBS-002 | Compliance | 관측성 하드닝 기준선 검증 | `bash scripts/hardening/check-observability-hardening.sh` | 실패 0건 |
+| VAL-OBS-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
+| VAL-OBS-004 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
 
 ## Risks & Mitigations
 

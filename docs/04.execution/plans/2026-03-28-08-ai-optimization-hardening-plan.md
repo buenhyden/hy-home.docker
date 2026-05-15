@@ -22,7 +22,7 @@
 - **In Scope**:
   - `infra/08-ai/ollama/docker-compose.yml`
   - `infra/08-ai/open-webui/docker-compose.yml`
-  - `scripts/check-ai-hardening.sh`
+  - `scripts/hardening/check-ai-hardening.sh`
   - `scripts/README.md`
   - `.github/workflows/ci-quality.yml`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` AI optimization-hardening 문서/README
@@ -44,7 +44,7 @@
 | PLN-AI-002 | Ollama concurrency/queue/resource 상한 명시 | `infra/08-ai/ollama/docker-compose.yml` | REQ-PRD-AI-FUN-02 | env contract 확인 |
 | PLN-AI-003 | Open WebUI stateful 템플릿 정렬 | `infra/08-ai/open-webui/docker-compose.yml` | REQ-PRD-AI-FUN-03 | `template-stateful-med` 확인 |
 | PLN-AI-004 | exporter health-gated dependency 및 healthcheck 보강 | `infra/08-ai/ollama/docker-compose.yml` | REQ-PRD-AI-FUN-04 | `depends_on`/healthcheck 확인 |
-| PLN-AI-005 | AI hardening script + CI 게이트 추가 | `scripts/check-ai-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-AI-FUN-05 | script/CI job 확인 |
+| PLN-AI-005 | AI hardening script + CI 게이트 추가 | `scripts/hardening/check-ai-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-AI-FUN-05 | script/CI job 확인 |
 | PLN-AI-006 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-AI-FUN-06 | 링크 정합성 확인 |
 | PLN-AI-007 | 카탈로그 확장 정책 작업 분해(모델 승격/접근 분리/로그 정책) | Plan/Task/Ops/Guide docs | REQ-PRD-AI-FUN-07 | 태스크/정책 반영 확인 |
 
@@ -54,9 +54,9 @@
 | --- | --- | --- | --- | --- |
 | VAL-AI-001 | Structural | Ollama compose 정적 검증 | `docker compose -f infra/08-ai/ollama/docker-compose.yml config` | 오류 없음 |
 | VAL-AI-002 | Structural | Open WebUI compose 정적 검증 | `docker compose -f infra/08-ai/open-webui/docker-compose.yml config` | 오류 없음 |
-| VAL-AI-003 | Compliance | AI 하드닝 기준선 검증 | `bash scripts/check-ai-hardening.sh` | 실패 0건 |
-| VAL-AI-004 | Baseline | 템플릿/보안 기준선 | `bash scripts/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-AI-005 | Traceability | 문서 추적성 검증 | `bash scripts/check-doc-traceability.sh` | 실패 0건 |
+| VAL-AI-003 | Compliance | AI 하드닝 기준선 검증 | `bash scripts/hardening/check-ai-hardening.sh` | 실패 0건 |
+| VAL-AI-004 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
+| VAL-AI-005 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
 
 ## Risks & Mitigations
 

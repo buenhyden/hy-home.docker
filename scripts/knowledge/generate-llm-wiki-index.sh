@@ -6,7 +6,7 @@ cd "$BASE_DIR"
 
 usage() {
   cat <<'EOF'
-Usage: bash scripts/generate-llm-wiki-index.sh [--check]
+Usage: bash scripts/knowledge/generate-llm-wiki-index.sh [--check]
 
 Generate the repo-local LLM Wiki path index.
 
@@ -59,7 +59,7 @@ ROOT_ENTRYPOINTS = {
 }
 
 REQUIRED_LOCAL_PATHS = {
-    "scripts/generate-llm-wiki-index.sh",
+    "scripts/knowledge/generate-llm-wiki-index.sh",
     "docs/05.operations/guides/llm-wiki-maintenance.md",
     "docs/00.agent-governance/agents/agents/wiki-curator.md",
     ".claude/agents/wiki-curator.md",
@@ -220,7 +220,7 @@ def render(paths: list[str]) -> str:
     lines: list[str] = [
         "---",
         "status: active",
-        "generated_by: scripts/generate-llm-wiki-index.sh",
+        "generated_by: scripts/knowledge/generate-llm-wiki-index.sh",
         "---",
         "",
         "# Reference: LLM Wiki Generated Index",
@@ -245,7 +245,7 @@ def render(paths: list[str]) -> str:
         "",
         "- Repo-relative path links for safe tracked source entrypoints.",
         "- Governance, runtime, documentation, infrastructure, script, and secret-handling policy surfaces.",
-        "- Deterministic refresh through `bash scripts/generate-llm-wiki-index.sh`.",
+        "- Deterministic refresh through `bash scripts/knowledge/generate-llm-wiki-index.sh`.",
         "",
         "### Out of Scope",
         "",
@@ -292,14 +292,14 @@ def render(paths: list[str]) -> str:
         "",
         "- [llms.txt](../../../llms.txt) - root LLM entrypoint and boundary statement",
         "- [repository-map.md](./repository-map.md) - curated canonical source map",
-        "- [generate-llm-wiki-index.sh](../../../scripts/generate-llm-wiki-index.sh) - deterministic generator",
-        "- [check-repo-contracts.sh](../../../scripts/check-repo-contracts.sh) - freshness and safety validator",
+        "- [generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) - deterministic generator",
+        "- [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) - freshness and safety validator",
         "",
         "## Maintenance",
         "",
         "- **Owner**: `wiki-curator`",
         "- **Review Cadence**: Review when root entrypoints, governance, operations docs, script inventory, infrastructure indexes, or LLM Wiki files change",
-        "- **Update Trigger**: Run `bash scripts/generate-llm-wiki-index.sh` after in-scope path changes and `bash scripts/generate-llm-wiki-index.sh --check` during validation",
+        "- **Update Trigger**: Run `bash scripts/knowledge/generate-llm-wiki-index.sh` after in-scope path changes and `bash scripts/knowledge/generate-llm-wiki-index.sh --check` during validation",
         "",
         "## Related Documents",
         "",
@@ -313,7 +313,7 @@ def render(paths: list[str]) -> str:
 
 tracked = git_ls_files()
 tracked.update(path for path in REQUIRED_LOCAL_PATHS if pathlib.Path(path).exists())
-safe_paths = sorted(path for path in tracked if is_safe_candidate(path))
+safe_paths = sorted(path for path in tracked if pathlib.Path(path).exists() and is_safe_candidate(path))
 generated = render(safe_paths)
 
 if MODE == "check":
@@ -323,7 +323,7 @@ if MODE == "check":
     current = OUTPUT.read_text()
     if current != generated:
         print(f"FAIL: stale generated LLM Wiki index: {OUTPUT}", file=sys.stderr)
-        print("Run: bash scripts/generate-llm-wiki-index.sh", file=sys.stderr)
+        print("Run: bash scripts/knowledge/generate-llm-wiki-index.sh", file=sys.stderr)
         sys.exit(1)
     print(f"PASS: generated LLM Wiki index is fresh: {OUTPUT}")
 else:

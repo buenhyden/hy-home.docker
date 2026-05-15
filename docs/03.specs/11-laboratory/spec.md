@@ -34,7 +34,7 @@
   - dozzle docker socket은 `:ro`로 마운트한다.
   - service mount 기반 healthcheck를 제공한다.
 - **Governance Contract**:
-  - `scripts/check-laboratory-hardening.sh` 통과가 hardening 기준선이다.
+  - `scripts/hardening/check-laboratory-hardening.sh` 통과가 hardening 기준선이다.
   - CI `laboratory-hardening` job이 PR 회귀를 차단한다.
 
 ## Core Design
@@ -87,9 +87,9 @@ laboratory_hardening_controls:
 ```bash
 for f in infra/11-laboratory/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done
 for f in infra/11-laboratory/dozzle/docker-compose.yml infra/11-laboratory/redisinsight/docker-compose.yml; do docker compose --profile admin -f "$f" config >/dev/null; done
-bash scripts/check-laboratory-hardening.sh
-bash scripts/check-template-security-baseline.sh
-bash scripts/check-doc-traceability.sh
+bash scripts/hardening/check-laboratory-hardening.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-doc-traceability.sh
 ```
 
 ## Success Criteria & Verification Plan

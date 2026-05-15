@@ -11,13 +11,13 @@
       "Bash(docker compose logs:*)",
       "Bash(docker inspect:*)",
       "Bash(docker image ls:*)",
-      "Bash(bash scripts/validate-docker-compose.sh:*)",
-      "Bash(bash scripts/check-all-hardening.sh:*)",
-      "Bash(bash scripts/check-doc-traceability.sh:*)",
-      "Bash(bash scripts/check-repo-contracts.sh:*)",
-      "Bash(bash scripts/check-quickwin-baseline.sh:*)",
-      "Bash(bash scripts/check-template-security-baseline.sh:*)",
-      "Bash(bash scripts/report-graphify-health.sh:*)"
+      "Bash(bash scripts/validation/validate-docker-compose.sh:*)",
+      "Bash(bash scripts/hardening/check-all-hardening.sh:*)",
+      "Bash(bash scripts/validation/check-doc-traceability.sh:*)",
+      "Bash(bash scripts/validation/check-repo-contracts.sh:*)",
+      "Bash(bash scripts/validation/check-quickwin-baseline.sh:*)",
+      "Bash(bash scripts/validation/check-template-security-baseline.sh:*)",
+      "Bash(bash scripts/knowledge/report-graphify-health.sh:*)"
     ],
     "deny": [
       "Bash(docker system prune:*)",

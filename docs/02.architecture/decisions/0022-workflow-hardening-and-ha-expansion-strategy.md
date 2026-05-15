@@ -15,7 +15,7 @@ Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 rac
   - Airflow 핵심 서비스에 Valkey health 기반 의존성을 부여한다.
   - n8n worker/task-runner healthcheck와 dependency gating을 추가한다.
   - n8n custom image를 compose 기본 이미지로 승격하고 non-root + secret guard를 강제한다.
-  - `scripts/check-workflow-hardening.sh`와 CI `workflow-hardening` job을 도입한다.
+  - `scripts/hardening/check-workflow-hardening.sh`와 CI `workflow-hardening` job을 도입한다.
 - 카탈로그 확장은 단계적으로 시행한다.
   - Airflow DAG quality gate/worker autoscale 기준 문서화 및 점진 도입
   - n8n workflow Git backup/Vault credential 연계 표준화

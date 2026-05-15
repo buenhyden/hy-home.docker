@@ -34,7 +34,7 @@
 - **Data / Interface Contract**:
   - tooling 서비스는 기존 PostgreSQL/Valkey/MinIO/InfluxDB 연계를 유지한다.
 - **Governance Contract**:
-  - `scripts/check-tooling-hardening.sh` 통과가 tooling tier 하드닝 기준선이다.
+  - `scripts/hardening/check-tooling-hardening.sh` 통과가 tooling tier 하드닝 기준선이다.
   - CI `tooling-hardening` job이 PR 단계에서 회귀를 차단한다.
 
 ## Core Design
@@ -101,9 +101,9 @@ docker compose -f infra/09-tooling/syncthing/docker-compose.yml config
 docker compose -f infra/09-tooling/locust/docker-compose.yml config
 docker compose -f infra/09-tooling/k6/docker-compose.yml config
 docker compose -f infra/09-tooling/terraform/docker-compose.yml config
-bash scripts/check-tooling-hardening.sh
-bash scripts/check-template-security-baseline.sh
-bash scripts/check-doc-traceability.sh
+bash scripts/hardening/check-tooling-hardening.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-doc-traceability.sh
 ```
 
 ## Success Criteria & Verification Plan

@@ -57,14 +57,14 @@ python3 -m json.tool .claude/settings.json >/dev/null
 bash -n .claude/hooks/*.sh scripts/*.sh
 printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
 CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
-printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/post-tool-validate.sh
-bash scripts/report-graphify-health.sh
-bash scripts/check-repo-contracts.sh
-bash scripts/check-doc-traceability.sh
-bash scripts/validate-docker-compose.sh
-bash scripts/check-template-security-baseline.sh
-bash scripts/check-quickwin-baseline.sh
-bash scripts/check-all-hardening.sh
+printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
+bash scripts/knowledge/report-graphify-health.sh
+bash scripts/validation/check-repo-contracts.sh
+bash scripts/validation/check-doc-traceability.sh
+bash scripts/validation/validate-docker-compose.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-quickwin-baseline.sh
+bash scripts/hardening/check-all-hardening.sh
 ! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md GEMINI.md .claude .codex docs/00.agent-governance --glob '!docs/00.agent-governance/memory/**'
 ```
 
@@ -91,7 +91,7 @@ bash scripts/check-all-hardening.sh
 - Stage docs exist and contain `## Related Documents`.
 - Parent README files keep references to the stage docs.
 - Claude hook payload simulations return JSON/system-message output without command substitution side effects.
-- `bash scripts/report-graphify-health.sh` exits 0 and reports clean or advisory without being treated as architecture authority when advisory.
+- `bash scripts/knowledge/report-graphify-health.sh` exits 0 and reports clean or advisory without being treated as architecture authority when advisory.
 - Repository contract, docs traceability, default/core Compose, template/security, QuickWin, and supported hardening checks pass.
 - Source-label scan returns no active runtime/governance matches.
 - `10-communication` remediation remains documented as out of scope for this pass.

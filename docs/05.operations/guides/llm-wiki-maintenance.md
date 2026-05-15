@@ -10,7 +10,7 @@ status: active
 
 ## Policy Scope
 
-이 가이드는 루트 `llms.txt`, `docs/90.references/llm-wiki/`, `scripts/generate-llm-wiki-index.sh`, `wiki-curator` 역할의 운영 절차를 다룬다.
+이 가이드는 루트 `llms.txt`, `docs/90.references/llm-wiki/`, `scripts/knowledge/generate-llm-wiki-index.sh`, `wiki-curator` 역할의 운영 절차를 다룬다.
 
 ## Applies To
 
@@ -29,8 +29,8 @@ status: active
 - **Required**:
   - Keep `llms.txt` as a thin entrypoint.
   - Keep `repository-map.md` curated and source-backed.
-  - Regenerate `docs/90.references/llm-wiki/index.md` with `bash scripts/generate-llm-wiki-index.sh`.
-  - Verify freshness with `bash scripts/generate-llm-wiki-index.sh --check`.
+  - Regenerate `docs/90.references/llm-wiki/index.md` with `bash scripts/knowledge/generate-llm-wiki-index.sh`.
+  - Verify freshness with `bash scripts/knowledge/generate-llm-wiki-index.sh --check`.
 - **Allowed**:
   - Link to tracked source paths, README files, governance docs, operations docs, scripts, and infrastructure indexes.
   - Use Graphify output as advisory navigation context when corroborated with tracked source files.
@@ -46,26 +46,26 @@ status: active
 2. Run the generator.
 
    ```bash
-   bash scripts/generate-llm-wiki-index.sh
+   bash scripts/knowledge/generate-llm-wiki-index.sh
    ```
 
 3. Confirm the generated index is fresh.
 
    ```bash
-   bash scripts/generate-llm-wiki-index.sh --check
+   bash scripts/knowledge/generate-llm-wiki-index.sh --check
    ```
 
 4. Run repository contracts after LLM Wiki changes.
 
    ```bash
-   bash scripts/check-repo-contracts.sh
-   bash scripts/check-doc-traceability.sh
+   bash scripts/validation/check-repo-contracts.sh
+   bash scripts/validation/check-doc-traceability.sh
    ```
 
 5. If Graphify output is needed for navigation, report its advisory health instead of treating it as source truth.
 
    ```bash
-   bash scripts/report-graphify-health.sh
+   bash scripts/knowledge/report-graphify-health.sh
    ```
 
 ## Exceptions
@@ -76,9 +76,9 @@ status: active
 
 ## Verification
 
-- `bash scripts/generate-llm-wiki-index.sh --check` passes.
-- `bash scripts/check-repo-contracts.sh` passes.
-- `bash scripts/check-doc-traceability.sh` passes.
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` passes.
+- `bash scripts/validation/check-repo-contracts.sh` passes.
+- `bash scripts/validation/check-doc-traceability.sh` passes.
 - LLM Wiki files contain no absolute filesystem links, filesystem URI links, public-site scope drift, or Graphify-as-authority wording.
 
 ## Review Cadence
@@ -99,4 +99,4 @@ status: active
 - **Plan**: [../../04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md](../../04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md)
 - **Task**: [../../04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md](../../04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md)
 - **LLM Wiki References**: [../../90.references/llm-wiki/README.md](../../90.references/llm-wiki/README.md)
-- **Generator**: [../../../scripts/generate-llm-wiki-index.sh](../../../scripts/generate-llm-wiki-index.sh)
+- **Generator**: [../../../scripts/knowledge/generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh)

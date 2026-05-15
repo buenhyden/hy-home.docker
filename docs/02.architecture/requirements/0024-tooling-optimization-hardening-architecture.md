@@ -70,7 +70,7 @@ Tooling tier는 플랫폼 운영 품질을 담당하는 control plane 성격의 
   - 서비스별 독립 compose + 공통 template(`common-optimizations.yml`)
 - **Operational Evidence**:
   - compose static checks
-  - `scripts/check-tooling-hardening.sh`
+  - `scripts/hardening/check-tooling-hardening.sh`
   - CI `tooling-hardening` job
 
 ## Catalog-aligned Expansion Targets

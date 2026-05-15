@@ -21,7 +21,7 @@
 - **In Scope**:
   - `infra/07-workflow/airflow/docker-compose.yml`
   - `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,docker-entrypoint.sh}`
-  - `scripts/check-workflow-hardening.sh`
+  - `scripts/hardening/check-workflow-hardening.sh`
   - `scripts/README.md`
   - `.github/workflows/ci-quality.yml`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` workflow optimization-hardening 문서/README
@@ -43,7 +43,7 @@
 | PLN-WRK-002 | Airflow health-gated dependency 강화 | `infra/07-workflow/airflow/docker-compose.yml` | REQ-PRD-WRK-FUN-02 | `service_healthy` 계약 확인 |
 | PLN-WRK-003 | n8n worker/task-runner health/dependency 보강 | `infra/07-workflow/n8n/docker-compose.yml` | REQ-PRD-WRK-FUN-03 | healthcheck/depends_on 확인 |
 | PLN-WRK-004 | n8n custom image 및 entrypoint hardening 반영 | `infra/07-workflow/n8n/{Dockerfile,docker-entrypoint.sh,docker-compose.yml}` | REQ-PRD-WRK-FUN-04 | non-root/secret guard 확인 |
-| PLN-WRK-005 | workflow hardening script + CI 게이트 추가 | `scripts/check-workflow-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-WRK-FUN-05 | script/CI job 확인 |
+| PLN-WRK-005 | workflow hardening script + CI 게이트 추가 | `scripts/hardening/check-workflow-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-WRK-FUN-05 | script/CI job 확인 |
 | PLN-WRK-006 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-WRK-FUN-06 | 링크 정합성 확인 |
 | PLN-WRK-007 | 카탈로그 확장 항목 작업 분해(Airflow/n8n/airbyte) | Plan/Task/Ops/Guide docs | REQ-PRD-WRK-FUN-07 | 태스크/정책 반영 확인 |
 
@@ -53,9 +53,9 @@
 | --- | --- | --- | --- | --- |
 | VAL-WRK-001 | Structural | Airflow compose 정적 검증 | `docker compose -f infra/07-workflow/airflow/docker-compose.yml config` | 오류 없음 |
 | VAL-WRK-002 | Structural | n8n compose 정적 검증 | `docker compose -f infra/07-workflow/n8n/docker-compose.yml config` | 오류 없음 |
-| VAL-WRK-003 | Compliance | workflow 하드닝 기준선 검증 | `bash scripts/check-workflow-hardening.sh` | 실패 0건 |
-| VAL-WRK-004 | Baseline | 템플릿/보안 기준선 | `bash scripts/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-WRK-005 | Traceability | 문서 추적성 검증 | `bash scripts/check-doc-traceability.sh` | 실패 0건 |
+| VAL-WRK-003 | Compliance | workflow 하드닝 기준선 검증 | `bash scripts/hardening/check-workflow-hardening.sh` | 실패 0건 |
+| VAL-WRK-004 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
+| VAL-WRK-005 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
 
 ## Risks & Mitigations
 

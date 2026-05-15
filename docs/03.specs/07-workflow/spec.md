@@ -35,7 +35,7 @@
   - Airflow: CeleryExecutor + Valkey broker + PostgreSQL result backend
   - n8n: Queue mode + external runner + PostgreSQL metadata backend
 - **Governance Contract**:
-  - `scripts/check-workflow-hardening.sh` 통과가 workflow tier 하드닝 기본선이다.
+  - `scripts/hardening/check-workflow-hardening.sh` 통과가 workflow tier 하드닝 기본선이다.
   - CI `workflow-hardening` job이 PR 단계에서 회귀를 차단한다.
 
 ## Core Design
@@ -94,9 +94,9 @@ workflow_hardening_controls:
 ```bash
 docker compose -f infra/07-workflow/airflow/docker-compose.yml config
 docker compose -f infra/07-workflow/n8n/docker-compose.yml config
-bash scripts/check-workflow-hardening.sh
-bash scripts/check-template-security-baseline.sh
-bash scripts/check-doc-traceability.sh
+bash scripts/hardening/check-workflow-hardening.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-doc-traceability.sh
 ```
 
 ## Success Criteria & Verification Plan

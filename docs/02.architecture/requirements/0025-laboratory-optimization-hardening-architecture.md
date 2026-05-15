@@ -53,7 +53,7 @@ Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 
   - Service별 compose + 공통 template(`infra/common-optimizations.yml`)
 - **Operational Evidence**:
   - compose static checks
-  - `scripts/check-laboratory-hardening.sh`
+  - `scripts/hardening/check-laboratory-hardening.sh`
   - CI `laboratory-hardening` job
 
 ## Catalog-aligned Expansion Targets

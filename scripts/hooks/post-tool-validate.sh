@@ -109,10 +109,10 @@ if [[ "$run_bash" -eq 1 ]]; then
 fi
 
 if [[ "$run_compose" -eq 1 ]]; then
-  bash scripts/validate-docker-compose.sh
+  bash scripts/validation/validate-docker-compose.sh
 fi
 
 if [[ "$run_governance" -eq 1 ]]; then
-  bash scripts/check-repo-contracts.sh
-  bash scripts/check-doc-traceability.sh
+  bash scripts/validation/check-repo-contracts.sh
+  bash scripts/validation/check-doc-traceability.sh
 fi

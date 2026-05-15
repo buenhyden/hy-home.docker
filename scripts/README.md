@@ -24,7 +24,7 @@
 - Repo-local LLM Wiki index generation and freshness checks.
 - Tier hardening checks and their shared helper library.
 - Local manual utility scripts for preflight checks, safe secret file generation, local certificate generation, and Vault AppRole bootstrap.
-- Script inventory and lifecycle ownership rules for root-level `scripts/*.sh` files.
+- Script inventory and lifecycle ownership rules for canonical purpose-folder paths.
 
 ### Out of Scope
 
@@ -37,9 +37,8 @@
 
 ```text
 scripts/
-├── *.sh                 # Root compatibility wrappers for public commands
-├── validation/          # Compose, repo, docs, template, quickwin, and preflight implementations
-├── hardening/           # Unified and tier-specific hardening implementations
+├── validation/          # Compose, repo, docs, template, quickwin, and preflight checks
+├── hardening/           # Unified and tier-specific hardening checks
 ├── hooks/               # Provider-neutral hook dispatcher and post-tool validation
 ├── knowledge/           # LLM Wiki and Graphify advisory utilities
 ├── operations/          # Manual local cert, Vault AppRole, and secret-generation utilities
@@ -50,96 +49,69 @@ scripts/
 
 ## Purpose Folder Implementation
 
-Root `scripts/*.sh` files are stable compatibility wrappers. They preserve the
-existing public command surface while purpose-folder implementations carry the
-actual logic. Workflow, hook, documentation, CI, and pre-commit references may
-continue to use root compatibility wrappers.
+The canonical script surface is the purpose-folder path. Root-level
+`scripts/*.sh` duplicates were removed after docs, CI, hooks, and pre-commit
+references moved to purpose-folder paths. Do not recreate root duplicate
+wrappers unless a future approved compatibility plan explicitly requires them.
 
-| Purpose | Implementation folder | Root compatibility wrappers |
-| :--- | :--- | :--- |
-| Validation | `scripts/validation/` | `validate-docker-compose.sh`, `check-repo-contracts.sh`, `check-doc-traceability.sh`, `check-quickwin-baseline.sh`, `check-template-security-baseline.sh`, `preflight-compose.sh` |
-| Hardening | `scripts/hardening/` | `check-all-hardening.sh`, `check-*-hardening.sh` |
-| Hooks | `scripts/hooks/` | `agent-event-hook.sh`, `post-tool-validate.sh` |
-| Knowledge | `scripts/knowledge/` | `generate-llm-wiki-index.sh`, `report-graphify-health.sh` |
-| Operations | `scripts/operations/` | `generate-local-certs.sh`, `bootstrap-vault-approle.sh`, `gen-secrets.sh` |
-| Libraries | `scripts/lib/` | `lib/hardening-lib.sh` |
+| Purpose | Canonical paths |
+| :--- | :--- |
+| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/validation/preflight-compose.sh` |
+| Hardening | `scripts/hardening/check-all-hardening.sh`, `scripts/hardening/check-gateway-hardening.sh`, `scripts/hardening/check-auth-hardening.sh`, `scripts/hardening/check-security-hardening.sh`, `scripts/hardening/check-data-hardening.sh`, `scripts/hardening/check-messaging-hardening.sh`, `scripts/hardening/check-observability-hardening.sh`, `scripts/hardening/check-workflow-hardening.sh`, `scripts/hardening/check-ai-hardening.sh`, `scripts/hardening/check-tooling-hardening.sh`, `scripts/hardening/check-laboratory-hardening.sh` |
+| Hooks | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh` |
+| Knowledge | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/report-graphify-health.sh` |
+| Operations | `scripts/operations/generate-local-certs.sh`, `scripts/operations/bootstrap-vault-approle.sh`, `scripts/operations/gen-secrets.sh` |
+| Libraries | `scripts/lib/hardening-lib.sh` |
 
 ## How to Work in This Area
 
-1. Read this README before adding, renaming, or removing a root script.
-2. Keep every root `scripts/*.sh` file listed in the inventory below.
-3. Reference non-standalone root scripts from a repository entrypoint, stage document, runtime hook, or CI workflow.
-4. Use `scripts/check-repo-contracts.sh` to verify script inventory, external references, and library usage.
-5. Keep secret-related examples procedural only; do not print or document generated secret values.
-6. Preserve root compatibility wrappers unless an approved follow-up migrates all hooks, workflows, docs, pre-commit entries, and user-facing command examples.
+1. Read this README before adding, renaming, or removing a script.
+2. Place new scripts under the existing purpose folder that owns the behavior.
+3. Do not add root-level `scripts/*.sh` duplicates for purpose-folder scripts.
+4. Reference canonical purpose-folder paths from docs, CI, hooks, and pre-commit entries.
+5. Use `scripts/validation/check-repo-contracts.sh` to verify script inventory, references, and library usage.
+6. Keep secret-related examples procedural only; do not print or document generated secret values.
 
 ## Navigation / Inventory
 
 | Component | Path | Purpose |
 | :--- | :--- | :--- |
-| Docker Validation | [validate-docker-compose.sh](./validate-docker-compose.sh) | Validate root compose config |
-| Repo Contract Check | [check-repo-contracts.sh](./check-repo-contracts.sh) | Enforce docs, GitHub, script, image, and runtime governance contracts |
-| QuickWin Baseline Check | [check-quickwin-baseline.sh](./check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
-| Template & Security Baseline Check | [check-template-security-baseline.sh](./check-template-security-baseline.sh) | Enforce template adoption and required security controls |
-| Documentation Traceability Check | [check-doc-traceability.sh](./check-doc-traceability.sh) | Enforce sync links across 04.execution/plans ↔ 05.operations |
-| LLM Wiki Index Generator | [generate-llm-wiki-index.sh](./generate-llm-wiki-index.sh) | Generate and check the repo-local LLM Wiki path index |
-| Graphify Health Report | [report-graphify-health.sh](./report-graphify-health.sh) | Report advisory health of generated Graphify corpus without blocking validation |
-| Agent Event Hook | [agent-event-hook.sh](./agent-event-hook.sh) | Dispatch Claude/Codex hook events to provider-neutral repository behavior |
-| Post Tool Validation | [post-tool-validate.sh](./post-tool-validate.sh) | Run path-aware validation after Claude/Codex file edits |
-| Unified Hardening Check | [check-all-hardening.sh](./check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
-| Gateway Hardening Check | [check-gateway-hardening.sh](./check-gateway-hardening.sh) | Enforce 01-gateway Traefik/Nginx hardening baseline |
-| Auth Hardening Check | [check-auth-hardening.sh](./check-auth-hardening.sh) | Enforce 02-auth Keycloak/OAuth2 Proxy hardening baseline |
-| Security Hardening Check | [check-security-hardening.sh](./check-security-hardening.sh) | Enforce 03-security Vault hardening baseline |
-| Data Hardening Check | [check-data-hardening.sh](./check-data-hardening.sh) | Enforce 04-data service hardening baseline |
-| Messaging Hardening Check | [check-messaging-hardening.sh](./check-messaging-hardening.sh) | Enforce 05-messaging service hardening baseline |
-| Observability Hardening Check | [check-observability-hardening.sh](./check-observability-hardening.sh) | Enforce 06-observability service hardening baseline |
-| Workflow Hardening Check | [check-workflow-hardening.sh](./check-workflow-hardening.sh) | Enforce 07-workflow service hardening baseline |
-| AI Hardening Check | [check-ai-hardening.sh](./check-ai-hardening.sh) | Enforce 08-ai service hardening baseline |
-| Tooling Hardening Check | [check-tooling-hardening.sh](./check-tooling-hardening.sh) | Enforce 09-tooling service hardening baseline |
-| Laboratory Hardening Check | [check-laboratory-hardening.sh](./check-laboratory-hardening.sh) | Enforce 11-laboratory service hardening baseline |
-| Preflight Check | [preflight-compose.sh](./preflight-compose.sh) | Bootstrap prerequisite validation |
-| Secret Generation | [gen-secrets.sh](./gen-secrets.sh) | Generate local Docker secret files; use safe modes before default generation |
-| Cert Generation | [generate-local-certs.sh](./generate-local-certs.sh) | Generate local TLS files |
-| Vault AppRole Bootstrap | [bootstrap-vault-approle.sh](./bootstrap-vault-approle.sh) | Configure Vault Agent AppRole credentials after Vault is running and unsealed |
-
-## Implementation Layout
-
-| Root wrapper | Implementation path |
-| :--- | :--- |
-| `scripts/validate-docker-compose.sh` | `scripts/validation/validate-docker-compose.sh` |
-| `scripts/check-repo-contracts.sh` | `scripts/validation/check-repo-contracts.sh` |
-| `scripts/check-doc-traceability.sh` | `scripts/validation/check-doc-traceability.sh` |
-| `scripts/check-quickwin-baseline.sh` | `scripts/validation/check-quickwin-baseline.sh` |
-| `scripts/check-template-security-baseline.sh` | `scripts/validation/check-template-security-baseline.sh` |
-| `scripts/preflight-compose.sh` | `scripts/validation/preflight-compose.sh` |
-| `scripts/check-all-hardening.sh` | `scripts/hardening/check-all-hardening.sh` |
-| `scripts/check-*-hardening.sh` | `scripts/hardening/check-*-hardening.sh` |
-| `scripts/agent-event-hook.sh` | `scripts/hooks/agent-event-hook.sh` |
-| `scripts/post-tool-validate.sh` | `scripts/hooks/post-tool-validate.sh` |
-| `scripts/generate-llm-wiki-index.sh` | `scripts/knowledge/generate-llm-wiki-index.sh` |
-| `scripts/report-graphify-health.sh` | `scripts/knowledge/report-graphify-health.sh` |
-| `scripts/generate-local-certs.sh` | `scripts/operations/generate-local-certs.sh` |
-| `scripts/bootstrap-vault-approle.sh` | `scripts/operations/bootstrap-vault-approle.sh` |
-| `scripts/gen-secrets.sh` | `scripts/operations/gen-secrets.sh` |
+| Docker Validation | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) | Validate root compose config |
+| Repo Contract Check | [check-repo-contracts.sh](./validation/check-repo-contracts.sh) | Enforce docs, GitHub, script, image, and runtime governance contracts |
+| QuickWin Baseline Check | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
+| Template & Security Baseline Check | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh) | Enforce template adoption and required security controls |
+| Documentation Traceability Check | [check-doc-traceability.sh](./validation/check-doc-traceability.sh) | Enforce sync links across 04.execution/plans ↔ 05.operations |
+| LLM Wiki Index Generator | [generate-llm-wiki-index.sh](./knowledge/generate-llm-wiki-index.sh) | Generate and check the repo-local LLM Wiki path index |
+| Graphify Health Report | [report-graphify-health.sh](./knowledge/report-graphify-health.sh) | Report advisory health of generated Graphify corpus without blocking validation |
+| Agent Event Hook | [agent-event-hook.sh](./hooks/agent-event-hook.sh) | Dispatch Claude/Codex hook events to provider-neutral repository behavior |
+| Post Tool Validation | [post-tool-validate.sh](./hooks/post-tool-validate.sh) | Run path-aware validation after Claude/Codex file edits |
+| Unified Hardening Check | [check-all-hardening.sh](./hardening/check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
+| Gateway Hardening Check | [check-gateway-hardening.sh](./hardening/check-gateway-hardening.sh) | Enforce 01-gateway Traefik/Nginx hardening baseline |
+| Auth Hardening Check | [check-auth-hardening.sh](./hardening/check-auth-hardening.sh) | Enforce 02-auth Keycloak/OAuth2 Proxy hardening baseline |
+| Security Hardening Check | [check-security-hardening.sh](./hardening/check-security-hardening.sh) | Enforce 03-security Vault hardening baseline |
+| Data Hardening Check | [check-data-hardening.sh](./hardening/check-data-hardening.sh) | Enforce 04-data service hardening baseline |
+| Messaging Hardening Check | [check-messaging-hardening.sh](./hardening/check-messaging-hardening.sh) | Enforce 05-messaging service hardening baseline |
+| Observability Hardening Check | [check-observability-hardening.sh](./hardening/check-observability-hardening.sh) | Enforce 06-observability service hardening baseline |
+| Workflow Hardening Check | [check-workflow-hardening.sh](./hardening/check-workflow-hardening.sh) | Enforce 07-workflow service hardening baseline |
+| AI Hardening Check | [check-ai-hardening.sh](./hardening/check-ai-hardening.sh) | Enforce 08-ai service hardening baseline |
+| Tooling Hardening Check | [check-tooling-hardening.sh](./hardening/check-tooling-hardening.sh) | Enforce 09-tooling service hardening baseline |
+| Laboratory Hardening Check | [check-laboratory-hardening.sh](./hardening/check-laboratory-hardening.sh) | Enforce 11-laboratory service hardening baseline |
+| Preflight Check | [preflight-compose.sh](./validation/preflight-compose.sh) | Bootstrap prerequisite validation |
+| Secret Generation | [gen-secrets.sh](./operations/gen-secrets.sh) | Generate local Docker secret files; use safe modes before default generation |
+| Cert Generation | [generate-local-certs.sh](./operations/generate-local-certs.sh) | Generate local TLS files |
+| Vault AppRole Bootstrap | [bootstrap-vault-approle.sh](./operations/bootstrap-vault-approle.sh) | Configure Vault Agent AppRole credentials after Vault is running and unsealed |
 
 ## Script Lifecycle
 
 | Lifecycle | Scripts |
 | :--- | :--- |
-| CI / quality gate | `check-repo-contracts.sh`, `validate-docker-compose.sh`, `check-doc-traceability.sh`, `check-quickwin-baseline.sh`, `check-template-security-baseline.sh`, `check-all-hardening.sh`, `generate-llm-wiki-index.sh --check` |
-| Advisory evidence | `report-graphify-health.sh` |
-| Runtime hook | `agent-event-hook.sh`, `post-tool-validate.sh` |
-| Tier wrapper | `check-gateway-hardening.sh`, `check-auth-hardening.sh`, `check-security-hardening.sh`, `check-data-hardening.sh`, `check-messaging-hardening.sh`, `check-observability-hardening.sh`, `check-workflow-hardening.sh`, `check-ai-hardening.sh`, `check-tooling-hardening.sh`, `check-laboratory-hardening.sh` |
-| Manual operations | `preflight-compose.sh`, `gen-secrets.sh`, `generate-local-certs.sh`, `bootstrap-vault-approle.sh` |
-| Generated index maintenance | `generate-llm-wiki-index.sh` |
+| CI / quality gate | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/knowledge/generate-llm-wiki-index.sh --check` |
+| Advisory evidence | `scripts/knowledge/report-graphify-health.sh` |
+| Runtime hook | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh` |
+| Tier hardening | `scripts/hardening/check-gateway-hardening.sh`, `scripts/hardening/check-auth-hardening.sh`, `scripts/hardening/check-security-hardening.sh`, `scripts/hardening/check-data-hardening.sh`, `scripts/hardening/check-messaging-hardening.sh`, `scripts/hardening/check-observability-hardening.sh`, `scripts/hardening/check-workflow-hardening.sh`, `scripts/hardening/check-ai-hardening.sh`, `scripts/hardening/check-tooling-hardening.sh`, `scripts/hardening/check-laboratory-hardening.sh` |
+| Manual operations | `scripts/validation/preflight-compose.sh`, `scripts/operations/gen-secrets.sh`, `scripts/operations/generate-local-certs.sh`, `scripts/operations/bootstrap-vault-approle.sh` |
+| Generated index maintenance | `scripts/knowledge/generate-llm-wiki-index.sh` |
 | Internal library | `scripts/lib/hardening-lib.sh` |
-
-Root scripts must stay listed in this README and must remain wrappers for their
-purpose-folder implementation. A root script that is intended to remain
-standalone without an external repository reference must be explicitly listed in
-the external-reference exemption set in `check-repo-contracts.sh`. All other root
-scripts must be referenced by a repository entrypoint, stage document, runtime
-hook, or CI workflow.
 
 ---
 
@@ -155,83 +127,83 @@ hook, or CI workflow.
 
 ```bash
 # Run preflight check
-./scripts/preflight-compose.sh
+./scripts/validation/preflight-compose.sh
 
 # Enforce repository contracts
-./scripts/check-repo-contracts.sh
+./scripts/validation/check-repo-contracts.sh
 
 # Enforce Quick Win baseline
-./scripts/check-quickwin-baseline.sh
+./scripts/validation/check-quickwin-baseline.sh
 
 # Enforce Quick Win baseline for an explicit compose profile set
 # Fails when any selected profile has baseline violations.
-HYHOME_COMPOSE_PROFILES="core dev" ./scripts/check-quickwin-baseline.sh
+HYHOME_COMPOSE_PROFILES="core dev" ./scripts/validation/check-quickwin-baseline.sh
 
 # Enforce template + security baseline
-./scripts/check-template-security-baseline.sh
+./scripts/validation/check-template-security-baseline.sh
 
 # Enforce documentation traceability sync
-./scripts/check-doc-traceability.sh
+./scripts/validation/check-doc-traceability.sh
 
 # Generate the repo-local LLM Wiki path index
-bash scripts/generate-llm-wiki-index.sh
+bash scripts/knowledge/generate-llm-wiki-index.sh
 
 # Verify the repo-local LLM Wiki path index is fresh
-bash scripts/generate-llm-wiki-index.sh --check
+bash scripts/knowledge/generate-llm-wiki-index.sh --check
 
 # Report advisory Graphify corpus health
-./scripts/report-graphify-health.sh
+./scripts/knowledge/report-graphify-health.sh
 
 # Dispatch a provider-neutral PreToolUse hook event
-printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | bash scripts/agent-event-hook.sh PreToolUse
+printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | bash scripts/hooks/agent-event-hook.sh PreToolUse
 
 # Run provider-neutral post-edit validation from hook payload
-./scripts/post-tool-validate.sh
+./scripts/hooks/post-tool-validate.sh
 
 # Enforce all tier hardening baselines
-./scripts/check-all-hardening.sh
+./scripts/hardening/check-all-hardening.sh
 
 # Enforce one selected tier
-./scripts/check-all-hardening.sh 01-gateway
+./scripts/hardening/check-all-hardening.sh 01-gateway
 
 # Enforce 01-gateway hardening baseline
-./scripts/check-gateway-hardening.sh
+./scripts/hardening/check-gateway-hardening.sh
 
 # Enforce 02-auth hardening baseline
-./scripts/check-auth-hardening.sh
+./scripts/hardening/check-auth-hardening.sh
 
 # Enforce 03-security hardening baseline
-./scripts/check-security-hardening.sh
+./scripts/hardening/check-security-hardening.sh
 
 # Enforce 04-data hardening baseline
-./scripts/check-data-hardening.sh
+./scripts/hardening/check-data-hardening.sh
 
 # Enforce 05-messaging hardening baseline
-./scripts/check-messaging-hardening.sh
+./scripts/hardening/check-messaging-hardening.sh
 
 # Enforce 06-observability hardening baseline
-./scripts/check-observability-hardening.sh
+./scripts/hardening/check-observability-hardening.sh
 
 # Enforce 07-workflow hardening baseline
-./scripts/check-workflow-hardening.sh
+./scripts/hardening/check-workflow-hardening.sh
 
 # Enforce 08-ai hardening baseline
-./scripts/check-ai-hardening.sh
+./scripts/hardening/check-ai-hardening.sh
 
 # Enforce 09-tooling hardening baseline
-./scripts/check-tooling-hardening.sh
+./scripts/hardening/check-tooling-hardening.sh
 
 # Enforce 11-laboratory hardening baseline
-./scripts/check-laboratory-hardening.sh
+./scripts/hardening/check-laboratory-hardening.sh
 
 # Inspect secret-generation readiness without reading or writing secret values
-./scripts/gen-secrets.sh --check
+./scripts/operations/gen-secrets.sh --check
 
 # Preview secret-generation actions by ID/path only
-./scripts/gen-secrets.sh --dry-run
+./scripts/operations/gen-secrets.sh --dry-run
 
 # Generate local TLS certificates
-bash scripts/generate-local-certs.sh
+bash scripts/operations/generate-local-certs.sh
 
 ```
 

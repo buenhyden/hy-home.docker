@@ -32,7 +32,7 @@ The bootstrap sequence, agentic rule, task checklist, governance hub, memory tem
 
 ## Prevention
 
-Keep active policy in `rules/`, `scopes/`, provider overlays, root shims, and runtime files. Use `progress.md` as the running work log and memory index, use `docs/99.templates/memory.template.md` for memory notes that should survive a single task, then validate the memory contract through `scripts/check-repo-contracts.sh`.
+Keep active policy in `rules/`, `scopes/`, provider overlays, root shims, and runtime files. Use `progress.md` as the running work log and memory index, use `docs/99.templates/memory.template.md` for memory notes that should survive a single task, then validate the memory contract through `scripts/validation/check-repo-contracts.sh`.
 
 ## Evidence
 
@@ -43,4 +43,4 @@ Keep active policy in `rules/`, `scopes/`, provider overlays, root shims, and ru
 - `docs/00.agent-governance/rules/task-checklists.md`
 - `docs/99.templates/memory.template.md`
 - `docs/99.templates/progress.template.md`
-- `scripts/check-repo-contracts.sh`
+- `scripts/validation/check-repo-contracts.sh`

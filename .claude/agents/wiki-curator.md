@@ -31,7 +31,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 2. **Tracked-source boundary**: use repository paths and canonical documents as evidence.
 3. **Secret safety**: treat `secrets/README.md` as policy context only and do not inspect secret contents.
 4. **No Graphify authority**: use `graphify-out/` only as advisory context when corpus health allows it.
-5. **Freshness by command**: run `bash scripts/generate-llm-wiki-index.sh --check` before closing LLM Wiki work.
+5. **Freshness by command**: run `bash scripts/knowledge/generate-llm-wiki-index.sh --check` before closing LLM Wiki work.
 
 ## Input / Output Protocol
 
@@ -41,7 +41,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 
 ## Error Handling
 
-- Missing generator or stale index -> run `bash scripts/generate-llm-wiki-index.sh`, then rerun `--check`.
+- Missing generator or stale index -> run `bash scripts/knowledge/generate-llm-wiki-index.sh`, then rerun `--check`.
 - Unsafe path candidate -> exclude it from the index and record the reason in the maintenance guide if the exclusion is durable.
 - Broken LLM Wiki link -> fix the canonical link or remove the stale entry.
 - Ambiguous source authority -> prefer tracked source files and escalate if a human decision is required.
@@ -58,4 +58,4 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/90.references/llm-wiki/README.md`
 - `docs/05.operations/guides/llm-wiki-maintenance.md`
-- `scripts/generate-llm-wiki-index.sh`
+- `scripts/knowledge/generate-llm-wiki-index.sh`

@@ -85,8 +85,8 @@ postgresql-cluster/
 
 ## Validation
 
-- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect PostgreSQL cluster services.
-- Run `bash scripts/check-all-hardening.sh` before marking PostgreSQL cluster documentation ready.
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect PostgreSQL cluster services.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking PostgreSQL cluster documentation ready.
 
 ## Related Documents
 

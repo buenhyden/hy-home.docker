@@ -8,7 +8,7 @@
 
 - `infra/08-ai/ollama/docker-compose.yml`
 - `infra/08-ai/open-webui/docker-compose.yml`
-- `scripts/check-ai-hardening.sh`
+- `scripts/hardening/check-ai-hardening.sh`
 
 ## Applies To
 
@@ -46,9 +46,9 @@
 
 - `docker compose -f infra/08-ai/ollama/docker-compose.yml config`
 - `docker compose -f infra/08-ai/open-webui/docker-compose.yml config`
-- `bash scripts/check-ai-hardening.sh`
-- `bash scripts/check-template-security-baseline.sh`
-- `bash scripts/check-doc-traceability.sh`
+- `bash scripts/hardening/check-ai-hardening.sh`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
 
 ## Review Cadence
 
@@ -134,9 +134,9 @@
    - `ollama-exporter`가 `ollama` `service_healthy`에 의존하는지 확인한다.
    - metrics healthcheck(`http://localhost:${OLLAMA_EXPORTER_PORT:-11435}/metrics`)를 확인한다.
 6. 기준선 검증 실행
-   - `bash scripts/check-ai-hardening.sh`
-   - `bash scripts/check-template-security-baseline.sh`
-   - `bash scripts/check-doc-traceability.sh`
+   - `bash scripts/hardening/check-ai-hardening.sh`
+   - `bash scripts/validation/check-template-security-baseline.sh`
+   - `bash scripts/validation/check-doc-traceability.sh`
 7. 카탈로그 확장 운영 기준 반영
    - 모델 승격 절차(실험 -> 운영)를 tasks/operations에 반영한다.
    - Open WebUI 모델 접근 권한 분리 기준을 반영한다.
@@ -202,7 +202,7 @@
    - `docker compose -f infra/08-ai/ollama/docker-compose.yml config`
    - `docker compose -f infra/08-ai/open-webui/docker-compose.yml config`
 2. 하드닝 기준 점검
-   - `bash scripts/check-ai-hardening.sh`
+   - `bash scripts/hardening/check-ai-hardening.sh`
 3. 증상별 복구
    - middleware 회귀:
      - Ollama/Open WebUI 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 재적용
@@ -213,9 +213,9 @@
    - exporter metrics 실패:
      - `depends_on` health gating 및 metrics healthcheck 계약 복원
 4. 재검증
-   - `bash scripts/check-ai-hardening.sh`
-   - `bash scripts/check-template-security-baseline.sh`
-   - `bash scripts/check-doc-traceability.sh`
+   - `bash scripts/hardening/check-ai-hardening.sh`
+   - `bash scripts/validation/check-template-security-baseline.sh`
+   - `bash scripts/validation/check-doc-traceability.sh`
 
 #### Verification Steps
 
@@ -236,7 +236,7 @@
 - [ ] 롤백 대상 파일
   - `infra/08-ai/ollama/docker-compose.yml`
   - `infra/08-ai/open-webui/docker-compose.yml`
-  - `scripts/check-ai-hardening.sh`
+  - `scripts/hardening/check-ai-hardening.sh`
   - `.github/workflows/ci-quality.yml`
 - [ ] 롤백 후 정적 검증 재실행
 - [ ] 정책/가이드/태스크 문서 링크 재확인

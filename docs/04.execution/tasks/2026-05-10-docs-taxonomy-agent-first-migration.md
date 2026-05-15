@@ -37,13 +37,13 @@ status: completed
   - `bash -n scripts/*.sh scripts/lib/*.sh .claude/hooks/*.sh`
   - `python3 -m json.tool .claude/settings.json`
   - `python3 -m json.tool .codex/hooks.json`
-  - `bash scripts/check-repo-contracts.sh`
-  - `bash scripts/check-doc-traceability.sh`
-  - `bash scripts/validate-docker-compose.sh`
-  - `bash scripts/check-template-security-baseline.sh`
-  - `bash scripts/check-quickwin-baseline.sh`
-  - `bash scripts/check-all-hardening.sh`
-  - `bash scripts/report-graphify-health.sh`
+  - `bash scripts/validation/check-repo-contracts.sh`
+  - `bash scripts/validation/check-doc-traceability.sh`
+  - `bash scripts/validation/validate-docker-compose.sh`
+  - `bash scripts/validation/check-template-security-baseline.sh`
+  - `bash scripts/validation/check-quickwin-baseline.sh`
+  - `bash scripts/hardening/check-all-hardening.sh`
+  - `bash scripts/knowledge/report-graphify-health.sh`
   - `git diff --check`
   - local Markdown link scan excluding templates and inline command regex
 - **Eval Commands**: not applicable

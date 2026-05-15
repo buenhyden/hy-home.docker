@@ -21,7 +21,7 @@
   - `infra/05-messaging/kafka/docker-compose.yml`
   - `infra/05-messaging/kafka/docker-compose.dev.yml`
   - `infra/05-messaging/rabbitmq/docker-compose.yml`
-  - `scripts/check-messaging-hardening.sh`
+  - `scripts/hardening/check-messaging-hardening.sh`
   - `.github/workflows/ci-quality.yml`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 메시징 optimization-hardening 문서/README
 
@@ -41,7 +41,7 @@
 | PLN-MSG-001 | Kafka UI 이미지 태그 고정 및 gateway chain 적용 | `infra/05-messaging/kafka/docker-compose.yml` | REQ-PRD-MSG-FUN-01,03 | compose config + grep 체크 |
 | PLN-MSG-002 | Kafka dev compose 경로 정합성 및 chain 적용 | `infra/05-messaging/kafka/docker-compose.dev.yml` | REQ-PRD-MSG-FUN-01,04 | compose config 통과 |
 | PLN-MSG-003 | RabbitMQ 관리 경로 middleware chain 강화 | `infra/05-messaging/rabbitmq/docker-compose.yml` | REQ-PRD-MSG-FUN-01,02 | router label 확인 |
-| PLN-MSG-004 | 메시징 하드닝 기준선 스크립트 작성 | `scripts/check-messaging-hardening.sh` | REQ-PRD-MSG-FUN-05 | script pass/fail 동작 |
+| PLN-MSG-004 | 메시징 하드닝 기준선 스크립트 작성 | `scripts/hardening/check-messaging-hardening.sh` | REQ-PRD-MSG-FUN-05 | script pass/fail 동작 |
 | PLN-MSG-005 | CI `messaging-hardening` job 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-MSG-FUN-05 | workflow 정의 확인 |
 | PLN-MSG-006 | scripts 인덱스 갱신 | `scripts/README.md` | REQ-PRD-MSG-FUN-05 | README 항목/예시 반영 |
 | PLN-MSG-007 | PRD~Runbook optimization 문서 세트 생성/갱신 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-MSG-FUN-06 | 상호 링크/README 반영 |
@@ -53,9 +53,9 @@
 | VAL-MSG-001 | Structural | Kafka compose 정적 검증 | `docker compose -f infra/05-messaging/kafka/docker-compose.yml config` | 오류 없음 |
 | VAL-MSG-002 | Structural | Kafka dev compose 정적 검증 | `docker compose -f infra/05-messaging/kafka/docker-compose.dev.yml config` | 오류 없음 |
 | VAL-MSG-003 | Structural | RabbitMQ compose 정적 검증 | `docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config` | 오류 없음 |
-| VAL-MSG-004 | Compliance | 메시징 하드닝 기준선 검증 | `bash scripts/check-messaging-hardening.sh` | 실패 0건 |
-| VAL-MSG-005 | Baseline | 템플릿/보안 기준선 | `bash scripts/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-MSG-006 | Traceability | 문서 추적성 검증 | `bash scripts/check-doc-traceability.sh` | 실패 0건 |
+| VAL-MSG-004 | Compliance | 메시징 하드닝 기준선 검증 | `bash scripts/hardening/check-messaging-hardening.sh` | 실패 0건 |
+| VAL-MSG-005 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
+| VAL-MSG-006 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
 
 ## Risks & Mitigations
 

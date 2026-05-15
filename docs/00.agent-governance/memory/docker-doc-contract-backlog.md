@@ -88,7 +88,7 @@ Current disposition:
   they are not treated as duplicate implementations.
 - Classify `generate-local-certs.sh` as a manual operations script and document
   it in the developer setup flow.
-- Enforce future script hygiene through `scripts/check-repo-contracts.sh`:
+- Enforce future script hygiene through `scripts/validation/check-repo-contracts.sh`:
   root scripts must be listed in `scripts/README.md`, non-manual root scripts
   must have an external repository reference, and library scripts must be
   referenced by root scripts.
@@ -105,7 +105,7 @@ ownership.
 - `docs/03.specs/README.md`
 - `docs/90.references/docker/README.md`
 - `scripts/README.md`
-- `scripts/check-repo-contracts.sh`
+- `scripts/validation/check-repo-contracts.sh`
 
 ## Related Documents
 

@@ -54,7 +54,7 @@ Universal bootstrap protocol for all agents in `hy-home.docker`.
 
 For structural or cross-cutting changes:
 
-1. Run applicable repository checks (for infra, include `bash scripts/validate-docker-compose.sh`).
+1. Run applicable repository checks (for infra, include `bash scripts/validation/validate-docker-compose.sh`).
 2. Validate link integrity for changed governance/root files.
 3. Confirm policy text matches current workspace reality.
 4. Update `docs/00.agent-governance/memory/progress.md` with progress, verification evidence, and durable memory pointers.

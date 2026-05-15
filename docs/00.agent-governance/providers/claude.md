@@ -33,7 +33,7 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 - `CLAUDE.md` is the root shim; it delegates to `AGENTS.md` and provider overlays.
 - `docs/00.agent-governance/` governance files are the policy SSOT and override provider defaults.
 - `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, and `.claude/skills/` are the runtime enforcement layer for Claude-specific behavior.
-- `.claude/hooks/*.sh` are thin wrappers that dispatch hook events through `scripts/agent-event-hook.sh`.
+- `.claude/hooks/*.sh` are thin wrappers that dispatch hook events through `scripts/hooks/agent-event-hook.sh`.
 - GitHub-native instruction files are not part of this repository's active instruction hierarchy.
 - Personal `settings.local.json` may not override team policy in `settings.json`.
 
@@ -48,7 +48,7 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 - `docs/00.agent-governance/providers/agents-md.md`
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/rules/bootstrap.md`
-- `scripts/agent-event-hook.sh`
+- `scripts/hooks/agent-event-hook.sh`
 
 ## References
 

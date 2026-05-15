@@ -31,7 +31,7 @@ status: completed
 | HAFE-003 | Sync | Update parent README files for new artifacts. | Done | README structure and related links updated. |
 | HAFE-004 | Verify | Run governance, docs, runtime, default/core Compose, and supported hardening checks. | Done | Scoped validation commands passed on 2026-05-09; `10-communication` remediation is separate infra scope. |
 | HAFE-005 | Scan | Confirm no external source-label references in active runtime/governance surfaces. | Done | `rg` returned no matches in active runtime/governance surfaces. |
-| HAFE-006 | Context Quality | Add Graphify health fallback so contaminated graph output remains advisory. | Done | `bash scripts/report-graphify-health.sh` exits 0 and reports `status=advisory` for current generated corpus. |
+| HAFE-006 | Context Quality | Add Graphify health fallback so contaminated graph output remains advisory. | Done | `bash scripts/knowledge/report-graphify-health.sh` exits 0 and reports `status=advisory` for current generated corpus. |
 | HAFE-007 | Runtime Hook | Fix Claude hook quoting so markdown backticks are not executed by the shell. | Done | `.claude/hooks/docker-compose-pre.sh` and `.claude/hooks/session-start.sh` use heredoc/argv Python invocation. |
 | HAFE-008 | Evidence Scope | Tighten evidence wording for catalog parity, scoped infra validation, and Graphify authority. | Done | Stage docs distinguish catalog parity from semantic parity and `core`/supported-tier validation from full workspace validation. |
 | HAFE-009 | Taxonomy Hardening | Split HAFE guide/policy/runbook content and add stricter stale taxonomy drift checks. | Done | Guide content moved to `docs/05.operations/guides`; repo contract now checks active stale taxonomy shorthand. |
@@ -65,19 +65,19 @@ Run validation commands and record command outcomes in the final response.
 Executed commands:
 
 ```bash
-bash scripts/check-repo-contracts.sh
-bash scripts/check-doc-traceability.sh
-bash scripts/report-graphify-health.sh
+bash scripts/validation/check-repo-contracts.sh
+bash scripts/validation/check-doc-traceability.sh
+bash scripts/knowledge/report-graphify-health.sh
 python3 -m json.tool .codex/hooks.json >/dev/null
 python3 -m json.tool .claude/settings.json >/dev/null
 bash -n .claude/hooks/*.sh scripts/*.sh
 printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
 CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/session-start.sh
-printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/post-tool-validate.sh
-bash scripts/validate-docker-compose.sh
-bash scripts/check-template-security-baseline.sh
-bash scripts/check-quickwin-baseline.sh
-bash scripts/check-all-hardening.sh
+printf '{"tool_input":{"file_path":".claude/settings.json"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/post-tool-validate.sh
+bash scripts/validation/validate-docker-compose.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-quickwin-baseline.sh
+bash scripts/hardening/check-all-hardening.sh
 ! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md GEMINI.md .claude .codex docs/00.agent-governance --glob '!docs/00.agent-governance/memory/**'
 ```
 

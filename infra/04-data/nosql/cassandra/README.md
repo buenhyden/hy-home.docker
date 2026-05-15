@@ -74,8 +74,8 @@ cassandra/
 
 ## Validation
 
-- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Cassandra.
-- Run `bash scripts/check-all-hardening.sh` before marking Cassandra documentation ready.
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Cassandra.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking Cassandra documentation ready.
 
 ## Troubleshooting
 

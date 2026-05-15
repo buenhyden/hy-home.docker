@@ -9,7 +9,7 @@
 - `infra/05-messaging/kafka/docker-compose.yml`
 - `infra/05-messaging/kafka/docker-compose.dev.yml`
 - `infra/05-messaging/rabbitmq/docker-compose.yml`
-- `scripts/check-messaging-hardening.sh`
+- `scripts/hardening/check-messaging-hardening.sh`
 
 ## Applies To
 
@@ -40,9 +40,9 @@
 
 ## Verification
 
-- `bash scripts/check-messaging-hardening.sh`
-- `bash scripts/check-template-security-baseline.sh`
-- `bash scripts/check-doc-traceability.sh`
+- `bash scripts/hardening/check-messaging-hardening.sh`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
 - `docker compose -f infra/05-messaging/kafka/docker-compose.yml config`
 - `docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config`
 
@@ -131,7 +131,7 @@
    - `rabbitmq` 관리 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
    - `messaging-option` 프로필을 유지해 선택적 활성화 모델을 보존한다.
 5. 검증 자동화 및 CI 반영
-   - `bash scripts/check-messaging-hardening.sh`
+   - `bash scripts/hardening/check-messaging-hardening.sh`
    - CI workflow에 `messaging-hardening` job 반영 여부 확인
 6. 문서 추적성 동기화
    - PRD~Procedure optimization-hardening 문서 링크를 점검한다.
@@ -199,7 +199,7 @@
    - `docker compose -f infra/05-messaging/kafka/docker-compose.dev.yml config`
    - `docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config`
 2. 하드닝 기준 점검
-   - `bash scripts/check-messaging-hardening.sh`
+   - `bash scripts/hardening/check-messaging-hardening.sh`
 3. 증상별 복구
    - middleware 누락:
      - 대상 라우터에 `gateway-standard-chain@file` 재적용
@@ -210,9 +210,9 @@
    - dev 경로 오류:
      - `./jmx-exporter`, `./kafbat-ui/dynamic_config.yaml` 경로로 복원
 4. 재검증
-   - `bash scripts/check-messaging-hardening.sh`
-   - `bash scripts/check-template-security-baseline.sh`
-   - `bash scripts/check-doc-traceability.sh`
+   - `bash scripts/hardening/check-messaging-hardening.sh`
+   - `bash scripts/validation/check-template-security-baseline.sh`
+   - `bash scripts/validation/check-doc-traceability.sh`
 
 #### Verification Steps
 
@@ -234,7 +234,7 @@
   - `infra/05-messaging/kafka/docker-compose.yml`
   - `infra/05-messaging/kafka/docker-compose.dev.yml`
   - `infra/05-messaging/rabbitmq/docker-compose.yml`
-  - `scripts/check-messaging-hardening.sh`
+  - `scripts/hardening/check-messaging-hardening.sh`
   - `.github/workflows/ci-quality.yml`
 - [ ] 롤백 후 정적 검증 재실행
 - [ ] 운영 정책/가이드/태스크 문서 링크 재확인

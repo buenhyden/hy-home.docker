@@ -28,7 +28,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Check docs traceability sync
-        run: bash scripts/check-doc-traceability.sh
+        run: bash scripts/validation/check-doc-traceability.sh
 
   # ── Repository Contract Validation ──────────────────────
   repo-contracts:
@@ -39,7 +39,7 @@ jobs:
     steps:
       - *checkout
       - name: Check repository contracts
-        run: bash scripts/check-repo-contracts.sh
+        run: bash scripts/validation/check-repo-contracts.sh
 
   # ── Git Flow Contract ───────────────────────────────────────
   git-flow-contract:
@@ -87,7 +87,7 @@ jobs:
         name: Prepare environment
         run: cp .env.example .env
       - name: Validate Docker Compose config
-        run: bash scripts/validate-docker-compose.sh
+        run: bash scripts/validation/validate-docker-compose.sh
 
   # ── Full Profile Compose Contract Validation ────────────────
   compose-all-profiles-validation:
@@ -101,7 +101,7 @@ jobs:
       - *checkout
       - *prepare-env
       - name: Validate all Docker Compose profiles
-        run: bash scripts/validate-docker-compose.sh
+        run: bash scripts/validation/validate-docker-compose.sh
 
   # ── Infrastructure Hardening Baseline ──────────────────────────
   infrastructure-hardening:
@@ -113,7 +113,7 @@ jobs:
       - *checkout
       - *prepare-env
       - name: Check all tiers hardening baseline
-        run: bash scripts/check-all-hardening.sh
+        run: bash scripts/hardening/check-all-hardening.sh
 
   # ── Template/Security Baseline ──────────────────────────────
   template-security-baseline:
@@ -125,7 +125,7 @@ jobs:
       - *checkout
       - *prepare-env
       - name: Check template adoption + security baseline
-        run: bash scripts/check-template-security-baseline.sh
+        run: bash scripts/validation/check-template-security-baseline.sh
 
   # ── QuickWin Baseline ───────────────────────────────────────
   quickwin-baseline:
@@ -137,7 +137,7 @@ jobs:
       - *checkout
       - *prepare-env
       - name: Check QuickWin baseline
-        run: bash scripts/check-quickwin-baseline.sh
+        run: bash scripts/validation/check-quickwin-baseline.sh
 
   # ── Pre-commit Hooks ──────────────────────────────────────────
   pre-commit:

@@ -18,7 +18,7 @@ source "$LIB_PATH"
 
 usage() {
     cat <<'EOF'
-Usage: bash scripts/check-all-hardening.sh [TIER...]
+Usage: bash scripts/hardening/check-all-hardening.sh [TIER...]
 
 Run infrastructure hardening checks.
 

@@ -19,13 +19,13 @@
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-GW-001 | Traefik middleware에 `req-retry`, `req-circuit-breaker`, `gateway-standard-chain` 추가 | impl | 01-gateway/spec.md / Gateway | PLN-GW-001 | `bash scripts/check-gateway-hardening.sh` | Infra | Done |
-| T-GW-002 | Traefik dashboard router에 `gateway-standard-chain@file` 적용 | impl | 01-gateway/spec.md / Gateway | PLN-GW-002 | `bash scripts/check-gateway-hardening.sh` | Infra | Done |
-| T-GW-003 | Nginx compose를 `template-infra-readonly-low` + 필수 tmpfs + `/ping` healthcheck로 전환 | impl | 01-gateway/spec.md / Gateway | PLN-GW-003 | `bash scripts/check-gateway-hardening.sh` | Infra | Done |
-| T-GW-004 | Nginx config에 timeout/failover/cache/server_tokens 하드닝 반영 | impl | 01-gateway/spec.md / Gateway | PLN-GW-004 | `bash scripts/check-gateway-hardening.sh` | Infra | Done |
-| T-GW-005 | `scripts/check-gateway-hardening.sh` 추가 및 문서화 | ops | 01-gateway/spec.md / Verification | PLN-GW-005 | `bash scripts/check-gateway-hardening.sh` | DevOps | Done |
+| T-GW-001 | Traefik middleware에 `req-retry`, `req-circuit-breaker`, `gateway-standard-chain` 추가 | impl | 01-gateway/spec.md / Gateway | PLN-GW-001 | `bash scripts/hardening/check-gateway-hardening.sh` | Infra | Done |
+| T-GW-002 | Traefik dashboard router에 `gateway-standard-chain@file` 적용 | impl | 01-gateway/spec.md / Gateway | PLN-GW-002 | `bash scripts/hardening/check-gateway-hardening.sh` | Infra | Done |
+| T-GW-003 | Nginx compose를 `template-infra-readonly-low` + 필수 tmpfs + `/ping` healthcheck로 전환 | impl | 01-gateway/spec.md / Gateway | PLN-GW-003 | `bash scripts/hardening/check-gateway-hardening.sh` | Infra | Done |
+| T-GW-004 | Nginx config에 timeout/failover/cache/server_tokens 하드닝 반영 | impl | 01-gateway/spec.md / Gateway | PLN-GW-004 | `bash scripts/hardening/check-gateway-hardening.sh` | Infra | Done |
+| T-GW-005 | `scripts/hardening/check-gateway-hardening.sh` 추가 및 문서화 | ops | 01-gateway/spec.md / Verification | PLN-GW-005 | `bash scripts/hardening/check-gateway-hardening.sh` | DevOps | Done |
 | T-GW-006 | CI workflow에 `gateway-hardening` job 추가 | ops | 01-gateway/spec.md / CI | PLN-GW-006 | PR CI run | DevOps | Done |
-| T-GW-007 | Plan/Task/Operation/Runbook/Guide 문서 및 README 인덱스 동기화 | doc | 01-gateway/spec.md / Docs | PLN-GW-007 | `bash scripts/check-doc-traceability.sh` | Docs | Done |
+| T-GW-007 | Plan/Task/Operation/Runbook/Guide 문서 및 README 인덱스 동기화 | doc | 01-gateway/spec.md / Docs | PLN-GW-007 | `bash scripts/validation/check-doc-traceability.sh` | Docs | Done |
 | T-GW-008 | Compose/기본 검증 커맨드 실행 결과 기록 | test | 01-gateway/spec.md / Validation | PLN-GW-001~007 | `docker compose config`, baseline checks | Infra | Done |
 
 ## Suggested Types
@@ -54,9 +54,9 @@
 ## Verification Summary
 
 - **Test Commands**:
-  - `bash scripts/check-gateway-hardening.sh`
-  - `bash scripts/check-template-security-baseline.sh`
-  - `bash scripts/check-doc-traceability.sh`
+  - `bash scripts/hardening/check-gateway-hardening.sh`
+  - `bash scripts/validation/check-template-security-baseline.sh`
+  - `bash scripts/validation/check-doc-traceability.sh`
   - `docker compose config`
   - `docker compose -f infra/01-gateway/traefik/docker-compose.yml config`
   - `docker compose -f infra/01-gateway/nginx/docker-compose.yml config`

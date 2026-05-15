@@ -9,7 +9,7 @@
 - `infra/03-security/vault/docker-compose.yml`
 - `infra/03-security/vault/config/vault-agent.hcl`
 - `infra/03-security/vault/config/templates/*.ctmpl`
-- `scripts/check-security-hardening.sh`
+- `scripts/hardening/check-security-hardening.sh`
 
 ## Applies To
 
@@ -23,7 +23,7 @@
   - Vault Agent 템플릿은 `secret/data/hy-home/...` 경로 규약을 사용해야 한다.
   - `vault-agent`는 PID 기반 healthcheck를 유지해야 한다.
   - 렌더 출력은 `/vault/out` persistent volume에 저장해야 한다.
-  - `scripts/check-security-hardening.sh`를 CI `security-hardening` 게이트로 강제한다.
+  - `scripts/hardening/check-security-hardening.sh`를 CI `security-hardening` 게이트로 강제한다.
   - 운영 모드는 fail-closed를 기본으로 유지한다.
 - **Allowed**:
   - 외부 TLS는 Traefik 종료, 내부 `infra_net` HTTP 통신 모델 유지.
@@ -40,8 +40,8 @@
 
 ## Verification
 
-- `bash scripts/check-security-hardening.sh`
-- `bash scripts/check-template-security-baseline.sh`
+- `bash scripts/hardening/check-security-hardening.sh`
+- `bash scripts/validation/check-template-security-baseline.sh`
 - `docker compose -f infra/03-security/vault/docker-compose.yml config`
 - `docker inspect --format '{{json .State.Health}}' vault`
 - `docker inspect --format '{{json .State.Health}}' vault-agent`
@@ -119,7 +119,7 @@
    - `docker compose -f infra/03-security/vault/docker-compose.yml up -d vault vault-agent`
    - `docker exec vault vault status`
 2. AppRole bootstrap
-   - `bash scripts/bootstrap-vault-approle.sh`를 실행하여 Agent 인증 및 접근 권한 설정
+   - `bash scripts/operations/bootstrap-vault-approle.sh`를 실행하여 Agent 인증 및 접근 권한 설정
    - token sink(`/vault/agent/token`) 생성 확인
 3. 시크릿 경로 규약 적용
    - `secret/data/hy-home/04-data/mng-db` -> `password`
@@ -130,8 +130,8 @@
    - `docker exec vault-agent ls -la /vault/out`
    - 서비스별 파일 존재/권한(0600) 점검
 5. 정적 하드닝 검증
-   - `bash scripts/check-security-hardening.sh`
-   - `bash scripts/check-template-security-baseline.sh`
+   - `bash scripts/hardening/check-security-hardening.sh`
+   - `bash scripts/validation/check-template-security-baseline.sh`
 
 #### Common Pitfalls
 
@@ -201,15 +201,15 @@
 4. Vault Agent 렌더 실패 복구
    - `docker logs vault-agent --tail=200`
    - `/vault/agent/role_id`, `/vault/agent/secret_id`, `/vault/agent/token` 확인
-   - 인증 정보(role_id/secret_id) 부재/오류 시 `bash scripts/bootstrap-vault-approle.sh` 실행 후 재시도
+   - 인증 정보(role_id/secret_id) 부재/오류 시 `bash scripts/operations/bootstrap-vault-approle.sh` 실행 후 재시도
    - `docker exec vault-agent ls -la /vault/out`로 출력 파일 재검증
 5. 재검증
-   - `bash scripts/check-security-hardening.sh`
-   - `bash scripts/check-template-security-baseline.sh`
+   - `bash scripts/hardening/check-security-hardening.sh`
+   - `bash scripts/validation/check-template-security-baseline.sh`
 
 #### Verification Steps
 
-- [ ] `bash scripts/check-security-hardening.sh` 통과
+- [ ] `bash scripts/hardening/check-security-hardening.sh` 통과
 - [ ] `docker exec vault vault status`에서 `Sealed: false` 확인
 - [ ] `docker inspect`에서 `vault`, `vault-agent` health가 정상
 - [ ] `/vault/out` 하위 템플릿 파일 생성 확인
@@ -227,9 +227,9 @@
 - [ ] 롤백 대상 파일
   - `infra/03-security/vault/docker-compose.yml`
   - `infra/03-security/vault/config/templates/*.ctmpl`
-  - `scripts/check-security-hardening.sh`
+  - `scripts/hardening/check-security-hardening.sh`
   - `.github/workflows/ci-quality.yml`
-  - `scripts/check-auth-hardening.sh`
+  - `scripts/hardening/check-auth-hardening.sh`
 - [ ] compose 재반영
   - `docker compose -f infra/03-security/vault/docker-compose.yml up -d vault vault-agent`
 - [ ] 하드닝/추적성 검증 재실행

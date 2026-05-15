@@ -42,7 +42,7 @@
 ### Key Dependencies
 
 - **Docker Socket**: `ro` 마운트를 통한 서비스 감지.
-- **Shared Secrets**: `scripts/gen-secrets.sh`에 의해 생성된 인증서 및 패스워드 파일.
+- **Shared Secrets**: `scripts/operations/gen-secrets.sh`에 의해 생성된 인증서 및 패스워드 파일.
 
 ### Tech Stack
 

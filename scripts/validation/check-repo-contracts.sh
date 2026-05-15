@@ -104,7 +104,7 @@ if rg -n 'docs/11|11\.postmortems|\.agent/|docs/(01\.prd|02\.ard|03\.adr|04\.spe
   --glob '!graphify-out/**' \
   --glob '!docs/README.md' \
   --glob '!docs/00.agent-governance/memory/**' \
-  --glob '!scripts/check-repo-contracts.sh' \
+  --glob '!scripts/validation/check-repo-contracts.sh' \
   --glob '!scripts/validation/check-repo-contracts.sh' >/tmp/check-repo-contracts-banned.txt; then
   fail "stale docs taxonomy, removed operations-stage, guide/runbook template, harness-catalog, or .agent references remain"
   cat /tmp/check-repo-contracts-banned.txt >&2
@@ -116,7 +116,7 @@ if rg -n 'docs/(0[1-9]~0?9|01~09|01~10|01-03|01-09)|docs/01[[:space:]]*[–-][[:
   --glob '!graphify-out/**' \
   --glob '!docs/README.md' \
   --glob '!docs/00.agent-governance/memory/**' \
-  --glob '!scripts/check-repo-contracts.sh' \
+  --glob '!scripts/validation/check-repo-contracts.sh' \
   --glob '!scripts/validation/check-repo-contracts.sh' >/tmp/check-repo-contracts-taxonomy-shorthand.txt; then
   fail "active docs taxonomy shorthand or legacy stage shorthand remains"
   cat /tmp/check-repo-contracts-taxonomy-shorthand.txt >&2
@@ -487,7 +487,7 @@ for path in [codex_readme, codex_provider]:
     for required in [
         "AGENTS.md",
         ".codex/hooks.json",
-        "scripts/agent-event-hook.sh",
+        "scripts/hooks/agent-event-hook.sh",
         "docs/00.agent-governance/agents/",
         ".claude",
     ]:
@@ -503,7 +503,7 @@ else:
         "SessionStart",
         "PreToolUse",
         "PostToolUse",
-        "scripts/post-tool-validate.sh",
+        "scripts/hooks/post-tool-validate.sh",
         "graphify-out",
     ]:
         if literal not in event_hook_text:
@@ -518,11 +518,11 @@ for wrapper, event in {
     if not text:
         failures.append(f"missing Claude hook wrapper: {wrapper}")
         continue
-    if "scripts/agent-event-hook.sh" not in text or event not in text:
-        failures.append(f"{wrapper}: must delegate {event} to scripts/agent-event-hook.sh")
+    if "scripts/hooks/agent-event-hook.sh" not in text or event not in text:
+        failures.append(f"{wrapper}: must delegate {event} to scripts/hooks/agent-event-hook.sh")
 
 hook_configs = {
-    pathlib.Path(".codex/hooks.json"): "scripts/agent-event-hook.sh",
+    pathlib.Path(".codex/hooks.json"): "scripts/hooks/agent-event-hook.sh",
     pathlib.Path(".claude/settings.json"): ".claude/hooks/",
 }
 for path, required_command_literal in hook_configs.items():
@@ -857,7 +857,7 @@ failures: list[str] = []
 
 required_files = [
     pathlib.Path("llms.txt"),
-    pathlib.Path("scripts/generate-llm-wiki-index.sh"),
+    pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
     pathlib.Path("docs/05.operations/guides/llm-wiki-maintenance.md"),
     pathlib.Path("docs/90.references/llm-wiki/README.md"),
     pathlib.Path("docs/90.references/llm-wiki/index.md"),
@@ -989,10 +989,10 @@ index_path = pathlib.Path("docs/90.references/llm-wiki/index.md")
 if index_path.is_file():
     text = index_path.read_text(errors="ignore")
     for literal in [
-        "generated_by: scripts/generate-llm-wiki-index.sh",
+        "generated_by: scripts/knowledge/generate-llm-wiki-index.sh",
         "Generated tracked repo-local index",
         "## Generated Index",
-        "scripts/generate-llm-wiki-index.sh --check",
+        "scripts/knowledge/generate-llm-wiki-index.sh --check",
         "wiki-curator",
     ]:
         if literal not in text:
@@ -1016,10 +1016,10 @@ if index_path.is_file():
         if linked_path.startswith("secrets/") and linked_path != "secrets/README.md":
             failures.append(f"{index_path}: generated index includes secret content path: {linked_path}")
 
-generator = pathlib.Path("scripts/generate-llm-wiki-index.sh")
+generator = pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh")
 if generator.is_file() and index_path.is_file():
     result = subprocess.run(
-        ["bash", "scripts/generate-llm-wiki-index.sh", "--check"],
+        ["bash", "scripts/knowledge/generate-llm-wiki-index.sh", "--check"],
         capture_output=True,
         text=True,
     )
@@ -1071,7 +1071,7 @@ pattern = re.compile(r"(?<![\w./-])(\./)?(scripts/[A-Za-z0-9._/-]+\.sh)")
 for root in roots:
     files = [root] if root.is_file() else [p for p in root.rglob("*") if p.is_file() and "graphify-out" not in p.parts]
     for path in files:
-        if path == pathlib.Path("scripts/check-repo-contracts.sh"):
+        if path == pathlib.Path("scripts/validation/check-repo-contracts.sh"):
             continue
         try:
             text = path.read_text(errors="ignore")
@@ -1166,45 +1166,39 @@ required_readme_fragments = [
     "scripts/knowledge/",
     "scripts/operations/",
     "scripts/lib/",
-    "root compatibility wrappers",
+    "canonical purpose-folder paths",
 ]
 for fragment in required_readme_fragments:
     if fragment not in readme_text:
-        failures.append(f"scripts/README.md missing script purpose-folder plan fragment: {fragment}")
+        failures.append(f"scripts/README.md missing script purpose-folder fragment: {fragment}")
 
-# Root scripts in this set are intentionally allowed to be standalone: they
-# must be inventoried in scripts/README.md, but do not need another repository
-# entrypoint, stage document, runtime hook, or CI workflow reference.
-external_reference_exemptions = {
-    pathlib.Path("scripts/generate-local-certs.sh"),
-}
 root_scripts = sorted(path for path in pathlib.Path("scripts").glob("*.sh") if path.is_file())
 lib_scripts = sorted(path for path in pathlib.Path("scripts/lib").glob("*.sh") if path.is_file())
-wrapper_targets = {
-    pathlib.Path("scripts/validate-docker-compose.sh"): pathlib.Path("scripts/validation/validate-docker-compose.sh"),
-    pathlib.Path("scripts/check-repo-contracts.sh"): pathlib.Path("scripts/validation/check-repo-contracts.sh"),
-    pathlib.Path("scripts/check-doc-traceability.sh"): pathlib.Path("scripts/validation/check-doc-traceability.sh"),
-    pathlib.Path("scripts/check-quickwin-baseline.sh"): pathlib.Path("scripts/validation/check-quickwin-baseline.sh"),
-    pathlib.Path("scripts/check-template-security-baseline.sh"): pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
-    pathlib.Path("scripts/preflight-compose.sh"): pathlib.Path("scripts/validation/preflight-compose.sh"),
-    pathlib.Path("scripts/check-all-hardening.sh"): pathlib.Path("scripts/hardening/check-all-hardening.sh"),
-    pathlib.Path("scripts/check-gateway-hardening.sh"): pathlib.Path("scripts/hardening/check-gateway-hardening.sh"),
-    pathlib.Path("scripts/check-auth-hardening.sh"): pathlib.Path("scripts/hardening/check-auth-hardening.sh"),
-    pathlib.Path("scripts/check-security-hardening.sh"): pathlib.Path("scripts/hardening/check-security-hardening.sh"),
-    pathlib.Path("scripts/check-data-hardening.sh"): pathlib.Path("scripts/hardening/check-data-hardening.sh"),
-    pathlib.Path("scripts/check-messaging-hardening.sh"): pathlib.Path("scripts/hardening/check-messaging-hardening.sh"),
-    pathlib.Path("scripts/check-observability-hardening.sh"): pathlib.Path("scripts/hardening/check-observability-hardening.sh"),
-    pathlib.Path("scripts/check-workflow-hardening.sh"): pathlib.Path("scripts/hardening/check-workflow-hardening.sh"),
-    pathlib.Path("scripts/check-ai-hardening.sh"): pathlib.Path("scripts/hardening/check-ai-hardening.sh"),
-    pathlib.Path("scripts/check-tooling-hardening.sh"): pathlib.Path("scripts/hardening/check-tooling-hardening.sh"),
-    pathlib.Path("scripts/check-laboratory-hardening.sh"): pathlib.Path("scripts/hardening/check-laboratory-hardening.sh"),
-    pathlib.Path("scripts/agent-event-hook.sh"): pathlib.Path("scripts/hooks/agent-event-hook.sh"),
-    pathlib.Path("scripts/post-tool-validate.sh"): pathlib.Path("scripts/hooks/post-tool-validate.sh"),
-    pathlib.Path("scripts/generate-llm-wiki-index.sh"): pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
-    pathlib.Path("scripts/report-graphify-health.sh"): pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
-    pathlib.Path("scripts/generate-local-certs.sh"): pathlib.Path("scripts/operations/generate-local-certs.sh"),
-    pathlib.Path("scripts/bootstrap-vault-approle.sh"): pathlib.Path("scripts/operations/bootstrap-vault-approle.sh"),
-    pathlib.Path("scripts/gen-secrets.sh"): pathlib.Path("scripts/operations/gen-secrets.sh"),
+expected_implementations = {
+    pathlib.Path("scripts/validation/validate-docker-compose.sh"),
+    pathlib.Path("scripts/validation/check-repo-contracts.sh"),
+    pathlib.Path("scripts/validation/check-doc-traceability.sh"),
+    pathlib.Path("scripts/validation/check-quickwin-baseline.sh"),
+    pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
+    pathlib.Path("scripts/validation/preflight-compose.sh"),
+    pathlib.Path("scripts/hardening/check-all-hardening.sh"),
+    pathlib.Path("scripts/hardening/check-gateway-hardening.sh"),
+    pathlib.Path("scripts/hardening/check-auth-hardening.sh"),
+    pathlib.Path("scripts/hardening/check-security-hardening.sh"),
+    pathlib.Path("scripts/hardening/check-data-hardening.sh"),
+    pathlib.Path("scripts/hardening/check-messaging-hardening.sh"),
+    pathlib.Path("scripts/hardening/check-observability-hardening.sh"),
+    pathlib.Path("scripts/hardening/check-workflow-hardening.sh"),
+    pathlib.Path("scripts/hardening/check-ai-hardening.sh"),
+    pathlib.Path("scripts/hardening/check-tooling-hardening.sh"),
+    pathlib.Path("scripts/hardening/check-laboratory-hardening.sh"),
+    pathlib.Path("scripts/hooks/agent-event-hook.sh"),
+    pathlib.Path("scripts/hooks/post-tool-validate.sh"),
+    pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
+    pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
+    pathlib.Path("scripts/operations/generate-local-certs.sh"),
+    pathlib.Path("scripts/operations/bootstrap-vault-approle.sh"),
+    pathlib.Path("scripts/operations/gen-secrets.sh"),
 }
 implementation_scripts = sorted(
     path
@@ -1213,41 +1207,20 @@ implementation_scripts = sorted(
     if path.is_file()
 )
 
-for path in external_reference_exemptions:
-    if not path.is_file():
-        failures.append(f"external-reference exemption points to missing root script: {path}")
+for path in root_scripts:
+    failures.append(f"root duplicate script remains after purpose-folder migration: {path}")
 
-if set(root_scripts) != set(wrapper_targets):
-    missing = sorted(set(wrapper_targets) - set(root_scripts))
-    extra = sorted(set(root_scripts) - set(wrapper_targets))
-    for path in missing:
-        failures.append(f"missing root compatibility wrapper: {path}")
-    for path in extra:
-        failures.append(f"unexpected root script without wrapper contract: {path}")
-
-for wrapper, implementation in sorted(wrapper_targets.items()):
-    if not implementation.is_file():
-        failures.append(f"{wrapper}: missing purpose-folder implementation {implementation}")
-        continue
-    try:
-        wrapper_text = wrapper.read_text(errors="ignore")
-    except Exception:
-        wrapper_text = ""
-    expected_fragment = str(implementation.relative_to("scripts"))
-    if expected_fragment not in wrapper_text or 'exec bash "$SCRIPT_DIR/' not in wrapper_text:
-        failures.append(f"{wrapper}: wrapper must exec scripts/{expected_fragment}")
-
-if set(implementation_scripts) != set(wrapper_targets.values()):
-    missing = sorted(set(wrapper_targets.values()) - set(implementation_scripts))
-    extra = sorted(set(implementation_scripts) - set(wrapper_targets.values()))
+if set(implementation_scripts) != expected_implementations:
+    missing = sorted(expected_implementations - set(implementation_scripts))
+    extra = sorted(set(implementation_scripts) - expected_implementations)
     for path in missing:
         failures.append(f"missing purpose-folder implementation: {path}")
     for path in extra:
-        failures.append(f"purpose-folder implementation lacks root wrapper contract: {path}")
+        failures.append(f"unexpected purpose-folder implementation not inventoried in scripts/README.md: {path}")
 
-for path in root_scripts:
-    if path.name not in readme_text and str(path) not in readme_text:
-        failures.append(f"scripts/README.md missing root script inventory entry: {path}")
+for path in sorted(expected_implementations):
+    if str(path) not in readme_text:
+        failures.append(f"scripts/README.md missing purpose-folder inventory entry: {path}")
 
 scan_roots = [
     pathlib.Path(p)
@@ -1285,25 +1258,8 @@ for root in scan_roots:
         except Exception:
             continue
 
-for script in root_scripts:
-    if script in external_reference_exemptions:
-        continue
-    candidates = {str(script), f"./{script}", script.name}
-    referenced = False
-    for path, text in scanned_files:
-        if path in {script, readme}:
-            continue
-        if any(candidate in text for candidate in candidates):
-            referenced = True
-            break
-    if not referenced:
-        failures.append(
-            "root script is not externally referenced and is not in the external-reference exemption set: "
-            f"{script}"
-        )
-
 script_texts: list[tuple[pathlib.Path, str]] = []
-for script in [*root_scripts, *implementation_scripts]:
+for script in implementation_scripts:
     try:
         script_texts.append((script, script.read_text(errors="ignore")))
     except Exception:

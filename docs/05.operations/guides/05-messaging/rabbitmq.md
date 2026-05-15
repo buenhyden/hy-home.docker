@@ -18,7 +18,7 @@
 
 ### 1. Security & Access Control
 
-- **Credential Management**: 모든 접속 계정은 `scripts/gen-secrets.sh`를 통해 관리되어야 하며, `rabbitmq_user` 및 `rabbitmq_password` 시크릿 파일을 사용해 환경 변수로 주입한다.
+- **Credential Management**: 모든 접속 계정은 `scripts/operations/gen-secrets.sh`를 통해 관리되어야 하며, `rabbitmq_user` 및 `rabbitmq_password` 시크릿 파일을 사용해 환경 변수로 주입한다.
 - **TLS Configuration**: 외부 노출되는 Management UI는 Traefik을 통해 HTTPS로 강제 전환된다.
 - **Permission**: 애플리케이션 계정은 원칙적으로 필요한 VHost와 Queue에 대해서만 권한을 부여하는 최소 권한 원칙을 준수한다.
 

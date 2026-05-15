@@ -36,7 +36,7 @@
 
 ## Verification
 
-- `bash scripts/check-auth-hardening.sh`
+- `bash scripts/hardening/check-auth-hardening.sh`
 - `docker compose -f infra/02-auth/keycloak/docker-compose.yml config`
 
 ## Review Cadence
@@ -101,7 +101,7 @@
    - Realm issuer와 OAuth2 Proxy `OAUTH2_PROXY_OIDC_ISSUER_URL`가 동일한 도메인 규칙을 따르는지 확인
 4. 정적 검증
    - `docker compose -f infra/02-auth/keycloak/docker-compose.yml config`
-   - `bash scripts/check-auth-hardening.sh`
+   - `bash scripts/hardening/check-auth-hardening.sh`
 
 #### Common Pitfalls
 
@@ -150,7 +150,7 @@
 ##### Checklist
 
 - [ ] `docker compose -f infra/02-auth/keycloak/docker-compose.yml config` 성공
-- [ ] `bash scripts/check-auth-hardening.sh` 결과 확인
+- [ ] `bash scripts/hardening/check-auth-hardening.sh` 결과 확인
 - [ ] `docker compose ps`에서 `keycloak`, `mng-pg` 상태 확인
 
 ##### Procedure
@@ -170,7 +170,7 @@
 
 #### Verification Steps
 
-- [ ] `bash scripts/check-auth-hardening.sh` 통과
+- [ ] `bash scripts/hardening/check-auth-hardening.sh` 통과
 - [ ] `docker exec keycloak sh -c 'exec 3<>/dev/tcp/127.0.0.1/9000; printf \"GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&3; cat <&3'`에서 `\"status\":\"UP\"` 확인
 
 #### Observability and Evidence Sources
@@ -191,7 +191,7 @@
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: N/A
-- **Eval Re-run**: `bash scripts/check-auth-hardening.sh`
+- **Eval Re-run**: `bash scripts/hardening/check-auth-hardening.sh`
 - **Trace Capture**: Keycloak 로그 + CI job 로그
 
 #### Related Operational Documents

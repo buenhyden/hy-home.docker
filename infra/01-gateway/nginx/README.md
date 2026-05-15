@@ -82,8 +82,8 @@ healthcheck:
 
 ## Validation
 
-- Run `bash scripts/validate-docker-compose.sh` after README or Compose changes that affect this service.
-- Run `bash scripts/check-repo-contracts.sh` before marking the service documentation ready.
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose changes that affect this service.
+- Run `bash scripts/validation/check-repo-contracts.sh` before marking the service documentation ready.
 
 ## Troubleshooting
 

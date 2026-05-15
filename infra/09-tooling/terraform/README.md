@@ -69,8 +69,8 @@ docker compose run --rm terraform apply
 
 ## Validation
 
-- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect Terraform.
-- Run `bash scripts/check-all-hardening.sh` before marking Terraform documentation ready.
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Terraform.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking Terraform documentation ready.
 - Healthcheck decision: this service extends `template-job-low`, sets `restart: 'no'`, and uses a CLI `terraform` entrypoint, so a long-running healthcheck is not applicable unless the service is redesigned as a daemon.
 
 ## Troubleshooting

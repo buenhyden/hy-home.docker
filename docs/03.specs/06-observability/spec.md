@@ -27,7 +27,7 @@
   - 수집/저장/조회 트래픽은 `infra_net` 내부 경계를 기본으로 유지한다.
   - 관리 경로 외부 접근은 Traefik `websecure` 진입점에서 통제한다.
 - **Governance Contract**:
-  - `scripts/check-observability-hardening.sh`를 CI `observability-hardening` job으로 강제한다.
+  - `scripts/hardening/check-observability-hardening.sh`를 CI `observability-hardening` job으로 강제한다.
   - 문서 계층(01~09)은 optimization-hardening 문서 세트로 상호 링크를 유지한다.
 
 ## Core Design
@@ -101,9 +101,9 @@ observability_gateway_contract:
 
 ```bash
 docker compose -f infra/06-observability/docker-compose.yml config
-bash scripts/check-observability-hardening.sh
-bash scripts/check-template-security-baseline.sh
-bash scripts/check-doc-traceability.sh
+bash scripts/hardening/check-observability-hardening.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-doc-traceability.sh
 ```
 
 가능 환경에서 runtime 검증:

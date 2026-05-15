@@ -67,7 +67,7 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
   - n8n queue mode + external runner
 - **Operational Evidence**:
   - `docker compose config` checks
-  - `scripts/check-workflow-hardening.sh`
+  - `scripts/hardening/check-workflow-hardening.sh`
   - CI `workflow-hardening` job
 
 ## Catalog-aligned Expansion Targets

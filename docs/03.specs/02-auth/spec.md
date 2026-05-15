@@ -27,7 +27,7 @@
   - Callback: `https://auth.${DEFAULT_URL}/oauth2/callback`
   - Session store: `redis://...@mng-valkey:6379`
 - **Governance Contract**:
-  - `scripts/check-auth-hardening.sh` 통과가 CI merge gate 조건
+  - `scripts/hardening/check-auth-hardening.sh` 통과가 CI merge gate 조건
   - Guide/Operation/Runbook 문서는 상호 링크를 유지
 
 ## Core Design
@@ -92,9 +92,9 @@ interface AuthHardeningContract {
 필수 검증 명령:
 
 ```bash
-bash scripts/check-auth-hardening.sh
-bash scripts/check-template-security-baseline.sh
-bash scripts/check-doc-traceability.sh
+bash scripts/hardening/check-auth-hardening.sh
+bash scripts/validation/check-template-security-baseline.sh
+bash scripts/validation/check-doc-traceability.sh
 docker compose config
 docker compose -f infra/02-auth/keycloak/docker-compose.yml config
 docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config

@@ -67,8 +67,8 @@ sonarqube/
 
 ## Validation
 
-- Run `bash scripts/validate-docker-compose.sh` after README or Compose reference changes that affect SonarQube.
-- Run `bash scripts/check-all-hardening.sh` before marking SonarQube documentation ready.
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect SonarQube.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking SonarQube documentation ready.
 
 ## Troubleshooting
 

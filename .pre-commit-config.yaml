@@ -84,9 +84,9 @@ repos:
 
       - id: docker-compose-check
         name: Validate Docker Compose
-        entry: ./scripts/validate-docker-compose.sh
+        entry: ./scripts/validation/validate-docker-compose.sh
         language: script
-        files: ^(docker-compose\.yml|\.env\.example|infra/.*|scripts/validate-docker-compose\.sh)$
+        files: ^(docker-compose\.yml|\.env\.example|infra/.*|scripts/validation/validate-docker-compose\.sh)$
         pass_filenames: false
         stages: [pre-push]
   # --- 7. 커밋 및 메시지 (Release) ---
