@@ -41,3 +41,9 @@ List concrete guardrails for future runs.
 ## Evidence
 
 List related commands, validators, docs, or follow-up task references.
+
+## Related Documents
+
+- `docs/00.agent-governance/memory/README.md`
+- `docs/00.agent-governance/memory/progress.md`
+- `docs/99.templates/memory.template.md`

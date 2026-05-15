@@ -88,7 +88,7 @@ status: draft
 3. {따라야 하는 템플릿, 규칙, 표준}
 4. {변경 후 함께 갱신해야 하는 링크, 메타데이터, 관련 문서}
 
-## Related References
+## Related Documents
 
 - {상위 문서 또는 상위 컨텍스트}
 - {같은 계층의 관련 문서}

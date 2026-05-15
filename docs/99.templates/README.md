@@ -78,6 +78,7 @@
 | `00.agent-governance/memory/<note>.md` | `memory.template.md` |
 | `00.agent-governance/memory/progress.md` | `progress.template.md` |
 | `90.references/` | `reference.template.md` |
+| `README.md` (per folder) | `readme.template.md` |
 
 ## API Spec 템플릿 위치
 

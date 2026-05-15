@@ -87,7 +87,9 @@ status: draft
 - **Runbook updates**:
 - **Guardrail / Eval updates**:
 
-## Related Links
+## Related Documents
 
 - **Runbook**: `[../../05.operations/####-<topic>.md]`
 - **Operation**: `[../../05.operations/<policy-or-standard>.md]`
+- **Incident**: `[YYYY-MM-DD-<incident-title>.md]`
+- **Follow-up Task**: `[../../04.execution/tasks/YYYY-MM-DD-<topic>.md]`

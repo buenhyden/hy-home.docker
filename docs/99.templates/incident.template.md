@@ -75,3 +75,9 @@ NC-YYYYMMDD-XXX / [Short Incident Title]
 ## Postmortem Link
 
 - `[YYYY-MM-DD-<incident-title>-postmortem.md]`
+
+## Related Documents
+
+- **Runbook**: `[../../runbooks/<topic>.md]`
+- **Operations Guide / Policy**: `[../../guides/<topic>.md]`
+- **Follow-up Task**: `[../../../04.execution/tasks/YYYY-MM-DD-<topic>.md]`

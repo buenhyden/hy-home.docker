@@ -70,3 +70,9 @@ status: draft
 - **Test Commands**:
 - **Eval Commands**:
 - **Logs / Evidence Location**:
+
+## Related Documents
+
+- **Parent Spec**: `[../03.specs/<feature-id>/spec.md]`
+- **Parent Plan**: `[../04.execution/plans/YYYY-MM-DD-<feature>.md]`
+- **Operations / References**: `[../05.operations/<topic>.md]`

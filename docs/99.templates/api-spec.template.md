@@ -97,3 +97,9 @@ status: draft
 - Contract lint
 - Mock / integration test
 - Consumer compatibility check
+
+## Related Documents
+
+- **Parent Spec**: `[./spec.md]`
+- **Data Model**: `[./data-model.md]`
+- **Tests**: `[./tests.md]`

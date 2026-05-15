@@ -80,3 +80,9 @@ python evals/run_feature_eval.py
 - **Where results are stored**:
 - **Failure triage rule**:
 - **Linked execution tasks**: `[../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md]`
+
+## Related Documents
+
+- **Spec**: `[./spec.md]`
+- **Agent Design**: `[./agent-design.md]`
+- **Execution Task**: `[../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md]`
