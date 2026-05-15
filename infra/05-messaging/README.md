@@ -89,7 +89,7 @@ docker exec rabbitmq rabbitmq-diagnostics check_running
 - Changing Schema Registry compatibility levels may break downstream consumers.
 - RabbitMQ queue purging will permanently delete non-persistent messages.
 
-## Related References
+## Related Documents
 
 - [04-data](../04-data/README.md) - Storing processed events.
 - [01-gateway](../01-gateway/README.md) - routing to Messaging UIs.

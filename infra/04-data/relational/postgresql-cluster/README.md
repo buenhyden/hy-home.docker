@@ -83,7 +83,7 @@ postgresql-cluster/
 - Overview 섹션은 반드시 한글(KR)과 영문(EN)을 병기함
 - 모든 링크는 상대 경로를 사용하여 리포지토리 내 무결성을 유지함
 
-## Related References
+## Related Documents
 
 - **Guide**: [docs/05.operations/04-data/relational/postgresql-cluster.md](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)
 - **Operations**: [docs/05.operations/04-data/relational/postgresql-cluster.md](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)
@@ -92,9 +92,3 @@ postgresql-cluster/
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.
-
----
-
-## Overview
-
-`infra/04-data/relational/postgresql-cluster`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.

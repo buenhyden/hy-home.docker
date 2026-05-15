@@ -58,7 +58,7 @@ mail/
 | `SMTP_HOST_PORT`        | No       | 외부 SMTP 수신 포트 (기본: 25)               |
 | `STALWART_PORT`         | No       | Stalwart 관리 UI 내부 포트 (기본: 8080)       |
 
-## Related References
+## Related Documents
 
 - **Guide**: [Mail Services Guide](../../../docs/05.operations/guides/10-communication/mail.md)
 - **Operation**: [Mail Operations Policy](../../../docs/05.operations/guides/10-communication/mail.md)

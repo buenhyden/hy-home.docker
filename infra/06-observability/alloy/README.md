@@ -82,7 +82,7 @@ alloy/
 3. **Performance**: Monitor `batch` processing metrics via the Alloy UI to prevent data loss or latency during high load periods.
 4. **Relabeling Rules**: When adding new services, ensure relabeling rules in `config.alloy` correctly assign the `scope` (infra vs app).
 
-## Related References
+## Related Documents
 
 - **System Guide**: [docs/05.operations/06-observability/alloy.md](../../../docs/05.operations/guides/06-observability/alloy.md)
 - **Operations**: [docs/05.operations/06-observability/alloy.md](../../../docs/05.operations/guides/06-observability/alloy.md)

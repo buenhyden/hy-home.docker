@@ -45,7 +45,7 @@ warehouses/
 2. 자원 거버넌스는 [운영 정책](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)을 확인한다.
 3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)을 사용한다.
 
-## Related References
+## Related Documents
 
 - **System Guide**: [docs/05.operations/04-data/analytics/warehouses.md](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)
 - **Operations**: [docs/05.operations/04-data/analytics/warehouses.md](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)
@@ -60,9 +60,3 @@ warehouses/
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.
-
----
-
-## Overview
-
-`infra/04-data/analytics/warehouses`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.

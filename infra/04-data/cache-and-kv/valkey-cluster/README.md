@@ -48,7 +48,7 @@ valkey-cluster/
 4. 운영 정책은 [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 확인한다.
 5. 장애 조치 지침은 [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 따른다.
 
-## Related References
+## Related Documents
 
 - **Guide**: [Valkey Cluster Guide](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
 - **Operation**: [Valkey Operations Policy](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)

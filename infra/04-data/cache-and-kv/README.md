@@ -44,7 +44,7 @@ cache-and-kv/
 2. 실행 가이드는 [Valkey Cluster Guide](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 참조합니다.
 3. 운영 정책은 [Valkey Operations Policy](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 확인합니다.
 
-## Related References
+## Related Documents
 
 - **Guides**: [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
 - **Operations**: [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)

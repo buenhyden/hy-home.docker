@@ -57,7 +57,7 @@ k6/
 | `INFLUXDB_ORG`    | Yes      | InfluxDB v2 조직 명칭                        |
 | `INFLUXDB_BUCKET` | Yes      | 지표를 저장할 버켓 명칭                      |
 
-## Related References
+## Related Documents
 
 - **Guide**: [k6 Performance Testing Guide](../../../docs/05.operations/guides/09-tooling/k6.md)
 - **Operation**: [k6 Operations Policy](../../../docs/05.operations/guides/09-tooling/k6.md)

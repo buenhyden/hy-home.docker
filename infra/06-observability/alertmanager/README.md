@@ -69,7 +69,7 @@ alertmanager/
 | `SLACK_WEBHOOK_URL` | Yes | Slack incoming webhook endpoint |
 | `SMTP_PASSWORD` | Yes | SMTP authentication password (App Password) |
 
-## Related References
+## Related Documents
 
 - **Guides**: [docs/05.operations/06-observability/alertmanager.md](../../../docs/05.operations/guides/06-observability/alertmanager.md)
 - **Operations**: [docs/05.operations/06-observability/alertmanager.md](../../../docs/05.operations/guides/06-observability/alertmanager.md)

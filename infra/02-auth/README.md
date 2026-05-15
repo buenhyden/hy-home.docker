@@ -81,7 +81,7 @@ docker exec oauth2-proxy wget -qO- http://localhost:4180/ping
 - OAuth2 Proxy configuration updates may require a redirect URI update in Keycloak.
 - Secret rotations (Cookie Secret, Client Secret) must be synchronized across both services.
 
-## Related References
+## Related Documents
 
 - [01-gateway](../01-gateway/README.md) - Handles ingress and ForwardAuth routing.
 - [04-data](../04-data/README.md) - Provides persistence and caching layers.

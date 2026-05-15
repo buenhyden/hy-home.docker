@@ -138,6 +138,27 @@ infra/
 └── README.md          # This file
 ```
 
+## Service Documentation Rubric
+
+Each service README must stay aligned with the Compose/config files in the same
+service directory and cover the following agent-verifiable fields:
+
+| Field | Required evidence |
+| :--- | :--- |
+| Purpose | Service role, tier, and root-active or standalone status |
+| Config files | Local `docker-compose*.yml`, Dockerfile, scripts, and mounted config paths |
+| Config values | Non-secret environment keys and defaults that affect operation |
+| Compose linkage | Root include/profile status and any variant compose files |
+| Networks | Declared networks and intended trust boundary |
+| Volumes | Persistent data, bind mounts, and backup-relevant paths |
+| Ports | Internal and exposed ports with protocol notes |
+| Labels | Traefik, routing, observability, or policy labels |
+| Secret refs | Secret names and mounted paths only; never secret values |
+| Healthcheck | Health endpoint or explicit reason when not applicable |
+| Operations | Canonical guide, policy, runbook, or service README reference |
+| Validation | Relevant compose, hardening, and repo-contract checks |
+| Troubleshooting | Known failure modes and first diagnostic command |
+
 ## How to Work in This Area
 
 1. **Service Addition**: `infra/<tier>/<service>/` 디렉토리를 생성하고 `docker-compose.yml`을 작성합니다.
@@ -145,7 +166,7 @@ infra/
 3. **Configuration**: 환경 변수가 필요하면 루트 `.env.example`에 추가하고, 민감 값은 `secrets/`에 분리합니다.
 4. **Validation**: `scripts/validate-docker-compose.sh`를 실행하여 구조적 정합성을 확인합니다.
 
-## Related References
+## Related Documents
 
 - [Official Guides](../docs/05.operations/README.md)
 - [Operation Specs](../docs/05.operations/README.md)

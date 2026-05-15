@@ -72,7 +72,7 @@ cassandra/
 | `CASSANDRA_USERNAME` | Yes | 관리자 계정 이름 |
 | `CASSANDRA_CLIENT_PORT` | No | CQL 접속 포트 (Default: 9042) |
 
-## Related References
+## Related Documents
 
 - **Guide**: [Cassandra Guide](../../../../docs/05.operations/guides/04-data/nosql/cassandra.md)
 - **Operation**: [Cassandra Operation](../../../../docs/05.operations/guides/04-data/nosql/cassandra.md)

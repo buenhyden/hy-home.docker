@@ -48,7 +48,7 @@ analytics/
 3. 운영 절차 변경 시 관련 런북(`docs/05.operations/04-data/analytics/`)을 함께 갱신한다.
 4. 모든 비밀번호 및 토큰은 Docker Secrets( `secrets/` )로 관리한다.
 
-## Related References
+## Related Documents
 
 - **System Guide**: [docs/05.operations/04-data/analytics/](../../../docs/05.operations/guides/04-data/analytics/README.md)
 - **Operations**: [docs/05.operations/04-data/analytics/](../../../docs/05.operations/guides/04-data/analytics/README.md)
@@ -62,9 +62,3 @@ analytics/
 
 ---
 Copyright (c) 2026. Analytics Tier Infrastructure.
-
----
-
-## Overview
-
-`infra/04-data/analytics`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.

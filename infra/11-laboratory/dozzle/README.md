@@ -61,7 +61,7 @@ dozzle/
 | `DEFAULT_URL`          |      Yes | Base URL for Traefik routing       |
 | `DEFAULT_MANAGEMENT_DIR`|      Yes | Path for persistent data storage   |
 
-## Related References
+## Related Documents
 
 - **Guide**: [../docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)
 - **Operation**: [../docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)

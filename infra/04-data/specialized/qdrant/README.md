@@ -55,7 +55,7 @@ qdrant/
 | gRPC API   | gRPC         | Port 6334                      |
 | Persistence| Local Bind   | `${DEFAULT_DATA_DIR}/qdrant`   |
 
-## Related References
+## Related Documents
 
 - [05.analytical-specialized-dbs.md](../../../../docs/05.operations/guides/04-data/05.analytical-specialized-dbs.md)
 - [Qdrant Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/qdrant.md)

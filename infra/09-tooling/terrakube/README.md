@@ -68,7 +68,7 @@ After the stack is enabled with the `tooling` or `iac` profile, use these routed
 - UI: `https://terrakube-ui.${DEFAULT_URL}`
 - API docs: `https://terrakube-api.${DEFAULT_URL}/swagger-ui.html`
 
-## Related References
+## Related Documents
 
 - [Tooling tier README](../README.md)
 - [Terrakube guide](../../../docs/05.operations/guides/09-tooling/terrakube.md)

@@ -43,7 +43,7 @@ open-webui/
 2. Access the UI at `https://chat.${DEFAULT_URL}` with SSO.
 3. Verify connection to Ollama and Qdrant before document indexing.
 
-## Related References
+## Related Documents
 
 - [Ollama Implementation](../ollama/README.md)
 - [Qdrant Implementation](../../04-data/specialized/qdrant/README.md)

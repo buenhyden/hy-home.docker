@@ -103,16 +103,10 @@ Traefik uses the `ForwardAuth` middleware (`sso-auth@file`) to delegate authenti
 | `HTTP_HOST_PORT`  |       No | Host port for HTTP (default: 80) |
 | `HTTPS_HOST_PORT` |       No | Host port for HTTPS (default: 443) |
 
-## Related References
+## Related Documents
 
 - [01-gateway Root README](../README.md)
 - [Traefik Guide](../../../docs/05.operations/guides/01-gateway/traefik.md)
 - [Gateway Operations Policy](../../../docs/05.operations/guides/01-gateway/traefik.md)
 - [Traefik Runbook](../../../docs/05.operations/guides/01-gateway/traefik.md)
 - [Traefik Dashboard](https://dashboard.${DEFAULT_URL:-localhost}) (Internal)
-
----
-
-## Overview
-
-`infra/01-gateway/traefik`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며, 기존 본문과 실제 디렉터리 구조를 함께 기준으로 사용한다.

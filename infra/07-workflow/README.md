@@ -84,7 +84,7 @@ curl -f http://localhost:5678/healthz
 - Changing the Valkey broker configuration affects all active Celery workers.
 - Deleting an n8n workflow is irreversible if not version-controlled externally.
 
-## Related References
+## Related Documents
 
 - [04-data](../04-data/README.md) - Metadata storage.
 - [06-observability](../06-observability/README.md) - Monitoring task performance.

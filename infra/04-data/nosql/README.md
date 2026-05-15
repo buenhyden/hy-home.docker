@@ -47,7 +47,7 @@ nosql/
 3. **Standards**: 모든 엔진은 `common-optimizations.yml`을 확장하며 Prometheus 익스포터를 포함해야 한다.
 4. **Documentation**: 변경 사항 발생 시 상위 `docs/` 경로의 관련 가이드와 런북을 업데이트한다.
 
-## Related References
+## Related Documents
 
 - **Architecture**: [Data Tier ARD](../../../docs/02.architecture/requirements/0004-data-architecture.md)
 - **Guides**: [NoSQL Guides](../../../docs/05.operations/guides/04-data/nosql/README.md)

@@ -70,7 +70,7 @@ relational/
 docker compose up -d
 ```
 
-## Related References
+## Related Documents
 
 - **Guide**: [docs/05.operations/04-data/relational.md](../../../docs/05.operations/guides/04-data/relational.md)
 - **Operations**: [docs/05.operations/04-data/relational.md](../../../docs/05.operations/guides/04-data/relational.md)

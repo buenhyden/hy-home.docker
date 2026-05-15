@@ -69,7 +69,7 @@ tempo/
 2. **Service Graphs**: Verify `metrics_generator` is active to visualize service dependency maps in Grafana.
 3. **Storage Health**: Monitor MinIO bucket availability if trace ingestion gaps occur.
 
-## Related References
+## Related Documents
 
 - [System Guide](../../../docs/05.operations/guides/06-observability/tempo.md)
 - [Operational Policy](../../../docs/05.operations/guides/06-observability/tempo.md)

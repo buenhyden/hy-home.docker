@@ -91,7 +91,7 @@ curl -fsS http://schema-registry.localhost/subjects
 2. **Monitor Health**: 브로커 점검 시 `UnderReplicatedPartitions` 지표가 0인지 항상 확인한다.
 3. **SSoT Linkage**: 토픽 스펙 변경 시 `docs/03.specs/05-messaging/spec.md`를 함께 갱신한다.
 
-## Related References
+## Related Documents
 
 - **PRD**: [05-messaging](../../../docs/01.requirements/2026-03-26-05-messaging.md)
 - **ARD**: [Messaging Architecture](../../../docs/02.architecture/requirements/0005-messaging-architecture.md)

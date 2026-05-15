@@ -69,7 +69,7 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway.local/metrics/j
 2. **Maintenance**: Periodically check for stale metrics that haven't been updated.
 3. **Traceability**: Refer to the dedicated guide for complex TTL or cleanup logic.
 
-## Related References
+## Related Documents
 
 - [System Guide](../../../docs/05.operations/guides/06-observability/pushgateway.md)
 - [Operational Policy](../../../docs/05.operations/guides/06-observability/pushgateway.md)

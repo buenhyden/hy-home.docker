@@ -36,7 +36,7 @@ specialized/
 └── README.md     # This file
 ```
 
-## Related References
+## Related Documents
 
 - [infra/04-data/README.md](../README.md)
 - [docs/03.specs/04-data/README.md](../../../docs/03.specs/04-data/README.md)

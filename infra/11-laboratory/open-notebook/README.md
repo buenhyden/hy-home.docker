@@ -51,7 +51,7 @@ open-notebook/
 | `open_notebook` | `lfnovo/open_notebook:v1-latest-single` | Notebook UI and API runtime |
 | `surrealdb` | `./surrealdb/Dockerfile` | Local metadata and notebook persistence |
 
-## Related References
+## Related Documents
 
 - [Laboratory guides](../../../docs/05.operations/guides/11-laboratory/README.md)
 - [Laboratory operations](../../../docs/05.operations/guides/11-laboratory/README.md)

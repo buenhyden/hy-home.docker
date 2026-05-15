@@ -73,7 +73,7 @@ mongodb/
 | `MONGO_EXPRESS_PORT` | No | UI 접속 포트 (Default: 8081) |
 | `MONGODB_REPLICA_SET_NAME`| No | 레플리카 셋 명칭 (Default: MyReplicaSet) |
 
-## Related References
+## Related Documents
 
 - **Guide**: [MongoDB Guide](../../../../docs/05.operations/guides/04-data/nosql/mongodb.md)
 - **Operation**: [MongoDB Operation](../../../../docs/05.operations/guides/04-data/nosql/mongodb.md)

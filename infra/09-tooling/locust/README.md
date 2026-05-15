@@ -55,7 +55,7 @@ locust/
 | `INFLUXDB_BUCKET` | Yes      | 지표를 저장할 버켓 명칭                      |
 | `DEFAULT_TOOLING_DIR` | Yes  | Locust 데이터 마운트 경로                    |
 
-## Related References
+## Related Documents
 
 - **Guide**: [Locust Load Testing Guide](../../../docs/05.operations/guides/09-tooling/locust.md)
 - **Operation**: [Locust Operations Policy](../../../docs/05.operations/guides/09-tooling/locust.md)

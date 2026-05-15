@@ -56,7 +56,7 @@ neo4j/
 | Security   | Docker Secrets    | `neo4j_password`          |
 | Extension  | APOC (Optional)   | Mount to `/plugins`       |
 
-## Related References
+## Related Documents
 
 - [05.analytical-specialized-dbs.md](../../../../docs/05.operations/guides/04-data/05.analytical-specialized-dbs.md)
 - [Neo4j Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md)

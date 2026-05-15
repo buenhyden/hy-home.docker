@@ -73,7 +73,7 @@ syncthing/
 | `docker compose up -d` | Start the Syncthing service. |
 | `docker compose logs -f` | View real-time service logs. |
 
-## Related References
+## Related Documents
 
 - **Guide**: [Syncthing Guide](../../../docs/05.operations/guides/09-tooling/syncthing.md)
 - **Operation**: [Syncthing Operations](../../../docs/05.operations/guides/09-tooling/syncthing.md)

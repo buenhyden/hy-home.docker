@@ -63,7 +63,7 @@ labels:
 - `docker compose down`: Stop the service.
 - `docker compose logs -f`: View service logs.
 
-## Related References
+## Related Documents
 
 - **System Guide**: [Portainer Guide](../../../docs/05.operations/guides/11-laboratory/portainer.md)
 - **Operations Policy**: [Portainer Operations](../../../docs/05.operations/guides/11-laboratory/portainer.md)

@@ -68,7 +68,7 @@ pyroscope/
 2. **Resource Monitoring**: Profiling ingestion can be CPU-intensive; monitor `infra-pyroscope` container stats during peak loads.
 3. **Traceability**: Refer to the dedicated system guide for remapping logic and custom labels.
 
-## Related References
+## Related Documents
 
 - [System Guide](../../../docs/05.operations/guides/06-observability/pyroscope.md)
 - [Operational Policy](../../../docs/05.operations/guides/06-observability/pyroscope.md)

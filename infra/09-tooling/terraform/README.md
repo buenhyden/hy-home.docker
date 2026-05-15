@@ -67,7 +67,7 @@ docker compose run --rm terraform plan
 docker compose run --rm terraform apply
 ```
 
-## Related References
+## Related Documents
 
 - [Tooling tier README](../README.md)
 - [Terraform guide](../../../docs/05.operations/guides/09-tooling/terraform.md)

@@ -98,7 +98,7 @@ docker exec oauth2-proxy wget -qO- http://localhost:4180/ping
 docker logs oauth2-proxy | grep "OIDC"
 ```
 
-## Related References
+## Related Documents
 
 - [Keycloak](../keycloak/README.md) - The Identity Provider.
 - [01-gateway](../../01-gateway/README.md) - Traefik route configuration.

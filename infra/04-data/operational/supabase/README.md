@@ -63,7 +63,7 @@ supabase/
 | `POSTGRES_PASSWORD` | Yes | 핵심 DB 루트 패스워드 |
 | `SUPABASE_PUBLIC_URL` | Yes | 플랫폼 외부 노출 URL |
 
-## Related References
+## Related Documents
 
 - **Guide**: [supabase.md](../../../../docs/05.operations/guides/04-data/operational/supabase.md)
 - **Operation**: [supabase.md](../../../../docs/05.operations/guides/04-data/operational/supabase.md)

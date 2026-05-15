@@ -65,7 +65,7 @@ sonarqube/
 | `docker compose up -d` | Start the SonarQube service. |
 | `docker compose logs -f` | View real-time service logs. |
 
-## Related References
+## Related Documents
 
 - **Guide**: [SonarQube Guide](../../../docs/05.operations/guides/09-tooling/sonarqube.md)
 - **Operation**: [SonarQube Operations](../../../docs/05.operations/guides/09-tooling/sonarqube.md)

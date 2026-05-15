@@ -72,7 +72,7 @@ couchdb/
 | `COUCHDB_USERNAME` | Yes | 관리자 계정 이름 |
 | `COUCHDB_PORT` | No | HTTP API 포트 (Default: 5984) |
 
-## Related References
+## Related Documents
 
 - **Guide**: [CouchDB Guide](../../../../docs/05.operations/guides/04-data/nosql/couchdb.md)
 - **Operation**: [CouchDB Operation](../../../../docs/05.operations/guides/04-data/nosql/couchdb.md)

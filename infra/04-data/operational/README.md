@@ -53,7 +53,7 @@ operational/
 | **mng-valkey** | Valkey 9 | Platform Shared Cache |
 | **Supabase** | Multi-stack | Integrated Backend Platform |
 
-## Related References
+## Related Documents
 
 - **Guide**: [Operational Guides](../../../docs/05.operations/guides/04-data/operational/README.md)
 - **Operation**: [Operational Policies](../../../docs/05.operations/guides/04-data/operational/README.md)

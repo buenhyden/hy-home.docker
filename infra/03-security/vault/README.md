@@ -87,7 +87,7 @@ docker exec vault-agent ls -la /vault/agent/
 2. **Template Path Verification**: `.ctmpl` 파일 수정 시 `vault-agent.hcl`의 `template` 섹션과 경로가 일치하는지 확인한다.
 3. **AppRole ID Access**: 자동화 작업 시 `/vault/agent/role_id` 및 `secret_id` 파일을 통해 토큰을 획득한다.
 
-## Related References
+## Related Documents
 
 - **System Guide**: [vault.md](../../../docs/05.operations/guides/03-security/vault.md)
 - **Technical Spec**: [spec.md](../../../docs/03.specs/03-security/spec.md)

@@ -95,7 +95,7 @@ docker exec infra-alloy alloy run --test /etc/alloy/config.alloy
 - Changes in Alloy OTLP endpoints will break telemetry for all downstream services.
 - Grafana plugin updates may require manual dashboard migration.
 
-## Related References
+## Related Documents
 
 - [04-data](../04-data/README.md) - MinIO for telemetry storage.
 - [02-auth](../02-auth/README.md) - Keycloak for SSO.

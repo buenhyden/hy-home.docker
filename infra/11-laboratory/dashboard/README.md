@@ -68,7 +68,7 @@ dashboard/
 - `config.yml`의 구문 오류는 대시보드 전체 로딩 실패를 유발한다.
 - 서비스 URL 변경 시 Traefik 라우팅 설정과 동기화되어야 한다.
 
-## Related References
+## Related Documents
 
 - **Guide**: [Dashboard Management Guide](../../../docs/05.operations/guides/11-laboratory/dashboard.md)
 - **Operation**: [Laboratory Operations Policy](../../../docs/05.operations/guides/11-laboratory/dashboard.md)

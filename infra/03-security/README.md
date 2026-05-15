@@ -80,7 +80,7 @@ docker exec vault wget -q -O- "http://127.0.0.1:8200/v1/sys/health"
 - Policy changes may revoke access for critical infrastructure components.
 - Raft configuration changes require 쿼럼 validation before applying.
 
-## Related References
+## Related Documents
 
 - [02-auth](../02-auth/README.md) - Integrating Vault with OIDC.
 - [01-gateway](../01-gateway/README.md) - Vault UI ingress routing.

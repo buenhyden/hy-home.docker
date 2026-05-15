@@ -64,7 +64,7 @@ The `01-gateway` tier is the unified entry point for all traffic entering the `h
 3. Follow [SETUP.md](../../docs/05.operations/guides/01-gateway/01.setup.md) for initial deployment.
 4. Verify changes using `docker exec traefik traefik healthcheck --ping`.
 
-## Related References
+## Related Documents
 
 - [🤖 Agent Governance](../../AGENTS.md)
 - [🏛️ System Architecture](../../docs/02.architecture/requirements/README.md)

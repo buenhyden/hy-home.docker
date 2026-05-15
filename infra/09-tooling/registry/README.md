@@ -63,7 +63,7 @@ registry/
 | `docker compose up -d` | Start the registry service. |
 | `docker pause registry` | Pause the registry service. |
 
-## Related References
+## Related Documents
 
 - **Guide**: [Registry Guide](../../../docs/05.operations/guides/09-tooling/registry.md)
 - **Operation**: [Registry Operations](../../../docs/05.operations/guides/09-tooling/registry.md)

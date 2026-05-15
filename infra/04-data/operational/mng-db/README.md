@@ -62,7 +62,7 @@ mng-db/
 | `POSTGRES_DEFAULT_DB` | Yes | 기본 관리용 DB 이름 (mng-pg) |
 | `VALKEY_PORT` | No | 노출 포트 (Default: 6379) |
 
-## Related References
+## Related Documents
 
 - **ARD**: [0004-data-architecture.md](../../../../docs/02.architecture/requirements/0004-data-architecture.md)
 - **Spec**: [spec.md](../../../../docs/03.specs/04-data/spec.md)
