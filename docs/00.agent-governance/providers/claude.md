@@ -34,6 +34,7 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 - `docs/00.agent-governance/` governance files are the policy SSOT and override provider defaults.
 - `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, and `.claude/skills/` are the runtime enforcement layer for Claude-specific behavior.
 - `.claude/hooks/*.sh` are thin wrappers that dispatch hook events through `scripts/hooks/agent-event-hook.sh`.
+- Claude `PreToolUse` Graphify advisory context and Docker Compose edit guardrails must route through the shared dispatcher, not inline shell snippets in `.claude/settings.json`.
 - GitHub-native instruction files are not part of this repository's active instruction hierarchy.
 - Personal `settings.local.json` may not override team policy in `settings.json`.
 

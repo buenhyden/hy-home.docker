@@ -554,6 +554,27 @@ for path, required_command_literal in hook_configs.items():
         for matcher_literal in ["Bash", "Read", "Edit", "Write", "apply_patch"]:
             if matcher_literal not in matcher_text:
                 failures.append(f"{path}: PreToolUse matcher must cover {matcher_literal!r}")
+    elif path == pathlib.Path(".claude/settings.json"):
+        if "[ -f graphify-out/graph.json ]" in text:
+            failures.append(f"{path}: Graphify advisory context must route through scripts/hooks/agent-event-hook.sh, not an inline command")
+        pre_tool_entries = hooks.get("PreToolUse") if isinstance(hooks, dict) else None
+        pre_tool_matchers = []
+        pre_tool_commands = []
+        if isinstance(pre_tool_entries, list):
+            for entry in pre_tool_entries:
+                if not isinstance(entry, dict):
+                    continue
+                pre_tool_matchers.append(entry.get("matcher", ""))
+                for hook in entry.get("hooks", []):
+                    if isinstance(hook, dict):
+                        pre_tool_commands.append(hook.get("command", ""))
+        matcher_text = "|".join(pre_tool_matchers)
+        command_text = "\n".join(pre_tool_commands)
+        for matcher_literal in ["Bash", "Read", "Glob", "Grep", "LS", "Edit", "Write", "MultiEdit", "apply_patch", "ApplyPatch"]:
+            if matcher_literal not in matcher_text:
+                failures.append(f"{path}: PreToolUse matcher must cover {matcher_literal!r}")
+        if ".claude/hooks/docker-compose-pre.sh" not in command_text:
+            failures.append(f"{path}: PreToolUse must call .claude/hooks/docker-compose-pre.sh")
 
 claude_settings = read(pathlib.Path(".claude/settings.json"))
 if '"Bash(rg:*)"' not in claude_settings:
