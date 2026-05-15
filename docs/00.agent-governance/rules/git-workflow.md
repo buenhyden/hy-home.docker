@@ -31,10 +31,14 @@ Use Conventional Commits with explicit scopes where possible.
 2. Run relevant programmatic checks before requesting review.
 3. For governance work, ensure linked stage docs remain accurate.
 4. Apply the GitHub completion gate from `rules/github-governance.md` §6 before declaring the PR done.
+5. Mark incomplete work as Draft/WIP and list remaining work in the PR template; do not request final review until the PR is ready.
+6. Keep commits atomic and reviewable. If cleanup is needed, use the PR description to explain the intended squash/rebase strategy instead of hiding mixed concerns.
 
 ## 4. Operational Best Practices
 
 - Keep commits atomic.
+- Use `fix` for user-visible or operational defect corrections and include regression evidence.
+- Use `refactor` only for behavior-preserving structure changes and list checks that demonstrate unchanged behavior.
 - Never commit plaintext secrets.
 - Reference issue IDs, ADR IDs, or plan/task IDs when applicable.
 

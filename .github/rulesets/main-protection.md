@@ -6,8 +6,13 @@ itself.
 
 ## Current Remote State
 
-- Repository rulesets: none observed.
-- `main` branch protection: not enabled.
+- Verified on 2026-05-16 by read-only GitHub API calls.
+- Repository rulesets: none returned by `gh api repos/buenhyden/hy-home.docker/rulesets --paginate`.
+- `main` branch protection: enabled, but weaker than the target ruleset below.
+- Required status checks: only `ci-summary`; strict up-to-date branch requirement is disabled.
+- Pull request review protection: enabled object exists, but approving review count is `0` and CODEOWNERS review is not required.
+- Conversation resolution, linear history, signed commits, and admin enforcement: disabled.
+- Force pushes and branch deletion: disabled.
 - Delete branch on merge: disabled.
 - Merge methods: merge, squash, and rebase are all enabled.
 

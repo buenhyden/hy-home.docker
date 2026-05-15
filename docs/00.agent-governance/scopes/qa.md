@@ -17,9 +17,11 @@ title: 'Quality Assurance Scope'
 
 - **Test Suite**:
   - **Unit**: >80% coverage for domain logic.
+  - **Target**: 90% coverage for changed domain logic when the repository has a measurable suite for that layer.
   - **E2E**: Critical paths verified via **Playwright**.
   - **Load**: API performance verified via **k6** or **Locust**.
 - **Automation**: Mandatory CI/CD gate for all PRs.
+- **Applicability**: Mark coverage N/A for docs-only, policy-only, infrastructure configuration, and validation-script changes when no domain-code coverage signal applies.
 
 ## 3. Implementation Flow
 
@@ -31,6 +33,7 @@ title: 'Quality Assurance Scope'
 ## 4. Operational Procedures
 
 - **Regression**: Add regression tests for every bug fix.
+- **Refactor evidence**: For behavior-preserving refactors, run checks that cover the touched behavior and state that no behavior change is intended.
 - **Reporting**: Publish test results to the session summary or `docs/04.execution/tasks/`.
 
 ## 5. Maintenance & Safety

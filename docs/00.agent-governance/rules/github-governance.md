@@ -19,6 +19,7 @@ Repo-local stricter rules always override this document; never weaken them on th
 ## 2. Pull Request and Review Contract
 
 - A PR is complete only when: (a) all required status checks pass, (b) all required code reviews are approved, (c) no unresolved BLOCK-severity findings remain.
+- Draft/WIP PRs are allowed for collaboration, but they must not be treated as merge-ready and must list remaining work in the PR template.
 - Agents must not self-approve or bypass required reviewers.
 - When agents propose changes, they must list which CODEOWNERS paths are touched and which review gates apply.
 - Merge method discipline: prefer squash or rebase to keep `main` history linear unless the project explicitly allows merge commits.
