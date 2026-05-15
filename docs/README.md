@@ -1,10 +1,10 @@
 # docs
 
-> 요구사항, 아키텍처, 명세, 실행, 운영 지식을 새 stage taxonomy로 관리하는 공식 문서 공간
+> Shared harness-engineering and agent-first engineering documentation space for staged repository knowledge.
 
 ## Overview
 
-`docs/`는 프로젝트의 요구사항, 아키텍처, 결정 사항, 기술 명세, 실행 증거, 운영 지식을 통합 관리하는 표준 공간입니다. 활성 문서는 허용된 taxonomy 안에서만 관리하며, 검증 스크립트가 이 계약을 강제합니다.
+`docs/`는 shared harness-engineering and agent-first engineering 목적에 맞춰 프로젝트의 요구사항, 아키텍처, 결정 사항, 기술 명세, 실행 증거, 운영 지식을 통합 관리하는 표준 공간입니다. 활성 문서는 허용된 taxonomy 안에서만 관리하며, 검증 스크립트가 이 계약을 강제합니다.
 
 현재 문서 흐름은 `01.requirements -> 02.architecture -> 03.specs -> 04.execution -> 05.operations`입니다. 보조 공간으로 `00.agent-governance`, `90.references`, `99.templates`를 사용합니다.
 
@@ -163,7 +163,7 @@ bash scripts/check-doc-traceability.sh
 | Generated index | [90.references/llm-wiki/index.md](90.references/llm-wiki/index.md) |
 | Operations guide | [05.operations/guides/llm-wiki-maintenance.md](05.operations/guides/llm-wiki-maintenance.md) |
 
-## Related References
+## Related Documents
 
 - [00.agent-governance/README.md](00.agent-governance/README.md)
 - [01.requirements/README.md](01.requirements/README.md)

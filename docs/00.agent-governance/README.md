@@ -8,7 +8,7 @@ layer: agentic
 
 ## Overview
 
-- Purpose: deterministic, auditable, token-efficient agent execution.
+- Purpose: deterministic, auditable, token-efficient agent execution for a shared harness-engineering and agent-first engineering workspace.
 - Entry point: root shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) route agents into this hub; Codex uses `AGENTS.md` plus `.codex/`.
 - Compliance boundary: stage-gate lifecycle in `docs/01` to `docs/05`, plus `docs/90` and `docs/99`.
 

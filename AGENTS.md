@@ -6,6 +6,8 @@ layer: agentic
 
 Universal entry shim for agent execution in `hy-home.docker`.
 
+Workspace purpose: shared harness-engineering and agent-first engineering over modular Docker Compose infrastructure and stage-gated documentation.
+
 ## 1. Bootstrap Sequence
 
 1. Load `[LOAD:RULES:BOOTSTRAP]` from `docs/00.agent-governance/rules/bootstrap.md`.

@@ -1,10 +1,10 @@
 # hy-home.docker
 
-> 문서 체계와 모듈형 Docker Compose 구성을 함께 운영하는 홈 인프라 저장소
+> Shared harness-engineering and agent-first engineering workspace for modular Docker Compose home infrastructure.
 
 ## Overview
 
-`hy-home.docker`는 홈 서버와 개인 개발 인프라를 Docker Compose 중심으로 표준화하고, 그 위에 요구사항, 설계, 계획, 작업, 운영 지식을 단계별 문서 체계로 연결하는 저장소입니다. 루트 [`docker-compose.yml`](./docker-compose.yml)은 `infra/**/docker-compose*.yml` 파일을 `include`로 통합해 단일 진입점 역할을 수행합니다.
+`hy-home.docker`는 shared harness-engineering and agent-first engineering workspace로, 홈 서버와 개인 개발 인프라를 Docker Compose 중심으로 표준화하고 그 위에 요구사항, 설계, 계획, 작업, 운영 지식을 단계별 문서 체계로 연결하는 저장소입니다. 루트 [`docker-compose.yml`](./docker-compose.yml)은 `infra/**/docker-compose*.yml` 파일을 `include`로 통합해 단일 진입점 역할을 수행합니다.
 
 이 저장소의 핵심 목적은 다음 세 가지입니다. 첫째, 인프라 구성을 계층별로 분리해 서비스 추가와 변경 영향을 명확히 만드는 것. 둘째, 문서와 실행 대상을 연결해 추적성과 검증 가능성을 확보하는 것. 셋째, AI Agent와 사람이 동일한 규칙 아래에서 안전하게 협업할 수 있도록 진입 규칙과 작업 범위를 명확히 유지하는 것입니다.
 
@@ -215,7 +215,7 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 5. GitHub workflow를 바꿀 때는 [`docs/00.agent-governance/rules/github-governance.md`](./docs/00.agent-governance/rules/github-governance.md)와 [`docs/00.agent-governance/rules/git-workflow.md`](./docs/00.agent-governance/rules/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
 6. 변경 후에는 관련 링크, 검증 명령, 문서 정책, CI 영향 범위를 함께 점검하고 필요한 경우 검증 스크립트를 실행합니다.
 
-## Related References
+## Related Documents
 
 - [`docs/README.md`](./docs/README.md)
 - [`docs/00.agent-governance/README.md`](./docs/00.agent-governance/README.md)
