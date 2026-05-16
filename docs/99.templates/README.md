@@ -1,3 +1,7 @@
+---
+layer: agentic
+---
+
 # 99.templates
 
 > stage 문서와 README 작성을 위한 공식 템플릿 원천
@@ -63,22 +67,22 @@
 
 ## 템플릿-폴더 매핑
 
-| Folder | Template |
-| --- | --- |
-| `01.requirements/` | `prd.template.md` |
-| `02.architecture/requirements/` | `ard.template.md` |
-| `02.architecture/decisions/` | `adr.template.md` |
-| `03.specs/` | `spec.template.md` |
-| `03.specs/<feature-id>/api-spec.md` | `api-spec.template.md` |
-| `04.execution/plans/` | `plan.template.md` |
-| `04.execution/tasks/` | `task.template.md` |
-| `05.operations/` | `operation.template.md` |
-| `05.operations/incidents/` | `incident.template.md` |
-| `05.operations/incidents/` | `postmortem.template.md` |
-| `00.agent-governance/memory/<note>.md` | `memory.template.md` |
-| `00.agent-governance/memory/progress.md` | `progress.template.md` |
-| `90.references/` | `reference.template.md` |
-| `README.md` (per folder) | `readme.template.md` |
+| Folder                                   | Template                 |
+| ---------------------------------------- | ------------------------ |
+| `01.requirements/`                       | `prd.template.md`        |
+| `02.architecture/requirements/`          | `ard.template.md`        |
+| `02.architecture/decisions/`             | `adr.template.md`        |
+| `03.specs/`                              | `spec.template.md`       |
+| `03.specs/<feature-id>/api-spec.md`      | `api-spec.template.md`   |
+| `04.execution/plans/`                    | `plan.template.md`       |
+| `04.execution/tasks/`                    | `task.template.md`       |
+| `05.operations/`                         | `operation.template.md`  |
+| `05.operations/incidents/`               | `incident.template.md`   |
+| `05.operations/incidents/`               | `postmortem.template.md` |
+| `00.agent-governance/memory/<note>.md`   | `memory.template.md`     |
+| `00.agent-governance/memory/progress.md` | `progress.template.md`   |
+| `90.references/`                         | `reference.template.md`  |
+| `README.md` (per folder)                 | `readme.template.md`     |
 
 ## API Spec 템플릿 위치
 
