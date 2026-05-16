@@ -22,6 +22,7 @@ jobs:
         uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_message: "Not applicable for issues" # 필수값 충족을 위한 더미 메시지
           issue_message:
             "Welcome to the project! Thank you for opening your first issue. We
             will review it shortly."
@@ -38,6 +39,7 @@ jobs:
         uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
+          issue_message: "Not applicable for PRs" # 필수값 충족을 위한 더미 메시지
           pr_message:
             "Welcome to the project! Thank you for your first Pull Request.
             We'll review your changes as soon as possible."

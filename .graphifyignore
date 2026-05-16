@@ -1,0 +1,14 @@
+# graphifyignore — paths excluded from knowledge graph extraction
+# Follows gitignore last-match-wins semantics.
+
+# Runtime Docker volume mounts: Grafana plugins contain minified JS that
+# creates meaningless god nodes (N, d, etc.) with thousands of edges.
+# These are gitignored on-disk artifacts, not codebase files.
+volumes/
+
+# Storybook sub-project: separate JS/TS codebase unrelated to infra operations.
+# Including it inflates the graph without improving infra/docs navigation.
+projects/
+
+# Secret mounts: sensitive configuration must not be scanned or indexed.
+secrets/
