@@ -72,6 +72,21 @@ infra/06-observability/grafana/
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify datasource connectivity by testing each datasource in Grafana UI (Configuration → Data Sources → Test).
+- Confirm dashboard provisioning by checking `docker logs grafana | grep -i 'error\|warn'` after config changes.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For datasource errors: confirm the datasource URL and credentials match the target service's network address and auth config.
+- For dashboard loading errors: validate provisioning YAML syntax and confirm dashboard JSON files are correctly mounted.
+- For auth errors: verify Grafana's OIDC or admin credentials and confirm the OAuth2 callback URL is correctly configured.
+
 ## Related Documents
 
 - [infra/README.md](../../README.md)

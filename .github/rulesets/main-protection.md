@@ -6,15 +6,18 @@ itself.
 
 ## Current Remote State
 
-- Verified on 2026-05-16 by read-only GitHub API calls.
-- Repository rulesets: none returned by `gh api repos/buenhyden/hy-home.docker/rulesets --paginate`.
-- `main` branch protection: enabled, but weaker than the target ruleset below.
-- Required status checks: only `ci-summary`; strict up-to-date branch requirement is disabled.
-- Pull request review protection: enabled object exists, but approving review count is `0` and CODEOWNERS review is not required.
-- Conversation resolution, linear history, signed commits, and admin enforcement: disabled.
-- Force pushes and branch deletion: disabled.
-- Delete branch on merge: disabled.
-- Merge methods: merge, squash, and rebase are all enabled.
+- Verified on 2026-05-16 by read-only GitHub API calls (post-mutation state).
+- Repository rulesets: classic branch protection active on `main`.
+- Required status checks: 10 contexts required with strict/latest up-to-date branch requirement enabled:
+  `docs-traceability`, `repo-contracts`, `git-flow-contract`, `compose-validation`,
+  `compose-all-profiles-validation`, `infrastructure-hardening`, `template-security-baseline`,
+  `quickwin-baseline`, `pre-commit`, `zizmor`.
+- Pull request review protection: 1 approving review required; CODEOWNERS review required.
+- Conversation resolution: required before merge.
+- Force pushes: disabled.
+- Branch deletion: disabled.
+- Linear history: enforced via squash/rebase merge preference.
+- Agents must re-verify remote state in future audit passes before asserting enforcement.
 
 ## Target Ruleset
 

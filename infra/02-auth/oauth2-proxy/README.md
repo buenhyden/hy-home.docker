@@ -49,22 +49,22 @@ oauth2-proxy/
 
 ## Tech Stack
 
-| Category   | Technology                     | Notes                     |
-| ---------- | ------------------------------ | ------------------------- |
-| Proxy      | OAuth2 Proxy (Go)              | v7.14.2                   |
-| Session    | Valkey                         | Redis-compatible storage  |
-| Protocol   | OIDC / ForwardAuth             | Keycloak & Traefik        |
-| Runtime    | Alpine Linux                   | Minimal footprint         |
+| Category | Technology         | Notes                    |
+| -------- | ------------------ | ------------------------ |
+| Proxy    | OAuth2 Proxy (Go)  | v7.14.2                  |
+| Session  | Valkey             | Redis-compatible storage |
+| Protocol | OIDC / ForwardAuth | Keycloak & Traefik       |
+| Runtime  | Alpine Linux       | Minimal footprint        |
 
 ## Configuration
 
 ### Environment Variables
 
-| Variable | Required | Description |
-| --------- | -------: | ----------- |
-| `OAUTH2_PROXY_CLIENT_ID` | Yes | OIDC Client ID from Keycloak |
-| `OAUTH2_PROXY_COOKIE_SECRET` | Yes | Cookie encryption key (32-byte string) |
-| `OAUTH2_PROXY_CLIENT_SECRET` | Yes | Client secret from Keycloak |
+| Variable                     | Required | Description                            |
+| ---------------------------- | -------: | -------------------------------------- |
+| `OAUTH2_PROXY_CLIENT_ID`     |      Yes | OIDC Client ID from Keycloak           |
+| `OAUTH2_PROXY_COOKIE_SECRET` |      Yes | Cookie encryption key (32-byte string) |
+| `OAUTH2_PROXY_CLIENT_SECRET` |      Yes | Client secret from Keycloak            |
 
 ### Secrets Injection
 
@@ -82,7 +82,7 @@ The service uses `wget` to perform a health check against the `/ping` endpoint:
 
 ```yaml
 healthcheck:
-  test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:4180/ping >/dev/null 2>&1 || exit 1"]
+  test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:4180/ping >/dev/null 2>&1 || exit 1']
   interval: 30s
   timeout: 10s
   retries: 3
@@ -97,6 +97,21 @@ docker exec oauth2-proxy wget -qO- http://localhost:4180/ping
 # Verify OIDC reachability via logs
 docker logs oauth2-proxy | grep "OIDC"
 ```
+
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify OIDC ForwardAuth forwarding by checking `docker logs oauth2-proxy | grep "OIDC"` after config changes.
+- Confirm cookie and session connectivity by verifying Valkey is reachable: `docker exec oauth2-proxy wget -qO- http://localhost:4180/ping`.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For OIDC errors: verify `OAUTH2_PROXY_CLIENT_ID` matches the Keycloak client and `redirect_url` is synchronized.
+- For session errors: confirm `mng_valkey_password` secret is injected and Valkey is reachable from the oauth2-proxy container.
+- For ForwardAuth failures: check Traefik middleware labels reference `auth.${DEFAULT_URL}` and the upstream config is correct.
 
 ## Related Documents
 

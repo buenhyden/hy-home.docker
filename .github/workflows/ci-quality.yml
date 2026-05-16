@@ -58,7 +58,7 @@ jobs:
           set -euo pipefail
 
           title_re='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([A-Za-z0-9._-]+\))?!?: .+'
-          human_branch_re='^((feat|fix)/[A-Za-z0-9._-]+-.+|(docs|style|refactor|perf|test|build|ci|chore|revert)/.+)$'
+          human_branch_re='^((feat|fix|hotfix)/[A-Za-z0-9._-]+-.+|(docs|style|refactor|perf|test|build|ci|chore|revert)/.+)$'
           automation_branch_re='^(dependabot|codex)/.+'
 
           if ! [[ "$PR_TITLE" =~ $title_re ]]; then
@@ -69,7 +69,7 @@ jobs:
 
           if ! [[ "$HEAD_REF" =~ $human_branch_re || "$HEAD_REF" =~ $automation_branch_re ]]; then
             echo "Source branch must use a governed prefix." >&2
-            echo "Human branches: feat/<issue-id>-..., fix/<issue-id>-..., docs/, style/," >&2
+            echo "Human branches: feat/<issue-id>-..., fix/<issue-id>-..., hotfix/<issue-id>-..., docs/, style/," >&2
             echo "refactor/, perf/, test/, build/, ci/, chore/, or revert/." >&2
             echo "Automation branches: dependabot/** or codex/**." >&2
             exit 1

@@ -48,26 +48,41 @@ alertmanager/
 
 ## Tech Stack
 
-| Category | Technology | Version | Notes |
-| :--- | :--- | :--- | :--- |
-| Alerting | Alertmanager | v0.30.0 | High-availability mode cluster |
-| Integrations | Slack / SMTP | - | Webhook and SMTP relay |
+| Category     | Technology   | Version | Notes                          |
+| :----------- | :----------- | :------ | :----------------------------- |
+| Alerting     | Alertmanager | v0.30.0 | High-availability mode cluster |
+| Integrations | Slack / SMTP | -       | Webhook and SMTP relay         |
 
 ## Available Scripts
 
-| Command | Description |
-| :--- | :--- |
-| `docker compose up -d` | Start Alertmanager cluster |
+| Command                  | Description                 |
+| :----------------------- | :-------------------------- |
+| `docker compose up -d`   | Start Alertmanager cluster  |
 | `docker compose restart` | Apply configuration changes |
 
 ## Configuration
 
 ### Environment Variables
 
-| Variable | Required | Description |
-| :--- | :--- | :--- |
-| `SLACK_WEBHOOK_URL` | Yes | Slack incoming webhook endpoint |
-| `SMTP_PASSWORD` | Yes | SMTP authentication password (App Password) |
+| Variable            | Required | Description                                 |
+| :------------------ | :------- | :------------------------------------------ |
+| `SLACK_WEBHOOK_URL` | Yes      | Slack incoming webhook endpoint             |
+| `SMTP_PASSWORD`     | Yes      | SMTP authentication password (App Password) |
+
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify routing tree syntax by checking `docker logs alertmanager | grep -i "error\|warn"` after `config.yml` changes.
+- Confirm receiver connectivity by triggering a test alert and verifying the notification reaches the target channel.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For routing tree errors: validate `config.yml` YAML syntax and check that all referenced receivers are defined.
+- For notification failures: confirm `SLACK_WEBHOOK_URL` and `SMTP_PASSWORD` secrets are correctly injected via Vault.
+- For inhibition rule issues: review `inhibit_rules` in `config.yml` to ensure source and target match labels are correct.
 
 ## Related Documents
 

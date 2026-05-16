@@ -69,6 +69,21 @@ tempo/
 2. **Service Graphs**: Verify `metrics_generator` is active to visualize service dependency maps in Grafana.
 3. **Storage Health**: Monitor MinIO bucket availability if trace ingestion gaps occur.
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify trace ingestion by checking `docker logs tempo | grep -i 'error\|warn'` after config changes.
+- Confirm OTLP endpoint reachability from Alloy by verifying traces appear in Grafana Tempo datasource.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For OTLP ingestion errors: confirm port bindings and that Alloy's Tempo exporter targets the correct endpoint.
+- For trace query errors: verify the Tempo datasource URL in Grafana matches the Tempo container's network address.
+- For storage issues: confirm the Tempo data volume is mounted and the backend storage path is correctly configured.
+
 ## Related Documents
 
 - [System Guide](../../../docs/05.operations/guides/06-observability/tempo.md)

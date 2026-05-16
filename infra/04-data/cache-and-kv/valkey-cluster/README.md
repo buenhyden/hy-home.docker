@@ -48,6 +48,21 @@ valkey-cluster/
 4. 운영 정책은 [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 확인한다.
 5. 장애 조치 지침은 [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 따른다.
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify cluster connectivity by running `docker exec valkey-cluster valkey-cli cluster info` and confirming `cluster_state:ok`.
+- Confirm replication health by checking `docker logs valkey-cluster | grep -i 'error\|warn'` after config changes.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For cluster connectivity errors: verify all cluster nodes can reach each other on the gossip port and confirm `cluster-enabled yes` in the config.
+- For replication errors: check node roles with `cluster nodes` command and verify the replica count matches the configuration.
+- For persistence issues: confirm the Valkey data volume is mounted and `appendonly` or `save` settings are correct.
+
 ## Related Documents
 
 - **Guide**: [Valkey Cluster Guide](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)

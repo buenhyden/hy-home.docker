@@ -18,6 +18,7 @@ Use Conventional Commits with explicit scopes where possible.
 - Protected baseline: `main`
 - Feature branch naming: `feat/<issue-id>-<short-description>`
 - Fix branch naming: `fix/<issue-id>-<short-description>`
+- Hotfix branch naming: `hotfix/<issue-id>-<short-description>` for emergency production fixes; follows the same issue-ID requirement as `feat/` and `fix/`.
 - Other human-authored branch naming may use a matching Conventional Commit
   type prefix: `docs/`, `style/`, `refactor/`, `perf/`, `test/`, `build/`,
   `ci/`, `chore/`, or `revert/`.

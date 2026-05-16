@@ -82,6 +82,14 @@ airflow/
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Airflow.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking Airflow documentation ready.
 
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For DAG errors: check the Airflow UI task logs and verify DAG file syntax with `airflow dags list`.
+- For scheduler errors: confirm the scheduler container is running and check `docker logs airflow-scheduler | grep -i 'error'`.
+- For worker errors: verify the executor configuration and confirm the message broker is reachable.
+
 ## Related Documents
 
 - **ARD**: [07-workflow Architecture](../../../docs/02.architecture/requirements/0007-workflow-architecture.md)
