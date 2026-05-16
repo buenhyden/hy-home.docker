@@ -66,6 +66,14 @@ mc admin definitions export ...
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect RabbitMQ.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking RabbitMQ documentation ready.
 
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For queue errors: check queue state in the RabbitMQ management UI and verify consumer count and message backlog.
+- For dead letter issues: review DLX exchange and routing key configuration in the queue definition.
+- For credential errors: confirm `RABBITMQ_DEFAULT_USER` and `RABBITMQ_DEFAULT_PASS` secrets are correctly injected.
+
 ## Related Documents
 
 - **ARD**: `[../../../docs/02.architecture/requirements/0005-messaging-architecture.md]`

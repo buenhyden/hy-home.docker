@@ -69,6 +69,21 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway.local/metrics/j
 2. **Maintenance**: Periodically check for stale metrics that haven't been updated.
 3. **Traceability**: Refer to the dedicated guide for complex TTL or cleanup logic.
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify metric push by checking `docker logs pushgateway | grep -i 'error\|warn'` and confirming pushed metrics appear in the Pushgateway UI.
+- Confirm Prometheus scrapes Pushgateway by verifying the target appears UP in the Prometheus Targets page.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For push errors: validate the push URL format (`http://pushgateway:9091/metrics/job/<job>`) and confirm network connectivity from the pushing service.
+- For stale metrics: use the Pushgateway UI to delete stale job groups; configure `--persistence.file` for persistence across restarts.
+- For scrape errors: verify the Pushgateway scrape job is defined in `prometheus.yml` and the target is reachable.
+
 ## Related Documents
 
 - [System Guide](../../../docs/05.operations/guides/06-observability/pushgateway.md)

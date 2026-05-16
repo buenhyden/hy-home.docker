@@ -68,6 +68,21 @@ pyroscope/
 2. **Resource Monitoring**: Profiling ingestion can be CPU-intensive; monitor `infra-pyroscope` container stats during peak loads.
 3. **Traceability**: Refer to the dedicated system guide for remapping logic and custom labels.
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify profiling ingestion by checking `docker logs pyroscope | grep -i 'error\|warn'` after config changes.
+- Confirm profiles appear in Grafana Pyroscope datasource after Alloy sends profiling data.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For ingestion errors: confirm Alloy's Pyroscope exporter endpoint matches the Pyroscope container's push API.
+- For missing profiles: verify service name labels in Alloy's profiling configuration match expected Pyroscope app names.
+- For storage issues: confirm the Pyroscope data volume is mounted and has sufficient disk space.
+
 ## Related Documents
 
 - [System Guide](../../../docs/05.operations/guides/06-observability/pyroscope.md)

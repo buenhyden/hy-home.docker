@@ -103,6 +103,14 @@ Traefik uses the `ForwardAuth` middleware (`sso-auth@file`) to delegate authenti
 | `HTTP_HOST_PORT`  |       No | Host port for HTTP (default: 80) |
 | `HTTPS_HOST_PORT` |       No | Host port for HTTPS (default: 443) |
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify routing configuration by checking the Traefik dashboard and confirming all expected routers and services are registered.
+- Confirm TLS certificate issuance by checking `docker logs traefik | grep -i 'error\|warn'` after domain config changes.
+- Confirm middleware chain by verifying ForwardAuth and other middlewares appear correctly in the Traefik dashboard.
+
 ## Troubleshooting
 
 - Start with `docker compose config` to confirm routers, networks, and mounted dynamic config paths render.

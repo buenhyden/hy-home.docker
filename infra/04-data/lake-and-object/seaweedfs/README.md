@@ -120,6 +120,21 @@ infra/04-data/lake-and-object/seaweedfs/
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify volume server health by checking `docker logs seaweedfs | grep -i 'error\|warn'` and confirming master/volume/filer status via the SeaweedFS UI.
+- Confirm S3 API compatibility by testing a PUT/GET operation against the filer's S3 endpoint.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For volume server errors: verify master address configuration and confirm volume servers can register with the master.
+- For filer errors: check filer metadata store connectivity and confirm the filer config references the correct master address.
+- For S3 API errors: verify the filer's S3 gateway is enabled and credentials match the client configuration.
+
 ## Related Documents
 
 - [infra/README.md](../../../README.md)

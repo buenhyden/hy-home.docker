@@ -60,6 +60,21 @@ docker compose -f docker-compose.cluster.yaml up -d
 - **Path-Style Access**: 클라이언트가 가상 호스트 기반 접근을 시도할 경우 연결이 실패할 수 있으므로, 반드시 `path-style` 접근을 활성화해야 한다.
 - **Quota Management**: 버킷 용량 제한이 설정되지 않았으므로 호스트 디스크 사용량을 주의 깊게 모니터링해야 한다.
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify bucket access by checking `docker logs minio | grep -i 'error\|warn'` and confirming the MinIO console is reachable.
+- Confirm S3 API health by running a test upload/download against the MinIO endpoint.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For credential errors: verify `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD` secrets are correctly injected and match the client configuration.
+- For bucket access errors: confirm bucket policies and IAM permissions are correctly configured in the MinIO console.
+- For storage issues: confirm the MinIO data volume is mounted and has sufficient disk space.
+
 ## 7. Canonical References
 
 - **Official MinIO Docs**: [https://docs.min.io/](https://docs.min.io/)

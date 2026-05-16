@@ -87,6 +87,14 @@ docker exec vault-agent ls -la /vault/agent/
 2. **Template Path Verification**: `.ctmpl` 파일 수정 시 `vault-agent.hcl`의 `template` 섹션과 경로가 일치하는지 확인한다.
 3. **AppRole ID Access**: 자동화 작업 시 `/vault/agent/role_id` 및 `secret_id` 파일을 통해 토큰을 획득한다.
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify Vault seal status by running `docker exec vault vault status` and confirming the seal state is `false`.
+- Confirm secret paths are accessible by checking `docker logs vault | grep -i 'error\|warn'` after policy changes.
+- Verify token authentication by confirming dependent services can retrieve their secrets on startup.
+
 ## Troubleshooting
 
 - Start with `docker compose config` to confirm Vault mounts, ports, and network placement.

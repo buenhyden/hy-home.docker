@@ -79,6 +79,21 @@ infra/06-observability/prometheus/
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify scrape targets are UP by checking the Prometheus UI Targets page after `prometheus.yml` changes.
+- Confirm alert rules load correctly by checking `docker logs prometheus | grep -i 'error\|warn'`.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For scrape errors: validate `prometheus.yml` scrape configs and confirm target endpoints are reachable from the Prometheus container.
+- For alert rule errors: check YAML syntax in rule files and verify the `rule_files` paths are correctly mounted.
+- For storage issues: confirm the Prometheus data volume is mounted and has sufficient disk space.
+
 ## Related Documents
 
 - [infra/README.md](../../README.md)

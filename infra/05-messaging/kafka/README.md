@@ -91,6 +91,14 @@ curl -fsS http://schema-registry.localhost/subjects
 2. **Monitor Health**: 브로커 점검 시 `UnderReplicatedPartitions` 지표가 0인지 항상 확인한다.
 3. **SSoT Linkage**: 토픽 스펙 변경 시 `docs/03.specs/05-messaging/spec.md`를 함께 갱신한다.
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify topic creation by running `kafka-topics.sh --list` and confirming expected topics exist with correct partition and replication settings.
+- Confirm producer/consumer connectivity by checking `docker logs kafka | grep -i 'error\|warn'` after config changes.
+- Verify broker registration by confirming the broker ID appears in the controller metadata logs.
+
 ## Troubleshooting
 
 - Start with `docker compose config` to confirm Kafka listeners, broker identity, and network references render.

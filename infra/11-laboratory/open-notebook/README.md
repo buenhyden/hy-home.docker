@@ -56,6 +56,14 @@ open-notebook/
 - `infra/11-laboratory/open-notebook/docker-compose.yml` currently uses `lfnovo/open_notebook:v1-latest-single`, which is a latest-like tag.
 - The tag is registered in `infra/image-tag-policy.exceptions.json` for monthly Laboratory Operator review; keep it unchanged unless a later approved pass pins a stable tag or removes the exception.
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify kernel connectivity by opening a notebook and confirming the kernel starts without errors.
+- Confirm persistence by checking `docker logs open-notebook | grep -i 'error\|warn'` after config changes.
+- Verify the notebook data volume is mounted and notebooks persist across container restarts.
+
 ## Troubleshooting
 
 - Start with `docker compose config` to confirm Open Notebook, SurrealDB, network, and secret references render.

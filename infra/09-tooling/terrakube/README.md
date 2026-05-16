@@ -68,6 +68,14 @@ After the stack is enabled with the `tooling` or `iac` profile, use these routed
 - UI: `https://terrakube-ui.${DEFAULT_URL}`
 - API docs: `https://terrakube-api.${DEFAULT_URL}/swagger-ui.html`
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify workspace configuration by checking the Terrakube UI and confirming Terraform workspaces are registered with correct provider credentials.
+- Confirm API connectivity by checking `docker logs terrakube | grep -i 'error\|warn'` after config changes.
+- Verify OIDC authentication by confirming the Keycloak client configuration matches Terrakube's auth settings.
+
 ## Troubleshooting
 
 - Start with `docker compose config` to confirm Terrakube network, database, and secret references render.

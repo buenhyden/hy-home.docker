@@ -114,6 +114,21 @@ infra/06-observability/loki/
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
+- Verify log ingestion by checking `docker logs loki | grep -i 'error\|warn'` after config changes.
+- Confirm label selectors by querying Loki via Grafana and verifying expected log streams appear.
+
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For ingestion errors: validate `loki-config.yaml` and confirm the push API endpoint is reachable from Alloy.
+- For label selector mismatches: review stream selectors in push requests and Loki's label cardinality limits.
+- For storage issues: confirm the Loki chunks volume is mounted and the configured storage backend is reachable.
+
 ## Related Documents
 
 - [infra/README.md](../../README.md)

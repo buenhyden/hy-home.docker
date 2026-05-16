@@ -47,6 +47,14 @@ ollama/
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Ollama.
 - Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
 
+## Troubleshooting
+
+- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Check container logs and the linked runbook before changing configuration or secret references.
+- For model loading errors: verify the model name with `ollama list` and confirm sufficient disk space for model storage.
+- For API errors: check `docker logs ollama | grep -i 'error'` and confirm the API port binding matches client configuration.
+- For GPU errors: verify the NVIDIA container toolkit is installed and the GPU is accessible inside the container.
+
 ## Related Documents
 
 - **Guide**: [docs/05.operations/08-ai/ollama.md](../../../docs/05.operations/guides/08-ai/ollama.md)
