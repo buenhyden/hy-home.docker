@@ -50,3 +50,7 @@ status: completed
 - **Logs / Evidence Location**: this task document and conversation command outputs
 - **Result**: all verification commands passed; Graphify reported `status=advisory` because of known runtime-volume and gitlink contamination.
 - **Graphify Refresh**: skipped because `graphify` was not available on `PATH`.
+
+## Related Documents
+
+- (참조 문서 없음)

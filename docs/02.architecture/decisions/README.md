@@ -69,7 +69,7 @@ docs/02.architecture/decisions/
 2. 특정 기술이나 설계를 제안하기 전에 기존 ADR을 검토하여 시스템의 일관성을 저해하는지 확인한다.
 3. 결정된 사항에 반하는 변경을 수행하기 전에는 반드시 새로운 ADR 제안이 선행되어야 한다.
 
-## Related References
+## Related Documents
 
 - **PRD**: [../01.requirements/README.md]
 - **ARD**: [../02.architecture/requirements/README.md]

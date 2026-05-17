@@ -42,7 +42,7 @@ This policy defines the operational standards for the Syncthing service. It ensu
   - `device_count` (Online vs Total).
   - `throughput` (Inbound/Outbound).
 
-## Related References
+## Related Documents
 
 - **Infrastructure**: [Syncthing Service](../../../../infra/09-tooling/syncthing/README.md)
 - **Usage**: [Syncthing System Usage](./syncthing.md)
@@ -164,7 +164,7 @@ To sync files with another device:
 1. Ensure port `22000` (TCP/UDP) is open between devices.
 2. Verify that **Global Discovery** and **Relaying** are enabled if devices are on different networks.
 
-#### Related References
+#### Related Documents
 
 - **Infrastructure**: [Syncthing Service](../../../../infra/09-tooling/syncthing/README.md)
 - **Operation**: [Syncthing Operations Policy](./syncthing.md)
@@ -292,7 +292,7 @@ If the admin password is lost:
 - **P1**: Critical sync failure for production resource data -> Notify SRE Team.
 - **P2**: Intermittent connectivity or "Out of Sync" for non-critical data -> Follow manual re-scan procedures.
 
-#### Related References
+#### Related Documents
 
 - **Infrastructure**: [Syncthing Service](../../../../infra/09-tooling/syncthing/README.md)
 - **Usage**: [Syncthing System Usage](./syncthing.md)

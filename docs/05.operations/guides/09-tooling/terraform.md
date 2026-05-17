@@ -47,7 +47,7 @@ All infrastructure changes in `hy-home.docker` must be managed via Terraform to 
 - **Secrets**: Never hardcode credentials in `.tf` files. Use environment variables or secret managers (Vault).
 - **Versioning**: Pin all provider and module versions to prevent breaking changes during `init`.
 
-## Related References
+## Related Documents
 
 - **Infrastructure**: [Terraform Tool](../../../../infra/09-tooling/terraform/README.md)
 - **Usage**: [Terraform System Usage](./terraform.md)
@@ -177,7 +177,7 @@ If Terraform fails with "Error acquiring the state lock", ensure no other group 
 
 The container uses `infra_net`. If you cannot reach local services (like MinIO), verify the network labels in `docker-compose.yml`.
 
-#### Related References
+#### Related Documents
 
 - **Infrastructure**: [Terraform Tool](../../../../infra/09-tooling/terraform/README.md)
 - **Operation**: [IaC Operations Policy](./terraform.md)
@@ -313,7 +313,7 @@ If credentials expired or are invalid:
 - **P1**: Corrupted remote state with no backup -> Notify Infrastructure Architect immediately.
 - **P2**: Stuck state lock or transient network error -> Follow manual recovery steps.
 
-#### Related References
+#### Related Documents
 
 - **Infrastructure**: [Terraform Tool](../../../../infra/09-tooling/terraform/README.md)
 - **Usage**: [Terraform System Usage](./terraform.md)

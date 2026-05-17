@@ -62,3 +62,7 @@
   - `docker compose -f infra/01-gateway/nginx/docker-compose.yml config`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: PR CI logs + local command outputs (`gateway-hardening/template-security/doc-traceability/config` pass, `nginx -t`는 `service \"nginx\" is not running`로 미수행)
+
+## Related Documents
+
+- (참조 문서 없음)

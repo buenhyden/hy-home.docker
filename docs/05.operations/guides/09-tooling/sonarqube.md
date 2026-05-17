@@ -43,7 +43,7 @@ This policy defines the operational standards for the SonarQube service. It ensu
   - `sonar.search-jvm.max_heap_size`
   - Number of pending Background Tasks.
 
-## Related References
+## Related Documents
 
 - **Infrastructure**: [SonarQube Service](../../../../infra/09-tooling/sonarqube/README.md)
 - **Usage**: [SonarQube System Usage](./sonarqube.md)
@@ -171,7 +171,7 @@ sysctl -w vm.max_map_count=262144
 
 **Solution**: Adjust `SONAR_SEARCH_JAVAOPTS` and `SONAR_WEB_JAVAOPTS` in `docker-compose.yml`.
 
-#### Related References
+#### Related Documents
 
 - **Infrastructure**: [SonarQube Service](../../../../infra/09-tooling/sonarqube/README.md)
 - **Operation**: [SonarQube Operations Policy](./sonarqube.md)
@@ -300,7 +300,7 @@ Monitor these files for specific error patterns:
 - **P1**: Total UI outage affecting all PR merges -> Notify SRE Team.
 - **P2**: Intermittent scan failures -> Investigate Compute Engine limits.
 
-#### Related References
+#### Related Documents
 
 - **Infrastructure**: [SonarQube Service](../../../../infra/09-tooling/sonarqube/README.md)
 - **Usage**: [SonarQube System Usage](./sonarqube.md)

@@ -69,7 +69,7 @@ docs/02.architecture/requirements/
 2. 기존 아키텍처 참조 모델을 확인하여 구조적 일치성을 유지한다.
 3. 아키텍처 변경 시 연관된 `ADR` 문서가 작성되었는지 확인한다.
 
-## Related References
+## Related Documents
 
 - **PRD**: [../01.requirements/README.md]
 - **ADR**: [../02.architecture/decisions/README.md]

@@ -30,3 +30,8 @@
 
 - **Test Commands**: N/A (Documentation project)
 - **Links**: `head -n 20 docs/**/*.md` 를 통해 링크 레이아웃 검증 필요.
+
+## Related Documents
+
+- **Parent Spec**: `[../../03.specs/05-messaging/spec.md]`
+- **Parent Plan**: `[../plans/2026-03-26-05-messaging-standardization.md]`

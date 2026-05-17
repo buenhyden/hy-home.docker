@@ -16,7 +16,7 @@ This directory contains operations policies for data lake and object storage sys
 - [MinIO Object Storage Policy](./minio.md)
 - [SeaweedFS Distributed Storage Policy](./seaweedfs.md)
 
-## Related References
+## Related Documents
 
 - [04-data Operations Index](../README.md)
 - [Lake and Object Technical Usages](./README.md)
@@ -92,7 +92,7 @@ lake-and-object/
 └── seaweedfs.md   # SeaweedFS Storage Usage
 ```
 
-#### Related References
+#### Related Documents
 
 - **Parent**: [04-data Usages](../README.md)
 - **Implementation**: [lake-and-object Infrastructure](../../../../../infra/04-data/lake-and-object/minio/README.md)
@@ -144,7 +144,7 @@ This directory contains recovery runbooks for data lake and object storage syste
 - [MinIO Recovery Procedure](./minio.md)
 - [SeaweedFS Recovery Procedure](./seaweedfs.md)
 
-#### Related References
+#### Related Documents
 
 - [04-data Procedures Index](../README.md)
 - [Lake and Object Technical Usages](./README.md)

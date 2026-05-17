@@ -36,3 +36,8 @@
   - `docker exec open-webui curl -f localhost:8080/health`
 - **Eval Commands**:
   - [Self-eval] Check documentation completeness against mandatory templates.
+
+## Related Documents
+
+- **Parent Spec**: `[../../03.specs/08-ai/open-webui.md]`
+- **Parent Plan**: `[../plans/2026-03-27-08-ai-open-webui-plan.md]`

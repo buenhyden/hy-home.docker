@@ -50,7 +50,7 @@ Terrakube serves as the authoritative source for infrastructure state. Strict ac
 - Perform a manual backup of the Terrakube metadata database (PostgreSQL).
 - Update the base Docker images for executors to include the latest security patches.
 
-## Related References
+## Related Documents
 
 - **Infrastructure**: [Terrakube Platform](../../../../infra/09-tooling/terrakube/README.md)
 - **Usage**: [Terrakube System Usage](./terrakube.md)
@@ -173,7 +173,7 @@ docker compose logs -f terrakube-executor
 
 If OIDC logout occurs frequently, check the token expiration settings in the `hy-home.realm` of Keycloak.
 
-#### Related References
+#### Related Documents
 
 - **Infrastructure**: [Terrakube Platform](../../../../infra/09-tooling/terrakube/README.md)
 - **Operation**: [Terrakube Operations Policy](./terrakube.md)
@@ -300,7 +300,7 @@ If a workspace is stuck in a locked state and "Force Unlock" in the UI fails:
 - **P1**: Total loss of the `tfstate` bucket content in MinIO -> Follow Disaster Recovery Plan.
 - **P2**: Intermittent executor failures or UI sync issues -> Follow manual restart and queue cleanup.
 
-#### Related References
+#### Related Documents
 
 - **Infrastructure**: [Terrakube Platform](../../../../infra/09-tooling/terrakube/README.md)
 - **Usage**: [Terrakube System Usage](./terrakube.md)

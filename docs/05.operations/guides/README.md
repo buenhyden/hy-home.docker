@@ -36,7 +36,7 @@ guides/
 - [Harness / Agent-first Engineering Usage Guide](./harness-agent-first-engineering.md)
 - [LLM Wiki Maintenance Guide](./llm-wiki-maintenance.md)
 
-## Related References
+## Related Documents
 
 - [../README.md](../README.md)
 - [../policies/README.md](../policies/README.md)

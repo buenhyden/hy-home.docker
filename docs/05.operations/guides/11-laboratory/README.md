@@ -70,7 +70,7 @@
 3. Required/Allowed/Disallowed controls를 구분하고, 예외 승인 경로를 명시한다.
 4. 문서 추가/삭제 후 이 README의 `Structure`와 `Policy Index`를 갱신한다.
 
-## Related References
+## Related Documents
 
 - **PRD**: [../../01.requirements/2026-03-28-11-laboratory-optimization-hardening.md](../../../01.requirements/2026-03-28-11-laboratory-optimization-hardening.md)
 - **ARD**: [../../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md](../../../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md)
@@ -153,7 +153,7 @@
 3. 운영 통제는 `docs/05.operations/11-laboratory/`, 복구 절차는 `docs/05.operations/11-laboratory/`에 함께 연결한다.
 4. 문서 추가/삭제 후 이 README의 `Structure`와 `Usage Index`를 갱신한다.
 
-#### Related References
+#### Related Documents
 
 - **Infra Source**: [../../../infra/11-laboratory/README.md](../../../../infra/11-laboratory/README.md)
 - **Spec**: [../../03.specs/11-laboratory/spec.md](../../../03.specs/11-laboratory/spec.md)
@@ -234,7 +234,7 @@
 3. 명령은 즉시 실행 가능한 순서로 쓰고, destructive action은 사용자 승인 조건을 명시한다.
 4. 문서 추가/삭제 후 이 README의 `Structure`와 `Procedure Index`를 갱신한다.
 
-#### Related References
+#### Related Documents
 
 - **PRD**: [../../01.requirements/2026-03-28-11-laboratory-optimization-hardening.md](../../../01.requirements/2026-03-28-11-laboratory-optimization-hardening.md)
 - **ARD**: [../../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md](../../../02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md)

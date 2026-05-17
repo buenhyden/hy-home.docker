@@ -35,7 +35,7 @@ policies/
 
 - [Harness / Agent-first Engineering Operations Policy](./harness-agent-first-engineering.md)
 
-## Related References
+## Related Documents
 
 - [../README.md](../README.md)
 - [../guides/README.md](../guides/README.md)

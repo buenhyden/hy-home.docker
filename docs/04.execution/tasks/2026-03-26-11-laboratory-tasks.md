@@ -28,3 +28,8 @@
 
 - **Test Commands**: `grep -r "11-laboratory" docs/`
 - **Logs / Evidence Location**: Correct rendering of all updated .md files.
+
+## Related Documents
+
+- **Parent Spec**: `[../../03.specs/11-laboratory/spec.md]`
+- **Parent Plan**: `[../plans/2026-03-26-11-laboratory-standardization.md]`

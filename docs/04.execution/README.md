@@ -49,7 +49,7 @@ docs/04.execution/
 3. 새 문서는 `../99.templates/plan.template.md` 또는 `../99.templates/task.template.md`를 사용합니다.
 4. 관련 spec, operations, README 링크를 함께 갱신합니다.
 
-## Related References
+## Related Documents
 
 - **Requirements**: [../01.requirements/README.md](../01.requirements/README.md)
 - **Architecture**: [../02.architecture/README.md](../02.architecture/README.md)

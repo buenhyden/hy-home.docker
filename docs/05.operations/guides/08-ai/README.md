@@ -52,7 +52,7 @@
 4. AI Agent 정책 섹션(변경 프로세스/가드레일/보존/안전 임계치)을 누락하지 않는다.
 5. 최적화/하드닝 변경 시 `optimization-hardening.md`와 상위 Plan/Task를 동시 갱신한다.
 
-## Related References
+## Related Documents
 
 - [AI Usages](./README.md)
 - [AI Procedures](./README.md)
@@ -128,7 +128,7 @@
 4. 상대 경로만 사용하고 깨진 링크를 남기지 않는다.
 5. 최적화/하드닝 변경 시 `optimization-hardening.md`와 상위 Plan/Task 문서를 함께 갱신한다.
 
-#### Related References
+#### Related Documents
 
 - [AI PRD (공통)](../../../01.requirements/2026-03-26-08-ai.md)
 - [Open WebUI PRD](../../../01.requirements/2026-03-27-08-ai-open-webui.md)

@@ -64,3 +64,7 @@
   - `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: PR CI logs + local command output (`auth-hardening/template-security/doc-traceability/config`)
+
+## Related Documents
+
+- (참조 문서 없음)

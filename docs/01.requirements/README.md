@@ -69,7 +69,7 @@ docs/01.requirements/
 2. 기존 PRD 문서를 확인하여 중복 기능 정의를 피한다.
 3. 요구사항 변경 시 연관된 `Spec`과 `Plan` 문서도 함께 검토하여 불일치를 방지한다.
 
-## Related References
+## Related Documents
 
 - **ARD**: [../02.architecture/requirements/README.md]
 - **Spec**: [../03.specs/README.md]

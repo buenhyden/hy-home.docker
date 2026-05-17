@@ -1,6 +1,7 @@
 ---
 layer: agentic
 ---
+
 <!-- Target: docs/00.agent-governance/memory/{short-title}.md -->
 
 # Memory: {short-title}
@@ -44,6 +45,6 @@ List related commands, validators, docs, or follow-up task references.
 
 ## Related Documents
 
-- `docs/00.agent-governance/memory/README.md`
-- `docs/00.agent-governance/memory/progress.md`
-- `docs/99.templates/memory.template.md`
+- `README.md`
+- `progress.md`
+- `../../99.templates/memory.template.md`

@@ -60,7 +60,7 @@ operational/
 | **supabase** | Backend Platform | [supabase.md](./supabase.md) |
 | **postgresql-cluster** | Relational DB | [relational/README.md](../relational/README.md) |
 
-## Related References
+## Related Documents
 
 - **Usages**: [Technical Usages](./README.md)
 - **Procedures**: [Recovery Procedures](./README.md)
@@ -119,7 +119,7 @@ operational/
 2. 각 문서는 하위 구현인 `infra/04-data/relational/`과 1:1 대응 관계를 유지해야 한다.
 3. 아키텍처 수준의 결정 사항은 `docs/02.architecture/decisions/`을 먼저 참조한다.
 
-#### Related References
+#### Related Documents
 
 - **# Operational Data Usages
 
@@ -201,7 +201,7 @@ Copyright (c) 2026. Licensed under the MIT License.
 
 ---
 
-#### Related References
+#### Related Documents
 
 - [docs/05.operations/README.md](../README.md)
 - [docs/05.operations/README.md](../../../README.md)

@@ -33,3 +33,8 @@
 - **Link Check**: 모든 문서 간의 상대 경로 링크 작동 확인.
 - **Lint Check**: `markdownlint`를 통한 서석 및 공백 오류 제거.
 - **Index Check**: 각 레이어 README에 신규 문서 노출 확인.
+
+## Related Documents
+
+- **Parent Spec**: `[../../03.specs/06-observability/spec.md]`
+- **Parent Plan**: `[../plans/2026-03-26-06-observability-standardization.md]`

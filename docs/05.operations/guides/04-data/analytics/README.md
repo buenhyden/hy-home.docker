@@ -47,7 +47,7 @@ analytics/
 3. 정책 수정 후에는 반드시 관련 런북(`05.operations/`)의 실행 절차와의 일치 여부를 확인한다.
 4. AI Agent는 정책 위반 사례 발견 시 즉시 사용자에게 보고하고 대응 시나리오를 제안한다.
 
-## Related References
+## Related Documents
 
 - **PRD**: [2026-03-26-04-data-analytics.md](../../../../01.requirements/2026-03-26-04-data-analytics.md)
 - **ARD**: [0012-data-analytics-architecture.md](../../../../02.architecture/requirements/0012-data-analytics-architecture.md)
@@ -124,7 +124,7 @@ analytics/
 3. 문서 수정 시 관련 운영 정책(`05.operations/`) 및 런북(`05.operations/`)과 상호 참조 무결성을 확인한다.
 4. AI Agent는 문서 생성 시 한국어 요약(Overview KR)을 반드시 포함한다.
 
-#### Related References
+#### Related Documents
 
 - **PRD**: [2026-03-26-04-data-analytics.md](../../../../01.requirements/2026-03-26-04-data-analytics.md)
 - **ARD**: [0012-data-analytics-architecture.md](../../../../02.architecture/requirements/0012-data-analytics-architecture.md)
@@ -202,7 +202,7 @@ analytics/
 3. 런북 실행 전 반드시 관련 운영 정책(`05.operations/`)의 제약 사항을 확인한다.
 4. AI Agent는 장애 탐지 시 관련 런북을 검색하여 대응 방안을 즉시 제시한다.
 
-#### Related References
+#### Related Documents
 
 - **PRD**: [2026-03-26-04-data-analytics.md](../../../../01.requirements/2026-03-26-04-data-analytics.md)
 - **ARD**: [0012-data-analytics-architecture.md](../../../../02.architecture/requirements/0012-data-analytics-architecture.md)

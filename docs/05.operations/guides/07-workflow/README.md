@@ -47,7 +47,7 @@
 3. 정책 변경 시 대응 Procedure과 Plan/Task 링크를 함께 갱신한다.
 4. 카탈로그 확장 항목(Airflow/n8n/airbyte)의 승인 게이트를 최신 상태로 유지한다.
 
-## Related References
+## Related Documents
 
 - **PRD**: [2026-03-26-07-workflow.md](../../../01.requirements/2026-03-26-07-workflow.md)
 - **ARD**: [0007-workflow-architecture.md](../../../02.architecture/requirements/0007-workflow-architecture.md)
@@ -112,7 +112,7 @@
 3. 각 가이드에서 대응되는 Operation/Procedure 링크를 함께 유지한다.
 4. 최적화/하드닝 변경은 `optimization-hardening.md`와 상위 Plan/Task 문서를 함께 갱신한다.
 
-#### Related References
+#### Related Documents
 
 - **PRD**: [2026-03-26-07-workflow.md](../../../01.requirements/2026-03-26-07-workflow.md)
 - **ARD**: [0007-workflow-architecture.md](../../../02.architecture/requirements/0007-workflow-architecture.md)
@@ -177,7 +177,7 @@
 3. 복구 종료 후 Incident/Postmortem 링크를 남긴다.
 4. 최적화/하드닝 회귀 복구 시 `check-workflow-hardening.sh` 결과를 증적으로 남긴다.
 
-#### Related References
+#### Related Documents
 
 - **PRD**: [2026-03-26-07-workflow.md](../../../01.requirements/2026-03-26-07-workflow.md)
 - **ARD**: [0007-workflow-architecture.md](../../../02.architecture/requirements/0007-workflow-architecture.md)

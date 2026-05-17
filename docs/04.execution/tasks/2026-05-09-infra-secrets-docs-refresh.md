@@ -99,3 +99,7 @@ status: completed
   - `bash scripts/hardening/check-all-hardening.sh`: pass
   - `git diff --check`: pass
   - Semantic QA: fixed malformed stage README links, removed duplicate `docs/90.references/README.md` legacy/template split, and reworded secret-value or shell-history-sensitive examples.
+
+## Related Documents
+
+- (참조 문서 없음)

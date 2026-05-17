@@ -60,7 +60,7 @@ Copyright (c) 2026. Licensed under the MIT License.
 
 ---
 
-## Related References
+## Related Documents
 
 - [docs/05.operations/README.md](../README.md)
 - [docs/05.operations/README.md](../../../README.md)
@@ -121,7 +121,7 @@ relational/
 - Overview 섹션은 반드시 한글(KR)과 영문(EN)을 병기함 (Bilingual Policy)
 - Single Source of Truth(SSoT) 유지 및 중복 방지
 
-#### Related References
+#### Related Documents
 
 - **Operations**: [Relational Operations](./README.md)
 - **Procedures**: [Relational Procedures](./README.md)
@@ -196,7 +196,7 @@ Copyright (c) 2026. Licensed under the MIT License.
 
 ---
 
-#### Related References
+#### Related Documents
 
 - [docs/05.operations/README.md](../README.md)
 - [docs/05.operations/README.md](../../../README.md)

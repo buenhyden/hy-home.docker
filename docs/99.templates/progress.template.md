@@ -2,6 +2,7 @@
 layer: agentic
 status: active
 ---
+
 <!-- Target: docs/00.agent-governance/memory/progress.md -->
 
 # Agent Progress Log
@@ -18,20 +19,20 @@ status: active
 
 ## Current Work Log
 
-| Date | Task | Status | Progress | Memory | Evidence |
-| --- | --- | --- | --- | --- | --- |
+| Date       | Task         | Status                           | Progress              | Memory                    | Evidence                        |
+| ---------- | ------------ | -------------------------------- | --------------------- | ------------------------- | ------------------------------- |
 | YYYY-MM-DD | {task-title} | Planned/In Progress/Done/Blocked | {short progress note} | {memory note path or N/A} | {commands, docs, or validators} |
 
 ## Phase Tracker
 
-| Phase | Status | Completed | Notes |
-| --- | --- | --- | --- |
+| Phase              | Status                           | Completed  | Notes        |
+| ------------------ | -------------------------------- | ---------- | ------------ |
 | P0 - {phase-title} | Planned/In Progress/Done/Blocked | YYYY-MM-DD | {short note} |
 
 ## Layer Audit
 
-| Layer | Status | Remediation |
-| --- | --- | --- |
+| Layer           | Status                           | Remediation  |
+| --------------- | -------------------------------- | ------------ |
 | L1 {layer-name} | Planned/In Progress/Done/Blocked | {short note} |
 
 ## Open Issues
@@ -40,7 +41,7 @@ status: active
 
 ## Related Documents
 
-- `docs/00.agent-governance/memory/README.md`
-- `docs/00.agent-governance/memory/template.md`
-- `docs/00.agent-governance/rules/bootstrap.md`
-- `docs/00.agent-governance/rules/task-checklists.md`
+- `README.md`
+- `template.md`
+- `../rules/bootstrap.md`
+- `../rules/task-checklists.md`

@@ -60,7 +60,7 @@ This directory defines the operational standards and data protection requirement
 - 모든 운영 정책은 ARD(Architecture Requirements Document)와 연결되어야 합니다.
 - 대응되는 Procedure이 존재해야 합니다.
 
-## Related References
+## Related Documents
 
 - **Usages**: [Technical Usages](./README.md)
 - **Procedures**: [Recovery Procedures](./README.md)
@@ -132,7 +132,7 @@ This directory contains technical guides for the `hy-home.docker` data infrastru
 - Operations Policy
 - Procedure
 
-#### Related References
+#### Related Documents
 
 - **Operations**: [Data Operations Policy](./README.md)
 - **Procedures**: [Data Recovery Procedures](./README.md)
@@ -203,7 +203,7 @@ This directory contains step-by-step execution guidelines (Procedures) for respo
 - 런북은 실시간 대응을 위한 가독성이 중요하며, 명령어 중심(KR/EN)이어야 합니다.
 - 단계별 검증 기준(Verification)이 포함되어야 합니다.
 
-#### Related References
+#### Related Documents
 
 - **Usages**: [Technical Usages](./README.md)
 - **Operations**: [Operations Policy](./README.md)

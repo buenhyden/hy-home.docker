@@ -63,7 +63,7 @@ docs/05.operations/
 - 반복 실행 절차에는 명령, 기대 결과, 실패 시 중단 기준, rollback 또는 escalation 기준을 포함합니다.
 - 사고 기록은 secret, token, credential, private key 원문을 포함하지 않습니다.
 
-## Related References
+## Related Documents
 
 - **Docs Index**: [../README.md](../README.md)
 - **Plans**: [../04.execution/plans/README.md](../04.execution/plans/README.md)

@@ -45,7 +45,7 @@ nosql/
 2. **Review**: 모든 정책 변경은 인프라 팀의 승인을 거쳐야 한다.
 3. **Traceability**: 정책 위반 발생 시 대응할 수 있는 `Procedure` 링크를 반드시 포함한다.
 
-## Related References
+## Related Documents
 
 - **Infrastructure**: [NoSQL Infrastructure](../../../../../infra/04-data/nosql/README.md)
 - **Usages**: [NoSQL Technical Usages](./README.md)
@@ -111,7 +111,7 @@ nosql/
 2. **SSoT**: 인프라 변경 사항이 가이드에 즉시 반영되도록 유지한다.
 3. **Traceability**: 각 가이드는 관련 `Spec`, `Operation`, `Procedure` 문서와 연결되어야 한다.
 
-#### Related References
+#### Related Documents
 
 - **Infrastructure**: [NoSQL Infrastructure](../../../../../infra/04-data/nosql/README.md)
 - **Operations**: [NoSQL Operations](./README.md)
@@ -171,7 +171,7 @@ nosql/
 2. **Actionable**: 런북은 생각할 필요 없이 바로 명령어를 복사/붙여넣기 할 수 있을 정도로 구체적이어야 한다.
 3. **Traceability**: 장애 원인 분석을 위해 관련 `Usage`와 `Operation` 문서를 링크한다.
 
-#### Related References
+#### Related Documents
 
 - **Infrastructure**: [NoSQL Infrastructure](../../../../../infra/04-data/nosql/README.md)
 - **Usages**: [NoSQL Technical Usages](./README.md)

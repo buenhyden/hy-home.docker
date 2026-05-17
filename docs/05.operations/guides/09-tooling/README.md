@@ -25,7 +25,7 @@
 - tooling 하드닝 회귀는 script/CI 게이트로 차단한다.
 - 카탈로그 확장 항목은 승인 게이트와 함께 단계적으로 도입한다.
 
-## Related References
+## Related Documents
 
 - [Tooling Usage Index](./README.md)
 - [Tooling Procedure Index](./README.md)
@@ -114,7 +114,7 @@ docs/05.operations/09-tooling/
 2. 실행 절차 변경 시 대응 Operation/Procedure 링크를 함께 갱신한다.
 3. 최적화/하드닝 변경은 `optimization-hardening.md`와 Plan/Tasks를 동시 갱신한다.
 
-#### Related References
+#### Related Documents
 
 - [Tooling Infra](../../../../infra/09-tooling/README.md)
 - [Tooling PRD](../../../01.requirements/2026-03-28-09-tooling-optimization-hardening.md)
@@ -197,7 +197,7 @@ docs/05.operations/09-tooling/
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/check-doc-traceability.sh`
 
-#### Related References
+#### Related Documents
 
 - [Tooling Usages](./README.md)
 - [Tooling Operations](./README.md)

@@ -49,7 +49,7 @@ docs/02.architecture/
 3. 새 문서는 `../99.templates/ard.template.md` 또는 `../99.templates/adr.template.md`를 사용합니다.
 4. 관련 requirements, specs, plans, operations 링크를 함께 갱신합니다.
 
-## Related References
+## Related Documents
 
 - **Requirements**: [../01.requirements/README.md](../01.requirements/README.md)
 - **Architecture Requirements**: [requirements/README.md](requirements/README.md)

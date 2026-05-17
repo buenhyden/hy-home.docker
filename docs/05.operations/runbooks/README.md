@@ -35,7 +35,7 @@ runbooks/
 
 - [Harness Agent First Engineering Validation Operations](./harness-agent-first-engineering-validation.md)
 
-## Related References
+## Related Documents
 
 - [../README.md](../README.md)
 - [../guides/README.md](../guides/README.md)

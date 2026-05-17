@@ -47,7 +47,7 @@ cache-and-kv/
 
 - [Valkey Cluster Operations Policy](./valkey-cluster.md): 백업, 보안, 리소스 관리 표준.
 
-## Related References
+## Related Documents
 
 - **Implementation**: [infra/04-data/cache-and-kv/README.md](../../../../../infra/04-data/cache-and-kv/README.md)
 - **Usage**: [04-data Usages](./README.md)
@@ -113,7 +113,7 @@ cache-and-kv/
 
 - [Valkey Cluster Usage](./valkey-cluster.md): 6노드 분산 클러스터 연결 및 사용법.
 
-#### Related References
+#### Related Documents
 
 - **Implementation**: [infra/04-data/cache-and-kv/README.md](../../../../../infra/04-data/cache-and-kv/README.md)
 - **Operation**: [04-data Operations](./README.md)
@@ -178,7 +178,7 @@ cache-and-kv/
 
 - [Valkey Cluster Procedure](./valkey-cluster.md): 노드 장애, 슬롯 오류 복구 절차.
 
-#### Related References
+#### Related Documents
 
 - **Implementation**: [infra/04-data/cache-and-kv/README.md](../../../../../infra/04-data/cache-and-kv/README.md)
 - **Usage**: [04-data Usages](./README.md)

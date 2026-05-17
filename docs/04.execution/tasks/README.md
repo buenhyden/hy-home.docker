@@ -72,7 +72,7 @@ docs/04.execution/tasks/
 2. 실행 시 각 작업 단위의 의존성과 성공 기준을 명확히 이해하고 수행한다.
 3. 수행된 모든 작업에 대해 가능한 경우 증거(로그 또는 스크린샷 덤프)를 남긴다.
 
-## Related References
+## Related Documents
 
 - **Plan**: [../plans/README.md](../plans/README.md)
 - **Spec**: [../../03.specs/README.md](../../03.specs/README.md)

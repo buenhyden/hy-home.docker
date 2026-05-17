@@ -18,7 +18,7 @@
 
 - [Vault Operations Policy](./vault.md): Required/Allowed/Disallowed, 승인 조건, 검증 기준
 
-## Related References
+## Related Documents
 
 - [03-security Spec](../../../03.specs/03-security/spec.md)
 - [03-security Plan](../../../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md)
@@ -88,7 +88,7 @@
 - [Vault Usage](./vault.md): 템플릿 경로 계약, AppRole bootstrap, 렌더 검증 절차
 - [Setup Usage](./01.setup.md): 보안 티어 초기 구성 절차
 
-#### Related References
+#### Related Documents
 
 - [03-security Spec](../../../03.specs/03-security/spec.md)
 - [03-security Plan](../../../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md)
@@ -156,7 +156,7 @@
 
 - [Vault Procedure](./vault.md): seal/unseal, raft, audit, render 복구, 안전 롤백 절차
 
-#### Related References
+#### Related Documents
 
 - [03-security Spec](../../../03.specs/03-security/spec.md)
 - [03-security Plan](../../../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md)

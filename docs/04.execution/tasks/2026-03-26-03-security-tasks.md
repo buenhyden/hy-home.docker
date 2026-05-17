@@ -30,3 +30,8 @@
 
 - **Test Commands**: `ls -R docs/`, `grep` for Mandatory Sections.
 - **Evidence Location**: `docs/01.requirements/`, `docs/02.architecture/requirements/`, `docs/02.architecture/decisions/`, `docs/03.specs/03-security/`, `docs/04.execution/plans/`, `docs/04.execution/tasks/`.
+
+## Related Documents
+
+- **Parent Spec**: `[../../03.specs/03-security/spec.md]`
+- **Parent Plan**: `[../plans/2026-03-26-03-security-standardization.md]`
