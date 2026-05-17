@@ -1,3 +1,6 @@
+---
+status: draft
+---
 <!-- Target: docs/01.requirements/2026-03-26-10-communication.md -->
 
 # Communication Tier (10-communication) Product Requirements

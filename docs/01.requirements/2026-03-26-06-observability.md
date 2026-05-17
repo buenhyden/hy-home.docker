@@ -1,3 +1,8 @@
+---
+status: draft
+---
+<!-- Target: docs/01.requirements/2026-03-26-06-observability.md -->
+
 # Observability Tier Product Requirements
 
 > Centralized telemetry, monitoring, and debugging hub.

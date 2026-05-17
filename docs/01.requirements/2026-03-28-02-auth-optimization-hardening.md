@@ -1,3 +1,8 @@
+---
+status: draft
+---
+<!-- Target: docs/01.requirements/2026-03-28-02-auth-optimization-hardening.md -->
+
 # 02-Auth Optimization & Hardening Product Requirements
 
 ## Overview (KR)

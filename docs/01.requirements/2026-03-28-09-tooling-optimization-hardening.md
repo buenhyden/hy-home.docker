@@ -1,3 +1,8 @@
+---
+status: draft
+---
+<!-- Target: docs/01.requirements/2026-03-28-09-tooling-optimization-hardening.md -->
+
 # 09-Tooling Optimization & Hardening Product Requirements
 
 ## Overview (KR)

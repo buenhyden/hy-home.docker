@@ -1,3 +1,8 @@
+---
+status: draft
+---
+<!-- Target: docs/01.requirements/2026-03-26-04-data-analytics.md -->
+
 # PRD: Analytics Tier (04-data/analytics)
 
 > This document defines the product requirements for the specialized analytics data engines within the `04-data/analytics` sub-tier.

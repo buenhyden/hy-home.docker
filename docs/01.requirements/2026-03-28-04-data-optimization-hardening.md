@@ -1,3 +1,8 @@
+---
+status: draft
+---
+<!-- Target: docs/01.requirements/2026-03-28-04-data-optimization-hardening.md -->
+
 # 04-Data Optimization & Hardening Product Requirements
 
 ## Overview (KR)

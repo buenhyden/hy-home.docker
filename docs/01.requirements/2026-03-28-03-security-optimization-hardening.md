@@ -1,3 +1,8 @@
+---
+status: draft
+---
+<!-- Target: docs/01.requirements/2026-03-28-03-security-optimization-hardening.md -->
+
 # 03-Security (Vault) Optimization & Hardening Product Requirements
 
 ## Overview (KR)

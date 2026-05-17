@@ -1,3 +1,8 @@
+---
+status: draft
+---
+<!-- Target: docs/01.requirements/2026-03-28-08-ai-optimization-hardening.md -->
+
 # 08-AI Optimization & Hardening Product Requirements
 
 ## Overview (KR)

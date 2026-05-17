@@ -1,6 +1,9 @@
-# Open WebUI Product Requirements Document
-
+---
+status: draft
+---
 <!-- Target: docs/01.requirements/2026-03-27-08-ai-open-webui.md -->
+
+# Open WebUI Product Requirements Document
 
 ---
 
