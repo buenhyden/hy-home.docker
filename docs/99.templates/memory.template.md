@@ -14,6 +14,7 @@ layer: agentic
 > - Do not store transcripts, raw logs, shell history, credentials, tokens, private keys, or secret values.
 > - Keep the note concise, reusable, and evidence-backed.
 > - Update `docs/00.agent-governance/memory/progress.md` when creating or materially changing a memory note.
+> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 - Date: YYYY-MM-DD
 - Layer: {architecture|backend|frontend|infra|security|ops|qa|docs|meta|product|mobile|entry|common|agentic}

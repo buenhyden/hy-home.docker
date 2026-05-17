@@ -12,6 +12,7 @@ status: draft
 > - Keep ARD architectural.
 > - File-level implementation detail belongs in the Spec.
 > - Use one `Overview (KR)` summary near the top.
+> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 

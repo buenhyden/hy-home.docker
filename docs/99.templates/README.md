@@ -68,6 +68,7 @@ layer: agentic
 7. 운영 문서는 `operation.template.md`의 guide, policy, runbook profile 중 하나만 선택하고 나머지 profile 섹션을 제거한다.
 8. infra service README는 목적, config, compose linkage, network, volume, port, label, secret ref, healthcheck, operations, validation, troubleshooting evidence를 포함한다.
 9. scripts README는 `scripts/validation/`, `scripts/hardening/`, `scripts/hooks/`, `scripts/knowledge/`, `scripts/operations/`, `scripts/lib/` 목적 폴더를 보존하고 root-level wrapper를 만들지 않는다.
+10. Markdown 템플릿의 cross-link 예시는 복사된 Target 위치 기준으로 계산하고, YAML/GraphQL/Proto 계약 파일의 cross-link는 parent Markdown Spec 또는 API Spec에서 관리한다.
 
 ## 템플릿-폴더 매핑
 

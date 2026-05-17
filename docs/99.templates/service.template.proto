@@ -1,4 +1,6 @@
 // Target: docs/03.specs/<feature-id>/contracts/service.proto
+// Cross-links: link this contract from the parent Markdown spec or API spec.
+// Do not add a Markdown Related Documents section to this Protobuf contract.
 syntax = "proto3";
 
 package example.v1;

@@ -14,6 +14,7 @@ status: draft
 > - Remove every placeholder before saving.
 > - Keep implementation detail out of the PRD.
 > - Keep one `Overview (KR)` summary near the top.
+> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 

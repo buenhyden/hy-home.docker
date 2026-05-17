@@ -6,6 +6,8 @@ status: draft
 # Postmortem: [Incident Title]
 
 > Use this template for `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md`.
+>
+> Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 

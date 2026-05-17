@@ -14,6 +14,7 @@ status: draft
 > - If this feature exposes an external API, link a dedicated API Spec.
 > - Keep one `Overview (KR)` summary near the top.
 > - This document is the parent design doc; API contracts live in `api-spec.md` under the same feature directory.
+> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 

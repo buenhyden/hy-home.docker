@@ -14,6 +14,7 @@ NC-YYYYMMDD-XXX / [Short Incident Title]
 > - Record facts, status, and response state.
 > - Separate confirmed facts from current hypotheses.
 > - Keep final root cause analysis in a paired Postmortem under `docs/05.operations/incidents/`.
+> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 

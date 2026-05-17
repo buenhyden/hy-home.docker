@@ -12,6 +12,7 @@ status: draft
 > - One decision per ADR.
 > - Do not turn ADRs into implementation specs.
 > - Use global numbering.
+> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 

@@ -2,6 +2,10 @@
 status: draft
 ---
 <!--
+Target: docs/05.operations/<bucket>/<topic>.md
+Target: docs/05.operations/<bucket>/<domain>/<topic>.md
+Target: docs/05.operations/<bucket>/<domain>/<subdomain>/<topic>.md
+
 # Operation Template
 
 Use this template for one `docs/05.operations` leaf document.

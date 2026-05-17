@@ -1,4 +1,6 @@
 # Target: docs/03.specs/<feature-id>/contracts/schema.graphql
+# Cross-links: link this contract from the parent Markdown spec or API spec.
+# Do not add a Markdown Related Documents section to this GraphQL contract.
 schema {
   query: Query
 }

@@ -13,6 +13,7 @@ status: draft
 > - Do not create a parallel `docs/api/` tree for this document.
 > - Use this for REST, GraphQL, or gRPC contracts.
 > - Link the parent Spec near the top.
+> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 

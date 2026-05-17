@@ -13,6 +13,7 @@ status: draft
 > - Keep product intent in PRD and system-wide constraints in ARD.
 > - Keep implementation tasks in `04.execution/tasks/`.
 > - This document focuses on AI Agent behavior, orchestration, safety, and evaluation.
+> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 

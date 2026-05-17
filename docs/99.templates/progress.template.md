@@ -16,6 +16,7 @@ status: active
 - Link durable reusable findings to separate memory notes created from `docs/00.agent-governance/memory/template.md`.
 - Keep active policy in `rules/`, `scopes/`, provider overlays, runtime files, and root shims; use this file as an audit log and memory index.
 - Update the final entry before declaring completion.
+- Target-relative links in `## Related Documents` are calculated from `docs/00.agent-governance/memory/progress.md`, not from `docs/99.templates/`.
 
 ## Current Work Log
 

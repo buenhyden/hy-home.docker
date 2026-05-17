@@ -3,7 +3,7 @@ status: draft
 ---
 <!-- Target: docs/90.references/<category>/<item>.md -->
 
-# Reference: [Item Name]
+# Reference: {Item Name}
 
 > Use this template for non-README reference docs under `docs/90.references/<category>/<item>.md`.
 >
@@ -13,6 +13,7 @@ status: draft
 > - Use repo-relative links for local sources and direct links for external sources.
 > - Summarize what each source supports; do not paste long external content.
 > - Do not include secret values, credentials, tokens, private keys, shell history, or raw secret logs.
+> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 
@@ -52,8 +53,8 @@ status: draft
 
 ## Sources
 
-- [Source 1] - [What this source supports]
-- [Source 2] - [What this source supports]
+- {Source 1} - {What this source supports}
+- {Source 2} - {What this source supports}
 
 ## Maintenance
 

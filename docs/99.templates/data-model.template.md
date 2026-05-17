@@ -12,6 +12,7 @@ status: draft
 > - This document captures logical/physical data structures for the feature.
 > - Keep API surface details in `api-spec.md`.
 > - Keep migration execution steps in Plan or Runbook, not here.
+> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 

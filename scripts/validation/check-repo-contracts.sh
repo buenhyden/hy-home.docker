@@ -814,8 +814,40 @@ import sys
 failures: list[str] = []
 for path in sorted(pathlib.Path("docs/99.templates").glob("*.template.md")):
     text = path.read_text(errors="ignore")
+    if "Target:" not in text:
+        failures.append(f"{path}: template missing Target path guidance")
+    if "Target-relative" not in text:
+        failures.append(f"{path}: template missing target-relative link guidance")
     if "## Related Documents" not in text:
         failures.append(f"{path}: template missing ## Related Documents")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section "Contract template cross-link ownership"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import sys
+
+failures: list[str] = []
+for path in sorted(pathlib.Path("docs/99.templates").glob("*.template.*")):
+    if path.suffix == ".md":
+        continue
+    text = path.read_text(errors="ignore")
+    if "Target:" not in text:
+        failures.append(f"{path}: contract template missing Target path guidance")
+    if "Cross-links:" not in text:
+        failures.append(f"{path}: contract template missing parent Markdown cross-link ownership note")
+    if "## Related Documents" in text:
+        failures.append(f"{path}: non-Markdown contract template must not include Markdown Related Documents section")
 
 if failures:
     for failure in failures:
