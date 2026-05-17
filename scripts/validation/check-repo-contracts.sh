@@ -830,6 +830,55 @@ then
   failures=$((failures + 1))
 fi
 
+section "Spec document traceability contract"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+pseudo_link = re.compile(r"`\[((?:\.\.?/|docs/)[^`\]]+?\.md(?:#[^`\]]*)?)\]`")
+related_link = re.compile(
+    r"\*\*(Guide|Policy|Operation|Operations|Runbook)\*\*:\s*\[[^\]]+\]\(([^)]+)\)"
+)
+expected_bucket = {
+    "Guide": "05.operations/guides/",
+    "Policy": "05.operations/policies/",
+    "Operation": "05.operations/policies/",
+    "Operations": "05.operations/policies/",
+    "Runbook": "05.operations/runbooks/",
+}
+
+for path in sorted(pathlib.Path("docs/03.specs").rglob("*.md")):
+    text = path.read_text(errors="ignore")
+    for line_no, line in enumerate(text.splitlines(), start=1):
+        for match in pseudo_link.finditer(line):
+            failures.append(
+                f"{path}:{line_no}: active spec uses pseudo-link instead of Markdown link: {match.group(1)}"
+            )
+
+        for match in related_link.finditer(line):
+            label = match.group(1)
+            href = match.group(2).strip().split()[0]
+            if "05.operations/" not in href:
+                continue
+            required = expected_bucket[label]
+            if required not in href:
+                failures.append(
+                    f"{path}:{line_no}: {label} link must target {required}: {href}"
+                )
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
 section "Contract template cross-link ownership"
 if ! python3 - <<'PY'
 from __future__ import annotations

@@ -112,5 +112,5 @@ docker exec vault-agent ls -la /vault/out
 - **Plan**: [../../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md)
 - **Tasks**: [../../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md)
 - **Guide**: [../../05.operations/guides/03-security/vault.md](../../05.operations/guides/03-security/vault.md)
-- **Operations**: [../../05.operations/guides/03-security/vault.md](../../05.operations/guides/03-security/vault.md)
-- **Runbook**: [../../05.operations/guides/03-security/vault.md](../../05.operations/guides/03-security/vault.md)
+- **Policy**: [../../05.operations/policies/03-security/vault.md](../../05.operations/policies/03-security/vault.md)
+- **Runbook**: [../../05.operations/runbooks/03-security/vault.md](../../05.operations/runbooks/03-security/vault.md)

@@ -19,7 +19,7 @@ status: approved
 
 - **Requirements**: [../../01.requirements/README.md](../../01.requirements/README.md)
 - **Architecture**: [../../02.architecture/README.md](../../02.architecture/README.md)
-- **Operations**: [../../05.operations/README.md](../../05.operations/README.md)
+- **Operations Stage**: [../../05.operations/README.md](../../05.operations/README.md)
 
 ## Contracts
 
@@ -34,6 +34,32 @@ status: approved
 - legacy consolidated operations 문서는 소비 목적에 따라 `guides`, `policies`, `runbooks`로 나눈다.
 - `docs/README.md`는 새 taxonomy SSOT이며, 과거 경로는 migration map으로만 설명한다.
 - `docs/99.templates`는 기존 template 파일명을 유지하되 target examples를 새 경로로 맞춘다.
+
+## Data Modeling & Storage Strategy
+
+- **Schema / Entity Strategy**:
+  - Stage taxonomy is represented by canonical folder paths and README indexes, not by a runtime database.
+  - Template-to-folder mapping lives in `docs/99.templates/README.md` and governance rules.
+- **Migration / Transition Plan**:
+  - Move active artifacts into canonical stage paths.
+  - Rewrite active references to canonical paths.
+  - Keep legacy path names only in explicit migration maps and historical evidence.
+
+## Interfaces & Data Structures
+
+### Canonical Stage Path Contract
+
+```text
+docs/01.requirements/
+docs/02.architecture/requirements/
+docs/02.architecture/decisions/
+docs/03.specs/
+docs/04.execution/plans/
+docs/04.execution/tasks/
+docs/05.operations/
+docs/90.references/
+docs/99.templates/
+```
 
 ## Guardrails
 

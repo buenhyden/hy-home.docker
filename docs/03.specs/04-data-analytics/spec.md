@@ -17,9 +17,9 @@
 
 ## Related Inputs
 
-- **PRD**: `[../../01.requirements/2026-03-26-04-data-analytics.md]`
-- **ARD**: `[../../02.architecture/requirements/0012-data-analytics-architecture.md]`
-- **Related ADRs**: `[../../02.architecture/decisions/0015-analytics-engine-selection.md]`
+- **PRD**: [../../01.requirements/2026-03-26-04-data-analytics.md](../../01.requirements/2026-03-26-04-data-analytics.md)
+- **ARD**: [../../02.architecture/requirements/0012-data-analytics-architecture.md](../../02.architecture/requirements/0012-data-analytics-architecture.md)
+- **Related ADRs**: [../../02.architecture/decisions/0015-analytics-engine-selection.md](../../02.architecture/decisions/0015-analytics-engine-selection.md)
 
 ## Contracts
 
@@ -55,6 +55,17 @@
 - **Retention Plan**:
   - 시계열 및 로그 데이터는 30일(기본) 보존 후 자동 삭제 또는 Cold storage 이동.
 
+## Interfaces & Data Structures
+
+### Analytics Engine Contract
+
+| Engine | Interface | Primary Data Shape | Persistence Boundary |
+| --- | --- | --- | --- |
+| InfluxDB | HTTP / Line Protocol | time-series measurements, tags, fields | `${DEFAULT_DATA_DIR}/analytics/influxdb` |
+| ksqlDB | Kafka topics + SQL streams | stream/table definitions | Kafka state stores and topic retention |
+| OpenSearch | REST API | index documents and mappings | `${DEFAULT_DATA_DIR}/analytics/opensearch` |
+| StarRocks | MySQL-compatible protocol | OLAP tables and materialized views | `${DEFAULT_DATA_DIR}/analytics/starrocks` |
+
 ## Verification
 
 ```bash
@@ -75,5 +86,6 @@ mysql -h starrocks -P 9030 -u root
 
 ## Related Documents
 
-- **Guide**: `[../../05.operations/04-data/analytics/README.md]`
-- **Runbook**: `[../../05.operations/04-data/analytics/influxdb.md]`
+- **Guide**: [../../05.operations/guides/04-data/analytics/README.md](../../05.operations/guides/04-data/analytics/README.md)
+- **Policy**: [../../05.operations/policies/04-data/analytics/README.md](../../05.operations/policies/04-data/analytics/README.md)
+- **Runbook**: [../../05.operations/runbooks/04-data/analytics/influxdb.md](../../05.operations/runbooks/04-data/analytics/influxdb.md)

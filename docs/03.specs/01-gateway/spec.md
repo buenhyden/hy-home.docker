@@ -18,9 +18,9 @@
 
 ## Related Inputs
 
-- **PRD**: `[../../01.requirements/2026-03-26-01-gateway.md]`
-- **ARD**: `[../../02.architecture/requirements/0001-gateway-architecture.md]`
-- **Related ADRs**: `[../../02.architecture/decisions/0001-traefik-nginx-hybrid.md]`
+- **PRD**: [../../01.requirements/2026-03-26-01-gateway.md](../../01.requirements/2026-03-26-01-gateway.md)
+- **ARD**: [../../02.architecture/requirements/0001-gateway-architecture.md](../../02.architecture/requirements/0001-gateway-architecture.md)
+- **Related ADRs**: [../../02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../02.architecture/decisions/0001-traefik-nginx-hybrid.md)
 
 ## Contracts
 
@@ -92,5 +92,8 @@ openssl s_client -connect localhost:443 -tls1_3
 
 ## Related Documents
 
-- **Plan**: `[../../04.execution/plans/2026-03-26-01-gateway-standardization.md]`
-- **Tasks**: `[../../04.execution/tasks/2026-03-26-01-gateway-tasks.md]`
+- **Plan**: [../../04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md)
+- **Tasks**: [../../04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md)
+- **Guide**: [../../05.operations/guides/01-gateway/README.md](../../05.operations/guides/01-gateway/README.md)
+- **Policy**: [../../05.operations/policies/01-gateway/README.md](../../05.operations/policies/01-gateway/README.md)
+- **Runbook**: [../../05.operations/runbooks/01-gateway/README.md](../../05.operations/runbooks/01-gateway/README.md)

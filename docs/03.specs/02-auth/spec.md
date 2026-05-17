@@ -111,5 +111,5 @@ docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config
 - **Plan**: [../../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md)
 - **Tasks**: [../../04.execution/tasks/2026-03-28-02-auth-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-02-auth-optimization-hardening-tasks.md)
 - **Guide**: [../../05.operations/guides/02-auth/README.md](../../05.operations/guides/02-auth/README.md)
-- **Operations**: [../../05.operations/guides/02-auth/README.md](../../05.operations/guides/02-auth/README.md)
-- **Runbook**: [../../05.operations/guides/02-auth/README.md](../../05.operations/guides/02-auth/README.md)
+- **Policy**: [../../05.operations/policies/02-auth/README.md](../../05.operations/policies/02-auth/README.md)
+- **Runbook**: [../../05.operations/runbooks/02-auth/README.md](../../05.operations/runbooks/02-auth/README.md)

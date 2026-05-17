@@ -1,10 +1,12 @@
-# Component Specifications (Specs)
+# 03.specs
 
-> 이 경로는 컴포넌트/기능별 상세 설계 명세(Data, API, Logic, Agent-Design)를 관리한다.
+> 컴포넌트와 기능별 기술 명세, 구현 계약, 검증 기준을 관리하는 stage
 
 ## Overview
 
-`docs/03.specs`는 시스템의 세부 구현을 위한 구체적인 명세를 보관한다. 아키텍처(ARD)와 결정(ADR)을 바탕으로 실제 데이터 스키마, API 인터페이스, 비즈니스 로직 및 에이전트 설계 방식을 상세히 기술한다.
+`docs/03.specs`는 PRD, ARD, ADR을 구현 가능한 기술 계약으로 바꾸는 stage입니다. 각 spec은 구현자가 무엇을 바꾸고, 어떤 interface와 data contract를 지켜야 하며, 어떤 검증으로 완료를 판단할지 설명합니다.
+
+이 경로는 계획이나 작업 증거를 보관하지 않습니다. 실행 순서와 위험 관리는 `docs/04.execution/plans/`, 작업 결과와 evidence는 `docs/04.execution/tasks/`, 운영 절차와 정책은 `docs/05.operations/`가 담당합니다.
 
 ## Audience
 
@@ -19,67 +21,99 @@
 
 ### In Scope
 
-- 데이터 모델링 및 DB 스키마 정의
-- API 엔드포인트 및 요청/응답 형식 명세
-- 주요 비즈니스 로직 순서도 및 알고리즘
-- 에이전트 도구(Tool) 및 페르소나 설계
-- 네트워크 인프라 상세 요구사항 (Spec)
+- 컴포넌트/기능별 technical specification
+- config, data/interface, governance contract
+- API, schema, proto, tests, data model 같은 spec child contract
+- AI Agent 역할, tool, guardrail, evaluation contract
+- 구현 전 검증 기준과 성공 조건
 
 ### Out of Scope
 
-- 상위 요구사항 (PRD 담당)
-- 상위 아키텍처 비전 (ARD 담당)
-- 실행 계획 (Plan 담당)
-- 실제 소스 코드 구현
+- 제품 요구사항과 사용자 가치 정의 (`docs/01.requirements/` 담당)
+- 아키텍처 요구사항과 의사결정 (`docs/02.architecture/` 담당)
+- 구현 순서, milestone, 작업 배분 (`docs/04.execution/plans/` 담당)
+- 작업 수행 evidence (`docs/04.execution/tasks/` 담당)
+- 운영 가이드, 정책, 런북 (`docs/05.operations/` 담당)
+- Docker Compose runtime 원문이나 secret 값
 
 ## Structure
 
 ```text
 docs/03.specs/
-├── 01-gateway/
-│   └── spec.md
-├── ...
-├── 07-workflow/
-│   ├── spec.md
-│   └── agent-design.md    # Workflow cross-validation agent behavior contract
-├── ...
-├── standardize-infra-net/
-│   └── spec.md            # infra_net 상세 설계 명세
-├── harness-agent-first-engineering/
-│   └── spec.md            # Latest: Harness / Agent-first Engineering 분석 명세
-├── infra-secrets-docs-refresh/
-│   └── spec.md            # Infra, secrets, docs 운영 문서 최신화 명세
-├── llm-wiki-agent-first-completion/
-│   └── spec.md            # LLM Wiki generator/index/curator completion 명세
-└── README.md              # This file
+├── 01-gateway/                          # Traefik/Nginx gateway contracts
+├── 02-auth/                             # Keycloak/OAuth2 Proxy contracts
+├── 03-security/                         # Vault and secret delivery contracts
+├── 04-data/                             # Core data service contracts
+├── 04-data-analytics/                   # Analytics engine contracts
+├── 05-messaging/                        # Kafka/RabbitMQ messaging contracts
+├── 06-observability/                    # LGTM observability contracts
+├── 07-workflow/                         # Airflow/n8n workflow contracts and agent design
+├── 08-ai/                               # Ollama/Open WebUI AI contracts
+├── 09-tooling/                          # Tooling service contracts
+├── 10-communication/                    # Mail communication contracts
+├── 11-laboratory/                       # Laboratory/admin surface contracts
+├── docs-taxonomy-agent-first-migration/ # Completed docs taxonomy migration spec
+├── harness-agent-first-engineering/     # Completed agent-first harness spec
+├── infra-secrets-docs-refresh/          # Completed infra/secrets/docs refresh spec
+├── llm-wiki-agent-first-completion/     # Completed LLM Wiki contract spec
+├── standardize-infra-net/               # infra_net standardization spec
+└── README.md                            # This file
 ```
+
+## Routing
+
+| If you need to define... | Use |
+| --- | --- |
+| Gateway routing, TLS, middleware, proxy behavior | `01-gateway/spec.md` |
+| Identity, OAuth2, OIDC, session store behavior | `02-auth/spec.md` |
+| Vault, secret template, AppRole, secret delivery behavior | `03-security/spec.md` |
+| Databases, cache, object storage, core data persistence | `04-data/spec.md` |
+| InfluxDB, ksqlDB, OpenSearch, OLAP analytics engines | `04-data-analytics/spec.md` |
+| Kafka, RabbitMQ, stream/message broker behavior | `05-messaging/spec.md` |
+| Metrics, logs, traces, dashboards, alerts | `06-observability/spec.md` |
+| Workflow orchestration and cross-validation agent behavior | `07-workflow/spec.md`, `07-workflow/agent-design.md` |
+| Local AI inference, RAG UI, model-serving contracts | `08-ai/spec.md`, `08-ai/open-webui.md` |
+| IaC, registry, quality, performance tooling services | `09-tooling/spec.md` |
+| Mail, SMTP, IMAP, development mail trapping | `10-communication/spec.md` |
+| Laboratory/admin UI surfaces and access contracts | `11-laboratory/spec.md` |
+| Completed governance/documentation contract work | named governance spec folders |
 
 ## How to Work in This Area
 
-1. 기능 구현 전 [spec.template.md](../99.templates/spec.template.md)를 활용하여 명세서를 작성함.
-2. Agent 전용 세부 설계가 필요하면 `docs/03.specs/<feature-id>/agent-design.md`에 child document로 작성함.
-3. 데이터 모델이나 API 변경 시 영향도를 미리 분석하여 명시함.
-4. 문서 상태(`draft`, `approved`, `deprecated`)를 명확히 함.
-5. 구현 완료 후 변경된 사항이 있다면 실제 코드와 일치하도록 갱신함.
+1. 새 spec을 만들기 전에 상위 PRD, ARD, ADR이 있는지 확인합니다.
+2. 새 `spec.md`는 [spec template](../99.templates/spec.template.md)을 복사해 작성합니다.
+3. README는 [README template](../99.templates/readme.template.md)을 기준으로 작성하고, 링크는 대상 README 위치 기준으로 계산합니다.
+4. Agent 전용 설계가 필요하면 [agent design template](../99.templates/agent-design.template.md)을 사용해 `docs/03.specs/<feature-id>/agent-design.md`에 둡니다.
+5. API, schema, proto, tests, data model 계약은 같은 feature 디렉터리 아래 child document로 둡니다.
+6. `## Related Documents`는 실제 Markdown 링크로 작성합니다. 문서 경로를 코드 span 안에만 남기지 않습니다.
+7. 운영 링크는 목적별 bucket을 맞춥니다: guide는 `docs/05.operations/guides/`, policy는 `docs/05.operations/policies/`, runbook은 `docs/05.operations/runbooks/`.
 
 ## Documentation Standards
 
 - 가능한 경우 승인된 템플릿에서 시작한다.
 - 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성한다.
 - 상위 문서와 하위 산출물 간 추적성을 유지한다.
+- 기존 spec의 domain facts를 보존하고, template section을 보강할 때 의미를 바꾸지 않는다.
+- ordinary broken-link 검사뿐 아니라 pseudo-link와 label/path mismatch를 확인한다.
 
 ## AI Agent Guidance
 
 1. 이 README를 먼저 읽는다.
 2. 코드 변경 전 이 영역의 스펙 문서를 우선 참조하여 설계 의도를 파악한다.
-3. 스펙과 실제 구현 사이의 불일치를 발견하면 즉시 보고하거나 문서를 수정한다.
+3. Graphify는 탐색 보조로만 사용하고, spec 판단은 tracked source files와 stage docs로 확인한다.
+4. 스펙과 실제 구현 사이의 불일치를 발견하면 즉시 보고하거나 문서를 수정한다.
+5. 새 PRD/ARD/ADR/Plan/Task가 필요한 변경이면 해당 stage template으로 별도 작성하고, 이 경로에 대체 문서를 만들지 않는다.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/README.md]
-- **ARD**: [../02.architecture/requirements/README.md]
-- **ADR**: [../02.architecture/decisions/README.md]
-- **Plan**: [../04.execution/plans/README.md]
+- **PRD**: [../01.requirements/README.md](../01.requirements/README.md)
+- **ARD**: [../02.architecture/requirements/README.md](../02.architecture/requirements/README.md)
+- **ADR**: [../02.architecture/decisions/README.md](../02.architecture/decisions/README.md)
+- **Plan**: [../04.execution/plans/README.md](../04.execution/plans/README.md)
+- **Tasks**: [../04.execution/tasks/README.md](../04.execution/tasks/README.md)
+- **Operations Stage**: [../05.operations/README.md](../05.operations/README.md)
+- **Spec template**: [../99.templates/spec.template.md](../99.templates/spec.template.md)
+- **README template**: [../99.templates/readme.template.md](../99.templates/readme.template.md)
 - **Harness / Agent-first Engineering Spec**: [harness-agent-first-engineering/spec.md](./harness-agent-first-engineering/spec.md)
 - **Infra / Secrets / Docs Refresh Spec**: [infra-secrets-docs-refresh/spec.md](./infra-secrets-docs-refresh/spec.md)
 - **LLM Wiki Agent-first Completion Spec**: [llm-wiki-agent-first-completion/spec.md](./llm-wiki-agent-first-completion/spec.md)

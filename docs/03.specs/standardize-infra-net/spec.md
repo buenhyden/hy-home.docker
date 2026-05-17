@@ -16,9 +16,9 @@
 
 ## Related Inputs
 
-- **PRD**: `[../../01.requirements/2026-04-01-standardize-infra-net.md]`
-- **ARD**: `[../../02.architecture/requirements/0026-standardize-infra-net.md]`
-- **Related ADRs**: `[../../02.architecture/decisions/0026-standardize-infra-net.md]`
+- **PRD**: [../../01.requirements/2026-04-01-standardize-infra-net.md](../../01.requirements/2026-04-01-standardize-infra-net.md)
+- **ARD**: [../../02.architecture/requirements/0026-standardize-infra-net.md](../../02.architecture/requirements/0026-standardize-infra-net.md)
+- **Related ADRs**: [../../02.architecture/decisions/0026-standardize-infra-net.md](../../02.architecture/decisions/0026-standardize-infra-net.md)
 
 ## Contracts
 
@@ -120,8 +120,17 @@ docker compose config | grep -A 5 "infra_net:"
 docker compose config | grep "k3d-hyhome"
 ```
 
+## Success Criteria & Verification Plan
+
+- **VAL-SPC-NET-001**: `infra_net` subnet and gateway resolve to the approved IPAM contract.
+- **VAL-SPC-NET-002**: service compose files preserve existing static IP assignments and join `infra_net`.
+- **VAL-SPC-NET-003**: `k3d-hyhome` references remain present where they existed before the network standardization.
+- **VAL-SPC-NET-004**: operations guide and runbook point to the canonical `docs/05.operations` buckets.
+
 ## Related Documents
 
-- **Plan**: `[../../04.execution/plans/2026-04-01-standardize-infra-net.md]`
-- **Tasks**: `[../../04.execution/tasks/2026-04-01-standardize-infra-net.md]`
-- **Runbook**: `[../../05.operations/0012-standardize-infra-net.md]`
+- **Plan**: [../../04.execution/plans/2026-04-01-standardize-infra-net.md](../../04.execution/plans/2026-04-01-standardize-infra-net.md)
+- **Tasks**: [../../04.execution/tasks/2026-04-01-standardize-infra-net.md](../../04.execution/tasks/2026-04-01-standardize-infra-net.md)
+- **Guide**: [../../05.operations/guides/0012-standardize-infra-net.md](../../05.operations/guides/0012-standardize-infra-net.md)
+- **Policy**: [../../05.operations/policies/standardize-infra-net.md](../../05.operations/policies/standardize-infra-net.md)
+- **Runbook**: [../../05.operations/runbooks/0012-standardize-infra-net.md](../../05.operations/runbooks/0012-standardize-infra-net.md)

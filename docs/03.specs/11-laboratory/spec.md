@@ -49,6 +49,15 @@
 - **Policy Gate Plane**:
   - lab hardening checker + CI job으로 회귀 조기 탐지
 
+## Data Modeling & Storage Strategy
+
+- **Schema / Entity Strategy**:
+  - Laboratory services do not define shared application data schemas in this spec.
+  - Service-specific state remains in the corresponding Docker volumes or upstream systems.
+- **Migration / Transition Plan**:
+  - Preserve existing service state while tightening ingress, network, socket, and policy gate contracts.
+  - Treat new data-bearing laboratory tools as separate specs when they introduce durable state or user data boundaries.
+
 ## Interfaces & Data Structures
 
 ### Laboratory Hardening Control Surface
@@ -103,7 +112,7 @@ bash scripts/validation/check-doc-traceability.sh
 
 - **Plan**: [../../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
 - **Tasks**: [../../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md)
-- **Guide**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
-- **Operation**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
-- **Runbook**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/11-laboratory/optimization-hardening.md](../../05.operations/guides/11-laboratory/optimization-hardening.md)
+- **Policy**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/11-laboratory/optimization-hardening.md](../../05.operations/runbooks/11-laboratory/optimization-hardening.md)
 - **Catalog**: [../../05.operations/policies/12-infra-service-optimization-catalog.md](../../05.operations/policies/12-infra-service-optimization-catalog.md)

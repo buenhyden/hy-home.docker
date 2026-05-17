@@ -17,9 +17,9 @@
 
 ## Related Inputs
 
-- **PRD**: `[../../01.requirements/2026-03-27-08-ai-open-webui.md]`
-- **ARD**: `[../../02.architecture/requirements/0013-open-webui-architecture.md]`
-- **Related ADRs**: `[../../02.architecture/decisions/0016-open-webui-implementation.md]`
+- **PRD**: [../../01.requirements/2026-03-27-08-ai-open-webui.md](../../01.requirements/2026-03-27-08-ai-open-webui.md)
+- **ARD**: [../../02.architecture/requirements/0013-open-webui-architecture.md](../../02.architecture/requirements/0013-open-webui-architecture.md)
+- **Related ADRs**: [../../02.architecture/decisions/0016-open-webui-implementation.md](../../02.architecture/decisions/0016-open-webui-implementation.md)
 
 ## Contracts
 
@@ -46,13 +46,34 @@
 - **SPEC-OPENWEBUI-04**: Persistent volume: `${DEFAULT_AI_MODEL_DIR}/open-webui:/app/backend/data`.
 - **Tech Stack**: Docker, SvelteKit, Python, CUDA.
 
-## Key Components
+## Data Modeling & Storage Strategy
+
+- **Schema / Entity Strategy**:
+  - User sessions, chat state, uploads, and RAG metadata live under `/app/backend/data`.
+  - Vector retrieval data is delegated to Qdrant through `VECTOR_DB_URL`.
+  - Model inference data is delegated to Ollama through `OLLAMA_BASE_URL`.
+- **Migration / Transition Plan**:
+  - Preserve `${DEFAULT_AI_MODEL_DIR}/open-webui` as the stateful volume boundary.
+  - Keep embedding model defaults aligned with the parent AI spec before changing RAG behavior.
+
+## Interfaces & Data Structures
+
+### Core Interfaces
 
 ```bash
 # Verify container connectivity to Ollama
 docker exec open-webui curl -f ${OLLAMA_BASE_URL}/api/tags
 
 # Verify healthcheck endpoint
+curl -f http://localhost:${OLLAMA_WEB_UI_PORT:-8080}/health
+```
+
+## Verification
+
+```bash
+docker compose -f infra/08-ai/open-webui/docker-compose.yml config
+docker exec open-webui curl -f ${OLLAMA_BASE_URL}/api/tags
+docker exec open-webui curl -f ${VECTOR_DB_URL}/collections
 curl -f http://localhost:${OLLAMA_WEB_UI_PORT:-8080}/health
 ```
 
@@ -63,6 +84,8 @@ curl -f http://localhost:${OLLAMA_WEB_UI_PORT:-8080}/health
 
 ## Related Documents
 
-- **Plan**: `[../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md]`
-- **Tasks**: `[../../04.execution/tasks/2026-03-27-08-ai-open-webui-tasks.md]`
-- **Runbook**: `[../../05.operations/08-ai/open-webui.md]`
+- **Plan**: [../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md](../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md)
+- **Tasks**: [../../04.execution/tasks/2026-03-27-08-ai-open-webui-tasks.md](../../04.execution/tasks/2026-03-27-08-ai-open-webui-tasks.md)
+- **Guide**: [../../05.operations/guides/08-ai/open-webui.md](../../05.operations/guides/08-ai/open-webui.md)
+- **Policy**: [../../05.operations/policies/08-ai/open-webui.md](../../05.operations/policies/08-ai/open-webui.md)
+- **Runbook**: [../../05.operations/runbooks/08-ai/open-webui.md](../../05.operations/runbooks/08-ai/open-webui.md)
