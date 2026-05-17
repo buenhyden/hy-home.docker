@@ -1,11 +1,9 @@
 ---
-status: migrated
+status: active
 ---
 <!-- Target: docs/05.operations/runbooks/06-observability/prometheus-recovery.md -->
 
 # Prometheus Recovery Operations
-
-> Migrated from `docs/05.operations/06-observability/prometheus-recovery.md` during the 2026-05-10 operations taxonomy consolidation.
 
 ## Procedure
 
@@ -110,3 +108,8 @@ Check if the metrics are visible in Grafana. If not, verify that Alloy is succes
 - [../README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/incidents/README.md](../../incidents/README.md)
+
+## Related Documents
+
+- [Operations index](../../README.md)
+- [Operations template](../../../99.templates/operation.template.md)

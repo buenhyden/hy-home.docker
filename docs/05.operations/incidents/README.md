@@ -55,7 +55,7 @@
 
 ## Related Documents
 
-- [Runbooks](../README.md)
-- [Operations](../README.md)
+- [Operations index](../README.md)
+- [Runbooks](../runbooks/README.md)
 - [Incident template](../../99.templates/incident.template.md)
 - [Postmortem template](../../99.templates/postmortem.template.md)

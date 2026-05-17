@@ -1,11 +1,9 @@
 ---
-status: migrated
+status: active
 ---
 <!-- Target: docs/05.operations/guides/08-ai/local-llm-setup.md -->
 
 # Local Llm Setup Operations
-
-> Migrated from `docs/05.operations/08-ai/local-llm-setup.md` during the 2026-05-10 operations taxonomy consolidation.
 
 ## Usage
 
@@ -82,3 +80,8 @@ Once pulled, the model will automatically appear in the [Open WebUI](https://cha
 - [../README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
+
+## Related Documents
+
+- [Operations index](../../README.md)
+- [Operations template](../../../99.templates/operation.template.md)

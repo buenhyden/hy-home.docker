@@ -1,5 +1,5 @@
 ---
-status: migrated
+status: active
 ---
 <!-- Target: docs/05.operations/runbooks/harness-agent-first-engineering-validation.md -->
 
@@ -138,3 +138,8 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 - [Plan](../../04.execution/plans/2026-05-09-harness-agent-first-engineering.md)
 - [Task Evidence](../../04.execution/tasks/2026-05-09-harness-agent-first-engineering.md)
 - [Agent Governance Hub](../../00.agent-governance/README.md)
+
+## Related Documents
+
+- [Operations index](../README.md)
+- [Operations template](../../99.templates/operation.template.md)

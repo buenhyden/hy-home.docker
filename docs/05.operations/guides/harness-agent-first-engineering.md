@@ -61,9 +61,6 @@ How-to / audit guide.
 
 ## Related Documents
 
-- [Specification](../../03.specs/harness-agent-first-engineering/spec.md)
-- [Plan](../../04.execution/plans/2026-05-09-harness-agent-first-engineering.md)
-- [Task Evidence](../../04.execution/tasks/2026-05-09-harness-agent-first-engineering.md)
-- [Operations Policy](../policies/harness-agent-first-engineering.md)
-- [Validation Procedure](../runbooks/harness-agent-first-engineering-validation.md)
-- [Agent Governance Hub](../../00.agent-governance/README.md)
+- [Operations index](../README.md)
+- [Operations policy](../policies/harness-agent-first-engineering.md)
+- [Operations template](../../99.templates/operation.template.md)

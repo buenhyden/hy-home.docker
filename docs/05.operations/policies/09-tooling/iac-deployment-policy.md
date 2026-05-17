@@ -8,13 +8,6 @@ This policy defines the standards for Infrastructure as Code (IaC) deployments u
 - State files must be stored in the remote backend.
 - Plan verification is required before apply.
 
-## Related Documents
-
-- [ARD](../../../02.architecture/requirements/0009-tooling-architecture.md)
-- [Usage](../../guides/09-tooling/01.iac-automation.md)
-
----
-
 ## Overview (KR)
 
 이 문서는 `docs/05.operations/09-tooling/iac-deployment-policy.md` 주제의 운영 정책을 정의한다. 기존 운영 내용을 유지하면서 적용 범위, 통제, 검증 기준을 명시한다.
@@ -55,3 +48,8 @@ This policy defines the standards for Infrastructure as Code (IaC) deployments u
 - **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
 - **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
 - **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
+
+## Related Documents
+
+- [Operations index](../../README.md)
+- [Operations template](../../../99.templates/operation.template.md)

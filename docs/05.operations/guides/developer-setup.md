@@ -1,11 +1,9 @@
 ---
-status: migrated
+status: active
 ---
 <!-- Target: docs/05.operations/guides/developer-setup.md -->
 
 # Developer Setup Operations
-
-> Migrated from `docs/05.operations/developer-setup.md` during the 2026-05-10 operations taxonomy consolidation.
 
 ## Usage
 
@@ -128,3 +126,8 @@ All scripts assume a bash-compatible shell. If you are on Windows, use WSL2.
 - [../README.md](../../README.md)
 - [../../05.operations/README.md](../README.md)
 - [../../05.operations/README.md](../README.md)
+
+## Related Documents
+
+- [Operations index](../README.md)
+- [Operations template](../../99.templates/operation.template.md)

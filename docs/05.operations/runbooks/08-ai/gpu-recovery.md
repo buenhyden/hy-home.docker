@@ -1,11 +1,9 @@
 ---
-status: migrated
+status: active
 ---
 <!-- Target: docs/05.operations/runbooks/08-ai/gpu-recovery.md -->
 
 # Gpu Recovery Operations
-
-> Migrated from `docs/05.operations/08-ai/gpu-recovery.md` during the 2026-05-10 operations taxonomy consolidation.
 
 ## Procedure
 
@@ -118,3 +116,8 @@ dmesg | grep -i nvidia
 - [../README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/incidents/README.md](../../incidents/README.md)
+
+## Related Documents
+
+- [Operations index](../../README.md)
+- [Operations template](../../../99.templates/operation.template.md)

@@ -1,11 +1,9 @@
 ---
-status: migrated
+status: active
 ---
 <!-- Target: docs/05.operations/runbooks/04-data/storage-exhaustion.md -->
 
 # Storage Exhaustion Operations
-
-> Migrated from `docs/05.operations/04-data/storage-exhaustion.md` during the 2026-05-10 operations taxonomy consolidation.
 
 ## Procedure
 
@@ -116,3 +114,8 @@ sudo journalctl --vacuum-time=1d
 - [../README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/incidents/README.md](../../incidents/README.md)
+
+## Related Documents
+
+- [Operations index](../../README.md)
+- [Operations template](../../../99.templates/operation.template.md)

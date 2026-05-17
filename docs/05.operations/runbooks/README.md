@@ -4,39 +4,81 @@
 
 ## Overview
 
-`docs/05.operations/runbooks`는 장애 대응, 반복 검증, 변경 실행 절차처럼 순서와 중단 기준이 필요한 문서를 관리합니다.
+`runbooks`는 `docs/05.operations`의 runbook 문서를 관리합니다. 트리거 조건, 순서 있는 절차, evidence, rollback/recovery, escalation을 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+
+## Audience
+
+이 README의 주요 독자:
+
+- Operators
+- SREs
+- Developers
+- AI Agents
 
 ## Scope
 
 ### In Scope
 
-- 장애 복구 절차
-- 검증 및 점검 절차
-- 반복 실행 명령과 rollback 또는 escalation 기준
+- 장애 복구, 정기 점검, rollback, escalation, evidence capture
+- 이 bucket에 속한 runbook 문서 인덱스
+- 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
 
 ### Out of Scope
 
-- 일반 사용 가이드 (`../guides/` 담당)
-- 정책과 승인 기준 (`../policies/` 담당)
-- 사고 기록과 postmortem (`../incidents/` 담당)
+- 배경 설명 중심 가이드와 장기 운영 정책
+- 다른 bucket 또는 다른 stage가 담당하는 운영 지식
+- secret 값, credential, token, 인증서 원문
 
 ## Structure
 
 ```text
 runbooks/
-├── harness-agent-first-engineering-validation.md
+├── 01-gateway/
+├── 02-auth/
+├── 03-security/
 ├── 04-data/
+├── 05-messaging/
 ├── 06-observability/
-├── ...
+├── 07-workflow/
+├── 08-ai/
+├── 09-tooling/
+├── 10-communication/
+├── 11-laboratory/
+├── 0012-standardize-infra-net.md
+├── harness-agent-first-engineering-validation.md
+├── llm-wiki-maintenance.md
 └── README.md
 ```
 
-## Current Governance Runbooks
+## How to Work in This Area
 
-- [Harness Agent First Engineering Validation Operations](./harness-agent-first-engineering-validation.md)
+1. 새 문서를 만들기 전에 `docs/99.templates/operation.template.md`의 목적별 profile과 target-relative link 규칙을 확인합니다.
+2. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
+3. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
+
+## Contents
+
+| Path | Purpose |
+| --- | --- |
+| [01-gateway/](./01-gateway/README.md) | 01 Gateway runbook 문서 |
+| [02-auth/](./02-auth/README.md) | 02 Auth runbook 문서 |
+| [03-security/](./03-security/README.md) | 03 Security runbook 문서 |
+| [04-data/](./04-data/README.md) | 04 Data runbook 문서 |
+| [05-messaging/](./05-messaging/README.md) | 05 Messaging runbook 문서 |
+| [06-observability/](./06-observability/README.md) | 06 Observability runbook 문서 |
+| [07-workflow/](./07-workflow/README.md) | 07 Workflow runbook 문서 |
+| [08-ai/](./08-ai/README.md) | 08 Ai runbook 문서 |
+| [09-tooling/](./09-tooling/README.md) | 09 Tooling runbook 문서 |
+| [10-communication/](./10-communication/README.md) | 10 Communication runbook 문서 |
+| [11-laboratory/](./11-laboratory/README.md) | 11 Laboratory runbook 문서 |
+| [0012-standardize-infra-net.md](./0012-standardize-infra-net.md) | 0012 Standardize Infra Net runbook 문서 |
+| [harness-agent-first-engineering-validation.md](./harness-agent-first-engineering-validation.md) | Harness Agent First Engineering Validation runbook 문서 |
+| [llm-wiki-maintenance.md](./llm-wiki-maintenance.md) | Llm Wiki Maintenance runbook 문서 |
 
 ## Related Documents
 
-- [../README.md](../README.md)
-- [../guides/README.md](../guides/README.md)
-- [../policies/README.md](../policies/README.md)
+- [Operations index](../README.md)
+- [Operations Guides](../guides/README.md)
+- [Operations Policies](../policies/README.md)
+- [Incident records](../incidents/README.md)
+- [Operations template](../../99.templates/operation.template.md)

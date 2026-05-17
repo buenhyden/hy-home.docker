@@ -1,17 +1,15 @@
 ---
-status: migrated
+status: active
 ---
 <!-- Target: docs/05.operations/runbooks/07-workflow/airflow-worker-recovery.md -->
 
 # Airflow Worker Recovery Operations
 
-> Migrated from `docs/05.operations/07-workflow/airflow-worker-recovery.md` during the 2026-05-10 operations taxonomy consolidation.
-
 ## Procedure
 
 ### Airflow Worker Recovery Procedure
 
-: Airflow / Workflow Tier
+> Scope: Airflow / Workflow Tier
 
 ---
 
@@ -92,3 +90,8 @@ To resolve issues where Airflow tasks remain in `queued` or `running` state inde
 - **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+
+## Related Documents
+
+- [Operations index](../../README.md)
+- [Operations template](../../../99.templates/operation.template.md)

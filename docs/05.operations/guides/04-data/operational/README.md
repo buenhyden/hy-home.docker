@@ -1,208 +1,61 @@
-# Operational Policies: 04-data
+# Operations Guides - 04 Data / Operational
 
-> Operational policies for shared data management services.
+> 서비스 사용, 설정, 온보딩 문서를 domain/service 구조로 관리한다.
 
 ## Overview
 
-이 디렉토리는 `04-data` 티어의 운영 계층 서비스(Management DB 등)에 대한 거버넌스 및 정책 문서를 포함한다. 각 문서는 통제 기준과 검증 방법을 정의한다.
+`guides/04-data/operational`는 `docs/05.operations`의 guide 문서를 관리합니다. 사용 맥락, 전제 조건, 일반 점검, 관련 runbook handoff를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
 
 ## Audience
 
 이 README의 주요 독자:
 
-- 플랫폼 운영팀, SRE, AI 에이전트
-
-- 운영 정책을 수립하고 모니터링하는 **Operators**
-- 데이터 보안 및 규정 준수를 검토하는 **Security Engineers**
-- 정책 준수 자동화를 수행하는 **AI Agents**
+- Operators
+- SREs
+- Developers
+- AI Agents
 
 ## Scope
 
 ### In Scope
 
-- `postgresql-cluster`(HA) 가용성 및 쿼럼 정책
-- `mng-db` 운영 데이터 보호 및 백업 표준
-- `supabase` 서비스 거버넌스 및 접근 제어
+- 서비스 사용 맥락, 설정 방법, 온보딩, 일반 점검
+- 현재 경로에 속한 guide 문서 인덱스
+- 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
 
 ### Out of Scope
 
-- 캐시 및 Key-Value 운영 정책 (-> `../cache-and-kv/`)
-- 분석용 및 특수 데이터베이스 정책 (-> `../specialized/`)
+- 운영 통제 기준과 반복 실행 복구 절차
+- 다른 bucket 또는 다른 stage가 담당하는 운영 지식
+- secret 값, credential, token, 인증서 원문
 
 ## Structure
 
 ```text
-operational/
-├── mng-db.md                 # 운영 관리용 DB 운영 정책
-├── supabase.md               # Supabase 스택 운영 정책
-└── README.md                 # This file
+guides/04-data/operational/
+├── mng-db.md
+├── supabase.md
+└── README.md
 ```
 
 ## How to Work in This Area
 
-1. 정책 문서를 작성하거나 수정할 때는 `docs/99.templates/operation.template.md`를 준수한다.
-2. 모든 정책은 `docs/02.architecture/requirements/`에 정의된 아키텍처 원칙과 일치해야 한다.
-3. 중요 정책 변경 시에는 영향도 평가 및 승인 절차를 거쳐야 한다.
+1. 새 문서를 만들기 전에 `docs/99.templates/operation.template.md`의 목적별 profile과 target-relative link 규칙을 확인합니다.
+2. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
+3. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
 
-## Operational Data Policies
+## Contents
 
-> Governance and operational standards for management data services.
-
-## Overview
-
-이 디렉터리는 플랫폼 데이터 계층의 운영 가용성, 보안 및 백업에 대한 정책 문서를 포함합니다.
-
-## Policies
-
-| Service | Category | Policy |
-| :--- | :--- | :--- |
-| **mng-db** | Management DB | [mng-db.md](./mng-db.md) |
-| **supabase** | Backend Platform | [supabase.md](./supabase.md) |
-| **postgresql-cluster** | Relational DB | [relational/README.md](../relational/README.md) |
+| Path | Purpose |
+| --- | --- |
+| [mng-db.md](./mng-db.md) | Mng Db guide 문서 |
+| [supabase.md](./supabase.md) | Supabase guide 문서 |
 
 ## Related Documents
 
-- **Usages**: [Technical Usages](./README.md)
-- **Procedures**: [Recovery Procedures](./README.md)
-- **Infra**: [Relational Infra Source](../../../../../infra/04-data/relational/README.md)
-
----
-Copyright (c) 2026. Licensed under the MIT License.
-
-## Usage
-
-> Migrated from `docs/05.operations/04-data/operational/README.md` during the 2026-05-10 operations taxonomy consolidation.
-
-### Operational Usages: 04-data
-
-> Usages for operational data services and management databases.
-
-#### Overview
-
-이 디렉토리는 `04-data` 티어 중 운영 및 관리 서비스(Management Database 등)와 관련된 가이드 문서를 포함한다. 각 문서는 시스템 구조 이해 및 사용자 가이드를 제공한다.
-
-#### Audience
-
-이 README의 주요 독자:
-
-- 개발자, 운영자, AI 에이전트
-
-- 데이터 서비스 연결이 필요한 **Developers**
-- 인프라 상태를 점검하는 **Operators**
-- 문서 간 추적성을 유지하는 **AI Agents**
-
-#### Scope
-
-##### In Scope
-
-- `postgresql-cluster`(HA) 사용 및 구성 가이드
-- `mng-db` 운영 관리 데이터베이스 가이드
-- `supabase` 로컬 스택 및 외부 연동 가이드
-
-##### Out of Scope
-
-- 캐시 및 Key-Value 엔진 가이드 (-> `../cache-and-kv/`)
-- 분석용 및 특수 데이터베이스 가이드 (-> `../specialized/`)
-
-#### Structure
-
-```text
-operational/
-├── mng-db.md                 # 운영 관리용 DB 기술 가이드
-├── supabase.md               # Supabase 스택 기술 가이드
-└── README.md                 # This file
-```
-
-#### How to Work in This Area
-
-1. 새 가이드를 작성할 때는 `docs/99.templates/operation.template.md`를 사용한다.
-2. 각 문서는 하위 구현인 `infra/04-data/relational/`과 1:1 대응 관계를 유지해야 한다.
-3. 아키텍처 수준의 결정 사항은 `docs/02.architecture/decisions/`을 먼저 참조한다.
-
-#### Related Documents
-
-- **# Operational Data Usages
-
-> Technical guides for management and shared backend platforms.
-
-#### Overview
-
-이 디렉터리는 플랫폼 운영에 필수적인 핵심 데이터베이스 및 공통 백엔드 서비스에 대한 기술 가이드를 포함합니다.
-
-#### Services
-
-| Service | Category | Usage |
-| :--- | :--- | :--- |
-| **mng-db** | Management DB | [mng-db.md](./mng-db.md) |
-| **supabase** | Backend Platform | [supabase.md](./supabase.md) |
-| **postgresql-cluster** | Relational DB | [relational/README.md](../relational/README.md) |
-
----
-Copyright (c) 2026. Licensed under the MIT License.
-
-## Procedure
-
-> Migrated from `docs/05.operations/04-data/operational/README.md` during the 2026-05-10 operations taxonomy consolidation.
-
-### Operational Procedures: 04-data
-
-> Step-by-step procedures for shared data services.
-
-#### Overview
-
-이 디렉토리는 `04-data` 티어의 운영 계층 서비스(Management DB 등)에 대한 실행 절차 문서를 포함한다.
-
-#### Audience
-
-이 README의 주요 독자:
-
-- 온콜 엔지니어, 플랫폼 관리자, AI 에이전트
-
-- 장애 대응을 수행하는 **Operators / SRE**
-- 복구 절차의 유효성을 검증하는 **QA Engineers**
-- 실시간 장애 조치를 가이드하는 **AI Agents**
-
-#### Scope
-
-##### In Scope
-
-- `postgresql-cluster`(HA) 노드 및 쿼럼 복구 절차
-- `mng-db` 장애 시 서비스 복구 지침
-- `supabase` 로컬/배포 스택의 긴급 복구 런북
-
-##### Out of Scope
-
-- 캐시 및 Key-Value 복구 런북 (-> `../cache-and-kv/`)
-- 분석용 및 특수 데이터베이스 런북 (-> `../specialized/`)
-
-#### Structure
-
-```text
-operational/
-├── mng-db.md                 # 운영 관리용 DB 복구 런북
-├── supabase.md               # Supabase 스택 복구 런북
-└── README.md                 # This file
-```
-
-#### How to Work in This Area
-
-이 디렉터리는 플랫폼 핵심 데이터 서비스의 장애 복구 및 트러블슈팅을 위한 단계별 절차서를 포함합니다.
-
-#### Procedures
-
-| Service | Category | Procedure |
-| :--- | :--- | :--- |
-| **mng-db** | Management DB | [mng-db.md](./mng-db.md) |
-| **supabase** | Backend Platform | [supabase.md](./supabase.md) |
-| **postgresql-cluster** | Relational DB | [relational/README.md](../relational/README.md) |
-
----
-Copyright (c) 2026. Licensed under the MIT License.
-
----
-
-#### Related Documents
-
-- [docs/05.operations/README.md](../README.md)
-- [docs/05.operations/README.md](../../../README.md)
-- [docs/05.operations/incidents/README.md](../../../incidents/README.md)
+- [Operations index](../../../README.md)
+- [Operations Guides index](../../README.md)
+- [Operations Policies - 04-data / operational](../../../policies/04-data/operational/README.md)
+- [Operations Runbooks - 04-data / operational](../../../runbooks/04-data/operational/README.md)
+- [Incident records](../../../incidents/README.md)
+- [Operations template](../../../../99.templates/operation.template.md)

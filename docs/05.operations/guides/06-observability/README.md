@@ -1,283 +1,77 @@
-# Observability Operations Policy (05.operations/06-observability)
+# Operations Guides - 06 Observability
 
-> Governance, reliability standards, and optimization/hardening controls for the observability tier.
+> 서비스 사용, 설정, 온보딩 문서를 domain/service 구조로 관리한다.
 
 ## Overview
 
-이 디렉터리는 `06-observability` 계층의 운영 정책 문서를 관리한다. retention/alerting 기본 정책과 서비스별 운영 기준, optimization-hardening 통제를 정의한다.
+`guides/06-observability`는 `docs/05.operations`의 guide 문서를 관리합니다. 사용 맥락, 전제 조건, 일반 점검, 관련 runbook handoff를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
 
 ## Audience
 
 이 README의 주요 독자:
 
 - Operators
-- DevOps Engineers
-- Architects
+- SREs
+- Developers
 - AI Agents
 
 ## Scope
 
 ### In Scope
 
-- Prometheus/Alertmanager/Grafana/Loki/Tempo/Alloy/Pushgateway/Pyroscope 운영 정책
-- Retention 정책
-- Observability optimization/hardening 운영 정책
-- 카탈로그 연계 확장 승인 기준
+- 서비스 사용 맥락, 설정 방법, 온보딩, 일반 점검
+- 현재 경로에 속한 guide 문서 인덱스
+- 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
 
 ### Out of Scope
 
-- 단계별 장애 복구 실행 절차 (-> `05.operations/06-observability`)
-- 개발자 튜토리얼/사용 가이드 (-> `05.operations/06-observability`)
+- 운영 통제 기준과 반복 실행 복구 절차
+- 다른 bucket 또는 다른 stage가 담당하는 운영 지식
+- secret 값, credential, token, 인증서 원문
 
 ## Structure
 
 ```text
-06-observability/
-├── 01.retention.md            # Retention baseline policy
-├── alertmanager.md            # Alertmanager operations policy
-├── alloy.md                   # Alloy operations policy
-├── grafana.md                 # Grafana operations policy
-├── loki.md                    # Loki operations policy
-├── prometheus.md              # Prometheus operations policy
-├── pushgateway.md             # Pushgateway operations policy
-├── pyroscope.md               # Pyroscope operations policy
-├── tempo.md                   # Tempo operations policy
-├── optimization-hardening.md  # Observability optimization/hardening policy
-└── README.md                  # This file
+guides/06-observability/
+├── 01.lgtm-stack.md
+├── alertmanager.md
+├── alloy.md
+├── grafana.md
+├── loki.md
+├── optimization-hardening.md
+├── prometheus.md
+├── pushgateway.md
+├── pyroscope.md
+├── tempo.md
+└── README.md
 ```
 
 ## How to Work in This Area
 
-1. 정책 문서는 `docs/99.templates/operation.template.md` 기준으로 작성한다.
-2. 정책 변경 시 대응 guide/runbook 링크를 함께 갱신한다.
-3. 카탈로그 항목과 정책 통제를 매핑해 변경 근거를 남긴다.
-4. 변경 후 `scripts/validation/check-doc-traceability.sh`를 실행한다.
+1. 새 문서를 만들기 전에 `docs/99.templates/operation.template.md`의 목적별 profile과 target-relative link 규칙을 확인합니다.
+2. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
+3. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
 
-## Usage Instructions
+## Contents
 
-이 경로는 "무엇을 허용/금지하는가"를 정의하는 정책 계층이다. 구체 실행 절차는 `05.operations`를 참조한다.
-
-## Verification and Monitoring
-
-- 정책 준수 검증:
-  - `bash scripts/hardening/check-all-hardening.sh 06-observability`
-  - `bash scripts/validation/check-template-security-baseline.sh`
-  - `bash scripts/validation/check-doc-traceability.sh`
-- 운영 지표:
-  - scrape success ratio
-  - ingestion latency/log backlog
-  - query latency/error rate
-
-## Incident and Recovery Links
-
-- **Procedures**: [../../05.operations/06-observability/README.md](./README.md)
-- **Usages**: [../../05.operations/06-observability/README.md](./README.md)
-
-## SSoT References
-
-- **PRD**: [../../01.requirements/2026-03-28-06-observability-optimization-hardening.md](../../../01.requirements/2026-03-28-06-observability-optimization-hardening.md)
-- **ARD**: [../../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md](../../../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md)
-- **ADR**: [../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
-- **Spec**: [../../03.specs/06-observability/spec.md](../../../03.specs/06-observability/spec.md)
-- **Plan**: [../../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md](../../../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md)
-- **Tasks**: [../../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md](../../../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md)
-- **Usage**: [../../05.operations/06-observability/optimization-hardening.md](../../policies/06-observability/optimization-hardening.md)
-- **Procedure**: [../../05.operations/06-observability/optimization-hardening.md](../../policies/06-observability/optimization-hardening.md)
-- **Catalog**: [../12-infra-service-optimization-catalog.md](../../policies/12-infra-service-optimization-catalog.md)
-
-## AI Agent Guidance
-
-1. observability 경로 변경 시 `optimization-hardening.md` 정책을 최우선 기준으로 적용한다.
-2. Required 통제를 compose 변경에서 누락하면 안 된다.
-
----
+| Path | Purpose |
+| --- | --- |
+| [01.lgtm-stack.md](./01.lgtm-stack.md) | 01.Lgtm Stack guide 문서 |
+| [alertmanager.md](./alertmanager.md) | Alertmanager guide 문서 |
+| [alloy.md](./alloy.md) | Alloy guide 문서 |
+| [grafana.md](./grafana.md) | Grafana guide 문서 |
+| [loki.md](./loki.md) | Loki guide 문서 |
+| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening guide 문서 |
+| [prometheus.md](./prometheus.md) | Prometheus guide 문서 |
+| [pushgateway.md](./pushgateway.md) | Pushgateway guide 문서 |
+| [pyroscope.md](./pyroscope.md) | Pyroscope guide 문서 |
+| [tempo.md](./tempo.md) | Tempo guide 문서 |
 
 ## Related Documents
 
-- [docs/05.operations/README.md](../../README.md)
-- [docs/05.operations/README.md](../../README.md)
-- [docs/05.operations/README.md](../../README.md)
-
-## Usage
-
-> Migrated from `docs/05.operations/06-observability/README.md` during the 2026-05-10 operations taxonomy consolidation.
-
-### Observability Usages (05.operations/06-observability)
-
-> Developer/operator guides for LGTM stack operation and optimization hardening.
-
-#### Overview
-
-이 디렉터리는 `06-observability` 계층의 사용/운영 가이드를 제공한다. 서비스별 가이드와 optimization-hardening 적용 절차를 함께 관리한다.
-
-#### Audience
-
-이 README의 주요 독자:
-
-- Developers
-- SRE / Platform Operators
-- DevOps Engineers
-- AI Agents
-
-#### Scope
-
-##### In Scope
-
-- Prometheus/Grafana/Loki/Tempo/Alloy/Alertmanager/Pushgateway/Pyroscope 가이드
-- LGTM 아키텍처 가이드
-- 관측성 optimization-hardening 적용 가이드
-
-##### Out of Scope
-
-- 운영 통제 정책 정의 (-> `05.operations/06-observability`)
-- 즉시 실행 장애 복구 절차 (-> `05.operations/06-observability`)
-
-#### Structure
-
-```text
-06-observability/
-├── 01.lgtm-stack.md           # LGTM architecture guide
-├── alertmanager.md            # Alertmanager guide
-├── alloy.md                   # Alloy guide
-├── grafana.md                 # Grafana guide
-├── loki.md                    # Loki guide
-├── prometheus.md              # Prometheus guide
-├── pushgateway.md             # Pushgateway guide
-├── pyroscope.md               # Pyroscope guide
-├── tempo.md                   # Tempo guide
-├── optimization-hardening.md  # Observability optimization/hardening guide
-└── README.md                  # This file
-```
-
-#### How to Work in This Area
-
-1. 새 가이드는 `docs/99.templates/operation.template.md`를 기반으로 작성한다.
-2. 절차 문서는 Prerequisites와 Step-by-step Instructions를 포함한다.
-3. 관련 Spec/Operation/Procedure 링크를 문서 하단에 유지한다.
-4. 가이드 추가/변경 시 README Structure와 SSoT 링크를 즉시 갱신한다.
-
-#### Documentation Standards
-
-- 가이드는 정책 문서가 아닌 재현 가능한 how-to/system guide여야 한다.
-- 상대 경로 링크만 사용한다.
-- 한국어 `Overview (KR)` 요약을 포함한다.
-
-#### SSoT References
-
-- **PRD**: [../../01.requirements/2026-03-28-06-observability-optimization-hardening.md](../../../01.requirements/2026-03-28-06-observability-optimization-hardening.md)
-- **ARD**: [../../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md](../../../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md)
-- **ADR**: [../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
-- **Spec**: [../../03.specs/06-observability/spec.md](../../../03.specs/06-observability/spec.md)
-- **Plan**: [../../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md](../../../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md)
-- **Tasks**: [../../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md](../../../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md)
-- **Operation**: [../../05.operations/06-observability/optimization-hardening.md](../../policies/06-observability/optimization-hardening.md)
-- **Procedure**: [../../05.operations/06-observability/optimization-hardening.md](../../policies/06-observability/optimization-hardening.md)
-
-#### AI Agent Guidance
-
-1. 가이드 변경 시 optimization-hardening 문서와 상호 링크를 유지한다.
-2. gateway/SSO 설명은 `05.operations` 정책과 충돌하지 않아야 한다.
-
----
-
-#### Related Documents
-
-- [docs/05.operations/README.md](../../README.md)
-- [docs/05.operations/README.md](../../README.md)
-- [docs/05.operations/README.md](../../README.md)
-
-## Procedure
-
-> Migrated from `docs/05.operations/06-observability/README.md` during the 2026-05-10 operations taxonomy consolidation.
-
-### Observability Procedures (05.operations/06-observability)
-
-> Executable procedures for observability incident response, recovery, and optimization baseline restoration.
-
-#### Overview
-
-이 디렉터리는 `06-observability` 계층의 즉시 실행 가능한 운영 절차를 제공한다. 서비스별 복구 절차와 optimization-hardening 회귀 복구 절차를 포함한다.
-
-#### Audience
-
-이 README의 주요 독자:
-
-- SRE / On-call Engineers
-- DevOps Engineers
-- Platform Operators
-- AI Agents
-
-#### Scope
-
-##### In Scope
-
-- Prometheus/Grafana/Loki/Tempo/Alloy/Pushgateway/Pyroscope/Alertmanager 복구 절차
-- 관측성 최적화/하드닝 기준선 회귀 복구 절차
-
-##### Out of Scope
-
-- 운영 통제 정의 (-> `05.operations/06-observability`)
-- 교육용/개념 중심 가이드 (-> `05.operations/06-observability`)
-
-#### Structure
-
-```text
-06-observability/
-├── alertmanager.md            # Alertmanager recovery
-├── alloy.md                   # Alloy recovery
-├── grafana.md                 # Grafana recovery
-├── loki.md                    # Loki recovery
-├── prometheus.md              # Prometheus recovery
-├── prometheus-recovery.md     # Prometheus advanced recovery
-├── pushgateway.md             # Pushgateway recovery
-├── pyroscope.md               # Pyroscope recovery
-├── tempo.md                   # Tempo recovery
-├── optimization-hardening.md  # Observability hardening baseline recovery
-└── README.md                  # This file
-```
-
-#### How to Work in This Area
-
-1. 런북은 즉시 실행 가능한 절차와 검증 단계를 우선으로 작성한다.
-2. `docs/99.templates/operation.template.md` 형식을 준용한다.
-3. 고위험 조치 전 승인 조건과 증적 수집 방법을 명시한다.
-4. 문서 추가/변경 시 README 구조와 SSoT 링크를 함께 갱신한다.
-
-#### Usage Instructions
-
-장애 유형에 맞는 런북을 선택하고, Checklist -> Procedure -> Verification 순서로 수행한다.
-
-#### Verification and Monitoring
-
-- 런북 수행 후 `Verification Steps`를 완료한다.
-- 필요 시 다음 검증을 병행한다.
-  - `bash scripts/hardening/check-all-hardening.sh 06-observability`
-  - `bash scripts/validation/check-doc-traceability.sh`
-
-#### Incident and Recovery Links
-
-- **Operations Policy**: [../../05.operations/06-observability/README.md](./README.md)
-- **Usages**: [../../05.operations/06-observability/README.md](./README.md)
-
-#### SSoT References
-
-- **PRD**: [../../01.requirements/2026-03-28-06-observability-optimization-hardening.md](../../../01.requirements/2026-03-28-06-observability-optimization-hardening.md)
-- **ARD**: [../../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md](../../../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md)
-- **ADR**: [../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
-- **Spec**: [../../03.specs/06-observability/spec.md](../../../03.specs/06-observability/spec.md)
-- **Plan**: [../../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md](../../../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md)
-- **Tasks**: [../../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md](../../../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md)
-- **Operation**: [../../05.operations/06-observability/optimization-hardening.md](../../policies/06-observability/optimization-hardening.md)
-
-#### AI Agent Guidance
-
-1. 고위험 조치(접근제어 완화, 강제 purge, 라우팅 우회) 전 사람 승인 필요.
-2. 수행 전후 증적(health, logs, config diff)을 남기고 incident 문서와 연결한다.
-
----
-
-#### Related Documents
-
-- [docs/05.operations/README.md](../../README.md)
-- [docs/05.operations/README.md](../../README.md)
-- [docs/05.operations/incidents/README.md](../../incidents/README.md)
+- [Operations index](../../README.md)
+- [Operations Guides index](../README.md)
+- [Operations Policies - 06-observability](../../policies/06-observability/README.md)
+- [Operations Runbooks - 06-observability](../../runbooks/06-observability/README.md)
+- [Incident records](../../incidents/README.md)
+- [Operations template](../../../99.templates/operation.template.md)

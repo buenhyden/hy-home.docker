@@ -240,8 +240,5 @@
 
 ## Related Documents
 
-- **PRD**: [AI Open WebUI PRD](../../01.requirements/2026-03-27-08-ai-open-webui.md)
-- **ARD**: [Architecture References](../../02.architecture/requirements/README.md)
-- **Operations Index**: [05.operations README](../README.md)
-- **Procedure Index**: [05.operations README](../README.md)
-- **Infra Source of Truth**: [infra README](../../../infra/README.md)
+- [Operations index](../README.md)
+- [Operations template](../../99.templates/operation.template.md)

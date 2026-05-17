@@ -4,39 +4,85 @@
 
 ## Overview
 
-`docs/05.operations/policies`는 서비스 운영 중 지켜야 하는 정책과 통제 기준을 정의합니다. 실행 절차가 아니라 판단 기준과 승인 경계를 기록합니다.
+`policies`는 `docs/05.operations`의 policy 문서를 관리합니다. 필수/허용/금지 상태, 예외 승인, 검증 기준, 검토 주기를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+
+## Audience
+
+이 README의 주요 독자:
+
+- Operators
+- SREs
+- Developers
+- AI Agents
 
 ## Scope
 
 ### In Scope
 
-- 운영 통제 기준
-- 보안, 가용성, 자원 사용 정책
-- 승인된 예외와 검토 주기
+- 운영 controls, allowed/disallowed 상태, exception, review cadence
+- 이 bucket에 속한 policy 문서 인덱스
+- 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
 
 ### Out of Scope
 
-- 서비스 사용법 (`../guides/` 담당)
-- 복구 절차 (`../runbooks/` 담당)
-- 사고 기록 (`../incidents/` 담당)
+- 사용 온보딩과 명령 순서 중심 복구 절차
+- 다른 bucket 또는 다른 stage가 담당하는 운영 지식
+- secret 값, credential, token, 인증서 원문
 
 ## Structure
 
 ```text
 policies/
-├── harness-agent-first-engineering.md
+├── 01-gateway/
+├── 02-auth/
+├── 03-security/
 ├── 04-data/
+├── 05-messaging/
 ├── 06-observability/
-├── ...
+├── 07-workflow/
+├── 08-ai/
+├── 09-tooling/
+├── 10-communication/
+├── 11-laboratory/
+├── 12-infra-service-optimization-catalog.md
+├── 13-common-optimizations-template-exceptions.md
+├── harness-agent-first-engineering.md
+├── llm-wiki-maintenance.md
+├── standardize-infra-net.md
 └── README.md
 ```
 
-## Current Governance Policies
+## How to Work in This Area
 
-- [Harness / Agent-first Engineering Operations Policy](./harness-agent-first-engineering.md)
+1. 새 문서를 만들기 전에 `docs/99.templates/operation.template.md`의 목적별 profile과 target-relative link 규칙을 확인합니다.
+2. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
+3. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
+
+## Contents
+
+| Path | Purpose |
+| --- | --- |
+| [01-gateway/](./01-gateway/README.md) | 01 Gateway policy 문서 |
+| [02-auth/](./02-auth/README.md) | 02 Auth policy 문서 |
+| [03-security/](./03-security/README.md) | 03 Security policy 문서 |
+| [04-data/](./04-data/README.md) | 04 Data policy 문서 |
+| [05-messaging/](./05-messaging/README.md) | 05 Messaging policy 문서 |
+| [06-observability/](./06-observability/README.md) | 06 Observability policy 문서 |
+| [07-workflow/](./07-workflow/README.md) | 07 Workflow policy 문서 |
+| [08-ai/](./08-ai/README.md) | 08 Ai policy 문서 |
+| [09-tooling/](./09-tooling/README.md) | 09 Tooling policy 문서 |
+| [10-communication/](./10-communication/README.md) | 10 Communication policy 문서 |
+| [11-laboratory/](./11-laboratory/README.md) | 11 Laboratory policy 문서 |
+| [12-infra-service-optimization-catalog.md](./12-infra-service-optimization-catalog.md) | 12 Infra Service Optimization Catalog policy 문서 |
+| [13-common-optimizations-template-exceptions.md](./13-common-optimizations-template-exceptions.md) | 13 Common Optimizations Template Exceptions policy 문서 |
+| [harness-agent-first-engineering.md](./harness-agent-first-engineering.md) | Harness Agent First Engineering policy 문서 |
+| [llm-wiki-maintenance.md](./llm-wiki-maintenance.md) | Llm Wiki Maintenance policy 문서 |
+| [standardize-infra-net.md](./standardize-infra-net.md) | Standardize Infra Net policy 문서 |
 
 ## Related Documents
 
-- [../README.md](../README.md)
-- [../guides/README.md](../guides/README.md)
-- [../runbooks/README.md](../runbooks/README.md)
+- [Operations index](../README.md)
+- [Operations Guides](../guides/README.md)
+- [Operations Runbooks](../runbooks/README.md)
+- [Incident records](../incidents/README.md)
+- [Operations template](../../99.templates/operation.template.md)

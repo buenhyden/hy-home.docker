@@ -1,11 +1,9 @@
 ---
-status: migrated
+status: active
 ---
 <!-- Target: docs/05.operations/guides/07-workflow/airflow-dag-basics.md -->
 
 # Airflow Dag Basics Operations
-
-> Migrated from `docs/05.operations/07-workflow/airflow-dag-basics.md` during the 2026-05-10 operations taxonomy consolidation.
 
 ## Usage
 
@@ -76,3 +74,8 @@ Place your `.py` files in `${DEFAULT_WORKFLOW_DIR}/airflow/dags`. The `airflow-s
 
 - **Operation**: [DAG Deployment Policy](./01.dag-deployment.md)
 - **Procedure**: [Airflow Worker Recovery](../../runbooks/07-workflow/airflow-worker-recovery.md)
+
+## Related Documents
+
+- [Operations index](../../README.md)
+- [Operations template](../../../99.templates/operation.template.md)

@@ -40,17 +40,14 @@
 
 - **Monthly**: IP 맵핑 테이블(Sheet/Doc)과 현재 Compose 파일 사이의 실태 점검 및 업데이트.
 
-## Related Documents
-
-- **ARD**: `[../02.architecture/requirements/2026-04-01-standardize-infra-net.md]`
-- **Procedure**: `[../05.operations/0012-standardize-infra-net.md]`
-- **Plan**: `[../04.execution/plans/2026-04-01-standardize-infra-net.md]`
-
----
-
 ## AI Agent Policy Section (If Applicable)
 
 - **Model / Prompt Change Process**: agent runtime 변경은 이 문서에서 직접 수행하지 않고 governance 문서로 분리한다.
 - **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
 - **Log / Trace Retention**: 검증 evidence는 task 문서나 대화 요약에 남긴다.
 - **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
+
+## Related Documents
+
+- [Operations index](../README.md)
+- [Operations template](../../99.templates/operation.template.md)
