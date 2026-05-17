@@ -8,8 +8,8 @@
 
 ## Inputs
 
-- **Parent Spec**: `[../03.specs/01-gateway/spec.md]`
-- **Parent Plan**: `[../04.execution/plans/2026-03-26-01-gateway-standardization.md]`
+- **Parent Spec**: `[../../03.specs/01-gateway/spec.md]`
+- **Parent Plan**: `[../plans/2026-03-26-01-gateway-standardization.md]`
 
 ## Working Rules
 

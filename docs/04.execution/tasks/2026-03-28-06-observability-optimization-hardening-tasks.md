@@ -6,8 +6,8 @@
 
 ## Inputs
 
-- **Parent Spec**: [../03.specs/06-observability/spec.md](../../03.specs/06-observability/spec.md)
-- **Parent Plan**: [../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md](../plans/2026-03-28-06-observability-optimization-hardening-plan.md)
+- **Parent Spec**: [../../03.specs/06-observability/spec.md](../../03.specs/06-observability/spec.md)
+- **Parent Plan**: [../plans/2026-03-28-06-observability-optimization-hardening-plan.md](../plans/2026-03-28-06-observability-optimization-hardening-plan.md)
 
 ## Working Rules
 
@@ -72,7 +72,7 @@
 - **PRD**: [../01.requirements/2026-03-28-06-observability-optimization-hardening.md](../../01.requirements/2026-03-28-06-observability-optimization-hardening.md)
 - **ARD**: [../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md](../../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
-- **Plan**: [../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md](../plans/2026-03-28-06-observability-optimization-hardening-plan.md)
+- **Plan**: [../plans/2026-03-28-06-observability-optimization-hardening-plan.md](../plans/2026-03-28-06-observability-optimization-hardening-plan.md)
 - **Guide**: [../05.operations/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
 - **Operation**: [../05.operations/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
 - **Runbook**: [../05.operations/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)

@@ -10,8 +10,8 @@
 
 ## Inputs
 
-- **Parent Spec**: `[../03.specs/08-ai/open-webui.md]`
-- **Parent Plan**: `[../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md]`
+- **Parent Spec**: `[../../03.specs/08-ai/open-webui.md]`
+- **Parent Plan**: `[../plans/2026-03-27-08-ai-open-webui-plan.md]`
 
 ## Working Rules
 

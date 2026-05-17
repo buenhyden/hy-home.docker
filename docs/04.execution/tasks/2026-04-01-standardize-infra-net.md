@@ -6,8 +6,8 @@
 
 ## Inputs
 
-- **Parent Spec**: `[../03.specs/standardize-infra-net/spec.md]`
-- **Parent Plan**: `[../04.execution/plans/2026-04-01-standardize-infra-net.md]`
+- **Parent Spec**: `[../../03.specs/standardize-infra-net/spec.md]`
+- **Parent Plan**: `[../plans/2026-04-01-standardize-infra-net.md]`
 - **Parent PRD**: `[../01.requirements/2026-04-01-standardize-infra-net.md]`
 
 ## Working Rules
@@ -55,8 +55,8 @@
 
 ## Related Documents
 
-- **Spec**: `[../03.specs/standardize-infra-net/spec.md]`
-- **Plan**: `[../04.execution/plans/2026-04-01-standardize-infra-net.md]`
+- **Spec**: `[../../03.specs/standardize-infra-net/spec.md]`
+- **Plan**: `[../plans/2026-04-01-standardize-infra-net.md]`
 - **Guide**: `[../05.operations/0012-standardize-infra-net.md]`
 - **Runbook**: `[../05.operations/0012-standardize-infra-net.md]`
 - **ARD**: `[../02.architecture/requirements/2026-04-01-standardize-infra-net.md]`

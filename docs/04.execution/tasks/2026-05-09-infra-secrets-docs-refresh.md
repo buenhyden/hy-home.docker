@@ -10,8 +10,8 @@ status: completed
 
 ## Inputs
 
-- **Parent Spec**: [../03.specs/infra-secrets-docs-refresh/spec.md](../../03.specs/infra-secrets-docs-refresh/spec.md)
-- **Parent Plan**: [../04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md](../plans/2026-05-09-infra-secrets-docs-refresh.md)
+- **Parent Spec**: [../../03.specs/infra-secrets-docs-refresh/spec.md](../../03.specs/infra-secrets-docs-refresh/spec.md)
+- **Parent Plan**: [../plans/2026-05-09-infra-secrets-docs-refresh.md](../plans/2026-05-09-infra-secrets-docs-refresh.md)
 
 ## Working Rules
 

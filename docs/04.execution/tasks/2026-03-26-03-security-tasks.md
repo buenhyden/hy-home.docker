@@ -6,8 +6,8 @@
 
 ## Inputs
 
-- **Parent Spec**: `[../03.specs/03-security/spec.md]`
-- **Parent Plan**: `[../04.execution/plans/2026-03-26-03-security-standardization.md]`
+- **Parent Spec**: `[../../03.specs/03-security/spec.md]`
+- **Parent Plan**: `[../plans/2026-03-26-03-security-standardization.md]`
 
 ## Working Rules
 

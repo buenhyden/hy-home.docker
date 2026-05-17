@@ -6,8 +6,8 @@
 
 ## Inputs
 
-- **Parent Spec**: `[../03.specs/05-messaging/spec.md]`
-- **Parent Plan**: `[../04.execution/plans/2026-03-26-05-messaging-standardization.md]`
+- **Parent Spec**: `[../../03.specs/05-messaging/spec.md]`
+- **Parent Plan**: `[../plans/2026-03-26-05-messaging-standardization.md]`
 
 ## Working Rules
 

@@ -28,15 +28,15 @@ status: completed
 
 ## Current Baseline
 
-| Area | Baseline |
-| --- | --- |
-| Infra inventory | 47 Compose files, 40 Compose service directories, 0 missing service README files |
-| Root include state | 14 active include files; commented optional and standalone files are not treated as active runtime |
-| Secret inventory | 69 root Compose declarations, 76 value/cert filenames, 0 missing declared files |
-| Secret classification | `compose-declared`, `bind-mounted-cert`, `registry/local-only`, `private-registry`, `example-registry` |
-| README audit | 127 README files, heading gaps 0 |
-| Stage audit | 208 non-README docs under `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, `docs/90.references`, heading gaps 0 |
-| Semantic QA | Duplicate legacy/template blocks, non-link references, secret-value wording, and shell-history-sensitive examples are reviewed separately from heading audit |
+| Area                  | Baseline                                                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Infra inventory       | 47 Compose files, 40 Compose service directories, 0 missing service README files                                                                             |
+| Root include state    | 14 active include files; commented optional and standalone files are not treated as active runtime                                                           |
+| Secret inventory      | 69 root Compose declarations, 76 value/cert filenames, 0 missing declared files                                                                              |
+| Secret classification | `compose-declared`, `bind-mounted-cert`, `registry/local-only`, `private-registry`, `example-registry`                                                       |
+| README audit          | 127 README files, heading gaps 0                                                                                                                             |
+| Stage audit           | 208 non-README docs under `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, `docs/90.references`, heading gaps 0    |
+| Semantic QA           | Duplicate legacy/template blocks, non-link references, secret-value wording, and shell-history-sensitive examples are reviewed separately from heading audit |
 
 ## Core Design
 
@@ -60,7 +60,7 @@ README base headings:
 - Scope
 - Structure
 - How to Work in This Area
-- Related References or Related Documents
+- Related Documents
 
 Stage document template families:
 - docs/05.operations/guides -> operation.template.md
