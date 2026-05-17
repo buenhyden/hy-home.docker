@@ -1,90 +1,145 @@
 ---
 status: draft
 ---
-<!-- Target: docs/05.operations/{guides,policies,runbooks}/<topic>.md -->
-<!-- Target variant: docs/05.operations/{guides,policies,runbooks}/<domain>/<topic>.md -->
+<!--
+# Operation Template
 
-# [Topic Name] Operations
+Use this template for one `docs/05.operations` leaf document.
 
-> Use this template for `docs/05.operations/guides/<topic>.md`, `docs/05.operations/policies/<topic>.md`, or `docs/05.operations/runbooks/<topic>.md`.
->
-> Rules:
->
-> - Pick one operational purpose per document: guide, policy, or runbook.
-> - Use `guides/` for usage, `policies/` for controls, and `runbooks/` for repeatable procedures.
-> - This document is not an incident timeline or a postmortem.
-> - Relative links must be calculated from the copied target path, not from `docs/99.templates/`.
-> - For `docs/05.operations/<bucket>/<topic>.md`, use `../../` to reach `docs/`.
-> - For `docs/05.operations/<bucket>/<domain>/<topic>.md`, use `../../../` to reach `docs/`.
+## Target Paths
+
+- Direct target: `docs/05.operations/<bucket>/<topic>.md`
+- Domain target: `docs/05.operations/<bucket>/<domain>/<topic>.md`
+- Nested target: `docs/05.operations/<bucket>/<domain>/<subdomain>/<topic>.md`
+
+## Purpose Selection
+
+Pick exactly one profile and delete the other profile sections before committing.
+
+- Guide: use `guides/` for usage context, prerequisites, onboarding, common checks, and handoff links.
+- Policy: use `policies/` for controls, allowed/disallowed states, exceptions, verification, and review cadence.
+- Runbook: use `runbooks/` for ordered procedures, evidence capture, rollback/recovery, and escalation.
+
+Do not use this template for incident timelines or postmortems. Use `incident.template.md` or
+`postmortem.template.md` under `docs/05.operations/incidents/`.
+
+## Target-relative Link Rules
+
+Calculate links from the copied target path, not from `docs/99.templates/`.
+
+Direct target, for example `docs/05.operations/guides/<topic>.md`:
+
+- Docs root: `../../`
+- Sibling policy: `../policies/<topic>.md`
+- Sibling runbook: `../runbooks/<topic>.md`
+- Incident record: `../incidents/YYYY/YYYY-MM-DD-<incident-title>.md`
+
+Domain target, for example `docs/05.operations/guides/<domain>/<topic>.md`:
+
+- Docs root: `../../../`
+- Sibling policy: `../../policies/<domain>/<topic>.md`
+- Sibling runbook: `../../runbooks/<domain>/<topic>.md`
+- Incident record: `../../incidents/YYYY/YYYY-MM-DD-<incident-title>.md`
+
+Nested target, for example `docs/05.operations/guides/<domain>/<subdomain>/<topic>.md`:
+
+- Docs root: `../../../../`
+- Sibling policy: `../../../policies/<domain>/<subdomain>/<topic>.md`
+- Sibling runbook: `../../../runbooks/<domain>/<subdomain>/<topic>.md`
+- Incident record: `../../../incidents/YYYY/YYYY-MM-DD-<incident-title>.md`
+-->
+
+# {Topic Name} {Guide | Policy | Runbook}
+
+> {One-line operational purpose.}
+
+## Overview
+
+{Explain what this document covers and when someone should use it.}
 
 ---
 
-## Overview (KR)
+## Guide Profile
 
-이 문서는 [주제명] 운영 지식을 정의한다. 대상 하위 폴더에 맞춰 사용 맥락, 통제 기준, 실행 절차 중 필요한 내용을 규정한다.
+Keep this profile only for `docs/05.operations/guides/**`.
 
-## Policy Scope
+### Usage
 
-[What this policy governs.]
+{Describe the normal usage context, prerequisites, and expected operating state.}
 
-## Applies To
+### Common Checks
 
-- **Systems**:
-- **Agents**:
-- **Environments**:
+- {Check or command}
+- {Expected result}
 
-## Usage
+### Runbook Handoff
 
-- [When to use this system or procedure]
-- [Required context before operation]
+For repeatable procedures, recovery, rollback, or escalation, link to the matching runbook.
 
-## Controls
+---
 
-- **Required**:
-- **Allowed**:
-- **Disallowed**:
+## Policy Profile
 
-## Procedure
+Keep this profile only for `docs/05.operations/policies/**`.
 
-1. [Step]
-2. [Expected result]
-3. [Failure handling]
+### Policy Scope
 
-## Exceptions
+{List systems, configs, agents, environments, or workflows governed by this policy.}
 
-- [Exception rule and approval path]
+### Controls
 
-## Verification
+- **Required**: {Required state}
+- **Allowed**: {Allowed variation}
+- **Disallowed**: {Forbidden state}
 
-- [How compliance is checked]
+### Exceptions
 
-## Review Cadence
+{State who may approve exceptions and what evidence must be recorded.}
 
-- [Monthly / Quarterly / Per release]
+### Verification
 
-## AI Agent Policy Section (If Applicable)
+{State the checks that prove compliance.}
 
-- **Model / Prompt Change Process**:
-- **Eval / Guardrail Threshold**:
-- **Log / Trace Retention**:
-- **Safety Incident Thresholds**:
+### Review Cadence
+
+{Monthly, quarterly, per release, or on material change.}
+
+---
+
+## Runbook Profile
+
+Keep this profile only for `docs/05.operations/runbooks/**`.
+
+### When to Use
+
+{Trigger conditions, symptoms, or scheduled operation criteria.}
+
+### Procedure
+
+1. {Step}
+2. {Expected result}
+3. {Failure handling}
+
+### Evidence
+
+- {Log, command output, dashboard, ticket, or trace to capture}
+
+### Rollback or Recovery
+
+{Safe rollback, fallback, or restoration steps.}
+
+### Escalation
+
+{Escalation owner, threshold, and required context.}
+
+---
 
 ## Related Documents
 
-Choose the link depth that matches the copied target path, then remove the unused examples.
+Use only links that apply to the copied target path.
 
-### Direct target: `docs/05.operations/<bucket>/<topic>.md`
-
-- **ARD**: `[../../02.architecture/requirements/####-<system-or-domain>.md]`
-- **Guide**: `[../guides/<topic>.md]`
-- **Policy**: `[../policies/<topic>.md]`
-- **Runbook**: `[../runbooks/<topic>.md]`
-- **Postmortem**: `[../incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md]`
-
-### Domain target: `docs/05.operations/<bucket>/<domain>/<topic>.md`
-
-- **ARD**: `[../../../02.architecture/requirements/####-<system-or-domain>.md]`
-- **Guide**: `[../../guides/<domain>/<topic>.md]`
-- **Policy**: `[../../policies/<domain>/<topic>.md]`
-- **Runbook**: `[../../runbooks/<domain>/<topic>.md]`
-- **Postmortem**: `[../../incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md]`
+- [Operations index]({target-relative-link})
+- [Usage guide]({target-relative-link})
+- [Operations policy]({target-relative-link})
+- [Recovery runbook]({target-relative-link})
+- [Incident record]({target-relative-link})
