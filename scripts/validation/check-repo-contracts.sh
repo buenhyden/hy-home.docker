@@ -1228,6 +1228,10 @@ required_readme_fragments = [
     "scripts/operations/",
     "scripts/lib/",
     "canonical purpose-folder paths",
+    "## Active Surface Retention Rules",
+    "Historical references under completed requirements",
+    "`--check` for readiness checks",
+    "`--dry-run` for ID/path-only action previews",
 ]
 for fragment in required_readme_fragments:
     if fragment not in readme_text:

@@ -76,6 +76,23 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 5. Use `scripts/validation/check-repo-contracts.sh` to verify script inventory, references, and library usage.
 6. Keep secret-related examples procedural only; do not print or document generated secret values.
 
+## Active Surface Retention Rules
+
+Keep a root `scripts/` implementation when any active surface uses it:
+
+- GitHub Actions, pre-commit, Claude/Codex hooks, root README files, active
+  specs, active operations docs, or `infra/**/README.md` reference the script.
+- Another implementation script sources it as a library.
+- The script is the single canonical entrypoint for a manual operation, such as
+  local preflight checks or local secret file generation.
+
+Remove or reject a script when it is only a duplicate wrapper, a one-off operation
+captured by active documentation, or a deleted entrypoint reintroduced without an
+approved compatibility plan. Historical references under completed requirements,
+architecture decisions, execution evidence, governance memory, or generated
+reference artifacts are audit evidence and do not by themselves justify keeping a
+script.
+
 ## Navigation / Inventory
 
 | Component | Path | Purpose |
@@ -91,7 +108,7 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 | Post Tool Validation | [post-tool-validate.sh](./hooks/post-tool-validate.sh) | Run path-aware validation after Claude/Codex file edits |
 | Unified Hardening Check | [check-all-hardening.sh](./hardening/check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
 | Docker Preflight Mode | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) `--preflight` | Real local prerequisite validation without dummy file creation |
-| Secret Generation | [gen-secrets.sh](./operations/gen-secrets.sh) | Generate local Docker secret files; use safe modes before default generation |
+| Secret Generation | [gen-secrets.sh](./operations/gen-secrets.sh) | Generate local Docker secret files; use `--check` or `--dry-run` before default generation |
 
 ## Hardening Tier Arguments
 
@@ -122,6 +139,11 @@ tier. Without arguments, all supported tiers are checked.
 | Manual operations | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/operations/gen-secrets.sh` |
 | Generated index maintenance | `scripts/knowledge/generate-llm-wiki-index.sh` |
 | Internal library | `scripts/lib/hardening-lib.sh` |
+
+`scripts/operations/gen-secrets.sh` is a manual operation entrypoint. Its
+no-argument mode may read or write local secret registry and secret files; use
+`--check` for readiness checks and `--dry-run` for ID/path-only action previews
+before running the default mode.
 
 ---
 
