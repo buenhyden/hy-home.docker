@@ -1,13 +1,16 @@
 ---
 status: active
 ---
+<!-- Target: docs/04.execution/plans/2026-05-17-scripts-ci-qa-cleanup.md -->
 
 # Scripts CI/CD & QA Cleanup Plan
 
-## Overview
+## Overview (KR)
 
 This plan implements the approved root `scripts/` cleanup for CI/CD, QA, hook,
 knowledge, and manual-operation entrypoints.
+
+## Context
 
 This plan supersedes the deletion non-goals in
 `2026-05-09-scripts-lifecycle-contract-cleanup.md` for the root `scripts/`
@@ -15,13 +18,19 @@ surface only. Historical `docs/01`, `docs/02`, completed `docs/04`, and
 governance memory references remain audit evidence unless they are active
 instructions.
 
-## Goals & In Scope
+## Goals & In-Scope
 
 - Delete redundant root script entrypoints and keep one canonical command per behavior.
 - Preserve CI-safe Compose structural validation.
 - Preserve real local preflight checks as `validate-docker-compose.sh --preflight`.
 - Replace active docs references to removed scripts.
 - Keep service-local `infra/**/scripts/` out of scope.
+
+## Non-Goals & Out-of-Scope
+
+- Do not change service-local `infra/**/scripts/`.
+- Do not rewrite historical `docs/01`, `docs/02`, completed `docs/04`, or governance memory evidence only because it references deleted scripts.
+- Do not change Docker Compose service behavior beyond the approved script cleanup.
 
 ## Work Breakdown
 
@@ -55,6 +64,13 @@ instructions.
 | Preflight behavior regresses | High | Keep `--preflight` non-mutating and validate it separately from normal mode |
 | Secret values leak through replacement procedures | High | Keep TLS and Vault procedures procedural; never instruct users to paste generated secrets into docs, PRs, summaries, or logs |
 | Hook routing becomes unclear | Medium | Remove inline Graphify shell and rely on `.claude/hooks/docker-compose-pre.sh` -> `scripts/hooks/agent-event-hook.sh` |
+
+## Completion Criteria
+
+- [ ] Redundant root script entrypoints removed or consolidated into canonical commands.
+- [ ] Active docs and runtime hook surfaces reference canonical commands.
+- [ ] Validation commands in this plan pass or explicitly record local prerequisite limits.
+- [ ] Generated navigation is refreshed or verified fresh.
 
 ## Related Documents
 

@@ -1,6 +1,7 @@
 ---
 status: completed
 ---
+<!-- Target: docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md -->
 
 # Scripts Lifecycle Contract Cleanup Plan
 

@@ -1,6 +1,7 @@
 ---
 status: completed
 ---
+<!-- Target: docs/04.execution/tasks/2026-05-09-harness-agent-first-engineering.md -->
 
 # Task: Harness / Agent-first Engineering Documentation
 

@@ -23,8 +23,8 @@ status: draft
 
 ## Inputs
 
-- **Parent Spec**: `[../../03.specs/<feature-id>/spec.md]`
-- **Parent Plan**: `[../plans/YYYY-MM-DD-<feature>.md]`
+- **Parent Spec**: [<feature-id> spec](../../03.specs/<feature-id>/spec.md)
+- **Parent Plan**: [YYYY-MM-DD-<feature> plan](../plans/YYYY-MM-DD-<feature>.md)
 
 ## Working Rules
 
@@ -74,6 +74,6 @@ status: draft
 
 ## Related Documents
 
-- **Parent Spec**: `[../../03.specs/<feature-id>/spec.md]`
-- **Parent Plan**: `[../plans/YYYY-MM-DD-<feature>.md]`
-- **Operations / References**: `[../../05.operations/guides/<topic>.md]`
+- **Parent Spec**: [<feature-id> spec](../../03.specs/<feature-id>/spec.md)
+- **Parent Plan**: [YYYY-MM-DD-<feature> plan](../plans/YYYY-MM-DD-<feature>.md)
+- **Operations / References**: [<topic> operations guide](../../05.operations/guides/<topic>.md)

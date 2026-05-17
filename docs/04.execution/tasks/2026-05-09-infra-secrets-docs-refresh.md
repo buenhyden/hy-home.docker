@@ -1,6 +1,7 @@
 ---
 status: completed
 ---
+<!-- Target: docs/04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md -->
 
 # Task: Infra / Secrets / Docs Refresh
 

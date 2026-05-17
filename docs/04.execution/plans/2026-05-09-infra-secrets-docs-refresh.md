@@ -1,6 +1,7 @@
 ---
 status: completed
 ---
+<!-- Target: docs/04.execution/plans/2026-05-09-infra-secrets-docs-refresh.md -->
 
 # Infra / Secrets / Docs Refresh Plan
 

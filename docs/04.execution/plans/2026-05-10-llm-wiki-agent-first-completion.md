@@ -1,6 +1,7 @@
 ---
 status: completed
 ---
+<!-- Target: docs/04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md -->
 
 # LLM Wiki Agent-first Completion Plan
 
