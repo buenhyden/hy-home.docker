@@ -43,8 +43,13 @@ Use this category for stable interpretation rules and inventory context. Use `do
 
 ```text
 docs/90.references/docker/
-└── README.md  # This file
+├── README.md                       # This file
+└── image-version-interpretation.md # Docker image/version source interpretation rules
 ```
+
+## Current References
+
+- [image-version-interpretation.md](./image-version-interpretation.md) - Docker image/version source interpretation rules
 
 ## Reference Rules
 
@@ -56,9 +61,10 @@ docs/90.references/docker/
 ## How to Work in This Area
 
 1. Use this folder for stable Docker reference rules only.
-2. Update `infra/tech-stack.versions.json` when a major operational image is added to the validated registry.
-3. Update `infra/image-tag-policy.exceptions.json` when a floating image tag is intentionally approved.
-4. Run `bash scripts/validation/check-repo-contracts.sh` after changing Docker reference docs or registry files.
+2. Keep current image values in Compose and registry files, not in reference prose.
+3. Update `infra/tech-stack.versions.json` when a major operational image is added to the validated registry.
+4. Update `infra/image-tag-policy.exceptions.json` when a floating image tag is intentionally approved.
+5. Run `bash scripts/validation/check-repo-contracts.sh` after changing Docker reference docs or registry files.
 
 ## Examples
 
@@ -68,6 +74,7 @@ docs/90.references/docker/
 ## Related Documents
 
 - [references index](../README.md)
+- [image/version interpretation](./image-version-interpretation.md)
 - [image tag exceptions](../../../infra/image-tag-policy.exceptions.json)
 - [tech stack versions](../../../infra/tech-stack.versions.json)
 - [repo contract checker](../../../scripts/validation/check-repo-contracts.sh)

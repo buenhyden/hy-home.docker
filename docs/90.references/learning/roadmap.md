@@ -35,6 +35,14 @@ status: active
 
 - 이 문서는 active policy나 runbook을 대체하지 않는다.
 - repo-local 연결은 학습을 돕기 위한 예시이며, runtime truth는 `infra/`와 관련 validators가 담당한다.
+- 외부 링크는 학습 출처를 가리키며, 현재 의사결정에 사용하기 전에는 다시 확인해야 한다.
+
+## Source Rules
+
+- repo-local 예시는 학습 연결을 위한 pointer로 사용하고, 최신 runtime 판단은 `infra/`, registry 파일, validators에서 확인한다.
+- 외부 논문, 표준, 책 링크는 이론적 배경을 뒷받침하는 source로 사용한다.
+- 최신 release 상태, 가격, 지원 정책처럼 변하기 쉬운 외부 사실은 이 문서에서 current fact로 주장하지 않는다.
+- 이 roadmap을 작업 지시, 운영 runbook, implementation plan으로 사용하지 않는다.
 
 ## Reference Body
 
@@ -159,4 +167,5 @@ status: active
 
 - [Learning reference index](./README.md)
 - [90.references](../README.md)
+- [stable reference terms](../glossary/stable-reference-terms.md)
 - [docs index](../../README.md)

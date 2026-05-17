@@ -624,6 +624,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | --- | --- |
 | [docs/90.references/README.md](../README.md) | folder index |
 | [docs/90.references/docker/README.md](../docker/README.md) | folder index |
+| [docs/90.references/docker/image-version-interpretation.md](../docker/image-version-interpretation.md) | Markdown reference |
+| [docs/90.references/glossary/README.md](../glossary/README.md) | folder index |
+| [docs/90.references/glossary/stable-reference-terms.md](../glossary/stable-reference-terms.md) | Markdown reference |
 | [docs/90.references/learning/README.md](../learning/README.md) | folder index |
 | [docs/90.references/learning/roadmap-v1.md](../learning/roadmap-v1.md) | Markdown reference |
 | [docs/90.references/learning/roadmap.md](../learning/roadmap.md) | Markdown reference |

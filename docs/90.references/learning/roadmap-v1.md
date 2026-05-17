@@ -35,6 +35,14 @@ status: archived
 
 - 이 문서는 archived reference이며 active policy나 runbook을 대체하지 않는다.
 - 최신 학습 로드맵은 `roadmap.md`다.
+- 외부 링크는 archive 시점의 학습 출처이며, 현재 의사결정에 사용하기 전에는 다시 확인해야 한다.
+
+## Source Rules
+
+- 이 문서는 archive history로만 사용하고 현재 학습 기준은 `roadmap.md`에서 확인한다.
+- repo-local 예시는 초기 mapping context이며, 최신 runtime 판단은 `infra/`, registry 파일, validators에서 확인한다.
+- 외부 논문과 표준 링크는 이론적 배경을 보존하기 위한 source다.
+- 최신 release 상태, 가격, 지원 정책처럼 변하기 쉬운 외부 사실은 이 archived 문서에서 current fact로 주장하지 않는다.
 
 ## Reference Body
 
@@ -154,4 +162,5 @@ Verified learning through coding.
 - [Learning reference index](./README.md)
 - [Current learning roadmap](./roadmap.md)
 - [90.references](../README.md)
+- [stable reference terms](../glossary/stable-reference-terms.md)
 - [docs index](../../README.md)
