@@ -58,8 +58,25 @@ All scripts assume a bash-compatible shell. If you are on Windows, use WSL2.
 2. Ensure Docker and Docker Compose (v2.x) are installed.
 3. Copy `.env.example` to `.env` and fill only local values required by the
    selected profiles.
-4. For local TLS development, install `mkcert` and run
-   `bash scripts/operations/generate-local-certs.sh`.
+4. For local TLS development, install `mkcert` and generate local files
+   without printing key material:
+
+   ```bash
+   set -euo pipefail
+   [ -f .env ] || { echo ".env is required"; exit 1; }
+   set -a
+   . ./.env
+   set +a
+   domain="${DEFAULT_URL:-127.0.0.1.nip.io}"
+   cert_dir="secrets/certs"
+   mkdir -p "$cert_dir"
+   mkcert -install
+   mkcert -cert-file "$cert_dir/cert.pem" -key-file "$cert_dir/key.pem" "$domain" "*.$domain"
+   cp "$(mkcert -CAROOT)/rootCA.pem" "$cert_dir/rootCA.pem"
+   chmod 600 "$cert_dir/key.pem"
+   chmod 644 "$cert_dir/cert.pem" "$cert_dir/rootCA.pem"
+   ```
+
 5. Run `bash scripts/validation/validate-docker-compose.sh` to verify your local setup.
 
 #### 5. Maintenance & Safety

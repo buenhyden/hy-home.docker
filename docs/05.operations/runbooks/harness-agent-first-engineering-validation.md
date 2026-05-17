@@ -68,7 +68,7 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
    ```bash
    python3 -m json.tool .codex/hooks.json >/dev/null
    python3 -m json.tool .claude/settings.json >/dev/null
-   bash -n .claude/hooks/*.sh scripts/*.sh scripts/lib/*.sh
+   bash -n .claude/hooks/*.sh scripts/**/*.sh
    bash scripts/validation/check-repo-contracts.sh
    bash scripts/validation/check-doc-traceability.sh
    ```

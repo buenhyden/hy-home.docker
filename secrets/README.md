@@ -56,7 +56,7 @@ secrets/
 1. secret 값 파일을 열지 말고, 먼저 이 README와 `SENSITIVE_ENV_VARS.md.example`를 확인합니다.
 2. 새 secret 경로가 필요하면 대응 서비스의 `infra/` Compose 정의와 registry mapping을 함께 확인합니다.
 3. secret 생성 또는 누락 파일 보강은 `./scripts/operations/gen-secrets.sh` 같은 승인된 스크립트를 우선 사용합니다.
-4. 인증서 파일은 `./scripts/operations/generate-local-certs.sh` 절차와 관련 runbook을 따릅니다.
+4. 인증서 파일은 [Developer Setup Operations](../docs/05.operations/guides/developer-setup.md)의 local TLS 절차와 관련 runbook을 따릅니다.
 5. 문서, 로그, commit, PR 설명에는 secret 값 원문을 쓰지 않습니다.
 
 ## Navigation / Inventory
@@ -103,8 +103,8 @@ secrets/
 # Generate or sync missing secrets using the approved script
 ./scripts/operations/gen-secrets.sh
 
-# Generate local TLS certificates when certificate material is required
-./scripts/operations/generate-local-certs.sh
+# For local TLS certificates, follow docs/05.operations/guides/developer-setup.md.
+# Do not paste generated key material into docs, logs, commits, or PRs.
 ```
 
 특정 secret을 교체해야 할 때는 값을 문서에 쓰지 말고, 승인된 운영 절차에 따라 secure input 또는 스크립트 기반 생성 방식으로 처리합니다. 교체 후에는 해당 서비스의 runbook에 따라 재시작과 검증을 수행합니다.

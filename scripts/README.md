@@ -23,7 +23,7 @@
 - Repository validation, contract checks, and agent event hook automation scripts.
 - Repo-local LLM Wiki index generation and freshness checks.
 - Tier hardening checks and their shared helper library.
-- Local manual utility scripts for preflight checks, safe secret file generation, local certificate generation, and Vault AppRole bootstrap.
+- Local preflight validation mode and safe secret file generation utility.
 - Script inventory and lifecycle ownership rules for canonical purpose-folder paths.
 
 ### Out of Scope
@@ -38,10 +38,10 @@
 ```text
 scripts/
 ├── validation/          # Compose, repo, docs, template, quickwin, and preflight checks
-├── hardening/           # Unified and tier-specific hardening checks
+├── hardening/           # Unified hardening check with tier arguments
 ├── hooks/               # Provider-neutral hook dispatcher and post-tool validation
 ├── knowledge/           # LLM Wiki and Graphify advisory utilities
-├── operations/          # Manual local cert, Vault AppRole, and secret-generation utilities
+├── operations/          # Safe secret-generation utility
 ├── lib/
 │   └── hardening-lib.sh # Shared implementation for tier hardening checks
 └── README.md            # This file
@@ -54,13 +54,17 @@ The canonical script surface is the purpose-folder path. Root-level
 references moved to purpose-folder paths. Do not recreate root duplicate
 wrappers unless a future approved compatibility plan explicitly requires them.
 
+The hardening surface is intentionally consolidated into
+`scripts/hardening/check-all-hardening.sh`. Tier-specific wrapper entrypoints
+were removed by the 2026-05-17 cleanup; use tier arguments instead.
+
 | Purpose | Canonical paths |
 | :--- | :--- |
-| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/validation/preflight-compose.sh` |
-| Hardening | `scripts/hardening/check-all-hardening.sh`, `scripts/hardening/check-gateway-hardening.sh`, `scripts/hardening/check-auth-hardening.sh`, `scripts/hardening/check-security-hardening.sh`, `scripts/hardening/check-data-hardening.sh`, `scripts/hardening/check-messaging-hardening.sh`, `scripts/hardening/check-observability-hardening.sh`, `scripts/hardening/check-workflow-hardening.sh`, `scripts/hardening/check-ai-hardening.sh`, `scripts/hardening/check-tooling-hardening.sh`, `scripts/hardening/check-laboratory-hardening.sh` |
+| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh` |
+| Hardening | `scripts/hardening/check-all-hardening.sh` |
 | Hooks | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh` |
 | Knowledge | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/report-graphify-health.sh` |
-| Operations | `scripts/operations/generate-local-certs.sh`, `scripts/operations/bootstrap-vault-approle.sh`, `scripts/operations/gen-secrets.sh` |
+| Operations | `scripts/operations/gen-secrets.sh` |
 | Libraries | `scripts/lib/hardening-lib.sh` |
 
 ## How to Work in This Area
@@ -86,20 +90,26 @@ wrappers unless a future approved compatibility plan explicitly requires them.
 | Agent Event Hook | [agent-event-hook.sh](./hooks/agent-event-hook.sh) | Dispatch Claude/Codex hook events to provider-neutral repository behavior |
 | Post Tool Validation | [post-tool-validate.sh](./hooks/post-tool-validate.sh) | Run path-aware validation after Claude/Codex file edits |
 | Unified Hardening Check | [check-all-hardening.sh](./hardening/check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
-| Gateway Hardening Check | [check-gateway-hardening.sh](./hardening/check-gateway-hardening.sh) | Enforce 01-gateway Traefik/Nginx hardening baseline |
-| Auth Hardening Check | [check-auth-hardening.sh](./hardening/check-auth-hardening.sh) | Enforce 02-auth Keycloak/OAuth2 Proxy hardening baseline |
-| Security Hardening Check | [check-security-hardening.sh](./hardening/check-security-hardening.sh) | Enforce 03-security Vault hardening baseline |
-| Data Hardening Check | [check-data-hardening.sh](./hardening/check-data-hardening.sh) | Enforce 04-data service hardening baseline |
-| Messaging Hardening Check | [check-messaging-hardening.sh](./hardening/check-messaging-hardening.sh) | Enforce 05-messaging service hardening baseline |
-| Observability Hardening Check | [check-observability-hardening.sh](./hardening/check-observability-hardening.sh) | Enforce 06-observability service hardening baseline |
-| Workflow Hardening Check | [check-workflow-hardening.sh](./hardening/check-workflow-hardening.sh) | Enforce 07-workflow service hardening baseline |
-| AI Hardening Check | [check-ai-hardening.sh](./hardening/check-ai-hardening.sh) | Enforce 08-ai service hardening baseline |
-| Tooling Hardening Check | [check-tooling-hardening.sh](./hardening/check-tooling-hardening.sh) | Enforce 09-tooling service hardening baseline |
-| Laboratory Hardening Check | [check-laboratory-hardening.sh](./hardening/check-laboratory-hardening.sh) | Enforce 11-laboratory service hardening baseline |
-| Preflight Check | [preflight-compose.sh](./validation/preflight-compose.sh) | Bootstrap prerequisite validation |
+| Docker Preflight Mode | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) `--preflight` | Real local prerequisite validation without dummy file creation |
 | Secret Generation | [gen-secrets.sh](./operations/gen-secrets.sh) | Generate local Docker secret files; use safe modes before default generation |
-| Cert Generation | [generate-local-certs.sh](./operations/generate-local-certs.sh) | Generate local TLS files |
-| Vault AppRole Bootstrap | [bootstrap-vault-approle.sh](./operations/bootstrap-vault-approle.sh) | Configure Vault Agent AppRole credentials after Vault is running and unsealed |
+
+## Hardening Tier Arguments
+
+Use `bash scripts/hardening/check-all-hardening.sh <tier>` for a selected
+tier. Without arguments, all supported tiers are checked.
+
+| Tier | Accepted arguments |
+| :--- | :--- |
+| Gateway | `01-gateway`, `gateway` |
+| Auth | `02-auth`, `auth` |
+| Security | `03-security`, `security` |
+| Data | `04-data`, `data` |
+| Messaging | `05-messaging`, `messaging` |
+| Observability | `06-observability`, `observability`, `obs` |
+| Workflow | `07-workflow`, `workflow` |
+| AI | `08-ai`, `ai` |
+| Tooling | `09-tooling`, `tooling` |
+| Laboratory | `11-laboratory`, `laboratory`, `lab` |
 
 ## Script Lifecycle
 
@@ -108,8 +118,8 @@ wrappers unless a future approved compatibility plan explicitly requires them.
 | CI / quality gate | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/knowledge/generate-llm-wiki-index.sh --check` |
 | Advisory evidence | `scripts/knowledge/report-graphify-health.sh` |
 | Runtime hook | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh` |
-| Tier hardening | `scripts/hardening/check-gateway-hardening.sh`, `scripts/hardening/check-auth-hardening.sh`, `scripts/hardening/check-security-hardening.sh`, `scripts/hardening/check-data-hardening.sh`, `scripts/hardening/check-messaging-hardening.sh`, `scripts/hardening/check-observability-hardening.sh`, `scripts/hardening/check-workflow-hardening.sh`, `scripts/hardening/check-ai-hardening.sh`, `scripts/hardening/check-tooling-hardening.sh`, `scripts/hardening/check-laboratory-hardening.sh` |
-| Manual operations | `scripts/validation/preflight-compose.sh`, `scripts/operations/gen-secrets.sh`, `scripts/operations/generate-local-certs.sh`, `scripts/operations/bootstrap-vault-approle.sh` |
+| Tier hardening | `scripts/hardening/check-all-hardening.sh <tier>` |
+| Manual operations | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/operations/gen-secrets.sh` |
 | Generated index maintenance | `scripts/knowledge/generate-llm-wiki-index.sh` |
 | Internal library | `scripts/lib/hardening-lib.sh` |
 
@@ -126,8 +136,8 @@ wrappers unless a future approved compatibility plan explicitly requires them.
 ### Usage Examples
 
 ```bash
-# Run preflight check
-./scripts/validation/preflight-compose.sh
+# Run real local preflight checks without creating dummy files
+./scripts/validation/validate-docker-compose.sh --preflight
 
 # Enforce repository contracts
 ./scripts/validation/check-repo-contracts.sh
@@ -166,44 +176,11 @@ printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"comman
 # Enforce one selected tier
 ./scripts/hardening/check-all-hardening.sh 01-gateway
 
-# Enforce 01-gateway hardening baseline
-./scripts/hardening/check-gateway-hardening.sh
-
-# Enforce 02-auth hardening baseline
-./scripts/hardening/check-auth-hardening.sh
-
-# Enforce 03-security hardening baseline
-./scripts/hardening/check-security-hardening.sh
-
-# Enforce 04-data hardening baseline
-./scripts/hardening/check-data-hardening.sh
-
-# Enforce 05-messaging hardening baseline
-./scripts/hardening/check-messaging-hardening.sh
-
-# Enforce 06-observability hardening baseline
-./scripts/hardening/check-observability-hardening.sh
-
-# Enforce 07-workflow hardening baseline
-./scripts/hardening/check-workflow-hardening.sh
-
-# Enforce 08-ai hardening baseline
-./scripts/hardening/check-ai-hardening.sh
-
-# Enforce 09-tooling hardening baseline
-./scripts/hardening/check-tooling-hardening.sh
-
-# Enforce 11-laboratory hardening baseline
-./scripts/hardening/check-laboratory-hardening.sh
-
 # Inspect secret-generation readiness without reading or writing secret values
 ./scripts/operations/gen-secrets.sh --check
 
 # Preview secret-generation actions by ID/path only
 ./scripts/operations/gen-secrets.sh --dry-run
-
-# Generate local TLS certificates
-bash scripts/operations/generate-local-certs.sh
 
 ```
 
@@ -216,6 +193,7 @@ bash scripts/operations/generate-local-certs.sh
 - [📘 Runbooks](../docs/05.operations/README.md)
 - [LLM Wiki Maintenance](../docs/05.operations/guides/llm-wiki-maintenance.md)
 - [LLM Wiki Generated Index](../docs/90.references/llm-wiki/index.md)
+- [Scripts CI/CD & QA Cleanup Plan](../docs/04.execution/plans/2026-05-17-scripts-ci-qa-cleanup.md)
 - [Scripts Lifecycle Contract Cleanup Plan](../docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.

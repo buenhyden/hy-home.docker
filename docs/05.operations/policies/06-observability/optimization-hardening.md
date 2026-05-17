@@ -9,7 +9,7 @@
 - `infra/06-observability/docker-compose.yml`
 - `infra/06-observability/loki/{Dockerfile,docker-entrypoint.sh}`
 - `infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
-- `scripts/hardening/check-observability-hardening.sh`
+- `scripts/hardening/check-all-hardening.sh 06-observability`
 
 ## Applies To
 
@@ -42,7 +42,7 @@
 
 ## Verification
 
-- `bash scripts/hardening/check-observability-hardening.sh`
+- `bash scripts/hardening/check-all-hardening.sh 06-observability`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/check-doc-traceability.sh`
 - `docker compose -f infra/06-observability/docker-compose.yml config`
@@ -128,7 +128,7 @@
    - Loki/Tempo Dockerfile에 non-root user(`10001`)를 강제한다.
    - entrypoint에서 MinIO secret 존재를 선검증한다.
 5. 자동 검증 및 CI 반영
-   - `bash scripts/hardening/check-observability-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 06-observability`
    - CI workflow에 `observability-hardening` job 반영 여부 확인
 6. 문서 추적성 동기화
    - PRD~Procedure optimization-hardening 문서 링크를 점검한다.
@@ -194,7 +194,7 @@
 1. 정적 구성 점검
    - `docker compose -f infra/06-observability/docker-compose.yml config`
 2. 하드닝 기준 점검
-   - `bash scripts/hardening/check-observability-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 06-observability`
 3. 증상별 복구
    - middleware 누락:
      - 대상 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 재적용
@@ -206,7 +206,7 @@
      - Loki/Tempo Dockerfile `USER 10001:10001` 복원
      - entrypoint secret guard 복원
 4. 재검증
-   - `bash scripts/hardening/check-observability-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 06-observability`
    - `bash scripts/validation/check-template-security-baseline.sh`
    - `bash scripts/validation/check-doc-traceability.sh`
 
@@ -230,7 +230,7 @@
   - `infra/06-observability/docker-compose.yml`
   - `infra/06-observability/loki/{Dockerfile,docker-entrypoint.sh}`
   - `infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
-  - `scripts/hardening/check-observability-hardening.sh`
+  - `scripts/hardening/check-all-hardening.sh 06-observability`
   - `.github/workflows/ci-quality.yml`
 - [ ] 롤백 후 정적 검증 재실행
 - [ ] 운영 정책/가이드/태스크 문서 링크 재확인

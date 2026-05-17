@@ -38,7 +38,7 @@
 
 ## Verification
 
-- `bash scripts/hardening/check-gateway-hardening.sh`
+- `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - `docker compose -f infra/01-gateway/traefik/docker-compose.yml config`
 - `docker compose -f infra/01-gateway/traefik/docker-compose.yml exec traefik traefik healthcheck --ping`
 
@@ -90,7 +90,7 @@
 
 - Docker/Docker Compose 사용 가능
 - `infra/01-gateway/traefik` 구성 파일 접근 가능
-- `scripts/hardening/check-gateway-hardening.sh` 실행 가능
+- `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
 
 #### Step-by-step Instructions
 
@@ -103,7 +103,7 @@
 3. 설정 정적 검증
    - `docker compose -f infra/01-gateway/traefik/docker-compose.yml config`
 4. 하드닝 검증
-   - `bash scripts/hardening/check-gateway-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 
 #### Common Pitfalls
 
@@ -154,12 +154,12 @@
 
 - [ ] `docker compose -f infra/01-gateway/traefik/docker-compose.yml config` 성공
 - [ ] `docker compose -f infra/01-gateway/traefik/docker-compose.yml ps`에서 상태 정상
-- [ ] `bash scripts/hardening/check-gateway-hardening.sh` 실패 원인 확인
+- [ ] `bash scripts/hardening/check-all-hardening.sh 01-gateway` 실패 원인 확인
 
 ##### Procedure
 
 1. 설정 검증
-   - `bash scripts/hardening/check-gateway-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
    - `docker compose -f infra/01-gateway/traefik/docker-compose.yml config`
 2. middleware 회귀 대응
    - `infra/01-gateway/traefik/dynamic/middleware.yml`에서 아래 4개 블록 존재 확인:
@@ -177,7 +177,7 @@
 
 #### Verification Steps
 
-- [ ] `bash scripts/hardening/check-gateway-hardening.sh` 통과
+- [ ] `bash scripts/hardening/check-all-hardening.sh 01-gateway` 통과
 - [ ] dashboard 접근 시 BasicAuth 요구 및 인증 성공
 - [ ] 기존 라우팅 규칙 회귀 없음
 
@@ -199,7 +199,7 @@
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: N/A
-- **Eval Re-run**: `bash scripts/hardening/check-gateway-hardening.sh`
+- **Eval Re-run**: `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - **Trace Capture**: Traefik logs + CI job logs
 
 #### Related Operational Documents

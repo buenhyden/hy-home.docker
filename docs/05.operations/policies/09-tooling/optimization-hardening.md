@@ -7,7 +7,7 @@
 ## Policy Scope
 
 - `infra/09-tooling/*/docker-compose.yml`
-- `scripts/hardening/check-tooling-hardening.sh`
+- `scripts/hardening/check-all-hardening.sh 09-tooling`
 
 ## Applies To
 
@@ -40,7 +40,7 @@
 ## Verification
 
 - `for f in infra/09-tooling/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
-- `bash scripts/hardening/check-tooling-hardening.sh`
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/check-doc-traceability.sh`
 
@@ -134,7 +134,7 @@
    - locust-worker healthcheck를 확인한다.
    - k6 volume 참조가 `k6-data:/mnt/locust:rw`로 정렬되었는지 확인한다.
 5. 기준선 검증 실행
-   - `bash scripts/hardening/check-tooling-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
    - `bash scripts/validation/check-template-security-baseline.sh`
    - `bash scripts/validation/check-doc-traceability.sh`
 6. 카탈로그 확장 로드맵 반영
@@ -199,7 +199,7 @@
 1. 정적 구성 점검
    - `for f in infra/09-tooling/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
 2. 하드닝 기준 점검
-   - `bash scripts/hardening/check-tooling-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
 3. 증상별 복구
    - middleware 회귀:
      - SonarQube/Terrakube/Syncthing 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 재적용
@@ -210,7 +210,7 @@
    - k6 경로 드리프트:
      - `k6-data:/mnt/locust:rw` volume 계약 복원
 4. 재검증
-   - `bash scripts/hardening/check-tooling-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
    - `bash scripts/validation/check-template-security-baseline.sh`
    - `bash scripts/validation/check-doc-traceability.sh`
 
@@ -232,7 +232,7 @@
 
 - [ ] 롤백 대상 파일
   - `infra/09-tooling/*/docker-compose.yml`
-  - `scripts/hardening/check-tooling-hardening.sh`
+  - `scripts/hardening/check-all-hardening.sh 09-tooling`
   - `.github/workflows/ci-quality.yml`
 - [ ] 롤백 후 정적 검증 재실행
 - [ ] 정책/가이드/태스크 문서 링크 재확인

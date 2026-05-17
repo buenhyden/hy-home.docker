@@ -28,7 +28,7 @@ status: enforced
 - `docs/05.operations/guides/**`
 - `docs/05.operations/policies/**`
 - `docs/05.operations/runbooks/**`
-- `scripts/check-*.sh`, `scripts/validation/validate-docker-compose.sh`
+- `scripts/validation/check-*.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/validation/validate-docker-compose.sh`
 
 ## Controls
 
@@ -59,7 +59,7 @@ status: enforced
 ```bash
 python3 -m json.tool .codex/hooks.json >/dev/null
 python3 -m json.tool .claude/settings.json >/dev/null
-bash -n .claude/hooks/*.sh scripts/*.sh scripts/lib/*.sh
+bash -n .claude/hooks/*.sh scripts/**/*.sh
 CLAUDE_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh SessionStart
 printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh PreToolUse
 printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh

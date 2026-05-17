@@ -72,7 +72,7 @@ status: draft
 | `docker compose ps` | Post-flight health check | Read service health | Restarting or tearing down services | Record missing health evidence |
 | `docker image ls` | Image audit evidence | Inspect image tag/digest state | Pulling or retagging images | Downgrade to WARN when audit evidence is partial |
 | `docker inspect` | Drift/performance inspection | Read container config and limits | Modifying live containers | Report unreachable target as validation gap |
-| `bash scripts/check-*.sh` | Policy gate execution | Run approved repository validation scripts | Running unrelated mutation scripts | Attach stderr/stdout summary to report |
+| `bash scripts/validation/check-*.sh` | Policy gate execution | Run approved repository validation scripts | Running unrelated mutation scripts | Attach stderr/stdout summary to report |
 | `Read` / workspace file writes | Evidence persistence | Write `_workspace/` report and progress note | Writing plaintext secrets | Redact and halt on secret exposure |
 
 ## Prompt / Policy Contract

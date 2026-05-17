@@ -28,7 +28,7 @@
   - Kafka/KRaft 3노드 및 RabbitMQ 단일 노드 운영 모델을 유지한다.
   - TLS 종료는 Traefik에서 수행하고 내부 `infra_net` 통신은 서비스 내부 프로토콜을 사용한다.
 - **Governance Contract**:
-  - `scripts/hardening/check-messaging-hardening.sh`를 CI `messaging-hardening` job으로 강제한다.
+  - `scripts/hardening/check-all-hardening.sh 05-messaging`를 CI `messaging-hardening` job으로 강제한다.
   - 문서 계층(01~09)은 optimization-hardening 문서 세트로 상호 링크를 유지한다.
 
 ## Core Design
@@ -109,7 +109,7 @@ messaging_gateway_contract:
 docker compose -f infra/05-messaging/kafka/docker-compose.yml config
 docker compose -f infra/05-messaging/kafka/docker-compose.dev.yml config
 docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config
-bash scripts/hardening/check-messaging-hardening.sh
+bash scripts/hardening/check-all-hardening.sh 05-messaging
 bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-doc-traceability.sh
 ```

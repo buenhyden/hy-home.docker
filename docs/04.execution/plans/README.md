@@ -44,6 +44,7 @@ docs/04.execution/plans/
 ├── 2026-05-09-infra-secrets-docs-refresh.md  # Infra, secrets, docs 운영 문서 최신화 계획
 ├── 2026-05-09-scripts-lifecycle-contract-cleanup.md  # scripts lifecycle contract cleanup 계획
 ├── 2026-05-10-llm-wiki-agent-first-completion.md  # LLM Wiki generator/index/curator completion 계획
+├── 2026-05-17-scripts-ci-qa-cleanup.md  # scripts CI/CD 및 QA cleanup 계획
 └── README.md                              # This file
 ```
 
@@ -79,3 +80,4 @@ docs/04.execution/plans/
 - **Infra / Secrets / Docs Refresh Plan**: [2026-05-09-infra-secrets-docs-refresh.md](./2026-05-09-infra-secrets-docs-refresh.md)
 - **Scripts Lifecycle Contract Cleanup Plan**: [2026-05-09-scripts-lifecycle-contract-cleanup.md](./2026-05-09-scripts-lifecycle-contract-cleanup.md)
 - **LLM Wiki Agent-first Completion Plan**: [2026-05-10-llm-wiki-agent-first-completion.md](./2026-05-10-llm-wiki-agent-first-completion.md)
+- **Scripts CI/CD & QA Cleanup Plan**: [2026-05-17-scripts-ci-qa-cleanup.md](./2026-05-17-scripts-ci-qa-cleanup.md)

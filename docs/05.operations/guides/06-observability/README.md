@@ -60,7 +60,7 @@
 ## Verification and Monitoring
 
 - 정책 준수 검증:
-  - `bash scripts/hardening/check-observability-hardening.sh`
+  - `bash scripts/hardening/check-all-hardening.sh 06-observability`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
 - 운영 지표:
@@ -251,7 +251,7 @@
 
 - 런북 수행 후 `Verification Steps`를 완료한다.
 - 필요 시 다음 검증을 병행한다.
-  - `bash scripts/hardening/check-observability-hardening.sh`
+  - `bash scripts/hardening/check-all-hardening.sh 06-observability`
   - `bash scripts/validation/check-doc-traceability.sh`
 
 #### Incident and Recovery Links

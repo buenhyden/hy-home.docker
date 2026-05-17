@@ -45,7 +45,7 @@ status: approved
 ## Verification
 
 ```bash
-bash -n scripts/*.sh scripts/lib/*.sh .claude/hooks/*.sh
+bash -n scripts/**/*.sh .claude/hooks/*.sh
 python3 -m json.tool .claude/settings.json
 python3 -m json.tool .codex/hooks.json
 bash scripts/validation/check-repo-contracts.sh

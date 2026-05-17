@@ -49,7 +49,7 @@ status: approved
 | Runtime mirror | `.claude/agents`, `.claude/skills`, `docs/00.agent-governance/agents` | runtime agent/function catalog, model front matter, scope imports, protocol references가 governance catalog와 동기화되어야 한다. 이 검증은 semantic content parity가 아니라 catalog parity를 증명한다. |
 | Codex boundary | `.codex/README.md`, `.codex/hooks.json` | Codex는 hook/context surface이며 parallel delegated-agent catalog를 만들지 않는다. |
 | Graphify context health | `AGENTS.md`, runtime hooks, `scripts/knowledge/report-graphify-health.sh` | Graphify는 clean corpus일 때 navigation aid이며, contamination이 있으면 advisory로 낮추고 tracked source와 canonical docs로 재확인한다. |
-| Verification | `scripts/check-*.sh` | repository contract, docs traceability, default/core Compose profile, supported hardening tiers, hook payload simulation으로 완료를 증명한다. |
+| Verification | `scripts/validation/check-*.sh` and `scripts/hardening/check-all-hardening.sh` | repository contract, docs traceability, default/core Compose profile, supported hardening tiers, hook payload simulation으로 완료를 증명한다. |
 
 ## Core Design
 
@@ -184,7 +184,7 @@ Evaluation is command-based:
 ```bash
 python3 -m json.tool .codex/hooks.json >/dev/null
 python3 -m json.tool .claude/settings.json >/dev/null
-bash -n .claude/hooks/*.sh scripts/*.sh scripts/lib/*.sh
+bash -n .claude/hooks/*.sh scripts/**/*.sh
 CLAUDE_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh SessionStart
 printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | CODEX_PROJECT_DIR="$PWD" bash scripts/hooks/agent-event-hook.sh PreToolUse
 printf '{"tool_input":{"file_path":"infra/10-communication/mail/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh

@@ -39,7 +39,7 @@
 
 ## Verification
 
-- `bash scripts/hardening/check-gateway-hardening.sh`
+- `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - `docker compose -f infra/01-gateway/nginx/docker-compose.yml config`
 - `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t`
 
@@ -91,7 +91,7 @@
 
 - Docker/Docker Compose 사용 가능
 - `infra/01-gateway/nginx` 구성 파일 접근 가능
-- `scripts/hardening/check-gateway-hardening.sh` 실행 가능
+- `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
 
 #### Step-by-step Instructions
 
@@ -104,7 +104,7 @@
 3. 설정 검증
    - `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t`
 4. 하드닝 검증
-   - `bash scripts/hardening/check-gateway-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 
 #### Common Pitfalls
 
@@ -155,13 +155,13 @@
 ##### Checklist
 
 - [ ] `docker compose -f infra/01-gateway/nginx/docker-compose.yml config` 성공
-- [ ] `bash scripts/hardening/check-gateway-hardening.sh` 실행
+- [ ] `bash scripts/hardening/check-all-hardening.sh 01-gateway` 실행
 - [ ] `docker compose -f infra/01-gateway/nginx/docker-compose.yml ps` 상태 확인
 
 ##### Procedure
 
 1. 설정 검증
-   - `bash scripts/hardening/check-gateway-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
    - `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t`
 2. readonly/tmpfs 장애 복구
    - compose에 아래 tmpfs 3개가 있는지 확인:
@@ -206,7 +206,7 @@
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: N/A
-- **Eval Re-run**: `bash scripts/hardening/check-gateway-hardening.sh`
+- **Eval Re-run**: `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - **Trace Capture**: nginx logs + CI job logs
 
 #### Related Operational Documents

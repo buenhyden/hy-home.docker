@@ -118,10 +118,10 @@ cp .env.example .env
 ### 3. 사전 점검 실행
 
 ```bash
-bash scripts/validation/preflight-compose.sh
+bash scripts/validation/validate-docker-compose.sh --preflight
 ```
 
-이 스크립트는 `.env`, 필수 secret 파일, 인증서 파일, 주요 디렉터리, 외부 Docker 네트워크 존재 여부를 점검합니다.
+이 모드는 `.env`, 필수 secret 파일, 인증서 파일, 주요 디렉터리, 외부 Docker 네트워크 존재 여부를 점검합니다. 일반 Compose 구조 검증과 달리 `.env`, secret 파일, 인증서 파일, dummy 데이터를 만들지 않습니다.
 
 ### 4. Compose 구조 검증
 
@@ -176,7 +176,7 @@ docker compose --profile core up -d
 
 로컬 또는 CI에서 자주 사용되는 검증 진입점은 다음과 같습니다.
 
-- `bash scripts/validation/preflight-compose.sh` - 실행 전 필수 파일과 디렉터리 점검
+- `bash scripts/validation/validate-docker-compose.sh --preflight` - 실행 전 필수 파일과 디렉터리 점검
 - `bash scripts/validation/check-repo-contracts.sh` - repository/docs/GitHub/runtime/Docker/LLM Wiki contract 검증
 - `bash scripts/validation/validate-docker-compose.sh` - profile-aware Compose 구조 검증
 - `bash scripts/validation/check-doc-traceability.sh` - 문서 추적성 검사

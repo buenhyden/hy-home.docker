@@ -8,7 +8,7 @@
 
 - `infra/07-workflow/airflow/docker-compose.yml`
 - `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,docker-entrypoint.sh}`
-- `scripts/hardening/check-workflow-hardening.sh`
+- `scripts/hardening/check-all-hardening.sh 07-workflow`
 
 ## Applies To
 
@@ -45,7 +45,7 @@
 
 - `docker compose -f infra/07-workflow/airflow/docker-compose.yml config`
 - `docker compose -f infra/07-workflow/n8n/docker-compose.yml config`
-- `bash scripts/hardening/check-workflow-hardening.sh`
+- `bash scripts/hardening/check-all-hardening.sh 07-workflow`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/check-doc-traceability.sh`
 
@@ -132,7 +132,7 @@
    - compose가 custom image(`hyhome/n8n:2.15.0-local`)를 사용하도록 확인한다.
    - Dockerfile non-root runtime(`USER node`)와 entrypoint secret guard를 확인한다.
 5. 기준선 검증 실행
-   - `bash scripts/hardening/check-workflow-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
    - `bash scripts/validation/check-template-security-baseline.sh`
    - `bash scripts/validation/check-doc-traceability.sh`
 6. 카탈로그 확장 운영 기준 반영
@@ -200,7 +200,7 @@
    - `docker compose -f infra/07-workflow/airflow/docker-compose.yml config`
    - `docker compose -f infra/07-workflow/n8n/docker-compose.yml config`
 2. 하드닝 기준 점검
-   - `bash scripts/hardening/check-workflow-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
 3. 증상별 복구
    - middleware 회귀:
      - Airflow/Flower/n8n 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 재적용
@@ -212,7 +212,7 @@
      - compose custom image 설정 복원
      - Dockerfile `USER node`, entrypoint secret guard 복원
 4. 재검증
-   - `bash scripts/hardening/check-workflow-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
    - `bash scripts/validation/check-template-security-baseline.sh`
    - `bash scripts/validation/check-doc-traceability.sh`
 
@@ -235,7 +235,7 @@
 - [ ] 롤백 대상 파일
   - `infra/07-workflow/airflow/docker-compose.yml`
   - `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,docker-entrypoint.sh}`
-  - `scripts/hardening/check-workflow-hardening.sh`
+  - `scripts/hardening/check-all-hardening.sh 07-workflow`
   - `.github/workflows/ci-quality.yml`
 - [ ] 롤백 후 정적 검증 재실행
 - [ ] 정책/가이드/태스크 문서 링크 재확인

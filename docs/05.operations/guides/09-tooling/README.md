@@ -193,7 +193,7 @@ docs/05.operations/09-tooling/
 #### Verification Baseline
 
 - `for f in infra/09-tooling/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
-- `bash scripts/hardening/check-tooling-hardening.sh`
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/check-doc-traceability.sh`
 

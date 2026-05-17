@@ -1088,6 +1088,44 @@ roots = [
 
 failures: list[str] = []
 pattern = re.compile(r"(?<![\w./-])(\./)?(scripts/[A-Za-z0-9._/-]+\.sh)")
+deleted_entrypoints = {
+    "scripts/hardening/check-ai-hardening.sh",
+    "scripts/hardening/check-auth-hardening.sh",
+    "scripts/hardening/check-data-hardening.sh",
+    "scripts/hardening/check-gateway-hardening.sh",
+    "scripts/hardening/check-laboratory-hardening.sh",
+    "scripts/hardening/check-messaging-hardening.sh",
+    "scripts/hardening/check-observability-hardening.sh",
+    "scripts/hardening/check-security-hardening.sh",
+    "scripts/hardening/check-tooling-hardening.sh",
+    "scripts/hardening/check-workflow-hardening.sh",
+    "scripts/operations/bootstrap-vault-approle.sh",
+    "scripts/operations/generate-local-certs.sh",
+    "scripts/validation/preflight-compose.sh",
+}
+
+historical_reference_roots = (
+    pathlib.Path("docs/01.requirements"),
+    pathlib.Path("docs/02.architecture"),
+    pathlib.Path("docs/04.execution"),
+    pathlib.Path("docs/00.agent-governance/memory"),
+)
+
+reference_artifact_roots = (
+    pathlib.Path("docs/90.references"),
+)
+
+def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+def allows_deleted_entrypoint_reference(path: pathlib.Path, ref: str) -> bool:
+    if ref not in deleted_entrypoints:
+        return False
+    return any(is_relative_to(path, root) for root in (*historical_reference_roots, *reference_artifact_roots))
 
 for root in roots:
     files = [root] if root.is_file() else [p for p in root.rglob("*") if p.is_file() and "graphify-out" not in p.parts]
@@ -1103,6 +1141,8 @@ for root in roots:
             local_target = path.parent / ref
             root_target = pathlib.Path(ref)
             if local_target.is_file() or root_target.is_file():
+                continue
+            if allows_deleted_entrypoint_reference(path, ref):
                 continue
             failures.append(f"{path}: missing script reference {match.group(0)}")
 
@@ -1201,24 +1241,11 @@ expected_implementations = {
     pathlib.Path("scripts/validation/check-doc-traceability.sh"),
     pathlib.Path("scripts/validation/check-quickwin-baseline.sh"),
     pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
-    pathlib.Path("scripts/validation/preflight-compose.sh"),
     pathlib.Path("scripts/hardening/check-all-hardening.sh"),
-    pathlib.Path("scripts/hardening/check-gateway-hardening.sh"),
-    pathlib.Path("scripts/hardening/check-auth-hardening.sh"),
-    pathlib.Path("scripts/hardening/check-security-hardening.sh"),
-    pathlib.Path("scripts/hardening/check-data-hardening.sh"),
-    pathlib.Path("scripts/hardening/check-messaging-hardening.sh"),
-    pathlib.Path("scripts/hardening/check-observability-hardening.sh"),
-    pathlib.Path("scripts/hardening/check-workflow-hardening.sh"),
-    pathlib.Path("scripts/hardening/check-ai-hardening.sh"),
-    pathlib.Path("scripts/hardening/check-tooling-hardening.sh"),
-    pathlib.Path("scripts/hardening/check-laboratory-hardening.sh"),
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),
     pathlib.Path("scripts/hooks/post-tool-validate.sh"),
     pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
     pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
-    pathlib.Path("scripts/operations/generate-local-certs.sh"),
-    pathlib.Path("scripts/operations/bootstrap-vault-approle.sh"),
     pathlib.Path("scripts/operations/gen-secrets.sh"),
 }
 implementation_scripts = sorted(

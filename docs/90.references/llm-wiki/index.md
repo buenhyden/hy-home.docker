@@ -314,6 +314,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md](../../04.execution/plans/2026-05-09-scripts-lifecycle-contract-cleanup.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-10-docs-taxonomy-agent-first-migration.md](../../04.execution/plans/2026-05-10-docs-taxonomy-agent-first-migration.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md](../../04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md) | Markdown reference |
+| [docs/04.execution/plans/2026-05-17-scripts-ci-qa-cleanup.md](../../04.execution/plans/2026-05-17-scripts-ci-qa-cleanup.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -762,30 +763,17 @@ Graphify output is advisory navigation context only. This index is generated fro
 | Path | Role |
 | --- | --- |
 | [scripts/README.md](../../../scripts/README.md) | folder index |
-| [scripts/hardening/check-ai-hardening.sh](../../../scripts/hardening/check-ai-hardening.sh) | script |
 | [scripts/hardening/check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) | script |
-| [scripts/hardening/check-auth-hardening.sh](../../../scripts/hardening/check-auth-hardening.sh) | script |
-| [scripts/hardening/check-data-hardening.sh](../../../scripts/hardening/check-data-hardening.sh) | script |
-| [scripts/hardening/check-gateway-hardening.sh](../../../scripts/hardening/check-gateway-hardening.sh) | script |
-| [scripts/hardening/check-laboratory-hardening.sh](../../../scripts/hardening/check-laboratory-hardening.sh) | script |
-| [scripts/hardening/check-messaging-hardening.sh](../../../scripts/hardening/check-messaging-hardening.sh) | script |
-| [scripts/hardening/check-observability-hardening.sh](../../../scripts/hardening/check-observability-hardening.sh) | script |
-| [scripts/hardening/check-security-hardening.sh](../../../scripts/hardening/check-security-hardening.sh) | script |
-| [scripts/hardening/check-tooling-hardening.sh](../../../scripts/hardening/check-tooling-hardening.sh) | script |
-| [scripts/hardening/check-workflow-hardening.sh](../../../scripts/hardening/check-workflow-hardening.sh) | script |
 | [scripts/hooks/agent-event-hook.sh](../../../scripts/hooks/agent-event-hook.sh) | script |
 | [scripts/hooks/post-tool-validate.sh](../../../scripts/hooks/post-tool-validate.sh) | script |
 | [scripts/knowledge/generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) | script |
 | [scripts/knowledge/report-graphify-health.sh](../../../scripts/knowledge/report-graphify-health.sh) | script |
 | [scripts/lib/hardening-lib.sh](../../../scripts/lib/hardening-lib.sh) | script |
-| [scripts/operations/bootstrap-vault-approle.sh](../../../scripts/operations/bootstrap-vault-approle.sh) | script |
 | [scripts/operations/gen-secrets.sh](../../../scripts/operations/gen-secrets.sh) | script |
-| [scripts/operations/generate-local-certs.sh](../../../scripts/operations/generate-local-certs.sh) | script |
 | [scripts/validation/check-doc-traceability.sh](../../../scripts/validation/check-doc-traceability.sh) | script |
 | [scripts/validation/check-quickwin-baseline.sh](../../../scripts/validation/check-quickwin-baseline.sh) | script |
 | [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |
 | [scripts/validation/check-template-security-baseline.sh](../../../scripts/validation/check-template-security-baseline.sh) | script |
-| [scripts/validation/preflight-compose.sh](../../../scripts/validation/preflight-compose.sh) | script |
 | [scripts/validation/validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) | script |
 
 ### GitHub workflow surface

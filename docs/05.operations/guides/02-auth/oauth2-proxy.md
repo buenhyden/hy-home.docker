@@ -39,7 +39,7 @@
 
 ## Verification
 
-- `bash scripts/hardening/check-auth-hardening.sh`
+- `bash scripts/hardening/check-all-hardening.sh 02-auth`
 - `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config`
 - `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
 
@@ -106,7 +106,7 @@
    - Dockerfile의 `USER oauth2proxy:oauth2proxy` 적용 확인
 4. 정적 검증
    - `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config`
-   - `bash scripts/hardening/check-auth-hardening.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
 #### Common Pitfalls
 
@@ -158,7 +158,7 @@
 ##### Checklist
 
 - [ ] `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config` 성공
-- [ ] `bash scripts/hardening/check-auth-hardening.sh` 실행
+- [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 실행
 - [ ] `docker logs oauth2-proxy --tail=200` 오류 패턴 확인
 
 ##### Procedure
@@ -182,7 +182,7 @@
 
 #### Verification Steps
 
-- [ ] `bash scripts/hardening/check-auth-hardening.sh` 통과
+- [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 통과
 - [ ] `docker exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping` 성공
 - [ ] 인증 콜백(`/oauth2/callback`) 정상 동작
 
@@ -209,7 +209,7 @@
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: N/A
-- **Eval Re-run**: `bash scripts/hardening/check-auth-hardening.sh`
+- **Eval Re-run**: `bash scripts/hardening/check-all-hardening.sh 02-auth`
 - **Trace Capture**: oauth2-proxy/keycloak 로그 + CI job 로그
 
 #### Related Operational Documents
