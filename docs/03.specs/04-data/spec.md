@@ -125,6 +125,6 @@ docker inspect --format '{{json .State.Health}}' supabase-pooler
 
 - **Plan**: [../../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md)
 - **Tasks**: [../../04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md)
-- **Guide**: [../../05.operations/04-data/optimization-hardening.md](../../05.operations/policies/04-data/optimization-hardening.md)
-- **Operations**: [../../05.operations/04-data/optimization-hardening.md](../../05.operations/policies/04-data/optimization-hardening.md)
-- **Runbook**: [../../05.operations/04-data/optimization-hardening.md](../../05.operations/policies/04-data/optimization-hardening.md)
+- **Guide**: [../../05.operations/policies/04-data/optimization-hardening.md](../../05.operations/policies/04-data/optimization-hardening.md)
+- **Operations**: [../../05.operations/policies/04-data/optimization-hardening.md](../../05.operations/policies/04-data/optimization-hardening.md)
+- **Runbook**: [../../05.operations/policies/04-data/optimization-hardening.md](../../05.operations/policies/04-data/optimization-hardening.md)
