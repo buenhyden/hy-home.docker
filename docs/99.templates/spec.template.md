@@ -142,4 +142,9 @@ python evals/run_[feature]_eval.py
 
 - **Plan**: `[../../04.execution/plans/YYYY-MM-DD-<feature>.md]`
 - **Tasks**: `[../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md]`
-- **Runbook**: `[../../05.operations/<topic>.md]`
+- **Guide, direct operations target**: `[../../05.operations/guides/<topic>.md]`
+- **Guide, domain operations target**: `[../../05.operations/guides/<domain>/<topic>.md]`
+- **Policy, direct operations target**: `[../../05.operations/policies/<topic>.md]`
+- **Policy, domain operations target**: `[../../05.operations/policies/<domain>/<topic>.md]`
+- **Runbook, direct operations target**: `[../../05.operations/runbooks/<topic>.md]`
+- **Runbook, domain operations target**: `[../../05.operations/runbooks/<domain>/<topic>.md]`

@@ -15,6 +15,12 @@ status: draft
 - Operations & Procedures (`docs/05.operations/`, `scripts/`) -> `Base Structure` + `Ops & Utils Snippet`
 - Incident Learning (`docs/05.operations/incidents/`) -> `Base Structure` + `Incident / Postmortem Snippet`
 
+## Target-relative Link Rules
+- Root README links are written from `README.md` at the repository root.
+- Docs README links are written from `docs/README.md`.
+- Folder README links are written from that folder's own `README.md`.
+- Do not copy links from this template location (`docs/99.templates/`) without recalculating them for the target README.
+
 ## docs 디렉터리 상세 역할
 - [01.requirements](01.requirements/README.md): 제품 요구사항 정의 (Vision, Use Case, Requirements)
 - [02.architecture/requirements](02.architecture/requirements/README.md): 아키텍처 참조 모델 및 품질 속성 정의
@@ -143,10 +149,14 @@ cd {project-name}
 
 리포지토리 작업 전에 다음 진입점을 우선 확인한다.
 
+<!-- Target: repository root README.md. Copy these links as-is only when assembling the root README. Remove the code fence in the final README. -->
+
+```markdown
 1. [README.md](./README.md) - 저장소 개요
 2. [docs/README.md](./docs/README.md) - 문서 체계 개요
 3. [AGENTS.md](./AGENTS.md) - Agent 규칙
-4. [ARCHITECTURE.md](./ARCHITECTURE.md) - 상위 구조 설명
+4. [docs/00.agent-governance/README.md](./docs/00.agent-governance/README.md) - Agent governance 허브
+```
 
 <!--
 ===============================================================================

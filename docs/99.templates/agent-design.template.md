@@ -99,5 +99,7 @@ status: draft
 ## Related Documents
 
 - **Tests**: `[./tests.md]`
-- **Operation**: `[../../05.operations/<policy>.md]`
-- **Runbook**: `[../../05.operations/<topic>.md]`
+- **Policy, direct operations target**: `[../../05.operations/policies/<policy>.md]`
+- **Policy, domain operations target**: `[../../05.operations/policies/<domain>/<policy>.md]`
+- **Runbook, direct operations target**: `[../../05.operations/runbooks/<topic>.md]`
+- **Runbook, domain operations target**: `[../../05.operations/runbooks/<domain>/<topic>.md]`

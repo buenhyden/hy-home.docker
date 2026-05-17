@@ -82,4 +82,5 @@ CREATE TABLE example (
 
 - **Spec**: `[./spec.md]`
 - **Plan**: `[../../04.execution/plans/YYYY-MM-DD-<feature>.md]`
-- **Runbook**: `[../../05.operations/####-<topic>.md]`
+- **Runbook, direct operations target**: `[../../05.operations/runbooks/<topic>.md]`
+- **Runbook, domain operations target**: `[../../05.operations/runbooks/<domain>/<topic>.md]`

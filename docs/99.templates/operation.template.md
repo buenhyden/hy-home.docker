@@ -2,6 +2,7 @@
 status: draft
 ---
 <!-- Target: docs/05.operations/{guides,policies,runbooks}/<topic>.md -->
+<!-- Target variant: docs/05.operations/{guides,policies,runbooks}/<domain>/<topic>.md -->
 
 # [Topic Name] Operations
 
@@ -12,6 +13,9 @@ status: draft
 > - Pick one operational purpose per document: guide, policy, or runbook.
 > - Use `guides/` for usage, `policies/` for controls, and `runbooks/` for repeatable procedures.
 > - This document is not an incident timeline or a postmortem.
+> - Relative links must be calculated from the copied target path, not from `docs/99.templates/`.
+> - For `docs/05.operations/<bucket>/<topic>.md`, use `../../` to reach `docs/`.
+> - For `docs/05.operations/<bucket>/<domain>/<topic>.md`, use `../../../` to reach `docs/`.
 
 ---
 
@@ -67,5 +71,20 @@ status: draft
 
 ## Related Documents
 
+Choose the link depth that matches the copied target path, then remove the unused examples.
+
+### Direct target: `docs/05.operations/<bucket>/<topic>.md`
+
 - **ARD**: `[../../02.architecture/requirements/####-<system-or-domain>.md]`
+- **Guide**: `[../guides/<topic>.md]`
+- **Policy**: `[../policies/<topic>.md]`
+- **Runbook**: `[../runbooks/<topic>.md]`
 - **Postmortem**: `[../incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md]`
+
+### Domain target: `docs/05.operations/<bucket>/<domain>/<topic>.md`
+
+- **ARD**: `[../../../02.architecture/requirements/####-<system-or-domain>.md]`
+- **Guide**: `[../../guides/<domain>/<topic>.md]`
+- **Policy**: `[../../policies/<domain>/<topic>.md]`
+- **Runbook**: `[../../runbooks/<domain>/<topic>.md]`
+- **Postmortem**: `[../../incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md]`
