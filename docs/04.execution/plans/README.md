@@ -45,6 +45,7 @@ docs/04.execution/plans/
 ├── 2026-05-09-scripts-lifecycle-contract-cleanup.md  # scripts lifecycle contract cleanup 계획
 ├── 2026-05-10-llm-wiki-agent-first-completion.md  # LLM Wiki generator/index/curator completion 계획
 ├── 2026-05-17-scripts-ci-qa-cleanup.md  # scripts CI/CD 및 QA cleanup 계획
+├── 2026-05-17-requirements-standardization.md  # docs/01.requirements PRD contract remediation 계획
 └── README.md                              # This file
 ```
 
@@ -81,3 +82,4 @@ docs/04.execution/plans/
 - **Scripts Lifecycle Contract Cleanup Plan**: [2026-05-09-scripts-lifecycle-contract-cleanup.md](./2026-05-09-scripts-lifecycle-contract-cleanup.md)
 - **LLM Wiki Agent-first Completion Plan**: [2026-05-10-llm-wiki-agent-first-completion.md](./2026-05-10-llm-wiki-agent-first-completion.md)
 - **Scripts CI/CD & QA Cleanup Plan**: [2026-05-17-scripts-ci-qa-cleanup.md](./2026-05-17-scripts-ci-qa-cleanup.md)
+- **Requirements Standardization Plan**: [2026-05-17-requirements-standardization.md](./2026-05-17-requirements-standardization.md)

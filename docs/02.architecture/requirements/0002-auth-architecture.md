@@ -64,6 +64,6 @@ Agents access services using Service Account tokens issued by Keycloak. All agen
 
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-03-26-02-auth.md]`
-- **Spec**: `[../03.specs/02-auth/spec.md]`
-- **ADR**: `[../02.architecture/decisions/####-keycloak-oauth2-proxy-choice.md]`
+- **PRD**: [Auth product requirements](../../01.requirements/2026-03-26-02-auth.md)
+- **Spec**: [Auth technical specification](../../03.specs/02-auth/spec.md)
+- **ADR**: [Keycloak and OAuth2 Proxy choice](../decisions/0002-keycloak-oauth2-proxy-choice.md)

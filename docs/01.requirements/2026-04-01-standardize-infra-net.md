@@ -3,9 +3,7 @@ status: draft
 ---
 <!-- Target: docs/01.requirements/2026-04-01-standardize-infra-net.md -->
 
-# Product Requirements Document
-
-## Standardize `infra_net` Network Requirements
+# Standardize infra_net Network Product Requirements
 
 ## Overview (KR)
 
@@ -58,8 +56,8 @@ status: draft
 
 ## Related Documents
 
-- **ARD**: `[../02.architecture/requirements/0026-standardize-infra-net.md]`
-- **ADR**: `[../02.architecture/decisions/0026-standardize-infra-net.md]`
-- **Spec**: `[../03.specs/standardize-infra-net/spec.md]`
-- **Plan**: `[../04.execution/plans/2026-04-01-standardize-infra-net.md]`
-- **Task**: `[../04.execution/tasks/2026-04-01-standardize-infra-net.md]`
+- **ARD**: [infra_net architecture requirements](../02.architecture/requirements/0026-standardize-infra-net.md)
+- **ADR**: [infra_net standardization decision](../02.architecture/decisions/0026-standardize-infra-net.md)
+- **Spec**: [infra_net technical specification](../03.specs/standardize-infra-net/spec.md)
+- **Plan**: [infra_net implementation plan](../04.execution/plans/2026-04-01-standardize-infra-net.md)
+- **Task**: [infra_net task evidence](../04.execution/tasks/2026-04-01-standardize-infra-net.md)

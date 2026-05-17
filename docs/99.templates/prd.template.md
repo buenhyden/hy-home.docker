@@ -3,7 +3,7 @@ status: draft
 ---
 <!-- Target: docs/01.requirements/YYYY-MM-DD-<feature-or-system>.md -->
 
-# Product Requirements Document
+# [Feature or System Name] Product Requirements
 
 > Use this template for `docs/01.requirements/YYYY-MM-DD-<feature-or-system>.md`.
 >
@@ -15,10 +15,6 @@ status: draft
 > - Keep implementation detail out of the PRD.
 > - Keep one `Overview (KR)` summary near the top.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
-
----
-
-## [Feature or System Name] Product Requirements
 
 ## Overview (KR)
 
@@ -71,7 +67,7 @@ status: draft
 
 ## Related Documents
 
-- **ARD**: `[../02.architecture/requirements/####-system-or-domain.md]`
-- **Spec**: `[../03.specs/<feature-id>/spec.md]`
-- **Plan**: `[../04.execution/plans/YYYY-MM-DD-<feature>.md]`
-- **ADR**: `[../02.architecture/decisions/####-<short-title>.md]`
+- **ARD**: [Architecture requirements](../02.architecture/requirements/####-system-or-domain.md)
+- **Spec**: [Technical specification](../03.specs/<feature-id>/spec.md)
+- **Plan**: [Implementation plan](../04.execution/plans/YYYY-MM-DD-<feature>.md)
+- **ADR**: [Architecture decision](../02.architecture/decisions/####-<short-title>.md)

@@ -3,11 +3,7 @@ status: draft
 ---
 <!-- Target: docs/01.requirements/2026-03-27-08-ai-open-webui.md -->
 
-# Open WebUI Product Requirements Document
-
----
-
-## Open WebUI Product Requirements
+# Open WebUI Product Requirements
 
 ## Overview (KR)
 
@@ -71,7 +67,7 @@ Interacting with local LLMs often requires CLI knowledge or fragmented tools. Us
 
 ## Related Documents
 
-- **ARD**: `[../02.architecture/requirements/0013-open-webui-architecture.md]`
-- **Spec**: `[../03.specs/08-ai/open-webui.md]`
-- **Plan**: `[../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md]`
-- **ADR**: `[../02.architecture/decisions/0016-open-webui-implementation.md]`
+- **ARD**: [Open WebUI architecture requirements](../02.architecture/requirements/0013-open-webui-architecture.md)
+- **Spec**: [Open WebUI technical specification](../03.specs/08-ai/open-webui.md)
+- **Plan**: [Open WebUI plan](../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md)
+- **ADR**: [Open WebUI implementation decision](../02.architecture/decisions/0016-open-webui-implementation.md)
