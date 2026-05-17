@@ -1,10 +1,17 @@
+---
+status: draft
+---
+<!-- Target: docs/02.architecture/decisions/README.md -->
+
 # Architecture Decision Records (ADR)
 
-> 이 경로는 기술적 의사결정 기록(Decision, Status, Context, Consequence)을 관리한다.
+> 중요한 아키텍처 선택의 배경, 대안, 결과를 남기는 ADR 문서 공간
 
 ## Overview
 
-`docs/02.architecture/decisions`은 프로젝트 전반의 아키텍처 및 기술 스택 선택에 대한 결정 과정을 기록한다. 왜 특정 기술을 선택했는지, 어떤 대안이 있었는지, 그리고 그 결정에 따른 결과가 무엇인지 투명하게 공유하여 히스토리 관리를 용이하게 한다.
+`docs/02.architecture/decisions`는 프로젝트 전반의 아키텍처 및 기술 스택 선택을 기록한다. ADR은 선택 자체만이 아니라 왜 그 선택을 했는지, 어떤 대안을 버렸는지, 그 결과로 어떤 trade-off가 생겼는지를 보존한다.
+
+ADR은 구현 명세가 아니다. 결정이 내려진 뒤의 상세 인터페이스, 설정, 검증 기준은 후속 Spec, Plan, Task, Operations 문서에서 관리한다.
 
 ## Audience
 
@@ -19,58 +26,68 @@
 
 ### In Scope
 
-- 주요 프레임워크 및 라이브러리 선정 결정
-- 시스템 통신 프로토콜 결정
-- 데이터베이스 엔진 및 스키마 설계 원칙
-- 네트워크 표준화 정책 결정 (ADR)
+- 주요 프레임워크, 플랫폼, 런타임 서비스 선정 결정
+- 시스템 통신 프로토콜과 경계 결정
+- 데이터베이스, 메시징, 관측성, 워크플로, AI, tooling 계층의 기술 선택
+- 네트워크 표준화 정책 결정
+- 관련 PRD, ARD, Spec, Plan 문서로의 추적성
 
 ### Out of Scope
 
-- 상세 규격서 (Spec 담당)
-- 단순한 코드 변경 로그
-- 일반적인 가이드 문서
+- 아키텍처 참조 모델과 품질 속성 정의 (`docs/02.architecture/requirements` 담당)
+- 상세 기술 명세와 구현 계약 (`docs/03.specs` 담당)
+- 단순 코드 변경 로그
+- 일반 사용 가이드나 운영 절차
 - 일시적인 트러블슈팅 기록
 
 ## Structure
 
 ```text
 docs/02.architecture/decisions/
-├── 2026-03-26-01-gateway-adr.md
-├── 2026-03-26-02-auth-adr.md
-├── 2026-03-26-03-security-adr.md
-├── 2026-03-26-04-data-adr.md
-├── 2026-03-26-05-messaging-adr.md
-├── 2026-03-26-06-observability-adr.md
-├── 2026-03-26-07-workflow-adr.md
-├── 2026-03-26-08-ai-adr.md
-├── 2026-03-26-09-tooling-adr.md
-├── 2026-03-26-10-communication-adr.md
-├── 2026-03-26-11-laboratory-adr.md
-├── 2026-04-01-standardize-infra-net.md  # Latest: infra_net 표준화 결정 기록
-└── README.md                               # This file
+├── 0001-traefik-nginx-hybrid.md
+├── 0002-keycloak-oauth2-proxy-choice.md
+├── ...
+├── 0026-standardize-infra-net.md        # Canonical infra_net ADR
+├── 2026-04-01-standardize-infra-net.md  # Legacy duplicate candidate
+└── README.md                            # This file
 ```
+
+## Current Inventory
+
+- 24 ADR leaf documents are present.
+- `0001` through `0011` cover base service and tier selection decisions.
+- `0015` through `0026` cover analytics, hardening/HA, and network decisions.
+- [`0026-standardize-infra-net.md`](./0026-standardize-infra-net.md) is the canonical `infra_net` ADR for this stage.
+- [`2026-04-01-standardize-infra-net.md`](./2026-04-01-standardize-infra-net.md) remains as a legacy duplicate candidate until cross-stage references are remediated with separate approval.
 
 ## How to Work in This Area
 
-1. 기술적 대안 비교 및 결정이 필요할 때 [adr.template.md](../../99.templates/adr.template.md)를 활용함.
-2. 각 ADR은 하나의 독립된 결정을 다뤄야 함.
-3. 문서 상태(`proposed`, `accepted`, `deprecated`, `superseded`)를 명확히 함.
-4. 결정된 사항은 `ARD` 또는 `Spec`에 반영하여 정합성을 유지함.
+1. 결정을 제안하기 전에 상위 PRD와 관련 ARD를 먼저 읽는다.
+2. 새 ADR을 추가하기 전에 기존 ADR을 확인한다.
+3. 새 ADR은 [`../../99.templates/adr.template.md`](../../99.templates/adr.template.md)에서 시작한다.
+4. 모든 링크는 이 폴더 아래의 대상 ADR 위치 기준으로 다시 계산한다.
+5. 하나의 ADR은 하나의 결정을 다룬다.
+6. accepted decision은 관련 ARD와 Spec에 반영한다.
 
 ## Documentation Standards
 
-- 가능한 경우 승인된 템플릿에서 시작한다.
-- 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성한다.
-- 상위 문서와 하위 산출물 간 추적성을 유지한다.
+- ADR은 implementation step이 아니라 decision을 기록한다.
+- 각 ADR은 context, decision, non-goals, consequences, alternatives, related documents를 포함한다.
+- 번호가 부여된 canonical ADR이 있으면 같은 목적의 dated duplicate를 만들지 않는다.
+- accepted ADR과 충돌하는 새 결정은 새 ADR 또는 명시적인 supersession 경로가 필요하다.
 
 ## AI Agent Guidance
 
-1. 이 README를 먼저 읽는다.
-2. 특정 기술이나 설계를 제안하기 전에 기존 ADR을 검토하여 시스템의 일관성을 저해하는지 확인한다.
-3. 결정된 사항에 반하는 변경을 수행하기 전에는 반드시 새로운 ADR 제안이 선행되어야 한다.
+1. ADR을 수정하기 전에 이 README를 먼저 읽는다.
+2. 대체 파일을 추가하지 말고 canonical ADR을 in-place로 수정한다.
+3. `infra_net` decision reference는 [`0026-standardize-infra-net.md`](./0026-standardize-infra-net.md)를 canonical로 본다.
+4. secret 값을 문서화하지 않고, untracked local state에서 runtime truth를 추론하지 않는다.
 
 ## Related Documents
 
-- **PRD**: [../01.requirements/README.md]
-- **ARD**: [../02.architecture/requirements/README.md]
-- **Spec**: [../03.specs/README.md]
+- **Architecture Stage**: [Architecture index](../README.md)
+- **PRD**: [Product requirements](../../01.requirements/README.md)
+- **ARD**: [Architecture reference documents](../requirements/README.md)
+- **Spec**: [Technical specifications](../../03.specs/README.md)
+- **Plan**: [Execution plans](../../04.execution/plans/README.md)
+- **Template**: [ADR template](../../99.templates/adr.template.md)

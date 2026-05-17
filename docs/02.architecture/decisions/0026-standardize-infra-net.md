@@ -10,7 +10,7 @@
 
 ## Decision
 
-- **결성 사항 1**: 루트 `docker-compose.yml`에서 `infra_net`의 서브넷을 `${INFRA_SUBNET:-172.19.0.0/16}`으로 고정 정의한다.
+- **결정 사항 1**: 루트 `docker-compose.yml`에서 `infra_net`의 서브넷을 `${INFRA_SUBNET:-172.19.0.0/16}`으로 고정 정의한다.
 - **결정 사항 2**: `include`되는 모든 개별 설정 파일의 서비스에 `infra_net`을 명시적으로 선언한다.
 - **결정 사항 3**: 서비스가 이미 `k3d-hyhome` 등 다른 네트워크에 연결되어 있을 경우, 이를 제거하지 않고 `infra_net`을 추가하는 방식으로 구성한다.
 
@@ -36,7 +36,7 @@
 
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-04-01-standardize-infra-net.md]`
-- **ARD**: `[../02.architecture/requirements/0026-standardize-infra-net.md]`
-- **Spec**: `[../03.specs/standardize-infra-net/spec.md]`
-- **Plan**: `[../04.execution/plans/2026-04-01-standardize-infra-net.md]`
+- **PRD**: [infra_net product requirements](../../01.requirements/2026-04-01-standardize-infra-net.md)
+- **ARD**: [infra_net architecture requirements](../requirements/0026-standardize-infra-net.md)
+- **Spec**: [infra_net technical specification](../../03.specs/standardize-infra-net/spec.md)
+- **Plan**: [infra_net implementation plan](../../04.execution/plans/2026-04-01-standardize-infra-net.md)
