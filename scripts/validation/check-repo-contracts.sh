@@ -330,6 +330,7 @@ required_jobs = {
     "quickwin-baseline",
     "pre-commit",
     "zizmor",
+    "storybook-coverage",
 }
 ci_jobs: set[str] = set()
 if ci_quality.is_file():
@@ -421,6 +422,147 @@ missing = sorted(required_patterns - patterns)
 if missing:
     for pattern in missing:
         print(f"FAIL: CODEOWNERS missing required governance pattern: {pattern}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section "PR template strategy fields"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import sys
+
+failures: list[str] = []
+template = pathlib.Path(".github/PULL_REQUEST_TEMPLATE.md")
+required_literals = [
+    "Draft/WIP",
+    "remaining work",
+    "Coverage target",
+    "Coverage rationale",
+    "Fix/Refactor evidence",
+    "Commits are small, logical, and reviewable",
+]
+
+if not template.is_file():
+    failures.append("missing PR template: .github/PULL_REQUEST_TEMPLATE.md")
+else:
+    text = template.read_text(errors="ignore")
+    for literal in required_literals:
+        if literal not in text:
+            failures.append(f"{template}: missing PR strategy field: {literal}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section "Storybook coverage contract"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import json
+import pathlib
+import sys
+
+failures: list[str] = []
+package_path = pathlib.Path("projects/storybook/nextjs/package.json")
+workflow_path = pathlib.Path(".github/workflows/ci-quality.yml")
+
+if not package_path.is_file():
+    failures.append(f"missing package file: {package_path}")
+else:
+    data = json.loads(package_path.read_text())
+    scripts = data.get("scripts", {})
+    for name in ["test", "coverage"]:
+        value = scripts.get(name)
+        if not value or "vitest run --project storybook" not in value:
+            failures.append(f"{package_path}: script {name!r} must run the Storybook Vitest project")
+    if "--coverage" not in str(scripts.get("coverage", "")):
+        failures.append(f"{package_path}: coverage script must enable coverage")
+
+if not workflow_path.is_file():
+    failures.append(f"missing workflow file: {workflow_path}")
+else:
+    text = workflow_path.read_text(errors="ignore")
+    for literal in [
+        "storybook-coverage:",
+        "npm ci --prefix projects/storybook/nextjs",
+        "npm run coverage --prefix projects/storybook/nextjs",
+    ]:
+        if literal not in text:
+            failures.append(f"{workflow_path}: missing Storybook coverage workflow literal: {literal}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section "Root shim and hook parity drift"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import json
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+
+claude_md = pathlib.Path("CLAUDE.md")
+if claude_md.is_file():
+    text = claude_md.read_text(errors="ignore")
+    if re.search(r"(?m)^##\s+graphify\s*$", text):
+        failures.append("CLAUDE.md: duplicate root-local Graphify policy block remains")
+else:
+    failures.append("missing root CLAUDE.md")
+
+def matchers(path: pathlib.Path, event: str) -> str:
+    try:
+        data = json.loads(path.read_text())
+    except Exception as exc:
+        failures.append(f"{path}: JSON parse failed: {exc}")
+        return ""
+    hooks = data.get("hooks", {}) if isinstance(data, dict) else {}
+    entries = hooks.get(event, []) if isinstance(hooks, dict) else []
+    values: list[str] = []
+    if isinstance(entries, list):
+        for entry in entries:
+            if isinstance(entry, dict):
+                values.append(str(entry.get("matcher", "")))
+    return "|".join(values)
+
+claude_post = matchers(pathlib.Path(".claude/settings.json"), "PostToolUse")
+codex_post = matchers(pathlib.Path(".codex/hooks.json"), "PostToolUse")
+for literal in ["Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch"]:
+    if literal not in claude_post:
+        failures.append(f".claude/settings.json: PostToolUse matcher must cover {literal!r}")
+    if literal not in codex_post:
+        failures.append(f".codex/hooks.json: PostToolUse matcher must cover {literal!r}")
+
+for path in [
+    pathlib.Path("docs/00.agent-governance/providers/claude.md"),
+    pathlib.Path("docs/00.agent-governance/providers/codex.md"),
+    pathlib.Path(".codex/README.md"),
+]:
+    text = path.read_text(errors="ignore") if path.is_file() else ""
+    for literal in ["Hook Parity", "apply_patch", "ApplyPatch"]:
+        if literal not in text:
+            failures.append(f"{path}: missing hook parity literal: {literal}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
 then
@@ -615,6 +757,125 @@ for path in files:
     for pattern in stale_patterns:
         for match in pattern.finditer(text):
             failures.append(f"{path}: stale runtime/governance reference: {match.group(0)}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section "Active script ownership globs"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+active_paths = [
+    pathlib.Path(".claude/agents/infra-implementer.md"),
+    pathlib.Path("docs/00.agent-governance/scopes/infra.md"),
+    pathlib.Path("docs/00.agent-governance/scopes/security.md"),
+]
+patterns = [
+    re.compile(r"scripts/validate-\*\.sh"),
+    re.compile(r"scripts/check-\*-baseline\.sh"),
+]
+
+for path in active_paths:
+    if not path.is_file():
+        failures.append(f"missing active script ownership document: {path}")
+        continue
+    text = path.read_text(errors="ignore")
+    for pattern in patterns:
+        if pattern.search(text):
+            failures.append(f"{path}: stale script ownership glob remains: {pattern.pattern}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section "Related Documents phased coverage"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import sys
+
+failures: list[str] = []
+for path in sorted(pathlib.Path("docs/99.templates").glob("*.template.md")):
+    text = path.read_text(errors="ignore")
+    if "## Related Documents" not in text:
+        failures.append(f"{path}: template missing ## Related Documents")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section "Infra README rubric advisory"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import sys
+
+failures: list[str] = []
+required_template_literals = [
+    "SNIPPET: INFRA SERVICE READINESS",
+    "Secret refs",
+    "Troubleshooting",
+    "scripts/validation/",
+    "root-level `scripts/*.sh` wrappers",
+]
+for path in [pathlib.Path("docs/99.templates/readme.template.md"), pathlib.Path("infra/README.md")]:
+    if not path.is_file():
+        failures.append(f"missing rubric source: {path}")
+        continue
+    text = path.read_text(errors="ignore")
+    required = ["Secret refs", "Troubleshooting"] if path.parts[0] == "infra" else required_template_literals
+    for literal in required:
+        if literal not in text:
+            failures.append(f"{path}: missing rubric/lifecycle literal: {literal}")
+
+required_fields = [
+    "Purpose",
+    "Config files",
+    "Config values",
+    "Compose linkage",
+    "Networks",
+    "Volumes",
+    "Ports",
+    "Labels",
+    "Secret refs",
+    "Healthcheck",
+    "Operations",
+    "Validation",
+    "Troubleshooting",
+]
+readmes = sorted(pathlib.Path("infra").rglob("README.md"))
+missing_by_file: dict[str, list[str]] = {}
+for path in readmes:
+    text = path.read_text(errors="ignore")
+    missing = [field for field in required_fields if field not in text]
+    if missing:
+        missing_by_file[str(path)] = missing
+
+print(f"infra_readmes_total={len(readmes)}")
+print(f"infra_readmes_rubric_partial={len(missing_by_file)}")
 
 if failures:
     for failure in failures:

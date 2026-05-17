@@ -47,7 +47,7 @@ Universal security standards and data protection protocols for `hy-home.docker`.
 | Path Pattern                     | Owner Agent        | Read-Only For                                    |
 | -------------------------------- | ------------------ | ------------------------------------------------ |
 | `scripts/hardening/check-all-hardening.sh` | `security-auditor` | all other agents                                 |
-| `scripts/check-*-baseline.sh`    | `security-auditor` | all other agents                                 |
+| `scripts/hardening/check-all-hardening.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/validation/check-quickwin-baseline.sh` | `security-auditor` | all other agents                                 |
 | `docs/05.operations/incidents/`             | `security-auditor` | `incident-responder` (read)                      |
 | `infra/*/`                       | read-only          | audit only; changes owned by `infra-implementer` |
 

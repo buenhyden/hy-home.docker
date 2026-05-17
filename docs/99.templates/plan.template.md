@@ -68,7 +68,7 @@ status: draft
 
 ## Related Documents
 
-- **PRD**: `[../01.requirements/YYYY-MM-DD-<feature-or-system>.md]`
-- **ARD**: `[../02.architecture/requirements/####-<system-or-domain>.md]`
-- **Spec**: `[../03.specs/<feature-id>/spec.md]`
-- **ADR**: `[../02.architecture/decisions/####-<short-title>.md]`
+- **PRD**: `[../../01.requirements/YYYY-MM-DD-<feature-or-system>.md]`
+- **ARD**: `[../../02.architecture/requirements/####-<system-or-domain>.md]`
+- **Spec**: `[../../03.specs/<feature-id>/spec.md]`
+- **ADR**: `[../../02.architecture/decisions/####-<short-title>.md]`

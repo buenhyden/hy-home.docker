@@ -64,6 +64,9 @@ layer: agentic
 3. 상대 경로만 사용한다.
 4. PRD/ARD/ADR/Spec/Plan/Task의 추적성을 유지한다.
 5. Agent 기능은 Role, Tool, Guardrail, Eval, Fallback을 빠뜨리지 않는다.
+6. `## Related Documents` 예시는 템플릿 파일 위치가 아니라 복사된 대상 파일 위치에서 해석되어야 한다.
+7. infra service README는 목적, config, compose linkage, network, volume, port, label, secret ref, healthcheck, operations, validation, troubleshooting evidence를 포함한다.
+8. scripts README는 `scripts/validation/`, `scripts/hardening/`, `scripts/hooks/`, `scripts/knowledge/`, `scripts/operations/`, `scripts/lib/` 목적 폴더를 보존하고 root-level wrapper를 만들지 않는다.
 
 ## 템플릿-폴더 매핑
 

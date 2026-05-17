@@ -144,9 +144,10 @@ graph_tools = {"Bash", "Glob", "Grep", "Read", "LS"}
 if (project / "graphify-out" / "graph.json").is_file() and (not tool_name or tool_name in graph_tools):
     additional_context.append(
         "graphify: Knowledge graph exists. Read graphify-out/GRAPH_REPORT.md first; "
-        "if report health is contaminated by ignored volumes, gitlink/submodule content, "
-        "generated/minified artifacts, meaningless god nodes, or unrelated cross-root inferred edges, "
-        "treat it as advisory and corroborate against tracked source files, docs/00.agent-governance, and stage docs."
+        "when report health is advisory for any reason, including ignored volumes, "
+        "gitlink/submodule content, generated/minified artifacts, meaningless god nodes, "
+        "or unrelated cross-root inferred edges, corroborate against tracked source files, "
+        "docs/00.agent-governance, and stage docs."
     )
 
 edit_tools = {"Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch"}

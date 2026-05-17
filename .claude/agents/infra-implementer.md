@@ -45,7 +45,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 ## Collaboration
 
 - Reads from: `security-auditor` audit reports, `code-reviewer` findings, `drift-detector` drift reports.
-- Writes to: `docker-compose*.yml`, `infra/*/`, `scripts/validate-*.sh`.
+- Writes to: `docker-compose*.yml`, `infra/*/`, `scripts/validation/validate-docker-compose.sh`.
 - Escalates to: user for plaintext secret discovery or destructive operation requests.
 
 ## Team Communication Protocol

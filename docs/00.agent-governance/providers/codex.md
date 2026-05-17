@@ -41,7 +41,14 @@ Codex-specific guidance for this repository.
   documented in `docs/00.agent-governance/agents/` and
   `docs/00.agent-governance/subagent-protocol.md`.
 
-## 5. Operational Practices
+## 5. Hook Parity Contract
+
+- Codex hook events must stay behaviorally aligned with Claude hook events where both runtimes support the event.
+- `SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`, `Stop`, and `PreCompact` route through `scripts/hooks/agent-event-hook.sh`.
+- Codex `PreToolUse` and `PostToolUse` matchers must cover normal file edits and patch-based edits, including `Write`, `Edit`, `MultiEdit`, `apply_patch`, and `ApplyPatch`.
+- Runtime hooks provide advisory context and validation routing only. Policy remains in `docs/00.agent-governance/`.
+
+## 6. Operational Practices
 
 - Keep root files concise and delegate detailed policy to governance docs.
 - Prefer repository-local checks over user-global configuration changes.

@@ -59,6 +59,10 @@ This README is for:
 - `PreToolUse` uses `scripts/hooks/agent-event-hook.sh` to emit Graphify advisory context when relevant and Docker Compose guardrail context before matching edits.
 - `PostToolUse` uses `scripts/hooks/agent-event-hook.sh`, which delegates to `scripts/hooks/post-tool-validate.sh` after file edits when the hook payload includes changed paths.
 - `SessionEnd`, `Stop`, and `PreCompact` route through `scripts/hooks/agent-event-hook.sh` for lifecycle-safe advisory context when the runtime supports those events.
+
+## Hook Parity Contract
+
+- Hook event coverage should stay aligned with `.claude/settings.json` where both runtimes support the event; edit matchers cover `Write`, `Edit`, `MultiEdit`, `apply_patch`, and `ApplyPatch`.
 - The hook is advisory and must not be treated as the policy source of truth.
 - Agents still follow `AGENTS.md`, provider notes, scope rules, and active sandbox approvals.
 

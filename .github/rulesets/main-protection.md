@@ -6,9 +6,10 @@ itself.
 
 ## Current Remote State
 
-- Verified on 2026-05-16 by read-only GitHub API calls (post-mutation state).
+- Verified on 2026-05-17 by read-only GitHub API calls recorded in `.agent-work/report/cicd-github-report.md`.
 - Repository rulesets: classic branch protection active on `main`.
-- Required status checks: 10 contexts required with strict/latest up-to-date branch requirement enabled:
+- Repository rulesets API returned `[]`; no repository rulesets are active.
+- Required status checks: 10 remote contexts currently required with strict/latest up-to-date branch requirement enabled:
   `docs-traceability`, `repo-contracts`, `git-flow-contract`, `compose-validation`,
   `compose-all-profiles-validation`, `infrastructure-hardening`, `template-security-baseline`,
   `quickwin-baseline`, `pre-commit`, `zizmor`.
@@ -16,6 +17,7 @@ itself.
 - Conversation resolution: required before merge.
 - Force pushes: disabled.
 - Branch deletion: disabled.
+- Admin enforcement: `enforce_admins=false`; agents still follow no-bypass governance policy locally.
 - Linear history: enforced via squash/rebase merge preference.
 - Agents must re-verify remote state in future audit passes before asserting enforcement.
 
@@ -47,6 +49,7 @@ Use the CI Quality Gates workflow job names as required checks:
 - `quickwin-baseline`
 - `pre-commit`
 - `zizmor`
+- `storybook-coverage`
 
 ## Application Boundary
 

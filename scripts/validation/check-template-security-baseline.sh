@@ -59,6 +59,10 @@ mapfile -t compose_files < <(
   find infra -type f \( -name 'docker-compose.yml' -o -name 'docker-compose.*.yml' -o -name 'docker-compose-*.yml' \) | sort
 )
 
+mapfile -t compose_yaml_files_excluded < <(
+  find infra -type f \( -name 'docker-compose.yaml' -o -name 'docker-compose.*.yaml' -o -name 'docker-compose-*.yaml' \) | sort
+)
+
 template_violations=()
 for f in "${compose_files[@]}"; do
   is_exception="$(
@@ -111,6 +115,7 @@ capdrop_violations="$(
 )"
 
 total_files="${#compose_files[@]}"
+excluded_yaml_files="${#compose_yaml_files_excluded[@]}"
 template_fail_count="${#template_violations[@]}"
 nnp_fail_count="$(wc -w <<<"$nnp_violations" | tr -d ' ')"
 capdrop_fail_count="$(wc -w <<<"$capdrop_violations" | tr -d ' ')"
@@ -119,6 +124,10 @@ echo "Template & security baseline check"
 echo "compose_profiles=$compose_profiles"
 echo "services_total=$service_total"
 echo "compose_files_total=$total_files"
+echo "compose_yaml_files_excluded=$excluded_yaml_files"
+if [[ "$excluded_yaml_files" -gt 0 ]]; then
+  printf 'compose_yaml_exclusion=%s\n' "${compose_yaml_files_excluded[@]}"
+fi
 echo "template_adoption_missing=$template_fail_count"
 echo "missing_no_new_privileges=$nnp_fail_count"
 echo "missing_cap_drop_all=$capdrop_fail_count"

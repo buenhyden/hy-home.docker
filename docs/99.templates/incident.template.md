@@ -31,7 +31,7 @@ NC-YYYYMMDD-XXX / [Short Incident Title]
 | Detection Time | `YYYY-MM-DD HH:MM UTC` |
 | Primary Service | [Affected service] |
 | Evidence Source | [Log / dashboard / report] |
-| Runbook Link | `[../../05.operations/####-<topic>.md]` |
+| Runbook Link | `[../../runbooks/<topic>.md]` |
 
 ## Agent Metadata (If Applicable)
 
@@ -79,5 +79,6 @@ NC-YYYYMMDD-XXX / [Short Incident Title]
 ## Related Documents
 
 - **Runbook**: `[../../runbooks/<topic>.md]`
-- **Operations Guide / Policy**: `[../../guides/<topic>.md]`
+- **Operations Guide**: `[../../guides/<topic>.md]`
+- **Operations Policy**: `[../../policies/<topic>.md]`
 - **Follow-up Task**: `[../../../04.execution/tasks/YYYY-MM-DD-<topic>.md]`

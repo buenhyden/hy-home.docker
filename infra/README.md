@@ -48,7 +48,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 
 ## Compose Inventory Snapshot
 
-`infra/`에는 현재 47개의 `docker-compose*.yml` 파일과 40개의 Compose service directory가 있습니다. 루트 `docker-compose.yml`이 활성 include로 직접 묶는 파일은 14개이며, 나머지는 optional, standalone, 또는 variant로 분류합니다.
+`infra/`에는 현재 48개의 Compose variant 파일이 있습니다. 이 중 47개는 `docker-compose*.yml`이고 1개는 명시적으로 excluded/report-only 처리되는 `docker-compose*.yaml` cluster variant입니다. Compose service directory는 40개입니다. 루트 `docker-compose.yml`이 활성 include로 직접 묶는 파일은 14개이며, 나머지는 optional, standalone, 또는 variant로 분류합니다.
 
 | Status | Meaning | Documentation Rule |
 | --- | --- | --- |

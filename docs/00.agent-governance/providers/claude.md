@@ -38,7 +38,14 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 - GitHub-native instruction files are not part of this repository's active instruction hierarchy.
 - Personal `settings.local.json` may not override team policy in `settings.json`.
 
-## 5. Operational Practices
+## 5. Hook Parity Contract
+
+- Claude hook events must stay behaviorally aligned with Codex hook events where both runtimes support the event.
+- `SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`, `Stop`, and `PreCompact` route through thin `.claude/hooks/*.sh` wrappers and then the provider-neutral dispatcher in `scripts/hooks/agent-event-hook.sh`.
+- Claude `PreToolUse` and `PostToolUse` matchers must cover normal file edits and patch-based edits, including `Write`, `Edit`, `MultiEdit`, `apply_patch`, and `ApplyPatch`.
+- Runtime hooks provide advisory context and validation routing only. Policy remains in `docs/00.agent-governance/`.
+
+## 6. Operational Practices
 
 - Keep instructions short, specific, and executable.
 - Prefer path-scoped instruction files instead of large monolithic root files.
@@ -50,6 +57,7 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/rules/bootstrap.md`
 - `scripts/hooks/agent-event-hook.sh`
+- `scripts/hooks/post-tool-validate.sh`
 
 ## References
 

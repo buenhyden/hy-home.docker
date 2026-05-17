@@ -37,6 +37,9 @@ status: draft
 - README는 사람과 AI Agent 모두가 읽어도 목적을 오해하지 않도록 작성해야 한다.
 - README는 상위 문서와 하위 산출물 간 연결을 드러내야 한다.
 - README는 생성, 수정, 검토 시 따라야 하는 최소 작업 규칙을 포함해야 한다.
+- Related Documents 링크는 템플릿 파일 위치가 아니라 복사된 대상 README 위치에서 해석되어야 한다.
+- infra service README는 `Infra Service Readiness Snippet`을 추가해 agent-verifiable evidence를 남긴다.
+- scripts README는 `Scripts Purpose-Folder Snippet`을 추가해 목적별 폴더와 root wrapper 금지 규칙을 보존한다.
 -->
 
 # {Folder or Project Name}
@@ -279,6 +282,51 @@ SNIPPET: OPS & UTILS
 - Operations Procedures: {operations-procedure-link}
 - Incident Records: {incident-link}
 - Postmortems: {postmortem-link}
+
+<!--
+===============================================================================
+SNIPPET: INFRA SERVICE READINESS
+===============================================================================
+-->
+
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | {service role, tier, and root-active / optional / standalone status} |
+| Config files | {docker-compose files, Dockerfile, scripts, and mounted config paths} |
+| Config values | {non-secret environment keys and defaults that affect operation} |
+| Compose linkage | {root include/profile status and variant compose files} |
+| Networks | {declared networks and trust boundary} |
+| Volumes | {persistent data, bind mounts, and backup-relevant paths} |
+| Ports | {internal and exposed ports with protocol notes} |
+| Labels | {routing, observability, or policy labels} |
+| Secret refs | {secret names and mounted paths only; never secret values} |
+| Healthcheck | {health endpoint or explicit reason when not applicable} |
+| Operations | {canonical guide, policy, runbook, or service README reference} |
+| Validation | {compose, hardening, and repository contract checks} |
+| Troubleshooting | {known failure modes and first diagnostic command} |
+
+<!--
+===============================================================================
+SNIPPET: SCRIPTS PURPOSE-FOLDER LIFECYCLE
+===============================================================================
+-->
+
+## Purpose Folder Implementation
+
+Scripts must stay under canonical purpose folders:
+
+- `scripts/validation/` for validation gates.
+- `scripts/hardening/` for hardening checks.
+- `scripts/hooks/` for provider-neutral runtime hooks.
+- `scripts/knowledge/` for repository knowledge and index helpers.
+- `scripts/operations/` for manual operator utilities.
+- `scripts/lib/` for sourced helper libraries only.
+
+Do not add root-level `scripts/*.sh` wrappers. New scripts must be inventoried
+in `scripts/README.md`, referenced by an active surface, and support safe
+`--check` or `--dry-run` modes when they inspect or preview operational state.
 
 <!--
 ===============================================================================

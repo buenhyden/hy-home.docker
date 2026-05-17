@@ -12,7 +12,7 @@
 
 `docs/90.references/llm-wiki`는 tracked source files 기반의 LLM 탐색 지도입니다. 사람과 AI Agent가 같은 canonical 경로를 보도록 돕지만, 정책, 실행 계획, 운영 절차, incident 기록, runtime 설정 원문을 대체하지 않습니다.
 
-Graphify 산출물은 corpus health가 clean일 때도 navigation aid로만 사용합니다. 현재처럼 `graphify-out/`에 runtime volume이나 gitlink/submodule 오염이 포함되면 advisory evidence로 낮추고, 모든 판단은 추적 파일과 canonical docs로 재확인합니다.
+Graphify 산출물은 corpus health가 clean일 때도 navigation aid로만 사용합니다. `graphify-out/` health가 advisory이면 이유가 runtime volume, gitlink/submodule, generated/minified artifact, meaningless god node, cross-root inferred edge 중 무엇이든 advisory evidence로 낮추고, 모든 판단은 추적 파일과 canonical docs로 재확인합니다.
 
 ## Audience
 

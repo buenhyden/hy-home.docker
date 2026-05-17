@@ -67,5 +67,5 @@ status: draft
 
 ## Related Documents
 
-- **ARD**: `[../02.architecture/requirements/####-<system-or-domain>.md]`
-- **Postmortem**: `[../05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md]`
+- **ARD**: `[../../02.architecture/requirements/####-<system-or-domain>.md]`
+- **Postmortem**: `[../incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md]`

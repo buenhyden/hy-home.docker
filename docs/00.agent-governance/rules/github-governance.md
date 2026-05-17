@@ -10,7 +10,8 @@ Repo-local stricter rules always override this document; never weaken them on th
 ## 1. Repository Protection Contract
 
 - Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks.
-- This is an agent behavior contract. Remote branch protection was verified active on 2026-05-16 (10 required contexts, 1 approving review, CODEOWNERS required, conversation resolution required, no force-push/deletion). Agents must re-verify remote state in future audit passes before asserting enforcement.
+- This is an agent behavior contract. Remote branch protection was verified active on 2026-05-17 (10 required remote contexts, 1 approving review, CODEOWNERS required, conversation resolution required, no force-push/deletion, `enforce_admins=false`). Agents must re-verify remote state in future audit passes before asserting enforcement.
+- "No exceptions" is mandatory agent behavior even when GitHub admin enforcement or repository rulesets do not fully enforce the same boundary.
 - Remote branch protection and ruleset state must be verified from GitHub before claiming enforcement is active. The local verified-state record lives in `.github/rulesets/main-protection.md`.
 - If remote enforcement is absent or unknown, agents must still follow protected-branch discipline locally and report the remote enforcement state as blocked or unverified.
 - Required status checks listed in `.github/rulesets/main-protection.md` must pass before any PR is considered ready to merge. Agents must not declare "done" until those checks are green or explicitly report why remote enforcement could not be verified.
