@@ -53,3 +53,8 @@ being caught by the repository contract check.
 - `.codex/README.md`
 - `docs/00.agent-governance/agents/`
 - `scripts/validation/check-repo-contracts.sh`
+
+## Related Documents
+
+- `README.md`
+- `progress.md`

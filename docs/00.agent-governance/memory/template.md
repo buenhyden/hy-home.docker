@@ -42,3 +42,8 @@ List concrete guardrails for future runs.
 ## Evidence
 
 List related commands, validators, docs, or follow-up task references.
+
+## Related Documents
+
+- `README.md`
+- `progress.md`

@@ -44,3 +44,8 @@ Keep active policy in `rules/`, `scopes/`, provider overlays, root shims, and ru
 - `docs/99.templates/memory.template.md`
 - `docs/99.templates/progress.template.md`
 - `scripts/validation/check-repo-contracts.sh`
+
+## Related Documents
+
+- `README.md`
+- `progress.md`
