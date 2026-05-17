@@ -62,6 +62,12 @@ mng-db/
 | `POSTGRES_DEFAULT_DB` | Yes | 기본 관리용 DB 이름 (mng-pg) |
 | `VALKEY_PORT` | No | 노출 포트 (Default: 6379) |
 
+## Validation
+
+- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect the management database.
+- Run `bash scripts/hardening/check-all-hardening.sh` before marking management database documentation ready.
+- Validate this service directory with `docker compose config --services` when changing PostgreSQL, Valkey, exporter, network, volume, or secret references.
+
 ## Troubleshooting
 
 - Start with `docker compose config` to confirm PostgreSQL, Valkey, network, and secret references render.

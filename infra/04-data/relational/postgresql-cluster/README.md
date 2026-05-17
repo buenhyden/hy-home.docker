@@ -88,6 +88,11 @@ postgresql-cluster/
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect PostgreSQL cluster services.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking PostgreSQL cluster documentation ready.
 
+## Troubleshooting
+
+- Start with `docker compose config` from this service directory to verify Patroni, etcd, HAProxy, exporter, network, volume, and secret references render.
+- If leader election or routing fails, inspect `docker compose logs pg-router` and the Patroni node logs, then check `patronictl list` before changing DCS or HAProxy settings.
+
 ## Related Documents
 
 - **Guide**: [docs/05.operations/04-data/relational/postgresql-cluster.md](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)

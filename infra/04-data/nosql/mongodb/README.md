@@ -78,6 +78,11 @@ mongodb/
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect MongoDB.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking MongoDB documentation ready.
 
+## Troubleshooting
+
+- Start with `docker compose config` from this service directory to verify replica set, Mongo Express, exporter, network, and secret references render.
+- If replica initialization fails, inspect `docker compose logs mongo-init` and confirm `docker exec -it mongodb-rep1 mongosh --eval "rs.status()"` reports the expected member state before changing keyfile or replica set settings.
+
 ## Related Documents
 
 - **Guide**: [MongoDB Guide](../../../../docs/05.operations/guides/04-data/nosql/mongodb.md)

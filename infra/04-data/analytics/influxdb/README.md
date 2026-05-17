@@ -50,6 +50,11 @@ influxdb/
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect InfluxDB.
 - Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
 
+## Troubleshooting
+
+- Start with `docker compose config` from this service directory to verify the selected InfluxDB variant renders without missing environment, secret, volume, or network references.
+- If writes or dashboards fail, inspect `docker compose logs influxdb` and confirm the expected API token secret path exists before changing retention, bucket, or version settings.
+
 ## Related Documents
 
 - **System Guide**: [docs/05.operations/04-data/analytics/influxdb.md](../../../../docs/05.operations/guides/04-data/analytics/influxdb.md)

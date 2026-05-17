@@ -52,6 +52,11 @@ opensearch/
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking OpenSearch documentation ready.
 - `docker-compose.cluster.yml` includes node and dashboard healthchecks; validate it from this service directory with `docker compose --env-file ../../../../.env.example -f docker-compose.cluster.yml config --services`.
 
+## Troubleshooting
+
+- Start with `docker compose config` from this service directory to verify OpenSearch, Dashboards, network, certificate, and secret references render.
+- If the cluster does not form or Dashboards cannot connect, inspect `docker compose logs opensearch` and `docker compose logs opensearch-dashboards` before changing JVM, OIDC, or certificate settings.
+
 ## Related Documents
 
 - **System Guide**: [docs/05.operations/04-data/analytics/opensearch.md](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)
