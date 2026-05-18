@@ -12,3 +12,18 @@ projects/
 
 # Secret mounts: sensitive configuration must not be scanned or indexed.
 secrets/
+
+_workspace/
+.agent/
+.agent-work/
+.agents/
+.claude/
+.codex/
+.github/
+.gstack/
+.rtk/
+.ruff_cache/
+.vscode/
+.worktrees/
+examples/
+node_modules/
