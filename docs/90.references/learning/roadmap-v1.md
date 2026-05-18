@@ -26,7 +26,7 @@ status: archived
 
 ### Out of Scope
 
-- 최신 학습 기준의 SSoT
+- active learning 기준의 SSoT
 - 실시간 운영 절차
 - incident timeline 또는 postmortem
 - secret 값, credential, token
@@ -34,29 +34,32 @@ status: archived
 ## Definitions / Facts
 
 - 이 문서는 archived reference이며 active policy나 runbook을 대체하지 않는다.
-- 최신 학습 로드맵은 `roadmap.md`다.
+- active learning roadmap은 `roadmap.md`다.
 - 외부 링크는 archive 시점의 학습 출처이며, 현재 의사결정에 사용하기 전에는 다시 확인해야 한다.
+- Repository analysis와 exercise 항목은 2026-03-30 snapshot history다. 현재 runtime 상태, 지원 범위, 운영 절차, 학습 기준으로 사용하지 않는다.
 
 ## Source Rules
 
 - 이 문서는 archive history로만 사용하고 현재 학습 기준은 `roadmap.md`에서 확인한다.
-- repo-local 예시는 초기 mapping context이며, 최신 runtime 판단은 `infra/`, registry 파일, validators에서 확인한다.
+- repo-local 예시는 초기 mapping context이며, runtime 판단은 `infra/`, registry 파일, validators에서 확인한다.
 - 외부 논문과 표준 링크는 이론적 배경을 보존하기 위한 source다.
-- 최신 release 상태, 가격, 지원 정책처럼 변하기 쉬운 외부 사실은 이 archived 문서에서 current fact로 주장하지 않는다.
+- release 상태, 가격, 지원 정책처럼 변하기 쉬운 외부 사실은 이 archived 문서에서 live fact로 주장하지 않는다.
 
 ## Reference Body
 
 ## 📝 Describe Changes
 
-- **Initial Version**: Synthesized from the current `hy-home.docker` infrastructure audit (2026-03-30).
+- **Initial Version**: Synthesized from the 2026-03-30 `hy-home.docker` infrastructure audit snapshot.
 - **Consensus Focus**: Added Patroni/etcd (Raft) mapping to Distributed Systems theory.
 - **AI Focus**: Added Qdrant (HNSW) mapping to Vector Search theory.
 - **Hands-on**: Added "Custom Controller" and "Vector RAG" mini-projects.
 
 ## 🔍 Repository Analysis
 
-- **Component Overview**: A multi-tiered Docker-based private cloud infrastructure covering Gateway, Auth, Database Clusters, Messaging, and AI services.
-- **Current Complexity Level**: **Intermediate to Architect**. The stack uses production-grade cluster patterns (Patroni, Valkey Cluster) and advanced AI infrastructure (Qdrant, Ollama).
+Archived 2026-03-30 snapshot. Preserve this section as historical context only; use [active learning roadmap](./roadmap.md), [infra index](../../../infra/README.md), and validators for live interpretation.
+
+- **Component Overview Snapshot**: A multi-tiered Docker-based private cloud infrastructure covering Gateway, Auth, Database Clusters, Messaging, and AI services.
+- **Learning Complexity Snapshot**: The archived analysis mapped Patroni, Valkey Cluster, Qdrant, and Ollama to intermediate-to-architect learning topics. It is not a live maturity rating.
 
 ---
 
@@ -103,29 +106,29 @@ Patterns, CI/CD, Observability, and Security.
   - **Learning Objective**: Master how to build alerting rules that separate "signal" from "noise".
 
 - **Topic Name**: **Secret Management & Zero Trust**
-  - **Pattern Root**: Centralized, encrypted storage of credentials that are dynamically injected into services.
+  - **Pattern Root**: Centralized, encrypted storage of sensitive values that are dynamically injected into services.
   - **Repo Connection**: See **HashiCorp Vault** in `infra/03-security/vault/`.
-  - **Learning Objective**: Master the AppRole authentication method and secret rotation.
+  - **Learning Objective**: Master the AppRole authentication method and rotation patterns.
 
 ---
 
-## 🏗️ Tier 4: Hands-on Mini-Projects (Implementation)
+## 🏗️ Tier 4: Archived Sandboxed Learning Exercises
 
-Verified learning through coding.
+Archived exercise ideas. These are not implementation tasks, operations runbooks, or backlog items. If reused for learning, keep them in throwaway sandbox environments with synthetic data only. Do not use live Docker sockets, mutate existing Valkey/etcd clusters, or any private PDFs, secrets, credentials, tokens.
 
-### Project 1: **Custom Controller Implementation**
+### Exercise 1: **Custom Controller Simulation**
 
-- **Objective**: Build a simple reconciliation loop in Python or Go that monitors the Docker API and automatically performs an action (e.g., tagging resources or cleaning dangling volumes).
+- **Objective**: Study reconciliation loops with static fixtures that model desired and observed container state.
 - **Theory**: Control Loop theory used in Kubernetes and automation brokers.
 
-### Project 2: **Distributed Lock Service**
+### Exercise 2: **Distributed Lock Concept Lab**
 
-- **Objective**: Using the existing **Valkey** or **etcd** cluster, implement a service that prevents concurrent execution of a specific task across multiple containers.
+- **Objective**: Study mutual exclusion and lease expiry with a toy in-memory or disposable local service.
 - **Theory**: Mutual Exclusion in distributed environments.
 
-### Project 3: **Vector RAG Pipeline Builder**
+### Exercise 3: **Vector Retrieval Thought Experiment**
 
-- **Objective**: Create a script that picks a directory of PDF files, converts them to embeddings using **Ollama**, stores them in **Qdrant**, and allows querying through a simple CLI.
+- **Objective**: Study retrieval and answer grounding with public toy text and fake embeddings.
 - **Theory**: Retrieval-Augmented Generation (RAG) architecture.
 
 ---
@@ -148,8 +151,9 @@ Verified learning through coding.
 
 ## Sources
 
-- Repository-local docs and README files
-- Linked references already present in this document
+- [Active learning roadmap](./roadmap.md) - active learning roadmap reference
+- [infra index](../../../infra/README.md) - infrastructure entrypoint for verifying archived repo-state claims
+- Linked external references already present in this document
 
 ## Maintenance
 
@@ -160,7 +164,7 @@ Verified learning through coding.
 ## Related Documents
 
 - [Learning reference index](./README.md)
-- [Current learning roadmap](./roadmap.md)
+- [Active learning roadmap](./roadmap.md)
 - [90.references](../README.md)
 - [stable reference terms](../glossary/stable-reference-terms.md)
 - [docs index](../../README.md)
