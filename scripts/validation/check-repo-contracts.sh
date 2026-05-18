@@ -870,6 +870,298 @@ then
   failures=$((failures + 1))
 fi
 
+section "Markdown documentation contract"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+repo_root = pathlib.Path(".").resolve()
+template_root = pathlib.Path("docs/99.templates")
+generated_llm_index = pathlib.Path("docs/90.references/llm-wiki/index.md")
+
+markdown_link = re.compile(r"(?<!!)(?<!\\)\[([^\]\n]+)\]\(([^)\n]+)\)")
+pseudo_doc_link = re.compile(r"`\[((?:\.{1,2}/|docs/)[^`\]]+?\.md(?:#[^`\]]*)?)\]`")
+path_like = re.compile(r"^(?:\.{1,2}/|docs/).+\.md(?:#[^#\s]+)?$")
+
+scoped_label_paths = {
+    pathlib.Path(path)
+    for path in [
+        "docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md",
+        "docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md",
+        "docs/02.architecture/decisions/0003-vault-as-secrets-manager.md",
+        "docs/02.architecture/decisions/0004-postgresql-ha-patroni.md",
+        "docs/02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md",
+        "docs/02.architecture/decisions/0006-lgtm-stack-selection.md",
+        "docs/02.architecture/decisions/0009-tooling-services.md",
+        "docs/02.architecture/decisions/0010-communication-services.md",
+        "docs/02.architecture/decisions/0011-laboratory-services.md",
+        "docs/02.architecture/decisions/0016-open-webui-implementation.md",
+        "docs/02.architecture/decisions/2026-04-01-standardize-infra-net.md",
+        "docs/02.architecture/requirements/0001-gateway-architecture.md",
+        "docs/02.architecture/requirements/0002-auth-architecture.md",
+        "docs/02.architecture/requirements/0003-security-architecture.md",
+        "docs/02.architecture/requirements/0004-data-architecture.md",
+        "docs/02.architecture/requirements/0005-messaging-architecture.md",
+        "docs/02.architecture/requirements/0006-observability-architecture.md",
+        "docs/02.architecture/requirements/0011-laboratory-architecture.md",
+        "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
+        "docs/02.architecture/requirements/0013-open-webui-architecture.md",
+        "docs/02.architecture/requirements/2026-04-01-standardize-infra-net.md",
+        "docs/04.execution/plans/2026-03-26-01-gateway-standardization.md",
+        "docs/04.execution/plans/2026-03-26-02-auth-standardization.md",
+        "docs/04.execution/plans/2026-03-26-03-security-standardization.md",
+        "docs/04.execution/plans/2026-03-26-04-data-standardization.md",
+        "docs/04.execution/plans/2026-03-26-05-messaging-standardization.md",
+        "docs/04.execution/plans/2026-03-26-06-observability-standardization.md",
+        "docs/04.execution/plans/2026-03-26-07-workflow-standardization.md",
+        "docs/04.execution/plans/2026-03-26-08-ai-standardization.md",
+        "docs/04.execution/plans/2026-03-26-09-tooling-standardization.md",
+        "docs/04.execution/plans/2026-03-26-10-communication-standardization.md",
+        "docs/04.execution/plans/2026-03-26-11-laboratory-standardization.md",
+        "docs/04.execution/plans/2026-03-27-08-ai-open-webui-plan.md",
+        "docs/04.execution/plans/2026-03-29-k8s-migration-strategy.md",
+        "docs/04.execution/plans/2026-04-01-standardize-infra-net.md",
+        "docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md",
+        "docs/04.execution/tasks/2026-03-26-02-auth-tasks.md",
+        "docs/04.execution/tasks/2026-03-26-03-security-tasks.md",
+        "docs/04.execution/tasks/2026-03-26-04-data-tasks.md",
+        "docs/04.execution/tasks/2026-03-26-05-messaging-tasks.md",
+        "docs/04.execution/tasks/2026-03-26-06-observability-tasks.md",
+        "docs/04.execution/tasks/2026-03-26-07-workflow-tasks.md",
+        "docs/04.execution/tasks/2026-03-26-08-ai-tasks.md",
+        "docs/04.execution/tasks/2026-03-26-09-tooling-tasks.md",
+        "docs/04.execution/tasks/2026-03-26-10-communication-tasks.md",
+        "docs/04.execution/tasks/2026-03-26-11-laboratory-tasks.md",
+        "docs/04.execution/tasks/2026-03-27-08-ai-open-webui-tasks.md",
+        "docs/04.execution/tasks/2026-04-01-standardize-infra-net.md",
+        "docs/05.operations/runbooks/0012-standardize-infra-net.md",
+        "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
+        "docs/05.operations/runbooks/04-data/analytics/ksqldb.md",
+        "docs/05.operations/runbooks/04-data/analytics/opensearch.md",
+        "docs/05.operations/runbooks/04-data/analytics/warehouses.md",
+        "docs/05.operations/runbooks/04-data/operational/supabase.md",
+        "docs/05.operations/runbooks/04-data/relational.md",
+        "docs/05.operations/runbooks/05-messaging/kafka.md",
+        "docs/05.operations/runbooks/05-messaging/rabbitmq.md",
+        "docs/05.operations/runbooks/08-ai/ollama.md",
+        "docs/05.operations/runbooks/08-ai/open-webui.md",
+        "docs/05.operations/runbooks/11-laboratory/dashboard.md",
+        "docs/05.operations/runbooks/11-laboratory/dozzle.md",
+    ]
+}
+
+heading_scope = {
+    "ARD": {
+        pathlib.Path("docs/02.architecture/requirements/0002-auth-architecture.md"),
+        pathlib.Path("docs/02.architecture/requirements/0003-security-architecture.md"),
+        pathlib.Path("docs/02.architecture/requirements/0012-data-analytics-architecture.md"),
+    },
+    "ADR": {
+        pathlib.Path("docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md"),
+        pathlib.Path("docs/02.architecture/decisions/0003-vault-as-secrets-manager.md"),
+        pathlib.Path("docs/02.architecture/decisions/0009-tooling-services.md"),
+        pathlib.Path("docs/02.architecture/decisions/0010-communication-services.md"),
+        pathlib.Path("docs/02.architecture/decisions/0011-laboratory-services.md"),
+    },
+    "Plan": {
+        pathlib.Path("docs/04.execution/plans/2026-03-26-02-auth-standardization.md"),
+        pathlib.Path("docs/04.execution/plans/2026-03-26-03-security-standardization.md"),
+        pathlib.Path("docs/04.execution/plans/2026-03-26-07-workflow-standardization.md"),
+        pathlib.Path("docs/04.execution/plans/2026-03-26-08-ai-standardization.md"),
+        pathlib.Path("docs/04.execution/plans/2026-03-26-09-tooling-standardization.md"),
+        pathlib.Path("docs/04.execution/plans/2026-03-26-10-communication-standardization.md"),
+        pathlib.Path("docs/04.execution/plans/2026-03-26-11-laboratory-standardization.md"),
+        pathlib.Path("docs/04.execution/plans/2026-03-29-k8s-migration-strategy.md"),
+    },
+    "Task": {
+        pathlib.Path("docs/04.execution/tasks/2026-03-26-07-workflow-tasks.md"),
+        pathlib.Path("docs/04.execution/tasks/2026-03-26-08-ai-tasks.md"),
+        pathlib.Path("docs/04.execution/tasks/2026-03-26-09-tooling-tasks.md"),
+        pathlib.Path("docs/04.execution/tasks/2026-03-26-10-communication-tasks.md"),
+    },
+}
+
+
+def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+
+def is_markdown_template(path: pathlib.Path) -> bool:
+    return is_relative_to(path, template_root) and path.name.endswith(".template.md")
+
+
+def iter_unfenced_lines(path: pathlib.Path) -> list[tuple[int, str]]:
+    try:
+        lines = path.read_text(errors="ignore").splitlines()
+    except Exception:
+        return []
+
+    result: list[tuple[int, str]] = []
+    in_fence = False
+    for line_no, line in enumerate(lines, start=1):
+        stripped = line.lstrip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            in_fence = not in_fence
+            continue
+        if not in_fence:
+            result.append((line_no, line))
+    return result
+
+
+def inside_inline_code(line: str, index: int) -> bool:
+    return line[:index].count("`") % 2 == 1
+
+
+def link_path(raw_href: str) -> str:
+    href = raw_href.strip()
+    if href.startswith("<") and ">" in href:
+        return href[1 : href.index(">")]
+    return href.split()[0]
+
+
+def target_exists(path: pathlib.Path, raw_href: str) -> bool:
+    href = link_path(raw_href)
+    if not href or href.startswith("#"):
+        return True
+    if re.match(r"^[a-z][a-z0-9+.-]*:", href, flags=re.I):
+        return href.startswith(("http://", "https://", "mailto:"))
+    target_path = pathlib.Path(href.split("#", 1)[0])
+    if target_path.is_absolute():
+        return False
+    target = (path.parent / target_path).resolve()
+    try:
+        target.relative_to(repo_root)
+    except ValueError:
+        return False
+    return target.exists()
+
+
+active_markdown_files = [
+    pathlib.Path("README.md"),
+    *sorted(pathlib.Path("docs").rglob("*.md")),
+]
+active_markdown_files = [
+    path
+    for path in active_markdown_files
+    if path.is_file()
+    and "graphify-out" not in path.parts
+    and "volumes" not in path.parts
+    and "node_modules" not in path.parts
+    and not is_relative_to(path, template_root)
+]
+
+for path in active_markdown_files:
+    text = path.read_text(errors="ignore")
+    for required in ["## Related Documents"]:
+        if required not in text:
+            failures.append(f"{path}: missing {required}")
+
+    for line_no, line in iter_unfenced_lines(path):
+        for match in markdown_link.finditer(line):
+            if inside_inline_code(line, match.start()):
+                continue
+            if not target_exists(path, match.group(2)):
+                failures.append(f"{path}:{line_no}: broken or disallowed Markdown link: {match.group(2)}")
+        for match in pseudo_doc_link.finditer(line):
+            failures.append(f"{path}:{line_no}: use a real Markdown link instead of pseudo-link: {match.group(1)}")
+
+        if path in scoped_label_paths and path != generated_llm_index:
+            for match in markdown_link.finditer(line):
+                if inside_inline_code(line, match.start()):
+                    continue
+                label = match.group(1).strip()
+                href = link_path(match.group(2))
+                if path_like.match(label) and path_like.match(href) and label != href:
+                    failures.append(f"{path}:{line_no}: path-like link label and href differ: {label} != {href}")
+
+for path in sorted(template_root.glob("*.template.md")):
+    for line_no, line in iter_unfenced_lines(path):
+        for match in pseudo_doc_link.finditer(line):
+            failures.append(f"{path}:{line_no}: template Related Documents examples must use Markdown links: {match.group(1)}")
+
+heading_contracts = [
+    (
+        pathlib.Path("docs/02.architecture/requirements"),
+        "ARD",
+        [
+            ("Overview", ("## Overview (KR)",)),
+            ("Summary", ("## Summary",)),
+            ("Boundaries", ("## Boundaries & Non-goals",)),
+            ("Quality Attributes", ("## Quality Attributes",)),
+            ("System Overview", ("## System Overview & Context",)),
+            ("Data Architecture", ("## Data Architecture", "## Data Models")),
+            ("Related Documents", ("## Related Documents",)),
+        ],
+    ),
+    (
+        pathlib.Path("docs/02.architecture/decisions"),
+        "ADR",
+        [
+            ("Overview", ("## Overview (KR)",)),
+            ("Context", ("## Context",)),
+            ("Decision", ("## Decision",)),
+            ("Explicit Non-goals", ("## Explicit Non-goals",)),
+            ("Consequences", ("## Consequences", "## Consequence")),
+            ("Alternatives", ("## Alternatives", "## Alternatives Considered")),
+            ("Related Documents", ("## Related Documents",)),
+        ],
+    ),
+    (
+        pathlib.Path("docs/04.execution/plans"),
+        "Plan",
+        [
+            ("Overview", ("## Overview (KR)",)),
+            ("Context", ("## Context",)),
+            ("Goals", ("## Goals & In-Scope",)),
+            ("Non-goals", ("## Non-Goals & Out-of-Scope",)),
+            ("Work Breakdown", ("## Work Breakdown", "## Work Breakdown (WBS)")),
+            ("Verification Plan", ("## Verification Plan",)),
+            ("Completion Criteria", ("## Completion Criteria",)),
+            ("Related Documents", ("## Related Documents",)),
+        ],
+    ),
+    (
+        pathlib.Path("docs/04.execution/tasks"),
+        "Task",
+        [
+            ("Overview", ("## Overview (KR)",)),
+            ("Inputs", ("## Inputs",)),
+            ("Working Rules", ("## Working Rules",)),
+            ("Task Table", ("## Task Table",)),
+            ("Verification Summary", ("## Verification Summary",)),
+            ("Related Documents", ("## Related Documents",)),
+        ],
+    ),
+]
+for root, label, headings in heading_contracts:
+    for path in sorted(root.glob("*.md")) if root.exists() else []:
+        if path.name == "README.md":
+            continue
+        if path not in heading_scope[label]:
+            continue
+        text = path.read_text(errors="ignore")
+        for group_name, alternatives in headings:
+            if not any(heading in text for heading in alternatives):
+                expected = " or ".join(alternatives)
+                failures.append(f"{path}: missing {label} contract heading group {group_name}: {expected}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
 section "Spec document traceability contract"
 if ! python3 - <<'PY'
 from __future__ import annotations
