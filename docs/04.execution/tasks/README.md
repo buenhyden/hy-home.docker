@@ -45,6 +45,7 @@ docs/04.execution/tasks/
 ├── 2026-05-10-*.md                          # Docs taxonomy and LLM Wiki task records
 ├── 2026-05-18-execution-stage-remediation.md # Current bounded execution-stage remediation task record
 ├── 2026-05-18-docs-05-operations-purpose-remediation.md # Current operations purpose remediation task record
+├── 2026-05-18-docs-bounded-consistency-audit.md # Current bounded docs consistency audit task record
 └── README.md                                # This file
 ```
 
@@ -80,6 +81,7 @@ docs/04.execution/tasks/
 - **Postmortem**: [../../05.operations/incidents/README.md](../../05.operations/incidents/README.md)
 - **Execution stage remediation task**: [2026-05-18-execution-stage-remediation.md](./2026-05-18-execution-stage-remediation.md)
 - **Operations Purpose Remediation Task**: [2026-05-18-docs-05-operations-purpose-remediation.md](./2026-05-18-docs-05-operations-purpose-remediation.md)
+- **Docs Bounded Consistency Audit Task**: [2026-05-18-docs-bounded-consistency-audit.md](./2026-05-18-docs-bounded-consistency-audit.md)
 - **Harness / Agent-first Engineering Task**: [2026-05-09-harness-agent-first-engineering.md](./2026-05-09-harness-agent-first-engineering.md)
 - **Infra / Secrets / Docs Refresh Task**: [2026-05-09-infra-secrets-docs-refresh.md](./2026-05-09-infra-secrets-docs-refresh.md)
 - **LLM Wiki Agent-first Completion Task**: [2026-05-10-llm-wiki-agent-first-completion.md](./2026-05-10-llm-wiki-agent-first-completion.md)

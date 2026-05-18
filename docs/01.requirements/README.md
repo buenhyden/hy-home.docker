@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 ---
 
 <!-- Target: docs/01.requirements/README.md -->

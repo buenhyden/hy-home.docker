@@ -46,6 +46,11 @@ docs/04.execution/
 └── README.md   # This file
 ```
 
+## Current Audit Artifacts
+
+- [Docs bounded consistency audit plan](plans/2026-05-18-docs-bounded-consistency-audit.md) - README entrypoint, stale inventory, and validator-backed drift remediation plan
+- [Docs bounded consistency audit task](tasks/2026-05-18-docs-bounded-consistency-audit.md) - execution evidence for the bounded consistency audit
+
 ## How to Work in This Area
 
 1. 실행 전에는 [plan template](../99.templates/plan.template.md)을 사용해 `plans/YYYY-MM-DD-<topic>.md`를 작성합니다.
@@ -79,3 +84,5 @@ docs/04.execution/
 - **Operations**: [../05.operations/README.md](../05.operations/README.md)
 - **Templates**: [../99.templates/README.md](../99.templates/README.md)
 - **Documentation protocol**: [../00.agent-governance/rules/documentation-protocol.md](../00.agent-governance/rules/documentation-protocol.md)
+- **Docs bounded consistency audit plan**: [plans/2026-05-18-docs-bounded-consistency-audit.md](plans/2026-05-18-docs-bounded-consistency-audit.md)
+- **Docs bounded consistency audit task**: [tasks/2026-05-18-docs-bounded-consistency-audit.md](tasks/2026-05-18-docs-bounded-consistency-audit.md)

@@ -318,6 +318,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-17-requirements-standardization.md](../../04.execution/plans/2026-05-17-requirements-standardization.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-17-scripts-ci-qa-cleanup.md](../../04.execution/plans/2026-05-17-scripts-ci-qa-cleanup.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-18-docs-05-operations-purpose-remediation.md](../../04.execution/plans/2026-05-18-docs-05-operations-purpose-remediation.md) | Markdown reference |
+| [docs/04.execution/plans/2026-05-18-docs-bounded-consistency-audit.md](../../04.execution/plans/2026-05-18-docs-bounded-consistency-audit.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-18-execution-stage-remediation.md](../../04.execution/plans/2026-05-18-execution-stage-remediation.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
@@ -348,6 +349,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-05-10-docs-taxonomy-agent-first-migration.md](../../04.execution/tasks/2026-05-10-docs-taxonomy-agent-first-migration.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md](../../04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-18-docs-05-operations-purpose-remediation.md](../../04.execution/tasks/2026-05-18-docs-05-operations-purpose-remediation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-05-18-docs-bounded-consistency-audit.md](../../04.execution/tasks/2026-05-18-docs-bounded-consistency-audit.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-18-execution-stage-remediation.md](../../04.execution/tasks/2026-05-18-execution-stage-remediation.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
