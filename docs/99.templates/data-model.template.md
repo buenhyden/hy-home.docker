@@ -22,8 +22,8 @@ status: draft
 
 ## Parent Documents
 
-- **Spec**: `[./spec.md]`
-- **API Spec**: `[./api-spec.md]`
+- **Spec**: [./spec.md](./spec.md)
+- **API Spec**: [./api-spec.md](./api-spec.md)
 
 ## Scope & Non-goals
 
@@ -81,7 +81,7 @@ CREATE TABLE example (
 
 ## Related Documents
 
-- **Spec**: `[./spec.md]`
-- **Plan**: `[../../04.execution/plans/YYYY-MM-DD-<feature>.md]`
-- **Runbook, direct operations target**: `[../../05.operations/runbooks/<topic>.md]`
-- **Runbook, domain operations target**: `[../../05.operations/runbooks/<domain>/<topic>.md]`
+- **Spec**: [./spec.md](./spec.md)
+- **Plan**: [../../04.execution/plans/YYYY-MM-DD-<feature>.md](../../04.execution/plans/YYYY-MM-DD-<feature>.md)
+- **Runbook, direct operations target**: [../../05.operations/runbooks/<topic>.md](../../05.operations/runbooks/<topic>.md)
+- **Runbook, domain operations target**: [../../05.operations/runbooks/<domain>/<topic>.md](../../05.operations/runbooks/<domain>/<topic>.md)

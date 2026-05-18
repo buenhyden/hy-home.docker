@@ -91,7 +91,7 @@ status: draft
 
 ## Related Documents
 
-- **Runbook**: `[../../runbooks/<topic>.md]`
-- **Operation Policy**: `[../../policies/<policy-or-standard>.md]`
+- **Runbook**: [../../runbooks/<topic>.md](../../runbooks/<topic>.md)
+- **Operation Policy**: [../../policies/<policy-or-standard>.md](../../policies/<policy-or-standard>.md)
 - **Incident**: `[YYYY-MM-DD-<incident-title>.md]`
-- **Follow-up Task**: `[../../../04.execution/tasks/YYYY-MM-DD-<topic>.md]`
+- **Follow-up Task**: [../../../04.execution/tasks/YYYY-MM-DD-<topic>.md](../../../04.execution/tasks/YYYY-MM-DD-<topic>.md)

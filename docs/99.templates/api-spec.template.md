@@ -23,7 +23,7 @@ status: draft
 
 ## Parent Spec
 
-- **Spec**: `[./spec.md]`
+- **Spec**: [./spec.md](./spec.md)
 
 ## Scope & Non-goals
 
@@ -101,6 +101,6 @@ status: draft
 
 ## Related Documents
 
-- **Parent Spec**: `[./spec.md]`
-- **Data Model**: `[./data-model.md]`
-- **Tests**: `[./tests.md]`
+- **Parent Spec**: [./spec.md](./spec.md)
+- **Data Model**: [./data-model.md](./data-model.md)
+- **Tests**: [./tests.md](./tests.md)

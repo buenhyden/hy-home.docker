@@ -60,8 +60,8 @@ status: draft
 
 ## Related Documents
 
-- **PRD**: `[../../01.requirements/YYYY-MM-DD-<feature-or-system>.md]`
-- **ARD**: `[../requirements/####-<system-or-domain>.md]`
-- **Spec**: `[../../03.specs/<feature-id>/spec.md]`
-- **Plan**: `[../../04.execution/plans/YYYY-MM-DD-<feature>.md]`
-- **Related ADR**: `[./####-<related-decision>.md]`
+- **PRD**: [../../01.requirements/YYYY-MM-DD-<feature-or-system>.md](../../01.requirements/YYYY-MM-DD-<feature-or-system>.md)
+- **ARD**: [../requirements/####-<system-or-domain>.md](../requirements/####-<system-or-domain>.md)
+- **Spec**: [../../03.specs/<feature-id>/spec.md](../../03.specs/<feature-id>/spec.md)
+- **Plan**: [../../04.execution/plans/YYYY-MM-DD-<feature>.md](../../04.execution/plans/YYYY-MM-DD-<feature>.md)
+- **Related ADR**: [./####-<related-decision>.md](./####-<related-decision>.md)

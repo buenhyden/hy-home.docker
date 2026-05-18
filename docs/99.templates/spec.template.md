@@ -30,9 +30,9 @@ status: draft
 
 ## Related Inputs
 
-- **PRD**: `[../../01.requirements/YYYY-MM-DD-<feature-or-system>.md]`
-- **ARD**: `[../../02.architecture/requirements/####-<system-or-domain-name>.md]`
-- **Related ADRs**: `[../../02.architecture/decisions/####-<short-title>.md]`
+- **PRD**: [../../01.requirements/YYYY-MM-DD-<feature-or-system>.md](../../01.requirements/YYYY-MM-DD-<feature-or-system>.md)
+- **ARD**: [../../02.architecture/requirements/####-<system-or-domain-name>.md](../../02.architecture/requirements/####-<system-or-domain-name>.md)
+- **Related ADRs**: [../../02.architecture/decisions/####-<short-title>.md](../../02.architecture/decisions/####-<short-title>.md)
 
 ## Contracts
 
@@ -66,7 +66,7 @@ interface ExampleContract {
 
 Contract-first 원칙: 이 기능이 외부 API를 제공하는 경우, 상세 API 계약은 별도 API Spec 문서에서 정의한다.
 
-- **API Spec**: `[./api-spec.md]`
+- **API Spec**: [./api-spec.md](./api-spec.md)
 - **Policy**: API Spec은 `docs/api/` 같은 별도 최상위 경로가 아니라 현재 feature 디렉터리 아래에 둔다.
 - **Machine-readable Contract**:
   - `./contracts/openapi.yaml`
@@ -141,11 +141,11 @@ python evals/run_[feature]_eval.py
 
 ## Related Documents
 
-- **Plan**: `[../../04.execution/plans/YYYY-MM-DD-<feature>.md]`
-- **Tasks**: `[../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md]`
-- **Guide, direct operations target**: `[../../05.operations/guides/<topic>.md]`
-- **Guide, domain operations target**: `[../../05.operations/guides/<domain>/<topic>.md]`
-- **Policy, direct operations target**: `[../../05.operations/policies/<topic>.md]`
-- **Policy, domain operations target**: `[../../05.operations/policies/<domain>/<topic>.md]`
-- **Runbook, direct operations target**: `[../../05.operations/runbooks/<topic>.md]`
-- **Runbook, domain operations target**: `[../../05.operations/runbooks/<domain>/<topic>.md]`
+- **Plan**: [../../04.execution/plans/YYYY-MM-DD-<feature>.md](../../04.execution/plans/YYYY-MM-DD-<feature>.md)
+- **Tasks**: [../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md](../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md)
+- **Guide, direct operations target**: [../../05.operations/guides/<topic>.md](../../05.operations/guides/<topic>.md)
+- **Guide, domain operations target**: [../../05.operations/guides/<domain>/<topic>.md](../../05.operations/guides/<domain>/<topic>.md)
+- **Policy, direct operations target**: [../../05.operations/policies/<topic>.md](../../05.operations/policies/<topic>.md)
+- **Policy, domain operations target**: [../../05.operations/policies/<domain>/<topic>.md](../../05.operations/policies/<domain>/<topic>.md)
+- **Runbook, direct operations target**: [../../05.operations/runbooks/<topic>.md](../../05.operations/runbooks/<topic>.md)
+- **Runbook, domain operations target**: [../../05.operations/runbooks/<domain>/<topic>.md](../../05.operations/runbooks/<domain>/<topic>.md)

@@ -23,10 +23,10 @@ status: draft
 
 ## Parent Documents
 
-- **Spec**: `[./spec.md]`
-- **PRD**: `[../../01.requirements/YYYY-MM-DD-feature.md]`
-- **ARD**: `[../../02.architecture/requirements/0001-system.md]`
-- **Related ADRs**: `[../../02.architecture/decisions/0001-example.md]`
+- **Spec**: [./spec.md](./spec.md)
+- **PRD**: [../../01.requirements/YYYY-MM-DD-feature.md](../../01.requirements/YYYY-MM-DD-feature.md)
+- **ARD**: [../../02.architecture/requirements/0001-system.md](../../02.architecture/requirements/0001-system.md)
+- **Related ADRs**: [../../02.architecture/decisions/0001-example.md](../../02.architecture/decisions/0001-example.md)
 
 ## Scope & Non-goals
 
@@ -89,7 +89,7 @@ status: draft
 - **Offline Evals**:
 - **Online Signals**:
 - **Acceptance Thresholds**:
-- **Linked Task / Eval Docs**: `[../../04.execution/tasks/YYYY-MM-DD-feature.md]`
+- **Linked Task / Eval Docs**: [../../04.execution/tasks/YYYY-MM-DD-feature.md](../../04.execution/tasks/YYYY-MM-DD-feature.md)
 
 ## Observability
 
@@ -99,8 +99,8 @@ status: draft
 
 ## Related Documents
 
-- **Tests**: `[./tests.md]`
-- **Policy, direct operations target**: `[../../05.operations/policies/<policy>.md]`
-- **Policy, domain operations target**: `[../../05.operations/policies/<domain>/<policy>.md]`
-- **Runbook, direct operations target**: `[../../05.operations/runbooks/<topic>.md]`
-- **Runbook, domain operations target**: `[../../05.operations/runbooks/<domain>/<topic>.md]`
+- **Tests**: [./tests.md](./tests.md)
+- **Policy, direct operations target**: [../../05.operations/policies/<policy>.md](../../05.operations/policies/<policy>.md)
+- **Policy, domain operations target**: [../../05.operations/policies/<domain>/<policy>.md](../../05.operations/policies/<domain>/<policy>.md)
+- **Runbook, direct operations target**: [../../05.operations/runbooks/<topic>.md](../../05.operations/runbooks/<topic>.md)
+- **Runbook, domain operations target**: [../../05.operations/runbooks/<domain>/<topic>.md](../../05.operations/runbooks/<domain>/<topic>.md)

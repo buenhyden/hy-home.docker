@@ -24,9 +24,9 @@ status: draft
 
 ## Parent Documents
 
-- **Spec**: `[./spec.md]`
-- **Agent Design**: `[./agent-design.md]`
-- **API Spec**: `[./api-spec.md]`
+- **Spec**: [./spec.md](./spec.md)
+- **Agent Design**: [./agent-design.md](./agent-design.md)
+- **API Spec**: [./api-spec.md](./api-spec.md)
 
 ## Verification Goals
 
@@ -80,10 +80,10 @@ python evals/run_feature_eval.py
 
 - **Where results are stored**:
 - **Failure triage rule**:
-- **Linked execution tasks**: `[../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md]`
+- **Linked execution tasks**: [../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md](../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md)
 
 ## Related Documents
 
-- **Spec**: `[./spec.md]`
-- **Agent Design**: `[./agent-design.md]`
-- **Execution Task**: `[../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md]`
+- **Spec**: [./spec.md](./spec.md)
+- **Agent Design**: [./agent-design.md](./agent-design.md)
+- **Execution Task**: [../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md](../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md)

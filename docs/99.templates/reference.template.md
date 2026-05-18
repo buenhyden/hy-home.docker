@@ -64,6 +64,6 @@ status: draft
 
 ## Related Documents
 
-- **Architecture**: `[../../02.architecture/requirements/####-<system-or-domain-name>.md]`
-- **Spec**: `[../../03.specs/<feature-id>/spec.md]`
-- **Operations**: `[../../05.operations/README.md]`
+- **Architecture**: [../../02.architecture/requirements/####-<system-or-domain-name>.md](../../02.architecture/requirements/####-<system-or-domain-name>.md)
+- **Spec**: [../../03.specs/<feature-id>/spec.md](../../03.specs/<feature-id>/spec.md)
+- **Operations**: [../../05.operations/README.md](../../05.operations/README.md)
