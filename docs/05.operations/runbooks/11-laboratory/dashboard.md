@@ -22,9 +22,9 @@ status: active
 
 ### Canonical References
 
-- `[../../../infra/11-laboratory/dashboard/README.md]`
-- `[../../05.operations/11-laboratory/dashboard.md]`
-- `[../../05.operations/11-laboratory/dashboard.md]`
+- [../../../../infra/11-laboratory/dashboard/README.md](../../../../infra/11-laboratory/dashboard/README.md)
+- [../../guides/11-laboratory/dashboard.md](../../guides/11-laboratory/dashboard.md)
+- [../../policies/11-laboratory/dashboard.md](../../policies/11-laboratory/dashboard.md)
 
 ### When to Use
 

@@ -42,6 +42,11 @@
 - [x] 각 계층 README 링크 업데이트 완료
 - [ ] 모든 문서 린트 및 링크 검증 완료
 
+## Non-Goals & Out-of-Scope
+
+- **Non-goals**: Runtime or semantic changes not listed in the existing plan.
+- **Out of Scope**: Rewriting historical evidence during this template-alignment pass.
+
 ## Related Documents
 
 - **PRD**: [2026-03-26-08-ai.md](../../01.requirements/2026-03-26-08-ai.md)

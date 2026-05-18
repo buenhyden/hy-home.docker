@@ -59,9 +59,29 @@
 - Update `01-gateway` references to point to the new authorized `02-auth` endpoints.
 - Sync with centralized documentation hub (`docs/README.md`).
 
+## Context
+
+This historical plan exists to organize the work described in the existing goal and proposed-change sections. No new execution scope is introduced by this alignment section.
+
+## Goals & In-Scope
+
+- **Goals**: Preserve the plan goal already described in this document.
+- **In Scope**: The documentation, infrastructure, or migration items already listed in the existing plan sections.
+
+## Non-Goals & Out-of-Scope
+
+- **Non-goals**: Runtime or semantic changes not listed in the existing plan.
+- **Out of Scope**: Rewriting historical evidence during this template-alignment pass.
+
+## Completion Criteria
+
+- Existing completion state remains as recorded in this historical plan.
+- Verification evidence remains in existing verification notes or linked tasks.
+- Related documentation links remain valid.
+
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-03-26-02-auth.md]`
-- **ARD**: `[../02.architecture/requirements/0002-auth-architecture.md]`
-- **Spec**: `[../03.specs/02-auth/spec.md]`
-- **Task**: `[../04.execution/tasks/2026-03-26-02-auth-tasks.md]`
+- **PRD**: [../../01.requirements/2026-03-26-02-auth.md](../../01.requirements/2026-03-26-02-auth.md)
+- **ARD**: [../../02.architecture/requirements/0002-auth-architecture.md](../../02.architecture/requirements/0002-auth-architecture.md)
+- **Spec**: [../../03.specs/02-auth/spec.md](../../03.specs/02-auth/spec.md)
+- **Task**: [../tasks/2026-03-26-02-auth-tasks.md](../tasks/2026-03-26-02-auth-tasks.md)

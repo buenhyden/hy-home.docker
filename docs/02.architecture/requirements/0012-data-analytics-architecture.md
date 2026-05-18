@@ -89,6 +89,13 @@ graph LR
 - **Metadata Access**: AI 에이전트는 분석용 스키마 정보와 메타데이터에 대한 읽기 권한을 가짐.
 - **Query Optimization**: 에이전트는 비효율적인 분석 쿼리 패턴을 감지하고 StarRocks 인덱싱 등의 최적화 제안 가능.
 
+## Boundaries & Non-goals
+
+- **Owns**: The architecture scope already described in this document.
+- **Consumes**: Upstream requirements and downstream specs listed in Related Documents.
+- **Does Not Own**: Secret values, runtime changes, or execution evidence outside this ARD.
+- **Non-goals**: Semantic rewriting of the historical architecture record.
+
 ## Related Documents
 
 - **PRD**: [2026-03-26-04-data-analytics.md](../../01.requirements/2026-03-26-04-data-analytics.md)

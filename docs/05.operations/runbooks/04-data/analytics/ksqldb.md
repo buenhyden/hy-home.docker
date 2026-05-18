@@ -20,9 +20,9 @@ status: active
 
 ### Canonical References
 
-- `[../../02.architecture/requirements/0012-data-analytics-architecture.md]`
-- `[../../05.operations/04-data/analytics/ksqldb.md]`
-- `[../../05.operations/04-data/analytics/ksqldb.md]`
+- [../../../../02.architecture/requirements/0012-data-analytics-architecture.md](../../../../02.architecture/requirements/0012-data-analytics-architecture.md)
+- [../../../guides/04-data/analytics/ksqldb.md](../../../guides/04-data/analytics/ksqldb.md)
+- [../../../policies/04-data/analytics/ksqldb.md](../../../policies/04-data/analytics/ksqldb.md)
 
 ### When to Use
 

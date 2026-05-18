@@ -63,7 +63,7 @@
 
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-03-26-05-messaging.md]`
-- **Spec**: `[../03.specs/05-messaging/spec.md]`
-- **Plan**: `[../04.execution/plans/2026-03-26-05-messaging-standardization.md]`
-- **ADR**: `[../02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md]`
+- **PRD**: [../../01.requirements/2026-03-26-05-messaging.md](../../01.requirements/2026-03-26-05-messaging.md)
+- **Spec**: [../../03.specs/05-messaging/spec.md](../../03.specs/05-messaging/spec.md)
+- **Plan**: [../../04.execution/plans/2026-03-26-05-messaging-standardization.md](../../04.execution/plans/2026-03-26-05-messaging-standardization.md)
+- **ADR**: [../decisions/0005-kafka-vs-rabbitmq-selection.md](../decisions/0005-kafka-vs-rabbitmq-selection.md)

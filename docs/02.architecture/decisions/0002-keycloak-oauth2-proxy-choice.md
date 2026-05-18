@@ -47,9 +47,19 @@ We decided to use:
 
 Agents must use the OIDC discovery endpoint provided by Keycloak (`/realms/hy-home.realm/.well-known/openid-configuration`) to obtain token information.
 
+## Explicit Non-goals
+
+- This ADR does not change runtime behavior.
+- This ADR does not rewrite historical decision evidence.
+- Implementation details remain in linked specs, plans, and tasks.
+
+## Consequences
+
+Existing rationale, positive/negative notes, and trade-off text in this ADR remain the consequence record. This alignment section introduces no new decision outcome.
+
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-03-26-02-auth.md]`
-- **ARD**: `[../02.architecture/requirements/0002-auth-architecture.md]`
-- **Spec**: `[../03.specs/02-auth/spec.md]`
-- **Plan**: `[../04.execution/plans/2026-03-26-02-auth-standardization.md]`
+- **PRD**: [../../01.requirements/2026-03-26-02-auth.md](../../01.requirements/2026-03-26-02-auth.md)
+- **ARD**: [../requirements/0002-auth-architecture.md](../requirements/0002-auth-architecture.md)
+- **Spec**: [../../03.specs/02-auth/spec.md](../../03.specs/02-auth/spec.md)
+- **Plan**: [../../04.execution/plans/2026-03-26-02-auth-standardization.md](../../04.execution/plans/2026-03-26-02-auth-standardization.md)

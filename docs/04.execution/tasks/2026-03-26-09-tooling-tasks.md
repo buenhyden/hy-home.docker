@@ -36,6 +36,25 @@
 | Infrastructure | 2 | 0 | 0% |
 | **Total** | **10 marks** | **5** | **50%** |
 
+## Inputs
+
+- **Parent Plan**: [2026-03-26-09-tooling-standardization.md](../plans/2026-03-26-09-tooling-standardization.md)
+
+## Working Rules
+
+- Preserve existing task evidence.
+- Record validation evidence before marking work complete.
+- Do not add unrelated implementation scope during template alignment.
+
+## Task Table
+
+Existing task bullets and verification notes in this document remain the task list for this historical task file; no new task row is introduced by this alignment section.
+
+## Verification Summary
+
+- **Test Commands**: Use existing verification notes in this task file.
+- **Logs / Evidence Location**: Existing task evidence remains authoritative.
+
 ## Related Documents
 
 - **Plan**: [2026-03-26-09-tooling-standardization.md](../plans/2026-03-26-09-tooling-standardization.md)

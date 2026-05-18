@@ -47,3 +47,30 @@
 ### Manual Verification
 
 - 에이전트(AI)가 해당 문서를 통해 Vault 구성을 100% 이해하고 설명할 수 있는지 확인.
+
+## Context
+
+This historical plan exists to organize the work described in the existing goal and proposed-change sections. No new execution scope is introduced by this alignment section.
+
+## Goals & In-Scope
+
+- **Goals**: Preserve the plan goal already described in this document.
+- **In Scope**: The documentation, infrastructure, or migration items already listed in the existing plan sections.
+
+## Non-Goals & Out-of-Scope
+
+- **Non-goals**: Runtime or semantic changes not listed in the existing plan.
+- **Out of Scope**: Rewriting historical evidence during this template-alignment pass.
+
+## Completion Criteria
+
+- Existing completion state remains as recorded in this historical plan.
+- Verification evidence remains in existing verification notes or linked tasks.
+- Related documentation links remain valid.
+
+## Related Documents
+
+- [Security PRD](../../01.requirements/2026-03-26-03-security.md)
+- [Security ARD](../../02.architecture/requirements/0003-security-architecture.md)
+- [Vault ADR](../../02.architecture/decisions/0003-vault-as-secrets-manager.md)
+- [Security spec](../../03.specs/03-security/spec.md)

@@ -24,7 +24,7 @@ status: active
 
 ### Canonical References
 
-- `[../../02.architecture/requirements/04-data/operational-data-architecture.md]`
+- [../../../../02.architecture/requirements/0004-data-architecture.md](../../../../02.architecture/requirements/0004-data-architecture.md)
 - `[../../../infra/04-data/operational/supabase/docker-compose.yml]`
 
 ### When to Use

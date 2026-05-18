@@ -22,8 +22,8 @@ status: active
 
 ### Canonical References
 
-- `[../../../infra/05-messaging/rabbitmq/README.md]`
-- `[../05.operations/05-messaging/rabbitmq.md]`
+- [../../../../infra/05-messaging/rabbitmq/README.md](../../../../infra/05-messaging/rabbitmq/README.md)
+- [../../policies/05-messaging/rabbitmq.md](../../policies/05-messaging/rabbitmq.md)
 
 ### When to Use
 

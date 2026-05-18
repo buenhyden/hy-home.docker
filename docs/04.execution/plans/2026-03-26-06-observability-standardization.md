@@ -55,7 +55,7 @@
 
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-03-26-06-observability.md]`
-- **ARD**: `[../02.architecture/requirements/0006-observability-architecture.md]`
-- **Spec**: `[../03.specs/06-observability/spec.md]`
-- **ADR**: `[../02.architecture/decisions/0006-lgtm-stack-selection.md]`
+- **PRD**: [../../01.requirements/2026-03-26-06-observability.md](../../01.requirements/2026-03-26-06-observability.md)
+- **ARD**: [../../02.architecture/requirements/0006-observability-architecture.md](../../02.architecture/requirements/0006-observability-architecture.md)
+- **Spec**: [../../03.specs/06-observability/spec.md](../../03.specs/06-observability/spec.md)
+- **ADR**: [../../02.architecture/decisions/0006-lgtm-stack-selection.md](../../02.architecture/decisions/0006-lgtm-stack-selection.md)

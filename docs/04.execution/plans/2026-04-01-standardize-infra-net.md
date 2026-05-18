@@ -53,8 +53,8 @@
 
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-04-01-standardize-infra-net.md]`
-- **ARD**: `[../02.architecture/requirements/0026-standardize-infra-net.md]`
-- **Spec**: `[../03.specs/standardize-infra-net/spec.md]`
-- **ADR**: `[../02.architecture/decisions/0026-standardize-infra-net.md]`
-- **TASK**: `[../04.execution/tasks/2026-04-01-standardize-infra-net.md]`
+- **PRD**: [../../01.requirements/2026-04-01-standardize-infra-net.md](../../01.requirements/2026-04-01-standardize-infra-net.md)
+- **ARD**: [../../02.architecture/requirements/0026-standardize-infra-net.md](../../02.architecture/requirements/0026-standardize-infra-net.md)
+- **Spec**: [../../03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md)
+- **ADR**: [../../02.architecture/decisions/0026-standardize-infra-net.md](../../02.architecture/decisions/0026-standardize-infra-net.md)
+- **TASK**: [../tasks/2026-04-01-standardize-infra-net.md](../tasks/2026-04-01-standardize-infra-net.md)

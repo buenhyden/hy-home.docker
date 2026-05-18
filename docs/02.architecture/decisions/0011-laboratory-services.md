@@ -25,8 +25,18 @@
 - **Trade-offs**:
   - `docker.sock` 노출이 필요하므로, SSO를 통한 강력한 접근 제어가 필수적임.
 
+## Explicit Non-goals
+
+- This ADR does not change runtime behavior.
+- This ADR does not rewrite historical decision evidence.
+- Implementation details remain in linked specs, plans, and tasks.
+
+## Alternatives
+
+Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.
+
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-03-26-11-laboratory.md]`
-- **ARD**: `[../02.architecture/requirements/0011-laboratory-architecture.md]`
-- **Spec**: `[../03.specs/11-laboratory/spec.md]`
+- **PRD**: [../../01.requirements/2026-03-26-11-laboratory.md](../../01.requirements/2026-03-26-11-laboratory.md)
+- **ARD**: [../requirements/0011-laboratory-architecture.md](../requirements/0011-laboratory-architecture.md)
+- **Spec**: [../../03.specs/11-laboratory/spec.md](../../03.specs/11-laboratory/spec.md)

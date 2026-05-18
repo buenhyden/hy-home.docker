@@ -69,7 +69,7 @@ Open WebUI is deployed as a Docker container within the `ai` tier. It sits behin
 
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-03-27-08-ai-open-webui.md]`
-- **Spec**: `[../03.specs/08-ai/open-webui.md]`
-- **Plan**: `[../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md]`
-- **ADR**: `[../02.architecture/decisions/0016-open-webui-implementation.md]`
+- **PRD**: [../../01.requirements/2026-03-27-08-ai-open-webui.md](../../01.requirements/2026-03-27-08-ai-open-webui.md)
+- **Spec**: [../../03.specs/08-ai/open-webui.md](../../03.specs/08-ai/open-webui.md)
+- **Plan**: [../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md](../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md)
+- **ADR**: [../decisions/0016-open-webui-implementation.md](../decisions/0016-open-webui-implementation.md)

@@ -42,3 +42,16 @@
 1. **Docker Secrets**: 사용이 간편하나 기능이 부족하고 유연성이 낮음.
 2. **SOPS**: 파일 기반 암호화에는 좋으나 동적 주입 및 API 기반 관리가 어려움.
 3. **AWS/GCP Secrets Manager**: 클라우드 종속성이 생기며, 온프레미스/도커 환경에서 비용 및 가용성 이슈.
+
+## Explicit Non-goals
+
+- This ADR does not change runtime behavior.
+- This ADR does not rewrite historical decision evidence.
+- Implementation details remain in linked specs, plans, and tasks.
+
+## Related Documents
+
+- [Security PRD](../../01.requirements/2026-03-26-03-security.md)
+- [Security ARD](../requirements/0003-security-architecture.md)
+- [Security spec](../../03.specs/03-security/spec.md)
+- [Security standardization plan](../../04.execution/plans/2026-03-26-03-security-standardization.md)

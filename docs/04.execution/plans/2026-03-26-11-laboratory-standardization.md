@@ -36,9 +36,14 @@
 - [x] Verification passed
 - [x] Required docs updated
 
+## Non-Goals & Out-of-Scope
+
+- **Non-goals**: Runtime or semantic changes not listed in the existing plan.
+- **Out of Scope**: Rewriting historical evidence during this template-alignment pass.
+
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-03-26-11-laboratory.md]`
-- **ARD**: `[../02.architecture/requirements/0011-laboratory-architecture.md]`
-- **Spec**: `[../03.specs/11-laboratory/spec.md]`
-- **ADR**: `[../02.architecture/decisions/0011-laboratory-services.md]`
+- **PRD**: [../../01.requirements/2026-03-26-11-laboratory.md](../../01.requirements/2026-03-26-11-laboratory.md)
+- **ARD**: [../../02.architecture/requirements/0011-laboratory-architecture.md](../../02.architecture/requirements/0011-laboratory-architecture.md)
+- **Spec**: [../../03.specs/11-laboratory/spec.md](../../03.specs/11-laboratory/spec.md)
+- **ADR**: [../../02.architecture/decisions/0011-laboratory-services.md](../../02.architecture/decisions/0011-laboratory-services.md)

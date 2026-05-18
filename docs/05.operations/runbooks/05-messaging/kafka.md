@@ -22,9 +22,9 @@ status: active
 
 ### Canonical References
 
-- `[../../02.architecture/requirements/0005-messaging-architecture.md]`
-- `[../../03.specs/05-messaging/spec.md]`
-- `[../../05.operations/05-messaging/kafka.md]`
+- [../../../02.architecture/requirements/0005-messaging-architecture.md](../../../02.architecture/requirements/0005-messaging-architecture.md)
+- [../../../03.specs/05-messaging/spec.md](../../../03.specs/05-messaging/spec.md)
+- [../../policies/05-messaging/kafka.md](../../policies/05-messaging/kafka.md)
 
 ### When to Use
 

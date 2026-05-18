@@ -44,7 +44,7 @@
 
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-03-26-04-data.md]`
-- **ARD**: `[../02.architecture/requirements/0004-data-architecture.md]`
-- **Spec**: `[../03.specs/04-data/spec.md]`
-- **Plan**: `[../04.execution/plans/2026-03-26-04-data-standardization.md]`
+- **PRD**: [../../01.requirements/2026-03-26-04-data.md](../../01.requirements/2026-03-26-04-data.md)
+- **ARD**: [../requirements/0004-data-architecture.md](../requirements/0004-data-architecture.md)
+- **Spec**: [../../03.specs/04-data/spec.md](../../03.specs/04-data/spec.md)
+- **Plan**: [../../04.execution/plans/2026-03-26-04-data-standardization.md](../../04.execution/plans/2026-03-26-04-data-standardization.md)

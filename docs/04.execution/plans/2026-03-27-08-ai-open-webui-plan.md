@@ -59,7 +59,7 @@ Open WebUI is a critical component for the AI tier, providing the primary interf
 
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-03-27-08-ai-open-webui.md]`
-- **ARD**: `[../02.architecture/requirements/0013-open-webui-architecture.md]`
-- **Spec**: `[../03.specs/08-ai/open-webui.md]`
-- **ADR**: `[../02.architecture/decisions/0016-open-webui-implementation.md]`
+- **PRD**: [../../01.requirements/2026-03-27-08-ai-open-webui.md](../../01.requirements/2026-03-27-08-ai-open-webui.md)
+- **ARD**: [../../02.architecture/requirements/0013-open-webui-architecture.md](../../02.architecture/requirements/0013-open-webui-architecture.md)
+- **Spec**: [../../03.specs/08-ai/open-webui.md](../../03.specs/08-ai/open-webui.md)
+- **ADR**: [../../02.architecture/decisions/0016-open-webui-implementation.md](../../02.architecture/decisions/0016-open-webui-implementation.md)

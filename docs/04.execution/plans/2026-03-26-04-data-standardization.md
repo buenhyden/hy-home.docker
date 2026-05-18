@@ -52,7 +52,7 @@
 
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-03-26-04-data.md]`
-- **ARD**: `[../02.architecture/requirements/0004-data-architecture.md]`
-- **Spec**: `[../03.specs/04-data/spec.md]`
-- **ADR**: `[../02.architecture/decisions/0004-postgresql-ha-patroni.md]`
+- **PRD**: [../../01.requirements/2026-03-26-04-data.md](../../01.requirements/2026-03-26-04-data.md)
+- **ARD**: [../../02.architecture/requirements/0004-data-architecture.md](../../02.architecture/requirements/0004-data-architecture.md)
+- **Spec**: [../../03.specs/04-data/spec.md](../../03.specs/04-data/spec.md)
+- **ADR**: [../../02.architecture/decisions/0004-postgresql-ha-patroni.md](../../02.architecture/decisions/0004-postgresql-ha-patroni.md)

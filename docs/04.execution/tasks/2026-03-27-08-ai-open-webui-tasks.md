@@ -10,8 +10,8 @@
 
 ## Inputs
 
-- **Parent Spec**: `[../../03.specs/08-ai/open-webui.md]`
-- **Parent Plan**: `[../plans/2026-03-27-08-ai-open-webui-plan.md]`
+- **Parent Spec**: [../../03.specs/08-ai/open-webui.md](../../03.specs/08-ai/open-webui.md)
+- **Parent Plan**: [../plans/2026-03-27-08-ai-open-webui-plan.md](../plans/2026-03-27-08-ai-open-webui-plan.md)
 
 ## Working Rules
 
@@ -39,5 +39,5 @@
 
 ## Related Documents
 
-- **Parent Spec**: `[../../03.specs/08-ai/open-webui.md]`
-- **Parent Plan**: `[../plans/2026-03-27-08-ai-open-webui-plan.md]`
+- **Parent Spec**: [../../03.specs/08-ai/open-webui.md](../../03.specs/08-ai/open-webui.md)
+- **Parent Plan**: [../plans/2026-03-27-08-ai-open-webui-plan.md](../plans/2026-03-27-08-ai-open-webui-plan.md)

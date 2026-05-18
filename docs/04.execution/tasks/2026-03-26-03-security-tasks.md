@@ -6,8 +6,8 @@
 
 ## Inputs
 
-- **Parent Spec**: `[../../03.specs/03-security/spec.md]`
-- **Parent Plan**: `[../plans/2026-03-26-03-security-standardization.md]`
+- **Parent Spec**: [../../03.specs/03-security/spec.md](../../03.specs/03-security/spec.md)
+- **Parent Plan**: [../plans/2026-03-26-03-security-standardization.md](../plans/2026-03-26-03-security-standardization.md)
 
 ## Working Rules
 
@@ -33,5 +33,5 @@
 
 ## Related Documents
 
-- **Parent Spec**: `[../../03.specs/03-security/spec.md]`
-- **Parent Plan**: `[../plans/2026-03-26-03-security-standardization.md]`
+- **Parent Spec**: [../../03.specs/03-security/spec.md](../../03.specs/03-security/spec.md)
+- **Parent Plan**: [../plans/2026-03-26-03-security-standardization.md](../plans/2026-03-26-03-security-standardization.md)

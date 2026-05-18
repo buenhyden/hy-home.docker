@@ -40,3 +40,24 @@
 ## Status
 
 Accepted (2026-03-26)
+
+## Overview (KR)
+
+이 문서는 해당 아키텍처 결정의 배경, 선택, 결과를 추적하기 위한 ADR이다. 이 정렬 섹션은 기존 결정 내용을 바꾸지 않는다.
+
+## Explicit Non-goals
+
+* This ADR does not change runtime behavior.
+* This ADR does not rewrite historical decision evidence.
+* Implementation details remain in linked specs, plans, and tasks.
+
+## Alternatives
+
+Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.
+
+## Related Documents
+
+* [Tooling PRD](../../01.requirements/2026-03-26-09-tooling.md)
+* [Tooling ARD](../requirements/0009-tooling-architecture.md)
+* [Tooling spec](../../03.specs/09-tooling/spec.md)
+* [Tooling standardization plan](../../04.execution/plans/2026-03-26-09-tooling-standardization.md)

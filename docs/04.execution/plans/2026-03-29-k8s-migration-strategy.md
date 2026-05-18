@@ -76,3 +76,42 @@
 1. **스토리지 계층**: 현재 호스트 환경에서 Longhorn 또는 OpenEBS와 같은 K8s 전용 스토리지 솔루션 도입이 가능한지 확인이 필요합니다.
 2. **네트워크 구조**: Traefik을 K8s 내부 Ingress Controller로 완전히 전환할지, 아니면 현재처럼 외부 Shim으로 유지할지 결정이 필요합니다.
 3. **GPU 지원**: k3d 클러스터 내에서 NVIDIA Container Toolkit이 정상적으로 인식되도록 하는 추가 설정이 필요합니다.
+
+## Overview (KR)
+
+이 문서는 해당 표준화 또는 이전 작업의 실행 계획이다. 기존 목표, 변경 목록, 검증 내용은 그대로 유지하며 현재 plan template 필수 heading에 맞춘다.
+
+## Context
+
+This historical plan exists to organize the work described in the existing goal and proposed-change sections. No new execution scope is introduced by this alignment section.
+
+## Goals & In-Scope
+
+- **Goals**: Preserve the plan goal already described in this document.
+- **In Scope**: The documentation, infrastructure, or migration items already listed in the existing plan sections.
+
+## Non-Goals & Out-of-Scope
+
+- **Non-goals**: Runtime or semantic changes not listed in the existing plan.
+- **Out of Scope**: Rewriting historical evidence during this template-alignment pass.
+
+## Work Breakdown
+
+The existing proposed changes, documentation layer, infrastructure layer, or roadmap sections remain the work breakdown for this historical plan.
+
+## Completion Criteria
+
+- Existing completion state remains as recorded in this historical plan.
+- Verification evidence remains in existing verification notes or linked tasks.
+- Related documentation links remain valid.
+
+## Verification Plan
+
+Use the existing automated or manual verification notes in this historical plan. This alignment section adds no new verification command.
+
+## Related Documents
+
+- [Execution plans index](README.md)
+- [Operations index](../../05.operations/README.md)
+- [Architecture index](../../02.architecture/README.md)
+- [References index](../../90.references/README.md)

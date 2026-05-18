@@ -59,3 +59,38 @@ graph TD
 
 - **Direct API Call**: SDK를 통한 직접 조회가 가능하나, 코드 수정 최소화를 위해 템플릿 방식 우선.
 - **OIDC Auth**: 관리자 접속을 위해 Keycloak OIDC 연동 가능 (향후 고도화).
+
+## Summary
+
+This section was added for template alignment. Existing architecture content in this historical ARD remains the source of truth; no runtime behavior is changed.
+
+## Boundaries & Non-goals
+
+- **Owns**: The architecture scope already described in this document.
+- **Consumes**: Upstream requirements and downstream specs listed in Related Documents.
+- **Does Not Own**: Secret values, runtime changes, or execution evidence outside this ARD.
+- **Non-goals**: Semantic rewriting of the historical architecture record.
+
+## Quality Attributes
+
+- **Performance**: Use the existing service-specific constraints in this document.
+- **Security**: Preserve the security boundaries already described in this document.
+- **Reliability**: Preserve the availability and failure-mode notes already described in this document.
+- **Scalability**: Use existing capacity and deployment notes where present.
+- **Observability**: Use downstream operations and spec documents for runtime evidence.
+- **Operability**: Use downstream operations documents for procedures.
+
+## System Overview & Context
+
+The existing architecture diagram, component, constraint, or reliability sections in this document provide the system context. This alignment section does not introduce new architecture facts.
+
+## Data Architecture
+
+The existing storage, secret templating, and Vault Agent sections in this document describe data handling boundaries for this historical ARD. This alignment section does not introduce new data architecture facts.
+
+## Related Documents
+
+- [Security PRD](../../01.requirements/2026-03-26-03-security.md)
+- [Vault ADR](../decisions/0003-vault-as-secrets-manager.md)
+- [Security spec](../../03.specs/03-security/spec.md)
+- [Security standardization plan](../../04.execution/plans/2026-03-26-03-security-standardization.md)

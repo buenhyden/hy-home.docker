@@ -16,10 +16,10 @@ status: active
 
 ### Canonical References
 
-- `[../02.architecture/requirements/2026-04-01-standardize-infra-net.md]`
-- `[../02.architecture/decisions/2026-04-01-standardize-infra-net.md]`
-- `[../03.specs/standardize-infra-net/spec.md]`
-- `[../04.execution/plans/2026-04-01-standardize-infra-net.md]`
+- [../../02.architecture/requirements/2026-04-01-standardize-infra-net.md](../../02.architecture/requirements/2026-04-01-standardize-infra-net.md)
+- [../../02.architecture/decisions/2026-04-01-standardize-infra-net.md](../../02.architecture/decisions/2026-04-01-standardize-infra-net.md)
+- [../../03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md)
+- [../../04.execution/plans/2026-04-01-standardize-infra-net.md](../../04.execution/plans/2026-04-01-standardize-infra-net.md)
 
 ### When to Use
 

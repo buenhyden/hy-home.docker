@@ -22,10 +22,10 @@ This runbook defines emergency response and recovery procedures for potential fa
 
 ### Canonical References
 
-- `[../../02.architecture/requirements/0004-data-architecture.md]`
-- `[../../02.architecture/decisions/0004-postgresql-ha-patroni.md]`
-- `[../../05.operations/04-data/relational.md]`
-- `[../../03.specs/04-data/postgresql-cluster/spec.md]`
+- [../../../02.architecture/requirements/0004-data-architecture.md](../../../02.architecture/requirements/0004-data-architecture.md)
+- [../../../02.architecture/decisions/0004-postgresql-ha-patroni.md](../../../02.architecture/decisions/0004-postgresql-ha-patroni.md)
+- [../../policies/04-data/relational.md](../../policies/04-data/relational.md)
+- [../../../03.specs/04-data/spec.md](../../../03.specs/04-data/spec.md)
 
 ### When to Use
 

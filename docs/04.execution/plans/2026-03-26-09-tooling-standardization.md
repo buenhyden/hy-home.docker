@@ -38,6 +38,26 @@
 - [ ] 가이드라인에 따라 Terrakube 워크스페이스가 정상적으로 생성되는지 확인.
 - [ ] SonarQube 품질 게이트가 파이프라인에서 정상 작동하는지 재검증.
 
+## Context
+
+This historical plan exists to organize the work described in the existing goal and proposed-change sections. No new execution scope is introduced by this alignment section.
+
+## Goals & In-Scope
+
+- **Goals**: Preserve the plan goal already described in this document.
+- **In Scope**: The documentation, infrastructure, or migration items already listed in the existing plan sections.
+
+## Non-Goals & Out-of-Scope
+
+- **Non-goals**: Runtime or semantic changes not listed in the existing plan.
+- **Out of Scope**: Rewriting historical evidence during this template-alignment pass.
+
+## Completion Criteria
+
+- Existing completion state remains as recorded in this historical plan.
+- Verification evidence remains in existing verification notes or linked tasks.
+- Related documentation links remain valid.
+
 ## Related Documents
 
 - **PRD**: [2026-03-26-09-tooling.md](../../01.requirements/2026-03-26-09-tooling.md)

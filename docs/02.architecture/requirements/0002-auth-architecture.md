@@ -62,6 +62,30 @@ Refer to `docs/03.specs/02-auth/spec.md` for detailed OIDC claims and realm stru
 
 Agents access services using Service Account tokens issued by Keycloak. All agent-initiated actions must include the `X-Auth-Request-User` header for auditing.
 
+## Summary
+
+This section was added for template alignment. Existing architecture content in this historical ARD remains the source of truth; no runtime behavior is changed.
+
+## Boundaries & Non-goals
+
+- **Owns**: The architecture scope already described in this document.
+- **Consumes**: Upstream requirements and downstream specs listed in Related Documents.
+- **Does Not Own**: Secret values, runtime changes, or execution evidence outside this ARD.
+- **Non-goals**: Semantic rewriting of the historical architecture record.
+
+## Quality Attributes
+
+- **Performance**: Use the existing service-specific constraints in this document.
+- **Security**: Preserve the security boundaries already described in this document.
+- **Reliability**: Preserve the availability and failure-mode notes already described in this document.
+- **Scalability**: Use existing capacity and deployment notes where present.
+- **Observability**: Use downstream operations and spec documents for runtime evidence.
+- **Operability**: Use downstream operations documents for procedures.
+
+## System Overview & Context
+
+The existing architecture diagram, component, constraint, or reliability sections in this document provide the system context. This alignment section does not introduce new architecture facts.
+
 ## Related Documents
 
 - **PRD**: [Auth product requirements](../../01.requirements/2026-03-26-02-auth.md)

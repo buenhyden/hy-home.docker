@@ -6,9 +6,9 @@
 
 ## Inputs
 
-- **Parent Spec**: `[../../03.specs/standardize-infra-net/spec.md]`
-- **Parent Plan**: `[../plans/2026-04-01-standardize-infra-net.md]`
-- **Parent PRD**: `[../01.requirements/2026-04-01-standardize-infra-net.md]`
+- **Parent Spec**: [../../03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md)
+- **Parent Plan**: [../plans/2026-04-01-standardize-infra-net.md](../plans/2026-04-01-standardize-infra-net.md)
+- **Parent PRD**: [../../01.requirements/2026-04-01-standardize-infra-net.md](../../01.requirements/2026-04-01-standardize-infra-net.md)
 
 ## Working Rules
 
@@ -55,11 +55,11 @@
 
 ## Related Documents
 
-- **Spec**: `[../../03.specs/standardize-infra-net/spec.md]`
-- **Plan**: `[../plans/2026-04-01-standardize-infra-net.md]`
-- **Guide**: `[../05.operations/0012-standardize-infra-net.md]`
-- **Runbook**: `[../05.operations/0012-standardize-infra-net.md]`
-- **ARD**: `[../02.architecture/requirements/2026-04-01-standardize-infra-net.md]`
-- **ADR**: `[../02.architecture/decisions/2026-04-01-standardize-infra-net.md]`
-- **Operation**: `[../05.operations/standardize-infra-net.md]`
-- **PRD**: `[../01.requirements/2026-04-01-standardize-infra-net.md]`
+- **Spec**: [../../03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md)
+- **Plan**: [../plans/2026-04-01-standardize-infra-net.md](../plans/2026-04-01-standardize-infra-net.md)
+- **Guide**: [../../05.operations/guides/0012-standardize-infra-net.md](../../05.operations/guides/0012-standardize-infra-net.md)
+- **Runbook**: [../../05.operations/runbooks/0012-standardize-infra-net.md](../../05.operations/runbooks/0012-standardize-infra-net.md)
+- **ARD**: [../../02.architecture/requirements/2026-04-01-standardize-infra-net.md](../../02.architecture/requirements/2026-04-01-standardize-infra-net.md)
+- **ADR**: [../../02.architecture/decisions/2026-04-01-standardize-infra-net.md](../../02.architecture/decisions/2026-04-01-standardize-infra-net.md)
+- **Operation**: [../../05.operations/policies/standardize-infra-net.md](../../05.operations/policies/standardize-infra-net.md)
+- **PRD**: [../../01.requirements/2026-04-01-standardize-infra-net.md](../../01.requirements/2026-04-01-standardize-infra-net.md)

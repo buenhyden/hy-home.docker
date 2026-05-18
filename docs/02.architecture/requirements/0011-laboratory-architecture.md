@@ -62,7 +62,7 @@ graph TD
 
 ## Related Documents
 
-- **PRD**: `[../01.requirements/2026-03-26-11-laboratory.md]`
-- **Spec**: `[../03.specs/11-laboratory/spec.md]`
-- **Plan**: `[../04.execution/plans/2026-03-26-11-laboratory-standardization.md]`
-- **ADR**: `[../02.architecture/decisions/0011-laboratory-services.md]`
+- **PRD**: [../../01.requirements/2026-03-26-11-laboratory.md](../../01.requirements/2026-03-26-11-laboratory.md)
+- **Spec**: [../../03.specs/11-laboratory/spec.md](../../03.specs/11-laboratory/spec.md)
+- **Plan**: [../../04.execution/plans/2026-03-26-11-laboratory-standardization.md](../../04.execution/plans/2026-03-26-11-laboratory-standardization.md)
+- **ADR**: [../decisions/0011-laboratory-services.md](../decisions/0011-laboratory-services.md)
