@@ -107,8 +107,11 @@ volumes/
 
 .agent-work/
 
+!graphify-out/graph.html
+!graphify-out/GRAPH_REPORT.md
+!graphify-out/graph.json
 # Graphify is optional generated intelligence for local exploration.
-graphify-out/
+graphify-out/.graphify*
 
 # optional: commit for shared extraction speed, skip to keep repo small
 graphify-out/cache/
