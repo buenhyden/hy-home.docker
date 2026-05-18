@@ -33,3 +33,11 @@ title: 'Metadata & Taxonomy Engineering Scope'
 
 - **Pruning**: Archived or outdated docs must be moved to an `archive/` subfolder, not deleted.
 - **Refactoring**: Significant changes to folder structure require a `Meta ADR`.
+
+## Related Documents
+
+- [Agent governance hub](../README.md)
+- [Bootstrap rule](../rules/bootstrap.md)
+- [Persona protocol](../rules/persona.md)
+- [Task checklists](../rules/task-checklists.md)
+- [Agentic rule](../rules/agentic.md)

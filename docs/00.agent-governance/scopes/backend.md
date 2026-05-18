@@ -37,3 +37,11 @@ title: 'Backend Engineering Scope'
 
 - **Testing**: Unit test coverage MUST be **> 80%** for domain logic.
 - **Tracing**: Ensure trace IDs from Traefik/OpenTelemetry are propagated in all service-to-service calls.
+
+## Related Documents
+
+- [Agent governance hub](../README.md)
+- [Bootstrap rule](../rules/bootstrap.md)
+- [Persona protocol](../rules/persona.md)
+- [Task checklists](../rules/task-checklists.md)
+- [Agentic rule](../rules/agentic.md)

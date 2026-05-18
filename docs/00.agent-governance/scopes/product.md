@@ -33,3 +33,11 @@ title: 'Product Requirements Scope'
 
 - **Archive**: Move deprecated product ideas to an `archive/` subfolder within `01.requirements/`.
 - **Glossary**: Maintain a ubiquitous language glossary in project documentation under `docs/90.references/`.
+
+## Related Documents
+
+- [Agent governance hub](../README.md)
+- [Bootstrap rule](../rules/bootstrap.md)
+- [Persona protocol](../rules/persona.md)
+- [Task checklists](../rules/task-checklists.md)
+- [Agentic rule](../rules/agentic.md)

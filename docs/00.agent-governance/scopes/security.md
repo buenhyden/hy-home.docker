@@ -61,3 +61,11 @@ Universal security standards and data protection protocols for `hy-home.docker`.
 ```
 
 Spawn via the active runtime's delegated-agent facility. Do not embed security policy inline in agent files.
+
+## Related Documents
+
+- [Agent governance hub](../README.md)
+- [Bootstrap rule](../rules/bootstrap.md)
+- [Persona protocol](../rules/persona.md)
+- [Task checklists](../rules/task-checklists.md)
+- [Agentic rule](../rules/agentic.md)

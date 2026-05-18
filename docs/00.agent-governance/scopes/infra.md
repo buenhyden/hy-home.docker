@@ -62,3 +62,11 @@ Conflicts: the most specific scope wins. Raises to user if ambiguous.
 ```
 
 Spawn via the active runtime's delegated-agent facility. Pass `scopes/infra.md` path in context. Do not embed policy inline.
+
+## Related Documents
+
+- [Agent governance hub](../README.md)
+- [Bootstrap rule](../rules/bootstrap.md)
+- [Persona protocol](../rules/persona.md)
+- [Task checklists](../rules/task-checklists.md)
+- [Agentic rule](../rules/agentic.md)

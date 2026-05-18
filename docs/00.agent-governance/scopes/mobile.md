@@ -34,3 +34,11 @@ title: 'Mobile Engineering Scope'
 
 - **Native Modules**: Minimize use of custom native modules; prefer Expo SDK libraries.
 - **Secrets**: Handle API keys securely via environment variables and Expo Secrets.
+
+## Related Documents
+
+- [Agent governance hub](../README.md)
+- [Bootstrap rule](../rules/bootstrap.md)
+- [Persona protocol](../rules/persona.md)
+- [Task checklists](../rules/task-checklists.md)
+- [Agentic rule](../rules/agentic.md)

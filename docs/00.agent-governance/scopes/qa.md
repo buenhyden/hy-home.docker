@@ -40,3 +40,11 @@ title: 'Quality Assurance Scope'
 
 - **Flakiness**: Immediately isolate and fix flaky E2E tests.
 - **Audit**: Conduct monthly quality audits of test infrastructure.
+
+## Related Documents
+
+- [Agent governance hub](../README.md)
+- [Bootstrap rule](../rules/bootstrap.md)
+- [Persona protocol](../rules/persona.md)
+- [Task checklists](../rules/task-checklists.md)
+- [Agentic rule](../rules/agentic.md)

@@ -33,3 +33,11 @@ title: 'Entry & Gateway Engineering Scope'
 
 - **Blue/Green**: Use weight-based routing for zero-downtime deployments.
 - **Rate Limiting**: Adjust rate limits based on traffic patterns and DoS threats.
+
+## Related Documents
+
+- [Agent governance hub](../README.md)
+- [Bootstrap rule](../rules/bootstrap.md)
+- [Persona protocol](../rules/persona.md)
+- [Task checklists](../rules/task-checklists.md)
+- [Agentic rule](../rules/agentic.md)

@@ -36,3 +36,11 @@ Protocols for predictable, high-quality autonomous work.
 
 - Remove stale guidance and conflicting instructions immediately.
 - Keep high-impact changes traceable to explicit rationale.
+
+## Related Documents
+
+- [Agent governance hub](../README.md)
+- [Bootstrap rule](../rules/bootstrap.md)
+- [Persona protocol](../rules/persona.md)
+- [Task checklists](../rules/task-checklists.md)
+- [Agentic rule](../rules/agentic.md)

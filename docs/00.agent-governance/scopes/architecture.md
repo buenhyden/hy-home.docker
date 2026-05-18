@@ -38,3 +38,11 @@ title: 'Architecture Strategy Scope'
 
 - **Audit**: Conduct quarterly architectural reviews against the original ADPs.
 - **Consistency**: Ensure all layers (Backend, Frontend, Mobile) align with the centralized identity and messaging contracts.
+
+## Related Documents
+
+- [Agent governance hub](../README.md)
+- [Bootstrap rule](../rules/bootstrap.md)
+- [Persona protocol](../rules/persona.md)
+- [Task checklists](../rules/task-checklists.md)
+- [Agentic rule](../rules/agentic.md)

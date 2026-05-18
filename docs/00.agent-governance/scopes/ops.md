@@ -55,3 +55,11 @@ title: 'Operations & SRE Scope'
 ```
 
 Spawn via the active runtime's delegated-agent facility. Do not embed ops policy inline in agent files.
+
+## Related Documents
+
+- [Agent governance hub](../README.md)
+- [Bootstrap rule](../rules/bootstrap.md)
+- [Persona protocol](../rules/persona.md)
+- [Task checklists](../rules/task-checklists.md)
+- [Agentic rule](../rules/agentic.md)
