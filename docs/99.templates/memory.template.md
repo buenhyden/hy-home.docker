@@ -1,5 +1,5 @@
 ---
-layer: agentic
+status: draft
 ---
 
 <!-- Target: docs/00.agent-governance/memory/{short-title}.md -->
@@ -14,6 +14,7 @@ layer: agentic
 > - Do not store transcripts, raw logs, shell history, credentials, tokens, private keys, or secret values.
 > - Keep the note concise, reusable, and evidence-backed.
 > - Update `docs/00.agent-governance/memory/progress.md` when creating or materially changing a memory note.
+> - When copied to `docs/00.agent-governance/memory/<short-title>.md`, replace this template frontmatter with `layer: agentic`.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 - Date: YYYY-MM-DD
@@ -46,6 +47,6 @@ List related commands, validators, docs, or follow-up task references.
 
 ## Related Documents
 
-- `README.md`
-- `progress.md`
-- `../../99.templates/memory.template.md`
+- [Memory README](./README.md)
+- [Progress log](./progress.md)
+- [Memory template](../../99.templates/memory.template.md)

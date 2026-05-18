@@ -1,6 +1,5 @@
 ---
-layer: agentic
-status: active
+status: draft
 ---
 
 <!-- Target: docs/00.agent-governance/memory/progress.md -->
@@ -16,6 +15,7 @@ status: active
 - Link durable reusable findings to separate memory notes created from `docs/00.agent-governance/memory/template.md`.
 - Keep active policy in `rules/`, `scopes/`, provider overlays, runtime files, and root shims; use this file as an audit log and memory index.
 - Update the final entry before declaring completion.
+- When copied to `docs/00.agent-governance/memory/progress.md`, replace this template frontmatter with `layer: agentic` and `status: active`.
 - Target-relative links in `## Related Documents` are calculated from `docs/00.agent-governance/memory/progress.md`, not from `docs/99.templates/`.
 
 ## Current Work Log
@@ -42,7 +42,7 @@ status: active
 
 ## Related Documents
 
-- `README.md`
-- `template.md`
-- `../rules/bootstrap.md`
-- `../rules/task-checklists.md`
+- [Memory README](./README.md)
+- [Memory template mirror](./template.md)
+- [Bootstrap rules](../rules/bootstrap.md)
+- [Task checklists](../rules/task-checklists.md)

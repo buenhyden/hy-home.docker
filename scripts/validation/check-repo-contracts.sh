@@ -849,17 +849,30 @@ if ! python3 - <<'PY'
 from __future__ import annotations
 
 import pathlib
+import re
 import sys
 
 failures: list[str] = []
 for path in sorted(pathlib.Path("docs/99.templates").glob("*.template.md")):
     text = path.read_text(errors="ignore")
+    if not text.startswith("---\nstatus: draft\n---"):
+        failures.append(f"{path}: Markdown template frontmatter must start with status: draft")
     if "Target:" not in text:
         failures.append(f"{path}: template missing Target path guidance")
     if "Target-relative" not in text:
         failures.append(f"{path}: template missing target-relative link guidance")
     if "## Related Documents" not in text:
         failures.append(f"{path}: template missing ## Related Documents")
+    in_related_documents = False
+    for line_no, line in enumerate(text.splitlines(), start=1):
+        if line.startswith("## "):
+            in_related_documents = line.strip() == "## Related Documents"
+            continue
+        if in_related_documents:
+            for match in re.finditer(r"`([^`]+\.md(?:#[^`]*)?)`", line):
+                failures.append(
+                    f"{path}:{line_no}: Related Documents path must use a Markdown link: {match.group(1)}"
+                )
 
 if failures:
     for failure in failures:

@@ -23,7 +23,7 @@ status: draft
 | Incident Date | `YYYY-MM-DD` |
 | Analysis Date | `YYYY-MM-DD` |
 | Severity | `SEV-1 / SEV-2 / SEV-3` |
-| Incident Document | `[YYYY-MM-DD-<incident-title>.md]` |
+| Incident Document | [YYYY-MM-DD-<incident-title>.md](./YYYY-MM-DD-<incident-title>.md) |
 
 ## Agent Metadata (If Applicable)
 
@@ -93,5 +93,5 @@ status: draft
 
 - **Runbook**: [../../runbooks/<topic>.md](../../runbooks/<topic>.md)
 - **Operation Policy**: [../../policies/<policy-or-standard>.md](../../policies/<policy-or-standard>.md)
-- **Incident**: `[YYYY-MM-DD-<incident-title>.md]`
+- **Incident**: [YYYY-MM-DD-<incident-title>.md](./YYYY-MM-DD-<incident-title>.md)
 - **Follow-up Task**: [../../../04.execution/tasks/YYYY-MM-DD-<topic>.md](../../../04.execution/tasks/YYYY-MM-DD-<topic>.md)

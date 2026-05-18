@@ -75,7 +75,7 @@ NC-YYYYMMDD-XXX / [Short Incident Title]
 
 ## Postmortem Link
 
-- `[YYYY-MM-DD-<incident-title>-postmortem.md]`
+- [YYYY-MM-DD-<incident-title>-postmortem.md](./YYYY-MM-DD-<incident-title>-postmortem.md)
 
 ## Related Documents
 

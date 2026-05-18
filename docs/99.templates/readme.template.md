@@ -353,7 +353,7 @@ SNIPPET: INCIDENT / POSTMORTEM
 이 영역은 운영 중 학습과 대응 기록을 저장한다.
 
 - `incidents/` 는 장애 또는 이상 상황에서 **무슨 일이 발생했는지**, **영향 범위가 무엇인지**, **즉시 어떤 대응을 했는지**를 기록한다.
-- `postmortems/` 는 사건 이후 **근본 원인**, **기여 요인**, **재발 방지 조치**, **학습 내용**을 정리한다.
+- `incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md` 는 사건 이후 **근본 원인**, **기여 요인**, **재발 방지 조치**, **학습 내용**을 정리한다.
 
 ## Expected Record Shape
 

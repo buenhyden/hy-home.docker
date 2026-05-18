@@ -45,5 +45,5 @@ List related commands, validators, docs, or follow-up task references.
 
 ## Related Documents
 
-- `README.md`
-- `progress.md`
+- [Memory README](./README.md)
+- [Progress log](./progress.md)

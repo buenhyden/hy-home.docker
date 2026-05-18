@@ -21,6 +21,7 @@ config:
       - policy-or-standard
       - system-or-domain-name
       - feature-or-stream
+      - incident-title
   MD024: false
 # Shared markdownlint-cli2 rules for docs and root markdown files.
 ignores:
