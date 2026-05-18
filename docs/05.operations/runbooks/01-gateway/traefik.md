@@ -84,6 +84,10 @@ status: active
 - **Eval Re-run**: `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - **Trace Capture**: Traefik logs + CI job logs
 
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

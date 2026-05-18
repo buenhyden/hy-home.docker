@@ -16,6 +16,10 @@ status: active
 
 이 문서는 MongoDB 레플리카 셋의 안정적인 복제 상태 유지, 백업 절차, 보안 패치 및 모니터링 운영 정책을 정의한다.
 
+## Policy Scope
+
+This policy applies to the service, workflow, or operational control surface described by this document and its linked guide/runbook.
+
 ## Policy Type
 
 `operational-standard`
@@ -63,6 +67,12 @@ status: active
 - **Required**: Preserve the operational contract documented in the linked guide and source configuration.
 - **Allowed**: Documentation-only corrections that keep links and verification evidence current.
 - **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+
+## Verification
+
+- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
 
 ## Review Cadence
 

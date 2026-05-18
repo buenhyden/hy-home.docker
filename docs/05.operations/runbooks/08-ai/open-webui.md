@@ -122,6 +122,10 @@ docker restart open-webui
 - **Eval Re-run**: 기본 채팅 + RAG smoke test 재실행
 - **Trace Capture**: 장애 시간대 로그/지표를 증적으로 보존
 
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

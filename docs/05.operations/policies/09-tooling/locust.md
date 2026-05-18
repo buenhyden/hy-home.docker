@@ -16,6 +16,10 @@ status: active
 
 이 문서는 로드 테스팅 수행 시 발생할 수 있는 부작용(운영 서비스 영향 등)을 방지하고, 성능 데이터의 신뢰성을 보장하기 위한 운영 정책을 정의합니다.
 
+## Policy Scope
+
+This policy applies to the service, workflow, or operational control surface described by this document and its linked guide/runbook.
+
 ## Target Audience
 
 - Operator
@@ -55,6 +59,12 @@ status: active
 - **Required**: Preserve the operational contract documented in the linked guide and source configuration.
 - **Allowed**: Documentation-only corrections that keep links and verification evidence current.
 - **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+
+## Verification
+
+- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
 
 ## Review Cadence
 

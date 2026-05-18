@@ -53,4 +53,6 @@ Compliance is checked via the Airflow static/runtime checks documented in [Airfl
 ## Related Documents
 
 - [Operations index](../../README.md)
+- [Airflow DAG basics guide](../../guides/07-workflow/airflow-dag-basics.md)
+- [Airflow recovery runbook](../../runbooks/07-workflow/airflow.md)
 - [Operations template](../../../99.templates/operation.template.md)

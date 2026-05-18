@@ -18,6 +18,23 @@ status: active
 - **Agents**: `wiki-curator`, `doc-writer`, `workflow-supervisor`
 - **Environments**: local repository worktree and CI validation
 
+## Controls
+
+- **Required**: Generated LLM Wiki output must be refreshed after root entrypoints, governance docs, operations docs, script inventory, infrastructure indexes, or LLM Wiki source files change.
+- **Allowed**: Graphify output may be used as advisory navigation context when corroborated against tracked source files.
+- **Disallowed**: Do not include secret values, runtime volume contents, generated dependency artifacts, or Graphify output as authoritative source material.
+
+## Exceptions
+
+- Exceptions require explicit user approval and must record why the existing generated index or repository map cannot cover the navigation need.
+- Do not add runtime hooks for LLM Wiki refresh unless a later task establishes a concrete failure mode that post-tool validation cannot catch.
+
+## Verification
+
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check`
+- `bash scripts/validation/check-repo-contracts.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
+
 ## Review Cadence
 
 - Review when linked service configuration, architecture, or runbook behavior changes.

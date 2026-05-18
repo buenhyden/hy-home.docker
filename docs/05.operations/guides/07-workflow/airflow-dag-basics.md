@@ -70,11 +70,6 @@ Place your `.py` files in `${DEFAULT_WORKFLOW_DIR}/airflow/dags`. The `airflow-s
 - **Relative Imports**: Avoid relative imports within DAGs; use the `plugins/` directory for shared logic.
 - **Heavy Initialization**: Do not perform heavy computations or database queries at the top level of the DAG file; keep it within `@task`.
 
-#### Related Documents
-
-- **Operation**: [DAG Deployment Policy](./01.dag-deployment.md)
-- **Procedure**: [Airflow Worker Recovery](../../runbooks/07-workflow/airflow-worker-recovery.md)
-
 ## Related Documents
 
 - [Operations index](../../README.md)

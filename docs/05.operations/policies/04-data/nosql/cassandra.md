@@ -16,6 +16,10 @@ status: active
 
 이 문서는 `hy-home.docker` 환경에서 Apache Cassandra의 안정적인 운영을 위한 백업, 성능 모니터링, 리소스 관리 정책을 정의한다.
 
+## Policy Scope
+
+This policy applies to the service, workflow, or operational control surface described by this document and its linked guide/runbook.
+
 ## Policy Type
 
 `operational-standard`
@@ -67,6 +71,12 @@ status: active
 - **Required**: Preserve the operational contract documented in the linked guide and source configuration.
 - **Allowed**: Documentation-only corrections that keep links and verification evidence current.
 - **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+
+## Verification
+
+- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
 
 ## Review Cadence
 

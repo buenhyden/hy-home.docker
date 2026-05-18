@@ -23,7 +23,7 @@ This document defines the operational policies and guidelines to ensure the stab
 
 `OP-DATA-LAKE-SWFS-001`
 
-## Scope
+## Policy Scope
 
 - Management of Master, Volume, Filer, S3, and Mount services.
 - Data lifecycle management for the Data Lake assets.
@@ -52,6 +52,12 @@ This document defines the operational policies and guidelines to ensure the stab
 
 - **Access Audit**: Retain Filer and S3 access logs for at least 90 days.
 - **Encryption**: Use SSL/TLS for all S3 interface traffic in staging and production.
+
+## Verification
+
+- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
 
 ## Review Cadence
 

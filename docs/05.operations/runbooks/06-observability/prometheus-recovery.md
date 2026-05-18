@@ -109,6 +109,10 @@ Check if the metrics are visible in Grafana. If not, verify that Alloy is succes
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/incidents/README.md](../../incidents/README.md)
 
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

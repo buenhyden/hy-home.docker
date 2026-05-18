@@ -35,6 +35,7 @@
 policies/07-workflow/
 ├── airbyte.md
 ├── airflow.md
+├── dag-deployment.md
 ├── n8n.md
 ├── optimization-hardening.md
 └── README.md
@@ -52,6 +53,7 @@ policies/07-workflow/
 | --- | --- |
 | [airbyte.md](./airbyte.md) | Airbyte policy 문서 |
 | [airflow.md](./airflow.md) | Airflow policy 문서 |
+| [dag-deployment.md](./dag-deployment.md) | DAG Deployment policy 문서 |
 | [n8n.md](./n8n.md) | N8N policy 문서 |
 | [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening policy 문서 |
 

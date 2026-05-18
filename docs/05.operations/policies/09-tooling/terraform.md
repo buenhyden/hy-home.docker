@@ -53,11 +53,21 @@ All infrastructure changes in `hy-home.docker` must be managed via Terraform to 
 - **Secrets**: Never hardcode credentials in `.tf` files. Use environment variables or secret managers (Vault).
 - **Versioning**: Pin all provider and module versions to prevent breaking changes during `init`.
 
+## Policy Scope
+
+This policy applies to Terraform state management, deployment workflow, provider maintenance, and infrastructure change auditability in the tooling tier.
+
 ## Controls
 
 - **Required**: Preserve the operational contract documented in the linked guide and source configuration.
 - **Allowed**: Documentation-only corrections that keep links and verification evidence current.
 - **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+
+## Verification
+
+- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
 
 ## Review Cadence
 

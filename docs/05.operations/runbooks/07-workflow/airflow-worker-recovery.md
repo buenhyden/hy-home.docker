@@ -62,7 +62,7 @@ To resolve issues where Airflow tasks remain in `queued` or `running` state inde
 
 #### Related Operational Documents
 
-- **Operation**: [DAG Deployment Policy](../../guides/07-workflow/01.dag-deployment.md)
+- **Policy**: [DAG Deployment Policy](../../policies/07-workflow/dag-deployment.md)
 - **Usage**: [Airflow System Usage](../../guides/07-workflow/airflow.md)
 
 ---
@@ -90,6 +90,10 @@ To resolve issues where Airflow tasks remain in `queued` or `running` state inde
 - **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
 
 ## Related Documents
 

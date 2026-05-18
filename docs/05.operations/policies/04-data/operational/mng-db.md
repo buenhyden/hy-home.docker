@@ -41,6 +41,12 @@ status: active
 
 - 긴급 복구 작업은 사후 승인 기록을 남긴다.
 
+## Verification
+
+- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
+
 ## Review Cadence
 
 - Review when linked service configuration, architecture, or runbook behavior changes.

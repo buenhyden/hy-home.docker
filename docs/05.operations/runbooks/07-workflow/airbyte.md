@@ -106,6 +106,10 @@ status: active
 - **Eval Re-run**: 복구 완료 후 정책 위반 시나리오를 재검증한다.
 - **Trace Capture**: 에이전트 실행 추적과 승인 이벤트를 Incident에 첨부한다.
 
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

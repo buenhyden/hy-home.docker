@@ -97,6 +97,10 @@ status: active
 - **Eval Re-run**: `check-data-hardening`, `check-template-security-baseline`, `check-doc-traceability`
 - **Trace Capture**: CI logs + compose config output
 
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

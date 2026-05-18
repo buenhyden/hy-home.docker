@@ -13,7 +13,7 @@ status: active
 
 This policy defines the operational standards for the SonarQube service. It ensures that code quality scanning is consistent across all platform components and that the infrastructure remains healthy and high-performing.
 
-## Scope
+## Policy Scope
 
 - **Governance**: Quality gate enforcement, branch analysis rules.
 - **Maintenance**: Plug-in life-cycle, database optimization.
@@ -54,6 +54,12 @@ This policy defines the operational standards for the SonarQube service. It ensu
 - **Required**: Preserve the operational contract documented in the linked guide and source configuration.
 - **Allowed**: Documentation-only corrections that keep links and verification evidence current.
 - **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+
+## Verification
+
+- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
 
 ## Review Cadence
 

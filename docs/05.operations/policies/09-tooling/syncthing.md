@@ -13,7 +13,7 @@ status: active
 
 This policy defines the operational standards for the Syncthing service. It ensures that decentralized data synchronization is reliable, secure, and performs optimally across all paired devices.
 
-## Scope
+## Policy Scope
 
 - **Governance**: Data sync patterns, conflict resolution rules.
 - **Maintenance**: Database health, version upgrades.
@@ -53,6 +53,12 @@ This policy defines the operational standards for the Syncthing service. It ensu
 - **Required**: Preserve the operational contract documented in the linked guide and source configuration.
 - **Allowed**: Documentation-only corrections that keep links and verification evidence current.
 - **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+
+## Verification
+
+- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
 
 ## Review Cadence
 

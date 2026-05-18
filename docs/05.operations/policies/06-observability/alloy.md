@@ -12,6 +12,10 @@ status: active
 
 이 정책은 `hy-home.docker` 가시성 플랫폼의 핵심 수집기인 Grafana Alloy의 운영 기준을 정의한다. 파이프라인 안정성과 데이터 무결성을 유지하기 위한 가이드라인을 제공한다.
 
+## Policy Scope
+
+This policy applies to the service, workflow, or operational control surface described by this document and its linked guide/runbook.
+
 ## Target Audience
 
 - Operator
@@ -63,6 +67,12 @@ status: active
 - **Required**: Preserve the operational contract documented in the linked guide and source configuration.
 - **Allowed**: Documentation-only corrections that keep links and verification evidence current.
 - **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+
+## Verification
+
+- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
 
 ## Review Cadence
 

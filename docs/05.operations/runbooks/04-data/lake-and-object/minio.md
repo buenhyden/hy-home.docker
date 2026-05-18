@@ -150,6 +150,10 @@ This runbook defines implementation procedures for responding to failure situati
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
 ## Related Documents
 
 - [Operations index](../../../README.md)

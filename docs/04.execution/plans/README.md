@@ -44,6 +44,7 @@ docs/04.execution/plans/
 ├── 2026-05-10-*.md                         # Docs taxonomy and LLM Wiki plans
 ├── 2026-05-17-*.md                         # Recent docs/scripts remediation plans
 ├── 2026-05-18-execution-stage-remediation.md # Current bounded execution-stage remediation
+├── 2026-05-18-docs-05-operations-purpose-remediation.md # Current operations purpose remediation
 └── README.md                               # This file
 ```
 
@@ -79,6 +80,7 @@ docs/04.execution/plans/
 - **Operations**: [../../05.operations/README.md](../../05.operations/README.md)
 - **Runbooks**: [../../05.operations/runbooks/README.md](../../05.operations/runbooks/README.md)
 - **Execution stage remediation plan**: [2026-05-18-execution-stage-remediation.md](./2026-05-18-execution-stage-remediation.md)
+- **Operations Purpose Remediation Plan**: [2026-05-18-docs-05-operations-purpose-remediation.md](./2026-05-18-docs-05-operations-purpose-remediation.md)
 - **Harness / Agent-first Engineering Plan**: [2026-05-09-harness-agent-first-engineering.md](./2026-05-09-harness-agent-first-engineering.md)
 - **Infra / Secrets / Docs Refresh Plan**: [2026-05-09-infra-secrets-docs-refresh.md](./2026-05-09-infra-secrets-docs-refresh.md)
 - **Scripts Lifecycle Contract Cleanup Plan**: [2026-05-09-scripts-lifecycle-contract-cleanup.md](./2026-05-09-scripts-lifecycle-contract-cleanup.md)

@@ -124,6 +124,10 @@ docker exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 - **Eval Re-run**: 추론 smoke test + Open WebUI 연동 테스트 재실행
 - **Trace Capture**: 장애 시간대 API/리소스 로그 보존
 
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

@@ -16,6 +16,10 @@ status: active
 
 이 문서는 CouchDB 클러스터의 데이터 정합성 유지, 디스크 최적화(Compaction), 그리고 멀티 마스터 복제 환경에서의 운영 정책을 정의한다.
 
+## Policy Scope
+
+This policy applies to the service, workflow, or operational control surface described by this document and its linked guide/runbook.
+
 ## Policy Type
 
 `operational-standard`
@@ -65,6 +69,12 @@ CouchDB는 Append-only 데이터베이스이므로 정기적인 압축 작업이
 - **Required**: Preserve the operational contract documented in the linked guide and source configuration.
 - **Allowed**: Documentation-only corrections that keep links and verification evidence current.
 - **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+
+## Verification
+
+- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
 
 ## Review Cadence
 

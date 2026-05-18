@@ -121,12 +121,6 @@ All scripts assume a bash-compatible shell. If you are on Windows, use WSL2.
 - secret 값, token, 인증서 원문을 열람하거나 문서화하지 않는다.
 - runtime 변경이 필요한 경우 문서 보강과 별도 작업으로 분리한다.
 
-#### Related Documents
-
-- [../README.md](../../README.md)
-- [../../05.operations/README.md](../README.md)
-- [../../05.operations/README.md](../README.md)
-
 ## Related Documents
 
 - [Operations index](../README.md)

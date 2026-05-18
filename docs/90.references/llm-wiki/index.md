@@ -99,6 +99,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/memory/README.md](../../00.agent-governance/memory/README.md) | folder index |
 | [docs/00.agent-governance/memory/agentic-harness-contract-hardening.md](../../00.agent-governance/memory/agentic-harness-contract-hardening.md) | Markdown reference |
 | [docs/00.agent-governance/memory/docker-doc-contract-backlog.md](../../00.agent-governance/memory/docker-doc-contract-backlog.md) | Markdown reference |
+| [docs/00.agent-governance/memory/execution-stage-legacy-debt.md](../../00.agent-governance/memory/execution-stage-legacy-debt.md) | Markdown reference |
 | [docs/00.agent-governance/memory/github-ci-contract-audit.md](../../00.agent-governance/memory/github-ci-contract-audit.md) | Markdown reference |
 | [docs/00.agent-governance/memory/governance-memory-usage-contract.md](../../00.agent-governance/memory/governance-memory-usage-contract.md) | Markdown reference |
 | [docs/00.agent-governance/memory/harness-agent-first-gap-audit.md](../../00.agent-governance/memory/harness-agent-first-gap-audit.md) | Markdown reference |
@@ -316,6 +317,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md](../../04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-17-requirements-standardization.md](../../04.execution/plans/2026-05-17-requirements-standardization.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-17-scripts-ci-qa-cleanup.md](../../04.execution/plans/2026-05-17-scripts-ci-qa-cleanup.md) | Markdown reference |
+| [docs/04.execution/plans/2026-05-18-execution-stage-remediation.md](../../04.execution/plans/2026-05-18-execution-stage-remediation.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -344,6 +346,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md](../../04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-10-docs-taxonomy-agent-first-migration.md](../../04.execution/tasks/2026-05-10-docs-taxonomy-agent-first-migration.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md](../../04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-05-18-execution-stage-remediation.md](../../04.execution/tasks/2026-05-18-execution-stage-remediation.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -409,7 +412,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/06-observability/pyroscope.md](../../05.operations/guides/06-observability/pyroscope.md) | Markdown reference |
 | [docs/05.operations/guides/06-observability/tempo.md](../../05.operations/guides/06-observability/tempo.md) | Markdown reference |
 | [docs/05.operations/guides/07-workflow/01.airflow-dag-dev.md](../../05.operations/guides/07-workflow/01.airflow-dag-dev.md) | Markdown reference |
-| [docs/05.operations/guides/07-workflow/01.dag-deployment.md](../../05.operations/guides/07-workflow/01.dag-deployment.md) | Markdown reference |
 | [docs/05.operations/guides/07-workflow/02.n8n-automation.md](../../05.operations/guides/07-workflow/02.n8n-automation.md) | Markdown reference |
 | [docs/05.operations/guides/07-workflow/README.md](../../05.operations/guides/07-workflow/README.md) | folder index |
 | [docs/05.operations/guides/07-workflow/airbyte.md](../../05.operations/guides/07-workflow/airbyte.md) | Markdown reference |

@@ -8,6 +8,14 @@ status: active
 
 이 런북은 `runbooks/llm-wiki-maintenance.md` 대상의 반복 실행 절차, 검증 evidence, 실패 시 중단 기준을 정의한다.
 
+## When to Use
+
+- Root entrypoints, agent governance docs, operations docs, script inventory, infrastructure indexes, or LLM Wiki files changed.
+- `bash scripts/knowledge/generate-llm-wiki-index.sh --check` reports stale generated output.
+- Repository contract validation fails in the LLM Wiki contract section.
+
+## Procedure
+
 1. Review the changed paths and decide whether they affect LLM-facing navigation.
 2. Run the generator.
 
@@ -34,23 +42,12 @@ status: active
    bash scripts/knowledge/report-graphify-health.sh
    ```
 
-## Exceptions
-
-- Do not add a new LLM Wiki source category when the same navigation need is already covered by `repository-map.md` or the generated index.
-- Do not add runtime hooks for LLM Wiki refresh unless a later task establishes a concrete failure mode that the existing post-tool validation cannot catch.
-- Escalate to the user before including any path that may expose private values or user-specific runtime data.
-
-## Verification
+## Evidence
 
 - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` passes.
 - `bash scripts/validation/check-repo-contracts.sh` passes.
 - `bash scripts/validation/check-doc-traceability.sh` passes.
 - LLM Wiki files contain no absolute filesystem links, filesystem URI links, public-site scope drift, or Graphify-as-authority wording.
-
-## Review Cadence
-
-- Review after changes to root entrypoints, `docs/00.agent-governance/`, `docs/05.operations/`, `docs/90.references/llm-wiki/`, `infra/README.md`, `scripts/README.md`, or `secrets/README.md`.
-- Review during repository contract failures that mention LLM Wiki freshness or boundary wording.
 
 ## AI Agent Policy Section
 

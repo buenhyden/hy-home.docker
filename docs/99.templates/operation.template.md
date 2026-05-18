@@ -24,6 +24,14 @@ Pick exactly one profile and delete the other profile sections before committing
 - Policy: use `policies/` for controls, allowed/disallowed states, exceptions, verification, and review cadence.
 - Runbook: use `runbooks/` for ordered procedures, evidence capture, rollback/recovery, and escalation.
 
+## Purpose Profile Contract
+
+The copied target must keep the profile headings for its bucket and must not keep headings from the other profiles.
+
+- `guides/**` must include `## Usage` and must not include policy or runbook profile headings such as `## Policy Scope`, `## Controls`, `## Review Cadence`, `### When to Use`, or `#### Procedure`.
+- `policies/**` must include `## Policy Scope`, `## Controls`, `## Verification`, and `## Review Cadence`; it must not include guide/runbook profile headings such as `## Usage`, `## Runbook Handoff`, `### When to Use`, or `#### Procedure`.
+- `runbooks/**` must include trigger, procedure, evidence, rollback/recovery, and escalation content; it must not include guide/policy profile headings such as `## Usage`, `## Policy Scope`, `## Controls`, `## Exceptions`, or `## Review Cadence`.
+
 Do not use this template for incident timelines or postmortems. Use `incident.template.md` or
 `postmortem.template.md` under `docs/05.operations/incidents/`.
 

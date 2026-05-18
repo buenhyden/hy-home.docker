@@ -139,6 +139,10 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 - [Task Evidence](../../04.execution/tasks/2026-05-09-harness-agent-first-engineering.md)
 - [Agent Governance Hub](../../00.agent-governance/README.md)
 
+## Escalation
+
+Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+
 ## Related Documents
 
 - [Operations index](../README.md)

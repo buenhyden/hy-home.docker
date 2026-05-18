@@ -128,7 +128,6 @@ if ! python3 - <<'PY'
 from __future__ import annotations
 
 import pathlib
-import json
 import re
 import sys
 
@@ -156,6 +155,47 @@ for path in sorted(pathlib.Path("docs").rglob("*.md")):
         target = match.group(1)
         if not target.startswith(allowed_prefixes):
             failures.append(f"{path}:{line_no}: operations target must use guides/policies/runbooks/incidents: {target}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section "Operations purpose profile contract"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import sys
+
+required = {
+    "guides": ["## Usage"],
+    "policies": ["## Policy Scope", "## Controls", "## Verification", "## Review Cadence"],
+    "runbooks": ["When to Use", "Procedure", "Evidence", "Escalation"],
+}
+forbidden = {
+    "guides": ["## Policy Scope", "## Controls", "## Exceptions", "## Review Cadence", "### When to Use", "#### Procedure"],
+    "policies": ["## Usage", "## Runbook Handoff", "### When to Use", "#### Procedure"],
+    "runbooks": ["## Usage", "## Policy Scope", "## Controls", "## Exceptions", "## Review Cadence"],
+}
+
+failures: list[str] = []
+for bucket in ["guides", "policies", "runbooks"]:
+    root = pathlib.Path("docs/05.operations") / bucket
+    for path in sorted(root.rglob("*.md")):
+        if path.name == "README.md":
+            continue
+        text = path.read_text(errors="ignore")
+        for literal in required[bucket]:
+            if literal not in text:
+                failures.append(f"{path}: missing {bucket} profile heading: {literal}")
+        for literal in forbidden[bucket]:
+            if literal in text:
+                failures.append(f"{path}: {bucket} document contains cross-profile heading: {literal}")
 
 if failures:
     for failure in failures:

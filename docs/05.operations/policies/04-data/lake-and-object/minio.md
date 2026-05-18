@@ -23,7 +23,7 @@ This document defines the operational policies for MinIO Object Storage. It regu
 
 `OP-DATA-LAKE-MINIO-001`
 
-## Scope
+## Policy Scope
 
 - MinIO Cluster and Single Node data volume protection.
 - Global and application-level Access Control (IAM).
@@ -54,6 +54,12 @@ This document defines the operational policies for MinIO Object Storage. It regu
 - **Audit Logs**: Access logs must be retained for at least 90 days for compliance auditing.
 - **Encryption**: Enable Server-Side Encryption (SSE) for sensitive data buckets.
 - **Public Access**: Public access remains disabled by default. Exceptions for CDN/Public assets require explicit approval.
+
+## Verification
+
+- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
 
 ## Review Cadence
 

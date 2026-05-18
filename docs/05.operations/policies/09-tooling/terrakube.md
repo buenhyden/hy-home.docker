@@ -56,11 +56,21 @@ Terrakube serves as the authoritative source for infrastructure state. Strict ac
 - Perform a manual backup of the Terrakube metadata database (PostgreSQL).
 - Update the base Docker images for executors to include the latest security patches.
 
+## Policy Scope
+
+This policy applies to Terrakube workspace access, execution governance, registry maintenance, sensitive variable handling, and routine platform maintenance in the tooling tier.
+
 ## Controls
 
 - **Required**: Preserve the operational contract documented in the linked guide and source configuration.
 - **Allowed**: Documentation-only corrections that keep links and verification evidence current.
 - **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+
+## Verification
+
+- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
+- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
 
 ## Review Cadence
 
