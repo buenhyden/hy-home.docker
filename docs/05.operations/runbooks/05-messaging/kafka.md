@@ -2,7 +2,7 @@
 status: active
 ---
 
-# Kafka Cluster Operations Policy (05-messaging) Runbook
+# Kafka Cluster Runbook
 
 ## Kafka Recovery & Maintenance Procedure (05-messaging)
 

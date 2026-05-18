@@ -48,6 +48,8 @@ docs/04.execution/
 
 ## Current Audit Artifacts
 
+- [Targeted documentation precision remediation plan](plans/2026-05-18-targeted-docs-precision-remediation.md) - evidence-gated remediation plan for target stage docs and root README
+- [Targeted documentation precision remediation task](tasks/2026-05-18-targeted-docs-precision-remediation.md) - execution evidence for the precision remediation pass
 - [Docs bounded consistency audit plan](plans/2026-05-18-docs-bounded-consistency-audit.md) - README entrypoint, stale inventory, and validator-backed drift remediation plan
 - [Docs bounded consistency audit task](tasks/2026-05-18-docs-bounded-consistency-audit.md) - execution evidence for the bounded consistency audit
 
@@ -84,5 +86,7 @@ docs/04.execution/
 - **Operations**: [../05.operations/README.md](../05.operations/README.md)
 - **Templates**: [../99.templates/README.md](../99.templates/README.md)
 - **Documentation protocol**: [../00.agent-governance/rules/documentation-protocol.md](../00.agent-governance/rules/documentation-protocol.md)
+- **Targeted documentation precision remediation plan**: [plans/2026-05-18-targeted-docs-precision-remediation.md](plans/2026-05-18-targeted-docs-precision-remediation.md)
+- **Targeted documentation precision remediation task**: [tasks/2026-05-18-targeted-docs-precision-remediation.md](tasks/2026-05-18-targeted-docs-precision-remediation.md)
 - **Docs bounded consistency audit plan**: [plans/2026-05-18-docs-bounded-consistency-audit.md](plans/2026-05-18-docs-bounded-consistency-audit.md)
 - **Docs bounded consistency audit task**: [tasks/2026-05-18-docs-bounded-consistency-audit.md](tasks/2026-05-18-docs-bounded-consistency-audit.md)

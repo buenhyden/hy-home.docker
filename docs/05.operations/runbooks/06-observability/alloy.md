@@ -2,7 +2,7 @@
 status: active
 ---
 
-# Alloy Operational Policy Runbook
+# Alloy Runbook
 
 ## Alloy Recovery Procedure
 

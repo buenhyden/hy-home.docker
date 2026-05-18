@@ -2,7 +2,7 @@
 status: active
 ---
 
-# Loki Operational Policy Runbook
+# Loki Runbook
 
 ## Loki Recovery Procedure
 

@@ -20,9 +20,9 @@ status: active
 
 ### Canonical References
 
-- `[../../02.architecture/requirements/0004-data-architecture.md](../../../../02.architecture/requirements/0004-data-architecture.md)`
-- `[../../../05.operations/04-data/specialized/neo4j.md](../../../policies/04-data/specialized/neo4j.md)`
-- `[infra/04-data/specialized/neo4j/README.md](../../../../../infra/04-data/specialized/neo4j/README.md)`
+- [Data architecture ARD](../../../../02.architecture/requirements/0004-data-architecture.md)
+- [Neo4j operations policy](../../../policies/04-data/specialized/neo4j.md)
+- [Neo4j infra README](../../../../../infra/04-data/specialized/neo4j/README.md)
 
 ### When to Use
 

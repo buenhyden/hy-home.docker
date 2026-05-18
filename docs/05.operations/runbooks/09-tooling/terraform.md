@@ -2,7 +2,7 @@
 status: active
 ---
 
-# Operations: Terraform Policy Runbook
+# Terraform Runbook
 
 <!-- [ID:09-tooling:terraform] -->
 ## Procedure: Terraform Recovery (P2)

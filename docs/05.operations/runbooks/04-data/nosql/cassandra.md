@@ -2,7 +2,7 @@
 status: active
 ---
 
-# Cassandra Operation Policy Runbook
+# Cassandra Runbook
 
 ## Cassandra Recovery Procedure
 

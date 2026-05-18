@@ -2,7 +2,7 @@
 status: active
 ---
 
-# CouchDB Operation Policy Runbook
+# CouchDB Runbook
 
 ## CouchDB Recovery Procedure
 

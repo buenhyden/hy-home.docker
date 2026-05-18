@@ -2,9 +2,9 @@
 status: active
 ---
 
-# [OPERATIONAL-POLICY] 06-observability: prometheus Runbook
+# Prometheus Runbook
 
-## [RECOVERY-RUNBOOK] 06-observability: prometheus
+## Recovery Runbook: Prometheus
 
 Recovery procedures for common Prometheus service disruptions and metrics collection failures.
 
@@ -58,7 +58,7 @@ Recovery procedures for common Prometheus service disruptions and metrics collec
 
 3. Fix any syntax errors or simplify expensive PromQL expressions.
 
-### Verification
+### Recovery Verification
 
 1. Access the Prometheus UI: [http://prometheus.hy-home.local/-/healthy](http://prometheus.hy-home.local/-/healthy) (or internal port `9090`).
 2. Verify all "critical" scrape targets are "UP" in the `/targets` page.
@@ -77,9 +77,10 @@ Recovery procedures for common Prometheus service disruptions and metrics collec
 
 ### Canonical References
 
-- [../README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
+- [Observability operations index](../../README.md)
+- [Prometheus usage guide](../../guides/06-observability/prometheus.md)
+- [Prometheus operations policy](../../policies/06-observability/prometheus.md)
+- [Prometheus infra README](../../../../infra/06-observability/prometheus/README.md)
 
 ### When to Use
 

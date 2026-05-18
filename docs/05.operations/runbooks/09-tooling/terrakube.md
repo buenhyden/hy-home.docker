@@ -2,7 +2,7 @@
 status: active
 ---
 
-# Operations: Terrakube Policy Runbook
+# Terrakube Runbook
 
 <!-- [ID:09-tooling:terrakube] -->
 ## Procedure: Terrakube Recovery (P2)

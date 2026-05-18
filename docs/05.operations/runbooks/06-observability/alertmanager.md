@@ -2,7 +2,7 @@
 status: active
 ---
 
-# Alertmanager Operational Policy (06-observability) Runbook
+# Alertmanager Runbook
 
 ## Alertmanager Recovery Procedure (06-observability)
 

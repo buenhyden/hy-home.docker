@@ -20,9 +20,9 @@ Pushgateway의 안정적인 메트릭 버퍼 상태를 유지하고, 비정상�
 
 ### Canonical References
 
-- ARD: `[../../02.architecture/requirements/0006-observability-architecture.md](../../../02.architecture/requirements/0006-observability-architecture.md)`
-- Infrastructure: `[infra/06-observability/pushgateway/README.md](../../../../infra/06-observability/pushgateway/README.md)`
-- Operation: `[../../05.operations/06-observability/pushgateway.md](../../policies/06-observability/pushgateway.md)`
+- ARD: [Observability architecture ARD](../../../02.architecture/requirements/0006-observability-architecture.md)
+- Infrastructure: [Pushgateway infra README](../../../../infra/06-observability/pushgateway/README.md)
+- Operation: [Pushgateway operations policy](../../policies/06-observability/pushgateway.md)
 
 ### When to Use
 

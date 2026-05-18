@@ -2,7 +2,7 @@
 status: active
 ---
 
-# Grafana Operational Policy (06-observability) Runbook
+# Grafana Runbook
 
 ## Grafana Recovery Procedure (06-observability)
 

@@ -20,9 +20,9 @@ status: active
 
 ### Canonical References
 
-- `[../../02.architecture/requirements/0004-data-architecture.md](../../../../02.architecture/requirements/0004-data-architecture.md)`
-- `[../../../05.operations/04-data/specialized/qdrant.md](../../../policies/04-data/specialized/qdrant.md)`
-- `[infra/04-data/specialized/qdrant/README.md](../../../../../infra/04-data/specialized/qdrant/README.md)`
+- [Data architecture ARD](../../../../02.architecture/requirements/0004-data-architecture.md)
+- [Qdrant operations policy](../../../policies/04-data/specialized/qdrant.md)
+- [Qdrant infra README](../../../../../infra/04-data/specialized/qdrant/README.md)
 
 ### When to Use
 
@@ -54,6 +54,8 @@ status: active
         -H "Content-Type: application/json" \
         --data '{ "location": "file:///qdrant/storage/snapshots/my_collection_snapshot.snapshot" }'
    ```
+
+   `file://` 값은 Qdrant snapshot recovery API가 컨테이너 내부 스냅샷 파일을 가리키기 위해 받는 `location` URI다. 문서 링크나 호스트 파일 경로로 해석하지 않는다.
 
 #### 3. Emergency Health Recovery
 

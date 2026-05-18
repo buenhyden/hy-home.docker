@@ -46,6 +46,7 @@ docs/04.execution/plans/
 ├── 2026-05-18-execution-stage-remediation.md # Current bounded execution-stage remediation
 ├── 2026-05-18-docs-05-operations-purpose-remediation.md # Current operations purpose remediation
 ├── 2026-05-18-docs-bounded-consistency-audit.md # Current bounded docs consistency audit
+├── 2026-05-18-targeted-docs-precision-remediation.md # Current targeted docs precision remediation
 └── README.md                               # This file
 ```
 
@@ -83,6 +84,7 @@ docs/04.execution/plans/
 - **Execution stage remediation plan**: [2026-05-18-execution-stage-remediation.md](./2026-05-18-execution-stage-remediation.md)
 - **Operations Purpose Remediation Plan**: [2026-05-18-docs-05-operations-purpose-remediation.md](./2026-05-18-docs-05-operations-purpose-remediation.md)
 - **Docs Bounded Consistency Audit Plan**: [2026-05-18-docs-bounded-consistency-audit.md](./2026-05-18-docs-bounded-consistency-audit.md)
+- **Targeted Docs Precision Remediation Plan**: [2026-05-18-targeted-docs-precision-remediation.md](./2026-05-18-targeted-docs-precision-remediation.md)
 - **Harness / Agent-first Engineering Plan**: [2026-05-09-harness-agent-first-engineering.md](./2026-05-09-harness-agent-first-engineering.md)
 - **Infra / Secrets / Docs Refresh Plan**: [2026-05-09-infra-secrets-docs-refresh.md](./2026-05-09-infra-secrets-docs-refresh.md)
 - **Scripts Lifecycle Contract Cleanup Plan**: [2026-05-09-scripts-lifecycle-contract-cleanup.md](./2026-05-09-scripts-lifecycle-contract-cleanup.md)

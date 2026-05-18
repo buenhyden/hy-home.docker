@@ -2,7 +2,7 @@
 status: active
 ---
 
-# MongoDB Operation Policy Runbook
+# MongoDB Runbook
 
 ## MongoDB Recovery Procedure
 
