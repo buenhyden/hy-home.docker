@@ -104,8 +104,8 @@ script.
 | Documentation Traceability Check | [check-doc-traceability.sh](./validation/check-doc-traceability.sh) | Enforce sync links across 04.execution/plans ↔ 05.operations |
 | LLM Wiki Index Generator | [generate-llm-wiki-index.sh](./knowledge/generate-llm-wiki-index.sh) | Generate and check the repo-local LLM Wiki path index |
 | Graphify Health Report | [report-graphify-health.sh](./knowledge/report-graphify-health.sh) | Report advisory health of generated Graphify corpus without blocking validation |
-| Agent Event Hook | [agent-event-hook.sh](./hooks/agent-event-hook.sh) | Dispatch Claude/Codex hook events to provider-neutral repository behavior |
-| Post Tool Validation | [post-tool-validate.sh](./hooks/post-tool-validate.sh) | Run path-aware validation after Claude/Codex file edits |
+| Agent Event Hook | [agent-event-hook.sh](./hooks/agent-event-hook.sh) | Dispatch Claude/Codex hook events, including template-first target-stage docs guidance and Stop gating |
+| Post Tool Validation | [post-tool-validate.sh](./hooks/post-tool-validate.sh) | Run path-aware validation, including changed-doc template enforcement, after Claude/Codex file edits |
 | Unified Hardening Check | [check-all-hardening.sh](./hardening/check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
 | Docker Preflight Mode | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) `--preflight` | Real local prerequisite validation without dummy file creation |
 | Secret Generation | [gen-secrets.sh](./operations/gen-secrets.sh) | Generate local Docker secret files; use `--check` or `--dry-run` before default generation |

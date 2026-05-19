@@ -27,7 +27,7 @@ Keep documentation consistent, traceable, and aligned with governance policies.
 ## Structure
 
 - Scope import: `docs/00.agent-governance/scopes/docs.md`
-- Template-first authoring and related-docs enforcement
+- Template-first authoring, changed-doc template gate, and related-docs enforcement
 
 ## Agents
 
@@ -42,6 +42,7 @@ Keep documentation consistent, traceable, and aligned with governance policies.
 - Trigger for documentation updates or governance alignment.
 - **Inputs:** target stage, document type, trigger reason
 - **Outputs:** updated doc + parent README sync
+- **Completion Gate:** added or modified target-stage docs must pass `scripts/validation/check-repo-contracts.sh`
 
 ## Artifacts
 

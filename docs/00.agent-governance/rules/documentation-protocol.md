@@ -14,7 +14,10 @@ Protocol for maintaining documentation consistency and governance traceability.
 
 ## 2. Requirements and Constraints
 
-- Use templates from `docs/99.templates/` for new stage documents.
+- Use templates from `docs/99.templates/` for every new or modified target-stage
+  document under `docs/01.requirements/`, `docs/02.architecture/`,
+  `docs/03.specs/`, `docs/04.execution/`, `docs/05.operations/`, and
+  `docs/90.references/`.
 - Use only relative links; never use absolute `file://` links.
 - Keep `docs/00.agent-governance/` English-only.
 - Keep human-facing docs in Korean unless interoperability requires English terms.
@@ -59,9 +62,12 @@ See `docs/99.templates/README.md` for the full catalog and usage rules.
 
 1. Identify target stage.
 2. Load `rules/stage-authoring-matrix.md` and follow its stage row.
-3. Draft or update using the mapped template and required input documents.
-4. Cross-link related Requirements, Architecture, Spec, Plan, Task, Operations, Reference, and Incident files.
-5. Run checklist gates from `rules/task-checklists.md`.
+3. Load the mapped template before drafting or updating the target document.
+4. Preserve the template contract: required headings, target path guidance,
+   target-relative links, and one `## Related Documents` section.
+5. Remove all template placeholders before saving.
+6. Cross-link related Requirements, Architecture, Spec, Plan, Task, Operations, Reference, and Incident files.
+7. Run checklist gates from `rules/task-checklists.md`.
 
 For `docs/90.references/`, verify that the document is stable reference context, contains source-backed facts, and does not define active policy, runtime truth, runbook procedure, plan, task evidence, or incident timeline.
 
@@ -102,7 +108,9 @@ When legacy active-stage content is discovered in a non-stage `docs/*` path:
 These rules are blocking. Completion is **PROHIBITED** until all three pass.
 
 **R1 — Template First:**
-Read the matching template from `docs/99.templates/` → fill every section → set `status: draft`.
+Read the matching template from `docs/99.templates/` before writing or editing
+any target-stage document → keep required headings → fill every applicable
+section → remove placeholders before completion.
 Infrastructure triggers: new service → ARD first; network change → ADR first; production procedure → `05.operations` first.
 
 **R2 — README Sync:**

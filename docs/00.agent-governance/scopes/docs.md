@@ -27,6 +27,11 @@ Boundaries and permissions for agents interacting with repository documentation.
   - Human-facing docs (README, operations, reports): Korean by default.
 - Link integrity: no broken links, no absolute filesystem links, no `file://` URIs.
 - Taxonomy compliance: follow stage mapping in `rules/stage-authoring-matrix.md`.
+- Template-first compliance: before creating or modifying target-stage docs
+  under `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`,
+  `docs/04.execution/`, `docs/05.operations/`, or `docs/90.references/`,
+  load the mapped template from `docs/99.templates/` and keep its required
+  contract.
 - Active stage artifacts must live only in canonical stage paths; non-stage `docs/*` paths are not valid targets for active specs, plans, or tasks.
 
 ## 4. Out-of-Scope Handling
@@ -60,6 +65,7 @@ If legacy active-stage content is found in a non-stage `docs/*` path:
 @import docs/00.agent-governance/scopes/docs.md
 # Docs pattern — template → draft → link
 # DOCS 3 RULES enforced (R1 template · R2 README · R3 related-docs)
+# Changed target-stage docs must pass check-repo-contracts template gate.
 ```
 
 Spawn via the active runtime's delegated-agent facility. Do not embed documentation policy inline in agent files.

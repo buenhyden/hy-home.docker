@@ -31,7 +31,13 @@ Single source of truth for stage-level authoring expectations.
 
 1. Load this matrix for any documentation authoring/refactoring task.
 2. Use the row for the target stage as a mandatory authoring contract.
-3. If a stage is read-only for the current task, record findings instead of mutating the stage.
+3. Load the required template from `docs/99.templates/` before creating or
+   modifying the target document.
+4. Remove all template placeholders, keep required headings, and sync the
+   parent README before completion.
+5. Run `bash scripts/validation/check-repo-contracts.sh` for changed
+   target-stage documents.
+6. If a stage is read-only for the current task, record findings instead of mutating the stage.
 
 ## Related Documents
 

@@ -56,9 +56,10 @@ This README is for:
 ## Current Hook Contract
 
 - `SessionStart` uses `scripts/hooks/agent-event-hook.sh` to emit project context when the event is supported.
-- `PreToolUse` uses `scripts/hooks/agent-event-hook.sh` to emit Graphify advisory context when relevant and Docker Compose guardrail context before matching edits.
+- `PreToolUse` uses `scripts/hooks/agent-event-hook.sh` to emit Graphify advisory context when relevant, Docker Compose guardrail context before matching edits, and template-first guidance before target-stage documentation edits.
 - `PostToolUse` uses `scripts/hooks/agent-event-hook.sh`, which delegates to `scripts/hooks/post-tool-validate.sh` after file edits when the hook payload includes changed paths.
-- `SessionEnd`, `Stop`, and `PreCompact` route through `scripts/hooks/agent-event-hook.sh` for lifecycle-safe advisory context when the runtime supports those events.
+- `Stop` blocks completion when changed target-stage docs fail `bash scripts/validation/check-repo-contracts.sh`.
+- `SessionEnd` and `PreCompact` route through `scripts/hooks/agent-event-hook.sh` for lifecycle-safe advisory context when the runtime supports those events.
 
 ## Hook Parity Contract
 

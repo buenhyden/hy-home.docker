@@ -55,7 +55,7 @@
           {
             "type": "command",
             "command": "bash scripts/hooks/agent-event-hook.sh Stop",
-            "timeout": 10
+            "timeout": 30
           }
         ]
       }

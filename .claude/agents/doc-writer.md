@@ -27,13 +27,14 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 
 ## Task Principles
 
-1. **Template first (R1)**: load `docs/99.templates/<type>.template.md` before writing.
+1. **Template first (R1)**: load the mapped `docs/99.templates/*` template before writing or editing any target-stage document.
 2. **README sync (R2)**: update parent README for any folder-level change before closing.
 3. **Related docs (R3)**: every document must have `## Related Documents` with upstream links.
 4. **Language policy**: governance files in English; human-facing docs in Korean.
 5. **Read-only stages**: `docs/01`–`docs/99` require explicit user approval to modify.
 6. **Active voice**: "Configure the service" not "The service should be configured". Every step has an expected result.
 7. **Executable examples**: all code blocks must be runnable as-is; mark exceptions explicitly.
+8. **Template gate**: do not mark work complete when an added or modified target-stage doc would fail `scripts/validation/check-repo-contracts.sh`.
 
 ## Document Type Writing Guide
 
@@ -90,11 +91,12 @@ Use Mermaid diagrams for all architecture, flow, and sequence documentation.
 
 - **Input**: target stage + document type + trigger (service change / folder change / governance update).
 - **Output**: filled document at canonical stage path + updated parent README.
-- **On completion**: run postflight-checklist §3 Documentation Gate (R1/R2/R3 all checked).
+- **On completion**: run postflight-checklist §3 Documentation Gate (R1/R2/R3 all checked) and the repo contract template gate for changed target-stage docs.
 
 ## Error Handling
 
 - Missing template → halt; report to user before proceeding.
+- Target-stage doc was not started from the mapped template → halt; restart from the template or refactor the edited doc until the template gate passes.
 - Broken link detected → fix link or note in memory/; never leave dead links.
 - Read-only stage needs update → log in `_workspace/` with recommended fix; do not patch.
 - Technical ambiguity in ADR → mark `[Analysis incomplete — supplementation needed]`; do not speculate.

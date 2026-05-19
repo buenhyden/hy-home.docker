@@ -166,6 +166,23 @@ if not tool_name or tool_name in edit_tools:
                 "and existing network names."
             )
             break
+    for path in paths:
+        short_path = path
+        project_prefix = str(project) + "/"
+        if short_path.startswith(project_prefix):
+            short_path = short_path[len(project_prefix):]
+        short_path = short_path.removeprefix("./")
+        if re.match(r"docs/(01\.requirements|02\.architecture|03\.specs|04\.execution|05\.operations|90\.references)/", short_path):
+            system_messages.append(
+                "Target-stage documentation edit detected.\n\n"
+                f"Path: `{short_path}`\n\n"
+                "Before writing or updating this document, load the matching template from "
+                "`docs/99.templates/` and preserve its required headings, target path guidance, "
+                "target-relative links, and `## Related Documents` section. The PostToolUse and "
+                "Stop hooks run `bash scripts/validation/check-repo-contracts.sh` to enforce the "
+                "changed-doc template gate."
+            )
+            break
 
 if not system_messages and not additional_context:
     sys.exit(0)
@@ -220,8 +237,100 @@ print(json.dumps({"systemMessage": msg.strip()}))
 PY
 }
 
+has_changed_target_stage_docs() {
+  python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import subprocess
+import sys
+
+stage_roots = (
+    pathlib.Path("docs/01.requirements"),
+    pathlib.Path("docs/02.architecture"),
+    pathlib.Path("docs/03.specs"),
+    pathlib.Path("docs/04.execution"),
+    pathlib.Path("docs/05.operations"),
+    pathlib.Path("docs/90.references"),
+)
+
+
+def run_git(args: list[str]) -> list[str]:
+    try:
+        result = subprocess.run(
+            ["git", *args],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+    except subprocess.CalledProcessError:
+        return []
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+
+def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+
+paths: set[pathlib.Path] = set()
+for git_args in (
+    ["diff", "--name-only", "--diff-filter=AM"],
+    ["diff", "--cached", "--name-only", "--diff-filter=AM"],
+    ["ls-files", "--others", "--exclude-standard"],
+):
+    paths.update(pathlib.Path(path) for path in run_git(git_args))
+
+for path in paths:
+    if path.suffix.lower() not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
+        continue
+    if any(is_relative_to(path, root) for root in stage_roots):
+        sys.exit(0)
+
+sys.exit(1)
+PY
+}
+
+template_stop_gate() {
+  if ! has_changed_target_stage_docs; then
+    return 0
+  fi
+
+  local output
+  if output="$(bash scripts/validation/check-repo-contracts.sh 2>&1)"; then
+    return 0
+  fi
+
+  GATE_OUTPUT="$output" python3 - <<'PY'
+import json
+import os
+
+output = os.environ.get("GATE_OUTPUT", "").strip()
+reason = (
+    "Changed target-stage documentation does not satisfy the docs/99.templates "
+    "contract. Continue the task, fix the document from the mapped template, "
+    "and rerun `bash scripts/validation/check-repo-contracts.sh`."
+)
+if output:
+    reason = f"{reason}\n\nValidator output:\n{output[-6000:]}"
+
+print(json.dumps({
+    "decision": "block",
+    "reason": reason,
+    "systemMessage": reason,
+}))
+PY
+  return 1
+}
+
 stop() {
-  session_end
+  if template_stop_gate; then
+    session_end
+  fi
 }
 
 pre_compact() {
