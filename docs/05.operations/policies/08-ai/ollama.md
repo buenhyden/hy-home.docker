@@ -2,9 +2,7 @@
 status: active
 ---
 
-# Ollama Operations Policy
-
-<!-- Target: docs/05.operations/guides/08-ai/ollama.md -->
+<!-- Target: docs/05.operations/policies/08-ai/ollama.md -->
 
 # Ollama Operations Policy
 

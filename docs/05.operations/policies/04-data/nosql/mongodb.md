@@ -2,9 +2,7 @@
 status: active
 ---
 
-# MongoDB Operation Policy Operations Policy
-
-<!-- Target: docs/05.operations/guides/04-data/nosql/mongodb.md -->
+<!-- Target: docs/05.operations/policies/04-data/nosql/mongodb.md -->
 
 # MongoDB Operation Policy Operations Policy
 

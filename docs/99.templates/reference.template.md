@@ -10,7 +10,8 @@ status: draft
 > Rules:
 >
 > - Reference docs provide stable context; they do not define active policy, plans, runbooks, incidents, or runtime truth.
-> - Use repo-relative links for local sources and direct links for external sources.
+> - Use target-relative Markdown links for repo-local sources and Related Documents.
+> - Use direct links for external sources.
 > - Summarize what each source supports; do not paste long external content.
 > - Do not include secret values, credentials, tokens, private keys, shell history, or raw secret logs.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
@@ -53,8 +54,8 @@ status: draft
 
 ## Sources
 
-- {Source 1} - {What this source supports}
-- {Source 2} - {What this source supports}
+- [Repo-local source](../../path/to/source.md) - {What this source supports}
+- [External source](https://example.com/source) - {What this source supports}
 
 ## Maintenance
 

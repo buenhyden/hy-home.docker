@@ -2,9 +2,7 @@
 status: active
 ---
 
-# InfluxDB Operations Policy
-
-<!-- Target: docs/05.operations/guides/04-data/analytics/influxdb.md -->
+<!-- Target: docs/05.operations/policies/04-data/analytics/influxdb.md -->
 
 # InfluxDB Operations Policy
 

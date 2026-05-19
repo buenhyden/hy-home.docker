@@ -2,9 +2,7 @@
 status: active
 ---
 
-# Open WebUI Operations Policy
-
-<!-- Target: docs/05.operations/guides/08-ai/open-webui.md -->
+<!-- Target: docs/05.operations/policies/08-ai/open-webui.md -->
 
 # Open WebUI Operations Policy
 

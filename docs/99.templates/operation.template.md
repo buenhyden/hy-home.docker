@@ -148,10 +148,25 @@ Keep this profile only for `docs/05.operations/runbooks/**`.
 
 ## Related Documents
 
-Use only links that apply to the copied target path.
+Use only links that apply to the copied target path. Delete unused examples before committing.
 
-- [Operations index]({target-relative-link})
-- [Usage guide]({target-relative-link})
-- [Operations policy]({target-relative-link})
-- [Recovery runbook]({target-relative-link})
-- [Incident record]({target-relative-link})
+Direct target examples:
+
+- [Operations index](../README.md)
+- [Usage guide](../guides/<topic>.md)
+- [Operations policy](../policies/<topic>.md)
+- [Recovery runbook](../runbooks/<topic>.md)
+
+Domain target examples:
+
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/<domain>/<topic>.md)
+- [Operations policy](../../policies/<domain>/<topic>.md)
+- [Recovery runbook](../../runbooks/<domain>/<topic>.md)
+
+Nested target examples:
+
+- [Operations index](../../../README.md)
+- [Usage guide](../../../guides/<domain>/<subdomain>/<topic>.md)
+- [Operations policy](../../../policies/<domain>/<subdomain>/<topic>.md)
+- [Recovery runbook](../../../runbooks/<domain>/<subdomain>/<topic>.md)

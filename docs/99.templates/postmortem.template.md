@@ -91,7 +91,9 @@ status: draft
 
 ## Related Documents
 
-- **Runbook**: [../../runbooks/<topic>.md](../../runbooks/<topic>.md)
-- **Operation Policy**: [../../policies/<policy-or-standard>.md](../../policies/<policy-or-standard>.md)
+- **Runbook, direct target**: [../../runbooks/<topic>.md](../../runbooks/<topic>.md)
+- **Runbook, domain target**: [../../runbooks/<domain>/<topic>.md](../../runbooks/<domain>/<topic>.md)
+- **Runbook, nested target**: [../../runbooks/<domain>/<subdomain>/<topic>.md](../../runbooks/<domain>/<subdomain>/<topic>.md)
+- **Operation Policy, domain target**: [../../policies/<domain>/<policy-or-standard>.md](../../policies/<domain>/<policy-or-standard>.md)
 - **Incident**: [YYYY-MM-DD-<incident-title>.md](./YYYY-MM-DD-<incident-title>.md)
 - **Follow-up Task**: [../../../04.execution/tasks/YYYY-MM-DD-<topic>.md](../../../04.execution/tasks/YYYY-MM-DD-<topic>.md)

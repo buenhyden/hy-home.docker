@@ -65,7 +65,7 @@ docker compose run --rm terraform validate
 
 #### Lock File Issues
 
-If Terraform fails with "Error acquiring the state lock", ensure no other group members are applying changes. If a process crashed, refer to the [Procedure](../../runbooks/09-tooling/terraform.md#state-lock-recovery).
+If Terraform fails with "Error acquiring the state lock", ensure no other group members are applying changes. If a process crashed, refer to the [force unlock procedure](../../runbooks/09-tooling/terraform.md#1-force-unlocking-state).
 
 #### Network Connectivity
 

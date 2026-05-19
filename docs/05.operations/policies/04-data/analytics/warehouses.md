@@ -2,9 +2,7 @@
 status: active
 ---
 
-# StarRocks Operations Policy
-
-<!-- Target: docs/05.operations/guides/04-data/analytics/warehouses.md -->
+<!-- Target: docs/05.operations/policies/04-data/analytics/warehouses.md -->
 
 # StarRocks Operations Policy
 

@@ -165,6 +165,22 @@ docker compose --profile core up -d
 - 문서 작성 작업은 가능한 경우 [`docs/99.templates/`](./docs/99.templates)의 템플릿을 출발점으로 사용합니다.
 - 상위 문서와 하위 산출물 사이의 추적성을 유지하고, 중복된 SSoT 문서를 만들지 않습니다.
 
+## Documentation Lifecycle
+
+문서 stage는 역할이 겹치지 않도록 다음 흐름으로 관리합니다.
+
+| Stage | Responsibility |
+| --- | --- |
+| [`docs/01.requirements/`](./docs/01.requirements) | 사용자 가치, 문제 정의, 요구사항, 성공 기준 |
+| [`docs/02.architecture/`](./docs/02.architecture) | 아키텍처 요구사항과 결정 기록 |
+| [`docs/03.specs/`](./docs/03.specs) | 기능별 기술 명세, 인터페이스, 구현 계약 |
+| [`docs/04.execution/`](./docs/04.execution) | 실행 계획과 작업 evidence |
+| [`docs/05.operations/`](./docs/05.operations) | 운영 가이드, 정책, 런북, 사고 기록 |
+| [`docs/90.references/`](./docs/90.references) | 느리게 변하는 참고 지식, 용어, source-backed reference |
+| [`docs/99.templates/`](./docs/99.templates) | 새 문서와 README의 canonical template |
+
+일반 작업 흐름은 요구사항 → 아키텍처 → 명세 → 실행 → 운영 순서입니다. 참고 문서는 active stage를 대체하지 않고, 템플릿은 새 문서 작성 전에 target 위치와 상대 링크를 다시 계산하는 기준으로만 사용합니다.
+
 ## Agent Working Rules
 
 - 작업 시작 전 [`AGENTS.md`](./AGENTS.md)를 먼저 확인합니다.

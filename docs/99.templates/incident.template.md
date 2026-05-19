@@ -79,7 +79,9 @@ NC-YYYYMMDD-XXX / [Short Incident Title]
 
 ## Related Documents
 
-- **Runbook**: [../../runbooks/<topic>.md](../../runbooks/<topic>.md)
-- **Operations Guide**: [../../guides/<topic>.md](../../guides/<topic>.md)
-- **Operations Policy**: [../../policies/<topic>.md](../../policies/<topic>.md)
+- **Runbook, direct target**: [../../runbooks/<topic>.md](../../runbooks/<topic>.md)
+- **Runbook, domain target**: [../../runbooks/<domain>/<topic>.md](../../runbooks/<domain>/<topic>.md)
+- **Runbook, nested target**: [../../runbooks/<domain>/<subdomain>/<topic>.md](../../runbooks/<domain>/<subdomain>/<topic>.md)
+- **Operations Guide, domain target**: [../../guides/<domain>/<topic>.md](../../guides/<domain>/<topic>.md)
+- **Operations Policy, domain target**: [../../policies/<domain>/<topic>.md](../../policies/<domain>/<topic>.md)
 - **Follow-up Task**: [../../../04.execution/tasks/YYYY-MM-DD-<topic>.md](../../../04.execution/tasks/YYYY-MM-DD-<topic>.md)

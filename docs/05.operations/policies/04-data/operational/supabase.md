@@ -2,9 +2,7 @@
 status: active
 ---
 
-# Supabase Operations Policy
-
-<!-- Target: docs/05.operations/guides/04-data/operational/supabase.md -->
+<!-- Target: docs/05.operations/policies/04-data/operational/supabase.md -->
 
 # Supabase Operations Policy
 

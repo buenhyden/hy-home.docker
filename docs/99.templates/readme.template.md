@@ -34,6 +34,8 @@ Target: <folder>/README.md
 - [04.execution/tasks](04.execution/tasks/README.md): 실제 구현 및 검증 작업 단위 (Task Table, Evidence)
 - [05.operations](05.operations/README.md): 사용 가이드, 운영 정책, 반복 실행 절차를 통합한 운영 지식 베이스
 - [05.operations/incidents](05.operations/incidents/README.md): 발생한 사고의 사실 기록, 사고 구조 분석, 재발 방지 대책
+- [90.references](90.references/README.md): 느리게 변하는 참고 지식, 용어, source-backed reference
+- [99.templates](99.templates/README.md): stage 문서와 README 작성을 위한 canonical template 원천
 
 ## Assembly Rules
 1. 아래의 `Base Structure`를 먼저 복사한다.

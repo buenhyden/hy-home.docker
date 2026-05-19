@@ -16,8 +16,8 @@ status: active
 
 ### Canonical References
 
-- [../../02.architecture/requirements/2026-04-01-standardize-infra-net.md](../../02.architecture/requirements/2026-04-01-standardize-infra-net.md)
-- [../../02.architecture/decisions/2026-04-01-standardize-infra-net.md](../../02.architecture/decisions/2026-04-01-standardize-infra-net.md)
+- [../../02.architecture/requirements/0026-standardize-infra-net.md](../../02.architecture/requirements/0026-standardize-infra-net.md)
+- [../../02.architecture/decisions/0026-standardize-infra-net.md](../../02.architecture/decisions/0026-standardize-infra-net.md)
 - [../../03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md)
 - [../../04.execution/plans/2026-04-01-standardize-infra-net.md](../../04.execution/plans/2026-04-01-standardize-infra-net.md)
 
@@ -37,7 +37,7 @@ status: active
 
 #### Procedure
 
-1. **IP 선정**: `docs/04.execution/plans/2026-04-01-standardize-infra-net.md`의 IP 맵핑 리스트에서 비어있는 영역을 선택함.
+1. **IP 선정**: `docs/03.specs/standardize-infra-net/spec.md`의 **Assigned IP Mapping Table (Authoritative)**에서 비어있는 영역을 선택함.
 2. **Compose 파일 수정**:
 
    ```yaml
@@ -79,4 +79,5 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0012-standardize-infra-net.md)
+- [infra_net spec](../../03.specs/standardize-infra-net/spec.md)
 - [Operations template](../../99.templates/operation.template.md)

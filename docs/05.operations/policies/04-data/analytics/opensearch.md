@@ -2,9 +2,7 @@
 status: active
 ---
 
-# OpenSearch Operations Policy
-
-<!-- Target: docs/05.operations/guides/04-data/analytics/opensearch.md -->
+<!-- Target: docs/05.operations/policies/04-data/analytics/opensearch.md -->
 
 # OpenSearch Operations Policy
 

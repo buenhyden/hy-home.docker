@@ -2,9 +2,7 @@
 status: active
 ---
 
-# Cassandra Operation Policy Operations Policy
-
-<!-- Target: docs/05.operations/guides/04-data/nosql/cassandra.md -->
+<!-- Target: docs/05.operations/policies/04-data/nosql/cassandra.md -->
 
 # Cassandra Operation Policy Operations Policy
 

@@ -2,9 +2,7 @@
 status: draft
 ---
 
-# Open Notebook Operations Policy
-
-<!-- Target: docs/05.operations/guides/11-laboratory/open-notebook.md -->
+<!-- Target: docs/05.operations/policies/11-laboratory/open-notebook.md -->
 
 # Open Notebook Operations Policy
 

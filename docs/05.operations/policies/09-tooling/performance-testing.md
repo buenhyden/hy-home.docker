@@ -2,9 +2,7 @@
 status: active
 ---
 
-# Performance Testing Operations Policy
-
-<!-- Target: docs/05.operations/guides/09-tooling/performance-testing.md -->
+<!-- Target: docs/05.operations/policies/09-tooling/performance-testing.md -->
 
 # Performance Testing Operations Policy
 

@@ -22,6 +22,7 @@ config:
       - system-or-domain-name
       - feature-or-stream
       - incident-title
+      - subdomain
   MD024: false
 # Shared markdownlint-cli2 rules for docs and root markdown files.
 ignores:

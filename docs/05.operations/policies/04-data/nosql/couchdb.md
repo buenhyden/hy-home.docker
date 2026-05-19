@@ -2,9 +2,7 @@
 status: active
 ---
 
-# CouchDB Operation Policy Operations Policy
-
-<!-- Target: docs/05.operations/guides/04-data/nosql/couchdb.md -->
+<!-- Target: docs/05.operations/policies/04-data/nosql/couchdb.md -->
 
 # CouchDB Operation Policy Operations Policy
 

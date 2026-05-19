@@ -2,9 +2,7 @@
 status: active
 ---
 
-# Docker Registry Operations Policy
-
-<!-- Target: docs/05.operations/guides/09-tooling/registry.md -->
+<!-- Target: docs/05.operations/policies/09-tooling/registry.md -->
 
 # Docker Registry Operations Policy
 
