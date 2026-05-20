@@ -69,7 +69,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh SessionEnd",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-end.sh",
             "timeout": 10
           }
         ]
@@ -81,7 +81,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh Stop",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/stop.sh",
             "timeout": 30
           }
         ]
@@ -93,7 +93,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh PreCompact",
+            "command": "bash $CLAUDE_PROJECT_DIR/.claude/hooks/pre-compact.sh",
             "timeout": 10
           }
         ]
