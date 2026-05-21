@@ -5,7 +5,7 @@ status: draft
 
 # Incident: [Incident Title]
 
-NC-YYYYMMDD-XXX / [Short Incident Title]
+INC-YYYYMMDD-XXX / [Short Incident Title]
 
 > Use this template for `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>.md`.
 >
@@ -15,6 +15,14 @@ NC-YYYYMMDD-XXX / [Short Incident Title]
 > - Separate confirmed facts from current hypotheses.
 > - Keep final root cause analysis in a paired Postmortem under `docs/05.operations/incidents/`.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
+>
+> Target-relative examples from `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>.md`:
+>
+> - Same-incident postmortem: `./YYYY-MM-DD-incident-title-postmortem.md`
+> - Direct runbook: `../../runbooks/topic.md`
+> - Domain runbook: `../../runbooks/domain/topic.md`
+> - Nested runbook: `../../runbooks/domain/subdomain/topic.md`
+> - Follow-up task: `../../../04.execution/tasks/YYYY-MM-DD-topic.md`
 
 ---
 

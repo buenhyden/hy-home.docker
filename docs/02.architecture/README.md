@@ -65,6 +65,15 @@ docs/02.architecture/
 5. 링크는 템플릿 위치가 아니라 복사된 대상 문서 위치 기준으로 계산한다.
 6. 구현 상세는 [`../03.specs/`](../03.specs/README.md), 운영 절차는 [`../05.operations/`](../05.operations/README.md)에 둔다.
 
+## Architecture Contract
+
+| Artifact | Canonical Location | Responsibility |
+| --- | --- | --- |
+| ARD | `requirements/` | 시스템 경계, 품질 속성, 참조 아키텍처 |
+| ADR | `decisions/` | 결정, 대안, consequence, supersession |
+
+ARD와 ADR은 서로 대체하지 않습니다. ARD가 “시스템이 어떤 구조와 품질 속성을 가져야 하는지”를 설명하고, ADR은 “왜 특정 선택을 했는지”를 기록합니다. 구현 세부와 검증 명령은 Spec과 Execution stage로 내려보냅니다.
+
 ## Documentation Standards
 
 - 새 stage 문서는 매핑된 템플릿에서 시작한다.

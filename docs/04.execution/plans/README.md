@@ -59,6 +59,20 @@ docs/04.execution/plans/
 4. 계획에는 work breakdown, verification plan, risks, completion criteria가 있어야 합니다.
 5. 예기치 않은 이슈가 발생하면 plan을 갱신하거나, historical evidence를 바꾸기 어렵다면 governance memory note로 남깁니다.
 
+## Plan Contract
+
+Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질문에 답해야 합니다.
+
+| Question | Plan Section |
+| --- | --- |
+| 왜 지금 이 작업을 하는가 | `## Context` |
+| 범위와 비범위는 무엇인가 | `## Goals & In-Scope`, `## Non-Goals & Out-of-Scope` |
+| 어떤 순서로 진행하는가 | `## Work Breakdown` |
+| 실패 가능성과 완화책은 무엇인가 | `## Risks & Mitigations` |
+| 완료를 무엇으로 증명하는가 | `## Verification Plan`, `## Completion Criteria` |
+
+실제 수행 결과는 sibling [tasks README](../tasks/README.md)에 따라 task 문서로 기록합니다.
+
 ## Documentation Standards
 
 - 가능한 경우 승인된 템플릿에서 시작한다.

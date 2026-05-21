@@ -1,3 +1,5 @@
+<!-- Target: docs/02.architecture/requirements/0011-laboratory-architecture.md -->
+
 # 11-laboratory Architecture Reference Document (ARD)
 
 ## Overview (KR)
@@ -54,6 +56,10 @@ graph TD
     RI -.-> RedisPool
     Dash -.-> TF
 ```
+
+## Data Architecture
+
+`11-laboratory` does not own primary application data. It consumes Docker Engine, Valkey/Redis, and dashboard metadata endpoints for management visibility, while persistence remains owned by the underlying service tiers.
 
 ## Infrastructure & Deployment
 

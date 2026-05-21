@@ -1,3 +1,5 @@
+<!-- Target: docs/02.architecture/requirements/0003-security-architecture.md -->
+
 # ARD: Security Tier Architecture (03-security)
 
 ## Overview (KR)
@@ -87,6 +89,10 @@ The existing architecture diagram, component, constraint, or reliability section
 ## Data Architecture
 
 The existing storage, secret templating, and Vault Agent sections in this document describe data handling boundaries for this historical ARD. This alignment section does not introduce new data architecture facts.
+
+## Infrastructure & Deployment
+
+The existing constraints, component architecture, and reliability sections describe the Vault runtime and deployment boundaries for this historical ARD. Operational procedures remain in the linked operations documents.
 
 ## Related Documents
 

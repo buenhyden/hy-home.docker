@@ -1,3 +1,5 @@
+<!-- Target: docs/03.specs/README.md -->
+
 # 03.specs
 
 > 컴포넌트와 기능별 기술 명세, 구현 계약, 검증 기준을 관리하는 stage
@@ -83,10 +85,24 @@ docs/03.specs/
 1. 새 spec을 만들기 전에 상위 PRD, ARD, ADR이 있는지 확인합니다.
 2. 새 `spec.md`는 [spec template](../99.templates/spec.template.md)을 복사해 작성합니다.
 3. README는 [README template](../99.templates/readme.template.md)을 기준으로 작성하고, 링크는 대상 README 위치 기준으로 계산합니다.
-4. Agent 전용 설계가 필요하면 [agent design template](../99.templates/agent-design.template.md)을 사용해 `docs/03.specs/<feature-id>/agent-design.md`에 둡니다.
+4. Agent 전용 설계가 필요하면 [agent design template](../99.templates/agent-design.template.md)을 사용해 해당 feature 디렉터리의 `agent-design.md`에 둡니다.
 5. API, schema, proto, tests, data model 계약은 같은 feature 디렉터리 아래 child document로 둡니다.
 6. `## Related Documents`는 실제 Markdown 링크로 작성합니다. 문서 경로를 코드 span 안에만 남기지 않습니다.
 7. 운영 링크는 목적별 bucket을 맞춥니다: guide는 `docs/05.operations/guides/`, policy는 `docs/05.operations/policies/`, runbook은 `docs/05.operations/runbooks/`.
+
+## Spec Contract
+
+Spec은 구현자가 따라야 하는 기술 계약입니다. 요구사항이나 실행 evidence를 다시 쓰지 않고, 다음 항목을 구현 가능한 형태로 연결합니다.
+
+| Contract Area | Expected Content |
+| --- | --- |
+| Related inputs | PRD, ARD, ADR 링크 또는 명시적인 부재 사유 |
+| Contracts | config, data/interface, governance contract |
+| Core design | component boundary, dependencies, stack |
+| Verification | 실행 가능한 명령, 수동 확인 기준, pass criteria |
+| Operations handoff | guide, policy, runbook 중 실제 운영 target 링크 |
+
+API, data model, tests, agent design 같은 child document는 같은 feature 디렉터리에 둡니다. 실행 순서와 작업 evidence는 `docs/04.execution`으로 연결합니다.
 
 ## Documentation Standards
 

@@ -1,3 +1,5 @@
+<!-- Target: docs/02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md -->
+
 # 11-Laboratory Optimization Hardening Architecture Reference Document (ARD)
 
 ## Overview (KR)
@@ -46,6 +48,10 @@ Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 
   - dozzle/portainer -> Docker socket
   - redisinsight -> valkey/redis endpoints
 
+## Data Architecture
+
+This hardening ARD does not introduce primary data ownership for the laboratory tier. Data access remains limited to management metadata, Docker socket visibility, log streams, and Valkey/Redis endpoint inspection described in the control path.
+
 ## Infrastructure & Deployment
 
 - **Runtime / Platform**: Docker Compose (`infra/11-laboratory/*`)
@@ -70,6 +76,6 @@ Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 
 - **Plan**: [../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md](../decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md)
-- **Guide**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/11-laboratory/optimization-hardening.md](../../05.operations/guides/11-laboratory/optimization-hardening.md)
 - **Operation**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
-- **Runbook**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/11-laboratory/optimization-hardening.md](../../05.operations/runbooks/11-laboratory/optimization-hardening.md)

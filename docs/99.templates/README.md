@@ -69,36 +69,76 @@ layer: agentic
 8. infra service README는 목적, config, compose linkage, network, volume, port, label, secret ref, healthcheck, operations, validation, troubleshooting evidence를 포함한다.
 9. scripts README는 `scripts/validation/`, `scripts/hardening/`, `scripts/hooks/`, `scripts/knowledge/`, `scripts/operations/`, `scripts/lib/` 목적 폴더를 보존하고 root-level wrapper를 만들지 않는다.
 10. Markdown 템플릿의 cross-link 예시는 복사된 Target 위치 기준으로 계산하고, YAML/GraphQL/Proto 계약 파일의 cross-link는 parent Markdown Spec 또는 API Spec에서 관리한다.
-11. `docs/99.templates/*.template.md` 원본은 `status: draft` frontmatter를 사용한다. 복사된 Target 문서가 governance memory나 progress log처럼 `layer:` 또는 `status: active`가 필요하면 템플릿 안내에 따라 Target 문서에서만 frontmatter를 교체한다.
+11. `docs/99.templates/*.template.md` 원본은 `status: draft` frontmatter를 사용한다. 복사된 Target 문서는 대상 stage의 lifecycle에 맞게 `status: draft`, `status: active`, `status: completed`, generated metadata, 또는 repository README처럼 no-frontmatter 형태로 조정한다.
 12. Template source에 있는 placeholder는 최종 문서에 남기지 않는다. 실제 링크처럼 렌더링되는 placeholder Markdown link와 placeholder command는 target 문서로 복사하기 전에 반드시 삭제하거나 실제 target-relative 값으로 교체한다.
 13. README template의 `<!-- Target: ... -->` 주석은 작성 보조 정보다. Target 문서에서 필수 metadata로 취급하지 않으며, 리뷰에 도움이 되는 경우에만 남긴다.
 
+## Documentation Contract
+
+이 폴더는 새 문서의 구조뿐 아니라 stage 간 책임 경계를 정의하는 계약이다. 새 문서나 갱신 문서는 아래 매핑과 lifecycle을 먼저 확인해야 한다.
+
+| Stage | Responsibility | Template |
+| --- | --- | --- |
+| `docs/01.requirements/` | 사용자 가치, 문제 정의, 요구사항, acceptance criteria | `prd.template.md` |
+| `docs/02.architecture/requirements/` | 시스템 경계, 품질 속성, 참조 아키텍처 | `ard.template.md` |
+| `docs/02.architecture/decisions/` | 아키텍처 trade-off, 대안, 결정 결과 | `adr.template.md` |
+| `docs/03.specs/` | 기능/시스템별 기술 명세, interface, verification contract | `spec.template.md` |
+| `docs/04.execution/plans/` | 작업 순서, 리스크, 검증 계획, 완료 기준 | `plan.template.md` |
+| `docs/04.execution/tasks/` | 실제 작업 상태, 검증 evidence, deviation 기록 | `task.template.md` |
+| `docs/05.operations/` | guide, policy, runbook, incident/postmortem 운영 지식 | `operation.template.md`, `incident.template.md`, `postmortem.template.md` |
+| `docs/90.references/` | 느리게 변하는 reference, glossary, source-backed facts | `reference.template.md` |
+| `README.md` files | 폴더 책임, 라우팅, 작업 방식, 관련 문서 index | `readme.template.md` |
+
+## Lifecycle Rules
+
+1. Requirement: 요구사항과 acceptance criteria를 PRD로 확정한다.
+2. Architecture: 시스템 경계는 ARD에, trade-off 결정은 ADR에 기록한다.
+3. Specification: 구현자가 지킬 interface, data, config, verification contract를 Spec에 둔다.
+4. Execution: 실행 순서는 Plan에 두고, 실제 수행 결과와 evidence는 Task에 둔다.
+5. Operations: 반복 가능한 사용법, 통제, 절차, 사고 기록은 `docs/05.operations`의 목적별 bucket에 둔다.
+6. Reference: active 판단을 대체하지 않는 안정적 배경 지식만 `docs/90.references`에 둔다.
+
+## Cross-link Rules
+
+- 모든 Markdown target 문서는 `## Related Documents`를 유지한다.
+- 링크는 복사된 target 문서 위치 기준의 상대 경로로 계산한다.
+- `docs/99.templates`에 있는 예시 링크를 target 문서에 그대로 복사하지 않는다.
+- `README.md`는 parent/child index 역할을 하므로 새 파일 추가, 이동, 삭제 시 함께 갱신한다.
+- YAML, GraphQL, Proto 같은 machine-readable contract의 cross-link ownership은 parent Markdown Spec 또는 API Spec에서 관리한다.
+
+## Stale Document Rules
+
+- 오래된 문서가 같은 책임의 canonical 문서와 충돌하면 먼저 canonical 문서를 확인한다.
+- 의미가 살아 있는 historical evidence는 대량 재작성하지 않고 필요한 최소 구조만 보강한다.
+- reference/archive 이동은 reference search와 migration note 후에만 수행한다.
+- 삭제는 참조 검색, 영향 기록, 사용자 승인 없이는 수행하지 않는다.
+
 ## 템플릿-폴더 매핑
 
-| Folder                                   | Template                 |
-| ---------------------------------------- | ------------------------ |
-| `01.requirements/`                       | `prd.template.md`        |
-| `02.architecture/requirements/`          | `ard.template.md`        |
-| `02.architecture/decisions/`             | `adr.template.md`        |
-| `03.specs/<feature-id>/spec.md`          | `spec.template.md`       |
-| `03.specs/<feature-id>/agent-design.md`  | `agent-design.template.md` |
-| `03.specs/<feature-id>/api-spec.md`      | `api-spec.template.md`   |
-| `03.specs/<feature-id>/data-model.md`    | `data-model.template.md` |
-| `03.specs/<feature-id>/tests.md`         | `tests.template.md`      |
-| `03.specs/<feature-id>/contracts/openapi.yaml` | `openapi.template.yaml` |
-| `03.specs/<feature-id>/contracts/schema.graphql` | `schema.template.graphql` |
-| `03.specs/<feature-id>/contracts/service.proto` | `service.template.proto` |
-| `04.execution/plans/`                    | `plan.template.md`       |
-| `04.execution/tasks/`                    | `task.template.md`       |
-| `05.operations/guides/`                  | `operation.template.md`  |
-| `05.operations/policies/`                | `operation.template.md`  |
-| `05.operations/runbooks/`                | `operation.template.md`  |
-| `05.operations/incidents/`               | `incident.template.md`   |
-| `05.operations/incidents/`               | `postmortem.template.md` |
-| `00.agent-governance/memory/<note>.md`   | `memory.template.md`     |
-| `00.agent-governance/memory/progress.md` | `progress.template.md`   |
-| `90.references/<category>/<item>.md`      | `reference.template.md`  |
-| `README.md` (per folder)                 | `readme.template.md`     |
+| Target Location | Template |
+| --- | --- |
+| `docs/01.requirements/YYYY-MM-DD-<feature-or-system>.md` | `prd.template.md` |
+| `docs/02.architecture/requirements/####-<system-or-domain>.md` | `ard.template.md` |
+| `docs/02.architecture/decisions/####-<short-title>.md` | `adr.template.md` |
+| `docs/03.specs/<feature-id>/spec.md` | `spec.template.md` |
+| `docs/03.specs/<feature-id>/agent-design.md` | `agent-design.template.md` |
+| `docs/03.specs/<feature-id>/api-spec.md` | `api-spec.template.md` |
+| `docs/03.specs/<feature-id>/data-model.md` | `data-model.template.md` |
+| `docs/03.specs/<feature-id>/tests.md` | `tests.template.md` |
+| `docs/03.specs/<feature-id>/contracts/openapi.yaml` | `openapi.template.yaml` |
+| `docs/03.specs/<feature-id>/contracts/schema.graphql` | `schema.template.graphql` |
+| `docs/03.specs/<feature-id>/contracts/service.proto` | `service.template.proto` |
+| `docs/04.execution/plans/YYYY-MM-DD-<feature>.md` | `plan.template.md` |
+| `docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md` | `task.template.md` |
+| `docs/05.operations/guides/**.md` | `operation.template.md` |
+| `docs/05.operations/policies/**.md` | `operation.template.md` |
+| `docs/05.operations/runbooks/**.md` | `operation.template.md` |
+| `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>.md` | `incident.template.md` |
+| `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md` | `postmortem.template.md` |
+| `docs/00.agent-governance/memory/<note>.md` | `memory.template.md` |
+| `docs/00.agent-governance/memory/progress.md` | `progress.template.md` |
+| `docs/90.references/<category>/<item>.md` | `reference.template.md` |
+| `README.md`, `docs/README.md`, and folder `README.md` files | `readme.template.md` |
 
 ## API Spec 템플릿 위치
 

@@ -15,6 +15,18 @@ status: draft
 > - Keep one `Overview (KR)` summary near the top.
 > - This document is the parent design doc; API contracts live in `api-spec.md` under the same feature directory.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
+>
+> Target-relative examples from `docs/03.specs/<feature-id>/spec.md`:
+>
+> - PRD: `../../01.requirements/YYYY-MM-DD-feature-or-system.md`
+> - ARD: `../../02.architecture/requirements/####-system-or-domain-name.md`
+> - ADR: `../../02.architecture/decisions/####-short-title.md`
+> - Plan: `../../04.execution/plans/YYYY-MM-DD-feature.md`
+> - Task: `../../04.execution/tasks/YYYY-MM-DD-feature-or-stream.md`
+> - Same-directory API Spec: `./api-spec.md`
+> - Operations direct target: `../../05.operations/guides/topic.md`
+> - Operations domain target: `../../05.operations/guides/domain/topic.md`
+> - Operations nested target: `../../05.operations/guides/domain/subdomain/topic.md`
 
 ---
 
@@ -123,7 +135,7 @@ Contract-first 원칙: 이 기능이 외부 API를 제공하는 경우, 상세 A
 
 ## Verification
 
-List the required commands, manual checks, or evidence capture steps.
+List the commands, manual checks, or evidence capture steps. This section answers "how to run the checks."
 
 ```bash
 [command 1]
@@ -133,6 +145,8 @@ python evals/run_[feature]_eval.py
 ```
 
 ## Success Criteria & Verification Plan
+
+Define what each verification step proves. This section answers "what must be true for the spec to be accepted."
 
 - **VAL-SPC-001**:
 - **VAL-SPC-002**:
@@ -147,3 +161,4 @@ python evals/run_[feature]_eval.py
 - **Policy, domain operations target**: [../../05.operations/policies/<domain>/<topic>.md](../../05.operations/policies/<domain>/<topic>.md)
 - **Runbook, direct operations target**: [../../05.operations/runbooks/<topic>.md](../../05.operations/runbooks/<topic>.md)
 - **Runbook, domain operations target**: [../../05.operations/runbooks/<domain>/<topic>.md](../../05.operations/runbooks/<domain>/<topic>.md)
+- **Runbook, nested operations target**: [../../05.operations/runbooks/<domain>/<subdomain>/<topic>.md](../../05.operations/runbooks/<domain>/<subdomain>/<topic>.md)

@@ -59,6 +59,19 @@ docs/04.execution/tasks/
 4. 문서-only 작업도 검증 evidence를 남깁니다.
 5. 작업 완료 후에는 최종 검증 명령과 결과를 `Verification Summary`에 남깁니다.
 
+## Task Contract
+
+Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행 결과를 검증 가능하게 남깁니다.
+
+| Evidence Type | Expected Content |
+| --- | --- |
+| Task Table | 작업 ID, type, parent spec/plan, evidence, status |
+| Phase View | 수행 흐름을 빠르게 확인할 수 있는 선택적 checklist |
+| Verification Summary | 실행한 명령, 결과, 수동 확인, 실패 또는 skip 사유 |
+| Deviation Notes | 계획과 달라진 점, 최종 판단 근거, follow-up 필요 여부 |
+
+완료된 historical task는 의미 보존을 우선합니다. 새 task 또는 현재 task를 갱신할 때만 최신 template 구조를 적용합니다.
+
 ## Documentation Standards
 
 - 가능한 경우 승인된 템플릿에서 시작한다.

@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/README.md -->
+
 # Operations
 
 > 서비스 사용 가이드, 운영 정책, 반복 실행 절차, 사고 기록을 분리해 관리하는 운영 지식 베이스
@@ -60,14 +62,25 @@ docs/05.operations/
 
 ## How to Work in This Area
 
-1. 서비스 사용법이나 배경 설명은 `guides/<domain>/<service>.md`에 둡니다.
-2. 운영 통제, 예외, 보안/가용성 기준은 `policies/<domain>/<topic>.md`에 둡니다.
-3. 명령 순서, 기대 결과, 실패 시 중단 기준이 있는 절차는 `runbooks/<domain>/<topic>.md`에 둡니다.
+1. 서비스 사용법이나 배경 설명은 `guides/01-gateway/traefik.md` 같은 guide 문서에 둡니다.
+2. 운영 통제, 예외, 보안/가용성 기준은 `policies/01-gateway/traefik.md` 같은 policy 문서에 둡니다.
+3. 명령 순서, 기대 결과, 실패 시 중단 기준이 있는 절차는 `runbooks/01-gateway/traefik.md` 같은 runbook 문서에 둡니다.
 4. 실제 사고 기록과 postmortem은 `incidents/`에 둡니다.
 5. 새 operations 문서는 `../99.templates/operation.template.md`를 기본 템플릿으로 사용하고, target 위치 기준으로 상대 링크를 계산합니다.
 6. 문서를 추가, 이동, 삭제하면 해당 parent `README.md`와 관련 bucket 링크를 함께 갱신합니다.
 
 모든 서비스가 guide, policy, runbook을 모두 가질 필요는 없습니다. 소비자가 실제로 구분해서 찾아야 하는 문서만 추가합니다.
+
+## Operations Contract
+
+| Bucket | Responsibility | Required Profile |
+| --- | --- | --- |
+| `guides/` | 정상 사용, 설정, 온보딩, common checks | `## Usage`, `## Common Checks`, handoff links |
+| `policies/` | 운영 통제, 허용/금지 상태, 예외, 검토 주기 | `## Policy Scope`, `## Controls`, `## Verification`, `## Review Cadence` |
+| `runbooks/` | 순서 있는 절차, evidence, rollback/recovery, escalation | `## When to Use`, `## Procedure`, `## Evidence`, `## Rollback or Recovery`, `## Escalation` |
+| `incidents/` | 사고 사실 기록과 postmortem | incident/postmortem templates |
+
+하나의 leaf 문서에는 하나의 primary purpose만 둡니다. 사용 설명과 반복 절차가 모두 필요한 경우 guide에서 runbook으로 handoff 링크를 둡니다.
 
 ## Documentation Standards
 

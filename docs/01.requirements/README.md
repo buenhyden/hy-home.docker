@@ -78,6 +78,19 @@ docs/01.requirements/
 3. 문서 상태(`draft`, `approved`, `deprecated`)를 frontmatter의 `status` 필드로 관리함.
 4. 승인 후에는 관련 `ARD`, `Spec`, `Plan` 문서를 생성하여 추적성을 유지함.
 
+## PRD Contract
+
+PRD는 문제와 요구사항의 SSoT입니다. 구현 방법, 실행 순서, 운영 절차는 이 stage에 두지 않습니다.
+
+| PRD Must Define | Downstream Owner |
+| --- | --- |
+| 사용자 또는 운영자 문제 | ARD/ADR이 해결 구조와 trade-off를 설명 |
+| 기능 요구사항과 비기능 요구사항 | Spec이 interface와 verification contract로 변환 |
+| Scope, out-of-scope, non-goals | Plan이 실행 범위와 risk gate로 변환 |
+| Success criteria와 acceptance criteria | Task가 검증 evidence로 기록 |
+
+새 PRD의 `## Related Documents` 링크는 `docs/01.requirements/`에 복사된 PRD 파일 위치 기준으로 계산합니다. 예를 들어 architecture requirements는 `../02.architecture/requirements/...`, technical spec은 `../03.specs/...`, execution plan은 `../04.execution/plans/...`로 연결합니다.
+
 ## Documentation Standards
 
 - 가능한 경우 승인된 템플릿에서 시작한다.

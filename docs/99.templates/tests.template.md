@@ -9,11 +9,10 @@ status: draft
 >
 > Rules:
 >
-> - This document defines the verification strategy for the feature.
+> - This document defines the verification strategy and test inventory for the feature.
 > - Core behavior defaults to TDD.
 > - Agent functionality must include both software tests and eval coverage when applicable.
 > - Execution-tracking remains in `04.execution/tasks/`.
-> - This document defines strategy and test inventory.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---

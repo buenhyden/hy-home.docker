@@ -13,6 +13,15 @@ status: draft
 > - File-level implementation detail belongs in the Spec.
 > - Use one `Overview (KR)` summary near the top.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
+>
+> Target-relative examples from `docs/02.architecture/requirements/####-<system-or-domain>.md`:
+>
+> - PRD: `../../01.requirements/YYYY-MM-DD-feature-or-system.md`
+> - ADR: `../decisions/####-short-title.md`
+> - Spec: `../../03.specs/feature-id/spec.md`
+> - Plan: `../../04.execution/plans/YYYY-MM-DD-feature.md`
+> - Task: `../../04.execution/tasks/YYYY-MM-DD-feature-or-stream.md`
+> - Operations: `../../05.operations/README.md`
 
 ---
 

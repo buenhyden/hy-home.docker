@@ -7,7 +7,20 @@ status: draft
 
 > Use this template for `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md`.
 >
-> Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
+> Rules:
+>
+> - Analyze systemic causes without blaming individuals.
+> - Link the paired Incident document in the same incident-year folder.
+> - Convert prevention work into follow-up tasks with owners and verification.
+> - Do not include secret values, credentials, private keys, raw logs, or shell history.
+> - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
+>
+> Target-relative examples from `docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md`:
+>
+> - Incident document: `./YYYY-MM-DD-incident-title.md`
+> - Direct runbook: `../../runbooks/topic.md`
+> - Domain policy: `../../policies/domain/policy-or-standard.md`
+> - Follow-up task: `../../../04.execution/tasks/YYYY-MM-DD-topic.md`
 
 ---
 

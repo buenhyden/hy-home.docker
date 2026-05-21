@@ -239,6 +239,18 @@ SNIPPET: DOCS & GOVERNANCE
 - Operations Procedure
 - Incident / Postmortem
 
+## README Contract
+
+README는 해당 경로의 entrypoint이자 routing contract다. 새 README 또는 갱신된 README는 다음을 명확히 해야 한다.
+
+- 이 폴더가 담당하는 책임과 담당하지 않는 책임
+- 새 파일을 만들 때 사용할 template 또는 canonical parent 문서
+- 하위 문서가 있다면 찾는 방법과 index 역할
+- 변경 후 함께 갱신해야 하는 parent README, child README, Related Documents
+- target-relative link rule: 현재 README 파일 위치 기준으로 상대 링크를 계산한다
+
+문서 stage README는 requirement → architecture → specification → execution → operations lifecycle에서 자신의 위치를 설명해야 한다. Reference README는 active policy, plan, runbook을 대체하지 않는다는 경계를 명시해야 한다.
+
 ## Template Usage
 
 - 새 문서를 만들 때는 `{template-path}` 또는 `templates/` 아래의 적절한 템플릿을 사용한다.

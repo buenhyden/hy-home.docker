@@ -1,3 +1,5 @@
+<!-- Target: docs/02.architecture/requirements/0012-data-analytics-architecture.md -->
+
 # ARD: Analytics Tier Architecture (04-data/analytics)
 
 > This document defines the structural boundaries, quality attributes, and infrastructure strategy for the specialized analytics data engines within the `04-data/analytics` sub-tier.
@@ -83,6 +85,10 @@ graph LR
   - `${DEFAULT_DATA_DIR}/analytics/<target>/data` 경로에 데이터 물리 저장.
   - 고성능 디스크(NVMe) 활용 권장.
 - **Config Management**: Docker Secrets 및 환경 변수를 통한 설정 주입.
+
+## Infrastructure & Deployment
+
+The existing infrastructure strategy section defines the deployment boundary for this historical ARD. Runtime procedures and recovery steps remain in the linked operations documents.
 
 ## AI Requirements
 

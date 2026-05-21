@@ -14,6 +14,14 @@ status: draft
 > - Agent work must include eval tasks where applicable.
 > - This is the canonical execution-tracking location; feature-local task notes under `03.specs/` are secondary.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
+>
+> Target-relative examples from `docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md`:
+>
+> - Parent Spec: `../../03.specs/feature-id/spec.md`
+> - Parent Plan: `../plans/YYYY-MM-DD-feature.md`
+> - Operations direct target: `../../05.operations/guides/topic.md`
+> - Operations domain target: `../../05.operations/guides/domain/topic.md`
+> - Reference target: `../../90.references/category/item.md`
 
 ---
 
@@ -77,3 +85,4 @@ status: draft
 - **Parent Spec**: [<feature-id> spec](../../03.specs/<feature-id>/spec.md)
 - **Parent Plan**: [YYYY-MM-DD-<feature> plan](../plans/YYYY-MM-DD-<feature>.md)
 - **Operations / References**: [<topic> operations guide](../../05.operations/guides/<topic>.md)
+- **Reference**: [Reference item](../../90.references/<category>/<item>.md)

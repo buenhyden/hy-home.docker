@@ -13,6 +13,15 @@ status: draft
 > - Do not turn ADRs into implementation specs.
 > - Use global numbering.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
+>
+> Target-relative examples from `docs/02.architecture/decisions/####-<short-title>.md`:
+>
+> - PRD: `../../01.requirements/YYYY-MM-DD-feature-or-system.md`
+> - ARD: `../requirements/####-system-or-domain.md`
+> - Spec: `../../03.specs/feature-id/spec.md`
+> - Plan: `../../04.execution/plans/YYYY-MM-DD-feature.md`
+> - Task: `../../04.execution/tasks/YYYY-MM-DD-feature-or-stream.md`
+> - Related ADR: `./####-related-decision.md`
 
 ---
 
@@ -64,4 +73,5 @@ status: draft
 - **ARD**: [../requirements/####-<system-or-domain>.md](../requirements/####-<system-or-domain>.md)
 - **Spec**: [../../03.specs/<feature-id>/spec.md](../../03.specs/<feature-id>/spec.md)
 - **Plan**: [../../04.execution/plans/YYYY-MM-DD-<feature>.md](../../04.execution/plans/YYYY-MM-DD-<feature>.md)
+- **Task**: [../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md](../../04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md)
 - **Related ADR**: [./####-<related-decision>.md](./####-<related-decision>.md)

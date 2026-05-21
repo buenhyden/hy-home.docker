@@ -61,7 +61,12 @@ Nested target, for example `docs/05.operations/guides/<domain>/<subdomain>/<topi
 - Incident record: `../../../incidents/YYYY/YYYY-MM-DD-<incident-title>.md`
 -->
 
-<!-- Target: docs/05.operations/<bucket>/<topic>.md -->
+<!--
+Target: docs/05.operations/<bucket>/<topic>.md
+Target: docs/05.operations/<bucket>/<domain>/<topic>.md
+Target: docs/05.operations/<bucket>/<domain>/<subdomain>/<topic>.md
+Keep only the copied target path that matches the final document.
+-->
 
 # {Topic Name} {Guide | Policy | Runbook}
 

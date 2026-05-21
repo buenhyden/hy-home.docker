@@ -53,6 +53,17 @@ docs/04.execution/
 - [Docs bounded consistency audit plan](plans/2026-05-18-docs-bounded-consistency-audit.md) - README entrypoint, stale inventory, and validator-backed drift remediation plan
 - [Docs bounded consistency audit task](tasks/2026-05-18-docs-bounded-consistency-audit.md) - execution evidence for the bounded consistency audit
 
+## Execution Contract
+
+`plans/`와 `tasks/`는 같은 작업을 다루더라도 책임이 다릅니다.
+
+| Artifact | Responsibility | Must Not Become |
+| --- | --- | --- |
+| Plan | 실행 순서, dependency, risk, rollback, verification plan | 실제 수행 로그 또는 완료 evidence |
+| Task | 수행 상태, 검증 결과, deviation, completion evidence | 새 요구사항, architecture decision, 또는 spec |
+
+같은 문장을 plan과 task에 중복해서 복사하지 않습니다. Plan은 “무엇을 어떤 순서로 할지”를 유지하고, Task는 “무엇을 실제로 했고 무엇으로 검증했는지”를 유지합니다.
+
 ## How to Work in This Area
 
 1. 실행 전에는 [plan template](../99.templates/plan.template.md)을 사용해 `plans/YYYY-MM-DD-topic.md`를 작성합니다.

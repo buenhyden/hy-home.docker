@@ -1,14 +1,19 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/06-observability/prometheus.md -->
 
 # [OPERATIONAL-POLICY] 06-observability: prometheus Operations Policy
 
 Standardized procedures for maintaining Prometheus metrics collection and alerting integrity.
 
-## Procedures
+## Overview
 
-### 1. Scrape Target Registration
+This policy defines the Prometheus controls for scrape target registration, alerting rule management, performance monitoring, and TSDB integrity. Ordered recovery or reload procedures belong in the matching runbook.
+
+## Policy Details
+
+### Scrape Target Registration Requirements
 
 To add a new service for monitoring:
 
@@ -29,7 +34,7 @@ To add a new service for monitoring:
 
 4. Reload Prometheus (send `SIGHUP` or use API `-X POST /-/reload`).
 
-### 2. Alerting Rule Management
+### Alerting Rule Management Requirements
 
 - **Definition**: Rules must be added to the appropriate file in `config/alert_rules/`.
 - **Naming**: Use camelCase for alert names (e.g., `PostgresInstanceDown`).
@@ -41,7 +46,7 @@ To add a new service for monitoring:
   promtool test rules config/alert_rules/tests/*.yml
   ```
 
-### 3. Performance Monitoring
+### Performance Monitoring Requirements
 
 - **Cardinality Audit**: Periodically review high-cardinality metrics (e.g., `container_...` from cAdvisor).
 - **Rule Evaluation**: Monitor `prometheus_rule_evaluation_duration_seconds` to ensure evaluations complete within the `15s` window.

@@ -109,6 +109,30 @@ docs/
 - Agent 전용 문서(`docs/00.agent-governance/`, `AGENTS.md` 등)는 영어를 원칙으로 하고, 사람 대상 README/operations/reference 문서는 한국어를 기본으로 합니다.
 - Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
 
+## Documentation Contract
+
+| Stage | Responsibility | Template |
+| --- | --- | --- |
+| `01.requirements/` | 문제, 사용자 가치, scope, acceptance criteria | `99.templates/prd.template.md` |
+| `02.architecture/requirements/` | 시스템 경계, 품질 속성, 참조 아키텍처 | `99.templates/ard.template.md` |
+| `02.architecture/decisions/` | 선택, 대안, consequence를 남기는 결정 기록 | `99.templates/adr.template.md` |
+| `03.specs/` | 구현 계약, interface, data/config contract, verification | `99.templates/spec.template.md` |
+| `04.execution/plans/` | 실행 순서, risk control, verification plan | `99.templates/plan.template.md` |
+| `04.execution/tasks/` | 실제 수행 상태, evidence, deviation, completion record | `99.templates/task.template.md` |
+| `05.operations/` | guide, policy, runbook, incident/postmortem | `99.templates/operation.template.md`, incident/postmortem templates |
+| `90.references/` | active 판단을 대체하지 않는 stable reference | `99.templates/reference.template.md` |
+| `99.templates/` | canonical template source and target-relative link rules | `99.templates/readme.template.md` |
+
+문서 lifecycle은 requirement → architecture → specification → execution → operations 순서로 흐릅니다. Reference는 lifecycle을 보조하고, template은 lifecycle 문서의 구조와 링크 계산 기준을 제공합니다.
+
+## Cross-link Rules
+
+- 새 문서와 갱신 문서는 하나의 `## Related Documents` 섹션을 유지합니다.
+- 상대 링크는 현재 파일 위치 기준으로 계산합니다.
+- 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
+- README는 폴더 index이므로 파일 추가, 이동, 삭제가 있으면 parent README를 함께 갱신합니다.
+- 오래된 문서를 archive/reference로 옮기거나 삭제하려면 먼저 참조 검색과 migration note가 필요합니다.
+
 ## Template Usage
 
 | 문서 유형 | 위치 | 템플릿 |
@@ -117,8 +141,8 @@ docs/
 | Architecture Requirements | `02.architecture/requirements/` | `99.templates/ard.template.md` |
 | Architecture Decision | `02.architecture/decisions/` | `99.templates/adr.template.md` |
 | Spec | `03.specs/` | `99.templates/spec.template.md` |
-| API Spec | `03.specs/<feature-id>/api-spec.md` | `99.templates/api-spec.template.md` |
-| Agent Design | `03.specs/<feature-id>/agent-design.md` | `99.templates/agent-design.template.md` |
+| API Spec | feature directory `api-spec.md` | `99.templates/api-spec.template.md` |
+| Agent Design | feature directory `agent-design.md` | `99.templates/agent-design.template.md` |
 | Plan | `04.execution/plans/` | `99.templates/plan.template.md` |
 | Task | `04.execution/tasks/` | `99.templates/task.template.md` |
 | Operations Guide | `05.operations/guides/` | `99.templates/operation.template.md` |
