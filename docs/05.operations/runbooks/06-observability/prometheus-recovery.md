@@ -46,7 +46,7 @@ Check if the metrics are visible in Grafana. If not, verify that Alloy is succes
 
 #### Overview (KR)
 
-이 런북은 `docs/05.operations/06-observability/prometheus-recovery.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+이 런북은 `docs/05.operations/runbooks/06-observability/prometheus-recovery.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
 #### Purpose
 
@@ -108,6 +108,10 @@ Check if the metrics are visible in Grafana. If not, verify that Alloy is succes
 - [../README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/incidents/README.md](../../incidents/README.md)
+
+## Evidence
+
+- Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
 
 ## Escalation
 

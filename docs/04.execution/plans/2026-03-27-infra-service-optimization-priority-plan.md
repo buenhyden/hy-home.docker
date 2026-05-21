@@ -80,10 +80,10 @@
 | PLN-QW-001 | Tier A/B 장기 실행 서비스 `restart` 정책 표준화 | `infra/**/docker-compose*.yml`, `docs/04.execution/tasks/*` | REQ-OPS-BASE-001 | Tier A/B 대상 서비스 `restart` 누락 0건 |
 | PLN-QW-002 | `healthcheck` 누락 서비스 보강 우선 적용 (운영 핵심 우선, lab 후순위) | `infra/**/docker-compose*.yml`, `docs/05.operations/**` | REQ-OPS-BASE-002 | Tier A/B 핵심 서비스 `healthcheck` 누락 0건 |
 | PLN-QW-003 | `no-new-privileges` 기본 적용 원칙 도입 및 예외 목록화 | `infra/**/docker-compose*.yml`, `docs/05.operations/**` | REQ-SEC-BASE-003 | 예외 목록 명시 + 기본 적용률 100% |
-| PLN-QW-004 | 리소스 최소 상한(`cpus`, `memory`) 정책 초안 확정 | `docs/05.operations/12-infra-service-optimization-catalog.md`, `docs/04.execution/tasks/*` | REQ-OPS-CAP-004 | 티어별 최소 상한 정책 문서화 완료 |
+| PLN-QW-004 | 리소스 최소 상한(`cpus`, `memory`) 정책 초안 확정 | `docs/05.operations/policies/12-infra-service-optimization-catalog.md`, `docs/04.execution/tasks/*` | REQ-OPS-CAP-004 | 티어별 최소 상한 정책 문서화 완료 |
 | PLN-QW-005 | 민감정보 주입 경로 표준화(`secrets`/Vault 우선) | `infra/**/docker-compose*.yml`, `infra/03-security/vault/**`, `docs/05.operations/**` | REQ-SEC-SECRETS-005 | 평문 비밀 주입 경로 감축 및 표준 경로 명시 |
-| PLN-QW-006 | `infra/07-workflow/airbyte` 실체 정의 갭 해소 계획(Compose/README) 수립 | `infra/07-workflow/airbyte/**`, `docs/05.operations/07-workflow/airbyte.md`, `docs/05.operations/07-workflow/airbyte.md` | REQ-WF-GAP-006 | airbyte 인프라 실체 정의 완료 기준 합의 |
-| PLN-QW-007 | 문서 추적성 정리 (`04.execution/plans` ↔ `05.operations` ↔ `05.operations`) | `docs/04.execution/plans/**`, `docs/05.operations/**`, `docs/05.operations/**` | REQ-DOC-TRACE-007 | 교차 링크 무결성 100% |
+| PLN-QW-006 | `infra/07-workflow/airbyte` 실체 정의 갭 해소 계획(Compose/README) 수립 | `infra/07-workflow/airbyte/**`, `docs/05.operations/{guides,policies,runbooks}/07-workflow/airbyte.md` | REQ-WF-GAP-006 | airbyte 인프라 실체 정의 완료 기준 합의 |
+| PLN-QW-007 | 문서 추적성 정리 (`04.execution/plans` ↔ `05.operations/{guides,policies,runbooks}`) | `docs/04.execution/plans/**`, `docs/05.operations/**` | REQ-DOC-TRACE-007 | 교차 링크 무결성 100% |
 
 ## Quarterly Roadmap
 
@@ -100,7 +100,7 @@
 | VAL-PLN-002 | Compliance | 템플릿 필수 섹션 준수 (`Overview (KR)`, `Work Breakdown`, `Verification`, `Completion`) | 문서 섹션 체크리스트 검토 | 필수 섹션 누락 0건 |
 | VAL-PLN-003 | Traceability | 기준 카탈로그와 항목 일치성(Quick Wins/Quarterly 매핑) | 카탈로그 대비 항목 매핑 리뷰 | 누락/중복 없이 1:1 매핑 |
 | VAL-PLN-004 | Indexing | `docs/04.execution/plans/README.md` 인덱스 반영 확인 | README Structure 섹션 검토 | 신규 계획서 항목 존재 |
-| VAL-PLN-005 | Automation | `04.execution/plans ↔ 05.operations ↔ 05.operations` 링크 동기화 자동 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
+| VAL-PLN-005 | Automation | `04.execution/plans ↔ 05.operations/{guides,policies,runbooks}` 링크 동기화 자동 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
 
 ## Test Cases / Scenarios
 

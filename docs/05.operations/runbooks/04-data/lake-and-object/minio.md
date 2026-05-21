@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/runbooks/04-data/lake-and-object/minio.md -->
 
 # MinIO Object Storage Runbook
 
@@ -104,7 +105,7 @@ This runbook defines implementation procedures for responding to failure situati
 
 ### Overview (KR)
 
-이 런북은 `docs/05.operations/04-data/lake-and-object/minio.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+이 런북은 `docs/05.operations/runbooks/04-data/lake-and-object/minio.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
 ### Purpose
 
@@ -149,6 +150,10 @@ This runbook defines implementation procedures for responding to failure situati
 - **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+
+## Evidence
+
+- Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
 
 ## Escalation
 

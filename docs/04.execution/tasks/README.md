@@ -1,3 +1,4 @@
+<!-- Target: docs/04.execution/tasks/README.md -->
 # Execution Tasks
 
 > 실제 구현 상태, 검증 결과, 완료 evidence를 기록하는 execution tracking 공간
@@ -43,10 +44,10 @@ docs/04.execution/tasks/
 ├── 2026-03-28-*-optimization-hardening-*.md # Historical hardening task records
 ├── 2026-05-09-*.md                          # Agent-first and docs refresh task records
 ├── 2026-05-10-*.md                          # Docs taxonomy and LLM Wiki task records
-├── 2026-05-18-execution-stage-remediation.md # Current bounded execution-stage remediation task record
-├── 2026-05-18-docs-05-operations-purpose-remediation.md # Current operations purpose remediation task record
-├── 2026-05-18-docs-bounded-consistency-audit.md # Current bounded docs consistency audit task record
-├── 2026-05-18-targeted-docs-precision-remediation.md # Current targeted docs precision remediation task record
+├── 2026-05-18-execution-stage-remediation.md # Completed bounded execution-stage remediation task record
+├── 2026-05-18-docs-05-operations-purpose-remediation.md # Completed operations purpose remediation task record
+├── 2026-05-18-docs-bounded-consistency-audit.md # Completed bounded docs consistency audit task record
+├── 2026-05-18-targeted-docs-precision-remediation.md # Completed targeted docs precision remediation task record
 └── README.md                                # This file
 ```
 

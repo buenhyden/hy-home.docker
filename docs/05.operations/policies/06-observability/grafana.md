@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/06-observability/grafana.md -->
 
 # Grafana Operational Policy (06-observability) Operations Policy
 
@@ -49,7 +50,7 @@ Grafana version updates are managed via `docker-compose.yml`. Before upgrading, 
 
 ## Overview (KR)
 
-이 문서는 `docs/05.operations/06-observability/grafana.md` 주제의 운영 정책을 정의한다. 기존 운영 내용을 유지하면서 적용 범위, 통제, 검증 기준을 명시한다.
+이 문서는 `docs/05.operations/policies/06-observability/grafana.md` 주제의 운영 정책을 정의한다. 기존 운영 내용을 유지하면서 적용 범위, 통제, 검증 기준을 명시한다.
 
 ## Policy Scope
 

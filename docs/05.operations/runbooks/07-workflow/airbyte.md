@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/runbooks/07-workflow/airbyte.md -->
 
 # Airbyte Runbook
 
@@ -12,7 +13,7 @@ status: active
 
 ### Overview (KR)
 
-이 런북은 Airbyte 동기화 실패 또는 워커 장애 발생 시 즉시 실행할 복구 절차를 정의한다. 현재 저장소에서는 `infra/07-workflow/airbyte/`에 실행 자산이 없을 수 있으므로, 실행 전 자산 존재 여부를 먼저 확인한다.
+이 런북은 Airbyte 동기화 실패 또는 워커 장애 발생 시 즉시 실행할 복구 절차를 정의한다. 현재 저장소의 tracked runtime에는 `infra/07-workflow/airbyte/` 실행 자산이 없으므로, Airbyte는 도입 전/backlog 상태로 취급하고 실행 전 자산 존재 여부를 먼저 확인한다.
 
 ### Purpose
 
@@ -39,7 +40,7 @@ status: active
 
 #### Checklist
 
-- [ ] `infra/07-workflow/airbyte/docker-compose.yml` 존재 여부 확인
+- [ ] `infra/07-workflow/airbyte/` 디렉터리와 `docker-compose.yml` 존재 여부 확인
 - [ ] 장애 Connection ID, 영향 데이터셋, 첫 실패 시각 확보
 - [ ] 최근 설정 변경(Connector/권한/네트워크) 여부 확인
 
@@ -48,15 +49,16 @@ status: active
 1. 실행 자산 존재 여부를 점검한다.
 
    ```bash
+   test -d infra/07-workflow/airbyte && echo "dir:present" || echo "dir:missing"
    test -f infra/07-workflow/airbyte/docker-compose.yml && echo "compose:ok" || echo "compose:missing"
    ```
 
-2. 실행 자산이 없는 경우, 즉시 운영 티켓을 생성하고 수동 복구 절차로 전환한다.
+2. 디렉터리 또는 Compose 자산이 없는 경우, 런타임 명령을 실행하지 말고 운영 티켓을 생성한 뒤 수동 복구 절차로 전환한다.
    - 영향 범위 기록
    - 데이터 소스/타깃 직접 동기화 여부 검토
    - 승인된 우회 절차만 수행
 
-3. 실행 자산이 있는 경우, 서비스 상태를 확인한다.
+3. 디렉터리와 Compose 자산이 모두 있는 경우에만 서비스 상태를 확인한다.
 
    ```bash
    docker compose -f infra/07-workflow/airbyte/docker-compose.yml ps
@@ -105,6 +107,10 @@ status: active
 - **Tool Disable / Revoke**: Connector 변경 권한을 일시적으로 차단한다.
 - **Eval Re-run**: 복구 완료 후 정책 위반 시나리오를 재검증한다.
 - **Trace Capture**: 에이전트 실행 추적과 승인 이벤트를 Incident에 첨부한다.
+
+## Evidence
+
+- Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
 
 ## Escalation
 

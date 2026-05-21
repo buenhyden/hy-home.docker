@@ -1,8 +1,9 @@
+<!-- Target: docs/04.execution/plans/2026-03-28-01-gateway-optimization-hardening-plan.md -->
 # 01-Gateway Optimization Hardening Implementation Plan
 
 ## Overview (KR)
 
-이 문서는 `infra/01-gateway`의 Traefik/Nginx를 `Traefik Primary, Balanced Hardening` 기준으로 최적화하는 실행 계획서다. 설정 변경, 검증 자동화, CI 게이트, 문서 추적성(`04.execution/plans ↔ 05.operations ↔ 05.operations`) 동기화를 포함한다.
+이 문서는 `infra/01-gateway`의 Traefik/Nginx를 `Traefik Primary, Balanced Hardening` 기준으로 최적화하는 실행 계획서다. 설정 변경, 검증 자동화, CI 게이트, 문서 추적성(`04.execution/plans ↔ 05.operations/{guides,policies,runbooks}`) 동기화를 포함한다.
 
 ## Context
 
@@ -25,7 +26,7 @@
 - **In Scope**:
   - `infra/01-gateway/traefik/**`, `infra/01-gateway/nginx/**`
   - `scripts/hardening/check-gateway-hardening.sh`, `.github/workflows/ci-quality.yml`
-  - `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations/01-gateway`, `docs/05.operations/01-gateway`, `docs/05.operations/01-gateway`
+  - `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations/{guides,policies,runbooks}/01-gateway`
 
 ## Non-Goals & Out-of-Scope
 
@@ -46,7 +47,7 @@
 | PLN-GW-004 | Nginx timeout/failover/cache 하드닝 | `infra/01-gateway/nginx/config/nginx.conf` | REQ-GW-NGINX-HARDEN | `server_tokens`, timeout, upstream fail params, `proxy_next_upstream`, static cache 정책 적용 |
 | PLN-GW-005 | Gateway hardening 검증 스크립트 추가 | `scripts/hardening/check-gateway-hardening.sh`, `scripts/README.md` | REQ-GW-VERIFY-AUTO | 스크립트 non-zero fail/zero pass 동작 |
 | PLN-GW-006 | CI Strict Gate 연결 | `.github/workflows/ci-quality.yml` | REQ-GW-CI-GATE | `gateway-hardening` job 필수 실행 |
-| PLN-GW-007 | 문서 추적성 동기화 | `docs/04.execution/plans/**`, `docs/04.execution/tasks/**`, `docs/05.operations/01-gateway/**`, `docs/05.operations/01-gateway/**`, `docs/05.operations/01-gateway/**` | REQ-GW-DOC-TRACE | 상호 링크/README 인덱스 반영 |
+| PLN-GW-007 | 문서 추적성 동기화 | `docs/04.execution/plans/**`, `docs/04.execution/tasks/**`, `docs/05.operations/{guides,policies,runbooks}/01-gateway/**` | REQ-GW-DOC-TRACE | 상호 링크/README 인덱스 반영 |
 
 ## Verification Plan
 
@@ -89,4 +90,4 @@
 - **Parent Priority Plan**: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
 - **Task**: [2026-03-28-01-gateway-optimization-hardening-tasks.md](../tasks/2026-03-28-01-gateway-optimization-hardening-tasks.md)
 - **Gateway Operations**: [01-gateway/README.md](../../05.operations/guides/01-gateway/README.md)
-- **Gateway Runbooks**: [01-gateway/README.md](../../05.operations/guides/01-gateway/README.md)
+- **Gateway Runbooks**: [01-gateway/README.md](../../05.operations/runbooks/01-gateway/README.md)

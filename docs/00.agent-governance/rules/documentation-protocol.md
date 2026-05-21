@@ -26,7 +26,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 - Non-stage `docs/*` paths such as `docs/superpowers/` must not contain active specs or plans.
 - `README.md` files and root instruction shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) are documentation surfaces for DOCS 3 unless a higher-priority runtime constraint explicitly exempts them.
 - Root instruction shims must remain thin; their `## Related Documents` sections should point to canonical governance and provider docs instead of duplicating policy.
-- **Template frontmatter exemption**: Files under `docs/99.templates/` use `status: draft` in YAML frontmatter instead of `layer:`. This is intentional. Agents performing `layer:` compliance audits must exempt all `docs/99.templates/*.md` files from that check. `memory.template.md` and `progress.template.md` are governance-memory templates, but they still keep this template frontmatter shape until copied into active governance memory files.
+- **Template frontmatter exemption**: Template source files under `docs/99.templates/*.template.md` use `status: draft` in YAML frontmatter instead of `layer:`. This is intentional. Agents performing `layer:` compliance audits must exempt those template source files from that check. `docs/99.templates/README.md` is an active folder README and may use repository README frontmatter such as `layer: agentic`. `memory.template.md` and `progress.template.md` are governance-memory templates, but they still keep this template frontmatter shape until copied into active governance memory files.
 
 ## 3. Document Type ↔ Template Mapping
 

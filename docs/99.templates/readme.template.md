@@ -1,12 +1,12 @@
 ---
 status: draft
 ---
-<!--
 # README Template — Repository-wide Usage Guide
 
+<!--
 Target: README.md
 Target: docs/README.md
-Target: <folder>/README.md
+Target: {folder}/README.md
 
 이 템플릿은 리포지토리 전반에서 공통으로 사용하는 README 원본 템플릿이다.
 모든 README가 공유해야 하는 최소 구조(Base Structure)를 제공하고,
@@ -24,8 +24,11 @@ Target: <folder>/README.md
 - Docs README links are written from `docs/README.md`.
 - Folder README links are written from that folder's own `README.md`.
 - Do not copy links from this template location (`docs/99.templates/`) without recalculating them for the target README.
+- Placeholder links and commands in this template are examples only. Before saving a target README, replace them with real target-relative values or delete them.
+- `<!-- Target: ... -->` comments are authoring aids, not required metadata. Keep them only when they help reviewers confirm the assembled target path.
 
 ## docs 디렉터리 상세 역할
+
 - [01.requirements](01.requirements/README.md): 제품 요구사항 정의 (Vision, Use Case, Requirements)
 - [02.architecture/requirements](02.architecture/requirements/README.md): 아키텍처 참조 모델 및 품질 속성 정의
 - [02.architecture/decisions](02.architecture/decisions/README.md): 기술적 의사결정 기록 (Decision, Status, Context, Consequence)
@@ -38,12 +41,15 @@ Target: <folder>/README.md
 - [99.templates](99.templates/README.md): stage 문서와 README 작성을 위한 canonical template 원천
 
 ## Assembly Rules
+
 1. 아래의 `Base Structure`를 먼저 복사한다.
 2. `{}` 자리표시자를 실제 내용으로 교체한다.
 3. 현재 경로의 목적에 맞는 `Snippet`만 추가한다.
 4. 사용하지 않는 스니펫과 이 안내 주석은 최종 `README.md`에서 제거한다.
+5. 예시 Markdown link, shell command, path placeholder는 최종 문서에 그대로 남기지 않는다.
 
 ## Writing Principles
+
 - README는 소개문이 아니라 이 경로의 진입 문서여야 한다.
 - README는 책임 범위(In Scope / Out of Scope)를 명확히 보여줘야 한다.
 - README는 사람과 AI Agent 모두가 읽어도 목적을 오해하지 않도록 작성해야 한다.

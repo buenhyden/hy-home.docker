@@ -1,3 +1,4 @@
+<!-- Target: docs/05.operations/guides/04-data/relational/postgresql-cluster.md -->
 # postgresql-cluster Usage Guide
 
 ## Usage
@@ -72,7 +73,7 @@ docker compose up pg-cluster-init
 
 ### Overview (KR)
 
-이 문서는 `docs/05.operations/04-data/relational/postgresql-cluster.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
+이 문서는 `docs/05.operations/guides/04-data/relational/postgresql-cluster.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
 
 ## Runbook Handoff
 

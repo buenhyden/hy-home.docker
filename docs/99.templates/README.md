@@ -70,7 +70,8 @@ layer: agentic
 9. scripts README는 `scripts/validation/`, `scripts/hardening/`, `scripts/hooks/`, `scripts/knowledge/`, `scripts/operations/`, `scripts/lib/` 목적 폴더를 보존하고 root-level wrapper를 만들지 않는다.
 10. Markdown 템플릿의 cross-link 예시는 복사된 Target 위치 기준으로 계산하고, YAML/GraphQL/Proto 계약 파일의 cross-link는 parent Markdown Spec 또는 API Spec에서 관리한다.
 11. `docs/99.templates/*.template.md` 원본은 `status: draft` frontmatter를 사용한다. 복사된 Target 문서가 governance memory나 progress log처럼 `layer:` 또는 `status: active`가 필요하면 템플릿 안내에 따라 Target 문서에서만 frontmatter를 교체한다.
-12. Template source에 있는 placeholder는 최종 문서에 남기지 않는다. 실제 링크처럼 렌더링되는 placeholder Markdown link는 target 문서로 복사하기 전에 반드시 삭제하거나 실제 target-relative link로 교체한다.
+12. Template source에 있는 placeholder는 최종 문서에 남기지 않는다. 실제 링크처럼 렌더링되는 placeholder Markdown link와 placeholder command는 target 문서로 복사하기 전에 반드시 삭제하거나 실제 target-relative 값으로 교체한다.
+13. README template의 `<!-- Target: ... -->` 주석은 작성 보조 정보다. Target 문서에서 필수 metadata로 취급하지 않으며, 리뷰에 도움이 되는 경우에만 남긴다.
 
 ## 템플릿-폴더 매핑
 

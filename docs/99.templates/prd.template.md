@@ -43,6 +43,11 @@ status: draft
 - **REQ-PRD-FUN-01**: [Requirement]
 - **REQ-PRD-FUN-02**: [Requirement]
 
+## Non-functional Requirements
+
+- **REQ-PRD-NFR-01**: [Quality, reliability, security, performance, or operability requirement]
+- **REQ-PRD-NFR-02**: [Quality, reliability, security, performance, or operability requirement]
+
 ## Success Criteria
 
 - **REQ-PRD-MET-01**: [Metric and target]

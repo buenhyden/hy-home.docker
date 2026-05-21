@@ -1,3 +1,4 @@
+<!-- Target: docs/04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md -->
 # 02-Auth Optimization Hardening Implementation Plan
 
 ## Overview (KR)
@@ -45,7 +46,7 @@
 | PLN-AUTH-004 | 02-auth 하드닝 검증 스크립트 추가 | `scripts/hardening/check-auth-hardening.sh` | REQ-PRD-FUN-03 | 실패시 non-zero, 통과시 zero |
 | PLN-AUTH-005 | CI에 `auth-hardening` 게이트 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-FUN-03 | PR/Push 시 job 실행 |
 | PLN-AUTH-006 | PRD~Runbook 문서 세트 생성/정비 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 관련 파일 | REQ-PRD-FUN-04 | 양방향 링크 및 README 인덱스 반영 |
-| PLN-AUTH-007 | degraded-mode 운영/복구 절차 명문화 | `docs/05.operations/02-auth/*.md`, `docs/05.operations/02-auth/*.md` | REQ-PRD-FUN-05 | 정책+절차 문서 일치 |
+| PLN-AUTH-007 | degraded-mode 운영/복구 절차 명문화 | `docs/05.operations/{policies,runbooks}/02-auth/*.md` | REQ-PRD-FUN-05 | 정책+절차 문서 일치 |
 
 ## Verification Plan
 
@@ -90,4 +91,4 @@
 - **Spec**: [../03.specs/02-auth/spec.md](../../03.specs/02-auth/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-02-auth-optimization-hardening-tasks.md](../tasks/2026-03-28-02-auth-optimization-hardening-tasks.md)
 - **Operations**: [../../05.operations/guides/02-auth/README.md](../../05.operations/guides/02-auth/README.md)
-- **Runbooks**: [../../05.operations/guides/02-auth/README.md](../../05.operations/guides/02-auth/README.md)
+- **Runbooks**: [../../05.operations/runbooks/02-auth/README.md](../../05.operations/runbooks/02-auth/README.md)

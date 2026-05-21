@@ -1,3 +1,4 @@
+<!-- Target: docs/04.execution/plans/README.md -->
 # Execution Plans
 
 > 실행 순서, 리스크, 검증 기준, 완료 조건을 관리하는 implementation plan 공간
@@ -43,10 +44,10 @@ docs/04.execution/plans/
 ├── 2026-05-09-*.md                         # Agent-first and scripts lifecycle plans
 ├── 2026-05-10-*.md                         # Docs taxonomy and LLM Wiki plans
 ├── 2026-05-17-*.md                         # Recent docs/scripts remediation plans
-├── 2026-05-18-execution-stage-remediation.md # Current bounded execution-stage remediation
-├── 2026-05-18-docs-05-operations-purpose-remediation.md # Current operations purpose remediation
-├── 2026-05-18-docs-bounded-consistency-audit.md # Current bounded docs consistency audit
-├── 2026-05-18-targeted-docs-precision-remediation.md # Current targeted docs precision remediation
+├── 2026-05-18-execution-stage-remediation.md # Completed bounded execution-stage remediation
+├── 2026-05-18-docs-05-operations-purpose-remediation.md # Completed operations purpose remediation
+├── 2026-05-18-docs-bounded-consistency-audit.md # Completed bounded docs consistency audit
+├── 2026-05-18-targeted-docs-precision-remediation.md # Completed targeted docs precision remediation
 └── README.md                               # This file
 ```
 

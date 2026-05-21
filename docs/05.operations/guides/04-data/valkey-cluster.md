@@ -1,8 +1,9 @@
+<!-- Target: docs/05.operations/guides/04-data/valkey-cluster.md -->
 # Valkey Cluster Usage Guide
 
 ## Usage
 >
-> `docs/05.operations/04-data/valkey-cluster.md`에 대한 안내 문서입니다.
+> `docs/05.operations/guides/04-data/valkey-cluster.md`에 대한 안내 문서입니다.
 
 ---
 

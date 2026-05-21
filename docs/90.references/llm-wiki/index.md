@@ -327,7 +327,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md) | Markdown reference |
 | [docs/04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md) | Markdown reference |
 | [docs/04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md) | Markdown reference |
-| [docs/04.execution/plans/2026-03-29-k8s-migration-strategy.md](../../04.execution/plans/2026-03-29-k8s-migration-strategy.md) | Markdown reference |
 | [docs/04.execution/plans/2026-04-01-standardize-infra-net.md](../../04.execution/plans/2026-04-01-standardize-infra-net.md) | Markdown reference |
 | [docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md](../../04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-09-harness-agent-first-engineering.md](../../04.execution/plans/2026-05-09-harness-agent-first-engineering.md) | Markdown reference |
@@ -657,6 +656,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/docker/image-version-interpretation.md](../docker/image-version-interpretation.md) | Markdown reference |
 | [docs/90.references/glossary/README.md](../glossary/README.md) | folder index |
 | [docs/90.references/glossary/stable-reference-terms.md](../glossary/stable-reference-terms.md) | Markdown reference |
+| [docs/90.references/kubernetes/README.md](../kubernetes/README.md) | folder index |
+| [docs/90.references/kubernetes/docker-compose-to-k3s-migration.md](../kubernetes/docker-compose-to-k3s-migration.md) | Markdown reference |
 | [docs/90.references/learning/README.md](../learning/README.md) | folder index |
 | [docs/90.references/learning/roadmap-v1.md](../learning/roadmap-v1.md) | Markdown reference |
 | [docs/90.references/learning/roadmap.md](../learning/roadmap.md) | Markdown reference |

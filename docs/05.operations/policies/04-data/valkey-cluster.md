@@ -1,10 +1,11 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/04-data/valkey-cluster.md -->
 
 # Valkey Cluster Operations Policy
 
-> `docs/05.operations/04-data/valkey-cluster.md`에 대한 운영 정책 문서입니다.
+> `docs/05.operations/policies/04-data/valkey-cluster.md`에 대한 운영 정책 문서입니다.
 
 ---
 
