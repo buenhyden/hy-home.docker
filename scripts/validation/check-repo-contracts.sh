@@ -1350,6 +1350,7 @@ def classify(path: pathlib.Path) -> str | None:
         if path.suffix == ".md" and len(rel.parts) == 2:
             return {
                 "spec.md": "Spec",
+                "open-webui.md": "Spec",
                 "api-spec.md": "API Spec",
                 "agent-design.md": "Agent Design",
                 "data-model.md": "Data Model",

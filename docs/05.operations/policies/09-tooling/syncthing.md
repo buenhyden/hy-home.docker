@@ -1,12 +1,11 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/09-tooling/syncthing.md -->
 
 # Syncthing Operations Policy
 
 <!-- [ID:08-tooling:syncthing] -->
-# Syncthing Operations Policy
-
 > Governance for P2P data synchronization and integrity.
 
 ## Overview

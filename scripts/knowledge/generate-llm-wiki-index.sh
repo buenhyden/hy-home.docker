@@ -223,6 +223,8 @@ def render(paths: list[str]) -> str:
         "generated_by: scripts/knowledge/generate-llm-wiki-index.sh",
         "---",
         "",
+        "<!-- Target: docs/90.references/llm-wiki/index.md -->",
+        "",
         "# Reference: LLM Wiki Generated Index",
         "",
         "## Overview (KR)",

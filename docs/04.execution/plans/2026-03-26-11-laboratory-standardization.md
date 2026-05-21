@@ -1,3 +1,5 @@
+<!-- Target: docs/04.execution/plans/2026-03-26-11-laboratory-standardization.md -->
+
 # 11-laboratory Implementation Plan
 
 ## Overview (KR)
@@ -28,7 +30,7 @@
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
 | VAL-PLN-001 | Structural | Template Compliance | Manual Revie | All placeholders removed |
-| VAL-PLN-002 | Functional | Link Validation | `grep -r "\\[.*\\](.*\\.md)" docs/` | No broken relative links |
+| VAL-PLN-002 | Functional | Link Validation | `bash scripts/validation/check-repo-contracts.sh` | No broken relative links |
 
 ## Completion Criteria
 

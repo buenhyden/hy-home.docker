@@ -3,6 +3,8 @@ status: active
 generated_by: scripts/knowledge/generate-llm-wiki-index.sh
 ---
 
+<!-- Target: docs/90.references/llm-wiki/index.md -->
+
 # Reference: LLM Wiki Generated Index
 
 ## Overview (KR)
@@ -150,9 +152,27 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/agents/security-auditor.md](../../../.claude/agents/security-auditor.md) | Markdown reference |
 | [.claude/agents/wiki-curator.md](../../../.claude/agents/wiki-curator.md) | Markdown reference |
 | [.claude/agents/workflow-supervisor.md](../../../.claude/agents/workflow-supervisor.md) | Markdown reference |
+| [.claude/hookify.block-absolute-file-link.local.md](../../../.claude/hookify.block-absolute-file-link.local.md) | Markdown reference |
+| [.claude/hookify.block-direct-main-push.local.md](../../../.claude/hookify.block-direct-main-push.local.md) | Markdown reference |
+| [.claude/hookify.block-gha-secrets-in-run.local.md](../../../.claude/hookify.block-gha-secrets-in-run.local.md) | Markdown reference |
+| [.claude/hookify.block-git-no-verify.local.md](../../../.claude/hookify.block-git-no-verify.local.md) | Markdown reference |
+| [.claude/hookify.block-plaintext-secret-compose.local.md](../../../.claude/hookify.block-plaintext-secret-compose.local.md) | Markdown reference |
+| [.claude/hookify.block-unpinned-gha-action.local.md](../../../.claude/hookify.block-unpinned-gha-action.local.md) | Markdown reference |
+| [.claude/hookify.warn-branch-naming.local.md](../../../.claude/hookify.warn-branch-naming.local.md) | Markdown reference |
+| [.claude/hookify.warn-conventional-commit.local.md](../../../.claude/hookify.warn-conventional-commit.local.md) | Markdown reference |
+| [.claude/hookify.warn-docker-infra-stop.local.md](../../../.claude/hookify.warn-docker-infra-stop.local.md) | Markdown reference |
+| [.claude/hookify.warn-force-push.local.md](../../../.claude/hookify.warn-force-push.local.md) | Markdown reference |
+| [.claude/hookify.warn-hook-parity-edit.local.md](../../../.claude/hookify.warn-hook-parity-edit.local.md) | Markdown reference |
+| [.claude/hookify.warn-korean-in-governance.local.md](../../../.claude/hookify.warn-korean-in-governance.local.md) | Markdown reference |
+| [.claude/hookify.warn-parallel-doc-file.local.md](../../../.claude/hookify.warn-parallel-doc-file.local.md) | Markdown reference |
+| [.claude/hookify.warn-pre-commit-manual.local.md](../../../.claude/hookify.warn-pre-commit-manual.local.md) | Markdown reference |
+| [.claude/hookify.warn-stage-doc-edit.local.md](../../../.claude/hookify.warn-stage-doc-edit.local.md) | Markdown reference |
 | [.claude/hooks/docker-compose-pre.sh](../../../.claude/hooks/docker-compose-pre.sh) | script |
 | [.claude/hooks/post-tool-validate.sh](../../../.claude/hooks/post-tool-validate.sh) | script |
+| [.claude/hooks/pre-compact.sh](../../../.claude/hooks/pre-compact.sh) | script |
+| [.claude/hooks/session-end.sh](../../../.claude/hooks/session-end.sh) | script |
 | [.claude/hooks/session-start.sh](../../../.claude/hooks/session-start.sh) | script |
+| [.claude/hooks/stop.sh](../../../.claude/hooks/stop.sh) | script |
 | [.claude/settings.json](../../../.claude/settings.json) | JSON registry |
 | [.claude/skills/adr-writing/skill.md](../../../.claude/skills/adr-writing/skill.md) | Markdown reference |
 | [.claude/skills/ci-cd-patterns/skill.md](../../../.claude/skills/ci-cd-patterns/skill.md) | Markdown reference |

@@ -1,15 +1,14 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/09-tooling/terraform.md -->
 
 # Operations: Terraform Policy Operations Policy
 
 <!-- [ID:09-tooling:terraform] -->
-# Operations: Terraform Policy Operations Policy
-
 > Operational guidelines and policies for managing infrastructure via Terraform.
 
-## Policy Overview
+## Overview
 
 All infrastructure changes in `hy-home.docker` must be managed via Terraform to ensure auditability and reproducibility.
 

@@ -28,9 +28,9 @@ Pick exactly one profile and delete the other profile sections before committing
 
 The copied target must keep the profile headings for its bucket and must not keep headings from the other profiles.
 
-- `guides/**` must include `## Usage` and must not include policy or runbook profile headings such as `## Policy Scope`, `## Controls`, `## Review Cadence`, `### When to Use`, or `#### Procedure`.
-- `policies/**` must include `## Policy Scope`, `## Controls`, `## Verification`, and `## Review Cadence`; it must not include guide/runbook profile headings such as `## Usage`, `## Runbook Handoff`, `### When to Use`, or `#### Procedure`.
-- `runbooks/**` must include trigger, procedure, evidence, rollback/recovery, and escalation content; it must not include guide/policy profile headings such as `## Usage`, `## Policy Scope`, `## Controls`, `## Exceptions`, or `## Review Cadence`.
+- `guides/**` must include `## Usage` and must not include policy or runbook profile headings such as `## Policy Scope`, `## Controls`, `## Review Cadence`, `## When to Use`, or `## Procedure`.
+- `policies/**` must include `## Policy Scope`, `## Controls`, `## Verification`, and `## Review Cadence`; it must not include guide/runbook profile headings such as `## Usage`, `## Runbook Handoff`, `## When to Use`, or `## Procedure`.
+- `runbooks/**` must include `## When to Use`, `## Procedure`, `## Evidence`, `## Rollback or Recovery`, and `## Escalation`; it must not include guide/policy profile headings such as `## Usage`, `## Policy Scope`, `## Controls`, `## Exceptions`, or `## Review Cadence`.
 
 Do not use this template for incident timelines or postmortems. Use `incident.template.md` or
 `postmortem.template.md` under `docs/05.operations/incidents/`.
@@ -61,86 +61,82 @@ Nested target, for example `docs/05.operations/guides/<domain>/<subdomain>/<topi
 - Incident record: `../../../incidents/YYYY/YYYY-MM-DD-<incident-title>.md`
 -->
 
+<!-- Target: docs/05.operations/<bucket>/<topic>.md -->
+
 # {Topic Name} {Guide | Policy | Runbook}
 
 > {One-line operational purpose.}
 
-## Overview
+## Overview (KR)
 
 {Explain what this document covers and when someone should use it.}
 
 ---
 
-## Guide Profile
+<!-- GUIDE PROFILE: keep this profile only for `docs/05.operations/guides/**`; delete policy and runbook profile sections. -->
 
-Keep this profile only for `docs/05.operations/guides/**`.
-
-### Usage
+## Usage
 
 {Describe the normal usage context, prerequisites, and expected operating state.}
 
-### Common Checks
+## Common Checks
 
 - {Check or command}
 - {Expected result}
 
-### Runbook Handoff
+## Runbook Handoff
 
 For repeatable procedures, recovery, rollback, or escalation, link to the matching runbook.
 
 ---
 
-## Policy Profile
+<!-- POLICY PROFILE: keep this profile only for `docs/05.operations/policies/**`; delete guide and runbook profile sections. -->
 
-Keep this profile only for `docs/05.operations/policies/**`.
-
-### Policy Scope
+## Policy Scope
 
 {List systems, configs, agents, environments, or workflows governed by this policy.}
 
-### Controls
+## Controls
 
 - **Required**: {Required state}
 - **Allowed**: {Allowed variation}
 - **Disallowed**: {Forbidden state}
 
-### Exceptions
+## Exceptions
 
 {State who may approve exceptions and what evidence must be recorded.}
 
-### Verification
+## Verification
 
 {State the checks that prove compliance.}
 
-### Review Cadence
+## Review Cadence
 
 {Monthly, quarterly, per release, or on material change.}
 
 ---
 
-## Runbook Profile
+<!-- RUNBOOK PROFILE: keep this profile only for `docs/05.operations/runbooks/**`; delete guide and policy profile sections. -->
 
-Keep this profile only for `docs/05.operations/runbooks/**`.
-
-### When to Use
+## When to Use
 
 {Trigger conditions, symptoms, or scheduled operation criteria.}
 
-### Procedure
+## Procedure
 
 1. {Step}
 2. {Expected result}
 3. {Failure handling}
 
-### Evidence
+## Evidence
 
 - {Log, command output, dashboard, ticket, or trace to capture}
 
-### Rollback or Recovery
+## Rollback or Recovery
 
 {Safe rollback, fallback, or restoration steps.}
 
-### Escalation
+## Escalation
 
 {Escalation owner, threshold, and required context.}
 

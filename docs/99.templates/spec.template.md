@@ -18,8 +18,6 @@ status: draft
 
 ---
 
-# [Feature Name] Specification
-
 ## Overview (KR)
 
 이 문서는 [기능명]의 기술 설계와 구현 계약을 정의하는 명세서다. PRD 요구를 기술적으로 구체화하고, 구현과 검증의 직접 기준이 된다.

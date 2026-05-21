@@ -16,8 +16,6 @@ status: draft
 
 ---
 
-## [System or Domain Name] Architecture Reference Document
-
 ## Overview (KR)
 
 이 문서는 [시스템 또는 도메인명]의 참조 아키텍처와 품질 속성을 정의한다. 시스템 경계, 책임, 데이터 흐름, 운영 관점을 정리하는 기준 문서다.

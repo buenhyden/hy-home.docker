@@ -1,12 +1,11 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/09-tooling/sonarqube.md -->
 
 # SonarQube Operations Policy
 
 <!-- [ID:08-tooling:sonarqube] -->
-# SonarQube Operations Policy
-
 > Governance for code quality, security standards, and SonarQube lifecycle.
 
 ## Overview

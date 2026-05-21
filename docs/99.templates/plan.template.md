@@ -15,8 +15,6 @@ status: draft
 
 ---
 
-# [Feature or Component] Plan
-
 ## Overview (KR)
 
 이 문서는 [기능 또는 컴포넌트명]의 실행 계획서다. 작업 분해, 검증, 롤아웃, 위험 관리, 완료 기준을 정의한다.

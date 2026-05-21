@@ -54,6 +54,8 @@ Target: <folder>/README.md
 - scripts README는 `Scripts Purpose-Folder Snippet`을 추가해 목적별 폴더와 root wrapper 금지 규칙을 보존한다.
 -->
 
+<!-- Target: <actual README.md path> -->
+
 # {Folder or Project Name}
 
 > {이 경로가 왜 존재하는지 설명하는 한 줄 목적문}
@@ -111,7 +113,9 @@ Target: <folder>/README.md
 
 ---
 
-# SNIPPET LIBRARY
+## Snippet Library (Template-only)
+
+<!-- The snippet library below is template-only material. Copy only the sections that apply to the target README, then remove this library from the final README. -->
 
 <!--
 ===============================================================================

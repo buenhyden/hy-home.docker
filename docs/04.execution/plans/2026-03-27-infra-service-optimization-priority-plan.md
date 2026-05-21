@@ -6,8 +6,6 @@
 
 ---
 
-# Infra Service Optimization Priority Plan (Quick Wins + Quarterly)
-
 ## Overview (KR)
 
 이 문서는 인프라 서비스 최적화 카탈로그를 기준으로 `docs/04.execution/plans` 레이어에서 실행 우선순위를 고정하는 통합 실행 계획서다.

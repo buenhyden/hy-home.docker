@@ -54,7 +54,8 @@ status: draft
 
 ## Sources
 
-- [Repo-local source](../../path/to/source.md) - {What this source supports}
+- [Docs-local source](../../02.architecture/requirements/####-<system-or-domain-name>.md) - {What this docs-local source supports}
+- [Repo-root source](../../../README.md) - {What this repo-root source supports}
 - [External source](https://example.com/source) - {What this source supports}
 
 ## Maintenance

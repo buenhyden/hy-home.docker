@@ -1,10 +1,10 @@
+<!-- Target: docs/03.specs/04-data-analytics/spec.md -->
+
 # Analytics Tier Technical Specification (Spec)
 
 > This document defines the technical specification for the specialized analytics data engines within the `04-data/analytics` sub-tier.
 
 ---
-
-# Analytics Tier Specification
 
 ## Overview (KR)
 

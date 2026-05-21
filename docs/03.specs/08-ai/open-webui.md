@@ -4,8 +4,6 @@
 
 ---
 
-# Open WebUI Specification
-
 ## Overview (KR)
 
 이 문서는 Open WebUI의 기술 설계와 구현 계약을 정의하는 명세서다. PRD 요구를 기술적으로 구체화하고, 인프라 배포 및 타 서비스(Ollama, Qdrant)와의 연동 기준이 된다.

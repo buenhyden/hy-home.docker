@@ -67,7 +67,7 @@ docs/01.requirements/
 │   ├── 2026-03-28-08-ai-optimization-hardening.md
 │   ├── 2026-03-28-09-tooling-optimization-hardening.md
 │   └── 2026-03-28-11-laboratory-optimization-hardening.md
-│   # NOTE: 01-gateway, 10-communication 하드닝 PRD 미작성
+│   # NOTE: 01-gateway, 10-communication 하드닝 PRD는 backlog/deferred 항목이며 별도 승인 전까지 새 PRD를 만들지 않음
 └── README.md                                # This file
 ```
 
@@ -94,7 +94,7 @@ docs/01.requirements/
 
 ### Allowed Outputs
 
-- PRD 문서 (`prd.template.md` 기반, `YYYY-MM-DD-<feature>.md` 파일명 형식)
+- PRD 문서 (`prd.template.md` 기반, 날짜-슬러그 파일명 형식. 예: `2026-05-21-feature-name.md`)
 - 기존 PRD의 `status` 갱신 (`draft` → `approved` → `deprecated`)
 
 ### Guardrails
