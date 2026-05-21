@@ -24,6 +24,7 @@ Target: {folder}/README.md
 - Docs README links are written from `docs/README.md`.
 - Folder README links are written from that folder's own `README.md`.
 - Do not copy links from this template location (`docs/99.templates/`) without recalculating them for the target README.
+- Markdown links shown inside template comment blocks are template-time examples, not source-relative links from `docs/99.templates/`.
 - Placeholder links and commands in this template are examples only. Before saving a target README, replace them with real target-relative values or delete them.
 - `<!-- Target: ... -->` comments are authoring aids, not required metadata. Keep them only when they help reviewers confirm the assembled target path.
 

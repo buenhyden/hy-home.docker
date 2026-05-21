@@ -14,6 +14,7 @@ status: draft
 > - Agent work must include eval tasks where applicable.
 > - This is the canonical execution-tracking location; feature-local task notes under `03.specs/` are secondary.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
+> - Replace example links with real target-relative links, or delete unused examples before saving.
 >
 > Target-relative examples from `docs/04.execution/tasks/YYYY-MM-DD-<feature-or-stream>.md`:
 >

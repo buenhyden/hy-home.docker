@@ -12,6 +12,7 @@ status: draft
 > - Every active plan must include explicit verification criteria.
 > - Plan explains execution order, risk control, and rollout strategy.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
+> - Replace example links with real target-relative links, or delete unused examples before saving.
 >
 > Target-relative examples from `docs/04.execution/plans/YYYY-MM-DD-<feature>.md`:
 >

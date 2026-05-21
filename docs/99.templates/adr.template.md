@@ -13,6 +13,7 @@ status: draft
 > - Do not turn ADRs into implementation specs.
 > - Use global numbering.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
+> - Replace example links with real target-relative links, or delete unused examples before saving.
 >
 > Target-relative examples from `docs/02.architecture/decisions/####-<short-title>.md`:
 >

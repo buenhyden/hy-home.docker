@@ -143,6 +143,11 @@ docs/
 | Spec | `03.specs/` | `99.templates/spec.template.md` |
 | API Spec | feature directory `api-spec.md` | `99.templates/api-spec.template.md` |
 | Agent Design | feature directory `agent-design.md` | `99.templates/agent-design.template.md` |
+| Data Model | feature directory `data-model.md` | `99.templates/data-model.template.md` |
+| Test Contract | feature directory `tests.md` | `99.templates/tests.template.md` |
+| OpenAPI Contract | feature directory `contracts/openapi.yaml` | `99.templates/openapi.template.yaml` |
+| GraphQL Contract | feature directory `contracts/schema.graphql` | `99.templates/schema.template.graphql` |
+| Protobuf Contract | feature directory `contracts/service.proto` | `99.templates/service.template.proto` |
 | Plan | `04.execution/plans/` | `99.templates/plan.template.md` |
 | Task | `04.execution/tasks/` | `99.templates/task.template.md` |
 | Operations Guide | `05.operations/guides/` | `99.templates/operation.template.md` |
@@ -184,6 +189,7 @@ bash scripts/validation/check-doc-traceability.sh
 | Spec | [03.specs/llm-wiki-agent-first-completion/spec.md](03.specs/llm-wiki-agent-first-completion/spec.md) |
 | Plan | [04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md](04.execution/plans/2026-05-10-llm-wiki-agent-first-completion.md) |
 | Task evidence | [04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md](04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md) |
+| Repository map | [90.references/llm-wiki/repository-map.md](90.references/llm-wiki/repository-map.md) |
 | Generated index | [90.references/llm-wiki/index.md](90.references/llm-wiki/index.md) |
 | Operations guide | [05.operations/guides/llm-wiki-maintenance.md](05.operations/guides/llm-wiki-maintenance.md) |
 
@@ -197,6 +203,7 @@ bash scripts/validation/check-doc-traceability.sh
 - [05.operations/README.md](05.operations/README.md)
 - [90.references/README.md](90.references/README.md)
 - [90.references/llm-wiki/README.md](90.references/llm-wiki/README.md)
+- [90.references/llm-wiki/repository-map.md](90.references/llm-wiki/repository-map.md)
 - [90.references/llm-wiki/index.md](90.references/llm-wiki/index.md)
 - [99.templates/README.md](99.templates/README.md)
 - [../README.md](../README.md)

@@ -38,6 +38,11 @@ Protocol for maintaining documentation consistency and governance traceability.
 | `docs/03.specs/`                              | Spec                   | `docs/99.templates/spec.template.md`         |
 | `docs/03.specs/<feature-id>/api-spec.md`      | API Spec               | `docs/99.templates/api-spec.template.md`     |
 | `docs/03.specs/<feature-id>/agent-design.md`  | Agent Design           | `docs/99.templates/agent-design.template.md` |
+| `docs/03.specs/<feature-id>/data-model.md`    | Data Model             | `docs/99.templates/data-model.template.md`   |
+| `docs/03.specs/<feature-id>/tests.md`         | Test Contract          | `docs/99.templates/tests.template.md`        |
+| `docs/03.specs/<feature-id>/contracts/openapi.yaml` | OpenAPI Contract | `docs/99.templates/openapi.template.yaml`    |
+| `docs/03.specs/<feature-id>/contracts/schema.graphql` | GraphQL Contract | `docs/99.templates/schema.template.graphql` |
+| `docs/03.specs/<feature-id>/contracts/service.proto` | Protobuf Contract | `docs/99.templates/service.template.proto`  |
 | `docs/04.execution/plans/`                    | Plan                   | `docs/99.templates/plan.template.md`         |
 | `docs/04.execution/tasks/`                    | Task                   | `docs/99.templates/task.template.md`         |
 | `docs/05.operations/`                         | Operations Knowledge   | `docs/99.templates/operation.template.md`    |
@@ -48,13 +53,10 @@ Protocol for maintaining documentation consistency and governance traceability.
 | `docs/90.references/`                         | Reference              | `docs/99.templates/reference.template.md`    |
 | `README.md` (per folder)                      | README                 | `docs/99.templates/readme.template.md`       |
 
-For supporting contracts under `docs/03.specs/<feature-id>/`, use:
-
-- `docs/99.templates/data-model.template.md`
-- `docs/99.templates/tests.template.md`
-- `docs/99.templates/openapi.template.yaml`
-- `docs/99.templates/schema.template.graphql`
-- `docs/99.templates/service.template.proto`
+For optional supporting contracts under `docs/03.specs/<feature-id>/`, keep
+Markdown support files in the feature directory and machine-readable contracts
+under `contracts/`. Parent Markdown Spec or API Spec documents own the
+cross-links for YAML, GraphQL, and Proto files.
 
 See `docs/99.templates/README.md` for the full catalog and usage rules.
 

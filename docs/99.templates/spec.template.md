@@ -15,6 +15,7 @@ status: draft
 > - Keep one `Overview (KR)` summary near the top.
 > - This document is the parent design doc; API contracts live in `api-spec.md` under the same feature directory.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
+> - Replace example links with real target-relative links, or delete unused examples before saving.
 >
 > Target-relative examples from `docs/03.specs/<feature-id>/spec.md`:
 >

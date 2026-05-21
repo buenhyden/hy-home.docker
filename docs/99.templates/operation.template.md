@@ -6,8 +6,6 @@ Target: docs/05.operations/<bucket>/<topic>.md
 Target: docs/05.operations/<bucket>/<domain>/<topic>.md
 Target: docs/05.operations/<bucket>/<domain>/<subdomain>/<topic>.md
 
-# Operation Template
-
 Use this template for one `docs/05.operations` leaf document.
 
 ## Target Paths
@@ -35,6 +33,9 @@ The copied target must keep the profile headings for its bucket and must not kee
 Do not use this template for incident timelines or postmortems. Use `incident.template.md` or
 `postmortem.template.md` under `docs/05.operations/incidents/`.
 
+When copying this template, keep only the target path comment that matches the
+final document path and remove every unused profile and placeholder link.
+
 ## Target-relative Link Rules
 
 Calculate links from the copied target path, not from `docs/99.templates/`.
@@ -59,13 +60,6 @@ Nested target, for example `docs/05.operations/guides/<domain>/<subdomain>/<topi
 - Sibling policy: `../../../policies/<domain>/<subdomain>/<topic>.md`
 - Sibling runbook: `../../../runbooks/<domain>/<subdomain>/<topic>.md`
 - Incident record: `../../../incidents/YYYY/YYYY-MM-DD-<incident-title>.md`
--->
-
-<!--
-Target: docs/05.operations/<bucket>/<topic>.md
-Target: docs/05.operations/<bucket>/<domain>/<topic>.md
-Target: docs/05.operations/<bucket>/<domain>/<subdomain>/<topic>.md
-Keep only the copied target path that matches the final document.
 -->
 
 # {Topic Name} {Guide | Policy | Runbook}

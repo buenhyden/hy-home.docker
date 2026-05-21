@@ -73,6 +73,18 @@ layer: agentic
 12. Template source에 있는 placeholder는 최종 문서에 남기지 않는다. 실제 링크처럼 렌더링되는 placeholder Markdown link와 placeholder command는 target 문서로 복사하기 전에 반드시 삭제하거나 실제 target-relative 값으로 교체한다.
 13. README template의 `<!-- Target: ... -->` 주석은 작성 보조 정보다. Target 문서에서 필수 metadata로 취급하지 않으며, 리뷰에 도움이 되는 경우에만 남긴다.
 
+## Template Alignment Note
+
+이 README는 template-to-folder mapping의 canonical catalog다. 같은 매핑을 설명하는
+`docs/00.agent-governance/rules/documentation-protocol.md`,
+`docs/00.agent-governance/rules/stage-authoring-matrix.md`, 그리고
+`scripts/validation/check-repo-contracts.sh`를 바꿀 때는 이 표와 함께 검토한다.
+
+Markdown 템플릿의 placeholder 링크는 `docs/99.templates/` 기준으로 존재하는
+링크가 아니라, 복사된 target 문서에서 다시 계산할 예시다. 활성 문서 링크 검증은
+최종 target 문서를 기준으로 수행하며, 템플릿 원본에서는 placeholder가 예시인지와
+target-relative guidance가 있는지를 확인한다.
+
 ## Documentation Contract
 
 이 폴더는 새 문서의 구조뿐 아니라 stage 간 책임 경계를 정의하는 계약이다. 새 문서나 갱신 문서는 아래 매핑과 lifecycle을 먼저 확인해야 한다.

@@ -56,7 +56,9 @@ hy-home.docker/
 - [`docs/05.operations/`](./docs/05.operations) - 사용 가이드, 운영 정책, 런북, 사고 기록을 분리해 관리하는 운영 지식 베이스
 - [`docs/90.references/`](./docs/90.references) - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
 - [`llms.txt`](./llms.txt) - LLM 에이전트용 repo-local 탐색 진입점
-- [`docs/90.references/llm-wiki/`](./docs/90.references/llm-wiki) - tracked source files 기반 LLM Wiki reference map과 generated path index
+- [`docs/90.references/llm-wiki/`](./docs/90.references/llm-wiki) - tracked source files 기반 LLM Wiki entrypoint
+- [`docs/90.references/llm-wiki/repository-map.md`](./docs/90.references/llm-wiki/repository-map.md) - curated repository map
+- [`docs/90.references/llm-wiki/index.md`](./docs/90.references/llm-wiki/index.md) - generated tracked path index
 - [`infra/`](./infra) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
 - [`scripts/`](./scripts) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
 - [`secrets/`](./secrets) - Docker secrets 파일 구조와 민감 정보 관리 기준
@@ -185,13 +187,13 @@ docker compose --profile core up -d
 
 | Workflow | Start Here | Then Update | Verify |
 | --- | --- | --- | --- |
-| 새 요구사항 정의 | [`docs/01.requirements/README.md`](./docs/01.requirements/README.md) | PRD → ARD/ADR → Spec traceability | `bash scripts/validation/check-doc-traceability.sh` |
+| 새 요구사항 정의 | [`docs/01.requirements/README.md`](./docs/01.requirements/README.md) | PRD → ARD/ADR → Spec 링크를 target-relative로 연결 | `bash scripts/validation/check-repo-contracts.sh` |
 | 아키텍처 선택 기록 | [`docs/02.architecture/README.md`](./docs/02.architecture/README.md) | ARD 또는 ADR, 관련 Spec 링크 | `bash scripts/validation/check-repo-contracts.sh` |
 | 구현 명세 작성 | [`docs/03.specs/README.md`](./docs/03.specs/README.md) | Spec child contracts and execution plan links | `bash scripts/validation/check-repo-contracts.sh` |
 | 실행 계획/작업 evidence 갱신 | [`docs/04.execution/README.md`](./docs/04.execution/README.md) | Plan과 Task를 분리하고 검증 evidence 기록 | `bash scripts/validation/check-doc-traceability.sh` |
 | 운영 지식 갱신 | [`docs/05.operations/README.md`](./docs/05.operations/README.md) | guide, policy, runbook, incident 목적별 배치 | `bash scripts/validation/check-repo-contracts.sh` |
 | 참고 지식 추가 | [`docs/90.references/README.md`](./docs/90.references/README.md) | Reference가 active policy나 runbook을 대체하지 않는지 확인 | `bash scripts/validation/check-repo-contracts.sh` |
-| 템플릿 변경 | [`docs/99.templates/README.md`](./docs/99.templates/README.md) | Template-to-folder mapping and target-relative links | `bash scripts/validation/check-template-security-baseline.sh` |
+| 템플릿 변경 | [`docs/99.templates/README.md`](./docs/99.templates/README.md) | Template-to-folder mapping and target-relative links | `bash scripts/validation/check-repo-contracts.sh` |
 
 새 문서 작업은 항상 해당 stage README에서 시작하고, 생성된 문서의 `## Related Documents` 링크는 템플릿 파일 위치가 아니라 복사된 target 문서 위치 기준으로 다시 계산합니다.
 

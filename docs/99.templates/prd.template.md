@@ -15,6 +15,7 @@ status: draft
 > - Keep implementation detail out of the PRD.
 > - Keep one `Overview (KR)` summary near the top.
 > - Target-relative links in `## Related Documents` are calculated from the copied target path, not from `docs/99.templates/`.
+> - Replace example links with real target-relative links, or delete unused examples before saving.
 >
 > Target-relative examples from `docs/01.requirements/YYYY-MM-DD-<feature-or-system>.md`:
 >
