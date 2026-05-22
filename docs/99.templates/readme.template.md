@@ -64,6 +64,8 @@ Target: {folder}/README.md
 - infra service leaf README는 `Infra Service Readiness Snippet`을 추가해 agent-verifiable evidence를 남긴다.
 - infra folder index README에는 service leaf readiness field를 억지로 추가하지 않는다.
 - scripts README는 `Scripts Purpose-Folder Snippet`을 추가해 목적별 폴더와 root wrapper 금지 규칙을 보존한다.
+- README가 folder index인지 service leaf인지 먼저 결정한다. 둘 다처럼 보이면 실제 service marker(`docker-compose*.yml`, `compose.yml`, `Dockerfile`)가 있는 경로만 service leaf로 취급한다.
+- infra service leaf에서 evidence를 확인할 수 없으면 값을 추측하지 말고 `Not declared`, `N/A - not applicable`, 또는 `See linked operations document`처럼 검증 가능한 부재 사유를 적는다.
 -->
 
 <!-- Target: <actual README.md path> -->
@@ -263,6 +265,7 @@ Folder index README와 service leaf README를 구분한다.
 - Service leaf README: 단일 runtime service, component, or config bundle의 service readiness evidence를 우선한다.
 - infra tier/category README는 실제 service leaf가 아니면 `Service Readiness` 전체 표를 요구하지 않는다.
 - infra service leaf README는 compose/config linkage, secret ref 이름과 mount path, healthcheck, validation, troubleshooting을 포함한다.
+- service marker가 없는 folder index README에 service readiness 표를 만들지 않는다.
 
 Historical evidence 또는 legacy README를 정규화할 때는 현재 사실로 덮어쓰지 말고, 누락된 heading과 target-relative links만 최소 보강한다. 동일 목적의 noncanonical README가 있으면 canonical README를 먼저 확인하고, 참조 검색과 고유 evidence 이관 없이 삭제하지 않는다.
 
@@ -359,6 +362,8 @@ SNIPPET: INFRA SERVICE READINESS
 | Operations | {canonical guide, policy, runbook, or service README reference} |
 | Validation | {compose, hardening, and repository contract checks} |
 | Troubleshooting | {known failure modes and first diagnostic command} |
+
+Use factual values from repository files only. Do not infer secret values, live container state, or unstated runtime behavior. If evidence is absent, record the absence instead of inventing a default.
 
 <!--
 ===============================================================================
