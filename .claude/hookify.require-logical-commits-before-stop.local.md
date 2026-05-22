@@ -3,7 +3,7 @@ name: require-logical-commits-before-stop
 enabled: true
 event: stop
 pattern: .*
-action: warn
+action: block
 ---
 
 **Logical commit completion check**
@@ -15,3 +15,7 @@ Before the final response for completed repository-modifying work:
 - Create small Conventional Commits by logical unit after required checks pass.
 - Leave unrelated untracked files untouched.
 - If commits are intentionally skipped, state the reason clearly.
+
+The shared Stop hook blocks when task-owned repository changes remain
+uncommitted. Use this as a completion gate, not as a substitute for reviewing
+the staged diff.

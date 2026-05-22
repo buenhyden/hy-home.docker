@@ -68,6 +68,7 @@ fi
 
 EXISTING_CHANGED_FILES=()
 SHELL_STYLE_FILES=()
+YAML_STYLE_FILES=()
 
 format_text_file_basics() {
   local file="$1"
@@ -149,6 +150,9 @@ for path in "${CHANGED_PATHS[@]}"; do
       SHELL_STYLE_FILES+=("$rel")
     fi
   fi
+  if [[ "$rel" =~ \.ya?ml$ && -f "$rel" ]]; then
+    YAML_STYLE_FILES+=("$rel")
+  fi
 done
 
 if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shfmt >/dev/null 2>&1; then
@@ -158,6 +162,12 @@ fi
 if [[ "$run_style" -eq 1 ]]; then
   if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shfmt >/dev/null 2>&1; then
     shfmt -d "${SHELL_STYLE_FILES[@]}"
+  fi
+  if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shellcheck >/dev/null 2>&1; then
+    shellcheck "${SHELL_STYLE_FILES[@]}"
+  fi
+  if [[ "${#YAML_STYLE_FILES[@]}" -gt 0 ]] && command -v yamllint >/dev/null 2>&1; then
+    yamllint -c .yamllint "${YAML_STYLE_FILES[@]}"
   fi
   git diff --check -- "${EXISTING_CHANGED_FILES[@]}"
 fi

@@ -408,8 +408,77 @@ PY
   return 1
 }
 
+logical_commit_stop_gate() {
+  if [[ "${AGENT_ALLOW_UNCOMMITTED_STOP:-}" == "1" ]]; then
+    return 0
+  fi
+
+  local output
+  output="$(
+    python3 - <<'PY'
+from __future__ import annotations
+
+import subprocess
+
+ignored_prefixes = ("projects/storybook/mcp/",)
+
+try:
+    result = subprocess.run(
+        ["git", "status", "--porcelain=v1"],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        text=True,
+    )
+except subprocess.CalledProcessError:
+    raise SystemExit(0)
+
+paths: list[str] = []
+for line in result.stdout.splitlines():
+    if not line.strip():
+        continue
+    path = line[3:]
+    if " -> " in path:
+        path = path.split(" -> ", 1)[1]
+    if path.startswith(ignored_prefixes):
+        continue
+    paths.append(path)
+
+print("\n".join(paths[:80]))
+PY
+  )"
+
+  if [[ -z "$output" ]]; then
+    return 0
+  fi
+
+  GATE_OUTPUT="$output" python3 - <<'PY'
+import json
+import os
+
+paths = os.environ.get("GATE_OUTPUT", "").strip()
+reason = (
+    "Repository-modifying work still has uncommitted task-owned changes. "
+    "Before the final response, inspect the diff, run the relevant checks, "
+    "stage only task-owned files or hunks, and create small Conventional "
+    "Commits by logical unit. Leave unrelated untracked paths untouched. "
+    "If this stop is intentionally an incomplete handoff, record the reason "
+    "and set AGENT_ALLOW_UNCOMMITTED_STOP=1 for that stop attempt."
+)
+if paths:
+    reason = f"{reason}\n\nUncommitted paths:\n{paths}"
+
+print(json.dumps({
+    "decision": "block",
+    "reason": reason,
+    "systemMessage": reason,
+}))
+PY
+  return 1
+}
+
 stop() {
-  if template_stop_gate; then
+  if template_stop_gate && logical_commit_stop_gate; then
     session_end
   fi
 }

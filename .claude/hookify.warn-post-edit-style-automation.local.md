@@ -18,6 +18,8 @@ and run changed-file style checks:
   and JSON files
 - runs `shfmt -w` and `shfmt -d` for changed hook/script shell files when
   `shfmt` is available
+- runs `shellcheck` for changed hook/script shell files when available
+- runs `yamllint -c .yamllint` for changed YAML files when available
 - runs `git diff --check` for changed files before repository validators
 
 Inspect the resulting diff before committing.
