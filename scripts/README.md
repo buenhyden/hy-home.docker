@@ -98,13 +98,13 @@ script.
 | Component | Path | Purpose |
 | :--- | :--- | :--- |
 | Docker Validation | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) | Validate root compose config |
-| Repo Contract Check | [check-repo-contracts.sh](./validation/check-repo-contracts.sh) | Enforce docs, GitHub, script, image, and runtime governance contracts |
+| Repo Contract Check | [check-repo-contracts.sh](./validation/check-repo-contracts.sh) | Enforce docs, GitHub, script, image, runtime governance, and execution evidence status contracts |
 | QuickWin Baseline Check | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
 | Template & Security Baseline Check | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh) | Enforce template adoption and required security controls |
 | Documentation Traceability Check | [check-doc-traceability.sh](./validation/check-doc-traceability.sh) | Enforce sync links across 04.execution/plans ↔ 05.operations |
 | LLM Wiki Index Generator | [generate-llm-wiki-index.sh](./knowledge/generate-llm-wiki-index.sh) | Generate and check the repo-local LLM Wiki path index |
 | Graphify Health Report | [report-graphify-health.sh](./knowledge/report-graphify-health.sh) | Report advisory health of generated Graphify corpus without blocking validation |
-| Agent Event Hook | [agent-event-hook.sh](./hooks/agent-event-hook.sh) | Dispatch Claude/Codex hook events, including template-first target-stage docs guidance and Stop gating |
+| Agent Event Hook | [agent-event-hook.sh](./hooks/agent-event-hook.sh) | Dispatch Claude/Codex hook events, including template-first target-stage docs guidance, governance memory guidance, post-edit style validation/formatting, logical commit completion reminders, and Stop gating |
 | Post Tool Validation | [post-tool-validate.sh](./hooks/post-tool-validate.sh) | Run path-aware validation, including changed-doc template enforcement, after Claude/Codex file edits |
 | Unified Hardening Check | [check-all-hardening.sh](./hardening/check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
 | QA/CI Tooling Environment | [use-qa-ci-tools.sh](./operations/use-qa-ci-tools.sh) | Expose user-global QA/CI tools to restricted agent shells |

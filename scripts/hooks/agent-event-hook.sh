@@ -203,6 +203,24 @@ if not tool_name or tool_name in edit_tools:
         if short_path.startswith(project_prefix):
             short_path = short_path[len(project_prefix):]
         short_path = short_path.removeprefix("./")
+        if short_path.startswith("docs/00.agent-governance/memory/") and short_path.endswith(".md"):
+            system_messages.append(
+                "Governance memory edit detected.\n\n"
+                f"Path: `{short_path}`\n\n"
+                "Memory notes are advisory retrieval context, not active policy. "
+                "Use `docs/99.templates/memory.template.md` for durable notes, "
+                "do not store transcripts, raw logs, shell history, credentials, "
+                "tokens, private keys, or secret values, and update "
+                "`docs/00.agent-governance/memory/progress.md` when creating or "
+                "materially changing a memory note."
+            )
+            break
+    for path in paths:
+        short_path = path
+        project_prefix = str(project) + "/"
+        if short_path.startswith(project_prefix):
+            short_path = short_path[len(project_prefix):]
+        short_path = short_path.removeprefix("./")
         if re.match(r"docs/(01\.requirements|02\.architecture|03\.specs|04\.execution|05\.operations|90\.references)/", short_path):
             system_messages.append(
                 "Target-stage documentation edit detected.\n\n"
@@ -281,15 +299,20 @@ def run(cmd, fallback="unknown", timeout=3):
 
 branch = run(["git", "rev-parse", "--abbrev-ref", "HEAD"])
 last_commit = run(["git", "log", "-1", "--format=%h %s"])
+changed = run(["git", "status", "--short"], fallback="")
+changed_count = len([line for line in changed.splitlines() if line.strip()]) if changed else 0
 
 msg = f"""Session ending — governance reminder:
 
 - Update `docs/00.agent-governance/memory/progress.md` with a work log entry before this session closes.
 - Record changed files, verification evidence, and any residual risk or open gap.
+- When repository-modifying work is complete, create small Conventional Commits by logical unit before the final response unless the user explicitly asked not to commit, the work is incomplete, or required checks/approvals are missing.
+- Stage only task-owned files or hunks, and leave unrelated untracked files untouched.
 
 Current state:
 - Branch: `{branch}`
-- Last commit: `{last_commit}`"""
+- Last commit: `{last_commit}`
+- Uncommitted changes: `{changed_count}` files"""
 
 print(json.dumps({"systemMessage": msg.strip()}))
 PY

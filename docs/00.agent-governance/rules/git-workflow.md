@@ -43,7 +43,22 @@ Use Conventional Commits with explicit scopes where possible.
 - Never commit plaintext secrets.
 - Reference issue IDs, ADR IDs, or plan/task IDs when applicable.
 
-## 5. Enforcement
+## 5. Agent Completion Commit Discipline
+
+- For repository-modifying agent work, the completion default is to create
+  logical Conventional Commits after verification and before declaring the task
+  done.
+- Split commits by reviewable concern: documentation evidence, runtime hook
+  behavior, validators, generated graph outputs, and similar units should not be
+  mixed unless they are inseparable.
+- Stage only files or hunks owned by the current task. Leave unrelated untracked
+  files and user changes untouched.
+- Do not commit when the user explicitly asks not to commit, the work is
+  exploratory or incomplete, required checks/approvals are missing, or committing
+  would include secrets or unrelated changes. In that case, report the reason and
+  remaining state.
+
+## 6. Enforcement
 
 Changes that bypass checks or violate secret safety must not be merged.
 GitHub-specific enforcement rules (branch protection, required checks, CODEOWNERS, Actions security) are governed by `rules/github-governance.md`.

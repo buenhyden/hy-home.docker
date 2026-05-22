@@ -5,6 +5,11 @@ set -euo pipefail
 PROJECT_DIR="${CODEX_PROJECT_DIR:-${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}}"
 cd "$PROJECT_DIR"
 
+if [[ -f scripts/operations/use-qa-ci-tools.sh ]]; then
+  # shellcheck source=../operations/use-qa-ci-tools.sh
+  source scripts/operations/use-qa-ci-tools.sh >/dev/null 2>&1 || true
+fi
+
 INPUT="$(cat || true)"
 mapfile -t CHANGED_PATHS < <(
   printf '%s' "$INPUT" | python3 -c '
@@ -61,37 +66,101 @@ if [[ "${#CHANGED_PATHS[@]}" -eq 0 ]]; then
   exit 0
 fi
 
+EXISTING_CHANGED_FILES=()
+SHELL_STYLE_FILES=()
+
+format_text_file_basics() {
+  local file="$1"
+  python3 - "$file" <<'PY'
+from __future__ import annotations
+
+import pathlib
+import sys
+
+path = pathlib.Path(sys.argv[1])
+if not path.is_file():
+    raise SystemExit(0)
+
+data = path.read_bytes()
+try:
+    text = data.decode("utf-8")
+except UnicodeDecodeError:
+    raise SystemExit(0)
+
+if "\x00" in text:
+    raise SystemExit(0)
+
+lines = text.splitlines()
+formatted = "\n".join(line.rstrip(" \t") for line in lines)
+if formatted or text.endswith(("\n", "\r")):
+    formatted += "\n"
+
+new_data = formatted.encode("utf-8")
+if new_data != data:
+    path.write_bytes(new_data)
+PY
+}
+
 run_compose=0
 run_governance=0
 run_json=0
 run_bash=0
+run_style=0
 
 for path in "${CHANGED_PATHS[@]}"; do
+  if [[ "$path" = /* && "$path" != "$PROJECT_DIR"/* ]]; then
+    continue
+  fi
+
   rel="${path#"$PROJECT_DIR"/}"
   rel="${rel#./}"
 
-  case "$rel" in
-    *docker-compose*.yml|*docker-compose*.yaml|infra/*|.env.example)
-      run_compose=1
+  if [[ -f "$rel" && "$rel" != graphify-out/* ]]; then
+    EXISTING_CHANGED_FILES+=("$rel")
+    run_style=1
+    case "$rel" in
+    *.md | *.sh | *.yml | *.yaml | *.json)
+      format_text_file_basics "$rel"
       ;;
+    esac
+  fi
+
+  case "$rel" in
+  *docker-compose*.yml | *docker-compose*.yaml | infra/* | .env.example)
+    run_compose=1
+    ;;
   esac
 
   case "$rel" in
-    AGENTS.md|CLAUDE.md|GEMINI.md|README.md|llms.txt|docs/*|.github/*|.claude/*|.codex/*|.agents/*|scripts/*|infra/tech-stack.versions.json)
-      run_governance=1
-      ;;
+  AGENTS.md | CLAUDE.md | GEMINI.md | README.md | llms.txt | docs/* | .github/* | .claude/* | .codex/* | .agents/* | scripts/* | infra/tech-stack.versions.json)
+    run_governance=1
+    ;;
   esac
 
   case "$rel" in
-    .claude/settings.json|.codex/hooks.json|infra/tech-stack.versions.json)
-      run_json=1
-      ;;
+  .claude/settings.json | .codex/hooks.json | infra/tech-stack.versions.json)
+    run_json=1
+    ;;
   esac
 
   if [[ "$rel" =~ ^(\.claude/hooks|scripts)/.*\.sh$ ]]; then
     run_bash=1
+    if [[ -f "$rel" ]]; then
+      SHELL_STYLE_FILES+=("$rel")
+    fi
   fi
 done
+
+if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shfmt >/dev/null 2>&1; then
+  shfmt -w "${SHELL_STYLE_FILES[@]}"
+fi
+
+if [[ "$run_style" -eq 1 ]]; then
+  if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shfmt >/dev/null 2>&1; then
+    shfmt -d "${SHELL_STYLE_FILES[@]}"
+  fi
+  git diff --check -- "${EXISTING_CHANGED_FILES[@]}"
+fi
 
 if [[ "$run_json" -eq 1 ]]; then
   python3 -m json.tool .claude/settings.json >/dev/null

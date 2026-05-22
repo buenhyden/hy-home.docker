@@ -33,10 +33,12 @@ Unified task execution checklists for all agent work.
 - [ ] Run relevant repository checks for changed layers.
 - [ ] Confirm each implemented change is traceable to the approved plan when an approved-plan gate applies.
 - [ ] Validate link integrity for changed root/governance files.
+- [ ] Inspect the post-edit diff after hook-managed formatting or style checks.
 - [ ] Confirm no contradictory policy statements were introduced.
 - [ ] Confirm completion criteria are satisfied for the affected stage(s).
 - [ ] Update `docs/00.agent-governance/memory/progress.md` with final status, verification evidence, and memory note links.
 - [ ] Create/update out-of-scope or durable finding reports from `docs/99.templates/memory.template.md` when needed.
+- [ ] For completed repository-modifying agent work, create logical Conventional Commits or record why commits were intentionally skipped.
 - [ ] Summarize what changed, what was verified, and what remains out-of-scope.
 
 ## Related Documents
