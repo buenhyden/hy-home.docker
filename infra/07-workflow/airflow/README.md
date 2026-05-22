@@ -38,6 +38,24 @@ airflow/
 └── README.md           # 이 파일
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Airflow (07-workflow) service leaf in `07-workflow`; services: `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, plus 12 more; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Config files | `docker-compose.dev.yml`, `docker-compose.yml`, `config`, `config/statsd_mapping.yml` |
+| Config values | env keys: `AIRFLOW__CORE__EXECUTOR`, `AIRFLOW__CORE__AUTH_MANAGER`, `AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD`, `AIRFLOW__CELERY__RESULT_BACKEND_CMD`, `AIRFLOW__CELERY__BROKER_URL_CMD`, `AIRFLOW__CORE__FERNET_KEY_CMD`, `AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION`, `AIRFLOW__CORE__LOAD_EXAMPLES`, plus 15 more; profiles: `workflow`, `dev` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/airflow/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `airflow-dags:/opt/airflow/dags`, `airflow-plugins:/opt/airflow/plugins`, `airflow-logs:/opt/airflow/logs`, `airflow-config:/opt/airflow/config`, `./config/statsd_mapping.yml:/tmp/mappings.yml:ro`, `airflow-dags`, `airflow-logs`, `airflow-config`, plus 3 more |
+| Ports | `${STATSD_PROMETHEUS_PORT:-9102}`, `${STATSD_AIRFLOW_PORT:-9125}`, `${VALKEY_PORT:-6379}`, `${VALKEY_BUS_PORT:-16379}`, `${VALKEY_EXPORTER_PORT:-9121}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.airflow.rule`, `traefik.http.routers.airflow.entrypoints`, `traefik.http.routers.airflow.tls`, `traefik.http.routers.airflow.middlewares`, `traefik.http.services.airflow.loadbalancer.server.port`, `traefik.http.routers.flower.rule`, plus 4 more |
+| Secret refs | names: `airflow_db_password`, `airflow_fernet_key`, `airflow_www_password`, `mng_valkey_password`, `airflow_valkey_password`; mounts: `/run/secrets/airflow_db_password`, `/run/secrets/airflow_fernet_key`, `/run/secrets/airflow_www_password`, `/run/secrets/mng_valkey_password`, `/run/secrets/airflow_valkey_password` |
+| Healthcheck | Compose healthcheck declared for `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, plus 8 more; not declared for `airflow-init`, `airflow-statsd-exporter`, `airflow-init`, `airflow-valkey-exporter`, `airflow-statsd-exporter` |
+| Operations | [Guide](../../../docs/05.operations/guides/07-workflow/airflow.md), [Policy](../../../docs/05.operations/policies/07-workflow/airflow.md), [Runbook](../../../docs/05.operations/runbooks/07-workflow/airflow.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. [진입 가이드](../../../docs/05.operations/guides/07-workflow/airflow.md)를 읽고 시스템 전반을 이해합니다.

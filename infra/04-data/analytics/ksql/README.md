@@ -38,6 +38,24 @@ ksql/
 └── README.md                # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | ksqlDB service leaf in `04-data`; services: `ksqldb-server`, `ksqldb-cli`, `ksql-datagen`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/ksql/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `KSQL_CONFIG_DIR`, `KSQL_BOOTSTRAP_SERVERS`, `KSQL_HOST_NAME`, `KSQL_LISTENERS`, `KSQL_CACHE_MAX_BYTES_BUFFERING`, `KSQL_KSQL_SCHEMA_REGISTRY_URL`, `KSQL_PRODUCER_INTERCEPTOR_CLASSES`, `KSQL_CONSUMER_INTERCEPTOR_CLASSES`, plus 8 more; profiles: `data`, `ksql` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/ksql/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `ksqldb-data-volume:/var/lib/ksql:rw`, `ksqldb-data-volume` |
+| Ports | `${KSQLDB_HOST_PORT:-8088}:${KSQLDB_PORT:-8088}` |
+| Labels | `hy-home.tier` |
+| Secret refs | Not declared |
+| Healthcheck | Compose healthcheck declared for `ksqldb-server`; not declared for `ksqldb-cli`, `ksql-datagen` |
+| Operations | [Guide index](../../../../docs/05.operations/guides/04-data/README.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. 아키텍처 및 사용법은 [ksqlDB 시스템 가이드](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md)를 참조한다.

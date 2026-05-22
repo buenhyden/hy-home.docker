@@ -37,6 +37,24 @@ dashboard/
 └── README.md          # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Laboratory Dashboard (Homer) service leaf in `11-laboratory`; services: `homer`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/dashboard/docker-compose.yml` |
+| Config files | `docker-compose.yml`, `config`, `config/config.yml` |
+| Config values | env keys: `INIT_ASSETS`; profiles: `admin` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/dashboard/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `./config:/www/assets` |
+| Ports | `${HOMER_PORT:-8080}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.homer.rule`, `traefik.http.routers.homer.entrypoints`, `traefik.http.routers.homer.tls`, `traefik.http.middlewares.homer-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.homer.middlewares`, `traefik.http.services.homer.loadbalancer.server.port` |
+| Secret refs | Not declared |
+| Healthcheck | Compose healthcheck declared for `homer` |
+| Operations | [Guide](../../../docs/05.operations/guides/11-laboratory/dashboard.md), [Policy](../../../docs/05.operations/policies/11-laboratory/dashboard.md), [Runbook](../../../docs/05.operations/runbooks/11-laboratory/dashboard.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. **링크 추가**: `config/config.yml`의 `services` 섹션에 새로운 그룹이나 아이템을 추가한다.

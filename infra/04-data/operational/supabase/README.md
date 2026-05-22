@@ -37,6 +37,24 @@ supabase/
 └── README.md           # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Supabase Stack service leaf in `04-data`; services: `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, plus 7 more; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/operational/supabase/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | profiles: `data` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/operational/supabase/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `${DEFAULT_DATA_DIR}/supabase/api/kong.yml:/home/kong/temp.yml:ro`, `${DEFAULT_DATA_DIR}/supabase/storage:/var/lib/storage`, `${DEFAULT_DATA_DIR}/supabase/functions:/home/deno/functions`, `${DEFAULT_DATA_DIR}/supabase/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql`, `${DEFAULT_DATA_DIR}/supabase/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql`, `${DEFAULT_DATA_DIR}/supabase/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql`, `${DEFAULT_DATA_DIR}/supabase/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql`, `${DEFAULT_DATA_DIR}/supabase/db/data:/var/lib/postgresql/data`, plus 8 more |
+| Ports | `${SUPABASE_KONG_HTTP_HOST_PORT:-8000}:8000/tcp`, `${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp`, `${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000`, `${SUPABASE_POSTGRES_HOST_PORT:-5432}:5432`, `${SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT:-6543}:6543` |
+| Labels | `hy-home.tier` |
+| Secret refs | Not declared |
+| Healthcheck | Compose healthcheck declared for `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, plus 5 more |
+| Operations | [Guide](../../../../docs/05.operations/guides/04-data/operational/supabase.md), [Policy](../../../../docs/05.operations/policies/04-data/operational/supabase.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/operational/supabase.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. **환경 로드**: `.env.example`을 복사하여 `.env`를 생성하고, 특히 `JWT_SECRET`을 설정합니다.

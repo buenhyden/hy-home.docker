@@ -42,6 +42,24 @@ terrakube/
 └── README.md           # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Terrakube IaC Automation Platform service leaf in `09-tooling`; services: `terrakube-api`, `terrakube-ui`, `terrakube-executor`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/terrakube/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `ApiDataSourceType`, `DatasourceHostname`, `DatasourceDatabase`, `DatasourceUser`, `DatasourcePassword_FILE`, `GroupValidationType`, `UserValidationType`, `AuthenticationValidationType`, plus 43 more; profiles: `tooling`, `iac` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/terrakube/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `/var/run/docker.sock:/var/run/docker.sock` |
+| Ports | Not declared |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.terrakube-api.rule`, `traefik.http.routers.terrakube-api.entrypoints`, `traefik.http.routers.terrakube-api.tls`, `traefik.http.routers.terrakube-api.middlewares`, `traefik.http.services.terrakube-api.loadbalancer.server.port`, `traefik.http.routers.terrakube-ui.rule`, plus 9 more |
+| Secret refs | names: `terrakube_db_password`, `minio_app_user_password`, `terrakube_valkey_password`, `terrakube_pat_secret`, `terrakube_internal_secret`; mounts: `/run/secrets/terrakube_db_password`, `/run/secrets/minio_app_user_password`, `/run/secrets/terrakube_valkey_password`, `/run/secrets/terrakube_pat_secret`, `/run/secrets/terrakube_internal_secret` |
+| Healthcheck | Compose healthcheck declared for `terrakube-api`, `terrakube-ui`, `terrakube-executor` |
+| Operations | [Guide](../../../docs/05.operations/guides/09-tooling/terrakube.md), [Policy](../../../docs/05.operations/policies/09-tooling/terrakube.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/terrakube.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. Read the parent [`../README.md`](../README.md) and this service Compose file before changing Terrakube.

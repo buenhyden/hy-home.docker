@@ -37,6 +37,24 @@ open-webui/
 └── README.md           # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Open WebUI service leaf in `08-ai`; services: `open-webui`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL`; profiles: `ai` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/open-webui/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `open-webui:/app/backend/data:rw`, `open-webui` |
+| Ports | Not declared |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-webui.rule`, `traefik.http.routers.open-webui.entrypoints`, `traefik.http.routers.open-webui.tls`, `traefik.http.services.open-webui.loadbalancer.server.port`, `traefik.http.routers.open-webui.middlewares` |
+| Secret refs | Not declared |
+| Healthcheck | Compose healthcheck declared for `open-webui` |
+| Operations | [Guide](../../../docs/05.operations/guides/08-ai/open-webui.md), [Policy](../../../docs/05.operations/policies/08-ai/open-webui.md), [Runbook](../../../docs/05.operations/runbooks/08-ai/open-webui.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. Read the [Open WebUI Interface & RAG Guide](../../../docs/05.operations/guides/08-ai/open-webui.md).

@@ -45,6 +45,24 @@ traefik/
 └── README.md           # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Traefik Edge Router service leaf in `01-gateway`; services: `traefik`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/01-gateway/traefik/docker-compose.yml` |
+| Config files | `docker-compose.yml`, `config`, `config/README.md`, `config/traefik.yml` |
+| Config values | profiles: `core`, `dev` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/01-gateway/traefik/docker-compose.yml` |
+| Networks | `k3d-hyhome`, `infra_net` |
+| Volumes | `/var/run/docker.sock:/var/run/docker.sock:ro`, `../../../secrets/certs:/certs:ro`, `./dynamic:/dynamic:ro`, `./config/traefik.yml:/etc/traefik/traefik.yml:ro` |
+| Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}`, `${NEO4J_BOLT_HOST_PORT:-7687}:${NEO4J_BOLT_PORT:-7687}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dashboard.rule`, `traefik.http.routers.dashboard.entrypoints`, `traefik.http.routers.dashboard.tls`, `traefik.http.routers.dashboard.service`, `traefik.http.routers.dashboard.middlewares` |
+| Secret refs | names: `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`; mounts: `/run/secrets/traefik_basicauth_password`, `/run/secrets/traefik_opensearch_basicauth_password` |
+| Healthcheck | Compose healthcheck declared for `traefik` |
+| Operations | [Guide](../../../docs/05.operations/guides/01-gateway/traefik.md), [Policy](../../../docs/05.operations/policies/01-gateway/traefik.md), [Runbook](../../../docs/05.operations/runbooks/01-gateway/traefik.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. Start by reviewing `config/traefik.yml` to understand the core routing entrypoints.

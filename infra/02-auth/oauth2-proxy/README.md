@@ -40,6 +40,24 @@ oauth2-proxy/
 └── README.md           # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | OAuth2 Proxy service leaf in `02-auth`; services: `oauth2-proxy`, `oauth2-proxy`, `oauth2-proxy-valkey`, `oauth2-proxy-valkey-exporter`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/02-auth/oauth2-proxy/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Config files | `docker-compose.dev.yml`, `docker-compose.yml`, `config`, `config/oauth2-proxy.cfg` |
+| Config values | env keys: `SSL_CERT_FILE`, `OAUTH2_PROXY_SESSION_STORE_TYPE`, `OAUTH2_PROXY_REDIS_CONNECTION_URL`, `OAUTH2_PROXY_CLIENT_ID`, `OAUTH2_PROXY_OIDC_ISSUER_URL`, `OAUTH2_PROXY_REDIRECT_URL`, `OAUTH2_PROXY_COOKIE_DOMAINS`, `OAUTH2_PROXY_WHITELIST_DOMAINS`; profiles: `core`, `auth`, `dev` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/02-auth/oauth2-proxy/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro`, `../../../secrets/certs/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro`, `oauth2-proxy-valkey-data`, `oauth2-proxy-valkey-data:/data` |
+| Ports | `${VALKEY_PORT:-6379}`, `${VALKEY_EXPORTER_PORT:-9121}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.oauth2-proxy.rule`, `traefik.docker.network`, `traefik.http.routers.oauth2-proxy.entrypoints`, `traefik.http.routers.oauth2-proxy.service`, `traefik.http.routers.oauth2-proxy.tls`, `traefik.http.routers.oauth2-proxy.middlewares`, plus 1 more |
+| Secret refs | names: `mng_valkey_password`, `oauth2_proxy_client_secret`, `oauth2_proxy_cookie_secret`, `oauth2_valkey_password`; mounts: `/run/secrets/mng_valkey_password`, `/run/secrets/oauth2_proxy_client_secret`, `/run/secrets/oauth2_proxy_cookie_secret`, `/run/secrets/oauth2_valkey_password` |
+| Healthcheck | Compose healthcheck declared for `oauth2-proxy`, `oauth2-proxy`, `oauth2-proxy-valkey`; not declared for `oauth2-proxy-valkey-exporter` |
+| Operations | [Guide](../../../docs/05.operations/guides/02-auth/oauth2-proxy.md), [Policy](../../../docs/05.operations/policies/02-auth/oauth2-proxy.md), [Runbook](../../../docs/05.operations/runbooks/02-auth/oauth2-proxy.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. Read the [Auth Guides](../../../docs/05.operations/guides/02-auth/README.md) for OIDC/ForwardAuth configuration.

@@ -91,6 +91,24 @@ syncthing/
 
 ---
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Syncthing service leaf in `09-tooling`; services: `syncthing`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/syncthing/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `PUID`, `PGID`, `FILE__USER`, `FILE__PASSWORD_FILE`; profiles: `tooling`, `sync` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/syncthing/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `syncthing-volume:/var/syncthing:rw`, `resources-contents-volume:/Sync:rw`, `syncthing-volume`, `resources-contents-volume` |
+| Ports | `${SYNCTHING_SYNC_HOST_PORT:-22000}:${SYNCTHING_SYNC_PORT:-22000}/tcp`, `${SYNCTHING_SYNC_HOST_PORT:-22000}:${SYNCTHING_SYNC_PORT:-22000}/udp`, `${SYNCTHING_BROADCASTS_HOST_PORT:-21027}:${SYNCTHING_BROADCASTS_PORT:-21027}/udp`, `${SYNCTHING_GUI_PORT:-8384}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.syncthing.rule`, `traefik.http.routers.syncthing.entrypoints`, `traefik.http.routers.syncthing.tls`, `traefik.http.routers.syncthing.middlewares`, `traefik.http.services.syncthing.loadbalancer.server.port` |
+| Secret refs | names: `syncthing_password`; mounts: `/run/secrets/syncthing_password` |
+| Healthcheck | Compose healthcheck declared for `syncthing` |
+| Operations | [Guide](../../../docs/05.operations/guides/09-tooling/syncthing.md), [Policy](../../../docs/05.operations/policies/09-tooling/syncthing.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/syncthing.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.

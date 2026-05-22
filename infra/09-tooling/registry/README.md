@@ -81,6 +81,24 @@ registry/
 
 ---
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Docker Registry service leaf in `09-tooling`; services: `registry`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/registry/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | profiles: `tooling`, `registry` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/registry/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `registry-data-volume:/var/lib/registry:rw`, `registry-data-volume` |
+| Ports | `${REGISTRY_PORT:-5000}:${REGISTRY_PORT:-5000}` |
+| Labels | `hy-home.tier` |
+| Secret refs | Not declared |
+| Healthcheck | Compose healthcheck declared for `registry` |
+| Operations | [Guide](../../../docs/05.operations/guides/09-tooling/registry.md), [Policy](../../../docs/05.operations/policies/09-tooling/registry.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/registry.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.

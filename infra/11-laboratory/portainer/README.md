@@ -25,6 +25,24 @@ Portainer is a lightweight management UI which allows you to easily manage your 
 └── README.md                # Entry point
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Laboratory Portainer service leaf in `11-laboratory`; services: `portainer`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/portainer/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | profiles: `admin` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/portainer/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `/var/run/docker.sock:/var/run/docker.sock`, `portainer-data:/data`, `portainer-data` |
+| Ports | Not declared |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.portainer.rule`, `traefik.http.routers.portainer.entrypoints`, `traefik.http.routers.portainer.tls`, `traefik.http.middlewares.portainer-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.portainer.middlewares`, `traefik.http.services.portainer.loadbalancer.server.port` |
+| Secret refs | Not declared |
+| Healthcheck | Compose healthcheck declared for `portainer` |
+| Operations | [Guide](../../../docs/05.operations/guides/11-laboratory/portainer.md), [Policy](../../../docs/05.operations/policies/11-laboratory/portainer.md), [Runbook](../../../docs/05.operations/runbooks/11-laboratory/portainer.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 ### 1. Initial Setup

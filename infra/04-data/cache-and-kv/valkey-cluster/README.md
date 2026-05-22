@@ -40,6 +40,24 @@ valkey-cluster/
 └── README.md                # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Valkey Distributed Cluster service leaf in `04-data`; services: `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`, plus 2 more; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml` |
+| Config files | `docker-compose.yml`, `config`, `config/valkey.conf` |
+| Config values | env keys: `PORT`, `NODE_NAME`; profiles: `data`, `service` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `valkey0-data:/data:rw`, `./config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro`, `./scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro`, `valkey1-data:/data:rw`, `valkey2-data:/data:rw`, `valkey3-data:/data:rw`, `valkey4-data:/data:rw`, `valkey5-data:/data:rw`, plus 7 more |
+| Ports | `${VALKEY0_PORT:-6379}:${VALKEY0_PORT:-6379}`, `${VALKEY0_BUS_PORT:-16379}`, `${VALKEY1_PORT:-6380}:${VALKEY1_PORT:-6380}`, `${VALKEY1_BUS_PORT:-16380}`, `${VALKEY2_PORT:-6381}:${VALKEY2_PORT:-6381}`, `${VALKEY2_BUS_PORT:-16381}`, `${VALKEY3_PORT:-6382}:${VALKEY3_PORT:-6382}`, `${VALKEY3_BUS_PORT:-16382}`, plus 5 more |
+| Labels | `hy-home.tier` |
+| Secret refs | names: `service_valkey_password`; mounts: `/run/secrets/service_valkey_password` |
+| Healthcheck | Compose healthcheck declared for `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, plus 2 more; not declared for `valkey-cluster-init` |
+| Operations | [Guide](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md), [Policy](../../../../docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. [docker-compose.yml](./docker-compose.yml)을 통해 클러스터 노드 구성을 확인한다.

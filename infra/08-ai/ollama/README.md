@@ -36,6 +36,24 @@ ollama/
 └── README.md           # 이 파일 (인프라 진입점)
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Ollama Inference Engine service leaf in `08-ai`; services: `ollama`, `ollama-exporter`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/ollama/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `OLLAMA_HOST`, `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`; profiles: `ai`, `dev` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/ollama/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `ollama-data:/root/.ollama:rw`, `ollama-data` |
+| Ports | `${OLLAMA_HOST_PORT}:${OLLAMA_PORT}`, `${OLLAMA_EXPORTER_PORT:-8000}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.ollama.rule`, `traefik.http.routers.ollama.entrypoints`, `traefik.http.routers.ollama.tls`, `traefik.http.services.ollama.loadbalancer.server.port`, `traefik.http.routers.ollama.middlewares` |
+| Secret refs | Not declared |
+| Healthcheck | Compose healthcheck declared for `ollama`, `ollama-exporter` |
+| Operations | [Guide](../../../docs/05.operations/guides/08-ai/ollama.md), [Policy](../../../docs/05.operations/policies/08-ai/ollama.md), [Runbook](../../../docs/05.operations/runbooks/08-ai/ollama.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. 상위 시스템 가이드인 [Ollama System Guide](../../../docs/05.operations/guides/08-ai/ollama.md)를 먼저 읽는다.

@@ -39,6 +39,24 @@ n8n/
 └── README.md           # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | n8n Low-code Automation service leaf in `07-workflow`; services: `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`, `n8n`, `n8n-worker`, plus 4 more; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Config files | `docker-compose.dev.yml`, `docker-compose.yml` |
+| Config values | env keys: `GENERIC_TIMEZONE`, `TZ`, `DB_TYPE`, `DB_POSTGRESDB_HOST`, `DB_POSTGRESDB_PORT`, `DB_POSTGRESDB_DATABASE`, `DB_POSTGRESDB_USER`, `DB_POSTGRESDB_PASSWORD_FILE`, plus 31 more; profiles: `workflow`, `dev` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `n8n-data:/home/node/.n8n:rw`, `./custom:/home/node/.n8n/custom:rw`, `n8n-task-runner-worker-data:/home/node/.n8n:rw`, `n8n-data`, `n8n-task-runner-data`, `n8n-task-runner-worker-data`, `n8n-valkey-data:/data:rw`, `n8n-valkey-data` |
+| Ports | `${N8N_PORT:-5678}`, `${N8N_BROKER_PORT:-5679}`, `${N8N_TASK_RUNNER_PORT:-5680}`, `${VALKEY_PORT:-6379}`, `${VALKEY_BUS_PORT:-16379}`, `${VALKEY_EXPORTER_PORT:-9121}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.n8n.rule`, `traefik.http.routers.n8n.entrypoints`, `traefik.http.routers.n8n.middlewares`, `traefik.http.routers.n8n.tls`, `traefik.http.routers.n8n.service`, `traefik.http.services.n8n.loadbalancer.server.port` |
+| Secret refs | names: `mng_valkey_password`, `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, `n8n_valkey_password`; mounts: `/run/secrets/mng_valkey_password`, `/run/secrets/n8n_db_password`, `/run/secrets/n8n_encryption_key`, `/run/secrets/n8n_runner_auth_token`, `/run/secrets/n8n_valkey_password` |
+| Healthcheck | Compose healthcheck declared for `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`, `n8n`, plus 4 more; not declared for `n8n-valkey-exporter` |
+| Operations | [Guide](../../../docs/05.operations/guides/07-workflow/n8n.md), [Policy](../../../docs/05.operations/policies/07-workflow/n8n.md), [Runbook](../../../docs/05.operations/runbooks/07-workflow/n8n.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. Review the linked operations guide, policy, and runbook before changing n8n configuration.

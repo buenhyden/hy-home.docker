@@ -38,6 +38,24 @@ mng-db/
 └── README.md           # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Management Database (mng-db) service leaf in `04-data`; services: `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter`; root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/operational/mng-db/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `POSTGRES_PASSWORD_FILE`, `POSTGRES_USER`, `POSTGRES_DB`, `PGDATA`, `POSTGRES_HOSTNAME`, `POSTGRES_PORT`, `SERVICE_POSTGRES_USERNAME`, `SERVICE_POSTGRES_DB`; profiles: `mng`, `dev` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/operational/mng-db/docker-compose.yml` |
+| Networks | `infra_net`, `k3d-hyhome` |
+| Volumes | `mng-valkey-data:/data:rw`, `mng-pg-data:/var/lib/postgresql/data:rw`, `./pg/init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro`, `mng-pg-data`, `mng-valkey-data`, `redisinsight-data` |
+| Ports | `${VALKEY_MNG_HOST_POST-26379}:${VALKEY_PORT:-6379}`, `${VALKEY_PORT:-6379}`, `${VALKEY_EXPORTER_PORT:-9121}`, `${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}`, `${POSTGRES_EXPORTER_PORT:-9187}` |
+| Labels | `hy-home.tier`, `traefik.enable` |
+| Secret refs | names: `mng_valkey_password`, `mng_postgres_password`, `service_postgres_password`, `n8n_db_password`, `keycloak_db_password`, `airflow_db_password`, `terrakube_db_password`, `sonarqube_db_password`; mounts: `/run/secrets/mng_valkey_password`, `/run/secrets/mng_postgres_password`, `/run/secrets/service_postgres_password`, `/run/secrets/n8n_db_password`, `/run/secrets/keycloak_db_password`, `/run/secrets/airflow_db_password`, `/run/secrets/terrakube_db_password`, `/run/secrets/sonarqube_db_password` |
+| Healthcheck | Compose healthcheck declared for `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-exporter`; not declared for `mng-pg-init` |
+| Operations | [Guide](../../../../docs/05.operations/guides/04-data/operational/mng-db.md), [Policy](../../../../docs/05.operations/policies/04-data/operational/mng-db.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/operational/mng-db.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. **초기화 확인**: 신규 플랫폼 서비스 추가 시 `pg/init-scripts/init_users_dbs.sql`을 업데이트합니다.

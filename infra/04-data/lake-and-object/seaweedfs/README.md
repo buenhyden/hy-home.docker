@@ -113,6 +113,24 @@ infra/04-data/lake-and-object/seaweedfs/
 └── README.md  # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | SeaweedFS service leaf in `04-data`; services: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml` |
+| Config files | `docker-compose.yml`, `config`, `config/security.toml`, `config/security.toml.example` |
+| Config values | profiles: `data` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `seaweedfs-master-data:/data:rw`, `seaweedfs-volume-data:/data:rw`, `seaweedfs-master-data`, `seaweedfs-volume-data` |
+| Ports | `${SEAWEEDFS_MASTER_HTTP_PORT:-9333}`, `${SEAWEEDFS_MASTER_GRPC_PORT:-19333}`, `${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}`, `${SEAWEEDFS_VOLUME_GRPC_PORT:-18085}`, `${SEAWEEDFS_FILER_HTTP_PORT:-8888}`, `${SEAWEEDFS_FILER_GRPC_PORT:-18888}`, `${SEAWEEDFS_S3_HTTP_PORT:-8333}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.seaweedfs-master.rule`, `traefik.http.routers.seaweedfs-master.entrypoints`, `traefik.http.routers.seaweedfs-master.tls`, `traefik.http.services.seaweedfs-master.loadbalancer.server.port`, `traefik.http.routers.seaweedfs-master.middlewares`, `traefik.http.routers.cdn.rule`, plus 9 more |
+| Secret refs | Not declared |
+| Healthcheck | Compose healthcheck declared for `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`; not declared for `seaweedfs-mount` |
+| Operations | [Guide](../../../../docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md), [Policy](../../../../docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/lake-and-object/seaweedfs.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.

@@ -41,6 +41,24 @@ minio/
 └── README.md                   # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | MinIO Object Storage service leaf in `04-data`; services: `minio1`, `minio2`, `minio3`, `minio4`, `minio`, `minio-create-buckets`; local compose only: `docker-compose.cluster.yaml`; root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lake-and-object/minio/docker-compose.yml` |
+| Config files | `docker-compose.cluster.yaml`, `docker-compose.yml` |
+| Config values | env keys: `MINIO_ROOT_USER_FILE`, `MINIO_ROOT_PASSWORD_FILE`, `MINIO_PROMETHEUS_AUTH_TYPE`, `MINIO_API_ROOT_ACCESS`; profiles: `storage`, `obs`, `dev` |
+| Compose linkage | local compose only: `docker-compose.cluster.yaml`; root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lake-and-object/minio/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `minio-data1-volume:/data:rw`, `minio-data2-volume:/data:rw`, `minio-data3-volume:/data:rw`, `minio-data4-volume:/data:rw`, `minio-data1-volume`, `minio-data2-volume`, `minio-data3-volume`, `minio-data4-volume`, plus 2 more |
+| Ports | Not declared |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.minio-api.rule`, `traefik.http.routers.minio-api.entrypoints`, `traefik.http.routers.minio-api.tls`, `traefik.http.routers.minio-api.service`, `traefik.http.services.minio-api.loadbalancer.server.port`, `traefik.http.routers.minio-api.middlewares`, plus 6 more |
+| Secret refs | names: `minio_root_username`, `minio_root_password`, `minio_app_username`, `minio_app_user_password`; mounts: `/run/secrets/minio_root_username`, `/run/secrets/minio_root_password`, `/run/secrets/minio_app_username`, `/run/secrets/minio_app_user_password` |
+| Healthcheck | Compose healthcheck declared for `minio1`, `minio2`, `minio3`, `minio4`, `minio`; not declared for `minio-create-buckets` |
+| Operations | [Guide](../../../../docs/05.operations/guides/04-data/lake-and-object/minio.md), [Policy](../../../../docs/05.operations/policies/04-data/lake-and-object/minio.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/lake-and-object/minio.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. Review the linked operations guide, policy, and runbook before changing MinIO configuration.

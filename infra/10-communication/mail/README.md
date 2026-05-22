@@ -80,6 +80,24 @@ Copyright (c) 2026. Licensed under the MIT License.
 
 ---
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | ✉️ Mail Infrastructure (mail) service leaf in `10-communication`; services: `stalwart`, `mailhog`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/10-communication/mail/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `STALWART_ADMIN_USER`; profiles: `communication` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/10-communication/mail/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `stalwart-data:/opt/stalwart:rw`, `../../../secrets/certs:/opt/stalwart/certs:ro`, `stalwart-data` |
+| Ports | `${SMTP_HOST_PORT:-25}:${SMTP_PORT:-25}`, `${SUBMISSION_HOST_PORT:-587}:${SUBMISSION_PORT:-587}`, `${SMTPS_HOST_PORT:-465}:${SMTPS_PORT:-465}`, `${IMAPS_HOST_PORT:-993}:${IMAPS_PORT:-993}`, `${MANAGESIEVE_HOST_PORT:-4190}:${MANAGESIEVE_PORT:-4190}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.stalwart-ui.rule`, `traefik.http.routers.stalwart-ui.entrypoints`, `traefik.http.routers.stalwart-ui.tls`, `traefik.http.routers.stalwart-ui.middlewares`, `traefik.http.services.stalwart-ui.loadbalancer.server.port`, `traefik.http.routers.mailhog.rule`, plus 4 more |
+| Secret refs | names: `stalwart_password`; mounts: `/run/secrets/stalwart_password` |
+| Healthcheck | Compose healthcheck declared for `stalwart`, `mailhog` |
+| Operations | [Guide](../../../docs/05.operations/guides/10-communication/mail.md), [Policy](../../../docs/05.operations/policies/10-communication/mail.md), [Runbook](../../../docs/05.operations/runbooks/10-communication/mail.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.

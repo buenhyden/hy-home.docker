@@ -42,6 +42,24 @@ terraform/
 └── README.md           # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Terraform Infrastructure Tool service leaf in `09-tooling`; services: `terraform`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/terraform/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | profiles: `tooling`, `iac` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/terraform/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `./workspace:/workspace:rw`, `$HOME/.aws:/root/.aws:ro`, `$HOME/.azure:/root/.azure:ro` |
+| Ports | Not declared |
+| Labels | `hy-home.tier` |
+| Secret refs | Not declared |
+| Healthcheck | Not declared in compose; use service logs and dependent checks |
+| Operations | [Guide](../../../docs/05.operations/guides/09-tooling/terraform.md), [Policy](../../../docs/05.operations/policies/09-tooling/terraform.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/terraform.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. Read the parent [`../README.md`](../README.md) and this service Compose file before changing Terraform tooling.

@@ -77,6 +77,24 @@ Copyright (c) 2026. Licensed under the MIT License.
 
 ---
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | 🦗 Locust Load Testing Infrastructure service leaf in `09-tooling`; services: `locust-master`, `locust-worker`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/locust/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `LOCUST_INFLUXDB_HOST`, `LOCUST_INFLUXDB_PORT`, `LOCUST_INFLUXDB_ORG`, `LOCUST_INFLUXDB_BUCKET`; profiles: `tooling`, `testing` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/locust/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `locust-data:/mnt/locust:rw`, `locust-data` |
+| Ports | `${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}` |
+| Labels | `hy-home.tier` |
+| Secret refs | names: `influxdb_api_token`; mounts: `/run/secrets/influxdb_api_token` |
+| Healthcheck | Compose healthcheck declared for `locust-master`, `locust-worker` |
+| Operations | [Guide](../../../docs/05.operations/guides/09-tooling/locust.md), [Policy](../../../docs/05.operations/policies/09-tooling/locust.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/locust.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.

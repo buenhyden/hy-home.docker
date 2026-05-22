@@ -39,6 +39,24 @@ warehouses/
 └── README.md           # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | StarRocks (OLAP Warehouse) service leaf in `04-data`; services: `starrocks-fe`, `starrocks-be`; local compose only: `docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | profiles: `data` |
+| Compose linkage | local compose only: `docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `starrocks-fe-data:/opt/starrocks/fe/meta:rw`, `starrocks-be-data:/opt/starrocks/be/storage:rw`, `starrocks-fe-data`, `starrocks-be-data` |
+| Ports | `9030:9030`, `8030:8030`, `8040:8040` |
+| Labels | `hy-home.tier` |
+| Secret refs | Not declared |
+| Healthcheck | Compose healthcheck declared for `starrocks-fe`, `starrocks-be` |
+| Operations | [Guide](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md), [Policy](../../../../docs/05.operations/policies/04-data/analytics/warehouses.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/analytics/warehouses.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)를 참조한다.

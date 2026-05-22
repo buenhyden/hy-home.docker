@@ -38,6 +38,24 @@ keycloak/
 └── README.md           # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Keycloak IAM service leaf in `02-auth`; services: `keycloak`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/02-auth/keycloak/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `KC_DB`, `KC_DB_URL`, `KC_DB_USERNAME`, `KC_DB_PASSWORD_FILE`, `KC_BOOTSTRAP_ADMIN_USERNAME`, `KC_HOSTNAME`, `KC_HTTP_ENABLED`, `KC_PROXY_HEADERS`, plus 6 more; profiles: `core`, `auth`, `dev` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/02-auth/keycloak/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `keycloak-themes:/opt/keycloak/themes:ro`, `keycloak-config:/opt/keycloak/conf:ro`, `keycloak-providers:/opt/keycloak/providers:ro`, `keycloak-config`, `keycloak-providers`, `keycloak-themes` |
+| Ports | `${KEYCLOAK_MANAGEMENT_PORT:-9000}`, `${KEYCLOAK_PORT:-8080}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.keycloak.rule`, `traefik.http.routers.keycloak.entrypoints`, `traefik.http.routers.keycloak.tls`, `traefik.http.routers.keycloak.middlewares`, `traefik.http.services.keycloak.loadbalancer.server.port` |
+| Secret refs | names: `keycloak_db_password`, `keycloak_admin_password`; mounts: `/run/secrets/keycloak_db_password`, `/run/secrets/keycloak_admin_password` |
+| Healthcheck | Compose healthcheck declared for `keycloak` |
+| Operations | [Guide](../../../docs/05.operations/guides/02-auth/keycloak.md), [Policy](../../../docs/05.operations/policies/02-auth/keycloak.md), [Runbook](../../../docs/05.operations/runbooks/02-auth/keycloak.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. Read the linked operations guide, policy, and runbook before changing Keycloak configuration.

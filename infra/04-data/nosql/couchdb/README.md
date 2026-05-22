@@ -47,6 +47,24 @@ couchdb/
 └── docker-compose.yml    # Cluster deployment file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | CouchDB Cluster service leaf in `04-data`; services: `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/couchdb/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `COUCHDB_USER`, `NODENAME`; profiles: `data` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/couchdb/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `couchdb1-data:/opt/couchdb/data:rw`, `couchdb2-data:/opt/couchdb/data:rw`, `couchdb3-data:/opt/couchdb/data:rw`, `couchdb1-data`, `couchdb2-data`, `couchdb3-data` |
+| Ports | `${COUCHDB_PORT:-5984}`, `${COUCHDB_ERLANG_MAPPER_PORT:-4369}`, `${COUCHDB_ERLANG_DISTRIBUTION_PORT:-9100}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.couchdb.rule`, `traefik.http.routers.couchdb.entrypoints`, `traefik.http.routers.couchdb.tls`, `traefik.http.routers.couchdb.service`, `traefik.http.routers.couchdb.middlewares`, `traefik.http.services.couchdb-cluster.loadbalancer.server.port`, plus 2 more |
+| Secret refs | names: `couchdb_password`, `couchdb_cookie`; mounts: `/run/secrets/couchdb_password`, `/run/secrets/couchdb_cookie` |
+| Healthcheck | Compose healthcheck declared for `couchdb-1`, `couchdb-2`, `couchdb-3`; not declared for `couchdb-cluster-init` |
+| Operations | [Guide](../../../../docs/05.operations/guides/04-data/nosql/couchdb.md), [Policy](../../../../docs/05.operations/policies/04-data/nosql/couchdb.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/nosql/couchdb.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. **Deployment**: `docker compose up -d`를 사용하여 전체 클러스터와 초기화 작업을 기동한다.

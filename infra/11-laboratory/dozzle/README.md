@@ -36,6 +36,24 @@ dozzle/
 └── README.md             # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Dozzle service leaf in `11-laboratory`; services: `dozzle`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/dozzle/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | profiles: `admin`, `dev` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/dozzle/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `/var/run/docker.sock:/var/run/docker.sock:ro`, `dozzle-data:/data`, `dozzle-data` |
+| Ports | `${DOZZLE_PORT:-8080}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dozzle.rule`, `traefik.http.routers.dozzle.entrypoints`, `traefik.http.routers.dozzle.tls`, `traefik.http.middlewares.dozzle-admin-ip.ipallowlist.sourcerange`, `traefik.http.routers.dozzle.middlewares`, `traefik.http.services.dozzle.loadbalancer.server.port` |
+| Secret refs | Not declared |
+| Healthcheck | Compose healthcheck declared for `dozzle` |
+| Operations | [Guide](../../../docs/05.operations/guides/11-laboratory/dozzle.md), [Policy](../../../docs/05.operations/policies/11-laboratory/dozzle.md), [Runbook](../../../docs/05.operations/runbooks/11-laboratory/dozzle.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. [docker-compose.yml](./docker-compose.yml)을 통해 서비스 구성을 확인한다.

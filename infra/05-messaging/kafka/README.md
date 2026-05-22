@@ -41,6 +41,24 @@ kafka/
 └── README.md          # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Kafka Event Streaming Cluster (05-messaging) service leaf in `05-messaging`; services: `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, plus 10 more; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Config files | `docker-compose.dev.yml`, `docker-compose.yml` |
+| Config values | env keys: `CLUSTER_ID`, `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR`, `KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR`, `KAFKA_TRANSACTION_STATE_LOG_MIN_ISR`, `KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS`, `KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS`, `KAFKA_AUTO_CREATE_TOPICS_ENABLE`, `KAFKA_PROCESS_ROLES`, plus 54 more; profiles: `messaging`, `dev` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `kafka-1-data:/var/lib/kafka/data:rw`, `./jmx-exporter:/usr/share/jmx_exporter:ro`, `kafka-connect-data:/var/lib/kafka-connect:rw`, `./kafbat-ui/dynamic_config.template.yaml:/tmp/dynamic_config.template.yaml:ro`, `kafka-1-data`, `kafka-connect-data`, `kafka-2-data:/var/lib/kafka/data:rw`, `kafka-3-data:/var/lib/kafka/data:rw`, plus 2 more |
+| Ports | `${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}`, `${KAFKA_JMX_1_HOST_PORT:-19101}:${KAFKA_JMX_PORT:-9101}`, `${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}`, `${SCHEMA_REGISTRY_PORT:-8081}`, `${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}`, `${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}`, `${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}`, `${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}`, plus 2 more |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.schema-registry.rule`, `traefik.http.routers.schema-registry.entrypoints`, `traefik.http.routers.schema-registry.tls`, `traefik.http.routers.schema-registry.middlewares`, `traefik.http.services.schema-registry.loadbalancer.server.port`, `traefik.http.routers.kafka-connect.rule`, plus 14 more |
+| Secret refs | names: `kafbat_client_secret`; mounts: `/run/secrets/kafbat_client_secret` |
+| Healthcheck | Compose healthcheck declared for `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, plus 9 more; not declared for `kafka-init`, `kafka-init` |
+| Operations | [Guide](../../../docs/05.operations/guides/05-messaging/kafka.md), [Policy](../../../docs/05.operations/policies/05-messaging/kafka.md), [Runbook](../../../docs/05.operations/runbooks/05-messaging/kafka.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. **Bootstrap**: [Kafka KRaft Guide](../../../docs/05.operations/guides/05-messaging/kafka.md)를 읽고 클러스터 초기 구성 방식을 파악한다.

@@ -83,6 +83,24 @@ sonarqube/
 
 ---
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | SonarQube Code Quality service leaf in `09-tooling`; services: `sonarqube`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/sonarqube/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `SONAR_JDBC_URL`, `SONAR_JDBC_USERNAME`, `SONAR_JDBC_PASSWORD_FILE`, `SONAR_WEB_JAVAOPTS`, `SONAR_SEARCH_JAVAOPTS`; profiles: `tooling`, `sast` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/09-tooling/sonarqube/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `sonarqube-data-volume:/opt/sonarqube/data:rw`, `sonarqube-logs-volume:/opt/sonarqube/logs:rw`, `sonarqube-data-volume`, `sonarqube-logs-volume` |
+| Ports | `${SONARQUBE_PORT:-9000}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.sonarqube.rule`, `traefik.http.routers.sonarqube.entrypoints`, `traefik.http.routers.sonarqube.tls`, `traefik.http.routers.sonarqube.middlewares`, `traefik.http.services.sonarqube.loadbalancer.server.port` |
+| Secret refs | names: `sonarqube_db_password`; mounts: `/run/secrets/sonarqube_db_password` |
+| Healthcheck | Compose healthcheck declared for `sonarqube` |
+| Operations | [Guide](../../../docs/05.operations/guides/09-tooling/sonarqube.md), [Policy](../../../docs/05.operations/policies/09-tooling/sonarqube.md), [Runbook](../../../docs/05.operations/runbooks/09-tooling/sonarqube.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.

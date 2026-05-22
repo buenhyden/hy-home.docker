@@ -40,6 +40,24 @@ opensearch/
 └── README.md               # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | OpenSearch service leaf in `04-data`; services: `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards`, `opensearch`, `opensearch-dashboards`; local compose only: `docker-compose.cluster.yml`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/opensearch/docker-compose.yml` |
+| Config files | `docker-compose.cluster.yml`, `docker-compose.yml` |
+| Config values | env keys: `node.name`, `cluster.name`, `discovery.seed_hosts`, `cluster.initial_cluster_manager_nodes`, `OPENSEARCH_JAVA_OPTS`, `bootstrap.memory_lock`, `node.roles`, `plugins.security.ssl.http.enabled`, plus 8 more; profiles: `data` |
+| Compose linkage | local compose only: `docker-compose.cluster.yml`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/opensearch/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `opensearch-data1:/usr/share/opensearch/data`, `../../../../secrets/certs:/usr/share/opensearch/config/certs:ro`, `./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro`, `opensearch-data2:/usr/share/opensearch/data`, `opensearch-data3:/usr/share/opensearch/data`, `../../../../secrets/certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro`, `opensearch-data1`, `opensearch-data2`, plus 15 more |
+| Ports | `${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}`, `9200`, `9600`, `5601`, `${KIBANA_PORT:-5601}` |
+| Labels | `traefik.enable`, `traefik.http.routers.opensearch.rule`, `traefik.http.routers.opensearch.entrypoints`, `traefik.http.routers.opensearch.tls`, `traefik.http.services.opensearch.loadbalancer.serversTransport`, `traefik.http.services.opensearch.loadbalancer.server.port`, `traefik.http.services.opensearch.loadbalancer.server.scheme`, `traefik.http.routers.opensearch-dashboards.rule`, plus 8 more |
+| Secret refs | names: `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_exporter_password`, `opensearch_security_cookie`, `oauth2_proxy_client_secret`; mounts: `/run/secrets/opensearch_admin_password`, `/run/secrets/opensearch_dashboard_password`, `/run/secrets/opensearch_exporter_password`, `/run/secrets/opensearch_security_cookie`, `/run/secrets/oauth2_proxy_client_secret` |
+| Healthcheck | Compose healthcheck declared for `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards`, `opensearch`, `opensearch-dashboards` |
+| Operations | [Guide](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md), [Policy](../../../../docs/05.operations/policies/04-data/analytics/opensearch.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/analytics/opensearch.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)를 참조한다.

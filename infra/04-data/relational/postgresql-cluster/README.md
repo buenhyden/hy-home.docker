@@ -52,6 +52,24 @@ postgresql-cluster/
 └── README.md                 # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | postgresql-cluster service leaf in `04-data`; services: `etcd-1`, `etcd-2`, `etcd-3`, `pg-router`, `pg-cluster-init`, `pg-0`, plus 5 more; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/relational/postgresql-cluster/docker-compose.yml` |
+| Config files | `docker-compose.yml`, `config`, `config/haproxy.cfg.tpl` |
+| Config values | env keys: `POSTGRES_ROUTER_HOSTNAME`, `POSTGRES_WRITE_PORT`, `POSTGRES_READ_PORT`, `POSTGRES_USER`, `POSTGRES_DB`, `PATRONI_EXPORTER_USERNAME`, `SERVICE_POSTGRES_USERNAME`, `SERVICE_POSTGRES_DB`, plus 10 more; profiles: `data`, `service` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/relational/postgresql-cluster/docker-compose.yml` |
+| Networks | `infra_net`, `k3d-hyhome` |
+| Volumes | `etcd1-data:/etcd-data:rw`, `etcd2-data:/etcd-data:rw`, `etcd3-data:/etcd-data:rw`, `./config/haproxy.cfg.tpl:/tmp/haproxy.cfg.tpl:ro`, `./init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro`, `pg0-data:/home/postgres/pgdata:rw`, `./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro`, `pg1-data:/home/postgres/pgdata:rw`, plus 7 more |
+| Ports | `${POSTGRES_WRITE_HOST_PORT:-15432}:${POSTGRES_WRITE_PORT:-15432}`, `${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}`, `${HAPROXY_METRICS_PORT:-8404}`, `${POSTGRES_EXPORTER_PORT:-9187}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.haproxy-stats.rule`, `traefik.http.routers.haproxy-stats.entrypoints`, `traefik.http.routers.haproxy-stats.tls`, `traefik.http.services.haproxy-stats.loadbalancer.server.port`, `traefik.http.routers.haproxy-stats.middlewares` |
+| Secret refs | names: `pg_haproxy_stats_password`, `patroni_superuser_password`, `patroni_exporter_password`, `service_postgres_password`, `patroni_replication_password`; mounts: `/run/secrets/pg_haproxy_stats_password`, `/run/secrets/patroni_superuser_password`, `/run/secrets/patroni_exporter_password`, `/run/secrets/service_postgres_password`, `/run/secrets/patroni_replication_password` |
+| Healthcheck | Compose healthcheck declared for `etcd-1`, `etcd-2`, `etcd-3`, `pg-router`, `pg-0`, plus 5 more; not declared for `pg-cluster-init` |
+| Operations | [Guide](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md), [Policy](../../../../docs/05.operations/policies/04-data/relational/postgresql-cluster.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. 클러스터 아키텍처 및 연결 방법은 [Technical Guide](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)를 먼저 확인합니다.

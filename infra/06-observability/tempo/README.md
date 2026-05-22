@@ -96,6 +96,24 @@ Copyright (c) 2026. Licensed under the MIT License.
 
 ---
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Tempo Distributed Tracing service leaf in `06-observability`; services: Not declared; Not declared |
+| Config files | `config`, `config/tempo.yaml` |
+| Config values | No non-secret config keys declared in compose |
+| Compose linkage | Not declared |
+| Networks | Not declared |
+| Volumes | Not declared |
+| Ports | Not declared |
+| Labels | Not declared |
+| Secret refs | Not declared |
+| Healthcheck | Not declared in compose; use service logs and dependent checks |
+| Operations | [Guide](../../../docs/05.operations/guides/06-observability/tempo.md), [Policy](../../../docs/05.operations/policies/06-observability/tempo.md), [Runbook](../../../docs/05.operations/runbooks/06-observability/tempo.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.

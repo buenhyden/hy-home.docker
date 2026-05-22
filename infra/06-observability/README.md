@@ -45,6 +45,24 @@ The `06-observability` tier implements the LGTM stack (Loki, Grafana, Tempo, Mim
 └── README.md
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Observability Tier (06-observability) service leaf in `06-observability`; services: `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, plus 11 more; root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Config files | `docker-compose.dev.yml`, `docker-compose.yml` |
+| Config values | env keys: `MINIO_APP_USERNAME`, `GF_SERVER_ROOT_URL`, `GF_SERVER_DOMAIN`, `GF_AUTH_OAUTH_AUTO_LOGIN`, `GF_AUTH_DISABLE_LOGIN_FORM`, `GF_SECURITY_ADMIN_USER`, `GF_SECURITY_ADMIN_PASSWORD__FILE`, `GF_USERS_ALLOW_SIGN_UP`, plus 27 more; profiles: `obs`, `dev` |
+| Compose linkage | root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Networks | `infra_net`, `k3d-hyhome` |
+| Volumes | `./prometheus/config/prometheus.dev.yml:/etc/prometheus/prometheus.yml:ro`, `./prometheus/config/alert_rules:/etc/prometheus/alert_rules:ro`, `prometheus-data:/prometheus:rw`, `./loki/config/loki-config.yaml:/etc/loki/loki-config.yaml:ro`, `loki-data:/loki:rw`, `./tempo/config/tempo.yaml:/etc/tempo.yaml:ro`, `tempo-data:/var/tempo:rw`, `./alloy/config/config.alloy:/etc/alloy/config.alloy:ro`, plus 24 more |
+| Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `${CADVISOR_PORT:-8080}`, `${PUSHGATEWAY_PORT:-9091}`, `${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.prometheus.rule`, `traefik.http.routers.prometheus.entrypoints`, `traefik.http.routers.prometheus.tls`, `traefik.http.routers.prometheus.middlewares`, `traefik.http.services.prometheus.loadbalancer.server.port`, `traefik.http.routers.loki.rule`, plus 40 more |
+| Secret refs | names: `opensearch_exporter_password`, `vault_token`, `minio_app_user_password`, `grafana_admin_password`, `grafana_client_secret`, `smtp_username`, `smtp_password`, `slack_webhook`; mounts: `/run/secrets/opensearch_exporter_password`, `/run/secrets/vault_token`, `/run/secrets/minio_app_user_password`, `/run/secrets/grafana_admin_password`, `/run/secrets/grafana_client_secret`, `/run/secrets/smtp_username`, `/run/secrets/smtp_password`, `/run/secrets/slack_webhook` |
+| Healthcheck | Compose healthcheck declared for `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `alertmanager`, `pushgateway`, plus 9 more |
+| Operations | [Guide index](../../docs/05.operations/guides/06-observability/README.md), [Policy index](../../docs/05.operations/policies/06-observability/README.md), [Runbook index](../../docs/05.operations/runbooks/06-observability/README.md) |
+| Validation | [validate-docker-compose.sh](../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. Follow the [LGTM Stack Guide](../../docs/05.operations/guides/06-observability/01.lgtm-stack.md).

@@ -36,6 +36,24 @@ open-notebook/
 └── README.md              # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Laboratory Open Notebook service leaf in `11-laboratory`; services: `surrealdb`, `open_notebook`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/open-notebook/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `SURREALDB_USERNAME`, `OPEN_NOTEBOOK_PASSWORD_FILE`, `OPEN_NOTEBOOK_ENCRYPTION_KEY`, `API_URL`, `SURREAL_URL`, `SURREAL_USER`, `SURREAL_NAMESPACE`, `SURREAL_DATABASE`; profiles: `admin`, `dev` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/open-notebook/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `surrealdb-data:/mydata`, `open-notebook-data:/app/data`, `open-notebook-data`, `surrealdb-data` |
+| Ports | `${SURREALDB_HOST_PORT:-8000}:8000`, `${OPEN_NOTEBOOK_API_URL:-5055}:5055`, `${OPEN_NOTEBOOK_WEB_URL:-8502}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.open-notebook.rule`, `traefik.http.routers.open-notebook.entrypoints`, `traefik.http.routers.open-notebook.tls`, `traefik.http.routers.open-notebook.middlewares`, `traefik.http.services.open-notebook.loadbalancer.server.port` |
+| Secret refs | names: `surreal_db_password`, `open_notebook_password`; mounts: `/run/secrets/surreal_db_password`, `/run/secrets/open_notebook_password` |
+| Healthcheck | Compose healthcheck declared for `surrealdb`; not declared for `open_notebook` |
+| Operations | [Guide](../../../docs/05.operations/guides/11-laboratory/open-notebook.md), [Policy](../../../docs/05.operations/policies/11-laboratory/open-notebook.md), [Runbook](../../../docs/05.operations/runbooks/11-laboratory/open-notebook.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. Validate static Compose configuration before running the service:

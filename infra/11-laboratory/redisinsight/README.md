@@ -25,6 +25,24 @@ RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, 
 └── README.md                # Entry point
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Laboratory RedisInsight service leaf in `11-laboratory`; services: `redisinsight`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/redisinsight/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | profiles: `admin`, `dev` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/redisinsight/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `redisinsight-data:/data:rw`, `redisinsight-data` |
+| Ports | Not declared |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.redisinsight-static.rule`, `traefik.http.routers.redisinsight-static.entrypoints`, `traefik.http.routers.redisinsight-static.tls`, `traefik.http.routers.redisinsight-static.priority`, `traefik.http.routers.redisinsight-static.service`, `traefik.http.routers.redisinsight.rule`, plus 7 more |
+| Secret refs | Not declared |
+| Healthcheck | Compose healthcheck declared for `redisinsight` |
+| Operations | [Guide](../../../docs/05.operations/guides/11-laboratory/redisinsight.md), [Policy](../../../docs/05.operations/policies/11-laboratory/redisinsight.md), [Runbook](../../../docs/05.operations/runbooks/11-laboratory/redisinsight.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 ### 1. Initial Setup

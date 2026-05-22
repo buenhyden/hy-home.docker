@@ -43,6 +43,24 @@ nginx/
 └── README.md          # This file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Nginx Proxy service leaf in `01-gateway`; services: `nginx`; local compose only: `docker-compose.yml` |
+| Config files | `docker-compose.yml`, `config`, `config/nginx.conf` |
+| Config values | profiles: `nginx` |
+| Compose linkage | local compose only: `docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `./config/nginx.conf:/etc/nginx/nginx.conf:ro`, `../../../secrets/certs:/etc/nginx/certs:ro` |
+| Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}` |
+| Labels | Not declared |
+| Secret refs | Not declared |
+| Healthcheck | Compose healthcheck declared for `nginx` |
+| Operations | [Guide](../../../docs/05.operations/guides/01-gateway/nginx.md), [Policy](../../../docs/05.operations/policies/01-gateway/nginx.md), [Runbook](../../../docs/05.operations/runbooks/01-gateway/nginx.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. Review `config/nginx.conf` to understand current `location` blocks and `upstream` definitions.

@@ -38,6 +38,24 @@ rabbitmq/
 └── README.md           # This document
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | RabbitMQ service leaf in `05-messaging`; services: `rabbitmq`; root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/rabbitmq/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `RABBITMQ_DEFAULT_USER_FILE`, `RABBITMQ_DEFAULT_PASS_FILE`; profiles: `messaging-option` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/rabbitmq/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `rabbitmq-data-volume:/var/lib/rabbitmq:rw`, `rabbitmq-data-volume` |
+| Ports | `${RABBITMQ_HOST_PORT:-5672}:${RABBITMQ_PORT:-5672}`, `${RABBITMQ_MANAGEMENT_HOST_PORT:-15672}:${RABBITMQ_MANAGEMENT_PORT:-15672}` |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.rabbitmq.rule`, `traefik.http.routers.rabbitmq.entrypoints`, `traefik.http.routers.rabbitmq.tls`, `traefik.http.routers.rabbitmq.middlewares`, `traefik.http.services.rabbitmq.loadbalancer.server.port` |
+| Secret refs | names: `rabbitmq_user`, `rabbitmq_password`; mounts: `/run/secrets/rabbitmq_user`, `/run/secrets/rabbitmq_password` |
+| Healthcheck | Compose healthcheck declared for `rabbitmq` |
+| Operations | [Guide](../../../docs/05.operations/guides/05-messaging/rabbitmq.md), [Policy](../../../docs/05.operations/policies/05-messaging/rabbitmq.md), [Runbook](../../../docs/05.operations/runbooks/05-messaging/rabbitmq.md) |
+| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. **Service Guide**: 상세 아키텍처 및 연결 설정은 [RabbitMQ guide](../../../docs/05.operations/guides/05-messaging/rabbitmq.md)를 참조한다.

@@ -47,6 +47,24 @@ cassandra/
 └── docker-compose.yml    # Main deployment file
 ```
 
+## Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | Apache Cassandra service leaf in `04-data`; services: `cassandra-exporter`, `cassandra-node1`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/cassandra/docker-compose.yml` |
+| Config files | `docker-compose.yml` |
+| Config values | env keys: `CASSANDRA_SEEDS`, `CASSANDRA_PASSWORD_SEEDER`, `CASSANDRA_USER`, `CASSANDRA_PASSWORD_FILE`, `MAX_HEAP_SIZE`, `HEAP_NEWSIZE`; profiles: `data`, `obs` |
+| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/cassandra/docker-compose.yml` |
+| Networks | `infra_net` |
+| Volumes | `cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf:rw`, `cassandra-node1-volume:/bitnami/cassandra:rw`, `cassandra-node1-volume`, `cassandra-exporter-volume` |
+| Ports | `${CASSANDRA_EXPORTER_PORT:-8080}`, `${CASSANDRA_EXPORTER_LISTEN_PORT:-8081}`, `${CASSANDRA_INTER_NODE_PORT:-7000}`, `${CASSANDRA_CLIENT_PORT:-9042}` |
+| Labels | `hy-home.tier` |
+| Secret refs | names: `cassandra_password`; mounts: `/run/secrets/cassandra_password` |
+| Healthcheck | Compose healthcheck declared for `cassandra-node1`; not declared for `cassandra-exporter` |
+| Operations | [Guide](../../../../docs/05.operations/guides/04-data/nosql/cassandra.md), [Policy](../../../../docs/05.operations/policies/04-data/nosql/cassandra.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/nosql/cassandra.md) |
+| Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
+| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+
 ## How to Work in This Area
 
 1. **Deployment**: `docker compose up -d`를 사용하여 스택을 기동한다.
