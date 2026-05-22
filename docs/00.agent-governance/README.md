@@ -47,6 +47,8 @@ This README is for:
   - Runtime mirror: 9 Claude agents in `.claude/agents/` and 10 functions in `.claude/skills/`.
 - `.claude/`: Claude runtime enforcement layer (`CLAUDE.md`, `settings.json`, hooks, agent files, nested skills).
 - `.codex/`: Codex runtime hook/context layer (`hooks.json`, `README.md`).
+- `.agents/`: compatibility surface for tools that read `.agents/`; not a policy
+  source of truth and not a parallel runtime catalog.
 - `memory/`: durable governance notes, audit findings, and the agent progress log.
   - `progress.md` — mandatory work progress log, verification index, and durable memory pointer list
   - `template.md` — local mirror of `docs/99.templates/memory.template.md`

@@ -39,6 +39,7 @@ Workspace purpose: shared harness-engineering and agent-first engineering over m
 - Provider overlays: `docs/00.agent-governance/providers/`
 - Claude runtime: `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, `.claude/skills/`
 - Codex runtime hooks: `.codex/hooks.json`
+- Compatibility surface: `.agents/`
 - Agent/function catalog: `docs/00.agent-governance/agents/`
 - Delegation protocol: `docs/00.agent-governance/subagent-protocol.md`
 - Governance memory: `docs/00.agent-governance/memory/`

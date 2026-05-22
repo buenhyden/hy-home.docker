@@ -23,6 +23,8 @@ Provider-neutral guidance for `AGENTS.md` style files.
 - Shared policy source of truth: `docs/00.agent-governance/`.
 - Root shim files: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`.
 - Codex entry: `AGENTS.md` plus `.codex/` runtime hooks.
+- `.agents/` compatibility files may exist for tools that read that path, but
+  they must not override the governance hub or `.claude` runtime catalog.
 - Stage docs `docs/01` to `docs/99`: read-only by default.
 
 ## 4. Instruction File Hierarchy and Precedence
@@ -34,6 +36,8 @@ This repository keeps agent instruction authority inside repo-local files only. 
 3. **Root shim files** (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) — entry points routing into governance.
 4. **Provider overlays** (`providers/claude.md`, `providers/gemini.md`, `providers/codex.md`) — provider-specific behavior within governance bounds.
 5. **Runtime controls** — executable enforcement and local agent behavior in `.claude/` and Codex hook support in `.codex/`.
+6. **Compatibility surfaces** — `.agents/` files only mirror or route tooling
+   behavior and do not define active policy.
 
 GitHub-native instruction files are not part of this repository's active instruction hierarchy.
 If such files ever appear, they must not be treated as authoritative until governance explicitly adopts them.
