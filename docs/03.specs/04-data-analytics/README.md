@@ -1,3 +1,5 @@
+<!-- Target: docs/03.specs/04-data-analytics/README.md -->
+
 # 04-data-analytics Specifications
 
 > 데이터 분석 파이프라인 및 워크플로우 서비스 기술 사양
@@ -45,6 +47,8 @@
 ## Related Documents
 
 - [spec.md](./spec.md)
+- [Data analytics execution traceability plan](../../04.execution/plans/2026-05-22-data-analytics-execution-traceability.md)
+- [Data analytics execution traceability task](../../04.execution/tasks/2026-05-22-data-analytics-execution-traceability.md)
 - [docs/03.specs/README.md](../README.md)
 - [infra/04-data/README.md](../../../infra/04-data/README.md)
 - [docs/05.operations/guides/04-data/](../../05.operations/guides/04-data/)

@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/plans/2026-05-17-scripts-ci-qa-cleanup.md -->
 
@@ -67,14 +67,15 @@ instructions.
 
 ## Completion Criteria
 
-- [ ] Redundant root script entrypoints removed or consolidated into canonical commands.
-- [ ] Active docs and runtime hook surfaces reference canonical commands.
-- [ ] Validation commands in this plan pass or explicitly record local prerequisite limits.
-- [ ] Generated navigation is refreshed or verified fresh.
+- [x] Redundant root script entrypoints removed or consolidated into canonical commands.
+- [x] Active docs and runtime hook surfaces reference canonical commands.
+- [x] Validation commands in this plan pass or explicitly record local prerequisite limits.
+- [x] Generated navigation is refreshed or verified fresh.
 
 ## Related Documents
 
 - [Scripts README](../../../scripts/README.md)
+- [Execution Task](../tasks/2026-05-17-scripts-ci-qa-cleanup.md)
 - [Repository contract checker](../../../scripts/validation/check-repo-contracts.sh)
 - [Prior scripts lifecycle cleanup plan](./2026-05-09-scripts-lifecycle-contract-cleanup.md)
 - [Harness Agent-first validation runbook](../../05.operations/runbooks/harness-agent-first-engineering-validation.md)

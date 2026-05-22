@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 ---
 <!-- Target: docs/03.specs/07-workflow/agent-design.md -->
 
@@ -146,7 +146,7 @@ status: draft
   - 100% deterministic terminal status vocabulary
   - 0 active spec/plan documents in non-stage paths
   - 0 broken related-document links in changed files
-- **Linked Task / Eval Docs**: [../../04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md](../../04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md)
+- **Linked Plan / Task / Eval Docs**: [../../04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md](../../04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md), [../../04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md](../../04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md)
 
 ## Observability
 
@@ -169,6 +169,7 @@ status: draft
 
 - **Workflow Spec**: [./spec.md](./spec.md)
 - **Implementation Plan**: [../../04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md](../../04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md)
+- **Implementation Task**: [../../04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md](../../04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md)
 - **Policy**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/policies/07-workflow/optimization-hardening.md)
 - **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/runbooks/07-workflow/optimization-hardening.md)
 - **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)

@@ -1,5 +1,5 @@
 ---
-status: draft
+status: completed
 ---
 <!-- Target: docs/04.execution/plans/2026-05-17-requirements-standardization.md -->
 
@@ -81,14 +81,15 @@ status: draft
 
 ## Completion Criteria
 
-- [ ] Scoped PRD/template/taxonomy cleanup completed
-- [ ] LLM Wiki index regenerated
-- [ ] Required validation commands passed
-- [ ] `projects/storybook/mcp/` left untouched
+- [x] Scoped PRD/template/taxonomy cleanup completed
+- [x] LLM Wiki index regenerated
+- [x] Required validation commands passed
+- [x] `projects/storybook/mcp/` left untouched
 
 ## Related Documents
 
 - **PRD README**: [../../01.requirements/README.md](../../01.requirements/README.md)
+- **Execution Task**: [../tasks/2026-05-17-requirements-standardization.md](../tasks/2026-05-17-requirements-standardization.md)
 - **PRD Template**: [../../99.templates/prd.template.md](../../99.templates/prd.template.md)
 - **README Template**: [../../99.templates/readme.template.md](../../99.templates/readme.template.md)
 - **Documentation Protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)

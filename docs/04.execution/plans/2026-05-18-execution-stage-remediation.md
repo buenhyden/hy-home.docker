@@ -1,5 +1,5 @@
 ---
-status: draft
+status: completed
 ---
 <!-- Target: docs/04.execution/plans/2026-05-18-execution-stage-remediation.md -->
 
@@ -85,12 +85,12 @@ status: draft
 
 ## Completion Criteria
 
-- [ ] New plan/task remediation artifacts exist and are linked from parent READMEs.
-- [ ] README entrypoints describe plan/task responsibilities accurately.
-- [ ] Plan/task template Related Documents examples are clickable Markdown links.
-- [ ] Active/recent docs are normalized without bulk rewriting historical artifacts.
-- [ ] Legacy drift is recorded in governance memory.
-- [ ] Validation commands pass and evidence is recorded.
+- [x] New plan/task remediation artifacts exist and are linked from parent READMEs.
+- [x] README entrypoints describe plan/task responsibilities accurately.
+- [x] Plan/task template Related Documents examples are clickable Markdown links.
+- [x] Active/recent docs are normalized without bulk rewriting historical artifacts.
+- [x] Legacy drift is recorded in governance memory.
+- [x] Validation commands pass and evidence is recorded.
 
 ## Related Documents
 

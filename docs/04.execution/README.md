@@ -48,6 +48,19 @@ docs/04.execution/
 
 ## Completed Remediation Evidence
 
+- [Infra team agent cross-validation plan](plans/2026-04-10-infra-team-agent-cross-validation.md) - completed plan for canonical workflow cross-validation design and runtime catalog alignment
+- [Infra team agent cross-validation task](tasks/2026-04-10-infra-team-agent-cross-validation.md) - completion evidence for canonical agent design, non-stage docs removal, and runtime handoff surfaces
+- [Requirements standardization plan](plans/2026-05-17-requirements-standardization.md) - completed plan for PRD contract and taxonomy remediation
+- [Requirements standardization task](tasks/2026-05-17-requirements-standardization.md) - completion evidence for PRD/template cleanup and generated navigation freshness
+- [Scripts CI/CD and QA cleanup plan](plans/2026-05-17-scripts-ci-qa-cleanup.md) - completed plan for canonical script inventory, QA/CI tooling, and hook routing cleanup
+- [Scripts CI/CD and QA cleanup task](tasks/2026-05-17-scripts-ci-qa-cleanup.md) - completion evidence for root scripts cleanup and QA/CI tooling surface
+- [Execution stage remediation plan](plans/2026-05-18-execution-stage-remediation.md) - completed plan for execution README/template/current-artifact remediation
+- [Agent hook completion and style automation plan](plans/2026-05-22-agent-hook-completion-style-automation.md) - completed hook plan for logical commit gating, style validation, and post-edit formatting
+- [Agent hook completion and style automation task](tasks/2026-05-22-agent-hook-completion-style-automation.md) - execution evidence for Hook Development and Hookify rule updates
+- [Data analytics execution traceability plan](plans/2026-05-22-data-analytics-execution-traceability.md) - completed plan for closing the missing execution evidence link for `04-data-analytics`
+- [Data analytics execution traceability task](tasks/2026-05-22-data-analytics-execution-traceability.md) - execution evidence for analytics spec-to-plan/task traceability and static compose checks
+- [Spec execution implementation audit plan](plans/2026-05-22-spec-execution-implementation-audit.md) - completed audit plan for spec/plan/task implementation coverage and evidence-backed remediation
+- [Spec execution implementation audit task](tasks/2026-05-22-spec-execution-implementation-audit.md) - execution evidence for spec link coverage, stale state cleanup, and hook smoke tests
 - [Workspace governance bounded re-audit plan](plans/2026-05-22-workspace-governance-bounded-reaudit.md) - completed bounded re-audit plan for docs, governance, memory, hook guidance, and validator drift
 - [Workspace governance bounded re-audit task](tasks/2026-05-22-workspace-governance-bounded-reaudit.md) - execution evidence for the bounded re-audit and agent improvement pass
 - [Lifecycle README debt closure plan](plans/2026-05-22-lifecycle-readme-debt-closure.md) - completed plan for closing lifecycle, README readiness, and hook guidance debt
@@ -103,6 +116,14 @@ docs/04.execution/
 - **Operations**: [../05.operations/README.md](../05.operations/README.md)
 - **Templates**: [../99.templates/README.md](../99.templates/README.md)
 - **Documentation protocol**: [../00.agent-governance/rules/documentation-protocol.md](../00.agent-governance/rules/documentation-protocol.md)
+- **Infra team agent cross-validation plan**: [plans/2026-04-10-infra-team-agent-cross-validation.md](plans/2026-04-10-infra-team-agent-cross-validation.md)
+- **Infra team agent cross-validation task**: [tasks/2026-04-10-infra-team-agent-cross-validation.md](tasks/2026-04-10-infra-team-agent-cross-validation.md)
+- **Requirements standardization plan**: [plans/2026-05-17-requirements-standardization.md](plans/2026-05-17-requirements-standardization.md)
+- **Requirements standardization task**: [tasks/2026-05-17-requirements-standardization.md](tasks/2026-05-17-requirements-standardization.md)
+- **Scripts CI/CD and QA cleanup plan**: [plans/2026-05-17-scripts-ci-qa-cleanup.md](plans/2026-05-17-scripts-ci-qa-cleanup.md)
+- **Scripts CI/CD and QA cleanup task**: [tasks/2026-05-17-scripts-ci-qa-cleanup.md](tasks/2026-05-17-scripts-ci-qa-cleanup.md)
+- **Agent hook completion and style automation plan**: [plans/2026-05-22-agent-hook-completion-style-automation.md](plans/2026-05-22-agent-hook-completion-style-automation.md)
+- **Agent hook completion and style automation task**: [tasks/2026-05-22-agent-hook-completion-style-automation.md](tasks/2026-05-22-agent-hook-completion-style-automation.md)
 - **Targeted documentation precision remediation plan**: [plans/2026-05-18-targeted-docs-precision-remediation.md](plans/2026-05-18-targeted-docs-precision-remediation.md)
 - **Targeted documentation precision remediation task**: [tasks/2026-05-18-targeted-docs-precision-remediation.md](tasks/2026-05-18-targeted-docs-precision-remediation.md)
 - **Docs bounded consistency audit plan**: [plans/2026-05-18-docs-bounded-consistency-audit.md](plans/2026-05-18-docs-bounded-consistency-audit.md)
@@ -113,3 +134,7 @@ docs/04.execution/
 - **Workspace docs and agent governance remediation task**: [tasks/2026-05-22-workspace-docs-agent-governance-remediation.md](tasks/2026-05-22-workspace-docs-agent-governance-remediation.md)
 - **Workspace governance bounded re-audit plan**: [plans/2026-05-22-workspace-governance-bounded-reaudit.md](plans/2026-05-22-workspace-governance-bounded-reaudit.md)
 - **Workspace governance bounded re-audit task**: [tasks/2026-05-22-workspace-governance-bounded-reaudit.md](tasks/2026-05-22-workspace-governance-bounded-reaudit.md)
+- **Spec execution implementation audit plan**: [plans/2026-05-22-spec-execution-implementation-audit.md](plans/2026-05-22-spec-execution-implementation-audit.md)
+- **Spec execution implementation audit task**: [tasks/2026-05-22-spec-execution-implementation-audit.md](tasks/2026-05-22-spec-execution-implementation-audit.md)
+- **Data analytics execution traceability plan**: [plans/2026-05-22-data-analytics-execution-traceability.md](plans/2026-05-22-data-analytics-execution-traceability.md)
+- **Data analytics execution traceability task**: [tasks/2026-05-22-data-analytics-execution-traceability.md](tasks/2026-05-22-data-analytics-execution-traceability.md)

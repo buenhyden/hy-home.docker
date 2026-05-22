@@ -42,12 +42,18 @@ Task 문서는 plan을 다시 설명하는 문서가 아닙니다. 어떤 작업
 docs/04.execution/tasks/
 ├── 2026-03-26-*-tasks.md                    # Historical tier standardization task records
 ├── 2026-03-28-*-optimization-hardening-*.md # Historical hardening task records
+├── 2026-04-10-infra-team-agent-cross-validation.md # Completed infra team agent cross-validation task record
 ├── 2026-05-09-*.md                          # Agent-first and docs refresh task records
 ├── 2026-05-10-*.md                          # Docs taxonomy and LLM Wiki task records
+├── 2026-05-17-requirements-standardization.md # Completed requirements standardization task record
+├── 2026-05-17-scripts-ci-qa-cleanup.md       # Completed scripts CI/CD and QA cleanup task record
 ├── 2026-05-18-execution-stage-remediation.md # Completed bounded execution-stage remediation task record
 ├── 2026-05-18-docs-05-operations-purpose-remediation.md # Completed operations purpose remediation task record
 ├── 2026-05-18-docs-bounded-consistency-audit.md # Completed bounded docs consistency audit task record
 ├── 2026-05-18-targeted-docs-precision-remediation.md # Completed targeted docs precision remediation task record
+├── 2026-05-22-agent-hook-completion-style-automation.md # Completed agent hook completion/style automation task record
+├── 2026-05-22-spec-execution-implementation-audit.md # Completed spec/plan/task implementation audit task record
+├── 2026-05-22-data-analytics-execution-traceability.md # Completed data analytics traceability task record
 ├── 2026-05-22-lifecycle-readme-debt-closure.md # Completed lifecycle README debt closure task record
 ├── 2026-05-22-workspace-docs-agent-governance-remediation.md # Completed workspace docs and agent governance remediation task record
 ├── 2026-05-22-workspace-governance-bounded-reaudit.md # Completed workspace governance bounded re-audit task record
@@ -97,6 +103,9 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Operations**: [../../05.operations/README.md](../../05.operations/README.md)
 - **Runbook**: [../../05.operations/runbooks/README.md](../../05.operations/runbooks/README.md)
 - **Postmortem**: [../../05.operations/incidents/README.md](../../05.operations/incidents/README.md)
+- **Infra Team Agent Cross-Validation Task**: [2026-04-10-infra-team-agent-cross-validation.md](./2026-04-10-infra-team-agent-cross-validation.md)
+- **Requirements Standardization Task**: [2026-05-17-requirements-standardization.md](./2026-05-17-requirements-standardization.md)
+- **Scripts CI/CD and QA Cleanup Task**: [2026-05-17-scripts-ci-qa-cleanup.md](./2026-05-17-scripts-ci-qa-cleanup.md)
 - **Execution stage remediation task**: [2026-05-18-execution-stage-remediation.md](./2026-05-18-execution-stage-remediation.md)
 - **Operations Purpose Remediation Task**: [2026-05-18-docs-05-operations-purpose-remediation.md](./2026-05-18-docs-05-operations-purpose-remediation.md)
 - **Docs Bounded Consistency Audit Task**: [2026-05-18-docs-bounded-consistency-audit.md](./2026-05-18-docs-bounded-consistency-audit.md)
@@ -107,3 +116,6 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Lifecycle README Debt Closure Task**: [2026-05-22-lifecycle-readme-debt-closure.md](./2026-05-22-lifecycle-readme-debt-closure.md)
 - **Workspace Docs and Agent Governance Remediation Task**: [2026-05-22-workspace-docs-agent-governance-remediation.md](./2026-05-22-workspace-docs-agent-governance-remediation.md)
 - **Workspace Governance Bounded Re-audit Task**: [2026-05-22-workspace-governance-bounded-reaudit.md](./2026-05-22-workspace-governance-bounded-reaudit.md)
+- **Agent Hook Completion and Style Automation Task**: [2026-05-22-agent-hook-completion-style-automation.md](./2026-05-22-agent-hook-completion-style-automation.md)
+- **Spec Execution Implementation Audit Task**: [2026-05-22-spec-execution-implementation-audit.md](./2026-05-22-spec-execution-implementation-audit.md)
+- **Data Analytics Execution Traceability Task**: [2026-05-22-data-analytics-execution-traceability.md](./2026-05-22-data-analytics-execution-traceability.md)

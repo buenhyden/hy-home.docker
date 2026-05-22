@@ -89,6 +89,8 @@ mysql -h starrocks -P 9030 -u root
 
 ## Related Documents
 
+- **Plan**: [../../04.execution/plans/2026-05-22-data-analytics-execution-traceability.md](../../04.execution/plans/2026-05-22-data-analytics-execution-traceability.md)
+- **Tasks**: [../../04.execution/tasks/2026-05-22-data-analytics-execution-traceability.md](../../04.execution/tasks/2026-05-22-data-analytics-execution-traceability.md)
 - **Guide**: [../../05.operations/guides/04-data/analytics/README.md](../../05.operations/guides/04-data/analytics/README.md)
 - **Policy**: [../../05.operations/policies/04-data/analytics/README.md](../../05.operations/policies/04-data/analytics/README.md)
 - **Runbook**: [../../05.operations/runbooks/04-data/analytics/influxdb.md](../../05.operations/runbooks/04-data/analytics/influxdb.md)

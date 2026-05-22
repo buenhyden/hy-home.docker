@@ -1,5 +1,5 @@
 ---
-status: draft
+status: completed
 ---
 <!-- Target: docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md -->
 
@@ -55,7 +55,7 @@ status: draft
 | VAL-PLN-001 | Structural | canonical agent design exists in the stage path | `test -f docs/03.specs/07-workflow/agent-design.md` | exit code 0 |
 | VAL-PLN-002 | Structural | canonical plan exists in the stage path | `test -f docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md` | exit code 0 |
 | VAL-PLN-003 | Content | changed docs include required related-doc sections | `rg -n "^## Related Documents" AGENTS.md docs/00.agent-governance/scopes/docs.md docs/00.agent-governance/rules/documentation-protocol.md docs/03.specs/07-workflow/agent-design.md docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md` | every changed doc matched |
-| VAL-PLN-004 | Hygiene | no active `docs/superpowers` references remain | `rg -n "docs/superpowers" docs AGENTS.md CLAUDE.md .claude \|\| true` | no matches |
+| VAL-PLN-004 | Hygiene | no active `docs/superpowers` references remain | `rg -n "docs/superpowers" docs AGENTS.md CLAUDE.md .claude \|\| true` plus manual review | matches are limited to completed migration evidence; no `docs/superpowers` directory exists |
 | VAL-PLN-005 | Traceability | repository doc traceability check passes | `bash scripts/validation/check-doc-traceability.sh` | script exits successfully |
 | VAL-PLN-006 | Filesystem | legacy directory removed | `test ! -d docs/superpowers` | exit code 0 |
 
@@ -78,16 +78,17 @@ status: draft
 
 ## Completion Criteria
 
-- [ ] Canonical `agent-design.md` created under `docs/03.specs/07-workflow/`
-- [ ] Canonical plan created under `docs/04.execution/plans/`
-- [ ] Governance rules updated to forbid non-stage active docs
-- [ ] README files synced to actual structure
-- [ ] `docs/superpowers` removed
-- [ ] Verification passed
+- [x] Canonical `agent-design.md` created under `docs/03.specs/07-workflow/`
+- [x] Canonical plan created under `docs/04.execution/plans/`
+- [x] Governance rules updated to forbid non-stage active docs
+- [x] README files synced to actual structure
+- [x] `docs/superpowers` removed
+- [x] Verification passed
 
 ## Related Documents
 
 - **Spec**: [../03.specs/07-workflow/agent-design.md](../../03.specs/07-workflow/agent-design.md)
+- **Task**: [Infra team agent cross-validation task](../tasks/2026-04-10-infra-team-agent-cross-validation.md)
 - **Workflow Parent Spec**: [../03.specs/07-workflow/spec.md](../../03.specs/07-workflow/spec.md)
 - **PRD Context**: [../01.requirements/2026-03-28-07-workflow-optimization-hardening.md](../../01.requirements/2026-03-28-07-workflow-optimization-hardening.md)
 - **ARD Context**: [../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md](../../02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md)

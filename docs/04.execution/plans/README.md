@@ -41,13 +41,17 @@ Plan 문서는 구현자가 무엇을 어떤 순서로 바꾸고, 어떤 리스�
 docs/04.execution/plans/
 ├── 2026-03-26-*.md                         # Historical tier standardization plans
 ├── 2026-03-28-*-optimization-hardening-*.md # Historical hardening plans
+├── 2026-04-10-infra-team-agent-cross-validation.md # Completed infra team agent cross-validation plan
 ├── 2026-05-09-*.md                         # Agent-first and scripts lifecycle plans
 ├── 2026-05-10-*.md                         # Docs taxonomy and LLM Wiki plans
-├── 2026-05-17-*.md                         # Recent docs/scripts remediation plans
+├── 2026-05-17-*.md                         # Completed docs/scripts remediation plans
 ├── 2026-05-18-execution-stage-remediation.md # Completed bounded execution-stage remediation
 ├── 2026-05-18-docs-05-operations-purpose-remediation.md # Completed operations purpose remediation
 ├── 2026-05-18-docs-bounded-consistency-audit.md # Completed bounded docs consistency audit
 ├── 2026-05-18-targeted-docs-precision-remediation.md # Completed targeted docs precision remediation
+├── 2026-05-22-agent-hook-completion-style-automation.md # Completed agent hook completion/style automation
+├── 2026-05-22-spec-execution-implementation-audit.md # Completed spec/plan/task implementation audit
+├── 2026-05-22-data-analytics-execution-traceability.md # Completed data analytics traceability closure
 ├── 2026-05-22-lifecycle-readme-debt-closure.md # Completed lifecycle README debt closure
 ├── 2026-05-22-workspace-docs-agent-governance-remediation.md # Completed workspace docs and agent governance remediation
 ├── 2026-05-22-workspace-governance-bounded-reaudit.md # Completed workspace governance bounded re-audit
@@ -99,6 +103,7 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Architecture Decisions**: [../../02.architecture/decisions/README.md](../../02.architecture/decisions/README.md)
 - **Operations**: [../../05.operations/README.md](../../05.operations/README.md)
 - **Runbooks**: [../../05.operations/runbooks/README.md](../../05.operations/runbooks/README.md)
+- **Infra Team Agent Cross-Validation Plan**: [2026-04-10-infra-team-agent-cross-validation.md](./2026-04-10-infra-team-agent-cross-validation.md)
 - **Execution stage remediation plan**: [2026-05-18-execution-stage-remediation.md](./2026-05-18-execution-stage-remediation.md)
 - **Operations Purpose Remediation Plan**: [2026-05-18-docs-05-operations-purpose-remediation.md](./2026-05-18-docs-05-operations-purpose-remediation.md)
 - **Docs Bounded Consistency Audit Plan**: [2026-05-18-docs-bounded-consistency-audit.md](./2026-05-18-docs-bounded-consistency-audit.md)
@@ -109,6 +114,9 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **LLM Wiki Agent-first Completion Plan**: [2026-05-10-llm-wiki-agent-first-completion.md](./2026-05-10-llm-wiki-agent-first-completion.md)
 - **Scripts CI/CD & QA Cleanup Plan**: [2026-05-17-scripts-ci-qa-cleanup.md](./2026-05-17-scripts-ci-qa-cleanup.md)
 - **Requirements Standardization Plan**: [2026-05-17-requirements-standardization.md](./2026-05-17-requirements-standardization.md)
+- **Agent Hook Completion and Style Automation Plan**: [2026-05-22-agent-hook-completion-style-automation.md](./2026-05-22-agent-hook-completion-style-automation.md)
 - **Lifecycle README Debt Closure Plan**: [2026-05-22-lifecycle-readme-debt-closure.md](./2026-05-22-lifecycle-readme-debt-closure.md)
 - **Workspace Docs and Agent Governance Remediation Plan**: [2026-05-22-workspace-docs-agent-governance-remediation.md](./2026-05-22-workspace-docs-agent-governance-remediation.md)
 - **Workspace Governance Bounded Re-audit Plan**: [2026-05-22-workspace-governance-bounded-reaudit.md](./2026-05-22-workspace-governance-bounded-reaudit.md)
+- **Spec Execution Implementation Audit Plan**: [2026-05-22-spec-execution-implementation-audit.md](./2026-05-22-spec-execution-implementation-audit.md)
+- **Data Analytics Execution Traceability Plan**: [2026-05-22-data-analytics-execution-traceability.md](./2026-05-22-data-analytics-execution-traceability.md)
