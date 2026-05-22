@@ -159,13 +159,16 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/hookify.block-git-no-verify.local.md](../../../.claude/hookify.block-git-no-verify.local.md) | Markdown reference |
 | [.claude/hookify.block-plaintext-secret-compose.local.md](../../../.claude/hookify.block-plaintext-secret-compose.local.md) | Markdown reference |
 | [.claude/hookify.block-unpinned-gha-action.local.md](../../../.claude/hookify.block-unpinned-gha-action.local.md) | Markdown reference |
+| [.claude/hookify.require-logical-commits-before-stop.local.md](../../../.claude/hookify.require-logical-commits-before-stop.local.md) | Markdown reference |
 | [.claude/hookify.warn-branch-naming.local.md](../../../.claude/hookify.warn-branch-naming.local.md) | Markdown reference |
 | [.claude/hookify.warn-conventional-commit.local.md](../../../.claude/hookify.warn-conventional-commit.local.md) | Markdown reference |
 | [.claude/hookify.warn-docker-infra-stop.local.md](../../../.claude/hookify.warn-docker-infra-stop.local.md) | Markdown reference |
 | [.claude/hookify.warn-force-push.local.md](../../../.claude/hookify.warn-force-push.local.md) | Markdown reference |
+| [.claude/hookify.warn-governance-memory-edit.local.md](../../../.claude/hookify.warn-governance-memory-edit.local.md) | Markdown reference |
 | [.claude/hookify.warn-hook-parity-edit.local.md](../../../.claude/hookify.warn-hook-parity-edit.local.md) | Markdown reference |
 | [.claude/hookify.warn-korean-in-governance.local.md](../../../.claude/hookify.warn-korean-in-governance.local.md) | Markdown reference |
 | [.claude/hookify.warn-parallel-doc-file.local.md](../../../.claude/hookify.warn-parallel-doc-file.local.md) | Markdown reference |
+| [.claude/hookify.warn-post-edit-style-automation.local.md](../../../.claude/hookify.warn-post-edit-style-automation.local.md) | Markdown reference |
 | [.claude/hookify.warn-pre-commit-manual.local.md](../../../.claude/hookify.warn-pre-commit-manual.local.md) | Markdown reference |
 | [.claude/hookify.warn-stage-doc-edit.local.md](../../../.claude/hookify.warn-stage-doc-edit.local.md) | Markdown reference |
 | [.claude/hooks/docker-compose-pre.sh](../../../.claude/hooks/docker-compose-pre.sh) | script |
@@ -341,6 +344,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-18-targeted-docs-precision-remediation.md](../../04.execution/plans/2026-05-18-targeted-docs-precision-remediation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-22-lifecycle-readme-debt-closure.md](../../04.execution/plans/2026-05-22-lifecycle-readme-debt-closure.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-22-workspace-docs-agent-governance-remediation.md](../../04.execution/plans/2026-05-22-workspace-docs-agent-governance-remediation.md) | Markdown reference |
+| [docs/04.execution/plans/2026-05-22-workspace-governance-bounded-reaudit.md](../../04.execution/plans/2026-05-22-workspace-governance-bounded-reaudit.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -375,6 +379,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-05-18-targeted-docs-precision-remediation.md](../../04.execution/tasks/2026-05-18-targeted-docs-precision-remediation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-22-lifecycle-readme-debt-closure.md](../../04.execution/tasks/2026-05-22-lifecycle-readme-debt-closure.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-22-workspace-docs-agent-governance-remediation.md](../../04.execution/tasks/2026-05-22-workspace-docs-agent-governance-remediation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
