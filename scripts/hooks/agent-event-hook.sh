@@ -172,6 +172,22 @@ if not tool_name or tool_name in edit_tools:
         if short_path.startswith(project_prefix):
             short_path = short_path[len(project_prefix):]
         short_path = short_path.removeprefix("./")
+        if short_path.startswith(".agents/"):
+            system_messages.append(
+                ".agents compatibility surface edit detected.\n\n"
+                f"Path: `{short_path}`\n\n"
+                "Keep `.agents/` aligned with `docs/00.agent-governance/` and the "
+                "canonical `.claude/` runtime catalog. It must not introduce a "
+                "parallel policy source, unknown skills, or stale runtime paths. "
+                "After editing, run `bash scripts/validation/check-repo-contracts.sh`."
+            )
+            break
+    for path in paths:
+        short_path = path
+        project_prefix = str(project) + "/"
+        if short_path.startswith(project_prefix):
+            short_path = short_path[len(project_prefix):]
+        short_path = short_path.removeprefix("./")
         if re.match(r"docs/(01\.requirements|02\.architecture|03\.specs|04\.execution|05\.operations|90\.references)/", short_path):
             system_messages.append(
                 "Target-stage documentation edit detected.\n\n"

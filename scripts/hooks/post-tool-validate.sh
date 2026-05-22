@@ -77,7 +77,7 @@ for path in "${CHANGED_PATHS[@]}"; do
   esac
 
   case "$rel" in
-    AGENTS.md|CLAUDE.md|GEMINI.md|README.md|llms.txt|docs/*|.github/*|.claude/*|.codex/*|scripts/*|infra/tech-stack.versions.json)
+    AGENTS.md|CLAUDE.md|GEMINI.md|README.md|llms.txt|docs/*|.github/*|.claude/*|.codex/*|.agents/*|scripts/*|infra/tech-stack.versions.json)
       run_governance=1
       ;;
   esac

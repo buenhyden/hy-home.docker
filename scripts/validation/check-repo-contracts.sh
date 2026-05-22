@@ -777,6 +777,7 @@ scan_roots = [
     pathlib.Path("AGENTS.md"),
     pathlib.Path("CLAUDE.md"),
     pathlib.Path("GEMINI.md"),
+    pathlib.Path(".agents"),
     pathlib.Path(".claude"),
     pathlib.Path(".codex"),
     pathlib.Path("docs/00.agent-governance"),
@@ -797,6 +798,71 @@ for path in files:
     for pattern in stale_patterns:
         for match in pattern.finditer(text):
             failures.append(f"{path}: stale runtime/governance reference: {match.group(0)}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section ".agents compatibility surface"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import sys
+
+failures: list[str] = []
+agents_root = pathlib.Path(".agents")
+claude_skills_root = pathlib.Path(".claude/skills")
+
+if agents_root.exists():
+    readme = agents_root / "README.md"
+    if not readme.is_file():
+        failures.append(".agents/README.md: missing compatibility surface contract")
+    else:
+        text = readme.read_text(errors="ignore")
+        for literal in [
+            "compatibility surface",
+            "not the source of truth",
+            ".claude/agents/",
+            ".claude/skills/",
+            "docs/00.agent-governance/",
+        ]:
+            if literal not in text:
+                failures.append(f"{readme}: missing compatibility literal: {literal}")
+
+    graphify_rule = agents_root / "rules" / "graphify.md"
+    if graphify_rule.is_file():
+        text = graphify_rule.read_text(errors="ignore")
+        for literal in [
+            "report-graphify-health.sh",
+            "advisory",
+            "corroborate",
+            "tracked source files",
+            "docs/00.agent-governance/",
+        ]:
+            if literal not in text:
+                failures.append(f"{graphify_rule}: missing advisory Graphify literal: {literal}")
+
+    skills_root = agents_root / "skills"
+    if skills_root.exists():
+        known_skills = {
+            path.parent.name
+            for path in claude_skills_root.glob("*/skill.md")
+        }
+        for skill_file in sorted(skills_root.glob("*/skill.md")):
+            skill_name = skill_file.parent.name
+            if skill_name not in known_skills:
+                failures.append(f"{skill_file}: unknown compatibility skill not present in .claude/skills")
+            text = skill_file.read_text(errors="ignore")
+            if ".Codex/" in text or ".Codex" in text:
+                failures.append(f"{skill_file}: stale .Codex runtime path reference")
+            if ".codex/agents" in text or ".codex/skills" in text:
+                failures.append(f"{skill_file}: .codex must not be treated as an agent/function catalog")
 
 if failures:
     for failure in failures:
