@@ -48,9 +48,11 @@ docs/04.execution/
 
 ## Completed Remediation Evidence
 
-- [Lifecycle README debt closure plan](plans/2026-05-22-lifecycle-readme-debt-closure.md) - active plan for closing lifecycle, README readiness, and hook guidance debt
+- [Workspace governance bounded re-audit plan](plans/2026-05-22-workspace-governance-bounded-reaudit.md) - completed bounded re-audit plan for docs, governance, memory, hook guidance, and validator drift
+- [Workspace governance bounded re-audit task](tasks/2026-05-22-workspace-governance-bounded-reaudit.md) - execution evidence for the bounded re-audit and agent improvement pass
+- [Lifecycle README debt closure plan](plans/2026-05-22-lifecycle-readme-debt-closure.md) - completed plan for closing lifecycle, README readiness, and hook guidance debt
 - [Lifecycle README debt closure task](tasks/2026-05-22-lifecycle-readme-debt-closure.md) - execution evidence for lifecycle README debt closure
-- [Workspace docs and agent governance remediation plan](plans/2026-05-22-workspace-docs-agent-governance-remediation.md) - active plan for lifecycle, template, cross-link, and agent runtime governance remediation
+- [Workspace docs and agent governance remediation plan](plans/2026-05-22-workspace-docs-agent-governance-remediation.md) - completed plan for lifecycle, template, cross-link, and agent runtime governance remediation
 - [Workspace docs and agent governance remediation task](tasks/2026-05-22-workspace-docs-agent-governance-remediation.md) - execution evidence for the workspace docs and agent governance remediation
 - [Targeted documentation precision remediation plan](plans/2026-05-18-targeted-docs-precision-remediation.md) - evidence-gated remediation plan for target stage docs and root README
 - [Targeted documentation precision remediation task](tasks/2026-05-18-targeted-docs-precision-remediation.md) - execution evidence for the precision remediation pass
@@ -109,3 +111,5 @@ docs/04.execution/
 - **Lifecycle README debt closure task**: [tasks/2026-05-22-lifecycle-readme-debt-closure.md](tasks/2026-05-22-lifecycle-readme-debt-closure.md)
 - **Workspace docs and agent governance remediation plan**: [plans/2026-05-22-workspace-docs-agent-governance-remediation.md](plans/2026-05-22-workspace-docs-agent-governance-remediation.md)
 - **Workspace docs and agent governance remediation task**: [tasks/2026-05-22-workspace-docs-agent-governance-remediation.md](tasks/2026-05-22-workspace-docs-agent-governance-remediation.md)
+- **Workspace governance bounded re-audit plan**: [plans/2026-05-22-workspace-governance-bounded-reaudit.md](plans/2026-05-22-workspace-governance-bounded-reaudit.md)
+- **Workspace governance bounded re-audit task**: [tasks/2026-05-22-workspace-governance-bounded-reaudit.md](tasks/2026-05-22-workspace-governance-bounded-reaudit.md)

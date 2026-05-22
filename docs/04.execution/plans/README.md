@@ -48,8 +48,9 @@ docs/04.execution/plans/
 ├── 2026-05-18-docs-05-operations-purpose-remediation.md # Completed operations purpose remediation
 ├── 2026-05-18-docs-bounded-consistency-audit.md # Completed bounded docs consistency audit
 ├── 2026-05-18-targeted-docs-precision-remediation.md # Completed targeted docs precision remediation
-├── 2026-05-22-lifecycle-readme-debt-closure.md # Active lifecycle README debt closure
-├── 2026-05-22-workspace-docs-agent-governance-remediation.md # Active workspace docs and agent governance remediation
+├── 2026-05-22-lifecycle-readme-debt-closure.md # Completed lifecycle README debt closure
+├── 2026-05-22-workspace-docs-agent-governance-remediation.md # Completed workspace docs and agent governance remediation
+├── 2026-05-22-workspace-governance-bounded-reaudit.md # Completed workspace governance bounded re-audit
 └── README.md                               # This file
 ```
 
@@ -110,3 +111,4 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Requirements Standardization Plan**: [2026-05-17-requirements-standardization.md](./2026-05-17-requirements-standardization.md)
 - **Lifecycle README Debt Closure Plan**: [2026-05-22-lifecycle-readme-debt-closure.md](./2026-05-22-lifecycle-readme-debt-closure.md)
 - **Workspace Docs and Agent Governance Remediation Plan**: [2026-05-22-workspace-docs-agent-governance-remediation.md](./2026-05-22-workspace-docs-agent-governance-remediation.md)
+- **Workspace Governance Bounded Re-audit Plan**: [2026-05-22-workspace-governance-bounded-reaudit.md](./2026-05-22-workspace-governance-bounded-reaudit.md)

@@ -6,22 +6,22 @@ layer: agentic
 
 - Date: 2026-05-09
 - Layer: docs
-- Status: active
+- Status: superseded
 - Applies To: `docs/03.specs/`, `docs/90.references/`, Docker docs, script contract checks
 - Tags: #docker #documentation #quality
 - Retrieval Keywords: docker docs backlog, README coverage, stage templates, script usage audit, service documentation coverage
-- Last Verified: 2026-05-10
+- Last Verified: 2026-05-22
 
 ## Problem
 
-The Docker documentation contract audit found that several `docs/03.specs/*`
-feature folders do not have local README files. This is a documentation
-navigability gap, but creating all missing README files in the current pass
-would broaden a contract-repair change into a larger docs normalization sweep.
+The original Docker documentation contract audit found missing
+`docs/03.specs/*` README files and broader template-shape debt. Later
+documentation passes closed that backlog. This note remains as historical
+context so future agents do not re-open completed cleanup work.
 
 ## Context
 
-Missing README coverage was observed under:
+Missing README coverage was originally observed under:
 
 - `docs/03.specs/01-gateway`
 - `docs/03.specs/02-auth`
@@ -37,24 +37,27 @@ Missing README coverage was observed under:
 - `docs/03.specs/11-laboratory`
 - `docs/03.specs/standardize-infra-net`
 
-The current Docker contract repair focused on profile-aware Compose validation,
-hardening script wrappers, stale top-level documentation links, and relocation
-of non-active learning material into `docs/90.references/learning/`.
+As of the 2026-05-22 bounded re-audit, those listed `docs/03.specs/*`
+directories have README coverage and the repository contract reports a clean
+target-stage normalization baseline.
+
+Current validator metrics:
+
+- `target_stage_docs_total=465`
+- `normalized_target_stage_docs_total=465`
+- `legacy_target_stage_docs_skipped=0`
+- `infra_service_readmes_rubric_partial=0`
 
 ## Resolution
 
-Defer scoped README generation for `docs/03.specs/*` as a follow-up backlog
-item. The current implementation keeps the taxonomy intact and repairs broken
-runtime/documentation contracts without expanding into broad docs consolidation.
+The README coverage backlog is closed. Future work should treat this note as
+historical evidence, not an active task list.
 
 ## 2026-05-09 Follow-up Audit
 
-A wider template-shape audit found broad legacy drift across stage documents:
-many existing `docs/01` to `docs/10` and `docs/90` markdown files predate the
-current templates and therefore lack `status: draft` front matter, while some
-older README files do not yet expose the full `readme.template.md` base section
-set. The active remediation pass intentionally limits edits to the current
-service coverage and runtime-hook gaps.
+A wider template-shape audit found broad legacy drift across stage documents.
+That finding was valid on 2026-05-09, but it is superseded by the 2026-05-22
+repository contract baseline.
 
 Immediate corrections in this pass:
 
@@ -66,14 +69,11 @@ Immediate corrections in this pass:
   implementation-name-to-document-name mapping.
 - Keep `infra/06-observability` as an explicit aggregate compose exception.
 
-Deferred work:
+Current disposition:
 
-- Normalize legacy stage documents to include template front matter where
-  appropriate.
-- Normalize older nested README files to the complete `readme.template.md`
-  base section set.
-- Avoid mass front matter insertion until each stage folder has an explicit
-  owner and review scope.
+- Do not recreate the old README backlog.
+- Use current validators and stage templates for any newly edited document.
+- Record new gaps in a fresh memory note if future drift is found.
 
 ## 2026-05-09 Script Usage Audit
 
@@ -96,9 +96,8 @@ Current disposition:
 ## Prevention
 
 When a stage subfolder is created or materially changed, update the nearest
-stage README or add a local README in the same change. Future README generation
-should be a separate docs pass with a clear template and folder-by-folder
-ownership.
+stage README or add a local README in the same change. Use current repository
+validators as the source of truth for whether this backlog has reopened.
 
 ## Evidence
 
@@ -106,6 +105,10 @@ ownership.
 - `docs/90.references/docker/README.md`
 - `scripts/README.md`
 - `scripts/validation/check-repo-contracts.sh`
+- `bash scripts/validation/check-repo-contracts.sh` on 2026-05-22:
+  `legacy_target_stage_docs_skipped=0`,
+  `infra_service_readmes_rubric_partial=0`
+- [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)
 
 ## Related Documents
 
@@ -113,3 +116,4 @@ ownership.
 - [Documentation stage matrix](../rules/stage-authoring-matrix.md)
 - [Documentation protocol](../rules/documentation-protocol.md)
 - [Specs index](../../03.specs/README.md)
+- [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)

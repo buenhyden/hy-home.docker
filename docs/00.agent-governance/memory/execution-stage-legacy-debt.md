@@ -6,18 +6,18 @@ layer: agentic
 
 - Date: 2026-05-18
 - Layer: docs
-- Status: active
+- Status: superseded
 - Applies To: `docs/04.execution/`, plan/task templates, execution-stage remediation
 - Tags: #docs #execution #template-drift
 - Retrieval Keywords: docs/04 execution legacy debt, plan task pseudo-links, execution stage remediation, bounded normalization
-- Last Verified: 2026-05-18
+- Last Verified: 2026-05-22
 
 ## Problem
 
-`docs/04.execution` contains historical plan and task artifacts that predate the
-current template contract. A full rewrite would risk changing execution evidence,
-so remediation should stay bounded unless the user explicitly approves a legacy
-normalization pass.
+`docs/04.execution` contained historical plan and task artifacts that predated
+the current template contract. That 2026-05-18 finding is superseded by the
+2026-05-22 full-stage normalization baseline. This note remains as historical
+context for why future execution edits should stay evidence-preserving.
 
 ## Context
 
@@ -42,12 +42,20 @@ Representative deferred files:
 - `docs/04.execution/tasks/2026-03-26-10-communication-tasks.md`
 - `docs/04.execution/tasks/2026-04-01-standardize-infra-net.md`
 
+The 2026-05-22 bounded re-audit found the current repository contract clean:
+
+- `target_stage_docs_total=465`
+- `normalized_target_stage_docs_total=465`
+- `legacy_target_stage_docs_skipped=0`
+
+That does not mean old execution history should be rewritten for style. It means
+the current validator no longer sees these files as legacy-shape debt.
+
 ## Resolution
 
-The bounded remediation updates entrypoint READMEs, plan/task templates, current
-2026-05 execution artifacts, and a new 2026-05-18 plan/task pair. Historical
-2026-03 and 2026-04 artifacts remain as audit evidence unless a later task
-explicitly scopes a legacy normalization pass.
+The 2026-05-22 remediation and bounded re-audit closed the legacy-shape debt.
+Historical 2026-03 and 2026-04 artifacts remain audit evidence, not style
+rewrite targets.
 
 ## Prevention
 
@@ -55,8 +63,8 @@ explicitly scopes a legacy normalization pass.
   or `docs/99.templates/task.template.md`.
 - New plan/task documents must include status frontmatter, a `Target:` comment,
   required template sections, and clickable Related Documents links.
-- Do not turn broad legacy drift into a repository-contract failure until the
-  migration scope and exemptions are explicitly approved.
+- If future drift appears, use repository validators and a scoped execution plan
+  before editing historical evidence.
 
 ## Evidence
 
@@ -64,6 +72,9 @@ explicitly scopes a legacy normalization pass.
 - Custom 2026-05-18 pseudo-link scan over `docs/04.execution`.
 - `docs/04.execution/plans/2026-05-18-execution-stage-remediation.md`
 - `docs/04.execution/tasks/2026-05-18-execution-stage-remediation.md`
+- `bash scripts/validation/check-repo-contracts.sh` on 2026-05-22:
+  `legacy_target_stage_docs_skipped=0`
+- [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)
 
 ## Related Documents
 
@@ -75,3 +86,4 @@ explicitly scopes a legacy normalization pass.
 - [Plan template](../../99.templates/plan.template.md)
 - [Task template](../../99.templates/task.template.md)
 - [Progress log](./progress.md)
+- [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)

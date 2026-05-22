@@ -48,8 +48,9 @@ docs/04.execution/tasks/
 ├── 2026-05-18-docs-05-operations-purpose-remediation.md # Completed operations purpose remediation task record
 ├── 2026-05-18-docs-bounded-consistency-audit.md # Completed bounded docs consistency audit task record
 ├── 2026-05-18-targeted-docs-precision-remediation.md # Completed targeted docs precision remediation task record
-├── 2026-05-22-lifecycle-readme-debt-closure.md # Active lifecycle README debt closure task record
-├── 2026-05-22-workspace-docs-agent-governance-remediation.md # Active workspace docs and agent governance remediation task record
+├── 2026-05-22-lifecycle-readme-debt-closure.md # Completed lifecycle README debt closure task record
+├── 2026-05-22-workspace-docs-agent-governance-remediation.md # Completed workspace docs and agent governance remediation task record
+├── 2026-05-22-workspace-governance-bounded-reaudit.md # Completed workspace governance bounded re-audit task record
 └── README.md                                # This file
 ```
 
@@ -105,3 +106,4 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **LLM Wiki Agent-first Completion Task**: [2026-05-10-llm-wiki-agent-first-completion.md](./2026-05-10-llm-wiki-agent-first-completion.md)
 - **Lifecycle README Debt Closure Task**: [2026-05-22-lifecycle-readme-debt-closure.md](./2026-05-22-lifecycle-readme-debt-closure.md)
 - **Workspace Docs and Agent Governance Remediation Task**: [2026-05-22-workspace-docs-agent-governance-remediation.md](./2026-05-22-workspace-docs-agent-governance-remediation.md)
+- **Workspace Governance Bounded Re-audit Task**: [2026-05-22-workspace-governance-bounded-reaudit.md](./2026-05-22-workspace-governance-bounded-reaudit.md)
