@@ -43,6 +43,20 @@ This README is for:
 └── README.md   # This file
 ```
 
+## QA/CI Tooling
+
+Codex sandbox shells may not inherit the user's full interactive `PATH`. Before
+running local QA or CI commands, source the workspace tooling shim:
+
+```bash
+source scripts/operations/use-qa-ci-tools.sh
+```
+
+The shim exposes user-global tools from `$HOME/.local/bin`, `$HOME/go/bin`, and
+the configured Node.js runtime under `$HOME/.nvm/versions/node/v24.14.0/bin`
+without installing duplicate workspace-local CLI packages. Run the script
+directly to verify tool visibility.
+
 ## Runtime Boundary
 
 - Codex uses `AGENTS.md` plus `docs/00.agent-governance/providers/codex.md`

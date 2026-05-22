@@ -64,7 +64,7 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 | Hardening | `scripts/hardening/check-all-hardening.sh` |
 | Hooks | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh` |
 | Knowledge | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/report-graphify-health.sh` |
-| Operations | `scripts/operations/gen-secrets.sh` |
+| Operations | `scripts/operations/gen-secrets.sh`, `scripts/operations/use-qa-ci-tools.sh` |
 | Libraries | `scripts/lib/hardening-lib.sh` |
 
 ## How to Work in This Area
@@ -107,6 +107,7 @@ script.
 | Agent Event Hook | [agent-event-hook.sh](./hooks/agent-event-hook.sh) | Dispatch Claude/Codex hook events, including template-first target-stage docs guidance and Stop gating |
 | Post Tool Validation | [post-tool-validate.sh](./hooks/post-tool-validate.sh) | Run path-aware validation, including changed-doc template enforcement, after Claude/Codex file edits |
 | Unified Hardening Check | [check-all-hardening.sh](./hardening/check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
+| QA/CI Tooling Environment | [use-qa-ci-tools.sh](./operations/use-qa-ci-tools.sh) | Expose user-global QA/CI tools to restricted agent shells |
 | Docker Preflight Mode | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) `--preflight` | Real local prerequisite validation without dummy file creation |
 | Secret Generation | [gen-secrets.sh](./operations/gen-secrets.sh) | Generate local Docker secret files; use `--check` or `--dry-run` before default generation |
 
@@ -137,6 +138,7 @@ tier. Without arguments, all supported tiers are checked.
 | Runtime hook | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh` |
 | Tier hardening | `scripts/hardening/check-all-hardening.sh <tier>` |
 | Manual operations | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/operations/gen-secrets.sh` |
+| Agent QA/CI environment | `source scripts/operations/use-qa-ci-tools.sh` |
 | Generated index maintenance | `scripts/knowledge/generate-llm-wiki-index.sh` |
 | Internal library | `scripts/lib/hardening-lib.sh` |
 
@@ -203,6 +205,12 @@ printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"comman
 
 # Preview secret-generation actions by ID/path only
 ./scripts/operations/gen-secrets.sh --dry-run
+
+# Make globally installed QA/CI tools available in restricted agent shells
+source scripts/operations/use-qa-ci-tools.sh
+
+# Verify the agent-visible QA/CI toolchain
+./scripts/operations/use-qa-ci-tools.sh
 
 ```
 

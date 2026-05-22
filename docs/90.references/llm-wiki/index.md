@@ -948,6 +948,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/knowledge/report-graphify-health.sh](../../../scripts/knowledge/report-graphify-health.sh) | script |
 | [scripts/lib/hardening-lib.sh](../../../scripts/lib/hardening-lib.sh) | script |
 | [scripts/operations/gen-secrets.sh](../../../scripts/operations/gen-secrets.sh) | script |
+| [scripts/operations/use-qa-ci-tools.sh](../../../scripts/operations/use-qa-ci-tools.sh) | script |
 | [scripts/validation/check-doc-traceability.sh](../../../scripts/validation/check-doc-traceability.sh) | script |
 | [scripts/validation/check-quickwin-baseline.sh](../../../scripts/validation/check-quickwin-baseline.sh) | script |
 | [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |

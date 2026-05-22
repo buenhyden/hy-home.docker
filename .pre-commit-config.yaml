@@ -95,4 +95,4 @@ repos:
     hooks:
       - id: commitizen
         stages: [commit-msg]
-        args: [--allow-abort, --message-length-limit=75]
+        args: [--allow-abort, --message-length-limit=75, --commit-msg-file]

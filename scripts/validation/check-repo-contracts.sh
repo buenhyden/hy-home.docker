@@ -2307,6 +2307,7 @@ expected_implementations = {
     pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
     pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
     pathlib.Path("scripts/operations/gen-secrets.sh"),
+    pathlib.Path("scripts/operations/use-qa-ci-tools.sh"),
 }
 implementation_scripts = sorted(
     path
