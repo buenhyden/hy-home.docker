@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/08-ai/open-webui.md -->
+
 # Open WebUI Usage Guide
 
 ## Usage

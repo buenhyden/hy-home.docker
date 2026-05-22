@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/03.specs/08-ai/spec.md -->
+
 # 08-AI Optimization Hardening Technical Specification
 
 ## Overview (KR)

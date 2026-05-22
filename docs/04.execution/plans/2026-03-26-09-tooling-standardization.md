@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/04.execution/plans/2026-03-26-09-tooling-standardization.md -->
 
 # 09-tooling Documentation Standardization Plan

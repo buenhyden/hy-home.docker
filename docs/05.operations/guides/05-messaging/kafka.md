@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/05-messaging/kafka.md -->
+
 # Kafka Cluster Operations Policy (05-messaging) Usage Guide
 
 ## Kafka Event Streaming Usage (05-messaging)

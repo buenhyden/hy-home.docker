@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/04.execution/plans/2026-03-26-07-workflow-standardization.md -->
 
 # 07-workflow Documentation Standardization Plan

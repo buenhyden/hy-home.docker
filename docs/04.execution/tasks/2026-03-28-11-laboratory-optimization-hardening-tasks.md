@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md -->
+
 # Task: 11-Laboratory Optimization Hardening
 
 ## Overview (KR)

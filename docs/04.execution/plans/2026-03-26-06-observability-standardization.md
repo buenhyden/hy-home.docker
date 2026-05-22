@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/plans/2026-03-26-06-observability-standardization.md -->
+
 # Observability Standardization Plan
 
 > Implementation Roadmap for 06-observability Documentation.

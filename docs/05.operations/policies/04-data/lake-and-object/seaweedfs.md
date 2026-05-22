@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md -->
 
 # SeaweedFS Operations Policy
 

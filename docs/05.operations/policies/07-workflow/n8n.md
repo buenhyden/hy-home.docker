@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/07-workflow/n8n.md -->
 
 # n8n Operations Policy
 

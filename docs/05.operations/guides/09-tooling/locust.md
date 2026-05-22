@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/09-tooling/locust.md -->
+
 # Locust Usage Guide
 
 ## Usage

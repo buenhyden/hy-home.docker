@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/07-workflow/n8n.md -->
+
 # n8n Usage Guide
 
 ## Usage

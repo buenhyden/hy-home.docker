@@ -1,7 +1,6 @@
 ---
 status: active
 ---
-
 <!-- Target: docs/05.operations/policies/09-tooling/locust.md -->
 
 # Locust Operations Policy

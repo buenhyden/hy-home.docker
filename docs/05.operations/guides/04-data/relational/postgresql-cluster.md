@@ -1,4 +1,8 @@
+---
+status: active
+---
 <!-- Target: docs/05.operations/guides/04-data/relational/postgresql-cluster.md -->
+
 # postgresql-cluster Usage Guide
 
 ## Usage

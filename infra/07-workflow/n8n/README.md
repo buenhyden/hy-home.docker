@@ -9,6 +9,43 @@
 
 n8n은 시각적 인터페이스를 통해 워크플로우 자동화를 구현하는 로우코드 도구이다. 복잡한 Airflow DAG와 달리 직관적인 노드 연결을 통해 API 통합, 웹후크 처리, 이벤트 기반 자동화를 빠르게 배포할 수 있다.
 
+## Audience
+
+이 README의 주요 독자:
+
+- Workflow Operators
+- Integration Developers
+- AI Agents
+
+## Scope
+
+### In Scope
+
+- n8n main service, worker, task runner, metadata DB, and queue mode compose wiring
+- Non-secret environment and runtime topology notes
+- Links to canonical guide, policy, runbook, and workflow spec
+
+### Out of Scope
+
+- Airflow DAG authoring and scheduler operation
+- n8n credential values, workflow secrets, and exported private workflow data
+- Third-party SaaS account configuration
+
+## Structure
+
+```text
+n8n/
+├── docker-compose.yml  # n8n, worker, task runner, DB, and queue wiring
+└── README.md           # This file
+```
+
+## How to Work in This Area
+
+1. Review the linked operations guide, policy, and runbook before changing n8n configuration.
+2. Keep external credentials in n8n's encrypted credentials system or Docker Secrets.
+3. Distinguish quick low-code automation from Airflow-owned DAG workflows before adding integrations.
+4. After compose or queue-mode changes, run the validation commands listed below.
+
 ## Tech Stack
 
 | Component | Technology | Version | Note |
@@ -44,8 +81,8 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 ## Operational Documentation
 
 - **System Guide**: [n8n System Guide](../../../docs/05.operations/guides/07-workflow/n8n.md)
-- **Operations Policy**: [n8n Operations Policy](../../../docs/05.operations/guides/07-workflow/n8n.md)
-- **Recovery Runbook**: [n8n Recovery Runbook](../../../docs/05.operations/guides/07-workflow/n8n.md)
+- **Operations Policy**: [n8n Operations Policy](../../../docs/05.operations/policies/07-workflow/n8n.md)
+- **Recovery Runbook**: [n8n Recovery Runbook](../../../docs/05.operations/runbooks/07-workflow/n8n.md)
 
 ## Validation
 
@@ -56,3 +93,10 @@ n8n 환경은 고성능 및 확장성을 위해 분산 모드로 구성된다:
 
 - Start with `docker compose config` to confirm n8n, worker, task runner, Valkey, and secret references render.
 - Check n8n service logs and the linked runbook before changing queue or credential settings.
+
+## Related Documents
+
+- **Guide**: [n8n System Guide](../../../docs/05.operations/guides/07-workflow/n8n.md)
+- **Policy**: [n8n Operations Policy](../../../docs/05.operations/policies/07-workflow/n8n.md)
+- **Runbook**: [n8n Recovery Runbook](../../../docs/05.operations/runbooks/07-workflow/n8n.md)
+- **Spec**: [07-workflow Technical Spec](../../../docs/03.specs/07-workflow/spec.md)

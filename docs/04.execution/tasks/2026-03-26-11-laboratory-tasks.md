@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/tasks/2026-03-26-11-laboratory-tasks.md -->
+
 # Task: 11-laboratory Standardization
 
 ## Overview (KR)

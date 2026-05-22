@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/90.references/glossary/stable-reference-terms.md -->
 
 # Reference: Stable Reference Terms
 

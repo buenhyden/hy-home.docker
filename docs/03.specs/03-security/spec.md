@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/03.specs/03-security/spec.md -->
+
 # 03-Security Optimization Hardening Specification
 
 ## Overview (KR)

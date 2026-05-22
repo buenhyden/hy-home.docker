@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/03.specs/04-data-analytics/spec.md -->
 
 # Analytics Tier Technical Specification (Spec)

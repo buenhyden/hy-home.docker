@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/plans/2026-03-26-03-security-standardization.md -->
+
 # Plan: Security Tier Documentation Standardization (03-security)
 
 ## Overview (KR)

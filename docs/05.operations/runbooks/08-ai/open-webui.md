@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/runbooks/08-ai/open-webui.md -->
 
 # Open WebUI Runbook
 
@@ -121,6 +122,17 @@ docker restart open-webui
 - **Tool Disable / Revoke**: 문서 업로드/자동 인덱싱 기능 임시 비활성
 - **Eval Re-run**: 기본 채팅 + RAG smoke test 재실행
 - **Trace Capture**: 장애 시간대 로그/지표를 증적으로 보존
+
+## Evidence
+
+- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
+- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+
+## Rollback or Recovery
+
+- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
+- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
 
 ## Escalation
 

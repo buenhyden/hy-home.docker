@@ -1,4 +1,8 @@
+---
+status: active
+---
 <!-- Target: docs/05.operations/guides/04-data/valkey-cluster.md -->
+
 # Valkey Cluster Usage Guide
 
 ## Usage

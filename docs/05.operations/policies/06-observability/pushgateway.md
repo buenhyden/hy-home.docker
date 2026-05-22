@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/06-observability/pushgateway.md -->
 
 # Pushgateway Operations Policy
 

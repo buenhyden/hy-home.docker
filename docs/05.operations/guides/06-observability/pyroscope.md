@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/06-observability/pyroscope.md -->
+
 # Pyroscope Usage Guide
 
 ## Usage

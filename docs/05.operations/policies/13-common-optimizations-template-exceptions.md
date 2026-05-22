@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/policies/13-common-optimizations-template-exceptions.md -->
+
 # Common Optimizations Template Exceptions Policy
 
 ## Overview (KR)

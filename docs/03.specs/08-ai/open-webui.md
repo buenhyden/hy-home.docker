@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/03.specs/08-ai/open-webui.md -->
 
 # Open WebUI Technical Specification (Spec)

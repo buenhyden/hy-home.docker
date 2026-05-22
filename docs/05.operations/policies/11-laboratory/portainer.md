@@ -1,12 +1,17 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/11-laboratory/portainer.md -->
 
 # Portainer Operations Policy
 
 > Docker 관리 도구의 보안 노출 및 운영 정책 정의.
 
 ---
+
+## Overview
+
+이 정책은 Portainer 관리 UI의 접근 제어, 데이터 보존, 리소스 관리 기준을 정의한다.
 
 ## Policy Scope
 

@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/policies/07-workflow/dag-deployment.md -->
+
 # DAG Deployment Operations Policy
 
 > Rules for promoting Airflow DAGs from development to production.

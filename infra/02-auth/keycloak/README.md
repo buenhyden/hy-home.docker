@@ -8,6 +8,42 @@
 
 Keycloak은 `hy-home.docker` 생태계의 중앙 ID 제공자(IdP)이다. 사용자 인증, 세션 관리, OIDC/SAML 토큰 발행을 처리하며, Quarkus 기반 배포판(v26.5.4)을 인프라망 내에서 컨테이너 환경에 최적화하여 운영한다.
 
+## Audience
+
+이 README의 주요 독자:
+
+- Infrastructure Operators
+- Security Reviewers
+- AI Agents
+
+## Scope
+
+### In Scope
+
+- Keycloak container runtime wiring under `infra/02-auth/keycloak/`
+- Non-secret environment keys, healthcheck behavior, and compose references
+- Links to canonical guide, policy, runbook, and auth spec
+
+### Out of Scope
+
+- Realm export contents, user credentials, token values, and secret file contents
+- Application-specific RBAC policy design
+- OAuth2 Proxy runtime configuration
+
+## Structure
+
+```text
+keycloak/
+├── docker-compose.yml  # Keycloak service definition and routing labels
+└── README.md           # This file
+```
+
+## How to Work in This Area
+
+1. Read the linked operations guide, policy, and runbook before changing Keycloak configuration.
+2. Keep all sensitive values behind Docker Secrets or mounted secret files.
+3. After compose or config reference changes, run the validation commands listed below.
+
 ## Service Type
 
 `infra-service | auth-provider`
@@ -56,8 +92,8 @@ healthcheck:
 ## Related Documents
 
 - **Guide**: [Keycloak Operations Guide](../../../docs/05.operations/guides/02-auth/keycloak.md)
-- **Operation**: [Keycloak Operations Guide](../../../docs/05.operations/guides/02-auth/keycloak.md)
-- **Runbook**: [Keycloak Operations Guide](../../../docs/05.operations/guides/02-auth/keycloak.md)
+- **Operation**: [Keycloak Operations Policy](../../../docs/05.operations/policies/02-auth/keycloak.md)
+- **Runbook**: [Keycloak Recovery Runbook](../../../docs/05.operations/runbooks/02-auth/keycloak.md)
 - **Spec**: [02-auth Spec](../../../docs/03.specs/02-auth/spec.md)
 
 ## AI Agent Guidance

@@ -1,4 +1,8 @@
+---
+status: active
+---
 <!-- Target: docs/05.operations/guides/09-tooling/syncthing.md -->
+
 # Syncthing Usage Guide
 
 <!-- [ID:07-tooling:syncthing] -->

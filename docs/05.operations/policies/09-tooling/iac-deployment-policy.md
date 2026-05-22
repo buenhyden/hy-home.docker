@@ -1,4 +1,8 @@
+---
+status: active
+---
 <!-- Target: docs/05.operations/policies/09-tooling/iac-deployment-policy.md -->
+
 # IaC Deployment Policy
 
 This policy defines the standards for Infrastructure as Code (IaC) deployments using Terraform and Terrakube.

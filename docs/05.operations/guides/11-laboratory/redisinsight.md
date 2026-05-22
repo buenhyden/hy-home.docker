@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/11-laboratory/redisinsight.md -->
+
 # RedisInsight Usage Guide
 
 ## Usage

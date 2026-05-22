@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/08-ai/ollama.md -->
+
 # Ollama Usage Guide
 
 ## Usage

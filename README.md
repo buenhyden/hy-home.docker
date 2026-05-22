@@ -89,7 +89,7 @@ hy-home.docker/
 | Root active includes | 14 | 주석 처리된 optional include는 실행면으로 과장하지 않음 |
 | Root Compose secret declarations | 69 | 선언된 secret 파일 누락 0개 |
 | `secrets/` value/cert files | 94 | 값은 열람하지 않고 파일명과 경로만 기준으로 분류 |
-| Parent-repo tracked README files | 170 | `git ls-files '*README.md'` 기준의 tracked README inventory |
+| Parent-repo tracked README files | 172 | `git ls-files '*README.md'` 기준의 tracked README inventory |
 | README refresh contract | path-appropriate template coverage | `docs/99.templates/readme.template.md`의 공통 구조와 경로별 snippet을 기준으로 갱신 |
 
 ## Prerequisites

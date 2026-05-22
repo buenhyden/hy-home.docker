@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/05-messaging/optimization-hardening.md -->
 
 # 05-Messaging Optimization Hardening Operations Policy
 

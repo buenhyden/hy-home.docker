@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/10-communication/mail.md -->
+
 # Mail Usage Guide
 
 ## Usage

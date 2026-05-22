@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/04-data/relational.md -->
+
 # Relational Databases Usage Guide
 
 ## Usage

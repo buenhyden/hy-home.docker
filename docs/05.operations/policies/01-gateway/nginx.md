@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/01-gateway/nginx.md -->
 
 # 01-Gateway Nginx Operations Policy
 

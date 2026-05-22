@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/03-security/vault.md -->
+
 # 03-Security Vault Usage Guide
 
 ## Usage

@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/08-ai/optimization-hardening.md -->
+
 # 08-AI Optimization Hardening Usage Guide
 
 ## Usage

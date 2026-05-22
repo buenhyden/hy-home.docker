@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md -->
+
 # 09-Tooling Optimization Hardening Implementation Plan
 
 ## Overview (KR)

@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/03.specs/10-communication/spec.md -->
 
 # Communication Tier Technical Specification

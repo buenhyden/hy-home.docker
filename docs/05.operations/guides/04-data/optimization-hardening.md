@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/04-data/optimization-hardening.md -->
+
 # 04-Data Optimization Hardening Usage Guide
 
 ## Usage

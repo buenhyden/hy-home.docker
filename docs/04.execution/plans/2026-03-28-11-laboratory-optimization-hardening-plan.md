@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md -->
+
 # 11-Laboratory Optimization Hardening Implementation Plan
 
 ## Overview (KR)

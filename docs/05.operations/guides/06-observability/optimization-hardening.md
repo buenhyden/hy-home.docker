@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/06-observability/optimization-hardening.md -->
+
 # 06-Observability Optimization Hardening Usage Guide
 
 ## Usage

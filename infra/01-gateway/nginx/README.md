@@ -2,11 +2,11 @@
 
 > Specialized path-based proxy and SSO client for the hy-home.docker ecosystem.
 
-## English Overview
+## Overview
 
 The Nginx component in the `01-gateway` tier acts as a specialized proxy for complex path-based routing (e.g., MinIO, Keycloak) and serves as a client for SSO (OAuth2 Proxy) authentication using the `auth_request` module. It handles specific header transformations and redirects that are more efficiently managed by Nginx.
 
-## Korean Overview
+## Overview (KR)
 
 Nginx 컴포넌트는 복잡한 경로 기반 라우팅과 SSO(OAuth2 Proxy) 인증 클라이언트 역할을 수행합니다. 특정 헤더 변환 및 리다이렉트 처리를 담당하며, Traefik 뒷단에서 정적 자산 서빙 또는 특수 프록시 규칙을 처리합니다.
 
@@ -94,8 +94,8 @@ healthcheck:
 
 - [01-gateway Root README](../README.md)
 - [Nginx Guide](../../../docs/05.operations/guides/01-gateway/nginx.md)
-- [Gateway Operations Policy](../../../docs/05.operations/guides/01-gateway/nginx.md)
-- [Nginx Runbook](../../../docs/05.operations/guides/01-gateway/nginx.md)
+- [Gateway Operations Policy](../../../docs/05.operations/policies/01-gateway/nginx.md)
+- [Nginx Runbook](../../../docs/05.operations/runbooks/01-gateway/nginx.md)
 - [SSO Setup Guide](../../../docs/05.operations/guides/02-auth/README.md)
 
 ## AI Agent Guidance

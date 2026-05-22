@@ -1,6 +1,8 @@
 ---
-status: enforced
+status: active
+policy_state: enforced
 ---
+<!-- Target: docs/05.operations/policies/harness-agent-first-engineering.md -->
 
 # Harness / Agent-first Engineering Operations Policy
 

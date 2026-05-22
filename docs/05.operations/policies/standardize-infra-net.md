@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/policies/standardize-infra-net.md -->
+
 # infra_net IP Management Operations Policy
 
 ## Overview (KR)

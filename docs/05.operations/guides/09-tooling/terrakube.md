@@ -1,4 +1,8 @@
+---
+status: active
+---
 <!-- Target: docs/05.operations/guides/09-tooling/terrakube.md -->
+
 # Operations: Terrakube Policy Usage Guide
 
 <!-- [ID:09-tooling:terrakube] -->

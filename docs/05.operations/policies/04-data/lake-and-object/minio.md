@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/04-data/lake-and-object/minio.md -->
 
 # MinIO Object Storage Operations Policy
 

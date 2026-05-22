@@ -1,7 +1,6 @@
 ---
 status: active
 ---
-
 <!-- Target: docs/05.operations/policies/10-communication/mail.md -->
 
 # Mail Operations Policy

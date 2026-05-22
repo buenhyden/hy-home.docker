@@ -1,4 +1,8 @@
+---
+status: active
+---
 <!-- Target: docs/05.operations/policies/04-data/backup-policy.md -->
+
 # Backup Policy
 
 Standard backup requirements for data infrastructure.

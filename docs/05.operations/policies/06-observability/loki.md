@@ -2,7 +2,8 @@
 tier: 05.operations
 component: 06-observability
 title: Loki Operational Policy
-status: production
+status: active
+runtime_state: production
 updated: 2026-03-26
 ---
 <!-- Target: docs/05.operations/policies/06-observability/loki.md -->

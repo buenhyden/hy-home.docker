@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/02-auth/keycloak.md -->
 
 # 02-Auth Keycloak Operations Policy
 

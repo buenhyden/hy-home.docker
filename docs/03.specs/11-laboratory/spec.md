@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/03.specs/11-laboratory/spec.md -->
+
 # 11-Laboratory Optimization Hardening Technical Specification
 
 ## Overview (KR)

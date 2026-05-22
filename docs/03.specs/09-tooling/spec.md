@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/03.specs/09-tooling/spec.md -->
+
 # 09-Tooling Optimization Hardening Technical Specification
 
 ## Overview (KR)

@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/04-data/operational/mng-db.md -->
 
 # Management Database Operations Policy
 

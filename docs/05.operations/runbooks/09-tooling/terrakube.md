@@ -146,3 +146,13 @@ If a workspace is stuck in a locked state and "Force Unlock" in the UI fails:
 - [Usage guide](../../guides/09-tooling/terrakube.md)
 - [Operations policy](../../policies/09-tooling/terrakube.md)
 - [Operations template](../../../99.templates/operation.template.md)
+
+## Rollback or Recovery
+
+- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
+- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+
+## Escalation
+
+- Stop and escalate to the owning operator with captured evidence when the documented procedure does not match the observed failure.

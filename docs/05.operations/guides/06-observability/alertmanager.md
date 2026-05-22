@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/06-observability/alertmanager.md -->
+
 # Alertmanager Operational Policy (06-observability) Usage Guide
 
 ## Alertmanager Notification Routing Usage (06-observability)

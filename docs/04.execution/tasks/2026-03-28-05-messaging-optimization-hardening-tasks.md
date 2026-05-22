@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md -->
+
 # Task: 05-Messaging Optimization Hardening
 
 ## Overview (KR)

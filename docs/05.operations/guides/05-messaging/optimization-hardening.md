@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/05-messaging/optimization-hardening.md -->
+
 # 05-Messaging Optimization Hardening Usage Guide
 
 ## Usage

@@ -1,7 +1,6 @@
 ---
 status: active
 ---
-
 <!-- Target: docs/05.operations/policies/04-data/analytics/ksqldb.md -->
 
 # ksqlDB Operations Policy

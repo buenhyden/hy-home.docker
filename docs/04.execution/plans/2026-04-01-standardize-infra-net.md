@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/plans/2026-04-01-standardize-infra-net.md -->
+
 # Standardize `infra_net` Implementation Plan
 
 ## Overview (KR)

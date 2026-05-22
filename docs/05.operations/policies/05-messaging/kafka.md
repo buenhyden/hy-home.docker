@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/05-messaging/kafka.md -->
 
 # Kafka Cluster Operations Policy (05-messaging) Operations Policy
 

@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/03.specs/05-messaging/spec.md -->
+
 # 05-Messaging Optimization Hardening Specification
 
 ## Overview (KR)

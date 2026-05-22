@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/03.specs/standardize-infra-net/spec.md -->
+
 # Standardize `infra_net` Technical Specification
 
 ## Overview (KR)

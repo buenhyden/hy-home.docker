@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/04-data/lake-and-object/minio.md -->
+
 # MinIO Object Storage Usage Guide
 
 ## Usage

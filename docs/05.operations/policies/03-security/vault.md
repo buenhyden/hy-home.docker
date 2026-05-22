@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/03-security/vault.md -->
 
 # 03-Security Vault Operations Policy
 

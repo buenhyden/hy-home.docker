@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/03.specs/04-data/spec.md -->
+
 # 04-Data Optimization Hardening Specification
 
 ## Overview (KR)

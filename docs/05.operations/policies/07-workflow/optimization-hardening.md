@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/07-workflow/optimization-hardening.md -->
 
 # 07-Workflow Optimization Hardening Operations Policy
 

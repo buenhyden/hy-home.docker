@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/runbooks/02-auth/keycloak.md -->
 
 # 02-Auth Keycloak Runbook
 
@@ -77,6 +78,17 @@ status: active
 - **Tool Disable / Revoke**: N/A
 - **Eval Re-run**: `bash scripts/hardening/check-all-hardening.sh 02-auth`
 - **Trace Capture**: Keycloak 로그 + CI job 로그
+
+## Evidence
+
+- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
+- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+
+## Rollback or Recovery
+
+- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
+- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
 
 ## Escalation
 

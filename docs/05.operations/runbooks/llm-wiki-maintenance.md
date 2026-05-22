@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/runbooks/llm-wiki-maintenance.md -->
 
 # LLM Wiki Maintenance Runbook
 
@@ -55,6 +56,12 @@ status: active
 - **Eval / Guardrail Threshold**: stale index, unsafe path inclusion, or forbidden wording is a blocking validation failure.
 - **Log / Trace Retention**: record final verification evidence in `docs/00.agent-governance/memory/progress.md`; do not paste raw secret-adjacent logs.
 - **Safety Incident Thresholds**: suspected secret exposure or public-scope drift requires immediate stop and user escalation.
+
+## Rollback or Recovery
+
+- Use only recovery or rollback steps already documented in this runbook.
+- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
 
 ## Escalation
 

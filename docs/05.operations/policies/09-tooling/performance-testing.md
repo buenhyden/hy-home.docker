@@ -1,7 +1,6 @@
 ---
 status: active
 ---
-
 <!-- Target: docs/05.operations/policies/09-tooling/performance-testing.md -->
 
 # Performance Testing Operations Policy

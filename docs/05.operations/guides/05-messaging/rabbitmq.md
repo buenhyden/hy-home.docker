@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/05-messaging/rabbitmq.md -->
+
 # RabbitMQ Usage Guide
 
 ## Usage

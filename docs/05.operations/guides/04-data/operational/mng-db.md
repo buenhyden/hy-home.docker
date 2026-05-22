@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/04-data/operational/mng-db.md -->
+
 # Management Database Usage Guide
 
 ## Usage

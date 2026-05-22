@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md -->
+
 # 05-Messaging Optimization Hardening Implementation Plan
 
 ## Overview (KR)

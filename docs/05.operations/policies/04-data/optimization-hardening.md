@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/04-data/optimization-hardening.md -->
 
 # 04-Data Optimization Hardening Operations Policy
 

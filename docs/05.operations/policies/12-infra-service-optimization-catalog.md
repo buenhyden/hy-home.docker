@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/policies/12-infra-service-optimization-catalog.md -->
+
 # Infra Service Optimization & Expansion Policy
 
 ## Overview (KR)

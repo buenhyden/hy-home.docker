@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/03.specs/07-workflow/spec.md -->
+
 # 07-Workflow Optimization Hardening Technical Specification
 
 ## Overview (KR)

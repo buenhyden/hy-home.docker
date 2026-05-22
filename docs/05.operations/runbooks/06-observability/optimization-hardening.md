@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/runbooks/06-observability/optimization-hardening.md -->
 
 # 06-Observability Optimization Hardening Runbook
 
@@ -92,6 +93,17 @@ status: active
 - **Tool Disable / Revoke**: 관측성 자동화 변경 작업 일시 중지(승인 필요)
 - **Eval Re-run**: `check-observability-hardening`, `check-template-security-baseline`, `check-doc-traceability`
 - **Trace Capture**: CI logs + compose config output + health 상태
+
+## Evidence
+
+- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
+- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+
+## Rollback or Recovery
+
+- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
+- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
+- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
 
 ## Escalation
 

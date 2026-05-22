@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md -->
+
 # Task: 04-Data Optimization Hardening
 
 ## Overview (KR)

@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/guides/0012-standardize-infra-net.md -->
 
 # 0012 Standardize Infra Net Usage Guide
 

@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/06-observability/pyroscope.md -->
 
 # Pyroscope Operations Policy
 

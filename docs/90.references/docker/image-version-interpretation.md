@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/90.references/docker/image-version-interpretation.md -->
 
 # Reference: Docker Image and Version Interpretation
 

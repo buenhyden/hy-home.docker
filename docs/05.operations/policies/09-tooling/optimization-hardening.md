@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/09-tooling/optimization-hardening.md -->
 
 # 09-Tooling Optimization Hardening Operations Policy
 

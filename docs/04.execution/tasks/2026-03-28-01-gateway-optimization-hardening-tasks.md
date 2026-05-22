@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/tasks/2026-03-28-01-gateway-optimization-hardening-tasks.md -->
+
 # Task: 01-Gateway Optimization Hardening
 
 ## Overview (KR)

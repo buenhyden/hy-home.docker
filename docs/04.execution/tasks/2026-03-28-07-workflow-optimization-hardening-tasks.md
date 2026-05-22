@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md -->
+
 # Task: 07-Workflow Optimization Hardening
 
 ## Overview (KR)

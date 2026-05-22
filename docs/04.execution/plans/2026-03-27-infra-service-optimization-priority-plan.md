@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md -->
 
 # Infra Service Optimization Priority Plan (Quick Wins + Quarterly) Implementation Plan

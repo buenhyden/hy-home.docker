@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/03.specs/01-gateway/spec.md -->
 
 # Gateway Tier (01-gateway) Technical Specification

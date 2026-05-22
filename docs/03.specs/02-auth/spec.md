@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/03.specs/02-auth/spec.md -->
+
 # 02-Auth Optimization Hardening Specification
 
 ## Overview (KR)

@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md -->
+
 # Task: 06-Observability Optimization Hardening
 
 ## Overview (KR)

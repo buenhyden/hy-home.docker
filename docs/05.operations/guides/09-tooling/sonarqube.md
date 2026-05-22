@@ -1,4 +1,8 @@
+---
+status: active
+---
 <!-- Target: docs/05.operations/guides/09-tooling/sonarqube.md -->
+
 # SonarQube Usage Guide
 
 <!-- [ID:07-tooling:sonarqube] -->

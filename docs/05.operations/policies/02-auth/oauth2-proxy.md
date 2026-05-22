@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/02-auth/oauth2-proxy.md -->
 
 # 02-Auth OAuth2 Proxy Operations Policy
 

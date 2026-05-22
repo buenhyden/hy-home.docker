@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/04-data/nosql/cassandra.md -->
+
 # Cassandra Operation Policy Usage Guide
 
 ## Usage

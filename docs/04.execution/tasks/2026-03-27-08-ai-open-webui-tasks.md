@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/04.execution/tasks/2026-03-27-08-ai-open-webui-tasks.md -->
 
 # Task: Open WebUI Documentation & Verification

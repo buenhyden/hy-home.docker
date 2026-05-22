@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/11-laboratory/optimization-hardening.md -->
+
 # 11-Laboratory Optimization Hardening Usage Guide
 
 ## Usage

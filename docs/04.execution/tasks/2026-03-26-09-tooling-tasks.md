@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/04.execution/tasks/2026-03-26-09-tooling-tasks.md -->
 
 # 09-tooling Documentation Tasks

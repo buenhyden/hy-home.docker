@@ -1,4 +1,8 @@
+---
+status: active
+---
 <!-- Target: docs/05.operations/guides/06-observability/prometheus.md -->
+
 # [OPERATIONAL-POLICY] 06-observability: prometheus Usage Guide
 
 ## [SYSTEM-GUIDE] 06-observability: prometheus

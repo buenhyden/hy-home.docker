@@ -1,6 +1,7 @@
 ---
 status: approved
 ---
+<!-- Target: docs/03.specs/llm-wiki-agent-first-completion/spec.md -->
 
 # LLM Wiki Agent-first Completion Specification
 

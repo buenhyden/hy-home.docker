@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/runbooks/0012-standardize-infra-net.md -->
 
 # 0012 Standardize Infra Net Runbook
 
@@ -53,12 +54,12 @@ status: active
 
 - [ ] `docker network inspect infra_net` 실행 시 모든 컨테이너가 의도된 고정 IP를 보유하고 있는지 전수 조사.
 
-### Observability and Evidence Sources
+### Evidence
 
 - **Signals**: `docker-compose` 배포 로그의 "Network Conflict" 에러 메시지.
 - **Evidence to Capture**: `grep -r "infra_net" infra/` 결과 덤프.
 
-### Safe Rollback or Recovery Procedure
+### Rollback or Recovery
 
 - [ ] 변경 전 `docker-compose.yml` 백업본으로 복구.
 - [ ] 충돌이 심각할 경우 해당 서비스를 `infra_net`에서 일시 제외하고 게이트웨이 서비스만 유지.

@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/02-auth/oauth2-proxy.md -->
+
 # 02-Auth OAuth2 Proxy Usage Guide
 
 ## Usage

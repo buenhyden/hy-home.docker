@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/09-tooling/optimization-hardening.md -->
+
 # 09-Tooling Optimization Hardening Usage Guide
 
 ## Usage

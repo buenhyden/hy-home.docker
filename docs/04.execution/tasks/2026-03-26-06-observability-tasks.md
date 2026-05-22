@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/tasks/2026-03-26-06-observability-tasks.md -->
+
 # Task: Observability Documentation Standardization
 
 > Execution tracking for 06-observability documentation tier.

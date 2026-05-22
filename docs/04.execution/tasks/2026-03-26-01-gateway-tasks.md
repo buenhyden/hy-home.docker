@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md -->
 
 # Task: Gateway Documentation Standardization

@@ -36,6 +36,13 @@ lake-and-object/
 └── README.md     # This file
 ```
 
+## How to Work in This Area
+
+1. Treat this README as a folder index; service-specific runtime details belong in each service leaf README.
+2. Review [minio/README.md](./minio/README.md) or [seaweedfs/README.md](./seaweedfs/README.md) before changing a service.
+3. Keep backup and retention rules in operations policy documents instead of duplicating them here.
+4. After adding, moving, or removing a storage service, update this index and the linked operations README files.
+
 ## Related Documents
 
 - [infra/04-data/README.md](../README.md)

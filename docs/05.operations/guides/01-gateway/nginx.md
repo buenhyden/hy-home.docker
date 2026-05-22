@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/01-gateway/nginx.md -->
+
 # 01-Gateway Nginx Usage Guide
 
 ## Usage

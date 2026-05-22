@@ -1,6 +1,7 @@
 ---
 status: completed
 ---
+<!-- Target: docs/03.specs/infra-secrets-docs-refresh/spec.md -->
 
 # Infra / Secrets / Docs Refresh Specification
 

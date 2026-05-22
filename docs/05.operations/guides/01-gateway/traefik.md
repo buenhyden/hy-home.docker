@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/01-gateway/traefik.md -->
+
 # 01-Gateway Traefik Usage Guide
 
 ## Usage

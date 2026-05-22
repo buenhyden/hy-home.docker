@@ -8,16 +8,27 @@
 
 이 문서는 `hy-home.docker`의 메시징 인프라를 담당하는 RabbitMQ 설정 및 운영 체계를 설명한다. 비동기 작업 처리, 서비스 간 메시지 라우팅 및 큐 대기열 관리를 위한 핵심 인프라다.
 
-## Target Audience
+## Audience
 
-- Backend Developers (Service integration)
-- SREs (Maintenance & Scaling)
+이 README의 주요 독자:
+
+- Backend Developers
+- SREs
+- AI Agents
 
 ## Scope
+
+### In Scope
 
 - **Broker**: RabbitMQ 4.x 기반 메시지 중개
 - **Management**: Web-based console & REST API
 - **VHost/Auth**: 가상 호스트 및 자격 증명 관리
+
+### Out of Scope
+
+- Kafka event streaming configuration
+- Application queue naming policy beyond documented broker controls
+- Secret values or credential material
 
 ## Structure
 
@@ -29,9 +40,9 @@ rabbitmq/
 
 ## How to Work in This Area
 
-1. **Service Guide**: 상세 아키텍처 및 연결 설정은 `[../../../docs/05.operations/05-messaging/rabbitmq.md]`를 참조한다.
-2. **Operations**: 보안 규정 및 가용성 정책은 `[../../../docs/05.operations/05-messaging/rabbitmq.md]`에 정의되어 있다.
-3. **Emergency**: 서비스 장애 상황 발생 시 `[../../../docs/05.operations/05-messaging/rabbitmq.md]`의 복구 절차를 따른다.
+1. **Service Guide**: 상세 아키텍처 및 연결 설정은 [RabbitMQ guide](../../../docs/05.operations/guides/05-messaging/rabbitmq.md)를 참조한다.
+2. **Operations**: 보안 규정 및 가용성 정책은 [RabbitMQ policy](../../../docs/05.operations/policies/05-messaging/rabbitmq.md)에 정의되어 있다.
+3. **Emergency**: 서비스 장애 상황 발생 시 [RabbitMQ runbook](../../../docs/05.operations/runbooks/05-messaging/rabbitmq.md)의 복구 절차를 따른다.
 
 ## Tech Stack
 
@@ -76,6 +87,8 @@ mc admin definitions export ...
 
 ## Related Documents
 
-- **ARD**: `[../../../docs/02.architecture/requirements/0005-messaging-architecture.md]`
-- **Runbook**: `[../../../docs/05.operations/05-messaging/rabbitmq.md]`
+- **ARD**: [Messaging architecture](../../../docs/02.architecture/requirements/0005-messaging-architecture.md)
+- **Guide**: [RabbitMQ guide](../../../docs/05.operations/guides/05-messaging/rabbitmq.md)
+- **Policy**: [RabbitMQ policy](../../../docs/05.operations/policies/05-messaging/rabbitmq.md)
+- **Runbook**: [RabbitMQ runbook](../../../docs/05.operations/runbooks/05-messaging/rabbitmq.md)
 - **Monitoring**: `Grafana - Messaging Dashboard`

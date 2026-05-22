@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/08-ai/optimization-hardening.md -->
 
 # 08-AI Optimization Hardening Operations Policy
 

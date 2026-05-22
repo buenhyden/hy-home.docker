@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md -->
+
 # Task: 09-Tooling Optimization Hardening
 
 ## Overview (KR)

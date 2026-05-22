@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/03.specs/06-observability/spec.md -->
+
 # 06-Observability Optimization Hardening Specification
 
 ## Overview (KR)

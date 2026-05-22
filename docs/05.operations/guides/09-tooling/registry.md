@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/09-tooling/registry.md -->
+
 # Docker Registry Usage Guide
 
 ## Usage

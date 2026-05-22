@@ -36,6 +36,13 @@ specialized/
 └── README.md     # This file
 ```
 
+## How to Work in This Area
+
+1. Treat this README as a folder index; service-specific runtime details belong in each service leaf README.
+2. Review [neo4j/README.md](./neo4j/README.md) or [qdrant/README.md](./qdrant/README.md) before changing a service.
+3. Keep vector search, graph modeling, and application logic decisions in specs or application docs, not this infra index.
+4. After adding, moving, or removing a specialized data service, update this index and related operations links.
+
 ## Related Documents
 
 - [infra/04-data/README.md](../README.md)

@@ -1,6 +1,7 @@
 ---
 status: approved
 ---
+<!-- Target: docs/03.specs/harness-agent-first-engineering/spec.md -->
 
 # Harness / Agent-first Engineering Specification
 

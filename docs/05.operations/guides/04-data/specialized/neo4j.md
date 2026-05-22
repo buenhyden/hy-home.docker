@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/04-data/specialized/neo4j.md -->
+
 # Neo4j Usage Guide
 
 ## Usage

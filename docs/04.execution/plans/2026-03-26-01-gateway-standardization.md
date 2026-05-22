@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/04.execution/plans/2026-03-26-01-gateway-standardization.md -->
 
 # Gateway Documentation Standardization Plan

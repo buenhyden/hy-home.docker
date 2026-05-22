@@ -1,4 +1,8 @@
+---
+status: active
+---
 <!-- Target: docs/05.operations/guides/07-workflow/airbyte.md -->
+
 # Airbyte Usage Guide
 
 ## Usage

@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/04.execution/plans/2026-03-26-08-ai-standardization.md -->
 
 # 08-ai Documentation Standardization Plan

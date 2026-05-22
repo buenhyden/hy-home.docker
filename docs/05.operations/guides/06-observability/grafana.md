@@ -1,4 +1,8 @@
+---
+status: active
+---
 <!-- Target: docs/05.operations/guides/06-observability/grafana.md -->
+
 # Grafana Operational Policy (06-observability) Usage Guide
 
 ## Grafana System Usage (06-observability)

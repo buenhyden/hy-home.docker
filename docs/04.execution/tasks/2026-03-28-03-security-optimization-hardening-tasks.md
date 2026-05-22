@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md -->
+
 # Task: 03-Security (Vault) Optimization Hardening
 
 ## Overview (KR)

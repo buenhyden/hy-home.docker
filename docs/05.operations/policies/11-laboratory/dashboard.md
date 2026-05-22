@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+<!-- Target: docs/05.operations/policies/11-laboratory/dashboard.md -->
 
 # Laboratory Dashboard Operations Policy
 

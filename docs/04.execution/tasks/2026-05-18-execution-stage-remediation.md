@@ -1,5 +1,5 @@
 ---
-status: done
+status: completed
 ---
 <!-- Target: docs/04.execution/tasks/2026-05-18-execution-stage-remediation.md -->
 

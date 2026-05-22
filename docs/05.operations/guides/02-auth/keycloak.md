@@ -1,3 +1,8 @@
+---
+status: active
+---
+<!-- Target: docs/05.operations/guides/02-auth/keycloak.md -->
+
 # 02-Auth Keycloak Usage Guide
 
 ## Usage
