@@ -86,7 +86,7 @@ status: draft
   - never store plaintext secrets in reports or memory
   - keep provider-specific behavior out of generic governance files
 - **Versioning Rule**:
-  - canonical agent behavior changes belong in `docs/03.specs/<feature-id>/agent-design.md`
+  - canonical workflow agent behavior changes belong in `docs/03.specs/07-workflow/agent-design.md`
   - execution sequencing changes belong in `docs/04.execution/plans/`
 
 ## Context & Memory Strategy

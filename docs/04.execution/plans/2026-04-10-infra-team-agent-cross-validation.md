@@ -16,8 +16,8 @@ status: draft
 ## Goals & In-Scope
 
 - **Goals**:
-  - `DOC-AGT-001`: 활성 agent design 문서를 `docs/03.specs/<feature-id>/agent-design.md`에만 둔다.
-  - `DOC-AGT-002`: 활성 implementation plan 문서를 `docs/04.execution/plans/YYYY-MM-DD-<slug>.md`에만 둔다.
+- `DOC-AGT-001`: 활성 agent design 문서를 `docs/03.specs/07-workflow/agent-design.md`에만 둔다.
+  - `DOC-AGT-002`: 활성 implementation plan 문서를 `docs/04.execution/plans/2026-04-10-infra-team-agent-cross-validation.md`에 둔다.
   - `DOC-AGT-003`: repo-local governance가 비표준 `docs/*` 경로의 활성 spec/plan 생성을 금지하도록 만든다.
   - `DOC-AGT-004`: README와 traceability가 새 canonical 경로를 기준으로 정렬되도록 만든다.
 - **In Scope**:

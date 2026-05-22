@@ -1,3 +1,5 @@
+<!-- Target: docs/05.operations/incidents/README.md -->
+
 # 05.operations/incidents
 
 > 사고 기록과 사후 분석을 보관하는 공식 incident stage
@@ -36,8 +38,8 @@
 ```text
 05.operations/incidents/
 ├── YYYY/
-│   ├── YYYY-MM-DD-<incident-title>.md
-│   └── YYYY-MM-DD-<incident-title>-postmortem.md
+│   ├── date-slug incident record
+│   └── date-slug postmortem record
 └── README.md
 ```
 
