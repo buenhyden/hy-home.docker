@@ -48,6 +48,8 @@ docs/04.execution/
 
 ## Completed Remediation Evidence
 
+- [Lifecycle README debt closure plan](plans/2026-05-22-lifecycle-readme-debt-closure.md) - active plan for closing lifecycle, README readiness, and hook guidance debt
+- [Lifecycle README debt closure task](tasks/2026-05-22-lifecycle-readme-debt-closure.md) - execution evidence for lifecycle README debt closure
 - [Workspace docs and agent governance remediation plan](plans/2026-05-22-workspace-docs-agent-governance-remediation.md) - active plan for lifecycle, template, cross-link, and agent runtime governance remediation
 - [Workspace docs and agent governance remediation task](tasks/2026-05-22-workspace-docs-agent-governance-remediation.md) - execution evidence for the workspace docs and agent governance remediation
 - [Targeted documentation precision remediation plan](plans/2026-05-18-targeted-docs-precision-remediation.md) - evidence-gated remediation plan for target stage docs and root README
@@ -103,5 +105,7 @@ docs/04.execution/
 - **Targeted documentation precision remediation task**: [tasks/2026-05-18-targeted-docs-precision-remediation.md](tasks/2026-05-18-targeted-docs-precision-remediation.md)
 - **Docs bounded consistency audit plan**: [plans/2026-05-18-docs-bounded-consistency-audit.md](plans/2026-05-18-docs-bounded-consistency-audit.md)
 - **Docs bounded consistency audit task**: [tasks/2026-05-18-docs-bounded-consistency-audit.md](tasks/2026-05-18-docs-bounded-consistency-audit.md)
+- **Lifecycle README debt closure plan**: [plans/2026-05-22-lifecycle-readme-debt-closure.md](plans/2026-05-22-lifecycle-readme-debt-closure.md)
+- **Lifecycle README debt closure task**: [tasks/2026-05-22-lifecycle-readme-debt-closure.md](tasks/2026-05-22-lifecycle-readme-debt-closure.md)
 - **Workspace docs and agent governance remediation plan**: [plans/2026-05-22-workspace-docs-agent-governance-remediation.md](plans/2026-05-22-workspace-docs-agent-governance-remediation.md)
 - **Workspace docs and agent governance remediation task**: [tasks/2026-05-22-workspace-docs-agent-governance-remediation.md](tasks/2026-05-22-workspace-docs-agent-governance-remediation.md)
