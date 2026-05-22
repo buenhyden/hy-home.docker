@@ -99,6 +99,57 @@ if [[ "${#misplaced_templates[@]}" -gt 0 ]]; then
   printf '  %s\n' "${misplaced_templates[@]}" >&2
 fi
 
+section "Execution evidence status wording"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+
+execution_readmes = [
+    pathlib.Path("docs/04.execution/README.md"),
+    pathlib.Path("docs/04.execution/plans/README.md"),
+    pathlib.Path("docs/04.execution/tasks/README.md"),
+]
+
+completed_docs: list[pathlib.Path] = []
+for root in [
+    pathlib.Path("docs/04.execution/plans"),
+    pathlib.Path("docs/04.execution/tasks"),
+]:
+    if not root.exists():
+        continue
+    for path in sorted(root.glob("*.md")):
+        if path.name == "README.md":
+            continue
+        text = path.read_text(errors="ignore")
+        head = "\n".join(text.splitlines()[:8])
+        if re.search(r"(?m)^status:\s*completed\s*$", head):
+            completed_docs.append(path)
+
+for readme in execution_readmes:
+    if not readme.is_file():
+        failures.append(f"missing execution README for status wording check: {readme}")
+        continue
+    for line_no, line in enumerate(readme.read_text(errors="ignore").splitlines(), start=1):
+        for doc in completed_docs:
+            if doc.name in line and re.search(r"\bactive\b", line, re.I):
+                failures.append(
+                    f"{readme}:{line_no}: completed execution artifact {doc.name} is described as active"
+                )
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
 section "Banned stale references"
 if rg -n 'docs/11|11\.postmortems|\.agent/|docs/(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)|(^|[^[:alnum:]_/-])(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)([^[:alnum:]_/-]|$)|guide\.template\.md|runbook\.template\.md|harness catalog|Runtime harness catalog' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
   --glob '!graphify-out/**' \
