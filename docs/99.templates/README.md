@@ -80,10 +80,10 @@ layer: agentic
 `docs/00.agent-governance/rules/stage-authoring-matrix.md`, 그리고
 `scripts/validation/check-repo-contracts.sh`를 바꿀 때는 이 표와 함께 검토한다.
 
-Markdown 템플릿의 placeholder 링크는 `docs/99.templates/` 기준으로 존재하는
-링크가 아니라, 복사된 target 문서에서 다시 계산할 예시다. 활성 문서 링크 검증은
-최종 target 문서를 기준으로 수행하며, 템플릿 원본에서는 placeholder가 예시인지와
-target-relative guidance가 있는지를 확인한다.
+Markdown 템플릿의 placeholder/example 링크는 `docs/99.templates/` 기준으로
+존재하는 링크가 아니라, 복사된 target 문서에서 다시 계산할 예시다. 활성 문서
+링크 검증은 최종 target 문서를 기준으로 수행하며, 템플릿 원본에서는 예시 링크가
+target-relative guidance와 함께 제공되는지를 확인한다.
 
 ## Documentation Contract
 
