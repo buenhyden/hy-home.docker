@@ -48,17 +48,15 @@ docs/02.architecture/decisions/
 ├── 0002-keycloak-oauth2-proxy-choice.md
 ├── ...
 ├── 0026-standardize-infra-net.md        # Canonical infra_net ADR
-├── 2026-04-01-standardize-infra-net.md  # Legacy duplicate candidate
 └── README.md                            # This file
 ```
 
 ## Current Inventory
 
-- 24 ADR leaf documents are present.
+- 23 ADR leaf documents are present.
 - `0001` through `0011` cover base service and tier selection decisions.
 - `0015` through `0026` cover analytics, hardening/HA, and network decisions.
 - [`0026-standardize-infra-net.md`](./0026-standardize-infra-net.md) is the canonical `infra_net` ADR for this stage.
-- [`2026-04-01-standardize-infra-net.md`](./2026-04-01-standardize-infra-net.md) remains as a legacy duplicate candidate until cross-stage references are remediated with separate approval.
 
 ## How to Work in This Area
 

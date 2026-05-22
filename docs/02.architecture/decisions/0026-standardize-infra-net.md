@@ -1,8 +1,10 @@
-# ADR-20260401: Standardize `infra_net` Subnet
+<!-- Target: docs/02.architecture/decisions/0026-standardize-infra-net.md -->
+
+# ADR-20260401: Standardize `infra_net` Subnet and Static IP Assignment
 
 ## Overview (KR)
 
-이 문서는 모든 인프라 서비스용 네트워크(`infra_net`)의 서브넷을 `172.19.0.0/16`으로 표준화하기로 한 결정에 대한 기록이다.
+이 문서는 모든 인프라 서비스용 네트워크(`infra_net`)의 서브넷을 `172.19.0.0/16`으로 표준화하고, Compose 서비스의 `infra_net` 연결을 dictionary 기반 고정 IP 할당으로 관리하기로 한 결정에 대한 기록이다.
 
 ## Context
 
@@ -13,6 +15,7 @@
 - **결정 사항 1**: 루트 `docker-compose.yml`에서 `infra_net`의 서브넷을 `${INFRA_SUBNET:-172.19.0.0/16}`으로 고정 정의한다.
 - **결정 사항 2**: `include`되는 모든 개별 설정 파일의 서비스에 `infra_net`을 명시적으로 선언한다.
 - **결정 사항 3**: 서비스가 이미 `k3d-hyhome` 등 다른 네트워크에 연결되어 있을 경우, 이를 제거하지 않고 `infra_net`을 추가하는 방식으로 구성한다.
+- **결정 사항 4**: 서비스의 `infra_net` 선언은 dictionary 형태로 작성하고, `ipv4_address`를 통해 `172.19.0.0/16` 안의 고정 IP를 부여한다.
 
 ## Explicit Non-goals
 
@@ -24,8 +27,10 @@
 - **Positive**:
   - 예측 가능한 IP 대역 관리 (`172.19.0.0/16`).
   - 서비스 간 통신 시 DNS 및 IP 참조의 안정성 확보.
+  - 컨테이너 재시작 후에도 서비스 연결성 보장.
 - **Trade-offs**:
   - 서브넷이 겹치는 다른 로컬 네트워크 환경과의 충돌 가능성이 미세하게 존재할 수 있음.
+  - IP 충돌을 피하기 위한 사전 대역 관리 오버헤드가 발생함.
 
 ## Alternatives
 
@@ -33,6 +38,11 @@
 
 - Good: 별도의 설정 없이 Docker가 알아서 할당함.
 - Bad: 서비스 배치 순서에 따라 IP가 바뀌어 Static IP 기반의 설정이 불가능함.
+
+### 대안 2: External IPAM Service
+
+- Good: 독립적인 전담 관리 도구로 IP 주소 관리를 자동화할 수 있음.
+- Bad: 소규모 Docker Compose 기반 로컬 인프라에서 과도한 구성과 운영 복잡도를 추가함.
 
 ## Related Documents
 

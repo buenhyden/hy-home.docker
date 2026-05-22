@@ -1,3 +1,5 @@
+<!-- Target: docs/02.architecture/requirements/0026-standardize-infra-net.md -->
+
 # infra_net Architecture Reference Document
 
 ## Overview (KR)
@@ -6,13 +8,14 @@
 
 ## Summary
 
-`infra_net`은 모든 인프라 관련 서비스(데이터베이스, 인증, 메시지 브로커, 모니터링 등)가 통신하는 핵심 가상 네트워크다. 중앙 집중식 네트워크 관리를 통해 서비스 간의 연결성을 보장하고, 고정 서브넷을 통해 예측 가능한 호스트 통신을 가능하게 한다.
+`infra_net`은 모든 인프라 관련 서비스(데이터베이스, 인증, 메시지 브로커, 모니터링 등)가 통신하는 핵심 가상 네트워크다. 중앙 집중식 네트워크 관리를 통해 서비스 간의 연결성을 보장하고, 고정 서브넷과 dictionary 기반 `ipv4_address` 할당으로 예측 가능한 호스트 통신을 가능하게 한다.
 
 ## Boundaries & Non-goals
 
 - **Owns**:
   - `infra_net` 네트워크 정의 및 서브넷 할당 (`172.19.0.0/16`).
   - 브리지 드라이버 수준의 네트워크 격리와 라우팅.
+  - 서비스 그룹별 고정 IP 주소 영역과 Compose 네트워크 선언 표준.
 - **Consumes**:
   - Docker Compose의 네트워크 추상화 레이어.
   - 시스템 리소스 (IPAM 엔진).
@@ -40,7 +43,8 @@
 
 - **Key Entities / Flows**:
   - **Service Discovery**: Docker 내부 DNS를 통해 서비스명을 IP로 해결.
-  - **Static IP Mapping**: 일부 핵심 서비스(Traefik, DB)는 하드코딩된 IP를 사용하여 참조 편의성을 높임.
+  - **Static IP Mapping**: 핵심 서비스는 `172.19.0.0/16` 안의 고정 IP를 사용하여 참조 편의성을 높임.
+  - **Dictionary Network Definition**: Compose 서비스의 `infra_net` 선언은 `ipv4_address`를 포함한 dictionary 형태를 기준으로 함.
 - **Storage Strategy**: 네트워크 자체는 상태가 없으나, IP 할당 정보는 Compose 상태 파일에서 관리.
 
 ## Infrastructure & Deployment

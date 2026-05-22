@@ -48,17 +48,15 @@ docs/02.architecture/requirements/
 ├── 0002-auth-architecture.md
 ├── ...
 ├── 0026-standardize-infra-net.md        # Canonical infra_net ARD
-├── 2026-04-01-standardize-infra-net.md  # Legacy duplicate candidate
 └── README.md                            # This file
 ```
 
 ## Current Inventory
 
-- 24 ARD leaf documents are present.
+- 23 ARD leaf documents are present.
 - `0001` through `0014` cover the base service and tier architecture set.
 - `0018` through `0026` cover hardening/HA and network architecture follow-up work.
 - [`0026-standardize-infra-net.md`](./0026-standardize-infra-net.md) is the canonical `infra_net` ARD for this stage.
-- [`2026-04-01-standardize-infra-net.md`](./2026-04-01-standardize-infra-net.md) remains as a legacy duplicate candidate until cross-stage references are remediated with separate approval.
 
 ## How to Work in This Area
 

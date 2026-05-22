@@ -50,11 +50,10 @@ docs/02.architecture/
 
 ## Current Inventory
 
-- `requirements/`: 24 ARD leaf documents plus `README.md`.
-- `decisions/`: 24 ADR leaf documents plus `README.md`.
+- `requirements/`: 23 ARD leaf documents plus `README.md`.
+- `decisions/`: 23 ADR leaf documents plus `README.md`.
 - `infra_net` canonical ARD: [`requirements/0026-standardize-infra-net.md`](requirements/0026-standardize-infra-net.md).
 - `infra_net` canonical ADR: [`decisions/0026-standardize-infra-net.md`](decisions/0026-standardize-infra-net.md).
-- Dated `infra_net` files remain in this stage as legacy duplicate candidates until cross-stage references are remediated with separate approval.
 
 ## How to Work in This Area
 
