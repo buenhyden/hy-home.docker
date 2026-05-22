@@ -8,7 +8,7 @@ action: warn
 
 ⚠️ **Force Push 감지됨 (프로젝트 규칙)**
 
-`docs/00.agent-governance/rules/github-governance.md §1`:
+`docs/00.agent-governance/rules/github-governance.md` — Repository Protection Contract:
 
 > "no direct pushes, no force pushes, no bypass of required checks"
 

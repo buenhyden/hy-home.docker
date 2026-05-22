@@ -77,8 +77,8 @@ Present the top 10 findings by priority. Do not demand more than 10 fixes in a s
 
 - **Input**: changed file list + diff + scope path.
 - **Output**: `_workspace/review_<branch>_<YYYY-MM-DD>.md` with findings table + per-domain scores + cross-domain conflict log + final verdict.
-- **On completion**: run postflight-checklist §5 Lint Gate.
-  For PR-targeted reviews, additionally apply the GitHub completion gate from `rules/github-governance.md` §6:
+- **On completion**: run the Lint Gate in `rules/postflight-checklist.md`.
+  For PR-targeted reviews, additionally apply the Completion Gate in `rules/github-governance.md`:
   verify required checks, required reviews, CODEOWNERS-triggered reviewers, and absence of unpinned actions or secret exposure.
 
 ## Error Handling

@@ -14,7 +14,7 @@ action: block
 
 🚫 **GitHub Actions 시크릿 노출 패턴 차단됨 (프로젝트 규칙)**
 
-`docs/00.agent-governance/rules/github-governance.md §4` — 워크플로우 로그에 시크릿이 노출될 수 있는 패턴입니다.
+`docs/00.agent-governance/rules/github-governance.md` — GitHub Actions Security Contract: 워크플로우 로그에 시크릿이 노출될 수 있는 패턴입니다.
 
 **감지된 위험 패턴:**
 - `echo ${{ secrets.* }}` — 시크릿을 로그에 출력

@@ -8,7 +8,7 @@ action: block
 
 🚫 **main 브랜치 직접 푸시 차단됨 (프로젝트 규칙)**
 
-`docs/00.agent-governance/rules/github-governance.md §1 Repository Protection Contract`:
+`docs/00.agent-governance/rules/github-governance.md` — Repository Protection Contract:
 
 > "Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks."
 
@@ -27,7 +27,7 @@ git push origin fix/17-bug-fix
 # → GitHub에서 PR 생성 후 리뷰/머지
 ```
 
-**PR 완료 게이트 (`github-governance.md §6`):**
+**PR 완료 게이트 (`github-governance.md` — Completion Gate):**
 1. 모든 required status checks 통과
 2. 모든 required reviews 승인
 3. BLOCK 수준 소견 없음

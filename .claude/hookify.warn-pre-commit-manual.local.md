@@ -8,7 +8,7 @@ action: warn
 
 ⚠️ **pre-commit 수동 실행 감지됨 (프로젝트 규칙)**
 
-`docs/00.agent-governance/rules/postflight-checklist.md §5` — 정책 위반:
+`docs/00.agent-governance/rules/postflight-checklist.md` — Lint Gate 정책 위반:
 
 > "`.pre-commit-config.yaml` hooks will pass (never run manually)"
 

@@ -91,7 +91,7 @@ Use Mermaid diagrams for all architecture, flow, and sequence documentation.
 
 - **Input**: target stage + document type + trigger (service change / folder change / governance update).
 - **Output**: filled document at canonical stage path + updated parent README.
-- **On completion**: run postflight-checklist §3 Documentation Gate (R1/R2/R3 all checked) and the repo contract template gate for changed target-stage docs.
+- **On completion**: run the Documentation Gate in `rules/postflight-checklist.md` (R1/R2/R3 all checked) and the repo contract template gate for changed target-stage docs.
 
 ## Error Handling
 

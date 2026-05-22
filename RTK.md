@@ -4,7 +4,9 @@
 
 ## Rule
 
-Always prefix shell commands with `rtk`.
+Use `rtk` as the shell-command proxy only when it is available on `PATH`.
+If `rtk` is not installed or not visible in the active sandbox, run the command
+directly and note that RTK filtering was unavailable when relevant.
 
 Examples:
 
@@ -26,7 +28,7 @@ rtk proxy <cmd>     # Run raw command without filtering
 ## Verification
 
 ```bash
+which rtk
 rtk --version
 rtk gain
-which rtk
 ```

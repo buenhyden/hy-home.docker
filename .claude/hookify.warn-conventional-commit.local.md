@@ -8,7 +8,7 @@ action: warn
 
 ⚠️ **Conventional Commit 형식 미준수 감지됨 (프로젝트 규칙)**
 
-`docs/00.agent-governance/rules/git-workflow.md §1` 커밋 표준을 따르지 않는 메시지입니다.
+`docs/00.agent-governance/rules/git-workflow.md`의 Commit Standards를 따르지 않는 메시지입니다.
 
 **필수 형식:**
 ```

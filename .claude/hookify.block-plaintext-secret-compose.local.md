@@ -14,11 +14,11 @@ action: block
 
 🚫 **Docker Compose 파일에 플레인텍스트 시크릿 감지됨 (프로젝트 규칙)**
 
-`AGENTS.md §2 Hard Constraints` — 정책 위반:
+`AGENTS.md` — Hard Constraints 정책 위반:
 
 > "Never write plaintext secrets; use Docker Secrets or `secrets/` mounts."
 
-`docs/00.agent-governance/rules/quality-standards.md §2`:
+`docs/00.agent-governance/rules/quality-standards.md` — Requirements:
 
 > "Never commit plaintext credentials."
 

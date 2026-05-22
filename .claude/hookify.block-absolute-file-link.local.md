@@ -14,7 +14,7 @@ action: block
 
 🚫 **절대 file:// 링크 차단됨 (프로젝트 규칙)**
 
-`docs/00.agent-governance/rules/documentation-protocol.md §2` — 절대 경로 링크 금지 정책:
+`docs/00.agent-governance/rules/documentation-protocol.md` — Documentation Standards:
 
 > "Use only relative links; never use absolute `file://` links."
 

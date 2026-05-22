@@ -17,6 +17,7 @@ Claude Code-specific guidance for this repository.
 - Keep provider-neutral behavior in `providers/agents-md.md` and shared rules.
 - Use `@path` imports for modular instruction loading.
 - Use project memory hierarchy intentionally (enterprise/project/local) and avoid duplicating the same rule across layers.
+- Keep `.claude/hookify.*.local.md` filenames for Hookify compatibility; in this repository those files are tracked team-shared rules, not personal local overrides.
 
 ## 3. Recommended Loading Sequence
 

@@ -38,10 +38,10 @@ This README is for:
 
 - `rules/`: shared governance policies and completion gates.
   - `bootstrap.md` · `persona.md` · `task-checklists.md` · `stage-authoring-matrix.md`
-  - `documentation-protocol.md` (§6 DOCS 3 RULES HALT)
+  - `documentation-protocol.md` — DOCS 3 RULES halt conditions
   - `postflight-checklist.md` — run after every task before declaring completion
   - `github-governance.md` — GitHub-aligned policy baseline (branch protection, PR contracts, Actions security, local-instruction boundary)
-- `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge (§6 §7 per scope).
+- `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge guidance.
 - `providers/`: runtime-specific overlays (`claude`, `gemini`, `codex`, provider-neutral `agents-md`).
 - `agents/`: local agent/function catalog of workspace agents and orchestration functions.
   - Runtime mirror: 9 Claude agents in `.claude/agents/` and 10 functions in `.claude/skills/`.
@@ -95,7 +95,7 @@ This README is for:
 4. Run pre-task checklist before implementation.
 5. Use `subagent-protocol.md` and `workflow-supervisor` for cross-domain or delegated work.
 6. Use stage authoring matrix for any documentation authoring/refactoring task.
-7. For PR-related tasks, load `[LOAD:RULES:GITHUB]` and verify GitHub completion gate (§6 of that rule) before declaring done.
+7. For PR-related tasks, load `[LOAD:RULES:GITHUB]` and verify the Completion Gate in `rules/github-governance.md` before declaring done.
 8. Review `memory/README.md` and `memory/progress.md` before editing; retrieve one or more relevant memory notes for governance, docs, runtime, or repeated-failure work.
 9. Run completion checklist, update `memory/progress.md`, and record durable out-of-scope findings in `memory/` from `docs/99.templates/memory.template.md`.
 

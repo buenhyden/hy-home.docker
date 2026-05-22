@@ -11,7 +11,7 @@ action: warn
 
 ⚠️ **Hook 파일 편집 감지됨 — 패리티 계약 확인 필요 (프로젝트 규칙)**
 
-`docs/00.agent-governance/providers/claude.md §5 Hook Parity Contract`:
+`docs/00.agent-governance/providers/claude.md` — Hook Parity Contract:
 
 > "Claude hook events must stay behaviorally aligned with Codex hook events where both runtimes support the event."
 
@@ -28,7 +28,7 @@ action: warn
 - [ ] 이벤트 추가/제거 → 다른 파일에서도 동일하게 반영
 - [ ] 타임아웃 변경 → 양쪽 파일에서 동일하게 조정
 - [ ] 새 이벤트 매처 → `agent-event-hook.sh`에도 핸들러 추가
-- [ ] `.codex/README.md §Current Hook Contract` 업데이트
+- [ ] `.codex/README.md` — Current Hook Contract 업데이트
 
 **완료 후 검증:**
 ```bash

@@ -14,7 +14,7 @@ action: warn
 
 ⚠️ **거버넌스 문서에 한국어 감지됨 (프로젝트 규칙)**
 
-`docs/00.agent-governance/rules/standards.md §2` — 언어 정책 위반:
+`docs/00.agent-governance/rules/standards.md` — Language Standards 정책 위반:
 
 > "Governance and provider policy files in `docs/00.agent-governance/` must be English."
 

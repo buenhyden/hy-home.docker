@@ -8,7 +8,7 @@ action: warn
 
 ⚠️ **브랜치 이름 규칙 위반 감지됨 (프로젝트 규칙)**
 
-`docs/00.agent-governance/rules/git-workflow.md §2` 브랜칭 전략을 따르지 않는 브랜치 이름입니다.
+`docs/00.agent-governance/rules/git-workflow.md`의 Branching Strategy를 따르지 않는 브랜치 이름입니다.
 
 **허용된 prefix:**
 

@@ -35,7 +35,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 
 - **Input**: task description + scope path + target compose file(s).
 - **Output**: modified file(s) + `_workspace/infra_<artifact>.md` with change summary.
-- **On completion**: run postflight-checklist §1 Infrastructure Gate.
+- **On completion**: run the Infrastructure Gate in `rules/postflight-checklist.md`.
 
 ## Error Handling
 

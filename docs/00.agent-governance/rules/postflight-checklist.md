@@ -6,37 +6,37 @@ layer: agentic
 
 Run after every agent task before declaring completion.
 
-## §1 Infrastructure Gate (infra layer only)
+## Infrastructure Gate (infra layer only)
 
 - [ ] `bash scripts/validation/validate-docker-compose.sh` exits 0
 - [ ] `docker compose ps` shows all expected services UP
 - [ ] No plaintext secrets introduced in any changed file
 - [ ] Named volumes follow `[Service]-[Data]-[Volume]` convention
 
-## §2 Settings Gate (any settings change)
+## Settings Gate (any settings change)
 
 - [ ] `settings.json` contains team-shared config (git tracked)
 - [ ] `settings.local.json` contains personal overrides only
 - [ ] No duplication across both files
 
-## §3 Documentation Gate (DOCS 3 RULES)
+## Documentation Gate (DOCS 3 RULES)
 
-- [ ] R1: Template loaded, all sections filled, `status: draft` set
+- [ ] R1: Template loaded, required sections filled, and lifecycle `status` set according to the target template/stage
 - [ ] R2: Parent `README.md` updated for any folder-level change
 - [ ] R3: `## Related Documents` section present with upstream links
 
-## §4 Secrets Gate (all layers)
+## Secrets Gate (all layers)
 
 - [ ] No plaintext credentials in source-controlled files
 - [ ] Docker Secrets / `secrets/` mounts used for sensitive values
 - [ ] `.env` files excluded from git if they contain real values
 
-## §5 Lint Gate (all layers)
+## Lint Gate (all layers)
 
 - [ ] `.pre-commit-config.yaml` hooks will pass (never run manually)
 - [ ] No linter suppressions added without comment explaining why
 
-## §6 Completion Blockers (HALT if any fail)
+## Completion Blockers (HALT if any fail)
 
 | Condition                          | Action                               |
 | ---------------------------------- | ------------------------------------ |
@@ -52,4 +52,4 @@ Run after every agent task before declaring completion.
 - `docs/00.agent-governance/rules/task-checklists.md`
 - `docs/00.agent-governance/rules/documentation-protocol.md`
 - `docs/00.agent-governance/subagent-protocol.md`
-- `AGENTS.md` §4 Orchestration Protocol
+- `AGENTS.md` — Verification

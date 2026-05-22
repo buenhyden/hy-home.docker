@@ -64,7 +64,7 @@ For PR-related tasks, additionally verify the GitHub completion gate:
 5. No secrets, long-lived credentials, or unpinned action references were introduced.
 
 "Done" means all applicable gates above are met, not just local validation success.
-See `rules/github-governance.md` §6 for the authoritative GitHub gate definition.
+See the Completion Gate in `rules/github-governance.md` for the authoritative GitHub gate definition.
 
 ## Related Documents
 

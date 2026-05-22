@@ -14,7 +14,7 @@ action: block
 
 🚫 **GitHub Actions 플로팅 레퍼런스 차단됨 (프로젝트 규칙)**
 
-`docs/00.agent-governance/rules/github-governance.md §4` — 워크플로우에서 플로팅 브랜치/태그 레퍼런스를 사용하고 있습니다.
+`docs/00.agent-governance/rules/github-governance.md` — GitHub Actions Security Contract: 워크플로우에서 플로팅 브랜치/태그 레퍼런스를 사용하고 있습니다.
 
 **감지된 패턴:** `uses: owner/action@latest` / `@main` / `@master` / `@develop`
 

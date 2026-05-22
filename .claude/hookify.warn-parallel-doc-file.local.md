@@ -11,7 +11,7 @@ action: warn
 
 ⚠️ **병렬 대체 문서 파일 생성 감지됨 (프로젝트 규칙)**
 
-`AGENTS.md §2 Hard Constraints` — 정책 위반:
+`AGENTS.md` — Hard Constraints 정책 위반:
 
 > "Use in-place refactors only; do not create parallel replacement files for canonical docs."
 

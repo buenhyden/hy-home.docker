@@ -72,6 +72,6 @@ Dead `_workspace/` files are preserved for audit; do not delete without user app
 - `docs/00.agent-governance/rules/bootstrap.md`
 - `docs/00.agent-governance/rules/task-checklists.md`
 - `docs/00.agent-governance/rules/postflight-checklist.md`
-- `AGENTS.md` §3 Runtime Surfaces
+- `AGENTS.md` — Runtime Surfaces
 - `docs/00.agent-governance/agents/README.md`
 - `.claude/agents/workflow-supervisor.md`

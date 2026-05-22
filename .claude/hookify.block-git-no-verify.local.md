@@ -8,11 +8,11 @@ action: block
 
 🚫 **git commit --no-verify 차단됨 (프로젝트 규칙)**
 
-전역 Claude Code 정책 및 `docs/00.agent-governance/rules/git-workflow.md §5`:
+전역 Claude Code 정책 및 `docs/00.agent-governance/rules/git-workflow.md` — Enforcement:
 
 > "Changes that bypass checks or violate secret safety must not be merged."
 
-`AGENTS.md §4`:
+`AGENTS.md` — Verification:
 
 > "Lint and format are managed by `.pre-commit-config.yaml`; do not run `pre-commit` manually."
 

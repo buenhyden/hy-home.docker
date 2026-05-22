@@ -274,6 +274,6 @@ hotfix/*   -> PR -> main     (expedited: security review only + emergency approv
 
 ## Related Governance
 
-- `docs/00.agent-governance/rules/github-governance.md` §4 — GitHub Actions security baseline (unpinned actions, secret exposure, OIDC)
+- `docs/00.agent-governance/rules/github-governance.md` — GitHub Actions Security Contract (unpinned actions, secret exposure, OIDC)
 - `.pre-commit-config.yaml` — Pre-commit hooks (linting, secret detection)
 - `scripts/validation/validate-docker-compose.sh` — Compose validation gate

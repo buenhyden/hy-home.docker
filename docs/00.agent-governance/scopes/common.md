@@ -32,12 +32,12 @@ title: 'Common Engineering Scope'
 
 - **Linting and Formatting**: All lint and format checks are managed by `.pre-commit-config.yaml` — never invoke them manually.
   Hooks run automatically on commit. Agents must not run `npm run lint`, `npm run format`, or equivalent commands directly.
-  See `AGENTS.md §6` for the authoritative statement.
+  See the Verification section in `AGENTS.md` for the authoritative statement.
 
 ## 5. Maintenance & Safety
 
 - **Refactoring**: Proactively extract shared logic into common utilities when spotted in multiple layers.
-- **Legacy Code**: When touching legacy files, apply "Boy Scout Rule" (leave it cleaner than you found it).
+- **Cleanup**: Remove only the imports, variables, generated artifacts, or dead paths made stale by your own change; report unrelated cleanup opportunities instead of editing them.
 
 ## 6. File Ownership SSOT
 

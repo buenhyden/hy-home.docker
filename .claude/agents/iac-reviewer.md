@@ -72,7 +72,7 @@ Re-verify after fix; maximum 2 rework cycles before escalating to user.
 
 - **Input**: target compose file(s) + optional live container snapshot (`docker ps -a`).
 - **Output**: `_workspace/iac_review_<YYYY-MM-DD>.md` — findings table + consistency matrix + drift summary.
-- **On completion**: run postflight-checklist §1 Infrastructure Gate (read assertions only).
+- **On completion**: run the Infrastructure Gate in `rules/postflight-checklist.md` (read assertions only).
 
 ## Error Handling
 

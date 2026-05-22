@@ -31,7 +31,7 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 2. **Threat-model first**: lightweight STRIDE threat model before scanning new/changed services.
 3. **Evidence-based**: cite file:line for every finding.
 4. **No false negatives on secrets**: any credential-like string is CRIT until proven safe.
-5. **GitHub Actions scope**: when auditing workflow files (`.github/workflows/`), apply the Actions security baseline from `rules/github-governance.md` §4 — flag unpinned actions, long-lived cloud secrets, and untrusted input injection as BLOCK/CRIT findings.
+5. **GitHub Actions scope**: when auditing workflow files (`.github/workflows/`), apply the GitHub Actions Security Contract in `rules/github-governance.md` — flag unpinned actions, long-lived cloud secrets, and untrusted input injection as BLOCK/CRIT findings.
 6. **Image audit**: for changed services, run `docker image ls <image>` to confirm pinned digest or known tag; flag unpinned `latest` tag as WARN finding.
 7. **DREAD scoring**: apply DREAD risk scoring (Damage/Reproducibility/Exploitability/Affected Users/Discoverability) for high-severity findings to prioritise remediation.
 
@@ -80,7 +80,7 @@ Include a brief NIST CSF gap table in each audit report:
 
 - **Input**: target path(s) + scope path + audit trigger (new service / CVE / routine).
 - **Output**: `_workspace/security_audit_<date>.md` with structured findings table.
-- **On completion**: run postflight-checklist §4 Secrets Gate.
+- **On completion**: run the Secrets Gate in `rules/postflight-checklist.md`.
 
 ## Error Handling
 
