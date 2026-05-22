@@ -29,6 +29,7 @@ The copied target must keep the profile headings for its bucket and must not kee
 - `guides/**` must include `## Usage` and must not include policy or runbook profile headings such as `## Policy Scope`, `## Controls`, `## Review Cadence`, `## When to Use`, or `## Procedure`.
 - `policies/**` must include `## Policy Scope`, `## Controls`, `## Verification`, and `## Review Cadence`; it must not include guide/runbook profile headings such as `## Usage`, `## Runbook Handoff`, `## When to Use`, or `## Procedure`.
 - `runbooks/**` must include `## When to Use`, `## Procedure`, `## Evidence`, `## Rollback or Recovery`, and `## Escalation`; it must not include guide/policy profile headings such as `## Usage`, `## Policy Scope`, `## Controls`, `## Exceptions`, or `## Review Cadence`.
+- `runbooks/**` must keep rollback/recovery factual-only. If no verified rollback or recovery steps exist, write a safe `N/A` reason and route readers to `## Escalation`; do not invent unverified recovery commands.
 
 Do not use this template for incident timelines or postmortems. Use `incident.template.md` or
 `postmortem.template.md` under `docs/05.operations/incidents/`.
@@ -39,6 +40,8 @@ final document path and remove every unused profile and placeholder link.
 ## Target-relative Link Rules
 
 Calculate links from the copied target path, not from `docs/99.templates/`.
+Use Markdown links for repo-local documents. Do not use absolute filesystem paths,
+`file://` URIs, or links calculated from this template source path.
 
 Direct target, for example `docs/05.operations/guides/<topic>.md`:
 
@@ -133,7 +136,7 @@ For repeatable procedures, recovery, rollback, or escalation, link to the matchi
 
 ## Rollback or Recovery
 
-{Safe rollback, fallback, or restoration steps.}
+{Verified safe rollback, fallback, or restoration steps. If none are verified, write `N/A - no verified rollback or recovery procedure is documented yet` and send readers to `## Escalation` with the evidence they must provide.}
 
 ## Escalation
 

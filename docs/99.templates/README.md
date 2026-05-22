@@ -72,6 +72,9 @@ layer: agentic
 11. `docs/99.templates/*.template.md` 원본은 `status: draft` frontmatter를 사용한다. 복사된 Target 문서는 대상 stage의 lifecycle에 맞게 `status: draft`, `status: active`, `status: completed`, generated metadata, 또는 repository README처럼 no-frontmatter 형태로 조정한다.
 12. Template source에 있는 placeholder는 최종 문서에 남기지 않는다. 실제 링크처럼 렌더링되는 placeholder Markdown link와 placeholder command는 target 문서로 복사하기 전에 반드시 삭제하거나 실제 target-relative 값으로 교체한다.
 13. README template의 `<!-- Target: ... -->` 주석은 작성 보조 정보다. Target 문서에서 필수 metadata로 취급하지 않으며, 리뷰에 도움이 되는 경우에만 남긴다.
+14. Historical evidence 문서는 사실을 재해석하지 않는다. 현재 템플릿 heading과 Related Documents만 최소 보강하고, 검증되지 않은 실행 결과나 원인을 새로 쓰지 않는다.
+15. Duplicate 또는 noncanonical 문서는 canonical target, 참조 검색 결과, 보존할 고유 evidence 유무가 확인된 뒤에만 삭제한다. 고유 evidence가 있으면 canonical 문서로 이관하거나 `docs/90.references/`로 이동할 사유를 남긴다.
+16. `## Rollback or Recovery`는 factual-only 원칙을 따른다. 검증된 rollback/recovery 단계가 없으면 임의 절차를 만들지 말고, 안전한 `N/A` 사유와 `## Escalation`의 담당 경로를 명시한다.
 
 ## Template Alignment Note
 
@@ -113,15 +116,18 @@ target-relative guidance와 함께 제공되는지를 확인한다.
 ## Cross-link Rules
 
 - 모든 Markdown target 문서는 `## Related Documents`를 유지한다.
-- 링크는 복사된 target 문서 위치 기준의 상대 경로로 계산한다.
+- 링크는 복사된 target 문서 위치 기준의 target-relative Markdown link로 계산한다.
 - `docs/99.templates`에 있는 예시 링크를 target 문서에 그대로 복사하지 않는다.
+- repo-local 문서 링크에 absolute filesystem path, `file://` URI, 템플릿 위치 기준 경로를 사용하지 않는다.
 - `README.md`는 parent/child index 역할을 하므로 새 파일 추가, 이동, 삭제 시 함께 갱신한다.
 - YAML, GraphQL, Proto 같은 machine-readable contract의 cross-link ownership은 parent Markdown Spec 또는 API Spec에서 관리한다.
 
 ## Stale Document Rules
 
 - 오래된 문서가 같은 책임의 canonical 문서와 충돌하면 먼저 canonical 문서를 확인한다.
-- 의미가 살아 있는 historical evidence는 대량 재작성하지 않고 필요한 최소 구조만 보강한다.
+- 의미가 살아 있는 historical evidence는 대량 재작성하지 않고 필요한 최소 구조만 보강한다. 날짜, 명령 결과, 담당자 판단, incident/task evidence는 원문 사실을 보존한다.
+- Historical evidence를 현재 템플릿으로 정규화할 때는 누락된 필수 heading, lifecycle status, target-relative Related Documents만 보강하고, 검증되지 않은 성공/실패 원인을 추가하지 않는다.
+- Duplicate/noncanonical 문서 삭제 기준: canonical 문서가 존재하고, `rg` 참조 검색 결과가 정리되었고, 고유 evidence가 없거나 이관되었고, 삭제 영향이 계획/작업 evidence에 기록된 경우에만 삭제한다.
 - reference/archive 이동은 reference search와 migration note 후에만 수행한다.
 - 삭제는 참조 검색, 영향 기록, 사용자 승인 없이는 수행하지 않는다.
 

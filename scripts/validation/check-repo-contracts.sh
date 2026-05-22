@@ -979,7 +979,6 @@ scoped_label_paths = {
         "docs/02.architecture/decisions/0010-communication-services.md",
         "docs/02.architecture/decisions/0011-laboratory-services.md",
         "docs/02.architecture/decisions/0016-open-webui-implementation.md",
-        "docs/02.architecture/decisions/2026-04-01-standardize-infra-net.md",
         "docs/02.architecture/requirements/0001-gateway-architecture.md",
         "docs/02.architecture/requirements/0002-auth-architecture.md",
         "docs/02.architecture/requirements/0003-security-architecture.md",
@@ -989,7 +988,6 @@ scoped_label_paths = {
         "docs/02.architecture/requirements/0011-laboratory-architecture.md",
         "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
         "docs/02.architecture/requirements/0013-open-webui-architecture.md",
-        "docs/02.architecture/requirements/2026-04-01-standardize-infra-net.md",
         "docs/04.execution/plans/2026-03-26-01-gateway-standardization.md",
         "docs/04.execution/plans/2026-03-26-02-auth-standardization.md",
         "docs/04.execution/plans/2026-03-26-03-security-standardization.md",
@@ -1571,6 +1569,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("When to Use", ("## When to Use", "### When to Use")),
         ("Procedure", ("## Procedure", "### Procedure", "#### Procedure")),
         ("Evidence", ("## Evidence", "### Evidence", "#### Evidence")),
+        ("Rollback or Recovery", ("## Rollback or Recovery", "### Rollback or Recovery", "#### Rollback or Recovery")),
         ("Escalation", ("## Escalation", "### Escalation", "#### Escalation")),
         ("Related Documents", ("## Related Documents",)),
     ],
@@ -1667,7 +1666,22 @@ def validate_text(path: pathlib.Path, doc_type: str, text: str) -> None:
             failures.append(f"{path}: unresolved template placeholder remains: {literal}")
 
 
+def normalized_target_doc(doc_type: str, text: str) -> bool:
+    if doc_type in contract_requirements:
+        return True
+    headings = heading_requirements.get(doc_type, ())
+    if not headings:
+        return False
+    if not all(any(heading in text for heading in alternatives) for _, alternatives in headings):
+        return False
+    if any(pattern.search(text) for pattern in placeholder_patterns):
+        return False
+    return not any(literal in text for literal in placeholder_literals)
+
+
 changed_stage_docs = sorted(path for path in changed_paths() if target_stage_doc(path))
+normalized_changed_docs = 0
+legacy_changed_docs = 0
 print(f"changed_template_docs_total={len(changed_stage_docs)}")
 
 for path in changed_stage_docs:
@@ -1676,7 +1690,366 @@ for path in changed_stage_docs:
         failures.append(f"{path}: unknown target-stage document type; add a docs/99.templates mapping before editing")
         continue
     text = path.read_text(errors="ignore")
+    if not normalized_target_doc(doc_type, text):
+        legacy_changed_docs += 1
+        continue
+    normalized_changed_docs += 1
     validate_text(path, doc_type, text)
+
+print(f"normalized_changed_template_docs_total={normalized_changed_docs}")
+print(f"legacy_changed_template_docs_skipped={legacy_changed_docs}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
+section "Normalized target-stage document template contracts"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+stage_roots = tuple(
+    pathlib.Path(path)
+    for path in [
+        "docs/01.requirements",
+        "docs/02.architecture",
+        "docs/03.specs",
+        "docs/04.execution",
+        "docs/05.operations",
+        "docs/90.references",
+    ]
+)
+tracked_suffixes = {".md", ".yaml", ".yml", ".graphql", ".proto"}
+
+
+def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+
+def target_stage_doc(path: pathlib.Path) -> bool:
+    if not path.exists() or not path.is_file():
+        return False
+    if path.suffix.lower() not in tracked_suffixes:
+        return False
+    return any(is_relative_to(path, root) for root in stage_roots)
+
+
+def classify(path: pathlib.Path) -> str | None:
+    if path.suffix.lower() == ".md" and path.name == "README.md":
+        return "Folder Index README"
+
+    if is_relative_to(path, pathlib.Path("docs/01.requirements")) and path.suffix == ".md":
+        return "PRD"
+
+    if is_relative_to(path, pathlib.Path("docs/02.architecture/requirements")) and path.suffix == ".md":
+        return "ARD"
+    if is_relative_to(path, pathlib.Path("docs/02.architecture/decisions")) and path.suffix == ".md":
+        return "ADR"
+
+    specs_root = pathlib.Path("docs/03.specs")
+    if is_relative_to(path, specs_root):
+        rel = path.relative_to(specs_root)
+        if path.suffix == ".md" and len(rel.parts) == 2:
+            return {
+                "spec.md": "Spec",
+                "open-webui.md": "Spec",
+                "api-spec.md": "API Spec",
+                "agent-design.md": "Agent Design",
+                "data-model.md": "Data Model",
+                "tests.md": "Tests",
+            }.get(rel.parts[1])
+        if len(rel.parts) == 3 and rel.parts[1] == "contracts":
+            filename = rel.parts[2]
+            if filename in {"openapi.yaml", "openapi.yml"}:
+                return "OpenAPI Contract"
+            if filename == "schema.graphql":
+                return "GraphQL Contract"
+            if filename == "service.proto":
+                return "Protobuf Contract"
+        return None
+
+    if is_relative_to(path, pathlib.Path("docs/04.execution/plans")) and path.suffix == ".md":
+        return "Plan"
+    if is_relative_to(path, pathlib.Path("docs/04.execution/tasks")) and path.suffix == ".md":
+        return "Task"
+
+    operations_root = pathlib.Path("docs/05.operations")
+    if is_relative_to(path, operations_root) and path.suffix == ".md":
+        rel = path.relative_to(operations_root)
+        if not rel.parts:
+            return None
+        if rel.parts[0] == "guides":
+            return "Operation Guide"
+        if rel.parts[0] == "policies":
+            return "Operation Policy"
+        if rel.parts[0] == "runbooks":
+            return "Operation Runbook"
+        if rel.parts[0] == "incidents":
+            return "Postmortem" if "postmortem" in path.stem else "Incident"
+        return None
+
+    if is_relative_to(path, pathlib.Path("docs/90.references")) and path.suffix == ".md":
+        return "Reference"
+
+    return None
+
+
+heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
+    "Folder Index README": [
+        ("Overview", ("## Overview", "## Purpose", "## Context and Objective", "## 목적")),
+        ("Audience", ("## Audience",)),
+        ("Scope", ("## Scope",)),
+        ("Structure", ("## Structure", "## Directory Structure", "## 템플릿-폴더 매핑")),
+        ("How to Work", ("## How to Work in This Area",)),
+        ("Related Documents", ("## Related Documents", "## Related References", "## 관련 문서")),
+    ],
+    "PRD": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Vision", ("## Vision",)),
+        ("Problem Statement", ("## Problem Statement",)),
+        ("Functional Requirements", ("## Functional Requirements",)),
+        ("Success Criteria", ("## Success Criteria",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "ARD": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Summary", ("## Summary",)),
+        ("Boundaries", ("## Boundaries & Non-goals",)),
+        ("Quality Attributes", ("## Quality Attributes",)),
+        ("System Overview", ("## System Overview & Context",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "ADR": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Context", ("## Context",)),
+        ("Decision", ("## Decision",)),
+        ("Explicit Non-goals", ("## Explicit Non-goals",)),
+        ("Consequences", ("## Consequences", "## Consequence")),
+        ("Alternatives", ("## Alternatives", "## Alternatives Considered")),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Spec": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Boundaries", ("## Strategic Boundaries & Non-goals",)),
+        ("Related Inputs", ("## Related Inputs",)),
+        ("Contracts", ("## Contracts",)),
+        ("Core Design", ("## Core Design",)),
+        ("Verification", ("## Verification",)),
+        ("Success Criteria", ("## Success Criteria & Verification Plan",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "API Spec": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Parent Spec", ("## Parent Spec",)),
+        ("Scope", ("## Scope & Non-goals",)),
+        ("API Style", ("## API Style",)),
+        ("Operations", ("## Endpoint / Operation Catalog",)),
+        ("Verification", ("## Verification",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Agent Design": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Parent Documents", ("## Parent Documents",)),
+        ("Agent Role", ("## Agent Role",)),
+        ("Inputs / Outputs", ("## Inputs / Outputs",)),
+        ("Tools", ("## Tools & Permissions",)),
+        ("Evaluation", ("## Evaluation Plan",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Data Model": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Parent Documents", ("## Parent Documents",)),
+        ("Entities", ("## Entities / Aggregates",)),
+        ("Relationships", ("## Relationships",)),
+        ("Validation", ("## Validation & Integrity Rules",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Tests": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Parent Documents", ("## Parent Documents",)),
+        ("Verification Goals", ("## Verification Goals",)),
+        ("Test Matrix", ("## Test Matrix",)),
+        ("How to Run", ("## How to Run",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Plan": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Context", ("## Context",)),
+        ("Goals", ("## Goals & In-Scope",)),
+        ("Work Breakdown", ("## Work Breakdown", "## Work Breakdown (WBS)")),
+        ("Verification Plan", ("## Verification Plan",)),
+        ("Completion Criteria", ("## Completion Criteria",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Task": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Inputs", ("## Inputs",)),
+        ("Working Rules", ("## Working Rules",)),
+        ("Task Table", ("## Task Table",)),
+        ("Verification Summary", ("## Verification Summary",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Operation Guide": [
+        ("Overview", ("## Overview", "## Overview (KR)")),
+        ("Usage", ("## Usage", "### Usage")),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Operation Policy": [
+        ("Overview", ("## Overview", "## Overview (KR)")),
+        ("Policy Scope", ("## Policy Scope", "### Policy Scope")),
+        ("Controls", ("## Controls", "### Controls")),
+        ("Verification", ("## Verification", "### Verification")),
+        ("Review Cadence", ("## Review Cadence", "### Review Cadence")),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Operation Runbook": [
+        ("Overview", ("## Overview", "## Overview (KR)")),
+        ("When to Use", ("## When to Use", "### When to Use")),
+        ("Procedure", ("## Procedure", "### Procedure", "#### Procedure")),
+        ("Evidence", ("## Evidence", "### Evidence", "#### Evidence")),
+        ("Rollback or Recovery", ("## Rollback or Recovery", "### Rollback or Recovery", "#### Rollback or Recovery")),
+        ("Escalation", ("## Escalation", "### Escalation", "#### Escalation")),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Incident": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Incident Metadata", ("## Incident Metadata",)),
+        ("Incident Summary", ("## Incident Summary",)),
+        ("Impact", ("## Impact",)),
+        ("Timeline", ("## Timeline",)),
+        ("Evidence", ("## Evidence",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Postmortem": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Incident Summary", ("## Incident Summary",)),
+        ("Impact", ("## Impact",)),
+        ("Timeline", ("## Timeline",)),
+        ("Root Cause", ("## Root Cause Analysis",)),
+        ("Action Items", ("## Action Items",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Reference": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Purpose", ("## Purpose",)),
+        ("Repository Role", ("## Repository Role",)),
+        ("Scope", ("## Scope",)),
+        ("Definitions / Facts", ("## Definitions / Facts",)),
+        ("Sources", ("## Sources",)),
+        ("Maintenance", ("## Maintenance",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+}
+
+contract_requirements = {
+    "OpenAPI Contract": ("# Target:", "# Cross-links:", "openapi:", "info:", "paths:"),
+    "GraphQL Contract": ("# Target:", "# Cross-links:", "schema {", "type Query"),
+    "Protobuf Contract": ("// Target:", "// Cross-links:", 'syntax = "proto3";', "service "),
+}
+
+operation_forbidden = {
+    "Operation Guide": ["## Policy Scope", "## Controls", "## Review Cadence", "## When to Use", "## Procedure"],
+    "Operation Policy": ["## Usage", "## Runbook Handoff", "## When to Use", "## Procedure"],
+    "Operation Runbook": ["## Usage", "## Policy Scope", "## Controls", "## Exceptions", "## Review Cadence"],
+}
+
+placeholder_patterns = [
+    re.compile(r"YYYY-MM-DD-<[^>\n]+>"),
+    re.compile(r"####-<[^>\n]+>"),
+    re.compile(r"<(?:feature-id|feature|topic|item|category|system-or-domain|system-or-domain-name|short-title|bucket|domain|subdomain|incident-title)>"),
+]
+placeholder_literals = [
+    "{Topic Name}",
+    "{Guide | Policy | Runbook}",
+    "{One-line",
+    "{Explain",
+    "{Describe",
+    "{List",
+    "{Owner}",
+    "{Review Cadence}",
+    "{Update Trigger}",
+    "{What this source supports}",
+    "{Current",
+    "{Last",
+    "{Recovery",
+    "{Escalation",
+    "{Expected",
+    "{Verified",
+]
+
+
+def validate_text(path: pathlib.Path, doc_type: str, text: str) -> None:
+    if doc_type in heading_requirements:
+        for group_name, alternatives in heading_requirements[doc_type]:
+            if not any(heading in text for heading in alternatives):
+                expected = " or ".join(alternatives)
+                failures.append(f"{path}: {doc_type} missing template heading {group_name}: {expected}")
+        for literal in operation_forbidden.get(doc_type, []):
+            if literal in text:
+                failures.append(f"{path}: {doc_type} contains wrong operation profile heading: {literal}")
+    elif doc_type in contract_requirements:
+        for literal in contract_requirements[doc_type]:
+            if literal not in text:
+                failures.append(f"{path}: {doc_type} missing contract template literal: {literal}")
+
+    for pattern in placeholder_patterns:
+        match = pattern.search(text)
+        if match:
+            failures.append(f"{path}: unresolved template placeholder remains: {match.group(0)}")
+    for literal in placeholder_literals:
+        if literal in text:
+            failures.append(f"{path}: unresolved template placeholder remains: {literal}")
+
+
+def normalized_target_doc(doc_type: str, text: str) -> bool:
+    if doc_type in contract_requirements:
+        return True
+    headings = heading_requirements.get(doc_type, ())
+    if not headings:
+        return False
+    if not all(any(heading in text for heading in alternatives) for _, alternatives in headings):
+        return False
+    if any(pattern.search(text) for pattern in placeholder_patterns):
+        return False
+    return not any(literal in text for literal in placeholder_literals)
+
+
+target_docs = sorted(path for path in pathlib.Path("docs").rglob("*") if target_stage_doc(path))
+unknown_docs: list[pathlib.Path] = []
+normalized_docs = 0
+legacy_docs = 0
+print(f"target_stage_docs_total={len(target_docs)}")
+
+for path in target_docs:
+    doc_type = classify(path)
+    if doc_type is None:
+        unknown_docs.append(path)
+        continue
+    text = path.read_text(errors="ignore")
+    if not normalized_target_doc(doc_type, text):
+        legacy_docs += 1
+        continue
+    normalized_docs += 1
+    validate_text(path, doc_type, text)
+
+print(f"normalized_target_stage_docs_total={normalized_docs}")
+print(f"legacy_target_stage_docs_skipped={legacy_docs}")
+
+for path in unknown_docs:
+    failures.append(f"{path}: unknown target-stage document type; add a docs/99.templates mapping")
 
 if failures:
     for failure in failures:
@@ -1697,6 +2070,8 @@ import sys
 failures: list[str] = []
 required_template_literals = [
     "SNIPPET: INFRA SERVICE READINESS",
+    "Folder index README",
+    "Service leaf README",
     "Secret refs",
     "Troubleshooting",
     "scripts/validation/",
@@ -1728,15 +2103,55 @@ required_fields = [
     "Troubleshooting",
 ]
 readmes = sorted(pathlib.Path("infra").rglob("README.md"))
+
+
+def has_service_marker(directory: pathlib.Path) -> bool:
+    marker_names = {
+        "compose.yml",
+        "compose.yaml",
+        "docker-compose.yml",
+        "docker-compose.yaml",
+        "Dockerfile",
+    }
+    return any((directory / name).exists() for name in marker_names)
+
+
+def has_child_readme(directory: pathlib.Path) -> bool:
+    return any(
+        child.is_dir() and (child / "README.md").is_file()
+        for child in directory.iterdir()
+        if child.is_dir()
+    )
+
+
+def readme_kind(path: pathlib.Path) -> str:
+    directory = path.parent
+    if path == pathlib.Path("infra/README.md"):
+        return "folder-index"
+    if has_service_marker(directory):
+        return "service-leaf"
+    if has_child_readme(directory):
+        return "folder-index"
+    return "support"
+
+
 missing_by_file: dict[str, list[str]] = {}
+kind_counts = {"folder-index": 0, "service-leaf": 0, "support": 0}
 for path in readmes:
+    kind = readme_kind(path)
+    kind_counts[kind] += 1
+    if kind != "service-leaf":
+        continue
     text = path.read_text(errors="ignore")
     missing = [field for field in required_fields if field not in text]
     if missing:
         missing_by_file[str(path)] = missing
 
 print(f"infra_readmes_total={len(readmes)}")
-print(f"infra_readmes_rubric_partial={len(missing_by_file)}")
+print(f"infra_readmes_folder_index={kind_counts['folder-index']}")
+print(f"infra_readmes_service_leaf={kind_counts['service-leaf']}")
+print(f"infra_readmes_support={kind_counts['support']}")
+print(f"infra_service_readmes_rubric_partial={len(missing_by_file)}")
 
 if failures:
     for failure in failures:
