@@ -22,12 +22,14 @@ action: warn
 | 설정 파일 | `.claude/settings.json` | `.codex/hooks.json` |
 | 이벤트 커버리지 | SessionStart, PreToolUse, PostToolUse, SessionEnd, Stop, PreCompact | 동일 |
 | 파일 편집 매처 | `Write\|Edit\|MultiEdit\|apply_patch\|ApplyPatch` | 동일 |
-| 공유 디스패처 | `scripts/hooks/agent-event-hook.sh` | 동일 |
+| 공유 디스패처 | `.claude/hooks/*.sh` thin wrapper → `scripts/hooks/agent-event-hook.sh` | `scripts/hooks/agent-event-hook.sh` |
+| README guidance | target-stage template guidance + README folder/service-leaf guidance | 동일 |
 
 **패리티 체크리스트:**
 - [ ] 이벤트 추가/제거 → 다른 파일에서도 동일하게 반영
 - [ ] 타임아웃 변경 → 양쪽 파일에서 동일하게 조정
 - [ ] 새 이벤트 매처 → `agent-event-hook.sh`에도 핸들러 추가
+- [ ] README edit guidance → folder index vs infra service leaf readiness 계약 유지
 - [ ] `.codex/README.md` — Current Hook Contract 업데이트
 
 **완료 후 검증:**

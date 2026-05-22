@@ -5,7 +5,7 @@ event: file
 conditions:
   - field: file_path
     operator: regex_match
-    pattern: /docs/(0[1-9]|[1-9][0-9])\./
+    pattern: (^|/)docs/(0[1-9]|[1-9][0-9])\.
 action: warn
 ---
 
@@ -21,6 +21,7 @@ action: warn
 - [ ] 사용자로부터 명시적인 수정 지시를 받았나요?
 - [ ] 활성 스테이지 아티팩트 디렉토리(`docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/04.execution`, `docs/05.operations`, `docs/90.references`, `docs/99.templates`) 내의 파일인가요?
 - [ ] 인플레이스 수정인가요? (병렬 대체 파일 생성 금지)
+- [ ] 상대 경로(`docs/...`)와 절대 경로(`/.../docs/...`) 어느 형태로 들어와도 이 규칙이 적용됩니다.
 
 **수정 후 검증:**
 

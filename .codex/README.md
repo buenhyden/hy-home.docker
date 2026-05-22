@@ -70,7 +70,7 @@ directly to verify tool visibility.
 ## Current Hook Contract
 
 - `SessionStart` uses `scripts/hooks/agent-event-hook.sh` to emit project context when the event is supported.
-- `PreToolUse` uses `scripts/hooks/agent-event-hook.sh` to emit Graphify advisory context when relevant, Docker Compose guardrail context before matching edits, and template-first guidance before target-stage documentation edits.
+- `PreToolUse` uses `scripts/hooks/agent-event-hook.sh` to emit Graphify advisory context when relevant, Docker Compose guardrail context before matching edits, template-first guidance before target-stage documentation edits, and README guidance before README edits.
 - `PostToolUse` uses `scripts/hooks/agent-event-hook.sh`, which delegates to `scripts/hooks/post-tool-validate.sh` after file edits when the hook payload includes changed paths.
 - `Stop` blocks completion when changed target-stage docs fail `bash scripts/validation/check-repo-contracts.sh`.
 - `SessionEnd` and `PreCompact` route through `scripts/hooks/agent-event-hook.sh` for lifecycle-safe advisory context when the runtime supports those events.
@@ -78,6 +78,7 @@ directly to verify tool visibility.
 ## Hook Parity Contract
 
 - Hook event coverage should stay aligned with `.claude/settings.json` where both runtimes support the event; edit matchers cover `Write`, `Edit`, `MultiEdit`, `apply_patch`, and `ApplyPatch`.
+- README guidance is provider-neutral: folder-index README edits must use `docs/99.templates/readme.template.md`, and infra service leaf README edits must include the Service Readiness fields without reading secret values.
 - The hook is advisory and must not be treated as the policy source of truth.
 - Agents still follow `AGENTS.md`, provider notes, scope rules, and active sandbox approvals.
 

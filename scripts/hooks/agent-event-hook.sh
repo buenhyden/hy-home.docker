@@ -152,6 +152,21 @@ if (project / "graphify-out" / "graph.json").is_file() and (not tool_name or too
 
 edit_tools = {"Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch"}
 if not tool_name or tool_name in edit_tools:
+    def service_marker_for(short_path: str) -> bool:
+        target = (project / short_path).resolve()
+        directory = target.parent if target.name == "README.md" else target
+        marker_names = {
+            "compose.yml",
+            "compose.yaml",
+            "docker-compose.yml",
+            "docker-compose.yaml",
+            "Dockerfile",
+        }
+        try:
+            return any((directory / name).exists() for name in marker_names)
+        except Exception:
+            return False
+
     for path in paths:
         short_path = path
         project_prefix = str(project) + "/"
@@ -198,6 +213,33 @@ if not tool_name or tool_name in edit_tools:
                 "Stop hooks run `bash scripts/validation/check-repo-contracts.sh` to enforce the "
                 "changed-doc template gate."
             )
+            break
+    for path in paths:
+        short_path = path
+        project_prefix = str(project) + "/"
+        if short_path.startswith(project_prefix):
+            short_path = short_path[len(project_prefix):]
+        short_path = short_path.removeprefix("./")
+        if short_path.endswith("README.md"):
+            if short_path.startswith("infra/") and service_marker_for(short_path):
+                system_messages.append(
+                    "Infra service README edit detected.\n\n"
+                    f"Path: `{short_path}`\n\n"
+                    "Use `docs/99.templates/readme.template.md` with the Infra Service "
+                    "Readiness snippet. Include Purpose, Config files, Config values, "
+                    "Compose linkage, Networks, Volumes, Ports, Labels, Secret refs, "
+                    "Healthcheck, Operations, Validation, and Troubleshooting. Record "
+                    "secret names and mount paths only; never read or paste secret values."
+                )
+            else:
+                system_messages.append(
+                    "README edit detected.\n\n"
+                    f"Path: `{short_path}`\n\n"
+                    "Use `docs/99.templates/readme.template.md` as the target-path guide. "
+                    "Decide whether this README is a folder index or service leaf before "
+                    "editing, preserve `## Related Documents`, and calculate links from "
+                    "the README target path rather than from `docs/99.templates/`."
+                )
             break
 
 if not system_messages and not additional_context:

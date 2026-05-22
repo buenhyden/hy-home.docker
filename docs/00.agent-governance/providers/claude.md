@@ -44,7 +44,8 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 - Claude hook events must stay behaviorally aligned with Codex hook events where both runtimes support the event.
 - `SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`, `Stop`, and `PreCompact` route through thin `.claude/hooks/*.sh` wrappers and then the provider-neutral dispatcher in `scripts/hooks/agent-event-hook.sh`.
 - Claude `PreToolUse` and `PostToolUse` matchers must cover normal file edits and patch-based edits, including `Write`, `Edit`, `MultiEdit`, `apply_patch`, and `ApplyPatch`.
-- Claude hooks must surface template-first guidance before target-stage documentation edits and block Stop when changed target-stage docs fail `bash scripts/validation/check-repo-contracts.sh`.
+- Claude hooks must surface template-first guidance before target-stage documentation edits, README template/readiness guidance before README edits, and block Stop when changed target-stage docs fail `bash scripts/validation/check-repo-contracts.sh`.
+- README guidance must remain provider-neutral: folder-index README edits route to `docs/99.templates/readme.template.md`, and infra service leaf README edits require Service Readiness evidence without reading secret values.
 - Runtime hooks provide advisory context and validation routing only. Policy remains in `docs/00.agent-governance/`.
 
 ## 6. Operational Practices
