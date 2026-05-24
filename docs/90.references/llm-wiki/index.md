@@ -348,6 +348,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-22-spec-execution-implementation-audit.md](../../04.execution/plans/2026-05-22-spec-execution-implementation-audit.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-22-workspace-docs-agent-governance-remediation.md](../../04.execution/plans/2026-05-22-workspace-docs-agent-governance-remediation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-22-workspace-governance-bounded-reaudit.md](../../04.execution/plans/2026-05-22-workspace-governance-bounded-reaudit.md) | Markdown reference |
+| [docs/04.execution/plans/2026-05-24-workspace-audit-improvement.md](../../04.execution/plans/2026-05-24-workspace-audit-improvement.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -389,6 +390,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-05-22-spec-execution-implementation-audit.md](../../04.execution/tasks/2026-05-22-spec-execution-implementation-audit.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-22-workspace-docs-agent-governance-remediation.md](../../04.execution/tasks/2026-05-22-workspace-docs-agent-governance-remediation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-05-24-workspace-audit-improvement.md](../../04.execution/tasks/2026-05-24-workspace-audit-improvement.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
