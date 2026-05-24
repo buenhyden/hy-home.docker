@@ -43,6 +43,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | T-WAI-009 | Close follow-up input-task evidence gaps | doc | Original user input task list | Follow-up gap closure | Target Path Ledger, Reviewer Baseline Ledger, role/purpose-safe secrets parser evidence, and Graphify update row added | main agent | Done |
 | T-WAI-010 | Revalidate completed audit evidence against current repository state | test | Bounded revalidation plan | Revalidation addendum | Six read-only reviewer roles completed; inventory, env, secrets, CI/CD, and verification evidence refreshed | main agent + read-only reviewers | Done |
 | T-WAI-011 | Review bounded revalidation omissions with office-hours lens | doc | Follow-up objective | Omission review addendum | Requirement-by-requirement reflection, implementation plan, and missing verification row recorded in this canonical task | main agent | Done |
+| T-WAI-012 | Review bounded revalidation omissions with Superpowers brainstorming lens | doc | Follow-up objective | Brainstorming review addendum | Design alternatives, selected approach, implementation plan, and verification evidence recorded in this canonical task | main agent | Done |
 
 ## Phase View
 
@@ -87,6 +88,13 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 - [x] Read `$office-hours` from `/home/hy/gstack/.agents/skills/gstack-office-hours/SKILL.md` and used its forcing-question review pattern.
 - [x] Did not run the full office-hours design-doc workflow because it is product-design oriented, requires an `AskUserQuestion` tool gate that is not available in this runtime, and explicitly forbids implementation.
 - [x] Added the narrow missing evidence: a requirement-by-requirement reflection matrix and an explicit `git status --short --branch` verification row.
+
+### Phase 11: Superpowers brainstorming omission review
+
+- [x] Reviewed `$superpowers:brainstorming` from `/home/hy/.codex/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/SKILL.md`.
+- [x] Treated the follow-up continuation as approval of the previously presented design: keep evidence in the canonical audit Task, not a duplicate Superpowers design doc.
+- [x] Compared the initial bounded revalidation plan against the current Task evidence with the brainstorming flow: context, alternatives, selected design, implementation plan, self-review, and verification.
+- [x] Preserved runtime, secret-value, actual `.env`, Docker start/stop, deploy, push/PR, deletion-risk, and untracked Storybook MCP deferrals.
 
 ## Coverage Ledger
 
@@ -197,6 +205,53 @@ the narrowest missing wedge, and convert the result into auditable evidence.
 | OR-003 | Patch only the canonical audit task and progress log | Diff limited to this task artifact and `memory/progress.md` | Done |
 | OR-004 | Re-run docs quality gates after the addendum | Repo contract, doc traceability, LLM Wiki freshness, Graphify health, status, and diff hygiene passed | Done |
 
+## Superpowers Brainstorming Review
+
+`$superpowers:brainstorming` was used as a design discipline for this follow-up:
+check project context first, compare alternatives, present a design, then
+implement the approved smallest artifact change. The default Superpowers output
+path `docs/superpowers/specs/` was not used because this repository constrains
+active stage artifacts to `docs/01` through `docs/05`, `docs/90.references`, and
+`docs/99.templates`. The canonical execution Task remains the correct evidence
+home for this audit addendum.
+
+| Brainstorming Step | Result | Evidence |
+| --- | --- | --- |
+| Explore project context | Current `main` was clean except pre-existing untracked `projects/storybook/mcp/`; bounded revalidation and office-hours addenda were already merged. | `git status --short --branch`; recent commit log; this task artifact |
+| Visual companion | Not offered because this is a text-only audit evidence review, not a visual/UI design problem. | Brainstorming visual companion rule applied as not applicable |
+| Clarifying question | The follow-up continuation confirmed the goal to proceed after the design proposal. | Thread continuation objective repeated the Superpowers brainstorming review request |
+| Alternatives | Three options were compared: canonical Task addendum, new `docs/superpowers/specs/` design doc, or progress-only log. | Design alternatives below |
+| Selected design | Canonical Task addendum plus progress log, with no duplicate full-audit artifact. | `DEC-WAI-009`, `CS-WAI-007` |
+| Self-review | The addendum has no placeholders, avoids duplicate docs, and keeps runtime/value/remote/deletion work deferred. | Reflection rows and verification rows |
+| Implementation transition | The implementation plan was kept inside this Task because no new implementation skill or non-stage design doc is needed. | Brainstorming Implementation Plan below |
+
+## Brainstorming Design Alternatives
+
+| Option | Summary | Trade-off | Decision |
+| --- | --- | --- | --- |
+| A | Add a Phase 11 Superpowers brainstorming review to this canonical audit Task and progress log. | Best fit for repo taxonomy and avoids duplicate audit artifacts; less literal than creating `docs/superpowers/specs/`. | Selected |
+| B | Create `docs/superpowers/specs/2026-05-24-workspace-audit-brainstorming-design.md`. | Matches Superpowers default path, but creates a non-canonical active docs path in this repository. | Rejected |
+| C | Add only a progress-log entry. | Minimal, but too weak to prove the initial bounded revalidation plan was reviewed with the requested skill. | Rejected |
+
+## Brainstorming Reflection Matrix
+
+| Requirement | Existing Evidence Before Phase 11 | Missing or Weak Evidence | Phase 11 Result |
+| --- | --- | --- | --- |
+| Use `$superpowers:brainstorming` for investigation and review | Skill Review mentioned a different brainstorming path and prior planning usage | No explicit evidence that the Superpowers plugin skill was reviewed for the bounded revalidation follow-up | Added Phase 11 and this Superpowers Brainstorming Review |
+| Write an implementation plan and proceed | Office-hours addendum had an implementation plan for that skill lens | No Superpowers-specific alternatives or selected design were recorded | Added Brainstorming Design Alternatives and Brainstorming Implementation Plan |
+| Check whether the initial bounded revalidation plan had unreflected items | Bounded Revalidation Reflection Matrix already mapped the initial plan | The matrix did not explain the Superpowers review outcome | Added this matrix and kept the earlier matrix as canonical requirement evidence |
+| Avoid duplicate full-audit docs | `DEC-WAI-007` and Phase 9 already chose in-place revalidation | Superpowers default design-doc path could conflict with this if followed literally | Recorded `DEC-WAI-009` and kept evidence in this Task |
+| Keep high-risk work deferred | Working Rules, Deferred Risk Register, Skipped Verification rows | No new gap found | Preserved existing deferrals unchanged |
+
+## Brainstorming Implementation Plan
+
+| Step | Implementation | Verification | Status |
+| --- | --- | --- | --- |
+| BR-001 | Read the Superpowers brainstorming skill and current audit evidence | Skill hard gate, default design-doc path, and repository stage matrix inspected | Done |
+| BR-002 | Compare implementation alternatives | Options A, B, and C recorded with trade-offs | Done |
+| BR-003 | Patch only canonical Task evidence and progress log | Diff limited to this task artifact and `memory/progress.md` | Done |
+| BR-004 | Run repository documentation gates | Graphify health advisory recorded; repo contract, doc traceability, LLM Wiki freshness, diff hygiene, and status check passed | Done |
+
 ## Gap Registry
 
 | ID | Area | Path | Summary | Evidence | Impact | Action | Risk | Related Task | Verification | Status |
@@ -248,6 +303,7 @@ the narrowest missing wedge, and convert the result into auditable evidence.
 | DEC-WAI-006 | Defer Docker port/secret wiring changes | Runtime and secret behavior are medium/high risk | Change compose YAML now | Avoids stateful side effects | N/A | Done |
 | DEC-WAI-007 | Revalidate in place on `codex/workspace-audit-revalidation` | Existing audit artifacts remain canonical and only evidence drift needed updates | Create duplicate full-audit artifacts | Keeps history compact and avoids duplicate ledgers | Revert this addendum patch | Done |
 | DEC-WAI-008 | Use office-hours as an omission-review lens, not a full design workflow | The skill is product-design oriented, requires an unavailable `AskUserQuestion` gate, and forbids implementation; the user requested repository implementation | Stop at blocked skill workflow or create a new design doc | Preserves the user's implementation goal while documenting the skill constraint | Remove Phase 10 addendum if a full design-doc workflow is later approved | Done |
+| DEC-WAI-009 | Use Superpowers brainstorming as a design lens inside the canonical Task | The plugin skill's default `docs/superpowers/specs/` output conflicts with this repository's active-stage taxonomy, while the user goal is to implement an audit evidence addendum | Create a non-canonical design doc or record only a progress row | Proves the requested skill review without duplicate audit artifacts | Remove Phase 11 addendum if a separate approved design-doc workflow supersedes it | Done |
 
 ## Change Scope
 
@@ -259,6 +315,7 @@ the narrowest missing wedge, and convert the result into auditable evidence.
 | CS-WAI-004 | Follow-up input gap closure Plan/Task and this task addendum | Docs artifact | Close input-task evidence gaps | INPUT-GAP-001 to INPUT-GAP-005 | Low |
 | CS-WAI-005 | This task artifact and progress log | Docs artifact | Record bounded revalidation evidence and current counts | T-WAI-010, CI-001 | Low |
 | CS-WAI-006 | This task artifact and progress log | Docs artifact | Record office-hours omission review, implementation plan, and missing standalone status verification evidence | T-WAI-011 | Low |
+| CS-WAI-007 | This task artifact and progress log | Docs artifact | Record Superpowers brainstorming review, alternatives, selected implementation plan, and verification evidence | T-WAI-012 | Low |
 
 ## Verification Log
 
@@ -286,6 +343,7 @@ the narrowest missing wedge, and convert the result into auditable evidence.
 | VER-WAI-020 | Revalidation gate rerun | Local quality gates | PASS | Repo contract, doc traceability, LLM Wiki freshness, template/security baseline, Compose validation/preflight, QuickWin baseline, hardening baseline, Storybook coverage, and `git diff --check` passed during reviewer/main-agent revalidation | N/A | Remote GitHub and runtime behavior still unverified by design |
 | VER-WAI-021 | `git status --short --branch` | Branch and dirty state after Phase 10 edits | PASS | On `codex/workspace-audit-revalidation`; modified files limited to this task artifact and `memory/progress.md`; pre-existing untracked `projects/storybook/mcp/` remains untouched | N/A | Commit/staging still pending if this addendum is committed |
 | VER-WAI-022 | Office-hours omission review docs gate | Phase 10 addendum | PASS | Graphify health advisory with 3 cross-root inferred edges; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS | N/A | Graphify remains advisory by design |
+| VER-WAI-023 | Superpowers brainstorming review docs gate | Phase 11 addendum | PASS | Graphify health advisory with 3 cross-root inferred edges; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
 
 ## Skipped / Failed Verification
 
@@ -301,6 +359,7 @@ the narrowest missing wedge, and convert the result into auditable evidence.
 
 | Skill / Path | Status | Impact | Fallback |
 | --- | --- | --- | --- |
+| `/home/hy/.codex/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/SKILL.md` | Readable / used as Phase 11 design lens | Forced context review, alternatives, selected design, and implementation-plan evidence before patching | Repo stage taxonomy keeps the evidence in this canonical Task instead of `docs/superpowers/specs/` |
 | `/home/hy/.agents/skills/brainstorming/SKILL.md` | Readable / used in planning | Scope lock and decision gating | Repo-approved plan controls execution |
 | `/home/hy/.agents/skills/grill-with-docs/SKILL.md` | Readable / used in planning | Forced explicit edge decisions | Repo evidence replaced answerable questions |
 | `/home/hy/.agents/skills/documentation-writer/SKILL.md` | Readable / used | Diataxis-aware docs cleanup | Stage templates control final structure |
