@@ -230,6 +230,7 @@ GitHub Actions에서는 다음 품질 게이트를 사용합니다.
 - `template-security-baseline` - 템플릿/보안 baseline 검사
 - `quickwin-baseline` - QuickWin baseline 검사
 - `pre-commit` - hook 기반 포맷/린트/품질 검사
+- `storybook-coverage` - Storybook Next.js coverage 검사
 - `zizmor` - GitHub Actions 보안 분석
 
 `pre-commit` job은 공통 hook 정책을 CI에서 재현하고, 별도 `zizmor` job은
