@@ -40,6 +40,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | T-WAI-006 | Implement low-risk docs/checks cleanup | doc | Approved low-risk scope | Workstreams 2-3 | README, changelog, `.env.example`, stale links, runbook guardrails, Graphify guidance, Hookify metadata gate | workers / main agent | Done |
 | T-WAI-007 | Record deferred medium/high-risk work | doc | Approved deferred scope | Deferred Items | Deferred Risk Register complete | main agent | Done |
 | T-WAI-008 | Verify and prepare local commits | test | Completion criteria | Verification | Required local checks recorded; local task-sized commits prepared on the feature branch | main agent | Done |
+| T-WAI-009 | Close follow-up input-task evidence gaps | doc | Original user input task list | Follow-up gap closure | Target Path Ledger, Reviewer Baseline Ledger, role/purpose-safe secrets parser evidence, and Graphify update row added | main agent | Done |
 
 ## Phase View
 
@@ -64,6 +65,13 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 - [x] Recorded skipped/failure reasons and local alternatives.
 - [x] Prepare local task-sized commits after the final verification pass.
 
+### Phase 8: input-task evidence gap closure
+
+- [x] Rechecked the completed audit artifacts against the original input task list.
+- [x] Added explicit target-path coverage evidence.
+- [x] Added explicit reviewer baseline evidence.
+- [x] Added explicit Graphify update and role/purpose-safe metadata parser evidence.
+
 ## Coverage Ledger
 
 | Area | Path / Target | Exists | Initial Read | Needs Deep Read | Reason | Owner | Status |
@@ -84,13 +92,41 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | Inventory | Count | Method | Notes |
 | --- | ---: | --- | --- |
 | Agent governance files | 124 | `rg --files` over root shims and governance/runtime dirs | Excludes unrelated generated output |
-| Documentation lifecycle files | 497 | `rg --files` over staged docs | Target-stage total became 478 after new artifacts |
+| Documentation lifecycle files | 501 | `rg --files` over staged docs | Count includes the input-task gap closure Plan/Task artifacts |
 | Script files | 14 | `rg --files scripts` | Validator README and contract checker changed |
 | Infrastructure files | 273 | `rg --files infra docker-compose.yml .env.example` | Compose behavior unchanged |
 | Compose files | 48 | `find infra -path '*/docker-compose*.yml' -o ...` | Existing validator excludes one MinIO cluster YAML |
 | Workflow/ruleset files | 6 | `rg --files .github/workflows .github/rulesets` | Local-only CI/CD review |
 | Hookify rule files | 18 | `find .claude -maxdepth 1 -name 'hookify*.local.md'` | Metadata validation now enforced |
 | Runtime Skill mirror files | 10 Claude + 10 `.agents` | `find .../skills -name skill.md` | No Skill edits made |
+
+## Target Path Ledger
+
+| Target Group | Paths | Current Count / Evidence | Handling |
+| --- | --- | --- | --- |
+| Root and agent governance | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `README.md`, `CHANGELOG.md`, `.env.example`, `.agents/`, `.claude/`, `.codex/`, `docs/00.agent-governance/` | 127 files via `rg --files ...` and `wc -l` | Reviewed with Graphify guidance and progress-log updates |
+| Lifecycle docs | `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`, `docs/04.execution/`, `docs/05.operations/`, `docs/90.references/`, `docs/99.templates/` | 501 files via `rg --files ...` and `wc -l` | Targeted edits only; no broad rewrite |
+| Execution artifacts | `docs/04.execution/plans/`, `docs/04.execution/tasks/` | 45 plan files and 43 task files | New audit and follow-up artifacts registered in parent READMEs |
+| Scripts | `scripts/` | 14 files | `check-repo-contracts.sh` extended in place; syntax checked |
+| Infrastructure and env examples | `infra/`, `docker-compose.yml`, `.env.example` | 273 files | Static docs/env example review only; no Compose behavior change |
+| Compose files | `infra/**/docker-compose*.yml`, `infra/**/compose*.yml` | 47 Compose files | Validated through repo validators; runtime start skipped by design |
+| GitHub workflow/ruleset surfaces | `.github/workflows/`, `.github/rulesets/` | 6 files | Local static review only; remote checks deferred |
+| Hookify local rules | `.claude/hookify*.local.md` | 18 files | Metadata contract enforced by repo-contract validator |
+| Runtime Skill mirrors | `.claude/skills/**/skill.md`, `.agents/skills/**/skill.md` | 10 Claude + 10 `.agents` skill files | Reviewed; no TDD-gated Skill change justified |
+| Storybook QA surface | `projects/storybook/nextjs/` | 46 tracked files | Coverage command passed with local Node path and `/tmp` temp vars |
+| Graphify output | `graphify-out/` | `manifest_paths_total=727`, advisory health | Refreshed after script change; used as navigation only |
+| Pre-existing untracked tree | `projects/storybook/mcp/` | Present in `git status --short` | Left untouched and unstaged |
+
+## Reviewer Baseline Ledger
+
+| Baseline ID | Input Reviewer Output Scope | Refreshed By | Result |
+| --- | --- | --- | --- |
+| REV-WAI-001 | Agent governance, root shims, and Graphify compatibility guidance | Root/governance file review, `.agents` edits, `check-repo-contracts.sh` | Closed GOV-001; root shims preserved |
+| REV-WAI-002 | Documentation lifecycle and stale cross-link review | Targeted stale-link fixes, parent README links, doc traceability check | Closed DOC-001 through DOC-005 |
+| REV-WAI-003 | Scripts, validators, and Hookify inventory review | `check-repo-contracts.sh` metadata gate and shell syntax check | Closed AUTO-001 |
+| REV-WAI-004 | Compose, env, and secrets metadata review | Static Compose validators, env key compare, metadata-only secrets compare | Closed INFRA-002; deferred INFRA/SEC runtime or value-bearing work |
+| REV-WAI-005 | QA and CI/CD review | Storybook coverage, README CI gate list, minimal changelog | Closed QA-001 and REL-001; deferred coverage threshold policy |
+| REV-WAI-006 | Skills, legacy/delete, and integration review | Skill inventory, Legacy/Delete/Integration Results, deferred risk register | No Skill edit or deletion justified; candidates recorded |
 
 ## Gap Registry
 
@@ -148,6 +184,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | CS-WAI-001 | `docs/04.execution/plans/2026-05-24-workspace-audit-improvement.md`, `docs/04.execution/tasks/2026-05-24-workspace-audit-improvement.md`, execution README files, progress log | Docs artifact | Required Plan/Task/ledger evidence | All | Low |
 | CS-WAI-002 | `scripts/validation/check-repo-contracts.sh`, `scripts/README.md` | Validator/docs | Enforce Hookify metadata contract | AUTO-001 | Medium |
 | CS-WAI-003 | `README.md`, `CHANGELOG.md`, `.env.example`, `.agents/**`, stale-link docs, recovery runbooks | Docs/examples | Close low-risk docs and example drift | GOV/DOC/INFRA/QA/REL/OPS gaps | Low |
+| CS-WAI-004 | Follow-up input gap closure Plan/Task and this task addendum | Docs artifact | Close input-task evidence gaps | INPUT-GAP-001 to INPUT-GAP-005 | Low |
 
 ## Verification Log
 
@@ -168,6 +205,8 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | VER-WAI-013 | `env PATH=/home/hy/.nvm/versions/node/v24.14.0/bin:$PATH TMPDIR=/tmp TEMP=/tmp TMP=/tmp npm run coverage --prefix projects/storybook/nextjs` | Storybook QA | PASS | 3 files, 8 tests passed; statements 83.33%, branches 81.81%, functions 66.66%, lines 83.33% | N/A | Vitest reported close timeout after tests but exited 0 |
 | VER-WAI-014 | Metadata-only env key compare | `.env.example` vs `.env` | PASS with expected delta | `.env.example` 328 keys, `.env` 327 keys, only example-only `QDRANT_GRPC_PORT` | N/A | Actual `.env` operator update deferred |
 | VER-WAI-015 | Metadata-only secrets compare | Sensitive example vs real registry | PASS with drift | 104 rows each; IDs match; 3 metadata rows differ | N/A | Follow-up needed; no values inspected/output |
+| VER-WAI-016 | `/home/hy/.local/bin/graphify update .` | Graphify output after script change | PASS | Rebuilt graph output; hook-normalized report delta committed | N/A | Graphify health remains advisory |
+| VER-WAI-017 | Input-task completeness review | Original input list vs completed audit artifacts | PASS after addendum | Target-path, reviewer-baseline, role/purpose parser, and Graphify update evidence gaps closed | N/A | Runtime/value/remote deferrals remain intentional |
 
 ## Skipped / Failed Verification
 
@@ -209,6 +248,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | SEC-WAI-001 | `secrets/SENSITIVE_ENV_VARS.md.example` | real sensitive registry | Parse table columns ID, Auto, Type, `.env` var, file path; ignore Value column | 104 metadata rows each; no ID count mismatch | Values ignored |
 | SEC-WAI-002 | Metadata drift | Same | Compare metadata rows only | `AUTO-006`: real registry has `TERRAKUBE_ADMIN_USERNAME` env var, example has none; `CACHE-003`: example has `MONGODB_ROOT_USERNAME`, real has none; `CACHE-015`: automation flag differs `X` vs `O` | Values ignored |
 | SEC-WAI-003 | Follow-up | Secret owner | Manual metadata reconciliation | Required because real/example metadata drift remains | No value output |
+| SEC-WAI-004 | Role/purpose-safe parser coverage | Same | Extract ID, automation flag, type, `.env` key, file path, and purpose/role text while skipping the Value column | 104 metadata rows each; differing IDs remain `AUTO-006`, `CACHE-003`, and `CACHE-015` | Values ignored |
 
 ## Deferred Risk Register
 
@@ -238,9 +278,9 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | 1. Summary | Gap Registry, Change Scope | Low-risk docs/checks completed; high-risk work deferred |
 | 2. Applied Agent Instructions and Skills | Skill Review, Working Rules | Repo governance and requested Skills mapped to Codex-safe behavior |
 | 3. Original Skill Preservation Summary | Skill Review | Original domain Skills preserved; no replacement Skill created |
-| 4. Coverage Ledger Summary | Coverage Ledger | All target areas reviewed |
+| 4. Coverage Ledger Summary | Coverage Ledger, Target Path Ledger | All target areas reviewed with explicit target-path counts |
 | 5. Work Management Rules | Inputs, Working Rules | Plan/Task first; Spec not changed because no enduring contract changed |
-| 6. Reviewer Summary | Gap Registry | Six baseline reviewer outputs reused and refreshed by local evidence |
+| 6. Reviewer Summary | Reviewer Baseline Ledger, Gap Registry | Six baseline reviewer outputs reused and refreshed by local evidence |
 | 7. Integrated Gap Analysis Summary | Integrated Gap Analysis | P1 gaps closed; P0/runtime/secret work deferred |
 | 8. Plan / Task / Spec Updates | Change Scope | Plan/Task created; Spec not needed |
 | 9. Skill Creation / Update Results | Skill Review | No TDD-gated Skill change justified |
@@ -248,13 +288,13 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | 11. Deferred Items | Deferred Risk Register | Runtime, secrets, remote, deletion, thresholds |
 | 12. Legacy / Delete / Integration Results | Legacy/Delete/Integration Results | No deletion; stale refs fixed |
 | 13. Env Key Comparison | Env Key Comparison | Example now has one operator-owned key delta |
-| 14. Secrets Key Comparison | Secrets Key Comparison | Three metadata drifts; no values output |
+| 14. Secrets Key Comparison | Secrets Key Comparison | Three metadata drifts; role/purpose metadata included; no values output |
 | 15. Docker Compose Review | Gap Registry, Verification Log | Static validation passed; runtime edits deferred |
 | 16. Scripts Review | Change Scope, Verification Log | Contract checker extended and syntax checked |
 | 17. Hook Review | Gap AUTO-001, Verification Log | Metadata gate added; no runtime hook behavior changed |
 | 18. QA Review | Verification Log, QA gaps | Storybook coverage passed; thresholds deferred |
 | 19. CI/CD Review | README, workflow/ruleset checks | Local static gates aligned; remote checks skipped |
-| 20. Checklist Results | Task Table, Working Rules | Completion checklist satisfied except final commit step in progress |
+| 20. Checklist Results | Task Table, Working Rules | Completion checklist satisfied; local commits completed before main merge |
 | 21. Verification Results | Verification Log | Local required checks passed or alternatives recorded |
 | 22. Verification Gaps | Skipped / Failed Verification | Remote/runtime/value checks skipped by design |
 | 23. Remaining Risks | Deferred Risk Register | Operator decisions remain for env/secrets/runtime |
@@ -276,3 +316,5 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 - **Task checklists**: [Task checklists](../../00.agent-governance/rules/task-checklists.md)
 - **Progress log**: [Agent progress log](../../00.agent-governance/memory/progress.md)
 - **Graphify report**: [Graph report](../../../graphify-out/GRAPH_REPORT.md)
+- **Input task gap closure plan**: [Workspace audit input task gap closure plan](../plans/2026-05-24-workspace-audit-input-task-gap-closure.md)
+- **Input task gap closure task**: [Workspace audit input task gap closure task](./2026-05-24-workspace-audit-input-task-gap-closure.md)

@@ -103,9 +103,29 @@ The worker constraints for this artifact creation are intentionally narrow:
 - [x] Metadata-only env and secrets rows are filled without values.
 - [x] Changed-area verification refreshed reused reviewer baseline outputs.
 
+## Input Task Gap Closure Addendum
+
+The follow-up input-task completeness review found that the completed Task
+artifact already proved the main audit implementation, but several original
+input requirements were only implicit:
+
+- target-path coverage was present through area coverage and inventories, but
+  did not have a dedicated target-path ledger;
+- the six reviewer baselines were referenced, but not enumerated;
+- Graphify health was recorded, but the `graphify update .` execution was not
+  listed as its own verification row;
+- the secrets parser evidence skipped values, but did not explicitly name
+  purpose/role metadata.
+
+These evidence gaps are closed by the sibling input-task gap closure Plan/Task
+and the updated Task addendum. No runtime, secret value, actual `.env`, remote,
+deployment, permission, or deletion work was added.
+
 ## Related Documents
 
 - **Task**: [Workspace audit improvement task](../tasks/2026-05-24-workspace-audit-improvement.md)
+- **Input task gap closure plan**: [Workspace audit input task gap closure plan](./2026-05-24-workspace-audit-input-task-gap-closure.md)
+- **Input task gap closure task**: [Workspace audit input task gap closure task](../tasks/2026-05-24-workspace-audit-input-task-gap-closure.md)
 - **Plans README**: [Execution plans README](./README.md)
 - **Tasks README**: [Execution tasks README](../tasks/README.md)
 - **Stage authoring matrix**: [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
