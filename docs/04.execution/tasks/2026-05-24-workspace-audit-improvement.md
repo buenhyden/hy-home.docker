@@ -41,6 +41,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | T-WAI-007 | Record deferred medium/high-risk work | doc | Approved deferred scope | Deferred Items | Deferred Risk Register complete | main agent | Done |
 | T-WAI-008 | Verify and prepare local commits | test | Completion criteria | Verification | Required local checks recorded; local task-sized commits prepared on the feature branch | main agent | Done |
 | T-WAI-009 | Close follow-up input-task evidence gaps | doc | Original user input task list | Follow-up gap closure | Target Path Ledger, Reviewer Baseline Ledger, role/purpose-safe secrets parser evidence, and Graphify update row added | main agent | Done |
+| T-WAI-010 | Revalidate completed audit evidence against current repository state | test | Bounded revalidation plan | Revalidation addendum | Six read-only reviewer roles completed; inventory, env, secrets, CI/CD, and verification evidence refreshed | main agent + read-only reviewers | Done |
 
 ## Phase View
 
@@ -72,6 +73,13 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 - [x] Added explicit reviewer baseline evidence.
 - [x] Added explicit Graphify update and role/purpose-safe metadata parser evidence.
 
+### Phase 9: bounded revalidation
+
+- [x] Revalidated the completed audit artifacts on `codex/workspace-audit-revalidation`.
+- [x] Used six read-only reviewer roles for governance/skills, documentation lifecycle, Docker/env/secrets, scripts/hooks, QA, and CI/CD/operations.
+- [x] Updated current counts and evidence rows only where the live repository state drifted from the completed audit evidence.
+- [x] Preserved all runtime, value-bearing, remote, deployment, permission, deletion, and untracked Storybook deferrals.
+
 ## Coverage Ledger
 
 | Area | Path / Target | Exists | Initial Read | Needs Deep Read | Reason | Owner | Status |
@@ -91,8 +99,8 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 
 | Inventory | Count | Method | Notes |
 | --- | ---: | --- | --- |
-| Agent governance files | 124 | `rg --files` over root shims and governance/runtime dirs | Excludes unrelated generated output |
-| Documentation lifecycle files | 501 | `rg --files` over staged docs | Count includes the input-task gap closure Plan/Task artifacts |
+| Root and agent governance files | 127 | `rg --files` over root shims, repo entry docs, and governance/runtime dirs | Excludes unrelated generated output and untracked Storybook MCP |
+| Documentation lifecycle files | 503 | `rg --files` over staged docs | Revalidated after grill-review Plan/Task artifacts were registered |
 | Script files | 14 | `rg --files scripts` | Validator README and contract checker changed |
 | Infrastructure files | 273 | `rg --files infra docker-compose.yml .env.example` | Compose behavior unchanged |
 | Compose files | 48 | `find infra -path '*/docker-compose*.yml' -o ...` | Existing validator excludes one MinIO cluster YAML |
@@ -105,11 +113,11 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | Target Group | Paths | Current Count / Evidence | Handling |
 | --- | --- | --- | --- |
 | Root and agent governance | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `README.md`, `CHANGELOG.md`, `.env.example`, `.agents/`, `.claude/`, `.codex/`, `docs/00.agent-governance/` | 127 files via `rg --files ...` and `wc -l` | Reviewed with Graphify guidance and progress-log updates |
-| Lifecycle docs | `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`, `docs/04.execution/`, `docs/05.operations/`, `docs/90.references/`, `docs/99.templates/` | 501 files via `rg --files ...` and `wc -l` | Targeted edits only; no broad rewrite |
-| Execution artifacts | `docs/04.execution/plans/`, `docs/04.execution/tasks/` | 45 plan files and 43 task files | New audit and follow-up artifacts registered in parent READMEs |
+| Lifecycle docs | `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`, `docs/04.execution/`, `docs/05.operations/`, `docs/90.references/`, `docs/99.templates/` | 503 files via `rg --files ...` and `wc -l` | Revalidated with targeted edits only; no broad rewrite |
+| Execution artifacts | `docs/04.execution/plans/`, `docs/04.execution/tasks/` | 46 plan files and 44 task files | Audit, gap-closure, and grill-review artifacts remain registered in parent READMEs |
 | Scripts | `scripts/` | 14 files | `check-repo-contracts.sh` extended in place; syntax checked |
 | Infrastructure and env examples | `infra/`, `docker-compose.yml`, `.env.example` | 273 files | Static docs/env example review only; no Compose behavior change |
-| Compose files | `infra/**/docker-compose*.yml`, `infra/**/compose*.yml` | 47 Compose files | Validated through repo validators; runtime start skipped by design |
+| Compose files | `infra/**/docker-compose*.yml`, `infra/**/compose*.yml` | 48 discovered Compose files; validator covers 47 with the existing MinIO cluster YAML exclusion | Validated through repo validators; runtime start skipped by design |
 | GitHub workflow/ruleset surfaces | `.github/workflows/`, `.github/rulesets/` | 6 files | Local static review only; remote checks deferred |
 | Hookify local rules | `.claude/hookify*.local.md` | 18 files | Metadata contract enforced by repo-contract validator |
 | Runtime Skill mirrors | `.claude/skills/**/skill.md`, `.agents/skills/**/skill.md` | 10 Claude + 10 `.agents` skill files | Reviewed; no TDD-gated Skill change justified |
@@ -121,12 +129,12 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 
 | Baseline ID | Input Reviewer Output Scope | Refreshed By | Result |
 | --- | --- | --- | --- |
-| REV-WAI-001 | Agent governance, root shims, and Graphify compatibility guidance | Root/governance file review, `.agents` edits, `check-repo-contracts.sh` | Closed GOV-001; root shims preserved |
-| REV-WAI-002 | Documentation lifecycle and stale cross-link review | Targeted stale-link fixes, parent README links, doc traceability check | Closed DOC-001 through DOC-005 |
-| REV-WAI-003 | Scripts, validators, and Hookify inventory review | `check-repo-contracts.sh` metadata gate and shell syntax check | Closed AUTO-001 |
-| REV-WAI-004 | Compose, env, and secrets metadata review | Static Compose validators, env key compare, metadata-only secrets compare | Closed INFRA-002; deferred INFRA/SEC runtime or value-bearing work |
-| REV-WAI-005 | QA and CI/CD review | Storybook coverage, README CI gate list, minimal changelog | Closed QA-001 and REL-001; deferred coverage threshold policy |
-| REV-WAI-006 | Skills, legacy/delete, and integration review | Skill inventory, Legacy/Delete/Integration Results, deferred risk register | No Skill edit or deletion justified; candidates recorded |
+| REV-WAI-001 | Agent governance, root shims, and Graphify compatibility guidance | 2026-05-24 read-only governance/skills reviewer, root/runtime inventory, JSON checks, repo contract check | GOV-001 remains closed; root shims preserved; `.agents` stays compatibility-only |
+| REV-WAI-002 | Documentation lifecycle and stale cross-link review | 2026-05-24 read-only documentation lifecycle reviewer, parent README/LLM Wiki checks, stale-link scan, repo contract check | DOC-001 through DOC-005 remain closed; target-stage total is now 482 |
+| REV-WAI-003 | Scripts, validators, and Hookify inventory review | 2026-05-24 read-only scripts/hooks reviewer, shell syntax checks, Hookify metadata scan, repo contract check | AUTO-001 remains closed; 18 Hookify rules validate |
+| REV-WAI-004 | Compose, env, and secrets metadata review | 2026-05-24 read-only Docker/env/secrets reviewer, Compose static config, key-only env compare, metadata-only secrets compare | INFRA-002 remains closed; SEC-001 and runtime/value-bearing work remain deferred |
+| REV-WAI-005 | QA and CI/CD review | 2026-05-24 read-only QA and CI/CD reviewers, Storybook coverage, local workflow/ruleset review, skipped-verification review | QA-001 and REL-001 remain closed; QA-002 and remote enforcement remain deferred |
+| REV-WAI-006 | Skills, legacy/delete, and integration review | 2026-05-24 read-only governance/docs reviewers, Skill mirror inventory, legacy/delete/integration review | No Skill edit or deletion justified; formatting-only mirror cleanup remains candidate work |
 
 ## Gap Registry
 
@@ -148,6 +156,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | QA-001 | QA / CI | `README.md` | README CI gate list omitted `storybook-coverage` | Workflow/ruleset list includes job | Reviewers could miss required gate | Added README row | Low | T-WAI-006 | Repo contract PASS | Closed |
 | QA-002 | QA | `projects/storybook/nextjs` | Coverage runs but function coverage is below common 80% target | Coverage summary: functions 66.66% | Quality threshold decision needed | Record; no threshold added this pass | Medium | T-WAI-007 | Coverage command PASS | Deferred |
 | REL-001 | CI/CD / Release | `CHANGELOG.md`, `generate-changelog.yml` | Release workflow expects changelog file; file was absent | `CHANGELOG.md` missing before edit | Workflow/release docs mismatch | Added minimal Unreleased changelog | Low | T-WAI-006 | Repo contract PASS | Closed |
+| CI-001 | CI/CD | `.github/rulesets/main-protection.md` | Remote branch-protection snapshot is dated 2026-05-17 and lists 10 required contexts while the local target list has 11 including `storybook-coverage` | Local ruleset proposal states it is not evidence of remote enforcement | Remote protection may not match the local target proposal | Record owner-approved remote revalidation follow-up; do not use network in this pass | Medium | T-WAI-010 | Local static review only | Deferred |
 | OPS-001 | Operations | Prometheus and GPU recovery runbooks | High-blast-radius recovery steps needed clearer approval prerequisites | Reviewer baseline | Operators may run destructive/interruption steps too quickly | Added guardrail wording only | Medium | T-WAI-006 | Repo contract PASS | Closed |
 | GIT-001 | Git hygiene | `projects/storybook/mcp/` | Pre-existing untracked tree present | `git status --short` before work | Could be accidentally staged | Leave untouched | Low | T-WAI-007 | Final status check | Deferred / untouched |
 
@@ -161,10 +170,10 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | p2_gaps | Formatting-only Skill mirror drift and coverage threshold policy remain future cleanup candidates. |
 | duplicated_gaps | Stale references collapsed into DOC-001 through DOC-005. |
 | conflicting_gaps | Skill instructions that imply writes or network were mapped to Codex-safe repo-native behavior. |
-| missing_systems | Live remote branch-protection verification and runtime exposure policy decisions are intentionally absent from this local pass. |
+| missing_systems | Live remote branch-protection verification, release dry-run rehearsal policy, and runtime exposure policy decisions are intentionally absent from this local pass. |
 | implementation_candidates | Future RabbitMQ secret wiring, Vault exposure decision, Neo4j exposure decision, coverage threshold policy, and Skill mirror cleanup. |
-| deferred_items | INFRA-001, INFRA-003, INFRA-004, SEC-001 follow-up, QA-002, GIT-001. |
-| required_decisions | Operator decision needed for actual `.env` sync, sensitive-registry metadata drift, runtime exposure changes, and coverage thresholds. |
+| deferred_items | INFRA-001, INFRA-003, INFRA-004, SEC-001 follow-up, QA-002, CI-001, GIT-001. |
+| required_decisions | Operator decision needed for actual `.env` sync, sensitive-registry metadata drift, runtime exposure changes, remote branch protection, release dry-run policy, and coverage thresholds. |
 
 ## Decision Log
 
@@ -176,6 +185,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | DEC-WAI-004 | Add Hookify metadata gate, not runtime blocking | Plan allowed contract-preserving checks only | Add new hook blocks | Improves validation without runtime behavior change | Revert script section | Done |
 | DEC-WAI-005 | Create minimal `CHANGELOG.md` | Existing workflow expects file; no release history should be invented | Change workflow or defer | Satisfies release-doc expectation | Delete file if release policy changes | Done |
 | DEC-WAI-006 | Defer Docker port/secret wiring changes | Runtime and secret behavior are medium/high risk | Change compose YAML now | Avoids stateful side effects | N/A | Done |
+| DEC-WAI-007 | Revalidate in place on `codex/workspace-audit-revalidation` | Existing audit artifacts remain canonical and only evidence drift needed updates | Create duplicate full-audit artifacts | Keeps history compact and avoids duplicate ledgers | Revert this addendum patch | Done |
 
 ## Change Scope
 
@@ -185,13 +195,14 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | CS-WAI-002 | `scripts/validation/check-repo-contracts.sh`, `scripts/README.md` | Validator/docs | Enforce Hookify metadata contract | AUTO-001 | Medium |
 | CS-WAI-003 | `README.md`, `CHANGELOG.md`, `.env.example`, `.agents/**`, stale-link docs, recovery runbooks | Docs/examples | Close low-risk docs and example drift | GOV/DOC/INFRA/QA/REL/OPS gaps | Low |
 | CS-WAI-004 | Follow-up input gap closure Plan/Task and this task addendum | Docs artifact | Close input-task evidence gaps | INPUT-GAP-001 to INPUT-GAP-005 | Low |
+| CS-WAI-005 | This task artifact and progress log | Docs artifact | Record bounded revalidation evidence and current counts | T-WAI-010, CI-001 | Low |
 
 ## Verification Log
 
 | ID | Command or Check | Target | Result | Evidence | Reason if Skipped | Remaining Risk |
 | --- | --- | --- | --- | --- | --- | --- |
 | VER-WAI-001 | `bash scripts/knowledge/report-graphify-health.sh` | Graphify output | Advisory | `surprising_cross_root_inferred_edges=3` | N/A | Graphify remains navigation aid only |
-| VER-WAI-002 | `bash scripts/validation/check-repo-contracts.sh` | Repo docs/contracts | PASS | `failures=0`, `target_stage_docs_total=478` | N/A | None known |
+| VER-WAI-002 | `bash scripts/validation/check-repo-contracts.sh` | Repo docs/contracts | PASS | `failures=0`, `target_stage_docs_total=482`, `normalized_target_stage_docs_total=482` | N/A | None known |
 | VER-WAI-003 | `bash scripts/validation/check-doc-traceability.sh` | Execution/operations traceability | PASS | `catalog_pairs_total=46`, `failures=0` | N/A | None known |
 | VER-WAI-004 | `bash scripts/validation/check-template-security-baseline.sh` | Templates/security controls | PASS | `compose_files_total=47`, missing controls 0 | N/A | One existing excluded MinIO cluster YAML remains expected |
 | VER-WAI-005 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | LLM wiki freshness | PASS | Generated index fresh | N/A | None known |
@@ -207,6 +218,9 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | VER-WAI-015 | Metadata-only secrets compare | Sensitive example vs real registry | PASS with drift | 104 rows each; IDs match; 3 metadata rows differ | N/A | Follow-up needed; no values inspected/output |
 | VER-WAI-016 | `/home/hy/.local/bin/graphify update .` | Graphify output after script change | PASS | Rebuilt graph output; hook-normalized report delta committed | N/A | Graphify health remains advisory |
 | VER-WAI-017 | Input-task completeness review | Original input list vs completed audit artifacts | PASS after addendum | Target-path, reviewer-baseline, role/purpose parser, and Graphify update evidence gaps closed | N/A | Runtime/value/remote deferrals remain intentional |
+| VER-WAI-018 | Six read-only reviewer revalidation | Governance, docs, Docker/env/secrets, scripts/hooks, QA, CI/CD/ops | PASS | All six reviewer roles returned required scope/files/gaps/skills/actions/risks/verification/deferred/coverage fields | N/A | Runtime, values, remote state, deployment, and untracked tree remain out of scope |
+| VER-WAI-019 | Current inventory recount | Audit target paths | PASS | Root/governance 127, lifecycle docs 503, scripts 14, infra 273, Compose files 48, workflows/rulesets 6, Hookify 18, Skill mirrors 10+10, plans/tasks 46/44 | N/A | Counts may drift after future artifact additions |
+| VER-WAI-020 | Revalidation gate rerun | Local quality gates | PASS | Repo contract, doc traceability, LLM Wiki freshness, template/security baseline, Compose validation/preflight, QuickWin baseline, hardening baseline, Storybook coverage, and `git diff --check` passed during reviewer/main-agent revalidation | N/A | Remote GitHub and runtime behavior still unverified by design |
 
 ## Skipped / Failed Verification
 
@@ -216,6 +230,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | SKIP-WAI-002 | Docker runtime start/stop/log checks | Skipped | Runtime operations can affect operational state | Compose config/static hardening checks | Live service behavior not proven | Runtime rehearsal under explicit approval |
 | SKIP-WAI-003 | Actual `.env` value sync | Skipped | Actual value edits prohibited | Key-only comparison | Operator must decide whether to add local `QDRANT_GRPC_PORT` | Operator-owned env sync |
 | SKIP-WAI-004 | Secret value validation | Skipped | Secret value reads/output prohibited | Metadata-only registry compare | Values and rotation status unverified | Secret owner review |
+| SKIP-WAI-005 | Remote branch-protection revalidation | Skipped | Network/remote checks require explicit approval | Local workflow/ruleset proposal review | Remote required checks may still reflect the older 10-context snapshot | Owner-approved GitHub settings audit |
 
 ## Skill Review
 
@@ -303,7 +318,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 ## Verification Summary
 
 - **Test Commands**: see Verification Log.
-- **Eval Commands**: targeted reader/spec review was performed by main-agent inspection of the new Plan/Task artifacts; no external reader subagent remained available after worker shutdown.
+- **Eval Commands**: six read-only reviewer roles revalidated governance/skills, documentation lifecycle, Docker/env/secrets, scripts/hooks, QA, and CI/CD/operations; main-agent inspection reconciled their findings into this task artifact.
 - **Logs / Evidence Location**: this task document and [progress log](../../00.agent-governance/memory/progress.md).
 
 ## Related Documents
