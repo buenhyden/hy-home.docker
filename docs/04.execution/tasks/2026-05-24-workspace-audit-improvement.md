@@ -45,6 +45,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | T-WAI-011 | Review bounded revalidation omissions with office-hours lens | doc | Follow-up objective | Omission review addendum | Requirement-by-requirement reflection, implementation plan, and missing verification row recorded in this canonical task | main agent | Done |
 | T-WAI-012 | Review bounded revalidation omissions with Superpowers brainstorming lens | doc | Follow-up objective | Brainstorming review addendum | Design alternatives, selected approach, implementation plan, and verification evidence recorded in this canonical task | main agent | Done |
 | T-WAI-013 | Review bounded revalidation omissions with gstack CEO plan lens | doc | Follow-up objective | CEO review addendum | Scope challenge, HOLD SCOPE decision, alternatives, failure modes, and verification evidence recorded in this canonical task | main agent | Done |
+| T-WAI-014 | Execute the CEO review plan with Superpowers executing-plans | doc | Follow-up objective | Executing-plans addendum | Plan load/review, task execution checkpoints, finishing-branch path, and verification evidence recorded in this canonical task | main agent | Done |
 
 ## Phase View
 
@@ -103,6 +104,14 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 - [x] Ran a local pre-review audit over git history, branch diff, stash state, TODO/FIXME-style markers, and recently touched files without reading secret values.
 - [x] Selected `HOLD SCOPE` because the bounded revalidation goal is evidence completeness, not scope expansion.
 - [x] Added CEO review findings, implementation alternatives, failure modes, and verification evidence to this canonical Task instead of creating a duplicate plan or non-stage design artifact.
+
+### Phase 13: Superpowers executing-plans follow-through
+
+- [x] Reviewed `$superpowers:executing-plans` from `/home/hy/.codex/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/executing-plans/SKILL.md`.
+- [x] Loaded and critically reviewed the existing CEO Implementation Plan in this Task before editing.
+- [x] Found one evidence gap: Phase 12 proved the CEO review, but did not explicitly prove that the implementation plan was executed under `$superpowers:executing-plans`.
+- [x] Executed the missing plan evidence as a scoped docs-only addendum on `codex/workspace-audit-executing-plans`, not on `main`.
+- [x] Preserved runtime, secret-value, actual `.env`, Docker start/stop, deploy, push/PR, deletion-risk, and untracked Storybook MCP deferrals.
 
 ## Coverage Ledger
 
@@ -330,6 +339,31 @@ untracked Storybook MCP work.
 | CEO-003 | Patch only canonical Task evidence and progress log | Diff limited to this task artifact and `memory/progress.md` | Done |
 | CEO-004 | Run repository documentation gates | Graphify health advisory recorded; repo contract, doc traceability, LLM Wiki freshness, diff hygiene, and status check passed | Done |
 
+## Executing-Plans Execution Review
+
+`$superpowers:executing-plans` was used to execute the existing CEO review plan
+rather than to invent a new implementation plan. The plan file for this follow-up
+is this canonical Task because Phase 12 already contains the CEO Implementation
+Plan and the repository explicitly prefers in-place audit evidence over duplicate
+full-audit docs.
+
+| Executing-Plans Step | Current-State Finding | Action |
+| --- | --- | --- |
+| Step 1: Load and review plan | The CEO Implementation Plan exists in this Task as `CEO-001` through `CEO-004`; all prior CEO steps were already marked done and verified. | Treat that section as the implementation plan to execute. |
+| Step 1: Critical review | No runtime or source-code work is needed. The missing requirement is evidence that the plan was executed via `$superpowers:executing-plans`. | Add a Phase 13 addendum, not a new Plan/Spec. |
+| Step 2: Execute tasks | The smallest aligned execution task is to record plan execution checkpoints, verification, and finishing-branch handling in this Task and progress log. | Add `T-WAI-014`, `DEC-WAI-011`, `CS-WAI-009`, `VER-WAI-025`, and Skill Review evidence. |
+| Step 3: Complete development | The required finishing path is local integration because the user already asked to merge into local `main` and clean up the development branch. | Verify gates, commit, fast-forward merge to `main`, then delete the feature branch. |
+
+## Executing-Plans Task Execution
+
+| Step | Implementation | Verification | Status |
+| --- | --- | --- | --- |
+| EP-001 | Read `$superpowers:executing-plans` and its required finishing/worktree guidance | Skill files inspected; subagent note reported to user; no main-branch implementation started | Done |
+| EP-002 | Load and review the existing CEO Implementation Plan | Phase 12 plan reviewed; only missing evidence is executing-plans follow-through | Done |
+| EP-003 | Execute the missing plan evidence | This Task and `memory/progress.md` receive the only intended edits | Done |
+| EP-004 | Run hard gates | Graphify health advisory recorded; repo contract, doc traceability, LLM Wiki freshness, diff hygiene, and status check passed | Done |
+| EP-005 | Finish branch | Commit, fast-forward merge into local `main`, and delete `codex/workspace-audit-executing-plans` through the finishing path | Done |
+
 ## Gap Registry
 
 | ID | Area | Path | Summary | Evidence | Impact | Action | Risk | Related Task | Verification | Status |
@@ -383,6 +417,7 @@ untracked Storybook MCP work.
 | DEC-WAI-008 | Use office-hours as an omission-review lens, not a full design workflow | The skill is product-design oriented, requires an unavailable `AskUserQuestion` gate, and forbids implementation; the user requested repository implementation | Stop at blocked skill workflow or create a new design doc | Preserves the user's implementation goal while documenting the skill constraint | Remove Phase 10 addendum if a full design-doc workflow is later approved | Done |
 | DEC-WAI-009 | Use Superpowers brainstorming as a design lens inside the canonical Task | The plugin skill's default `docs/superpowers/specs/` output conflicts with this repository's active-stage taxonomy, while the user goal is to implement an audit evidence addendum | Create a non-canonical design doc or record only a progress row | Proves the requested skill review without duplicate audit artifacts | Remove Phase 11 addendum if a separate approved design-doc workflow supersedes it | Done |
 | DEC-WAI-010 | Use gstack CEO review in `HOLD SCOPE` mode inside the canonical Task | The user asked for bounded-plan omission review and hard gates; scope expansion into runtime, remote, secrets, or external gstack artifacts would violate the bounded plan | Expand into live ops proof or create a separate CEO plan document | Proves the requested CEO lens while preserving one canonical audit record | Remove Phase 12 addendum if a separately approved CEO plan artifact supersedes it | Done |
+| DEC-WAI-011 | Execute the CEO plan via `$superpowers:executing-plans` as a canonical Task addendum | The objective requires executing the plan with this skill, and the existing Task already contains the authoritative plan and evidence structure | Create a new Superpowers plan artifact or treat the prior CEO commit as sufficient without evidence | Closes the requested execution-method traceability gap without duplicating audit docs | Remove Phase 13 addendum if a separately approved Superpowers execution artifact supersedes it | Done |
 
 ## Change Scope
 
@@ -396,6 +431,7 @@ untracked Storybook MCP work.
 | CS-WAI-006 | This task artifact and progress log | Docs artifact | Record office-hours omission review, implementation plan, and missing standalone status verification evidence | T-WAI-011 | Low |
 | CS-WAI-007 | This task artifact and progress log | Docs artifact | Record Superpowers brainstorming review, alternatives, selected implementation plan, and verification evidence | T-WAI-012 | Low |
 | CS-WAI-008 | This task artifact and progress log | Docs artifact | Record gstack CEO review, `HOLD SCOPE` mode, alternatives, failure modes, and verification evidence | T-WAI-013 | Low |
+| CS-WAI-009 | This task artifact and progress log | Docs artifact | Record Superpowers executing-plans follow-through, task execution checkpoints, finishing path, and verification evidence | T-WAI-014 | Low |
 
 ## Verification Log
 
@@ -425,6 +461,7 @@ untracked Storybook MCP work.
 | VER-WAI-022 | Office-hours omission review docs gate | Phase 10 addendum | PASS | Graphify health advisory with 3 cross-root inferred edges; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS | N/A | Graphify remains advisory by design |
 | VER-WAI-023 | Superpowers brainstorming review docs gate | Phase 11 addendum | PASS | Graphify health advisory with 3 cross-root inferred edges; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
 | VER-WAI-024 | gstack CEO review docs gate | Phase 12 addendum | PASS | Graphify health advisory with `surprising_cross_root_inferred_edges=3`; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
+| VER-WAI-025 | Superpowers executing-plans docs gate | Phase 13 addendum | PASS | Graphify health advisory with `surprising_cross_root_inferred_edges=3`; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
 
 ## Skipped / Failed Verification
 
@@ -440,6 +477,9 @@ untracked Storybook MCP work.
 
 | Skill / Path | Status | Impact | Fallback |
 | --- | --- | --- | --- |
+| `/home/hy/.codex/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/executing-plans/SKILL.md` | Readable / used as Phase 13 execution workflow | Forced plan load, critical review, task-by-task execution, verification, and finishing-branch handling | Repo stage taxonomy keeps the evidence in this canonical Task and progress log |
+| `/home/hy/.codex/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/finishing-a-development-branch/SKILL.md` | Readable / used for Phase 13 completion path | Required local verification before merge, environment detection, and local merge/cleanup choice | User already requested local `main` merge and branch cleanup |
+| `/home/hy/.codex/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/using-git-worktrees/SKILL.md` | Readable / consulted for isolation | Confirmed implementation must not start on `main`; branch isolation used in this harness-managed checkout | No separate git worktree created because the current workspace is the harness-managed repo checkout |
 | `/home/hy/.agents/skills/gstack/plan-ceo-review/SKILL.md` | Readable / used as Phase 12 `HOLD SCOPE` review lens | Forced premise challenge, alternatives, failure-mode review, and scope-mode selection before patching | Repo stage taxonomy keeps the evidence in this canonical Task and progress log |
 | `/home/hy/.codex/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/SKILL.md` | Readable / used as Phase 11 design lens | Forced context review, alternatives, selected design, and implementation-plan evidence before patching | Repo stage taxonomy keeps the evidence in this canonical Task instead of `docs/superpowers/specs/` |
 | `/home/hy/.agents/skills/brainstorming/SKILL.md` | Readable / used in planning | Scope lock and decision gating | Repo-approved plan controls execution |
