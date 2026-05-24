@@ -46,6 +46,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | T-WAI-012 | Review bounded revalidation omissions with Superpowers brainstorming lens | doc | Follow-up objective | Brainstorming review addendum | Design alternatives, selected approach, implementation plan, and verification evidence recorded in this canonical task | main agent | Done |
 | T-WAI-013 | Review bounded revalidation omissions with gstack CEO plan lens | doc | Follow-up objective | CEO review addendum | Scope challenge, HOLD SCOPE decision, alternatives, failure modes, and verification evidence recorded in this canonical task | main agent | Done |
 | T-WAI-014 | Execute the CEO review plan with Superpowers executing-plans | doc | Follow-up objective | Executing-plans addendum | Plan load/review, task execution checkpoints, finishing-branch path, and verification evidence recorded in this canonical task | main agent | Done |
+| T-WAI-015 | Review skill creation and improvement prerequisites | doc | Follow-up objective | Skill workflow review addendum | `skill-creator`, `skillify`, `skill-developer`, and `skill-improver` prerequisites reviewed; no TDD-gated Skill mutation justified | main agent | Done |
 
 ## Phase View
 
@@ -112,6 +113,15 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 - [x] Found one evidence gap: Phase 12 proved the CEO review, but did not explicitly prove that the implementation plan was executed under `$superpowers:executing-plans`.
 - [x] Executed the missing plan evidence as a scoped docs-only addendum on `codex/workspace-audit-executing-plans`, not on `main`.
 - [x] Preserved runtime, secret-value, actual `.env`, Docker start/stop, deploy, push/PR, deletion-risk, and untracked Storybook MCP deferrals.
+
+### Phase 14: skill creation and improvement workflow review
+
+- [x] Reviewed `$skill-creator` from `/home/hy/.codex/skills/.system/skill-creator/SKILL.md`.
+- [x] Reviewed `$skillify` from `/home/hy/gstack/.agents/skills/gstack-skillify/SKILL.md`.
+- [x] Reviewed `$skill-developer` from `/home/hy/.agents/skills/skill-developer/SKILL.md`.
+- [x] Reviewed `$skill-improver:skill-improver` from `/home/hy/.codex/trailofbits-skills/plugins/skill-improver/skills/skill-improver/SKILL.md`.
+- [x] Confirmed no new Skill should be created or edited in this pass because no target Skill, concrete usage examples, failing baseline, or verified skill-review loop was provided.
+- [x] Recorded the outcome as a candidate-only review, preserving the original audit rule: create/update Skills only after a failing baseline and skill-writing TDD workflow.
 
 ## Coverage Ledger
 
@@ -364,6 +374,29 @@ full-audit docs.
 | EP-004 | Run hard gates | Graphify health advisory recorded; repo contract, doc traceability, LLM Wiki freshness, diff hygiene, and status check passed | Done |
 | EP-005 | Finish branch | Commit, fast-forward merge into local `main`, and delete `codex/workspace-audit-executing-plans` through the finishing path | Done |
 
+## Skill Creation Workflow Review
+
+The named skill-authoring tools were used as review lenses for the existing
+`GOV-002` and Skill Review decision. They do not justify writing a new Skill in
+this pass because the required inputs are absent and the bounded audit already
+requires TDD-gated evidence before Skill mutation.
+
+| Skill Lens | Required Condition | Current Evidence | Result |
+| --- | --- | --- | --- |
+| `$skill-creator` | Concrete usage examples, planned reusable resources, initialized skill folder, edited `SKILL.md`, validation with `quick_validate.py`, and iteration from real use | The objective listed skill workflows, but did not provide a target skill, concrete examples, or reusable resource requirements | No creation; record candidate-only outcome |
+| `$skillify` | A recent successful `/scrape` result to codify into a browser-skill with `script.ts`, `script.test.ts`, and fixture evidence | No recent `/scrape` result exists in this audit thread; current work is docs evidence, not browser scraping | Not applicable |
+| `$skill-developer` | A target Claude Code skill, trigger rules, hook tests, and at least three real trigger scenarios | No target `.claude/skills` or `.agents/skills` file is approved for mutation; prior inventory only identified possible formatting drift | No skill-rule or hook change |
+| `$skill-improver:skill-improver` | Target `SKILL.md`, plugin-dev `skill-reviewer` agent, review loop, fixes, rerun, and completion marker | `plugin-dev` is not available in this tool context and no target skill review output exists | No improvement loop; defer until prerequisites exist |
+
+## Skill Workflow Decision Matrix
+
+| Question | Finding | Decision |
+| --- | --- | --- |
+| Is there a repeated workflow worth packaging? | The workspace-audit pattern is repeated, but the existing audit evidence says no failing baseline test has been run. | Keep as candidate only. |
+| Can a new skill be validated now? | No. There are no accepted examples, no failing baseline, and no validation target outside the canonical docs evidence. | Do not create a skill folder. |
+| Can an existing skill be improved now? | No. No target Skill and no `skill-reviewer` findings were provided. | Do not edit `.claude/skills`, `.agents/skills`, or external skill roots. |
+| Can the named skills still advance the audit? | Yes. They prove that the no-mutation decision was reviewed against skill-authoring workflows, not merely assumed. | Add this addendum and progress evidence. |
+
 ## Gap Registry
 
 | ID | Area | Path | Summary | Evidence | Impact | Action | Risk | Related Task | Verification | Status |
@@ -418,6 +451,7 @@ full-audit docs.
 | DEC-WAI-009 | Use Superpowers brainstorming as a design lens inside the canonical Task | The plugin skill's default `docs/superpowers/specs/` output conflicts with this repository's active-stage taxonomy, while the user goal is to implement an audit evidence addendum | Create a non-canonical design doc or record only a progress row | Proves the requested skill review without duplicate audit artifacts | Remove Phase 11 addendum if a separate approved design-doc workflow supersedes it | Done |
 | DEC-WAI-010 | Use gstack CEO review in `HOLD SCOPE` mode inside the canonical Task | The user asked for bounded-plan omission review and hard gates; scope expansion into runtime, remote, secrets, or external gstack artifacts would violate the bounded plan | Expand into live ops proof or create a separate CEO plan document | Proves the requested CEO lens while preserving one canonical audit record | Remove Phase 12 addendum if a separately approved CEO plan artifact supersedes it | Done |
 | DEC-WAI-011 | Execute the CEO plan via `$superpowers:executing-plans` as a canonical Task addendum | The objective requires executing the plan with this skill, and the existing Task already contains the authoritative plan and evidence structure | Create a new Superpowers plan artifact or treat the prior CEO commit as sufficient without evidence | Closes the requested execution-method traceability gap without duplicating audit docs | Remove Phase 13 addendum if a separately approved Superpowers execution artifact supersedes it | Done |
+| DEC-WAI-012 | Treat skill creation/improvement as candidate-only until TDD prerequisites exist | The named skill-authoring workflows require concrete examples, target Skill files, failing baselines, validation, or reviewer loops that are not present in this bounded audit | Create or edit a Skill immediately, or ignore the requested skill-authoring lenses | Preserves the original TDD-gated Skill policy while proving the four requested workflows were reviewed | Remove Phase 14 addendum if a separately approved skill-authoring task provides the missing prerequisites | Done |
 
 ## Change Scope
 
@@ -432,6 +466,7 @@ full-audit docs.
 | CS-WAI-007 | This task artifact and progress log | Docs artifact | Record Superpowers brainstorming review, alternatives, selected implementation plan, and verification evidence | T-WAI-012 | Low |
 | CS-WAI-008 | This task artifact and progress log | Docs artifact | Record gstack CEO review, `HOLD SCOPE` mode, alternatives, failure modes, and verification evidence | T-WAI-013 | Low |
 | CS-WAI-009 | This task artifact and progress log | Docs artifact | Record Superpowers executing-plans follow-through, task execution checkpoints, finishing path, and verification evidence | T-WAI-014 | Low |
+| CS-WAI-010 | This task artifact and progress log | Docs artifact | Record skill creation/improvement prerequisite review and candidate-only decision | T-WAI-015 | Low |
 
 ## Verification Log
 
@@ -462,6 +497,7 @@ full-audit docs.
 | VER-WAI-023 | Superpowers brainstorming review docs gate | Phase 11 addendum | PASS | Graphify health advisory with 3 cross-root inferred edges; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
 | VER-WAI-024 | gstack CEO review docs gate | Phase 12 addendum | PASS | Graphify health advisory with `surprising_cross_root_inferred_edges=3`; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
 | VER-WAI-025 | Superpowers executing-plans docs gate | Phase 13 addendum | PASS | Graphify health advisory with `surprising_cross_root_inferred_edges=3`; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
+| VER-WAI-026 | Skill workflow review docs gate | Phase 14 addendum | PASS | Graphify health advisory with `surprising_cross_root_inferred_edges=3`; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
 
 ## Skipped / Failed Verification
 
@@ -477,6 +513,10 @@ full-audit docs.
 
 | Skill / Path | Status | Impact | Fallback |
 | --- | --- | --- | --- |
+| `/home/hy/.codex/skills/.system/skill-creator/SKILL.md` | Readable / used as Phase 14 creation workflow lens | Confirmed new Skill creation requires concrete examples, resource planning, initialization, validation, and real-use iteration | Candidate-only because those inputs are absent |
+| `/home/hy/gstack/.agents/skills/gstack-skillify/SKILL.md` | Readable / used as Phase 14 applicability check | Confirmed `skillify` is scoped to codifying a recent successful `/scrape` flow into a browser-skill | Not applicable because this audit has no recent `/scrape` result |
+| `/home/hy/.agents/skills/skill-developer/SKILL.md` | Readable / used as Phase 14 skill-development lens | Confirmed Claude Code skill changes need target skill files, trigger rules, hook tests, and real scenarios | No skill-rule or hook change without an approved target |
+| `/home/hy/.codex/trailofbits-skills/plugins/skill-improver/skills/skill-improver/SKILL.md` | Readable / used as Phase 14 improvement-loop lens | Confirmed improvement requires a target `SKILL.md`, `plugin-dev:skill-reviewer`, fixes, rerun, and completion marker | Deferred because no target skill or reviewer output exists |
 | `/home/hy/.codex/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/executing-plans/SKILL.md` | Readable / used as Phase 13 execution workflow | Forced plan load, critical review, task-by-task execution, verification, and finishing-branch handling | Repo stage taxonomy keeps the evidence in this canonical Task and progress log |
 | `/home/hy/.codex/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/finishing-a-development-branch/SKILL.md` | Readable / used for Phase 13 completion path | Required local verification before merge, environment detection, and local merge/cleanup choice | User already requested local `main` merge and branch cleanup |
 | `/home/hy/.codex/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/using-git-worktrees/SKILL.md` | Readable / consulted for isolation | Confirmed implementation must not start on `main`; branch isolation used in this harness-managed checkout | No separate git worktree created because the current workspace is the harness-managed repo checkout |
