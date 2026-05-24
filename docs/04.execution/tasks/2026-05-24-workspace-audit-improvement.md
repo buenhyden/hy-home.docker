@@ -318,3 +318,5 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 - **Graphify report**: [Graph report](../../../graphify-out/GRAPH_REPORT.md)
 - **Input task gap closure plan**: [Workspace audit input task gap closure plan](../plans/2026-05-24-workspace-audit-input-task-gap-closure.md)
 - **Input task gap closure task**: [Workspace audit input task gap closure task](./2026-05-24-workspace-audit-input-task-gap-closure.md)
+- **Grill review plan**: [Workspace audit grill review plan](../plans/2026-05-24-workspace-audit-grill-review.md)
+- **Grill review task**: [Workspace audit grill review task](./2026-05-24-workspace-audit-grill-review.md)

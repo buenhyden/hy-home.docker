@@ -126,6 +126,8 @@ deployment, permission, or deletion work was added.
 - **Task**: [Workspace audit improvement task](../tasks/2026-05-24-workspace-audit-improvement.md)
 - **Input task gap closure plan**: [Workspace audit input task gap closure plan](./2026-05-24-workspace-audit-input-task-gap-closure.md)
 - **Input task gap closure task**: [Workspace audit input task gap closure task](../tasks/2026-05-24-workspace-audit-input-task-gap-closure.md)
+- **Grill review plan**: [Workspace audit grill review plan](./2026-05-24-workspace-audit-grill-review.md)
+- **Grill review task**: [Workspace audit grill review task](../tasks/2026-05-24-workspace-audit-grill-review.md)
 - **Plans README**: [Execution plans README](./README.md)
 - **Tasks README**: [Execution tasks README](../tasks/README.md)
 - **Stage authoring matrix**: [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

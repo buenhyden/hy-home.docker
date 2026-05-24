@@ -116,6 +116,8 @@ GitHub state, deployment behavior, permissions, or untracked Storybook files.
 - **Parent Audit Plan**: [Workspace audit improvement plan](./2026-05-24-workspace-audit-improvement.md)
 - **Task**: [Workspace audit input task gap closure task](../tasks/2026-05-24-workspace-audit-input-task-gap-closure.md)
 - **Parent Audit Task**: [Workspace audit improvement task](../tasks/2026-05-24-workspace-audit-improvement.md)
+- **Grill review plan**: [Workspace audit grill review plan](./2026-05-24-workspace-audit-grill-review.md)
+- **Grill review task**: [Workspace audit grill review task](../tasks/2026-05-24-workspace-audit-grill-review.md)
 - **Plans README**: [Execution plans README](./README.md)
 - **Tasks README**: [Execution tasks README](../tasks/README.md)
 - **Stage authoring matrix**: [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

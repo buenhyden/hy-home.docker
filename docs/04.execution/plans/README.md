@@ -57,6 +57,7 @@ docs/04.execution/plans/
 ├── 2026-05-22-workspace-governance-bounded-reaudit.md # Completed workspace governance bounded re-audit
 ├── 2026-05-24-workspace-audit-improvement.md # Completed workspace audit improvement plan
 ├── 2026-05-24-workspace-audit-input-task-gap-closure.md # Completed workspace audit input-task gap closure plan
+├── 2026-05-24-workspace-audit-grill-review.md # Completed workspace audit grill review plan
 └── README.md                               # This file
 ```
 
@@ -122,5 +123,6 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Workspace Governance Bounded Re-audit Plan**: [2026-05-22-workspace-governance-bounded-reaudit.md](./2026-05-22-workspace-governance-bounded-reaudit.md)
 - **Workspace Audit Improvement Plan**: [2026-05-24-workspace-audit-improvement.md](./2026-05-24-workspace-audit-improvement.md)
 - **Workspace Audit Input Task Gap Closure Plan**: [2026-05-24-workspace-audit-input-task-gap-closure.md](./2026-05-24-workspace-audit-input-task-gap-closure.md)
+- **Workspace Audit Grill Review Plan**: [2026-05-24-workspace-audit-grill-review.md](./2026-05-24-workspace-audit-grill-review.md)
 - **Spec Execution Implementation Audit Plan**: [2026-05-22-spec-execution-implementation-audit.md](./2026-05-22-spec-execution-implementation-audit.md)
 - **Data Analytics Execution Traceability Plan**: [2026-05-22-data-analytics-execution-traceability.md](./2026-05-22-data-analytics-execution-traceability.md)

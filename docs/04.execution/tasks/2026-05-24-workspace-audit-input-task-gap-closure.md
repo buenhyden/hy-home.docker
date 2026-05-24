@@ -92,6 +92,8 @@ implementation that closes those gaps.
 - **Parent Plan**: [Workspace audit input task gap closure plan](../plans/2026-05-24-workspace-audit-input-task-gap-closure.md)
 - **Completed Audit Plan**: [Workspace audit improvement plan](../plans/2026-05-24-workspace-audit-improvement.md)
 - **Completed Audit Task**: [Workspace audit improvement task](./2026-05-24-workspace-audit-improvement.md)
+- **Grill review plan**: [Workspace audit grill review plan](../plans/2026-05-24-workspace-audit-grill-review.md)
+- **Grill review task**: [Workspace audit grill review task](./2026-05-24-workspace-audit-grill-review.md)
 - **Plans README**: [Execution plans README](../plans/README.md)
 - **Tasks README**: [Execution tasks README](./README.md)
 - **Stage authoring matrix**: [Stage authoring matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
