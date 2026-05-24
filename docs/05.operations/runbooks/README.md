@@ -1,3 +1,4 @@
+<!-- Target: docs/05.operations/runbooks/README.md -->
 # Operations Runbooks
 
 > 복구, 검증, 반복 실행 절차를 명령과 evidence 중심으로 관리한다.
@@ -47,6 +48,7 @@ runbooks/
 ├── 0012-standardize-infra-net.md
 ├── harness-agent-first-engineering-validation.md
 ├── llm-wiki-maintenance.md
+├── release-management.md
 └── README.md
 ```
 
@@ -74,6 +76,7 @@ runbooks/
 | [0012-standardize-infra-net.md](./0012-standardize-infra-net.md) | 0012 Standardize Infra Net runbook 문서 |
 | [harness-agent-first-engineering-validation.md](./harness-agent-first-engineering-validation.md) | Harness Agent First Engineering Validation runbook 문서 |
 | [llm-wiki-maintenance.md](./llm-wiki-maintenance.md) | Llm Wiki Maintenance runbook 문서 |
+| [release-management.md](./release-management.md) | Release Management runbook 문서 |
 
 ## Related Documents
 

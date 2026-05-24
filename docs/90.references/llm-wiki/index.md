@@ -671,6 +671,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/runbooks/README.md](../../05.operations/runbooks/README.md) | folder index |
 | [docs/05.operations/runbooks/harness-agent-first-engineering-validation.md](../../05.operations/runbooks/harness-agent-first-engineering-validation.md) | Markdown reference |
 | [docs/05.operations/runbooks/llm-wiki-maintenance.md](../../05.operations/runbooks/llm-wiki-maintenance.md) | Markdown reference |
+| [docs/05.operations/runbooks/release-management.md](../../05.operations/runbooks/release-management.md) | Markdown reference |
 
 ### Reference and template docs
 
