@@ -98,6 +98,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/agents/functions/infra-cross-validate.md](../../00.agent-governance/agents/functions/infra-cross-validate.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/infra-validate.md](../../00.agent-governance/agents/functions/infra-validate.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/security-audit.md](../../00.agent-governance/agents/functions/security-audit.md) | Markdown reference |
+| [docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md](../../00.agent-governance/agents/functions/workspace-audit-revalidation.md) | Markdown reference |
 | [docs/00.agent-governance/memory/README.md](../../00.agent-governance/memory/README.md) | folder index |
 | [docs/00.agent-governance/memory/agentic-harness-contract-hardening.md](../../00.agent-governance/memory/agentic-harness-contract-hardening.md) | Markdown reference |
 | [docs/00.agent-governance/memory/docker-doc-contract-backlog.md](../../00.agent-governance/memory/docker-doc-contract-backlog.md) | Markdown reference |
@@ -188,6 +189,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/skills/infra-cross-validate/skill.md](../../../.claude/skills/infra-cross-validate/skill.md) | Markdown reference |
 | [.claude/skills/infra-validate/skill.md](../../../.claude/skills/infra-validate/skill.md) | Markdown reference |
 | [.claude/skills/security-audit/skill.md](../../../.claude/skills/security-audit/skill.md) | Markdown reference |
+| [.claude/skills/workspace-audit-revalidation/skill.md](../../../.claude/skills/workspace-audit-revalidation/skill.md) | Markdown reference |
 | [.codex/README.md](../../../.codex/README.md) | folder index |
 | [.codex/hooks.json](../../../.codex/hooks.json) | JSON registry |
 
