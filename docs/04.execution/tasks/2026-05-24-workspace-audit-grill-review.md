@@ -133,7 +133,7 @@ for the original input.
 | 15. Docker Compose Review | Static Compose gates pass; runtime behavior unchanged. |
 | 16. Scripts Review | No script changed in this follow-up. |
 | 17. Hook Review | Hookify metadata gate remains documented and validated. |
-| 18. QA Review | Existing Storybook coverage evidence remains documented; not rerun for docs-only change. |
+| 18. QA Review | Storybook coverage was rerun with the local Node path and `/tmp` temp vars. |
 | 19. CI/CD Review | No workflow behavior changed; no remote checks performed. |
 | 20. Checklist Results | Stage docs, README links, LLM Wiki, and repo checks are included in the verification plan. |
 | 21. Verification Results | Local docs/static checks recorded in this task. |
