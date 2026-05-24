@@ -44,6 +44,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | T-WAI-010 | Revalidate completed audit evidence against current repository state | test | Bounded revalidation plan | Revalidation addendum | Six read-only reviewer roles completed; inventory, env, secrets, CI/CD, and verification evidence refreshed | main agent + read-only reviewers | Done |
 | T-WAI-011 | Review bounded revalidation omissions with office-hours lens | doc | Follow-up objective | Omission review addendum | Requirement-by-requirement reflection, implementation plan, and missing verification row recorded in this canonical task | main agent | Done |
 | T-WAI-012 | Review bounded revalidation omissions with Superpowers brainstorming lens | doc | Follow-up objective | Brainstorming review addendum | Design alternatives, selected approach, implementation plan, and verification evidence recorded in this canonical task | main agent | Done |
+| T-WAI-013 | Review bounded revalidation omissions with gstack CEO plan lens | doc | Follow-up objective | CEO review addendum | Scope challenge, HOLD SCOPE decision, alternatives, failure modes, and verification evidence recorded in this canonical task | main agent | Done |
 
 ## Phase View
 
@@ -95,6 +96,13 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 - [x] Treated the follow-up continuation as approval of the previously presented design: keep evidence in the canonical audit Task, not a duplicate Superpowers design doc.
 - [x] Compared the initial bounded revalidation plan against the current Task evidence with the brainstorming flow: context, alternatives, selected design, implementation plan, self-review, and verification.
 - [x] Preserved runtime, secret-value, actual `.env`, Docker start/stop, deploy, push/PR, deletion-risk, and untracked Storybook MCP deferrals.
+
+### Phase 12: gstack CEO plan review
+
+- [x] Reviewed `$gstack-plan-ceo-review` from `/home/hy/.agents/skills/gstack/plan-ceo-review/SKILL.md`.
+- [x] Ran a local pre-review audit over git history, branch diff, stash state, TODO/FIXME-style markers, and recently touched files without reading secret values.
+- [x] Selected `HOLD SCOPE` because the bounded revalidation goal is evidence completeness, not scope expansion.
+- [x] Added CEO review findings, implementation alternatives, failure modes, and verification evidence to this canonical Task instead of creating a duplicate plan or non-stage design artifact.
 
 ## Coverage Ledger
 
@@ -252,6 +260,76 @@ home for this audit addendum.
 | BR-003 | Patch only canonical Task evidence and progress log | Diff limited to this task artifact and `memory/progress.md` | Done |
 | BR-004 | Run repository documentation gates | Graphify health advisory recorded; repo contract, doc traceability, LLM Wiki freshness, diff hygiene, and status check passed | Done |
 
+## CEO Plan Review
+
+`$gstack-plan-ceo-review` was used as a strategy and scope review lens. The
+review mode is `HOLD SCOPE`: the plan's scope is accepted, and the job is to
+make the evidence bulletproof without silently expanding runtime, remote,
+secret-value, actual `.env`, Docker start/stop, deployment, deletion, or
+untracked Storybook MCP work.
+
+| Review Step | Result | Evidence |
+| --- | --- | --- |
+| Platform and base branch | GitHub remote, base `origin/main`; current branch started clean except pre-existing untracked Storybook MCP. | `git remote get-url origin`; `git status --short --branch` |
+| Recent history | Recent commits already show audit evidence, input-gap closure, grill review, bounded revalidation, office-hours review, and brainstorming review. | `git log --oneline -30` |
+| Branch diff and stash | No branch diff from `origin/main` before this addendum; no stashed work. | `git diff origin/main --stat`; `git stash list` |
+| TODO/FIXME scan | Tracked TODO/FIXME-style hits are unrelated historical docs/scripts; untracked Storybook MCP hits remain untouched. | `rg -l` marker scan for TODO, FIXME, HACK, and XXX with `secrets/`, `volumes/`, dependency, and `.git` exclusions |
+| Recently touched files | Audit/gov docs, Graphify, LLM Wiki, and contract validators are the hot surface. | `git log --since=30.days --name-only` |
+| Graphify posture | Advisory due to three cross-root inferred edges, so conclusions are corroborated against tracked Task/progress/governance docs. | `graphify-out/GRAPH_REPORT.md`; `report-graphify-health.sh` |
+
+## CEO Scope Challenge
+
+| Challenge | Answer | Outcome |
+| --- | --- | --- |
+| Is this the right problem? | Yes. The problem is not missing runtime work; it is whether the bounded revalidation plan is fully evidenced under the requested review lens. | Keep the scope on evidence completeness. |
+| Is this solving a proxy problem? | No. The canonical Task is the audit record reviewers will inspect; missing review-lens evidence would be a real traceability gap. | Update the Task, not a separate report. |
+| What if we do nothing? | The functional audit remains complete, but the user-requested `$gstack-plan-ceo-review` investigation would be undocumented. | Add a compact Phase 12 addendum. |
+| What already exists? | Phase 9, Phase 10, and Phase 11 already cover bounded revalidation, office-hours, and Superpowers brainstorming lenses. | Reuse those sections; do not duplicate the full audit. |
+| Dream state | Every requested review lens has one canonical row, one phase, one decision/change-scope/verifier row, and one progress-log entry. | Phase 12 closes that pattern. |
+
+## CEO Implementation Alternatives
+
+| Approach | Summary | Effort | Risk | Pros | Cons | Reuses | Decision |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| A. Canonical Task addendum | Add Phase 12, CEO review findings, alternatives, decision/change/verification rows, and a progress entry. | S | Low | Keeps one audit source of truth; matches stage taxonomy; easy to validate. | Does not create a standalone CEO plan artifact. | Existing Task, progress log, repo validators. | Selected |
+| B. Standalone CEO plan artifact | Create a separate CEO review or design document. | M | Medium | More literal to the skill's expanded review style; easier to read alone. | Duplicates the audit narrative; risks non-canonical stage placement. | Could link to existing Task. | Rejected |
+| C. Scope expansion into runtime/remote proof | Add live Docker, remote GitHub, secret-value, or actual `.env` checks. | XL | High | Would prove more operational truth. | Violates the bounded plan's deferred risk boundary and needs explicit separate approval. | Existing deferred-risk register. | Rejected |
+
+## CEO Review Section Summary
+
+| Section | CEO Review Finding | Action |
+| --- | --- | --- |
+| Architecture | The right architecture is a single canonical evidence artifact with additive review sections. | Keep evidence in this Task. |
+| Error and rescue map | Main failure is silent drift: a requested review lens not recorded while final status claims completion. | Add `T-WAI-013`, `DEC-WAI-010`, `CS-WAI-008`, and `VER-WAI-024`. |
+| Security and threat model | Reading values, secret files, or actual `.env` content would violate the audit safety boundary. | Preserve metadata-only and skipped-verification rows. |
+| Data flow and interaction edge cases | Review flow is user request -> skill lens -> canonical Task update -> validators -> commit/merge. | Record implementation plan and verification. |
+| Code quality | No code change is needed. Docs-only evidence avoids validator or runtime churn. | Do not edit scripts or infra. |
+| Test review | Existing docs gates prove the changed surface; runtime tests would be broader than the requested evidence addendum. | Use repo contract, traceability, LLM Wiki, Graphify health, diff check, and status. |
+| Performance | No runtime path changes. | No performance work. |
+| Observability and debuggability | Progress log is the observable trail for future agents. | Add progress-log entry. |
+| Deployment and rollout | Local docs commit and fast-forward main merge are enough; no push/PR/deploy required. | Keep publishing out of scope. |
+| Long-term trajectory | The repeated review-lens pattern is now explicit and auditable. | Future review lenses can follow the same compact pattern. |
+| Design and UX | No UI scope. | Skip design review. |
+
+## CEO Failure Modes Registry
+
+| Failure Mode | Impact | Mitigation |
+| --- | --- | --- |
+| Silent scope expansion into runtime or remote checks | Breaks the bounded revalidation plan and can affect live systems or secrets. | `HOLD SCOPE`; rejected Approach C. |
+| Duplicate audit documents | Reviewers split attention across competing sources of truth. | Canonical Task addendum only. |
+| Skill-default artifact path conflicts with repo taxonomy | Non-stage docs could bypass repo validators and governance. | Keep active evidence under `docs/04.execution/tasks/`. |
+| Untracked Storybook MCP accidentally staged | User-owned or pre-existing work could be committed accidentally. | Stage only the two intended docs files; final status check. |
+| Graphify treated as authoritative despite advisory status | Inferred edges could drive false conclusions. | Corroborate with tracked Task/progress/governance docs. |
+
+## CEO Implementation Plan
+
+| Step | Implementation | Verification | Status |
+| --- | --- | --- | --- |
+| CEO-001 | Read `$gstack-plan-ceo-review`, run local system audit, and identify review mode | Skill file, git state, Graphify, Task/progress, and memory inspected | Done |
+| CEO-002 | Select mode and compare alternatives | `HOLD SCOPE` selected; Approaches A, B, and C recorded | Done |
+| CEO-003 | Patch only canonical Task evidence and progress log | Diff limited to this task artifact and `memory/progress.md` | Done |
+| CEO-004 | Run repository documentation gates | Graphify health advisory recorded; repo contract, doc traceability, LLM Wiki freshness, diff hygiene, and status check passed | Done |
+
 ## Gap Registry
 
 | ID | Area | Path | Summary | Evidence | Impact | Action | Risk | Related Task | Verification | Status |
@@ -304,6 +382,7 @@ home for this audit addendum.
 | DEC-WAI-007 | Revalidate in place on `codex/workspace-audit-revalidation` | Existing audit artifacts remain canonical and only evidence drift needed updates | Create duplicate full-audit artifacts | Keeps history compact and avoids duplicate ledgers | Revert this addendum patch | Done |
 | DEC-WAI-008 | Use office-hours as an omission-review lens, not a full design workflow | The skill is product-design oriented, requires an unavailable `AskUserQuestion` gate, and forbids implementation; the user requested repository implementation | Stop at blocked skill workflow or create a new design doc | Preserves the user's implementation goal while documenting the skill constraint | Remove Phase 10 addendum if a full design-doc workflow is later approved | Done |
 | DEC-WAI-009 | Use Superpowers brainstorming as a design lens inside the canonical Task | The plugin skill's default `docs/superpowers/specs/` output conflicts with this repository's active-stage taxonomy, while the user goal is to implement an audit evidence addendum | Create a non-canonical design doc or record only a progress row | Proves the requested skill review without duplicate audit artifacts | Remove Phase 11 addendum if a separate approved design-doc workflow supersedes it | Done |
+| DEC-WAI-010 | Use gstack CEO review in `HOLD SCOPE` mode inside the canonical Task | The user asked for bounded-plan omission review and hard gates; scope expansion into runtime, remote, secrets, or external gstack artifacts would violate the bounded plan | Expand into live ops proof or create a separate CEO plan document | Proves the requested CEO lens while preserving one canonical audit record | Remove Phase 12 addendum if a separately approved CEO plan artifact supersedes it | Done |
 
 ## Change Scope
 
@@ -316,6 +395,7 @@ home for this audit addendum.
 | CS-WAI-005 | This task artifact and progress log | Docs artifact | Record bounded revalidation evidence and current counts | T-WAI-010, CI-001 | Low |
 | CS-WAI-006 | This task artifact and progress log | Docs artifact | Record office-hours omission review, implementation plan, and missing standalone status verification evidence | T-WAI-011 | Low |
 | CS-WAI-007 | This task artifact and progress log | Docs artifact | Record Superpowers brainstorming review, alternatives, selected implementation plan, and verification evidence | T-WAI-012 | Low |
+| CS-WAI-008 | This task artifact and progress log | Docs artifact | Record gstack CEO review, `HOLD SCOPE` mode, alternatives, failure modes, and verification evidence | T-WAI-013 | Low |
 
 ## Verification Log
 
@@ -344,6 +424,7 @@ home for this audit addendum.
 | VER-WAI-021 | `git status --short --branch` | Branch and dirty state after Phase 10 edits | PASS | On `codex/workspace-audit-revalidation`; modified files limited to this task artifact and `memory/progress.md`; pre-existing untracked `projects/storybook/mcp/` remains untouched | N/A | Commit/staging still pending if this addendum is committed |
 | VER-WAI-022 | Office-hours omission review docs gate | Phase 10 addendum | PASS | Graphify health advisory with 3 cross-root inferred edges; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS | N/A | Graphify remains advisory by design |
 | VER-WAI-023 | Superpowers brainstorming review docs gate | Phase 11 addendum | PASS | Graphify health advisory with 3 cross-root inferred edges; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
+| VER-WAI-024 | gstack CEO review docs gate | Phase 12 addendum | PASS | Graphify health advisory with `surprising_cross_root_inferred_edges=3`; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
 
 ## Skipped / Failed Verification
 
@@ -359,6 +440,7 @@ home for this audit addendum.
 
 | Skill / Path | Status | Impact | Fallback |
 | --- | --- | --- | --- |
+| `/home/hy/.agents/skills/gstack/plan-ceo-review/SKILL.md` | Readable / used as Phase 12 `HOLD SCOPE` review lens | Forced premise challenge, alternatives, failure-mode review, and scope-mode selection before patching | Repo stage taxonomy keeps the evidence in this canonical Task and progress log |
 | `/home/hy/.codex/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/SKILL.md` | Readable / used as Phase 11 design lens | Forced context review, alternatives, selected design, and implementation-plan evidence before patching | Repo stage taxonomy keeps the evidence in this canonical Task instead of `docs/superpowers/specs/` |
 | `/home/hy/.agents/skills/brainstorming/SKILL.md` | Readable / used in planning | Scope lock and decision gating | Repo-approved plan controls execution |
 | `/home/hy/.agents/skills/grill-with-docs/SKILL.md` | Readable / used in planning | Forced explicit edge decisions | Repo evidence replaced answerable questions |
