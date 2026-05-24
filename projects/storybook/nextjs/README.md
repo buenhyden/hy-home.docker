@@ -58,6 +58,8 @@ nextjs/
 | `npm run build` | Next.js production build |
 | `npm run build-storybook` | Storybook 정적 산출물 빌드 |
 | `npm run lint` | ESLint 실행 |
+| `npm run test` | Storybook Vitest 테스트 실행 |
+| `npm run coverage` | Storybook Vitest coverage 실행 |
 
 Parent repo 루트에서 실행할 때는 `npm --prefix projects/storybook/nextjs <command>`를 사용합니다.
 

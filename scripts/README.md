@@ -147,6 +147,14 @@ no-argument mode may read or write local secret registry and secret files; use
 `--check` for readiness checks and `--dry-run` for ID/path-only action previews
 before running the default mode.
 
+`scripts/hooks/post-tool-validate.sh` is a hook payload consumer. With no JSON
+payload or no changed paths, it exits successfully without running validators.
+
+Repo-local Hookify metadata validation currently supports only `bash`, `file`,
+and `stop` events, as enforced by
+`scripts/validation/check-repo-contracts.sh`. External Hookify event names are
+not automatically accepted by this repository.
+
 ---
 
 ## 🛠️ Utilities & Automation
@@ -191,8 +199,8 @@ bash scripts/knowledge/generate-llm-wiki-index.sh --check
 # Dispatch a provider-neutral PreToolUse hook event
 printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"rg hook"}}' | bash scripts/hooks/agent-event-hook.sh PreToolUse
 
-# Run provider-neutral post-edit validation from hook payload
-./scripts/hooks/post-tool-validate.sh
+# Run provider-neutral post-edit validation from a file-edit hook payload
+printf '{"tool_input":{"file_path":"docs/00.agent-governance/memory/progress.md"}}' | bash scripts/hooks/post-tool-validate.sh
 
 # Enforce all tier hardening baselines
 ./scripts/hardening/check-all-hardening.sh
