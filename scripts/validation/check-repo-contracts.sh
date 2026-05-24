@@ -660,6 +660,100 @@ then
   failures=$((failures + 1))
 fi
 
+section "Hookify critical-rule metadata"
+if ! python3 - <<'PY'
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+try:
+    import yaml
+except Exception as exc:
+    print(f"FAIL: PyYAML is required for Hookify metadata parsing: {exc}", file=sys.stderr)
+    sys.exit(1)
+
+failures: list[str] = []
+hookify_files = sorted(pathlib.Path(".claude").glob("hookify*.local.md"))
+allowed_events = {"bash", "file", "stop"}
+allowed_actions = {"block", "warn"}
+
+for path in hookify_files:
+    text = path.read_text(errors="ignore")
+    match = re.match(r"^---\n(.*?)\n---(?:\n|\Z)", text, re.S)
+    if not match:
+        failures.append(f"{path}: missing YAML front matter")
+        continue
+
+    try:
+        metadata = yaml.safe_load(match.group(1))
+    except Exception as exc:
+        failures.append(f"{path}: YAML front matter parse failed: {exc}")
+        continue
+
+    if not isinstance(metadata, dict):
+        failures.append(f"{path}: YAML front matter must be a mapping")
+        continue
+
+    expected_name = path.name.removeprefix("hookify.").removesuffix(".local.md")
+    name = metadata.get("name")
+    enabled = metadata.get("enabled")
+    event = metadata.get("event")
+    action = metadata.get("action")
+    pattern = metadata.get("pattern")
+    conditions = metadata.get("conditions")
+
+    if name != expected_name:
+        failures.append(f"{path}: name must match filename stem {expected_name!r}")
+    if enabled is not True:
+        failures.append(f"{path}: enabled must be true")
+    if event not in allowed_events:
+        failures.append(f"{path}: event must be one of {sorted(allowed_events)}")
+    if action not in allowed_actions:
+        failures.append(f"{path}: action must be one of {sorted(allowed_actions)}")
+    elif isinstance(name, str):
+        if name.startswith("block-") and action != "block":
+            failures.append(f"{path}: block rule must use action: block")
+        if name.startswith("require-") and action != "block":
+            failures.append(f"{path}: require rule must use action: block")
+        if name.startswith("warn-") and action != "warn":
+            failures.append(f"{path}: warn rule must use action: warn")
+
+    if event in {"bash", "stop"}:
+        if not isinstance(pattern, str) or not pattern.strip():
+            failures.append(f"{path}: {event} rule must define a non-empty pattern")
+        if conditions is not None:
+            failures.append(f"{path}: {event} rule must use pattern, not conditions")
+    elif event == "file":
+        if not isinstance(conditions, list) or not conditions:
+            failures.append(f"{path}: file rule must define non-empty conditions")
+            continue
+        if pattern is not None:
+            failures.append(f"{path}: file rule must use conditions, not top-level pattern")
+        for index, condition in enumerate(conditions, start=1):
+            if not isinstance(condition, dict):
+                failures.append(f"{path}: condition #{index} must be a mapping")
+                continue
+            field = condition.get("field")
+            operator = condition.get("operator")
+            condition_pattern = condition.get("pattern")
+            if not isinstance(field, str) or not field.strip():
+                failures.append(f"{path}: condition #{index} missing field")
+            if operator != "regex_match":
+                failures.append(f"{path}: condition #{index} operator must be regex_match")
+            if not isinstance(condition_pattern, str) or not condition_pattern.strip():
+                failures.append(f"{path}: condition #{index} missing pattern")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+then
+  failures=$((failures + 1))
+fi
+
 section "Runtime agent/function catalog"
 if ! python3 - <<'PY'
 from __future__ import annotations
