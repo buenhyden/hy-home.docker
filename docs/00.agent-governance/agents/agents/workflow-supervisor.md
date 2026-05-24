@@ -47,6 +47,7 @@ Make runtime execution predictable by separating high-level routing and final de
 - [docker-compose-patterns](../functions/docker-compose-patterns.md)
 - [incident-response](../functions/incident-response.md)
 - [adr-writing](../functions/adr-writing.md)
+- [workspace-audit-revalidation](../functions/workspace-audit-revalidation.md)
 
 ## Usage
 
