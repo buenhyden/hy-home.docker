@@ -47,6 +47,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | T-WAI-013 | Review bounded revalidation omissions with gstack CEO plan lens | doc | Follow-up objective | CEO review addendum | Scope challenge, HOLD SCOPE decision, alternatives, failure modes, and verification evidence recorded in this canonical task | main agent | Done |
 | T-WAI-014 | Execute the CEO review plan with Superpowers executing-plans | doc | Follow-up objective | Executing-plans addendum | Plan load/review, task execution checkpoints, finishing-branch path, and verification evidence recorded in this canonical task | main agent | Done |
 | T-WAI-015 | Review skill creation and improvement prerequisites | doc | Follow-up objective | Skill workflow review addendum | `skill-creator`, `skillify`, `skill-developer`, and `skill-improver` prerequisites reviewed; no TDD-gated Skill mutation justified | main agent | Done |
+| T-WAI-016 | Create repeated workspace-audit revalidation Skill | doc | Follow-up objective | Runtime Skill addendum | Repeated audit/revalidation workflow packaged as `workspace-audit-revalidation` runtime Skill with governance function catalog evidence | main agent | Done |
 
 ## Phase View
 
@@ -123,6 +124,14 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 - [x] Confirmed no new Skill should be created or edited in this pass because no target Skill, concrete usage examples, failing baseline, or verified skill-review loop was provided.
 - [x] Recorded the outcome as a candidate-only review, preserving the original audit rule: create/update Skills only after a failing baseline and skill-writing TDD workflow.
 
+### Phase 15: workspace-audit-revalidation Skill creation
+
+- [x] Treated the user's follow-up as explicit approval to turn the repeated workspace-audit revalidation workflow into a Skill.
+- [x] Used current Task and progress-log evidence as the repeated-workflow baseline: audit improvement, input-gap closure, grill review, bounded revalidation, office-hours review, brainstorming review, CEO review, executing-plans follow-through, and skill workflow review.
+- [x] Created `.claude/skills/workspace-audit-revalidation/skill.md` with concrete trigger examples, bootstrap sequence, branch discipline, evidence targets, safety boundaries, Skill creation gate, verification commands, and completion report expectations.
+- [x] Added `docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md` and updated governance/runtime catalog counts to keep `.claude/skills` and governance functions synchronized.
+- [x] Did not create a `.agents/skills` compatibility copy because `.agents/skills` rejected new directory creation in this runtime and `.agents` copies are optional compatibility surfaces, not the source of truth.
+
 ## Coverage Ledger
 
 | Area | Path / Target | Exists | Initial Read | Needs Deep Read | Reason | Owner | Status |
@@ -149,7 +158,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | Compose files | 48 | `find infra -path '*/docker-compose*.yml' -o ...` | Existing validator excludes one MinIO cluster YAML |
 | Workflow/ruleset files | 6 | `rg --files .github/workflows .github/rulesets` | Local-only CI/CD review |
 | Hookify rule files | 18 | `find .claude -maxdepth 1 -name 'hookify*.local.md'` | Metadata validation now enforced |
-| Runtime Skill mirror files | 10 Claude + 10 `.agents` | `find .../skills -name skill.md` | No Skill edits made |
+| Runtime Skill mirror files | 11 Claude + 10 `.agents` | `find .../skills -name skill.md` | `workspace-audit-revalidation` added to `.claude/skills`; `.agents` compatibility copy deferred because `.agents/skills` rejected new directory creation |
 
 ## Target Path Ledger
 
@@ -163,7 +172,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | Compose files | `infra/**/docker-compose*.yml`, `infra/**/compose*.yml` | 48 discovered Compose files; validator covers 47 with the existing MinIO cluster YAML exclusion | Validated through repo validators; runtime start skipped by design |
 | GitHub workflow/ruleset surfaces | `.github/workflows/`, `.github/rulesets/` | 6 files | Local static review only; remote checks deferred |
 | Hookify local rules | `.claude/hookify*.local.md` | 18 files | Metadata contract enforced by repo-contract validator |
-| Runtime Skill mirrors | `.claude/skills/**/skill.md`, `.agents/skills/**/skill.md` | 10 Claude + 10 `.agents` skill files | Reviewed; no TDD-gated Skill change justified |
+| Runtime Skill mirrors | `.claude/skills/**/skill.md`, `.agents/skills/**/skill.md` | 11 Claude + 10 `.agents` skill files | Runtime Skill created in `.claude/skills`; optional `.agents` compatibility copy deferred |
 | Storybook QA surface | `projects/storybook/nextjs/` | 46 tracked files | Coverage command passed with local Node path and `/tmp` temp vars |
 | Graphify output | `graphify-out/` | `manifest_paths_total=727`, advisory health | Refreshed after script change; used as navigation only |
 | Pre-existing untracked tree | `projects/storybook/mcp/` | Present in `git status --short` | Left untouched and unstaged |
@@ -397,6 +406,18 @@ requires TDD-gated evidence before Skill mutation.
 | Can an existing skill be improved now? | No. No target Skill and no `skill-reviewer` findings were provided. | Do not edit `.claude/skills`, `.agents/skills`, or external skill roots. |
 | Can the named skills still advance the audit? | Yes. They prove that the no-mutation decision was reviewed against skill-authoring workflows, not merely assumed. | Add this addendum and progress evidence. |
 
+## Created Skill Result
+
+| Field | Result |
+| --- | --- |
+| Skill name | `workspace-audit-revalidation` |
+| Runtime path | `.claude/skills/workspace-audit-revalidation/skill.md` |
+| Governance catalog path | `docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md` |
+| Trigger baseline | Repeated workspace audit, bounded revalidation, omission-review, and Skill-review follow-up requests in this Task and progress log |
+| Main workflow | Revalidate canonical audit evidence in place, preserve deferrals, run repo gates, and report branch/commit status |
+| Compatibility copy | `.agents/skills` copy deferred because directory creation failed in this runtime; `.agents` is optional compatibility, while `.claude/skills` is the runtime source of truth |
+| Validation target | Repo contract synchronization of `.claude/skills` and governance function catalog, doc traceability, LLM Wiki freshness, Graphify health, and diff hygiene |
+
 ## Gap Registry
 
 | ID | Area | Path | Summary | Evidence | Impact | Action | Risk | Related Task | Verification | Status |
@@ -452,6 +473,7 @@ requires TDD-gated evidence before Skill mutation.
 | DEC-WAI-010 | Use gstack CEO review in `HOLD SCOPE` mode inside the canonical Task | The user asked for bounded-plan omission review and hard gates; scope expansion into runtime, remote, secrets, or external gstack artifacts would violate the bounded plan | Expand into live ops proof or create a separate CEO plan document | Proves the requested CEO lens while preserving one canonical audit record | Remove Phase 12 addendum if a separately approved CEO plan artifact supersedes it | Done |
 | DEC-WAI-011 | Execute the CEO plan via `$superpowers:executing-plans` as a canonical Task addendum | The objective requires executing the plan with this skill, and the existing Task already contains the authoritative plan and evidence structure | Create a new Superpowers plan artifact or treat the prior CEO commit as sufficient without evidence | Closes the requested execution-method traceability gap without duplicating audit docs | Remove Phase 13 addendum if a separately approved Superpowers execution artifact supersedes it | Done |
 | DEC-WAI-012 | Treat skill creation/improvement as candidate-only until TDD prerequisites exist | The named skill-authoring workflows require concrete examples, target Skill files, failing baselines, validation, or reviewer loops that are not present in this bounded audit | Create or edit a Skill immediately, or ignore the requested skill-authoring lenses | Preserves the original TDD-gated Skill policy while proving the four requested workflows were reviewed | Remove Phase 14 addendum if a separately approved skill-authoring task provides the missing prerequisites | Done |
+| DEC-WAI-013 | Create `workspace-audit-revalidation` as a repo-local runtime Skill | The user explicitly requested Skill creation after the candidate-only review, and the current Task/progress evidence proves a repeated bounded audit/revalidation workflow | Keep candidate-only or create a user-global Skill outside the repo | Future agents get a reusable repo-native workflow without changing runtime Docker, secrets, remote GitHub, or deployment behavior | Remove the Skill and catalog entry if a broader Skill package supersedes it | Done |
 
 ## Change Scope
 
@@ -467,6 +489,7 @@ requires TDD-gated evidence before Skill mutation.
 | CS-WAI-008 | This task artifact and progress log | Docs artifact | Record gstack CEO review, `HOLD SCOPE` mode, alternatives, failure modes, and verification evidence | T-WAI-013 | Low |
 | CS-WAI-009 | This task artifact and progress log | Docs artifact | Record Superpowers executing-plans follow-through, task execution checkpoints, finishing path, and verification evidence | T-WAI-014 | Low |
 | CS-WAI-010 | This task artifact and progress log | Docs artifact | Record skill creation/improvement prerequisite review and candidate-only decision | T-WAI-015 | Low |
+| CS-WAI-011 | `.claude/skills/workspace-audit-revalidation/skill.md`, `docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md`, governance/runtime catalogs, this task artifact, progress log | Runtime Skill + docs artifact | Create approved reusable workspace-audit revalidation Skill and keep catalogs synchronized | T-WAI-016 | Low |
 
 ## Verification Log
 
@@ -498,6 +521,7 @@ requires TDD-gated evidence before Skill mutation.
 | VER-WAI-024 | gstack CEO review docs gate | Phase 12 addendum | PASS | Graphify health advisory with `surprising_cross_root_inferred_edges=3`; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
 | VER-WAI-025 | Superpowers executing-plans docs gate | Phase 13 addendum | PASS | Graphify health advisory with `surprising_cross_root_inferred_edges=3`; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
 | VER-WAI-026 | Skill workflow review docs gate | Phase 14 addendum | PASS | Graphify health advisory with `surprising_cross_root_inferred_edges=3`; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to this task artifact, `memory/progress.md`, and pre-existing untracked `projects/storybook/mcp/` | N/A | Graphify remains advisory by design |
+| VER-WAI-027 | Workspace audit revalidation Skill creation gate | Phase 15 Skill addendum | PASS | Skill smoke PASS for frontmatter and required sections; Graphify health advisory with `surprising_cross_root_inferred_edges=3`; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS; status limited to runtime Skill/catalog/docs updates and pre-existing untracked `projects/storybook/mcp/` | N/A | Optional `.agents` compatibility copy remains deferred because directory creation was rejected |
 
 ## Skipped / Failed Verification
 
@@ -513,6 +537,7 @@ requires TDD-gated evidence before Skill mutation.
 
 | Skill / Path | Status | Impact | Fallback |
 | --- | --- | --- | --- |
+| `.claude/skills/workspace-audit-revalidation/skill.md` | Created / runtime Skill | Encodes the repeated bounded workspace-audit revalidation workflow for future repo-local agents | Governance function catalog mirrors the Skill purpose and usage |
 | `/home/hy/.codex/skills/.system/skill-creator/SKILL.md` | Readable / used as Phase 14 creation workflow lens | Confirmed new Skill creation requires concrete examples, resource planning, initialization, validation, and real-use iteration | Candidate-only because those inputs are absent |
 | `/home/hy/gstack/.agents/skills/gstack-skillify/SKILL.md` | Readable / used as Phase 14 applicability check | Confirmed `skillify` is scoped to codifying a recent successful `/scrape` flow into a browser-skill | Not applicable because this audit has no recent `/scrape` result |
 | `/home/hy/.agents/skills/skill-developer/SKILL.md` | Readable / used as Phase 14 skill-development lens | Confirmed Claude Code skill changes need target skill files, trigger rules, hook tests, and real scenarios | No skill-rule or hook change without an approved target |
@@ -529,7 +554,7 @@ requires TDD-gated evidence before Skill mutation.
 | `/home/hy/gstack/.agents/skills/gstack-document-release/SKILL.md` | Readable / partially mapped | Changelog/release expectations | Codex-safe local-only behavior |
 | `/home/hy/.agents/skills/doc-coauthoring/SKILL.md` | Readable / mapped | Task artifact reader clarity | Targeted reader review |
 | `/home/hy/.agents/skills/technical-blog-writing/SKILL.md` | Readable / not applicable | No blog content created | N/A |
-| Skill creation/update group | Readable / TDD-gated | No new Skill created because no failing baseline test was run | Record candidates only |
+| Skill creation/update group | Readable / TDD-gated | Phase 15 created `workspace-audit-revalidation` after explicit user approval and repeated-workflow evidence from Task/progress history | Keep future Skill mutations gated by examples and validation |
 | Hook skills | Readable / used | Hookify metadata validation added | No new runtime hook blocks |
 | Agent instruction skills | Readable / used | Root shims preserved; Graphify compatibility guidance updated | Thin-shim policy |
 | Bash/Docker/DevOps/QA skills | Readable / used as review lenses | Validator, Docker, QA, CI/CD evidence recorded | Repo-native validators |
@@ -578,13 +603,13 @@ requires TDD-gated evidence before Skill mutation.
 | --- | --- | --- |
 | 1. Summary | Gap Registry, Change Scope | Low-risk docs/checks completed; high-risk work deferred |
 | 2. Applied Agent Instructions and Skills | Skill Review, Working Rules | Repo governance and requested Skills mapped to Codex-safe behavior |
-| 3. Original Skill Preservation Summary | Skill Review | Original domain Skills preserved; no replacement Skill created |
+| 3. Original Skill Preservation Summary | Skill Review | Original domain Skills preserved; new workspace-audit revalidation Skill added |
 | 4. Coverage Ledger Summary | Coverage Ledger, Target Path Ledger | All target areas reviewed with explicit target-path counts |
 | 5. Work Management Rules | Inputs, Working Rules | Plan/Task first; Spec not changed because no enduring contract changed |
 | 6. Reviewer Summary | Reviewer Baseline Ledger, Gap Registry | Six baseline reviewer outputs reused and refreshed by local evidence |
 | 7. Integrated Gap Analysis Summary | Integrated Gap Analysis | P1 gaps closed; P0/runtime/secret work deferred |
 | 8. Plan / Task / Spec Updates | Change Scope | Plan/Task created; Spec not needed |
-| 9. Skill Creation / Update Results | Skill Review | No TDD-gated Skill change justified |
+| 9. Skill Creation / Update Results | Skill Review | `workspace-audit-revalidation` Skill created after explicit approval and repeated-workflow evidence |
 | 10. Implemented Changes | Change Scope | Docs, env example, hook metadata gate, runbook guardrails |
 | 11. Deferred Items | Deferred Risk Register | Runtime, secrets, remote, deletion, thresholds |
 | 12. Legacy / Delete / Integration Results | Legacy/Delete/Integration Results | No deletion; stale refs fixed |

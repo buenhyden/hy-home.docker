@@ -17,7 +17,7 @@ This file keeps Claude-specific runtime routing local to `.claude/` while the sh
 
 - Runtime supervisor: `.claude/agents/workflow-supervisor.md` (`model: opus`)
 - Domain agents: `.claude/agents/*.md` (8 workers, `model: sonnet`)
-- Runtime skills: `.claude/skills/<skill>/skill.md` (10 functions)
+- Runtime skills: `.claude/skills/<skill>/skill.md` (11 functions)
 - Runtime hooks: `.claude/hooks/*.sh` dispatch to `scripts/hooks/agent-event-hook.sh`
 - Hookify rules: `.claude/hookify.*.local.md` keep Hookify's `.local.md` naming but are tracked team-shared rules in this repository, not personal overrides.
 - Shared team permissions: `.claude/settings.json`

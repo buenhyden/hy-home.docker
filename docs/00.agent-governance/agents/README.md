@@ -62,6 +62,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 - [code-review-dimensions](./functions/code-review-dimensions.md)
 - [adr-writing](./functions/adr-writing.md)
 - [ci-cd-patterns](./functions/ci-cd-patterns.md)
+- [workspace-audit-revalidation](./functions/workspace-audit-revalidation.md)
 
 ## How to Work in This Area
 
