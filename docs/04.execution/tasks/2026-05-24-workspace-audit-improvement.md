@@ -42,6 +42,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | T-WAI-008 | Verify and prepare local commits | test | Completion criteria | Verification | Required local checks recorded; local task-sized commits prepared on the feature branch | main agent | Done |
 | T-WAI-009 | Close follow-up input-task evidence gaps | doc | Original user input task list | Follow-up gap closure | Target Path Ledger, Reviewer Baseline Ledger, role/purpose-safe secrets parser evidence, and Graphify update row added | main agent | Done |
 | T-WAI-010 | Revalidate completed audit evidence against current repository state | test | Bounded revalidation plan | Revalidation addendum | Six read-only reviewer roles completed; inventory, env, secrets, CI/CD, and verification evidence refreshed | main agent + read-only reviewers | Done |
+| T-WAI-011 | Review bounded revalidation omissions with office-hours lens | doc | Follow-up objective | Omission review addendum | Requirement-by-requirement reflection, implementation plan, and missing verification row recorded in this canonical task | main agent | Done |
 
 ## Phase View
 
@@ -79,6 +80,13 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 - [x] Used six read-only reviewer roles for governance/skills, documentation lifecycle, Docker/env/secrets, scripts/hooks, QA, and CI/CD/operations.
 - [x] Updated current counts and evidence rows only where the live repository state drifted from the completed audit evidence.
 - [x] Preserved all runtime, value-bearing, remote, deployment, permission, deletion, and untracked Storybook deferrals.
+
+### Phase 10: office-hours omission review
+
+- [x] Reviewed the bounded revalidation addendum against the initial bounded revalidation plan.
+- [x] Read `$office-hours` from `/home/hy/gstack/.agents/skills/gstack-office-hours/SKILL.md` and used its forcing-question review pattern.
+- [x] Did not run the full office-hours design-doc workflow because it is product-design oriented, requires an `AskUserQuestion` tool gate that is not available in this runtime, and explicitly forbids implementation.
+- [x] Added the narrow missing evidence: a requirement-by-requirement reflection matrix and an explicit `git status --short --branch` verification row.
 
 ## Coverage Ledger
 
@@ -136,6 +144,59 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | REV-WAI-005 | QA and CI/CD review | 2026-05-24 read-only QA and CI/CD reviewers, Storybook coverage, local workflow/ruleset review, skipped-verification review | QA-001 and REL-001 remain closed; QA-002 and remote enforcement remain deferred |
 | REV-WAI-006 | Skills, legacy/delete, and integration review | 2026-05-24 read-only governance/docs reviewers, Skill mirror inventory, legacy/delete/integration review | No Skill edit or deletion justified; formatting-only mirror cleanup remains candidate work |
 
+## Office-Hours Omission Review
+
+The follow-up review used `$office-hours` as a pressure-test lens, not as a full
+design-doc workflow. The full skill workflow was not run because it requires an
+`AskUserQuestion` gate that is not available in this runtime and its hard gate
+forbids implementation. The useful part for this repository task was its
+forcing-question pattern: make the premise specific, check the status quo, find
+the narrowest missing wedge, and convert the result into auditable evidence.
+
+| Probe | Finding | Evidence | Action |
+| --- | --- | --- | --- |
+| Demand reality | The real demand was not another audit, but proof that the initial bounded revalidation plan was fully reflected. | Existing Phase 9 recorded revalidation results, but not a bullet-by-bullet reflection of the initial bounded plan. | Add the Bounded Revalidation Reflection Matrix below. |
+| Status quo | The canonical task already contains most required ledgers and deferrals. | Coverage Ledger, Gap Registry, Integrated Gap Analysis, Decision Log, Change Scope, Verification Log, Env/Secrets comparisons, Legacy/Delete/Integration Results, and Final Report Evidence Map already exist. | Keep the existing artifact canonical; do not create a duplicate full-audit doc. |
+| Desperate specificity | One named verification command lacked a standalone verification row. | The bounded plan required `git status --short --branch`; progress evidence mentioned status, but the Verification Log did not have a dedicated row. | Add `VER-WAI-021`. |
+| Narrowest wedge | The smallest implementation is a task addendum plus progress-log row. | Docs scope permits explicit user-approved target-stage edits; stage matrix routes execution evidence to `docs/04.execution/tasks/`. | Update this task and `memory/progress.md` only. |
+| Observation | Runtime, network, secret-value, deployment, deletion, and untracked work remained correctly deferred. | Skipped verification rows, Deferred Risk Register, and `GIT-001` preserve these boundaries. | No runtime or value-bearing work added. |
+| Future fit | No enduring contract changed. | The review only strengthens evidence coverage for an already completed audit workflow. | No Spec or ADR needed. |
+
+## Bounded Revalidation Reflection Matrix
+
+| Initial Requirement | Current Evidence | Reflection Status | Follow-up |
+| --- | --- | --- | --- |
+| Revalidate existing 2026-05-24 audit artifacts instead of creating duplicates | Phase 9, `DEC-WAI-007`, `CS-WAI-005` | Reflected | None |
+| Use Agentic Workflow Specialist with `scopes/agentic.md`, docs scope, and stage matrix | Inputs, Working Rules, Phase 10 bootstrap evidence, governance progress log | Reflected after this addendum | None |
+| Work on `codex/workspace-audit-revalidation` before mutation | `DEC-WAI-007`, progress log, commit branch evidence | Reflected | None |
+| Update existing Plan/Task evidence only for proven drift, missing evidence, or stale status | Phase 9, `CS-WAI-005`, this Phase 10 addendum | Reflected | None |
+| Defer runtime, secret-value, actual `.env`, Docker start/stop, deploy, push/PR, and deletion-risk work | Working Rules, Skipped/Failed Verification, Deferred Risk Register | Reflected | None |
+| Bootstrap with root `AGENTS.md`, governance rules, memory/progress, scopes, and stage matrix | Inputs and Phase 10 evidence | Reflected after this addendum | None |
+| Use up to six read-only explorer roles with structured return fields | `REV-WAI-001` through `REV-WAI-006`, `VER-WAI-018` | Reflected | None |
+| Refresh Coverage Ledger, Gap Registry, Integrated Gap Analysis, Decision Log, Change Scope, Verification Log, Env/Secrets comparisons, Legacy/Delete/Integration Results, and Final Report Evidence Map | Named sections in this task artifact | Reflected | None |
+| Compare `.env.example` and `.env` by key names only | `ENV-WAI-001` through `ENV-WAI-003`, `VER-WAI-014` | Reflected | None |
+| Compare sensitive registries by metadata only and skip value columns/value files | `SEC-WAI-001` through `SEC-WAI-004`, `VER-WAI-015` | Reflected | None |
+| Classify legacy/delete/integration candidates and delete only when all checks prove low risk | Legacy/Delete/Integration Results, `GIT-001`, Deferred Risk Register | Reflected | None |
+| Create/update Skills only after failing baseline and skill-writing TDD workflow | Skill Review, `GOV-002` | Reflected | None |
+| Run listed verification commands after edits | Verification Log and progress evidence | Mostly reflected before this addendum; `git status --short --branch` needed a standalone row | Added `VER-WAI-021` |
+| If scripts change, run `bash -n` on changed shell scripts | `VER-WAI-010`; Phase 10 has no script changes | Reflected | None |
+| If Storybook QA evidence is refreshed, use pinned Node path and `/tmp` temp vars | `VER-WAI-011` through `VER-WAI-013` | Reflected | None |
+| Deliver concise 24-section final report | Final Report Evidence Map and final response from the revalidation commit | Reflected | None |
+| Keep explicit skipped-verification rows for network, remote GitHub, Docker runtime, secret values, and actual `.env` value work | `SKIP-WAI-001` through `SKIP-WAI-005` | Reflected | None |
+| Make task-sized commits if committing | Commit `e3c4648f` recorded the bounded revalidation evidence | Reflected | This addendum will use a separate docs commit if committed. |
+| Treat Graphify as advisory and corroborate against tracked files | Working Rules, `VER-WAI-001`, Graphify health evidence | Reflected | None |
+| Leave pre-existing untracked `projects/storybook/mcp/` untouched | Target Path Ledger, `GIT-001`, progress log | Reflected | None |
+| Do not create a new Spec unless enduring contract changes | Final Report Evidence Map and Office-Hours Omission Review | Reflected | None |
+
+## Omission Review Implementation Plan
+
+| Step | Implementation | Verification | Status |
+| --- | --- | --- | --- |
+| OR-001 | Read `$office-hours` and determine applicable review pattern versus blocked full workflow | Skill file inspected; hard gate and AskUserQuestion requirement identified | Done |
+| OR-002 | Compare the initial bounded revalidation plan against current canonical evidence | Reflection matrix maps every explicit requirement to evidence | Done |
+| OR-003 | Patch only the canonical audit task and progress log | Diff limited to this task artifact and `memory/progress.md` | Done |
+| OR-004 | Re-run docs quality gates after the addendum | Repo contract, doc traceability, LLM Wiki freshness, Graphify health, status, and diff hygiene passed | Done |
+
 ## Gap Registry
 
 | ID | Area | Path | Summary | Evidence | Impact | Action | Risk | Related Task | Verification | Status |
@@ -186,6 +247,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | DEC-WAI-005 | Create minimal `CHANGELOG.md` | Existing workflow expects file; no release history should be invented | Change workflow or defer | Satisfies release-doc expectation | Delete file if release policy changes | Done |
 | DEC-WAI-006 | Defer Docker port/secret wiring changes | Runtime and secret behavior are medium/high risk | Change compose YAML now | Avoids stateful side effects | N/A | Done |
 | DEC-WAI-007 | Revalidate in place on `codex/workspace-audit-revalidation` | Existing audit artifacts remain canonical and only evidence drift needed updates | Create duplicate full-audit artifacts | Keeps history compact and avoids duplicate ledgers | Revert this addendum patch | Done |
+| DEC-WAI-008 | Use office-hours as an omission-review lens, not a full design workflow | The skill is product-design oriented, requires an unavailable `AskUserQuestion` gate, and forbids implementation; the user requested repository implementation | Stop at blocked skill workflow or create a new design doc | Preserves the user's implementation goal while documenting the skill constraint | Remove Phase 10 addendum if a full design-doc workflow is later approved | Done |
 
 ## Change Scope
 
@@ -196,6 +258,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | CS-WAI-003 | `README.md`, `CHANGELOG.md`, `.env.example`, `.agents/**`, stale-link docs, recovery runbooks | Docs/examples | Close low-risk docs and example drift | GOV/DOC/INFRA/QA/REL/OPS gaps | Low |
 | CS-WAI-004 | Follow-up input gap closure Plan/Task and this task addendum | Docs artifact | Close input-task evidence gaps | INPUT-GAP-001 to INPUT-GAP-005 | Low |
 | CS-WAI-005 | This task artifact and progress log | Docs artifact | Record bounded revalidation evidence and current counts | T-WAI-010, CI-001 | Low |
+| CS-WAI-006 | This task artifact and progress log | Docs artifact | Record office-hours omission review, implementation plan, and missing standalone status verification evidence | T-WAI-011 | Low |
 
 ## Verification Log
 
@@ -221,6 +284,8 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | VER-WAI-018 | Six read-only reviewer revalidation | Governance, docs, Docker/env/secrets, scripts/hooks, QA, CI/CD/ops | PASS | All six reviewer roles returned required scope/files/gaps/skills/actions/risks/verification/deferred/coverage fields | N/A | Runtime, values, remote state, deployment, and untracked tree remain out of scope |
 | VER-WAI-019 | Current inventory recount | Audit target paths | PASS | Root/governance 127, lifecycle docs 503, scripts 14, infra 273, Compose files 48, workflows/rulesets 6, Hookify 18, Skill mirrors 10+10, plans/tasks 46/44 | N/A | Counts may drift after future artifact additions |
 | VER-WAI-020 | Revalidation gate rerun | Local quality gates | PASS | Repo contract, doc traceability, LLM Wiki freshness, template/security baseline, Compose validation/preflight, QuickWin baseline, hardening baseline, Storybook coverage, and `git diff --check` passed during reviewer/main-agent revalidation | N/A | Remote GitHub and runtime behavior still unverified by design |
+| VER-WAI-021 | `git status --short --branch` | Branch and dirty state after Phase 10 edits | PASS | On `codex/workspace-audit-revalidation`; modified files limited to this task artifact and `memory/progress.md`; pre-existing untracked `projects/storybook/mcp/` remains untouched | N/A | Commit/staging still pending if this addendum is committed |
+| VER-WAI-022 | Office-hours omission review docs gate | Phase 10 addendum | PASS | Graphify health advisory with 3 cross-root inferred edges; repo contract PASS with `target_stage_docs_total=482`; doc traceability PASS with `catalog_pairs_total=46`; LLM Wiki freshness PASS; `git diff --check` PASS | N/A | Graphify remains advisory by design |
 
 ## Skipped / Failed Verification
 
