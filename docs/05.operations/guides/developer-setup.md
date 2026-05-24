@@ -86,7 +86,7 @@ All scripts assume a bash-compatible shell. If you are on Windows, use WSL2.
 
 #### Overview (KR)
 
-이 문서는 `docs/05.operations/developer-setup.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
+이 문서는 `docs/05.operations/guides/developer-setup.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
 
 #### Usage Type
 

@@ -30,6 +30,12 @@ If the error is related to memory or locks:
 
 If the TSDB index is corrupted:
 
+Safety prerequisites:
+
+- Confirm incident owner approval before running data-loss-risk recovery steps.
+- Capture current container and volume state before modifying TSDB files.
+- Verify backup evidence and available destination capacity before removing WAL data.
+
 1. **Stop** Prometheus: `docker compose stop prometheus`.
 2. **Snapshot** the data directory: `tar -czvf /tmp/prometheus_data_backup.tar.gz /var/lib/docker/volumes/prometheus_data`.
 3. **Delete** the WAL (Write Ahead Log): `rm -rf /var/lib/docker/volumes/prometheus_data/_data/wal`.

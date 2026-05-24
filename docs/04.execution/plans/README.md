@@ -55,6 +55,7 @@ docs/04.execution/plans/
 ├── 2026-05-22-lifecycle-readme-debt-closure.md # Completed lifecycle README debt closure
 ├── 2026-05-22-workspace-docs-agent-governance-remediation.md # Completed workspace docs and agent governance remediation
 ├── 2026-05-22-workspace-governance-bounded-reaudit.md # Completed workspace governance bounded re-audit
+├── 2026-05-24-workspace-audit-improvement.md # Completed workspace audit improvement plan
 └── README.md                               # This file
 ```
 
@@ -118,5 +119,6 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Lifecycle README Debt Closure Plan**: [2026-05-22-lifecycle-readme-debt-closure.md](./2026-05-22-lifecycle-readme-debt-closure.md)
 - **Workspace Docs and Agent Governance Remediation Plan**: [2026-05-22-workspace-docs-agent-governance-remediation.md](./2026-05-22-workspace-docs-agent-governance-remediation.md)
 - **Workspace Governance Bounded Re-audit Plan**: [2026-05-22-workspace-governance-bounded-reaudit.md](./2026-05-22-workspace-governance-bounded-reaudit.md)
+- **Workspace Audit Improvement Plan**: [2026-05-24-workspace-audit-improvement.md](./2026-05-24-workspace-audit-improvement.md)
 - **Spec Execution Implementation Audit Plan**: [2026-05-22-spec-execution-implementation-audit.md](./2026-05-22-spec-execution-implementation-audit.md)
 - **Data Analytics Execution Traceability Plan**: [2026-05-22-data-analytics-execution-traceability.md](./2026-05-22-data-analytics-execution-traceability.md)

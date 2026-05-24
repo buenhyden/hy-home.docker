@@ -57,6 +57,7 @@ docs/04.execution/tasks/
 ├── 2026-05-22-lifecycle-readme-debt-closure.md # Completed lifecycle README debt closure task record
 ├── 2026-05-22-workspace-docs-agent-governance-remediation.md # Completed workspace docs and agent governance remediation task record
 ├── 2026-05-22-workspace-governance-bounded-reaudit.md # Completed workspace governance bounded re-audit task record
+├── 2026-05-24-workspace-audit-improvement.md # Completed workspace audit improvement task record
 └── README.md                                # This file
 ```
 
@@ -116,6 +117,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Lifecycle README Debt Closure Task**: [2026-05-22-lifecycle-readme-debt-closure.md](./2026-05-22-lifecycle-readme-debt-closure.md)
 - **Workspace Docs and Agent Governance Remediation Task**: [2026-05-22-workspace-docs-agent-governance-remediation.md](./2026-05-22-workspace-docs-agent-governance-remediation.md)
 - **Workspace Governance Bounded Re-audit Task**: [2026-05-22-workspace-governance-bounded-reaudit.md](./2026-05-22-workspace-governance-bounded-reaudit.md)
+- **Workspace Audit Improvement Task**: [2026-05-24-workspace-audit-improvement.md](./2026-05-24-workspace-audit-improvement.md)
 - **Agent Hook Completion and Style Automation Task**: [2026-05-22-agent-hook-completion-style-automation.md](./2026-05-22-agent-hook-completion-style-automation.md)
 - **Spec Execution Implementation Audit Task**: [2026-05-22-spec-execution-implementation-audit.md](./2026-05-22-spec-execution-implementation-audit.md)
 - **Data Analytics Execution Traceability Task**: [2026-05-22-data-analytics-execution-traceability.md](./2026-05-22-data-analytics-execution-traceability.md)

@@ -31,7 +31,7 @@ status: active
 | PLN-002 | ARD 갱신 | `docs/02.architecture/requirements/0004-data-architecture.md` | - | 다이어그램 포함 여부 |
 | PLN-003 | ADR 갱신 | `docs/02.architecture/decisions/0004-postgresql-ha-patroni.md` | - | 의사결정 맥락 기술 |
 | PLN-004 | Spec 갱신 | `docs/03.specs/04-data/spec.md` | VAL-SPC-001 | 기술 명세 구체성 |
-| PLN-005 | Tasks 생성 | `docs/04.execution/tasks/04-data-tasks.md` | - | 작업 추적성 확보 |
+| PLN-005 | Tasks 생성 | `docs/04.execution/tasks/2026-03-26-04-data-tasks.md` | - | 작업 추적성 확보 |
 
 ## Verification Plan
 

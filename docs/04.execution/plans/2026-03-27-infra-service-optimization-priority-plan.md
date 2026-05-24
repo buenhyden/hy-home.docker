@@ -5,7 +5,7 @@ status: active
 
 # Infra Service Optimization Priority Plan (Quick Wins + Quarterly) Implementation Plan
 
-> 기준 문서: `docs/05.operations/12-infra-service-optimization-catalog.md`
+> 기준 문서: `docs/05.operations/policies/12-infra-service-optimization-catalog.md`
 
 ---
 

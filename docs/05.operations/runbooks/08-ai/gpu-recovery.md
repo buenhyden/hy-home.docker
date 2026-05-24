@@ -27,6 +27,12 @@ docker run --rm --runtime=nvidia --gpus all nvidia/cuda:12.0.0-base-ubuntu22.04 
 
 #### 3. Recovery Procedure
 
+Safety prerequisites:
+
+- Confirm operator approval before restarting Docker or recreating GPU-dependent containers.
+- Capture active container state and identify dependent workloads that could be interrupted.
+- Preserve host GPU and container runtime evidence before making recovery changes.
+
 1. **Restart Docker Service**:
 
    ```bash
