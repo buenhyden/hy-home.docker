@@ -230,8 +230,14 @@ GitHub Actions에서는 다음 품질 게이트를 사용합니다.
 - `template-security-baseline` - 템플릿/보안 baseline 검사
 - `quickwin-baseline` - QuickWin baseline 검사
 - `pre-commit` - hook 기반 포맷/린트/품질 검사
+- `frontend-quality` - Storybook Next.js lint/typecheck/build/build-storybook 검사
 - `storybook-coverage` - Storybook Next.js coverage 검사
 - `zizmor` - GitHub Actions 보안 분석
+
+추가로 `v*.*.*` 태그 push에는 `Release Changelog Check`가 실행되어
+`CHANGELOG.md`에 해당 release tag 항목이 있는지 확인합니다. 이는 tag-only
+release visibility gate이며, remote required-check enforcement 증거로
+간주하지 않습니다.
 
 `pre-commit` job은 공통 hook 정책을 CI에서 재현하고, 별도 `zizmor` job은
 GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,

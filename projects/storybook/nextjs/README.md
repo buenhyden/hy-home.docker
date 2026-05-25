@@ -58,6 +58,7 @@ nextjs/
 | `npm run build` | Next.js production build |
 | `npm run build-storybook` | Storybook 정적 산출물 빌드 |
 | `npm run lint` | ESLint 실행 |
+| `npm run typecheck` | TypeScript typecheck 실행 |
 | `npm run test` | Storybook Vitest 테스트 실행 |
 | `npm run coverage` | Storybook Vitest coverage 실행 |
 

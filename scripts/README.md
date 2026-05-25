@@ -42,6 +42,7 @@ scripts/
 ├── hooks/               # Provider-neutral hook dispatcher and post-tool validation
 ├── knowledge/           # LLM Wiki and Graphify advisory utilities
 ├── operations/          # Safe secret-generation utility
+├── requirements.txt     # Python modules required by repository validation scripts
 ├── lib/
 │   └── hardening-lib.sh # Shared implementation for tier hardening checks
 └── README.md            # This file
@@ -65,7 +66,7 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 | Hooks | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh` |
 | Knowledge | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/report-graphify-health.sh` |
 | Operations | `scripts/operations/gen-secrets.sh`, `scripts/operations/use-qa-ci-tools.sh` |
-| Libraries | `scripts/lib/hardening-lib.sh` |
+| Libraries | `scripts/lib/hardening-lib.sh`, `scripts/requirements.txt` |
 
 ## How to Work in This Area
 
@@ -75,6 +76,7 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 4. Reference canonical purpose-folder paths from docs, CI, hooks, and pre-commit entries.
 5. Use `scripts/validation/check-repo-contracts.sh` to verify script inventory, references, and library usage.
 6. Keep secret-related examples procedural only; do not print or document generated secret values.
+7. Keep Python module dependencies for repository validation scripts in `scripts/requirements.txt`.
 
 ## Active Surface Retention Rules
 

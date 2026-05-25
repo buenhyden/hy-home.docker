@@ -6,13 +6,13 @@ itself.
 
 ## Current Remote State
 
-- Verified on 2026-05-17 by read-only GitHub API calls recorded in `.agent-work/report/cicd-github-report.md`.
+- Verified and updated on 2026-05-25 by audited GitHub API calls during the authored SSoT follow-up closure.
 - Repository rulesets: classic branch protection active on `main`.
 - Repository rulesets API returned `[]`; no repository rulesets are active.
-- Required status checks: 10 remote contexts currently required with strict/latest up-to-date branch requirement enabled:
+- Required status checks: 12 remote contexts currently required with strict/latest up-to-date branch requirement enabled:
   `docs-traceability`, `repo-contracts`, `git-flow-contract`, `compose-validation`,
   `compose-all-profiles-validation`, `infrastructure-hardening`, `template-security-baseline`,
-  `quickwin-baseline`, `pre-commit`, `zizmor`.
+  `quickwin-baseline`, `pre-commit`, `zizmor`, `frontend-quality`, `storybook-coverage`.
 - Pull request review protection: 1 approving review required; CODEOWNERS review required.
 - Conversation resolution: required before merge.
 - Force pushes: disabled.
@@ -48,15 +48,14 @@ Use the CI Quality Gates workflow job names as required checks:
 - `template-security-baseline`
 - `quickwin-baseline`
 - `pre-commit`
-- `zizmor`
+- `frontend-quality`
 - `storybook-coverage`
+- `zizmor`
 
 ## Application Boundary
 
-Apply this proposal only after explicit owner approval. Until that approval and
-remote application happen, this document is not evidence that branch protection
-is enabled. Remote changes should be performed through GitHub UI or an audited
-`gh api` command, then re-check:
+Apply future changes only after explicit owner approval. Remote changes should
+be performed through GitHub UI or an audited `gh api` command, then re-check:
 
 - `gh api repos/buenhyden/hy-home.docker/rulesets --paginate`
 - `gh api repos/buenhyden/hy-home.docker/branches/main/protection`

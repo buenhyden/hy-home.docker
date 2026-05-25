@@ -1,0 +1,2 @@
+# Python dependencies for repository validation scripts.
+PyYAML>=6.0,<7.0

@@ -420,6 +420,7 @@ required_jobs = {
     "template-security-baseline",
     "quickwin-baseline",
     "pre-commit",
+    "frontend-quality",
     "zizmor",
     "storybook-coverage",
 }
@@ -443,7 +444,7 @@ if ruleset.is_file():
         "local GitHub settings proposal only",
         "does not apply remote repository settings by",
         "explicit owner approval",
-        "not evidence that branch protection",
+        "audited `gh api` command",
     ]:
         if literal not in text:
             failures.append(f"{ruleset}: missing remote enforcement boundary literal: {literal}")
@@ -577,12 +578,19 @@ else:
             failures.append(f"{package_path}: script {name!r} must run the Storybook Vitest project")
     if "--coverage" not in str(scripts.get("coverage", "")):
         failures.append(f"{package_path}: coverage script must enable coverage")
+    if scripts.get("typecheck") != "tsc --noEmit":
+        failures.append(f"{package_path}: script 'typecheck' must run TypeScript without emitting files")
 
 if not workflow_path.is_file():
     failures.append(f"missing workflow file: {workflow_path}")
 else:
     text = workflow_path.read_text(errors="ignore")
     for literal in [
+        "frontend-quality:",
+        "npm run lint --prefix projects/storybook/nextjs",
+        "npm run typecheck --prefix projects/storybook/nextjs",
+        "npm run build --prefix projects/storybook/nextjs",
+        "npm run build-storybook --prefix projects/storybook/nextjs",
         "storybook-coverage:",
         "npm ci --prefix projects/storybook/nextjs",
         "npm run coverage --prefix projects/storybook/nextjs",
