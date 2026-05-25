@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md -->
 # 07-Workflow Optimization Hardening Architecture Reference Document (ARD)
 
 ## Overview (KR)

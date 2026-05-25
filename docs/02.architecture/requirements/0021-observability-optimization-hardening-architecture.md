@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/requirements/0021-observability-optimization-hardening-architecture.md -->
 # 06-Observability Optimization Hardening Architecture Reference Document (ARD)
 
 ## Overview (KR)

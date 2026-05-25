@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/requirements/0004-data-architecture.md -->
 
 # Data Tier (04-data) Architecture Reference Document (ARD)

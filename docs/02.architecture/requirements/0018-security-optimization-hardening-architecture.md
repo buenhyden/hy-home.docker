@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/requirements/0018-security-optimization-hardening-architecture.md -->
 # 03-Security Optimization Hardening Architecture Reference Document (ARD)
 
 ## Overview (KR)

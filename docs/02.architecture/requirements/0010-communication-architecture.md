@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/requirements/0010-communication-architecture.md -->
 
 # Communication Tier Architecture Reference Document (ARD)

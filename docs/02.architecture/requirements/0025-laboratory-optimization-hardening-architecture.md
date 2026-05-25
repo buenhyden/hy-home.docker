@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/requirements/0025-laboratory-optimization-hardening-architecture.md -->
 
 # 11-Laboratory Optimization Hardening Architecture Reference Document (ARD)

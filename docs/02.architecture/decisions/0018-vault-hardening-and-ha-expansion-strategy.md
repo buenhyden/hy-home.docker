@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md -->
 # ADR-0018: Vault Hardening and HA Expansion Strategy
 
 ## Overview (KR)

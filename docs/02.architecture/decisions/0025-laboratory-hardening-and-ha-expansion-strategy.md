@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0025-laboratory-hardening-and-ha-expansion-strategy.md -->
 # ADR-0025: Laboratory Hardening and HA Expansion Strategy
 
 ## Overview (KR)

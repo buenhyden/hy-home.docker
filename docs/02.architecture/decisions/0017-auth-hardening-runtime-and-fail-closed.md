@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md -->
 # ADR-0017: 02-Auth Runtime Hardening and Fail-closed Policy
 
 ## Overview (KR)

@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md -->
 # ADR-0022: Workflow Hardening and HA Expansion Strategy
 
 ## Overview (KR)

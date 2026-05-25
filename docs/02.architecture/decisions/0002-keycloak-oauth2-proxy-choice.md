@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/decisions/0002-keycloak-oauth2-proxy-choice.md -->
 
 # ADR-0002: Choice of Keycloak and OAuth2 Proxy for IAM and SSO

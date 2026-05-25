@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/requirements/0024-tooling-optimization-hardening-architecture.md -->
 # 09-Tooling Optimization Hardening Architecture Reference Document (ARD)
 
 ## Overview (KR)

@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/decisions/0004-postgresql-ha-patroni.md -->
 
 # ADR-0004: Choice of Spilo/Patroni for PostgreSQL HA

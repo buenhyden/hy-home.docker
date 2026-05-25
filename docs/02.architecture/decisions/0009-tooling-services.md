@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/decisions/0009-tooling-services.md -->
 
 # ADR-0009: 09-tooling 계층 주요 서비스 선정 및 구성

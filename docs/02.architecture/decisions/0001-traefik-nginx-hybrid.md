@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md -->
 
 # ADR-0001: Traefik & Nginx Hybrid Gateway Architecture

@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0019-04-data-hardening-and-ha-expansion-strategy.md -->
 # ADR-0019: 04-Data Hardening and HA Expansion Strategy
 
 ## Overview (KR)

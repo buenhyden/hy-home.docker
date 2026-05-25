@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/requirements/0001-gateway-architecture.md -->
 
 # Gateway Tier Architecture Reference Document (ARD)

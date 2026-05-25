@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md -->
 # ADR-0005: Polyglot Messaging Strategy (Kafka & RabbitMQ Selection)
 
 ## Overview (KR)

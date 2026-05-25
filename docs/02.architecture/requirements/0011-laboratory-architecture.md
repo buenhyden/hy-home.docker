@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/requirements/0011-laboratory-architecture.md -->
 
 # 11-laboratory Architecture Reference Document (ARD)

@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/requirements/0023-ai-optimization-hardening-architecture.md -->
 # 08-AI Optimization Hardening Architecture Reference Document (ARD)
 
 ## Overview (KR)

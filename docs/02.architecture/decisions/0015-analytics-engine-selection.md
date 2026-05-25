@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0015-analytics-engine-selection.md -->
 # ADR-0015: Specialized Analytics Engines Selection
 
 > This Architecture Decision Record (ADR) formalizes the selection of specialized analytics engines over a unified "one-size-fits-all" database approach for the `hy-home.docker` platform.

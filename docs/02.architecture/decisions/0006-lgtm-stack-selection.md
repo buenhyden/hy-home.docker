@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0006-lgtm-stack-selection.md -->
 # ADR-0006: LGTM Stack and Grafana Alloy Selection
 
 > Selection of Grafana LGTM Stack and Alloy for Unified Observability.

@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0011-laboratory-services.md -->
 # ADR-0011: 11-laboratory 서비스 선정 및 구성
 
 ## Overview (KR)

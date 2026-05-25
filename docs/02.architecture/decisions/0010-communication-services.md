@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/decisions/0010-communication-services.md -->
 
 # ADR-0010: 10-communication 계층 주요 서비스 선정 및 구성

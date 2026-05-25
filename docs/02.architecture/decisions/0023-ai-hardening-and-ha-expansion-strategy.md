@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md -->
 # ADR-0023: AI Hardening and HA Expansion Strategy
 
 ## Overview (KR)

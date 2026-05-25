@@ -53,28 +53,28 @@ status: completed
 
 | Gap ID | Area | Current Evidence | Recommended Lane | Deferred |
 | --- | --- | --- | --- | --- |
-| GOV-001 | Runtime skill authority | `.claude/skills` is the runtime SSoT; `.agents/skills` is optional compatibility and not a full mirror | Compatibility cleanup only if `.agents` consumers need it | Yes |
+| GOV-001 | Runtime skill authority | `.claude/skills` remains runtime SSoT; `.agents/skills/workspace-audit-revalidation/skill.md` now mirrors the approved runtime skill for compatibility consumers | Closed after expanded approval; keep `.claude` authoritative | No |
 | GOV-002 | Graphify authority | Graphify report is advisory due cross-root inferred edges | Keep corroboration requirement in reviewer prompts and task evidence | No |
 | DLR-001 | Spec folder routing | `docs/03.specs/home-docker-revalidation-deferred-follow-up/README.md` now exists and links to the spec/plan/task chain | Closed in low-risk docs lane | No |
 | DLR-002 | Task evidence heading | The two 2026-05-25 task docs now use exact `## Verification Summary` headings while preserving evidence tables | Closed in low-risk docs lane | No |
-| DLR-003 | Architecture status metadata | 46 architecture leaf docs lack explicit status frontmatter | Decide requirement or document validator exception before broad cleanup | Yes |
-| DLR-004 | Historical plan/task pairing | Two historical plan/task pairing candidates need review | Add evidence, mark exceptions, or deprecate in a bounded docs lane | Yes |
-| INF-ENV-001 | Optional env template coverage | `KAFKA_EXTERNAL_HOSTNAME` is referenced by Kafka dev Compose but absent from `.env.example` and `.env` | Env template review lane; do not edit actual `.env` | Yes |
-| INF-ENV-002 | Local env drift | `.env.example` contains `QDRANT_GRPC_PORT`; local `.env` key set does not | Operator-approved local env sync only | Yes |
-| SEC-001 | Sensitive registry metadata drift | Selected metadata drift includes `AUTO-006`, `CACHE-003`, and `CACHE-015`; value fields are not used as evidence | Secret metadata governance lane; do not print or mutate values | Yes |
-| SEC-002 | Optional RabbitMQ secret mapping | Optional RabbitMQ references secret names without matching root declaration/registry mapping | Secret/Compose mapping lane | Yes |
+| DLR-003 | Architecture status metadata | Architecture leaf docs now have explicit `status: active` frontmatter | Closed after expanded approval; broad body cleanup still avoided | No |
+| DLR-004 | Historical plan/task pairing | Completed scripts lifecycle cleanup plan now has retrospective task evidence; active 2026-03 priority plan is classified as a parent/umbrella plan | Closed after expanded approval | No |
+| INF-ENV-001 | Optional env template coverage | `.env.example` now includes non-secret `KAFKA_EXTERNAL_HOSTNAME` for Kafka dev advertised listeners | Closed after expanded approval | No |
+| INF-ENV-002 | Local env drift | Actual ignored `.env` was conditionally synced with non-secret `QDRANT_GRPC_PORT`; no values were printed | Closed after expanded approval | No |
+| SEC-001 | Sensitive registry metadata drift | Selected `AUTO-006`, `CACHE-003`, and `CACHE-015` metadata was reconciled without printing or changing secret values | Closed after expanded approval | No |
+| SEC-002 | Optional RabbitMQ secret mapping | RabbitMQ compose now declares `rabbitmq_user`/`rabbitmq_password` secret file mappings; registry metadata includes RabbitMQ IDs | Closed after expanded approval; secret value generation remains operator-controlled | No |
 | SEC-003 | Optional Supabase secret wiring | Optional Supabase has secret declarations but no Compose env/secrets wiring | Optional service readiness lane | Yes |
-| INF-NET-001 | Network exception clarity | `mongo-key-generator` lacks an explicit network declaration or no-network exception | Network policy lane | Yes |
-| INF-VOL-001 | Volume policy clarity | Volume naming is not uniformly aligned with stated convention; two declared volumes appear unreferenced | Volume policy lane | Yes |
+| INF-NET-001 | Network exception clarity | `mongo-key-generator` now has an explicit `infra_net` network declaration | Closed after expanded approval | No |
+| INF-VOL-001 | Volume policy clarity | Unreferenced/duplicate declared volumes were normalized or connected to their intended services | Closed after expanded approval | No |
 | SCR-001 | Validator scalability | `check-repo-contracts.sh` is the authoritative gate but remains a large embedded validator | Modularization or suite-gating lane | Yes |
 | SCR-002 | Read-only validator mode | Baseline checks now pass `.env.example` via Compose `--env-file` instead of copying `.env`; post-tool validation supports check-only mode | Closed in validation-hardening lane | No |
 | SCR-003 | Hook parity enforcement | Repo contracts now enforce `SessionEnd`, `Stop`, and `PreCompact` wrapper/config parity in addition to the original three events | Closed in validation-hardening lane | No |
-| SCR-004 | Hookify parser dependency | Hookify metadata parsing depends on PyYAML behavior that should be declared or removed | Dependency declaration/removal lane | Yes |
-| QA-001 | Storybook threshold policy | Coverage command exists, but 90% threshold is not policy-as-code | Decide docs-only, Vitest, or CI enforcement | Yes |
-| QA-002 | Remote required checks | Local target includes `storybook-coverage`; current remote enforcement is unverified | Remote GitHub verification lane | Yes |
-| QA-003 | Frontend gate clarity | Typecheck/build gate for frontend changes is not resolved | QA policy lane | Yes |
+| SCR-004 | Hookify parser dependency | PyYAML is now declared in `scripts/requirements.txt` and installed before CI repo-contract validation | Closed after expanded approval | No |
+| QA-001 | Storybook threshold policy | Latest recorded coverage is below 90% for at least functions, so immediate 90% enforcement would break CI without test expansion | Test coverage expansion lane before threshold enforcement | Yes |
+| QA-002 | Remote required checks | Remote `main` protection now requires `frontend-quality` and `storybook-coverage` in addition to existing CI Quality Gates contexts | Closed after expanded approval and audited `gh api` update | No |
+| QA-003 | Frontend gate clarity | `frontend-quality` now runs Storybook Next.js lint, typecheck, app build, and static Storybook build | Closed after expanded approval | No |
 | CI-001 | Release readiness checklist | Release runbook now requires backup/N/A evidence, affected rollback/recovery link, incident path, and remote gate verification before release/deploy claims | Closed in low-risk docs lane | No |
-| CI-002 | Tag-only changelog gate visibility | Release changelog workflow is discoverable, but README gate coverage is not the same as remote enforcement | CI docs lane if release gate list needs expansion | Yes |
+| CI-002 | Tag-only changelog gate visibility | Root README now documents `Release Changelog Check` as a tag-only release visibility gate, not a remote required-check claim | Closed after expanded approval | No |
 
 ## Low-Risk Follow-up Candidates
 
@@ -96,18 +96,25 @@ status: completed
 | Non-mutating baseline validation | Replaced `.env.example` copy behavior with Compose `--env-file .env.example` when `.env` is absent | Static copy scan PASS; baseline validators PASS |
 | Post-tool check-only mode | Added `--check` and `POST_TOOL_VALIDATE_CHECK_ONLY=1` support | Hook smoke PASS; help output documents mode |
 | Hook parity enforcement | Extended repo-contract checks to `SessionEnd`, `Stop`, and `PreCompact` | Repo contract PASS |
+| PyYAML dependency declaration | Added `scripts/requirements.txt` and CI install step before repo-contract validation | Repo contract verification pending in expanded bundle |
+| Kafka env template key | Added `KAFKA_EXTERNAL_HOSTNAME` to `.env.example`; actual `.env` value was not printed | Metadata-only key check pending |
+| Local env sync | Added missing non-secret `QDRANT_GRPC_PORT` key to ignored `.env` after approval | Metadata-only key check pending |
+| Compatibility skill mirror | Mirrored `workspace-audit-revalidation` under `.agents/skills` after approval | File parity check pending |
+| Architecture status metadata | Added `status: active` frontmatter to architecture leaf docs | Frontmatter scan pending |
+| Historical plan/task pairing | Added retrospective scripts lifecycle task and classified the 2026-03 priority plan as an active parent plan | Plan/task scan pending |
+| RabbitMQ secret mapping | Added RabbitMQ secret declarations and registry metadata without generated values | Compose and secret dry-run checks pending |
+| Network/volume clarity | Added explicit Mongo key-generator network and normalized unreferenced volumes | Compose validation pending |
+| Remote required checks | Added `frontend-quality` and `storybook-coverage` to remote `main` required status checks | Read-back verification pending |
+| Frontend quality gate | Added `typecheck` script and `frontend-quality` CI job | Local frontend checks pending |
 
 ## Deferred Risk Register
 
 | Risk | Deferred Because | Follow-up |
 | --- | --- | --- |
-| Actual `.env` sync | Operator-owned local state and value-bearing file | Separate operator-approved env sync |
-| Secret registry values or metadata mutation | Sensitive/value-bearing surface | Separate secret-management approval |
+| Secret registry values | Sensitive/value-bearing surface; only selected metadata was reconciled | Separate secret-generation or rotation approval if values must change |
 | Optional stack runtime enablement | Runtime behavior and service readiness impact | Separate infra profile validation matrix |
-| Docker network, volume, port, permission normalization | Runtime and compatibility impact | Separate operations window |
-| Remote GitHub branch protection and required checks | Requires live remote/admin verification | Separate remote governance task |
-| Storybook threshold enforcement | QA policy and CI behavior decision | Separate QA policy task |
-| Broad architecture frontmatter cleanup | Wide docs blast radius | Separate docs remediation plan |
+| Port and permission normalization | Runtime and compatibility impact | Separate operations window |
+| Storybook 90% threshold enforcement | Current coverage evidence is below 90%; immediate enforcement would fail without test expansion | Separate test expansion and threshold task |
 | File deletion candidates | Ownership and history risk | Separate cleanup approval |
 
 ## Rule Conflict Log
@@ -134,6 +141,16 @@ status: completed
 | Six reviewer axes | PARTIAL-READY | All axes are ready for gap registration, not broad automated infra/runtime execution |
 | Low-risk docs closure | PASS | Spec README added; task headings normalized; release checklist strengthened |
 | Low-risk validation hardening | PASS | `bash -n` PASS; baseline validators PASS; static env-copy scan PASS; post-tool `--check` smoke PASS |
+| Expanded approval closure | PASS | Closed additional static/repo-governance gaps for `.agents` compatibility, architecture status metadata, env key drift, selected secret metadata, RabbitMQ secret mapping, network/volume clarity, PyYAML declaration, CI gate visibility, remote required checks, and frontend build/typecheck gates |
+| Architecture frontmatter scan | PASS | No `docs/02.architecture/**/*.md` files are missing `status:` frontmatter after metadata cleanup |
+| Historical plan/task scan | REVIEWED | The completed scripts lifecycle cleanup plan now has task evidence; `2026-03-27-infra-service-optimization-priority-plan.md` remains an active parent/umbrella plan |
+| `.env.example` vs `.env` key comparison | PASS | `.env.example` and `.env` both have 329 keys; no key-set delta; values not recorded |
+| Sensitive registry metadata comparison | PASS | Parsed example/local registry metadata ID sets match with no metadata diff IDs; values not recorded |
+| `bash scripts/operations/gen-secrets.sh --dry-run` RabbitMQ rows | PASS | `COMM-007` and `COMM-008` report create-generated-file actions for RabbitMQ secret paths; values not generated in dry-run |
+| Remote `main` required checks read-back | PASS | GitHub branch protection now requires 12 contexts including `frontend-quality` and `storybook-coverage` |
+| Docker Compose validation | PASS | Preflight PASS; default core Compose PASS with `services_total=5`; all-profile static validation PASS with `services_total=44` |
+| Frontend quality commands | PASS | Storybook Next.js lint, typecheck, Next build, and static Storybook build all exited 0 |
+| Storybook coverage | PASS command / BELOW 90 target | 3 files and 8 tests passed; statements 83.33%, branches 81.81%, functions 66.66%, lines 83.33%; 90% threshold enforcement remains deferred until tests improve |
 
 ## Final Report Evidence Map
 
@@ -146,6 +163,8 @@ status: completed
 | Secret and env handling stayed metadata-only | Verification Summary |
 | No-touch Storybook MCP path was preserved | Final `git status --short --branch` |
 | Low-risk follow-up lane closed without runtime mutation | Low-Risk Follow-up Closure |
+| Expanded approval follow-up closed additional static and remote-governance gaps | Gap Registry and Verification Summary |
+| Remaining unresolved work is narrowed to Supabase wiring, validator modularization, Storybook threshold test expansion, optional runtime enablement, port/permission changes, and deletion candidates | Gap Registry and Deferred Risk Register |
 
 ## Related Documents
 

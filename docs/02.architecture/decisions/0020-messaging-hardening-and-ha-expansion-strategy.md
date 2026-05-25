@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md -->
 # ADR-0020: Messaging Hardening and HA Expansion Strategy
 
 ## Overview (KR)

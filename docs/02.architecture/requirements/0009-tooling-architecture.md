@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/requirements/0009-tooling-architecture.md -->
 
 # Tooling Tier Architecture Reference Document (ARD)

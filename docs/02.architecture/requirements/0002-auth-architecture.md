@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/requirements/0002-auth-architecture.md -->
 
 # 02-Auth Architecture Reference

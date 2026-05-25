@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/requirements/0013-open-webui-architecture.md -->
 
 # Open WebUI Architecture Reference Document (ARD)

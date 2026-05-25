@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/requirements/0006-observability-architecture.md -->
 # Observability Architecture Reference Document
 
 > Integrated Telemetry Pipeline with LGTM Stack and Grafana Alloy.

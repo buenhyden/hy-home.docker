@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/requirements/0005-messaging-architecture.md -->
 # Messaging Architecture Reference Document (ARD)
 
 ## Messaging Tier (05-messaging) Architecture Reference Document

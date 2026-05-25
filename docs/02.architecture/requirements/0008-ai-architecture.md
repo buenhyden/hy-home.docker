@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/requirements/0008-ai-architecture.md -->
 
 # AI Infrastructure Architecture Reference Document (ARD)

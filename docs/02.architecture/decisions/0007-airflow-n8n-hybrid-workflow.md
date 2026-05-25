@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md -->
 
 # ADR-0007: Airflow & n8n Hybrid Workflow Strategy

@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0003-vault-as-secrets-manager.md -->
 # ADR: HashiCorp Vault as Centralized Secrets Manager
 
 ## Overview (KR)

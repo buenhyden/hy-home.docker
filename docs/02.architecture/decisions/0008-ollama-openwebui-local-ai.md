@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/decisions/0008-ollama-openwebui-local-ai.md -->
 
 # ADR-0008: Ollama and Open WebUI for Local AI Infrastructure

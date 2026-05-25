@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/requirements/0012-data-analytics-architecture.md -->
 
 # ARD: Analytics Tier Architecture (04-data/analytics)

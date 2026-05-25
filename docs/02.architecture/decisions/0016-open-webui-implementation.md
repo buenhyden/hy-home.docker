@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/decisions/0016-open-webui-implementation.md -->
 
 # ADR-0016: Open WebUI as Primary AI/RAG Interface

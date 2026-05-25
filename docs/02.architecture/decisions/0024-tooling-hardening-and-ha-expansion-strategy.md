@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md -->
 # ADR-0024: Tooling Hardening and HA Expansion Strategy
 
 ## Overview (KR)

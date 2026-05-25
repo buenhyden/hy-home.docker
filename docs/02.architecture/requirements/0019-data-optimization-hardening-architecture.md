@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/requirements/0019-data-optimization-hardening-architecture.md -->
 # 04-Data Optimization Hardening Architecture Reference Document (ARD)
 
 ## Overview (KR)

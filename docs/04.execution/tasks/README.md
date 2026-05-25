@@ -44,6 +44,7 @@ docs/04.execution/tasks/
 ├── 2026-03-28-*-optimization-hardening-*.md # Historical hardening task records
 ├── 2026-04-10-infra-team-agent-cross-validation.md # Completed infra team agent cross-validation task record
 ├── 2026-05-09-*.md                          # Agent-first and docs refresh task records
+├── 2026-05-09-scripts-lifecycle-contract-cleanup.md # Completed retrospective scripts lifecycle task record
 ├── 2026-05-10-*.md                          # Docs taxonomy and LLM Wiki task records
 ├── 2026-05-17-requirements-standardization.md # Completed requirements standardization task record
 ├── 2026-05-17-scripts-ci-qa-cleanup.md       # Completed scripts CI/CD and QA cleanup task record
@@ -117,6 +118,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Targeted Docs Precision Remediation Task**: [2026-05-18-targeted-docs-precision-remediation.md](./2026-05-18-targeted-docs-precision-remediation.md)
 - **Harness / Agent-first Engineering Task**: [2026-05-09-harness-agent-first-engineering.md](./2026-05-09-harness-agent-first-engineering.md)
 - **Infra / Secrets / Docs Refresh Task**: [2026-05-09-infra-secrets-docs-refresh.md](./2026-05-09-infra-secrets-docs-refresh.md)
+- **Scripts Lifecycle Contract Cleanup Task**: [2026-05-09-scripts-lifecycle-contract-cleanup.md](./2026-05-09-scripts-lifecycle-contract-cleanup.md)
 - **LLM Wiki Agent-first Completion Task**: [2026-05-10-llm-wiki-agent-first-completion.md](./2026-05-10-llm-wiki-agent-first-completion.md)
 - **Lifecycle README Debt Closure Task**: [2026-05-22-lifecycle-readme-debt-closure.md](./2026-05-22-lifecycle-readme-debt-closure.md)
 - **Workspace Docs and Agent Governance Remediation Task**: [2026-05-22-workspace-docs-agent-governance-remediation.md](./2026-05-22-workspace-docs-agent-governance-remediation.md)

@@ -1,3 +1,6 @@
+---
+status: active
+---
 <!-- Target: docs/02.architecture/requirements/0007-workflow-architecture.md -->
 
 # Workflow Tier (07-workflow) Architecture Reference Document (ARD)

@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/requirements/0020-messaging-optimization-hardening-architecture.md -->
 # 05-Messaging Optimization Hardening Architecture Reference Document (ARD)
 
 ## Overview (KR)

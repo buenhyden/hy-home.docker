@@ -1,3 +1,7 @@
+---
+status: active
+---
+<!-- Target: docs/02.architecture/requirements/0014-auth-optimization-hardening-architecture.md -->
 # 02-Auth Optimization Hardening Architecture Reference Document (ARD)
 
 ## Overview (KR)

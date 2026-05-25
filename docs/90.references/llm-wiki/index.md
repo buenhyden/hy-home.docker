@@ -385,6 +385,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md](../../04.execution/tasks/2026-04-10-infra-team-agent-cross-validation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-09-harness-agent-first-engineering.md](../../04.execution/tasks/2026-05-09-harness-agent-first-engineering.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md](../../04.execution/tasks/2026-05-09-infra-secrets-docs-refresh.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-05-09-scripts-lifecycle-contract-cleanup.md](../../04.execution/tasks/2026-05-09-scripts-lifecycle-contract-cleanup.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-10-docs-taxonomy-agent-first-migration.md](../../04.execution/tasks/2026-05-10-docs-taxonomy-agent-first-migration.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md](../../04.execution/tasks/2026-05-10-llm-wiki-agent-first-completion.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-17-requirements-standardization.md](../../04.execution/tasks/2026-05-17-requirements-standardization.md) | Markdown reference |
