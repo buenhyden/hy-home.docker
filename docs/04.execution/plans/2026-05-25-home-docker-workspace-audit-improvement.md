@@ -43,7 +43,8 @@ Read-only audit evidence found one blocking local gate: `bash scripts/validation
     runtime skill mirror formatting follow-up; no runtime behavior change).
   - Storybook coverage threshold policy (closed by the later expanded
     authored SSoT follow-up with repo-local 90% threshold enforcement).
-  - Remote branch protection and `storybook-coverage` required-check enforcement.
+  - Remote branch protection and `storybook-coverage` required-check enforcement
+    (verified later by read-only GitHub API read-back; no remote mutation in this pass).
   - Actual `.env` sync, secret metadata mutation, secret value work, Docker runtime start/stop, deployments, ports, permissions, and file deletions.
   - Pre-existing untracked `projects/storybook/mcp/`.
 

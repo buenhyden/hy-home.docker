@@ -61,7 +61,7 @@ status: completed
 | `.agents/skills` compatibility mirror drift | Later follow-up aligned formatting-only drift while keeping `.claude/skills` as runtime source of truth | Agent | Done |
 | ARD/ADR template-frontmatter cleanup across 46 architecture leaves | Keep deferred due broad blast radius | Future docs remediation | Deferred |
 | Storybook coverage threshold policy | Later expanded authored SSoT follow-up enforced 90% repo-local thresholds | Agent | Done |
-| Remote branch protection and `storybook-coverage` required check | Keep deferred without remote GitHub verification/action | Maintainer | Deferred |
+| Remote branch protection and `storybook-coverage` required check | Later read-only GitHub API read-back confirmed strict `main` required checks include `frontend-quality` and `storybook-coverage` | Agent | Done |
 | Release runbook omits tag workflow `CHANGELOG.md` exact-tag requirement | Add doc-only runbook clarification; do not create tags or edit changelog | Agent | Done |
 | Runtime/deployment/ports/permissions/deletions | Keep deferred by approved scope | Operator | Deferred |
 
@@ -125,7 +125,7 @@ The prior 2026-05-25 audit closed the low-risk documentation and generated-index
 | Create a Stage 03 spec | Approved plan explicitly requested a spec | New spec owns the follow-up contract |
 | Keep env/secrets value work deferred | Values and local operator state are sensitive | Metadata-only drift recorded |
 | Do not run Storybook coverage by default | This follow-up does not edit Storybook QA behavior | Coverage remains conditional |
-| Do not call remote GitHub | Plan defers remote branch protection and required-check changes | Remote enforcement remains unverified |
+| Do not mutate remote GitHub | Plan defers remote branch protection and required-check changes | Later read-only GitHub API read-back verified required-check enforcement without mutation |
 | Clarify release runbook tag gate | CI/CD reviewer found workflow requires exact pushed tag in `CHANGELOG.md` | Doc-only runbook update added |
 
 ## Change Scope
@@ -205,7 +205,7 @@ No secret value is recorded in this document.
 | `projects/storybook/mcp/` | Pre-existing untracked tree preserved; not staged or modified |
 | File deletions | None planned |
 | Docker runtime | No start/stop or deployment commands planned |
-| Remote GitHub | No branch protection, push, PR, or required-check changes planned |
+| Remote GitHub | No branch protection, push, PR, or required-check changes planned; later read-only API read-back verified required-check enforcement |
 | Graphify | Advisory due to cross-root inferred edges; source claims must be corroborated |
 | Graphify generated outputs | Changed in prior baseline history relative to `origin/main`; not a current uncommitted follow-up change unless the index/graph refresh step updates them |
 
@@ -218,7 +218,7 @@ No secret value is recorded in this document.
 | `.agents/skills` compatibility mirror drift | Closed by later runtime skill mirror formatting alignment; compatibility surface now matches runtime skill copies | No further compatibility cleanup needed for this drift |
 | ARD/ADR template-frontmatter cleanup across 46 architecture leaves | Broad documentation normalization | Separate docs remediation plan |
 | Storybook coverage threshold policy | Closed by later expanded authored SSoT follow-up with repo-local 90% threshold enforcement | No further repo-local QA threshold cleanup needed |
-| Remote branch protection and `storybook-coverage` required check | Requires remote GitHub verification/admin intent | Separate remote governance task |
+| Remote branch protection and `storybook-coverage` required check | Closed by later read-only GitHub API read-back; strict `main` required checks include `frontend-quality` and `storybook-coverage` | No further read-back-only required-check cleanup needed |
 | Docker runtime, deployments, ports, permissions | Runtime operations outside doc-only follow-up | Separate operations window |
 | File deletion candidates | Ownership uncertain | Separate cleanup approval |
 
