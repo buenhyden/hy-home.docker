@@ -613,8 +613,8 @@ requires TDD-gated evidence before Skill mutation.
 | 10. Implemented Changes | Change Scope | Docs, env example, hook metadata gate, runbook guardrails |
 | 11. Deferred Items | Deferred Risk Register | Runtime, secrets, deletion, and remote mutation remain deferred; threshold and remote read-back evidence closed later |
 | 12. Legacy / Delete / Integration Results | Legacy/Delete/Integration Results | No deletion; stale refs fixed |
-| 13. Env Key Comparison | Env Key Comparison | Example now has one operator-owned key delta |
-| 14. Secrets Key Comparison | Secrets Key Comparison | Three metadata drifts; role/purpose metadata included; no values output |
+| 13. Env Key Comparison | Env Key Comparison | Key-set drift closed later by 326/326 `.env.example` and `.env` comparison; no values output |
+| 14. Secrets Key Comparison | Secrets Key Comparison | Original metadata drift closed later by 106/106 ID and env-var/path metadata comparison; no values output |
 | 15. Docker Compose Review | Gap Registry, Verification Log | Static validation passed; runtime edits deferred |
 | 16. Scripts Review | Change Scope, Verification Log | Contract checker extended and syntax checked |
 | 17. Hook Review | Gap AUTO-001, Verification Log | Metadata gate added; no runtime hook behavior changed |
@@ -623,8 +623,8 @@ requires TDD-gated evidence before Skill mutation.
 | 20. Checklist Results | Task Table, Working Rules | Completion checklist satisfied; local commits completed before main merge |
 | 21. Verification Results | Verification Log | Local required checks passed or alternatives recorded |
 | 22. Verification Gaps | Skipped / Failed Verification | Runtime/value checks remain skipped by design; remote required-check read-back closed later |
-| 23. Remaining Risks | Deferred Risk Register | Operator decisions remain for env/secrets/runtime |
-| 24. Next Tasks | Deferred Risk Register | Secret metadata reconciliation and runtime exposure decisions; QA thresholds closed later |
+| 23. Remaining Risks | Deferred Risk Register | Operator decisions remain for env values, secret values, and runtime behavior |
+| 24. Next Tasks | Deferred Risk Register | Secret value owner review and runtime exposure decisions remain separate; metadata reconciliation and QA thresholds closed later |
 
 ## Verification Summary
 
