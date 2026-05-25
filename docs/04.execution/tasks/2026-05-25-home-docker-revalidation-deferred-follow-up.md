@@ -35,7 +35,7 @@ status: completed
 | Env key drift | `.env.example` 328 keys, `.env` 327 keys, missing `QDRANT_GRPC_PORT` | Rechecked by key names only; same drift observed | Deferred |
 | Secret registry metadata drift | Both registries 104 IDs; ID sets match; selected env-var/path metadata drift | Rechecked by ID/env-var/path metadata only; same drift observed | Deferred |
 | Hook and script docs | Prior audit clarified no-payload and Hookify event support | Local fallback confirmed docs already match hook behavior; no script edits required | Done |
-| Storybook QA docs | Prior audit documented `test` and `coverage` commands | QA reviewer confirmed coverage is not needed for this doc-only follow-up and threshold policy remains deferred | Done |
+| Storybook QA docs | Prior audit documented `test` and `coverage` commands | QA reviewer confirmed coverage was not needed for this doc-only follow-up; later expanded authored SSoT follow-up closed repo-local 90% threshold enforcement | Done |
 | Release/GitHub readiness | Prior audit added runbook; remote enforcement deferred | CI/CD reviewer found tag workflow requires exact tag string in `CHANGELOG.md`; runbook clarification added, remote calls remain deferred | Done |
 | Graphify context | Prior audit reported advisory health | Health command returned advisory with 3 cross-root inferred edges | Advisory |
 
@@ -47,7 +47,7 @@ status: completed
 | Documentation Lifecycle | Stage/template conformance and README routing | Found follow-up artifacts absent before this implementation and confirmed Stage 03 path is valid only as a contract spec, not an evidence bucket | Created contract-style spec and parent README links |
 | Infra / Docker / Env / Secrets | Static infra and metadata-only drift | Local fallback confirmed metadata-only env/secrets drift and no approved runtime config edits; later authored SSoT closure records static follow-up evidence | Keep runtime/value work deferred |
 | Scripts / Hooks / Automation | Script docs and hook contracts | Local fallback confirmed `scripts/README.md` documents no-payload hook no-op and repo-local Hookify event support; later authored SSoT closure records script lifecycle evidence | No script edits required |
-| QA / Storybook | Validation gates and Storybook coverage policy | Storybook command evidence remains command-pass evidence only; 90% coverage policy remains deferred; Graphify generated outputs belong to prior baseline unless this follow-up refreshes them | Skip Storybook coverage because this follow-up does not touch Storybook |
+| QA / Storybook | Validation gates and Storybook coverage policy | Storybook command evidence in this doc remains prior command-pass evidence; later expanded authored SSoT follow-up closed repo-local 90% threshold enforcement | Skip Storybook coverage because this follow-up does not touch Storybook |
 | CI/CD / Release | GitHub governance and release readiness | Remote PR/branch-protection readiness remains unverified; tag workflow requires exact pushed tag in `CHANGELOG.md`; local diff base should be `origin/main...HEAD` for PR review | Clarify release runbook; keep remote checks deferred |
 
 ## Gap Registry
@@ -60,7 +60,7 @@ status: completed
 | Secret registry selected env-var/path metadata drift | Record metadata-only drift; do not mutate registry/value files | Operator | Deferred |
 | `.agents/skills` compatibility mirror drift | Later follow-up aligned formatting-only drift while keeping `.claude/skills` as runtime source of truth | Agent | Done |
 | ARD/ADR template-frontmatter cleanup across 46 architecture leaves | Keep deferred due broad blast radius | Future docs remediation | Deferred |
-| Storybook coverage threshold policy | Keep deferred unless user approves QA policy/CI enforcement | Maintainer | Deferred |
+| Storybook coverage threshold policy | Later expanded authored SSoT follow-up enforced 90% repo-local thresholds | Agent | Done |
 | Remote branch protection and `storybook-coverage` required check | Keep deferred without remote GitHub verification/action | Maintainer | Deferred |
 | Release runbook omits tag workflow `CHANGELOG.md` exact-tag requirement | Add doc-only runbook clarification; do not create tags or edit changelog | Agent | Done |
 | Runtime/deployment/ports/permissions/deletions | Keep deferred by approved scope | Operator | Deferred |
@@ -217,7 +217,7 @@ No secret value is recorded in this document.
 | Secret registry metadata/value mutation | Sensitive registry and value-bearing surface | Separate secret-management approval |
 | `.agents/skills` compatibility mirror drift | Closed by later runtime skill mirror formatting alignment; compatibility surface now matches runtime skill copies | No further compatibility cleanup needed for this drift |
 | ARD/ADR template-frontmatter cleanup across 46 architecture leaves | Broad documentation normalization | Separate docs remediation plan |
-| Storybook coverage threshold policy | QA policy and CI enforcement decision | Separate QA policy task |
+| Storybook coverage threshold policy | Closed by later expanded authored SSoT follow-up with repo-local 90% threshold enforcement | No further repo-local QA threshold cleanup needed |
 | Remote branch protection and `storybook-coverage` required check | Requires remote GitHub verification/admin intent | Separate remote governance task |
 | Docker runtime, deployments, ports, permissions | Runtime operations outside doc-only follow-up | Separate operations window |
 | File deletion candidates | Ownership uncertain | Separate cleanup approval |

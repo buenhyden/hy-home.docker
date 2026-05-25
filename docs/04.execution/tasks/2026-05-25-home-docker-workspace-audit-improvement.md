@@ -172,7 +172,7 @@ Metadata-only drift recorded: `MONGODB_ROOT_USERNAME` appears in example metadat
 | --- | --- | --- |
 | ARD/ADR template-frontmatter cleanup across 46 architecture leaves | Broad docs normalization outside low-risk scope | Separate docs remediation plan |
 | `.agents/skills` mirror drift | Closed by later runtime skill mirror formatting alignment; compatibility mirror now matches active runtime source of truth | No further compatibility cleanup needed for this drift |
-| Storybook coverage threshold policy | Policy decision not required for current README discoverability fix | Separate QA policy decision |
+| Storybook coverage threshold policy | Closed by later expanded authored SSoT follow-up with repo-local 90% threshold enforcement | No further repo-local QA threshold cleanup needed |
 | Remote branch protection and `storybook-coverage` required check | Requires GitHub remote access and repository admin intent | Separate remote governance task |
 | Actual `.env` sync | Operator-owned local state | Operator follow-up |
 | Secret metadata mutation and secret values | Sensitive/value-bearing surface | Explicit secret-management approval |

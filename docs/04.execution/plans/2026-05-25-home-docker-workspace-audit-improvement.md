@@ -41,7 +41,8 @@ Read-only audit evidence found one blocking local gate: `bash scripts/validation
   - ARD/ADR template-frontmatter cleanup across 46 architecture leaves.
   - `.agents/skills` compatibility mirror drift (closed by the later 2026-05-25
     runtime skill mirror formatting follow-up; no runtime behavior change).
-  - Storybook coverage threshold policy.
+  - Storybook coverage threshold policy (closed by the later expanded
+    authored SSoT follow-up with repo-local 90% threshold enforcement).
   - Remote branch protection and `storybook-coverage` required-check enforcement.
   - Actual `.env` sync, secret metadata mutation, secret value work, Docker runtime start/stop, deployments, ports, permissions, and file deletions.
   - Pre-existing untracked `projects/storybook/mcp/`.
