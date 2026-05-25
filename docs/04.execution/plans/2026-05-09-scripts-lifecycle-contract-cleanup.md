@@ -15,6 +15,22 @@ status: completed
 
 Graphify output is advisory for this task. `graphify-out/GRAPH_REPORT.md` includes generated-volume contamination and meaningless god nodes, so conclusions must be corroborated against tracked source files, `scripts/README.md`, `scripts/validation/check-repo-contracts.sh`, and repository validators.
 
+## Current Disposition (2026-05-26)
+
+This plan records the 2026-05-09 cleanup context. It is superseded by the
+current purpose-folder script contract:
+
+- Root-level `scripts/*.sh` duplicate wrappers are no longer part of the active
+  script surface; current tracked source has zero root shell scripts.
+- Canonical script entrypoints live under `scripts/validation/`,
+  `scripts/hardening/`, `scripts/hooks/`, `scripts/knowledge/`,
+  `scripts/operations/`, and `scripts/lib/`.
+- `scripts/README.md`, the retrospective sibling task, and
+  `scripts/validation/check-repo-contracts.sh` are the current authority for
+  script ownership and duplicate-wrapper rejection.
+- Current Graphify health is advisory because of cross-root inferred edges, not
+  generated-volume contamination or meaningless god nodes.
+
 ## Goals & In-Scope
 
 - **Goals**:
