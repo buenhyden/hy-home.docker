@@ -90,7 +90,7 @@ for the original input.
 | WORK-004 | Main agent integrates, verifies, reader-tests, and commits by scope | Verification Log and local commits | Reader test is recorded as main-agent inspection; commit-count preference deviated | Deviation documented |
 | DEF-001 | Actual `.env`, secret values, secret generation/rotation deferred | Deferred Risk Register | Preserved | Proven |
 | DEF-002 | Vault port, Neo4j Bolt, RabbitMQ root secret, Compose behavior deferred | Gap Registry and Deferred Risk Register | Preserved | Proven |
-| DEF-003 | Remote GitHub checks, workflow deployment edits, push, PR, release automation deferred | Skipped Verification and Deferred Risk Register | Preserved | Proven |
+| DEF-003 | Remote GitHub mutation, workflow deployment edits, push, PR, release automation deferred; read-only required-check verification closed later | Skipped Verification and Deferred Risk Register plus later read-back evidence | Preserved | Proven |
 | DEF-004 | Permission tightening in `.claude/settings.json` deferred | Deferred scope and no diff | No permission edit was made | Proven |
 | DEF-005 | File deletion only after criteria; untracked Storybook MCP untouched | Legacy/Delete/Integration Results and `git status` | Preserved | Proven |
 | VER-001 | Required local checks after edits | Verification Log and current commands | Required docs/static checks pass | Proven |
@@ -110,7 +110,7 @@ for the original input.
 | Commit-count target "up to three" was exceeded by prior task-sized commits. | Documented deviation; no history rewrite performed. |
 | `CONTEXT.md` and ADR creation were considered through `$grill-with-docs`. | Skipped because no glossary term or hard-to-reverse decision was resolved. |
 | Graphify remains advisory. | Kept as navigation only; claims corroborated against tracked docs. |
-| Runtime, value-bearing, remote, and permission work remains deferred. | Preserved by design. |
+| Runtime, value-bearing, remote mutation, and permission work remains deferred; remote required-check read-back closed later. | Preserved by design. |
 
 ## 24-Section Grill Review Report
 
@@ -126,7 +126,7 @@ for the original input.
 | 8. Plan / Task / Spec Updates | Grill Review Plan/Task were added; no Spec was needed. |
 | 9. Skill Creation / Update Results | No TDD-gated Skill change was required. |
 | 10. Implemented Changes | Documentation-only evidence and generated index updates. |
-| 11. Deferred Items | Runtime, secrets, remote, permission, deletion, and thresholds remain deferred. |
+| 11. Deferred Items | Runtime, secrets, remote mutation, permission, and deletion remain deferred; thresholds closed later. |
 | 12. Legacy / Delete / Integration Results | No deletion; untracked Storybook MCP remains untouched. |
 | 13. Env Key Comparison | Existing env metadata evidence remains sufficient. |
 | 14. Secrets Key Comparison | Existing role/purpose-safe metadata evidence remains sufficient. |
@@ -134,12 +134,12 @@ for the original input.
 | 16. Scripts Review | No script changed in this follow-up. |
 | 17. Hook Review | Hookify metadata gate remains documented and validated. |
 | 18. QA Review | Storybook coverage was rerun with the local Node path and `/tmp` temp vars. |
-| 19. CI/CD Review | No workflow behavior changed; no remote checks performed. |
+| 19. CI/CD Review | No workflow behavior changed; remote required-check read-back closed later without mutation. |
 | 20. Checklist Results | Stage docs, README links, LLM Wiki, and repo checks are included in the verification plan. |
 | 21. Verification Results | Local docs/static checks recorded in this task. |
 | 22. Verification Gaps | Remote/runtime/value checks remain intentionally skipped. |
-| 23. Remaining Risks | Operator decisions remain for env, secrets, runtime exposure, and thresholds. |
-| 24. Next Tasks | Only deferred follow-ups remain; no additional low-risk input reflection gap found. |
+| 23. Remaining Risks | Operator decisions remain for env, secrets, and runtime exposure; thresholds closed later. |
+| 24. Next Tasks | Only true deferred follow-ups remain; threshold and remote read-back evidence closed later. |
 
 ## Verification Summary
 
