@@ -44,7 +44,7 @@ rabbitmq/
 | --- | --- |
 | Purpose | RabbitMQ service leaf in `05-messaging`; services: `rabbitmq`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/rabbitmq/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `RABBITMQ_DEFAULT_USER_FILE`, `RABBITMQ_DEFAULT_PASS_FILE`; profiles: `messaging-option` |
+| Config values | env keys: `RABBITMQ_DEFAULT_USER_FILE`, `RABBITMQ_DEFAULT_PASS_FILE`; profiles: `messaging`, `messaging-option` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/rabbitmq/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `rabbitmq-data-volume:/var/lib/rabbitmq:rw`, `rabbitmq-data-volume` |

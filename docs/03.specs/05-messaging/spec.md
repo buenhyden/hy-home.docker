@@ -123,7 +123,7 @@ bash scripts/validation/check-doc-traceability.sh
 
 ```bash
 docker compose -f infra/05-messaging/kafka/docker-compose.yml --profile messaging up -d
-docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml --profile messaging-option up -d
+docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml --profile messaging up -d
 docker inspect --format '{{json .State.Health}}' kafka-1
 docker inspect --format '{{json .State.Health}}' rabbitmq
 ```

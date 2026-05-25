@@ -83,8 +83,8 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 - `profiles: [ "data" ]`: 범용 데이터 저장소 (Qdrant 등)
 - `profiles: [ "mng" ]`: 시스템 관리용 DB 계층 (mng-db)
 - `profiles: [ "storage" ]`: 오브젝트 및 파일 저장소 (MinIO)
-- `profiles: [ "messaging" ]`: 핵심 메시징 브로커 (Kafka)
-- `profiles: [ "messaging-option" ]`: 선택 메시징 브로커 (RabbitMQ)
+- `profiles: [ "messaging" ]`: 메시징 브로커 (Kafka, RabbitMQ)
+- `profiles: [ "messaging-option" ]`: RabbitMQ 단독/호환 profile alias
 - `profiles: [ "obs" ]`: 모니터링 및 로기 (LGTM Stack)
 - `profiles: [ "workflow" ]`: 워크플로우 엔진 (Airflow, n8n)
 - `profiles: [ "ai" ]`: AI/LLM 엔진 및 Vector DB
