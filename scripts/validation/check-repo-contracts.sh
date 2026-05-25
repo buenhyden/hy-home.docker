@@ -830,6 +830,9 @@ else:
         "SessionStart",
         "PreToolUse",
         "PostToolUse",
+        "SessionEnd",
+        "Stop",
+        "PreCompact",
         "scripts/hooks/post-tool-validate.sh",
         "graphify-out",
     ]:
@@ -840,6 +843,9 @@ for wrapper, event in {
     pathlib.Path(".claude/hooks/session-start.sh"): "SessionStart",
     pathlib.Path(".claude/hooks/docker-compose-pre.sh"): "PreToolUse",
     pathlib.Path(".claude/hooks/post-tool-validate.sh"): "PostToolUse",
+    pathlib.Path(".claude/hooks/session-end.sh"): "SessionEnd",
+    pathlib.Path(".claude/hooks/stop.sh"): "Stop",
+    pathlib.Path(".claude/hooks/pre-compact.sh"): "PreCompact",
 }.items():
     text = read(wrapper)
     if not text:
@@ -863,7 +869,7 @@ for path, required_command_literal in hook_configs.items():
         failures.append(f"{path}: JSON parse failed for hook contract: {exc}")
         continue
     hooks = data.get("hooks", {}) if isinstance(data, dict) else {}
-    for event in ["SessionStart", "PreToolUse", "PostToolUse"]:
+    for event in ["SessionStart", "PreToolUse", "PostToolUse", "SessionEnd", "Stop", "PreCompact"]:
         if event not in hooks:
             failures.append(f"{path}: missing hook event: {event}")
     if required_command_literal not in text:

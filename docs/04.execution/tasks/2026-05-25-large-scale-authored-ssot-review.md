@@ -55,8 +55,8 @@ status: completed
 | --- | --- | --- | --- | --- |
 | GOV-001 | Runtime skill authority | `.claude/skills` is the runtime SSoT; `.agents/skills` is optional compatibility and not a full mirror | Compatibility cleanup only if `.agents` consumers need it | Yes |
 | GOV-002 | Graphify authority | Graphify report is advisory due cross-root inferred edges | Keep corroboration requirement in reviewer prompts and task evidence | No |
-| DLR-001 | Spec folder routing | `docs/03.specs/home-docker-revalidation-deferred-follow-up/` has a `spec.md` but no folder README | Add README or record a deliberate exception in a docs remediation lane | Yes |
-| DLR-002 | Task evidence heading | Two 2026-05-25 task docs use `## Verification Log` rather than exact `## Verification Summary` | Normalize headings while preserving evidence | Yes |
+| DLR-001 | Spec folder routing | `docs/03.specs/home-docker-revalidation-deferred-follow-up/README.md` now exists and links to the spec/plan/task chain | Closed in low-risk docs lane | No |
+| DLR-002 | Task evidence heading | The two 2026-05-25 task docs now use exact `## Verification Summary` headings while preserving evidence tables | Closed in low-risk docs lane | No |
 | DLR-003 | Architecture status metadata | 46 architecture leaf docs lack explicit status frontmatter | Decide requirement or document validator exception before broad cleanup | Yes |
 | DLR-004 | Historical plan/task pairing | Two historical plan/task pairing candidates need review | Add evidence, mark exceptions, or deprecate in a bounded docs lane | Yes |
 | INF-ENV-001 | Optional env template coverage | `KAFKA_EXTERNAL_HOSTNAME` is referenced by Kafka dev Compose but absent from `.env.example` and `.env` | Env template review lane; do not edit actual `.env` | Yes |
@@ -67,13 +67,13 @@ status: completed
 | INF-NET-001 | Network exception clarity | `mongo-key-generator` lacks an explicit network declaration or no-network exception | Network policy lane | Yes |
 | INF-VOL-001 | Volume policy clarity | Volume naming is not uniformly aligned with stated convention; two declared volumes appear unreferenced | Volume policy lane | Yes |
 | SCR-001 | Validator scalability | `check-repo-contracts.sh` is the authoritative gate but remains a large embedded validator | Modularization or suite-gating lane | Yes |
-| SCR-002 | Read-only validator mode | Some baseline checks can create `.env` when absent; post-tool validation can rewrite formatting | Add explicit non-mutating/dry-run behavior before reviewer workflows rely on it | Yes |
-| SCR-003 | Hook parity enforcement | Hook parity exists more broadly than the validator enforces | Extend parity checks for supported events and wrappers | Yes |
+| SCR-002 | Read-only validator mode | Baseline checks now pass `.env.example` via Compose `--env-file` instead of copying `.env`; post-tool validation supports check-only mode | Closed in validation-hardening lane | No |
+| SCR-003 | Hook parity enforcement | Repo contracts now enforce `SessionEnd`, `Stop`, and `PreCompact` wrapper/config parity in addition to the original three events | Closed in validation-hardening lane | No |
 | SCR-004 | Hookify parser dependency | Hookify metadata parsing depends on PyYAML behavior that should be declared or removed | Dependency declaration/removal lane | Yes |
 | QA-001 | Storybook threshold policy | Coverage command exists, but 90% threshold is not policy-as-code | Decide docs-only, Vitest, or CI enforcement | Yes |
 | QA-002 | Remote required checks | Local target includes `storybook-coverage`; current remote enforcement is unverified | Remote GitHub verification lane | Yes |
 | QA-003 | Frontend gate clarity | Typecheck/build gate for frontend changes is not resolved | QA policy lane | Yes |
-| CI-001 | Release readiness checklist | Release authored policy does not yet force backup evidence, rollback link, incident path, and remote gate verification before deployment/release decisions | Operations runbook/checklist lane | Yes |
+| CI-001 | Release readiness checklist | Release runbook now requires backup/N/A evidence, affected rollback/recovery link, incident path, and remote gate verification before release/deploy claims | Closed in low-risk docs lane | No |
 | CI-002 | Tag-only changelog gate visibility | Release changelog workflow is discoverable, but README gate coverage is not the same as remote enforcement | CI docs lane if release gate list needs expansion | Yes |
 
 ## Low-Risk Follow-up Candidates
@@ -85,6 +85,17 @@ status: completed
 | Add release-readiness checklist links | Operations documentation only | `check-doc-traceability.sh` |
 | Add non-mutating validator modes | Script behavior change, but bounded to safer dry-run semantics | `bash -n`, targeted script tests, repo contracts |
 | Extend hook parity checks | Validator hardening only | `check-repo-contracts.sh`, hook smoke checks |
+
+## Low-Risk Follow-up Closure
+
+| Closure Item | Result | Evidence |
+| --- | --- | --- |
+| Spec folder README | Added `docs/03.specs/home-docker-revalidation-deferred-follow-up/README.md` | Repo contract changed-doc template gate PASS |
+| Verification heading normalization | Renamed the two current 2026-05-25 task headings from `Verification Log` to `Verification Summary` | Existing evidence tables preserved |
+| Release-readiness checklist | Added backup/N/A, rollback/recovery link, incident path, and remote gate verification requirements | Doc traceability PASS |
+| Non-mutating baseline validation | Replaced `.env.example` copy behavior with Compose `--env-file .env.example` when `.env` is absent | Static copy scan PASS; baseline validators PASS |
+| Post-tool check-only mode | Added `--check` and `POST_TOOL_VALIDATE_CHECK_ONLY=1` support | Hook smoke PASS; help output documents mode |
+| Hook parity enforcement | Extended repo-contract checks to `SessionEnd`, `Stop`, and `PreCompact` | Repo contract PASS |
 
 ## Deferred Risk Register
 
@@ -121,6 +132,8 @@ status: completed
 | `.env.example` vs `.env` key comparison | DEFERRED DRIFT | `.env.example` has 328 keys; `.env` has 327 keys; `QDRANT_GRPC_PORT` is only in `.env.example`; no values recorded |
 | Sensitive registry ID comparison | PASS | Example and local registries both contain 104 IDs; ID sets match; values not read or recorded |
 | Six reviewer axes | PARTIAL-READY | All axes are ready for gap registration, not broad automated infra/runtime execution |
+| Low-risk docs closure | PASS | Spec README added; task headings normalized; release checklist strengthened |
+| Low-risk validation hardening | PASS | `bash -n` PASS; baseline validators PASS; static env-copy scan PASS; post-tool `--check` smoke PASS |
 
 ## Final Report Evidence Map
 
@@ -132,6 +145,7 @@ status: completed
 | Graphify remains advisory | Verification Summary and final validation command |
 | Secret and env handling stayed metadata-only | Verification Summary |
 | No-touch Storybook MCP path was preserved | Final `git status --short --branch` |
+| Low-risk follow-up lane closed without runtime mutation | Low-Risk Follow-up Closure |
 
 ## Related Documents
 

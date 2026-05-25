@@ -149,6 +149,9 @@ before running the default mode.
 
 `scripts/hooks/post-tool-validate.sh` is a hook payload consumer. With no JSON
 payload or no changed paths, it exits successfully without running validators.
+Use `--check` or `POST_TOOL_VALIDATE_CHECK_ONLY=1` to run non-mutating
+validation; check-only mode disables whitespace writes and `shfmt -w` while
+preserving diff, syntax, and repo checks.
 
 Repo-local Hookify metadata validation currently supports only `bash`, `file`,
 and `stop` events, as enforced by
@@ -201,6 +204,9 @@ printf '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"comman
 
 # Run provider-neutral post-edit validation from a file-edit hook payload
 printf '{"tool_input":{"file_path":"docs/00.agent-governance/memory/progress.md"}}' | bash scripts/hooks/post-tool-validate.sh
+
+# Run provider-neutral post-edit validation without formatting writes
+printf '{"tool_input":{"file_path":"docs/00.agent-governance/memory/progress.md"}}' | bash scripts/hooks/post-tool-validate.sh --check
 
 # Enforce all tier hardening baselines
 ./scripts/hardening/check-all-hardening.sh

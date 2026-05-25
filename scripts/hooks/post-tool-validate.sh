@@ -2,6 +2,38 @@
 # post-tool-validate.sh — provider-neutral post-edit repository validation.
 set -euo pipefail
 
+check_only=0
+while [[ "$#" -gt 0 ]]; do
+  case "$1" in
+  --check)
+    check_only=1
+    ;;
+  -h | --help)
+    cat <<'EOF'
+Usage: post-tool-validate.sh [--check]
+
+Consumes a hook JSON payload on stdin and validates changed files.
+
+Options:
+  --check   Run non-mutating validation only. This disables whitespace writes
+            and shfmt -w while preserving diff, syntax, and repo checks.
+EOF
+    exit 0
+    ;;
+  *)
+    printf 'ERROR: unknown option: %s\n' "$1" >&2
+    exit 2
+    ;;
+  esac
+  shift
+done
+
+case "${POST_TOOL_VALIDATE_CHECK_ONLY:-0}" in
+1 | true | TRUE | yes | YES)
+  check_only=1
+  ;;
+esac
+
 PROJECT_DIR="${CODEX_PROJECT_DIR:-${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}}"
 cd "$PROJECT_DIR"
 
@@ -119,11 +151,13 @@ for path in "${CHANGED_PATHS[@]}"; do
   if [[ -f "$rel" && "$rel" != graphify-out/* ]]; then
     EXISTING_CHANGED_FILES+=("$rel")
     run_style=1
-    case "$rel" in
-    *.md | *.sh | *.yml | *.yaml | *.json)
-      format_text_file_basics "$rel"
-      ;;
-    esac
+    if [[ "$check_only" -eq 0 ]]; then
+      case "$rel" in
+      *.md | *.sh | *.yml | *.yaml | *.json)
+        format_text_file_basics "$rel"
+        ;;
+      esac
+    fi
   fi
 
   case "$rel" in
@@ -155,7 +189,7 @@ for path in "${CHANGED_PATHS[@]}"; do
   fi
 done
 
-if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shfmt >/dev/null 2>&1; then
+if [[ "$check_only" -eq 0 && "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shfmt >/dev/null 2>&1; then
   shfmt -w "${SHELL_STYLE_FILES[@]}"
 fi
 

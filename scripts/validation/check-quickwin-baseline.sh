@@ -17,9 +17,10 @@ fi
 BASE_DIR="$(git rev-parse --show-toplevel)"
 cd "$BASE_DIR"
 
+compose_env_args=()
 if [[ ! -f .env ]] && [[ -f .env.example ]]; then
-  echo "INFO: .env not found, using .env.example for baseline validation."
-  cp .env.example .env
+  echo "INFO: .env not found, using .env.example as a non-mutating env file for baseline validation."
+  compose_env_args+=(--env-file .env.example)
 fi
 
 exceptions_file="infra/common-optimizations.exceptions.json"
@@ -44,7 +45,7 @@ fi
 tmp_json="$(mktemp)"
 trap 'rm -f "$tmp_json"' EXIT
 
-docker compose "${compose_profile_args[@]}" config --format json >"$tmp_json"
+docker compose "${compose_env_args[@]}" "${compose_profile_args[@]}" config --format json >"$tmp_json"
 
 service_total="$(jq '.services | length' "$tmp_json")"
 if [[ "$service_total" -eq 0 ]]; then

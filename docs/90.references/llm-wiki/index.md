@@ -301,6 +301,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/docs-taxonomy-agent-first-migration/spec.md](../../03.specs/docs-taxonomy-agent-first-migration/spec.md) | Markdown reference |
 | [docs/03.specs/harness-agent-first-engineering/README.md](../../03.specs/harness-agent-first-engineering/README.md) | folder index |
 | [docs/03.specs/harness-agent-first-engineering/spec.md](../../03.specs/harness-agent-first-engineering/spec.md) | Markdown reference |
+| [docs/03.specs/home-docker-revalidation-deferred-follow-up/README.md](../../03.specs/home-docker-revalidation-deferred-follow-up/README.md) | folder index |
 | [docs/03.specs/home-docker-revalidation-deferred-follow-up/spec.md](../../03.specs/home-docker-revalidation-deferred-follow-up/spec.md) | Markdown reference |
 | [docs/03.specs/infra-secrets-docs-refresh/README.md](../../03.specs/infra-secrets-docs-refresh/README.md) | folder index |
 | [docs/03.specs/infra-secrets-docs-refresh/spec.md](../../03.specs/infra-secrets-docs-refresh/spec.md) | Markdown reference |
