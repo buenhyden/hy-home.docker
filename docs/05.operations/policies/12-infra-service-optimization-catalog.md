@@ -112,136 +112,136 @@ status: active
 ### 01-gateway
 
 - [traefik](../../../infra/01-gateway/traefik/README.md): 엔트리포인트별 `rate-limit`/`retry`/`circuit-breaker` 표준화, `restart`/자원 제한 보강
-  ([OPER](../guides/01-gateway/traefik.md), [RUN](../guides/01-gateway/traefik.md))
+  ([OPER](../guides/01-gateway/traefik.md), [RUN](../runbooks/01-gateway/traefik.md))
 - [nginx](../../../infra/01-gateway/nginx/README.md): 업스트림 헬스체크/타임아웃 일원화, `read_only`+`tmpfs` 적용, 정적 자산 캐시 정책 강화
-  ([OPER](../guides/01-gateway/nginx.md), [RUN](../guides/01-gateway/nginx.md))
+  ([OPER](../guides/01-gateway/nginx.md), [RUN](../runbooks/01-gateway/nginx.md))
 
 ### 02-auth
 
 - [keycloak](../../../infra/02-auth/keycloak/README.md): 세션/캐시 외부화 전략 점검, DB/관리자 비밀 회전 자동화, 노드 확장 대비 세션 정책 정리
-  ([OPER](../guides/02-auth/keycloak.md), [RUN](../guides/02-auth/keycloak.md))
+  ([OPER](../guides/02-auth/keycloak.md), [RUN](../runbooks/02-auth/keycloak.md))
 - [oauth2-proxy](../../../infra/02-auth/oauth2-proxy/README.md): 쿠키/세션 만료 정책 표준화, OIDC 장애시 degraded-mode 정책 추가, 보안헤더 강화
-  ([OPER](../guides/02-auth/oauth2-proxy.md), [RUN](../guides/02-auth/oauth2-proxy.md))
+  ([OPER](../guides/02-auth/oauth2-proxy.md), [RUN](../runbooks/02-auth/oauth2-proxy.md))
 
 ### 03-security
 
 - [vault](../../../infra/03-security/vault/README.md): auto-unseal(KMS/HSM) 도입 검토, audit device 원격 적재, `no-new-privileges` 및 자원 상한 일괄 적용
-  ([OPER](../guides/03-security/vault.md), [RUN](../guides/03-security/vault.md))
+  ([OPER](../guides/03-security/vault.md), [RUN](../runbooks/03-security/vault.md))
 
 ### 04-data
 
 - Analytics
   - [influxdb](../../../infra/04-data/analytics/influxdb/README.md): retention tiering(핫/웜) 정책과 shard compaction 기준 명문화
-    ([OPER](../guides/04-data/analytics/influxdb.md), [RUN](../guides/04-data/analytics/influxdb.md))
+    ([OPER](../guides/04-data/analytics/influxdb.md), [RUN](../runbooks/04-data/analytics/influxdb.md))
   - [ksqldb](../../../infra/04-data/analytics/ksql/README.md): Kafka 토픽 스키마/호환성 게이트, state store 복구 시간 목표(RTO) 정의
-    ([OPER](../guides/04-data/analytics/ksqldb.md), [RUN](../guides/04-data/analytics/ksqldb.md))
+    ([OPER](../guides/04-data/analytics/ksqldb.md), [RUN](../runbooks/04-data/analytics/ksqldb.md))
   - [opensearch](../../../infra/04-data/analytics/opensearch/README.md): 인덱스 lifecycle(rollover/ISM) 표준화, 쿼리 가드레일(검색 폭주 제한) 추가
-    ([OPER](../guides/04-data/analytics/opensearch.md), [RUN](../guides/04-data/analytics/opensearch.md))
+    ([OPER](../guides/04-data/analytics/opensearch.md), [RUN](../runbooks/04-data/analytics/opensearch.md))
   - [warehouses](../../../infra/04-data/analytics/warehouses/README.md): 배치 윈도우/리소스 큐 정책, 메타스토어 백업 주기 명시
-    ([OPER](../guides/04-data/analytics/warehouses.md), [RUN](../guides/04-data/analytics/warehouses.md))
+    ([OPER](../guides/04-data/analytics/warehouses.md), [RUN](../runbooks/04-data/analytics/warehouses.md))
 - Cache & KV
   - [valkey-cluster](../../../infra/04-data/cache-and-kv/valkey-cluster/README.md): failover 리허설 주기화, eviction 정책 워크로드별 분리, exporter 표준화
-    ([OPER](../guides/04-data/cache-and-kv/valkey-cluster.md), [RUN](../guides/04-data/cache-and-kv/valkey-cluster.md))
+    ([OPER](../guides/04-data/cache-and-kv/valkey-cluster.md), [RUN](../runbooks/04-data/cache-and-kv/valkey-cluster.md))
 - Lake & Object
   - [minio](../../../infra/04-data/lake-and-object/minio/README.md): 버킷 수명주기/버전관리 정책, KMS 연동 암호화, 교차 AZ 복제 검토
-    ([OPER](../guides/04-data/lake-and-object/minio.md), [RUN](../guides/04-data/lake-and-object/minio.md))
+    ([OPER](../guides/04-data/lake-and-object/minio.md), [RUN](../runbooks/04-data/lake-and-object/minio.md))
   - [seaweedfs](../../../infra/04-data/lake-and-object/seaweedfs/README.md): 볼륨 성장 정책, 마스터 quorum/복구 점검 자동화
-    ([OPER](../guides/04-data/lake-and-object/seaweedfs.md), [RUN](../guides/04-data/lake-and-object/seaweedfs.md))
+    ([OPER](../guides/04-data/lake-and-object/seaweedfs.md), [RUN](../runbooks/04-data/lake-and-object/seaweedfs.md))
 - NoSQL
   - [cassandra](../../../infra/04-data/nosql/cassandra/README.md): compaction/repair 윈도우 자동화, consistency level 기준(읽기/쓰기) 문서화
-    ([OPER](../guides/04-data/nosql/cassandra.md), [RUN](../guides/04-data/nosql/cassandra.md))
+    ([OPER](../guides/04-data/nosql/cassandra.md), [RUN](../runbooks/04-data/nosql/cassandra.md))
   - [couchdb](../../../infra/04-data/nosql/couchdb/README.md): shard/replica 균형 점검, 디자인문서 배포 절차 표준화
-    ([OPER](../guides/04-data/nosql/couchdb.md), [RUN](../guides/04-data/nosql/couchdb.md))
+    ([OPER](../guides/04-data/nosql/couchdb.md), [RUN](../runbooks/04-data/nosql/couchdb.md))
   - [mongodb](../../../infra/04-data/nosql/mongodb/README.md): replicaset 선출 안정성(heartbeat/timeout) 튜닝, 백업 복구 드릴 정례화
-    ([OPER](../guides/04-data/nosql/mongodb.md), [RUN](../guides/04-data/nosql/mongodb.md))
+    ([OPER](../guides/04-data/nosql/mongodb.md), [RUN](../runbooks/04-data/nosql/mongodb.md))
 - Operational
   - [mng-db](../../../infra/04-data/operational/mng-db/README.md): 운영 DB 파라미터 baseline 확정, 슬로우쿼리 게이트와 회귀 점검 추가
-    ([OPER](../guides/04-data/operational/mng-db.md), [RUN](../guides/04-data/operational/mng-db.md))
+    ([OPER](../guides/04-data/operational/mng-db.md), [RUN](../runbooks/04-data/operational/mng-db.md))
   - [supabase](../../../infra/04-data/operational/supabase/README.md): 현재 헬스체크 갭 보강, 내부 서비스별 최소 자원 상한 지정, 핵심 컴포넌트 외부노출 재검토
-    ([OPER](../guides/04-data/operational/supabase.md), [RUN](../guides/04-data/operational/supabase.md))
+    ([OPER](../guides/04-data/operational/supabase.md), [RUN](../runbooks/04-data/operational/supabase.md))
 - Relational
   - [postgresql-cluster](../../../infra/04-data/relational/postgresql-cluster/README.md): Patroni failover SLA 수립, VACUUM/Autovacuum 지표 기반 튜닝, PITR 리허설 자동화
-    ([OPER](../guides/04-data/relational/postgresql-cluster.md), [RUN](../guides/04-data/relational/postgresql-cluster.md))
+    ([OPER](../guides/04-data/relational/postgresql-cluster.md), [RUN](../runbooks/04-data/relational/postgresql-cluster.md))
 - Specialized
   - [neo4j](../../../infra/04-data/specialized/neo4j/README.md): graph 백업(online/offline) 정책, 대형 질의 timeout/메모리 가드레일 적용
-    ([OPER](../guides/04-data/specialized/neo4j.md), [RUN](../guides/04-data/specialized/neo4j.md))
+    ([OPER](../guides/04-data/specialized/neo4j.md), [RUN](../runbooks/04-data/specialized/neo4j.md))
   - [qdrant](../../../infra/04-data/specialized/qdrant/README.md): 컬렉션별 HNSW/quantization 정책 표준화, 임베딩 재색인 운영 절차 추가
-    ([OPER](../guides/04-data/specialized/qdrant.md), [RUN](../guides/04-data/specialized/qdrant.md))
+    ([OPER](../guides/04-data/specialized/qdrant.md), [RUN](../runbooks/04-data/specialized/qdrant.md))
 
 ### 05-messaging
 
 - [kafka](../../../infra/05-messaging/kafka/README.md): 토픽 거버넌스(파티션/보존/compaction) 표준화, DLQ/재처리 파이프라인 공식화
-  ([OPER](../guides/05-messaging/kafka.md), [RUN](../guides/05-messaging/kafka.md))
+  ([OPER](../guides/05-messaging/kafka.md), [RUN](../runbooks/05-messaging/kafka.md))
 - [rabbitmq](../../../infra/05-messaging/rabbitmq/README.md): quorum queue 채택 범위 정의, dead-letter 정책과 소비자 재시도 표준화
-  ([OPER](../guides/05-messaging/rabbitmq.md), [RUN](../guides/05-messaging/rabbitmq.md))
+  ([OPER](../guides/05-messaging/rabbitmq.md), [RUN](../runbooks/05-messaging/rabbitmq.md))
 
 ### 06-observability
 
 - [prometheus](../../../infra/06-observability/prometheus/README.md): scrape budget 관리, rule/group 지연 예산 도입, 장기저장(remote_write) 계층화
-  ([OPER](../guides/06-observability/prometheus.md), [RUN](../guides/06-observability/prometheus.md))
+  ([OPER](../guides/06-observability/prometheus.md), [RUN](../runbooks/06-observability/prometheus.md))
 - [alertmanager](../../../infra/06-observability/alertmanager/README.md): 알림 라우팅 소유권 분리, 중복 억제/소거 윈도우 표준화
-  ([OPER](../guides/06-observability/alertmanager.md), [RUN](../guides/06-observability/alertmanager.md))
+  ([OPER](../guides/06-observability/alertmanager.md), [RUN](../runbooks/06-observability/alertmanager.md))
 - [grafana](../../../infra/06-observability/grafana/README.md): 폴더별 권한/RBAC 정리, 대시보드 lint/JSON 검증 파이프라인 추가
-  ([OPER](../guides/06-observability/grafana.md), [RUN](../guides/06-observability/grafana.md))
+  ([OPER](../guides/06-observability/grafana.md), [RUN](../runbooks/06-observability/grafana.md))
 - [loki](../../../infra/06-observability/loki/README.md): 로그 라벨 카디널리티 예산, retention/compaction 분리 운영
-  ([OPER](../guides/06-observability/loki.md), [RUN](../guides/06-observability/loki.md))
+  ([OPER](../guides/06-observability/loki.md), [RUN](../runbooks/06-observability/loki.md))
 - [tempo](../../../infra/06-observability/tempo/README.md): trace 샘플링 정책(서비스/엔드포인트별) 명문화, 스팬 폭주 보호장치 추가
-  ([OPER](../guides/06-observability/tempo.md), [RUN](../guides/06-observability/tempo.md))
+  ([OPER](../guides/06-observability/tempo.md), [RUN](../runbooks/06-observability/tempo.md))
 - [alloy](../../../infra/06-observability/alloy/README.md): 수집 파이프라인 표준 모듈화, 신규 서비스 온보딩 템플릿화
-  ([OPER](../guides/06-observability/alloy.md), [RUN](../guides/06-observability/alloy.md))
+  ([OPER](../guides/06-observability/alloy.md), [RUN](../runbooks/06-observability/alloy.md))
 - [pushgateway](../../../infra/06-observability/pushgateway/README.md): short-lived job 전용 정책 강제, stale metrics 정리 자동화
-  ([OPER](../guides/06-observability/pushgateway.md), [RUN](../guides/06-observability/pushgateway.md))
+  ([OPER](../guides/06-observability/pushgateway.md), [RUN](../runbooks/06-observability/pushgateway.md))
 - [pyroscope](../../../infra/06-observability/pyroscope/README.md): 프로파일 수집 대상 우선순위화, CPU/heap 프로파일 보존정책 확정
-  ([OPER](../guides/06-observability/pyroscope.md), [RUN](../guides/06-observability/pyroscope.md))
+  ([OPER](../guides/06-observability/pyroscope.md), [RUN](../runbooks/06-observability/pyroscope.md))
 
 ### 07-workflow
 
 - [airflow](../../../infra/07-workflow/airflow/README.md): DAG 품질 게이트(파싱/스케줄/지연) CI 추가, 워커 오토스케일 기준 정의
-  ([OPER](../guides/07-workflow/airflow.md), [RUN](../guides/07-workflow/airflow.md))
+  ([OPER](../guides/07-workflow/airflow.md), [RUN](../runbooks/07-workflow/airflow.md))
 - [n8n](../../../infra/07-workflow/n8n/README.md): 워크플로 버전관리/Git 백업 표준화, 자격증명 스토어 Vault 연계 강화
-  ([OPER](../guides/07-workflow/n8n.md), [RUN](../guides/07-workflow/n8n.md))
+  ([OPER](../guides/07-workflow/n8n.md), [RUN](../runbooks/07-workflow/n8n.md))
 - [airbyte](../guides/07-workflow/airbyte.md): 현재 인프라 실체 정의(Compose/README) 우선 보강, 커넥터 승격 기준(실험→운영) 추가
-  ([RUN](../guides/07-workflow/airbyte.md))
+  ([RUN](../runbooks/07-workflow/airbyte.md))
 
 ### 08-ai
 
 - [ollama](../../../infra/08-ai/ollama/README.md): 모델 캐시/스토리지 정책, GPU 스케줄링 및 동시성 상한, 모델 승격 절차(실험→운영) 명문화
-  ([OPER](../guides/08-ai/ollama.md), [RUN](../guides/08-ai/ollama.md))
+  ([OPER](../guides/08-ai/ollama.md), [RUN](../runbooks/08-ai/ollama.md))
 - [open-webui](../../../infra/08-ai/open-webui/README.md): SSO 강제, 모델 접근 권한 분리, 대화 로그 보존/마스킹 정책 강화
-  ([OPER](../guides/08-ai/open-webui.md), [RUN](../guides/08-ai/open-webui.md))
+  ([OPER](../guides/08-ai/open-webui.md), [RUN](../runbooks/08-ai/open-webui.md))
 
 ### 09-tooling
 
 - [terraform](../../../infra/09-tooling/terraform/README.md): plan/apply 승인 게이트, state 잠금/백업 정책 강화, drift 자동 탐지 추가
-  ([OPER](../guides/09-tooling/terraform.md), [RUN](../guides/09-tooling/terraform.md))
+  ([OPER](../guides/09-tooling/terraform.md), [RUN](../runbooks/09-tooling/terraform.md))
 - [terrakube](../../../infra/09-tooling/terrakube/README.md): 워크스페이스 분리 전략, 실행 권한과 감사로그 연동 강화
-  ([OPER](../guides/09-tooling/terrakube.md), [RUN](../guides/09-tooling/terrakube.md))
+  ([OPER](../guides/09-tooling/terrakube.md), [RUN](../runbooks/09-tooling/terrakube.md))
 - [registry](../../../infra/09-tooling/registry/README.md): 이미지 서명/검증(cosign) 도입, 취약점 스캔 실패 차단 정책 적용
-  ([OPER](../guides/09-tooling/registry.md), [RUN](../guides/09-tooling/registry.md))
+  ([OPER](../guides/09-tooling/registry.md), [RUN](../runbooks/09-tooling/registry.md))
 - [sonarqube](../../../infra/09-tooling/sonarqube/README.md): 품질게이트 임계값 재정의, 브랜치 정책과 보안 룰셋 분리 관리
-  ([OPER](../guides/09-tooling/sonarqube.md), [RUN](../guides/09-tooling/sonarqube.md))
+  ([OPER](../guides/09-tooling/sonarqube.md), [RUN](../runbooks/09-tooling/sonarqube.md))
 - [k6](../../../infra/09-tooling/k6/README.md): 성능 회귀 기준선 저장/비교 자동화, 시나리오 태그 표준화
-  ([OPER](../guides/09-tooling/k6.md), [RUN](../guides/09-tooling/k6.md))
+  ([OPER](../guides/09-tooling/k6.md), [RUN](../runbooks/09-tooling/k6.md))
 - [locust](../../../infra/09-tooling/locust/README.md): 분산 실행 토폴로지 표준화, 테스트 데이터 초기화/정리 루틴 추가
-  ([OPER](../guides/09-tooling/locust.md), [RUN](../guides/09-tooling/locust.md))
+  ([OPER](../guides/09-tooling/locust.md), [RUN](../runbooks/09-tooling/locust.md))
 - [syncthing](../../../infra/09-tooling/syncthing/README.md): 동기화 폴더 ACL/암호화 기준 강화, 충돌 파일 처리 정책 명문화
-  ([OPER](../guides/09-tooling/syncthing.md), [RUN](../guides/09-tooling/syncthing.md))
+  ([OPER](../guides/09-tooling/syncthing.md), [RUN](../runbooks/09-tooling/syncthing.md))
 
 ### 10-communication
 
 - [mail](../../../infra/10-communication/mail/README.md): SPF/DKIM/DMARC 운영 기준 강화, 큐 적체 경보 및 재전송 정책 표준화
-  ([OPER](../guides/10-communication/mail.md), [RUN](../guides/10-communication/mail.md))
+  ([OPER](../guides/10-communication/mail.md), [RUN](../runbooks/10-communication/mail.md))
 
 ### 11-laboratory
 
 - [dashboard](../../../infra/11-laboratory/dashboard/README.md): 실험성 대시보드 접근정책(SSO/IP allowlist) 적용, 만료 정책(자동 종료) 추가
-  ([OPER](../guides/11-laboratory/dashboard.md), [RUN](../guides/11-laboratory/dashboard.md))
+  ([OPER](../guides/11-laboratory/dashboard.md), [RUN](../runbooks/11-laboratory/dashboard.md))
 - [dozzle](../../../infra/11-laboratory/dozzle/README.md): 로그 열람 권한 제한, 프로덕션 로그 접근 차단 규칙 강화
-  ([OPER](../guides/11-laboratory/dozzle.md), [RUN](../guides/11-laboratory/dozzle.md))
+  ([OPER](../guides/11-laboratory/dozzle.md), [RUN](../runbooks/11-laboratory/dozzle.md))
 - [portainer](../../../infra/11-laboratory/portainer/README.md): 관리자 계정/세션 정책 강화, 엔드포인트 등록 승인 절차 명문화
-  ([OPER](../guides/11-laboratory/portainer.md), [RUN](../guides/11-laboratory/portainer.md))
+  ([OPER](../guides/11-laboratory/portainer.md), [RUN](../runbooks/11-laboratory/portainer.md))
 - [redisinsight](../../../infra/11-laboratory/redisinsight/README.md): 접근권한 최소화, 운영 캐시 직접 수정 금지 정책 및 감사로그 적용
-  ([OPER](../guides/11-laboratory/redisinsight.md), [RUN](../guides/11-laboratory/redisinsight.md))
+  ([OPER](../guides/11-laboratory/redisinsight.md), [RUN](../runbooks/11-laboratory/redisinsight.md))
 
 ## Related Documents
 
