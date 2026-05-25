@@ -49,7 +49,7 @@ minio/
 | Config files | `docker-compose.cluster.yaml`, `docker-compose.yml` |
 | Config values | env keys: `MINIO_ROOT_USER_FILE`, `MINIO_ROOT_PASSWORD_FILE`, `MINIO_PROMETHEUS_AUTH_TYPE`, `MINIO_API_ROOT_ACCESS`; profiles: `storage`, `obs`, `dev` |
 | Compose linkage | local compose only: `docker-compose.cluster.yaml`; root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lake-and-object/minio/docker-compose.yml` |
-| Networks | `infra_net` |
+| Networks | `infra_net`; static IPs: `172.19.0.29` (`minio`), `172.19.0.39` (`minio-create-buckets`) |
 | Volumes | `minio-data1-volume:/data:rw`, `minio-data2-volume:/data:rw`, `minio-data3-volume:/data:rw`, `minio-data4-volume:/data:rw`, `minio-data1-volume`, `minio-data2-volume`, `minio-data3-volume`, `minio-data4-volume`, plus 2 more |
 | Ports | Not declared |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.minio-api.rule`, `traefik.http.routers.minio-api.entrypoints`, `traefik.http.routers.minio-api.tls`, `traefik.http.routers.minio-api.service`, `traefik.http.services.minio-api.loadbalancer.server.port`, `traefik.http.routers.minio-api.middlewares`, plus 6 more |

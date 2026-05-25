@@ -71,7 +71,9 @@ networks:
 | `172.19.0.7` | registry | `infra/09-tooling/registry` |
 | `172.19.0.11-16` | Relational / Mng DB Core | `infra/04-data/relational`, `operational` |
 | `172.19.0.20-28` | Observability Stack | `infra/06-observability` |
+| `172.19.0.29` | MinIO | `infra/04-data/lake-and-object/minio` |
 | `172.19.0.30-38` | Kafka Stack | `infra/05-messaging/kafka` |
+| `172.19.0.39` | MinIO bucket job | `infra/04-data/lake-and-object/minio` |
 | `172.19.0.50-59` | PostgreSQL Cluster | `infra/04-data/relational/postgresql-cluster` |
 | `172.19.0.61` | Neo4j | `infra/04-data/specialized/neo4j` |
 | `172.19.0.80-85` | n8n Workflow | `infra/07-workflow/n8n` |
