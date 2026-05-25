@@ -45,6 +45,22 @@ Graphify was read first and is advisory because the current health report includ
   - Broad architecture frontmatter cleanup.
   - `projects/storybook/mcp/`.
 
+## Current Disposition (2026-05-26)
+
+The non-goals above describe the original authored SSoT review boundary. Later
+user-approved follow-up work closed selected static and governance-safe items in
+the paired task record without turning this plan into a live runtime or secret
+operation.
+
+| Area | Current disposition |
+| --- | --- |
+| Non-secret `.env` key-set drift | Closed only for approved key presence evidence; values remain unprinted and operator-owned |
+| Remote required-check evidence | Closed through approved read-back and required-check update evidence; release/deploy claims still need their own operations evidence |
+| Storybook threshold policy | Closed through repo-local threshold enforcement and coverage evidence |
+| Architecture frontmatter metadata | Closed for `status:` metadata only; broad body cleanup remains out of scope |
+| Runtime, deployment, secret values, and deletion | Still deferred to separate owner-approved operations work |
+| `projects/storybook/mcp/` | Still no-touch and outside this review |
+
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
