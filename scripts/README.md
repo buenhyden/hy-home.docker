@@ -61,7 +61,7 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 
 | Purpose | Canonical paths |
 | :--- | :--- |
-| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh` |
+| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh` |
 | Hardening | `scripts/hardening/check-all-hardening.sh` |
 | Hooks | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh` |
 | Knowledge | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/report-graphify-health.sh` |
@@ -101,6 +101,7 @@ script.
 | :--- | :--- | :--- |
 | Docker Validation | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) | Validate root compose config |
 | Repo Contract Check | [check-repo-contracts.sh](./validation/check-repo-contracts.sh) | Enforce docs, GitHub, script, image, runtime governance, Hookify metadata, and execution evidence status contracts |
+| Storybook Contract Check | [check-storybook-contract.sh](./validation/check-storybook-contract.sh) | Enforce Storybook CI scripts, workflow wiring, and 90% coverage threshold metadata |
 | QuickWin Baseline Check | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
 | Template & Security Baseline Check | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh) | Enforce template adoption and required security controls |
 | Documentation Traceability Check | [check-doc-traceability.sh](./validation/check-doc-traceability.sh) | Enforce sync links across 04.execution/plans ↔ 05.operations |

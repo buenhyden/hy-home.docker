@@ -60,7 +60,7 @@ nextjs/
 | `npm run lint` | ESLint 실행 |
 | `npm run typecheck` | TypeScript typecheck 실행 |
 | `npm run test` | Storybook Vitest 테스트 실행 |
-| `npm run coverage` | Storybook Vitest coverage 실행 |
+| `npm run coverage` | Storybook Vitest coverage 실행; statements/branches/functions/lines 90% threshold 적용 |
 
 Parent repo 루트에서 실행할 때는 `npm --prefix projects/storybook/nextjs <command>`를 사용합니다.
 
