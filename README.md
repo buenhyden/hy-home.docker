@@ -200,7 +200,7 @@ docker compose --profile core up -d
 ## Agent Working Rules
 
 - 작업 시작 전 [`AGENTS.md`](./AGENTS.md)를 먼저 확인합니다.
-- Bootstrap 순서는 `bootstrap.md` → `persona.md` → `task-checklists.md` → 해당 scope 순서를 따릅니다.
+- Bootstrap 순서는 `bootstrap.md` → `persona.md` → `task-checklists.md` → `agentic.md` → `memory/README.md`와 `memory/progress.md` review → 해당 scope 순서를 따릅니다.
 - 문서 작성/갱신 작업은 [`docs/00.agent-governance/rules/stage-authoring-matrix.md`](./docs/00.agent-governance/rules/stage-authoring-matrix.md)를 기준으로 작성합니다.
 - 공식 stage 문서는 기본적으로 읽기 전용이며, 명시적 사용자 지시가 있을 때만 수정합니다.
 
