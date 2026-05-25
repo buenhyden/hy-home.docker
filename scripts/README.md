@@ -136,7 +136,7 @@ tier. Without arguments, all supported tiers are checked.
 
 | Lifecycle | Scripts |
 | :--- | :--- |
-| CI / quality gate | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/knowledge/generate-llm-wiki-index.sh --check` |
+| CI / quality gate | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/knowledge/generate-llm-wiki-index.sh --check` |
 | Advisory evidence | `scripts/knowledge/report-graphify-health.sh` |
 | Runtime hook | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh` |
 | Tier hardening | `scripts/hardening/check-all-hardening.sh <tier>` |
