@@ -154,7 +154,7 @@ Metadata-only drift recorded: `MONGODB_ROOT_USERNAME` appears in example metadat
 | Skill / Surface | Finding | Action |
 | --- | --- | --- |
 | `workspace-audit-revalidation` | Runtime skill exists and is cataloged, but supervisor routing lacked the function link | Add supervisor skill route |
-| `.agents/skills` compatibility mirror | Drift exists outside active runtime source of truth | Deferred |
+| `.agents/skills` compatibility mirror | Later follow-up closed the formatting-only drift; `.claude/skills` and `.agents/skills` are now `diff -qr` clean | Closed with no skill additions, hook changes, or runtime behavior changes |
 
 ## Legacy/Delete/Integration Results
 
@@ -171,7 +171,7 @@ Metadata-only drift recorded: `MONGODB_ROOT_USERNAME` appears in example metadat
 | Risk | Deferred Because | Follow-up |
 | --- | --- | --- |
 | ARD/ADR template-frontmatter cleanup across 46 architecture leaves | Broad docs normalization outside low-risk scope | Separate docs remediation plan |
-| `.agents/skills` mirror drift | Compatibility mirror, not active runtime source of truth | Separate compatibility cleanup |
+| `.agents/skills` mirror drift | Closed by later runtime skill mirror formatting alignment; compatibility mirror now matches active runtime source of truth | No further compatibility cleanup needed for this drift |
 | Storybook coverage threshold policy | Policy decision not required for current README discoverability fix | Separate QA policy decision |
 | Remote branch protection and `storybook-coverage` required check | Requires GitHub remote access and repository admin intent | Separate remote governance task |
 | Actual `.env` sync | Operator-owned local state | Operator follow-up |

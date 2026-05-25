@@ -43,7 +43,7 @@ status: completed
 
 | Reviewer Pass | Scope | Result | Action |
 | --- | --- | --- | --- |
-| Governance / Harness / Skills | `AGENTS.md`, governance hub, runtime catalogs, skill routing | No blocking findings; `.agents/skills` mirror remains deferred; exact follow-up title searchability addressed by new artifacts | Record as corroborated reviewer evidence |
+| Governance / Harness / Skills | `AGENTS.md`, governance hub, runtime catalogs, skill routing | No blocking findings; exact follow-up title searchability addressed by new artifacts; later runtime skill mirror formatting follow-up closed the `.agents/skills` mirror drift | Record as corroborated reviewer evidence |
 | Documentation Lifecycle | Stage/template conformance and README routing | Found follow-up artifacts absent before this implementation and confirmed Stage 03 path is valid only as a contract spec, not an evidence bucket | Created contract-style spec and parent README links |
 | Infra / Docker / Env / Secrets | Static infra and metadata-only drift | Local fallback confirmed metadata-only env/secrets drift and no approved runtime config edits; later authored SSoT closure records static follow-up evidence | Keep runtime/value work deferred |
 | Scripts / Hooks / Automation | Script docs and hook contracts | Local fallback confirmed `scripts/README.md` documents no-payload hook no-op and repo-local Hookify event support; later authored SSoT closure records script lifecycle evidence | No script edits required |
@@ -58,7 +58,7 @@ status: completed
 | Need task-level evidence separate from prior baseline audit | Add dedicated task artifact | Agent | Done |
 | `.env` missing `QDRANT_GRPC_PORT` | Record operator-owned deferred drift; do not edit `.env` | Operator | Deferred |
 | Secret registry selected env-var/path metadata drift | Record metadata-only drift; do not mutate registry/value files | Operator | Deferred |
-| `.agents/skills` compatibility mirror drift | Keep deferred; `.claude/skills` remains runtime source of truth | Operator / Future agent | Deferred |
+| `.agents/skills` compatibility mirror drift | Later follow-up aligned formatting-only drift while keeping `.claude/skills` as runtime source of truth | Agent | Done |
 | ARD/ADR template-frontmatter cleanup across 46 architecture leaves | Keep deferred due broad blast radius | Future docs remediation | Deferred |
 | Storybook coverage threshold policy | Keep deferred unless user approves QA policy/CI enforcement | Maintainer | Deferred |
 | Remote branch protection and `storybook-coverage` required check | Keep deferred without remote GitHub verification/action | Maintainer | Deferred |
@@ -196,7 +196,7 @@ No secret value is recorded in this document.
 | --- | --- | --- |
 | `workspace-audit-revalidation` | Memory pattern and repo-local skill expectations match this task | Use as workflow pattern |
 | `.claude/skills` | Active runtime skill source of truth from prior audit | No mutation planned |
-| `.agents/skills` | Compatibility mirror drift is previously deferred | Keep deferred |
+| `.agents/skills` | Compatibility mirror drift is closed by later runtime skill mirror formatting alignment | No action needed |
 
 ## Legacy/Delete/Integration Results
 
@@ -215,7 +215,7 @@ No secret value is recorded in this document.
 | --- | --- | --- |
 | Actual `.env` sync for `QDRANT_GRPC_PORT` | Operator-owned local state and value-bearing file | Separate operator-approved env sync |
 | Secret registry metadata/value mutation | Sensitive registry and value-bearing surface | Separate secret-management approval |
-| `.agents/skills` compatibility mirror drift | Compatibility surface, not runtime source of truth | Separate compatibility cleanup |
+| `.agents/skills` compatibility mirror drift | Closed by later runtime skill mirror formatting alignment; compatibility surface now matches runtime skill copies | No further compatibility cleanup needed for this drift |
 | ARD/ADR template-frontmatter cleanup across 46 architecture leaves | Broad documentation normalization | Separate docs remediation plan |
 | Storybook coverage threshold policy | QA policy and CI enforcement decision | Separate QA policy task |
 | Remote branch protection and `storybook-coverage` required check | Requires remote GitHub verification/admin intent | Separate remote governance task |

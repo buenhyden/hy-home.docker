@@ -39,7 +39,8 @@ Read-only audit evidence found one blocking local gate: `bash scripts/validation
   - No cleanup of unrelated untracked files or uncertain deletion candidates.
 - **Out of Scope**:
   - ARD/ADR template-frontmatter cleanup across 46 architecture leaves.
-  - `.agents/skills` compatibility mirror drift.
+  - `.agents/skills` compatibility mirror drift (closed by the later 2026-05-25
+    runtime skill mirror formatting follow-up; no runtime behavior change).
   - Storybook coverage threshold policy.
   - Remote branch protection and `storybook-coverage` required-check enforcement.
   - Actual `.env` sync, secret metadata mutation, secret value work, Docker runtime start/stop, deployments, ports, permissions, and file deletions.
