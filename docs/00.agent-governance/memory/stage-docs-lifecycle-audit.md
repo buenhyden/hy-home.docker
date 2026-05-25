@@ -10,7 +10,7 @@ layer: agentic
 - Applies To: `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`, `docs/04.execution/`, `docs/05.operations/`
 - Tags: #docs #governance #traceability
 - Retrieval Keywords: stage docs lifecycle audit, PRD ARD ADR Spec Plan Task Operations traceability, docs 01 05 review
-- Last Verified: 2026-05-22
+- Last Verified: 2026-05-26
 
 ## Problem
 
@@ -29,10 +29,15 @@ clean baseline.
 
 Current validator metrics:
 
-- `target_stage_docs_total=465`
-- `normalized_target_stage_docs_total=465`
+- `target_stage_docs_total=492`
+- `normalized_target_stage_docs_total=492`
 - `legacy_target_stage_docs_skipped=0`
 - `infra_service_readmes_rubric_partial=0`
+
+The original 2026-05-22 clean-baseline metrics were 465/465 normalized target
+stage docs. Later documentation work added or normalized additional stage
+artifacts, so the current clean baseline is 492/492. Treat the older number as
+historical evidence only.
 
 The safe implementation boundary remains the same: preserve historical evidence,
 fix clear validator-backed drift in scoped changes, and avoid style-only rewrites
@@ -72,11 +77,13 @@ workspace governance bounded re-audit.
 - `bash scripts/validation/check-doc-traceability.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/validate-docker-compose.sh`
-- 2026-05-22 repository contract metrics:
-  - `target_stage_docs_total=465`
-  - `normalized_target_stage_docs_total=465`
+- 2026-05-26 repository contract metrics:
+  - `target_stage_docs_total=492`
+  - `normalized_target_stage_docs_total=492`
   - `legacy_target_stage_docs_skipped=0`
   - `infra_service_readmes_rubric_partial=0`
+- Historical 2026-05-22 repository contract metrics were 465/465 normalized
+  target-stage docs.
 - [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)
 
 ## Related Documents

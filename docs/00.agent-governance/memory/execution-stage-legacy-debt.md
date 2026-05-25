@@ -10,7 +10,7 @@ layer: agentic
 - Applies To: `docs/04.execution/`, plan/task templates, execution-stage remediation
 - Tags: #docs #execution #template-drift
 - Retrieval Keywords: docs/04 execution legacy debt, plan task pseudo-links, execution stage remediation, bounded normalization
-- Last Verified: 2026-05-22
+- Last Verified: 2026-05-26
 
 ## Problem
 
@@ -42,10 +42,18 @@ Representative deferred files:
 - `docs/04.execution/tasks/2026-03-26-10-communication-tasks.md`
 - `docs/04.execution/tasks/2026-04-01-standardize-infra-net.md`
 
-The 2026-05-22 bounded re-audit found the current repository contract clean:
+The 2026-05-22 bounded re-audit found the repository contract clean at that
+time:
 
 - `target_stage_docs_total=465`
 - `normalized_target_stage_docs_total=465`
+- `legacy_target_stage_docs_skipped=0`
+
+The current 2026-05-26 repository contract baseline is also clean after later
+stage-doc additions:
+
+- `target_stage_docs_total=492`
+- `normalized_target_stage_docs_total=492`
 - `legacy_target_stage_docs_skipped=0`
 
 That does not mean old execution history should be rewritten for style. It means
@@ -72,8 +80,11 @@ rewrite targets.
 - Custom 2026-05-18 pseudo-link scan over `docs/04.execution`.
 - `docs/04.execution/plans/2026-05-18-execution-stage-remediation.md`
 - `docs/04.execution/tasks/2026-05-18-execution-stage-remediation.md`
-- `bash scripts/validation/check-repo-contracts.sh` on 2026-05-22:
-  `legacy_target_stage_docs_skipped=0`
+- `bash scripts/validation/check-repo-contracts.sh` on 2026-05-26:
+  `target_stage_docs_total=492`, `normalized_target_stage_docs_total=492`,
+  and `legacy_target_stage_docs_skipped=0`
+- Historical 2026-05-22 contract metrics were 465/465 normalized target-stage
+  docs with `legacy_target_stage_docs_skipped=0`.
 - [Workspace governance bounded re-audit task](../../04.execution/tasks/2026-05-22-workspace-governance-bounded-reaudit.md)
 
 ## Related Documents
