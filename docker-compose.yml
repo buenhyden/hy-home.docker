@@ -214,12 +214,12 @@ include:
   # - infra/04-data/nosql/couchdb/docker-compose.yml
   # - infra/04-data/nosql/mongodb/docker-compose.yml
   - infra/04-data/operational/mng-db/docker-compose.yml
-  # - infra/04-data/operational/supabase/docker-compose.yml
+  - infra/04-data/operational/supabase/docker-compose.yml
   # - infra/04-data/relational/postgresql-cluster/docker-compose.yml
-  # - infra/04-data/specialized/neo4j/docker-compose.yml
+  - infra/04-data/specialized/neo4j/docker-compose.yml
   - infra/04-data/specialized/qdrant/docker-compose.yml
   - infra/05-messaging/kafka/docker-compose.dev.yml
-  # - infra/05-messaging/rabbitmq/docker-compose.yml
+  - infra/05-messaging/rabbitmq/docker-compose.yml
   - infra/06-observability/docker-compose.dev.yml
   - infra/07-workflow/n8n/docker-compose.dev.yml
   - infra/07-workflow/airflow/docker-compose.dev.yml

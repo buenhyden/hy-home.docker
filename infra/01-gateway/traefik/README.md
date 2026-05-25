@@ -55,7 +55,7 @@ traefik/
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/01-gateway/traefik/docker-compose.yml` |
 | Networks | `k3d-hyhome`, `infra_net` |
 | Volumes | `/var/run/docker.sock:/var/run/docker.sock:ro`, `../../../secrets/certs:/certs:ro`, `./dynamic:/dynamic:ro`, `./config/traefik.yml:/etc/traefik/traefik.yml:ro` |
-| Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}`, `${NEO4J_BOLT_HOST_PORT:-7687}:${NEO4J_BOLT_PORT:-7687}` |
+| Ports | `${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.dashboard.rule`, `traefik.http.routers.dashboard.entrypoints`, `traefik.http.routers.dashboard.tls`, `traefik.http.routers.dashboard.service`, `traefik.http.routers.dashboard.middlewares` |
 | Secret refs | names: `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`; mounts: `/run/secrets/traefik_basicauth_password`, `/run/secrets/traefik_opensearch_basicauth_password` |
 | Healthcheck | Compose healthcheck declared for `traefik` |

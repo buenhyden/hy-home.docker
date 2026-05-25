@@ -117,7 +117,7 @@ docker exec vault-agent ls -la /vault/agent/
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/03-security/vault/docker-compose.yml` |
 | Networks | `k3d-hyhome`, `infra_net` |
 | Volumes | `vault-data:/vault/data`, `./config/vault.hcl:/vault/config/vault.hcl:ro`, `./config/vault-agent.hcl:/vault/config/vault-agent.hcl:ro`, `./config/templates:/vault/config/templates:ro`, `vault-agent-data:/vault/agent`, `vault-agent-out:/vault/out`, `vault-data`, `vault-agent-data`, plus 1 more |
-| Ports | `${VAULT_HOST_PORT:-8200}:${VAULT_PORT:-8200}`, `${VAULT_PORT:-8200}`, `${VAULT_CLUSTER_PORT:-8201}` |
+| Ports | `${VAULT_PORT:-8200}`, `${VAULT_CLUSTER_PORT:-8201}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.vault.rule`, `traefik.http.routers.vault.entrypoints`, `traefik.http.routers.vault.tls`, `traefik.http.routers.vault.middlewares`, `traefik.http.services.vault.loadbalancer.server.port` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `vault`, `vault-agent` |

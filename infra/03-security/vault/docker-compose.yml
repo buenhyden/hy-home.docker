@@ -37,8 +37,6 @@ services:
       - IPC_LOCK
       - SETGID # su-exec: setgroups 에러 해결용
       - SETUID # 사용자 ID 전환 권한
-    ports:
-      - '${VAULT_HOST_PORT:-8200}:${VAULT_PORT:-8200}'
     expose:
       - ${VAULT_PORT:-8200}
       - '${VAULT_CLUSTER_PORT:-8201}'

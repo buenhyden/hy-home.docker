@@ -57,12 +57,12 @@ MATCH (a:Person {name: 'Alice'}), (b:Person {name: 'Bob'})
 CREATE (a)-[:COLLEAGUE]->(b);
 ```
 
-#### 3. Connection via Bolt
+#### 3. Internal Bolt Connection
 
-애플리케이션 드라이버는 Bolt 프로토콜을 사용한다.
+애플리케이션 드라이버는 동일한 `infra_net` 내부에서 Bolt 프로토콜을 사용한다.
 
-- **URL**: `bolt://neo4j.${DEFAULT_URL}:7687`
-- **TLS**: 활성화 권장 (Traefik을 통한 암호화)
+- **Internal URL**: `bolt://neo4j:${NEO4J_BOLT_PORT:-7687}`
+- **External exposure**: 기본 host port 노출은 사용하지 않는다. 외부 접근이 필요하면 별도 승인된 gateway 변경으로 분리한다.
 
 ### Common Pitfalls
 

@@ -4,6 +4,30 @@ x-tier-label: &tier-label
 volumes:
   db-config:
 
+secrets:
+  supabase_db_password:
+    file: ../../../../secrets/db/postgres/supabase_password.txt
+  supabase_jwt_secret:
+    file: ../../../../secrets/data/supabase_jwt_secret.txt
+  supabase_anon_key:
+    file: ../../../../secrets/data/supabase_anon_key.txt
+  supabase_service_key:
+    file: ../../../../secrets/data/supabase_service_key.txt
+  supabase_dashboard_password:
+    file: ../../../../secrets/data/supabase_dashboard_password.txt
+  supabase_secret_key_base:
+    file: ../../../../secrets/data/supabase_secret_key_base.txt
+  supabase_vault_enc_key:
+    file: ../../../../secrets/data/supabase_vault_enc_key.txt
+  supabase_pg_meta_crypto_key:
+    file: ../../../../secrets/data/supabase_pg_meta_crypto_key.txt
+  supabase_openai_api_key:
+    file: ../../../../secrets/data/supabase_openai_api_key.txt
+  supabase_logflare_private_token:
+    file: ../../../../secrets/data/supabase_logflare_private_token.txt
+  supabase_smtp_password:
+    file: ../../../../secrets/common/supabase_smtp_password.txt
+
 services:
   studio:
     profiles:
@@ -17,6 +41,22 @@ services:
     depends_on:
       analytics:
         condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+      - supabase_anon_key
+      - supabase_service_key
+      - supabase_pg_meta_crypto_key
+      - supabase_openai_api_key
+      - supabase_logflare_private_token
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/supabase_db_password
+      AUTH_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      SUPABASE_ANON_KEY_FILE: /run/secrets/supabase_anon_key
+      SUPABASE_SERVICE_KEY_FILE: /run/secrets/supabase_service_key
+      PG_META_CRYPTO_KEY_FILE: /run/secrets/supabase_pg_meta_crypto_key
+      OPENAI_API_KEY_FILE: /run/secrets/supabase_openai_api_key
+      LOGFLARE_PRIVATE_ACCESS_TOKEN_FILE: /run/secrets/supabase_logflare_private_token
     networks:
       infra_net:
         ipv4_address: 172.19.0.179
@@ -46,6 +86,15 @@ services:
       - ${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp
     volumes:
       - ${DEFAULT_DATA_DIR}/supabase/api/kong.yml:/home/kong/temp.yml:ro
+    secrets:
+      - supabase_anon_key
+      - supabase_service_key
+      - supabase_dashboard_password
+    environment:
+      SUPABASE_ANON_KEY_FILE: /run/secrets/supabase_anon_key
+      SUPABASE_SERVICE_KEY_FILE: /run/secrets/supabase_service_key
+      DASHBOARD_USERNAME: ${SUPABASE_DASHBOARD_USERNAME:-supabase_admin}
+      DASHBOARD_PASSWORD_FILE: /run/secrets/supabase_dashboard_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.180
@@ -74,6 +123,14 @@ services:
         condition: service_healthy
       analytics:
         condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+      - supabase_smtp_password
+    environment:
+      GOTRUE_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
+      GOTRUE_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      GOTRUE_SMTP_PASS_FILE: /run/secrets/supabase_smtp_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.181
@@ -102,6 +159,12 @@ services:
         condition: service_healthy
       analytics:
         condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+    environment:
+      PGRST_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
+      PGRST_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
     networks:
       infra_net:
         ipv4_address: 172.19.0.182
@@ -128,6 +191,15 @@ services:
         condition: service_healthy
       analytics:
         condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+      - supabase_secret_key_base
+    environment:
+      DB_PASSWORD_FILE: /run/secrets/supabase_db_password
+      API_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      METRICS_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      SECRET_KEY_BASE_FILE: /run/secrets/supabase_secret_key_base
     networks:
       infra_net:
         ipv4_address: 172.19.0.183
@@ -159,6 +231,16 @@ services:
         condition: service_started
       imgproxy:
         condition: service_started
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+      - supabase_anon_key
+      - supabase_service_key
+    environment:
+      ANON_KEY_FILE: /run/secrets/supabase_anon_key
+      SERVICE_KEY_FILE: /run/secrets/supabase_service_key
+      AUTH_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      DATABASE_PASSWORD_FILE: /run/secrets/supabase_db_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.184
@@ -210,6 +292,12 @@ services:
         condition: service_healthy
       analytics:
         condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_pg_meta_crypto_key
+    environment:
+      PG_META_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
+      CRYPTO_KEY_FILE: /run/secrets/supabase_pg_meta_crypto_key
     networks:
       infra_net:
         ipv4_address: 172.19.0.186
@@ -236,6 +324,16 @@ services:
     depends_on:
       analytics:
         condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+      - supabase_anon_key
+      - supabase_service_key
+    environment:
+      JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      SUPABASE_ANON_KEY_FILE: /run/secrets/supabase_anon_key
+      SUPABASE_SERVICE_ROLE_KEY_FILE: /run/secrets/supabase_service_key
+      SUPABASE_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
     networks:
       infra_net:
         ipv4_address: 172.19.0.187
@@ -262,6 +360,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_logflare_private_token
+    environment:
+      DB_PASSWORD_FILE: /run/secrets/supabase_db_password
+      LOGFLARE_PRIVATE_ACCESS_TOKEN_FILE: /run/secrets/supabase_logflare_private_token
     networks:
       infra_net:
         ipv4_address: 172.19.0.188
@@ -297,6 +401,12 @@ services:
     depends_on:
       vector:
         condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/supabase_db_password
+      JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
     networks:
       infra_net:
         ipv4_address: 172.19.0.189
@@ -353,6 +463,17 @@ services:
         condition: service_healthy
       analytics:
         condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+      - supabase_secret_key_base
+      - supabase_vault_enc_key
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/supabase_db_password
+      API_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      METRICS_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      SECRET_KEY_BASE_FILE: /run/secrets/supabase_secret_key_base
+      VAULT_ENC_KEY_FILE: /run/secrets/supabase_vault_enc_key
     networks:
       infra_net:
         ipv4_address: 172.19.0.191

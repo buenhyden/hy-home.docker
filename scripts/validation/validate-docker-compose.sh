@@ -85,6 +85,8 @@ is_optional_secret() {
     ./secrets/db/mongodb/mongo_express_basicauth_password.txt|\
     ./secrets/db/neo4j/neo4j_password.txt|\
     ./secrets/db/valkey/airflow_password.txt|\
+    ./secrets/messaging/rabbitmq_user.txt|\
+    ./secrets/messaging/rabbitmq_password.txt|\
     ./secrets/tools/syncthing_password.txt)
       return 0
       ;;
@@ -95,9 +97,34 @@ is_optional_secret() {
 }
 
 compose_secret_files() {
-  rg --no-filename '^[[:space:]]*file:[[:space:]]*' docker-compose.yml \
-    | sed -E 's/^[[:space:]]*file:[[:space:]]*//; s/[[:space:]]+#.*$//; s/^["'"'"']|["'"'"']$//g'
+  docker compose "${COMPOSE_PROFILE_ARGS[@]}" config 2>/dev/null \
+    | sed -nE 's/^[[:space:]]*file:[[:space:]]*//p' \
+    | sed -E 's/[[:space:]]+#.*$//; s/^["'"'"']|["'"'"']$//g' \
+    | while IFS= read -r secret_file; do
+      case "$secret_file" in
+        "$BASE_DIR"/*)
+          printf './%s\n' "${secret_file#"$BASE_DIR"/}"
+          ;;
+        *)
+          printf '%s\n' "$secret_file"
+          ;;
+      esac
+    done \
+    | sort -u
 }
+
+COMPOSE_PROFILES="${HYHOME_COMPOSE_PROFILES:-core}"
+COMPOSE_PROFILE_ARGS=()
+for profile in ${COMPOSE_PROFILES//,/ }; do
+  if [ -n "$profile" ]; then
+    COMPOSE_PROFILE_ARGS+=(--profile "$profile")
+  fi
+done
+
+if [ "${#COMPOSE_PROFILE_ARGS[@]}" -eq 0 ]; then
+  echo "No Docker Compose profiles resolved for validation."
+  exit 1
+fi
 
 run_preflight() {
   echo "Running Docker Compose preflight checks..."
@@ -166,20 +193,6 @@ if [ "$MODE" = "preflight" ]; then
 fi
 
 echo "Validating Docker Compose configuration..."
-
-COMPOSE_PROFILES="${HYHOME_COMPOSE_PROFILES:-core}"
-COMPOSE_PROFILE_ARGS=()
-for profile in ${COMPOSE_PROFILES//,/ }; do
-  if [ -n "$profile" ]; then
-    COMPOSE_PROFILE_ARGS+=(--profile "$profile")
-  fi
-done
-
-if [ "${#COMPOSE_PROFILE_ARGS[@]}" -eq 0 ]; then
-  echo "No Docker Compose profiles resolved for validation."
-  exit 1
-fi
-
 echo "Compose profiles: $COMPOSE_PROFILES"
 
 CREATED_FILES=()

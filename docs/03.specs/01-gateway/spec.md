@@ -28,7 +28,7 @@ status: active
 ## Contracts
 
 - **Config Contract**:
-  - Traefik Entrypoints: `web` (80), `websecure` (443), `neo4j-bolt` (7687), `metrics` (8082).
+  - Traefik Entrypoints: `web` (80), `websecure` (443), `metrics` (8082).
   - Traefik Providers: `docker`, `file` (/dynamic).
 - **Security Contract**:
   - TLS: v1.2 min, v1.3 preferred.

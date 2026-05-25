@@ -44,14 +44,14 @@ neo4j/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Neo4j service leaf in `04-data`; services: `neo4j`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/specialized/neo4j/docker-compose.yml` |
+| Purpose | Neo4j service leaf in `04-data`; services: `neo4j`; root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/specialized/neo4j/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
 | Config values | env keys: `NEO4J_server_memory_heap_initial__size`, `NEO4J_server_memory_heap_max__size`, `NEO4J_server_memory_pagecache_size`, `NEO4J_server_default__listen__address`, `NEO4J_server_bolt_advertised__address`, `NEO4J_server_http_advertised__address`; profiles: `data`, `graph` |
-| Compose linkage | root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/specialized/neo4j/docker-compose.yml` |
+| Compose linkage | root include active via [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/specialized/neo4j/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `neo4j-data:/data:rw`, `./scripts/neo4j-entrypoint-with-secrets.sh:/startup/neo4j-entrypoint-with-secrets.sh:ro`, `neo4j-data` |
 | Ports | `${NEO4J_BOLT_PORT:-7687}`, `${NEO4J_HTTP_PORT:-7474}`, `${NEO4J_HTTPS_PORT:-7473}`, `${NEO4J_METRICS_PORT:-2004}` |
-| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.neo4j.rule`, `traefik.http.routers.neo4j.entrypoints`, `traefik.http.routers.neo4j.tls`, `traefik.http.services.neo4j.loadbalancer.server.port`, `traefik.http.routers.neo4j.middlewares`, `traefik.tcp.routers.neo4j-bolt.entrypoints`, plus 5 more |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.neo4j.rule`, `traefik.http.routers.neo4j.entrypoints`, `traefik.http.routers.neo4j.tls`, `traefik.http.services.neo4j.loadbalancer.server.port`, `traefik.http.routers.neo4j.middlewares` |
 | Secret refs | names: `neo4j_password`; mounts: `/run/secrets/neo4j_password` |
 | Healthcheck | Compose healthcheck declared for `neo4j` |
 | Operations | [Guide](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md), [Policy](../../../../docs/05.operations/policies/04-data/specialized/neo4j.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/specialized/neo4j.md) |
