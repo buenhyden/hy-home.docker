@@ -72,8 +72,8 @@ docker exec valkey-node-0 valkey-cli -p 6379 cluster nodes
 
 ### Health & Monitoring
 
-- Check [Operations Policy](../../docs/05.operations/guides/04-data/README.md) for backup standards.
-- Consult the [Data Runbook](../../docs/05.operations/guides/04-data/README.md) for recovery.
+- Check [Operations Policy](../../docs/05.operations/policies/04-data/README.md) for backup standards.
+- Consult the [Data Runbook](../../docs/05.operations/runbooks/04-data/README.md) for recovery.
 
 ### Safety Protocols
 

@@ -60,7 +60,7 @@ airflow/
 
 1. [진입 가이드](../../../docs/05.operations/guides/07-workflow/airflow.md)를 읽고 시스템 전반을 이해합니다.
 2. [DAG 개발 가이드](../../../docs/05.operations/guides/07-workflow/01.airflow-dag-dev.md)를 참조하여 파이프라인을 작성합니다.
-3. [운영 정책](../../../docs/05.operations/guides/07-workflow/airflow.md)에 따라 리소스 할당 및 보안 설정을 확인합니다.
+3. [운영 정책](../../../docs/05.operations/policies/07-workflow/airflow.md)에 따라 리소스 할당 및 보안 설정을 확인합니다.
 4. 장애 발생 시 [장애 조치 런북](../../../docs/05.operations/guides/07-workflow/airflow.md)을 따릅니다.
 
 ## Tech Stack

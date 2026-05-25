@@ -91,5 +91,5 @@ open-notebook/
 
 - [Laboratory guides](../../../docs/05.operations/guides/11-laboratory/README.md)
 - [Laboratory operations](../../../docs/05.operations/guides/11-laboratory/README.md)
-- [Laboratory runbooks](../../../docs/05.operations/guides/11-laboratory/README.md)
+- [Laboratory runbooks](../../../docs/05.operations/runbooks/11-laboratory/README.md)
 - [Image tag exceptions](../../image-tag-policy.exceptions.json)

@@ -55,7 +55,7 @@ operational/
 
 ## Related Documents
 
-- **Guide**: [Operational Guides](../../../docs/05.operations/guides/04-data/operational/README.md)
+- **Guide**: [Operational Guides](../../../docs/05.operations/policies/04-data/operational/README.md)
 - **Policies**: [Operational Policies](../../../docs/05.operations/policies/04-data/operational/README.md)
 - **Runbooks**: [Operational Runbooks](../../../docs/05.operations/runbooks/04-data/operational/README.md)
 

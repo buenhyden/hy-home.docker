@@ -63,7 +63,7 @@ valkey-cluster/
 1. [docker-compose.yml](./docker-compose.yml)을 통해 클러스터 노드 구성을 확인한다.
 2. [scripts/valkey-cluster-init.sh](./scripts/valkey-cluster-init.sh)를 통해 초기화 로직을 이해한다.
 3. 가이드 문서는 [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 참조한다.
-4. 운영 정책은 [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 확인한다.
+4. 운영 정책은 [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md)를 확인한다.
 5. 장애 조치 지침은 [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 따른다.
 
 ## Validation

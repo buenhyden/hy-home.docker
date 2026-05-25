@@ -64,7 +64,7 @@ kafka/
 1. **Bootstrap**: [Kafka KRaft Guide](../../../docs/05.operations/guides/05-messaging/kafka.md)를 읽고 클러스터 초기 구성 방식을 파악한다.
 2. **Configuration**: `docker-compose.yml`의 Broker ID 및 포트 맵핑 설정을 확인한다.
 3. **Execution**: 변경 사항 적용 후 `docker compose up -d`로 반영한다.
-4. **Validation**: [Messaging Runbook](../../../docs/05.operations/guides/05-messaging/kafka.md)의 점검 절차를 수행한다.
+4. **Validation**: [Messaging Runbook](../../../docs/05.operations/runbooks/05-messaging/kafka.md)의 점검 절차를 수행한다.
 
 ## Tech Stack
 

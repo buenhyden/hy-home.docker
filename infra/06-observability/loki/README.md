@@ -89,7 +89,7 @@ Retention is enabled and currently set to **7 days (168h)** by default.
 - Correlate logs with metrics using common labels (e.g., `service_name`).
 
 ---
-[System Guide](../../../docs/05.operations/guides/06-observability/loki.md) | [Operational Policy](../../../docs/05.operations/guides/06-observability/loki.md) | [Recovery Runbook](../../../docs/05.operations/guides/06-observability/loki.md)
+[System Guide](../../../docs/05.operations/guides/06-observability/loki.md) | [Operational Policy](../../../docs/05.operations/policies/06-observability/loki.md) | [Recovery Runbook](../../../docs/05.operations/runbooks/06-observability/loki.md)
 
 ---
 

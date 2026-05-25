@@ -57,8 +57,8 @@ ollama/
 ## How to Work in This Area
 
 1. 상위 시스템 가이드인 [Ollama System Guide](../../../docs/05.operations/guides/08-ai/ollama.md)를 먼저 읽는다.
-2. 리소스 예약 및 모델 거버넌스는 [Ollama Operations Policy](../../../docs/05.operations/guides/08-ai/ollama.md)를 따른다.
-3. 장애 발생 시 [Ollama Runbook](../../../docs/05.operations/guides/08-ai/ollama.md)에 따라 복구를 수행한다.
+2. 리소스 예약 및 모델 거버넌스는 [Ollama Operations Policy](../../../docs/05.operations/policies/08-ai/ollama.md)를 따른다.
+3. 장애 발생 시 [Ollama Runbook](../../../docs/05.operations/runbooks/08-ai/ollama.md)에 따라 복구를 수행한다.
 
 ## Validation
 
@@ -117,4 +117,4 @@ curl http://localhost:11434/api/generate -d '{
 
 1. 모델 데이터는 `/root/.ollama` (호스트의 `${DEFAULT_AI_MODEL_DIR}/ollama`)에 저장된다. 볼륨 삭제 시 모든 모델을 다시 다운로드해야 하므로 주의한다.
 2. `ollama-exporter`를 통해 토큰 발생 속도 및 VRAM 가용량을 지속적으로 모니터링한다.
-3. 새로운 모델을 추가하기 전 [Ollama Operations Policy](../../../docs/05.operations/guides/08-ai/ollama.md)의 도입 기준을 확인한다.
+3. 새로운 모델을 추가하기 전 [Ollama Operations Policy](../../../docs/05.operations/policies/08-ai/ollama.md)의 도입 기준을 확인한다.

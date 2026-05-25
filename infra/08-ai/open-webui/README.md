@@ -71,8 +71,8 @@ open-webui/
 - [Ollama Implementation](../ollama/README.md)
 - [Qdrant Implementation](../../04-data/specialized/qdrant/README.md)
 - [Open WebUI System Guide](../../../docs/05.operations/guides/08-ai/open-webui.md)
-- [Open WebUI Operations Policy](../../../docs/05.operations/guides/08-ai/open-webui.md)
-- [Open WebUI Runbook](../../../docs/05.operations/guides/08-ai/open-webui.md)
+- [Open WebUI Operations Policy](../../../docs/05.operations/policies/08-ai/open-webui.md)
+- [Open WebUI Runbook](../../../docs/05.operations/runbooks/08-ai/open-webui.md)
 
 ---
 

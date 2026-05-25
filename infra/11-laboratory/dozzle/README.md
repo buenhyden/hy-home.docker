@@ -58,7 +58,7 @@ dozzle/
 
 1. [docker-compose.yml](./docker-compose.yml)을 통해 서비스 구성을 확인한다.
 2. 가이드 문서는 [docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)를 참조한다.
-3. 운영 정책은 [docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)를 확인한다.
+3. 운영 정책은 [docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/policies/11-laboratory/dozzle.md)를 확인한다.
 4. 장애 조치 지침은 [docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)를 따른다.
 
 ## Tech Stack

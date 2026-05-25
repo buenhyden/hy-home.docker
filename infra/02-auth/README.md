@@ -42,8 +42,8 @@ The `02-auth` tier provides the security foundation for the `hy-home.docker` eco
 
 1. Read the [Auth Guides](../../docs/05.operations/guides/02-auth/README.md) for bootstrap and integration steps.
 2. Review the `docker-compose.yml` in subdirectories for specific service configurations.
-3. Follow the [Operations Policy](../../docs/05.operations/guides/02-auth/README.md) for user and realm management.
-4. Use the [Auth Runbook](../../docs/05.operations/guides/02-auth/README.md) for maintenance and recovery tasks.
+3. Follow the [Operations Policy](../../docs/05.operations/policies/02-auth/README.md) for user and realm management.
+4. Use the [Auth Runbook](../../docs/05.operations/runbooks/02-auth/README.md) for maintenance and recovery tasks.
 
 ## Tech Stack
 

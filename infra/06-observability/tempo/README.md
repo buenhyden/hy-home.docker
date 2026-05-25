@@ -25,7 +25,7 @@ Tempo stores trace data in an S3-compatible backend (MinIO). It enables "TraceQL
 ### Out of Scope
 
 - Application-level instrumentation (handled by OpenTelemetry SDKs).
-- Long-term trace archival (governed by [Retention Policy](../../../docs/05.operations/guides/06-observability/tempo.md)).
+- Long-term trace archival (governed by [Retention Policy](../../../docs/05.operations/policies/06-observability/tempo.md)).
 
 ## Structure
 
@@ -87,8 +87,8 @@ tempo/
 ## Related Documents
 
 - [System Guide](../../../docs/05.operations/guides/06-observability/tempo.md)
-- [Operational Policy](../../../docs/05.operations/guides/06-observability/tempo.md)
-- [Recovery Runbook](../../../docs/05.operations/guides/06-observability/tempo.md)
+- [Operational Policy](../../../docs/05.operations/policies/06-observability/tempo.md)
+- [Recovery Runbook](../../../docs/05.operations/runbooks/06-observability/tempo.md)
 
 ---
 

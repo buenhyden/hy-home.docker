@@ -70,5 +70,5 @@ The `01-gateway` tier is the unified entry point for all traffic entering the `h
 - [🏛️ System Architecture](../../docs/02.architecture/requirements/README.md)
 - [🔑 Secret Management](../../secrets/README.md)
 - [📘 Gateway Guides](../../docs/05.operations/guides/01-gateway/README.md)
-- [⚙️ Operations Policy](../../docs/05.operations/guides/01-gateway/README.md)
-- [🚑 Emergency Runbooks](../../docs/05.operations/guides/01-gateway/README.md)
+- [⚙️ Operations Policy](../../docs/05.operations/policies/01-gateway/README.md)
+- [🚑 Emergency Runbooks](../../docs/05.operations/runbooks/01-gateway/README.md)

@@ -42,7 +42,7 @@ cache-and-kv/
 
 1. [valkey-cluster/README.md](./valkey-cluster/README.md)를 통해 세부 클러스터 구성을 확인합니다.
 2. 실행 가이드는 [Valkey Cluster Guide](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 참조합니다.
-3. 운영 정책은 [Valkey Operations Policy](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 확인합니다.
+3. 운영 정책은 [Valkey Operations Policy](../../../docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md)를 확인합니다.
 
 ## Related Documents
 

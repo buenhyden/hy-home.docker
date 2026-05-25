@@ -42,8 +42,8 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 
 1. Read the [LLM Inference Guide](../../docs/05.operations/guides/08-ai/01.llm-inference.md).
 2. Follow the [RAG Workflow Guide](../../docs/05.operations/guides/08-ai/02.rag-workflow.md).
-3. Check the [Operations Policy](../../docs/05.operations/guides/08-ai/README.md) for GPU resource management.
-4. Consult the [AI Runbook](../../docs/05.operations/guides/08-ai/README.md) for NVIDIA driver or OOM troubleshooting.
+3. Check the [Operations Policy](../../docs/05.operations/policies/08-ai/README.md) for GPU resource management.
+4. Consult the [AI Runbook](../../docs/05.operations/runbooks/08-ai/README.md) for NVIDIA driver or OOM troubleshooting.
 
 ## Tech Stack
 

@@ -48,7 +48,7 @@ alloy/
 1. Follow the [Alloy Guide](../../../docs/05.operations/guides/06-observability/alloy.md).
 2. Modify `config.alloy` to add new pipeline components or relabeling rules.
 3. Access the Alloy UI at `http://alloy.${DEFAULT_URL}` to debug pipelines and check component status.
-4. Verify changes in the [Alloy Operation Policy](../../../docs/05.operations/guides/06-observability/alloy.md).
+4. Verify changes in the [Alloy Operation Policy](../../../docs/05.operations/policies/06-observability/alloy.md).
 
 ## Tech Stack
 

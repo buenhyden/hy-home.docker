@@ -28,8 +28,8 @@ The `qdrant` service provides the vector database layer for AI/ML applications, 
 
 - Vector embedding generation (Handled by upstream models)
 - Collection-level schema design (See [Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/qdrant.md))
-- Global backup policies (See [Operations Policy](../../../../docs/05.operations/guides/04-data/specialized/qdrant.md))
-- Disaster recovery procedures (See [Recovery Runbook](../../../../docs/05.operations/guides/04-data/specialized/qdrant.md))
+- Global backup policies (See [Operations Policy](../../../../docs/05.operations/policies/04-data/specialized/qdrant.md))
+- Disaster recovery procedures (See [Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/specialized/qdrant.md))
 
 ## Structure
 
@@ -87,5 +87,5 @@ qdrant/
 
 - [05.analytical-specialized-dbs.md](../../../../docs/05.operations/guides/04-data/05.analytical-specialized-dbs.md)
 - [Qdrant Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/qdrant.md)
-- [Qdrant Operations Policy](../../../../docs/05.operations/guides/04-data/specialized/qdrant.md)
-- [Qdrant Recovery Runbook](../../../../docs/05.operations/guides/04-data/specialized/qdrant.md)
+- [Qdrant Operations Policy](../../../../docs/05.operations/policies/04-data/specialized/qdrant.md)
+- [Qdrant Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/specialized/qdrant.md)

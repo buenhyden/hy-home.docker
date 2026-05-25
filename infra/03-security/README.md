@@ -41,8 +41,8 @@ The `03-security` tier serves as the platform's root of trust. It provides Hashi
 ## How to Work in This Area
 
 1. Read the [Security Setup Guide](../../docs/05.operations/guides/03-security/01.setup.md) for initialization.
-2. Follow the [Operations Policy](../../docs/05.operations/guides/03-security/README.md) for unseal protocols.
-3. Use the [Security Runbook](../../docs/05.operations/guides/03-security/README.md) for emergency recovery.
+2. Follow the [Operations Policy](../../docs/05.operations/policies/03-security/README.md) for unseal protocols.
+3. Use the [Security Runbook](../../docs/05.operations/runbooks/03-security/README.md) for emergency recovery.
 4. Vault must be manually unsealed after each restart.
 
 ## Tech Stack

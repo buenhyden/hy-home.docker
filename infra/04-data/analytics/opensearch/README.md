@@ -61,8 +61,8 @@ opensearch/
 ## How to Work in This Area
 
 1. 아키텍처 컨텍스트는 [시스템 가이드](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)를 참조한다.
-2. 자원 거버넌스는 [운영 정책](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)을 확인한다.
-3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)을 사용한다.
+2. 자원 거버넌스는 [운영 정책](../../../../docs/05.operations/policies/04-data/analytics/opensearch.md)을 확인한다.
+3. 유지보수 및 복구 절차는 [복구 런북](../../../../docs/05.operations/runbooks/04-data/analytics/opensearch.md)을 사용한다.
 
 ## Validation
 

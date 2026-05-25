@@ -74,8 +74,8 @@ postgresql-cluster/
 
 1. 클러스터 아키텍처 및 연결 방법은 [Technical Guide](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)를 먼저 확인합니다.
 2. 로컬 테스트를 위해 `docker compose up -d`를 실행한 후 `patronictl list`로 상태를 모니터링합니다.
-3. 운영 변경 사항은 반드시 [Operations Policy](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md) 준수 여부를 확인합니다.
-4. 장애 대응 절차는 [Recovery Runbook](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)를 참조합니다.
+3. 운영 변경 사항은 반드시 [Operations Policy](../../../../docs/05.operations/policies/04-data/relational/postgresql-cluster.md) 준수 여부를 확인합니다.
+4. 장애 대응 절차는 [Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md)를 참조합니다.
 
 ## Available Scripts
 

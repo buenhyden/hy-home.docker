@@ -27,8 +27,8 @@ The `neo4j` service provides a specialized graph storage layer for relationship-
 ### Out of Scope
 
 - Application-level graph modeling (See [Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md))
-- Global backup policies (See [Operations Policy](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md))
-- Disaster recovery procedures (See [Recovery Runbook](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md))
+- Global backup policies (See [Operations Policy](../../../../docs/05.operations/policies/04-data/specialized/neo4j.md))
+- Disaster recovery procedures (See [Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/specialized/neo4j.md))
 
 ## Structure
 
@@ -88,5 +88,5 @@ neo4j/
 
 - [05.analytical-specialized-dbs.md](../../../../docs/05.operations/guides/04-data/05.analytical-specialized-dbs.md)
 - [Neo4j Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md)
-- [Neo4j Operations Policy](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md)
-- [Neo4j Recovery Runbook](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md)
+- [Neo4j Operations Policy](../../../../docs/05.operations/policies/04-data/specialized/neo4j.md)
+- [Neo4j Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/specialized/neo4j.md)

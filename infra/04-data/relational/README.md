@@ -43,8 +43,8 @@ relational/
 
 1. 서비스 요구사항에 맞는 데이터베이스 기술 가이드는 [Relational DB Guides](../../../docs/05.operations/guides/04-data/relational.md)를 참조합니다.
 2. 새 클러스터 추가 시 `postgresql-cluster` 구조를 템플릿으로 활용합니다.
-3. 운영 정책은 [Relational Operations](../../../docs/05.operations/guides/04-data/relational.md)를 반드시 준수해야 합니다.
-4. 장애 대응 및 복구는 [Relational Runbooks](../../../docs/05.operations/guides/04-data/relational.md)를 따릅니다.
+3. 운영 정책은 [Relational Operations](../../../docs/05.operations/policies/04-data/relational.md)를 반드시 준수해야 합니다.
+4. 장애 대응 및 복구는 [Relational Runbooks](../../../docs/05.operations/runbooks/04-data/relational.md)를 따릅니다.
 
 ## Available Scripts
 
