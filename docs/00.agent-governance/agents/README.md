@@ -25,7 +25,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 **Covers:**
 
 - Agent definitions used in this workspace
-- Orchestration functions mirrored from runtime skills
+- Orchestration function catalog entries corresponding to runtime skills
 - Links to governing scopes and rules
 
 **Excludes:**
@@ -36,7 +36,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 ## Structure
 
 - `agents/` — per-agent role documentation
-- `functions/` — per-function documentation mirrored from `.claude/skills/<name>/skill.md`
+- `functions/` — per-function catalog entries corresponding to `.claude/skills/<name>/skill.md`
 
 ## Agents
 

@@ -37,7 +37,7 @@ Codex-specific guidance for this repository.
 - The event dispatcher emits Graphify context when `graphify-out/graph.json` exists, emits Docker Compose guardrail context before matching edits, emits README template/readiness guidance before README edits, and delegates post-edit formatting and style validation to `scripts/hooks/post-tool-validate.sh`.
 - Hook output is advisory context. Governance remains in `docs/00.agent-governance/`.
 - Codex does not maintain a parallel delegated-agent catalog in this repository.
-- The canonical delegated-agent catalog is the `.claude` runtime mirror
+- The canonical delegated-agent catalog is the `.claude` runtime catalog
   documented in `docs/00.agent-governance/agents/` and
   `docs/00.agent-governance/subagent-protocol.md`.
 

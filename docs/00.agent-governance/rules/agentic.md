@@ -27,8 +27,11 @@ Standard behavior contract for repo-local, auditable agent execution.
 - Use persona routing, checklist routing, this rule, and one primary scope before
   task execution.
 - Use the local agent/function catalog as the runtime boundary:
-  - `.claude/agents/*.md` mirrors `docs/00.agent-governance/agents/agents/*.md`.
-  - `.claude/skills/*/skill.md` mirrors `docs/00.agent-governance/agents/functions/*.md`.
+  - `.claude/agents/*.md` is the executable runtime surface; each file must have
+    a same-named catalog entry under `docs/00.agent-governance/agents/agents/`.
+  - `.claude/skills/*/skill.md` is the executable runtime surface; each skill
+    must have a same-named catalog entry under
+    `docs/00.agent-governance/agents/functions/`.
   - `docs/00.agent-governance/subagent-protocol.md` defines delegation rules.
 - Do not import external harness identities or create GitHub-native instruction
   layers for local execution policy.
@@ -70,8 +73,8 @@ Standard behavior contract for repo-local, auditable agent execution.
 - Keep policy text short and actionable.
 - Remove contradictory guidance immediately.
 - Keep provider-specific behavior in provider files, not in generic scope/rule files.
-- Keep the runtime harness mirror synchronized across `.claude/` and
-  `docs/00.agent-governance/agents/`.
+- Keep runtime behavior synchronized across `.claude/` and the corresponding
+  `docs/00.agent-governance/agents/` catalog entries.
 - Record work progress in `docs/00.agent-governance/memory/progress.md`.
 - Record historical notes under `docs/00.agent-governance/memory/` from
   `docs/99.templates/memory.template.md`; do not use memory notes as active policy.
