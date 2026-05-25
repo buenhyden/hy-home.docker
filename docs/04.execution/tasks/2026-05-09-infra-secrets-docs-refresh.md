@@ -81,14 +81,16 @@ status: completed
   - README heading audit over `infra`, `secrets`, `docs/05.operations`, `docs/05.operations`, `docs/05.operations`, `docs/90.references`
   - Stage heading audit over non-README Markdown in `docs/05.operations`, `docs/05.operations`, `docs/05.operations`, `docs/90.references`
 - **Logs / Evidence Location**:
-  - `INFRA_COMPOSE_FILES=47`
+  - 2026-05-26 count-only refresh: inventory counts below were refreshed from tracked paths and metadata-only commands; secret values were not opened or recorded.
+  - `INFRA_COMPOSE_FILES=48` (`47` `docker-compose*.yml` files plus `1` report-only `docker-compose*.yaml` cluster variant)
   - `INFRA_COMPOSE_SERVICE_DIRS=40`
   - `MISSING_SERVICE_README=0`
-  - `ACTIVE_ROOT_INCLUDES=14`
+  - `ACTIVE_ROOT_INCLUDES=17`
+  - `TRACKED_README_FILES=173`
   - `ROOT_SECRET_DECLARATIONS=69`
-  - `SECRET_VALUE_OR_CERT_FILES=76`
+  - `SECRET_VALUE_OR_CERT_FILES=94`
   - `MISSING_DECLARED_SECRET_FILES=0`
-  - `UNDECLARED_SECRET_FILES=7`, classified as bind-mounted cert or registry/local-only without value reads
+  - Secret classification remains metadata-only: compose-declared, bind-mounted cert, registry/local-only, private-registry, and example-registry surfaces are documented without value reads.
   - `README_HEADING_GAPS=0`
   - `STAGE_HEADING_GAPS=0`
   - `MARKDOWN_LINK_GAPS=0`
