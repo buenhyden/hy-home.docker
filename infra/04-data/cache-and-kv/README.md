@@ -47,8 +47,8 @@ cache-and-kv/
 ## Related Documents
 
 - **Guides**: [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
-- **Operations**: [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
-- **Runbooks**: [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
+- **Policy**: [docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md)
+- **Runbook**: [docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md)
 
 ## Tech Stack
 

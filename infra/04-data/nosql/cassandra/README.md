@@ -103,8 +103,8 @@ cassandra/
 ## Related Documents
 
 - **Guide**: [Cassandra Guide](../../../../docs/05.operations/guides/04-data/nosql/cassandra.md)
-- **Operation**: [Cassandra Operation](../../../../docs/05.operations/guides/04-data/nosql/cassandra.md)
-- **Runbook**: [Cassandra Runbook](../../../../docs/05.operations/guides/04-data/nosql/cassandra.md)
+- **Policy**: [Cassandra Operation](../../../../docs/05.operations/policies/04-data/nosql/cassandra.md)
+- **Runbook**: [Cassandra Runbook](../../../../docs/05.operations/runbooks/04-data/nosql/cassandra.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

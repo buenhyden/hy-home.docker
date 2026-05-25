@@ -100,5 +100,5 @@ alloy/
 ## Related Documents
 
 - **System Guide**: [docs/05.operations/06-observability/alloy.md](../../../docs/05.operations/guides/06-observability/alloy.md)
-- **Operations**: [docs/05.operations/06-observability/alloy.md](../../../docs/05.operations/guides/06-observability/alloy.md)
-- **Runbooks**: [docs/05.operations/06-observability/alloy.md](../../../docs/05.operations/guides/06-observability/alloy.md)
+- **Policy**: [docs/05.operations/policies/06-observability/alloy.md](../../../docs/05.operations/policies/06-observability/alloy.md)
+- **Runbooks**: [docs/05.operations/runbooks/06-observability/alloy.md](../../../docs/05.operations/runbooks/06-observability/alloy.md)

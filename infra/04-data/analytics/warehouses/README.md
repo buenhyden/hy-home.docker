@@ -76,8 +76,8 @@ warehouses/
 ## Related Documents
 
 - **System Guide**: [docs/05.operations/04-data/analytics/warehouses.md](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)
-- **Operations**: [docs/05.operations/04-data/analytics/warehouses.md](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)
-- **Runbook**: [docs/05.operations/04-data/analytics/warehouses.md](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)
+- **Policy**: [docs/05.operations/policies/04-data/analytics/warehouses.md](../../../../docs/05.operations/policies/04-data/analytics/warehouses.md)
+- **Runbook**: [docs/05.operations/runbooks/04-data/analytics/warehouses.md](../../../../docs/05.operations/runbooks/04-data/analytics/warehouses.md)
 - **Monitoring**: `starrocks-fe:8030/metrics`
 
 ## AI Agent Guidance

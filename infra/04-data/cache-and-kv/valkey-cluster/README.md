@@ -84,8 +84,8 @@ valkey-cluster/
 ## Related Documents
 
 - **Guide**: [Valkey Cluster Guide](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
-- **Operation**: [Valkey Operations Policy](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
-- **Runbook**: [Valkey Recovery Runbook](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
+- **Policy**: [Valkey Operations Policy](../../../../docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md)
+- **Runbook**: [Valkey Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md)
 
 ## Tech Stack
 

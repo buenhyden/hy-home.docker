@@ -76,8 +76,8 @@ ksql/
 ## Related Documents
 
 - **System Guide**: [docs/05.operations/04-data/analytics/ksqldb.md](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md)
-- **Operations**: [docs/05.operations/04-data/analytics/ksqldb.md](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md)
-- **Runbook**: [docs/05.operations/04-data/analytics/ksqldb.md](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md)
+- **Policy**: [docs/05.operations/policies/04-data/analytics/ksqldb.md](../../../../docs/05.operations/policies/04-data/analytics/ksqldb.md)
+- **Runbook**: [docs/05.operations/runbooks/04-data/analytics/ksqldb.md](../../../../docs/05.operations/runbooks/04-data/analytics/ksqldb.md)
 - **Kafka Status**: `infra/05-messaging/kafka/README.md`
 
 ## AI Agent Guidance

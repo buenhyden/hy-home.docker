@@ -76,8 +76,8 @@ influxdb/
 ## Related Documents
 
 - **System Guide**: [docs/05.operations/04-data/analytics/influxdb.md](../../../../docs/05.operations/guides/04-data/analytics/influxdb.md)
-- **Operations**: [docs/05.operations/04-data/analytics/influxdb.md](../../../../docs/05.operations/guides/04-data/analytics/influxdb.md)
-- **Runbook**: [docs/05.operations/04-data/analytics/influxdb.md](../../../../docs/05.operations/guides/04-data/analytics/influxdb.md)
+- **Policy**: [docs/05.operations/policies/04-data/analytics/influxdb.md](../../../../docs/05.operations/policies/04-data/analytics/influxdb.md)
+- **Runbook**: [docs/05.operations/runbooks/04-data/analytics/influxdb.md](../../../../docs/05.operations/runbooks/04-data/analytics/influxdb.md)
 - **Monitoring**: `https://grafana.${DEFAULT_URL}`
 
 ## AI Agent Guidance

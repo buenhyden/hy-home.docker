@@ -76,8 +76,8 @@ ollama/
 ## Related Documents
 
 - **Guide**: [docs/05.operations/08-ai/ollama.md](../../../docs/05.operations/guides/08-ai/ollama.md)
-- **Operation**: [docs/05.operations/08-ai/ollama.md](../../../docs/05.operations/guides/08-ai/ollama.md)
-- **Runbook**: [docs/05.operations/08-ai/ollama.md](../../../docs/05.operations/guides/08-ai/ollama.md)
+- **Policy**: [docs/05.operations/policies/08-ai/ollama.md](../../../docs/05.operations/policies/08-ai/ollama.md)
+- **Runbook**: [docs/05.operations/runbooks/08-ai/ollama.md](../../../docs/05.operations/runbooks/08-ai/ollama.md)
 
 ---
 

@@ -103,8 +103,8 @@ couchdb/
 ## Related Documents
 
 - **Guide**: [CouchDB Guide](../../../../docs/05.operations/guides/04-data/nosql/couchdb.md)
-- **Operation**: [CouchDB Operation](../../../../docs/05.operations/guides/04-data/nosql/couchdb.md)
-- **Runbook**: [CouchDB Runbook](../../../../docs/05.operations/guides/04-data/nosql/couchdb.md)
+- **Policy**: [CouchDB Operation](../../../../docs/05.operations/policies/04-data/nosql/couchdb.md)
+- **Runbook**: [CouchDB Runbook](../../../../docs/05.operations/runbooks/04-data/nosql/couchdb.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

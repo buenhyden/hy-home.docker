@@ -112,5 +112,5 @@ airflow/
 
 - **ARD**: [07-workflow Architecture](../../../docs/02.architecture/requirements/0007-workflow-architecture.md)
 - **Guide**: [Airflow System Guide](../../../docs/05.operations/guides/07-workflow/airflow.md)
-- **Operation**: [Airflow Operations Policy](../../../docs/05.operations/guides/07-workflow/airflow.md)
-- **Runbook**: [Airflow Recovery Runbook](../../../docs/05.operations/guides/07-workflow/airflow.md)
+- **Policy**: [Airflow Operations Policy](../../../docs/05.operations/policies/07-workflow/airflow.md)
+- **Runbook**: [Airflow Recovery Runbook](../../../docs/05.operations/runbooks/07-workflow/airflow.md)

@@ -78,8 +78,8 @@ opensearch/
 ## Related Documents
 
 - **System Guide**: [docs/05.operations/04-data/analytics/opensearch.md](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)
-- **Operations**: [docs/05.operations/04-data/analytics/opensearch.md](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)
-- **Runbook**: [docs/05.operations/04-data/analytics/opensearch.md](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md)
+- **Policy**: [docs/05.operations/policies/04-data/analytics/opensearch.md](../../../../docs/05.operations/policies/04-data/analytics/opensearch.md)
+- **Runbook**: [docs/05.operations/runbooks/04-data/analytics/opensearch.md](../../../../docs/05.operations/runbooks/04-data/analytics/opensearch.md)
 - **Monitoring**: `opensearch-exporter:9114/metrics`
 
 ## AI Agent Guidance

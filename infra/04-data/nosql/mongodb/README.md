@@ -104,8 +104,8 @@ mongodb/
 ## Related Documents
 
 - **Guide**: [MongoDB Guide](../../../../docs/05.operations/guides/04-data/nosql/mongodb.md)
-- **Operation**: [MongoDB Operation](../../../../docs/05.operations/guides/04-data/nosql/mongodb.md)
-- **Runbook**: [MongoDB Runbook](../../../../docs/05.operations/guides/04-data/nosql/mongodb.md)
+- **Policy**: [MongoDB Operation](../../../../docs/05.operations/policies/04-data/nosql/mongodb.md)
+- **Runbook**: [MongoDB Runbook](../../../../docs/05.operations/runbooks/04-data/nosql/mongodb.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

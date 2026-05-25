@@ -51,8 +51,8 @@ analytics/
 ## Related Documents
 
 - **System Guide**: [docs/05.operations/04-data/analytics/](../../../docs/05.operations/guides/04-data/analytics/README.md)
-- **Operations**: [docs/05.operations/04-data/analytics/](../../../docs/05.operations/guides/04-data/analytics/README.md)
-- **Runbooks**: [docs/05.operations/04-data/analytics/](../../../docs/05.operations/guides/04-data/analytics/README.md)
+- **Policies**: [docs/05.operations/policies/04-data/analytics/](../../../docs/05.operations/policies/04-data/analytics/README.md)
+- **Runbooks**: [docs/05.operations/runbooks/04-data/analytics/](../../../docs/05.operations/runbooks/04-data/analytics/README.md)
 
 ## AI Agent Guidance
 

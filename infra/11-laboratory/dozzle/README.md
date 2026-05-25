@@ -96,5 +96,5 @@ dozzle/
 ## Related Documents
 
 - **Guide**: [../docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)
-- **Operation**: [../docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)
-- **Runbook**: [../docs/05.operations/11-laboratory/dozzle.md](../../../docs/05.operations/guides/11-laboratory/dozzle.md)
+- **Policy**: [docs/05.operations/policies/11-laboratory/dozzle.md](../../../docs/05.operations/policies/11-laboratory/dozzle.md)
+- **Runbook**: [docs/05.operations/runbooks/11-laboratory/dozzle.md](../../../docs/05.operations/runbooks/11-laboratory/dozzle.md)

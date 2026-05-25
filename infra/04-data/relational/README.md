@@ -73,8 +73,8 @@ docker compose up -d
 ## Related Documents
 
 - **Guide**: [docs/05.operations/04-data/relational.md](../../../docs/05.operations/guides/04-data/relational.md)
-- **Operations**: [docs/05.operations/04-data/relational.md](../../../docs/05.operations/guides/04-data/relational.md)
-- **Runbook**: [docs/05.operations/04-data/relational.md](../../../docs/05.operations/guides/04-data/relational.md)
+- **Policy**: [docs/05.operations/policies/04-data/relational.md](../../../docs/05.operations/policies/04-data/relational.md)
+- **Runbook**: [docs/05.operations/runbooks/04-data/relational.md](../../../docs/05.operations/runbooks/04-data/relational.md)
 - **ARD**: [docs/02.architecture/requirements/0004-data-architecture.md](../../../docs/02.architecture/requirements/0004-data-architecture.md)
 
 ---

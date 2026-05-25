@@ -69,8 +69,8 @@ curl http://seaweedfs-master:9333/cluster/status
 ## 8. Related Documents
 
 - **Guide**: [Technical Guide](../../../../docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md)
-- **Operation**: [Operations Policy](../../../../docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md)
-- **Runbook**: [Recovery Runbook](../../../../docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md)
+- **Policy**: [Operations Policy](../../../../docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md)
+- **Runbook**: [Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/lake-and-object/seaweedfs.md)
 
 ---
 Copyright (c) 2026. Licensed under the MIT License.

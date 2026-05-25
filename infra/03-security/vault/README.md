@@ -104,8 +104,8 @@ docker exec vault-agent ls -la /vault/agent/
 
 - **System Guide**: [vault.md](../../../docs/05.operations/guides/03-security/vault.md)
 - **Technical Spec**: [spec.md](../../../docs/03.specs/03-security/spec.md)
-- **Ops Policy**: [vault.md](../../../docs/05.operations/guides/03-security/vault.md)
-- **Runbook**: [vault.md](../../../docs/05.operations/guides/03-security/vault.md)
+- **Ops Policy**: [vault.md](../../../docs/05.operations/policies/03-security/vault.md)
+- **Runbook**: [vault.md](../../../docs/05.operations/runbooks/03-security/vault.md)
 
 ## Service Readiness
 
