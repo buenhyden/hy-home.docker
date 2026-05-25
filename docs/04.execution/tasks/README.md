@@ -63,6 +63,7 @@ docs/04.execution/tasks/
 ├── 2026-05-24-workspace-audit-grill-review.md # Completed workspace audit grill review task record
 ├── 2026-05-25-home-docker-workspace-audit-improvement.md # Completed home docker workspace audit improvement task record
 ├── 2026-05-25-home-docker-revalidation-deferred-follow-up.md # Completed home docker revalidation deferred follow-up task record
+├── 2026-05-25-large-scale-authored-ssot-review.md # Completed large-scale authored SSoT review task record
 └── README.md                                # This file
 ```
 

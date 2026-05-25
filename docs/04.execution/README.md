@@ -53,7 +53,7 @@ docs/04.execution/
 - [Requirements standardization plan](plans/2026-05-17-requirements-standardization.md) - completed plan for PRD contract and taxonomy remediation
 - [Requirements standardization task](tasks/2026-05-17-requirements-standardization.md) - completion evidence for PRD/template cleanup and generated navigation freshness
 - [Scripts CI/CD and QA cleanup plan](plans/2026-05-17-scripts-ci-qa-cleanup.md) - completed plan for canonical script inventory, QA/CI tooling, and hook routing cleanup
-- [Scripts CI/CD and QA cleanup task](tasks/2026-05-17-scripts-ci-qa-cleanup.md) - completion evidence for root scripts cleanup and QA/CI tooling surface
+- [Scripts CI/CD and QA cleanup task](tasks/2026-05-17-scripts-ci-qa-cleanup.md) - completion evidence for purpose-folder script ownership and QA/CI tooling surface
 - [Execution stage remediation plan](plans/2026-05-18-execution-stage-remediation.md) - completed plan for execution README/template/current-artifact remediation
 - [Agent hook completion and style automation plan](plans/2026-05-22-agent-hook-completion-style-automation.md) - completed hook plan for logical commit gating, style validation, and post-edit formatting
 - [Agent hook completion and style automation task](tasks/2026-05-22-agent-hook-completion-style-automation.md) - execution evidence for Hook Development and Hookify rule updates
