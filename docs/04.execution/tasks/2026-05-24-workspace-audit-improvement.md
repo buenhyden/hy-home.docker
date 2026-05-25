@@ -130,7 +130,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 - [x] Used current Task and progress-log evidence as the repeated-workflow baseline: audit improvement, input-gap closure, grill review, bounded revalidation, office-hours review, brainstorming review, CEO review, executing-plans follow-through, and skill workflow review.
 - [x] Created `.claude/skills/workspace-audit-revalidation/skill.md` with concrete trigger examples, bootstrap sequence, branch discipline, evidence targets, safety boundaries, Skill creation gate, verification commands, and completion report expectations.
 - [x] Added `docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md` and updated governance/runtime catalog counts to keep `.claude/skills` and governance functions synchronized.
-- [x] Did not create a `.agents/skills` compatibility copy because `.agents/skills` rejected new directory creation in this runtime and `.agents` copies are optional compatibility surfaces, not the source of truth.
+- [x] Did not create a `.agents/skills` compatibility copy in the original runtime because `.agents/skills` rejected new directory creation and `.agents` copies were optional compatibility surfaces; later follow-up aligned the compatibility mirror.
 
 ## Coverage Ledger
 
@@ -158,7 +158,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | Compose files | 48 | `find infra -path '*/docker-compose*.yml' -o ...` | Existing validator excludes one MinIO cluster YAML |
 | Workflow/ruleset files | 6 | `rg --files .github/workflows .github/rulesets` | Local-only CI/CD review |
 | Hookify rule files | 18 | `find .claude -maxdepth 1 -name 'hookify*.local.md'` | Metadata validation now enforced |
-| Runtime Skill mirror files | 11 Claude + 10 `.agents` | `find .../skills -name skill.md` | `workspace-audit-revalidation` added to `.claude/skills`; `.agents` compatibility copy deferred because `.agents/skills` rejected new directory creation |
+| Runtime Skill mirror files | 11 Claude + 11 `.agents` | `find .../skills -name skill.md`; later `diff -qr .claude/skills .agents/skills` clean | `workspace-audit-revalidation` added to `.claude/skills` in the original pass; later follow-up aligned the `.agents` compatibility mirror |
 
 ## Target Path Ledger
 
@@ -172,7 +172,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | Compose files | `infra/**/docker-compose*.yml`, `infra/**/compose*.yml` | 48 discovered Compose files; validator covers 47 with the existing MinIO cluster YAML exclusion | Validated through repo validators; runtime start skipped by design |
 | GitHub workflow/ruleset surfaces | `.github/workflows/`, `.github/rulesets/` | 6 files | Local static review only; remote checks deferred |
 | Hookify local rules | `.claude/hookify*.local.md` | 18 files | Metadata contract enforced by repo-contract validator |
-| Runtime Skill mirrors | `.claude/skills/**/skill.md`, `.agents/skills/**/skill.md` | 11 Claude + 10 `.agents` skill files | Runtime Skill created in `.claude/skills`; optional `.agents` compatibility copy deferred |
+| Runtime Skill mirrors | `.claude/skills/**/skill.md`, `.agents/skills/**/skill.md` | 11 Claude + 11 `.agents` skill files | Runtime Skill created in `.claude/skills` in the original pass; later `.agents` compatibility mirror alignment is clean |
 | Storybook QA surface | `projects/storybook/nextjs/` | 46 tracked files | Coverage command passed with local Node path and `/tmp` temp vars |
 | Graphify output | `graphify-out/` | `manifest_paths_total=727`, advisory health | Refreshed after script change; used as navigation only |
 | Pre-existing untracked tree | `projects/storybook/mcp/` | Present in `git status --short` | Left untouched and unstaged |
@@ -185,7 +185,7 @@ This document records the 2026-05-24 workspace audit and low-risk remediation pa
 | REV-WAI-002 | Documentation lifecycle and stale cross-link review | 2026-05-24 read-only documentation lifecycle reviewer, parent README/LLM Wiki checks, stale-link scan, repo contract check | DOC-001 through DOC-005 remain closed; target-stage total is now 482 |
 | REV-WAI-003 | Scripts, validators, and Hookify inventory review | 2026-05-24 read-only scripts/hooks reviewer, shell syntax checks, Hookify metadata scan, repo contract check | AUTO-001 remains closed; 18 Hookify rules validate |
 | REV-WAI-004 | Compose, env, and secrets metadata review | 2026-05-24 read-only Docker/env/secrets reviewer, Compose static config, key-only env compare, metadata-only secrets compare | INFRA-002 remains closed; SEC-001 and runtime/value-bearing work remain deferred |
-| REV-WAI-005 | QA and CI/CD review | 2026-05-24 read-only QA and CI/CD reviewers, Storybook coverage, local workflow/ruleset review, skipped-verification review | QA-001 and REL-001 remain closed; QA-002 and remote enforcement remain deferred |
+| REV-WAI-005 | QA and CI/CD review | 2026-05-24 read-only QA and CI/CD reviewers, Storybook coverage, local workflow/ruleset review, skipped-verification review | QA-001 and REL-001 remain closed; QA-002 and remote enforcement were later closed by follow-up evidence |
 | REV-WAI-006 | Skills, legacy/delete, and integration review | 2026-05-24 read-only governance/docs reviewers, Skill mirror inventory, legacy/delete/integration review | No Skill edit or deletion justified; formatting-only mirror cleanup remains candidate work |
 
 ## Office-Hours Omission Review
@@ -415,7 +415,7 @@ requires TDD-gated evidence before Skill mutation.
 | Governance catalog path | `docs/00.agent-governance/agents/functions/workspace-audit-revalidation.md` |
 | Trigger baseline | Repeated workspace audit, bounded revalidation, omission-review, and Skill-review follow-up requests in this Task and progress log |
 | Main workflow | Revalidate canonical audit evidence in place, preserve deferrals, run repo gates, and report branch/commit status |
-| Compatibility copy | `.agents/skills` copy deferred because directory creation failed in this runtime; `.agents` is optional compatibility, while `.claude/skills` is the runtime source of truth |
+| Compatibility copy | Initially deferred in this runtime; later 2026-05-25 follow-up aligned `.agents/skills` with `.claude/skills` as a compatibility mirror without changing runtime behavior |
 | Validation target | Repo contract synchronization of `.claude/skills` and governance function catalog, doc traceability, LLM Wiki freshness, Graphify health, and diff hygiene |
 
 ## Gap Registry
@@ -423,7 +423,7 @@ requires TDD-gated evidence before Skill mutation.
 | ID | Area | Path | Summary | Evidence | Impact | Action | Risk | Related Task | Verification | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | GOV-001 | Agent Governance | `.agents/rules/graphify.md`, `.agents/workflows/graphify.md` | Graphify guidance did not fully condition navigation on health | Graphify health advisory; AGENTS.md requires corroboration | Agents may over-trust advisory graph output | Clarified advisory/corroboration wording | Low | T-WAI-006 | Repo contract PASS | Closed |
-| GOV-002 | Skills | `.agents/skills/*`, `.claude/skills/*` | Compatibility copies may have formatting-only drift | Reviewer baseline; mirror inventory present | Low maintenance noise | Record as candidate; no Skill edit without TDD baseline | Low | T-WAI-007 | Skill inventory reviewed | Deferred |
+| GOV-002 | Skills | `.agents/skills/*`, `.claude/skills/*` | Compatibility copies had formatting-only drift | Reviewer baseline; mirror inventory present; later follow-up verified `.claude/skills` and `.agents/skills` are `diff -qr` clean | Low maintenance noise | Closed by runtime skill mirror formatting alignment without skill additions or hook changes | Low | T-WAI-007 | Skill mirror parity clean | Closed later |
 | DOC-001 | Docs Lifecycle | `docs/04.execution/plans/2026-03-26-04-data-standardization.md` | Stale data task path | Inline reference pointed at old task name | Broken discoverability | Updated to dated task path | Low | T-WAI-006 | Repo contract PASS | Closed |
 | DOC-002 | Docs Lifecycle | `docs/04.execution/plans/2026-03-26-06-observability-standardization.md` | Stale LGTM ADR number | Inline reference used `0005` | Broken traceability | Updated to `0006-lgtm-stack-selection.md` | Low | T-WAI-006 | Repo contract PASS | Closed |
 | DOC-003 | Docs Lifecycle | `docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md` | Operations policy path omitted `policies/` | Inline path stale after taxonomy consolidation | Broken discoverability | Updated policy path | Low | T-WAI-006 | Repo contract PASS | Closed |
@@ -436,9 +436,9 @@ requires TDD-gated evidence before Skill mutation.
 | SEC-001 | Secrets | `SENSITIVE_ENV_VARS.md.example`, real registry | Metadata differs for 3 IDs; IDs count matches | Metadata-only parser: 104 rows each, 6 changed diff lines | Documentation/real registry drift without value exposure | Record metadata deltas only | Medium | T-WAI-005 | Parser ignored value column | Open follow-up |
 | AUTO-001 | Hooks | `scripts/validation/check-repo-contracts.sh` | Hookify critical metadata lacked hard repo-contract validation | 18 rule files present | Malformed local rule could silently weaken guardrails | Added metadata gate | Medium | T-WAI-006 | Repo contract PASS | Closed |
 | QA-001 | QA / CI | `README.md` | README CI gate list omitted `storybook-coverage` | Workflow/ruleset list includes job | Reviewers could miss required gate | Added README row | Low | T-WAI-006 | Repo contract PASS | Closed |
-| QA-002 | QA | `projects/storybook/nextjs` | Coverage runs but function coverage is below common 80% target | Coverage summary: functions 66.66% | Quality threshold decision needed | Record; no threshold added this pass | Medium | T-WAI-007 | Coverage command PASS | Deferred |
+| QA-002 | QA | `projects/storybook/nextjs` | Coverage threshold policy was absent in this pass | Original coverage summary: functions 66.66%; later follow-up added repo-local 90% threshold enforcement | Quality threshold policy needed | Closed by Storybook threshold enforcement follow-up | Medium | T-WAI-007 | Storybook contract check enforces threshold metadata | Closed later |
 | REL-001 | CI/CD / Release | `CHANGELOG.md`, `generate-changelog.yml` | Release workflow expects changelog file; file was absent | `CHANGELOG.md` missing before edit | Workflow/release docs mismatch | Added minimal Unreleased changelog | Low | T-WAI-006 | Repo contract PASS | Closed |
-| CI-001 | CI/CD | `.github/rulesets/main-protection.md` | Remote branch-protection snapshot is dated 2026-05-17 and lists 10 required contexts while the local target list has 11 including `storybook-coverage` | Local ruleset proposal states it is not evidence of remote enforcement | Remote protection may not match the local target proposal | Record owner-approved remote revalidation follow-up; do not use network in this pass | Medium | T-WAI-010 | Local static review only | Deferred |
+| CI-001 | CI/CD | `.github/rulesets/main-protection.md` | Remote branch-protection snapshot was dated 2026-05-17 and lacked later required contexts | Later read-only GitHub API read-back returned `strict=true` with 12 required contexts including `frontend-quality` and `storybook-coverage` | Remote protection evidence could drift without read-back | Closed by read-only remote required-check verification; no remote mutation in this pass | Medium | T-WAI-010 | GitHub API read-back PASS | Closed later |
 | OPS-001 | Operations | Prometheus and GPU recovery runbooks | High-blast-radius recovery steps needed clearer approval prerequisites | Reviewer baseline | Operators may run destructive/interruption steps too quickly | Added guardrail wording only | Medium | T-WAI-006 | Repo contract PASS | Closed |
 | GIT-001 | Git hygiene | `projects/storybook/mcp/` | Pre-existing untracked tree present | `git status --short` before work | Could be accidentally staged | Leave untouched | Low | T-WAI-007 | Final status check | Deferred / untouched |
 
@@ -447,15 +447,15 @@ requires TDD-gated evidence before Skill mutation.
 | Field | Summary |
 | --- | --- |
 | workspace_purpose_fit | The low-risk changes improve agent-safe navigation, traceability, validation, and local verification without changing Docker runtime behavior. |
-| p0_gaps | Secret values, actual `.env` values, Docker ports/permissions, runtime data, remote GitHub, deployment, and uncertain deletion are deferred. |
+| p0_gaps | Secret values, actual `.env` values, Docker ports/permissions, runtime data, remote mutation, deployment, and uncertain deletion are deferred. |
 | p1_gaps | Documentation traceability, CI gate discoverability, Hookify metadata enforcement, release-file expectation, and runbook safety wording were addressed. |
-| p2_gaps | Formatting-only Skill mirror drift and coverage threshold policy remain future cleanup candidates. |
+| p2_gaps | Formatting-only Skill mirror drift and coverage threshold policy were later closed; remaining p2 candidates exclude those two items. |
 | duplicated_gaps | Stale references collapsed into DOC-001 through DOC-005. |
 | conflicting_gaps | Skill instructions that imply writes or network were mapped to Codex-safe repo-native behavior. |
-| missing_systems | Live remote branch-protection verification, release dry-run rehearsal policy, and runtime exposure policy decisions are intentionally absent from this local pass. |
-| implementation_candidates | Future RabbitMQ secret wiring, Vault exposure decision, Neo4j exposure decision, coverage threshold policy, and Skill mirror cleanup. |
-| deferred_items | INFRA-001, INFRA-003, INFRA-004, SEC-001 follow-up, QA-002, CI-001, GIT-001. |
-| required_decisions | Operator decision needed for actual `.env` sync, sensitive-registry metadata drift, runtime exposure changes, remote branch protection, release dry-run policy, and coverage thresholds. |
+| missing_systems | Release dry-run rehearsal policy and runtime exposure policy decisions remain intentionally absent; live remote branch-protection read-back was closed later. |
+| implementation_candidates | Future RabbitMQ secret wiring, Vault exposure decision, Neo4j exposure decision, and secret metadata follow-up. |
+| deferred_items | INFRA-001, INFRA-003, INFRA-004, SEC-001 follow-up, GIT-001. QA-002 and CI-001 were later closed by follow-up evidence. |
+| required_decisions | Operator decision needed for actual `.env` sync, sensitive-registry metadata drift, runtime exposure changes, and release dry-run policy. |
 
 ## Decision Log
 
@@ -531,7 +531,7 @@ requires TDD-gated evidence before Skill mutation.
 | SKIP-WAI-002 | Docker runtime start/stop/log checks | Skipped | Runtime operations can affect operational state | Compose config/static hardening checks | Live service behavior not proven | Runtime rehearsal under explicit approval |
 | SKIP-WAI-003 | Actual `.env` value sync | Skipped | Actual value edits prohibited | Key-only comparison | Operator must decide whether to add local `QDRANT_GRPC_PORT` | Operator-owned env sync |
 | SKIP-WAI-004 | Secret value validation | Skipped | Secret value reads/output prohibited | Metadata-only registry compare | Values and rotation status unverified | Secret owner review |
-| SKIP-WAI-005 | Remote branch-protection revalidation | Skipped | Network/remote checks require explicit approval | Local workflow/ruleset proposal review | Remote required checks may still reflect the older 10-context snapshot | Owner-approved GitHub settings audit |
+| SKIP-WAI-005 | Remote branch-protection revalidation | Skipped in original pass; read-back closed later | Network/remote checks required explicit approval during the original pass | Local workflow/ruleset proposal review plus later read-only GitHub API read-back | Later required checks include `frontend-quality` and `storybook-coverage` with `strict=true` | No further read-back-only required-check cleanup needed |
 
 ## Skill Review
 
@@ -584,9 +584,9 @@ requires TDD-gated evidence before Skill mutation.
 | RISK-WAI-002 | Secret value edits or output | Secret safety constraint | Secret-owner handling plan | Deferred |
 | RISK-WAI-003 | RabbitMQ root secret activation | Would affect compose/secret wiring | Runtime/secret task | Deferred |
 | RISK-WAI-004 | Vault and Neo4j exposure changes | Port/runtime behavior change | Infra runtime decision | Deferred |
-| RISK-WAI-005 | Remote GitHub, deploy, push, PR | Network/publish action | Explicit request | Deferred |
+| RISK-WAI-005 | Remote GitHub mutation, deploy, push, PR | Network/publish action; read-only required-check verification later completed | Explicit request for any mutation or publish action | Read-back closed; mutation deferred |
 | RISK-WAI-006 | Uncertain deletion | Requires full reference and operational proof | Separate deletion plan | Deferred |
-| RISK-WAI-007 | Storybook coverage thresholds | CI behavior change | QA policy decision | Deferred |
+| RISK-WAI-007 | Storybook coverage thresholds | CI behavior change | QA policy decision | Closed later by repo-local 90% threshold enforcement |
 
 ## Legacy/Delete/Integration Results
 
@@ -611,20 +611,20 @@ requires TDD-gated evidence before Skill mutation.
 | 8. Plan / Task / Spec Updates | Change Scope | Plan/Task created; Spec not needed |
 | 9. Skill Creation / Update Results | Skill Review | `workspace-audit-revalidation` Skill created after explicit approval and repeated-workflow evidence |
 | 10. Implemented Changes | Change Scope | Docs, env example, hook metadata gate, runbook guardrails |
-| 11. Deferred Items | Deferred Risk Register | Runtime, secrets, remote, deletion, thresholds |
+| 11. Deferred Items | Deferred Risk Register | Runtime, secrets, deletion, and remote mutation remain deferred; threshold and remote read-back evidence closed later |
 | 12. Legacy / Delete / Integration Results | Legacy/Delete/Integration Results | No deletion; stale refs fixed |
 | 13. Env Key Comparison | Env Key Comparison | Example now has one operator-owned key delta |
 | 14. Secrets Key Comparison | Secrets Key Comparison | Three metadata drifts; role/purpose metadata included; no values output |
 | 15. Docker Compose Review | Gap Registry, Verification Log | Static validation passed; runtime edits deferred |
 | 16. Scripts Review | Change Scope, Verification Log | Contract checker extended and syntax checked |
 | 17. Hook Review | Gap AUTO-001, Verification Log | Metadata gate added; no runtime hook behavior changed |
-| 18. QA Review | Verification Log, QA gaps | Storybook coverage passed; thresholds deferred |
-| 19. CI/CD Review | README, workflow/ruleset checks | Local static gates aligned; remote checks skipped |
+| 18. QA Review | Verification Log, QA gaps | Storybook coverage passed in the original pass; threshold policy closed later |
+| 19. CI/CD Review | README, workflow/ruleset checks | Local static gates aligned in the original pass; remote required-check read-back closed later |
 | 20. Checklist Results | Task Table, Working Rules | Completion checklist satisfied; local commits completed before main merge |
 | 21. Verification Results | Verification Log | Local required checks passed or alternatives recorded |
-| 22. Verification Gaps | Skipped / Failed Verification | Remote/runtime/value checks skipped by design |
+| 22. Verification Gaps | Skipped / Failed Verification | Runtime/value checks remain skipped by design; remote required-check read-back closed later |
 | 23. Remaining Risks | Deferred Risk Register | Operator decisions remain for env/secrets/runtime |
-| 24. Next Tasks | Deferred Risk Register | Secret metadata reconciliation, runtime exposure decisions, QA thresholds |
+| 24. Next Tasks | Deferred Risk Register | Secret metadata reconciliation and runtime exposure decisions; QA thresholds closed later |
 
 ## Verification Summary
 
