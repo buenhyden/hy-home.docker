@@ -32,7 +32,7 @@ status: completed
 | Branch and no-touch scope | Prior audit completed on local `main`; no-touch `projects/storybook/mcp/` recorded | Follow-up branch created; no-touch path remains out of scope | Done |
 | Governance routing | Prior audit documented workspace-audit skill routing | Governance reviewer pass returned no blocking findings; repo rules loaded | Done |
 | Stage docs lifecycle | Prior audit added Stage 04 evidence only | Dedicated Stage 03/04 follow-up artifacts created from templates | Done |
-| Env key drift | `.env.example` 328 keys, `.env` 327 keys, missing `QDRANT_GRPC_PORT` | Rechecked by key names only; same drift observed | Deferred |
+| Env key drift | Original pass reported `.env.example` 328 keys, `.env` 327 keys, and missing `QDRANT_GRPC_PORT` | Later key-only revalidation reports `.env.example` and `.env` each have 326 keys and both include `QDRANT_GRPC_PORT` | Closed later |
 | Secret registry metadata drift | Both registries 104 IDs; ID sets match; selected env-var/path metadata drift | Rechecked by ID/env-var/path metadata only; same drift observed | Deferred |
 | Hook and script docs | Prior audit clarified no-payload and Hookify event support | Local fallback confirmed docs already match hook behavior; no script edits required | Done |
 | Storybook QA docs | Prior audit documented `test` and `coverage` commands | QA reviewer confirmed coverage was not needed for this doc-only follow-up; later expanded authored SSoT follow-up closed repo-local 90% threshold enforcement | Done |
@@ -56,7 +56,7 @@ status: completed
 | --- | --- | --- | --- |
 | Need a Stage 03 parent contract for revalidation/deferred work | Add dedicated spec artifact | Agent | Done |
 | Need task-level evidence separate from prior baseline audit | Add dedicated task artifact | Agent | Done |
-| `.env` missing `QDRANT_GRPC_PORT` | Record operator-owned deferred drift; do not edit `.env` | Operator | Deferred |
+| `.env` missing `QDRANT_GRPC_PORT` | Original pass recorded operator-owned deferred drift; later approved non-secret key sync closed the key-set delta without printing values | Agent | Closed later |
 | Secret registry selected env-var/path metadata drift | Record metadata-only drift; do not mutate registry/value files | Operator | Deferred |
 | `.agents/skills` compatibility mirror drift | Later follow-up aligned formatting-only drift while keeping `.claude/skills` as runtime source of truth | Agent | Done |
 | ARD/ADR template-frontmatter cleanup across 46 architecture leaves | Keep deferred due broad blast radius | Future docs remediation | Deferred |
@@ -171,10 +171,10 @@ The prior 2026-05-25 audit closed the low-risk documentation and generated-index
 
 | File | Key Count | Drift |
 | --- | --- | --- |
-| `.env.example` | 328 | Source template includes `QDRANT_GRPC_PORT` |
-| `.env` | 327 | Missing `QDRANT_GRPC_PORT`; operator-owned deferred drift |
+| `.env.example` | 326 | Includes `QDRANT_GRPC_PORT`; key set matches local `.env` |
+| `.env` | 326 | Includes `QDRANT_GRPC_PORT`; key set matches `.env.example` |
 
-No `.env` value was recorded in this document.
+No `.env` value was recorded in this document; this row records key names and counts only.
 
 ## Secrets Metadata Comparison
 

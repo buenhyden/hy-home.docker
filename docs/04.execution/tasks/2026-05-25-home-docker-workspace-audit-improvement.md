@@ -31,7 +31,7 @@ status: completed
 | --- | --- | --- | --- |
 | Governance routing | GOV reviewer | `workflow-supervisor.md` skill list and function catalog path | Done |
 | LLM Wiki freshness | DOC reviewer, local generator | `generate-llm-wiki-index.sh --check` now passes | Done |
-| Env key drift | INF reviewer, metadata-only comparison | `.env.example` has 328 keys; `.env` has 327 keys; `.env` missing `QDRANT_GRPC_PORT` | Deferred |
+| Env key drift | INF reviewer, metadata-only comparison | Later key-only revalidation reports `.env.example` and `.env` each have 326 keys and both include `QDRANT_GRPC_PORT` | Closed later |
 | Secret registry metadata drift | INF reviewer, ID/metadata-only comparison | Both sensitive registry files have 104 IDs; ID sets match; env-var/path metadata drift recorded without values | Deferred |
 | Hook validation docs | SCR reviewer, script source | `post-tool-validate.sh` exits 0 with no payload; Hookify repo validator allows only `bash`, `file`, `stop` | Done |
 | Storybook QA docs | QA reviewer, package manifest | `test` and `coverage` scripts exist in `projects/storybook/nextjs/package.json` | Done |
@@ -47,7 +47,7 @@ status: completed
 | `scripts/README.md` no-payload post-tool example is ambiguous | Replace with payload-based example and note no-payload no-op behavior | Agent | Done |
 | Hookify event support can be misread as external Hookify parity | Document repo validator support as `bash`, `file`, `stop` only | Agent | Done |
 | Release/tag readiness lacks local runbook | Add manual evidence-focused runbook without changing deployment behavior | Agent | Done |
-| `.env` missing `QDRANT_GRPC_PORT` | Record operator-owned deferred drift; do not edit `.env` | Operator | Deferred |
+| `.env` missing `QDRANT_GRPC_PORT` | Original pass recorded operator-owned deferred drift; later approved non-secret key sync closed the key-set delta without printing values | Agent | Closed later |
 | Sensitive metadata path/env-var drift | Record metadata-only drift; do not mutate values or registry files | Operator | Deferred |
 
 ## Rule Conflict Log
@@ -135,10 +135,10 @@ The only blocking local gate found before implementation was stale generated LLM
 
 | File | Key Count | Drift |
 | --- | --- | --- |
-| `.env.example` | 328 | Source template includes `QDRANT_GRPC_PORT` |
-| `.env` | 327 | Missing `QDRANT_GRPC_PORT`; operator-owned deferred drift |
+| `.env.example` | 326 | Includes `QDRANT_GRPC_PORT`; key set matches local `.env` |
+| `.env` | 326 | Includes `QDRANT_GRPC_PORT`; key set matches `.env.example` |
 
-No `.env` value was printed or edited.
+No `.env` value was printed in this document; this row records key names and counts only.
 
 ## Secrets Key Comparison
 
