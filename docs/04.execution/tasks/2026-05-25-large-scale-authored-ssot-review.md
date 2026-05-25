@@ -7,7 +7,7 @@ status: completed
 
 ## Overview (KR)
 
-이 문서는 `대규모 개선 실행` 전에 authored SSoT 전반을 검토하고, 후속 실행 전에 필요한 gap/deferred registry를 현재 repo truth 기준으로 고정한 실행 기록이다. 최초 작업은 Stage 04 문서와 governance progress 갱신에 한정되었고, 이후 사용자 승인에 따라 approval-gated deferred 항목 중 repo-tracked static/runtime-authoring, non-secret `.env` key sync, remote required-check read-back, validation hardening, and Storybook threshold enforcement closure evidence를 이 같은 canonical task에 추가 기록한다. Secret values, secret generation/rotation, Docker start/stop, deployment, destructive deletion, and unverified live service behavior remain out of this closure.
+이 문서는 `대규모 개선 실행` 전에 authored SSoT 전반을 검토하고, 후속 실행 전에 필요한 gap/deferred registry를 현재 repo truth 기준으로 고정한 실행 기록이다. 최초 작업은 Stage 04 문서와 governance progress 갱신에 한정되었고, 이후 사용자 승인에 따라 approval-gated deferred 항목 중 repo-tracked static/runtime-authoring, non-secret `.env` key sync, approved Open Notebook secret-file migration, remote required-check read-back, validation hardening, and Storybook threshold enforcement closure evidence를 이 같은 canonical task에 추가 기록한다. Secret values are not printed or committed; secret generation/rotation, Docker start/stop, deployment, destructive deletion, and unverified live service behavior remain out of this closure.
 
 ## Inputs
 
@@ -21,7 +21,7 @@ status: completed
 - Active persona/layer: Agentic Workflow Specialist / `agentic`.
 - Primary scope: authored authoritative surface review before large-scale execution.
 - Treat Graphify as advisory and corroborate against tracked source, `docs/00.agent-governance/`, and stage docs.
-- Do not print secret values, private keys, shell history, log databases, or value-bearing `.env` content. Approved local `.env` work is limited to non-secret key-set sync.
+- Do not print secret values, private keys, shell history, log databases, or value-bearing `.env` content. Approved local `.env` work is limited to non-secret key-set sync and moving the Open Notebook encryption key into an ignored Docker Secret file without printing or committing the value.
 - Do not run Docker start/stop, deployment, secret generation/rotation, destructive deletion, or uncertain deletion candidates in this closure.
 - Keep `projects/storybook/mcp/` untracked and untouched.
 - Do not run `pre-commit` manually.
@@ -84,18 +84,18 @@ status: completed
 | DLR-005 | Stage 04 parent routing | The large-scale authored SSoT plan/task existed but was missing from the Stage 04 parent README indexes | Added parent README links for the existing plan/task; no duplicate execution lane created | Closed |
 | DLR-006 | Inventory drift | Root `docker-compose.yml` has 17 active include entries and `git ls-files '*README.md'` reports 173 tracked README files | Updated root, infra, and supporting infra/secrets/docs inventory text from stale 14/172 evidence to current 17/173 evidence | Closed |
 | DLR-007 | Retrospective task template drift | The completed scripts lifecycle cleanup task lacked a `## Working Rules` section | Added minimal retrospective working rules without changing script CLI, CI, hook, Docker runtime, or secret behavior | Closed |
-| DLR-008 | Infra/secrets spec inventory drift | Count-only revalidation reports 94 secret/cert files under `secrets/` after excluding Markdown registry/README documents, 134 README files in the target audit scope, and 217 non-README Markdown files in the stage audit scope, while the active infra/secrets spec still carried older 76/127/208 counts | Updated current spec inventory counts only; no secret file contents or values were read or changed | Closed |
+| DLR-008 | Infra/secrets spec inventory drift | Count-only revalidation reports 95 secret/cert files under `secrets/` after excluding Markdown registry/README documents, 70 root Compose secret declarations, 134 README files in the target audit scope, and 217 non-README Markdown files in the stage audit scope | Updated current spec inventory counts after the approved Open Notebook secret-file migration; no secret value was printed or committed | Closed |
 | DLR-009 | Graphify health evidence drift | Current Graphify health helper output reports `manifest_paths_total=743` after later docs evidence updates, while this task still carried the prior `740` rerun evidence | Refreshed evidence text only; Graphify remains advisory due cross-root inferred edges and no graph/runtime files changed | Closed |
 | DLR-010 | Agent entrypoint wording drift | Root README summarized the bootstrap path without `agentic.md` and governance memory review, and infra README used a singular spec JIT marker instead of canonical `[LOAD:SPECS]` | Updated README wording only; no runtime, Compose, hook, skill, or provider behavior changed | Closed |
-| DLR-011 | Env key deferred evidence drift | Older workspace audit task evidence still described `QDRANT_GRPC_PORT` as missing from local `.env`, while current key-only comparison reports `.env.example` and `.env` each have 326 keys and both include the key | Updated Stage 04 evidence text only; no secret values were read or printed and no `.env` values were changed in this pass | Closed |
-| DLR-012 | Secret registry metadata evidence drift | Older workspace audit task evidence still described 104 registry IDs and selected env-var/path metadata drift, while current metadata-only comparison reports 106 IDs in each registry, matching ID sets, and no env-var/path metadata delta IDs | Updated Stage 04 evidence text only; no secret values were read or printed and no registry values were changed in this pass | Closed |
+| DLR-011 | Env key deferred evidence drift | Older workspace audit task evidence still described `QDRANT_GRPC_PORT` as missing from local `.env`, while current key-only comparison reports `.env.example` and `.env` each have 325 keys, both include `QDRANT_GRPC_PORT`, and neither keeps direct `OPEN_NOTEBOOK_ENCRYPTION_KEY` | Updated Stage 04 evidence after the approved Open Notebook secret-file migration; no secret value was printed or committed | Closed |
+| DLR-012 | Secret registry metadata evidence drift | Older workspace audit task evidence still described 104 registry IDs and selected env-var/path metadata drift, while current metadata-only comparison reports 107 IDs in each registry, matching ID sets, and no env-var/path metadata delta IDs | Updated Stage 04 evidence after adding `AI-005` metadata; no secret value was printed or committed | Closed |
 | DLR-013 | Prior task final-report evidence drift | The 2026-05-24 audit task's Final Report Evidence Map still summarized env key and secret metadata drift as open even though later key/metadata-only evidence closed those deltas | Updated final-report summary wording only; env values, secret values, and runtime behavior remain owner-approved follow-up work | Closed |
 | DLR-014 | Prior infra refresh task count drift | The 2026-05-09 infra/secrets/docs refresh task still recorded older count-only evidence for Compose files, root-active includes, tracked READMEs, and secret/cert files | Updated task evidence counts only; no Compose behavior, runtime state, secret values, or registry values changed | Closed |
 | DLR-015 | Infra README operations link bucket drift | Several infra README workflow/related-document links still used Policy/Runbook labels while pointing at `docs/05.operations/guides/**` targets | Repointed label-specific links to existing `policies/**` or `runbooks/**` targets only; guide-labeled links remain guide links, and no Compose/runtime behavior changed | Closed |
 | INF-COMP-ROOTACTIVE-001 | Compose inventory docs | Supabase, Neo4j, and RabbitMQ are active root includes while older README text still described the pre-expansion include set | Updated README narrative only; no Compose include or profile behavior changed | Closed |
 | INF-PROFILE-RABBITMQ-001 | Compose profile semantics | RabbitMQ was root-included but absent from the `messaging` profile used by CI/all-profile validation, because it only declared `messaging-option` | Added `messaging` as the primary RabbitMQ profile while preserving `messaging-option` as a compatibility alias | Closed |
 | INF-NET-MINIOJOB-001 | Network static IP policy | `minio-create-buckets` attached to `infra_net` without an explicit static IP while MinIO service kept its static IP | Added explicit `172.19.0.39` static IP for the bucket job and recorded the assignment in the `infra_net` map | Closed |
-| SEC-ENV-OPENNOTEBOOK-001 | Sensitive env handling | `OPEN_NOTEBOOK_ENCRYPTION_KEY` remains provided as a direct environment variable in Open Notebook compose | Recorded as behavior-sensitive; no actual `.env`, private registry, secret value, or Compose secret migration in this pass | Deferred secret/runtime |
+| SEC-ENV-OPENNOTEBOOK-001 | Sensitive env handling | `OPEN_NOTEBOOK_ENCRYPTION_KEY` was provided as a direct environment variable in Open Notebook compose | Migrated Compose to `open_notebook_encryption_key` Docker Secret input and moved the ignored local `.env` value into an ignored secret file without printing or committing the value | Closed |
 
 ## Low-Risk Follow-up Candidates
 
@@ -132,7 +132,7 @@ status: completed
 | Port exposure normalization | Removed Neo4j Bolt host exposure through Traefik and removed Vault direct host port publication | Runtime/config scan finds no deprecated host-port keys or `neo4j-bolt` routing references outside this evidence document |
 | Validator modularization | Extracted Storybook contract checks into `scripts/validation/check-storybook-contract.sh` | Script syntax PASS; direct contract check PASS; repo contract PASS |
 | Storybook threshold enforcement | Added 90% coverage thresholds and expanded stories/interactions to satisfy them | `npm run coverage --prefix projects/storybook/nextjs` PASS with 9 tests and 100% coverage |
-| Local env key sync | Removed approved non-secret deprecated host-port keys from ignored local `.env` | Metadata-only key comparison PASS with 326/326 keys and no deltas |
+| Local env key sync | Removed approved non-secret deprecated host-port keys from ignored local `.env`; later moved direct Open Notebook encryption key input to an ignored Docker Secret file | Metadata-only key comparison PASS with 325/325 keys and no deltas |
 | Deletion candidates | Reviewed current cleanup boundary and performed no deletion | `projects/storybook/mcp/` remains pre-existing untracked no-touch work |
 
 ## Deferred Risk Register
@@ -165,15 +165,15 @@ status: completed
 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS | Generated LLM Wiki index is fresh |
 | `bash scripts/validation/check-doc-traceability.sh` | PASS | `catalog_pairs_total=46`, `failures=0` |
 | `bash scripts/validation/check-repo-contracts.sh` | PASS | `failures=0`; changed template docs 2; normalized changed docs 2 |
-| `.env.example` vs `.env` key comparison | PASS | `.env.example` and `.env` both have 326 keys after approved non-secret key sync; no key-set delta; values not recorded |
-| Sensitive registry ID comparison | UNCHANGED | Secret registry files were not changed in this closure; prior metadata-only ID evidence is retained and values were not recorded |
+| `.env.example` vs `.env` key comparison | PASS | `.env.example` and `.env` both have 325 keys after approved non-secret key sync and Open Notebook secret-file migration; no key-set delta; values not recorded |
+| Sensitive registry ID comparison | PASS | Example and local registry metadata each have 107 IDs after adding `AI-005`; values were not recorded |
 | Six reviewer axes | STATIC-READY | All axes have static/repo-authoring closure evidence; live Docker start/stop and deployment evidence remain separate |
 | Low-risk docs closure | PASS | Spec README added; task headings normalized; release checklist strengthened |
 | Low-risk validation hardening | PASS | `bash -n` PASS; baseline validators PASS; static env-copy scan PASS; post-tool `--check` smoke PASS |
 | Expanded approval closure | PASS | Closed additional static/repo-governance gaps for `.agents` compatibility, architecture status metadata, env key drift, selected secret metadata, RabbitMQ secret mapping, network/volume clarity, PyYAML declaration, CI gate visibility, remote required checks, frontend build/typecheck gates, Supabase secret wiring, optional profile includes, port exposure normalization, validator modularization, and Storybook threshold enforcement |
 | Architecture frontmatter scan | PASS | No `docs/02.architecture/**/*.md` files are missing `status:` frontmatter after metadata cleanup |
 | Historical plan/task scan | REVIEWED | The completed scripts lifecycle cleanup plan now has task evidence; `2026-03-27-infra-service-optimization-priority-plan.md` remains an active parent/umbrella plan |
-| Sensitive registry metadata comparison | UNCHANGED | Secret registry files were not changed in this closure; value-bearing registry content was not reprinted |
+| Sensitive registry metadata comparison | PASS | Example and local registry ID sets match after adding `AI-005`; value-bearing registry content was not reprinted |
 | `bash scripts/operations/gen-secrets.sh --dry-run` RabbitMQ rows | PASS | `COMM-007` and `COMM-008` report create-generated-file actions for RabbitMQ secret paths; values not generated in dry-run |
 | Remote `main` required checks read-back | PASS | GitHub branch protection now requires 12 contexts including `frontend-quality` and `storybook-coverage` |
 | Docker Compose validation | PASS | Default core Compose PASS with `services_total=5`; all-profile static validation PASS with `services_total=59`; all-profile preflight PASS with RabbitMQ optional secret warnings only |
@@ -183,8 +183,8 @@ status: completed
 | Static deprecated port-key scan | PASS | No deprecated host-port keys or `neo4j-bolt` routing references remain in runtime/config surfaces; remaining mentions are closure evidence text |
 | Post-tool check-only smoke | PASS | Minimal PostToolUse payload with `--check` exits 0 and keeps validation non-mutating |
 | Approved bounded follow-up refresh | PASS | Stage 04 parent links, root/infra/spec inventory counts, scripts lifecycle working rules, and deferred infra/security findings updated; repo contracts, doc traceability, Compose validation, baselines, secrets check, and Storybook coverage pass |
-| Current metadata-only env/secret comparison | PASS | `.env.example` and `.env` each have 326 key names; sensitive registry example/local ID sets each have 106 IDs; no values recorded |
-| Infra/secrets count-only revalidation | PASS | `find secrets -type f ! -name '*.md' \| wc -l` reports 94 secret/cert files; target README audit count is 134; target non-README stage audit count is 217; active spec inventory was updated without reading secret contents |
+| Current metadata-only env/secret comparison | PASS | `.env.example` and `.env` each have 325 key names; sensitive registry example/local ID sets each have 107 IDs; no values recorded |
+| Infra/secrets count-only revalidation | PASS | `find secrets -type f ! -name '*.md' \| wc -l` reports 95 secret/cert files; root Compose declares 70 secrets; target README audit count is 134; target non-README stage audit count is 217; active spec inventory was updated without recording secret values |
 
 ## Final Report Evidence Map
 

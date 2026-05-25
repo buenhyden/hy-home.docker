@@ -197,6 +197,8 @@ secrets:
   # ── Open Notebook ──────────────────────────────────────────────
   open_notebook_password:
     file: ./secrets/tools/open_notebook_password.txt
+  open_notebook_encryption_key:
+    file: ./secrets/tools/open_notebook_encryption_key.txt
 
 include:
   # Core stack

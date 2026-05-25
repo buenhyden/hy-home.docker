@@ -26,9 +26,9 @@ status: draft
 ## Controls
 
 - **Required**:
-  - `open_notebook_password`와 `surreal_db_password`는 Docker Secrets로만 주입해야 한다.
+  - `open_notebook_password`, `open_notebook_encryption_key`, `surreal_db_password`는 Docker Secrets로만 주입해야 한다.
   - UI 접근은 `open-notebook.${DEFAULT_URL}` Traefik route와 표준 gateway middleware chain 뒤에 둔다.
-  - `OPEN_NOTEBOOK_ENCRYPTION_KEY`는 credential storage 보호에 필요한 비밀값으로 관리한다.
+  - `OPEN_NOTEBOOK_ENCRYPTION_KEY`는 컨테이너 시작 시 `/run/secrets/open_notebook_encryption_key`에서만 export한다.
   - Open Notebook 데이터와 SurrealDB 데이터는 `DEFAULT_MANAGEMENT_DIR` 하위 bind-backed named volume에 저장한다.
 - **Allowed**:
   - `admin` 또는 `dev` profile에서 로컬 실험/관리 목적으로 실행한다.
