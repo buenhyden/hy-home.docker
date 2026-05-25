@@ -9,6 +9,12 @@ volumes:
       o: bind
       device: ${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq
 
+secrets:
+  rabbitmq_user:
+    file: ../../../secrets/messaging/rabbitmq_user.txt
+  rabbitmq_password:
+    file: ../../../secrets/messaging/rabbitmq_password.txt
+
 services:
   rabbitmq:
     profiles:

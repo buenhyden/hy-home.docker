@@ -20,6 +20,8 @@ services:
     restart: 'no'
     volumes:
       - mongo-key:/data/configdb:rw
+    networks:
+      infra_net: {}
     command: >
       /bin/sh -c "
         if [ ! -f /data/configdb/mongodb.key ]; then
@@ -114,6 +116,7 @@ services:
     restart: unless-stopped
     read_only: false
     volumes:
+      - mongodb3-data:/data/db:rw
       - mongo-key:/data/configdb:ro
     command:
       ['--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all']

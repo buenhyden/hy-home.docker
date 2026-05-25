@@ -180,6 +180,8 @@ services:
       N8N_RUNNERS_AUTH_TOKEN_FILE: /run/secrets/n8n_runner_auth_token
     expose:
       - ${N8N_TASK_RUNNER_PORT:-5680}
+    volumes:
+      - n8n-task-runner-data:/home/node/.n8n:rw
     networks:
       infra_net:
         ipv4_address: 172.19.0.82

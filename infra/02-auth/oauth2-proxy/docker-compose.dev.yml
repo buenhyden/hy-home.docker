@@ -1,14 +1,6 @@
 x-tier-label: &tier-label
   hy-home.tier: auth
 
-volumes:
-  oauth2-proxy-valkey-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_AUTH_DIR}/valkey
-
 services:
   oauth2-proxy:
     profiles:
