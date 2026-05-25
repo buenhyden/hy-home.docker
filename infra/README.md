@@ -48,7 +48,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 
 ## Compose Inventory Snapshot
 
-`infra/`에는 현재 48개의 Compose variant 파일이 있습니다. 이 중 47개는 `docker-compose*.yml`이고 1개는 명시적으로 excluded/report-only 처리되는 `docker-compose*.yaml` cluster variant입니다. Compose service directory는 40개입니다. 루트 `docker-compose.yml`이 활성 include로 직접 묶는 파일은 14개이며, 나머지는 optional, standalone, 또는 variant로 분류합니다.
+`infra/`에는 현재 48개의 Compose variant 파일이 있습니다. 이 중 47개는 `docker-compose*.yml`이고 1개는 명시적으로 excluded/report-only 처리되는 `docker-compose*.yaml` cluster variant입니다. Compose service directory는 40개입니다. 루트 `docker-compose.yml`이 활성 include로 직접 묶는 파일은 17개이며, 나머지는 optional, standalone, 또는 variant로 분류합니다.
 
 | Status | Meaning | Documentation Rule |
 | --- | --- | --- |
@@ -57,7 +57,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 | `standalone-only` | `infra/`에 존재하지만 루트 include 목록에 없는 Compose 파일 | service README와 직접 실행 절차를 기준으로 설명 |
 | `dev/cluster variant` | `.dev.yml`, `.cluster.yml`, v2 등 대체 실행 파일 | 대상 profile과 검증 범위를 함께 기록 |
 
-현재 `root-active` 파일은 gateway/auth/security, MinIO, mng-db, Qdrant, Kafka dev, observability dev, n8n dev, Airflow dev, Dozzle, RedisInsight, Open Notebook으로 제한됩니다. 전체 보유 Compose 수와 root-active 수를 혼동하지 않습니다.
+현재 `root-active` 파일은 gateway/auth/security, MinIO, mng-db, Supabase, Neo4j, Qdrant, Kafka dev, RabbitMQ, observability dev, n8n dev, Airflow dev, Dozzle, RedisInsight, Open Notebook으로 제한됩니다. 전체 보유 Compose 수와 root-active 수를 혼동하지 않습니다.
 
 ## Tech Stack
 
@@ -84,6 +84,7 @@ The `infra/` directory manages the **Service Definitions** for the entire home s
 - `profiles: [ "mng" ]`: 시스템 관리용 DB 계층 (mng-db)
 - `profiles: [ "storage" ]`: 오브젝트 및 파일 저장소 (MinIO)
 - `profiles: [ "messaging" ]`: 핵심 메시징 브로커 (Kafka)
+- `profiles: [ "messaging-option" ]`: 선택 메시징 브로커 (RabbitMQ)
 - `profiles: [ "obs" ]`: 모니터링 및 로기 (LGTM Stack)
 - `profiles: [ "workflow" ]`: 워크플로우 엔진 (Airflow, n8n)
 - `profiles: [ "ai" ]`: AI/LLM 엔진 및 Vector DB

@@ -37,6 +37,7 @@ status: completed
 | T-005 | Preserve deferred boundaries | guardrail | PLN-004 | Deferred Risk Register records excluded runtime/value/remote surfaces | Agent | Done |
 | T-006 | Update governance progress log | memory | PLN-005 | `progress.md` includes this task | Agent | Done |
 | T-007 | Run scoped verification | test | Verification Plan | Verification Summary records commands and results | Agent | Done |
+| T-008 | Apply approved bounded follow-up refresh | doc | Follow-up refresh plan | Stage 04 indexes, inventory counts, scripts task rules, and deferred infra findings updated without runtime or value changes | Agent | Done |
 
 ## Reviewer Axis Ledger
 
@@ -75,6 +76,18 @@ status: completed
 | QA-003 | Frontend gate clarity | `frontend-quality` now runs Storybook Next.js lint, typecheck, app build, and static Storybook build | Closed after expanded approval | No |
 | CI-001 | Release readiness checklist | Release runbook now requires backup/N/A evidence, affected rollback/recovery link, incident path, and remote gate verification before release/deploy claims | Closed in low-risk docs lane | No |
 | CI-002 | Tag-only changelog gate visibility | Root README now documents `Release Changelog Check` as a tag-only release visibility gate, not a remote required-check claim | Closed after expanded approval | No |
+
+## Approved Follow-up Refresh
+
+| Finding ID | Area | Current Evidence | Action / Decision | Status |
+| --- | --- | --- | --- | --- |
+| DLR-005 | Stage 04 parent routing | The large-scale authored SSoT plan/task existed but was missing from the Stage 04 parent README indexes | Added parent README links for the existing plan/task; no duplicate execution lane created | Closed |
+| DLR-006 | Inventory drift | Root `docker-compose.yml` has 17 active include entries and `git ls-files '*README.md'` reports 173 tracked README files | Updated root, infra, and supporting infra/secrets/docs inventory text from stale 14/172 evidence to current 17/173 evidence | Closed |
+| DLR-007 | Retrospective task template drift | The completed scripts lifecycle cleanup task lacked a `## Working Rules` section | Added minimal retrospective working rules without changing script CLI, CI, hook, Docker runtime, or secret behavior | Closed |
+| INF-COMP-ROOTACTIVE-001 | Compose inventory docs | Supabase, Neo4j, and RabbitMQ are active root includes while older README text still described the pre-expansion include set | Updated README narrative only; no Compose include or profile behavior changed | Closed |
+| INF-PROFILE-RABBITMQ-001 | Compose profile semantics | RabbitMQ remains root-included and profile-gated by `messaging-option`, while Kafka remains under `messaging` | Documented `messaging-option` as the RabbitMQ profile; no profile rename or behavior change in this pass | Deferred behavior |
+| INF-NET-MINIOJOB-001 | Network static IP policy | `minio-create-buckets` attaches to `infra_net` without an explicit static IP while MinIO service keeps its static IP | Recorded as behavior-sensitive; no job network/IP change without separate runtime approval | Deferred behavior |
+| SEC-ENV-OPENNOTEBOOK-001 | Sensitive env handling | `OPEN_NOTEBOOK_ENCRYPTION_KEY` remains provided as a direct environment variable in Open Notebook compose | Recorded as behavior-sensitive; no actual `.env`, private registry, secret value, or Compose secret migration in this pass | Deferred secret/runtime |
 
 ## Low-Risk Follow-up Candidates
 
@@ -161,6 +174,8 @@ status: completed
 | `bash scripts/validation/check-storybook-contract.sh` | PASS | Standalone Storybook contract check exits 0 |
 | Static deprecated port-key scan | PASS | No deprecated host-port keys or `neo4j-bolt` routing references remain in runtime/config surfaces; remaining mentions are closure evidence text |
 | Post-tool check-only smoke | PASS | Minimal PostToolUse payload with `--check` exits 0 and keeps validation non-mutating |
+| Approved bounded follow-up refresh | PASS | Stage 04 parent links, root/infra/spec inventory counts, scripts lifecycle working rules, and deferred infra/security findings updated; repo contracts, doc traceability, Compose validation, baselines, secrets check, and Storybook coverage pass |
+| Current metadata-only env/secret comparison | PASS | `.env.example` and `.env` each have 326 key names; sensitive registry example/local ID sets each have 106 IDs; no values recorded |
 
 ## Final Report Evidence Map
 

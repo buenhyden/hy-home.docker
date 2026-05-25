@@ -128,6 +128,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Workspace Audit Grill Review Task**: [2026-05-24-workspace-audit-grill-review.md](./2026-05-24-workspace-audit-grill-review.md)
 - **Home Docker Workspace Audit Improvement Task**: [2026-05-25-home-docker-workspace-audit-improvement.md](./2026-05-25-home-docker-workspace-audit-improvement.md)
 - **Home Docker Revalidation Deferred Follow-up Task**: [2026-05-25-home-docker-revalidation-deferred-follow-up.md](./2026-05-25-home-docker-revalidation-deferred-follow-up.md)
+- **Large-Scale Authored SSoT Review Task**: [2026-05-25-large-scale-authored-ssot-review.md](./2026-05-25-large-scale-authored-ssot-review.md)
 - **Agent Hook Completion and Style Automation Task**: [2026-05-22-agent-hook-completion-style-automation.md](./2026-05-22-agent-hook-completion-style-automation.md)
 - **Spec Execution Implementation Audit Task**: [2026-05-22-spec-execution-implementation-audit.md](./2026-05-22-spec-execution-implementation-audit.md)
 - **Data Analytics Execution Traceability Task**: [2026-05-22-data-analytics-execution-traceability.md](./2026-05-22-data-analytics-execution-traceability.md)

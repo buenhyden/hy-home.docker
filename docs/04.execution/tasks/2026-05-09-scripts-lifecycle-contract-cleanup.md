@@ -15,6 +15,12 @@ status: completed
 - **Follow-up Plan**: [2026-05-17 scripts CI/CD and QA cleanup plan](../plans/2026-05-17-scripts-ci-qa-cleanup.md)
 - **Scripts README**: [scripts README](../../../scripts/README.md)
 
+## Working Rules
+
+- Preserve this artifact as retrospective evidence for the completed scripts lifecycle cleanup.
+- Do not change script CLI, CI behavior, hook behavior, Docker runtime, or value-bearing secret surfaces from this task.
+- Treat the current `scripts/README.md` and repository validators as the authoritative evidence for script ownership and retention rules.
+
 ## Task Table
 
 | Task ID | Description | Type | Parent Plan / Phase | Validation / Evidence | Owner | Status |
@@ -30,7 +36,7 @@ status: completed
 | --- | --- | --- |
 | Retrospective evidence review | PASS | Parent plan is `status: completed`; this task records current evidence without rewriting historical script behavior |
 | Runtime and CLI mutation check | PASS | No script CLI, Docker runtime, secret value, or deployment behavior is changed by this task |
-| Repository validation | Pending | To be covered by the active authored SSoT follow-up verification bundle |
+| Repository validation | PASS | Covered by the approved 2026-05-25 bounded follow-up refresh; repo contracts and doc traceability pass |
 
 ## Deviation Notes
 
