@@ -30712,9 +30712,9 @@
       "author": null,
       "contributor": null,
       "rationale": "Provides deterministic safe repo-local paths without becoming a public site, content bundle, or canonical source replacement.",
-      "id": "index_llm_wiki_generated_index",
       "community": 12,
-      "norm_label": "llm wiki generated index"
+      "norm_label": "llm wiki generated index",
+      "id": "index_llm_wiki_generated_index"
     },
     {
       "label": "Tracked Source Boundary",
@@ -30725,9 +30725,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "index_tracked_source_boundary",
       "community": 12,
-      "norm_label": "tracked source boundary"
+      "norm_label": "tracked source boundary",
+      "id": "index_tracked_source_boundary"
     },
     {
       "label": "Runtime Truth",
@@ -30738,9 +30738,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "index_runtime_truth",
       "community": 12,
-      "norm_label": "runtime truth"
+      "norm_label": "runtime truth",
+      "id": "index_runtime_truth"
     },
     {
       "label": "Advisory Graph Context",
@@ -30751,9 +30751,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "index_advisory_graph_context",
       "community": 12,
-      "norm_label": "advisory graph context"
+      "norm_label": "advisory graph context",
+      "id": "index_advisory_graph_context"
     },
     {
       "label": "LLM Wiki Source Rules",
@@ -30764,9 +30764,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "index_source_rules",
       "community": 12,
-      "norm_label": "llm wiki source rules"
+      "norm_label": "llm wiki source rules",
+      "id": "index_source_rules"
     },
     {
       "label": "Generate LLM Wiki Index Script",
@@ -30777,9 +30777,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "index_generate_llm_wiki_index",
       "community": 12,
-      "norm_label": "generate llm wiki index script"
+      "norm_label": "generate llm wiki index script",
+      "id": "index_generate_llm_wiki_index"
     },
     {
       "label": "AI Agent Governance Hub",
@@ -30791,9 +30791,9 @@
       "author": null,
       "contributor": null,
       "rationale": "Centralizes deterministic, auditable, token-efficient agent execution for the shared harness-engineering workspace.",
-      "id": "readme_ai_agent_governance_hub",
       "community": 12,
-      "norm_label": "ai agent governance hub"
+      "norm_label": "ai agent governance hub",
+      "id": "readme_ai_agent_governance_hub"
     },
     {
       "label": "Root Agent Shims",
@@ -30804,9 +30804,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_root_shims",
       "community": 12,
-      "norm_label": "root agent shims"
+      "norm_label": "root agent shims",
+      "id": "readme_root_shims"
     },
     {
       "label": "Stage Gate Lifecycle",
@@ -30817,9 +30817,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_stage_gate_lifecycle",
       "community": 12,
-      "norm_label": "stage gate lifecycle"
+      "norm_label": "stage gate lifecycle",
+      "id": "readme_stage_gate_lifecycle"
     },
     {
       "label": "Governance Rules",
@@ -30830,9 +30830,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_governance_rules",
       "community": 12,
-      "norm_label": "governance rules"
+      "norm_label": "governance rules",
+      "id": "readme_governance_rules"
     },
     {
       "label": "Governance Scopes",
@@ -30843,9 +30843,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_governance_scopes",
       "community": 12,
-      "norm_label": "governance scopes"
+      "norm_label": "governance scopes",
+      "id": "readme_governance_scopes"
     },
     {
       "label": "Provider Overlays",
@@ -30856,9 +30856,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_provider_overlays",
       "community": 12,
-      "norm_label": "provider overlays"
+      "norm_label": "provider overlays",
+      "id": "readme_provider_overlays"
     },
     {
       "label": "Memory Progress Log",
@@ -30869,9 +30869,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_memory_progress_log",
       "community": 12,
-      "norm_label": "memory progress log"
+      "norm_label": "memory progress log",
+      "id": "readme_memory_progress_log"
     },
     {
       "label": "Agent and Function Catalog",
@@ -30883,9 +30883,9 @@
       "author": null,
       "contributor": null,
       "rationale": "Provides a single English-only source of truth for workspace agent roles and reusable orchestration functions.",
-      "id": "readme_agent_and_function_catalog",
       "community": 12,
-      "norm_label": "agent and function catalog"
+      "norm_label": "agent and function catalog",
+      "id": "readme_agent_and_function_catalog"
     },
     {
       "label": "Workspace Agents",
@@ -30896,9 +30896,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_workspace_agents",
       "community": 12,
-      "norm_label": "workspace agents"
+      "norm_label": "workspace agents",
+      "id": "readme_workspace_agents"
     },
     {
       "label": "Orchestration Functions",
@@ -30909,9 +30909,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_orchestration_functions",
       "community": 12,
-      "norm_label": "orchestration functions"
+      "norm_label": "orchestration functions",
+      "id": "readme_orchestration_functions"
     },
     {
       "label": "Runtime Skill Mirror",
@@ -30922,9 +30922,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_runtime_skill_mirror",
       "community": 12,
-      "norm_label": "runtime skill mirror"
+      "norm_label": "runtime skill mirror",
+      "id": "readme_runtime_skill_mirror"
     },
     {
       "label": "Bounded Revalidation Workflow",
@@ -30936,9 +30936,9 @@
       "author": null,
       "contributor": null,
       "rationale": "Keeps audit evidence current without duplicating full-audit documents or expanding into deferred runtime, secret, remote, deployment, or deletion work.",
-      "id": "workspace_audit_revalidation_bounded_revalidation_workflow",
       "community": 12,
-      "norm_label": "bounded revalidation workflow"
+      "norm_label": "bounded revalidation workflow",
+      "id": "workspace_audit_revalidation_bounded_revalidation_workflow"
     },
     {
       "label": "Existing Workspace Audit Evidence",
@@ -30949,9 +30949,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "workspace_audit_revalidation_existing_audit_evidence",
       "community": 12,
-      "norm_label": "existing workspace audit evidence"
+      "norm_label": "existing workspace audit evidence",
+      "id": "workspace_audit_revalidation_existing_audit_evidence"
     },
     {
       "label": "Scoped In Place Evidence Updates",
@@ -30962,9 +30962,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "workspace_audit_revalidation_scoped_evidence_updates",
       "community": 12,
-      "norm_label": "scoped in place evidence updates"
+      "norm_label": "scoped in place evidence updates",
+      "id": "workspace_audit_revalidation_scoped_evidence_updates"
     },
     {
       "label": "Explicit Revalidation Deferrals",
@@ -30975,9 +30975,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "workspace_audit_revalidation_explicit_deferrals",
       "community": 12,
-      "norm_label": "explicit revalidation deferrals"
+      "norm_label": "explicit revalidation deferrals",
+      "id": "workspace_audit_revalidation_explicit_deferrals"
     },
     {
       "label": "Repository Revalidation Gates",
@@ -30988,9 +30988,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "workspace_audit_revalidation_repo_gates",
       "community": 12,
-      "norm_label": "repository revalidation gates"
+      "norm_label": "repository revalidation gates",
+      "id": "workspace_audit_revalidation_repo_gates"
     },
     {
       "label": "doc-writer Agent",
@@ -31001,9 +31001,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "workspace_audit_revalidation_doc_writer",
       "community": 12,
-      "norm_label": "doc-writer agent"
+      "norm_label": "doc-writer agent",
+      "id": "workspace_audit_revalidation_doc_writer"
     },
     {
       "label": "workflow-supervisor Agent",
@@ -31014,9 +31014,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "workspace_audit_revalidation_workflow_supervisor",
       "community": 12,
-      "norm_label": "workflow-supervisor agent"
+      "norm_label": "workflow-supervisor agent",
+      "id": "workspace_audit_revalidation_workflow_supervisor"
     },
     {
       "label": "workspace-audit-revalidation Runtime Skill",
@@ -31027,9 +31027,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "workspace_audit_revalidation_runtime_skill",
       "community": 12,
-      "norm_label": "workspace-audit-revalidation runtime skill"
+      "norm_label": "workspace-audit-revalidation runtime skill",
+      "id": "workspace_audit_revalidation_runtime_skill"
     },
     {
       "label": "Agent Progress Log",
@@ -31040,9 +31040,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "progress_agent_progress_log",
       "community": 12,
-      "norm_label": "agent progress log"
+      "norm_label": "agent progress log",
+      "id": "progress_agent_progress_log"
     },
     {
       "label": "Workspace Audit Improvement Progress",
@@ -31053,9 +31053,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "progress_workspace_audit_improvement",
       "community": 12,
-      "norm_label": "workspace audit improvement progress"
+      "norm_label": "workspace audit improvement progress",
+      "id": "progress_workspace_audit_improvement"
     },
     {
       "label": "Workspace Audit Input Task Gap Closure Progress",
@@ -31066,9 +31066,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "progress_input_task_gap_closure",
       "community": 12,
-      "norm_label": "workspace audit input task gap closure progress"
+      "norm_label": "workspace audit input task gap closure progress",
+      "id": "progress_input_task_gap_closure"
     },
     {
       "label": "Workspace Audit Grill Review Progress",
@@ -31079,9 +31079,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "progress_workspace_audit_grill_review",
       "community": 12,
-      "norm_label": "workspace audit grill review progress"
+      "norm_label": "workspace audit grill review progress",
+      "id": "progress_workspace_audit_grill_review"
     },
     {
       "label": "Workspace Audit Bounded Revalidation Progress",
@@ -31092,9 +31092,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "progress_bounded_revalidation",
       "community": 12,
-      "norm_label": "workspace audit bounded revalidation progress"
+      "norm_label": "workspace audit bounded revalidation progress",
+      "id": "progress_bounded_revalidation"
     },
     {
       "label": "Workspace Audit Revalidation Skill Creation Progress",
@@ -31105,9 +31105,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "progress_workspace_audit_revalidation_skill_creation",
       "community": 12,
-      "norm_label": "workspace audit revalidation skill creation progress"
+      "norm_label": "workspace audit revalidation skill creation progress",
+      "id": "progress_workspace_audit_revalidation_skill_creation"
     },
     {
       "label": "Graphify Health Advisory",
@@ -31118,9 +31118,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "progress_graphify_health_advisory",
       "community": 12,
-      "norm_label": "graphify health advisory"
+      "norm_label": "graphify health advisory",
+      "id": "progress_graphify_health_advisory"
     },
     {
       "label": "Storybook MCP No Touch Boundary",
@@ -31131,9 +31131,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "progress_storybook_mcp_no_touch",
       "community": 12,
-      "norm_label": "storybook mcp no touch boundary"
+      "norm_label": "storybook mcp no touch boundary",
+      "id": "progress_storybook_mcp_no_touch"
     },
     {
       "label": "Execution Plans",
@@ -31144,9 +31144,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_execution_plans",
       "community": 58,
-      "norm_label": "execution plans"
+      "norm_label": "execution plans",
+      "id": "readme_execution_plans"
     },
     {
       "label": "Plan Contract",
@@ -31157,9 +31157,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_plan_contract",
       "community": 58,
-      "norm_label": "plan contract"
+      "norm_label": "plan contract",
+      "id": "readme_plan_contract"
     },
     {
       "label": "Plan to Task Evidence Boundary",
@@ -31170,9 +31170,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_plan_to_task_evidence_boundary",
       "community": 58,
-      "norm_label": "plan to task evidence boundary"
+      "norm_label": "plan to task evidence boundary",
+      "id": "readme_plan_to_task_evidence_boundary"
     },
     {
       "label": "Completed Workspace Audit Plans",
@@ -31183,9 +31183,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_completed_workspace_audit_plans",
       "community": 58,
-      "norm_label": "completed workspace audit plans"
+      "norm_label": "completed workspace audit plans",
+      "id": "readme_completed_workspace_audit_plans"
     },
     {
       "label": "Execution Tasks",
@@ -31196,9 +31196,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_execution_tasks",
       "community": 58,
-      "norm_label": "execution tasks"
+      "norm_label": "execution tasks",
+      "id": "readme_execution_tasks"
     },
     {
       "label": "Task Contract",
@@ -31209,9 +31209,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_task_contract",
       "community": 58,
-      "norm_label": "task contract"
+      "norm_label": "task contract",
+      "id": "readme_task_contract"
     },
     {
       "label": "Verification Summary",
@@ -31222,9 +31222,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_verification_summary",
       "community": 58,
-      "norm_label": "verification summary"
+      "norm_label": "verification summary",
+      "id": "readme_verification_summary"
     },
     {
       "label": "Completed Workspace Audit Tasks",
@@ -31235,9 +31235,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "readme_completed_workspace_audit_tasks",
       "community": 58,
-      "norm_label": "completed workspace audit tasks"
+      "norm_label": "completed workspace audit tasks",
+      "id": "readme_completed_workspace_audit_tasks"
     },
     {
       "label": "Home Docker Workspace Audit Plan",
@@ -31249,9 +31249,9 @@
       "author": null,
       "contributor": null,
       "rationale": "Keeps audit evidence, gap analysis, low-risk remediation, and final reporting traceable without expanding into runtime, secret, deployment, or remote GitHub work.",
-      "id": "2026_05_24_workspace_audit_improvement_plan_home_docker_workspace_audit",
       "community": 12,
-      "norm_label": "home docker workspace audit plan"
+      "norm_label": "home docker workspace audit plan",
+      "id": "2026_05_24_workspace_audit_improvement_plan_home_docker_workspace_audit"
     },
     {
       "label": "Full Audit Coverage",
@@ -31262,9 +31262,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_improvement_plan_full_audit_coverage",
       "community": 12,
-      "norm_label": "full audit coverage"
+      "norm_label": "full audit coverage",
+      "id": "2026_05_24_workspace_audit_improvement_plan_full_audit_coverage"
     },
     {
       "label": "Metadata Only Env and Secrets Handling",
@@ -31275,9 +31275,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_improvement_plan_metadata_only_env_secrets",
       "community": 12,
-      "norm_label": "metadata only env and secrets handling"
+      "norm_label": "metadata only env and secrets handling",
+      "id": "2026_05_24_workspace_audit_improvement_plan_metadata_only_env_secrets"
     },
     {
       "label": "Reviewer Baseline Refresh",
@@ -31288,9 +31288,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_improvement_plan_reviewer_baseline_refresh",
       "community": 12,
-      "norm_label": "reviewer baseline refresh"
+      "norm_label": "reviewer baseline refresh",
+      "id": "2026_05_24_workspace_audit_improvement_plan_reviewer_baseline_refresh"
     },
     {
       "label": "Deferred Runtime and Remote Work",
@@ -31301,9 +31301,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_improvement_plan_deferred_runtime_work",
       "community": 12,
-      "norm_label": "deferred runtime and remote work"
+      "norm_label": "deferred runtime and remote work",
+      "id": "2026_05_24_workspace_audit_improvement_plan_deferred_runtime_work"
     },
     {
       "label": "Home Docker Workspace Audit Task",
@@ -31314,9 +31314,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_improvement_task_home_docker_workspace_audit_task",
       "community": 12,
-      "norm_label": "home docker workspace audit task"
+      "norm_label": "home docker workspace audit task",
+      "id": "2026_05_24_workspace_audit_improvement_task_home_docker_workspace_audit_task"
     },
     {
       "label": "Coverage Ledger",
@@ -31327,9 +31327,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_improvement_task_coverage_ledger",
       "community": 12,
-      "norm_label": "coverage ledger"
+      "norm_label": "coverage ledger",
+      "id": "2026_05_24_workspace_audit_improvement_task_coverage_ledger"
     },
     {
       "label": "Target Path Ledger",
@@ -31340,9 +31340,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_improvement_task_target_path_ledger",
       "community": 12,
-      "norm_label": "target path ledger"
+      "norm_label": "target path ledger",
+      "id": "2026_05_24_workspace_audit_improvement_task_target_path_ledger"
     },
     {
       "label": "Reviewer Baseline Ledger",
@@ -31353,9 +31353,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_improvement_task_reviewer_baseline_ledger",
       "community": 12,
-      "norm_label": "reviewer baseline ledger"
+      "norm_label": "reviewer baseline ledger",
+      "id": "2026_05_24_workspace_audit_improvement_task_reviewer_baseline_ledger"
     },
     {
       "label": "Audit Phase View",
@@ -31366,9 +31366,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_improvement_task_phase_view",
       "community": 12,
-      "norm_label": "audit phase view"
+      "norm_label": "audit phase view",
+      "id": "2026_05_24_workspace_audit_improvement_task_phase_view"
     },
     {
       "label": "Workspace Audit Revalidation Skill Addendum",
@@ -31379,9 +31379,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_improvement_task_workspace_audit_revalidation_skill_addendum",
       "community": 12,
-      "norm_label": "workspace audit revalidation skill addendum"
+      "norm_label": "workspace audit revalidation skill addendum",
+      "id": "2026_05_24_workspace_audit_improvement_task_workspace_audit_revalidation_skill_addendum"
     },
     {
       "label": "Input Task Gap Closure Plan",
@@ -31393,9 +31393,9 @@
       "author": null,
       "contributor": null,
       "rationale": "Closes weak evidence with documentation-only updates and preserves runtime, secret, remote, deployment, permission, and untracked Storybook boundaries.",
-      "id": "2026_05_24_workspace_audit_input_task_gap_closure_plan_input_task_gap_closure",
       "community": 12,
-      "norm_label": "input task gap closure plan"
+      "norm_label": "input task gap closure plan",
+      "id": "2026_05_24_workspace_audit_input_task_gap_closure_plan_input_task_gap_closure"
     },
     {
       "label": "Graphify Update Evidence",
@@ -31406,9 +31406,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_input_task_gap_closure_plan_graphify_update_evidence",
       "community": 12,
-      "norm_label": "graphify update evidence"
+      "norm_label": "graphify update evidence",
+      "id": "2026_05_24_workspace_audit_input_task_gap_closure_plan_graphify_update_evidence"
     },
     {
       "label": "Role Purpose Metadata Evidence",
@@ -31419,9 +31419,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_input_task_gap_closure_plan_role_purpose_metadata",
       "community": 12,
-      "norm_label": "role purpose metadata evidence"
+      "norm_label": "role purpose metadata evidence",
+      "id": "2026_05_24_workspace_audit_input_task_gap_closure_plan_role_purpose_metadata"
     },
     {
       "label": "Input Requirement Matrix",
@@ -31432,9 +31432,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_input_task_gap_closure_task_input_requirement_matrix",
       "community": 12,
-      "norm_label": "input requirement matrix"
+      "norm_label": "input requirement matrix",
+      "id": "2026_05_24_workspace_audit_input_task_gap_closure_task_input_requirement_matrix"
     },
     {
       "label": "Implemented Closure",
@@ -31445,9 +31445,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_input_task_gap_closure_task_implemented_closure",
       "community": 12,
-      "norm_label": "implemented closure"
+      "norm_label": "implemented closure",
+      "id": "2026_05_24_workspace_audit_input_task_gap_closure_task_implemented_closure"
     },
     {
       "label": "Grill With Docs Review Plan",
@@ -31459,9 +31459,9 @@
       "author": null,
       "contributor": null,
       "rationale": "Uses repo evidence to answer challenge questions directly and avoid creating context or ADR artifacts when no glossary term or architectural decision is resolved.",
-      "id": "2026_05_24_workspace_audit_grill_review_plan_grill_with_docs_review",
       "community": 12,
-      "norm_label": "grill with docs review plan"
+      "norm_label": "grill with docs review plan",
+      "id": "2026_05_24_workspace_audit_grill_review_plan_grill_with_docs_review"
     },
     {
       "label": "Original Input Reflection Matrix Plan",
@@ -31472,9 +31472,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_grill_review_plan_original_input_reflection_matrix",
       "community": 12,
-      "norm_label": "original input reflection matrix plan"
+      "norm_label": "original input reflection matrix plan",
+      "id": "2026_05_24_workspace_audit_grill_review_plan_original_input_reflection_matrix"
     },
     {
       "label": "No CONTEXT or ADR Decision",
@@ -31485,9 +31485,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_grill_review_plan_no_context_or_adr_decision",
       "community": 12,
-      "norm_label": "no context or adr decision"
+      "norm_label": "no context or adr decision",
+      "id": "2026_05_24_workspace_audit_grill_review_plan_no_context_or_adr_decision"
     },
     {
       "label": "Grill Review Questions",
@@ -31498,9 +31498,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_grill_review_task_grill_review_questions",
       "community": 12,
-      "norm_label": "grill review questions"
+      "norm_label": "grill review questions",
+      "id": "2026_05_24_workspace_audit_grill_review_task_grill_review_questions"
     },
     {
       "label": "Original Input Reflection Matrix",
@@ -31511,9 +31511,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_grill_review_task_original_input_reflection_matrix",
       "community": 12,
-      "norm_label": "original input reflection matrix"
+      "norm_label": "original input reflection matrix",
+      "id": "2026_05_24_workspace_audit_grill_review_task_original_input_reflection_matrix"
     },
     {
       "label": "Grill Findings Summary",
@@ -31524,9 +31524,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_grill_review_task_grill_findings_summary",
       "community": 12,
-      "norm_label": "grill findings summary"
+      "norm_label": "grill findings summary",
+      "id": "2026_05_24_workspace_audit_grill_review_task_grill_findings_summary"
     },
     {
       "label": "Commit Count Deviation",
@@ -31537,9 +31537,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_grill_review_task_commit_count_deviation",
       "community": 12,
-      "norm_label": "commit count deviation"
+      "norm_label": "commit count deviation",
+      "id": "2026_05_24_workspace_audit_grill_review_task_commit_count_deviation"
     },
     {
       "label": "24 Section Grill Review Report",
@@ -31550,9 +31550,9 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "id": "2026_05_24_workspace_audit_grill_review_task_twenty_four_section_report",
       "community": 12,
-      "norm_label": "24 section grill review report"
+      "norm_label": "24 section grill review report",
+      "id": "2026_05_24_workspace_audit_grill_review_task_twenty_four_section_report"
     }
   ],
   "links": [
