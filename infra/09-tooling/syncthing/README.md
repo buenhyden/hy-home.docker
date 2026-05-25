@@ -86,8 +86,8 @@ syncthing/
 ## Related Documents
 
 - **Guide**: [Syncthing Guide](../../../docs/05.operations/guides/09-tooling/syncthing.md)
-- **Operation**: [Syncthing Operations](../../../docs/05.operations/guides/09-tooling/syncthing.md)
-- **Runbook**: [Syncthing Runbook](../../../docs/05.operations/guides/09-tooling/syncthing.md)
+- **Policy**: [Syncthing Operations](../../../docs/05.operations/policies/09-tooling/syncthing.md)
+- **Runbook**: [Syncthing Runbook](../../../docs/05.operations/runbooks/09-tooling/syncthing.md)
 
 ---
 

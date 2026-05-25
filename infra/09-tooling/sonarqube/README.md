@@ -78,8 +78,8 @@ sonarqube/
 ## Related Documents
 
 - **Guide**: [SonarQube Guide](../../../docs/05.operations/guides/09-tooling/sonarqube.md)
-- **Operation**: [SonarQube Operations](../../../docs/05.operations/guides/09-tooling/sonarqube.md)
-- **Runbook**: [SonarQube Runbook](../../../docs/05.operations/guides/09-tooling/sonarqube.md)
+- **Policy**: [SonarQube Operations](../../../docs/05.operations/policies/09-tooling/sonarqube.md)
+- **Runbook**: [SonarQube Runbook](../../../docs/05.operations/runbooks/09-tooling/sonarqube.md)
 
 ---
 

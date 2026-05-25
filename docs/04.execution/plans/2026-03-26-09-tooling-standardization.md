@@ -20,26 +20,28 @@ status: active
 
 ### Phase 2: Operational Documentation
 
-- [ ] 사용자 가이드 작성 (`docs/05.operations/`): Terrakube 워크스페이스 생성, SonarQube 프로젝트 연동 등.
-- [ ] 운영 정책 작성 (`docs/05.operations/`): 성능 테스트 주기, IaC 승인 프로세스, 이미지 보관 정책.
-- [ ] 런북 작성 (`docs/05.operations/`): Terrakube 상태 복구, SonarQube DB 마이그레이션 등.
+- [x] 사용자 가이드 작성 (`docs/05.operations/`): Terrakube 워크스페이스 생성, SonarQube 프로젝트 연동 등.
+- [x] 운영 정책 작성 (`docs/05.operations/`): 성능 테스트 주기, IaC 승인 프로세스, 이미지 보관 정책.
+- [x] 런북 작성 (`docs/05.operations/`): Terrakube 상태 복구, SonarQube DB 마이그레이션 등.
 
 ### Phase 3: Infrastructure README Refactoring
 
-- [ ] `infra/09-tooling/README.md`를 [Golden 5] 패턴으로 리팩토링.
-- [ ] 계층 내 하부 서비스 README(SonarQube, Terrakube 등) 표준화.
+- [x] `infra/09-tooling/README.md`를 [Golden 5] 패턴으로 리팩토링.
+- [x] 계층 내 하부 서비스 README(SonarQube, Terrakube 등) 표준화.
 
 ## Verification Plan
 
 ### Automated Tests
 
-- [ ] 모든 문서의 마운트 링크 및 상대 경로 무결성 검사.
-- [ ] Markdown Lint (`markdownlint`)를 통한 스타일 및 문법 검증.
+- [x] 모든 문서의 마운트 링크 및 상대 경로 무결성 검사.
+- [x] Markdown Lint (`markdownlint`)를 통한 스타일 및 문법 검증.
 
 ### Manual Verification
 
 - [ ] 가이드라인에 따라 Terrakube 워크스페이스가 정상적으로 생성되는지 확인.
 - [ ] SonarQube 품질 게이트가 파이프라인에서 정상 작동하는지 재검증.
+
+Runtime rehearsal remains deferred because it can affect live tooling state and needs a separate operator-approved runtime window.
 
 ## Context
 

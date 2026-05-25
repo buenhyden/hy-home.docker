@@ -100,6 +100,6 @@ docker compose run --rm terraform apply
 
 - [Tooling tier README](../README.md)
 - [Terraform guide](../../../docs/05.operations/guides/09-tooling/terraform.md)
-- [IaC operations policy](../../../docs/05.operations/guides/09-tooling/terraform.md)
-- [Terraform recovery runbook](../../../docs/05.operations/guides/09-tooling/terraform.md)
+- [IaC operations policy](../../../docs/05.operations/policies/09-tooling/terraform.md)
+- [Terraform recovery runbook](../../../docs/05.operations/runbooks/09-tooling/terraform.md)
 - [Root infra README](../../README.md)

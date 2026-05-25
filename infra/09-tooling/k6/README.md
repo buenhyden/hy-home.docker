@@ -70,8 +70,8 @@ k6/
 ## Related Documents
 
 - **Guide**: [k6 Performance Testing Guide](../../../docs/05.operations/guides/09-tooling/k6.md)
-- **Operation**: [k6 Operations Policy](../../../docs/05.operations/guides/09-tooling/k6.md)
-- **Runbook**: [k6 Recovery Runbook](../../../docs/05.operations/guides/09-tooling/k6.md)
+- **Policy**: [k6 Operations Policy](../../../docs/05.operations/policies/09-tooling/k6.md)
+- **Runbook**: [k6 Recovery Runbook](../../../docs/05.operations/runbooks/09-tooling/k6.md)
 
 ---
 
