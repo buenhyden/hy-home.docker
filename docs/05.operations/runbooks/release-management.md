@@ -61,7 +61,14 @@ status: active
    rg -n "vX.Y.Z" CHANGELOG.md
    ```
 
-6. Capture release readiness evidence in the relevant execution task or PR description. Do not paste secret values, `.env` values, raw logs containing credentials, shell history, or deployment tokens.
+6. Confirm release-readiness checklist items before any release or deploy claim.
+
+   - Backup evidence or an explicit N/A rationale for every affected stateful surface.
+   - Affected rollback or recovery runbook link for every changed service, workflow, or deployment surface.
+   - Incident record path or escalation channel for blocked, failed, or rolled-back release decisions.
+   - Remote gate verification evidence before claiming branch protection, required checks, or release workflow enforcement is current.
+
+7. Capture release readiness evidence in the relevant execution task or PR description. Do not paste secret values, `.env` values, raw logs containing credentials, shell history, or deployment tokens.
 
 ## Evidence
 
@@ -69,6 +76,7 @@ status: active
 - Diff summary and `git diff --check` result.
 - Repo contract, doc traceability, LLM Wiki freshness, and Compose validation results.
 - Changelog tag-string evidence and commit-range evidence used for the release/tag decision.
+- Backup or N/A rationale, affected rollback/recovery links, incident path, and remote gate verification evidence when a release/deploy claim depends on those controls.
 - Explicit statement that no runtime deployment, secret value mutation, `.env` sync, port, permission, or remote branch-protection change was performed unless separately approved.
 
 ## Rollback or Recovery

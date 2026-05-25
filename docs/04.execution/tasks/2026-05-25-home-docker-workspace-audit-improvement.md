@@ -113,7 +113,7 @@ The only blocking local gate found before implementation was stale generated LLM
 | `docs/05.operations/runbooks/release-management.md` | New runbook | None |
 | `docs/05.operations/runbooks/README.md` | Runbook index update | None |
 
-## Verification Log
+## Verification Summary
 
 | Command | Result | Evidence |
 | --- | --- | --- |
