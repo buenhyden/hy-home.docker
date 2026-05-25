@@ -53,6 +53,14 @@ status: active
    git tag --list
    ```
 
+   Before pushing a `v*.*.*` tag, confirm `CHANGELOG.md` already contains the
+   exact release tag string. The repository tag workflow fails when the pushed
+   tag is missing from `CHANGELOG.md`.
+
+   ```bash
+   rg -n "vX.Y.Z" CHANGELOG.md
+   ```
+
 6. Capture release readiness evidence in the relevant execution task or PR description. Do not paste secret values, `.env` values, raw logs containing credentials, shell history, or deployment tokens.
 
 ## Evidence
@@ -60,7 +68,7 @@ status: active
 - Current branch and clean/expected working-tree state.
 - Diff summary and `git diff --check` result.
 - Repo contract, doc traceability, LLM Wiki freshness, and Compose validation results.
-- Changelog or commit-range evidence used for the release/tag decision.
+- Changelog tag-string evidence and commit-range evidence used for the release/tag decision.
 - Explicit statement that no runtime deployment, secret value mutation, `.env` sync, port, permission, or remote branch-protection change was performed unless separately approved.
 
 ## Rollback or Recovery

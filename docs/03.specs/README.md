@@ -56,6 +56,7 @@ docs/03.specs/
 ├── 11-laboratory/                       # Laboratory/admin surface contracts
 ├── docs-taxonomy-agent-first-migration/ # Completed docs taxonomy migration spec
 ├── harness-agent-first-engineering/     # Completed agent-first harness spec
+├── home-docker-revalidation-deferred-follow-up/ # Home Docker revalidation and deferred-follow-up spec
 ├── infra-secrets-docs-refresh/          # Completed infra/secrets/docs refresh spec
 ├── llm-wiki-agent-first-completion/     # Completed LLM Wiki contract spec
 ├── standardize-infra-net/               # infra_net standardization spec
@@ -131,5 +132,6 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Spec template**: [../99.templates/spec.template.md](../99.templates/spec.template.md)
 - **README template**: [../99.templates/readme.template.md](../99.templates/readme.template.md)
 - **Harness / Agent-first Engineering Spec**: [harness-agent-first-engineering/spec.md](./harness-agent-first-engineering/spec.md)
+- **Home Docker Revalidation Deferred Follow-up Spec**: [home-docker-revalidation-deferred-follow-up/spec.md](./home-docker-revalidation-deferred-follow-up/spec.md)
 - **Infra / Secrets / Docs Refresh Spec**: [infra-secrets-docs-refresh/spec.md](./infra-secrets-docs-refresh/spec.md)
 - **LLM Wiki Agent-first Completion Spec**: [llm-wiki-agent-first-completion/spec.md](./llm-wiki-agent-first-completion/spec.md)

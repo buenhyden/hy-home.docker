@@ -301,6 +301,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/docs-taxonomy-agent-first-migration/spec.md](../../03.specs/docs-taxonomy-agent-first-migration/spec.md) | Markdown reference |
 | [docs/03.specs/harness-agent-first-engineering/README.md](../../03.specs/harness-agent-first-engineering/README.md) | folder index |
 | [docs/03.specs/harness-agent-first-engineering/spec.md](../../03.specs/harness-agent-first-engineering/spec.md) | Markdown reference |
+| [docs/03.specs/home-docker-revalidation-deferred-follow-up/spec.md](../../03.specs/home-docker-revalidation-deferred-follow-up/spec.md) | Markdown reference |
 | [docs/03.specs/infra-secrets-docs-refresh/README.md](../../03.specs/infra-secrets-docs-refresh/README.md) | folder index |
 | [docs/03.specs/infra-secrets-docs-refresh/spec.md](../../03.specs/infra-secrets-docs-refresh/spec.md) | Markdown reference |
 | [docs/03.specs/llm-wiki-agent-first-completion/README.md](../../03.specs/llm-wiki-agent-first-completion/README.md) | folder index |
@@ -353,6 +354,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-24-workspace-audit-grill-review.md](../../04.execution/plans/2026-05-24-workspace-audit-grill-review.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-24-workspace-audit-improvement.md](../../04.execution/plans/2026-05-24-workspace-audit-improvement.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-24-workspace-audit-input-task-gap-closure.md](../../04.execution/plans/2026-05-24-workspace-audit-input-task-gap-closure.md) | Markdown reference |
+| [docs/04.execution/plans/2026-05-25-home-docker-revalidation-deferred-follow-up.md](../../04.execution/plans/2026-05-25-home-docker-revalidation-deferred-follow-up.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-25-home-docker-workspace-audit-improvement.md](../../04.execution/plans/2026-05-25-home-docker-workspace-audit-improvement.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
@@ -398,6 +400,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-05-24-workspace-audit-grill-review.md](../../04.execution/tasks/2026-05-24-workspace-audit-grill-review.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-24-workspace-audit-improvement.md](../../04.execution/tasks/2026-05-24-workspace-audit-improvement.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-24-workspace-audit-input-task-gap-closure.md](../../04.execution/tasks/2026-05-24-workspace-audit-input-task-gap-closure.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md](../../04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md](../../04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
