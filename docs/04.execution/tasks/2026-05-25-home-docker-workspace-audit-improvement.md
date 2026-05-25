@@ -32,7 +32,7 @@ status: completed
 | Governance routing | GOV reviewer | `workflow-supervisor.md` skill list and function catalog path | Done |
 | LLM Wiki freshness | DOC reviewer, local generator | `generate-llm-wiki-index.sh --check` now passes | Done |
 | Env key drift | INF reviewer, metadata-only comparison | Later key-only revalidation reports `.env.example` and `.env` each have 326 keys and both include `QDRANT_GRPC_PORT` | Closed later |
-| Secret registry metadata drift | INF reviewer, ID/metadata-only comparison | Both sensitive registry files have 104 IDs; ID sets match; env-var/path metadata drift recorded without values | Deferred |
+| Secret registry metadata drift | INF reviewer, ID/metadata-only comparison | Later metadata-only revalidation reports both sensitive registry files have 106 IDs, matching ID sets, and no env-var/path metadata delta | Closed later |
 | Hook validation docs | SCR reviewer, script source | `post-tool-validate.sh` exits 0 with no payload; Hookify repo validator allows only `bash`, `file`, `stop` | Done |
 | Storybook QA docs | QA reviewer, package manifest | `test` and `coverage` scripts exist in `projects/storybook/nextjs/package.json` | Done |
 | Release readiness docs | CICD reviewer, local docs | Documentation-only runbook added; no deploy or remote branch protection changes | Done |
@@ -48,7 +48,7 @@ status: completed
 | Hookify event support can be misread as external Hookify parity | Document repo validator support as `bash`, `file`, `stop` only | Agent | Done |
 | Release/tag readiness lacks local runbook | Add manual evidence-focused runbook without changing deployment behavior | Agent | Done |
 | `.env` missing `QDRANT_GRPC_PORT` | Original pass recorded operator-owned deferred drift; later approved non-secret key sync closed the key-set delta without printing values | Agent | Closed later |
-| Sensitive metadata path/env-var drift | Record metadata-only drift; do not mutate values or registry files | Operator | Deferred |
+| Sensitive metadata path/env-var drift | Original pass recorded metadata-only drift; later approved metadata reconciliation closed ID/env-var/path deltas without printing values | Agent | Closed later |
 
 ## Rule Conflict Log
 
@@ -144,10 +144,10 @@ No `.env` value was printed in this document; this row records key names and cou
 
 | File | ID Count | Drift |
 | --- | --- | --- |
-| `secrets/SENSITIVE_ENV_VARS.md.example` | 104 | ID set matches local registry |
-| `secrets/SENSITIVE_ENV_VARS.md` | 104 | ID set matches example registry |
+| `secrets/SENSITIVE_ENV_VARS.md.example` | 106 | ID set and env-var/path metadata match local registry |
+| `secrets/SENSITIVE_ENV_VARS.md` | 106 | ID set and env-var/path metadata match example registry |
 
-Metadata-only drift recorded: `MONGODB_ROOT_USERNAME` appears in example metadata only, and `TERRAKUBE_ADMIN_USERNAME` appears in local path metadata only. No secret value was printed or edited.
+No secret value was printed in this document; this row records ID, env-var, and file-path metadata only.
 
 ## Skill Review
 

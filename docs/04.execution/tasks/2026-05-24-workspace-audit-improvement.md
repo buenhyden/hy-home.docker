@@ -453,9 +453,9 @@ requires TDD-gated evidence before Skill mutation.
 | duplicated_gaps | Stale references collapsed into DOC-001 through DOC-005. |
 | conflicting_gaps | Skill instructions that imply writes or network were mapped to Codex-safe repo-native behavior. |
 | missing_systems | Release dry-run rehearsal policy and runtime exposure policy decisions remain intentionally absent; live remote branch-protection read-back was closed later. |
-| implementation_candidates | Future RabbitMQ secret wiring, Vault exposure decision, Neo4j exposure decision, and secret metadata follow-up. |
+| implementation_candidates | Future RabbitMQ secret wiring, Vault exposure decision, and Neo4j exposure decision. |
 | deferred_items | INFRA-001, INFRA-003, INFRA-004, SEC-001 follow-up, GIT-001. QA-002 and CI-001 were later closed by follow-up evidence. |
-| required_decisions | Operator decision needed for actual `.env` sync, sensitive-registry metadata drift, runtime exposure changes, and release dry-run policy. |
+| required_decisions | Operator decision needed for value-bearing secret review, runtime exposure changes, and release dry-run policy. |
 
 ## Decision Log
 
@@ -509,7 +509,7 @@ requires TDD-gated evidence before Skill mutation.
 | VER-WAI-012 | `env PATH=/home/hy/.nvm/versions/node/v24.14.0/bin:$PATH npm run coverage --prefix projects/storybook/nextjs` | Storybook QA | FAIL | Playwright temp path EROFS under `/mnt/c/.../Temp` | Windows temp path read-only in sandbox | Alternative forced temp vars to `/tmp` |
 | VER-WAI-013 | `env PATH=/home/hy/.nvm/versions/node/v24.14.0/bin:$PATH TMPDIR=/tmp TEMP=/tmp TMP=/tmp npm run coverage --prefix projects/storybook/nextjs` | Storybook QA | PASS | 3 files, 8 tests passed; statements 83.33%, branches 81.81%, functions 66.66%, lines 83.33% | N/A | Vitest reported close timeout after tests but exited 0 |
 | VER-WAI-014 | Metadata-only env key compare | `.env.example` vs `.env` | PASS; later key-set delta closed | Original evidence had `.env.example` 328 keys and `.env` 327 keys with example-only `QDRANT_GRPC_PORT`; later key-only revalidation reports both files have 326 keys and both include `QDRANT_GRPC_PORT` | N/A | Values remain uninspected and operator-owned |
-| VER-WAI-015 | Metadata-only secrets compare | Sensitive example vs real registry | PASS with drift | 104 rows each; IDs match; 3 metadata rows differ | N/A | Follow-up needed; no values inspected/output |
+| VER-WAI-015 | Metadata-only secrets compare | Sensitive example vs real registry | PASS; later metadata drift closed | Original evidence had 104 rows each, matching IDs, and 3 metadata rows differing; later metadata-only revalidation reports both registries have 106 IDs, matching ID sets, and no env-var/path metadata deltas | N/A | Values remain uninspected and owner-controlled |
 | VER-WAI-016 | `/home/hy/.local/bin/graphify update .` | Graphify output after script change | PASS | Rebuilt graph output; hook-normalized report delta committed | N/A | Graphify health remains advisory |
 | VER-WAI-017 | Input-task completeness review | Original input list vs completed audit artifacts | PASS after addendum | Target-path, reviewer-baseline, role/purpose parser, and Graphify update evidence gaps closed | N/A | Runtime/value/remote deferrals remain intentional |
 | VER-WAI-018 | Six read-only reviewer revalidation | Governance, docs, Docker/env/secrets, scripts/hooks, QA, CI/CD/ops | PASS | All six reviewer roles returned required scope/files/gaps/skills/actions/risks/verification/deferred/coverage fields | N/A | Runtime, values, remote state, deployment, and untracked tree remain out of scope |
@@ -571,10 +571,10 @@ requires TDD-gated evidence before Skill mutation.
 
 | Comparison ID | Source A | Source B | Method | Result | Value Handling |
 | --- | --- | --- | --- | --- | --- |
-| SEC-WAI-001 | `secrets/SENSITIVE_ENV_VARS.md.example` | real sensitive registry | Parse table columns ID, Auto, Type, `.env` var, file path; ignore Value column | 104 metadata rows each; no ID count mismatch | Values ignored |
-| SEC-WAI-002 | Metadata drift | Same | Compare metadata rows only | `AUTO-006`: real registry has `TERRAKUBE_ADMIN_USERNAME` env var, example has none; `CACHE-003`: example has `MONGODB_ROOT_USERNAME`, real has none; `CACHE-015`: automation flag differs `X` vs `O` | Values ignored |
-| SEC-WAI-003 | Follow-up | Secret owner | Manual metadata reconciliation | Required because real/example metadata drift remains | No value output |
-| SEC-WAI-004 | Role/purpose-safe parser coverage | Same | Extract ID, automation flag, type, `.env` key, file path, and purpose/role text while skipping the Value column | 104 metadata rows each; differing IDs remain `AUTO-006`, `CACHE-003`, and `CACHE-015` | Values ignored |
+| SEC-WAI-001 | `secrets/SENSITIVE_ENV_VARS.md.example` | real sensitive registry | Parse table columns ID, Auto, Type, `.env` var, file path; ignore Value column | Later metadata-only revalidation reports 106 metadata rows each and no ID count mismatch | Values ignored |
+| SEC-WAI-002 | Metadata drift | Same | Compare metadata rows only | Later metadata-only revalidation reports no env-var/path metadata delta IDs | Values ignored |
+| SEC-WAI-003 | Follow-up | Secret owner | Manual value review only if required | Metadata drift closed later; value correctness remains owner-controlled | No value output |
+| SEC-WAI-004 | Role/purpose-safe parser coverage | Same | Extract ID, automation flag, type, `.env` key, file path, and purpose/role text while skipping the Value column | Later metadata-only revalidation reports 106 metadata rows each and no env-var/path metadata delta IDs | Values ignored |
 
 ## Deferred Risk Register
 

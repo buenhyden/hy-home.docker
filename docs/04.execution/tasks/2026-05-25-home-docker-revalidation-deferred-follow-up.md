@@ -33,7 +33,7 @@ status: completed
 | Governance routing | Prior audit documented workspace-audit skill routing | Governance reviewer pass returned no blocking findings; repo rules loaded | Done |
 | Stage docs lifecycle | Prior audit added Stage 04 evidence only | Dedicated Stage 03/04 follow-up artifacts created from templates | Done |
 | Env key drift | Original pass reported `.env.example` 328 keys, `.env` 327 keys, and missing `QDRANT_GRPC_PORT` | Later key-only revalidation reports `.env.example` and `.env` each have 326 keys and both include `QDRANT_GRPC_PORT` | Closed later |
-| Secret registry metadata drift | Both registries 104 IDs; ID sets match; selected env-var/path metadata drift | Rechecked by ID/env-var/path metadata only; same drift observed | Deferred |
+| Secret registry metadata drift | Original pass reported 104 IDs and selected env-var/path metadata drift | Later metadata-only revalidation reports both sensitive registry files have 106 IDs, matching ID sets, and no env-var/path metadata delta | Closed later |
 | Hook and script docs | Prior audit clarified no-payload and Hookify event support | Local fallback confirmed docs already match hook behavior; no script edits required | Done |
 | Storybook QA docs | Prior audit documented `test` and `coverage` commands | QA reviewer confirmed coverage was not needed for this doc-only follow-up; later expanded authored SSoT follow-up closed repo-local 90% threshold enforcement | Done |
 | Release/GitHub readiness | Prior audit added runbook; remote enforcement deferred | CI/CD reviewer found tag workflow requires exact tag string in `CHANGELOG.md`; runbook clarification added, remote calls remain deferred | Done |
@@ -57,7 +57,7 @@ status: completed
 | Need a Stage 03 parent contract for revalidation/deferred work | Add dedicated spec artifact | Agent | Done |
 | Need task-level evidence separate from prior baseline audit | Add dedicated task artifact | Agent | Done |
 | `.env` missing `QDRANT_GRPC_PORT` | Original pass recorded operator-owned deferred drift; later approved non-secret key sync closed the key-set delta without printing values | Agent | Closed later |
-| Secret registry selected env-var/path metadata drift | Record metadata-only drift; do not mutate registry/value files | Operator | Deferred |
+| Secret registry selected env-var/path metadata drift | Original pass recorded metadata-only drift; later approved metadata reconciliation closed ID/env-var/path deltas without printing values | Agent | Closed later |
 | `.agents/skills` compatibility mirror drift | Later follow-up aligned formatting-only drift while keeping `.claude/skills` as runtime source of truth | Agent | Done |
 | ARD/ADR template-frontmatter cleanup across 46 architecture leaves | Keep deferred due broad blast radius | Future docs remediation | Deferred |
 | Storybook coverage threshold policy | Later expanded authored SSoT follow-up enforced 90% repo-local thresholds | Agent | Done |
@@ -150,9 +150,9 @@ The prior 2026-05-25 audit closed the low-risk documentation and generated-index
 | `.env.example` key count | PASS | 328 key names found; values not printed |
 | `.env` key count | PASS | 327 key names found; values not printed |
 | `.env.example` vs `.env` key diff | Deferred drift | `QDRANT_GRPC_PORT` present only in `.env.example`; no extra `.env` keys found |
-| Secret registry ID count | PASS | Example and local registries each contain 104 IDs |
+| Secret registry ID count | PASS | Example and local registries each contain 106 IDs |
 | Secret registry ID set diff | PASS | ID sets match |
-| Secret registry env-var/path metadata diff | Deferred drift | `AUTO-006` and `CACHE-003` env-var/path metadata differ; values ignored |
+| Secret registry env-var/path metadata diff | PASS | No differing IDs found when comparing env-var and file-path metadata; values ignored |
 | CI/CD reviewer pass | Doc gap found | Release runbook needed to mention exact `CHANGELOG.md` tag-string gate from `.github/workflows/generate-changelog.yml` |
 | `git diff --check HEAD` | PASS | No whitespace errors |
 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS | Generated LLM Wiki index is fresh |
@@ -180,15 +180,10 @@ No `.env` value was recorded in this document; this row records key names and co
 
 | File | ID Count | Drift |
 | --- | --- | --- |
-| `secrets/SENSITIVE_ENV_VARS.md.example` | 104 | ID set matches local registry |
-| `secrets/SENSITIVE_ENV_VARS.md` | 104 | ID set matches example registry |
+| `secrets/SENSITIVE_ENV_VARS.md.example` | 106 | ID set and env-var/path metadata match local registry |
+| `secrets/SENSITIVE_ENV_VARS.md` | 106 | ID set and env-var/path metadata match example registry |
 
-Metadata-only drift:
-
-- `AUTO-006`: env-var metadata differs between example and local registry.
-- `CACHE-003`: env-var metadata differs between example and local registry.
-
-No secret value is recorded in this document.
+No secret value is recorded in this document; this row records ID, env-var, and file-path metadata only.
 
 ## Skill Review
 
