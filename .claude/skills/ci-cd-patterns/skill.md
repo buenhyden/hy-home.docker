@@ -43,11 +43,13 @@ docker compose ps myservice
 ```
 
 Requirements:
+
 - Service must have a health-check defined (`healthcheck.test`, `interval`, `retries`)
 - Upstream service (Traefik) must have retry logic or connection draining
 - Image must be backward-compatible with running data schemas
 
 Rollback:
+
 ```bash
 # Pin image back to previous tag in compose file, then:
 docker compose up -d --no-deps myservice
@@ -83,6 +85,7 @@ services:
 ```
 
 **Switch procedure**:
+
 1. Deploy green with `docker compose --profile green up -d myservice-green`.
 2. Run smoke tests against green (internal access or header-based routing).
 3. Swap Traefik router rules: make green the primary host route; make blue header-gated.
@@ -119,6 +122,7 @@ http:
 | 4 | 100% | — | Remove stable; canary becomes primary |
 
 **Automatic rollback conditions**:
+
 - HTTP 5xx rate > 2% sustained for 5 minutes
 - p99 latency > 2× baseline sustained for 5 minutes
 - Container restart count > 2 within 10 minutes
@@ -171,7 +175,7 @@ labels:
 
 ### Gate Placement — GitHub Actions
 
-```
+```text
 [Pre-Commit Hook]
   ├── Secret detection (Gitleaks or detect-secrets)
   └── YAML lint / docker-compose validate
@@ -263,7 +267,7 @@ Four key metrics for pipeline maturity assessment:
 
 ## Branch Strategy and Deployment Mapping
 
-```
+```text
 feature/*  -> PR -> main     (auto: compose validate + SAST + secret scan)
 main       -> push           (auto: staging deploy + integration test)
 main + tag -> push           (manual approval gate -> production deploy)

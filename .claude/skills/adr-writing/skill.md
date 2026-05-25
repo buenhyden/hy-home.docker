@@ -16,7 +16,7 @@ for infrastructure, security, and operational decisions in this Docker-based hom
 
 ## ADR Status Lifecycle
 
-```
+```text
 [Proposed] -> [Accepted] -> [Deprecated]
                    |
              [Superseded by ADR-NNN]
@@ -33,7 +33,7 @@ Update the Status field and add a Change History entry whenever the status trans
 
 ## Category-Prefixed Numbering System
 
-```
+```text
 docs/02.architecture/decisions/NNNN-<category>-<short-title>.md
 
 Category codes (hy-home.docker):
@@ -45,6 +45,7 @@ Category codes (hy-home.docker):
 ```
 
 Examples:
+
 - `0001-infra-network-isolation-strategy.md`
 - `0002-sec-secrets-docker-vs-env.md`
 - `0003-ops-log-aggregation-loki-vs-elk.md`
@@ -127,7 +128,7 @@ tradeoffs explicit and comparable.
 
 When choosing or configuring stateful services in hy-home.docker:
 
-```
+```text
 Consistency + Availability + Partition Tolerance: choose 2.
 
 CP  (Consistent + Partition Tolerant):
@@ -175,7 +176,7 @@ Score each alternative 1–5 per attribute. Weighted score = Weight x Score.
 
 For decisions with significant architectural impact (ARCH category or cross-cutting changes):
 
-```
+```text
 Step 1 — Identify Architecture Drivers
   Core operational goals + quality attribute scenarios (specific, measurable)
 

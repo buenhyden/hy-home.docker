@@ -16,7 +16,7 @@ Patterns and best practices for designing maintainable, secure Docker Compose se
 
 ### Pattern 1: Single-file with override files
 
-```
+```text
 project/
 ├── docker-compose.yml          # Base service definitions (shared)
 ├── docker-compose.override.yml # Dev overrides (auto-loaded, gitignored for secrets)
@@ -26,7 +26,7 @@ project/
 
 ### Pattern 2: Service-group separation
 
-```
+```text
 project/
 ├── docker-compose.yml          # Shared infrastructure (networks, secrets, volumes)
 ├── infra/

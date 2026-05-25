@@ -26,7 +26,7 @@ Systematic threat identification and risk scoring for Docker Compose service sta
 
 ## Trust Boundary Mapping — hy-home.docker Stack
 
-```
+```text
 Internet
     │ HTTPS/443
     ▼ [Trust Boundary: External → Gateway]
@@ -73,7 +73,7 @@ Internet
 
 Score each identified threat 1–10 per dimension:
 
-```
+```text
 Damage          — Impact if successfully exploited
 Reproducibility — How reliably can the attack be repeated?
 Exploitability  — Skill and resources needed to execute
@@ -90,7 +90,7 @@ Risk Score = (D + R + E + A + D) / 5
 
 ### Example: Unauthenticated Internal Service Access
 
-```
+```text
 Threat: Service B on infra_net directly calls Service A without auth token
 ├── Damage:          8 (service A state manipulable)
 ├── Reproducibility: 9 (trivially repeatable within network)
@@ -102,7 +102,7 @@ Threat: Service B on infra_net directly calls Service A without auth token
 
 ## Attack Tree — Common Container Attack Paths
 
-```
+```text
 Goal: Obtain database credentials
 
 OR ─┬── Plaintext in compose env section
@@ -121,33 +121,39 @@ OR ─┬── Plaintext in compose env section
 ## Audit Checklist — Pre-deployment Threat Review
 
 ### Authentication & Identity (Spoofing)
+
 - [ ] Service-to-service calls use token validation or mTLS
 - [ ] Keycloak realm and client settings reviewed
 - [ ] Default passwords changed or managed via Docker Secrets
 - [ ] Admin endpoints not exposed externally
 
 ### Data Integrity (Tampering)
+
 - [ ] Writable volumes restricted to necessary paths
 - [ ] Database migrations use checksums or version control
 - [ ] Network traffic between sensitive services uses TLS
 
 ### Audit Trail (Repudiation)
+
 - [ ] Structured JSON logging enabled on all services
 - [ ] Log driver configured (json-file with rotation, or remote)
 - [ ] Auth events logged by Keycloak
 
 ### Data Exposure (Information Disclosure)
+
 - [ ] No credentials in compose env sections — only `_FILE` references to secrets
 - [ ] Container inspect output clean of credentials
 - [ ] Debug endpoints disabled in production images
 
 ### Availability (Denial of Service)
+
 - [ ] `mem_limit` and `cpus` set on all containers
 - [ ] Traefik rate limiting enabled
 - [ ] Health-check `retries` and `start_period` configured
 - [ ] Stateful services have restart policies
 
 ### Privilege (Elevation of Privilege)
+
 - [ ] `no-new-privileges: true` on all containers
 - [ ] Services run as non-root user
 - [ ] `privileged: false` (not overridden)
@@ -167,7 +173,7 @@ OR ─┬── Plaintext in compose env section
 
 Produce `_workspace/threat_model_<YYYY-MM-DD>.md`:
 
-```
+```markdown
 # Container Threat Model — YYYY-MM-DD
 
 ## Scope

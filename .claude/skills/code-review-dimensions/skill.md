@@ -50,53 +50,64 @@ Structured reference for the `code-reviewer` agent covering Security, Architectu
 
 #### Python
 
-**CWE-89 SQL Injection**
+__CWE-89 SQL Injection__
+
 - Vulnerable: f-string or % formatting of user_input directly into a SQL query string passed to cursor.execute.
 - Safe: Parameterised queries — `cursor.execute("SELECT ... WHERE name = %s", (user_input,))` — or use ORM (SQLAlchemy, Django ORM).
 
-**CWE-78 OS Command Injection**
+__CWE-78 OS Command Injection__
+
 - Vulnerable: os.system or subprocess with shell=True and a formatted string containing user input.
 - Safe: subprocess.run with shell=False, passing arguments as a list — never as a shell string.
 
-**CWE-22 Path Traversal**
+__CWE-22 Path Traversal__
+
 - Vulnerable: os.path.join(BASE_DIR, user_input) opened directly without verifying the resolved path stays inside BASE_DIR.
 - Safe: os.path.realpath the joined path, then assert it starts with os.path.realpath(BASE_DIR).
 
-**CWE-502 Unsafe Deserialization**
+__CWE-502 Unsafe Deserialization__
+
 - Vulnerable: Permissive YAML loader (yaml.load without SafeLoader) on untrusted input — allows arbitrary object construction.
 - Safe: yaml.safe_load restricts to simple types.
 
 #### JavaScript / TypeScript
 
-**CWE-79 XSS**
+__CWE-79 XSS__
+
 - Vulnerable: Setting a raw-HTML injection prop with unescaped user-supplied content; direct innerHTML assignment in vanilla JS.
 - Safe: Use React text-node rendering (auto-escaped). When HTML injection is required, sanitise input with DOMPurify before injection.
 
-**CWE-1321 Prototype Pollution**
+__CWE-1321 Prototype Pollution__
+
 - Vulnerable: Recursive merge with for...in iteration assigning target[key] = source[key] without filtering — a crafted object with __proto__ key pollutes the base prototype.
 - Safe: Iterate with Object.keys() (own keys only); explicitly skip __proto__ and constructor keys before assignment.
 
-**CWE-95 Dynamic Code Evaluation**
+__CWE-95 Dynamic Code Evaluation__
+
 - Vulnerable: Any construct that evaluates a user-controlled string as executable code.
 - Safe: Replace with data-driven logic — lookup tables, JSON configuration, whitelisted dispatch maps. Never execute arbitrary strings.
 
 #### Java
 
-**CWE-89 SQL Injection**
+__CWE-89 SQL Injection__
+
 - Vulnerable: Concatenating userId directly into a SQL string passed to Statement.executeQuery.
 - Safe: PreparedStatement with ? placeholders and typed setter methods (ps.setInt, ps.setString).
 
-**CWE-611 XXE**
+__CWE-611 XXE__
+
 - Vulnerable: DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(userInput) without disabling external entity resolution.
 - Safe: Set disallow-doctype-decl and external-general-entities features on the factory before parsing.
 
 #### Go
 
-**CWE-89 SQL Injection**
+__CWE-89 SQL Injection__
+
 - Vulnerable: fmt.Sprintf with user input interpolated into a SQL string, passed to db.Query.
 - Safe: db.Query with $1 parameterised placeholder.
 
-**CWE-22 Path Traversal**
+__CWE-22 Path Traversal__
+
 - Vulnerable: filepath.Join(baseDir, r.URL.Path) served directly without validating that the resolved path remains inside baseDir.
 - Safe: filepath.Clean the path, then strings.HasPrefix(fullPath, baseDir) — reject if outside.
 
@@ -123,25 +134,25 @@ secrets:
 
 | Principle | Violation Signal | Identification Criteria | Refactoring |
 |-----------|-----------------|------------------------|-------------|
-| **S — SRP** | Class name contains "And", "Manager", "Handler" | Multiple reasons to change; imports from DB + HTTP + UI simultaneously | Extract Class, Layer Separation |
-| **S — SRP** | God Class (1000+ lines) | Single class covers multiple domain concerns | Extract Class, Extract Subclass |
-| **O — OCP** | Switch/if modified when adding new types | case blocks added to existing logic | Strategy Pattern, Polymorphism |
-| **O — OCP** | Hardcoded branching | New conditions added for each new type | Plugin/Registry Pattern |
-| **L — LSP** | Child class throws NotImplementedError | Parent contract violated by subtype | Interface Segregation, Composition |
-| **L — LSP** | Type-check before cast | isinstance / type(x) == branching on polymorphic type | Redesign with polymorphism |
-| **I — ISP** | Empty interface implementations | pass, {}, noop for methods that don't apply | Split into Role Interfaces |
-| **I — ISP** | Fat interface (10+ methods) | Implementors forced to stub unrelated methods | Separate by client need |
-| **D — DIP** | Direct concrete class instantiation | ConcreteService() hardcoded in business logic | Dependency Injection |
-| **D — DIP** | Upper module imports lower module | Domain layer directly imports DB/ORM library | Interface/Port abstraction |
+| __S — SRP__ | Class name contains "And", "Manager", "Handler" | Multiple reasons to change; imports from DB + HTTP + UI simultaneously | Extract Class, Layer Separation |
+| __S — SRP__ | God Class (1000+ lines) | Single class covers multiple domain concerns | Extract Class, Extract Subclass |
+| __O — OCP__ | Switch/if modified when adding new types | case blocks added to existing logic | Strategy Pattern, Polymorphism |
+| __O — OCP__ | Hardcoded branching | New conditions added for each new type | Plugin/Registry Pattern |
+| __L — LSP__ | Child class throws NotImplementedError | Parent contract violated by subtype | Interface Segregation, Composition |
+| __L — LSP__ | Type-check before cast | isinstance / type(x) == branching on polymorphic type | Redesign with polymorphism |
+| __I — ISP__ | Empty interface implementations | pass, {}, noop for methods that don't apply | Split into Role Interfaces |
+| __I — ISP__ | Fat interface (10+ methods) | Implementors forced to stub unrelated methods | Separate by client need |
+| __D — DIP__ | Direct concrete class instantiation | ConcreteService() hardcoded in business logic | Dependency Injection |
+| __D — DIP__ | Upper module imports lower module | Domain layer directly imports DB/ORM library | Interface/Port abstraction |
 
 ### SOLID Checklist
 
-- [ ] **S** — Each class/module has only one reason to change
-- [ ] **S** — No God Classes exceeding 1000 lines
-- [ ] **O** — New features added without modifying existing code (polymorphism, not switch)
-- [ ] **L** — Subtypes can fully replace parent types without behavioural change
-- [ ] **I** — No fat interfaces forcing empty implementations
-- [ ] **D** — High-level modules depend on abstractions, not concrete implementations
+- [ ] __S__ — Each class/module has only one reason to change
+- [ ] __S__ — No God Classes exceeding 1000 lines
+- [ ] __O__ — New features added without modifying existing code (polymorphism, not switch)
+- [ ] __L__ — Subtypes can fully replace parent types without behavioural change
+- [ ] __I__ — No fat interfaces forcing empty implementations
+- [ ] __D__ — High-level modules depend on abstractions, not concrete implementations
 
 ---
 
@@ -201,25 +212,25 @@ Branch points (if / else / switch / for / while / catch) + 1:
 
 | Code Smell | Symptoms | Refactoring Technique |
 |-----------|----------|----------------------|
-| **Long Method** | 20+ lines | Extract Method, Replace Temp with Query |
-| **Large Class** | 300+ lines or 10+ fields | Extract Class, Extract Subclass |
-| **Long Parameter List** | 4+ parameters | Introduce Parameter Object, Builder Pattern |
-| **Data Clumps** | Same field groups repeated across classes | Extract Class |
-| **Primitive Obsession** | Domain concepts represented as raw primitives | Value Object, Enum |
+| __Long Method__ | 20+ lines | Extract Method, Replace Temp with Query |
+| __Large Class__ | 300+ lines or 10+ fields | Extract Class, Extract Subclass |
+| __Long Parameter List__ | 4+ parameters | Introduce Parameter Object, Builder Pattern |
+| __Data Clumps__ | Same field groups repeated across classes | Extract Class |
+| __Primitive Obsession__ | Domain concepts represented as raw primitives | Value Object, Enum |
 
 #### Structure-Related Smells
 
 | Code Smell | Symptoms | Refactoring Technique |
 |-----------|----------|----------------------|
-| **Feature Envy** | Excessive use of another class's data | Move Method |
-| **Data Class** | Class with only getters/setters, no behaviour | Move behaviour into class |
-| **Shotgun Surgery** | One change forces edits in multiple classes | Move Method/Field, Inline Class |
-| **Divergent Change** | One class changes for multiple unrelated reasons | Extract Class (SRP) |
-| **Duplicated Code** | Identical or near-identical blocks | Extract Method, Template Method |
-| **Middle Man** | Class that only delegates to another | Remove Middle Man, Inline Class |
-| **Switch/If Chain** | Long conditional branching on type | Replace Conditional with Polymorphism, Strategy |
-| **Refused Bequest** | Child class inherits but does not use parent methods | Replace Inheritance with Delegation |
-| **Explanatory Comments** | Complex logic requires comments to be understood | Extract Method to make code self-documenting |
+| __Feature Envy__ | Excessive use of another class's data | Move Method |
+| __Data Class__ | Class with only getters/setters, no behaviour | Move behaviour into class |
+| __Shotgun Surgery__ | One change forces edits in multiple classes | Move Method/Field, Inline Class |
+| __Divergent Change__ | One class changes for multiple unrelated reasons | Extract Class (SRP) |
+| __Duplicated Code__ | Identical or near-identical blocks | Extract Method, Template Method |
+| __Middle Man__ | Class that only delegates to another | Remove Middle Man, Inline Class |
+| __Switch/If Chain__ | Long conditional branching on type | Replace Conditional with Polymorphism, Strategy |
+| __Refused Bequest__ | Child class inherits but does not use parent methods | Replace Inheritance with Delegation |
+| __Explanatory Comments__ | Complex logic requires comments to be understood | Extract Method to make code self-documenting |
 
 ### Language-Specific Style Guide Reference
 
@@ -239,25 +250,25 @@ Branch points (if / else / switch / for / while / catch) + 1:
 
 | Problem Situation | Applicable Pattern | Benefit |
 |------------------|--------------------|---------|
-| Behavioural branching via conditionals on type | **Strategy** | OCP compliance; new behaviours addable without modifying existing code |
-| Complex object creation with many parameters | **Factory Method / Builder** | Encapsulate creation logic; prevents invalid object state |
-| Same algorithm skeleton, different implementation details | **Template Method** | Remove duplication; isolate change points |
-| Behaviour changes based on object state | **State** | Remove nested conditionals; clarify state transitions |
-| Event propagation to multiple subscribers | **Observer** | Loose coupling between producers and consumers |
-| Integrating incompatible interfaces | **Adapter** | Integrate without modifying existing code |
-| Simplifying complex subsystem | **Facade** | Reduce surface area; lower coupling |
-| Dynamically adding features without inheritance | **Decorator** | Feature composition at runtime |
+| Behavioural branching via conditionals on type | __Strategy__ | OCP compliance; new behaviours addable without modifying existing code |
+| Complex object creation with many parameters | __Factory Method / Builder__ | Encapsulate creation logic; prevents invalid object state |
+| Same algorithm skeleton, different implementation details | __Template Method__ | Remove duplication; isolate change points |
+| Behaviour changes based on object state | __State__ | Remove nested conditionals; clarify state transitions |
+| Event propagation to multiple subscribers | __Observer__ | Loose coupling between producers and consumers |
+| Integrating incompatible interfaces | __Adapter__ | Integrate without modifying existing code |
+| Simplifying complex subsystem | __Facade__ | Reduce surface area; lower coupling |
+| Dynamically adding features without inheritance | __Decorator__ | Feature composition at runtime |
 
 ### Refactoring Priority — Impact / Difficulty Matrix
 
 | | Low Difficulty | High Difficulty |
 |--|---------------|----------------|
-| **High Impact** | Do immediately | Plan then execute in dedicated sprint |
-| **Low Impact** | When time allows (backlog) | Defer — low cost-benefit ratio |
+| __High Impact__ | Do immediately | Plan then execute in dedicated sprint |
+| __Low Impact__ | When time allows (backlog) | Defer — low cost-benefit ratio |
 
 ### Refactoring Suggestion Format
 
-```
+```text
 [Severity] Code Smell: [Smell Name]
 Location: [file:line]
 Current State: [Problem description]
