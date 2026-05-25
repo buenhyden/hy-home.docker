@@ -85,6 +85,7 @@ status: completed
 | DLR-006 | Inventory drift | Root `docker-compose.yml` has 17 active include entries and `git ls-files '*README.md'` reports 173 tracked README files | Updated root, infra, and supporting infra/secrets/docs inventory text from stale 14/172 evidence to current 17/173 evidence | Closed |
 | DLR-007 | Retrospective task template drift | The completed scripts lifecycle cleanup task lacked a `## Working Rules` section | Added minimal retrospective working rules without changing script CLI, CI, hook, Docker runtime, or secret behavior | Closed |
 | DLR-008 | Infra/secrets spec inventory drift | Count-only revalidation reports 94 secret/cert files under `secrets/` after excluding Markdown registry/README documents, 134 README files in the target audit scope, and 217 non-README Markdown files in the stage audit scope, while the active infra/secrets spec still carried older 76/127/208 counts | Updated current spec inventory counts only; no secret file contents or values were read or changed | Closed |
+| DLR-009 | Graphify health evidence drift | Current Graphify health helper output reports `manifest_paths_total=740` while this task still carried older `743` evidence | Refreshed evidence text only; Graphify remains advisory due cross-root inferred edges and no graph/runtime files changed | Closed |
 | INF-COMP-ROOTACTIVE-001 | Compose inventory docs | Supabase, Neo4j, and RabbitMQ are active root includes while older README text still described the pre-expansion include set | Updated README narrative only; no Compose include or profile behavior changed | Closed |
 | INF-PROFILE-RABBITMQ-001 | Compose profile semantics | RabbitMQ remains root-included and profile-gated by `messaging-option`, while Kafka remains under `messaging` | Documented `messaging-option` as the RabbitMQ profile; no profile rename or behavior change in this pass | Deferred behavior |
 | INF-NET-MINIOJOB-001 | Network static IP policy | `minio-create-buckets` attaches to `infra_net` without an explicit static IP while MinIO service keeps its static IP | Recorded as behavior-sensitive; no job network/IP change without separate runtime approval | Deferred behavior |
@@ -153,7 +154,7 @@ status: completed
 | `git status --short --branch` | PASS | Branch state reviewed during closure; only task-owned tracked edits plus pre-existing `projects/storybook/mcp/` appeared before staging |
 | `git diff --check` | PASS | No whitespace errors |
 | Graphify report read | ADVISORY | Report shows a large corpus with inferred edges; used for navigation only |
-| `bash scripts/knowledge/report-graphify-health.sh` | ADVISORY | `status=advisory`; `manifest_paths_total=743`; contamination counts zero; `surprising_cross_root_inferred_edges=3` |
+| `bash scripts/knowledge/report-graphify-health.sh` | ADVISORY | Current rerun reports `status=advisory`, `manifest_paths_total=740`, contamination counts zero, and `surprising_cross_root_inferred_edges=3` |
 | `/home/hy/.local/bin/graphify update .` | PASS / ADVISORY | Rebuilt code graph outputs after code/script changes; Graphify remains advisory and corroborated by tracked source plus validators |
 | `bash scripts/knowledge/generate-llm-wiki-index.sh --check` | PASS | Generated LLM Wiki index is fresh |
 | `bash scripts/validation/check-doc-traceability.sh` | PASS | `catalog_pairs_total=46`, `failures=0` |
