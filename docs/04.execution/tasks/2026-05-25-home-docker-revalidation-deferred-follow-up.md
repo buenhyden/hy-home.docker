@@ -45,8 +45,8 @@ status: completed
 | --- | --- | --- | --- |
 | Governance / Harness / Skills | `AGENTS.md`, governance hub, runtime catalogs, skill routing | No blocking findings; `.agents/skills` mirror remains deferred; exact follow-up title searchability addressed by new artifacts | Record as corroborated reviewer evidence |
 | Documentation Lifecycle | Stage/template conformance and README routing | Found follow-up artifacts absent before this implementation and confirmed Stage 03 path is valid only as a contract spec, not an evidence bucket | Created contract-style spec and parent README links |
-| Infra / Docker / Env / Secrets | Static infra and metadata-only drift | Sub-agent output pending; local fallback confirmed metadata-only env/secrets drift and no approved runtime config edits | Keep runtime/value work deferred |
-| Scripts / Hooks / Automation | Script docs and hook contracts | Sub-agent output pending; local fallback confirmed `scripts/README.md` already documents no-payload hook no-op and repo-local Hookify event support | No script edits required |
+| Infra / Docker / Env / Secrets | Static infra and metadata-only drift | Local fallback confirmed metadata-only env/secrets drift and no approved runtime config edits; later authored SSoT closure records static follow-up evidence | Keep runtime/value work deferred |
+| Scripts / Hooks / Automation | Script docs and hook contracts | Local fallback confirmed `scripts/README.md` documents no-payload hook no-op and repo-local Hookify event support; later authored SSoT closure records script lifecycle evidence | No script edits required |
 | QA / Storybook | Validation gates and Storybook coverage policy | Storybook command evidence remains command-pass evidence only; 90% coverage policy remains deferred; Graphify generated outputs belong to prior baseline unless this follow-up refreshes them | Skip Storybook coverage because this follow-up does not touch Storybook |
 | CI/CD / Release | GitHub governance and release readiness | Remote PR/branch-protection readiness remains unverified; tag workflow requires exact pushed tag in `CHANGELOG.md`; local diff base should be `origin/main...HEAD` for PR review | Clarify release runbook; keep remote checks deferred |
 
@@ -54,15 +54,15 @@ status: completed
 
 | Gap | Decision | Owner | Status |
 | --- | --- | --- | --- |
-| Need a Stage 03 parent contract for revalidation/deferred work | Add dedicated spec artifact | Agent | In Progress |
-| Need task-level evidence separate from prior baseline audit | Add dedicated task artifact | Agent | In Progress |
+| Need a Stage 03 parent contract for revalidation/deferred work | Add dedicated spec artifact | Agent | Done |
+| Need task-level evidence separate from prior baseline audit | Add dedicated task artifact | Agent | Done |
 | `.env` missing `QDRANT_GRPC_PORT` | Record operator-owned deferred drift; do not edit `.env` | Operator | Deferred |
 | Secret registry selected env-var/path metadata drift | Record metadata-only drift; do not mutate registry/value files | Operator | Deferred |
 | `.agents/skills` compatibility mirror drift | Keep deferred; `.claude/skills` remains runtime source of truth | Operator / Future agent | Deferred |
 | ARD/ADR template-frontmatter cleanup across 46 architecture leaves | Keep deferred due broad blast radius | Future docs remediation | Deferred |
 | Storybook coverage threshold policy | Keep deferred unless user approves QA policy/CI enforcement | Maintainer | Deferred |
 | Remote branch protection and `storybook-coverage` required check | Keep deferred without remote GitHub verification/action | Maintainer | Deferred |
-| Release runbook omits tag workflow `CHANGELOG.md` exact-tag requirement | Add doc-only runbook clarification; do not create tags or edit changelog | Agent | In Progress |
+| Release runbook omits tag workflow `CHANGELOG.md` exact-tag requirement | Add doc-only runbook clarification; do not create tags or edit changelog | Agent | Done |
 | Runtime/deployment/ports/permissions/deletions | Keep deferred by approved scope | Operator | Deferred |
 
 ## Rule Conflict Log
