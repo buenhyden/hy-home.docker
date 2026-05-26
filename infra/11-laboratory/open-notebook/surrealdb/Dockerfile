@@ -1,4 +1,4 @@
-FROM surrealdb/surrealdb:v2 AS surreal
+FROM surrealdb/surrealdb:v3 AS surreal
 
 FROM debian:bookworm-slim
 
