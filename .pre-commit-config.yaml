@@ -89,6 +89,39 @@ repos:
         files: ^(docker-compose\.yml|\.env\.example|infra/.*|scripts/validation/validate-docker-compose\.sh)$
         pass_filenames: false
         stages: [pre-push]
+
+      - id: check-repo-contracts
+        name: Repo contracts (docs/infra/scripts drift)
+        entry: ./scripts/validation/check-repo-contracts.sh
+        language: script
+        files: ^(docker-compose\.yml|\.env\.example|infra/.*|docs/.*|scripts/.*)$
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: check-doc-traceability
+        name: Doc traceability (execution <-> operations)
+        entry: ./scripts/validation/check-doc-traceability.sh
+        language: script
+        files: ^docs/(04\.execution|05\.operations)/
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: check-quickwin-baseline
+        name: Quickwin baseline (compose QW policies)
+        entry: ./scripts/validation/check-quickwin-baseline.sh
+        language: script
+        files: ^(docker-compose\.yml|\.env\.example|infra/.*)$
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: check-template-security-baseline
+        name: Template security baseline
+        entry: ./scripts/validation/check-template-security-baseline.sh
+        language: script
+        files: ^(docker-compose\.yml|infra/.*)$
+        pass_filenames: false
+        stages: [pre-push]
+
   # --- 7. 커밋 및 메시지 (Release) ---
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.15.1
