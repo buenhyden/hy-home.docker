@@ -8,7 +8,7 @@ x-valkey-node-base: &valkey-node-base
   extends:
     file: ../../../common-optimizations.yml
     service: template-stateful-med
-  image: valkey/valkey:9.0.2-alpine
+  image: valkey/valkey:9.1.0-alpine
   read_only: false
   tmpfs:
     - /tmp
@@ -185,7 +185,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: valkey/valkey:9.0.2-alpine
+    image: valkey/valkey:9.1.0-alpine
     container_name: valkey-cluster-init
     entrypoint: ['/bin/sh', '/usr/local/bin/valkey-cluster-init.sh']
     volumes:
@@ -216,7 +216,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: oliver006/redis_exporter:v1.81.0-alpine
+    image: oliver006/redis_exporter:v1.84.0-alpine
     container_name: valkey-cluster-exporter
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'

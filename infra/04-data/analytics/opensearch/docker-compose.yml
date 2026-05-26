@@ -86,7 +86,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-med
-    image: opensearchproject/opensearch-dashboards:3.5.0
+    image: opensearchproject/opensearch-dashboards:3.6.0
     networks:
       infra_net:
         ipv4_address: 172.19.0.71

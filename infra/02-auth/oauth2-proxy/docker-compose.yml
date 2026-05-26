@@ -73,7 +73,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-low
-    image: valkey/valkey:9.0.2-alpine
+    image: valkey/valkey:9.1.0-alpine
     container_name: oauth2-proxy-valkey
     user: '999:999'
     secrets:
@@ -115,7 +115,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: oliver006/redis_exporter:v1.80.1-alpine
+    image: oliver006/redis_exporter:v1.84.0-alpine
     container_name: oauth2-proxy-redis-exporter
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'

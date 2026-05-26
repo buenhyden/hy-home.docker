@@ -36,7 +36,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-studio
-    image: supabase/studio:2025.11.10-sha-5291fe3
+    image: supabase/studio:2026.05.25-sha-65c570e
     restart: unless-stopped
     depends_on:
       analytics:
@@ -114,7 +114,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-auth
-    image: supabase/gotrue:v2.182.1
+    image: supabase/gotrue:v2.189.0
     tmpfs:
       - /tmp
     restart: unless-stopped
@@ -150,7 +150,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-low
     container_name: supabase-rest
-    image: postgrest/postgrest:v13.0.8
+    image: postgrest/postgrest:v14.12
     tmpfs:
       - /tmp
     restart: unless-stopped
@@ -184,7 +184,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: realtime-dev.supabase-realtime
-    image: supabase/realtime:v2.63.0
+    image: supabase/realtime:v2.98.3
     restart: unless-stopped
     depends_on:
       db:
@@ -219,7 +219,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-storage
-    image: supabase/storage-api:v1.29.0
+    image: supabase/storage-api:v1.58.27
     restart: unless-stopped
     read_only: false
     volumes:
@@ -260,7 +260,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-low
     container_name: supabase-imgproxy
-    image: darthsim/imgproxy:v3.30.1
+    image: darthsim/imgproxy:v4.0.3
     tmpfs:
       - /tmp
     restart: unless-stopped
@@ -285,7 +285,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-low
     container_name: supabase-meta
-    image: supabase/postgres-meta:v0.93.1
+    image: supabase/postgres-meta:v0.96.6
     restart: unless-stopped
     depends_on:
       db:
@@ -317,7 +317,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-edge-functions
-    image: supabase/edge-runtime:v1.69.23
+    image: supabase/edge-runtime:v1.74.0
     restart: unless-stopped
     volumes:
       - ${DEFAULT_DATA_DIR}/supabase/functions:/home/deno/functions
@@ -353,7 +353,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-analytics
-    image: supabase/logflare:1.22.6
+    image: supabase/logflare:1.41.4
     restart: unless-stopped
     ports:
       - ${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000
@@ -385,7 +385,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-high
     container_name: supabase-db
-    image: supabase/postgres:15.14.1.068
+    image: supabase/postgres:17.6.1.129
     restart: unless-stopped
     read_only: false
     volumes:
@@ -426,7 +426,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: supabase-vector
-    image: timberio/vector:0.52.0-alpine
+    image: timberio/vector:0.55.0-alpine
     restart: unless-stopped
     volumes:
       - ${DEFAULT_DATA_DIR}/supabase/logs/vector.yml:/etc/vector/vector.yml:ro

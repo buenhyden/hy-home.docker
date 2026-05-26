@@ -22,7 +22,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
-    image: valkey/valkey:9.0.2-alpine
+    image: valkey/valkey:9.1.0-alpine
     container_name: mng-valkey
     hostname: mng-valkey
     user: '999:999'
@@ -67,7 +67,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: oliver006/redis_exporter:v1.81.0-alpine
+    image: oliver006/redis_exporter:v1.84.0-alpine
     container_name: mng-valkey-exporter
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
@@ -108,7 +108,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-db-med
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     container_name: mng-pg
     hostname: mng-pg
     shm_size: 256mb
@@ -145,7 +145,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     container_name: mng-pg-init
     environment:
       POSTGRES_HOSTNAME: mng-pg
@@ -213,7 +213,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: prometheuscommunity/postgres-exporter:v0.18.1
+    image: prometheuscommunity/postgres-exporter:v0.19.1
     container_name: mng-pg-exporter
     environment:
       POSTGRES_HOSTNAME: mng-pg

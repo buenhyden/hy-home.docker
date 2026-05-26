@@ -18,7 +18,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: registry:2
+    image: registry:3
     container_name: registry
     restart: unless-stopped
     read_only: false
