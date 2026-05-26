@@ -309,6 +309,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/llm-wiki-agent-first-completion/spec.md](../../03.specs/llm-wiki-agent-first-completion/spec.md) | Markdown reference |
 | [docs/03.specs/standardize-infra-net/README.md](../../03.specs/standardize-infra-net/README.md) | folder index |
 | [docs/03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md) | Markdown reference |
+| [docs/03.specs/workspace-audit-2026-05/spec.md](../../03.specs/workspace-audit-2026-05/spec.md) | Markdown reference |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
 | [docs/04.execution/plans/2026-03-26-02-auth-standardization.md](../../04.execution/plans/2026-03-26-02-auth-standardization.md) | Markdown reference |
@@ -358,6 +359,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-25-home-docker-revalidation-deferred-follow-up.md](../../04.execution/plans/2026-05-25-home-docker-revalidation-deferred-follow-up.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-25-home-docker-workspace-audit-improvement.md](../../04.execution/plans/2026-05-25-home-docker-workspace-audit-improvement.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-25-large-scale-authored-ssot-review.md](../../04.execution/plans/2026-05-25-large-scale-authored-ssot-review.md) | Markdown reference |
+| [docs/04.execution/plans/2026-05-26-workspace-audit.md](../../04.execution/plans/2026-05-26-workspace-audit.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -406,6 +408,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md](../../04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md](../../04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-25-large-scale-authored-ssot-review.md](../../04.execution/tasks/2026-05-25-large-scale-authored-ssot-review.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-05-26-workspace-audit.md](../../04.execution/tasks/2026-05-26-workspace-audit.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -507,8 +510,10 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/11-laboratory/redisinsight.md](../../05.operations/guides/11-laboratory/redisinsight.md) | Markdown reference |
 | [docs/05.operations/guides/README.md](../../05.operations/guides/README.md) | folder index |
 | [docs/05.operations/guides/developer-setup.md](../../05.operations/guides/developer-setup.md) | Markdown reference |
+| [docs/05.operations/guides/env-key-comparison.md](../../05.operations/guides/env-key-comparison.md) | Markdown reference |
 | [docs/05.operations/guides/harness-agent-first-engineering.md](../../05.operations/guides/harness-agent-first-engineering.md) | Markdown reference |
 | [docs/05.operations/guides/llm-wiki-maintenance.md](../../05.operations/guides/llm-wiki-maintenance.md) | Markdown reference |
+| [docs/05.operations/guides/sensitive-env-vars-comparison.md](../../05.operations/guides/sensitive-env-vars-comparison.md) | Markdown reference |
 | [docs/05.operations/incidents/README.md](../../05.operations/incidents/README.md) | folder index |
 | [docs/05.operations/policies/01-gateway/README.md](../../05.operations/policies/01-gateway/README.md) | folder index |
 | [docs/05.operations/policies/01-gateway/nginx.md](../../05.operations/policies/01-gateway/nginx.md) | Markdown reference |
