@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 # 04.execution
 
 > 승인된 명세를 실행 순서와 검증 가능한 작업 증거로 전환하는 stage
@@ -71,15 +75,17 @@ docs/04.execution/
 - [Targeted documentation precision remediation task](tasks/2026-05-18-targeted-docs-precision-remediation.md) - execution evidence for the precision remediation pass
 - [Docs bounded consistency audit plan](plans/2026-05-18-docs-bounded-consistency-audit.md) - README entrypoint, stale inventory, and validator-backed drift remediation plan
 - [Docs bounded consistency audit task](tasks/2026-05-18-docs-bounded-consistency-audit.md) - execution evidence for the bounded consistency audit
+- [Workspace audit 2026-05 plan](plans/2026-05-26-workspace-audit.md) - implementation plan for gap registry, lifecycle docs, env/secrets comparison, skill stubs, and memory update
+- [Workspace audit 2026-05 task](tasks/2026-05-26-workspace-audit.md) - execution evidence for stage README lifecycle sections, env/secrets comparison reports, and session spec traceability
 
 ## Execution Contract
 
 `plans/`와 `tasks/`는 같은 작업을 다루더라도 책임이 다릅니다.
 
-| Artifact | Responsibility | Must Not Become |
-| --- | --- | --- |
-| Plan | 실행 순서, dependency, risk, rollback, verification plan | 실제 수행 로그 또는 완료 evidence |
-| Task | 수행 상태, 검증 결과, deviation, completion evidence | 새 요구사항, architecture decision, 또는 spec |
+| Artifact | Responsibility                                           | Must Not Become                               |
+| -------- | -------------------------------------------------------- | --------------------------------------------- |
+| Plan     | 실행 순서, dependency, risk, rollback, verification plan | 실제 수행 로그 또는 완료 evidence             |
+| Task     | 수행 상태, 검증 결과, deviation, completion evidence     | 새 요구사항, architecture decision, 또는 spec |
 
 같은 문장을 plan과 task에 중복해서 복사하지 않습니다. Plan은 “무엇을 어떤 순서로 할지”를 유지하고, Task는 “무엇을 실제로 했고 무엇으로 검증했는지”를 유지합니다.
 
@@ -105,6 +111,10 @@ docs/04.execution/
 2. 구현 전에는 관련 spec과 plan을 찾고, 실행 후에는 task evidence와 progress log를 갱신합니다.
 3. Graphify는 탐색 보조로만 사용하고, 완료 판단은 tracked docs와 repository validators로 확인합니다.
 4. 오래된 execution artifact의 template drift를 발견하면 즉시 대량 재작성하지 말고 범위와 위험을 기록합니다.
+
+## Stage Handoff
+
+구현과 검증이 완료된 운영 절차, 통제 기준, 반복 절차는 [`docs/05.operations/`](../05.operations/README.md)로 이관한다. Plan은 "무엇을 어떤 순서로 할지", Task는 "무엇을 실제로 했고 무엇으로 검증했는지"를 유지한다. 상세 매핑은 [`stage-authoring-matrix.md`](../00.agent-governance/rules/stage-authoring-matrix.md)를 따른다.
 
 ## Related Documents
 
@@ -138,3 +148,5 @@ docs/04.execution/
 - **Spec execution implementation audit task**: [tasks/2026-05-22-spec-execution-implementation-audit.md](tasks/2026-05-22-spec-execution-implementation-audit.md)
 - **Data analytics execution traceability plan**: [plans/2026-05-22-data-analytics-execution-traceability.md](plans/2026-05-22-data-analytics-execution-traceability.md)
 - **Data analytics execution traceability task**: [tasks/2026-05-22-data-analytics-execution-traceability.md](tasks/2026-05-22-data-analytics-execution-traceability.md)
+- **Workspace audit 2026-05 plan**: [plans/2026-05-26-workspace-audit.md](plans/2026-05-26-workspace-audit.md)
+- **Workspace audit 2026-05 task**: [tasks/2026-05-26-workspace-audit.md](tasks/2026-05-26-workspace-audit.md)

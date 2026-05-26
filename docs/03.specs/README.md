@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 <!-- Target: docs/03.specs/README.md -->
 
 # 03.specs
@@ -60,26 +64,27 @@ docs/03.specs/
 ├── infra-secrets-docs-refresh/          # Completed infra/secrets/docs refresh spec
 ├── llm-wiki-agent-first-completion/     # Completed LLM Wiki contract spec
 ├── standardize-infra-net/               # infra_net standardization spec
+├── workspace-audit-2026-05/             # 2026-05-26 workspace audit session spec
 └── README.md                            # This file
 ```
 
 ## Routing
 
-| If you need to define... | Use |
-| --- | --- |
-| Gateway routing, TLS, middleware, proxy behavior | `01-gateway/spec.md` |
-| Identity, OAuth2, OIDC, session store behavior | `02-auth/spec.md` |
-| Vault, secret template, AppRole, secret delivery behavior | `03-security/spec.md` |
-| Databases, cache, object storage, core data persistence | `04-data/spec.md` |
-| InfluxDB, ksqlDB, OpenSearch, OLAP analytics engines | `04-data-analytics/spec.md` |
-| Kafka, RabbitMQ, stream/message broker behavior | `05-messaging/spec.md` |
-| Metrics, logs, traces, dashboards, alerts | `06-observability/spec.md` |
+| If you need to define...                                   | Use                                                  |
+| ---------------------------------------------------------- | ---------------------------------------------------- |
+| Gateway routing, TLS, middleware, proxy behavior           | `01-gateway/spec.md`                                 |
+| Identity, OAuth2, OIDC, session store behavior             | `02-auth/spec.md`                                    |
+| Vault, secret template, AppRole, secret delivery behavior  | `03-security/spec.md`                                |
+| Databases, cache, object storage, core data persistence    | `04-data/spec.md`                                    |
+| InfluxDB, ksqlDB, OpenSearch, OLAP analytics engines       | `04-data-analytics/spec.md`                          |
+| Kafka, RabbitMQ, stream/message broker behavior            | `05-messaging/spec.md`                               |
+| Metrics, logs, traces, dashboards, alerts                  | `06-observability/spec.md`                           |
 | Workflow orchestration and cross-validation agent behavior | `07-workflow/spec.md`, `07-workflow/agent-design.md` |
-| Local AI inference, RAG UI, model-serving contracts | `08-ai/spec.md`, `08-ai/open-webui.md` |
-| IaC, registry, quality, performance tooling services | `09-tooling/spec.md` |
-| Mail, SMTP, IMAP, development mail trapping | `10-communication/spec.md` |
-| Laboratory/admin UI surfaces and access contracts | `11-laboratory/spec.md` |
-| Completed governance/documentation contract work | named governance spec folders |
+| Local AI inference, RAG UI, model-serving contracts        | `08-ai/spec.md`, `08-ai/open-webui.md`               |
+| IaC, registry, quality, performance tooling services       | `09-tooling/spec.md`                                 |
+| Mail, SMTP, IMAP, development mail trapping                | `10-communication/spec.md`                           |
+| Laboratory/admin UI surfaces and access contracts          | `11-laboratory/spec.md`                              |
+| Completed governance/documentation contract work           | named governance spec folders                        |
 
 ## How to Work in This Area
 
@@ -95,12 +100,12 @@ docs/03.specs/
 
 Spec은 구현자가 따라야 하는 기술 계약입니다. 요구사항이나 실행 evidence를 다시 쓰지 않고, 다음 항목을 구현 가능한 형태로 연결합니다.
 
-| Contract Area | Expected Content |
-| --- | --- |
-| Related inputs | PRD, ARD, ADR 링크 또는 명시적인 부재 사유 |
-| Contracts | config, data/interface, governance contract |
-| Core design | component boundary, dependencies, stack |
-| Verification | 실행 가능한 명령, 수동 확인 기준, pass criteria |
+| Contract Area      | Expected Content                                |
+| ------------------ | ----------------------------------------------- |
+| Related inputs     | PRD, ARD, ADR 링크 또는 명시적인 부재 사유      |
+| Contracts          | config, data/interface, governance contract     |
+| Core design        | component boundary, dependencies, stack         |
+| Verification       | 실행 가능한 명령, 수동 확인 기준, pass criteria |
 | Operations handoff | guide, policy, runbook 중 실제 운영 target 링크 |
 
 API, data model, tests, agent design 같은 child document는 같은 feature 디렉터리에 둡니다. 실행 순서와 작업 evidence는 `docs/04.execution`으로 연결합니다.
@@ -121,6 +126,10 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 4. 스펙과 실제 구현 사이의 불일치를 발견하면 즉시 보고하거나 문서를 수정한다.
 5. 새 PRD/ARD/ADR/Plan/Task가 필요한 변경이면 해당 stage template으로 별도 작성하고, 이 경로에 대체 문서를 만들지 않는다.
 
+## Stage Handoff
+
+이 stage의 완료 기준이 충족되면 [`docs/04.execution/`](../04.execution/README.md)로 이관한다. 구현 순서와 risk control은 `plan.template.md`를 사용해 Plan 문서로, 작업 수행 evidence는 `task.template.md`를 사용해 Task 문서로 기록한다. 상세 매핑은 [`stage-authoring-matrix.md`](../00.agent-governance/rules/stage-authoring-matrix.md)를 따른다.
+
 ## Related Documents
 
 - **PRD**: [../01.requirements/README.md](../01.requirements/README.md)
@@ -135,3 +144,4 @@ API, data model, tests, agent design 같은 child document는 같은 feature 디
 - **Home Docker Revalidation Deferred Follow-up Spec**: [home-docker-revalidation-deferred-follow-up/spec.md](./home-docker-revalidation-deferred-follow-up/spec.md)
 - **Infra / Secrets / Docs Refresh Spec**: [infra-secrets-docs-refresh/spec.md](./infra-secrets-docs-refresh/spec.md)
 - **LLM Wiki Agent-first Completion Spec**: [llm-wiki-agent-first-completion/spec.md](./llm-wiki-agent-first-completion/spec.md)
+- **Workspace Audit 2026-05 Spec**: [workspace-audit-2026-05/spec.md](./workspace-audit-2026-05/spec.md)

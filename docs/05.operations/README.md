@@ -1,3 +1,7 @@
+---
+status: active
+---
+
 <!-- README Target: docs/05.operations/README.md -->
 
 # Operations
@@ -51,14 +55,14 @@ docs/05.operations/
 
 ## Routing
 
-| I need to... | Go to |
-| --- | --- |
-| understand or configure a service | [guides/](./guides/README.md) |
-| check allowed controls, exceptions, or review cadence | [policies/](./policies/README.md) |
-| execute recovery, validation, rollback, or escalation steps | [runbooks/](./runbooks/README.md) |
-| record an incident or postmortem | [incidents/](./incidents/README.md) |
-| start a new operations document | [operation template](../99.templates/operation.template.md) |
-| confirm execution traceability | [execution plans](../04.execution/plans/README.md) and [tasks](../04.execution/tasks/README.md) |
+| I need to...                                                | Go to                                                                                           |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| understand or configure a service                           | [guides/](./guides/README.md)                                                                   |
+| check allowed controls, exceptions, or review cadence       | [policies/](./policies/README.md)                                                               |
+| execute recovery, validation, rollback, or escalation steps | [runbooks/](./runbooks/README.md)                                                               |
+| record an incident or postmortem                            | [incidents/](./incidents/README.md)                                                             |
+| start a new operations document                             | [operation template](../99.templates/operation.template.md)                                     |
+| confirm execution traceability                              | [execution plans](../04.execution/plans/README.md) and [tasks](../04.execution/tasks/README.md) |
 
 ## How to Work in This Area
 
@@ -73,12 +77,12 @@ docs/05.operations/
 
 ## Operations Contract
 
-| Bucket | Responsibility | Required Profile |
-| --- | --- | --- |
-| `guides/` | 정상 사용, 설정, 온보딩, common checks | `## Usage`, `## Common Checks`, handoff links |
-| `policies/` | 운영 통제, 허용/금지 상태, 예외, 검토 주기 | `## Policy Scope`, `## Controls`, `## Verification`, `## Review Cadence` |
-| `runbooks/` | 순서 있는 절차, evidence, rollback/recovery, escalation | `## When to Use`, `## Procedure`, `## Evidence`, `## Rollback or Recovery`, `## Escalation` |
-| `incidents/` | 사고 사실 기록과 postmortem | incident/postmortem templates |
+| Bucket       | Responsibility                                          | Required Profile                                                                            |
+| ------------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `guides/`    | 정상 사용, 설정, 온보딩, common checks                  | `## Usage`, `## Common Checks`, handoff links                                               |
+| `policies/`  | 운영 통제, 허용/금지 상태, 예외, 검토 주기              | `## Policy Scope`, `## Controls`, `## Verification`, `## Review Cadence`                    |
+| `runbooks/`  | 순서 있는 절차, evidence, rollback/recovery, escalation | `## When to Use`, `## Procedure`, `## Evidence`, `## Rollback or Recovery`, `## Escalation` |
+| `incidents/` | 사고 사실 기록과 postmortem                             | incident/postmortem templates                                                               |
 
 하나의 leaf 문서에는 하나의 primary purpose만 둡니다. 사용 설명과 반복 절차가 모두 필요한 경우 guide에서 runbook으로 handoff 링크를 둡니다.
 
@@ -89,6 +93,10 @@ docs/05.operations/
 - policy는 통제 기준, 예외 승인, 검토 주기를 설명합니다.
 - runbook은 명령, 기대 결과, 실패 시 중단 기준, rollback 또는 escalation 기준을 포함합니다.
 - 사고 기록은 secret, token, credential, private key 원문을 포함하지 않습니다.
+
+## Stage Handoff
+
+`docs/05.operations/`는 lifecycle의 최종 운영 단계다. 사고 기록에서 새 요구사항이 식별되면 [`docs/01.requirements/`](../01.requirements/README.md)로 feedback한다. 절차 개선이 설계 변경을 요구하면 [`docs/02.architecture/`](../02.architecture/README.md) 또는 [`docs/03.specs/`](../03.specs/README.md)로 이관한다. 상세 매핑은 [`stage-authoring-matrix.md`](../00.agent-governance/rules/stage-authoring-matrix.md)를 따른다.
 
 ## Related Documents
 
