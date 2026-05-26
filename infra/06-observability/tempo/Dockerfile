@@ -1,6 +1,6 @@
-FROM grafana/tempo:2.10.1 AS upstream
+FROM grafana/tempo:2.10.5 AS upstream
 
-FROM alpine:3.21
+FROM alpine:3.23.4
 
 RUN apk add --no-cache busybox wget ca-certificates \
     && addgroup -S -g 10001 observability \
