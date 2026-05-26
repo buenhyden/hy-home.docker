@@ -69,6 +69,10 @@ Alloy의 파이프라인은 다음과 같은 단계로 구성된다.
 - **Batch Size Tuning**: 배치가 너무 크면 지연 시간이 증가하고, 너무 작으면 백엔드 부하가 증가한다.
 - **Docker Socket permissions**: Alloy 컨테이너가 `/var/run/docker.sock`에 접근할 수 있어야 discovery가 작동한다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/06-observability/alloy.md)을 따른다.

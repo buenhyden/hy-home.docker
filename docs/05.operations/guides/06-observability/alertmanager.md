@@ -70,6 +70,10 @@ route:
 - **Resolution Delays**: `repeat_interval`이 너무 길면 해결된 문제가 다시 발생했을 때 알림이 늦게 올 수 있다.
 - **Invalid Templates**: Slack 메시지 템플릿 문법 오류 시 알림 발송 자체가 실패할 수 있으므로 주의해야 한다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/06-observability/alertmanager.md)을 따른다.

@@ -77,6 +77,10 @@ status: active
 - Connector 권한 범위를 과도하게 부여하는 경우
 - Sync 실패 로그를 수집하지 않고 재시도만 반복하는 경우
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/07-workflow/airbyte.md)을 따른다.

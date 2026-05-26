@@ -26,15 +26,15 @@ status: active
 - **ARD**: [Communication Infrastructure](../../../02.architecture/requirements/0010-communication-architecture.md) (If exists)
 - **Operation**: [Mail Operations Policy](../../policies/10-communication/mail.md)
 
-### When to Use
+## When to Use
 
 - 사용자가 메일을 보내거나 받을 수 없을 때.
 - 메일 서버 UI(Stalwart/MailHog)에 접속할 수 없을 때.
 - SMTP/IMAP 포트가 응답하지 않을 때.
 
-### Procedure or Checklist
+## Procedure
 
-#### 1. 서비스 상태 확인 Checklist
+### 1. 서비스 상태 확인 Checklist
 
 - [ ] 컨테이너 실행 여부 확인: `docker ps | grep -E 'stalwart|mailhog'`
 - [ ] 호스트 네트워크 포트 가용성 확인: `nc -zv localhost 25 465 587 993`

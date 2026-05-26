@@ -23,22 +23,22 @@ status: active
 - [Plan](../../../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md)
 
-### When to Use
+## When to Use
 
 - `ai-hardening` CI가 실패할 때
 - Ollama/Open WebUI 경로 접근 정책이 비정상일 때
 - Ollama GPU 과부하/OOM 또는 queue 적체가 반복될 때
 - exporter metrics 수집이 실패할 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 실패 항목(middleware, concurrency, template, healthcheck, script, docs) 식별
 - [ ] 최근 변경 커밋 및 영향 범위 확인
 - [ ] 운영 영향도(응답 지연, 인증 실패, GPU 사용률 급등) 평가
 
-#### Procedure
+### Steps
 
 1. 정적 구성 점검
    - `docker compose -f infra/08-ai/ollama/docker-compose.yml config`

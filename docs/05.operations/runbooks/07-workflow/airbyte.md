@@ -29,22 +29,22 @@ status: active
 - [07-workflow/spec.md](../../../03.specs/07-workflow/spec.md)
 - [2026-03-26-07-workflow-standardization.md](../../../04.execution/plans/2026-03-26-07-workflow-standardization.md)
 
-### When to Use
+## When to Use
 
 - Connector Sync가 연속 실패하는 경우
 - Worker가 비정상 종료되거나 재시작 루프에 들어간 경우
 - 스키마 변경 후 Sync가 중단된 경우
 - 배포 직후 Connection이 실행되지 않는 경우
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] `infra/07-workflow/airbyte/` 디렉터리와 `docker-compose.yml` 존재 여부 확인
 - [ ] 장애 Connection ID, 영향 데이터셋, 첫 실패 시각 확보
 - [ ] 최근 설정 변경(Connector/권한/네트워크) 여부 확인
 
-#### Procedure
+### Steps
 
 1. 실행 자산 존재 여부를 점검한다.
 

@@ -27,7 +27,7 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
 - [Agent Governance Hub](../../00.agent-governance/README.md)
 - [Subagent Protocol](../../00.agent-governance/subagent-protocol.md)
 
-#### When to Use
+## When to Use
 
 - Root instruction files change.
 - `.claude` or `.codex` files change.
@@ -35,9 +35,9 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
 - New stage docs are added.
 - A harness or Agent-first audit is requested.
 
-#### Procedure or Checklist
+### Procedure or Checklist
 
-##### Checklist
+#### Checklist
 
 - [ ] Confirm `git status --short --branch`.
 - [ ] Read `graphify-out/GRAPH_REPORT.md`.

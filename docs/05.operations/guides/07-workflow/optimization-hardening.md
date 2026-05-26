@@ -63,6 +63,18 @@ status: active
 - n8n custom image를 compose에서 사용하지 않아 hardening drift가 생기는 실수
 - 카탈로그 확장 항목을 문서만 기록하고 task로 분해하지 않는 실수
 
+## Common Checks
+
+- `docker compose -f infra/07-workflow/airflow/docker-compose.yml config`
+- `docker compose -f infra/07-workflow/n8n/docker-compose.yml config`
+- `bash scripts/hardening/check-all-hardening.sh 07-workflow`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
+
+## Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/07-workflow/optimization-hardening.md)을 따른다.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

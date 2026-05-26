@@ -27,26 +27,26 @@ status: active
 - [../../../03.specs/05-messaging/spec.md](../../../03.specs/05-messaging/spec.md)
 - [../../policies/05-messaging/kafka.md](../../policies/05-messaging/kafka.md)
 
-### When to Use
+## When to Use
 
 - **Emergency**: 브로커 쿼럼 붕괴 (`No Leader found` 발생 시).
 - **Incident**: `UnderReplicatedPartitions` 지표가 0보다 클
 
-#### 1. Quorum Failure (KRaft)
+### 1. Quorum Failure (KRaft)
 
 - **Issue**: 클러스터 내 브로커 과반수 이상 다운되어 리더 선출이 불가능한 경우.
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] [ ] 모든 브로커 컨테이너가 `Up (healthy)` 상태인지 확인.
 - [ ] [ ] `Kafbat UI`에서 `Offline Partitions`가 존재하는지 확인.
 - [ ] [ ] `docker logs`를 통해 `Fatal` 또는 `OutOfMemory` 에러가 있는지 조사.
 
-#### Procedure
+### Steps
 
-##### 1. Broker Quorum Recovery (Single node down)
+#### 1. Broker Quorum Recovery (Single node down)
 
 1. 실패한 노드 식별: `docker compose ps`
 2. 컨테이너 재시작: `docker compose restart kafka-X`

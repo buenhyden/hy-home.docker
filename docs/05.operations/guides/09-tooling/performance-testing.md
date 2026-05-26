@@ -75,6 +75,10 @@ class WebsiteUser(HttpUser):
 - **Worker 연결 실패**: 마스터 컨테이너 명칭(`locust-master`) 및 Docker 네트워크 가시성을 확인하십시오.
 - **마스터 노드 과부하**: 마스터 노드는 데이터 수집 역할만 수행하도록 하고, 실제 부하 발생은 전적으로 워커 노드에서 담당해야 합니다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/09-tooling/performance-testing.md)을 따른다.

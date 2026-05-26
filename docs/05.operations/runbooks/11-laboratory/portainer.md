@@ -15,9 +15,9 @@ status: active
 
 이 런북은 Portainer 관리 계정 접근 불능 사유 발생 시 비밀번호를 초기화하거나, 서비스 시작 불능 상황을 복구하는 절차를 제공한다.
 
-### Procedure or Checklist
+## Procedure
 
-#### 1. Admin Password Reset
+### 1. Admin Password Reset
 
 Portainer 내부 DB의 관리자 비밀번호를 수동으로 재설정해야 하는 경우 다음을 수행한다.
 
@@ -73,7 +73,7 @@ Portainer가 로컬 Docker 환경에 연결하지 못하는 경우:
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
 
-### When to Use
+## When to Use
 
 - 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
 - 운영 절차와 evidence capture가 필요한 변경을 수행할 때

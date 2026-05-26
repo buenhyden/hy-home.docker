@@ -75,6 +75,10 @@ class BenchmarkUser(HttpUser):
 - **Worker 미연결**: 워커는 `locust-master` 컨테이너 명칭을 호스트로 인식해야 하므로, 네트워크 설정에 유의하십시오.
 - **InfluxDB v2 연동**: `influxdb-client` 라이브러리가 포함된 커스텀 이미지를 사용하는지 확인하십시오.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/09-tooling/locust.md)을 따른다.

@@ -65,6 +65,10 @@ status: active
 - 관련 `infra/` 서비스 README 확인
 - 필요한 경우 대응 operation/runbook 문서 확인
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/11-laboratory/portainer.md)을 따른다.

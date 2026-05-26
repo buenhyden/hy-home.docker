@@ -15,9 +15,9 @@ status: active
 
 이 런북은 RedisInsight의 연결 오류, 설정 초기화, 그리고 서비스 성능 저하 상황 발생 시 조치 방법을 안내한다.
 
-### Procedure or Checklist
+## Procedure
 
-#### 1. Connection Failure Troubleshooting
+### 1. Connection Failure Troubleshooting
 
 Redis 서버에 연결할 수 없는 경우:
 
@@ -55,7 +55,7 @@ Redis 서버에 연결할 수 없는 경우:
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
 
-### When to Use
+## When to Use
 
 - 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
 - 운영 절차와 evidence capture가 필요한 변경을 수행할 때

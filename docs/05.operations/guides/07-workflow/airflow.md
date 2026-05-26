@@ -72,6 +72,10 @@ docker compose exec airflow-webserver airflow dags list
 - **Worker Timeout**: 리소스 부족으로 워커가 종료되면 태스크가 `Queued` 상태로 멈출 수 있습니다.
 - **XCom Abuse**: XCom은 작은 데이터 교환용입니다. 대용량 데이터는 S3/MinIO 등 외부 저장소를 사용하십시오.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/07-workflow/airflow.md)을 따른다.

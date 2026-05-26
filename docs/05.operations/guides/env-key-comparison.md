@@ -89,6 +89,10 @@ status: active
 
 분기 1회 또는 서비스 추가/제거 시. 점검 후 이 문서의 "감사 기준일"과 요약 표를 업데이트한다.
 
+## Runbook Handoff
+
+N/A — 이 가이드에 대응하는 runbook이 없습니다.
+
 ## Related Documents
 
 - [Secrets Key Comparison](./sensitive-env-vars-comparison.md)

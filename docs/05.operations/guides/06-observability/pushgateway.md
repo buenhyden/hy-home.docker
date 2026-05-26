@@ -53,7 +53,7 @@ batch_process_items 1500
 EOF
 ```
 
-#### 2. 프로메테우스 스크랩 설정
+### 2. 프로메테우스 스크랩 설정
 
 프로메테우스는 Pushgateway의 `/metrics` 엔드포인트를 주기적으로 스크랩한다. 이때 `honor_labels: true` 설정이 권장된다.
 
@@ -70,6 +70,10 @@ curl -X DELETE http://pushgateway.local/metrics/job/my_batch_job
 - **메트릭 잔류 (Stale Metrics)**: Pushgateway는 수신된 마지막 값을 계속 보관한다. 만약 실패한 배치가 메트릭을 업데이트하지 못하면 프로메테우스는 마지막 성공 값을 계속 수집하여 오해를 유발할 수 있다.
 - **인스턴스 레이블 충돌**: 여러 인스턴스가 동일한 `job` 레이블로 Push하면 데이터가 덮어씌워진다. `instance` 레이블을 활용하여 구분해야 한다.
 - **오남용 (Anti-pattern)**: 일반적인 서비스의 메트릭 수집을 위해 Pushgateway를 사용하지 마라. 이는 프로메테우스의 가용성 감지 기능을 무력화한다.
+
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
 
 ## Runbook Handoff
 

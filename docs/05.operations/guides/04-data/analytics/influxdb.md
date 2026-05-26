@@ -56,7 +56,7 @@ influx3 bucket create --name my-metrics --retention 90d
 influx bucket create -n my-metrics -r 90d
 ```
 
-#### 3. 검증 및 상태 확인 (Verification & Health Check)
+### 3. 검증 및 상태 확인 (Verification & Health Check)
 
 ```bash
 ## Endpoint: http://influxdb:8181 (v3) or http://influxdb:8086 (v2)
@@ -68,6 +68,10 @@ curl -i http://influxdb:8181/health
 - **토큰 불일치 (Token Mismatch)**: Telegraf나 k6에서 사용하는 토큰이 Docker Secrets에 저장된 토큰과 일치하는지 확인한다.
 - **포트 충돌 (Port Conflict)**: v3는 `8181`, v2는 `8086`을 기본값으로 사용한다. 애플리케이션 연결 정보를 확인한다.
 - **보존 제약 (Retention Limits)**: 보존 정책 없이 대량의 데이터를 수집할 경우 `${DEFAULT_DATA_DIR}`의 디스크 공간이 고갈될 수 있다.
+
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
 
 ## Runbook Handoff
 

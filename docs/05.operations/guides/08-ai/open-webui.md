@@ -76,7 +76,7 @@ docker exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 docker exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
 ```
 
-#### 5. Advanced Settings
+### 5. Advanced Settings
 
 1. 모델별 시스템 프롬프트(System Prompt)를 워크로드에 맞게 분리한다.
 2. Temperature, Top-K, Top-P를 모델 특성에 맞춰 조정한다.
@@ -89,6 +89,10 @@ docker exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
 - **임베딩 모델 누락**: `RAG_EMBEDDING_MODEL`이 Ollama에 준비되지 않아 인덱싱 실패.
 - **VRAM OOM**: 동시 인덱싱/추론 증가로 응답 지연 또는 실패.
 - **SSO 문제**: 인증 미들웨어/리디렉션 설정 불일치로 접근 실패.
+
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
 
 ## Runbook Handoff
 

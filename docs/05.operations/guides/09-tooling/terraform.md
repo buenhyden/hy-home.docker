@@ -57,7 +57,7 @@ docker compose run --rm terraform plan -out=tfplan
 docker compose run --rm terraform apply tfplan
 ```
 
-#### Formating and Validation
+### Formating and Validation
 
 Maintain code quality by using built-in tools.
 
@@ -112,6 +112,10 @@ The container uses `infra_net`. If you cannot reach local services (like MinIO),
 - guide 문서에 운영 정책이나 incident timeline을 섞지 않는다.
 - secret 값, token, 인증서 원문을 열람하거나 문서화하지 않는다.
 - runtime 변경이 필요한 경우 문서 보강과 별도 작업으로 분리한다.
+
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
 
 ## Runbook Handoff
 

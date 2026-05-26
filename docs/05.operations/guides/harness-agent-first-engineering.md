@@ -59,6 +59,14 @@ How-to / audit guide.
 - Claiming graph refresh when the `graphify` CLI is unavailable.
 - Running `pre-commit` manually despite repository guidance.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
+## Runbook Handoff
+
+N/A — 이 가이드에 대응하는 runbook이 없습니다.
+
 ## Related Documents
 
 - [Operations index](../README.md)

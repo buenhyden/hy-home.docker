@@ -73,6 +73,10 @@ curl -X POST "https://qdrant.${DEFAULT_URL}/collections/my_collection/points/sea
 - **Payload Size**: 대용량 페이로드 저장 시 메모리 및 디스크 사용량이 급증할 수 있으므로, 필요한 메타데이터만 포함한다.
 - **Indexing Latency**: 데이터 대량 삽입 후 Indexing이 완료될 때까지 검색 성능이 저하될 수 있다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/specialized/qdrant.md)을 따른다.

@@ -52,6 +52,11 @@ status: active
 - 세션 비밀 변경 후 기존 쿠키 재사용으로 인한 인증 실패
 - `/ping` 헬스체크 통과 전 트래픽 유입
 
+## Common Checks
+
+- `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config`
+- `bash scripts/hardening/check-all-hardening.sh 02-auth`
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/02-auth/oauth2-proxy.md)을 따른다.

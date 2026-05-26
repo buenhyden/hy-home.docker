@@ -68,6 +68,10 @@ docker exec -it pg-0 patronictl -c /home/postgres/postgres.yml list
 - **직접 연결 지양**: 개별 노드(`pg-0`, `pg-1`, `pg-2`)에 직접 연결하면 페일오버 발생 시 가용성을 보장받을 수 없다. 반드시 `pg-router`를 경유한다.
 - **네트워크 격리**: 데이터베이스는 `infra_net` 내부망에서만 접근 가능하다. 외부 노출이 필요한 경우 API 게이트웨이를 통한다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/04-data/relational.md)을 따른다.

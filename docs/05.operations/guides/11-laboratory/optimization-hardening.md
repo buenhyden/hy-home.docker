@@ -59,6 +59,16 @@ status: active
 - dozzle socket 권한을 read-write로 유지하는 실수
 - 문서 링크/README 인덱스 동기화를 누락하는 실수
 
+## Common Checks
+
+- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
+
+## Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/11-laboratory/optimization-hardening.md)을 따른다.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

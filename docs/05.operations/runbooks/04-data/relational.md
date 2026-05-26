@@ -28,23 +28,23 @@ This runbook defines emergency response and recovery procedures for potential fa
 - [../../policies/04-data/relational.md](../../policies/04-data/relational.md)
 - [../../../03.specs/04-data/spec.md](../../../03.specs/04-data/spec.md)
 
-### When to Use
+## When to Use
 
 - PostgreSQL 리더(Leader) 노드 다운 및 페일오버 실패 시
 - etcd 클러스터 가용성 상실 시
 - 노드 데이터 오염 또는 저장 공간 부족 시
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 현재 리더 노드 식별: `docker exec -it pg-0 patronictl -c /home/postgres/postgres.yml list`
 - [ ] etcd 엔드포인트 헬스 체크: `docker exec -it etcd-1 etcdctl endpoint health`
 - [ ] 호스트 디스크 여유 공간 확인: `df -h`
 
-#### Procedure
+### Steps
 
-##### 1. 노드 재시작 (Minor Failure)
+#### 1. 노드 재시작 (Minor Failure)
 
 1. 장애 노드 확인: `docker compose ps`
 2. 컨테이너 재시작: `docker compose restart [node-name]`

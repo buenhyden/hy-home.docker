@@ -71,7 +71,7 @@ mc cp local-file.txt myminio/cdn-bucket/
 
 민감값을 명령어에 직접 적거나 문서에 남기지 않는다. 가능한 경우 승인된 secret 주입 절차를 사용한다.
 
-#### 4. 애플리케이션 연동 (App Integration)
+### 4. 애플리케이션 연동 (App Integration)
 
 애플리케이션에서 AWS SDK 등을 사용하여 연결할 때는 `path-style` 접근 방식을 활성화해야 한다.
 
@@ -87,6 +87,10 @@ const s3 = new AWS.S3({
 
 - **Path-Style Access**: MinIO는 기본적으로 가상 호스트 기반 접근이 아닌 경로 기반 접근을 사용하므로 클라이언트 설정에서 반드시 활성화해야 한다.
 - **Root Credentials**: `MINIO_ROOT_USER`와 `MINIO_ROOT_PASSWORD`는 서비스 배포용 비밀번호이므로, 애플리케이션 연동 시에는 별도의 IAM 사용자나 App Credentials를 사용하는 것을 권장한다.
+
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
 
 ## Runbook Handoff
 

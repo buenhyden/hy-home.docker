@@ -25,21 +25,21 @@ status: active
 - **Spec**: [../03.specs/04-data/spec.md](../../../../03.specs/04-data/spec.md)
 - **Repo**: `infra/04-data/operational/mng-db/`
 
-### When to Use
+## When to Use
 
 - 초기 플랫폼 설치 및 부트스트랩 시
 - 관리용 DB 또는 캐시 서비스의 불능(unhealthy) 상태 발생 시
 - 신규 플랫폼 서비스 추가로 인한 DB 초기화(`mng-pg-init`)가 필요할 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] `infra_net` 네트워크가 생성되어 있는가?
 - [ ] `/run/secrets/` 하위에 필수 비밀번호 파일들이 존재하는가?
 - [ ] `${DEFAULT_MANAGEMENT_DIR}` 데이터 볼륨 경로 권한이 올바른가?
 
-#### Procedure
+### Steps
 
 1. **서비스 가동**
 

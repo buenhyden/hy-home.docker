@@ -21,15 +21,15 @@ status: active
 
 To resolve issues where Airflow tasks remain in `queued` or `running` state indefinitely due to worker failure or broker congestion.
 
-#### When to Use
+## When to Use
 
 - Tasks are stuck in `queued` for > 15 minutes.
 - `airflow-worker` container is healthy but not picking up tasks.
 - `flower` UI shows workers as "Offline".
 
-#### Procedure or Checklist
+### Procedure or Checklist
 
-##### Procedure
+#### Procedure
 
 1. **Check Disk Space**: Ensure the log volume is not full.
 

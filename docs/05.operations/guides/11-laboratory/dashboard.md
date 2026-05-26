@@ -72,6 +72,10 @@ status: active
 - **YAML Indentation**: 들여쓰기 오류 발생 시 대시보드가 로드되지 않는다. 수정 후 `yq` 등으로 검증을 권장한다.
 - **URL Syntax**: `${DEFAULT_URL}` 변수 사용 시 따옴표(`${DEFAULT_URL}`) 유의.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/11-laboratory/dashboard.md)을 따른다.

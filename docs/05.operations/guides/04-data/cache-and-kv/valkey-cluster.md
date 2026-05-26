@@ -50,7 +50,7 @@ docker exec valkey-node-0 valkey-cli -a "$VALKEY_PASSWORD" cluster info
 unset VALKEY_PASSWORD
 ```
 
-#### 2. 클라이언트 연결 설정 (Cluster Mode)
+### 2. 클라이언트 연결 설정 (Cluster Mode)
 
 Valkey Cluster는 샤딩된 환경이므로 모든 노드 정보를 클라이언트에 제공해야 합니다.
 
@@ -65,6 +65,10 @@ Valkey Cluster는 샤딩된 환경이므로 모든 노드 정보를 클라이언
 
 - **Single Node Access**: 클러스터 지원이 없는 라이브러리로 특정 노드에만 접속할 경우, 슬롯 불일치 시 `MOVED` 오류가 발생합니다.
 - **Large Keys / Operations**: 단일 Key에 과도한 데이터를 담거나 `KEYS *` 등의 전체 스캔 명령은 지양해야 합니다.
+
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
 
 ## Runbook Handoff
 

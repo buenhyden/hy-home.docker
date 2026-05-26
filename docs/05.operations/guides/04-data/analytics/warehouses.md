@@ -46,7 +46,7 @@ StarRocks는 MySQL 프로토콜과 호환된다.
 mysql -u root -h starrocks-fe -P 9030
 ```
 
-#### 2. Creating Tables
+### 2. Creating Tables
 
 StarRocks는 여러 데이터 모델(Duplicate, Aggregate, Primary Key)을 지원한다.
 
@@ -81,6 +81,10 @@ curl --location-trusted -u root: \
 
 - **BE Node Alive Status**: BE 노드가 FE에 정상적으로 추가되지 않으면 쿼리가 수행되지 않는다. `SHOW BACKENDS;` 명령어로 상태를 확인해야 한다.
 - **Ulimit Restrictions**: BE 노드는 고성능 처리를 위해 높은 `ulimit` 설정을 요구한다. 컨테이너 내부 또는 호스트에서 조정이 필요하다.
+
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
 
 ## Runbook Handoff
 

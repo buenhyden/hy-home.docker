@@ -24,21 +24,21 @@ status: active
 - [Plan](../../../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-02-auth-optimization-hardening-tasks.md)
 
-### When to Use
+## When to Use
 
 - `/health/ready` 실패 지속
 - DB 인증 오류 또는 연결 오류
 - 관리자/DB 비밀 회전 직후 로그인 실패
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] `docker compose -f infra/02-auth/keycloak/docker-compose.yml config` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 결과 확인
 - [ ] `docker compose ps`에서 `keycloak`, `mng-pg` 상태 확인
 
-#### Procedure
+### Steps
 
 1. 설정/로그 확인
    - `docker logs keycloak --tail=200`

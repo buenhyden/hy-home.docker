@@ -70,6 +70,14 @@ Place your `.py` files in `${DEFAULT_WORKFLOW_DIR}/airflow/dags`. The `airflow-s
 - **Relative Imports**: Avoid relative imports within DAGs; use the `plugins/` directory for shared logic.
 - **Heavy Initialization**: Do not perform heavy computations or database queries at the top level of the DAG file; keep it within `@task`.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
+## Runbook Handoff
+
+N/A — 이 가이드에 대응하는 runbook이 없습니다.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

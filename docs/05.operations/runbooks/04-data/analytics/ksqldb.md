@@ -25,21 +25,21 @@ status: active
 - [../../../guides/04-data/analytics/ksqldb.md](../../../guides/04-data/analytics/ksqldb.md)
 - [../../../policies/04-data/analytics/ksqldb.md](../../../policies/04-data/analytics/ksqldb.md)
 
-### When to Use
+## When to Use
 
 - ksqlDB 서버가 Kafka 브로커에 연결하지 못할 때.
 - `ksql-cli`에서 특정 쿼리의 상태가 `RUNNING`이 아닐 때.
 - 컨슈머 래그(Lag)가 급격히 증가하여 실시간성이 훼손될 때.
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] Kafka 브로커 가용성 확인 (`kafka-1:19092`)
 - [ ] Schema Registry 가용성 확인 (`schema-registry:8081`)
 - [ ] ksqlDB 서버 로그의 `KafkaException` 발생 여부 확인
 
-#### Procedure
+### Steps
 
 1. **쿼리 상태 점검**:
    CLI에 접속하여 비정상 쿼리를 식별한다.

@@ -25,21 +25,21 @@ status: active
 - [../../../guides/04-data/analytics/influxdb.md](../../../guides/04-data/analytics/influxdb.md)
 - [../../../policies/04-data/analytics/influxdb.md](../../../policies/04-data/analytics/influxdb.md)
 
-### When to Use
+## When to Use
 
 - InfluxDB 헬스 체크(`8181/health`) 실패 시.
 - Telegraf 또는 애플리케이션에서 `401 Unauthorized` 또는 `503 Service Unavailable` 노출 시.
 - 디스크 사용량 임계치(80%) 초과 경보 발생 시.
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] Docker 컨테이너 상태 확인 (`influxdb`)
 - [ ] API Token 유효성 및 Secrets 마운트 확인
 - [ ] 볼륨 마운트 지점의 디스크 잔여 용량 확인
 
-#### Procedure
+### Steps
 
 1. **서비스 요상 확인**:
 

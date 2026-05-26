@@ -47,7 +47,7 @@ docker-compose up -d
 docker-compose ps
 ```
 
-#### 2. PostgreSQL 데이타베이스 접근
+### 2. PostgreSQL 데이타베이스 접근
 
 `mng-pg` 인스턴스 내에는 다음과 같은 논리적 데이타베이스가 생성된다.
 
@@ -63,6 +63,10 @@ Copyright (c) 2026. Licensed under the MIT License.
 - guide 문서에 운영 정책이나 incident timeline을 섞지 않는다.
 - secret 값, token, 인증서 원문을 열람하거나 문서화하지 않는다.
 - runtime 변경이 필요한 경우 문서 보강과 별도 작업으로 분리한다.
+
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
 
 ## Runbook Handoff
 

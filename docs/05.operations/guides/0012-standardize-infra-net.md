@@ -56,6 +56,10 @@ status: active
 - **Indentation Error**: YAML 딕셔너리 구조에서의 들여쓰기 오류 주의.
 - **Network Scope**: 지정된 주소 대역(`172.19.0.0/16`) 외부의 IP를 입력할 경우 배포 실패.
 
+## Common Checks
+
+- `docker compose config`
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0012-standardize-infra-net.md)을 따른다.

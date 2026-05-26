@@ -25,21 +25,21 @@ status: active
 - [Plan](../../../04.execution/plans/2026-03-28-01-gateway-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-01-gateway-optimization-hardening-tasks.md)
 
-### When to Use
+## When to Use
 
 - dashboard 접근 실패(401 loop, 429 burst, 5xx)
 - 미들웨어 체인 누락/오타/잘못된 순서
 - Traefik healthcheck 실패
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] `docker compose -f infra/01-gateway/traefik/docker-compose.yml config` 성공
 - [ ] `docker compose -f infra/01-gateway/traefik/docker-compose.yml ps`에서 상태 정상
 - [ ] `bash scripts/hardening/check-all-hardening.sh 01-gateway` 실패 원인 확인
 
-#### Procedure
+### Steps
 
 1. 설정 검증
    - `bash scripts/hardening/check-all-hardening.sh 01-gateway`

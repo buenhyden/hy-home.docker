@@ -56,7 +56,7 @@ docker compose start sonarqube
 > [!NOTE]
 > This will trigger a full re-analysis on the next scan for all projects. This is normal and expected.
 
-#### 2. JVM Memory Adjustment
+### 2. JVM Memory Adjustment
 
 If logs show `OutOfMemoryError`, increase the JVM heap in `docker-compose.yml`.
 
@@ -66,7 +66,7 @@ If logs show `OutOfMemoryError`, increase the JVM heap in `docker-compose.yml`.
 - SONAR_SEARCH_JAVAOPTS=-Xmx1024m -Xms1024m
 ```
 
-#### 3. Log Inspection
+### 3. Log Inspection
 
 Monitor these files for specific error patterns:
 
@@ -93,21 +93,21 @@ Monitor these files for specific error patterns:
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
 
-### When to Use
+## When to Use
 
 - 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
 - 운영 절차와 evidence capture가 필요한 변경을 수행할 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 관련 operation policy를 확인한다.
 - [ ] 현재 compose/config/docs 상태를 확인한다.
 - [ ] 필요한 절차를 수행한다.
 - [ ] 검증 결과와 evidence를 기록한다.
 
-#### Procedure
+### Steps
 
 1. 관련 README와 operation 문서를 확인한다.
 2. 작업 전 현재 상태를 기록한다.

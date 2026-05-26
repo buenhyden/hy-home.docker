@@ -77,6 +77,10 @@ connection.close()
 - **Default Credentials**: `guest/guest`는 보안상 비활성화되어 있다. 반드시 Vault/Secrets를 통해 생성된 계정을 사용해야 한다.
 - **OOM Kill**: RabbitMQ는 메모리 사용량이 임계치에 도달하면 메시지 수신을 차단한다. 모니터링 대시보드에서 `Memory Workflow`를 상시 확인해야 한다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/05-messaging/rabbitmq.md)을 따른다.

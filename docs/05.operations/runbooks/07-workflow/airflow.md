@@ -27,23 +27,23 @@ status: active
 - Usage: [Airflow System Usage](../../guides/07-workflow/airflow.md)
 - Policy: [Airflow Operations Policy](../../policies/07-workflow/airflow.md)
 
-### When to Use
+## When to Use
 
 - 태스크가 `Queued` 상태에서 장시간 머물러 있을 때.
 - Web UI 접근 시 DB 연결 에러 또는 50x 에러가 발생할 때.
 - 워커(Worker) 프로세스가 비정상 종료되거나 리소스 부족으로 경고가 발생할 때.
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] [ ] `docker compose ps workflow` 결과가 모두 `Up` 인가?
 - [ ] [ ] `airflow-valkey` 브로커와 통신이 가능한가?
 - [ ] [ ] 메타데이터 DB(PostgreSQL)가 정상 동작 중인가?
 
-#### Procedure
+### Steps
 
-##### 시나리오 1: 태스크 지연 (Task stuck in Queued)
+#### 시나리오 1: 태스크 지연 (Task stuck in Queued)
 
 1. Valkey 브로커 상태 확인: `docker compose exec airflow-valkey valkey-cli ping`
 2. 워커 재배포: `docker compose restart airflow-worker`

@@ -48,7 +48,7 @@ curl -X GET "https://opensearch:9200/_cluster/health" -u "admin:${OPENSEARCH_ADM
 unset OPENSEARCH_ADMIN_PASSWORD
 ```
 
-#### 2. Dashboards Usage
+### 2. Dashboards Usage
 
 데이터 시각화 및 매니지먼트를 위해 Dashboards UI에 접속한다.
 
@@ -77,6 +77,10 @@ unset OPENSEARCH_ADMIN_PASSWORD
 
 - **Memory Lock Fail**: `bootstrap.memory_lock=true` 설정에도 불구하고 호스트 시스템의 `ulimit` 제한으로 인해 메모리 락이 실패할 수 있다.
 - **Certificate Mismatch**: 커스텀 인증서 적용 시 도메인 이름 불일치로 인한 통신 오류가 발생할 수 있다.
+
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
 
 ## Runbook Handoff
 

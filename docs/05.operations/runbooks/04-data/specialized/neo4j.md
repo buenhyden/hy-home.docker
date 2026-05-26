@@ -25,15 +25,15 @@ status: active
 - [Neo4j operations policy](../../../policies/04-data/specialized/neo4j.md)
 - [Neo4j infra README](../../../../../infra/04-data/specialized/neo4j/README.md)
 
-### When to Use
+## When to Use
 
 - 정기적인 데이터 백업(Dump)이 필요할 때.
 - 기존 백업 수단으로부터 데이터를 복구해야 할 때.
 - 관리자 패스워드 분실 또는 유출로 인한 재설정이 필요할 때.
 
-### Procedure or Checklist
+## Procedure
 
-#### 1. Database Dump (Backup)
+### 1. Database Dump (Backup)
 
 Neo4j Community Edition은 인스턴스를 중지한 후 오프라인 덤프를 수행해야 한다.
 

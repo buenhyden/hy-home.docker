@@ -27,23 +27,23 @@ status: active
 - Usage: [n8n System Usage](../../guides/07-workflow/n8n.md)
 - Policy: [n8n Operations Policy](../../policies/07-workflow/n8n.md)
 
-### When to Use
+## When to Use
 
 - n8n UI 접근 시 "Connection lost" 또는 50x 에러가 발생할 때.
 - 워크플로우가 실행되지 않고 `Pending` 또는 `Waiting` 상태에 멈춰 있을 때.
 - 워커 컨테이너가 반복적으로 재시작(`Restarting`)될 때.
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] [ ] `docker compose ps` 결과 모든 n8n 서비스가 `Up` 인가?
 - [ ] [ ] `n8n-valkey` 서비스가 정상이며 워커가 연결되어 있는가?
 - [ ] [ ] `n8n_db_password` 시크릿이 올바르게 로드되었는가?
 
-#### Procedure
+### Steps
 
-##### 시나리오 1: 워커 노드 중단 (Worker Down)
+#### 시나리오 1: 워커 노드 중단 (Worker Down)
 
 1. 워커 로그 확인: `docker compose logs --tail=50 n8n-worker`
 2. 워커 재시작: `docker compose restart n8n-worker`

@@ -25,7 +25,7 @@ status: active
 - [Plan](../../../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-02-auth-optimization-hardening-tasks.md)
 
-### When to Use
+## When to Use
 
 - 로그인 루프(무한 redirect)
 - OIDC issuer 접근 실패
@@ -33,15 +33,15 @@ status: active
 - readonly/tmpfs 관련 쓰기 오류
 - compose/config 변경 후 런타임 부팅 실패
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 실행
 - [ ] `docker logs oauth2-proxy --tail=200` 오류 패턴 확인
 
-#### Procedure
+### Steps
 
 1. 기본 진단
    - `/ping` 확인: `docker exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`

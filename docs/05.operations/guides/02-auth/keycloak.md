@@ -51,6 +51,11 @@ status: active
 - DB 시크릿 파일 경로 오타
 - 초기 기동 시간보다 짧은 헬스체크 판단으로 인한 오탐
 
+## Common Checks
+
+- `docker compose -f infra/02-auth/keycloak/docker-compose.yml config`
+- `bash scripts/hardening/check-all-hardening.sh 02-auth`
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/02-auth/keycloak.md)을 따른다.

@@ -46,7 +46,7 @@ CouchDB 전체 노드가 정상적으로 연결되어 있는지 상태를 확인
 curl -u ${COUCHDB_USER}:${COUCHDB_PASSWORD} https://couchdb.${DEFAULT_URL}/_up
 ```
 
-#### 2. 데이터베이스 및 문서 생성
+### 2. 데이터베이스 및 문서 생성
 
 CouchDB는 모든 작업을 HTTP API를 통해 수행한다.
 
@@ -61,7 +61,7 @@ curl -X POST -H "Content-Type: application/json" \
      -d '{"name": "hy-home", "type": "NoSQL"}'
 ```
 
-#### 3. 데이터 동기화 (Replication)
+### 3. 데이터 동기화 (Replication)
 
 CouchDB의 핵심은 원격 데이터베이스 간의 동기화이다.
 
@@ -78,6 +78,10 @@ CouchDB의 핵심은 원격 데이터베이스 간의 동기화이다.
 - **Sticky Session**: Traefik 설정에서 Sticky Cookie가 비활성화되면 노드 간 리비전 불일치로 인해 예상치 못한 충돌이 발생할 수 있다.
 - **Compaction**: CouchDB는 문서를 업데이트할 때마다 새 리비전을 생성하므로, 주기적인 컴팩션(Compaction) 작업이 없으면 디스크 사용량이 급격히 증가한다.
 - **Admin Party**: 기본 인증이 설정되지 않은 경우 누구나 접근 가능한 위험이 있으므로 항상 Secrets 기반 인증을 확인한다.
+
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
 
 ## Runbook Handoff
 

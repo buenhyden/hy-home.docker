@@ -32,7 +32,7 @@ This runbook defines implementation procedures for responding to failure situati
 - Infrastructure Operators
 - Data Engineers
 
-### When to Use
+## When to Use
 
 - **Storage Exhaustion**: API write failures due to lack of disk space.
 - **Credential Loss**: Root user password lost or compromised.
@@ -117,16 +117,16 @@ This runbook defines implementation procedures for responding to failure situati
 - [../../05.operations/README.md](../../../README.md)
 - [../../05.operations/README.md](../../../README.md)
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 관련 operation policy를 확인한다.
 - [ ] 현재 compose/config/docs 상태를 확인한다.
 - [ ] 필요한 절차를 수행한다.
 - [ ] 검증 결과와 evidence를 기록한다.
 
-#### Procedure
+### Steps
 
 1. 관련 README와 operation 문서를 확인한다.
 2. 작업 전 현재 상태를 기록한다.

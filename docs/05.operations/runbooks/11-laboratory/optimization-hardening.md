@@ -23,22 +23,22 @@ status: active
 - [Plan](../../../04.execution/plans/2026-03-28-11-laboratory-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-11-laboratory-optimization-hardening-tasks.md)
 
-### When to Use
+## When to Use
 
 - `laboratory-hardening` CI가 실패할 때
 - dashboard/dozzle/portainer/redisinsight 접근 경계가 비정상일 때
 - dashboard direct 접근 경로가 재노출되었을 때
 - dozzle socket 권한 드리프트가 발생했을 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 실패 항목(middleware, allowlist, network, direct exposure, socket 권한, script, docs) 식별
 - [ ] 최근 변경 커밋 및 영향 범위 확인
 - [ ] 운영 영향도(관리 UI 접근/보안/감사) 평가
 
-#### Procedure
+### Steps
 
 1. 정적 구성 점검
    - `for f in infra/11-laboratory/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`

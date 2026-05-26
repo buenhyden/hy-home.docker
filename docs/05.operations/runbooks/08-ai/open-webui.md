@@ -28,25 +28,25 @@ status: active
 - [../../../03.specs/08-ai/open-webui.md](../../../03.specs/08-ai/open-webui.md)
 - [../../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md](../../../04.execution/plans/2026-03-27-08-ai-open-webui-plan.md)
 
-### When to Use
+## When to Use
 
 - `https://chat.${DEFAULT_URL}` 접속 실패 또는 5xx 증가.
 - 모델 목록 미표시, 채팅 응답 실패.
 - 문서 업로드 후 RAG 인덱싱 실패.
 - Open WebUI healthcheck 실패.
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] `open-webui` 컨테이너 상태/로그 확인
 - [ ] `ollama`, `qdrant` 상태 및 health 확인
 - [ ] 인증(SSO) 경로 정상 여부 확인
 - [ ] 데이터 디렉터리 백업 가능 여부 확인
 
-#### Procedure
+### Steps
 
-##### 1. Initial Triage
+#### 1. Initial Triage
 
 ```bash
 docker ps --filter name=open-webui
@@ -64,7 +64,7 @@ docker exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 docker exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
 ```
 
-##### 3. SQLite Backup and Recovery
+### 3. SQLite Backup and Recovery
 
 ```bash
 ## 1) 데이터 백업
@@ -76,13 +76,13 @@ docker restart open-webui
 
 - DB 손상 의심 시, 최신 백업본으로 `webui.db` 복구 후 재기동한다.
 
-##### 4. RAG Index Re-sync
+### 4. RAG Index Re-sync
 
 1. Open WebUI 문서 관리에서 실패한 인덱스를 식별한다.
 2. 문제 문서를 삭제 후 재업로드하여 재인덱싱한다.
 3. 필요 시 Qdrant 해당 컬렉션 상태를 점검하고 재동기화한다.
 
-##### 5. Service Restart Path
+#### 5. Service Restart Path
 
 ```bash
 docker restart ollama

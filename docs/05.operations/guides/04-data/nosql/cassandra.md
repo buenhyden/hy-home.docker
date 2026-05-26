@@ -74,6 +74,10 @@ Prometheus는 `cassandra-exporter` (포트 8080/8081)를 통해 메트릭을 수
 - **Heavy Scan Queries**: `ALLOW FILTERING`을 사용하는 쿼리는 대규모 데이터 셋에서 성능 장애를 유발하므로 실무 환경에서는 지양한다.
 - **Tombstone Accumulation**: 대량의 `DELETE` 작업은 데이터 조회 시 성능 저하를 일으키므로 TTL 기반의 자동 삭제를 권장한다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/nosql/cassandra.md)을 따른다.

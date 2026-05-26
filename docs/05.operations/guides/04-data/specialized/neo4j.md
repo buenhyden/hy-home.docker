@@ -69,6 +69,10 @@ CREATE (a)-[:COLLEAGUE]->(b);
 - **Memory OOM**: Heap 크기(`NEO4J_server_memory_heap_max__size`)가 너무 작으면 복잡한 그래프 연산 시 장애가 발생할 수 있다.
 - **Password Policies**: 초기 비밀번호 변경 필요 시, `cypher-shell`을 통해 수행해야 할 수 있다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/specialized/neo4j.md)을 따른다.

@@ -51,6 +51,11 @@ status: active
 - dashboard middleware 순서/구분자(`,`) 오류
 - 비게이트웨이 소유 라우터까지 무분별하게 체인 확장 적용
 
+## Common Checks
+
+- `docker compose -f infra/01-gateway/traefik/docker-compose.yml config`
+- `bash scripts/hardening/check-all-hardening.sh 01-gateway`
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/01-gateway/traefik.md)을 따른다.

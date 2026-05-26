@@ -60,6 +60,16 @@ status: active
 - locust worker health 상태를 확인하지 않는 실수
 - k6/locust 구성 드리프트를 문서 없이 방치하는 실수
 
+## Common Checks
+
+- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
+
+## Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/09-tooling/optimization-hardening.md)을 따른다.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

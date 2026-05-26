@@ -23,22 +23,22 @@ status: active
 - [Plan](../../../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md)
 
-### When to Use
+## When to Use
 
 - `workflow-hardening` CI가 실패할 때
 - Airflow/Flower/n8n 경로 접근 정책이 비정상일 때
 - Airflow worker/scheduler startup이 불안정할 때
 - n8n worker/task-runner 재시작 루프가 발생할 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 실패 항목(middleware, healthcheck, depends_on, image, script, docs) 식별
 - [ ] 최근 변경 커밋 및 영향 범위 확인
 - [ ] 운영 영향도(스케줄링, 자동화, 큐 지연) 평가
 
-#### Procedure
+### Steps
 
 1. 정적 구성 점검
    - `docker compose -f infra/07-workflow/airflow/docker-compose.yml config`

@@ -94,6 +94,15 @@ status: active
 - KV 경로와 키 이름 불일치로 빈 렌더 파일 생성
 - `role_id`/`secret_id` 누락으로 Agent 인증 실패
 
+## Common Checks
+
+- `docker compose -f infra/03-security/vault/docker-compose.yml config`
+- `docker compose -f infra/03-security/vault/docker-compose.yml up -d vault vault-agent`
+- `docker exec vault vault status`
+- `docker exec vault-agent ls -la /vault/out`
+- `bash scripts/hardening/check-all-hardening.sh 03-security`
+- `bash scripts/validation/check-template-security-baseline.sh`
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/03-security/vault.md)을 따른다.

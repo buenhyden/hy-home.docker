@@ -58,6 +58,15 @@ status: active
 - custom 이미지에 root 실행 경로를 재도입하는 실수
 - 하드닝 스크립트/README 인덱스를 함께 갱신하지 않는 실수
 
+## Common Checks
+
+- `docker compose -f infra/06-observability/docker-compose.yml config`
+- `bash scripts/hardening/check-all-hardening.sh 06-observability`
+
+## Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/06-observability/optimization-hardening.md)을 따른다.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

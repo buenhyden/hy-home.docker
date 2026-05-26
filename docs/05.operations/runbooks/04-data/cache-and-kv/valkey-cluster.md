@@ -27,22 +27,22 @@ This runbook defines the emergency recovery procedures for node failures, slot i
 - [04-data Specification](../../../../03.specs/04-data/spec.md)
 - [Valkey Operations Policy](../../../policies/04-data/cache-and-kv/valkey-cluster.md)
 
-### When to Use
+## When to Use
 
 - `cluster_state:fail` 상태가 감지될 때
 - `cluster_slots_assigned`가 16384 미만일 때
 - 프라이머리 노드 다운 후 자동 페일오버가 실패했을 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 모든 Valkey 노드 컨테이너가 Running 상태인지 확인
 - [ ] 노드 간 네트워크 통신이 가능한지 확인
 
-#### Procedure
+### Steps
 
-##### 1. 클러스터 상태 진단
+#### 1. 클러스터 상태 진단
 
 ```bash
 docker exec valkey-node-0 valkey-cli -a $PASS --cluster check localhost:6379

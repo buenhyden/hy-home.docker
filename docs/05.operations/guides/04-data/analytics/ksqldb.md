@@ -79,6 +79,10 @@ CREATE TABLE event_counts AS
 - **컨슈머 그룹 지연 (Consumer Group Lag)**: 에러 확인을 위해 `KSQL_KSQL_LOGGING_PROCESSING_TOPIC`을 모니터링한다.
 - **자원 고갈 (Resource Exhaustion)**: ksqlDB는 상당한 메모리를 소비하므로 JVM Heap을 면밀히 모니터링한다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/analytics/ksqldb.md)을 따른다.

@@ -25,21 +25,21 @@ status: active
 - [../../../guides/04-data/analytics/opensearch.md](../../../guides/04-data/analytics/opensearch.md)
 - [../../../policies/04-data/analytics/opensearch.md](../../../policies/04-data/analytics/opensearch.md)
 
-### When to Use
+## When to Use
 
 - 클러스터 상태가 `Red` (데이터 일부 소실 가능성) 또는 `Yellow` (복제본 불완전)일 때.
 - 인덱싱 속도가 급격히 느려지거나 대량의 429(Too Many Requests) 에러 발생 시.
 - 특정 데이터 노드가 응답하지 않을 때.
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 클러스터 헬스 API 호출 (`_cluster/health`)
 - [ ] 미할당 샤드(Unassigned Shards) 목록 확인
 - [ ] 각 노드의 디스크 잔여 용량 및 메모리(JVM) 상태 확인
 
-#### Procedure
+### Steps
 
 1. **클러스터 상태 진단**:
 

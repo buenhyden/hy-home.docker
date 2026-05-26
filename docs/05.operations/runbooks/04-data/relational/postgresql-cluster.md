@@ -36,23 +36,23 @@ This runbook defines operational procedures for rapid recovery and maintenance i
 - **Spec**: `docs/03.specs/04-data/spec.md`
 - **Operation**: `docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md`
 
-### When to Use
+## When to Use
 
 - `patronictl list` 결과에서 리더가 없거나 쿼럼이 깨진 경우
 - 계획된 점검을 위해 리더 노드를 변경(Switchover)해야 하는 경우
 - `pg-router`를 통한 DB 접속이 불가능한 경우
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] `docker compose ps`로 etcd 및 pg 노드 컨테이너 생존 확인
 - [ ] `docker compose logs`로 에러 메시지 확인
 - [ ] 데이터 볼륨(`DEFAULT_DATA_DIR`)의 디스크 여유 공간 확인
 
-#### Procedure
+### Steps
 
-##### 1. 클러스터 수동 리더 변경 (Switchover)
+#### 1. 클러스터 수동 리더 변경 (Switchover)
 
 ```bash
 docker exec -it pg-0 patronictl -c /home/postgres/postgres.yml switchover

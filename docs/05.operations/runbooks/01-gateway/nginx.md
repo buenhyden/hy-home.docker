@@ -25,22 +25,22 @@ status: active
 - [Plan](../../../04.execution/plans/2026-03-28-01-gateway-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-01-gateway-optimization-hardening-tasks.md)
 
-### When to Use
+## When to Use
 
 - `nginx -t` 실패
 - `/ping` healthcheck 반복 실패
 - readonly 전환 후 캐시/로그/PID 쓰기 오류
 - 백엔드 장애 전환(failover) 동작 이상
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] `docker compose -f infra/01-gateway/nginx/docker-compose.yml config` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 01-gateway` 실행
 - [ ] `docker compose -f infra/01-gateway/nginx/docker-compose.yml ps` 상태 확인
 
-#### Procedure
+### Steps
 
 1. 설정 검증
    - `bash scripts/hardening/check-all-hardening.sh 01-gateway`

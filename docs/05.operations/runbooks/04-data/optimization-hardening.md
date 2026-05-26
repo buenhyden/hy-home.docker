@@ -25,22 +25,22 @@ status: active
 - [Plan](../../../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md)
 
-### When to Use
+## When to Use
 
 - `data-hardening` CI가 실패할 때
 - `supabase` 서비스들이 `service_healthy` 대기 상태에서 시작되지 않을 때
 - `valkey-cluster-exporter`가 인증 실패로 기동되지 않을 때
 - `seaweedfs` compose 파싱/기동 오류가 발생할 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 실패한 검증 항목과 대상 파일 식별
 - [ ] 최근 변경 커밋/파일 범위 확인
 - [ ] 영향 범위(analytics/cache/storage/operational) 식별
 
-#### Procedure
+### Steps
 
 1. 정적 구성 점검
    - `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config`

@@ -25,22 +25,22 @@ status: active
 - [Plan](../../../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md)
 
-### When to Use
+## When to Use
 
 - `observability-hardening` CI가 실패할 때
 - 관측성 UI/API가 Traefik 경유로 비정상 응답할 때
 - 스택 부팅 시 Alloy/Grafana 의존성 대기로 장애가 반복될 때
 - Loki/Tempo custom image 런타임 실패가 발생할 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 실패 항목(middleware/depends_on/healthcheck/image/script/doc) 식별
 - [ ] 최근 변경 커밋과 영향 범위 확인
 - [ ] 운영 영향도(수집/조회/알림 경로) 평가
 
-#### Procedure
+### Steps
 
 1. 정적 구성 점검
    - `docker compose -f infra/06-observability/docker-compose.yml config`

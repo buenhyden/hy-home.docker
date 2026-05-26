@@ -28,15 +28,15 @@ status: active
 - [../../../../02.architecture/requirements/0004-data-architecture.md](../../../../02.architecture/requirements/0004-data-architecture.md)
 - `[../../../infra/04-data/operational/supabase/docker-compose.yml]`
 
-### When to Use
+## When to Use
 
 - Database container fails to start due to corruption.
 - JWT secret rotation is required.
 - Storage volume reaches capacity.
 
-### Procedure or Checklist
+## Procedure
 
-#### Database Recovery
+### Database Recovery
 
 1. Stop the stack: `docker compose down`.
 2. Locate the last healthy backup in `${DEFAULT_DATA_DIR}/backups/supabase/`.

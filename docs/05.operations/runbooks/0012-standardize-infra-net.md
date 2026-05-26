@@ -22,21 +22,21 @@ status: active
 - [../../03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md)
 - [../../04.execution/plans/2026-04-01-standardize-infra-net.md](../../04.execution/plans/2026-04-01-standardize-infra-net.md)
 
-### When to Use
+## When to Use
 
 - 서비스의 `networks` 설정을 표준 딕셔너리 포맷으로 전환할 때.
 - 신규 인프라 서비스를 인공지능 홈 시스템에 통합할 때.
 - 네트워크 충돌 발생 시 원인 분석 및 IP 재배치.
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 대상 서비스의 `infra/` 내 `docker-compose.yml` 경로 확인.
 - [ ] 현재 서브넷(`172.19.0.0/16`) 내 가용 IP 대역 확인 (Plan/Spec 참조).
 - [ ] 중복 사용 여부 사전 검증 (`grep -r "ipv4_address" .`).
 
-#### Procedure
+### Steps
 
 1. **IP 선정**: `docs/03.specs/standardize-infra-net/spec.md`의 **Assigned IP Mapping Table (Authoritative)**에서 비어있는 영역을 선택함.
 2. **Compose 파일 수정**:

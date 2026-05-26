@@ -27,23 +27,23 @@ status: active
 - **Operation**: [valkey-cluster.md](./valkey-cluster.md)
 - **Usage**: [valkey-cluster.md](./valkey-cluster.md)
 
-### When to Use
+## When to Use
 
 - `cluster_state:fail` 상태가 감지될 때
 - `cluster_slots_assigned`가 16384 미만일 때
 - 프라이머리 노드 다운 후 자동 페일오버가 실패했을 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 모든 Valkey 노드 컨테이너가 Running 상태인지 확인
 - [ ] 노드 간 네트워크 통신이 가능한지 확인
 - [ ] 마스터 패스워드 secret(`service_valkey_password`) 파일 존재와 mount 상태 확인. 값은 출력하지 않는다.
 
-#### Procedure
+### Steps
 
-##### 1. 클러스터 상태 진단
+#### 1. 클러스터 상태 진단
 
 ```bash
 read -rsp "Valkey password: " VALKEY_PASSWORD; echo

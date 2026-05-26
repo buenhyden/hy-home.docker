@@ -26,20 +26,20 @@ status: active
 - [../../../../infra/05-messaging/rabbitmq/README.md](../../../../infra/05-messaging/rabbitmq/README.md)
 - [../../policies/05-messaging/rabbitmq.md](../../policies/05-messaging/rabbitmq.md)
 
-### When to Use
+## When to Use
 
 - "Message Backlog": 큐에 메시지가 수만 개 이상 쌓여 처리가 지연될 때.
 - "Memory Alarm": RabbitMQ가 메모리 부족으로 인해 퍼블리셔 차단 상태일 때.
 - "Service Down": 컨테이너 장애로 인해 서비스에 접속할 수 없을 때.
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] RabbitMQ Management UI 접속 가능 여부 확인.
 - [ ] `docker exec rabbitmq rabbitmqctl list_queues` 명령으로 큐 상태 확인.
 
-#### Procedure
+### Steps
 
 1. **Service Downtime (서비스 중단 시)**
    - 컨테이너 상태 확인: `docker compose ps rabbitmq`

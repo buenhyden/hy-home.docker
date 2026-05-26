@@ -72,6 +72,10 @@ docker pull registry.hy-home.docker:5000/<project>/<image>:<tag>
 - **Disk Space**: 대량의 이미지가 누적되면 호스트 디스크가 가득 찰 수 있다. 가비지 컬렉션(GC)을 주기적으로 실행해야 한다.
 - **Service Down**: 레지스트리 컨테이너가 중단되면 CI/CD 파이프라인 전체가 실패하므로 헬스체크 모니터링이 필수적이다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/09-tooling/registry.md)을 따른다.

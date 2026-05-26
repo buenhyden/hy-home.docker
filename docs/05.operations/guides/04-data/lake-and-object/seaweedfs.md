@@ -72,6 +72,10 @@ Master UI를 통해 볼륨 서버 상태와 복제 상태를 확인한다.
 - **Volume Size Limit**: 볼륨 파일 하나가 가득 차면 자동으로 새로운 볼륨이 할당되지만, 마스터 서버에서 이를 확인하지 못할 경우 쓰기 장애가 발생할 수 있다.
 - **Filer Persistence**: Filer의 메타데이터는 Cassandra, MySQL, Redis 등 외부 DB에 저장할 수 있다. 기본 설정은 Filer 내장 LevelDB를 사용하므로 데이터 유실에 주의해야 한다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/lake-and-object/seaweedfs.md)을 따른다.

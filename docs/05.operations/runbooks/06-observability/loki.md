@@ -70,7 +70,7 @@ If storage is full and retention cleanup is pending:
 docker compose -f infra/06-observability/docker-compose.yml logs -f loki | grep "compactor"
 ```
 
-#### Flush Chunks
+### Flush Chunks
 
 If Loki needs to be shut down gracefully while ensuring all logs are committed to S3:
 
@@ -97,21 +97,21 @@ If Loki needs to be shut down gracefully while ensuring all logs are committed t
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
 
-### When to Use
+## When to Use
 
 - 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
 - 운영 절차와 evidence capture가 필요한 변경을 수행할 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 관련 operation policy를 확인한다.
 - [ ] 현재 compose/config/docs 상태를 확인한다.
 - [ ] 필요한 절차를 수행한다.
 - [ ] 검증 결과와 evidence를 기록한다.
 
-#### Procedure
+### Steps
 
 1. 관련 README와 operation 문서를 확인한다.
 2. 작업 전 현재 상태를 기록한다.

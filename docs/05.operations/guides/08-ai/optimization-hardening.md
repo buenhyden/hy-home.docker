@@ -65,6 +65,18 @@ status: active
 - Open WebUI를 stateless 템플릿으로 운용해 상태 드리프트를 유발하는 실수
 - exporter health 계약 없이 모니터링 신뢰도를 낮추는 실수
 
+## Common Checks
+
+- `docker compose -f infra/08-ai/ollama/docker-compose.yml config`
+- `docker compose -f infra/08-ai/open-webui/docker-compose.yml config`
+- `bash scripts/hardening/check-all-hardening.sh 08-ai`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
+
+## Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/08-ai/optimization-hardening.md)을 따른다.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

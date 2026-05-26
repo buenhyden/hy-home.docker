@@ -106,6 +106,10 @@ If OIDC logout occurs frequently, check the token expiration settings in the `hy
 - secret 값, token, 인증서 원문을 열람하거나 문서화하지 않는다.
 - runtime 변경이 필요한 경우 문서 보강과 별도 작업으로 분리한다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/09-tooling/terrakube.md)을 따른다.

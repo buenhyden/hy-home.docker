@@ -28,7 +28,7 @@ docker system df -v
 du -ah ${DEFAULT_DATA_DIR} | sort -rn | head -n 20
 ```
 
-##### 2. Emergency Cleanup
+#### 2. Emergency Cleanup
 
 ```bash
 ### Prune unused docker objects
@@ -37,7 +37,7 @@ docker system prune -a --volumes
 sudo journalctl --vacuum-time=1d
 ```
 
-##### 3. Service-Specific Truncation
+#### 3. Service-Specific Truncation
 
 - **PostgreSQL**: Vacuum full (requires temporary overhead).
 - **Valkey**: Flush volatile keys if not persistent.
@@ -64,14 +64,14 @@ sudo journalctl --vacuum-time=1d
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
 
-#### When to Use
+## When to Use
 
 - 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
 - 운영 절차와 evidence capture가 필요한 변경을 수행할 때
 
-#### Procedure or Checklist
+### Procedure or Checklist
 
-##### Checklist
+#### Checklist
 
 - [ ] 관련 operation policy를 확인한다.
 - [ ] 현재 compose/config/docs 상태를 확인한다.

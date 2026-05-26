@@ -51,6 +51,11 @@ status: active
 - `proxy_pass` trailing slash 처리 실수로 경로 재작성 오류
 - timeout 전역값/특정 location override 충돌
 
+## Common Checks
+
+- `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t`
+- `bash scripts/hardening/check-all-hardening.sh 01-gateway`
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/01-gateway/nginx.md)을 따른다.

@@ -25,23 +25,23 @@ status: active
 - [Plan](../../../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md)
 
-### When to Use
+## When to Use
 
 - Vault가 `Sealed: true` 상태일 때
 - raft peer 상태가 비정상일 때
 - audit device가 비활성화되었을 때
 - Vault Agent healthcheck 또는 템플릿 렌더가 실패할 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] `docker exec vault vault status` 확인
 - [ ] `docker inspect --format '{{json .State.Health}}' vault` 확인
 - [ ] `docker inspect --format '{{json .State.Health}}' vault-agent` 확인
 - [ ] 최근 변경 파일/커밋 식별
 
-#### Procedure
+### Steps
 
 1. Seal/Unseal 복구
    - 상태 확인: `docker exec vault vault status`

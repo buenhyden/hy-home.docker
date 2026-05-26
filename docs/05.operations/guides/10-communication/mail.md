@@ -67,6 +67,10 @@ status: active
 - **ISP 포트 차단**: 많은 웹 호스팅/ISP는 포트 25(SMTP)를 기본적으로 차단합니다. 발송 실패 시 릴레이 서비스를 검토하거나 ISP에 해제를 요청하십시오.
 - **인증서 만료**: `secrets/certs` 내의 인증서가 만료되면 SMTP/IMAP 연결이 실패할 수 있습니다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/10-communication/mail.md)을 따른다.

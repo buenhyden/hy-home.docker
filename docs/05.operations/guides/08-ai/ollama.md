@@ -56,7 +56,7 @@ curl -f http://localhost:${OLLAMA_PORT:-11434}/api/tags
 docker exec ollama nvidia-smi
 ```
 
-#### 2. Model Lifecycle (CLI)
+### 2. Model Lifecycle (CLI)
 
 ```bash
 ## 모델 다운로드
@@ -66,7 +66,7 @@ docker exec ollama ollama pull llama3
 docker exec ollama ollama list
 ```
 
-#### 3. Inference API Check
+### 3. Inference API Check
 
 ```bash
 curl http://localhost:${OLLAMA_PORT:-11434}/api/generate -d '{
@@ -96,6 +96,10 @@ curl -f http://localhost:${OLLAMA_EXPORTER_PORT:-11435}/metrics
 - **VRAM OOM**: 대형 모델 동시 로드 시 응답 실패/지연.
 - **모델 태그 불일치**: Open WebUI 설정 모델명과 Ollama 실제 태그 불일치.
 - **Exporter 미수집**: 관측 포트 설정 불일치로 지표 공백 발생.
+
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
 
 ## Runbook Handoff
 

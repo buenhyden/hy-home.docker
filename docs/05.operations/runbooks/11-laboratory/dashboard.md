@@ -27,22 +27,22 @@ status: active
 - [../../guides/11-laboratory/dashboard.md](../../guides/11-laboratory/dashboard.md)
 - [../../policies/11-laboratory/dashboard.md](../../policies/11-laboratory/dashboard.md)
 
-### When to Use
+## When to Use
 
 - Homer 접속 시 "Internal Server Error" 또는 빈 화면이 출력되는 경우.
 - `config.yml` 수정 후 변경 사항이 실시간으로 반영되지 않는 경우.
 - 대시보드 내 특정 아이콘이 깨지거나 링크가 동작하지 않는 경우.
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] `infra/11-laboratory/dashboard/config/config.yml` 파일 존재 여부 확인.
 - [ ] Homer 컨테이너 실행 상태 확인 (`docker ps | grep homer`).
 
-#### Procedure
+### Steps
 
-##### 1. Configuration Validation and Recovery
+#### 1. Configuration Validation and Recovery
 
 1. 설정 파일의 구문 오류를 확인한다:
 

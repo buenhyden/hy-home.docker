@@ -75,6 +75,10 @@ mongodb://${USER}:${PASS}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyRe
 - **Read Preference**: 기본값은 `primary`이나, 읽기 부하 분산을 위해 `secondaryPreferred` 설정을 고려할 수 있다. 단, 최신 데이터 정합성 이슈에 유의해야 한다.
 - **WiredTiger Cache**: MongoDB는 시스템 메모리의 상당 부분을 캐시로 사용하므로 Docker 리소스 제한 시 `cacheSizeGB` 설정을 신중히 확인해야 한다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/nosql/mongodb.md)을 따른다.

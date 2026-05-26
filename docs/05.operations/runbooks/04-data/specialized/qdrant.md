@@ -25,15 +25,15 @@ status: active
 - [Qdrant operations policy](../../../policies/04-data/specialized/qdrant.md)
 - [Qdrant infra README](../../../../../infra/04-data/specialized/qdrant/README.md)
 
-### When to Use
+## When to Use
 
 - 컬렉션 단위의 스냅샷 생성이 필요할 때.
 - 특정 시점의 스냅샷으로 데이터를 복원해야 할 때.
 - 서비스 응답 지연 또는 `/readyz` 실패 시 조치.
 
-### Procedure or Checklist
+## Procedure
 
-#### 1. Collection Snapshot Execution
+### 1. Collection Snapshot Execution
 
 실행 중인 상태에서 컬렉션별 스냅샷을 생성한다.
 

@@ -62,6 +62,17 @@ status: active
 - dev compose 경로를 repo-root 기준으로 작성해 파일 마운트 실패를 유발하는 실수
 - 하드닝 스크립트와 문서 링크를 함께 갱신하지 않는 실수
 
+## Common Checks
+
+- `docker compose -f infra/05-messaging/kafka/docker-compose.yml config`
+- `docker compose -f infra/05-messaging/kafka/docker-compose.dev.yml config`
+- `docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config`
+- `bash scripts/hardening/check-all-hardening.sh 05-messaging`
+
+## Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/05-messaging/optimization-hardening.md)을 따른다.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

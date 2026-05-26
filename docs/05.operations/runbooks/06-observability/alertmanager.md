@@ -25,24 +25,24 @@ status: active
 - [Alertmanager Operational Policy](../../policies/06-observability/alertmanager.md)
 - [Alertmanager System Usage](../../guides/06-observability/alertmanager.md)
 
-### When to Use
+## When to Use
 
 - Prometheus/Loki에서 알림이 발생했으나 실제 통지(Slack/Email)가 오지 않을 때.
 - Alertmanager UI에 접속이 불가능하거나 서비스가 응답하지 않을 때.
 - 잘못된 Silence 설정으로 인해 중요 알림이 차단되었을 때.
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] Alertmanager 컨테이너 상태 확인 (`docker ps`)
 - [ ] Slack Webhook URL 유효성 확인
 - [ ] Alertmanager 로그 내 `level=error` 메시지 확인
 - [ ] 활성화된 Silence 목록 확인
 
-#### Procedure
+### Steps
 
-##### 1. Service Restoration
+#### 1. Service Restoration
 
 Alertmanager 서비스가 중단된 경우 컨테이너를 재시작한다.
 

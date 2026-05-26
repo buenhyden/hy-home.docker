@@ -23,22 +23,22 @@ status: active
 - [Plan](../../../04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md)
 
-### When to Use
+## When to Use
 
 - `tooling-hardening` CI가 실패할 때
 - SonarQube/Terrakube/Syncthing 접근 정책이 비정상일 때
 - locust worker 실행 불안정/재시작 루프가 발생할 때
 - k6 테스트 런타임 데이터 경로 이상이 발생할 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 실패 항목(middleware, network, healthcheck, volume, script, docs) 식별
 - [ ] 최근 변경 커밋 및 영향 범위 확인
 - [ ] 운영 영향도(품질게이트, IaC 실행, 테스트 신뢰도) 평가
 
-#### Procedure
+### Steps
 
 1. 정적 구성 점검
    - `for f in infra/09-tooling/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`

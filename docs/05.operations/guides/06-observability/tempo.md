@@ -61,6 +61,10 @@ Loki 로그와 연동되어 있는 경우, 특정 로그 라인에 포함된 Tra
 - **WAL 관리**: 로컬 디스크의 WAL(Write-Ahead Log) 공간이 부족하면 트레이스 저장이 중단된다.
 - **MinIO 연결**: Tempo와 MinIO 간의 네트워크 지연이나 설정 오류는 트레이스 조회를 불가능하게 만든다.
 
+## Common Checks
+
+- Step-by-step Instructions 의 검증 단계를 따른다.
+
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/06-observability/tempo.md)을 따른다.

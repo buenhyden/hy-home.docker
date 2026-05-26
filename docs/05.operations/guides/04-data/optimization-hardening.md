@@ -58,6 +58,20 @@ status: active
 - exporter 시크릿 파일 경로를 서비스 계약과 다르게 유지하는 실수
 - compose 오타(토큰/브래킷)로 정적 검증 실패를 유발하는 실수
 
+## Common Checks
+
+- `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config`
+- `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml config`
+- `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml config`
+- `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config`
+- `bash scripts/hardening/check-all-hardening.sh 04-data`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `bash scripts/validation/check-doc-traceability.sh`
+
+## Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/04-data/optimization-hardening.md)을 따른다.
+
 ## Related Documents
 
 - [Operations index](../../README.md)

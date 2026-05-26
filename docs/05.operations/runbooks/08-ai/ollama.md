@@ -28,25 +28,25 @@ status: active
 - [../../../03.specs/08-ai/spec.md](../../../03.specs/08-ai/spec.md)
 - [../../../04.execution/plans/2026-03-26-08-ai-standardization.md](../../../04.execution/plans/2026-03-26-08-ai-standardization.md)
 
-### When to Use
+## When to Use
 
 - Ollama API(`/api/tags`, `/api/generate`) 호출 실패.
 - 컨테이너 내부 GPU 미인식 또는 CPU fallback 발생.
 - 모델 로드 시 VRAM OOM으로 추론 실패.
 - Open WebUI에서 모델 목록 미표시.
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 호스트 `nvidia-smi` 정상 여부 확인
 - [ ] `ollama` 컨테이너 healthcheck 확인
 - [ ] 최근 모델 변경/배포 이력 확인
 - [ ] Open WebUI 영향 범위 확인
 
-#### Procedure
+### Steps
 
-##### 1. Initial Health & API Check
+#### 1. Initial Health & API Check
 
 ```bash
 docker ps --filter name=ollama
@@ -67,7 +67,7 @@ docker exec ollama nvidia-smi
 docker restart ollama
 ```
 
-##### 3. VRAM OOM Mitigation
+### 3. VRAM OOM Mitigation
 
 ```bash
 ## keep_alive=0으로 상주 모델 언로드(예시)
@@ -80,7 +80,7 @@ curl -X POST http://localhost:${OLLAMA_PORT:-11434}/api/generate -d '{
 
 - 고부하 모델 사용 중이면 임시로 경량 모델로 fallback한다.
 
-##### 4. Model Integrity Check
+### 4. Model Integrity Check
 
 ```bash
 docker exec ollama ollama list
@@ -88,7 +88,7 @@ docker exec ollama ollama list
 
 - 운영 기준 모델 태그가 존재하는지 확인한다.
 
-##### 5. Open WebUI Dependency Recheck
+#### 5. Open WebUI Dependency Recheck
 
 ```bash
 ## Open WebUI 컨테이너에서 Ollama 접근 확인

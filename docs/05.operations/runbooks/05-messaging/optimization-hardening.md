@@ -25,22 +25,22 @@ status: active
 - [Plan](../../../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md)
 - [Tasks](../../../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md)
 
-### When to Use
+## When to Use
 
 - `messaging-hardening` CI가 실패할 때
 - Kafka/RabbitMQ 관리 UI가 Traefik 경유로 비정상 응답할 때
 - Kafka dev compose가 경로/네트워크 오류로 기동 실패할 때
 - 부동 태그 이미지 회귀가 발견될 때
 
-### Procedure or Checklist
+## Procedure
 
-#### Checklist
+### Checklist
 
 - [ ] 실패 항목(이미지/라우터/경로/문서 링크) 식별
 - [ ] 최근 변경 커밋과 영향 범위 확인
 - [ ] 운영 영향도(관리 경로/데이터 평면) 평가
 
-#### Procedure
+### Steps
 
 1. 정적 구성 점검
    - `docker compose -f infra/05-messaging/kafka/docker-compose.yml config`
