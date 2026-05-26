@@ -185,6 +185,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/hooks/session-end.sh](../../../.claude/hooks/session-end.sh) | script |
 | [.claude/hooks/session-start.sh](../../../.claude/hooks/session-start.sh) | script |
 | [.claude/hooks/stop.sh](../../../.claude/hooks/stop.sh) | script |
+| [.claude/hooks/user-prompt-submit.sh](../../../.claude/hooks/user-prompt-submit.sh) | script |
 | [.claude/settings.json](../../../.claude/settings.json) | JSON registry |
 | [.claude/skills/adr-writing/skill.md](../../../.claude/skills/adr-writing/skill.md) | Markdown reference |
 | [.claude/skills/ci-cd-patterns/skill.md](../../../.claude/skills/ci-cd-patterns/skill.md) | Markdown reference |
