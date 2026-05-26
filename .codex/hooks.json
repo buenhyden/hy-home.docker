@@ -71,6 +71,18 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/agent-event-hook.sh UserPromptSubmit",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   }
 }
