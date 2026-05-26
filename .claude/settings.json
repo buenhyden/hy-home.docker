@@ -1,6 +1,9 @@
 {
   "permissions": {
     "allow": [
+      "$defaults",
+      "Write(.claude/skills/*)",
+      "Edit(.claude/skills/*)",
       "Bash(git:*)",
       "Bash(python3:*)",
       "Bash(grep:*)",
@@ -98,6 +101,13 @@
           }
         ]
       }
+    ]
+  },
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Write(.claude/skills/*)",
+      "Edit(.claude/skills/*)"
     ]
   },
   "deniedMcpServers": [
