@@ -14,7 +14,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-job-low
-    image: alpine:3.23.2
+    image: alpine:3.23.4
     container_name: mongo-key-generator
     read_only: false
     restart: 'no'
@@ -38,7 +38,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high
-    image: mongo:8.2.3-noble
+    image: mongo:8.2.9-noble
     restart: unless-stopped
     container_name: mongodb-rep1
     hostname: mongodb-rep1
@@ -74,7 +74,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high
-    image: mongo:8.2.3-noble
+    image: mongo:8.2.9-noble
     restart: unless-stopped
     container_name: mongodb-rep2
     hostname: mongodb-rep2
@@ -110,7 +110,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-low
-    image: mongo:8.2.3-noble
+    image: mongo:8.2.9-noble
     container_name: mongodb-arbiter
     hostname: mongodb-arbiter
     restart: unless-stopped
@@ -136,7 +136,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: mongo:8.2.3-noble
+    image: mongo:8.2.9-noble
     container_name: mongo-init
     read_only: true
     tmpfs:
@@ -166,7 +166,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-infra-low
-    image: mongo-express:1.0.2-20-alpine3.19
+    image: mongo-express:1-18-alpine3.19
     container_name: mongo-express
     hostname: mongo-express
     restart: unless-stopped

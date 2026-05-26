@@ -50,7 +50,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-high
-    image: cassandra:5.0.6
+    image: cassandra:5.0.8
     container_name: cassandra-node1
     hostname: cassandra-node1
     read_only: false

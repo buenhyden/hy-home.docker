@@ -17,7 +17,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: stalwartlabs/stalwart:v0.14
+    image: stalwartlabs/stalwart:v0.16.6
     container_name: stalwart
     read_only: false
     ports:

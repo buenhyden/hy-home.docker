@@ -28,7 +28,7 @@ x-airflow-common: &airflow-common
   profiles:
     - 'workflow'
     - dev
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.1.8}
+  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.2.1}
   environment: *airflow-common-env
   volumes:
     - airflow-dags:/opt/airflow/dags
@@ -353,7 +353,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
-    image: prom/statsd-exporter:v0.28.0
+    image: prom/statsd-exporter:v0.29.0
     container_name: airflow-statsd-exporter
     read_only: true
     tmpfs:
