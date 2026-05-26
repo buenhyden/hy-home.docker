@@ -483,6 +483,108 @@ stop() {
   fi
 }
 
+user_prompt_submit() {
+  HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" <<'PY'
+import json
+import os
+import sys
+
+project = sys.argv[1]
+raw = os.environ.get("HOOK_INPUT", "")
+
+try:
+    data = json.loads(raw) if raw.strip() else {}
+except Exception:
+    data = {}
+
+prompt = str(data.get("prompt", "")).lower()
+
+SKILLS = [
+    {
+        "label": "compose-stack-agent",
+        "path": ".claude/skills/compose-stack-agent/skill.md",
+        "desc": "Compose 서비스 스택 검토 및 QW-001~005 인프라 기준선 검사",
+        "keywords": [
+            "healthcheck", "health check", "restart policy",
+            "qw-001", "qw-002", "qw-003", "qw-004", "qw-005", "quickwin",
+            "compose stack", "infra tier",
+        ],
+    },
+    {
+        "label": "requirements-to-design-agent",
+        "path": ".claude/skills/requirements-to-design-agent/skill.md",
+        "desc": "Stage 01→02 PRD→ARD/ADR 트레이서빌리티 갭 분석",
+        "keywords": [
+            "prd", "ard", "requirements to design", "architecture decision",
+            "stage 01", "stage 02", "01.requirements", "02.architecture", "adr",
+        ],
+    },
+    {
+        "label": "execution-plan-agent",
+        "path": ".claude/skills/execution-plan-agent/skill.md",
+        "desc": "Stage 03→04 스펙→플랜 분해 및 실행 계획 작성",
+        "keywords": [
+            "execution plan", "spec to plan", "stage 03", "stage 04",
+            "03.specs", "04.execution", "plan template", "implementation plan",
+        ],
+    },
+    {
+        "label": "task-breakdown-agent",
+        "path": ".claude/skills/task-breakdown-agent/skill.md",
+        "desc": "플랜→태스크 분해 및 실행 증거 기록",
+        "keywords": [
+            "task breakdown", "task evidence", "plan to task",
+            "effort estimation", "execution task", "task template",
+        ],
+    },
+    {
+        "label": "ops-runbook-agent",
+        "path": ".claude/skills/ops-runbook-agent/skill.md",
+        "desc": "Stage 05 운영 런북 작성 및 장애 대응 절차 문서화",
+        "keywords": [
+            "runbook", "stage 05", "05.operations", "backup procedure",
+            "recovery procedure", "incident runbook", "ops runbook",
+        ],
+    },
+    {
+        "label": "knowledge-map-agent",
+        "path": ".claude/skills/knowledge-map-agent/skill.md",
+        "desc": "Graphify 지식 그래프 탐색 및 문서 간 트레이서빌리티 갭 감지",
+        "keywords": [
+            "graphify", "knowledge graph", "traceability gap", "orphaned doc",
+            "cross-document", "missing link", "knowledge map",
+        ],
+    },
+    {
+        "label": "policy-gate-agent",
+        "path": ".claude/skills/policy-gate-agent/skill.md",
+        "desc": "전체 검증 스크립트 오케스트레이션 및 정책 게이트 통과 확인",
+        "keywords": [
+            "policy gate", "validation suite", "check-quickwin",
+            "check-template-security", "check-repo-contracts",
+            "policy validation",
+        ],
+    },
+]
+
+matched = [s for s in SKILLS if any(kw in prompt for kw in s["keywords"])]
+
+if not matched:
+    sys.exit(0)
+
+lines = ["Workspace skills that may apply to this prompt:"]
+for s in matched:
+    lines.append(f"  - **{s['label']}** (`{s['path']}`): {s['desc']}")
+
+print(json.dumps({
+    "hookSpecificOutput": {
+        "hookEventName": "UserPromptSubmit",
+        "additionalContext": "\n".join(lines),
+    }
+}))
+PY
+}
+
 pre_compact() {
   python3 - "$PROJECT_DIR" <<'PY' || true
 import json
@@ -526,25 +628,28 @@ PY
 }
 
 case "$EVENT" in
-  SessionStart)
-    session_start
-    ;;
-  PreToolUse)
-    pre_tool_use
-    ;;
-  PostToolUse)
-    post_tool_use
-    ;;
-  SessionEnd)
-    session_end
-    ;;
-  Stop)
-    stop
-    ;;
-  PreCompact)
-    pre_compact
-    ;;
-  *)
-    exit 0
-    ;;
+SessionStart)
+  session_start
+  ;;
+PreToolUse)
+  pre_tool_use
+  ;;
+PostToolUse)
+  post_tool_use
+  ;;
+SessionEnd)
+  session_end
+  ;;
+Stop)
+  stop
+  ;;
+PreCompact)
+  pre_compact
+  ;;
+UserPromptSubmit)
+  user_prompt_submit
+  ;;
+*)
+  exit 0
+  ;;
 esac
