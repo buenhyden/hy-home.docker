@@ -77,6 +77,8 @@ docs/04.execution/
 - [Docs bounded consistency audit task](tasks/2026-05-18-docs-bounded-consistency-audit.md) - execution evidence for the bounded consistency audit
 - [Workspace audit 2026-05 plan](plans/2026-05-26-workspace-audit.md) - implementation plan for gap registry, lifecycle docs, env/secrets comparison, skill stubs, and memory update
 - [Workspace audit 2026-05 task](tasks/2026-05-26-workspace-audit.md) - execution evidence for stage README lifecycle sections, env/secrets comparison reports, and session spec traceability
+- [Workspace audit gap closure plan](plans/2026-05-26-workspace-audit-gap-closure.md) - gap closure plan for hook parity, skill count alignment, stage matrix, and tech-stack drift
+- [Workspace audit gap closure task](tasks/2026-05-26-workspace-audit-gap-closure.md) - execution evidence for GAP-NEW-03~09 closure and deferred item recording
 
 ## Execution Contract
 
@@ -150,3 +152,5 @@ docs/04.execution/
 - **Data analytics execution traceability task**: [tasks/2026-05-22-data-analytics-execution-traceability.md](tasks/2026-05-22-data-analytics-execution-traceability.md)
 - **Workspace audit 2026-05 plan**: [plans/2026-05-26-workspace-audit.md](plans/2026-05-26-workspace-audit.md)
 - **Workspace audit 2026-05 task**: [tasks/2026-05-26-workspace-audit.md](tasks/2026-05-26-workspace-audit.md)
+- **Workspace audit gap closure plan**: [plans/2026-05-26-workspace-audit-gap-closure.md](plans/2026-05-26-workspace-audit-gap-closure.md)
+- **Workspace audit gap closure task**: [tasks/2026-05-26-workspace-audit-gap-closure.md](tasks/2026-05-26-workspace-audit-gap-closure.md)
