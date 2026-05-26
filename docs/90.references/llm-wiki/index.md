@@ -374,6 +374,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-25-home-docker-revalidation-deferred-follow-up.md](../../04.execution/plans/2026-05-25-home-docker-revalidation-deferred-follow-up.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-25-home-docker-workspace-audit-improvement.md](../../04.execution/plans/2026-05-25-home-docker-workspace-audit-improvement.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-25-large-scale-authored-ssot-review.md](../../04.execution/plans/2026-05-25-large-scale-authored-ssot-review.md) | Markdown reference |
+| [docs/04.execution/plans/2026-05-26-workspace-audit-gap-closure.md](../../04.execution/plans/2026-05-26-workspace-audit-gap-closure.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-26-workspace-audit.md](../../04.execution/plans/2026-05-26-workspace-audit.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
@@ -423,6 +424,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md](../../04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md](../../04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-25-large-scale-authored-ssot-review.md](../../04.execution/tasks/2026-05-25-large-scale-authored-ssot-review.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-05-26-workspace-audit-gap-closure.md](../../04.execution/tasks/2026-05-26-workspace-audit-gap-closure.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-26-workspace-audit.md](../../04.execution/tasks/2026-05-26-workspace-audit.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 

@@ -73,6 +73,8 @@ docs/05.operations/
 5. 새 operations 문서는 `../99.templates/operation.template.md`를 기본 템플릿으로 사용하고, target 위치 기준으로 상대 링크를 계산합니다.
 6. 문서를 추가, 이동, 삭제하면 해당 parent `README.md`와 관련 bucket 링크를 함께 갱신합니다.
 
+특정 서비스에 속하지 않는 cross-service 또는 workspace-level 문서(예: `guides/developer-setup.md`, `policies/12-infra-service-optimization-catalog.md`, `runbooks/release-management.md`)는 서비스 하위 폴더 없이 tier root에 직접 둡니다.
+
 모든 서비스가 guide, policy, runbook을 모두 가질 필요는 없습니다. 소비자가 실제로 구분해서 찾아야 하는 문서만 추가합니다.
 
 ## Operations Contract
