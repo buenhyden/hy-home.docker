@@ -23,17 +23,17 @@ status: completed
 
 ## Task Table
 
-| Task ID          | Description                                                       | Type | Parent Plan | Validation / Evidence                                     | Status   |
-| ---------------- | ----------------------------------------------------------------- | ---- | ----------- | --------------------------------------------------------- | -------- |
-| T-001            | `infra/tech-stack.versions.json` 드리프트 16개 컴포넌트 정정      | ops  | PLN-005     | `check-repo-contracts.sh` failures=0                      | Done     |
-| T-002            | `docs/90.references/llm-wiki/index.md` 재생성 (928 paths)         | ops  | PLN-006     | `check-repo-contracts.sh` failures=0                      | Done     |
-| T-003            | `.codex/hooks.json` `UserPromptSubmit` 이벤트 추가                | impl | PLN-001     | `jq '.hooks \| keys'` 7개 키 확인                         | Done     |
-| T-004            | `AGENTS.md` 섹션 3 `.claude/skills/` 스킬 카운트 명시 (18 skills) | doc  | PLN-002     | `grep "18 skills" AGENTS.md`                              | Done     |
-| T-005            | `stage-authoring-matrix.md` Section 4 Agent Skills by Stage 추가  | doc  | PLN-003     | Section 4 존재, 7개 스킬 행                               | Done     |
-| T-006            | `docs/90.references/README.md` Stage Handoff 섹션 추가            | doc  | PLN-004     | "Stage Handoff" heading 존재                              | Done     |
-| T-007 (BLOCKED)  | `.claude/CLAUDE.md` line 20 "11 functions" → "18 skills"          | doc  | PLN-007     | 런타임 자기-수정 차단 — 사용자 수동 수정 필요             | Blocked  |
-| T-008 (DEFERRED) | ops 고아 파일 15개 tier 분류 기준 문서화                          | doc  | N/A         | 중위험: 파일 재분류가 다른 ops 문서 참조를 깨뜨릴 수 있음 | Deferred |
-| T-009 (DEFERRED) | pre-commit에 5개 검증 스크립트 통합                               | impl | N/A         | 중위험: pre-commit hook 변경이 모든 개발자 환경에 영향    | Deferred |
+| Task ID | Description                                                       | Type | Parent Plan | Validation / Evidence                                                                     | Status |
+| ------- | ----------------------------------------------------------------- | ---- | ----------- | ----------------------------------------------------------------------------------------- | ------ |
+| T-001   | `infra/tech-stack.versions.json` 드리프트 16개 컴포넌트 정정      | ops  | PLN-005     | `check-repo-contracts.sh` failures=0                                                      | Done   |
+| T-002   | `docs/90.references/llm-wiki/index.md` 재생성 (928 paths)         | ops  | PLN-006     | `check-repo-contracts.sh` failures=0                                                      | Done   |
+| T-003   | `.codex/hooks.json` `UserPromptSubmit` 이벤트 추가                | impl | PLN-001     | `jq '.hooks \| keys'` 7개 키 확인                                                         | Done   |
+| T-004   | `AGENTS.md` 섹션 3 `.claude/skills/` 스킬 카운트 명시 (18 skills) | doc  | PLN-002     | `grep "18 skills" AGENTS.md`                                                              | Done   |
+| T-005   | `stage-authoring-matrix.md` Section 4 Agent Skills by Stage 추가  | doc  | PLN-003     | Section 4 존재, 7개 스킬 행                                                               | Done   |
+| T-006   | `docs/90.references/README.md` Stage Handoff 섹션 추가            | doc  | PLN-004     | "Stage Handoff" heading 존재                                                              | Done   |
+| T-007   | `.claude/CLAUDE.md` line 20 "11 functions" → "18 skills"          | doc  | PLN-007     | `grep "18 skills" .claude/CLAUDE.md` — committed in ci(pre-commit)                        | Done   |
+| T-008   | ops 고아 파일 15개 tier 분류 기준 문서화                          | doc  | N/A         | docs/05.operations/README.md tier-root policy added; `check-repo-contracts.sh` failures=0 | Done   |
+| T-009   | pre-commit에 5개 검증 스크립트 통합 (4개 신규 + 기존 1개)         | impl | N/A         | `.pre-commit-config.yaml` pre-push hooks confirmed; `check-repo-contracts.sh` failures=0  | Done   |
 
 ## Phase View
 

@@ -19,7 +19,9 @@ Claude Code-specific guidance for this repository.
 - Use project memory hierarchy intentionally (enterprise/project/local) and avoid duplicating the same rule across layers.
 - Keep `.claude/hookify.*.local.md` filenames for Hookify compatibility; in this repository those files are tracked team-shared rules, not personal local overrides.
 
-## 3. Recommended Loading Sequence
+## 3. Recommended CLAUDE.md Import Sequence
+
+The following `@`-imports belong in the root `CLAUDE.md` file. Step 3 refers to this file being loaded by `CLAUDE.md`, not a circular self-reference.
 
 1. `@AGENTS.md`
 2. `@docs/00.agent-governance/providers/agents-md.md`
