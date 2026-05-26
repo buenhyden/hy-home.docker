@@ -37,9 +37,9 @@ Workspace purpose: shared harness-engineering and agent-first engineering over m
 - Provider-neutral entry: `AGENTS.md`
 - Provider shims: `CLAUDE.md`, `GEMINI.md`
 - Provider overlays: `docs/00.agent-governance/providers/`
-- Claude runtime: `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, `.claude/skills/`
+- Claude runtime: `.claude/CLAUDE.md`, `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, `.claude/skills/` (18 skills)
 - Codex runtime hooks: `.codex/hooks.json`
-- Compatibility surface: `.agents/`
+- Compatibility surface: `.agents/` (mirrors `.claude/skills/` for tools that read this path; policy authority remains in `.claude/skills/`)
 - Agent/function catalog: `docs/00.agent-governance/agents/`
 - Delegation protocol: `docs/00.agent-governance/subagent-protocol.md`
 - Governance memory: `docs/00.agent-governance/memory/`
