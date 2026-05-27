@@ -141,6 +141,9 @@ A single document must serve one primary purpose. If usage AND procedure are nee
 - Never include secret values, tokens, or credential content.
 - Calculate all links relative to the target document path, not the template path.
 - After adding a new document, update the parent `<bucket>/<tier>/README.md` index.
+- **No flat-file + same-name subfolder coexistence**: if a subdomain folder (e.g., `relational/`) already exists inside a tier directory, do NOT create a flat `relational.md` at the same level. Place new content inside the subfolder instead.
+- **Cross-service workspace-level documents** (e.g., `developer-setup.md`, `harness-agent-first-engineering.md`, `release-management.md`) that span multiple tiers belong directly under `<bucket>/` root without a tier subfolder. Service-specific documents always go into `<bucket>/<tier>/`.
+- **Naming convention for cross-service root files**: use the associated ADR/spec number prefix (`0012-`, `0026-`) when the document corresponds to a numbered architecture decision. Do not mix numbered and unnumbered naming for the same cross-service document across buckets (guides, policies, runbooks must use the same filename).
 
 ---
 
