@@ -57,7 +57,7 @@ if [[ "$failures" -eq 0 ]]; then
   check_contains_literal "$ops_readme" "../04.execution/plans/README.md" "05.operations README missing plans link"
   check_contains_literal "$ops_readme" "../04.execution/tasks/README.md" "05.operations README missing tasks link"
 
-  check_contains_literal "$priority_plan" "../../05.operations/policies/12-infra-service-optimization-catalog.md" "priority plan missing operations policy catalog link"
+  check_contains_literal "$priority_plan" "../../05.operations/policies/infra-service-optimization-catalog.md" "priority plan missing operations policy catalog link"
   check_contains_literal "$priority_plan" "../../05.operations/README.md" "priority plan missing operations index link"
 
   catalog_dir="$(dirname "$catalog")"
