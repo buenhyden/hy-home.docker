@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/03.specs/standardize-infra-net/spec.md -->
 
 # Standardize `infra_net` Technical Specification
@@ -65,39 +66,39 @@ networks:
 
 ### Assigned IP Mapping Table (Authoritative)
 
-| IP Address | Service Name / Group | Folder Path |
-| :--- | :--- | :--- |
-| `172.19.0.5` | oauth2-proxy-valkey | `infra/02-auth/oauth2-proxy` |
-| `172.19.0.7` | registry | `infra/09-tooling/registry` |
-| `172.19.0.11-16` | Relational / Mng DB Core | `infra/04-data/relational`, `operational` |
-| `172.19.0.20-28` | Observability Stack | `infra/06-observability` |
-| `172.19.0.29` | MinIO | `infra/04-data/lake-and-object/minio` |
-| `172.19.0.30-38` | Kafka Stack | `infra/05-messaging/kafka` |
-| `172.19.0.39` | MinIO bucket job | `infra/04-data/lake-and-object/minio` |
-| `172.19.0.50-59` | PostgreSQL Cluster | `infra/04-data/relational/postgresql-cluster` |
-| `172.19.0.61` | Neo4j | `infra/04-data/specialized/neo4j` |
-| `172.19.0.80-85` | n8n Workflow | `infra/07-workflow/n8n` |
-| `172.19.0.90-100` | Airflow Workflow | `infra/07-workflow/airflow` |
-| `172.19.0.120` | Terraform / Atlantis | `infra/09-tooling/terraform` |
-| `172.19.0.121` | RedisInsight | `infra/11-laboratory/redisinsight` |
-| `172.19.0.150-151` | Cassandra | `infra/04-data/nosql/cassandra` |
-| `172.19.0.160-163` | CouchDB | `infra/04-data/nosql/couchdb` |
-| `172.19.0.170-175` | MongoDB | `infra/04-data/nosql/mongodb` |
-| `172.19.0.179-191` | Supabase Stack | `infra/04-data/operational/supabase` |
-| `172.19.0.200` | RabbitMQ | `infra/05-messaging/rabbitmq` |
-| `172.19.0.201` | Ollama | `infra/08-ai/ollama` |
-| `172.19.0.202` | Qdrant | `infra/04-data/specialized/qdrant` |
-| `172.19.0.211` | Ollama Exporter | `infra/08-ai/ollama` |
-| `172.19.0.220` | Portainer | `infra/11-laboratory/portainer` |
-| `172.19.0.221` | Dozzle | `infra/11-laboratory/dozzle` |
-| `172.19.0.222` | Homer Dashboard | `infra/11-laboratory/dashboard` |
-| `172.19.0.223` | SonarQube | `infra/09-tooling/sonarqube` |
-| `172.19.0.224` | Syncthing | `infra/09-tooling/syncthing` |
-| `172.19.0.225-227` | Terrakube API/UI/Executor | `infra/09-tooling/terrakube` |
-| `172.19.0.250` | Locust Master | `infra/09-tooling/locust` |
-| `172.19.0.251` | Open-WebUI | `infra/08-ai/open-webui` |
-| `172.19.0.253` | Locust Worker | `infra/09-tooling/locust` |
-| `172.19.0.260-261` | Stalwart Mail / MailHog | `infra/10-communication/mail` |
+| IP Address         | Service Name / Group      | Folder Path                                   |
+| :----------------- | :------------------------ | :-------------------------------------------- |
+| `172.19.0.5`       | oauth2-proxy-valkey       | `infra/02-auth/oauth2-proxy`                  |
+| `172.19.0.7`       | registry                  | `infra/09-tooling/registry`                   |
+| `172.19.0.11-16`   | Relational / Mng DB Core  | `infra/04-data/relational`, `operational`     |
+| `172.19.0.20-28`   | Observability Stack       | `infra/06-observability`                      |
+| `172.19.0.29`      | MinIO                     | `infra/04-data/lake-and-object/minio`         |
+| `172.19.0.30-38`   | Kafka Stack               | `infra/05-messaging/kafka`                    |
+| `172.19.0.39`      | MinIO bucket job          | `infra/04-data/lake-and-object/minio`         |
+| `172.19.0.50-59`   | PostgreSQL Cluster        | `infra/04-data/relational/postgresql-cluster` |
+| `172.19.0.61`      | Neo4j                     | `infra/04-data/specialized/neo4j`             |
+| `172.19.0.80-85`   | n8n Workflow              | `infra/07-workflow/n8n`                       |
+| `172.19.0.90-100`  | Airflow Workflow          | `infra/07-workflow/airflow`                   |
+| `172.19.0.120`     | Terraform / Atlantis      | `infra/09-tooling/terraform`                  |
+| `172.19.0.121`     | RedisInsight              | `infra/11-laboratory/redisinsight`            |
+| `172.19.0.150-151` | Cassandra                 | `infra/04-data/nosql/cassandra`               |
+| `172.19.0.160-163` | CouchDB                   | `infra/04-data/nosql/couchdb`                 |
+| `172.19.0.170-175` | MongoDB                   | `infra/04-data/nosql/mongodb`                 |
+| `172.19.0.179-191` | Supabase Stack            | `infra/04-data/operational/supabase`          |
+| `172.19.0.200`     | RabbitMQ                  | `infra/05-messaging/rabbitmq`                 |
+| `172.19.0.201`     | Ollama                    | `infra/08-ai/ollama`                          |
+| `172.19.0.202`     | Qdrant                    | `infra/04-data/specialized/qdrant`            |
+| `172.19.0.211`     | Ollama Exporter           | `infra/08-ai/ollama`                          |
+| `172.19.0.220`     | Portainer                 | `infra/11-laboratory/portainer`               |
+| `172.19.0.221`     | Dozzle                    | `infra/11-laboratory/dozzle`                  |
+| `172.19.0.222`     | Homer Dashboard           | `infra/11-laboratory/dashboard`               |
+| `172.19.0.223`     | SonarQube                 | `infra/09-tooling/sonarqube`                  |
+| `172.19.0.224`     | Syncthing                 | `infra/09-tooling/syncthing`                  |
+| `172.19.0.225-227` | Terrakube API/UI/Executor | `infra/09-tooling/terrakube`                  |
+| `172.19.0.250`     | Locust Master             | `infra/09-tooling/locust`                     |
+| `172.19.0.251`     | Open-WebUI                | `infra/08-ai/open-webui`                      |
+| `172.19.0.253`     | Locust Worker             | `infra/09-tooling/locust`                     |
+| `172.19.0.260-261` | Stalwart Mail / MailHog   | `infra/10-communication/mail`                 |
 
 ### Service Assignment Example
 
@@ -139,5 +140,5 @@ docker compose config | grep "k3d-hyhome"
 - **Plan**: [../../04.execution/plans/2026-04-01-standardize-infra-net.md](../../04.execution/plans/2026-04-01-standardize-infra-net.md)
 - **Tasks**: [../../04.execution/tasks/2026-04-01-standardize-infra-net.md](../../04.execution/tasks/2026-04-01-standardize-infra-net.md)
 - **Guide**: [../../05.operations/guides/0012-standardize-infra-net.md](../../05.operations/guides/0012-standardize-infra-net.md)
-- **Policy**: [../../05.operations/policies/standardize-infra-net.md](../../05.operations/policies/standardize-infra-net.md)
+- **Policy**: [../../05.operations/policies/0012-standardize-infra-net.md](../../05.operations/policies/0012-standardize-infra-net.md)
 - **Runbook**: [../../05.operations/runbooks/0012-standardize-infra-net.md](../../05.operations/runbooks/0012-standardize-infra-net.md)

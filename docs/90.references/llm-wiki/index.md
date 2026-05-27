@@ -617,7 +617,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/policies/README.md](../../05.operations/policies/README.md) | folder index |
 | [docs/05.operations/policies/harness-agent-first-engineering.md](../../05.operations/policies/harness-agent-first-engineering.md) | Markdown reference |
 | [docs/05.operations/policies/llm-wiki-maintenance.md](../../05.operations/policies/llm-wiki-maintenance.md) | Markdown reference |
-| [docs/05.operations/policies/standardize-infra-net.md](../../05.operations/policies/standardize-infra-net.md) | Markdown reference |
 | [docs/05.operations/runbooks/0012-standardize-infra-net.md](../../05.operations/runbooks/0012-standardize-infra-net.md) | Markdown reference |
 | [docs/05.operations/runbooks/01-gateway/README.md](../../05.operations/runbooks/01-gateway/README.md) | folder index |
 | [docs/05.operations/runbooks/01-gateway/nginx.md](../../05.operations/runbooks/01-gateway/nginx.md) | Markdown reference |

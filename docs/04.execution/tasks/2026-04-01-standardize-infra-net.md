@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/04.execution/tasks/2026-04-01-standardize-infra-net.md -->
 
 # Task: Standardize `infra_net` Implementation
@@ -23,15 +24,15 @@ status: active
 
 ## Task Table
 
-| Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| T-DOC-01 | PRD, ARD, ADR, Spec, Plan 작성 | doc | SPC-GOV | Phase 1 | `ls docs/` 및 컨텐츠 확인 | Antigravity | Done |
-| T-DOC-02 | Task, Guide, Oper, Runbook 작성 | doc | SPC-GOV | Phase 1 | `ls docs/` 및 컨텐츠 확인 | Antigravity | Done |
-| T-DOC-03 | 9개 디렉터리 README 업데이트 | doc | SPC-GOV | Phase 1 | README 내용 확인 | Antigravity | Done |
-| T-IMP-01 | 루트 `docker-compose.yml` 수정 | impl | SPC-CFG | Phase 2 | `docker compose config` | Antigravity | Done |
-| T-IMP-02 | 21개 서비스 Compose 파일 수정 | impl | SPC-CFG | Phase 2 | `grep "infra_net" infra/**/docker-compose.yml` | Antigravity | Done |
-| T-VAL-01 | 전체 네트워크 병합 결과 검증 | test | SPC-VAL | Phase 3 | `docker compose config` | Antigravity | Done |
-| T-DOC-04 | 외부 수동 할당 IP 명세 동기화 | doc | SPC-GOV | Phase 3 | Spec 내 IP 매핑 테이블 업데이트 | Antigravity | Done |
+| Task ID  | Description                     | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence                          | Owner       | Status |
+| -------- | ------------------------------- | ---- | --------------------- | ------------------- | ---------------------------------------------- | ----------- | ------ |
+| T-DOC-01 | PRD, ARD, ADR, Spec, Plan 작성  | doc  | SPC-GOV               | Phase 1             | `ls docs/` 및 컨텐츠 확인                      | Antigravity | Done   |
+| T-DOC-02 | Task, Guide, Oper, Runbook 작성 | doc  | SPC-GOV               | Phase 1             | `ls docs/` 및 컨텐츠 확인                      | Antigravity | Done   |
+| T-DOC-03 | 9개 디렉터리 README 업데이트    | doc  | SPC-GOV               | Phase 1             | README 내용 확인                               | Antigravity | Done   |
+| T-IMP-01 | 루트 `docker-compose.yml` 수정  | impl | SPC-CFG               | Phase 2             | `docker compose config`                        | Antigravity | Done   |
+| T-IMP-02 | 21개 서비스 Compose 파일 수정   | impl | SPC-CFG               | Phase 2             | `grep "infra_net" infra/**/docker-compose.yml` | Antigravity | Done   |
+| T-VAL-01 | 전체 네트워크 병합 결과 검증    | test | SPC-VAL               | Phase 3             | `docker compose config`                        | Antigravity | Done   |
+| T-DOC-04 | 외부 수동 할당 IP 명세 동기화   | doc  | SPC-GOV               | Phase 3             | Spec 내 IP 매핑 테이블 업데이트                | Antigravity | Done   |
 
 ## Verification Summary
 
@@ -66,5 +67,5 @@ status: active
 - **Runbook**: [../../05.operations/runbooks/0012-standardize-infra-net.md](../../05.operations/runbooks/0012-standardize-infra-net.md)
 - **ARD**: [../../02.architecture/requirements/0026-standardize-infra-net.md](../../02.architecture/requirements/0026-standardize-infra-net.md)
 - **ADR**: [../../02.architecture/decisions/0026-standardize-infra-net.md](../../02.architecture/decisions/0026-standardize-infra-net.md)
-- **Operation**: [../../05.operations/policies/standardize-infra-net.md](../../05.operations/policies/standardize-infra-net.md)
+- **Operation**: [../../05.operations/policies/0012-standardize-infra-net.md](../../05.operations/policies/0012-standardize-infra-net.md)
 - **PRD**: [../../01.requirements/2026-04-01-standardize-infra-net.md](../../01.requirements/2026-04-01-standardize-infra-net.md)
