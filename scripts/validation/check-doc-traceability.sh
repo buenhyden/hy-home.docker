@@ -41,7 +41,7 @@ plans_readme="docs/04.execution/plans/README.md"
 tasks_readme="docs/04.execution/tasks/README.md"
 ops_readme="docs/05.operations/README.md"
 priority_plan="docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md"
-catalog="docs/05.operations/policies/12-infra-service-optimization-catalog.md"
+catalog="docs/05.operations/policies/infra-service-optimization-catalog.md"
 
 check_file_exists "$execution_readme" || true
 check_file_exists "$plans_readme" || true
