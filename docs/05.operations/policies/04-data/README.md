@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/policies/04-data/README.md -->
+
 # Operations Policies - 04 Data
 
 > 운영 통제, 보안/가용성 기준, 예외 승인 기준을 관리한다.
@@ -42,8 +44,6 @@ policies/04-data/
 ├── specialized/
 ├── backup-policy.md
 ├── optimization-hardening.md
-├── relational.md
-├── valkey-cluster.md
 └── README.md
 ```
 
@@ -55,19 +55,17 @@ policies/04-data/
 
 ## Contents
 
-| Path | Purpose |
-| --- | --- |
-| [analytics/](./analytics/README.md) | Analytics policy 문서 |
-| [cache-and-kv/](./cache-and-kv/README.md) | Cache And Kv policy 문서 |
-| [lake-and-object/](./lake-and-object/README.md) | Lake And Object policy 문서 |
-| [nosql/](./nosql/README.md) | Nosql policy 문서 |
-| [operational/](./operational/README.md) | Operational policy 문서 |
-| [relational/](./relational/README.md) | Relational policy 문서 |
-| [specialized/](./specialized/README.md) | Specialized policy 문서 |
-| [backup-policy.md](./backup-policy.md) | Backup Policy policy 문서 |
+| Path                                                     | Purpose                            |
+| -------------------------------------------------------- | ---------------------------------- |
+| [analytics/](./analytics/README.md)                      | Analytics policy 문서              |
+| [cache-and-kv/](./cache-and-kv/README.md)                | Cache And Kv policy 문서           |
+| [lake-and-object/](./lake-and-object/README.md)          | Lake And Object policy 문서        |
+| [nosql/](./nosql/README.md)                              | Nosql policy 문서                  |
+| [operational/](./operational/README.md)                  | Operational policy 문서            |
+| [relational/](./relational/README.md)                    | Relational policy 문서             |
+| [specialized/](./specialized/README.md)                  | Specialized policy 문서            |
+| [backup-policy.md](./backup-policy.md)                   | Backup Policy policy 문서          |
 | [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening policy 문서 |
-| [relational.md](./relational.md) | Relational policy 문서 |
-| [valkey-cluster.md](./valkey-cluster.md) | Valkey Cluster policy 문서 |
 
 ## Related Documents
 

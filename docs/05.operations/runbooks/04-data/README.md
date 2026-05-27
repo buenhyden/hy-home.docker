@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/runbooks/04-data/README.md -->
+
 # Operations Runbooks - 04 Data
 
 > 복구, 검증, 반복 실행 절차를 명령과 evidence 중심으로 관리한다.
@@ -41,9 +43,7 @@ runbooks/04-data/
 ├── relational/
 ├── specialized/
 ├── optimization-hardening.md
-├── relational.md
 ├── storage-exhaustion.md
-├── valkey-cluster.md
 └── README.md
 ```
 
@@ -55,19 +55,17 @@ runbooks/04-data/
 
 ## Contents
 
-| Path | Purpose |
-| --- | --- |
-| [analytics/](./analytics/README.md) | Analytics runbook 문서 |
-| [cache-and-kv/](./cache-and-kv/README.md) | Cache And Kv runbook 문서 |
-| [lake-and-object/](./lake-and-object/README.md) | Lake And Object runbook 문서 |
-| [nosql/](./nosql/README.md) | Nosql runbook 문서 |
-| [operational/](./operational/README.md) | Operational runbook 문서 |
-| [relational/](./relational/README.md) | Relational runbook 문서 |
-| [specialized/](./specialized/README.md) | Specialized runbook 문서 |
+| Path                                                     | Purpose                             |
+| -------------------------------------------------------- | ----------------------------------- |
+| [analytics/](./analytics/README.md)                      | Analytics runbook 문서              |
+| [cache-and-kv/](./cache-and-kv/README.md)                | Cache And Kv runbook 문서           |
+| [lake-and-object/](./lake-and-object/README.md)          | Lake And Object runbook 문서        |
+| [nosql/](./nosql/README.md)                              | Nosql runbook 문서                  |
+| [operational/](./operational/README.md)                  | Operational runbook 문서            |
+| [relational/](./relational/README.md)                    | Relational runbook 문서             |
+| [specialized/](./specialized/README.md)                  | Specialized runbook 문서            |
 | [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening runbook 문서 |
-| [relational.md](./relational.md) | Relational runbook 문서 |
-| [storage-exhaustion.md](./storage-exhaustion.md) | Storage Exhaustion runbook 문서 |
-| [valkey-cluster.md](./valkey-cluster.md) | Valkey Cluster runbook 문서 |
+| [storage-exhaustion.md](./storage-exhaustion.md)         | Storage Exhaustion runbook 문서     |
 
 ## Related Documents
 

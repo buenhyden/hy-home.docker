@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/guides/04-data/README.md -->
+
 # Operations Guides - 04 Data
 
 > 서비스 사용, 설정, 온보딩 문서를 domain/service 구조로 관리한다.
@@ -40,13 +42,7 @@ guides/04-data/
 ├── operational/
 ├── relational/
 ├── specialized/
-├── 01.relational-dbs.md
-├── 02.cache-kv-dbs.md
-├── 04.storage-systems.md
-├── 05.analytical-specialized-dbs.md
 ├── optimization-hardening.md
-├── relational.md
-├── valkey-cluster.md
 └── README.md
 ```
 
@@ -58,22 +54,16 @@ guides/04-data/
 
 ## Contents
 
-| Path | Purpose |
-| --- | --- |
-| [analytics/](./analytics/README.md) | Analytics guide 문서 |
-| [cache-and-kv/](./cache-and-kv/README.md) | Cache And Kv guide 문서 |
-| [lake-and-object/](./lake-and-object/README.md) | Lake And Object guide 문서 |
-| [nosql/](./nosql/README.md) | Nosql guide 문서 |
-| [operational/](../../policies/04-data/operational/README.md) | Operational guide 문서 |
-| [relational/](./relational/README.md) | Relational guide 문서 |
-| [specialized/](./specialized/README.md) | Specialized guide 문서 |
-| [01.relational-dbs.md](./01.relational-dbs.md) | 01.Relational Dbs guide 문서 |
-| [02.cache-kv-dbs.md](./02.cache-kv-dbs.md) | 02.Cache Kv Dbs guide 문서 |
-| [04.storage-systems.md](./04.storage-systems.md) | 04.Storage Systems guide 문서 |
-| [05.analytical-specialized-dbs.md](./05.analytical-specialized-dbs.md) | 05.Analytical Specialized Dbs guide 문서 |
+| Path                                                     | Purpose                           |
+| -------------------------------------------------------- | --------------------------------- |
+| [analytics/](./analytics/README.md)                      | Analytics guide 문서              |
+| [cache-and-kv/](./cache-and-kv/README.md)                | Cache And Kv guide 문서           |
+| [lake-and-object/](./lake-and-object/README.md)          | Lake And Object guide 문서        |
+| [nosql/](./nosql/README.md)                              | Nosql guide 문서                  |
+| [operational/](./operational/README.md)                  | Operational guide 문서            |
+| [relational/](./relational/README.md)                    | Relational guide 문서             |
+| [specialized/](./specialized/README.md)                  | Specialized guide 문서            |
 | [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening guide 문서 |
-| [relational.md](./relational.md) | Relational guide 문서 |
-| [valkey-cluster.md](./valkey-cluster.md) | Valkey Cluster guide 문서 |
 
 ## Related Documents
 
