@@ -2,8 +2,9 @@
 name: ops-runbook-agent
 description: >
   Author and maintain Stage 05 operations documents in docs/05.operations/.
-  Covers guides (usage context), policies (controls and compliance), and
-  runbooks (ordered procedures with evidence, rollback, and escalation).
+  Covers guides (usage context), policies (controls and compliance),
+  runbooks (ordered procedures with evidence, rollback, and escalation),
+  and incidents (event records and postmortems).
 ---
 
 # ops-runbook-agent
@@ -45,6 +46,7 @@ Pick exactly one bucket based on the primary purpose:
 | `guides/` | Usage context, onboarding, prerequisites, common checks | "How do I use / configure / verify this service?" |
 | `policies/` | Controls, allowed/disallowed states, exceptions, review cadence | "What are the rules governing this service?" |
 | `runbooks/` | Ordered procedures, evidence capture, rollback, escalation | "How do I recover / operate this service step-by-step?" |
+| `incidents/YYYY/` | Event records (Incident) and post-incident analysis (Postmortem) | "Document an active or resolved incident or its root-cause analysis." |
 
 A single document must serve one primary purpose. If usage AND procedure are needed, write a guide that links to a runbook via `## Runbook Handoff`.
 
@@ -127,6 +129,49 @@ A single document must serve one primary purpose. If usage AND procedure are nee
 **Forbidden in runbooks**: `## Usage`, `## Policy Scope`, `## Controls`,
 `## Exceptions`, `## Review Cadence`.
 
+### Incident Profile (`incidents/YYYY/`)
+
+```markdown
+## Overview (KR)
+## Incident Metadata
+## Agent Metadata (If Applicable)
+## Incident Summary
+## Impact
+## Timeline
+## Current Hypothesis / Response State
+## Evidence
+## Follow-up Actions
+## Postmortem Link
+## Related Documents
+```
+
+Filename: `YYYY-MM-DD-<incident-title>.md`
+Target: `<!-- Target: docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>.md -->`
+
+**Forbidden in incidents**: `## Policy Scope`, `## Controls`, `## When to Use`, `## Procedure`, `## Rollback or Recovery`, `## Escalation`.
+
+### Postmortem Profile (`incidents/YYYY/`)
+
+```markdown
+## Overview (KR)
+## Incident Summary
+## Agent Metadata (If Applicable)
+## Impact
+## Timeline
+## Root Cause Analysis
+## What Went Well
+## What Went Wrong
+## Action Items
+## Prevention and Verification
+## Required Documentation Feedback Loop
+## Related Documents
+```
+
+Filename: `YYYY-MM-DD-<incident-title>-postmortem.md`
+Target: `<!-- Target: docs/05.operations/incidents/YYYY/YYYY-MM-DD-<incident-title>-postmortem.md -->`
+
+**Forbidden in postmortems**: `## Policy Scope`, `## Controls`, `## When to Use`, `## Procedure`, `## Common Checks`, `## Runbook Handoff`.
+
 ---
 
 ## Working Rules
@@ -144,6 +189,8 @@ A single document must serve one primary purpose. If usage AND procedure are nee
 - **No flat-file + same-name subfolder coexistence**: if a subdomain folder (e.g., `relational/`) already exists inside a tier directory, do NOT create a flat `relational.md` at the same level. Place new content inside the subfolder instead.
 - **Cross-service workspace-level documents** (e.g., `developer-setup.md`, `harness-agent-first-engineering.md`, `release-management.md`) that span multiple tiers belong directly under `<bucket>/` root without a tier subfolder. Service-specific documents always go into `<bucket>/<tier>/`.
 - **Naming convention for cross-service root files**: use the associated ADR/spec number prefix (`0012-`, `0026-`) when the document corresponds to a numbered architecture decision. Do not mix numbered and unnumbered naming for the same cross-service document across buckets (guides, policies, runbooks must use the same filename).
+- **Incident and Postmortem placement**: place both files under `incidents/YYYY/` grouped by year. Filename must start with `YYYY-MM-DD-`. Incident and Postmortem files are always written as a pair; the Incident must link to its Postmortem via `## Postmortem Link`, and the Postmortem must reference the Incident via `## Incident Summary`.
+- **Cross-tier policy files at `policies/` root**: use descriptive kebab-case filenames without a numeric tier prefix. Reserve the `NNNN-` prefix (four digits) only for files that correspond to a numbered ADR or spec.
 
 ---
 
