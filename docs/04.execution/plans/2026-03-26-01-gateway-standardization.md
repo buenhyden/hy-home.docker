@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/04.execution/plans/2026-03-26-01-gateway-standardization.md -->
 
 # Gateway Documentation Standardization Plan
@@ -36,18 +37,18 @@ status: active
 
 ## Work Breakdown
 
-| Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
-| --- | --- | --- | --- | --- |
-| PLN-01 | Gateway PRD 작성 | `docs/01.requirements/2026-03-26-01-gateway.md` | REQ-PRD-FUN | 템플릿 준수 및 KR 요약 포함 |
-| PLN-02 | Gateway ARD 작성 | `docs/02.architecture/requirements/0001-gateway-architecture.md` | - | 시스템 경계 및 품질 속성 정의 |
-| PLN-03 | Gateway ADR 작성 | `docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md` | - | 하이브리드 구조 결정 배경 명시 |
-| PLN-04 | 레이어별 README 최신화 | `docs/01.requirements/README.md`, `docs/02.architecture/requirements/README.md`, `docs/02.architecture/decisions/README.md` | - | 표준 템플릿 구조 적용 |
+| Task   | Description            | Files / Docs Affected                                                                                                       | Target REQ  | Validation Criteria            |
+| ------ | ---------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------------ |
+| PLN-01 | Gateway PRD 작성       | `docs/01.requirements/2026-03-26-01-gateway.md`                                                                             | REQ-PRD-FUN | 템플릿 준수 및 KR 요약 포함    |
+| PLN-02 | Gateway ARD 작성       | `docs/02.architecture/requirements/0001-gateway-architecture.md`                                                            | -           | 시스템 경계 및 품질 속성 정의  |
+| PLN-03 | Gateway ADR 작성       | `docs/02.architecture/decisions/0001-traefik-nginx-hybrid.md`                                                               | -           | 하이브리드 구조 결정 배경 명시 |
+| PLN-04 | 레이어별 README 최신화 | `docs/01.requirements/README.md`, `docs/02.architecture/requirements/README.md`, `docs/02.architecture/decisions/README.md` | -           | 표준 템플릿 구조 적용          |
 
 ## Verification Plan
 
-| ID | Level | Description | Command / How to Run | Pass Criteria |
-| --- | --- | --- | --- | --- |
-| VAL-PLN-01 | Structural | 문서 내 상대 경로 링크 유효성 검사 | `ls` 및 육안 확인 | 모든 링크가 실제 파일과 매핑됨 |
+| ID         | Level      | Description                                 | Command / How to Run  | Pass Criteria                         |
+| ---------- | ---------- | ------------------------------------------- | --------------------- | ------------------------------------- |
+| VAL-PLN-01 | Structural | 문서 내 상대 경로 링크 유효성 검사          | `ls` 및 육안 확인     | 모든 링크가 실제 파일과 매핑됨        |
 | VAL-PLN-02 | Compliance | 템플릿 규칙 준수 여부 (H1 하나, KR 요약 등) | `grep` 또는 육안 확인 | 모든 필수 섹션 존재 및 제약 사항 준수 |
 
 ## Completion Criteria
@@ -61,3 +62,4 @@ status: active
 - **PRD**: [../../01.requirements/2026-03-26-01-gateway.md](../../01.requirements/2026-03-26-01-gateway.md)
 - **ARD**: [../../02.architecture/requirements/0001-gateway-architecture.md](../../02.architecture/requirements/0001-gateway-architecture.md)
 - **ADR**: [../../02.architecture/decisions/0001-traefik-nginx-hybrid.md](../../02.architecture/decisions/0001-traefik-nginx-hybrid.md)
+- **Spec**: [../../03.specs/01-gateway/spec.md](../../03.specs/01-gateway/spec.md)

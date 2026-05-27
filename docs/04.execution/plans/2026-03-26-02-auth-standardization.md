@@ -1,9 +1,10 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/04.execution/plans/2026-03-26-02-auth-standardization.md -->
 
-# Plan: 02-Auth Documentation Standardization
+# 02-Auth Documentation Standardization Implementation Plan
 
 > Execution strategy for standardizing the 02-auth (Identity & Access) documentation layer.
 
