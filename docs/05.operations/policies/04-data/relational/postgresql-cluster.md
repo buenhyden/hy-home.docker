@@ -10,7 +10,7 @@ status: active
 
 ---
 
-## Overview (KR/EN)
+## Overview (KR)
 
 ### KR
 

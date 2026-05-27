@@ -8,7 +8,7 @@ status: active
 <!-- [ID:09-tooling:terrakube] -->
 > Operational guidelines and governance for the centralized Terrakube IaC platform.
 
-## Overview
+## Overview (KR)
 
 Terrakube serves as the authoritative source for infrastructure state. Strict access control and operational hygiene are required to prevent data loss or unauthorized provisioning.
 

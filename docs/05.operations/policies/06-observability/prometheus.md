@@ -7,7 +7,7 @@ status: active
 
 Standardized procedures for maintaining Prometheus metrics collection and alerting integrity.
 
-## Overview
+## Overview (KR)
 
 This policy defines the Prometheus controls for scrape target registration, alerting rule management, performance monitoring, and TSDB integrity. Ordered recovery or reload procedures belong in the matching runbook.
 

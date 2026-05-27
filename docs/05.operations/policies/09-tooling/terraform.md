@@ -8,7 +8,7 @@ status: active
 <!-- [ID:09-tooling:terraform] -->
 > Operational guidelines and policies for managing infrastructure via Terraform.
 
-## Overview
+## Overview (KR)
 
 All infrastructure changes in `hy-home.docker` must be managed via Terraform to ensure auditability and reproducibility.
 

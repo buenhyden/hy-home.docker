@@ -235,6 +235,23 @@ Full-scope workspace audit. 14 gaps identified (GAP-01 through GAP-14). Low-risk
 
 Deferred follow-up: create `docs/03.specs/compose-hardening-healthchecks.md` for GAP-01 per-service probe design.
 
+## docs/05.operations Normalization (2026-05-27)
+
+Full normalization of `docs/05.operations/` guides, policies, and runbooks for structural consistency, template compliance, and AI agent authoring alignment.
+
+| Item                                   | Area                           | Status  | Notes                                                                                    |
+| -------------------------------------- | ------------------------------ | ------- | ---------------------------------------------------------------------------------------- |
+| `## Exceptions` missing                | 18 policy files                | ✅ Done | Added `N/A — 현재 승인된 예외 없음.` to all 18 files                                     |
+| `## Overview` → `## Overview (KR)`     | 10 policies + 1 guide          | ✅ Done | Includes `postgresql-cluster.md` (`KR/EN` → `KR`) and `05.analytical-specialized-dbs.md` |
+| `guide.template.md` rewrite            | `docs/99.templates/`           | ✅ Done | Removed Vault-personal sections; normalized `## Usage` wrapper structure                 |
+| `runbook.template.md` rewrite          | `docs/99.templates/`           | ✅ Done | Removed Vault-personal sections; normalized Runbook Profile structure                    |
+| `check-repo-contracts.sh` update       | `scripts/validation/`          | ✅ Done | Removed `guide.template.md`/`runbook.template.md` from banned pattern (now canonical)    |
+| `ops-runbook-agent/skill.md` Bootstrap | `.claude/skills/`              | ✅ Done | Bootstrap step 2 now references `guide.template.md` and `runbook.template.md`            |
+| LLM wiki index regenerated             | `docs/90.references/llm-wiki/` | ✅ Done | 932 paths after template additions                                                       |
+| Validation                             | all checks                     | ✅ Pass | `check-repo-contracts.sh` failures=0, `check-doc-traceability.sh` failures=0             |
+
+3-layer consistency achieved: actual ops files ↔ `guide.template.md`/`runbook.template.md` ↔ `ops-runbook-agent/skill.md` profiles.
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.
