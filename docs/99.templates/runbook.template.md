@@ -1,112 +1,105 @@
 ---
-title: 'Runbook Template'
 status: draft
-type: runbook
-stage: docs/05.operations/runbooks
-template: docs/99.templates/runbook.template.md
-project: ''
-linked_zk: []
-lessons_extracted: false
 ---
 
-<!-- Target: docs/05.operations/runbooks/####-<topic>.md -->
+<!-- Target: docs/05.operations/runbooks/<tier>/<topic>.md -->
 
-# [topic Name] Runbook
+# {Service} {Operation} Runbook
 
-> Use this template for `docs/05.operations/runbooks/####-<topic>.md`.
+> Use this template for `docs/05.operations/runbooks/<tier>/<topic>.md`.
 >
 > Rules:
 >
-> - This document exists for immediate execution.
-> - This document is not a policy definition.
-> - This document is not a tutorial-first guide.
-> - If the main purpose is analysis after the event, write a Postmortem instead.
+> - This document exists for immediate execution — ordered steps, evidence capture, rollback, and escalation.
+> - This document is not a policy definition and must not contain `## Policy Scope`, `## Controls`, or `## Review Cadence`.
+> - This document is not a tutorial-first guide. Usage context belongs in the paired Guide.
+> - If the primary purpose is post-incident analysis, write a Postmortem instead.
+> - Rollback or Recovery must be factual-only. If no verified steps exist, write `N/A — no verified rollback procedure` and route to `## Escalation`.
+> - Target-relative links are calculated from the copied target path, not from `docs/99.templates/`.
 
 ---
 
-## Overview (KR)
+## {Service} {Operation} Procedure
 
-이 런북은 [서비스 또는 워크플로명]에 대한 실행 절차를 정의한다. 운영자가 즉시 따라 할 수 있는 단계와 검증 기준을 제공한다.
+> Scope: {one-line scope statement}
 
-## Autonomous SDLC Contract
+### Overview (KR)
 
-| Field                 | Value                                                                                   |
-| :-------------------- | :-------------------------------------------------------------------------------------- |
-| Stage                 | `05.operations/runbooks`                                                                |
-| Methodology Alignment | SDD executable procedure, operations readiness                                          |
-| Upstream              | Operation, Spec, ADR, ARD                                                               |
-| Downstream            | Incident response, postmortem action items, operational evidence                        |
-| Stage Exit Gate       | Trigger, procedure, verification, evidence capture, and rollback/recovery are explicit. |
+{이 런북이 다루는 범위와 언제 사용해야 하는지 설명한다.}
 
-## Purpose
+### Purpose
 
-[What operational problem this runbook addresses.]
+{이 런북이 해결하는 운영 문제.}
 
-## Canonical References
+### Canonical References
 
-> Replace each placeholder with a real target-relative link from the generated runbook.
-> If no real upstream exists, write `N/A - no upstream source`.
-> If a required upstream is missing, write `Blocked - real upstream required`.
-
-- **ARD**: Real target-relative ARD link, or `N/A - no upstream source`
-- **ADR**: Real target-relative ADR link, or `N/A - no upstream source`
-- **Spec**: Real target-relative spec link, or `N/A - no upstream source`
-- **Plan**: Real target-relative plan link, or `N/A - no upstream source`
+- **Spec**: N/A — no upstream source
+- **Policy**: N/A — no upstream source
+- **Guide**: N/A — no upstream source
 
 ## When to Use
 
-- [Use case 1]
-- [Use case 2]
+{트리거 조건, 증상, 또는 실행 기준.}
 
 ## Procedure
 
 ### Checklist
 
-- [ ] [Check 1]
-- [ ] [Check 2]
+- [ ] {Pre-condition check 1}
+- [ ] {Pre-condition check 2}
 
 ### Steps
 
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
+1. {Step 1}
+2. {Step 2}
+3. {Step 3}
 
-## Verification
+### Verification Steps
 
-- [ ] [Verification command or manual check]
+- `{verification command}`
+- {expected result}
 
-## Observability and Evidence Sources
+### Observability and Evidence Sources
 
-- **Signals**:
-- **Evidence to Capture**:
+- **Logs**: {log location or command}
+- **Metrics**: {metric name or dashboard link}
 
-## Safe Rollback or Recovery Procedure
+### Safe Rollback or Recovery Procedure
 
-- [ ] [Recovery step 1]
-- [ ] [Recovery step 2]
+1. {Rollback step 1}
+2. {Rollback step 2}
 
-## Agent Operations (If Applicable)
+### Agent Operations (If Applicable)
 
-- **Prompt Rollback**:
-- **Model Fallback**:
-- **Tool Disable / Revoke**:
-- **Eval Re-run**:
-- **Trace Capture**:
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: N/A
+- **Eval Re-run**: N/A
+
+## Evidence
+
+- {캡처할 로그, 명령 출력, 대시보드 스크린샷}
+
+## Rollback or Recovery
+
+{검증된 안전한 롤백/복구 절차. 검증된 절차가 없으면 `N/A — no verified rollback or recovery procedure is documented yet`을 기록하고 `## Escalation`으로 독자를 안내한다.}
+
+## Escalation
+
+{에스컬레이션 담당자, 기준, 제공해야 할 컨텍스트.}
 
 ## Related Documents
 
-> Replace generated examples with real target-relative links, or use `N/A - no upstream source`.
+Use only links that apply to the copied target path. Delete unused examples before committing.
 
-- **Operation**: Real target-relative operation policy link, or `N/A - no upstream source`
-- **Incident examples**: Real target-relative incident link, or `N/A - no upstream source`
-- **Postmortem examples**: Real target-relative postmortem link, or `N/A - no upstream source`
+Domain-depth examples (two levels deep):
 
-## SDLC/PARA Boundary & ZK Extraction
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/<tier>/<topic>.md)
+- [Operations policy](../../policies/<tier>/<topic>.md)
 
-> [!NOTE]
-> AI Agent는 SDLC 문서를 작성/수정할 때 `30_PARA/31_Projects/`를 필수 소유자, 링크 대상, 증적 저장소로 사용하지 않는다.
-> `30_PARA/31_Projects/`는 사용자의 개인/업무 프로젝트를 관리하는 별도 Vault 영역이다.
-> 작성 중 발견한 독립적인 지식, 패턴, 의사결정 기준만 `20_ZK/22_Permanent/` 또는 `20_ZK/23_Maps/`로 추출한다.
+Nested-depth examples (three levels deep):
 
-- **Extracted ZK Notes**:
-  - `[Link to 20_ZK/...]`
+- [Operations index](../../../README.md)
+- [Usage guide](../../../guides/<tier>/<subdomain>/<topic>.md)
+- [Operations policy](../../../policies/<tier>/<subdomain>/<topic>.md)
