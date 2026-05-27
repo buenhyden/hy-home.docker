@@ -54,6 +54,10 @@ This document defines the operational policies and guidelines to ensure the stab
 - **Access Audit**: Retain Filer and S3 access logs for at least 90 days.
 - **Encryption**: Use SSL/TLS for all S3 interface traffic in staging and production.
 
+## Exceptions
+
+N/A — 현재 승인된 예외 없음.
+
 ## Verification
 
 - Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.

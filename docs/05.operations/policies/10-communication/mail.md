@@ -40,6 +40,10 @@ status: active
 - **Backup Schedule**: `stalwart-data` 볼륨에 대한 주간 스냅샷 백업이 의무 사항입니다.
 - **MailHog Data**: MailHog는 인메모리 저장소를 사용하므로 별도의 데이터 보존 정책을 두지 않습니다.
 
+## Exceptions
+
+N/A — 현재 승인된 예외 없음.
+
 ## Verification
 
 - **Compliance Check**: 주기적인 SPF/DKIM 테스트 및 릴레이 점검 도구를 사용하여 보안 상태를 확인합니다.

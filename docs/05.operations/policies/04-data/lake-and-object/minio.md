@@ -56,6 +56,10 @@ This document defines the operational policies for MinIO Object Storage. It regu
 - **Encryption**: Enable Server-Side Encryption (SSE) for sensitive data buckets.
 - **Public Access**: Public access remains disabled by default. Exceptions for CDN/Public assets require explicit approval.
 
+## Exceptions
+
+N/A — 현재 승인된 예외 없음.
+
 ## Verification
 
 - Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.

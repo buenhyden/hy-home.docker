@@ -71,6 +71,10 @@ This policy applies to Prometheus scrape target registration, alerting rule mana
 - **Allowed**: Documentation-only corrections that keep links and verification evidence current.
 - **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
 
+## Exceptions
+
+N/A — 현재 승인된 예외 없음.
+
 ## Verification
 
 - Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
