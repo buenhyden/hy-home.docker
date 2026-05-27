@@ -30,28 +30,28 @@ Protocol for maintaining documentation consistency and governance traceability.
 
 ## 3. Document Type ↔ Template Mapping
 
-| Stage/Folder                                  | Document Type          | Template                                     |
-| --------------------------------------------- | ---------------------- | -------------------------------------------- |
-| `docs/01.requirements/`                       | PRD                    | `docs/99.templates/prd.template.md`          |
-| `docs/02.architecture/requirements/`          | ARD                    | `docs/99.templates/ard.template.md`          |
-| `docs/02.architecture/decisions/`             | ADR                    | `docs/99.templates/adr.template.md`          |
-| `docs/03.specs/`                              | Spec                   | `docs/99.templates/spec.template.md`         |
-| `docs/03.specs/<feature-id>/api-spec.md`      | API Spec               | `docs/99.templates/api-spec.template.md`     |
-| `docs/03.specs/<feature-id>/agent-design.md`  | Agent Design           | `docs/99.templates/agent-design.template.md` |
-| `docs/03.specs/<feature-id>/data-model.md`    | Data Model             | `docs/99.templates/data-model.template.md`   |
-| `docs/03.specs/<feature-id>/tests.md`         | Test Contract          | `docs/99.templates/tests.template.md`        |
-| `docs/03.specs/<feature-id>/contracts/openapi.yaml` | OpenAPI Contract | `docs/99.templates/openapi.template.yaml`    |
-| `docs/03.specs/<feature-id>/contracts/schema.graphql` | GraphQL Contract | `docs/99.templates/schema.template.graphql` |
-| `docs/03.specs/<feature-id>/contracts/service.proto` | Protobuf Contract | `docs/99.templates/service.template.proto`  |
-| `docs/04.execution/plans/`                    | Plan                   | `docs/99.templates/plan.template.md`         |
-| `docs/04.execution/tasks/`                    | Task                   | `docs/99.templates/task.template.md`         |
-| `docs/05.operations/`                         | Operations Knowledge   | `docs/99.templates/operation.template.md`    |
-| `docs/05.operations/incidents/`               | Incident               | `docs/99.templates/incident.template.md`     |
-| `docs/05.operations/incidents/`               | Postmortem             | `docs/99.templates/postmortem.template.md`   |
-| `docs/00.agent-governance/memory/<note>.md`   | Governance Memory Note | `docs/99.templates/memory.template.md`       |
-| `docs/00.agent-governance/memory/progress.md` | Agent Progress Log     | `docs/99.templates/progress.template.md`     |
-| `docs/90.references/`                         | Reference              | `docs/99.templates/reference.template.md`    |
-| `README.md` (per folder)                      | README                 | `docs/99.templates/readme.template.md`       |
+| Stage/Folder                                          | Document Type          | Template                                     |
+| ----------------------------------------------------- | ---------------------- | -------------------------------------------- |
+| `docs/01.requirements/`                               | PRD                    | `docs/99.templates/prd.template.md`          |
+| `docs/02.architecture/requirements/`                  | ARD                    | `docs/99.templates/ard.template.md`          |
+| `docs/02.architecture/decisions/`                     | ADR                    | `docs/99.templates/adr.template.md`          |
+| `docs/03.specs/`                                      | Spec                   | `docs/99.templates/spec.template.md`         |
+| `docs/03.specs/<feature-id>/api-spec.md`              | API Spec               | `docs/99.templates/api-spec.template.md`     |
+| `docs/03.specs/<feature-id>/agent-design.md`          | Agent Design           | `docs/99.templates/agent-design.template.md` |
+| `docs/03.specs/<feature-id>/data-model.md`            | Data Model             | `docs/99.templates/data-model.template.md`   |
+| `docs/03.specs/<feature-id>/tests.md`                 | Test Contract          | `docs/99.templates/tests.template.md`        |
+| `docs/03.specs/<feature-id>/contracts/openapi.yaml`   | OpenAPI Contract       | `docs/99.templates/openapi.template.yaml`    |
+| `docs/03.specs/<feature-id>/contracts/schema.graphql` | GraphQL Contract       | `docs/99.templates/schema.template.graphql`  |
+| `docs/03.specs/<feature-id>/contracts/service.proto`  | Protobuf Contract      | `docs/99.templates/service.template.proto`   |
+| `docs/04.execution/plans/`                            | Plan                   | `docs/99.templates/plan.template.md`         |
+| `docs/04.execution/tasks/`                            | Task                   | `docs/99.templates/task.template.md`         |
+| `docs/05.operations/`                                 | Operations Knowledge   | `docs/99.templates/operation.template.md`    |
+| `docs/05.operations/incidents/YYYY/`                  | Incident               | `docs/99.templates/incident.template.md`     |
+| `docs/05.operations/incidents/YYYY/`                  | Postmortem             | `docs/99.templates/postmortem.template.md`   |
+| `docs/00.agent-governance/memory/<note>.md`           | Governance Memory Note | `docs/99.templates/memory.template.md`       |
+| `docs/00.agent-governance/memory/progress.md`         | Agent Progress Log     | `docs/99.templates/progress.template.md`     |
+| `docs/90.references/`                                 | Reference              | `docs/99.templates/reference.template.md`    |
+| `README.md` (per folder)                              | README                 | `docs/99.templates/readme.template.md`       |
 
 For optional supporting contracts under `docs/03.specs/<feature-id>/`, keep
 Markdown support files in the feature directory and machine-readable contracts
@@ -104,6 +104,16 @@ When legacy active-stage content is discovered in a non-stage `docs/*` path:
 - **Stage documents without a date**: use a stable descriptive kebab-case name. Example: `spec.md`, `agent-design.md`.
 - **READMEs**: always named exactly `README.md` (uppercase, no date prefix).
 - Agents enforcing naming must not flag `README.md`, template files, or files that predate this rule unless they are being actively edited.
+- **ADRs and ARDs**: use a four-digit zero-padded monotonically increasing sequence
+  number: `NNNN-<short-title>.md`. This sequence is independent of tier prefixes.
+- **Tier prefixes** (`01-gateway`, `02-auth`, …, `04-data`, `04-data-analytics`, `11-laboratory`):
+  are two-digit service-tier identifiers used in `docs/03.specs/`, `docs/05.operations/`
+  folder names, and PRD filename segments. `04-data` and `04-data-analytics` share the
+  `04` prefix intentionally; analytics is a sub-tier of data. Do not rename a tier-prefix
+  folder that already has active cross-links.
+- Hardening/optimization PRDs reuse the original tier prefix with a new date:
+  `YYYY-MM-DD-NN-<tier>-optimization-hardening.md`. The same tier number `NN` is
+  intentional; the date and the `-optimization-hardening` suffix disambiguate.
 
 ## 8. DOCS 3 RULES — HALT CONDITIONS
 
@@ -122,6 +132,30 @@ Agent is **BLOCKED** from marking task complete until this is done.
 **R3 — Related Documents:**
 Every document MUST contain a `## Related Documents` section with upstream links.
 A document without this section is **INCOMPLETE** regardless of content quality.
+
+## 8.5. Cross-Cutting Plans — Spec Link Exception
+
+Plans under `docs/04.execution/plans/` that address cross-cutting concerns
+(workspace audits, governance remediation, tooling lifecycle, agent harness work)
+are **not required** to link a single parent Spec. They must instead reference the
+governance document or operations artifact that scopes their work in
+`## Related Documents`.
+
+Tier-specific implementation plans (one plan ↔ one tier) **must** link the
+corresponding Spec in `## Related Documents`:
+`../../03.specs/<tier-id>/spec.md`.
+
+## 9. Known Architecture Sequence Gaps
+
+The following sequence numbers are reserved or were intentionally skipped.
+Agents must not auto-assign these numbers without confirming with this table.
+
+| Range     | Location                             | Reason                  |
+| --------- | ------------------------------------ | ----------------------- |
+| 0012–0014 | `docs/02.architecture/decisions/`    | Reserved / legacy merge |
+| 0015–0017 | `docs/02.architecture/requirements/` | Reserved / legacy merge |
+
+Update this table when a number is consumed or definitively retired.
 
 ## Related Documents
 
