@@ -6,7 +6,7 @@ itself.
 
 ## Current Remote State
 
-- Verified and updated on 2026-05-25 by audited GitHub API calls during the authored SSoT follow-up closure.
+- Verified and updated on 2026-05-28 by audited GitHub API calls during the QA/CI/CD inspection pass.
 - Repository rulesets: classic branch protection active on `main`.
 - Repository rulesets API returned `[]`; no repository rulesets are active.
 - Required status checks: 12 remote contexts currently required with strict/latest up-to-date branch requirement enabled:
