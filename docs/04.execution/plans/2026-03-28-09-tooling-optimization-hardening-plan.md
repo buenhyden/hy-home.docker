@@ -11,7 +11,7 @@ status: active
 
 ## Context
 
-- 기준 카탈로그: [../../05.operations/policies/12-infra-service-optimization-catalog.md](../../05.operations/policies/12-infra-service-optimization-catalog.md)
+- 기준 카탈로그: [../../05.operations/policies/infra-service-optimization-catalog.md](../../05.operations/policies/infra-service-optimization-catalog.md)
 - 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
 - 대상 구성: `infra/09-tooling/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
 

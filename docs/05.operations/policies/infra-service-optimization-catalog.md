@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/policies/12-infra-service-optimization-catalog.md -->
+<!-- Target: docs/05.operations/policies/infra-service-optimization-catalog.md -->
 
 # Infra Service Optimization & Expansion Policy
 
@@ -90,7 +90,7 @@ status: active
   - [opensearch cluster compose](../../../infra/04-data/analytics/opensearch/docker-compose.cluster.yml): **적용 완료**
 - 의도된 템플릿 예외:
   - SSoT: [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json)
-  - 운영 정책: [13-common-optimizations-template-exceptions.md](./13-common-optimizations-template-exceptions.md)
+  - 운영 정책: [common-optimizations-template-exceptions.md](./common-optimizations-template-exceptions.md)
 
 ## Quick Win Enforcement Snapshot (2026-03-28)
 

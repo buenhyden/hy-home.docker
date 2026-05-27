@@ -46,8 +46,8 @@ policies/
 ├── 09-tooling/
 ├── 10-communication/
 ├── 11-laboratory/
-├── 12-infra-service-optimization-catalog.md
-├── 13-common-optimizations-template-exceptions.md
+├── infra-service-optimization-catalog.md
+├── common-optimizations-template-exceptions.md
 ├── harness-agent-first-engineering.md
 ├── llm-wiki-maintenance.md
 ├── 0012-standardize-infra-net.md
@@ -76,8 +76,8 @@ policies/
 | [10-communication/](./10-communication/README.md)                                                  | 10 Communication policy 문서                            |
 | [11-laboratory/](./11-laboratory/README.md)                                                        | 11 Laboratory policy 문서                               |
 | [0012-standardize-infra-net.md](./0012-standardize-infra-net.md)                                   | infra_net IP 관리 policy 문서                           |
-| [12-infra-service-optimization-catalog.md](./12-infra-service-optimization-catalog.md)             | 12 Infra Service Optimization Catalog policy 문서       |
-| [13-common-optimizations-template-exceptions.md](./13-common-optimizations-template-exceptions.md) | 13 Common Optimizations Template Exceptions policy 문서 |
+| [infra-service-optimization-catalog.md](./infra-service-optimization-catalog.md)             | 12 Infra Service Optimization Catalog policy 문서       |
+| [common-optimizations-template-exceptions.md](./common-optimizations-template-exceptions.md) | 13 Common Optimizations Template Exceptions policy 문서 |
 | [harness-agent-first-engineering.md](./harness-agent-first-engineering.md)                         | Harness Agent-first Engineering policy 문서             |
 | [llm-wiki-maintenance.md](./llm-wiki-maintenance.md)                                               | LLM Wiki Maintenance policy 문서                        |
 

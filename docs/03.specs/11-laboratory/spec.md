@@ -120,4 +120,4 @@ bash scripts/validation/check-doc-traceability.sh
 - **Guide**: [../../05.operations/guides/11-laboratory/optimization-hardening.md](../../05.operations/guides/11-laboratory/optimization-hardening.md)
 - **Policy**: [../../05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md)
 - **Runbook**: [../../05.operations/runbooks/11-laboratory/optimization-hardening.md](../../05.operations/runbooks/11-laboratory/optimization-hardening.md)
-- **Catalog**: [../../05.operations/policies/12-infra-service-optimization-catalog.md](../../05.operations/policies/12-infra-service-optimization-catalog.md)
+- **Catalog**: [../../05.operations/policies/infra-service-optimization-catalog.md](../../05.operations/policies/infra-service-optimization-catalog.md)

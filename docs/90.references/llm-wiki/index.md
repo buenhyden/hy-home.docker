@@ -605,10 +605,10 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/policies/11-laboratory/portainer.md](../../05.operations/policies/11-laboratory/portainer.md) | Markdown reference |
 | [docs/05.operations/policies/11-laboratory/redisinsight.md](../../05.operations/policies/11-laboratory/redisinsight.md) | Markdown reference |
-| [docs/05.operations/policies/12-infra-service-optimization-catalog.md](../../05.operations/policies/12-infra-service-optimization-catalog.md) | Markdown reference |
-| [docs/05.operations/policies/13-common-optimizations-template-exceptions.md](../../05.operations/policies/13-common-optimizations-template-exceptions.md) | Markdown reference |
 | [docs/05.operations/policies/README.md](../../05.operations/policies/README.md) | folder index |
+| [docs/05.operations/policies/common-optimizations-template-exceptions.md](../../05.operations/policies/common-optimizations-template-exceptions.md) | Markdown reference |
 | [docs/05.operations/policies/harness-agent-first-engineering.md](../../05.operations/policies/harness-agent-first-engineering.md) | Markdown reference |
+| [docs/05.operations/policies/infra-service-optimization-catalog.md](../../05.operations/policies/infra-service-optimization-catalog.md) | Markdown reference |
 | [docs/05.operations/policies/llm-wiki-maintenance.md](../../05.operations/policies/llm-wiki-maintenance.md) | Markdown reference |
 | [docs/05.operations/runbooks/0012-standardize-infra-net.md](../../05.operations/runbooks/0012-standardize-infra-net.md) | Markdown reference |
 | [docs/05.operations/runbooks/01-gateway/README.md](../../05.operations/runbooks/01-gateway/README.md) | folder index |
