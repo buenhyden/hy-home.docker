@@ -46,6 +46,12 @@ guides/04-data/
 └── README.md
 ```
 
+> **참고**: `04-data` 가이드는 다른 tier와 달리 카테고리 서브폴더 구조를 사용한다.
+> 데이터 tier가 `analytics/`, `cache-and-kv/`, `lake-and-object/`, `nosql/`,
+> `operational/`, `relational/`, `specialized/` 등 이질적인 서비스를 12개 이상 포함하기 때문이다.
+> 다른 tier는 서비스 수가 적어 flat 구조를 유지한다. 이 비대칭 구조는 의도적이며 거버넌스에서 허용된다.
+> (`docs/00.agent-governance/rules/documentation-protocol.md` Section 7 참조)
+
 ## How to Work in This Area
 
 1. 새 문서를 만들기 전에 `docs/99.templates/operation.template.md`의 목적별 profile과 target-relative link 규칙을 확인합니다.

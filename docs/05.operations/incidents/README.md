@@ -45,6 +45,9 @@
 └── README.md
 ```
 
+> **현황 (2026-05-28)**: 기록된 사고가 없어 `YYYY/` 연도 폴더가 존재하지 않는다.
+> 첫 사고 발생 시 `incidents/2026/` 폴더를 생성하고 해당 연도 내에 파일을 저장한다.
+
 ## How to Work in This Area
 
 1. 새 사고 기록은 [incident template](../../99.templates/incident.template.md)을 복사해 시작합니다.
