@@ -724,6 +724,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/api-spec.template.md](../../99.templates/api-spec.template.md) | Markdown reference |
 | [docs/99.templates/ard.template.md](../../99.templates/ard.template.md) | Markdown reference |
 | [docs/99.templates/data-model.template.md](../../99.templates/data-model.template.md) | Markdown reference |
+| [docs/99.templates/guide.template.md](../../99.templates/guide.template.md) | Markdown reference |
 | [docs/99.templates/incident.template.md](../../99.templates/incident.template.md) | Markdown reference |
 | [docs/99.templates/memory.template.md](../../99.templates/memory.template.md) | Markdown reference |
 | [docs/99.templates/openapi.template.yaml](../../99.templates/openapi.template.yaml) | YAML config |
@@ -734,6 +735,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/progress.template.md](../../99.templates/progress.template.md) | Markdown reference |
 | [docs/99.templates/readme.template.md](../../99.templates/readme.template.md) | Markdown reference |
 | [docs/99.templates/reference.template.md](../../99.templates/reference.template.md) | Markdown reference |
+| [docs/99.templates/runbook.template.md](../../99.templates/runbook.template.md) | Markdown reference |
 | [docs/99.templates/schema.template.graphql](../../99.templates/schema.template.graphql) | source path |
 | [docs/99.templates/service.template.proto](../../99.templates/service.template.proto) | source path |
 | [docs/99.templates/spec.template.md](../../99.templates/spec.template.md) | Markdown reference |

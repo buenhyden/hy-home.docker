@@ -100,7 +100,7 @@ if [[ "${#misplaced_templates[@]}" -gt 0 ]]; then
 fi
 
 section "Execution evidence status wording"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -146,18 +146,17 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Banned stale references"
-if rg -n 'docs/11|11\.postmortems|\.agent/|docs/(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)|(^|[^[:alnum:]_/-])(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)([^[:alnum:]_/-]|$)|guide\.template\.md|runbook\.template\.md|harness catalog|Runtime harness catalog' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
+if rg -n 'docs/11|11\.postmortems|\.agent/|docs/(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)|(^|[^[:alnum:]_/-])(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)([^[:alnum:]_/-]|$)|harness catalog|Runtime harness catalog' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
   --glob '!graphify-out/**' \
   --glob '!docs/README.md' \
   --glob '!docs/00.agent-governance/memory/**' \
   --glob '!scripts/validation/check-repo-contracts.sh' \
   --glob '!scripts/validation/check-repo-contracts.sh' >/tmp/check-repo-contracts-banned.txt; then
-  fail "stale docs taxonomy, removed operations-stage, guide/runbook template, harness-catalog, or .agent references remain"
+  fail "stale docs taxonomy, removed operations-stage, harness-catalog, or .agent references remain"
   cat /tmp/check-repo-contracts-banned.txt >&2
 fi
 rm -f /tmp/check-repo-contracts-banned.txt
@@ -175,7 +174,7 @@ fi
 rm -f /tmp/check-repo-contracts-taxonomy-shorthand.txt
 
 section "Operations target comments"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -212,12 +211,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Operations purpose profile contract"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -253,12 +251,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "GitHub Actions YAML and duplicate workflow steps"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import collections
@@ -349,12 +346,11 @@ for path in workflow_files:
 if failures:
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "GitHub workflow security contracts"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import json
@@ -469,7 +465,6 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
@@ -478,7 +473,7 @@ if [[ -f ".github/copilot-instructions.md" || -d ".github/instructions" ]]; then
   fail "GitHub-native instruction files are not adopted in this repository"
 fi
 
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -516,12 +511,11 @@ if missing:
         print(f"FAIL: CODEOWNERS missing required governance pattern: {pattern}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "PR template strategy fields"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -551,18 +545,16 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Storybook coverage contract"
-if ! bash scripts/validation/check-storybook-contract.sh
-then
+if ! bash scripts/validation/check-storybook-contract.sh; then
   failures=$((failures + 1))
 fi
 
 section "Root shim and hook parity drift"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import json
@@ -618,12 +610,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Hookify critical-rule metadata"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -712,12 +703,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Runtime agent/function catalog"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import json
@@ -917,12 +907,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section ".agents compatibility surface"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -982,12 +971,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Active script ownership globs"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -1019,12 +1007,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Related Documents phased coverage"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -1058,12 +1045,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Markdown documentation contract"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -1348,12 +1334,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Spec document traceability contract"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -1397,12 +1382,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Contract template cross-link ownership"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -1425,12 +1409,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Changed stage document template gate"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import os
@@ -1817,12 +1800,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Normalized target-stage document template contracts"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -2169,12 +2151,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Infra README rubric advisory"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -2271,12 +2252,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Governance memory contract"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -2401,12 +2381,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Reference stage contract"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -2511,12 +2490,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "LLM Wiki contract"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -2704,12 +2682,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Script reference integrity"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -2801,12 +2778,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Service documentation coverage"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -2851,12 +2827,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Script usage contract"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
@@ -2983,12 +2958,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Floating image tag policy"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import json
@@ -3046,12 +3020,11 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
 section "Tech-stack version drift"
-if ! python3 - <<'PY'
+if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import json
@@ -3116,7 +3089,6 @@ if failures:
         print(f"FAIL: {failure}", file=sys.stderr)
     sys.exit(1)
 PY
-then
   failures=$((failures + 1))
 fi
 
