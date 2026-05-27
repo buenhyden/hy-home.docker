@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/guides/05-messaging/README.md -->
+
 # Operations Guides - 05 Messaging
 
 > 서비스 사용, 설정, 온보딩 문서를 domain/service 구조로 관리한다.
@@ -33,7 +35,7 @@
 
 ```text
 guides/05-messaging/
-├── 03.ksql-streaming.md
+├── ksql-streaming.md
 ├── kafka.md
 ├── optimization-hardening.md
 ├── rabbitmq.md
@@ -48,12 +50,12 @@ guides/05-messaging/
 
 ## Contents
 
-| Path | Purpose |
-| --- | --- |
-| [03.ksql-streaming.md](./03.ksql-streaming.md) | 03.Ksql Streaming guide 문서 |
-| [kafka.md](./kafka.md) | Kafka guide 문서 |
+| Path                                                     | Purpose                           |
+| -------------------------------------------------------- | --------------------------------- |
+| [ksql-streaming.md](./ksql-streaming.md)                 | ksqlDB Streaming guide 문서       |
+| [kafka.md](./kafka.md)                                   | Kafka guide 문서                  |
 | [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening guide 문서 |
-| [rabbitmq.md](./rabbitmq.md) | Rabbitmq guide 문서 |
+| [rabbitmq.md](./rabbitmq.md)                             | Rabbitmq guide 문서               |
 
 ## Related Documents
 

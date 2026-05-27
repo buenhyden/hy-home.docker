@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/policies/11-laboratory/README.md -->
+
 # Operations Policies - 11 Laboratory
 
 > 운영 통제, 보안/가용성 기준, 예외 승인 기준을 관리한다.

@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/policies/07-workflow/README.md -->
+
 # Operations Policies - 07 Workflow
 
 > 운영 통제, 보안/가용성 기준, 예외 승인 기준을 관리한다.

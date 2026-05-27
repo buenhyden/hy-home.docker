@@ -1,9 +1,10 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/guides/05-messaging/03.ksql-streaming.md -->
 
-# 03.Ksql Streaming Operations
+<!-- Target: docs/05.operations/guides/05-messaging/ksql-streaming.md -->
+
+# ksqlDB Streaming Operations
 
 ## Usage
 

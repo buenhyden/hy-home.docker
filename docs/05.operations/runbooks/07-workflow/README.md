@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/runbooks/07-workflow/README.md -->
+
 # Operations Runbooks - 07 Workflow
 
 > 복구, 검증, 반복 실행 절차를 명령과 evidence 중심으로 관리한다.

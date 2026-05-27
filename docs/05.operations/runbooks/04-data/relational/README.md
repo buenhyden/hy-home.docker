@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/runbooks/04-data/relational/README.md -->
+
 # Operations Runbooks - 04 Data / Relational
 
 > 복구, 검증, 반복 실행 절차를 명령과 evidence 중심으로 관리한다.

@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/guides/08-ai/README.md -->
+
 # Operations Guides - 08 Ai
 
 > 서비스 사용, 설정, 온보딩 문서를 domain/service 구조로 관리한다.

@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/runbooks/01-gateway/README.md -->
+
 # Operations Runbooks - 01 Gateway
 
 > 복구, 검증, 반복 실행 절차를 명령과 evidence 중심으로 관리한다.

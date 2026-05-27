@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/guides/04-data/nosql/README.md -->
+
 # Operations Guides - 04 Data / Nosql
 
 > 서비스 사용, 설정, 온보딩 문서를 domain/service 구조로 관리한다.

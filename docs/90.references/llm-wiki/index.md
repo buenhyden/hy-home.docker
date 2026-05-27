@@ -468,9 +468,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/04-data/specialized/README.md](../../05.operations/guides/04-data/specialized/README.md) | folder index |
 | [docs/05.operations/guides/04-data/specialized/neo4j.md](../../05.operations/guides/04-data/specialized/neo4j.md) | Markdown reference |
 | [docs/05.operations/guides/04-data/specialized/qdrant.md](../../05.operations/guides/04-data/specialized/qdrant.md) | Markdown reference |
-| [docs/05.operations/guides/05-messaging/03.ksql-streaming.md](../../05.operations/guides/05-messaging/03.ksql-streaming.md) | Markdown reference |
 | [docs/05.operations/guides/05-messaging/README.md](../../05.operations/guides/05-messaging/README.md) | folder index |
 | [docs/05.operations/guides/05-messaging/kafka.md](../../05.operations/guides/05-messaging/kafka.md) | Markdown reference |
+| [docs/05.operations/guides/05-messaging/ksql-streaming.md](../../05.operations/guides/05-messaging/ksql-streaming.md) | Markdown reference |
 | [docs/05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/guides/05-messaging/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/guides/05-messaging/rabbitmq.md](../../05.operations/guides/05-messaging/rabbitmq.md) | Markdown reference |
 | [docs/05.operations/guides/06-observability/01.lgtm-stack.md](../../05.operations/guides/06-observability/01.lgtm-stack.md) | Markdown reference |

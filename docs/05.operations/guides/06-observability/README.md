@@ -1,3 +1,5 @@
+<!-- README Target: docs/05.operations/guides/06-observability/README.md -->
+
 # Operations Guides - 06 Observability
 
 > 서비스 사용, 설정, 온보딩 문서를 domain/service 구조로 관리한다.
