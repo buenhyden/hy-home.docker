@@ -1,9 +1,10 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/02.architecture/requirements/0002-auth-architecture.md -->
 
-# 02-Auth Architecture Reference
+# 02-Auth Architecture Reference Document (ARD)
 
 > This document defines the technical architecture for Identity and Access Management (IAM) and Authentication ForwardAuth Gateway.
 

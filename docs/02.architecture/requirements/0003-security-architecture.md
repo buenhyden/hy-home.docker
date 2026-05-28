@@ -1,9 +1,10 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/02.architecture/requirements/0003-security-architecture.md -->
 
-# ARD: Security Tier Architecture (03-security)
+# Security Tier Architecture Reference Document (ARD)
 
 ## Overview (KR)
 

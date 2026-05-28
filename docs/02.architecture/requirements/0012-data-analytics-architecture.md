@@ -1,9 +1,10 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/02.architecture/requirements/0012-data-analytics-architecture.md -->
 
-# ARD: Analytics Tier Architecture (04-data/analytics)
+# Analytics Tier Architecture Reference Document (ARD)
 
 > This document defines the structural boundaries, quality attributes, and infrastructure strategy for the specialized analytics data engines within the `04-data/analytics` sub-tier.
 
