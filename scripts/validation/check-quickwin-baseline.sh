@@ -125,7 +125,7 @@ violations="$(
 
 if [[ -n "$violations" ]]; then
   echo
-  echo "FAILED: baseline violations detected"
+  echo "FAIL: baseline violations detected"
   echo "$violations"
   exit 1
 fi

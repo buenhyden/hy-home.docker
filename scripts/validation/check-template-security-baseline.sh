@@ -135,7 +135,7 @@ echo "missing_cap_drop_all=$capdrop_fail_count"
 
 if [[ "$template_fail_count" -gt 0 || "$nnp_fail_count" -gt 0 || "$capdrop_fail_count" -gt 0 ]]; then
   echo
-  echo "FAILED: baseline violations detected"
+  echo "FAIL: baseline violations detected"
   if [[ "$template_fail_count" -gt 0 ]]; then
     echo "- template adoption missing:"
     printf '  - %s\n' "${template_violations[@]}"

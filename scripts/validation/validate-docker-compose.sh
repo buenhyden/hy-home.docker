@@ -22,19 +22,19 @@ if [ "$#" -gt 1 ]; then
   exit 2
 fi
 case "${1-}" in
-  "")
-    ;;
-  --preflight)
-    MODE="preflight"
-    ;;
-  --help|-h)
-    usage
-    exit 0
-    ;;
-  *)
-    usage >&2
-    exit 2
-    ;;
+"")
+  ;;
+--preflight)
+  MODE="preflight"
+  ;;
+--help | -h)
+  usage
+  exit 0
+  ;;
+*)
+  usage >&2
+  exit 2
+  ;;
 esac
 
 ok() {
@@ -46,7 +46,7 @@ warn() {
 }
 
 fail() {
-  echo "[FAIL] $1"
+  echo "FAIL: $1"
   FAILED=1
 }
 
@@ -80,37 +80,37 @@ check_dir() {
 is_optional_secret() {
   local path="$1"
   case "$path" in
-    ./secrets/db/cassandra/cassandra_password.txt|\
-    ./secrets/db/mongodb/mongodb_root_password.txt|\
-    ./secrets/db/mongodb/mongo_express_basicauth_password.txt|\
-    ./secrets/db/neo4j/neo4j_password.txt|\
-    ./secrets/db/valkey/airflow_password.txt|\
-    ./secrets/messaging/rabbitmq_user.txt|\
-    ./secrets/messaging/rabbitmq_password.txt|\
+  ./secrets/db/cassandra/cassandra_password.txt | \
+    ./secrets/db/mongodb/mongodb_root_password.txt | \
+    ./secrets/db/mongodb/mongo_express_basicauth_password.txt | \
+    ./secrets/db/neo4j/neo4j_password.txt | \
+    ./secrets/db/valkey/airflow_password.txt | \
+    ./secrets/messaging/rabbitmq_user.txt | \
+    ./secrets/messaging/rabbitmq_password.txt | \
     ./secrets/tools/syncthing_password.txt)
-      return 0
-      ;;
-    *)
-      return 1
-      ;;
+    return 0
+    ;;
+  *)
+    return 1
+    ;;
   esac
 }
 
 compose_secret_files() {
-  docker compose "${COMPOSE_PROFILE_ARGS[@]}" config 2>/dev/null \
-    | sed -nE 's/^[[:space:]]*file:[[:space:]]*//p' \
-    | sed -E 's/[[:space:]]+#.*$//; s/^["'"'"']|["'"'"']$//g' \
-    | while IFS= read -r secret_file; do
+  docker compose "${COMPOSE_PROFILE_ARGS[@]}" config 2>/dev/null |
+    sed -nE 's/^[[:space:]]*file:[[:space:]]*//p' |
+    sed -E 's/[[:space:]]+#.*$//; s/^["'"'"']|["'"'"']$//g' |
+    while IFS= read -r secret_file; do
       case "$secret_file" in
-        "$BASE_DIR"/*)
-          printf './%s\n' "${secret_file#"$BASE_DIR"/}"
-          ;;
-        *)
-          printf '%s\n' "$secret_file"
-          ;;
+      "$BASE_DIR"/*)
+        printf './%s\n' "${secret_file#"$BASE_DIR"/}"
+        ;;
+      *)
+        printf '%s\n' "$secret_file"
+        ;;
       esac
-    done \
-    | sort -u
+    done |
+    sort -u
 }
 
 COMPOSE_PROFILES="${HYHOME_COMPOSE_PROFILES:-core}"
@@ -219,21 +219,21 @@ mapfile -t SECRET_FILES < <(compose_secret_files)
 for secret_file in "${SECRET_FILES[@]}"; do
   if [ ! -f "$secret_file" ]; then
     mkdir -p "$(dirname "$secret_file")"
-    printf 'dummy\n' > "$secret_file"
+    printf 'dummy\n' >"$secret_file"
     CREATED_FILES+=("$secret_file")
   fi
 done
 
-if ! docker compose "${COMPOSE_PROFILE_ARGS[@]}" config > /dev/null; then
+if ! docker compose "${COMPOSE_PROFILE_ARGS[@]}" config >/dev/null; then
   echo "Docker Compose validation failed."
   exit 1
 fi
 
 SERVICE_COUNT="$(
-  docker compose "${COMPOSE_PROFILE_ARGS[@]}" config --services \
-    | sed '/^[[:space:]]*$/d' \
-    | wc -l \
-    | tr -d ' '
+  docker compose "${COMPOSE_PROFILE_ARGS[@]}" config --services |
+    sed '/^[[:space:]]*$/d' |
+    wc -l |
+    tr -d ' '
 )"
 
 if [ "$SERVICE_COUNT" -eq 0 ]; then

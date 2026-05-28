@@ -2873,6 +2873,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
     pathlib.Path("scripts/hardening/check-all-hardening.sh"),
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),
+    pathlib.Path("scripts/hooks/patch-graphify-post-commit.sh"),
     pathlib.Path("scripts/hooks/post-tool-validate.sh"),
     pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
     pathlib.Path("scripts/knowledge/report-graphify-health.sh"),

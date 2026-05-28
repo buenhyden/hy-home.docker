@@ -59,14 +59,14 @@ The hardening surface is intentionally consolidated into
 `scripts/hardening/check-all-hardening.sh`. Tier-specific wrapper entrypoints
 were removed by the 2026-05-17 cleanup; use tier arguments instead.
 
-| Purpose | Canonical paths |
-| :--- | :--- |
+| Purpose    | Canonical paths                                                                                                                                                                                                                                                                                            |
+| :--------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh` |
-| Hardening | `scripts/hardening/check-all-hardening.sh` |
-| Hooks | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh` |
-| Knowledge | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/report-graphify-health.sh` |
-| Operations | `scripts/operations/gen-secrets.sh`, `scripts/operations/use-qa-ci-tools.sh` |
-| Libraries | `scripts/lib/hardening-lib.sh`, `scripts/requirements.txt` |
+| Hardening  | `scripts/hardening/check-all-hardening.sh`                                                                                                                                                                                                                                                                 |
+| Hooks      | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/patch-graphify-post-commit.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                  |
+| Knowledge  | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                              |
+| Operations | `scripts/operations/gen-secrets.sh`, `scripts/operations/use-qa-ci-tools.sh`                                                                                                                                                                                                                               |
+| Libraries  | `scripts/lib/hardening-lib.sh`, `scripts/requirements.txt`                                                                                                                                                                                                                                                 |
 
 ## How to Work in This Area
 
@@ -97,53 +97,54 @@ script.
 
 ## Navigation / Inventory
 
-| Component | Path | Purpose |
-| :--- | :--- | :--- |
-| Docker Validation | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) | Validate root compose config |
-| Repo Contract Check | [check-repo-contracts.sh](./validation/check-repo-contracts.sh) | Enforce docs, GitHub, script, image, runtime governance, Hookify metadata, and execution evidence status contracts |
-| Storybook Contract Check | [check-storybook-contract.sh](./validation/check-storybook-contract.sh) | Enforce Storybook CI scripts, workflow wiring, and 90% coverage threshold metadata |
-| QuickWin Baseline Check | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh) | Enforce PLN-QW-001~005 baseline controls |
-| Template & Security Baseline Check | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh) | Enforce template adoption and required security controls |
-| Documentation Traceability Check | [check-doc-traceability.sh](./validation/check-doc-traceability.sh) | Enforce sync links across 04.execution/plans ↔ 05.operations |
-| LLM Wiki Index Generator | [generate-llm-wiki-index.sh](./knowledge/generate-llm-wiki-index.sh) | Generate and check the repo-local LLM Wiki path index |
-| Graphify Health Report | [report-graphify-health.sh](./knowledge/report-graphify-health.sh) | Report advisory health of generated Graphify corpus without blocking validation |
-| Agent Event Hook | [agent-event-hook.sh](./hooks/agent-event-hook.sh) | Dispatch Claude/Codex hook events, including template-first target-stage docs guidance, governance memory guidance, post-edit style validation/formatting, logical commit completion reminders, and Stop gating |
-| Post Tool Validation | [post-tool-validate.sh](./hooks/post-tool-validate.sh) | Run path-aware validation, including changed-doc template enforcement, after Claude/Codex file edits |
-| Unified Hardening Check | [check-all-hardening.sh](./hardening/check-all-hardening.sh) | Run all tier hardening checks, or one selected tier |
-| QA/CI Tooling Environment | [use-qa-ci-tools.sh](./operations/use-qa-ci-tools.sh) | Expose user-global QA/CI tools to restricted agent shells |
-| Docker Preflight Mode | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) `--preflight` | Real local prerequisite validation without dummy file creation |
-| Secret Generation | [gen-secrets.sh](./operations/gen-secrets.sh) | Generate local Docker secret files; use `--check` or `--dry-run` before default generation |
+| Component                          | Path                                                                                    | Purpose                                                                                                                                                                                                         |
+| :--------------------------------- | :-------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Docker Validation                  | [validate-docker-compose.sh](./validation/validate-docker-compose.sh)                   | Validate root compose config                                                                                                                                                                                    |
+| Repo Contract Check                | [check-repo-contracts.sh](./validation/check-repo-contracts.sh)                         | Enforce docs, GitHub, script, image, runtime governance, Hookify metadata, and execution evidence status contracts                                                                                              |
+| Storybook Contract Check           | [check-storybook-contract.sh](./validation/check-storybook-contract.sh)                 | Enforce Storybook CI scripts, workflow wiring, and 90% coverage threshold metadata                                                                                                                              |
+| QuickWin Baseline Check            | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh)                   | Enforce PLN-QW-001~005 baseline controls                                                                                                                                                                        |
+| Template & Security Baseline Check | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh) | Enforce template adoption and required security controls                                                                                                                                                        |
+| Documentation Traceability Check   | [check-doc-traceability.sh](./validation/check-doc-traceability.sh)                     | Enforce sync links across 04.execution/plans ↔ 05.operations                                                                                                                                                    |
+| LLM Wiki Index Generator           | [generate-llm-wiki-index.sh](./knowledge/generate-llm-wiki-index.sh)                    | Generate and check the repo-local LLM Wiki path index                                                                                                                                                           |
+| Graphify Health Report             | [report-graphify-health.sh](./knowledge/report-graphify-health.sh)                      | Report advisory health of generated Graphify corpus without blocking validation                                                                                                                                 |
+| Agent Event Hook                   | [agent-event-hook.sh](./hooks/agent-event-hook.sh)                                      | Dispatch Claude/Codex hook events, including template-first target-stage docs guidance, governance memory guidance, post-edit style validation/formatting, logical commit completion reminders, and Stop gating |
+| Post Tool Validation               | [post-tool-validate.sh](./hooks/post-tool-validate.sh)                                  | Run path-aware validation, including changed-doc template enforcement, after Claude/Codex file edits                                                                                                            |
+| Graphify Post-commit Patcher       | [patch-graphify-post-commit.sh](./hooks/patch-graphify-post-commit.sh)                  | Re-apply the graphify-out filter to `.git/hooks/post-commit` after hook resets                                                                                                                                  |
+| Unified Hardening Check            | [check-all-hardening.sh](./hardening/check-all-hardening.sh)                            | Run all tier hardening checks, or one selected tier                                                                                                                                                             |
+| QA/CI Tooling Environment          | [use-qa-ci-tools.sh](./operations/use-qa-ci-tools.sh)                                   | Expose user-global QA/CI tools to restricted agent shells                                                                                                                                                       |
+| Docker Preflight Mode              | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) `--preflight`     | Real local prerequisite validation without dummy file creation                                                                                                                                                  |
+| Secret Generation                  | [gen-secrets.sh](./operations/gen-secrets.sh)                                           | Generate local Docker secret files; use `--check` or `--dry-run` before default generation                                                                                                                      |
 
 ## Hardening Tier Arguments
 
 Use `bash scripts/hardening/check-all-hardening.sh <tier>` for a selected
 tier. Without arguments, all supported tiers are checked.
 
-| Tier | Accepted arguments |
-| :--- | :--- |
-| Gateway | `01-gateway`, `gateway` |
-| Auth | `02-auth`, `auth` |
-| Security | `03-security`, `security` |
-| Data | `04-data`, `data` |
-| Messaging | `05-messaging`, `messaging` |
+| Tier          | Accepted arguments                         |
+| :------------ | :----------------------------------------- |
+| Gateway       | `01-gateway`, `gateway`                    |
+| Auth          | `02-auth`, `auth`                          |
+| Security      | `03-security`, `security`                  |
+| Data          | `04-data`, `data`                          |
+| Messaging     | `05-messaging`, `messaging`                |
 | Observability | `06-observability`, `observability`, `obs` |
-| Workflow | `07-workflow`, `workflow` |
-| AI | `08-ai`, `ai` |
-| Tooling | `09-tooling`, `tooling` |
-| Laboratory | `11-laboratory`, `laboratory`, `lab` |
+| Workflow      | `07-workflow`, `workflow`                  |
+| AI            | `08-ai`, `ai`                              |
+| Tooling       | `09-tooling`, `tooling`                    |
+| Laboratory    | `11-laboratory`, `laboratory`, `lab`       |
 
 ## Script Lifecycle
 
-| Lifecycle | Scripts |
-| :--- | :--- |
-| CI / quality gate | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/knowledge/generate-llm-wiki-index.sh --check` |
-| Advisory evidence | `scripts/knowledge/report-graphify-health.sh` |
-| Runtime hook | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh` |
-| Tier hardening | `scripts/hardening/check-all-hardening.sh <tier>` |
-| Manual operations | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/operations/gen-secrets.sh` |
-| Agent QA/CI environment | `source scripts/operations/use-qa-ci-tools.sh` |
-| Generated index maintenance | `scripts/knowledge/generate-llm-wiki-index.sh` |
-| Internal library | `scripts/lib/hardening-lib.sh` |
+| Lifecycle                   | Scripts                                                                                                                                                                                                                                                                                                                                                                                                        |
+| :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CI / quality gate           | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/knowledge/generate-llm-wiki-index.sh --check` |
+| Advisory evidence           | `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                                                                                                                  |
+| Runtime hook                | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                                                                     |
+| Tier hardening              | `scripts/hardening/check-all-hardening.sh <tier>`                                                                                                                                                                                                                                                                                                                                                              |
+| Manual operations           | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/operations/gen-secrets.sh`                                                                                                                                                                                                                                                                                                               |
+| Agent QA/CI environment     | `source scripts/operations/use-qa-ci-tools.sh`                                                                                                                                                                                                                                                                                                                                                                 |
+| Generated index maintenance | `scripts/knowledge/generate-llm-wiki-index.sh`                                                                                                                                                                                                                                                                                                                                                                 |
+| Internal library            | `scripts/lib/hardening-lib.sh`                                                                                                                                                                                                                                                                                                                                                                                 |
 
 `scripts/operations/gen-secrets.sh` is a manual operation entrypoint. Its
 no-argument mode may read or write local secret registry and secret files; use

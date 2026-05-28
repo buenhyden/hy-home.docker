@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -u
+set -euo pipefail
 
 # Reports Graphify corpus health as advisory evidence.
 # This script reads only graphify-out/manifest.json, graphify-out/graph.json,
