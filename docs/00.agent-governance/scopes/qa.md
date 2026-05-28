@@ -21,7 +21,7 @@ title: 'Quality Assurance Scope'
   - **E2E**: Critical paths verified via **Playwright**.
   - **Load**: API performance verified via **k6** or **Locust**.
 - **Automation**: Mandatory CI/CD gate for all PRs.
-- **Applicability**: Mark coverage N/A for docs-only, policy-only, infrastructure configuration, and validation-script changes when no domain-code coverage signal applies.
+- **Applicability**: Mark coverage N/A for docs-only, policy-only, infrastructure configuration, or validation-script changes when no domain-code coverage signal applies.
 
 ## 3. Implementation Flow
 
@@ -41,6 +41,27 @@ title: 'Quality Assurance Scope'
 - **Flakiness**: Immediately isolate and fix flaky E2E tests.
 - **Audit**: Conduct monthly quality audits of test infrastructure.
 
+## 6. File Ownership SSOT
+
+| Path Pattern | Owner Agent | Read-Only For |
+| --- | --- | --- |
+| `projects/storybook/` | `code-reviewer` | layer agents (read) |
+| `scripts/validation/check-storybook-contract.sh` | `code-reviewer` | all other agents |
+| Test configuration files (`vitest.config.*`, `jest.config.*`) | layer agent that owns the service | `code-reviewer` (read) |
+
+QA-specific owned files are limited in this infrastructure-focused repository. Each layer scope defines test ownership for its own services.
+
+## 7. Subagent Bridge
+
+```text
+# QA engineer agent preamble
+@import docs/00.agent-governance/scopes/qa.md
+# TDD-first pattern — red → green → refactor → finalize
+# 80% floor · 90% target · regression evidence mandatory
+```
+
+Spawn via the active runtime's delegated-agent facility. Do not embed QA policy inline in agent files.
+
 ## Related Documents
 
 - [Agent governance hub](../README.md)
@@ -48,3 +69,6 @@ title: 'Quality Assurance Scope'
 - [Persona protocol](../rules/persona.md)
 - [Task checklists](../rules/task-checklists.md)
 - [Agentic rule](../rules/agentic.md)
+- [Quality standards](../rules/quality-standards.md)
+- [Documentation protocol](../rules/documentation-protocol.md)
+- [Postflight checklist](../rules/postflight-checklist.md)

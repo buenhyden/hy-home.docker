@@ -34,7 +34,8 @@ Quality dimensions:
 - Include health checks for long-running services when applicable.
 - Keep validation explicit in plans and task evidence.
 - Avoid introducing commands that do not exist in this repository.
-- Target 90% coverage for changed domain logic when a measurable test suite exists.
+- Maintain a minimum floor of 80% unit test coverage for domain logic.
+- Target 90% coverage for changed domain logic when a measurable test suite exists (the 80% floor is the minimum expectation; 90% is the stretch target for actively changed code).
 - Mark the 90% target N/A only for docs-only, policy-only, infrastructure configuration, or validation-script changes where no domain-code coverage signal applies.
 - Bug fixes require regression evidence; refactors require behavior-preserving validation evidence.
 

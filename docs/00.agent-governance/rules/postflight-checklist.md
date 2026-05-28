@@ -22,7 +22,7 @@ Run after every agent task before declaring completion.
 ## Documentation Gate (DOCS 3 RULES)
 
 - [ ] R1: Template loaded, required sections filled, and lifecycle `status` set according to the target template/stage
-- [ ] R2: Parent `README.md` updated for any folder-level change
+- [ ] R2: Parent `README.md` updated for any folder-level change (including content modifications that affect folder-level descriptions)
 - [ ] R3: `## Related Documents` section present with upstream links
 
 ## Secrets Gate (all layers)
