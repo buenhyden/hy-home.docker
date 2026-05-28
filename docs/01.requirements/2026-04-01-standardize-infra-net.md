@@ -1,6 +1,7 @@
 ---
 status: draft
 ---
+
 <!-- Target: docs/01.requirements/2026-04-01-standardize-infra-net.md -->
 
 # Standardize infra_net Network Product Requirements
@@ -53,6 +54,10 @@ status: draft
 - **Risks**: IP 충돌 가능성 (기존에 수동으로 할당된 IP가 있을 경우).
 - **Dependencies**: Root `docker-compose.yml`의 `networks` 기본 정의에 의존.
 - **Assumptions**: `docker compose` V2의 `include` 기능을 사용하여 설정이 병합됨.
+
+## AI Agent Requirements (If Applicable)
+
+N/A
 
 ## Related Documents
 
