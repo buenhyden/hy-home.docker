@@ -24,7 +24,7 @@ This policy defines the operational standards for the SonarQube service. It ensu
 
 - All platform-level projects **MUST** pass the "Sonar way" Quality Gate before merging into `main`.
 - Critical issues and high-severity security vulnerabilities **MUST** be remediated or officially "Acknowledged" with a technical rationale.
-- Test coverage requirements: Minimum 80% for new code (recommended).
+- Test coverage requirements: Minimum 90% for new code (mandatory).
 
 ### 2. Routine Maintenance
 

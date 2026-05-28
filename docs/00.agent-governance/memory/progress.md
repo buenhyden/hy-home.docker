@@ -267,3 +267,4 @@ None for active harness blockers. Legacy guide/operations/runbook stage history 
 - [Subagent protocol](../subagent-protocol.md)
 - [Postflight checklist](../rules/postflight-checklist.md)
 - [Root agent shim](../../../AGENTS.md)
+- `2026-05-29`: `chore(qa)`: Enforced strict >=90% test coverage threshold across all governance docs (`qa.md`, `quality-standards.md`, `backend.md`) and operations policies (`sonarqube.md`). Verified test script configs.
