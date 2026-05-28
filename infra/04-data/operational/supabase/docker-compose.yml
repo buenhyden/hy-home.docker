@@ -4,30 +4,6 @@ x-tier-label: &tier-label
 volumes:
   db-config:
 
-secrets:
-  supabase_db_password:
-    file: ../../../../secrets/db/postgres/supabase_password.txt
-  supabase_jwt_secret:
-    file: ../../../../secrets/data/supabase_jwt_secret.txt
-  supabase_anon_key:
-    file: ../../../../secrets/data/supabase_anon_key.txt
-  supabase_service_key:
-    file: ../../../../secrets/data/supabase_service_key.txt
-  supabase_dashboard_password:
-    file: ../../../../secrets/data/supabase_dashboard_password.txt
-  supabase_secret_key_base:
-    file: ../../../../secrets/data/supabase_secret_key_base.txt
-  supabase_vault_enc_key:
-    file: ../../../../secrets/data/supabase_vault_enc_key.txt
-  supabase_pg_meta_crypto_key:
-    file: ../../../../secrets/data/supabase_pg_meta_crypto_key.txt
-  supabase_openai_api_key:
-    file: ../../../../secrets/data/supabase_openai_api_key.txt
-  supabase_logflare_private_token:
-    file: ../../../../secrets/data/supabase_logflare_private_token.txt
-  supabase_smtp_password:
-    file: ../../../../secrets/common/supabase_smtp_password.txt
-
 services:
   studio:
     profiles:
