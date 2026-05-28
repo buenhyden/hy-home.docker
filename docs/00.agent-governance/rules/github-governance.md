@@ -41,7 +41,14 @@ Repo-local stricter rules always override this document; never weaken them on th
 - Untrusted input into `$GITHUB_ENV`, `$GITHUB_OUTPUT`, or `run:` interpolation is a security injection risk — flag as BLOCK.
 - Reusable workflows called from external repositories must be pinned and reviewed before use.
 
-## 5. Local Instruction Authority
+## 5. Execution Boundary (Local vs Remote)
+
+- **Anti-Duplication**: Do not execute heavy workloads (e.g., Zizmor, Storybook ESLint) redundantly across both local `pre-commit` and dedicated GitHub Action jobs.
+- **Local Responsibility**: Fail-fast static analysis (formatting, simple linting, pre-push contract scripts).
+- **GitHub Responsibility**: Ultimate SSoT gates, E2E tests, SARIF generation, and workflows requiring secrets.
+- **Implementation**: If a tool requires a dedicated CI job (e.g., for SARIF uploads), it must be removed from the local `.pre-commit-config.yaml` or skipped in the CI `pre-commit` runner via the `SKIP` environment variable.
+
+## 6. Local Instruction Authority
 
 - This repository does not adopt a GitHub-native instruction hierarchy for agent execution.
 - Instruction authority lives in repo-local assets only:
@@ -52,7 +59,7 @@ Repo-local stricter rules always override this document; never weaken them on th
 - GitHub is used here for repository protection, PR workflow, and Actions execution; it is not the canonical home of agent instruction policy.
 - Any future GitHub-native instruction file must be treated as out-of-scope until the repository governance explicitly adopts it.
 
-## 6. Completion Gate (GitHub-Specific)
+## 7. Completion Gate (GitHub-Specific)
 
 Before an agent declares any PR-related task complete, it must confirm:
 

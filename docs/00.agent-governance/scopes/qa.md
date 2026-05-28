@@ -20,7 +20,10 @@ title: 'Quality Assurance Scope'
   - **Target**: 90% coverage for changed domain logic when the repository has a measurable suite for that layer.
   - **E2E**: Critical paths verified via **Playwright**.
   - **Load**: API performance verified via **k6** or **Locust**.
-- **Automation**: Mandatory CI/CD gate for all PRs.
+- **Execution Boundary (Local vs Remote)**:
+  - **Local**: Fail-fast validation (e.g., `pre-commit` for formatting/linting, `pre-push` for structural contract scripts).
+  - **Remote (GitHub CI)**: The ultimate SSoT quality gate. Heavy analysis (e.g., E2E, Zizmor SARIF upload, SonarQube) belongs here.
+  - **Anti-Duplication**: Do not execute the same heavy workloads redundantly. If a dedicated CI job exists for a task (e.g., `zizmor`, `eslint`), skip it in the CI `pre-commit` runner.
 - **Applicability**: Mark coverage N/A for docs-only, policy-only, infrastructure configuration, or validation-script changes when no domain-code coverage signal applies.
 
 ## 3. Implementation Flow
