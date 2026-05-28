@@ -138,7 +138,8 @@ section → remove placeholders before completion.
 Infrastructure triggers: new service → ARD first; network change → ADR first; production procedure → `05.operations` first.
 
 **R2 — README Sync:**
-Any folder-level change (file added, moved, or removed) → the parent `README.md` MUST be updated.
+Any folder-level change (file added, moved, removed, or **content-modified**) → the parent `README.md` MUST be updated to reflect the current state of the folder.
+This applies when a document's title, status, scope, or summary-level content changes in a way that affects how the folder README describes that document.
 Agent is **BLOCKED** from marking task complete until this is done.
 
 **R3 — Related Documents:**

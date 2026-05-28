@@ -24,6 +24,7 @@ Unified task execution checklists for all agent work.
 - [ ] Preserve SSoT traceability across affected documentation artifacts.
 - [ ] Maintain language policy consistency (English governance, Korean human-facing docs).
 - [ ] Validate new/changed links as edits are made.
+- [ ] When a document is modified, update the parent folder `README.md` if the change affects the folder's description of that document (title, status, scope, or summary-level content); see DOCS 3 R2 in `rules/documentation-protocol.md`.
 - [ ] Remove stale, conflicting, or nonexistent references in editable scope.
 - [ ] Update `docs/00.agent-governance/memory/progress.md` for material task progress.
 - [ ] Record out-of-scope issues instead of patching read-only stages.
