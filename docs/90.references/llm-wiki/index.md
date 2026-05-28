@@ -993,6 +993,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/README.md](../../../scripts/README.md) | folder index |
 | [scripts/hardening/check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) | script |
 | [scripts/hooks/agent-event-hook.sh](../../../scripts/hooks/agent-event-hook.sh) | script |
+| [scripts/hooks/patch-graphify-post-commit.sh](../../../scripts/hooks/patch-graphify-post-commit.sh) | script |
 | [scripts/hooks/post-tool-validate.sh](../../../scripts/hooks/post-tool-validate.sh) | script |
 | [scripts/knowledge/generate-llm-wiki-index.sh](../../../scripts/knowledge/generate-llm-wiki-index.sh) | script |
 | [scripts/knowledge/report-graphify-health.sh](../../../scripts/knowledge/report-graphify-health.sh) | script |
