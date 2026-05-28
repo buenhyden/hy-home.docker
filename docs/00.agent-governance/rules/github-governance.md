@@ -75,6 +75,8 @@ If any gate is unmet, the task status is "blocked" not "done."
 - `docs/00.agent-governance/providers/gemini.md`
 - `docs/00.agent-governance/providers/codex.md`
 - `docs/00.agent-governance/memory/progress.md`
+- `docs/00.agent-governance/memory/github-ci-contract-audit.md`
+- `docs/05.operations/runbooks/release-management.md`
 
 ## References
 
