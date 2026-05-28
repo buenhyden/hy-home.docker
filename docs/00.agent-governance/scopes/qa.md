@@ -16,8 +16,7 @@ title: 'Quality Assurance Scope'
 ## 2. Requirements & Constraints
 
 - **Test Suite**:
-  - **Unit**: >80% coverage for domain logic.
-  - **Target**: 90% coverage for changed domain logic when the repository has a measurable suite for that layer.
+  - **Unit / Target**: Mandatory ≥90% coverage for domain logic (both overall and changed code) when the repository has a measurable suite for that layer.
   - **E2E**: Critical paths verified via **Playwright**.
   - **Load**: API performance verified via **k6** or **Locust**.
 - **Execution Boundary (Local vs Remote)**:
@@ -60,7 +59,7 @@ QA-specific owned files are limited in this infrastructure-focused repository. E
 # QA engineer agent preamble
 @import docs/00.agent-governance/scopes/qa.md
 # TDD-first pattern — red → green → refactor → finalize
-# 80% floor · 90% target · regression evidence mandatory
+# 90% coverage mandatory · regression evidence mandatory
 ```
 
 Spawn via the active runtime's delegated-agent facility. Do not embed QA policy inline in agent files.

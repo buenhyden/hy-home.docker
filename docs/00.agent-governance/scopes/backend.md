@@ -35,7 +35,7 @@ title: 'Backend Engineering Scope'
 
 ## 5. Maintenance & Safety
 
-- **Testing**: Unit test coverage MUST be **> 80%** for domain logic.
+- **Testing**: Unit test coverage MUST be **≥ 90%** for domain logic.
 - **Tracing**: Ensure trace IDs from Traefik/OpenTelemetry are propagated in all service-to-service calls.
 
 ## Related Documents
