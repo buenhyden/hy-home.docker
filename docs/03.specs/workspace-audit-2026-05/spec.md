@@ -68,6 +68,13 @@ bash scripts/validation/check-doc-traceability.sh
 - **VAL-SPC-004**: env/secrets 키 비교 보고서에 secret 값 미포함
 - **VAL-SPC-005**: session Plan과 Task가 template 필수 섹션을 포함
 
+## Agent Role & IO Contract (If Applicable)
+
+- **Agent Role**: N/A
+- **Inputs**: N/A
+- **Outputs**: N/A
+- **Success Definition**: N/A
+
 ## Related Documents
 
 - **Plan**: [../../04.execution/plans/2026-05-26-workspace-audit.md](../../04.execution/plans/2026-05-26-workspace-audit.md)

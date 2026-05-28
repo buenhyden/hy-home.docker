@@ -111,6 +111,13 @@ bash scripts/validation/check-doc-traceability.sh
 - **VAL-WRK-003**: PRD~Runbook optimization-hardening 문서 링크 정합성 유지
 - **VAL-WRK-004**: 카탈로그 `07-workflow` 확장 항목(Airflow DAG quality gate, n8n backup/Vault, airbyte artifact gap)이 문서/태스크에 반영
 
+## Agent Role & IO Contract (If Applicable)
+
+- **Agent Role**: N/A
+- **Inputs**: N/A
+- **Outputs**: N/A
+- **Success Definition**: N/A
+
 ## Related Documents
 
 - **Agent Design**: [./agent-design.md](./agent-design.md)

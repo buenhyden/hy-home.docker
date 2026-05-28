@@ -135,6 +135,13 @@ docker compose config | grep "k3d-hyhome"
 - **VAL-SPC-NET-003**: `k3d-hyhome` references remain present where they existed before the network standardization.
 - **VAL-SPC-NET-004**: operations guide and runbook point to the canonical `docs/05.operations` buckets.
 
+## Agent Role & IO Contract (If Applicable)
+
+- **Agent Role**: N/A
+- **Inputs**: N/A
+- **Outputs**: N/A
+- **Success Definition**: N/A
+
 ## Related Documents
 
 - **Plan**: [../../04.execution/plans/2026-04-01-standardize-infra-net.md](../../04.execution/plans/2026-04-01-standardize-infra-net.md)

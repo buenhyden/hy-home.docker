@@ -117,6 +117,13 @@ bash scripts/validation/check-doc-traceability.sh
 - **VAL-AI-003**: PRD~Runbook optimization-hardening 문서 링크 정합성 유지
 - **VAL-AI-004**: 카탈로그 `08-ai` 확장 항목(모델 승격, 접근 분리, 로그 정책)이 Plan/Tasks/Operations에 반영
 
+## Agent Role & IO Contract (If Applicable)
+
+- **Agent Role**: N/A
+- **Inputs**: N/A
+- **Outputs**: N/A
+- **Success Definition**: N/A
+
 ## Related Documents
 
 - **Plan**: [../../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-08-ai-optimization-hardening-plan.md)

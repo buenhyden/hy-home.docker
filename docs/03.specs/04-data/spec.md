@@ -126,6 +126,13 @@ docker inspect --format '{{json .State.Health}}' supabase-pooler
 - **VAL-SPC-DATA-004**: `seaweedfs` expose 토큰 오타 제거
 - **VAL-SPC-DATA-005**: 04-data 문서 레이어 추적성 링크 동기화
 
+## Agent Role & IO Contract (If Applicable)
+
+- **Agent Role**: N/A
+- **Inputs**: N/A
+- **Outputs**: N/A
+- **Success Definition**: N/A
+
 ## Related Documents
 
 - **Plan**: [../../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md)
