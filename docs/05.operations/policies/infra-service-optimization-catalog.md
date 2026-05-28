@@ -16,7 +16,7 @@ status: active
 - 목적: 공통 운영 기준 통일 + 서비스별 개선 백로그 우선순위화
 - 비대상: 기능 설계 변경, 애플리케이션 비즈니스 로직 변경
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Docker Compose 기반 인프라 서비스 39개(서비스 디렉터리 기준)
 - **Agents**: Infra/DevOps/Operations 역할의 에이전트

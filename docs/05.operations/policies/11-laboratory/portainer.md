@@ -17,7 +17,7 @@ status: active
 
 Portainer 인터페이스의 접근 제어, 데이터 백업, 리소스 관리 가이드라인.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Portainer (Container Management)
 - **Environments**: Infrastructure Management Area

@@ -17,7 +17,7 @@ status: active
 
 이 정책은 ksqlDB 서버 클러스터, 스트림 처리 쿼리, 그리고 연관된 Kafka 브로커 인터페이스를 관리한다.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: ksqlDB Server, ksqlDB CLI
 - **Agents**: Stream Logic Optimizers, Event-driven Workflow Agents

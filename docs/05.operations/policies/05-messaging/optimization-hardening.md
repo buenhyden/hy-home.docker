@@ -16,7 +16,7 @@ status: active
 - `infra/05-messaging/rabbitmq/docker-compose.yml`
 - `scripts/hardening/check-all-hardening.sh 05-messaging`
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Kafka/Kafbat/Schema Registry/Kafka Connect/Kafka REST/RabbitMQ
 - **Agents**: Infra/DevOps/Operations agents

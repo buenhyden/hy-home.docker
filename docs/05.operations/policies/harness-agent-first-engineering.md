@@ -18,7 +18,7 @@ policy_state: enforced
 - Codex hook/context surface.
 - Stage documentation and validators.
 
-## Applies To
+## Policy Scope
 
 - `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`
 - `.claude/**`

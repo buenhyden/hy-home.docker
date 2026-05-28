@@ -14,7 +14,7 @@ status: active
 - `infra/09-tooling/*/docker-compose.yml`
 - `scripts/hardening/check-all-hardening.sh 09-tooling`
 
-## Applies To
+## Policy Scope
 
 - **Systems**: terraform, terrakube, registry, sonarqube, k6, locust, syncthing
 - **Agents**: Infra/DevOps/Operations agents

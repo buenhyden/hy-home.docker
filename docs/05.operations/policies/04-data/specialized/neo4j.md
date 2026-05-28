@@ -15,7 +15,7 @@ status: active
 
 Neo4j Community Edition 인스턴스의 자원 할당, 데이터 보호 및 접근 권한 관리를 규정한다.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Neo4j (Containerized)
 - **Agents**: Operators (DBA), DevOps Engineers

@@ -21,7 +21,7 @@ Ollama 추론 엔진 운영 전반:
 - GPU/VRAM 자원 통제
 - 추론 계층 변경 승인 및 검증
 
-## Applies To
+## Policy Scope
 
 - **Systems**: `ollama`, `ollama-exporter`, `open-webui`
 - **Agents**: 모델 배포/교체 자동화 에이전트, 추론 호출 에이전트

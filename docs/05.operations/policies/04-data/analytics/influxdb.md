@@ -17,7 +17,7 @@ status: active
 
 이 정책은 플랫폼 내 모든 InfluxDB 인스턴스와 이에 연결된 데이터 수집(Telegraf) 및 시각화(Grafana) 인터페이스를 관리한다.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: InfluxDB 3.x, InfluxDB 2.x, Telegraf
 - **Agents**: AI Metric Analyzers, Automated Scaling Agents

@@ -17,7 +17,7 @@ status: active
 
 이 정책은 `infra/04-data/operational/mng-db` 및 해당 서비스가 제공하는 모든 논리적 데이타베이스(n8n, keycloak, airflow 등)를 대상으로 한다.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: mng-pg, mng-valkey, mng-pg-init
 - **Agents**: AI Agent (자동화 관리 및 메타데이터 접근 시)

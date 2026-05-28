@@ -17,7 +17,7 @@ status: active
 
 Dozzle 서비스의 노출 범위, 인증 방식 및 리소스 접근 통제.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Dozzle
 - **Agents**: AI-Ops Agents
