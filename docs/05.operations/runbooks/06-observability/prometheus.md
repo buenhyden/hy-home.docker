@@ -5,6 +5,10 @@ status: active
 
 # Prometheus Runbook
 
+## Overview (KR)
+
+이 런북은 `docs/05.operations/runbooks/06-observability/prometheus.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+
 ## Recovery Runbook: Prometheus
 
 Recovery procedures for common Prometheus service disruptions and metrics collection failures.
@@ -67,10 +71,6 @@ Recovery procedures for common Prometheus service disruptions and metrics collec
 
 ---
 **AI Agent Note**: AI agents should use the `promtool` command to verify any proposed changes to Prometheus or Alerting configurations before applying them.
-
-### Overview (KR)
-
-이 런북은 `docs/05.operations/runbooks/06-observability/prometheus.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
 ### Purpose
 

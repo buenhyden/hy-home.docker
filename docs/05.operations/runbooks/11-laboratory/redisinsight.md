@@ -5,15 +5,15 @@ status: active
 
 # RedisInsight Runbook
 
+## Overview (KR)
+
+이 런북은 RedisInsight의 연결 오류, 설정 초기화, 그리고 서비스 성능 저하 상황 발생 시 조치 방법을 안내한다.
+
 ## RedisInsight Procedure
 
 > RedisInsight 연결 장애 및 설정 복구 절차.
 
 ---
-
-### Overview (KR)
-
-이 런북은 RedisInsight의 연결 오류, 설정 초기화, 그리고 서비스 성능 저하 상황 발생 시 조치 방법을 안내한다.
 
 ## Procedure
 

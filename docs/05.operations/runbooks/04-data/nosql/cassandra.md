@@ -5,15 +5,15 @@ status: active
 
 # Cassandra Runbook
 
+## Overview (KR)
+
+이 문서는 Cassandra 서비스 중단, 데이터 오염 또는 노드 장애 시 신속하게 서비스를 정상화하기 위한 긴급 대응 절차를 설명한다.
+
 ## Cassandra Recovery Procedure
 
 > Emergency recovery procedures for Apache Cassandra single-node instance.
 
 ---
-
-### Overview (KR)
-
-이 문서는 Cassandra 서비스 중단, 데이터 오염 또는 노드 장애 시 신속하게 서비스를 정상화하기 위한 긴급 대응 절차를 설명한다.
 
 ### Procedure Type
 

@@ -5,15 +5,15 @@ status: active
 
 # ksqlDB Runbook
 
+## Overview (KR)
+
+이 런북은 ksqlDB 스트림 처리 지연, 쿼리 실패 및 서버 연결 이슈 상황에 대한 실행 절차를 정의한다. Kafka와의 연결성을 복원하고 처리 무결성을 유지하기 위한 단계를 제공한다.
+
 ## ksqlDB Recovery Procedure
 
 > Scope: ksqlDB Stream Processing Recovery
 
 ---
-
-### Overview (KR)
-
-이 런북은 ksqlDB 스트림 처리 지연, 쿼리 실패 및 서버 연결 이슈 상황에 대한 실행 절차를 정의한다. Kafka와의 연결성을 복원하고 처리 무결성을 유지하기 위한 단계를 제공한다.
 
 ### Purpose
 

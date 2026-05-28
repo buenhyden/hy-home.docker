@@ -7,13 +7,13 @@ status: active
 
 > Normalized under `docs/05.operations/runbooks/` during the 2026-05-10 operations taxonomy consolidation.
 
+## Overview (KR)
+
+이 런북은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약이 계속 유효한지 반복 검증하는 절차를 제공한다.
+
 ## Procedure
 
 ### Harness / Agent-first Engineering Validation Procedure
-
-#### Overview (KR)
-
-이 런북은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약이 계속 유효한지 반복 검증하는 절차를 제공한다.
 
 #### Purpose
 

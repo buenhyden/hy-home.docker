@@ -5,15 +5,15 @@ status: active
 
 # Airflow Runbook
 
+## Overview (KR)
+
+이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 데이터베이스 연결 오류, 워커 중단, DAG 파싱 지연 등 주요 장애 시나리오별 대응 단계를 제공한다.
+
 ## Airflow Recovery Procedure
 
 > Scope: Apache Airflow (07-workflow)
 
 ---
-
-### Overview (KR)
-
-이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 데이터베이스 연결 오류, 워커 중단, DAG 파싱 지연 등 주요 장애 시나리오별 대응 단계를 제공한다.
 
 ### Purpose
 

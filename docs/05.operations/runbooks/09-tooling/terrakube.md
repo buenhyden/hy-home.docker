@@ -6,6 +6,11 @@ status: active
 # Terrakube Runbook
 
 <!-- [ID:09-tooling:terrakube] -->
+
+## Overview (KR)
+
+이 런북은 `docs/05.operations/runbooks/09-tooling/terrakube.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+
 ## Procedure: Terrakube Recovery (P2)
 
 > Procedures for recovering the Terrakube platform from executor failures, sync drift, and database corruption.
@@ -76,10 +81,6 @@ If a workspace is stuck in a locked state and "Force Unlock" in the UI fails:
 
 - **P1**: Total loss of the `tfstate` bucket content in MinIO -> Follow Disaster Recovery Plan.
 - **P2**: Intermittent executor failures or UI sync issues -> Follow manual restart and queue cleanup.
-
-### Overview (KR)
-
-이 런북은 `docs/05.operations/runbooks/09-tooling/terrakube.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
 ### Purpose
 

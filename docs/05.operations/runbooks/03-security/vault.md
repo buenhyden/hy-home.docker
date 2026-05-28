@@ -5,13 +5,13 @@ status: active
 
 # 03-Security Vault Runbook
 
+## Overview (KR)
+
+이 런북은 Vault seal/unseal, raft 상태 점검, audit 활성/검증, Vault Agent 렌더 실패 복구, 안전 롤백 절차를 즉시 실행 가능 형태로 제공한다.
+
 ## 03-Security Vault Procedure
 
 > Scope: Vault Secret Management Recovery & Maintenance
-
-### Overview (KR)
-
-이 런북은 Vault seal/unseal, raft 상태 점검, audit 활성/검증, Vault Agent 렌더 실패 복구, 안전 롤백 절차를 즉시 실행 가능 형태로 제공한다.
 
 ### Purpose
 

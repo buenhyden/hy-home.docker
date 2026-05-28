@@ -5,6 +5,10 @@ status: active
 
 # MinIO Object Storage Runbook
 
+## Overview (KR)
+
+이 런북은 `docs/05.operations/runbooks/04-data/lake-and-object/minio.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+
 ## MinIO Object Storage Recovery Procedure
 
 > MinIO Service Recovery & Emergency Restoration
@@ -102,10 +106,6 @@ This runbook defines implementation procedures for responding to failure situati
 - Document the Root Cause Analysis (RCA).
 - Review and update monitoring thresholds in Grafana/Prometheus.
 - Record the Recovery Time Objective (RTO) achieved.
-
-### Overview (KR)
-
-이 런북은 `docs/05.operations/runbooks/04-data/lake-and-object/minio.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
 ### Purpose
 

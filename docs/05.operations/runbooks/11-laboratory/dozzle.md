@@ -5,15 +5,15 @@ status: active
 
 # Dozzle Runbook
 
+## Overview (KR)
+
+이 런북은 Dozzle 서비스의 장애 대응 및 유지보수 절차를 정의한다. 로그 스트림 끊김, UI 응답 없음 등 발생 가능한 일반적인 문제에 대한 해결 단계를 제공한다.
+
 ## Dozzle Procedure
 
 > Scope: Dozzle (Real-time Log Viewer)
 
 ---
-
-### Overview (KR)
-
-이 런북은 Dozzle 서비스의 장애 대응 및 유지보수 절차를 정의한다. 로그 스트림 끊김, UI 응답 없음 등 발생 가능한 일반적인 문제에 대한 해결 단계를 제공한다.
 
 ### Purpose
 

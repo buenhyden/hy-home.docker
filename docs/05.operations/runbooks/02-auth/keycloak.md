@@ -5,13 +5,13 @@ status: active
 
 # 02-Auth Keycloak Runbook
 
+## Overview (KR)
+
+이 런북은 Keycloak readiness 실패, DB 연결 오류, 시크릿 회전 후 인증 장애 상황의 복구 절차를 정의한다.
+
 ## 02-Auth Keycloak Procedure
 
 > Scope: Keycloak Runtime Recovery
-
-### Overview (KR)
-
-이 런북은 Keycloak readiness 실패, DB 연결 오류, 시크릿 회전 후 인증 장애 상황의 복구 절차를 정의한다.
 
 ### Purpose
 

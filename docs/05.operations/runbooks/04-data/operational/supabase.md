@@ -5,6 +5,10 @@ status: active
 
 # Supabase Runbook
 
+## Overview (KR)
+
+이 런북은 Supabase 플랫폼 운영 중 발생하는 일반적인 작업(재해 복구, 비밀번호 초기화, 로그 분석 등)에 대한 실행 절차를 정의한다.
+
 ## Supabase Platform Procedure
 
 > Scope: Supabase Stack
@@ -12,10 +16,6 @@ status: active
 > Operational procedures for common Supabase maintenance and recovery tasks.
 
 ---
-
-### Overview (KR)
-
-이 런북은 Supabase 플랫폼 운영 중 발생하는 일반적인 작업(재해 복구, 비밀번호 초기화, 로그 분석 등)에 대한 실행 절차를 정의한다.
 
 ### Purpose
 

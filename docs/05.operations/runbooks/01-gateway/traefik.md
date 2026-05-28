@@ -5,13 +5,13 @@ status: active
 
 # 01-Gateway Traefik Runbook
 
+## Overview (KR)
+
+이 런북은 Traefik 미들웨어 회귀, dashboard 접근 장애, 라우팅 이상 상황에서 복구 절차를 정의한다.
+
 ## 01-Gateway Traefik Procedure
 
 > Scope: Traefik Primary Gateway Recovery
-
-### Overview (KR)
-
-이 런북은 Traefik 미들웨어 회귀, dashboard 접근 장애, 라우팅 이상 상황에서 복구 절차를 정의한다.
 
 ### Purpose
 

@@ -5,17 +5,17 @@ status: active
 
 # Valkey Cluster Runbook
 
+## Overview (KR)
+
+이 런북은 Valkey Cluster에서 발생할 수 있는 노드 장애, 슬롯 불일치 및 네트워크 파티션 상황에 대한 긴급 복구 절차를 정의합니다.
+
+This runbook defines the emergency recovery procedures for node failures, slot inconsistencies, and network partition situations that may occur in the Valkey Cluster.
+
 ## Valkey Cluster Recovery Procedure
 
 > Scope: `valkey-cluster`
 
 > Emergency Restoration and Node Failover Procedures / 긴급 복구 및 노드 페일오버 절차
-
-### Overview (KR)
-
-이 런북은 Valkey Cluster에서 발생할 수 있는 노드 장애, 슬롯 불일치 및 네트워크 파티션 상황에 대한 긴급 복구 절차를 정의합니다.
-
-This runbook defines the emergency recovery procedures for node failures, slot inconsistencies, and network partition situations that may occur in the Valkey Cluster.
 
 ### Purpose
 

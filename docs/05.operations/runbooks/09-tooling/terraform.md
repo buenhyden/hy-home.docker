@@ -6,6 +6,11 @@ status: active
 # Terraform Runbook
 
 <!-- [ID:09-tooling:terraform] -->
+
+## Overview (KR)
+
+이 런북은 `docs/05.operations/runbooks/09-tooling/terraform.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+
 ## Procedure: Terraform Recovery (P2)
 
 > Procedures for resolving common Terraform execution errors and state lock issues.
@@ -85,10 +90,6 @@ If credentials expired or are invalid:
 
 - **P1**: Corrupted remote state with no backup -> Notify Infrastructure Architect immediately.
 - **P2**: Stuck state lock or transient network error -> Follow manual recovery steps.
-
-### Overview (KR)
-
-이 런북은 `docs/05.operations/runbooks/09-tooling/terraform.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
 ### Purpose
 

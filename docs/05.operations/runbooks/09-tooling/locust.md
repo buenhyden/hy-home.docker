@@ -5,15 +5,15 @@ status: active
 
 # Locust Runbook
 
+## Overview (KR)
+
+이 문서는 Locust 마스터-워커 간의 연결 끊김, InfluxDB 전송 실패 또는 테스트 실행 중 발생하는 연쇄 장애 상황에서의 복구 방법을 안내합니다.
+
 ## Locust Recovery Procedure
 
 > Locust 로드 테스팅 인프라의 장애 대응 및 복구 절차입니다.
 
 ---
-
-### Overview (KR)
-
-이 문서는 Locust 마스터-워커 간의 연결 끊김, InfluxDB 전송 실패 또는 테스트 실행 중 발생하는 연쇄 장애 상황에서의 복구 방법을 안내합니다.
 
 ### Target Audience
 

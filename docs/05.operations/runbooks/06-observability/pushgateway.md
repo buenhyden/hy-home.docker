@@ -5,15 +5,15 @@ status: active
 
 # Pushgateway Runbook
 
+## Overview (KR)
+
+이 런북은 Pushgateway 운영 중 발생할 수 있는 주요 문제(데이터 오염, 메모리 부하, 전송 실패)에 대한 복구 및 관리 절차를 정의한다.
+
 ## Pushgateway Procedure
 
 > Scope: Metrics Buffer Management
 
 ---
-
-### Overview (KR)
-
-이 런북은 Pushgateway 운영 중 발생할 수 있는 주요 문제(데이터 오염, 메모리 부하, 전송 실패)에 대한 복구 및 관리 절차를 정의한다.
 
 ### Purpose
 

@@ -5,6 +5,10 @@ status: active
 
 # SeaweedFS Runbook
 
+## Overview (KR)
+
+이 런북은 `docs/05.operations/runbooks/04-data/lake-and-object/seaweedfs.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+
 ## SeaweedFS Recovery Procedure
 
 > Emergency procedures for SeaweedFS cluster restoration and troubleshooting.
@@ -95,10 +99,6 @@ If the host mount point is unresponsive:
 - Perform Root Cause Analysis (RCA) on disk/network failures.
 - Adjust monitoring thresholds and alerting rules based on findings.
 - Update the documentation with any new troubleshooting patterns discovered.
-
-### Overview (KR)
-
-이 런북은 `docs/05.operations/runbooks/04-data/lake-and-object/seaweedfs.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
 ### Purpose
 

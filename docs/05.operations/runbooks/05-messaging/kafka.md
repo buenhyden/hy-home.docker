@@ -5,6 +5,10 @@ status: active
 
 # Kafka Cluster Runbook
 
+## Overview (KR)
+
+이 런북은 `hy-home.docker`의 Kafka 인프라(05-messaging)에서 발생할 수 있는 주요 장애 상황의 복구 절차와 정기 점검 단계를 정의한다. 운영자가 즉시 따라 할 수 있는 명령어와 검증 기준을 제공한다.
+
 ## Kafka Recovery & Maintenance Procedure (05-messaging)
 
 > Scope: Kafka Infrastructure
@@ -12,10 +16,6 @@ status: active
 > Step-by-step procedures for broker recovery, partition rebalancing, and system maintenance.
 
 ---
-
-### Overview (KR)
-
-이 런북은 `hy-home.docker`의 Kafka 인프라(05-messaging)에서 발생할 수 있는 주요 장애 상황의 복구 절차와 정기 점검 단계를 정의한다. 운영자가 즉시 따라 할 수 있는 명령어와 검증 기준을 제공한다.
 
 ### Purpose
 

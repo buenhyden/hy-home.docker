@@ -5,15 +5,15 @@ status: active
 
 # Laboratory Dashboard Runbook
 
+## Overview (KR)
+
+이 런북은 `11-laboratory` 티어의 서비스 대시보드(Homer)에 대한 장애 복구 및 설정 검증 절차를 정의한다. 설정 오류로 인한 페이지 렌더링 실패나 서비스 접근 불가 상황을 즉시 해결하기 위한 단계별 지침을 제공한다.
+
 ## Laboratory Dashboard Procedure: Homer
 
 > Scope: Homer Dashboard Recovery and Configuration Service
 
 ---
-
-### Overview (KR)
-
-이 런북은 `11-laboratory` 티어의 서비스 대시보드(Homer)에 대한 장애 복구 및 설정 검증 절차를 정의한다. 설정 오류로 인한 페이지 렌더링 실패나 서비스 접근 불가 상황을 즉시 해결하기 위한 단계별 지침을 제공한다.
 
 ### Purpose
 

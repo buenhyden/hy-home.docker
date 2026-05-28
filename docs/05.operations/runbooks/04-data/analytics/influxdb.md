@@ -5,15 +5,15 @@ status: active
 
 # InfluxDB Runbook
 
+## Overview (KR)
+
+이 런북은 InfluxDB의 수집 장애, 성능 저하 및 노드 중단 시의 실행 절차를 정의한다. 운영자가 즉시 따라 할 수 있는 복구 단계와 검증 기준을 제공한다.
+
 ## InfluxDB Recovery Procedure
 
 > Scope: InfluxDB Performance & Ingestion Recovery
 
 ---
-
-### Overview (KR)
-
-이 런북은 InfluxDB의 수집 장애, 성능 저하 및 노드 중단 시의 실행 절차를 정의한다. 운영자가 즉시 따라 할 수 있는 복구 단계와 검증 기준을 제공한다.
 
 ### Purpose
 

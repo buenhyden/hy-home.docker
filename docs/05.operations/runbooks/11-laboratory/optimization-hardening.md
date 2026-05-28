@@ -5,11 +5,11 @@ status: active
 
 # 11-Laboratory Optimization Hardening Runbook
 
-## 11-Laboratory Optimization Hardening Procedure
-
-### Overview (KR)
+## Overview (KR)
 
 이 런북은 `11-laboratory` 하드닝 항목에서 발생하는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. direct 노출 복원, allowlist/SSO/gateway 체인 누락, 네트워크 경계 드리프트, CI 게이트 실패를 중심으로 점검/복구한다.
+
+## 11-Laboratory Optimization Hardening Procedure
 
 ### Purpose
 

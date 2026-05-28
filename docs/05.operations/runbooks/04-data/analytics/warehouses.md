@@ -5,15 +5,15 @@ status: active
 
 # StarRocks Runbook
 
+## Overview (KR)
+
+이 런북은 StarRocks FE/BE 노드 장애, 데이터 로드 실패 및 분석 쿼리 타임아웃 상황에 대한 대응 절차를 정의한다. 분산 분석 엔진의 가용성을 복원하고 일관성 있는 쿼리 환경을 유지하기 위한 단계를 제공한다.
+
 ## StarRocks Recovery Procedure
 
 > Scope: StarRocks Cluster & Load Job Recovery
 
 ---
-
-### Overview (KR)
-
-이 런북은 StarRocks FE/BE 노드 장애, 데이터 로드 실패 및 분석 쿼리 타임아웃 상황에 대한 대응 절차를 정의한다. 분산 분석 엔진의 가용성을 복원하고 일관성 있는 쿼리 환경을 유지하기 위한 단계를 제공한다.
 
 ### Purpose
 

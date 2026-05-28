@@ -5,15 +5,15 @@ status: active
 
 # Alertmanager Runbook
 
+## Overview (KR)
+
+이 런북은 Alertmanager(06-observability) 알림 서비스의 장애 발생 시 복구 절차를 정의한다. 통지 실패, 설정 오류, 그리고 수신자 연결 문제를 신속하게 해결하는 방법을 제공한다.
+
 ## Alertmanager Recovery Procedure (06-observability)
 
 > Scope: Alertmanager Notification Service
 
 ---
-
-### Overview (KR)
-
-이 런북은 Alertmanager(06-observability) 알림 서비스의 장애 발생 시 복구 절차를 정의한다. 통지 실패, 설정 오류, 그리고 수신자 연결 문제를 신속하게 해결하는 방법을 제공한다.
 
 ### Purpose
 

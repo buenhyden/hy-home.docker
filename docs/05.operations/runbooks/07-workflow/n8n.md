@@ -5,15 +5,15 @@ status: active
 
 # n8n Runbook
 
+## Overview (KR)
+
+이 런북은 n8n 서비스 장애 발생 시 운영자가 신속하게 서비스를 복구하기 위한 단계별 절차를 제공한다. 워커 중단, 데이터베이스 연결 오류, 암호화 키 분실 등 주요 장애 시나리오에 대응한다.
+
 ## n8n Recovery Procedure
 
 > Scope: Apache n8n (07-workflow)
 
 ---
-
-### Overview (KR)
-
-이 런북은 n8n 서비스 장애 발생 시 운영자가 신속하게 서비스를 복구하기 위한 단계별 절차를 제공한다. 워커 중단, 데이터베이스 연결 오류, 암호화 키 분실 등 주요 장애 시나리오에 대응한다.
 
 ### Purpose
 

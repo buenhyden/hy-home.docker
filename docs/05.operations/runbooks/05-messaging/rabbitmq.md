@@ -5,15 +5,15 @@ status: active
 
 # RabbitMQ Runbook
 
+## Overview (KR)
+
+이 런북은 RabbitMQ 서비스 장애 시 장애 복구 절차를 정의한다. 메시지 누적(Message Backlog), 메모리 부족(Memory Alarm), 서비스 응답 없음 등의 상황에서 즉각적인 복구 단계를 제공한다.
+
 ## RabbitMQ Recovery Procedure
 
 > Scope: Emergency procedures for RabbitMQ service failures.
 
 ---
-
-### Overview (KR)
-
-이 런북은 RabbitMQ 서비스 장애 시 장애 복구 절차를 정의한다. 메시지 누적(Message Backlog), 메모리 부족(Memory Alarm), 서비스 응답 없음 등의 상황에서 즉각적인 복구 단계를 제공한다.
 
 ### Purpose
 

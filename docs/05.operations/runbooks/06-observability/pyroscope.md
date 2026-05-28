@@ -5,15 +5,15 @@ status: active
 
 # Pyroscope Runbook
 
+## Overview (KR)
+
+이 문서는 Pyroscope 서비스 장애 발생 시 복구 절차를 정의한다. 프로파일 데이터 인입 중단, 저장소 공간 부족, 쿼리 성능 저하 등의 일반적인 데브옵스 시나리오를 다룬다.
+
 ## Pyroscope Recovery Procedure
 
 > Troubleshooting and recovery procedures for continuous profiling.
 
 ---
-
-### Overview (KR)
-
-이 문서는 Pyroscope 서비스 장애 발생 시 복구 절차를 정의한다. 프로파일 데이터 인입 중단, 저장소 공간 부족, 쿼리 성능 저하 등의 일반적인 데브옵스 시나리오를 다룬다.
 
 ### Procedure Type
 

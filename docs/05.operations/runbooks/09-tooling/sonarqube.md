@@ -6,6 +6,11 @@ status: active
 # SonarQube Runbook
 
 <!-- [ID:09-tooling:sonarqube] -->
+
+## Overview (KR)
+
+이 런북은 `docs/05.operations/runbooks/09-tooling/sonarqube.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+
 ## Procedure: SonarQube Service Recovery (P2)
 
 > Procedures for recovering from SonarQube service failures and index corruption.
@@ -78,10 +83,6 @@ Monitor these files for specific error patterns:
 
 - **P1**: Total UI outage affecting all PR merges -> Notify SRE Team.
 - **P2**: Intermittent scan failures -> Investigate Compute Engine limits.
-
-### Overview (KR)
-
-이 런북은 `docs/05.operations/runbooks/09-tooling/sonarqube.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
 ### Purpose
 

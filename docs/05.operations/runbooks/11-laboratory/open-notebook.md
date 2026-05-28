@@ -5,15 +5,15 @@ status: active
 
 # Open Notebook Runbook
 
+## Overview (KR)
+
+이 런북은 `open-notebook` UI 접속 실패, SurrealDB 의존성 장애, secret 또는 볼륨 문제를 진단하고 복구하기 위한 실행 절차를 정의한다.
+
 ## Open Notebook Procedure
 
 > Scope: Open Notebook and SurrealDB
 
 ---
-
-### Overview (KR)
-
-이 런북은 `open-notebook` UI 접속 실패, SurrealDB 의존성 장애, secret 또는 볼륨 문제를 진단하고 복구하기 위한 실행 절차를 정의한다.
 
 ### Purpose
 

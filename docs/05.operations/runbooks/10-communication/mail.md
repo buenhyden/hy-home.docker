@@ -5,6 +5,10 @@ status: active
 
 # Mail Runbook
 
+## Overview (KR)
+
+이 런북은 Stalwart 메일 서버와 MailHog 개발 트랩에 장애가 발생했을 때 운영자가 즉시 따라 할 수 있는 단계별 절차와 검증 기준을 정의합니다.
+
 ## Mail Recovery Procedure
 
 > Scope: Stalwart Mail Server & MailHog
@@ -12,10 +16,6 @@ status: active
 > 메일 서비스 장애 시 즉각적으로 대응하여 서비스를 복구하기 위한 수동 실행 지침입니다.
 
 ---
-
-### Overview (KR)
-
-이 런북은 Stalwart 메일 서버와 MailHog 개발 트랩에 장애가 발생했을 때 운영자가 즉시 따라 할 수 있는 단계별 절차와 검증 기준을 정의합니다.
 
 ### Purpose
 

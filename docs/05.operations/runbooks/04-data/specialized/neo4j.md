@@ -5,15 +5,15 @@ status: active
 
 # Neo4j Runbook
 
+## Overview (KR)
+
+이 런북은 Neo4j 데이터베이스의 백업 추출, 복구 및 관리자 패스워드 재설정 절차를 정의한다. 장애 발생 시 운영자가 즉시 실행할 수 있는 명령어를 제공한다.
+
 ## Neo4j Recovery Procedure
 
 > Scope: Neo4j Graph Database
 
 > Procedure for database backup/restore and password management for Neo4j within the `04-data/specialized` tier.
-
-### Overview (KR)
-
-이 런북은 Neo4j 데이터베이스의 백업 추출, 복구 및 관리자 패스워드 재설정 절차를 정의한다. 장애 발생 시 운영자가 즉시 실행할 수 있는 명령어를 제공한다.
 
 ### Purpose
 

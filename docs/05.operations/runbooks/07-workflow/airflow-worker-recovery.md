@@ -5,6 +5,10 @@ status: active
 
 # Airflow Worker Recovery Operations
 
+## Overview (KR)
+
+이 런북은 응답하지 않거나 'stuck' 상태인 Airflow Worker를 복구하는 절차를 정의합니다. Celery 브로커 상태 확인 및 워커 재시작 단계를 제공합니다.
+
 ## Procedure
 
 ### Airflow Worker Recovery Procedure
@@ -12,10 +16,6 @@ status: active
 > Scope: Airflow / Workflow Tier
 
 ---
-
-#### Overview (KR)
-
-이 런북은 응답하지 않거나 'stuck' 상태인 Airflow Worker를 복구하는 절차를 정의합니다. Celery 브로커 상태 확인 및 워커 재시작 단계를 제공합니다.
 
 #### Purpose
 

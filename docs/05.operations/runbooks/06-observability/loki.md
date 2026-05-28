@@ -5,6 +5,10 @@ status: active
 
 # Loki Runbook
 
+## Overview (KR)
+
+이 런북은 `docs/05.operations/runbooks/06-observability/loki.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+
 ## Loki Recovery Procedure
 
 > Critical recovery procedures for Loki logging service.
@@ -82,10 +86,6 @@ If Loki needs to be shut down gracefully while ensuring all logs are committed t
  | [Operational Policy](../../policies/06-observability/loki.md)
 
 ---
-
-### Overview (KR)
-
-이 런북은 `docs/05.operations/runbooks/06-observability/loki.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
 ### Purpose
 

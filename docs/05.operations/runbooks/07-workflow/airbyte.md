@@ -5,15 +5,15 @@ status: active
 
 # Airbyte Runbook
 
+## Overview (KR)
+
+이 런북은 Airbyte 동기화 실패 또는 워커 장애 발생 시 즉시 실행할 복구 절차를 정의한다. 현재 저장소의 tracked runtime에는 `infra/07-workflow/airbyte/` 실행 자산이 없으므로, Airbyte는 도입 전/backlog 상태로 취급하고 실행 전 자산 존재 여부를 먼저 확인한다.
+
 ## Airbyte Procedure
 
 > Scope: Airbyte / Workflow Tier
 
 ---
-
-### Overview (KR)
-
-이 런북은 Airbyte 동기화 실패 또는 워커 장애 발생 시 즉시 실행할 복구 절차를 정의한다. 현재 저장소의 tracked runtime에는 `infra/07-workflow/airbyte/` 실행 자산이 없으므로, Airbyte는 도입 전/backlog 상태로 취급하고 실행 전 자산 존재 여부를 먼저 확인한다.
 
 ### Purpose
 

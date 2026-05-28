@@ -5,15 +5,15 @@ status: active
 
 # CouchDB Runbook
 
+## Overview (KR)
+
+이 문서는 CouchDB 클러스터 정족수 상실, 노드 간 복제 중단, 또는 데이터 정합성 이슈 발생 시의 복구 절차를 정의한다.
+
 ## CouchDB Recovery Procedure
 
 > Emergency recovery procedures for CouchDB Cluster and node synchronization issues.
 
 ---
-
-### Overview (KR)
-
-이 문서는 CouchDB 클러스터 정족수 상실, 노드 간 복제 중단, 또는 데이터 정합성 이슈 발생 시의 복구 절차를 정의한다.
 
 ### Procedure Type
 

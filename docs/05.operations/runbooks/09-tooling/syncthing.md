@@ -6,6 +6,11 @@ status: active
 # Syncthing Runbook
 
 <!-- [ID:09-tooling:syncthing] -->
+
+## Overview (KR)
+
+이 런북은 `docs/05.operations/runbooks/09-tooling/syncthing.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+
 ## Procedure: Syncthing Service Recovery (P2)
 
 > Procedures for recovering from Syncthing synchronization failures and connectivity issues.
@@ -77,10 +82,6 @@ If the admin password is lost:
 
 - **P1**: Critical sync failure for production resource data -> Notify SRE Team.
 - **P2**: Intermittent connectivity or "Out of Sync" for non-critical data -> Follow manual re-scan procedures.
-
-### Overview (KR)
-
-이 런북은 `docs/05.operations/runbooks/09-tooling/syncthing.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
 ### Purpose
 

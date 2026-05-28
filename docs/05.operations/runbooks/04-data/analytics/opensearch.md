@@ -5,15 +5,15 @@ status: active
 
 # OpenSearch Runbook
 
+## Overview (KR)
+
+이 런북은 OpenSearch 클러스터 장애, 샤드 불균형, 검색 지연 및 색인 실패 상황에 대한 대응 절차를 정의한다. 데이터 손실 없이 클러스터 상태(Yellow/Red)를 정상화하기 위한 단계를 제공한다.
+
 ## OpenSearch Recovery Procedure
 
 > Scope: OpenSearch Cluster & Index Recovery
 
 ---
-
-### Overview (KR)
-
-이 런북은 OpenSearch 클러스터 장애, 샤드 불균형, 검색 지연 및 색인 실패 상황에 대한 대응 절차를 정의한다. 데이터 손실 없이 클러스터 상태(Yellow/Red)를 정상화하기 위한 단계를 제공한다.
 
 ### Purpose
 

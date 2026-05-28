@@ -5,6 +5,10 @@ status: active
 
 # postgresql-cluster Runbook
 
+## Overview (KR)
+
+이 런북은 `docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+
 ## postgresql-cluster Procedure
 
 > Scope: PostgreSQL Cluster High-Availability Recovery
@@ -86,10 +90,6 @@ docker compose up pg-cluster-init
 
 - [ ] 기존 클러스터 상태 보존을 위한 볼륨 백업 권장
 - [ ] etcd 강제 무력화 전 반드시 데이터 무결성 검토
-
-### Overview (KR)
-
-이 런북은 `docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
 
 ### Agent Operations (If Applicable)
 

@@ -5,15 +5,15 @@ status: active
 
 # Qdrant Runbook
 
+## Overview (KR)
+
+이 런북은 Qdrant 데이터베이스의 스냅샷 생성, 복원 및 클러스터 상태 복구 절차를 정의한다. 데이터 손상 또는 유실 시 단계별 조치 지침을 제공한다.
+
 ## Qdrant Recovery Procedure
 
 > Scope: Qdrant Vector Database
 
 > Procedure for snapshot management and disaster recovery for Qdrant within the `04-data/specialized` tier.
-
-### Overview (KR)
-
-이 런북은 Qdrant 데이터베이스의 스냅샷 생성, 복원 및 클러스터 상태 복구 절차를 정의한다. 데이터 손상 또는 유실 시 단계별 조치 지침을 제공한다.
 
 ### Purpose
 

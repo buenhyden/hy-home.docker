@@ -5,15 +5,15 @@ status: active
 
 # Performance Testing Runbook
 
+## Overview (KR)
+
+이 문서는 Locust 마스터/워커 노드의 연결 끊김, InfluxDB 지표 수집 장애 또는 성능 테스트로 인한 타 서비스 과부하 발생 시의 긴급 조치 방법을 안내합니다.
+
 ## Performance Testing Recovery Procedure
 
 > Locust 부하 테스트 인프라 장애 시 대응 및 복구 절차를 정의합니다.
 
 ---
-
-### Overview (KR)
-
-이 문서는 Locust 마스터/워커 노드의 연결 끊김, InfluxDB 지표 수집 장애 또는 성능 테스트로 인한 타 서비스 과부하 발생 시의 긴급 조치 방법을 안내합니다.
 
 ### Target Audience
 

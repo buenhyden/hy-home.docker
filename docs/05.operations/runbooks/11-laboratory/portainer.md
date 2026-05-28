@@ -5,15 +5,15 @@ status: active
 
 # Portainer Runbook
 
+## Overview (KR)
+
+이 런북은 Portainer 관리 계정 접근 불능 사유 발생 시 비밀번호를 초기화하거나, 서비스 시작 불능 상황을 복구하는 절차를 제공한다.
+
 ## Portainer Procedure
 
 > 관리자 비밀번호 복구 및 서비스 장애 해결 절차.
 
 ---
-
-### Overview (KR)
-
-이 런북은 Portainer 관리 계정 접근 불능 사유 발생 시 비밀번호를 초기화하거나, 서비스 시작 불능 상황을 복구하는 절차를 제공한다.
 
 ## Procedure
 

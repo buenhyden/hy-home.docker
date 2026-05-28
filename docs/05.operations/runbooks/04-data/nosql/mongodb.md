@@ -5,15 +5,15 @@ status: active
 
 # MongoDB Runbook
 
+## Overview (KR)
+
+이 문서는 MongoDB 레플리카 셋의 Primary 부재, 과도한 데이터 지연(Lag), 또는 Arbiter 장애 발생 시의 신속한 복구 절차를 설명한다.
+
 ## MongoDB Recovery Procedure
 
 > Emergency recovery procedures for MongoDB Replica Set and failover incidents.
 
 ---
-
-### Overview (KR)
-
-이 문서는 MongoDB 레플리카 셋의 Primary 부재, 과도한 데이터 지연(Lag), 또는 Arbiter 장애 발생 시의 신속한 복구 절차를 설명한다.
 
 ### Procedure Type
 

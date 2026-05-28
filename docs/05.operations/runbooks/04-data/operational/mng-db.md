@@ -5,15 +5,15 @@ status: active
 
 # Management Database Runbook
 
+## Overview (KR)
+
+이 런북은 `mng-db` (Management Database)의 가동, 초기화, 건강 상태 점검 및 긴급 복구 절차를 정의한다. 운영자가 즉시 따라 할 수 있는 명령어와 검증 단계를 제공한다.
+
 ## Management Database (mng-db) Procedure
 
 > Scope: Infrastructure Recovery and Maintenance
 
 ---
-
-### Overview (KR)
-
-이 런북은 `mng-db` (Management Database)의 가동, 초기화, 건강 상태 점검 및 긴급 복구 절차를 정의한다. 운영자가 즉시 따라 할 수 있는 명령어와 검증 단계를 제공한다.
 
 ### Purpose
 
