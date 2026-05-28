@@ -10,6 +10,10 @@ volumes/
 # Including it inflates the graph without improving infra/docs navigation.
 projects/
 
+# Graph output directory: indexing graphify-out/ would create self-referential
+# nodes and cause the post-commit hook to loop (output change → rebuild → output change).
+graphify-out/
+
 # Secret mounts: sensitive configuration must not be scanned or indexed.
 secrets/
 
