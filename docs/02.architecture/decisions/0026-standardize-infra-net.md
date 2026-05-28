@@ -1,9 +1,10 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/02.architecture/decisions/0026-standardize-infra-net.md -->
 
-# ADR-20260401: Standardize `infra_net` Subnet and Static IP Assignment
+# ADR-0026: Standardize infra_net Subnet and Static IP Assignment
 
 ## Overview (KR)
 
