@@ -5,15 +5,15 @@ status: active
 
 # StarRocks Usage Guide
 
+## Overview (KR)
+
+이 문서는 StarRocks 데이터 웨어하우스 시스템에 대한 가이드다. OLAP 엔진의 구조(FE/BE), SQL 인터페이스 사용법, 대규모 데이터 세트의 실시간 분석 및 시각화 도구 연동 방법을 제공한다.
+
 ## Usage
 >
 > High-performance analytical database for real-time analytics.
 
 ---
-
-### Overview (KR)
-
-이 문서는 StarRocks 데이터 웨어하우스 시스템에 대한 가이드다. OLAP 엔진의 구조(FE/BE), SQL 인터페이스 사용법, 대규모 데이터 세트의 실시간 분석 및 시각화 도구 연동 방법을 제공한다.
 
 ### Usage Type
 

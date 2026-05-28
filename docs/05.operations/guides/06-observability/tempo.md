@@ -5,15 +5,15 @@ status: active
 
 # Tempo Usage Guide
 
+## Overview (KR)
+
+이 문서는 Tempo에 대한 가이드다. Tempo는 분산 추적(Distributed Tracing) 데이터를 수집, 저장, 쿼리하는 시스템으로, 마이크로서비스 환경에서 요청의 흐름과 지연 시간(Latency)을 시각화한다. 특히 Span Metrics와 Service Graphs를 자동으로 생성하여 서비스 간의 의존성 지도를 제공한다.
+
 ## Usage
 >
 > Distributed tracing and trace-to-metrics correlation.
 
 ---
-
-### Overview (KR)
-
-이 문서는 Tempo에 대한 가이드다. Tempo는 분산 추적(Distributed Tracing) 데이터를 수집, 저장, 쿼리하는 시스템으로, 마이크로서비스 환경에서 요청의 흐름과 지연 시간(Latency)을 시각화한다. 특히 Span Metrics와 Service Graphs를 자동으로 생성하여 서비스 간의 의존성 지도를 제공한다.
 
 ### Usage Type
 

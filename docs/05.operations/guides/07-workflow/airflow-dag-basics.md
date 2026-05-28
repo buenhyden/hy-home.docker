@@ -5,6 +5,10 @@ status: active
 
 # Airflow Dag Basics Operations
 
+## Overview (KR)
+
+이 문서는 `hy-home.docker` 환경에서 Airflow DAG를 작성하는 기본 방법과 권장 패턴을 설명합니다. Docker 볼륨 마운트 시 주의사항과 커넥션 관리 방법을 제공합니다.
+
 ## Usage
 
 ### Airflow DAG Basics Usage
@@ -12,10 +16,6 @@ status: active
 > Fundamental patterns for writing Airflow DAGs in the `hy-home.docker` stack.
 
 ---
-
-#### Overview (KR)
-
-이 문서는 `hy-home.docker` 환경에서 Airflow DAG를 작성하는 기본 방법과 권장 패턴을 설명합니다. Docker 볼륨 마운트 시 주의사항과 커넥션 관리 방법을 제공합니다.
 
 #### Usage Type
 

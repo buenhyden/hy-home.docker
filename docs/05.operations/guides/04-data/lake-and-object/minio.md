@@ -5,15 +5,15 @@ status: active
 
 # MinIO Object Storage Usage Guide
 
+## Overview (KR)
+
+이 문서는 MinIO 오브젝트 스토리지에 대한 기술 가이드를 제공한다. `hy-home.docker` 환경에서 MinIO를 연결하고 사용하는 방법, 버킷 관리 절차 및 아키텍처적 통합 방안을 설명한다.
+
 ## Usage
 >
 > S3-compatible high-performance object storage server.
 
 ---
-
-### Overview (KR)
-
-이 문서는 MinIO 오브젝트 스토리지에 대한 기술 가이드를 제공한다. `hy-home.docker` 환경에서 MinIO를 연결하고 사용하는 방법, 버킷 관리 절차 및 아키텍처적 통합 방안을 설명한다.
 
 ### Usage Type
 

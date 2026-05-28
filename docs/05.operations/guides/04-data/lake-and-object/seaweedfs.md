@@ -5,15 +5,15 @@ status: active
 
 # SeaweedFS Usage Guide
 
+## Overview (KR)
+
+이 문서는 SeaweedFS 분산 스케일아웃 스토리지에 대한 기술 가이드를 제공한다. SeaweedFS는 메타데이터와 실제 데이터를 분리하여 관리함으로써 수십억 개의 파일에 대한 저지연 접근을 보장한다. `hy-home.docker` 환경에서의 연결 방법, 인터페이스 활용법 및 성능 최적화 방안을 설명한다.
+
 ## Usage
 >
 > High-performance distributed storage with S3 and FUSE interfaces.
 
 ---
-
-### Overview (KR)
-
-이 문서는 SeaweedFS 분산 스케일아웃 스토리지에 대한 기술 가이드를 제공한다. SeaweedFS는 메타데이터와 실제 데이터를 분리하여 관리함으로써 수십억 개의 파일에 대한 저지연 접근을 보장한다. `hy-home.docker` 환경에서의 연결 방법, 인터페이스 활용법 및 성능 최적화 방안을 설명한다.
 
 ### Usage Type
 

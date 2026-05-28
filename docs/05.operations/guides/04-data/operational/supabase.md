@@ -5,15 +5,15 @@ status: active
 
 # Supabase Usage Guide
 
+## Overview (KR)
+
+이 문서는 `hy-home.docker` 환경에서 Supabase 플랫폼을 구성하고 운영하기 위한 가이드다. PostgreSQL 기반의 통합 백엔드 서비스(Auth, Realtime, Storage, Edge Functions)의 구조와 로컬 관리 방법을 설명한다.
+
 ## Usage
 >
 > Comprehensive guide for self-hosting Supabase in `hy-home.docker`.
 
 ---
-
-### Overview (KR)
-
-이 문서는 `hy-home.docker` 환경에서 Supabase 플랫폼을 구성하고 운영하기 위한 가이드다. PostgreSQL 기반의 통합 백엔드 서비스(Auth, Realtime, Storage, Edge Functions)의 구조와 로컬 관리 방법을 설명한다.
 
 ### Usage Type
 

@@ -5,15 +5,15 @@ status: draft
 
 # Open Notebook Usage Guide
 
+## Overview (KR)
+
+이 문서는 `open-notebook` 서비스를 사용해 로컬 노트북형 지식 작업 환경에 접근하고, 연결된 SurrealDB 상태를 확인하는 방법을 설명하는 가이드다. 이 서비스는 `11-laboratory` 계층의 관리/실험 도구로 분류되며, 운영 경계와 복구 절차는 별도 operations/runbook 문서를 따른다.
+
 ## Usage
 >
 > Open Notebook and SurrealDB usage guide for the laboratory management tier.
 
 ---
-
-### Overview (KR)
-
-이 문서는 `open-notebook` 서비스를 사용해 로컬 노트북형 지식 작업 환경에 접근하고, 연결된 SurrealDB 상태를 확인하는 방법을 설명하는 가이드다. 이 서비스는 `11-laboratory` 계층의 관리/실험 도구로 분류되며, 운영 경계와 복구 절차는 별도 operations/runbook 문서를 따른다.
 
 ### Usage Type
 

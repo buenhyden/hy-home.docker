@@ -5,15 +5,15 @@ status: active
 
 # Management Database Usage Guide
 
+## Overview (KR)
+
+이 문서는 `mng-db` (Management Database) 시스템에 대한 가이드다. `mng-db`는 플랫폼 핵심 서비스(Identity, Automation, Workflow 등)의 메타데이타를 관리하는 PostgreSQL 및 Valkey 인스턴스로 구성되어 있다.
+
 ## Usage
 >
 > This document explains how to understand and use the Management Database system.
 
 ---
-
-### Overview (KR)
-
-이 문서는 `mng-db` (Management Database) 시스템에 대한 가이드다. `mng-db`는 플랫폼 핵심 서비스(Identity, Automation, Workflow 등)의 메타데이타를 관리하는 PostgreSQL 및 Valkey 인스턴스로 구성되어 있다.
 
 ### Usage Type
 

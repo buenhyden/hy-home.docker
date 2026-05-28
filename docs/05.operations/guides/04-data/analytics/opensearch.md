@@ -5,15 +5,15 @@ status: active
 
 # OpenSearch Usage Guide
 
+## Overview (KR)
+
+이 문서는 OpenSearch 시스템에 대한 가이드다. 검색 엔진의 구조, API 사용법, Dashboards를 통한 시각화 및 문제 해결 방법을 제공한다.
+
 ## Usage
 >
 > Distributed search and analytics engine with Dashboards.
 
 ---
-
-### Overview (KR)
-
-이 문서는 OpenSearch 시스템에 대한 가이드다. 검색 엔진의 구조, API 사용법, Dashboards를 통한 시각화 및 문제 해결 방법을 제공한다.
 
 ### Usage Type
 

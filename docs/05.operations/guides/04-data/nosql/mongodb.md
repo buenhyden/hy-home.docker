@@ -5,15 +5,15 @@ status: active
 
 # MongoDB Operation Policy Usage Guide
 
+## Overview (KR)
+
+이 문서는 MongoDB 8.2 Replica Set의 아키텍처, 데이터 모델링 원칙 및 `hy-home.docker` 환경에서의 연결 및 운영 가이드를 제공한다.
+
 ## Usage
 >
 > Document-oriented NoSQL database with flexible schemas and high availability via Replica Sets.
 
 ---
-
-### Overview (KR)
-
-이 문서는 MongoDB 8.2 Replica Set의 아키텍처, 데이터 모델링 원칙 및 `hy-home.docker` 환경에서의 연결 및 운영 가이드를 제공한다.
 
 ### Usage Type
 

@@ -5,11 +5,11 @@ status: active
 
 # 05-Messaging Optimization Hardening Usage Guide
 
-## Usage
-
-### Overview (KR)
+## Overview (KR)
 
 이 문서는 `05-messaging` 계층의 최적화/하드닝 항목을 운영자/개발자가 재현 가능하게 적용하기 위한 가이드다. Kafka/RabbitMQ 관리 경로의 게이트웨이 제어, 이미지 태그 고정, 개발 구성 정합성, CI 검증 절차를 제공한다.
+
+## Usage
 
 ### Usage Type
 

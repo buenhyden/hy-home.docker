@@ -5,15 +5,15 @@ status: active
 
 # Kafka Cluster Operations Policy (05-messaging) Usage Guide
 
+## Overview (KR)
+
+이 문서는 KRaft(Kafka Raft) 모드 기반의 Apache Kafka 클러스터 시스템(05-messaging)의 설정 및 운영 방법을 설명한다. 대용량 이벤트 스트리밍, 메시지 스키마 거버넌스, 그리고 Kafka Connect 연동을 다룬다.
+
 ## Kafka Event Streaming Usage (05-messaging)
 
 > Zookeeper-less Kafka Cluster Setup & Management for hy-home.docker.
 
 ---
-
-### Overview (KR)
-
-이 문서는 KRaft(Kafka Raft) 모드 기반의 Apache Kafka 클러스터 시스템(05-messaging)의 설정 및 운영 방법을 설명한다. 대용량 이벤트 스트리밍, 메시지 스키마 거버넌스, 그리고 Kafka Connect 연동을 다룬다.
 
 ### Usage Type
 

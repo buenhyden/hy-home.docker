@@ -5,15 +5,15 @@ status: active
 
 # Alertmanager Operational Policy (06-observability) Usage Guide
 
+## Overview (KR)
+
+이 문서는 Alertmanager(06-observability)의 알림 라우팅 체계와 설정 방법을 설명한다. 다양한 소스(Prometheus, Loki 등)에서 유입된 경보(Alert)를 그룹화하고 중복을 제거하여 적절한 대상(Slack, Email 등)으로 전달하는 과정을 다룬다.
+
 ## Alertmanager Notification Routing Usage (06-observability)
 
 > Centralized alert routing, deduplication, and notification gateway.
 
 ---
-
-### Overview (KR)
-
-이 문서는 Alertmanager(06-observability)의 알림 라우팅 체계와 설정 방법을 설명한다. 다양한 소스(Prometheus, Loki 등)에서 유입된 경보(Alert)를 그룹화하고 중복을 제거하여 적절한 대상(Slack, Email 등)으로 전달하는 과정을 다룬다.
 
 ### Usage Type
 

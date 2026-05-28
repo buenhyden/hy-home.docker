@@ -10,13 +10,13 @@ updated: 2026-03-26
 
 # Loki Operational Policy Usage Guide
 
+## Overview (KR)
+
+Loki는 Prometheus에서 영감을 받은 로그 집계 시스템으로, 데이터 본문 전체를 인덱싱하는 대신 레이블(Labels)만 인덱싱하여 높은 효율성을 제공한다. `hy-home.docker` 아키텍처에서 Loki는 모든 서비스의 로그를 중앙 집중화하고, Grafana를 통해 시각화 및 분석을 수행한다.
+
 ## Usage
 >
 > Cloud-native log aggregation system for the LGTM stack.
-
-### Overview (KR)
-
-Loki는 Prometheus에서 영감을 받은 로그 집계 시스템으로, 데이터 본문 전체를 인덱싱하는 대신 레이블(Labels)만 인덱싱하여 높은 효율성을 제공한다. `hy-home.docker` 아키텍처에서 Loki는 모든 서비스의 로그를 중앙 집중화하고, Grafana를 통해 시각화 및 분석을 수행한다.
 
 ### Strategic Boundaries
 

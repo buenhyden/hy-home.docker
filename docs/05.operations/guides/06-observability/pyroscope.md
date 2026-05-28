@@ -5,15 +5,15 @@ status: active
 
 # Pyroscope Usage Guide
 
+## Overview (KR)
+
+이 문서는 Pyroscope에 대한 가이드다. Pyroscope는 애플리케이션의 런타임 성능 데이터(CPU 사용량, 메모리 할당 등)를 지속적으로 수집(Continuous Profiling)하여 시각화한다. 이를 통해 성능 병목 지점, 데드락, 메모리 누수 등을 플레임그래프(Flamegraph)를 통해 직관적으로 분석할 수 있다.
+
 ## Usage
 >
 > Continuous profiling and performance analysis.
 
 ---
-
-### Overview (KR)
-
-이 문서는 Pyroscope에 대한 가이드다. Pyroscope는 애플리케이션의 런타임 성능 데이터(CPU 사용량, 메모리 할당 등)를 지속적으로 수집(Continuous Profiling)하여 시각화한다. 이를 통해 성능 병목 지점, 데드락, 메모리 누수 등을 플레임그래프(Flamegraph)를 통해 직관적으로 분석할 수 있다.
 
 ### Usage Type
 

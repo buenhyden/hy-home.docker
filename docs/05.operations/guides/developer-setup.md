@@ -5,6 +5,10 @@ status: active
 
 # Developer Setup Operations
 
+## Overview (KR)
+
+이 문서는 `docs/05.operations/guides/developer-setup.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
+
 ## Usage
 
 ### Developer Environment Setup Usage
@@ -83,10 +87,6 @@ All scripts assume a bash-compatible shell. If you are on Windows, use WSL2.
 - **Secrets**: Ensure your local `.env` is never committed; use `secrets/SENSITIVE_ENV_VARS.md.example` as a template.
 
 ---
-
-#### Overview (KR)
-
-이 문서는 `docs/05.operations/guides/developer-setup.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
 
 #### Usage Type
 

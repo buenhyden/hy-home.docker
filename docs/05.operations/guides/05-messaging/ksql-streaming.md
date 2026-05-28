@@ -6,15 +6,15 @@ status: active
 
 # ksqlDB Streaming Operations
 
+## Overview (KR)
+
+이 가이드는 Kafka 스트림 데이터에 대해 SQL 질의가 가능한 ksqlDB(05-messaging)의 활용 방법을 설명한다. 실시간 데이터 정제, 조인(Join), 그리고 구체화된 뷰(Materialized View) 생성을 다룬다.
+
 ## Usage
 
 ### ksqlDB Usage (05-messaging)
 
 > Real-time Streaming SQL and Data Transformation for Kafka.
-
-#### Overview (KR)
-
-이 가이드는 Kafka 스트림 데이터에 대해 SQL 질의가 가능한 ksqlDB(05-messaging)의 활용 방법을 설명한다. 실시간 데이터 정제, 조인(Join), 그리고 구체화된 뷰(Materialized View) 생성을 다룬다.
 
 #### Service Components
 

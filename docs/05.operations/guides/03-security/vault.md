@@ -5,11 +5,11 @@ status: active
 
 # 03-Security Vault Usage Guide
 
-## Usage
-
-### Overview (KR)
+## Overview (KR)
 
 이 문서는 `03-security` Vault 운영/개발 가이드다. Vault Agent 템플릿 경로 규약, AppRole 부트스트랩, 렌더 출력 확인 절차를 중심으로 optimization/hardening 기준을 설명한다.
+
+## Usage
 
 ### Usage Type
 

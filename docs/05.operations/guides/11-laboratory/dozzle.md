@@ -5,15 +5,15 @@ status: active
 
 # Dozzle Usage Guide
 
+## Overview (KR)
+
+이 문서는 Dozzle을 사용하여 Docker 컨테이너의 로그를 실시간으로 모니터링하고 검색하는 방법을 설명하는 가이드다. 별도의 복잡한 설정 없이 웹 UI를 통해 모든 컨테이너의 로그 스트림에 접근할 수 있다.
+
 ## Usage
 >
 > Real-time log viewer for Docker containers.
 
 ---
-
-### Overview (KR)
-
-이 문서는 Dozzle을 사용하여 Docker 컨테이너의 로그를 실시간으로 모니터링하고 검색하는 방법을 설명하는 가이드다. 별도의 복잡한 설정 없이 웹 UI를 통해 모든 컨테이너의 로그 스트림에 접근할 수 있다.
 
 ### Usage Type
 

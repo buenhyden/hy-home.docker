@@ -5,15 +5,15 @@ status: active
 
 # Airbyte Usage Guide
 
+## Overview (KR)
+
+이 문서는 `07-workflow` 계층에서 Airbyte를 도입하거나 운영하기 전에 필요한 준비 절차와 사용 흐름을 안내한다. 현재 저장소 기준으로 `infra/07-workflow/airbyte/` 실행 자산은 등록되지 않았으므로, Airbyte는 도입 전/backlog 상태로 취급한다.
+
 ## Usage
 >
 > Airbyte 기반 데이터 동기화 워크플로 설계 및 운영 준비 가이드.
 
 ---
-
-### Overview (KR)
-
-이 문서는 `07-workflow` 계층에서 Airbyte를 도입하거나 운영하기 전에 필요한 준비 절차와 사용 흐름을 안내한다. 현재 저장소 기준으로 `infra/07-workflow/airbyte/` 실행 자산은 등록되지 않았으므로, Airbyte는 도입 전/backlog 상태로 취급한다.
 
 ### Usage Type
 

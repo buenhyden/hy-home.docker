@@ -5,11 +5,11 @@ status: active
 
 # 01-Gateway Nginx Usage Guide
 
-## Usage
-
-### Overview (KR)
+## Overview (KR)
 
 이 문서는 01-gateway의 Nginx 특수 경로 프록시 구성과 하드닝 포인트를 설명한다. readonly/tmpfs 운영, timeout/failover, 정적 캐시 정책의 의도를 중심으로 다룬다.
+
+## Usage
 
 ### Usage Type
 

@@ -5,15 +5,15 @@ status: active
 
 # Airflow Usage Guide
 
+## Overview (KR)
+
+이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 개발자와 운영자가 시스템 아키텍처를 이해하고, 서비스 상태를 확인하며, 기본적인 파이프라인 운영을 수행할 수 있도록 돕는다.
+
 ## Usage
 >
 > Apache Airflow 워크플로 엔진 시스템 환경 및 운영 전반에 대한 종합 안내서.
 
 ---
-
-### Overview (KR)
-
-이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 개발자와 운영자가 시스템 아키텍처를 이해하고, 서비스 상태를 확인하며, 기본적인 파이프라인 운영을 수행할 수 있도록 돕는다.
 
 ### Usage Type
 

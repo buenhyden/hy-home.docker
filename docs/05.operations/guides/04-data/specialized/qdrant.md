@@ -5,13 +5,13 @@ status: active
 
 # Qdrant Usage Guide
 
+## Overview (KR)
+
+이 문서는 Qdrant 벡터 데이터베이스에 대한 기술 가이드다. 고차원 벡터 임베딩의 저장 및 검색(Similarity Search)을 위한 아키텍처와 RAG(Retrieval-Augmented Generation) 워크플로 통합 방법을 설명한다.
+
 ## Usage
 >
 > Technical guide for understanding and using Qdrant within the `04-data/specialized` tier.
-
-### Overview (KR)
-
-이 문서는 Qdrant 벡터 데이터베이스에 대한 기술 가이드다. 고차원 벡터 임베딩의 저장 및 검색(Similarity Search)을 위한 아키텍처와 RAG(Retrieval-Augmented Generation) 워크플로 통합 방법을 설명한다.
 
 ### Usage Type
 

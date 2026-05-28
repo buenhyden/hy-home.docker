@@ -5,6 +5,10 @@ status: active
 
 # [OPERATIONAL-POLICY] 06-observability: prometheus Usage Guide
 
+## Overview (KR)
+
+이 문서는 `docs/05.operations/guides/06-observability/prometheus.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
+
 ## [SYSTEM-GUIDE] 06-observability: prometheus
 
 Prometheus is the core metrics engine for the `hy-home.docker` platform, responsible for metrics collection, alerting, and time-series storage.
@@ -76,10 +80,6 @@ Prometheus scrapes the Keycloak `/metrics` endpoint (enabled via theme/provider)
 **AI Agent Note**: When adding new services, ensure they expose a `/metrics` endpoint and register them in `prometheus.yml` under the appropriate job name.
 
 ---
-
-### Overview (KR)
-
-이 문서는 `docs/05.operations/guides/06-observability/prometheus.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
 
 ### Usage Type
 

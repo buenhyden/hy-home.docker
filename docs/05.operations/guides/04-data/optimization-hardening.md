@@ -5,11 +5,11 @@ status: active
 
 # 04-Data Optimization Hardening Usage Guide
 
-## Usage
-
-### Overview (KR)
+## Overview (KR)
 
 이 문서는 `04-data` 계층의 즉시 하드닝 항목을 운영자/개발자가 재현 가능하게 적용하기 위한 가이드다. `supabase` healthcheck 보강, `valkey` 시크릿 경로 정합화, `seaweedfs` compose 정합화, `ksql` 라벨 정규화 절차를 제공한다.
+
+## Usage
 
 ### Usage Type
 

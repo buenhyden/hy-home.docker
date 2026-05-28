@@ -5,6 +5,10 @@ status: active
 
 # Local Llm Setup Operations
 
+## Overview (KR)
+
+이 문서는 `docs/05.operations/guides/08-ai/local-llm-setup.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
+
 ## Usage
 
 ### Local LLM Setup Usage
@@ -37,10 +41,6 @@ docker exec -it ollama ollama run llama3 "Hello, how are you?"
 Once pulled, the model will automatically appear in the [Open WebUI](https://chat.${DEFAULT_URL}) selection dropdown.
 
 ---
-
-#### Overview (KR)
-
-이 문서는 `docs/05.operations/guides/08-ai/local-llm-setup.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
 
 #### Usage Type
 

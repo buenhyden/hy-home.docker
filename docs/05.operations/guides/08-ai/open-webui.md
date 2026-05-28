@@ -5,15 +5,15 @@ status: active
 
 # Open WebUI Usage Guide
 
+## Overview (KR)
+
+이 문서는 `hy-home.docker` 환경에서 Open WebUI를 통해 Ollama 모델과 대화하고, 문서 기반 RAG를 사용하는 방법을 설명한다. 운영자가 재현 가능한 절차로 접근/인증, 모델 선택, 문서 인덱싱, 기본 점검을 수행할 수 있도록 정리한다.
+
 ## Usage
 >
 > Open WebUI 기반 로컬 LLM 채팅 및 RAG 운영 가이드.
 
 ---
-
-### Overview (KR)
-
-이 문서는 `hy-home.docker` 환경에서 Open WebUI를 통해 Ollama 모델과 대화하고, 문서 기반 RAG를 사용하는 방법을 설명한다. 운영자가 재현 가능한 절차로 접근/인증, 모델 선택, 문서 인덱싱, 기본 점검을 수행할 수 있도록 정리한다.
 
 ### Usage Type
 

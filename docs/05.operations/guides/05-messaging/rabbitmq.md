@@ -5,15 +5,15 @@ status: active
 
 # RabbitMQ Usage Guide
 
+## Overview (KR)
+
+이 문서는 RabbitMQ 메시지 브로커에 대한 기술 가이드를 제공한다. `hy-home.docker` 환경에서 RabbitMQ를 연동하고 관리하는 방법, 큐 관리 정책 및 메시지 안정성 확보 방안을 설명한다.
+
 ## Usage
 >
 > Standardized AMQP message broker for task queuing and asynchronous messaging.
 
 ---
-
-### Overview (KR)
-
-이 문서는 RabbitMQ 메시지 브로커에 대한 기술 가이드를 제공한다. `hy-home.docker` 환경에서 RabbitMQ를 연동하고 관리하는 방법, 큐 관리 정책 및 메시지 안정성 확보 방안을 설명한다.
 
 ### Usage Type
 

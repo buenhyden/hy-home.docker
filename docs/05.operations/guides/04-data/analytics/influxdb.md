@@ -5,15 +5,15 @@ status: active
 
 # InfluxDB Usage Guide
 
+## Overview (KR)
+
+이 문서는 InfluxDB 시계열 데이터베이스에 대한 가이드다. 시스템의 아키텍처, V3(Core)와 V2(Legacy)의 차이점, 그리고 Telegraf/Grafana와의 연동 방법을 설명한다. 플랫폼 성능 지표 및 비즈니스 매트릭 수집의 핵심 진입점을 다룬다.
+
 ## Usage
 >
 > Comprehensive guide for managing InfluxDB 3.x and 2.x in the hy-home.docker ecosystem.
 
 ---
-
-### Overview (KR)
-
-이 문서는 InfluxDB 시계열 데이터베이스에 대한 가이드다. 시스템의 아키텍처, V3(Core)와 V2(Legacy)의 차이점, 그리고 Telegraf/Grafana와의 연동 방법을 설명한다. 플랫폼 성능 지표 및 비즈니스 매트릭 수집의 핵심 진입점을 다룬다.
 
 ### Usage Type
 

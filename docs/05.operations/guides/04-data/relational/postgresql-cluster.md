@@ -5,6 +5,10 @@ status: active
 
 # postgresql-cluster Usage Guide
 
+## Overview (KR)
+
+이 문서는 `docs/05.operations/guides/04-data/relational/postgresql-cluster.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
+
 ## Usage
 >
 > Patroni 및 etcd 기반 고가용성(HA) PostgreSQL 클러스터 가이드
@@ -74,10 +78,6 @@ docker compose up pg-cluster-init
 
 - **etcd Quorum Loss**: 3개 etcd 노드 중 2개 이상 장애 시 리더 선출이 중단되며 클러스터는 `Read-Only` 상태로 전환될 수 있다.
 - **Connection Limits**: HAProxy 포트가 열려 있어도 각 노드의 `max_connections` 설정에 따라 연결이 거부될 수 있으므로 커넥션 풀 사용을 권장한다.
-
-### Overview (KR)
-
-이 문서는 `docs/05.operations/guides/04-data/relational/postgresql-cluster.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
 
 ## Common Checks
 
