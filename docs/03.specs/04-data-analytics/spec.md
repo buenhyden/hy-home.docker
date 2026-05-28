@@ -87,6 +87,13 @@ mysql -h starrocks -P 9030 -u root
 - **VAL-SPC-04-ANA-01**: 모든 분석 엔진이 `infra_net` 내에서 상호 통신 가능해야 함.
 - **VAL-SPC-04-ANA-02**: 영구 볼륨 마운트 후 컨테이너 재시작 시 데이터 무결성이 유지되어야 함.
 
+## Agent Role & IO Contract (If Applicable)
+
+- **Agent Role**: N/A
+- **Inputs**: N/A
+- **Outputs**: N/A
+- **Success Definition**: N/A
+
 ## Related Documents
 
 - **Plan**: [../../04.execution/plans/2026-05-22-data-analytics-execution-traceability.md](../../04.execution/plans/2026-05-22-data-analytics-execution-traceability.md)

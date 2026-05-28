@@ -15,7 +15,7 @@ status: active
 
 Qdrant 서비스의 자원 효율성, 데이터 무결성 및 검색 품질 유지 정책을 규정한다.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Qdrant (Containerized)
 - **Agents**: AI Engineers, DevOps Operators

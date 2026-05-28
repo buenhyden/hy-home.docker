@@ -21,7 +21,7 @@ Open WebUI 서비스 운영 전반:
 - 문서 업로드/인덱싱/삭제 기준
 - Open WebUI와 Ollama/Qdrant 연동 구성 변경 관리
 
-## Applies To
+## Policy Scope
 
 - **Systems**: `open-webui`, `ollama`, `qdrant`, `traefik`, `oauth2-proxy`, `keycloak`
 - **Agents**: Open WebUI 운영 자동화 에이전트, 문서 인덱싱/정리 에이전트

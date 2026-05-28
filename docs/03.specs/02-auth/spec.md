@@ -111,6 +111,13 @@ docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config
 - **VAL-SPC-AUTH-002**: CI에 `auth-hardening` job이 존재하고 실행됨
 - **VAL-SPC-AUTH-003**: 02-auth Guide/Operation/Runbook이 상호 링크로 연결됨
 
+## Agent Role & IO Contract (If Applicable)
+
+- **Agent Role**: N/A
+- **Inputs**: N/A
+- **Outputs**: N/A
+- **Success Definition**: N/A
+
 ## Related Documents
 
 - **Plan**: [../../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md)

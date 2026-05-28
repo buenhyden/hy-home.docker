@@ -108,6 +108,16 @@ When legacy active-stage content is discovered in a non-stage `docs/*` path:
 - Agents enforcing naming must not flag `README.md`, template files, or files that predate this rule unless they are being actively edited.
 - **ADRs and ARDs**: use a four-digit zero-padded monotonically increasing sequence
   number: `NNNN-<short-title>.md`. This sequence is independent of tier prefixes.
+- **ADR document H1 title format**: `# ADR-NNNN: English Short Title` — four-digit
+  zero-padded number, colon, English-only title. Example:
+  `# ADR-0003: HashiCorp Vault as Centralized Secrets Manager`.
+- **ARD document H1 title format**: `# [Domain] Architecture Reference Document (ARD)` —
+  must end with the `(ARD)` suffix. Example:
+  `# Security Tier Architecture Reference Document (ARD)`.
+- **Task document H1 title format**: `# Task: [Task Name]` — all task files under
+  `docs/04.execution/tasks/` must use this prefix.
+- **Operations policy required heading**: Use `## Policy Scope` (not `## Applies To`)
+  as the audience and scope heading in all `docs/05.operations/policies/` documents.
 - **Tier prefixes** (`01-gateway`, `02-auth`, …, `04-data`, `04-data-analytics`, `11-laboratory`):
   are two-digit service-tier identifiers used in `docs/03.specs/`, `docs/05.operations/`
   folder names, and PRD filename segments. `04-data` and `04-data-analytics` share the

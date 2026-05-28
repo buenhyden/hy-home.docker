@@ -17,7 +17,7 @@ status: draft
 
 이 정책은 `open_notebook` 애플리케이션, `surrealdb` 의존 서비스, 관련 Docker Secrets, Traefik 라우팅, 관리 데이터 볼륨을 관리한다.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Open Notebook, SurrealDB, Traefik
 - **Agents**: Infra/DevOps agents, Operations agents, AI Agents

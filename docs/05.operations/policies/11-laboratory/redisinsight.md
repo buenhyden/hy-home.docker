@@ -17,7 +17,7 @@ status: active
 
 RedisInsight의 접근 권한, 연결 메타데이터 관리, 그리고 운영 가드레일.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: RedisInsight (Database GUI)
 - **Environments**: Laboratory/Management Tier

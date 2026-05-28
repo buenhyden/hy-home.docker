@@ -1,9 +1,10 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/04.execution/tasks/2026-03-26-07-workflow-tasks.md -->
 
-# 07-workflow Documentation Standardization Tasks
+# Task: 07-workflow Documentation Standardization Tasks
 
 ## Overview (KR)
 

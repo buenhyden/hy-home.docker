@@ -1,6 +1,7 @@
 ---
 status: draft
 ---
+
 <!-- Target: docs/01.requirements/2026-03-26-10-communication.md -->
 
 # Communication Tier (10-communication) Product Requirements
@@ -59,6 +60,10 @@ status: draft
 
 - **Risks**: 메일 서버 IP 차단(Blacklist) 시 외부 발송 중단 위험.
 - **Dependencies**: `02-auth` (SSO 인증), `secrets/certs` (TLS 인증서).
+
+## AI Agent Requirements (If Applicable)
+
+N/A
 
 ## Related Documents
 

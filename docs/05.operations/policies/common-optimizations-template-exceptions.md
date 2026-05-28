@@ -16,7 +16,7 @@ status: active
 - `common-optimizations.yml` 템플릿 계열(`template-*`)의 제어항목 예외 관리
 - Quick Win 기준선(`PLN-QW-001~005`) 검증 시 허용되는 서비스 단위 예외 관리
 
-## Applies To
+## Policy Scope
 
 - **Systems**: `infra/**/docker-compose*.yml` (root 통합 compose 해석 기준)
 - **Agents**: Infra/DevOps/Operations 역할 에이전트

@@ -1,9 +1,10 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/02.architecture/requirements/0026-standardize-infra-net.md -->
 
-# infra_net Architecture Reference Document
+# infra_net Architecture Reference Document (ARD)
 
 ## Overview (KR)
 

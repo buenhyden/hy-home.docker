@@ -17,7 +17,7 @@ status: active
 
 Tempo 서비스의 트레이스 인입, 저장소 처리, 메트릭 원격 쓰기 정책.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Tempo (v2.10.1-custom)
 - **Agents**: Grafana Alloy (OTLP Collectors)

@@ -16,7 +16,7 @@ status: active
 - `infra/03-security/vault/config/templates/*.ctmpl`
 - `scripts/hardening/check-all-hardening.sh 03-security`
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Vault server, Vault Agent
 - **Agents**: Infra/Security/Ops agents

@@ -15,7 +15,7 @@ status: active
 - `infra/01-gateway/nginx/config/nginx.conf`
 - Nginx healthcheck/readonly/tmpfs 운영 표준
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Nginx gateway proxy
 - **Agents**: Infra/DevOps/Ops agents

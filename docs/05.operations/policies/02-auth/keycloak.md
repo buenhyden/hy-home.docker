@@ -15,7 +15,7 @@ status: active
 - Keycloak secret injection and healthcheck contract
 - Realm/client 운영 변경 승인 정책
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Keycloak (Quarkus)
 - **Agents**: Infra/DevOps/Ops agents

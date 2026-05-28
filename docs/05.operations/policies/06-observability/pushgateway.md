@@ -17,7 +17,7 @@ status: active
 
 Pushgateway 서비스의 메트릭 인입, 보관 기간, 그리고 수동/자동 데이터 정리 작업.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Pushgateway (v1.11.2)
 - **Agents**: CI/CD Workers, Batch Scripts

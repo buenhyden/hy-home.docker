@@ -17,7 +17,7 @@ status: active
 
 Pyroscope 서비스의 프로파일 데이터 인입, 저장소 관리, 보관 기간 정책.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Pyroscope (v1.18.1)
 - **Agents**: Grafana Alloy (Collectors)

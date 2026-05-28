@@ -168,6 +168,13 @@ openssl s_client -starttls smtp -connect mail.${DEFAULT_URL}:587
 - **VAL-SPC-COMM-003**: SPF, DKIM, and DMARC requirements are reflected in operations policy.
 - **VAL-SPC-COMM-004**: Guide, policy, and runbook links point to canonical `docs/05.operations` buckets.
 
+## Agent Role & IO Contract (If Applicable)
+
+- **Agent Role**: N/A
+- **Inputs**: N/A
+- **Outputs**: N/A
+- **Success Definition**: N/A
+
 ## Related Documents
 
 - **PRD**: [2026-03-26-10-communication.md](../../01.requirements/2026-03-26-10-communication.md)

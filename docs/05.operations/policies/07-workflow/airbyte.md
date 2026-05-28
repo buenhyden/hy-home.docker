@@ -20,7 +20,7 @@ status: active
 - 자격 증명(credential)과 접근 권한 관리
 - 장애 시 운영 에스컬레이션 기준
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Airbyte (server, worker, connector jobs)
 - **Agents**: 운영 자동화 에이전트, 배포 에이전트

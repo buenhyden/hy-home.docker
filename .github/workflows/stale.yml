@@ -1,8 +1,8 @@
-name: "Close Stale Issues & PRs"
+name: 'Close Stale Issues & PRs'
 
 on:
   schedule:
-    - cron: "30 1 * * *"
+    - cron: '30 1 * * *'
 
 permissions: {}
 
@@ -16,15 +16,13 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Mark and close stale threads
-        uses: actions/stale@b5d41d4e1d5dceea10e7104786b73624c18a190f
+        uses: actions/stale@eb5cf3af3ac0a1aa4c9c45633dd1ae542a27a899 # v10.3.0
         with:
-          stale-issue-message:
-            "이 이슈는 소통이 없어 stale 상태로 표시되었습니다. 7일 내에 답변이
-            없으면 닫힙니다."
-          stale-pr-message:
-            "이 PR은 소통이 없어 stale 상태로 표시되었습니다. 7일 내에 답변이
-            없으면 닫힙니다."
+          stale-issue-message: '이 이슈는 소통이 없어 stale 상태로 표시되었습니다. 7일 내에 답변이
+            없으면 닫힙니다.'
+          stale-pr-message: '이 PR은 소통이 없어 stale 상태로 표시되었습니다. 7일 내에 답변이
+            없으면 닫힙니다.'
           days-before-stale: 30
           days-before-close: 7
-          stale-issue-label: "stale"
-          stale-pr-label: "stale"
+          stale-issue-label: 'stale'
+          stale-pr-label: 'stale'

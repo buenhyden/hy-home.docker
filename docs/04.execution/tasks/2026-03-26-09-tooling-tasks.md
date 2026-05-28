@@ -1,9 +1,10 @@
 ---
 status: completed
 ---
+
 <!-- Target: docs/04.execution/tasks/2026-03-26-09-tooling-tasks.md -->
 
-# 09-tooling Documentation Tasks
+# Task: 09-tooling Documentation Tasks
 
 ## Overview (KR)
 
@@ -32,12 +33,12 @@ status: completed
 
 ## Progress Summary
 
-| Phase | Total Tasks | Completed | Progress |
-| :--- | :--- | :--- | :--- |
-| Governance | 5 | 5 | 100% |
-| Operations | 3 | 3 | 100% |
-| Infrastructure | 2 | 2 | 100% |
-| **Total** | **10 marks** | **10** | **100%** |
+| Phase          | Total Tasks  | Completed | Progress |
+| :------------- | :----------- | :-------- | :------- |
+| Governance     | 5            | 5         | 100%     |
+| Operations     | 3            | 3         | 100%     |
+| Infrastructure | 2            | 2         | 100%     |
+| **Total**      | **10 marks** | **10**    | **100%** |
 
 ## Inputs
 

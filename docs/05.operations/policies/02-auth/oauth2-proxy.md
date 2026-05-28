@@ -16,7 +16,7 @@ status: active
 - `infra/02-auth/oauth2-proxy/Dockerfile`
 - `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg`
 
-## Applies To
+## Policy Scope
 
 - **Systems**: OAuth2 Proxy ForwardAuth gateway
 - **Agents**: Infra/DevOps/Ops agents

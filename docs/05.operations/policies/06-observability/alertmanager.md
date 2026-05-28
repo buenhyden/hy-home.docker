@@ -17,7 +17,7 @@ status: active
 
 이 정책은 시스템의 모든 경보(Alert)가 사용자에게 도달하기까지의 라우팅, 필터링, 그리고 통지 과정을 제어한다.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Alertmanager Cluster, Slack Webhook, SMTP Relay
 - **Agents**: SRE-Agent, Monitoring-Agent

@@ -17,7 +17,7 @@ status: active
 
 Governs the lifecycle of all Apache Airflow DAGs within the `hy-home.docker` ecosystem.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Apache Airflow (07-workflow)
 - **Environments**: Staging, Production

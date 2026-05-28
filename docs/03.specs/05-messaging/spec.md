@@ -135,6 +135,13 @@ docker inspect --format '{{json .State.Health}}' rabbitmq
 - **VAL-SPC-MSG-003**: 외부 노출 라우터의 middleware 체인 계약 충족
 - **VAL-SPC-MSG-004**: 01~09 optimization-hardening 문서 상호 링크 동기화
 
+## Agent Role & IO Contract (If Applicable)
+
+- **Agent Role**: N/A
+- **Inputs**: N/A
+- **Outputs**: N/A
+- **Success Definition**: N/A
+
 ## Related Documents
 
 - **Plan**: [../../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md)

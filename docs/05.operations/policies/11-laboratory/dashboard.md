@@ -19,7 +19,7 @@ status: active
 - 대시보드 노출 서비스 선정 기준 및 관리 프로세스.
 - 대시보드 접근 제어 및 보안 가드레일.
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Homer (Laboratory Dashboard)
 - **Agents**: AI-Ops Agents (대시보드 업데이트 수행 시)

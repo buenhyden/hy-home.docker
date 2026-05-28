@@ -93,6 +93,13 @@ openssl s_client -connect localhost:443 -tls1_3
 - **VAL-SPC-002**: Traefik Dashboard는 Basic Auth를 통해서만 접근 가능해야 함.
 - **VAL-SPC-003**: OAuth2 Proxy 미들웨어가 적용된 경로는 미인증 시 로그인 페이지로 리다이렉트되어야 함.
 
+## Agent Role & IO Contract (If Applicable)
+
+- **Agent Role**: N/A
+- **Inputs**: N/A
+- **Outputs**: N/A
+- **Success Definition**: N/A
+
 ## Related Documents
 
 - **Plan**: [../../04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md)

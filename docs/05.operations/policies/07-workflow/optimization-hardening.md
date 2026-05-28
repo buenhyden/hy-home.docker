@@ -15,7 +15,7 @@ status: active
 - `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,docker-entrypoint.sh}`
 - `scripts/hardening/check-all-hardening.sh 07-workflow`
 
-## Applies To
+## Policy Scope
 
 - **Systems**: Airflow, Flower, n8n, n8n-worker, n8n-task-runner, workflow Valkey
 - **Agents**: Infra/DevOps/Operations agents
