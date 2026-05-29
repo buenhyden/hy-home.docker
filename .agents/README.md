@@ -1,37 +1,36 @@
-# Agents Compatibility Surface
+# Gemini Shared Runtime & Compatibility Surface
 
-This directory is a compatibility surface for agent tooling that reads
-`.agents/` paths. It is not the source of truth for repository policy or the
-delegated agent/function catalog.
+This directory is the native runtime surface for Gemini agents and a compatibility surface for agent tooling that reads `.agents/` paths. It is not the source of truth for repository policy.
 
 ## Scope
 
 ### In Scope
 
-- Local compatibility rules under `rules/`
-- Local compatibility workflows under `workflows/`
-- Optional compatibility skill copies under `skills/`
+- Gemini-specific rules under `rules/`
+- Gemini-specific workflows under `workflows/`
+- Gemini runtime skill implementations under `skills/`
+- Gemini reference index under `agents/` pointing to the governance catalog
 
 ### Out of Scope
 
 - Active policy that belongs in `docs/00.agent-governance/`
-- A parallel runtime agent catalog
+- Parallel disconnected agent catalogs (must link to `docs/00.agent-governance/agents/`)
 - Secrets, tokens, credentials, shell history, or logs
 
 ## Authority
 
 - Policy source of truth: `docs/00.agent-governance/`
-- Runtime agent/function source of truth: `.claude/agents/` and `.claude/skills/`
+- Runtime agent/function source of truth: `docs/00.agent-governance/agents/`
+- Claude runtime surface: `.claude/` (agents: `.claude/agents/`, skills: `.claude/skills/`)
 - Codex hook/context surface: `.codex/`
+- Gemini runtime surface: `.agents/` (this directory)
 
-If a `.agents/skills/<name>/skill.md` file exists, it must stay compatible with
-the corresponding `.claude/skills/<name>/skill.md` contract. It must not point
-to nonexistent runtime paths such as `.Codex/`.
+If a `.agents/skills/<name>/skill.md` file exists, it must stay functionally compatible with the corresponding provider-neutral governance function. It must not point to nonexistent runtime paths.
 
 ## How to Work in This Area
 
 1. Update canonical governance and runtime files first.
-2. Keep `.agents/` references aligned with `.claude/` and `docs/00.agent-governance/`.
+2. Keep `.agents/` references aligned with `docs/00.agent-governance/`.
 3. Run `bash scripts/validation/check-repo-contracts.sh` after edits.
 
 ## Related Documents
