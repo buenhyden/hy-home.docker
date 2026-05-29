@@ -16,6 +16,7 @@ layer: agentic
 - `.claude/CLAUDE.md`
 - `docs/00.agent-governance/README.md`
 - `docs/00.agent-governance/providers/claude.md`
+- `RTK.md`
 
 <!-- Thin Claude root shim. Shared policy lives in docs/00.agent-governance/. -->
 <!-- Claude runtime bootstrap: .claude/CLAUDE.md -->
