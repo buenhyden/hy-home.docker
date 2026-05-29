@@ -326,6 +326,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md) | Markdown reference |
 | [docs/03.specs/workspace-audit-2026-05/README.md](../../03.specs/workspace-audit-2026-05/README.md) | folder index |
 | [docs/03.specs/workspace-audit-2026-05/spec.md](../../03.specs/workspace-audit-2026-05/spec.md) | Markdown reference |
+| [docs/03.specs/workspace-consistency-2026-05b/spec.md](../../03.specs/workspace-consistency-2026-05b/spec.md) | Markdown reference |
 | [docs/03.specs/workspace-doc-consistency-2026-05/spec.md](../../03.specs/workspace-doc-consistency-2026-05/spec.md) | Markdown reference |
 | [docs/04.execution/README.md](../../04.execution/README.md) | folder index |
 | [docs/04.execution/plans/2026-03-26-01-gateway-standardization.md](../../04.execution/plans/2026-03-26-01-gateway-standardization.md) | Markdown reference |
@@ -379,6 +380,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-26-workspace-audit-gap-closure.md](../../04.execution/plans/2026-05-26-workspace-audit-gap-closure.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-26-workspace-audit.md](../../04.execution/plans/2026-05-26-workspace-audit.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-28-workspace-doc-consistency.md](../../04.execution/plans/2026-05-28-workspace-doc-consistency.md) | Markdown reference |
+| [docs/04.execution/plans/2026-05-29-workspace-consistency-2026-05b.md](../../04.execution/plans/2026-05-29-workspace-consistency-2026-05b.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -430,6 +432,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-05-26-workspace-audit-gap-closure.md](../../04.execution/tasks/2026-05-26-workspace-audit-gap-closure.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-26-workspace-audit.md](../../04.execution/tasks/2026-05-26-workspace-audit.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-28-workspace-doc-consistency.md](../../04.execution/tasks/2026-05-28-workspace-doc-consistency.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-05-29-workspace-consistency-2026-05b.md](../../04.execution/tasks/2026-05-29-workspace-consistency-2026-05b.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs

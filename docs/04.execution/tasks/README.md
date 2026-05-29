@@ -1,4 +1,5 @@
 <!-- Target: docs/04.execution/tasks/README.md -->
+
 # Execution Tasks
 
 > 실제 구현 상태, 검증 결과, 완료 evidence를 기록하는 execution tracking 공간
@@ -79,12 +80,12 @@ docs/04.execution/tasks/
 
 Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행 결과를 검증 가능하게 남깁니다.
 
-| Evidence Type | Expected Content |
-| --- | --- |
-| Task Table | 작업 ID, type, parent spec/plan, evidence, status |
-| Phase View | 수행 흐름을 빠르게 확인할 수 있는 선택적 checklist |
-| Verification Summary | 실행한 명령, 결과, 수동 확인, 실패 또는 skip 사유 |
-| Deviation Notes | 계획과 달라진 점, 최종 판단 근거, follow-up 필요 여부 |
+| Evidence Type        | Expected Content                                      |
+| -------------------- | ----------------------------------------------------- |
+| Task Table           | 작업 ID, type, parent spec/plan, evidence, status     |
+| Phase View           | 수행 흐름을 빠르게 확인할 수 있는 선택적 checklist    |
+| Verification Summary | 실행한 명령, 결과, 수동 확인, 실패 또는 skip 사유     |
+| Deviation Notes      | 계획과 달라진 점, 최종 판단 근거, follow-up 필요 여부 |
 
 완료된 historical task는 의미 보존을 우선합니다. 새 task 또는 현재 task를 갱신할 때만 최신 template 구조를 적용합니다.
 
@@ -133,3 +134,4 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Agent Hook Completion and Style Automation Task**: [2026-05-22-agent-hook-completion-style-automation.md](./2026-05-22-agent-hook-completion-style-automation.md)
 - **Spec Execution Implementation Audit Task**: [2026-05-22-spec-execution-implementation-audit.md](./2026-05-22-spec-execution-implementation-audit.md)
 - **Data Analytics Execution Traceability Task**: [2026-05-22-data-analytics-execution-traceability.md](./2026-05-22-data-analytics-execution-traceability.md)
+- **Workspace Doc & Governance Consistency (2026-05b) Task**: [2026-05-29-workspace-consistency-2026-05b.md](./2026-05-29-workspace-consistency-2026-05b.md)

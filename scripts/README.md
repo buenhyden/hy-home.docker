@@ -164,7 +164,7 @@ not automatically accepted by this repository.
 
 ---
 
-## 🛠️ Utilities & Automation
+## Utilities & Automation
 
 ### Standard Rules
 

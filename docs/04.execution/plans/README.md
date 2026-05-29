@@ -1,4 +1,5 @@
 <!-- Target: docs/04.execution/plans/README.md -->
+
 # Execution Plans
 
 > 실행 순서, 리스크, 검증 기준, 완료 조건을 관리하는 implementation plan 공간
@@ -76,13 +77,13 @@ docs/04.execution/plans/
 
 Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질문에 답해야 합니다.
 
-| Question | Plan Section |
-| --- | --- |
-| 왜 지금 이 작업을 하는가 | `## Context` |
-| 범위와 비범위는 무엇인가 | `## Goals & In-Scope`, `## Non-Goals & Out-of-Scope` |
-| 어떤 순서로 진행하는가 | `## Work Breakdown` |
-| 실패 가능성과 완화책은 무엇인가 | `## Risks & Mitigations` |
-| 완료를 무엇으로 증명하는가 | `## Verification Plan`, `## Completion Criteria` |
+| Question                        | Plan Section                                         |
+| ------------------------------- | ---------------------------------------------------- |
+| 왜 지금 이 작업을 하는가        | `## Context`                                         |
+| 범위와 비범위는 무엇인가        | `## Goals & In-Scope`, `## Non-Goals & Out-of-Scope` |
+| 어떤 순서로 진행하는가          | `## Work Breakdown`                                  |
+| 실패 가능성과 완화책은 무엇인가 | `## Risks & Mitigations`                             |
+| 완료를 무엇으로 증명하는가      | `## Verification Plan`, `## Completion Criteria`     |
 
 실제 수행 결과는 sibling [tasks README](../tasks/README.md)에 따라 task 문서로 기록합니다.
 
@@ -132,3 +133,4 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Large-Scale Authored SSoT Review Plan**: [2026-05-25-large-scale-authored-ssot-review.md](./2026-05-25-large-scale-authored-ssot-review.md)
 - **Spec Execution Implementation Audit Plan**: [2026-05-22-spec-execution-implementation-audit.md](./2026-05-22-spec-execution-implementation-audit.md)
 - **Data Analytics Execution Traceability Plan**: [2026-05-22-data-analytics-execution-traceability.md](./2026-05-22-data-analytics-execution-traceability.md)
+- **Workspace Doc & Governance Consistency (2026-05b) Plan**: [2026-05-29-workspace-consistency-2026-05b.md](./2026-05-29-workspace-consistency-2026-05b.md)

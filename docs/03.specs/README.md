@@ -65,6 +65,8 @@ docs/03.specs/
 ├── llm-wiki-agent-first-completion/     # Completed LLM Wiki contract spec
 ├── standardize-infra-net/               # infra_net standardization spec
 ├── workspace-audit-2026-05/             # 2026-05-26 workspace audit session spec
+├── workspace-doc-consistency-2026-05/   # 2026-05-28 workspace doc consistency spec (PR #89)
+├── workspace-consistency-2026-05b/      # 2026-05-29 workspace governance consistency follow-up spec
 └── README.md                            # This file
 ```
 
