@@ -1,6 +1,7 @@
 ---
 status: draft
 ---
+
 <!-- Target: docs/03.specs/<feature-id>/agent-design.md -->
 
 # [Feature Name] Agent Design
@@ -25,8 +26,8 @@ status: draft
 
 - **Spec**: [./spec.md](./spec.md)
 - **PRD**: [../../01.requirements/YYYY-MM-DD-feature.md](../../01.requirements/YYYY-MM-DD-feature.md)
-- **ARD**: [../../02.architecture/requirements/0001-system.md](../../02.architecture/requirements/0001-system.md)
-- **Related ADRs**: [../../02.architecture/decisions/0001-example.md](../../02.architecture/decisions/0001-example.md)
+- **ARD**: [ARD folder](../../02.architecture/requirements/)
+- **Related ADRs**: [ADR folder](../../02.architecture/decisions/)
 
 ## Scope & Non-goals
 
@@ -53,9 +54,9 @@ status: draft
 
 ## Tools & Permissions
 
-| Tool | Purpose | Allowed Actions | Forbidden Actions | Failure Handling |
-| --- | --- | --- | --- | --- |
-| [Tool] | [Purpose] | [Allowed] | [Forbidden] | [Fallback] |
+| Tool   | Purpose   | Allowed Actions | Forbidden Actions | Failure Handling |
+| ------ | --------- | --------------- | ----------------- | ---------------- |
+| [Tool] | [Purpose] | [Allowed]       | [Forbidden]       | [Fallback]       |
 
 ## Prompt / Policy Contract
 
