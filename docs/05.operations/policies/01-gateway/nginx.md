@@ -1,6 +1,7 @@
 ---
 status: active
 ---
+
 <!-- Target: docs/05.operations/policies/01-gateway/nginx.md -->
 
 # 01-Gateway Nginx Operations Policy
@@ -14,9 +15,6 @@ status: active
 - `infra/01-gateway/nginx/docker-compose.yml`
 - `infra/01-gateway/nginx/config/nginx.conf`
 - Nginx healthcheck/readonly/tmpfs 운영 표준
-
-## Policy Scope
-
 - **Systems**: Nginx gateway proxy
 - **Agents**: Infra/DevOps/Ops agents
 - **Environments**: Local, Dev, Stage, Production-like
