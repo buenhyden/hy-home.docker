@@ -28,10 +28,11 @@ Protocol for maintaining documentation consistency and governance traceability.
 - Root instruction shims must remain thin; their `## Related Documents` sections should point to canonical governance and provider docs instead of duplicating policy.
 - **Template frontmatter exemption**: Template source files under `docs/99.templates/*.template.md` use `status: draft` in YAML frontmatter instead of `layer:`. This is intentional. Agents performing `layer:` compliance audits must exempt those template source files from that check. `docs/99.templates/README.md` is an active folder README and may use repository README frontmatter such as `layer: agentic`. `memory.template.md` and `progress.template.md` are governance-memory templates, but they still keep this template frontmatter shape until copied into active governance memory files.
 - **Frontmatter status (R5):** Every leaf document under `docs/01`–`docs/05`
-  and `docs/90` MUST include YAML frontmatter with `status: draft | active |
-superseded`. Governance memory files (`docs/00.agent-governance/`) use `layer:`
+  and `docs/90` MUST include YAML frontmatter with `status: draft | active | superseded`.
+  Governance memory files (`docs/00.agent-governance/`) use `layer:`
   frontmatter instead. Template source files (`docs/99.templates/*.template.md`)
   always use `status: draft` and are exempt from the `layer:` requirement.
+  A document without this frontmatter is **INCOMPLETE**.
 
 ## 3. Document Type ↔ Template Mapping
 
@@ -134,7 +135,7 @@ When legacy active-stage content is discovered in a non-stage `docs/*` path:
 
 ## 8. DOCS 3 RULES — HALT CONDITIONS
 
-These rules are blocking. Completion is **PROHIBITED** until all three pass.
+These rules are blocking. Completion is **PROHIBITED** until all four pass.
 
 **R1 — Template First:**
 Read the matching template from `docs/99.templates/` before writing or editing
@@ -156,14 +157,15 @@ Every non-README leaf document under `docs/05.operations/` MUST satisfy its
 bucket's purpose-profile contract. Profile compliance is machine-verified by
 `check-repo-contracts.sh` (section "Operations purpose profile contract").
 
-- `guides/**` required: `## Usage`, `## Common Checks`, `## Runbook Handoff`.
+- `guides/**` required: `## Usage` (enforced now); `## Common Checks`,
+  `## Runbook Handoff` (Phase 4 script update will add enforcement).
   Forbidden in guides: `## Policy Scope`, `## Controls`, `## Exceptions`,
-  `## Review Cadence`, `## When to Use`, `## Procedure`.
+  `## Review Cadence`, `### When to Use`, `#### Procedure`.
 - `policies/**` required: `## Policy Scope`, `## Controls`, `## Verification`,
   `## Review Cadence`. Forbidden in policies: `## Usage`, `## Runbook Handoff`,
-  `## When to Use`, `## Procedure`.
+  `### When to Use`, `#### Procedure`.
 - `runbooks/**` required: `## When to Use`, `## Procedure`, `## Evidence`,
-  `## Rollback or Recovery`, `## Escalation`. Forbidden in runbooks: `## Usage`,
+  `## Escalation`. Forbidden in runbooks: `## Usage`,
   `## Policy Scope`, `## Controls`, `## Exceptions`, `## Review Cadence`.
 - `incidents/**` documents use `incident.template.md` (active incident record)
   or `postmortem.template.md` (post-incident review). Filename pattern:
