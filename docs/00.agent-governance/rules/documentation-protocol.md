@@ -27,6 +27,11 @@ Protocol for maintaining documentation consistency and governance traceability.
 - `README.md` files and root instruction shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) are documentation surfaces for DOCS 3 unless a higher-priority runtime constraint explicitly exempts them.
 - Root instruction shims must remain thin; their `## Related Documents` sections should point to canonical governance and provider docs instead of duplicating policy.
 - **Template frontmatter exemption**: Template source files under `docs/99.templates/*.template.md` use `status: draft` in YAML frontmatter instead of `layer:`. This is intentional. Agents performing `layer:` compliance audits must exempt those template source files from that check. `docs/99.templates/README.md` is an active folder README and may use repository README frontmatter such as `layer: agentic`. `memory.template.md` and `progress.template.md` are governance-memory templates, but they still keep this template frontmatter shape until copied into active governance memory files.
+- **Frontmatter status (R5):** Every leaf document under `docs/01`–`docs/05`
+  and `docs/90` MUST include YAML frontmatter with `status: draft | active |
+superseded`. Governance memory files (`docs/00.agent-governance/`) use `layer:`
+  frontmatter instead. Template source files (`docs/99.templates/*.template.md`)
+  always use `status: draft` and are exempt from the `layer:` requirement.
 
 ## 3. Document Type ↔ Template Mapping
 
@@ -145,6 +150,27 @@ Agent is **BLOCKED** from marking task complete until this is done.
 **R3 — Related Documents:**
 Every document MUST contain a `## Related Documents` section with upstream links.
 A document without this section is **INCOMPLETE** regardless of content quality.
+
+**R4 — Operations Profile Compliance (BLOCKING):**
+Every non-README leaf document under `docs/05.operations/` MUST satisfy its
+bucket's purpose-profile contract. Profile compliance is machine-verified by
+`check-repo-contracts.sh` (section "Operations purpose profile contract").
+
+- `guides/**` required: `## Usage`, `## Common Checks`, `## Runbook Handoff`.
+  Forbidden in guides: `## Policy Scope`, `## Controls`, `## Exceptions`,
+  `## Review Cadence`, `## When to Use`, `## Procedure`.
+- `policies/**` required: `## Policy Scope`, `## Controls`, `## Verification`,
+  `## Review Cadence`. Forbidden in policies: `## Usage`, `## Runbook Handoff`,
+  `## When to Use`, `## Procedure`.
+- `runbooks/**` required: `## When to Use`, `## Procedure`, `## Evidence`,
+  `## Rollback or Recovery`, `## Escalation`. Forbidden in runbooks: `## Usage`,
+  `## Policy Scope`, `## Controls`, `## Exceptions`, `## Review Cadence`.
+- `incidents/**` documents use `incident.template.md` (active incident record)
+  or `postmortem.template.md` (post-incident review). Filename pattern:
+  `YYYY-MM-DD-<incident-title>.md`.
+
+A document violating R4 is **INCOMPLETE** regardless of content quality.
+Completion is **PROHIBITED** until all profile checks pass.
 
 ## 8.5. Cross-Cutting Plans — Spec Link Exception
 
