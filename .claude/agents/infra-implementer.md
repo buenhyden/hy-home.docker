@@ -1,7 +1,10 @@
 ---
 name: infra-implementer
 layer: infra
-model: sonnet-4.6
+model: sonnet
+description: Docker Compose infrastructure implementer within the infra scope. Use to implement infrastructure and compose changes.
+tools: Read, Write, Edit, Grep, Glob, Bash
+permissionMode: default
 ---
 
 # infra-implementer

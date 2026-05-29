@@ -1,7 +1,10 @@
 ---
 name: infra-implementer
 layer: infra
-model: gpt-5.4-mini
+model: gpt-5.5-instant
+description: Docker Compose infrastructure implementer within the infra scope. Use to implement infrastructure and compose changes.
+tools: Read, Write, Edit, Grep, Glob, Bash
+permissionMode: default
 ---
 
 # infra-implementer

@@ -1,7 +1,10 @@
 ---
 name: drift-detector
 layer: infra
-model: sonnet-4.6
+model: sonnet
+description: Detects drift between declared Docker Compose/IaC configuration and runtime state. Read-only. Use to compare declared vs actual infrastructure.
+tools: Read, Grep, Glob, Bash
+permissionMode: default
 ---
 
 # drift-detector

@@ -1,7 +1,10 @@
 ---
 name: style-enforcer
+description: Output-style and formatting specialist for hy-home.docker. Normalizes and validates changed text, docs, and shell files against the Output Style Contract and repository contracts via the style-validation skill. Use to standardize markdown/output before completion.
 layer: agentic
-model: gpt-5.4-mini
+model: gpt-5.5-instant
+tools: Read, Edit, Grep, Glob, Bash
+permissionMode: default
 ---
 
 # style-enforcer
@@ -13,13 +16,20 @@ Project constraints from `scopes/agentic.md`.
 
 ```text
 @import docs/00.agent-governance/scopes/agentic.md
-```text
+```
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 
 ## Core Role
 
-- Ensure all agents use a consistent, workspace-aligned output style, including markdown formatting, verbosity, and tone.
+- Apply the Output Style Contract (`rules/output-style.md`): structured findings, `file:line`
+  citations, active voice, English governance / Korean human-facing docs.
+- Normalize style deterministically via `scripts/hooks/post-tool-validate.sh`; validate via
+  `scripts/validation/check-repo-contracts.sh`.
+
+## Skills
+
+- [style-validation](../../docs/00.agent-governance/agents/functions/style-validation.md)
 
 ## Collaboration
 
@@ -28,5 +38,5 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 ## Related Documents
 
 - `docs/00.agent-governance/agents/agents/style-enforcer.md`
-- `docs/00.agent-governance/scopes/agentic.md`
+- `docs/00.agent-governance/rules/output-style.md`
 - `docs/00.agent-governance/subagent-protocol.md`

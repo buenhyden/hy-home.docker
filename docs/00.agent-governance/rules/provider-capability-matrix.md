@@ -33,6 +33,29 @@ own native mechanism per the Provider Parity Model (`providers/agents-md.md` §5
 4. Memory is shared: every runtime reads `memory/progress.md` before mutating the
    repository and appends progress after completing repository-modifying work.
 
+## 3. Supported / Unsupported / Deferred
+
+| Capability                        | Claude                                        | Codex / GPT                       | Gemini                               |
+| --------------------------------- | --------------------------------------------- | --------------------------------- | ------------------------------------ |
+| Custom subagents                  | Supported (`.claude/agents`)                  | Supported (mirror files)          | Supported (reference-index pointers) |
+| Skills                            | Supported (`.claude/skills`)                  | Supported (mirror)                | Supported (pointers)                 |
+| Programmatic hooks                | Supported (`settings.json` + `.claude/hooks`) | Supported (`.codex/hooks.json`)   | Unsupported → behavioral contract    |
+| Per-agent model                   | Supported (alias)                             | Supported (model id)              | Supported (pointer frontmatter)      |
+| Native output style               | Supported (`.claude/output-styles`)           | Unsupported → behavioral contract | Unsupported → behavioral contract    |
+| Per-subagent tools/permissionMode | Supported (frontmatter)                       | Mirror (advisory)                 | Pointer (advisory)                   |
+
+- **Deferred:** anything a runtime cannot honor natively is recorded here and followed as a
+  behavioral contract rather than implemented divergently. Do not add provider-specific
+  primitives that have no governance contract behind them.
+
+## 4. Output-Style Placement
+
+- **Global contract** (all runtimes): `rules/output-style.md` — the workspace-wide style.
+- **Claude-native binding**: `.claude/output-styles/hy-home.md`, registered via
+  `settings.json` `outputStyle`. Codex and Gemini follow the contract behaviorally.
+- **Skill/subagent-specific formatting** stays inside that skill's or subagent's prompt
+  (e.g. a report layout for one agent), not in the global contract.
+
 ## Related Documents
 
 - `docs/00.agent-governance/providers/agents-md.md`

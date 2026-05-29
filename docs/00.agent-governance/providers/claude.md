@@ -17,8 +17,8 @@ Claude Code-specific guidance for this repository.
 - Keep provider-neutral behavior in `providers/agents-md.md` and shared rules.
 - Use `@path` imports for modular instruction loading.
 - Use project memory hierarchy intentionally (enterprise/project/local) and avoid duplicating the same rule across layers.
-- Hook files reside in `docs/00.agent-governance/rules/hooks/`. Claude Code hook scripts delegate validation to these common files.
-- Claude acts as an adapter under the Adapter Model (`providers/agents-md.md` §5); `.claude/agents/` and `.claude/skills/` are used when natively supported but follow the common catalog.
+- Keep `.claude/hookify.*.local.md` filenames for Hookify compatibility; in this repository those files are tracked team-shared rules, not personal local overrides.
+- Claude is the canonical runtime in the Provider Parity Model (`providers/agents-md.md` §5); `.claude/agents/` and `.claude/skills/` hold the full source content that Codex mirrors and Gemini points to.
 - Apply the Model Policy (`subagent-protocol.md`): `workflow-supervisor` uses `opus-4.8`, all worker agents use `sonnet-4.6`.
 - Define the Claude-native output style under `.claude/output-styles/` implementing `rules/output-style.md`, and follow `rules/provider-capability-matrix.md` and `rules/workflows.md`.
 

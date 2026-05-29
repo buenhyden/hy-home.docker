@@ -17,14 +17,20 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 
 ### Model Policy (provider-equivalent mapping)
 
-| Tier                  | Role                                | Claude       | Gemini           | GPT / Codex          |
-| --------------------- | ----------------------------------- | ------------ | ---------------- | -------------------- |
-| Supervisor (top spec) | routing, final decisions, synthesis | `opus-4.8`   | `gemini-3.1-pro` | `gpt-5.5`            |
-| Worker (right-sized)  | scoped task execution               | `sonnet-4.6` | `gemini-3.5-flash`| `gpt-5.4-mini`       |
+| Tier                  | Role                                | Claude       | Gemini             | GPT / Codex       |
+| --------------------- | ----------------------------------- | ------------ | ------------------ | ----------------- |
+| Supervisor (top spec) | routing, final decisions, synthesis | `opus-4.8`   | `gemini-3.1-pro`   | `gpt-5.5`         |
+| Worker (right-sized)  | scoped task execution               | `sonnet-4.6` | `gemini-3.5-flash` | `gpt-5.5-instant` |
 
-- This table is the single source of truth for the "provider equivalent" model tiers.
+- This table is the single source of truth for the "provider equivalent" model tiers. The
+  Claude column uses human-readable version names; `.claude/agents/*.md` carry the Claude
+  Code model aliases `opus` (Supervisor) and `sonnet` (Worker), which resolve to `opus-4.8`
+  and `sonnet-4.6`. `.codex/` and `.agents/` carry the literal identifiers shown.
 - `workflow-supervisor` is the only Supervisor-tier role; all other catalog agents are Worker tier.
 - The model mapping is enforced by `scripts/validation/check-repo-contracts.sh`.
+- Identifiers verified against latest official model docs on 2026-05-29 (Opus 4.8, Sonnet 4.6;
+  Gemini 3.1 Pro, Gemini 3.5 Flash; GPT-5.5, GPT-5.5 Instant). `gpt-5.3-codex` is the
+  Codex-native agentic coding model and is an acceptable future refinement for `.codex/`.
 
 ## 2. Required Preamble (per agent)
 
@@ -63,7 +69,10 @@ The supervisor coordinates workers and should not be treated as a generic worker
 | `rules-engineer`     | `scopes/agentic.md`  | `.claude/agents/rules-engineer.md`     | `.codex/agents/rules-engineer.md`     | `.agents/agents/rules-engineer.md`     |
 | `style-enforcer`     | `scopes/agentic.md`  | `.claude/agents/style-enforcer.md`     | `.codex/agents/style-enforcer.md`     | `.agents/agents/style-enforcer.md`     |
 
-Per the Adapter Model (`providers/agents-md.md` §5): `docs/00.agent-governance/agents/` is the canonical catalog. Claude, Codex, and Gemini are adapter implementations that surface the exact same agent name set.
+Per the Provider Parity Model (`providers/agents-md.md` §5): Claude is the canonical
+runtime implementation, Codex mirrors it content-identically (provider model identifier
+aside), and Gemini exposes reference-index pointers. All three surfaces carry the same
+agent name set.
 
 ## 4. Communication Protocol
 

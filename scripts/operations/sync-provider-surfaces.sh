@@ -29,11 +29,11 @@ DRIFT=0
 TMP="$(mktemp)"
 trap 'rm -f "$TMP"' EXIT
 
-# Map a Claude worker/supervisor model to its Codex (GPT) equivalent.
+# Map a Claude worker/supervisor model alias to its Codex (GPT) equivalent.
 codex_model() {
   case "$1" in
-  opus) echo "gpt-5.1-codex" ;;
-  sonnet) echo "gpt-5.1-codex-mini" ;;
+  opus) echo "gpt-5.5" ;;
+  sonnet) echo "gpt-5.5-instant" ;;
   *) echo "$1" ;;
   esac
 }
@@ -41,9 +41,9 @@ codex_model() {
 # Map an agent name to its Gemini model tier.
 gemini_model() {
   if [ "$1" = "$SUPERVISOR" ]; then
-    echo "gemini-3-pro"
+    echo "gemini-3.1-pro"
   else
-    echo "gemini-3-flash"
+    echo "gemini-3.5-flash"
   fi
 }
 

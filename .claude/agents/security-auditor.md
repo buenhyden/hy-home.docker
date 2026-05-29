@@ -1,7 +1,10 @@
 ---
 name: security-auditor
 layer: security
-model: sonnet-4.6
+model: sonnet
+description: Security and container threat auditor. Read-only findings with mitigations. Use for security audits and threat modeling.
+tools: Read, Grep, Glob, Bash
+permissionMode: default
 ---
 
 # security-auditor

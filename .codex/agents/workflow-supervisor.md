@@ -2,6 +2,8 @@
 name: workflow-supervisor
 layer: agentic
 model: gpt-5.5
+description: Opus-tier runtime supervisor: routes work to worker agents, coordinates orchestration skills, and owns final synthesis. Use for multi-domain or arbitration tasks.
+permissionMode: default
 ---
 
 # workflow-supervisor

@@ -1,7 +1,10 @@
 ---
 name: security-auditor
 layer: security
-model: gpt-5.4-mini
+model: gpt-5.5-instant
+description: Security and container threat auditor. Read-only findings with mitigations. Use for security audits and threat modeling.
+tools: Read, Grep, Glob, Bash
+permissionMode: default
 ---
 
 # security-auditor

@@ -1,7 +1,10 @@
 ---
 name: incident-responder
 layer: ops
-model: sonnet-4.6
+model: sonnet
+description: Incident response and postmortem specialist for Stage 05 operations. Use to drive incident handling and author incident/postmortem docs.
+tools: Read, Grep, Glob, Bash
+permissionMode: default
 ---
 
 # incident-responder

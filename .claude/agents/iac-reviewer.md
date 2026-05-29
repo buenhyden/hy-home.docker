@@ -1,7 +1,10 @@
 ---
 name: iac-reviewer
 layer: infra
-model: sonnet-4.6
+model: sonnet
+description: Infrastructure-as-code and Docker Compose reviewer. Read-only correctness and policy review. Use to review compose/IaC changes.
+tools: Read, Grep, Glob, Bash
+permissionMode: default
 ---
 
 # iac-reviewer

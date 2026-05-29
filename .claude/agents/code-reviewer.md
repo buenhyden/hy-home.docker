@@ -1,7 +1,10 @@
 ---
 name: code-reviewer
 layer: common
-model: sonnet-4.6
+model: sonnet
+description: Cross-layer code quality, security, and architecture reviewer for hy-home.docker. Produces read-only structured findings with file:line citations and severity tags. Use for code review.
+tools: Read, Grep, Glob, Bash
+permissionMode: default
 ---
 
 # code-reviewer

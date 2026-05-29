@@ -1,7 +1,10 @@
 ---
 name: wiki-curator
 layer: docs
-model: sonnet-4.6
+model: sonnet
+description: LLM wiki and knowledge-reference curator. Use to maintain docs/90 references and the generated wiki index.
+tools: Read, Write, Edit, Grep, Glob
+permissionMode: default
 ---
 
 # wiki-curator
