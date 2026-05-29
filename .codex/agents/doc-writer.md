@@ -1,7 +1,7 @@
 ---
 name: doc-writer
 layer: docs
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 ---
 
 # doc-writer
@@ -13,7 +13,7 @@ Active voice, single-action steps, executable code examples. Project constraints
 
 ```text
 @import docs/00.agent-governance/scopes/docs.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 
@@ -82,7 +82,6 @@ Use Mermaid diagrams for all architecture, flow, and sequence documentation.
 | Data model | Entity relationships | `erDiagram` |
 
 **Diagram quality rules**:
-
 - Maximum 10 nodes per diagram; split larger diagrams by subgraph.
 - 3–5 subgraph levels maximum.
 - All nodes and edges labelled; no unlabelled arrows.

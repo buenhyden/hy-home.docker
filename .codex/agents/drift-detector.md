@@ -1,7 +1,7 @@
 ---
 name: drift-detector
 layer: infra
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 ---
 
 # drift-detector
@@ -13,7 +13,7 @@ Detects discrepancies between declared Compose state and live container state, v
 
 ```text
 @import docs/00.agent-governance/scopes/infra.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 
@@ -35,7 +35,6 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 ## Drift Detection Checklist
 
 ### Security Compliance (P0 — immediate remediation required)
-
 - [ ] `no-new-privileges: true` present for every container.
 - [ ] Secrets referenced via `secrets:` block — no env-var plaintext.
 - [ ] No containers running as root without explicit justification.
@@ -43,31 +42,26 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - [ ] Image tags are pinned (not `latest`) for production services.
 
 ### Network Configuration (P1)
-
 - [ ] All services assigned to `infra_net` (not default bridge).
 - [ ] No undeclared network attachments on running containers.
 - [ ] Inter-service communication uses service names, not IPs.
 
 ### Resource Constraints (P1)
-
 - [ ] `mem_limit` and `cpus` declared on every service.
 - [ ] Resource limits match compose declarations (no runtime overrides).
 - [ ] Stateful services (PostgreSQL, Kafka, OpenSearch, MinIO) have ceiling limits.
 
 ### Volume & Storage (P2)
-
 - [ ] Named volumes follow `[Service]-[Data]-[Volume]` convention.
 - [ ] No anonymous volumes on stateful services.
 - [ ] Backup labels/tags present on persistent data volumes.
 
 ### Health & Availability (P2)
-
 - [ ] Health-check defined for every stateful service.
 - [ ] Restart policy set (`unless-stopped` or `on-failure`) on all stateful services.
 - [ ] SLO guard: health-check interval and timeout configured for gateway-latency-sensitive services.
 
 ### Compose Configuration Drift (P3)
-
 - [ ] Running container environment variables match compose declarations.
 - [ ] Mount points and volume bindings match declarations.
 - [ ] Image digests match declared tags (no silent updates).
@@ -92,7 +86,7 @@ docker network inspect infra_net --format '{{json .Containers}}' | jq 'keys[]'
 
 # Resource limit verification
 docker inspect <container_name> --format '{{.HostConfig.Memory}} {{.HostConfig.NanoCPUs}}'
-```
+```text
 
 ## Drift Classification System
 
@@ -109,7 +103,7 @@ docker inspect <container_name> --format '{{.HostConfig.Memory}} {{.HostConfig.N
 
 Save as `_workspace/drift_<YYYY-MM-DD>.md`:
 
-```
+```text
 # Drift Detection Report — YYYY-MM-DD
 
 ## Executive Summary
@@ -144,7 +138,7 @@ Save as `_workspace/drift_<YYYY-MM-DD>.md`:
 ## Audit Schedule
 - **Frequency**: Triggered by infra change + daily scheduled scan
 - **Alert Channel**: Logged to `_workspace/`, escalated to user on RED finding
-```
+```text
 
 ## Team Communication Protocol
 

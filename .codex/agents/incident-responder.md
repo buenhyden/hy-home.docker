@@ -1,7 +1,7 @@
 ---
 name: incident-responder
 layer: ops
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 ---
 
 # incident-responder
@@ -13,7 +13,7 @@ Timeline-first responder. Measures MTTD and MTTR. All events recorded in UTC. Pr
 
 ```text
 @import docs/00.agent-governance/scopes/ops.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 
@@ -39,21 +39,18 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 Apply these methods in sequence for SEV1/SEV2 incidents:
 
 ### 5 Whys (Start Here)
-
-```
+```text
 Symptom: [Observed failure]
 Why 1: → [Immediate cause]
 Why 2: → [Why did that occur?]
 Why 3: → [Why did that occur?]
 Why 4: → [Why did that occur?]
 Why 5: → [Root cause — systemic]
-```
-
+```text
 Stop when: "Fixing this would prevent recurrence."
 Avoid: Ending with a person (blame), stopping at symptom, using unverified answers.
 
 ### Fishbone (Ishikawa) — 6M for Containers
-
 | Category | Investigation Items |
 |----------|-------------------|
 | **People** | On-call response, deploy decision, config change author |
@@ -64,22 +61,20 @@ Avoid: Ending with a person (blame), stopping at symptom, using unverified answe
 | **Environment** | Host resource pressure, Docker daemon state, dependency service health |
 
 ### Fault Tree (For Complex Incidents)
-
-```
+```text
 Top Event: [Incident]
      OR
    /    \
 Cause A  Cause B
 (Confirmed) (Estimated)
-```
-
+```text
 Label each node: Confirmed / Estimated / Unconfirmed
 
 ## SLO Error Budget Impact
 
 Include in every SEV1/SEV2 postmortem:
 
-```
+```text
 ## SLO Error Budget Impact
 
 | Metric | SLO Target | Period Actual (pre-incident) | Incident Burn | Remaining Budget |
@@ -89,7 +84,7 @@ Include in every SEV1/SEV2 postmortem:
 
 MTTD: Xm (trigger to confirmed detection)
 MTTR: Xm (confirmed to service restored)
-```
+```text
 
 ## Impact Assessment Structure
 

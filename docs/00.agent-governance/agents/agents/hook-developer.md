@@ -36,9 +36,6 @@ To write hook rules (/writing-hookify-rules, /hook-development) that intercept t
 
 ## Skills
 
-- [writing-hookify-rules](../functions/writing-hookify-rules.md)
-- [hook-development](../functions/hook-development.md)
-
 ## Usage
 
 - Trigger when governance requires programmatic enforcement via hooks.

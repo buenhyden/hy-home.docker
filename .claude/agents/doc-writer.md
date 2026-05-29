@@ -13,7 +13,7 @@ Active voice, single-action steps, executable code examples. Project constraints
 
 ```text
 @import docs/00.agent-governance/scopes/docs.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 

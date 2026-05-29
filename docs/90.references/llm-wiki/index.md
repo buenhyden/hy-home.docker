@@ -79,13 +79,19 @@ Graphify output is advisory navigation context only. This index is generated fro
 | --- | --- |
 | [docs/00.agent-governance/README.md](../../00.agent-governance/README.md) | folder index |
 | [docs/00.agent-governance/agents/README.md](../../00.agent-governance/agents/README.md) | folder index |
+| [docs/00.agent-governance/agents/agents/ci-cd-engineer.md](../../00.agent-governance/agents/agents/ci-cd-engineer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/code-reviewer.md](../../00.agent-governance/agents/agents/code-reviewer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/doc-writer.md](../../00.agent-governance/agents/agents/doc-writer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/drift-detector.md](../../00.agent-governance/agents/agents/drift-detector.md) | Markdown reference |
+| [docs/00.agent-governance/agents/agents/hook-developer.md](../../00.agent-governance/agents/agents/hook-developer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/iac-reviewer.md](../../00.agent-governance/agents/agents/iac-reviewer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/incident-responder.md](../../00.agent-governance/agents/agents/incident-responder.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/infra-implementer.md](../../00.agent-governance/agents/agents/infra-implementer.md) | Markdown reference |
+| [docs/00.agent-governance/agents/agents/qa-engineer.md](../../00.agent-governance/agents/agents/qa-engineer.md) | Markdown reference |
+| [docs/00.agent-governance/agents/agents/rules-engineer.md](../../00.agent-governance/agents/agents/rules-engineer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/security-auditor.md](../../00.agent-governance/agents/agents/security-auditor.md) | Markdown reference |
+| [docs/00.agent-governance/agents/agents/skill-creator.md](../../00.agent-governance/agents/agents/skill-creator.md) | Markdown reference |
+| [docs/00.agent-governance/agents/agents/style-enforcer.md](../../00.agent-governance/agents/agents/style-enforcer.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/wiki-curator.md](../../00.agent-governance/agents/agents/wiki-curator.md) | Markdown reference |
 | [docs/00.agent-governance/agents/agents/workflow-supervisor.md](../../00.agent-governance/agents/agents/workflow-supervisor.md) | Markdown reference |
 | [docs/00.agent-governance/agents/functions/adr-writing.md](../../00.agent-governance/agents/functions/adr-writing.md) | Markdown reference |
@@ -127,12 +133,15 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/rules/git-workflow.md](../../00.agent-governance/rules/git-workflow.md) | Markdown reference |
 | [docs/00.agent-governance/rules/github-governance.md](../../00.agent-governance/rules/github-governance.md) | Markdown reference |
 | [docs/00.agent-governance/rules/jit-markers.md](../../00.agent-governance/rules/jit-markers.md) | Markdown reference |
+| [docs/00.agent-governance/rules/output-style.md](../../00.agent-governance/rules/output-style.md) | Markdown reference |
 | [docs/00.agent-governance/rules/persona.md](../../00.agent-governance/rules/persona.md) | Markdown reference |
 | [docs/00.agent-governance/rules/postflight-checklist.md](../../00.agent-governance/rules/postflight-checklist.md) | Markdown reference |
+| [docs/00.agent-governance/rules/provider-capability-matrix.md](../../00.agent-governance/rules/provider-capability-matrix.md) | Markdown reference |
 | [docs/00.agent-governance/rules/quality-standards.md](../../00.agent-governance/rules/quality-standards.md) | Markdown reference |
 | [docs/00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md) | Markdown reference |
 | [docs/00.agent-governance/rules/standards.md](../../00.agent-governance/rules/standards.md) | Markdown reference |
 | [docs/00.agent-governance/rules/task-checklists.md](../../00.agent-governance/rules/task-checklists.md) | Markdown reference |
+| [docs/00.agent-governance/rules/workflows.md](../../00.agent-governance/rules/workflows.md) | Markdown reference |
 | [docs/00.agent-governance/scopes/agentic.md](../../00.agent-governance/scopes/agentic.md) | Markdown reference |
 | [docs/00.agent-governance/scopes/architecture.md](../../00.agent-governance/scopes/architecture.md) | Markdown reference |
 | [docs/00.agent-governance/scopes/backend.md](../../00.agent-governance/scopes/backend.md) | Markdown reference |
@@ -154,33 +163,21 @@ Graphify output is advisory navigation context only. This index is generated fro
 | Path | Role |
 | --- | --- |
 | [.claude/CLAUDE.md](../../../.claude/CLAUDE.md) | Markdown reference |
+| [.claude/agents/ci-cd-engineer.md](../../../.claude/agents/ci-cd-engineer.md) | Markdown reference |
 | [.claude/agents/code-reviewer.md](../../../.claude/agents/code-reviewer.md) | Markdown reference |
 | [.claude/agents/doc-writer.md](../../../.claude/agents/doc-writer.md) | Markdown reference |
 | [.claude/agents/drift-detector.md](../../../.claude/agents/drift-detector.md) | Markdown reference |
+| [.claude/agents/hook-developer.md](../../../.claude/agents/hook-developer.md) | Markdown reference |
 | [.claude/agents/iac-reviewer.md](../../../.claude/agents/iac-reviewer.md) | Markdown reference |
 | [.claude/agents/incident-responder.md](../../../.claude/agents/incident-responder.md) | Markdown reference |
 | [.claude/agents/infra-implementer.md](../../../.claude/agents/infra-implementer.md) | Markdown reference |
+| [.claude/agents/qa-engineer.md](../../../.claude/agents/qa-engineer.md) | Markdown reference |
+| [.claude/agents/rules-engineer.md](../../../.claude/agents/rules-engineer.md) | Markdown reference |
 | [.claude/agents/security-auditor.md](../../../.claude/agents/security-auditor.md) | Markdown reference |
+| [.claude/agents/skill-creator.md](../../../.claude/agents/skill-creator.md) | Markdown reference |
+| [.claude/agents/style-enforcer.md](../../../.claude/agents/style-enforcer.md) | Markdown reference |
 | [.claude/agents/wiki-curator.md](../../../.claude/agents/wiki-curator.md) | Markdown reference |
 | [.claude/agents/workflow-supervisor.md](../../../.claude/agents/workflow-supervisor.md) | Markdown reference |
-| [.claude/hookify.block-absolute-file-link.local.md](../../../.claude/hookify.block-absolute-file-link.local.md) | Markdown reference |
-| [.claude/hookify.block-direct-main-push.local.md](../../../.claude/hookify.block-direct-main-push.local.md) | Markdown reference |
-| [.claude/hookify.block-gha-secrets-in-run.local.md](../../../.claude/hookify.block-gha-secrets-in-run.local.md) | Markdown reference |
-| [.claude/hookify.block-git-no-verify.local.md](../../../.claude/hookify.block-git-no-verify.local.md) | Markdown reference |
-| [.claude/hookify.block-plaintext-secret-compose.local.md](../../../.claude/hookify.block-plaintext-secret-compose.local.md) | Markdown reference |
-| [.claude/hookify.block-unpinned-gha-action.local.md](../../../.claude/hookify.block-unpinned-gha-action.local.md) | Markdown reference |
-| [.claude/hookify.require-logical-commits-before-stop.local.md](../../../.claude/hookify.require-logical-commits-before-stop.local.md) | Markdown reference |
-| [.claude/hookify.warn-branch-naming.local.md](../../../.claude/hookify.warn-branch-naming.local.md) | Markdown reference |
-| [.claude/hookify.warn-conventional-commit.local.md](../../../.claude/hookify.warn-conventional-commit.local.md) | Markdown reference |
-| [.claude/hookify.warn-docker-infra-stop.local.md](../../../.claude/hookify.warn-docker-infra-stop.local.md) | Markdown reference |
-| [.claude/hookify.warn-force-push.local.md](../../../.claude/hookify.warn-force-push.local.md) | Markdown reference |
-| [.claude/hookify.warn-governance-memory-edit.local.md](../../../.claude/hookify.warn-governance-memory-edit.local.md) | Markdown reference |
-| [.claude/hookify.warn-hook-parity-edit.local.md](../../../.claude/hookify.warn-hook-parity-edit.local.md) | Markdown reference |
-| [.claude/hookify.warn-korean-in-governance.local.md](../../../.claude/hookify.warn-korean-in-governance.local.md) | Markdown reference |
-| [.claude/hookify.warn-parallel-doc-file.local.md](../../../.claude/hookify.warn-parallel-doc-file.local.md) | Markdown reference |
-| [.claude/hookify.warn-post-edit-style-automation.local.md](../../../.claude/hookify.warn-post-edit-style-automation.local.md) | Markdown reference |
-| [.claude/hookify.warn-pre-commit-manual.local.md](../../../.claude/hookify.warn-pre-commit-manual.local.md) | Markdown reference |
-| [.claude/hookify.warn-stage-doc-edit.local.md](../../../.claude/hookify.warn-stage-doc-edit.local.md) | Markdown reference |
 | [.claude/hooks/docker-compose-pre.sh](../../../.claude/hooks/docker-compose-pre.sh) | script |
 | [.claude/hooks/post-tool-validate.sh](../../../.claude/hooks/post-tool-validate.sh) | script |
 | [.claude/hooks/pre-compact.sh](../../../.claude/hooks/pre-compact.sh) | script |
@@ -188,6 +185,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/hooks/session-start.sh](../../../.claude/hooks/session-start.sh) | script |
 | [.claude/hooks/stop.sh](../../../.claude/hooks/stop.sh) | script |
 | [.claude/hooks/user-prompt-submit.sh](../../../.claude/hooks/user-prompt-submit.sh) | script |
+| [.claude/output-styles/hy-home.md](../../../.claude/output-styles/hy-home.md) | Markdown reference |
 | [.claude/settings.json](../../../.claude/settings.json) | JSON registry |
 | [.claude/skills/adr-writing/skill.md](../../../.claude/skills/adr-writing/skill.md) | Markdown reference |
 | [.claude/skills/ci-cd-patterns/skill.md](../../../.claude/skills/ci-cd-patterns/skill.md) | Markdown reference |
@@ -208,15 +206,22 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/skills/task-breakdown-agent/skill.md](../../../.claude/skills/task-breakdown-agent/skill.md) | Markdown reference |
 | [.claude/skills/workspace-audit-revalidation/skill.md](../../../.claude/skills/workspace-audit-revalidation/skill.md) | Markdown reference |
 | [.codex/README.md](../../../.codex/README.md) | folder index |
+| [.codex/agents/ci-cd-engineer.md](../../../.codex/agents/ci-cd-engineer.md) | Markdown reference |
 | [.codex/agents/code-reviewer.md](../../../.codex/agents/code-reviewer.md) | Markdown reference |
 | [.codex/agents/doc-writer.md](../../../.codex/agents/doc-writer.md) | Markdown reference |
 | [.codex/agents/drift-detector.md](../../../.codex/agents/drift-detector.md) | Markdown reference |
+| [.codex/agents/hook-developer.md](../../../.codex/agents/hook-developer.md) | Markdown reference |
 | [.codex/agents/iac-reviewer.md](../../../.codex/agents/iac-reviewer.md) | Markdown reference |
 | [.codex/agents/incident-responder.md](../../../.codex/agents/incident-responder.md) | Markdown reference |
 | [.codex/agents/infra-implementer.md](../../../.codex/agents/infra-implementer.md) | Markdown reference |
+| [.codex/agents/qa-engineer.md](../../../.codex/agents/qa-engineer.md) | Markdown reference |
+| [.codex/agents/rules-engineer.md](../../../.codex/agents/rules-engineer.md) | Markdown reference |
 | [.codex/agents/security-auditor.md](../../../.codex/agents/security-auditor.md) | Markdown reference |
+| [.codex/agents/skill-creator.md](../../../.codex/agents/skill-creator.md) | Markdown reference |
+| [.codex/agents/style-enforcer.md](../../../.codex/agents/style-enforcer.md) | Markdown reference |
 | [.codex/agents/wiki-curator.md](../../../.codex/agents/wiki-curator.md) | Markdown reference |
 | [.codex/agents/workflow-supervisor.md](../../../.codex/agents/workflow-supervisor.md) | Markdown reference |
+| [.codex/hookify.enforce-docs-templates.local.md](../../../.codex/hookify.enforce-docs-templates.local.md) | Markdown reference |
 | [.codex/hooks.json](../../../.codex/hooks.json) | JSON registry |
 | [.codex/skills/adr-writing/skill.md](../../../.codex/skills/adr-writing/skill.md) | Markdown reference |
 | [.codex/skills/ci-cd-patterns/skill.md](../../../.codex/skills/ci-cd-patterns/skill.md) | Markdown reference |
@@ -1034,6 +1039,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/knowledge/report-graphify-health.sh](../../../scripts/knowledge/report-graphify-health.sh) | script |
 | [scripts/lib/hardening-lib.sh](../../../scripts/lib/hardening-lib.sh) | script |
 | [scripts/operations/gen-secrets.sh](../../../scripts/operations/gen-secrets.sh) | script |
+| [scripts/operations/sync-provider-surfaces.sh](../../../scripts/operations/sync-provider-surfaces.sh) | script |
 | [scripts/operations/use-qa-ci-tools.sh](../../../scripts/operations/use-qa-ci-tools.sh) | script |
 | [scripts/requirements.txt](../../../scripts/requirements.txt) | text entrypoint |
 | [scripts/validation/check-doc-traceability.sh](../../../scripts/validation/check-doc-traceability.sh) | script |

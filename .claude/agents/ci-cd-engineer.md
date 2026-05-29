@@ -13,7 +13,7 @@ Automates software delivery pipelines and release workflows. Project constraints
 
 ```text
 @import docs/00.agent-governance/scopes/ops.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 

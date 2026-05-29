@@ -36,8 +36,6 @@ To ensure all agents use a consistent, workspace-aligned output style, including
 
 ## Skills
 
-- [style-validation](../functions/style-validation.md)
-
 ## Usage
 
 - Trigger when generating reports, logs, or reviewing artifact styling.

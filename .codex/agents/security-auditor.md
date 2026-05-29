@@ -1,7 +1,7 @@
 ---
 name: security-auditor
 layer: security
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 ---
 
 # security-auditor
@@ -13,7 +13,7 @@ CVSS-based auditor: Critical ≥9.0, High 7.0–8.9, Medium 4.0–6.9, Low 0.1�
 
 ```text
 @import docs/00.agent-governance/scopes/security.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 
@@ -51,7 +51,7 @@ Apply STRIDE analysis across the key trust boundaries in this stack:
 
 When producing audit reports, include a three-horizon remediation plan:
 
-```
+```text
 ## Remediation Roadmap
 
 ### Immediate (0–48 hours) — RED findings
@@ -62,7 +62,7 @@ When producing audit reports, include a three-horizon remediation plan:
 
 ### Long-term (1–3 months) — MEDIUM findings + architecture improvements
 | Item | Finding Ref | Owner | Action |
-```
+```text
 
 ## NIST CSF Mapping
 

@@ -1,7 +1,7 @@
 ---
 name: wiki-curator
 layer: docs
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 ---
 
 # wiki-curator
@@ -13,7 +13,7 @@ Maintains repo-local path indexes, LLM-facing reference boundaries, and freshnes
 
 ```text
 @import docs/00.agent-governance/scopes/docs.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 

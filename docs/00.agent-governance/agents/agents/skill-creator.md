@@ -36,9 +36,6 @@ To create and maintain reusable skills (/writing-skills, /skill-creator) that ag
 
 ## Skills
 
-- [writing-skills](../functions/writing-skills.md)
-- [skill-creator](../functions/skill-creator.md)
-
 ## Usage
 
 - Trigger when creating or updating custom skills for agents.

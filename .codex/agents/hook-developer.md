@@ -1,7 +1,7 @@
 ---
 name: hook-developer
 layer: agentic
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 ---
 
 # hook-developer
@@ -13,7 +13,7 @@ Project constraints from `scopes/agentic.md`.
 
 ```text
 @import docs/00.agent-governance/scopes/agentic.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 

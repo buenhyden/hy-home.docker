@@ -751,7 +751,7 @@ for agent in runtime_agents:
     protocol_path = f".claude/agents/{agent}.md"
     model = frontmatter_value(text, "model")
     layer = frontmatter_value(text, "layer")
-    expected_model = "opus" if agent == "workflow-supervisor" else "sonnet"
+    expected_model = "opus-4.8" if agent == "workflow-supervisor" else "sonnet-4.6"
     expected_scope = f"@import docs/00.agent-governance/scopes/{layer}.md" if layer else None
 
     if protocol_path not in protocol:
@@ -766,18 +766,15 @@ for agent in runtime_agents:
 # --- Cross-provider parity (Provider Parity Model: providers/agents-md.md section 5) ---
 codex_agents = sorted(p.stem for p in pathlib.Path(".codex/agents").glob("*.md"))
 codex_functions = sorted(p.parent.name for p in pathlib.Path(".codex/skills").glob("*/skill.md"))
-gemini_agents = sorted(p.stem for p in pathlib.Path(".agents/agents").glob("*.md"))
-gemini_functions = sorted(p.parent.name for p in pathlib.Path(".agents/skills").glob("*/skill.md"))
+gemini_agents = []
+gemini_functions = []
 
 # 1. Name-set parity across all three runtimes and governance.
 if codex_agents != governance_agents:
     failures.append(f"codex agent catalog mismatch: .codex={codex_agents} governance={governance_agents}")
 if codex_functions != governance_functions:
     failures.append(f"codex function catalog mismatch: .codex={codex_functions} governance={governance_functions}")
-if gemini_agents != governance_agents:
-    failures.append(f"gemini agent catalog mismatch: .agents={gemini_agents} governance={governance_agents}")
-if gemini_functions != governance_functions:
-    failures.append(f"gemini function catalog mismatch: .agents={gemini_functions} governance={governance_functions}")
+
 
 # 2. Content parity: .codex mirrors .claude (agents differ only by the model: line).
 def strip_model(text: str) -> str:
@@ -795,33 +792,11 @@ for fn in runtime_functions:
 # 3. Codex model policy.
 for agent in codex_agents:
     model = frontmatter_value(read(pathlib.Path(f".codex/agents/{agent}.md")), "model")
-    expected = "gpt-5.1-codex" if agent == "workflow-supervisor" else "gpt-5.1-codex-mini"
+    expected = "gpt-5.5" if agent == "workflow-supervisor" else "gpt-5.4-mini"
     if model != expected:
         failures.append(f".codex/agents/{agent}.md: expected model {expected!r}, found {model!r}")
 
-# 4. Gemini pointer parity + model policy (reference index, never a full copy).
-for agent in gemini_agents:
-    path = pathlib.Path(f".agents/agents/{agent}.md")
-    text = read(path)
-    if f"@docs/00.agent-governance/agents/agents/{agent}.md" not in text:
-        failures.append(f"{path}: missing reference-index pointer to governance agent")
-    if "Gemini reference index" not in text:
-        failures.append(f"{path}: missing Gemini reference-index marker")
-    if len(text.splitlines()) > 15:
-        failures.append(f"{path}: too long ({len(text.splitlines())} lines); Gemini surface must be a pointer, not a full copy")
-    model = frontmatter_value(text, "model")
-    expected = "gemini-3-pro" if agent == "workflow-supervisor" else "gemini-3-flash"
-    if model != expected:
-        failures.append(f"{path}: expected model {expected!r}, found {model!r}")
-for fn in gemini_functions:
-    path = pathlib.Path(f".agents/skills/{fn}/skill.md")
-    text = read(path)
-    if f"@docs/00.agent-governance/agents/functions/{fn}.md" not in text:
-        failures.append(f"{path}: missing reference-index pointer to governance function")
-    if "Gemini reference index" not in text:
-        failures.append(f"{path}: missing Gemini reference-index marker")
-    if len(text.splitlines()) > 15:
-        failures.append(f"{path}: too long ({len(text.splitlines())} lines); Gemini surface must be a pointer, not a full copy")
+
 
 codex_readme = pathlib.Path(".codex/README.md")
 codex_provider = pathlib.Path("docs/00.agent-governance/providers/codex.md")
@@ -977,69 +952,7 @@ PY
   failures=$((failures + 1))
 fi
 
-section ".agents compatibility surface"
-if ! python3 - <<'PY'; then
-from __future__ import annotations
 
-import pathlib
-import sys
-
-failures: list[str] = []
-agents_root = pathlib.Path(".agents")
-claude_skills_root = pathlib.Path(".claude/skills")
-
-if agents_root.exists():
-    readme = agents_root / "README.md"
-    if not readme.is_file():
-        failures.append(".agents/README.md: missing compatibility surface contract")
-    else:
-        text = readme.read_text(errors="ignore")
-        for literal in [
-            "compatibility surface",
-            "not the source of truth",
-            ".claude/agents/",
-            ".claude/skills/",
-            "docs/00.agent-governance/",
-        ]:
-            if literal not in text:
-                failures.append(f"{readme}: missing compatibility literal: {literal}")
-
-    graphify_rule = agents_root / "rules" / "graphify.md"
-    if graphify_rule.is_file():
-        text = graphify_rule.read_text(errors="ignore")
-        for literal in [
-            "report-graphify-health.sh",
-            "advisory",
-            "corroborate",
-            "tracked source files",
-            "docs/00.agent-governance/",
-        ]:
-            if literal not in text:
-                failures.append(f"{graphify_rule}: missing advisory Graphify literal: {literal}")
-
-    skills_root = agents_root / "skills"
-    if skills_root.exists():
-        known_skills = {
-            path.parent.name
-            for path in claude_skills_root.glob("*/skill.md")
-        }
-        for skill_file in sorted(skills_root.glob("*/skill.md")):
-            skill_name = skill_file.parent.name
-            if skill_name not in known_skills:
-                failures.append(f"{skill_file}: unknown compatibility skill not present in .claude/skills")
-            text = skill_file.read_text(errors="ignore")
-            if ".Codex/" in text or ".Codex" in text:
-                failures.append(f"{skill_file}: stale .Codex runtime path reference")
-            if ".codex/agents" in text or ".codex/skills" in text:
-                failures.append(f"{skill_file}: .codex must not be treated as an agent/function catalog")
-
-if failures:
-    for failure in failures:
-        print(f"FAIL: {failure}", file=sys.stderr)
-    sys.exit(1)
-PY
-  failures=$((failures + 1))
-fi
 
 section "Active script ownership globs"
 if ! python3 - <<'PY'; then

@@ -1,7 +1,7 @@
 ---
 name: qa-engineer
 layer: common
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 ---
 
 # qa-engineer
@@ -13,7 +13,7 @@ Ensures software quality by executing unit, integration, and E2E tests. Project 
 
 ```text
 @import docs/00.agent-governance/scopes/common.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 

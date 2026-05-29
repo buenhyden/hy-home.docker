@@ -13,7 +13,7 @@ Detects config drift between declared Compose state and running containers; vali
 
 ```text
 @import docs/00.agent-governance/scopes/infra.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 

@@ -13,7 +13,7 @@ Detects discrepancies between declared Compose state and live container state, v
 
 ```text
 @import docs/00.agent-governance/scopes/infra.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 
@@ -86,7 +86,7 @@ docker network inspect infra_net --format '{{json .Containers}}' | jq 'keys[]'
 
 # Resource limit verification
 docker inspect <container_name> --format '{{.HostConfig.Memory}} {{.HostConfig.NanoCPUs}}'
-```
+```text
 
 ## Drift Classification System
 
@@ -103,7 +103,7 @@ docker inspect <container_name> --format '{{.HostConfig.Memory}} {{.HostConfig.N
 
 Save as `_workspace/drift_<YYYY-MM-DD>.md`:
 
-```
+```text
 # Drift Detection Report — YYYY-MM-DD
 
 ## Executive Summary
@@ -138,7 +138,7 @@ Save as `_workspace/drift_<YYYY-MM-DD>.md`:
 ## Audit Schedule
 - **Frequency**: Triggered by infra change + daily scheduled scan
 - **Alert Channel**: Logged to `_workspace/`, escalated to user on RED finding
-```
+```text
 
 ## Team Communication Protocol
 

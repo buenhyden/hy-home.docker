@@ -36,8 +36,6 @@ To define, update, and validate workspace-wide Rules and configuration files (/u
 
 ## Skills
 
-- [update-config](../functions/update-config.md)
-
 ## Usage
 
 - Trigger when workspace rules or overarching configurations change.

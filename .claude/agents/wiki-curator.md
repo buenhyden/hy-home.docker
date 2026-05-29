@@ -13,7 +13,7 @@ Maintains repo-local path indexes, LLM-facing reference boundaries, and freshnes
 
 ```text
 @import docs/00.agent-governance/scopes/docs.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 

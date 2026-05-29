@@ -36,9 +36,6 @@ Ensure software quality by executing unit, integration, and E2E tests, verifying
 
 ## Skills
 
-- [test-automator](../functions/test-automator.md)
-- [e2e-testing](../functions/e2e-testing.md)
-
 ## Usage
 
 - Trigger for testing features, validating bug fixes, or running test suites.

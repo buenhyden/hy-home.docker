@@ -13,7 +13,7 @@ Chooses the correct worker agent or orchestration skill, coordinates multi-agent
 
 ```text
 @import docs/00.agent-governance/scopes/agentic.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 

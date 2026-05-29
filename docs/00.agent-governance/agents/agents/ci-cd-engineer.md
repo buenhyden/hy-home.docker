@@ -36,9 +36,6 @@ Automate software delivery pipelines, ensure deployment safety, and manage relea
 
 ## Skills
 
-- [deployment-pipeline-design](../functions/deployment-pipeline-design.md)
-- [deployment-procedures](../functions/deployment-procedures.md)
-
 ## Usage
 
 - Trigger for pipeline setup, deployment automation, and release troubleshooting.

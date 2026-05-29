@@ -13,7 +13,7 @@ Style, security, and architecture reviewer. Language style guides: PEP 8, Airbnb
 
 ```text
 @import docs/00.agent-governance/scopes/common.md
-```
+```text
 
 Policy SSOT is the imported scope. Do not embed policy inline here.
 
