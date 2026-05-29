@@ -62,7 +62,7 @@ directly to verify tool visibility.
 - Codex uses `AGENTS.md` plus `docs/00.agent-governance/providers/codex.md`
   as its repository entry contract.
 - `.codex/hooks.json` provides Codex-local context and post-edit validation.
-- The canonical delegated-agent catalog remains the `.claude` runtime catalog
+- The canonical delegated-agent catalog is the provider-neutral runtime catalog
   documented in `docs/00.agent-governance/agents/`.
 - Do not create a parallel Codex agent catalog unless repository governance
   explicitly adopts one.
