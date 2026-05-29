@@ -208,7 +208,34 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.claude/skills/task-breakdown-agent/skill.md](../../../.claude/skills/task-breakdown-agent/skill.md) | Markdown reference |
 | [.claude/skills/workspace-audit-revalidation/skill.md](../../../.claude/skills/workspace-audit-revalidation/skill.md) | Markdown reference |
 | [.codex/README.md](../../../.codex/README.md) | folder index |
+| [.codex/agents/code-reviewer.md](../../../.codex/agents/code-reviewer.md) | Markdown reference |
+| [.codex/agents/doc-writer.md](../../../.codex/agents/doc-writer.md) | Markdown reference |
+| [.codex/agents/drift-detector.md](../../../.codex/agents/drift-detector.md) | Markdown reference |
+| [.codex/agents/iac-reviewer.md](../../../.codex/agents/iac-reviewer.md) | Markdown reference |
+| [.codex/agents/incident-responder.md](../../../.codex/agents/incident-responder.md) | Markdown reference |
+| [.codex/agents/infra-implementer.md](../../../.codex/agents/infra-implementer.md) | Markdown reference |
+| [.codex/agents/security-auditor.md](../../../.codex/agents/security-auditor.md) | Markdown reference |
+| [.codex/agents/wiki-curator.md](../../../.codex/agents/wiki-curator.md) | Markdown reference |
+| [.codex/agents/workflow-supervisor.md](../../../.codex/agents/workflow-supervisor.md) | Markdown reference |
 | [.codex/hooks.json](../../../.codex/hooks.json) | JSON registry |
+| [.codex/skills/adr-writing/skill.md](../../../.codex/skills/adr-writing/skill.md) | Markdown reference |
+| [.codex/skills/ci-cd-patterns/skill.md](../../../.codex/skills/ci-cd-patterns/skill.md) | Markdown reference |
+| [.codex/skills/code-review-dimensions/skill.md](../../../.codex/skills/code-review-dimensions/skill.md) | Markdown reference |
+| [.codex/skills/code-reviewer/skill.md](../../../.codex/skills/code-reviewer/skill.md) | Markdown reference |
+| [.codex/skills/compose-stack-agent/skill.md](../../../.codex/skills/compose-stack-agent/skill.md) | Markdown reference |
+| [.codex/skills/container-threat-modeling/skill.md](../../../.codex/skills/container-threat-modeling/skill.md) | Markdown reference |
+| [.codex/skills/docker-compose-patterns/skill.md](../../../.codex/skills/docker-compose-patterns/skill.md) | Markdown reference |
+| [.codex/skills/execution-plan-agent/skill.md](../../../.codex/skills/execution-plan-agent/skill.md) | Markdown reference |
+| [.codex/skills/incident-response/skill.md](../../../.codex/skills/incident-response/skill.md) | Markdown reference |
+| [.codex/skills/infra-cross-validate/skill.md](../../../.codex/skills/infra-cross-validate/skill.md) | Markdown reference |
+| [.codex/skills/infra-validate/skill.md](../../../.codex/skills/infra-validate/skill.md) | Markdown reference |
+| [.codex/skills/knowledge-map-agent/skill.md](../../../.codex/skills/knowledge-map-agent/skill.md) | Markdown reference |
+| [.codex/skills/ops-runbook-agent/skill.md](../../../.codex/skills/ops-runbook-agent/skill.md) | Markdown reference |
+| [.codex/skills/policy-gate-agent/skill.md](../../../.codex/skills/policy-gate-agent/skill.md) | Markdown reference |
+| [.codex/skills/requirements-to-design-agent/skill.md](../../../.codex/skills/requirements-to-design-agent/skill.md) | Markdown reference |
+| [.codex/skills/security-audit/skill.md](../../../.codex/skills/security-audit/skill.md) | Markdown reference |
+| [.codex/skills/task-breakdown-agent/skill.md](../../../.codex/skills/task-breakdown-agent/skill.md) | Markdown reference |
+| [.codex/skills/workspace-audit-revalidation/skill.md](../../../.codex/skills/workspace-audit-revalidation/skill.md) | Markdown reference |
 
 ### Active stage docs
 

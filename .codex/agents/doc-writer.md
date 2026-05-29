@@ -1,7 +1,7 @@
 ---
 name: doc-writer
 layer: docs
-model: sonnet
+model: gpt-5.5-instant
 ---
 
 # doc-writer

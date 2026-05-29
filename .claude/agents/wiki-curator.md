@@ -1,7 +1,7 @@
 ---
 name: wiki-curator
 layer: docs
-model: sonnet
+model: sonnet-4.6
 ---
 
 # wiki-curator

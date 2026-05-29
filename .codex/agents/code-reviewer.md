@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 layer: common
-model: sonnet
+model: gpt-5.5-instant
 ---
 
 # code-reviewer

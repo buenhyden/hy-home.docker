@@ -1,7 +1,7 @@
 ---
 name: incident-responder
 layer: ops
-model: sonnet
+model: gpt-5.5-instant
 ---
 
 # incident-responder
@@ -40,7 +40,7 @@ Apply these methods in sequence for SEV1/SEV2 incidents:
 
 ### 5 Whys (Start Here)
 
-```text
+```
 Symptom: [Observed failure]
 Why 1: → [Immediate cause]
 Why 2: → [Why did that occur?]
@@ -65,7 +65,7 @@ Avoid: Ending with a person (blame), stopping at symptom, using unverified answe
 
 ### Fault Tree (For Complex Incidents)
 
-```text
+```
 Top Event: [Incident]
      OR
    /    \
@@ -79,7 +79,7 @@ Label each node: Confirmed / Estimated / Unconfirmed
 
 Include in every SEV1/SEV2 postmortem:
 
-```text
+```
 ## SLO Error Budget Impact
 
 | Metric | SLO Target | Period Actual (pre-incident) | Incident Burn | Remaining Budget |

@@ -1,5 +1,6 @@
 ---
 layer: agentic
+model: gemini-3.5-pro
 ---
 
 # workflow-supervisor.md

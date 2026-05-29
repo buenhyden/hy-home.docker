@@ -1,7 +1,7 @@
 ---
 name: workflow-supervisor
 layer: agentic
-model: opus
+model: opus-4.8
 ---
 
 # workflow-supervisor

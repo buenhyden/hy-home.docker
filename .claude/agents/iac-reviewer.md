@@ -1,7 +1,7 @@
 ---
 name: iac-reviewer
 layer: infra
-model: sonnet
+model: sonnet-4.6
 ---
 
 # iac-reviewer

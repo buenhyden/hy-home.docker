@@ -1,7 +1,7 @@
 ---
 name: infra-implementer
 layer: infra
-model: sonnet
+model: gpt-5.5-instant
 ---
 
 # infra-implementer

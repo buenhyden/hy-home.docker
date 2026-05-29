@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 layer: common
-model: sonnet
+model: sonnet-4.6
 ---
 
 # code-reviewer

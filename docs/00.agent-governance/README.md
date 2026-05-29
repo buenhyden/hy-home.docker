@@ -26,7 +26,7 @@ layer: agentic
 
 ## Structure
 
-- `rules/`: shared governance policies, completion gates, and [JIT Markers](rules/jit-markers.md) (e.g. `[LOAD:MEMORY]`).
+- `rules/`: shared governance policies, completion gates, and [JIT Markers](rules/jit-markers.md) (e.g. `[LOAD:MEMORY]`). Includes the cross-provider [Capability Matrix](rules/provider-capability-matrix.md), [Output Style Contract](rules/output-style.md), and [Workflows](rules/workflows.md).
 - `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge guidance.
 - `providers/`: runtime-specific overlays (`claude`, `gemini`, `codex`, provider-neutral `agents-md`).
 - `agents/`: local agent/function catalog of workspace agents and orchestration functions.

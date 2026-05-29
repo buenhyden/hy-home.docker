@@ -1,5 +1,6 @@
 ---
 layer: agentic
+model: gemini-3.5-flash
 ---
 
 # drift-detector.md

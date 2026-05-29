@@ -1,7 +1,7 @@
 ---
 name: security-auditor
 layer: security
-model: sonnet
+model: sonnet-4.6
 ---
 
 # security-auditor

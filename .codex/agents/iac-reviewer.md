@@ -1,7 +1,7 @@
 ---
 name: iac-reviewer
 layer: infra
-model: sonnet
+model: gpt-5.5-instant
 ---
 
 # iac-reviewer

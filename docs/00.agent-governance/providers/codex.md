@@ -33,7 +33,9 @@ Codex-specific guidance for this repository.
 ## 4. Runtime Boundary
 
 - `.codex/hooks.json` provides Codex-local hooks.
-- `.codex/agents/` and `.codex/skills/` provide the Codex-compatible runtime catalog surface, aligned with `docs/00.agent-governance/agents/`.
+- `.codex/agents/` and `.codex/skills/` are content-identical mirrors of `.claude/` (the canonical runtime), per the Provider Parity Model (`providers/agents-md.md` §5). They differ only in the provider model identifier.
+- Apply the Model Policy (`subagent-protocol.md`): `workflow-supervisor` uses `gpt-5.5`, all worker agents use `gpt-5.4-mini`. Never carry Anthropic model names (`opus-4.8`/`sonnet-4.6`) in `.codex/` files.
+- Follow the shared `rules/output-style.md`, `rules/provider-capability-matrix.md`, and `rules/workflows.md` as behavioral contracts.
 - The canonical delegated-agent catalog is the provider-neutral catalog documented in `docs/00.agent-governance/agents/`.
 
 ## 5. QA/CI Tooling

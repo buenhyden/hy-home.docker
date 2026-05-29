@@ -1,7 +1,7 @@
 ---
 name: workflow-supervisor
 layer: agentic
-model: opus
+model: gpt-5.5
 ---
 
 # workflow-supervisor

@@ -12,8 +12,19 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 - The Claude runtime supervisor implementation is `.claude/agents/workflow-supervisor.md`.
 - Each subagent MUST `@import` exactly one primary scope file before acting.
 - Pass the scope path explicitly in the task prompt; do not rely on ambient context.
-- All subagent model calls use `model: "sonnet"` (or provider equivalent) for cost-efficient execution.
-- The supervising/orchestrating agent uses `model: "opus"` (or provider equivalent) for routing, final decisions, and coordination.
+- The supervising/orchestrating agent uses the top-spec model; worker subagents use the right-sized model per the Model Policy below.
+- Each runtime's agent frontmatter MUST carry that provider's own model identifier; never copy another provider's model name across surfaces.
+
+### Model Policy (provider-equivalent mapping)
+
+| Tier                  | Role                                | Claude       | Gemini           | GPT / Codex          |
+| --------------------- | ----------------------------------- | ------------ | ---------------- | -------------------- |
+| Supervisor (top spec) | routing, final decisions, synthesis | `opus-4.8`   | `gemini-3.1-pro` | `gpt-5.5`            |
+| Worker (right-sized)  | scoped task execution               | `sonnet-4.6` | `gemini-3.5-flash`| `gpt-5.5-instant`    |
+
+- This table is the single source of truth for the "provider equivalent" model tiers.
+- `workflow-supervisor` is the only Supervisor-tier role; all other catalog agents are Worker tier.
+- The model mapping is enforced by `scripts/validation/check-repo-contracts.sh`.
 
 ## 2. Required Preamble (per agent)
 
@@ -27,26 +38,35 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 
 ### Supervising Runtime Agent
 
-| Governance Role | Scope Import | Claude Implementation | Gemini Implementation |
-| --- | --- | --- | --- |
-| `workflow-supervisor` | `scopes/agentic.md` | `.claude/agents/workflow-supervisor.md` | `.agents/agents/workflow-supervisor.md` |
+| Governance Role       | Scope Import        | Claude Implementation (canonical)       | Codex Implementation (mirror)          | Gemini Implementation (pointer)         |
+| --------------------- | ------------------- | --------------------------------------- | -------------------------------------- | --------------------------------------- |
+| `workflow-supervisor` | `scopes/agentic.md` | `.claude/agents/workflow-supervisor.md` | `.codex/agents/workflow-supervisor.md` | `.agents/agents/workflow-supervisor.md` |
 
 The supervisor coordinates workers and should not be treated as a generic worker replacement.
 
 ### Worker Agents
 
-| Governance Role | Scope Import | Claude Implementation | Gemini Implementation |
-| --- | --- | --- | --- |
-| `infra-implementer` | `scopes/infra.md` | `.claude/agents/infra-implementer.md` | `.agents/agents/infra-implementer.md` |
-| `security-auditor` | `scopes/security.md` | `.claude/agents/security-auditor.md` | `.agents/agents/security-auditor.md` |
-| `incident-responder` | `scopes/ops.md` | `.claude/agents/incident-responder.md` | `.agents/agents/incident-responder.md` |
-| `code-reviewer` | `scopes/common.md` | `.claude/agents/code-reviewer.md` | `.agents/agents/code-reviewer.md` |
-| `doc-writer` | `scopes/docs.md` | `.claude/agents/doc-writer.md` | `.agents/agents/doc-writer.md` |
-| `wiki-curator` | `scopes/docs.md` | `.claude/agents/wiki-curator.md` | `.agents/agents/wiki-curator.md` |
-| `iac-reviewer` | `scopes/infra.md` | `.claude/agents/iac-reviewer.md` | `.agents/agents/iac-reviewer.md` |
-| `drift-detector` | `scopes/infra.md` | `.claude/agents/drift-detector.md` | `.agents/agents/drift-detector.md` |
+| Governance Role      | Scope Import         | Claude Implementation (canonical)      | Codex Implementation (mirror)         | Gemini Implementation (pointer)        |
+| -------------------- | -------------------- | -------------------------------------- | ------------------------------------- | -------------------------------------- |
+| `infra-implementer`  | `scopes/infra.md`    | `.claude/agents/infra-implementer.md`  | `.codex/agents/infra-implementer.md`  | `.agents/agents/infra-implementer.md`  |
+| `security-auditor`   | `scopes/security.md` | `.claude/agents/security-auditor.md`   | `.codex/agents/security-auditor.md`   | `.agents/agents/security-auditor.md`   |
+| `incident-responder` | `scopes/ops.md`      | `.claude/agents/incident-responder.md` | `.codex/agents/incident-responder.md` | `.agents/agents/incident-responder.md` |
+| `code-reviewer`      | `scopes/common.md`   | `.claude/agents/code-reviewer.md`      | `.codex/agents/code-reviewer.md`      | `.agents/agents/code-reviewer.md`      |
+| `doc-writer`         | `scopes/docs.md`     | `.claude/agents/doc-writer.md`         | `.codex/agents/doc-writer.md`         | `.agents/agents/doc-writer.md`         |
+| `wiki-curator`       | `scopes/docs.md`     | `.claude/agents/wiki-curator.md`       | `.codex/agents/wiki-curator.md`       | `.agents/agents/wiki-curator.md`       |
+| `iac-reviewer`       | `scopes/infra.md`    | `.claude/agents/iac-reviewer.md`       | `.codex/agents/iac-reviewer.md`       | `.agents/agents/iac-reviewer.md`       |
+| `drift-detector`     | `scopes/infra.md`    | `.claude/agents/drift-detector.md`     | `.codex/agents/drift-detector.md`     | `.agents/agents/drift-detector.md`     |
+| `qa-engineer`        | `scopes/common.md`   | `.claude/agents/qa-engineer.md`        | `.codex/agents/qa-engineer.md`        | `.agents/agents/qa-engineer.md`        |
+| `ci-cd-engineer`     | `scopes/ops.md`      | `.claude/agents/ci-cd-engineer.md`     | `.codex/agents/ci-cd-engineer.md`     | `.agents/agents/ci-cd-engineer.md`     |
+| `skill-creator`      | `scopes/agentic.md`  | `.claude/agents/skill-creator.md`      | `.codex/agents/skill-creator.md`      | `.agents/agents/skill-creator.md`      |
+| `hook-developer`     | `scopes/agentic.md`  | `.claude/agents/hook-developer.md`     | `.codex/agents/hook-developer.md`     | `.agents/agents/hook-developer.md`     |
+| `rules-engineer`     | `scopes/agentic.md`  | `.claude/agents/rules-engineer.md`     | `.codex/agents/rules-engineer.md`     | `.agents/agents/rules-engineer.md`     |
+| `style-enforcer`     | `scopes/agentic.md`  | `.claude/agents/style-enforcer.md`     | `.codex/agents/style-enforcer.md`     | `.agents/agents/style-enforcer.md`     |
 
-Note: Codex/GPT uses the governance catalog directly without native agent file support.
+Per the Provider Parity Model (`providers/agents-md.md` §5): Claude is the canonical
+runtime implementation, Codex mirrors it content-identically (provider model identifier
+aside), and Gemini exposes reference-index pointers. All three surfaces carry the same
+agent name set.
 
 ## 4. Communication Protocol
 

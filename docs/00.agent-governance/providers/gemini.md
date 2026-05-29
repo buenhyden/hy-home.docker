@@ -32,21 +32,25 @@ Gemini merges context from multiple files. Within this repository:
 
 - `GEMINI.md` is the root shim; it delegates to `AGENTS.md` and provider overlays.
 - `docs/00.agent-governance/` governance files are the policy SSOT and override Gemini defaults.
-- `.agents/` is Gemini's shared surface and moderate-shim, where Gemini-specific rules, workflows, and skills reside.
+- `.agents/` is Gemini's shared surface and reference-index shim; it holds pointer-only agent and skill indexes, while rules and workflows remain in governance.
 - `.agents/agents/` provides the Gemini reference index to the governance agent catalog.
 - GitHub-native instruction files are not part of this repository's active instruction hierarchy.
 
 ## 5. Runtime Surface
 
-- `.agents/` is Gemini's shared runtime surface and moderate-shim.
-- `.agents/rules/` contains Gemini-specific rules.
-- `.agents/workflows/` contains Gemini-specific workflows.
-- `.agents/skills/` contains Gemini's runtime skill implementations.
-- `.agents/agents/` provides the Gemini reference index pointing to the governance catalog.
+Per the Provider Parity Model (`providers/agents-md.md` §5), Gemini uses a
+reference-index model — no full duplication and no provider-local policy directories.
+
+- `.agents/` is Gemini's shared runtime surface and reference-index shim.
+- `.agents/agents/<name>.md` are reference-index pointers to `docs/00.agent-governance/agents/agents/`.
+- `.agents/skills/<name>/skill.md` are reference-index pointers to `docs/00.agent-governance/agents/functions/`.
+- `.agents/` contains no `rules/` or `workflows/` directories; Gemini rules and workflows live in governance (`rules/`, `rules/workflows.md`) and are followed as behavioral contracts.
+- Gemini agent model identifiers follow the Model Policy in `subagent-protocol.md` (supervisor `gemini-3.1-pro`, worker `gemini-3.5-flash`).
 - The `.agents/` directory is git-tracked.
 
 ## 6. Hook Parity Contract
 
+- Gemini follows the shared `rules/output-style.md`, `rules/provider-capability-matrix.md`, and `rules/workflows.md` as behavioral contracts.
 - While Gemini CLI does not natively support the same programmatic hooks as Claude or Codex, Gemini agents MUST manually follow the same behavioral contracts documented for hooks.
 - **Pre-edit validation**: Review requirements and guardrails before mutating files.
 - **Post-edit validation**: Validate style (formatting, trimming) and run repository contract checks before declaring completion.

@@ -6,10 +6,13 @@ This directory is the native runtime surface for Gemini agents and a compatibili
 
 ### In Scope
 
-- Gemini-specific rules under `rules/`
-- Gemini-specific workflows under `workflows/`
-- Gemini runtime skill implementations under `skills/`
-- Gemini reference index under `agents/` pointing to the governance catalog
+- Gemini reference index under `agents/` pointing to the governance agent catalog
+- Gemini reference index under `skills/` pointing to the governance function catalog
+
+Per the Provider Parity Model (`docs/00.agent-governance/providers/agents-md.md` §5),
+both `agents/` and `skills/` are pointer-only reference indexes. Gemini rules and
+workflows are not duplicated here; they live in `docs/00.agent-governance/` and are
+followed as behavioral contracts.
 
 ### Out of Scope
 

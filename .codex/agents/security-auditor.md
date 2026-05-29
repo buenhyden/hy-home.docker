@@ -1,7 +1,7 @@
 ---
 name: security-auditor
 layer: security
-model: sonnet
+model: gpt-5.5-instant
 ---
 
 # security-auditor
@@ -51,7 +51,7 @@ Apply STRIDE analysis across the key trust boundaries in this stack:
 
 When producing audit reports, include a three-horizon remediation plan:
 
-```text
+```
 ## Remediation Roadmap
 
 ### Immediate (0–48 hours) — RED findings

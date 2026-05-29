@@ -763,6 +763,66 @@ for agent in runtime_agents:
     elif expected_scope not in text:
         failures.append(f"{agent_path}: missing exact scope import {expected_scope!r}")
 
+# --- Cross-provider parity (Provider Parity Model: providers/agents-md.md section 5) ---
+codex_agents = sorted(p.stem for p in pathlib.Path(".codex/agents").glob("*.md"))
+codex_functions = sorted(p.parent.name for p in pathlib.Path(".codex/skills").glob("*/skill.md"))
+gemini_agents = sorted(p.stem for p in pathlib.Path(".agents/agents").glob("*.md"))
+gemini_functions = sorted(p.parent.name for p in pathlib.Path(".agents/skills").glob("*/skill.md"))
+
+# 1. Name-set parity across all three runtimes and governance.
+if codex_agents != governance_agents:
+    failures.append(f"codex agent catalog mismatch: .codex={codex_agents} governance={governance_agents}")
+if codex_functions != governance_functions:
+    failures.append(f"codex function catalog mismatch: .codex={codex_functions} governance={governance_functions}")
+if gemini_agents != governance_agents:
+    failures.append(f"gemini agent catalog mismatch: .agents={gemini_agents} governance={governance_agents}")
+if gemini_functions != governance_functions:
+    failures.append(f"gemini function catalog mismatch: .agents={gemini_functions} governance={governance_functions}")
+
+# 2. Content parity: .codex mirrors .claude (agents differ only by the model: line).
+def strip_model(text: str) -> str:
+    return re.sub(r"^model:.*$", "model:", text, flags=re.M)
+
+for agent in runtime_agents:
+    claude_text = read(pathlib.Path(f".claude/agents/{agent}.md"))
+    codex_text = read(pathlib.Path(f".codex/agents/{agent}.md"))
+    if strip_model(claude_text) != strip_model(codex_text):
+        failures.append(f".codex/agents/{agent}.md: content drift from canonical .claude/agents/{agent}.md")
+for fn in runtime_functions:
+    if read(pathlib.Path(f".claude/skills/{fn}/skill.md")) != read(pathlib.Path(f".codex/skills/{fn}/skill.md")):
+        failures.append(f".codex/skills/{fn}/skill.md: content drift from canonical .claude/skills/{fn}/skill.md")
+
+# 3. Codex model policy.
+for agent in codex_agents:
+    model = frontmatter_value(read(pathlib.Path(f".codex/agents/{agent}.md")), "model")
+    expected = "gpt-5.1-codex" if agent == "workflow-supervisor" else "gpt-5.1-codex-mini"
+    if model != expected:
+        failures.append(f".codex/agents/{agent}.md: expected model {expected!r}, found {model!r}")
+
+# 4. Gemini pointer parity + model policy (reference index, never a full copy).
+for agent in gemini_agents:
+    path = pathlib.Path(f".agents/agents/{agent}.md")
+    text = read(path)
+    if f"@docs/00.agent-governance/agents/agents/{agent}.md" not in text:
+        failures.append(f"{path}: missing reference-index pointer to governance agent")
+    if "Gemini reference index" not in text:
+        failures.append(f"{path}: missing Gemini reference-index marker")
+    if len(text.splitlines()) > 15:
+        failures.append(f"{path}: too long ({len(text.splitlines())} lines); Gemini surface must be a pointer, not a full copy")
+    model = frontmatter_value(text, "model")
+    expected = "gemini-3-pro" if agent == "workflow-supervisor" else "gemini-3-flash"
+    if model != expected:
+        failures.append(f"{path}: expected model {expected!r}, found {model!r}")
+for fn in gemini_functions:
+    path = pathlib.Path(f".agents/skills/{fn}/skill.md")
+    text = read(path)
+    if f"@docs/00.agent-governance/agents/functions/{fn}.md" not in text:
+        failures.append(f"{path}: missing reference-index pointer to governance function")
+    if "Gemini reference index" not in text:
+        failures.append(f"{path}: missing Gemini reference-index marker")
+    if len(text.splitlines()) > 15:
+        failures.append(f"{path}: too long ({len(text.splitlines())} lines); Gemini surface must be a pointer, not a full copy")
+
 codex_readme = pathlib.Path(".codex/README.md")
 codex_provider = pathlib.Path("docs/00.agent-governance/providers/codex.md")
 for path in [codex_readme, codex_provider]:
@@ -2886,6 +2946,7 @@ expected_implementations = {
     pathlib.Path("scripts/knowledge/report-graphify-health.sh"),
     pathlib.Path("scripts/operations/gen-secrets.sh"),
     pathlib.Path("scripts/operations/use-qa-ci-tools.sh"),
+    pathlib.Path("scripts/operations/sync-provider-surfaces.sh"),
 }
 implementation_scripts = sorted(
     path

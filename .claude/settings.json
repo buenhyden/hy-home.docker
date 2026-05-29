@@ -1,4 +1,5 @@
 {
+  "outputStyle": "hy-home",
   "permissions": {
     "allow": [
       "$defaults",

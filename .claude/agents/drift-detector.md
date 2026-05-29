@@ -1,7 +1,7 @@
 ---
 name: drift-detector
 layer: infra
-model: sonnet
+model: sonnet-4.6
 ---
 
 # drift-detector

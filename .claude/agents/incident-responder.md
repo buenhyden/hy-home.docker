@@ -1,7 +1,7 @@
 ---
 name: incident-responder
 layer: ops
-model: sonnet
+model: sonnet-4.6
 ---
 
 # incident-responder

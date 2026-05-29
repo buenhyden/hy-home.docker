@@ -1,7 +1,7 @@
 ---
 name: infra-implementer
 layer: infra
-model: sonnet
+model: sonnet-4.6
 ---
 
 # infra-implementer

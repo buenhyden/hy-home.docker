@@ -1,7 +1,7 @@
 ---
 name: drift-detector
 layer: infra
-model: sonnet
+model: gpt-5.5-instant
 ---
 
 # drift-detector
@@ -109,7 +109,7 @@ docker inspect <container_name> --format '{{.HostConfig.Memory}} {{.HostConfig.N
 
 Save as `_workspace/drift_<YYYY-MM-DD>.md`:
 
-```text
+```
 # Drift Detection Report — YYYY-MM-DD
 
 ## Executive Summary
