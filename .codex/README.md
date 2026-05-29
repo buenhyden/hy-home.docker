@@ -22,8 +22,8 @@ For specific Codex execution guidelines, including the Hook Parity Contract, QA/
 
 ## 3. Scope
 
-- **In Scope:** `.codex/hooks.json` and `scripts/hooks/agent-event-hook.sh`.
-- **Out of Scope:** User-global Codex settings, credentials, or a parallel agent catalog. Shared policy remains in `docs/00.agent-governance/`.
+- **In Scope:** `.codex/hooks.json`, `scripts/hooks/agent-event-hook.sh`, and the Codex-compatible runtime catalog (`.codex/agents/`, `.codex/skills/`).
+- **Out of Scope:** User-global Codex settings or credentials. Shared policy remains in `docs/00.agent-governance/`.
 
 ## 4. Hook Parity (Summary)
 

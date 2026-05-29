@@ -33,8 +33,8 @@ Codex-specific guidance for this repository.
 ## 4. Runtime Boundary
 
 - `.codex/hooks.json` provides Codex-local hooks.
+- `.codex/agents/` and `.codex/skills/` provide the Codex-compatible runtime catalog surface, aligned with `docs/00.agent-governance/agents/`.
 - The canonical delegated-agent catalog is the provider-neutral catalog documented in `docs/00.agent-governance/agents/`.
-- Do not create a parallel Codex agent catalog unless repository governance explicitly adopts one.
 
 ## 5. QA/CI Tooling
 

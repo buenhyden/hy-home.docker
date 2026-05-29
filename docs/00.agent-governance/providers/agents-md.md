@@ -40,6 +40,31 @@ This repository keeps agent instruction authority inside repo-local files only. 
 GitHub-native instruction files are not part of this repository's active instruction hierarchy.
 If such files ever appear, they must not be treated as authoritative until governance explicitly adopts them.
 
+## 5. Provider Parity Model
+
+All three runtimes (Claude, Codex, Gemini) mirror the same agent and function catalog through one shared, three-tier model. This model is the canonical rule for how each provider surface relates to the catalog; provider overlays must not redefine it.
+
+### Tier 1 — Catalog SSOT
+
+- `docs/00.agent-governance/agents/agents/` (role docs) and `docs/00.agent-governance/agents/functions/` (function entries) are the source of truth for _which_ agents and functions exist, their roles, inputs/outputs, and governing links.
+- The agent name set and function name set defined here are authoritative. Every runtime surface MUST expose exactly the same name sets.
+
+### Tier 2 — Canonical Runtime Implementation (Claude)
+
+- `.claude/agents/*.md` and `.claude/skills/*/skill.md` hold the full, self-contained runtime content (provider frontmatter plus prompt body).
+- This is the canonical _implementation_ mirror that catalog `functions/*.md` entries reference as the runtime mirror.
+
+### Tier 3 — Provider Mirrors and Indexes
+
+- **Codex (`.codex/`)** keeps full runtime copies under `.codex/agents/` and `.codex/skills/` because Codex loads self-contained files. These copies MUST stay content-identical to `.claude/` (provider frontmatter aside) and are kept in sync deliberately.
+- **Gemini (`.agents/`)** uses a reference-index model: each `.agents/agents/<name>.md` and `.agents/skills/<name>/skill.md` is a thin pointer that imports the governance catalog entry and names `.claude/` as the canonical implementation. Gemini surfaces carry no full duplication. `.agents/` holds no `rules/` or `workflows/` directories; Gemini-specific policy lives in governance.
+
+### Parity Rules (enforced by `scripts/validation/check-repo-contracts.sh`)
+
+- **Name-set parity:** the agent set and the function set MUST be identical across Tier 1, `.claude/`, `.codex/`, and `.agents/`.
+- **Content parity:** `.codex/` runtime content MUST match `.claude/` runtime content.
+- **Pointer parity:** every `.agents/` agent and skill file MUST be a reference index pointing to the canonical source and MUST NOT contain divergent full content or reference nonexistent paths.
+
 ## Related Documents
 
 - `docs/00.agent-governance/rules/github-governance.md`
