@@ -222,7 +222,7 @@ import pathlib
 import sys
 
 required = {
-    "guides": ["## Usage"],
+    "guides": ["## Usage", "## Common Checks", "## Runbook Handoff"],
     "policies": ["## Policy Scope", "## Controls", "## Verification", "## Review Cadence"],
     "runbooks": ["When to Use", "Procedure", "Evidence", "Escalation"],
 }
@@ -406,6 +406,13 @@ for path in workflow_files:
                 failures.append(f"{path}: job {job_id!r} is missing explicit permissions")
 
 ci_quality = pathlib.Path(".github/workflows/ci-quality.yml")
+# COUPLING CONSTRAINT: required_jobs must stay in sync with:
+#   (1) job IDs in .github/workflows/ci-quality.yml
+#   (2) Required Status Checks in .github/rulesets/main-protection.md
+#   (3) CI/CD Job Taxonomy in docs/00.agent-governance/rules/github-governance.md
+# When adding a new CI job: update all three locations simultaneously.
+# GitHub-native-only jobs (greetings, stale, pr-labeler, generate-changelog)
+# must NOT be added here — they are not script-backed QA gates.
 required_jobs = {
     "docs-traceability",
     "repo-contracts",
