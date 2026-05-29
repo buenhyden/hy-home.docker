@@ -27,11 +27,9 @@ Standard behavior contract for repo-local, auditable agent execution.
 - Use persona routing, checklist routing, this rule, and one primary scope before
   task execution.
 - Use the local agent/function catalog as the runtime boundary:
-  - `.claude/agents/*.md` is the executable runtime surface; each file must have
-    a same-named catalog entry under `docs/00.agent-governance/agents/agents/`.
-  - `.claude/skills/*/skill.md` is the executable runtime surface; each skill
-    must have a same-named catalog entry under
-    `docs/00.agent-governance/agents/functions/`.
+  - The active provider's runtime agent directory (e.g., `.claude/agents/`, `.agents/agents/`) is the executable runtime surface; each file must have a same-named catalog entry under `docs/00.agent-governance/agents/agents/`.
+  - The active provider's runtime skill directory (e.g., `.claude/skills/`, `.agents/skills/`) is the executable runtime surface; each skill must have a same-named catalog entry under `docs/00.agent-governance/agents/functions/`.
+  - Runtime baselines: Claude uses `.claude/`, Gemini uses `.agents/` as a shared surface/moderate-shim, Codex uses `.codex/`.
   - `docs/00.agent-governance/subagent-protocol.md` defines delegation rules.
 - Do not import external harness identities or create GitHub-native instruction
   layers for local execution policy.
@@ -73,7 +71,7 @@ Standard behavior contract for repo-local, auditable agent execution.
 - Keep policy text short and actionable.
 - Remove contradictory guidance immediately.
 - Keep provider-specific behavior in provider files, not in generic scope/rule files.
-- Keep runtime behavior synchronized across `.claude/` and the corresponding
+- Keep runtime behavior synchronized across the active provider's runtime surface and the corresponding
   `docs/00.agent-governance/agents/` catalog entries.
 - Record work progress in `docs/00.agent-governance/memory/progress.md`.
 - Record historical notes under `docs/00.agent-governance/memory/` from

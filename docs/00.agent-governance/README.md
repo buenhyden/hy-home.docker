@@ -44,11 +44,10 @@ This README is for:
 - `scopes/`: layer-specific boundaries, file ownership SSOT, and subagent bridge guidance.
 - `providers/`: runtime-specific overlays (`claude`, `gemini`, `codex`, provider-neutral `agents-md`).
 - `agents/`: local agent/function catalog of workspace agents and orchestration functions.
-  - Runtime catalog parity: 9 Claude agents in `.claude/agents/` and 11 functions in `.claude/skills/`.
+  - Runtime catalog parity ensures alignment across provider runtime surfaces.
 - `.claude/`: Claude runtime enforcement layer (`CLAUDE.md`, `settings.json`, hooks, agent files, nested skills).
 - `.codex/`: Codex runtime hook/context layer (`hooks.json`, `README.md`).
-- `.agents/`: compatibility surface for tools that read `.agents/`; not a policy
-  source of truth and not a parallel runtime catalog.
+- `.agents/`: Gemini shared runtime surface and cross-provider compatibility layer.
 - `memory/`: durable governance notes, audit findings, and the agent progress log.
   - `progress.md` — mandatory work progress log, verification index, and durable memory pointer list
   - `template.md` — local mirror of `docs/99.templates/memory.template.md`
@@ -113,5 +112,6 @@ This README is for:
 - `docs/00.agent-governance/rules/standards.md`
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/00.agent-governance/providers/codex.md`
+- `.agents/README.md`
 - `.claude/CLAUDE.md`
 - `.codex/README.md`

@@ -36,7 +36,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 ## Structure
 
 - `agents/` — per-agent role documentation
-- `functions/` — per-function catalog entries corresponding to `.claude/skills/<name>/skill.md`
+- `functions/` — per-function catalog entries corresponding to runtime skill implementations across providers
 
 ## Agents
 
@@ -63,10 +63,18 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 - [adr-writing](./functions/adr-writing.md)
 - [ci-cd-patterns](./functions/ci-cd-patterns.md)
 - [workspace-audit-revalidation](./functions/workspace-audit-revalidation.md)
+- [compose-stack-agent](./functions/compose-stack-agent.md)
+- [execution-plan-agent](./functions/execution-plan-agent.md)
+- [knowledge-map-agent](./functions/knowledge-map-agent.md)
+- [policy-gate-agent](./functions/policy-gate-agent.md)
+- [requirements-to-design-agent](./functions/requirements-to-design-agent.md)
+- [task-breakdown-agent](./functions/task-breakdown-agent.md)
+- [ops-runbook-agent](./functions/ops-runbook-agent.md)
 
 ## How to Work in This Area
 
-- Use this catalog when updating `.claude/agents/`, `.claude/skills/<name>/skill.md`, or provider runtime notes.
+- Use this catalog when updating `.claude/agents/`, `.agents/agents/`, or provider runtime notes.
+- Note that `.agents/skills/` is the Gemini-compatible surface, while `.claude/skills/` is the Claude runtime surface.
 - Keep agent docs aligned with their scope files under `docs/00.agent-governance/scopes/`.
 - Keep this catalog free of external harness identifiers.
 - Update links here when agent or function files are added, moved, or removed.

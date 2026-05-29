@@ -32,10 +32,29 @@ Gemini merges context from multiple files. Within this repository:
 
 - `GEMINI.md` is the root shim; it delegates to `AGENTS.md` and provider overlays.
 - `docs/00.agent-governance/` governance files are the policy SSOT and override Gemini defaults.
-- `.claude/agents/`, `.claude/skills/`, and the shared governance docs define the repo-local behavior Gemini must follow when operating in this workspace.
+- `.agents/` is Gemini's shared surface and moderate-shim, where Gemini-specific rules, workflows, and skills reside.
+- `.agents/agents/` provides the Gemini reference index to the governance agent catalog.
 - GitHub-native instruction files are not part of this repository's active instruction hierarchy.
 
-## 5. Operational Practices
+## 5. Runtime Surface
+
+- `.agents/` is Gemini's shared runtime surface and moderate-shim.
+- `.agents/rules/` contains Gemini-specific rules.
+- `.agents/workflows/` contains Gemini-specific workflows.
+- `.agents/skills/` contains Gemini's runtime skill implementations.
+- `.agents/agents/` provides the Gemini reference index pointing to the governance catalog.
+- The `.agents/` directory is git-tracked.
+
+## 6. Hook Parity Contract
+
+- While Gemini CLI does not natively support the same programmatic hooks as Claude or Codex, Gemini agents MUST manually follow the same behavioral contracts documented for hooks.
+- **Pre-edit validation**: Review requirements and guardrails before mutating files.
+- **Post-edit validation**: Validate style (formatting, trimming) and run repository contract checks before declaring completion.
+- **Template-first guidance**: Use `docs/99.templates/` before creating new target-stage documentation.
+- **Commit discipline**: Create logical Conventional Commits for completed repository-modifying work.
+- **README guidance**: Follow the provider-neutral README readiness rules.
+
+## 7. Operational Practices
 
 - Use `/memory list` to inspect loaded context files.
 - Use `/memory show` to inspect merged effective context.
@@ -47,6 +66,7 @@ Gemini merges context from multiple files. Within this repository:
 - `docs/00.agent-governance/providers/agents-md.md`
 - `docs/00.agent-governance/rules/github-governance.md`
 - `docs/00.agent-governance/rules/bootstrap.md`
+- `.agents/README.md`
 
 ## References
 

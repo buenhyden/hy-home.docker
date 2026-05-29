@@ -9,11 +9,11 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 ## 1. Spawn Rules
 
 - Spawn subagents through the active runtime's delegated-agent facility — never via inline prompt embedding.
-- The local runtime supervisor is `.claude/agents/workflow-supervisor.md`.
+- The Claude runtime supervisor implementation is `.claude/agents/workflow-supervisor.md`.
 - Each subagent MUST `@import` exactly one primary scope file before acting.
 - Pass the scope path explicitly in the task prompt; do not rely on ambient context.
-- All subagent model calls use `model: "sonnet"` for cost-efficient execution.
-- The supervising/orchestrating agent uses `model: "opus"` for routing, final decisions, and coordination.
+- All subagent model calls use `model: "sonnet"` (or provider equivalent) for cost-efficient execution.
+- The supervising/orchestrating agent uses `model: "opus"` (or provider equivalent) for routing, final decisions, and coordination.
 
 ## 2. Required Preamble (per agent)
 
@@ -27,24 +27,26 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 
 ### Supervising Runtime Agent
 
-| Agent File                                  | Scope Import          | Runtime Role |
-| ------------------------------------------- | --------------------- | ------------ |
-| `.claude/agents/workflow-supervisor.md`     | `scopes/agentic.md`   | Final routing and synthesis |
+| Governance Role | Scope Import | Claude Implementation | Gemini Implementation |
+| --- | --- | --- | --- |
+| `workflow-supervisor` | `scopes/agentic.md` | `.claude/agents/workflow-supervisor.md` | `.agents/agents/workflow-supervisor.md` |
 
 The supervisor coordinates workers and should not be treated as a generic worker replacement.
 
 ### Worker Agents
 
-| Agent File                             | Scope Import         | Delegated Agent Name |
-| -------------------------------------- | -------------------- | -------------------- |
-| `.claude/agents/infra-implementer.md`  | `scopes/infra.md`    | `infra-implementer`  |
-| `.claude/agents/security-auditor.md`   | `scopes/security.md` | `security-auditor`   |
-| `.claude/agents/incident-responder.md` | `scopes/ops.md`      | `incident-responder` |
-| `.claude/agents/code-reviewer.md`      | `scopes/common.md`   | `code-reviewer`      |
-| `.claude/agents/doc-writer.md`         | `scopes/docs.md`     | `doc-writer`         |
-| `.claude/agents/wiki-curator.md`       | `scopes/docs.md`     | `wiki-curator`       |
-| `.claude/agents/iac-reviewer.md`       | `scopes/infra.md`    | `iac-reviewer`       |
-| `.claude/agents/drift-detector.md`     | `scopes/infra.md`    | `drift-detector`     |
+| Governance Role | Scope Import | Claude Implementation | Gemini Implementation |
+| --- | --- | --- | --- |
+| `infra-implementer` | `scopes/infra.md` | `.claude/agents/infra-implementer.md` | `.agents/agents/infra-implementer.md` |
+| `security-auditor` | `scopes/security.md` | `.claude/agents/security-auditor.md` | `.agents/agents/security-auditor.md` |
+| `incident-responder` | `scopes/ops.md` | `.claude/agents/incident-responder.md` | `.agents/agents/incident-responder.md` |
+| `code-reviewer` | `scopes/common.md` | `.claude/agents/code-reviewer.md` | `.agents/agents/code-reviewer.md` |
+| `doc-writer` | `scopes/docs.md` | `.claude/agents/doc-writer.md` | `.agents/agents/doc-writer.md` |
+| `wiki-curator` | `scopes/docs.md` | `.claude/agents/wiki-curator.md` | `.agents/agents/wiki-curator.md` |
+| `iac-reviewer` | `scopes/infra.md` | `.claude/agents/iac-reviewer.md` | `.agents/agents/iac-reviewer.md` |
+| `drift-detector` | `scopes/infra.md` | `.claude/agents/drift-detector.md` | `.agents/agents/drift-detector.md` |
+
+Note: Codex/GPT uses the governance catalog directly without native agent file support.
 
 ## 4. Communication Protocol
 
