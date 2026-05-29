@@ -7,101 +7,30 @@ runtime: codex
 
 > Codex-specific runtime hooks and provider notes for `hy-home.docker`.
 
-## Overview
+## 1. Quick Reference
 
-This directory contains the Codex runtime surface for the repository. Shared
-policy remains in `AGENTS.md` and `docs/00.agent-governance/`; `.codex/`
-contains only Codex-local hook configuration and routing notes.
+- **Governance Hub:** `../docs/00.agent-governance/`
+- **Agent Catalog:** `../docs/00.agent-governance/agents/`
+- **Hook Configuration:** `.codex/hooks.json`
 
-## Audience
+## 2. Detailed Instructions
 
-This README is for:
+For specific Codex execution guidelines, including the Hook Parity Contract, QA/CI tooling, and runtime boundaries, see:
 
-- AI Agents
-- Documentation Writers
-- Repository Maintainers
+- [Codex Provider Notes](../docs/00.agent-governance/providers/codex.md)
+- [Universal Entry Shim](../AGENTS.md)
 
-## Scope
+## 3. Scope
 
-### In Scope
+- **In Scope:** `.codex/hooks.json` and `scripts/hooks/agent-event-hook.sh`.
+- **Out of Scope:** User-global Codex settings, credentials, or a parallel agent catalog. Shared policy remains in `docs/00.agent-governance/`.
 
-- Codex-local hook configuration
-- Provider-specific runtime boundary notes
-- References back to the shared governance hub
+## 4. Hook Parity (Summary)
 
-### Out of Scope
-
-- User-global Codex settings
-- Secrets, tokens, credentials, shell history, or logs
-- A parallel Codex agent catalog
-
-## Structure
-
-```text
-.codex/
-├── hooks.json  # Codex-local hook configuration
-└── README.md   # This file
-```
-
-## QA/CI Tooling
-
-Codex sandbox shells may not inherit the user's full interactive `PATH`. Before
-running local QA or CI commands, source the workspace tooling shim:
-
-```bash
-source scripts/operations/use-qa-ci-tools.sh
-```
-
-The shim exposes user-global tools from `$HOME/.local/bin`, `$HOME/go/bin`, and
-the configured Node.js runtime under `$HOME/.nvm/versions/node/v24.14.0/bin`
-without installing duplicate workspace-local CLI packages. Run the script
-directly to verify tool visibility.
-
-## Runtime Boundary
-
-- Codex uses `AGENTS.md` plus `docs/00.agent-governance/providers/codex.md`
-  as its repository entry contract.
-- `.codex/hooks.json` provides Codex-local context and post-edit validation.
-- The canonical delegated-agent catalog is the provider-neutral runtime catalog
-  documented in `docs/00.agent-governance/agents/`.
-- Do not create a parallel Codex agent catalog unless repository governance
-  explicitly adopts one.
-
-## Current Hook Contract
-
-- `SessionStart` uses `scripts/hooks/agent-event-hook.sh` to emit project context when the event is supported.
-- `PreToolUse` uses `scripts/hooks/agent-event-hook.sh` to emit Graphify advisory context when relevant, Docker Compose guardrail context before matching edits, template-first guidance before target-stage documentation edits, governance memory guidance before memory-note edits, and README guidance before README edits.
-- `PostToolUse` uses `scripts/hooks/agent-event-hook.sh`, which delegates to `scripts/hooks/post-tool-validate.sh` after file edits when the hook payload includes changed paths. The post-edit script performs changed-file style normalization, shell formatting, optional `shellcheck`/`yamllint` style validation, and diff hygiene checks before repository contract checks.
-- `Stop` blocks completion when changed target-stage docs fail `bash scripts/validation/check-repo-contracts.sh` or task-owned repository changes remain uncommitted. Agents must inspect the diff and create small Conventional Commits by logical unit before the final response unless the stop is an explicitly incomplete handoff.
-- `SessionEnd` and `PreCompact` route through `scripts/hooks/agent-event-hook.sh` for lifecycle-safe advisory context when the runtime supports those events, including final logical commit reminders for repository-modifying work.
-
-## Hook Parity Contract
-
-- Hook event coverage should stay aligned with `.claude/settings.json` where both runtimes support the event; edit matchers cover `Write`, `Edit`, `MultiEdit`, `apply_patch`, and `ApplyPatch`.
-- README guidance is provider-neutral: folder-index README edits must use `docs/99.templates/readme.template.md`, and infra service leaf README edits must include the Service Readiness fields without reading secret values.
-- The hook is advisory and must not be treated as the policy source of truth.
-- Agents still follow `AGENTS.md`, provider notes, scope rules, and active sandbox approvals.
-
-## Safety Rules
-
-- Do not store secrets, tokens, credentials, personal settings, shell history, or logs here.
-- Do not add user-global Codex configuration under this repository.
-- Keep tracked `.codex/` files minimal and auditable.
-
-## How to Work in This Area
-
-1. Read `AGENTS.md` and the Codex provider overlay before changing Codex behavior.
-2. Keep shared policy in `docs/00.agent-governance/` instead of duplicating it here.
-3. Update this README when `hooks.json` gains or loses a repository-level behavior.
-4. Run the repository contract checks after changing tracked runtime files.
+Hook event coverage should align with `.claude` settings where supported. Edit matchers cover `apply_patch` and `ApplyPatch`.
 
 ## Related Documents
 
 - `../AGENTS.md`
 - `../docs/00.agent-governance/providers/codex.md`
-- `../docs/00.agent-governance/providers/agents-md.md`
 - `../docs/00.agent-governance/agents/`
-- `../docs/00.agent-governance/rules/bootstrap.md`
-- `../.claude/CLAUDE.md`
-- `../scripts/hooks/agent-event-hook.sh`
-- `../scripts/hooks/post-tool-validate.sh`

@@ -123,8 +123,10 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/00.agent-governance/rules/agentic.md](../../00.agent-governance/rules/agentic.md) | Markdown reference |
 | [docs/00.agent-governance/rules/bootstrap.md](../../00.agent-governance/rules/bootstrap.md) | Markdown reference |
 | [docs/00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md) | Markdown reference |
+| [docs/00.agent-governance/rules/environment-constraints.md](../../00.agent-governance/rules/environment-constraints.md) | Markdown reference |
 | [docs/00.agent-governance/rules/git-workflow.md](../../00.agent-governance/rules/git-workflow.md) | Markdown reference |
 | [docs/00.agent-governance/rules/github-governance.md](../../00.agent-governance/rules/github-governance.md) | Markdown reference |
+| [docs/00.agent-governance/rules/jit-markers.md](../../00.agent-governance/rules/jit-markers.md) | Markdown reference |
 | [docs/00.agent-governance/rules/persona.md](../../00.agent-governance/rules/persona.md) | Markdown reference |
 | [docs/00.agent-governance/rules/postflight-checklist.md](../../00.agent-governance/rules/postflight-checklist.md) | Markdown reference |
 | [docs/00.agent-governance/rules/quality-standards.md](../../00.agent-governance/rules/quality-standards.md) | Markdown reference |

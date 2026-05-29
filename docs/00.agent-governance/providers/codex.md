@@ -30,33 +30,40 @@ Codex-specific guidance for this repository.
 4. bootstrap -> persona -> checklists -> one scope -> JIT stage docs
 5. `rules/github-governance.md` for PR / merge / review tasks
 
-## 4. Runtime Surface
+## 4. Runtime Boundary
 
 - `.codex/hooks.json` provides Codex-local hooks.
-- The current hooks call `scripts/hooks/agent-event-hook.sh` by event (`SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`, `Stop`, `PreCompact`) when the runtime supports that event.
-- The event dispatcher emits Graphify context when `graphify-out/graph.json` exists, emits Docker Compose guardrail context before matching edits, emits README template/readiness guidance before README edits, and delegates post-edit formatting and style validation to `scripts/hooks/post-tool-validate.sh`.
-- Hook output is advisory context. Governance remains in `docs/00.agent-governance/`.
-- `.codex/` is the Codex runtime baseline.
-- Codex does not maintain a parallel delegated-agent catalog in this repository.
-- The canonical delegated-agent catalog is the provider-neutral catalog
-  documented in `docs/00.agent-governance/agents/` and
-  `docs/00.agent-governance/subagent-protocol.md`.
+- The canonical delegated-agent catalog is the provider-neutral catalog documented in `docs/00.agent-governance/agents/`.
+- Do not create a parallel Codex agent catalog unless repository governance explicitly adopts one.
 
-## 5. Hook Parity Contract
+## 5. QA/CI Tooling
 
-- Codex hook events must stay behaviorally aligned with Claude hook events where both runtimes support the event.
-- `SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`, `Stop`, and `PreCompact` route through `scripts/hooks/agent-event-hook.sh`.
-- Codex `PreToolUse` and `PostToolUse` matchers must cover normal file edits and patch-based edits, including `Write`, `Edit`, `MultiEdit`, `apply_patch`, and `ApplyPatch`.
-- Codex hooks must surface template-first guidance before target-stage documentation edits, README template/readiness guidance before README edits, block Stop when changed target-stage docs fail `bash scripts/validation/check-repo-contracts.sh`, and block Stop while task-owned uncommitted paths remain after repository-modifying work.
-- README guidance must remain provider-neutral: folder-index README edits route to `docs/99.templates/readme.template.md`, and infra service leaf README edits require Service Readiness evidence without reading secret values.
+Codex sandbox shells may not inherit the user's full interactive `PATH`. Before running local QA or CI commands, source the workspace tooling shim:
+
+```bash
+source scripts/operations/use-qa-ci-tools.sh
+```
+
+## 6. Current Hook Contract
+
+- `SessionStart` uses `scripts/hooks/agent-event-hook.sh` to emit project context when the event is supported.
+- `PreToolUse` emits Graphify advisory context, Docker Compose guardrails, and template-first guidance.
+- `PostToolUse` delegates to `scripts/hooks/post-tool-validate.sh` after file edits for shell formatting, validation, and diff hygiene.
+- `Stop` blocks completion when changed target-stage docs fail `check-repo-contracts.sh` or task-owned uncommitted paths remain.
+- `SessionEnd` and `PreCompact` route through `agent-event-hook.sh` for lifecycle-safe advisory context.
+
+## 7. Hook Parity Contract
+
+- Codex hook events must stay behaviorally aligned with Claude hook events.
+- Codex `PreToolUse` and `PostToolUse` matchers must cover normal file edits and patch-based edits including `apply_patch` and `ApplyPatch`.
+- README guidance is provider-neutral (e.g. folder-index README edits route to `docs/99.templates/readme.template.md`).
 - Runtime hooks provide advisory context and validation routing only. Policy remains in `docs/00.agent-governance/`.
 
-## 6. Operational Practices
+## 8. Operational Practices
 
 - Keep root files concise and delegate detailed policy to governance docs.
 - Prefer repository-local checks over user-global configuration changes.
 - Do not mutate user-global `~/.codex` unless explicitly requested.
-- Keep `.codex/README.md` synchronized with any tracked `.codex/` runtime files.
 
 ## Related Documents
 
@@ -66,9 +73,4 @@ Codex-specific guidance for this repository.
 - `.codex/hooks.json`
 - `.claude/CLAUDE.md`
 - `docs/00.agent-governance/agents/`
-- `docs/00.agent-governance/providers/agents-md.md`
-- `docs/00.agent-governance/rules/bootstrap.md`
-- `docs/00.agent-governance/rules/github-governance.md`
-- `docs/00.agent-governance/subagent-protocol.md`
 - `scripts/hooks/agent-event-hook.sh`
-- `scripts/hooks/post-tool-validate.sh`
