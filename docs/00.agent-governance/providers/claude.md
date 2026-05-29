@@ -35,7 +35,10 @@ Claude Code loads instruction files in a defined precedence order. Within this r
 
 - `CLAUDE.md` is the root shim; it delegates to `AGENTS.md` and provider overlays.
 - `docs/00.agent-governance/` governance files are the policy SSOT and override provider defaults.
+- `.claude/` is the Claude runtime baseline.
 - `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`, and `.claude/skills/` are the runtime enforcement layer for Claude-specific behavior.
+- Claude agents and skills must maintain catalog parity with `docs/00.agent-governance/agents/`.
+- The `.agents/` directory acts as the cross-provider compatibility surface and Gemini shared surface, distinct from the Claude-specific `.claude/` runtime.
 - `.claude/hooks/*.sh` are thin wrappers that dispatch hook events through `scripts/hooks/agent-event-hook.sh`.
 - Claude `PreToolUse` Graphify advisory context and Docker Compose edit guardrails must route through the shared dispatcher, not inline shell snippets in `.claude/settings.json`.
 - GitHub-native instruction files are not part of this repository's active instruction hierarchy.
