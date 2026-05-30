@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 ---
 <!-- Target: docs/04.execution/tasks/2026-05-30-standardizing-agent-governance.md -->
 
@@ -18,24 +18,25 @@ status: draft
 ## Working Rules
 
 - Verify parity rules across Claude, Codex, and Gemini.
-- Core behavior must comply with the 3-tier Provider Parity Model.
+- Core behavior must comply with the 3-tier Provider Parity Model using the 2026-05-29 canonical models.
 - Run validation scripts after every file modification to prevent syntax or parity breaks.
 
 ## Task Table
 
-| Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| T-001 | Create and structure Plan & Task documents | doc | N/A | Phase 1 | Files present in docs/04.execution/ | Antigravity | Completed |
-| T-002 | Standardize Core Governance policies (README/workflows/matrix) | doc | N/A | Phase 1 | Matrix checks passed | Antigravity | Todo |
-| T-003 | Aling Platform Overlays (gemini.md / GEMINI.md / AGENTS.md) | doc | N/A | Phase 2 | Pointer parity validation success | Antigravity | Todo |
-| T-004 | Run contract verification script | eval | N/A | Phase 2 | `bash scripts/validation/check-repo-contracts.sh` | Antigravity | Todo |
+| Task ID | Description | Type | Parent Plan | Validation / Evidence | Owner | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| T-001 | Stage 00 공통 거버넌스 업데이트 | doc | PLN-001 | `provider-capability-matrix.md`, `stage-authoring-matrix.md` updated | Antigravity | Completed |
+| T-002 | 템플릿 계약 명시 및 매핑 리팩터링 | doc | PLN-002 | `policy.template.md` created, references updated | Antigravity | Completed |
+| T-003 | 모델 및 Reasoning 설정 업데이트 | doc | PLN-003 | `subagent-protocol.md` already correct (Opus 4.8 / Sonnet 4.6 / GPT-5.5 / Gemini 3.1 Pro). Capability matrix aligned. | Antigravity | Completed |
+| T-004 | 플랫폼별 하네스 정비 (Claude, Codex, Gemini) | doc | PLN-004 | `.claude`, `.codex`, `.agents` pointers checked | Antigravity | Completed |
+| T-005 | Run contract verification script | eval | All | `bash scripts/validation/check-repo-contracts.sh` | Antigravity | Completed |
 
 ## Verification Summary
 
 - **Test Commands**:
   - `bash scripts/validation/check-repo-contracts.sh`
 - **Logs / Evidence Location**:
-  - Console validation output (failures=0 PASS)
+  - Console validation output: `failures=0 PASS`
 
 ## Related Documents
 

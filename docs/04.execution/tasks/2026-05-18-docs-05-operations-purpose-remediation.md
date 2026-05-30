@@ -13,7 +13,6 @@ status: completed
 
 - **Parent Plan**: [docs/05.operations purpose remediation plan](../plans/2026-05-18-docs-05-operations-purpose-remediation.md)
 - **Operations Stage**: [Operations index](../../05.operations/README.md)
-- **Template Contract**: [Operation template](../../99.templates/operation.template.md)
 
 ## Working Rules
 
@@ -71,5 +70,4 @@ status: completed
 
 - **Parent Plan**: [docs/05.operations purpose remediation plan](../plans/2026-05-18-docs-05-operations-purpose-remediation.md)
 - **Operations index**: [../../05.operations/README.md](../../05.operations/README.md)
-- **Operations template**: [../../99.templates/operation.template.md](../../99.templates/operation.template.md)
 - **Repository contract validator**: [../../../scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh)

@@ -23,7 +23,6 @@ status: completed
   - LLM Wiki generated index를 최신화한다.
 - **In Scope**:
   - `docs/05.operations/**`
-  - `docs/99.templates/operation.template.md`
   - `scripts/validation/check-repo-contracts.sh`
   - `docs/90.references/llm-wiki/index.md`
   - `docs/04.execution/plans/README.md`
@@ -48,7 +47,6 @@ status: completed
 | OPS-002 | Normalize LLM Wiki maintenance guide/policy/runbook profiles | `docs/05.operations/*/llm-wiki-maintenance.md` | OPS-PURPOSE-002 | Guide has `## Usage`; policy has controls and verification; runbook has procedure and evidence |
 | OPS-003 | Add missing policy and runbook profile headings | `docs/05.operations/policies/**`, `docs/05.operations/runbooks/**` | OPS-PURPOSE-003 | Purpose profile scan reports `guides=0`, `policies=0`, `runbooks=0` |
 | OPS-004 | Remove nested duplicate Related Documents sections | `docs/05.operations/guides/**` | OPS-PURPOSE-004 | `#### Related Documents` scan returns no matches |
-| OPS-005 | Enforce the profile contract | `docs/99.templates/operation.template.md`, `scripts/validation/check-repo-contracts.sh` | OPS-PURPOSE-005 | Repo contract fails on missing or cross-profile headings |
 | OPS-006 | Refresh generated indexes and evidence | `docs/90.references/llm-wiki/index.md`, progress log | OPS-PURPOSE-006 | LLM Wiki check and repo validators pass |
 
 ## Verification Plan
@@ -92,7 +90,6 @@ status: completed
 ## Related Documents
 
 - **Operations index**: [../../05.operations/README.md](../../05.operations/README.md)
-- **Operations template**: [../../99.templates/operation.template.md](../../99.templates/operation.template.md)
 - **Task record**: [../tasks/2026-05-18-docs-05-operations-purpose-remediation.md](../tasks/2026-05-18-docs-05-operations-purpose-remediation.md)
 - **Documentation protocol**: [../../00.agent-governance/rules/documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
 - **Stage authoring matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
