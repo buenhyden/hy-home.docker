@@ -793,6 +793,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/memory.template.md](../../99.templates/memory.template.md) | Markdown reference |
 | [docs/99.templates/openapi.template.yaml](../../99.templates/openapi.template.yaml) | YAML config |
 | [docs/99.templates/plan.template.md](../../99.templates/plan.template.md) | Markdown reference |
+| [docs/99.templates/policy.template.md](../../99.templates/policy.template.md) | Markdown reference |
 | [docs/99.templates/postmortem.template.md](../../99.templates/postmortem.template.md) | Markdown reference |
 | [docs/99.templates/prd.template.md](../../99.templates/prd.template.md) | Markdown reference |
 | [docs/99.templates/progress.template.md](../../99.templates/progress.template.md) | Markdown reference |
