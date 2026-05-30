@@ -95,4 +95,3 @@ curl --location-trusted -u root: \
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/analytics/warehouses.md)
 - [Recovery runbook](../../../runbooks/04-data/analytics/warehouses.md)
-- [Operations template](../../../../99.templates/operation.template.md)

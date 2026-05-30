@@ -58,4 +58,3 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 ## Related Documents
 
 - [Operations index](../../README.md)
-- [Operations template](../../../99.templates/operation.template.md)

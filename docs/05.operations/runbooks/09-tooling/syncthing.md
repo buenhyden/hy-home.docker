@@ -147,7 +147,6 @@ If the admin password is lost:
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/09-tooling/syncthing.md)
 - [Operations policy](../../policies/09-tooling/syncthing.md)
-- [Operations template](../../../99.templates/operation.template.md)
 
 ## Rollback or Recovery
 

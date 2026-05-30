@@ -77,4 +77,3 @@ Copyright (c) 2026. Licensed under the MIT License.
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/operational/mng-db.md)
 - [Recovery runbook](../../../runbooks/04-data/operational/mng-db.md)
-- [Operations template](../../../../99.templates/operation.template.md)

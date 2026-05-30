@@ -74,4 +74,3 @@ status: active
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/11-laboratory/optimization-hardening.md)
 - [Recovery runbook](../../runbooks/11-laboratory/optimization-hardening.md)
-- [Operations template](../../../99.templates/operation.template.md)

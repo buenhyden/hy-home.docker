@@ -85,4 +85,3 @@ Master UI를 통해 볼륨 서버 상태와 복제 상태를 확인한다.
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/lake-and-object/seaweedfs.md)
 - [Recovery runbook](../../../runbooks/04-data/lake-and-object/seaweedfs.md)
-- [Operations template](../../../../99.templates/operation.template.md)

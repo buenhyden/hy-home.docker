@@ -71,4 +71,3 @@ Backups are useless if they cannot be restored. Quarterly "Fire Drills" are mand
 ## Related Documents
 
 - [Operations index](../../README.md)
-- [Operations template](../../../99.templates/operation.template.md)

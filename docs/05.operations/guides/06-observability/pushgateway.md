@@ -84,4 +84,3 @@ curl -X DELETE http://pushgateway.local/metrics/job/my_batch_job
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/06-observability/pushgateway.md)
 - [Recovery runbook](../../runbooks/06-observability/pushgateway.md)
-- [Operations template](../../../99.templates/operation.template.md)

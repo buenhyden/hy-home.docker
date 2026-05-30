@@ -68,4 +68,3 @@ ms`는 7일(604,800,000ms)로 설정한다.
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/05-messaging/kafka.md)
 - [Recovery runbook](../../runbooks/05-messaging/kafka.md)
-- [Operations template](../../../99.templates/operation.template.md)

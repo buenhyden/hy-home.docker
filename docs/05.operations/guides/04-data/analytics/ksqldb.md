@@ -92,4 +92,3 @@ CREATE TABLE event_counts AS
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/analytics/ksqldb.md)
 - [Recovery runbook](../../../runbooks/04-data/analytics/ksqldb.md)
-- [Operations template](../../../../99.templates/operation.template.md)

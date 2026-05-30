@@ -127,4 +127,3 @@ The container uses `infra_net`. If you cannot reach local services (like MinIO),
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/09-tooling/terraform.md)
 - [Recovery runbook](../../runbooks/09-tooling/terraform.md)
-- [Operations template](../../../99.templates/operation.template.md)

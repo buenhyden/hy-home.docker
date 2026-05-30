@@ -146,7 +146,6 @@ If a workspace is stuck in a locked state and "Force Unlock" in the UI fails:
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/09-tooling/terrakube.md)
 - [Operations policy](../../policies/09-tooling/terrakube.md)
-- [Operations template](../../../99.templates/operation.template.md)
 
 ## Rollback or Recovery
 

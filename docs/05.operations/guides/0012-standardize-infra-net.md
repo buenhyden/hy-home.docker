@@ -69,4 +69,3 @@ status: active
 - [Operations index](../README.md)
 - [infra_net spec](../../03.specs/standardize-infra-net/spec.md)
 - [Recovery runbook](../runbooks/0012-standardize-infra-net.md)
-- [Operations template](../../99.templates/operation.template.md)

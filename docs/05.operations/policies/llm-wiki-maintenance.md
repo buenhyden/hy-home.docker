@@ -45,4 +45,3 @@ status: active
 - [Operations index](../README.md)
 - [Usage guide](../guides/llm-wiki-maintenance.md)
 - [Recovery runbook](../runbooks/llm-wiki-maintenance.md)
-- [Operations template](../../99.templates/operation.template.md)

@@ -97,4 +97,3 @@ status: active
 - [LLM Wiki maintenance runbook](./llm-wiki-maintenance.md)
 - [Execution plans](../../04.execution/plans/README.md)
 - [Execution tasks](../../04.execution/tasks/README.md)
-- [Operations template](../../99.templates/operation.template.md)

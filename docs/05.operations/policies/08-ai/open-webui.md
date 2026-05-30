@@ -78,4 +78,3 @@ Open WebUI 서비스 운영 전반:
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/08-ai/open-webui.md)
 - [Recovery runbook](../../runbooks/08-ai/open-webui.md)
-- [Operations template](../../../99.templates/operation.template.md)

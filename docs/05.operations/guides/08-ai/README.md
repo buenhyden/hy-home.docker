@@ -46,9 +46,8 @@ guides/08-ai/
 
 ## How to Work in This Area
 
-1. 새 문서를 만들기 전에 `docs/99.templates/operation.template.md`의 목적별 profile과 target-relative link 규칙을 확인합니다.
-2. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
-3. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
+1. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
+2. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
 
 ## Contents
 
@@ -68,4 +67,3 @@ guides/08-ai/
 - [Operations Policies - 08-ai](../../policies/08-ai/README.md)
 - [Operations Runbooks - 08-ai](../../runbooks/08-ai/README.md)
 - [Incident records](../../incidents/README.md)
-- [Operations template](../../../99.templates/operation.template.md)

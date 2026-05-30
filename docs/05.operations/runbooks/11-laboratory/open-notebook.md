@@ -138,4 +138,3 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/11-laboratory/open-notebook.md)
 - [Operations policy](../../policies/11-laboratory/open-notebook.md)
-- [Operations template](../../../99.templates/operation.template.md)

@@ -145,4 +145,3 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/08-ai/ollama.md)
 - [Operations policy](../../policies/08-ai/ollama.md)
-- [Operations template](../../../99.templates/operation.template.md)

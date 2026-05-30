@@ -120,4 +120,3 @@ If OIDC logout occurs frequently, check the token expiration settings in the `hy
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/09-tooling/terrakube.md)
 - [Recovery runbook](../../runbooks/09-tooling/terrakube.md)
-- [Operations template](../../../99.templates/operation.template.md)

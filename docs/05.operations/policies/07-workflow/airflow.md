@@ -57,4 +57,3 @@ status: active
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/07-workflow/airflow.md)
 - [Recovery runbook](../../runbooks/07-workflow/airflow.md)
-- [Operations template](../../../99.templates/operation.template.md)

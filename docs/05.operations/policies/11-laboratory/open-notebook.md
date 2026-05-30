@@ -67,4 +67,3 @@ status: draft
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/11-laboratory/open-notebook.md)
 - [Recovery runbook](../../runbooks/11-laboratory/open-notebook.md)
-- [Operations template](../../../99.templates/operation.template.md)

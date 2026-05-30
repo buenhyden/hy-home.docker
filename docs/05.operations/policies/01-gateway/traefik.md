@@ -64,4 +64,3 @@ status: active
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/01-gateway/traefik.md)
 - [Recovery runbook](../../runbooks/01-gateway/traefik.md)
-- [Operations template](../../../99.templates/operation.template.md)

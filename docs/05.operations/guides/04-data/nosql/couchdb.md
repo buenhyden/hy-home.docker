@@ -92,4 +92,3 @@ CouchDB의 핵심은 원격 데이터베이스 간의 동기화이다.
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/nosql/couchdb.md)
 - [Recovery runbook](../../../runbooks/04-data/nosql/couchdb.md)
-- [Operations template](../../../../99.templates/operation.template.md)

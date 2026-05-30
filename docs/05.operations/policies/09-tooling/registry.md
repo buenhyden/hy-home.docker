@@ -56,4 +56,3 @@ status: active
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/09-tooling/registry.md)
 - [Recovery runbook](../../runbooks/09-tooling/registry.md)
-- [Operations template](../../../99.templates/operation.template.md)

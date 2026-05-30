@@ -88,4 +88,3 @@ N/A — 현재 승인된 예외 없음.
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/nosql/cassandra.md)
 - [Recovery runbook](../../../runbooks/04-data/nosql/cassandra.md)
-- [Operations template](../../../../99.templates/operation.template.md)

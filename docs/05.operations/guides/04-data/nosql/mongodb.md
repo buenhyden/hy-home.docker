@@ -88,4 +88,3 @@ mongodb://${USER}:${PASS}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyRe
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/nosql/mongodb.md)
 - [Recovery runbook](../../../runbooks/04-data/nosql/mongodb.md)
-- [Operations template](../../../../99.templates/operation.template.md)

@@ -59,4 +59,3 @@ Copyright (c) 2026. Licensed under the MIT License.
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/operational/supabase.md)
 - [Recovery runbook](../../../runbooks/04-data/operational/supabase.md)
-- [Operations template](../../../../99.templates/operation.template.md)

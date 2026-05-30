@@ -90,4 +90,3 @@ status: active
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-workflow/airbyte.md)
 - [Recovery runbook](../../runbooks/07-workflow/airbyte.md)
-- [Operations template](../../../99.templates/operation.template.md)

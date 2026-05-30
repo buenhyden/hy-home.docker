@@ -61,7 +61,6 @@ docs/05.operations/
 | check allowed controls, exceptions, or review cadence       | [policies/](./policies/README.md)                                                               |
 | execute recovery, validation, rollback, or escalation steps | [runbooks/](./runbooks/README.md)                                                               |
 | record an incident or postmortem                            | [incidents/](./incidents/README.md)                                                             |
-| start a new operations document                             | [operation template](../99.templates/operation.template.md)                                     |
 | confirm execution traceability                              | [execution plans](../04.execution/plans/README.md) and [tasks](../04.execution/tasks/README.md) |
 
 ## How to Work in This Area
@@ -70,8 +69,7 @@ docs/05.operations/
 2. 운영 통제, 예외, 보안/가용성 기준은 `policies/01-gateway/traefik.md` 같은 policy 문서에 둡니다.
 3. 명령 순서, 기대 결과, 실패 시 중단 기준이 있는 절차는 `runbooks/01-gateway/traefik.md` 같은 runbook 문서에 둡니다.
 4. 실제 사고 기록과 postmortem은 `incidents/`에 둡니다.
-5. 새 operations 문서는 `../99.templates/operation.template.md`를 기본 템플릿으로 사용하고, target 위치 기준으로 상대 링크를 계산합니다.
-6. 문서를 추가, 이동, 삭제하면 해당 parent `README.md`와 관련 bucket 링크를 함께 갱신합니다.
+5. 문서를 추가, 이동, 삭제하면 해당 parent `README.md`와 관련 bucket 링크를 함께 갱신합니다.
 
 특정 서비스에 속하지 않는 cross-service 또는 workspace-level 문서(예: `guides/developer-setup.md`, `policies/infra-service-optimization-catalog.md`, `runbooks/release-management.md`)는 서비스 하위 폴더 없이 tier root에 직접 둡니다.
 

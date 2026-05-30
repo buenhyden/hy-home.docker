@@ -110,4 +110,3 @@ curl -f http://localhost:${OLLAMA_EXPORTER_PORT:-11435}/metrics
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/08-ai/ollama.md)
 - [Recovery runbook](../../runbooks/08-ai/ollama.md)
-- [Operations template](../../../99.templates/operation.template.md)

@@ -85,4 +85,3 @@ docker compose exec airflow-webserver airflow dags list
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-workflow/airflow.md)
 - [Recovery runbook](../../runbooks/07-workflow/airflow.md)
-- [Operations template](../../../99.templates/operation.template.md)

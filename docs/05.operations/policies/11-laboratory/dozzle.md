@@ -51,4 +51,3 @@ Dozzle 서비스의 노출 범위, 인증 방식 및 리소스 접근 통제.
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/11-laboratory/dozzle.md)
 - [Recovery runbook](../../runbooks/11-laboratory/dozzle.md)
-- [Operations template](../../../99.templates/operation.template.md)

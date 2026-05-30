@@ -56,4 +56,3 @@ status: active
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/11-laboratory/dashboard.md)
 - [Recovery runbook](../../runbooks/11-laboratory/dashboard.md)
-- [Operations template](../../../99.templates/operation.template.md)

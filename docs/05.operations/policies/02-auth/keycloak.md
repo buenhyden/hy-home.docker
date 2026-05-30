@@ -61,4 +61,3 @@ status: active
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/02-auth/keycloak.md)
 - [Recovery runbook](../../runbooks/02-auth/keycloak.md)
-- [Operations template](../../../99.templates/operation.template.md)

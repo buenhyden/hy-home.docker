@@ -153,4 +153,3 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/06-observability/tempo.md)
 - [Operations policy](../../policies/06-observability/tempo.md)
-- [Operations template](../../../99.templates/operation.template.md)

@@ -65,4 +65,3 @@ status: active
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/01-gateway/nginx.md)
 - [Recovery runbook](../../runbooks/01-gateway/nginx.md)
-- [Operations template](../../../99.templates/operation.template.md)

@@ -86,4 +86,3 @@ curl -X POST "https://qdrant.${DEFAULT_URL}/collections/my_collection/points/sea
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/specialized/qdrant.md)
 - [Recovery runbook](../../../runbooks/04-data/specialized/qdrant.md)
-- [Operations template](../../../../99.templates/operation.template.md)

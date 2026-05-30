@@ -79,4 +79,3 @@ Valkey Cluster는 샤딩된 환경이므로 모든 노드 정보를 클라이언
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/cache-and-kv/valkey-cluster.md)
 - [Recovery runbook](../../../runbooks/04-data/cache-and-kv/valkey-cluster.md)
-- [Operations template](../../../../99.templates/operation.template.md)

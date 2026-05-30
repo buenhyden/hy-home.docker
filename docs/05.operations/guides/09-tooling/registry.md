@@ -85,4 +85,3 @@ docker pull registry.hy-home.docker:5000/<project>/<image>:<tag>
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/09-tooling/registry.md)
 - [Recovery runbook](../../runbooks/09-tooling/registry.md)
-- [Operations template](../../../99.templates/operation.template.md)

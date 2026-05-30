@@ -92,4 +92,3 @@ docker compose up pg-cluster-init
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/relational/postgresql-cluster.md)
 - [Recovery runbook](../../../runbooks/04-data/relational/postgresql-cluster.md)
-- [Operations template](../../../../99.templates/operation.template.md)

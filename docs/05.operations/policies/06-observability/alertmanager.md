@@ -67,4 +67,3 @@ status: active
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/06-observability/alertmanager.md)
 - [Recovery runbook](../../runbooks/06-observability/alertmanager.md)
-- [Operations template](../../../99.templates/operation.template.md)

@@ -90,4 +90,3 @@ kafka-topics --create --topic my-topic --bootstrap-server localhost:9092
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/05-messaging/kafka.md)
 - [Recovery runbook](../../runbooks/05-messaging/kafka.md)
-- [Operations template](../../../99.templates/operation.template.md)

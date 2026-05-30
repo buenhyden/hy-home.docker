@@ -79,4 +79,3 @@ status: active
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/03-security/vault.md)
 - [Recovery runbook](../../runbooks/03-security/vault.md)
-- [Operations template](../../../99.templates/operation.template.md)

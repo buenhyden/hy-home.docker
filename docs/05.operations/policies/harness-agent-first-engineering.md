@@ -17,9 +17,6 @@ policy_state: enforced
 - Claude runtime mirror.
 - Codex hook/context surface.
 - Stage documentation and validators.
-
-## Policy Scope
-
 - `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`
 - `.claude/**`
 - `.codex/**`
@@ -47,6 +44,7 @@ policy_state: enforced
 | Source-label prevention | Active runtime/governance files must not reference external harness source labels. |
 | Graph context health | Graphify is a navigation aid only when health is clean; contaminated output remains advisory and must be corroborated against tracked source and canonical docs. |
 | Infra validation scope | HAFE completion may rely on default/core Compose and supported hardening tiers; non-included profiles such as `10-communication` require separate infra remediation. |
+| AI Agent limits | Agents must start with non-mutating discovery, must not invent untracked roles, must document gaps, and must report Graphify as advisory context only. |
 
 ## Exceptions
 
@@ -83,16 +81,7 @@ bash scripts/hardening/check-all-hardening.sh
 - Review this policy when `.claude`, `.codex`, or `docs/00.agent-governance/agents` changes.
 - Record out-of-scope infra profile failures separately instead of expanding HAFE acceptance criteria silently.
 
-## AI Agent Policy Section (If Applicable)
-
-- Agents must start with non-mutating discovery.
-- Agents must not invent runtime teams or untracked roles.
-- Agents must document gap findings before making runtime changes.
-- Agents must report changed files, checks run, and residual risks.
-- Agents must describe Graphify advisory output as navigation context, not architecture authority.
-
 ## Related Documents
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/harness-agent-first-engineering.md)
-- [Operations template](../../99.templates/operation.template.md)

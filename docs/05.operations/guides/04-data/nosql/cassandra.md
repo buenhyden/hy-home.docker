@@ -87,4 +87,3 @@ Prometheus는 `cassandra-exporter` (포트 8080/8081)를 통해 메트릭을 수
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/nosql/cassandra.md)
 - [Recovery runbook](../../../runbooks/04-data/nosql/cassandra.md)
-- [Operations template](../../../../99.templates/operation.template.md)

@@ -94,4 +94,3 @@ Grafana version updates are managed via `docker-compose.yml`. Before upgrading, 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/06-observability/grafana.md)
 - [Recovery runbook](../../runbooks/06-observability/grafana.md)
-- [Operations template](../../../99.templates/operation.template.md)

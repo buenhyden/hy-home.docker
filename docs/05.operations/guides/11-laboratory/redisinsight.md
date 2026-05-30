@@ -79,4 +79,3 @@ status: active
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/11-laboratory/redisinsight.md)
 - [Recovery runbook](../../runbooks/11-laboratory/redisinsight.md)
-- [Operations template](../../../99.templates/operation.template.md)

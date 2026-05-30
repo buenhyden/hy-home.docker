@@ -65,4 +65,3 @@ This document defines the operational policy for `postgresql-cluster`. It establ
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/relational/postgresql-cluster.md)
 - [Recovery runbook](../../../runbooks/04-data/relational/postgresql-cluster.md)
-- [Operations template](../../../../99.templates/operation.template.md)

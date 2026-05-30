@@ -155,7 +155,6 @@ If credentials expired or are invalid:
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/09-tooling/terraform.md)
 - [Operations policy](../../policies/09-tooling/terraform.md)
-- [Operations template](../../../99.templates/operation.template.md)
 
 ## Rollback or Recovery
 

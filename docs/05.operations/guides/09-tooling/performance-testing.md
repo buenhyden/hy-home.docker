@@ -88,4 +88,3 @@ class WebsiteUser(HttpUser):
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/09-tooling/performance-testing.md)
 - [Recovery runbook](../../runbooks/09-tooling/performance-testing.md)
-- [Operations template](../../../99.templates/operation.template.md)

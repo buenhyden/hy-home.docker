@@ -93,4 +93,3 @@ High cardinality labels can degrade Loki performance and increase storage costs.
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/06-observability/loki.md)
 - [Recovery runbook](../../runbooks/06-observability/loki.md)
-- [Operations template](../../../99.templates/operation.template.md)

@@ -446,6 +446,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-28-workspace-doc-consistency.md](../../04.execution/plans/2026-05-28-workspace-doc-consistency.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-29-workspace-consistency-2026-05b.md](../../04.execution/plans/2026-05-29-workspace-consistency-2026-05b.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-30-ai-governance-reorg.md](../../04.execution/plans/2026-05-30-ai-governance-reorg.md) | Markdown reference |
+| [docs/04.execution/plans/2026-05-30-standardizing-agent-governance.md](../../04.execution/plans/2026-05-30-standardizing-agent-governance.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -498,6 +499,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-05-26-workspace-audit.md](../../04.execution/tasks/2026-05-26-workspace-audit.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-28-workspace-doc-consistency.md](../../04.execution/tasks/2026-05-28-workspace-doc-consistency.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-29-workspace-consistency-2026-05b.md](../../04.execution/tasks/2026-05-29-workspace-consistency-2026-05b.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-05-30-standardizing-agent-governance.md](../../04.execution/tasks/2026-05-30-standardizing-agent-governance.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -790,7 +792,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/incident.template.md](../../99.templates/incident.template.md) | Markdown reference |
 | [docs/99.templates/memory.template.md](../../99.templates/memory.template.md) | Markdown reference |
 | [docs/99.templates/openapi.template.yaml](../../99.templates/openapi.template.yaml) | YAML config |
-| [docs/99.templates/operation.template.md](../../99.templates/operation.template.md) | Markdown reference |
 | [docs/99.templates/plan.template.md](../../99.templates/plan.template.md) | Markdown reference |
 | [docs/99.templates/postmortem.template.md](../../99.templates/postmortem.template.md) | Markdown reference |
 | [docs/99.templates/prd.template.md](../../99.templates/prd.template.md) | Markdown reference |

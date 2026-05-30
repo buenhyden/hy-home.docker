@@ -101,4 +101,3 @@ const s3 = new AWS.S3({
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/lake-and-object/minio.md)
 - [Recovery runbook](../../../runbooks/04-data/lake-and-object/minio.md)
-- [Operations template](../../../../99.templates/operation.template.md)

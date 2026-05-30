@@ -57,4 +57,3 @@ status: active
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/operational/mng-db.md)
 - [Recovery runbook](../../../runbooks/04-data/operational/mng-db.md)
-- [Operations template](../../../../99.templates/operation.template.md)

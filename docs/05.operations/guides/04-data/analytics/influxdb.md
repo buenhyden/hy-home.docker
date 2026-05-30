@@ -82,4 +82,3 @@ curl -i http://influxdb:8181/health
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/analytics/influxdb.md)
 - [Recovery runbook](../../../runbooks/04-data/analytics/influxdb.md)
-- [Operations template](../../../../99.templates/operation.template.md)

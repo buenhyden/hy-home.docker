@@ -53,4 +53,3 @@ Valkey 6노드 분산 클러스터의 영속성(Persistence), 메모리 관리, 
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/cache-and-kv/valkey-cluster.md)
 - [Recovery runbook](../../../runbooks/04-data/cache-and-kv/valkey-cluster.md)
-- [Operations template](../../../../99.templates/operation.template.md)

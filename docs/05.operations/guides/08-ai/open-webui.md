@@ -103,4 +103,3 @@ docker exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/08-ai/open-webui.md)
 - [Recovery runbook](../../runbooks/08-ai/open-webui.md)
-- [Operations template](../../../99.templates/operation.template.md)

@@ -125,4 +125,3 @@ sysctl -w vm.max_map_count=262144
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/09-tooling/sonarqube.md)
 - [Recovery runbook](../../runbooks/09-tooling/sonarqube.md)
-- [Operations template](../../../99.templates/operation.template.md)

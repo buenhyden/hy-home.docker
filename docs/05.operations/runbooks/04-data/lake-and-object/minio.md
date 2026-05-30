@@ -170,4 +170,3 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/lake-and-object/minio.md)
 - [Operations policy](../../../policies/04-data/lake-and-object/minio.md)
-- [Operations template](../../../../99.templates/operation.template.md)

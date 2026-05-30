@@ -80,4 +80,3 @@ status: active
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/10-communication/mail.md)
 - [Recovery runbook](../../runbooks/10-communication/mail.md)
-- [Operations template](../../../99.templates/operation.template.md)

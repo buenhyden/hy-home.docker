@@ -82,4 +82,3 @@ Alloy의 파이프라인은 다음과 같은 단계로 구성된다.
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/06-observability/alloy.md)
 - [Recovery runbook](../../runbooks/06-observability/alloy.md)
-- [Operations template](../../../99.templates/operation.template.md)

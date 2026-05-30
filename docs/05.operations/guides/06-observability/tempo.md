@@ -74,4 +74,3 @@ Loki 로그와 연동되어 있는 경우, 특정 로그 라인에 포함된 Tra
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/06-observability/tempo.md)
 - [Recovery runbook](../../runbooks/06-observability/tempo.md)
-- [Operations template](../../../99.templates/operation.template.md)

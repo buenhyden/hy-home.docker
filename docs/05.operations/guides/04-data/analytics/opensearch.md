@@ -91,4 +91,3 @@ unset OPENSEARCH_ADMIN_PASSWORD
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/analytics/opensearch.md)
 - [Recovery runbook](../../../runbooks/04-data/analytics/opensearch.md)
-- [Operations template](../../../../99.templates/operation.template.md)

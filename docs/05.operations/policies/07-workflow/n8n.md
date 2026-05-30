@@ -92,4 +92,3 @@ status: active
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/07-workflow/n8n.md)
 - [Recovery runbook](../../runbooks/07-workflow/n8n.md)
-- [Operations template](../../../99.templates/operation.template.md)

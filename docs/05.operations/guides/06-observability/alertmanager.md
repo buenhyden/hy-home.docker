@@ -83,4 +83,3 @@ route:
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/06-observability/alertmanager.md)
 - [Recovery runbook](../../runbooks/06-observability/alertmanager.md)
-- [Operations template](../../../99.templates/operation.template.md)

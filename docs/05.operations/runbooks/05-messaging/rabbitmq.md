@@ -100,4 +100,3 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/05-messaging/rabbitmq.md)
 - [Operations policy](../../policies/05-messaging/rabbitmq.md)
-- [Operations template](../../../99.templates/operation.template.md)

@@ -65,4 +65,3 @@ status: active
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/02-auth/oauth2-proxy.md)
 - [Recovery runbook](../../runbooks/02-auth/oauth2-proxy.md)
-- [Operations template](../../../99.templates/operation.template.md)

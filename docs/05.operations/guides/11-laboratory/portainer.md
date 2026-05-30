@@ -78,4 +78,3 @@ status: active
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/11-laboratory/portainer.md)
 - [Recovery runbook](../../runbooks/11-laboratory/portainer.md)
-- [Operations template](../../../99.templates/operation.template.md)

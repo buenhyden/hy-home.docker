@@ -54,4 +54,3 @@ N/A — 현재 승인된 예외 없음.
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/11-laboratory/redisinsight.md)
 - [Recovery runbook](../../runbooks/11-laboratory/redisinsight.md)
-- [Operations template](../../../99.templates/operation.template.md)

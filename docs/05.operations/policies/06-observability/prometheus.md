@@ -90,4 +90,3 @@ N/A — 현재 승인된 예외 없음.
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/06-observability/prometheus.md)
 - [Recovery runbook](../../runbooks/06-observability/prometheus.md)
-- [Operations template](../../../99.templates/operation.template.md)

@@ -59,4 +59,3 @@ Dozzle을 통해 인프라 내 컨테이너 로그를 효율적으로 확인하�
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/11-laboratory/dozzle.md)
 - [Recovery runbook](../../runbooks/11-laboratory/dozzle.md)
-- [Operations template](../../../99.templates/operation.template.md)

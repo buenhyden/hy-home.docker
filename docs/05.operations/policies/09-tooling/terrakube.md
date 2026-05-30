@@ -84,4 +84,3 @@ N/A — 현재 승인된 예외 없음.
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/09-tooling/terrakube.md)
 - [Recovery runbook](../../runbooks/09-tooling/terrakube.md)
-- [Operations template](../../../99.templates/operation.template.md)

@@ -148,7 +148,6 @@ Monitor these files for specific error patterns:
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/09-tooling/sonarqube.md)
 - [Operations policy](../../policies/09-tooling/sonarqube.md)
-- [Operations template](../../../99.templates/operation.template.md)
 
 ## Rollback or Recovery
 
