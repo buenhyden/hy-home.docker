@@ -32,7 +32,7 @@ Gemini merges context from multiple files. Within this repository:
 
 - `GEMINI.md` is the root shim; it delegates to `AGENTS.md` and provider overlays.
 - `docs/00.agent-governance/` governance files are the policy SSOT and override Gemini defaults.
-- `.agents/` is Gemini's shared surface and reference-index shim; it holds pointer-only agent and skill indexes, while rules and workflows remain in governance.
+- `.agents/` is Gemini's shared surface and reference-index shim; it holds pointer-only agent and skill indexes, but actively contains native Antigravity `rules/` and `workflows/` directories for workspace-specific policies.
 - `.agents/agents/` provides the Gemini reference index to the governance agent catalog.
 - GitHub-native instruction files are not part of this repository's active instruction hierarchy.
 
@@ -44,7 +44,7 @@ reference-index model — no full duplication and no provider-local policy direc
 - `.agents/` is Gemini's shared runtime surface and reference-index shim.
 - `.agents/agents/<name>.md` are reference-index pointers to `docs/00.agent-governance/agents/agents/`.
 - `.agents/skills/<name>/skill.md` are reference-index pointers to `docs/00.agent-governance/agents/functions/`.
-- `.agents/` contains no `rules/` or `workflows/` directories; Gemini rules and workflows live in governance (`rules/`, `rules/workflows.md`) and are followed as behavioral contracts.
+- `.agents/` contains `rules/` and `workflows/` directories natively supported by Antigravity IDE to define workspace-specific behavioral contracts and pipelines.
 - Gemini agent model identifiers follow the Model Policy in `subagent-protocol.md` (supervisor `gemini-3.1-pro`, worker `gemini-3.5-flash`).
 - The `.agents/` directory is git-tracked.
 

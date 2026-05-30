@@ -8,15 +8,15 @@ This directory is the native runtime surface for Gemini agents and a compatibili
 
 - Gemini reference index under `agents/` pointing to the governance agent catalog
 - Gemini reference index under `skills/` pointing to the governance function catalog
+- Gemini-native Workspace Rules in `rules/`
+- Gemini-native Workflows in `workflows/`
 
 Per the Provider Parity Model (`docs/00.agent-governance/providers/agents-md.md` §5),
-both `agents/` and `skills/` are pointer-only reference indexes. Gemini rules and
-workflows are not duplicated here; they live in `docs/00.agent-governance/` and are
-followed as behavioral contracts.
+both `agents/` and `skills/` are pointer-only reference indexes. However, `.agents/` natively supports defining workspace-specific behavior in `rules/` and `workflows/` to fully leverage the Antigravity IDE.
 
 ### Out of Scope
 
-- Active policy that belongs in `docs/00.agent-governance/`
+- Core global policy that belongs in `docs/00.agent-governance/`
 - Parallel disconnected agent catalogs (must link to `docs/00.agent-governance/agents/`)
 - Secrets, tokens, credentials, shell history, or logs
 

@@ -19,7 +19,7 @@ own native mechanism per the Provider Parity Model (`providers/agents-md.md` §5
 | Output style       | `rules/output-style.md`                                    | `.claude/output-styles/*.md` + `settings.json` | behavioral contract                         | behavioral contract                     |
 | Workflows          | `rules/workflows.md` (+ `rules/stage-authoring-matrix.md`) | orchestration skills / commands                | orchestration skills (mirror)               | orchestration skills (pointer)          |
 | Memory             | `memory/` (`progress.md`, notes)                           | read/write `memory/progress.md` + notes        | read/write `memory/progress.md` + notes     | read/write `memory/progress.md` + notes |
-| Models             | `subagent-protocol.md` Model Policy                        | `opus` / `sonnet`                              | `gpt-5.1-codex` / `gpt-5.1-codex-mini`      | `gemini-3-pro` / `gemini-3-flash`       |
+| Models             | `subagent-protocol.md` Model Policy                        | `opus-4.8` / `sonnet-4.6`                      | `gpt-5.5` / `gpt-5.5-instant`               | `gemini-3.1-pro` / `gemini-3.5-flash`   |
 | Templates          | `docs/99.templates/` via `rules/documentation-protocol.md` | shared                                         | shared                                      | shared                                  |
 
 ## 2. Rules

@@ -57,7 +57,7 @@ All three runtimes (Claude, Codex, Gemini) mirror the same agent and function ca
 ### Tier 3 — Provider Mirrors and Indexes
 
 - **Codex (`.codex/`)** keeps full runtime copies under `.codex/agents/` and `.codex/skills/` because Codex loads self-contained files. These copies MUST stay content-identical to `.claude/` (provider frontmatter aside) and are kept in sync deliberately.
-- **Gemini (`.agents/`)** uses a reference-index model: each `.agents/agents/<name>.md` and `.agents/skills/<name>/skill.md` is a thin pointer that imports the governance catalog entry and names `.claude/` as the canonical implementation. Gemini surfaces carry no full duplication. `.agents/` holds no `rules/` or `workflows/` directories; Gemini-specific policy lives in governance.
+- **Gemini (`.agents/`)** uses a hybrid model: each `.agents/agents/<name>.md` and `.agents/skills/<name>/skill.md` is a thin pointer that imports the governance catalog entry and names `.claude/` as the canonical implementation. However, to leverage native Antigravity IDE capabilities, `.agents/` explicitly supports and contains `rules/` and `workflows/` directories for workspace-specific policies.
 
 ### Parity Rules (enforced by `scripts/validation/check-repo-contracts.sh`)
 

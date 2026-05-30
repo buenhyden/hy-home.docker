@@ -19,8 +19,8 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 
 | Tier                  | Role                                | Claude       | Gemini             | GPT / Codex       |
 | --------------------- | ----------------------------------- | ------------ | ------------------ | ----------------- |
-| Supervisor (top spec) | routing, final decisions, synthesis | `opus-4.8`   | `gemini-3.1-pro`   | `gpt-5.5`         |
-| Worker (right-sized)  | scoped task execution               | `sonnet-4.6` | `gemini-3.5-flash` | `gpt-5.5-instant` |
+| Supervisor (top spec) | routing, final decisions, synthesis, planning, architecture, refactoring | `opus-4.8`   | `gemini-3.1-pro`   | `gpt-5.5`         |
+| Worker (right-sized)  | scoped task execution, repetitive editing, doc organizing, summarization | `sonnet-4.6` | `gemini-3.5-flash` | `gpt-5.5-instant` |
 
 - This table is the single source of truth for the "provider equivalent" model tiers. The
   Claude column uses human-readable version names; `.claude/agents/*.md` carry the Claude
@@ -31,6 +31,7 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 - Identifiers verified against latest official model docs on 2026-05-29 (Opus 4.8, Sonnet 4.6;
   Gemini 3.1 Pro, Gemini 3.5 Flash; GPT-5.5, GPT-5.5 Instant). `gpt-5.3-codex` is the
   Codex-native agentic coding model and is an acceptable future refinement for `.codex/`.
+- **Gemini Reasoning Policy**: Antigravity IDE manages reasoning effort strictly via model selection. `gemini-3.1-pro` is mandated for tasks requiring high reasoning effort (planning, complex refactors), while `gemini-3.5-flash` is used for standard/low reasoning effort (repetitive edits, text classification).
 
 ## 2. Required Preamble (per agent)
 
