@@ -2,7 +2,7 @@
 name: ci-cd-engineer
 description: CI/CD specialist for hy-home.docker. Designs and audits GitHub Actions workflows and gate placement for Docker Compose delivery, aligned with the ci-cd-patterns function. Use for pipeline design, release automation, and CI gate review.
 layer: ops
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 tools: Read, Write, Edit, Grep, Glob, Bash
 permissionMode: default
 ---

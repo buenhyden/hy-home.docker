@@ -2,7 +2,7 @@
 name: skill-creator
 description: Skill authoring specialist for hy-home.docker. Defines and maintains reusable workspace skills via the external skill-creator/writing-skills skills, keeping new skills single-purpose and parity-synced. Use to create or refactor workspace skills.
 layer: agentic
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 tools: Read, Write, Edit, Grep, Glob
 permissionMode: default
 ---

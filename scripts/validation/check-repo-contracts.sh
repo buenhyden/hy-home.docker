@@ -797,7 +797,7 @@ for fn in runtime_functions:
 # 3. Codex model policy.
 for agent in codex_agents:
     model = frontmatter_value(read(pathlib.Path(f".codex/agents/{agent}.md")), "model")
-    expected = "gpt-5.5" if agent == "workflow-supervisor" else "gpt-5.5-instant"
+    expected = "gpt-5.5" if agent == "workflow-supervisor" else "gpt-5.4-mini"
     if model != expected:
         failures.append(f".codex/agents/{agent}.md: expected model {expected!r}, found {model!r}")
 

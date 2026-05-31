@@ -20,7 +20,7 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
 | Tier                  | Role                                | Claude       | Gemini             | GPT / Codex       |
 | --------------------- | ----------------------------------- | ------------ | ------------------ | ----------------- |
 | Supervisor (top spec) | routing, final decisions, synthesis, planning, architecture, refactoring | `opus-4.8`   | `gemini-3.1-pro`   | `gpt-5.5`         |
-| Worker (right-sized)  | scoped task execution, repetitive editing, doc organizing, summarization | `sonnet-4.6` | `gemini-3.5-flash` | `gpt-5.5-instant` |
+| Worker (right-sized)  | scoped task execution, repetitive editing, doc organizing, summarization | `sonnet-4.6` | `gemini-3.5-flash` | `gpt-5.4-mini` |
 
 - This table is the single source of truth for the "provider equivalent" model tiers. The
   Claude column uses human-readable version names; `.claude/agents/*.md` carry the Claude
@@ -28,9 +28,11 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
   and `sonnet-4.6`. `.codex/` and `.agents/` carry the literal identifiers shown.
 - `workflow-supervisor` is the only Supervisor-tier role; all other catalog agents are Worker tier.
 - The model mapping is enforced by `scripts/validation/check-repo-contracts.sh`.
-- Identifiers verified against latest official model docs on 2026-05-29 (Opus 4.8, Sonnet 4.6;
-  Gemini 3.1 Pro, Gemini 3.5 Flash; GPT-5.5, GPT-5.5 Instant). `gpt-5.3-codex` is the
-  Codex-native agentic coding model and is an acceptable future refinement for `.codex/`.
+- Identifiers verified against official model docs on 2026-05-31 for Codex/GPT
+  (`gpt-5.5`, `gpt-5.4-mini`) and retained from prior provider verification for
+  Claude and Gemini. `gpt-5.3-codex` may be introduced only as an explicit
+  code-specialized worker override after the same provider-parity checks are
+  updated; it is not the default worker model.
 - **Gemini Reasoning Policy**: Antigravity IDE manages reasoning effort strictly via model selection. `gemini-3.1-pro` is mandated for tasks requiring high reasoning effort (planning, complex refactors), while `gemini-3.5-flash` is used for standard/low reasoning effort (repetitive edits, text classification).
 
 ## 2. Required Preamble (per agent)
@@ -63,7 +65,7 @@ The supervisor coordinates workers and should not be treated as a generic worker
 | `wiki-curator`       | `scopes/docs.md`     | `.claude/agents/wiki-curator.md`       | `.codex/agents/wiki-curator.md`       | `.agents/agents/wiki-curator.md`       |
 | `iac-reviewer`       | `scopes/infra.md`    | `.claude/agents/iac-reviewer.md`       | `.codex/agents/iac-reviewer.md`       | `.agents/agents/iac-reviewer.md`       |
 | `drift-detector`     | `scopes/infra.md`    | `.claude/agents/drift-detector.md`     | `.codex/agents/drift-detector.md`     | `.agents/agents/drift-detector.md`     |
-| `qa-engineer`        | `scopes/common.md`   | `.claude/agents/qa-engineer.md`        | `.codex/agents/qa-engineer.md`        | `.agents/agents/qa-engineer.md`        |
+| `qa-engineer`        | `scopes/qa.md`       | `.claude/agents/qa-engineer.md`        | `.codex/agents/qa-engineer.md`        | `.agents/agents/qa-engineer.md`        |
 | `ci-cd-engineer`     | `scopes/ops.md`      | `.claude/agents/ci-cd-engineer.md`     | `.codex/agents/ci-cd-engineer.md`     | `.agents/agents/ci-cd-engineer.md`     |
 | `skill-creator`      | `scopes/agentic.md`  | `.claude/agents/skill-creator.md`      | `.codex/agents/skill-creator.md`      | `.agents/agents/skill-creator.md`      |
 | `hook-developer`     | `scopes/agentic.md`  | `.claude/agents/hook-developer.md`     | `.codex/agents/hook-developer.md`     | `.agents/agents/hook-developer.md`     |

@@ -2,7 +2,7 @@
 name: rules-engineer
 description: Governance rules and settings specialist for hy-home.docker. Maintains rules, templates, and configuration files via the external update-config skill, keeping policy in governance and avoiding duplication across layers. Use to change rules, permissions, or settings.
 layer: agentic
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 tools: Read, Write, Edit, Grep, Glob
 permissionMode: default
 ---

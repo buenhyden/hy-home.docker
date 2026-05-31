@@ -8,36 +8,37 @@ action: warn
 
 <!-- markdownlint-disable MD041 MD040 -->
 
-🐳 **Docker 인프라 완료 체크리스트 (프로젝트 규칙)**
+**Docker infrastructure completion checklist (project rule)**
 
-`docs/00.agent-governance/rules/postflight-checklist.md` — 인프라 레이어 완료 전 확인사항:
+`docs/00.agent-governance/rules/postflight-checklist.md` — checks before completing infra-layer work:
 
-**Infrastructure Gate (infra 레이어 변경 시):**
+**Infrastructure Gate (when the infra layer changes):**
 
-- [ ] `bash scripts/validation/validate-docker-compose.sh` 통과
-- [ ] 플레인텍스트 시크릿이 변경 파일에 없음 (Docker Secrets 또는 `secrets/` 마운트 사용)
-- [ ] Named 볼륨이 `[Service]-[Data]-[Volume]` 규칙을 따름
+- [ ] `bash scripts/validation/validate-docker-compose.sh` passes.
+- [ ] Changed files contain no plaintext secrets; use Docker Secrets or `secrets/` mounts.
+- [ ] Named volumes follow the `[Service]-[Data]-[Volume]` rule.
 
-**Settings Gate (settings 변경 시):**
+**Settings Gate (when settings change):**
 
-- [ ] `settings.json` = 팀 공유 설정만 (git tracked)
-- [ ] `settings.local.json` = 개인 오버라이드만
-- [ ] 두 파일 간 중복 없음
+- [ ] `settings.json` contains only team-shared settings (git tracked).
+- [ ] `settings.local.json` contains only personal overrides.
+- [ ] The two files have no duplicate settings.
 
-**Governance Memory 업데이트:**
+**Governance memory update:**
 
-- [ ] `docs/00.agent-governance/memory/progress.md` 작업 로그 기록
-- [ ] 변경 파일, 검증 증거, 미해결 리스크 기록
+- [ ] Record the work log in `docs/00.agent-governance/memory/progress.md`.
+- [ ] Record changed files, verification evidence, and unresolved risk.
 
-**Completion Blockers (HALT 조건):**
+**Completion blockers (halt conditions):**
 
-| 조건 | 조치 |
-|------|------|
-| `validate-docker-compose.sh` 실패 | compose 수정 후 재실행 |
-| 설정 중복 | `settings.local.json`에서 제거 |
-| 플레인텍스트 시크릿 발견 | Docker Secret 참조로 교체 |
+| Condition | Action |
+| --------- | ------ |
+| `validate-docker-compose.sh` fails | fix Compose and rerun |
+| duplicate settings | remove duplicates from `settings.local.json` |
+| plaintext secret found | replace with Docker Secret reference |
 
-PR 관련 작업이라면 `docs/00.agent-governance/rules/github-governance.md`의 Completion Gate도 확인하세요.
+For PR-related work, also check the Completion Gate in
+`docs/00.agent-governance/rules/github-governance.md`.
 
 ## Related Documents
 

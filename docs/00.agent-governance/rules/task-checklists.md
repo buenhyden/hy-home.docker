@@ -14,6 +14,8 @@ Unified task execution checklists for all agent work.
 - [ ] Confirm whether `docs/01` to `docs/99` are in read-only mode.
 - [ ] Identify required input documents (PRD, ARD, ADR, Specs, Plans, Tasks).
 - [ ] Review `docs/00.agent-governance/memory/README.md` and `progress.md`; retrieve relevant memory notes when the task touches governance, docs, runtime, or repeated failures.
+- [ ] Identify ambiguity. Ask before state changes if a wrong assumption could
+      change scope, policy, security posture, or verification outcome.
 - [ ] Identify key risks (security, data loss, breaking changes, governance drift).
 - [ ] Define verification commands and acceptance criteria before edits.
 
@@ -23,6 +25,7 @@ Unified task execution checklists for all agent work.
 - [ ] Preserve audit/planning/implementation/verification separation when the workflow defines those roles.
 - [ ] Preserve SSoT traceability across affected documentation artifacts.
 - [ ] Maintain language policy consistency (English governance, Korean human-facing docs).
+- [ ] Keep assumptions explicit and update them when repository evidence disproves them.
 - [ ] Validate new/changed links as edits are made.
 - [ ] When a document is modified, update the parent folder `README.md` if the change affects the folder's description of that document (title, status, scope, or summary-level content); see DOCS 3 R2 in `rules/documentation-protocol.md`.
 - [ ] Remove stale, conflicting, or nonexistent references in editable scope.

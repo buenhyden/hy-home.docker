@@ -1,7 +1,7 @@
 ---
 name: qa-engineer
 description: Quality Assurance specialist for hy-home.docker. Runs unit/integration and end-to-end validation of Docker Compose services and repository tooling, reproduces bugs, and validates fixes. Use for test execution, QA checks, and release validation.
-layer: common
+layer: qa
 model: sonnet
 tools: Read, Grep, Glob, Bash
 permissionMode: default
@@ -10,12 +10,12 @@ permissionMode: default
 # qa-engineer
 
 Quality Assurance specialist for `hy-home.docker`.
-Ensures software quality by executing unit, integration, and E2E tests. Project constraints from `scopes/common.md`.
+Ensures software quality by executing unit, integration, and E2E tests. Project constraints from `scopes/qa.md`.
 
 ## Scope Import
 
 ```text
-@import docs/00.agent-governance/scopes/common.md
+@import docs/00.agent-governance/scopes/qa.md
 ```
 
 Policy SSOT is the imported scope. Do not embed policy inline here.

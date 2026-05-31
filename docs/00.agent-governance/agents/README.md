@@ -44,10 +44,15 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 - [code-reviewer](./agents/code-reviewer.md)
 - [doc-writer](./agents/doc-writer.md)
 - [drift-detector](./agents/drift-detector.md)
+- [hook-developer](./agents/hook-developer.md)
 - [iac-reviewer](./agents/iac-reviewer.md)
 - [incident-responder](./agents/incident-responder.md)
 - [infra-implementer](./agents/infra-implementer.md)
+- [qa-engineer](./agents/qa-engineer.md)
+- [rules-engineer](./agents/rules-engineer.md)
 - [security-auditor](./agents/security-auditor.md)
+- [skill-creator](./agents/skill-creator.md)
+- [style-enforcer](./agents/style-enforcer.md)
 - [wiki-curator](./agents/wiki-curator.md)
 
 ## Functions
@@ -62,6 +67,8 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 - [code-review-dimensions](./functions/code-review-dimensions.md)
 - [adr-writing](./functions/adr-writing.md)
 - [ci-cd-patterns](./functions/ci-cd-patterns.md)
+- [deployment-pipeline-design](./functions/deployment-pipeline-design.md)
+- [e2e-testing](./functions/e2e-testing.md)
 - [workspace-audit-revalidation](./functions/workspace-audit-revalidation.md)
 - [compose-stack-agent](./functions/compose-stack-agent.md)
 - [execution-plan-agent](./functions/execution-plan-agent.md)
@@ -70,6 +77,8 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 - [requirements-to-design-agent](./functions/requirements-to-design-agent.md)
 - [task-breakdown-agent](./functions/task-breakdown-agent.md)
 - [ops-runbook-agent](./functions/ops-runbook-agent.md)
+- [style-validation](./functions/style-validation.md)
+- [test-automator](./functions/test-automator.md)
 
 ## How to Work in This Area
 

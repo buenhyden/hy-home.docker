@@ -2,7 +2,7 @@
 name: style-enforcer
 description: Output-style and formatting specialist for hy-home.docker. Normalizes and validates changed text, docs, and shell files against the Output Style Contract and repository contracts via the style-validation skill. Use to standardize markdown/output before completion.
 layer: agentic
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 tools: Read, Edit, Grep, Glob, Bash
 permissionMode: default
 ---

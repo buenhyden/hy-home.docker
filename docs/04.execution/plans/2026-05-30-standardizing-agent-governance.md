@@ -1,11 +1,12 @@
 ---
-status: draft
+status: completed
 ---
 <!-- Target: docs/04.execution/plans/2026-05-30-standardizing-agent-governance.md -->
 
 # Stage 00 and Codex Harness Governance Alignment Plan
 
-> This plan remains draft until the user approves Phase 3 implementation.
+> Phase 3 implementation was approved by the user on 2026-05-31 and completed
+> against this plan.
 
 ## Overview (KR)
 
@@ -143,17 +144,17 @@ User-confirmed decisions for Phase 2 and Phase 3:
 
 ## Completion Criteria
 
-- [ ] User approves Phase 3 implementation against this plan.
-- [ ] Shared clarification duty exists in Stage 00 and Codex provider guidance.
-- [ ] Stage 00 concept definitions are present and do not create provider-specific duplicate policy.
-- [ ] Template Contract mapping is consistent across Stage 00, template README, and validators.
-- [ ] All target-stage document deviations in scope are fixed or documented as explicit exceptions.
-- [ ] Codex harness remains `.codex/agents/*.md` YAML frontmatter, not `.toml`.
-- [ ] Codex model policy uses `gpt-5.5` for supervisor and `gpt-5.4-mini` / justified `gpt-5.3-codex` for workers.
-- [ ] Stage 00 English-only remediation includes `github-governance.md` and hookify messages.
-- [ ] QA & CI/CD policy accurately maps local commands, CI-only jobs, inline shell checks, and npm checks.
-- [ ] Paired task document records actual changes and verification evidence.
-- [ ] Verification plan passes or any skipped check is explicitly recorded with rationale.
+- [x] User approves Phase 3 implementation against this plan.
+- [x] Shared clarification duty exists in Stage 00 and Codex provider guidance.
+- [x] Stage 00 concept definitions are present and do not create provider-specific duplicate policy.
+- [x] Template Contract mapping is consistent across Stage 00, template README, and validators.
+- [x] All target-stage document deviations in scope are fixed or documented as explicit exceptions.
+- [x] Codex harness remains `.codex/agents/*.md` YAML frontmatter, not `.toml`.
+- [x] Codex model policy uses `gpt-5.5` for supervisor and `gpt-5.4-mini` / justified `gpt-5.3-codex` for workers.
+- [x] Stage 00 English-only remediation includes `github-governance.md` and hookify messages.
+- [x] QA & CI/CD policy accurately maps local commands, CI-only jobs, inline shell checks, and npm checks.
+- [x] Paired task document records actual changes and verification evidence.
+- [x] Verification plan passes or any skipped check is explicitly recorded with rationale.
 
 ## Related Documents
 

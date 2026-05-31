@@ -8,35 +8,36 @@ conditions:
     pattern: docs/00\.agent-governance/.*\.md$
   - field: new_text
     operator: regex_match
-    pattern: "[가-힣ㄱ-ㅎㅏ-ㅣ]"
+    pattern: '[\uac00-\ud7a3\u3131-\u318e]'
 action: warn
 ---
 
 <!-- markdownlint-disable MD041 MD040 -->
 
-⚠️ **거버넌스 문서에 한국어 감지됨 (프로젝트 규칙)**
+**Korean text detected in governance documentation (project rule)**
 
-`docs/00.agent-governance/rules/standards.md` — Language Standards 정책 위반:
+`docs/00.agent-governance/rules/standards.md` — Language Standards violation:
 
 > "Governance and provider policy files in `docs/00.agent-governance/` must be English."
 
-**언어 정책 요약:**
+**Language policy summary:**
 
-| 영역 | 언어 |
-|------|------|
-| `docs/00.agent-governance/` | **영어 전용** |
-| 사용자 대면 응답 | 한국어 우선 |
-| 인간 대상 저장소 가이드 | 한국어 |
-| 기술 식별자, 코드 | 원본 형식 유지 |
+| Area | Language |
+| ---- | -------- |
+| `docs/00.agent-governance/` | **English only** |
+| User-facing replies | Korean by default |
+| Human-facing repository guides | Korean |
+| Technical identifiers and code | Preserve source form |
 
-**올바른 접근:**
+**Correct approach:**
 
-- 거버넌스 정책 설명 → 영어로 작성
-- 한국어 설명이 필요하다면 `docs/01` ~ `docs/99`의 인간 대상 문서에 작성
-- 코드 블록 내 주석은 영어 사용 권장
+- Write governance policy explanations in English.
+- Put Korean explanations in human-facing `docs/01` through `docs/99` documents when needed.
+- Prefer English comments inside code blocks in governance files.
 
-거버넌스 문서(`docs/00.agent-governance/`)는 모든 AI 에이전트가 공통으로 읽는 정책 파일입니다.
-영어로 작성해야 다중 제공자(Claude, Gemini, Codex) 환경에서 일관성이 유지됩니다.
+Governance files under `docs/00.agent-governance/` are shared policy inputs for
+all AI agents. English keeps multi-provider behavior consistent across Claude,
+Gemini, and Codex.
 
 ## Related Documents
 

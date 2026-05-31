@@ -24,6 +24,21 @@ layer: agentic
 - Root files must stay thin; detailed policy must live under this directory.
 - `docs/01` to `docs/99` are read-only by default and require explicit user approval for mutation.
 
+## Core Concepts
+
+- **Governance SSoT**: `docs/00.agent-governance/` owns policy, provider overlays,
+  agent catalog contracts, and validation expectations. Runtime directories expose
+  those contracts; they do not define separate governance.
+- **Provider Parity Model**: Claude remains the canonical runtime surface,
+  Codex mirrors `.claude/` content with provider-native model identifiers, and
+  Gemini exposes reference-index pointers.
+- **Template Contract**: target-stage documents use the mapped template from
+  `docs/99.templates/` before editing and retain required headings, lifecycle
+  metadata, target-relative links, and one `## Related Documents` section.
+- **Clarification Duty**: when the task is underspecified, constraints conflict,
+  or a likely assumption could change the outcome, stop and ask before changing
+  state. Do not silently choose a risky interpretation.
+
 ## Structure
 
 - `rules/`: shared governance policies, completion gates, and [JIT Markers](rules/jit-markers.md) (e.g. `[LOAD:MEMORY]`). Includes the cross-provider [Capability Matrix](rules/provider-capability-matrix.md), [Output Style Contract](rules/output-style.md), and [Workflows](rules/workflows.md).
@@ -43,7 +58,9 @@ layer: agentic
 4. Use `subagent-protocol.md` and `workflow-supervisor` for cross-domain or delegated work.
 5. For PR-related tasks, load `[LOAD:RULES:GITHUB]` and verify the Completion Gate.
 6. Review `memory/progress.md` before editing.
-7. Run completion checklist and update `memory/progress.md`.
+7. Ask for clarification before state changes when the request is underspecified
+   or governance constraints conflict.
+8. Run completion checklist and update `memory/progress.md`.
 
 ## Related Documents
 

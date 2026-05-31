@@ -33,7 +33,7 @@ trap 'rm -f "$TMP"' EXIT
 codex_model() {
   case "$1" in
   opus) echo "gpt-5.5" ;;
-  sonnet) echo "gpt-5.5-instant" ;;
+  sonnet) echo "gpt-5.4-mini" ;;
   *) echo "$1" ;;
   esac
 }

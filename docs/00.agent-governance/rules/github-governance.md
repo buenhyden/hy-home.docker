@@ -73,42 +73,46 @@ If any gate is unmet, the task status is "blocked" not "done."
 
 ## 8. CI/CD Job Taxonomy
 
-`ci-quality.yml` 워크플로우는 두 가지 범주의 잡을 정의한다.
+`ci-quality.yml` defines required quality gates and separate GitHub-native
+automation. Required job IDs must stay in sync with
+`check-repo-contracts.sh` and `.github/rulesets/main-protection.md`.
 
-### 로컬 스크립트 기반 QA 게이트 (required status checks)
+### Required Quality Gates
 
-아래 잡은 로컬에서도 실행 가능한 스크립트를 실행하며, `check-repo-contracts.sh`의
-`required_jobs` 목록에 포함되어야 한다:
+| Job ID                            | Execution Surface                                      |
+| --------------------------------- | ------------------------------------------------------ |
+| `docs-traceability`               | `scripts/validation/check-doc-traceability.sh`         |
+| `repo-contracts`                  | `scripts/validation/check-repo-contracts.sh`           |
+| `git-flow-contract`               | inline PR title and source-branch shell check          |
+| `compose-validation`              | `scripts/validation/validate-docker-compose.sh`        |
+| `compose-all-profiles-validation` | `validate-docker-compose.sh` with all governed profiles |
+| `infrastructure-hardening`        | `scripts/hardening/check-all-hardening.sh`             |
+| `template-security-baseline`      | `scripts/validation/check-template-security-baseline.sh` |
+| `quickwin-baseline`               | `scripts/validation/check-quickwin-baseline.sh`        |
+| `pre-commit`                      | pre-commit hook suite with project-specific skips      |
+| `frontend-quality`                | Storybook Next.js lint, typecheck, app build, and static build |
+| `storybook-coverage`              | Storybook Next.js coverage via npm script              |
+| `zizmor`                          | GitHub Actions security scan with SARIF upload; GitHub-only gate |
 
-| Job ID                            | Script                                                         |
-| --------------------------------- | -------------------------------------------------------------- |
-| `docs-traceability`               | `scripts/validation/check-doc-traceability.sh`                 |
-| `repo-contracts`                  | `scripts/validation/check-repo-contracts.sh`                   |
-| `git-flow-contract`               | 인라인 git log 검사                                            |
-| `compose-validation`              | `scripts/validation/validate-docker-compose.sh`                |
-| `compose-all-profiles-validation` | `scripts/validation/validate-docker-compose.sh` (all profiles) |
-| `infrastructure-hardening`        | `scripts/hardening/check-all-hardening.sh`                     |
-| `template-security-baseline`      | `scripts/validation/check-template-security-baseline.sh`       |
-| `quickwin-baseline`               | `scripts/validation/check-quickwin-baseline.sh`                |
-| `pre-commit`                      | pre-commit 훅 스위트                                           |
-| `frontend-quality`                | frontend lint/typecheck/build                                  |
-| `zizmor`                          | GitHub Actions 보안 스캐너 (로컬 동급 없음)                    |
-| `storybook-coverage`              | `scripts/validation/check-storybook-contract.sh`               |
+`zizmor` is intentionally GitHub-only because its gate uploads SARIF with
+GitHub security permissions. Do not duplicate it inside the local pre-commit
+runner.
 
-### GitHub 네이티브 자동화 (QA 게이트 아님, required check 아님)
+### Non-Gating GitHub Automation
 
-| Workflow                 | Purpose               |
-| ------------------------ | --------------------- |
-| `greetings.yml`          | 신규 기여자 환영      |
-| `stale.yml`              | 오래된 이슈/PR 관리   |
-| `pr-labeler.yml`         | PR 자동 레이블        |
-| `generate-changelog.yml` | 릴리스 변경 로그 생성 |
+| Workflow                 | Purpose                    |
+| ------------------------ | -------------------------- |
+| `greetings.yml`          | welcome new contributors   |
+| `stale.yml`              | manage stale issues and PRs |
+| `pr-labeler.yml`         | apply PR labels            |
+| `generate-changelog.yml` | generate release changelog |
 
-**커플링 제약:** `ci-quality.yml`에 새 잡을 추가할 때는 다음 세 곳을 동시에 업데이트해야 한다:
+**Coupling constraint:** when adding, removing, or renaming a required job in
+`ci-quality.yml`, update all three places together:
 
-1. `scripts/validation/check-repo-contracts.sh`의 `required_jobs`
-2. `.github/rulesets/main-protection.md`의 Required Status Checks 목록
-3. 이 섹션의 테이블
+1. `required_jobs` in `scripts/validation/check-repo-contracts.sh`
+2. `.github/rulesets/main-protection.md` Required Status Checks
+3. this section's Required Quality Gates table
 
 ## Related Documents
 

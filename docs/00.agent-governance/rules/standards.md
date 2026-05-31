@@ -18,7 +18,7 @@ Shared standards for instruction design, token efficiency, and execution quality
   5. one primary `scopes/<layer>.md`
   6. `rules/stage-authoring-matrix.md` (docs authoring only)
   7. `rules/github-governance.md` (PR / merge / review tasks only)
-  8. stage docs JIT (`docs/01` to `docs/10`, then `docs/90` or `docs/99`)
+  8. stage docs JIT (`docs/01` to `docs/05`, then `docs/90` or `docs/99`)
 - Avoid duplicated instructions across root shims and rule files.
 
 ## 2. Language Standard

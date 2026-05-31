@@ -1,7 +1,7 @@
-# Graph Report - hy-home.docker  (2026-05-30)
+# Graph Report - hy-home.docker  (2026-05-31)
 
 ## Corpus Check
-- 2 files · ~359,777 words
+- 2 files · ~361,754 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

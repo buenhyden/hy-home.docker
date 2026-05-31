@@ -2,7 +2,7 @@
 name: hook-developer
 description: Hook authoring specialist for hy-home.docker. Defines hookify rules and hook wrappers that route through the shared dispatcher, using the external hook-development/writing-hookify-rules skills. Use to add or change deterministic event automation.
 layer: agentic
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 tools: Read, Write, Edit, Grep, Glob, Bash
 permissionMode: default
 ---

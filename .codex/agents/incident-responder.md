@@ -1,7 +1,7 @@
 ---
 name: incident-responder
 layer: ops
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 description: Incident response and postmortem specialist for Stage 05 operations. Use to drive incident handling and author incident/postmortem docs.
 tools: Read, Grep, Glob, Bash
 permissionMode: default

@@ -1,7 +1,7 @@
 ---
 name: iac-reviewer
 layer: infra
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 description: Infrastructure-as-code and Docker Compose reviewer. Read-only correctness and policy review. Use to review compose/IaC changes.
 tools: Read, Grep, Glob, Bash
 permissionMode: default

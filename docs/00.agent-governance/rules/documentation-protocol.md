@@ -52,7 +52,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 | `docs/04.execution/plans/`                            | Plan                   | `docs/99.templates/plan.template.md`         |
 | `docs/04.execution/tasks/`                            | Task                   | `docs/99.templates/task.template.md`         |
 | `docs/05.operations/guides/`                          | Operations Guide       | `docs/99.templates/guide.template.md`        |
-| `docs/05.operations/policies/`                        | Operations Policy      | `docs/99.templates/operation.template.md`    |
+| `docs/05.operations/policies/`                        | Operations Policy      | `docs/99.templates/policy.template.md`       |
 | `docs/05.operations/runbooks/`                        | Operations Runbook     | `docs/99.templates/runbook.template.md`      |
 | `docs/05.operations/incidents/YYYY/`                  | Incident               | `docs/99.templates/incident.template.md`     |
 | `docs/05.operations/incidents/YYYY/`                  | Postmortem             | `docs/99.templates/postmortem.template.md`   |

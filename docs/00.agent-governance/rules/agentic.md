@@ -24,6 +24,9 @@ Standard behavior contract for repo-local, auditable agent execution.
   workflow prompt defines those phases.
 - Do not execute implementation-agent changes until the approved plan path
   required by the workflow exists and the requested edits map to that plan.
+- Ask for clarification before changing state when a request is underspecified,
+  constraints conflict, or a plausible assumption could change the outcome.
+  Record low-risk assumptions explicitly when proceeding without a question.
 - Use persona routing, checklist routing, this rule, and one primary scope before
   task execution.
 - Use the local agent/function catalog as the runtime boundary:
@@ -49,17 +52,22 @@ Standard behavior contract for repo-local, auditable agent execution.
 6. Review governance memory and `memory/progress.md`; use `rg` to retrieve
    only relevant notes when the task matches memory triggers.
 7. Discover current repository state with read-only commands.
-8. Plan the smallest scoped change and name the verification gate.
-9. Execute the change in place.
-10. Verify with the smallest checks that prove the contract.
-11. Update `memory/progress.md` with final progress, verification evidence,
+8. Resolve ambiguities: ask before state changes for risky ambiguity; otherwise
+   record explicit assumptions and proceed conservatively.
+9. Plan the smallest scoped change and name the verification gate.
+10. Execute the change in place.
+11. Verify with the smallest checks that prove the contract.
+12. Update `memory/progress.md` with final progress, verification evidence,
     and durable memory pointers.
-12. Report changed files, checks run, and any residual risk or out-of-scope gap.
+13. Report changed files, checks run, and any residual risk or out-of-scope gap.
 
 ## 4. Operational Procedures
 
 - Provide concise progress updates during long operations.
 - Stop and request clarification when constraints conflict.
+- Stop and request clarification when the task is underspecified and a wrong
+  assumption could cause policy drift, data loss, security exposure, or unrelated
+  edits.
 - Prefer root-cause analysis over symptom patching.
 - Route cross-domain or multi-agent work through `workflow-supervisor`.
 - Delegate only to workers listed in `subagent-protocol.md`; do not invent

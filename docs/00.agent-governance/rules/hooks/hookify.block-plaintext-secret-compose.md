@@ -14,9 +14,9 @@ action: block
 
 <!-- markdownlint-disable MD041 MD040 -->
 
-🚫 **Docker Compose 파일에 플레인텍스트 시크릿 감지됨 (프로젝트 규칙)**
+**Plaintext secret detected in Docker Compose file (project rule)**
 
-`AGENTS.md` — Hard Constraints 정책 위반:
+`AGENTS.md` — Hard Constraints violation:
 
 > "Never write plaintext secrets; use Docker Secrets or `secrets/` mounts."
 
@@ -24,20 +24,20 @@ action: block
 
 > "Never commit plaintext credentials."
 
-**감지된 패턴 예시:**
+**Detected pattern examples:**
 
 ```yaml
-# ❌ 금지 — 플레인텍스트 시크릿
+# BLOCKED: plaintext secrets
 environment:
   POSTGRES_PASSWORD: mysecretpassword
   MYSQL_PASSWORD: hunter2
   API_KEY: abc123xyz
 ```
 
-**올바른 대안:**
+**Safer alternatives:**
 
 ```yaml
-# ✅ 방법 1: Docker Secrets 참조
+# Option 1: Docker Secrets reference
 secrets:
   db_password:
     file: ./secrets/db_password.txt
@@ -49,16 +49,17 @@ services:
     secrets:
       - db_password
 
-# ✅ 방법 2: 환경 변수 참조 (값은 .env 또는 외부 주입)
+# Option 2: environment variable reference, with value injected from .env or outside Compose
 environment:
   POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
-# ✅ 방법 3: .env 파일 사용 (git에서 제외)
+# Option 3: ignored .env file
 env_file:
   - .env
 ```
 
-**제외 조건:** `_FILE` 접미사, `${...}` 변수 참조, `/run/secrets/` 경로, 빈 값은 감지하지 않습니다.
+**Exclusions:** `_FILE` suffixes, `${...}` variable references, `/run/secrets/`
+paths, and empty values are not flagged.
 
 ## Related Documents
 

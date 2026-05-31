@@ -27,7 +27,7 @@ Ensure software quality by executing unit, integration, and E2E tests, verifying
 
 ## Structure
 
-- Scope import: `docs/00.agent-governance/scopes/common.md`
+- Scope import: `docs/00.agent-governance/scopes/qa.md`
 - Test → Analyze → Validate workflow
 
 ## Agents
@@ -48,7 +48,7 @@ Ensure software quality by executing unit, integration, and E2E tests, verifying
 
 ## Related Documents
 
-- `../../scopes/common.md`
+- `../../scopes/qa.md`
 - `../../rules/task-checklists.md`
 - `../../subagent-protocol.md`
 - `../README.md`

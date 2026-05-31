@@ -8,7 +8,7 @@ action: block
 
 <!-- markdownlint-disable MD041 MD040 -->
 
-🚫 **main 브랜치 직접 푸시 차단됨 (프로젝트 규칙)**
+**Direct push to `main` blocked (project rule)**
 
 `docs/00.agent-governance/rules/github-governance.md` — Repository Protection Contract:
 
@@ -16,26 +16,26 @@ action: block
 
 > "No exceptions is mandatory agent behavior even when GitHub admin enforcement does not fully enforce the same boundary."
 
-**올바른 워크플로우:**
+**Correct workflow:**
 
 ```bash
-# ❌ 금지 — main 직접 푸시
+# BLOCKED: direct push to main
 git push origin main
 git push origin HEAD:main
 
-# ✅ 허용 — feature 브랜치에서 PR
+# ALLOWED: push a feature branch and open a PR
 git push origin feat/42-my-feature
 git push origin fix/17-bug-fix
-# → GitHub에서 PR 생성 후 리뷰/머지
+# Create a GitHub PR, then review and merge through the governed flow.
 ```
 
-**PR 완료 게이트 (`github-governance.md` — Completion Gate):**
+**PR completion gate (`github-governance.md` — Completion Gate):**
 
-1. 모든 required status checks 통과
-2. 모든 required reviews 승인
-3. BLOCK 수준 소견 없음
-4. CODEOWNERS 리뷰어 통보 완료
-5. 시크릿/미핀 액션 없음
+1. All required status checks pass.
+2. All required reviews are approved.
+3. No BLOCK-severity findings remain.
+4. CODEOWNERS reviewers are notified.
+5. No secrets or unpinned actions were introduced.
 
 ## Related Documents
 

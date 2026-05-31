@@ -22,16 +22,17 @@ Creates and updates operational documents in `docs/05.operations/`.
 
 Produce operations documents (guide, policy, or runbook) that operators and AI
 agents can follow. Every document must conform to the profile contract defined
-in `docs/99.templates/operation.template.md`.
+by its mapped template in `docs/99.templates/`.
 
 ---
 
 ## Bootstrap
 
 1. Read `AGENTS.md` and `docs/05.operations/README.md`.
-2. Read `docs/99.templates/operation.template.md` — use the correct profile section.
-   - For guides: also read `docs/99.templates/guide.template.md` for the expanded section structure.
-   - For runbooks: also read `docs/99.templates/runbook.template.md` for the expanded section structure.
+2. Read the mapped operations template for the target bucket.
+   - For guides: read `docs/99.templates/guide.template.md`.
+   - For policies: read `docs/99.templates/policy.template.md`.
+   - For runbooks: read `docs/99.templates/runbook.template.md`.
 3. Check `docs/05.operations/<bucket>/<tier>/` for existing documents on the topic.
 4. Read the relevant spec at `docs/03.specs/<tier>/spec.md` for service context.
 
@@ -215,7 +216,7 @@ For a document at depth `guides/<tier>/<subdomain>/<topic>.md`:
 | Input | Source |
 | ----- | ------ |
 | Service spec | `docs/03.specs/<tier>/spec.md` |
-| Operations template | `docs/99.templates/operation.template.md` (profiles); `guide.template.md`, `runbook.template.md` (expanded) |
+| Operations template | `docs/99.templates/guide.template.md`, `docs/99.templates/policy.template.md`, or `docs/99.templates/runbook.template.md` |
 | Existing documents | `docs/05.operations/<bucket>/<tier>/` |
 
 ## Outputs

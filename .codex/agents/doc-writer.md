@@ -1,7 +1,7 @@
 ---
 name: doc-writer
 layer: docs
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 description: Documentation authoring and governance specialist. Authors template-first stage docs, ADRs, and READMEs and enforces the DOCS 3 rules. Use for documentation tasks.
 tools: Read, Write, Edit, Grep, Glob
 permissionMode: default

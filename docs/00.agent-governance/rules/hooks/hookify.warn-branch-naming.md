@@ -8,22 +8,23 @@ action: warn
 
 <!-- markdownlint-disable MD041 MD040 -->
 
-⚠️ **브랜치 이름 규칙 위반 감지됨 (프로젝트 규칙)**
+**Branch naming rule violation detected (project rule)**
 
-`docs/00.agent-governance/rules/git-workflow.md`의 Branching Strategy를 따르지 않는 브랜치 이름입니다.
+The branch name does not follow the Branching Strategy in
+`docs/00.agent-governance/rules/git-workflow.md`.
 
-**허용된 prefix:**
+**Allowed prefixes:**
 
-| prefix | 용도 |
-|--------|------|
-| `feat/<issue-id>-<description>` | 새 기능 |
-| `fix/<issue-id>-<description>` | 버그 수정 |
-| `hotfix/<issue-id>-<description>` | 긴급 프로덕션 수정 |
-| `docs/`, `style/`, `refactor/` | 문서·스타일·리팩터 |
-| `perf/`, `test/`, `build/`, `ci/`, `chore/`, `revert/` | 기타 타입 |
-| `dependabot/**`, `codex/**` | 자동화 도구 전용 |
+| prefix | Purpose |
+| ------ | ------- |
+| `feat/<issue-id>-<description>` | new feature |
+| `fix/<issue-id>-<description>` | bug fix |
+| `hotfix/<issue-id>-<description>` | urgent production fix |
+| `docs/`, `style/`, `refactor/` | documentation, style, or refactor work |
+| `perf/`, `test/`, `build/`, `ci/`, `chore/`, `revert/` | other Conventional Commit types |
+| `dependabot/**`, `codex/**` | automation-owned branches |
 
-**올바른 예:**
+**Correct examples:**
 
 ```bash
 git checkout -b feat/42-add-nginx-service
@@ -31,7 +32,7 @@ git checkout -b fix/17-fix-volume-mount
 git checkout -b hotfix/99-patch-secret-leak
 ```
 
-`main` 브랜치를 직접 사용하지 마세요. 항상 feature/fix 브랜치에서 시작하세요.
+Do not work directly on `main`. Start from a feature or fix branch.
 
 ## Related Documents
 

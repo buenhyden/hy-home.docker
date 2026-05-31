@@ -8,31 +8,31 @@ action: warn
 
 <!-- markdownlint-disable MD041 MD040 -->
 
-⚠️ **Force Push 감지됨 (프로젝트 규칙)**
+**Force push detected (project rule)**
 
 `docs/00.agent-governance/rules/github-governance.md` — Repository Protection Contract:
 
 > "no direct pushes, no force pushes, no bypass of required checks"
 
-**force push가 정당한 경우:**
+**When a force push may be justified:**
 
-- 자신의 feature 브랜치에서 rebase 후 history 재작성
-- `--force-with-lease`를 사용해 원격 상태 보호
+- Rewriting history after a rebase on your own feature branch.
+- Using `--force-with-lease` to protect against overwriting remote changes.
 
-**절대 금지:**
+**Never allowed:**
 
-- `main` 브랜치에 force push
-- 다른 에이전트/개발자의 작업 중인 브랜치에 force push
-- 이미 머지된 커밋 force push
+- Force pushing to `main`.
+- Force pushing another agent's or developer's in-progress branch.
+- Force pushing commits that have already been merged.
 
-**확인 체크리스트:**
+**Confirmation checklist:**
 
-- [ ] `main`이 아닌 본인 소유 브랜치인가?
-- [ ] `--force-with-lease`를 사용하고 있는가? (`--force` 보다 안전)
-- [ ] 팀원이 같은 브랜치에서 작업 중이 아닌가?
+- [ ] This is your own branch, not `main`.
+- [ ] The command uses `--force-with-lease`, not plain `--force`.
+- [ ] No teammate or agent is working on the same branch.
 
 ```bash
-# ⚠️ 최소한 --force 대신 --force-with-lease 사용
+# Prefer --force-with-lease over --force.
 git push --force-with-lease origin feat/42-my-feature
 ```
 

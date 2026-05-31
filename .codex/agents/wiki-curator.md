@@ -1,7 +1,7 @@
 ---
 name: wiki-curator
 layer: docs
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 description: LLM wiki and knowledge-reference curator. Use to maintain docs/90 references and the generated wiki index.
 tools: Read, Write, Edit, Grep, Glob
 permissionMode: default

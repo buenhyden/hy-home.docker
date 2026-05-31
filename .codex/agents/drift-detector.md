@@ -1,7 +1,7 @@
 ---
 name: drift-detector
 layer: infra
-model: gpt-5.5-instant
+model: gpt-5.4-mini
 description: Detects drift between declared Docker Compose/IaC configuration and runtime state. Read-only. Use to compare declared vs actual infrastructure.
 tools: Read, Grep, Glob, Bash
 permissionMode: default
