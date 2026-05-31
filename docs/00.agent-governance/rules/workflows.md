@@ -39,11 +39,12 @@ contract — do not duplicate it here).
 - **Governance Configuration**: external `update-config` → `rules-engineer` agent → policy updates.
 - **Style Enforcement**: `style-validation` → `style-enforcer` execution → standardized markdown/output.
 
-Backtick names without an "external" prefix are workspace functions in `agents/functions/`
-(mirrored per the Provider Parity Model). Names marked **external** are existing Claude skills
-(e.g. `skill-creator`, `hook-development`, `writing-hookify-rules`, `update-config`,
-`writing-skills`, `deployment-procedures`); meta agents invoke them directly and the workspace
-does not duplicate them as functions.
+Backtick names without an "external" prefix are workspace functions in
+`agents/functions/` and are exposed through provider adapters per the Provider
+Capability Matrix. Names marked **external** are existing external/runtime
+skills (e.g. `skill-creator`, `hook-development`, `writing-hookify-rules`,
+`update-config`, `writing-skills`, `deployment-procedures`); meta agents invoke
+them directly and the workspace does not duplicate them as functions.
 
 ## 3. Routing Rules
 

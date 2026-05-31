@@ -26,15 +26,41 @@ layer: agentic
 
 ## Core Concepts
 
-- **Governance SSoT**: `docs/00.agent-governance/` owns policy, provider overlays,
-  agent catalog contracts, and validation expectations. Runtime directories expose
-  those contracts; they do not define separate governance.
-- **Provider Parity Model**: Claude remains the canonical runtime surface,
-  Codex mirrors `.claude/` content with provider-native model identifiers, and
-  Gemini exposes reference-index pointers.
+- **Governance SSoT**: `docs/00.agent-governance/` owns policy, provider
+  overlays, agent catalog contracts, and validation expectations. Runtime
+  directories expose those contracts; they do not define separate governance.
+- **Agent**: a named role in `agents/agents/` with a scope, purpose, expected
+  inputs/outputs, provider adapter bindings, and model tier.
+- **Skill / Function**: a reusable capability in `agents/functions/` and, when
+  supported by a runtime, a provider adapter under `.claude/skills/`,
+  `.codex/skills/`, or `.agents/skills/`.
+- **Rule**: a shared policy in `rules/` or `scopes/`. Provider files may bind
+  rules to runtime mechanics but may not redefine the policy.
+- **Hook**: runtime event wiring that routes to shared scripts or behavioral
+  gates. Hooks provide enforcement and advisory context; active policy remains
+  in Stage 00.
+- **Sub-agent**: a delegated agent invocation governed by
+  `subagent-protocol.md`; it imports exactly one primary scope and follows the
+  shared model policy.
+- **Output Style**: the workspace-wide response contract in
+  `rules/output-style.md`, with provider-native bindings only where supported.
+- **Workflow**: an ordered execution path in `rules/workflows.md` and related
+  stage docs that maps context, planning, implementation, validation, and
+  evidence capture.
+- **Memory**: advisory durable context under `memory/`; it supports recall and
+  progress logging but never overrides active governance.
+- **QA & CI/CD**: shared verification policy in `rules/github-governance.md`,
+  `scopes/qa.md`, scripts, and CI docs. Providers execute the same policy with
+  provider-native mechanics.
+- **Model Policy**: provider-equivalent model and reasoning-effort mapping in
+  `subagent-protocol.md`. Runtime surfaces must use only values permitted by
+  that policy.
 - **Template Contract**: target-stage documents use the mapped template from
   `docs/99.templates/` before editing and retain required headings, lifecycle
   metadata, target-relative links, and one `## Related Documents` section.
+- **Provider Adapter Model**: Stage 00 is the canonical runtime catalog.
+  Claude, Codex, and Gemini expose provider-specific adapters that must match
+  Stage 00 name sets, roles, scopes, models, and validation rules.
 - **Clarification Duty**: when the task is underspecified, constraints conflict,
   or a likely assumption could change the outcome, stop and ask before changing
   state. Do not silently choose a risky interpretation.

@@ -1,0 +1,7 @@
+name = "drift-detector"
+layer = "agentic"
+model = "gpt-5.4-mini"
+model_reasoning_effort = "medium"
+source_catalog = "docs/00.agent-governance/agents/agents/drift-detector.md"
+scope = "docs/00.agent-governance/scopes/agentic.md"
+legacy_markdown_adapter = ".codex/agents/drift-detector.md"

@@ -72,7 +72,7 @@ layer: agentic
    Folder index README는 service readiness evidence를 억지로 복제하지 않고 하위 문서 routing과 lifecycle만 설명한다.
 9. scripts README는 `scripts/validation/`, `scripts/hardening/`, `scripts/hooks/`, `scripts/knowledge/`, `scripts/operations/`, `scripts/lib/` 목적 폴더를 보존하고 root-level wrapper를 만들지 않는다.
 10. Markdown 템플릿의 cross-link 예시는 복사된 Target 위치 기준으로 계산하고, YAML/GraphQL/Proto 계약 파일의 cross-link는 parent Markdown Spec 또는 API Spec에서 관리한다.
-11. `docs/99.templates/*.template.md` 원본은 `status: draft` frontmatter를 사용한다. 복사된 Target 문서는 대상 stage의 lifecycle에 맞게 `status: draft`, `status: active`, `status: completed`, generated metadata, 또는 repository README처럼 no-frontmatter 형태로 조정한다.
+11. `docs/99.templates/*.template.md` 원본은 `status: draft` frontmatter를 사용한다. 복사된 Target 문서는 대상 stage의 lifecycle에 맞게 `status: draft`, `status: active`, `status: completed`, `status: superseded`, generated metadata, 또는 repository README처럼 no-frontmatter 형태로 조정한다.
 12. Template source에 있는 placeholder는 최종 문서에 남기지 않는다. 실제 링크처럼 렌더링되는 placeholder Markdown link와 placeholder command는 target 문서로 복사하기 전에 반드시 삭제하거나 실제 target-relative 값으로 교체한다.
 13. README template의 `<!-- Target: ... -->` 주석은 작성 보조 정보다. Target 문서에서 필수 metadata로 취급하지 않으며, 리뷰에 도움이 되는 경우에만 남긴다.
 14. Historical evidence 문서는 사실을 재해석하지 않는다. 현재 템플릿 heading과 Related Documents만 최소 보강하고, 검증되지 않은 실행 결과나 원인을 새로 쓰지 않는다.

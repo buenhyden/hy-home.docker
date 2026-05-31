@@ -167,6 +167,7 @@ These gates capture confirmed user decisions before Phase 3 implementation. Phas
 
 - **Prior Plan**: [2026-05-30-standardizing-agent-governance](./2026-05-30-standardizing-agent-governance.md)
 - **Prior Claude Verification Plan**: [2026-05-31-claude-harness-governance-verification](./2026-05-31-claude-harness-governance-verification.md)
+- **Task**: [2026-06-01-agent-governance-phase3-implementation](../tasks/2026-06-01-agent-governance-phase3-implementation.md)
 - **Governance Hub**: [AI Agent Governance Hub](../../00.agent-governance/README.md)
 - **Codex Provider Notes**: [Codex Provider Notes](../../00.agent-governance/providers/codex.md)
 - **Subagent Protocol**: [Subagent Protocol](../../00.agent-governance/subagent-protocol.md)

@@ -1,6 +1,7 @@
 ---
-status: done
+status: completed
 ---
+<!-- Target: docs/04.execution/tasks/2026-05-28-workspace-doc-consistency.md -->
 
 # Task: Workspace Documentation Consistency 2026-05
 

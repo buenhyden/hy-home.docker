@@ -151,6 +151,61 @@ PY
   failures=$((failures + 1))
 fi
 
+section "Target-stage frontmatter status vocabulary"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+stage_roots = tuple(
+    pathlib.Path(path)
+    for path in [
+        "docs/01.requirements",
+        "docs/02.architecture",
+        "docs/03.specs",
+        "docs/04.execution",
+        "docs/05.operations",
+        "docs/90.references",
+    ]
+)
+allowed_statuses = {"draft", "active", "completed", "superseded"}
+
+
+def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+
+for path in sorted(pathlib.Path("docs").rglob("*.md")):
+    if path.name == "README.md":
+        continue
+    if not any(is_relative_to(path, root) for root in stage_roots):
+        continue
+    text = path.read_text(errors="ignore")
+    head = "\n".join(text.splitlines()[:12])
+    match = re.search(r"(?m)^status:\s*([A-Za-z0-9_-]+)\s*$", head)
+    if not match:
+        failures.append(f"{path}: missing target-stage frontmatter status")
+        continue
+    status = match.group(1)
+    if status not in allowed_statuses:
+        allowed = ", ".join(sorted(allowed_statuses))
+        failures.append(f"{path}: unsupported target-stage status {status!r}; expected one of: {allowed}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
 section "Banned stale references"
 if rg -n 'docs/11|11\.postmortems|\.agent/|docs/(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)|(^|[^[:alnum:]_/-])(01\.prd|02\.ard|03\.adr|04\.specs|05\.plans|06\.tasks|07\.operations|07\.guides|08\.operations|09\.runbooks|10\.incidents)([^[:alnum:]_/-]|$)|harness catalog|Runtime harness catalog' README.md AGENTS.md CLAUDE.md GEMINI.md docs infra scripts .github .claude .codex \
   --glob '!graphify-out/**' \
@@ -736,6 +791,10 @@ def frontmatter_value(text: str, key: str) -> str | None:
     match = re.search(rf"^{re.escape(key)}:\s*['\"]?([^'\"\n]+)['\"]?\s*$", text, re.M)
     return match.group(1).strip() if match else None
 
+def toml_value(text: str, key: str) -> str | None:
+    match = re.search(rf"^{re.escape(key)}\s*=\s*\"([^\"]*)\"\s*$", text, re.M)
+    return match.group(1).strip() if match else None
+
 runtime_agents = sorted(p.stem for p in pathlib.Path(".claude/agents").glob("*.md"))
 governance_agents = sorted(p.stem for p in pathlib.Path("docs/00.agent-governance/agents/agents").glob("*.md"))
 if runtime_agents != governance_agents:
@@ -765,8 +824,8 @@ for agent in runtime_agents:
     elif expected_scope not in text:
         failures.append(f"{agent_path}: missing exact scope import {expected_scope!r}")
 
-# --- Cross-provider parity (Provider Parity Model: providers/agents-md.md section 5) ---
-codex_agents = sorted(p.stem for p in pathlib.Path(".codex/agents").glob("*.md"))
+# --- Cross-provider parity (Stage 00 Canonical Adapter Model: providers/agents-md.md section 5) ---
+codex_agents = sorted(p.stem for p in pathlib.Path(".codex/agents").glob("*.toml"))
 codex_functions = sorted(p.parent.name for p in pathlib.Path(".codex/skills").glob("*/skill.md"))
 gemini_agents = sorted(p.stem for p in pathlib.Path(".agents/agents").glob("*.md"))
 gemini_functions = sorted(p.parent.name for p in pathlib.Path(".agents/skills").glob("*/skill.md"))
@@ -781,27 +840,31 @@ if gemini_agents != governance_agents:
 if gemini_functions != governance_functions:
     failures.append(f"gemini function catalog mismatch: .agents={gemini_functions} governance={governance_functions}")
 
-# 2. Content parity: .codex mirrors .claude (agents differ only by the model: line).
-def strip_model(text: str) -> str:
-    return re.sub(r"^model:.*$", "model:", text, flags=re.M)
-
+# 2. Codex agent TOML adapter policy and skill adapter parity.
 for agent in runtime_agents:
-    claude_text = read(pathlib.Path(f".claude/agents/{agent}.md"))
-    codex_text = read(pathlib.Path(f".codex/agents/{agent}.md"))
-    if strip_model(claude_text) != strip_model(codex_text):
-        failures.append(f".codex/agents/{agent}.md: content drift from canonical .claude/agents/{agent}.md")
+    path = pathlib.Path(f".codex/agents/{agent}.toml")
+    text = read(path)
+    expected_model = "gpt-5.5" if agent == "workflow-supervisor" else "gpt-5.4-mini"
+    expected_effort = "xhigh" if agent == "workflow-supervisor" else "medium"
+    expected_catalog = f"docs/00.agent-governance/agents/agents/{agent}.md"
+    expected_legacy = f".codex/agents/{agent}.md"
+
+    if toml_value(text, "name") != agent:
+        failures.append(f"{path}: expected name {agent!r}, found {toml_value(text, 'name')!r}")
+    if toml_value(text, "model") != expected_model:
+        failures.append(f"{path}: expected model {expected_model!r}, found {toml_value(text, 'model')!r}")
+    if toml_value(text, "model_reasoning_effort") != expected_effort:
+        failures.append(f"{path}: expected model_reasoning_effort {expected_effort!r}, found {toml_value(text, 'model_reasoning_effort')!r}")
+    if toml_value(text, "source_catalog") != expected_catalog:
+        failures.append(f"{path}: expected source_catalog {expected_catalog!r}")
+    if toml_value(text, "legacy_markdown_adapter") != expected_legacy:
+        failures.append(f"{path}: expected legacy_markdown_adapter {expected_legacy!r}")
+
 for fn in runtime_functions:
     if read(pathlib.Path(f".claude/skills/{fn}/skill.md")) != read(pathlib.Path(f".codex/skills/{fn}/skill.md")):
-        failures.append(f".codex/skills/{fn}/skill.md: content drift from canonical .claude/skills/{fn}/skill.md")
+        failures.append(f".codex/skills/{fn}/skill.md: content drift from .claude/skills/{fn}/skill.md adapter")
 
-# 3. Codex model policy.
-for agent in codex_agents:
-    model = frontmatter_value(read(pathlib.Path(f".codex/agents/{agent}.md")), "model")
-    expected = "gpt-5.5" if agent == "workflow-supervisor" else "gpt-5.4-mini"
-    if model != expected:
-        failures.append(f".codex/agents/{agent}.md: expected model {expected!r}, found {model!r}")
-
-# 4. Gemini pointer parity + model policy (reference index, never a full copy).
+# 3. Gemini pointer parity + model policy (reference index, never a full copy).
 for agent in gemini_agents:
     path = pathlib.Path(f".agents/agents/{agent}.md")
     text = read(path)
@@ -1261,6 +1324,40 @@ def iter_unfenced_lines(path: pathlib.Path) -> list[tuple[int, str]]:
     return result
 
 
+def validate_fenced_code_blocks(path: pathlib.Path) -> list[str]:
+    try:
+        lines = path.read_text(errors="ignore").splitlines()
+    except Exception:
+        return []
+
+    result: list[str] = []
+    in_fence = False
+    marker = ""
+    open_line = 0
+    for line_no, line in enumerate(lines, start=1):
+        stripped = line.lstrip()
+        prefix = "```" if stripped.startswith("```") else "~~~" if stripped.startswith("~~~") else ""
+        if not prefix:
+            continue
+        if not in_fence:
+            in_fence = True
+            marker = prefix
+            open_line = line_no
+            continue
+        if prefix != marker:
+            continue
+        suffix = stripped[len(marker) :]
+        if suffix.strip():
+            result.append(f"{path}:{line_no}: fenced code closing marker must not include an info string")
+        in_fence = False
+        marker = ""
+        open_line = 0
+
+    if in_fence:
+        result.append(f"{path}:{open_line}: fenced code block is not closed")
+    return result
+
+
 def inside_inline_code(line: str, index: int) -> bool:
     return line[:index].count("`") % 2 == 1
 
@@ -1308,6 +1405,7 @@ for path in active_markdown_files:
     for required in ["## Related Documents"]:
         if required not in text:
             failures.append(f"{path}: missing {required}")
+    failures.extend(validate_fenced_code_blocks(path))
 
     for line_no, line in iter_unfenced_lines(path):
         for match in markdown_link.finditer(line):
@@ -1864,6 +1962,11 @@ for path in changed_stage_docs:
 print(f"normalized_changed_template_docs_total={normalized_changed_docs}")
 print(f"legacy_changed_template_docs_skipped={legacy_changed_docs}")
 
+if legacy_changed_docs:
+    failures.append(
+        f"changed target-stage documents must be normalized; legacy_changed_template_docs_skipped={legacy_changed_docs}"
+    )
+
 if failures:
     for failure in failures:
         print(f"FAIL: {failure}", file=sys.stderr)
@@ -2211,6 +2314,11 @@ for path in target_docs:
 
 print(f"normalized_target_stage_docs_total={normalized_docs}")
 print(f"legacy_target_stage_docs_skipped={legacy_docs}")
+
+if legacy_docs:
+    failures.append(
+        f"all target-stage documents must be normalized; legacy_target_stage_docs_skipped={legacy_docs}"
+    )
 
 for path in unknown_docs:
     failures.append(f"{path}: unknown target-stage document type; add a docs/99.templates mapping")

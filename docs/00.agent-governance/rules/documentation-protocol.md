@@ -28,11 +28,13 @@ Protocol for maintaining documentation consistency and governance traceability.
 - Root instruction shims must remain thin; their `## Related Documents` sections should point to canonical governance and provider docs instead of duplicating policy.
 - **Template frontmatter exemption**: Template source files under `docs/99.templates/*.template.md` use `status: draft` in YAML frontmatter instead of `layer:`. This is intentional. Agents performing `layer:` compliance audits must exempt those template source files from that check. `docs/99.templates/README.md` is an active folder README and may use repository README frontmatter such as `layer: agentic`. `memory.template.md` and `progress.template.md` are governance-memory templates, but they still keep this template frontmatter shape until copied into active governance memory files.
 - **Frontmatter status (R5):** Every leaf document under `docs/01`–`docs/05`
-  and `docs/90` MUST include YAML frontmatter with `status: draft | active | superseded`.
+  and `docs/90` MUST include YAML frontmatter with
+  `status: draft | active | completed | superseded`.
   Governance memory files (`docs/00.agent-governance/`) use `layer:`
   frontmatter instead. Template source files (`docs/99.templates/*.template.md`)
   always use `status: draft` and are exempt from the `layer:` requirement.
-  A document without this frontmatter is **INCOMPLETE**.
+  A document without this frontmatter is **INCOMPLETE**. Retired aliases such
+  as `approved`, `done`, and `archived` must be normalized when found.
 
 ## 3. Document Type ↔ Template Mapping
 

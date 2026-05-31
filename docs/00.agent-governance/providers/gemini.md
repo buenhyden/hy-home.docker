@@ -38,8 +38,9 @@ Gemini merges context from multiple files. Within this repository:
 
 ## 5. Runtime Surface
 
-Per the Provider Parity Model (`providers/agents-md.md` §5), Gemini uses a
-reference-index model — no full duplication and no provider-local policy directories.
+Per the Stage 00 Canonical Adapter Model (`providers/agents-md.md` §5), Gemini
+uses a reference-index adapter model — no full duplication and no provider-local
+policy directories.
 
 - `.agents/` is Gemini's shared runtime surface and reference-index shim.
 - `.agents/agents/<name>.md` are reference-index pointers to `docs/00.agent-governance/agents/agents/`.

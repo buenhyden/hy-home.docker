@@ -33,11 +33,18 @@ Codex-specific guidance for this repository.
 ## 4. Runtime Boundary
 
 - `.codex/hooks.json` provides Codex-local hooks.
-- `.codex/agents/` uses the current Codex harness shape: Markdown files with
-  YAML frontmatter under `.codex/agents/*.md`. Do not introduce `.toml` agent
-  definitions for this repository.
-- `.codex/agents/` and `.codex/skills/` are content-identical mirrors of `.claude/` (the canonical runtime), per the Provider Parity Model (`providers/agents-md.md` §5). Agent files differ only in the provider model identifier.
-- Apply the Model Policy (`subagent-protocol.md`): `workflow-supervisor` uses `gpt-5.5`, all default worker agents use `gpt-5.4-mini`. Never carry Anthropic model names (`opus-4.8`/`sonnet-4.6`) in `.codex/` `model:` frontmatter.
+- `.codex/agents/` uses Codex-native TOML adapter definitions under
+  `.codex/agents/*.toml`. The TOML files bind each Stage 00 agent role to a
+  Codex model, reasoning effort, scope, and source catalog path.
+- `.codex/agents/*.toml` is the Codex agent adapter surface. Do not define
+  Codex-only roles, QA rules, Template Contract rules, or Model Policy values
+  in TOML; those belong in Stage 00.
+- `.codex/skills/` remains the Codex-compatible skill adapter surface and must
+  stay aligned with the Stage 00 function catalog.
+- Apply the Model Policy (`subagent-protocol.md`): `workflow-supervisor` uses
+  `gpt-5.5` with `xhigh` reasoning effort; default worker agents use
+  `gpt-5.4-mini` with `medium` reasoning effort. Never carry
+  Anthropic model names (`opus-4.8`/`sonnet-4.6`) in `.codex/`.
 - `gpt-5.3-codex` is reserved for a future explicit code-specialized worker override;
   do not use it until the sync script, validator, and policy table all encode the
   same exception.

@@ -1,24 +1,17 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/plans/2026-05-30-ai-governance-reorg.md -->
 
 # AI Agent Governance Reorganization Plan
-
-> Use this template for `docs/04.execution/plans/YYYY-MM-DD-<feature>.md`.
->
-> Rules:
->
-> - Every active plan must include explicit verification criteria.
-> - Plan explains execution order, risk control, and rollout strategy.
-
----
 
 ## Overview (KR)
 
 이 문서는 Antigravity 2.0 IDE, Claude, Codex 에이전트 간의 파편화된 거버넌스(`hy-home.docker`)를 `docs/00.agent-governance/` 기반의 단일 공통 거버넌스(Canonical)로 통합하기 위한 실행 계획 및 기록 문서입니다.
 
 ## Context
+
+이 문서는 완료된 2026-05-30 재구성 계획의 역사적 증거로 보존된다. 현재 정책 원천은 `docs/00.agent-governance/`이며, provider surface는 Stage 00 canonical adapter 모델을 따르는 어댑터로 해석한다. 최신 전환 계획과 구현 추적은 2026-06-01 Phase 2/Phase 3 문서를 우선한다.
 
 기존에는 Claude가 Canonical Runtime으로 여겨졌으며 Antigravity(Gemini)와 Codex는 Claude의 구조에 종속적인(단순 미러/포인터) 형태로 관리되었습니다. 이를 개편하여 `docs/00.agent-governance`를 SSOT(Single Source of Truth)로 격상시키고 모든 플랫폼 환경이 어댑터(Adapter) 역할만 하도록 재설계합니다.
 
@@ -72,3 +65,5 @@ status: active
 ## Related Documents
 
 - **Operations**: [Operations index](../../05.operations/README.md)
+- **Superseding Plan**: [Agent governance Phase 2 alignment plan](./2026-06-01-agent-governance-phase2-alignment.md)
+- **Implementation Task**: [Agent governance Phase 3 implementation](../tasks/2026-06-01-agent-governance-phase3-implementation.md)

@@ -82,7 +82,7 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 
 ## How to Work in This Area
 
-- Use this catalog when updating `.claude/agents/`, `.agents/agents/`, `.codex/agents/`, or provider runtime notes.
+- Use this catalog when updating `.claude/agents/`, `.agents/agents/`, `.codex/agents/*.toml`, or provider runtime notes.
 - Note that `.agents/skills/` is the Gemini-compatible surface, `.claude/skills/` is the Claude runtime surface, and `.codex/skills/` is the Codex runtime surface.
 - Keep agent docs aligned with their scope files under `docs/00.agent-governance/scopes/`.
 - Keep this catalog free of external harness identifiers.

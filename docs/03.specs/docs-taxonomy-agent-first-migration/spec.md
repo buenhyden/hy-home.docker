@@ -1,5 +1,5 @@
 ---
-status: approved
+status: active
 ---
 <!-- Target: docs/03.specs/docs-taxonomy-agent-first-migration/spec.md -->
 
