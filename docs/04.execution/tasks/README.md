@@ -66,6 +66,7 @@ docs/04.execution/tasks/
 ├── 2026-05-25-home-docker-revalidation-deferred-follow-up.md # Completed home docker revalidation deferred follow-up task record
 ├── 2026-05-25-large-scale-authored-ssot-review.md # Completed large-scale authored SSoT review task record
 ├── 2026-05-30-standardizing-agent-governance.md # Completed Stage 00 and Codex harness governance alignment task record
+├── 2026-05-31-claude-harness-governance-verification.md # Completed Claude harness governance verification task record
 └── README.md                                # This file
 ```
 
@@ -137,3 +138,4 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Data Analytics Execution Traceability Task**: [2026-05-22-data-analytics-execution-traceability.md](./2026-05-22-data-analytics-execution-traceability.md)
 - **Workspace Doc & Governance Consistency (2026-05b) Task**: [2026-05-29-workspace-consistency-2026-05b.md](./2026-05-29-workspace-consistency-2026-05b.md)
 - **Stage 00 and Codex Harness Governance Alignment Task**: [2026-05-30-standardizing-agent-governance.md](./2026-05-30-standardizing-agent-governance.md)
+- **Claude Harness Governance Verification Task**: [2026-05-31-claude-harness-governance-verification.md](./2026-05-31-claude-harness-governance-verification.md)

@@ -28,7 +28,7 @@ Make runtime execution predictable by separating high-level routing and final de
 ## Structure
 
 - Scope import: `docs/00.agent-governance/scopes/agentic.md`
-- Supervisor model (top spec): Claude `opus`, Gemini `gemini-3-pro`, GPT/Codex `gpt-5.1-codex` (see Model Policy in `../../subagent-protocol.md`)
+- Supervisor model (top spec): Claude `opus`, Gemini `gemini-3.1-pro`, GPT/Codex `gpt-5.5` (see Model Policy in `../../subagent-protocol.md`)
 - Coordinates worker agents and runtime skills
 
 ## Agents
