@@ -80,6 +80,23 @@ Provide a single, English-only source of truth for agent roles and reusable orch
 - [style-validation](./functions/style-validation.md)
 - [test-automator](./functions/test-automator.md)
 
+## Function / Skill Lifecycle
+
+Workspace functions and provider skill adapters use the same lifecycle terms:
+
+1. **Discovery**: identify requested or applicable functions/skills before mutation.
+2. **Applicability**: decide whether the function/skill changes the workflow,
+   artifact, or validation scope.
+3. **Provider loading**: load the runtime-specific skill or adapter instructions
+   needed for the task.
+4. **Canonical artifact**: write outputs to the repository's canonical stage or
+   runtime surface.
+5. **Validation evidence**: record commands, outcomes, CI-only gates, and
+   skipped-check rationale.
+
+Provider-local `skill.md` or `SKILL.md` files may describe runtime mechanics;
+the lifecycle policy remains in Stage 00.
+
 ## How to Work in This Area
 
 - Use this catalog when updating `.claude/agents/`, `.agents/agents/`, `.codex/agents/*.toml`, or provider runtime notes.

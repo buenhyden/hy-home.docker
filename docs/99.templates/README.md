@@ -83,6 +83,10 @@ layer: agentic
     예: `spec.template.md` 내 `./api-spec.md`는 `docs/03.specs/<feature>/`를
     기준으로 해석된다. 링크 검증 도구는 이 설계 원칙을 인지하고 템플릿 소스
     파일의 링크를 단순 나이브 검사로 깨진 링크로 표시하면 안 된다.
+18. Template deviation은 silent cleanup 대상이 아니다. 대상 문서가 매핑된
+    템플릿을 의도적으로 벗어나야 하면 관련 task evidence에 파일, 기대
+    템플릿, deviation 요약, 사유, 승인 또는 evidence owner, 검증 결과를
+    남긴다.
 
 ## Template Alignment Note
 

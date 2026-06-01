@@ -31,7 +31,22 @@ must not define separate governance, model policy, QA rules, or Template
 Contract rules. When TOML and Markdown prompt context disagree, Stage 00 and
 the validated TOML adapter surface win.
 
-## 4. Hook Parity (Summary)
+## 4. Harness Alignment Gates
+
+- Clarification duty is blocking before Codex changes planning, implementation,
+  model/reasoning values, hook/config state, or completion status when the
+  answer cannot be discovered from repository evidence.
+- `.codex/agents/*.toml` must use only model and `model_reasoning_effort`
+  values permitted by Stage 00 policy, provider sync, and validators.
+- `.codex/agents/*.md` remains compatibility prompt context until a separately
+  approved retirement plan exists.
+- `.codex/skills/**/skill.md` is a provider skill adapter surface. Use the
+  Stage 00 lifecycle terms: discovery -> applicability -> provider loading ->
+  canonical artifact -> validation evidence.
+- QA/CI completion evidence must distinguish local checks, CI-only gates,
+  hook/script output, and skipped-check rationale.
+
+## 5. Hook Parity (Summary)
 
 Hook event coverage should align with `.claude` settings where supported. Edit matchers cover `apply_patch` and `ApplyPatch`.
 

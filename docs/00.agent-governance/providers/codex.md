@@ -21,6 +21,8 @@ Codex-specific guidance for this repository.
 - Use `RTK.md` for the repository's token-optimized shell command convention when applicable.
 - Do not store secrets, tokens, credentials, personal settings, or shell history under `.codex/`.
 - Respect the active sandbox and approval model before mutating files or running high-risk commands.
+- Treat ambiguity as blocking before Codex changes planning, implementation,
+  model/reasoning values, hook/config state, or completion status.
 
 ## 3. Recommended Loading Sequence
 
@@ -46,7 +48,9 @@ Codex-specific guidance for this repository.
   catalog and regenerated/validated adapter surface rather than treating the
   Markdown prompt as policy.
 - `.codex/skills/` remains the Codex-compatible skill adapter surface and must
-  stay aligned with the Stage 00 function catalog.
+  stay aligned with the Stage 00 function catalog and the shared skill
+  lifecycle: discovery -> applicability -> provider loading -> canonical
+  artifact -> validation evidence.
 - Apply the Model Policy (`subagent-protocol.md`): `workflow-supervisor` uses
   `gpt-5.5` with `xhigh` reasoning effort; default worker agents use
   `gpt-5.4-mini` with `medium` reasoning effort. Never carry
@@ -54,6 +58,10 @@ Codex-specific guidance for this repository.
 - `gpt-5.3-codex` is reserved for a future explicit code-specialized worker override;
   do not use it until the sync script, validator, and policy table all encode the
   same exception.
+- `model` and `model_reasoning_effort` values are configuration outputs of the
+  Stage 00 policy. Codex must not introduce new aliases, downgrade reasoning
+  gates, or copy speculative model names from prompt context unless Stage 00,
+  the provider sync script, and validators all permit the value.
 - Follow the shared `rules/output-style.md`, `rules/provider-capability-matrix.md`, and `rules/workflows.md` as behavioral contracts.
 - The canonical delegated-agent catalog is the provider-neutral catalog documented in `docs/00.agent-governance/agents/`.
 
@@ -64,6 +72,17 @@ Codex sandbox shells may not inherit the user's full interactive `PATH`. Before 
 ```bash
 source scripts/operations/use-qa-ci-tools.sh
 ```
+
+For each change type, Codex completion evidence must distinguish:
+
+- local checks that were run,
+- CI-only gates that must be observed remotely,
+- hook or script evidence collected locally,
+- skipped checks and the reason they are not applicable.
+
+Docs-only and governance-only changes still require diff hygiene, repository
+contracts, traceability checks, and provider sync when provider surfaces are
+touched.
 
 ## 6. Current Hook Contract
 

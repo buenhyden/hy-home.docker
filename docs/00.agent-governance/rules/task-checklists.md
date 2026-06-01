@@ -19,6 +19,12 @@ Unified task execution checklists for all agent work.
 - [ ] Review `docs/00.agent-governance/memory/README.md` and `progress.md`; retrieve relevant memory notes when the task touches governance, docs, runtime, or repeated failures.
 - [ ] Identify ambiguity. Ask before state changes if a wrong assumption could
       change scope, policy, security posture, or verification outcome.
+- [ ] Treat ambiguity as blocking before planning, implementation, model/config
+      changes, or completion claims when the answer cannot be discovered from
+      repository evidence.
+- [ ] For model, reasoning-effort, provider adapter, hook, or CI/CD config
+      changes, confirm the governing Stage 00 policy and validator support
+      before editing.
 - [ ] Identify key risks (security, data loss, breaking changes, governance drift).
 - [ ] Define verification commands and acceptance criteria before edits.
 
@@ -34,6 +40,11 @@ Unified task execution checklists for all agent work.
 - [ ] Validate new/changed links as edits are made.
 - [ ] When a document is modified, update the parent folder `README.md` if the change affects the folder's description of that document (title, status, scope, or summary-level content); see DOCS 3 R2 in `rules/documentation-protocol.md`.
 - [ ] Remove stale, conflicting, or nonexistent references in editable scope.
+- [ ] Record template deviations or explicit N/A rationale in task evidence; do
+      not silently normalize historical artifacts outside the approved scope.
+- [ ] Keep provider adapters aligned with Stage 00 lifecycle terms:
+      discovery -> applicability -> provider loading -> canonical artifact ->
+      validation evidence.
 - [ ] Update `docs/00.agent-governance/memory/progress.md` for material task progress.
 - [ ] Record out-of-scope issues instead of patching read-only stages.
 
@@ -46,6 +57,11 @@ Unified task execution checklists for all agent work.
 - [ ] Confirm no contradictory policy statements were introduced.
 - [ ] Confirm any HADS usage is explicitly approved or documented as advisory.
 - [ ] Confirm completion criteria are satisfied for the affected stage(s).
+- [ ] Confirm any attachment gap coverage, template exceptions, or model/config
+      uncertainty was either resolved in editable scope or recorded as a human
+      approval gate.
+- [ ] Confirm QA/CI/CD evidence includes local checks, CI-only gates, and
+      skipped-check rationale appropriate to the change type.
 - [ ] Update `docs/00.agent-governance/memory/progress.md` with final status, verification evidence, and memory note links.
 - [ ] Create/update out-of-scope or durable finding reports from `docs/99.templates/memory.template.md` when needed.
 - [ ] For completed repository-modifying agent work, create logical Conventional Commits or record why commits were intentionally skipped.

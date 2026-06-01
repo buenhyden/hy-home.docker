@@ -48,6 +48,22 @@ Repo-local stricter rules always override this document; never weaken them on th
 - **GitHub Responsibility**: Ultimate SSoT gates, E2E tests, SARIF generation, and workflows requiring secrets.
 - **Implementation**: If a tool requires a dedicated CI job (e.g., for SARIF uploads), it must be removed from the local `.pre-commit-config.yaml` or skipped in the CI `pre-commit` runner via the `SKIP` environment variable.
 
+### 5.1 Evidence Boundary by Change Type
+
+Agents must align local checks, CI-only gates, and skipped-check rationale with
+the QA scope matrix. For PR-related work, the completion summary or task
+evidence must state:
+
+| Change Type | Required Local Evidence | CI-Only Evidence | Required Skip Rationale |
+| --- | --- | --- | --- |
+| Docs or governance docs | Diff hygiene, repo contracts, doc traceability, provider sync when provider docs changed | Required docs/repo contract jobs | Domain tests are N/A for docs-only changes. |
+| Hook, script, or validator | Targeted command output plus repo contracts | Required quality/security jobs | GitHub-only permissions, SARIF upload, or protected remote state if not locally runnable. |
+| Runtime or Docker config | Compose/hardening/local smoke checks when approved | Compose and hardening jobs | Live mutation skipped without approval. |
+| GitHub workflow/protection | Static review and local contract checks | GitHub Actions and branch-protection verification | Any remote state not verified must be reported as unverified, not done. |
+
+No task is complete by citing a CI-only gate alone when a cheap local check is
+available, and no local-only check replaces required protected-branch gates.
+
 ## 6. Local Instruction Authority
 
 - This repository does not adopt a GitHub-native instruction hierarchy for agent execution.

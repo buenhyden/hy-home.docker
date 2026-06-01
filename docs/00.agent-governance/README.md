@@ -69,7 +69,28 @@ layer: agentic
   Stage 00 name sets, roles, scopes, models, and validation rules.
 - **Clarification Duty**: when the task is underspecified, constraints conflict,
   or a likely assumption could change the outcome, stop and ask before changing
-  state. Do not silently choose a risky interpretation.
+  state. This duty is blocking before planning, implementation, model/config
+  changes, and completion claims. Do not silently choose a risky interpretation.
+
+## Governance Coverage Matrix
+
+This matrix records the current Stage 00 coverage and the desired completion
+evidence for the shared governance concepts. It is a routing aid; detailed
+policy remains in the linked Stage 00 documents.
+
+| Concept | Current Canonical Surface | Desired State / Evidence |
+| --- | --- | --- |
+| Agent | `agents/agents/`, `subagent-protocol.md` | Role, scope, model tier, provider adapter, and delegated-agent lifecycle stay synchronized across provider surfaces. |
+| Skill / Function | `agents/functions/`, provider skill adapters, `rules/workflows.md` | Work uses the lifecycle: discovery -> applicability -> provider loading -> canonical artifact -> validation evidence. |
+| Rule | `rules/`, `scopes/` | Provider overlays bind rules to runtime mechanics without redefining policy. |
+| Hook | Runtime hook configs and `scripts/hooks/` | Hooks provide enforcement or advisory context and point back to Stage 00 for policy. |
+| Sub-agent | `subagent-protocol.md` | Delegation imports exactly one primary scope and follows the shared communication and model policy. |
+| Output Style | `rules/output-style.md` | Provider output bindings remain behavioral adapters, not separate writing policy. |
+| Workflow | `rules/workflows.md`, stage docs | Planning, execution, verification, and evidence land in canonical stage paths. |
+| Memory | `memory/README.md`, `memory/progress.md` | Memory supports recall and progress logging but never overrides active governance. |
+| QA & CI/CD | `scopes/qa.md`, `rules/github-governance.md` | Each change type has local checks, CI-only gates, hook/script evidence, and skipped-check rationale. |
+| Model Policy | `subagent-protocol.md`, provider notes | Model and reasoning-effort values change only when policy, sync script, and validators agree. |
+| Template Contract | `rules/documentation-protocol.md`, `rules/stage-authoring-matrix.md`, `docs/99.templates/` | Template deviations are audited with file, expected template, reason, approval/evidence owner, and validation evidence. |
 
 ## Structure
 
@@ -92,7 +113,9 @@ layer: agentic
 6. Review `memory/progress.md` before editing.
 7. Ask for clarification before state changes when the request is underspecified
    or governance constraints conflict.
-8. Run completion checklist and update `memory/progress.md`.
+8. Before changing model/config values, confirm the Stage 00 policy, provider
+   sync script, and validators already encode the same permitted value.
+9. Run completion checklist and update `memory/progress.md`.
 
 ## Related Documents
 

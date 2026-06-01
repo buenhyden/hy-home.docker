@@ -37,6 +37,20 @@ before applying fixes. For documentation-only or governance-only work, TDD is
 N/A, but the task still needs repository-contract, traceability, diff hygiene,
 and manual evidence for any policy claims.
 
+## 3.1 Change-Type Verification Matrix
+
+Use the smallest meaningful checks for the touched layer. When a listed check is
+not applicable, record the skipped-check rationale in the task evidence.
+
+| Change Type | Local Checks | CI-Only / Remote Gate | Hook or Script Evidence | Skip Rationale Required |
+| --- | --- | --- | --- | --- |
+| Documentation-only stage docs | `git diff --check`, `check-repo-contracts.sh`, `check-doc-traceability.sh`, LLM Wiki freshness when indexes change | Remote docs traceability and repo contracts | Post-edit validation hook, task evidence, progress log | Domain tests, coverage, Docker runtime checks |
+| Governance or provider policy docs | Documentation checks plus `sync-provider-surfaces.sh` when provider surfaces are affected | Remote repo contracts and required checks | Provider sync output and policy-gate evidence | Runtime tests unless behavior/config changed |
+| Provider adapter, hook, or validation script | Targeted script self-check, repo contracts, provider sync, quickwin/template-security baselines when relevant | Required GitHub quality gates and security scans | Hook validation or script command output | CI-only tools such as SARIF upload are named, not duplicated locally |
+| Runtime, Docker, or Compose config | Compose validation, hardening scripts, targeted service smoke checks when safe | Compose and hardening jobs, any protected-branch required checks | Docker/Compose command output or explicit approval gate | Live service mutation skipped unless approved |
+| CI workflow or GitHub protection | Static workflow validation, repo contracts, ruleset documentation review | GitHub Actions jobs, branch protection/ruleset verification | `gh` or workflow evidence where approved | Local execution of GitHub-only jobs such as `zizmor` SARIF upload |
+| Model policy or reasoning-effort config | Stage 00 policy review, provider sync, validator support check | Required repo contracts after generated surfaces update | Validator output and task evidence | Any unsupported value remains blocked, not skipped |
+
 ## 4. Operational Procedures
 
 - **Regression**: Add regression tests for every bug fix.

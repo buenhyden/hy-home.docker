@@ -66,7 +66,7 @@ docs/04.execution/plans/
 ├── 2026-05-31-claude-harness-governance-verification.md # Completed Claude harness governance verification plan
 ├── 2026-06-01-agent-governance-phase1-diagnostic.md # Completed agent governance Phase 1 diagnostic
 ├── 2026-06-01-agent-governance-phase2-alignment.md # Completed agent governance Phase 2 alignment plan
-├── 2026-06-02-agent-governance-decision-items-plan.md # Active agent governance decision-item continuation plan
+├── 2026-06-02-agent-governance-decision-items-plan.md # Completed agent governance decision-item and attachment-gap continuation plan
 └── README.md                               # This file
 ```
 
@@ -143,4 +143,4 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Claude Harness Governance Verification Plan**: [2026-05-31-claude-harness-governance-verification.md](./2026-05-31-claude-harness-governance-verification.md)
 - **Agent Governance Phase 1 Diagnostic**: [2026-06-01-agent-governance-phase1-diagnostic.md](./2026-06-01-agent-governance-phase1-diagnostic.md)
 - **Agent Governance Phase 2 Alignment Plan**: [2026-06-01-agent-governance-phase2-alignment.md](./2026-06-01-agent-governance-phase2-alignment.md)
-- **Agent Governance Decision Items Plan**: [2026-06-02-agent-governance-decision-items-plan.md](./2026-06-02-agent-governance-decision-items-plan.md)
+- **Agent Governance Decision Items and Attachment-Gap Plan**: [2026-06-02-agent-governance-decision-items-plan.md](./2026-06-02-agent-governance-decision-items-plan.md)

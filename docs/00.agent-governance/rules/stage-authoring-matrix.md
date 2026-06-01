@@ -54,6 +54,9 @@ Skills are available in `.claude/skills/<skill>/skill.md`. Load using the `Skill
 5. Run `bash scripts/validation/check-repo-contracts.sh` for changed
    target-stage documents.
 6. If a stage is read-only for the current task, record findings instead of mutating the stage.
+7. If a changed document intentionally deviates from its mapped template,
+   record the file, expected template, reason, approval/evidence owner, and
+   validation evidence in the related task record.
 
 ## Related Documents
 

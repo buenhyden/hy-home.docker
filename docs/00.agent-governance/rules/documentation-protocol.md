@@ -88,6 +88,24 @@ See `docs/99.templates/README.md` for the full catalog and usage rules.
 
 For `docs/90.references/`, verify that the document is stable reference context, contains source-backed facts, and does not define active policy, runtime truth, runbook procedure, plan, task evidence, or incident timeline.
 
+### 4.1 Template Deviation Audit
+
+Before completing changes under `docs/01` to `docs/05`, `docs/90`, or
+`docs/99`, compare each changed target against the mapped template and the
+Stage Authoring Matrix row. If a document intentionally deviates, record the
+exception in the related task evidence with:
+
+- file path,
+- expected template,
+- deviation summary,
+- reason the template cannot or should not be applied verbatim,
+- approval or evidence owner,
+- validation command or manual review evidence.
+
+Do not use template-deviation cleanup as a reason to rewrite historical
+evidence outside the approved scope. Already-valid documents should remain
+unchanged.
+
 ## 5. Operational Procedures
 
 Trigger documentation updates when:

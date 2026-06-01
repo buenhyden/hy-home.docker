@@ -73,6 +73,7 @@ docs/04.execution/tasks/
 ├── 2026-06-01-agent-governance-phase3-stage01-02-continuation.md # Completed Phase 3 Stage 01/02 traceability continuation
 ├── 2026-06-01-agent-governance-phase3-strategy-integration.md # Completed Phase 3 strategy integration task record
 ├── 2026-06-01-agent-governance-phase4-closure.md # Completed Phase 4 closure task record
+├── 2026-06-02-agent-governance-missing-items-implementation.md # Completed decision-item attachment-gap implementation task record
 └── README.md                                # This file
 ```
 
@@ -151,3 +152,4 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Agent Governance Phase 3 Stage 01/02 Continuation Task**: [2026-06-01-agent-governance-phase3-stage01-02-continuation.md](./2026-06-01-agent-governance-phase3-stage01-02-continuation.md)
 - **Agent Governance Phase 3 Strategy Integration Task**: [2026-06-01-agent-governance-phase3-strategy-integration.md](./2026-06-01-agent-governance-phase3-strategy-integration.md)
 - **Agent Governance Phase 4 Closure Task**: [2026-06-01-agent-governance-phase4-closure.md](./2026-06-01-agent-governance-phase4-closure.md)
+- **Agent Governance Missing Items Implementation Task**: [2026-06-02-agent-governance-missing-items-implementation.md](./2026-06-02-agent-governance-missing-items-implementation.md)

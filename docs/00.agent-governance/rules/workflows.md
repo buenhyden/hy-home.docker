@@ -67,7 +67,23 @@ HADS is advisory by default. It may guide AI-readable documentation structure,
 but existing templates are not converted and HADS block tags are not required
 unless a future plan explicitly approves that rollout.
 
-## 4. Routing Rules
+## 4. Skill Lifecycle Gate
+
+Reusable functions and provider skills follow the same lifecycle regardless of
+runtime:
+
+| Lifecycle Step | Required Agent Action | Canonical Evidence |
+| --- | --- | --- |
+| Discovery | Identify requested, named, or obviously applicable workspace functions and external skills before mutation. | Task notes or plan assumptions identify the considered skill set. |
+| Applicability | Decide whether each skill changes the work method, output artifact, or validation scope. | Inapplicable skills are recorded as N/A only when they were requested or materially relevant. |
+| Provider loading | Load the provider adapter file (`.claude/skills/`, `.codex/skills/`, `.agents/skills/`) or external skill instructions needed for the task. | The loaded source is reflected in the task narrative or session audit trail. |
+| Canonical artifact | Write the resulting plan, task, policy, runbook, code, or review output to the repository's canonical stage path. | Active artifacts live under `docs/01` to `docs/05`, `docs/90`, `docs/99`, or the scoped runtime surface. |
+| Validation evidence | Run the relevant local checks, record CI-only gates, or explain skipped checks. | `docs/04.execution/tasks/` and progress logs capture the command, outcome, and rationale. |
+
+Provider-local skill files may describe runtime mechanics, but they do not own
+the lifecycle policy above.
+
+## 5. Routing Rules
 
 1. `workflow-supervisor` selects the workflow and delegates each step to the right
    worker agent with exactly one primary scope (`subagent-protocol.md`).

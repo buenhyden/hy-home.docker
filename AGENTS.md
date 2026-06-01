@@ -21,6 +21,7 @@ Workspace purpose: shared harness-engineering and agent-first engineering over m
 
 - **Governance Hub:** `docs/00.agent-governance/`
 - **Agent Catalog:** `docs/00.agent-governance/agents/`
+- **Codex Provider Notes:** `docs/00.agent-governance/providers/codex.md`
 
 ## 4. Detailed Instructions
 
@@ -30,6 +31,10 @@ For specific guidelines, see:
 - [Environment Constraints](docs/00.agent-governance/rules/environment-constraints.md)
 - [Subagent Protocol](docs/00.agent-governance/subagent-protocol.md)
 - [GitHub Governance](docs/00.agent-governance/rules/github-governance.md)
+
+This file is an entry shim. Shared governance, clarification duty, model policy,
+Template Contract rules, QA/CI gates, and Codex harness boundaries live in
+Stage 00. Do not add provider-local policy here.
 
 ## Related Documents
 
