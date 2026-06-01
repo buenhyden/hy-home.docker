@@ -93,7 +93,6 @@ model = "$(codex_model "$name")"
 model_reasoning_effort = "$(codex_reasoning_effort "$name")"
 source_catalog = "docs/00.agent-governance/agents/agents/${name}.md"
 scope = "docs/00.agent-governance/scopes/${layer}.md"
-legacy_markdown_adapter = ".codex/agents/${name}.md"
 EOF
 }
 

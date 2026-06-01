@@ -119,6 +119,20 @@ The attached decision scope is treated as an input contract for the continuation
 - **Rollback Trigger**: Revert the follow-up implementation if it creates duplicate governance, weakens Stage 00 authority, introduces unapproved hard gates, or breaks provider parity.
 - **Prompt / Model Promotion Criteria**: No model, model alias, or reasoning-effort value changes are part of this plan.
 
+## Approved Gate Closure Addendum (2026-06-02)
+
+The user approved implementation of approval-gated unfinished items and
+modification of protected repository surfaces. This approval supersedes the
+original non-goal boundary only for repo-tracked, validator-backed changes.
+
+| Approved Gate | Implementation Boundary | Evidence |
+| --- | --- | --- |
+| HADS rollout | Mandatory only for non-README reference documents under `docs/90.references/hads/`; no broad conversion of existing active docs. | `docs/90.references/hads/profile.md`, `scripts/validation/check-repo-contracts.sh` HADS profile check. |
+| Docker hard-validator promotion | `scripts/hardening/check-all-hardening.sh` becomes a hard gate inside repo contracts. | Repo contract hardening section and hardening command output. |
+| Codex Markdown prompt retirement | `.codex/agents/*.md` prompt files are removed; `.codex/agents/*.toml` is the sole Codex agent adapter surface. | Provider docs, sync script, TOML adapters, and repo contract drift checks. |
+| Stage 00 / template / validator protected surfaces | Protected docs and scripts may be updated for the approved bounded gate closure. | Task evidence and repository validation commands. |
+| Runtime, deployment, secrets, and remote GitHub state | No live mutation without a concrete target and separate runtime/remote evidence. | Explicitly recorded as not changed in task evidence. |
+
 ## Completion Criteria
 
 - [x] Phase 1/2 historical evidence remains preserved.

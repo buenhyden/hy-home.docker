@@ -41,12 +41,9 @@ Codex-specific guidance for this repository.
 - `.codex/agents/*.toml` is the Codex agent adapter surface. Do not define
   Codex-only roles, QA rules, Template Contract rules, or Model Policy values
   in TOML; those belong in Stage 00.
-- `.codex/agents/*.md` may exist as a legacy or compatibility prompt surface.
-  Markdown prompt files are not the source of truth for Codex model selection,
-  reasoning effort, QA policy, Template Contract rules, or shared governance.
-  If they drift from Stage 00 or TOML adapters, fix the canonical Stage 00
-  catalog and regenerated/validated adapter surface rather than treating the
-  Markdown prompt as policy.
+- `.codex/agents/*.md` is retired. Do not recreate Codex Markdown agent prompts;
+  Stage 00 plus validated `.codex/agents/*.toml` adapters are the Codex agent
+  source of truth.
 - `.codex/skills/` remains the Codex-compatible skill adapter surface and must
   stay aligned with the Stage 00 function catalog and the shared skill
   lifecycle: discovery -> applicability -> provider loading -> canonical

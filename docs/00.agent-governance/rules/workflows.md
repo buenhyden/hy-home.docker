@@ -63,9 +63,10 @@ and `docs/99`.
 | Verification before completion | Completion claims require command output, manual evidence, or explicit skipped-check rationale. |
 | Finishing a branch | Follow `rules/github-governance.md` and `rules/git-workflow.md`: verify, inspect diff/status, stage scoped files only, and commit/PR by approval. |
 
-HADS is advisory by default. It may guide AI-readable documentation structure,
-but existing templates are not converted and HADS block tags are not required
-unless a future plan explicitly approves that rollout.
+HADS is mandatory only for the approved `docs/90.references/hads/` reference
+profile. It may guide AI-readable documentation elsewhere, but existing
+templates are not converted and HADS block tags are not required outside that
+profile unless a future plan explicitly approves that rollout.
 
 ## 4. Skill Lifecycle Gate
 

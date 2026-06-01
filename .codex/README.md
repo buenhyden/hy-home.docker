@@ -25,11 +25,9 @@ For specific Codex execution guidelines, including the Hook Parity Contract, QA/
 - **In Scope:** `.codex/hooks.json`, `scripts/hooks/agent-event-hook.sh`, and the Codex-compatible runtime adapters (`.codex/agents/*.toml`, `.codex/skills/`).
 - **Out of Scope:** User-global Codex settings or credentials. Shared policy remains in `docs/00.agent-governance/`.
 
-Codex TOML files are the active agent adapter definitions. Legacy
-`.codex/agents/*.md` files may remain as compatibility prompt context, but they
-must not define separate governance, model policy, QA rules, or Template
-Contract rules. When TOML and Markdown prompt context disagree, Stage 00 and
-the validated TOML adapter surface win.
+Codex TOML files are the only active agent adapter definitions. The former
+`.codex/agents/*.md` compatibility prompt surface is retired; do not recreate
+Markdown agent prompts under `.codex/agents/`.
 
 ## 4. Harness Alignment Gates
 
@@ -38,8 +36,8 @@ the validated TOML adapter surface win.
   answer cannot be discovered from repository evidence.
 - `.codex/agents/*.toml` must use only model and `model_reasoning_effort`
   values permitted by Stage 00 policy, provider sync, and validators.
-- `.codex/agents/*.md` remains compatibility prompt context until a separately
-  approved retirement plan exists.
+- `.codex/agents/*.md` is disallowed. Stage 00 and validated TOML adapters are
+  the Codex agent source of truth.
 - `.codex/skills/**/skill.md` is a provider skill adapter surface. Use the
   Stage 00 lifecycle terms: discovery -> applicability -> provider loading ->
   canonical artifact -> validation evidence.

@@ -55,7 +55,9 @@ Unified task execution checklists for all agent work.
 - [ ] Validate link integrity for changed root/governance files.
 - [ ] Inspect the post-edit diff after hook-managed formatting or style checks.
 - [ ] Confirm no contradictory policy statements were introduced.
-- [ ] Confirm any HADS usage is explicitly approved or documented as advisory.
+- [ ] Confirm any HADS usage follows the mandatory
+      `docs/90.references/hads/` profile when applicable, or is explicitly
+      approved/documented as advisory elsewhere.
 - [ ] Confirm completion criteria are satisfied for the affected stage(s).
 - [ ] Confirm any attachment gap coverage, template exceptions, or model/config
       uncertainty was either resolved in editable scope or recorded as a human

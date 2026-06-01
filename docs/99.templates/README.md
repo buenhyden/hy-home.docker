@@ -87,6 +87,10 @@ layer: agentic
     템플릿을 의도적으로 벗어나야 하면 관련 task evidence에 파일, 기대
     템플릿, deviation 요약, 사유, 승인 또는 evidence owner, 검증 결과를
     남긴다.
+19. `docs/90.references/hads/` 아래의 non-README reference 문서는 HADS
+    profile을 함께 따른다. 즉 `reference.template.md`의 reference 책임 섹션을
+    유지하면서 HADS `**Version X.Y.Z**`, `## AI READING INSTRUCTION`, bold block
+    tag를 포함해야 한다.
 
 ## Template Alignment Note
 

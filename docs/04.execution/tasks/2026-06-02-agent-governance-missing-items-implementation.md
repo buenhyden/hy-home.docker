@@ -22,9 +22,11 @@ Phase 1/2 historical artifacts는 수정하지 않고, 현재 기준 보정은 S
 
 - Preserve completed Phase 1/2 historical documents.
 - Keep Stage 00 as the governance SSoT; do not create duplicate provider-local policy.
-- Keep `.codex/agents/*.md` as compatibility prompt context until a separate approved retirement plan exists.
+- User approved protected surface changes and approval-gated unfinished items on 2026-06-02.
+- Retire `.codex/agents/*.md` compatibility prompt context in this approved follow-up.
 - Do not change Docker runtime, GitHub remote settings, secrets, deployment, or user-global Codex settings.
-- Treat HADS mandatory rollout, Docker hard-validator promotion, Codex Markdown prompt retirement, and model/reasoning changes as separate human approval gates.
+- Treat model/reasoning changes and live runtime/deployment/secret/remote changes as separate human approval gates.
+- The 2026-06-02 approval closes the bounded repo-tracked gates for HADS profile rollout, Docker hard-validator promotion, Codex Markdown prompt retirement, and protected Stage 00/template/validator surfaces.
 
 ## Task Table
 
@@ -37,6 +39,12 @@ Phase 1/2 historical artifacts는 수정하지 않고, 현재 기준 보정은 S
 | T-005 | Add template deviation exception criteria without rewriting template sources or historical docs. | doc | N/A | PLN-DI-011 | Template README, documentation protocol, and Stage Authoring Matrix record exception evidence requirements. | Codex | Completed |
 | T-006 | Update Stage 04 plan/task indexes and progress log for the continuation task. | doc/memory | N/A | PLN-DI-016 | Plan/task READMEs and progress log updated; LLM Wiki index regenerated with 1029 paths after fresh revalidation. | Codex | Completed |
 | T-007 | Run verification commands from the plan and record results, including Graphify advisory reason. | eval | N/A | VAL-DI-001..011 | Verification summary records PASS/advisory outcomes. | Codex | Completed |
+| T-008 | Record the 2026-06-02 approval-gate closure scope in the parent plan and task evidence. | doc | N/A | Approved Gate Closure | Parent plan addendum and this task evidence distinguish repo-tracked protected surfaces from live runtime/remote state. | Codex | Completed |
+| T-009 | Retire Codex Markdown prompt adapters and make `.codex/agents/*.toml` the sole Codex agent adapter surface. | doc/script | N/A | Codex Markdown prompt retirement | `.codex/agents/*.md` removed; TOML adapters, provider docs, sync script, and repo contracts updated. | Codex | Completed |
+| T-010 | Promote Docker hardening from manual boundary to repo-contract hard validator. | script/doc | N/A | Docker hard-validator promotion | `check-repo-contracts.sh` runs `scripts/hardening/check-all-hardening.sh` as a hard gate. | Codex | Completed |
+| T-011 | Implement bounded HADS mandatory rollout for `docs/90.references/hads/`. | doc/script | N/A | HADS mandatory rollout | HADS profile reference docs added and repo contracts validate HADS profile shape. | Codex | Completed |
+| T-012 | Update indexes, progress, and LLM Wiki for approved gate closure. | doc/memory | N/A | Evidence closure | `docs/90.references/README.md`, progress log, and LLM Wiki index updated; LLM Wiki regenerated with 1014 paths. | Codex | Completed |
+| T-013 | Run verification for protected surface changes and record results. | eval | N/A | Verification | Verification summary records protected-surface checks. | Codex | Completed |
 
 ## Suggested Types
 
@@ -60,6 +68,12 @@ Phase 1/2 historical artifacts는 수정하지 않고, 현재 기준 보정은 S
 - [x] T-005 Template deviation criteria.
 - [x] T-006 Index, progress, and LLM Wiki updates.
 - [x] T-007 Verification evidence.
+- [x] T-008 Approval-gate closure scope.
+- [x] T-009 Codex Markdown prompt retirement.
+- [x] T-010 Docker hard-validator promotion.
+- [x] T-011 HADS mandatory reference profile.
+- [x] T-012 Index, progress, and LLM Wiki refresh for approved gate closure.
+- [x] T-013 Protected-surface verification evidence.
 
 ## Verification Summary
 
@@ -74,10 +88,18 @@ Phase 1/2 historical artifacts는 수정하지 않고, 현재 기준 보정은 S
   - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — PASS.
   - `bash scripts/knowledge/report-graphify-health.sh` — advisory (`surprising_cross_root_inferred_edges=3`).
   - `rg -n "gpt-5\\.1|gemini-3-pro|unsupported|TBD|TODO" docs/00.agent-governance .codex AGENTS.md docs/04.execution` — advisory hits only: historical progress/task references, scan command literals, existing `.codex/skills/adr-writing/skill.md` instructional `TBD`, and the QA matrix word `unsupported`; no model/reasoning value was changed.
+  - `bash -n scripts/validation/check-repo-contracts.sh scripts/operations/sync-provider-surfaces.sh` — PASS.
+  - `bash scripts/hardening/check-all-hardening.sh` — PASS (`Summary: ALL checks passed successfully.`).
+  - `bash scripts/operations/sync-provider-surfaces.sh` after Codex prompt retirement — PASS (`no drift`).
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh` after approved gate closure — regenerated `docs/90.references/llm-wiki/index.md` with 1014 paths.
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` after approved gate closure — PASS.
+  - `bash scripts/validation/check-repo-contracts.sh` after approved gate closure — PASS (`failures=0`; `changed_template_docs_total=6`; `normalized_changed_template_docs_total=6`; `target_stage_docs_total=516`; `normalized_target_stage_docs_total=516`).
+  - `rg -n "gpt-5\\.1|gemini-3-pro|unsupported|TBD|TODO|legacy_markdown_adapter" docs/00.agent-governance .codex AGENTS.md docs/04.execution scripts/operations scripts/validation` after approved gate closure — advisory hits only: historical progress/task references, scan command literals, existing validator/QA wording, existing `.codex/skills/adr-writing/skill.md` instructional `TBD`, and no `legacy_markdown_adapter` references.
 - **Eval Commands**:
   - `graphify-out/GRAPH_REPORT.md` was read before Graphify health usage; report status is advisory because of `surprising_cross_root_inferred_edges=3`.
-  - `.codex/agents/*.toml` and `.codex/agents/*.md` surfaces were inspected by path listing; no adapter/model/reasoning edits were made.
+  - `.codex/agents/*.toml` and `.codex/agents/*.md` surfaces were inspected by path listing; Markdown prompt adapters were retired, TOML adapter metadata no longer references them, and no model/reasoning values were changed.
   - Graphify advisory claims were corroborated against tracked Stage 00 docs, Codex runtime notes, and Stage 04 task/plan evidence.
+  - User approval on 2026-06-02 enabled protected repo-tracked surface changes. Live Docker runtime, deployment, secrets, user-global Codex settings, and remote GitHub protection state were not mutated.
 - **Logs / Evidence Location**:
   - This task document.
   - [Progress log](../../00.agent-governance/memory/progress.md)

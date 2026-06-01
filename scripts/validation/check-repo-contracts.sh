@@ -847,7 +847,6 @@ for agent in runtime_agents:
     expected_model = "gpt-5.5" if agent == "workflow-supervisor" else "gpt-5.4-mini"
     expected_effort = "xhigh" if agent == "workflow-supervisor" else "medium"
     expected_catalog = f"docs/00.agent-governance/agents/agents/{agent}.md"
-    expected_legacy = f".codex/agents/{agent}.md"
 
     if toml_value(text, "name") != agent:
         failures.append(f"{path}: expected name {agent!r}, found {toml_value(text, 'name')!r}")
@@ -857,8 +856,13 @@ for agent in runtime_agents:
         failures.append(f"{path}: expected model_reasoning_effort {expected_effort!r}, found {toml_value(text, 'model_reasoning_effort')!r}")
     if toml_value(text, "source_catalog") != expected_catalog:
         failures.append(f"{path}: expected source_catalog {expected_catalog!r}")
-    if toml_value(text, "legacy_markdown_adapter") != expected_legacy:
-        failures.append(f"{path}: expected legacy_markdown_adapter {expected_legacy!r}")
+
+codex_markdown_agents = sorted(pathlib.Path(".codex/agents").glob("*.md"))
+if codex_markdown_agents:
+    failures.append(
+        ".codex/agents/*.md compatibility prompts are retired; remove: "
+        + ", ".join(str(path) for path in codex_markdown_agents)
+    )
 
 for fn in runtime_functions:
     if read(pathlib.Path(f".claude/skills/{fn}/skill.md")) != read(pathlib.Path(f".codex/skills/{fn}/skill.md")):
@@ -2861,6 +2865,59 @@ if failures:
 PY
   failures=$((failures + 1))
 fi
+
+section "HADS reference profile"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import re
+import sys
+
+failures: list[str] = []
+root = pathlib.Path("docs/90.references/hads")
+
+if root.exists():
+    for path in sorted(root.glob("*.md")):
+        if path.name == "README.md":
+            continue
+        text = path.read_text(errors="ignore")
+        lines = text.splitlines()
+        first_20 = "\n".join(lines[:20])
+        if not re.search(r"(?m)^# .+", text):
+            failures.append(f"{path}: HADS document missing H1 title")
+        if not re.search(r"\*\*Version [0-9]+\.[0-9]+\.[0-9]+\*\*", first_20):
+            failures.append(f"{path}: HADS document missing **Version X.Y.Z** in first 20 lines")
+        manifest_match = re.search(r"(?m)^## AI READING INSTRUCTION\s*$", text)
+        if not manifest_match:
+            failures.append(f"{path}: HADS document missing AI READING INSTRUCTION")
+        first_content = re.search(r"(?m)^## (?!AI READING INSTRUCTION\b).+", text)
+        if manifest_match and first_content and manifest_match.start() > first_content.start():
+            failures.append(f"{path}: AI READING INSTRUCTION must appear before first content section")
+        if "**[SPEC]**" not in text:
+            failures.append(f"{path}: HADS document missing **[SPEC]** block")
+        bad_tags = re.findall(r"(?m)^(?<!\*)\[(SPEC|NOTE|BUG|\?)\](?!\*)", text)
+        if bad_tags:
+            failures.append(f"{path}: HADS block tags must be bold, found plain tags {bad_tags}")
+        for bug_match in re.finditer(r"(?ms)^\*\*\[BUG\][^\n]*\*\*\n(.*?)(?=^\*\*\[(?:SPEC|NOTE|BUG|\?)\]|^## |\Z)", text):
+            block = bug_match.group(1).lower()
+            if "symptom" not in block or "fix" not in block:
+                failures.append(f"{path}: HADS BUG block must include symptom and fix")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
+section "Infrastructure hardening hard gate"
+if ! bash scripts/hardening/check-all-hardening.sh >/tmp/check-repo-contracts-hardening.txt 2>&1; then
+  fail "infrastructure hardening hard gate failed"
+  cat /tmp/check-repo-contracts-hardening.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-hardening.txt
 
 section "Script reference integrity"
 if ! python3 - <<'PY'; then
