@@ -1,5 +1,5 @@
 ---
-status: draft
+status: completed
 ---
 <!-- Target: docs/04.execution/plans/2026-06-01-agent-governance-phase2-alignment.md -->
 
@@ -34,6 +34,7 @@ The prior Phase 2 and Phase 3 artifacts remain historical evidence:
 - `docs/04.execution/plans/2026-05-30-standardizing-agent-governance.md`
 - `docs/04.execution/tasks/2026-05-30-standardizing-agent-governance.md`
 - `docs/04.execution/tasks/2026-06-01-agent-governance-phase3-implementation.md`
+- `docs/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md`
 
 This plan supersedes stale assumptions in earlier Phase 2 text where the current worktree now proves a different state, especially the existence of `.codex/agents/*.toml`.
 
@@ -150,11 +151,27 @@ This plan supersedes stale assumptions in earlier Phase 2 text where the current
 
 | Gate | Status | Decision Needed | Default if Not Approved |
 | --- | --- | --- | --- |
-| DG-006 | Open | Should HADS become a required template overlay, an optional reference-doc overlay, or advisory guidance only? | Advisory only; no template conversion. |
-| DG-007 | Planned | Keep Superpowers outputs inside canonical stage paths rather than `docs/superpowers/**`. | Use canonical stage paths. |
-| DG-008 | Open | Should `.codex/agents/*.md` be retained as compatibility prompts, generated from Stage 00, or retired after TOML adoption? | Retain as compatibility prompts. |
-| DG-009 | Open | Which Docker best-practice items become hard validators versus manual review checklist items? | Manual checklist only for new hardening rules. |
-| DG-010 | Open | Should Phase 3 create a new task document for this continuation or append to the prior Phase 3 task? | Create a new task document to preserve historical evidence. |
+| DG-006 | Default applied | Should HADS become a required template overlay, an optional reference-doc overlay, or advisory guidance only? | Advisory only; no template conversion. |
+| DG-007 | Default applied | Keep Superpowers outputs inside canonical stage paths rather than `docs/superpowers/**`. | Use canonical stage paths. |
+| DG-008 | Default applied | Should `.codex/agents/*.md` be retained as compatibility prompts, generated from Stage 00, or retired after TOML adoption? | Retain as compatibility prompts. |
+| DG-009 | Default applied | Which Docker best-practice items become hard validators versus manual review checklist items? | Manual checklist only for new hardening rules. |
+| DG-010 | Default applied | Should Phase 3 create a new task document for this continuation or append to the prior Phase 3 task? | Create a new task document to preserve historical evidence. |
+
+## Phase 3 Outcome and Gate Disposition
+
+The user continued into Phase 3 by default-gate execution. The implemented
+scope stayed within this plan's safety boundaries: no HADS template conversion,
+no `.codex/agents/*.md` retirement, no Docker runtime mutation, no deployment
+state change, no remote GitHub protection change, and no user-global Codex
+settings change.
+
+| Gate | Final Disposition | Evidence |
+| --- | --- | --- |
+| DG-006 | HADS remains advisory only. | `rules/documentation-protocol.md` and `rules/output-style.md` define HADS as advisory unless a future approved rollout changes that. |
+| DG-007 | External strategy outputs stay in canonical stage paths. | `rules/workflows.md` maps external strategy disciplines to `docs/01`-`docs/05`, `docs/90`, and `docs/99`. |
+| DG-008 | `.codex/agents/*.md` remains a compatibility prompt surface. | `.codex/README.md` and `providers/codex.md` distinguish TOML adapters from legacy Markdown prompt context. |
+| DG-009 | New Docker best-practice items remain manual review boundaries. | `scopes/infra.md`, `scopes/security.md`, and `scopes/qa.md` record review expectations without adding new hard validators. |
+| DG-010 | A new task document records the continuation. | `docs/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md`. |
 
 ## Work Breakdown
 
@@ -199,7 +216,7 @@ This plan supersedes stale assumptions in earlier Phase 2 text where the current
 
 - **Offline Eval Gate**: Phase 3 must pass repo contracts, doc traceability, provider sync, LLM Wiki freshness, diff hygiene, and any new manual checks approved from this plan.
 - **Sandbox / Canary Rollout**: N/A for plan-only work. Runtime Docker canary is out of scope unless a later approved implementation changes runtime behavior.
-- **Human Approval Gate**: Required before Phase 3 implementation, especially for DG-006, DG-008, DG-009, and DG-010.
+- **Human Approval Gate**: Satisfied by the subsequent user continuation into Phase 3. Broader HADS rollout, Docker hard validators, Codex Markdown prompt retirement, runtime changes, deployment changes, and remote GitHub protection changes still require explicit future approval.
 - **Rollback Trigger**: Revert Phase 3 changes if they create separate governance, break provider parity, or enforce unapproved template/Docker/model rules.
 - **Prompt / Model Promotion Criteria**: No new model, model alias, or reasoning-effort value is promoted unless Stage 00 and official/provider evidence agree.
 
@@ -210,13 +227,15 @@ This plan supersedes stale assumptions in earlier Phase 2 text where the current
 - [x] Stage 00, Template Contract, Skill strategy, Codex harness, Docker/Compose, QA/CI/CD, architecture, and data concerns are mapped to concrete Phase 3 planning tasks.
 - [x] Open high-impact decisions are isolated as decision gates rather than silently implemented.
 - [x] Phase 2 verification commands pass after this plan update.
-- [ ] User approves or amends the decision gates before Phase 3 implementation.
+- [x] User approves or amends the decision gates before Phase 3 implementation.
 
 ## Related Documents
 
 - **Prior Plan**: [2026-05-30-standardizing-agent-governance](./2026-05-30-standardizing-agent-governance.md)
 - **Prior Claude Verification Plan**: [2026-05-31-claude-harness-governance-verification](./2026-05-31-claude-harness-governance-verification.md)
 - **Prior Phase 3 Task**: [2026-06-01-agent-governance-phase3-implementation](../tasks/2026-06-01-agent-governance-phase3-implementation.md)
+- **Phase 3 Strategy Integration Task**: [2026-06-01-agent-governance-phase3-strategy-integration](../tasks/2026-06-01-agent-governance-phase3-strategy-integration.md)
+- **Phase 4 Closure Task**: [2026-06-01-agent-governance-phase4-closure](../tasks/2026-06-01-agent-governance-phase4-closure.md)
 - **Governance Hub**: [AI Agent Governance Hub](../../00.agent-governance/README.md)
 - **Codex Provider Notes**: [Codex Provider Notes](../../00.agent-governance/providers/codex.md)
 - **Subagent Protocol**: [Subagent Protocol](../../00.agent-governance/subagent-protocol.md)
