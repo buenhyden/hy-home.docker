@@ -96,6 +96,9 @@ layer: agentic
 
 ## Related Documents
 
+- `../01.requirements/2026-06-01-agent-governance-standardization.md`
+- `../02.architecture/requirements/0027-agent-governance-canonical-adapter.md`
+- `../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md`
 - `rules/agentic.md`
 - `rules/bootstrap.md`
 - `rules/jit-markers.md`
