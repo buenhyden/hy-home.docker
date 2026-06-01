@@ -68,6 +68,7 @@ docs/04.execution/tasks/
 ├── 2026-05-30-standardizing-agent-governance.md # Completed Stage 00 and Codex harness governance alignment task record
 ├── 2026-05-31-claude-harness-governance-verification.md # Completed Claude harness governance verification task record
 ├── 2026-06-01-agent-governance-phase1-diagnostic.md # Completed Phase 1 diagnostic task record
+├── 2026-06-01-agent-governance-stage01-02-alignment.md # Completed Stage 01/02 governance alignment task record
 ├── 2026-06-01-agent-governance-phase3-implementation.md # Completed Phase 3 adapter normalization task record
 ├── 2026-06-01-agent-governance-phase3-strategy-integration.md # Completed Phase 3 strategy integration task record
 ├── 2026-06-01-agent-governance-phase4-closure.md # Completed Phase 4 closure task record
@@ -144,6 +145,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Stage 00 and Codex Harness Governance Alignment Task**: [2026-05-30-standardizing-agent-governance.md](./2026-05-30-standardizing-agent-governance.md)
 - **Claude Harness Governance Verification Task**: [2026-05-31-claude-harness-governance-verification.md](./2026-05-31-claude-harness-governance-verification.md)
 - **Agent Governance Phase 1 Diagnostic Task**: [2026-06-01-agent-governance-phase1-diagnostic.md](./2026-06-01-agent-governance-phase1-diagnostic.md)
+- **Agent Governance Stage 01/02 Alignment Task**: [2026-06-01-agent-governance-stage01-02-alignment.md](./2026-06-01-agent-governance-stage01-02-alignment.md)
 - **Agent Governance Phase 3 Implementation Task**: [2026-06-01-agent-governance-phase3-implementation.md](./2026-06-01-agent-governance-phase3-implementation.md)
 - **Agent Governance Phase 3 Strategy Integration Task**: [2026-06-01-agent-governance-phase3-strategy-integration.md](./2026-06-01-agent-governance-phase3-strategy-integration.md)
 - **Agent Governance Phase 4 Closure Task**: [2026-06-01-agent-governance-phase4-closure.md](./2026-06-01-agent-governance-phase4-closure.md)

@@ -19,6 +19,10 @@ Phase 2는 계획만 작성한다. Stage 00, template, provider harness, validat
 
 ### Current Evidence
 
+- Stage 01/02 now provide direct upstream traceability for this plan through
+  `2026-06-01-agent-governance-standardization.md`,
+  `0027-agent-governance-canonical-adapter.md`, and
+  `0027-stage-00-canonical-adapter-model.md`.
 - Stage 00 already defines shared governance, provider adapters, Template Contract, QA/CI/CD policy, Model Policy, and clarification duty.
 - Codex currently has `.codex/agents/*.toml`; `workflow-supervisor` uses `gpt-5.5` with `model_reasoning_effort = "xhigh"`, and workers use `gpt-5.4-mini` with `model_reasoning_effort = "medium"`.
 - `.codex/agents/*.md` also exists as a legacy/compatibility prompt surface.
@@ -237,6 +241,10 @@ settings change.
 - **Phase 3 Strategy Integration Task**: [2026-06-01-agent-governance-phase3-strategy-integration](../tasks/2026-06-01-agent-governance-phase3-strategy-integration.md)
 - **Phase 4 Closure Task**: [2026-06-01-agent-governance-phase4-closure](../tasks/2026-06-01-agent-governance-phase4-closure.md)
 - **Governance Hub**: [AI Agent Governance Hub](../../00.agent-governance/README.md)
+- **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/2026-06-01-agent-governance-standardization.md)
+- **ARD**: [Agent Governance Canonical Adapter ARD](../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
+- **ADR**: [ADR-0027: Stage 00 Canonical Adapter Model](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
+- **Phase 1 Diagnostic**: [Agent Governance Phase 1 Diagnostic](./2026-06-01-agent-governance-phase1-diagnostic.md)
 - **Codex Provider Notes**: [Codex Provider Notes](../../00.agent-governance/providers/codex.md)
 - **Subagent Protocol**: [Subagent Protocol](../../00.agent-governance/subagent-protocol.md)
 - **Documentation Protocol**: [Documentation Protocol](../../00.agent-governance/rules/documentation-protocol.md)

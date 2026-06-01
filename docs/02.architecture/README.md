@@ -50,10 +50,12 @@ docs/02.architecture/
 
 ## Current Inventory
 
-- `requirements/`: 23 ARD leaf documents plus `README.md`.
-- `decisions/`: 23 ADR leaf documents plus `README.md`.
+- `requirements/`: 24 ARD leaf documents plus `README.md`.
+- `decisions/`: 24 ADR leaf documents plus `README.md`.
 - `infra_net` canonical ARD: [`requirements/0026-standardize-infra-net.md`](requirements/0026-standardize-infra-net.md).
 - `infra_net` canonical ADR: [`decisions/0026-standardize-infra-net.md`](decisions/0026-standardize-infra-net.md).
+- Agent governance canonical adapter ARD: [`requirements/0027-agent-governance-canonical-adapter.md`](requirements/0027-agent-governance-canonical-adapter.md).
+- Stage 00 canonical adapter ADR: [`decisions/0027-stage-00-canonical-adapter-model.md`](decisions/0027-stage-00-canonical-adapter-model.md).
 
 ## How to Work in This Area
 
@@ -85,6 +87,8 @@ ARD와 ADR은 서로 대체하지 않습니다. ARD가 “시스템이 어떤 �
 - **Requirements**: [Product requirements](../01.requirements/README.md)
 - **Architecture Requirements**: [ARD index](requirements/README.md)
 - **Architecture Decisions**: [ADR index](decisions/README.md)
+- **Agent Governance ARD**: [0027-agent-governance-canonical-adapter](requirements/0027-agent-governance-canonical-adapter.md)
+- **Stage 00 Adapter ADR**: [0027-stage-00-canonical-adapter-model](decisions/0027-stage-00-canonical-adapter-model.md)
 - **Specs**: [Technical specifications](../03.specs/README.md)
 - **Execution**: [Execution plans and tasks](../04.execution/README.md)
 - **Operations**: [Operations knowledge base](../05.operations/README.md)

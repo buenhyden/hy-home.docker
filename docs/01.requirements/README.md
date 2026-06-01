@@ -56,7 +56,8 @@ docs/01.requirements/
 │   └── 2026-03-26-11-laboratory.md          # Laboratory Tier
 ├── 추가 PRD
 │   ├── 2026-03-27-08-ai-open-webui.md       # Open WebUI (AI sub-feature)
-│   └── 2026-04-01-standardize-infra-net.md  # infra_net 표준화
+│   ├── 2026-04-01-standardize-infra-net.md  # infra_net 표준화
+│   └── 2026-06-01-agent-governance-standardization.md # Agent governance 표준화
 ├── 최적화/하드닝 PRD (2026-03-28)
 │   ├── 2026-03-28-02-auth-optimization-hardening.md
 │   ├── 2026-03-28-03-security-optimization-hardening.md
@@ -128,3 +129,4 @@ PRD는 문제와 요구사항의 SSoT입니다. 구현 방법, 실행 순서, �
 - [ARD README](../02.architecture/requirements/README.md)
 - [Spec README](../03.specs/README.md)
 - [Plan README](../04.execution/plans/README.md)
+- [Agent Governance Standardization PRD](./2026-06-01-agent-governance-standardization.md)
