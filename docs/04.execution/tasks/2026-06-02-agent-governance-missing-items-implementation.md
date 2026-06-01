@@ -35,7 +35,7 @@ Phase 1/2 historical artifacts는 수정하지 않고, 현재 기준 보정은 S
 | T-003 | Add Codex harness alignment gates without retiring compatibility Markdown prompts or changing TOML adapters. | doc | N/A | PLN-DI-013..014 | `AGENTS.md`, `.codex/README.md`, and Codex provider notes updated; `.codex/agents/*.toml` unchanged. | Codex | Completed |
 | T-004 | Add QA/CI/CD local/remote/skipped-check evidence matrix. | doc | N/A | PLN-DI-015 | QA scope and GitHub governance now map change types to local checks, CI-only gates, hook/script evidence, and skip rationale. | Codex | Completed |
 | T-005 | Add template deviation exception criteria without rewriting template sources or historical docs. | doc | N/A | PLN-DI-011 | Template README, documentation protocol, and Stage Authoring Matrix record exception evidence requirements. | Codex | Completed |
-| T-006 | Update Stage 04 plan/task indexes and progress log for the continuation task. | doc/memory | N/A | PLN-DI-016 | Plan/task READMEs and progress log updated; LLM Wiki index regenerated with 1028 paths. | Codex | Completed |
+| T-006 | Update Stage 04 plan/task indexes and progress log for the continuation task. | doc/memory | N/A | PLN-DI-016 | Plan/task READMEs and progress log updated; LLM Wiki index regenerated with 1029 paths after fresh revalidation. | Codex | Completed |
 | T-007 | Run verification commands from the plan and record results, including Graphify advisory reason. | eval | N/A | VAL-DI-001..011 | Verification summary records PASS/advisory outcomes. | Codex | Completed |
 
 ## Suggested Types
@@ -70,7 +70,7 @@ Phase 1/2 historical artifacts는 수정하지 않고, 현재 기준 보정은 S
   - `bash scripts/validation/check-quickwin-baseline.sh` — PASS (`services_total=5`; baseline enforced).
   - `bash scripts/validation/check-template-security-baseline.sh` — PASS (`template_adoption_missing=0`; required security controls enforced).
   - `bash scripts/operations/sync-provider-surfaces.sh` — PASS (`no drift`).
-  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — regenerated `docs/90.references/llm-wiki/index.md` with 1028 paths.
+  - `bash scripts/knowledge/generate-llm-wiki-index.sh` — regenerated `docs/90.references/llm-wiki/index.md` with 1029 paths after fresh revalidation.
   - `bash scripts/knowledge/generate-llm-wiki-index.sh --check` — PASS.
   - `bash scripts/knowledge/report-graphify-health.sh` — advisory (`surprising_cross_root_inferred_edges=3`).
   - `rg -n "gpt-5\\.1|gemini-3-pro|unsupported|TBD|TODO" docs/00.agent-governance .codex AGENTS.md docs/04.execution` — advisory hits only: historical progress/task references, scan command literals, existing `.codex/skills/adr-writing/skill.md` instructional `TBD`, and the QA matrix word `unsupported`; no model/reasoning value was changed.

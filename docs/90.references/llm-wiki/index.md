@@ -530,6 +530,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md](../../04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md](../../04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md](../../04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md](../../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
