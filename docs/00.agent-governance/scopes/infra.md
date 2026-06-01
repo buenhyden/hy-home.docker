@@ -19,6 +19,15 @@ title: 'Infrastructure Operational Scope'
 - **Networking**: All inter-service traffic MUST use `infra_net`. Direct external exposure is PROHIBITED except via authorized gateways.
 - **Storage**: Use named volumes following the `[Service]-[Data]-[Volume]` convention.
 - **Security**: Mandatory `no-new-privileges: true` for all containers. Use Docker Secrets for production credentials.
+- **Container build review**: For Dockerfile or image-build changes, review
+  multi-stage builds, pinned base image tags or digests, `.dockerignore`
+  hygiene, non-root users, health checks, layer ordering, and secret-free image
+  layers. These are manual review expectations unless a repository validator
+  already enforces the specific rule.
+- **Compose review**: For Compose changes, review profile behavior, service
+  health checks, restart policy, named volumes, resource limits where supported,
+  network segmentation, and localhost-only port binding where external exposure
+  is not intended.
 - **Service Integrations**:
   - **Messaging**: Kafka (standard) or RabbitMQ for async events.
   - **AI**: Ollama for local LLM inference, Open-WebUI for interaction.
@@ -29,6 +38,9 @@ title: 'Infrastructure Operational Scope'
 2. **Schema**: Verify service dependencies and network isolation in `docker-compose.yml`.
 3. **Execution**: Apply smallest correct change (Atomic Infra).
 4. **Post-check**: Verify service health via `docker compose ps` and logs.
+
+For docs-only governance work that does not change Compose files, record Compose
+validation as N/A instead of running runtime-affecting commands.
 
 ## 4. Operational Procedures
 

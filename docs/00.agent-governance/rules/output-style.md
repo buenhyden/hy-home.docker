@@ -35,6 +35,12 @@ artifacts in `hy-home.docker`. Claude exposes it natively via
   (load the mapped `docs/99.templates/*` template before writing).
 - Every document ends with one `## Related Documents` section (R3).
 - Keep root shims thin; route detail into governance.
+- Keep human-facing documents direct and specific. Avoid promotional tone,
+  vague significance claims, formulaic "future outlook" endings, and chatbot
+  filler; use plain claims backed by repository evidence.
+- Use HADS block labels only when a document type or approved plan explicitly
+  asks for them. Do not add `[SPEC]`, `[NOTE]`, `[BUG]`, or `[?]` tags to active
+  templates as an incidental style change.
 
 ## 5. Honesty and Completion
 

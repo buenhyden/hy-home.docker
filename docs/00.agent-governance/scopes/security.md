@@ -21,6 +21,12 @@ Universal security standards and data protection protocols for `hy-home.docker`.
 - Secrets management:
   - prohibited: plaintext credentials in source-controlled configs,
   - mandatory: Docker secrets and/or Vault-backed secret flow.
+- Container hardening:
+  - mandatory where compatible: non-root runtime, `no-new-privileges`, minimal
+    capabilities, read-only mounts for static config, and secret injection by
+    file rather than image layer or plaintext environment value,
+  - manual review unless an existing validator or hook enforces the specific
+    field.
 - Network hardening:
   - isolate traffic on intended networks,
   - enforce TLS at ingress boundaries.

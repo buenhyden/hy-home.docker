@@ -32,6 +32,11 @@ title: 'Quality Assurance Scope'
 3. **Refactor**: Clean code patterns without changing behavior.
 4. **Finalize**: Run all repository-available test and validation commands relevant to the touched area.
 
+For debugging work, establish a root-cause hypothesis and reproduction evidence
+before applying fixes. For documentation-only or governance-only work, TDD is
+N/A, but the task still needs repository-contract, traceability, diff hygiene,
+and manual evidence for any policy claims.
+
 ## 4. Operational Procedures
 
 - **Regression**: Add regression tests for every bug fix.

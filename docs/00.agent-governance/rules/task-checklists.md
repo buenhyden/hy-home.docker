@@ -11,6 +11,9 @@ Unified task execution checklists for all agent work.
 - [ ] Confirm active persona, layer, and primary scope.
 - [ ] Confirm editable scope for this task.
 - [ ] For implementation-agent work, confirm the approved plan exists and every planned edit maps to it.
+- [ ] Check whether a requested or obviously applicable skill/workflow strategy
+      changes how the task should be performed; map its outputs to canonical
+      repository stages before editing.
 - [ ] Confirm whether `docs/01` to `docs/99` are in read-only mode.
 - [ ] Identify required input documents (PRD, ARD, ADR, Specs, Plans, Tasks).
 - [ ] Review `docs/00.agent-governance/memory/README.md` and `progress.md`; retrieve relevant memory notes when the task touches governance, docs, runtime, or repeated failures.
@@ -23,6 +26,8 @@ Unified task execution checklists for all agent work.
 
 - [ ] Keep changes within declared editable scope.
 - [ ] Preserve audit/planning/implementation/verification separation when the workflow defines those roles.
+- [ ] Keep external strategy outputs in canonical stage paths; do not create
+      active non-stage specs, plans, or task logs.
 - [ ] Preserve SSoT traceability across affected documentation artifacts.
 - [ ] Maintain language policy consistency (English governance, Korean human-facing docs).
 - [ ] Keep assumptions explicit and update them when repository evidence disproves them.
@@ -39,6 +44,7 @@ Unified task execution checklists for all agent work.
 - [ ] Validate link integrity for changed root/governance files.
 - [ ] Inspect the post-edit diff after hook-managed formatting or style checks.
 - [ ] Confirm no contradictory policy statements were introduced.
+- [ ] Confirm any HADS usage is explicitly approved or documented as advisory.
 - [ ] Confirm completion criteria are satisfied for the affected stage(s).
 - [ ] Update `docs/00.agent-governance/memory/progress.md` with final status, verification evidence, and memory note links.
 - [ ] Create/update out-of-scope or durable finding reports from `docs/99.templates/memory.template.md` when needed.

@@ -25,6 +25,12 @@ For specific Codex execution guidelines, including the Hook Parity Contract, QA/
 - **In Scope:** `.codex/hooks.json`, `scripts/hooks/agent-event-hook.sh`, and the Codex-compatible runtime adapters (`.codex/agents/*.toml`, `.codex/skills/`).
 - **Out of Scope:** User-global Codex settings or credentials. Shared policy remains in `docs/00.agent-governance/`.
 
+Codex TOML files are the active agent adapter definitions. Legacy
+`.codex/agents/*.md` files may remain as compatibility prompt context, but they
+must not define separate governance, model policy, QA rules, or Template
+Contract rules. When TOML and Markdown prompt context disagree, Stage 00 and
+the validated TOML adapter surface win.
+
 ## 4. Hook Parity (Summary)
 
 Hook event coverage should align with `.claude` settings where supported. Edit matchers cover `apply_patch` and `ApplyPatch`.

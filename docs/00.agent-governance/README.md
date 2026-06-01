@@ -33,7 +33,10 @@ layer: agentic
   inputs/outputs, provider adapter bindings, and model tier.
 - **Skill / Function**: a reusable capability in `agents/functions/` and, when
   supported by a runtime, a provider adapter under `.claude/skills/`,
-  `.codex/skills/`, or `.agents/skills/`.
+  `.codex/skills/`, or `.agents/skills/`. Shared skill policy defines when a
+  skill should be considered, what artifact it may produce, and which provider
+  surface exposes it; provider-local skill files may not create separate
+  governance.
 - **Rule**: a shared policy in `rules/` or `scopes/`. Provider files may bind
   rules to runtime mechanics but may not redefine the policy.
 - **Hook**: runtime event wiring that routes to shared scripts or behavioral
@@ -46,7 +49,10 @@ layer: agentic
   `rules/output-style.md`, with provider-native bindings only where supported.
 - **Workflow**: an ordered execution path in `rules/workflows.md` and related
   stage docs that maps context, planning, implementation, validation, and
-  evidence capture.
+  evidence capture. External workflow disciplines such as brainstorming,
+  implementation planning, TDD, systematic debugging, verification, and branch
+  finalization are adapted into the repository stage taxonomy rather than
+  copied into non-canonical active docs paths.
 - **Memory**: advisory durable context under `memory/`; it supports recall and
   progress logging but never overrides active governance.
 - **QA & CI/CD**: shared verification policy in `rules/github-governance.md`,

@@ -46,7 +46,28 @@ skills (e.g. `skill-creator`, `hook-development`, `writing-hookify-rules`,
 `update-config`, `writing-skills`, `deployment-procedures`); meta agents invoke
 them directly and the workspace does not duplicate them as functions.
 
-## 3. Routing Rules
+## 3. External Strategy Adaptation
+
+External strategy skills may shape how an agent works, but active repository
+artifacts still use the stage taxonomy in `docs/01` to `docs/05`, `docs/90`,
+and `docs/99`.
+
+| Strategy discipline | Canonical repository adaptation |
+| --- | --- |
+| Skill applicability before action | Check relevant Stage 00 functions, provider adapters, and requested external skills before mutating state. |
+| Brainstorming / design exploration | Capture approved outcomes in PRD, ARD/ADR, Spec, or Plan artifacts; do not create active `docs/superpowers/**` specs. |
+| Writing implementation plans | Use `docs/04.execution/plans/**` and `docs/99.templates/plan.template.md`. |
+| Executing plans | Use `docs/04.execution/tasks/**` and record task-by-task evidence. |
+| Test-driven development | Follow `scopes/qa.md`; mark docs-only or policy-only coverage N/A with rationale. |
+| Systematic debugging | Establish root cause before fixes; incidents and recurring failures use Stage 05 incident/postmortem paths where applicable. |
+| Verification before completion | Completion claims require command output, manual evidence, or explicit skipped-check rationale. |
+| Finishing a branch | Follow `rules/github-governance.md` and `rules/git-workflow.md`: verify, inspect diff/status, stage scoped files only, and commit/PR by approval. |
+
+HADS is advisory by default. It may guide AI-readable documentation structure,
+but existing templates are not converted and HADS block tags are not required
+unless a future plan explicitly approves that rollout.
+
+## 4. Routing Rules
 
 1. `workflow-supervisor` selects the workflow and delegates each step to the right
    worker agent with exactly one primary scope (`subagent-protocol.md`).
