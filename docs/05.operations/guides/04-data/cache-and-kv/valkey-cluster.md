@@ -5,15 +5,21 @@ status: active
 
 # Valkey Cluster Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 Valkey Cluster의 아키텍처, 설정 및 사용 방법에 대한 기술 가이드입니다. 6노드 기반의 고가용성 캐시 클러스터를 이해하고 애플리케이션에 통합하는 데 필요한 정보를 제공합니다.
 
 This document is a technical guide for the architecture, configuration, and usage of the Valkey Cluster. It provides the necessary information to understand and integrate a 6-node based high-availability cache cluster into applications.
-
-## Usage
 >
 > Distributed Caching and Fast Key-Value Storage System / 분산 캐싱 및 고성능 키-밸류 저장소 시스템
+
+### Common Pitfalls
+
+- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
+- target-relative link를 템플릿 위치 기준으로 계산하는 경우
+- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 ### Usage Type
 
@@ -44,6 +50,7 @@ Helps application developers and system operators understand the structure of th
 클러스터는 처음 배포 시 `valkey-init` 컨테이너에 의해 자동으로 구성됩니다.
 
 ```bash
+
 ## 클러스터 구성 상태 확인
 read -rsp "Valkey password: " VALKEY_PASSWORD; echo
 docker exec valkey-node-0 valkey-cli -a "$VALKEY_PASSWORD" cluster info

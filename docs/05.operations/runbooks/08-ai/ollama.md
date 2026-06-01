@@ -57,6 +57,7 @@ curl -f http://localhost:${OLLAMA_PORT:-11434}/api/tags
 ##### 2. GPU Recognition Recovery
 
 ```bash
+
 ## 호스트 GPU 상태
 nvidia-smi
 
@@ -70,6 +71,7 @@ docker restart ollama
 ### 3. VRAM OOM Mitigation
 
 ```bash
+
 ## keep_alive=0으로 상주 모델 언로드(예시)
 curl -X POST http://localhost:${OLLAMA_PORT:-11434}/api/generate -d '{
   "model": "llama3",
@@ -91,6 +93,7 @@ docker exec ollama ollama list
 #### 5. Open WebUI Dependency Recheck
 
 ```bash
+
 ## Open WebUI 컨테이너에서 Ollama 접근 확인
 docker exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 ```

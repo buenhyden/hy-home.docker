@@ -5,15 +5,21 @@ status: active
 
 # Open WebUI Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 `hy-home.docker` 환경에서 Open WebUI를 통해 Ollama 모델과 대화하고, 문서 기반 RAG를 사용하는 방법을 설명한다. 운영자가 재현 가능한 절차로 접근/인증, 모델 선택, 문서 인덱싱, 기본 점검을 수행할 수 있도록 정리한다.
-
-## Usage
 >
 > Open WebUI 기반 로컬 LLM 채팅 및 RAG 운영 가이드.
 
 ---
+
+### Common Pitfalls
+
+- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
+- target-relative link를 템플릿 위치 기준으로 계산하는 경우
+- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 ### Usage Type
 
@@ -66,6 +72,7 @@ status: active
 #### 4. Quick Connectivity Checks
 
 ```bash
+
 ## Open WebUI health
 curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health
 

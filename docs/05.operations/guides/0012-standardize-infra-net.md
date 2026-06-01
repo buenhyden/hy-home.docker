@@ -5,11 +5,11 @@ status: active
 
 # 0012 Standardize Infra Net Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 모든 인프라 서비스에 `infra_net` 공통 네트워크와 고정 IP를 할당하는 가이드다. 프로젝트의 일관성을 유지하기 위해 표준 딕셔너리 기반의 네트워크 정의 방식을 따른다.
-
-## Usage
 
 ### Usage Type
 

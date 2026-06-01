@@ -5,11 +5,11 @@ status: active
 
 # Performance Testing Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 플랫폼의 엔드포인트를 벤치마킹하고 성능 병목 지점을 식별하기 위한 성능 테스트 워크플로우를 설명합니다. **Locust**(Python 기반)를 사용하여 시나리오를 작성하고, **InfluxDB**와 **Grafana**를 연동하여 지표를 분석하는 방법을 다룹니다.
-
-## Usage
 >
 > `hy-home.docker` 환경에서 Locust를 활용한 분산 부하 테스트 및 성능 벤치마킹 통합 가이드입니다.
 

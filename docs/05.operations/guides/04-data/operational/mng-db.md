@@ -5,15 +5,21 @@ status: active
 
 # Management Database Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 `mng-db` (Management Database) 시스템에 대한 가이드다. `mng-db`는 플랫폼 핵심 서비스(Identity, Automation, Workflow 등)의 메타데이타를 관리하는 PostgreSQL 및 Valkey 인스턴스로 구성되어 있다.
-
-## Usage
 >
 > This document explains how to understand and use the Management Database system.
 
 ---
+
+### Common Pitfalls
+
+- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
+- target-relative link를 템플릿 위치 기준으로 계산하는 경우
+- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 ### Usage Type
 
@@ -42,6 +48,7 @@ status: active
 `mng-db`는 플랫폼 초기화 시 가장 먼저 가동되어야 하는 서비스 중 하나이다.
 
 ```bash
+
 ## infra/04-data/operational/mng-db 경로에서 실행
 docker-compose up -d
 docker-compose ps

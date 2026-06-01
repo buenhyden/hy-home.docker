@@ -141,12 +141,6 @@ If a workspace is stuck in a locked state and "Force Unlock" in the UI fails:
 
 - Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
 
-## Related Documents
-
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/09-tooling/terrakube.md)
-- [Operations policy](../../policies/09-tooling/terrakube.md)
-
 ## Rollback or Recovery
 
 - Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
@@ -156,3 +150,9 @@ If a workspace is stuck in a locked state and "Force Unlock" in the UI fails:
 ## Escalation
 
 - Stop and escalate to the owning operator with captured evidence when the documented procedure does not match the observed failure.
+
+## Related Documents
+
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/09-tooling/terrakube.md)
+- [Operations policy](../../policies/09-tooling/terrakube.md)

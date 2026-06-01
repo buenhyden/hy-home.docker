@@ -8,13 +8,49 @@ status: active
 
 > **중요**: 이 문서는 secret 카테고리, ID, 파일 경로 구조만 기록한다. 실제 secret 값은 포함하지 않는다.
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 `secrets/SENSITIVE_ENV_VARS.md.example`과 `secrets/SENSITIVE_ENV_VARS.md`의 카테고리 및 항목 수 일관성을 확인하는 운영 참조 문서다. 실제 파일은 mode 600으로 값 열람이 불가능하므로 라인 수와 구조 비교만 수행한다.
 
-## Usage
-
 이 문서는 `secrets/SENSITIVE_ENV_VARS.md.example`의 카테고리 및 항목 수를 기록한다. 실제 `SENSITIVE_ENV_VARS.md`는 mode 600이므로 값 비교 없이 라인 수와 구조 일치 여부만 확인한다. 신규 서비스 추가 시 example 파일에 먼저 항목을 추가하고 실제 파일도 동기화한다.
+
+### Usage Type
+
+`operational-reference | system-guide`
+
+### Target Audience
+
+- Operators
+- Developers
+- Contributors
+- AI Agents
+
+### Purpose
+
+- `SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison의 운영 사용 맥락을 빠르게 파악한다.
+- 반복 실행 절차와 장애 대응은 연결된 runbook으로 넘긴다.
+- 통제 기준은 연결된 policy 문서와 분리해 유지한다.
+
+### Prerequisites
+
+- Repository checkout 접근 가능
+- 관련 `docs/03.specs/` 또는 operations 문서 확인 가능
+- 필요한 경우 Docker/Docker Compose 명령 실행 권한
+
+### Step-by-step Instructions
+
+1. 이 문서의 overview와 usage context를 확인한다.
+2. 관련 service, configuration, 또는 documentation target을 식별한다.
+3. `## Common Checks`의 검증 항목을 실행하거나 검토한다.
+4. 반복 절차, 장애 대응, rollback, escalation이 필요하면 `## Runbook Handoff`의 runbook으로 이동한다.
+
+### Common Pitfalls
+
+- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
+- target-relative link를 템플릿 위치 기준으로 계산하는 경우
+- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 ## Common Checks
 

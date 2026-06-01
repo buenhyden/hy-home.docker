@@ -9,6 +9,21 @@ status: active
 
 이 런북은 `hy-home.docker`의 수동 release/tag readiness, evidence capture, rollback evidence 확인 절차를 정의한다. 이 문서는 배포 자동화, GitHub branch protection, required check, Docker runtime, secret, `.env`, port, permission 동작을 변경하지 않는다.
 
+## Release Management Runbook Procedure
+
+> Scope: Release Management Runbook operational execution
+
+### Purpose
+
+- Release Management Runbook 작업을 반복 가능하고 검증 가능한 절차로 수행한다.
+- 실행 전후 evidence, rollback 또는 escalation 기준을 명확히 남긴다.
+
+### Canonical References
+
+- [Operations index](../README.md)
+- **Policy**: N/A — no upstream source
+- **Guide**: N/A — no upstream source
+
 ## When to Use
 
 - Release 또는 tag 생성 전에 local documentation, validation, changelog readiness를 확인해야 할 때.
@@ -16,6 +31,11 @@ status: active
 - Rollback 가능성을 주장하기 전에 실제로 남겨야 할 local evidence를 확인해야 할 때.
 
 ## Procedure
+
+### Checklist
+
+- [ ] 관련 policy, guide, runbook handoff를 확인한다.
+- [ ] 현재 상태와 변경 범위를 기록한다.
 
 1. Confirm the release candidate branch and intended base branch.
 
@@ -69,6 +89,36 @@ status: active
    - Remote gate verification evidence before claiming branch protection, required checks, or release workflow enforcement is current.
 
 7. Capture release readiness evidence in the relevant execution task or PR description. Do not paste secret values, `.env` values, raw logs containing credentials, shell history, or deployment tokens.
+
+### Steps
+
+1. 이 runbook의 trigger와 checklist를 확인한다.
+2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.
+3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.
+4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
+
+### Verification Steps
+
+- [ ] 관련 validation script 또는 수동 확인을 실행한다.
+- [ ] 변경 결과가 policy, guide, runbook handoff와 충돌하지 않는지 확인한다.
+
+### Observability and Evidence Sources
+
+- **Signals**: command output, validation logs, service health status, documentation diff
+- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+
+### Safe Rollback or Recovery Procedure
+
+- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
+- [ ] runtime 변경이 필요한 경우 이 runbook 범위를 벗어난 별도 승인 절차로 분리한다.
+
+### Agent Operations (If Applicable)
+
+- **Prompt Rollback**: 적용하지 않음
+- **Model Fallback**: 적용하지 않음
+- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
+- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
+- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
 ## Evidence
 

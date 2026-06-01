@@ -6,11 +6,47 @@ status: active
 
 # ksqlDB Streaming Operations
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 가이드는 Kafka 스트림 데이터에 대해 SQL 질의가 가능한 ksqlDB(05-messaging)의 활용 방법을 설명한다. 실시간 데이터 정제, 조인(Join), 그리고 구체화된 뷰(Materialized View) 생성을 다룬다.
 
-## Usage
+### Usage Type
+
+`system-guide | how-to`
+
+### Target Audience
+
+- Operators
+- Developers
+- Contributors
+- AI Agents
+
+### Purpose
+
+- ksqlDB Streaming Operations의 운영 사용 맥락을 빠르게 파악한다.
+- 반복 실행 절차와 장애 대응은 연결된 runbook으로 넘긴다.
+- 통제 기준은 연결된 policy 문서와 분리해 유지한다.
+
+### Prerequisites
+
+- Repository checkout 접근 가능
+- 관련 `docs/03.specs/` 또는 operations 문서 확인 가능
+- 필요한 경우 Docker/Docker Compose 명령 실행 권한
+
+### Step-by-step Instructions
+
+1. 이 문서의 overview와 usage context를 확인한다.
+2. 관련 service, configuration, 또는 documentation target을 식별한다.
+3. `## Common Checks`의 검증 항목을 실행하거나 검토한다.
+4. 반복 절차, 장애 대응, rollback, escalation이 필요하면 `## Runbook Handoff`의 runbook으로 이동한다.
+
+### Common Pitfalls
+
+- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
+- target-relative link를 템플릿 위치 기준으로 계산하는 경우
+- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 ### ksqlDB Usage (05-messaging)
 

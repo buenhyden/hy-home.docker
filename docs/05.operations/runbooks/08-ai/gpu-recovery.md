@@ -11,6 +11,11 @@ status: active
 
 ## Procedure
 
+### Checklist
+
+- [ ] 관련 policy, guide, runbook handoff를 확인한다.
+- [ ] 현재 상태와 변경 범위를 기록한다.
+
 ### GPU Recovery Procedure
 
 Procedures for restoring NVIDIA GPU acceleration if containers fail to detect the hardware.
@@ -71,6 +76,36 @@ dmesg | grep -i nvidia
 - [../README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
+
+### Steps
+
+1. 이 runbook의 trigger와 checklist를 확인한다.
+2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.
+3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.
+4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
+
+### Verification Steps
+
+- [ ] 관련 validation script 또는 수동 확인을 실행한다.
+- [ ] 변경 결과가 policy, guide, runbook handoff와 충돌하지 않는지 확인한다.
+
+### Observability and Evidence Sources
+
+- **Signals**: command output, validation logs, service health status, documentation diff
+- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+
+### Safe Rollback or Recovery Procedure
+
+- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
+- [ ] runtime 변경이 필요한 경우 이 runbook 범위를 벗어난 별도 승인 절차로 분리한다.
+
+### Agent Operations (If Applicable)
+
+- **Prompt Rollback**: 적용하지 않음
+- **Model Fallback**: 적용하지 않음
+- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
+- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
+- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
 ## When to Use
 

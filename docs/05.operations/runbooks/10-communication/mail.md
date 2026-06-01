@@ -34,6 +34,11 @@ status: active
 
 ## Procedure
 
+### Checklist
+
+- [ ] 관련 policy, guide, runbook handoff를 확인한다.
+- [ ] 현재 상태와 변경 범위를 기록한다.
+
 ### 1. 서비스 상태 확인 Checklist
 
 - [ ] 컨테이너 실행 여부 확인: `docker ps | grep -E 'stalwart|mailhog'`
@@ -59,6 +64,13 @@ status: active
 
 1. MailHog는 인메모리 저장소를 사용하여 큐가 포화될 경우 UI가 느려질 수 있습니다.
 2. 서비스를 재시작하여 큐를 비웁니다: `docker-compose restart mailhog`
+
+### Steps
+
+1. 이 runbook의 trigger와 checklist를 확인한다.
+2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.
+3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.
+4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
 
 ### Verification Steps
 

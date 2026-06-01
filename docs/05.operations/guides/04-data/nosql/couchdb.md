@@ -5,15 +5,21 @@ status: active
 
 # CouchDB Operation Policy Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 CouchDB 3-노드 클러스터의 아키텍처, 데이터 동기화 메커니즘 및 `hy-home.docker` 환경에서의 사용 가이드를 제공한다. CouchDB의 HTTP 기반 API와 강력한 복제 기능을 활용하는 방법을 설명한다.
-
-## Usage
 >
 > Document-oriented NoSQL database optimized for multi-master replication and synchronization.
 
 ---
+
+### Common Pitfalls
+
+- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
+- target-relative link를 템플릿 위치 기준으로 계산하는 경우
+- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 ### Usage Type
 
@@ -42,6 +48,7 @@ status: active
 CouchDB 전체 노드가 정상적으로 연결되어 있는지 상태를 확인한다.
 
 ```bash
+
 ## 특정 노드 상태 확인
 curl -u ${COUCHDB_USER}:${COUCHDB_PASSWORD} https://couchdb.${DEFAULT_URL}/_up
 ```

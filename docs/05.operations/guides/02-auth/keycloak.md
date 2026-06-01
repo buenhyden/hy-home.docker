@@ -5,11 +5,11 @@ status: active
 
 # 02-Auth Keycloak Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 `02-auth`의 Keycloak 운영 구성 방법을 설명한다. DB/관리자 시크릿 주입 방식, 헬스체크 점검, OIDC 클라이언트 정합 확인 절차를 중심으로 다룬다.
-
-## Usage
 
 ### Usage Type
 

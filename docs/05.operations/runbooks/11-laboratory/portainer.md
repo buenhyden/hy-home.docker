@@ -17,6 +17,11 @@ status: active
 
 ## Procedure
 
+### Checklist
+
+- [ ] 관련 policy, guide, runbook handoff를 확인한다.
+- [ ] 현재 상태와 변경 범위를 기록한다.
+
 ### 1. Admin Password Reset
 
 Portainer 내부 DB의 관리자 비밀번호를 수동으로 재설정해야 하는 경우 다음을 수행한다.
@@ -58,6 +63,13 @@ Portainer가 로컬 Docker 환경에 연결하지 못하는 경우:
 1. 백업된 `${DEFAULT_MANAGEMENT_DIR}/portainer` 데이터를 복원한다.
 2. 기존 볼륨을 삭제하고 새 데이터를 배치한 뒤 재시작한다.
 
+### Steps
+
+1. 이 runbook의 trigger와 checklist를 확인한다.
+2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.
+3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.
+4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
+
 ### Verification Steps
 
 - [ ] `https://portainer.${DEFAULT_URL}` 로그인 후 'Home' 대시보드에 로컬 환경이 'Active' 상태인지 확인.
@@ -72,6 +84,24 @@ Portainer가 로컬 Docker 환경에 연결하지 못하는 경우:
 - [../README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
 - [../../05.operations/README.md](../../README.md)
+
+### Observability and Evidence Sources
+
+- **Signals**: command output, validation logs, service health status, documentation diff
+- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+
+### Safe Rollback or Recovery Procedure
+
+- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
+- [ ] runtime 변경이 필요한 경우 이 runbook 범위를 벗어난 별도 승인 절차로 분리한다.
+
+### Agent Operations (If Applicable)
+
+- **Prompt Rollback**: 적용하지 않음
+- **Model Fallback**: 적용하지 않음
+- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
+- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
+- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
 ## When to Use
 

@@ -5,15 +5,21 @@ status: active
 
 # Ollama Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 `hy-home.docker` AI 계층의 핵심 추론 엔진인 Ollama 사용 방법을 설명한다. 모델 라이프사이클(풀/조회/호출), GPU 가속 확인, Open WebUI 연동, exporter 관측 흐름을 표준 절차로 제공한다.
-
-## Usage
 >
 > 로컬 LLM 추론 엔진(Ollama) 운영 및 연동 가이드.
 
 ---
+
+### Common Pitfalls
+
+- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
+- target-relative link를 템플릿 위치 기준으로 계산하는 경우
+- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 ### Usage Type
 
@@ -46,6 +52,7 @@ status: active
 #### 1. Service & GPU Health Check
 
 ```bash
+
 ## 호스트 GPU 상태
 nvidia-smi
 

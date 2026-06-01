@@ -18,6 +18,7 @@ status: active
 Verify if Loki is healthy and ready to receive logs:
 
 ```bash
+
 ## Check readiness
 wget -qO- http://loki:3100/ready
 
@@ -70,6 +71,7 @@ docker compose -f infra/06-observability/docker-compose.yml restart loki
 If storage is full and retention cleanup is pending:
 
 ```bash
+
 ## Compactor runs automatically, but check for errors:
 docker compose -f infra/06-observability/docker-compose.yml logs -f loki | grep "compactor"
 ```

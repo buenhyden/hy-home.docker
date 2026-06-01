@@ -5,11 +5,11 @@ status: active
 
 # Laboratory Dashboard Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 Homer 대시보드의 서비스 링크 관리, 테마 커스터마이징, 레이아웃 변경 방법을 설명한다. 하이홈 인프라의 모든 도구에 대한 접근성을 유지하고 관리하는 중앙 관리 지침을 제공한다.
-
-## Usage
 >
 > This guide explains how to manage and customize the static service dashboard (Homer) in the 11-laboratory tier.
 

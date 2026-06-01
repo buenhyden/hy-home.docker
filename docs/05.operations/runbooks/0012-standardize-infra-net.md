@@ -72,6 +72,25 @@ status: active
 - **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
 - **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
 
+### Observability and Evidence Sources
+
+- **Signals**: command output, validation logs, service health status, documentation diff
+- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+
+### Safe Rollback or Recovery Procedure
+
+- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
+- [ ] runtime 변경이 필요한 경우 이 runbook 범위를 벗어난 별도 승인 절차로 분리한다.
+
+## Evidence
+
+- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
+
+## Rollback or Recovery
+
+- Use only recovery or rollback steps already documented in this runbook.
+- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+
 ## Escalation
 
 Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.

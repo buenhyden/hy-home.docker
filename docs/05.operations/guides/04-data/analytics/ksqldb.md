@@ -5,11 +5,11 @@ status: active
 
 # ksqlDB Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 ksqlDB 스트리밍 SQL 엔진에 대한 가이드다. Kafka 스트림과 테이블의 개념, CLI 사용법, 그리고 데이터 생성 패턴을 설명한다. 실시간 데이터 분석 및 변환을 위한 스트림 처리 애플리케이션 구축의 핵심 지침을 제공한다.
-
-## Usage
 >
 > Usage for real-time stream processing with ksqlDB in the hy-home.docker ecosystem.
 

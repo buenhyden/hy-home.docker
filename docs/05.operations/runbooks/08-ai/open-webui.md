@@ -57,6 +57,7 @@ curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health
 ##### 2. Dependency Connectivity Check
 
 ```bash
+
 ## Open WebUI -> Ollama
 docker exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 
@@ -67,6 +68,7 @@ docker exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
 ### 3. SQLite Backup and Recovery
 
 ```bash
+
 ## 1) 데이터 백업
 cp -a ${DEFAULT_AI_MODEL_DIR}/open-webui ${DEFAULT_AI_MODEL_DIR}/open-webui.bak.$(date +%Y%m%d%H%M%S)
 

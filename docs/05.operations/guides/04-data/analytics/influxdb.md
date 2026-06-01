@@ -5,15 +5,21 @@ status: active
 
 # InfluxDB Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 InfluxDB 시계열 데이터베이스에 대한 가이드다. 시스템의 아키텍처, V3(Core)와 V2(Legacy)의 차이점, 그리고 Telegraf/Grafana와의 연동 방법을 설명한다. 플랫폼 성능 지표 및 비즈니스 매트릭 수집의 핵심 진입점을 다룬다.
-
-## Usage
 >
 > Comprehensive guide for managing InfluxDB 3.x and 2.x in the hy-home.docker ecosystem.
 
 ---
+
+### Common Pitfalls
+
+- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
+- target-relative link를 템플릿 위치 기준으로 계산하는 경우
+- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 ### Usage Type
 
@@ -49,6 +55,7 @@ status: active
 버킷은 특정 보존 정책을 가진 데이터를 저장하는 단위다.
 
 ```bash
+
 ## InfluxDB 3.x (via influx3 CLI)
 influx3 bucket create --name my-metrics --retention 90d
 

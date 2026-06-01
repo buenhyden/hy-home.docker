@@ -8,13 +8,49 @@ status: active
 
 > **중요**: 이 문서는 키 이름과 구조만 기록한다. 실제 값은 포함하지 않는다.
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 `.env.example`과 `.env`의 환경변수 키 일관성을 확인하는 운영 참조 문서다. 키셋 동기화 여부, 순서 차이, 누락·추가·deprecated 키를 기록한다.
 
-## Usage
-
 이 문서는 `.env.example`과 `.env`의 키 동기화 상태를 확인할 때 참조한다. 값은 포함하지 않으므로 공개 저장소에서 안전하게 열람 가능하다. 신규 서비스 추가 시 `.env.example`에 먼저 키를 추가하고, `.env`에도 동기화한다. 주기 점검은 `## 점검 주기` 섹션을 따른다.
+
+### Usage Type
+
+`operational-reference | system-guide`
+
+### Target Audience
+
+- Operators
+- Developers
+- Contributors
+- AI Agents
+
+### Purpose
+
+- `.env.example` vs `.env` Key Comparison의 운영 사용 맥락을 빠르게 파악한다.
+- 반복 실행 절차와 장애 대응은 연결된 runbook으로 넘긴다.
+- 통제 기준은 연결된 policy 문서와 분리해 유지한다.
+
+### Prerequisites
+
+- Repository checkout 접근 가능
+- 관련 `docs/03.specs/` 또는 operations 문서 확인 가능
+- 필요한 경우 Docker/Docker Compose 명령 실행 권한
+
+### Step-by-step Instructions
+
+1. 이 문서의 overview와 usage context를 확인한다.
+2. 관련 service, configuration, 또는 documentation target을 식별한다.
+3. `## Common Checks`의 검증 항목을 실행하거나 검토한다.
+4. 반복 절차, 장애 대응, rollback, escalation이 필요하면 `## Runbook Handoff`의 runbook으로 이동한다.
+
+### Common Pitfalls
+
+- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
+- target-relative link를 템플릿 위치 기준으로 계산하는 경우
+- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 ## Common Checks
 

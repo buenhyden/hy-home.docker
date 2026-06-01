@@ -5,15 +5,21 @@ status: active
 
 # StarRocks Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 StarRocks 데이터 웨어하우스 시스템에 대한 가이드다. OLAP 엔진의 구조(FE/BE), SQL 인터페이스 사용법, 대규모 데이터 세트의 실시간 분석 및 시각화 도구 연동 방법을 제공한다.
-
-## Usage
 >
 > High-performance analytical database for real-time analytics.
 
 ---
+
+### Common Pitfalls
+
+- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
+- target-relative link를 템플릿 위치 기준으로 계산하는 경우
+- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 ### Usage Type
 
@@ -42,6 +48,7 @@ StarRocks의 분산 분석 아키텍처를 이해하고, 대규모 데이터를 
 StarRocks는 MySQL 프로토콜과 호환된다.
 
 ```bash
+
 ## FE 노드 접속 (기본 포트 9030)
 mysql -u root -h starrocks-fe -P 9030
 ```

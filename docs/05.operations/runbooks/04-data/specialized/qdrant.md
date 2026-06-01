@@ -33,6 +33,11 @@ status: active
 
 ## Procedure
 
+### Checklist
+
+- [ ] 관련 policy, guide, runbook handoff를 확인한다.
+- [ ] 현재 상태와 변경 범위를 기록한다.
+
 ### 1. Collection Snapshot Execution
 
 실행 중인 상태에서 컬렉션별 스냅샷을 생성한다.
@@ -63,6 +68,13 @@ status: active
 1. 로그 확인: `docker compose logs -f qdrant`
 2. 데이터 디렉토리 권한 점검: `1000:1000` (Unprivileged user) 소유 확인.
 3. 임시 파일 정리: `/tmp` (tmpfs) 용량 확인 및 정리.
+
+### Steps
+
+1. 이 runbook의 trigger와 checklist를 확인한다.
+2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.
+3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.
+4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
 
 ### Verification Steps
 

@@ -33,6 +33,11 @@ status: active
 
 ## Procedure
 
+### Checklist
+
+- [ ] 관련 policy, guide, runbook handoff를 확인한다.
+- [ ] 현재 상태와 변경 범위를 기록한다.
+
 ### 1. Database Dump (Backup)
 
 Neo4j Community Edition은 인스턴스를 중지한 후 오프라인 덤프를 수행해야 한다.
@@ -69,6 +74,13 @@ Neo4j Community Edition은 인스턴스를 중지한 후 오프라인 덤프를 
 
 1. 승인된 secret rotation 절차로 Docker Secret `neo4j_password`를 갱신한다. 값은 문서나 로그에 남기지 않는다.
 2. 서비스 재시작: `docker compose up -d --force-recreate neo4j`
+
+### Steps
+
+1. 이 runbook의 trigger와 checklist를 확인한다.
+2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.
+3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.
+4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
 
 ### Verification Steps
 

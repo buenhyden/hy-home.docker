@@ -5,11 +5,11 @@ status: active
 
 # 11-Laboratory Optimization Hardening Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 `11-laboratory` 계층 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. 관리 UI 보안 경계, 네트워크 표준화, 최소권한 적용, 기준선 검증 절차를 제공한다.
-
-## Usage
 
 ### Usage Type
 

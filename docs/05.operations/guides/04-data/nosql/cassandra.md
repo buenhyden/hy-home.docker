@@ -5,11 +5,11 @@ status: active
 
 # Cassandra Operation Policy Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 Apache Cassandra 5.0의 시스템 아키텍처, 데이터 모델링 기본 원리 및 `hy-home.docker` 환경에서의 사용 가이드를 제공한다.
-
-## Usage
 >
 > Distributed wide-column NoSQL database for high-throughput, highly available workloads.
 

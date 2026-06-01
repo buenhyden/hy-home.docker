@@ -5,11 +5,11 @@ status: active
 
 # Mail Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 시스템의 메일 인프라 구성과 개발 워크플로우에 대한 가이드를 제공합니다. 실제 메일 서비스 운영을 위한 **Stalwart** 설정과 안전한 개발 테스트를 위한 **MailHog** 사용법을 다룹니다.
-
-## Usage
 >
 > `hy-home.docker` 환경에서 메일 서버(Stalwart) 및 개발용 트랩(MailHog)을 관리하고 사용하는 통합 가이드입니다.
 

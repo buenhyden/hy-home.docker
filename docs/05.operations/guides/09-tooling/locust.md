@@ -5,11 +5,11 @@ status: active
 
 # Locust Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 Locust를 사용하여 플랫폼의 서비스를 벤치마킹하는 방법을 설명합니다. 특히, `influxdb-client`를 통한 성능 지표의 영구 저장 및 분산 워커 노드 환경 구성에 초점을 맞춥니다.
-
-## Usage
 >
 > `hy-home.docker` 환경에서 Locust를 사용한 부하 테스트 시나리오 작성 및 실행 가이드입니다.
 

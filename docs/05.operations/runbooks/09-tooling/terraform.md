@@ -150,12 +150,6 @@ If credentials expired or are invalid:
 
 - Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
 
-## Related Documents
-
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/09-tooling/terraform.md)
-- [Operations policy](../../policies/09-tooling/terraform.md)
-
 ## Rollback or Recovery
 
 - Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
@@ -165,3 +159,9 @@ If credentials expired or are invalid:
 ## Escalation
 
 - Stop and escalate to the owning operator with captured evidence when the documented procedure does not match the observed failure.
+
+## Related Documents
+
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/09-tooling/terraform.md)
+- [Operations policy](../../policies/09-tooling/terraform.md)

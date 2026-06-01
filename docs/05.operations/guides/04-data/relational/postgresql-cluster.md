@@ -5,16 +5,22 @@ status: active
 
 # postgresql-cluster Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 `docs/05.operations/guides/04-data/relational/postgresql-cluster.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
-
-## Usage
 >
 > Patroni 및 etcd 기반 고가용성(HA) PostgreSQL 클러스터 가이드
 > High-Availability (HA) PostgreSQL Cluster Usage based on Patroni and etcd
 
 ---
+
+### Common Pitfalls
+
+- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
+- target-relative link를 템플릿 위치 기준으로 계산하는 경우
+- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 ### Overview (KR/EN)
 
@@ -55,6 +61,7 @@ This document is a system guide for understanding the architecture of `postgresq
 Patroni CLI를 사용하여 현재 리더(Leader) 노드와 복제본(Replica) 노드들의 상태를 확인한다.
 
 ```bash
+
 ## pg-0 노드에서 클러스터 리스트 확인
 docker exec -it pg-0 patronictl -c /home/postgres/postgres.yml list
 ```

@@ -5,11 +5,11 @@ status: active
 
 # Neo4j Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 Neo4j 그래프 데이터베이스에 대한 기술 가이드다. 관계 중심 데이터 모델을 위한 그래프 저장소의 특성과 로컬 환경에서의 브라우저 UI 및 Bolt 프로토콜 활용 방법을 설명한다.
-
-## Usage
 >
 > Technical guide for understanding and using Neo4j within the `04-data/specialized` tier.
 

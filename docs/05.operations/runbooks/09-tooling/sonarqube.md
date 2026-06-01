@@ -143,12 +143,6 @@ Monitor these files for specific error patterns:
 
 - Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
 
-## Related Documents
-
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/09-tooling/sonarqube.md)
-- [Operations policy](../../policies/09-tooling/sonarqube.md)
-
 ## Rollback or Recovery
 
 - Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
@@ -158,3 +152,9 @@ Monitor these files for specific error patterns:
 ## Escalation
 
 - Stop and escalate to the owning operator with captured evidence when the documented procedure does not match the observed failure.
+
+## Related Documents
+
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/09-tooling/sonarqube.md)
+- [Operations policy](../../policies/09-tooling/sonarqube.md)

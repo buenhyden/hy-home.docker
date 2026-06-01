@@ -5,11 +5,11 @@ status: active
 
 # 02-Auth OAuth2 Proxy Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 OAuth2 Proxy를 `ForwardAuth` 표준으로 운영하는 방법을 설명한다. 시크릿 엔트리포인트 주입, non-root 실행, 도메인 파라미터화, 세션 정책 점검 절차를 포함한다.
-
-## Usage
 
 ### Usage Type
 

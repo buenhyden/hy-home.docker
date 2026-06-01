@@ -53,6 +53,7 @@ status: active
 #### Emergency Restart
 
 ```bash
+
 ## Move to infra directory
 cd infra/06-observability
 

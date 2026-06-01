@@ -5,15 +5,21 @@ status: active
 
 # Airflow Usage Guide
 
-## Overview (KR)
+## Usage
+
+### Overview (KR)
 
 이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 개발자와 운영자가 시스템 아키텍처를 이해하고, 서비스 상태를 확인하며, 기본적인 파이프라인 운영을 수행할 수 있도록 돕는다.
-
-## Usage
 >
 > Apache Airflow 워크플로 엔진 시스템 환경 및 운영 전반에 대한 종합 안내서.
 
 ---
+
+### Common Pitfalls
+
+- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
+- target-relative link를 템플릿 위치 기준으로 계산하는 경우
+- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
 
 ### Usage Type
 
@@ -59,6 +65,7 @@ Airflow는 다음과 같은 분산 컴포넌트로 구성됩니다:
 새로운 DAG를 추가하기 전에 다음 명령으로 시스템 상태를 확인합니다:
 
 ```bash
+
 ## 컨테이너 상태 확인
 docker compose ps workflow
 
