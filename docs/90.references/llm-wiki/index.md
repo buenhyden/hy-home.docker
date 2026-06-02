@@ -455,6 +455,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-06-02-agent-governance-phase-2-strategy-integration.md](../../04.execution/plans/2026-06-02-agent-governance-phase-2-strategy-integration.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-agent-governance-phase-3-approved-surface-activation.md](../../04.execution/plans/2026-06-02-agent-governance-phase-3-approved-surface-activation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-agent-governance-phase-4-closure-reconciliation.md](../../04.execution/plans/2026-06-02-agent-governance-phase-4-closure-reconciliation.md) | Markdown reference |
+| [docs/04.execution/plans/2026-06-02-docs-implementation-reconciliation.md](../../04.execution/plans/2026-06-02-docs-implementation-reconciliation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-governance-optimization.md](../../04.execution/plans/2026-06-02-governance-optimization.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
@@ -514,6 +515,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-06-02-agent-governance-phase-2-strategy-integration.md](../../04.execution/tasks/2026-06-02-agent-governance-phase-2-strategy-integration.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-agent-governance-phase-3-approved-surface-activation.md](../../04.execution/tasks/2026-06-02-agent-governance-phase-3-approved-surface-activation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-agent-governance-phase-4-closure-reconciliation.md](../../04.execution/tasks/2026-06-02-agent-governance-phase-4-closure-reconciliation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-06-02-docs-implementation-reconciliation.md](../../04.execution/tasks/2026-06-02-docs-implementation-reconciliation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-governance-optimization.md](../../04.execution/tasks/2026-06-02-governance-optimization.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
@@ -1092,6 +1094,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/operations/sync-provider-surfaces.sh](../../../scripts/operations/sync-provider-surfaces.sh) | script |
 | [scripts/operations/use-qa-ci-tools.sh](../../../scripts/operations/use-qa-ci-tools.sh) | script |
 | [scripts/requirements.txt](../../../scripts/requirements.txt) | text entrypoint |
+| [scripts/validation/check-doc-implementation-alignment.sh](../../../scripts/validation/check-doc-implementation-alignment.sh) | script |
 | [scripts/validation/check-doc-traceability.sh](../../../scripts/validation/check-doc-traceability.sh) | script |
 | [scripts/validation/check-quickwin-baseline.sh](../../../scripts/validation/check-quickwin-baseline.sh) | script |
 | [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |
