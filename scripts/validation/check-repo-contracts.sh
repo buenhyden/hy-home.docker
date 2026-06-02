@@ -104,6 +104,16 @@ if [[ "${#misplaced_templates[@]}" -gt 0 ]]; then
   printf '  %s\n' "${misplaced_templates[@]}" >&2
 fi
 
+section "Approved surface evidence template"
+if ! grep -q "^## Approved Surface Evidence" docs/99.templates/task.template.md; then
+  echo "FAIL: docs/99.templates/task.template.md must include Approved Surface Evidence for high-risk work" >&2
+  failures=$((failures + 1))
+fi
+if ! grep -q "policy, runtime, CI, templates, secrets, remote GitHub, model policy, or provider" docs/99.templates/task.template.md; then
+  echo "FAIL: task.template.md Approved Surface Evidence must name high-risk surface classes" >&2
+  failures=$((failures + 1))
+fi
+
 section "Execution evidence status wording"
 if ! python3 - <<'PY'; then
 from __future__ import annotations

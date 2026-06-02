@@ -25,6 +25,11 @@ Unified task execution checklists for all agent work.
 - [ ] For model, reasoning-effort, provider adapter, hook, or CI/CD config
       changes, confirm the governing Stage 00 policy and validator support
       before editing.
+- [ ] For high-risk approved surfaces, bind the approval to concrete evidence
+      before editing: policy, runtime, CI, templates, secrets, remote GitHub,
+      model policy, and provider adapters require a Stage 04 task record that
+      names the target surface, approval source, validation command, rollback or
+      recovery path, and redaction boundary.
 - [ ] Identify key risks (security, data loss, breaking changes, governance drift).
 - [ ] Define verification commands and acceptance criteria before edits.
 
@@ -42,6 +47,10 @@ Unified task execution checklists for all agent work.
 - [ ] Remove stale, conflicting, or nonexistent references in editable scope.
 - [ ] Record template deviations or explicit N/A rationale in task evidence; do
       not silently normalize historical artifacts outside the approved scope.
+- [ ] For approved secret work, record metadata, IDs, paths, or rotation evidence
+      only; never paste secret values into docs, logs, commits, PRs, or summaries.
+- [ ] For approved remote GitHub work, record the repository, remote surface,
+      command class, before/after evidence, and any unverified remote gate.
 - [ ] Keep provider adapters aligned with Stage 00 lifecycle terms:
       discovery -> applicability -> provider loading -> canonical artifact ->
       validation evidence.
@@ -62,6 +71,9 @@ Unified task execution checklists for all agent work.
 - [ ] Confirm any attachment gap coverage, template exceptions, or model/config
       uncertainty was either resolved in editable scope or recorded as a human
       approval gate.
+- [ ] Confirm approved high-risk surface evidence is recorded in the task
+      document, including whether runtime, secrets, remote GitHub, model, or
+      provider adapter state was actually changed or only verified.
 - [ ] Confirm QA/CI/CD evidence includes local checks, CI-only gates, and
       skipped-check rationale appropriate to the change type.
 - [ ] Update `docs/00.agent-governance/memory/progress.md` with final status, verification evidence, and memory note links.

@@ -37,6 +37,19 @@ Universal security standards and data protection protocols for `hy-home.docker`.
 2. Run security checks defined in active scope plus `rules/task-checklists.md`.
 3. Apply static analysis and dependency risk checks where available.
 
+### 3.1 Approved Secrets Work Protocol
+
+When the user approves secrets work, agents may inspect repository-local secret
+metadata needed for the task, but secret values remain non-output data.
+Permitted evidence includes counts, IDs, file paths, key names, registry
+metadata, rotation status, and command success/failure. Prohibited evidence
+includes plaintext values, private keys, token-bearing logs, shell history, and
+full secret file bodies.
+
+Secret value reads, writes, or rotations require a concrete target and task
+evidence that records the redaction boundary, validation command, and rollback
+or recovery path. Do not commit, print, summarize, or quote secret values.
+
 ## 4. Operational Procedures
 
 - Patch critical CVEs in images and dependencies with priority handling.

@@ -45,6 +45,22 @@ Spawning, communication, and lifecycle rules for subagents in `hy-home.docker`.
   use `low` through a task-specific override.
 - **Gemini Reasoning Policy**: Antigravity IDE manages reasoning effort strictly via model selection. `gemini-3.1-pro` is mandated for tasks requiring high reasoning effort (planning, complex refactors), while `gemini-3.5-flash` is used for standard/low reasoning effort (repetitive edits, text classification).
 
+### Model and Provider Adapter Change Protocol
+
+User approval may authorize model policy or provider adapter changes, but those
+changes are valid only when the same task updates all coupled surfaces:
+
+- this Model Policy table or the documented override rule,
+- provider adapter generation logic,
+- generated provider adapters,
+- repository validators that enforce allowed values,
+- Stage 04 task evidence with the exact approved value, target role, source of
+  evidence, and provider sync result.
+
+If the task does not name a concrete model value, role, provider, and validation
+path, the approval is recorded as verified-only and existing model/provider
+adapter values remain unchanged.
+
 ## 2. Required Preamble (per agent)
 
 ```text

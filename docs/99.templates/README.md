@@ -49,7 +49,7 @@ layer: agentic
 - `spec.template.md`
 - `api-spec.template.md`
 - `plan.template.md`
-- `task.template.md`
+- `task.template.md` — includes optional approved-surface evidence for high-risk policy/runtime/CI/template/secrets/remote/model/provider work
 - `guide.template.md` — 운영 가이드 (단독 프로파일)
 - `policy.template.md` — 운영 정책 (단독 프로파일)
 - `incident.template.md`
@@ -117,7 +117,7 @@ target-relative guidance와 함께 제공되는지를 확인한다.
 | `docs/02.architecture/decisions/`    | 아키텍처 trade-off, 대안, 결정 결과                       | `adr.template.md`                                                                                                  |
 | `docs/03.specs/`                     | 기능/시스템별 기술 명세, interface, verification contract | `spec.template.md`                                                                                                 |
 | `docs/04.execution/plans/`           | 작업 순서, 리스크, 검증 계획, 완료 기준                   | `plan.template.md`                                                                                                 |
-| `docs/04.execution/tasks/`           | 실제 작업 상태, 검증 evidence, deviation 기록             | `task.template.md`                                                                                                 |
+| `docs/04.execution/tasks/`           | 실제 작업 상태, 검증 evidence, deviation, approved-surface 기록 | `task.template.md`                                                                                                 |
 | `docs/05.operations/`                | guide, policy, runbook, incident/postmortem 운영 지식     | `guide.template.md`, `policy.template.md`, `runbook.template.md`, `incident.template.md`, `postmortem.template.md` |
 | `docs/90.references/`                | 느리게 변하는 reference, glossary, source-backed facts    | `reference.template.md`                                                                                            |
 | `docs/98.archive/`                   | active chain에서 제거된 old 문서 tombstone                | `archive.template.md`                                                                                              |

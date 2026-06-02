@@ -48,6 +48,20 @@ Repo-local stricter rules always override this document; never weaken them on th
 - **GitHub Responsibility**: Ultimate SSoT gates, E2E tests, SARIF generation, and workflows requiring secrets.
 - **Implementation**: If a tool requires a dedicated CI job (e.g., for SARIF uploads), it must be removed from the local `.pre-commit-config.yaml` or skipped in the CI `pre-commit` runner via the `SKIP` environment variable.
 
+### 5.0 Approved Remote Mutation Protocol
+
+When the user approves remote GitHub mutation, agents must still bind the action
+to a concrete repository and remote surface before changing state. Task evidence
+must include the approval source, target repository, target setting or object,
+command class, before-state evidence, after-state evidence, and rollback or
+recovery path. Do not merge PRs, bypass required checks, weaken protected-branch
+rules, or expose GitHub secrets unless the user separately names that concrete
+action and target.
+
+Read-only remote checks may be recorded as verification evidence. Remote state
+that was approved but not changed must be reported as verified-only, not as a
+mutation.
+
 ### 5.1 Evidence Boundary by Change Type
 
 Agents must align local checks, CI-only gates, and skipped-check rationale with

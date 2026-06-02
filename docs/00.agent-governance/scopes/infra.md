@@ -42,6 +42,22 @@ title: 'Infrastructure Operational Scope'
 For docs-only governance work that does not change Compose files, record Compose
 validation as N/A instead of running runtime-affecting commands.
 
+### 3.1 Approved Runtime Mutation Protocol
+
+When the user approves live runtime or Docker mutation, the agent still needs a
+concrete target before changing service state. The Stage 04 task evidence must
+record:
+
+- target service or Compose file,
+- intended runtime action and approval source,
+- pre-check command and result,
+- rollback or recovery command,
+- post-check command and result,
+- reason any live mutation was skipped.
+
+Approval without a concrete runtime target authorizes planning and validation
+only; it does not require starting, stopping, rebuilding, or recreating services.
+
 ## 4. Operational Procedures
 
 - **Scalability**: For database scaling, refer to `infra/04-data/postgresql-cluster/` (Patroni/ETCD).

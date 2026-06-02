@@ -42,6 +42,16 @@ status: draft
 - Documentation-only work still needs validation evidence.
 - If a feature-local `tasks.md` exists under `03.specs/`, this document remains the execution-tracking source of truth.
 
+## Approved Surface Evidence
+
+Use this section when the task touches high-risk approved surfaces such as
+policy, runtime, CI, templates, secrets, remote GitHub, model policy, or provider
+adapters. Delete the section when no such surface is in scope.
+
+| Surface | Approval Source | Target | Before Evidence | After Evidence | Rollback / Recovery | Redaction Boundary |
+| --- | --- | --- | --- | --- | --- | --- |
+| [surface] | [approval] | [target] | [evidence] | [evidence] | [rollback] | [redaction] |
+
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
