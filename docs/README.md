@@ -121,7 +121,7 @@ docs/
 | `03.specs/` | 구현 계약, interface, data/config contract, verification | `99.templates/spec.template.md` |
 | `04.execution/plans/` | 실행 순서, risk control, verification plan | `99.templates/plan.template.md` |
 | `04.execution/tasks/` | 실제 수행 상태, evidence, deviation, completion record | `99.templates/task.template.md` |
-| `05.operations/` | guide, policy, runbook, incident/postmortem | `99.templates/operation.template.md`, incident/postmortem templates |
+| `05.operations/` | guide, policy, runbook, incident/postmortem | `99.templates/guide.template.md`, `99.templates/policy.template.md`, `99.templates/runbook.template.md`, incident/postmortem templates |
 | `90.references/` | active 판단을 대체하지 않는 stable reference | `99.templates/reference.template.md` |
 | `98.archive/` | active chain에서 제거된 old 문서 tombstone | `99.templates/archive.template.md` |
 | `99.templates/` | canonical template source and target-relative link rules | `99.templates/readme.template.md` |
@@ -154,9 +154,9 @@ docs/
 | Protobuf Contract | feature directory `contracts/service.proto` | `99.templates/service.template.proto` |
 | Plan | `04.execution/plans/` | `99.templates/plan.template.md` |
 | Task | `04.execution/tasks/` | `99.templates/task.template.md` |
-| Operations Guide | `05.operations/guides/` | `99.templates/operation.template.md` |
-| Operations Policy | `05.operations/policies/` | `99.templates/operation.template.md` |
-| Runbook | `05.operations/runbooks/` | `99.templates/operation.template.md` |
+| Operations Guide | `05.operations/guides/` | `99.templates/guide.template.md` |
+| Operations Policy | `05.operations/policies/` | `99.templates/policy.template.md` |
+| Runbook | `05.operations/runbooks/` | `99.templates/runbook.template.md` |
 | Incident | `05.operations/incidents/` | `99.templates/incident.template.md` |
 | Postmortem | `05.operations/incidents/` | `99.templates/postmortem.template.md` |
 | Reference | `90.references/` | `99.templates/reference.template.md` |

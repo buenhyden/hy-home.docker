@@ -31,6 +31,17 @@ jobs:
       - name: Check docs traceability sync
         run: bash scripts/validation/check-doc-traceability.sh
 
+  # ── Documentation Implementation Alignment ─────────────────
+  docs-implementation-alignment:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - *checkout
+      - name: Check docs against tracked implementation surfaces
+        run: bash scripts/validation/check-doc-implementation-alignment.sh
+
   # ── Repository Contract Validation ──────────────────────
   repo-contracts:
     permissions:

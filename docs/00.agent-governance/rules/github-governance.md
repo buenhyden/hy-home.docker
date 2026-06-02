@@ -70,8 +70,8 @@ evidence must state:
 
 | Change Type | Required Local Evidence | CI-Only Evidence | Required Skip Rationale |
 | --- | --- | --- | --- |
-| Docs or governance docs | Diff hygiene, repo contracts, doc traceability, provider sync when provider docs changed | Required docs/repo contract jobs | Domain tests are N/A for docs-only changes. |
-| Archive/tombstone migration | Diff hygiene, stale active-reference scans, repo contracts, doc traceability, archive ledger review | Required docs/repo contract jobs | Domain tests and runtime checks are N/A unless behavior/config changed. |
+| Docs or governance docs | Diff hygiene, doc implementation alignment, repo contracts, doc traceability, provider sync when provider docs changed | Required docs/repo contract jobs | Domain tests are N/A for docs-only changes. |
+| Archive/tombstone migration | Diff hygiene, doc implementation alignment, stale active-reference scans, repo contracts, doc traceability, archive ledger review | Required docs/repo contract jobs | Domain tests and runtime checks are N/A unless behavior/config changed. |
 | Hook, script, or validator | Targeted command output plus repo contracts | Required quality/security jobs | GitHub-only permissions, SARIF upload, or protected remote state if not locally runnable. |
 | Runtime or Docker config | Compose/hardening/local smoke checks when approved | Compose and hardening jobs | Live mutation skipped without approval. |
 | GitHub workflow/protection | Static review and local contract checks | GitHub Actions and branch-protection verification | Any remote state not verified must be reported as unverified, not done. |
@@ -116,6 +116,7 @@ template/status checks.
 | Job ID                            | Execution Surface                                      |
 | --------------------------------- | ------------------------------------------------------ |
 | `docs-traceability`               | `scripts/validation/check-doc-traceability.sh`         |
+| `docs-implementation-alignment`   | `scripts/validation/check-doc-implementation-alignment.sh` |
 | `repo-contracts`                  | `scripts/validation/check-repo-contracts.sh`           |
 | `git-flow-contract`               | inline PR title and source-branch shell check          |
 | `compose-validation`              | `scripts/validation/validate-docker-compose.sh`        |

@@ -488,6 +488,7 @@ ci_quality = pathlib.Path(".github/workflows/ci-quality.yml")
 # must NOT be added here — they are not script-backed QA gates.
 required_jobs = {
     "docs-traceability",
+    "docs-implementation-alignment",
     "repo-contracts",
     "git-flow-contract",
     "compose-validation",
@@ -3132,6 +3133,7 @@ lib_scripts = sorted(path for path in pathlib.Path("scripts/lib").glob("*.sh") i
 expected_implementations = {
     pathlib.Path("scripts/validation/validate-docker-compose.sh"),
     pathlib.Path("scripts/validation/check-repo-contracts.sh"),
+    pathlib.Path("scripts/validation/check-doc-implementation-alignment.sh"),
     pathlib.Path("scripts/validation/check-storybook-contract.sh"),
     pathlib.Path("scripts/validation/check-doc-traceability.sh"),
     pathlib.Path("scripts/validation/check-quickwin-baseline.sh"),

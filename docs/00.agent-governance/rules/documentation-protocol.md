@@ -124,6 +124,10 @@ Trigger documentation updates when:
 - policy and repository reality diverge.
 
 For completion, ensure affected README files and governance pointers remain accurate.
+For Stage 01-05 implementation reconciliation, also run
+`bash scripts/validation/check-doc-implementation-alignment.sh`; it verifies
+tracked implementation paths, removed template names, archive index-only links,
+and Stage 05 service document coverage against `infra/**`.
 
 When legacy active-stage content is discovered in a non-stage `docs/*` path:
 

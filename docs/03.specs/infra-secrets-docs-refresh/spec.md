@@ -64,9 +64,9 @@ README base headings:
 - Related Documents
 
 Stage document template families:
-- docs/05.operations/guides -> operation.template.md
-- docs/05.operations/policies -> operation.template.md
-- docs/05.operations/runbooks -> operation.template.md
+- docs/05.operations/guides -> guide.template.md
+- docs/05.operations/policies -> policy.template.md
+- docs/05.operations/runbooks -> runbook.template.md
 - docs/90.references -> reference.template.md
 ```
 

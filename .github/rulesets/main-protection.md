@@ -13,6 +13,7 @@ itself.
   `docs-traceability`, `repo-contracts`, `git-flow-contract`, `compose-validation`,
   `compose-all-profiles-validation`, `infrastructure-hardening`, `template-security-baseline`,
   `quickwin-baseline`, `pre-commit`, `zizmor`, `frontend-quality`, `storybook-coverage`.
+- Proposed local CI contract adds `docs-implementation-alignment`; agents must re-verify and update remote protection before asserting that the new context is remotely enforced.
 - Pull request review protection: 1 approving review required; CODEOWNERS review required.
 - Conversation resolution: required before merge.
 - Force pushes: disabled.
@@ -40,6 +41,7 @@ Use the CI Quality Gates workflow job names as required checks:
 `.github/workflows/ci-quality.yml`.
 
 - `docs-traceability`
+- `docs-implementation-alignment`
 - `repo-contracts`
 - `git-flow-contract`
 - `compose-validation`

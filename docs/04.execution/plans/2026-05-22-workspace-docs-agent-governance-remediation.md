@@ -20,7 +20,8 @@ status: completed
 - `check-repo-contracts.sh`가 stale LLM Wiki index 때문에 실패한다.
 - historical stage 문서 중 일부가 현재 template metadata나 heading contract를 완전히 따르지 않는다.
 - `docs/02.architecture`에는 canonical `0026-standardize-infra-net.md`와 충돌하는 dated duplicate ARD/ADR 후보가 남아 있다.
-- 일부 README와 operation leaf 문서가 `readme.template.md` 또는 `operation.template.md`의 현재 계약과 어긋난다.
+- 일부 README와 operations leaf 문서가 `readme.template.md`, `guide.template.md`,
+  `policy.template.md`, 또는 `runbook.template.md`의 현재 계약과 어긋난다.
 - agent runtime 문서에는 stale section reference, unavailable `rtk` guidance, Hookify `.local.md` tracking convention drift가 있다.
 
 ## Goals & In-Scope

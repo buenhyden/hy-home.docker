@@ -20,7 +20,7 @@
 
 ### In Scope
 
-- Repository validation, contract checks, and agent event hook automation scripts.
+- Repository validation, implementation-alignment checks, contract checks, and agent event hook automation scripts.
 - Repo-local LLM Wiki index generation and freshness checks.
 - Tier hardening checks and their shared helper library.
 - Local preflight validation mode and safe secret file generation utility.
@@ -61,7 +61,7 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 
 | Purpose    | Canonical paths                                                                                                                                                                                                                                                                                            |
 | :--------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh` |
+| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh` |
 | Hardening  | `scripts/hardening/check-all-hardening.sh`                                                                                                                                                                                                                                                                 |
 | Hooks      | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/patch-graphify-post-commit.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                  |
 | Knowledge  | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                              |
@@ -104,6 +104,7 @@ script.
 | Storybook Contract Check           | [check-storybook-contract.sh](./validation/check-storybook-contract.sh)                 | Enforce Storybook CI scripts, workflow wiring, and 90% coverage threshold metadata                                                                                                                              |
 | QuickWin Baseline Check            | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh)                   | Enforce PLN-QW-001~005 baseline controls                                                                                                                                                                        |
 | Template & Security Baseline Check | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh) | Enforce template adoption and required security controls                                                                                                                                                        |
+| Documentation Implementation Alignment | [check-doc-implementation-alignment.sh](./validation/check-doc-implementation-alignment.sh) | Validate active Stage 01-05 docs against tracked implementation surfaces, removed template names, archive index-only links, operations service coverage, scripts, and workflow paths |
 | Documentation Traceability Check   | [check-doc-traceability.sh](./validation/check-doc-traceability.sh)                     | Enforce sync links across 04.execution/plans ↔ 05.operations                                                                                                                                                    |
 | LLM Wiki Index Generator           | [generate-llm-wiki-index.sh](./knowledge/generate-llm-wiki-index.sh)                    | Generate and check the repo-local LLM Wiki path index                                                                                                                                                           |
 | Graphify Health Report             | [report-graphify-health.sh](./knowledge/report-graphify-health.sh)                      | Report advisory health of generated Graphify corpus without blocking validation                                                                                                                                 |
@@ -138,7 +139,7 @@ tier. Without arguments, all supported tiers are checked.
 
 | Lifecycle                   | Scripts                                                                                                                                                                                                                                                                                                                                                                                                        |
 | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CI / quality gate           | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/knowledge/generate-llm-wiki-index.sh --check` |
+| CI / quality gate           | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/knowledge/generate-llm-wiki-index.sh --check` |
 | Advisory evidence           | `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                                                                                                                  |
 | Runtime hook                | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                                                                     |
 | Tier hardening              | `scripts/hardening/check-all-hardening.sh <tier>`                                                                                                                                                                                                                                                                                                                                                              |
@@ -181,6 +182,9 @@ not automatically accepted by this repository.
 
 # Enforce repository contracts
 ./scripts/validation/check-repo-contracts.sh
+
+# Enforce active docs to tracked implementation alignment
+bash scripts/validation/check-doc-implementation-alignment.sh
 
 # Enforce Quick Win baseline
 ./scripts/validation/check-quickwin-baseline.sh
