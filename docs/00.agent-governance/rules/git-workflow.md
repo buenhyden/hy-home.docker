@@ -34,6 +34,8 @@ Use Conventional Commits with explicit scopes where possible.
 4. Apply the Completion Gate from `rules/github-governance.md` before declaring the PR done.
 5. Mark incomplete work as Draft/WIP and list remaining work in the PR template; do not request final review until the PR is ready.
 6. Keep commits atomic and reviewable. If cleanup is needed, use the PR description to explain the intended squash/rebase strategy instead of hiding mixed concerns.
+7. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
+8. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
 
 ## 4. Operational Best Practices
 

@@ -28,7 +28,7 @@ contract — do not duplicate it here).
 
 - **Infrastructure change**: `compose-stack-agent` → `infra-validate` / `infra-cross-validate`
   → `iac-reviewer` / `drift-detector` review → ADR/spec/runbook authoring.
-- **Code review**: `code-reviewer` + `code-review-dimensions` → structured findings.
+- **Code review**: request (after self-review and local checks pass) → `code-reviewer` + `code-review-dimensions` review → structured findings → author resolves or replies to each finding and re-verifies → re-request. Follow the `rules/git-workflow.md` Pull Request Protocol.
 - **Quality Assurance**: `test-automator` / `e2e-testing` → `qa-engineer` review → test reports.
 - **CI/CD Pipeline**: `deployment-pipeline-design` (+ external `deployment-procedures`) → `ci-cd-engineer` execution → deployment reports.
 - **Security audit**: `security-audit` + `container-threat-modeling` → findings + mitigations.
@@ -52,16 +52,17 @@ External strategy skills may shape how an agent works, but active repository
 artifacts still use the stage taxonomy in `docs/01` to `docs/05`, `docs/90`,
 and `docs/99`.
 
-| Strategy discipline | Canonical repository adaptation |
-| --- | --- |
-| Skill applicability before action | Check relevant Stage 00 functions, provider adapters, and requested external skills before mutating state. |
-| Brainstorming / design exploration | Capture approved outcomes in PRD, ARD/ADR, Spec, or Plan artifacts; do not create active `docs/superpowers/**` specs. |
-| Writing implementation plans | Use `docs/04.execution/plans/**` and `docs/99.templates/plan.template.md`. |
-| Executing plans | Use `docs/04.execution/tasks/**` and record task-by-task evidence. |
-| Test-driven development | Follow `scopes/qa.md`; mark docs-only or policy-only coverage N/A with rationale. |
-| Systematic debugging | Establish root cause before fixes; incidents and recurring failures use Stage 05 incident/postmortem paths where applicable. |
-| Verification before completion | Completion claims require command output, manual evidence, or explicit skipped-check rationale. |
-| Finishing a branch | Follow `rules/github-governance.md` and `rules/git-workflow.md`: verify, inspect diff/status, stage scoped files only, and commit/PR by approval. |
+| Strategy discipline                | Canonical repository adaptation                                                                                                                                                                                                        |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Skill applicability before action  | Check relevant Stage 00 functions, provider adapters, and requested external skills before mutating state.                                                                                                                             |
+| Brainstorming / design exploration | Capture approved outcomes in PRD, ARD/ADR, Spec, or Plan artifacts; do not create active `docs/superpowers/**` specs.                                                                                                                  |
+| Writing implementation plans       | Use `docs/04.execution/plans/**` and `docs/99.templates/plan.template.md`.                                                                                                                                                             |
+| Executing plans                    | Use `docs/04.execution/tasks/**` and record task-by-task evidence.                                                                                                                                                                     |
+| Test-driven development            | Follow `scopes/qa.md`; mark docs-only or policy-only coverage N/A with rationale.                                                                                                                                                      |
+| Systematic debugging               | Establish root cause before fixes; incidents and recurring failures use Stage 05 incident/postmortem paths where applicable.                                                                                                           |
+| Verification before completion     | Completion claims require command output, manual evidence, or explicit skipped-check rationale.                                                                                                                                        |
+| Requesting / receiving code review | Request review only after self-review and local checks pass; resolve or reply to each finding, re-run affected checks, and record incorporated changes before re-requesting. Follow the `rules/git-workflow.md` Pull Request Protocol. |
+| Finishing a branch                 | Follow `rules/github-governance.md` and `rules/git-workflow.md`: verify, inspect diff/status, stage scoped files only, and commit/PR by approval.                                                                                      |
 
 HADS is mandatory only for the approved `docs/90.references/hads/` reference
 profile. It may guide AI-readable documentation elsewhere, but existing
@@ -73,13 +74,13 @@ profile unless a future plan explicitly approves that rollout.
 Reusable functions and provider skills follow the same lifecycle regardless of
 runtime:
 
-| Lifecycle Step | Required Agent Action | Canonical Evidence |
-| --- | --- | --- |
-| Discovery | Identify requested, named, or obviously applicable workspace functions and external skills before mutation. | Task notes or plan assumptions identify the considered skill set. |
-| Applicability | Decide whether each skill changes the work method, output artifact, or validation scope. | Inapplicable skills are recorded as N/A only when they were requested or materially relevant. |
-| Provider loading | Load the provider adapter file (`.claude/skills/`, `.codex/skills/`, `.agents/skills/`) or external skill instructions needed for the task. | The loaded source is reflected in the task narrative or session audit trail. |
-| Canonical artifact | Write the resulting plan, task, policy, runbook, code, or review output to the repository's canonical stage path. | Active artifacts live under `docs/01` to `docs/05`, `docs/90`, `docs/99`, or the scoped runtime surface. |
-| Validation evidence | Run the relevant local checks, record CI-only gates, or explain skipped checks. | `docs/04.execution/tasks/` and progress logs capture the command, outcome, and rationale. |
+| Lifecycle Step      | Required Agent Action                                                                                                                       | Canonical Evidence                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Discovery           | Identify requested, named, or obviously applicable workspace functions and external skills before mutation.                                 | Task notes or plan assumptions identify the considered skill set.                                        |
+| Applicability       | Decide whether each skill changes the work method, output artifact, or validation scope.                                                    | Inapplicable skills are recorded as N/A only when they were requested or materially relevant.            |
+| Provider loading    | Load the provider adapter file (`.claude/skills/`, `.codex/skills/`, `.agents/skills/`) or external skill instructions needed for the task. | The loaded source is reflected in the task narrative or session audit trail.                             |
+| Canonical artifact  | Write the resulting plan, task, policy, runbook, code, or review output to the repository's canonical stage path.                           | Active artifacts live under `docs/01` to `docs/05`, `docs/90`, `docs/99`, or the scoped runtime surface. |
+| Validation evidence | Run the relevant local checks, record CI-only gates, or explain skipped checks.                                                             | `docs/04.execution/tasks/` and progress logs capture the command, outcome, and rationale.                |
 
 Provider-local skill files may describe runtime mechanics, but they do not own
 the lifecycle policy above.
