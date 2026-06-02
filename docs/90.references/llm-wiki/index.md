@@ -454,6 +454,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-06-02-agent-governance-phase-1-revalidation.md](../../04.execution/plans/2026-06-02-agent-governance-phase-1-revalidation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-agent-governance-phase-2-strategy-integration.md](../../04.execution/plans/2026-06-02-agent-governance-phase-2-strategy-integration.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-agent-governance-phase-3-approved-surface-activation.md](../../04.execution/plans/2026-06-02-agent-governance-phase-3-approved-surface-activation.md) | Markdown reference |
+| [docs/04.execution/plans/2026-06-02-agent-governance-phase-4-closure-reconciliation.md](../../04.execution/plans/2026-06-02-agent-governance-phase-4-closure-reconciliation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-governance-optimization.md](../../04.execution/plans/2026-06-02-governance-optimization.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
@@ -512,6 +513,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-06-02-agent-governance-phase-1-revalidation.md](../../04.execution/tasks/2026-06-02-agent-governance-phase-1-revalidation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-agent-governance-phase-2-strategy-integration.md](../../04.execution/tasks/2026-06-02-agent-governance-phase-2-strategy-integration.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-agent-governance-phase-3-approved-surface-activation.md](../../04.execution/tasks/2026-06-02-agent-governance-phase-3-approved-surface-activation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-06-02-agent-governance-phase-4-closure-reconciliation.md](../../04.execution/tasks/2026-06-02-agent-governance-phase-4-closure-reconciliation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-governance-optimization.md](../../04.execution/tasks/2026-06-02-governance-optimization.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 

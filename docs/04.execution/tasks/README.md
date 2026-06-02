@@ -70,6 +70,7 @@ docs/04.execution/tasks/
 ├── 2026-06-02-agent-governance-phase-1-revalidation.md # Completed agent governance Phase 1 revalidation task record
 ├── 2026-06-02-agent-governance-phase-2-strategy-integration.md # Completed agent governance Phase 2 strategy integration task record
 ├── 2026-06-02-agent-governance-phase-3-approved-surface-activation.md # Completed agent governance Phase 3 approved surface activation task record
+├── 2026-06-02-agent-governance-phase-4-closure-reconciliation.md # Completed agent governance Phase 4 closure reconciliation task record
 └── README.md                                # This file
 ```
 
@@ -145,3 +146,4 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Agent Governance Phase 1 Revalidation Task**: [2026-06-02-agent-governance-phase-1-revalidation.md](./2026-06-02-agent-governance-phase-1-revalidation.md)
 - **Agent Governance Phase 2 Strategy Integration Task**: [2026-06-02-agent-governance-phase-2-strategy-integration.md](./2026-06-02-agent-governance-phase-2-strategy-integration.md)
 - **Agent Governance Phase 3 Approved Surface Activation Task**: [2026-06-02-agent-governance-phase-3-approved-surface-activation.md](./2026-06-02-agent-governance-phase-3-approved-surface-activation.md)
+- **Agent Governance Phase 4 Closure Reconciliation Task**: [2026-06-02-agent-governance-phase-4-closure-reconciliation.md](./2026-06-02-agent-governance-phase-4-closure-reconciliation.md)
