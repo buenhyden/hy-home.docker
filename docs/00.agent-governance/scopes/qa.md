@@ -63,8 +63,15 @@ optional cleanup.
   `bash scripts/knowledge/generate-llm-wiki-index.sh`. `check-repo-contracts.sh`
   enforces freshness locally and in the `repo-contracts` CI job; a stale index is
   a hard failure.
-- **Knowledge graph**: refresh `graphify-out/` with `graphify update .` after
-  code or doc changes when the CLI is available; report when it is skipped.
+- **Knowledge graph**: refresh `graphify-out/` with one-shot `graphify update .`
+  after code or doc changes when the CLI is available; report when it is skipped.
+  Do not rely on a live `graphify watch` daemon during commits: `pre-commit`
+  takes an intermediate stash of unstaged changes, and concurrent watcher writes
+  to the tracked `graphify-out/` snapshots conflict on stash restore, which rolls
+  back the commit. Refresh the graph, then stage and commit `graphify-out/` as a
+  dedicated `chore(graph)` unit. The tracked snapshots are also excluded from
+  `pre-commit` file hooks (`exclude: '^graphify-out/'`) so formatters never
+  rewrite them mid-commit.
 - **General rule**: never hand-edit a generated artifact to pass a check. Re-run
   its generator and commit the generated result as a separate logical unit.
 
