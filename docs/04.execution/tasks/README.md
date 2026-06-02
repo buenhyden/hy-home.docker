@@ -68,6 +68,7 @@ docs/04.execution/tasks/
 ├── 2026-05-31-claude-harness-governance-verification.md # Completed Claude harness governance verification task record
 ├── 2026-06-02-agent-governance-missing-items-implementation.md # Completed decision-item attachment-gap implementation task record
 ├── 2026-06-02-agent-governance-phase-1-revalidation.md # Completed agent governance Phase 1 revalidation task record
+├── 2026-06-02-agent-governance-phase-2-strategy-integration.md # Completed agent governance Phase 2 strategy integration task record
 └── README.md                                # This file
 ```
 
@@ -141,3 +142,4 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Claude Harness Governance Verification Task**: [2026-05-31-claude-harness-governance-verification.md](./2026-05-31-claude-harness-governance-verification.md)
 - **Agent Governance Missing Items Implementation Task**: [2026-06-02-agent-governance-missing-items-implementation.md](./2026-06-02-agent-governance-missing-items-implementation.md)
 - **Agent Governance Phase 1 Revalidation Task**: [2026-06-02-agent-governance-phase-1-revalidation.md](./2026-06-02-agent-governance-phase-1-revalidation.md)
+- **Agent Governance Phase 2 Strategy Integration Task**: [2026-06-02-agent-governance-phase-2-strategy-integration.md](./2026-06-02-agent-governance-phase-2-strategy-integration.md)
