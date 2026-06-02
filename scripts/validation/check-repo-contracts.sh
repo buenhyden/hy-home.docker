@@ -83,6 +83,7 @@ required_templates=(
   "reference.template.md"
   "runbook.template.md"
   "schema.template.graphql"
+  "service.template.md"
   "service.template.proto"
   "spec.template.md"
   "task.template.md"

@@ -54,6 +54,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 | `docs/03.specs/<feature-id>/api-spec.md`              | API Spec               | `docs/99.templates/api-spec.template.md`     |
 | `docs/03.specs/<feature-id>/agent-design.md`          | Agent Design           | `docs/99.templates/agent-design.template.md` |
 | `docs/03.specs/<feature-id>/data-model.md`            | Data Model             | `docs/99.templates/data-model.template.md`   |
+| `docs/03.specs/<feature-id>/service.md`               | Service Scaffold       | `docs/99.templates/service.template.md`      |
 | `docs/03.specs/<feature-id>/tests.md`                 | Test Contract          | `docs/99.templates/tests.template.md`        |
 | `docs/03.specs/<feature-id>/contracts/openapi.yaml`   | OpenAPI Contract       | `docs/99.templates/openapi.template.yaml`    |
 | `docs/03.specs/<feature-id>/contracts/schema.graphql` | GraphQL Contract       | `docs/99.templates/schema.template.graphql`  |
