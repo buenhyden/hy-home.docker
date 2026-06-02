@@ -42,15 +42,31 @@ and manual evidence for any policy claims.
 Use the smallest meaningful checks for the touched layer. When a listed check is
 not applicable, record the skipped-check rationale in the task evidence.
 
-| Change Type | Local Checks | CI-Only / Remote Gate | Hook or Script Evidence | Skip Rationale Required |
-| --- | --- | --- | --- | --- |
-| Documentation-only stage docs | `git diff --check`, `check-repo-contracts.sh`, `check-doc-traceability.sh`, LLM Wiki freshness when indexes change | Remote docs traceability and repo contracts | Post-edit validation hook, task evidence, progress log | Domain tests, coverage, Docker runtime checks |
-| Archive/tombstone migration | Documentation checks plus stale active-reference scans for archived subjects and `docs/98.archive` status/template checks | Remote docs traceability and repo contracts | Archive ledger update, tombstone metadata, task evidence, progress log | Domain tests, coverage, Docker runtime checks |
-| Governance or provider policy docs | Documentation checks plus `sync-provider-surfaces.sh` when provider surfaces are affected | Remote repo contracts and required checks | Provider sync output and policy-gate evidence | Runtime tests unless behavior/config changed |
-| Provider adapter, hook, or validation script | Targeted script self-check, repo contracts, provider sync, quickwin/template-security baselines when relevant | Required GitHub quality gates and security scans | Hook validation or script command output | CI-only tools such as SARIF upload are named, not duplicated locally |
-| Runtime, Docker, or Compose config | Compose validation, hardening scripts, targeted service smoke checks when safe | Compose and hardening jobs, any protected-branch required checks | Docker/Compose command output or explicit approval gate | Live service mutation skipped unless approved |
-| CI workflow or GitHub protection | Static workflow validation, repo contracts, ruleset documentation review | GitHub Actions jobs, branch protection/ruleset verification | `gh` or workflow evidence where approved | Local execution of GitHub-only jobs such as `zizmor` SARIF upload |
-| Model policy or reasoning-effort config | Stage 00 policy review, provider sync, validator support check | Required repo contracts after generated surfaces update | Validator output and task evidence | Any unsupported value remains blocked, not skipped |
+| Change Type                                  | Local Checks                                                                                                                                                                                            | CI-Only / Remote Gate                                            | Hook or Script Evidence                                                | Skip Rationale Required                                              |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Documentation-only stage docs                | `git diff --check`, `check-repo-contracts.sh`, `check-doc-traceability.sh`, and LLM Wiki index regeneration via `scripts/knowledge/generate-llm-wiki-index.sh` when docs are added, removed, or renamed | Remote docs traceability and repo contracts                      | Post-edit validation hook, task evidence, progress log                 | Domain tests, coverage, Docker runtime checks                        |
+| Archive/tombstone migration                  | Documentation checks plus stale active-reference scans for archived subjects and `docs/98.archive` status/template checks                                                                               | Remote docs traceability and repo contracts                      | Archive ledger update, tombstone metadata, task evidence, progress log | Domain tests, coverage, Docker runtime checks                        |
+| Governance or provider policy docs           | Documentation checks plus `sync-provider-surfaces.sh` when provider surfaces are affected                                                                                                               | Remote repo contracts and required checks                        | Provider sync output and policy-gate evidence                          | Runtime tests unless behavior/config changed                         |
+| Provider adapter, hook, or validation script | Targeted script self-check, repo contracts, provider sync, quickwin/template-security baselines when relevant                                                                                           | Required GitHub quality gates and security scans                 | Hook validation or script command output                               | CI-only tools such as SARIF upload are named, not duplicated locally |
+| Runtime, Docker, or Compose config           | Compose validation, hardening scripts, targeted service smoke checks when safe                                                                                                                          | Compose and hardening jobs, any protected-branch required checks | Docker/Compose command output or explicit approval gate                | Live service mutation skipped unless approved                        |
+| CI workflow or GitHub protection             | Static workflow validation, repo contracts, ruleset documentation review                                                                                                                                | GitHub Actions jobs, branch protection/ruleset verification      | `gh` or workflow evidence where approved                               | Local execution of GitHub-only jobs such as `zizmor` SARIF upload    |
+| Model policy or reasoning-effort config      | Stage 00 policy review, provider sync, validator support check                                                                                                                                          | Required repo contracts after generated surfaces update          | Validator output and task evidence                                     | Any unsupported value remains blocked, not skipped                   |
+
+## 3.2 Generated-Artifact Freshness
+
+Some artifacts are generated from repository content and must be regenerated as
+part of QA before completion. Treat regeneration as a verification step, not an
+optional cleanup.
+
+- **LLM Wiki index**: when documents are added, removed, or renamed under indexed
+  scopes, regenerate `docs/90.references/llm-wiki/index.md` with
+  `bash scripts/knowledge/generate-llm-wiki-index.sh`. `check-repo-contracts.sh`
+  enforces freshness locally and in the `repo-contracts` CI job; a stale index is
+  a hard failure.
+- **Knowledge graph**: refresh `graphify-out/` with `graphify update .` after
+  code or doc changes when the CLI is available; report when it is skipped.
+- **General rule**: never hand-edit a generated artifact to pass a check. Re-run
+  its generator and commit the generated result as a separate logical unit.
 
 ## 4. Operational Procedures
 
@@ -65,10 +81,10 @@ not applicable, record the skipped-check rationale in the task evidence.
 
 ## 6. File Ownership SSOT
 
-| Path Pattern | Owner Agent | Read-Only For |
-| --- | --- | --- |
-| `projects/storybook/` | `code-reviewer` | layer agents (read) |
-| `scripts/validation/check-storybook-contract.sh` | `code-reviewer` | all other agents |
+| Path Pattern                                                  | Owner Agent                       | Read-Only For          |
+| ------------------------------------------------------------- | --------------------------------- | ---------------------- |
+| `projects/storybook/`                                         | `code-reviewer`                   | layer agents (read)    |
+| `scripts/validation/check-storybook-contract.sh`              | `code-reviewer`                   | all other agents       |
 | Test configuration files (`vitest.config.*`, `jest.config.*`) | layer agent that owns the service | `code-reviewer` (read) |
 
 QA-specific owned files are limited in this infrastructure-focused repository. Each layer scope defines test ownership for its own services.

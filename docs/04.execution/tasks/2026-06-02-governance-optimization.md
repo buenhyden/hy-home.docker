@@ -26,12 +26,13 @@ status: completed
 
 ## Task Table
 
-| Task ID | Description                          | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence                       | Owner               | Status |
-| ------- | ------------------------------------ | ---- | --------------------- | ------------------- | ------------------------------------------- | ------------------- | ------ |
-| T-001   | 보안 하드닝 내장 서비스 시드 작성    | impl | N/A                   | PLN-001             | `yaml.safe_load` OK, 계약 검사 `failures=0` | workflow-supervisor | Done   |
-| T-002   | service scaffold 템플릿 + 4파일 등록 | doc  | N/A                   | PLN-002             | `check-repo-contracts.sh` `failures=0`      | workflow-supervisor | Done   |
-| T-003   | 신규 서비스 온보딩 가이드 작성       | doc  | N/A                   | PLN-003             | guide 정규화 통과, `failures=0`             | workflow-supervisor | Done   |
-| T-004   | 코드리뷰 요청/수용 루프 명문화       | doc  | N/A                   | PLN-004             | `check-repo-contracts.sh` `failures=0`      | workflow-supervisor | Done   |
+| Task ID | Description                              | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence                       | Owner               | Status |
+| ------- | ---------------------------------------- | ---- | --------------------- | ------------------- | ------------------------------------------- | ------------------- | ------ |
+| T-001   | 보안 하드닝 내장 서비스 시드 작성        | impl | N/A                   | PLN-001             | `yaml.safe_load` OK, 계약 검사 `failures=0` | workflow-supervisor | Done   |
+| T-002   | service scaffold 템플릿 + 4파일 등록     | doc  | N/A                   | PLN-002             | `check-repo-contracts.sh` `failures=0`      | workflow-supervisor | Done   |
+| T-003   | 신규 서비스 온보딩 가이드 작성           | doc  | N/A                   | PLN-003             | guide 정규화 통과, `failures=0`             | workflow-supervisor | Done   |
+| T-004   | 코드리뷰 요청/수용 루프 명문화           | doc  | N/A                   | PLN-004             | `check-repo-contracts.sh` `failures=0`      | workflow-supervisor | Done   |
+| T-005   | 생성물 freshness 계약을 QA 스코프에 주입 | doc  | N/A                   | PLN-005             | `check-repo-contracts.sh` `failures=0`      | workflow-supervisor | Done   |
 
 ## Suggested Types
 
