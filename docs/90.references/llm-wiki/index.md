@@ -451,6 +451,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-29-workspace-consistency-2026-05b.md](../../04.execution/plans/2026-05-29-workspace-consistency-2026-05b.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-31-claude-harness-governance-verification.md](../../04.execution/plans/2026-05-31-claude-harness-governance-verification.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md](../../04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md) | Markdown reference |
+| [docs/04.execution/plans/2026-06-02-agent-governance-phase-1-revalidation.md](../../04.execution/plans/2026-06-02-agent-governance-phase-1-revalidation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-governance-optimization.md](../../04.execution/plans/2026-06-02-governance-optimization.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
@@ -506,6 +507,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-05-29-workspace-consistency-2026-05b.md](../../04.execution/tasks/2026-05-29-workspace-consistency-2026-05b.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-31-claude-harness-governance-verification.md](../../04.execution/tasks/2026-05-31-claude-harness-governance-verification.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md](../../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-06-02-agent-governance-phase-1-revalidation.md](../../04.execution/tasks/2026-06-02-agent-governance-phase-1-revalidation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-governance-optimization.md](../../04.execution/tasks/2026-06-02-governance-optimization.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
