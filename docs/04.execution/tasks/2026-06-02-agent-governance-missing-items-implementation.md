@@ -9,7 +9,7 @@ status: completed
 
 이 문서는 `2026-06-02-agent-governance-decision-items-plan.md`에 대한 첨부 문서 대비 누락 항목 보강과 단계적 구현 evidence를 기록한다.
 
-Phase 1/2 historical artifacts는 수정하지 않고, 현재 기준 보정은 Stage 00, Codex harness, Template Contract, QA/CI/CD, Stage 04 evidence surface에 continuation 형태로 반영한다.
+현재 구현과 상충하는 과거 Phase 실행 artifacts는 active chain에서 제거하고 `docs/98.archive/` tombstone으로 이동한다. 현재 기준 보정은 Stage 00, Codex harness, Template Contract, QA/CI/CD, Stage 04 evidence surface에 continuation 형태로 반영한다.
 
 ## Inputs
 
@@ -20,7 +20,7 @@ Phase 1/2 historical artifacts는 수정하지 않고, 현재 기준 보정은 S
 
 ## Working Rules
 
-- Preserve completed Phase 1/2 historical documents.
+- Archive completed Phase artifacts when their body conflicts with current tracked implementation.
 - Keep Stage 00 as the governance SSoT; do not create duplicate provider-local policy.
 - User approved protected surface changes and approval-gated unfinished items on 2026-06-02.
 - Retire `.codex/agents/*.md` compatibility prompt context in this approved follow-up.
@@ -34,7 +34,7 @@ Phase 1/2 historical artifacts는 수정하지 않고, 현재 기준 보정은 S
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-001 | Add Attachment Gap Coverage and WBS PLN-DI-009 through PLN-DI-016 to the decision-items plan. | doc | N/A | PLN-DI-009..016 | Parent plan includes gap matrix, added WBS rows, verification rows, risks, and completion criteria. | Codex | Completed |
 | T-002 | Add Stage 00 clarification duty, current-to-desired governance matrix, skill lifecycle, template deviation audit, and model/config gates. | doc | N/A | PLN-DI-009..014 | `docs/00.agent-governance/README.md`, workflows, checklists, documentation protocol, Stage Authoring Matrix, and function catalog README updated. | Codex | Completed |
-| T-003 | Add Codex harness alignment gates without retiring compatibility Markdown prompts or changing TOML adapters. | doc | N/A | PLN-DI-013..014 | `AGENTS.md`, `.codex/README.md`, and Codex provider notes updated; `.codex/agents/*.toml` unchanged. | Codex | Completed |
+| T-003 | Add Codex harness alignment gates around TOML-only adapters and retired Markdown prompt adapters. | doc | N/A | PLN-DI-013..014 | `AGENTS.md`, `.codex/README.md`, Codex provider notes, and repo contracts enforce TOML-only Codex adapters. | Codex | Completed |
 | T-004 | Add QA/CI/CD local/remote/skipped-check evidence matrix. | doc | N/A | PLN-DI-015 | QA scope and GitHub governance now map change types to local checks, CI-only gates, hook/script evidence, and skip rationale. | Codex | Completed |
 | T-005 | Add template deviation exception criteria without rewriting template sources or historical docs. | doc | N/A | PLN-DI-011 | Template README, documentation protocol, and Stage Authoring Matrix record exception evidence requirements. | Codex | Completed |
 | T-006 | Update Stage 04 plan/task indexes and progress log for the continuation task. | doc/memory | N/A | PLN-DI-016 | Plan/task READMEs and progress log updated; LLM Wiki index regenerated with 1029 paths after fresh revalidation. | Codex | Completed |
@@ -45,6 +45,7 @@ Phase 1/2 historical artifacts는 수정하지 않고, 현재 기준 보정은 S
 | T-011 | Implement bounded HADS mandatory rollout for `docs/90.references/hads/`. | doc/script | N/A | HADS mandatory rollout | HADS profile reference docs added and repo contracts validate HADS profile shape. | Codex | Completed |
 | T-012 | Update indexes, progress, and LLM Wiki for approved gate closure. | doc/memory | N/A | Evidence closure | `docs/90.references/README.md`, progress log, and LLM Wiki index updated; LLM Wiki regenerated with 1014 paths. | Codex | Completed |
 | T-013 | Run verification for protected surface changes and record results. | eval | N/A | Verification | Verification summary records protected-surface checks. | Codex | Completed |
+| T-014 | Add archive stage governance and move conflicting old execution artifacts to tombstones. | doc/script | N/A | PLN-DI-001, PLN-DI-004 | `docs/98.archive/`, archive template, stage matrix, documentation protocol, QA/CI notes, and repo contracts updated. | Codex | Completed |
 
 ## Suggested Types
 
@@ -74,6 +75,7 @@ Phase 1/2 historical artifacts는 수정하지 않고, 현재 기준 보정은 S
 - [x] T-011 HADS mandatory reference profile.
 - [x] T-012 Index, progress, and LLM Wiki refresh for approved gate closure.
 - [x] T-013 Protected-surface verification evidence.
+- [x] T-014 Archive stage and stale execution tombstones.
 
 ## Verification Summary
 
@@ -100,6 +102,8 @@ Phase 1/2 historical artifacts는 수정하지 않고, 현재 기준 보정은 S
   - `.codex/agents/*.toml` and `.codex/agents/*.md` surfaces were inspected by path listing; Markdown prompt adapters were retired, TOML adapter metadata no longer references them, and no model/reasoning values were changed.
   - Graphify advisory claims were corroborated against tracked Stage 00 docs, Codex runtime notes, and Stage 04 task/plan evidence.
   - User approval on 2026-06-02 enabled protected repo-tracked surface changes. Live Docker runtime, deployment, secrets, user-global Codex settings, and remote GitHub protection state were not mutated.
+  - Current Stage 01-04 implementation-alignment cleanup archived conflicting old execution artifacts and unimplemented 07-workflow operations docs, regenerated LLM Wiki with 1016 paths, and revalidated repo contracts (`failures=0`), doc traceability (`failures=0`), hardening (`ALL checks passed successfully`), LLM Wiki freshness, and diff hygiene.
+  - `graphify update .` was skipped because the `graphify` CLI was unavailable in PATH; `report-graphify-health.sh` remains advisory due `surprising_cross_root_inferred_edges=3`, so completion claims were corroborated against tracked docs and validators.
 - **Logs / Evidence Location**:
   - This task document.
   - [Progress log](../../00.agent-governance/memory/progress.md)

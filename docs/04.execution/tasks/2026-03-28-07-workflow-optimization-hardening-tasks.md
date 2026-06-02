@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md -->
 
@@ -28,13 +28,12 @@ status: active
 | T-WRK-002 | Airflow service dependency를 valkey health 기반으로 강화 | impl | Contracts / Config | PLN-WRK-002 | compose `service_healthy` 확인 | DevOps | Done |
 | T-WRK-003 | n8n worker/task-runner healthcheck 및 dependency gating 추가 | impl | Contracts / Config | PLN-WRK-003 | healthcheck/depends_on 확인 | DevOps | Done |
 | T-WRK-004 | n8n custom image compose 승격 + entrypoint secret guard 적용 | impl | Core Design / Image Hardening | PLN-WRK-004 | Dockerfile/entrypoint 확인 | DevOps | Done |
-| T-WRK-005 | workflow hardening script 추가 | ops | Governance Contract | PLN-WRK-005 | `bash scripts/hardening/check-workflow-hardening.sh` | DevOps | Done |
-| T-WRK-006 | CI `workflow-hardening` job 추가 | ops | Governance Contract | PLN-WRK-005 | workflow job 확인 | DevOps | Done |
+| T-WRK-005 | workflow hardening command 정렬 | ops | Governance Contract | PLN-WRK-005 | `bash scripts/hardening/check-all-hardening.sh 07-workflow` | DevOps | Done |
+| T-WRK-006 | CI `infrastructure-hardening` job 추가 | ops | Governance Contract | PLN-WRK-005 | workflow job 확인 | DevOps | Done |
 | T-WRK-007 | scripts inventory/usage README 갱신 | doc | Related Docs | PLN-WRK-005 | README 항목 반영 | Docs | Done |
 | T-WRK-008 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 생성 | doc | Related Docs | PLN-WRK-006 | 링크/인덱스 동기화 | Docs | Done |
 | T-WRK-009 | Airflow DAG quality gate/worker autoscale 기준 문서화 | doc | Catalog Expansion Targets | PLN-WRK-007 | ops/guide/task 반영 | DevOps | Done |
 | T-WRK-010 | n8n Git backup/Vault credential 연계 기준 문서화 | doc | Catalog Expansion Targets | PLN-WRK-007 | ops/guide/task 반영 | DevOps | Done |
-| T-WRK-011 | airbyte infra artifact gap backlog 정의 | doc | Catalog Expansion Targets | PLN-WRK-007 | task backlog 항목 반영 | DevOps | Done |
 | T-WRK-012 | 정적 검증 실행 및 결과 기록 | test | Verification | PLN-WRK-001~007 | compose/script/baseline/traceability 체크 | DevOps | Done |
 | T-WRK-013 | runtime 기동 및 복구 리허설 증적 수집 | test | Verification | PLN-WRK-001~007 | health/recovery logs | DevOps | Planned |
 
@@ -71,11 +70,11 @@ status: active
 - **Test Commands**:
   - `docker compose -f infra/07-workflow/airflow/docker-compose.yml config`
   - `docker compose -f infra/07-workflow/n8n/docker-compose.yml config`
-  - `bash scripts/hardening/check-workflow-hardening.sh`
+  - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: 로컬 검증 로그 + CI `workflow-hardening` job
+- **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
 
 ## Related Documents
 

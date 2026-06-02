@@ -1,6 +1,8 @@
 ---
-status: active
+status: completed
 ---
+
+<!-- Target: docs/04.execution/plans/2026-05-28-workspace-doc-consistency.md -->
 
 # Workspace Documentation Consistency 2026-05 Implementation Plan
 

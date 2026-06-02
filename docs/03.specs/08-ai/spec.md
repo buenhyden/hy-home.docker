@@ -7,7 +7,7 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `infra/08-ai`(Ollama, Open WebUI) 계층의 최적화/하드닝 기술 명세다. gateway 경계 보안, GPU concurrency 제어, exporter health-gating, stateful 운영 일관성, CI 정책 게이트, 카탈로그 기반 확장 요구를 구현 계약으로 정의한다.
+이 문서는 `infra/08-ai`(Ollama, Open WebUI) 계층의 최적화/하드닝 기술 명세다. gateway 경계 보안, GPU concurrency 제어, exporter health-gating, stateful 운영 일관성, CI 정책 게이트, 카탈로그 기반 확장 요구를 구현 계약으로 정의한다. 현재 root `docker-compose.yml`에서는 AI compose include가 주석 처리되어 있으므로, 이 명세는 보유 구현과 standalone/root-commented optional 실행 계약을 설명한다.
 
 ## Strategic Boundaries & Non-goals
 
@@ -16,7 +16,7 @@ status: active
   - Ollama concurrency/queue/resource 보호 계약
   - Open WebUI stateful template 계약
   - `ollama-exporter` dependency/healthcheck 계약
-  - `check-ai-hardening.sh` 정책 게이트 계약
+  - `scripts/hardening/check-all-hardening.sh 08-ai` 정책 게이트 계약
 - **Does Not Own**:
   - 모델 학습/파인튜닝 파이프라인
   - Qdrant 내부 운영 정책/스키마
@@ -33,6 +33,7 @@ status: active
 ## Contracts
 
 - **Config Contract**:
+  - `infra/08-ai/ollama/docker-compose.yml`과 `infra/08-ai/open-webui/docker-compose.yml`는 현재 root-commented optional includes다.
   - Ollama/Open WebUI 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용한다.
   - Ollama는 `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`를 명시한다.
   - Open WebUI는 `template-stateful-med`를 사용한다.
@@ -43,7 +44,7 @@ status: active
   - Embedding 모델 기본값은 `qwen3-embedding:0.6b`를 유지한다.
 - **Governance Contract**:
   - `scripts/hardening/check-all-hardening.sh 08-ai` 통과가 AI tier 하드닝 기준선이다.
-  - CI `ai-hardening` job이 PR 단계에서 회귀를 차단한다.
+  - CI `infrastructure-hardening` job이 전체 hardening baseline으로 PR 단계에서 회귀를 차단한다.
 
 ## Core Design
 

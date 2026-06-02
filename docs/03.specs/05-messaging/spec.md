@@ -33,7 +33,7 @@ status: active
   - Kafka/KRaft 3노드 및 RabbitMQ 단일 노드 운영 모델을 유지한다.
   - TLS 종료는 Traefik에서 수행하고 내부 `infra_net` 통신은 서비스 내부 프로토콜을 사용한다.
 - **Governance Contract**:
-  - `scripts/hardening/check-all-hardening.sh 05-messaging`를 CI `messaging-hardening` job으로 강제한다.
+  - `scripts/hardening/check-all-hardening.sh 05-messaging`를 CI `infrastructure-hardening` job으로 강제한다.
   - 문서 계층(01~09)은 optimization-hardening 문서 세트로 상호 링크를 유지한다.
 
 ## Core Design
@@ -130,7 +130,7 @@ docker inspect --format '{{json .State.Health}}' rabbitmq
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-MSG-001**: `check-messaging-hardening` 실패 0건
+- **VAL-SPC-MSG-001**: `check-all-hardening.sh 05-messaging` 실패 0건
 - **VAL-SPC-MSG-002**: Kafka/RabbitMQ compose 정적 검증 통과
 - **VAL-SPC-MSG-003**: 외부 노출 라우터의 middleware 체인 계약 충족
 - **VAL-SPC-MSG-004**: 01~09 optimization-hardening 문서 상호 링크 동기화

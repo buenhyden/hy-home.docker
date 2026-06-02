@@ -28,7 +28,7 @@ status: active
   - 외부 노출 라우터는 `gateway-standard-chain@file`를 적용해야 한다.
   - 관리 UI 라우터(`kafka-ui`, `kafbat-ui-dev`, `rabbitmq`)는 SSO 체인을 포함해야 한다.
   - Kafka UI 이미지는 고정 태그를 사용해야 하며 부동 태그를 금지한다.
-  - 메시징 변경은 `messaging-hardening` CI 게이트를 통과해야 한다.
+  - 메시징 변경은 `infrastructure-hardening` CI 게이트를 통과해야 한다.
   - 문서(PRD~Procedure)는 optimization-hardening 링크를 유지해야 한다.
 - **Allowed**:
   - `messaging-option` 프로필 기반 RabbitMQ 선택 활성화
@@ -71,7 +71,7 @@ status: active
 ## AI Agent Policy Section (If Applicable)
 
 - **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: `messaging-hardening` + 공통 기준선 통과 필수
+- **Eval / Guardrail Threshold**: `infrastructure-hardening` + 공통 기준선 통과 필수
 - **Log / Trace Retention**: `06-observability` 정책 준수
 - **Safety Incident Thresholds**: 장기 healthcheck fail, 관리경로 인증 실패 급증, 메시지 지연 급증 시 runbook 즉시 전환
 

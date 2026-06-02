@@ -92,8 +92,8 @@ status: active
 
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
-- **Tool Disable / Revoke**: CI `security-hardening` 임시 비활성은 승인 후만 수행
-- **Eval Re-run**: `check-security-hardening`, `check-auth-hardening`, `check-doc-traceability`
+- **Tool Disable / Revoke**: CI `infrastructure-hardening` 임시 비활성은 승인 후만 수행
+- **Eval Re-run**: `check-all-hardening.sh 03-security`, `check-all-hardening.sh 02-auth`, `check-doc-traceability`
 - **Trace Capture**: CI job logs + container logs
 
 ## Evidence

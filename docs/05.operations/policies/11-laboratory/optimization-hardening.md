@@ -28,7 +28,7 @@ status: active
   - 모든 compose는 `infra_net` external 경계를 유지한다.
   - dashboard direct host `ports` 노출을 금지한다.
   - dozzle docker socket은 read-only로 유지한다.
-  - laboratory 변경은 `check-laboratory-hardening.sh` 및 CI `laboratory-hardening` 통과가 필수다.
+  - laboratory 변경은 `check-all-hardening.sh 11-laboratory` 및 CI `infrastructure-hardening` 통과가 필수다.
   - optimization-hardening 문서(PRD~Procedure)와 README 인덱스를 동기화한다.
 - **Allowed**:
   - 카탈로그 확장 항목을 단계적으로 도입하는 정책/절차/문서 작업

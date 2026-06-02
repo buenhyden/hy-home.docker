@@ -28,7 +28,7 @@ status: active
   - Vault Agent 템플릿은 `secret/data/hy-home/...` 경로 규약을 사용해야 한다.
   - `vault-agent`는 PID 기반 healthcheck를 유지해야 한다.
   - 렌더 출력은 `/vault/out` persistent volume에 저장해야 한다.
-  - `scripts/hardening/check-all-hardening.sh 03-security`를 CI `security-hardening` 게이트로 강제한다.
+  - `scripts/hardening/check-all-hardening.sh 03-security`를 CI `infrastructure-hardening` 게이트로 강제한다.
   - 운영 모드는 fail-closed를 기본으로 유지한다.
 - **Allowed**:
   - 외부 TLS는 Traefik 종료, 내부 `infra_net` HTTP 통신 모델 유지.
@@ -70,7 +70,7 @@ status: active
 ## AI Agent Policy Section (If Applicable)
 
 - **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: security-hardening/auth-hardening/doc-traceability 통과
+- **Eval / Guardrail Threshold**: infrastructure-hardening/doc-traceability 통과
 - **Log / Trace Retention**: audit/healthcheck/검증 로그 보존 정책 준수
 - **Safety Incident Thresholds**: seal 상태 지속, 렌더 실패 지속, audit 비활성 상태 감지 시 runbook 즉시 수행
 

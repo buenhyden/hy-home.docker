@@ -30,7 +30,7 @@ status: active
   - host observer(cAdvisor)는 healthcheck를 필수로 가진다.
   - Loki/Tempo 커스텀 이미지는 non-root 실행을 강제한다.
   - entrypoint는 secret 파일 존재를 선검증한다.
-  - 관측성 변경은 `observability-hardening` CI 게이트를 통과해야 한다.
+  - 관측성 변경은 `infrastructure-hardening` CI 게이트를 통과해야 한다.
   - 문서(PRD~Procedure)는 optimization-hardening 링크를 유지해야 한다.
 - **Allowed**:
   - 카탈로그 기반 단계 확장(샘플링/retention/pipeline module)
@@ -72,7 +72,7 @@ status: active
 ## AI Agent Policy Section (If Applicable)
 
 - **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: `observability-hardening` + 공통 기준선 통과 필수
+- **Eval / Guardrail Threshold**: `infrastructure-hardening` + 공통 기준선 통과 필수
 - **Log / Trace Retention**: 06-observability 기본 retention 정책 준수
 - **Safety Incident Thresholds**: 대량 scrape 실패, trace/log ingestion 지연 급증, 관리경로 인증 실패 급증 시 runbook 즉시 전환
 

@@ -27,7 +27,7 @@ status: active
 
 ## When to Use
 
-- `data-hardening` CI가 실패할 때
+- `infrastructure-hardening` CI가 실패할 때
 - `supabase` 서비스들이 `service_healthy` 대기 상태에서 시작되지 않을 때
 - `valkey-cluster-exporter`가 인증 실패로 기동되지 않을 때
 - `seaweedfs` compose 파싱/기동 오류가 발생할 때
@@ -67,14 +67,14 @@ status: active
 ### Verification Steps
 
 - [ ] 4개 compose `config` 검증 통과
-- [ ] `data-hardening` 실패 0건
+- [ ] `infrastructure-hardening` 실패 0건
 - [ ] 관련 문서 링크/인덱스가 최신 상태
 
 ### Observability and Evidence Sources
 
-- **Signals**: CI `data-hardening` job 상태, compose config 결과, 컨테이너 health 상태
+- **Signals**: CI `infrastructure-hardening` job 상태, compose config 결과, 컨테이너 health 상태
 - **Evidence to Capture**:
-  - 실패/복구 전후 `check-data-hardening.sh` 출력
+  - 실패/복구 전후 `check-all-hardening.sh 04-data` 출력
   - `docker inspect --format '{{json .State.Health}}'` 결과
   - 수정 파일 diff
 
@@ -94,8 +94,8 @@ status: active
 
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
-- **Tool Disable / Revoke**: `data-hardening` 게이트 임시 비활성은 승인 후만 수행
-- **Eval Re-run**: `check-data-hardening`, `check-template-security-baseline`, `check-doc-traceability`
+- **Tool Disable / Revoke**: `infrastructure-hardening` 게이트 임시 비활성은 승인 후만 수행
+- **Eval Re-run**: `check-all-hardening.sh 04-data`, `check-template-security-baseline`, `check-doc-traceability`
 - **Trace Capture**: CI logs + compose config output
 
 ## Evidence

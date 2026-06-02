@@ -15,11 +15,11 @@ status: active
   - Airflow/n8n Traefik middleware 계약
   - Airflow/n8n dependency/healthcheck 계약
   - n8n custom image runtime hardening 계약
-  - `check-workflow-hardening.sh` 정책 게이트 계약
+  - `check-all-hardening.sh 07-workflow` 정책 게이트 계약
 - **Does Not Own**:
   - 개별 Airflow DAG 비즈니스 로직
   - n8n 워크플로 내부 비즈니스 로직
-  - Airbyte 프로덕션 배포(현 단계는 artifact 정의와 승격 기준 정리)
+  - 신규 workflow service 프로덕션 배포
 
 ## Related Inputs
 
@@ -41,7 +41,7 @@ status: active
   - n8n: Queue mode + external runner + PostgreSQL metadata backend
 - **Governance Contract**:
   - `scripts/hardening/check-all-hardening.sh 07-workflow` 통과가 workflow tier 하드닝 기본선이다.
-  - CI `workflow-hardening` job이 PR 단계에서 회귀를 차단한다.
+  - CI `infrastructure-hardening` job이 PR 단계에서 회귀를 차단한다.
 
 ## Core Design
 
@@ -109,7 +109,7 @@ bash scripts/validation/check-doc-traceability.sh
 - **VAL-WRK-001**: Airflow/n8n compose static validation 통과
 - **VAL-WRK-002**: workflow hardening baseline script 실패 0건
 - **VAL-WRK-003**: PRD~Runbook optimization-hardening 문서 링크 정합성 유지
-- **VAL-WRK-004**: 카탈로그 `07-workflow` 확장 항목(Airflow DAG quality gate, n8n backup/Vault, airbyte artifact gap)이 문서/태스크에 반영
+- **VAL-WRK-004**: 카탈로그 `07-workflow` 확장 항목(Airflow DAG quality gate, n8n backup/Vault)이 문서/태스크에 반영
 
 ## Agent Role & IO Contract (If Applicable)
 

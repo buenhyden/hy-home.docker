@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/tasks/2026-03-26-11-laboratory-tasks.md -->
 
@@ -27,7 +27,7 @@ status: active
 | T-11-LAB-002 | Update ARD with mermaid diagram | doc | §3 | PLN-002 | Mermaid render | Antigravity | Done |
 | T-11-LAB-003 | Update ADR with service stack | doc | §3 | PLN-003 | Decision logic check | Antigravity | Done |
 | T-11-LAB-004 | Update Spec with port/label details | doc | §1 | PLN-004 | Config vs Spec check | Antigravity | Done |
-| T-11-LAB-005 | Update READMEs in all docs/ folders | doc | N/A | N/A | File review | Antigravity | Todo |
+| T-11-LAB-005 | Update READMEs in all docs/ folders | doc | N/A | N/A | File review | Antigravity | Completed |
 
 ## Verification Summary
 

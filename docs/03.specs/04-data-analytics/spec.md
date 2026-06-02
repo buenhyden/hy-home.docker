@@ -11,7 +11,7 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `04-data/analytics` 티어의 시계열(InfluxDB), 스트림 처리(ksqlDB), 로그 검색(OpenSearch), OLAP 분석(StarRocks) 엔진들의 기술 설계 및 인터페이스 계약을 정의한다. 본 명세는 PRD-2026-03-26-04-data-analytics의 요구사항을 기술적으로 구체화하며, 인프라 계층과의 연동 및 데이터 처리 규약을 설명한다.
+이 문서는 `04-data/analytics` 티어의 시계열(InfluxDB), 스트림 처리(ksqlDB), 로그 검색(OpenSearch), OLAP 분석(StarRocks) 엔진들의 기술 설계 및 인터페이스 계약을 정의한다. 본 명세는 PRD-2026-03-26-04-data-analytics의 요구사항을 기술적으로 구체화하며, 인프라 계층과의 연동 및 데이터 처리 규약을 설명한다. 현재 root `docker-compose.yml`에서 analytics include는 주석 처리되어 있으므로, 이 명세는 보유 구현과 standalone/root-commented optional 실행 계약을 설명한다.
 
 ## Strategic Boundaries & Non-goals
 
@@ -27,6 +27,7 @@ status: active
 ## Contracts
 
 - **Infrastructure Contract**:
+  - Analytics compose files are present under `infra/04-data/analytics/`, but analytics includes are root-commented optional entries in the current root compose.
   - 모든 엔진은 `infra_net` 브리지 네트워크에 배치되어야 한다.
   - 영구 데이터는 `${DEFAULT_DATA_DIR}/analytics/{engine_name}` 경로에 마운트되어야 한다.
 - **Data / Interface Contract**:

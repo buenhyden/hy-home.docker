@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/tasks/2026-03-26-06-observability-tasks.md -->
 
@@ -31,7 +31,7 @@ status: active
 | T-003 | Create ADR | doc | §ADR Ref | PLN-003 | `docs/02.architecture/decisions/0006-lgtm-stack-selection.md` | AI Agent | Done |
 | T-004 | Create Spec | doc | §Spec Ref | PLN-004 | `docs/03.specs/06-observability/spec.md` | AI Agent | Done |
 | T-005 | Create Plan | doc | §Plan Ref | PLN-005 | `docs/04.execution/plans/2026-03-26-06-observability-standardization.md` | AI Agent | Done |
-| T-006 | Update READMEs| doc | All | PLN-006 | All README.md files updated | AI Agent | Todo |
+| T-006 | Update READMEs| doc | All | PLN-006 | All README.md files updated | AI Agent | Completed |
 
 ## Verification Summary
 

@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md -->
 
@@ -28,8 +28,8 @@ status: active
 | T-AI-002 | Ollama concurrency/queue 상한 환경 변수 추가 | impl | Contracts / Config | PLN-AI-002 | env contract 확인 | DevOps | Done |
 | T-AI-003 | Open WebUI stateful 템플릿 정렬 | impl | Contracts / Config | PLN-AI-003 | template 확인 | DevOps | Done |
 | T-AI-004 | exporter health-gated dependency + healthcheck 추가 | impl | Contracts / Config | PLN-AI-004 | dependency/healthcheck 확인 | DevOps | Done |
-| T-AI-005 | AI hardening script 추가/수정 | ops | Governance Contract | PLN-AI-005 | `bash scripts/hardening/check-ai-hardening.sh` | DevOps | Done |
-| T-AI-006 | CI `ai-hardening` job 추가 | ops | Governance Contract | PLN-AI-005 | workflow job 확인 | DevOps | Done |
+| T-AI-005 | AI hardening script 추가/수정 | ops | Governance Contract | PLN-AI-005 | `bash scripts/hardening/check-all-hardening.sh 08-ai` | DevOps | Done |
+| T-AI-006 | CI `infrastructure-hardening` job 추가 | ops | Governance Contract | PLN-AI-005 | workflow job 확인 | DevOps | Done |
 | T-AI-007 | scripts inventory/usage README 갱신 | doc | Related Docs | PLN-AI-005 | README 항목 반영 | Docs | Done |
 | T-AI-008 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 생성 | doc | Related Docs | PLN-AI-006 | 링크/인덱스 동기화 | Docs | Done |
 | T-AI-009 | Ollama 모델 승격 절차 정의(실험 -> 운영) | doc | Catalog-aligned Expansion | PLN-AI-007 | operations/tasks 반영 | AI Owner | Done |
@@ -71,11 +71,11 @@ status: active
 - **Test Commands**:
   - `docker compose -f infra/08-ai/ollama/docker-compose.yml config`
   - `docker compose -f infra/08-ai/open-webui/docker-compose.yml config`
-  - `bash scripts/hardening/check-ai-hardening.sh`
+  - `bash scripts/hardening/check-all-hardening.sh 08-ai`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: 로컬 검증 로그 + CI `ai-hardening` job
+- **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
 
 ## Related Documents
 

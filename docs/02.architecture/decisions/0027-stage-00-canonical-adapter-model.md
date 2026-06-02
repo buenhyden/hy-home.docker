@@ -19,16 +19,16 @@ Phase 1 진단은 Stage 00 canonical adapter model이 이미 존재하고 provid
 
 - Stage 00 under `docs/00.agent-governance/` is the only canonical source for agent policy, workflow rules, scopes, provider-neutral catalog entries, template expectations, and governance memory contract.
 - `.claude/`, `.codex/`, and `.agents/` are provider runtime adapters. They may express Stage 00 catalog entries in provider-native formats, but they must not redefine policy.
-- `.codex/agents/*.toml` is the active Codex agent adapter surface. `.codex/agents/*.md` may remain compatibility prompt context but cannot override Stage 00 or validated TOML adapter behavior.
+- `.codex/agents/*.toml` is the only active Codex agent adapter surface. `.codex/agents/*.md` prompt files are retired and must not be recreated.
 - External strategy skills must be adapted into canonical repository stage paths rather than creating active non-stage specs, plans, or task logs.
-- HADS remains advisory until a separate approved rollout changes the template contract.
+- HADS mandatory validation is bounded to non-README documents under `docs/90.references/hads/`; broad HADS conversion outside that path requires a separate approved rollout.
 - Docker hardening, QA, DevOps, and CI/CD strategy additions must distinguish hard repository validators from manual review expectations.
 
 ## Explicit Non-goals
 
 - This ADR does not define new provider model IDs or reasoning-effort values.
-- This ADR does not retire legacy compatibility prompt files.
-- This ADR does not make HADS mandatory.
+- This ADR does not recreate retired Codex Markdown prompt files.
+- This ADR does not broaden HADS mandatory validation beyond `docs/90.references/hads/`.
 - This ADR does not mutate Docker runtime, secrets, deployment state, or remote GitHub protection settings.
 - This ADR does not replace existing service/tier ARD or ADR documents.
 
@@ -41,8 +41,8 @@ Phase 1 진단은 Stage 00 canonical adapter model이 이미 존재하고 provid
   - Stage 01/02/04 traceability for agent governance becomes explicit.
 - **Trade-offs**:
   - Some provider-native capabilities must be documented as adapter mechanics instead of policy.
-  - Broad HADS or Docker hardening changes require additional approval gates.
-  - Historical Phase 2/3/4 artifacts remain as evidence and may not reflect the newest wording without targeted updates.
+  - Broad HADS or Docker hardening changes outside the current bounded gates require additional approval.
+  - Historical Phase execution artifacts that conflict with current implementation must be archived as tombstones instead of remaining active evidence.
 
 ## Alternatives
 
@@ -98,7 +98,6 @@ Phase 1 진단은 Stage 00 canonical adapter model이 이미 존재하고 provid
 
 - **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/2026-06-01-agent-governance-standardization.md)
 - **ARD**: [Agent Governance Canonical Adapter ARD](../requirements/0027-agent-governance-canonical-adapter.md)
-- **Phase 1 Plan**: [Agent Governance Phase 1 Diagnostic](../../04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md)
-- **Phase 2 Plan**: [Agent Governance Phase 2 Alignment Plan](../../04.execution/plans/2026-06-01-agent-governance-phase2-alignment.md)
-- **Task**: [Agent Governance Stage 01/02 Alignment Task](../../04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md)
+- **Current Plan**: [Agent Governance Decision Items and Attachment-Gap Plan](../../04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md)
+- **Current Task**: [Agent Governance Missing Items Implementation Task](../../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md)
 - **Related ADR**: [ADR-0026: Standardize infra_net Compose Network](./0026-standardize-infra-net.md)

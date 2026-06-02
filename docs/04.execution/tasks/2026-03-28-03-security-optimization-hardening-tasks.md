@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md -->
 
@@ -25,11 +25,11 @@ status: active
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-SEC-001 | Vault compose에 `vault-agent` healthcheck, `/vault/out` 볼륨, cap 조정 반영 | impl | 03-security/spec.md / Contracts | PLN-SEC-001 | `docker compose -f infra/03-security/vault/docker-compose.yml config` | Infra | Done |
-| T-SEC-002 | Vault Agent 템플릿 경로/키 정규화 및 placeholder 제거 | impl | 03-security/spec.md / Contracts | PLN-SEC-002 | `bash scripts/hardening/check-security-hardening.sh` | Infra | Done |
-| T-SEC-003 | `scripts/hardening/check-security-hardening.sh` 추가 | ops | 03-security/spec.md / Governance | PLN-SEC-003 | 스크립트 pass/fail 확인 | DevOps | Done |
-| T-SEC-004 | CI `security-hardening` job 추가 | ops | 03-security/spec.md / Governance | PLN-SEC-004 | workflow 정적 검토 | DevOps | Done |
+| T-SEC-002 | Vault Agent 템플릿 경로/키 정규화 및 placeholder 제거 | impl | 03-security/spec.md / Contracts | PLN-SEC-002 | `bash scripts/hardening/check-all-hardening.sh 03-security` | Infra | Done |
+| T-SEC-003 | `scripts/hardening/check-all-hardening.sh 03-security` 추가 | ops | 03-security/spec.md / Governance | PLN-SEC-003 | 스크립트 pass/fail 확인 | DevOps | Done |
+| T-SEC-004 | CI `infrastructure-hardening` job 추가 | ops | 03-security/spec.md / Governance | PLN-SEC-004 | workflow 정적 검토 | DevOps | Done |
 | T-SEC-005 | scripts README 인덱스 갱신 | doc | 03-security/spec.md / Related Docs | PLN-SEC-005 | README 항목 확인 | Docs | Done |
-| T-SEC-006 | `check-auth-hardening.sh` 최신 02-auth 계약 반영 | ops | 03-security/spec.md / Governance | PLN-SEC-006 | `bash scripts/hardening/check-auth-hardening.sh` | DevOps | Done |
+| T-SEC-006 | `check-all-hardening.sh 02-auth` 최신 02-auth 계약 반영 | ops | 03-security/spec.md / Governance | PLN-SEC-006 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | DevOps | Done |
 | T-SEC-007 | PRD/ARD/ADR/Plan/Task 생성 및 Spec/Guide/Ops/Runbook 갱신 | doc | 03-security/spec.md / Related Docs | PLN-SEC-007 | 문서 링크/인덱스 확인 | Docs | Done |
 | T-SEC-008 | README 자동 인덱스(01~09 + 03-security 하위) 반영 | doc | 03-security/spec.md / Related Docs | PLN-SEC-007 | README 반영 확인 | Docs | Done |
 | T-SEC-009 | 정적 검증 커맨드 실행 및 결과 기록 | test | 03-security/spec.md / Verification | PLN-SEC-001~007 | 5개 검증 커맨드 실행 | Infra | Done |
@@ -64,12 +64,12 @@ status: active
 
 - **Test Commands**:
   - `docker compose -f infra/03-security/vault/docker-compose.yml config`
-  - `bash scripts/hardening/check-security-hardening.sh`
+  - `bash scripts/hardening/check-all-hardening.sh 03-security`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
-  - `bash scripts/hardening/check-auth-hardening.sh`
+  - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: 로컬 실행 출력 + CI quality gates(`security-hardening`, `auth-hardening`, `template-security-baseline`, `docs-traceability`)
+- **Logs / Evidence Location**: 로컬 실행 출력 + CI quality gates(`infrastructure-hardening`, `template-security-baseline`, `docs-traceability`)
 
 ## Related Documents
 

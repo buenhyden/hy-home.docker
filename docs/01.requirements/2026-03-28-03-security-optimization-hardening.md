@@ -17,7 +17,7 @@ status: draft
 
 - Vault Agent 템플릿이 placeholder(`secret/data/example`)에 머물러 실제 운영 시크릿 경로 계약이 불명확하다.
 - `vault-agent` 헬스체크와 렌더링 출력 지속성 계약이 미비해 장애 탐지/복구 신뢰성이 낮다.
-- 03-security 하드닝을 강제하는 전용 CI 게이트가 없다.
+- 03-security 하드닝은 현재 통합 `infrastructure-hardening` CI gate와 `scripts/hardening/check-all-hardening.sh 03-security`로 강제된다.
 - 문서 레이어(01~09)가 표준화 문맥 중심이라 optimization/hardening 실행 기준과 일부 불일치한다.
 
 ## Personas
@@ -28,7 +28,7 @@ status: draft
 
 ## Key Use Cases
 
-- **STORY-01**: 운영자는 Vault/Vault Agent 변경 후 CI의 `security-hardening` 게이트 통과로 회귀 여부를 즉시 확인한다.
+- **STORY-01**: 운영자는 Vault/Vault Agent 변경 후 CI의 `infrastructure-hardening` 게이트 통과로 회귀 여부를 즉시 확인한다.
 - **STORY-02**: 개발자는 `secret/data/hy-home/...` 경로 계약에 맞춰 템플릿 렌더 결과를 서비스에 연결한다.
 - **STORY-03**: 장애 대응자는 runbook 절차로 seal/unseal, raft 상태, agent 렌더 실패를 복구한다.
 
@@ -37,24 +37,24 @@ status: draft
 - **REQ-PRD-FUN-01**: Vault Agent 템플릿은 placeholder 경로를 금지하고 서비스별 정규 경로(`secret/data/hy-home/...`)를 사용해야 한다.
 - **REQ-PRD-FUN-02**: `vault-agent`는 PID 기반 프로세스 헬스체크를 제공해야 한다.
 - **REQ-PRD-FUN-03**: Vault Agent 렌더 출력은 지속 볼륨(`/vault/out`)에 기록되어야 한다.
-- **REQ-PRD-FUN-04**: 03-security 하드닝 정적 검증 스크립트와 CI 게이트(`security-hardening`)를 제공해야 한다.
+- **REQ-PRD-FUN-04**: 03-security 하드닝 정적 검증 스크립트와 CI 게이트(`infrastructure-hardening`)를 제공해야 한다.
 - **REQ-PRD-FUN-05**: auto-unseal/원격 audit 적재는 즉시 구현 대신 정책/아키텍처/런북에 단계적 전환 절차를 명시해야 한다.
-- **REQ-PRD-FUN-06**: `scripts/hardening/check-auth-hardening.sh`를 최신 02-auth 계약으로 정합화해 기존 회귀를 복구해야 한다.
+- **REQ-PRD-FUN-06**: `scripts/hardening/check-all-hardening.sh 02-auth`를 최신 02-auth 계약으로 정합화해 기존 회귀를 복구해야 한다.
 
 ## Success Criteria
 
-- **REQ-PRD-MET-01**: `bash scripts/hardening/check-security-hardening.sh`가 로컬/CI에서 성공한다.
+- **REQ-PRD-MET-01**: `bash scripts/hardening/check-all-hardening.sh 03-security`가 로컬/CI에서 성공한다.
 - **REQ-PRD-MET-02**: `.ctmpl` 파일에서 `secret/data/example` 검출이 0건이다.
 - **REQ-PRD-MET-03**: `vault-agent` 헬스 상태를 컨테이너 healthcheck로 확인할 수 있다.
-- **REQ-PRD-MET-04**: `bash scripts/hardening/check-auth-hardening.sh`가 최신 계약 기준으로 성공한다.
+- **REQ-PRD-MET-04**: `bash scripts/hardening/check-all-hardening.sh 02-auth`가 최신 계약 기준으로 성공한다.
 - **REQ-PRD-MET-05**: 01~09 문서와 README 인덱스가 상호 링크로 동기화되어 있다.
 
 ## Scope and Non-goals
 
 - **In Scope**:
   - `infra/03-security/vault/*` 구성 하드닝
-  - `scripts/hardening/check-security-hardening.sh`, CI job 추가
-  - `scripts/hardening/check-auth-hardening.sh` 회귀 수정
+  - `scripts/hardening/check-all-hardening.sh 03-security`, CI job 추가
+  - `scripts/hardening/check-all-hardening.sh 02-auth` 회귀 수정
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 03-security 문서/인덱스 동기화
 - **Out of Scope**:
   - 즉시 auto-unseal 실구현(KMS/HSM 연동)

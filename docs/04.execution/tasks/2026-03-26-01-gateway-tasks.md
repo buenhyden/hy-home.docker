@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md -->
 
@@ -29,7 +29,7 @@ status: active
 | T-003 | Gateway ADR 생성 및 레벨 README 리팩토링 | doc | §1 | Phase 1 | `ls docs/02.architecture/decisions/` | Done |
 | T-004 | Gateway Spec 생성 및 레벨 README 리팩토링 | doc | §1 | Phase 1 | `ls docs/03.specs/01-gateway/` | Done |
 | T-005 | Gateway Plan 리팩토링 및 레벨 README 리팩토링 | doc | §1 | Phase 1 | `ls docs/04.execution/plans/` | Done |
-| T-006 | Gateway Task 문서 생성 및 레벨 README 리팩토링 | doc | §1 | Phase 1 | `ls docs/04.execution/tasks/` | In Progress |
+| T-006 | Gateway Task 문서 생성 및 레벨 README 리팩토링 | doc | §1 | Phase 1 | `ls docs/04.execution/tasks/` | Completed |
 
 ## Verification Summary
 

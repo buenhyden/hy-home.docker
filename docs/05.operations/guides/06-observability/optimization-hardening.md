@@ -47,7 +47,7 @@ status: active
    - entrypoint에서 MinIO secret 존재를 선검증한다.
 5. 자동 검증 및 CI 반영
    - `bash scripts/hardening/check-all-hardening.sh 06-observability`
-   - CI workflow에 `observability-hardening` job 반영 여부 확인
+   - CI workflow에 `infrastructure-hardening` job 반영 여부 확인
 6. 문서 추적성 동기화
    - PRD~Procedure optimization-hardening 문서 링크를 점검한다.
 

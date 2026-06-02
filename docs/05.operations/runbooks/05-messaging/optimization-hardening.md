@@ -27,7 +27,7 @@ status: active
 
 ## When to Use
 
-- `messaging-hardening` CI가 실패할 때
+- `infrastructure-hardening` CI가 실패할 때
 - Kafka/RabbitMQ 관리 UI가 Traefik 경유로 비정상 응답할 때
 - Kafka dev compose가 경로/네트워크 오류로 기동 실패할 때
 - 부동 태그 이미지 회귀가 발견될 때
@@ -65,14 +65,14 @@ status: active
 ### Verification Steps
 
 - [ ] 3개 compose `config` 검증 통과
-- [ ] `check-messaging-hardening` 실패 0건
+- [ ] `check-all-hardening.sh 05-messaging` 실패 0건
 - [ ] optimization-hardening 문서 링크와 README 인덱스 최신화 확인
 
 ### Observability and Evidence Sources
 
-- **Signals**: CI `messaging-hardening` job 상태, Traefik 라우터 상태, 컨테이너 health
+- **Signals**: CI `infrastructure-hardening` job 상태, Traefik 라우터 상태, 컨테이너 health
 - **Evidence to Capture**:
-  - 변경 전후 `check-messaging-hardening.sh` 출력
+  - 변경 전후 `check-all-hardening.sh 05-messaging` 출력
   - `docker compose config` 결과
   - 관련 compose/docs diff
 
@@ -92,7 +92,7 @@ status: active
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: 메시징 관리 자동화 작업 일시 중지(승인 필요)
-- **Eval Re-run**: `check-messaging-hardening`, `check-template-security-baseline`, `check-doc-traceability`
+- **Eval Re-run**: `check-all-hardening.sh 05-messaging`, `check-template-security-baseline`, `check-doc-traceability`
 - **Trace Capture**: CI logs + compose config output + health 상태 스냅샷
 
 ## Evidence

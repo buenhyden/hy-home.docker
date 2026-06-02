@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/tasks/2026-03-28-09-tooling-optimization-hardening-tasks.md -->
 
@@ -28,8 +28,8 @@ status: active
 | T-TLG-002 | tooling compose `infra_net` external 선언 정렬 | impl | Contracts / Config | PLN-TLG-002 | network contract 확인 | DevOps | Done |
 | T-TLG-003 | locust-worker healthcheck 추가 | impl | Runtime Stability | PLN-TLG-003 | compose healthcheck 확인 | DevOps | Done |
 | T-TLG-004 | k6 volume 참조 drift 정렬 | impl | Runtime Stability | PLN-TLG-003 | `k6-data` mount 확인 | DevOps | Done |
-| T-TLG-005 | tooling hardening script 추가 | ops | Governance Contract | PLN-TLG-004 | `bash scripts/hardening/check-tooling-hardening.sh` | DevOps | Done |
-| T-TLG-006 | CI `tooling-hardening` job 추가 | ops | Governance Contract | PLN-TLG-004 | workflow job 확인 | DevOps | Done |
+| T-TLG-005 | tooling hardening script 추가 | ops | Governance Contract | PLN-TLG-004 | `bash scripts/hardening/check-all-hardening.sh 09-tooling` | DevOps | Done |
+| T-TLG-006 | CI `infrastructure-hardening` job 추가 | ops | Governance Contract | PLN-TLG-004 | workflow job 확인 | DevOps | Done |
 | T-TLG-007 | scripts inventory/usage README 갱신 | doc | Related Docs | PLN-TLG-004 | README 항목 반영 | Docs | Done |
 | T-TLG-008 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 생성 | doc | Related Docs | PLN-TLG-005 | 링크/인덱스 동기화 | Docs | Done |
 | T-TLG-009 | terraform 승인 게이트/state 백업/drift 자동 탐지 roadmap 정의 | doc | Catalog Expansion Targets | PLN-TLG-006 | operations/tasks 반영 | Platform Owner | Done |
@@ -72,11 +72,11 @@ status: active
 
 - **Test Commands**:
   - `for f in infra/09-tooling/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done`
-  - `bash scripts/hardening/check-tooling-hardening.sh`
+  - `bash scripts/hardening/check-all-hardening.sh 09-tooling`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: 로컬 검증 로그 + CI `tooling-hardening` job
+- **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
 
 ## Related Documents
 

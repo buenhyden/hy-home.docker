@@ -19,7 +19,7 @@ status: active
   - Alloy/Grafana의 Loki/Tempo 의존성을 `service_healthy`로 상향한다.
   - cAdvisor healthcheck를 추가한다.
   - Loki/Tempo 커스텀 이미지에 non-root 실행/secret guard를 명시한다.
-  - `check-observability-hardening.sh` 및 CI `observability-hardening` job을 도입한다.
+  - `check-all-hardening.sh 06-observability` 및 CI `infrastructure-hardening` job을 도입한다.
   - PRD~Runbook 문서 세트를 생성해 양방향 추적성을 확보한다.
 - 카탈로그 확장(샘플링/장기보관/모듈화)은 정책 승인 절차에 따라 단계적으로 도입한다.
 
@@ -56,7 +56,7 @@ status: active
 
 ## Agent-related Example Decisions (If Applicable)
 
-- Tool gating: `check-observability-hardening.sh`를 PR 필수 게이트로 사용
+- Tool gating: `check-all-hardening.sh 06-observability`를 PR 필수 게이트로 사용
 - Guardrail strategy: 공개 라우터 보안 체인 필수, non-root/secret guard 필수
 
 ## Related Documents

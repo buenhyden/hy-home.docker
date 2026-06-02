@@ -55,7 +55,7 @@ status: active
 
 ## Agent-related Example Decisions (If Applicable)
 
-- Tool gating: `scripts/hardening/check-auth-hardening.sh`를 CI 필수 게이트로 사용
+- Tool gating: `scripts/hardening/check-all-hardening.sh 02-auth`를 CI 필수 게이트로 사용
 - Guardrail strategy: 시크릿 평문/우회 정책 금지
 
 ## Related Documents

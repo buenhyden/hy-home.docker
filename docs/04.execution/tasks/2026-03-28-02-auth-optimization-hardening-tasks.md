@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/tasks/2026-03-28-02-auth-optimization-hardening-tasks.md -->
 
@@ -24,12 +24,12 @@ status: active
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-AUTH-001 | OAuth2 Proxy compose 인라인 셸 제거, 엔트리포인트 기반 실행으로 전환 | impl | 02-auth/spec.md / Contracts | PLN-AUTH-001 | `bash scripts/hardening/check-auth-hardening.sh` | Infra | Done |
-| T-AUTH-002 | OAuth2 Proxy 엔트리포인트에서 cookie/client/redis secret 파일 주입 처리 | impl | 02-auth/spec.md / Core Design | PLN-AUTH-001 | `bash scripts/hardening/check-auth-hardening.sh` | Infra | Done |
-| T-AUTH-003 | OAuth2 Proxy Dockerfile non-root 사용자 생성 및 USER 적용 | impl | 02-auth/spec.md / Security | PLN-AUTH-002 | `bash scripts/hardening/check-auth-hardening.sh` | DevOps | Done |
+| T-AUTH-001 | OAuth2 Proxy compose 인라인 셸 제거, 엔트리포인트 기반 실행으로 전환 | impl | 02-auth/spec.md / Contracts | PLN-AUTH-001 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | Infra | Done |
+| T-AUTH-002 | OAuth2 Proxy 엔트리포인트에서 cookie/client/redis secret 파일 주입 처리 | impl | 02-auth/spec.md / Core Design | PLN-AUTH-001 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | Infra | Done |
+| T-AUTH-003 | OAuth2 Proxy Dockerfile non-root 사용자 생성 및 USER 적용 | impl | 02-auth/spec.md / Security | PLN-AUTH-002 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | DevOps | Done |
 | T-AUTH-004 | Keycloak compose에서 시크릿 길이 출력 제거 | impl | 02-auth/spec.md / Security | PLN-AUTH-003 | 코드 리뷰 + `docker compose config` | Infra | Done |
-| T-AUTH-005 | `scripts/hardening/check-auth-hardening.sh` 추가 | ops | 02-auth/spec.md / Verification | PLN-AUTH-004 | 스크립트 pass/fail 동작 확인 | DevOps | Done |
-| T-AUTH-006 | CI workflow에 `auth-hardening` job 추가 | ops | 02-auth/spec.md / CI | PLN-AUTH-005 | PR CI logs | DevOps | Done |
+| T-AUTH-005 | `scripts/hardening/check-all-hardening.sh 02-auth` 추가 | ops | 02-auth/spec.md / Verification | PLN-AUTH-004 | 스크립트 pass/fail 동작 확인 | DevOps | Done |
+| T-AUTH-006 | CI workflow에 `infrastructure-hardening` job 추가 | ops | 02-auth/spec.md / CI | PLN-AUTH-005 | PR CI logs | DevOps | Done |
 | T-AUTH-007 | PRD/ARD/ADR/Plan/Task 문서 생성 및 링크 연결 | doc | 02-auth/spec.md / Traceability | PLN-AUTH-006 | 상대경로 양방향 링크 확인 | Docs | Done |
 | T-AUTH-008 | 02-auth Guide/Operation/Runbook 재정비 및 README 인덱스 갱신 | doc | 02-auth/spec.md / Traceability | PLN-AUTH-006, PLN-AUTH-007 | `bash scripts/validation/check-doc-traceability.sh` | Docs | Done |
 | T-AUTH-009 | 02-auth 관련 검증 명령 실행 및 결과 기록 | test | 02-auth/spec.md / Verification | PLN-AUTH-004~005 | 실행 결과 수집 | Infra | Done |
@@ -61,14 +61,14 @@ status: active
 ## Verification Summary
 
 - **Test Commands**:
-  - `bash scripts/hardening/check-auth-hardening.sh`
+  - `bash scripts/hardening/check-all-hardening.sh 02-auth`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
   - `docker compose config`
   - `docker compose -f infra/02-auth/keycloak/docker-compose.yml config`
   - `docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: PR CI logs + local command output (`auth-hardening/template-security/doc-traceability/config`)
+- **Logs / Evidence Location**: PR CI logs + local command output (`infrastructure-hardening/template-security/doc-traceability/config`)
 
 ## Related Documents
 

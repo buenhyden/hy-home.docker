@@ -74,7 +74,7 @@ status: active
   - Phase 2: 카탈로그 확장(예: lifecycle, failover drill, backup window) 설계 반영
   - Phase 3: 서비스별 승인된 HA 확장 실행
 - **Operational Evidence**:
-  - `scripts/hardening/check-data-hardening.sh`
+  - `scripts/hardening/check-all-hardening.sh 04-data`
   - `scripts/validation/check-template-security-baseline.sh`
   - `scripts/validation/check-doc-traceability.sh`
 

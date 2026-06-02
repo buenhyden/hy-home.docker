@@ -7,13 +7,13 @@ status: completed
 
 ## Overview (KR)
 
-이 문서는 Agent Governance Phase 1 진단과 후속 Stage 01/02/04 정렬 이후 남은 결정 항목을 실행 가능한 후속 로드맵으로 정리한다.
+이 문서는 Agent Governance Stage 01/02/04 정렬 이후 남은 결정 항목과 현재 구현 불일치 정리 기준을 실행 가능한 후속 로드맵으로 정리한다.
 
-기존 completed Phase 1/2 문서는 historical baseline으로 보존한다. 이 plan은 현재 `main` 기준으로 필요한 보정, 인덱싱, 정책 경계 정리, 검증 기준을 별도 continuation plan으로 고정한다.
+현재 구현과 상충하는 과거 Phase 실행 문서는 active chain에서 제거하고 `docs/98.archive/` tombstone으로 보존한다. 이 plan은 현재 tracked repository state 기준의 보정, 인덱싱, 정책 경계 정리, 검증 기준을 continuation plan으로 고정한다.
 
 ## Context
 
-Phase 1 diagnostic은 Stage 00 canonical adapter model, provider runtime surfaces, Docker/QA/CI/CD scopes, Graphify advisory report, and `/home/hy/.local/bin` Node/npm/rtk facts를 확인했다. 이후 Stage 01/02 alignment가 추가되어 Agent Governance PRD, canonical adapter ARD, and Stage 00 canonical adapter ADR traceability gap은 닫힌 상태다.
+Earlier governance diagnostics identified the Stage 00 canonical adapter model, provider runtime surfaces, Docker/QA/CI/CD scopes, Graphify advisory boundary, and `/home/hy/.local/bin` Node/npm/rtk facts. Current active evidence is this continuation plan plus the paired missing-items implementation task.
 
 이번 plan은 남은 결정 항목을 구현 단계로 넘기기 위한 실행 설계다. 즉시 Stage 00 policy, templates, validators, Docker runtime, Codex adapter, remote GitHub state, or user-global Codex settings를 변경하지 않는다.
 
@@ -22,24 +22,24 @@ Graphify remains advisory when `report-graphify-health.sh` reports `surprising_c
 ## Goals & In-Scope
 
 - **Goals**:
-  - Preserve Phase 1/2 historical evidence while adding current-state correction paths.
+  - Archive Phase execution evidence that conflicts with current implementation while preserving traceability in the archive ledger.
   - Convert remaining decision items into sequenced, approval-gated execution work.
   - Keep Stage 00 as the canonical policy and adapter catalog source.
   - Define verification evidence required before any later implementation is considered complete.
 - **In Scope**:
   - Stage 04 plan/task index improvements.
   - Stage 00 drift-checking and provider adapter parity planning.
-  - Skill lifecycle, HADS pilot, Docker hardening boundary, QA/CI/CD matrix, and Node toolchain automation planning.
+  - Skill lifecycle, bounded HADS reference profile, Docker hardening boundary, QA/CI/CD matrix, and Node toolchain automation planning.
   - Documentation-only updates to plan and index surfaces.
   - Attachment gap coverage for clarification duty, concept inventory, template deviation audit, Codex harness alignment, model policy, and evidence closure.
 
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - Do not rewrite completed Phase 1/2/3/4 historical artifacts as incidental cleanup.
-  - Do not make HADS mandatory.
+  - Do not preserve completed Phase 1/2/3/4 historical artifacts in the active chain when they conflict with current implementation.
+  - Do not broaden HADS mandatory validation beyond `docs/90.references/hads/`.
   - Do not promote new Docker hard validators without a separate approval gate.
-  - Do not retire `.codex/agents/*.md` compatibility prompt files.
+  - Do not recreate `.codex/agents/*.md` compatibility prompt files.
 - **Out of Scope**:
   - Stage 00 architecture replacement, template source rewrites, validator edits, and Codex TOML adapter edits that are not backed by existing policy and validator evidence.
   - Docker service start/stop/recreate, image rebuilds, migrations, deployment, or live network changes.
@@ -64,11 +64,11 @@ The attached decision scope is treated as an input contract for the continuation
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-DI-001 | Preserve the completed Phase 1 historical baseline and add a current-state correction path instead of editing old evidence. | Future Stage 04 addendum or task evidence, `docs/04.execution/plans/README.md` | REQ-AGG-MET-01 | New work links to Phase 1 diagnostic, Phase 2 alignment plan, PRD, ARD, and ADR without rewriting completed evidence. |
+| PLN-DI-001 | Archive completed Phase execution artifacts whose body conflicts with current implementation and keep only current replacement evidence active. | `docs/98.archive/`, `docs/04.execution/plans/README.md`, `docs/04.execution/tasks/README.md` | REQ-AGG-MET-01 | Active indexes point to current plan/task; archive README ledger records moved artifacts. |
 | PLN-DI-002 | Keep the Stage 00 canonical adapter model; plan drift-check hardening rather than architecture replacement. | `docs/00.agent-governance/providers/agents-md.md`, `subagent-protocol.md`, `scripts/operations/sync-provider-surfaces.sh`, `scripts/validation/check-repo-contracts.sh` | REQ-AGG-FUN-01, REQ-AGG-FUN-02 | Provider sync reports no drift and any new adapter rule maps back to Stage 00. |
 | PLN-DI-003 | Define the skill lifecycle as discovery -> applicability -> provider loading -> canonical artifact -> validation evidence. | `docs/00.agent-governance/rules/workflows.md`, `rules/task-checklists.md`, provider notes, skill adapter docs | REQ-AGG-FUN-04 | Skill guidance distinguishes workspace functions, provider adapters, and external strategy skills without creating a second governance layer. |
-| PLN-DI-004 | Add a curated Stage 04 execution evidence index or summary for governance/audit plans. | `docs/04.execution/plans/README.md`, `docs/04.execution/tasks/README.md`, optional future Stage 04 summary | REQ-AGG-NFR-05 | Historical artifacts remain linked, and readers can find current canonical governance evidence without broad rewrites. |
-| PLN-DI-005 | Keep HADS advisory by default and design only an optional `docs/90.references` pilot unless separately approved. | `docs/90.references/`, `docs/00.agent-governance/rules/documentation-protocol.md`, `docs/99.templates/README.md` | REQ-AGG-FUN-05 | No active template or stage document requires HADS block tags unless a future approved rollout changes the contract. |
+| PLN-DI-004 | Add a curated Stage 04 execution evidence index for current governance/audit plans and remove archived-file direct links from active indexes. | `docs/04.execution/plans/README.md`, `docs/04.execution/tasks/README.md`, `docs/98.archive/README.md` | REQ-AGG-NFR-05 | Active indexes point to current canonical governance evidence; archived artifacts are tracked only by the archive ledger. |
+| PLN-DI-005 | Keep HADS mandatory validation bounded to non-README reference documents under `docs/90.references/hads/`. | `docs/90.references/hads/`, `docs/00.agent-governance/rules/documentation-protocol.md`, `docs/99.templates/README.md` | REQ-AGG-FUN-05 | No active template or stage document outside the bounded HADS reference profile requires HADS block tags. |
 | PLN-DI-006 | Split Docker hardening expectations into hard validators and manual review boundaries. | `docs/00.agent-governance/scopes/infra.md`, `scopes/security.md`, `scripts/hardening/`, `scripts/validation/` | REQ-AGG-FUN-06 | New checks fail only on repo-proven rules; service-specific or compatibility-sensitive guidance remains manual review. |
 | PLN-DI-007 | Define a QA/CI/CD matrix by change type: local check, CI-only gate, skipped-check rationale, and required evidence. | `docs/00.agent-governance/scopes/qa.md`, `rules/github-governance.md`, `scripts/README.md`, task evidence conventions | REQ-AGG-FUN-07 | Docs-only, policy-only, behavior, runtime, and CI changes each map to the smallest meaningful verification set. |
 | PLN-DI-008 | Standardize Node/npm/rtk automation assumptions around explicit PATH handling or the QA/CI tooling shim. | `scripts/operations/use-qa-ci-tools.sh`, `scripts/README.md`, future automation docs | REQ-AGG-FUN-08 | Non-interactive shell examples use `/home/hy/.local/bin` explicitly or source the tooling shim before Node-based commands. |
@@ -76,7 +76,7 @@ The attached decision scope is treated as an input contract for the continuation
 | PLN-DI-010 | Add a current-to-desired governance coverage matrix for Agent, Skill, Rule, Hook, Sub-agent, Output Style, Workflow, Memory, QA/CI/CD, Model Policy, and Template Contract. | `docs/00.agent-governance/README.md` | REQ-AGG-FUN-01 | Matrix keeps Stage 00 as SSoT and identifies desired enforcement/evidence for each concept. |
 | PLN-DI-011 | Define template deviation audit and exception criteria for `docs/01`-`docs/05`, `docs/90`, and `docs/99`. | `rules/documentation-protocol.md`, `rules/stage-authoring-matrix.md`, `docs/99.templates/README.md` | REQ-AGG-FUN-05 | Deviations require file, expected template, reason, approval/evidence owner, and validation evidence in task records. |
 | PLN-DI-012 | Standardize Skill / `SKILL.md` lifecycle wording: discovery -> applicability -> provider loading -> canonical artifact -> validation evidence. | `rules/workflows.md`, `agents/README.md`, `.codex/README.md`, provider notes | REQ-AGG-FUN-04 | Function catalog and provider skill surfaces use the same lifecycle terms without making provider skill files the governance source. |
-| PLN-DI-013 | Align Codex harness surfaces while keeping `.codex/agents/*.md` as compatibility prompts and `.codex/agents/*.toml` as validated adapter definitions. | `AGENTS.md`, `.codex/README.md`, `providers/codex.md` | REQ-AGG-FUN-02 | Harness docs state Stage 00 wins over provider Markdown and TOML must pass model/reasoning validator policy. |
+| PLN-DI-013 | Align Codex harness surfaces around `.codex/agents/*.toml` as the sole active Codex adapter surface and keep `.codex/agents/*.md` retired. | `AGENTS.md`, `.codex/README.md`, `providers/codex.md`, `scripts/validation/check-repo-contracts.sh` | REQ-AGG-FUN-02 | Harness docs state Stage 00 wins and repo contracts fail if Codex Markdown prompt adapters reappear. |
 | PLN-DI-014 | Preserve Model Policy and `model_reasoning_effort` uncertainty gates. | `providers/codex.md`, `rules/task-checklists.md`, `subagent-protocol.md` | REQ-AGG-NFR-02 | No model/reasoning changes occur unless Stage 00 policy, sync script, and validator encode the same permitted value. |
 | PLN-DI-015 | Add QA/CI/CD command, hook, script, CI-only, and skipped-check rationale matrix by change type. | `scopes/qa.md`, `rules/github-governance.md`, task evidence conventions | REQ-AGG-FUN-07 | Change types map to local checks, CI-only gates, hook/script evidence, and explicit skip rationale. |
 | PLN-DI-016 | Close PLAN/TASK/progress evidence traceability for this continuation. | `docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md`, plan/task READMEs, `memory/progress.md`, LLM Wiki index | REQ-AGG-NFR-05 | Task evidence, indexes, progress log, and LLM Wiki index are updated and validated. |
@@ -101,13 +101,13 @@ The attached decision scope is treated as an input contract for the continuation
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| Historical Phase 1/2 evidence is overwritten while trying to update current facts. | High | Add continuation/addendum artifacts and indexes; do not rewrite completed artifacts unless explicitly approved. |
+| Historical Phase evidence keeps conflicting current-truth claims in active docs. | High | Move whole conflicting artifacts to `docs/98.archive/` tombstones and track them only in the archive ledger. |
 | Stage 00 adapter architecture is redesigned unnecessarily. | High | Preserve ADR-0027 and focus only on drift-check clarity and validation coverage. |
-| HADS rollout creates broad document churn. | High | Keep HADS advisory; use `docs/90.references` pilot only after separate approval. |
+| HADS rollout creates broad document churn. | High | Keep mandatory HADS validation bounded to `docs/90.references/hads/`; require separate approval for broad rollout. |
 | Docker hardening guidance breaks existing services if converted directly into hard validators. | High | Promote only repo-proven, low-risk checks; leave compatibility-sensitive items as manual review boundaries. |
 | QA/CI/CD rules become too heavy for docs-only or policy-only changes. | Medium | Define change-type-specific verification and require skipped-check rationale. |
 | Node automation works interactively but fails in agent shells. | Medium | Use explicit `/home/hy/.local/bin` PATH handling or `scripts/operations/use-qa-ci-tools.sh`. |
-| Codex harness alignment accidentally retires compatibility Markdown prompts. | Medium | Keep `.codex/agents/*.md` as compatibility prompt context until a separate approved retirement plan exists. |
+| Codex harness alignment accidentally recreates retired Markdown prompts. | Medium | Keep `.codex/agents/*.md` disallowed by provider docs and repo contracts. |
 | Model alias or reasoning-effort values drift ahead of validators. | High | Treat model/reasoning changes as blocked unless Stage 00 policy, sync script, and validators all encode the same value. |
 | Template deviation cleanup causes broad historical churn. | Medium | Record deviations and exceptions in task evidence; do not rewrite already-valid historical artifacts. |
 
@@ -115,7 +115,7 @@ The attached decision scope is treated as an input contract for the continuation
 
 - **Offline Eval Gate**: Future implementation must pass repo contracts, doc traceability, provider sync, LLM Wiki freshness, diff hygiene, and Graphify health reporting.
 - **Sandbox / Canary Rollout**: N/A for this plan. Runtime Docker canary is required only if a later approved implementation changes Compose behavior or live services.
-- **Human Approval Gate**: Required before HADS mandatory rollout, Docker hard-validator promotion, Codex Markdown prompt retirement, Stage 00 policy changes, validator changes, runtime changes, deployment changes, or remote GitHub protection changes.
+- **Human Approval Gate**: Required before broad HADS rollout outside `docs/90.references/hads/`, new Docker/runtime mutation, deployment changes, or remote GitHub protection changes.
 - **Rollback Trigger**: Revert the follow-up implementation if it creates duplicate governance, weakens Stage 00 authority, introduces unapproved hard gates, or breaks provider parity.
 - **Prompt / Model Promotion Criteria**: No model, model alias, or reasoning-effort value changes are part of this plan.
 
@@ -135,7 +135,7 @@ original non-goal boundary only for repo-tracked, validator-backed changes.
 
 ## Completion Criteria
 
-- [x] Phase 1/2 historical evidence remains preserved.
+- [x] Conflicting Phase execution evidence is removed from the active chain and tracked through archive tombstones.
 - [x] Current-state correction path is documented through continuation artifacts.
 - [x] Stage 00 adapter model remains canonical and drift checks are not weakened.
 - [x] Skill lifecycle, HADS, Docker hardening, QA/CI/CD, and Node automation decisions are mapped to concrete follow-up tasks.
@@ -149,9 +149,6 @@ original non-goal boundary only for repo-tracked, validator-backed changes.
 - **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/2026-06-01-agent-governance-standardization.md)
 - **ARD**: [Agent Governance Canonical Adapter ARD](../../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
 - **ADR**: [ADR-0027: Stage 00 Canonical Adapter Model](../../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
-- **Phase 1 Diagnostic**: [Agent Governance Phase 1 Diagnostic](./2026-06-01-agent-governance-phase1-diagnostic.md)
-- **Phase 2 Alignment Plan**: [Agent Governance Phase 2 Alignment Plan](./2026-06-01-agent-governance-phase2-alignment.md)
-- **Phase 3 Strategy Task**: [Agent Governance Phase 3 Strategy Integration Task](../tasks/2026-06-01-agent-governance-phase3-strategy-integration.md)
 - **Missing Items Implementation Task**: [Agent Governance Missing Items Implementation Task](../tasks/2026-06-02-agent-governance-missing-items-implementation.md)
 - **Stage 00 Governance Hub**: [AI Agent Governance Hub](../../00.agent-governance/README.md)
 - **Stage Authoring Matrix**: [Stage Authoring Matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)

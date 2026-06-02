@@ -10,7 +10,7 @@ status: active
 
 ## Context
 
-Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 race condition/image drift가 누적되면 장애 전파 가능성이 높다. 동시에 카탈로그는 Airflow/n8n/airbyte 확장 항목을 요구하고 있어, 단기 안정화와 중기 확장을 분리한 의사결정이 필요하다.
+Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 race condition/image drift가 누적되면 장애 전파 가능성이 높다. 동시에 카탈로그는 Airflow/n8n 확장 항목을 요구하고 있어, 단기 안정화와 중기 확장을 분리한 의사결정이 필요하다.
 
 ## Decision
 
@@ -19,16 +19,15 @@ Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 rac
   - Airflow 핵심 서비스에 Valkey health 기반 의존성을 부여한다.
   - n8n worker/task-runner healthcheck와 dependency gating을 추가한다.
   - n8n custom image를 compose 기본 이미지로 승격하고 non-root + secret guard를 강제한다.
-  - `scripts/hardening/check-workflow-hardening.sh`와 CI `workflow-hardening` job을 도입한다.
+  - `scripts/hardening/check-all-hardening.sh 07-workflow`와 CI `infrastructure-hardening` job을 도입한다.
 - 카탈로그 확장은 단계적으로 시행한다.
   - Airflow DAG quality gate/worker autoscale 기준 문서화 및 점진 도입
   - n8n workflow Git backup/Vault credential 연계 표준화
-  - airbyte infra artifact gap은 별도 backlog로 추적
 
 ## Explicit Non-goals
 
 - 즉시 multi-cluster workflow 아키텍처 전환
-- Airbyte full production rollout 동시 추진
+- 신규 workflow service full production rollout 동시 추진
 - 개별 DAG/workflow 비즈니스 로직 리팩터링
 
 ## Consequences

@@ -9,7 +9,7 @@ Boundaries and permissions for agents interacting with repository documentation.
 ## 1. Context and Objective
 
 - Agentic hub: `docs/00.agent-governance/` (primary authority for agents).
-- Project docs: `docs/01.requirements/` to `docs/05.operations/incidents/`, plus `docs/90.references/` and `docs/99.templates/`.
+- Project docs: `docs/01.requirements/` to `docs/05.operations/incidents/`, plus `docs/90.references/`, `docs/98.archive/`, and `docs/99.templates/`.
 - Root instructions: `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`.
 
 ## 2. Operational Permissions
@@ -29,7 +29,8 @@ Boundaries and permissions for agents interacting with repository documentation.
 - Taxonomy compliance: follow stage mapping in `rules/stage-authoring-matrix.md`.
 - Template-first compliance: before creating or modifying target-stage docs
   under `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`,
-  `docs/04.execution/`, `docs/05.operations/`, or `docs/90.references/`,
+  `docs/04.execution/`, `docs/05.operations/`, `docs/90.references/`,
+  or `docs/98.archive/`,
   load the mapped template from `docs/99.templates/` and keep its required
   contract.
 - Active stage artifacts must live only in canonical stage paths; non-stage `docs/*` paths are not valid targets for active specs, plans, or tasks.
@@ -48,12 +49,17 @@ If legacy active-stage content is found in a non-stage `docs/*` path:
 2. Remove the legacy file after README and link synchronization.
 3. Do not leave redirect-style active artifacts in non-stage locations.
 
+If a whole active document conflicts with current implementation, move it to a
+`docs/98.archive/<original-stage>/...` tombstone, remove active references, and
+record the migration in the archive README.
+
 ## 5. File Ownership SSOT
 
 | Path Pattern                          | Owner Agent  | Read-Only For                           |
 | ------------------------------------- | ------------ | --------------------------------------- |
 | `docs/00.agent-governance/`           | `doc-writer`   | governance rules — all agents read      |
 | `docs/90.references/llm-wiki/`        | `wiki-curator` | `doc-writer` (style and template review) |
+| `docs/98.archive/`                    | `doc-writer`   | all other agents                         |
 | `docs/99.templates/`                  | `doc-writer`   | all — template edits need user approval |
 | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md` | `doc-writer`   | all other agents                        |
 | `docs/05.operations/`                 | `doc-writer`   | all other agents                        |

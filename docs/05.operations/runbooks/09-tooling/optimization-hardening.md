@@ -25,7 +25,7 @@ status: active
 
 ## When to Use
 
-- `tooling-hardening` CI가 실패할 때
+- `infrastructure-hardening` CI가 실패할 때
 - SonarQube/Terrakube/Syncthing 접근 정책이 비정상일 때
 - locust worker 실행 불안정/재시작 루프가 발생할 때
 - k6 테스트 런타임 데이터 경로 이상이 발생할 때
@@ -66,7 +66,7 @@ status: active
 
 ### Observability and Evidence Sources
 
-- **Signals**: CI `tooling-hardening`, service health, ingress access logs, tool execution logs
+- **Signals**: CI `infrastructure-hardening`, service health, ingress access logs, tool execution logs
 - **Evidence to Capture**:
   - 변경 전후 hardening check 결과
   - compose config 결과
@@ -87,7 +87,7 @@ status: active
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: tooling 자동 변경 파이프라인 일시 중지(승인 필요)
 - **Eval Re-run**:
-  - `check-tooling-hardening`
+  - `check-all-hardening.sh 09-tooling`
   - `check-template-security-baseline`
   - `check-doc-traceability`
 - **Trace Capture**: CI logs + compose config + service health 상태

@@ -7,7 +7,7 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `10-communication` 계층의 기술 사양을 정의한다. SMTP 트래핑 아키텍처, 메일 서버 구성 요소, 데이터 지속성 프로토콜 및 보안 통제 사항을 포함한다.
+이 문서는 `10-communication` 계층의 기술 사양을 정의한다. SMTP 트래핑 아키텍처, 메일 서버 구성 요소, 데이터 지속성 프로토콜 및 보안 통제 사항을 포함한다. 현재 root `docker-compose.yml`에서 `infra/10-communication/mail/docker-compose.yml`은 주석 처리된 optional include이므로, 이 명세는 보유 구현과 standalone/root-commented optional 실행 계약을 설명한다.
 
 ## Strategic Boundaries & Non-goals
 
@@ -29,6 +29,7 @@ status: active
 ## Contracts
 
 - **Config Contract**:
+  - Communication mail compose exists under `infra/10-communication/mail/`, but it is not root-active in the current root compose.
   - MailHog receives development SMTP traffic on internal port `1025` and exposes its web UI on internal port `8025`.
   - Stalwart exposes SMTP/Submit on `25`, `465`, `587`, IMAPS on `993`, and JMAP/Admin UI on `8080`.
   - `DEFAULT_MAIL_DOMAIN` defines the default system mail domain.
@@ -164,7 +165,7 @@ openssl s_client -starttls smtp -connect mail.${DEFAULT_URL}:587
 ## Success Criteria & Verification Plan
 
 - **VAL-SPC-COMM-001**: MailHog receives development SMTP traffic and does not relay externally.
-- **VAL-SPC-COMM-002**: Stalwart exposes TLS-protected SMTP/IMAP endpoints with secret-backed administration.
+- **VAL-SPC-COMM-002**: Stalwart TLS-protected SMTP/IMAP endpoints are validated only after the optional mail compose is promoted and DNS, TLS, and secret evidence are present.
 - **VAL-SPC-COMM-003**: SPF, DKIM, and DMARC requirements are reflected in operations policy.
 - **VAL-SPC-COMM-004**: Guide, policy, and runbook links point to canonical `docs/05.operations` buckets.
 

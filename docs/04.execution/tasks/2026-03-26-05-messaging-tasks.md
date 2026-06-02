@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/tasks/2026-03-26-05-messaging-tasks.md -->
 
@@ -29,7 +29,7 @@ status: active
 | T-003 | ADR-0005 채택 및 문서 생성 | doc | Core Design | Phase 1 | 결정 배경 타당성 | Antigravity | Done |
 | T-004 | Spec 문서 생성 (Technical 명세) | doc | All sections | Phase 2 | 기술 설정 일치 확인 | Antigravity | Done |
 | T-005 | Plan 문서 생성 (실행 계획) | doc | All sections | Phase 2 | 마일스톤 적절성 | Antigravity | Done |
-| T-006 | README 통합 리팩토링 (Layer & Service) | doc | Governance | Phase 3 | 템플릿 준수도 | Antigravity | Todo |
+| T-006 | README 통합 리팩토링 (Layer & Service) | doc | Governance | Phase 3 | 템플릿 준수도 | Antigravity | Completed |
 
 ## Verification Summary
 

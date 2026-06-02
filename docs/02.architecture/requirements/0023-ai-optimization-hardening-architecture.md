@@ -43,7 +43,7 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
 - **Reliability**: health-gated dependency/healthcheck로 기동 안정성과 관측 신뢰도를 강화한다.
 - **Scalability**: 모델 승격/리소스 정책 기반으로 단계적 확장을 가능하게 한다.
 - **Observability**: exporter metrics health 계약과 CI 하드닝 게이트를 표준화한다.
-- **Operability**: `check-ai-hardening.sh`를 AI tier 운영 기준선으로 사용한다.
+- **Operability**: `check-all-hardening.sh 08-ai`를 AI tier 운영 기준선으로 사용한다.
 
 ## System Overview & Context
 
@@ -73,8 +73,8 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
   - Open WebUI (stateful) + ollama/qdrant dependency
 - **Operational Evidence**:
   - `docker compose config` checks
-  - `scripts/hardening/check-ai-hardening.sh`
-  - CI `ai-hardening` job
+  - `scripts/hardening/check-all-hardening.sh 08-ai`
+  - CI `infrastructure-hardening` job
 
 ## Catalog-aligned Expansion Targets
 

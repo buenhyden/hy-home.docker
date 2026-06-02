@@ -28,7 +28,7 @@ status: draft
 
 ## Key Use Cases
 
-- **STORY-01**: 운영자는 04-data compose 변경 후 `data-hardening` 게이트 통과 여부로 배포 가능성을 판단한다.
+- **STORY-01**: 운영자는 04-data compose 변경 후 `infrastructure-hardening` 게이트 통과 여부로 배포 가능성을 판단한다.
 - **STORY-02**: 엔지니어는 `supabase` 스택의 healthcheck 기반 의존 순서가 안정적으로 동작하는지 점검한다.
 - **STORY-03**: 장애 대응자는 runbook 절차로 Valkey exporter, SeaweedFS expose, Supabase health 문제를 빠르게 복구한다.
 
@@ -38,12 +38,12 @@ status: draft
 - **REQ-PRD-DATA-FUN-02**: `valkey-cluster-exporter`는 `service_valkey_password` 시크릿 계약을 사용해야 한다.
 - **REQ-PRD-DATA-FUN-03**: `seaweedfs` compose의 malformed expose 토큰(`]`)을 제거해야 한다.
 - **REQ-PRD-DATA-FUN-04**: `ksql`의 tier 라벨은 `data`로 정규화해야 한다.
-- **REQ-PRD-DATA-FUN-05**: 04-data 하드닝 검증 스크립트(`scripts/hardening/check-data-hardening.sh`)와 CI job(`data-hardening`)을 제공해야 한다.
+- **REQ-PRD-DATA-FUN-05**: 04-data 하드닝 검증 스크립트(`scripts/hardening/check-all-hardening.sh 04-data`)와 CI job(`infrastructure-hardening`)을 제공해야 한다.
 - **REQ-PRD-DATA-FUN-06**: 01~09 문서 계층에서 04-data 최적화/하드닝 기준, 정책, 절차를 상호 링크로 동기화해야 한다.
 
 ## Success Criteria
 
-- **REQ-PRD-DATA-MET-01**: `bash scripts/hardening/check-data-hardening.sh`가 실패 0건으로 통과한다.
+- **REQ-PRD-DATA-MET-01**: `bash scripts/hardening/check-all-hardening.sh 04-data`가 실패 0건으로 통과한다.
 - **REQ-PRD-DATA-MET-02**: `docker compose -f infra/04-data/operational/supabase/docker-compose.yml config`가 오류 없이 통과한다.
 - **REQ-PRD-DATA-MET-03**: `valkey-cluster` exporter 시크릿 경로가 단일 계약으로 정합화된다.
 - **REQ-PRD-DATA-MET-04**: 04-data Spec/Plan/Tasks/Guide/Ops/Runbook 문서가 상호 추적 링크를 포함한다.
@@ -76,7 +76,7 @@ status: draft
 - **Allowed Actions**: 04-data compose/script/docs/ci 수정 및 정적 검증 실행.
 - **Disallowed Actions**: 무검증 포트 노출 확대, 시크릿 하드코딩, 카탈로그 미근거 구조 변경.
 - **Human-in-the-loop Requirement**: HA 확장, 보존 정책 변경, 운영 노출 정책 변경은 승인 후 수행.
-- **Evaluation Expectation**: `data-hardening`, `template-security-baseline`, `doc-traceability` 통과.
+- **Evaluation Expectation**: `infrastructure-hardening`, `template-security-baseline`, `doc-traceability` 통과.
 
 ## Related Documents
 

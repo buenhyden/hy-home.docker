@@ -31,7 +31,7 @@ title: 'Product Requirements Scope'
 
 ## 5. Maintenance & Safety
 
-- **Archive**: Move deprecated product ideas to an `archive/` subfolder within `01.requirements/`.
+- **Archive**: Move deprecated or implementation-conflicting product documents to `docs/98.archive/01.requirements/` tombstones after active references are removed.
 - **Glossary**: Maintain a ubiquitous language glossary in project documentation under `docs/90.references/`.
 
 ## Related Documents

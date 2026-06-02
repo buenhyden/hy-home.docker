@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/04.execution/plans/2026-05-31-claude-harness-governance-verification.md -->
@@ -85,4 +85,4 @@ clarification duty, 15개 에이전트 모델 별칭(`opus`/`sonnet`)이 모두 
 - **Documentation Protocol**: [documentation-protocol.md](../../00.agent-governance/rules/documentation-protocol.md)
 - **Gemini Model Tier Review (memory)**: [2026-05-31-gemini-model-tier-review.md](../../00.agent-governance/memory/2026-05-31-gemini-model-tier-review.md)
 - **Task**: [2026-05-31-claude-harness-governance-verification.md](../tasks/2026-05-31-claude-harness-governance-verification.md)
-- **Prior Plan**: [2026-05-30-standardizing-agent-governance.md](./2026-05-30-standardizing-agent-governance.md)
+- **Current Governance Plan**: [Agent Governance Decision Items and Attachment-Gap Plan](./2026-06-02-agent-governance-decision-items-plan.md)

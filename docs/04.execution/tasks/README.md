@@ -65,14 +65,7 @@ docs/04.execution/tasks/
 ├── 2026-05-25-home-docker-workspace-audit-improvement.md # Completed home docker workspace audit improvement task record
 ├── 2026-05-25-home-docker-revalidation-deferred-follow-up.md # Completed home docker revalidation deferred follow-up task record
 ├── 2026-05-25-large-scale-authored-ssot-review.md # Completed large-scale authored SSoT review task record
-├── 2026-05-30-standardizing-agent-governance.md # Completed Stage 00 and Codex harness governance alignment task record
 ├── 2026-05-31-claude-harness-governance-verification.md # Completed Claude harness governance verification task record
-├── 2026-06-01-agent-governance-phase1-diagnostic.md # Completed Phase 1 diagnostic task record
-├── 2026-06-01-agent-governance-stage01-02-alignment.md # Completed Stage 01/02 governance alignment task record
-├── 2026-06-01-agent-governance-phase3-implementation.md # Completed Phase 3 adapter normalization task record
-├── 2026-06-01-agent-governance-phase3-stage01-02-continuation.md # Completed Phase 3 Stage 01/02 traceability continuation
-├── 2026-06-01-agent-governance-phase3-strategy-integration.md # Completed Phase 3 strategy integration task record
-├── 2026-06-01-agent-governance-phase4-closure.md # Completed Phase 4 closure task record
 ├── 2026-06-02-agent-governance-missing-items-implementation.md # Completed decision-item attachment-gap implementation task record
 └── README.md                                # This file
 ```
@@ -96,7 +89,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 | Verification Summary | 실행한 명령, 결과, 수동 확인, 실패 또는 skip 사유     |
 | Deviation Notes      | 계획과 달라진 점, 최종 판단 근거, follow-up 필요 여부 |
 
-완료된 historical task는 의미 보존을 우선합니다. 새 task 또는 현재 task를 갱신할 때만 최신 template 구조를 적용합니다.
+완료된 historical task는 의미 보존을 우선합니다. 다만 현재 구현과 상충하는 historical task는 active index에서 제거하고 `docs/98.archive/` tombstone ledger로 이동합니다.
 
 ## Documentation Standards
 
@@ -104,7 +97,7 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성한다.
 - 상위 문서와 하위 산출물 간 추적성을 유지한다.
 - Related Documents는 실제 Markdown 링크로 작성한다.
-- Historical task evidence는 의미 보존을 우선한다.
+- Historical task evidence는 의미 보존을 우선하되, 현재 구현과 상충하면 archive tombstone으로 이동한다.
 
 ## AI Agent Guidance
 
@@ -144,12 +137,5 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Spec Execution Implementation Audit Task**: [2026-05-22-spec-execution-implementation-audit.md](./2026-05-22-spec-execution-implementation-audit.md)
 - **Data Analytics Execution Traceability Task**: [2026-05-22-data-analytics-execution-traceability.md](./2026-05-22-data-analytics-execution-traceability.md)
 - **Workspace Doc & Governance Consistency (2026-05b) Task**: [2026-05-29-workspace-consistency-2026-05b.md](./2026-05-29-workspace-consistency-2026-05b.md)
-- **Stage 00 and Codex Harness Governance Alignment Task**: [2026-05-30-standardizing-agent-governance.md](./2026-05-30-standardizing-agent-governance.md)
 - **Claude Harness Governance Verification Task**: [2026-05-31-claude-harness-governance-verification.md](./2026-05-31-claude-harness-governance-verification.md)
-- **Agent Governance Phase 1 Diagnostic Task**: [2026-06-01-agent-governance-phase1-diagnostic.md](./2026-06-01-agent-governance-phase1-diagnostic.md)
-- **Agent Governance Stage 01/02 Alignment Task**: [2026-06-01-agent-governance-stage01-02-alignment.md](./2026-06-01-agent-governance-stage01-02-alignment.md)
-- **Agent Governance Phase 3 Implementation Task**: [2026-06-01-agent-governance-phase3-implementation.md](./2026-06-01-agent-governance-phase3-implementation.md)
-- **Agent Governance Phase 3 Stage 01/02 Continuation Task**: [2026-06-01-agent-governance-phase3-stage01-02-continuation.md](./2026-06-01-agent-governance-phase3-stage01-02-continuation.md)
-- **Agent Governance Phase 3 Strategy Integration Task**: [2026-06-01-agent-governance-phase3-strategy-integration.md](./2026-06-01-agent-governance-phase3-strategy-integration.md)
-- **Agent Governance Phase 4 Closure Task**: [2026-06-01-agent-governance-phase4-closure.md](./2026-06-01-agent-governance-phase4-closure.md)
 - **Agent Governance Missing Items Implementation Task**: [2026-06-02-agent-governance-missing-items-implementation.md](./2026-06-02-agent-governance-missing-items-implementation.md)

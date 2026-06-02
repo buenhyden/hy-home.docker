@@ -55,7 +55,7 @@ status: active
 ## AI Agent Policy Section (If Applicable)
 
 - **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: gateway-hardening 스크립트 실패 0건
+- **Eval / Guardrail Threshold**: check-all-hardening.sh 01-gateway 실패 0건
 - **Log / Trace Retention**: gateway access/error 로그는 observability 정책 준수
 - **Safety Incident Thresholds**: 인증 루프, 대량 429, dashboard 접근 장애 발생 시 즉시 런북 절차 수행
 

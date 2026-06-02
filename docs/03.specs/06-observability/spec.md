@@ -32,7 +32,7 @@ status: active
   - 수집/저장/조회 트래픽은 `infra_net` 내부 경계를 기본으로 유지한다.
   - 관리 경로 외부 접근은 Traefik `websecure` 진입점에서 통제한다.
 - **Governance Contract**:
-  - `scripts/hardening/check-all-hardening.sh 06-observability`를 CI `observability-hardening` job으로 강제한다.
+  - `scripts/hardening/check-all-hardening.sh 06-observability`를 CI `infrastructure-hardening` job으로 강제한다.
   - 문서 계층(01~09)은 optimization-hardening 문서 세트로 상호 링크를 유지한다.
 
 ## Core Design
@@ -122,7 +122,7 @@ docker inspect --format '{{json .State.Health}}' cadvisor
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-OBS-001**: `check-observability-hardening` 실패 0건
+- **VAL-SPC-OBS-001**: `check-all-hardening.sh 06-observability` 실패 0건
 - **VAL-SPC-OBS-002**: observability compose 정적 검증 통과
 - **VAL-SPC-OBS-003**: 공개 라우터 middleware 체인 계약 충족
 - **VAL-SPC-OBS-004**: 01~09 optimization-hardening 문서 상호 링크 동기화

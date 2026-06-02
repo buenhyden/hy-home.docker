@@ -67,8 +67,8 @@ status: active
 - **Deployment Model**:
   - single-node observability core + optional horizontal expansion
 - **Operational Evidence**:
-  - `scripts/hardening/check-observability-hardening.sh`
-  - CI `observability-hardening` job
+  - `scripts/hardening/check-all-hardening.sh 06-observability`
+  - CI `infrastructure-hardening` job
 
 ## Catalog-aligned Expansion Targets
 

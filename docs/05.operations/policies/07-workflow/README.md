@@ -35,7 +35,6 @@
 
 ```text
 policies/07-workflow/
-├── airbyte.md
 ├── airflow.md
 ├── dag-deployment.md
 ├── n8n.md
@@ -52,7 +51,6 @@ policies/07-workflow/
 
 | Path | Purpose |
 | --- | --- |
-| [airbyte.md](./airbyte.md) | Airbyte policy 문서 |
 | [airflow.md](./airflow.md) | Airflow policy 문서 |
 | [dag-deployment.md](./dag-deployment.md) | DAG Deployment policy 문서 |
 | [n8n.md](./n8n.md) | N8N policy 문서 |

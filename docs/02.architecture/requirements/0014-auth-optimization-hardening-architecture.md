@@ -67,9 +67,9 @@ status: active
   - OAuth2 Proxy: custom image + non-root 사용자
 - **Deployment Model**:
   - 정적 검증 후 단계적 반영(인증 계층 단위)
-  - CI에서 `auth-hardening` 필수 게이트 적용
+  - CI에서 `infrastructure-hardening` 필수 게이트 적용
 - **Operational Evidence**:
-  - `scripts/hardening/check-auth-hardening.sh`
+  - `scripts/hardening/check-all-hardening.sh 02-auth`
   - `docker compose config`
   - 서비스별 healthcheck 결과
 

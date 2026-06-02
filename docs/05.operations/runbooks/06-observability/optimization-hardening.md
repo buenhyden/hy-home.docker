@@ -27,7 +27,7 @@ status: active
 
 ## When to Use
 
-- `observability-hardening` CI가 실패할 때
+- `infrastructure-hardening` CI가 실패할 때
 - 관측성 UI/API가 Traefik 경유로 비정상 응답할 때
 - 스택 부팅 시 Alloy/Grafana 의존성 대기로 장애가 반복될 때
 - Loki/Tempo custom image 런타임 실패가 발생할 때
@@ -64,14 +64,14 @@ status: active
 ### Verification Steps
 
 - [ ] observability compose `config` 검증 통과
-- [ ] `check-observability-hardening` 실패 0건
+- [ ] `check-all-hardening.sh 06-observability` 실패 0건
 - [ ] optimization-hardening 문서 링크/README 인덱스 최신화 확인
 
 ### Observability and Evidence Sources
 
-- **Signals**: CI `observability-hardening` 상태, Traefik 라우터 상태, container health
+- **Signals**: CI `infrastructure-hardening` 상태, Traefik 라우터 상태, container health
 - **Evidence to Capture**:
-  - 변경 전후 `check-observability-hardening.sh` 출력
+  - 변경 전후 `check-all-hardening.sh 06-observability` 출력
   - compose `config` 결과
   - 관련 compose/Dockerfile/docs diff
 
@@ -91,7 +91,7 @@ status: active
 - **Prompt Rollback**: N/A
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: 관측성 자동화 변경 작업 일시 중지(승인 필요)
-- **Eval Re-run**: `check-observability-hardening`, `check-template-security-baseline`, `check-doc-traceability`
+- **Eval Re-run**: `check-all-hardening.sh 06-observability`, `check-template-security-baseline`, `check-doc-traceability`
 - **Trace Capture**: CI logs + compose config output + health 상태
 
 ## Evidence

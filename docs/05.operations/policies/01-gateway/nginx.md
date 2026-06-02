@@ -54,7 +54,7 @@ status: active
 ## AI Agent Policy Section (If Applicable)
 
 - **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: gateway-hardening 스크립트 실패 0건
+- **Eval / Guardrail Threshold**: check-all-hardening.sh 01-gateway 실패 0건
 - **Log / Trace Retention**: nginx access/error 로그는 observability 정책 준수
 - **Safety Incident Thresholds**: `/ping` 실패, 반복 5xx 증가, 인증 루프 발생 시 런북 절차 수행
 

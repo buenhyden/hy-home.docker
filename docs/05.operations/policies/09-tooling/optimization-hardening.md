@@ -27,7 +27,7 @@ status: active
   - tooling compose는 `infra_net` external 경계 선언을 유지한다.
   - locust-worker healthcheck를 유지한다.
   - k6 volume 계약(`k6-data:/mnt/locust:rw`)을 유지한다.
-  - tooling 변경은 `check-tooling-hardening.sh` 및 CI `tooling-hardening`을 통과해야 한다.
+  - tooling 변경은 `check-all-hardening.sh 09-tooling` 및 CI `infrastructure-hardening`을 통과해야 한다.
   - optimization-hardening 문서(PRD~Procedure) 링크를 유지해야 한다.
 - **Allowed**:
   - 카탈로그 확장 항목을 단계적으로 도입하는 설계/운영 작업

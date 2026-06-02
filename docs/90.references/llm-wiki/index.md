@@ -449,11 +449,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-26-workspace-audit.md](../../04.execution/plans/2026-05-26-workspace-audit.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-28-workspace-doc-consistency.md](../../04.execution/plans/2026-05-28-workspace-doc-consistency.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-29-workspace-consistency-2026-05b.md](../../04.execution/plans/2026-05-29-workspace-consistency-2026-05b.md) | Markdown reference |
-| [docs/04.execution/plans/2026-05-30-ai-governance-reorg.md](../../04.execution/plans/2026-05-30-ai-governance-reorg.md) | Markdown reference |
-| [docs/04.execution/plans/2026-05-30-standardizing-agent-governance.md](../../04.execution/plans/2026-05-30-standardizing-agent-governance.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-31-claude-harness-governance-verification.md](../../04.execution/plans/2026-05-31-claude-harness-governance-verification.md) | Markdown reference |
-| [docs/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md](../../04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md) | Markdown reference |
-| [docs/04.execution/plans/2026-06-01-agent-governance-phase2-alignment.md](../../04.execution/plans/2026-06-01-agent-governance-phase2-alignment.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md](../../04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
@@ -507,14 +503,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-05-26-workspace-audit.md](../../04.execution/tasks/2026-05-26-workspace-audit.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-28-workspace-doc-consistency.md](../../04.execution/tasks/2026-05-28-workspace-doc-consistency.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-29-workspace-consistency-2026-05b.md](../../04.execution/tasks/2026-05-29-workspace-consistency-2026-05b.md) | Markdown reference |
-| [docs/04.execution/tasks/2026-05-30-standardizing-agent-governance.md](../../04.execution/tasks/2026-05-30-standardizing-agent-governance.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-31-claude-harness-governance-verification.md](../../04.execution/tasks/2026-05-31-claude-harness-governance-verification.md) | Markdown reference |
-| [docs/04.execution/tasks/2026-06-01-agent-governance-phase1-diagnostic.md](../../04.execution/tasks/2026-06-01-agent-governance-phase1-diagnostic.md) | Markdown reference |
-| [docs/04.execution/tasks/2026-06-01-agent-governance-phase3-implementation.md](../../04.execution/tasks/2026-06-01-agent-governance-phase3-implementation.md) | Markdown reference |
-| [docs/04.execution/tasks/2026-06-01-agent-governance-phase3-stage01-02-continuation.md](../../04.execution/tasks/2026-06-01-agent-governance-phase3-stage01-02-continuation.md) | Markdown reference |
-| [docs/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md](../../04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md) | Markdown reference |
-| [docs/04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md](../../04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md) | Markdown reference |
-| [docs/04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md](../../04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md](../../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
@@ -577,7 +566,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/07-workflow/01.airflow-dag-dev.md](../../05.operations/guides/07-workflow/01.airflow-dag-dev.md) | Markdown reference |
 | [docs/05.operations/guides/07-workflow/02.n8n-automation.md](../../05.operations/guides/07-workflow/02.n8n-automation.md) | Markdown reference |
 | [docs/05.operations/guides/07-workflow/README.md](../../05.operations/guides/07-workflow/README.md) | folder index |
-| [docs/05.operations/guides/07-workflow/airbyte.md](../../05.operations/guides/07-workflow/airbyte.md) | Markdown reference |
 | [docs/05.operations/guides/07-workflow/airflow-dag-basics.md](../../05.operations/guides/07-workflow/airflow-dag-basics.md) | Markdown reference |
 | [docs/05.operations/guides/07-workflow/airflow.md](../../05.operations/guides/07-workflow/airflow.md) | Markdown reference |
 | [docs/05.operations/guides/07-workflow/n8n.md](../../05.operations/guides/07-workflow/n8n.md) | Markdown reference |
@@ -666,7 +654,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/policies/06-observability/pyroscope.md](../../05.operations/policies/06-observability/pyroscope.md) | Markdown reference |
 | [docs/05.operations/policies/06-observability/tempo.md](../../05.operations/policies/06-observability/tempo.md) | Markdown reference |
 | [docs/05.operations/policies/07-workflow/README.md](../../05.operations/policies/07-workflow/README.md) | folder index |
-| [docs/05.operations/policies/07-workflow/airbyte.md](../../05.operations/policies/07-workflow/airbyte.md) | Markdown reference |
 | [docs/05.operations/policies/07-workflow/airflow.md](../../05.operations/policies/07-workflow/airflow.md) | Markdown reference |
 | [docs/05.operations/policies/07-workflow/dag-deployment.md](../../05.operations/policies/07-workflow/dag-deployment.md) | Markdown reference |
 | [docs/05.operations/policies/07-workflow/n8n.md](../../05.operations/policies/07-workflow/n8n.md) | Markdown reference |
@@ -750,7 +737,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/runbooks/06-observability/pyroscope.md](../../05.operations/runbooks/06-observability/pyroscope.md) | Markdown reference |
 | [docs/05.operations/runbooks/06-observability/tempo.md](../../05.operations/runbooks/06-observability/tempo.md) | Markdown reference |
 | [docs/05.operations/runbooks/07-workflow/README.md](../../05.operations/runbooks/07-workflow/README.md) | folder index |
-| [docs/05.operations/runbooks/07-workflow/airbyte.md](../../05.operations/runbooks/07-workflow/airbyte.md) | Markdown reference |
 | [docs/05.operations/runbooks/07-workflow/airflow-worker-recovery.md](../../05.operations/runbooks/07-workflow/airflow-worker-recovery.md) | Markdown reference |
 | [docs/05.operations/runbooks/07-workflow/airflow.md](../../05.operations/runbooks/07-workflow/airflow.md) | Markdown reference |
 | [docs/05.operations/runbooks/07-workflow/n8n.md](../../05.operations/runbooks/07-workflow/n8n.md) | Markdown reference |
@@ -793,6 +779,8 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/90.references/docker/image-version-interpretation.md](../docker/image-version-interpretation.md) | Markdown reference |
 | [docs/90.references/glossary/README.md](../glossary/README.md) | folder index |
 | [docs/90.references/glossary/stable-reference-terms.md](../glossary/stable-reference-terms.md) | Markdown reference |
+| [docs/90.references/hads/README.md](../hads/README.md) | folder index |
+| [docs/90.references/hads/profile.md](../hads/profile.md) | Markdown reference |
 | [docs/90.references/kubernetes/README.md](../kubernetes/README.md) | folder index |
 | [docs/90.references/kubernetes/docker-compose-to-k3s-migration.md](../kubernetes/docker-compose-to-k3s-migration.md) | Markdown reference |
 | [docs/90.references/learning/README.md](../learning/README.md) | folder index |
@@ -802,6 +790,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/adr.template.md](../../99.templates/adr.template.md) | Markdown reference |
 | [docs/99.templates/agent-design.template.md](../../99.templates/agent-design.template.md) | Markdown reference |
 | [docs/99.templates/api-spec.template.md](../../99.templates/api-spec.template.md) | Markdown reference |
+| [docs/99.templates/archive.template.md](../../99.templates/archive.template.md) | Markdown reference |
 | [docs/99.templates/ard.template.md](../../99.templates/ard.template.md) | Markdown reference |
 | [docs/99.templates/data-model.template.md](../../99.templates/data-model.template.md) | Markdown reference |
 | [docs/99.templates/guide.template.md](../../99.templates/guide.template.md) | Markdown reference |
@@ -1121,6 +1110,26 @@ Graphify output is advisory navigation context only. This index is generated fro
 | Path | Role |
 | --- | --- |
 | [secrets/README.md](../../../secrets/README.md) | folder index |
+
+### Other tracked source
+
+| Path | Role |
+| --- | --- |
+| [docs/98.archive/04.execution/plans/2026-05-30-ai-governance-reorg.md](../../98.archive/04.execution/plans/2026-05-30-ai-governance-reorg.md) | Markdown reference |
+| [docs/98.archive/04.execution/plans/2026-05-30-standardizing-agent-governance.md](../../98.archive/04.execution/plans/2026-05-30-standardizing-agent-governance.md) | Markdown reference |
+| [docs/98.archive/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md](../../98.archive/04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md) | Markdown reference |
+| [docs/98.archive/04.execution/plans/2026-06-01-agent-governance-phase2-alignment.md](../../98.archive/04.execution/plans/2026-06-01-agent-governance-phase2-alignment.md) | Markdown reference |
+| [docs/98.archive/04.execution/tasks/2026-05-30-standardizing-agent-governance.md](../../98.archive/04.execution/tasks/2026-05-30-standardizing-agent-governance.md) | Markdown reference |
+| [docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase1-diagnostic.md](../../98.archive/04.execution/tasks/2026-06-01-agent-governance-phase1-diagnostic.md) | Markdown reference |
+| [docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-implementation.md](../../98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-implementation.md) | Markdown reference |
+| [docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-stage01-02-continuation.md](../../98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-stage01-02-continuation.md) | Markdown reference |
+| [docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md](../../98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md) | Markdown reference |
+| [docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md](../../98.archive/04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md) | Markdown reference |
+| [docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md](../../98.archive/04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md) | Markdown reference |
+| [docs/98.archive/05.operations/guides/07-workflow/airbyte.md](../../98.archive/05.operations/guides/07-workflow/airbyte.md) | Markdown reference |
+| [docs/98.archive/05.operations/policies/07-workflow/airbyte.md](../../98.archive/05.operations/policies/07-workflow/airbyte.md) | Markdown reference |
+| [docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md](../../98.archive/05.operations/runbooks/07-workflow/airbyte.md) | Markdown reference |
+| [docs/98.archive/README.md](../../98.archive/README.md) | folder index |
 
 ## Sources
 

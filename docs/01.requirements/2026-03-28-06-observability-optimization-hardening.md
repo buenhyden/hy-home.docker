@@ -40,12 +40,12 @@ status: draft
 - **REQ-PRD-OBS-FUN-03**: Alloy/Grafana의 Loki/Tempo 의존성은 `service_healthy` 기준을 사용해야 한다.
 - **REQ-PRD-OBS-FUN-04**: cAdvisor는 healthcheck를 제공해야 한다.
 - **REQ-PRD-OBS-FUN-05**: Loki/Tempo 커스텀 이미지와 entrypoint는 비루트 실행 및 secret 존재 검증을 포함해야 한다.
-- **REQ-PRD-OBS-FUN-06**: `scripts/hardening/check-observability-hardening.sh`와 CI `observability-hardening` job을 제공해야 한다.
+- **REQ-PRD-OBS-FUN-06**: `scripts/hardening/check-all-hardening.sh 06-observability`와 CI `infrastructure-hardening` job을 제공해야 한다.
 - **REQ-PRD-OBS-FUN-07**: PRD~Runbook(01~09) 최적화/하드닝 문서를 상호 링크로 동기화해야 한다.
 
 ## Success Criteria
 
-- **REQ-PRD-OBS-MET-01**: `bash scripts/hardening/check-observability-hardening.sh` 실패 0건.
+- **REQ-PRD-OBS-MET-01**: `bash scripts/hardening/check-all-hardening.sh 06-observability` 실패 0건.
 - **REQ-PRD-OBS-MET-02**: `docker compose -f infra/06-observability/docker-compose.yml config` 검증 통과.
 - **REQ-PRD-OBS-MET-03**: 관측성 공개 라우터 middleware 계약 100% 충족.
 - **REQ-PRD-OBS-MET-04**: 06-observability optimization-hardening 문서 세트의 양방향 링크 정합성 확보.
@@ -56,7 +56,7 @@ status: draft
   - `infra/06-observability/docker-compose.yml`
   - `infra/06-observability/loki/Dockerfile`, `infra/06-observability/tempo/Dockerfile`
   - `infra/06-observability/loki/docker-entrypoint.sh`, `infra/06-observability/tempo/docker-entrypoint.sh`
-  - `scripts/hardening/check-observability-hardening.sh`
+  - `scripts/hardening/check-all-hardening.sh 06-observability`
   - `.github/workflows/ci-quality.yml`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` observability optimization-hardening 문서/README
 - **Out of Scope**:
@@ -77,7 +77,7 @@ status: draft
 - **Allowed Actions**: observability compose/script/docs/ci 변경 및 정적 검증 실행
 - **Disallowed Actions**: 부동 태그 도입, 무근거 포트 노출 확대, 무검증 미들웨어 완화
 - **Human-in-the-loop Requirement**: 접근제어 완화, 대규모 HA 토폴로지 변경 시 승인 필수
-- **Evaluation Expectation**: `check-observability-hardening` + 공통 기준선 통과
+- **Evaluation Expectation**: `check-all-hardening.sh 06-observability` + 공통 기준선 통과
 
 ## Related Documents
 

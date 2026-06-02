@@ -25,7 +25,7 @@ status: active
 
 ## When to Use
 
-- `ai-hardening` CI가 실패할 때
+- `infrastructure-hardening` CI가 실패할 때
 - Ollama/Open WebUI 경로 접근 정책이 비정상일 때
 - Ollama GPU 과부하/OOM 또는 queue 적체가 반복될 때
 - exporter metrics 수집이 실패할 때
@@ -67,7 +67,7 @@ status: active
 
 ### Observability and Evidence Sources
 
-- **Signals**: CI `ai-hardening`, Ollama exporter metrics, Open WebUI health, gateway access logs
+- **Signals**: CI `infrastructure-hardening`, Ollama exporter metrics, Open WebUI health, gateway access logs
 - **Evidence to Capture**:
   - 변경 전후 hardening check 결과
   - compose config 결과
@@ -89,7 +89,7 @@ status: active
 - **Model Fallback**: 승인된 운영 모델에서 직전 안정 모델로 fallback
 - **Tool Disable / Revoke**: AI 자동 배포/승격 파이프라인 일시 중지(승인 필요)
 - **Eval Re-run**:
-  - `check-ai-hardening`
+  - `check-all-hardening.sh 08-ai`
   - `check-template-security-baseline`
   - `check-doc-traceability`
 - **Trace Capture**: CI logs + exporter metrics + compose config

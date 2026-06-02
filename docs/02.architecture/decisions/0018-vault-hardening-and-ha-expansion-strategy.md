@@ -18,12 +18,12 @@ status: active
   - template placeholder 제거 및 `secret/data/hy-home/...` 경로 계약 고정
   - `vault-agent` 프로세스 기반 healthcheck 추가
   - `/vault/out` 지속 볼륨 추가
-  - `scripts/hardening/check-security-hardening.sh` + CI `security-hardening` 게이트 도입
+  - `scripts/hardening/check-all-hardening.sh 03-security` + CI `infrastructure-hardening` 게이트 도입
 - auto-unseal/원격 audit 적재는 이번 단계에서 정책/아키텍처/런북 전환 절차로만 명시한다.
 - 내부 통신 모델은 현행 유지한다.
   - 외부 TLS 종료: Traefik
   - 내부 `infra_net`: HTTP
-- 기존 회귀(`scripts/hardening/check-auth-hardening.sh`)는 같은 변경 세트에서 복구한다.
+- 기존 회귀(`scripts/hardening/check-all-hardening.sh 02-auth`)는 같은 변경 세트에서 복구한다.
 
 ## Explicit Non-goals
 
@@ -60,7 +60,7 @@ status: active
 
 ## Agent-related Example Decisions (If Applicable)
 
-- Tool gating: `check-security-hardening.sh`를 CI merge gate로 강제
+- Tool gating: `check-all-hardening.sh 03-security`를 CI merge gate로 강제
 - Guardrail strategy: placeholder 경로 금지, 평문 시크릿 금지
 
 ## Related Documents

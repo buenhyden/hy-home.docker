@@ -7,7 +7,7 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `infra/09-tooling` 계층(terraform, terrakube, registry, sonarqube, k6, locust, syncthing)의 최적화/하드닝 기술 명세다. 공개 경계 보안, 네트워크 격리, 테스트 런타임 안정성, CI 정책 게이트, 카탈로그 기반 확장 항목을 구현 계약으로 정의한다.
+이 문서는 `infra/09-tooling` 계층(terraform, terrakube, registry, sonarqube, k6, locust, syncthing)의 최적화/하드닝 기술 명세다. 공개 경계 보안, 네트워크 격리, 테스트 런타임 안정성, CI 정책 게이트, 카탈로그 기반 확장 항목을 구현 계약으로 정의한다. 현재 root `docker-compose.yml`에서 tooling compose includes는 주석 처리되어 있으므로, 이 명세는 보유 구현과 standalone/root-commented optional 실행 계약을 설명한다.
 
 ## Strategic Boundaries & Non-goals
 
@@ -15,7 +15,7 @@ status: active
   - tooling 공개 라우터 middleware 계약
   - tooling compose 네트워크 경계 계약
   - locust/k6 runtime 계약(health/volume)
-  - `check-tooling-hardening.sh` 정책 게이트 계약
+  - `scripts/hardening/check-all-hardening.sh 09-tooling` 정책 게이트 계약
 - **Does Not Own**:
   - 각 도구의 도메인 기능 구현 세부
   - 카탈로그 확장 항목의 즉시 전면 구현
@@ -32,6 +32,7 @@ status: active
 ## Contracts
 
 - **Config Contract**:
+  - `infra/09-tooling/*/docker-compose.yml` files are currently root-commented optional includes.
   - SonarQube/Terrakube/Syncthing 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용한다.
   - registry/sonarqube/terrakube/syncthing/locust/k6/terraform compose는 `infra_net` external 경계를 명시한다.
   - locust-worker는 worker 프로세스 healthcheck를 가진다.
@@ -40,7 +41,7 @@ status: active
   - tooling 서비스는 기존 PostgreSQL/Valkey/MinIO/InfluxDB 연계를 유지한다.
 - **Governance Contract**:
   - `scripts/hardening/check-all-hardening.sh 09-tooling` 통과가 tooling tier 하드닝 기준선이다.
-  - CI `tooling-hardening` job이 PR 단계에서 회귀를 차단한다.
+  - CI `infrastructure-hardening` job이 전체 hardening baseline으로 PR 단계에서 회귀를 차단한다.
 
 ## Core Design
 

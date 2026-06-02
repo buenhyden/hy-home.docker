@@ -39,9 +39,9 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
 
 - **REQ-AGG-FUN-01**: Stage 00은 agent catalog, function catalog, workflow rules, provider overlays, memory/progress rules의 canonical source of truth여야 한다.
 - **REQ-AGG-FUN-02**: `.claude/`, `.codex/`, `.agents/` provider adapters는 Stage 00 catalog의 role, scope, name set, policy intent를 보존해야 한다.
-- **REQ-AGG-FUN-03**: Codex TOML adapter는 active provider adapter로 취급하고, legacy Markdown prompt context는 별도 policy source가 되면 안 된다.
+- **REQ-AGG-FUN-03**: Codex adapter는 `.codex/agents/*.toml`만 active provider adapter로 취급하고, `.codex/agents/*.md` prompt files는 retired 상태로 유지해야 한다.
 - **REQ-AGG-FUN-04**: External strategy outputs는 canonical repository stages인 `docs/01`-`docs/05`, `docs/90`, `docs/99`로 귀속되어야 한다.
-- **REQ-AGG-FUN-05**: HADS는 별도 승인 전까지 advisory guidance로만 취급하고, active templates나 stage docs에 필수 block tag를 요구하지 않아야 한다.
+- **REQ-AGG-FUN-05**: HADS mandatory profile은 `docs/90.references/hads/`의 non-README reference documents에만 적용하고, 그 밖의 active templates나 stage docs에는 broad HADS block tag를 요구하지 않아야 한다.
 - **REQ-AGG-FUN-06**: Docker/Compose best-practice guidance는 hard validator와 manual review boundary를 구분해야 한다.
 - **REQ-AGG-FUN-07**: QA/CI/CD evidence는 docs-only, policy-only, behavior change, runtime change를 구분해 최소 검증 명령과 skipped-check rationale을 기록해야 한다.
 - **REQ-AGG-FUN-08**: Node/npm/rtk 기반 automation은 `/home/hy/.local/bin` toolchain 존재를 활용할 수 있으나, non-interactive agent PATH 차이를 명시적으로 처리해야 한다.
@@ -52,7 +52,7 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
 - **REQ-AGG-NFR-02**: Stage 00 governance files must remain English-only; human-facing stage execution evidence may use Korean where appropriate.
 - **REQ-AGG-NFR-03**: Repository checks must be able to detect adapter drift, template drift, unsupported statuses, and traceability gaps.
 - **REQ-AGG-NFR-04**: Graphify may support navigation, but completion claims must be corroborated by tracked docs and validation scripts when graph health is advisory.
-- **REQ-AGG-NFR-05**: Documentation changes must avoid broad historical rewrites unless a specific plan approves them.
+- **REQ-AGG-NFR-05**: Documentation changes must remove or archive historical content when it conflicts with current tracked implementation truth.
 
 ## Success Criteria
 
@@ -72,10 +72,10 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
   - Docker runtime start/stop/recreate, image rebuilds, deployment, migrations, or live network changes.
   - Secret values, private tokens, shell history, or user-global Codex credentials.
   - Remote GitHub branch protection mutation.
-  - Broad rewrite of historical completed Phase 2/3/4 artifacts.
+  - Broad rewrite of historical artifacts that remain semantically aligned with current implementation.
 - **Non-goals**:
-  - Do not make HADS mandatory in this requirement.
-  - Do not retire `.codex/agents/*.md` compatibility prompt files in this requirement.
+  - Do not broaden the HADS mandatory profile beyond `docs/90.references/hads/` in this requirement.
+  - Do not recreate `.codex/agents/*.md` compatibility prompt files.
   - Do not create a new non-stage documentation taxonomy.
 
 ## Risks, Dependencies, and Assumptions
@@ -83,7 +83,7 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
 - Stage 00 provider adapter policy must remain aligned with `providers/agents-md.md` and `subagent-protocol.md`.
 - The repository may have graphify advisory findings; these are navigation signals, not proof of completion.
 - `/home/hy/.local/bin/node`, `npm`, and `rtk` exist, but command wrappers should not assume every non-interactive shell has that path loaded.
-- Future hard validators for Docker or HADS require separate approval because they can create broad churn.
+- Future hard validators outside the current infrastructure hardening gate or bounded HADS reference profile require separate approval because they can create broad churn.
 
 ## AI Agent Requirements (If Applicable)
 
@@ -96,7 +96,7 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
   - Mutate Docker runtime, deployment state, remote GitHub settings, or user-global Codex settings without explicit approval.
   - Treat provider adapter files as a separate policy source.
 - **Human-in-the-loop Requirement**:
-  - Required before HADS mandatory rollout, Docker hard-validator promotion, provider adapter retirement, runtime mutation, deployment, or remote protection change.
+  - Required before broad HADS rollout outside `docs/90.references/hads/`, new Docker/runtime mutation, deployment, or remote protection change.
 - **Evaluation Expectation**:
   - Every governance implementation task must record validation commands, pass/fail outcomes, skipped-check rationale, and Graphify advisory status when used.
 
@@ -104,7 +104,6 @@ Phase 1 진단 결과, Stage 00 canonical adapter model과 provider runtime surf
 
 - **ARD**: [Agent Governance Canonical Adapter ARD](../02.architecture/requirements/0027-agent-governance-canonical-adapter.md)
 - **ADR**: [ADR-0027 Stage 00 Canonical Adapter Model](../02.architecture/decisions/0027-stage-00-canonical-adapter-model.md)
-- **Phase 1 Plan**: [Agent Governance Phase 1 Diagnostic](../04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md)
-- **Phase 2 Plan**: [Agent Governance Phase 2 Alignment Plan](../04.execution/plans/2026-06-01-agent-governance-phase2-alignment.md)
-- **Task**: [Agent Governance Stage 01/02 Alignment Task](../04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md)
+- **Current Plan**: [Agent Governance Decision Items and Attachment-Gap Plan](../04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md)
+- **Current Task**: [Agent Governance Missing Items Implementation Task](../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md)
 - **Stage 00 Governance Hub**: [Agent governance](../00.agent-governance/README.md)

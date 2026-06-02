@@ -75,7 +75,7 @@ status: active
   - Phase 2: auto-unseal 정책 승인 후 전환
   - Phase 3: raft 3-node + 원격 audit 확장
 - **Operational Evidence**:
-  - `scripts/hardening/check-security-hardening.sh`
+  - `scripts/hardening/check-all-hardening.sh 03-security`
   - `scripts/validation/check-template-security-baseline.sh`
   - `scripts/validation/check-doc-traceability.sh`
 

@@ -28,7 +28,7 @@ status: active
   - Ollama는 `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE` 상한을 유지한다.
   - Open WebUI는 `template-stateful-med`를 사용한다.
   - `ollama-exporter`는 `ollama` health 기반 의존성과 metrics healthcheck를 유지한다.
-  - AI 변경은 `check-ai-hardening.sh` 및 CI `ai-hardening`을 통과해야 한다.
+  - AI 변경은 `check-all-hardening.sh 08-ai` 및 CI `infrastructure-hardening`을 통과해야 한다.
   - 모델 승격은 실험/검증/운영 단계와 승인 기록을 포함해야 한다.
   - Open WebUI 모델 접근 권한은 역할/환경 단위로 분리해야 한다.
   - 대화 로그는 보존 기간/마스킹 기준을 명시하고 비식별화 정책을 준수해야 한다.

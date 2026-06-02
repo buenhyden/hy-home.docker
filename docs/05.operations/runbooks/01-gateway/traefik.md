@@ -75,7 +75,7 @@ status: active
 
 - [ ] 직전 정상 커밋으로 `infra/01-gateway/traefik/*` 복원
 - [ ] `docker compose -f infra/01-gateway/traefik/docker-compose.yml up -d traefik`
-- [ ] 롤백 후 `check-gateway-hardening.sh` 재실행
+- [ ] 롤백 후 `check-all-hardening.sh 01-gateway` 재실행
 
 ### Agent Operations (If Applicable)
 

@@ -72,7 +72,7 @@ status: active
 - **Evidence to Capture**:
   - `docker logs oauth2-proxy --tail=200`
   - `docker logs keycloak --tail=200`
-  - auth-hardening 스크립트 출력
+  - check-all-hardening.sh 02-auth 출력
 
 ### Safe Rollback or Recovery Procedure
 

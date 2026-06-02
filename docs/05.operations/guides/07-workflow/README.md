@@ -37,7 +37,6 @@
 guides/07-workflow/
 ├── 01.airflow-dag-dev.md
 ├── 02.n8n-automation.md
-├── airbyte.md
 ├── airflow-dag-basics.md
 ├── airflow.md
 ├── n8n.md
@@ -56,7 +55,6 @@ guides/07-workflow/
 | --- | --- |
 | [01.airflow-dag-dev.md](./01.airflow-dag-dev.md) | 01.Airflow Dag Dev guide 문서 |
 | [02.n8n-automation.md](./02.n8n-automation.md) | 02.N8N Automation guide 문서 |
-| [airbyte.md](./airbyte.md) | Airbyte guide 문서 |
 | [airflow-dag-basics.md](./airflow-dag-basics.md) | Airflow Dag Basics guide 문서 |
 | [airflow.md](./airflow.md) | Airflow guide 문서 |
 | [n8n.md](./n8n.md) | N8N guide 문서 |

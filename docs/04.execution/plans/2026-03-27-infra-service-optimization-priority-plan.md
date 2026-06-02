@@ -85,7 +85,7 @@ status: active
 | PLN-QW-003 | `no-new-privileges` 기본 적용 원칙 도입 및 예외 목록화 | `infra/**/docker-compose*.yml`, `docs/05.operations/**` | REQ-SEC-BASE-003 | 예외 목록 명시 + 기본 적용률 100% |
 | PLN-QW-004 | 리소스 최소 상한(`cpus`, `memory`) 정책 초안 확정 | `docs/05.operations/policies/infra-service-optimization-catalog.md`, `docs/04.execution/tasks/*` | REQ-OPS-CAP-004 | 티어별 최소 상한 정책 문서화 완료 |
 | PLN-QW-005 | 민감정보 주입 경로 표준화(`secrets`/Vault 우선) | `infra/**/docker-compose*.yml`, `infra/03-security/vault/**`, `docs/05.operations/**` | REQ-SEC-SECRETS-005 | 평문 비밀 주입 경로 감축 및 표준 경로 명시 |
-| PLN-QW-006 | `infra/07-workflow/airbyte` 실체 정의 갭 해소 계획(Compose/README) 수립 | `infra/07-workflow/airbyte/**`, `docs/05.operations/{guides,policies,runbooks}/07-workflow/airbyte.md` | REQ-WF-GAP-006 | airbyte 인프라 실체 정의 완료 기준 합의 |
+| PLN-QW-006 | workflow tier 신규 서비스 실체 정의 갭 처리 기준 수립 | `docs/98.archive/README.md`, `docs/05.operations/**/07-workflow/README.md` | REQ-WF-GAP-006 | 미구현 workflow service는 active chain에서 제거되고 archive ledger로만 추적 |
 | PLN-QW-007 | 문서 추적성 정리 (`04.execution/plans` ↔ `05.operations/{guides,policies,runbooks}`) | `docs/04.execution/plans/**`, `docs/05.operations/**` | REQ-DOC-TRACE-007 | 교차 링크 무결성 100% |
 
 ## Quarterly Roadmap

@@ -107,8 +107,8 @@ docker compose -f infra/02-auth/oauth2-proxy/docker-compose.yml config
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-AUTH-001**: auth-hardening 스크립트 실패 0건
-- **VAL-SPC-AUTH-002**: CI에 `auth-hardening` job이 존재하고 실행됨
+- **VAL-SPC-AUTH-001**: check-all-hardening.sh 02-auth 실패 0건
+- **VAL-SPC-AUTH-002**: CI에 `infrastructure-hardening` job이 존재하고 실행됨
 - **VAL-SPC-AUTH-003**: 02-auth Guide/Operation/Runbook이 상호 링크로 연결됨
 
 ## Agent Role & IO Contract (If Applicable)

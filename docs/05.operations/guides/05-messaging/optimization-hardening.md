@@ -51,7 +51,7 @@ status: active
    - `messaging-option` 프로필을 유지해 선택적 활성화 모델을 보존한다.
 5. 검증 자동화 및 CI 반영
    - `bash scripts/hardening/check-all-hardening.sh 05-messaging`
-   - CI workflow에 `messaging-hardening` job 반영 여부 확인
+   - CI workflow에 `infrastructure-hardening` job 반영 여부 확인
 6. 문서 추적성 동기화
    - PRD~Procedure optimization-hardening 문서 링크를 점검한다.
 

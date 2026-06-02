@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/plans/2026-03-28-09-tooling-optimization-hardening-plan.md -->
 
@@ -21,11 +21,11 @@ status: active
   - SonarQube/Terrakube/Syncthing 공개 경로를 gateway 표준+SSO 정책으로 정렬한다.
   - tooling compose의 `infra_net` external 경계 선언을 표준화한다.
   - locust-worker healthcheck와 k6 volume 계약을 정렬한다.
-  - tooling 전용 하드닝 검증 스크립트 및 CI 게이트를 도입한다.
+  - tooling tier 하드닝 검증을 `scripts/hardening/check-all-hardening.sh 09-tooling` 및 통합 `infrastructure-hardening` CI 게이트로 정렬한다.
   - 카탈로그 확장 항목을 문서/태스크 기반으로 실행 가능하게 만든다.
 - **In Scope**:
   - `infra/09-tooling/*/docker-compose.yml`
-  - `scripts/hardening/check-tooling-hardening.sh`
+  - `scripts/hardening/check-all-hardening.sh 09-tooling`
   - `scripts/README.md`
   - `.github/workflows/ci-quality.yml`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` tooling optimization-hardening 문서/README
@@ -46,7 +46,7 @@ status: active
 | PLN-TLG-001 | SonarQube/Terrakube/Syncthing middleware를 gateway+SSO 체인으로 정렬 | `infra/09-tooling/{sonarqube,terrakube,syncthing}/docker-compose.yml` | REQ-PRD-TLG-FUN-01 | compose label 확인 |
 | PLN-TLG-002 | tooling compose `infra_net` external 선언 표준화 | `infra/09-tooling/*/docker-compose.yml` | REQ-PRD-TLG-FUN-02 | network contract 확인 |
 | PLN-TLG-003 | locust worker healthcheck + k6 volume 참조 정렬 | `infra/09-tooling/{locust,k6}/docker-compose.yml` | REQ-PRD-TLG-FUN-03 | health/volume 계약 확인 |
-| PLN-TLG-004 | tooling hardening script + CI 게이트 추가 | `scripts/hardening/check-tooling-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-TLG-FUN-04 | script/CI job 확인 |
+| PLN-TLG-004 | tooling hardening script + CI 게이트 추가 | `scripts/hardening/check-all-hardening.sh 09-tooling`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-TLG-FUN-04 | script/CI job 확인 |
 | PLN-TLG-005 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-TLG-FUN-05 | 링크 정합성 확인 |
 | PLN-TLG-006 | 카탈로그 확장 항목 작업 분해(도구별) | Plan/Task/Ops/Guide docs | REQ-PRD-TLG-FUN-06 | 태스크/정책 반영 확인 |
 
@@ -55,7 +55,7 @@ status: active
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
 | VAL-TLG-001 | Structural | tooling compose 정적 검증 | `for f in infra/09-tooling/*/docker-compose.yml; do docker compose -f "$f" config >/dev/null; done` | 오류 없음 |
-| VAL-TLG-002 | Compliance | tooling 하드닝 기준선 검증 | `bash scripts/hardening/check-tooling-hardening.sh` | 실패 0건 |
+| VAL-TLG-002 | Compliance | tooling 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 09-tooling` | 실패 0건 |
 | VAL-TLG-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
 | VAL-TLG-004 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
 

@@ -32,7 +32,7 @@ status: active
   - `valkey-cluster-exporter` 시크릿 파일 경로는 `/run/secrets/service_valkey_password`를 사용한다.
   - `seaweedfs` expose 정의는 유효한 포트 토큰만 허용한다.
 - **Governance Contract**:
-  - `scripts/hardening/check-all-hardening.sh 04-data`를 CI `data-hardening` job으로 강제한다.
+  - `scripts/hardening/check-all-hardening.sh 04-data`를 CI `infrastructure-hardening` job으로 강제한다.
   - `scripts/validation/check-template-security-baseline.sh`, `scripts/validation/check-doc-traceability.sh`와 함께 운영 게이트를 구성한다.
 
 ## Core Design
@@ -120,7 +120,7 @@ docker inspect --format '{{json .State.Health}}' supabase-pooler
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-DATA-001**: `check-data-hardening` 실패 0건
+- **VAL-SPC-DATA-001**: `check-all-hardening.sh 04-data` 실패 0건
 - **VAL-SPC-DATA-002**: `supabase` 핵심 서비스 healthcheck 존재
 - **VAL-SPC-DATA-003**: `valkey-cluster-exporter` 시크릿 경로 계약 정합화
 - **VAL-SPC-DATA-004**: `seaweedfs` expose 토큰 오타 제거

@@ -2,7 +2,7 @@
 layer: agentic
 ---
 
-# Stage Authoring Matrix (00-05, 90, 99)
+# Stage Authoring Matrix (00-05, 90, 98, 99)
 
 Single source of truth for stage-level authoring expectations.
 
@@ -19,12 +19,14 @@ Single source of truth for stage-level authoring expectations.
 | 04 execution tasks           | Task execution evidence            | During implementation and validation                                 | Implementation Engineer / QA Engineer                  | Plans, Specs                                                          | Task docs with evidence                                          | `docs/99.templates/task.template.md`                                                                                                                                                                                   | Task states and verification evidence are current and auditable                                                                                         |
 | 05 operations                | Operations knowledge base          | When operational guidance, controls, or repeatable procedures change | Documentation Specialist / Operations/SRE Engineer     | Specs, Plans, Tasks, ADRs, compliance constraints, system behavior    | Operations docs with usage, controls, procedures, and validation | `docs/99.templates/guide.template.md` (guides/**), `docs/99.templates/policy.template.md` (policies/**), `docs/99.templates/runbook.template.md` (runbooks/\*\*) | Usage guides, policies, runbooks, validation, and related references live in one canonical operations stage; each leaf document has one primary purpose |
 | 05 incidents                 | Incident records and postmortems   | During/after incidents and after stabilization                       | Operations/SRE Engineer / Security Auditor             | Monitoring evidence, runbook execution logs, root-cause analysis data | Incident and postmortem docs                                     | `docs/99.templates/incident.template.md`, `docs/99.templates/postmortem.template.md`                                                                                                                                   | Timeline, impact, mitigation, root cause, and prevention actions are complete and assigned                                                              |
+| 98 archive                   | Tombstone records for removed stale docs | When a whole document conflicts with current implementation and must leave the active chain | Documentation Specialist / Agentic Workflow Specialist | Original document path, current replacement, archive reason           | Tombstone docs and archive README ledger                         | `docs/99.templates/archive.template.md`                                                                                                                                                                                | Stale body is removed, original path is recorded, active docs do not link back to archive tombstones                                                     |
 
 ## 2. Appendix: Supporting Stages
 
 | Stage | Purpose                                                                                                                                                                                                                                              | Template                                                   |
 | :---- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------------- |
 | 90    | Stable references, glossary, source-backed facts, inventories, and evergreen learning context. This stage supports active docs, must state repository role and lifecycle, and does not replace policy, plans, runbooks, incidents, or runtime truth. | `docs/99.templates/reference.template.md`                  |
+| 98    | Archive tombstones for old, deprecated, legacy, or implementation-conflicting documents removed from active chains. This stage preserves migration traceability, not historical current-truth.                                                       | `docs/99.templates/archive.template.md`                    |
 | 99    | Source templates for all stages                                                                                                                                                                                                                      | `docs/99.templates/readme.template.md` and stage templates |
 
 ## 4. Agent Skills by Stage

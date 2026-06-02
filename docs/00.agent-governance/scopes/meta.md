@@ -10,7 +10,7 @@ title: 'Metadata & Taxonomy Engineering Scope'
 ## 1. Context & Objective
 
 - **Goal**: Maintain a highly organized, searchable, and AI-optimized documentation ecosystem.
-- **Standards**: Strict adherence to the `01.requirements - 05.operations/incidents` Stage-Gate Taxonomy, plus `90.references` and `99.templates`.
+- **Standards**: Strict adherence to the `01.requirements - 05.operations/incidents` Stage-Gate Taxonomy, plus `90.references`, `98.archive`, and `99.templates`.
 
 ## 2. Requirements & Constraints
 
@@ -20,7 +20,7 @@ title: 'Metadata & Taxonomy Engineering Scope'
 
 ## 3. Implementation Flow
 
-1. **Placement**: Determine the correct taxonomy folder (`01.requirements - 05.operations/incidents`, `90.references`, or `99.templates`) for new documents.
+1. **Placement**: Determine the correct taxonomy folder (`01.requirements - 05.operations/incidents`, `90.references`, `98.archive`, or `99.templates`) for new documents.
 2. **Template**: Use the corresponding template from `docs/99.templates/`.
 3. **Linking**: Update the parent README and any related cross-links (e.g., ADR <-> Spec).
 
@@ -31,7 +31,7 @@ title: 'Metadata & Taxonomy Engineering Scope'
 
 ## 5. Maintenance & Safety
 
-- **Pruning**: Archived or outdated docs must be moved to an `archive/` subfolder, not deleted.
+- **Pruning**: Implementation-conflicting whole-document old material must be moved to `docs/98.archive/` tombstones, not preserved in active stage folders.
 - **Refactoring**: Significant changes to folder structure require a `Meta ADR`.
 
 ## Related Documents

@@ -63,7 +63,7 @@ status: active
 - **Signals**: readiness 상태, Keycloak 로그의 DB/OIDC 오류
 - **Evidence to Capture**:
   - `docker logs keycloak --tail=200`
-  - `check-auth-hardening.sh` 실행 결과
+  - `check-all-hardening.sh 02-auth` 실행 결과
 
 ### Safe Rollback or Recovery Procedure
 

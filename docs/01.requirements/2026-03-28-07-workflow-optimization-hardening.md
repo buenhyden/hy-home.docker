@@ -18,7 +18,7 @@ status: draft
 - Airflow/n8n 관리 UI 라우터의 middleware 정책이 불균일하여 경계 보안이 약해질 수 있다.
 - 일부 서비스는 health 기반 dependency/healthcheck 계약이 부족해 기동 race condition 위험이 있다.
 - n8n 이미지/entrypoint 하드닝 계약이 compose 구성과 일치하지 않아 drift 가능성이 있다.
-- 카탈로그의 workflow 확장 항목(Airflow 품질 게이트, n8n backup/Vault, airbyte artifact 보강)이 실행 문서로 충분히 연결되지 않았다.
+- 카탈로그의 workflow 확장 항목(Airflow 품질 게이트, n8n backup/Vault)이 실행 문서로 충분히 연결되지 않았다.
 
 ## Personas
 
@@ -31,7 +31,7 @@ status: draft
 - **STORY-WRK-01**: 운영자는 Airflow/n8n 경로가 gateway+SSO 정책을 충족하는지 확인한다.
 - **STORY-WRK-02**: 엔지니어는 health 기반 기동 계약을 통해 worker startup 실패를 줄인다.
 - **STORY-WRK-03**: CI는 workflow 하드닝 회귀를 PR 단계에서 자동 차단한다.
-- **STORY-WRK-04**: 팀은 Airflow DAG 품질 게이트/오토스케일 기준, n8n Git backup/Vault 연계 기준, airbyte artifact 보강 계획을 추적한다.
+- **STORY-WRK-04**: 팀은 Airflow DAG 품질 게이트/오토스케일 기준과 n8n Git backup/Vault 연계 기준을 추적한다.
 
 ## Functional Requirements
 
@@ -39,13 +39,13 @@ status: draft
 - **REQ-PRD-WRK-FUN-02**: Airflow 핵심 서비스는 broker(`airflow-valkey`) health 기반 의존성을 사용해야 한다.
 - **REQ-PRD-WRK-FUN-03**: n8n worker/task-runner는 healthcheck를 제공하고 task-runner는 n8n/valkey health 의존성을 사용해야 한다.
 - **REQ-PRD-WRK-FUN-04**: n8n 서비스는 multi-stage/custom image 기반 비루트 실행 및 secret guard를 제공해야 한다.
-- **REQ-PRD-WRK-FUN-05**: `scripts/hardening/check-workflow-hardening.sh`와 CI `workflow-hardening` job을 제공해야 한다.
+- **REQ-PRD-WRK-FUN-05**: `scripts/hardening/check-all-hardening.sh 07-workflow`와 CI `infrastructure-hardening` job을 제공해야 한다.
 - **REQ-PRD-WRK-FUN-06**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
-- **REQ-PRD-WRK-FUN-07**: 카탈로그 기준으로 Airflow DAG 품질 게이트/워커 오토스케일 기준, n8n Git backup/Vault 연계, airbyte artifact 보강 태스크를 정의해야 한다.
+- **REQ-PRD-WRK-FUN-07**: 카탈로그 기준으로 Airflow DAG 품질 게이트/워커 오토스케일 기준과 n8n Git backup/Vault 연계를 정의해야 한다.
 
 ## Success Criteria
 
-- **REQ-PRD-WRK-MET-01**: `bash scripts/hardening/check-workflow-hardening.sh` 실패 0건.
+- **REQ-PRD-WRK-MET-01**: `bash scripts/hardening/check-all-hardening.sh 07-workflow` 실패 0건.
 - **REQ-PRD-WRK-MET-02**: Airflow/n8n compose static validation 통과.
 - **REQ-PRD-WRK-MET-03**: workflow optimization-hardening 문서 간 양방향 링크 정합성 확보.
 - **REQ-PRD-WRK-MET-04**: workflow 카탈로그 확장 항목이 Plan/Tasks에 반영.
@@ -55,12 +55,12 @@ status: draft
 - **In Scope**:
   - `infra/07-workflow/airflow/docker-compose.yml`
   - `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,docker-entrypoint.sh}`
-  - `scripts/hardening/check-workflow-hardening.sh`
+  - `scripts/hardening/check-all-hardening.sh 07-workflow`
   - `.github/workflows/ci-quality.yml`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` workflow optimization-hardening 문서 및 README 인덱스
 - **Out of Scope**:
   - 개별 DAG/워크플로 비즈니스 로직 구현
-  - Airbyte 프로덕션 컨테이너/compose 신규 도입
+  - 신규 workflow service 컨테이너/compose 도입
 - **Non-goals**:
   - 즉시 멀티클러스터 workflow 아키텍처 전환
   - 외부 SaaS orchestration 서비스 이전
@@ -69,7 +69,7 @@ status: draft
 
 - SSO 체인 강화는 기존 자동화 접근 경로에 영향을 줄 수 있어 운영 승인 절차가 필요하다.
 - Airflow/n8n은 `04-data` PostgreSQL, `01-gateway` Traefik, `02-auth` SSO middleware 구성에 의존한다.
-- Airbyte는 현재 infra artifact 부재 상태이며 본 사이클에서는 backlog 정의가 중심이다.
+- 신규 workflow service는 tracked infra artifact가 없으면 active scope에 포함하지 않는다.
 
 ## AI Agent Requirements (If Applicable)
 

@@ -62,8 +62,8 @@ This hardening ARD does not introduce primary data ownership for the laboratory 
   - Service별 compose + 공통 template(`infra/common-optimizations.yml`)
 - **Operational Evidence**:
   - compose static checks
-  - `scripts/hardening/check-laboratory-hardening.sh`
-  - CI `laboratory-hardening` job
+  - `scripts/hardening/check-all-hardening.sh 11-laboratory`
+  - CI `infrastructure-hardening` job
 
 ## Catalog-aligned Expansion Targets
 

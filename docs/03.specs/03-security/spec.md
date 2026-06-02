@@ -36,7 +36,7 @@ status: active
     - `02-auth/oauth2-proxy`: `client_secret`, `cookie_secret`
     - `06-observability/grafana`: `admin_password`, `db_password`, `grafana_client_secret`
 - **Governance Contract**:
-  - `scripts/hardening/check-all-hardening.sh 03-security`를 CI `security-hardening` job으로 강제한다.
+  - `scripts/hardening/check-all-hardening.sh 03-security`를 CI `infrastructure-hardening` job으로 강제한다.
   - `scripts/hardening/check-all-hardening.sh 02-auth`는 최신 02-auth 계약 기준으로 유지한다.
 
 ## Core Design
@@ -106,9 +106,9 @@ docker exec vault-agent ls -la /vault/out
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-SEC-001**: `check-security-hardening` 실패 0건
+- **VAL-SPC-SEC-001**: `check-all-hardening.sh 03-security` 실패 0건
 - **VAL-SPC-SEC-002**: `.ctmpl` placeholder 경로 검출 0건
-- **VAL-SPC-SEC-003**: CI `security-hardening` job 실행 성공
+- **VAL-SPC-SEC-003**: CI `infrastructure-hardening` job 실행 성공
 - **VAL-SPC-SEC-004**: 문서 추적성 검사 통과
 - **VAL-SPC-SEC-005**: auth 하드닝 회귀 검사 통과
 

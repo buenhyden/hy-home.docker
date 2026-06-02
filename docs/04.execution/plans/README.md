@@ -62,10 +62,7 @@ docs/04.execution/plans/
 ├── 2026-05-25-home-docker-workspace-audit-improvement.md # Completed home docker workspace audit improvement plan
 ├── 2026-05-25-home-docker-revalidation-deferred-follow-up.md # Completed home docker revalidation deferred follow-up plan
 ├── 2026-05-25-large-scale-authored-ssot-review.md # Completed large-scale authored SSoT review plan
-├── 2026-05-30-standardizing-agent-governance.md # Completed Stage 00 and Codex harness governance alignment plan
 ├── 2026-05-31-claude-harness-governance-verification.md # Completed Claude harness governance verification plan
-├── 2026-06-01-agent-governance-phase1-diagnostic.md # Completed agent governance Phase 1 diagnostic
-├── 2026-06-01-agent-governance-phase2-alignment.md # Completed agent governance Phase 2 alignment plan
 ├── 2026-06-02-agent-governance-decision-items-plan.md # Completed agent governance decision-item and attachment-gap continuation plan
 └── README.md                               # This file
 ```
@@ -98,14 +95,14 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성한다.
 - 상위 문서와 하위 산출물 간 추적성을 유지한다.
 - Related Documents는 실제 Markdown 링크로 작성한다.
-- 오래된 plan의 historical evidence는 의미 보존을 우선한다.
+- 오래된 plan의 historical evidence는 의미 보존을 우선하되, 현재 구현과 상충하면 `docs/98.archive/` tombstone으로 이동한다.
 
 ## AI Agent Guidance
 
 1. 이 README를 먼저 읽는다.
 2. 실행 전 계획 단계에서 정의된 작업 분할(WBS)과 리스크 요인을 반드시 숙지한다.
 3. 작업 수행 중 계획에서 벗어난 상황이 발생하면 계획 문서를 갱신하거나 task evidence에 deviation을 기록한다.
-4. 오래된 plan이 현재 template과 맞지 않아도 즉시 대량 재작성하지 않는다. 범위가 승인된 경우에만 수정한다.
+4. 오래된 plan이 현재 template과 맞지 않아도 즉시 대량 재작성하지 않는다. 단, 현재 구현과 상충하면 승인된 범위 안에서 active chain에서 제거하고 archive tombstone으로 이동한다.
 
 ## Related Documents
 
@@ -139,8 +136,5 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Spec Execution Implementation Audit Plan**: [2026-05-22-spec-execution-implementation-audit.md](./2026-05-22-spec-execution-implementation-audit.md)
 - **Data Analytics Execution Traceability Plan**: [2026-05-22-data-analytics-execution-traceability.md](./2026-05-22-data-analytics-execution-traceability.md)
 - **Workspace Doc & Governance Consistency (2026-05b) Plan**: [2026-05-29-workspace-consistency-2026-05b.md](./2026-05-29-workspace-consistency-2026-05b.md)
-- **Stage 00 and Codex Harness Governance Alignment Plan**: [2026-05-30-standardizing-agent-governance.md](./2026-05-30-standardizing-agent-governance.md)
 - **Claude Harness Governance Verification Plan**: [2026-05-31-claude-harness-governance-verification.md](./2026-05-31-claude-harness-governance-verification.md)
-- **Agent Governance Phase 1 Diagnostic**: [2026-06-01-agent-governance-phase1-diagnostic.md](./2026-06-01-agent-governance-phase1-diagnostic.md)
-- **Agent Governance Phase 2 Alignment Plan**: [2026-06-01-agent-governance-phase2-alignment.md](./2026-06-01-agent-governance-phase2-alignment.md)
 - **Agent Governance Decision Items and Attachment-Gap Plan**: [2026-06-02-agent-governance-decision-items-plan.md](./2026-06-02-agent-governance-decision-items-plan.md)

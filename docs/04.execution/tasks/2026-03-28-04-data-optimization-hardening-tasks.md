@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md -->
 
@@ -28,8 +28,8 @@ status: active
 | T-DATA-002 | Valkey exporter 시크릿 경로 정합화 | impl | 04-data/spec.md / Contracts | PLN-DATA-002 | `rg mng_valkey_password` 미검출 | DevOps | Done |
 | T-DATA-003 | SeaweedFS expose 오타 제거 | impl | 04-data/spec.md / Contracts | PLN-DATA-003 | `rg ':-19333}]\|:-18085}]\|:-18888}]'` 미검출 | DevOps | Done |
 | T-DATA-004 | ksql tier 라벨 정규화 | impl | 04-data/spec.md / Contracts | PLN-DATA-004 | `hy-home.tier: data` 확인 | DevOps | Done |
-| T-DATA-005 | `check-data-hardening.sh` 신규 작성 | ops | 04-data/spec.md / Governance | PLN-DATA-005 | `bash scripts/hardening/check-data-hardening.sh` | DevOps | Done |
-| T-DATA-006 | CI `data-hardening` job 추가 | ops | 04-data/spec.md / Governance | PLN-DATA-006 | workflow 변경 확인 | DevOps | Done |
+| T-DATA-005 | `check-all-hardening.sh 04-data` 신규 작성 | ops | 04-data/spec.md / Governance | PLN-DATA-005 | `bash scripts/hardening/check-all-hardening.sh 04-data` | DevOps | Done |
+| T-DATA-006 | CI `infrastructure-hardening` job 추가 | ops | 04-data/spec.md / Governance | PLN-DATA-006 | workflow 변경 확인 | DevOps | Done |
 | T-DATA-007 | scripts README 인덱스/예시 갱신 | doc | 04-data/spec.md / Related Docs | PLN-DATA-007 | README 항목 확인 | Docs | Done |
 | T-DATA-008 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 반영 | doc | 04-data/spec.md / Related Docs | PLN-DATA-008 | 문서 링크/인덱스 확인 | Docs | Done |
 | T-DATA-009 | 정적 검증 실행 및 결과 기록 | test | 04-data/spec.md / Verification | PLN-DATA-001~008 | compose + hardening + traceability 점검 | DevOps | Done |
@@ -67,11 +67,11 @@ status: active
   - `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml config`
   - `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml config`
   - `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config`
-  - `bash scripts/hardening/check-data-hardening.sh`
+  - `bash scripts/hardening/check-all-hardening.sh 04-data`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: 로컬 검증 로그 + CI `data-hardening` job
+- **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
 
 ## Related Documents
 

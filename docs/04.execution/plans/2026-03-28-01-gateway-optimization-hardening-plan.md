@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/plans/2026-03-28-01-gateway-optimization-hardening-plan.md -->
 
@@ -29,7 +29,7 @@ status: active
   - 계획/운영정책/런북/가이드 문서를 상호 링크와 인덱스로 동기화한다.
 - **In Scope**:
   - `infra/01-gateway/traefik/**`, `infra/01-gateway/nginx/**`
-  - `scripts/hardening/check-gateway-hardening.sh`, `.github/workflows/ci-quality.yml`
+  - `scripts/hardening/check-all-hardening.sh 01-gateway`, `.github/workflows/ci-quality.yml`
   - `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations/{guides,policies,runbooks}/01-gateway`
 
 ## Non-Goals & Out-of-Scope
@@ -49,15 +49,15 @@ status: active
 | PLN-GW-002 | Dashboard router 체인 적용 | `infra/01-gateway/traefik/docker-compose.yml` | REQ-GW-TRAEFIK-ROUTER | `dashboard-auth@file,gateway-standard-chain@file` 적용 |
 | PLN-GW-003 | Nginx readonly 템플릿+tmpfs 전환 | `infra/01-gateway/nginx/docker-compose.yml` | REQ-GW-NGINX-READONLY | readonly 템플릿 + 필수 tmpfs + `/ping` healthcheck |
 | PLN-GW-004 | Nginx timeout/failover/cache 하드닝 | `infra/01-gateway/nginx/config/nginx.conf` | REQ-GW-NGINX-HARDEN | `server_tokens`, timeout, upstream fail params, `proxy_next_upstream`, static cache 정책 적용 |
-| PLN-GW-005 | Gateway hardening 검증 스크립트 추가 | `scripts/hardening/check-gateway-hardening.sh`, `scripts/README.md` | REQ-GW-VERIFY-AUTO | 스크립트 non-zero fail/zero pass 동작 |
-| PLN-GW-006 | CI Strict Gate 연결 | `.github/workflows/ci-quality.yml` | REQ-GW-CI-GATE | `gateway-hardening` job 필수 실행 |
+| PLN-GW-005 | Gateway hardening 검증 스크립트 추가 | `scripts/hardening/check-all-hardening.sh 01-gateway`, `scripts/README.md` | REQ-GW-VERIFY-AUTO | 스크립트 non-zero fail/zero pass 동작 |
+| PLN-GW-006 | CI Strict Gate 연결 | `.github/workflows/ci-quality.yml` | REQ-GW-CI-GATE | `infrastructure-hardening` job 필수 실행 |
 | PLN-GW-007 | 문서 추적성 동기화 | `docs/04.execution/plans/**`, `docs/04.execution/tasks/**`, `docs/05.operations/{guides,policies,runbooks}/01-gateway/**` | REQ-GW-DOC-TRACE | 상호 링크/README 인덱스 반영 |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-GW-001 | Structural | Gateway 하드닝 정책 정적 검증 | `bash scripts/hardening/check-gateway-hardening.sh` | 실패 0건 |
+| VAL-GW-001 | Structural | Gateway 하드닝 정책 정적 검증 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | 실패 0건 |
 | VAL-GW-002 | Compliance | 템플릿/보안 기준선 검증 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
 | VAL-GW-003 | Traceability | execution/operations 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
 | VAL-GW-004 | Compose | Compose 해석 검증 | `docker compose config` | 오류 없이 출력 |
@@ -74,7 +74,7 @@ status: active
 
 ## Agent Rollout & Evaluation Gates (If Applicable)
 
-- **Offline Eval Gate**: 정적 체크 3종(`gateway-hardening`, `template-security`, `doc-traceability`) 통과
+- **Offline Eval Gate**: 정적 체크 3종(`infrastructure-hardening`, `template-security`, `doc-traceability`) 통과
 - **Sandbox / Canary Rollout**: Traefik 반영 후 Nginx 반영 순서 고정
 - **Human Approval Gate**: Infra/Ops reviewer 승인 후 병합
 - **Rollback Trigger**: 인증 루프, 대량 429, `/ping` 실패 발생 시 직전 커밋 복구

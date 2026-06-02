@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md -->
 
@@ -21,12 +21,12 @@ status: active
   - Airflow/n8n 경로를 gateway 표준+SSO 정책으로 정렬한다.
   - orchestrator/runtime startup을 health 기반으로 안정화한다.
   - n8n custom image의 non-root/secret guard 계약을 compose 기본값으로 반영한다.
-  - workflow 전용 하드닝 검증 스크립트 및 CI 게이트를 도입한다.
+  - workflow tier 하드닝 검증 명령 및 CI 게이트를 도입한다.
   - 카탈로그 확장 항목을 문서/태스크로 실행 가능하게 만든다.
 - **In Scope**:
   - `infra/07-workflow/airflow/docker-compose.yml`
   - `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,docker-entrypoint.sh}`
-  - `scripts/hardening/check-workflow-hardening.sh`
+  - `scripts/hardening/check-all-hardening.sh 07-workflow`
   - `scripts/README.md`
   - `.github/workflows/ci-quality.yml`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` workflow optimization-hardening 문서/README
@@ -34,7 +34,7 @@ status: active
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - Airbyte 서비스 즉시 배포
+  - 신규 workflow service 즉시 배포
   - 개별 DAG/workflow 로직 리팩터링
 - **Out of Scope**:
   - workflow tier 외 인프라 직접 변경
@@ -48,9 +48,9 @@ status: active
 | PLN-WRK-002 | Airflow health-gated dependency 강화 | `infra/07-workflow/airflow/docker-compose.yml` | REQ-PRD-WRK-FUN-02 | `service_healthy` 계약 확인 |
 | PLN-WRK-003 | n8n worker/task-runner health/dependency 보강 | `infra/07-workflow/n8n/docker-compose.yml` | REQ-PRD-WRK-FUN-03 | healthcheck/depends_on 확인 |
 | PLN-WRK-004 | n8n custom image 및 entrypoint hardening 반영 | `infra/07-workflow/n8n/{Dockerfile,docker-entrypoint.sh,docker-compose.yml}` | REQ-PRD-WRK-FUN-04 | non-root/secret guard 확인 |
-| PLN-WRK-005 | workflow hardening script + CI 게이트 추가 | `scripts/hardening/check-workflow-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-WRK-FUN-05 | script/CI job 확인 |
+| PLN-WRK-005 | workflow hardening command + CI 게이트 정렬 | `scripts/hardening/check-all-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-WRK-FUN-05 | script/CI job 확인 |
 | PLN-WRK-006 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-WRK-FUN-06 | 링크 정합성 확인 |
-| PLN-WRK-007 | 카탈로그 확장 항목 작업 분해(Airflow/n8n/airbyte) | Plan/Task/Ops/Guide docs | REQ-PRD-WRK-FUN-07 | 태스크/정책 반영 확인 |
+| PLN-WRK-007 | 카탈로그 확장 항목 작업 분해(Airflow/n8n) | Plan/Task/Ops/Guide docs | REQ-PRD-WRK-FUN-07 | 태스크/정책 반영 확인 |
 
 ## Verification Plan
 
@@ -58,7 +58,7 @@ status: active
 | --- | --- | --- | --- | --- |
 | VAL-WRK-001 | Structural | Airflow compose 정적 검증 | `docker compose -f infra/07-workflow/airflow/docker-compose.yml config` | 오류 없음 |
 | VAL-WRK-002 | Structural | n8n compose 정적 검증 | `docker compose -f infra/07-workflow/n8n/docker-compose.yml config` | 오류 없음 |
-| VAL-WRK-003 | Compliance | workflow 하드닝 기준선 검증 | `bash scripts/hardening/check-workflow-hardening.sh` | 실패 0건 |
+| VAL-WRK-003 | Compliance | workflow 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 07-workflow` | 실패 0건 |
 | VAL-WRK-004 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
 | VAL-WRK-005 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
 
@@ -69,7 +69,7 @@ status: active
 | SSO 강화로 기존 운영 접근 경로 영향 | Medium | runbook에 예외/복구 절차 반영 |
 | custom image 빌드 실패로 배포 지연 | Medium | image pin 유지 + compose static 검증 선행 |
 | healthcheck 오탐으로 재시작 루프 | Medium | 프로세스 기반 최소 계약으로 시작, 운영 지표 기반 튜닝 |
-| airbyte artifact 부재로 계획 공백 | Medium | tasks에 별도 backlog 항목으로 명시 |
+| 미구현 workflow service 문서가 active chain에 남을 위험 | Medium | 미구현 service active 문서와 task row를 제거하고 archive tombstone ledger로만 추적 |
 
 ## Completion Criteria
 

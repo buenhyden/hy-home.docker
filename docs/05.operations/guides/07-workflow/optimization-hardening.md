@@ -26,7 +26,7 @@ status: active
 - Airflow/n8n 관리 경로를 gateway+SSO 정책에 정렬한다.
 - startup 안정성을 높이고 장애 전파를 줄인다.
 - workflow 하드닝 회귀를 script/CI로 조기 차단한다.
-- 카탈로그 확장 항목의 운영 기준(Airflow/n8n/airbyte)을 문서화한다.
+- 카탈로그 확장 항목의 운영 기준(Airflow/n8n)을 문서화한다.
 
 ### Prerequisites
 
@@ -54,7 +54,7 @@ status: active
 6. 카탈로그 확장 운영 기준 반영
    - Airflow DAG quality gate와 worker autoscale 기준을 정책 문서에 반영한다.
    - n8n workflow Git backup/Vault credential 기준을 정책 문서에 반영한다.
-   - airbyte infra artifact gap을 backlog로 추적한다.
+   - 미구현 workflow service 문서는 active operations chain에서 제거한다.
 
 ### Common Pitfalls
 

@@ -68,8 +68,8 @@ status: active
   - Kafka 3-node + optional RabbitMQ single-node
   - Traefik TLS termination + middleware policy
 - **Operational Evidence**:
-  - `scripts/hardening/check-messaging-hardening.sh`
-  - `.github/workflows/ci-quality.yml`의 `messaging-hardening` job
+  - `scripts/hardening/check-all-hardening.sh 05-messaging`
+  - `.github/workflows/ci-quality.yml`의 `infrastructure-hardening` job
 
 ## AI Agent Architecture Requirements (If Applicable)
 

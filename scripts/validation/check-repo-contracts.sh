@@ -25,6 +25,7 @@ allowed_docs=(
   "04.execution"
   "05.operations"
   "90.references"
+  "98.archive"
   "99.templates"
 )
 
@@ -63,6 +64,7 @@ done
 
 section "Template inventory"
 required_templates=(
+  "archive.template.md"
   "adr.template.md"
   "agent-design.template.md"
   "api-spec.template.md"
@@ -169,9 +171,11 @@ stage_roots = tuple(
         "docs/04.execution",
         "docs/05.operations",
         "docs/90.references",
+        "docs/98.archive",
     ]
 )
-allowed_statuses = {"draft", "active", "completed", "superseded"}
+active_statuses = {"draft", "active", "completed", "superseded"}
+archive_statuses = {"archived"}
 
 
 def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
@@ -194,6 +198,7 @@ for path in sorted(pathlib.Path("docs").rglob("*.md")):
         failures.append(f"{path}: missing target-stage frontmatter status")
         continue
     status = match.group(1)
+    allowed_statuses = archive_statuses if is_relative_to(path, pathlib.Path("docs/98.archive")) else active_statuses
     if status not in allowed_statuses:
         allowed = ", ".join(sorted(allowed_statuses))
         failures.append(f"{path}: unsupported target-stage status {status!r}; expected one of: {allowed}")
@@ -1604,6 +1609,7 @@ stage_roots = tuple(
         "docs/04.execution",
         "docs/05.operations",
         "docs/90.references",
+        "docs/98.archive",
     ]
 )
 tracked_suffixes = {".md", ".yaml", ".yml", ".graphql", ".proto"}
@@ -1719,6 +1725,8 @@ def classify(path: pathlib.Path) -> str | None:
 
     if is_relative_to(path, pathlib.Path("docs/90.references")) and path.suffix == ".md":
         return "Reference"
+    if is_relative_to(path, pathlib.Path("docs/98.archive")) and path.suffix == ".md":
+        return "Archive Tombstone"
 
     return None
 
@@ -1868,6 +1876,13 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Maintenance", ("## Maintenance",)),
         ("Related Documents", ("## Related Documents",)),
     ],
+    "Archive Tombstone": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Archive Metadata", ("## Archive Metadata",)),
+        ("Current Replacement", ("## Current Replacement",)),
+        ("Archive Ledger", ("## Archive Ledger",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
 }
 
 contract_requirements = {
@@ -1997,6 +2012,7 @@ stage_roots = tuple(
         "docs/04.execution",
         "docs/05.operations",
         "docs/90.references",
+        "docs/98.archive",
     ]
 )
 tracked_suffixes = {".md", ".yaml", ".yml", ".graphql", ".proto"}
@@ -2074,6 +2090,8 @@ def classify(path: pathlib.Path) -> str | None:
 
     if is_relative_to(path, pathlib.Path("docs/90.references")) and path.suffix == ".md":
         return "Reference"
+    if is_relative_to(path, pathlib.Path("docs/98.archive")) and path.suffix == ".md":
+        return "Archive Tombstone"
 
     return None
 
@@ -2221,6 +2239,13 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Definitions / Facts", ("## Definitions / Facts",)),
         ("Sources", ("## Sources",)),
         ("Maintenance", ("## Maintenance",)),
+        ("Related Documents", ("## Related Documents",)),
+    ],
+    "Archive Tombstone": [
+        ("Overview", ("## Overview (KR)",)),
+        ("Archive Metadata", ("## Archive Metadata",)),
+        ("Current Replacement", ("## Current Replacement",)),
+        ("Archive Ledger", ("## Archive Ledger",)),
         ("Related Documents", ("## Related Documents",)),
     ],
 }
@@ -2966,15 +2991,10 @@ deleted_entrypoints = {
 }
 
 historical_reference_roots = (
-    pathlib.Path("docs/01.requirements"),
-    pathlib.Path("docs/02.architecture"),
-    pathlib.Path("docs/04.execution"),
     pathlib.Path("docs/00.agent-governance/memory"),
 )
 
-reference_artifact_roots = (
-    pathlib.Path("docs/90.references"),
-)
+reference_artifact_roots = ()
 
 def is_relative_to(path: pathlib.Path, root: pathlib.Path) -> bool:
     try:

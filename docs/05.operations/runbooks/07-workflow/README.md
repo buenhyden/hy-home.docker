@@ -35,7 +35,6 @@
 
 ```text
 runbooks/07-workflow/
-├── airbyte.md
 ├── airflow-worker-recovery.md
 ├── airflow.md
 ├── n8n.md
@@ -52,7 +51,6 @@ runbooks/07-workflow/
 
 | Path | Purpose |
 | --- | --- |
-| [airbyte.md](./airbyte.md) | Airbyte runbook 문서 |
 | [airflow-worker-recovery.md](./airflow-worker-recovery.md) | Airflow Worker Recovery runbook 문서 |
 | [airflow.md](./airflow.md) | Airflow runbook 문서 |
 | [n8n.md](./n8n.md) | N8N runbook 문서 |

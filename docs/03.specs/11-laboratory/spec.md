@@ -16,7 +16,7 @@ status: active
   - compose 네트워크 경계(`infra_net` external) 계약
   - dashboard direct 노출 제거 계약
   - dozzle socket 최소권한(read-only) 계약
-  - `check-laboratory-hardening.sh` 정책 게이트 계약
+  - `check-all-hardening.sh 11-laboratory` 정책 게이트 계약
 - **Does Not Own**:
   - Keycloak realm 상세 정책
   - Traefik 코어 엔트리포인트/전역 라우팅
@@ -40,7 +40,7 @@ status: active
   - service mount 기반 healthcheck를 제공한다.
 - **Governance Contract**:
   - `scripts/hardening/check-all-hardening.sh 11-laboratory` 통과가 hardening 기준선이다.
-  - CI `laboratory-hardening` job이 PR 회귀를 차단한다.
+  - CI `infrastructure-hardening` job이 PR 회귀를 차단한다.
 
 ## Core Design
 

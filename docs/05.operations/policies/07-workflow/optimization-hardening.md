@@ -30,12 +30,12 @@ status: active
   - n8n task-runner는 `n8n`/`n8n-valkey` health 기반 의존성을 유지한다.
   - n8n compose 기본 이미지는 custom image(`hyhome/n8n:2.15.0-local`)를 사용한다.
   - n8n runtime은 non-root이며 entrypoint secret guard를 유지한다.
-  - workflow 변경은 `check-workflow-hardening.sh` 및 CI `workflow-hardening`을 통과해야 한다.
+  - workflow 변경은 `check-all-hardening.sh 07-workflow` 및 CI `infrastructure-hardening`을 통과해야 한다.
   - 문서(PRD~Procedure)는 optimization-hardening 링크를 유지한다.
 - **Allowed**:
   - Airflow DAG quality gate/worker autoscale 기준의 단계적 강화
   - n8n workflow Git backup/Vault credential 연계의 단계적 강화
-  - airbyte infra artifact gap 해소를 위한 backlog/설계 작업
+  - 미구현 workflow service 문서 제거 및 archive ledger 추적
 - **Disallowed**:
   - 무승인 middleware 완화
   - root runtime 복귀
@@ -67,9 +67,6 @@ status: active
 - **n8n 승인 조건**:
   - workflow Git backup 표준 운영 절차 수립
   - credential store Vault 연계 모델 및 롤백 절차 문서화
-- **airbyte 승인 조건**:
-  - infra artifact(Compose/README) 정식 정의
-  - connector 승격 기준(실험 -> 운영) 및 검증 체크리스트 수립
 
 ## AI Agent Policy Section (If Applicable)
 

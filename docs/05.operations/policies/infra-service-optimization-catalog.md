@@ -73,7 +73,7 @@ status: active
   - 자원 제한(`cpus`/`memory`) 미구성: **37/39**
   - `secrets` 미구성: **16/39**
 - 추가 관찰:
-  - `infra/07-workflow/airbyte`는 운영/런북 문서는 있으나 인프라 실체(Compose/README) 정의가 누락되어 온보딩 갭이 존재
+  - workflow tier의 미구현 서비스 문서는 active operations chain에서 제거하고 archive ledger로만 추적한다.
 
 ## Common Template Coverage Snapshot (2026-03-28)
 
@@ -200,8 +200,6 @@ status: active
   ([OPER](../guides/07-workflow/airflow.md), [RUN](../runbooks/07-workflow/airflow.md))
 - [n8n](../../../infra/07-workflow/n8n/README.md): 워크플로 버전관리/Git 백업 표준화, 자격증명 스토어 Vault 연계 강화
   ([OPER](../guides/07-workflow/n8n.md), [RUN](../runbooks/07-workflow/n8n.md))
-- [airbyte](../guides/07-workflow/airbyte.md): 현재 인프라 실체 정의(Compose/README) 우선 보강, 커넥터 승격 기준(실험→운영) 추가
-  ([RUN](../runbooks/07-workflow/airbyte.md))
 
 ### 08-ai
 

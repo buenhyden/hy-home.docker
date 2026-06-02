@@ -25,7 +25,7 @@ status: active
 
 ## When to Use
 
-- `laboratory-hardening` CI가 실패할 때
+- `infrastructure-hardening` CI가 실패할 때
 - dashboard/dozzle/portainer/redisinsight 접근 경계가 비정상일 때
 - dashboard direct 접근 경로가 재노출되었을 때
 - dozzle socket 권한 드리프트가 발생했을 때
@@ -66,7 +66,7 @@ status: active
 
 ### Observability and Evidence Sources
 
-- **Signals**: CI `laboratory-hardening`, ingress access logs, service logs
+- **Signals**: CI `infrastructure-hardening`, ingress access logs, service logs
 - **Evidence to Capture**:
   - 변경 전후 hardening check 결과
   - compose config 결과

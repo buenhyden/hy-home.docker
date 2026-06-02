@@ -26,7 +26,7 @@ status: active
 ## Controls
 
 - **Required**:
-  - 04-data 구성 변경은 `data-hardening` CI 게이트를 통과해야 한다.
+  - 04-data 구성 변경은 `infrastructure-hardening` CI 게이트를 통과해야 한다.
   - `supabase` 핵심 서비스 healthcheck 계약을 유지해야 한다.
   - `valkey-cluster-exporter` 시크릿 경로는 `/run/secrets/service_valkey_password`를 사용해야 한다.
   - `seaweedfs` expose 정의는 유효한 포트 토큰만 허용한다.
@@ -71,7 +71,7 @@ status: active
 ## AI Agent Policy Section (If Applicable)
 
 - **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: `data-hardening` + 공통 기준선 통과 필수
+- **Eval / Guardrail Threshold**: `infrastructure-hardening` + 공통 기준선 통과 필수
 - **Log / Trace Retention**: `06-observability` 정책 준수
 - **Safety Incident Thresholds**: 데이터 손상 의심, 장기 healthcheck fail, 복구 불가 상태 발생 시 즉시 runbook 전환
 

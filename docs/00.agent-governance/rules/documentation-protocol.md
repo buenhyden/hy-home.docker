@@ -16,13 +16,13 @@ Protocol for maintaining documentation consistency and governance traceability.
 
 - Use templates from `docs/99.templates/` for every new or modified target-stage
   document under `docs/01.requirements/`, `docs/02.architecture/`,
-  `docs/03.specs/`, `docs/04.execution/`, `docs/05.operations/`, and
-  `docs/90.references/`.
+  `docs/03.specs/`, `docs/04.execution/`, `docs/05.operations/`,
+  `docs/90.references/`, and `docs/98.archive/`.
 - Use only relative links; never use absolute `file://` links.
 - Keep `docs/00.agent-governance/` English-only.
 - Keep human-facing docs in Korean unless interoperability requires English terms.
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user approval.
-- Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/05`, `docs/90`, `docs/99`).
+- Active stage artifacts may exist only under canonical stage paths (`docs/01` to `docs/05`, `docs/90`, `docs/99`). Archive tombstones live under `docs/98.archive` and are not active artifacts.
 - Non-stage `docs/*` paths such as `docs/superpowers/` must not contain active specs or plans.
 - `README.md` files and root instruction shims (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`) are documentation surfaces for DOCS 3 unless a higher-priority runtime constraint explicitly exempts them.
 - Root instruction shims must remain thin; their `## Related Documents` sections should point to canonical governance and provider docs instead of duplicating policy.
@@ -36,6 +36,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 - **Frontmatter status (R5):** Every leaf document under `docs/01`–`docs/05`
   and `docs/90` MUST include YAML frontmatter with
   `status: draft | active | completed | superseded`.
+  Archive tombstones under `docs/98.archive` MUST use `status: archived`.
   Governance memory files (`docs/00.agent-governance/`) use `layer:`
   frontmatter instead. Template source files (`docs/99.templates/*.template.md`)
   always use `status: draft` and are exempt from the `layer:` requirement.
@@ -67,6 +68,7 @@ Protocol for maintaining documentation consistency and governance traceability.
 | `docs/00.agent-governance/memory/<note>.md`           | Governance Memory Note | `docs/99.templates/memory.template.md`       |
 | `docs/00.agent-governance/memory/progress.md`         | Agent Progress Log     | `docs/99.templates/progress.template.md`     |
 | `docs/90.references/`                                 | Reference              | `docs/99.templates/reference.template.md`    |
+| `docs/98.archive/`                                    | Archive Tombstone      | `docs/99.templates/archive.template.md`      |
 | `README.md` (per folder)                              | README                 | `docs/99.templates/readme.template.md`       |
 
 For optional supporting contracts under `docs/03.specs/<feature-id>/`, keep
@@ -88,6 +90,10 @@ See `docs/99.templates/README.md` for the full catalog and usage rules.
 7. Run checklist gates from `rules/task-checklists.md`.
 
 For `docs/90.references/`, verify that the document is stable reference context, contains source-backed facts, and does not define active policy, runtime truth, runbook procedure, plan, task evidence, or incident timeline.
+
+For `docs/98.archive/`, verify that the document is a tombstone only. It must
+record the original path, archive reason, and current replacement while removing
+stale original body content.
 
 ### 4.1 Template Deviation Audit
 
@@ -124,10 +130,19 @@ When legacy active-stage content is discovered in a non-stage `docs/*` path:
 2. Sync parent README files to the canonical path.
 3. Remove the legacy file and directory once no active references remain.
 
+When a whole document under `docs/01` to `docs/05` conflicts with current
+implementation and should leave the active chain:
+
+1. Remove active references to that document.
+2. Create a tombstone under `docs/98.archive/<original-stage>/<original-path>.md`.
+3. Record the migration in `docs/98.archive/README.md`.
+4. Do not link active documents back to the archive tombstone.
+
 ## 6. Maintenance and Safety
 
 - Remove obsolete instructions quickly in editable scope.
 - If breakages are found in read-only stages (`docs/01` to `docs/99`), log them in `docs/00.agent-governance/memory/` with recommended fixes.
+- Move implementation-conflicting whole-document old material to `docs/98.archive` tombstones instead of preserving stale body text in active docs.
 - Keep policy wording concise, explicit, and conflict-free.
 
 ## 7. File Naming Conventions

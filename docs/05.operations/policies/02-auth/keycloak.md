@@ -52,7 +52,7 @@ status: active
 ## AI Agent Policy Section (If Applicable)
 
 - **Model / Prompt Change Process**: N/A
-- **Eval / Guardrail Threshold**: auth-hardening 스크립트 실패 0건
+- **Eval / Guardrail Threshold**: check-all-hardening.sh 02-auth 실패 0건
 - **Log / Trace Retention**: 인증 로그 보존 정책은 관측성 기준 준수
 - **Safety Incident Thresholds**: readiness 실패 지속, 로그인 실패 급증, realm 설정 오류 시 런북 절차 수행
 

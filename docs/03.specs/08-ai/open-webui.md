@@ -9,11 +9,12 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 Open WebUI의 기술 설계와 구현 계약을 정의하는 명세서다. PRD 요구를 기술적으로 구체화하고, 인프라 배포 및 타 서비스(Ollama, Qdrant)와의 연동 기준이 된다.
+이 문서는 Open WebUI의 기술 설계와 구현 계약을 정의하는 명세서다. PRD 요구를 기술적으로 구체화하고, 인프라 배포 및 타 서비스(Ollama, Qdrant)와의 연동 기준이 된다. 현재 root `docker-compose.yml`에서 Open WebUI include는 주석 처리되어 있으므로, 이 문서는 standalone/root-commented optional 구현 계약을 설명한다.
 
 ## Strategic Boundaries & Non-goals
 
 - **Owns**: Deployment spec for `open-webui` service, environment configuration for RAG, local volume mapping.
+- **Runtime Surface**: `infra/08-ai/open-webui/docker-compose.yml` exists, but the root include is commented out; promote it to root-active only after explicit runtime approval.
 - **Does Not Own**: Ollama API endpoints (managed in `08-ai/ollama`), Qdrant server config (managed in `04-data/qdrant`).
 
 ## Related Inputs

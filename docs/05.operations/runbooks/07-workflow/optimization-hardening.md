@@ -25,7 +25,7 @@ status: active
 
 ## When to Use
 
-- `workflow-hardening` CI가 실패할 때
+- `infrastructure-hardening` CI가 실패할 때
 - Airflow/Flower/n8n 경로 접근 정책이 비정상일 때
 - Airflow worker/scheduler startup이 불안정할 때
 - n8n worker/task-runner 재시작 루프가 발생할 때
@@ -68,7 +68,7 @@ status: active
 
 ### Observability and Evidence Sources
 
-- **Signals**: CI `workflow-hardening`, container health, queue lag, scheduler heartbeat
+- **Signals**: CI `infrastructure-hardening`, container health, queue lag, scheduler heartbeat
 - **Evidence to Capture**:
   - 변경 전후 hardening check 결과
   - compose config 결과
@@ -90,7 +90,7 @@ status: active
 - **Model Fallback**: N/A
 - **Tool Disable / Revoke**: workflow 자동 변경 파이프라인 일시 중지(승인 필요)
 - **Eval Re-run**:
-  - `check-workflow-hardening`
+  - `check-all-hardening.sh 07-workflow`
   - `check-template-security-baseline`
   - `check-doc-traceability`
 - **Trace Capture**: CI logs + compose config + health 상태

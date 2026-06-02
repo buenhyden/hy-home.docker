@@ -35,8 +35,8 @@ Stage 00은 active policy와 catalog를 소유한다. Provider directories는 ru
   - Operations procedures unrelated to agent governance.
 - **Non-goals**:
   - Do not replace the existing service/tier architecture documents.
-  - Do not make HADS mandatory.
-  - Do not retire compatibility prompt files.
+  - Do not broaden the HADS mandatory profile beyond `docs/90.references/hads/`.
+  - Do not recreate retired Codex Markdown prompt files.
   - Do not create a separate active governance layer under provider directories.
 
 ## Quality Attributes
@@ -113,8 +113,7 @@ The Stage 00 canonical adapter model is the architecture boundary between policy
 
 - **PRD**: [Agent Governance Standardization Product Requirements](../../01.requirements/2026-06-01-agent-governance-standardization.md)
 - **ADR**: [ADR-0027: Stage 00 Canonical Adapter Model](../decisions/0027-stage-00-canonical-adapter-model.md)
-- **Phase 1 Plan**: [Agent Governance Phase 1 Diagnostic](../../04.execution/plans/2026-06-01-agent-governance-phase1-diagnostic.md)
-- **Phase 2 Plan**: [Agent Governance Phase 2 Alignment Plan](../../04.execution/plans/2026-06-01-agent-governance-phase2-alignment.md)
-- **Task**: [Agent Governance Stage 01/02 Alignment Task](../../04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md)
+- **Current Plan**: [Agent Governance Decision Items and Attachment-Gap Plan](../../04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md)
+- **Current Task**: [Agent Governance Missing Items Implementation Task](../../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md)
 - **Stage 00 Governance Hub**: [Agent governance](../../00.agent-governance/README.md)
 - **Operations**: [Operations index](../../05.operations/README.md)

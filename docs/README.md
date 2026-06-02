@@ -6,7 +6,7 @@
 
 `docs/`는 shared harness-engineering and agent-first engineering 목적에 맞춰 프로젝트의 요구사항, 아키텍처, 결정 사항, 기술 명세, 실행 증거, 운영 지식을 통합 관리하는 표준 공간입니다. 활성 문서는 허용된 taxonomy 안에서만 관리하며, 검증 스크립트가 이 계약을 강제합니다.
 
-현재 문서 흐름은 `01.requirements -> 02.architecture -> 03.specs -> 04.execution -> 05.operations`입니다. 보조 공간으로 `00.agent-governance`, `90.references`, `99.templates`를 사용합니다.
+현재 문서 흐름은 `01.requirements -> 02.architecture -> 03.specs -> 04.execution -> 05.operations`입니다. 보조 공간으로 `00.agent-governance`, `90.references`, `98.archive`, `99.templates`를 사용합니다.
 
 ## Audience
 
@@ -52,6 +52,7 @@ docs/
 │   ├── runbooks/
 │   └── incidents/
 ├── 90.references/              # 느리게 변하는 참고 지식, 표준, 학습 로드맵, LLM Wiki
+├── 98.archive/                 # active chain에서 제거된 old 문서 tombstone
 ├── 99.templates/               # stage 문서 작성을 위한 표준 템플릿
 └── README.md                   # This file
 ```
@@ -71,6 +72,7 @@ docs/
 | execute recovery or repeatable procedures | `05.operations/runbooks/` |
 | record incidents or postmortems | `05.operations/incidents/` |
 | provide LLM-facing repository navigation | `90.references/llm-wiki/` |
+| trace removed old documents | `98.archive/` |
 
 ## Migration Map
 
@@ -121,6 +123,7 @@ docs/
 | `04.execution/tasks/` | 실제 수행 상태, evidence, deviation, completion record | `99.templates/task.template.md` |
 | `05.operations/` | guide, policy, runbook, incident/postmortem | `99.templates/operation.template.md`, incident/postmortem templates |
 | `90.references/` | active 판단을 대체하지 않는 stable reference | `99.templates/reference.template.md` |
+| `98.archive/` | active chain에서 제거된 old 문서 tombstone | `99.templates/archive.template.md` |
 | `99.templates/` | canonical template source and target-relative link rules | `99.templates/readme.template.md` |
 
 문서 lifecycle은 requirement → architecture → specification → execution → operations 순서로 흐릅니다. Reference는 lifecycle을 보조하고, template은 lifecycle 문서의 구조와 링크 계산 기준을 제공합니다.
@@ -132,6 +135,7 @@ docs/
 - 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
 - README는 폴더 index이므로 파일 추가, 이동, 삭제가 있으면 parent README를 함께 갱신합니다.
 - 오래된 문서를 archive/reference로 옮기거나 삭제하려면 먼저 참조 검색과 migration note가 필요합니다.
+- 현재 구현과 상충하는 whole-document old 문서는 `98.archive/` tombstone으로 이동하고 active 문서에서는 archive로 역링크하지 않습니다.
 
 ## Template Usage
 
@@ -156,6 +160,7 @@ docs/
 | Incident | `05.operations/incidents/` | `99.templates/incident.template.md` |
 | Postmortem | `05.operations/incidents/` | `99.templates/postmortem.template.md` |
 | Reference | `90.references/` | `99.templates/reference.template.md` |
+| Archive Tombstone | `98.archive/` | `99.templates/archive.template.md` |
 | README | 각 폴더 | `99.templates/readme.template.md` |
 
 템플릿 없이 새 형식을 임의로 추가하기 전에 기존 문서 체계를 먼저 검토합니다. 동일 목적의 문서가 이미 존재하면 새 문서를 만들기보다 기존 문서를 확장하는 방식을 우선합니다.
@@ -205,6 +210,7 @@ bash scripts/validation/check-doc-traceability.sh
 - [90.references/llm-wiki/README.md](90.references/llm-wiki/README.md)
 - [90.references/llm-wiki/repository-map.md](90.references/llm-wiki/repository-map.md)
 - [90.references/llm-wiki/index.md](90.references/llm-wiki/index.md)
+- [98.archive/README.md](98.archive/README.md)
 - [99.templates/README.md](99.templates/README.md)
 - [../README.md](../README.md)
 - [../infra/README.md](../infra/README.md)

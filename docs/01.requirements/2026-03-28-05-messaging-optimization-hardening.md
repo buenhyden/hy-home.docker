@@ -39,12 +39,12 @@ status: draft
 - **REQ-PRD-MSG-FUN-02**: Kafka UI/RabbitMQ 관리 라우터는 SSO 미들웨어 체인을 강제해야 한다.
 - **REQ-PRD-MSG-FUN-03**: Kafka UI 이미지는 부동 태그를 금지하고 고정 버전을 사용해야 한다.
 - **REQ-PRD-MSG-FUN-04**: `docker-compose.dev.yml` 경로 정합성을 보장해야 한다.
-- **REQ-PRD-MSG-FUN-05**: `scripts/hardening/check-messaging-hardening.sh`와 CI `messaging-hardening` job을 제공해야 한다.
+- **REQ-PRD-MSG-FUN-05**: `scripts/hardening/check-all-hardening.sh 05-messaging`와 CI `infrastructure-hardening` job을 제공해야 한다.
 - **REQ-PRD-MSG-FUN-06**: 01~09 문서 계층에서 메시징 최적화/하드닝 문서 상호 링크를 유지해야 한다.
 
 ## Success Criteria
 
-- **REQ-PRD-MSG-MET-01**: `bash scripts/hardening/check-messaging-hardening.sh` 실패 0건
+- **REQ-PRD-MSG-MET-01**: `bash scripts/hardening/check-all-hardening.sh 05-messaging` 실패 0건
 - **REQ-PRD-MSG-MET-02**: Kafka/RabbitMQ compose 정적 검증 명령 통과
 - **REQ-PRD-MSG-MET-03**: 메시징 노출 라우터의 middleware 계약 충족
 - **REQ-PRD-MSG-MET-04**: 05-messaging optimization-hardening 문서의 양방향 링크 정합성 확보
@@ -55,7 +55,7 @@ status: draft
   - `infra/05-messaging/kafka/docker-compose.yml`
   - `infra/05-messaging/kafka/docker-compose.dev.yml`
   - `infra/05-messaging/rabbitmq/docker-compose.yml`
-  - `scripts/hardening/check-messaging-hardening.sh`
+  - `scripts/hardening/check-all-hardening.sh 05-messaging`
   - `.github/workflows/ci-quality.yml`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` 메시징 optimization-hardening 문서
 - **Out of Scope**:
@@ -77,7 +77,7 @@ status: draft
 - **Allowed Actions**: 메시징 compose/script/docs/ci 변경 및 정적 검증 실행
 - **Disallowed Actions**: 부동 태그 재도입, 무근거 포트 노출 확대, 무검증 라우팅 정책 변경
 - **Human-in-the-loop Requirement**: 운영 접근 정책 완화, 대규모 HA 확장은 승인 후 수행
-- **Evaluation Expectation**: `messaging-hardening`, `template-security-baseline`, `doc-traceability` 통과
+- **Evaluation Expectation**: `infrastructure-hardening`, `template-security-baseline`, `doc-traceability` 통과
 
 ## Related Documents
 

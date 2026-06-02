@@ -41,7 +41,7 @@ status: draft
 
 ## Success Criteria
 
-- **REQ-PRD-MET-01**: `bash scripts/hardening/check-auth-hardening.sh`가 로컬/CI에서 모두 성공한다.
+- **REQ-PRD-MET-01**: `bash scripts/hardening/check-all-hardening.sh 02-auth`가 로컬/CI에서 모두 성공한다.
 - **REQ-PRD-MET-02**: `docs/04.execution/plans`, `docs/05.operations`, `docs/05.operations` 추적성 검증이 성공한다.
 - **REQ-PRD-MET-03**: 인증 경로 주요 장애 유형(세션 루프, OIDC 연결 실패, 설정 회귀)에 대한 실행 가능한 런북이 최신 상태다.
 
@@ -49,7 +49,7 @@ status: draft
 
 - **In Scope**:
   - `infra/02-auth/keycloak/*`, `infra/02-auth/oauth2-proxy/*` 하드닝
-  - `scripts/hardening/check-auth-hardening.sh`, CI 게이트 추가
+  - `scripts/hardening/check-all-hardening.sh 02-auth`, CI 게이트 추가
   - PRD~Runbook 문서 동기화 및 README 인덱스 갱신
 - **Out of Scope**:
   - 신규 인증 프로토콜 도입(SAML/LDAP 신규 통합)

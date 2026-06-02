@@ -30,10 +30,10 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
   - `04-data` management PostgreSQL
 - **Does Not Own**:
   - DAG/workflow 내부 도메인 로직
-  - Airbyte production artifact 구현
+  - 신규 workflow service production artifact 구현
 - **Non-goals**:
   - 즉시 다중 region/cluster workflow 운영
-  - Airbyte full deployment 즉시 활성화
+  - 신규 workflow service full deployment 즉시 활성화
 
 ## Quality Attributes
 
@@ -42,7 +42,7 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
 - **Reliability**: worker/task-runner healthcheck와 dependency gating으로 안정성을 강화한다.
 - **Scalability**: Airflow worker autoscale 기준과 queue metrics 기반 확장 정책을 준비한다.
 - **Observability**: workflow stack health를 compose/CI 수준에서 검증한다.
-- **Operability**: `check-workflow-hardening.sh`를 운영 기준선으로 사용한다.
+- **Operability**: `check-all-hardening.sh 07-workflow`를 운영 기준선으로 사용한다.
 
 ## System Overview & Context
 
@@ -71,8 +71,8 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
   - n8n queue mode + external runner
 - **Operational Evidence**:
   - `docker compose config` checks
-  - `scripts/hardening/check-workflow-hardening.sh`
-  - CI `workflow-hardening` job
+  - `scripts/hardening/check-all-hardening.sh 07-workflow`
+  - CI `infrastructure-hardening` job
 
 ## Catalog-aligned Expansion Targets
 
@@ -82,9 +82,7 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
 - **n8n**:
   - workflow versioning/Git backup 표준화
   - credential store Vault 연계 강화
-- **airbyte**:
-  - infra artifact(Compose/README) 부재 갭 해소 계획 수립
-  - connector 승격 기준(실험 -> 운영) 정의
+Tracked infra artifact가 없는 신규 workflow service는 active workflow architecture scope에서 제외한다.
 
 ## Related Documents
 

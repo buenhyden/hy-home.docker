@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md -->
 
@@ -26,7 +26,7 @@ status: active
   - `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml`
   - `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`
   - `infra/04-data/analytics/ksql/docker-compose.yml`
-  - `scripts/hardening/check-data-hardening.sh`
+  - `scripts/hardening/check-all-hardening.sh 04-data`
   - `.github/workflows/ci-quality.yml`
   - `scripts/README.md`
   - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` + 관련 README 인덱스
@@ -48,8 +48,8 @@ status: active
 | PLN-DATA-002 | Valkey exporter 시크릿 경로 계약 정합화 | `infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml` | REQ-PRD-DATA-FUN-02 | stale secret path 0건 |
 | PLN-DATA-003 | SeaweedFS expose 토큰 오타 제거 | `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml` | REQ-PRD-DATA-FUN-03 | malformed expose 토큰 0건 |
 | PLN-DATA-004 | ksql tier 라벨 정규화 | `infra/04-data/analytics/ksql/docker-compose.yml` | REQ-PRD-DATA-FUN-04 | `hy-home.tier: data` 확인 |
-| PLN-DATA-005 | 04-data 하드닝 검증 스크립트 추가 | `scripts/hardening/check-data-hardening.sh` | REQ-PRD-DATA-FUN-05 | 스크립트 pass/fail 정상 동작 |
-| PLN-DATA-006 | CI `data-hardening` job 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-DATA-FUN-05 | workflow 정적 점검 |
+| PLN-DATA-005 | 04-data 하드닝 검증 스크립트 추가 | `scripts/hardening/check-all-hardening.sh 04-data` | REQ-PRD-DATA-FUN-05 | 스크립트 pass/fail 정상 동작 |
+| PLN-DATA-006 | CI `infrastructure-hardening` job 추가 | `.github/workflows/ci-quality.yml` | REQ-PRD-DATA-FUN-05 | workflow 정적 점검 |
 | PLN-DATA-007 | scripts 인덱스 갱신 | `scripts/README.md` | REQ-PRD-DATA-FUN-05 | README 항목/사용 예시 반영 |
 | PLN-DATA-008 | PRD~Runbook 문서 생성/갱신 + 상호 링크 정합화 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-DATA-FUN-06 | 링크/인덱스 반영 확인 |
 
@@ -61,7 +61,7 @@ status: active
 | VAL-DATA-002 | Structural | Valkey compose 정적 검증 | `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml config` | 오류 없음 |
 | VAL-DATA-003 | Structural | SeaweedFS compose 정적 검증 | `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml config` | 오류 없음 |
 | VAL-DATA-004 | Structural | ksql compose 정적 검증 | `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config` | 오류 없음 |
-| VAL-DATA-005 | Compliance | 04-data 하드닝 검증 | `bash scripts/hardening/check-data-hardening.sh` | 실패 0건 |
+| VAL-DATA-005 | Compliance | 04-data 하드닝 검증 | `bash scripts/hardening/check-all-hardening.sh 04-data` | 실패 0건 |
 | VAL-DATA-006 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
 | VAL-DATA-007 | Traceability | 문서 추적성 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
 
@@ -76,7 +76,7 @@ status: active
 
 ## Agent Rollout & Evaluation Gates (If Applicable)
 
-- **Offline Eval Gate**: `check-data-hardening`, `check-template-security-baseline`, `check-doc-traceability`
+- **Offline Eval Gate**: `check-all-hardening.sh 04-data`, `check-template-security-baseline`, `check-doc-traceability`
 - **Sandbox / Canary Rollout**: 04-data 서비스별 compose config 검증 후 단계 반영
 - **Human Approval Gate**: HA 확장/보존 정책/외부 노출 정책 변경 시 운영 승인 필수
 - **Rollback Trigger**: healthcheck fail 지속, exporter 인증 실패, compose 파싱 오류
