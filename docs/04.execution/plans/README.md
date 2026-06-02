@@ -68,6 +68,7 @@ docs/04.execution/plans/
 ├── 2026-06-02-agent-governance-phase-2-strategy-integration.md # Completed agent governance Phase 2 strategy integration plan
 ├── 2026-06-02-agent-governance-phase-3-approved-surface-activation.md # Completed agent governance Phase 3 approved surface activation plan
 ├── 2026-06-02-agent-governance-phase-4-closure-reconciliation.md # Completed agent governance Phase 4 closure reconciliation plan
+├── 2026-06-02-docs-implementation-reconciliation.md # Completed docs implementation reconciliation plan
 └── README.md                               # This file
 ```
 
@@ -146,3 +147,4 @@ Plan은 implementation task list가 아니라 실행 설계입니다. 다음 질
 - **Agent Governance Phase 2 Strategy Integration Plan**: [2026-06-02-agent-governance-phase-2-strategy-integration.md](./2026-06-02-agent-governance-phase-2-strategy-integration.md)
 - **Agent Governance Phase 3 Approved Surface Activation Plan**: [2026-06-02-agent-governance-phase-3-approved-surface-activation.md](./2026-06-02-agent-governance-phase-3-approved-surface-activation.md)
 - **Agent Governance Phase 4 Closure Reconciliation Plan**: [2026-06-02-agent-governance-phase-4-closure-reconciliation.md](./2026-06-02-agent-governance-phase-4-closure-reconciliation.md)
+- **Docs Implementation Reconciliation Plan**: [2026-06-02-docs-implementation-reconciliation.md](./2026-06-02-docs-implementation-reconciliation.md)

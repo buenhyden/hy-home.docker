@@ -79,6 +79,8 @@ docs/04.execution/
 - [Workspace audit 2026-05 task](tasks/2026-05-26-workspace-audit.md) - execution evidence for stage README lifecycle sections, env/secrets comparison reports, and session spec traceability
 - [Workspace audit gap closure plan](plans/2026-05-26-workspace-audit-gap-closure.md) - gap closure plan for hook parity, skill count alignment, stage matrix, and tech-stack drift
 - [Workspace audit gap closure task](tasks/2026-05-26-workspace-audit-gap-closure.md) - execution evidence for GAP-NEW-03~09 closure and deferred item recording
+- [Docs implementation reconciliation plan](plans/2026-06-02-docs-implementation-reconciliation.md) - completed plan for Stage 01-05 current-implementation alignment and archive disposition
+- [Docs implementation reconciliation task](tasks/2026-06-02-docs-implementation-reconciliation.md) - execution evidence for the implementation-alignment validator, stale template cleanup, and CI/governance wiring
 
 ## Execution Contract
 
