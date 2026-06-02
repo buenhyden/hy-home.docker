@@ -1,0 +1,49 @@
+name: sample-web-service
+
+# Reference Compose definition. Demonstrates pinned image tag, healthcheck,
+# read-only rootfs with explicit tmpfs, dropped capabilities, no-new-privileges,
+# resource limits, log rotation, and secret-free configuration via env_file.
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sample-web-service:1.0.0
+    container_name: sample-web-service
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - '${WEB_HOST_PORT:-8080}:8080'
+    networks:
+      - sample-internal
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+      - /var/run
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://127.0.0.1:8080/']
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+networks:
+  sample-internal:
+    driver: bridge
