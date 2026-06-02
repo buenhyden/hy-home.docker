@@ -451,6 +451,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-05-29-workspace-consistency-2026-05b.md](../../04.execution/plans/2026-05-29-workspace-consistency-2026-05b.md) | Markdown reference |
 | [docs/04.execution/plans/2026-05-31-claude-harness-governance-verification.md](../../04.execution/plans/2026-05-31-claude-harness-governance-verification.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md](../../04.execution/plans/2026-06-02-agent-governance-decision-items-plan.md) | Markdown reference |
+| [docs/04.execution/plans/2026-06-02-governance-optimization.md](../../04.execution/plans/2026-06-02-governance-optimization.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -505,6 +506,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-05-29-workspace-consistency-2026-05b.md](../../04.execution/tasks/2026-05-29-workspace-consistency-2026-05b.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-05-31-claude-harness-governance-verification.md](../../04.execution/tasks/2026-05-31-claude-harness-governance-verification.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md](../../04.execution/tasks/2026-06-02-agent-governance-missing-items-implementation.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-06-02-governance-optimization.md](../../04.execution/tasks/2026-06-02-governance-optimization.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -602,6 +604,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/env-key-comparison.md](../../05.operations/guides/env-key-comparison.md) | Markdown reference |
 | [docs/05.operations/guides/harness-agent-first-engineering.md](../../05.operations/guides/harness-agent-first-engineering.md) | Markdown reference |
 | [docs/05.operations/guides/llm-wiki-maintenance.md](../../05.operations/guides/llm-wiki-maintenance.md) | Markdown reference |
+| [docs/05.operations/guides/new-service-onboarding.md](../../05.operations/guides/new-service-onboarding.md) | Markdown reference |
 | [docs/05.operations/guides/sensitive-env-vars-comparison.md](../../05.operations/guides/sensitive-env-vars-comparison.md) | Markdown reference |
 | [docs/05.operations/incidents/README.md](../../05.operations/incidents/README.md) | folder index |
 | [docs/05.operations/policies/0012-standardize-infra-net.md](../../05.operations/policies/0012-standardize-infra-net.md) | Markdown reference |
@@ -806,6 +809,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/99.templates/reference.template.md](../../99.templates/reference.template.md) | Markdown reference |
 | [docs/99.templates/runbook.template.md](../../99.templates/runbook.template.md) | Markdown reference |
 | [docs/99.templates/schema.template.graphql](../../99.templates/schema.template.graphql) | source path |
+| [docs/99.templates/service.template.md](../../99.templates/service.template.md) | Markdown reference |
 | [docs/99.templates/service.template.proto](../../99.templates/service.template.proto) | source path |
 | [docs/99.templates/spec.template.md](../../99.templates/spec.template.md) | Markdown reference |
 | [docs/99.templates/task.template.md](../../99.templates/task.template.md) | Markdown reference |
