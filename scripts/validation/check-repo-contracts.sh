@@ -3147,6 +3147,7 @@ expected_implementations = {
     pathlib.Path("scripts/operations/gen-secrets.sh"),
     pathlib.Path("scripts/operations/use-qa-ci-tools.sh"),
     pathlib.Path("scripts/operations/sync-provider-surfaces.sh"),
+    pathlib.Path("scripts/operations/sync-tech-stack-versions.sh"),
 }
 implementation_scripts = sorted(
     path

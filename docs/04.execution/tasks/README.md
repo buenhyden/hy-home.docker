@@ -72,6 +72,7 @@ docs/04.execution/tasks/
 ├── 2026-06-02-agent-governance-phase-3-approved-surface-activation.md # Completed agent governance Phase 3 approved surface activation task record
 ├── 2026-06-02-agent-governance-phase-4-closure-reconciliation.md # Completed agent governance Phase 4 closure reconciliation task record
 ├── 2026-06-02-docs-implementation-reconciliation.md # Completed docs implementation reconciliation task record
+├── 2026-06-03-governance-surgical-reverification.md # Completed governance surgical re-verification and tech-stack drift closure task record
 └── README.md                                # This file
 ```
 
@@ -149,3 +150,4 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Agent Governance Phase 3 Approved Surface Activation Task**: [2026-06-02-agent-governance-phase-3-approved-surface-activation.md](./2026-06-02-agent-governance-phase-3-approved-surface-activation.md)
 - **Agent Governance Phase 4 Closure Reconciliation Task**: [2026-06-02-agent-governance-phase-4-closure-reconciliation.md](./2026-06-02-agent-governance-phase-4-closure-reconciliation.md)
 - **Docs Implementation Reconciliation Task**: [2026-06-02-docs-implementation-reconciliation.md](./2026-06-02-docs-implementation-reconciliation.md)
+- **Governance Surgical Re-Verification Task**: [2026-06-03-governance-surgical-reverification.md](./2026-06-03-governance-surgical-reverification.md)

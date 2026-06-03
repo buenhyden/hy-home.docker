@@ -1,0 +1,41 @@
+name: Tech-Stack Version Sync
+
+# Guard infra/tech-stack.versions.json (a curated drift gate, downstream of the
+# Docker Compose image declarations) when a PR changes compose image tags.
+#
+# Repository security governance forbids contents: write in workflows, so this
+# job does NOT auto-commit. It runs the sync script in read-only --check mode and
+# fails the PR with an actionable message when the registry drifts from compose
+# (for example after a Dependabot docker-compose bump). The fix is one command:
+#   bash scripts/operations/sync-tech-stack-versions.sh
+# committed to the PR branch by the author/maintainer.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docker-compose.yml'
+      - 'infra/**/docker-compose*.yml'
+      - 'infra/tech-stack.versions.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tech-stack-version-sync-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  drift-gate:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Check tech-stack registry is synced to compose tags
+        run: bash scripts/operations/sync-tech-stack-versions.sh --check

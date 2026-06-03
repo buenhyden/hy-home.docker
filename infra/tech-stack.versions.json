@@ -15,7 +15,7 @@
     {
       "component": "Keycloak",
       "tier": "02-auth",
-      "images": ["quay.io/keycloak/keycloak:26.6.2-1"],
+      "images": ["quay.io/keycloak/keycloak:26.6.2-2"],
       "compose_files": ["infra/02-auth/keycloak/docker-compose.yml"]
     },
     {
@@ -30,7 +30,7 @@
       "images": [
         "postgres:18-alpine",
         "ghcr.io/zalando/spilo-17:4.0-p3",
-        "supabase/postgres:17.6.1.129"
+        "supabase/postgres:17.6.1.132"
       ],
       "compose_files": [
         "infra/04-data/operational/mng-db/docker-compose.yml",
@@ -64,13 +64,13 @@
     {
       "component": "Prometheus",
       "tier": "06-observability",
-      "images": ["prom/prometheus:v3.11.3"],
+      "images": ["prom/prometheus:v3.12.0"],
       "compose_files": ["infra/06-observability/docker-compose.yml"]
     },
     {
       "component": "Grafana",
       "tier": "06-observability",
-      "images": ["grafana/grafana:13.0.1"],
+      "images": ["grafana/grafana:13.0.2"],
       "compose_files": ["infra/06-observability/docker-compose.yml"]
     },
     {
@@ -88,31 +88,31 @@
     {
       "component": "Alloy",
       "tier": "06-observability",
-      "images": ["grafana/alloy:v1.16.1"],
+      "images": ["grafana/alloy:v1.16.2"],
       "compose_files": ["infra/06-observability/docker-compose.yml"]
     },
     {
       "component": "Airflow",
       "tier": "07-workflow",
-      "images": ["apache/airflow:3.2.1"],
+      "images": ["apache/airflow:3.2.2"],
       "compose_files": ["infra/07-workflow/airflow/docker-compose.yml"]
     },
     {
       "component": "n8n",
       "tier": "07-workflow",
-      "images": ["hyhome/n8n:2.15.0-local", "n8nio/runners:2.21.7"],
+      "images": ["hyhome/n8n:2.15.0-local", "n8nio/runners:2.23.2"],
       "compose_files": ["infra/07-workflow/n8n/docker-compose.yml"]
     },
     {
       "component": "Ollama",
       "tier": "08-ai",
-      "images": ["ollama/ollama:0.24.0"],
+      "images": ["ollama/ollama:0.30.2"],
       "compose_files": ["infra/08-ai/ollama/docker-compose.yml"]
     },
     {
       "component": "Open WebUI",
       "tier": "08-ai",
-      "images": ["ghcr.io/open-webui/open-webui:v0.9.5-cuda"],
+      "images": ["ghcr.io/open-webui/open-webui:v0.9.6-cuda"],
       "compose_files": ["infra/08-ai/open-webui/docker-compose.yml"]
     },
     {
