@@ -28,7 +28,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
-    image: couchdb:3.5.1
+    image: couchdb:3.5.2
     container_name: couchdb-1
     read_only: false
     environment:
@@ -80,7 +80,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
-    image: couchdb:3.5.1
+    image: couchdb:3.5.2
     container_name: couchdb-2
     read_only: false
     environment:
@@ -127,7 +127,7 @@ services:
     extends:
       file: ../../../common-optimizations.yml
       service: template-stateful-med
-    image: couchdb:3.5.1
+    image: couchdb:3.5.2
     container_name: couchdb-3
     read_only: false
     environment:
