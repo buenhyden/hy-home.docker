@@ -48,7 +48,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
-    image: prom/prometheus:v3.11.3
+    image: prom/prometheus:v3.12.0
     container_name: infra-prometheus
     tmpfs:
       - /tmp
@@ -194,7 +194,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/alloy:v1.16.1
+    image: grafana/alloy:v1.16.2
     container_name: infra-alloy
     tmpfs:
       - /tmp
@@ -249,7 +249,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-med
-    image: grafana/grafana:13.0.1
+    image: grafana/grafana:13.0.2
     container_name: infra-grafana
     environment:
       GF_SERVER_ROOT_URL: https://grafana.${DEFAULT_URL}
@@ -444,7 +444,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-readonly-low
-    image: prom/pushgateway:v1.11.2
+    image: prom/pushgateway:v1.11.3
     container_name: pushgateway
     expose:
       - '${PUSHGATEWAY_PORT:-9091}'

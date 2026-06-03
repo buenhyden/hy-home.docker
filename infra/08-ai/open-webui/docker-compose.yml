@@ -17,7 +17,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: ghcr.io/open-webui/open-webui:v0.9.5-cuda
+    image: ghcr.io/open-webui/open-webui:v0.9.6-cuda
     container_name: open-webui
     environment:
       - OLLAMA_BASE_URL=http://ollama:${OLLAMA_PORT:-11434}

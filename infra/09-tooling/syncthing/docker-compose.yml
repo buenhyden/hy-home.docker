@@ -24,7 +24,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: syncthing/syncthing:2.1.0
+    image: syncthing/syncthing:2.1.1
     container_name: syncthing
     read_only: false
     ports:
