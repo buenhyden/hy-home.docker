@@ -10,7 +10,7 @@ layer: agentic
 - Applies To: `subagent-protocol.md` Model Policy (Gemini column), `providers/gemini.md`, `.agents/` reference surface
 - Tags: #governance #quality #model-policy
 - Retrieval Keywords: gemini model policy, gemini-3.5-flash, gemini-3.1-pro, gemini-3.5-pro, supervisor worker tier inversion
-- Last Verified: 2026-05-31
+- Last Verified: 2026-06-03
 
 ## Problem
 
@@ -62,6 +62,21 @@ contradictory stale reference in the governance agent catalog
   GPT-5.4-mini; Google Gemini 3.5 Flash (Google blog / MarkTechPost, 2026-05-20).
 - Drift fix verified: stale-model grep returns no hits post-edit.
 - `check-repo-contracts.sh` and `check-doc-traceability.sh` both `failures=0`.
+
+## 2026-06-03 Re-verification
+
+- Web re-verification on 2026-06-03 confirms the gating condition for the Gemini
+  tier decision is still unmet: `gemini-3.5-pro` is announced for June 2026 but is
+  **not yet GA** (only `gemini-3.5-flash` is live since 2026-05-19; Pro remains in
+  limited Vertex preview with no committed date). No Model Policy table change is
+  warranted; the Gemini supervisor=`gemini-3.1-pro` slot stays a logged soft spot.
+- Claude `opus-4.8` (2026-05-28) and `sonnet-4.6` remain current — no Claude drift.
+  Repository cross-check: `.claude/agents/*.md` resolve to 1 `opus` + 14 `sonnet`,
+  the `subagent-protocol.md` Model Policy table is unchanged, and a stale-model
+  string scan returns no hits.
+- Re-evaluation trigger is unchanged: revisit when `gemini-3.5-pro` reaches GA, then
+  re-sync `providers/gemini.md`, `GEMINI.md`, the `.agents/` surface, and re-run
+  `check-repo-contracts.sh`.
 
 ## Related Documents
 
