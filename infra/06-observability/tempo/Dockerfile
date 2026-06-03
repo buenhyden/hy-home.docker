@@ -1,4 +1,4 @@
-FROM grafana/tempo:2.10.5 AS upstream
+FROM grafana/tempo:3.0.0 AS upstream
 
 FROM alpine:3.23.4
 
