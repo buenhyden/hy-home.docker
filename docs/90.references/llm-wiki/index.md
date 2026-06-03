@@ -457,6 +457,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/plans/2026-06-02-agent-governance-phase-4-closure-reconciliation.md](../../04.execution/plans/2026-06-02-agent-governance-phase-4-closure-reconciliation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-docs-implementation-reconciliation.md](../../04.execution/plans/2026-06-02-docs-implementation-reconciliation.md) | Markdown reference |
 | [docs/04.execution/plans/2026-06-02-governance-optimization.md](../../04.execution/plans/2026-06-02-governance-optimization.md) | Markdown reference |
+| [docs/04.execution/plans/2026-06-03-governance-surgical-reverification.md](../../04.execution/plans/2026-06-03-governance-surgical-reverification.md) | Markdown reference |
 | [docs/04.execution/plans/README.md](../../04.execution/plans/README.md) | folder index |
 | [docs/04.execution/tasks/2026-03-26-01-gateway-tasks.md](../../04.execution/tasks/2026-03-26-01-gateway-tasks.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-03-26-02-auth-tasks.md](../../04.execution/tasks/2026-03-26-02-auth-tasks.md) | Markdown reference |
@@ -517,6 +518,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-06-02-agent-governance-phase-4-closure-reconciliation.md](../../04.execution/tasks/2026-06-02-agent-governance-phase-4-closure-reconciliation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-docs-implementation-reconciliation.md](../../04.execution/tasks/2026-06-02-docs-implementation-reconciliation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-governance-optimization.md](../../04.execution/tasks/2026-06-02-governance-optimization.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-06-03-governance-surgical-reverification.md](../../04.execution/tasks/2026-06-03-governance-surgical-reverification.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -1092,6 +1094,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/lib/hardening-lib.sh](../../../scripts/lib/hardening-lib.sh) | script |
 | [scripts/operations/gen-secrets.sh](../../../scripts/operations/gen-secrets.sh) | script |
 | [scripts/operations/sync-provider-surfaces.sh](../../../scripts/operations/sync-provider-surfaces.sh) | script |
+| [scripts/operations/sync-tech-stack-versions.sh](../../../scripts/operations/sync-tech-stack-versions.sh) | script |
 | [scripts/operations/use-qa-ci-tools.sh](../../../scripts/operations/use-qa-ci-tools.sh) | script |
 | [scripts/requirements.txt](../../../scripts/requirements.txt) | text entrypoint |
 | [scripts/validation/check-doc-implementation-alignment.sh](../../../scripts/validation/check-doc-implementation-alignment.sh) | script |
@@ -1119,6 +1122,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [.github/workflows/greetings.yml](../../../.github/workflows/greetings.yml) | YAML config |
 | [.github/workflows/pr-labeler.yml](../../../.github/workflows/pr-labeler.yml) | YAML config |
 | [.github/workflows/stale.yml](../../../.github/workflows/stale.yml) | YAML config |
+| [.github/workflows/tech-stack-version-sync.yml](../../../.github/workflows/tech-stack-version-sync.yml) | YAML config |
 
 ### Secret-handling policy
 
