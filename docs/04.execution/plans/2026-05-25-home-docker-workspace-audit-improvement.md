@@ -30,7 +30,7 @@ Read-only audit evidence found one blocking local gate: `bash scripts/validation
   - `docs/00.agent-governance/agents/agents/workflow-supervisor.md`
   - `projects/storybook/nextjs/README.md`
   - `scripts/README.md`
-  - `docs/05.operations/runbooks/release-management.md` and runbook README link
+  - `docs/05.operations/runbooks/00-workspace/release-management.md` and runbook README link
 
 ## Non-Goals & Out-of-Scope
 
@@ -57,7 +57,7 @@ Read-only audit evidence found one blocking local gate: `bash scripts/validation
 | PLN-003 | Register workspace audit revalidation routing in the supervisor catalog | `docs/00.agent-governance/agents/agents/workflow-supervisor.md` | AUD-2026-05-25 | Repo contract check passes |
 | PLN-004 | Document Storybook test and coverage commands | `projects/storybook/nextjs/README.md` | AUD-2026-05-25 | Storybook coverage command passes |
 | PLN-005 | Clarify hook validation no-payload behavior and Hookify supported events | `scripts/README.md` | AUD-2026-05-25 | Repo contract check passes |
-| PLN-006 | Add release-management runbook for manual release/tag readiness and rollback evidence | `docs/05.operations/runbooks/release-management.md`, `docs/05.operations/runbooks/README.md` | AUD-2026-05-25 | Operations purpose profile contract passes |
+| PLN-006 | Add release-management runbook for manual release/tag readiness and rollback evidence | `docs/05.operations/runbooks/00-workspace/release-management.md`, `docs/05.operations/runbooks/README.md` | AUD-2026-05-25 | Operations purpose profile contract passes |
 | PLN-007 | Record safe metadata-only comparisons and deferrals | task artifact, progress log | AUD-2026-05-25 | No secret values or `.env` values are printed or edited |
 
 ## Verification Plan
@@ -102,7 +102,7 @@ Read-only audit evidence found one blocking local gate: `bash scripts/validation
 
 - **Task**: [2026-05-25 home docker workspace audit improvement task](../tasks/2026-05-25-home-docker-workspace-audit-improvement.md)
 - **Operations**: [Operations index](../../05.operations/README.md)
-- **Release Management Runbook**: [release-management.md](../../05.operations/runbooks/release-management.md)
+- **Release Management Runbook**: [release-management.md](../../05.operations/runbooks/00-workspace/release-management.md)
 - **LLM Wiki Generated Index**: [index.md](../../90.references/llm-wiki/index.md)
 - **Workflow Supervisor**: [workflow-supervisor.md](../../00.agent-governance/agents/agents/workflow-supervisor.md)
 - **Scripts README**: [scripts README](../../../scripts/README.md)

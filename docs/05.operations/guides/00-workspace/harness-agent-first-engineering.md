@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/guides/harness-agent-first-engineering.md -->
+<!-- Target: docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md -->
 
 # Harness / Agent-first Engineering Usage Guide
 
@@ -111,5 +111,5 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 
 ## Related Documents
 
-- [Operations index](../README.md)
-- [Operations policy](../policies/harness-agent-first-engineering.md)
+- [Operations index](../../README.md)
+- [Operations policy](../../policies/00-workspace/harness-agent-first-engineering.md)

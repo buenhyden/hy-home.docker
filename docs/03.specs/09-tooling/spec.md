@@ -133,4 +133,4 @@ bash scripts/validation/check-doc-traceability.sh
 - **Guide**: [../../05.operations/guides/09-tooling/optimization-hardening.md](../../05.operations/guides/09-tooling/optimization-hardening.md)
 - **Policy**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/policies/09-tooling/optimization-hardening.md)
 - **Runbook**: [../../05.operations/runbooks/09-tooling/optimization-hardening.md](../../05.operations/runbooks/09-tooling/optimization-hardening.md)
-- **Catalog**: [../../05.operations/policies/infra-service-optimization-catalog.md](../../05.operations/policies/infra-service-optimization-catalog.md)
+- **Catalog**: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)

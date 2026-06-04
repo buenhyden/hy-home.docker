@@ -527,7 +527,11 @@ Graphify output is advisory navigation context only. This index is generated fro
 | Path | Role |
 | --- | --- |
 | [docs/05.operations/README.md](../../05.operations/README.md) | folder index |
-| [docs/05.operations/guides/0012-standardize-infra-net.md](../../05.operations/guides/0012-standardize-infra-net.md) | Markdown reference |
+| [docs/05.operations/guides/00-workspace/developer-setup.md](../../05.operations/guides/00-workspace/developer-setup.md) | Markdown reference |
+| [docs/05.operations/guides/00-workspace/env-key-comparison.md](../../05.operations/guides/00-workspace/env-key-comparison.md) | Markdown reference |
+| [docs/05.operations/guides/00-workspace/harness-agent-first-engineering.md](../../05.operations/guides/00-workspace/harness-agent-first-engineering.md) | Markdown reference |
+| [docs/05.operations/guides/00-workspace/new-service-onboarding.md](../../05.operations/guides/00-workspace/new-service-onboarding.md) | Markdown reference |
+| [docs/05.operations/guides/00-workspace/sensitive-env-vars-comparison.md](../../05.operations/guides/00-workspace/sensitive-env-vars-comparison.md) | Markdown reference |
 | [docs/05.operations/guides/01-gateway/01.setup.md](../../05.operations/guides/01-gateway/01.setup.md) | Markdown reference |
 | [docs/05.operations/guides/01-gateway/README.md](../../05.operations/guides/01-gateway/README.md) | folder index |
 | [docs/05.operations/guides/01-gateway/nginx.md](../../05.operations/guides/01-gateway/nginx.md) | Markdown reference |
@@ -612,15 +616,13 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/11-laboratory/optimization-hardening.md](../../05.operations/guides/11-laboratory/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/guides/11-laboratory/portainer.md](../../05.operations/guides/11-laboratory/portainer.md) | Markdown reference |
 | [docs/05.operations/guides/11-laboratory/redisinsight.md](../../05.operations/guides/11-laboratory/redisinsight.md) | Markdown reference |
+| [docs/05.operations/guides/12-infra-net/standardize-infra-net.md](../../05.operations/guides/12-infra-net/standardize-infra-net.md) | Markdown reference |
+| [docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md) | Markdown reference |
 | [docs/05.operations/guides/README.md](../../05.operations/guides/README.md) | folder index |
-| [docs/05.operations/guides/developer-setup.md](../../05.operations/guides/developer-setup.md) | Markdown reference |
-| [docs/05.operations/guides/env-key-comparison.md](../../05.operations/guides/env-key-comparison.md) | Markdown reference |
-| [docs/05.operations/guides/harness-agent-first-engineering.md](../../05.operations/guides/harness-agent-first-engineering.md) | Markdown reference |
-| [docs/05.operations/guides/llm-wiki-maintenance.md](../../05.operations/guides/llm-wiki-maintenance.md) | Markdown reference |
-| [docs/05.operations/guides/new-service-onboarding.md](../../05.operations/guides/new-service-onboarding.md) | Markdown reference |
-| [docs/05.operations/guides/sensitive-env-vars-comparison.md](../../05.operations/guides/sensitive-env-vars-comparison.md) | Markdown reference |
 | [docs/05.operations/incidents/README.md](../../05.operations/incidents/README.md) | folder index |
-| [docs/05.operations/policies/0012-standardize-infra-net.md](../../05.operations/policies/0012-standardize-infra-net.md) | Markdown reference |
+| [docs/05.operations/policies/00-workspace/common-optimizations-template-exceptions.md](../../05.operations/policies/00-workspace/common-optimizations-template-exceptions.md) | Markdown reference |
+| [docs/05.operations/policies/00-workspace/harness-agent-first-engineering.md](../../05.operations/policies/00-workspace/harness-agent-first-engineering.md) | Markdown reference |
+| [docs/05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md) | Markdown reference |
 | [docs/05.operations/policies/01-gateway/README.md](../../05.operations/policies/01-gateway/README.md) | folder index |
 | [docs/05.operations/policies/01-gateway/nginx.md](../../05.operations/policies/01-gateway/nginx.md) | Markdown reference |
 | [docs/05.operations/policies/01-gateway/traefik.md](../../05.operations/policies/01-gateway/traefik.md) | Markdown reference |
@@ -698,12 +700,11 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/policies/11-laboratory/optimization-hardening.md](../../05.operations/policies/11-laboratory/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/policies/11-laboratory/portainer.md](../../05.operations/policies/11-laboratory/portainer.md) | Markdown reference |
 | [docs/05.operations/policies/11-laboratory/redisinsight.md](../../05.operations/policies/11-laboratory/redisinsight.md) | Markdown reference |
+| [docs/05.operations/policies/12-infra-net/standardize-infra-net.md](../../05.operations/policies/12-infra-net/standardize-infra-net.md) | Markdown reference |
+| [docs/05.operations/policies/90-knowledge/llm-wiki-maintenance.md](../../05.operations/policies/90-knowledge/llm-wiki-maintenance.md) | Markdown reference |
 | [docs/05.operations/policies/README.md](../../05.operations/policies/README.md) | folder index |
-| [docs/05.operations/policies/common-optimizations-template-exceptions.md](../../05.operations/policies/common-optimizations-template-exceptions.md) | Markdown reference |
-| [docs/05.operations/policies/harness-agent-first-engineering.md](../../05.operations/policies/harness-agent-first-engineering.md) | Markdown reference |
-| [docs/05.operations/policies/infra-service-optimization-catalog.md](../../05.operations/policies/infra-service-optimization-catalog.md) | Markdown reference |
-| [docs/05.operations/policies/llm-wiki-maintenance.md](../../05.operations/policies/llm-wiki-maintenance.md) | Markdown reference |
-| [docs/05.operations/runbooks/0012-standardize-infra-net.md](../../05.operations/runbooks/0012-standardize-infra-net.md) | Markdown reference |
+| [docs/05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md](../../05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md) | Markdown reference |
+| [docs/05.operations/runbooks/00-workspace/release-management.md](../../05.operations/runbooks/00-workspace/release-management.md) | Markdown reference |
 | [docs/05.operations/runbooks/01-gateway/README.md](../../05.operations/runbooks/01-gateway/README.md) | folder index |
 | [docs/05.operations/runbooks/01-gateway/nginx.md](../../05.operations/runbooks/01-gateway/nginx.md) | Markdown reference |
 | [docs/05.operations/runbooks/01-gateway/traefik.md](../../05.operations/runbooks/01-gateway/traefik.md) | Markdown reference |
@@ -781,10 +782,9 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/runbooks/11-laboratory/optimization-hardening.md](../../05.operations/runbooks/11-laboratory/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/runbooks/11-laboratory/portainer.md](../../05.operations/runbooks/11-laboratory/portainer.md) | Markdown reference |
 | [docs/05.operations/runbooks/11-laboratory/redisinsight.md](../../05.operations/runbooks/11-laboratory/redisinsight.md) | Markdown reference |
+| [docs/05.operations/runbooks/12-infra-net/standardize-infra-net.md](../../05.operations/runbooks/12-infra-net/standardize-infra-net.md) | Markdown reference |
+| [docs/05.operations/runbooks/90-knowledge/llm-wiki-maintenance.md](../../05.operations/runbooks/90-knowledge/llm-wiki-maintenance.md) | Markdown reference |
 | [docs/05.operations/runbooks/README.md](../../05.operations/runbooks/README.md) | folder index |
-| [docs/05.operations/runbooks/harness-agent-first-engineering-validation.md](../../05.operations/runbooks/harness-agent-first-engineering-validation.md) | Markdown reference |
-| [docs/05.operations/runbooks/llm-wiki-maintenance.md](../../05.operations/runbooks/llm-wiki-maintenance.md) | Markdown reference |
-| [docs/05.operations/runbooks/release-management.md](../../05.operations/runbooks/release-management.md) | Markdown reference |
 
 ### Reference and template docs
 
@@ -1169,5 +1169,5 @@ Graphify output is advisory navigation context only. This index is generated fro
 
 - [LLM Wiki references](./README.md)
 - [LLM Wiki repository map](./repository-map.md)
-- [LLM Wiki maintenance guide](../../05.operations/guides/llm-wiki-maintenance.md)
+- [LLM Wiki maintenance guide](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)
 - [Agent governance hub](../../00.agent-governance/README.md)

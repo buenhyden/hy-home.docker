@@ -11,7 +11,7 @@ status: completed
 
 ## Context
 
-- 기준 카탈로그: [infra-service-optimization-catalog.md](../../05.operations/policies/infra-service-optimization-catalog.md)
+- 기준 카탈로그: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
 - 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
 - 대상 구성: `kafka`, `rabbitmq` compose + 관련 docs/ci/scripts
 

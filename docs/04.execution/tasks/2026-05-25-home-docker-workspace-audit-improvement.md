@@ -110,7 +110,7 @@ The only blocking local gate found before implementation was stale generated LLM
 | `docs/00.agent-governance/agents/agents/workflow-supervisor.md` | Documentation routing update | None |
 | `projects/storybook/nextjs/README.md` | Script documentation update | None |
 | `scripts/README.md` | Script behavior documentation update | None |
-| `docs/05.operations/runbooks/release-management.md` | New runbook | None |
+| `docs/05.operations/runbooks/00-workspace/release-management.md` | New runbook | None |
 | `docs/05.operations/runbooks/README.md` | Runbook index update | None |
 
 ## Verification Summary
@@ -193,7 +193,7 @@ No secret value was printed in this document; this row records ID, env-var, and 
 ## Related Documents
 
 - **Parent Plan**: [2026-05-25 home docker workspace audit improvement plan](../plans/2026-05-25-home-docker-workspace-audit-improvement.md)
-- **Operations / Runbook**: [Release management runbook](../../05.operations/runbooks/release-management.md)
+- **Operations / Runbook**: [Release management runbook](../../05.operations/runbooks/00-workspace/release-management.md)
 - **Reference**: [LLM Wiki generated index](../../90.references/llm-wiki/index.md)
 - **Governance Memory**: [progress.md](../../00.agent-governance/memory/progress.md)
 - **Scripts README**: [scripts README](../../../scripts/README.md)

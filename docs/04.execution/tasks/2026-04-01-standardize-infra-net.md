@@ -63,9 +63,9 @@ status: completed
 
 - **Spec**: [../../03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md)
 - **Plan**: [../plans/2026-04-01-standardize-infra-net.md](../plans/2026-04-01-standardize-infra-net.md)
-- **Guide**: [../../05.operations/guides/0012-standardize-infra-net.md](../../05.operations/guides/0012-standardize-infra-net.md)
-- **Runbook**: [../../05.operations/runbooks/0012-standardize-infra-net.md](../../05.operations/runbooks/0012-standardize-infra-net.md)
+- **Guide**: [../../05.operations/guides/12-infra-net/standardize-infra-net.md](../../05.operations/guides/12-infra-net/standardize-infra-net.md)
+- **Runbook**: [../../05.operations/runbooks/12-infra-net/standardize-infra-net.md](../../05.operations/runbooks/12-infra-net/standardize-infra-net.md)
 - **ARD**: [../../02.architecture/requirements/0026-standardize-infra-net.md](../../02.architecture/requirements/0026-standardize-infra-net.md)
 - **ADR**: [../../02.architecture/decisions/0026-standardize-infra-net.md](../../02.architecture/decisions/0026-standardize-infra-net.md)
-- **Operation**: [../../05.operations/policies/0012-standardize-infra-net.md](../../05.operations/policies/0012-standardize-infra-net.md)
+- **Operation**: [../../05.operations/policies/12-infra-net/standardize-infra-net.md](../../05.operations/policies/12-infra-net/standardize-infra-net.md)
 - **PRD**: [../../01.requirements/2026-04-01-standardize-infra-net.md](../../01.requirements/2026-04-01-standardize-infra-net.md)

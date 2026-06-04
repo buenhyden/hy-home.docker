@@ -83,7 +83,7 @@ bash scripts/validation/check-doc-traceability.sh
 
 - **Plan**: [../../04.execution/plans/2026-05-26-workspace-audit.md](../../04.execution/plans/2026-05-26-workspace-audit.md)
 - **Task**: [../../04.execution/tasks/2026-05-26-workspace-audit.md](../../04.execution/tasks/2026-05-26-workspace-audit.md)
-- **Env Key Comparison**: [../../05.operations/guides/env-key-comparison.md](../../05.operations/guides/env-key-comparison.md)
-- **Secrets Key Comparison**: [../../05.operations/guides/sensitive-env-vars-comparison.md](../../05.operations/guides/sensitive-env-vars-comparison.md)
+- **Env Key Comparison**: [../../05.operations/guides/00-workspace/env-key-comparison.md](../../05.operations/guides/00-workspace/env-key-comparison.md)
+- **Secrets Key Comparison**: [../../05.operations/guides/00-workspace/sensitive-env-vars-comparison.md](../../05.operations/guides/00-workspace/sensitive-env-vars-comparison.md)
 - **Stage Authoring Matrix**: [../../00.agent-governance/rules/stage-authoring-matrix.md](../../00.agent-governance/rules/stage-authoring-matrix.md)
 - **Progress Log**: [../../00.agent-governance/memory/progress.md](../../00.agent-governance/memory/progress.md)

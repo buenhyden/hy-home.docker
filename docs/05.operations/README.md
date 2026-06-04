@@ -71,7 +71,7 @@ docs/05.operations/
 4. 실제 사고 기록과 postmortem은 `incidents/`에 둡니다.
 5. 문서를 추가, 이동, 삭제하면 해당 parent `README.md`와 관련 bucket 링크를 함께 갱신합니다.
 
-특정 서비스에 속하지 않는 cross-service 또는 workspace-level 문서(예: `guides/developer-setup.md`, `policies/infra-service-optimization-catalog.md`, `runbooks/release-management.md`)는 서비스 하위 폴더 없이 tier root에 직접 둡니다.
+특정 서비스에 속하지 않는 cross-service 또는 workspace-level 문서(예: `guides/00-workspace/developer-setup.md`, `policies/00-workspace/infra-service-optimization-catalog.md`, `runbooks/00-workspace/release-management.md`)는 bucket root에 직접 두지 않고 의미별 하위 폴더에 둡니다. `guides/`, `policies/`, `runbooks/` root에는 해당 bucket `README.md`만 남깁니다.
 
 모든 서비스가 guide, policy, runbook을 모두 가질 필요는 없습니다. 소비자가 실제로 구분해서 찾아야 하는 문서만 추가합니다.
 

@@ -11,7 +11,7 @@ status: completed
 
 ## Context
 
-- 기준 카탈로그: [infra-service-optimization-catalog.md](../../05.operations/policies/infra-service-optimization-catalog.md)
+- 기준 카탈로그: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
 - 기준 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
 - 범위 결정:
   - Scope: `Config+Docs`
@@ -90,7 +90,7 @@ status: completed
 
 ## Related Documents
 
-- **Operations Catalog**: [infra-service-optimization-catalog.md](../../05.operations/policies/infra-service-optimization-catalog.md)
+- **Operations Catalog**: [infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
 - **Parent Priority Plan**: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
 - **Task**: [2026-03-28-01-gateway-optimization-hardening-tasks.md](../tasks/2026-03-28-01-gateway-optimization-hardening-tasks.md)
 - **Gateway Operations**: [01-gateway/README.md](../../05.operations/guides/01-gateway/README.md)

@@ -139,7 +139,7 @@ The prior 2026-05-25 audit closed the low-risk documentation and generated-index
 | `docs/04.execution/plans/README.md` | Parent index/link update | None |
 | `docs/04.execution/tasks/README.md` | Parent index/link update | None |
 | `docs/00.agent-governance/memory/progress.md` | Progress evidence update | None |
-| `docs/05.operations/runbooks/release-management.md` | Release tag/changelog gate clarification | None |
+| `docs/05.operations/runbooks/00-workspace/release-management.md` | Release tag/changelog gate clarification | None |
 | `docs/90.references/llm-wiki/index.md` | Generated index refresh if required | None |
 
 ## Verification Summary

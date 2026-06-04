@@ -76,5 +76,5 @@ status: draft
 
 - **Spec**: [./spec.md](./spec.md)
 - **Tests**: [./tests.md](./tests.md)
-- **Onboarding guide**: [../../05.operations/guides/new-service-onboarding.md](../../05.operations/guides/new-service-onboarding.md)
+- **Onboarding guide**: [../../05.operations/guides/00-workspace/new-service-onboarding.md](../../05.operations/guides/00-workspace/new-service-onboarding.md)
 - **Runbook, domain operations target**: [../../05.operations/runbooks/<domain>/<topic>.md](../../05.operations/runbooks/<domain>/<topic>.md)

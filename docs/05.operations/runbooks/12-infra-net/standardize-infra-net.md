@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/runbooks/0012-standardize-infra-net.md -->
+<!-- Target: docs/05.operations/runbooks/12-infra-net/standardize-infra-net.md -->
 
 # 0012 Standardize Infra Net Runbook
 
@@ -17,10 +17,10 @@ status: active
 
 ### Canonical References
 
-- [../../02.architecture/requirements/0026-standardize-infra-net.md](../../02.architecture/requirements/0026-standardize-infra-net.md)
-- [../../02.architecture/decisions/0026-standardize-infra-net.md](../../02.architecture/decisions/0026-standardize-infra-net.md)
-- [../../03.specs/standardize-infra-net/spec.md](../../03.specs/standardize-infra-net/spec.md)
-- [../../04.execution/plans/2026-04-01-standardize-infra-net.md](../../04.execution/plans/2026-04-01-standardize-infra-net.md)
+- [../../../02.architecture/requirements/0026-standardize-infra-net.md](../../../02.architecture/requirements/0026-standardize-infra-net.md)
+- [../../../02.architecture/decisions/0026-standardize-infra-net.md](../../../02.architecture/decisions/0026-standardize-infra-net.md)
+- [../../../03.specs/standardize-infra-net/spec.md](../../../03.specs/standardize-infra-net/spec.md)
+- [../../../04.execution/plans/2026-04-01-standardize-infra-net.md](../../../04.execution/plans/2026-04-01-standardize-infra-net.md)
 
 ## When to Use
 
@@ -98,6 +98,6 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Related Documents
 
-- [Operations index](../README.md)
-- [Usage guide](../guides/0012-standardize-infra-net.md)
-- [infra_net spec](../../03.specs/standardize-infra-net/spec.md)
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/12-infra-net/standardize-infra-net.md)
+- [infra_net spec](../../../03.specs/standardize-infra-net/spec.md)

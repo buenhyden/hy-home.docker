@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/runbooks/harness-agent-first-engineering-validation.md -->
+<!-- Target: docs/05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md -->
 
 # Harness Agent First Engineering Validation Operations
 
@@ -26,11 +26,11 @@ Root shim, governance, runtime mirror, Codex boundary, stage documentation, vali
 
 #### Canonical References
 
-- [Specification](../../03.specs/harness-agent-first-engineering/spec.md)
-- [Usage Guide](../guides/harness-agent-first-engineering.md)
-- [Operations Policy](../policies/harness-agent-first-engineering.md)
-- [Agent Governance Hub](../../00.agent-governance/README.md)
-- [Subagent Protocol](../../00.agent-governance/subagent-protocol.md)
+- [Specification](../../../03.specs/harness-agent-first-engineering/spec.md)
+- [Usage Guide](../../guides/00-workspace/harness-agent-first-engineering.md)
+- [Operations Policy](../../policies/00-workspace/harness-agent-first-engineering.md)
+- [Agent Governance Hub](../../../00.agent-governance/README.md)
+- [Subagent Protocol](../../../00.agent-governance/subagent-protocol.md)
 
 ### Steps
 
@@ -168,11 +168,11 @@ The runbook is successful when JSON parsing, hook payload simulation, Graphify h
 
 #### Related Operational Documents
 
-- [Operations Policy](../policies/harness-agent-first-engineering.md)
-- [Usage Guide](../guides/harness-agent-first-engineering.md)
-- [Plan](../../04.execution/plans/2026-05-09-harness-agent-first-engineering.md)
-- [Task Evidence](../../04.execution/tasks/2026-05-09-harness-agent-first-engineering.md)
-- [Agent Governance Hub](../../00.agent-governance/README.md)
+- [Operations Policy](../../policies/00-workspace/harness-agent-first-engineering.md)
+- [Usage Guide](../../guides/00-workspace/harness-agent-first-engineering.md)
+- [Plan](../../../04.execution/plans/2026-05-09-harness-agent-first-engineering.md)
+- [Task Evidence](../../../04.execution/tasks/2026-05-09-harness-agent-first-engineering.md)
+- [Agent Governance Hub](../../../00.agent-governance/README.md)
 
 ## Evidence
 
@@ -191,4 +191,4 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Related Documents
 
-- [Operations index](../README.md)
+- [Operations index](../../README.md)

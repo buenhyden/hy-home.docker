@@ -26,7 +26,7 @@ Local `main` already contains the 2026-05-25 workspace audit improvement commits
   - `docs/04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md`
   - Parent README links under `docs/03.specs/`, `docs/04.execution/plans/`, and `docs/04.execution/tasks/`
   - `docs/00.agent-governance/memory/progress.md`
-  - `docs/05.operations/runbooks/release-management.md` for doc-only tag/changelog gate clarification if reviewer evidence proves a mismatch
+  - `docs/05.operations/runbooks/00-workspace/release-management.md` for doc-only tag/changelog gate clarification if reviewer evidence proves a mismatch
   - Generated LLM Wiki index only if repo tooling requires it after intentional files are staged
 
 ## Non-Goals & Out-of-Scope
@@ -53,7 +53,7 @@ Local `main` already contains the 2026-05-25 workspace audit improvement commits
 | PLN-004 | Re-run repo-native validation suite | Task artifact | REV-2026-05-25 | Pass/advisory/deferred results recorded |
 | PLN-005 | Refresh generated LLM Wiki index if required by repo tooling | `docs/90.references/llm-wiki/index.md` if changed | REV-2026-05-25 | Generator check passes |
 | PLN-006 | Update governance progress log | `docs/00.agent-governance/memory/progress.md` | REV-2026-05-25 | Progress entry links this follow-up |
-| PLN-007 | Clarify release tag changelog gate discovered by CI/CD review | `docs/05.operations/runbooks/release-management.md` | REV-2026-05-25 | Runbook matches tag workflow guard |
+| PLN-007 | Clarify release tag changelog gate discovered by CI/CD review | `docs/05.operations/runbooks/00-workspace/release-management.md` | REV-2026-05-25 | Runbook matches tag workflow guard |
 
 ## Verification Plan
 
@@ -102,6 +102,6 @@ Local `main` already contains the 2026-05-25 workspace audit improvement commits
 - **Task**: [2026-05-25 home docker revalidation deferred follow-up task](../tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md)
 - **Baseline Plan**: [2026-05-25 home docker workspace audit improvement plan](./2026-05-25-home-docker-workspace-audit-improvement.md)
 - **Baseline Task**: [2026-05-25 home docker workspace audit improvement task](../tasks/2026-05-25-home-docker-workspace-audit-improvement.md)
-- **Release Runbook**: [release-management.md](../../05.operations/runbooks/release-management.md)
+- **Release Runbook**: [release-management.md](../../05.operations/runbooks/00-workspace/release-management.md)
 - **Governance Memory Progress**: [progress.md](../../00.agent-governance/memory/progress.md)
 - **Graphify Report**: [GRAPH_REPORT.md](../../../graphify-out/GRAPH_REPORT.md)

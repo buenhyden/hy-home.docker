@@ -103,6 +103,6 @@ Results:
 
 - [Specification](../../03.specs/harness-agent-first-engineering/spec.md)
 - [Plan](../plans/2026-05-09-harness-agent-first-engineering.md)
-- [Guide](../../05.operations/guides/harness-agent-first-engineering.md)
-- [Operations Policy](../../05.operations/policies/harness-agent-first-engineering.md)
-- [Validation Runbook](../../05.operations/runbooks/harness-agent-first-engineering-validation.md)
+- [Guide](../../05.operations/guides/00-workspace/harness-agent-first-engineering.md)
+- [Operations Policy](../../05.operations/policies/00-workspace/harness-agent-first-engineering.md)
+- [Validation Runbook](../../05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md)

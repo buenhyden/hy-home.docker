@@ -36,6 +36,7 @@
 
 ```text
 runbooks/
+├── 00-workspace/
 ├── 01-gateway/
 ├── 02-auth/
 ├── 03-security/
@@ -47,10 +48,8 @@ runbooks/
 ├── 09-tooling/
 ├── 10-communication/
 ├── 11-laboratory/
-├── 0012-standardize-infra-net.md
-├── harness-agent-first-engineering-validation.md
-├── llm-wiki-maintenance.md
-├── release-management.md
+├── 12-infra-net/
+├── 90-knowledge/
 └── README.md
 ```
 
@@ -64,6 +63,7 @@ runbooks/
 
 | Path | Purpose |
 | --- | --- |
+| [00-workspace/](./00-workspace/README.md) | Workspace-level runbook 문서 |
 | [01-gateway/](./01-gateway/README.md) | 01 Gateway runbook 문서 |
 | [02-auth/](./02-auth/README.md) | 02 Auth runbook 문서 |
 | [03-security/](./03-security/README.md) | 03 Security runbook 문서 |
@@ -75,10 +75,8 @@ runbooks/
 | [09-tooling/](./09-tooling/README.md) | 09 Tooling runbook 문서 |
 | [10-communication/](./10-communication/README.md) | 10 Communication runbook 문서 |
 | [11-laboratory/](./11-laboratory/README.md) | 11 Laboratory runbook 문서 |
-| [0012-standardize-infra-net.md](./0012-standardize-infra-net.md) | 0012 Standardize Infra Net runbook 문서 |
-| [harness-agent-first-engineering-validation.md](./harness-agent-first-engineering-validation.md) | Harness Agent First Engineering Validation runbook 문서 |
-| [llm-wiki-maintenance.md](./llm-wiki-maintenance.md) | Llm Wiki Maintenance runbook 문서 |
-| [release-management.md](./release-management.md) | Release Management runbook 문서 |
+| [12-infra-net/](./12-infra-net/README.md) | infra_net 검증 runbook 문서 |
+| [90-knowledge/](./90-knowledge/README.md) | Knowledge maintenance runbook 문서 |
 
 ## Related Documents
 

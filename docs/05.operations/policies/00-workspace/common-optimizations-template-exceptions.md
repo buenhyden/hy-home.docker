@@ -2,7 +2,7 @@
 status: active
 ---
 
-<!-- Target: docs/05.operations/policies/common-optimizations-template-exceptions.md -->
+<!-- Target: docs/05.operations/policies/00-workspace/common-optimizations-template-exceptions.md -->
 
 # Common Optimizations Template Exceptions Policy
 
@@ -23,7 +23,7 @@ status: active
 ## Controls
 
 - **Required**:
-  - 예외 목록 SSoT는 [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json) 단일 파일로 유지
+  - 예외 목록 SSoT는 [infra/common-optimizations.exceptions.json](../../../../infra/common-optimizations.exceptions.json) 단일 파일로 유지
   - `scripts/validation/check-quickwin-baseline.sh`는 해당 레지스트리를 직접 읽어 검증
   - 신규 예외 추가 시 `reason`, `owner_role`, `review_cadence`와 함께 갱신
 - **Allowed**:
@@ -36,7 +36,7 @@ status: active
 
 ## Exceptions
 
-- 템플릿/서비스 예외의 상세 항목은 [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json) 를 기준으로 한다.
+- 템플릿/서비스 예외의 상세 항목은 [infra/common-optimizations.exceptions.json](../../../../infra/common-optimizations.exceptions.json) 를 기준으로 한다.
 - 2026-03-28 기준 승인된 서비스 예외:
   - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init`
   - `secrets`: `etcd-1`, `etcd-2`, `etcd-3`
@@ -62,4 +62,4 @@ status: active
 
 ## Related Documents
 
-- [Operations index](../README.md)
+- [Operations index](../../README.md)

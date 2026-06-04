@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/guides/0012-standardize-infra-net.md -->
+<!-- Target: docs/05.operations/guides/12-infra-net/standardize-infra-net.md -->
 
 # 0012 Standardize Infra Net Usage Guide
 
@@ -63,10 +63,10 @@ status: active
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0012-standardize-infra-net.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/12-infra-net/standardize-infra-net.md)을 따른다.
 
 ## Related Documents
 
-- [Operations index](../README.md)
-- [infra_net spec](../../03.specs/standardize-infra-net/spec.md)
-- [Recovery runbook](../runbooks/0012-standardize-infra-net.md)
+- [Operations index](../../README.md)
+- [infra_net spec](../../../03.specs/standardize-infra-net/spec.md)
+- [Recovery runbook](../../runbooks/12-infra-net/standardize-infra-net.md)

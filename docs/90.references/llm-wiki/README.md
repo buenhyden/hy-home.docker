@@ -1,3 +1,5 @@
+<!-- README Target: docs/90.references/llm-wiki/README.md -->
+
 # LLM Wiki References
 
 > LLM 에이전트가 `hy-home.docker`를 안전하게 탐색하기 위한 repo-local reference index
@@ -68,7 +70,7 @@ llm-wiki/
 
 - [LLM entrypoint](../../../llms.txt)
 - [generated index](./index.md)
-- [maintenance guide](../../05.operations/guides/llm-wiki-maintenance.md)
+- [maintenance guide](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)
 - [90.references](../README.md)
 - [docs index](../../README.md)
 - [agent governance hub](../../00.agent-governance/README.md)

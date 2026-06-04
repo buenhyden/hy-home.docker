@@ -36,8 +36,8 @@ status: completed
 | T-008   | ops-runbook-agent 스킬 스텁            | impl | GAP-05                | `.claude/skills/ops-runbook-agent/skill.md` 존재                             | Done   |
 | T-009   | knowledge-map-agent 스킬 스텁          | impl | GAP-05                | `.claude/skills/knowledge-map-agent/skill.md` 존재                           | Done   |
 | T-010   | policy-gate-agent 스킬 스텁            | impl | GAP-05                | `.claude/skills/policy-gate-agent/skill.md` 존재                             | Done   |
-| T-011   | Env 키 비교 보고서 생성                | doc  | GAP-06                | `docs/05.operations/guides/env-key-comparison.md` 존재, 값 미포함            | Done   |
-| T-012   | Secrets 키 비교 보고서 생성            | doc  | GAP-07                | `docs/05.operations/guides/sensitive-env-vars-comparison.md` 존재, 값 미포함 | Done   |
+| T-011   | Env 키 비교 보고서 생성                | doc  | GAP-06                | `docs/05.operations/guides/00-workspace/env-key-comparison.md` 존재, 값 미포함            | Done   |
+| T-012   | Secrets 키 비교 보고서 생성            | doc  | GAP-07                | `docs/05.operations/guides/00-workspace/sensitive-env-vars-comparison.md` 존재, 값 미포함 | Done   |
 | T-013   | Stage README 라이프사이클 보강         | doc  | GAP-02                | docs/03~05, 90 README에 status frontmatter + Stage Handoff 추가              | Done   |
 | T-014   | Execution/Specs README 링크 추가       | doc  | GAP-10                | docs/04.execution/README.md, docs/03.specs/README.md 링크 업데이트           | Done   |
 | T-015   | progress.md 업데이트                   | doc  | GAP-12                | progress.md에 2026-05-26 항목 추가                                           | Done   |

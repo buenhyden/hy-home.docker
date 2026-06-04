@@ -60,7 +60,7 @@ ROOT_ENTRYPOINTS = {
 
 REQUIRED_LOCAL_PATHS = {
     "scripts/knowledge/generate-llm-wiki-index.sh",
-    "docs/05.operations/guides/llm-wiki-maintenance.md",
+    "docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md",
     "docs/00.agent-governance/agents/agents/wiki-curator.md",
     ".claude/agents/wiki-curator.md",
     "docs/03.specs/llm-wiki-agent-first-completion/spec.md",
@@ -307,7 +307,7 @@ def render(paths: list[str]) -> str:
         "",
         "- [LLM Wiki references](./README.md)",
         "- [LLM Wiki repository map](./repository-map.md)",
-        "- [LLM Wiki maintenance guide](../../05.operations/guides/llm-wiki-maintenance.md)",
+        "- [LLM Wiki maintenance guide](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)",
         "- [Agent governance hub](../../00.agent-governance/README.md)",
     ])
     return "\n".join(lines) + "\n"

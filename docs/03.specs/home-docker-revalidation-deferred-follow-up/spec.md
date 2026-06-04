@@ -24,7 +24,7 @@ status: completed
 - **Related ADRs**: 신규 ADR 없음. 런타임 또는 아키텍처 결정 변경이 없다.
 - **Baseline Plan**: [2026-05-25 home docker workspace audit improvement plan](../../04.execution/plans/2026-05-25-home-docker-workspace-audit-improvement.md)
 - **Baseline Task**: [2026-05-25 home docker workspace audit improvement task](../../04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md)
-- **Release Runbook**: [release-management.md](../../05.operations/runbooks/release-management.md)
+- **Release Runbook**: [release-management.md](../../05.operations/runbooks/00-workspace/release-management.md)
 
 ## Contracts
 
@@ -146,6 +146,6 @@ bash scripts/knowledge/report-graphify-health.sh
 - **Tasks**: [2026-05-25 home docker revalidation deferred follow-up task](../../04.execution/tasks/2026-05-25-home-docker-revalidation-deferred-follow-up.md)
 - **Baseline Plan**: [2026-05-25 home docker workspace audit improvement plan](../../04.execution/plans/2026-05-25-home-docker-workspace-audit-improvement.md)
 - **Baseline Task**: [2026-05-25 home docker workspace audit improvement task](../../04.execution/tasks/2026-05-25-home-docker-workspace-audit-improvement.md)
-- **Release Runbook**: [release-management.md](../../05.operations/runbooks/release-management.md)
+- **Release Runbook**: [release-management.md](../../05.operations/runbooks/00-workspace/release-management.md)
 - **Governance Memory Progress**: [progress.md](../../00.agent-governance/memory/progress.md)
 - **Graphify Report**: [GRAPH_REPORT.md](../../../graphify-out/GRAPH_REPORT.md)

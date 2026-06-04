@@ -35,6 +35,7 @@
 
 ```text
 policies/
+├── 00-workspace/
 ├── 01-gateway/
 ├── 02-auth/
 ├── 03-security/
@@ -46,11 +47,8 @@ policies/
 ├── 09-tooling/
 ├── 10-communication/
 ├── 11-laboratory/
-├── infra-service-optimization-catalog.md
-├── common-optimizations-template-exceptions.md
-├── harness-agent-first-engineering.md
-├── llm-wiki-maintenance.md
-├── 0012-standardize-infra-net.md
+├── 12-infra-net/
+├── 90-knowledge/
 └── README.md
 ```
 
@@ -62,24 +60,22 @@ policies/
 
 ## Contents
 
-| Path                                                                                               | Purpose                                                 |
-| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| [01-gateway/](./01-gateway/README.md)                                                              | 01 Gateway policy 문서                                  |
-| [02-auth/](./02-auth/README.md)                                                                    | 02 Auth policy 문서                                     |
-| [03-security/](./03-security/README.md)                                                            | 03 Security policy 문서                                 |
-| [04-data/](./04-data/README.md)                                                                    | 04 Data policy 문서                                     |
-| [05-messaging/](./05-messaging/README.md)                                                          | 05 Messaging policy 문서                                |
-| [06-observability/](./06-observability/README.md)                                                  | 06 Observability policy 문서                            |
-| [07-workflow/](./07-workflow/README.md)                                                            | 07 Workflow policy 문서                                 |
-| [08-ai/](./08-ai/README.md)                                                                        | 08 Ai policy 문서                                       |
-| [09-tooling/](./09-tooling/README.md)                                                              | 09 Tooling policy 문서                                  |
-| [10-communication/](./10-communication/README.md)                                                  | 10 Communication policy 문서                            |
-| [11-laboratory/](./11-laboratory/README.md)                                                        | 11 Laboratory policy 문서                               |
-| [0012-standardize-infra-net.md](./0012-standardize-infra-net.md)                                   | infra_net IP 관리 policy 문서                           |
-| [infra-service-optimization-catalog.md](./infra-service-optimization-catalog.md)             | 12 Infra Service Optimization Catalog policy 문서       |
-| [common-optimizations-template-exceptions.md](./common-optimizations-template-exceptions.md) | 13 Common Optimizations Template Exceptions policy 문서 |
-| [harness-agent-first-engineering.md](./harness-agent-first-engineering.md)                         | Harness Agent-first Engineering policy 문서             |
-| [llm-wiki-maintenance.md](./llm-wiki-maintenance.md)                                               | LLM Wiki Maintenance policy 문서                        |
+| Path | Purpose |
+| --- | --- |
+| [00-workspace/](./00-workspace/README.md) | Workspace-level policy 문서 |
+| [01-gateway/](./01-gateway/README.md) | 01 Gateway policy 문서 |
+| [02-auth/](./02-auth/README.md) | 02 Auth policy 문서 |
+| [03-security/](./03-security/README.md) | 03 Security policy 문서 |
+| [04-data/](./04-data/README.md) | 04 Data policy 문서 |
+| [05-messaging/](./05-messaging/README.md) | 05 Messaging policy 문서 |
+| [06-observability/](./06-observability/README.md) | 06 Observability policy 문서 |
+| [07-workflow/](./07-workflow/README.md) | 07 Workflow policy 문서 |
+| [08-ai/](./08-ai/README.md) | 08 Ai policy 문서 |
+| [09-tooling/](./09-tooling/README.md) | 09 Tooling policy 문서 |
+| [10-communication/](./10-communication/README.md) | 10 Communication policy 문서 |
+| [11-laboratory/](./11-laboratory/README.md) | 11 Laboratory policy 문서 |
+| [12-infra-net/](./12-infra-net/README.md) | infra_net IP 관리 policy 문서 |
+| [90-knowledge/](./90-knowledge/README.md) | Knowledge maintenance policy 문서 |
 
 ## Related Documents
 

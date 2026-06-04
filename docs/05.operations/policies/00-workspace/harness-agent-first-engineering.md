@@ -2,7 +2,7 @@
 status: active
 policy_state: enforced
 ---
-<!-- Target: docs/05.operations/policies/harness-agent-first-engineering.md -->
+<!-- Target: docs/05.operations/policies/00-workspace/harness-agent-first-engineering.md -->
 
 # Harness / Agent-first Engineering Operations Policy
 
@@ -83,5 +83,5 @@ bash scripts/hardening/check-all-hardening.sh
 
 ## Related Documents
 
-- [Operations index](../README.md)
-- [Usage guide](../guides/harness-agent-first-engineering.md)
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/00-workspace/harness-agent-first-engineering.md)

@@ -171,6 +171,11 @@ NON_SERVICE_STEMS = {
     "sensitive-env-vars-comparison",
     "storage-exhaustion",
 }
+NON_SERVICE_TIERS = {
+    "00-workspace",
+    "12-infra-net",
+    "90-knowledge",
+}
 
 
 def has_tracked_impl(service_dir: pathlib.Path) -> bool:
@@ -198,6 +203,8 @@ def scan_operations_implementation() -> tuple[int, int, int]:
                 continue
             tier = rel.parts[0]
             if not re.match(r"^\d\d-[A-Za-z0-9-]+$", tier):
+                continue
+            if tier in NON_SERVICE_TIERS:
                 continue
             stem = path.stem
             if stem in NON_SERVICE_STEMS:

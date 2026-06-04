@@ -59,4 +59,4 @@ docker compose down          # stop
 ## Related Documents
 
 - [Service scaffold template](../../docs/99.templates/service.template.md)
-- [New-service onboarding guide](../../docs/05.operations/guides/new-service-onboarding.md)
+- [New-service onboarding guide](../../docs/05.operations/guides/00-workspace/new-service-onboarding.md)

@@ -2,7 +2,7 @@
 status: active
 ---
 
-<!-- Target: docs/05.operations/policies/0012-standardize-infra-net.md -->
+<!-- Target: docs/05.operations/policies/12-infra-net/standardize-infra-net.md -->
 
 # infra_net IP Management Operations Policy
 
@@ -53,4 +53,4 @@ status: active
 
 ## Related Documents
 
-- [Operations index](../README.md)
+- [Operations index](../../README.md)

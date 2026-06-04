@@ -78,4 +78,4 @@ instructions.
 - [Execution Task](../tasks/2026-05-17-scripts-ci-qa-cleanup.md)
 - [Repository contract checker](../../../scripts/validation/check-repo-contracts.sh)
 - [Prior scripts lifecycle cleanup plan](./2026-05-09-scripts-lifecycle-contract-cleanup.md)
-- [Harness Agent-first validation runbook](../../05.operations/runbooks/harness-agent-first-engineering-validation.md)
+- [Harness Agent-first validation runbook](../../05.operations/runbooks/00-workspace/harness-agent-first-engineering-validation.md)

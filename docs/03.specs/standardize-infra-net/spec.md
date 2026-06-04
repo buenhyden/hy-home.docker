@@ -147,6 +147,6 @@ docker compose config | grep "k3d-hyhome"
 
 - **Plan**: [../../04.execution/plans/2026-04-01-standardize-infra-net.md](../../04.execution/plans/2026-04-01-standardize-infra-net.md)
 - **Tasks**: [../../04.execution/tasks/2026-04-01-standardize-infra-net.md](../../04.execution/tasks/2026-04-01-standardize-infra-net.md)
-- **Guide**: [../../05.operations/guides/0012-standardize-infra-net.md](../../05.operations/guides/0012-standardize-infra-net.md)
-- **Policy**: [../../05.operations/policies/0012-standardize-infra-net.md](../../05.operations/policies/0012-standardize-infra-net.md)
-- **Runbook**: [../../05.operations/runbooks/0012-standardize-infra-net.md](../../05.operations/runbooks/0012-standardize-infra-net.md)
+- **Guide**: [../../05.operations/guides/12-infra-net/standardize-infra-net.md](../../05.operations/guides/12-infra-net/standardize-infra-net.md)
+- **Policy**: [../../05.operations/policies/12-infra-net/standardize-infra-net.md](../../05.operations/policies/12-infra-net/standardize-infra-net.md)
+- **Runbook**: [../../05.operations/runbooks/12-infra-net/standardize-infra-net.md](../../05.operations/runbooks/12-infra-net/standardize-infra-net.md)

@@ -256,7 +256,7 @@ fi
 rm -f /tmp/check-repo-contracts-ip-placeholders.txt
 
 section "Metadata comparison guide drift"
-env_comparison_doc="docs/05.operations/guides/env-key-comparison.md"
+env_comparison_doc="docs/05.operations/guides/00-workspace/env-key-comparison.md"
 if [[ -f ".env.example" && -f ".env" && -f "$env_comparison_doc" ]]; then
   env_example_keys="$(awk -F= '/^[A-Za-z_][A-Za-z0-9_]*=/{count++} END{print count+0}' .env.example)"
   env_actual_keys="$(awk -F= '/^[A-Za-z_][A-Za-z0-9_]*=/{count++} END{print count+0}' .env)"
@@ -275,7 +275,7 @@ if [[ -f ".env.example" && -f ".env" && -f "$env_comparison_doc" ]]; then
   fi
 fi
 
-sensitive_comparison_doc="docs/05.operations/guides/sensitive-env-vars-comparison.md"
+sensitive_comparison_doc="docs/05.operations/guides/00-workspace/sensitive-env-vars-comparison.md"
 if [[ -f "secrets/SENSITIVE_ENV_VARS.md.example" && -f "secrets/SENSITIVE_ENV_VARS.md" && -f "$sensitive_comparison_doc" ]]; then
   sensitive_example_lines="$(wc -l < secrets/SENSITIVE_ENV_VARS.md.example | tr -d '[:space:]')"
   sensitive_actual_lines="$(wc -l < secrets/SENSITIVE_ENV_VARS.md | tr -d '[:space:]')"
@@ -323,6 +323,8 @@ for path in sorted(pathlib.Path("docs").rglob("*.md")):
         target = match.group(1)
         if not target.startswith(allowed_prefixes):
             failures.append(f"{path}:{line_no}: operations target must use guides/policies/runbooks/incidents: {target}")
+        if path.parts[:2] == ("docs", "05.operations") and target != path.as_posix():
+            failures.append(f"{path}:{line_no}: operations target must match file path: {target}")
 
 if failures:
     for failure in failures:
@@ -354,6 +356,11 @@ forbidden = {
 failures: list[str] = []
 for bucket in ["guides", "policies", "runbooks"]:
     root = pathlib.Path("docs/05.operations") / bucket
+    for path in sorted(root.glob("*.md")):
+        if path.name != "README.md":
+            failures.append(
+                f"{path}: operations bucket root must contain README.md only; move leaf docs into a purpose folder"
+            )
     for path in sorted(root.rglob("*.md")):
         if path.name == "README.md":
             continue
@@ -1334,7 +1341,7 @@ scoped_label_paths = {
         "docs/04.execution/tasks/2026-03-26-11-laboratory-tasks.md",
         "docs/04.execution/tasks/2026-03-27-08-ai-open-webui-tasks.md",
         "docs/04.execution/tasks/2026-04-01-standardize-infra-net.md",
-        "docs/05.operations/runbooks/0012-standardize-infra-net.md",
+        "docs/05.operations/runbooks/12-infra-net/standardize-infra-net.md",
         "docs/05.operations/runbooks/04-data/analytics/influxdb.md",
         "docs/05.operations/runbooks/04-data/analytics/ksqldb.md",
         "docs/05.operations/runbooks/04-data/analytics/opensearch.md",
@@ -2792,7 +2799,7 @@ failures: list[str] = []
 required_files = [
     pathlib.Path("llms.txt"),
     pathlib.Path("scripts/knowledge/generate-llm-wiki-index.sh"),
-    pathlib.Path("docs/05.operations/guides/llm-wiki-maintenance.md"),
+    pathlib.Path("docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md"),
     pathlib.Path("docs/90.references/llm-wiki/README.md"),
     pathlib.Path("docs/90.references/llm-wiki/index.md"),
     pathlib.Path("docs/90.references/llm-wiki/repository-map.md"),
@@ -2844,6 +2851,9 @@ readme_checks = {
         "llm-wiki/index.md",
     ],
     pathlib.Path("docs/05.operations/guides/README.md"): [
+        "90-knowledge/README.md",
+    ],
+    pathlib.Path("docs/05.operations/guides/90-knowledge/README.md"): [
         "llm-wiki-maintenance.md",
     ],
     pathlib.Path("scripts/README.md"): [
@@ -2873,7 +2883,7 @@ for path, literals in readme_checks.items():
 wiki_files = [path for path in pathlib.Path("docs/90.references/llm-wiki").glob("*.md")]
 safety_files = [
     llms_path,
-    pathlib.Path("docs/05.operations/guides/llm-wiki-maintenance.md"),
+    pathlib.Path("docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md"),
     *wiki_files,
 ]
 for path in safety_files:

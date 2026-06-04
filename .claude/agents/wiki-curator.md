@@ -60,5 +60,5 @@ Policy SSOT is the imported scope. Do not embed policy inline here.
 - `docs/00.agent-governance/scopes/docs.md`
 - `docs/00.agent-governance/subagent-protocol.md`
 - `docs/90.references/llm-wiki/README.md`
-- `docs/05.operations/guides/llm-wiki-maintenance.md`
+- `docs/05.operations/guides/90-knowledge/llm-wiki-maintenance.md`
 - `scripts/knowledge/generate-llm-wiki-index.sh`

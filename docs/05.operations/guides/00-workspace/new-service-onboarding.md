@@ -2,7 +2,7 @@
 status: active
 ---
 
-<!-- Target: docs/05.operations/guides/new-service-onboarding.md -->
+<!-- Target: docs/05.operations/guides/00-workspace/new-service-onboarding.md -->
 
 # New Service Onboarding Guide
 
@@ -62,10 +62,10 @@ healthcheck 표준을 처음부터 갖춘 서비스를 만든다.
 ## Runbook Handoff
 
 반복 실행 배포·롤백·장애 대응 절차는 해당 서비스 도메인의
-[recovery runbook](../runbooks/release-management.md)을 따른다.
+[recovery runbook](../../runbooks/00-workspace/release-management.md)을 따른다.
 
 ## Related Documents
 
-- [Operations index](../README.md)
-- [Service scaffold template](../../99.templates/service.template.md)
-- [Reference service seed](../../../examples/sample-web-service/README.md)
+- [Operations index](../../README.md)
+- [Service scaffold template](../../../99.templates/service.template.md)
+- [Reference service seed](../../../../examples/sample-web-service/README.md)

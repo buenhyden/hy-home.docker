@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/guides/developer-setup.md -->
+<!-- Target: docs/05.operations/guides/00-workspace/developer-setup.md -->
 
 # Developer Setup Operations
 
@@ -9,7 +9,7 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 `docs/05.operations/guides/developer-setup.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
+이 문서는 `docs/05.operations/guides/00-workspace/developer-setup.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
 
 ### Developer Environment Setup Usage
 
@@ -131,4 +131,4 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 
 ## Related Documents
 
-- [Operations index](../README.md)
+- [Operations index](../../README.md)

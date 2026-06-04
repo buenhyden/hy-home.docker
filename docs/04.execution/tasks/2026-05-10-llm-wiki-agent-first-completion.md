@@ -65,5 +65,5 @@ status: completed
 
 - [Spec](../../03.specs/llm-wiki-agent-first-completion/spec.md)
 - [Plan](../plans/2026-05-10-llm-wiki-agent-first-completion.md)
-- [Maintenance Guide](../../05.operations/guides/llm-wiki-maintenance.md)
+- [Maintenance Guide](../../05.operations/guides/90-knowledge/llm-wiki-maintenance.md)
 - [LLM Wiki References](../../90.references/llm-wiki/README.md)

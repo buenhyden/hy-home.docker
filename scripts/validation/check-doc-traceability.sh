@@ -41,7 +41,7 @@ plans_readme="docs/04.execution/plans/README.md"
 tasks_readme="docs/04.execution/tasks/README.md"
 ops_readme="docs/05.operations/README.md"
 priority_plan="docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md"
-catalog="docs/05.operations/policies/infra-service-optimization-catalog.md"
+catalog="docs/05.operations/policies/00-workspace/infra-service-optimization-catalog.md"
 
 check_file_exists "$execution_readme" || true
 check_file_exists "$plans_readme" || true
@@ -57,7 +57,7 @@ if [[ "$failures" -eq 0 ]]; then
   check_contains_literal "$ops_readme" "../04.execution/plans/README.md" "05.operations README missing plans link"
   check_contains_literal "$ops_readme" "../04.execution/tasks/README.md" "05.operations README missing tasks link"
 
-  check_contains_literal "$priority_plan" "../../05.operations/policies/infra-service-optimization-catalog.md" "priority plan missing operations policy catalog link"
+  check_contains_literal "$priority_plan" "../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md" "priority plan missing operations policy catalog link"
   check_contains_literal "$priority_plan" "../../05.operations/README.md" "priority plan missing operations index link"
 
   catalog_dir="$(dirname "$catalog")"

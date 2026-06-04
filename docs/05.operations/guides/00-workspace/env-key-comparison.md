@@ -2,7 +2,7 @@
 status: active
 ---
 
-<!-- Target: docs/05.operations/guides/env-key-comparison.md -->
+<!-- Target: docs/05.operations/guides/00-workspace/env-key-comparison.md -->
 
 # `.env.example` vs `.env` Key Comparison
 
@@ -131,7 +131,7 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 
 ## Related Documents
 
-- [Secrets Key Comparison](./sensitive-env-vars-comparison.md)
-- [Spec](../../03.specs/workspace-audit-2026-05/spec.md)
-- [secrets/README.md](../../../secrets/README.md)
-- [Stage Authoring Matrix](../../00.agent-governance/rules/stage-authoring-matrix.md)
+- [Secrets Key Comparison](sensitive-env-vars-comparison.md)
+- [Spec](../../../03.specs/workspace-audit-2026-05/spec.md)
+- [secrets/README.md](../../../../secrets/README.md)
+- [Stage Authoring Matrix](../../../00.agent-governance/rules/stage-authoring-matrix.md)

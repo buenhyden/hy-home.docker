@@ -35,6 +35,7 @@
 
 ```text
 guides/
+├── 00-workspace/
 ├── 01-gateway/
 ├── 02-auth/
 ├── 03-security/
@@ -46,12 +47,8 @@ guides/
 ├── 09-tooling/
 ├── 10-communication/
 ├── 11-laboratory/
-├── 0012-standardize-infra-net.md
-├── developer-setup.md
-├── env-key-comparison.md
-├── harness-agent-first-engineering.md
-├── llm-wiki-maintenance.md
-├── sensitive-env-vars-comparison.md
+├── 12-infra-net/
+├── 90-knowledge/
 └── README.md
 ```
 
@@ -64,25 +61,22 @@ guides/
 
 ## Contents
 
-| Path                                                                       | Purpose                                    |
-| -------------------------------------------------------------------------- | ------------------------------------------ |
-| [01-gateway/](./01-gateway/README.md)                                      | 01 Gateway guide 문서                      |
-| [02-auth/](./02-auth/README.md)                                            | 02 Auth guide 문서                         |
-| [03-security/](./03-security/README.md)                                    | 03 Security guide 문서                     |
-| [04-data/](./04-data/README.md)                                            | 04 Data guide 문서                         |
-| [05-messaging/](./05-messaging/README.md)                                  | 05 Messaging guide 문서                    |
-| [06-observability/](./06-observability/README.md)                          | 06 Observability guide 문서                |
-| [07-workflow/](./07-workflow/README.md)                                    | 07 Workflow guide 문서                     |
-| [08-ai/](./08-ai/README.md)                                                | 08 Ai guide 문서                           |
-| [09-tooling/](./09-tooling/README.md)                                      | 09 Tooling guide 문서                      |
-| [10-communication/](./10-communication/README.md)                          | 10 Communication guide 문서                |
-| [11-laboratory/](./11-laboratory/README.md)                                | 11 Laboratory guide 문서                   |
-| [0012-standardize-infra-net.md](./0012-standardize-infra-net.md)           | infra_net 네트워크 표준화 guide 문서       |
-| [developer-setup.md](./developer-setup.md)                                 | Developer Setup guide 문서                 |
-| [env-key-comparison.md](./env-key-comparison.md)                           | .env.example vs .env 키 비교 guide 문서    |
-| [harness-agent-first-engineering.md](./harness-agent-first-engineering.md) | Harness Agent-first Engineering guide 문서 |
-| [llm-wiki-maintenance.md](./llm-wiki-maintenance.md)                       | LLM Wiki Maintenance guide 문서            |
-| [sensitive-env-vars-comparison.md](./sensitive-env-vars-comparison.md)     | Sensitive Env Vars 비교 guide 문서         |
+| Path | Purpose |
+| --- | --- |
+| [00-workspace/](./00-workspace/README.md) | Workspace-level guide 문서 |
+| [01-gateway/](./01-gateway/README.md) | 01 Gateway guide 문서 |
+| [02-auth/](./02-auth/README.md) | 02 Auth guide 문서 |
+| [03-security/](./03-security/README.md) | 03 Security guide 문서 |
+| [04-data/](./04-data/README.md) | 04 Data guide 문서 |
+| [05-messaging/](./05-messaging/README.md) | 05 Messaging guide 문서 |
+| [06-observability/](./06-observability/README.md) | 06 Observability guide 문서 |
+| [07-workflow/](./07-workflow/README.md) | 07 Workflow guide 문서 |
+| [08-ai/](./08-ai/README.md) | 08 Ai guide 문서 |
+| [09-tooling/](./09-tooling/README.md) | 09 Tooling guide 문서 |
+| [10-communication/](./10-communication/README.md) | 10 Communication guide 문서 |
+| [11-laboratory/](./11-laboratory/README.md) | 11 Laboratory guide 문서 |
+| [12-infra-net/](./12-infra-net/README.md) | infra_net 네트워크 표준화 guide 문서 |
+| [90-knowledge/](./90-knowledge/README.md) | Knowledge maintenance guide 문서 |
 
 ## Related Documents
 
