@@ -7,7 +7,7 @@ status: active
 
 ## Overview (KR)
 
-이 런북은 `hy-home.docker`의 Kafka 인프라(05-messaging)에서 발생할 수 있는 주요 장애 상황의 복구 절차와 정기 점검 단계를 정의한다. 운영자가 즉시 따라 할 수 있는 명령어와 검증 기준을 제공한다.
+이 런북은 `hy-home.docker`의 Kafka 인프라(05-messaging)에서 발생할 수 있는 주요 장애 상황의 비파괴 점검, evidence capture, escalation 절차를 정의한다. Root-included dev Kafka는 단일 broker이며, full 3 broker Kafka compose는 root network/secret context가 필요한 service-local compose다.
 
 ## Kafka Recovery & Maintenance Procedure (05-messaging)
 
@@ -29,58 +29,81 @@ status: active
 
 ## When to Use
 
-- **Emergency**: 브로커 쿼럼 붕괴 (`No Leader found` 발생 시).
-- **Incident**: `UnderReplicatedPartitions` 지표가 0보다 클
-
-### 1. Quorum Failure (KRaft)
-
-- **Issue**: 클러스터 내 브로커 과반수 이상 다운되어 리더 선출이 불가능한 경우.
+- broker health가 `unhealthy` 또는 `starting` 상태에 오래 머물 때
+- `UnderReplicatedPartitions` 지표가 0보다 클 때
+- Schema Registry 또는 Kafka Connect healthcheck가 실패할 때
+- Kafbat UI에서 topic/consumer group 조회가 실패할 때
 
 ## Procedure
 
 ### Checklist
 
-- [ ] [ ] 모든 브로커 컨테이너가 `Up (healthy)` 상태인지 확인.
-- [ ] [ ] `Kafbat UI`에서 `Offline Partitions`가 존재하는지 확인.
-- [ ] [ ] `docker logs`를 통해 `Fatal` 또는 `OutOfMemory` 에러가 있는지 조사.
+- [ ] root profile 검증 결과를 확인한다.
+- [ ] Kafka 관련 컨테이너 health 상태를 확인한다.
+- [ ] 최근 compose, secret, route, topic 변경 여부를 확인한다.
+- [ ] 데이터 영향 작업(delete topic, retention 축소, partition reassignment)이 필요한지 판단한다.
 
 ### Steps
 
-#### 1. Broker Quorum Recovery (Single node down)
+1. 정적 baseline을 확인한다.
 
-1. 실패한 노드 식별: `docker compose ps`
-2. 컨테이너 재시작: `docker compose restart kafka-X`
-3. 복제 상태 확인: `docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --describe --under-replicated-partitions`
+   ```bash
+   HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh
+   bash scripts/hardening/check-all-hardening.sh 05-messaging
+   ```
 
-##### 2. Partition Rebalancing
+2. 컨테이너 상태와 health evidence를 캡처한다.
 
-- **Issue**: 특정 브로커에 파티션이 몰려 부하가 불균형한 경우.
+   ```bash
+   docker compose ps kafka-1 schema-registry kafka-connect kafka-rest-proxy kafbat-ui kafka-exporter kafka-init
+   docker inspect --format '{{json .State.Health}}' kafka-1
+   docker inspect --format '{{json .State.Health}}' schema-registry
+   docker inspect --format '{{json .State.Health}}' kafka-connect
+   ```
 
-1. 리더 선출 강제: `kafka-leader-election --bootstrap-server localhost:19092 --election-type PREFERRED --all-topic-partitions`
-2. 지표 확인: `UnderReplicatedPartitions`가 0으로 수렴하는지 관찰.
+3. Broker API와 topic 상태를 확인한다.
 
-##### 3. Schema Registry Incompatibility
+   ```bash
+   docker exec kafka-1 kafka-broker-api-versions --bootstrap-server localhost:19092
+   docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --describe --under-replicated-partitions
+   docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --list
+   ```
 
-- **Issue**: 잘못된 스키마 업데이트로 인해 생산/소비가 중단된 경우.
+4. 로그를 확인한다.
 
-1. 레지스트리 상태 체크: `curl -fsS http://schema-registry.localhost/subjects`
-2. 연결 실패 시 레지스트리 노드 재시작: `docker compose restart schema-registry`
-3. 메타데이터 토픽(`_schemas`)의 가용성 확인.
+   ```bash
+   docker logs kafka-1 --tail 100
+   docker logs schema-registry --tail 100
+   docker logs kafka-connect --tail 100
+   ```
+
+5. 단일 service health가 비정상이고 최근 설정 변경이 없다면 해당 서비스만 재시작한다.
+
+   ```bash
+   docker compose restart kafka-1
+   docker compose restart schema-registry
+   docker compose restart kafka-connect
+   ```
+
+6. Full 3 broker compose에서 partition reassignment, preferred leader election, topic deletion, retention 축소가 필요하면 이 런북에서 실행하지 말고 `## Escalation`으로 전환한다.
 
 ### Verification Steps
 
-- [ ] `docker exec kafka-1 kafka-broker-api-versions --bootstrap-server localhost:19092` 명령어 실행 성공 확인.
-- [ ] `Kafbat UI`의 Topic Dashboard에서 모든 파티션의 `In-Sync Replicas`가 정수값인 3인지 확인.
+- [ ] `docker exec kafka-1 kafka-broker-api-versions --bootstrap-server localhost:19092` 실행 성공
+- [ ] `UnderReplicatedPartitions` 조회가 실패 없이 완료
+- [ ] `schema-registry`, `kafka-connect`, `kafbat-ui` health 상태가 정상 또는 개선 추세
+- [ ] Root messaging profile validation 및 hardening baseline 통과
 
 ### Observability and Evidence Sources
 
 - **Signals**: Grafana Alert (UnderReplicatedPartitions > 0), Kafbat UI Health Indicator.
-- **Evidence to Capture**: `docker logs kafka-X`, `kafka-topics --describe` 출력물.
+- **Evidence to Capture**: `docker logs kafka-1`, `docker logs schema-registry`, `kafka-topics --describe`, `docker inspect` health 출력.
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 브로커 설정 변경 시 `docker-compose.yml`을 이전 상태로 롤백하고 재구동.
-- [ ] 스키마 변경 실패 시 `Schema Registry` 백업본을 통해 `_schemas` 토픽을 복구.
+- [ ] 문서 또는 compose 변경 직후 발생한 장애라면 해당 diff를 검토하고 변경 전 상태와 현재 compose render를 비교한다.
+- [ ] 검증된 workload-independent Kafka data rollback procedure는 아직 문서화되어 있지 않다.
+- [ ] `_schemas` topic, offset, retention, partition reassignment를 변경해야 하는 경우 destructive/data-impact escalation으로 전환한다.
 
 ### Agent Operations
 
@@ -102,9 +125,7 @@ status: active
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+N/A - no verified generic Kafka data rollback procedure is documented yet. Use this runbook for non-destructive inspection and service restart only. Escalate for replay, topic deletion, retention changes, schema topic mutation, partition reassignment, or full 3 broker recovery.
 
 ## Escalation
 

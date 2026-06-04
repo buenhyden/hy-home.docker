@@ -55,9 +55,9 @@ status: completed
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-MSG-001 | Structural | Kafka compose 정적 검증 | `docker compose -f infra/05-messaging/kafka/docker-compose.yml config` | 오류 없음 |
-| VAL-MSG-002 | Structural | Kafka dev compose 정적 검증 | `docker compose -f infra/05-messaging/kafka/docker-compose.dev.yml config` | 오류 없음 |
-| VAL-MSG-003 | Structural | RabbitMQ compose 정적 검증 | `docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config` | 오류 없음 |
+| VAL-MSG-001 | Structural | root-included messaging compose 정적 검증 | `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh` | 오류 없음 |
+| VAL-MSG-002 | Structural | root-included messaging+dev compose 정적 검증 | `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh` | 오류 없음 |
+| VAL-MSG-003 | Structural | service-local compose context boundary | `docker compose --env-file .env.example -f infra/05-messaging/rabbitmq/docker-compose.yml --profile messaging config --services` | root `infra_net` context 없이 `undefined network infra_net`가 발생하므로 root profile 또는 overlay 필요 |
 | VAL-MSG-004 | Compliance | 메시징 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 05-messaging` | 실패 0건 |
 | VAL-MSG-005 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
 | VAL-MSG-006 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
@@ -93,6 +93,6 @@ status: completed
 - **ADR**: [../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/05-messaging/spec.md](../../03.specs/05-messaging/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md](../tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md)
-- **Guide**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md)
-- **Operations**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md)
-- **Runbooks**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/guides/05-messaging/optimization-hardening.md)
+- **Policy**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/05-messaging/optimization-hardening.md](../../05.operations/runbooks/05-messaging/optimization-hardening.md)

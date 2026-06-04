@@ -66,7 +66,7 @@ rabbitmq/
 
 | Category | Technology | Version | Notes |
 | :--- | :--- | :--- | :--- |
-| **Core** | RabbitMQ | 4.2.5-management | Alpine-based image |
+| **Core** | RabbitMQ | 4.3.1-management-alpine | Alpine-based image |
 | **Management** | UI / HTTP API | Enabled | UI via port 15672 |
 | **Protocol** | AMQP | 0-9-1 | Standard port 5672 |
 
@@ -82,13 +82,9 @@ docker exec rabbitmq rabbitmqctl status
 docker exec rabbitmq rabbitmqctl list_queues
 ```
 
-### 2. Maintenance
+### 2. Maintenance Boundary
 
-```bash
-# Export broker definitions (backup)
-# Requires authorized user credentials
-mc admin definitions export ...
-```
+Definition export/import, queue purge/delete, vhost/user mutation, and replay are data-impact operations. Run them only with explicit task or incident evidence and operator approval.
 
 ## Validation
 
@@ -101,7 +97,7 @@ mc admin definitions export ...
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For queue errors: check queue state in the RabbitMQ management UI and verify consumer count and message backlog.
 - For dead letter issues: review DLX exchange and routing key configuration in the queue definition.
-- For credential errors: confirm `RABBITMQ_DEFAULT_USER` and `RABBITMQ_DEFAULT_PASS` secrets are correctly injected.
+- For credential errors: confirm `RABBITMQ_DEFAULT_USER_FILE` and `RABBITMQ_DEFAULT_PASS_FILE` point to `/run/secrets/rabbitmq_user` and `/run/secrets/rabbitmq_password`; do not print secret values.
 
 ## Related Documents
 

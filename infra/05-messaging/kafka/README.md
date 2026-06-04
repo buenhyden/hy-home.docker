@@ -1,10 +1,10 @@
-# Kafka Event Streaming Cluster (05-messaging)
+# Kafka Event Streaming (05-messaging)
 
-> High-performance, 3-node Kafka cluster in KRaft mode for hy-home.docker.
+> Kafka KRaft event streaming for hy-home.docker.
 
 ## Overview
 
-The platform's primary event streaming backbone. This cluster utilizes the Zookeeper-less KRaft architecture for improved scalability and simpler management. It includes a full ecosystem of Schema Registry, Kafka Connect, REST Proxy, and a Management UI (Kafbat). It serves as the SSoT for asynchronous inter-service communication and log aggregation.
+The platform's primary event streaming backbone. Root `docker-compose.yml` includes `docker-compose.dev.yml`, which renders a single broker development stack. `docker-compose.yml` in this directory is the full 3 broker Kafka compose and requires root network/secret context when validated service-locally.
 
 ## Audience
 
@@ -19,7 +19,8 @@ The platform's primary event streaming backbone. This cluster utilizes the Zooke
 
 ### In Scope
 
-- **3-node Kafka Broker Cluster**: KRaft 기반의 고가용성 클러스터.
+- **Root dev Kafka Broker**: KRaft 기반 단일 broker 개발 구성(`docker-compose.dev.yml`).
+- **Full Kafka Broker Cluster**: KRaft 기반 3 broker compose(`docker-compose.yml`).
 - **Confluent Schema Registry**: Avro/JSON 스키마 버전 관리.
 - **Kafka Connect**: 외부 시스템 연동용 커넥터 실행 엔진.
 - **Kafbat UI**: 웹 기반 관리 대시보드.
@@ -45,16 +46,16 @@ kafka/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Kafka Event Streaming Cluster (05-messaging) service leaf in `05-messaging`; services: `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, plus 10 more; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Purpose | Kafka Event Streaming service leaf in `05-messaging`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.dev.yml`; local full compose: `docker-compose.yml` |
 | Config files | `docker-compose.dev.yml`, `docker-compose.yml` |
-| Config values | env keys: `CLUSTER_ID`, `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR`, `KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR`, `KAFKA_TRANSACTION_STATE_LOG_MIN_ISR`, `KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS`, `KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS`, `KAFKA_AUTO_CREATE_TOPICS_ENABLE`, `KAFKA_PROCESS_ROLES`, plus 54 more; profiles: `messaging`, `dev` |
+| Config values | root dev env keys include `CLUSTER_ID`, `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1`, `KAFKA_PROCESS_ROLES`, `KAFKA_CONTROLLER_QUORUM_VOTERS`; full compose uses broker IDs 1-3 and replication factor 3 for internal topics; profiles: `messaging`, `dev` |
 | Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/05-messaging/kafka/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `kafka-1-data:/var/lib/kafka/data:rw`, `./jmx-exporter:/usr/share/jmx_exporter:ro`, `kafka-connect-data:/var/lib/kafka-connect:rw`, `./kafbat-ui/dynamic_config.template.yaml:/tmp/dynamic_config.template.yaml:ro`, `kafka-1-data`, `kafka-connect-data`, `kafka-2-data:/var/lib/kafka/data:rw`, `kafka-3-data:/var/lib/kafka/data:rw`, plus 2 more |
 | Ports | `${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}`, `${KAFKA_JMX_1_HOST_PORT:-19101}:${KAFKA_JMX_PORT:-9101}`, `${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}`, `${SCHEMA_REGISTRY_PORT:-8081}`, `${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}`, `${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}`, `${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}`, `${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}`, plus 2 more |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.schema-registry.rule`, `traefik.http.routers.schema-registry.entrypoints`, `traefik.http.routers.schema-registry.tls`, `traefik.http.routers.schema-registry.middlewares`, `traefik.http.services.schema-registry.loadbalancer.server.port`, `traefik.http.routers.kafka-connect.rule`, plus 14 more |
 | Secret refs | names: `kafbat_client_secret`; mounts: `/run/secrets/kafbat_client_secret` |
-| Healthcheck | Compose healthcheck declared for `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, plus 9 more; not declared for `kafka-init`, `kafka-init` |
+| Healthcheck | Compose healthcheck declared for Kafka broker(s), `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, and `kafka-exporter`; `kafka-init` is a job and has no healthcheck |
 | Operations | [Guide](../../../docs/05.operations/guides/05-messaging/kafka.md), [Policy](../../../docs/05.operations/policies/05-messaging/kafka.md), [Runbook](../../../docs/05.operations/runbooks/05-messaging/kafka.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
@@ -62,19 +63,19 @@ kafka/
 ## How to Work in This Area
 
 1. **Bootstrap**: [Kafka KRaft Guide](../../../docs/05.operations/guides/05-messaging/kafka.md)를 읽고 클러스터 초기 구성 방식을 파악한다.
-2. **Configuration**: `docker-compose.yml`의 Broker ID 및 포트 맵핑 설정을 확인한다.
-3. **Execution**: 변경 사항 적용 후 `docker compose up -d`로 반영한다.
+2. **Configuration**: root dev는 `docker-compose.dev.yml`, full cluster는 `docker-compose.yml`의 Broker ID 및 포트 매핑 설정을 확인한다.
+3. **Execution**: 변경 사항 적용 후 repository root에서 root profile 검증을 먼저 수행한다.
 4. **Validation**: [Messaging Runbook](../../../docs/05.operations/runbooks/05-messaging/kafka.md)의 점검 절차를 수행한다.
 
 ## Tech Stack
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Engine     | Confluent CP-Kafka             | v8.1.1                    |
+| Engine     | Confluent CP-Kafka             | 8.2.1                     |
 | Mode       | KRaft                          | Integrated Metadata log   |
-| Registry   | CP-Schema-Registry             | v8.1.1                    |
+| Registry   | CP-Schema-Registry             | 8.2.1                     |
 | UI         | Kafbat (Kafka UI)              | Web-based management      |
-| Exporter   | Kafka Exporter                 | Prometheus metrics        |
+| Exporter   | Kafka Exporter                 | `danielqsj/kafka-exporter:v1.9.0` |
 
 ## Configuration
 
@@ -93,7 +94,7 @@ kafka/
 docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --list
 
 # schema registry 연결성 확인
-curl -fsS http://schema-registry.localhost/subjects
+docker inspect --format '{{json .State.Health}}' schema-registry
 ```
 
 ## Change Impact
@@ -114,12 +115,13 @@ curl -fsS http://schema-registry.localhost/subjects
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
 - Verify topic creation by running `kafka-topics.sh --list` and confirming expected topics exist with correct partition and replication settings.
-- Confirm producer/consumer connectivity by checking `docker logs kafka | grep -i 'error\|warn'` after config changes.
+- Confirm producer/consumer connectivity by checking `docker logs kafka-1 --tail 100` after config changes.
 - Verify broker registration by confirming the broker ID appears in the controller metadata logs.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Kafka listeners, broker identity, and network references render.
+- Start with `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh` to confirm root-included messaging render.
+- Service-local `docker compose -f infra/05-messaging/kafka/docker-compose.yml --profile messaging config` needs root `infra_net` and secret context or a validation overlay.
 - Check Kafka logs and broker health before changing listener, storage, or KRaft settings.
 
 ## Related Documents

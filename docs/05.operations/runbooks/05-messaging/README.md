@@ -50,9 +50,9 @@ runbooks/05-messaging/
 
 | Path | Purpose |
 | --- | --- |
-| [kafka.md](./kafka.md) | Kafka runbook 문서 |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening runbook 문서 |
-| [rabbitmq.md](./rabbitmq.md) | Rabbitmq runbook 문서 |
+| [kafka.md](./kafka.md) | Kafka non-destructive health, evidence, and escalation runbook |
+| [optimization-hardening.md](./optimization-hardening.md) | Messaging hardening baseline recovery runbook |
+| [rabbitmq.md](./rabbitmq.md) | RabbitMQ non-destructive health, evidence, and escalation runbook |
 
 ## Related Documents
 

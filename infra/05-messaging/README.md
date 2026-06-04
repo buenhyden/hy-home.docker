@@ -4,14 +4,14 @@
 
 ## Overview
 
-The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` ecosystem. It supports high-throughput event streaming via Kafka and lightweight task queuing via RabbitMQ. Integrated streaming SQL (ksqlDB) enables real-time analytics and transformations as data flows through the platform.
+The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` ecosystem. It supports high-throughput event streaming via Kafka and lightweight task queuing via RabbitMQ. Streaming SQL is currently owned by `infra/04-data/analytics/ksql`, not by this tier.
 
 ## Audience
 
 이 README의 주요 독자:
 
 - Backend Developers (Event-driven patterns)
-- Data Engineers (Stream processing)
+- Data Engineers (Kafka topics, schemas, and connectors)
 - SREs (Broker reliability & scaling)
 - AI Agents (Automated topic provisioning)
 
@@ -21,7 +21,6 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 
 - Apache Kafka Cluster (KRaft mode)
 - Confluent Schema Registry & Kafka Connect
-- ksqlDB Streaming SQL Engine
 - RabbitMQ AMQP Broker
 - Messaging UI & Management consoles
 
@@ -36,7 +35,6 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 ```text
 05-messaging/
 ├── kafka/              # Kafka cluster, Connect, Registry, UI
-├── ksql/               # ksqlDB server configuration
 ├── rabbitmq/           # RabbitMQ broker configuration
 └── README.md           # This file
 ```
@@ -45,26 +43,27 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 
 1. Read the [Kafka Guide](../../docs/05.operations/guides/05-messaging/kafka.md) for cluster ops.
 2. Follow the [RabbitMQ Guide](../../docs/05.operations/guides/05-messaging/rabbitmq.md) for queues.
-3. Check the [Operations Policy](../../docs/05.operations/policies/05-messaging/README.md) for retention.
+3. Check the [Operations Policy](../../docs/05.operations/policies/05-messaging/README.md) for topic, secret, and queue controls.
 4. Consult the [Messaging Runbook](../../docs/05.operations/runbooks/05-messaging/README.md) for recovery.
 
 ## Tech Stack
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Streaming  | Apache Kafka                   | v8.1.1 (Confluent Spilo)  |
-| Mode       | KRaft (Zookeeper-less)         | 3-node HA                 |
-| Schema     | Schema Registry                | Avro/JSON support         |
-| AMQP       | RabbitMQ                       | Management-enabled        |
-| Analytics  | ksqlDB                         | Streaming SQL             |
+| Streaming  | Confluent Kafka                | `confluentinc/cp-kafka:8.2.1` |
+| Mode       | KRaft (Zookeeper-less)         | root dev single broker; service-local full 3 broker compose |
+| Schema     | Schema Registry                | `confluentinc/cp-schema-registry:8.2.1` |
+| Connect    | Kafka Connect / REST Proxy     | Confluent CP `8.2.1`      |
+| AMQP       | RabbitMQ                       | `rabbitmq:4.3.1-management-alpine` |
 
 ## Service Matrix
 
 | Service | Protocol | Profile | Port |
 | :--- | :--- | :--- | :--- |
-| `kafka-1/2/3` | Kafka/TCP | `messaging` | 9092, 19092 |
+| `kafka-1` | Kafka/TCP | `messaging`, `dev` | 9092, 19092 |
+| `kafka-2/3` | Kafka/TCP | `messaging` in service-local full compose only | 9094/9096, 19092 |
 | `schema-registry`| HTTP | `messaging` | 8081 |
-| `rabbitmq` | AMQP/HTTP | `rabbitmq` | 5672, 15672 (UI) |
+| `rabbitmq` | AMQP/HTTP | `messaging`, `messaging-option` | 5672, 15672 (UI) |
 | `kafbat-ui` | HTTP | `messaging` | 8080 |
 
 ## Configuration
@@ -76,7 +75,10 @@ The `05-messaging` tier provides the reactive backbone of the `hy-home.docker` e
 ## Testing
 
 ```bash
-# Verify Kafka cluster health via Kafbat UI
+# Verify root-included messaging compose
+HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh
+
+# Verify Kafka broker API from a running container
 docker exec kafka-1 kafka-broker-api-versions --bootstrap-server localhost:19092
 
 # Test RabbitMQ connectivity
@@ -91,12 +93,15 @@ docker exec rabbitmq rabbitmq-diagnostics check_running
 
 ## Related Documents
 
-- [04-data](../04-data/README.md) - Storing processed events.
+- [04-data](../04-data/README.md) - Storing and analyzing processed events.
+- [ksqlDB analytics README](../04-data/analytics/ksql/README.md) - Streaming SQL implementation.
 - [01-gateway](../01-gateway/README.md) - routing to Messaging UIs.
+- [Kafka guide](../../docs/05.operations/guides/05-messaging/kafka.md)
+- [RabbitMQ guide](../../docs/05.operations/guides/05-messaging/rabbitmq.md)
 
 ## AI Agent Guidance
 
 1. Always use the `Schema Registry` for any new topic schemas.
-2. Ensure `replication-factor: 3` for all production-grade topics.
+2. Use `replication-factor: 3` only in the full 3 broker Kafka compose; root dev single broker topics are development-only.
 3. Check consumer lag metrics before scaling producer throughput.
 4. RabbitMQ queues should use TTLs and DLXs as per the messaging policy.

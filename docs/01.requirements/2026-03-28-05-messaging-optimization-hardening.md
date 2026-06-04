@@ -36,7 +36,7 @@ status: active
 ## Functional Requirements
 
 - **REQ-PRD-MSG-FUN-01**: Kafka/RabbitMQ 외부 노출 라우터는 `gateway-standard-chain@file`를 적용해야 한다.
-- **REQ-PRD-MSG-FUN-02**: Kafka UI/RabbitMQ 관리 라우터는 SSO 미들웨어 체인을 강제해야 한다.
+- **REQ-PRD-MSG-FUN-02**: Kafka UI(`kafka-ui` router)와 RabbitMQ 관리 라우터는 SSO 미들웨어 체인을 강제해야 한다.
 - **REQ-PRD-MSG-FUN-03**: Kafka UI 이미지는 부동 태그를 금지하고 고정 버전을 사용해야 한다.
 - **REQ-PRD-MSG-FUN-04**: `docker-compose.dev.yml` 경로 정합성을 보장해야 한다.
 - **REQ-PRD-MSG-FUN-05**: `scripts/hardening/check-all-hardening.sh 05-messaging`와 CI `infrastructure-hardening` job을 제공해야 한다.
@@ -45,7 +45,7 @@ status: active
 ## Success Criteria
 
 - **REQ-PRD-MSG-MET-01**: `bash scripts/hardening/check-all-hardening.sh 05-messaging` 실패 0건
-- **REQ-PRD-MSG-MET-02**: Kafka/RabbitMQ compose 정적 검증 명령 통과
+- **REQ-PRD-MSG-MET-02**: root-included Kafka/RabbitMQ compose 정적 검증 명령 통과 및 service-local compose context boundary 기록
 - **REQ-PRD-MSG-MET-03**: 메시징 노출 라우터의 middleware 계약 충족
 - **REQ-PRD-MSG-MET-04**: 05-messaging optimization-hardening 문서의 양방향 링크 정합성 확보
 
@@ -86,6 +86,6 @@ status: active
 - **Plan**: [../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md](../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md](../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md)
-- **Guide**: [../05.operations/policies/05-messaging/optimization-hardening.md](../05.operations/policies/05-messaging/optimization-hardening.md)
-- **Operation**: [../05.operations/policies/05-messaging/optimization-hardening.md](../05.operations/policies/05-messaging/optimization-hardening.md)
-- **Runbook**: [../05.operations/policies/05-messaging/optimization-hardening.md](../05.operations/policies/05-messaging/optimization-hardening.md)
+- **Guide**: [../05.operations/guides/05-messaging/optimization-hardening.md](../05.operations/guides/05-messaging/optimization-hardening.md)
+- **Policy**: [../05.operations/policies/05-messaging/optimization-hardening.md](../05.operations/policies/05-messaging/optimization-hardening.md)
+- **Runbook**: [../05.operations/runbooks/05-messaging/optimization-hardening.md](../05.operations/runbooks/05-messaging/optimization-hardening.md)

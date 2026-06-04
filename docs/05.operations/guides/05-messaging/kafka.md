@@ -3,85 +3,84 @@ status: active
 ---
 <!-- Target: docs/05.operations/guides/05-messaging/kafka.md -->
 
-# Kafka Cluster Operations Policy (05-messaging) Usage Guide
+# Kafka Usage Guide
 
 ## Usage
 
 ### Overview (KR)
 
-이 문서는 KRaft(Kafka Raft) 모드 기반의 Apache Kafka 클러스터 시스템(05-messaging)의 설정 및 운영 방법을 설명한다. 대용량 이벤트 스트리밍, 메시지 스키마 거버넌스, 그리고 Kafka Connect 연동을 다룬다.
-
-### Kafka Event Streaming Usage (05-messaging)
-
-> Zookeeper-less Kafka Cluster Setup & Management for hy-home.docker.
-
----
+이 문서는 `05-messaging` Kafka 사용 가이드다. 현재 root `docker-compose.yml`은 `infra/05-messaging/kafka/docker-compose.dev.yml`를 include해 단일 broker 개발 구성을 렌더링하고, `infra/05-messaging/kafka/docker-compose.yml`은 root network/secret context가 필요한 3 broker full compose로 유지한다.
 
 ### Usage Type
 
-`system-guide | how-to`
+`system-guide | how-to | operational-reference`
 
 ### Target Audience
 
-- Developer (Backend, Data)
-- Operator
-- Agent-tuner
+- Developers
+- Operators
+- Data Engineers
+- AI Agents
 
 ### Purpose
 
-이 가이드는 사용자가 Kafka 클러스터를 이해하고, 토픽을 생성하며, 스키마 레지스트리를 통해 메시지 정합성을 보장할 수 있도록 돕는다.
+이 가이드는 Kafka deployment surface, topic 작업 경계, Schema Registry/Kafka Connect 접근 경로, 일반 점검 방법을 설명한다.
 
 ### Prerequisites
 
 - [Docker & Docker Compose](https://docs.docker.com/get-docker/)
-- [Kafka CLI Tools](https://kafka.apache.org/downloads) (옵션, 컨테이너 내 실행 가능)
-- [infra/05-messaging/kafka](../../../../infra/05-messaging/kafka/README.md) 기반 클러스터 구동 환경
+- Repository root에서 실행 가능한 `docker compose`
+- [infra/05-messaging/kafka README](../../../../infra/05-messaging/kafka/README.md)
+- Full 3 broker compose를 service-local로 검증하려면 root `infra_net` 및 `kafbat_client_secret` context 또는 임시 validation overlay가 필요하다.
 
 ### Step-by-step Instructions
 
-#### 1. Cluster Execution
+1. Deployment surface를 확인한다.
 
 ```bash
-## Infrastructure root에서 실행
-cd infra/05-messaging/kafka
-docker compose up -d
+HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh
+docker compose --env-file .env.example --profile messaging config --services
 ```
 
-- `kafka-init` 서비스가 가동되어 `infra-events`, `application-logs` 등의 시스템 토픽을 자동 생성한다.
+현재 root messaging profile은 `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`, `rabbitmq`를 렌더링한다.
 
-### 2. Work Breakdown
+1. Kafka topic 작업은 실행 중인 broker 컨테이너 내부 CLI로 수행한다.
 
 ```bash
-## Create a new topic
-kafka-topics --create --topic my-topic --bootstrap-server localhost:9092
+docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --list
+docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --describe --topic infra-events
 ```
 
-- **Topic Creation**: Define partitions and replication factor.
-- **CLI**: `docker exec kafka-1 kafka-topics --bootstrap-server localhost:19092 --create --topic <topic-name> --partitions 3 --replication-factor 3`
-- **UI**: `https://kafbat-ui.${DEFAULT_URL}` 접속 후 GUI를 통해 생성/수정 가능.
+Full 3 broker compose에서는 `replication-factor=3` 토픽을 사용할 수 있다. Root-included dev compose는 단일 broker이므로 신규 토픽에 `replication-factor=3`을 요구하지 않는다.
 
-### 3. Schema Registry Integration
+1. Schema Registry와 Kafka Connect는 내부 service DNS 또는 Traefik route로 확인한다.
 
-#### Implementation Snippet
+```bash
+docker inspect --format '{{json .State.Health}}' schema-registry
+docker inspect --format '{{json .State.Health}}' kafka-connect
+```
 
-- **Producer**: Configure `acks=all` for high durability.
-- 모든 생산자(Producer)는 메시지 전송 전 Schema Registry에 스키마를 등록해야 한다.
-- **Compatibility**: 기본 `BACKWARD` 정책을 준수하여 소비자의 호환성을 보장한다.
+- Internal endpoints: `http://schema-registry:8081`, `http://kafka-connect:8083`, `http://kafka-rest-proxy:8082`
+- Gateway routes: `https://schema-registry.${DEFAULT_URL}`, `https://kafka-connect.${DEFAULT_URL}`, `https://kafka-rest.${DEFAULT_URL}`
+- Kafbat UI route: `https://kafbat-ui.${DEFAULT_URL}` with `gateway-standard-chain@file,sso-errors@file,sso-auth@file`
 
-#### 4. Data Pipeline with Connect
-
-- Kafka Connect를 사용하여 데이터베이스(PostgreSQL 등)와 이벤트를 연동한다.
-- `https://kafka-connect.${DEFAULT_URL}` REST API를 통해 커넥터를 등록/관리한다.
+1. Kafka Connect connector 등록/변경은 정책 검토 후 수행한다.
+   - connector secret 값은 문서나 shell history에 남기지 않는다.
+   - Connector runtime state는 `kafka-connect` health와 logs를 함께 확인한다.
 
 ### Common Pitfalls
 
-- **Quorum Stability**: 브로커 3개 중 2개 이상이 다운되면 클러스터가 읽기 전용으로 전환되거나 중단될 수 있다.
-- **Schema Compatibility**: 스키마 변경 시 호환성 검사(`BACKWARD`)에 실패하면 `409 Conflict` 에러와 함께 생산자가 차단된다.
-- **Retention Misconfig**: 디스크 용량을 고려하지 않은 긴 `retention.ms` 설정은 스토리지 고갈을 초래한다.
+- root-included dev compose를 3 broker HA 구성으로 오해하는 경우
+- service-local compose를 root network/secret context 없이 standalone으로 검증하려는 경우
+- dev single broker에서 `replication-factor=3` 토픽을 생성하려는 경우
+- compose에 선언되지 않은 전역 retention 값을 current truth로 단정하는 경우
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh`
+- `bash scripts/hardening/check-all-hardening.sh 05-messaging`
+- `docker exec kafka-1 kafka-broker-api-versions --bootstrap-server localhost:19092`
 
 ## Runbook Handoff
 
@@ -92,3 +91,4 @@ kafka-topics --create --topic my-topic --bootstrap-server localhost:9092
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/05-messaging/kafka.md)
 - [Recovery runbook](../../runbooks/05-messaging/kafka.md)
+- [Infra README](../../../../infra/05-messaging/kafka/README.md)

@@ -65,9 +65,9 @@ status: completed
 ## Verification Summary
 
 - **Test Commands**:
-  - `docker compose -f infra/05-messaging/kafka/docker-compose.yml config`
-  - `docker compose -f infra/05-messaging/kafka/docker-compose.dev.yml config`
-  - `docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config`
+  - `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`
+  - `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh`
+  - service-local compose checks require root `infra_net`/secret context or a temporary validation overlay
   - `bash scripts/hardening/check-all-hardening.sh 05-messaging`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
@@ -81,6 +81,6 @@ status: completed
 - **ARD**: [../02.architecture/requirements/0020-messaging-optimization-hardening-architecture.md](../../02.architecture/requirements/0020-messaging-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
 - **Plan**: [../plans/2026-03-28-05-messaging-optimization-hardening-plan.md](../plans/2026-03-28-05-messaging-optimization-hardening-plan.md)
-- **Guide**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md)
-- **Operation**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md)
-- **Runbook**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/guides/05-messaging/optimization-hardening.md)
+- **Policy**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/05-messaging/optimization-hardening.md](../../05.operations/runbooks/05-messaging/optimization-hardening.md)

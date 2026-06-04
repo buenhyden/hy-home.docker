@@ -50,9 +50,9 @@ policies/05-messaging/
 
 | Path | Purpose |
 | --- | --- |
-| [kafka.md](./kafka.md) | Kafka policy 문서 |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening policy 문서 |
-| [rabbitmq.md](./rabbitmq.md) | Rabbitmq policy 문서 |
+| [kafka.md](./kafka.md) | Kafka topic, route, secret, and compose validation policy |
+| [optimization-hardening.md](./optimization-hardening.md) | Messaging gateway/compose hardening policy |
+| [rabbitmq.md](./rabbitmq.md) | RabbitMQ AMQP, Management UI, secret, and queue mutation policy |
 
 ## Related Documents
 

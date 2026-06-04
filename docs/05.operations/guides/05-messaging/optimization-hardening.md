@@ -36,9 +36,9 @@ status: active
 ### Step-by-step Instructions
 
 1. 구성 변경 전 정적 상태 점검
-   - `docker compose -f infra/05-messaging/kafka/docker-compose.yml config`
-   - `docker compose -f infra/05-messaging/kafka/docker-compose.dev.yml config`
-   - `docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config`
+   - `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`
+   - `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh`
+   - `docker compose --env-file .env.example --profile messaging config --services`
 2. Kafka 하드닝 적용
    - `kafbat-ui` 이미지를 고정 태그로 유지한다.
    - `schema-registry`, `kafka-connect`, `kafka-rest`, `kafka-ui` 라우터에 `gateway-standard-chain@file`를 적용한다.
@@ -53,7 +53,7 @@ status: active
    - `bash scripts/hardening/check-all-hardening.sh 05-messaging`
    - CI workflow에 `infrastructure-hardening` job 반영 여부 확인
 6. 문서 추적성 동기화
-   - PRD~Procedure optimization-hardening 문서 링크를 점검한다.
+   - PRD~Guide/Policy/Runbook optimization-hardening 문서 링크를 점검한다.
 
 ### Common Pitfalls
 
@@ -61,12 +61,12 @@ status: active
 - 부동 태그(`:main`)를 재도입해 예측 불가능한 런타임 회귀를 유발하는 실수
 - dev compose 경로를 repo-root 기준으로 작성해 파일 마운트 실패를 유발하는 실수
 - 하드닝 스크립트와 문서 링크를 함께 갱신하지 않는 실수
+- service-local compose가 root `infra_net` 및 secret context 없이 standalone으로 렌더링된다고 가정하는 실수
 
 ## Common Checks
 
-- `docker compose -f infra/05-messaging/kafka/docker-compose.yml config`
-- `docker compose -f infra/05-messaging/kafka/docker-compose.dev.yml config`
-- `docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config`
+- `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 05-messaging`
 
 ## Runbook Handoff

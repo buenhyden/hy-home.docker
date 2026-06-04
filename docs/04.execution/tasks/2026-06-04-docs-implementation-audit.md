@@ -8,7 +8,7 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `docs/01.requirements`~`docs/05.operations`(512개 문서)의 **작성된 내용**을
+이 문서는 `docs/01.requirements`~`docs/05.operations`의 **작성된 내용**을
 tracked `infra/**` 구현과 의미 단위로 대조한 감사 리포트다. 판정 기준은 링크/거버넌스/체인
 검증 통과가 아니라 "문서 내용 vs 현재 구현" 일치 여부다. 본 리포트는 Phase B(아카이브/수정)
 실행 및 검증 evidence이며, cross-cutting 거버넌스 작업으로 parent Spec 대신 거버넌스 문서를
@@ -28,19 +28,19 @@ tracked `infra/**` 구현과 의미 단위로 대조한 감사 리포트다. 판
 
 ## Methodology & Coverage
 
-- **Structural mapping (100%)**: 512개 문서를 stage/tier/service로 인벤토리하고 40개
+- **Structural mapping (100%)**: Stage 01-05 문서를 stage/tier/service로 인벤토리하고 40개
   compose-bearing implementation root, tier-level compose 서비스 문서, 거버넌스 표면에 매핑.
 - **Deep content read**: 후보군(03 프로세스 스펙, 04 stale active 플랜, 05 draft) + tier 대표 샘플.
 - **Signal scans**: frontmatter status 분포, legacy/deprecated 용어, operations↔infra 커버리지.
-- **한계**: 모든 512개 문서의 1:1 전수 정독은 수행하지 않음. 아래 "Open decision"에서 심층
+- **한계**: 모든 Stage 01-05 문서의 1:1 전수 정독은 수행하지 않음. 아래 "Open decision"에서 심층
   전수 패스 여부를 확인한다.
 
 ## Key Finding
 
 2026-06-02 reconciliation이 **구현과 총체적으로 충돌하는 문서를 이미 아카이브**했다(Airbyte
-미구현, Codex Markdown/HADS 상충 등 13건 tombstone). 그 결과 이번 심층 감사에서 **신규 ARCHIVE
-대상(구현과 상충/orphan)은 발견되지 않았다**. 실질 드리프트는 대부분 **frontmatter status
-메타데이터**와 **완료된 일회성 프로세스 문서의 라이프사이클 처리**다.
+미구현, Codex Markdown/HADS 상충 등). 이번 pass에서는 추가로 `05-messaging`의 misplaced ksqlDB
+guide 1건을 archive tombstone으로 이동했다. 나머지 실질 드리프트는 대부분 구현된 서비스 문서의
+current-truth mismatch, frontmatter status metadata, 완료된 일회성 프로세스 문서의 라이프사이클 처리다.
 
 ## Verdict Summary (by stage)
 
@@ -50,7 +50,7 @@ tracked `infra/**` 구현과 의미 단위로 대조한 감사 리포트다. 판
 | 02.architecture | 51   | 51                                     | 0                                          | 0                   | ADR/ARD 전부 현 infra 매핑(traefik/keycloak/vault/kafka/patroni/lgtm 등 실재) |
 | 03.specs        | 43   | 15 active / 9 completed / 19 README-like missing status | 7 프로세스 스펙(status active→completed) | 0                   | tier specs 매핑 OK; 프로세스 스펙은 완료된 일회성 작업                        |
 | 04.execution    | 125  | 120 completed / 3 active / 2 README-like missing status | stale `active` Open WebUI plan/task → completed; hardening runtime rows deferred | 0 | infra-opt-priority-plan은 ongoing roadmap이라 active 유지                      |
-| 05.operations   | 268  | 201 active / 67 README-like missing status | open-notebook draft→active; policy/guide profile 중복 정리; bucket-root leaf 문서를 목적 폴더로 정리 | 0 | orphan 없음(`failures=0`); policy/guide/profile 및 operations purpose 회귀 게이트 반영 |
+| 05.operations   | 272  | 200 active / 72 README-like missing status | open-notebook draft→active; policy/guide profile 중복 정리; bucket-root leaf 문서를 목적 폴더로 정리; `05-messaging` current-truth 정정 | 1 archived | misplaced ksqlDB guide는 `docs/98.archive`; 나머지 orphan 없음(`failures=0`) |
 
 ## Task Table
 
@@ -81,6 +81,7 @@ tracked `infra/**` 구현과 의미 단위로 대조한 감사 리포트다. 판
 | F-21 | `infra/04-data/specialized/{README.md,neo4j/README.md,qdrant/README.md}`, `docs/05.operations/{guides,policies,runbooks}/04-data/specialized/{README.md,neo4j.md,qdrant.md}` | Specialized data docs retained stale image tags, a removed `05.analytical-specialized-dbs.md` link, external Bolt/API-key claims not declared by compose, data mutation guide examples, backup/restore schedules, and destructive recovery steps not proven by current runbook evidence | Corrected in place to current compose truth: root-active Neo4j `neo4j:5.26.26-community` with `neo4j_password` secret-aware entrypoint and HTTP Browser route only; root-active Qdrant `qdrant/qdrant:v1.18.1-unprivileged` with REST/gRPC Traefik routes, current no-secret state, snapshot path, purpose-specific guide/policy/runbook separation, and non-destructive escalation boundary |
 | F-22 | `infra/04-data/relational/{README.md,postgresql-cluster/README.md}`, `docs/05.operations/{guides,policies,runbooks}/04-data/relational/{README.md,postgresql-cluster.md}` | Relational docs retained removed old relational index links, stale Spilo entrypoint filename, template/profile residue, unproven backup/archive controls, and destructive DCS/leadership guidance not proven by current runbook evidence | Corrected in place to current compose truth: optional/commented PostgreSQL HA cluster include; etcd `3.6.12`, HAProxy `3.3.10`, Spilo `spilo-17:4.0-p3`, init job `postgres:18-alpine`, exporters `v0.19.1`, Docker Secret boundaries, `pg-router` write/read endpoints, `pg-cluster-init` scope, and non-destructive escalation boundary |
 | F-23 | `infra/06-observability/{README.md,docker-compose.yml,docker-compose.dev.yml,*/README.md}`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**06-observability**` | Observability docs retained stale Mimir/version-family wording, generic README counts, service-local compose validation claims, stale Pushgateway/Pyroscope endpoints, and `docker-compose.dev.yml` referenced Pyroscope via Alloy/Grafana without declaring the service; cAdvisor labels used Pyroscope router/service names | Corrected in place to current compose truth: Prometheus `v3.12.0`, Loki `3.6.6-custom`, Tempo `2.10.1-custom`, Alloy `1.16.2`, Grafana `13.0.2`, cAdvisor `0.55.1`, Pyroscope `2.0.2`, Alertmanager `0.32.1`, Pushgateway `1.11.3`; restored Pyroscope in root-included dev compose; separated cAdvisor/Pyroscope Traefik labels; documented root/overlay compose validation boundary and current retention/storage facts |
+| F-24 | `infra/05-messaging/{README.md,kafka/README.md,rabbitmq/README.md}`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**05-messaging**`, `docs/05.operations/guides/05-messaging/ksql-streaming.md` | Messaging docs retained ksqlDB as a 05-messaging-owned service, old Kafka/RabbitMQ version literals, nonexistent `ksql/` structure, service-local compose validation claims without root context, stale `schema-registry.localhost`, wrong RabbitMQ AMQP route guidance, destructive queue purge guidance, and Guide/Policy/Runbook links that all pointed at policy docs | Archived misplaced `ksql-streaming.md` as a central tombstone; redirected active ksqlDB references to `04-data/analytics/ksql`; corrected Kafka/RabbitMQ docs to current images, profiles, root dev vs service-local full compose boundary, Docker Secrets, Traefik route/AMQP separation, and non-destructive runbook escalation; removed the stale active validator exception so a future 05-messaging `ksql-streaming` guide maps to missing implementation and fails alignment |
 
 ## Archive Decision
 
@@ -112,10 +113,14 @@ archive가 아니라 template-compliant in-place rewrite와 README reference 갱
 `06-observability` drift(F-23)는 구현된 observability compose와 문서의 route/service/version/storage
 불일치였고, 일부 compose label/service declaration도 명백한 current-truth 결함이었으므로 archive가 아니라
 in-place compose correction, template-aligned documentation correction, README reference 갱신으로 처리했다.
+`05-messaging` drift(F-24)는 구현된 Kafka/RabbitMQ 문서의 current-truth mismatch와 misplaced ksqlDB guide가
+혼재되어 있었다. Kafka/RabbitMQ 문서는 구현된 서비스에 매핑되므로 in-place correction으로 처리했고,
+`docs/05.operations/guides/05-messaging/ksql-streaming.md`는 현재 `infra/05-messaging` 구현에 대응하지 않고
+`04-data/analytics/ksql` 문서와 충돌하므로 `docs/98.archive` tombstone으로 이동했다.
 
 ## Verification Summary
 
-- Stage 01-05 inventory: `docs/01.requirements=25`, `docs/02.architecture=51`, `docs/03.specs=43`, `docs/04.execution=125`, `docs/05.operations=268`, total `512`.
+- Stage 01-05 inventory: `docs/01.requirements=25`, `docs/02.architecture=51`, `docs/03.specs=43`, `docs/04.execution=125`, `docs/05.operations=272`, total `516`.
 - operations 서비스 커버리지: `check-doc-implementation-alignment.sh` → `operations_service_docs_checked=143`, `failures=0`.
 - operations bucket-root scan: `docs/05.operations/{guides,policies,runbooks}` root에는 각 bucket `README.md`만 남음.
 - stale operations root-path scan: 이전 bucket-root leaf 형태(`guides/<leaf>.md`, `runbooks/<leaf>.md`, `policies/<leaf>.md`) 0건.
@@ -142,6 +147,9 @@ in-place compose correction, template-aligned documentation correction, README r
 - 06-observability stale scan: old Prometheus/Grafana/Alloy/Pyroscope/Alertmanager/Pushgateway version literals, old Mimir wording, `pushgateway.local`, stale Pyroscope `/health`, and generated `plus N more` README evidence 0건 in active observability scope.
 - 06-observability implementation mapping: root-included `docker-compose.dev.yml` and local `docker-compose.yml` now both render `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, and `pushgateway`; cAdvisor uses `cadvisor` Traefik labels and `${CADVISOR_PORT:-8080}`, Pyroscope uses `pyroscope` Traefik labels and `${PYROSCOPE_PORT:-4040}`.
 - 06-observability validation boundary: root profile validation passes with `HYHOME_COMPOSE_PROFILES=obs`; service-local compose validation requires root network/secret context or an explicit temporary validation overlay.
+- 05-messaging implementation mapping: root messaging profile renders `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`, and `rabbitmq`; `HYHOME_COMPOSE_PROFILES=messaging` validation passes with `services_total=8`, while `HYHOME_COMPOSE_PROFILES='messaging dev'` validation passes with `services_total=46`.
+- 05-messaging service-local boundary: direct service-local `--profile messaging config --services` for Kafka full, Kafka dev, and RabbitMQ compose fails without root `infra_net` context (`undefined network infra_net`), so active docs now route normal validation through root profile scripts or explicit overlay context.
+- 05-messaging stale scan: outside this audit evidence, archive tombstones, generated indexes, and the current `04-data/analytics` ksqlDB owner docs, active messaging docs no longer retain the old ksql streaming guide path, old Kafka/RabbitMQ version literals, stale Schema Registry host example, destructive queue purge command, or unrelated MinIO CLI definition export command.
 - reference.template.md archive 언급: 0건(제약 이미 충족).
 - Local QA gate: `bash scripts/validation/run-local-qa-gates.sh` → PASS, repo contracts `failures=0`.
 

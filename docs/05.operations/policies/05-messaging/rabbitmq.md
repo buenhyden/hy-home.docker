@@ -11,68 +11,43 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 RabbitMQ 서비스의 안정적인 운영을 위한 정책을 정의한다. 보안 관리, 리소스 할당, 백업 전략 및 성능 모니터링 기준을 수립하여 시스템의 신뢰성을 보장한다.
+이 문서는 `05-messaging` RabbitMQ 서비스의 운영 정책을 정의한다. Docker Secrets 기반 인증, AMQP/Management 경계, queue mutation 승인, 정적 검증 기준을 규정한다.
 
 ## Policy Scope
 
-This policy applies to the service, workflow, or operational control surface described by this document and its linked guide/runbook.
-
-## Policy Info
-
-- **Owner**: SRE Team
-- **Status**: `Active`
-- **Last Updated**: 2026-03-26
-
-## Core Policies
-
-### 1. Security & Access Control
-
-- **Credential Management**: 모든 접속 계정은 `scripts/operations/gen-secrets.sh`를 통해 관리되어야 하며, `rabbitmq_user` 및 `rabbitmq_password` 시크릿 파일을 사용해 환경 변수로 주입한다.
-- **TLS Configuration**: 외부 노출되는 Management UI는 Traefik을 통해 HTTPS로 강제 전환된다.
-- **Permission**: 애플리케이션 계정은 원칙적으로 필요한 VHost와 Queue에 대해서만 권한을 부여하는 최소 권한 원칙을 준수한다.
-
-### 2. Resource Management
-
-- **Memory Watermark**: 기본 메모리 임계치는 가용 메모리의 40%로 설정되어 있으며, 이를 초과할 경우 모든 퍼블리셔의 메시지 전송이 일시 중단된다.
-- **Disk Space**: 디스크 여유 공간이 50MB(기본값) 이하로 떨어지면 서비스가 중단될 수 있으므로, 상시 2GB 이상의 여유 공간 확보를 권장한다.
-
-### 3. Queue Management
-
-- **Max Length**: 메시지 폭주를 방지하기 위해 중요도가 낮은 큐에는 `x-max-length` 설정을 적용하여 무한 성장을 방지한다.
-- **TTL**: 불필요한 메시지 체류를 방지하기 위해 큐 레벨 또는 메시지 레벨 TTL 설정을 권장한다.
-
-### 4. Backup & Persistence Strategies
-
-- **Volume Persistence**: `rabbitmq-data-volume`은 호스트의 `${DEFAULT_MESSAGE_BROKER_DIR}/rabbitmq`에 마운트되어 데이터 지속성을 보장한다.
-- **Definition Export**: RabbitMQ 관리자 UI 또는 API를 통해 주기적으로 브로커 정의(Definitions - Users, VHosts, Queues, Exchanges)를 백업해야 한다.
-
-## Monitoring Standards
-
-- **Metrics**: Grafana를 통해 다음 지표를 상시 모니터링한다.
-  - Number of Connections / Channels
-  - Queue Length & Unacknowledged Messages
-  - Erlang Process Count
-  - Memory & Disk Usage
+이 정책은 `infra/05-messaging/rabbitmq/docker-compose.yml`의 `rabbitmq` service, `rabbitmq_user`/`rabbitmq_password` Docker Secrets, AMQP host port, Management UI route, linked guide/runbook에 적용한다.
 
 ## Controls
 
-- **Required**: Preserve the operational contract documented in the linked guide and source configuration.
-- **Allowed**: Documentation-only corrections that keep links and verification evidence current.
-- **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+- **Required**:
+  - `rabbitmq_user` 및 `rabbitmq_password`는 Docker Secrets로만 주입한다.
+  - Management UI route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` middleware를 유지한다.
+  - AMQP 데이터 평면은 host port mapping 또는 `infra_net` 내부 endpoint를 사용하고, Traefik HTTP route를 AMQP endpoint로 문서화하지 않는다.
+  - Queue purge/delete/rebind 같은 데이터 영향 작업은 승인과 evidence 없이 실행하지 않는다.
+- **Allowed**:
+  - `messaging` 및 `messaging-option` profile을 통한 활성화
+  - Runtime-approved definition export/import 절차를 별도 task 또는 incident evidence에 기록한 뒤 실행
+  - 서비스별 VHost/permission 분리는 최소 권한 검토 후 적용
+- **Disallowed**:
+  - secret 값, credential dump, token, 인증서 원문 기록
+  - 미검증 backup/restore 명령을 current runbook 절차로 승격
+  - 메시지 손실 가능 조치를 일반 troubleshooting 단계로 실행
 
 ## Exceptions
 
-N/A — 현재 승인된 예외 없음.
+- 긴급 장애 대응 중 데이터 영향 조치가 필요하면 Messaging Operator 승인, 영향 queue, 예상 손실, 실행자, 검증 결과를 incident/task evidence에 기록한다.
 
 ## Verification
 
-- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
-- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
-- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
+- `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`
+- `bash scripts/hardening/check-all-hardening.sh 05-messaging`
+- `docker exec rabbitmq rabbitmq-diagnostics -q check_running`
+- `docker exec rabbitmq rabbitmqctl list_queues name messages consumers`
+- `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
 
 ## Review Cadence
 
-- Review when linked service configuration, architecture, or runbook behavior changes.
+- Quarterly 또는 RabbitMQ compose, secrets, route, queue mutation policy 변경 시 검토.
 
 ## Related Documents
 

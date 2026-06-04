@@ -9,11 +9,7 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 RabbitMQ 메시지 브로커에 대한 기술 가이드를 제공한다. `hy-home.docker` 환경에서 RabbitMQ를 연동하고 관리하는 방법, 큐 관리 정책 및 메시지 안정성 확보 방안을 설명한다.
->
-> Standardized AMQP message broker for task queuing and asynchronous messaging.
-
----
+이 문서는 `05-messaging` RabbitMQ 사용 가이드다. AMQP 데이터 평면, Management UI 접근 경계, Docker Secrets 기반 인증 주입, 일반 점검 방법을 설명한다.
 
 ### Usage Type
 
@@ -32,21 +28,24 @@ status: active
 
 ### Prerequisites
 
-- `infra/05-messaging/rabbitmq` 서비스가 실행 중이어야 함.
-- AMQP 클라이언트 라이브러리 (pika, amqplib 등) 설치.
+- Repository root에서 `messaging` profile을 렌더링할 수 있어야 함.
+- AMQP 클라이언트 라이브러리(pika, amqplib 등)
+- RabbitMQ credential 값은 `rabbitmq_user`, `rabbitmq_password` Docker Secrets에서 런타임에 주입되며 문서에 기록하지 않는다.
 
 ### Step-by-step Instructions
 
-#### 1. 연결 정보 및 인증
+#### 1. 연결 정보 및 인증 경계
 
-- **Endpoint (External)**: `amqp://rabbitmq.${DEFAULT_URL}:5672`
+- **Host AMQP port**: `${RABBITMQ_HOST_PORT:-5672}` -> container `${RABBITMQ_PORT:-5672}`
 - **Management Console**: `https://rabbitmq.${DEFAULT_URL}`
-- **Internal API**: `rabbitmq:5672`
-- **Username/Password**: `rabbitmq_user` 및 `rabbitmq_password` 시크릿 파일에서 주입됨.
+- **Internal AMQP endpoint**: `rabbitmq:5672`
+- **Credential source**: `/run/secrets/rabbitmq_user`, `/run/secrets/rabbitmq_password`
+
+Traefik route는 Management UI HTTP 경로를 대상으로 한다. AMQP 프로토콜은 Traefik HTTP route가 아니라 host port mapping 또는 `infra_net` 내부 endpoint를 사용한다.
 
 #### 2. Management UI 접속
 
-웹 브라우저에서 `https://rabbitmq.${DEFAULT_URL}`에 접속하여 브로커 상태를 모니터링할 수 있다.
+웹 브라우저에서 `https://rabbitmq.${DEFAULT_URL}`에 접속하여 브로커 상태를 모니터링할 수 있다. 이 경로는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` middleware를 사용한다.
 
 - **Connections**: 활성 클라이언트 연결 확인
 - **Channels**: 활성 채널 및 처리량 확인
@@ -74,12 +73,15 @@ connection.close()
 
 ### Common Pitfalls
 
-- **Default Credentials**: `guest/guest`는 보안상 비활성화되어 있다. 반드시 Vault/Secrets를 통해 생성된 계정을 사용해야 한다.
-- **OOM Kill**: RabbitMQ는 메모리 사용량이 임계치에 도달하면 메시지 수신을 차단한다. 모니터링 대시보드에서 `Memory Workflow`를 상시 확인해야 한다.
+- **Protocol mix-up**: `https://rabbitmq.${DEFAULT_URL}`는 Management UI 경로이며 AMQP endpoint가 아니다.
+- **Credential handling**: secret 파일 값을 문서, 로그, task evidence에 기록하지 않는다.
+- **Queue mutation**: purge/delete/rebind는 메시지 손실 가능성이 있으므로 runbook escalation 기준을 따른다.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`
+- `docker exec rabbitmq rabbitmq-diagnostics -q check_running`
+- `docker exec rabbitmq rabbitmqctl list_queues name messages consumers`
 
 ## Runbook Handoff
 
@@ -90,3 +92,4 @@ connection.close()
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/05-messaging/rabbitmq.md)
 - [Recovery runbook](../../runbooks/05-messaging/rabbitmq.md)
+- [Infra README](../../../../infra/05-messaging/rabbitmq/README.md)

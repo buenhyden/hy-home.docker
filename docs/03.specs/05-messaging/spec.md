@@ -27,10 +27,10 @@ status: active
 - **Config Contract**:
   - `kafbat-ui` 이미지는 부동 태그(`:main`)를 금지하고 고정 버전을 사용한다.
   - 외부 노출 라우터는 `gateway-standard-chain@file`를 적용한다.
-  - 관리 UI 라우터(`kafka-ui`, `kafbat-ui-dev`, `rabbitmq`)는 SSO 미들웨어 체인을 유지한다.
+  - 관리 UI 라우터(`kafka-ui`, `rabbitmq`)는 SSO 미들웨어 체인을 유지한다. 현재 compose에 dev 전용 Kafbat router는 별도로 선언되어 있지 않다.
   - `docker-compose.dev.yml`의 로컬 볼륨 경로는 서비스 디렉터리 기준 상대 경로를 사용한다.
 - **Data / Interface Contract**:
-  - Kafka/KRaft 3노드 및 RabbitMQ 단일 노드 운영 모델을 유지한다.
+  - Root-included 메시징 profile은 `docker-compose.dev.yml`의 Kafka 단일 broker와 RabbitMQ 단일 노드를 렌더링한다. `infra/05-messaging/kafka/docker-compose.yml`은 root context 밖의 full 3 broker compose로 유지한다.
   - TLS 종료는 Traefik에서 수행하고 내부 `infra_net` 통신은 서비스 내부 프로토콜을 사용한다.
 - **Governance Contract**:
   - `scripts/hardening/check-all-hardening.sh 05-messaging`를 CI `infrastructure-hardening` job으로 강제한다.
@@ -49,7 +49,7 @@ status: active
 - **Tech Stack**:
   - Kafka (Confluent CP 8.2.1)
   - RabbitMQ 4.3.1
-  - Kafbat/Provectus UI
+  - Kafbat UI
   - Traefik TLS termination
 
 ## Data Modeling & Storage Strategy
@@ -87,7 +87,7 @@ messaging_gateway_contract:
 ## Catalog-aligned Expansion Targets
 
 - Kafka:
-  - 토픽 거버넌스(보존/compaction/파티션 기준) 표준화
+  - 토픽 거버넌스(보존/compaction/파티션 기준) 표준화. 단, 전역 `retention.ms` 값은 현재 compose에 고정 선언되어 있지 않다.
   - DLQ + 재처리 파이프라인 표준화
 - RabbitMQ:
   - quorum queue 적용 범위 확정
@@ -111,19 +111,23 @@ messaging_gateway_contract:
 ## Verification
 
 ```bash
-docker compose -f infra/05-messaging/kafka/docker-compose.yml config
-docker compose -f infra/05-messaging/kafka/docker-compose.dev.yml config
-docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config
+HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh
+HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh
+docker compose --env-file .env.example --profile messaging config --services
 bash scripts/hardening/check-all-hardening.sh 05-messaging
 bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-doc-traceability.sh
 ```
 
+Service-local compose 검증 경계:
+
+- `infra/05-messaging/kafka/docker-compose.yml`, `infra/05-messaging/kafka/docker-compose.dev.yml`, `infra/05-messaging/rabbitmq/docker-compose.yml`는 root `infra_net` 및 root-managed secrets context 없이 `--profile messaging config`를 실행하면 `undefined network infra_net`로 실패한다.
+- Full 3 broker Kafka compose 검증은 root network/secret context 또는 명시적인 임시 validation overlay가 있는 로컬 환경에서만 service-local로 실행한다.
+
 가능 환경에서 runtime 검증:
 
 ```bash
-docker compose -f infra/05-messaging/kafka/docker-compose.yml --profile messaging up -d
-docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml --profile messaging up -d
+docker compose --profile messaging up -d kafka-1 schema-registry kafka-connect kafka-rest-proxy kafbat-ui kafka-exporter kafka-init rabbitmq
 docker inspect --format '{{json .State.Health}}' kafka-1
 docker inspect --format '{{json .State.Health}}' rabbitmq
 ```
@@ -131,7 +135,7 @@ docker inspect --format '{{json .State.Health}}' rabbitmq
 ## Success Criteria & Verification Plan
 
 - **VAL-SPC-MSG-001**: `check-all-hardening.sh 05-messaging` 실패 0건
-- **VAL-SPC-MSG-002**: Kafka/RabbitMQ compose 정적 검증 통과
+- **VAL-SPC-MSG-002**: root profile 메시징 compose 정적 검증 통과 및 service-local compose context boundary 기록
 - **VAL-SPC-MSG-003**: 외부 노출 라우터의 middleware 체인 계약 충족
 - **VAL-SPC-MSG-004**: 01~09 optimization-hardening 문서 상호 링크 동기화
 

@@ -42,7 +42,8 @@ status: active
 ## System Overview & Context
 
 - Kafka:
-  - `kafka-1/2/3`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`
+  - Root include: `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
+  - Service-local full compose: `kafka-1/2/3`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
 - RabbitMQ:
   - `rabbitmq` (AMQP + Management)
 - Gateway Path:
@@ -65,7 +66,8 @@ status: active
 - **Runtime / Platform**:
   - Docker Compose + `infra/common-optimizations.yml`
 - **Deployment Model**:
-  - Kafka 3-node + optional RabbitMQ single-node
+  - Root profile: Kafka dev single broker + RabbitMQ single-node
+  - Service-local full compose: Kafka 3 broker model with root network/secret context
   - Traefik TLS termination + middleware policy
 - **Operational Evidence**:
   - `scripts/hardening/check-all-hardening.sh 05-messaging`
@@ -86,6 +88,6 @@ status: active
 - **Plan**: [../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0020-messaging-hardening-and-ha-expansion-strategy.md](../decisions/0020-messaging-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md)
-- **Guide**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md)
-- **Operation**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md)
-- **Runbook**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/guides/05-messaging/optimization-hardening.md)
+- **Policy**: [../../05.operations/policies/05-messaging/optimization-hardening.md](../../05.operations/policies/05-messaging/optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/05-messaging/optimization-hardening.md](../../05.operations/runbooks/05-messaging/optimization-hardening.md)

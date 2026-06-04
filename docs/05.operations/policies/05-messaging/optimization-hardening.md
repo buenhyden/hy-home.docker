@@ -24,7 +24,7 @@ status: active
 
 - **Required**:
   - 외부 노출 라우터는 `gateway-standard-chain@file`를 적용해야 한다.
-  - 관리 UI 라우터(`kafka-ui`, `kafbat-ui-dev`, `rabbitmq`)는 SSO 체인을 포함해야 한다.
+  - 관리 UI 라우터(`kafka-ui`, `rabbitmq`)는 SSO 체인을 포함해야 한다.
   - Kafka UI 이미지는 고정 태그를 사용해야 하며 부동 태그를 금지한다.
   - 메시징 변경은 `infrastructure-hardening` CI 게이트를 통과해야 한다.
   - 문서(PRD~Procedure)는 optimization-hardening 링크를 유지해야 한다.
@@ -44,10 +44,10 @@ status: active
 ## Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 05-messaging`
+- `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/check-doc-traceability.sh`
-- `docker compose -f infra/05-messaging/kafka/docker-compose.yml config`
-- `docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config`
 
 ## Review Cadence
 

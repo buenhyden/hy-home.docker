@@ -43,16 +43,16 @@ status: active
 ### Steps
 
 1. 정적 구성 점검
-   - `docker compose -f infra/05-messaging/kafka/docker-compose.yml config`
-   - `docker compose -f infra/05-messaging/kafka/docker-compose.dev.yml config`
-   - `docker compose -f infra/05-messaging/rabbitmq/docker-compose.yml config`
+   - `HYHOME_COMPOSE_PROFILES=messaging bash scripts/validation/validate-docker-compose.sh`
+   - `HYHOME_COMPOSE_PROFILES='messaging dev' bash scripts/validation/validate-docker-compose.sh`
+   - `docker compose --env-file .env.example --profile messaging config --services`
 2. 하드닝 기준 점검
    - `bash scripts/hardening/check-all-hardening.sh 05-messaging`
 3. 증상별 복구
    - middleware 누락:
      - 대상 라우터에 `gateway-standard-chain@file` 재적용
    - 관리 UI 접근 제어 누락:
-     - `kafka-ui`, `kafbat-ui-dev`, `rabbitmq` 라우터에 `sso-errors@file,sso-auth@file` 재적용
+     - `kafka-ui`, `rabbitmq` 라우터에 `sso-errors@file,sso-auth@file` 재적용
    - 이미지 회귀:
      - `kafka-ui` 이미지를 고정 태그로 복원
    - dev 경로 오류:
@@ -64,7 +64,7 @@ status: active
 
 ### Verification Steps
 
-- [ ] 3개 compose `config` 검증 통과
+- [ ] root messaging 및 messaging+dev profile 검증 통과
 - [ ] `check-all-hardening.sh 05-messaging` 실패 0건
 - [ ] optimization-hardening 문서 링크와 README 인덱스 최신화 확인
 
@@ -73,7 +73,7 @@ status: active
 - **Signals**: CI `infrastructure-hardening` job 상태, Traefik 라우터 상태, 컨테이너 health
 - **Evidence to Capture**:
   - 변경 전후 `check-all-hardening.sh 05-messaging` 출력
-  - `docker compose config` 결과
+  - root profile validation 결과와 rendered service list
   - 관련 compose/docs diff
 
 ### Safe Rollback or Recovery Procedure
@@ -102,9 +102,7 @@ status: active
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+Use only recovery or rollback steps already documented in this runbook, including the `Safe Rollback or Recovery Procedure` subsection above. Service-local compose validation requires root network/secret context or an explicit validation overlay; do not treat standalone `docker compose -f infra/05-messaging/... --profile messaging config` failure on `infra_net` as a runtime service outage.
 
 ## Escalation
 

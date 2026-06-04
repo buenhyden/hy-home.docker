@@ -20,28 +20,28 @@ status: active
   - Kafka Broker Cluster & Metadata (KRaft)
   - Schema Registry & Connect
   - RabbitMQ Server
-  - ksqlDB Engine
 - **Consumes**:
   - `infra_net` 네트워크 리소스
   - `${DEFAULT_MESSAGE_BROKER_DIR}` 영구 저장소
 - **Does Not Own**:
   - 서비스별 비즈니스 토픽 네이밍 규약 (Spec 담당)
   - 메트릭 시각화 (06-observability 담당)
+  - ksqlDB stream processing engine (`04-data/analytics/ksql` 담당)
 - **Non-goals**:
   - 메시징 계층에서 대용량 BLOB 데이터 직접 저장.
 
 ## Quality Attributes
 
-- **Performance**: Kafka 3노드 클러스터로 고성능 병렬 쓰기 보장.
-- **Security**: 내부망 기반 격리 통신 및 Vault 기반 시크릿 주입.
+- **Performance**: service-local full Kafka compose는 3 broker 병렬 쓰기 모델을 제공하고, root-included dev compose는 단일 broker 개발 모델을 제공한다.
+- **Security**: 내부망 기반 격리 통신, Traefik 관리 경로 보호, Docker Secrets 기반 Kafbat/RabbitMQ secret 주입을 사용한다.
 - **Reliability**: KRaft 쿼럼 기반 고가용성 메타데이터 서비스.
 - **Scalability**: 브로커 및 파티션 추가를 통한 수평 확장 지원.
-- **Observability**: JMX Exporter 및 Prometheus 기반 지표 모니터링.
+- **Observability**: Kafka broker JMX exporter agent, Kafka Exporter, RabbitMQ healthcheck 및 Prometheus 기반 지표 모니터링.
 - **Operability**: Kafbat UI 및 RabbitMQ Management 플러그인 제공.
 
 ## System Overview & Context
 
-메시징 계층은 Kafka REST Proxy를 통해 RESTful 접근도 지원하며, Schema Registry를 통해 Avro 기반의 강력한 데이터 정합성 보장을 가능하게 한다. ksqlDB는 흐르는 데이터에 대해 실시간 SQL 쿼리를 실행하여 마이크로서비스 엔진의 복잡도를 낮춘다.
+메시징 계층은 Kafka REST Proxy를 통해 RESTful 접근도 지원하며, Schema Registry를 통해 Avro/JSON 기반의 데이터 정합성 보장을 가능하게 한다. ksqlDB는 현재 `04-data/analytics/ksql`의 downstream analytics component로 운영한다.
 
 ## Data Architecture
 
@@ -50,12 +50,12 @@ status: active
   - `application-logs`: 애플리케이션 로그 스트림.
   - RabbitMQ `default` VHost 기반 작업 큐.
 - **Storage Strategy**: Local SSD 바인딩 기반 고성능 디바이스 사용.
-- **Data Boundaries**: 메시징 계층은 최대 7일간의 리텐션(Kafka 기준)을 원칙으로 함.
+- **Data Boundaries**: 메시징 계층은 current compose가 선언한 토픽과 broker storage 경계를 제공한다. 전역 Kafka retention 값은 현재 compose에 고정 선언되어 있지 않으며, 장기 분석/보관은 `04-data` 계층 책임이다.
 
 ## Infrastructure & Deployment
 
 - **Runtime / Platform**: Docker Containers / Linux Host.
-- **Deployment Model**: Infrastructure Stack (Kafka 3 Nodes, RabbitMQ 1 Node).
+- **Deployment Model**: root include path는 Kafka dev single broker + RabbitMQ 1 node를 렌더링한다. `infra/05-messaging/kafka/docker-compose.yml`은 service-local full 3 broker compose이며 root network/secret context가 필요하다.
 - **Operational Evidence**: `docker-compose.yml` 기반의 스테이트풀 서비스 관리.
 
 ## AI Agent Architecture Requirements (If Applicable)

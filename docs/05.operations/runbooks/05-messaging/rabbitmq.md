@@ -7,7 +7,7 @@ status: active
 
 ## Overview (KR)
 
-이 런북은 RabbitMQ 서비스 장애 시 장애 복구 절차를 정의한다. 메시지 누적(Message Backlog), 메모리 부족(Memory Alarm), 서비스 응답 없음 등의 상황에서 즉각적인 복구 단계를 제공한다.
+이 런북은 RabbitMQ 서비스 장애 시 비파괴 점검, evidence capture, 서비스 재시작, escalation 절차를 정의한다. Queue purge/delete/rebind 같은 메시지 손실 가능 작업은 일반 복구 단계가 아니라 승인된 escalation으로만 처리한다.
 
 ## RabbitMQ Recovery Procedure
 
@@ -17,9 +17,9 @@ status: active
 
 ### Purpose
 
-- RabbitMQ 메시지 처리 성능 회복
-- 장애 노드 복구 및 데이터 정합성 유지
-- 메시지 폭주 상황에서의 시스템 보호
+- RabbitMQ service health와 queue backlog 상태를 빠르게 확인한다.
+- secret 값을 노출하지 않고 evidence를 캡처한다.
+- 비파괴 재시작으로 복구 가능한 장애와 데이터 영향 조치가 필요한 장애를 분리한다.
 
 ### Canonical References
 
@@ -47,19 +47,19 @@ status: active
    - 서비스 재시작: `docker compose restart rabbitmq`
 
 2. **Memory Alarm (메모리 경고 시)**
-   - 메모리 소모가 심한 큐 식별.
-   - 불필요한 연결 강제 종료: UI 또는 `rabbitmqctl close_connection [connection-name]`
-   - 중요도가 낮은 큐의 메시지 퍼지(Purge) 검토: `rabbitmqctl purge_queue [queue-name]`
+   - 메모리 소모가 심한 큐와 connection을 식별한다.
+   - 연결 강제 종료가 필요하면 영향 connection, owner, 승인자를 evidence에 기록한 뒤 실행한다.
+   - Queue purge/delete는 메시지 손실 가능 작업이므로 이 단계에서 실행하지 않고 `## Escalation`으로 전환한다.
 
 3. **High CPU / Message Backlog (메처리 지연 시)**
    - Consumer 수 확인 및 확장 검토.
    - 메시지 처리 로직의 병목 지점(DB connection, external API call 등) 확인.
-   - `x-max-priority` 설정이 있는 큐의 우선순위 처리 상태 점색.
+   - `x-max-priority` 설정이 있는 큐의 우선순위 처리 상태를 점검.
 
 ### Verification Steps
 
-- [ ] `rabbitmq-diagnostics check_running`: 서비스 정상 실행 확인.
-- [ ] `rabbitmqctl status`: 메모리 및 디스크 알람 해제 여부 확인.
+- [ ] `docker exec rabbitmq rabbitmq-diagnostics -q check_running`: 서비스 정상 실행 확인.
+- [ ] `docker exec rabbitmq rabbitmqctl status`: 메모리 및 디스크 알람 해제 여부 확인.
 - [ ] 웹 콘솔 (`https://rabbitmq.${DEFAULT_URL}`) 접속 및 대시보드 정상 출력 확인.
 
 ### Observability and Evidence Sources
@@ -69,8 +69,9 @@ status: active
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+- [ ] compose 또는 route 변경 직후 발생한 장애라면 변경 전후 diff와 root profile render를 비교한다.
+- [ ] 비파괴 복구는 `docker compose restart rabbitmq`와 health 재검증으로 제한한다.
+- [ ] Queue contents, definition import/export, vhost/user permission mutation은 별도 승인 절차로 분리한다.
 
 ### Agent Operations (If Applicable)
 
@@ -87,9 +88,7 @@ status: active
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+N/A - no verified generic RabbitMQ data rollback procedure is documented yet. Use this runbook for inspection, evidence capture, and non-destructive restart only. Escalate before queue purge/delete, definition import/export, vhost/user mutation, or message replay.
 
 ## Escalation
 
