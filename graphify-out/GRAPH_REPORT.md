@@ -1,16 +1,16 @@
 # Graph Report - hy-home.docker  (2026-06-04)
 
 ## Corpus Check
-- 837 files · ~699,574 words
+- 837 files · ~699,243 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 14539 nodes · 14228 edges · 1098 communities (1021 shown, 77 thin omitted)
+- 14549 nodes · 14258 edges · 1098 communities (1021 shown, 77 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 332 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d7558d2d`
+- Built from commit: `4b811a73`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1192,8 +1192,8 @@ Cohesion: 0.10
 Nodes (35): AppRole Bootstrap Procedure, Cassandra Operation Policy Runbook, Cassandra Service, data-hardening CI Job, Document Traceability Validation, Execution Plan, Execution Tasks, gateway-standard-chain Middleware (+27 more)
 
 ### Community 11 - "Minio Mng Cassandra Exporter"
-Cohesion: 0.15
-Nodes (13): Neo4j Secret Aware Entrypoint, Neo4j Container Service, Neo4j Traefik HTTP and Bolt Routing, Qdrant Container Service, Qdrant Snapshot Storage, Qdrant REST and gRPC Traefik Routing, Supabase Kong Gateway, Neo4j Graph Database Service (+5 more)
+Cohesion: 0.20
+Nodes (10): Neo4j Secret Aware Entrypoint, Neo4j Container Service, Neo4j Traefik HTTP and Bolt Routing, Qdrant Container Service, Qdrant Snapshot Storage, Qdrant REST and gRPC Traefik Routing, Neo4j Graph Database Service, Qdrant Vector Database Service (+2 more)
 
 ### Community 12 - "Grill Review Ledger Original"
 Cohesion: 0.19
@@ -1560,12 +1560,12 @@ Cohesion: 0.07
 Nodes (29): 1. Symptom, 2. Verification Steps (Host), 3. Recovery Procedure, 4. Escalation, Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist (+21 more)
 
 ### Community 137 - "Community 137"
-Cohesion: 0.07
-Nodes (28): English, Korean, Overview (KR), Purpose, Related Documents, Target Audience, 1. Storage Exhaustion (디스크 공간 부족), 2. Root Credential Reset (비밀번호 초기화) (+20 more)
+Cohesion: 0.09
+Nodes (30): English, Korean, Overview (KR), Purpose, Related Documents, Target Audience, 1. Storage Exhaustion (디스크 공간 부족), 2. Root Credential Reset (비밀번호 초기화) (+22 more)
 
 ### Community 138 - "Community 138"
-Cohesion: 0.07
-Nodes (28): English, Korean, Overview (KR), Purpose, Related Documents, Target Audience, 1. Master Server Recovery, 2. Read-Only Mode Resolution (+20 more)
+Cohesion: 0.09
+Nodes (30): English, Korean, Overview (KR), Purpose, Related Documents, Target Audience, 1. Master Server Recovery, 2. Read-Only Mode Resolution (+22 more)
 
 ### Community 139 - "Community 139"
 Cohesion: 0.07
@@ -1721,7 +1721,7 @@ Nodes (24): annotations, list, description, editable, fiscalYearStartMonth, grap
 
 ### Community 177 - "Community 177"
 Cohesion: 0.08
-Nodes (24): 1. Context & Objective (KR), 2. Requirements & Constraints, 3.1. Full Stack Deployment, 3.2. Verification, 3. Setup & Installation, 4.1. Access Endpoints, 4.2. Storage Interfaces, 4. Usage & Integration (+16 more)
+Nodes (25): 1. Context & Objective (KR), 2. Requirements & Constraints, 3.1. Full Stack Deployment, 3.2. Verification, 3. Setup & Installation, 4.1. Access Endpoints, 4.2. Storage Interfaces, 4. Usage & Integration (+17 more)
 
 ### Community 178 - "Community 178"
 Cohesion: 0.08
@@ -1980,8 +1980,8 @@ Cohesion: 0.09
 Nodes (22): annotations, list, editable, fiscalYearStartMonth, graphTooltip, id, links, panels (+14 more)
 
 ### Community 242 - "Community 242"
-Cohesion: 0.09
-Nodes (22): Audience, Canonical References, Cluster Deployment, Entrypoints, How to Work in This Area, In Scope, Initialized Buckets, Known Issues & Troubleshooting (+14 more)
+Cohesion: 0.08
+Nodes (23): Audience, Canonical References, Cluster Deployment, Entrypoints, How to Work in This Area, In Scope, Initialized Buckets, Known Issues & Troubleshooting (+15 more)
 
 ### Community 243 - "Community 243"
 Cohesion: 0.09
@@ -2305,7 +2305,7 @@ Nodes (17): Agent Operations (If Applicable), Canonical References, Checklist, E
 
 ### Community 323 - "Community 323"
 Cohesion: 0.11
-Nodes (17): Overview (KR), Purpose, Related Documents, Target Audience, 1. 연결 정보 확인 (Connection Info), 2. 버킷 초기화 및 자동화 (Bucket Initialization), 3. MinIO Client (mc) 사용 (Using mc), 4. 애플리케이션 연동 (App Integration) (+9 more)
+Nodes (18): Overview (KR), Purpose, Related Documents, Target Audience, 1. 연결 정보 확인 (Connection Info), 2. 버킷 초기화 및 자동화 (Bucket Initialization), 3. MinIO Client (mc) 사용 (Using mc), 4. 애플리케이션 연동 (App Integration) (+10 more)
 
 ### Community 324 - "Community 324"
 Cohesion: 0.11
@@ -2488,8 +2488,8 @@ Cohesion: 0.12
 Nodes (16): Audience, Available Scripts, Change Impact, Configuration, Environment Variables, How to Work in This Area, In Scope, Laboratory Dashboard (Homer) (+8 more)
 
 ### Community 369 - "Community 369"
-Cohesion: 0.12
-Nodes (16): Overview (KR), Purpose, Related Documents, Target Audience, 1. S3 API 활용 (Using S3 API), 2. Filer API (CDN) 활용 (Using Filer API), 3. FUSE 호스트 마운트 (FUSE Host Mount), 4. 클러스터 모니터링 (Cluster Monitoring) (+8 more)
+Cohesion: 0.11
+Nodes (17): Overview (KR), Purpose, Related Documents, Target Audience, 1. S3 API 활용 (Using S3 API), 2. Filer API (CDN) 활용 (Using Filer API), 3. FUSE 호스트 마운트 (FUSE Host Mount), 4. 클러스터 모니터링 (Cluster Monitoring) (+9 more)
 
 ### Community 370 - "Community 370"
 Cohesion: 0.12
@@ -2724,12 +2724,12 @@ Cohesion: 0.13
 Nodes (15): Prometheus alert: ContainerHighCpuUtilization, Prometheus alert: ContainerHighMemoryUsage, Prometheus alert: ContainerHighThrottleRate, Prometheus alert: ContainerMemoryCritical, Prometheus alert: ContainerVolumeUsage, Prometheus rule group: infrastructure_alerts, Prometheus rule group: n8n_alerts, Prometheus alert: N8nLeaderMissing (+7 more)
 
 ### Community 428 - "Community 428"
-Cohesion: 0.13
-Nodes (14): English, Korean, Overview (KR), Related Documents, Backup & Lifecycle, Compliance Requirements, Controls & Standards, Exceptions (+6 more)
+Cohesion: 0.12
+Nodes (15): English, Korean, Overview (KR), Related Documents, Backup & Lifecycle, Compliance Requirements, Controls, Controls & Standards (+7 more)
 
 ### Community 429 - "Community 429"
-Cohesion: 0.13
-Nodes (14): English, Korean, Overview (KR), Related Documents, Backup & Lifecycle, Compliance Requirements, Controls & Standards, Exceptions (+6 more)
+Cohesion: 0.12
+Nodes (15): English, Korean, Overview (KR), Related Documents, Backup & Lifecycle, Compliance Requirements, Controls, Controls & Standards (+7 more)
 
 ### Community 430 - "Community 430"
 Cohesion: 0.13
@@ -3348,8 +3348,8 @@ Cohesion: 0.20
 Nodes (12): Doc Traceability Check, Hardening Check All, Messaging Gateway SSO Hardening, messaging-hardening CI Gate, Observability Gateway SSO Hardening, observability-hardening CI Gate, 05-Messaging Optimization Hardening Runbook, 06-Observability Optimization Hardening Runbook (+4 more)
 
 ### Community 584 - "Community 584"
-Cohesion: 0.17
-Nodes (12): mng-pg, mng-pg-exporter, mng-pg-init, mng-valkey, mng-valkey-exporter, Management Generic Service Database, Management Platform Service Databases, Management Database (+4 more)
+Cohesion: 0.13
+Nodes (15): mng-pg, mng-pg-exporter, mng-pg-init, mng-valkey, mng-valkey-exporter, Supabase Kong Gateway, Management Generic Service Database, Management Platform Service Databases (+7 more)
 
 ### Community 585 - "Community 585"
 Cohesion: 0.17
@@ -5234,7 +5234,7 @@ Nodes (8): Controls, Exceptions, LLM Wiki Maintenance Operations Policy, Policy 
   infra/06-observability/docker-compose.yml · relation: references
 
 ## Knowledge Gaps
-- **9940 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+9935 more)
+- **9930 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+9925 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **77 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -5245,13 +5245,13 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **What is the exact relationship between `cadvisor Compose Service` and `pyroscope Compose Service`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **Why does `Prometheus rule group: kubernetes_alerts` connect `Prometheus Alert Kubecputhrottlinghigh Kubepodnotready` to `Community 358`?**
+- **Why does `Prometheus Development Scrape And Alerting Config` connect `Community 243` to `Prometheus Alert Rule Group`, `Community 129`, `Community 358`, `Community 233`, `Community 458`, `Community 427`, `Community 715`, `Community 237`, `Community 526`, `Community 842`, `Community 525`, `Community 570`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
-- **Why does `alert_rules.k8s.yml Prometheus Rule File` connect `Community 358` to `Community 129`, `Community 243`, `Community 525`, `Prometheus Alert Kubecputhrottlinghigh Kubepodnotready`?**
+- **Why does `Prometheus rule group: infrastructure_recording_rules` connect `Community 427` to `Community 525`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **Why does `Prometheus Production Scrape And Alerting Config` connect `Community 129` to `Prometheus Alert Rule Group`, `Community 358`, `Prometheus Alert Kubecputhrottlinghigh Kubepodnotready`, `Community 233`, `Community 458`, `Community 427`, `Community 715`, `Community 842`, `Community 526`, `Community 525`, `Community 570`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **What connects `printWidth`, `singleQuote`, `semi` to the rest of the system?**
-  _10513 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _10503 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Prometheus Alert Rule Group` be split into smaller, more focused modules?**
   _Cohesion score 0.09682539682539683 - nodes in this community are weakly interconnected._

@@ -625,8 +625,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/cache-and-kv/README.md": {
-    "mtime": 1780554617.9469028,
-    "ast_hash": "14e2a40baefb1cbc1336f06a81c68a80",
+    "mtime": 1780569337.4980698,
+    "ast_hash": "eb39f7c1d6e4723ba64cdc47a1aee573",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml": {
@@ -635,8 +635,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/cache-and-kv/valkey-cluster/README.md": {
-    "mtime": 1780554617.9469028,
-    "ast_hash": "6b23cbbec9ac0b33b4ea8e692b250800",
+    "mtime": 1780569337.5019221,
+    "ast_hash": "3da922b36d27e90efce4272f0438e313",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/11-laboratory/README.md": {
@@ -1840,8 +1840,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md": {
-    "mtime": 1780371233.6312501,
-    "ast_hash": "a1b7d10739a8f391dd4db74aaa5ff54c",
+    "mtime": 1780569337.4518409,
+    "ast_hash": "d343a9c3f025439a40022b358fdcd2fa",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/cache-and-kv/README.md": {
@@ -2245,8 +2245,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md": {
-    "mtime": 1780371233.6472502,
-    "ast_hash": "d6c40f3f4a71ef438bcb564efc1657cb",
+    "mtime": 1780569337.4518409,
+    "ast_hash": "2ad250d9523307e654ee9479226aa563",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/cache-and-kv/README.md": {
@@ -2640,8 +2640,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md": {
-    "mtime": 1780553719.3690128,
-    "ast_hash": "083fe78506d89f3149dee27f0621bcbe",
+    "mtime": 1780569337.4518409,
+    "ast_hash": "765e9178e58b71780ca2f6b77924fb53",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/cache-and-kv/README.md": {
@@ -3430,8 +3430,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1780568785.4540248,
-    "ast_hash": "629003d4d483317280ebfcd3cdf51036",
+    "mtime": 1780569337.4518409,
+    "ast_hash": "f3893219096fcd702e4106c3a678e334",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -4540,8 +4540,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md": {
-    "mtime": 1780568785.4540248,
-    "ast_hash": "49afe1900316ce30092ae69878778783",
+    "mtime": 1780569337.4518409,
+    "ast_hash": "8a710c1e24ca917ad7aa2018c48fdef4",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/00-workspace/README.md": {
