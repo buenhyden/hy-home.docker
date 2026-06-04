@@ -3,23 +3,13 @@ status: active
 ---
 <!-- Target: docs/05.operations/guides/04-data/nosql/couchdb.md -->
 
-# CouchDB Operation Policy Usage Guide
+# CouchDB Usage Guide
 
 ## Usage
 
 ### Overview (KR)
 
-이 문서는 CouchDB 3-노드 클러스터의 아키텍처, 데이터 동기화 메커니즘 및 `hy-home.docker` 환경에서의 사용 가이드를 제공한다. CouchDB의 HTTP 기반 API와 강력한 복제 기능을 활용하는 방법을 설명한다.
->
-> Document-oriented NoSQL database optimized for multi-master replication and synchronization.
-
----
-
-### Common Pitfalls
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
+이 문서는 `infra/04-data/nosql/couchdb/docker-compose.yml`에 정의된 CouchDB 3노드 클러스터 사용 기준을 설명한다. 현재 루트 compose에서는 CouchDB include가 주석 처리된 선택 서비스이며, 활성화 시 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`가 `data` 프로파일과 `infra_net`에서 동작한다.
 
 ### Usage Type
 
@@ -27,75 +17,67 @@ status: active
 
 ### Target Audience
 
-- Developer
 - Operator
-- Agent-tuner
+- Developer
+- AI Agent
 
 ### Purpose
 
-애플리케이션 개발자가 CouchDB의 오프라인 우선(Offline-first) 데이터 동기화 기능을 이해하고, 클러스터 환경에서 가용성 높은 서비스를 구축할 수 있도록 돕는다.
+CouchDB HTTP API, cluster-init job, Traefik sticky routing, Docker Secret 기반 admin/cookie 설정을 현재 compose 이름과 맞춰 사용할 수 있게 한다.
 
 ### Prerequisites
 
-- `infra/04-data/nosql/couchdb` 클러스터 배포 환경
-- HTTP REST API 및 JSON 데이터 형식에 대한 기본 지식
-- PouchDB 또는 CouchDB 클라이언트 라이브러리에 대한 이해
+- `infra/04-data/nosql/couchdb/docker-compose.yml`와 루트 [docker-compose.yml](../../../../../docker-compose.yml)의 선택 include 상태를 확인한다.
+- `DEFAULT_DATA_DIR`, `DEFAULT_URL`, `COUCHDB_USERNAME`, `couchdb_password`, `couchdb_cookie`가 준비되어 있어야 한다.
+- 로컬 점검은 가능하면 `couchdb-1` 내부에서 secret mount를 읽어 수행한다.
 
 ### Step-by-step Instructions
 
-#### 1. 클러스터 상태 확인
+1. 서비스 구성을 렌더링한다.
 
-CouchDB 전체 노드가 정상적으로 연결되어 있는지 상태를 확인한다.
+   ```bash
+   docker compose -f docker-compose.yml -f infra/04-data/nosql/couchdb/docker-compose.yml --profile data config
+   ```
 
-```bash
+2. 클러스터와 init job 상태를 확인한다.
 
-## 특정 노드 상태 확인
-curl -u ${COUCHDB_USER}:${COUCHDB_PASSWORD} https://couchdb.${DEFAULT_URL}/_up
-```
+   ```bash
+   docker compose ps couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init
+   ```
 
-### 2. 데이터베이스 및 문서 생성
+3. 로컬 컨테이너 기준 health endpoint를 확인한다.
 
-CouchDB는 모든 작업을 HTTP API를 통해 수행한다.
+   ```bash
+   docker exec couchdb-1 sh -lc 'COUCHDB_PASSWORD=$(cat /run/secrets/couchdb_password); curl -fsS "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@localhost:${COUCHDB_PORT:-5984}/_up"'
+   ```
 
-```bash
-## 데이터베이스 생성
-curl -X PUT -u ${COUCHDB_USER}:${COUCHDB_PASSWORD} https://couchdb.${DEFAULT_URL}/my_database
+4. membership은 primary route 또는 `couchdb-1` 내부에서 확인한다.
 
-## 문서 생성
-curl -X POST -H "Content-Type: application/json" \
-     -u ${COUCHDB_USER}:${COUCHDB_PASSWORD} \
-     https://couchdb.${DEFAULT_URL}/my_database \
-     -d '{"name": "hy-home", "type": "NoSQL"}'
-```
+   ```bash
+   docker exec couchdb-1 sh -lc 'COUCHDB_PASSWORD=$(cat /run/secrets/couchdb_password); curl -fsS "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@localhost:${COUCHDB_PORT:-5984}/_membership"'
+   ```
 
-### 3. 데이터 동기화 (Replication)
-
-CouchDB의 핵심은 원격 데이터베이스 간의 동기화이다.
-
-- **Check-pointer**: 복제 진행 상황을 추적하여 중단 시 재개 가능하게 한다.
-- **Conflicts**: 동일 문서 동기화 시 발생하는 충돌을 리비전(`_rev`) 기반으로 해결한다.
-
-#### 4. 뷰와 쿼리 (Views & Mango)
-
-- **Design Documents**: Map-Reduce 뷰를 정의하여 인덱싱된 조회를 수행한다.
-- **Mango Queries**: MongoDB와 유사한 JSON 스타일의 선언적 쿼리를 사용한다.
+5. 외부 접근은 Traefik route `https://couchdb.${DEFAULT_URL}`와 sticky cookie 설정을 전제로 한다. 직접 host port publish는 현재 compose에 없다.
 
 ### Common Pitfalls
 
-- **Sticky Session**: Traefik 설정에서 Sticky Cookie가 비활성화되면 노드 간 리비전 불일치로 인해 예상치 못한 충돌이 발생할 수 있다.
-- **Compaction**: CouchDB는 문서를 업데이트할 때마다 새 리비전을 생성하므로, 주기적인 컴팩션(Compaction) 작업이 없으면 디스크 사용량이 급격히 증가한다.
-- **Admin Party**: 기본 인증이 설정되지 않은 경우 누구나 접근 가능한 위험이 있으므로 항상 Secrets 기반 인증을 확인한다.
+- 서비스명은 `couchdb-1`, `couchdb-2`, `couchdb-3`이다. 예전 node-style 이름을 현재 서비스명처럼 사용하지 않는다.
+- Erlang cookie는 legacy shared-secret env var가 아니라 `/run/secrets/couchdb_cookie`에서 읽어 `ERL_FLAGS`에 주입된다.
+- 클러스터 init은 `curlimages/curl:8.20.0` 기반 일회성 job이며, 반복 실패 시 재조인 절차를 임의로 실행하기 전에 runbook evidence를 남겨야 한다.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `docker compose -f docker-compose.yml -f infra/04-data/nosql/couchdb/docker-compose.yml --profile data config`
+- `docker compose logs couchdb-cluster-init`
+- `docker exec couchdb-1 sh -lc 'COUCHDB_PASSWORD=$(cat /run/secrets/couchdb_password); curl -fsS "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@localhost:${COUCHDB_PORT:-5984}/_membership"'`
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/nosql/couchdb.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [CouchDB runbook](../../../runbooks/04-data/nosql/couchdb.md)을 따른다.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/nosql/couchdb.md)
 - [Recovery runbook](../../../runbooks/04-data/nosql/couchdb.md)
+- [Infra README](../../../../../infra/04-data/nosql/couchdb/README.md)

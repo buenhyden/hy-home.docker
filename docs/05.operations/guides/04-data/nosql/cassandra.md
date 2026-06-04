@@ -3,17 +3,13 @@ status: active
 ---
 <!-- Target: docs/05.operations/guides/04-data/nosql/cassandra.md -->
 
-# Cassandra Operation Policy Usage Guide
+# Cassandra Usage Guide
 
 ## Usage
 
 ### Overview (KR)
 
-이 문서는 Apache Cassandra 5.0의 시스템 아키텍처, 데이터 모델링 기본 원리 및 `hy-home.docker` 환경에서의 사용 가이드를 제공한다.
->
-> Distributed wide-column NoSQL database for high-throughput, highly available workloads.
-
----
+이 문서는 `infra/04-data/nosql/cassandra/docker-compose.yml`에 정의된 Cassandra 단일 노드와 `cassandra-exporter`를 기준으로 사용 맥락, 접속 방식, 일반 점검 방법을 설명한다. 현재 루트 compose에서는 Cassandra include가 주석 처리된 선택 서비스이며, 활성화 시 `data` 프로파일의 `cassandra-node1`과 `data`/`obs` 프로파일의 `cassandra-exporter`가 `infra_net`에서 동작한다.
 
 ### Usage Type
 
@@ -21,69 +17,67 @@ status: active
 
 ### Target Audience
 
-- Developer
 - Operator
-- Agent-tuner
+- Developer
+- AI Agent
 
 ### Purpose
 
-애플리케이션 개발자와 운영자가 Cassandra의 분산 구조를 이해하고, 효율적인 데이터 스토리지 계층으로 활용할 수 있도록 돕는다.
+Cassandra를 wide-column 저장소로 사용할 때 현재 repository의 서비스명, secret mount, 볼륨 경계, 메트릭 exporter 경로를 오해하지 않도록 한다.
 
 ### Prerequisites
 
-- `infra/04-data/nosql/cassandra` 배포 환경 및 Docker 기반 지식
-- CQL(Cassandra Query Language) 기본 문법 이해
-- `${DEFAULT_DATA_DIR}/cassandra` 볼륨 접근 권한
+- `infra/04-data/nosql/cassandra/docker-compose.yml`와 루트 [docker-compose.yml](../../../../../docker-compose.yml)의 선택 include 상태를 확인한다.
+- `DEFAULT_DATA_DIR`, `CASSANDRA_USERNAME`, `cassandra_password` secret 파일이 로컬 환경에서 준비되어 있어야 한다.
+- 런타임 점검은 container 내부 secret 파일을 읽는 방식으로 수행하고, secret 값을 문서나 로그에 남기지 않는다.
 
 ### Step-by-step Instructions
 
-#### 1. Cassandra 서비스 상태 확인
+1. 서비스 구성을 렌더링한다.
 
-Cassandra가 정상적으로 실행 중인지 `nodetool`을 통해 확인한다.
+   ```bash
+   docker compose -f docker-compose.yml -f infra/04-data/nosql/cassandra/docker-compose.yml --profile data config
+   ```
 
-```bash
-docker exec -it cassandra-node1 nodetool status
-```
+2. Cassandra 서비스가 활성화된 런타임에서 컨테이너 상태를 확인한다.
 
-- `UN` (Up/Normal): 정상 상태
-- `DN` (Down/Normal): 서비스는 살아있으나 노드 통신 불가
+   ```bash
+   docker compose ps cassandra-node1 cassandra-exporter
+   ```
 
-#### 2. CQLSH를 통한 데이터베이스 접속
+3. 노드 상태는 `nodetool`로 확인한다.
 
-직접 쿼리를 수행하기 위해 `cqlsh` 인터페이스를 사용한다.
+   ```bash
+   docker exec cassandra-node1 nodetool status
+   ```
 
-```bash
-docker exec -it cassandra-node1 cqlsh -u ${CASSANDRA_USER} -p ${CASSANDRA_PASSWORD}
-```
+4. CQL 점검은 container 내부 secret mount를 사용한다.
 
-#### 3. 데이터 모델링 가이드
+   ```bash
+   docker exec cassandra-node1 sh -lc 'cqlsh -u "$CASSANDRA_USER" -p "$(cat /run/secrets/cassandra_password)" -e "SELECT cluster_name, release_version FROM system.local;"'
+   ```
 
-Cassandra는 쿼리 기반 모델링(Query-driven modeling)이 권장된다.
-
-- **Keyspace**: 데이터베이스 단위의 스키마 정의 (Replication Strategy 포함)
-- **Table**: 기본 키(Partition Key + Clustering Column)를 신중히 설계하여 데이터 분산을 최적화한다.
-- **SAI (Storage Attached Indexing)**: Cassandra 5.0의 신기능으로, 여러 컬럼에 대해 효율적인 인덱싱을 제공한다.
-
-#### 4. 메트릭 모니터링 연동
-
-Prometheus는 `cassandra-exporter` (포트 8080/8081)를 통해 메트릭을 수집한다. Grafana에서 `Cassandra Overview` 대시보드를 통해 Read/Write Latency, Compaction 상태 등을 모니터링할 수 있다.
+5. 메트릭 연동은 `cassandra-exporter`가 노드 health 이후 시작되는지 확인한다. exporter 포트는 compose의 `${CASSANDRA_EXPORTER_PORT:-8080}` 및 `${CASSANDRA_EXPORTER_LISTEN_PORT:-8081}` 기준이다.
 
 ### Common Pitfalls
 
-- **Single Node Limit**: 현재 단일 노드 구성이므로 클러스터 수준의 가용성(`QUORUM` 등) 테스트는 제한적이다.
-- **Heavy Scan Queries**: `ALLOW FILTERING`을 사용하는 쿼리는 대규모 데이터 셋에서 성능 장애를 유발하므로 실무 환경에서는 지양한다.
-- **Tombstone Accumulation**: 대량의 `DELETE` 작업은 데이터 조회 시 성능 저하를 일으키므로 TTL 기반의 자동 삭제를 권장한다.
+- 현재 구현은 `cassandra:5.0.8` 단일 노드다. 다중 노드 quorum, repair 자동화, zero-downtime node rotation을 구현된 기능처럼 문서화하지 않는다.
+- 데이터 볼륨은 `${DEFAULT_DATA_DIR}/cassandra/node1`에 bind되고 container에는 `/bitnami/cassandra`로 mount된다. `/var/lib/cassandra` 기준 설명은 현재 compose와 맞지 않는다.
+- 평문 password 환경 변수를 전제로 한 명령을 사용하지 않는다. compose는 `/run/secrets/cassandra_password`를 사용한다.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `docker compose -f docker-compose.yml -f infra/04-data/nosql/cassandra/docker-compose.yml --profile data config`
+- `docker exec cassandra-node1 nodetool status`에서 `cassandra-node1` 상태가 `UN`인지 확인한다.
+- `docker compose ps cassandra-node1 cassandra-exporter`에서 Cassandra가 healthy이고 exporter가 실행 중인지 확인한다.
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/nosql/cassandra.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [Cassandra runbook](../../../runbooks/04-data/nosql/cassandra.md)을 따른다.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/nosql/cassandra.md)
 - [Recovery runbook](../../../runbooks/04-data/nosql/cassandra.md)
+- [Infra README](../../../../../infra/04-data/nosql/cassandra/README.md)

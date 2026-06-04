@@ -3,149 +3,122 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/04-data/nosql/couchdb.md -->
 
-# CouchDB Runbook
+# CouchDB Cluster Triage Runbook
 
-## Overview (KR)
+## CouchDB Cluster Triage Procedure
 
-이 문서는 CouchDB 클러스터 정족수 상실, 노드 간 복제 중단, 또는 데이터 정합성 이슈 발생 시의 복구 절차를 정의한다.
+> Scope: Triage CouchDB 3-node cluster health, cluster-init results, membership, and Traefik route assumptions.
 
-## CouchDB Recovery Procedure
+### Overview (KR)
 
-> Emergency recovery procedures for CouchDB Cluster and node synchronization issues.
-
----
-
-### Procedure Type
-
-`incident-response`
-
-### Target Audience
-
-- On-call Engineer
-- SRE
-- AI-Agent
+이 런북은 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` 상태 이상이 발생했을 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. 수동 재조인, 데이터베이스 compaction, shard 변경, cookie 교체는 현재 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션한다.
 
 ### Purpose
 
-CouchDB 클러스터의 고가용성 상태를 복구하고, 노드 간 데이터 불일치를 해결하여 안정적인 문서 동기화 환경을 재구축한다.
-
-### Pre-remediation Checklist
-
-- [ ] `https://couchdb.${DEFAULT_URL}/_membership` 결과 분석
-- [ ] 노드 간 HTTP 통신(Port 5984) 및 Cluster 통신(Port 4369, 5986) 확인
-- [ ] `couchdb_secret`이 모든 노드에서 동일한지 확인
-
-### Remediation Steps
-
-#### Scenario 1: Node Out-of-Sync (Re-joining Cluster)
-
-클러스터에서 이탈한 노드를 다시 조인시킨다.
-
-1. 로그 확인: `docker logs couchdb-node1`
-2. 노드 재시작:
-
-   ```bash
-   docker-compose restart couchdb-node1
-   ```
-
-3. 클러스터 수동 조인 (필요 시):
-   (Setup API를 통해 이탈한 노드의 IP/Port를 다시 추가)
-
-#### Scenario 2: High Fragmentation (Manual Compaction)
-
-디스크 부족으로 인한 쓰기 거부 시 압축을 수행한다.
-
-1. 모든 데이터베이스 목록 확인:
-
-   ```bash
-   curl -u ${USER}:${PASS} https://couchdb.${DEFAULT_URL}/_all_dbs
-   ```
-
-2. 특정 DB 압축 실행:
-
-   ```bash
-   curl -H "Content-Type: application/json" -X POST -u ${USER}:${PASS} \
-        https://couchdb.${DEFAULT_URL}/<db_name>/_compact
-   ```
-
-### Verification Steps
-
-1. 클러스터 동기화 지연 확인:
-
-   ```bash
-   curl -u ${USER}:${PASS} https://couchdb.${DEFAULT_URL}/_scheduler/docs
-   ```
-
-2. 특정 문서 리비전 일치 여부 확인 (각 노드별 직접 쿼리).
-
-### Post-remediation Tasks
-
-- `revs_limit` 정책 적정성 검토
-- 디스크 자동 확장 트리거 점검
-- 공유 시크릿(Secret) 관리 상태 재확인
+CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구현에 없는 서비스명이나 secret control을 사용하지 않도록 한다.
 
 ### Canonical References
 
-- [../README.md](../README.md)
-- [../../05.operations/README.md](../../../README.md)
-- [../../05.operations/README.md](../../../README.md)
+- **Spec**: N/A — no upstream source
+- **Policy**: [CouchDB operations policy](../../../policies/04-data/nosql/couchdb.md)
+- **Guide**: [CouchDB usage guide](../../../guides/04-data/nosql/couchdb.md)
 
 ## When to Use
 
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
+- 한 개 이상의 CouchDB 노드가 unhealthy, stopped, or missing 상태일 때
+- `couchdb-cluster-init`가 실패했거나 membership이 세 노드를 표시하지 않을 때
+- Traefik route `couchdb.${DEFAULT_URL}` 또는 sticky routing 상태를 확인해야 할 때
+- NoSQL operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 operation policy를 확인한다.
-- [ ] 현재 compose/config/docs 상태를 확인한다.
-- [ ] 필요한 절차를 수행한다.
-- [ ] 검증 결과와 evidence를 기록한다.
+- [ ] 루트 compose에서 CouchDB include가 선택적으로 주석 처리되어 있는지, 이번 런타임에서 의도적으로 활성화했는지 확인한다.
+- [ ] secret 값을 출력하지 않는 명령만 사용한다.
+- [ ] 서비스명은 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`로만 기록한다.
+- [ ] 수동 재조인, compaction, shard 변경, cookie 교체가 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 
 ### Steps
 
-1. 관련 README와 operation 문서를 확인한다.
-2. 작업 전 현재 상태를 기록한다.
-3. 절차를 최소 변경으로 수행한다.
-4. 검증 명령 또는 수동 확인을 실행한다.
+1. compose 렌더링을 확인한다.
+
+   ```bash
+   docker compose -f docker-compose.yml -f infra/04-data/nosql/couchdb/docker-compose.yml --profile data config
+   ```
+
+2. 컨테이너와 init job 상태를 확인한다.
+
+   ```bash
+   docker compose ps couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init
+   ```
+
+3. 각 노드와 init job 로그를 확인한다.
+
+   ```bash
+   docker compose logs --tail=120 couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init
+   ```
+
+4. `couchdb-1` 내부에서 health endpoint를 확인한다.
+
+   ```bash
+   docker exec couchdb-1 sh -lc 'COUCHDB_PASSWORD=$(cat /run/secrets/couchdb_password); curl -fsS "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@localhost:${COUCHDB_PORT:-5984}/_up"'
+   ```
+
+5. membership을 확인한다.
+
+   ```bash
+   docker exec couchdb-1 sh -lc 'COUCHDB_PASSWORD=$(cat /run/secrets/couchdb_password); curl -fsS "http://${COUCHDB_USER}:${COUCHDB_PASSWORD}@localhost:${COUCHDB_PORT:-5984}/_membership"'
+   ```
+
+6. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 재기동한다.
+
+   ```bash
+   docker compose -f docker-compose.yml -f infra/04-data/nosql/couchdb/docker-compose.yml --profile data up -d couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init
+   ```
+
+### Verification Steps
+
+- `docker compose ps couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init`에서 세 노드가 running 또는 healthy 상태인지 확인한다.
+- `_membership` 결과에 `couchdb@couchdb-1.infra_net`, `couchdb@couchdb-2.infra_net`, `couchdb@couchdb-3.infra_net`가 포함되는지 확인한다.
+- `couchdb-cluster-init` 로그가 cluster setup completion 또는 idempotent success/failure evidence를 제공하는지 확인한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+- **Logs**: `docker compose logs --tail=120 couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init`
+- **Health**: `/_up`, `/_membership`, `/_scheduler/docs`
+- **Route**: Traefik labels on `couchdb-1` and `couchdb_sticky` service cookie
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+1. Documentation-only changes can be reverted by the current git diff or the logical commit that introduced them.
+2. Runtime recovery in this runbook is limited to compose `up -d` for the declared CouchDB services after evidence capture.
+3. N/A — no verified manual rejoin, compaction rollback, shard relocation, or data restore procedure is documented yet.
 
 ### Agent Operations (If Applicable)
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
+- **Eval Re-run**: Re-run `bash scripts/validation/check-repo-contracts.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` after documentation changes.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- Capture command names, pass/fail status, service states, image tags, sanitized logs, and membership summary.
+- Do not capture secret values, cookie values, or full authenticated HTTP output if it includes sensitive fields.
+- Record whether CouchDB was optional/commented in root compose or explicitly included for the runtime session.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+N/A — no verified rollback or recovery procedure is documented beyond non-destructive compose restart and status verification. If cluster surgery, compaction, shard movement, cookie replacement, or data restore is required, preserve evidence and escalate.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Escalate to the owning operator when membership does not show the expected three nodes, cluster-init repeatedly fails, Traefik route assumptions diverge from compose labels, secret exposure risk appears, or any data operation is required. Include sanitized logs, membership summary, rendered compose evidence, service states, and attempted steps.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/nosql/couchdb.md)
 - [Operations policy](../../../policies/04-data/nosql/couchdb.md)
+- [Infra README](../../../../../infra/04-data/nosql/couchdb/README.md)

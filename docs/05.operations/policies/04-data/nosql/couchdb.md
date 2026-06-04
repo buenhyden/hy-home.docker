@@ -3,86 +3,50 @@ status: active
 ---
 <!-- Target: docs/05.operations/policies/04-data/nosql/couchdb.md -->
 
-# CouchDB Operation Policy Operations Policy
-
-> Operational standards for managing a 3-node CouchDB cluster with replication focus.
-
----
+# CouchDB Operations Policy
 
 ## Overview (KR)
 
-이 문서는 CouchDB 클러스터의 데이터 정합성 유지, 디스크 최적화(Compaction), 그리고 멀티 마스터 복제 환경에서의 운영 정책을 정의한다.
+이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 `couchdb:3.5.2`, `curlimages/curl:8.20.0`, `couchdb-cluster-init`, Traefik sticky route, Docker Secret 기반 admin password와 Erlang cookie 구성이다.
 
 ## Policy Scope
 
-This policy applies to the service, workflow, or operational control surface described by this document and its linked guide/runbook.
-
-## Policy Type
-
-`operational-standard`
-
-## Target Audience
-
-- Operator
-- SRE
-- Developer
-
-## Purpose
-
-클러스터 내 데이터 불일치를 방지하고, 지속적인 서비스 가용성을 보장하며, 리소스 효율적인 안정 운영을 목표로 한다.
-
-## Service Level Objectives (SLO)
-
-- **Availability**: 99.9% (Cluster consensus maintained)
-- **Data Integrity**: Zero loss during node rotation
-- **API Response**: 99th percentile < 500ms for standard requests
-
-## Operational Procedures
-
-### 1. Monitoring & Health Check
-
-- **Endpoint**: `https://couchdb.${DEFAULT_URL}/_membership` 호출을 통해 모든 노드가 클러스터에 참여 중인지 확인한다.
-- **Alerts**: 특정 노드의 `_up` 상태가 1분 이상 지속되지 않을 경우 경고 발생.
-
-### 2. Disk Management (Compaction)
-
-CouchDB는 Append-only 데이터베이스이므로 정기적인 압축 작업이 필수적이다.
-
-- **Auto-compaction**: 배포 시 설정된 자동 압축 정책(Fragmentation threshold 30%)이 정상 작동하는지 모니터링한다.
-- **Manual Trigger**: 디스크 부족 경고 시 `/database/_compact` API를 통해 강제 압축을 수행한다.
-
-### 3. Backup & DR
-
-- **CouchDB Replication**: 중요한 데이터베이스는 별도의 오프사이트(Off-site) CouchDB 인스턴스로 실시간 또는 정기 복제를 설정한다.
-- **Metadata Backup**: `_users`, `_replicator` 시스템 데이터베이스를 정기적으로 백업한다.
-
-## Common Pitfalls
-
-- **Revision Sprawl**: 너무 잦은 업데이트는 `_rev` 기록을 방대하게 만들어 뷰 인덱싱 성능을 저하시킨다. 정기적인 리비전 제한 수(`revs_limit`) 설정을 검토한다.
-- **Shared Secret Conflict**: 클러스터 노드 간 `COUCHDB_SECRET`이 일치하지 않으면 노드 간 통신 및 복제가 실패한다.
+- `infra/04-data/nosql/couchdb/docker-compose.yml`
+- `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`
+- `couchdb1-data`, `couchdb2-data`, `couchdb3-data`
+- `couchdb_password`, `couchdb_cookie`, `COUCHDB_USERNAME`
+- Traefik route `couchdb.${DEFAULT_URL}` and `couchdb_sticky` load-balancer cookie
+- Linked guide and runbook under `docs/05.operations`
 
 ## Controls
 
-- **Required**: Preserve the operational contract documented in the linked guide and source configuration.
-- **Allowed**: Documentation-only corrections that keep links and verification evidence current.
-- **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+- **Required**: Documentation must use current service names `couchdb-1`, `couchdb-2`, `couchdb-3`, and `couchdb-cluster-init`.
+- **Required**: Cluster cookie guidance must reference `/run/secrets/couchdb_cookie`; legacy shared-secret environment variables are not the current compose control.
+- **Required**: Health and membership checks must use the CouchDB HTTP API and container-local secret reads, not copied password values.
+- **Required**: External access guidance must stay behind Traefik `websecure` routing; direct host port exposure is not declared in compose.
+- **Allowed**: Read-only `_up`, `_membership`, `_scheduler/docs`, and logs checks for evidence capture.
+- **Allowed**: Documentation-only corrections that preserve the 3-node cluster-init model and sticky routing.
+- **Disallowed**: Manual node rejoin, compaction, or cluster surgery guidance without current evidence and runbook escalation.
+- **Disallowed**: Secret values, credential dumps, or Erlang cookie material in policy text or evidence.
 
 ## Exceptions
 
-N/A — 현재 승인된 예외 없음.
+N/A - no currently approved exceptions.
 
 ## Verification
 
-- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
-- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
-- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
+- Compare this policy with [CouchDB guide](../../../guides/04-data/nosql/couchdb.md), [CouchDB runbook](../../../runbooks/04-data/nosql/couchdb.md), and [infra README](../../../../../infra/04-data/nosql/couchdb/README.md) after compose changes.
+- Run `docker compose -f docker-compose.yml -f infra/04-data/nosql/couchdb/docker-compose.yml --profile data config` before approving service-name, port, Traefik, secret, or cluster-init documentation updates.
+- Run `bash scripts/validation/check-repo-contracts.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` after policy or linked operations document updates.
 
 ## Review Cadence
 
-- Review when linked service configuration, architecture, or runbook behavior changes.
+- Review on CouchDB compose image/profile/secret/Traefik/cluster-init changes.
+- Review during the Stage 05 operations documentation audit cadence.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/nosql/couchdb.md)
 - [Recovery runbook](../../../runbooks/04-data/nosql/couchdb.md)
+- [Infra README](../../../../../infra/04-data/nosql/couchdb/README.md)

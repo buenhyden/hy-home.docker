@@ -3,17 +3,13 @@ status: active
 ---
 <!-- Target: docs/05.operations/guides/04-data/nosql/mongodb.md -->
 
-# MongoDB Operation Policy Usage Guide
+# MongoDB Usage Guide
 
 ## Usage
 
 ### Overview (KR)
 
-이 문서는 MongoDB 8.2 Replica Set의 아키텍처, 데이터 모델링 원칙 및 `hy-home.docker` 환경에서의 연결 및 운영 가이드를 제공한다.
->
-> Document-oriented NoSQL database with flexible schemas and high availability via Replica Sets.
-
----
+이 문서는 `infra/04-data/nosql/mongodb/docker-compose.yml`에 정의된 MongoDB replica set 사용 기준을 설명한다. 현재 루트 compose에서는 MongoDB include가 주석 처리된 선택 서비스이며, 활성화 시 `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`가 `data`/`obs` 프로파일과 `infra_net`에서 동작한다.
 
 ### Usage Type
 
@@ -21,70 +17,67 @@ status: active
 
 ### Target Audience
 
-- Developer
 - Operator
-- Agent-tuner
+- Developer
+- AI Agent
 
 ### Purpose
 
-개발자가 MongoDB의 문서 기반 데이터 모델을 효율적으로 설계하고, 운영자가 레플리카 셋의 고가용성 메커니즘을 이해하여 안정적인 데이터 서비스를 제공할 수 있도록 돕는다.
+MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express route, exporter 경계를 현재 compose와 맞춰 사용하도록 한다.
 
 ### Prerequisites
 
-- `infra/04-data/nosql/mongodb` 레플리카 셋 배포 환경
-- MongoDB 셸 (`mongosh`) 또는 GUI 클라이언트 (Compass) 사용법
-- JSON/BSON 데이터 구조에 대한 기초 지식
+- `infra/04-data/nosql/mongodb/docker-compose.yml`와 루트 [docker-compose.yml](../../../../../docker-compose.yml)의 선택 include 상태를 확인한다.
+- `MONGODB_ROOT_USERNAME`, `MONGO_EXPRESS_CONFIG_BASICAUTH_USERNAME`, `mongodb_root_password`, `mongo_express_basicauth_password`가 준비되어 있어야 한다.
+- replica set 이름은 compose command에 고정된 `MyReplicaSet` 기준이다. 현재 구현에는 별도 replica-set-name 환경 변수가 없다.
 
 ### Step-by-step Instructions
 
-#### 1. 레플리카 셋 상태 진단
+1. 서비스 구성을 렌더링한다.
 
-클러스터의 멤버십과 상태를 확인한다.
+   ```bash
+   docker compose -f docker-compose.yml -f infra/04-data/nosql/mongodb/docker-compose.yml --profile data --profile obs config
+   ```
 
-```bash
-docker exec -it mongodb-rep1 mongosh -u ${MONGODB_ROOT_USERNAME} --eval "rs.status()"
-```
+2. init job과 replica member 상태를 확인한다.
 
-- **PRIMARY**: 모든 읽기/쓰기 작업이 수행되는 메인 노드.
-- **SECONDARY**: Primary로부터 데이터를 복제하며 장애 시 새로운 Primary로 승격 가능.
-- **ARBITER**: 데이터를 저장하지 않으며 투표에만 참여하여 정족수를 유지.
+   ```bash
+   docker compose ps mongo-key-generator mongodb-rep1 mongodb-rep2 mongodb-arbiter mongo-init
+   ```
 
-#### 2. 애플리케이션 연결
+3. replica set 상태는 `mongodb-rep1` 내부 secret mount를 사용해 확인한다.
 
-고가용성을 위해 모든 노드를 포함한 연결 문자열을 사용한다.
+   ```bash
+   docker exec mongodb-rep1 sh -lc 'MONGO_ROOT_PASSWORD=$(cat /run/secrets/mongodb_root_password | tr -d "\n"); mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin --eval "rs.status().ok"'
+   ```
 
-```text
-mongodb://${USER}:${PASS}@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin
-```
+4. 애플리케이션 연결 문자열은 내부 서비스명을 포함한다.
 
-#### 3. 관리 UI 접근
+   ```text
+   mongodb://<user>:<password>@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin
+   ```
 
-**Mongo Express**를 통해 웹 기반으로 데이터를 관리할 수 있다.
-
-- **URL**: `https://mongo-express.${DEFAULT_URL}`
-- **Auth**: 배포 시 설정된 Basic Auth 정보를 확인한다.
-
-#### 4. 인덱스 최적화 및 쿼리 프로파일링
-
-- `db.collection.explain()` 명령을 통해 쿼리 실행 계획을 수집한다.
-- 쿼리 패턴에 맞는 적절한 인덱스(Compound, TTL, Text 등)를 생성하여 성능을 최적화한다.
+5. 관리 UI는 `mongo-express`가 제공하며 Traefik route `https://mongo-express.${DEFAULT_URL}`를 사용한다. 직접 host port publish는 현재 compose에 없다.
 
 ### Common Pitfalls
 
-- **Election Delay**: 노드 장애 시 새로운 Primary가 선정되는 동안(보통 수 초 내외) 일시적인 쓰기 거부가 발생할 수 있다. 애플리케이션 레벨의 재시도 로직이 필요하다.
-- **Read Preference**: 기본값은 `primary`이나, 읽기 부하 분산을 위해 `secondaryPreferred` 설정을 고려할 수 있다. 단, 최신 데이터 정합성 이슈에 유의해야 한다.
-- **WiredTiger Cache**: MongoDB는 시스템 메모리의 상당 부분을 캐시로 사용하므로 Docker 리소스 제한 시 `cacheSizeGB` 설정을 신중히 확인해야 한다.
+- `mongodb-arbiter`는 투표 전용 구성원이다. 데이터 보관 노드로 설명하거나 백업 대상으로 취급하지 않는다.
+- keyfile은 `mongo-key-generator`가 `mongo-key` named volume에 생성한다. repository 경로의 `configdb/` 디렉터리를 전제로 하지 않는다.
+- `mongodb-rep1`과 `mongodb-rep2`에만 compose healthcheck가 있다. `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`의 readiness는 logs와 dependency 상태로 확인한다.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `docker compose -f docker-compose.yml -f infra/04-data/nosql/mongodb/docker-compose.yml --profile data --profile obs config`
+- `docker compose logs mongo-init`
+- `docker exec mongodb-rep1 sh -lc 'MONGO_ROOT_PASSWORD=$(cat /run/secrets/mongodb_root_password | tr -d "\n"); mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin --eval "rs.status().members.map(m => ({name:m.name,state:m.stateStr}))"'`
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/nosql/mongodb.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [MongoDB runbook](../../../runbooks/04-data/nosql/mongodb.md)을 따른다.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/nosql/mongodb.md)
 - [Recovery runbook](../../../runbooks/04-data/nosql/mongodb.md)
+- [Infra README](../../../../../infra/04-data/nosql/mongodb/README.md)

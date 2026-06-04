@@ -1,12 +1,12 @@
 <!-- README Target: docs/05.operations/guides/04-data/nosql/README.md -->
 
-# Operations Guides - 04 Data / Nosql
+# Operations Guides - 04 Data / NoSQL
 
 > 서비스 사용, 설정, 온보딩 문서를 domain/service 구조로 관리한다.
 
 ## Overview
 
-`guides/04-data/nosql`는 `docs/05.operations`의 guide 문서를 관리합니다. 사용 맥락, 전제 조건, 일반 점검, 관련 runbook handoff를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`guides/04-data/nosql`는 `docs/05.operations`의 NoSQL guide 문서를 관리한다. Cassandra, CouchDB, MongoDB의 현재 compose 기반 서비스명, 프로파일, secret 경계, 일반 점검, 관련 runbook handoff를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 한다.
 
 ## Audience
 
@@ -21,7 +21,7 @@
 
 ### In Scope
 
-- 서비스 사용 맥락, 설정 방법, 온보딩, 일반 점검
+- Cassandra, CouchDB, MongoDB의 서비스 사용 맥락, 설정 방법, 온보딩, 일반 점검
 - 현재 경로에 속한 guide 문서 인덱스
 - 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
 
@@ -50,9 +50,9 @@ guides/04-data/nosql/
 
 | Path | Purpose |
 | --- | --- |
-| [cassandra.md](./cassandra.md) | Cassandra guide 문서 |
-| [couchdb.md](./couchdb.md) | Couchdb guide 문서 |
-| [mongodb.md](./mongodb.md) | Mongodb guide 문서 |
+| [cassandra.md](./cassandra.md) | Cassandra single-node + exporter usage guide |
+| [couchdb.md](./couchdb.md) | CouchDB 3-node cluster + cluster-init usage guide |
+| [mongodb.md](./mongodb.md) | MongoDB replica set + UI/exporter usage guide |
 
 ## Related Documents
 

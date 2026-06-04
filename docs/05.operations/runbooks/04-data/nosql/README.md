@@ -1,12 +1,12 @@
 <!-- README Target: docs/05.operations/runbooks/04-data/nosql/README.md -->
 
-# Operations Runbooks - 04 Data / Nosql
+# Operations Runbooks - 04 Data / NoSQL
 
 > 복구, 검증, 반복 실행 절차를 명령과 evidence 중심으로 관리한다.
 
 ## Overview
 
-`runbooks/04-data/nosql`는 `docs/05.operations`의 runbook 문서를 관리합니다. 트리거 조건, 순서 있는 절차, evidence, rollback/recovery, escalation을 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`runbooks/04-data/nosql`는 `docs/05.operations`의 NoSQL runbook 문서를 관리한다. Cassandra, CouchDB, MongoDB의 현재 compose 기반 트리거 조건, 순서 있는 점검 절차, evidence, recovery boundary, escalation을 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 한다.
 
 ## Audience
 
@@ -21,7 +21,7 @@
 
 ### In Scope
 
-- 장애 복구, 정기 점검, rollback, escalation, evidence capture
+- Cassandra, CouchDB, MongoDB 장애 triage, 정기 점검, escalation, evidence capture
 - 현재 경로에 속한 runbook 문서 인덱스
 - 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
 
@@ -50,9 +50,9 @@ runbooks/04-data/nosql/
 
 | Path | Purpose |
 | --- | --- |
-| [cassandra.md](./cassandra.md) | Cassandra runbook 문서 |
-| [couchdb.md](./couchdb.md) | Couchdb runbook 문서 |
-| [mongodb.md](./mongodb.md) | Mongodb runbook 문서 |
+| [cassandra.md](./cassandra.md) | Cassandra single-node + exporter triage runbook |
+| [couchdb.md](./couchdb.md) | CouchDB 3-node cluster + cluster-init triage runbook |
+| [mongodb.md](./mongodb.md) | MongoDB replica set + UI/exporter triage runbook |
 
 ## Related Documents
 

@@ -3,160 +3,123 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/04-data/nosql/mongodb.md -->
 
-# MongoDB Runbook
+# MongoDB Replica Set Triage Runbook
 
-## Overview (KR)
+## MongoDB Replica Set Triage Procedure
 
-이 문서는 MongoDB 레플리카 셋의 Primary 부재, 과도한 데이터 지연(Lag), 또는 Arbiter 장애 발생 시의 신속한 복구 절차를 설명한다.
+> Scope: Triage MongoDB replica set health, init job results, Mongo Express route, and exporter readiness without destructive data actions.
 
-## MongoDB Recovery Procedure
+### Overview (KR)
 
-> Emergency recovery procedures for MongoDB Replica Set and failover incidents.
-
----
-
-### Procedure Type
-
-`disaster-recovery`
-
-### Target Audience
-
-- On-call Engineer
-- SRE
-- DBA
+이 런북은 `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` 상태 이상이 발생했을 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. 강제 선출, secondary data wipe, keyfile rotation, restore는 현재 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션한다.
 
 ### Purpose
 
-레플리카 셋의 Primary를 재선출하고, Secondary 노드를 최신 상태로 재동기화하며, 클러스터의 정족수를 보호하여 쓰기 가용성을 확보한다.
-
-### Pre-remediation Checklist
-
-- [ ] `rs.status()` 명령으로 멤버 상태 확인 (`PRIMARY` 유무 확인)
-- [ ] `docker logs`를 통해 Election 로그 분석
-- [ ] 네트워크 분리(Split-brain) 가능성 검토
-- [ ] Oplog window 내 최신 데이터 존재 여부 확인
-
-### Remediation Steps
-
-#### Scenario 1: No Primary Elected
-
-정족수 부족으로 Primary가 선출되지 않는 경우.
-
-1. 죽은 노드(Secondary 또는 Arbiter) 우선 복구:
-
-   ```bash
-   docker-compose restart mongodb-rep2
-   ```
-
-2. 최소 2개 노드가 살아나면 자동으로 Election이 시작됨.
-3. 강제 선출 (긴급 상황):
-   Primary로 만들고자 하는 노드에서 `rs.stepDown()` 또는 Priority 조정을 통해 선출 유도.
-
-#### Scenario 2: Stale Secondary (Re-sync required)
-
-Secondary 노드 데이터가 너무 오래되어 Oplog로 추적이 불가능한 경우.
-
-1. Secondary 노드 중지 및 데이터 초기화:
-
-   ```bash
-   docker-compose stop mongodb-rep2
-   rm -rf ${DEFAULT_DATA_DIR}/mongodb/data2/*
-   ```
-
-2. 컨테이너 시작:
-
-   ```bash
-   docker-compose start mongodb-rep2
-   ```
-
-3. Initial Sync 시작 확인:
-
-   ```bash
-   rs.status() # stateStr: 'STARTUP2' 확인
-   ```
-
-### Verification Steps
-
-1. 클러스터 멤버십 확인:
-
-   ```bash
-   rs.conf()
-   ```
-
-2. 쓰기 테스트:
-
-   ```bash
-   db.test.insertOne({status: "recovered", date: new Date()})
-   ```
-
-### Post-remediation Tasks
-
-- Oplog 사이즈 증설 필요성 검토
-- Arbiter 배치 위치 물리적 격리 확인
-- 펜싱(Fencing) 로직 및 타이머 값(ElectionTimeout) 조정 검토
+MongoDB replica set의 현재 member 상태와 init job evidence를 수집하고, destructive resync 또는 undocumented replica-set control이 운영 문서에 재유입되지 않도록 한다.
 
 ### Canonical References
 
-- [../README.md](../README.md)
-- [../../05.operations/README.md](../../../README.md)
-- [../../05.operations/README.md](../../../README.md)
+- **Spec**: N/A — no upstream source
+- **Policy**: [MongoDB operations policy](../../../policies/04-data/nosql/mongodb.md)
+- **Guide**: [MongoDB usage guide](../../../guides/04-data/nosql/mongodb.md)
 
 ## When to Use
 
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
+- `mongodb-rep1` 또는 `mongodb-rep2`가 unhealthy, stopped, or missing 상태일 때
+- `mongo-init`가 replica set 초기화를 완료하지 못했거나 `rs.status()`가 실패할 때
+- `mongo-express` route 또는 `mongodb-exporter` readiness를 확인해야 할 때
+- NoSQL operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 operation policy를 확인한다.
-- [ ] 현재 compose/config/docs 상태를 확인한다.
-- [ ] 필요한 절차를 수행한다.
-- [ ] 검증 결과와 evidence를 기록한다.
+- [ ] 루트 compose에서 MongoDB include가 선택적으로 주석 처리되어 있는지, 이번 런타임에서 의도적으로 활성화했는지 확인한다.
+- [ ] secret 값을 출력하지 않는 명령만 사용한다.
+- [ ] destructive resync, data directory deletion, forced election, keyfile rotation, credential rotation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
+- [ ] replica set name은 compose-declared `MyReplicaSet`으로만 기록한다.
 
 ### Steps
 
-1. 관련 README와 operation 문서를 확인한다.
-2. 작업 전 현재 상태를 기록한다.
-3. 절차를 최소 변경으로 수행한다.
-4. 검증 명령 또는 수동 확인을 실행한다.
+1. compose 렌더링을 확인한다.
+
+   ```bash
+   docker compose -f docker-compose.yml -f infra/04-data/nosql/mongodb/docker-compose.yml --profile data --profile obs config
+   ```
+
+2. key generator, replica member, init job, UI, exporter 상태를 확인한다.
+
+   ```bash
+   docker compose ps mongo-key-generator mongodb-rep1 mongodb-rep2 mongodb-arbiter mongo-init mongo-express mongodb-exporter
+   ```
+
+3. init job과 replica nodes 로그를 확인한다.
+
+   ```bash
+   docker compose logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter
+   ```
+
+4. replica set 상태를 secret mount 기반으로 확인한다.
+
+   ```bash
+   docker exec mongodb-rep1 sh -lc 'MONGO_ROOT_PASSWORD=$(cat /run/secrets/mongodb_root_password | tr -d "\n"); mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin --eval "rs.status().members.map(m => ({name:m.name,state:m.stateStr}))"'
+   ```
+
+5. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 재기동한다.
+
+   ```bash
+   docker compose -f docker-compose.yml -f infra/04-data/nosql/mongodb/docker-compose.yml --profile data --profile obs up -d mongo-key-generator mongodb-rep1 mongodb-rep2 mongodb-arbiter mongo-init mongo-express mongodb-exporter
+   ```
+
+6. Mongo Express route는 Traefik label 기준으로 확인하고, password 값은 출력하지 않는다.
+
+   ```bash
+   docker compose logs --tail=80 mongo-express
+   ```
+
+### Verification Steps
+
+- `docker compose ps ...`에서 `mongodb-rep1`과 `mongodb-rep2`가 healthy 또는 running 상태인지 확인한다.
+- `rs.status()` member summary가 `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`를 포함하는지 확인한다.
+- `mongo-init`가 completed 상태인지, `mongodb-exporter`가 running 상태인지 확인한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+- **Logs**: `docker compose logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter mongodb-exporter`
+- **Replica evidence**: sanitized `rs.status()` member summary
+- **Route**: Traefik labels on `mongo-express`
+- **Metrics**: `mongodb-exporter` exposed port `${MONGO_EXPORTER_PORT:-9216}`
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+1. Documentation-only changes can be reverted by the current git diff or the logical commit that introduced them.
+2. Runtime recovery in this runbook is limited to compose `up -d` for the declared MongoDB services after evidence capture.
+3. N/A — no verified destructive resync, data directory rollback, forced election, keyfile rotation, or restore procedure is documented yet.
 
 ### Agent Operations (If Applicable)
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
+- **Eval Re-run**: Re-run `bash scripts/validation/check-repo-contracts.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` after documentation changes.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- Capture command names, pass/fail status, service states, image tags, sanitized logs, and replica member state summary.
+- Do not capture secret values, full MongoDB documents, or credential-backed URI strings with passwords.
+- Record whether MongoDB was optional/commented in root compose or explicitly included for the runtime session.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+N/A — no verified rollback or recovery procedure is documented beyond non-destructive compose restart and status verification. If forced election, member reconfiguration, data wipe, keyfile rotation, or restore is required, preserve evidence and escalate.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Escalate to the owning operator when no primary can be identified, `mongo-init` repeatedly fails, replica member state diverges from `mongodb-rep1`/`mongodb-rep2`/`mongodb-arbiter`, secret exposure risk appears, or any data operation is required. Include sanitized logs, member summary, rendered compose evidence, service states, and attempted steps.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/nosql/mongodb.md)
 - [Operations policy](../../../policies/04-data/nosql/mongodb.md)
+- [Infra README](../../../../../infra/04-data/nosql/mongodb/README.md)
