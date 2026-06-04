@@ -510,8 +510,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "78d984286108520256d12aa8c467a988",
+    "mtime": 1780576102.6567945,
+    "ast_hash": "49188dc76cd2f31e0c5365fda3324b5f",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/ksql/docker-compose.yml": {
@@ -520,8 +520,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/ksql/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "4f0cc971ed863558a3e983045fab24f0",
+    "mtime": 1780576102.6567945,
+    "ast_hash": "9a67274973af0f63926dd990673a16c0",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/influxdb/docker-compose.yml": {
@@ -530,8 +530,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/influxdb/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "f808e8dfbacba4bad784bab39992701d",
+    "mtime": 1780576102.6567945,
+    "ast_hash": "641fd25303209cea100db2c234a916b1",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/influxdb/docker-compose.v2.yml": {
@@ -545,8 +545,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/opensearch/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "5c23e28c8be60130dc22104d7e484ee6",
+    "mtime": 1780576102.6567945,
+    "ast_hash": "285486b00472c633b925b3dacd1ae320",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/opensearch/docker-compose.cluster.yml": {
@@ -605,8 +605,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/warehouses/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "495894a4ee1220a76d48a00681e51708",
+    "mtime": 1780576102.6567945,
+    "ast_hash": "9cf4205a583c2557384e2de9e13a4c69",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/relational/README.md": {
@@ -1020,13 +1020,13 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/04-data-analytics/README.md": {
-    "mtime": 1780554617.8854108,
-    "ast_hash": "51a808bca58fffbaf62df3b200febf8f",
+    "mtime": 1780576102.612955,
+    "ast_hash": "4e6ae5490410687b81feee8ae7139bc2",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/04-data-analytics/spec.md": {
-    "mtime": 1780553719.360904,
-    "ast_hash": "f586cf020a6b7bf3a47f4712c742e011",
+    "mtime": 1780576102.612955,
+    "ast_hash": "9dd5bf6b91c0217ef7a14d66c7028489",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/10-communication/README.md": {
@@ -1100,8 +1100,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0012-data-analytics-architecture.md": {
-    "mtime": 1780553719.360904,
-    "ast_hash": "d87d922c46d97030fb9a244c482964ed",
+    "mtime": 1780576102.612955,
+    "ast_hash": "c6b4b0dd3d7e127df7e78ec02a4f46d9",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0005-messaging-architecture.md": {
@@ -1345,8 +1345,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-26-04-data-analytics.md": {
-    "mtime": 1780553719.360904,
-    "ast_hash": "1dcc7734215e8b7209fd5b9d80c98de5",
+    "mtime": 1780576102.612955,
+    "ast_hash": "b031f6d7021709ea408ac4cbc7d561d4",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-26-01-gateway.md": {
@@ -1800,28 +1800,28 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/analytics/warehouses.md": {
-    "mtime": 1780371233.6272502,
-    "ast_hash": "10ce1558f13079383749f40afeec7da3",
+    "mtime": 1780576102.612955,
+    "ast_hash": "8f7e050f6e68742a54b32c0a3001c681",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/analytics/opensearch.md": {
-    "mtime": 1780371233.6272502,
-    "ast_hash": "cb8934d0cfcccf96a9aff178ad7ffc64",
+    "mtime": 1780576102.612955,
+    "ast_hash": "6bc6190ee34f3798d2e9036796ecc66a",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/analytics/ksqldb.md": {
-    "mtime": 1780371233.6272502,
-    "ast_hash": "fc3a9ac4d014685f46ddd9a36262cd9a",
+    "mtime": 1780576102.612955,
+    "ast_hash": "42a9ccb183a52fbff423db01cbd0ddd9",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/analytics/README.md": {
-    "mtime": 1780554617.8985877,
-    "ast_hash": "a4dc3d8498e5647c66cbe98b0002eec6",
+    "mtime": 1780576102.612955,
+    "ast_hash": "afd4d41621f6d261b25965f6c668de3e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/analytics/influxdb.md": {
-    "mtime": 1780371233.6312501,
-    "ast_hash": "4f9d6183e5378a022e05e4576e775e98",
+    "mtime": 1780576102.612955,
+    "ast_hash": "e81e22a75817a429e153827d39f4c612",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/relational/postgresql-cluster.md": {
@@ -2195,28 +2195,28 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/analytics/warehouses.md": {
-    "mtime": 1780371233.6472502,
-    "ast_hash": "9c33b32e91c6dc44b13aa91a1c84e329",
+    "mtime": 1780576102.612955,
+    "ast_hash": "5d3fd98c743ecfafe348975b6f8c22c3",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/analytics/opensearch.md": {
-    "mtime": 1780371233.6472502,
-    "ast_hash": "302daf13da58f013b306472396587f50",
+    "mtime": 1780576102.612955,
+    "ast_hash": "9a00568287b3d40dfbd0a4f88040cb97",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/analytics/ksqldb.md": {
-    "mtime": 1780371233.6472502,
-    "ast_hash": "7f701cbb9a6fb3abd4dee69770e88deb",
+    "mtime": 1780576102.612955,
+    "ast_hash": "36308799c33e27723b4e7d2c93738c18",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/analytics/README.md": {
-    "mtime": 1780554617.9029799,
-    "ast_hash": "ac6c9148960821d932eb28e842b78367",
+    "mtime": 1780576102.612955,
+    "ast_hash": "12d94307910044b3427e5343f8b8c0b3",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/analytics/influxdb.md": {
-    "mtime": 1780371233.6472502,
-    "ast_hash": "1e1f8fd3e86cd80d35d63af1375c2e73",
+    "mtime": 1780576102.612955,
+    "ast_hash": "2107b3cc9f40897e6185428663930cf0",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md": {
@@ -2580,28 +2580,28 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/analytics/warehouses.md": {
-    "mtime": 1780553719.3690128,
-    "ast_hash": "b26fcc1df7e52fcb656f6799d2de8f50",
+    "mtime": 1780576102.612955,
+    "ast_hash": "3f77ede38e9fc08678e46e3f1749aafd",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/analytics/opensearch.md": {
-    "mtime": 1780553719.3690128,
-    "ast_hash": "64202cd663d2e7dd23b2f814ab2e0dde",
+    "mtime": 1780576102.612955,
+    "ast_hash": "a314df79a45fbacc77725e13877e7e7b",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/analytics/ksqldb.md": {
-    "mtime": 1780553719.3690128,
-    "ast_hash": "ea30792ffcb17050ac63e2d87596151b",
+    "mtime": 1780576102.612955,
+    "ast_hash": "3eb3944b641bf99fdbd141124f09ddd1",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/analytics/README.md": {
-    "mtime": 1780554617.8985877,
-    "ast_hash": "c797519db8c8cf42cc6bb700f530ed8e",
+    "mtime": 1780576102.612955,
+    "ast_hash": "1e6058d5bccede33a9a69e91a4198a76",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/analytics/influxdb.md": {
-    "mtime": 1780553719.3690128,
-    "ast_hash": "95b169f7853c8713ba87a3223936503b",
+    "mtime": 1780576102.612955,
+    "ast_hash": "fad60e83515f7ec0e953859302f49f21",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/relational/postgresql-cluster.md": {
@@ -3405,8 +3405,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1780574777.2397068,
-    "ast_hash": "00e67885f42b82bfa20eeca2b690adcd",
+    "mtime": 1780576102.612955,
+    "ast_hash": "b072eb77086253801e4b611c89bd60e7",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -3455,8 +3455,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-05-22-data-analytics-execution-traceability.md": {
-    "mtime": 1780554617.8941953,
-    "ast_hash": "c9e1631bec8570624f2dcddfa9916f00",
+    "mtime": 1780576102.612955,
+    "ast_hash": "e074a25fb5f79f9767b13c62019edb81",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-05-10-docs-taxonomy-agent-first-migration.md": {
@@ -3775,8 +3775,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-05-22-data-analytics-execution-traceability.md": {
-    "mtime": 1780371233.6112502,
-    "ast_hash": "da746f4c826a40ec79c6acdb97f47dc6",
+    "mtime": 1780576102.612955,
+    "ast_hash": "0a502cb5ca5390bac628f9da79b5d09c",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-05-10-docs-taxonomy-agent-first-migration.md": {
