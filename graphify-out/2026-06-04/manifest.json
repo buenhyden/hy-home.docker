@@ -140,8 +140,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/README.md": {
-    "mtime": 1779728102.7410257,
-    "ast_hash": "9726a953958878e5a06da4e9129fc776",
+    "mtime": 1780579514.7315736,
+    "ast_hash": "e68ae294e03057d27775affa1f3df3ef",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/airflow/docker-compose.dev.yml": {
@@ -155,8 +155,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/airflow/README.md": {
-    "mtime": 1779728102.7410257,
-    "ast_hash": "3897f4d10b13a5838864a96fe6542b1d",
+    "mtime": 1780579514.9715667,
+    "ast_hash": "0615ff62ce5d255e9058dd5f89d43048",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/airflow/config/statsd_mapping.yml": {
@@ -175,13 +175,13 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/n8n/README.md": {
-    "mtime": 1779728102.7410257,
-    "ast_hash": "5fe641815ebec5ba16bf5195a909667e",
+    "mtime": 1780579515.2035599,
+    "ast_hash": "467caea07150905b3e9676ae73dd5f4d",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/05-messaging/README.md": {
-    "mtime": 1779728102.7410257,
-    "ast_hash": "ca581eedc3b7712beee32a59eb28dafd",
+    "mtime": 1780578656.860075,
+    "ast_hash": "0ea36bf4531c49859597d9e7204dbea2",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/05-messaging/kafka/docker-compose.dev.yml": {
@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/05-messaging/kafka/README.md": {
-    "mtime": 1779728102.7410257,
-    "ast_hash": "f3230e2935055868147913c635638f50",
+    "mtime": 1780578656.860075,
+    "ast_hash": "fb09469bcd109af847d32e7992dec1a6",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/05-messaging/kafka/jmx-exporter/kafka-config.yaml": {
@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/05-messaging/rabbitmq/README.md": {
-    "mtime": 1779728992.3191042,
-    "ast_hash": "31c7a2e0af940bbbc5efb609922283fc",
+    "mtime": 1780578656.860075,
+    "ast_hash": "7fe1108b980e2882c155f9cfc7e38da5",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/06-observability/docker-compose.dev.yml": {
@@ -910,8 +910,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/07-workflow/spec.md": {
-    "mtime": 1780555949.6041207,
-    "ast_hash": "73199093b35fc80f67b3c265b2380230",
+    "mtime": 1780579578.387694,
+    "ast_hash": "17e414bab667e5075a3482d5b1f6e916",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/harness-agent-first-engineering/README.md": {
@@ -930,8 +930,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/05-messaging/spec.md": {
-    "mtime": 1780555949.6041207,
-    "ast_hash": "5622d3ec467d5a4c656dbfb6616e2437",
+    "mtime": 1780578656.8160627,
+    "ast_hash": "72dca1881c988089272cbe0c51b79cc3",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/standardize-infra-net/README.md": {
@@ -1090,8 +1090,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0020-messaging-optimization-hardening-architecture.md": {
-    "mtime": 1780371233.5872502,
-    "ast_hash": "7aecf030b2c521865816e4f0f6f3080b",
+    "mtime": 1780578656.8160627,
+    "ast_hash": "a62efaa287d5b9ee078747a06419b40d",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0013-open-webui-architecture.md": {
@@ -1105,8 +1105,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0005-messaging-architecture.md": {
-    "mtime": 1780371233.5872502,
-    "ast_hash": "f618020bb27282afcf6ce5ea83020895",
+    "mtime": 1780578656.8160627,
+    "ast_hash": "bd5f803e9c1bf9f89a8f1cdb68032efa",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0004-data-architecture.md": {
@@ -1135,8 +1135,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0007-workflow-architecture.md": {
-    "mtime": 1780371233.5872502,
-    "ast_hash": "17e61de4dffbc2db932c7091005f1572",
+    "mtime": 1780579577.7357054,
+    "ast_hash": "05b72875f9cdf83204f0675902b4761e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0018-security-optimization-hardening-architecture.md": {
@@ -1175,8 +1175,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md": {
-    "mtime": 1780371233.5872502,
-    "ast_hash": "a0818b4770f1280d95d8690b6442aa41",
+    "mtime": 1780579577.9437017,
+    "ast_hash": "3bfefadfeefd24a528cd54d78711530e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0014-auth-optimization-hardening-architecture.md": {
@@ -1215,8 +1215,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md": {
-    "mtime": 1780554617.8854108,
-    "ast_hash": "4ae66ce4607df9a717de7d19c6601f9e",
+    "mtime": 1780579591.503706,
+    "ast_hash": "e80fffdcb1d90a6b4ba6ebae312eb1ab",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/decisions/0005-kafka-vs-rabbitmq-selection.md": {
@@ -1305,8 +1305,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md": {
-    "mtime": 1780371233.5912502,
-    "ast_hash": "b318204241ff3f9eaf1d5d8656ea48d3",
+    "mtime": 1780579578.159698,
+    "ast_hash": "ea771af81079bf093bfb2c5d448abda7",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/decisions/0004-postgresql-ha-patroni.md": {
@@ -1355,8 +1355,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-26-07-workflow.md": {
-    "mtime": 1780553719.360904,
-    "ast_hash": "79bbdf45082804137ac381f4ec6d7acb",
+    "mtime": 1780579577.287713,
+    "ast_hash": "7d310b4cc05921993ea5af05e9fc470e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-26-11-laboratory.md": {
@@ -1365,8 +1365,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-28-05-messaging-optimization-hardening.md": {
-    "mtime": 1780553719.360904,
-    "ast_hash": "963e1357bf8306a53f8d0eecb299c8d7",
+    "mtime": 1780578656.8160627,
+    "ast_hash": "26479b1f524e2e35605cdd70466e5815",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-28-04-data-optimization-hardening.md": {
@@ -1425,8 +1425,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-26-05-messaging.md": {
-    "mtime": 1780553719.360904,
-    "ast_hash": "938b5b29f7180ce405d884b6544c9930",
+    "mtime": 1780578656.8160627,
+    "ast_hash": "0e33b61578a9efbbfda843974f6568ad",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-28-06-observability-optimization-hardening.md": {
@@ -1440,8 +1440,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-28-07-workflow-optimization-hardening.md": {
-    "mtime": 1780553719.360904,
-    "ast_hash": "667c6d8f0383e503ef54362a1ff7e14e",
+    "mtime": 1780579577.523709,
+    "ast_hash": "8549fc6bff3380e27d0a55dad2d55371",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-26-08-ai.md": {
@@ -1470,8 +1470,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/llm-wiki/index.md": {
-    "mtime": 1780574806.7691813,
-    "ast_hash": "781bd8cc24ec0e33c52ce68a3e036d24",
+    "mtime": 1780579768.979839,
+    "ast_hash": "fc2e3c07d805703a4acc3475761933db",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/llm-wiki/README.md": {
@@ -1600,63 +1600,53 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/optimization-hardening.md": {
-    "mtime": 1780371233.6232502,
-    "ast_hash": "cb4ad39efa5cec6276d211e8caf3acb2",
+    "mtime": 1780579352.7957354,
+    "ast_hash": "d0223f63e5d0ea68503851e48d6eb831",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/airflow.md": {
-    "mtime": 1780371233.6232502,
-    "ast_hash": "03cc4c66c3d69b982cba89052493b823",
+    "mtime": 1780579351.963726,
+    "ast_hash": "e5e208c17c52caa51c5e0344900040fd",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/02.n8n-automation.md": {
-    "mtime": 1780371233.6232502,
-    "ast_hash": "18a3d321975200cda092cf47bfe01f2c",
+    "mtime": 1780579352.583738,
+    "ast_hash": "ae5648e6ba8cab173304d1569b48343e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/airflow-dag-basics.md": {
-    "mtime": 1780371233.6232502,
-    "ast_hash": "4f9dd9ae83dc26283ce30d65af99a9a0",
-    "semantic_hash": ""
-  },
-  "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/01.airflow-dag-dev.md": {
-    "mtime": 1780371233.6232502,
-    "ast_hash": "7321a8238cad6205755f257f44ed5923",
+    "mtime": 1780579708.5317743,
+    "ast_hash": "90e1ee7eee5917cc7ae470639d6b0c06",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/README.md": {
-    "mtime": 1780554617.8985877,
-    "ast_hash": "4cfbb9040034fe9a9cfd632f8a491de8",
+    "mtime": 1780579351.7557201,
+    "ast_hash": "25135b94518f8d2fa59089960599a8ef",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/n8n.md": {
-    "mtime": 1780554617.8985877,
-    "ast_hash": "19eb93a287642110074b3b379e49f0b8",
+    "mtime": 1780579352.3757377,
+    "ast_hash": "1c51c858905b2b6b443a2d168316d80e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/05-messaging/optimization-hardening.md": {
-    "mtime": 1780371233.6232502,
-    "ast_hash": "1b2dd8b97064466453bc1352b5ceb79e",
-    "semantic_hash": ""
-  },
-  "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/05-messaging/ksql-streaming.md": {
-    "mtime": 1780371233.6232502,
-    "ast_hash": "93ef4b9317c7fee292d6c28664a2e758",
+    "mtime": 1780578656.8200638,
+    "ast_hash": "550f6246b207e0943e7f7e76c12406e5",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/05-messaging/README.md": {
-    "mtime": 1780554617.8985877,
-    "ast_hash": "4a8fcc74e7ce4a27ec7232c7f712629d",
+    "mtime": 1780578656.8200638,
+    "ast_hash": "e14a812ed00d68c497402107a04d90cb",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/05-messaging/rabbitmq.md": {
-    "mtime": 1780371233.6232502,
-    "ast_hash": "406fe9d3ea5651f7cca3929e862eb7a1",
+    "mtime": 1780578656.8200638,
+    "ast_hash": "fa4fe2ce1b5fd9344a238e6ae8721dfe",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/05-messaging/kafka.md": {
-    "mtime": 1780553719.3649585,
-    "ast_hash": "4fb1273cbdb258776d3d8e3be6a8c3c7",
+    "mtime": 1780578656.8200638,
+    "ast_hash": "be4d4f7e80c980588bff07f2db685dac",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/06-observability/optimization-hardening.md": {
@@ -2015,13 +2005,13 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/07-workflow/optimization-hardening.md": {
-    "mtime": 1780371233.63525,
-    "ast_hash": "e4701a623881f21214908e2c26be7e39",
+    "mtime": 1780579461.7153244,
+    "ast_hash": "6e3a3a0a3e2dd986200b512025f386f8",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/07-workflow/airflow.md": {
-    "mtime": 1780371233.6392503,
-    "ast_hash": "509cd46a5736dd067334e8664d5b2e56",
+    "mtime": 1780579461.131337,
+    "ast_hash": "38b3fd865bca50e9f3629488079afca8",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/07-workflow/README.md": {
@@ -2030,33 +2020,33 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/07-workflow/airflow-worker-recovery.md": {
-    "mtime": 1780371233.6392503,
-    "ast_hash": "c32408776067b94f9ec2efc6e40f05da",
+    "mtime": 1780579461.515319,
+    "ast_hash": "c6a0dafcbf10552ff6c1ec9cf044127d",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/07-workflow/n8n.md": {
-    "mtime": 1780371233.6392503,
-    "ast_hash": "022350023a51e3a5c2be89555c9bbb01",
+    "mtime": 1780579461.3113286,
+    "ast_hash": "df79df95faf7e61a2b30dbd79e2e8c6d",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/05-messaging/optimization-hardening.md": {
-    "mtime": 1780371233.6392503,
-    "ast_hash": "f966a39c5c573689319df8014e8a15ba",
+    "mtime": 1780578656.8200638,
+    "ast_hash": "f60979660951da594056ee3149a8bf15",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/05-messaging/README.md": {
-    "mtime": 1780554617.9029799,
-    "ast_hash": "04f9b5acf1f79cb0bc36745e41c8ebb1",
+    "mtime": 1780578656.8200638,
+    "ast_hash": "a7252d2451529b2c4e28adb2f992c5c3",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/05-messaging/rabbitmq.md": {
-    "mtime": 1780371233.6392503,
-    "ast_hash": "59243f929dbdd3ab1175042e314c53ef",
+    "mtime": 1780578656.8200638,
+    "ast_hash": "83099d64a64e25aaec610ca6b12fd24e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/05-messaging/kafka.md": {
-    "mtime": 1780371233.6392503,
-    "ast_hash": "6144bb9b51646324c272c9f644227609",
+    "mtime": 1780578656.8200638,
+    "ast_hash": "d8441f151412038b12e109982e830bf3",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/06-observability/optimization-hardening.md": {
@@ -2400,13 +2390,13 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/07-workflow/optimization-hardening.md": {
-    "mtime": 1780553719.3730674,
-    "ast_hash": "3448342f61ada33f969963c7d442e7c1",
+    "mtime": 1780579406.973673,
+    "ast_hash": "f021dbeb67f4bf67b28d20d6ac94a4e0",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/07-workflow/airflow.md": {
-    "mtime": 1780553719.3730674,
-    "ast_hash": "cd1c5b2f11f6fa09f1bd3ca443a408ce",
+    "mtime": 1780579406.3855174,
+    "ast_hash": "5be0c0ae39c9b7700fbc77e9bd4251d7",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/07-workflow/README.md": {
@@ -2415,33 +2405,33 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/07-workflow/n8n.md": {
-    "mtime": 1780553719.3730674,
-    "ast_hash": "31450f4c823c2d12b59a1041522e2fa2",
+    "mtime": 1780579406.5895715,
+    "ast_hash": "6a14dba37f193229034049c61a23aca9",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/07-workflow/dag-deployment.md": {
-    "mtime": 1780553719.3730674,
-    "ast_hash": "cdd083f40b12caab26309f6ff78e28d1",
+    "mtime": 1780579406.7776213,
+    "ast_hash": "97c1021f3b6f7231b49b5dc42eb28b38",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/05-messaging/optimization-hardening.md": {
-    "mtime": 1780553719.3690128,
-    "ast_hash": "7efd84ee36ea92a09676aa010c78acb6",
+    "mtime": 1780578656.8200638,
+    "ast_hash": "476c1f3b3872150f3578734c8cbf24b1",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/05-messaging/README.md": {
-    "mtime": 1780554617.9029799,
-    "ast_hash": "0e99e28459cddb0fc69f3b0800b0ef3c",
+    "mtime": 1780578656.8200638,
+    "ast_hash": "d4957ff2ae861ab5152c8c69d2d73eb6",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/05-messaging/rabbitmq.md": {
-    "mtime": 1780549749.0061107,
-    "ast_hash": "bc3f595663686d631e4b3231cd00f557",
+    "mtime": 1780578656.8200638,
+    "ast_hash": "1369ff6a51154528f0b5ce03ecac41b3",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/05-messaging/kafka.md": {
-    "mtime": 1780553719.3690128,
-    "ast_hash": "e10515840a63405f985cce0708ab3f30",
+    "mtime": 1780578656.8200638,
+    "ast_hash": "0ef0e0523c455008805e5d9ef1e962f8",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/06-observability/optimization-hardening.md": {
@@ -2720,8 +2710,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/98.archive/README.md": {
-    "mtime": 1780371385.7392795,
-    "ast_hash": "e9e0f6db5eb186124979813c843ad736",
+    "mtime": 1780579295.7075706,
+    "ast_hash": "b2d879fcb5c4982c35b32e8b369e17a4",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/98.archive/05.operations/guides/07-workflow/airbyte.md": {
@@ -3405,8 +3395,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1780577177.1058123,
-    "ast_hash": "0722e51d0dc59dd51d3c7d78f2376cbb",
+    "mtime": 1780578656.8160627,
+    "ast_hash": "a93fa12eac1d838d800df52d53ada0a6",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -3605,8 +3595,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-03-28-05-messaging-optimization-hardening-tasks.md": {
-    "mtime": 1780553719.3649585,
-    "ast_hash": "eca7db43147a180b1d4e4be5af70ddcd",
+    "mtime": 1780578656.8160627,
+    "ast_hash": "382eb866a2a419211ec1e111177c16ea",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-06-02-docs-implementation-reconciliation.md": {
@@ -3640,8 +3630,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md": {
-    "mtime": 1780553719.3649585,
-    "ast_hash": "40bb553464642d23671b0f7146d04acd",
+    "mtime": 1780579578.7996867,
+    "ast_hash": "ae93bbe14313351713c0fe67ba40281a",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-05-26-workspace-audit.md": {
@@ -3770,8 +3760,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md": {
-    "mtime": 1780555949.6081965,
-    "ast_hash": "6d5ad764e33a906f1c56923878a3dfea",
+    "mtime": 1780579578.5916903,
+    "ast_hash": "92c501760201a33e289ec7e62bffea31",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-05-22-data-analytics-execution-traceability.md": {
@@ -3835,8 +3825,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-28-05-messaging-optimization-hardening-plan.md": {
-    "mtime": 1780555949.6081965,
-    "ast_hash": "13830a589d4a618a40698a1e0e17c0a6",
+    "mtime": 1780578656.8160627,
+    "ast_hash": "54031cee127013da27ace27d89bc980e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md": {
@@ -4445,8 +4435,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-doc-implementation-alignment.sh": {
-    "mtime": 1780555949.657108,
-    "ast_hash": "9da7a185c674633a7d5206a7007646c0",
+    "mtime": 1780579761.5038393,
+    "ast_hash": "38865330ef100491d0f9142a4ead588e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-doc-traceability.sh": {
@@ -4460,8 +4450,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-repo-contracts.sh": {
-    "mtime": 1780574777.2835007,
-    "ast_hash": "252a01122f7cfbf6d965791500c6bc42",
+    "mtime": 1780579591.7117128,
+    "ast_hash": "00cee19887c1134b522e16fa429094e1",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-storybook-contract.sh": {
@@ -4515,8 +4505,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md": {
-    "mtime": 1780577177.1097996,
-    "ast_hash": "9e2fa2981ab950e2db699afa3037c77f",
+    "mtime": 1780579708.7237728,
+    "ast_hash": "75b5b94ecc940b67956e819c5e941784",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/00-workspace/README.md": {
@@ -4692,6 +4682,16 @@
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/storage/storage-exhaustion.md": {
     "mtime": 1780574777.243688,
     "ast_hash": "e8326594f74d81387715f3a419adbeb6",
+    "semantic_hash": ""
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/98.archive/05.operations/guides/05-messaging/ksql-streaming.md": {
+    "mtime": 1780578656.8200638,
+    "ast_hash": "0aa4a254e599f4023ee1b802cb0a9d19",
+    "semantic_hash": ""
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md": {
+    "mtime": 1780579295.4755502,
+    "ast_hash": "391c5f567c9bd76b463d1dd2b34c60f3",
     "semantic_hash": ""
   }
 }
