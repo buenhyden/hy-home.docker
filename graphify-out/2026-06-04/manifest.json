@@ -970,8 +970,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/04-data/spec.md": {
-    "mtime": 1780574762.9600337,
-    "ast_hash": "370e6bf4160897649a6998f7d93ea52e",
+    "mtime": 1780574777.2397068,
+    "ast_hash": "8a187b19869eb0c72fee781d26a6e745",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/11-laboratory/README.md": {
@@ -1130,8 +1130,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0019-data-optimization-hardening-architecture.md": {
-    "mtime": 1780574762.9560392,
-    "ast_hash": "2ca57f91865a8f7d5f74f3f16c94ee84",
+    "mtime": 1780574777.2397068,
+    "ast_hash": "267986d6d8c60002d6e5e3e1efa3e355",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0007-workflow-architecture.md": {
@@ -1370,8 +1370,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-28-04-data-optimization-hardening.md": {
-    "mtime": 1780574762.9560392,
-    "ast_hash": "8a6b722394c8bfbf44a18ffeff64c567",
+    "mtime": 1780574777.2397068,
+    "ast_hash": "bce08d21949b927f7435068a397aaef3",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-27-08-ai-open-webui.md": {
@@ -1470,8 +1470,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/llm-wiki/index.md": {
-    "mtime": 1780574762.9600337,
-    "ast_hash": "c9aca8e7756e96fc5e6abb68f8a6b8d4",
+    "mtime": 1780574806.7691813,
+    "ast_hash": "781bd8cc24ec0e33c52ce68a3e036d24",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/llm-wiki/README.md": {
@@ -1730,8 +1730,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/README.md": {
-    "mtime": 1780574762.9600337,
-    "ast_hash": "122f4e9c9cb0c7be8cf31cb5feff0c1c",
+    "mtime": 1780574777.2397068,
+    "ast_hash": "ff1339c5e7d5d2e3b844e329a68ddc52",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/specialized/qdrant.md": {
@@ -2125,8 +2125,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/README.md": {
-    "mtime": 1780574762.9600337,
-    "ast_hash": "0f0db2598e5cc046e7137f5d90a9fb09",
+    "mtime": 1780574777.243688,
+    "ast_hash": "6eebf965633140320e6041eb94bdb782",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/specialized/qdrant.md": {
@@ -2510,8 +2510,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/README.md": {
-    "mtime": 1780574762.9600337,
-    "ast_hash": "a7475db5f6d2f66618916d2ea64c3301",
+    "mtime": 1780574777.2397068,
+    "ast_hash": "9576d4aab64ee6273d5638cb477eaed6",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/specialized/qdrant.md": {
@@ -3405,8 +3405,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1780574762.9560392,
-    "ast_hash": "c70989daab5034c954a0473695a4aff6",
+    "mtime": 1780574777.2397068,
+    "ast_hash": "00e67885f42b82bfa20eeca2b690adcd",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -3555,8 +3555,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md": {
-    "mtime": 1780574762.9600337,
-    "ast_hash": "a27510854d180f21c7b775f9cb98d5e2",
+    "mtime": 1780574777.2397068,
+    "ast_hash": "a8d38c341bec47c213bb64bdb4ec9453",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-03-26-02-auth-tasks.md": {
@@ -3840,8 +3840,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md": {
-    "mtime": 1780574762.9600337,
-    "ast_hash": "e2d92e1c1acf21c9519b2abf38c86290",
+    "mtime": 1780574777.2397068,
+    "ast_hash": "fb8eb5619cf2f9a9518cef42853a9f5f",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-05-18-docs-05-operations-purpose-remediation.md": {
@@ -4460,8 +4460,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-repo-contracts.sh": {
-    "mtime": 1780574762.9999766,
-    "ast_hash": "c5029ec05e6b7b17c065c6cb27edefb1",
+    "mtime": 1780574777.2835007,
+    "ast_hash": "252a01122f7cfbf6d965791500c6bc42",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-storybook-contract.sh": {
@@ -4644,29 +4644,54 @@
     "ast_hash": "d0a8ceb532f0458d4e91c46ba473729c",
     "semantic_hash": ""
   },
-  "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/optimization-hardening.md": {
-    "mtime": 1780574762.9600337,
-    "ast_hash": "22d3e5e8ae168db153e353944dcbdf76",
+  "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/optimization/README.md": {
+    "mtime": 1780574777.2397068,
+    "ast_hash": "78a148b9dd573a1592d727248ed824dd",
     "semantic_hash": ""
   },
-  "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/backup-policy.md": {
-    "mtime": 1780574762.9600337,
-    "ast_hash": "24b359f8fe011b71e182f2f6963070c2",
+  "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/optimization/optimization-hardening.md": {
+    "mtime": 1780574777.2397068,
+    "ast_hash": "6aa70d56e85786b10859c3ac8889c4fb",
     "semantic_hash": ""
   },
-  "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/optimization-hardening.md": {
-    "mtime": 1780574762.9600337,
-    "ast_hash": "631c84bd91ff9d6bb277840226954529",
+  "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/backup/README.md": {
+    "mtime": 1780574777.243688,
+    "ast_hash": "1ef256335de130b573327ec63c045ddf",
     "semantic_hash": ""
   },
-  "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/optimization-hardening.md": {
-    "mtime": 1780574762.9600337,
-    "ast_hash": "86420676b73203e3d4a7686133197ccc",
+  "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/backup/backup-policy.md": {
+    "mtime": 1780574777.243688,
+    "ast_hash": "4f22b8d151185136fb4f2ce3af123e32",
     "semantic_hash": ""
   },
-  "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/storage-exhaustion.md": {
-    "mtime": 1780574762.9600337,
-    "ast_hash": "34c8563a4a168ddf29df8eb6705d32e2",
+  "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/optimization/README.md": {
+    "mtime": 1780574777.243688,
+    "ast_hash": "baf336f0a532b43f037e9c6449e3fd1c",
+    "semantic_hash": ""
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/optimization/optimization-hardening.md": {
+    "mtime": 1780574777.243688,
+    "ast_hash": "cef07252adf69f5d0c8c2e45ea2816df",
+    "semantic_hash": ""
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/optimization/README.md": {
+    "mtime": 1780574777.243688,
+    "ast_hash": "e178e157cbb5a52e34a927966291c317",
+    "semantic_hash": ""
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/optimization/optimization-hardening.md": {
+    "mtime": 1780574777.243688,
+    "ast_hash": "830736e397f577fd40c89cd4d4ea65f7",
+    "semantic_hash": ""
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/storage/README.md": {
+    "mtime": 1780574777.243688,
+    "ast_hash": "4ba8d6684543a18b61b9abfec3e1650e",
+    "semantic_hash": ""
+  },
+  "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/storage/storage-exhaustion.md": {
+    "mtime": 1780574777.243688,
+    "ast_hash": "e8326594f74d81387715f3a419adbeb6",
     "semantic_hash": ""
   }
 }
