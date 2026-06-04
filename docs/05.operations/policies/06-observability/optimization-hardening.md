@@ -48,7 +48,8 @@ status: active
 - `bash scripts/hardening/check-all-hardening.sh 06-observability`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/check-doc-traceability.sh`
-- `docker compose -f infra/06-observability/docker-compose.yml config`
+- `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
+- Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
 
 ## Review Cadence
 

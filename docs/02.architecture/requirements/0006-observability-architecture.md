@@ -10,11 +10,11 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `hy-home.docker` 플랫폼의 관측성(Observability) 계층인 `06-observability`의 참조 아키텍처를 정의한다. 로컬 환경에서 클라우드 수준의 관측성을 확보하기 위해 LGTM 스택(Loki, Grafana, Tempo, Mimir/Prometheus)을 Grafana Alloy 및 Pyroscope와 통합하여 구축한다.
+이 문서는 `hy-home.docker` 플랫폼의 관측성(Observability) 계층인 `06-observability`의 참조 아키텍처를 정의한다. 로컬 환경에서 클라우드 수준의 관측성을 확보하기 위해 현재 구현된 LGTM 스택(Loki, Grafana, Tempo, Prometheus)을 Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, Pyroscope와 통합하여 구축한다.
 
 ## Summary
 
-Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시각화하며, 장애 시 상관 분석(Correlation Analysis)을 통해 문제 해결을 가속화한다. 모든 데이터는 OTLP(OpenTelemetry Protocol)를 준수하며, MinIO 기반의 S3 백엔드 스토리지를 활용하여 영속성을 보장한다.
+Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시각화하며, 장애 시 상관 분석(Correlation Analysis)을 통해 문제 해결을 가속화한다. 현재 compose는 OTLP trace ingress, Docker log discovery, Prometheus scrape/remote-write 경로를 제공하고, Loki/Tempo는 MinIO 기반 S3 백엔드 스토리지를 사용한다.
 
 ## Boundaries & Non-goals
 
@@ -54,15 +54,17 @@ Observability 티어는 시스템 전반의 상태 정보를 수집, 저장, 시
   - **Traces Flow**: App (OTLP) -> Alloy -> Tempo -> MinIO
   - **Profiles Flow**: App -> Alloy -> Pyroscope
 - **Storage Strategy**:
-  - 메트릭: Prometheus Local TSDB (7일 보관)
-  - 로그/트레이스: MinIO S3 Buckets (15일~30일 보관 정책)
+  - 메트릭: Prometheus local TSDB
+  - 로그: Loki MinIO bucket `loki-bucket`, `retention_period: 168h`
+  - 트레이스: Tempo MinIO bucket `tempo-bucket`, `block_retention: 24h`
+  - 프로파일: Pyroscope local filesystem backend
 - **Data Boundaries**: 모든 텔레메트리 데이터는 `infra_net` 내부망에서만 소통함을 원칙으로 한다.
 
 ## Infrastructure & Deployment
 
 - **Runtime / Platform**: Docker Compose v2.x 기반 컨테이너 오케스트레이션.
 - **Deployment Model**: `obs` 프로파일을 통해 선택적으로 로드되는 시스템 인프라.
-- **Operational Evidence**: Grafana Provisioning API를 통한 코드 기반의 대시보드 관리.
+- **Operational Evidence**: Grafana provisioning files, root compose profile validation, service-local compose validation with root network/secret context, and hardening script output.
 
 ## Related Documents
 

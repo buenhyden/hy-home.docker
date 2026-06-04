@@ -9,7 +9,7 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `hy-home.docker` 플랫폼의 관측성(Observability) 계층인 `06-observability`의 제품 요구사항을 정의한다. LGTM 스택(Loki, Grafana, Tempo, Mimir/Prometheus)과 Grafana Alloy를 통합하여 시스템 전반의 상태를 실시간으로 모니터링하고 가시화하는 것을 목표로 한다.
+이 문서는 `hy-home.docker` 플랫폼의 관측성(Observability) 계층인 `06-observability`의 제품 요구사항을 정의한다. 현재 구현된 LGTM 스택(Loki, Grafana, Tempo, Prometheus), Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, Pyroscope를 통합하여 시스템 전반의 상태를 실시간으로 모니터링하고 가시화하는 것을 목표로 한다.
 
 ## Vision
 
@@ -40,8 +40,8 @@ status: active
 
 ## Success Criteria
 
-- **REQ-PRD-MET-01**: 모든 인프라 서비스의 메트릭 수집율 100% 달성.
-- **REQ-PRD-MET-02**: 장애 발생 시 알람 도달 시간 60초 이내 확보.
+- **REQ-PRD-MET-01**: 현재 compose와 Prometheus scrape 설정에 선언된 관측 대상이 누락 없이 렌더링되고, runtime 검증 시 `/targets`에서 기대 대상이 확인되어야 한다.
+- **REQ-PRD-MET-02**: Alertmanager Slack/SMTP 통지는 설정과 secret mount가 렌더링되어야 하며, 실제 60초 이내 도달 시간은 별도 runtime rehearsal evidence로만 완료 처리한다.
 
 ## Scope and Non-goals
 

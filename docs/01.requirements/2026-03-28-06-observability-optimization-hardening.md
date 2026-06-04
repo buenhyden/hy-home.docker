@@ -46,7 +46,7 @@ status: active
 ## Success Criteria
 
 - **REQ-PRD-OBS-MET-01**: `bash scripts/hardening/check-all-hardening.sh 06-observability` 실패 0건.
-- **REQ-PRD-OBS-MET-02**: `docker compose -f infra/06-observability/docker-compose.yml config` 검증 통과.
+- **REQ-PRD-OBS-MET-02**: root compose profile 검증 또는 service-local validation overlay를 포함한 observability compose 정적 검증 통과.
 - **REQ-PRD-OBS-MET-03**: 관측성 공개 라우터 middleware 계약 100% 충족.
 - **REQ-PRD-OBS-MET-04**: 06-observability optimization-hardening 문서 세트의 양방향 링크 정합성 확보.
 
@@ -86,6 +86,6 @@ status: active
 - **Plan**: [../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md](../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md](../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md)
-- **Guide**: [../05.operations/policies/06-observability/optimization-hardening.md](../05.operations/policies/06-observability/optimization-hardening.md)
-- **Operation**: [../05.operations/policies/06-observability/optimization-hardening.md](../05.operations/policies/06-observability/optimization-hardening.md)
-- **Runbook**: [../05.operations/policies/06-observability/optimization-hardening.md](../05.operations/policies/06-observability/optimization-hardening.md)
+- **Guide**: [../05.operations/guides/06-observability/optimization-hardening.md](../05.operations/guides/06-observability/optimization-hardening.md)
+- **Policy**: [../05.operations/policies/06-observability/optimization-hardening.md](../05.operations/policies/06-observability/optimization-hardening.md)
+- **Runbook**: [../05.operations/runbooks/06-observability/optimization-hardening.md](../05.operations/runbooks/06-observability/optimization-hardening.md)

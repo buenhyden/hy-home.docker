@@ -47,8 +47,8 @@ status: active
 Alertmanager 서비스가 중단된 경우 컨테이너를 재시작한다.
 
 ```bash
-cd infra/06-observability/alertmanager
-docker compose restart
+HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh
+docker compose --profile obs restart alertmanager
 ```
 
 ##### 2. Configuration Validation
@@ -56,7 +56,7 @@ docker compose restart
 설정 오류(YAML 문법 등)가 의심되는 경우 로그를 확인하고 수정한 후 다시 로드한다.
 
 ```bash
-docker logs alertmanager | grep "err"
+docker logs infra-alertmanager | grep "err"
 ```
 
 ##### 3. Notification Test
@@ -65,7 +65,7 @@ Mock 알림을 수동으로 발송하여 통지 경로를 테스트한다. (Prom
 
 ### Verification Steps
 
-- [ ] Alertmanager UI (`http://localhost:9093`) 접속 확인.
+- [ ] Alertmanager UI (`https://alertmanager.${DEFAULT_URL}` 또는 내부 `http://alertmanager:9093`) 접속 확인.
 - [ ] Slack `#notification` 채널에 테스트 메시지 수신 확인.
 
 ### Observability and Evidence Sources

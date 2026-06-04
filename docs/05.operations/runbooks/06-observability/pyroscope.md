@@ -37,15 +37,15 @@ status: active
 - **Symptom**: 컨테이너가 `Read-only` 모드로 전환되거나 비정상 종료됨.
 - **Check**: `df -h`로 `/var/lib/pyroscope` 마운트 지점 확인.
 - **Resolution**:
-  - `pyroscope.yaml`에서 retention 설정 축소.
-  - 오래된 데이터 수동 삭제 (주의: 서비스 중단 후 수행 권장).
+  - `pyroscope.yaml`의 storage/capacity 관련 변경이 필요한지 검토한다.
+  - 오래된 데이터 수동 삭제는 이 런북의 검증된 복구 범위가 아니므로 승인된 maintenance 절차로 에스컬레이션한다.
 
 #### 3. High CPU Usage (수집 부하)
 
 - **Symptom**: 호스트 시스템 CPU 사용률 급증.
 - **Check**: `docker stats pyroscope`.
 - **Resolution**:
-  - `pyroscope.yaml`의 `ingestion_rate_limit` 조정.
+  - `pyroscope.yaml`의 `ingestion_rate_mb` 또는 `ingestion_burst_size_mb` 조정 필요성을 검토한다.
   - Alloy에서 수집 대상 서비스 필터링 강화.
 
 ### Recovery Steps
@@ -61,7 +61,7 @@ cd infra/06-observability
 docker compose restart pyroscope
 
 ## Verify Health
-curl -f http://localhost:4040/health
+curl -f http://localhost:4040/ready
 ```
 
 ### Configuration Rollback

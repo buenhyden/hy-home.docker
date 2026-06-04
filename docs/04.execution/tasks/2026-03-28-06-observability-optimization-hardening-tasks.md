@@ -25,7 +25,7 @@ status: completed
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-OBS-001 | 공개 라우터 middleware 계약 정렬 | impl | 06-observability/spec.md / Contracts | PLN-OBS-001 | 라벨 문자열 확인 | DevOps | Done |
-| T-OBS-002 | Loki/Tempo/Pyroscope Traefik 라우팅 추가 | impl | 06-observability/spec.md / Core Design | PLN-OBS-002 | 라우터 라벨 확인 | DevOps | Done |
+| T-OBS-002 | Loki/Tempo/Pyroscope/cAdvisor Traefik 라우팅 경계 정렬 | impl | 06-observability/spec.md / Core Design | PLN-OBS-002 | 라우터/서비스 라벨 확인 | DevOps | Done |
 | T-OBS-003 | Alloy/Grafana depends_on health 계약 강화 | impl | 06-observability/spec.md / Core Design | PLN-OBS-003 | compose config 통과 | DevOps | Done |
 | T-OBS-004 | cAdvisor healthcheck 추가 | impl | 06-observability/spec.md / Verification | PLN-OBS-003 | healthcheck 정의 확인 | DevOps | Done |
 | T-OBS-005 | Loki/Tempo 커스텀 이미지 비루트/secret guard 보강 | impl | 06-observability/spec.md / Contracts | PLN-OBS-004 | Dockerfile/entrypoint 확인 | DevOps | Done |
@@ -65,7 +65,8 @@ status: completed
 ## Verification Summary
 
 - **Test Commands**:
-  - `docker compose -f infra/06-observability/docker-compose.yml config`
+  - `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
+  - service-local `docker compose -f infra/06-observability/docker-compose.yml config` only with root network/secret overlay
   - `bash scripts/hardening/check-all-hardening.sh 06-observability`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
@@ -79,6 +80,6 @@ status: completed
 - **ARD**: [../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md](../../02.architecture/requirements/0021-observability-optimization-hardening-architecture.md)
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Plan**: [../plans/2026-03-28-06-observability-optimization-hardening-plan.md](../plans/2026-03-28-06-observability-optimization-hardening-plan.md)
-- **Guide**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
-- **Operation**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
-- **Runbook**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/guides/06-observability/optimization-hardening.md)
+- **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/runbooks/06-observability/optimization-hardening.md)

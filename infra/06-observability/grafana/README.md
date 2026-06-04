@@ -13,12 +13,12 @@ Grafana serves as the primary observability portal for the `hy-home.docker` ecos
 
 | Component | Technology | Version |
 | :--- | :--- | :--- |
-| Frontend | Grafana | v12.3.3 |
+| Frontend | Grafana | v13.0.2 |
 | Auth | Generic OAuth2 | Keycloak Integration |
 
 ## System Components
 
-- **Dashboards**: 34+ provisioned JSON dashboards across domains.
+- **Dashboards**: 63 provisioned JSON dashboards across domains.
   - **Infrastructure**: Node Exporter, cAdvisor, Docker, Linux Hosts.
   - **Middleware**: PostgreSQL, Redis, Kafka, MinIO.
   - **AI/ML**: Ollama, Qdrant.

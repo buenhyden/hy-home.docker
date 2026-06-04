@@ -51,13 +51,14 @@ Grafana의 `Explore` 메뉴에서 `Pyroscope` 데이터 소스를 선택한다. 
 
 #### 4. 분산 추적 연동 (Trace-to-Profile)
 
-Tempro와 연동되어 있는 경우, 특정 Trace ID와 관련된 프로파일을 바로 확인하여 요청 단위의 성능 병목을 수직적으로 분석할 수 있다.
+Tempo와 연동되어 있는 경우, 특정 Trace ID와 관련된 프로파일을 바로 확인하여 요청 단위의 성능 병목을 수직적으로 분석할 수 있다.
 
 ### Common Pitfalls
 
 - **오버헤드 (Overhead)**: 프로파일링 수집 빈도가 너무 높으면 애플리케이션 성능에 영향을 줄 수 있다. 기본 수집 주기를 유지하고 필요한 경우에만 조정하라.
 - **레이블 카디널리티 (Label Cardinality)**: 너무 많은 고유 레이블(예: Request ID)을 프로파일에 추가하면 Pyroscope의 인덱싱 부하가 급증한다.
 - **언어별 지원 차이**: Go, Java, Python, Rust 등 언어마다 수집 가능한 프로파일 종류(CPU, Mem, Block, Goroutine 등)가 다르므로 지원 범위를 확인하라.
+- **Retention 오해**: 현재 `pyroscope.yaml`에는 고정 7일 retention 설정이 없다. 보관 기간 변경은 config 변경과 capacity 검증을 동반해야 한다.
 
 ## Common Checks
 

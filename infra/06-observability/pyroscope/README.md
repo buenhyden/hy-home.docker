@@ -40,9 +40,9 @@ pyroscope/
 
 | Category | Technology | Version | Role |
 | :--- | :--- | :--- | :--- |
-| Profiling | [Grafana Pyroscope](https://github.com/grafana/pyroscope) | v1.18.1 | Continuous Profiling Engine |
-| Collector | [Grafana Alloy](../alloy/README.md) | v1.13.1 | Profile Scraping & Remapping |
-| Visualization | [Grafana](../grafana/README.md) | v12.3.3 | Unified Dashboards |
+| Profiling | [Grafana Pyroscope](https://github.com/grafana/pyroscope) | v2.0.2 | Continuous Profiling Engine |
+| Collector | [Grafana Alloy](../alloy/README.md) | v1.16.2 | Profile Scraping & Remapping |
+| Visualization | [Grafana](../grafana/README.md) | v13.0.2 | Unified Dashboards |
 
 ## Available Scripts
 
@@ -60,7 +60,7 @@ pyroscope/
 ## Operational Status
 
 > [!IMPORTANT]
-> Pyroscope is configured with a 7-day retention policy to balance visibility and storage costs. For critical performance audits, ensure data is analyzed within this window.
+> Pyroscope currently uses a local filesystem backend mounted at `/var/lib/pyroscope`. A fixed retention period is not declared in `pyroscope.yaml`; capacity and retention changes require an approved config update.
 
 ## AI Agent Guidance
 

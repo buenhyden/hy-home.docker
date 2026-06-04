@@ -6,7 +6,7 @@
 
 ## Overview
 
-`guides/06-observability`는 `docs/05.operations`의 guide 문서를 관리합니다. 사용 맥락, 전제 조건, 일반 점검, 관련 runbook handoff를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`guides/06-observability`는 Prometheus, Loki, Tempo, Alloy, Grafana, cAdvisor, Pyroscope, Alertmanager, Pushgateway guide 문서를 관리합니다. 각 guide는 현재 compose service/profile/route/storage 경계를 설명하고 반복 복구 절차는 runbook으로 handoff합니다.
 
 ## Audience
 
@@ -58,16 +58,16 @@ guides/06-observability/
 
 | Path | Purpose |
 | --- | --- |
-| [01.lgtm-stack.md](./01.lgtm-stack.md) | 01.Lgtm Stack guide 문서 |
-| [alertmanager.md](./alertmanager.md) | Alertmanager guide 문서 |
-| [alloy.md](./alloy.md) | Alloy guide 문서 |
-| [grafana.md](./grafana.md) | Grafana guide 문서 |
-| [loki.md](./loki.md) | Loki guide 문서 |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening guide 문서 |
-| [prometheus.md](./prometheus.md) | Prometheus guide 문서 |
-| [pushgateway.md](./pushgateway.md) | Pushgateway guide 문서 |
-| [pyroscope.md](./pyroscope.md) | Pyroscope guide 문서 |
-| [tempo.md](./tempo.md) | Tempo guide 문서 |
+| [01.lgtm-stack.md](./01.lgtm-stack.md) | Current LGTM/Alloy/alerting/profiling stack guide |
+| [alertmanager.md](./alertmanager.md) | Alertmanager Slack/SMTP routing guide |
+| [alloy.md](./alloy.md) | Alloy Docker log, OTLP, Prometheus, and Pyroscope pipeline guide |
+| [grafana.md](./grafana.md) | Grafana SSO, datasource, and dashboard provisioning guide |
+| [loki.md](./loki.md) | Loki MinIO-backed log aggregation guide |
+| [optimization-hardening.md](./optimization-hardening.md) | Gateway, health, route, and validation hardening guide |
+| [prometheus.md](./prometheus.md) | Prometheus scrape, TSDB, and alert rule guide |
+| [pushgateway.md](./pushgateway.md) | Pushgateway ephemeral metrics guide |
+| [pyroscope.md](./pyroscope.md) | Pyroscope local profiling guide |
+| [tempo.md](./tempo.md) | Tempo MinIO-backed tracing and span metrics guide |
 
 ## Related Documents
 

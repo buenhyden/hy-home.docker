@@ -61,7 +61,7 @@ To provide a single, unified observability portal that integrates metrics, logs,
 
 ### Architecture
 
-Grafana is the visualization frontend of the LGTM stack (Loki, Grafana, Tempo, Mimir/Prometheus). It functions as a stateless service that pulls data from multiple backends.
+Grafana is the visualization frontend of the current LGTM stack (Loki, Grafana, Tempo, Prometheus). It pulls data from Prometheus, Loki, Tempo, Alertmanager, and Pyroscope datasources declared in provisioning.
 
 #### Key Components
 
@@ -85,7 +85,7 @@ Grafana is the visualization frontend of the LGTM stack (Loki, Grafana, Tempo, M
 
 ### Dashboards Catalog
 
-The `hy-home.docker` ecosystem includes 34+ provisioned dashboards, categorized as follows:
+The `hy-home.docker` ecosystem currently tracks 63 provisioned dashboard JSON files, categorized as follows:
 
 - **Infrastructure**:
   - `Node Exporter Full`: Comprehensive host metrics.

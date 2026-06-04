@@ -14,7 +14,7 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 
 | Component | Technology | Version |
 | :--- | :--- | :--- |
-| Metrics DB | Prometheus | v3.9.0 |
+| Metrics DB | Prometheus | v3.12.0 |
 | Configuration | YAML-based | Static & File-based SD |
 | Tooling | promtool | Config/Rule Validation |
 
@@ -38,8 +38,8 @@ Prometheus is the core metrics engine for the `hy-home.docker` platform. It scra
 
 ### 2. Traceability
 
-- **System Guide**: [docs/05.operations/06-observability/prometheus.md](../../../docs/05.operations/guides/06-observability/prometheus.md)
-- **Operations Guide**: [docs/05.operations/06-observability/prometheus.md](../../../docs/05.operations/guides/06-observability/prometheus.md)
+- **System Guide**: [docs/05.operations/guides/06-observability/prometheus.md](../../../docs/05.operations/guides/06-observability/prometheus.md)
+- **Operations Policy**: [docs/05.operations/policies/06-observability/prometheus.md](../../../docs/05.operations/policies/06-observability/prometheus.md)
 - **Runbook**: [docs/05.operations/runbooks/06-observability/prometheus.md](../../../docs/05.operations/runbooks/06-observability/prometheus.md)
 
 ## AI Agent Guidance

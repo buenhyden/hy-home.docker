@@ -6,7 +6,7 @@
 
 ## Overview
 
-`policies/06-observability`는 `docs/05.operations`의 policy 문서를 관리합니다. 필수/허용/금지 상태, 예외 승인, 검증 기준, 검토 주기를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`policies/06-observability`는 current observability compose와 config가 선언한 route, storage, secret, retention, and validation controls를 관리합니다. 각 policy는 Required/Allowed/Disallowed 상태를 guide/runbook 절차와 분리해 정의합니다.
 
 ## Audience
 
@@ -57,16 +57,16 @@ policies/06-observability/
 
 | Path | Purpose |
 | --- | --- |
-| [01.retention.md](./01.retention.md) | 01.Retention policy 문서 |
-| [alertmanager.md](./alertmanager.md) | Alertmanager policy 문서 |
-| [alloy.md](./alloy.md) | Alloy policy 문서 |
-| [grafana.md](./grafana.md) | Grafana policy 문서 |
-| [loki.md](./loki.md) | Loki policy 문서 |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening policy 문서 |
-| [prometheus.md](./prometheus.md) | Prometheus policy 문서 |
-| [pushgateway.md](./pushgateway.md) | Pushgateway policy 문서 |
-| [pyroscope.md](./pyroscope.md) | Pyroscope policy 문서 |
-| [tempo.md](./tempo.md) | Tempo policy 문서 |
+| [01.retention.md](./01.retention.md) | Retention controls for Prometheus/Loki/Tempo/Pyroscope |
+| [alertmanager.md](./alertmanager.md) | Alertmanager routing and secret boundary policy |
+| [alloy.md](./alloy.md) | Alloy pipeline and Docker socket boundary policy |
+| [grafana.md](./grafana.md) | Grafana SSO, datasource, and provisioning policy |
+| [loki.md](./loki.md) | Loki MinIO storage and label cardinality policy |
+| [optimization-hardening.md](./optimization-hardening.md) | Observability gateway, health, route, and CI validation policy |
+| [prometheus.md](./prometheus.md) | Prometheus scrape and alert rule policy |
+| [pushgateway.md](./pushgateway.md) | Pushgateway stale metrics policy |
+| [pyroscope.md](./pyroscope.md) | Pyroscope local storage and profiling overhead policy |
+| [tempo.md](./tempo.md) | Tempo trace storage and metrics generator policy |
 
 ## Related Documents
 

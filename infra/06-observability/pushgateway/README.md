@@ -38,9 +38,9 @@ pushgateway/
 
 | Category | Technology | Version | Role |
 | :--- | :--- | :--- | :--- |
-| Buffer | [prom/pushgateway](https://hub.docker.com/r/prom/pushgateway) | v1.11.2 | Metrics ingestion buffer |
+| Buffer | [prom/pushgateway](https://hub.docker.com/r/prom/pushgateway) | v1.11.3 | Metrics ingestion buffer |
 | Ingress | [Traefik](../../01-gateway/README.md) | v3.3.4 | SSL Termination & Routing |
-| Scraper | [Prometheus](../prometheus/README.md) | v3.9.0 | Scrape-to-pull bridge |
+| Scraper | [Prometheus](../prometheus/README.md) | v3.12.0 | Scrape-to-pull bridge |
 
 ## Usage Instructions
 
@@ -49,7 +49,7 @@ pushgateway/
 Jobs can push metrics via simple HTTP POST/PUT requests:
 
 ```bash
-echo "some_metric 42" | curl --data-binary @- http://pushgateway.local/metrics/job/some_job
+echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/job/some_job
 ```
 
 ## Configuration

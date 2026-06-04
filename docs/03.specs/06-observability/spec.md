@@ -27,7 +27,8 @@ status: active
 - **Config Contract**:
   - 관측성 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
   - Alloy/Grafana는 Loki/Tempo를 `service_healthy`로 의존한다.
-  - cAdvisor는 `/healthz` healthcheck를 가진다.
+  - cAdvisor는 `/healthz` healthcheck와 독립된 `cadvisor` Traefik route/service label을 가진다.
+  - Pyroscope는 root-included dev compose와 local obs compose 모두에서 `pyroscope:4040` service로 렌더되어야 한다.
 - **Data / Interface Contract**:
   - 수집/저장/조회 트래픽은 `infra_net` 내부 경계를 기본으로 유지한다.
   - 관리 경로 외부 접근은 Traefik `websecure` 진입점에서 통제한다.
@@ -47,7 +48,7 @@ status: active
   - Keycloak SSO
   - MinIO object storage for Loki/Tempo
 - **Tech Stack**:
-  - Prometheus, Grafana, Loki, Tempo, Alloy, Alertmanager, Pushgateway, Pyroscope, cAdvisor
+  - Prometheus `v3.12.0`, Grafana `13.0.2`, Loki `3.6.6-custom`, Tempo `2.10.1-custom`, Alloy `1.16.2`, Alertmanager `0.32.1`, Pushgateway `1.11.3`, Pyroscope `2.0.2`, cAdvisor `0.55.1`
 
 ## Data Modeling & Storage Strategy
 
@@ -73,6 +74,7 @@ observability_gateway_contract:
     - loki
     - tempo
     - pyroscope
+    - cadvisor
   required_middlewares:
     - gateway-standard-chain@file
     - sso-errors@file
@@ -105,11 +107,13 @@ observability_gateway_contract:
 ## Verification
 
 ```bash
-docker compose -f infra/06-observability/docker-compose.yml config
+HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh
 bash scripts/hardening/check-all-hardening.sh 06-observability
 bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-doc-traceability.sh
 ```
+
+Service-local `docker compose -f infra/06-observability/docker-compose.yml config` requires the root network and Docker Secret context, or a local validation overlay that declares `infra_net`, `k3d-hyhome`, and the referenced secret files.
 
 가능 환경에서 runtime 검증:
 
@@ -123,7 +127,7 @@ docker inspect --format '{{json .State.Health}}' cadvisor
 ## Success Criteria & Verification Plan
 
 - **VAL-SPC-OBS-001**: `check-all-hardening.sh 06-observability` 실패 0건
-- **VAL-SPC-OBS-002**: observability compose 정적 검증 통과
+- **VAL-SPC-OBS-002**: root profile or overlay-backed observability compose 정적 검증 통과
 - **VAL-SPC-OBS-003**: 공개 라우터 middleware 체인 계약 충족
 - **VAL-SPC-OBS-004**: 01~09 optimization-hardening 문서 상호 링크 동기화
 

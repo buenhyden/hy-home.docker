@@ -43,7 +43,7 @@ tempo/
 | :--- | :--- | :--- | :--- |
 | Tracing | [Grafana Tempo](https://github.com/grafana/tempo) | v2.10.1-custom | Distributed Tracing Backend |
 | Storage | [MinIO](../../04-data/lake-and-object/minio/README.md) | latest | S3-Compatible Object Store |
-| Ingestion | [Grafana Alloy](../alloy/README.md) | v1.13.1 | OTLP Receiver & Forwarder |
+| Ingestion | [Grafana Alloy](../alloy/README.md) | v1.16.2 | OTLP Receiver & Forwarder |
 
 ## Available Scripts
 
@@ -100,16 +100,16 @@ Copyright (c) 2026. Licensed under the MIT License.
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Tempo Distributed Tracing service leaf in `06-observability`; services: Not declared; Not declared |
+| Purpose | Tempo Distributed Tracing service leaf in `06-observability`; compose service `tempo`, image `hy/tempo:2.10.1-custom` |
 | Config files | `config`, `config/tempo.yaml` |
 | Config values | No non-secret config keys declared in compose |
-| Compose linkage | Not declared |
-| Networks | Not declared |
-| Volumes | Not declared |
-| Ports | Not declared |
-| Labels | Not declared |
-| Secret refs | Not declared |
-| Healthcheck | Not declared in compose; use service logs and dependent checks |
+| Compose linkage | Declared in `../docker-compose.yml` and root-included `../docker-compose.dev.yml` |
+| Networks | `infra_net`, `k3d-hyhome` |
+| Volumes | `./tempo/config/tempo.yaml:/etc/tempo.yaml:ro`, `tempo-data:/var/tempo:rw` |
+| Ports | `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}` |
+| Labels | `traefik.http.routers.tempo.*`, `traefik.http.services.tempo.loadbalancer.server.port` |
+| Secret refs | `minio_app_user_password` |
+| Healthcheck | `http://localhost:${TEMPO_PORT:-3200}/ready` |
 | Operations | [Guide](../../../docs/05.operations/guides/06-observability/tempo.md), [Policy](../../../docs/05.operations/policies/06-observability/tempo.md), [Runbook](../../../docs/05.operations/runbooks/06-observability/tempo.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |

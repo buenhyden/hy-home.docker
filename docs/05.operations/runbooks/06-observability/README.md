@@ -6,7 +6,7 @@
 
 ## Overview
 
-`runbooks/06-observability`는 `docs/05.operations`의 runbook 문서를 관리합니다. 트리거 조건, 순서 있는 절차, evidence, rollback/recovery, escalation을 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`runbooks/06-observability`는 current observability services의 readiness, route, ingestion, alerting, and storage evidence 절차를 관리합니다. 런북은 검증 가능한 최소 조치와 escalation boundary를 제공하고 guide/policy 내용을 중복하지 않습니다.
 
 ## Audience
 
@@ -57,16 +57,16 @@ runbooks/06-observability/
 
 | Path | Purpose |
 | --- | --- |
-| [alertmanager.md](./alertmanager.md) | Alertmanager runbook 문서 |
-| [alloy.md](./alloy.md) | Alloy runbook 문서 |
-| [grafana.md](./grafana.md) | Grafana runbook 문서 |
-| [loki.md](./loki.md) | Loki runbook 문서 |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening runbook 문서 |
-| [prometheus-recovery.md](./prometheus-recovery.md) | Prometheus Recovery runbook 문서 |
-| [prometheus.md](./prometheus.md) | Prometheus runbook 문서 |
-| [pushgateway.md](./pushgateway.md) | Pushgateway runbook 문서 |
-| [pyroscope.md](./pyroscope.md) | Pyroscope runbook 문서 |
-| [tempo.md](./tempo.md) | Tempo runbook 문서 |
+| [alertmanager.md](./alertmanager.md) | Alertmanager readiness and notification evidence procedure |
+| [alloy.md](./alloy.md) | Alloy pipeline health and OTLP evidence procedure |
+| [grafana.md](./grafana.md) | Grafana SSO, datasource, and dashboard evidence procedure |
+| [loki.md](./loki.md) | Loki readiness and MinIO storage evidence procedure |
+| [optimization-hardening.md](./optimization-hardening.md) | Gateway/route/health hardening recovery procedure |
+| [prometheus-recovery.md](./prometheus-recovery.md) | Prometheus recovery reference retained for specific TSDB failures |
+| [prometheus.md](./prometheus.md) | Prometheus readiness, scrape, and alert rule evidence procedure |
+| [pushgateway.md](./pushgateway.md) | Pushgateway stale metric evidence and cleanup boundary procedure |
+| [pyroscope.md](./pyroscope.md) | Pyroscope readiness and local storage evidence procedure |
+| [tempo.md](./tempo.md) | Tempo readiness and trace storage evidence procedure |
 
 ## Related Documents
 

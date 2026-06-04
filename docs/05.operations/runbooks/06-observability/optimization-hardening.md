@@ -43,7 +43,8 @@ status: active
 ### Steps
 
 1. 정적 구성 점검
-   - `docker compose -f infra/06-observability/docker-compose.yml config`
+   - root context: `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
+   - service-local context: root networks/secrets를 선언한 임시 validation overlay를 함께 사용한다.
 2. 하드닝 기준 점검
    - `bash scripts/hardening/check-all-hardening.sh 06-observability`
 3. 증상별 복구
@@ -53,6 +54,10 @@ status: active
      - Alloy/Grafana의 Loki/Tempo `depends_on`을 `service_healthy`로 복원
    - 호스트 수집기 신호 불량:
      - cAdvisor `/healthz` healthcheck 복원
+     - cAdvisor labels가 `traefik.http.routers.cadvisor.*`와 `${CADVISOR_PORT:-8080}` service port를 사용하도록 복원
+   - pyroscope route/availability 회귀:
+     - root-included `docker-compose.dev.yml`과 local `docker-compose.yml` 모두 `pyroscope` service를 렌더하도록 복원
+     - Pyroscope labels가 `traefik.http.routers.pyroscope.*`와 `${PYROSCOPE_PORT:-4040}` service port를 사용하도록 복원
    - custom image 회귀:
      - Loki/Tempo Dockerfile `USER 10001:10001` 복원
      - entrypoint secret guard 복원

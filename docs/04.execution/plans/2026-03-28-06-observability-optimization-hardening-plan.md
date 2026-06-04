@@ -56,7 +56,7 @@ status: completed
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-OBS-001 | Structural | Observability compose 정적 검증 | `docker compose -f infra/06-observability/docker-compose.yml config` | 오류 없음 |
+| VAL-OBS-001 | Structural | Observability compose 정적 검증 | `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh` 또는 service-local network/secret overlay | 오류 없음 |
 | VAL-OBS-002 | Compliance | 관측성 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 06-observability` | 실패 0건 |
 | VAL-OBS-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
 | VAL-OBS-004 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
@@ -92,6 +92,6 @@ status: completed
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/06-observability/spec.md](../../03.specs/06-observability/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md](../tasks/2026-03-28-06-observability-optimization-hardening-tasks.md)
-- **Guide**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
-- **Operations**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
-- **Runbooks**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/guides/06-observability/optimization-hardening.md)
+- **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/runbooks/06-observability/optimization-hardening.md)

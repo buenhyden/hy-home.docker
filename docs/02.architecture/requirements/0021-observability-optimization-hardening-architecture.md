@@ -35,7 +35,7 @@ status: active
 - **Security**: TLS 종료 + SSO + 비루트 컨테이너 실행
 - **Reliability**: `service_healthy` 의존성으로 부팅 안정성 향상
 - **Scalability**: catalog 기반 확장(샘플링/retention/long-term storage) 준비
-- **Observability**: cAdvisor health + stack health 통합 검증
+- **Observability**: cAdvisor health, pyroscope availability, and stack health validation
 - **Operability**: 스크립트 기반 회귀 차단 + runbook 표준 절차
 
 ## System Overview & Context
@@ -43,7 +43,7 @@ status: active
 - Storage/Query Plane:
   - Prometheus, Loki, Tempo, Pyroscope
 - Control/Presentation Plane:
-  - Grafana, Alertmanager, Pushgateway, Alloy UI
+  - Grafana, Alertmanager, Pushgateway, Alloy UI, cAdvisor route, Pyroscope route
 - Gateway Path:
   - Client -> Traefik(`websecure`) -> `gateway-standard-chain` + `sso-*` -> target service
 - Internal Path:
@@ -84,6 +84,6 @@ status: active
 - **Plan**: [../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-06-observability-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0021-observability-hardening-and-ha-expansion-strategy.md](../decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-06-observability-optimization-hardening-tasks.md)
-- **Guide**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
-- **Operation**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
-- **Runbook**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/06-observability/optimization-hardening.md](../../05.operations/guides/06-observability/optimization-hardening.md)
+- **Policy**: [../../05.operations/policies/06-observability/optimization-hardening.md](../../05.operations/policies/06-observability/optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/06-observability/optimization-hardening.md](../../05.operations/runbooks/06-observability/optimization-hardening.md)

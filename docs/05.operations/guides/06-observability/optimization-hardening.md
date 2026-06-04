@@ -36,9 +36,10 @@ status: active
 ### Step-by-step Instructions
 
 1. 변경 전 정적 상태 점검
-   - `docker compose -f infra/06-observability/docker-compose.yml config`
+   - root context: `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
+   - service-local context: root networks/secrets를 선언한 임시 validation overlay를 함께 사용한다.
 2. Gateway/SSO 경계 정렬
-   - 공개 라우터(`prometheus`, `alloy`, `grafana`, `alertmanager`, `pushgateway`, `loki`, `tempo`, `pyroscope`)에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+   - 공개 라우터(`prometheus`, `alloy`, `grafana`, `alertmanager`, `pushgateway`, `loki`, `tempo`, `pyroscope`, `cadvisor`)에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
 3. 의존성/헬스 보강
    - Alloy/Grafana의 Loki/Tempo 의존성을 `service_healthy`로 설정한다.
    - cAdvisor healthcheck(`/healthz`)를 추가한다.
@@ -60,7 +61,8 @@ status: active
 
 ## Common Checks
 
-- `docker compose -f infra/06-observability/docker-compose.yml config`
+- `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
+- Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
 - `bash scripts/hardening/check-all-hardening.sh 06-observability`
 
 ## Runbook Handoff

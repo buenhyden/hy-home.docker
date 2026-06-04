@@ -293,6 +293,7 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | `04-data/nosql` current-truth cleanup | `cassandra`, `couchdb`, `mongodb`, linked infra READMEs | ✅ Done | Rewrote paired guide/policy/runbook docs and service READMEs to match optional NoSQL compose services, current image tags, profiles, Docker Secret boundaries, replica/cluster membership, and non-destructive runbook scope. |
 | `04-data/specialized` current-truth cleanup | `neo4j`, `qdrant`, linked infra READMEs | ✅ Done | Rewrote paired guide/policy/runbook docs and service READMEs to match root-active specialized compose services, current image tags, profiles, route boundaries, Neo4j secret handling, Qdrant no-secret state, and non-destructive runbook scope. |
 | `04-data/relational` current-truth cleanup | `postgresql-cluster`, linked infra READMEs | ✅ Done | Rewrote paired guide/policy/runbook docs and service READMEs to match optional PostgreSQL HA compose services, current image tags, profiles, Docker Secret boundaries, HAProxy routing, init/exporter scope, and non-destructive runbook scope. |
+| `06-observability` current-truth cleanup | compose, PRD/ARD/ADR/spec/plan/task, ops docs, linked infra READMEs | ✅ Done | Corrected current image tags, root-vs-local compose validation boundary, cAdvisor/Pyroscope Traefik labels, root-included Pyroscope service, MinIO/local storage retention facts, and stale Mimir/Pushgateway/Pyroscope references. |
 
 ## Open Issues
 

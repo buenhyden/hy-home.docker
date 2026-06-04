@@ -22,7 +22,7 @@
 
 | Component | Technology | Version | Backend |
 | :--- | :--- | :--- | :--- |
-| Logging | Loki | v3.6.6 | MinIO (S3) |
+| Logging | Loki | v3.6.6-custom | MinIO (S3) |
 
 ## Available Scripts
 
@@ -111,16 +111,16 @@ infra/06-observability/loki/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Loki Log Aggregation System service leaf in `06-observability`; services: Not declared; Not declared |
+| Purpose | Loki Log Aggregation System service leaf in `06-observability`; compose service `loki`, image `hy/loki:3.6.6-custom` |
 | Config files | `config`, `config/loki-config.yaml` |
 | Config values | No non-secret config keys declared in compose |
-| Compose linkage | Not declared |
-| Networks | Not declared |
-| Volumes | Not declared |
-| Ports | Not declared |
-| Labels | Not declared |
-| Secret refs | Not declared |
-| Healthcheck | Not declared in compose; use service logs and dependent checks |
+| Compose linkage | Declared in `../docker-compose.yml` and root-included `../docker-compose.dev.yml` |
+| Networks | `infra_net`, `k3d-hyhome` |
+| Volumes | `./loki/config/loki-config.yaml:/etc/loki/loki-config.yaml:ro`, `loki-data:/loki:rw` |
+| Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}` |
+| Labels | `traefik.http.routers.loki.*`, `traefik.http.services.loki.loadbalancer.server.port` |
+| Secret refs | `minio_app_user_password` |
+| Healthcheck | `http://127.0.0.1:${LOKI_PORT:-3100}/ready` |
 | Operations | [Guide](../../../docs/05.operations/guides/06-observability/loki.md), [Policy](../../../docs/05.operations/policies/06-observability/loki.md), [Runbook](../../../docs/05.operations/runbooks/06-observability/loki.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |

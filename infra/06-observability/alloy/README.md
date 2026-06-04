@@ -54,7 +54,7 @@ alloy/
 
 | Category  | Technology    | Version | Notes                    |
 | :-------- | :------------ | :------ | :----------------------- |
-| Collector | Grafana Alloy | v1.13.1 | Unified agent            |
+| Collector | Grafana Alloy | v1.16.2 | Unified agent            |
 | Protocol  | OTLP          | v1.x    | Standard interface       |
 | Runtime   | Docker        | Latest  | Containerized deployment |
 

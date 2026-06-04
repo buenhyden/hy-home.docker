@@ -4,7 +4,7 @@
 
 ## Overview
 
-The `06-observability` tier implements the LGTM stack (Loki, Grafana, Tempo, Mimir/Prometheus) combined with Grafana Alloy and Pyroscope to provide a unified "Single Source of Truth" for system health. It handles metrics, logs, traces, and continuous profiling across the entire `hy-home.docker` ecosystem.
+The `06-observability` tier implements the current LGTM stack (Loki, Grafana, Tempo, Prometheus) combined with Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, and Pyroscope. External long-term metric storage is not declared in the tracked compose files.
 
 ## Audience
 
@@ -41,7 +41,8 @@ The `06-observability` tier implements the LGTM stack (Loki, Grafana, Tempo, Mim
 ├── prometheus/     # Metrics storage
 ├── pyroscope/      # Continuous profiling
 ├── tempo/          # Distributed tracing
-├── docker-compose.yml
+├── docker-compose.dev.yml  # Root-included observability compose
+├── docker-compose.yml      # Local obs compose
 └── README.md
 ```
 
@@ -49,16 +50,16 @@ The `06-observability` tier implements the LGTM stack (Loki, Grafana, Tempo, Mim
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Observability Tier (06-observability) service leaf in `06-observability`; services: `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, plus 11 more; root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
+| Purpose | Observability Tier (06-observability) folder index; services `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway`; root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.dev.yml`; local obs compose is `docker-compose.yml` |
 | Config files | `docker-compose.dev.yml`, `docker-compose.yml` |
-| Config values | env keys: `MINIO_APP_USERNAME`, `GF_SERVER_ROOT_URL`, `GF_SERVER_DOMAIN`, `GF_AUTH_OAUTH_AUTO_LOGIN`, `GF_AUTH_DISABLE_LOGIN_FORM`, `GF_SECURITY_ADMIN_USER`, `GF_SECURITY_ADMIN_PASSWORD__FILE`, `GF_USERS_ALLOW_SIGN_UP`, plus 27 more; profiles: `obs`, `dev` |
+| Config values | Uses non-secret env keys for MinIO app username, Grafana server/OAuth settings, and service ports; profiles: `obs`, `dev` |
 | Compose linkage | root include active via [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.dev.yml`; local compose only: `docker-compose.yml` |
 | Networks | `infra_net`, `k3d-hyhome` |
-| Volumes | `./prometheus/config/prometheus.dev.yml:/etc/prometheus/prometheus.yml:ro`, `./prometheus/config/alert_rules:/etc/prometheus/alert_rules:ro`, `prometheus-data:/prometheus:rw`, `./loki/config/loki-config.yaml:/etc/loki/loki-config.yaml:ro`, `loki-data:/loki:rw`, `./tempo/config/tempo.yaml:/etc/tempo.yaml:ro`, `tempo-data:/var/tempo:rw`, `./alloy/config/config.alloy:/etc/alloy/config.alloy:ro`, plus 24 more |
+| Volumes | Prometheus/Loki/Tempo/Alloy/Grafana/Pyroscope config mounts plus bind-backed named data volumes under `${DEFAULT_OBSERVABILITY_DIR}` |
 | Ports | `${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `${CADVISOR_PORT:-8080}`, `${PUSHGATEWAY_PORT:-9091}`, `${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}` |
-| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.prometheus.rule`, `traefik.http.routers.prometheus.entrypoints`, `traefik.http.routers.prometheus.tls`, `traefik.http.routers.prometheus.middlewares`, `traefik.http.services.prometheus.loadbalancer.server.port`, `traefik.http.routers.loki.rule`, plus 40 more |
+| Labels | `hy-home.tier` plus Traefik router/service labels for Prometheus, Loki, Tempo, Alloy, Grafana, cAdvisor, Pyroscope, Alertmanager, and Pushgateway |
 | Secret refs | names: `opensearch_exporter_password`, `vault_token`, `minio_app_user_password`, `grafana_admin_password`, `grafana_client_secret`, `smtp_username`, `smtp_password`, `slack_webhook`; mounts: `/run/secrets/opensearch_exporter_password`, `/run/secrets/vault_token`, `/run/secrets/minio_app_user_password`, `/run/secrets/grafana_admin_password`, `/run/secrets/grafana_client_secret`, `/run/secrets/smtp_username`, `/run/secrets/smtp_password`, `/run/secrets/slack_webhook` |
-| Healthcheck | Compose healthcheck declared for `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `alertmanager`, `pushgateway`, plus 9 more |
+| Healthcheck | Compose healthcheck declared for `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway` |
 | Operations | [Guide index](../../docs/05.operations/guides/06-observability/README.md), [Policy index](../../docs/05.operations/policies/06-observability/README.md), [Runbook index](../../docs/05.operations/runbooks/06-observability/README.md) |
 | Validation | [validate-docker-compose.sh](../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../scripts/validation/check-repo-contracts.sh) |
 | Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
@@ -74,12 +75,15 @@ The `06-observability` tier implements the LGTM stack (Loki, Grafana, Tempo, Mim
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Metrics    | Prometheus                     | v3.9.0                    |
-| Logs       | Loki                           | v3.6.6 (S3 Backend)       |
-| Tracing    | Tempo                          | v2.10.1 (S3 Backend)      |
-| Profiling  | Pyroscope                      | v1.18.1                   |
-| Collector  | Grafana Alloy                  | v1.13.1                   |
-| UI         | Grafana                        | v12.3.3                   |
+| Metrics    | Prometheus                     | v3.12.0                   |
+| Logs       | Loki                           | v3.6.6-custom, MinIO bucket `loki-bucket` |
+| Tracing    | Tempo                          | v2.10.1-custom, MinIO bucket `tempo-bucket` |
+| Profiling  | Pyroscope                      | v2.0.2                    |
+| Collector  | Grafana Alloy                  | v1.16.2                   |
+| UI         | Grafana                        | v13.0.2                   |
+| Alerting   | Alertmanager                   | v0.32.1                   |
+| Batch metrics | Pushgateway                 | v1.11.3                   |
+| Container metrics | cAdvisor                | v0.55.1                   |
 
 ## Service Matrix
 
@@ -90,10 +94,14 @@ The `06-observability` tier implements the LGTM stack (Loki, Grafana, Tempo, Mim
 | `loki` | HTTP | `obs` | 3100 |
 | `tempo` | HTTP | `obs` | 3200 |
 | `alloy` | HTTP | `obs` | 12345 (UI), 4317/4318 (OTLP) |
+| `cadvisor` | HTTP | `obs` | 8080 |
+| `pyroscope` | HTTP | `obs` | 4040 |
+| `alertmanager` | HTTP | `obs` | 9093 |
+| `pushgateway` | HTTP | `obs` | 9091 |
 
 ## Configuration
 
-- **Persistence**: Loki and Tempo use MinIO (`04-data`) as the S3-compatible object store.
+- **Persistence**: Loki and Tempo use MinIO (`04-data`) as the S3-compatible object store; Prometheus and Pyroscope use local bind-backed volumes.
 - **Auth**: Grafana is integrated with Keycloak (`02-auth`) for OAuth2 SSO.
 - **Networking**: All telemetry traffic flows through the `infra_net`.
 
