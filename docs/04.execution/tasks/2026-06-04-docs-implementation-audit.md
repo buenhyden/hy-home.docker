@@ -75,6 +75,7 @@ tracked `infra/**` 구현과 의미 단위로 대조한 감사 리포트다. 판
 | F-15 | `docs/05.operations/{guides/06-observability/prometheus.md,runbooks/11-laboratory/dozzle.md,runbooks/11-laboratory/README.md}`, `infra/11-laboratory/dozzle/README.md` | Prometheus guide와 Dozzle runbook/infra README가 현재 PostgreSQL image family 및 Dozzle compose tag와 맞지 않는 구현값을 담고 있었음 | Prometheus scrape 대상 설명을 PostgreSQL 17/18 family로 정정; Dozzle 기준 tag를 `amir20/dozzle:v10.6.4`로 맞추고 rollback은 직전 검증 tag evidence를 기록하도록 수정; stale Dozzle/PostgreSQL literal gate 추가 |
 | F-16 | `docs/05.operations/{guides,policies,runbooks}/README.md` 및 `00-workspace`, `12-infra-net`, `90-knowledge` 목적 폴더 | bucket root에 leaf 문서와 folder index가 섞여 있어 Stage 05 운영 문서 구조가 목적별 탐색 계약과 맞지 않았음 | root에는 bucket `README.md`만 남기고 workspace, infra_net, knowledge 문서를 목적 폴더로 이동; parent/child README와 cross-link를 갱신; `check-repo-contracts.sh`에 operations bucket-root leaf 금지와 target-path 일치 gate 추가 |
 | F-17 | `infra/04-data/operational/README.md`, `infra/04-data/operational/{mng-db,supabase}/README.md`, `docs/05.operations/{guides,policies,runbooks}/04-data/operational/{mng-db,supabase}.md` | `mng-db` docs retained obsolete network/old Compose CLI guidance and template remnants; Supabase docs assumed direct Studio host-port access and contained incomplete policy/runbook template residue; infra README listed a relational cluster under the operational folder and linked the guide index to policies | Corrected in place to current compose truth: `mng-db` services/profiles/networks/init DBs, Supabase data-profile services/Kong ports/runtime mounts, PostgreSQL image family, and operations guide/policy/runbook links; no archive because documents map to implemented services |
+| F-18 | `infra/04-data/cache-and-kv/README.md`, `infra/04-data/cache-and-kv/valkey-cluster/README.md`, `docs/05.operations/{guides,policies,runbooks}/04-data/cache-and-kv/valkey-cluster.md` | Valkey docs referenced stale init/container names, direct password variables, stale image tag, unsupported `maxmemory-policy` control, and destructive restore guidance not proven by current runbook evidence | Corrected in place to current compose truth: six `valkey-node-*` services, `valkey-cluster-init`, `valkey-cluster-exporter`, `service_valkey_password`, `valkey/valkey:9.1.0-alpine`, current port/profile/network model, and non-destructive escalation boundary |
 
 ## Archive Decision
 
@@ -86,6 +87,9 @@ harness-agent-first, llm-wiki-completion 등)은 현재 구현과 **상충하지
 Stage 05 bucket-root 구조 drift(F-16)는 문서 내용 자체가 현재 구현과 상충하지 않고 위치/탐색
 계약만 낡은 경우라 archive가 아니라 in-place 이동 및 reference 갱신으로 처리했다.
 `04-data/operational` drift(F-17)는 구현된 `mng-db`와 `supabase` 서비스 문서의 current-truth
+불일치였으므로 archive가 아니라 template-compliant in-place rewrite와 README reference 갱신으로
+처리했다.
+`04-data/cache-and-kv` drift(F-18)도 구현된 Valkey cluster 문서의 service-name/command/control
 불일치였으므로 archive가 아니라 template-compliant in-place rewrite와 README reference 갱신으로
 처리했다.
 
@@ -105,6 +109,8 @@ Stage 05 bucket-root 구조 drift(F-16)는 문서 내용 자체가 현재 구현
 - analytics/laboratory version-family scan: analytics primary/decision stale phrases, Dozzle old tag, and PostgreSQL old scrape family phrase 0건; repo contract가 exact stale literal 재유입을 차단.
 - 04-data operational scan: `mng-db`/`supabase` guide, policy, runbook 문서에서 old Compose CLI command spelling, direct Studio host-port literal, template copyright residue, and obsolete shared-network literal 0건.
 - 04-data operational implementation mapping: `mng-db` docs now match compose services `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter`; Supabase docs now match data-profile services `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor`.
+- 04-data cache-and-kv scan: Valkey guide, policy, runbook, and infra README stale init/container names, stale image tag, direct password variable command, unsupported maxmemory policy, and single-container command assumptions 0건.
+- 04-data cache-and-kv implementation mapping: Valkey docs now match compose services `valkey-node-0` through `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter`, profiles `data`/`service`, network `infra_net`, and secret `service_valkey_password`.
 - reference.template.md archive 언급: 0건(제약 이미 충족).
 - Local QA gate: `bash scripts/validation/run-local-qa-gates.sh` → PASS, repo contracts `failures=0`.
 

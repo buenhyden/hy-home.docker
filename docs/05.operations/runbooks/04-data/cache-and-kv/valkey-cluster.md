@@ -3,96 +3,119 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md -->
 
-# Valkey Cluster Runbook
+# Valkey Cluster Health Runbook
 
-## Overview (KR)
+> Scope: health checks, cluster status checks, evidence capture, and escalation for the Valkey cluster.
 
-이 런북은 Valkey Cluster에서 발생할 수 있는 노드 장애, 슬롯 불일치 및 네트워크 파티션 상황에 대한 긴급 복구 절차를 정의합니다.
+---
 
-This runbook defines the emergency recovery procedures for node failures, slot inconsistencies, and network partition situations that may occur in the Valkey Cluster.
+## Valkey Cluster Health Procedure
 
-## Valkey Cluster Recovery Procedure
+### Overview (KR)
 
-> Scope: `valkey-cluster`
-
-> Emergency Restoration and Node Failover Procedures / 긴급 복구 및 노드 페일오버 절차
+이 런북은 Valkey cluster의 compose render, 6개 노드 상태, init job, exporter 상태, cluster info를 즉시 확인해야 할 때 사용한다. 데이터 볼륨 삭제, 강제 cluster recreation, RDB/AOF restore는 이 런북의 검증된 복구 범위가 아니다.
 
 ### Purpose
 
-장애 상황에서 클러스터를 정상 상태(`cluster_state:ok`)로 신속히 복구하고 데이터 무결성을 보장합니다.
+`valkey-node-0..5`, `valkey-cluster-init`, `valkey-cluster-exporter`의 상태를 안전하게 확인하고, secret 노출 또는 destructive recovery가 필요한 경우 escalation하도록 한다.
 
 ### Canonical References
 
-- [Data Architecture Document](../../../../02.architecture/requirements/0004-data-architecture.md)
-- [04-data Specification](../../../../03.specs/04-data/spec.md)
-- [Valkey Operations Policy](../../../policies/04-data/cache-and-kv/valkey-cluster.md)
+- **Spec**: [04-data spec](../../../../03.specs/04-data/spec.md)
+- **Policy**: [Valkey Cluster policy](../../../policies/04-data/cache-and-kv/valkey-cluster.md)
+- **Guide**: [Valkey Cluster guide](../../../guides/04-data/cache-and-kv/valkey-cluster.md)
+- **Repo**: [Valkey Cluster infrastructure](../../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md)
 
 ## When to Use
 
-- `cluster_state:fail` 상태가 감지될 때
-- `cluster_slots_assigned`가 16384 미만일 때
-- 프라이머리 노드 다운 후 자동 페일오버가 실패했을 때
+- One or more `valkey-node-*` services are missing or unhealthy.
+- `valkey-cluster-init` failed or skipped cluster creation unexpectedly.
+- Cluster status, slot assignment, or exporter health needs verification.
+- Linked Valkey operations docs or compose references were changed and need local verification evidence.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 모든 Valkey 노드 컨테이너가 Running 상태인지 확인
-- [ ] 노드 간 네트워크 통신이 가능한지 확인
+- [ ] Confirm this is a health/status verification task, not volume deletion, forced recreation, or backup restore.
+- [ ] Confirm Docker Secret file `service_valkey_password` exists without printing its value.
+- [ ] Confirm `${DEFAULT_DATA_DIR}/valkey/data-0` through `data-5` are the approved runtime data locations.
+- [ ] Confirm any evidence capture avoids copying secret values or full credential-bearing command output.
 
 ### Steps
 
-#### 1. 클러스터 상태 진단
+1. Render the current compose configuration.
 
-```bash
-docker exec valkey-node-0 valkey-cli -a $PASS --cluster check localhost:6379
-```
+   ```bash
+   docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data config
+   ```
 
-##### 2. 슬롯 자동 복구
+2. Check service status.
 
-```bash
-docker exec valkey-node-0 valkey-cli -a $PASS --cluster fix localhost:6379
-```
+   ```bash
+   docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data ps valkey-node-0 valkey-node-1 valkey-node-2 valkey-node-3 valkey-node-4 valkey-node-5 valkey-cluster-exporter
+   ```
+
+3. Inspect relevant logs if a service is unhealthy. Do not copy secret values into evidence.
+
+   ```bash
+   docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data logs valkey-node-0 valkey-node-1 valkey-node-2 valkey-node-3 valkey-node-4 valkey-node-5 valkey-cluster-init valkey-cluster-exporter
+   ```
+
+4. Check cluster state from inside the node boundary without printing the secret.
+
+   ```bash
+   docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data exec valkey-node-0 sh -c 'VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password | tr -d "\n"); valkey-cli -a "$VALKEY_PASSWORD" -p "${PORT:-6379}" cluster info | grep "^cluster_state:"'
+   ```
+
+5. Re-run the init job only when cluster creation or idempotent init verification is explicitly required.
+
+   ```bash
+   docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data run --rm valkey-cluster-init
+   ```
 
 ### Verification Steps
 
-- [ ] `valkey-cli cluster info | grep cluster_state` 결과가 `ok`인지 확인
-- [ ] `valkey-cli cluster nodes` 결과 모든 노드가 `connected` 상태인지 확인
+- `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data config`
+- `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data ps`
+- Expected result: compose renders, six node services and exporter are present, and cluster state evidence is recorded without exposing the secret.
 
 ### Observability and Evidence Sources
 
-- **Signals**: Prometheus Alert `ValkeyClusterDown`
-- **Evidence to Capture**: `valkey-cli cluster nodes` 출력 결과
+- **Logs**: `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data logs ...`
+- **Health**: compose `ps` status for six nodes and exporter
+- **Cluster status**: `cluster info` and `cluster nodes` summaries captured from inside a node container
+- **Evidence to Capture**: command names, timestamps, service status summary, cluster-state summary, init-job outcome if run, and skipped destructive actions
 
 ### Safe Rollback or Recovery Procedure
 
-- 클러스터 데이터 손상이 심각할 경우, 모든 노드를 중지하고 데이터 볼륨의 백업본(RDB/AOF)을 복원한 후 클러스터를 재구성합니다.
+1. For documentation-only changes, revert the last documentation diff and rerun validation.
+2. For an init-job failure, preserve logs and current data-volume state, then escalate; do not delete volumes or force recreate the cluster from this runbook.
+3. For suspected secret exposure, stop copying output and escalate under `## Escalation`.
 
 ### Agent Operations (If Applicable)
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: Stop using commands that reveal secret-bearing output when exposure risk appears.
+- **Eval Re-run**: Re-run linked validation scripts after documentation remediation.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- Record the compose command executed, service status, cluster-state summary, init-job result if applicable, and any destructive action that was intentionally skipped.
+- Attach failed validation output or service symptoms to the related task or incident evidence without copying secret values.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+N/A - no verified destructive rollback or data recovery procedure is documented in this runbook. If volume restore, forced cluster recreation, or credential rotation is required, stop and escalate with captured evidence.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Escalate to the owning operator when compose render fails, required secrets are missing, services remain unhealthy after documented checks, cluster state cannot be verified, secret exposure risk appears, or destructive data recovery is required.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/cache-and-kv/valkey-cluster.md)
 - [Operations policy](../../../policies/04-data/cache-and-kv/valkey-cluster.md)
+- [Infrastructure service README](../../../../../infra/04-data/cache-and-kv/valkey-cluster/README.md)

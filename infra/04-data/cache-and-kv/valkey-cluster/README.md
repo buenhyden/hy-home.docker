@@ -62,16 +62,16 @@ valkey-cluster/
 
 1. [docker-compose.yml](./docker-compose.yml)을 통해 클러스터 노드 구성을 확인한다.
 2. [scripts/valkey-cluster-init.sh](./scripts/valkey-cluster-init.sh)를 통해 초기화 로직을 이해한다.
-3. 가이드 문서는 [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 참조한다.
-4. 운영 정책은 [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md)를 확인한다.
-5. 장애 조치 지침은 [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 따른다.
+3. 가이드 문서는 [docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)를 참조한다.
+4. 운영 정책은 [docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md)를 확인한다.
+5. 장애 조치 지침은 [docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md](../../../../docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md)를 따른다.
 
 ## Validation
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify cluster connectivity by running `docker exec valkey-cluster valkey-cli cluster info` and confirming `cluster_state:ok`.
-- Confirm replication health by checking `docker logs valkey-cluster | grep -i 'error\|warn'` after config changes.
+- Verify cluster connectivity from `valkey-node-0` by reading `service_valkey_password` inside the container boundary and checking `cluster_state:ok` without printing the secret.
+- Confirm replication health by checking the six `valkey-node-*` logs and `valkey-cluster-init` outcome after config changes.
 
 ## Troubleshooting
 
@@ -91,7 +91,7 @@ valkey-cluster/
 
 | Category   | Technology   | Notes                     |
 | ---------- | ------------ | ------------------------- |
-| Image      | valkey/valkey| v9.0.2-alpine             |
+| Image      | valkey/valkey| v9.1.0-alpine             |
 | Interface  | valkey-cli   | Cluster protocol          |
 | Clustering | 3P + 3R      | 6 nodes architecture      |
 
@@ -99,7 +99,7 @@ valkey-cluster/
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose up -d` | 클러스터 전체 노드 시작 |
-| `docker compose ps` | 노드별 상태 및 헬스체크 확인 |
-| `docker compose logs -f` | 실시간 로그 모니터링 |
-| `docker exec -it valkey-node-0 valkey-cli -a $PASS cluster info` | 클러스터 상태 확인 |
+| `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data up -d` | 클러스터 전체 노드 시작 |
+| `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data ps` | 노드별 상태 및 헬스체크 확인 |
+| `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data logs valkey-node-0 valkey-cluster-init valkey-cluster-exporter` | 주요 노드, 초기화, exporter 로그 확인 |
+| `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data run --rm valkey-cluster-init` | 클러스터 초기화 job 재실행 |

@@ -46,7 +46,7 @@ cache-and-kv/
 
 ## Related Documents
 
-- **Guides**: [docs/05.operations/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
+- **Guides**: [docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md)
 - **Policy**: [docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md)
 - **Runbook**: [docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md](../../../docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md)
 
@@ -61,5 +61,5 @@ cache-and-kv/
 
 | Command | Description |
 | :--- | :--- |
-| `cd valkey-cluster && docker compose up -d` | 클러스터 전체 노드 시작 |
-| `cd valkey-cluster && docker compose ps` | 노드별 상태 확인 |
+| `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data up -d` | 클러스터 전체 노드 시작 |
+| `docker compose -f infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml --profile data ps` | 노드별 상태 확인 |
