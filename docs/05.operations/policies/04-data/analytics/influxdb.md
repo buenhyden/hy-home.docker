@@ -5,55 +5,45 @@ status: active
 
 # InfluxDB Operations Policy
 
-> Operational policy for time-series data storage and retention.
-
----
-
 ## Overview (KR)
 
-이 문서는 InfluxDB 운영 정책을 정의한다. 시계열 데이터의 세분화 수집 주기, 버킷별 보존 정책(Retention Policy), 그리고 인덱싱 및 쿼리 자원 통제를 규정한다.
+이 문서는 `infra/04-data/analytics/influxdb`의 InfluxDB 운영 정책을 정의한다. current implementation은 InfluxDB 3.x Core primary compose와 InfluxDB 2.x legacy compose를 분리하고, API token/password는 Docker Secrets로 주입한다.
 
 ## Policy Scope
 
-이 정책은 플랫폼 내 모든 InfluxDB 인스턴스와 이에 연결된 데이터 수집(Telegraf) 및 시각화(Grafana) 인터페이스를 관리한다.
-
-- **Systems**: InfluxDB 3.x, InfluxDB 2.x, Telegraf
-- **Agents**: AI Metric Analyzers, Automated Scaling Agents
-- **Environments**: Production, Staging, Dev
+- **Systems**: `influxdb` primary service, `docker-compose.yml`, `docker-compose.v2.yml`
+- **Persistence**: `influxdb-data`, `influxdb-plugins`
+- **Secrets**: `influxdb_password`, `influxdb_api_token`
+- **Environments**: repo-local, development, homelab, and production-like rehearsals
 
 ## Controls
 
-- **Required**:
-  - 모든 버킷은 최소 7일 이상의 보존 정책을 가져야 함.
-  - 모든 쓰기 작업은 유효한 API Token을 필요로 함.
-  - 고빈도 데이터(`1s` 미만)는 별도의 고성능 버킷에만 허용됨.
-- **Allowed**:
-  - 읽기 전용 토큰의 생성 (대시보드 공유용).
-  - 특정 기간에 대한 데이터 다운샘플링(Downsampling) 및 집계.
-- **Disallowed**:
-  - 인증되지 않은 익명 접근 (HTTP 인증 비활성화 금지).
-  - 무제한(`INF`) 보존 정책 설정 (승인 없이 금지).
+- **Required**: primary operations must use `docker-compose.yml` unless a legacy InfluxDB 2.x Flux compatibility requirement is explicitly recorded.
+- **Required**: token and password values must be supplied through Docker Secrets and must not be written into docs, shell history, or command output.
+- **Required**: retention or cleanup changes require evidence of the selected InfluxDB variant because v3 and v2 management commands differ.
+- **Allowed**: legacy v2 compose may be used for compatibility testing or migration evidence.
+- **Disallowed**: treating v2 bucket commands as verified v3 primary operations without runtime evidence.
 
 ## Exceptions
 
-- 장기 보관 요구사항이 있는 규제 준수 데이터의 경우, 백업 절차를 포함한 별도 승인 후 `INF` 설정 가능.
+Legacy v2 usage, long retention, or manual data cleanup requires owner approval and evidence showing which compose file, volume, and token boundary were used.
 
 ## Verification
 
-- `influx bucket list`를 통한 보존 정책 정기 점검.
-- Prometheus를 통한 InfluxDB 자원 사용량 모니터링.
+- `test -f infra/04-data/analytics/influxdb/docker-compose.yml`
+- `test -f infra/04-data/analytics/influxdb/docker-compose.v2.yml`
+- `bash scripts/validation/check-doc-implementation-alignment.sh`
+- `bash scripts/validation/check-repo-contracts.sh`
 
 ## Review Cadence
 
-- Quarterly (분기별)
-
-## AI Agent Policy Section
-
-- **Log / Trace Retention**: 수집된 메트릭은 90일 후 자동 다운샘플링 또는 삭제.
-- **Safety Incident Thresholds**: 디스크 사용량 80% 초과 시 즉시 알림 및 데이터 정리 태스크 실행.
+- On compose image/tag change
+- On secret mount or volume path change
+- On retention, migration, or legacy-v2 usage change
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
+- [Operations policies index](../../../README.md)
 - [Usage guide](../../../guides/04-data/analytics/influxdb.md)
 - [Recovery runbook](../../../runbooks/04-data/analytics/influxdb.md)
+- [Infra README](../../../../../infra/04-data/analytics/influxdb/README.md)

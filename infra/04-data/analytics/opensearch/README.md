@@ -18,7 +18,7 @@
 
 ### In Scope
 
-- OpenSearch 2.18 및 Dashboards 3.4.0을 위한 Docker 인프라
+- OpenSearch 3.x custom build와 OpenSearch Dashboards 3.6.0을 위한 Docker 인프라
 - 자원 할당(JVM Heap) 및 볼륨 영속성 관리
 - 보안 설정 (Docker Secrets, HTTPS 적용)
 - 커스텀 빌드 이미지를 통한 플러그인 관리
@@ -44,10 +44,10 @@ opensearch/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | OpenSearch service leaf in `04-data`; services: `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards`, `opensearch`, `opensearch-dashboards`; local compose only: `docker-compose.cluster.yml`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/opensearch/docker-compose.yml` |
+| Purpose | OpenSearch service leaf in `04-data`; primary services: `opensearch`, `opensearch-dashboards`; optional cluster variant services: `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards` |
 | Config files | `docker-compose.cluster.yml`, `docker-compose.yml` |
 | Config values | env keys: `node.name`, `cluster.name`, `discovery.seed_hosts`, `cluster.initial_cluster_manager_nodes`, `OPENSEARCH_JAVA_OPTS`, `bootstrap.memory_lock`, `node.roles`, `plugins.security.ssl.http.enabled`, plus 8 more; profiles: `data` |
-| Compose linkage | local compose only: `docker-compose.cluster.yml`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/opensearch/docker-compose.yml` |
+| Compose linkage | primary compose root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml); `docker-compose.cluster.yml` is a local optional cluster variant |
 | Networks | `infra_net` |
 | Volumes | `opensearch-data1:/usr/share/opensearch/data`, `../../../../secrets/certs:/usr/share/opensearch/config/certs:ro`, `./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro`, `opensearch-data2:/usr/share/opensearch/data`, `opensearch-data3:/usr/share/opensearch/data`, `../../../../secrets/certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro`, `opensearch-data1`, `opensearch-data2`, plus 15 more |
 | Ports | `${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}`, `9200`, `9600`, `5601`, `${KIBANA_PORT:-5601}` |
@@ -56,7 +56,7 @@ opensearch/
 | Healthcheck | Compose healthcheck declared for `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards`, `opensearch`, `opensearch-dashboards` |
 | Operations | [Guide](../../../../docs/05.operations/guides/04-data/analytics/opensearch.md), [Policy](../../../../docs/05.operations/policies/04-data/analytics/opensearch.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/analytics/opensearch.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with linked repository validators and service logs; service-local compose parsing requires root network/secret context or a local validation overlay. |
 
 ## How to Work in This Area
 
@@ -66,14 +66,14 @@ opensearch/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect OpenSearch.
+- Run `bash scripts/validation/check-doc-implementation-alignment.sh` after README or Compose reference changes that affect OpenSearch.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking OpenSearch documentation ready.
 - `docker-compose.cluster.yml` includes node and dashboard healthchecks; validate it from this service directory with `docker compose --env-file ../../../../.env.example -f docker-compose.cluster.yml config --services`.
 
 ## Troubleshooting
 
-- Start with `docker compose config` from this service directory to verify OpenSearch, Dashboards, network, certificate, and secret references render.
-- If the cluster does not form or Dashboards cannot connect, inspect `docker compose logs opensearch` and `docker compose logs opensearch-dashboards` before changing JVM, OIDC, or certificate settings.
+- Start with repository validators and Docker logs for runtime evidence. Service-local compose config requires root network/secret context or a local validation overlay.
+- If the primary stack does not form or Dashboards cannot connect, inspect `docker compose logs opensearch` and `docker compose logs opensearch-dashboards` before changing JVM, OIDC, or certificate settings. For the cluster variant, inspect `opensearch-node1`, `opensearch-node2`, and `opensearch-node3` logs.
 
 ## Related Documents
 

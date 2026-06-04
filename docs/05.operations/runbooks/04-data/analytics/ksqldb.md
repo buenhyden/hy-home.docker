@@ -3,113 +3,110 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/04-data/analytics/ksqldb.md -->
 
-# ksqlDB Runbook
-
-## Overview (KR)
-
-이 런북은 ksqlDB 스트림 처리 지연, 쿼리 실패 및 서버 연결 이슈 상황에 대한 실행 절차를 정의한다. Kafka와의 연결성을 복원하고 처리 무결성을 유지하기 위한 단계를 제공한다.
+# ksqlDB Recovery Runbook
 
 ## ksqlDB Recovery Procedure
 
-> Scope: ksqlDB Stream Processing Recovery
+> Scope: ksqlDB server readiness, Kafka dependency checks, and query lifecycle evidence.
 
----
+### Overview (KR)
+
+이 런북은 `ksqldb-server`가 unhealthy이거나 Kafka/Schema Registry dependency 문제로 stream processing이 실패할 때 사용한다. CLI/datagen 절차는 `ksql` profile을 명시한 경우에만 적용한다.
 
 ### Purpose
 
-실시간 스트림 처리 파이프라인의 중단을 최소화하고, 잘못된 상태를 가진 쿼리를 안전하게 재시작하는 것을 목적으로 한다.
+- ksqlDB 장애와 upstream Kafka dependency 장애를 구분한다.
+- query termination/replay 전 topic, query, offset evidence를 확보한다.
+- profile boundary를 지키며 복구 절차를 수행한다.
 
 ### Canonical References
 
-- [../../../../02.architecture/requirements/0012-data-analytics-architecture.md](../../../../02.architecture/requirements/0012-data-analytics-architecture.md)
-- [../../../guides/04-data/analytics/ksqldb.md](../../../guides/04-data/analytics/ksqldb.md)
-- [../../../policies/04-data/analytics/ksqldb.md](../../../policies/04-data/analytics/ksqldb.md)
+- **Spec**: [Analytics spec](../../../../03.specs/04-data-analytics/spec.md)
+- **Policy**: [ksqlDB policy](../../../policies/04-data/analytics/ksqldb.md)
+- **Guide**: [ksqlDB guide](../../../guides/04-data/analytics/ksqldb.md)
 
 ## When to Use
 
-- ksqlDB 서버가 Kafka 브로커에 연결하지 못할 때.
-- `ksql-cli`에서 특정 쿼리의 상태가 `RUNNING`이 아닐 때.
-- 컨슈머 래그(Lag)가 급격히 증가하여 실시간성이 훼손될 때.
+- `ksqldb-server` `/info` endpoint가 실패할 때
+- Kafka brokers or Schema Registry dependency가 unavailable일 때
+- query state가 expected running state와 다를 때
 
 ## Procedure
 
 ### Checklist
 
-- [ ] Kafka 브로커 가용성 확인 (`kafka-1:19092`)
-- [ ] Schema Registry 가용성 확인 (`schema-registry:8081`)
-- [ ] ksqlDB 서버 로그의 `KafkaException` 발생 여부 확인
+- [ ] `ksqldb-server` compose config를 확인한다.
+- [ ] Kafka brokers and Schema Registry dependency 상태를 분리해 기록한다.
+- [ ] query termination 전 query ID, source topic, sink topic, and offset evidence를 확보한다.
 
 ### Steps
 
-1. **쿼리 상태 점검**:
-   CLI에 접속하여 비정상 쿼리를 식별한다.
+1. Compose file과 repo-local 문서 계약을 확인한다.
+
+   ```bash
+   test -f infra/04-data/analytics/ksql/docker-compose.yml
+   bash scripts/validation/check-doc-implementation-alignment.sh
+   ```
+
+2. Server logs and readiness를 확인한다.
+
+   ```bash
+   docker logs ksqldb-server --tail 100
+   curl -fsS http://ksqldb-server:8088/info
+   ```
+
+3. CLI가 필요한 경우 `ksql` profile로 접속한다.
+
+   ```bash
+   docker run --rm --network infra_net confluentinc/cp-ksqldb-cli:8.0.5 ksql http://ksqldb-server:8088
+   ```
+
+4. Query mutation은 evidence 확보 후 수행한다.
 
    ```sql
    SHOW QUERIES;
-   DESCRIBE <QUERY_ID>;
-   ```
-
-2. **서버 상태 확인**:
-
-   ```bash
-   docker compose logs ksqldb-server --tail 50
-   ```
-
-3. **실패한 쿼리 재시작**:
-   문제 있는 쿼리를 종료하고 다시 등록한다. (상태 보존 주의)
-
-   ```sql
-   TERMINATE <QUERY_ID>;
-   -- 기존 CREATE 문 실행
-   ```
-
-4. **연결성 강제 갱신**:
-   Kafka 브로커와의 메타데이터 갱신을 위해 서버를 재시작한다.
-
-   ```bash
-   docker compose restart ksqldb-server
+   EXPLAIN <QUERY_ID>;
    ```
 
 ### Verification Steps
 
-- [ ] `SHOW QUERIES;` 결과 모든 핵심 쿼리가 `RUNNING` 상태인지 확인.
-- [ ] 샘플 데이터를 Kafka에 전송하여 결과 테이블이 즉시 업데이트되는지 확인.
+- [ ] `/info` endpoint succeeds.
+- [ ] required Kafka/Schema Registry dependencies are reachable.
+- [ ] query changes have before/after evidence and owner approval when replay or termination is needed.
 
 ### Observability and Evidence Sources
 
-- **Signals**: Kafka Consumer Lag metrics, ksqlDB `error_rate`.
-- **Evidence to Capture**: `EXPLAIN <QUERY>;` 결과물, ksqlDB 서버 에러 스택트레이스.
+- **Logs**: `ksqldb-server` logs
+- **Metrics**: Kafka consumer lag if the messaging stack exposes it
+- **Evidence**: query ID, source/sink topics, command class, dependency status
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 쿼리 종료 전 `DESCRIBE EXTENDED <SINK_TOPIC>;`를 통해 현재 오프셋 기록.
-- [ ] 데이터 정합성 이슈 시, 오프셋을 특정 시점으로 되돌려 재처리 수행.
+- N/A - no verified generic query rollback is documented for all ksqlDB workloads.
+- Reprocessing or offset replay must be approved per topic/query and recorded separately.
 
 ### Agent Operations (If Applicable)
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: N/A
+- **Eval Re-run**: rerun docs validation after docs-only changes.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- Capture service logs summary, `/info` status, dependency status, and query evidence.
+- Do not mutate topics or offsets without approval.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+N/A - no verified workload-independent rollback procedure exists for ksqlDB query state. Escalate for replay, offset changes, or destructive topic changes.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Escalate when Kafka/Schema Registry is unavailable, query replay is required, consumer lag cannot be explained, or service state diverges from compose evidence.
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
+- [Operations runbooks index](../../../README.md)
 - [Usage guide](../../../guides/04-data/analytics/ksqldb.md)
 - [Operations policy](../../../policies/04-data/analytics/ksqldb.md)

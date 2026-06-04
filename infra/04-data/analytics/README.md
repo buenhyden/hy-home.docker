@@ -45,12 +45,12 @@ analytics/
 
 1. 신규 분석 엔진 추가 시 반드시 **ADR-0015** 기술 선택 기록을 먼저 확인한다.
 2. 각 엔진 구성 변경 시 `infra_net` 보안 규약을 준수한다.
-3. 운영 절차 변경 시 관련 런북(`docs/05.operations/04-data/analytics/`)을 함께 갱신한다.
-4. 모든 비밀번호 및 토큰은 Docker Secrets( `secrets/` )로 관리한다.
+3. 운영 절차 변경 시 관련 guide/policy/runbook(`docs/05.operations/{guides,policies,runbooks}/04-data/analytics/`)을 함께 갱신한다.
+4. Docker Secrets는 compose에 선언된 서비스에서만 current implementation evidence로 취급한다. InfluxDB and OpenSearch declare secrets; ksqlDB and StarRocks do not currently declare Docker Secrets.
 
 ## Related Documents
 
-- **System Guide**: [docs/05.operations/04-data/analytics/](../../../docs/05.operations/guides/04-data/analytics/README.md)
+- **System Guide**: [docs/05.operations/guides/04-data/analytics/](../../../docs/05.operations/guides/04-data/analytics/README.md)
 - **Policies**: [docs/05.operations/policies/04-data/analytics/](../../../docs/05.operations/policies/04-data/analytics/README.md)
 - **Runbooks**: [docs/05.operations/runbooks/04-data/analytics/](../../../docs/05.operations/runbooks/04-data/analytics/README.md)
 

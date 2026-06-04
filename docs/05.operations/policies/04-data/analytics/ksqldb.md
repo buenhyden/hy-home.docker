@@ -5,55 +5,45 @@ status: active
 
 # ksqlDB Operations Policy
 
-> Operational policy for real-time stream processing and lifecycle.
-
----
-
 ## Overview (KR)
 
-이 문서는 ksqlDB 운영 정책을 정의한다. 스트림 및 테이블의 생성 주명 주기, Kafka 컨슈머 오프셋 관리, 그리고 스트림 프로세싱 자원 할당 기준을 규정한다.
+이 문서는 `infra/04-data/analytics/ksql`의 ksqlDB 운영 정책을 정의한다. current implementation은 `ksqldb-server`를 `data` profile로 제공하고, `ksqldb-cli` 및 `ksql-datagen`을 `ksql` profile 보조 서비스로 분리한다.
 
 ## Policy Scope
 
-이 정책은 ksqlDB 서버 클러스터, 스트림 처리 쿼리, 그리고 연관된 Kafka 브로커 인터페이스를 관리한다.
-
-- **Systems**: ksqlDB Server, ksqlDB CLI
-- **Agents**: Stream Logic Optimizers, Event-driven Workflow Agents
-- **Environments**: Production, Staging
+- **Systems**: `ksqldb-server`, `ksqldb-cli`, `ksql-datagen`
+- **Dependencies**: Kafka brokers, Schema Registry, Kafka Connect
+- **Persistence**: `ksqldb-data-volume`
+- **Environments**: repo-local, development, homelab, and production-like rehearsals
 
 ## Controls
 
-- **Required**:
-  - 모든 스트림 처리는 `AUTO_OFFSET_RESET='earliest'`를 기본값으로 하되, 비즈니스 로직에 따라 명시적으로 설정해야 함.
-  - 복잡한 조인(Join) 쿼리는 실행 전 성능 영향을 검토해야 함.
-  - 모든 쿼리는 `EMIT CHANGES`를 사용하여 스트리밍 결과의 무결성을 보장해야 함.
-- **Allowed**:
-  - 임시 디버깅용 스트림 및 테이블 생성 (24시간 이내 삭제 권고).
-  - Schema Registry를 통한 스키마 진화(Evolution).
-- **Disallowed**:
-  - 무한 루프를 유발할 수 있는 자기 참조 쿼리 금지.
-  - 가용한 JVM 메모리의 90%를 초과하는 대규모 쿼리 실행 제안 금지.
+- **Required**: server changes must preserve Kafka bootstrap server, Schema Registry URL, Kafka Connect URL, and `KSQL_HEAP_OPTS` evidence in compose.
+- **Required**: CLI/datagen usage must explicitly enable the `ksql` profile and must not be documented as always-on data services.
+- **Required**: stream query lifecycle changes must capture query ID, source topic, sink topic, and rollback/reprocessing evidence.
+- **Allowed**: temporary debug streams or datagen workloads when the affected topics and cleanup path are documented.
+- **Disallowed**: assuming Docker Secret coverage for ksqlDB because the current compose does not declare secrets.
 
 ## Exceptions
 
-- 재해 복구 또는 데이터 재처리(Reprocessing) 시, 기존 오프셋을 무시하고 특정 시점부터의 재처리를 승인 하에 허용.
+Offset replay, query termination, or datagen workloads that affect shared Kafka topics require owner approval and captured topic/query evidence.
 
 ## Verification
 
-- `LIST QUERIES;`를 통한 실행 중인 쿼리 목록 모니터링.
-- Kafka 컨슈머 그룹 지연(Lag) 상태 실시간 감지.
+- `test -f infra/04-data/analytics/ksql/docker-compose.yml`
+- `curl -fsS http://ksqldb-server:8088/info` when the service is running
+- `bash scripts/validation/check-doc-implementation-alignment.sh`
+- `bash scripts/validation/check-repo-contracts.sh`
 
 ## Review Cadence
 
-- Per release (변경 시마다)
-
-## AI Agent Policy Section
-
-- **Eval / Guardrail Threshold**: 쿼리 복잡도 지수가 임계치를 초과할 경우 실행 전 경고 발생.
-- **Trace Retention**: ksqlDB 처리 로그는 30일간 보관.
+- Per stream topology change
+- On Kafka/Schema Registry/Connect dependency change
+- On ksqlDB image or heap setting change
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
+- [Operations policies index](../../../README.md)
 - [Usage guide](../../../guides/04-data/analytics/ksqldb.md)
 - [Recovery runbook](../../../runbooks/04-data/analytics/ksqldb.md)
+- [Infra README](../../../../../infra/04-data/analytics/ksql/README.md)

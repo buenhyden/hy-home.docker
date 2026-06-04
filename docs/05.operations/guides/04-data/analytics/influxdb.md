@@ -9,17 +9,7 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 InfluxDB 시계열 데이터베이스에 대한 가이드다. 시스템의 아키텍처, V3(Core)와 V2(Legacy)의 차이점, 그리고 Telegraf/Grafana와의 연동 방법을 설명한다. 플랫폼 성능 지표 및 비즈니스 매트릭 수집의 핵심 진입점을 다룬다.
->
-> Comprehensive guide for managing InfluxDB 3.x and 2.x in the hy-home.docker ecosystem.
-
----
-
-### Common Pitfalls
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
+이 문서는 `infra/04-data/analytics/influxdb`의 InfluxDB 사용 가이드다. 현재 primary compose는 InfluxDB 3.x Core이며, `docker-compose.v2.yml`은 InfluxDB 2.x legacy Flux 호환 경로로만 유지된다.
 
 ### Usage Type
 
@@ -29,56 +19,54 @@ status: active
 
 - Developer
 - Operator
-- Agent-tuner
+- AI Agent
 
 ### Purpose
 
-이 가이드는 운영자가 인프라 내 InfluxDB 구성을 이해하고, 개발자가 성능 모니터링 및 분석을 위해 데이터베이스와 상호작용하는 방법을 익히도록 돕는다.
+- InfluxDB primary/legacy compose 경계를 이해한다.
+- API token secret, healthcheck, service port, persistent volume 계약을 확인한다.
+- 장애 대응은 paired runbook으로 넘긴다.
 
 ### Prerequisites
 
-- `infra_net` 네트워크 접근 권한.
-- Docker 및 Docker Compose 설치 완료.
-- `secrets/influxdb_api_token` 내 유효한 API 토큰.
+- `infra/04-data/analytics/influxdb/docker-compose.yml`
+- Docker Secret `influxdb_api_token` and `influxdb_password`
+- `infra_net` access for service-to-service checks
 
 ### Step-by-step Instructions
 
-#### 1. 버전 선택 (Version Selection)
+1. Primary compose contract 위치를 확인한다.
 
-환경은 다음 두 가지 버전을 지원한다:
+   ```bash
+   test -f infra/04-data/analytics/influxdb/docker-compose.yml
+   ```
 
-- **v3 (Core)**: 고성능 및 SQL 지원을 위해 선호됨. `docker-compose.yml` 사용.
-- **v2 (Legacy)**: 기존 Flux 스크립트 호환성을 위해 사용. `docker-compose.v2.yml` 사용.
+2. Primary v3 runtime endpoint를 확인한다.
 
-#### 2. 기본 버킷 관리 (Basic Bucket Management)
+   ```bash
+   curl -i http://influxdb:8181/
+   ```
 
-버킷은 특정 보존 정책을 가진 데이터를 저장하는 단위다.
+   The compose healthcheck accepts HTTP `200`, `204`, or `401` from `/` because token-protected service readiness can still return an auth challenge.
 
-```bash
+3. Legacy v2 path가 필요한 경우에만 `docker-compose.v2.yml`을 선택한다.
 
-## InfluxDB 3.x (via influx3 CLI)
-influx3 bucket create --name my-metrics --retention 90d
-
-## InfluxDB 2.x (via influx CLI)
-influx bucket create -n my-metrics -r 90d
-```
-
-### 3. 검증 및 상태 확인 (Verification & Health Check)
-
-```bash
-## Endpoint: http://influxdb:8181 (v3) or http://influxdb:8086 (v2)
-curl -i http://influxdb:8181/health
-```
+   ```bash
+   test -f infra/04-data/analytics/influxdb/docker-compose.v2.yml
+   ```
 
 ### Common Pitfalls
 
-- **토큰 불일치 (Token Mismatch)**: Telegraf나 k6에서 사용하는 토큰이 Docker Secrets에 저장된 토큰과 일치하는지 확인한다.
-- **포트 충돌 (Port Conflict)**: v3는 `8181`, v2는 `8086`을 기본값으로 사용한다. 애플리케이션 연결 정보를 확인한다.
-- **보존 제약 (Retention Limits)**: 보존 정책 없이 대량의 데이터를 수집할 경우 `${DEFAULT_DATA_DIR}`의 디스크 공간이 고갈될 수 있다.
+- InfluxDB 3.x primary에 InfluxDB 2.x bucket/Flux commands를 그대로 적용하는 경우
+- `/run/secrets/influxdb_api_token` 값을 출력하거나 shell history에 남기는 경우
+- host port가 직접 선언되어 있다고 가정하는 경우
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `test -f infra/04-data/analytics/influxdb/docker-compose.yml`
+- `test -f infra/04-data/analytics/influxdb/docker-compose.v2.yml`
+- `bash scripts/validation/check-doc-implementation-alignment.sh`
+- `bash scripts/validation/check-repo-contracts.sh`
 
 ## Runbook Handoff
 
@@ -86,6 +74,7 @@ curl -i http://influxdb:8181/health
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
+- [Operations guides index](../../../README.md)
 - [Operations policy](../../../policies/04-data/analytics/influxdb.md)
 - [Recovery runbook](../../../runbooks/04-data/analytics/influxdb.md)
+- [Infra README](../../../../../infra/04-data/analytics/influxdb/README.md)

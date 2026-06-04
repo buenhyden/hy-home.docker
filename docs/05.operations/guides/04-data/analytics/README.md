@@ -6,7 +6,7 @@
 
 ## Overview
 
-`guides/04-data/analytics`는 `docs/05.operations`의 guide 문서를 관리합니다. 사용 맥락, 전제 조건, 일반 점검, 관련 runbook handoff를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`guides/04-data/analytics`는 InfluxDB, ksqlDB, OpenSearch, StarRocks guide 문서를 관리합니다. 각 guide는 현재 tracked compose의 service/profile/secret/volume 경계를 설명하고, 반복 복구 절차는 runbook으로 handoff합니다.
 
 ## Audience
 
@@ -51,10 +51,10 @@ guides/04-data/analytics/
 
 | Path | Purpose |
 | --- | --- |
-| [influxdb.md](./influxdb.md) | Influxdb guide 문서 |
-| [ksqldb.md](./ksqldb.md) | Ksqldb guide 문서 |
-| [opensearch.md](./opensearch.md) | Opensearch guide 문서 |
-| [warehouses.md](./warehouses.md) | Warehouses guide 문서 |
+| [influxdb.md](./influxdb.md) | InfluxDB 3.x primary and 2.x legacy compose guide |
+| [ksqldb.md](./ksqldb.md) | ksqlDB server/CLI/datagen profile guide |
+| [opensearch.md](./opensearch.md) | OpenSearch primary stack and optional cluster variant guide |
+| [warehouses.md](./warehouses.md) | StarRocks FE/BE compose guide |
 
 ## Related Documents
 

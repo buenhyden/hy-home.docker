@@ -52,9 +52,9 @@ ksql/
 | Labels | `hy-home.tier` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `ksqldb-server`; not declared for `ksqldb-cli`, `ksql-datagen` |
-| Operations | [Guide index](../../../../docs/05.operations/guides/04-data/README.md) |
+| Operations | [Guide](../../../../docs/05.operations/guides/04-data/analytics/ksqldb.md), [Policy](../../../../docs/05.operations/policies/04-data/analytics/ksqldb.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/analytics/ksqldb.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with linked repository validators and service logs; service-local compose parsing requires root network context or a local validation overlay. |
 
 ## How to Work in This Area
 
@@ -65,12 +65,12 @@ ksql/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect ksqlDB.
+- Run `bash scripts/validation/check-doc-implementation-alignment.sh` after README or Compose reference changes that affect ksqlDB.
 - Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Kafka, network, and environment references render.
+- Start with repository validators and `docker logs ksqldb-server` for runtime evidence. Service-local compose config requires root network context or a local validation overlay.
 - Check ksqlDB logs for broker connectivity or stream startup errors before changing Compose settings.
 
 ## Related Documents

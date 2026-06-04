@@ -6,7 +6,7 @@
 
 ## Overview
 
-`runbooks/04-data/analytics`는 `docs/05.operations`의 runbook 문서를 관리합니다. 트리거 조건, 순서 있는 절차, evidence, rollback/recovery, escalation을 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`runbooks/04-data/analytics`는 InfluxDB, ksqlDB, OpenSearch, StarRocks 장애 대응 절차를 관리합니다. 각 runbook은 current compose service names와 검증 가능한 evidence를 우선 사용하고, 검증되지 않은 rollback/data mutation은 escalation으로 넘깁니다.
 
 ## Audience
 
@@ -51,10 +51,10 @@ runbooks/04-data/analytics/
 
 | Path | Purpose |
 | --- | --- |
-| [influxdb.md](./influxdb.md) | Influxdb runbook 문서 |
-| [ksqldb.md](./ksqldb.md) | Ksqldb runbook 문서 |
-| [opensearch.md](./opensearch.md) | Opensearch runbook 문서 |
-| [warehouses.md](./warehouses.md) | Warehouses runbook 문서 |
+| [influxdb.md](./influxdb.md) | InfluxDB readiness and token mount recovery |
+| [ksqldb.md](./ksqldb.md) | ksqlDB readiness and Kafka dependency recovery |
+| [opensearch.md](./opensearch.md) | OpenSearch HTTPS health and variant recovery |
+| [warehouses.md](./warehouses.md) | StarRocks FE/BE readiness and load boundary recovery |
 
 ## Related Documents
 

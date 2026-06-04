@@ -20,7 +20,7 @@ status: completed
 
 ## Working Rules
 
-- Static compose parsing proves configuration shape only, not runtime health.
+- Static compose parsing proves configuration shape only when the compose file is evaluated with the root network/secret context or a local validation overlay. Direct service-local `docker compose -f infra/04-data/analytics/... config` commands are not accepted as current proof.
 - Do not read secret values or start services.
 - Preserve the existing data analytics spec contract and add traceability only.
 
@@ -30,7 +30,7 @@ status: completed
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | T-DATA-ANA-001 | Add execution plan/task evidence for data analytics | doc | Related Documents | PLN-DATA-ANA-001 | plan/task files created | doc-writer | Done |
 | T-DATA-ANA-002 | Link spec and spec README to execution evidence | doc | Related Documents | PLN-DATA-ANA-002 | spec and README include plan/task links | doc-writer | Done |
-| T-DATA-ANA-003 | Verify analytics compose files parse | test | Verification | PLN-DATA-ANA-003 | four `docker compose ... config` commands exit 0 | doc-writer | Done |
+| T-DATA-ANA-003 | Record analytics compose validation boundary | test | Verification | PLN-DATA-ANA-003 | optional compose paths exist; current docs state root network/secret context requirement | doc-writer | Done |
 | T-DATA-ANA-004 | Expose new evidence from execution indexes | doc | Execution README contract | PLN-DATA-ANA-004 | execution README files link to plan/task | doc-writer | Done |
 
 ## Suggested Types
@@ -50,21 +50,21 @@ status: completed
 
 - [x] T-DATA-ANA-001 Add plan/task evidence
 - [x] T-DATA-ANA-002 Link spec and spec README
-- [x] T-DATA-ANA-003 Verify static compose config
+- [x] T-DATA-ANA-003 Record static compose context boundary
 - [x] T-DATA-ANA-004 Update execution indexes
 
 ## Verification Summary
 
 - **Test Commands**:
-  - PASS: `docker compose -f infra/04-data/analytics/influxdb/docker-compose.yml config >/dev/null`
-  - PASS: `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config >/dev/null`
-  - PASS: `docker compose -f infra/04-data/analytics/opensearch/docker-compose.yml config >/dev/null`
-  - PASS: `docker compose -f infra/04-data/analytics/warehouses/docker-compose.yml config >/dev/null`
+  - PASS: `bash scripts/validation/check-doc-implementation-alignment.sh`
+  - PASS: `bash scripts/validation/check-repo-contracts.sh`
+  - PASS: analytics compose path existence check through linked infra README and operations docs.
+  - Superseded: direct `docker compose -f infra/04-data/analytics/... config` commands require root network/secret context or a local validation overlay and are not used as current proof.
 - **Eval Commands**:
   - Spec link scan: `docs/03.specs/04-data-analytics/spec.md` now has direct plan/task links.
 - **Logs / Evidence Location**:
   - This task document.
-  - Compose config commands exited 0 with local env placeholder warnings for unset values such as `DEFAULT_DATA_DIR` and `DEFAULT_URL`.
+  - Current evidence records the analytics compose boundary and avoids claiming rootless service-local compose parse success.
 
 ## Related Documents
 

@@ -19,9 +19,9 @@
 ### In Scope
 
 - 관측성을 위한 시계열 데이터 영속성
-- Telegraf, k6, Locust 등을 통한 메트릭 수집
-- Grafana를 위한 데이터 소스 제공
-- InfluxDB 버킷 및 보존 정책(Retention Policy) 관리
+- InfluxDB 3.x Core primary compose와 InfluxDB 2.x legacy compose 구분
+- Docker Secret 기반 API token/password mount 확인
+- bind-backed named volume 기반 data/plugin persistence 확인
 
 ### Out of Scope
 
@@ -42,36 +42,36 @@ influxdb/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | InfluxDB (TSDB) service leaf in `04-data`; services: `influxdb`, `influxdb`; local compose only: `docker-compose.v2.yml`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/influxdb/docker-compose.yml` |
+| Purpose | InfluxDB (TSDB) service leaf in `04-data`; primary service: `influxdb`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/influxdb/docker-compose.yml` |
 | Config files | `docker-compose.v2.yml`, `docker-compose.yml` |
-| Config values | env keys: `DOCKER_INFLUXDB_INIT_MODE`, `DOCKER_INFLUXDB_INIT_USERNAME`, `DOCKER_INFLUXDB_INIT_ORG`, `DOCKER_INFLUXDB_INIT_BUCKET`; profiles: `data` |
-| Compose linkage | local compose only: `docker-compose.v2.yml`; root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/influxdb/docker-compose.yml` |
+| Config values | primary profile: `data`; legacy v2 init env keys are only in `docker-compose.v2.yml` |
+| Compose linkage | primary compose root include optional/commented in [root docker-compose.yml](../../../../docker-compose.yml); `docker-compose.v2.yml` is a local legacy variant |
 | Networks | `infra_net` |
 | Volumes | `influxdb-data:/var/lib/influxdb2:rw`, `influxdb-data`, `influxdb-data:/var/lib/influxdb3/data:rw`, `influxdb-plugins:/var/lib/influxdb3/plugins:rw`, `influxdb-plugins` |
-| Ports | Not declared |
+| Ports | No host port declared; Traefik service port `${INFLUXDB_PORT:-8181}` for primary v3 |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.influxdb.rule`, `traefik.http.routers.influxdb.entrypoints`, `traefik.http.routers.influxdb.tls`, `traefik.http.routers.influxdb.middlewares`, `traefik.http.services.influxdb.loadbalancer.server.port` |
 | Secret refs | names: `influxdb_password`, `influxdb_api_token`; mounts: `/run/secrets/influxdb_password`, `/run/secrets/influxdb_api_token` |
-| Healthcheck | Compose healthcheck declared for `influxdb`, `influxdb` |
+| Healthcheck | Primary v3 healthcheck probes `http://127.0.0.1:8181/` and accepts `200`, `204`, or `401`; legacy v2 healthcheck probes `/health` |
 | Operations | [Guide](../../../../docs/05.operations/guides/04-data/analytics/influxdb.md), [Policy](../../../../docs/05.operations/policies/04-data/analytics/influxdb.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/analytics/influxdb.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with linked repository validators and service logs; service-local compose parsing requires root network/secret context or a local validation overlay. |
 
 ## How to Work in This Area
 
 1. 아키텍처 세부 사항은 [InfluxDB 시스템 가이드](../../../../docs/05.operations/guides/04-data/analytics/influxdb.md)를 참조한다.
 2. 데이터 보존 및 보안 규약은 [운영 정책](../../../../docs/05.operations/policies/04-data/analytics/influxdb.md)을 따른다.
 3. 수집 장애 발생 시 [복구 런북](../../../../docs/05.operations/runbooks/04-data/analytics/influxdb.md)을 참조한다.
-4. 모든 API 토큰은 `secrets/influxdb_api_token`에 정의되어야 한다.
+4. API token evidence는 Docker Secret `influxdb_api_token`과 mount path `/run/secrets/influxdb_api_token` 기준으로 확인한다. Secret value는 출력하지 않는다.
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect InfluxDB.
+- Run `bash scripts/validation/check-doc-implementation-alignment.sh` after README or Compose reference changes that affect InfluxDB.
 - Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 
-- Start with `docker compose config` from this service directory to verify the selected InfluxDB variant renders without missing environment, secret, volume, or network references.
-- If writes or dashboards fail, inspect `docker compose logs influxdb` and confirm the expected API token secret path exists before changing retention, bucket, or version settings.
+- Start with repository validators and `docker logs influxdb` for runtime evidence. Service-local compose config requires root network/secret context or a local validation overlay.
+- If writes fail, inspect `docker compose logs influxdb` and confirm the expected API token secret path exists before changing retention, database, or version settings.
 
 ## Related Documents
 

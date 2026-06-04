@@ -6,7 +6,7 @@
 
 ## Overview
 
-`docs/03.specs/04-data-analytics`는 `infra/04-data/analytics`의 InfluxDB, ksqlDB, OpenSearch, StarRocks 엔진 계약을 포함합니다. 현재 구현은 InfluxDB 3.x Core를 primary compose로 사용하고 InfluxDB 2.x compose를 legacy Flux 호환 경로로 유지합니다.
+`docs/03.specs/04-data-analytics`는 `infra/04-data/analytics`의 InfluxDB, ksqlDB, OpenSearch, StarRocks 엔진 계약을 포함합니다. 현재 구현은 InfluxDB 3.x Core를 primary compose로 사용하고 InfluxDB 2.x compose를 legacy Flux 호환 경로로 유지합니다. ksqlDB는 Kafka/Schema Registry/Connect dependency를 가진 optional analytics service이고, OpenSearch는 primary stack과 optional cluster variant를 분리하며, StarRocks는 standalone FE/BE compose로 관리합니다.
 
 ## Audience
 
@@ -22,7 +22,7 @@
 ### In Scope
 
 - 시계열, 스트리밍 SQL, 로그 검색, OLAP 엔진 인터페이스 사양
-- root-commented optional analytics compose의 standalone 실행 계약
+- root-commented optional analytics compose의 integration and validation boundary
 - current compose image/version family와 operations handoff
 
 ### Out of Scope

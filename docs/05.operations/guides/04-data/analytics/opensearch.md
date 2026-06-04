@@ -9,17 +9,7 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 OpenSearch 시스템에 대한 가이드다. 검색 엔진의 구조, API 사용법, Dashboards를 통한 시각화 및 문제 해결 방법을 제공한다.
->
-> Distributed search and analytics engine with Dashboards.
-
----
-
-### Common Pitfalls
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
+이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 사용 가이드다. 현재 primary compose는 `opensearch`와 `opensearch-dashboards`를 제공하며, `docker-compose.cluster.yml`은 optional cluster variant로 별도 검증한다.
 
 ### Usage Type
 
@@ -29,65 +19,50 @@ status: active
 
 - Developer
 - Operator
-- AI Agents
+- Security Reviewer
+- AI Agent
 
 ### Purpose
 
-OpenSearch 클러스터의 아키텍처를 이해하고, 검색 API 및 시각화 도구를 효과적으로 활용하는 것을 돕는다.
+- OpenSearch primary stack과 optional cluster variant를 구분한다.
+- HTTPS, Docker Secrets, Traefik route, Dashboards route를 이해한다.
+- index 작업 전 policy/runbook handoff를 확인한다.
 
 ### Prerequisites
 
-- `hy-home.docker` 인프라 네트워크 (`infra_net`) 지식.
-- Docker Secrets 및 기본 HTTPS 통신 이해.
-- `opensearch-admin_password` 시크릿 접근 권한.
+- Docker Secrets: `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_security_cookie`
+- certificate bind mount under `secrets/certs`
+- `infra/04-data/analytics/opensearch/docker-compose.yml`
 
 ### Step-by-step Instructions
 
-#### 1. API Access (REST)
+1. Primary compose contract 위치를 확인한다.
 
-OpenSearch는 `9200` 포트를 통해 검색 API를 제공한다.
+   ```bash
+   test -f infra/04-data/analytics/opensearch/docker-compose.yml
+   ```
 
-```bash
+2. Cluster health는 HTTPS와 admin secret으로 확인한다.
 
-## 클러스터 헬스 체크
-read -rsp "OpenSearch admin password: " OPENSEARCH_ADMIN_PASSWORD; echo
-curl -X GET "https://opensearch:9200/_cluster/health" -u "admin:${OPENSEARCH_ADMIN_PASSWORD}" --insecure
-unset OPENSEARCH_ADMIN_PASSWORD
-```
+   ```bash
+   read -rsp "OpenSearch admin password: " OPENSEARCH_ADMIN_PASSWORD; echo
+   curl -fsSk -u "admin:${OPENSEARCH_ADMIN_PASSWORD}" "https://opensearch:9200/_cluster/health"
+   unset OPENSEARCH_ADMIN_PASSWORD
+   ```
 
-### 2. Dashboards Usage
-
-데이터 시각화 및 매니지먼트를 위해 Dashboards UI에 접속한다.
-
-- URL: `https://opensearch-dashboard.${DEFAULT_URL}`
-- 기본 계정: `admin`
-
-#### 3. Index Management
-
-매핑 설정 및 인덱스 생성을 수행한다.
-
-```bash
-read -rsp "OpenSearch admin password: " OPENSEARCH_ADMIN_PASSWORD; echo
-curl -X PUT "https://opensearch:9200/my-index" -u "admin:${OPENSEARCH_ADMIN_PASSWORD}" --insecure -H 'Content-Type: application/json' -d'
-{
-  "settings": {
-    "index": {
-      "number_of_shards": 3,
-      "number_of_replicas": 2
-    }
-  }
-}'
-unset OPENSEARCH_ADMIN_PASSWORD
-```
+3. Dashboards route는 `opensearch-dashboard.${DEFAULT_URL}` Traefik host rule을 사용한다.
 
 ### Common Pitfalls
 
-- **Memory Lock Fail**: `bootstrap.memory_lock=true` 설정에도 불구하고 호스트 시스템의 `ulimit` 제한으로 인해 메모리 락이 실패할 수 있다.
-- **Certificate Mismatch**: 커스텀 인증서 적용 시 도메인 이름 불일치로 인한 통신 오류가 발생할 수 있다.
+- primary service name `opensearch`와 cluster variant service names `opensearch-node1..3`을 혼용하는 경우
+- HTTP로 `9200`을 호출하는 경우
+- admin password를 command line literal이나 문서에 남기는 경우
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `test -f infra/04-data/analytics/opensearch/docker-compose.yml`
+- `test -f infra/04-data/analytics/opensearch/docker-compose.cluster.yml`
+- `bash scripts/validation/check-repo-contracts.sh`
 
 ## Runbook Handoff
 
@@ -95,6 +70,7 @@ unset OPENSEARCH_ADMIN_PASSWORD
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
+- [Operations guides index](../../../README.md)
 - [Operations policy](../../../policies/04-data/analytics/opensearch.md)
 - [Recovery runbook](../../../runbooks/04-data/analytics/opensearch.md)
+- [Infra README](../../../../../infra/04-data/analytics/opensearch/README.md)

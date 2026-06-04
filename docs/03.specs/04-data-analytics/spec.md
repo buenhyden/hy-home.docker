@@ -11,7 +11,7 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `04-data/analytics` 티어의 시계열(InfluxDB), 스트림 처리(ksqlDB), 로그 검색(OpenSearch), OLAP 분석(StarRocks) 엔진들의 기술 설계 및 인터페이스 계약을 정의한다. 본 명세는 PRD-2026-03-26-04-data-analytics의 요구사항을 기술적으로 구체화하며, 인프라 계층과의 연동 및 데이터 처리 규약을 설명한다. 현재 root `docker-compose.yml`에서 analytics include는 주석 처리되어 있으므로, 이 명세는 보유 구현과 standalone/root-commented optional 실행 계약을 설명한다.
+이 문서는 `04-data/analytics` 티어의 시계열(InfluxDB), 스트림 처리(ksqlDB), 로그 검색(OpenSearch), OLAP 분석(StarRocks) 엔진들의 기술 설계 및 인터페이스 계약을 정의한다. 본 명세는 PRD-2026-03-26-04-data-analytics의 요구사항을 기술적으로 구체화하며, 인프라 계층과의 연동 및 데이터 처리 규약을 설명한다. 현재 root `docker-compose.yml`에서 일부 analytics include는 주석 처리되어 있으므로, 이 명세는 보유 구현과 optional integration boundary를 설명한다.
 
 ## Strategic Boundaries & Non-goals
 
@@ -27,16 +27,18 @@ status: active
 ## Contracts
 
 - **Infrastructure Contract**:
-  - Analytics compose files are present under `infra/04-data/analytics/`, but analytics includes are root-commented optional entries in the current root compose.
+  - Analytics compose files are present under `infra/04-data/analytics/`, while root compose includes for InfluxDB, ksqlDB, and OpenSearch are currently optional/commented.
+  - StarRocks warehouses compose is standalone and not included by the root compose.
   - 모든 엔진은 `infra_net` 브리지 네트워크에 배치되어야 한다.
-  - 영구 데이터는 `${DEFAULT_DATA_DIR}/analytics/{engine_name}` 경로에 마운트되어야 한다.
+  - 영구 데이터는 bind-backed named volume으로 마운트되며, current compose device paths are service-specific under `${DEFAULT_DATA_DIR}` rather than a shared `analytics/` prefix.
 - **Data / Interface Contract**:
   - InfluxDB: primary InfluxDB 3.x HTTP/Line Protocol + SQL query interface; legacy InfluxDB 2.x compose preserves Flux compatibility.
   - ksqlDB: Kafka Topic 기반의 SQL 스트림 처리 인터페이스.
   - OpenSearch: REST API (Port 9200) 및 Lucene 기반 검색 인터페이스.
   - StarRocks: MySQL Protocol 호환 인터페이스 (Port 9030).
 - **Governance Contract**:
-  - 데이터 보존 기간(Retention Policy)은 각 엔진별 정책 설정 파일에서 중앙 관리한다.
+  - 데이터 보존 기간과 cleanup 기준은 operations policy/runbook에서 관리한다.
+  - Retention is compose-enforced only when the linked service config declares it; otherwise it is an operational control requiring runtime evidence.
 
 ## Core Design
 
@@ -46,8 +48,8 @@ status: active
   - OpenSearch: Logging & full-text search engine.
   - StarRocks: Unified OLAP engine for complex analytical queries.
 - **Key Dependencies**:
-  - `04-data/core` (PostgreSQL): 원본 스냅샷 데이터 소스.
-  - `05-messaging/rabbitmq`, `Kafka`: 실시간 데이터 수집 채널.
+  - `04-data/operational` and `04-data/relational`: 원본 스냅샷/트랜잭션 데이터 소스.
+  - `05-messaging/kafka`: ksqlDB upstream broker, Schema Registry, and Kafka Connect dependency.
 - **Tech Stack**: Docker, InfluxDB 3.x Core primary with InfluxDB 2.x legacy compose, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x.
 
 ## Data Modeling & Storage Strategy
@@ -57,7 +59,8 @@ status: active
   - OpenSearch: 도메인별 인덱스 패턴 (e.g., `logs-*-*`).
   - StarRocks: OLAP 최적화를 위한 Star Schema 또는 Flat Table 모델 권장.
 - **Retention Plan**:
-  - 시계열 및 로그 데이터는 30일(기본) 보존 후 자동 삭제 또는 Cold storage 이동.
+  - 시계열, 로그, stream state, and OLAP data retention targets must be recorded per service before production-like use.
+  - Automatic deletion or cold-storage movement is not assumed unless the current service config declares it.
 
 ## Interfaces & Data Structures
 
@@ -65,25 +68,27 @@ status: active
 
 | Engine | Interface | Primary Data Shape | Persistence Boundary |
 | --- | --- | --- | --- |
-| InfluxDB | HTTP / Line Protocol | time-series measurements, tags, fields | `${DEFAULT_DATA_DIR}/analytics/influxdb` |
-| ksqlDB | Kafka topics + SQL streams | stream/table definitions | Kafka state stores and topic retention |
-| OpenSearch | REST API | index documents and mappings | `${DEFAULT_DATA_DIR}/analytics/opensearch` |
-| StarRocks | MySQL-compatible protocol | OLAP tables and materialized views | `${DEFAULT_DATA_DIR}/analytics/starrocks` |
+| InfluxDB | HTTP / Line Protocol | time-series measurements, tags, fields | `influxdb-data`, `influxdb-plugins` |
+| ksqlDB | Kafka topics + SQL streams | stream/table definitions | `ksqldb-data-volume`, Kafka state stores, topic retention |
+| OpenSearch | HTTPS REST API | index documents and mappings | `opensearch-data`, `opensearch-dashboards-data` |
+| StarRocks | MySQL-compatible protocol | OLAP tables and materialized views | `starrocks-fe-data`, `starrocks-be-data` |
 
 ## Verification
 
 ```bash
 # InfluxDB 3.x primary health check
-curl -f http://influxdb:8181/health
+curl -i http://influxdb:8181/
 
 # InfluxDB 2.x legacy compose health check, only when docker-compose.v2.yml is selected
 curl -f http://influxdb:8086/health
 
-# OpenSearch Status
-curl -f http://opensearch:9200/
+# OpenSearch status requires HTTPS and the admin Docker Secret
+read -rsp "OpenSearch admin password: " OPENSEARCH_ADMIN_PASSWORD; echo
+curl -fsSk -u "admin:${OPENSEARCH_ADMIN_PASSWORD}" https://opensearch:9200/_cluster/health
+unset OPENSEARCH_ADMIN_PASSWORD
 
 # StarRocks Connection test (via MySQL client)
-mysql -h starrocks -P 9030 -u root
+mysql -h starrocks-fe -P 9030 -u root -e "SHOW FRONTENDS;"
 ```
 
 ## Success Criteria & Verification Plan

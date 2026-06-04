@@ -6,7 +6,7 @@
 
 ## Overview
 
-`policies/04-data/analytics`는 `docs/05.operations`의 policy 문서를 관리합니다. 필수/허용/금지 상태, 예외 승인, 검증 기준, 검토 주기를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`policies/04-data/analytics`는 InfluxDB, ksqlDB, OpenSearch, StarRocks 운영 통제를 관리합니다. 각 policy는 current compose가 실제로 선언한 service/profile/secret/volume 경계를 기준으로 Required/Allowed/Disallowed 상태를 정의합니다.
 
 ## Audience
 
@@ -51,10 +51,10 @@ policies/04-data/analytics/
 
 | Path | Purpose |
 | --- | --- |
-| [influxdb.md](./influxdb.md) | Influxdb policy 문서 |
-| [ksqldb.md](./ksqldb.md) | Ksqldb policy 문서 |
-| [opensearch.md](./opensearch.md) | Opensearch policy 문서 |
-| [warehouses.md](./warehouses.md) | Warehouses policy 문서 |
+| [influxdb.md](./influxdb.md) | InfluxDB primary/legacy and secret boundary policy |
+| [ksqldb.md](./ksqldb.md) | ksqlDB dependency and profile boundary policy |
+| [opensearch.md](./opensearch.md) | OpenSearch HTTPS, secret, and variant boundary policy |
+| [warehouses.md](./warehouses.md) | StarRocks FE/BE and load boundary policy |
 
 ## Related Documents
 

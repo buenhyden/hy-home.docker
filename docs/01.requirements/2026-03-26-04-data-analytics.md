@@ -17,7 +17,7 @@ status: active
 
 ## Problem Statement
 
-현재 핵심 데이터(SQL, KV)와 분석용 데이터가 분리되지 않거나, 시계열 및 로그 데이터 처리를 위한 전용 엔진이 부재하여 대규모 데이터 분석 시 성능 저하 및 운영 복잡도가 발생하고 있다.
+현재 구현은 `infra/04-data/analytics` 아래에 InfluxDB, ksqlDB, OpenSearch, StarRocks compose를 보유한다. 이 PRD는 해당 엔진들이 core transactional data와 분리된 optional analytics tier로 유지되어야 하며, root compose에서는 주석 처리된 optional include 또는 standalone compose로 검증된다는 요구사항을 정의한다.
 
 ## Personas
 
@@ -41,19 +41,20 @@ status: active
 
 ## Success Criteria
 
-- **REQ-PRD-MET-01**: InfluxDB 조회 쿼리 P95 응답 속도 200ms 미만 유지.
-- **REQ-PRD-MET-02**: OpenSearch 로그 인덱싱 지연 시간 5초 이내 보장.
-- **REQ-PRD-MET-03**: StarRocks 대규모 조인 쿼리(1억 건 이상) 수행 시간 3초 이내 달성.
+- **REQ-PRD-MET-01**: InfluxDB 3.x Core primary compose와 InfluxDB 2.x legacy compose의 역할이 문서와 compose에서 구분되어야 한다.
+- **REQ-PRD-MET-02**: ksqlDB compose는 Kafka/Schema Registry/Connect 의존성을 명시하고 `data`/`ksql` profile 경계를 유지해야 한다.
+- **REQ-PRD-MET-03**: OpenSearch와 StarRocks 문서는 현재 compose가 증명하는 단일 primary stack, optional cluster variant, FE/BE 구성, secret/volume/healthcheck 경계를 과장 없이 설명해야 한다.
+- **REQ-PRD-MET-04**: live 성능 수치(P95, indexing latency, large join runtime)는 별도 runtime benchmark evidence가 있을 때만 success evidence로 기록한다.
 
 ## Scope and Non-goals
 
-- **In Scope**: InfluxDB, ksqlDB, OpenSearch, StarRocks의 요구사항 및 인터페이스 정의.
+- **In Scope**: InfluxDB, ksqlDB, OpenSearch, StarRocks의 요구사항, 인터페이스, optional compose 실행 경계 정의.
 - **Out of Scope**: 개별 데이터 시각화 도구(Grafana)의 세부 대시보드 설계.
 - **Non-goals**: 실시간 트랜잭션 수반 SQL 데이터 처리 (-> core PostgreSQL 담당).
 
 ## Risks, Dependencies, and Assumptions
 
-- **Dependency**: 모든 분석 엔진은 `infra_net` 및 `${DEFAULT_DATA_DIR}` 환경에 의존함.
+- **Dependency**: 모든 분석 엔진은 `infra_net`, compose profile, bind-backed named volume, 그리고 서비스별 upstream dependency(Kafka, Schema Registry, Docker Secrets 등)에 의존함.
 - **Risk**: 대규모 데이터 유입 시 분석 노드(Storage/Compute)의 리소스 부족 위험.
 - **Assumption**: 원본 데이터는 핵심 데이터 티어 혹은 메시징 티어를 통해 안정적으로 공급됨.
 

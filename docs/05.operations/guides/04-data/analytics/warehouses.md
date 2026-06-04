@@ -9,17 +9,7 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 StarRocks 데이터 웨어하우스 시스템에 대한 가이드다. OLAP 엔진의 구조(FE/BE), SQL 인터페이스 사용법, 대규모 데이터 세트의 실시간 분석 및 시각화 도구 연동 방법을 제공한다.
->
-> High-performance analytical database for real-time analytics.
-
----
-
-### Common Pitfalls
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
+이 문서는 `infra/04-data/analytics/warehouses`의 StarRocks 사용 가이드다. 현재 compose는 `starrocks-fe`와 `starrocks-be` 단일 pair를 제공하고, BE는 FE에 `ALTER SYSTEM ADD BACKEND "starrocks-be:9050"` 명령으로 등록된다.
 
 ### Usage Type
 
@@ -29,69 +19,52 @@ status: active
 
 - Data Engineer
 - Analytics Developer
-- AI Agents
+- Operator
+- AI Agent
 
 ### Purpose
 
-StarRocks의 분산 분석 아키텍처를 이해하고, 대규모 데이터를 초 단위로 분석할 수 있는 SQL 환경을 구축 및 활용하는 것을 돕는다.
+- FE/BE service boundary와 bind-backed named volume을 이해한다.
+- MySQL-compatible port `9030`, FE HTTP port `8030`, BE HTTP port `8040`을 구분한다.
+- verified recovery는 paired runbook으로 넘긴다.
 
 ### Prerequisites
 
-- `hy-home.docker` 인프라 네트워크 (`infra_net`) 지식.
-- MySQL 프로토콜 및 SQL 문법 이해.
-- `DEFAULT_DATA_DIR` 환경 변수 설정 확인.
+- `infra/04-data/analytics/warehouses/docker-compose.yml`
+- MySQL client
+- `infra_net` access
 
 ### Step-by-step Instructions
 
-#### 1. Connection via MySQL Client
+1. Compose contract 위치를 확인한다.
 
-StarRocks는 MySQL 프로토콜과 호환된다.
+   ```bash
+   test -f infra/04-data/analytics/warehouses/docker-compose.yml
+   ```
 
-```bash
+2. FE 상태를 확인한다.
 
-## FE 노드 접속 (기본 포트 9030)
-mysql -u root -h starrocks-fe -P 9030
-```
+   ```bash
+   mysql -u root -h starrocks-fe -P 9030 -e "SHOW FRONTENDS;"
+   ```
 
-### 2. Creating Tables
+3. BE 등록 상태를 확인한다.
 
-StarRocks는 여러 데이터 모델(Duplicate, Aggregate, Primary Key)을 지원한다.
-
-```sql
-CREATE DATABASE demo;
-USE demo;
-
-CREATE TABLE sales (
-    sale_date DATE,
-    product_id INT,
-    amount DECIMAL(10, 2)
-)
-ENGINE=OLAP
-DUPLICATE KEY(sale_date, product_id)
-DISTRIBUTED BY HASH(product_id) BUCKETS 3;
-
-```
-
-#### 3. Data Ingestion (Stream Load)
-
-HTTP API를 사용하여 대량의 데이터를 빠르게 로드한다.
-
-```bash
-curl --location-trusted -u root: \
-    -H "label:sales_load_1" \
-    -H "column_separator:," \
-    -T sales_data.csv \
-    -XPUT http://starrocks-fe:8030/api/demo/sales/_stream_load
-```
+   ```bash
+   mysql -u root -h starrocks-fe -P 9030 -e "SHOW BACKENDS;"
+   ```
 
 ### Common Pitfalls
 
-- **BE Node Alive Status**: BE 노드가 FE에 정상적으로 추가되지 않으면 쿼리가 수행되지 않는다. `SHOW BACKENDS;` 명령어로 상태를 확인해야 한다.
-- **Ulimit Restrictions**: BE 노드는 고성능 처리를 위해 높은 `ulimit` 설정을 요구한다. 컨테이너 내부 또는 호스트에서 조정이 필요하다.
+- service host를 `starrocks`로 가정하는 경우
+- compose에 없는 Prometheus exporter를 current implementation으로 문서화하는 경우
+- BE registration command를 실행 절차 없이 수동 반복하여 duplicate backend state를 만드는 경우
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `test -f infra/04-data/analytics/warehouses/docker-compose.yml`
+- `bash scripts/validation/check-doc-implementation-alignment.sh`
+- `bash scripts/validation/check-repo-contracts.sh`
 
 ## Runbook Handoff
 
@@ -99,6 +72,7 @@ curl --location-trusted -u root: \
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
+- [Operations guides index](../../../README.md)
 - [Operations policy](../../../policies/04-data/analytics/warehouses.md)
 - [Recovery runbook](../../../runbooks/04-data/analytics/warehouses.md)
+- [Infra README](../../../../../infra/04-data/analytics/warehouses/README.md)

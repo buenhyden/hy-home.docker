@@ -3,110 +3,111 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/04-data/analytics/opensearch.md -->
 
-# OpenSearch Runbook
-
-## Overview (KR)
-
-이 런북은 OpenSearch 클러스터 장애, 샤드 불균형, 검색 지연 및 색인 실패 상황에 대한 대응 절차를 정의한다. 데이터 손실 없이 클러스터 상태(Yellow/Red)를 정상화하기 위한 단계를 제공한다.
+# OpenSearch Recovery Runbook
 
 ## OpenSearch Recovery Procedure
 
-> Scope: OpenSearch Cluster & Index Recovery
+> Scope: OpenSearch primary stack readiness, HTTPS health checks, and optional cluster variant evidence.
 
----
+### Overview (KR)
+
+이 런북은 OpenSearch primary stack 또는 optional cluster variant의 health/readiness 문제가 있을 때 사용한다. Primary stack은 `opensearch`; cluster variant는 `opensearch-node1..3` service names를 사용한다.
 
 ### Purpose
 
-검색 서비스의 다운타임을 줄이고, 분산 환경에서의 데이터 무결성을 유지하며 클러스터를 정상 상태로 복구하는 것을 목적으로 한다.
+- HTTPS와 Docker Secret 기반 healthcheck를 사용한다.
+- primary stack과 cluster variant를 혼동하지 않는다.
+- index/shard 작업 전 snapshot or escalation evidence를 확보한다.
 
 ### Canonical References
 
-- [../../../../02.architecture/requirements/0012-data-analytics-architecture.md](../../../../02.architecture/requirements/0012-data-analytics-architecture.md)
-- [../../../guides/04-data/analytics/opensearch.md](../../../guides/04-data/analytics/opensearch.md)
-- [../../../policies/04-data/analytics/opensearch.md](../../../policies/04-data/analytics/opensearch.md)
+- **Spec**: [Analytics spec](../../../../03.specs/04-data-analytics/spec.md)
+- **Policy**: [OpenSearch policy](../../../policies/04-data/analytics/opensearch.md)
+- **Guide**: [OpenSearch guide](../../../guides/04-data/analytics/opensearch.md)
 
 ## When to Use
 
-- 클러스터 상태가 `Red` (데이터 일부 소실 가능성) 또는 `Yellow` (복제본 불완전)일 때.
-- 인덱싱 속도가 급격히 느려지거나 대량의 429(Too Many Requests) 에러 발생 시.
-- 특정 데이터 노드가 응답하지 않을 때.
+- primary `opensearch` healthcheck fails
+- Dashboards cannot connect to OpenSearch
+- optional cluster variant has unhealthy node or shard allocation issues
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 클러스터 헬스 API 호출 (`_cluster/health`)
-- [ ] 미할당 샤드(Unassigned Shards) 목록 확인
-- [ ] 각 노드의 디스크 잔여 용량 및 메모리(JVM) 상태 확인
+- [ ] primary compose or cluster compose selection is recorded.
+- [ ] admin password is read securely and not persisted.
+- [ ] index or shard mutation requires owner approval.
 
 ### Steps
 
-1. **클러스터 상태 진단**:
+1. Primary compose file과 repo-local 문서 계약을 확인한다.
+
+   ```bash
+   test -f infra/04-data/analytics/opensearch/docker-compose.yml
+   bash scripts/validation/check-doc-implementation-alignment.sh
+   ```
+
+2. Primary health를 HTTPS로 확인한다.
 
    ```bash
    read -rsp "OpenSearch admin password: " OPENSEARCH_ADMIN_PASSWORD; echo
-   curl -X GET "https://opensearch:9200/_cluster/health?pretty" --insecure -u "admin:${OPENSEARCH_ADMIN_PASSWORD}"
+   curl -fsSk -u "admin:${OPENSEARCH_ADMIN_PASSWORD}" "https://opensearch:9200/_cluster/health?pretty"
    unset OPENSEARCH_ADMIN_PASSWORD
    ```
 
-2. **미할당 샤드 원인 파악**:
+3. Logs를 확인한다.
 
    ```bash
-   read -rsp "OpenSearch admin password: " OPENSEARCH_ADMIN_PASSWORD; echo
-   curl -X GET "https://opensearch:9200/_cluster/allocation/explain?pretty" --insecure -u "admin:${OPENSEARCH_ADMIN_PASSWORD}"
-   unset OPENSEARCH_ADMIN_PASSWORD
+   docker logs opensearch --tail 100
+   docker logs opensearch-dashboards --tail 100
    ```
 
-3. **노드 강제 동기화**:
-   중단된 노드를 재시작하고 샤드 재배치를 기다린다.
+4. Optional cluster variant는 별도 compose로 확인한다.
 
    ```bash
-   docker compose restart opensearch
+   test -f infra/04-data/analytics/opensearch/docker-compose.cluster.yml
    ```
-
-4. **샤드 수동 재배치 (필요 시)**:
-   특정 노드에 샤드가 몰린 경우 수동으로 이동 명령을 수행한다.
 
 ### Verification Steps
 
-- [ ] 클러스터 상태가 `Green`으로 복구되었는지 확인.
-- [ ] `_cat/shards` 명령어로 모든 샤드가 `STARTED` 상태인지 확인.
+- [ ] health endpoint returns at least yellow status for primary stack.
+- [ ] Dashboards health endpoint returns `200` or `401` as accepted by compose healthcheck.
+- [ ] final evidence states whether primary or cluster variant was inspected.
 
 ### Observability and Evidence Sources
 
-- **Signals**: OpenSearch `cluster_status`, `indexing_latency`, `search_latency`.
-- **Evidence to Capture**: `_cluster/state` 결과물, 노드 에러 로그.
+- **Logs**: OpenSearch and Dashboards compose logs
+- **Metrics**: N/A unless a separate exporter is running
+- **Evidence**: health response, compose file selected, service logs summary, secret boundary confirmation
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 데이터 소실 위험 시, 기존 인덱스의 스냅샷(Snapshot) 존재 여부 확인.
-- [ ] 대규모 샤드 이동 작업 전 `cluster.routing.allocation.enable`을 `none`으로 설정하여 폭주 방지.
+- N/A - no verified index/shard rollback procedure is documented here.
+- Snapshot, shard routing, or security config changes must escalate before execution.
 
 ### Agent Operations (If Applicable)
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: stop if secret values appear in output.
+- **Eval Re-run**: rerun docs validation after docs-only changes.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- Capture compose file, service names, health status, log summary, and escalation decision.
+- Do not capture password values.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+N/A - no verified generic rollback procedure can restore OpenSearch index or security state from this runbook. Use approved snapshot/security recovery evidence if mutation is required.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Escalate when health remains red/unavailable, shard mutation is needed, secrets or certs are missing, or primary and cluster variant evidence conflict.
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
+- [Operations runbooks index](../../../README.md)
 - [Usage guide](../../../guides/04-data/analytics/opensearch.md)
 - [Operations policy](../../../policies/04-data/analytics/opensearch.md)

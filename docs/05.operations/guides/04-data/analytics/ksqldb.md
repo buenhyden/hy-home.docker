@@ -9,11 +9,7 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 ksqlDB 스트리밍 SQL 엔진에 대한 가이드다. Kafka 스트림과 테이블의 개념, CLI 사용법, 그리고 데이터 생성 패턴을 설명한다. 실시간 데이터 분석 및 변환을 위한 스트림 처리 애플리케이션 구축의 핵심 지침을 제공한다.
->
-> Usage for real-time stream processing with ksqlDB in the hy-home.docker ecosystem.
-
----
+이 문서는 `infra/04-data/analytics/ksql`의 ksqlDB 사용 가이드다. 현재 compose는 `ksqldb-server`를 `data` profile로 실행하고, `ksqldb-cli`와 `ksql-datagen`은 `ksql` profile의 보조 job/tooling service로 유지한다.
 
 ### Usage Type
 
@@ -23,65 +19,53 @@ status: active
 
 - Developer
 - Operator
-- Architect
+- Data Engineer
+- AI Agent
 
 ### Purpose
 
-이 가이드는 사용자가 SQL을 사용하여 Kafka 스트림 위에 실시간 분석 애플리케이션을 구축하도록 돕는다.
+- ksqlDB server, CLI, datagen profile boundary를 이해한다.
+- Kafka, Schema Registry, Kafka Connect dependency를 확인한다.
+- stream/table SQL examples를 runtime 절차와 분리한다.
 
 ### Prerequisites
 
-- 정상 작동하는 Kafka 클러스터 (`kafka-1:19092` 접근 가능).
-- 정상 작동하는 Schema Registry (`schema-registry:8081` 접근 가능).
-- Docker Compose의 `data` 프로필 활성화.
+- Kafka brokers `kafka-1`, `kafka-2`, `kafka-3`
+- Schema Registry service `schema-registry`
+- Optional Kafka Connect service `kafka-connect`
+- `infra/04-data/analytics/ksql/docker-compose.yml`
 
 ### Step-by-step Instructions
 
-#### 1. ksqlDB CLI 연결 (Connecting to ksqlDB CLI)
+1. Compose contract 위치를 확인한다.
 
-대화형 CLI를 사용하여 스트림 프로세서에 대해 SQL 쿼리를 실행한다.
+   ```bash
+   test -f infra/04-data/analytics/ksql/docker-compose.yml
+   ```
 
-```bash
-docker compose --profile ksql run --rm ksqldb-cli ksql http://ksqldb-server:8088
-```
+2. Server readiness endpoint를 확인한다.
 
-#### 2. 스트림 생성 (Creating a Stream)
+   ```bash
+   curl -fsS http://ksqldb-server:8088/info
+   ```
 
-기존 Kafka 토픽에 대해 스키마를 정의한다.
+3. CLI profile은 server가 healthy일 때만 실행한다.
 
-```sql
-CREATE STREAM events (
-  id VARCHAR,
-  val INT,
-  timestamp BIGINT
-) WITH (
-  KAFKA_TOPIC='events',
-  VALUE_FORMAT='JSON',
-  TIMESTAMP='timestamp'
-);
-```
-
-#### 3. 실체화된 테이블 생성 (Creating a Materialized Table)
-
-스트림 데이터를 상태가 있는 쿼리 가능한 테이블로 집계한다.
-
-```sql
-CREATE TABLE event_counts AS
-  SELECT id, COUNT(*) AS total
-  FROM events
-  GROUP BY id
-  EMIT CHANGES;
-```
+   ```bash
+   docker compose --profile ksql run --rm ksqldb-cli ksql http://ksqldb-server:8088
+   ```
 
 ### Common Pitfalls
 
-- **직렬화 불일치 (Serialization Mismatch)**: `VALUE_FORMAT`이 Kafka의 실제 데이터와 일치하는지 확인한다.
-- **컨슈머 그룹 지연 (Consumer Group Lag)**: 에러 확인을 위해 `KSQL_KSQL_LOGGING_PROCESSING_TOPIC`을 모니터링한다.
-- **자원 고갈 (Resource Exhaustion)**: ksqlDB는 상당한 메모리를 소비하므로 JVM Heap을 면밀히 모니터링한다.
+- `ksqldb-cli`와 `ksql-datagen`을 항상 실행되는 data service로 오해하는 경우
+- Schema Registry 또는 Kafka Connect 없이 stream query failure를 ksqlDB 단독 장애로 판단하는 경우
+- ksqlDB compose가 Docker Secrets를 선언한다고 가정하는 경우
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `test -f infra/04-data/analytics/ksql/docker-compose.yml`
+- `bash scripts/validation/check-doc-implementation-alignment.sh`
+- `bash scripts/validation/check-repo-contracts.sh`
 
 ## Runbook Handoff
 
@@ -89,6 +73,7 @@ CREATE TABLE event_counts AS
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
+- [Operations guides index](../../../README.md)
 - [Operations policy](../../../policies/04-data/analytics/ksqldb.md)
 - [Recovery runbook](../../../runbooks/04-data/analytics/ksqldb.md)
+- [Infra README](../../../../../infra/04-data/analytics/ksql/README.md)

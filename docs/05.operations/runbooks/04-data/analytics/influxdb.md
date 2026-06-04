@@ -3,108 +3,110 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/04-data/analytics/influxdb.md -->
 
-# InfluxDB Runbook
-
-## Overview (KR)
-
-이 런북은 InfluxDB의 수집 장애, 성능 저하 및 노드 중단 시의 실행 절차를 정의한다. 운영자가 즉시 따라 할 수 있는 복구 단계와 검증 기준을 제공한다.
+# InfluxDB Recovery Runbook
 
 ## InfluxDB Recovery Procedure
 
-> Scope: InfluxDB Performance & Ingestion Recovery
+> Scope: InfluxDB service readiness, token mount verification, and primary/legacy compose selection.
 
----
+### Overview (KR)
+
+이 런북은 InfluxDB primary v3 service가 unhealthy이거나 token mount/readiness 문제가 의심될 때 사용한다. Legacy v2 절차는 `docker-compose.v2.yml`을 명시한 경우에만 적용한다.
 
 ### Purpose
 
-지표 수집 누락을 최소화하고, InfluxDB 서비스의 가용성을 즉각적으로 복구하는 것을 목적으로 한다.
+- InfluxDB variant mismatch를 방지한다.
+- secret value를 노출하지 않고 token mount와 health 상태를 확인한다.
+- cleanup or retention changes를 escalation 없이 임의 수행하지 않도록 한다.
 
 ### Canonical References
 
-- [../../../../02.architecture/requirements/0012-data-analytics-architecture.md](../../../../02.architecture/requirements/0012-data-analytics-architecture.md)
-- [../../../guides/04-data/analytics/influxdb.md](../../../guides/04-data/analytics/influxdb.md)
-- [../../../policies/04-data/analytics/influxdb.md](../../../policies/04-data/analytics/influxdb.md)
+- **Spec**: [Analytics spec](../../../../03.specs/04-data-analytics/spec.md)
+- **Policy**: [InfluxDB policy](../../../policies/04-data/analytics/influxdb.md)
+- **Guide**: [InfluxDB guide](../../../guides/04-data/analytics/influxdb.md)
 
 ## When to Use
 
-- InfluxDB 헬스 체크(`8181/health`) 실패 시.
-- Telegraf 또는 애플리케이션에서 `401 Unauthorized` 또는 `503 Service Unavailable` 노출 시.
-- 디스크 사용량 임계치(80%) 초과 경보 발생 시.
+- `influxdb` container healthcheck가 실패할 때
+- token mount가 누락되었거나 write/read request가 `401` 또는 service unavailable 상태를 보일 때
+- primary v3와 legacy v2 compose 선택이 불명확할 때
 
 ## Procedure
 
 ### Checklist
 
-- [ ] Docker 컨테이너 상태 확인 (`influxdb`)
-- [ ] API Token 유효성 및 Secrets 마운트 확인
-- [ ] 볼륨 마운트 지점의 디스크 잔여 용량 확인
+- [ ] 선택한 compose file이 `docker-compose.yml`인지 `docker-compose.v2.yml`인지 기록한다.
+- [ ] Docker Secret mount paths만 확인하고 secret value는 출력하지 않는다.
+- [ ] volume cleanup이나 retention 변경이 필요한 경우 owner approval을 확보한다.
 
 ### Steps
 
-1. **서비스 요상 확인**:
+1. Compose file과 repo-local 문서 계약을 확인한다.
 
    ```bash
-   docker compose ps influxdb
+   test -f infra/04-data/analytics/influxdb/docker-compose.yml
+   bash scripts/validation/check-doc-implementation-alignment.sh
+   ```
+
+2. Runtime container 상태를 확인한다.
+
+   ```bash
+   docker ps --filter name=influxdb
    docker logs influxdb --tail 100
    ```
 
-2. **토큰 검증**:
-   토큰 파일 존재와 mount 상태를 확인한다. 토큰 값은 출력하거나 command history에 남기지 않는다.
+3. Secret mount 존재만 확인한다.
 
    ```bash
-   docker compose exec influxdb test -r /run/secrets/influxdb_api_token
-   curl -i http://influxdb:8181/health
+   docker exec influxdb test -r /run/secrets/influxdb_api_token
    ```
 
-3. **강제 재시작 (필요 시)**:
+4. Primary v3 readiness endpoint를 확인한다.
 
    ```bash
-   docker compose restart influxdb
+   curl -i http://influxdb:8181/
    ```
-
-4. **데이터 정리 (디스크 고갈 시)**:
-   보존 정책이 짧은 버킷의 데이터를 수동으로 삭제하거나 보존 기간을 조정한다.
 
 ### Verification Steps
 
-- [ ] `curl -i http://influxdb:8181/health` 결과가 `200 OK`인지 확인.
-- [ ] Grafana 대시보드에서 최신 데이터가 업데이트되는지 확인.
+- [ ] compose file exists and docs implementation alignment passes.
+- [ ] primary v3 endpoint returns `200`, `204`, or `401` as accepted by compose healthcheck.
+- [ ] final evidence records compose file, container state, and whether escalation was needed.
 
 ### Observability and Evidence Sources
 
-- **Signals**: Prometheus `influxdb_up`, `influxdb_http_request_duration_seconds`.
-- **Evidence to Capture**: `docker logs influxdb` 출력 결과, `influx bucket list` 결과.
+- **Logs**: `docker compose ... logs influxdb --tail 100`
+- **Metrics**: N/A - no metrics endpoint is declared in the InfluxDB compose.
+- **Evidence**: compose file selected, health response code, secret mount existence, volume pressure summary
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 설정 변경 전 `docker-compose.yml` 백업.
-- [ ] 데이터 유실 우려 시, 기존 데이터를 다른 경로로 복사 후 작업 수행.
+- N/A - no verified data rollback procedure is documented for InfluxDB cleanup in this repository.
+- Restarting `influxdb` is allowed only after preserving logs and selected compose evidence.
+- Data deletion or retention changes must escalate unless backup/owner approval exists.
 
 ### Agent Operations (If Applicable)
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: stop if command output exposes secret values.
+- **Eval Re-run**: rerun documentation validation after docs-only changes.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- Record compose file, health response code, secret mount existence check, log summary, and final action.
+- Do not record secret values.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+N/A - no verified rollback procedure can restore deleted InfluxDB data from this runbook. Use backup evidence and owner-approved recovery if data mutation is required.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Escalate when secret mounts are missing, health does not match accepted response codes, disk pressure requires cleanup, or the observed service variant differs from the selected compose file.
 
 ## Related Documents
 
-- [Operations index](../../../README.md)
+- [Operations runbooks index](../../../README.md)
 - [Usage guide](../../../guides/04-data/analytics/influxdb.md)
 - [Operations policy](../../../policies/04-data/analytics/influxdb.md)

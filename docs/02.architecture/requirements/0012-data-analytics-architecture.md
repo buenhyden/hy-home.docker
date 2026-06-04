@@ -42,10 +42,12 @@ status: active
 
 - **Performance**: 대량 기록 시에도 조회 지연이 일정하게 유지되어야 함 (LSM 트리 기반 엔진 활용).
 - **Scalability**: 데이터량 및 쿼리 부하에 따라 별도의 FE/BE 노드 확장 가능성 보장 (StarRocks 등).
-- **Observability**: 모든 서비스는 `/metrics` 엔드포인트를 통해 상태 추적 가능.
+- **Observability**: 현재 compose가 선언한 healthcheck, service logs, Traefik route, and linked operations runbook evidence를 우선 사용한다. `/metrics` endpoint는 서비스별 compose에 선언된 경우에만 current implementation evidence로 취급한다.
 - **Reliability**: 분석 시스템의 장애가 핵심 데이터 티어(SQL)의 서비스 가용성에 영향을 주지 않는 완전 격리 보장.
 
 ## System Overview & Context
+
+현재 tracked compose는 analytics engines and endpoints를 제공한다. Kafka-to-engine ingestion, CDC fan-out, dashboard datasets, and StarRocks load workflows are application or workflow concerns and are not wired as automatic data pipelines in the analytics compose files.
 
 ```mermaid
 graph LR
@@ -65,17 +67,17 @@ graph LR
         SR_BE[StarRocks BackEnd]
     end
 
-    KAFKA --> KSQL
-    KSQL --> SR_BE
-    PG -- CDC --> KAFKA
-    KAFKA --> OS
-    KAFKA --> INFLUX
+    KAFKA -. "declared dependency" .-> KSQL
+    PG -. "application/workflow source" .-> KAFKA
+    KAFKA -. "external ingestion job required" .-> OS
+    KAFKA -. "external ingestion job required" .-> INFLUX
+    KSQL -. "external load job required" .-> SR_BE
     SR_FE --- SR_BE
 ```
 
 ## Data Architecture
 
-- **Ingestion**: 메시징 티어(Kafka)를 허브로 하는 Event-driven 수집 아키텍처.
+- **Ingestion**: 현재 compose는 ingestion endpoints and dependencies를 제공한다. Kafka CDC, OpenSearch indexing, InfluxDB writes, and StarRocks load jobs require separate producer/workflow evidence.
 - **Storage Strategy**:
   - InfluxDB: 3.x Core primary data/plugin volumes; 2.x TSM path remains a legacy compose option.
   - OpenSearch: 루씬(Lucene) 인덱스 분산 저장.
@@ -86,9 +88,10 @@ graph LR
 
 - **Networking**: `infra_net` 내부 통신만 허용하며, 외부 접근은 Gateway Tier의 Reverse Proxy를 통해서만 가능.
 - **Storage Bindings**:
-  - `${DEFAULT_DATA_DIR}/analytics/<target>/data` 경로에 데이터 물리 저장.
-  - 고성능 디스크(NVMe) 활용 권장.
-- **Config Management**: Docker Secrets 및 환경 변수를 통한 설정 주입.
+  - InfluxDB, ksqlDB, OpenSearch, OpenSearch Dashboards, StarRocks FE/BE는 bind-backed named volume을 사용한다.
+  - 현재 compose의 device paths는 `${DEFAULT_DATA_DIR}/influxdb`, `${DEFAULT_DATA_DIR}/ksql`, `${DEFAULT_DATA_DIR}/opensearch`, `${DEFAULT_DATA_DIR}/starrocks` 계열이다.
+  - 고성능 디스크(NVMe) 활용은 권장 사항이며, 성능 수치의 완료 증거는 별도 benchmark evidence가 필요하다.
+- **Config Management**: Docker Secrets and environment variables are used where declared by each compose file. ksqlDB and StarRocks do not currently declare Docker Secrets.
 
 ## Infrastructure & Deployment
 

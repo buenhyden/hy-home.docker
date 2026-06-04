@@ -20,8 +20,8 @@
 
 - StarRocks Frontend (FE) 및 Backend (BE) 노드 구성
 - 데이터 및 메타데이터를 위한 로컬 볼륨 영속성
-- Prometheus Exporter를 통한 헬스 모니터링
-- 클러스터 확장 및 기본 엔진 설정
+- Compose healthcheck를 통한 FE/BE 생존 확인
+- 단일 FE/BE pair와 BE auto-registration command 확인
 
 ### Out of Scope
 
@@ -33,8 +33,6 @@
 
 ```text
 warehouses/
-├── fe/                 # Frontend metadata and configuration
-├── be/                 # Backend storage and computation
 ├── docker-compose.yml  # Standard StarRocks stack
 └── README.md           # This file
 ```
@@ -55,7 +53,7 @@ warehouses/
 | Healthcheck | Compose healthcheck declared for `starrocks-fe`, `starrocks-be` |
 | Operations | [Guide](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md), [Policy](../../../../docs/05.operations/policies/04-data/analytics/warehouses.md), [Runbook](../../../../docs/05.operations/runbooks/04-data/analytics/warehouses.md) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with linked repository validators and service logs; service-local compose parsing requires root network context or a local validation overlay. |
 
 ## How to Work in This Area
 
@@ -65,12 +63,12 @@ warehouses/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect warehouse services.
+- Run `bash scripts/validation/check-doc-implementation-alignment.sh` after README or Compose reference changes that affect warehouse services.
 - Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm warehouse service networks, ports, and volume references render.
+- Start with repository validators and Docker logs for runtime evidence. Service-local compose config requires root network context or a local validation overlay.
 - Check warehouse container logs and the linked runbook before changing retention or persistence settings.
 
 ## Related Documents
@@ -78,7 +76,7 @@ warehouses/
 - **System Guide**: [docs/05.operations/04-data/analytics/warehouses.md](../../../../docs/05.operations/guides/04-data/analytics/warehouses.md)
 - **Policy**: [docs/05.operations/policies/04-data/analytics/warehouses.md](../../../../docs/05.operations/policies/04-data/analytics/warehouses.md)
 - **Runbook**: [docs/05.operations/runbooks/04-data/analytics/warehouses.md](../../../../docs/05.operations/runbooks/04-data/analytics/warehouses.md)
-- **Monitoring**: `starrocks-fe:8030/metrics`
+- **Health**: FE/BE healthchecks in `docker-compose.yml`
 
 ## AI Agent Guidance
 

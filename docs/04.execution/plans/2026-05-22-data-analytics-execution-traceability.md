@@ -19,7 +19,7 @@ status: completed
 
 - **Goals**:
   - `DATA-ANA-TRACE-001`: data analytics spec에서 execution plan/task로 이어지는 traceability를 복구한다.
-  - `DATA-ANA-TRACE-002`: analytics compose files의 static config 가능 여부를 확인한다.
+  - `DATA-ANA-TRACE-002`: analytics compose files의 current validation boundary를 기록한다.
   - `DATA-ANA-TRACE-003`: parent README index에서 새 evidence를 발견 가능하게 한다.
 - **In Scope**:
   - `docs/03.specs/04-data-analytics/spec.md`
@@ -44,17 +44,17 @@ status: completed
 | --- | --- | --- | --- | --- |
 | PLN-DATA-ANA-001 | Add data analytics execution plan/task evidence | `docs/04.execution/plans`, `docs/04.execution/tasks` | DATA-ANA-TRACE-001 | plan/task files exist and link to spec |
 | PLN-DATA-ANA-002 | Link spec and README to execution evidence | `docs/03.specs/04-data-analytics/*` | DATA-ANA-TRACE-001 | Related Documents include plan/task links |
-| PLN-DATA-ANA-003 | Verify analytics compose static config | `infra/04-data/analytics/**/docker-compose.yml` | DATA-ANA-TRACE-002 | `docker compose ... config` exits 0 for four analytics compose files |
+| PLN-DATA-ANA-003 | Record analytics compose validation boundary | `infra/04-data/analytics/**/docker-compose.yml` | DATA-ANA-TRACE-002 | optional analytics compose files are present and linked; service-local compose parsing requires root network/secret context or a local validation overlay |
 | PLN-DATA-ANA-004 | Update execution indexes | execution README files | DATA-ANA-TRACE-003 | parent READMEs expose new evidence |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-DATA-ANA-001 | Static Compose | InfluxDB compose parses | `docker compose -f infra/04-data/analytics/influxdb/docker-compose.yml config >/dev/null` | exit code 0 |
-| VAL-DATA-ANA-002 | Static Compose | ksqlDB compose parses | `docker compose -f infra/04-data/analytics/ksql/docker-compose.yml config >/dev/null` | exit code 0 |
-| VAL-DATA-ANA-003 | Static Compose | OpenSearch compose parses | `docker compose -f infra/04-data/analytics/opensearch/docker-compose.yml config >/dev/null` | exit code 0 |
-| VAL-DATA-ANA-004 | Static Compose | Warehouses compose parses | `docker compose -f infra/04-data/analytics/warehouses/docker-compose.yml config >/dev/null` | exit code 0 |
+| VAL-DATA-ANA-001 | Repository Contract | Active docs align to analytics infra paths | `bash scripts/validation/check-doc-implementation-alignment.sh` | failures=0 |
+| VAL-DATA-ANA-002 | Repository Contract | Operations/profile contracts pass | `bash scripts/validation/check-repo-contracts.sh` | failures=0 |
+| VAL-DATA-ANA-003 | Compose Boundary | Analytics optional service compose files exist | file existence plus infra README evidence | all four service compose paths exist |
+| VAL-DATA-ANA-004 | Compose Boundary | Service-local compose parsing context recorded | docs state root network/secret context or local overlay is required | no direct `docker compose -f infra/04-data/analytics/... config` claim remains |
 | VAL-DATA-ANA-005 | Docs Contract | Repository docs contract passes | `bash scripts/validation/check-repo-contracts.sh` | failures=0 |
 | VAL-DATA-ANA-006 | Traceability | Doc traceability passes | `bash scripts/validation/check-doc-traceability.sh` | failures=0 |
 
@@ -68,7 +68,7 @@ status: completed
 
 ## Agent Rollout & Evaluation Gates (If Applicable)
 
-- **Offline Eval Gate**: static compose config checks and repository validators.
+- **Offline Eval Gate**: repository validators and explicit analytics compose boundary documentation.
 - **Sandbox / Canary Rollout**: documentation-only traceability closure.
 - **Human Approval Gate**: active goal requests implementation of unimplemented spec/plan/task gaps.
 - **Rollback Trigger**: revert this traceability closure if docs validators cannot pass without changing runtime behavior.
@@ -78,7 +78,7 @@ status: completed
 
 - [x] Data analytics execution plan/task evidence exists.
 - [x] Data analytics spec and README link to the new execution evidence.
-- [x] Static compose config checks pass for analytics services.
+- [x] Analytics compose boundary is documented without treating service-local compose files as rootless standalone proof.
 - [x] Parent execution READMEs expose the new plan/task.
 
 ## Related Documents
