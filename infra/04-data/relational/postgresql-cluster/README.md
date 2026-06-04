@@ -47,7 +47,7 @@ postgresql-cluster/
 ├── init-scripts/
 │   └── init_users_dbs.sql    # 초기 데이터베이스 및 사용자 생성 스크립트
 ├── scripts/
-│   └── spilo-entrypoint.sh   # Spilo 엔트리포인트 래퍼
+│   └── spilo-entrypoint-with-secrets.sh # Secret-aware Spilo entrypoint
 ├── docker-compose.yml        # 클러스터 오케스트레이션 정의
 └── README.md                 # This file
 ```
@@ -73,7 +73,7 @@ postgresql-cluster/
 ## How to Work in This Area
 
 1. 클러스터 아키텍처 및 연결 방법은 [Technical Guide](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)를 먼저 확인합니다.
-2. 로컬 테스트를 위해 `docker compose up -d`를 실행한 후 `patronictl list`로 상태를 모니터링합니다.
+2. 루트 compose include 상태를 확인하고 `docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config`로 렌더링합니다.
 3. 운영 변경 사항은 반드시 [Operations Policy](../../../../docs/05.operations/policies/04-data/relational/postgresql-cluster.md) 준수 여부를 확인합니다.
 4. 장애 대응 절차는 [Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md)를 참조합니다.
 
@@ -81,9 +81,9 @@ postgresql-cluster/
 
 | Command                               | Description               |
 | ------------------------------------- | ------------------------- |
-| `docker compose up -d`                | 클러스터 전체 스택 시작   |
-| `patronictl list`                     | 클러스터 상태 및 역할 확인|
-| `docker compose logs -f`              | 실시간 로그 모니터링      |
+| `docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config` | 선택 클러스터 렌더링 |
+| `docker exec pg-0 patronictl -c /home/postgres/postgres.yml list` | 클러스터 상태 및 역할 확인 |
+| `docker compose logs --tail=120 pg-router pg-cluster-init pg-0 pg-1 pg-2` | 핵심 로그 확인 |
 
 ## Configuration
 
@@ -94,12 +94,9 @@ postgresql-cluster/
 | `SCOPE` | Yes | 클러스터 이름 (Default: `pg-ha`) |
 | `PATRONI_SUPERUSER_USERNAME` | Yes | 슈퍼유저 계정명 (Default: `postgres`) |
 | `ETCD3_HOSTS` | Yes | etcd 엔드포인트 리스트 |
-
-## Documentation Standards
-
-- 모든 기술 문서는 `docs/99.templates/`의 표준 스켈레톤을 준수해야 함
-- Overview 섹션은 반드시 한글(KR)과 영문(EN)을 병기함
-- 모든 링크는 상대 경로를 사용하여 리포지토리 내 무결성을 유지함
+| `POSTGRES_WRITE_PORT` | No | HAProxy write endpoint (Default: 15432) |
+| `POSTGRES_READ_PORT` | No | HAProxy read endpoint (Default: 15433) |
+| `SERVICE_POSTGRES_DB` | Yes | `pg-cluster-init`가 생성/동기화하는 service database |
 
 ## Validation
 
@@ -113,7 +110,7 @@ postgresql-cluster/
 
 ## Related Documents
 
-- **Guide**: [docs/05.operations/04-data/relational/postgresql-cluster.md](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)
+- **Guide**: [docs/05.operations/guides/04-data/relational/postgresql-cluster.md](../../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)
 - **Policy**: [docs/05.operations/policies/04-data/relational/postgresql-cluster.md](../../../../docs/05.operations/policies/04-data/relational/postgresql-cluster.md)
 - **Runbook**: [docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md](../../../../docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md)
 - **ARD**: [docs/02.architecture/requirements/0004-data-architecture.md](../../../../docs/02.architecture/requirements/0004-data-architecture.md)

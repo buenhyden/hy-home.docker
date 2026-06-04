@@ -3,34 +3,13 @@ status: active
 ---
 <!-- Target: docs/05.operations/guides/04-data/relational/postgresql-cluster.md -->
 
-# postgresql-cluster Usage Guide
+# PostgreSQL Cluster Usage Guide
 
 ## Usage
 
 ### Overview (KR)
 
-이 문서는 `docs/05.operations/guides/04-data/relational/postgresql-cluster.md` 주제의 사용 가이드다. 기존 본문을 기준으로 작업자가 필요한 배경, 절차, 주의사항을 빠르게 찾도록 보강한다.
->
-> Patroni 및 etcd 기반 고가용성(HA) PostgreSQL 클러스터 가이드
-> High-Availability (HA) PostgreSQL Cluster Usage based on Patroni and etcd
-
----
-
-### Common Pitfalls
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
-
-### Overview (KR/EN)
-
-#### KR
-
-이 문서는 `postgresql-cluster`의 아키텍처를 이해하고, 데이타베이스 노드 상태 확인 및 애플리케이션 연결 방법을 익히기 위한 시스템 가이드다. Patroni와 etcd가 어떻게 협력하여 고가용성을 유지하는지, 그리고 HAProxy(`pg-router`)를 통한 트래픽 라우팅 원리를 설명한다.
-
-#### EN
-
-This document is a system guide for understanding the architecture of `postgresql-cluster` and learning how to check database node status and connect applications. It explains how Patroni and etcd work together to maintain high availability and the principles of traffic routing through HAProxy (`pg-router`).
+이 문서는 `infra/04-data/relational/postgresql-cluster/docker-compose.yml`에 정의된 PostgreSQL HA cluster 사용 기준을 설명한다. 현재 루트 compose에서는 `postgresql-cluster` include가 주석 처리된 선택 서비스이며, 활성화 시 etcd 3노드, Spilo/Patroni PostgreSQL 3노드, `pg-router`, `pg-cluster-init`, per-node postgres exporter가 `data`/`service` 프로파일에서 동작한다.
 
 ### Usage Type
 
@@ -38,64 +17,73 @@ This document is a system guide for understanding the architecture of `postgresq
 
 ### Target Audience
 
-- Developer (연결 및 쿼리 테스트)
-- Operator (클러스터 상태 점검 및 유지보수)
-- AI Agent (인프라 무결성 검증 및 사고 대응 보조)
+- Operator
+- Developer
+- AI Agent
 
 ### Purpose
 
-- Patroni HA 아키텍처의 동작 원리 이해
-- etcd DCS(Distributed Configuration Store)의 역할 파악
-- `pg-router`(HAProxy)를 이용한 읽기/쓰기 분산 연결 방법 습득
+관계형 데이터베이스 연결과 일반 점검을 현재 compose의 service name, host port, secret mount, init job, exporter 경계와 맞춰 수행하도록 한다.
 
 ### Prerequisites
 
-- `infra_net` 네트워크에 대한 이해 및 접근 권한
-- Docker Secrets(`patroni_superuser_password`)에 대한 인지
-- `patronictl` CLI 도구 기본 사용법 숙지
+- `infra/04-data/relational/postgresql-cluster/docker-compose.yml`와 루트 [docker-compose.yml](../../../../../docker-compose.yml)의 선택 include 상태를 확인한다.
+- `DEFAULT_DATA_DIR`, `POSTGRES_DEFAULT_DB`, Patroni usernames, service DB/user variables, PostgreSQL/HAProxy secret files가 준비되어 있어야 한다.
+- secret 값은 `/run/secrets/*`에서 container 내부로만 읽고 문서나 로그에 남기지 않는다.
 
 ### Step-by-step Instructions
 
-#### 1. 클러스터 상태 모니터링
+1. 선택 클러스터 구성을 렌더링한다.
 
-Patroni CLI를 사용하여 현재 리더(Leader) 노드와 복제본(Replica) 노드들의 상태를 확인한다.
+   ```bash
+   docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config
+   ```
 
-```bash
+2. 핵심 서비스 상태를 확인한다.
 
-## pg-0 노드에서 클러스터 리스트 확인
-docker exec -it pg-0 patronictl -c /home/postgres/postgres.yml list
-```
+   ```bash
+   docker compose ps etcd-1 etcd-2 etcd-3 pg-router pg-cluster-init pg-0 pg-1 pg-2 pg-0-exporter pg-1-exporter pg-2-exporter
+   ```
 
-### 2. 애플리케이션 연결 정의
+3. Patroni cluster 상태는 한 PostgreSQL node 내부에서 확인한다.
 
-모든 애플리케이션은 개별 PostgreSQL 노드 주소가 아닌, `pg-router` 엔드포인트를 사용해야 한다.
+   ```bash
+   docker exec pg-0 patronictl -c /home/postgres/postgres.yml list
+   ```
 
-- **Write (Master)**: `pg-router:15432` (리더 노드 자동 연결)
-- **Read (Replica)**: `pg-router:15433` (레플리카들 간 라운드 로빈 분산)
+4. 애플리케이션 연결은 `pg-router`를 기준으로 한다.
 
-#### 3. 초기화 작업 (pg-cluster-init)
+   | Endpoint | Host | Port | Purpose |
+   | --- | --- | --- | --- |
+   | Write | `pg-router` | `${POSTGRES_WRITE_PORT:-15432}` | Patroni primary backend |
+   | Read | `pg-router` | `${POSTGRES_READ_PORT:-15433}` | Patroni replica backends |
+   | Stats | `pg-haproxy.${DEFAULT_URL}` | `${HAPROXY_PORT:-7000}` via Traefik | HAProxy stats route |
 
-시스템 구동 시 `pg-cluster-init` 컨테이너가 자동으로 실행되어 서비스에 필요한 기본 DB와 사용자를 생성한다. 수동 재실행이 필요한 경우:
+5. `pg-cluster-init`는 `pg-router` write endpoint가 준비된 뒤 `init_users_dbs.sql`로 exporter role, service role, service database를 동기화한다.
 
-```bash
-docker compose up pg-cluster-init
-```
+6. Exporter는 `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`가 각 node와 `patroni_exporter_password` secret을 기준으로 `${POSTGRES_EXPORTER_PORT:-9187}`에 metrics를 expose한다.
 
 ### Common Pitfalls
 
-- **etcd Quorum Loss**: 3개 etcd 노드 중 2개 이상 장애 시 리더 선출이 중단되며 클러스터는 `Read-Only` 상태로 전환될 수 있다.
-- **Connection Limits**: HAProxy 포트가 열려 있어도 각 노드의 `max_connections` 설정에 따라 연결이 거부될 수 있으므로 커넥션 풀 사용을 권장한다.
+- 현재 구현은 root-active가 아니라 optional/commented include다. root compose 기본 `core` validation에 이 클러스터가 포함된 것처럼 설명하지 않는다.
+- 직접 PostgreSQL node에 application traffic을 붙이면 failover 라우팅이 보장되지 않는다. 일반 연결 문서는 `pg-router`를 기준으로 한다.
+- Patroni/Spilo node secrets는 `spilo-entrypoint-with-secrets.sh`가 `/run/secrets/patroni_*`에서 읽는다. plain password variables를 전제로 한 예시는 사용하지 않는다.
+- DCS destructive recovery, leadership mutation 같은 운영 변경은 guide가 아니라 승인된 runbook/escalation 영역이다.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config`
+- `docker compose ps etcd-1 etcd-2 etcd-3 pg-router pg-0 pg-1 pg-2`
+- `docker exec pg-0 patronictl -c /home/postgres/postgres.yml list`
+- `docker compose logs --tail=120 pg-router pg-cluster-init`
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/relational/postgresql-cluster.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [PostgreSQL cluster runbook](../../../runbooks/04-data/relational/postgresql-cluster.md)을 따른다.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/relational/postgresql-cluster.md)
 - [Recovery runbook](../../../runbooks/04-data/relational/postgresql-cluster.md)
+- [Infra README](../../../../../infra/04-data/relational/postgresql-cluster/README.md)

@@ -6,7 +6,7 @@
 
 ## Overview
 
-`policies/04-data/relational`는 `docs/05.operations`의 policy 문서를 관리합니다. 필수/허용/금지 상태, 예외 승인, 검증 기준, 검토 주기를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`policies/04-data/relational`는 `docs/05.operations`의 relational policy 문서를 관리한다. 현재는 선택 include인 PostgreSQL HA cluster의 compose 기반 필수/허용/금지 상태, 예외 승인, 검증 기준, 검토 주기를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 한다.
 
 ## Audience
 
@@ -21,7 +21,7 @@
 
 ### In Scope
 
-- 운영 controls, allowed/disallowed 상태, exception, review cadence
+- PostgreSQL HA cluster 운영 controls, allowed/disallowed 상태, exception, review cadence
 - 현재 경로에 속한 policy 문서 인덱스
 - 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
 
@@ -48,7 +48,7 @@ policies/04-data/relational/
 
 | Path | Purpose |
 | --- | --- |
-| [postgresql-cluster.md](./postgresql-cluster.md) | Postgresql Cluster policy 문서 |
+| [postgresql-cluster.md](./postgresql-cluster.md) | PostgreSQL HA cluster operations policy |
 
 ## Related Documents
 

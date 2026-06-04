@@ -4,9 +4,7 @@
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` 인프라의 관계형 데이터베이스(RDBMS) 계층을 관리합니다. 고가용성(HA), 데이터 정합성, 그리고 확장성을 보장하기 위해 Patroni와 etcd 기반의 클러스터 아키텍처를 표준으로 사용하며, HAProxy를 통해 애플리케이션에 안정적인 엔드포인트를 제공합니다.
-
-This directory manages the Relational Database (RDBMS) tier of the `hy-home.docker` infrastructure. It uses Patroni and etcd-based cluster architecture as a standard to ensure High Availability (HA), data consistency, and scalability, providing reliable endpoints to applications via HAProxy.
+이 디렉터리는 `hy-home.docker` 인프라의 관계형 데이터베이스(RDBMS) 계층을 관리한다. 현재 루트 compose에서는 `postgresql-cluster` include가 주석 처리된 선택 서비스이며, 필요 시 Patroni/etcd/PostgreSQL/HAProxy cluster compose를 명시적으로 포함해 실행한다.
 
 ## Audience
 
@@ -41,40 +39,41 @@ relational/
 
 ## How to Work in This Area
 
-1. 서비스 요구사항에 맞는 데이터베이스 기술 가이드는 [Relational DB Guides](../../../docs/05.operations/guides/04-data/relational.md)를 참조합니다.
+1. 서비스 요구사항에 맞는 데이터베이스 기술 가이드는 [Relational DB Guides](../../../docs/05.operations/guides/04-data/relational/README.md)를 참조합니다.
 2. 새 클러스터 추가 시 `postgresql-cluster` 구조를 템플릿으로 활용합니다.
-3. 운영 정책은 [Relational Operations](../../../docs/05.operations/policies/04-data/relational.md)를 반드시 준수해야 합니다.
-4. 장애 대응 및 복구는 [Relational Runbooks](../../../docs/05.operations/runbooks/04-data/relational.md)를 따릅니다.
+3. 운영 정책은 [Relational Policies](../../../docs/05.operations/policies/04-data/relational/README.md)를 반드시 준수해야 합니다.
+4. 장애 대응 및 복구는 [Relational Runbooks](../../../docs/05.operations/runbooks/04-data/relational/README.md)를 따릅니다.
 
 ## Available Scripts
 
 | Command | Description |
 | ------- | ----------- |
-| `docker compose up -d` | 전체 관계형 데이터베이스 스택 시작 (Start the full RDBMS stack) |
-| `docker compose ps` | 서비스 상태 확인 (Check service status) |
-| `docker compose logs -f` | 실시간 로그 확인 (View real-time logs) |
+| `docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config` | 선택 클러스터 compose 렌더링 |
+| `docker compose ps` | 서비스 상태 확인 |
+| `docker compose logs --tail=120 pg-router pg-0 pg-1 pg-2` | 핵심 서비스 로그 확인 |
 
 ## Tech Stack
 
 | Category   | Technology                                | Notes                     |
 | ---------- | ----------------------------------------- | ------------------------- |
-| DB Engine  | PostgreSQL 17 (Spilo)                     | Core Persistence          |
+| DB Engine  | `ghcr.io/zalando/spilo-17:4.0-p3`         | Patroni/PostgreSQL nodes  |
 | HA Logic   | Patroni                                   | Cluster Lifecycle         |
-| DCS        | etcd                                      | Distributed Locks         |
-| Router     | HAProxy                                   | Traffic Distribution      |
+| DCS        | etcd 3.6.12                               | Distributed Locks         |
+| Router     | `haproxy:3.3.10`                          | Traffic Distribution      |
+| Init Job   | `postgres:18-alpine`                      | Role/database sync        |
 
 ## Getting Started
 
 ```bash
-# 전체 관계형 데이터베이스 스택 시작
-docker compose up -d
+docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config
 ```
 
 ## Related Documents
 
-- **Guide**: [docs/05.operations/04-data/relational.md](../../../docs/05.operations/guides/04-data/relational.md)
-- **Policy**: [docs/05.operations/policies/04-data/relational.md](../../../docs/05.operations/policies/04-data/relational.md)
-- **Runbook**: [docs/05.operations/runbooks/04-data/relational.md](../../../docs/05.operations/runbooks/04-data/relational.md)
+- **Guides**: [docs/05.operations/guides/04-data/relational/README.md](../../../docs/05.operations/guides/04-data/relational/README.md)
+- **Policies**: [docs/05.operations/policies/04-data/relational/README.md](../../../docs/05.operations/policies/04-data/relational/README.md)
+- **Runbooks**: [docs/05.operations/runbooks/04-data/relational/README.md](../../../docs/05.operations/runbooks/04-data/relational/README.md)
+- **Service Guide**: [postgresql-cluster guide](../../../docs/05.operations/guides/04-data/relational/postgresql-cluster.md)
 - **ARD**: [docs/02.architecture/requirements/0004-data-architecture.md](../../../docs/02.architecture/requirements/0004-data-architecture.md)
 
 ---

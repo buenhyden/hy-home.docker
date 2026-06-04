@@ -3,118 +3,131 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md -->
 
-# postgresql-cluster Runbook
+# PostgreSQL Cluster Health and Recovery Triage Runbook
 
-## Overview (KR)
+## PostgreSQL Cluster Health and Recovery Triage Procedure
 
-이 런북은 `docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
+> Scope: Triage optional PostgreSQL HA cluster health, etcd quorum symptoms, HAProxy routing, Patroni leadership, init job state, and exporter readiness without destructive data actions.
 
-## postgresql-cluster Procedure
+### Overview (KR)
 
-> Scope: PostgreSQL Cluster High-Availability Recovery
-
-> Patroni 및 etcd 기반 PostgreSQL 클러스터 장애 복구 및 유지보수 실행 지침
-> Operational Procedures for Fault Recovery and Maintenance of Patroni and etcd-based PostgreSQL Clusters
-
----
-
-### Overview (KR/EN)
-
-#### KR
-
-이 런북은 `postgresql-cluster` 장애 시 신속한 복구 및 유지보수 작업을 위한 실행 절차를 정의한다. 운영자가 즉시 따라 할 수 있는 단계와 검증 기준을 제공하여 서비스 중단을 최소화하는 것을 목적으로 한다.
-
-#### EN
-
-This runbook defines operational procedures for rapid recovery and maintenance in the event of a `postgresql-cluster` failure. It provides step-by-step instructions and verification criteria that operators can follow immediately to minimize service disruption.
+이 런북은 `postgresql-cluster` 선택 스택의 etcd, Patroni/Spilo, HAProxy, init job, exporter 상태 이상을 현재 compose 기준으로 점검하는 절차다. DCS destructive recovery, forced cluster bootstrap, leadership mutation, backup restore, volume replacement는 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션 대상으로 분리한다.
 
 ### Purpose
 
-- etcd 쿼럼 소실 시 클러스터 복구
-- PostgreSQL 마스터 장애 시 수동 페일오버 및 상태 복구
-- `pg-cluster-init`을 이용한 데이터베이스 초기화 재수행
+PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수집하고, compose가 보장하는 범위 안에서만 비파괴 재기동과 상태 확인을 수행한다.
 
 ### Canonical References
 
-- **ARD**: `docs/02.architecture/requirements/0004-data-architecture.md`
-- **Spec**: `docs/03.specs/04-data/spec.md`
-- **Operation**: `docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md`
+- **Spec**: N/A — no upstream source
+- **Policy**: [PostgreSQL cluster operations policy](../../../policies/04-data/relational/postgresql-cluster.md)
+- **Guide**: [PostgreSQL cluster usage guide](../../../guides/04-data/relational/postgresql-cluster.md)
 
 ## When to Use
 
-- `patronictl list` 결과에서 리더가 없거나 쿼럼이 깨진 경우
-- 계획된 점검을 위해 리더 노드를 변경(Switchover)해야 하는 경우
-- `pg-router`를 통한 DB 접속이 불가능한 경우
+- `pg-router` write/read endpoint가 응답하지 않을 때
+- `patronictl list`에서 leader/member 상태 확인이 필요할 때
+- etcd node, PostgreSQL node, exporter, or `pg-cluster-init` 상태가 unhealthy/stopped일 때
+- PostgreSQL cluster operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
 ## Procedure
 
 ### Checklist
 
-- [ ] `docker compose ps`로 etcd 및 pg 노드 컨테이너 생존 확인
-- [ ] `docker compose logs`로 에러 메시지 확인
-- [ ] 데이터 볼륨(`DEFAULT_DATA_DIR`)의 디스크 여유 공간 확인
+- [ ] 루트 compose에서 PostgreSQL cluster include가 선택적으로 주석 처리되어 있는지, 이번 런타임에서 의도적으로 활성화했는지 확인한다.
+- [ ] secret 값을 출력하지 않는 명령만 사용한다.
+- [ ] DCS data deletion, forced cluster bootstrap, leadership mutation, backup restore, credential rotation, database mutation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
+- [ ] 모든 명령 출력은 요약으로 기록하고 credential, SQL payload, application data는 기록하지 않는다.
 
 ### Steps
 
-#### 1. 클러스터 수동 리더 변경 (Switchover)
+1. compose 렌더링을 확인한다.
 
-```bash
-docker exec -it pg-0 patronictl -c /home/postgres/postgres.yml switchover
-```
+   ```bash
+   docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service config
+   ```
 
-##### 2. etcd 쿼럼 복구 (전체 장애 시)
+2. 전체 서비스 상태를 확인한다.
 
-1. 모든 PostgreSQL 노드 정지: `docker compose stop pg-0 pg-1 pg-2`
-2. etcd 데이터 초기화 (필요시): `rm -rf ${DEFAULT_DATA_DIR}/etcd/*`
-3. etcd 서비스 재시작: `docker compose up -d etcd-1 etcd-2 etcd-3`
-4. PostgreSQL 노드 순차 가동: `docker compose up -d pg-0` (이후 순차)
+   ```bash
+   docker compose ps etcd-1 etcd-2 etcd-3 pg-router pg-cluster-init pg-0 pg-1 pg-2 pg-0-exporter pg-1-exporter pg-2-exporter
+   ```
 
-##### 3. 초기화 작업(pg-cluster-init) 재실행
+3. etcd endpoint health를 각 etcd container에서 확인한다.
 
-```bash
-docker compose rm -f pg-cluster-init
-docker compose up pg-cluster-init
-```
+   ```bash
+   docker exec etcd-1 etcdctl endpoint health --endpoints=http://127.0.0.1:${ETCD_CLIENT_PORT:-2379}
+   ```
+
+4. Patroni leadership을 확인한다.
+
+   ```bash
+   docker exec pg-0 patronictl -c /home/postgres/postgres.yml list
+   ```
+
+5. HAProxy와 init job 로그를 확인한다.
+
+   ```bash
+   docker compose logs --tail=120 pg-router pg-cluster-init
+   ```
+
+6. PostgreSQL node와 exporter 로그를 확인한다.
+
+   ```bash
+   docker compose logs --tail=120 pg-0 pg-1 pg-2 pg-0-exporter pg-1-exporter pg-2-exporter
+   ```
+
+7. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 해당 서비스만 재기동한다. 예시는 `pg-router` 기준이며, 대상 서비스명은 현재 `docker compose ps` 결과에서 확인한 declared service로 제한한다.
+
+   ```bash
+   docker compose -f docker-compose.yml -f infra/04-data/relational/postgresql-cluster/docker-compose.yml --profile data --profile service up -d pg-router
+   ```
 
 ### Verification Steps
 
-- [ ] `docker exec -it pg-0 patronictl -c /home/postgres/postgres.yml list` 실행 후 `Leader` 존재 확인
-- [ ] `pg_isready -h localhost -p 15432 -U postgres` 명령으로 쓰기 포트 가용성 확인
+- `docker compose ps ...`에서 intended services가 running 또는 healthy 상태인지 확인한다.
+- `patronictl list`에서 leader와 members가 표시되는지 확인한다.
+- `pg-router` 로그와 HAProxy config validation healthcheck가 정상인지 확인한다.
+- exporter logs 또는 `/metrics` checks가 secret 값을 출력하지 않고 정상 evidence를 제공하는지 확인한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: Grafana PostgreSQL Dashboard, `pg-router` HAProxy Stats
-- **Evidence to Capture**: `patronictl list` 출력 결과, `docker compose logs`
+- **Logs**: `docker compose logs --tail=120 pg-router pg-cluster-init pg-0 pg-1 pg-2`
+- **Cluster state**: `patronictl list`
+- **DCS state**: `etcdctl endpoint health`
+- **Routing**: HAProxy stats route `pg-haproxy.${DEFAULT_URL}` and HAProxy healthcheck
+- **Metrics**: `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 기존 클러스터 상태 보존을 위한 볼륨 백업 권장
-- [ ] etcd 강제 무력화 전 반드시 데이터 무결성 검토
+1. Documentation-only changes can be reverted by the current git diff or the logical commit that introduced them.
+2. Runtime recovery in this runbook is limited to compose `up -d` for stopped declared services after evidence capture.
+3. N/A — no verified DCS reset, forced cluster bootstrap, leadership mutation, backup restore, credential rotation, or volume rollback procedure is documented yet.
 
 ### Agent Operations (If Applicable)
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
+- **Eval Re-run**: Re-run `bash scripts/validation/check-repo-contracts.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` after documentation changes.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
+- Capture command names, pass/fail status, service states, image tags, sanitized logs, and leadership/routing summary.
+- Do not capture secret values, SQL payloads, database row contents, or credential-backed connection strings.
+- Record whether the cluster was optional/commented in root compose or explicitly included for the runtime session.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+N/A — no verified rollback or recovery procedure is documented beyond non-destructive compose restart and status verification. If DCS reset, forced cluster bootstrap, leadership mutation, backup restore, credential rotation, or volume replacement is required, preserve evidence and escalate.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Escalate to the owning operator when no leader can be identified, etcd quorum symptoms appear, HAProxy routing diverges from compose, `pg-cluster-init` repeatedly fails, logs show storage corruption, secret exposure risk appears, or any data operation is required. Include sanitized logs, rendered compose evidence, service states, leadership summary, and attempted steps.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/relational/postgresql-cluster.md)
 - [Operations policy](../../../policies/04-data/relational/postgresql-cluster.md)
+- [Infra README](../../../../../infra/04-data/relational/postgresql-cluster/README.md)

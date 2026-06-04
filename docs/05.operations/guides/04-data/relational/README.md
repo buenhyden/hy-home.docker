@@ -6,7 +6,7 @@
 
 ## Overview
 
-`guides/04-data/relational`는 `hy-home.docker` 인프라의 관계형 데이터베이스(`relational`) 계층에 대한 guide 문서를 관리한다. Patroni와 etcd를 이용한 고가용성(HA) 클러스터 구조를 이해하고, 애플리케이션에서 안전하게 연결하는 방법과 관리 절차를 제공한다.
+`guides/04-data/relational`는 `hy-home.docker` 인프라의 관계형 데이터베이스(`relational`) guide 문서를 관리한다. 현재는 선택 include인 PostgreSQL HA cluster의 service names, profiles, HAProxy endpoints, secret boundaries, 일반 점검, 관련 runbook handoff를 제공한다.
 
 ## Audience
 
@@ -64,7 +64,7 @@ guides/04-data/relational/
 
 | Path                                             | Purpose                          |
 | ------------------------------------------------ | -------------------------------- |
-| [postgresql-cluster.md](./postgresql-cluster.md) | PostgreSQL HA Cluster guide 문서 |
+| [postgresql-cluster.md](./postgresql-cluster.md) | PostgreSQL HA cluster usage guide |
 
 ## Related Documents
 
