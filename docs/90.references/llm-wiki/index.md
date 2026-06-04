@@ -570,7 +570,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/04-data/specialized/qdrant.md](../../05.operations/guides/04-data/specialized/qdrant.md) | Markdown reference |
 | [docs/05.operations/guides/05-messaging/README.md](../../05.operations/guides/05-messaging/README.md) | folder index |
 | [docs/05.operations/guides/05-messaging/kafka.md](../../05.operations/guides/05-messaging/kafka.md) | Markdown reference |
-| [docs/05.operations/guides/05-messaging/ksql-streaming.md](../../05.operations/guides/05-messaging/ksql-streaming.md) | Markdown reference |
 | [docs/05.operations/guides/05-messaging/optimization-hardening.md](../../05.operations/guides/05-messaging/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/guides/05-messaging/rabbitmq.md](../../05.operations/guides/05-messaging/rabbitmq.md) | Markdown reference |
 | [docs/05.operations/guides/06-observability/01.lgtm-stack.md](../../05.operations/guides/06-observability/01.lgtm-stack.md) | Markdown reference |
@@ -1161,6 +1160,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md](../../98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md) | Markdown reference |
 | [docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md](../../98.archive/04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md) | Markdown reference |
 | [docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md](../../98.archive/04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md) | Markdown reference |
+| [docs/98.archive/05.operations/guides/05-messaging/ksql-streaming.md](../../98.archive/05.operations/guides/05-messaging/ksql-streaming.md) | Markdown reference |
 | [docs/98.archive/05.operations/guides/07-workflow/airbyte.md](../../98.archive/05.operations/guides/07-workflow/airbyte.md) | Markdown reference |
 | [docs/98.archive/05.operations/policies/07-workflow/airbyte.md](../../98.archive/05.operations/policies/07-workflow/airbyte.md) | Markdown reference |
 | [docs/98.archive/05.operations/runbooks/07-workflow/airbyte.md](../../98.archive/05.operations/runbooks/07-workflow/airbyte.md) | Markdown reference |

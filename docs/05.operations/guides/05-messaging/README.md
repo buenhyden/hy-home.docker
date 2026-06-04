@@ -35,7 +35,6 @@
 
 ```text
 guides/05-messaging/
-├── ksql-streaming.md
 ├── kafka.md
 ├── optimization-hardening.md
 ├── rabbitmq.md
@@ -51,10 +50,11 @@ guides/05-messaging/
 
 | Path                                                     | Purpose                           |
 | -------------------------------------------------------- | --------------------------------- |
-| [ksql-streaming.md](./ksql-streaming.md)                 | ksqlDB Streaming guide 문서       |
 | [kafka.md](./kafka.md)                                   | Kafka guide 문서                  |
 | [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening guide 문서 |
 | [rabbitmq.md](./rabbitmq.md)                             | Rabbitmq guide 문서               |
+
+ksqlDB는 현재 `05-messaging` guide가 아니라 [04-data analytics ksqlDB guide](../04-data/analytics/ksqldb.md)에서 관리한다.
 
 ## Related Documents
 

@@ -161,7 +161,6 @@ NON_SERVICE_STEMS = {
     "harness-agent-first-engineering-validation",
     "iac-deployment-policy",
     "infra-service-optimization-catalog",
-    "ksql-streaming",
     "llm-wiki-maintenance",
     "local-llm-setup",
     "new-service-onboarding",
