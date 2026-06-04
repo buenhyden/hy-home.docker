@@ -420,8 +420,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "ad13a81cc10af86f154968c1528e1802",
+    "mtime": 1780570868.316693,
+    "ast_hash": "095c4cab5e04d61e8146e534db2dcaa7",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/mongodb/docker-compose.yml": {
@@ -430,8 +430,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/mongodb/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "8175a23d64805ca7ef85945e5939c880",
+    "mtime": 1780570868.316693,
+    "ast_hash": "9ff87912b94d8778ddd4f992f332ea43",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/couchdb/docker-compose.yml": {
@@ -440,8 +440,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/couchdb/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "48507f901b93407cd4634c26ba63e557",
+    "mtime": 1780570868.316693,
+    "ast_hash": "2d040677bab901b67b2e42a28fb8975e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/cassandra/docker-compose.yml": {
@@ -450,8 +450,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/nosql/cassandra/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "a42fe86450dbb4473fe8fc2233b320b1",
+    "mtime": 1780570868.316693,
+    "ast_hash": "584917b0118424c3cbcb6457c05d4e8b",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/lake-and-object/README.md": {
@@ -1755,23 +1755,23 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/nosql/mongodb.md": {
-    "mtime": 1780371233.6272502,
-    "ast_hash": "5ee49aae2aa596ac969bcb021d795de9",
+    "mtime": 1780570868.282401,
+    "ast_hash": "5563834374d9a1a4a02a3d96b230379a",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/nosql/couchdb.md": {
-    "mtime": 1780371233.6272502,
-    "ast_hash": "1e4a9c772bca015ac0db7b1af21a4d10",
+    "mtime": 1780570868.282401,
+    "ast_hash": "bd697509db3feb9b9ab8921f1af4066b",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/nosql/README.md": {
-    "mtime": 1780554617.8985877,
-    "ast_hash": "d255603a9a6d653551e1d98994cf171e",
+    "mtime": 1780570868.282401,
+    "ast_hash": "acdb1810369dfac4d27f7e6f2a7ff32c",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/nosql/cassandra.md": {
-    "mtime": 1780371233.6272502,
-    "ast_hash": "6a5b378eb0bf8e27e6c0c372fc780591",
+    "mtime": 1780570868.282401,
+    "ast_hash": "08c6057b09fbfa6b0fb92298f885a09b",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/lake-and-object/seaweedfs.md": {
@@ -2160,23 +2160,23 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/nosql/mongodb.md": {
-    "mtime": 1780371233.6432502,
-    "ast_hash": "83c0fd57fd8173f518935b5a9eabbc78",
+    "mtime": 1780570868.282401,
+    "ast_hash": "4c10b835c7be087965367328245b4c05",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/nosql/couchdb.md": {
-    "mtime": 1780371233.6432502,
-    "ast_hash": "483ddec5487d75417688b41c2ac529f1",
+    "mtime": 1780570868.282401,
+    "ast_hash": "e978681b353a28b9a15b82c09fe13fba",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/nosql/README.md": {
-    "mtime": 1780554617.9029799,
-    "ast_hash": "45f56aa62d5cb2945e5ad055cbd20098",
+    "mtime": 1780570868.282401,
+    "ast_hash": "36fdc36264eb82cfe29a9accc712ca08",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/nosql/cassandra.md": {
-    "mtime": 1780371233.6432502,
-    "ast_hash": "b3782800588cab19f5bf0d0d8da5501c",
+    "mtime": 1780570868.282401,
+    "ast_hash": "84bccf5e51824412a03c954dd8417748",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/lake-and-object/seaweedfs.md": {
@@ -2555,23 +2555,23 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/nosql/mongodb.md": {
-    "mtime": 1780549749.0102594,
-    "ast_hash": "492db96e87a452ecc4bc852d72e8028a",
+    "mtime": 1780570868.282401,
+    "ast_hash": "56ddf856360d4df5924bf35acba90ae0",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/nosql/couchdb.md": {
-    "mtime": 1780549749.0102594,
-    "ast_hash": "14f86e2f761fe764346ec21b74027ac6",
+    "mtime": 1780570868.282401,
+    "ast_hash": "9316a44ad9cc229068c0a9f027061fec",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/nosql/README.md": {
-    "mtime": 1780554617.8985877,
-    "ast_hash": "cf46f72203a23fe48ed77bd90b139d4c",
+    "mtime": 1780570868.282401,
+    "ast_hash": "0ddd9d293e8c96ca05a2a9f26a3d4aa5",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/nosql/cassandra.md": {
-    "mtime": 1780549749.0102594,
-    "ast_hash": "312f7921abf30db0fe1f25a16fa4a9e6",
+    "mtime": 1780570868.282401,
+    "ast_hash": "b54b2c1e4fa4dcda254d7d2d90a2ec1c",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/lake-and-object/seaweedfs.md": {
@@ -3430,8 +3430,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1780569923.958942,
-    "ast_hash": "9c5fb75d1f8393798e12240912f32a94",
+    "mtime": 1780570868.2785907,
+    "ast_hash": "b16f1094b567e4afdf9a21dfac0db2f3",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -4540,8 +4540,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md": {
-    "mtime": 1780569923.958942,
-    "ast_hash": "1dc29ae360710c2abd9e89e85bfc7f09",
+    "mtime": 1780570868.282401,
+    "ast_hash": "0f9c3a6f26bf4c241fb6f9801b44144d",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/00-workspace/README.md": {
