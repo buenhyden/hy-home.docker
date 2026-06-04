@@ -281,6 +281,12 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 
 3-layer consistency achieved: actual ops files ↔ `guide.template.md`/`runbook.template.md` ↔ `ops-runbook-agent/skill.md` profiles.
 
+## Docs Implementation Audit Follow-up (2026-06-04)
+
+| Item | Area | Status | Notes |
+| ---- | ---- | ------ | ----- |
+| `04-data/operational` current-truth cleanup | `mng-db`, `supabase`, linked infra READMEs | ✅ Done | Rewrote paired guide/policy/runbook docs to match current compose services, profiles, networks, ports, Docker Secret boundaries, and runtime mounts; corrected operational README structure and guide/policy/runbook references. |
+
 ## Open Issues
 
 None for active harness blockers. Legacy guide/operations/runbook stage history now lives in canonical `docs/05.operations` documents after the 2026-05-10 taxonomy consolidation.

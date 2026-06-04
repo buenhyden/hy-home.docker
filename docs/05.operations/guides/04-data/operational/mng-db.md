@@ -5,82 +5,86 @@ status: active
 
 # Management Database Usage Guide
 
+> Use this guide to understand and verify the current `mng-db` implementation.
+
+---
+
 ## Usage
 
 ### Overview (KR)
 
-이 문서는 `mng-db` (Management Database) 시스템에 대한 가이드다. `mng-db`는 플랫폼 핵심 서비스(Identity, Automation, Workflow 등)의 메타데이타를 관리하는 PostgreSQL 및 Valkey 인스턴스로 구성되어 있다.
->
-> This document explains how to understand and use the Management Database system.
-
----
-
-### Common Pitfalls
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
+`mng-db`는 플랫폼 관리 서비스가 공유하는 PostgreSQL/Valkey 운영 데이터 계층이다. 현재 구현은 `infra/04-data/operational/mng-db/docker-compose.yml`의 `mng` 및 `dev` profile로 선언되며, Keycloak, n8n, Airflow, Terrakube, SonarQube, 기본 service DB를 위한 PostgreSQL role/database와 Valkey cache를 제공한다.
 
 ### Usage Type
 
-`system-guide`
+`system-guide | operational-reference`
 
 ### Target Audience
 
-- **Developers**: 플랫폼 서비스 개발 및 DB 연동
-- **Operators**: 초기 부트스트랩 및 서비스 상태 가이드 점검
-- **AI Agents**: 하위 시스템 의존성 분석
+- Operator
+- Developer
+- SRE
+- AI Agent
 
 ### Purpose
 
-이 가이드는 사용자가 `mng-db`의 구조를 이해하고, 제공되는 각 데이타베이스에 안전하게 연결 및 활용하는 것을 돕는다.
+이 가이드는 `mng-db`의 현재 compose 구조, 네트워크 경계, 초기화 job, 일반 점검 절차를 이해하고 상위 관리 서비스와의 연결을 검토할 수 있게 한다.
 
 ### Prerequisites
 
-- **Docker & Docker Compose**: 로컬 또는 인프라 노드에서 실행 환경 필요.
-- **psql / valkey-cli**: 데이타베이스 접속을 위한 클라이언트 도구.
-- **Credentials**: `/run/secrets/` 또는 환경 변수에 설정된 패스워드 정보.
+- Repository checkout at the project root.
+- Docker Compose access on the local or approved infrastructure host.
+- Docker Secret files referenced by the compose file are prepared; secret values must not be copied into docs, logs, or commits.
+- Service data paths referenced through `DEFAULT_MANAGEMENT_DIR` are available to the runtime host.
 
 ### Step-by-step Instructions
 
-#### 1. 서비스 가동 및 상태 확인
+1. 현재 compose surface를 확인한다.
 
-`mng-db`는 플랫폼 초기화 시 가장 먼저 가동되어야 하는 서비스 중 하나이다.
+   ```bash
+   docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng config --services
+   ```
 
-```bash
+   Expected services: `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter`.
 
-## infra/04-data/operational/mng-db 경로에서 실행
-docker-compose up -d
-docker-compose ps
-```
+2. 네트워크 경계를 확인한다.
 
-### 2. PostgreSQL 데이타베이스 접근
+   - `mng-pg` and `mng-valkey`: `infra_net`, `k3d-hyhome`
+   - `mng-pg-init`, `mng-pg-exporter`, `mng-valkey-exporter`: `infra_net`
+   - The legacy shared-network name is not part of the current implementation.
 
-`mng-pg` 인스턴스 내에는 다음과 같은 논리적 데이타베이스가 생성된다.
+3. PostgreSQL 초기화 범위를 확인한다.
 
-- `postgres`: 관리용 루트 DB
-- `n8n`: 워크플로우 자동화용
-- `keycloak`: 자격 증명 관리용
-Copyright (c) 2026. Licensed under the MIT License.
+   `mng-pg-init` applies `pg/init-scripts/init_users_dbs.sql` and maintains logical databases for `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`, and the service DB declared by `SERVICE_POSTGRES_DB` with the corresponding service role.
 
----
+4. 일반 상태를 확인한다.
+
+   ```bash
+   docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng ps mng-pg mng-valkey mng-pg-exporter mng-valkey-exporter
+   ```
 
 ### Common Pitfalls
 
-- guide 문서에 운영 정책이나 incident timeline을 섞지 않는다.
-- secret 값, token, 인증서 원문을 열람하거나 문서화하지 않는다.
-- runtime 변경이 필요한 경우 문서 보강과 별도 작업으로 분리한다.
+- Treating `mng-db` as the HA PostgreSQL cluster. HA production data belongs to `infra/04-data/relational/postgresql-cluster/`.
+- Referencing legacy shared-network names; the current `mng-db` compose uses `infra_net` and `k3d-hyhome`.
+- Writing secret values, generated passwords, or token material into documentation while describing `/run/secrets/` usage.
+- Running the init job without first confirming the compose render and linked policy/runbook context.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng config`
+- `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng ps`
+- Search the paired guide/policy/runbook for legacy network names or old Compose CLI spelling before committing.
+- Expected result: compose renders, documented services match the compose file, and stale network or command references are absent.
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/operational/mng-db.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은
+[recovery runbook](../../../runbooks/04-data/operational/mng-db.md)을 따른다.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/operational/mng-db.md)
 - [Recovery runbook](../../../runbooks/04-data/operational/mng-db.md)
+- [Infrastructure service README](../../../../../infra/04-data/operational/mng-db/README.md)

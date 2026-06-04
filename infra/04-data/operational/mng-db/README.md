@@ -18,7 +18,7 @@
 
 ### In Scope
 
-- **Shared PostgreSQL 17**: n8n, Keycloak, Airflow 등 플랫폼 서비스용 DB.
+- **Shared PostgreSQL 18**: n8n, Keycloak, Airflow 등 플랫폼 서비스용 DB.
 - **Shared Valkey 9**: 플랫폼 서비스용 임시 캐시 및 세션 저장소.
 - **Initialization Job**: `mng-pg-init`을 통한 사용자 및 DB 자동 생성.
 - **Monitoring**: 전용 Exporter를 통한 메트릭 노출(PostgreSQL, Valkey).
@@ -66,9 +66,9 @@ mng-db/
 
 | Category | Command | Description |
 | :--- | :--- | :--- |
-| **Execution** | `docker compose up -d` | 전체 서비스 배포 |
-| **Initialization** | `docker compose run --rm mng-pg-init` | DB 초기화 재실행 |
-| **Health Check** | `docker exec mng-pg pg_isready` | PostgreSQL 상태 점검 |
+| **Execution** | `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng up -d` | 전체 서비스 배포 |
+| **Initialization** | `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng run --rm mng-pg-init` | DB 초기화 재실행 |
+| **Health Check** | `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng ps mng-pg mng-valkey` | PostgreSQL 및 Valkey 상태 점검 |
 
 ## Configuration
 
@@ -78,17 +78,18 @@ mng-db/
 | :--- | :---: | :--- |
 | `POSTGRES_DEFAULT_USER` | Yes | 루트 유저 (secrets 연동 권장) |
 | `POSTGRES_DEFAULT_DB` | Yes | 기본 관리용 DB 이름 (mng-pg) |
+| `SERVICE_POSTGRES_DB` | No | `mng-pg-init`이 동기화하는 추가 service DB 이름 |
 | `VALKEY_PORT` | No | 노출 포트 (Default: 6379) |
 
 ## Validation
 
 - Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect the management database.
 - Run `bash scripts/hardening/check-all-hardening.sh` before marking management database documentation ready.
-- Validate this service directory with `docker compose config --services` when changing PostgreSQL, Valkey, exporter, network, volume, or secret references.
+- Validate this service directory with `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng config --services` when changing PostgreSQL, Valkey, exporter, network, volume, or secret references.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm PostgreSQL, Valkey, network, and secret references render.
+- Start with `docker compose -f infra/04-data/operational/mng-db/docker-compose.yml --profile mng config` to confirm PostgreSQL, Valkey, network, and secret references render.
 - Check the database and cache container logs before changing persistence, password, or bootstrap settings.
 
 ## Related Documents

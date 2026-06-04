@@ -60,13 +60,13 @@ supabase/
 1. **환경 로드**: `.env.example`을 기준으로 non-secret key surface를 확인합니다.
 2. **Secret 준비**: 위 `Secret refs`의 Docker Secret 파일 경로가 준비되었는지 확인합니다. 값은 문서, 로그, commit에 기록하지 않습니다.
 3. **서비스 가동**: 승인된 운영 절차에서 `data` profile을 포함해 전체 스택을 기동합니다.
-4. **접근 주소**: Studio(`http://localhost:3000`), Kong Gateway(`http://localhost:8000`).
+4. **접근 주소**: Kong Gateway(`http://localhost:${SUPABASE_KONG_HTTP_HOST_PORT:-8000}`, `https://localhost:${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}`)를 기준으로 확인합니다. 현재 compose는 Studio의 직접 host port를 publish하지 않습니다.
 
 ## Tech Stack
 
 | Service | Technology | Role |
 | :--- | :--- | :--- |
-| **db** | PostgreSQL 15 | Core Engine (pgvector) |
+| **db** | PostgreSQL 17 | Core Engine (pgvector) |
 | **auth** | GoTrue | JWT Auth & Management |
 | **rest** | PostgREST | Automated REST API |
 | **studio** | Supabase Studio | Unified Dashboard |
@@ -89,7 +89,7 @@ supabase/
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Supabase service, secret, and database references render.
+- Start with `docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data config` to confirm Supabase service, secret, and database references render.
 - Check Supabase service logs and the linked runbook before changing JWT, database, or dashboard settings.
 
 ## Related Documents

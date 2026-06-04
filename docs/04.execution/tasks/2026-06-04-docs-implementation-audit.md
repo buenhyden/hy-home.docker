@@ -74,6 +74,7 @@ tracked `infra/**` 구현과 의미 단위로 대조한 감사 리포트다. 판
 | F-14 | `docs/02.architecture/{decisions/0015-analytics-engine-selection.md,requirements/0012-data-analytics-architecture.md}`, `docs/03.specs/04-data-analytics/{spec.md,README.md}` | analytics 엔진 선택/계약 문서가 현재 `infra/04-data/analytics` compose의 version family와 다르게 InfluxDB primary, OpenSearch, StarRocks 계열을 오래된 기준으로 설명함 | InfluxDB 3.x Core primary + InfluxDB 2.x legacy compose, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x로 정정; InfluxDB primary health check를 `8181`로 정정; stale analytics version-family gate 추가 |
 | F-15 | `docs/05.operations/{guides/06-observability/prometheus.md,runbooks/11-laboratory/dozzle.md,runbooks/11-laboratory/README.md}`, `infra/11-laboratory/dozzle/README.md` | Prometheus guide와 Dozzle runbook/infra README가 현재 PostgreSQL image family 및 Dozzle compose tag와 맞지 않는 구현값을 담고 있었음 | Prometheus scrape 대상 설명을 PostgreSQL 17/18 family로 정정; Dozzle 기준 tag를 `amir20/dozzle:v10.6.4`로 맞추고 rollback은 직전 검증 tag evidence를 기록하도록 수정; stale Dozzle/PostgreSQL literal gate 추가 |
 | F-16 | `docs/05.operations/{guides,policies,runbooks}/README.md` 및 `00-workspace`, `12-infra-net`, `90-knowledge` 목적 폴더 | bucket root에 leaf 문서와 folder index가 섞여 있어 Stage 05 운영 문서 구조가 목적별 탐색 계약과 맞지 않았음 | root에는 bucket `README.md`만 남기고 workspace, infra_net, knowledge 문서를 목적 폴더로 이동; parent/child README와 cross-link를 갱신; `check-repo-contracts.sh`에 operations bucket-root leaf 금지와 target-path 일치 gate 추가 |
+| F-17 | `infra/04-data/operational/README.md`, `infra/04-data/operational/{mng-db,supabase}/README.md`, `docs/05.operations/{guides,policies,runbooks}/04-data/operational/{mng-db,supabase}.md` | `mng-db` docs retained obsolete network/old Compose CLI guidance and template remnants; Supabase docs assumed direct Studio host-port access and contained incomplete policy/runbook template residue; infra README listed a relational cluster under the operational folder and linked the guide index to policies | Corrected in place to current compose truth: `mng-db` services/profiles/networks/init DBs, Supabase data-profile services/Kong ports/runtime mounts, PostgreSQL image family, and operations guide/policy/runbook links; no archive because documents map to implemented services |
 
 ## Archive Decision
 
@@ -84,6 +85,9 @@ harness-agent-first, llm-wiki-completion 등)은 현재 구현과 **상충하지
 `docs/98.archive/README.md` ledger로 tombstone 처리되어 있다.
 Stage 05 bucket-root 구조 drift(F-16)는 문서 내용 자체가 현재 구현과 상충하지 않고 위치/탐색
 계약만 낡은 경우라 archive가 아니라 in-place 이동 및 reference 갱신으로 처리했다.
+`04-data/operational` drift(F-17)는 구현된 `mng-db`와 `supabase` 서비스 문서의 current-truth
+불일치였으므로 archive가 아니라 template-compliant in-place rewrite와 README reference 갱신으로
+처리했다.
 
 ## Verification Summary
 
@@ -99,6 +103,8 @@ Stage 05 bucket-root 구조 drift(F-16)는 문서 내용 자체가 현재 구현
 - IP placeholder scan: wildcard infra/k3d IPv4 placeholder 0건; repo contract가 concrete-network placeholder 재유입을 차단.
 - metadata comparison scan: `.env.example`/`.env` key count 325/325, sensitive registry line count 184/184, secret ID count 107; repo contract가 로컬 파일 존재 시 metadata-only 숫자 drift를 차단.
 - analytics/laboratory version-family scan: analytics primary/decision stale phrases, Dozzle old tag, and PostgreSQL old scrape family phrase 0건; repo contract가 exact stale literal 재유입을 차단.
+- 04-data operational scan: `mng-db`/`supabase` guide, policy, runbook 문서에서 old Compose CLI command spelling, direct Studio host-port literal, template copyright residue, and obsolete shared-network literal 0건.
+- 04-data operational implementation mapping: `mng-db` docs now match compose services `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter`; Supabase docs now match data-profile services `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor`.
 - reference.template.md archive 언급: 0건(제약 이미 충족).
 - Local QA gate: `bash scripts/validation/run-local-qa-gates.sh` → PASS, repo contracts `failures=0`.
 

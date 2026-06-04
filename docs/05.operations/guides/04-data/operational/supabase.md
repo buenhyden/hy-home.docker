@@ -5,65 +5,88 @@ status: active
 
 # Supabase Usage Guide
 
+> Use this guide to understand and verify the current self-hosted Supabase stack.
+
+---
+
 ## Usage
 
 ### Overview (KR)
 
-이 문서는 `hy-home.docker` 환경에서 Supabase 플랫폼을 구성하고 운영하기 위한 가이드다. PostgreSQL 기반의 통합 백엔드 서비스(Auth, Realtime, Storage, Edge Functions)의 구조와 로컬 관리 방법을 설명한다.
->
-> Comprehensive guide for self-hosting Supabase in `hy-home.docker`.
-
----
+`supabase`는 `infra/04-data/operational/supabase/docker-compose.yml`에 선언된 `data` profile 기반의 통합 백엔드 플랫폼이다. 현재 구현은 PostgreSQL, Kong Gateway, Auth, REST, Realtime, Storage, Studio, Edge Functions, analytics/logging, pooler를 `infra_net` 안에서 구성하고, 외부 접근은 compose에 선언된 Kong 및 일부 관리 포트를 통해 제한한다.
 
 ### Usage Type
 
-`system-guide | how-to`
+`system-guide | operational-reference`
 
 ### Target Audience
 
-- Developer
 - Operator
-- AI Agents
+- Developer
+- SRE
+- AI Agent
 
 ### Purpose
 
-- Understand the Supabase stack components and their interactions.
-- Provide instructions for local setup and dashboard access.
-- Define service boundaries and integration points.
+이 가이드는 Supabase stack의 현재 서비스 구성, 접근 경로, secret 경계, 일반 확인 방법을 설명한다. 사용자는 직접 Studio host port를 가정하지 않고, compose가 선언한 Kong/API 경로와 운영 runbook을 기준으로 상태를 확인해야 한다.
 
 ### Prerequisites
 
-- Docker and Docker Compose installed.
-- Access to the `04-data/operational/supabase` directory.
-- Properly configured `.env` file.
-
-Copyright (c) 2026. Licensed under the MIT License.
-
----
+- Repository checkout at the project root.
+- Docker Compose access on the local or approved infrastructure host.
+- `DEFAULT_DATA_DIR` points to prepared Supabase config, storage, function, log, and database paths.
+- Docker Secret files referenced by the stack are prepared; secret values must not be copied into docs, logs, or commits.
 
 ### Step-by-step Instructions
 
-1. 관련 README와 기존 본문을 먼저 읽는다.
-2. 실제 compose/config 경로와 문서 설명이 일치하는지 확인한다.
-3. 변경이 필요하면 대응 템플릿과 상위 README 링크를 함께 갱신한다.
-4. 관련 검증 스크립트 또는 문서 audit를 실행한다.
+1. 현재 compose surface를 확인한다.
+
+   ```bash
+   docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data config --services
+   ```
+
+   Expected services: `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor`.
+
+2. 공개 접근 경로를 확인한다.
+
+   - Kong HTTP: `${SUPABASE_KONG_HTTP_HOST_PORT:-8000}:8000/tcp`
+   - Kong HTTPS: `${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp`
+   - Analytics: `${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000`
+   - Postgres/pooler: `${SUPABASE_POSTGRES_HOST_PORT:-5432}:5432`, `${SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT:-6543}:6543`
+   - Studio has no direct host port in the current compose file; use the approved route exposed by Kong and stack configuration.
+
+3. 서비스 상태를 확인한다.
+
+   ```bash
+   docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data ps studio kong auth rest realtime storage db analytics supavisor
+   ```
+
+4. 데이터와 config 경계를 확인한다.
+
+   Supabase runtime files are mounted from `${DEFAULT_DATA_DIR}/supabase/...`, including Kong config, storage, functions, database init SQL, logs, and pooler config. Update implementation docs and operations docs together when these mounts change.
 
 ### Common Pitfalls
 
-- guide 문서에 운영 정책이나 incident timeline을 섞지 않는다.
-- secret 값, token, 인증서 원문을 열람하거나 문서화하지 않는다.
-- runtime 변경이 필요한 경우 문서 보강과 별도 작업으로 분리한다.
+- Assuming Studio is available through a direct local host port; the current compose file does not publish one.
+- Bypassing Kong for public API access without an approved implementation change.
+- Writing `supabase_anon_key`, `supabase_service_key`, JWT secrets, dashboard credentials, SMTP passwords, or database passwords into docs or evidence.
+- Treating generated Kong or database config as documentation-only state; it is runtime configuration mounted from `${DEFAULT_DATA_DIR}`.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data config`
+- `docker compose -f infra/04-data/operational/supabase/docker-compose.yml --profile data ps`
+- Search the paired guide/policy/runbook for direct Studio host-port assumptions, old Compose CLI spelling, or template copyright remnants before committing.
+- Expected result: compose renders, services match the compose file, and stale Studio/direct-port or template remnants are absent.
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/operational/supabase.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은
+[recovery runbook](../../../runbooks/04-data/operational/supabase.md)을 따른다.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/operational/supabase.md)
 - [Recovery runbook](../../../runbooks/04-data/operational/supabase.md)
+- [Infrastructure service README](../../../../../infra/04-data/operational/supabase/README.md)
