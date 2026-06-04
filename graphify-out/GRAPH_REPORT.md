@@ -1,16 +1,16 @@
 # Graph Report - hy-home.docker  (2026-06-04)
 
 ## Corpus Check
-- 842 files · ~702,509 words
+- 842 files · ~703,188 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 14696 nodes · 14517 edges · 1108 communities (1031 shown, 77 thin omitted)
+- 14705 nodes · 14554 edges · 1108 communities (1031 shown, 77 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 332 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `60874c4c`
+- Built from commit: `fcde1ebc`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1170,8 +1170,8 @@ Cohesion: 0.20
 Nodes (12): AI Documentation Standardization Plan, Ollama Open WebUI Local AI, GPU OOM Mitigation, Open WebUI Implementation Plan, Open WebUI RAG Ollama Qdrant Integration, SSO and Healthcheck Separation, AI Hardening CI Gate, AI Optimization Hardening Plan (+4 more)
 
 ### Community 3 - "Airflow Airbyte Failure Worker"
-Cohesion: 0.08
-Nodes (36): Airbyte Runbook, Airbyte Sync Failure, Airbyte Worker Failure, Airflow Admin Password Reset, Airflow Metadata DB Error, Airflow n8n Hybrid Workflow Decision, Airflow Runbook, Airflow Valkey Broker (+28 more)
+Cohesion: 0.15
+Nodes (16): Airbyte Runbook, Airbyte Sync Failure, Airbyte Worker Failure, Airflow Admin Password Reset, Airflow Metadata DB Error, Airflow n8n Hybrid Workflow Decision, Airflow Runbook, Airflow Valkey Broker (+8 more)
 
 ### Community 4 - "Cassandra Couchdb Influxdb Ksqldb"
 Cohesion: 0.13
@@ -1194,12 +1194,12 @@ Cohesion: 0.20
 Nodes (11): infra_net Collision Detection, infra_net Dictionary Network Definition, infra_net IP Mapping Validation and Update Procedure, Dozzle Read-only Docker Socket, Laboratory Gateway Allowlist SSO Boundary, No Direct Dashboard Exposure, 11-Laboratory Optimization Hardening Operations Policy, 11-laboratory Operations Policies (+3 more)
 
 ### Community 9 - "Adr Hybrid Traefik Nginx"
-Cohesion: 0.14
-Nodes (16): Agent Design Child Document Pattern, Component Specifications, infra-secrets-docs-refresh Specifications, llm-wiki-agent-first-completion Specifications, Stage Traceability Contract, generate-llm-wiki-index Script, Infra Secrets Docs Refresh Specification, LLM Wiki Agent-first Completion Specification (+8 more)
+Cohesion: 0.22
+Nodes (10): Agent Design Child Document Pattern, Component Specifications, llm-wiki-agent-first-completion Specifications, Stage Specification Taxonomy, Stage Traceability Contract, Active Stage Taxonomy Contract, generate-llm-wiki-index Script, LLM Wiki Agent-first Completion Specification (+2 more)
 
 ### Community 10 - "Data Cluster Cassandra Hardening"
-Cohesion: 0.10
-Nodes (35): AppRole Bootstrap Procedure, Cassandra Operation Policy Runbook, Cassandra Service, data-hardening CI Job, Document Traceability Validation, Execution Plan, Execution Tasks, gateway-standard-chain Middleware (+27 more)
+Cohesion: 0.11
+Nodes (31): AppRole Bootstrap Procedure, Cassandra Operation Policy Runbook, Cassandra Service, Execution Plan, Execution Tasks, gateway-standard-chain Middleware, Graphify Health Report, Hardening Validation (+23 more)
 
 ### Community 11 - "Minio Mng Cassandra Exporter"
 Cohesion: 0.15
@@ -1302,8 +1302,8 @@ Cohesion: 0.10
 Nodes (21): Ollama Exporter Service, Ollama GPU Reservation, Ollama Model Volume, Ollama Service, Ollama Traefik Router, Open WebUI RAG Environment, Open WebUI Compose Service, Open WebUI Traefik Router (+13 more)
 
 ### Community 36 - "Hardening Oauth2 Proxy Gate"
-Cohesion: 0.29
-Nodes (7): ADR-0004 PostgreSQL HA Patroni, Etcd Cluster State, HAProxy pg-router, Spilo Patroni PostgreSQL HA, Data Optimization Hardening PRD, Supabase Healthcheck Contract, Valkey Secret Contract
+Cohesion: 0.17
+Nodes (12): ADR-0004 PostgreSQL HA Patroni, Etcd Cluster State, HAProxy pg-router, Spilo Patroni PostgreSQL HA, Auto-Unseal Transition Policy, Security Hardening Gate, Security Vault Optimization Hardening PRD, Vault Agent Secret Contract (+4 more)
 
 ### Community 37 - "Gateway Proxy Auth Architecture"
 Cohesion: 0.12
@@ -1326,8 +1326,8 @@ Cohesion: 0.13
 Nodes (15): SonarQube PostgreSQL Connection, SonarQube Compose Service, SonarQube Storage Volumes, SonarQube Traefik Router, Locust Load Generator, Private Registry Image Storage, SonarQube Code Quality, SonarQube PostgreSQL Integration (+7 more)
 
 ### Community 42 - "Opensearch Starrocks Influxdb Ksqldb"
-Cohesion: 0.19
-Nodes (15): Data Analytics Architecture Document, Grafana Dashboard, InfluxDB Runbook, InfluxDB Service, Kafka Broker, ksqlDB Runbook, ksqlDB Stream Processing, OpenSearch Cluster (+7 more)
+Cohesion: 0.25
+Nodes (11): Data Analytics Architecture Document, Grafana Dashboard, InfluxDB Runbook, InfluxDB Service, OpenSearch Cluster, OpenSearch Runbook, OpenSearch Shards, StarRocks Cluster (+3 more)
 
 ### Community 43 - "Airflow Airbyte N8n Celeryexecutor"
 Cohesion: 0.20
@@ -1622,8 +1622,8 @@ Cohesion: 0.07
 Nodes (26): annotations, list, description, editable, fiscalYearStartMonth, gnetId, graphTooltip, id (+18 more)
 
 ### Community 150 - "Community 150"
-Cohesion: 0.09
-Nodes (25): 1. Cluster Execution, 2. Work Breakdown, 3. Schema Registry Integration, 4. Data Pipeline with Connect, Common Checks, Common Pitfalls, Common Pitfalls, Implementation Snippet (+17 more)
+Cohesion: 0.10
+Nodes (26): 1. Cluster Execution, 2. Work Breakdown, 3. Schema Registry Integration, 4. Data Pipeline with Connect, Common Checks, Common Pitfalls, Common Pitfalls, Implementation Snippet (+18 more)
 
 ### Community 151 - "Community 151"
 Cohesion: 0.08
@@ -1650,8 +1650,8 @@ Cohesion: 0.08
 Nodes (25): 1. Admin Password Reset, Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Implementation Snippet (+17 more)
 
 ### Community 157 - "Community 157"
-Cohesion: 0.11
-Nodes (26): Alloy OTLP Connectivity, Alloy Operational Policy Runbook, CouchDB Cluster, CouchDB Operation Policy Runbook, Grafana Dashboard Provisioning, Grafana Datasource Connection Issue, Grafana Operational Policy Runbook, Grafana SSO Authentication Failure (+18 more)
+Cohesion: 0.08
+Nodes (44): Alertmanager Notification Failure, Alertmanager Operational Policy Runbook, Alertmanager Silence Misconfiguration, Alloy OTLP Connectivity, Alloy Operational Policy Runbook, CouchDB Cluster, CouchDB Operation Policy Runbook, Apache Airflow DAG Lifecycle (+36 more)
 
 ### Community 158 - "Community 158"
 Cohesion: 0.08
@@ -2114,8 +2114,8 @@ Cohesion: 0.10
 Nodes (20): AI Agent Guidance, Audience, Configuration, Environment Variables, Healthcheck Configuration, How to Work in This Area, In Scope, Manual Verification (+12 more)
 
 ### Community 273 - "Community 273"
-Cohesion: 0.10
-Nodes (19): 1. Simple Stream Creation, 2. Materialized Views, Common Checks, Common Pitfalls, ksqlDB Streaming Operations, ksqlDB Usage (05-messaging), Maintenance Tasks, Overview (KR) (+11 more)
+Cohesion: 0.09
+Nodes (23): 1. Simple Stream Creation, 2. Materialized Views, Archive Ledger, Archive Metadata, Archive Tombstone: ksqlDB Streaming Operations, Common Checks, Common Pitfalls, Current Replacement (+15 more)
 
 ### Community 274 - "Community 274"
 Cohesion: 0.10
@@ -2178,8 +2178,8 @@ Cohesion: 0.11
 Nodes (18): Common Checks, Common Pitfalls, Overview (KR), Prerequisites, Purpose, Related Documents, Runbook Handoff, secrets/ 경로 패턴 (+10 more)
 
 ### Community 289 - "Community 289"
-Cohesion: 0.11
-Nodes (18): AI Agent Guidance, Audience, Change Impact, Configuration, Environment Variables, How to Work in This Area, In Scope, Kafka Event Streaming Cluster (05-messaging) (+10 more)
+Cohesion: 0.17
+Nodes (19): AI Agent Guidance, Audience, Change Impact, Configuration, Environment Variables, How to Work in This Area, In Scope, Kafka Event Streaming (05-messaging) (+11 more)
 
 ### Community 290 - "Community 290"
 Cohesion: 0.11
@@ -2386,8 +2386,8 @@ Cohesion: 0.12
 Nodes (16): 04-Data Optimization Hardening Specification, Agent Role & IO Contract (If Applicable), Catalog-aligned Expansion Targets, Contracts, Core Design, Core Interfaces, Data Modeling & Storage Strategy, Edge Cases & Error Handling (+8 more)
 
 ### Community 341 - "Community 341"
-Cohesion: 0.12
-Nodes (16): 1. 연결 정보 및 인증, 2. Management UI 접속, 3. 주요 설정 가이드, 4. 클라이언트 연동 예시 (Python/pika), Common Checks, Common Pitfalls, Prerequisites, RabbitMQ Usage Guide (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. 연결 정보 및 인증, 1. 연결 정보 및 인증 경계, 2. Management UI 접속, 3. 주요 설정 가이드, 4. 클라이언트 연동 예시 (Python/pika), Common Checks, Common Pitfalls, Prerequisites (+9 more)
 
 ### Community 342 - "Community 342"
 Cohesion: 0.12
@@ -2482,8 +2482,8 @@ Cohesion: 0.12
 Nodes (16): 1. 클러스터 초기화 및 상태 확인, 2. 클라이언트 연결 설정 (Cluster Mode), 3. 데이터 파티셔닝 이해, Common Checks, Common Pitfalls, Common Pitfalls, Prerequisites, Runbook Handoff (+8 more)
 
 ### Community 365 - "Community 365"
-Cohesion: 0.18
-Nodes (17): Cache and KV Valkey Cluster Runbook, Data Architecture Document, 04-Data Specification, etcd Cluster, MongoDB Replica Set, MongoDB Operation Policy Runbook, NodeDiskSpaceFilled Alert, Patroni Failover (+9 more)
+Cohesion: 0.29
+Nodes (12): Cache and KV Valkey Cluster Runbook, Data Architecture Document, 04-Data Specification, etcd Cluster, NodeDiskSpaceFilled Alert, Patroni Failover, pg-router Traffic Routing, PostgreSQL HA Cluster (+4 more)
 
 ### Community 366 - "Community 366"
 Cohesion: 0.12
@@ -2526,8 +2526,8 @@ Cohesion: 0.12
 Nodes (16): AI Agent Guidance, Audience, Available Scripts, Configuration, How to Work in This Area, In Scope, Operational Status, Out of Scope (+8 more)
 
 ### Community 376 - "Community 376"
-Cohesion: 0.12
-Nodes (16): 1. Verification, 2. Maintenance, Audience, Available Scripts, How to Work in This Area, In Scope, Out of Scope, Overview (KR) (+8 more)
+Cohesion: 0.11
+Nodes (17): 1. Verification, 2. Maintenance, 2. Maintenance Boundary, Audience, Available Scripts, How to Work in This Area, In Scope, Out of Scope (+9 more)
 
 ### Community 377 - "Community 377"
 Cohesion: 0.12
@@ -2770,8 +2770,8 @@ Cohesion: 0.13
 Nodes (14): Agent Working Rules, Audience, Common Documentation Workflows, Documentation Lifecycle, Documentation Standards, How to Work in This Area, hy-home.docker, Overview (+6 more)
 
 ### Community 437 - "Community 437"
-Cohesion: 0.14
-Nodes (15): docs-taxonomy-agent-first-migration Specifications, harness-agent-first-engineering Specifications, Stage Specification Taxonomy, Active Stage Taxonomy Contract, Agent Governance Thin Root Shim Contract, Codex Boundary, Docs Taxonomy and AI Agent-first Contract Migration Specification, Governance SSOT (+7 more)
+Cohesion: 0.17
+Nodes (13): docs-taxonomy-agent-first-migration Specifications, harness-agent-first-engineering Specifications, Agent Governance Thin Root Shim Contract, Codex Boundary, Docs Taxonomy and AI Agent-first Contract Migration Specification, Governance SSOT, Graphify Context Health, Harness Agent-first Engineering Specification (+5 more)
 
 ### Community 438 - "Community 438"
 Cohesion: 0.13
@@ -2814,8 +2814,8 @@ Cohesion: 0.14
 Nodes (13): 1. Frequency & Retention, 2. Tools, 3. Verification, AI Agent Policy Section (If Applicable), Backup Policy, Controls, Exceptions, Overview (KR) (+5 more)
 
 ### Community 448 - "Community 448"
-Cohesion: 0.14
-Nodes (13): 1. Topic## Replication Policy, 2. Data## Retention Standards, 3.## Schema Governance, AI Agent Policy Section, Controls, Exceptions, Kafka Cluster Operations Policy (05-messaging) Operations Policy, Policy Scope (+5 more)
+Cohesion: 0.21
+Nodes (14): 1. Topic## Replication Policy, 2. Data## Retention Standards, 3.## Schema Governance, AI Agent Policy Section, Controls, Exceptions, Kafka Cluster Operations Policy (05-messaging) Operations Policy, Kafka Operations Policy (+6 more)
 
 ### Community 449 - "Community 449"
 Cohesion: 0.14
@@ -4370,8 +4370,8 @@ Cohesion: 0.20
 Nodes (10): Common Optimizations Coverage Snapshot, Infra Service Optimization Priority Plan, Infra Service Optimization Catalog, Priority Score Model, 2026 Q2 Q3 Quarterly Roadmap, Tier Weight Model, Auth Fail-Closed Security Posture, Auth Optimization Hardening Plan (+2 more)
 
 ### Community 837 - "Community 837"
-Cohesion: 0.14
-Nodes (15): Workflow Hardening Gate, AI Hardening Gate, Tooling Gateway SSO Policy, Tooling Hardening Gate, Tooling infra_net Boundary, Tooling Optimization Hardening PRD, Dashboard Traefik-only Exposure, Dozzle Read-only Docker Socket (+7 more)
+Cohesion: 0.20
+Nodes (10): Workflow Hardening Gate, AI Hardening Gate, Tooling Hardening Gate, Tooling infra_net Boundary, Tooling Optimization Hardening PRD, Laboratory Hardening Gate, 172.19.0.0/16 IPAM, infra_net Network (+2 more)
 
 ### Community 838 - "Community 838"
 Cohesion: 0.20
@@ -4582,8 +4582,8 @@ Cohesion: 0.33
 Nodes (5): sync-provider-surfaces.sh script, gen_codex_agent(), gen_gemini_agent(), gen_gemini_skill(), sync_file()
 
 ### Community 890 - "Community 890"
-Cohesion: 0.31
-Nodes (9): Loki MinIO Connection Failure, MinIO Object Storage, MinIO Object Storage Runbook, S3 API, SeaweedFS Cluster, SeaweedFS Filer, SeaweedFS Master, SeaweedFS Runbook (+1 more)
+Cohesion: 0.12
+Nodes (22): data-hardening CI Job, Document Traceability Validation, Kafka Broker, ksqlDB Runbook, ksqlDB Stream Processing, Loki MinIO Connection Failure, MinIO Object Storage, MinIO Object Storage Runbook (+14 more)
 
 ### Community 891 - "Community 891"
 Cohesion: 0.22
@@ -4878,8 +4878,8 @@ Cohesion: 0.29
 Nodes (7): Execution Operations Traceability Cleanup, Healthcheck Control, No New Privileges Control, Quick Wins Baseline, Resource Limits Control, Restart Policy Control, Secrets and Vault Control
 
 ### Community 964 - "Community 964"
-Cohesion: 0.20
-Nodes (10): ADR-0005 Polyglot Messaging, Apache Kafka Event Backbone, Kafka KRaft Mode, RabbitMQ Task Queue, Kafka UI Pinned Image, Messaging Gateway SSO Policy, Messaging Optimization Hardening PRD, Observability Gateway SSO Policy (+2 more)
+Cohesion: 0.13
+Nodes (16): ADR-0005 Polyglot Messaging, Apache Kafka Event Backbone, Kafka KRaft Mode, RabbitMQ Task Queue, ADR-0006 LGTM Stack Alloy, Grafana Alloy, Grafana LGTM Stack, MinIO S3 Backend (+8 more)
 
 ### Community 965 - "Community 965"
 Cohesion: 0.29
@@ -5038,8 +5038,8 @@ Cohesion: 0.33
 Nodes (6): 07-Workflow Optimization Hardening Technical Specification, Airflow and n8n Workflow Runtime, Airflow Valkey Health Dependency, n8n Queue Mode and Secret Guard, check-workflow-hardening Policy Gate, Workflow Hardening Control Surface
 
 ### Community 1004 - "Community 1004"
-Cohesion: 0.29
-Nodes (7): Auto-Unseal Transition Policy, Security Hardening Gate, Security Vault Optimization Hardening PRD, Vault Agent Secret Contract, Data Hardening Gate, Messaging Hardening Gate, Observability Hardening Gate
+Cohesion: 0.25
+Nodes (8): infra-secrets-docs-refresh Specifications, Infra Secrets Docs Refresh Specification, LLM Wiki Safe Path Filters, README Base Headings, Root-active Optional Standalone Compose Boundary, Secret Inventory Classification, Secret Value Non-access Guardrail, Stage Document Template Families
 
 ### Community 1005 - "Community 1005"
 Cohesion: 0.70
@@ -5122,8 +5122,8 @@ Cohesion: 0.18
 Nodes (10): Completion Criteria, Context, Goals & In-Scope, Governance Surgical Re-Verification + Tech-Stack Drift Closure Implementation Plan, Non-Goals & Out-of-Scope, Overview (KR), Related Documents, Risks & Mitigations (+2 more)
 
 ### Community 1068 - "Community 1068"
-Cohesion: 0.33
-Nodes (6): ADR-0006 LGTM Stack Alloy, Grafana Alloy, Grafana LGTM Stack, MinIO S3 Backend, Loki Tempo Runtime Hardening, Observability Optimization Hardening PRD
+Cohesion: 0.29
+Nodes (7): Workflow Gateway SSO Policy, AI Gateway SSO Policy, Tooling Gateway SSO Policy, Dashboard Traefik-only Exposure, Dozzle Read-only Docker Socket, Laboratory Gateway SSO Allowlist, Laboratory Optimization Hardening PRD
 
 ### Community 1069 - "Community 1069"
 Cohesion: 0.48
@@ -5274,8 +5274,8 @@ Cohesion: 0.22
 Nodes (8): 04-Data Backup Policy, Controls, Exceptions, Overview (KR), Policy Scope, Related Documents, Review Cadence, Verification
 
 ### Community 1107 - "Community 1107"
-Cohesion: 0.67
-Nodes (3): Apache Airflow DAG Lifecycle, DAG Deployment Operations Policy, Operations Policies 07 Workflow Index
+Cohesion: 0.40
+Nodes (5): Kafka KRaft Quorum Recovery, Kafka Partition Rebalancing, Kafka Cluster Operations Policy Runbook, Messaging Architecture ARD, Schema Registry Incompatibility
 
 ## Ambiguous Edges - Review These
 - `Alertmanager Critical Route` → `Alertmanager SMTP Placeholders`  [AMBIGUOUS]
@@ -5284,7 +5284,7 @@ Nodes (3): Apache Airflow DAG Lifecycle, DAG Deployment Operations Policy, Opera
   infra/06-observability/docker-compose.yml · relation: references
 
 ## Knowledge Gaps
-- **9920 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+9915 more)
+- **9901 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+9896 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **77 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -5295,12 +5295,12 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **What is the exact relationship between `cadvisor Compose Service` and `pyroscope Compose Service`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **Why does `Qdrant Runbook` connect `First Specifications Specification Contract` to `Airflow Airbyte Failure Worker`, `Community 821`, `Community 157`?**
+- **Why does `Qdrant Runbook` connect `First Specifications Specification Contract` to `Community 821`, `Community 157`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **Why does `Qdrant Snapshot Recovery` connect `Community 821` to `First Specifications Specification Contract`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **What connects `printWidth`, `singleQuote`, `semi` to the rest of the system?**
-  _10493 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _10474 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Prometheus Alert Rule Group` be split into smaller, more focused modules?**
   _Cohesion score 0.09682539682539683 - nodes in this community are weakly interconnected._
 - **Should `Tier Product Requirements Oauth2` be split into smaller, more focused modules?**
