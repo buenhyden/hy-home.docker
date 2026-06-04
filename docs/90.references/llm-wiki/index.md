@@ -519,6 +519,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/04.execution/tasks/2026-06-02-docs-implementation-reconciliation.md](../../04.execution/tasks/2026-06-02-docs-implementation-reconciliation.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-02-governance-optimization.md](../../04.execution/tasks/2026-06-02-governance-optimization.md) | Markdown reference |
 | [docs/04.execution/tasks/2026-06-03-governance-surgical-reverification.md](../../04.execution/tasks/2026-06-03-governance-surgical-reverification.md) | Markdown reference |
+| [docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md](../../04.execution/tasks/2026-06-04-docs-implementation-audit.md) | Markdown reference |
 | [docs/04.execution/tasks/README.md](../../04.execution/tasks/README.md) | folder index |
 
 ### Operations docs
@@ -1103,6 +1104,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [scripts/validation/check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) | script |
 | [scripts/validation/check-storybook-contract.sh](../../../scripts/validation/check-storybook-contract.sh) | script |
 | [scripts/validation/check-template-security-baseline.sh](../../../scripts/validation/check-template-security-baseline.sh) | script |
+| [scripts/validation/run-local-qa-gates.sh](../../../scripts/validation/run-local-qa-gates.sh) | script |
 | [scripts/validation/validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) | script |
 
 ### GitHub workflow surface
