@@ -39,10 +39,10 @@ status: active
 
 - **Component Boundary**: Dockerized SvelteKit frontend + Python FastAPI backend.
 - **Key Dependencies**:
-  - `ghcr.io/open-webui/open-webui:v0.8.5-cuda`
+  - `ghcr.io/open-webui/open-webui:v0.9.6-cuda`
   - `ollama` (inference)
   - `qdrant` (vector storage)
-- **SPEC-OPENWEBUI-01**: Open WebUI Docker Image: `ghcr.io/open-webui/open-webui:v0.8.5-cuda`
+- **SPEC-OPENWEBUI-01**: Open WebUI Docker Image: `ghcr.io/open-webui/open-webui:v0.9.6-cuda`
 - **SPEC-OPENWEBUI-02**: Ollama Integration via `OLLAMA_BASE_URL` env.
 - **SPEC-OPENWEBUI-03**: Qdrant Integration via `VECTOR_DB_URL` env.
 - **SPEC-OPENWEBUI-04**: Persistent volume: `${DEFAULT_AI_MODEL_DIR}/open-webui:/app/backend/data`.

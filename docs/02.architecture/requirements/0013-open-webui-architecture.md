@@ -65,7 +65,7 @@ Open WebUI is deployed as a Docker container within the `ai` tier. It sits behin
 
 ## AI Agent Architecture Requirements (If Applicable)
 
-- **Model/Provider Strategy**: Local Ollama backend using `ghcr.io/open-webui/open-webui:v0.8.5-cuda`.
+- **Model/Provider Strategy**: Local Ollama backend using `ghcr.io/open-webui/open-webui:v0.9.6-cuda`.
 - **Tooling Boundary**: Access to Ollama API for model listing and RAG indexing.
 - **Memory & Context Strategy**: SQLite-based chat persistence.
 - **Guardrail Boundary**: SSO access control and GPU resource limits.

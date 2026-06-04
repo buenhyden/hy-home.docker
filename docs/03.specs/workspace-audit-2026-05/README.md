@@ -6,7 +6,7 @@
 
 ## Overview
 
-`docs/03.specs/workspace-audit-2026-05`는 2026-05 워크스페이스 감사 세션의 범위, 경계, 계약을 정의하는 기술 사양을 포함합니다. 거버넌스 규칙, 문서 라이프사이클, 스크립트, Docker Compose 인프라, env/secrets 계약을 대상으로 저위험 변경을 구현하고 중/고위험 항목은 deferred로 기록합니다.
+`docs/03.specs/workspace-audit-2026-05`는 완료된 2026-05 워크스페이스 감사 세션의 범위, 경계, 계약을 보존하는 기술 사양을 포함합니다. 거버넌스 규칙, 문서 라이프사이클, 스크립트, Docker Compose 인프라, env/secrets 계약을 대상으로 저위험 변경을 구현하고 중/고위험 항목은 당시 deferred baseline으로 기록합니다. 현재 구현 상태는 최신 QA 게이트와 후속 task evidence를 우선합니다.
 
 ## Audience
 
@@ -21,7 +21,7 @@
 ### In Scope
 
 - 2026-05 감사 세션 기술 계약 및 구현 경계
-- 저위험 변경 대상과 deferred 항목 명세
+- 당시 저위험 변경 대상과 deferred baseline 명세
 
 ### Out of Scope
 

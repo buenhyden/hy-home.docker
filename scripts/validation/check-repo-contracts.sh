@@ -246,6 +246,51 @@ if rg -n 'docs/(0[1-9]~0?9|01~09|01~10|01-03|01-09)|docs/01[[:space:]]*[–-][[:
 fi
 rm -f /tmp/check-repo-contracts-taxonomy-shorthand.txt
 
+section "Stage docs IP placeholder drift"
+if rg -n 'ipv4_address:[[:space:]]*172\.(18|19)\.0\.X{1,3}|172\.19\.0\.X{1,3}|172\.18\.0\.X{1,3}' \
+  docs/01.requirements docs/02.architecture docs/03.specs docs/04.execution docs/05.operations \
+  --glob '*.md' >/tmp/check-repo-contracts-ip-placeholders.txt; then
+  fail "stage docs contain concrete-network IP placeholders; use authoritative mapping examples instead"
+  cat /tmp/check-repo-contracts-ip-placeholders.txt >&2
+fi
+rm -f /tmp/check-repo-contracts-ip-placeholders.txt
+
+section "Metadata comparison guide drift"
+env_comparison_doc="docs/05.operations/guides/env-key-comparison.md"
+if [[ -f ".env.example" && -f ".env" && -f "$env_comparison_doc" ]]; then
+  env_example_keys="$(awk -F= '/^[A-Za-z_][A-Za-z0-9_]*=/{count++} END{print count+0}' .env.example)"
+  env_actual_keys="$(awk -F= '/^[A-Za-z_][A-Za-z0-9_]*=/{count++} END{print count+0}' .env)"
+  if ! grep -Eq "\\| \`\\.env\\.example\` 키 수[[:space:]]*\\|[[:space:]]*${env_example_keys}[[:space:]]*\\|" "$env_comparison_doc"; then
+    fail "$env_comparison_doc does not record current .env.example key count: $env_example_keys"
+  fi
+  if ! grep -Eq "\\| \`\\.env\` 키 수[[:space:]]*\\|[[:space:]]*${env_actual_keys}[[:space:]]*\\|" "$env_comparison_doc"; then
+    fail "$env_comparison_doc does not record current .env key count: $env_actual_keys"
+  fi
+  mapfile -t env_example_only < <(comm -23 <(awk -F= '/^[A-Za-z_][A-Za-z0-9_]*=/{print $1}' .env.example | sort) <(awk -F= '/^[A-Za-z_][A-Za-z0-9_]*=/{print $1}' .env | sort))
+  mapfile -t env_actual_only < <(comm -13 <(awk -F= '/^[A-Za-z_][A-Za-z0-9_]*=/{print $1}' .env.example | sort) <(awk -F= '/^[A-Za-z_][A-Za-z0-9_]*=/{print $1}' .env | sort))
+  if [[ "${#env_example_only[@]}" -gt 0 || "${#env_actual_only[@]}" -gt 0 ]]; then
+    fail ".env.example and .env key sets differ; update keys or env-key-comparison.md"
+    printf '  only in .env.example: %s\n' "${env_example_only[*]:-(none)}" >&2
+    printf '  only in .env: %s\n' "${env_actual_only[*]:-(none)}" >&2
+  fi
+fi
+
+sensitive_comparison_doc="docs/05.operations/guides/sensitive-env-vars-comparison.md"
+if [[ -f "secrets/SENSITIVE_ENV_VARS.md.example" && -f "secrets/SENSITIVE_ENV_VARS.md" && -f "$sensitive_comparison_doc" ]]; then
+  sensitive_example_lines="$(wc -l < secrets/SENSITIVE_ENV_VARS.md.example | tr -d '[:space:]')"
+  sensitive_actual_lines="$(wc -l < secrets/SENSITIVE_ENV_VARS.md | tr -d '[:space:]')"
+  sensitive_example_ids="$(rg -o '\b[A-Z]+-[0-9]{3}\b' secrets/SENSITIVE_ENV_VARS.md.example | sort -u | wc -l | tr -d '[:space:]')"
+  if ! grep -Eq "\\| Example 파일 라인 수[[:space:]]*\\|[[:space:]]*${sensitive_example_lines}[[:space:]]*\\|" "$sensitive_comparison_doc"; then
+    fail "$sensitive_comparison_doc does not record current sensitive example line count: $sensitive_example_lines"
+  fi
+  if ! grep -Eq "\\| 실제 파일 라인 수[[:space:]]*\\|[[:space:]]*${sensitive_actual_lines}[[:space:]]*\\|" "$sensitive_comparison_doc"; then
+    fail "$sensitive_comparison_doc does not record current sensitive local line count: $sensitive_actual_lines"
+  fi
+  if ! grep -Eq "\\| 총 secret ID 수 \\(example\\)[[:space:]]*\\|[[:space:]]*$sensitive_example_ids unique IDs[[:space:]]*\\|" "$sensitive_comparison_doc"; then
+    fail "$sensitive_comparison_doc does not record current sensitive example unique ID count: $sensitive_example_ids"
+  fi
+fi
+
 section "Operations target comments"
 if ! python3 - <<'PY'; then
 from __future__ import annotations
@@ -292,6 +337,7 @@ if ! python3 - <<'PY'; then
 from __future__ import annotations
 
 import pathlib
+import re
 import sys
 
 required = {
@@ -312,6 +358,27 @@ for bucket in ["guides", "policies", "runbooks"]:
         if path.name == "README.md":
             continue
         text = path.read_text(errors="ignore")
+        rel = path.relative_to(root)
+        expected_tier = rel.parts[0] if len(rel.parts) > 1 else None
+        if expected_tier:
+            for match in re.finditer(r"<!--\s*\[ID:([^\]]+)\]\s*-->", text):
+                actual_tier = match.group(1).split(":", 1)[0]
+                if actual_tier != expected_tier:
+                    failures.append(
+                        f"{path}: operations ID tier {actual_tier!r} does not match path tier {expected_tier!r}"
+                    )
+        if bucket == "guides":
+            usage_type_count = sum(1 for line in text.splitlines() if line.strip() == "### Usage Type")
+            if usage_type_count > 1:
+                failures.append(
+                    f"{path}: guide document must not contain duplicate ### Usage Type headings; found {usage_type_count}"
+                )
+        if bucket == "policies":
+            policy_scope_count = sum(1 for line in text.splitlines() if line.strip() == "## Policy Scope")
+            if policy_scope_count != 1:
+                failures.append(
+                    f"{path}: policy document must contain exactly one ## Policy Scope heading; found {policy_scope_count}"
+                )
         for literal in required[bucket]:
             if literal not in text:
                 failures.append(f"{path}: missing {bucket} profile heading: {literal}")
@@ -3138,6 +3205,7 @@ expected_implementations = {
     pathlib.Path("scripts/validation/check-doc-traceability.sh"),
     pathlib.Path("scripts/validation/check-quickwin-baseline.sh"),
     pathlib.Path("scripts/validation/check-template-security-baseline.sh"),
+    pathlib.Path("scripts/validation/run-local-qa-gates.sh"),
     pathlib.Path("scripts/hardening/check-all-hardening.sh"),
     pathlib.Path("scripts/hooks/agent-event-hook.sh"),
     pathlib.Path("scripts/hooks/patch-graphify-post-commit.sh"),
@@ -3353,6 +3421,63 @@ for index, entry in enumerate(entries, start=1):
     for image in images:
         if image not in discovered:
             failures.append(f"{registry_path}: {component} expected image not declared in listed compose files: {image}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
+section "Documentation runtime version drift"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import sys
+
+stage_roots = [
+    pathlib.Path("docs/01.requirements"),
+    pathlib.Path("docs/02.architecture"),
+    pathlib.Path("docs/03.specs"),
+    pathlib.Path("docs/04.execution"),
+    pathlib.Path("docs/05.operations"),
+]
+
+stale_literals = {
+    "v3.6.8": "Traefik is declared as traefik:v3.7.1",
+    "v3.6.12": "Traefik is declared as traefik:v3.7.1",
+    "26.5.4": "Keycloak is declared as quay.io/keycloak/keycloak:26.6.2-2",
+    "7.14.2": "OAuth2 Proxy Dockerfile uses quay.io/oauth2-proxy/oauth2-proxy:v7.15.2",
+    "hashicorp/vault:1.21.4": "Vault is declared as hashicorp/vault:2.0.1",
+    "Confluent CP 8.1.1": "Kafka is declared as confluentinc/cp-kafka:8.2.1",
+    "RabbitMQ 4.2": "RabbitMQ is declared as rabbitmq:4.3.1-management-alpine",
+    "kafbat/kafka-ui:v1.4.2": "Kafbat UI is declared as kafbat/kafka-ui:v1.5.0",
+    "v0.8.5-cuda": "Open WebUI is declared as ghcr.io/open-webui/open-webui:v0.9.6-cuda",
+    "v12.3.3": "Grafana is declared as grafana/grafana:13.0.2",
+    "v2.10.x": "Airflow is declared as apache/airflow:3.2.2",
+    "v1.11.2": "Pushgateway is declared as prom/pushgateway:v1.11.3",
+    "Pyroscope (v1.18.1)": "Pyroscope is declared as grafana/pyroscope:2.0.2",
+    "v1.17-unprivileged": "Qdrant is declared as qdrant/qdrant:v1.18.1-unprivileged",
+    "neo4j:5.26.23-community": "Neo4j is declared as neo4j:5.26.26-community",
+    "v10.2.0": "Dozzle is declared as amir20/dozzle:v10.6.4",
+    "PostgreSQL (v16+)": "PostgreSQL services are currently PostgreSQL 17/18 family images",
+    "InfluxDB 2.x 채택": "InfluxDB 3.x Core is the primary compose; InfluxDB 2.x is legacy compose only",
+    "OpenSearch 2.x 채택": "OpenSearch 3.x is the current analytics implementation family",
+    "StarRocks 3.x 채택": "StarRocks 4.x is the current analytics implementation family",
+    "Primary Tech Stack: InfluxDB 2.x, ksqlDB 0.29+, OpenSearch 2.x, StarRocks 3.x": "analytics ARD must describe the current compose-backed version families",
+    "Tech Stack**: Docker, InfluxDB 2.x, ksqlDB, OpenSearch 2.x, StarRocks.": "analytics spec must describe the current compose-backed version families",
+}
+
+failures: list[str] = []
+for root in stage_roots:
+    for path in sorted(root.rglob("*.md")):
+        text = path.read_text(errors="ignore")
+        for line_no, line in enumerate(text.splitlines(), start=1):
+            for stale, replacement in stale_literals.items():
+                if stale in line:
+                    failures.append(f"{path}:{line_no}: stale runtime version {stale!r}; {replacement}")
 
 if failures:
     for failure in failures:

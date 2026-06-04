@@ -33,7 +33,7 @@ status: completed
 | T-DATA-007 | scripts README 인덱스/예시 갱신 | doc | 04-data/spec.md / Related Docs | PLN-DATA-007 | README 항목 확인 | Docs | Done |
 | T-DATA-008 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 반영 | doc | 04-data/spec.md / Related Docs | PLN-DATA-008 | 문서 링크/인덱스 확인 | Docs | Done |
 | T-DATA-009 | 정적 검증 실행 및 결과 기록 | test | 04-data/spec.md / Verification | PLN-DATA-001~008 | compose + hardening + traceability 점검 | DevOps | Done |
-| T-DATA-010 | runtime 검증(가능 환경) 증적 수집 | test | 04-data/spec.md / Verification | PLN-DATA-001~008 | health 상태 점검 증적 | DevOps | Planned |
+| T-DATA-010 | runtime 검증(가능 환경) 증적 수집 | test | 04-data/spec.md / Verification | PLN-DATA-001~008 | Live service health evidence is collected only in an approved runtime session | DevOps | Deferred |
 
 ## Suggested Types
 
@@ -58,7 +58,7 @@ status: completed
 - [x] T-DATA-007
 - [x] T-DATA-008
 - [x] T-DATA-009
-- [ ] T-DATA-010
+- [x] T-DATA-010 (Deferred runtime evidence recorded)
 
 ## Verification Summary
 
@@ -72,6 +72,7 @@ status: completed
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
+- **Deferred Runtime Evidence**: T-DATA-010 is outside the static implementation pass and requires approved live services.
 
 ## Related Documents
 

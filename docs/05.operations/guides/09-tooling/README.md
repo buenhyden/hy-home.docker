@@ -52,6 +52,7 @@ guides/09-tooling/
 
 1. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
 2. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
+3. leaf 문서의 ID 주석은 현재 경로 tier와 같은 `09-tooling:<service>` 형식을 사용합니다.
 
 ## Contents
 

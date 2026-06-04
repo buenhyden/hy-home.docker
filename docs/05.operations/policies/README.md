@@ -58,6 +58,7 @@ policies/
 
 1. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
 2. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
+3. policy leaf 문서는 `docs/99.templates/policy.template.md`의 단일 `## Policy Scope` 섹션에 시스템, 구성 파일, agent, environment 범위를 함께 기록합니다.
 
 ## Contents
 

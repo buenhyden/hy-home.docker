@@ -8,18 +8,36 @@ qa_ci_prepend_path() {
   esac
 }
 
-qa_ci_node_bin="${QA_CI_NODE_BIN:-$HOME/.nvm/versions/node/v24.14.0/bin}"
+qa_ci_add_dir() {
+  if [ -d "$1" ]; then
+    qa_ci_prepend_path "$1"
+  fi
+}
 
-if [ -d "$qa_ci_node_bin" ]; then
-  qa_ci_prepend_path "$qa_ci_node_bin"
+qa_ci_node_bin="${QA_CI_NODE_BIN:-}"
+
+if [ -z "$qa_ci_node_bin" ]; then
+  qa_ci_nvm_root="${NVM_DIR:-$HOME/.nvm}"
+  if [ -d "$qa_ci_nvm_root/versions/node" ]; then
+    for qa_ci_candidate in "$qa_ci_nvm_root"/versions/node/*/bin; do
+      if [ -d "$qa_ci_candidate" ]; then
+        qa_ci_node_bin="$qa_ci_candidate"
+      fi
+    done
+  fi
 fi
 
-if [ -d "$HOME/go/bin" ]; then
-  qa_ci_prepend_path "$HOME/go/bin"
-fi
+qa_ci_add_dir "$qa_ci_node_bin"
+qa_ci_add_dir "$HOME/go/bin"
+qa_ci_add_dir "$HOME/.local/bin"
 
-if [ -d "$HOME/.local/bin" ]; then
-  qa_ci_prepend_path "$HOME/.local/bin"
+if [ -n "${QA_CI_EXTRA_PATHS:-}" ]; then
+  old_ifs="$IFS"
+  IFS=:
+  for qa_ci_extra_dir in $QA_CI_EXTRA_PATHS; do
+    qa_ci_add_dir "$qa_ci_extra_dir"
+  done
+  IFS="$old_ifs"
 fi
 
 export PATH

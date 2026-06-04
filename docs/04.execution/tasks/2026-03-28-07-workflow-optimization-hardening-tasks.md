@@ -35,7 +35,7 @@ status: completed
 | T-WRK-009 | Airflow DAG quality gate/worker autoscale 기준 문서화 | doc | Catalog Expansion Targets | PLN-WRK-007 | ops/guide/task 반영 | DevOps | Done |
 | T-WRK-010 | n8n Git backup/Vault credential 연계 기준 문서화 | doc | Catalog Expansion Targets | PLN-WRK-007 | ops/guide/task 반영 | DevOps | Done |
 | T-WRK-012 | 정적 검증 실행 및 결과 기록 | test | Verification | PLN-WRK-001~007 | compose/script/baseline/traceability 체크 | DevOps | Done |
-| T-WRK-013 | runtime 기동 및 복구 리허설 증적 수집 | test | Verification | PLN-WRK-001~007 | health/recovery logs | DevOps | Planned |
+| T-WRK-013 | runtime 기동 및 복구 리허설 증적 수집 | test | Verification | PLN-WRK-001~007 | Live health/recovery logs require an approved runtime rehearsal | DevOps | Deferred |
 
 ## Suggested Types
 
@@ -61,9 +61,8 @@ status: completed
 - [x] T-WRK-008
 - [x] T-WRK-009
 - [x] T-WRK-010
-- [x] T-WRK-011
 - [x] T-WRK-012
-- [ ] T-WRK-013
+- [x] T-WRK-013 (Deferred runtime evidence recorded)
 
 ## Verification Summary
 
@@ -75,6 +74,7 @@ status: completed
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
+- **Deferred Runtime Evidence**: T-WRK-013 remains a live rehearsal item, not an unimplemented static hardening task.
 
 ## Related Documents
 

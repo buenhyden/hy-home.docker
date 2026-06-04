@@ -17,8 +17,6 @@ status: active
 
 메일 서버(Stalwart)의 보안 설정, 계정 관리, 데이터 백업 및 개발용 트랩(MailHog)의 운영 범위를 규정합니다.
 
-## Policy Scope
-
 - **Systems**: Stalwart, MailHog
 - **Agents**: Kubernetes/Docker Operator
 - **Environments**: Production (Stalwart), Development (MailHog)

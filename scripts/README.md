@@ -20,7 +20,7 @@
 
 ### In Scope
 
-- Repository validation, implementation-alignment checks, contract checks, and agent event hook automation scripts.
+- Repository validation, implementation-alignment checks, contract checks, local QA gate orchestration, and agent event hook automation scripts.
 - Repo-local LLM Wiki index generation and freshness checks.
 - Tier hardening checks and their shared helper library.
 - Local preflight validation mode and safe secret file generation utility.
@@ -61,7 +61,7 @@ were removed by the 2026-05-17 cleanup; use tier arguments instead.
 
 | Purpose    | Canonical paths                                                                                                                                                                                                                                                                                                                                                        |
 | :--------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh` |
+| Validation | `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/validation/run-local-qa-gates.sh` |
 | Hardening  | `scripts/hardening/check-all-hardening.sh`                                                                                                                                                                                                                                                                                                                             |
 | Hooks      | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/patch-graphify-post-commit.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                              |
 | Knowledge  | `scripts/knowledge/generate-llm-wiki-index.sh`, `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                          |
@@ -106,6 +106,7 @@ script.
 | Template & Security Baseline Check     | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh)     | Enforce template adoption and required security controls                                                                                                                                                        |
 | Documentation Implementation Alignment | [check-doc-implementation-alignment.sh](./validation/check-doc-implementation-alignment.sh) | Validate active Stage 01-05 docs against tracked implementation surfaces, removed template names, archive index-only links, operations service coverage, scripts, and workflow paths                            |
 | Documentation Traceability Check       | [check-doc-traceability.sh](./validation/check-doc-traceability.sh)                         | Enforce sync links across 04.execution/plans ↔ 05.operations                                                                                                                                                    |
+| Local QA Gate Runner                    | [run-local-qa-gates.sh](./validation/run-local-qa-gates.sh)                                 | Run locally reproducible script-backed QA/CI gates and list remote-only CI responsibilities                                                                                                                     |
 | LLM Wiki Index Generator               | [generate-llm-wiki-index.sh](./knowledge/generate-llm-wiki-index.sh)                        | Generate and check the repo-local LLM Wiki path index                                                                                                                                                           |
 | Graphify Health Report                 | [report-graphify-health.sh](./knowledge/report-graphify-health.sh)                          | Report advisory health of generated Graphify corpus without blocking validation                                                                                                                                 |
 | Agent Event Hook                       | [agent-event-hook.sh](./hooks/agent-event-hook.sh)                                          | Dispatch Claude/Codex hook events, including template-first target-stage docs guidance, governance memory guidance, post-edit style validation/formatting, logical commit completion reminders, and Stop gating |
@@ -140,7 +141,7 @@ tier. Without arguments, all supported tiers are checked.
 
 | Lifecycle                   | Scripts                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CI / quality gate           | `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/knowledge/generate-llm-wiki-index.sh --check` |
+| CI / quality gate           | `scripts/validation/run-local-qa-gates.sh`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-implementation-alignment.sh`, `scripts/validation/validate-docker-compose.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/check-storybook-contract.sh`, `scripts/validation/check-quickwin-baseline.sh`, `scripts/validation/check-template-security-baseline.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/knowledge/generate-llm-wiki-index.sh --check` |
 | Advisory evidence           | `scripts/knowledge/report-graphify-health.sh`                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | Runtime hook                | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                                                                                                                                 |
 | Tier hardening              | `scripts/hardening/check-all-hardening.sh <tier>`                                                                                                                                                                                                                                                                                                                                                                                                                          |
@@ -159,6 +160,12 @@ payload or no changed paths, it exits successfully without running validators.
 Use `--check` or `POST_TOOL_VALIDATE_CHECK_ONLY=1` to run non-mutating
 validation; check-only mode disables whitespace writes and `shfmt -w` while
 preserving diff, syntax, and repo checks.
+
+`scripts/validation/run-local-qa-gates.sh` is the local script-backed QA/CI
+orchestrator. Default mode runs only checks that are safe to execute locally.
+Use `--list` to see local, CI/local-tooling, and remote-only responsibilities.
+Use `--all-profiles` to run the same local gates with the governed all-profile
+Compose set unless `HYHOME_COMPOSE_PROFILES` is already set.
 
 Repo-local Hookify metadata validation currently supports only `bash`, `file`,
 and `stop` events, as enforced by
@@ -199,6 +206,12 @@ HYHOME_COMPOSE_PROFILES="core dev" ./scripts/validation/check-quickwin-baseline.
 
 # Enforce documentation traceability sync
 ./scripts/validation/check-doc-traceability.sh
+
+# Run locally reproducible QA/CI gates
+./scripts/validation/run-local-qa-gates.sh
+
+# Show local vs remote-only QA/CI responsibilities
+./scripts/validation/run-local-qa-gates.sh --list
 
 # Generate the repo-local LLM Wiki path index
 bash scripts/knowledge/generate-llm-wiki-index.sh

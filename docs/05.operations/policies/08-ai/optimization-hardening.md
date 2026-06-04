@@ -15,8 +15,6 @@ status: active
 - `infra/08-ai/open-webui/docker-compose.yml`
 - `scripts/hardening/check-all-hardening.sh 08-ai`
 
-## Policy Scope
-
 - **Systems**: Ollama, Ollama Exporter, Open WebUI
 - **Agents**: Infra/DevOps/Operations agents
 - **Environments**: Local, Dev, Stage, Production-like

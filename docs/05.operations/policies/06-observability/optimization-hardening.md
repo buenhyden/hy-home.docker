@@ -16,8 +16,6 @@ status: active
 - `infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
 - `scripts/hardening/check-all-hardening.sh 06-observability`
 
-## Policy Scope
-
 - **Systems**: Prometheus, Alertmanager, Grafana, Loki, Tempo, Alloy, Pushgateway, Pyroscope, cAdvisor
 - **Agents**: Infra/DevOps/Operations agents
 - **Environments**: Local, Dev, Stage, Production-like

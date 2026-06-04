@@ -49,7 +49,7 @@ Neo4j Community Edition은 인스턴스를 중지한 후 오프라인 덤프를 
    docker run --rm \
      --volumes-from neo4j \
      -v $(pwd)/backups:/backups \
-     neo4j:5.26.23-community \
+     neo4j:5.26.26-community \
      neo4j-admin database dump neo4j --to-path=/backups
    ```
 
@@ -64,7 +64,7 @@ Neo4j Community Edition은 인스턴스를 중지한 후 오프라인 덤프를 
    docker run --rm \
      --volumes-from neo4j \
      -v $(pwd)/backups:/backups \
-     neo4j:5.26.23-community \
+     neo4j:5.26.26-community \
      neo4j-admin database load neo4j --from-path=/backups --overwrite-destination=true
    ```
 

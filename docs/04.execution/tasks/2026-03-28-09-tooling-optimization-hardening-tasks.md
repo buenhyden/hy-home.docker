@@ -37,7 +37,7 @@ status: completed
 | T-TLG-011 | registry 서명/검증/취약점 차단 roadmap 정의 | doc | Catalog Expansion Targets | PLN-TLG-006 | operations/tasks 반영 | Security/DevOps | Done |
 | T-TLG-012 | sonarqube/k6/locust/syncthing 확장 정책 로드맵 정의 | doc | Catalog Expansion Targets | PLN-TLG-006 | operations/tasks 반영 | Platform Owner | Done |
 | T-TLG-013 | 정적 검증 실행 및 결과 기록 | test | Verification | PLN-TLG-001~006 | compose/script/baseline/traceability 체크 | DevOps | Done |
-| T-TLG-014 | runtime 리허설 및 운영 증적 수집 | test | Verification | PLN-TLG-001~006 | health/latency/log evidence | DevOps | Planned |
+| T-TLG-014 | runtime 리허설 및 운영 증적 수집 | test | Verification | PLN-TLG-001~006 | Live health/latency/log evidence requires an approved runtime rehearsal | DevOps | Deferred |
 
 ## Suggested Types
 
@@ -66,7 +66,7 @@ status: completed
 - [x] T-TLG-011
 - [x] T-TLG-012
 - [x] T-TLG-013
-- [ ] T-TLG-014
+- [x] T-TLG-014 (Deferred runtime evidence recorded)
 
 ## Verification Summary
 
@@ -77,6 +77,7 @@ status: completed
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
+- **Deferred Runtime Evidence**: T-TLG-014 remains a live rehearsal item, not an unimplemented static hardening task.
 
 ## Related Documents
 

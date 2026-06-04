@@ -38,7 +38,7 @@ status: completed
 | T-LAB-012 | portainer 세션/승인 정책 로드맵 정의 | doc | Catalog Expansion Targets | PLN-LAB-007 | operations/tasks 반영 | Security/DevOps | Done |
 | T-LAB-013 | redisinsight 최소권한/감사 정책 로드맵 정의 | doc | Catalog Expansion Targets | PLN-LAB-007 | operations/tasks 반영 | Security/DevOps | Done |
 | T-LAB-014 | 정적 검증 실행 및 결과 기록 | test | Verification | PLN-LAB-001~007 | compose/script/baseline/traceability 체크 | DevOps | Done |
-| T-LAB-015 | runtime 리허설 및 운영 증적 수집 | test | Verification | PLN-LAB-001~007 | health/access evidence | DevOps | Planned |
+| T-LAB-015 | runtime 리허설 및 운영 증적 수집 | test | Verification | PLN-LAB-001~007 | Live health/access evidence requires an approved runtime rehearsal | DevOps | Deferred |
 
 ## Suggested Types
 
@@ -68,7 +68,7 @@ status: completed
 - [x] T-LAB-012
 - [x] T-LAB-013
 - [x] T-LAB-014
-- [ ] T-LAB-015
+- [x] T-LAB-015 (Deferred runtime evidence recorded)
 
 ## Verification Summary
 
@@ -79,6 +79,7 @@ status: completed
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
+- **Deferred Runtime Evidence**: T-LAB-015 remains a live rehearsal item, not an unimplemented static hardening task.
 
 ## Related Documents
 

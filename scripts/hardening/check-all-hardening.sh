@@ -270,5 +270,3 @@ main() {
 }
 
 main "$@"
-
-# k3s 전환 준비: Docker Compose 설정을 Kubernetes(k3s)로 옮기기 위한 리소스 및 네트워크 정책 최적화

@@ -44,11 +44,12 @@ status: active
    ```yaml
    networks:
      infra_net:
-       ipv4_address: 172.19.0.XXX
+       ipv4_address: 172.19.0.7 # registry example from the authoritative table
    ```
 
-3. **구문 검증**: `docker compose config` 실행하여 YAML 유효성 확인.
-4. **런타임 검증**: `docker compose up -d` (Test/Staging 환경) 실행 후 `docker inspect <container_name>`을 통해 실제 할당 결과 대조.
+3. **대상 IP 치환 확인**: 실제 변경 대상에는 registry 예시 값을 남기지 않고 authoritative table의 해당 서비스 IP를 사용했는지 확인한다.
+4. **구문 검증**: `docker compose config` 실행하여 YAML 유효성 확인.
+5. **런타임 검증**: `docker compose up -d` (Test/Staging 환경) 실행 후 `docker inspect <container_name>`을 통해 실제 할당 결과 대조.
 
 ### Verification Steps
 

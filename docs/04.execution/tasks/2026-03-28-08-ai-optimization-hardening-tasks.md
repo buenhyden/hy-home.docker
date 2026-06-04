@@ -36,7 +36,7 @@ status: completed
 | T-AI-010 | Open WebUI 모델 접근 권한 분리 기준 정의 | doc | Catalog-aligned Expansion | PLN-AI-007 | operations/tasks 반영 | AI Owner | Done |
 | T-AI-011 | Open WebUI 대화 로그 보존/마스킹 정책 정의 | doc | Catalog-aligned Expansion | PLN-AI-007 | operations/tasks 반영 | Security/AI Owner | Done |
 | T-AI-012 | 정적 검증 실행 및 결과 기록 | test | Verification | PLN-AI-001~007 | compose/script/baseline/traceability 체크 | DevOps | Done |
-| T-AI-013 | runtime 기동 리허설 및 성능 튜닝 증적 수집 | test | Verification | PLN-AI-001~007 | health/latency/gpu metrics 기록 | DevOps | Planned |
+| T-AI-013 | runtime 기동 리허설 및 성능 튜닝 증적 수집 | test | Verification | PLN-AI-001~007 | Live health/latency/GPU metrics require an approved runtime rehearsal | DevOps | Deferred |
 
 ## Suggested Types
 
@@ -64,7 +64,7 @@ status: completed
 - [x] T-AI-010
 - [x] T-AI-011
 - [x] T-AI-012
-- [ ] T-AI-013
+- [x] T-AI-013 (Deferred runtime evidence recorded)
 
 ## Verification Summary
 
@@ -76,6 +76,7 @@ status: completed
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
+- **Deferred Runtime Evidence**: T-AI-013 remains a live rehearsal item, not an unimplemented static hardening task.
 
 ## Related Documents
 

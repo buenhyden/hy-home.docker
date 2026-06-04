@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 ---
 
 <!-- Target: docs/01.requirements/2026-04-01-standardize-infra-net.md -->

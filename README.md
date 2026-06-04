@@ -209,6 +209,7 @@ docker compose --profile core up -d
 로컬 또는 CI에서 자주 사용되는 검증 진입점은 다음과 같습니다.
 
 - `bash scripts/validation/validate-docker-compose.sh --preflight` - 실행 전 필수 파일과 디렉터리 점검
+- `bash scripts/validation/run-local-qa-gates.sh` - 로컬에서 재현 가능한 script-backed QA/CI 게이트 묶음 실행
 - `bash scripts/validation/check-repo-contracts.sh` - repository/docs/GitHub/runtime/Docker/LLM Wiki contract 검증
 - `bash scripts/validation/validate-docker-compose.sh` - profile-aware Compose 구조 검증
 - `bash scripts/validation/check-doc-traceability.sh` - 문서 추적성 검사
@@ -222,6 +223,7 @@ docker compose --profile core up -d
 GitHub Actions에서는 다음 품질 게이트를 사용합니다.
 
 - `docs-traceability` - 문서 추적성 검사
+- `docs-implementation-alignment` - active docs와 tracked implementation surface 정렬 검사
 - `repo-contracts` - docs taxonomy, GitHub workflow, script reference, image/version drift, runtime catalog 검사
 - `git-flow-contract` - PR 제목 Conventional Commits와 source branch prefix 검사
 - `compose-validation` - Docker Compose 구조 검사
@@ -242,6 +244,8 @@ release visibility gate이며, remote required-check enforcement 증거로
 `pre-commit` job은 공통 hook 정책을 CI에서 재현하고, 별도 `zizmor` job은
 GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
 `pr-labeler` workflow는 필수 품질 게이트가 아니라 triage/community 자동화입니다.
+로컬에서는 `bash scripts/validation/run-local-qa-gates.sh --list`로 실행 가능한
+script-backed gate와 원격 전용 gate를 구분합니다.
 
 Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 action step에는 명시적 `name`을 둡니다.
 

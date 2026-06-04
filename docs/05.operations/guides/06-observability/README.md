@@ -52,6 +52,7 @@ guides/06-observability/
 
 1. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
 2. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
+3. Prometheus scrape 대상이나 exporter 버전 계열을 언급할 때는 현재 `infra/**/docker-compose*.yml` 이미지 계열과 맞춥니다.
 
 ## Contents
 

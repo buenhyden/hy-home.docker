@@ -58,6 +58,7 @@ runbooks/
 
 1. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
 2. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
+3. 명령 예시는 현재 구현에 맞는 실제 compose 경로, 이미지 태그, 고정 IP를 사용하고, 실행 가능한 절차에 복사 가능한 placeholder를 남기지 않습니다.
 
 ## Contents
 

@@ -41,10 +41,11 @@ status: active
    ```yaml
    networks:
      infra_net:
-       ipv4_address: 172.19.0.XXX
+       ipv4_address: 172.19.0.7 # registry example from the authoritative table
    ```
 
-   - (선택 사항) 만약 K3s 연동을 위해 `k3d-hyhome` 네트워크가 필요한 경우 명시적으로 추가한다.
+   - 실제 대상 서비스에는 위 예시를 그대로 복사하지 말고 authoritative table의 해당 서비스 IP를 사용한다.
+   - (선택 사항) 만약 K3s 연동을 위해 기존 `k3d-hyhome` 네트워크가 이미 필요한 경우 기존 값을 유지한다.
 3. **루트 Docker Compose 수정**:
    - 프로젝트 루트의 `docker-compose.yml` 내 `include:` 섹션에서 해당 파일이 주석 처리되어 있지 않은지 확인한다.
 4. **구성 검증**:

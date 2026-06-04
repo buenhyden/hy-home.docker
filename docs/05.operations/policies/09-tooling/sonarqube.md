@@ -5,7 +5,7 @@ status: active
 
 # SonarQube Operations Policy
 
-<!-- [ID:08-tooling:sonarqube] -->
+<!-- [ID:09-tooling:sonarqube] -->
 > Governance for code quality, security standards, and SonarQube lifecycle.
 
 ## Overview (KR)

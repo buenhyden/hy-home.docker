@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 ---
 <!-- Target: docs/05.operations/policies/11-laboratory/open-notebook.md -->
 
@@ -16,8 +16,6 @@ status: draft
 ## Policy Scope
 
 이 정책은 `open_notebook` 애플리케이션, `surrealdb` 의존 서비스, 관련 Docker Secrets, Traefik 라우팅, 관리 데이터 볼륨을 관리한다.
-
-## Policy Scope
 
 - **Systems**: Open Notebook, SurrealDB, Traefik
 - **Agents**: Infra/DevOps agents, Operations agents, AI Agents

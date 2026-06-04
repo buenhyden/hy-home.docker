@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/03.specs/llm-wiki-agent-first-completion/spec.md -->
 

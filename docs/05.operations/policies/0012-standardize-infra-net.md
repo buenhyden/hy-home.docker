@@ -14,8 +14,6 @@ status: active
 
 이 정책은 `infra_net` 브릿지 네트워크에 연결된 모든 Docker 컨테이너의 IP 할당 방식을 관할한다.
 
-## Policy Scope
-
 - **Systems**: `hy-home.docker` 기반 모든 서비스.
 - **Agents**: 모든 인프라 관리 에이전트.
 - **Environments**: Local (k3d/docker-compose) 및 Production (Future) 개발/운영 환경.

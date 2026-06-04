@@ -19,9 +19,7 @@ status: active
 - 메타데이터 DB 및 브로커(Valkey) 백업 및 복구 정책
 - DAG 배포 및 운영 환경 보안 통제
 
-## Policy Scope
-
-- **Systems**: Apache Airflow v2.10.x, CeleryExecutor
+- **Systems**: Apache Airflow 3.2.2, CeleryExecutor
 - **Agents**: CI/CD 배포 에이전트, 모니터링 에이전트
 - **Environments**: Production ( workflow 티어)
 

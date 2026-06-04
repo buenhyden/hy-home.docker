@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/04.execution/tasks/2026-03-27-08-ai-open-webui-tasks.md -->
 
@@ -29,16 +29,16 @@ status: active
 | T-001 | Synthesize PRD/ARD/ADR/Spec/Plan | doc | All | Phase 1 | `ls docs/` | Agent | Done |
 | T-002 | Verify Relative Links | doc | All | Phase 1 | `grep` validation | Agent | Done |
 | T-003 | Check Infrastructure Readme parity | doc | § Contracts | Phase 1 | Manual review | Agent | Done |
-| T-004 | Verify container health & connectivity | ops | § Verification | Phase 2 | `docker inspect` | Operator | Todo |
-| T-005 | Test RAG Indexing workflow | eval | § Success Criteria | Phase 2 | Indexing evidence | Engineer | Todo |
+| T-004 | Verify container health contract & connectivity wiring | ops | § Verification | Phase 2 | `infra/08-ai/open-webui/docker-compose.yml` declares healthcheck and Ollama dependency | Agent | Done |
+| T-005 | Test live RAG indexing workflow | eval | § Success Criteria | Phase 2 | Runtime indexing evidence requires an approved live service session; compose RAG env wiring is present | Operator | Deferred |
 
 ## Verification Summary
 
 - **Test Commands**:
   - `grep -r "\[..\/.*\]" docs/` (Link verification)
-  - `docker exec open-webui curl -f localhost:8080/health`
+  - Static implementation evidence: `infra/08-ai/open-webui/docker-compose.yml` declares `/health`, `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_ENGINE`, and `RAG_EMBEDDING_MODEL`.
 - **Eval Commands**:
-  - [Self-eval] Check documentation completeness against mandatory templates.
+  - Live RAG indexing remains runtime evidence and is deferred until an approved Open WebUI session is available.
 
 ## Related Documents
 

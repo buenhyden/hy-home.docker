@@ -60,13 +60,13 @@ docs/03.specs/
 ├── 11-laboratory/                       # Laboratory/admin surface contracts
 ├── docs-taxonomy-agent-first-migration/ # Completed docs taxonomy migration spec
 ├── harness-agent-first-engineering/     # Completed agent-first harness spec
-├── home-docker-revalidation-deferred-follow-up/ # Home Docker revalidation and deferred-follow-up spec
+├── home-docker-revalidation-deferred-follow-up/ # Completed Home Docker revalidation and deferred-follow-up spec
 ├── infra-secrets-docs-refresh/          # Completed infra/secrets/docs refresh spec
 ├── llm-wiki-agent-first-completion/     # Completed LLM Wiki contract spec
-├── standardize-infra-net/               # infra_net standardization spec
-├── workspace-audit-2026-05/             # 2026-05-26 workspace audit session spec
-├── workspace-doc-consistency-2026-05/   # 2026-05-28 workspace doc consistency spec (PR #89)
-├── workspace-consistency-2026-05b/      # 2026-05-29 workspace governance consistency follow-up spec
+├── standardize-infra-net/               # Completed infra_net standardization spec
+├── workspace-audit-2026-05/             # Completed 2026-05-26 workspace audit historical spec
+├── workspace-doc-consistency-2026-05/   # Completed 2026-05-28 workspace doc consistency spec (PR #89)
+├── workspace-consistency-2026-05b/      # Completed 2026-05-29 workspace governance consistency follow-up spec
 └── README.md                            # This file
 ```
 
@@ -97,6 +97,7 @@ docs/03.specs/
 5. API, schema, proto, tests, data model 계약은 같은 feature 디렉터리 아래 child document로 둡니다.
 6. `## Related Documents`는 실제 Markdown 링크로 작성합니다. 문서 경로를 코드 span 안에만 남기지 않습니다.
 7. 운영 링크는 목적별 bucket을 맞춥니다: guide는 `docs/05.operations/guides/`, policy는 `docs/05.operations/policies/`, runbook은 `docs/05.operations/runbooks/`.
+8. 이미지 태그, 고정 IP, 포트 같은 구현값 예시는 tracked compose와 `infra/tech-stack.versions.json`에 맞는 실제 값을 사용하고, 복사 가능한 placeholder를 남기지 않습니다.
 
 ## Spec Contract
 

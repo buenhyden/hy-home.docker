@@ -39,7 +39,7 @@ status: active
 
 ### Component Boundary
 
-- **Traefik (v3.6.8)**: 엣지 라우팅, TLS 종료, SSO 미들웨어 적용.
+- **Traefik (v3.7.1)**: 엣지 라우팅, TLS 종료, SSO 미들웨어 적용.
 - **Nginx (Alpine)**: `/keycloak/`, `/minio/` 등 특수 경로의 헤더 조작 및 프록시 패스.
 
 ### Key Dependencies
@@ -49,7 +49,7 @@ status: active
 
 ### Tech Stack
 
-- Traefik v3.6.12
+- Traefik v3.7.1
 - Nginx Alpine
 - TLS 1.2/1.3
 

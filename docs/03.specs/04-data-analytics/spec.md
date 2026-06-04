@@ -31,7 +31,7 @@ status: active
   - 모든 엔진은 `infra_net` 브리지 네트워크에 배치되어야 한다.
   - 영구 데이터는 `${DEFAULT_DATA_DIR}/analytics/{engine_name}` 경로에 마운트되어야 한다.
 - **Data / Interface Contract**:
-  - InfluxDB: Line Protocol을 통한 수집 및 Flux/InfluxQL 쿼리 인터페이스.
+  - InfluxDB: primary InfluxDB 3.x HTTP/Line Protocol + SQL query interface; legacy InfluxDB 2.x compose preserves Flux compatibility.
   - ksqlDB: Kafka Topic 기반의 SQL 스트림 처리 인터페이스.
   - OpenSearch: REST API (Port 9200) 및 Lucene 기반 검색 인터페이스.
   - StarRocks: MySQL Protocol 호환 인터페이스 (Port 9030).
@@ -48,7 +48,7 @@ status: active
 - **Key Dependencies**:
   - `04-data/core` (PostgreSQL): 원본 스냅샷 데이터 소스.
   - `05-messaging/rabbitmq`, `Kafka`: 실시간 데이터 수집 채널.
-- **Tech Stack**: Docker, InfluxDB 2.x, ksqlDB, OpenSearch 2.x, StarRocks.
+- **Tech Stack**: Docker, InfluxDB 3.x Core primary with InfluxDB 2.x legacy compose, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x.
 
 ## Data Modeling & Storage Strategy
 
@@ -73,7 +73,10 @@ status: active
 ## Verification
 
 ```bash
-# InfluxDB Health Check
+# InfluxDB 3.x primary health check
+curl -f http://influxdb:8181/health
+
+# InfluxDB 2.x legacy compose health check, only when docker-compose.v2.yml is selected
 curl -f http://influxdb:8086/health
 
 # OpenSearch Status

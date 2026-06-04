@@ -20,8 +20,6 @@ status: active
 - Asset storage and websocket realtime policies.
 - Edge function deployment and runtime limits.
 
-## Policy Scope
-
 - **Systems**: Supabase Stack (db, auth, rest, storage, kong, realtime, functions).
 - **Agents**: AI Agents managing or interacting with Supabase APIs.
 - **Environments**: Production and Staging.

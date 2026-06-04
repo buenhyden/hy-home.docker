@@ -59,6 +59,8 @@ guides/
 
 1. 문서 추가, 이동, 삭제 시 이 README와 관련 bucket README를 함께 갱신합니다.
 2. guide는 사용 맥락, policy는 통제 기준, runbook은 반복 실행 절차만 담습니다.
+3. guide leaf 문서는 `docs/99.templates/guide.template.md`의 `## Usage` profile을 하나의 primary wrapper로 사용하고, `### Usage Type` 같은 profile heading을 중복 작성하지 않습니다.
+4. 이미지 태그, 고정 IP, 포트 같은 구현값 예시는 tracked compose와 `infra/tech-stack.versions.json`에 맞는 실제 값을 사용하고, 복사 가능한 placeholder를 남기지 않습니다.
 
 ## Contents
 

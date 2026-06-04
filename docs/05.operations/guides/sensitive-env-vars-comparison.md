@@ -12,7 +12,7 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 `secrets/SENSITIVE_ENV_VARS.md.example`과 `secrets/SENSITIVE_ENV_VARS.md`의 카테고리 및 항목 수 일관성을 확인하는 운영 참조 문서다. 실제 파일은 mode 600으로 값 열람이 불가능하므로 라인 수와 구조 비교만 수행한다.
+이 문서는 `secrets/SENSITIVE_ENV_VARS.md.example`과 `secrets/SENSITIVE_ENV_VARS.md`의 카테고리 및 항목 수 일관성을 확인하는 운영 참조 문서다. 실제 파일은 mode 600의 operator-owned 파일이므로 값 열람 없이 라인 수와 구조 비교만 수행한다.
 
 이 문서는 `secrets/SENSITIVE_ENV_VARS.md.example`의 카테고리 및 항목 수를 기록한다. 실제 `SENSITIVE_ENV_VARS.md`는 mode 600이므로 값 비교 없이 라인 수와 구조 일치 여부만 확인한다. 신규 서비스 추가 시 example 파일에 먼저 항목을 추가하고 실제 파일도 동기화한다.
 
@@ -60,20 +60,20 @@ status: active
 
 ## 감사 기준일
 
-2026-05-26
+2026-06-04
 
 ## 요약
 
 | 항목                      | 결과                   |
 | ------------------------- | ---------------------- |
-| Example 파일 라인 수      | 185                    |
+| Example 파일 라인 수      | 184                    |
 | 실제 파일 라인 수         | 184                    |
 | 카테고리 수 (example)     | 11                     |
 | 총 secret ID 수 (example) | 107 unique IDs         |
-| 실제 파일 읽기 가능 여부  | 불가 (mode 600)        |
-| 라인 수 동일 여부         | ✓ 동일 (±1, 형식 차이) |
+| 실제 파일 취급 방식       | metadata-only (mode 600) |
+| 라인 수 동일 여부         | ✓ 동일                 |
 
-> **참고**: 실제 `SENSITIVE_ENV_VARS.md`는 민감 정보 보호를 위해 mode 600이며, 값 비교는 수행하지 않는다. 라인 수 기준으로 구조 일치를 추정한다.
+> **참고**: 실제 `SENSITIVE_ENV_VARS.md`는 민감 정보 보호를 위해 mode 600이며, 값 비교는 수행하지 않는다. 라인 수와 ID count 기준으로 구조 일치를 추정한다.
 
 ## 카테고리별 항목 현황 (Example 기준)
 
@@ -110,7 +110,7 @@ example 파일 기준 secret 파일은 다음 경로 패턴을 따른다.
 
 ## 유의 사항
 
-1. **실제 파일은 mode 600**: `secrets/SENSITIVE_ENV_VARS.md`는 읽기 권한이 없다. 구조 변경 시 운영자가 직접 비교해야 한다.
+1. **실제 파일은 mode 600**: `secrets/SENSITIVE_ENV_VARS.md`는 operator-owned 파일이므로 값 내용을 출력하지 않는다. 구조 변경 시 라인 수, ID count, 경로 패턴 같은 metadata-only 비교로 확인한다.
 2. **새 서비스 추가 시**: `SENSITIVE_ENV_VARS.md.example`에 새 항목을 먼저 추가하고, 실제 파일도 동기화한다.
 3. **ID 규칙**: `<PREFIX>-<NNN>` 형식을 유지한다 (예: `CACHE-001`).
 

@@ -34,7 +34,7 @@ status: completed
 | T-OBS-008 | scripts README 인덱스 갱신 | doc | 06-observability/spec.md / Related Docs | PLN-OBS-006 | README 항목/예시 반영 | Docs | Done |
 | T-OBS-009 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 반영 | doc | 06-observability/spec.md / Related Docs | PLN-OBS-007 | 문서 링크/README 동기화 확인 | Docs | Done |
 | T-OBS-010 | 정적 검증 실행 및 결과 기록 | test | 06-observability/spec.md / Verification | PLN-OBS-001~007 | compose + hardening + traceability 점검 | DevOps | Done |
-| T-OBS-011 | runtime/복구 리허설 증적 수집 | test | 06-observability/spec.md / Verification | PLN-OBS-001~007 | 헬스/복구 절차 로그 | DevOps | Planned |
+| T-OBS-011 | runtime/복구 리허설 증적 수집 | test | 06-observability/spec.md / Verification | PLN-OBS-001~007 | Live health/recovery logs require an approved runtime rehearsal | DevOps | Deferred |
 
 ## Suggested Types
 
@@ -60,7 +60,7 @@ status: completed
 - [x] T-OBS-008
 - [x] T-OBS-009
 - [x] T-OBS-010
-- [ ] T-OBS-011
+- [x] T-OBS-011 (Deferred runtime evidence recorded)
 
 ## Verification Summary
 
@@ -71,6 +71,7 @@ status: completed
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
+- **Deferred Runtime Evidence**: T-OBS-011 remains a live rehearsal item, not an unimplemented static hardening task.
 
 ## Related Documents
 

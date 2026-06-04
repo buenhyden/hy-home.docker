@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 ---
 <!-- Target: docs/05.operations/guides/11-laboratory/open-notebook.md -->
 

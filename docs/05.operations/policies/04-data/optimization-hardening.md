@@ -17,8 +17,6 @@ status: active
 - `infra/04-data/analytics/ksql/docker-compose.yml`
 - `scripts/hardening/check-all-hardening.sh 04-data`
 
-## Policy Scope
-
 - **Systems**: 04-data 하위 전 서비스(analytics/cache-and-kv/lake-and-object/nosql/operational/relational/specialized)
 - **Agents**: Infra/DevOps/Data-Ops agents
 - **Environments**: Local, Dev, Stage, Production-like

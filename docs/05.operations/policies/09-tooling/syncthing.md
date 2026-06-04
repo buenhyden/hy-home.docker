@@ -5,7 +5,7 @@ status: active
 
 # Syncthing Operations Policy
 
-<!-- [ID:08-tooling:syncthing] -->
+<!-- [ID:09-tooling:syncthing] -->
 > Governance for P2P data synchronization and integrity.
 
 ## Overview (KR)

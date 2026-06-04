@@ -47,8 +47,8 @@ status: active
   - `01-gateway` Traefik 동적 미들웨어(`gateway-standard-chain`, `sso-*`)
   - `02-auth` SSO 정책
 - **Tech Stack**:
-  - Kafka (Confluent CP 8.1.1)
-  - RabbitMQ 4.2.x
+  - Kafka (Confluent CP 8.2.1)
+  - RabbitMQ 4.3.1
   - Kafbat/Provectus UI
   - Traefik TLS termination
 

@@ -17,8 +17,6 @@ status: active
 
 이 정책은 Kafka 브로커, 스키마 레지스트리, 그리고 클러스터 내의 모든 토픽 설정을 제어한다.
 
-## Policy Scope
-
 - **Systems**: Kafka Broker Cluster (3-node), Schema Registry
 - **Agents**: AI Infrastructure Agent, CI/CD Deployer
 - **Environments**: Production (Default), Development

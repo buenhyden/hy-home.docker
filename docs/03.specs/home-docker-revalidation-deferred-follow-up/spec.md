@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 <!-- Target: docs/03.specs/home-docker-revalidation-deferred-follow-up/spec.md -->
 

@@ -1,5 +1,5 @@
 ---
-status: active
+status: completed
 ---
 
 <!-- Target: docs/03.specs/standardize-infra-net/spec.md -->
@@ -104,13 +104,14 @@ networks:
 
 ```yaml
 services:
-  example-service:
+  registry:
     networks:
       infra_net:
-        ipv4_address: 172.19.0.X # Existing or Auto
-      k3d-hyhome: # Must be preserved if exists
-        ipv4_address: 172.18.0.X
+        ipv4_address: 172.19.0.7
 ```
+
+When a service already has an additional `k3d-hyhome` network block, preserve
+its existing value verbatim while adding or normalizing the `infra_net` block.
 
 ## Edge Cases & Error Handling
 

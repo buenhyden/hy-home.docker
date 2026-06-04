@@ -18,8 +18,6 @@ status: active
 - `infra/09-tooling/registry` 내에서 구동되는 서비스.
 - 저장소 내 모든 컨테이너 이미지 및 OCI 아티팩트.
 
-## Policy Scope
-
 - **Systems**: Internal Docker Registry v2.
 - **Agents**: CI/CD Pipelines, Internal Developers.
 - **Environments**: Production (On-premise).

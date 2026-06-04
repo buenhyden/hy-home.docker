@@ -33,7 +33,7 @@ status: completed
 | T-SEC-007 | PRD/ARD/ADR/Plan/Task 생성 및 Spec/Guide/Ops/Runbook 갱신 | doc | 03-security/spec.md / Related Docs | PLN-SEC-007 | 문서 링크/인덱스 확인 | Docs | Done |
 | T-SEC-008 | README 자동 인덱스(01~09 + 03-security 하위) 반영 | doc | 03-security/spec.md / Related Docs | PLN-SEC-007 | README 반영 확인 | Docs | Done |
 | T-SEC-009 | 정적 검증 커맨드 실행 및 결과 기록 | test | 03-security/spec.md / Verification | PLN-SEC-001~007 | 5개 검증 커맨드 실행 | Infra | Done |
-| T-SEC-010 | runtime 검증(가능 환경) 수행 및 증빙 기록 | test | 03-security/spec.md / Verification | PLN-SEC-001~007 | `vault/vault-agent` health/runtime 점검 | Infra | Planned |
+| T-SEC-010 | runtime 검증(가능 환경) 수행 및 증빙 기록 | test | 03-security/spec.md / Verification | PLN-SEC-001~007 | Live `vault/vault-agent` health/runtime 점검은 approved runtime session에서 수행 | Infra | Deferred |
 
 ## Suggested Types
 
@@ -58,7 +58,7 @@ status: completed
 - [x] T-SEC-007
 - [x] T-SEC-008
 - [x] T-SEC-009
-- [ ] T-SEC-010
+- [x] T-SEC-010 (Deferred runtime evidence recorded)
 
 ## Verification Summary
 
@@ -70,6 +70,7 @@ status: completed
   - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 - **Eval Commands**: N/A
 - **Logs / Evidence Location**: 로컬 실행 출력 + CI quality gates(`infrastructure-hardening`, `template-security-baseline`, `docs-traceability`)
+- **Deferred Runtime Evidence**: T-SEC-010 requires an approved live Vault runtime session; static implementation and hardening gates are complete.
 
 ## Related Documents
 

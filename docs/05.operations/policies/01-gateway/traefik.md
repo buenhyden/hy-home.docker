@@ -15,8 +15,6 @@ status: active
 - `infra/01-gateway/traefik/dynamic/middleware.yml`
 - Gateway 소유 라우터(`dashboard` 등) 라벨 정책
 
-## Policy Scope
-
 - **Systems**: Traefik v3 (gateway tier)
 - **Agents**: Infra/DevOps/Ops agents
 - **Environments**: Local, Dev, Stage, Production-like

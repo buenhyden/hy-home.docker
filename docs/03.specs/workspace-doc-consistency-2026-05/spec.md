@@ -1,6 +1,8 @@
 ---
-status: active
+status: completed
 ---
+
+<!-- Target: docs/03.specs/workspace-doc-consistency-2026-05/spec.md -->
 
 # Workspace Documentation Consistency 2026-05 Technical Specification
 

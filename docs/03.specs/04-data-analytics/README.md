@@ -2,11 +2,11 @@
 
 # 04-data-analytics Specifications
 
-> 데이터 분석 파이프라인 및 워크플로우 서비스 기술 사양
+> 데이터 분석 엔진 기술 사양
 
 ## Overview
 
-`docs/03.specs/04-data-analytics`는 Airflow, ksqlDB, dbt 등 분석 파이프라인 서비스의 기술 사양을 포함합니다.
+`docs/03.specs/04-data-analytics`는 `infra/04-data/analytics`의 InfluxDB, ksqlDB, OpenSearch, StarRocks 엔진 계약을 포함합니다. 현재 구현은 InfluxDB 3.x Core를 primary compose로 사용하고 InfluxDB 2.x compose를 legacy Flux 호환 경로로 유지합니다.
 
 ## Audience
 
@@ -21,13 +21,15 @@
 
 ### In Scope
 
-- 분석 파이프라인 서비스 인터페이스 및 스케줄링 사양
-- 스트리밍 SQL 및 배치 처리 경계 정의
+- 시계열, 스트리밍 SQL, 로그 검색, OLAP 엔진 인터페이스 사양
+- root-commented optional analytics compose의 standalone 실행 계약
+- current compose image/version family와 operations handoff
 
 ### Out of Scope
 
 - 운영 절차 (`docs/05.operations/guides/04-data/` 담당)
 - 기본 데이터 저장 사양 (`04-data/` 담당)
+- workflow orchestration 및 Airflow 스케줄링 사양 (`07-workflow/` 담당)
 
 ## Structure
 

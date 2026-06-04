@@ -34,7 +34,11 @@ status: completed
 - **Key Dependencies**: `docs/99.templates/spec.template.md`, `docs/99.templates/plan.template.md`, `docs/99.templates/task.template.md`, `docs/00.agent-governance/rules/stage-authoring-matrix.md`
 - **Tech Stack**: Markdown 문서, Bash 검증 스크립트, Claude skill.md 형식
 
-## Gap Registry Summary
+## Historical Gap Registry Snapshot (2026-05-26)
+
+The rows below preserve the original workspace-audit baseline for this completed
+session. They are not current implementation status. For present-day state,
+prefer the current QA gates, follow-up task evidence, and progress log entries.
 
 | ID     | Area                | Summary                                     | Risk   | Status       |
 | ------ | ------------------- | ------------------------------------------- | ------ | ------------ |

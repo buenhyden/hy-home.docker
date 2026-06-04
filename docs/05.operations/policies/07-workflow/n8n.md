@@ -54,8 +54,6 @@ status: active
 
 이 정책은 관련 서비스의 운영 기준, 변경 통제, 검증 방법을 다룬다.
 
-## Policy Scope
-
 - **Systems**: 관련 Docker Compose 서비스와 문서화된 운영 자산
 - **Agents**: repo-local governance를 따르는 AI agents
 - **Environments**: local, development, homelab operations

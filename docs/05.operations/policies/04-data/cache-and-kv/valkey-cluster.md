@@ -17,8 +17,6 @@ This document defines the operational standards, data protection policies, and p
 
 Valkey 6노드 분산 클러스터의 영속성(Persistence), 메모리 관리, 보안 및 모니터링 정책을 관리합니다.
 
-## Policy Scope
-
 - **Systems**: `valkey-cluster` (node 0-5)
 - **Agents**: Data Infrastructure Agents, SRE Agents
 - **Environments**: Production, Staging

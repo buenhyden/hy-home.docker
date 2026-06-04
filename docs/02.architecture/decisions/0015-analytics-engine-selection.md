@@ -24,10 +24,13 @@ status: active
 
 ## Decision
 
-- **TSDB**: InfluxDB 2.x 채택 (고밀도 시계열 데이터 압축 및 보관 최적화).
-- **Stream Processing**: ksqlDB 채택 (Kafka Topic에 대한 SQL 기반 실시간 처리 및 변환).
-- **Log Engine**: OpenSearch 2.x 채택 (분산 루씬 기반 고속 전문 검색 및 시각화).
-- **OLAP Warehouse**: StarRocks 3.x 채택 (MPP 기반 실시간 조인 및 고속 데이터웨어하우스 구축).
+- **TSDB**: InfluxDB 3.x Core를 primary deployment로 채택하고, InfluxDB 2.x는 `docker-compose.v2.yml` 기반 legacy Flux 호환 경로로 유지한다.
+- **Stream Processing**: Confluent ksqlDB 계열을 채택하여 Kafka Topic에 대한 SQL 기반 실시간 처리 및 변환을 담당한다.
+- **Log Engine**: OpenSearch 3.x 계열을 채택하여 분산 루씬 기반 고속 전문 검색 및 시각화를 담당한다.
+- **OLAP Warehouse**: StarRocks 4.x 계열을 채택하여 MPP 기반 실시간 조인 및 고속 데이터웨어하우스 구축을 담당한다.
+
+Runtime image tags are implementation-pinned in the tracked Compose files; the
+current curated image registry is `infra/tech-stack.versions.json`.
 
 ## Explicit Non-goals
 

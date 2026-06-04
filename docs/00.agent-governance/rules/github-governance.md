@@ -44,7 +44,7 @@ Repo-local stricter rules always override this document; never weaken them on th
 ## 5. Execution Boundary (Local vs Remote)
 
 - **Anti-Duplication**: Do not execute heavy workloads (e.g., Zizmor, Storybook ESLint) redundantly across both local `pre-commit` and dedicated GitHub Action jobs.
-- **Local Responsibility**: Fail-fast static analysis (formatting, simple linting, pre-push contract scripts).
+- **Local Responsibility**: Fail-fast static analysis (formatting, simple linting, pre-push contract scripts, and `scripts/validation/run-local-qa-gates.sh` for locally reproducible script-backed QA/CI gates).
 - **GitHub Responsibility**: Ultimate SSoT gates, E2E tests, SARIF generation, and workflows requiring secrets.
 - **Implementation**: If a tool requires a dedicated CI job (e.g., for SARIF uploads), it must be removed from the local `.pre-commit-config.yaml` or skipped in the CI `pre-commit` runner via the `SKIP` environment variable.
 
@@ -109,7 +109,9 @@ automation. Required job IDs must stay in sync with
 `check-repo-contracts.sh` and `.github/rulesets/main-protection.md`.
 Archive/tombstone validation is part of the `repo-contracts` gate: active
 target-stage truth checks stay separate from `docs/98.archive` tombstone
-template/status checks.
+template/status checks. The same gate also blocks stage-document runtime version
+drift for implementation-pinned images and components, using current compose
+declarations and `infra/tech-stack.versions.json` as the implementation signal.
 
 ### Required Quality Gates
 

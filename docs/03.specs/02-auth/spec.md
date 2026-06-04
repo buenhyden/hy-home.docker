@@ -45,8 +45,8 @@ status: active
   - `mng-valkey` (OAuth2 session)
   - Traefik middleware/routers
 - **Tech Stack**:
-  - Keycloak 26.5.4
-  - OAuth2 Proxy 7.14.2
+  - Keycloak 26.6.2-2
+  - OAuth2 Proxy 7.15.2
   - Docker Compose + common optimization templates
 
 ## Data Modeling & Storage Strategy

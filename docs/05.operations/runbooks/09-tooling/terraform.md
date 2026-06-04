@@ -9,156 +9,100 @@ status: active
 
 ## Overview (KR)
 
-이 런북은 `docs/05.operations/runbooks/09-tooling/terraform.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
-
-## Procedure: Terraform Recovery (P2)
-
-> Procedures for resolving common Terraform execution errors and state lock issues.
-
-### Symptoms
-
-- "Error acquiring the state lock".
-- "Error: Failed to load state: State data is corrupted".
-- "Error: No valid credentials found".
-- "Error: Error refreshing state: AccessDenied".
-
-### Diagnostic Steps
-
-#### 1. Check Execution Context
-
-Ensure you are running the command from the correct directory:
-
-```bash
-cd ${DEFAULT_TOOLING_DIR}/terraform
-```
-
-#### 2. Verify Backend Access
-
-If using a remote backend, verify that MinIO/S3 is up:
-
-```bash
-## Check MinIO status if applicable
-cd ${DEFAULT_DATA_DIR}/minio
-docker compose ps
-```
-
-### Recovery Procedures
-
-#### 1. Force Unlocking State
-
-If a previous execution crashed and left the state locked:
-
-1. Identify the **Lock ID** from the error message.
-2. Run the force-unlock command:
-
-   ```bash
-   docker compose run --rm terraform force-unlock <LOCK_ID>
-   ```
-
-> [!CAUTION]
-> Only force-unlock if you are 100% sure that no other person or process is currently modifying the infrastructure.
-
-#### 2. Handling Corrupted Local State
-
-If the `.tfstate` file is unreadable:
-
-1. Check for the `terraform.tfstate.backup` file.
-2. If the backup exists and is valid, swap it:
-
-   ```bash
-   mv terraform.tfstate terraform.tfstate.corrupted
-   cp terraform.tfstate.backup terraform.tfstate
-   ```
-
-3. Run `terraform plan` to verify consistency.
-
-#### 3. Resolving Provider Credential Failures
-
-If credentials expired or are invalid:
-
-1. Verify the host mounts in `docker-compose.yml` point to valid directories.
-2. Refresh tokens on the host:
-
-   ```bash
-   ### For AWS
-   aws sso login --profile <your-profile>
-   ```
-
-3. Re-run `terraform init`.
-
-### Escalation Policy
-
-- **P1**: Corrupted remote state with no backup -> Notify Infrastructure Architect immediately.
-- **P2**: Stuck state lock or transient network error -> Follow manual recovery steps.
-
-### Purpose
-
-운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
-
-### Canonical References
-
-- [../README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
+이 런북은 `infra/09-tooling/terraform`의 컨테이너 기반 Terraform 실행 중 state lock,
+state 손상, provider credential 오류가 발생했을 때 사용하는 복구 절차다. 정상 사용 배경은
+guide에, 운영 통제 기준은 policy에 남기고, 이 문서는 반복 가능한 진단·복구·증거 수집만 다룬다.
 
 ## When to Use
 
-- 관련 서비스 점검, 재시작, 검증, 문서 보강이 필요할 때
-- 운영 절차와 evidence capture가 필요한 변경을 수행할 때
+- Terraform 실행에서 `Error acquiring the state lock`가 발생한 경우
+- `Failed to load state` 또는 state corruption 의심 오류가 발생한 경우
+- provider credential 만료, `AccessDenied`, `No valid credentials found` 오류가 발생한 경우
+- Terraform 작업 전후 evidence capture가 필요한 경우
 
 ## Procedure
 
-### Checklist
+### 1. Confirm Execution Context
 
-- [ ] 관련 operation policy를 확인한다.
-- [ ] 현재 compose/config/docs 상태를 확인한다.
-- [ ] 필요한 절차를 수행한다.
-- [ ] 검증 결과와 evidence를 기록한다.
+저장소 루트에서 Terraform compose 경로로 이동하고 compose 구성이 해석되는지 확인한다.
 
-### Steps
+```bash
+cd infra/09-tooling/terraform
+docker compose config
+```
 
-1. 관련 README와 operation 문서를 확인한다.
-2. 작업 전 현재 상태를 기록한다.
-3. 절차를 최소 변경으로 수행한다.
-4. 검증 명령 또는 수동 확인을 실행한다.
+### 2. Verify Remote Backend Access
 
-### Verification Steps
+원격 backend를 사용하는 경우, backend 서비스가 현재 compose 기준으로 해석되는지 확인한다.
 
-- [ ] 관련 validation script를 실행한다.
-- [ ] 문서 변경이면 template/heading audit를 확인한다.
-- [ ] runtime 변경이 있었다면 compose validation을 확인한다.
+```bash
+docker compose -f ../../04-data/lake-and-object/minio/docker-compose.yml config
+docker compose -f ../../04-data/lake-and-object/minio/docker-compose.yml ps
+```
 
-### Observability and Evidence Sources
+### 3. Force Unlocking State
 
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+이전 Terraform 실행이 비정상 종료되어 lock이 남아 있고, 다른 운영자 또는 자동화가 현재 apply를
+수행 중이 아님을 확인한 뒤에만 lock을 해제한다.
 
-### Safe Rollback or Recovery Procedure
+```bash
+: "${TERRAFORM_LOCK_ID:?Set TERRAFORM_LOCK_ID from the Terraform error output}"
+docker compose run --rm terraform force-unlock "$TERRAFORM_LOCK_ID"
+```
 
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+### 4. Restore Corrupted Local State
 
-### Agent Operations (If Applicable)
+로컬 state 파일이 손상되었고 원격 backend 또는 최신 backup이 없는 경우에만 로컬 backup을 사용한다.
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+```bash
+test -f terraform.tfstate.backup
+mv terraform.tfstate terraform.tfstate.corrupted
+cp terraform.tfstate.backup terraform.tfstate
+docker compose run --rm terraform plan
+```
+
+### 5. Refresh Provider Credentials
+
+호스트에 mount되는 cloud credential을 갱신한다. AWS SSO는 `AWS_PROFILE`을 사용하며, 별도 지정이
+없으면 `default` profile을 사용한다.
+
+```bash
+AWS_PROFILE="${AWS_PROFILE:-default}"
+aws sso login --profile "$AWS_PROFILE"
+docker compose run --rm terraform init
+```
+
+Azure credential을 사용하는 작업이면 호스트에서 `az login`을 수행한 뒤 Terraform container를
+다시 실행한다.
+
+### 6. Verify Terraform Health
+
+복구 후 format, validation, plan을 순서대로 확인한다.
+
+```bash
+docker compose run --rm terraform fmt -check
+docker compose run --rm terraform validate
+docker compose run --rm terraform plan
+```
 
 ## Evidence
 
-- Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
+- 발생한 오류 메시지와 lock ID 또는 state 파일 증상을 기록한다.
+- 실행한 명령, 종료 코드, `plan` 요약, operator/agent 이름, timestamp를 task evidence에 남긴다.
+- credential 갱신은 값이 아니라 profile 이름, provider 종류, 성공 여부만 기록한다.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+- `force-unlock` 후에도 같은 lock이 반복되면 추가 unlock을 중단하고 active Terraform 실행 주체를 확인한다.
+- 로컬 state 복구가 실패하면 `terraform.tfstate.corrupted`와 backup 파일을 보존하고 원격 backend 또는 백업 담당자에게 이관한다.
+- 문서 변경만 있었다면 직전 diff 단위로 되돌리고 `bash scripts/validation/run-local-qa-gates.sh`를 재실행한다.
+- runtime, secret value, remote deployment 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
 
 ## Escalation
 
-- Stop and escalate to the owning operator with captured evidence when the documented procedure does not match the observed failure.
+- 원격 state가 손상되었거나 backup이 없으면 Infrastructure Architect에게 즉시 escalation한다.
+- credential 오류가 권한 축소, 계정 잠금, MFA 실패와 연결되면 Security/Ops owner에게 escalation한다.
+- 복구 절차가 현재 관측된 장애와 맞지 않으면 변경을 멈추고 evidence를 보존한다.
 
 ## Related Documents
 

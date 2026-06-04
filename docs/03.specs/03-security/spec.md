@@ -48,7 +48,7 @@ status: active
   - `01-gateway/traefik` (외부 TLS 종료)
   - 시크릿 소비 계층(`02-auth`, `04-data`, `06-observability`)
 - **Tech Stack**:
-  - `hashicorp/vault:1.21.4`
+  - `hashicorp/vault:2.0.1`
   - Docker Compose + `common-optimizations.yml`
 
 ## Data Modeling & Storage Strategy

@@ -27,8 +27,6 @@ This document defines the operational policy for `postgresql-cluster`. It establ
 - HAProxy 라우팅 정합성 및 헬스체크 정책
 - 백업 수행 및 복구 유효성 검증
 
-## Policy Scope
-
 - **Systems**: `postgresql-cluster`, `etcd-cluster`, `pg-router`
 - **Agents**: Infrastructure Operator, DBA, SRE, AI Agent (Operation Scope)
 - **Environments**: Production-ready local/staging nodes

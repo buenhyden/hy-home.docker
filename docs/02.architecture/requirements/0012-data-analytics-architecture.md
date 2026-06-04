@@ -20,7 +20,7 @@ status: active
 
 - **Identifier**: `ARD-0012`
 - **Domain**: Data Architecture (Analytics)
-- **Primary Tech Stack**: InfluxDB 2.x, ksqlDB 0.29+, OpenSearch 2.x, StarRocks 3.x.
+- **Primary Tech Stack**: InfluxDB 3.x Core primary with InfluxDB 2.x legacy compose, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x.
 - **Connectivity**: Private isolated `infra_net`.
 
 ## Boundaries
@@ -77,7 +77,7 @@ graph LR
 
 - **Ingestion**: 메시징 티어(Kafka)를 허브로 하는 Event-driven 수집 아키텍처.
 - **Storage Strategy**:
-  - InfluxDB: TSM (Time-Structured Merge) 파일 기반.
+  - InfluxDB: 3.x Core primary data/plugin volumes; 2.x TSM path remains a legacy compose option.
   - OpenSearch: 루씬(Lucene) 인덱스 분산 저장.
   - StarRocks: MPP(Massively Parallel Processing) 아키텍처의 컬럼형 스토리지.
 - **Consistency**: 최종 일관성(Eventual Consistency) 모델을 기본으로 채택하여 처리량 극대화.

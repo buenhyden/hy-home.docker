@@ -17,8 +17,6 @@ status: active
 
 이 정책은 StarRocks Frontend(FE) 메타데이터 노드와 Backend(BE) 컴퓨팅 노드 클러스터를 관리한다.
 
-## Policy Scope
-
 - **Systems**: StarRocks (FE/BE), Stream Load Jobs, Export Tasks
 - **Agents**: SQL Query Optimizers, Data Ingestion Automators
 - **Environments**: Production (Distributed Cluster), Staging

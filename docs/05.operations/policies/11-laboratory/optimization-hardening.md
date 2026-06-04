@@ -15,8 +15,6 @@ status: active
 - `.env.example` (`LAB_ALLOWED_CIDRS`)
 - `scripts/hardening/check-all-hardening.sh 11-laboratory`
 
-## Policy Scope
-
 - **Systems**: dashboard, dozzle, portainer, redisinsight
 - **Agents**: Infra/DevOps/Operations agents
 - **Environments**: Local, Dev, Stage, Production-like management plane

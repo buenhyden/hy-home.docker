@@ -17,8 +17,6 @@ status: active
 
 이 정책은 플랫폼 내 모든 OpenSearch 클러스터, 데이터 노드 및 Dashboards 시각화 인터페이스를 관리한다.
 
-## Policy Scope
-
 - **Systems**: OpenSearch, OpenSearch Dashboards, Index Shuffling Scripts
 - **Agents**: Log Analysis Agents, Security Pattern Detectors
 - **Environments**: Production (Cluster), Staging, Dev (Single Node)

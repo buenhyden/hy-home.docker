@@ -5,7 +5,7 @@ status: active
 
 # Syncthing Usage Guide
 
-<!-- [ID:07-tooling:syncthing] -->
+<!-- [ID:09-tooling:syncthing] -->
 
 ## Usage
 

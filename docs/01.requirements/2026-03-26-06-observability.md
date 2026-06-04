@@ -1,5 +1,5 @@
 ---
-status: draft
+status: active
 ---
 <!-- Target: docs/01.requirements/2026-03-26-06-observability.md -->
 
