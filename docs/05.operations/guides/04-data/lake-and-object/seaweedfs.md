@@ -5,83 +5,87 @@ status: active
 
 # SeaweedFS Usage Guide
 
+> Use this guide to understand and verify the current SeaweedFS data-profile stack.
+
+---
+
 ## Usage
 
 ### Overview (KR)
 
-이 문서는 SeaweedFS 분산 스케일아웃 스토리지에 대한 기술 가이드를 제공한다. SeaweedFS는 메타데이터와 실제 데이터를 분리하여 관리함으로써 수십억 개의 파일에 대한 저지연 접근을 보장한다. `hy-home.docker` 환경에서의 연결 방법, 인터페이스 활용법 및 성능 최적화 방안을 설명한다.
->
-> High-performance distributed storage with S3 and FUSE interfaces.
-
----
+SeaweedFS는 `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`에 선언된 distributed file/object storage stack이다. 현재 구현은 `data` profile에서 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`를 실행하며, all services use `infra_net` and image `chrislusf/seaweedfs:4.31`.
 
 ### Usage Type
 
-`system-guide`
+`system-guide | operational-reference`
 
 ### Target Audience
 
+- Operator
 - Developer
-- DevOps Engineer
-- Data Engineer
+- SRE
+- AI Agent
 
 ### Purpose
 
-사용자가 SeaweedFS의 다양한 인터페이스(S3, Filer API, FUSE)를 목적에 맞게 선택하고 연동할 수 있도록 돕는다.
+이 가이드는 SeaweedFS의 현재 service set, exposed internal ports, Traefik routes, mount behavior, 일반 확인 절차를 설명한다. 검증되지 않은 metadata restore나 reshard 절차를 usage guide에 섞지 않도록 한다.
 
 ### Prerequisites
 
-- `infra/04-data/lake-and-object/seaweedfs` 서비스가 실행 중이어야 함.
-- S3 SDK 또는 WebDAV/Filer API 호출을 위한 `curl`, `mc` 툴 필요.
+- Repository checkout at the project root.
+- Docker Compose access on the local or approved infrastructure host.
+- Approved runtime volumes for `seaweedfs-master-data` and `seaweedfs-volume-data`.
+- Host/runtime approval for `seaweedfs-mount`, which runs privileged with `SYS_ADMIN`.
 
 ### Step-by-step Instructions
 
-#### 1. S3 API 활용 (Using S3 API)
+1. 현재 compose service set을 확인한다.
 
-MinIO와 동일한 S3 호환 API를 제공한다.
+   ```bash
+   docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config --services
+   ```
 
-- **Endpoint**: `https://s3.${DEFAULT_URL}`
-- **Bucket 생성**: `mc mb myseaweed/bucket-name`
+   Expected services: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`.
 
-#### 2. Filer API (CDN) 활용 (Using Filer API)
+2. 접근 경로를 확인한다.
 
-파일시스템 수준의 정적 자원 서빙에 최적화되어 있다.
+   - Master UI: `https://seaweedfs.${DEFAULT_URL}` through Traefik
+   - Filer/CDN route: `https://cdn.${DEFAULT_URL}` through Traefik
+   - S3 route: `https://s3.${DEFAULT_URL}` through Traefik
+   - Internal ports: master `9333/19333`, volume `8085/18085`, filer `8888/18888`, S3 `8333`
 
-- **Endpoint**: `https://cdn.${DEFAULT_URL}`
-- **파일 업로드 예시**:
+3. 일반 상태를 확인한다.
 
-  ```bash
-  curl -F file=@picture.jpg http://seaweedfs-filer:8888/path/to/save/
-  ```
+   ```bash
+   docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data ps seaweedfs-master seaweedfs-volume seaweedfs-filer seaweedfs-s3 seaweedfs-mount
+   ```
 
-#### 3. FUSE 호스트 마운트 (FUSE Host Mount)
+4. Mount service boundary를 확인한다.
 
-컨테이너 외부 호스트 환경에서 SeaweedFS를 로컬 디렉토리처럼 사용할 수 있다.
-
-- **Mount Point**: `/mnt/seaweedfs`
-- **사용 사례**: 대용량 로그 분석, 미디어 파일 직접 편집 등.
-
-#### 4. 클러스터 모니터링 (Cluster Monitoring)
-
-Master UI를 통해 볼륨 서버 상태와 복제 상태를 확인한다.
-
-- **Dashboard**: `https://seaweedfs.${DEFAULT_URL}`
+   `seaweedfs-mount` uses the SeaweedFS mount command with `privileged: true` and `SYS_ADMIN`. Treat mount behavior as host-impacting and follow the runbook before restarting it.
 
 ### Common Pitfalls
 
-- **Volume Size Limit**: 볼륨 파일 하나가 가득 차면 자동으로 새로운 볼륨이 할당되지만, 마스터 서버에서 이를 확인하지 못할 경우 쓰기 장애가 발생할 수 있다.
-- **Filer Persistence**: Filer의 메타데이터는 Cassandra, MySQL, Redis 등 외부 DB에 저장할 수 있다. 기본 설정은 Filer 내장 LevelDB를 사용하므로 데이터 유실에 주의해야 한다.
+- Referring to old SeaweedFS image versions. The current compose image is `chrislusf/seaweedfs:4.31`.
+- Assuming `security.toml` is mounted into the current compose. It exists in the directory but is not mounted by the current service definitions.
+- Treating `seaweedfs-mount` as a normal read-only service. It has elevated host-facing privileges.
+- Running unverified master metadata restore or reshard commands from documentation without owner approval.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config`
+- `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data ps`
+- Search paired guide/policy/runbook and infra README for stale image versions, single-container log commands, unmounted config claims, or destructive recovery commands.
+- Expected result: compose renders, documented services match the compose file, and mount privilege is explicitly acknowledged.
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/lake-and-object/seaweedfs.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은
+[recovery runbook](../../../runbooks/04-data/lake-and-object/seaweedfs.md)을 따른다.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/lake-and-object/seaweedfs.md)
 - [Recovery runbook](../../../runbooks/04-data/lake-and-object/seaweedfs.md)
+- [Infrastructure service README](../../../../../infra/04-data/lake-and-object/seaweedfs/README.md)

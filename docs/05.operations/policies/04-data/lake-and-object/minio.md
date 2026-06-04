@@ -5,73 +5,59 @@ status: active
 
 # MinIO Object Storage Operations Policy
 
-> S3-compatible object storage operations and governance.
-> S3 호환 오브젝트 스토리지 운영 및 거버넌스 정책.
+> This policy governs the current MinIO object storage services under `04-data/lake-and-object`.
 
 ---
 
 ## Overview (KR)
 
-### English
-
-This document defines the operational policies for MinIO Object Storage. It regulates backup strategies for data persistence, security control standards, system availability maintenance, and performance monitoring methods within the `hy-home.docker` environment.
-
-### Korean
-
-이 문서는 MinIO 오브젝트 스토리지의 운영 정책을 정의한다. `hy-home.docker` 환경 내에서 데이터 지속성 보장을 위한 백업 전략, 보안 통제 기준, 시스템 가용성 유지 및 성능 모니터링 방법을 규정한다.
-
-## Policy ID
-
-`OP-DATA-LAKE-MINIO-001`
+이 정책은 root-active MinIO 단일 service와 bucket bootstrap job의 운영 통제를 정의한다. 정책 기준은 `infra/04-data/lake-and-object/minio/docker-compose.yml`의 실제 service, profile, network, secret, bucket initialization surface다.
 
 ## Policy Scope
 
-- MinIO Cluster and Single Node data volume protection.
-- Global and application-level Access Control (IAM).
-- Storage quota management and monitoring thresholds.
-- Manual and automated bucket lifecycle management.
+- **Systems**: `minio`, `minio-create-buckets`
+- **Configs**: `infra/04-data/lake-and-object/minio/docker-compose.yml`; optional variant `docker-compose.cluster.yaml` only when explicitly invoked
+- **Profiles**: `storage`, `obs`, `dev`
+- **Networks**: `infra_net`
+- **Agents**: AI agents reviewing or updating operations docs, compose references, validation evidence, or object-storage runtime boundaries
 
-## Controls & Standards
+## Controls
 
-- **Secret Management**: Must use `MINIO_ROOT_USER_FILE` and `MINIO_ROOT_PASSWORD_FILE`. Direct use of plaintext credentials in environment variables is prohibited in production.
-- **Monitoring**: Prometheus endpoint must be enabled and integrated with the global monitoring system (Grafana/Prometheus).
-- **Data Protection**: Critical data buckets must have periodic backups enabled using `mc mirror` or server-side replication.
-- **Access Control**: Follow the Principle of Least Privilege (PoLP). Application-specific service accounts must be used instead of root credentials.
-
-## Monitoring & Alerting
-
-- **Health Check**: Monitor `/_minio/health/live` and `/_minio/health/ready` endpoints.
-- **Metrics**: Track `minio_disk_storage_used_bytes` and `minio_disk_storage_free_bytes`. Alert if free space is less than 15%.
-- **Uptime**: Alert if the MinIO service is unresponsive for more than 5 minutes.
-
-## Backup & Lifecycle
-
-- **Volume Backup**: Nightly backups of the `/data` volume using filesystem snapshots or `mc mirror` to an offsite location.
-- **Version Control**: Enable Object Locking and Versioning for critical production buckets to prevent accidental deletion.
-- **Retention**: Define lifecycle rules for temporary buckets (e.g., auto-delete after 24 hours for `tmp-` prefix).
-
-## Compliance Requirements
-
-- **Audit Logs**: Access logs must be retained for at least 90 days for compliance auditing.
-- **Encryption**: Enable Server-Side Encryption (SSE) for sensitive data buckets.
-- **Public Access**: Public access remains disabled by default. Exceptions for CDN/Public assets require explicit approval.
+- **Required**:
+  - Root and app credentials are injected through Docker Secrets under `/run/secrets/`.
+  - Compose-facing documentation must distinguish the root-active single-node compose from the optional cluster variant.
+  - Bucket bootstrap behavior must match `minio-create-buckets`: `tempo-bucket`, `loki-bucket`, `cdn-bucket`, `doc-intel-assets`, and public anonymous read only for `cdn-bucket`.
+  - Public access changes beyond the bootstrap policy require explicit approval and evidence.
+- **Allowed**:
+  - Metadata-only compose validation with `docker compose ... config`.
+  - Read-only service health/log checks that do not expose secret values.
+  - Optional cluster variant review when clearly scoped to `docker-compose.cluster.yaml` and not presented as root-active infrastructure.
+- **Disallowed**:
+  - Recording secret values, access keys, tokens, or private bucket content in documentation or task evidence.
+  - Treating optional cluster nodes as active root include services.
+  - Performing destructive bucket deletion, credential rotation, or volume restore as a documentation-only action.
+  - Assuming direct host-port exposure when current root-active compose uses Traefik routing and no direct `ports` entries.
 
 ## Exceptions
 
-N/A — 현재 승인된 예외 없음.
+Exceptions require explicit owner or user approval and must record scope, affected buckets/services, commands, secret-safety considerations, validation output, and rollback/escalation state in related task or incident evidence.
 
 ## Verification
 
-- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
-- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
-- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
+- Run `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config` after changing compose-facing documentation.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy, guide, runbook, README, or link updates.
+- Run `bash scripts/validation/check-doc-implementation-alignment.sh` when the change is part of implementation-vs-doc drift remediation.
+- Search updated docs for active/optional cluster confusion, direct secret values, unapproved public access claims, and direct host-port assumptions before committing.
 
 ## Review Cadence
 
-- Review when linked service configuration, architecture, or runbook behavior changes.
+Review on any change to MinIO compose services, image tag, profiles, network, secret refs, Traefik routes, bucket bootstrap job, optional cluster variant, or linked operations documents. Otherwise review during the regular Stage 05 operations audit.
+
+---
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/lake-and-object/minio.md)
 - [Recovery runbook](../../../runbooks/04-data/lake-and-object/minio.md)
+- [Infrastructure service README](../../../../../infra/04-data/lake-and-object/minio/README.md)

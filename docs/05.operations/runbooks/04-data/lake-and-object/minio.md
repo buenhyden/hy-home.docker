@@ -3,170 +3,119 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/04-data/lake-and-object/minio.md -->
 
-# MinIO Object Storage Runbook
+# MinIO Object Storage Health Runbook
 
-## Overview (KR)
-
-이 런북은 `docs/05.operations/runbooks/04-data/lake-and-object/minio.md` 주제의 실행 절차를 정의한다. 기존 절차를 유지하면서 검증, evidence, rollback 기준을 명확히 한다.
-
-## MinIO Object Storage Recovery Procedure
-
-> MinIO Service Recovery & Emergency Restoration
-> MinIO 서비스 복구 및 긴급 복원 절차.
+> Scope: health checks, bucket bootstrap verification, evidence capture, and escalation for root-active MinIO.
 
 ---
 
-### Overview
+## MinIO Object Storage Health Procedure
 
-#### English
+### Overview (KR)
 
-This runbook defines implementation procedures for responding to failure situations in MinIO Object Storage. It provides step-by-step processes for operators to take immediate action in cases of storage exhaustion, loss of administrator credentials, and cluster node failures.
-
-#### Korean
-
-이 런북은 MinIO 오브젝트 스토리지의 장애 상황에 대응하기 위한 실행 절차를 정의한다. 디스크 공간 부족, 관리자 자격 증명 분실, 그리고 클러스터 노드 장애 발생 시 운영자가 즉각적으로 수행할 수 있는 단계별 프로세스를 제공한다.
-
-### Procedure ID
-
-`RB-DATA-LAKE-MINIO-001`
-
-### Target Audience
-
-- Site Reliability Engineers (SRE)
-- Infrastructure Operators
-- Data Engineers
-
-## When to Use
-
-- **Storage Exhaustion**: API write failures due to lack of disk space.
-- **Credential Loss**: Root user password lost or compromised.
-- **Node Failure**: One or more nodes in the cluster are offline or unresponsive.
-- **Service Outage**: Total service unavailability through S3 API or Console.
-
-### Diagnosis Steps
-
-1. **Check Physical Storage**:
-
-   ```bash
-   df -h
-   ```
-
-2. **Analyze Bucket Usage**:
-
-   ```bash
-   mc du myminio
-   ```
-
-3. **Verify Cluster Health**:
-
-   ```bash
-   mc admin info myminio
-   ```
-
-4. **Check Service Logs**:
-
-   ```bash
-   docker compose logs --tail=100 minio
-   ```
-
-### Remediation Procedures
-
-#### 1. Storage Exhaustion (디스크 공간 부족)
-
-- Identify and delete unnecessary logs or non-critical data.
-- Check and clear `tempo-bucket` or `loki-bucket` retention if applicable.
-- For permanent resolution, increase the volume size in `docker-compose.yml` and redeploy.
-
-#### 2. Root Credential Reset (비밀번호 초기화)
-
-- Verify the credentials defined in `infra/04-data/lake-and-object/minio/.env` or secrets.
-- If lost, update the secret files and restart the service:
-
-  ```bash
-  docker compose restart minio
-  ```
-
-- Update the `mc` (MinIO Client) configuration to match new credentials.
-
-#### 3. Node Failure (클러스터 노드 장애)
-
-- Identify the failed node: `docker compose ps`.
-- Check logs for the specific node: `docker compose logs [node-name]`.
-- Attempt restart: `docker compose start [node-name]`.
-- Verify quorum and node status: `mc admin info myminio`.
-
-### Verification Steps
-
-- [ ] `mc admin info myminio`: Confirm cluster health and quorum status.
-- [ ] `mc ls myminio`: Verify bucket and object browsing is functional.
-- [ ] `curl -f http://localhost:9000/minio/health/live`: Confirm Liveness probe returns 200 OK.
-
-### Post-Mortem Tasks
-
-- Document the Root Cause Analysis (RCA).
-- Review and update monitoring thresholds in Grafana/Prometheus.
-- Record the Recovery Time Objective (RTO) achieved.
+이 런북은 root-active MinIO 단일 service와 `minio-create-buckets` job의 compose render, health, bucket bootstrap 상태를 확인할 때 사용한다. optional cluster node recovery, credential rotation, bucket deletion, volume restore는 이 런북의 검증된 복구 범위가 아니다.
 
 ### Purpose
 
-운영자가 관련 서비스나 문서 작업을 반복 가능하고 검증 가능한 방식으로 수행하도록 돕는다.
+`minio`와 `minio-create-buckets` 상태를 안전하게 확인하고, secret 노출 또는 destructive recovery가 필요한 경우 escalation하도록 한다.
 
 ### Canonical References
 
-- [../README.md](../README.md)
-- [../../05.operations/README.md](../../../README.md)
-- [../../05.operations/README.md](../../../README.md)
+- **Spec**: [04-data spec](../../../../03.specs/04-data/spec.md)
+- **Policy**: [MinIO policy](../../../policies/04-data/lake-and-object/minio.md)
+- **Guide**: [MinIO guide](../../../guides/04-data/lake-and-object/minio.md)
+- **Repo**: [MinIO infrastructure](../../../../../infra/04-data/lake-and-object/minio/README.md)
+
+## When to Use
+
+- `minio` is missing, unhealthy, or unavailable through the Traefik route.
+- `minio-create-buckets` failed or bucket bootstrap needs verification.
+- Object storage docs or compose references changed and need local verification evidence.
+- Storage exhaustion is suspected and non-destructive evidence is needed before escalation.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 operation policy를 확인한다.
-- [ ] 현재 compose/config/docs 상태를 확인한다.
-- [ ] 필요한 절차를 수행한다.
-- [ ] 검증 결과와 evidence를 기록한다.
+- [ ] Confirm this is a health/status verification task, not bucket deletion, credential rotation, or volume restore.
+- [ ] Confirm Docker Secret files exist without printing their values.
+- [ ] Confirm `${DEFAULT_DATA_DIR}/minio/data-1` is the approved runtime data location.
+- [ ] Confirm optional cluster compose is out of scope unless explicitly named in the task.
 
 ### Steps
 
-1. 관련 README와 operation 문서를 확인한다.
-2. 작업 전 현재 상태를 기록한다.
-3. 절차를 최소 변경으로 수행한다.
-4. 검증 명령 또는 수동 확인을 실행한다.
+1. Render the current root-active compose configuration.
+
+   ```bash
+   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config
+   ```
+
+2. Check service status.
+
+   ```bash
+   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage ps minio minio-create-buckets
+   ```
+
+3. Inspect logs if a service is unhealthy. Do not copy secret values into evidence.
+
+   ```bash
+   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage logs minio minio-create-buckets
+   ```
+
+4. Check liveness from inside the compose network boundary.
+
+   ```bash
+   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage exec minio curl -f "http://localhost:${MINIO_PORT:-9000}/minio/health/live"
+   ```
+
+5. Re-run bucket bootstrap only when explicitly required and after confirming secrets are ready.
+
+   ```bash
+   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage run --rm minio-create-buckets
+   ```
+
+### Verification Steps
+
+- `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config`
+- `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage ps`
+- Expected result: compose renders, `minio` is present, bootstrap job state is recorded, and no secret values are captured.
 
 ### Observability and Evidence Sources
 
-- **Signals**: command output, validation logs, service health status, documentation diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
+- **Logs**: `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage logs ...`
+- **Health**: MinIO `/minio/health/live` endpoint
+- **Routes**: Traefik labels for `minio.${DEFAULT_URL}` and `minio-console.${DEFAULT_URL}`
+- **Evidence to Capture**: command names, timestamps, service status summary, liveness result, bootstrap result if run, and skipped destructive actions
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 런북 범위를 벗어난 별도 승인 절차로 분리한다.
+1. For documentation-only changes, revert the last documentation diff and rerun validation.
+2. For bucket bootstrap failure, preserve logs and escalate; do not delete buckets or rotate credentials from this runbook.
+3. For suspected secret exposure, stop copying output and escalate under `## Escalation`.
 
 ### Agent Operations (If Applicable)
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: Stop using commands that reveal secret-bearing output when exposure risk appears.
+- **Eval Re-run**: Re-run linked validation scripts after documentation remediation.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator/agent actions for any execution of this runbook.
+- Record the compose command executed, service status, liveness result, bootstrap outcome if applicable, and any destructive action that was intentionally skipped.
+- Attach failed validation output or service symptoms to the related task or incident evidence without copying secret values.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+N/A - no verified destructive rollback or data recovery procedure is documented in this runbook. If bucket deletion, volume restore, optional cluster recovery, or credential rotation is required, stop and escalate with captured evidence.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Escalate to the owning operator when compose render fails, required secrets are missing, service health remains failed after documented checks, bucket bootstrap fails, secret exposure risk appears, or destructive object/credential/storage changes are required.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/lake-and-object/minio.md)
 - [Operations policy](../../../policies/04-data/lake-and-object/minio.md)
+- [Infrastructure service README](../../../../../infra/04-data/lake-and-object/minio/README.md)

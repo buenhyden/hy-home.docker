@@ -76,6 +76,7 @@ tracked `infra/**` 구현과 의미 단위로 대조한 감사 리포트다. 판
 | F-16 | `docs/05.operations/{guides,policies,runbooks}/README.md` 및 `00-workspace`, `12-infra-net`, `90-knowledge` 목적 폴더 | bucket root에 leaf 문서와 folder index가 섞여 있어 Stage 05 운영 문서 구조가 목적별 탐색 계약과 맞지 않았음 | root에는 bucket `README.md`만 남기고 workspace, infra_net, knowledge 문서를 목적 폴더로 이동; parent/child README와 cross-link를 갱신; `check-repo-contracts.sh`에 operations bucket-root leaf 금지와 target-path 일치 gate 추가 |
 | F-17 | `infra/04-data/operational/README.md`, `infra/04-data/operational/{mng-db,supabase}/README.md`, `docs/05.operations/{guides,policies,runbooks}/04-data/operational/{mng-db,supabase}.md` | `mng-db` docs retained obsolete network/old Compose CLI guidance and template remnants; Supabase docs assumed direct Studio host-port access and contained incomplete policy/runbook template residue; infra README listed a relational cluster under the operational folder and linked the guide index to policies | Corrected in place to current compose truth: `mng-db` services/profiles/networks/init DBs, Supabase data-profile services/Kong ports/runtime mounts, PostgreSQL image family, and operations guide/policy/runbook links; no archive because documents map to implemented services |
 | F-18 | `infra/04-data/cache-and-kv/README.md`, `infra/04-data/cache-and-kv/valkey-cluster/README.md`, `docs/05.operations/{guides,policies,runbooks}/04-data/cache-and-kv/valkey-cluster.md` | Valkey docs referenced stale init/container names, direct password variables, stale image tag, unsupported `maxmemory-policy` control, and destructive restore guidance not proven by current runbook evidence | Corrected in place to current compose truth: six `valkey-node-*` services, `valkey-cluster-init`, `valkey-cluster-exporter`, `service_valkey_password`, `valkey/valkey:9.1.0-alpine`, current port/profile/network model, and non-destructive escalation boundary |
+| F-19 | `infra/04-data/lake-and-object/{minio,seaweedfs}/README.md`, `docs/05.operations/{guides,policies,runbooks}/04-data/lake-and-object/{minio,seaweedfs}.md` | MinIO docs mixed root-active single-node compose with optional 4-node cluster recovery; SeaweedFS README contained duplicated old/new structures, an obsolete SeaweedFS version literal, unmounted `security.toml` claims, single-container log command, and unverified destructive restore/reshard procedures | Corrected in place to current compose truth: MinIO root-active `minio` + `minio-create-buckets` with optional cluster variant explicitly scoped; SeaweedFS `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`, image `chrislusf/seaweedfs:4.31`, route/health/mount boundaries, and non-destructive escalation boundary |
 
 ## Archive Decision
 
@@ -92,6 +93,9 @@ Stage 05 bucket-root 구조 drift(F-16)는 문서 내용 자체가 현재 구현
 `04-data/cache-and-kv` drift(F-18)도 구현된 Valkey cluster 문서의 service-name/command/control
 불일치였으므로 archive가 아니라 template-compliant in-place rewrite와 README reference 갱신으로
 처리했다.
+`04-data/lake-and-object` drift(F-19)는 구현된 MinIO와 SeaweedFS 문서의 active-vs-optional compose
+혼동과 stale runtime/control guidance였으므로 archive가 아니라 template-compliant in-place rewrite와
+README reference 갱신으로 처리했다.
 
 ## Verification Summary
 
@@ -111,6 +115,8 @@ Stage 05 bucket-root 구조 drift(F-16)는 문서 내용 자체가 현재 구현
 - 04-data operational implementation mapping: `mng-db` docs now match compose services `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter`; Supabase docs now match data-profile services `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor`.
 - 04-data cache-and-kv scan: Valkey guide, policy, runbook, and infra README stale init/container names, stale image tag, direct password variable command, unsupported maxmemory policy, and single-container command assumptions 0건.
 - 04-data cache-and-kv implementation mapping: Valkey docs now match compose services `valkey-node-0` through `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter`, profiles `data`/`service`, network `infra_net`, and secret `service_valkey_password`.
+- 04-data lake-and-object scan: MinIO/SeaweedFS guide, policy, runbook, and infra README stale SeaweedFS version, single-container SeaweedFS log target, unverified reshard command, direct MinIO root credential env references, and root-active/optional cluster confusion 0건 outside the explicitly optional MinIO cluster compose file.
+- 04-data lake-and-object implementation mapping: MinIO docs now match root-active `minio` + `minio-create-buckets` and optional `docker-compose.cluster.yaml`; SeaweedFS docs now match services `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`, image `chrislusf/seaweedfs:4.31`, network `infra_net`, and mount privilege boundary.
 - reference.template.md archive 언급: 0건(제약 이미 충족).
 - Local QA gate: `bash scripts/validation/run-local-qa-gates.sh` → PASS, repo contracts `failures=0`.
 

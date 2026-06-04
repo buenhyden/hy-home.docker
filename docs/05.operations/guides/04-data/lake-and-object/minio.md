@@ -5,106 +5,87 @@ status: active
 
 # MinIO Object Storage Usage Guide
 
+> Use this guide to understand and verify the root-active MinIO object storage implementation.
+
+---
+
 ## Usage
 
 ### Overview (KR)
 
-이 문서는 MinIO 오브젝트 스토리지에 대한 기술 가이드를 제공한다. `hy-home.docker` 환경에서 MinIO를 연결하고 사용하는 방법, 버킷 관리 절차 및 아키텍처적 통합 방안을 설명한다.
->
-> S3-compatible high-performance object storage server.
-
----
-
-### Common Pitfalls
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
+MinIO는 `infra/04-data/lake-and-object/minio/docker-compose.yml`에 선언된 S3-compatible object storage다. 현재 root-active compose path는 단일 `minio` service와 bucket/bootstrap job `minio-create-buckets`를 실행하며, optional `docker-compose.cluster.yaml`은 root include에 포함되지 않은 별도 cluster variant다.
 
 ### Usage Type
 
-`system-guide`
+`system-guide | operational-reference`
 
 ### Target Audience
 
-- Developer
 - Operator
+- Developer
+- SRE
+- AI Agent
 
 ### Purpose
 
-이 가이드는 사용자가 MinIO 서비스를 이해하고, 애플리케이션 또는 다른 인프라 서비스와 통합하며, 기본적인 관리 작업을 수행할 수 있도록 돕는다.
+이 가이드는 현재 MinIO service set, Traefik entrypoint, initialized buckets, secret boundary, 일반 확인 절차를 설명한다. 단일 compose와 optional cluster compose를 혼동하지 않도록 한다.
 
 ### Prerequisites
 
-- `infra/04-data/lake-and-object/minio` 서비스가 실행 중이어야 함.
-- S3 SDK (AWS SDK 등) 또는 MinIO Client (`mc`)가 설치되어야 함.
+- Repository checkout at the project root.
+- Docker Compose access on the local or approved infrastructure host.
+- Docker Secret files for `minio_root_username`, `minio_root_password`, `minio_app_username`, and `minio_app_user_password`.
+- Runtime data directory `${DEFAULT_DATA_DIR}/minio/data-1`.
 
 ### Step-by-step Instructions
 
-#### 1. 연결 정보 확인 (Connection Info)
+1. 현재 root-active compose service set을 확인한다.
 
-- **Internal API**: `http://minio:9000`
-- **Internal Console**: `http://minio:9001`
-- **External API**: `https://minio.${DEFAULT_URL}`
-- **External Console**: `https://minio-console.${DEFAULT_URL}`
+   ```bash
+   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config --services
+   ```
 
-#### 2. 버킷 초기화 및 자동화 (Bucket Initialization)
+   Expected services: `minio`, `minio-create-buckets`.
 
-MinIO 배포 시 `minio-create-buckets` 작업이 자동으로 실행되어 다음 버킷을 생성한다.
+2. 접근 경로를 확인한다.
 
-- `tempo-bucket`: Tempo 분산 추적 데이터 저장
-- `loki-bucket`: Loki 로그 데이터 저장
-- `cdn-bucket`: 공개 에셋 저장소 (Public/Anonymous Read 활성화)
-- `doc-intel-assets`: 문서 지능화 작업을 위한 자산 저장소
+   - Internal API: `http://minio:${MINIO_PORT:-9000}`
+   - Internal console: `http://minio:${MINIO_CONSOLE_PORT:-9001}`
+   - External API: `https://minio.${DEFAULT_URL}` through Traefik
+   - External console: `https://minio-console.${DEFAULT_URL}` through Traefik
 
-#### 3. MinIO Client (mc) 사용 (Using mc)
+3. 자동 bucket bootstrap 범위를 확인한다.
 
-원격 관리를 위해 `mc`를 설정한다.
+   `minio-create-buckets` creates `tempo-bucket`, `loki-bucket`, `cdn-bucket`, and `doc-intel-assets`; it also sets anonymous public read only for `cdn-bucket`.
 
-```bash
+4. 일반 상태를 확인한다.
 
-## 별칭 설정
-read -r MINIO_ACCESS_KEY
-read -rsp "MinIO secret key: " MINIO_SECRET_KEY; echo
-mc alias set myminio https://minio.${DEFAULT_URL} "$MINIO_ACCESS_KEY" "$MINIO_SECRET_KEY"
-unset MINIO_SECRET_KEY
-
-## 버킷 리스트 확인
-mc ls myminio
-
-## 데이터 복사 예시
-mc cp local-file.txt myminio/cdn-bucket/
-```
-
-민감값을 명령어에 직접 적거나 문서에 남기지 않는다. 가능한 경우 승인된 secret 주입 절차를 사용한다.
-
-### 4. 애플리케이션 연동 (App Integration)
-
-애플리케이션에서 AWS SDK 등을 사용하여 연결할 때는 `path-style` 접근 방식을 활성화해야 한다.
-
-```javascript
-const s3 = new AWS.S3({
-  endpoint: 'http://minio:9000',
-  s3ForcePathStyle: true, // 필수 설정
-  signatureVersion: 'v4'
-});
-```
+   ```bash
+   docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage ps minio minio-create-buckets
+   ```
 
 ### Common Pitfalls
 
-- **Path-Style Access**: MinIO는 기본적으로 가상 호스트 기반 접근이 아닌 경로 기반 접근을 사용하므로 클라이언트 설정에서 반드시 활성화해야 한다.
-- **Root Credentials**: `MINIO_ROOT_USER`와 `MINIO_ROOT_PASSWORD`는 서비스 배포용 비밀번호이므로, 애플리케이션 연동 시에는 별도의 IAM 사용자나 App Credentials를 사용하는 것을 권장한다.
+- Treating `docker-compose.cluster.yaml` as root-active. It is an optional local compose variant and must be called out separately in evidence.
+- Using root credentials for application integration. Use the app user created by `minio-create-buckets` and avoid recording secret values.
+- Assuming host ports are published directly. The current root-active compose uses Traefik labels and does not declare direct host ports.
+- Documenting secret values or command output that includes credentials.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage config`
+- `docker compose -f infra/04-data/lake-and-object/minio/docker-compose.yml --profile storage ps`
+- Search paired guide/policy/runbook and infra README for cluster-node assumptions, direct host-port assumptions, direct secret values, or old command forms.
+- Expected result: compose renders, documented services match root-active compose, and optional cluster references are clearly marked optional.
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/lake-and-object/minio.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은
+[recovery runbook](../../../runbooks/04-data/lake-and-object/minio.md)을 따른다.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/lake-and-object/minio.md)
 - [Recovery runbook](../../../runbooks/04-data/lake-and-object/minio.md)
+- [Infrastructure service README](../../../../../infra/04-data/lake-and-object/minio/README.md)

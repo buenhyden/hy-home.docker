@@ -5,71 +5,59 @@ status: active
 
 # SeaweedFS Operations Policy
 
-> Governance and operational standards for SeaweedFS distributed storage.
-> SeaweedFS 분산 스토리지 거버넌스 및 운영 표준.
+> This policy governs the current SeaweedFS services under `04-data/lake-and-object`.
 
 ---
 
 ## Overview (KR)
 
-### English
-
-This document defines the operational policies and guidelines to ensure the stability of SeaweedFS. It covers data integrity protection, performance monitoring, backup, and security governance, providing core operational standards for SeaweedFS in the `hy-home.docker` data layer.
-
-### Korean
-
-이 문서는 SeaweedFS의 안정성을 보장하기 위한 운영 정책과 가이드라인을 정의한다. 데이터 무결성 보호, 성능 모니터링, 백업 및 보안 거버넌스를 아우르며, `hy-home.docker` 데이터 레이어의 핵심 운영 기준을 제시한다.
-
-## Policy ID
-
-`OP-DATA-LAKE-SWFS-001`
+이 정책은 SeaweedFS data-profile stack의 master, volume, filer, S3 gateway, mount service 운영 통제를 정의한다. 정책 기준은 현재 compose에 실제로 선언된 image, route, healthcheck, volume, mount privilege, and network surface다.
 
 ## Policy Scope
 
-- Management of Master, Volume, Filer, S3, and Mount services.
-- Data lifecycle management for the Data Lake assets.
-- Governance of `/mnt/seaweedfs` mount points and FUSE interactions.
+- **Systems**: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`
+- **Configs**: `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`; `config/security.toml` is present but not mounted by current compose
+- **Profiles**: `data`
+- **Networks**: `infra_net`
+- **Agents**: AI agents reviewing or updating operations docs, compose references, validation evidence, or file/object-storage runtime boundaries
 
-## Controls & Standards
+## Controls
 
-- **Metadata Integrity**: Filer metadata persistence must be ensured through regular backups (LevelDB/PostgreSQL).
-- **Volume Replication**: Minimum replication level of `001` (2 copies in the same DC) is mandatory for production data.
-- **Concurrency Control**: Monitor `GOMAXPROCS` and memory usage of the Filer during heavy I/O to prevent bottlenecks.
-- **Network Security**: S3 port exposure is restricted to the internal `infra_net`. Remote access requires `security.toml` JWT authentication.
-
-## Monitoring & Alerting
-
-- **Master Status**: Track cluster health via `http://seaweedfs-master:9333/cluster/status`. Alert if free space falls below 20%.
-- **Latency**: Alert if individual volume server response time exceeds 500ms.
-- **Mount Health**: Monitor FUSE mount container CPU/Memory. Restart container if the mount point becomes stale.
-
-## Backup & Lifecycle
-
-- **Volume Export**: Use `weed export` for periodic archival of volume data to cold storage.
-- **Filer Snapshot**: Daily snapshots of the Filer database and metadata volume (`seaweedfs-master-data`).
-- **TTL Policies**: Use SeaweedFS TTL features to manage the expiration of log files and temporary artifacts.
-
-## Compliance Requirements
-
-- **Access Audit**: Retain Filer and S3 access logs for at least 90 days.
-- **Encryption**: Use SSL/TLS for all S3 interface traffic in staging and production.
+- **Required**:
+  - Compose-facing documentation must list image `chrislusf/seaweedfs:4.31` and the current five-service set.
+  - Health checks are documented for `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, and `seaweedfs-s3`; `seaweedfs-mount` has no compose healthcheck.
+  - `seaweedfs-mount` privileged/SYS_ADMIN behavior must be treated as host-impacting.
+  - Public access must use the declared Traefik routes: `seaweedfs.${DEFAULT_URL}`, `cdn.${DEFAULT_URL}`, and `s3.${DEFAULT_URL}`.
+- **Allowed**:
+  - Metadata-only compose validation with `docker compose ... config`.
+  - Read-only service health/log checks.
+  - Mount container restart only after capturing evidence and confirming host-impacting scope.
+- **Disallowed**:
+  - Claiming `security.toml` authentication is active unless the compose file mounts and uses it.
+  - Running destructive master metadata restore, volume deletion, unmount, or reshard operations as documentation-only actions.
+  - Treating the S3 gateway as credential-protected by the current compose unless credential config is explicitly added and documented.
+  - Recording private data, tokens, or credentials in documentation or task evidence.
 
 ## Exceptions
 
-N/A — 현재 승인된 예외 없음.
+Exceptions require explicit owner or user approval and must record scope, affected services, commands, host-impact considerations, validation output, and rollback/escalation state in related task or incident evidence.
 
 ## Verification
 
-- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
-- Run `bash scripts/validation/check-repo-contracts.sh` after policy or linked operations document updates.
-- Run `bash scripts/validation/check-doc-traceability.sh` when execution or operations links change.
+- Run `docker compose -f infra/04-data/lake-and-object/seaweedfs/docker-compose.yml --profile data config` after changing compose-facing documentation.
+- Run `bash scripts/validation/check-repo-contracts.sh` after policy, guide, runbook, README, or link updates.
+- Run `bash scripts/validation/check-doc-implementation-alignment.sh` when the change is part of implementation-vs-doc drift remediation.
+- Search updated docs for stale image versions, unmounted security config claims, single-container log commands, and destructive recovery commands before committing.
 
 ## Review Cadence
 
-- Review when linked service configuration, architecture, or runbook behavior changes.
+Review on any change to SeaweedFS compose services, image tag, routes, ports, profile, network, volume declarations, mount privilege, security config usage, or linked operations documents. Otherwise review during the regular Stage 05 operations audit.
+
+---
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/lake-and-object/seaweedfs.md)
 - [Recovery runbook](../../../runbooks/04-data/lake-and-object/seaweedfs.md)
+- [Infrastructure service README](../../../../../infra/04-data/lake-and-object/seaweedfs/README.md)
