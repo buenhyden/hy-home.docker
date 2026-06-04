@@ -9,9 +9,7 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 개발자와 운영자가 시스템 아키텍처를 이해하고, 서비스 상태를 확인하며, 기본적인 파이프라인 운영을 수행할 수 있도록 돕는다.
->
-> Apache Airflow 워크플로 엔진 시스템 환경 및 운영 전반에 대한 종합 안내서.
+이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 현재 구현은 Airflow 3.2.2, `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `flower`, `airflow-statsd-exporter`를 기준으로 한다.
 
 ---
 
@@ -51,8 +49,8 @@ Airflow는 다음과 같은 분산 컴포넌트로 구성됩니다:
 
 - **Scheduler & DAG Processor**: 작업 예약 및 DAG 파일 해석 (독립 실행으로 안정성 확보)
 - **Celery Workers**: 실제 태스크가 실행되는 동적 확장 노드
-- **Valkey Broker**: 스케줄러와 워커 간의 메시지 교환 (Redis 호환)
-- **API Server**: UI 및 외부 통합을 위한 통합 엔드포인트
+- **Valkey Broker**: 스케줄러와 워커 간의 메시지 교환. root-included dev compose는 `mng-valkey`를 사용하고, service-local `docker-compose.yml`은 `airflow-valkey`를 선언한다.
+- **API Server**: UI 및 외부 통합을 위한 `airflow-apiserver` 엔드포인트
 
 #### 2. UI 접근 및 모니터링
 
@@ -66,11 +64,11 @@ Airflow는 다음과 같은 분산 컴포넌트로 구성됩니다:
 
 ```bash
 
-## 컨테이너 상태 확인
-docker compose ps workflow
+## workflow root compose static validation
+HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
 
 ## DAG 목록 로드 확인
-docker compose exec airflow-webserver airflow dags list
+docker compose exec airflow-apiserver airflow dags list
 ```
 
 ### Common Pitfalls
@@ -81,7 +79,9 @@ docker compose exec airflow-webserver airflow dags list
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
+- `bash scripts/hardening/check-all-hardening.sh 07-workflow`
+- Runtime이 실행 중이면 `docker compose exec airflow-apiserver airflow dags list`
 
 ## Runbook Handoff
 

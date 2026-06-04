@@ -34,7 +34,7 @@ Governs the lifecycle of all Apache Airflow DAGs within the `hy-home.docker` eco
 
 ## Verification
 
-Compliance is checked via the Airflow static/runtime checks documented in [Airflow Procedure](../../runbooks/07-workflow/airflow.md), including `docker compose exec airflow-webserver airflow dags report`, and monthly audits of the Airflow metadata DB.
+Compliance is checked via the Airflow static/runtime checks documented in [Airflow Procedure](../../runbooks/07-workflow/airflow.md), including `docker compose exec airflow-apiserver airflow dags list`, and monthly audits of the Airflow metadata DB.
 
 ## Review Cadence
 

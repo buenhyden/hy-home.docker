@@ -36,8 +36,8 @@ status: active
 ## Functional Requirements
 
 - **REQ-PRD-WRK-FUN-01**: Airflow/n8n 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용해야 한다.
-- **REQ-PRD-WRK-FUN-02**: Airflow 핵심 서비스는 broker(`airflow-valkey`) health 기반 의존성을 사용해야 한다.
-- **REQ-PRD-WRK-FUN-03**: n8n worker/task-runner는 healthcheck를 제공하고 task-runner는 n8n/valkey health 의존성을 사용해야 한다.
+- **REQ-PRD-WRK-FUN-02**: service-local Airflow compose는 broker(`airflow-valkey`) health 기반 의존성을 사용해야 하며 root-included dev compose는 shared `mng-valkey` broker 경계를 문서화해야 한다.
+- **REQ-PRD-WRK-FUN-03**: n8n worker/task-runner는 healthcheck를 제공하고 task-runner는 service-local compose에서 n8n/valkey health 의존성을 사용해야 하며 root-included dev compose는 shared `mng-valkey` broker 경계를 문서화해야 한다.
 - **REQ-PRD-WRK-FUN-04**: n8n 서비스는 multi-stage/custom image 기반 비루트 실행 및 secret guard를 제공해야 한다.
 - **REQ-PRD-WRK-FUN-05**: `scripts/hardening/check-all-hardening.sh 07-workflow`와 CI `infrastructure-hardening` job을 제공해야 한다.
 - **REQ-PRD-WRK-FUN-06**: `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서 세트와 README 인덱스를 동기화해야 한다.
@@ -85,6 +85,6 @@ status: active
 - **Plan**: [../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md](../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md](../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md)
-- **Guide**: [../05.operations/policies/07-workflow/optimization-hardening.md](../05.operations/policies/07-workflow/optimization-hardening.md)
+- **Guide**: [../05.operations/guides/07-workflow/optimization-hardening.md](../05.operations/guides/07-workflow/optimization-hardening.md)
 - **Operation**: [../05.operations/policies/07-workflow/optimization-hardening.md](../05.operations/policies/07-workflow/optimization-hardening.md)
-- **Runbook**: [../05.operations/policies/07-workflow/optimization-hardening.md](../05.operations/policies/07-workflow/optimization-hardening.md)
+- **Runbook**: [../05.operations/runbooks/07-workflow/optimization-hardening.md](../05.operations/runbooks/07-workflow/optimization-hardening.md)

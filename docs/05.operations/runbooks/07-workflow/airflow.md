@@ -7,7 +7,7 @@ status: active
 
 ## Overview (KR)
 
-이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 데이터베이스 연결 오류, 워커 중단, DAG 파싱 지연 등 주요 장애 시나리오별 대응 단계를 제공한다.
+이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 현재 서비스명은 Airflow 3의 `airflow-apiserver`를 기준으로 하며, root-included dev compose는 shared `mng-valkey`, service-local compose는 `airflow-valkey`를 사용한다.
 
 ## Airflow Recovery Procedure
 
@@ -37,21 +37,23 @@ status: active
 
 ### Checklist
 
-- [ ] [ ] `docker compose ps workflow` 결과가 모두 `Up` 인가?
-- [ ] [ ] `airflow-valkey` 브로커와 통신이 가능한가?
-- [ ] [ ] 메타데이터 DB(PostgreSQL)가 정상 동작 중인가?
+- [ ] `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`가 통과하는가?
+- [ ] 현재 실행 환경이 root-included dev compose인지 service-local compose인지 식별했는가?
+- [ ] 메타데이터 DB(PostgreSQL)가 정상 동작 중인가?
 
 ### Steps
 
 #### 시나리오 1: 태스크 지연 (Task stuck in Queued)
 
-1. Valkey 브로커 상태 확인: `docker compose exec airflow-valkey valkey-cli ping`
+1. Broker 상태 확인:
+   - root-included dev compose: `docker compose exec mng-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/mng_valkey_password)" ping'`
+   - service-local compose: `docker compose exec airflow-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/airflow_valkey_password)" ping'`
 2. 워커 재배포: `docker compose restart airflow-worker`
 3. Flower(`flower.${DEFAULT_URL}`)를 통해 큐에 쌓인 작업량 확인.
 
 ##### 시나리오 2: 메타데이터 DB 오류
 
-1. DB 연결 정보 확인: `docker compose exec airflow-webserver airflow db check`
+1. DB 연결 정보 확인: `docker compose exec airflow-apiserver airflow db check`
 2. 비밀번호/시크릿 로드 여부 확인: `/run/secrets/airflow_db_password` 파일 존재 여부 확인.
 3. 서비스 재시작: `docker compose restart airflow-apiserver airflow-scheduler`
 
@@ -61,7 +63,7 @@ status: active
 
    ```bash
    read -rsp "New Airflow admin password: " AIRFLOW_NEW_PASSWORD; echo
-   docker compose run --rm airflow-cli users reset-password \
+   docker compose exec airflow-apiserver airflow users reset-password \
      --username admin \
      --password "$AIRFLOW_NEW_PASSWORD"
    unset AIRFLOW_NEW_PASSWORD
@@ -69,7 +71,7 @@ status: active
 
 ### Verification Steps
 
-- [ ] `docker compose exec airflow-webserver airflow dags report` 명령어로 정상 로드 여부 확인.
+- [ ] `docker compose exec airflow-apiserver airflow dags list` 명령어로 정상 로드 여부 확인.
 - [ ] Airflow Web UI 로그인 및 `Admin > Health` 페이지 확인.
 
 ### Observability and Evidence Sources

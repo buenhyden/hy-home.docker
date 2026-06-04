@@ -41,15 +41,17 @@ status: active
 ### Steps
 
 1. 정적 구성 점검
-   - `docker compose -f infra/07-workflow/airflow/docker-compose.yml config`
-   - `docker compose -f infra/07-workflow/n8n/docker-compose.yml config`
+   - `HYHOME_COMPOSE_PROFILES=workflow bash scripts/validation/validate-docker-compose.sh`
+   - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
+   - service-local compose 파일은 root network/secrets context 없이 단독 `config` 대상으로 쓰지 않는다.
 2. 하드닝 기준 점검
    - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
 3. 증상별 복구
    - middleware 회귀:
      - Airflow/Flower/n8n 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 재적용
    - Airflow startup race:
-     - 핵심 서비스의 `airflow-valkey` `service_healthy` dependency 복원
+     - service-local compose에서는 핵심 서비스의 `airflow-valkey` `service_healthy` dependency 복원
+     - root-included dev compose에서는 `mng-valkey` broker 경계와 validation evidence 확인
    - n8n worker/task-runner 이상:
      - healthcheck/depends_on 계약 복원
    - n8n image drift:

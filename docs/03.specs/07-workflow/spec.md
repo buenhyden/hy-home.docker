@@ -34,8 +34,10 @@ status: active
 - **Config Contract**:
   - Airflow UI/Flower 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용한다.
   - n8n UI 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용한다.
-  - Airflow 핵심 서비스(`apiserver`, `scheduler`, `dag-processor`, `worker`, `triggerer`, `flower`)는 `airflow-valkey` health 기반 의존성을 가진다.
-  - n8n `worker`, `task-runner`는 healthcheck를 제공하며 `task-runner`는 `n8n`/`n8n-valkey` health 기반 의존성을 가진다.
+  - service-local Airflow 핵심 서비스(`apiserver`, `scheduler`, `dag-processor`, `worker`, `triggerer`, `flower`)는 `airflow-valkey` health 기반 의존성을 가진다.
+  - root-included dev Airflow compose는 shared `mng-valkey` broker 경계를 문서화한다.
+  - n8n `worker`, `task-runner`는 healthcheck를 제공하며 service-local `task-runner`는 `n8n`/`n8n-valkey` health 기반 의존성을 가진다.
+  - root-included dev n8n compose는 shared `mng-valkey` broker 경계를 문서화한다.
 - **Data / Interface Contract**:
   - Airflow: CeleryExecutor + Valkey broker + PostgreSQL result backend
   - n8n: Queue mode + external runner + PostgreSQL metadata backend
@@ -48,7 +50,7 @@ status: active
 - **Gateway Security Plane**:
   - 외부 노출 관리 경로는 TLS 종료 후 표준 체인 + SSO 체인을 강제한다.
 - **Orchestration Runtime Plane**:
-  - Airflow는 Valkey health를 선행 조건으로 의존성을 정렬한다.
+  - Airflow는 service-local compose에서 Valkey health를 선행 조건으로 의존성을 정렬한다.
   - n8n은 main/worker/task-runner를 분리해 queue mode로 운영한다.
 - **Image Hardening Plane**:
   - n8n은 multi-stage Dockerfile과 `USER node` 기반 비루트 실행을 유지한다.
@@ -97,8 +99,8 @@ workflow_hardening_controls:
 ## Verification
 
 ```bash
-docker compose -f infra/07-workflow/airflow/docker-compose.yml config
-docker compose -f infra/07-workflow/n8n/docker-compose.yml config
+HYHOME_COMPOSE_PROFILES=workflow bash scripts/validation/validate-docker-compose.sh
+HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
 bash scripts/hardening/check-all-hardening.sh 07-workflow
 bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-doc-traceability.sh

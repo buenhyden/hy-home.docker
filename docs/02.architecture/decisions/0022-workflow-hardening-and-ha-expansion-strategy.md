@@ -16,8 +16,8 @@ Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 rac
 
 - 즉시 하드닝을 시행한다.
   - Airflow/n8n 관리 경로 middleware를 `gateway-standard-chain + sso-errors + sso-auth`로 정렬한다.
-  - Airflow 핵심 서비스에 Valkey health 기반 의존성을 부여한다.
-  - n8n worker/task-runner healthcheck와 dependency gating을 추가한다.
+  - service-local Airflow compose에는 Valkey health 기반 의존성을 부여하고 root-included dev compose의 shared `mng-valkey` 경계를 문서화한다.
+  - n8n worker/task-runner healthcheck와 dependency gating을 추가하고 root-included dev compose의 shared `mng-valkey` 경계를 문서화한다.
   - n8n custom image를 compose 기본 이미지로 승격하고 non-root + secret guard를 강제한다.
   - `scripts/hardening/check-all-hardening.sh 07-workflow`와 CI `infrastructure-hardening` job을 도입한다.
 - 카탈로그 확장은 단계적으로 시행한다.

@@ -37,12 +37,14 @@ status: active
 ### Step-by-step Instructions
 
 1. 정적 구성 점검
-   - `docker compose -f infra/07-workflow/airflow/docker-compose.yml config`
-   - `docker compose -f infra/07-workflow/n8n/docker-compose.yml config`
+   - `HYHOME_COMPOSE_PROFILES=workflow bash scripts/validation/validate-docker-compose.sh`
+   - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
+   - service-local compose 파일은 root network/secrets context 없이 단독 `config` 대상으로 쓰지 않는다.
 2. Gateway/SSO 경계 정렬
    - Airflow, Flower, n8n 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
 3. Health 기반 의존성 강화
-   - Airflow 핵심 서비스가 `airflow-valkey` `service_healthy`를 사용하도록 확인한다.
+   - service-local Airflow compose가 `airflow-valkey` `service_healthy`를 사용하도록 확인한다.
+   - root-included dev compose가 `mng-valkey` broker dependency를 사용한다는 경계를 문서화한다.
    - n8n worker/task-runner healthcheck와 task-runner dependency gating을 확인한다.
 4. n8n 이미지 하드닝 확인
    - compose가 custom image(`hyhome/n8n:2.15.0-local`)를 사용하도록 확인한다.
@@ -65,8 +67,8 @@ status: active
 
 ## Common Checks
 
-- `docker compose -f infra/07-workflow/airflow/docker-compose.yml config`
-- `docker compose -f infra/07-workflow/n8n/docker-compose.yml config`
+- `HYHOME_COMPOSE_PROFILES=workflow bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/check-doc-traceability.sh`

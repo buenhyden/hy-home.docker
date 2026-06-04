@@ -7,11 +7,11 @@ status: active
 
 ## Overview (KR)
 
-이 문서는 `07-workflow` 계층의 참조 아키텍처를 정의한다. 이 계층은 상이한 요구사항을 가진 두 가지 엔진(Airflow, n8n)을 하이이브리드 방식으로 운영하며, 공통 인프라(Valkey, PostgreSQL)를 공유하여 운영 효율성을 도모한다.
+이 문서는 `07-workflow` 계층의 참조 아키텍처를 정의한다. 이 계층은 상이한 요구사항을 가진 두 가지 엔진(Airflow, n8n)을 하이브리드 방식으로 운영하며, root-included dev compose와 service-local compose의 broker 경계를 명확히 분리한다.
 
 ## Summary
 
-`07-workflow` 계층은 시서비스 및 인프라 간의 워크플로우를 제어하고 자동화하는 통합 오케스트레이션 계층이다.
+`07-workflow` 계층은 서비스 및 인프라 간의 워크플로우를 제어하고 자동화하는 통합 오케스트레이션 계층이다.
 
 - **Airflow**: 프로그래밍 프레임워크 기반의 복잡한 데이터 파이프라인 관리.
 - **n8n**: 빠른 연동, API 중심 자동화, 비개발자 친화적인 워크플로 전용.
@@ -19,9 +19,9 @@ status: active
 ## Boundaries & Non-goals
 
 - **Owns**:
-  - Airflow Cluster (Scheduler, Webserver, Worker, Triggerer).
+  - Airflow services (`airflow-apiserver`, scheduler, dag-processor, worker, triggerer, Flower).
   - n8n Server & Task Runner.
-  - Workflow 전용 Message Broker (Valkey).
+  - Workflow broker wiring: root dev uses shared `mng-valkey`; service-local compose declares dedicated Airflow/n8n Valkey services.
 - **Consumes**:
   - `04-data`: PostgreSQL Management Cluster (Airflow & n8n DB).
   - `06-observability`: Prometheus, Loki (Monitoring & Logging).
@@ -36,7 +36,7 @@ status: active
 
 - **Performance**: CeleryExecutor를 통한 수평 확장으로 동시 태스크 처리량 확보.
 - **Security**: RBAC(Role-Based Access Control)를 통한 UI 접근 제어, 시크릿 정보는 Vault/Secrets 관리.
-- **Reliability**: Postgres HA 연동을 통한 워크플로 메타데이터 영속성 보장.
+- **Reliability**: Management PostgreSQL 연동을 통한 워크플로 메타데이터 영속성 보장.
 - **Scalability**: CeleryExecutor 및 n8n worker 확장을 통한 병렬 처리 능력 확보.
 - **Reliability**: Valkey 기반의 메시지 큐 시스템을 통한 작업 유실 방지.
 - **Observability**: Flower를 통한 Celery 워커 모니터링, Prometheus 메트릭 수집.
@@ -59,9 +59,9 @@ status: active
 
 ## Infrastructure & Deployment
 
-- **Runtime / Platform**: Docker Compose / Docker Swarm (Infrastructure Profile: `workflow`).
+- **Runtime / Platform**: Docker Compose (Infrastructure Profile: `workflow`).
 - **Deployment Model**: Infrastructure-as-code 기반의 컨테이너화된 배포.
-- **Operational Evidence**: `docker-compose ps` 및 각 서비스별 Healthcheck 엔드포인트.
+- **Operational Evidence**: `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`, hardening gate, and runtime service health.
 
 ## Related Documents
 

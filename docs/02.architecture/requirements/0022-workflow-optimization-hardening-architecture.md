@@ -67,8 +67,8 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
 
 - **Runtime / Platform**: Docker Compose (`infra/07-workflow/*`)
 - **Deployment Model**:
-  - Airflow distributed components + dedicated valkey
-  - n8n queue mode + external runner
+  - Airflow distributed components; root dev uses shared `mng-valkey`, service-local compose declares dedicated `airflow-valkey`
+  - n8n queue mode + external runner; root dev uses shared `mng-valkey`, service-local compose declares dedicated `n8n-valkey`
 - **Operational Evidence**:
   - `docker compose config` checks
   - `scripts/hardening/check-all-hardening.sh 07-workflow`
@@ -91,6 +91,6 @@ Tracked infra artifact가 없는 신규 workflow service는 active workflow arch
 - **Plan**: [../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md)
-- **Guide**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/policies/07-workflow/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/guides/07-workflow/optimization-hardening.md)
 - **Operation**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/policies/07-workflow/optimization-hardening.md)
-- **Runbook**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/policies/07-workflow/optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/runbooks/07-workflow/optimization-hardening.md)

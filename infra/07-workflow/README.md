@@ -4,7 +4,7 @@
 
 ## Overview
 
-The `07-workflow` tier provides the infrastructure for automating repetitive tasks and orchestrating complex data pipelines. It balances power and ease-of-use by offering Apache Airflow for programmatic, highly-customizing DAGs and n8n for rapid, low-code automation and third-party integrations.
+The `07-workflow` tier provides the infrastructure for automating repetitive tasks and orchestrating complex data pipelines. It balances power and ease-of-use by offering Apache Airflow for code-first DAG orchestration and n8n for rapid, low-code automation and third-party integrations.
 
 ## Audience
 
@@ -20,7 +20,7 @@ The `07-workflow` tier provides the infrastructure for automating repetitive tas
 
 - Apache Airflow (CeleryExecutor)
 - n8n Automation platform
-- Valkey (Broker for Celery)
+- Valkey broker wiring for Airflow/n8n queue mode
 - Workflow Database (Shared Management Postgres)
 
 ### Out of Scope
@@ -40,7 +40,7 @@ The `07-workflow` tier provides the infrastructure for automating repetitive tas
 
 ## How to Work in This Area
 
-1. Read the [Airflow DAG Development Guide](../../docs/05.operations/guides/07-workflow/01.airflow-dag-dev.md).
+1. Read the [Airflow DAG Basics Guide](../../docs/05.operations/guides/07-workflow/airflow-dag-basics.md).
 2. Follow the [n8n Automation Guide](../../docs/05.operations/guides/07-workflow/02.n8n-automation.md).
 3. Check the [Operations Policy](../../docs/05.operations/policies/07-workflow/README.md) for scaling.
 4. Consult the [Workflow Runbook](../../docs/05.operations/runbooks/07-workflow/README.md) for failure recovery.
@@ -49,39 +49,43 @@ The `07-workflow` tier provides the infrastructure for automating repetitive tas
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Orchestration | Apache Airflow              | v3.1.8 (CeleryExecutor)   |
+| Orchestration | Apache Airflow              | v3.2.2 (CeleryExecutor)   |
 | Automation  | n8n                          | v2.15.0-local             |
-| Broker      | Valkey                       | Dedicated for Celery      |
-| Database    | PostgreSQL                   | Management Cluster        |
+| Broker      | Valkey                       | root dev uses `mng-valkey`; service-local compose declares `airflow-valkey` and `n8n-valkey` |
+| Database    | PostgreSQL                   | Management PostgreSQL (`mng-pg`) |
 
 ## Service Matrix
 
 | Service | Protocol | Profile | Port |
 | :--- | :--- | :--- | :--- |
-| `airflow-webserver` | HTTP | `workflow` | 8080 |
+| `airflow-apiserver` | HTTP | `workflow` | 8080 |
+| `airflow-scheduler` | internal | `workflow` | 8974 health endpoint |
+| `airflow-worker` | internal | `workflow` | Celery worker |
 | `n8n` | HTTP | `workflow` | 5678 |
-| `airflow-flower` | HTTP | `workflow` | 5555 (Celery monitoring) |
+| `n8n-worker` | internal | `workflow` | 5679 broker health |
+| `n8n-task-runner` | internal | `workflow` | 5680 |
+| `flower` | HTTP | `workflow` | 5555 (Celery monitoring) |
 
 ## Configuration
 
 - **Database**: Airflow and n8n use the `mng-db` instance in `04-data`.
-- **Broker**: Celery uses `valkey-workflow` as the message broker.
+- **Broker**: root-included dev compose uses shared `mng-valkey`; service-local compose declares dedicated `airflow-valkey` and `n8n-valkey`.
 - **Persistence**: DAGs and workflows are stored in persistent volumes linked to `${DEFAULT_WORKFLOW_DIR}`.
 
 ## Testing
 
 ```bash
-# Verify Airflow CLI connectivity
-docker exec airflow-webserver airflow info
+# Verify workflow root compose
+HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
 
-# Test n8n health
-curl -f http://localhost:5678/healthz
+# Verify workflow hardening baseline
+bash scripts/hardening/check-all-hardening.sh 07-workflow
 ```
 
 ## Change Impact
 
 - Updating Airflow versions may require database migrations.
-- Changing the Valkey broker configuration affects all active Celery workers.
+- Changing the Valkey broker configuration affects Airflow Celery workers and n8n queue workers.
 - Deleting an n8n workflow is irreversible if not version-controlled externally.
 
 ## Related Documents

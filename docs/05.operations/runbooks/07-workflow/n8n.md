@@ -7,11 +7,11 @@ status: active
 
 ## Overview (KR)
 
-이 런북은 n8n 서비스 장애 발생 시 운영자가 신속하게 서비스를 복구하기 위한 단계별 절차를 제공한다. 워커 중단, 데이터베이스 연결 오류, 암호화 키 분실 등 주요 장애 시나리오에 대응한다.
+이 런북은 n8n 서비스 장애 발생 시 운영자가 신속하게 서비스를 복구하기 위한 단계별 절차를 제공한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`를 기준으로 하며 root-included dev compose와 service-local compose의 broker 경계를 먼저 식별한다.
 
 ## n8n Recovery Procedure
 
-> Scope: Apache n8n (07-workflow)
+> Scope: n8n (07-workflow)
 
 ---
 
@@ -37,9 +37,9 @@ status: active
 
 ### Checklist
 
-- [ ] [ ] `docker compose ps` 결과 모든 n8n 서비스가 `Up` 인가?
-- [ ] [ ] `n8n-valkey` 서비스가 정상이며 워커가 연결되어 있는가?
-- [ ] [ ] `n8n_db_password` 시크릿이 올바르게 로드되었는가?
+- [ ] `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`가 통과하는가?
+- [ ] 현재 실행 환경이 root-included dev compose인지 service-local compose인지 식별했는가?
+- [ ] `n8n_db_password` 시크릿이 올바르게 로드되었는가?
 
 ### Steps
 
@@ -47,7 +47,9 @@ status: active
 
 1. 워커 로그 확인: `docker compose logs --tail=50 n8n-worker`
 2. 워커 재시작: `docker compose restart n8n-worker`
-3. Valkey 큐 상태 확인: `docker compose exec n8n-valkey valkey-cli info keyspace`
+3. Valkey 큐 상태 확인:
+   - root-included dev compose: `docker compose exec mng-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/mng_valkey_password)" info keyspace'`
+   - service-local compose: `docker compose exec n8n-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/n8n_valkey_password)" info keyspace'`
 
 ##### 시나리오 2: 데이터베이스 연결 오류
 
@@ -57,12 +59,12 @@ status: active
 
 ##### 시나리오 3: 텐서플로우/Task Runner 오류
 
-1. Task Runner 로그 확인: `docker compose logs n8n-task-runner`
-2. Task Runner 재시작: `docker compose restart n8n-task-runner`
+1. Task Runner 로그 확인: `docker compose logs n8n-task-runner n8n-task-runner-worker`
+2. Task Runner 재시작: `docker compose restart n8n-task-runner n8n-task-runner-worker`
 
 ### Verification Steps
 
-- [ ] `https://n8n.${DEFAULT_URL}/healthz` 호출 시 `200 OK` 응답 확인.
+- [ ] `docker compose exec n8n wget -qO- http://localhost:${N8N_PORT:-5678}/healthz` 호출 시 정상 응답 확인.
 - [ ] UI 로그인 후 `Executions` 탭에서 최근 작업의 성공 여부 확인.
 
 ### Observability and Evidence Sources
@@ -72,7 +74,7 @@ status: active
 
 ### Safe Rollback or Recovery Procedure
 
-- [ ] 서비스를 재시작하기 전, `database` 볼륨의 데이터 유실 가능성이 낮으므로 안심하고 재시작을 시도하십시오.
+- [ ] 서비스를 재시작하기 전, 현재 실행/대기 중 workflow와 DB 백업 상태를 확인하십시오.
 - [ ] 만약 `N8N_ENCRYPTION_KEY`가 변경되어 이전 데이터 복호화가 불가능한 경우, 이전 키로 롤백하거나 자격 증명을 재설정해야 합니다.
 
 ---

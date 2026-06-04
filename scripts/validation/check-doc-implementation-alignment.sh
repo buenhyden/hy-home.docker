@@ -144,7 +144,6 @@ NON_SERVICE_STEMS = {
     "0012-standardize-infra-net",
     "01.lgtm-stack",
     "01.setup",
-    "01.airflow-dag-dev",
     "01.iac-automation",
     "01.llm-inference",
     "01.retention",

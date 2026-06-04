@@ -22,7 +22,7 @@ status: active
 
 - **Apache Airflow**를 "Core Orchestrator"로 채택하여 복잡한 데이터 파이프라인과 시스템 배치 작업을 담당한다.
 - **n8n**을 "Integration Automator"로 채택하여 외부 서비스 연합 및 이벤트 기반의 가벼운 자동화를 담당한다.
-- **공통 브로커(Valkey)**와 **데이터베이스(PostgreSQL)**를 공유하여 인프라 복잡도를 제어한다.
+- root-included dev compose는 shared `mng-valkey`와 management PostgreSQL을 사용하고, service-local compose는 Airflow/n8n dedicated Valkey 서비스를 선언하여 운영 경계를 분리한다.
 
 ## Explicit Non-goals
 

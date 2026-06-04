@@ -7,6 +7,7 @@
 ## Overview
 
 `guides/07-workflow`는 `docs/05.operations`의 guide 문서를 관리합니다. 사용 맥락, 전제 조건, 일반 점검, 관련 runbook handoff를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+현재 active guide는 구현된 Airflow와 n8n 서비스만 다루며, 중복되거나 구현 경로와 상충하는 guide는 `docs/98.archive` tombstone으로 이동한다.
 
 ## Audience
 
@@ -35,7 +36,6 @@
 
 ```text
 guides/07-workflow/
-├── 01.airflow-dag-dev.md
 ├── 02.n8n-automation.md
 ├── airflow-dag-basics.md
 ├── airflow.md
@@ -53,12 +53,11 @@ guides/07-workflow/
 
 | Path | Purpose |
 | --- | --- |
-| [01.airflow-dag-dev.md](./01.airflow-dag-dev.md) | 01.Airflow Dag Dev guide 문서 |
-| [02.n8n-automation.md](./02.n8n-automation.md) | 02.N8N Automation guide 문서 |
-| [airflow-dag-basics.md](./airflow-dag-basics.md) | Airflow Dag Basics guide 문서 |
-| [airflow.md](./airflow.md) | Airflow guide 문서 |
-| [n8n.md](./n8n.md) | N8N guide 문서 |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening guide 문서 |
+| [02.n8n-automation.md](./02.n8n-automation.md) | n8n workflow 작성과 활성화 기본 절차 |
+| [airflow-dag-basics.md](./airflow-dag-basics.md) | Airflow DAG 작성 위치와 기본 패턴 |
+| [airflow.md](./airflow.md) | Airflow runtime, access, common checks |
+| [n8n.md](./n8n.md) | n8n runtime, access, queue-mode common checks |
+| [optimization-hardening.md](./optimization-hardening.md) | workflow hardening 변경 절차와 검증 기준 |
 
 ## Related Documents
 

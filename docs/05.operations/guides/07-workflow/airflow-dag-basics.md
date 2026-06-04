@@ -9,7 +9,7 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 `hy-home.docker` 환경에서 Airflow DAG를 작성하는 기본 방법과 권장 패턴을 설명합니다. Docker 볼륨 마운트 시 주의사항과 커넥션 관리 방법을 제공합니다.
+이 문서는 `hy-home.docker` 환경에서 Airflow DAG를 작성하는 기본 방법과 권장 패턴을 설명합니다. 현재 compose는 DAG 파일을 repo 내부 Airflow 하위 경로가 아니라 `${DEFAULT_WORKFLOW_DIR}/airflow/dags`에서 bind mount합니다.
 
 ### Airflow DAG Basics Usage
 
@@ -32,7 +32,7 @@ To ensure all DAGs written for the project follow consistent patterns and utiliz
 
 #### Prerequisites
 
-- Access to `infra/07-workflow/airflow/dags`.
+- Access to `${DEFAULT_WORKFLOW_DIR}/airflow/dags`.
 - Basic understanding of Python and Apache Airflow TaskFlow API.
 
 #### Step-by-step Instructions
@@ -63,7 +63,7 @@ my_workflow()
 
 ##### 2. File Placement
 
-Place your `.py` files in `${DEFAULT_WORKFLOW_DIR}/airflow/dags`. The `airflow-scheduler` and `airflow-worker` will pick them up automatically via volume mounts.
+Place your `.py` files in `${DEFAULT_WORKFLOW_DIR}/airflow/dags`. The `airflow-scheduler`, `airflow-dag-processor`, and `airflow-worker` pick them up through the configured bind volume.
 
 #### Common Pitfalls
 
@@ -72,7 +72,8 @@ Place your `.py` files in `${DEFAULT_WORKFLOW_DIR}/airflow/dags`. The `airflow-s
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
+- Runtime이 실행 중이면 `docker compose exec airflow-apiserver airflow dags list`
 
 ## Runbook Handoff
 
@@ -81,3 +82,6 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 ## Related Documents
 
 - [Operations index](../../README.md)
+- [Airflow system guide](./airflow.md)
+- [DAG deployment policy](../../policies/07-workflow/dag-deployment.md)
+- [Airflow recovery runbook](../../runbooks/07-workflow/airflow.md)

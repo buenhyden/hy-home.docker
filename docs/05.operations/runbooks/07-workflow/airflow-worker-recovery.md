@@ -7,14 +7,14 @@ status: active
 
 ## Overview (KR)
 
-이 런북은 응답하지 않거나 'stuck' 상태인 Airflow Worker를 복구하는 절차를 정의합니다. Celery 브로커 상태 확인 및 워커 재시작 단계를 제공합니다.
+이 런북은 응답하지 않거나 `queued` 상태가 장기화된 Airflow worker를 복구하는 절차를 정의합니다. 현재 구현은 `airflow-worker`, `airflow-apiserver`, root-included dev `mng-valkey`, service-local `airflow-valkey` 경계를 기준으로 합니다.
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 policy, guide, runbook handoff를 확인한다.
-- [ ] 현재 상태와 변경 범위를 기록한다.
+- [ ] 현재 실행 환경이 root-included dev compose인지 service-local compose인지 식별한다.
+- [ ] `airflow-worker`, `airflow-scheduler`, `airflow-apiserver` 상태와 최근 로그를 캡처한다.
 
 ### Airflow Worker Recovery Procedure
 
@@ -28,15 +28,18 @@ To resolve issues where Airflow tasks remain in `queued` or `running` state inde
 
 ### Steps
 
-1. 이 runbook의 trigger와 checklist를 확인한다.
-2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.
-3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.
-4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
+1. `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`로 static validation을 확인한다.
+2. `docker compose logs --tail=100 airflow-worker airflow-scheduler airflow-apiserver` 결과를 캡처한다.
+3. Broker 상태를 확인한다.
+   - root-included dev compose: `docker compose exec mng-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/mng_valkey_password)" ping'`
+   - service-local compose: `docker compose exec airflow-valkey sh -lc 'valkey-cli -a "$(cat /run/secrets/airflow_valkey_password)" ping'`
+4. worker만 재시작한다: `docker compose restart airflow-worker`
+5. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
 
 ### Verification Steps
 
-- [ ] 관련 validation script 또는 수동 확인을 실행한다.
-- [ ] 변경 결과가 policy, guide, runbook handoff와 충돌하지 않는지 확인한다.
+- [ ] `docker compose exec airflow-apiserver airflow dags list`가 성공한다.
+- [ ] Flower UI 또는 worker 로그에서 worker heartbeat가 회복된다.
 
 ### Observability and Evidence Sources
 
@@ -66,16 +69,16 @@ To resolve issues where Airflow tasks remain in `queued` or `running` state inde
 
 #### Procedure
 
-1. **Check Disk Space**: Ensure the log volume is not full.
+1. **Check Disk Space**: Ensure the Airflow log volume is not full.
 
    ```bash
-   df -h /opt/airflow/logs
+   docker compose exec airflow-worker df -h /opt/airflow/logs
    ```
 
 2. **Inspect Broker**: Check if Valkey is reachable and has pending messages.
 
    ```bash
-   docker exec airflow-valkey valkey-cli info keyspace
+   docker compose exec airflow-apiserver airflow celery inspect ping
    ```
 
 3. **Restart Workers**: Force a restart of the worker nodes.
@@ -92,7 +95,7 @@ To resolve issues where Airflow tasks remain in `queued` or `running` state inde
 
 #### Verification Steps
 
-- [ ] Check Airflow UI "Celery" tab for active worker heartbeats.
+- [ ] Check Flower for active worker heartbeats.
 - [ ] Trigger a test DAG and verify task completion.
 
 #### Related Operational Documents
@@ -104,9 +107,9 @@ To resolve issues where Airflow tasks remain in `queued` or `running` state inde
 
 #### Canonical References
 
-- [../README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
-- [../../05.operations/README.md](../../README.md)
+- [Operations index](../../README.md)
+- [Airflow usage guide](../../guides/07-workflow/airflow.md)
+- [Airflow operations policy](../../policies/07-workflow/airflow.md)
 
 #### Observability and Evidence Sources
 
@@ -144,3 +147,5 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 ## Related Documents
 
 - [Operations index](../../README.md)
+- [Airflow usage guide](../../guides/07-workflow/airflow.md)
+- [Airflow operations policy](../../policies/07-workflow/airflow.md)

@@ -56,8 +56,8 @@ status: completed
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-WRK-001 | Structural | Airflow compose 정적 검증 | `docker compose -f infra/07-workflow/airflow/docker-compose.yml config` | 오류 없음 |
-| VAL-WRK-002 | Structural | n8n compose 정적 검증 | `docker compose -f infra/07-workflow/n8n/docker-compose.yml config` | 오류 없음 |
+| VAL-WRK-001 | Structural | workflow root compose 정적 검증 | `HYHOME_COMPOSE_PROFILES=workflow bash scripts/validation/validate-docker-compose.sh` | 오류 없음 |
+| VAL-WRK-002 | Structural | workflow root dev compose 정적 검증 | `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh` | 오류 없음 |
 | VAL-WRK-003 | Compliance | workflow 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 07-workflow` | 실패 0건 |
 | VAL-WRK-004 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
 | VAL-WRK-005 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
@@ -85,6 +85,6 @@ status: completed
 - **ADR**: [../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/07-workflow/spec.md](../../03.specs/07-workflow/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md](../tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md)
-- **Guide**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/policies/07-workflow/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/07-workflow/optimization-hardening.md](../../05.operations/guides/07-workflow/optimization-hardening.md)
 - **Operations**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/policies/07-workflow/optimization-hardening.md)
-- **Runbooks**: [../../05.operations/policies/07-workflow/optimization-hardening.md](../../05.operations/policies/07-workflow/optimization-hardening.md)
+- **Runbooks**: [../../05.operations/runbooks/07-workflow/optimization-hardening.md](../../05.operations/runbooks/07-workflow/optimization-hardening.md)
