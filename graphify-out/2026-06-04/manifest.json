@@ -3510,8 +3510,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1780552486.0582097,
-    "ast_hash": "6aff5e81ae8e3456d0477183300b693e",
+    "mtime": 1780553081.8151963,
+    "ast_hash": "28c5e8c69525c64684de815d00188f5b",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -4565,8 +4565,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-repo-contracts.sh": {
-    "mtime": 1780552902.7197053,
-    "ast_hash": "dce007935463c76f4de7be836118b36d",
+    "mtime": 1780553413.772122,
+    "ast_hash": "5e1c653ab65df4c63cc6074f032e95b2",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-storybook-contract.sh": {
