@@ -40,9 +40,9 @@ guides/04-data/
 ├── lake-and-object/
 ├── nosql/
 ├── operational/
+├── optimization/
 ├── relational/
 ├── specialized/
-├── optimization-hardening.md
 └── README.md
 ```
 
@@ -66,9 +66,9 @@ guides/04-data/
 | [lake-and-object/](./lake-and-object/README.md)          | Lake And Object guide 문서        |
 | [nosql/](./nosql/README.md)                              | Nosql guide 문서                  |
 | [operational/](./operational/README.md)                  | Operational guide 문서            |
+| [optimization/](./optimization/README.md)                | Optimization guide 문서           |
 | [relational/](./relational/README.md)                    | Relational guide 문서             |
 | [specialized/](./specialized/README.md)                  | Specialized guide 문서            |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening guide 문서 |
 
 ## Related Documents
 

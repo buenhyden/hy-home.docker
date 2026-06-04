@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/runbooks/04-data/optimization-hardening.md -->
+<!-- Target: docs/05.operations/runbooks/04-data/optimization/optimization-hardening.md -->
 
 # 04-Data Optimization Hardening Runbook
 
@@ -20,10 +20,11 @@ status: active
 
 ### Canonical References
 
-- [Spec](../../../03.specs/04-data/spec.md)
-- [Operations Policy](../../policies/04-data/optimization-hardening.md)
-- [Plan](../../../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md)
-- [Tasks](../../../04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md)
+- [Spec](../../../../03.specs/04-data/spec.md)
+- [Operations Policy](../../../policies/04-data/optimization/optimization-hardening.md)
+- [Usage Guide](../../../guides/04-data/optimization/optimization-hardening.md)
+- [Plan](../../../../04.execution/plans/2026-03-28-04-data-optimization-hardening-plan.md)
+- [Tasks](../../../../04.execution/tasks/2026-03-28-04-data-optimization-hardening-tasks.md)
 
 ## When to Use
 
@@ -115,6 +116,6 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Related Documents
 
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/04-data/optimization-hardening.md)
-- [Operations policy](../../policies/04-data/optimization-hardening.md)
+- [Operations index](../../../README.md)
+- [Usage guide](../../../guides/04-data/optimization/optimization-hardening.md)
+- [Operations policy](../../../policies/04-data/optimization/optimization-hardening.md)

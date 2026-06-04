@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/policies/04-data/optimization-hardening.md -->
+<!-- Target: docs/05.operations/policies/04-data/optimization/optimization-hardening.md -->
 
 # 04-Data Optimization Hardening Operations Policy
 
@@ -75,6 +75,6 @@ status: active
 
 ## Related Documents
 
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/04-data/optimization-hardening.md)
-- [Recovery runbook](../../runbooks/04-data/optimization-hardening.md)
+- [Operations index](../../../README.md)
+- [Usage guide](../../../guides/04-data/optimization/optimization-hardening.md)
+- [Recovery runbook](../../../runbooks/04-data/optimization/optimization-hardening.md)

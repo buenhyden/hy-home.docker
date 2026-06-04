@@ -36,14 +36,14 @@
 ```text
 policies/04-data/
 ├── analytics/
+├── backup/
 ├── cache-and-kv/
 ├── lake-and-object/
 ├── nosql/
 ├── operational/
+├── optimization/
 ├── relational/
 ├── specialized/
-├── backup-policy.md
-├── optimization-hardening.md
 └── README.md
 ```
 
@@ -57,14 +57,14 @@ policies/04-data/
 | Path                                                     | Purpose                            |
 | -------------------------------------------------------- | ---------------------------------- |
 | [analytics/](./analytics/README.md)                      | Analytics policy 문서              |
+| [backup/](./backup/README.md)                            | Backup policy 문서                 |
 | [cache-and-kv/](./cache-and-kv/README.md)                | Cache And Kv policy 문서           |
 | [lake-and-object/](./lake-and-object/README.md)          | Lake And Object policy 문서        |
 | [nosql/](./nosql/README.md)                              | Nosql policy 문서                  |
 | [operational/](./operational/README.md)                  | Operational policy 문서            |
+| [optimization/](./optimization/README.md)                | Optimization policy 문서           |
 | [relational/](./relational/README.md)                    | Relational policy 문서             |
 | [specialized/](./specialized/README.md)                  | Specialized policy 문서            |
-| [backup-policy.md](./backup-policy.md)                   | Backup Policy policy 문서          |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening policy 문서 |
 
 ## Related Documents
 

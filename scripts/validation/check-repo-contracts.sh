@@ -361,6 +361,15 @@ for bucket in ["guides", "policies", "runbooks"]:
             failures.append(
                 f"{path}: operations bucket root must contain README.md only; move leaf docs into a purpose folder"
             )
+    for path in sorted(p for p in root.rglob("*") if p.is_dir()):
+        direct_leaf_docs = sorted(
+            child for child in path.glob("*.md") if child.name != "README.md"
+        )
+        direct_dirs = sorted(child for child in path.iterdir() if child.is_dir())
+        if direct_leaf_docs and direct_dirs:
+            failures.append(
+                f"{path}: operations folder mixes direct leaf docs and child folders; move leaf docs into a purpose folder"
+            )
     for path in sorted(root.rglob("*.md")):
         if path.name == "README.md":
             continue

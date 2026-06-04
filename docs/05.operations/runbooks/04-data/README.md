@@ -40,10 +40,10 @@ runbooks/04-data/
 ├── lake-and-object/
 ├── nosql/
 ├── operational/
+├── optimization/
 ├── relational/
 ├── specialized/
-├── optimization-hardening.md
-├── storage-exhaustion.md
+├── storage/
 └── README.md
 ```
 
@@ -61,10 +61,10 @@ runbooks/04-data/
 | [lake-and-object/](./lake-and-object/README.md)          | Lake And Object runbook 문서        |
 | [nosql/](./nosql/README.md)                              | Nosql runbook 문서                  |
 | [operational/](./operational/README.md)                  | Operational runbook 문서            |
+| [optimization/](./optimization/README.md)                | Optimization runbook 문서           |
 | [relational/](./relational/README.md)                    | Relational runbook 문서             |
 | [specialized/](./specialized/README.md)                  | Specialized runbook 문서            |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening runbook 문서 |
-| [storage-exhaustion.md](./storage-exhaustion.md)         | Storage Exhaustion runbook 문서     |
+| [storage/](./storage/README.md)                          | Storage runbook 문서                |
 
 ## Related Documents
 

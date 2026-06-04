@@ -561,7 +561,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/04-data/operational/README.md](../../05.operations/guides/04-data/operational/README.md) | folder index |
 | [docs/05.operations/guides/04-data/operational/mng-db.md](../../05.operations/guides/04-data/operational/mng-db.md) | Markdown reference |
 | [docs/05.operations/guides/04-data/operational/supabase.md](../../05.operations/guides/04-data/operational/supabase.md) | Markdown reference |
-| [docs/05.operations/guides/04-data/optimization-hardening.md](../../05.operations/guides/04-data/optimization-hardening.md) | Markdown reference |
+| [docs/05.operations/guides/04-data/optimization/optimization-hardening.md](../../05.operations/guides/04-data/optimization/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/guides/04-data/relational/README.md](../../05.operations/guides/04-data/relational/README.md) | folder index |
 | [docs/05.operations/guides/04-data/relational/postgresql-cluster.md](../../05.operations/guides/04-data/relational/postgresql-cluster.md) | Markdown reference |
 | [docs/05.operations/guides/04-data/specialized/README.md](../../05.operations/guides/04-data/specialized/README.md) | folder index |
@@ -641,7 +641,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/policies/04-data/analytics/ksqldb.md](../../05.operations/policies/04-data/analytics/ksqldb.md) | Markdown reference |
 | [docs/05.operations/policies/04-data/analytics/opensearch.md](../../05.operations/policies/04-data/analytics/opensearch.md) | Markdown reference |
 | [docs/05.operations/policies/04-data/analytics/warehouses.md](../../05.operations/policies/04-data/analytics/warehouses.md) | Markdown reference |
-| [docs/05.operations/policies/04-data/backup-policy.md](../../05.operations/policies/04-data/backup-policy.md) | Markdown reference |
+| [docs/05.operations/policies/04-data/backup/backup-policy.md](../../05.operations/policies/04-data/backup/backup-policy.md) | Markdown reference |
 | [docs/05.operations/policies/04-data/cache-and-kv/README.md](../../05.operations/policies/04-data/cache-and-kv/README.md) | folder index |
 | [docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md](../../05.operations/policies/04-data/cache-and-kv/valkey-cluster.md) | Markdown reference |
 | [docs/05.operations/policies/04-data/lake-and-object/README.md](../../05.operations/policies/04-data/lake-and-object/README.md) | folder index |
@@ -654,7 +654,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/policies/04-data/operational/README.md](../../05.operations/policies/04-data/operational/README.md) | folder index |
 | [docs/05.operations/policies/04-data/operational/mng-db.md](../../05.operations/policies/04-data/operational/mng-db.md) | Markdown reference |
 | [docs/05.operations/policies/04-data/operational/supabase.md](../../05.operations/policies/04-data/operational/supabase.md) | Markdown reference |
-| [docs/05.operations/policies/04-data/optimization-hardening.md](../../05.operations/policies/04-data/optimization-hardening.md) | Markdown reference |
+| [docs/05.operations/policies/04-data/optimization/optimization-hardening.md](../../05.operations/policies/04-data/optimization/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/policies/04-data/relational/README.md](../../05.operations/policies/04-data/relational/README.md) | folder index |
 | [docs/05.operations/policies/04-data/relational/postgresql-cluster.md](../../05.operations/policies/04-data/relational/postgresql-cluster.md) | Markdown reference |
 | [docs/05.operations/policies/04-data/specialized/README.md](../../05.operations/policies/04-data/specialized/README.md) | folder index |
@@ -738,13 +738,13 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/runbooks/04-data/operational/README.md](../../05.operations/runbooks/04-data/operational/README.md) | folder index |
 | [docs/05.operations/runbooks/04-data/operational/mng-db.md](../../05.operations/runbooks/04-data/operational/mng-db.md) | Markdown reference |
 | [docs/05.operations/runbooks/04-data/operational/supabase.md](../../05.operations/runbooks/04-data/operational/supabase.md) | Markdown reference |
-| [docs/05.operations/runbooks/04-data/optimization-hardening.md](../../05.operations/runbooks/04-data/optimization-hardening.md) | Markdown reference |
+| [docs/05.operations/runbooks/04-data/optimization/optimization-hardening.md](../../05.operations/runbooks/04-data/optimization/optimization-hardening.md) | Markdown reference |
 | [docs/05.operations/runbooks/04-data/relational/README.md](../../05.operations/runbooks/04-data/relational/README.md) | folder index |
 | [docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md](../../05.operations/runbooks/04-data/relational/postgresql-cluster.md) | Markdown reference |
 | [docs/05.operations/runbooks/04-data/specialized/README.md](../../05.operations/runbooks/04-data/specialized/README.md) | folder index |
 | [docs/05.operations/runbooks/04-data/specialized/neo4j.md](../../05.operations/runbooks/04-data/specialized/neo4j.md) | Markdown reference |
 | [docs/05.operations/runbooks/04-data/specialized/qdrant.md](../../05.operations/runbooks/04-data/specialized/qdrant.md) | Markdown reference |
-| [docs/05.operations/runbooks/04-data/storage-exhaustion.md](../../05.operations/runbooks/04-data/storage-exhaustion.md) | Markdown reference |
+| [docs/05.operations/runbooks/04-data/storage/storage-exhaustion.md](../../05.operations/runbooks/04-data/storage/storage-exhaustion.md) | Markdown reference |
 | [docs/05.operations/runbooks/05-messaging/README.md](../../05.operations/runbooks/05-messaging/README.md) | folder index |
 | [docs/05.operations/runbooks/05-messaging/kafka.md](../../05.operations/runbooks/05-messaging/kafka.md) | Markdown reference |
 | [docs/05.operations/runbooks/05-messaging/optimization-hardening.md](../../05.operations/runbooks/05-messaging/optimization-hardening.md) | Markdown reference |

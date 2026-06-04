@@ -1,7 +1,7 @@
 ---
 status: active
 ---
-<!-- Target: docs/05.operations/guides/04-data/optimization-hardening.md -->
+<!-- Target: docs/05.operations/guides/04-data/optimization/optimization-hardening.md -->
 
 # 04-Data Optimization Hardening Usage Guide
 
@@ -70,10 +70,10 @@ status: active
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/04-data/optimization-hardening.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/optimization/optimization-hardening.md)을 따른다.
 
 ## Related Documents
 
-- [Operations index](../../README.md)
-- [Operations policy](../../policies/04-data/optimization-hardening.md)
-- [Recovery runbook](../../runbooks/04-data/optimization-hardening.md)
+- [Operations index](../../../README.md)
+- [Operations policy](../../../policies/04-data/optimization/optimization-hardening.md)
+- [Recovery runbook](../../../runbooks/04-data/optimization/optimization-hardening.md)
