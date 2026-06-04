@@ -610,8 +610,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/relational/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "bd6eb46cad34e31fe9cd3398d487ff47",
+    "mtime": 1780573906.12642,
+    "ast_hash": "a506fd480d89be77f1a49d2d5d3e47dc",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/relational/postgresql-cluster/docker-compose.yml": {
@@ -620,8 +620,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/relational/postgresql-cluster/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "b08570fc7f21986919c2cbf88ba42b37",
+    "mtime": 1780573906.12642,
+    "ast_hash": "58f52a47451f057ba560ee8ed2568be4",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/cache-and-kv/README.md": {
@@ -1830,13 +1830,13 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/relational/postgresql-cluster.md": {
-    "mtime": 1780371233.6312501,
-    "ast_hash": "4816dc4f0d957908bd69181b5dc2a7b4",
+    "mtime": 1780573906.081773,
+    "ast_hash": "34ac4cd7ee17c63cd5d83a84bf9f80b3",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/relational/README.md": {
-    "mtime": 1780554617.8985877,
-    "ast_hash": "44672d98d7515a74cb35dec631180b6a",
+    "mtime": 1780573906.081773,
+    "ast_hash": "b21941b9a2fe50d881d0a7959dc6ca57",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/cache-and-kv/valkey-cluster.md": {
@@ -2235,13 +2235,13 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/relational/postgresql-cluster.md": {
-    "mtime": 1780371233.6472502,
-    "ast_hash": "10bfafcec0d7b2674e89a0b2e94a2b4c",
+    "mtime": 1780573906.081773,
+    "ast_hash": "77ba2faaf57a37d3039748b7ef889495",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/relational/README.md": {
-    "mtime": 1780554617.9029799,
-    "ast_hash": "c37c7db3fc61f5d03a66fe43af6d0dfc",
+    "mtime": 1780573906.081773,
+    "ast_hash": "42ed846203d48b82d37acae9b7bce7e2",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/cache-and-kv/valkey-cluster.md": {
@@ -2630,13 +2630,13 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/relational/postgresql-cluster.md": {
-    "mtime": 1780553719.3690128,
-    "ast_hash": "18087207addf6518030a54e4af62dd3b",
+    "mtime": 1780573906.081773,
+    "ast_hash": "0256e9560b651cd99ba354b1c2230e7d",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/relational/README.md": {
-    "mtime": 1780554617.9029799,
-    "ast_hash": "0eab871a789960903f57c218d7f210af",
+    "mtime": 1780573906.081773,
+    "ast_hash": "5ae2e278603a034476bc06d8f3178d07",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/cache-and-kv/valkey-cluster.md": {
@@ -3430,8 +3430,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1780573328.569216,
-    "ast_hash": "6ffda096ed4acca3c3ac1189777a09d0",
+    "mtime": 1780573906.081773,
+    "ast_hash": "c70989daab5034c954a0473695a4aff6",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -4540,8 +4540,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md": {
-    "mtime": 1780573328.569216,
-    "ast_hash": "cbe83a649ebbcaf8b0335de5cb279c43",
+    "mtime": 1780573906.081773,
+    "ast_hash": "2022a4e003f89828d87fdeabbaedcb9d",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/00-workspace/README.md": {
