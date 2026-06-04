@@ -39,6 +39,12 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_OBSERVABILITY_DIR}/alloy
+  pyroscope-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_OBSERVABILITY_DIR}/pyroscope
 
 services:
   prometheus:
@@ -379,14 +385,49 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      traefik.http.routers.pyroscope.rule: Host(`cadvisor.${DEFAULT_URL}`)
+      traefik.http.routers.cadvisor.rule: Host(`cadvisor.${DEFAULT_URL}`)
+      traefik.http.routers.cadvisor.entrypoints: websecure
+      traefik.http.routers.cadvisor.tls: 'true'
+      traefik.http.routers.cadvisor.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      traefik.http.services.cadvisor.loadbalancer.server.port: ${CADVISOR_PORT:-8080}
+    networks:
+      infra_net:
+        ipv4_address: 172.19.0.25
+
+  pyroscope:
+    profiles:
+      - obs
+      - dev
+    extends:
+      file: ../common-optimizations.yml
+      service: template-infra-med
+    image: grafana/pyroscope:2.0.2
+    container_name: infra-pyroscope
+    command:
+      - -config.file=/etc/pyroscope/pyroscope.yaml
+      - -config.expand-env=true
+    volumes:
+      - ./pyroscope/config/pyroscope.yaml:/etc/pyroscope/pyroscope.yaml:ro
+      - pyroscope-data:/var/lib/pyroscope:rw
+    ports:
+      - '${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:4040/ready || exit 1']
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 60s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.pyroscope.rule: Host(`pyroscope.${DEFAULT_URL}`)
       traefik.http.routers.pyroscope.entrypoints: websecure
       traefik.http.routers.pyroscope.tls: 'true'
       traefik.http.routers.pyroscope.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.pyroscope.loadbalancer.server.port: ${PYROSCOPE_PORT:-4040}
     networks:
       infra_net:
-        ipv4_address: 172.19.0.25
+        ipv4_address: 172.19.0.26
 
   alertmanager:
     profiles:

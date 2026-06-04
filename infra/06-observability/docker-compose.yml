@@ -380,11 +380,11 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      traefik.http.routers.pyroscope.rule: Host(`cadvisor.${DEFAULT_URL}`)
-      traefik.http.routers.pyroscope.entrypoints: websecure
-      traefik.http.routers.pyroscope.tls: 'true'
-      traefik.http.routers.pyroscope.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
-      traefik.http.services.pyroscope.loadbalancer.server.port: ${PYROSCOPE_PORT:-4040}
+      traefik.http.routers.cadvisor.rule: Host(`cadvisor.${DEFAULT_URL}`)
+      traefik.http.routers.cadvisor.entrypoints: websecure
+      traefik.http.routers.cadvisor.tls: 'true'
+      traefik.http.routers.cadvisor.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      traefik.http.services.cadvisor.loadbalancer.server.port: ${CADVISOR_PORT:-8080}
     networks:
       infra_net:
         ipv4_address: 172.19.0.25
@@ -413,6 +413,12 @@ services:
       start_period: 60s
     labels:
       <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.pyroscope.rule: Host(`pyroscope.${DEFAULT_URL}`)
+      traefik.http.routers.pyroscope.entrypoints: websecure
+      traefik.http.routers.pyroscope.tls: 'true'
+      traefik.http.routers.pyroscope.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      traefik.http.services.pyroscope.loadbalancer.server.port: ${PYROSCOPE_PORT:-4040}
     networks:
       infra_net:
         ipv4_address: 172.19.0.26
