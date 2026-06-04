@@ -6,7 +6,7 @@
 
 ## Overview
 
-`runbooks/04-data/specialized`는 `docs/05.operations`의 runbook 문서를 관리합니다. 트리거 조건, 순서 있는 절차, evidence, rollback/recovery, escalation을 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`runbooks/04-data/specialized`는 `docs/05.operations`의 specialized data runbook 문서를 관리한다. Neo4j와 Qdrant의 현재 compose 기반 트리거 조건, 순서 있는 점검 절차, evidence, recovery boundary, escalation을 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 한다.
 
 ## Audience
 
@@ -21,7 +21,7 @@
 
 ### In Scope
 
-- 장애 복구, 정기 점검, rollback, escalation, evidence capture
+- Neo4j와 Qdrant 장애 triage, 정기 점검, escalation, evidence capture
 - 현재 경로에 속한 runbook 문서 인덱스
 - 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
 
@@ -49,8 +49,8 @@ runbooks/04-data/specialized/
 
 | Path | Purpose |
 | --- | --- |
-| [neo4j.md](./neo4j.md) | Neo4J runbook 문서 |
-| [qdrant.md](./qdrant.md) | Qdrant runbook 문서 |
+| [neo4j.md](./neo4j.md) | Neo4j graph database triage runbook |
+| [qdrant.md](./qdrant.md) | Qdrant vector database triage runbook |
 
 ## Related Documents
 

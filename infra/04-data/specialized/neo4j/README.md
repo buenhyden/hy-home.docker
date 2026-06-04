@@ -27,8 +27,8 @@ The `neo4j` service provides a specialized graph storage layer for relationship-
 ### Out of Scope
 
 - Application-level graph modeling (See [Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md))
-- Global backup policies (See [Operations Policy](../../../../docs/05.operations/policies/04-data/specialized/neo4j.md))
-- Disaster recovery procedures (See [Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/specialized/neo4j.md))
+- Operational controls (See [Operations Policy](../../../../docs/05.operations/policies/04-data/specialized/neo4j.md))
+- Health and recovery triage (See [Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/specialized/neo4j.md))
 
 ## Structure
 
@@ -63,16 +63,16 @@ neo4j/
 1. Start by reviewing the [Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md) for architectural context.
 2. Ensure the `neo4j_password` secret is provisioned before starting the service.
 3. Follow the `template-stateful-med` service extension in `docker-compose.yml` for resource consistency.
-4. Verify connectivity via the Cypher Shell or Neo4j Browser.
+4. Verify connectivity via container-local `cypher-shell` or the Traefik-backed Neo4j Browser route.
 
 ## Tech Stack
 
 | Category   | Technology        | Notes                     |
 | ---------- | ----------------- | ------------------------- |
-| Engine     | Neo4j Community   | Version 5.26.23           |
-| Protocol   | Bolt / HTTP / S   | Port 7687 / 7474 / 7473   |
+| Engine     | `neo4j:5.26.26-community` | Community single service |
+| Protocol   | Bolt / HTTP / S   | Exposed internally as 7687 / 7474 / 7473 |
 | Security   | Docker Secrets    | `neo4j_password`          |
-| Extension  | APOC (Optional)   | Mount to `/plugins`       |
+| Route      | Traefik HTTP      | `neo4j.${DEFAULT_URL}` to `${NEO4J_HTTP_PORT:-7474}` |
 
 ## Validation
 
@@ -86,7 +86,7 @@ neo4j/
 
 ## Related Documents
 
-- [05.analytical-specialized-dbs.md](../../../../docs/05.operations/guides/04-data/05.analytical-specialized-dbs.md)
+- [Specialized Guides](../../../../docs/05.operations/guides/04-data/specialized/README.md)
 - [Neo4j Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/neo4j.md)
 - [Neo4j Operations Policy](../../../../docs/05.operations/policies/04-data/specialized/neo4j.md)
 - [Neo4j Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/specialized/neo4j.md)

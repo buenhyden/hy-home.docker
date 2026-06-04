@@ -28,8 +28,8 @@ The `qdrant` service provides the vector database layer for AI/ML applications, 
 
 - Vector embedding generation (Handled by upstream models)
 - Collection-level schema design (See [Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/qdrant.md))
-- Global backup policies (See [Operations Policy](../../../../docs/05.operations/policies/04-data/specialized/qdrant.md))
-- Disaster recovery procedures (See [Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/specialized/qdrant.md))
+- Operational controls (See [Operations Policy](../../../../docs/05.operations/policies/04-data/specialized/qdrant.md))
+- Health and recovery triage (See [Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/specialized/qdrant.md))
 
 ## Structure
 
@@ -61,17 +61,17 @@ qdrant/
 
 1. Review the [Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/qdrant.md) for RAG integration patterns.
 2. Ensure the `ai` or `data` profiles are active when deploying.
-3. Snapshots are stored within the persistent volume; verify path mapping before backup operations.
+3. Snapshots are configured inside the persistent volume; verify path mapping before any owner-approved backup operation.
 4. Monitor health via the `/readyz` endpoint.
 
 ## Tech Stack
 
 | Category   | Technology   | Notes                          |
 | ---------- | ------------ | ------------------------------ |
-| Engine     | Qdrant       | Version v1.17 (Unprivileged)   |
+| Engine     | `qdrant/qdrant:v1.18.1-unprivileged` | Single unprivileged service |
 | REST API   | HTTP         | Port 6333                      |
 | gRPC API   | gRPC         | Port 6334                      |
-| Persistence| Local Bind   | `${DEFAULT_DATA_DIR}/qdrant`   |
+| Persistence | Local Bind  | `${DEFAULT_DATA_DIR}/qdrant/data` |
 
 ## Validation
 
@@ -85,7 +85,7 @@ qdrant/
 
 ## Related Documents
 
-- [05.analytical-specialized-dbs.md](../../../../docs/05.operations/guides/04-data/05.analytical-specialized-dbs.md)
+- [Specialized Guides](../../../../docs/05.operations/guides/04-data/specialized/README.md)
 - [Qdrant Technical Guide](../../../../docs/05.operations/guides/04-data/specialized/qdrant.md)
 - [Qdrant Operations Policy](../../../../docs/05.operations/policies/04-data/specialized/qdrant.md)
 - [Qdrant Recovery Runbook](../../../../docs/05.operations/runbooks/04-data/specialized/qdrant.md)

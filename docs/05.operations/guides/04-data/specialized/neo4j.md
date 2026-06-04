@@ -9,9 +9,7 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 Neo4j 그래프 데이터베이스에 대한 기술 가이드다. 관계 중심 데이터 모델을 위한 그래프 저장소의 특성과 로컬 환경에서의 브라우저 UI 및 Bolt 프로토콜 활용 방법을 설명한다.
->
-> Technical guide for understanding and using Neo4j within the `04-data/specialized` tier.
+이 문서는 root compose에 active include된 `infra/04-data/specialized/neo4j/docker-compose.yml` 기준으로 Neo4j graph database의 사용 맥락과 일반 점검 방법을 설명한다. 현재 구현은 `neo4j:5.26.26-community`, 단일 `neo4j` 서비스, `data`/`graph` 프로파일, `infra_net`, `neo4j_password` Docker Secret, secret-aware entrypoint, Traefik HTTP Browser route를 사용한다.
 
 ### Usage Type
 
@@ -19,66 +17,67 @@ status: active
 
 ### Target Audience
 
-- Backend Developers
-- Data Architects
-- Operators
-- AI Agents
+- Operator
+- Developer
+- AI Agent
 
 ### Purpose
 
-이 가이드는 Neo4j의 아키텍처를 이해하고, Cypher 쿼리 언어를 사용하며, 로컬 서비스를 효율적으로 관리하는 것을 돕는다.
+Neo4j를 graph storage로 사용할 때 현재 repository의 service name, route, Bolt boundary, secret mount, healthcheck 기준을 오해하지 않도록 한다.
 
 ### Prerequisites
 
-- Docker 및 Docker Compose 설치
-- `neo4j` 데이터 프로필 활성화
-- 기본 Cypher 쿼리 문법 이해
+- 루트 [docker-compose.yml](../../../../../docker-compose.yml)에 `infra/04-data/specialized/neo4j/docker-compose.yml`가 active include인지 확인한다.
+- `DEFAULT_DATA_DIR`, `DEFAULT_URL`, `NEO4J_BOLT_PORT`, `NEO4J_HTTP_PORT`, `neo4j_password` secret 파일이 준비되어 있어야 한다.
+- secret 값은 `/run/secrets/neo4j_password`에서 container 내부로만 읽고 문서나 로그에 남기지 않는다.
 
 ### Step-by-step Instructions
 
-#### 1. Accessing Neo4j Browser
+1. root-active compose 구성을 렌더링한다.
 
-Neo4j Browser는 시각적 쿼리 도구이다.
+   ```bash
+   docker compose --profile data --profile graph config neo4j
+   ```
 
-1. 웹 브라우저에서 `https://neo4j.${DEFAULT_URL}` 접속
-2. 인증 정보 입력 (사용자: `neo4j`, 비밀번호: Docker Secret `neo4j_password`)
+2. 서비스 상태를 확인한다.
 
-#### 2. Basic Cypher Operations
+   ```bash
+   docker compose ps neo4j
+   ```
 
-데이터를 탐색하거나 생성할 때 Cypher를 사용한다.
+3. Browser route는 Traefik HTTP router 기준으로 접근한다.
 
-```cypher
-// Node 생성
-CREATE (p:Person {name: 'Alice', role: 'Dev'})
-RETURN p;
+   ```text
+   https://neo4j.${DEFAULT_URL}
+   ```
 
-// Relationship 생성
-MATCH (a:Person {name: 'Alice'}), (b:Person {name: 'Bob'})
-CREATE (a)-[:COLLEAGUE]->(b);
-```
+4. 내부 Bolt 확인은 container-local secret mount를 사용한다.
 
-#### 3. Internal Bolt Connection
+   ```bash
+   docker exec neo4j sh -lc 'cypher-shell -a bolt://localhost:7687 -u neo4j -p "$(tr -d "\n" < /run/secrets/neo4j_password)" "RETURN 1;"'
+   ```
 
-애플리케이션 드라이버는 동일한 `infra_net` 내부에서 Bolt 프로토콜을 사용한다.
-
-- **Internal URL**: `bolt://neo4j:${NEO4J_BOLT_PORT:-7687}`
-- **External exposure**: 기본 host port 노출은 사용하지 않는다. 외부 접근이 필요하면 별도 승인된 gateway 변경으로 분리한다.
+5. 애플리케이션이 `infra_net` 내부에서 접근할 때는 `bolt://neo4j:${NEO4J_BOLT_PORT:-7687}`를 기준으로 한다. Public Bolt TCP route는 현재 compose에 선언되어 있지 않으므로 별도 gateway 변경 승인 없이는 문서화하지 않는다.
 
 ### Common Pitfalls
 
-- **Memory OOM**: Heap 크기(`NEO4J_server_memory_heap_max__size`)가 너무 작으면 복잡한 그래프 연산 시 장애가 발생할 수 있다.
-- **Password Policies**: 초기 비밀번호 변경 필요 시, `cypher-shell`을 통해 수행해야 할 수 있다.
+- 현재 구현은 Community single service다. clustering, multi-database enterprise operations, public Bolt routing을 구현된 기능처럼 설명하지 않는다.
+- Neo4j Browser는 Traefik HTTPS route를 통해 `${NEO4J_HTTP_PORT:-7474}`로 전달된다. `${NEO4J_HTTPS_PORT:-7473}` exposed port가 있어도 별도 HTTPS router가 선언된 것은 아니다.
+- `neo4j_password` 값은 entrypoint와 healthcheck가 secret mount에서 읽는다. 명령 예시는 secret 값을 출력하지 않아야 한다.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `docker compose --profile data --profile graph config neo4j`
+- `docker compose ps neo4j`
+- `docker exec neo4j sh -lc 'cypher-shell -a bolt://localhost:7687 -u neo4j -p "$(tr -d "\n" < /run/secrets/neo4j_password)" "RETURN 1;"'`
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../../runbooks/04-data/specialized/neo4j.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [Neo4j runbook](../../../runbooks/04-data/specialized/neo4j.md)을 따른다.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Operations policy](../../../policies/04-data/specialized/neo4j.md)
 - [Recovery runbook](../../../runbooks/04-data/specialized/neo4j.md)
+- [Infra README](../../../../../infra/04-data/specialized/neo4j/README.md)

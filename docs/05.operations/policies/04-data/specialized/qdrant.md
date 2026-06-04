@@ -5,52 +5,47 @@ status: active
 
 # Qdrant Operations Policy
 
-> Operations policy for Qdrant vector database within the `04-data/specialized` tier.
-
 ## Overview (KR)
 
-이 문서는 Qdrant 벡터 데이터베이스의 운영 정책을 정의한다. 인덱싱 설정, 세그먼트 최적화, 스냅샷 주기 및 API 보안 통제 기준을 규정한다.
+이 정책은 root-active specialized data service인 Qdrant 운영 기준을 정의한다. 기준은 현재 tracked compose의 `qdrant/qdrant:v1.18.1-unprivileged`, 단일 `qdrant` service, `ai`/`data`/`dev` profiles, `infra_net`, no-secret state, REST Traefik route, gRPC TCP route, `/readyz` healthcheck다.
 
 ## Policy Scope
 
-Qdrant 서비스의 자원 효율성, 데이터 무결성 및 검색 품질 유지 정책을 규정한다.
-
-- **Systems**: Qdrant (Containerized)
-- **Agents**: AI Engineers, DevOps Operators
-- **Environments**: Production (AI/Data Profile)
+- `infra/04-data/specialized/qdrant/docker-compose.yml`
+- `qdrant` service and `qdrant-data` volume
+- REST route `qdrant.${DEFAULT_URL}` and gRPC route `qdrant-grpc.${DEFAULT_URL}`
+- `QDRANT__STORAGE__SNAPSHOTS_PATH=/qdrant/storage/snapshots`
+- Linked guide and runbook under `docs/05.operations`
 
 ## Controls
 
-### 1. Persistence and Snapshots
-
-- **Automatic Snapshots**: 정기적인 스냅샷을 생성하여 `/qdrant/storage/snapshots`에 보관한다.
-- **Data Dir**: 호스트의 `${DEFAULT_DATA_DIR}/qdrant/data`와 바인드 마운트를 유지한다.
-
-### 2. Performance Optimization
-
-- **Indexing**: 대규모 데이터 삽입 시 인덱싱 쓰레드 및 세그먼트 설정을 점검하여 성능 저하를 방지한다.
-- **Resource Extension**: `template-stateful-med` 준수를 원칙으로 하며, 필요시 수직 확장을 고려한다.
-
-### 3. Security Controls
-
-- **API Access**: `QDRANT_API_KEY`를 통한 인증을 필수로 하며, 외부 노출은 Traefik TLS를 통한다.
-- **Privilege**: `qdrant/qdrant:v1.18.1-unprivileged` 이미지를 사용하여 컨테이너 권한을 최소화한다.
+- **Required**: Documentation must describe Qdrant as a root-active single unprivileged service, not as a cluster.
+- **Required**: Secret guidance must state the current no-secret compose state. API-key requirements require a compose change before being documented as active policy.
+- **Required**: External access guidance must stay behind declared Traefik REST/TCP routes and must not imply host port publishing.
+- **Required**: Persistence and snapshot-path wording must match `qdrant-data:/qdrant/storage:rw` and `/qdrant/storage/snapshots`.
+- **Allowed**: Read-only `/readyz`, `/collections`, compose config rendering, service logs, and `docker compose ps` for evidence capture.
+- **Allowed**: Documentation-only corrections that keep image tag, profile, route, healthcheck, and volume descriptions aligned with compose.
+- **Disallowed**: Collection delete, snapshot restore, volume replacement, cluster repair, or data mutation steps presented as approved policy without separate owner approval and verified runbook evidence.
+- **Disallowed**: Claiming a Qdrant API-key secret is active unless compose declares it.
 
 ## Exceptions
 
-- 초기 대량 마이그레이션(Initial Loading) 기간 동안 텔레메트리 일시 중지 또는 리소스 임시 증설이 허용된다.
+N/A - no currently approved exceptions.
 
 ## Verification
 
-- `/readyz` 엔드포인트를 통한 주기적 Healthcheck.
-- 각 컬렉션의 `status`를 조회하여 인덱싱 완료 여부 확인.
+- Compare this policy with [Qdrant guide](../../../guides/04-data/specialized/qdrant.md), [Qdrant runbook](../../../runbooks/04-data/specialized/qdrant.md), and [infra README](../../../../../infra/04-data/specialized/qdrant/README.md) after compose changes.
+- Run `docker compose --profile data --profile ai config qdrant` before approving service-name, image, route, secret, healthcheck, or volume documentation updates.
+- Run `bash scripts/validation/check-repo-contracts.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` after policy or linked operations document updates.
 
 ## Review Cadence
 
-- 반기별(Bi-annually) 검색 정확도(Recall/Precision) 및 데이터 정합성 검토.
+- Review on Qdrant compose image/profile/secret/route/snapshot-path changes.
+- Review during the Stage 05 operations documentation audit cadence.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/specialized/qdrant.md)
 - [Recovery runbook](../../../runbooks/04-data/specialized/qdrant.md)
+- [Infra README](../../../../../infra/04-data/specialized/qdrant/README.md)

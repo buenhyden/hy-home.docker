@@ -6,7 +6,7 @@
 
 ## Overview
 
-`guides/04-data/specialized`는 `docs/05.operations`의 guide 문서를 관리합니다. 사용 맥락, 전제 조건, 일반 점검, 관련 runbook handoff를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 합니다.
+`guides/04-data/specialized`는 `docs/05.operations`의 specialized data guide 문서를 관리한다. Neo4j와 Qdrant의 현재 compose 기반 서비스명, 프로파일, route, secret/no-secret 경계, 일반 점검, 관련 runbook handoff를 제공한다. guide, policy, runbook 목적을 섞지 않고 필요한 운영 지식을 빠르게 찾도록 한다.
 
 ## Audience
 
@@ -21,7 +21,7 @@
 
 ### In Scope
 
-- 서비스 사용 맥락, 설정 방법, 온보딩, 일반 점검
+- Neo4j와 Qdrant의 서비스 사용 맥락, 설정 방법, 온보딩, 일반 점검
 - 현재 경로에 속한 guide 문서 인덱스
 - 관련 guide/policy/runbook 문서로 이동하기 위한 navigation
 
@@ -49,8 +49,8 @@ guides/04-data/specialized/
 
 | Path | Purpose |
 | --- | --- |
-| [neo4j.md](./neo4j.md) | Neo4J guide 문서 |
-| [qdrant.md](./qdrant.md) | Qdrant guide 문서 |
+| [neo4j.md](./neo4j.md) | Neo4j graph database usage guide |
+| [qdrant.md](./qdrant.md) | Qdrant vector database usage guide |
 
 ## Related Documents
 

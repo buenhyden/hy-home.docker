@@ -289,6 +289,7 @@ Full normalization of `docs/05.operations/` guides, policies, and runbooks for s
 | `04-data/cache-and-kv` current-truth cleanup | `valkey-cluster`, linked infra READMEs | ✅ Done | Rewrote paired guide/policy/runbook docs to match six Valkey node services, init/exporter services, Docker Secret boundaries, image tag, profiles, ports, and non-destructive runbook scope. |
 | `04-data/lake-and-object` current-truth cleanup | `minio`, `seaweedfs`, linked infra READMEs | ✅ Done | Rewrote paired guide/policy/runbook docs and service READMEs to separate MinIO root-active compose from optional cluster compose, align SeaweedFS with image `4.31`, and preserve non-destructive runbook boundaries. |
 | `04-data/nosql` current-truth cleanup | `cassandra`, `couchdb`, `mongodb`, linked infra READMEs | ✅ Done | Rewrote paired guide/policy/runbook docs and service READMEs to match optional NoSQL compose services, current image tags, profiles, Docker Secret boundaries, replica/cluster membership, and non-destructive runbook scope. |
+| `04-data/specialized` current-truth cleanup | `neo4j`, `qdrant`, linked infra READMEs | ✅ Done | Rewrote paired guide/policy/runbook docs and service READMEs to match root-active specialized compose services, current image tags, profiles, route boundaries, Neo4j secret handling, Qdrant no-secret state, and non-destructive runbook scope. |
 
 ## Open Issues
 

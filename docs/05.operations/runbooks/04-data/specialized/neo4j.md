@@ -3,132 +3,123 @@ status: active
 ---
 <!-- Target: docs/05.operations/runbooks/04-data/specialized/neo4j.md -->
 
-# Neo4j Runbook
+# Neo4j Health and Recovery Triage Runbook
 
-## Overview (KR)
+## Neo4j Health and Recovery Triage Procedure
 
-이 런북은 Neo4j 데이터베이스의 백업 추출, 복구 및 관리자 패스워드 재설정 절차를 정의한다. 장애 발생 시 운영자가 즉시 실행할 수 있는 명령어를 제공한다.
+> Scope: Triage root-active Neo4j service health, route assumptions, secret-backed authentication, and evidence capture without destructive data actions.
 
-## Neo4j Recovery Procedure
+### Overview (KR)
 
-> Scope: Neo4j Graph Database
-
-> Procedure for database backup/restore and password management for Neo4j within the `04-data/specialized` tier.
+이 런북은 `neo4j` 서비스가 unhealthy, stopped, route failure, or authentication failure 상태일 때 현재 compose에 맞는 점검 순서와 안전한 재시작 경계를 제공한다. offline dump/load, password rotation, data volume replacement는 이 문서에서 검증된 복구 절차가 아니므로 에스컬레이션 대상으로 분리한다.
 
 ### Purpose
 
-데이터 유실 방지를 위한 백업 수행 및 서비스 중단 시 빠른 데이터 복구를 지원한다.
+Neo4j single Community service의 상태, secret-aware entrypoint, healthcheck, Traefik Browser route evidence를 수집하고 compose가 보장하는 범위 안에서만 비파괴 조치를 수행한다.
 
 ### Canonical References
 
-- [Data architecture ARD](../../../../02.architecture/requirements/0004-data-architecture.md)
-- [Neo4j operations policy](../../../policies/04-data/specialized/neo4j.md)
-- [Neo4j infra README](../../../../../infra/04-data/specialized/neo4j/README.md)
+- **Spec**: N/A — no upstream source
+- **Policy**: [Neo4j operations policy](../../../policies/04-data/specialized/neo4j.md)
+- **Guide**: [Neo4j usage guide](../../../guides/04-data/specialized/neo4j.md)
 
 ## When to Use
 
-- 정기적인 데이터 백업(Dump)이 필요할 때.
-- 기존 백업 수단으로부터 데이터를 복구해야 할 때.
-- 관리자 패스워드 분실 또는 유출로 인한 재설정이 필요할 때.
+- `neo4j`가 unhealthy, stopped, or missing 상태일 때
+- `cypher-shell RETURN 1` healthcheck가 실패할 때
+- Browser route `https://neo4j.${DEFAULT_URL}`가 응답하지 않을 때
+- Neo4j operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
 ## Procedure
 
 ### Checklist
 
-- [ ] 관련 policy, guide, runbook handoff를 확인한다.
-- [ ] 현재 상태와 변경 범위를 기록한다.
-
-### 1. Database Dump (Backup)
-
-Neo4j Community Edition은 인스턴스를 중지한 후 오프라인 덤프를 수행해야 한다.
-
-1. 인스턴스 중지: `docker compose stop neo4j`
-2. 덤프 생성:
-
-   ```bash
-   docker run --rm \
-     --volumes-from neo4j \
-     -v $(pwd)/backups:/backups \
-     neo4j:5.26.26-community \
-     neo4j-admin database dump neo4j --to-path=/backups
-   ```
-
-3. 인스턴스 시작: `docker compose start neo4j`
-
-#### 2. Database Load (Restore)
-
-1. 인스턴스 중지: `docker compose stop neo4j`
-2. 데이터 복구:
-
-   ```bash
-   docker run --rm \
-     --volumes-from neo4j \
-     -v $(pwd)/backups:/backups \
-     neo4j:5.26.26-community \
-     neo4j-admin database load neo4j --from-path=/backups --overwrite-destination=true
-   ```
-
-3. 인스턴스 시작: `docker compose start neo4j`
-
-#### 3. Password Rotation
-
-1. 승인된 secret rotation 절차로 Docker Secret `neo4j_password`를 갱신한다. 값은 문서나 로그에 남기지 않는다.
-2. 서비스 재시작: `docker compose up -d --force-recreate neo4j`
+- [ ] 루트 compose에서 `infra/04-data/specialized/neo4j/docker-compose.yml`가 active include인지 확인한다.
+- [ ] secret 값을 출력하지 않는 명령만 사용한다.
+- [ ] offline dump/load, password rotation, data volume replacement가 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
+- [ ] 모든 명령 출력은 요약으로 기록하고 secret 값은 기록하지 않는다.
 
 ### Steps
 
-1. 이 runbook의 trigger와 checklist를 확인한다.
-2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.
-3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.
-4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
+1. compose 렌더링을 확인한다.
+
+   ```bash
+   docker compose --profile data --profile graph config neo4j
+   ```
+
+2. 서비스 상태를 확인한다.
+
+   ```bash
+   docker compose ps neo4j
+   ```
+
+3. 최근 로그를 확인한다.
+
+   ```bash
+   docker compose logs --tail=120 neo4j
+   ```
+
+4. container-local secret mount로 Cypher health를 확인한다.
+
+   ```bash
+   docker exec neo4j sh -lc 'cypher-shell -a bolt://localhost:7687 -u neo4j -p "$(tr -d "\n" < /run/secrets/neo4j_password)" "RETURN 1;"'
+   ```
+
+5. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 재기동한다.
+
+   ```bash
+   docker compose --profile data --profile graph up -d neo4j
+   ```
+
+6. Browser route는 HTTP status만 확인한다.
+
+   ```bash
+   curl -fsSI "https://neo4j.${DEFAULT_URL}"
+   ```
 
 ### Verification Steps
 
-- [ ] `docker compose ps` 결과 `neo4j` 상태가 `Up (healthy)`인지 확인.
-- [ ] 아래 방식으로 secret 값을 history에 남기지 않고 연결 확인.
-
-  ```bash
-  read -rsp "Neo4j password: " NEO4J_PASSWORD; echo
-  cypher-shell -u neo4j -p "$NEO4J_PASSWORD" "RETURN 1;"
-  unset NEO4J_PASSWORD
-  ```
+- `docker compose ps neo4j`에서 `neo4j`가 running 또는 healthy 상태인지 확인한다.
+- `cypher-shell ... RETURN 1` 명령이 secret 값을 출력하지 않고 정상 종료되는지 확인한다.
+- `curl -fsSI "https://neo4j.${DEFAULT_URL}"`가 gateway/TLS route evidence를 제공하는지 확인한다.
 
 ### Observability and Evidence Sources
 
-- **Signals**: Docker logs (`docker compose logs -f neo4j`), `/data/logs/neo4j.log`.
-- **Evidence to Capture**: 덤프 파일 파일명 및 크기, 복구 로그 텍스트.
+- **Logs**: `docker compose logs --tail=120 neo4j`
+- **Health**: compose healthcheck and container-local `cypher-shell RETURN 1`
+- **Route**: Traefik labels on `neo4j`
+- **Config**: `docker compose --profile data --profile graph config neo4j`
 
 ### Safe Rollback or Recovery Procedure
 
-- 복구 실패 시, 기존 `neo4j-data` 볼륨의 백업 디렉토리를 보존하고 이전 시점의 덤프 파일을 사용하여 재시도한다.
-
----
+1. Documentation-only changes can be reverted by the current git diff or the logical commit that introduced them.
+2. Runtime recovery in this runbook is limited to compose `up -d neo4j` after evidence capture.
+3. N/A — no verified offline dump/load, password rotation, data restore, or volume rollback procedure is documented yet.
 
 ### Agent Operations (If Applicable)
 
-- **Prompt Rollback**: 적용하지 않음
-- **Model Fallback**: 적용하지 않음
-- **Tool Disable / Revoke**: secret 노출 위험이 있으면 파일 열람을 중단한다.
-- **Eval Re-run**: 관련 validation과 문서 audit를 재실행한다.
-- **Trace Capture**: 변경 파일, 명령, 결과를 task evidence에 기록한다.
+- **Prompt Rollback**: N/A
+- **Model Fallback**: N/A
+- **Tool Disable / Revoke**: Stop file or log inspection if secret material appears in output.
+- **Eval Re-run**: Re-run `bash scripts/validation/check-repo-contracts.sh` and `bash scripts/validation/check-doc-implementation-alignment.sh` after documentation changes.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- Capture command names, pass/fail status, service state, image tag, sanitized logs, and route status.
+- Do not capture secret values or full credential-backed command output.
+- Record whether the issue involves container health, Browser route, secret mount, or persistence symptoms.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- N/A for additional verified recovery steps: this file does not validate a broader service-specific rollback beyond the documented procedure.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+N/A — no verified rollback or recovery procedure is documented beyond non-destructive compose restart and status verification. If dump/load, password rotation, data mutation, or volume replacement is required, preserve evidence and escalate.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+Escalate to the owning operator when `cypher-shell RETURN 1` fails after restart, logs show data corruption, the secret-aware entrypoint cannot read `/run/secrets/neo4j_password`, route labels differ from expected compose, secret exposure risk appears, or any data operation is required. Include sanitized logs, rendered compose evidence, service states, and attempted steps.
 
 ## Related Documents
 
 - [Operations index](../../../README.md)
 - [Usage guide](../../../guides/04-data/specialized/neo4j.md)
 - [Operations policy](../../../policies/04-data/specialized/neo4j.md)
+- [Infra README](../../../../../infra/04-data/specialized/neo4j/README.md)

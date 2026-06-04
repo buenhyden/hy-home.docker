@@ -4,7 +4,7 @@
 
 ## Overview
 
-이 디렉터리는 `hy-home.docker` 인프라의 특수 목적 데이터 서비스를 위한 구성을 포함합니다. 그래프 데이터베이스 및 벡터 데이터베이스 등 전문 데이터 스토어를 포함합니다.
+이 디렉터리는 `hy-home.docker` 인프라의 root-active specialized data 서비스를 위한 구성을 포함한다. 현재 루트 compose는 Neo4j graph database와 Qdrant vector database를 active include로 참조한다.
 
 ## Audience
 
@@ -18,9 +18,9 @@
 
 ### In Scope
 
-- Neo4j 그래프 데이터베이스 구성
-- Qdrant 벡터 데이터베이스 구성
-- 시크릿 마운트 및 접근 제어
+- Neo4j graph database 구성과 `neo4j_password` Docker Secret 경계
+- Qdrant vector database 구성과 현재 no-secret route 경계
+- Traefik route, `infra_net`, persistent volume, linked operations docs
 
 ### Out of Scope
 
@@ -41,10 +41,12 @@ specialized/
 1. Treat this README as a folder index; service-specific runtime details belong in each service leaf README.
 2. Review [neo4j/README.md](./neo4j/README.md) or [qdrant/README.md](./qdrant/README.md) before changing a service.
 3. Keep vector search, graph modeling, and application logic decisions in specs or application docs, not this infra index.
-4. After adding, moving, or removing a specialized data service, update this index and related operations links.
+4. After adding, moving, or removing a specialized data service, update this index and related guide/policy/runbook links.
 
 ## Related Documents
 
 - [infra/04-data/README.md](../README.md)
 - [docs/03.specs/04-data/README.md](../../../docs/03.specs/04-data/README.md)
-- [docs/05.operations/guides/04-data/](../../../docs/05.operations/guides/04-data/)
+- [Operations Guides](../../../docs/05.operations/guides/04-data/specialized/README.md)
+- [Operations Policies](../../../docs/05.operations/policies/04-data/specialized/README.md)
+- [Operations Runbooks](../../../docs/05.operations/runbooks/04-data/specialized/README.md)
