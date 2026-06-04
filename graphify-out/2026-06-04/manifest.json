@@ -485,8 +485,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/operational/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "02998d74b13480197d06a2b8f727c5ff",
+    "mtime": 1780568785.488739,
+    "ast_hash": "22d18ca2475c58a09e9744d1da6b6fd4",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/operational/supabase/docker-compose.yml": {
@@ -495,8 +495,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/operational/supabase/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "826758b3f0794597c99506d83e39d34b",
+    "mtime": 1780568785.488739,
+    "ast_hash": "d722e74c2f77cda6ee98a5287d967e96",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/operational/mng-db/docker-compose.yml": {
@@ -505,8 +505,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/operational/mng-db/README.md": {
-    "mtime": 1779728102.7450233,
-    "ast_hash": "76a512308144dc5ecfecb28280839d5e",
+    "mtime": 1780568785.488739,
+    "ast_hash": "37413107f211bcbf37f00eff3e9841f6",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/04-data/analytics/README.md": {
@@ -1790,8 +1790,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/operational/mng-db.md": {
-    "mtime": 1780371233.6272502,
-    "ast_hash": "9103bae7c5627d91d581395efd4a30e3",
+    "mtime": 1780568785.4540248,
+    "ast_hash": "8c46a9e7cd9cd14268d60214bc13bc7f",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/operational/README.md": {
@@ -1800,8 +1800,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/operational/supabase.md": {
-    "mtime": 1780371233.6272502,
-    "ast_hash": "996164767e3bfd5200ddbf6cc4cf7774",
+    "mtime": 1780568785.4540248,
+    "ast_hash": "d501742ea38c5e1b418df64bd3b59144",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/04-data/analytics/warehouses.md": {
@@ -2195,8 +2195,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/operational/mng-db.md": {
-    "mtime": 1780371233.6472502,
-    "ast_hash": "ee3ef57ae3ac207006dedfad098dc535",
+    "mtime": 1780568785.457882,
+    "ast_hash": "d00843c83863b4f04fa3282feba7a35a",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/operational/README.md": {
@@ -2205,8 +2205,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/operational/supabase.md": {
-    "mtime": 1780371233.6472502,
-    "ast_hash": "824ba5a1a2eff2f569fdd48a4fd3f768",
+    "mtime": 1780568785.457882,
+    "ast_hash": "625aee64052e19ce7106c4fa2d77133e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/04-data/analytics/warehouses.md": {
@@ -2590,8 +2590,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/operational/mng-db.md": {
-    "mtime": 1780553719.3690128,
-    "ast_hash": "cacc907cd9e6d4355a2d83005f49272b",
+    "mtime": 1780568785.4540248,
+    "ast_hash": "8659e21d31949a72586f31958cb0d77e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/operational/README.md": {
@@ -2600,8 +2600,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/operational/supabase.md": {
-    "mtime": 1780553719.3690128,
-    "ast_hash": "e6142347b53a198dd91471846950e954",
+    "mtime": 1780568785.457882,
+    "ast_hash": "428dee4cd997b991a59b63a46e6a20c5",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/04-data/analytics/warehouses.md": {
@@ -3430,8 +3430,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1780567910.6734602,
-    "ast_hash": "b87e1ce1b968c578986d3959b040001f",
+    "mtime": 1780568785.4540248,
+    "ast_hash": "629003d4d483317280ebfcd3cdf51036",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -4540,8 +4540,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md": {
-    "mtime": 1780567910.6734602,
-    "ast_hash": "023095ac26bd3447b12fc5a29cf0c767",
+    "mtime": 1780568785.4540248,
+    "ast_hash": "49afe1900316ce30092ae69878778783",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/00-workspace/README.md": {
