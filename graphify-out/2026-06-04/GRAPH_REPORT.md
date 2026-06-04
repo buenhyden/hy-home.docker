@@ -1,16 +1,16 @@
 # Graph Report - hy-home.docker  (2026-06-04)
 
 ## Corpus Check
-- 837 files · ~700,680 words
+- 842 files · ~701,643 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 14573 nodes · 14372 edges · 1097 communities (1020 shown, 77 thin omitted)
+- 14692 nodes · 14481 edges · 1107 communities (1030 shown, 77 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 332 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `7f460086`
+- Built from commit: `428a12d8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1087,6 +1087,7 @@
 - [[_COMMUNITY_Community 1070|Community 1070]]
 - [[_COMMUNITY_Community 1071|Community 1071]]
 - [[_COMMUNITY_Community 1072|Community 1072]]
+- [[_COMMUNITY_Community 1073|Community 1073]]
 - [[_COMMUNITY_Community 1074|Community 1074]]
 - [[_COMMUNITY_Community 1075|Community 1075]]
 - [[_COMMUNITY_Community 1076|Community 1076]]
@@ -1107,10 +1108,19 @@
 - [[_COMMUNITY_Community 1091|Community 1091]]
 - [[_COMMUNITY_Community 1092|Community 1092]]
 - [[_COMMUNITY_Community 1093|Community 1093]]
+- [[_COMMUNITY_Community 1094|Community 1094]]
 - [[_COMMUNITY_Community 1095|Community 1095]]
 - [[_COMMUNITY_Community 1096|Community 1096]]
 - [[_COMMUNITY_Community 1097|Community 1097]]
 - [[_COMMUNITY_Community 1098|Community 1098]]
+- [[_COMMUNITY_Community 1099|Community 1099]]
+- [[_COMMUNITY_Community 1100|Community 1100]]
+- [[_COMMUNITY_Community 1101|Community 1101]]
+- [[_COMMUNITY_Community 1102|Community 1102]]
+- [[_COMMUNITY_Community 1103|Community 1103]]
+- [[_COMMUNITY_Community 1104|Community 1104]]
+- [[_COMMUNITY_Community 1105|Community 1105]]
+- [[_COMMUNITY_Community 1106|Community 1106]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Prometheus Production Scrape And Alerting Config` - 50 edges
@@ -1144,7 +1154,7 @@
 - **Workspace Audit Revalidation Skill Catalog Sync** — workspace_audit_revalidation_bounded_revalidation_workflow, workspace_audit_revalidation_runtime_skill, readme_agent_and_function_catalog, readme_runtime_skill_mirror, progress_workspace_audit_revalidation_skill_creation [EXTRACTED 1.00]
 - **Advisory Graph Boundary** — index_llm_wiki_generated_index, index_tracked_source_boundary, index_runtime_truth, index_advisory_graph_context, progress_graphify_health_advisory, 2026_05_24_workspace_audit_input_task_gap_closure_plan_graphify_update_evidence [EXTRACTED 1.00]
 
-## Communities (1097 total, 77 thin omitted)
+## Communities (1107 total, 77 thin omitted)
 
 ### Community 0 - "Prometheus Alert Rule Group"
 Cohesion: 0.10
@@ -5126,6 +5136,10 @@ Nodes (25): Agent Operations (If Applicable), Agent Operations (If Applicable), 
 Cohesion: 0.40
 Nodes (5): Kafka KRaft Quorum Recovery, Kafka Partition Rebalancing, Kafka Cluster Operations Policy Runbook, Messaging Architecture ARD, Schema Registry Incompatibility
 
+### Community 1073 - "Community 1073"
+Cohesion: 0.11
+Nodes (17): Overview (KR), Purpose, Related Documents, 04-Data Optimization Hardening Procedure, 04-Data Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist (+9 more)
+
 ### Community 1074 - "Community 1074"
 Cohesion: 0.08
 Nodes (24): 1. Context & Objective, 2. Recommended Permissions (Claude Code), 3. Tool Configuration, 4. Operational Procedures, 5. Maintenance & Safety, Common Checks, Common Pitfalls, Developer Environment Setup Usage (+16 more)
@@ -5206,6 +5220,10 @@ Nodes (10): Operations Policies - 90 Knowledge, Audience, Contents, How to Work 
 Cohesion: 0.18
 Nodes (10): Operations Runbooks - 90 Knowledge, Audience, Contents, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents (+2 more)
 
+### Community 1094 - "Community 1094"
+Cohesion: 0.11
+Nodes (17): 04-Data Storage Exhaustion Procedure, 04-Data Storage Exhaustion Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
+
 ### Community 1095 - "Community 1095"
 Cohesion: 0.20
 Nodes (9): AI Agent Policy Section (If Applicable), Common Optimizations Template Exceptions Policy, Controls, Exceptions, Overview (KR), Policy Scope, Related Documents, Review Cadence (+1 more)
@@ -5222,6 +5240,38 @@ Nodes (8): Controls, Exceptions, Harness / Agent-first Engineering Operations Po
 Cohesion: 0.22
 Nodes (8): Controls, Exceptions, LLM Wiki Maintenance Operations Policy, Policy Scope, Review Cadence, Verification, Overview (KR), Related Documents
 
+### Community 1099 - "Community 1099"
+Cohesion: 0.15
+Nodes (12): Overview (KR), Purpose, Related Documents, 04-Data Optimization Hardening Usage Guide, Common Checks, Common Pitfalls, Prerequisites, Runbook Handoff (+4 more)
+
+### Community 1100 - "Community 1100"
+Cohesion: 0.18
+Nodes (10): Overview (KR), Related Documents, 04-Data Optimization Hardening Operations Policy, AI Agent Policy Section (If Applicable), Catalog Expansion Approval Gates, Controls, Exceptions, Policy Scope (+2 more)
+
+### Community 1101 - "Community 1101"
+Cohesion: 0.20
+Nodes (9): 04-Data Backup Policies, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1102 - "Community 1102"
+Cohesion: 0.20
+Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
+
+### Community 1103 - "Community 1103"
+Cohesion: 0.20
+Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
+
+### Community 1104 - "Community 1104"
+Cohesion: 0.20
+Nodes (9): Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope, Structure (+1 more)
+
+### Community 1105 - "Community 1105"
+Cohesion: 0.20
+Nodes (9): 04-Data Storage Runbooks, Audience, How to Work in This Area, In Scope, Out of Scope, Overview, Related Documents, Scope (+1 more)
+
+### Community 1106 - "Community 1106"
+Cohesion: 0.22
+Nodes (8): 04-Data Backup Policy, Controls, Exceptions, Overview (KR), Policy Scope, Related Documents, Review Cadence, Verification
+
 ## Ambiguous Edges - Review These
 - `Alertmanager Critical Route` → `Alertmanager SMTP Placeholders`  [AMBIGUOUS]
   infra/06-observability/alertmanager/config/config.yml · relation: references
@@ -5229,7 +5279,7 @@ Nodes (8): Controls, Exceptions, LLM Wiki Maintenance Operations Policy, Policy 
   infra/06-observability/docker-compose.yml · relation: references
 
 ## Knowledge Gaps
-- **9855 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+9850 more)
+- **9944 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+9939 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **77 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -5240,13 +5290,13 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **What is the exact relationship between `cadvisor Compose Service` and `pyroscope Compose Service`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **Why does `Prometheus Production Scrape And Alerting Config` connect `Community 129` to `Prometheus Alert Rule Group`, `Community 358`, `Prometheus Alert Kubecputhrottlinghigh Kubepodnotready`, `Community 233`, `Community 458`, `Community 427`, `Community 715`, `Community 842`, `Community 526`, `Community 525`, `Community 570`?**
+- **Why does `Qdrant Runbook` connect `Airflow Airbyte Failure Worker` to `Community 821`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
-- **Why does `Operations Template` connect `Ollama Dashboard Dozzle Influxdb` to `Community 432`, `Contract Api Requirements Bearer`, `Community 852`, `Community 1036`?**
-  _High betweenness centrality (0.000) - this node is a cross-community bridge._
-- **Why does `alert_rules.local.prometheus.yml Prometheus Rule File` connect `Community 715` to `Community 129`, `Community 243`?**
+- **Why does `Qdrant Snapshot Recovery` connect `Community 821` to `Airflow Airbyte Failure Worker`?**
   _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **What connects `printWidth`, `singleQuote`, `semi` to the rest of the system?**
-  _10428 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _10517 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Prometheus Alert Rule Group` be split into smaller, more focused modules?**
   _Cohesion score 0.09682539682539683 - nodes in this community are weakly interconnected._
+- **Should `Tier Product Requirements Oauth2` be split into smaller, more focused modules?**
+  _Cohesion score 0.125 - nodes in this community are weakly interconnected._
