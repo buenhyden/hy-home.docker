@@ -9,17 +9,7 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 `hy-home.docker` AI 계층의 핵심 추론 엔진인 Ollama 사용 방법을 설명한다. 모델 라이프사이클(풀/조회/호출), GPU 가속 확인, Open WebUI 연동, exporter 관측 흐름을 표준 절차로 제공한다.
->
-> 로컬 LLM 추론 엔진(Ollama) 운영 및 연동 가이드.
-
----
-
-### Common Pitfalls
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
+이 문서는 `hy-home.docker` AI 계층의 핵심 추론 엔진인 Ollama 사용 방법을 설명한다. 현재 구현은 `infra/08-ai/ollama/docker-compose.yml`에 보유되어 있으며 root `docker-compose.yml`에서는 optional include로 주석 처리되어 있다. 모델 라이프사이클, GPU 가속 확인, Open WebUI 연동, exporter 관측 흐름은 root include가 승인되어 활성화된 런타임을 기준으로 수행한다.
 
 ### Usage Type
 
@@ -41,36 +31,36 @@ status: active
 ### Prerequisites
 
 - NVIDIA GPU 및 NVIDIA Container Toolkit이 정상 설치되어야 한다.
-- `ollama` 컨테이너가 기동 가능해야 한다.
+- root `docker-compose.yml`에서 `infra/08-ai/ollama/docker-compose.yml` include가 승인되어 활성화되어야 한다.
+- `ollama` 컨테이너가 root compose project 안에서 기동 가능해야 한다.
 - 모델 영속 저장 경로 `${DEFAULT_AI_MODEL_DIR}/ollama`가 준비되어야 한다.
 - 기본 포트/엔드포인트:
   - API: `${OLLAMA_PORT:-11434}`
-  - Exporter: `${OLLAMA_EXPORTER_PORT:-11435}`
+  - Exporter: `${OLLAMA_EXPORTER_PORT}` from `.env` / `.env.example` (`11435` in the repository baseline; compose fallback is `8000` when unset)
 
 ### Step-by-step Instructions
 
 #### 1. Service & GPU Health Check
 
 ```bash
-
-## 호스트 GPU 상태
+# 호스트 GPU 상태
 nvidia-smi
 
-## Ollama health endpoint
+# Ollama API health via host port
 curl -f http://localhost:${OLLAMA_PORT:-11434}/api/tags
 
-## 컨테이너 내부 GPU 인식 확인
-docker exec ollama nvidia-smi
+# 컨테이너 내부 GPU 인식 확인
+docker compose exec ollama nvidia-smi
 ```
 
 ### 2. Model Lifecycle (CLI)
 
 ```bash
-## 모델 다운로드
-docker exec ollama ollama pull llama3
+# 모델 다운로드
+docker compose exec ollama ollama pull llama3
 
-## 모델 목록 확인
-docker exec ollama ollama list
+# 모델 목록 확인
+docker compose exec ollama ollama list
 ```
 
 ### 3. Inference API Check
@@ -91,8 +81,8 @@ curl http://localhost:${OLLAMA_PORT:-11434}/api/generate -d '{
 #### 5. Exporter Observability Check
 
 ```bash
-## exporter metrics endpoint
-curl -f http://localhost:${OLLAMA_EXPORTER_PORT:-11435}/metrics
+# exporter exposes metrics inside infra_net; it is not published to host.
+docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLAMA_EXPORTER_PORT:-8000}/metrics"'
 ```
 
 - 주요 관측 대상: 모델 로드 수, 메모리 사용량, scrape 상태.
@@ -102,11 +92,13 @@ curl -f http://localhost:${OLLAMA_EXPORTER_PORT:-11435}/metrics
 - **GPU 미인식**: 컨테이너는 실행되지만 CPU 추론으로 강등됨.
 - **VRAM OOM**: 대형 모델 동시 로드 시 응답 실패/지연.
 - **모델 태그 불일치**: Open WebUI 설정 모델명과 Ollama 실제 태그 불일치.
-- **Exporter 미수집**: 관측 포트 설정 불일치로 지표 공백 발생.
+- **Exporter 미수집**: host-published 포트로 오해해 localhost에서 직접 조회하는 경우. exporter는 compose healthcheck와 `infra_net` 내부 scrape 경로를 기준으로 확인한다.
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `bash scripts/hardening/check-all-hardening.sh 08-ai`
+- `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
+- Runtime approval 후 root include를 활성화한 상태에서 `docker compose exec ollama ollama list`
 
 ## Runbook Handoff
 

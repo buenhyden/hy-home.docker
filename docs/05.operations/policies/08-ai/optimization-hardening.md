@@ -47,9 +47,8 @@ status: active
 
 ## Verification
 
-- `docker compose -f infra/08-ai/ollama/docker-compose.yml config`
-- `docker compose -f infra/08-ai/open-webui/docker-compose.yml config`
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
+- `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/check-doc-traceability.sh`
 

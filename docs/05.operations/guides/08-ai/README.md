@@ -35,9 +35,7 @@
 
 ```text
 guides/08-ai/
-├── 01.llm-inference.md
 ├── 02.rag-workflow.md
-├── local-llm-setup.md
 ├── ollama.md
 ├── open-webui.md
 ├── optimization-hardening.md
@@ -53,12 +51,10 @@ guides/08-ai/
 
 | Path | Purpose |
 | --- | --- |
-| [01.llm-inference.md](./01.llm-inference.md) | 01.Llm Inference guide 문서 |
-| [02.rag-workflow.md](./02.rag-workflow.md) | 02.Rag Workflow guide 문서 |
-| [local-llm-setup.md](./local-llm-setup.md) | Local Llm Setup guide 문서 |
-| [ollama.md](./ollama.md) | Ollama guide 문서 |
-| [open-webui.md](./open-webui.md) | Open Webui guide 문서 |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening guide 문서 |
+| [ollama.md](./ollama.md) | Ollama model lifecycle, GPU, API, and exporter usage guide |
+| [open-webui.md](./open-webui.md) | Open WebUI access, model selection, and RAG usage guide |
+| [02.rag-workflow.md](./02.rag-workflow.md) | Focused RAG document upload, embedding, and Qdrant workflow guide |
+| [optimization-hardening.md](./optimization-hardening.md) | 08-ai hardening usage and validation guide |
 
 ## Related Documents
 

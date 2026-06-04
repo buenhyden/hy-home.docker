@@ -38,8 +38,8 @@ Open WebUI acts as the presentation layer and orchestration hub for AI services.
 - **Performance**: CUDA-accelerated backend for embedding generation.
 - **Security**: Mandatory SSO integration via Traefik middlewares.
 - **Reliability**: Dependency on Ollama healthchecks (service_healthy).
-- **Scalability**: Stateless interface (metadata in SQLite volume), potential for horizontal scaling if database is externalized.
-- **Observability**: Healthcheck endpoint at port 8080.
+- **Scalability**: Stateful interface with metadata in the `${DEFAULT_AI_MODEL_DIR}/open-webui` volume; horizontal scaling requires externalizing the database first.
+- **Observability**: Healthcheck endpoint at container port `${OLLAMA_WEBUI_PORT:-8080}`.
 - **Operability**: Containerized deployment with environment-driven config.
 
 ## System Overview & Context
@@ -61,7 +61,7 @@ Open WebUI is deployed as a Docker container within the `ai` tier. It sits behin
 
 - **Runtime / Platform**: Docker (Linux / CUDA).
 - **Deployment Model**: `docker-compose` profile: `ai`.
-- **Operational Evidence**: `docker logs open-webui`, `curl localhost:8080/health`.
+- **Operational Evidence**: `docker logs open-webui`, `docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health`.
 
 ## AI Agent Architecture Requirements (If Applicable)
 

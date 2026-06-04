@@ -23,7 +23,7 @@ Open WebUI 서비스 운영 전반:
 
 - **Systems**: `open-webui`, `ollama`, `qdrant`, `traefik`, `oauth2-proxy`, `keycloak`
 - **Agents**: Open WebUI 운영 자동화 에이전트, 문서 인덱싱/정리 에이전트
-- **Environments**: `prod`, `staging`, `lab` (`dev`는 예외 조항 적용)
+- **Environments**: Local, Dev, Homelab, Production-like rehearsal
 
 ## Controls
 
@@ -31,6 +31,7 @@ Open WebUI 서비스 운영 전반:
   - 외부 노출 경로는 반드시 SSO 미들웨어(`sso-auth@file`)를 통과해야 한다.
   - `OLLAMA_BASE_URL`, `VECTOR_DB_URL`, `RAG_EMBEDDING_MODEL` 변경은 사전 영향도 검토를 수행해야 한다.
   - 인덱싱 실패/지연, 연결 실패 로그를 운영 증적으로 보관해야 한다.
+  - root `docker-compose.yml`의 AI optional include 활성화는 runtime 승인 후 수행해야 한다.
 - **Allowed**:
   - 문서 수명주기 관리(업로드, 재인덱싱, 삭제).
   - 성능 개선 목적의 모델 파라미터 조정(승인된 범위 내).
@@ -41,14 +42,15 @@ Open WebUI 서비스 운영 전반:
 
 ## Exceptions
 
-- 로컬 단독 개발 환경(`dev`)에서만 일시적 SSO 비활성 허용.
-- 단, 외부 네트워크 노출은 금지하며, 작업 종료 즉시 기본 보안 구성을 복구해야 한다.
+- 로컬 단독 개발 환경에서 SSO 우회를 검토해야 하면 외부 네트워크 비노출, 명시 승인, 작업 종료 즉시 복구가 필수다.
 
 ## Verification
 
 - 배포 전 체크:
-  - `open-webui` health endpoint 응답 확인
-  - Open WebUI -> Ollama/Qdrant 연결성 확인
+  - `bash scripts/hardening/check-all-hardening.sh 08-ai`
+  - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
+  - runtime 승인 후 root include 활성화 상태에서 `open-webui` container-internal health endpoint 응답 확인
+  - Open WebUI -> Ollama/Qdrant container-internal 연결성 확인
 - 운영 중 체크:
   - 인증 실패율, 5xx 비율, 인덱싱 실패율 모니터링
 - 증적:

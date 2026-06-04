@@ -38,8 +38,9 @@ status: active
 ### Step-by-step Instructions
 
 1. 정적 구성 점검
-   - `docker compose -f infra/08-ai/ollama/docker-compose.yml config`
-   - `docker compose -f infra/08-ai/open-webui/docker-compose.yml config`
+   - `bash scripts/hardening/check-all-hardening.sh 08-ai`
+   - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
+   - `infra/08-ai/*/docker-compose.yml` 파일은 `infra_net`과 root include context에 의존하므로 service-local 단독 `docker compose config` 대상으로 사용하지 않는다.
 2. Gateway/SSO 경계 정렬
    - Ollama/Open WebUI 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
 3. Ollama 리소스 보호 적용
@@ -48,9 +49,8 @@ status: active
    - Open WebUI가 `template-stateful-med`를 사용하도록 확인한다.
 5. Exporter 안정성 강화 확인
    - `ollama-exporter`가 `ollama` `service_healthy`에 의존하는지 확인한다.
-   - metrics healthcheck(`http://localhost:${OLLAMA_EXPORTER_PORT:-11435}/metrics`)를 확인한다.
+   - metrics healthcheck가 exporter 컨테이너 내부 `http://localhost:${OLLAMA_EXPORTER_PORT:-8000}/metrics`를 확인하는지 점검한다.
 6. 기준선 검증 실행
-   - `bash scripts/hardening/check-all-hardening.sh 08-ai`
    - `bash scripts/validation/check-template-security-baseline.sh`
    - `bash scripts/validation/check-doc-traceability.sh`
 7. 카탈로그 확장 운영 기준 반영
@@ -67,9 +67,8 @@ status: active
 
 ## Common Checks
 
-- `docker compose -f infra/08-ai/ollama/docker-compose.yml config`
-- `docker compose -f infra/08-ai/open-webui/docker-compose.yml config`
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
+- `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `bash scripts/validation/check-doc-traceability.sh`
 

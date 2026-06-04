@@ -140,7 +140,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/README.md": {
-    "mtime": 1780579514.7315736,
+    "mtime": 1780580031.1357386,
     "ast_hash": "e68ae294e03057d27775affa1f3df3ef",
     "semantic_hash": ""
   },
@@ -155,7 +155,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/airflow/README.md": {
-    "mtime": 1780579514.9715667,
+    "mtime": 1780580031.1357386,
     "ast_hash": "0615ff62ce5d255e9058dd5f89d43048",
     "semantic_hash": ""
   },
@@ -175,7 +175,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/07-workflow/n8n/README.md": {
-    "mtime": 1780579515.2035599,
+    "mtime": 1780580031.1357386,
     "ast_hash": "467caea07150905b3e9676ae73dd5f4d",
     "semantic_hash": ""
   },
@@ -910,7 +910,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/07-workflow/spec.md": {
-    "mtime": 1780579578.387694,
+    "mtime": 1780580031.0877383,
     "ast_hash": "17e414bab667e5075a3482d5b1f6e916",
     "semantic_hash": ""
   },
@@ -1135,7 +1135,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0007-workflow-architecture.md": {
-    "mtime": 1780579577.7357054,
+    "mtime": 1780580031.0877383,
     "ast_hash": "05b72875f9cdf83204f0675902b4761e",
     "semantic_hash": ""
   },
@@ -1175,7 +1175,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0022-workflow-optimization-hardening-architecture.md": {
-    "mtime": 1780579577.9437017,
+    "mtime": 1780580031.0877383,
     "ast_hash": "3bfefadfeefd24a528cd54d78711530e",
     "semantic_hash": ""
   },
@@ -1215,7 +1215,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/decisions/0022-workflow-hardening-and-ha-expansion-strategy.md": {
-    "mtime": 1780579591.503706,
+    "mtime": 1780580031.0877383,
     "ast_hash": "e80fffdcb1d90a6b4ba6ebae312eb1ab",
     "semantic_hash": ""
   },
@@ -1305,7 +1305,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/decisions/0007-airflow-n8n-hybrid-workflow.md": {
-    "mtime": 1780579578.159698,
+    "mtime": 1780580031.0877383,
     "ast_hash": "ea771af81079bf093bfb2c5d448abda7",
     "semantic_hash": ""
   },
@@ -1355,7 +1355,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-26-07-workflow.md": {
-    "mtime": 1780579577.287713,
+    "mtime": 1780580031.0877383,
     "ast_hash": "7d310b4cc05921993ea5af05e9fc470e",
     "semantic_hash": ""
   },
@@ -1440,7 +1440,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-28-07-workflow-optimization-hardening.md": {
-    "mtime": 1780579577.523709,
+    "mtime": 1780580031.0877383,
     "ast_hash": "8549fc6bff3380e27d0a55dad2d55371",
     "semantic_hash": ""
   },
@@ -1470,7 +1470,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/90.references/llm-wiki/index.md": {
-    "mtime": 1780579768.979839,
+    "mtime": 1780580031.0917385,
     "ast_hash": "fc2e3c07d805703a4acc3475761933db",
     "semantic_hash": ""
   },
@@ -1600,32 +1600,32 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/optimization-hardening.md": {
-    "mtime": 1780579352.7957354,
+    "mtime": 1780580031.0917385,
     "ast_hash": "d0223f63e5d0ea68503851e48d6eb831",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/airflow.md": {
-    "mtime": 1780579351.963726,
+    "mtime": 1780580031.0877383,
     "ast_hash": "e5e208c17c52caa51c5e0344900040fd",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/02.n8n-automation.md": {
-    "mtime": 1780579352.583738,
+    "mtime": 1780580031.0877383,
     "ast_hash": "ae5648e6ba8cab173304d1569b48343e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/airflow-dag-basics.md": {
-    "mtime": 1780579708.5317743,
+    "mtime": 1780580031.0877383,
     "ast_hash": "90e1ee7eee5917cc7ae470639d6b0c06",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/README.md": {
-    "mtime": 1780579351.7557201,
+    "mtime": 1780580031.0877383,
     "ast_hash": "25135b94518f8d2fa59089960599a8ef",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/07-workflow/n8n.md": {
-    "mtime": 1780579352.3757377,
+    "mtime": 1780580031.0877383,
     "ast_hash": "1c51c858905b2b6b443a2d168316d80e",
     "semantic_hash": ""
   },
@@ -2005,12 +2005,12 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/07-workflow/optimization-hardening.md": {
-    "mtime": 1780579461.7153244,
+    "mtime": 1780580031.0917385,
     "ast_hash": "6e3a3a0a3e2dd986200b512025f386f8",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/07-workflow/airflow.md": {
-    "mtime": 1780579461.131337,
+    "mtime": 1780580031.0917385,
     "ast_hash": "38b3fd865bca50e9f3629488079afca8",
     "semantic_hash": ""
   },
@@ -2020,12 +2020,12 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/07-workflow/airflow-worker-recovery.md": {
-    "mtime": 1780579461.515319,
+    "mtime": 1780580031.0917385,
     "ast_hash": "c6a0dafcbf10552ff6c1ec9cf044127d",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/07-workflow/n8n.md": {
-    "mtime": 1780579461.3113286,
+    "mtime": 1780580031.0917385,
     "ast_hash": "df79df95faf7e61a2b30dbd79e2e8c6d",
     "semantic_hash": ""
   },
@@ -2390,12 +2390,12 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/07-workflow/optimization-hardening.md": {
-    "mtime": 1780579406.973673,
+    "mtime": 1780580031.0917385,
     "ast_hash": "f021dbeb67f4bf67b28d20d6ac94a4e0",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/07-workflow/airflow.md": {
-    "mtime": 1780579406.3855174,
+    "mtime": 1780580031.0917385,
     "ast_hash": "5be0c0ae39c9b7700fbc77e9bd4251d7",
     "semantic_hash": ""
   },
@@ -2405,12 +2405,12 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/07-workflow/n8n.md": {
-    "mtime": 1780579406.5895715,
+    "mtime": 1780580031.0917385,
     "ast_hash": "6a14dba37f193229034049c61a23aca9",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/07-workflow/dag-deployment.md": {
-    "mtime": 1780579406.7776213,
+    "mtime": 1780580031.0917385,
     "ast_hash": "97c1021f3b6f7231b49b5dc42eb28b38",
     "semantic_hash": ""
   },
@@ -2710,7 +2710,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/98.archive/README.md": {
-    "mtime": 1780579295.7075706,
+    "mtime": 1780580031.0917385,
     "ast_hash": "b2d879fcb5c4982c35b32e8b369e17a4",
     "semantic_hash": ""
   },
@@ -3395,8 +3395,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1780578656.8160627,
-    "ast_hash": "a93fa12eac1d838d800df52d53ada0a6",
+    "mtime": 1780580031.0877383,
+    "ast_hash": "aea9449d96bde541680cee4bc4394557",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -3630,7 +3630,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-03-28-07-workflow-optimization-hardening-tasks.md": {
-    "mtime": 1780579578.7996867,
+    "mtime": 1780580031.0877383,
     "ast_hash": "ae93bbe14313351713c0fe67ba40281a",
     "semantic_hash": ""
   },
@@ -3760,7 +3760,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-28-07-workflow-optimization-hardening-plan.md": {
-    "mtime": 1780579578.5916903,
+    "mtime": 1780580031.0877383,
     "ast_hash": "92c501760201a33e289ec7e62bffea31",
     "semantic_hash": ""
   },
@@ -4435,7 +4435,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-doc-implementation-alignment.sh": {
-    "mtime": 1780579761.5038393,
+    "mtime": 1780580031.1357386,
     "ast_hash": "38865330ef100491d0f9142a4ead588e",
     "semantic_hash": ""
   },
@@ -4450,7 +4450,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-repo-contracts.sh": {
-    "mtime": 1780579591.7117128,
+    "mtime": 1780580031.1357386,
     "ast_hash": "00cee19887c1134b522e16fa429094e1",
     "semantic_hash": ""
   },
@@ -4505,7 +4505,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md": {
-    "mtime": 1780579708.7237728,
+    "mtime": 1780580031.0877383,
     "ast_hash": "75b5b94ecc940b67956e819c5e941784",
     "semantic_hash": ""
   },
@@ -4690,7 +4690,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md": {
-    "mtime": 1780579295.4755502,
+    "mtime": 1780580031.0917385,
     "ast_hash": "391c5f567c9bd76b463d1dd2b34c60f3",
     "semantic_hash": ""
   }

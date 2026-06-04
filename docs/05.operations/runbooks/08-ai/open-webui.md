@@ -51,7 +51,7 @@ status: active
 ```bash
 docker ps --filter name=open-webui
 docker logs --tail 200 open-webui
-curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health
+docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health
 ```
 
 ##### 2. Dependency Connectivity Check
@@ -59,10 +59,10 @@ curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health
 ```bash
 
 ## Open WebUI -> Ollama
-docker exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
+docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 
 ## Open WebUI -> Qdrant
-docker exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
+docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
 ```
 
 ### 3. SQLite Backup and Recovery
@@ -73,7 +73,7 @@ docker exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
 cp -a ${DEFAULT_AI_MODEL_DIR}/open-webui ${DEFAULT_AI_MODEL_DIR}/open-webui.bak.$(date +%Y%m%d%H%M%S)
 
 ## 2) 서비스 재기동
-docker restart open-webui
+docker compose restart open-webui
 ```
 
 - DB 손상 의심 시, 최신 백업본으로 `webui.db` 복구 후 재기동한다.
@@ -87,15 +87,15 @@ docker restart open-webui
 #### 5. Service Restart Path
 
 ```bash
-docker restart ollama
-docker restart open-webui
+docker compose restart ollama
+docker compose restart open-webui
 ```
 
 - 의존 서비스 정상화 후 Open WebUI를 마지막에 재시작한다.
 
 ### Verification Steps
 
-- [ ] `curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health` 성공
+- [ ] `docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health` 성공
 - [ ] UI 로그인 및 모델 목록 조회 성공
 - [ ] 테스트 채팅 응답 성공
 - [ ] 테스트 문서 업로드 후 RAG 질의 성공

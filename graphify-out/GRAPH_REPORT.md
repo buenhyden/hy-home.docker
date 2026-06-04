@@ -1,16 +1,16 @@
 # Graph Report - hy-home.docker  (2026-06-04)
 
 ## Corpus Check
-- 842 files · ~703,804 words
+- 842 files · ~703,869 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 14719 nodes · 14570 edges · 1106 communities (1029 shown, 77 thin omitted)
+- 14730 nodes · 14598 edges · 1107 communities (1030 shown, 77 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 332 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5a772d9b`
+- Built from commit: `315abcfc`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -41,6 +41,7 @@
 - [[_COMMUNITY_Airflow N8n Valkey Dev|Airflow N8n Valkey Dev]]
 - [[_COMMUNITY_Airflow Dag Stack Basics|Airflow Dag Stack Basics]]
 - [[_COMMUNITY_Compose Opensearch Oauth2 Proxy|Compose Opensearch Oauth2 Proxy]]
+- [[_COMMUNITY_Community 26|Community 26]]
 - [[_COMMUNITY_Tooling Adr Laboratory Locust|Tooling Adr Laboratory Locust]]
 - [[_COMMUNITY_Open Notebook Dashboard Dozzle|Open Notebook Dashboard Dozzle]]
 - [[_COMMUNITY_K3d Router Transport Adminer|K3d Router Transport Adminer]]
@@ -1153,7 +1154,7 @@
 - **Workspace Audit Revalidation Skill Catalog Sync** — workspace_audit_revalidation_bounded_revalidation_workflow, workspace_audit_revalidation_runtime_skill, readme_agent_and_function_catalog, readme_runtime_skill_mirror, progress_workspace_audit_revalidation_skill_creation [EXTRACTED 1.00]
 - **Advisory Graph Boundary** — index_llm_wiki_generated_index, index_tracked_source_boundary, index_runtime_truth, index_advisory_graph_context, progress_graphify_health_advisory, 2026_05_24_workspace_audit_input_task_gap_closure_plan_graphify_update_evidence [EXTRACTED 1.00]
 
-## Communities (1106 total, 77 thin omitted)
+## Communities (1107 total, 77 thin omitted)
 
 ### Community 0 - "Prometheus Alert Rule Group"
 Cohesion: 0.10
@@ -1188,12 +1189,12 @@ Cohesion: 0.18
 Nodes (17): 11-laboratory Architecture Reference Document, Non-intrusive Management Layer, Auth Optimization Hardening Architecture Reference Document, AI Optimization Hardening Architecture Reference Document, Tooling Catalog Expansion Policy, Tooling Control Plane, Tooling Optimization Hardening Architecture Reference Document, Laboratory Optimization Hardening Architecture Reference Document (+9 more)
 
 ### Community 8 - "Backup Infra Retention Common"
-Cohesion: 0.18
-Nodes (12): infra_net Collision Detection, infra_net Dictionary Network Definition, infra_net IP Mapping Validation and Update Procedure, Tooling infra_net External Boundary, Dozzle Read-only Docker Socket, Laboratory Gateway Allowlist SSO Boundary, No Direct Dashboard Exposure, 11-Laboratory Optimization Hardening Operations Policy (+4 more)
+Cohesion: 0.20
+Nodes (11): infra_net Collision Detection, infra_net Dictionary Network Definition, infra_net IP Mapping Validation and Update Procedure, Dozzle Read-only Docker Socket, Laboratory Gateway Allowlist SSO Boundary, No Direct Dashboard Exposure, 11-Laboratory Optimization Hardening Operations Policy, 11-laboratory Operations Policies (+3 more)
 
 ### Community 9 - "Adr Hybrid Traefik Nginx"
-Cohesion: 0.14
-Nodes (16): Agent Design Child Document Pattern, Component Specifications, infra-secrets-docs-refresh Specifications, llm-wiki-agent-first-completion Specifications, Stage Traceability Contract, generate-llm-wiki-index Script, Infra Secrets Docs Refresh Specification, LLM Wiki Agent-first Completion Specification (+8 more)
+Cohesion: 0.22
+Nodes (10): Agent Design Child Document Pattern, Component Specifications, llm-wiki-agent-first-completion Specifications, Stage Specification Taxonomy, Stage Traceability Contract, Active Stage Taxonomy Contract, generate-llm-wiki-index Script, LLM Wiki Agent-first Completion Specification (+2 more)
 
 ### Community 10 - "Data Cluster Cassandra Hardening"
 Cohesion: 0.10
@@ -1258,6 +1259,10 @@ Nodes (33): Airflow catchup False, DAG Deployment Policy, Airflow DAG Basics, Ai
 ### Community 25 - "Compose Opensearch Oauth2 Proxy"
 Cohesion: 0.22
 Nodes (11): OpenSearch Security Action Groups Defaults, OpenSearch Security Basic Internal Auth Domain, OpenSearch Security OpenID Auth Domain, Keycloak PostgreSQL Identity Database, Keycloak Compose Service, Keycloak Traefik Router, OpenSearch Dashboards Compose Service, OpenSearch Single Node Compose Service (+3 more)
+
+### Community 26 - "Community 26"
+Cohesion: 0.25
+Nodes (8): infra-secrets-docs-refresh Specifications, Infra Secrets Docs Refresh Specification, LLM Wiki Safe Path Filters, README Base Headings, Root-active Optional Standalone Compose Boundary, Secret Inventory Classification, Secret Value Non-access Guardrail, Stage Document Template Families
 
 ### Community 27 - "Tooling Adr Laboratory Locust"
 Cohesion: 0.22
@@ -1560,8 +1565,8 @@ Cohesion: 0.07
 Nodes (29): 1. Diagnosis, 2. Immediate Action (Safe), 3. Advanced Recovery (Data Loss Risk), 4. Verification, Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist (+21 more)
 
 ### Community 136 - "Community 136"
-Cohesion: 0.07
-Nodes (29): 1. Symptom, 2. Verification Steps (Host), 3. Recovery Procedure, 4. Escalation, Agent Operations (If Applicable), Agent Operations (If Applicable), Canonical References, Checklist (+21 more)
+Cohesion: 0.08
+Nodes (31): 1. Symptom, 2. Verification Steps (Host), 3. Recovery Procedure, 4. Escalation, Agent Operations (If Applicable), Agent Operations (If Applicable), AI GPU Recovery Procedure, AI GPU Recovery Runbook (+23 more)
 
 ### Community 137 - "Community 137"
 Cohesion: 0.09
@@ -2004,8 +2009,8 @@ Cohesion: 0.09
 Nodes (21): 01.Lgtm Stack Operations, 1. Unified Visualization, 2. Storage Integration (MinIO), Alerting Rule Management, Common Checks, Common Pitfalls, Core Workflows, Dashboard Provisioning (+13 more)
 
 ### Community 247 - "Community 247"
-Cohesion: 0.09
-Nodes (21): 02.Rag Workflow Operations, 1. 벡터 데이터베이스 연동, 2. 문서 임베딩 및 업로드, 3. 검색 및 응답 (Retrieval), Common Checks, Common Pitfalls, Core Components, Implementation Flow (+13 more)
+Cohesion: 0.10
+Nodes (22): 02.Rag Workflow Operations, 1. 벡터 데이터베이스 연동, 2. 문서 임베딩 및 업로드, 3. 검색 및 응답 (Retrieval), Common Checks, Common Pitfalls, Core Components, Implementation Flow (+14 more)
 
 ### Community 248 - "Community 248"
 Cohesion: 0.09
@@ -2068,8 +2073,8 @@ Cohesion: 0.10
 Nodes (20): Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, n8n Recovery Procedure, n8n Runbook, Observability and Evidence Sources (+12 more)
 
 ### Community 263 - "Community 263"
-Cohesion: 0.10
-Nodes (20): 01.Llm Inference Operations, 1. 모델 관리 (Model Lifecycle), 2. 성능 최적화 (Optimization), Architecture, Common Checks, Common Pitfalls, LLM Inference Management Usage (08-ai), Monitoring (+12 more)
+Cohesion: 0.09
+Nodes (24): 01.Llm Inference Operations, 1. 모델 관리 (Model Lifecycle), 2. 성능 최적화 (Optimization), Architecture, Archive Ledger, Archive Metadata, Archive Tombstone: 08-ai LLM Inference Guide, Common Checks (+16 more)
 
 ### Community 264 - "Community 264"
 Cohesion: 0.10
@@ -2264,8 +2269,8 @@ Cohesion: 0.11
 Nodes (17): 07-Workflow Optimization Hardening Procedure, 07-Workflow Optimization Hardening Runbook, Agent Operations (If Applicable), Canonical References, Checklist, Escalation, Evidence, Observability and Evidence Sources (+9 more)
 
 ### Community 312 - "Community 312"
-Cohesion: 0.11
-Nodes (17): 1. Prerequisites, 2. Pulling Models, 3. Verification, 4. Integration with Open WebUI, Common Checks, Common Pitfalls, Local Llm Setup Operations, Local LLM Setup Usage (+9 more)
+Cohesion: 0.10
+Nodes (21): 1. Prerequisites, 2. Pulling Models, 3. Verification, 4. Integration with Open WebUI, Archive Ledger, Archive Metadata, Archive Tombstone: Local LLM Setup Guide, Common Checks (+13 more)
 
 ### Community 313 - "Community 313"
 Cohesion: 0.11
@@ -2764,8 +2769,8 @@ Cohesion: 0.13
 Nodes (14): Agent Working Rules, Audience, Common Documentation Workflows, Documentation Lifecycle, Documentation Standards, How to Work in This Area, hy-home.docker, Overview (+6 more)
 
 ### Community 437 - "Community 437"
-Cohesion: 0.14
-Nodes (15): docs-taxonomy-agent-first-migration Specifications, harness-agent-first-engineering Specifications, Stage Specification Taxonomy, Active Stage Taxonomy Contract, Agent Governance Thin Root Shim Contract, Codex Boundary, Docs Taxonomy and AI Agent-first Contract Migration Specification, Governance SSOT (+7 more)
+Cohesion: 0.17
+Nodes (13): docs-taxonomy-agent-first-migration Specifications, harness-agent-first-engineering Specifications, Agent Governance Thin Root Shim Contract, Codex Boundary, Docs Taxonomy and AI Agent-first Contract Migration Specification, Governance SSOT, Graphify Context Health, Harness Agent-first Engineering Specification (+5 more)
 
 ### Community 438 - "Community 438"
 Cohesion: 0.13
@@ -4684,8 +4689,8 @@ Cohesion: 0.25
 Nodes (8): MinIO Cluster Common Settings, MinIO Four Node Cluster, MinIO Create Buckets Job, MinIO Data Volume, MinIO Single Node Service, MinIO Traefik API and Console Routes, MinIO Initialized Buckets, MinIO Secrets Management
 
 ### Community 917 - "Community 917"
-Cohesion: 0.33
-Nodes (7): IaC Deployment Policy, Plan Verification and Remote State, Tooling Gateway SSO Boundary, 09-Tooling Optimization Hardening Operations Policy, k6 Locust Test Runtime Contract, Tool Expansion Approval Gates, 09-tooling Operations Policies
+Cohesion: 0.29
+Nodes (8): IaC Deployment Policy, Plan Verification and Remote State, Tooling Gateway SSO Boundary, Tooling infra_net External Boundary, 09-Tooling Optimization Hardening Operations Policy, k6 Locust Test Runtime Contract, Tool Expansion Approval Gates, 09-tooling Operations Policies
 
 ### Community 918 - "Community 918"
 Cohesion: 0.25
@@ -5274,7 +5279,7 @@ Nodes (5): Kafka KRaft Quorum Recovery, Kafka Partition Rebalancing, Kafka Clust
   infra/06-observability/docker-compose.yml · relation: references
 
 ## Knowledge Gaps
-- **9912 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+9907 more)
+- **9904 isolated node(s):** `printWidth`, `singleQuote`, `semi`, `trailingComma`, `arrowParens` (+9899 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **77 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -5285,12 +5290,12 @@ _Questions this graph is uniquely positioned to answer:_
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **What is the exact relationship between `cadvisor Compose Service` and `pyroscope Compose Service`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **Why does `Qdrant Snapshot Recovery` connect `Community 821` to `Airflow Airbyte Failure Worker`?**
-  _High betweenness centrality (0.000) - this node is a cross-community bridge._
 - **Why does `Qdrant Runbook` connect `Airflow Airbyte Failure Worker` to `Community 821`?**
-  _High betweenness centrality (0.000) - this node is a cross-community bridge._
+  _High betweenness centrality (0.001) - this node is a cross-community bridge._
+- **Why does `Qdrant Snapshot Recovery` connect `Community 821` to `Airflow Airbyte Failure Worker`?**
+  _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **What connects `printWidth`, `singleQuote`, `semi` to the rest of the system?**
-  _10485 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _10477 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Prometheus Alert Rule Group` be split into smaller, more focused modules?**
   _Cohesion score 0.09682539682539683 - nodes in this community are weakly interconnected._
 - **Should `Tier Product Requirements Oauth2` be split into smaller, more focused modules?**

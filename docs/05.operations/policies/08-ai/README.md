@@ -50,9 +50,9 @@ policies/08-ai/
 
 | Path | Purpose |
 | --- | --- |
-| [ollama.md](./ollama.md) | Ollama policy 문서 |
-| [open-webui.md](./open-webui.md) | Open Webui policy 문서 |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening policy 문서 |
+| [ollama.md](./ollama.md) | Ollama model, GPU/VRAM, and exporter governance policy |
+| [open-webui.md](./open-webui.md) | Open WebUI access, RAG data handling, and change-gate policy |
+| [optimization-hardening.md](./optimization-hardening.md) | 08-ai gateway, stateful, exporter, model promotion, and logging hardening policy |
 
 ## Related Documents
 

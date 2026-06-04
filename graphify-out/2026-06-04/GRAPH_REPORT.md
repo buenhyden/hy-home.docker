@@ -1,16 +1,16 @@
 # Graph Report - hy-home.docker  (2026-06-04)
 
 ## Corpus Check
-- 842 files · ~703,586 words
+- 842 files · ~703,804 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 14719 nodes · 14570 edges · 1107 communities (1030 shown, 77 thin omitted)
+- 14719 nodes · 14570 edges · 1106 communities (1029 shown, 77 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 332 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `3524b5a8`
+- Built from commit: `5a772d9b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -1018,7 +1018,6 @@
 - [[_COMMUNITY_Community 1001|Community 1001]]
 - [[_COMMUNITY_Community 1002|Community 1002]]
 - [[_COMMUNITY_Community 1003|Community 1003]]
-- [[_COMMUNITY_Community 1004|Community 1004]]
 - [[_COMMUNITY_Community 1005|Community 1005]]
 - [[_COMMUNITY_Community 1006|Community 1006]]
 - [[_COMMUNITY_Community 1007|Community 1007]]
@@ -1154,7 +1153,7 @@
 - **Workspace Audit Revalidation Skill Catalog Sync** — workspace_audit_revalidation_bounded_revalidation_workflow, workspace_audit_revalidation_runtime_skill, readme_agent_and_function_catalog, readme_runtime_skill_mirror, progress_workspace_audit_revalidation_skill_creation [EXTRACTED 1.00]
 - **Advisory Graph Boundary** — index_llm_wiki_generated_index, index_tracked_source_boundary, index_runtime_truth, index_advisory_graph_context, progress_graphify_health_advisory, 2026_05_24_workspace_audit_input_task_gap_closure_plan_graphify_update_evidence [EXTRACTED 1.00]
 
-## Communities (1107 total, 77 thin omitted)
+## Communities (1106 total, 77 thin omitted)
 
 ### Community 0 - "Prometheus Alert Rule Group"
 Cohesion: 0.10
@@ -1189,12 +1188,12 @@ Cohesion: 0.18
 Nodes (17): 11-laboratory Architecture Reference Document, Non-intrusive Management Layer, Auth Optimization Hardening Architecture Reference Document, AI Optimization Hardening Architecture Reference Document, Tooling Catalog Expansion Policy, Tooling Control Plane, Tooling Optimization Hardening Architecture Reference Document, Laboratory Optimization Hardening Architecture Reference Document (+9 more)
 
 ### Community 8 - "Backup Infra Retention Common"
-Cohesion: 0.20
-Nodes (11): infra_net Collision Detection, infra_net Dictionary Network Definition, infra_net IP Mapping Validation and Update Procedure, Dozzle Read-only Docker Socket, Laboratory Gateway Allowlist SSO Boundary, No Direct Dashboard Exposure, 11-Laboratory Optimization Hardening Operations Policy, 11-laboratory Operations Policies (+3 more)
+Cohesion: 0.18
+Nodes (12): infra_net Collision Detection, infra_net Dictionary Network Definition, infra_net IP Mapping Validation and Update Procedure, Tooling infra_net External Boundary, Dozzle Read-only Docker Socket, Laboratory Gateway Allowlist SSO Boundary, No Direct Dashboard Exposure, 11-Laboratory Optimization Hardening Operations Policy (+4 more)
 
 ### Community 9 - "Adr Hybrid Traefik Nginx"
-Cohesion: 0.22
-Nodes (10): Agent Design Child Document Pattern, Component Specifications, llm-wiki-agent-first-completion Specifications, Stage Specification Taxonomy, Stage Traceability Contract, Active Stage Taxonomy Contract, generate-llm-wiki-index Script, LLM Wiki Agent-first Completion Specification (+2 more)
+Cohesion: 0.14
+Nodes (16): Agent Design Child Document Pattern, Component Specifications, infra-secrets-docs-refresh Specifications, llm-wiki-agent-first-completion Specifications, Stage Traceability Contract, generate-llm-wiki-index Script, Infra Secrets Docs Refresh Specification, LLM Wiki Agent-first Completion Specification (+8 more)
 
 ### Community 10 - "Data Cluster Cassandra Hardening"
 Cohesion: 0.10
@@ -2765,8 +2764,8 @@ Cohesion: 0.13
 Nodes (14): Agent Working Rules, Audience, Common Documentation Workflows, Documentation Lifecycle, Documentation Standards, How to Work in This Area, hy-home.docker, Overview (+6 more)
 
 ### Community 437 - "Community 437"
-Cohesion: 0.17
-Nodes (13): docs-taxonomy-agent-first-migration Specifications, harness-agent-first-engineering Specifications, Agent Governance Thin Root Shim Contract, Codex Boundary, Docs Taxonomy and AI Agent-first Contract Migration Specification, Governance SSOT, Graphify Context Health, Harness Agent-first Engineering Specification (+5 more)
+Cohesion: 0.14
+Nodes (15): docs-taxonomy-agent-first-migration Specifications, harness-agent-first-engineering Specifications, Stage Specification Taxonomy, Active Stage Taxonomy Contract, Agent Governance Thin Root Shim Contract, Codex Boundary, Docs Taxonomy and AI Agent-first Contract Migration Specification, Governance SSOT (+7 more)
 
 ### Community 438 - "Community 438"
 Cohesion: 0.13
@@ -4685,8 +4684,8 @@ Cohesion: 0.25
 Nodes (8): MinIO Cluster Common Settings, MinIO Four Node Cluster, MinIO Create Buckets Job, MinIO Data Volume, MinIO Single Node Service, MinIO Traefik API and Console Routes, MinIO Initialized Buckets, MinIO Secrets Management
 
 ### Community 917 - "Community 917"
-Cohesion: 0.29
-Nodes (8): IaC Deployment Policy, Plan Verification and Remote State, Tooling Gateway SSO Boundary, Tooling infra_net External Boundary, 09-Tooling Optimization Hardening Operations Policy, k6 Locust Test Runtime Contract, Tool Expansion Approval Gates, 09-tooling Operations Policies
+Cohesion: 0.33
+Nodes (7): IaC Deployment Policy, Plan Verification and Remote State, Tooling Gateway SSO Boundary, 09-Tooling Optimization Hardening Operations Policy, k6 Locust Test Runtime Contract, Tool Expansion Approval Gates, 09-tooling Operations Policies
 
 ### Community 918 - "Community 918"
 Cohesion: 0.25
@@ -5031,10 +5030,6 @@ Nodes (5): 1. Pre-Task Checklist, 2. In-Task Checklist, 3. Completion Checklist,
 ### Community 1003 - "Community 1003"
 Cohesion: 0.33
 Nodes (6): 07-Workflow Optimization Hardening Technical Specification, Airflow and n8n Workflow Runtime, Airflow Valkey Health Dependency, n8n Queue Mode and Secret Guard, check-workflow-hardening Policy Gate, Workflow Hardening Control Surface
-
-### Community 1004 - "Community 1004"
-Cohesion: 0.25
-Nodes (8): infra-secrets-docs-refresh Specifications, Infra Secrets Docs Refresh Specification, LLM Wiki Safe Path Filters, README Base Headings, Root-active Optional Standalone Compose Boundary, Secret Inventory Classification, Secret Value Non-access Guardrail, Stage Document Template Families
 
 ### Community 1005 - "Community 1005"
 Cohesion: 0.70

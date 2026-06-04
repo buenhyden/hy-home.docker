@@ -53,7 +53,7 @@ open-webui/
 | Healthcheck | Compose healthcheck declared for `open-webui` |
 | Operations | [Guide](../../../docs/05.operations/guides/08-ai/open-webui.md), [Policy](../../../docs/05.operations/policies/08-ai/open-webui.md), [Runbook](../../../docs/05.operations/runbooks/08-ai/open-webui.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `bash scripts/hardening/check-all-hardening.sh 08-ai`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
@@ -63,7 +63,8 @@ open-webui/
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Open WebUI, model backend, network, and volume references render.
+- Start with `bash scripts/hardening/check-all-hardening.sh 08-ai` to confirm Open WebUI hardening contracts.
+- Do not run this service-local compose file as a standalone config check; it depends on root `infra_net` context.
 - Check Open WebUI logs and the linked runbook before changing RAG, auth, or model endpoint settings.
 
 ## Related Documents
@@ -84,7 +85,7 @@ open-webui/
 | :--- | :---: | :--- |
 | `OLLAMA_BASE_URL` | Yes | Endpoint for Ollama API. |
 | `VECTOR_DB_URL` | Yes | Endpoint for Qdrant vector store. |
-| `RAG_EMBEDDING_MODEL` | Yes | Model used for document indexing. |
+| `RAG_EMBEDDING_MODEL` | Yes | Model used for document indexing; current compose value is `qwen3-embedding:0.6b`. |
 
 ## Change Impact
 
@@ -99,7 +100,7 @@ open-webui/
 
 1. 이 README를 먼저 읽는다.
 2. Open WebUI stores chat history and RAG metadata in a local SQLite DB mapped to `${DEFAULT_AI_MODEL_DIR}/open-webui`.
-3. RAG indexing performance depends on the `qwen3-embedding` model speed in Ollama.
+3. RAG indexing performance depends on the `qwen3-embedding:0.6b` model speed in Ollama.
 4. Ensure the `VECTOR_DB_URL` correctly points to the Qdrant instance in the `04-data` tier.
 
 ### Allowed Outputs

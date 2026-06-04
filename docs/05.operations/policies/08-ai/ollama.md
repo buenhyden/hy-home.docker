@@ -23,14 +23,15 @@ Ollama 추론 엔진 운영 전반:
 
 - **Systems**: `ollama`, `ollama-exporter`, `open-webui`
 - **Agents**: 모델 배포/교체 자동화 에이전트, 추론 호출 에이전트
-- **Environments**: `prod`, `staging`, `lab`
+- **Environments**: Local, Dev, Homelab, Production-like rehearsal
 
 ## Controls
 
 - **Required**:
-  - 모델 변경 전 staging에서 성능 및 안정성 검증을 수행해야 한다.
+  - 모델 변경 전 승인된 local/dev rehearsal에서 성능 및 안정성 검증을 수행해야 한다.
   - 운영 모델은 검증된 태그/소스만 사용해야 한다.
   - VRAM/메모리 사용량을 exporter 및 대시보드로 상시 관측해야 한다.
+  - root `docker-compose.yml`의 AI optional include 활성화는 runtime 승인 후 수행해야 한다.
 - **Allowed**:
   - 승인된 경량/양자화 모델 배포.
   - `keep_alive` 정책 기반 모델 언로드 최적화.
@@ -47,13 +48,15 @@ Ollama 추론 엔진 운영 전반:
 ## Verification
 
 - 배포 전:
+  - `bash scripts/hardening/check-all-hardening.sh 08-ai`
+  - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
   - `nvidia-smi` 정상
   - `/api/tags` 응답 정상
   - 대상 모델 추론 smoke test 성공
 - 운영 중:
   - VRAM 과점유, 응답 지연, 모델 로드 실패율 모니터링
 - 증적:
-  - 배포 로그, 모델 버전 기록, 롤백 결과
+  - 배포 로그, 모델 태그 기록, hardening/compose 검증 결과, 롤백 결과
 
 ## Review Cadence
 

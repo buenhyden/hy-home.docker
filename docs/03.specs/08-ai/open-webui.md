@@ -64,19 +64,20 @@ status: active
 
 ```bash
 # Verify container connectivity to Ollama
-docker exec open-webui curl -f ${OLLAMA_BASE_URL}/api/tags
+docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 
-# Verify healthcheck endpoint
-curl -f http://localhost:${OLLAMA_WEB_UI_PORT:-8080}/health
+# Verify container-internal healthcheck endpoint
+docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health
 ```
 
 ## Verification
 
 ```bash
-docker compose -f infra/08-ai/open-webui/docker-compose.yml config
-docker exec open-webui curl -f ${OLLAMA_BASE_URL}/api/tags
-docker exec open-webui curl -f ${VECTOR_DB_URL}/collections
-curl -f http://localhost:${OLLAMA_WEB_UI_PORT:-8080}/health
+bash scripts/hardening/check-all-hardening.sh 08-ai
+HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh
+docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
+docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
+docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health
 ```
 
 ## Success Criteria & Verification Plan

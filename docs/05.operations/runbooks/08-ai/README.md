@@ -51,10 +51,10 @@ runbooks/08-ai/
 
 | Path | Purpose |
 | --- | --- |
-| [gpu-recovery.md](./gpu-recovery.md) | Gpu Recovery runbook 문서 |
-| [ollama.md](./ollama.md) | Ollama runbook 문서 |
-| [open-webui.md](./open-webui.md) | Open Webui runbook 문서 |
-| [optimization-hardening.md](./optimization-hardening.md) | Optimization Hardening runbook 문서 |
+| [ollama.md](./ollama.md) | Ollama API, GPU, model, and Open WebUI dependency recovery |
+| [open-webui.md](./open-webui.md) | Open WebUI health, RAG connectivity, state backup, and restart recovery |
+| [gpu-recovery.md](./gpu-recovery.md) | NVIDIA GPU runtime recovery for Ollama |
+| [optimization-hardening.md](./optimization-hardening.md) | 08-ai hardening regression recovery and validation |
 
 ## Related Documents
 

@@ -9,17 +9,7 @@ status: active
 
 ### Overview (KR)
 
-이 문서는 `hy-home.docker` 환경에서 Open WebUI를 통해 Ollama 모델과 대화하고, 문서 기반 RAG를 사용하는 방법을 설명한다. 운영자가 재현 가능한 절차로 접근/인증, 모델 선택, 문서 인덱싱, 기본 점검을 수행할 수 있도록 정리한다.
->
-> Open WebUI 기반 로컬 LLM 채팅 및 RAG 운영 가이드.
-
----
-
-### Common Pitfalls
-
-- guide에 policy control이나 복구 절차를 직접 섞어 목적 프로파일을 흐리는 경우
-- target-relative link를 템플릿 위치 기준으로 계산하는 경우
-- 검증 명령 실행 결과 없이 운영 가능 상태를 단정하는 경우
+이 문서는 `hy-home.docker` 환경에서 Open WebUI를 통해 Ollama 모델과 대화하고, 문서 기반 RAG를 사용하는 방법을 설명한다. 현재 구현은 `infra/08-ai/open-webui/docker-compose.yml`에 보유되어 있으며 root `docker-compose.yml`에서는 optional include로 주석 처리되어 있다. 접근/인증, 모델 선택, 문서 인덱싱, 기본 점검은 root include가 승인되어 활성화된 런타임을 기준으로 수행한다.
 
 ### Usage Type
 
@@ -40,7 +30,8 @@ status: active
 
 ### Prerequisites
 
-- `open-webui` 컨테이너가 기동 가능해야 한다.
+- root `docker-compose.yml`에서 `infra/08-ai/ollama/docker-compose.yml` 및 `infra/08-ai/open-webui/docker-compose.yml` include가 승인되어 활성화되어야 한다.
+- `open-webui`, `ollama`, `qdrant` 컨테이너가 root compose project 안에서 기동 가능해야 한다.
 - `ollama` 컨테이너가 `http://ollama:${OLLAMA_PORT:-11434}`로 접근 가능해야 한다.
 - `qdrant` 컨테이너가 `http://qdrant:${QDRANT_PORT:-6333}`로 접근 가능해야 한다.
 - Open WebUI 환경변수 확인:
@@ -72,15 +63,14 @@ status: active
 #### 4. Quick Connectivity Checks
 
 ```bash
-
-## Open WebUI health
-curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health
+# Open WebUI health is internal unless a host port is explicitly published.
+docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health
 
 ## Open WebUI -> Ollama connectivity (컨테이너 내부)
-docker exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
+docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 
 ## Open WebUI -> Qdrant connectivity (컨테이너 내부)
-docker exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
+docker compose exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
 ```
 
 ### 5. Advanced Settings
@@ -99,7 +89,9 @@ docker exec open-webui curl -f http://qdrant:${QDRANT_PORT:-6333}/collections
 
 ## Common Checks
 
-- Step-by-step Instructions 의 검증 단계를 따른다.
+- `bash scripts/hardening/check-all-hardening.sh 08-ai`
+- `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
+- Runtime approval 후 root include를 활성화한 상태에서 `docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-8080}/health`
 
 ## Runbook Handoff
 

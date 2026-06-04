@@ -41,8 +41,9 @@ status: active
 ### Steps
 
 1. 정적 구성 점검
-   - `docker compose -f infra/08-ai/ollama/docker-compose.yml config`
-   - `docker compose -f infra/08-ai/open-webui/docker-compose.yml config`
+   - `bash scripts/hardening/check-all-hardening.sh 08-ai`
+   - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
+   - AI service-local compose 파일은 root `infra_net`과 optional include context에 의존하므로 단독 `docker compose config` 대상으로 사용하지 않는다.
 2. 하드닝 기준 점검
    - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 3. 증상별 복구
@@ -56,6 +57,7 @@ status: active
      - `depends_on` health gating 및 metrics healthcheck 계약 복원
 4. 재검증
    - `bash scripts/hardening/check-all-hardening.sh 08-ai`
+   - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
    - `bash scripts/validation/check-template-security-baseline.sh`
    - `bash scripts/validation/check-doc-traceability.sh`
 

@@ -46,13 +46,13 @@ ollama/
 | Compose linkage | root include optional/commented in [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/ollama/docker-compose.yml` |
 | Networks | `infra_net` |
 | Volumes | `ollama-data:/root/.ollama:rw`, `ollama-data` |
-| Ports | `${OLLAMA_HOST_PORT}:${OLLAMA_PORT}`, `${OLLAMA_EXPORTER_PORT:-8000}` |
+| Ports | `${OLLAMA_HOST_PORT}:${OLLAMA_PORT}` for Ollama API; exporter exposes `${OLLAMA_EXPORTER_PORT:-8000}` inside `infra_net` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.ollama.rule`, `traefik.http.routers.ollama.entrypoints`, `traefik.http.routers.ollama.tls`, `traefik.http.services.ollama.loadbalancer.server.port`, `traefik.http.routers.ollama.middlewares` |
 | Secret refs | Not declared |
 | Healthcheck | Compose healthcheck declared for `ollama`, `ollama-exporter` |
 | Operations | [Guide](../../../docs/05.operations/guides/08-ai/ollama.md), [Policy](../../../docs/05.operations/policies/08-ai/ollama.md), [Runbook](../../../docs/05.operations/runbooks/08-ai/ollama.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with `bash scripts/hardening/check-all-hardening.sh 08-ai`, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 
@@ -62,12 +62,14 @@ ollama/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Ollama.
+- Run `bash scripts/hardening/check-all-hardening.sh 08-ai` after README or Compose reference changes that affect Ollama.
+- Run `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh` for the current root-active profile surface.
 - Run `bash scripts/validation/check-repo-contracts.sh` to keep service documentation and operation links synchronized.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm network, volume, secret, and label references render correctly.
+- Start with `bash scripts/hardening/check-all-hardening.sh 08-ai` to confirm AI compose contracts.
+- Do not run this service-local compose file as a standalone config check; it depends on root `infra_net` context.
 - Check container logs and the linked runbook before changing configuration or secret references.
 - For model loading errors: verify the model name with `ollama list` and confirm sufficient disk space for model storage.
 - For API errors: check `docker logs ollama | grep -i 'error'` and confirm the API port binding matches client configuration.
@@ -98,16 +100,16 @@ ollama/
 | :--- | :---: | :--- | :--- |
 | `DEFAULT_AI_MODEL_DIR` | Yes | - | 모델 영구 저장 경로 |
 | `OLLAMA_PORT` | No | 11434 | API 포트 |
-| `OLLAMA_EXPORTER_PORT` | No | 11435 | 지표 수집 포트 |
+| `OLLAMA_EXPORTER_PORT` | No | 11435 in `.env.example` | exporter 지표 수집 포트; compose fallback is `8000` when unset |
 
 ## Testing
 
 ```bash
 # 기본 헬스체크
-curl http://localhost:11434/api/tags
+curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags"
 
 # 추론 API 테스트
-curl http://localhost:11434/api/generate -d '{
+curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
   "model": "llama3",
   "prompt": "Why is the sky blue?"
 }'

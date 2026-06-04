@@ -40,17 +40,17 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 
 ## How to Work in This Area
 
-1. Read the [LLM Inference Guide](../../docs/05.operations/guides/08-ai/01.llm-inference.md).
-2. Follow the [RAG Workflow Guide](../../docs/05.operations/guides/08-ai/02.rag-workflow.md).
-3. Check the [Operations Policy](../../docs/05.operations/policies/08-ai/README.md) for GPU resource management.
-4. Consult the [AI Runbook](../../docs/05.operations/runbooks/08-ai/README.md) for NVIDIA driver or OOM troubleshooting.
+1. Read the [Ollama Usage Guide](../../docs/05.operations/guides/08-ai/ollama.md).
+2. Follow the [Open WebUI Usage Guide](../../docs/05.operations/guides/08-ai/open-webui.md) and [RAG Workflow Guide](../../docs/05.operations/guides/08-ai/02.rag-workflow.md).
+3. Check the [Operations Policy](../../docs/05.operations/policies/08-ai/README.md) for GPU, model, access, and logging controls.
+4. Consult the [AI Runbooks](../../docs/05.operations/runbooks/08-ai/README.md) for NVIDIA driver, OOM, or Open WebUI troubleshooting.
 
 ## Tech Stack
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| Inference | Ollama | v0.20.0 (CUDA enabled) |
-| Interface | Open WebUI | v0.8.5-cuda |
+| Inference | Ollama | `ollama/ollama:0.30.2` |
+| Interface | Open WebUI | `ghcr.io/open-webui/open-webui:v0.9.6-cuda` |
 | Acceleration | NVIDIA CUDA | Requires NVIDIA Container Toolkit |
 | Vector DB | Qdrant | External dependency in `04-data` |
 
@@ -58,9 +58,9 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 
 | Service | Protocol | Profile | Port |
 | :--- | :--- | :--- | :--- |
-| `ollama` | HTTP | `ai` | 11434 |
-| `open-webui` | HTTP | `ai` | 8080 (Mapped to chat domain) |
-| `ollama-exporter` | HTTP | `ai` | 11435 (Metrics) |
+| `ollama` | HTTP | `ai`, `dev` | `${OLLAMA_HOST_PORT}:${OLLAMA_PORT}` and `ollama.${DEFAULT_URL}` |
+| `open-webui` | HTTP | `ai` | `chat.${DEFAULT_URL}` via Traefik; no host port is declared |
+| `ollama-exporter` | HTTP metrics | `ai`, `dev` | exposed on `${OLLAMA_EXPORTER_PORT}` inside `infra_net` |
 
 ## Configuration
 
@@ -72,10 +72,10 @@ The `08-ai` tier provides the platform's artificial intelligence capabilities, f
 
 ```bash
 # Verify GPU availability inside Ollama
-docker exec -it ollama nvidia-smi
+docker compose exec ollama nvidia-smi
 
 # List loaded models
-docker exec -it ollama ollama list
+docker compose exec ollama ollama list
 ```
 
 ## AI Agent Guidance
@@ -89,6 +89,6 @@ docker exec -it ollama ollama list
 ## Related Documents
 
 - [infra/README.md](../README.md)
-- [docs/05.operations/README.md](../../docs/05.operations/README.md)
-- [docs/05.operations/README.md](../../docs/05.operations/README.md)
-- [docs/05.operations/README.md](../../docs/05.operations/README.md)
+- [Operations guides - 08-ai](../../docs/05.operations/guides/08-ai/README.md)
+- [Operations policies - 08-ai](../../docs/05.operations/policies/08-ai/README.md)
+- [Operations runbooks - 08-ai](../../docs/05.operations/runbooks/08-ai/README.md)

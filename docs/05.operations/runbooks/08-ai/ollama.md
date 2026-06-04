@@ -62,10 +62,10 @@ curl -f http://localhost:${OLLAMA_PORT:-11434}/api/tags
 nvidia-smi
 
 ## 컨테이너 내부 GPU 상태
-docker exec ollama nvidia-smi
+docker compose exec ollama nvidia-smi
 
 ## 필요 시 컨테이너 재기동
-docker restart ollama
+docker compose restart ollama
 ```
 
 ### 3. VRAM OOM Mitigation
@@ -85,7 +85,7 @@ curl -X POST http://localhost:${OLLAMA_PORT:-11434}/api/generate -d '{
 ### 4. Model Integrity Check
 
 ```bash
-docker exec ollama ollama list
+docker compose exec ollama ollama list
 ```
 
 - 운영 기준 모델 태그가 존재하는지 확인한다.
@@ -95,13 +95,13 @@ docker exec ollama ollama list
 ```bash
 
 ## Open WebUI 컨테이너에서 Ollama 접근 확인
-docker exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
+docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 ```
 
 ### Verification Steps
 
 - [ ] `curl -f http://localhost:${OLLAMA_PORT:-11434}/api/tags` 성공
-- [ ] `docker exec ollama nvidia-smi` 성공
+- [ ] `docker compose exec ollama nvidia-smi` 성공
 - [ ] 기본 추론 요청(`/api/generate`) 성공
 - [ ] Open WebUI에서 모델 조회/채팅 성공
 

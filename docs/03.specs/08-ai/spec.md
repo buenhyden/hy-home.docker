@@ -104,16 +104,15 @@ ai_hardening_controls:
 ## Verification
 
 ```bash
-docker compose -f infra/08-ai/ollama/docker-compose.yml config
-docker compose -f infra/08-ai/open-webui/docker-compose.yml config
 bash scripts/hardening/check-all-hardening.sh 08-ai
+HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh
 bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-doc-traceability.sh
 ```
 
 ## Success Criteria & Verification Plan
 
-- **VAL-AI-001**: AI compose static validation 통과
+- **VAL-AI-001**: root-active compose validation and optional AI hardening checks 통과
 - **VAL-AI-002**: AI hardening baseline script 실패 0건
 - **VAL-AI-003**: PRD~Runbook optimization-hardening 문서 링크 정합성 유지
 - **VAL-AI-004**: 카탈로그 `08-ai` 확장 항목(모델 승격, 접근 분리, 로그 정책)이 Plan/Tasks/Operations에 반영

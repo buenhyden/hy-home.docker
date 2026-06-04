@@ -57,8 +57,8 @@ status: completed
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-AI-001 | Structural | Ollama compose 정적 검증 | `docker compose -f infra/08-ai/ollama/docker-compose.yml config` | 오류 없음 |
-| VAL-AI-002 | Structural | Open WebUI compose 정적 검증 | `docker compose -f infra/08-ai/open-webui/docker-compose.yml config` | 오류 없음 |
+| VAL-AI-001 | Structural | AI optional compose contract 정적 검증 | `bash scripts/hardening/check-all-hardening.sh 08-ai` | 실패 0건 |
+| VAL-AI-002 | Structural | root-active compose profile 검증 | `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh` | 오류 없음 |
 | VAL-AI-003 | Compliance | AI 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 08-ai` | 실패 0건 |
 | VAL-AI-004 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
 | VAL-AI-005 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
@@ -86,6 +86,6 @@ status: completed
 - **ADR**: [../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md](../../02.architecture/decisions/0023-ai-hardening-and-ha-expansion-strategy.md)
 - **Spec**: [../03.specs/08-ai/spec.md](../../03.specs/08-ai/spec.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-08-ai-optimization-hardening-tasks.md](../tasks/2026-03-28-08-ai-optimization-hardening-tasks.md)
-- **Guide**: [../../05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/policies/08-ai/optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/08-ai/optimization-hardening.md](../../05.operations/guides/08-ai/optimization-hardening.md)
 - **Operations**: [../../05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/policies/08-ai/optimization-hardening.md)
-- **Runbooks**: [../../05.operations/policies/08-ai/optimization-hardening.md](../../05.operations/policies/08-ai/optimization-hardening.md)
+- **Runbooks**: [../../05.operations/runbooks/08-ai/optimization-hardening.md](../../05.operations/runbooks/08-ai/optimization-hardening.md)
