@@ -40,7 +40,7 @@ The `03-security` tier serves as the platform's root of trust. It provides Hashi
 
 ## How to Work in This Area
 
-1. Read the [Security Setup Guide](../../docs/05.operations/guides/03-security/01.setup.md) for initialization.
+1. Read the [Vault Operations Guide](../../docs/05.operations/guides/03-security/vault.md) for initialization and AppRole bootstrap boundaries.
 2. Follow the [Operations Policy](../../docs/05.operations/policies/03-security/README.md) for unseal protocols.
 3. Use the [Security Runbook](../../docs/05.operations/runbooks/03-security/README.md) for emergency recovery.
 4. Vault must be manually unsealed after each restart.
@@ -49,8 +49,8 @@ The `03-security` tier serves as the platform's root of trust. It provides Hashi
 
 | Category   | Technology                     | Notes                     |
 | ---------- | ------------------------------ | ------------------------- |
-| Secret Mgmt| HashiCorp Vault                | v1.21.4                   |
-| Storage    | Raft (Integrated)              | High Availability         |
+| Secret Mgmt | HashiCorp Vault               | `hashicorp/vault:2.0.1`   |
+| Storage    | Raft (Integrated)              | Single-node current state; HA expansion planned |
 | Injection  | Vault Agent                    | Sidecar pattern           |
 | OS         | Alpine Linux (Container)       | Minimal surface area      |
 
@@ -67,11 +67,13 @@ The `03-security` tier serves as the platform's root of trust. It provides Hashi
 ## Testing
 
 ```bash
-# Verify Vault health (unsealed status)
-docker exec vault vault status
+# Validate the root security profile and 03-security hardening contract
+HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
+bash scripts/hardening/check-all-hardening.sh 03-security
 
-# Verify API reachability
-docker exec vault wget -q -O- "http://127.0.0.1:8200/v1/sys/health"
+# Runtime-only checks after the security profile is already running
+docker compose --profile security exec vault vault status
+docker compose --profile security exec vault wget -q -O- "http://127.0.0.1:8200/v1/sys/health"
 ```
 
 ## Change Impact

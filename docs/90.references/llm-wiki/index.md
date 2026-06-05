@@ -540,7 +540,6 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/05.operations/guides/02-auth/README.md](../../05.operations/guides/02-auth/README.md) | folder index |
 | [docs/05.operations/guides/02-auth/keycloak.md](../../05.operations/guides/02-auth/keycloak.md) | Markdown reference |
 | [docs/05.operations/guides/02-auth/oauth2-proxy.md](../../05.operations/guides/02-auth/oauth2-proxy.md) | Markdown reference |
-| [docs/05.operations/guides/03-security/01.setup.md](../../05.operations/guides/03-security/01.setup.md) | Markdown reference |
 | [docs/05.operations/guides/03-security/README.md](../../05.operations/guides/03-security/README.md) | folder index |
 | [docs/05.operations/guides/03-security/vault.md](../../05.operations/guides/03-security/vault.md) | Markdown reference |
 | [docs/05.operations/guides/04-data/README.md](../../05.operations/guides/04-data/README.md) | folder index |
@@ -1156,6 +1155,7 @@ Graphify output is advisory navigation context only. This index is generated fro
 | [docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md](../../98.archive/04.execution/tasks/2026-06-01-agent-governance-phase3-strategy-integration.md) | Markdown reference |
 | [docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md](../../98.archive/04.execution/tasks/2026-06-01-agent-governance-phase4-closure.md) | Markdown reference |
 | [docs/98.archive/04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md](../../98.archive/04.execution/tasks/2026-06-01-agent-governance-stage01-02-alignment.md) | Markdown reference |
+| [docs/98.archive/05.operations/guides/03-security/01.setup.md](../../98.archive/05.operations/guides/03-security/01.setup.md) | Markdown reference |
 | [docs/98.archive/05.operations/guides/05-messaging/ksql-streaming.md](../../98.archive/05.operations/guides/05-messaging/ksql-streaming.md) | Markdown reference |
 | [docs/98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md](../../98.archive/05.operations/guides/07-workflow/01.airflow-dag-dev.md) | Markdown reference |
 | [docs/98.archive/05.operations/guides/07-workflow/airbyte.md](../../98.archive/05.operations/guides/07-workflow/airbyte.md) | Markdown reference |

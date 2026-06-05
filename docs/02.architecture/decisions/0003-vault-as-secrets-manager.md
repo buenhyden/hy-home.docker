@@ -25,7 +25,7 @@ status: active
 
 **HashiCorp Vault**를 플랫폼의 표준 비밀 정보 관리 도구로 채택한다.
 
-1. **Raft Storage**: 외부 DB 없이 고가용성 클러스터 구축 가능.
+1. **Raft Storage**: 외부 DB 없이 통합 스토리지를 운영하며, 현재 단일 노드에서 향후 승인된 절차로 HA 확장이 가능.
 2. **AppRole Mechanism**: 컨테이너 기반 서비스에 최적화된 인증 방식 제공.
 3. **Template Support**: Vault Agent를 통한 기존 애플리케이션과의 원활한 통합.
 4. **Encryption-as-a-Service**: 단순 저장을 넘어 데이터 암호화 API 제공 가능.

@@ -815,7 +815,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/02-auth/README.md": {
-    "mtime": 1780628087.3210664,
+    "mtime": 1780628631.386047,
     "ast_hash": "0a89b67df10de8661a3d50f986478d6e",
     "semantic_hash": ""
   },
@@ -825,22 +825,22 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/02-auth/keycloak/README.md": {
-    "mtime": 1780628087.525026,
+    "mtime": 1780628631.386047,
     "ast_hash": "62fa97bceb268b3a506a31ab24e186e6",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/02-auth/oauth2-proxy/docker-compose.dev.yml": {
-    "mtime": 1780628007.7419162,
+    "mtime": 1780628631.386047,
     "ast_hash": "380bb975547b2a232663f26e527e7ced",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/02-auth/oauth2-proxy/docker-compose.yml": {
-    "mtime": 1780628007.9659162,
+    "mtime": 1780628631.386047,
     "ast_hash": "d66d0027c77f6a8f5522b8fbd7985689",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/infra/02-auth/oauth2-proxy/README.md": {
-    "mtime": 1780628087.7369843,
+    "mtime": 1780628631.386047,
     "ast_hash": "75c011098a5e70700a6ff74ed32b8cb7",
     "semantic_hash": ""
   },
@@ -1065,7 +1065,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/03.specs/02-auth/spec.md": {
-    "mtime": 1780628144.4420183,
+    "mtime": 1780628631.338047,
     "ast_hash": "2e3e1684f1932e9589c690d78c8eb9fb",
     "semantic_hash": ""
   },
@@ -1180,7 +1180,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/requirements/0014-auth-optimization-hardening-architecture.md": {
-    "mtime": 1780628144.2500165,
+    "mtime": 1780628631.338047,
     "ast_hash": "588496cffaf74079f06fcda94e079e00",
     "semantic_hash": ""
   },
@@ -1275,7 +1275,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/02.architecture/decisions/0017-auth-hardening-runtime-and-fail-closed.md": {
-    "mtime": 1780628144.0420146,
+    "mtime": 1780628631.338047,
     "ast_hash": "12561dc6ad002beb49ae2d8a09b66cf7",
     "semantic_hash": ""
   },
@@ -1450,7 +1450,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/01.requirements/2026-03-28-02-auth-optimization-hardening.md": {
-    "mtime": 1780628143.8300126,
+    "mtime": 1780628631.338047,
     "ast_hash": "4bb4a3683b7a85ec0bb907c6675b55ad",
     "semantic_hash": ""
   },
@@ -1920,7 +1920,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/02-auth/keycloak.md": {
-    "mtime": 1780628197.9420204,
+    "mtime": 1780628631.338047,
     "ast_hash": "be5c5e571832610d02433813041b5601",
     "semantic_hash": ""
   },
@@ -1930,7 +1930,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/02-auth/oauth2-proxy.md": {
-    "mtime": 1780628198.5900266,
+    "mtime": 1780628631.338047,
     "ast_hash": "26d83e03eac4f3fec63f5fa60304a795",
     "semantic_hash": ""
   },
@@ -2300,7 +2300,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/02-auth/keycloak.md": {
-    "mtime": 1780628222.122001,
+    "mtime": 1780628631.338047,
     "ast_hash": "66b1ecfbc050d97087412df4c8d4658e",
     "semantic_hash": ""
   },
@@ -2310,7 +2310,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/runbooks/02-auth/oauth2-proxy.md": {
-    "mtime": 1780628221.9099994,
+    "mtime": 1780628631.338047,
     "ast_hash": "aca51a5c49a1cc42b8bc26ff5f1f3900",
     "semantic_hash": ""
   },
@@ -2680,7 +2680,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/02-auth/keycloak.md": {
-    "mtime": 1780628198.1580224,
+    "mtime": 1780628631.338047,
     "ast_hash": "e3d6dd52b36c07ca8c480adb27cc138e",
     "semantic_hash": ""
   },
@@ -2690,7 +2690,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/policies/02-auth/oauth2-proxy.md": {
-    "mtime": 1780628198.8060288,
+    "mtime": 1780628631.338047,
     "ast_hash": "f1178177e861cdb68c03633a80d590fc",
     "semantic_hash": ""
   },
@@ -3380,8 +3380,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/progress.md": {
-    "mtime": 1780627518.0858881,
-    "ast_hash": "0d8d0b33f6bc98714c2ccf49c897c393",
+    "mtime": 1780628631.338047,
+    "ast_hash": "1500fab123476b46a80b3fbdc7006bd6",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/00.agent-governance/memory/stage-docs-lifecycle-audit.md": {
@@ -3490,7 +3490,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-03-28-02-auth-optimization-hardening-tasks.md": {
-    "mtime": 1780628144.8660223,
+    "mtime": 1780628631.338047,
     "ast_hash": "e03823510f528ebc847f3901c1f53986",
     "semantic_hash": ""
   },
@@ -3740,7 +3740,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/plans/2026-03-28-02-auth-optimization-hardening-plan.md": {
-    "mtime": 1780628144.6540203,
+    "mtime": 1780628631.338047,
     "ast_hash": "f08dc21e57861cda3abd047f5ed1e6a5",
     "semantic_hash": ""
   },
@@ -4375,7 +4375,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/hardening/check-all-hardening.sh": {
-    "mtime": 1780628027.5779192,
+    "mtime": 1780628631.386047,
     "ast_hash": "dfc3753f42ee975f080f2590072fa2d6",
     "semantic_hash": ""
   },
@@ -4435,7 +4435,7 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/scripts/validation/check-repo-contracts.sh": {
-    "mtime": 1780628295.9060137,
+    "mtime": 1780628631.386047,
     "ast_hash": "45331fc5855e0a3d9a1c64358ec528d4",
     "semantic_hash": ""
   },
@@ -4490,8 +4490,8 @@
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/04.execution/tasks/2026-06-04-docs-implementation-audit.md": {
-    "mtime": 1780627518.0858881,
-    "ast_hash": "1d71bb15a48d3444089f6e0aa402bf01",
+    "mtime": 1780628631.338047,
+    "ast_hash": "952e0c9fd367b27623e870f60a6c389e",
     "semantic_hash": ""
   },
   "/home/hy/project-infra/hy-home.docker/docs/05.operations/guides/00-workspace/README.md": {

@@ -1,7 +1,7 @@
 # vault.hcl
 ui = true
 
-# IPC_LOCK capability를 부여했으므로 mlock 사용을 허용
+# 현재 컨테이너 런타임에서는 mlock을 비활성화하고 Vault health/raft 상태로 운영 검증
 disable_mlock = true
 
 storage "raft" {

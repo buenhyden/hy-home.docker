@@ -36,9 +36,9 @@ status: active
 ### Step-by-step Instructions
 
 1. Vault 기본 상태 확인
-   - `docker compose -f infra/03-security/vault/docker-compose.yml config`
-   - `docker compose -f infra/03-security/vault/docker-compose.yml up -d vault vault-agent`
-   - `docker exec vault vault status`
+   - `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh`
+   - `bash scripts/hardening/check-all-hardening.sh 03-security`
+   - Runtime-only: `docker compose --profile security exec vault vault status`
 2. AppRole bootstrap
    - Vault가 unsealed 상태인지 확인한 뒤 아래 절차로 Agent 인증 및 접근 권한을 설정한다.
    - 명령은 `role_id`와 `secret_id`를 파일로 직접 리다이렉션해야 하며, 생성값을 문서/PR/로그에 붙여넣지 않는다.
@@ -53,14 +53,14 @@ status: active
    mkdir -p "$agent_dir"
    umask 077
 
-   docker exec vault vault policy write vault-agent-policy - <<'EOF'
+   docker compose --profile security exec -T vault vault policy write vault-agent-policy - <<'EOF'
    path "secret/data/hy-home/*" {
      capabilities = ["read", "list"]
    }
    EOF
 
-   docker exec vault vault auth enable approle || true
-   docker exec vault vault write auth/approle/role/vault-agent \
+   docker compose --profile security exec -T vault vault auth enable approle || true
+   docker compose --profile security exec -T vault vault write auth/approle/role/vault-agent \
      secret_id_ttl=0 \
      token_num_uses=0 \
      token_ttl=0 \
@@ -68,11 +68,11 @@ status: active
      secret_id_num_uses=0 \
      token_policies="vault-agent-policy"
 
-   docker exec vault vault read -field=role_id auth/approle/role/vault-agent/role-id > "$agent_dir/role_id"
-   docker exec vault vault write -f -field=secret_id auth/approle/role/vault-agent/secret-id > "$agent_dir/secret_id"
+   docker compose --profile security exec -T vault vault read -field=role_id auth/approle/role/vault-agent/role-id > "$agent_dir/role_id"
+   docker compose --profile security exec -T vault vault write -f -field=secret_id auth/approle/role/vault-agent/secret-id > "$agent_dir/secret_id"
    chmod 600 "$agent_dir/role_id" "$agent_dir/secret_id"
    docker run --rm -v "$agent_dir:/agent" alpine sh -c 'chown -R 100:1000 /agent 2>/dev/null || true'
-   docker restart vault-agent >/dev/null
+   docker compose --profile security restart vault-agent >/dev/null
    ```
 
    - token sink(`/vault/agent/token`) 생성 확인
@@ -82,7 +82,7 @@ status: active
    - `secret/data/hy-home/02-auth/oauth2-proxy` -> `client_secret`, `cookie_secret`
    - `secret/data/hy-home/06-observability/grafana` -> `admin_password`, `db_password`, `grafana_client_secret`
 4. 렌더 출력 확인
-   - `docker exec vault-agent ls -la /vault/out`
+   - Runtime-only: `docker compose --profile security exec vault-agent ls -la /vault/out`
    - 서비스별 파일 존재/권한(0600) 점검
 5. 정적 하드닝 검증
    - `bash scripts/hardening/check-all-hardening.sh 03-security`
@@ -96,10 +96,8 @@ status: active
 
 ## Common Checks
 
-- `docker compose -f infra/03-security/vault/docker-compose.yml config`
-- `docker compose -f infra/03-security/vault/docker-compose.yml up -d vault vault-agent`
-- `docker exec vault vault status`
-- `docker exec vault-agent ls -la /vault/out`
+- `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 03-security`
 - `bash scripts/validation/check-template-security-baseline.sh`
 

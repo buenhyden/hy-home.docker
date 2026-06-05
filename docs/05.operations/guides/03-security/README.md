@@ -35,7 +35,6 @@
 
 ```text
 guides/03-security/
-├── 01.setup.md
 ├── vault.md
 └── README.md
 ```
@@ -49,8 +48,7 @@ guides/03-security/
 
 | Path | Purpose |
 | --- | --- |
-| [01.setup.md](./01.setup.md) | 01.Setup guide 문서 |
-| [vault.md](./vault.md) | Vault guide 문서 |
+| [vault.md](./vault.md) | Vault guide 문서; setup, AppRole bootstrap, and validation boundary |
 
 ## Related Documents
 

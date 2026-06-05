@@ -4,7 +4,7 @@
 
 ## Overview
 
-HashiCorp Vault는 `hy-home.docker` 플랫폼의 중앙 비밀 관리 엔진이다. 모든 인프라 계층(Gateway, Auth, Data, App)에서 사용하는 API 키, 데이터베이스 자격 증명, 인증서 등을 안전하게 보관하고 수명 주기(Lifecycle)를 관리한다. Raft 통합 스토리지를 통해 별도의 데이터베이스 없이 고가용성 클러스터를 구성하며, Vault Agent Sidecar를 통해 애플리케이션에 비밀을 투명하게 주입한다.
+HashiCorp Vault는 `hy-home.docker` 플랫폼의 중앙 비밀 관리 엔진이다. 모든 인프라 계층(Gateway, Auth, Data, App)에서 사용하는 API 키, 데이터베이스 자격 증명, 인증서 등을 안전하게 보관하고 수명 주기(Lifecycle)를 관리한다. 현재 구현은 단일 노드 Raft 통합 스토리지와 Vault Agent 서비스로 구성되며, 향후 HA 확장을 위한 전환 절차는 정책/런북에서 관리한다.
 
 ## Audience
 
@@ -45,10 +45,10 @@ vault/
 
 | Category    | Technology      | Notes                  |
 | ----------- | --------------- | ---------------------- |
-| Platform    | Vault (Go)      | v1.21.4 (Official)     |
-| Persistence | Raft            | Integrated Storage     |
+| Platform    | Vault (Go)      | `hashicorp/vault:2.0.1` |
+| Persistence | Raft            | Single-node integrated storage |
 | Sidecar     | Vault Agent     | Auto-auth & Templating |
-| OS          | Alpine          | Minimal Footprint      |
+| Runtime     | Official container image | Root compose profile service |
 
 ## Implementation Details
 
@@ -69,14 +69,14 @@ healthcheck:
 ## Testing
 
 ```bash
-# Verify Raft cluster status
-docker exec vault vault operator raft list-peers
+# Validate the root security profile and 03-security hardening contract
+HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
+bash scripts/hardening/check-all-hardening.sh 03-security
 
-# Check unseal & init status
-docker exec vault vault status
-
-# Rendered secrets check (Vault Agent)
-docker exec vault-agent ls -la /vault/agent/
+# Runtime-only checks after the security profile is already running
+docker compose --profile security exec vault vault operator raft list-peers
+docker compose --profile security exec vault vault status
+docker compose --profile security exec vault-agent ls -la /vault/out
 ```
 
 ## AI Agent Guidance
@@ -89,15 +89,15 @@ docker exec vault-agent ls -la /vault/agent/
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify Vault seal status by running `docker exec vault vault status` and confirming the seal state is `false`.
-- Confirm secret paths are accessible by checking `docker logs vault | grep -i 'error\|warn'` after policy changes.
+- Run `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
+- Run `bash scripts/hardening/check-all-hardening.sh 03-security` before marking documentation ready.
+- Verify Vault seal status in runtime sessions with `docker compose --profile security exec vault vault status` and confirm the seal state is `false`.
+- Confirm secret paths are accessible by checking `docker compose --profile security logs vault --tail=200 | grep -i 'error\|warn'` after policy changes.
 - Verify token authentication by confirming dependent services can retrieve their secrets on startup.
 
 ## Troubleshooting
 
-- Start with `docker compose config` to confirm Vault mounts, ports, and network placement.
+- Start with `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh` to confirm root-context Vault mounts, ports, and network placement.
 - Check `vault` status and logs, then follow the linked security runbook for sealed or initialization failures.
 
 ## Related Documents
@@ -123,7 +123,7 @@ docker exec vault-agent ls -la /vault/agent/
 | Healthcheck | Compose healthcheck declared for `vault`, `vault-agent` |
 | Operations | [Guide](../../../docs/05.operations/guides/03-security/vault.md), [Policy](../../../docs/05.operations/policies/03-security/vault.md), [Runbook](../../../docs/05.operations/runbooks/03-security/vault.md) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [check-repo-contracts.sh](../../../scripts/validation/check-repo-contracts.sh) |
-| Troubleshooting | Start with `docker compose config`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | Start with root profile validation, then inspect service logs and linked operations/runbook evidence. |
 
 ## How to Work in This Area
 

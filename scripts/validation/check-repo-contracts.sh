@@ -3611,6 +3611,66 @@ PY
   failures=$((failures + 1))
 fi
 
+section "03-security current-truth drift"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import sys
+
+security_stage_files: list[pathlib.Path] = []
+for root in [
+    pathlib.Path("docs/01.requirements"),
+    pathlib.Path("docs/02.architecture"),
+    pathlib.Path("docs/03.specs"),
+    pathlib.Path("docs/04.execution"),
+    pathlib.Path("docs/05.operations"),
+]:
+    if not root.exists():
+        continue
+    for path in sorted(root.rglob("*.md")):
+        normalized = path.as_posix()
+        if "/03-security/" in normalized or "03-security" in path.name or "security-" in path.name or "vault" in path.name:
+            security_stage_files.append(path)
+
+security_files = security_stage_files + sorted(pathlib.Path("infra/03-security").rglob("*"))
+allowed_suffixes = {".md", ".yml", ".yaml", ".sh", ".hcl", ".ctmpl", ""}
+security_files = [path for path in security_files if path.is_file() and path.suffix in allowed_suffixes]
+
+stale_literals = {
+    "hashicorp/vault:1.21.4": "Vault current image is hashicorp/vault:2.0.1",
+    "v1.21.4": "Vault current image is hashicorp/vault:2.0.1",
+    "docs/05.operations/guides/03-security/01.setup.md": "Security setup guidance is consolidated into the Vault guide",
+    "guides/03-security/01.setup.md": "Security setup guidance is consolidated into the Vault guide",
+    "docker compose -f infra/03-security/vault/docker-compose.yml config": "03-security validation must use root profile validator",
+    "docker compose -f infra/03-security/vault/docker-compose.yml up -d vault vault-agent": "runtime starts must use root compose context",
+    "cd infra/03-security/vault": "03-security docs must not require service-local working-directory compose context",
+    "docker exec vault": "runtime checks must use root compose exec context",
+    "docker exec vault-agent": "runtime checks must use root compose exec context",
+    "docker logs vault": "log checks must use root compose logs context",
+    "docker logs vault-agent": "log checks must use root compose logs context",
+    "01~09": "Active documentation scope is Stage 01-05",
+    "고가용성 클러스터": "Current Vault implementation is single-node Raft with planned HA expansion",
+}
+
+failures: list[str] = []
+for path in security_files:
+    try:
+        text = path.read_text(errors="ignore")
+    except Exception:
+        continue
+    for literal, guidance in stale_literals.items():
+        if literal in text:
+            failures.append(f"{path}: stale 03-security literal {literal!r}; {guidance}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
 section "Gateway current-truth drift"
 if ! python3 - <<'PY'; then
 from __future__ import annotations

@@ -70,12 +70,15 @@ status: active
 - **Runtime / Platform**:
   - Docker Compose + `template-stateful-med`
   - `vault`, `vault-agent`
+  - root include active via `infra/03-security/vault/docker-compose.yml`
 - **Deployment Model**:
   - Phase 1: 단일 노드 안정화 + 검증 자동화
   - Phase 2: auto-unseal 정책 승인 후 전환
   - Phase 3: raft 3-node + 원격 audit 확장
 - **Operational Evidence**:
   - `scripts/hardening/check-all-hardening.sh 03-security`
+  - `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh`
+  - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
   - `scripts/validation/check-template-security-baseline.sh`
   - `scripts/validation/check-doc-traceability.sh`
 
@@ -94,5 +97,5 @@ status: active
 - **Plan**: [../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md](../../04.execution/plans/2026-03-28-03-security-optimization-hardening-plan.md)
 - **ADR**: [../02.architecture/decisions/0018-vault-hardening-and-ha-expansion-strategy.md](../decisions/0018-vault-hardening-and-ha-expansion-strategy.md)
 - **Tasks**: [../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md](../../04.execution/tasks/2026-03-28-03-security-optimization-hardening-tasks.md)
-- **Operation**: [../../05.operations/guides/03-security/vault.md](../../05.operations/guides/03-security/vault.md)
-- **Runbook**: [../../05.operations/guides/03-security/vault.md](../../05.operations/guides/03-security/vault.md)
+- **Policy**: [../../05.operations/policies/03-security/vault.md](../../05.operations/policies/03-security/vault.md)
+- **Runbook**: [../../05.operations/runbooks/03-security/vault.md](../../05.operations/runbooks/03-security/vault.md)

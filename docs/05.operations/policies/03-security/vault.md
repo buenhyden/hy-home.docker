@@ -44,8 +44,9 @@ status: active
 ## Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 03-security`
+- `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
-- `docker compose -f infra/03-security/vault/docker-compose.yml config`
 - `docker inspect --format '{{json .State.Health}}' vault`
 - `docker inspect --format '{{json .State.Health}}' vault-agent`
 

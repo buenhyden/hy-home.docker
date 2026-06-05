@@ -8,7 +8,7 @@ status: active
 
 ## Overview (KR)
 
-`03-security` 티어는 HashiCorp Vault를 기반으로 하는 고가용성 비밀 정보 관리 시스템이다. Raft 합의 알고리즘을 통한 자체 스토리지 구성을 사용하며, 애플리케이션 서비스에 비밀 정보를 안전하게 주입하기 위해 Vault Agent 사이드카 패턴을 채택한다. 외부 접근은 Traefik Gateway를 통해 HTTPS로 보호된다.
+`03-security` 티어는 HashiCorp Vault를 기반으로 하는 비밀 정보 관리 시스템이다. 현재 구현은 단일 노드 Raft 통합 스토리지를 사용하며, 애플리케이션 서비스에 비밀 정보를 안전하게 주입하기 위해 Vault Agent 서비스 패턴을 채택한다. 외부 접근은 Traefik Gateway를 통해 HTTPS로 보호된다.
 
 ## Constraints
 
@@ -58,7 +58,7 @@ graph TD
 
 ## Reliability & Scalability
 
-- **High Availability**: Raft Cluster 구성을 통해 단일 노드 장애 시에도 서비스 가용성 유지.
+- **Availability**: 현재는 단일 노드 Raft 운영 상태이며, Raft cluster 확장은 별도 전환 절차로 준비.
 - **Fault Tolerance**: Vault Agent의 캐싱 기능을 통해 서버 일시 장애 시 조회 가용성 확보.
 
 ## Alternative Scopes
