@@ -3219,6 +3219,7 @@ root_scripts = sorted(path for path in pathlib.Path("scripts").glob("*.sh") if p
 lib_scripts = sorted(path for path in pathlib.Path("scripts/lib").glob("*.sh") if path.is_file())
 expected_implementations = {
     pathlib.Path("scripts/validation/validate-docker-compose.sh"),
+    pathlib.Path("scripts/validation/validate-harness.sh"),
     pathlib.Path("scripts/validation/check-repo-contracts.sh"),
     pathlib.Path("scripts/validation/check-doc-implementation-alignment.sh"),
     pathlib.Path("scripts/validation/check-storybook-contract.sh"),
@@ -3725,14 +3726,25 @@ harness_map="docs/00.agent-governance/harness-implementation-map.md"
 approval_boundaries="docs/00.agent-governance/rules/approval-boundaries.md"
 [[ -f "$harness_map" ]] || fail "missing harness implementation map: $harness_map"
 [[ -f "$approval_boundaries" ]] || fail "missing approval boundaries rule: $approval_boundaries"
+[[ -f "docs/99.templates/harness-task-contract.template.md" ]] || fail "missing harness task contract template"
+[[ -f "scripts/validation/validate-harness.sh" ]] || fail "missing harness validation wrapper: scripts/validation/validate-harness.sh"
 if ! grep -q -- "--harness" scripts/validation/run-local-qa-gates.sh; then
   fail "run-local-qa-gates.sh missing --harness mode"
+fi
+if ! grep -q "run-local-qa-gates.sh --harness" scripts/validation/validate-harness.sh; then
+  fail "validate-harness.sh must delegate to run-local-qa-gates.sh --harness"
+fi
+if ! grep -q "validate-harness.sh" scripts/README.md; then
+  fail "scripts/README.md missing reference to validate-harness.sh"
 fi
 if ! grep -q "run-local-qa-gates.sh --harness" scripts/README.md; then
   fail "scripts/README.md missing reference to the harness gate (run-local-qa-gates.sh --harness)"
 fi
 if ! grep -q "## Harness Impact" .github/PULL_REQUEST_TEMPLATE.md; then
   fail "PR template missing Harness Impact section"
+fi
+if ! grep -q "validate-harness.sh" .github/PULL_REQUEST_TEMPLATE.md; then
+  fail "PR template missing validate-harness.sh evidence command"
 fi
 if ! grep -q "harness-implementation-map.md" docs/00.agent-governance/README.md; then
   fail "governance README missing harness implementation map reference"
