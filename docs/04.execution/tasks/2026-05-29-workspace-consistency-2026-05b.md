@@ -8,7 +8,7 @@ status: completed
 
 ## Overview
 
-이 문서는 워크스페이스 거버넌스 일관성 후속 작업(2026-05b)의 구현·검증 작업 목록이다. `workspace-consistency-2026-05b` Spec과 Plan에서 파생된 6개 태스크를 추적 가능하게 기록한다. 각 태스크는 독립 커밋으로 완료되며, Validation Evidence로 검증 명령 결과를 기록한다.
+This document is the implementation and verification task list for the workspace governance consistency follow-up work (2026-05b). It records 6 tasks derived from the `workspace-consistency-2026-05b` Spec and Plan in a traceable form. Each task is completed as an independent commit, and validation command results are recorded as Validation Evidence.
 
 ## Inputs
 
@@ -17,52 +17,52 @@ status: completed
 
 ## Working Rules
 
-- 구조·형식 수정만 수행. 문서 본문 의미 변경 금지.
-- 변경 전 대상 파일 현재 상태 확인.
-- 각 변경 완료 후 검증 명령으로 잔여 불일치 0건 확인.
-- 검증 통과 후 Conventional Commits 형식으로 커밋.
-- Documentation-only 작업이지만 모든 태스크에 검증 Evidence 필수.
+- Perform only structure and format fixes. Do not change document body meaning.
+- Check the current state of target files before changes.
+- After each change, use validation commands to confirm zero remaining mismatches.
+- Commit in Conventional Commits format after validation passes.
+- Although this is documentation-only work, every task requires validation evidence.
 
 ## Task Table
 
 | Task ID | Description                                          | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence                                   | Owner | Status |
 | ------- | ---------------------------------------------------- | ---- | --------------------- | ------------------- | ------------------------------------------------------- | ----- | ------ |
-| T-001   | documentation-protocol.md에 R4+R5 규칙 추가          | doc  | SPC / §Contracts      | PLN-001             | R4, R5 섹션 존재 확인                                   | agent | Done   |
-| T-002   | github-governance.md에 Section 8 CI/CD taxonomy 추가 | doc  | SPC / §Contracts      | PLN-002             | Section 8 CI/CD taxonomy 존재 확인                      | agent | Done   |
-| T-003   | check-repo-contracts.sh 가이드 프로파일 검사 강화    | ops  | SPC / §Contracts      | PLN-003             | `## Common Checks`, `## Runbook Handoff` 검사 포함 확인 | agent | Done   |
-| T-004   | docs/99.templates/README.md 템플릿 목록 추가         | doc  | SPC / §Interfaces     | PLN-004             | guide.template.md, runbook.template.md 항목 존재 확인   | agent | Done   |
-| T-005   | agent-design.template.md 예시 파일명 교체            | doc  | SPC / §Interfaces     | PLN-005             | 가상 파일명 없음, 디렉터리 링크 사용 확인               | agent | Done   |
-| T-006   | nginx.md 중복 Policy Scope 헤딩 제거                 | doc  | SPC / §Interfaces     | PLN-006             | 중복 헤딩 0건 확인                                      | agent | Done   |
+| T-001   | Add R4+R5 rules to documentation-protocol.md | doc | SPC / §Contracts | PLN-001 | Confirm R4 and R5 sections exist | agent | Done |
+| T-002   | Add Section 8 CI/CD taxonomy to github-governance.md | doc | SPC / §Contracts | PLN-002 | Confirm Section 8 CI/CD taxonomy exists | agent | Done |
+| T-003   | Strengthen guide profile checks in check-repo-contracts.sh | ops | SPC / §Contracts | PLN-003 | Confirm `## Common Checks` and `## Runbook Handoff` checks are included | agent | Done |
+| T-004   | Add template list to docs/99.templates/README.md | doc | SPC / §Interfaces | PLN-004 | Confirm guide.template.md and runbook.template.md entries exist | agent | Done |
+| T-005   | Replace example filenames in agent-design.template.md | doc | SPC / §Interfaces | PLN-005 | Confirm no virtual filenames and directory links are used | agent | Done |
+| T-006   | Remove duplicate Policy Scope heading from nginx.md | doc | SPC / §Interfaces | PLN-006 | Confirm 0 duplicate headings | agent | Done |
 
 ## Phase View
 
-### Phase 1: Governance Rule Additions (완료)
+### Phase 1: Governance Rule Additions (completed)
 
-- [x] T-001 documentation-protocol.md에 R4+R5 규칙 추가
-- [x] T-002 github-governance.md에 Section 8 CI/CD taxonomy 추가
+- [x] T-001 Add R4+R5 rules to documentation-protocol.md
+- [x] T-002 Add Section 8 CI/CD taxonomy to github-governance.md
 
-### Phase 2: Script Extension (완료)
+### Phase 2: Script Extension (completed)
 
-- [x] T-003 check-repo-contracts.sh 가이드 프로파일 검사 강화
+- [x] T-003 Strengthen guide profile checks in check-repo-contracts.sh
 
-### Phase 3: Template & Doc Fixes (완료)
+### Phase 3: Template & Doc Fixes (completed)
 
-- [x] T-004 docs/99.templates/README.md 템플릿 목록 추가
-- [x] T-005 agent-design.template.md 예시 파일명 교체
-- [x] T-006 nginx.md 중복 Policy Scope 헤딩 제거
+- [x] T-004 Add template list to docs/99.templates/README.md
+- [x] T-005 Replace example filenames in agent-design.template.md
+- [x] T-006 Remove duplicate Policy Scope heading from nginx.md
 
 ## Verification Summary
 
 - **Test Commands**:
 
   ```bash
-  # R4/R5 규칙 존재
+	  # R4/R5 rules exist
   grep -c "R4\|R5" docs/00.agent-governance/rules/documentation-protocol.md
 
-  # CI/CD taxonomy 섹션 존재
+	  # CI/CD taxonomy section exists
   grep "CI/CD" docs/00.agent-governance/rules/github-governance.md
 
-  # 가이드 프로파일 검사 강화
+	  # Guide profile checks strengthened
   grep "Common Checks" scripts/validation/check-repo-contracts.sh
 
   # repo contracts
@@ -73,16 +73,16 @@ status: completed
   ```
 
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: git log `docs/workspace-consistency-2026-05b` 브랜치
+- **Logs / Evidence Location**: git log for the `docs/workspace-consistency-2026-05b` branch
 
 ## Final Verification Evidence
 
 | Check                                               | Result            |
 | --------------------------------------------------- | ----------------- |
-| R4/R5 규칙 존재 (documentation-protocol.md)         | PASS              |
-| CI/CD taxonomy 섹션 존재 (github-governance.md)     | PASS              |
-| 가이드 프로파일 검사 강화 (check-repo-contracts.sh) | PASS              |
-| nginx.md 중복 헤딩 제거                             | PASS              |
+| R4/R5 rules exist (documentation-protocol.md) | PASS |
+| CI/CD taxonomy section exists (github-governance.md) | PASS |
+| Guide profile checks strengthened (check-repo-contracts.sh) | PASS |
+| nginx.md duplicate heading removed | PASS |
 | `check-repo-contracts.sh`                           | PASS (failures=0) |
 | `check-doc-traceability.sh`                         | PASS (failures=0) |
 

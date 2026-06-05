@@ -8,9 +8,10 @@ status: completed
 
 ## Overview
 
-이 문서는 공유 거버넌스와 Claude 하네스 정합성 검증 작업의 수행·검증 audit trail이다. 짝 Plan에서 파생된
-작업을 추적 가능하게 기록한다. 본 작업은 cross-cutting 거버넌스 작업으로, parent Spec 대신 거버넌스 문서를
-참조한다(`documentation-protocol.md` §8.5).
+This document is the execution and verification audit trail for shared governance
+and Claude harness consistency verification work. It records work derived from
+the paired Plan in a traceable form. This is cross-cutting governance work, so it
+references governance documents instead of a parent Spec (`documentation-protocol.md` §8.5).
 
 ## Inputs
 
@@ -19,19 +20,19 @@ status: completed
 
 ## Working Rules
 
-- 문서/검증 작업이므로 도메인 코드 TDD는 N/A이나 모든 작업에 검증 evidence를 남긴다.
-- raw logs, secret 값, shell history는 저장하지 않는다.
-- read-only stage 문서는 일괄 수정하지 않으며 갭은 거버넌스 메모리에 기록한다.
+- Domain-code TDD is N/A because this is documentation/verification work, but every task leaves verification evidence.
+- Do not store raw logs, secret values, or shell history.
+- Do not bulk-edit read-only stage documents; record gaps in governance memory.
 
 ## Task Table
 
 | Task ID | Description                      | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence                                                                                          | Owner | Status |
 | ------- | -------------------------------- | ---- | --------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------- | ----- | ------ |
-| T-001   | Baseline 검증 스크립트 실행      | ops  | N/A (cross-cutting)   | PLN-001             | `check-repo-contracts.sh` failures=0 (499 docs); `check-doc-traceability.sh` failures=0 (46 pairs)             | hy    | Done   |
-| T-002   | 웹 모델 재검증                   | doc  | N/A                   | PLN-002             | Claude opus-4.8/sonnet-4.6, Codex gpt-5.5/gpt-5.4-mini 현행 확인; Gemini 3.5-flash > 3.1-pro, 3.5-pro 6월 지연 | hy    | Done   |
-| T-003   | 모델 식별자 드리프트 수정        | impl | N/A                   | PLN-003             | `workflow-supervisor.md:31` gemini-3-pro→gemini-3.1-pro, gpt-5.1-codex→gpt-5.5; stale grep 무결과              | hy    | Done   |
-| T-004   | Gemini 티어 갭 메모리 기록       | doc  | N/A                   | PLN-004             | `memory/2026-05-31-gemini-model-tier-review.md` 생성                                                           | hy    | Done   |
-| T-005   | 추적성 문서/README/progress 작성 | doc  | N/A                   | PLN-005             | plan, task, 두 README, progress 행 갱신                                                                        | hy    | Done   |
+| T-001   | Run baseline validation scripts | ops | N/A (cross-cutting) | PLN-001 | `check-repo-contracts.sh` failures=0 (499 docs); `check-doc-traceability.sh` failures=0 (46 pairs) | hy | Done |
+| T-002   | Reverify web models | doc | N/A | PLN-002 | Confirmed current Claude opus-4.8/sonnet-4.6 and Codex gpt-5.5/gpt-5.4-mini; Gemini 3.5-flash > 3.1-pro, 3.5-pro delayed to June | hy | Done |
+| T-003   | Fix model identifier drift | impl | N/A | PLN-003 | `workflow-supervisor.md:31` gemini-3-pro -> gemini-3.1-pro, gpt-5.1-codex -> gpt-5.5; stale grep returned no results | hy | Done |
+| T-004   | Record Gemini tier gap memory | doc | N/A | PLN-004 | Created `memory/2026-05-31-gemini-model-tier-review.md` | hy | Done |
+| T-005   | Write traceability docs/README/progress | doc | N/A | PLN-005 | Updated plan, task, two README files, and progress row | hy | Done |
 
 ## Suggested Types
 
@@ -43,26 +44,25 @@ status: completed
 
 ### Phase 1
 
-- [x] T-001 Baseline 검증
-- [x] T-002 웹 모델 재검증
+- [x] T-001 Baseline validation
+- [x] T-002 Web model reverification
 
 ### Phase 2
 
-- [x] T-003 드리프트 수정
-- [x] T-004 갭 메모리 기록
-- [x] T-005 추적성 문서 작성
+- [x] T-003 Drift fix
+- [x] T-004 Gap memory record
+- [x] T-005 Traceability document writing
 
 ## Verification Summary
 
-- **Test Commands**: N/A (도메인 코드 변경 없음 → quality-standards 90% 커버리지 N/A: docs/policy 변경).
-- **Eval Commands**: `bash scripts/validation/check-repo-contracts.sh` → `failures=0`; `bash scripts/validation/check-doc-traceability.sh` → `failures=0`; stale-model `grep` → 무결과; `git diff --check` → 무결과.
-- **Logs / Evidence Location**: 본 문서 Task Table 및 `docs/00.agent-governance/memory/progress.md` 최신 행.
+- **Test Commands**: N/A (no domain code changes -> quality-standards 90% coverage N/A: docs/policy changes).
+- **Eval Commands**: `bash scripts/validation/check-repo-contracts.sh` -> `failures=0`; `bash scripts/validation/check-doc-traceability.sh` -> `failures=0`; stale-model `grep` -> no results; `git diff --check` -> no results.
+- **Logs / Evidence Location**: This document's Task Table and the latest row in `docs/00.agent-governance/memory/progress.md`.
 
 ### Deviation Notes
 
-- 원 요청은 greenfield 거버넌스 구축을 가정했으나 거버넌스가 이미 성숙·정합 상태여서, 사용자 승인에 따라
-  범위를 "검증 + 실제 드리프트 수정 + 갭 기록"으로 한정했다.
-- Gemini 티어 역전은 정책을 즉시 변경하지 않고 메모리 결정 항목으로 기록했다(`gemini-3.5-pro` 미출시).
+- The original request assumed greenfield governance setup, but governance was already mature and consistent, so the scope was limited by user approval to "verification + actual drift fixes + gap records."
+- Gemini tier inversion was recorded as a memory decision item without immediately changing policy (`gemini-3.5-pro` unreleased).
 
 ## Related Documents
 
