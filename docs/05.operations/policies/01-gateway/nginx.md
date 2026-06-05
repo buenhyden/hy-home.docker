@@ -14,7 +14,7 @@ status: active
 
 - `infra/01-gateway/nginx/docker-compose.yml`
 - `infra/01-gateway/nginx/config/nginx.conf`
-- Nginx healthcheck/readonly/tmpfs 운영 표준
+- Nginx healthcheck/readonly/tmpfs 운영 표준 and profile-only runtime boundary
 - **Systems**: Nginx gateway proxy
 - **Agents**: Infra/DevOps/Ops agents
 - **Environments**: Local, Dev, Stage, Production-like
@@ -43,8 +43,8 @@ status: active
 ## Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
-- `docker compose -f infra/01-gateway/nginx/docker-compose.yml config`
-- `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t`
+- Nginx runtime lint such as `docker compose exec nginx nginx -t` is valid only after an approved Nginx context with root `infra_net` and backend dependencies is running.
+- Standalone `infra/01-gateway/nginx/docker-compose.yml` compose rendering is not readiness evidence.
 
 ## Review Cadence
 

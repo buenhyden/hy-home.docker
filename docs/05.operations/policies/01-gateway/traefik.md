@@ -13,7 +13,7 @@ status: active
 
 - `infra/01-gateway/traefik/docker-compose.yml`
 - `infra/01-gateway/traefik/dynamic/middleware.yml`
-- Gateway 소유 라우터(`dashboard` 등) 라벨 정책
+- Gateway 소유 라우터(`dashboard` 등) 라벨 정책 and root `core` profile validation boundary
 
 - **Systems**: Traefik v3 (gateway tier)
 - **Agents**: Infra/DevOps/Ops agents
@@ -42,8 +42,8 @@ status: active
 ## Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
-- `docker compose -f infra/01-gateway/traefik/docker-compose.yml config`
-- `docker compose -f infra/01-gateway/traefik/docker-compose.yml exec traefik traefik healthcheck --ping`
+- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
+- Runtime health evidence such as `docker compose exec traefik traefik healthcheck --ping` is valid only after an approved root stack is running.
 
 ## Review Cadence
 

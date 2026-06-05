@@ -49,8 +49,8 @@ runbooks/01-gateway/
 
 | Path | Purpose |
 | --- | --- |
-| [nginx.md](./nginx.md) | Nginx runbook 문서 |
-| [traefik.md](./traefik.md) | Traefik runbook 문서 |
+| [nginx.md](./nginx.md) | Nginx profile-only proxy triage, lint, and escalation procedure |
+| [traefik.md](./traefik.md) | Traefik root-active router triage and recovery procedure |
 
 ## Related Documents
 

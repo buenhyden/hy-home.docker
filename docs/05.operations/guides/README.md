@@ -64,7 +64,7 @@ guides/
 | Path | Purpose |
 | --- | --- |
 | [00-workspace/](./00-workspace/README.md) | Workspace-level guide 문서 |
-| [01-gateway/](./01-gateway/README.md) | 01 Gateway guide 문서 |
+| [01-gateway/](./01-gateway/README.md) | Gateway Traefik/Nginx usage and validation boundary guides |
 | [02-auth/](./02-auth/README.md) | 02 Auth guide 문서 |
 | [03-security/](./03-security/README.md) | 03 Security guide 문서 |
 | [04-data/](./04-data/README.md) | 04 Data guide 문서 |

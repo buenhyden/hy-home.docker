@@ -49,8 +49,8 @@ policies/01-gateway/
 
 | Path | Purpose |
 | --- | --- |
-| [nginx.md](./nginx.md) | Nginx policy 문서 |
-| [traefik.md](./traefik.md) | Traefik policy 문서 |
+| [nginx.md](./nginx.md) | Nginx profile-only proxy controls and runtime approval boundary |
+| [traefik.md](./traefik.md) | Traefik root-active middleware and hardening controls |
 
 ## Related Documents
 

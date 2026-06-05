@@ -1,10 +1,12 @@
+<!-- README Target: docs/03.specs/01-gateway/README.md -->
+
 # 01-gateway Specifications
 
 > API Gateway 및 리버스 프록시 서비스 기술 사양
 
 ## Overview
 
-`docs/03.specs/01-gateway`는 Traefik 및 Nginx 기반 API 게이트웨이 서비스의 기술 사양을 포함합니다.
+`docs/03.specs/01-gateway`는 root-active Traefik edge router와 profile-only Nginx path proxy leaf의 기술 사양을 포함합니다.
 
 ## Audience
 
@@ -20,6 +22,7 @@
 ### In Scope
 
 - 게이트웨이 서비스 인터페이스, 라우팅, TLS, 인증 미들웨어 사양
+- root-active Traefik validation과 profile-only Nginx runtime boundary
 - 서비스 경계 및 네트워크 정책
 
 ### Out of Scope

@@ -31,6 +31,7 @@ status: active
 - Docker/Docker Compose 사용 가능
 - `infra/01-gateway/nginx` 구성 파일 접근 가능
 - `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
+- Nginx runtime 검증 시 명시적 root network/dependency context 승인 필요
 
 ### Step-by-step Instructions
 
@@ -41,7 +42,8 @@ status: active
    - `infra/01-gateway/nginx/config/nginx.conf`
    - `server_tokens off`, timeout 3종, `proxy_next_upstream`, upstream `max_fails/fail_timeout`, 정적 캐시 location 확인
 3. 설정 검증
-   - `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t`
+   - 정적 검증: `bash scripts/hardening/check-all-hardening.sh 01-gateway`
+   - runtime lint: approved Nginx runtime context에서 `docker compose exec nginx nginx -t`
 4. 하드닝 검증
    - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 
@@ -53,8 +55,8 @@ status: active
 
 ## Common Checks
 
-- `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t`
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
+- `docker compose exec nginx nginx -t` only after an approved Nginx runtime context is running
 
 ## Runbook Handoff
 

@@ -63,7 +63,7 @@ policies/
 | Path | Purpose |
 | --- | --- |
 | [00-workspace/](./00-workspace/README.md) | Workspace-level policy 문서 |
-| [01-gateway/](./01-gateway/README.md) | 01 Gateway policy 문서 |
+| [01-gateway/](./01-gateway/README.md) | Gateway Traefik/Nginx hardening and runtime-boundary policies |
 | [02-auth/](./02-auth/README.md) | 02 Auth policy 문서 |
 | [03-security/](./03-security/README.md) | 03 Security policy 문서 |
 | [04-data/](./04-data/README.md) | 04 Data policy 문서 |

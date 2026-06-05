@@ -50,9 +50,9 @@ guides/01-gateway/
 
 | Path | Purpose |
 | --- | --- |
-| [01.setup.md](./01.setup.md) | 01.Setup guide 문서 |
-| [nginx.md](./nginx.md) | Nginx guide 문서 |
-| [traefik.md](./traefik.md) | Traefik guide 문서 |
+| [01.setup.md](./01.setup.md) | Root-active Traefik validation and profile-only Nginx setup boundary |
+| [nginx.md](./nginx.md) | Nginx profile-only path proxy usage and runtime lint boundary |
+| [traefik.md](./traefik.md) | Traefik root-active router and middleware usage guide |
 
 ## Related Documents
 

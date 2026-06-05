@@ -3549,6 +3549,54 @@ PY
   failures=$((failures + 1))
 fi
 
+section "Gateway current-truth drift"
+if ! python3 - <<'PY'; then
+from __future__ import annotations
+
+import pathlib
+import sys
+
+roots = [
+    pathlib.Path("docs/01.requirements"),
+    pathlib.Path("docs/02.architecture"),
+    pathlib.Path("docs/03.specs"),
+    pathlib.Path("docs/04.execution"),
+    pathlib.Path("docs/05.operations"),
+    pathlib.Path("infra/01-gateway"),
+]
+
+stale_literals = {
+    "Traefik v3.6.12": "Traefik is declared as traefik:v3.7.1",
+    "Port 80, 443, 7687": "Traefik static entrypoints are web(80), websecure(443), and metrics(8082)",
+    "| `7687` | `7687` | TCP | Neo4j Bolt": "Current gateway docs must not claim a public Neo4j Bolt gateway entrypoint",
+    "cd infra/01-gateway": "Use root profile validation instead of a nonexistent tier-level compose stack",
+    "docker compose up -d traefik": "Traefik runtime actions must use an approved root compose context",
+    "docker compose up -d nginx": "Nginx is profile-only and needs an explicit approved runtime context",
+    "docker compose -f infra/01-gateway/traefik/docker-compose.yml config": "Use HYHOME_COMPOSE_PROFILES=core with validate-docker-compose.sh for root-context validation",
+    "docker compose -f infra/01-gateway/nginx/docker-compose.yml config": "Nginx standalone compose rendering lacks root infra_net/backend context",
+    "docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t": "Nginx lint is runtime-only evidence in an approved Nginx context",
+    "docker compose -f infra/01-gateway/traefik/docker-compose.yml exec traefik traefik healthcheck --ping": "Traefik healthcheck is runtime-only evidence in the approved root context",
+    "average: 1000": "Gateway req-rate-limit average is 100",
+    "burst: 300": "Gateway req-rate-limit burst is 50",
+}
+
+failures: list[str] = []
+for root in roots:
+    for path in sorted(root.rglob("*.md")) + sorted(root.rglob("*.yml")) + sorted(root.rglob("*.yaml")):
+        text = path.read_text(errors="ignore")
+        for line_no, line in enumerate(text.splitlines(), start=1):
+            for stale, replacement in stale_literals.items():
+                if stale in line:
+                    failures.append(f"{path}:{line_no}: stale gateway reference {stale!r}; {replacement}")
+
+if failures:
+    for failure in failures:
+        print(f"FAIL: {failure}", file=sys.stderr)
+    sys.exit(1)
+PY
+  failures=$((failures + 1))
+fi
+
 echo
 echo "Repo contract check"
 echo "failures=$failures"

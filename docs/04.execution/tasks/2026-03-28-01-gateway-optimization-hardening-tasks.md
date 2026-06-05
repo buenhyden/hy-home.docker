@@ -31,7 +31,7 @@ status: completed
 | T-GW-005 | `scripts/hardening/check-all-hardening.sh 01-gateway` 추가 및 문서화 | ops | 01-gateway/spec.md / Verification | PLN-GW-005 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | DevOps | Done |
 | T-GW-006 | CI workflow에 `infrastructure-hardening` job 추가 | ops | 01-gateway/spec.md / CI | PLN-GW-006 | PR CI run | DevOps | Done |
 | T-GW-007 | Plan/Task/Operation/Runbook/Guide 문서 및 README 인덱스 동기화 | doc | 01-gateway/spec.md / Docs | PLN-GW-007 | `bash scripts/validation/check-doc-traceability.sh` | Docs | Done |
-| T-GW-008 | Compose/기본 검증 커맨드 실행 결과 기록 | test | 01-gateway/spec.md / Validation | PLN-GW-001~007 | `docker compose config`, baseline checks | Infra | Done |
+| T-GW-008 | Compose/기본 검증 커맨드 실행 결과 기록 | test | 01-gateway/spec.md / Validation | PLN-GW-001~007 | root profile validator, hardening checks, runtime lint boundary | Infra | Done |
 
 ## Suggested Types
 
@@ -62,11 +62,9 @@ status: completed
   - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
-  - `docker compose config`
-  - `docker compose -f infra/01-gateway/traefik/docker-compose.yml config`
-  - `docker compose -f infra/01-gateway/nginx/docker-compose.yml config`
+  - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: PR CI logs + local command outputs (`infrastructure-hardening/template-security/doc-traceability/config` pass, `nginx -t`는 `service \"nginx\" is not running`로 미수행)
+- **Logs / Evidence Location**: PR CI logs + local command outputs (`infrastructure-hardening/template-security/doc-traceability/root profile validation` pass). Nginx `nginx -t` is runtime-only evidence because the current Nginx leaf is not root-included by default and standalone service-local compose lacks root `infra_net`/backend context.
 
 ## Related Documents
 

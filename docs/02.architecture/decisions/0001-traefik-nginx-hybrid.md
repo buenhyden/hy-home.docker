@@ -21,10 +21,10 @@ status: active
 - **Primary Edge Router**: Traefik v3를 사용함.
   - 모든 외부 트래픽(80, 443)의 최초 수신 및 TLS 종료 담당.
   - Docker Provider를 통한 대다수 서비스의 자동 라우팅 처리.
-- **Secondary Path Proxy**: Nginx Alpine을 사용함.
-  - Traefik이 처리하기 복잡한 특정 경로(예: `/keycloak/`, `/minio/`)를 Traefik의 백엔드 서비스로 등록.
-  - Nginx 내부에서 상세한 Proxy Pass, Header 조작, Buffering 설정을 수행.
-- **Service Flow**: `Client -> Traefik (Edge) -> Nginx (Specialized) -> Backend Service`.
+- **Secondary Path Proxy**: Nginx Alpine leaf를 유지함.
+  - 현재 root compose에는 기본 include되지 않으며, 명시적 profile/runtime context에서만 Traefik의 백엔드 서비스로 등록한다.
+  - Nginx 내부에서 상세한 Proxy Pass, Header 조작, Buffering 설정을 수행한다.
+- **Service Flow**: default root flow is `Client -> Traefik (Edge) -> Backend Service`; specialized flow is `Client -> Traefik (Edge) -> Nginx (Specialized) -> Backend Service` only when the Nginx leaf is explicitly deployed.
 
 ## Explicit Non-goals
 

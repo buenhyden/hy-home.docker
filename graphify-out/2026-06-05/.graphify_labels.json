@@ -25,6 +25,7 @@
   "23": "Airflow N8n Valkey Dev",
   "24": "Airflow Dag Stack Basics",
   "25": "Compose Opensearch Oauth2 Proxy",
+  "26": "Community 26",
   "27": "Tooling Adr Laboratory Locust",
   "28": "Open Notebook Dashboard Dozzle",
   "29": "K3d Router Transport Adminer",
@@ -1104,5 +1105,6 @@
   "1103": "Community 1103",
   "1104": "Community 1104",
   "1105": "Community 1105",
-  "1106": "Community 1106"
+  "1106": "Community 1106",
+  "1107": "Community 1107"
 }

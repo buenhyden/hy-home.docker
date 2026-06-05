@@ -60,8 +60,8 @@ status: completed
 | VAL-GW-001 | Structural | Gateway 하드닝 정책 정적 검증 | `bash scripts/hardening/check-all-hardening.sh 01-gateway` | 실패 0건 |
 | VAL-GW-002 | Compliance | 템플릿/보안 기준선 검증 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
 | VAL-GW-003 | Traceability | execution/operations 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
-| VAL-GW-004 | Compose | Compose 해석 검증 | `docker compose config` | 오류 없이 출력 |
-| VAL-GW-005 | Runtime lint | Nginx 설정 구문 검증 | `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t` | `syntax is ok` |
+| VAL-GW-004 | Compose | root-active Traefik compose 해석 검증 | `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` | 오류 없이 출력 |
+| VAL-GW-005 | Runtime lint | Nginx 설정 구문 검증 | approved Nginx runtime context에서 `docker compose exec nginx nginx -t` | `syntax is ok`; standalone service-local compose는 readiness evidence로 사용하지 않음 |
 
 ## Risks & Mitigations
 

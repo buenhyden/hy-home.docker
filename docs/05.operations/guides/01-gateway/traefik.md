@@ -31,6 +31,7 @@ status: active
 - Docker/Docker Compose 사용 가능
 - `infra/01-gateway/traefik` 구성 파일 접근 가능
 - `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
+- root `core` profile compose validation 실행 가능
 
 ### Step-by-step Instructions
 
@@ -41,7 +42,7 @@ status: active
    - `infra/01-gateway/traefik/docker-compose.yml`
    - dashboard 라우터에 `dashboard-auth@file,gateway-standard-chain@file` 적용 확인
 3. 설정 정적 검증
-   - `docker compose -f infra/01-gateway/traefik/docker-compose.yml config`
+   - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 4. 하드닝 검증
    - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 
@@ -53,8 +54,9 @@ status: active
 
 ## Common Checks
 
-- `docker compose -f infra/01-gateway/traefik/docker-compose.yml config`
+- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
+- `docker compose exec traefik traefik healthcheck --ping` only after an approved root stack is running
 
 ## Runbook Handoff
 

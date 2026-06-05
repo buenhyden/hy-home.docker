@@ -36,25 +36,24 @@ status: active
 
 ### Checklist
 
-- [ ] `docker compose -f infra/01-gateway/nginx/docker-compose.yml config` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 01-gateway` 실행
-- [ ] `docker compose -f infra/01-gateway/nginx/docker-compose.yml ps` 상태 확인
+- [ ] Nginx runtime 조치가 필요하면 명시적 root network/dependency context와 승인 범위를 확인
+- [ ] standalone service-local compose rendering을 readiness evidence로 사용하지 않는다
 
 ### Steps
 
 1. 설정 검증
    - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
-   - `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t`
+   - approved Nginx runtime context가 실행 중이면 `docker compose exec nginx nginx -t`
 2. readonly/tmpfs 장애 복구
    - compose에 아래 tmpfs 3개가 있는지 확인:
      - `/var/cache/nginx`
      - `/var/log/nginx`
      - `/var/run`
-   - 누락 시 compose 수정 후 재기동:
-     - `docker compose -f infra/01-gateway/nginx/docker-compose.yml up -d nginx`
+   - 누락 시 compose 수정 후 하드닝 검증을 재실행한다. runtime restart는 승인된 Nginx context에서만 수행한다.
 3. config lint 실패 대응
    - 실패 로그에서 오류 지점 수정
-   - `nginx -t` 재통과 확인 후 `nginx -s reload` 또는 재기동
+   - approved runtime context에서 `nginx -t` 재통과 확인 후 reload 또는 재기동을 수행한다.
 4. 특수 경로 정상성 확인
    - `/ping` 200 응답
    - `/oauth2/`, `/keycloak/`, `/minio/`, `/minio-console/` 경로 응답 확인
@@ -63,7 +62,7 @@ status: active
 
 ### Verification Steps
 
-- [ ] `docker compose -f infra/01-gateway/nginx/docker-compose.yml exec nginx nginx -t` 통과
+- [ ] approved runtime context에서 `docker compose exec nginx nginx -t` 통과
 - [ ] `/ping` 200
 - [ ] 인증 플로우 정상 동작 (`/oauth2/`)
 - [ ] 하드닝 검증 스크립트 통과
@@ -72,7 +71,7 @@ status: active
 
 - **Signals**: nginx healthcheck, 4xx/5xx 비율, upstream error 로그
 - **Evidence to Capture**:
-  - `docker compose -f infra/01-gateway/nginx/docker-compose.yml logs --tail=200 nginx`
+  - `docker compose logs --tail=200 nginx` from the approved running Nginx context
   - `nginx -t` 결과
 
 ### Safe Rollback or Recovery Procedure
@@ -80,7 +79,7 @@ status: active
 - [ ] 직전 정상 커밋으로 아래 파일 복원
   - `infra/01-gateway/nginx/docker-compose.yml`
   - `infra/01-gateway/nginx/config/nginx.conf`
-- [ ] `docker compose -f infra/01-gateway/nginx/docker-compose.yml up -d nginx`
+- [ ] runtime restart가 승인되면 approved Nginx context에서 Nginx 단위로만 수행
 - [ ] `nginx -t` 및 `/ping` 재검증
 
 ### Agent Operations (If Applicable)

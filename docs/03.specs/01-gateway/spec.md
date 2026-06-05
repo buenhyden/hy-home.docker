@@ -39,8 +39,8 @@ status: active
 
 ### Component Boundary
 
-- **Traefik (v3.7.1)**: 엣지 라우팅, TLS 종료, SSO 미들웨어 적용.
-- **Nginx (Alpine)**: `/keycloak/`, `/minio/` 등 특수 경로의 헤더 조작 및 프록시 패스.
+- **Traefik (v3.7.1)**: root-active 엣지 라우팅, TLS 종료, SSO 미들웨어 적용.
+- **Nginx (Alpine)**: profile-only leaf로 `/keycloak/`, `/minio/` 등 특수 경로의 헤더 조작 및 프록시 패스.
 
 ### Key Dependencies
 
@@ -74,17 +74,18 @@ Gateway의 통계 및 모니터링은 Prometheus 포맷을 따르며 별도 API 
 
 ## Verification
 
-Required verification steps for Gateway tier.
+Required static verification steps for Gateway tier.
 
 ```bash
-# Traefik Ping (Health Check)
-docker exec traefik traefik healthcheck --ping
+# Root-included Traefik compose context
+HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
 
-# Nginx Config Test
-docker exec nginx nginx -t
+# Gateway hardening contract
+bash scripts/hardening/check-all-hardening.sh 01-gateway
 
-# TLS Protocol Check
-openssl s_client -connect localhost:443 -tls1_3
+# Runtime-only checks after an approved stack is running
+docker compose exec traefik traefik healthcheck --ping
+docker compose exec nginx nginx -t
 ```
 
 ## Success Criteria & Verification Plan
@@ -92,6 +93,7 @@ openssl s_client -connect localhost:443 -tls1_3
 - **VAL-SPC-001**: 모든 HTTP 요청은 HTTPS로 301 리다이렉트되어야 함.
 - **VAL-SPC-002**: Traefik Dashboard는 Basic Auth를 통해서만 접근 가능해야 함.
 - **VAL-SPC-003**: OAuth2 Proxy 미들웨어가 적용된 경로는 미인증 시 로그인 페이지로 리다이렉트되어야 함.
+- **VAL-SPC-004**: service-local standalone compose rendering은 gateway readiness evidence로 사용하지 않고 root validator 또는 명시적 runtime context를 사용해야 함.
 
 ## Agent Role & IO Contract (If Applicable)
 

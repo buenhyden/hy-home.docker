@@ -11,12 +11,12 @@ status: active
 
 ## Summary
 
-Gateway 티어는 외부 네트워크와 내부 서비스 네트워크 사이의 유일한 통로 역할을 수행한다. Traefik은 엣지 라우터로서 TLS 종료 및 컨테이너 자동 발견을 담당하고, Nginx는 특정 레거시 호환 및 특수 경로 처리를 위한 보조 프록시로 동작한다.
+Gateway 티어는 외부 네트워크와 내부 서비스 네트워크 사이의 기본 통로 역할을 수행한다. 현재 root compose는 Traefik을 active edge router로 포함하며, Nginx는 특정 레거시 호환 및 특수 경로 처리를 위한 profile-only 보조 프록시 leaf로 유지한다.
 
 ## Boundaries & Non-goals
 
 - **Owns**:
-  - 외부 Ingress 트래픽 수신 (Port 80, 443, 7687).
+  - 외부 Ingress 트래픽 수신 (`web` 80, `websecure` 443)과 metrics/ping entrypoint(`metrics` 8082).
   - TLS/SSL 인증서 적용 및 종료.
   - 내부 서비스로의 트래픽 라우팅 및 부하 분산.
   - 보안 미들웨어 (Rate Limit, IP Allow List, Auth Integration).
@@ -49,15 +49,15 @@ Gateway는 `infra_net` 독커 네트워크의 핵심 노드로 작동한다. 외
 
 - **Key Entities / Flows**:
   - `Internet -> Traefik (TLS Term) -> Service Container`
-  - `Internet -> Traefik (TLS Term) -> Nginx (Path Rewrite) -> Keycloak/MinIO`
+  - `Internet -> Traefik (TLS Term) -> Nginx (Path Rewrite) -> Keycloak/MinIO` when the profile-only Nginx leaf is explicitly deployed with root network/dependency context
 - **Storage Strategy**: 무상태(Stateless) 아키텍처를 지향하며, 설정 파일과 인증서는 볼륨 마운트를 통해 공급받는다.
 - **Data Boundaries**: 게이트웨이는 요청의 메타데이터(Header, Path)를 수정하거나 전달할 뿐, 요청 바디를 영구 저장하지 않는다.
 
 ## Infrastructure & Deployment
 
 - **Runtime / Platform**: Docker Compose / Linux Alpine 기반 컨테이너.
-- **Deployment Model**: `infra/01-gateway` 폴더 내부의 정의에 따라 독립적인 스택으로 배포.
-- **Operational Evidence**: Traefik Dashboard (`dashboard.DEFAULT_URL`), `docker logs traefik`, Prometheus Metrics.
+- **Deployment Model**: root compose actively includes `infra/01-gateway/traefik/docker-compose.yml`; `infra/01-gateway/nginx/docker-compose.yml` is not root-included by default and requires explicit profile/runtime context.
+- **Operational Evidence**: root `core` profile compose validation, `check-all-hardening.sh 01-gateway`, Traefik Dashboard (`dashboard.DEFAULT_URL`) and sanitized runtime logs when the approved stack is running.
 
 ## Related Documents
 

@@ -50,6 +50,8 @@ check_01_gateway() {
   check_contains "$traefik_compose" "service: template-infra-readonly-med" "traefik compose template mismatch"
   check_contains "$traefik_compose" "traefik.http.routers.dashboard.middlewares: dashboard-auth@file,gateway-standard-chain@file" "traefik dashboard middleware chain mismatch"
   check_contains "$traefik_middleware" "gateway-standard-chain:" "missing gateway-standard-chain"
+  check_contains "$traefik_middleware" "average: 100 # requests per second" "gateway rate limit average mismatch"
+  check_contains "$traefik_middleware" "burst: 50" "gateway rate limit burst mismatch"
   check_contains "$nginx_compose" "service: template-infra-readonly-low" "nginx compose template mismatch"
   check_contains "$nginx_conf" "server_tokens off;" "nginx server_tokens off missing"
 }
