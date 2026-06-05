@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `08-ai` 최적화/하드닝 실행 태스크를 추적한다. compose hardening, CI 게이트, 문서 추적성, 카탈로그 확장 정책(모델 승격/접근 분리/로그 마스킹)을 작업 단위로 관리한다.
+This document tracks the `08-ai` optimization and hardening execution tasks. It manages compose hardening, CI gates, documentation traceability, and catalog expansion policies (model promotion, access separation, and log masking) as task units.
 
 ## Inputs
 
@@ -16,27 +16,27 @@ status: completed
 
 ## Working Rules
 
-- AI 구성 변경은 compose static validation + hardening script 결과를 남긴다.
-- gateway/auth 영향이 있는 변경은 보안 경계 영향도를 기록한다.
-- 문서 변경은 PRD~Runbook 링크와 README 인덱스를 동시 갱신한다.
+- AI configuration changes leave compose static validation plus hardening script results.
+- Changes that affect gateway/auth record the security-boundary impact.
+- Documentation changes update PRD-to-Runbook links and README indexes together.
 
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-AI-001 | Ollama/Open WebUI middleware를 gateway+SSO 체인으로 정렬 | impl | Contracts / Config | PLN-AI-001 | compose label 확인 | DevOps | Done |
-| T-AI-002 | Ollama concurrency/queue 상한 환경 변수 추가 | impl | Contracts / Config | PLN-AI-002 | env contract 확인 | DevOps | Done |
-| T-AI-003 | Open WebUI stateful 템플릿 정렬 | impl | Contracts / Config | PLN-AI-003 | template 확인 | DevOps | Done |
-| T-AI-004 | exporter health-gated dependency + healthcheck 추가 | impl | Contracts / Config | PLN-AI-004 | dependency/healthcheck 확인 | DevOps | Done |
-| T-AI-005 | AI hardening script 추가/수정 | ops | Governance Contract | PLN-AI-005 | `bash scripts/hardening/check-all-hardening.sh 08-ai` | DevOps | Done |
-| T-AI-006 | CI `infrastructure-hardening` job 추가 | ops | Governance Contract | PLN-AI-005 | workflow job 확인 | DevOps | Done |
-| T-AI-007 | scripts inventory/usage README 갱신 | doc | Related Docs | PLN-AI-005 | README 항목 반영 | Docs | Done |
-| T-AI-008 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 생성 | doc | Related Docs | PLN-AI-006 | 링크/인덱스 동기화 | Docs | Done |
-| T-AI-009 | Ollama 모델 승격 절차 정의(실험 -> 운영) | doc | Catalog-aligned Expansion | PLN-AI-007 | operations/tasks 반영 | AI Owner | Done |
-| T-AI-010 | Open WebUI 모델 접근 권한 분리 기준 정의 | doc | Catalog-aligned Expansion | PLN-AI-007 | operations/tasks 반영 | AI Owner | Done |
-| T-AI-011 | Open WebUI 대화 로그 보존/마스킹 정책 정의 | doc | Catalog-aligned Expansion | PLN-AI-007 | operations/tasks 반영 | Security/AI Owner | Done |
-| T-AI-012 | 정적 검증 실행 및 결과 기록 | test | Verification | PLN-AI-001~007 | compose/script/baseline/traceability 체크 | DevOps | Done |
-| T-AI-013 | runtime 기동 리허설 및 성능 튜닝 증적 수집 | test | Verification | PLN-AI-001~007 | Live health/latency/GPU metrics require an approved runtime rehearsal | DevOps | Deferred |
+| T-AI-001 | Align Ollama/Open WebUI middleware with the gateway+SSO chain | impl | Contracts / Config | PLN-AI-001 | Confirm compose labels | DevOps | Done |
+| T-AI-002 | Add environment variables for Ollama concurrency/queue limits | impl | Contracts / Config | PLN-AI-002 | Confirm env contract | DevOps | Done |
+| T-AI-003 | Align the Open WebUI stateful template | impl | Contracts / Config | PLN-AI-003 | Confirm template | DevOps | Done |
+| T-AI-004 | Add exporter health-gated dependency and healthcheck | impl | Contracts / Config | PLN-AI-004 | Confirm dependency/healthcheck | DevOps | Done |
+| T-AI-005 | Add/update the AI hardening script | ops | Governance Contract | PLN-AI-005 | `bash scripts/hardening/check-all-hardening.sh 08-ai` | DevOps | Done |
+| T-AI-006 | Add the CI `infrastructure-hardening` job | ops | Governance Contract | PLN-AI-005 | Confirm workflow job | DevOps | Done |
+| T-AI-007 | Refresh scripts inventory/usage README | doc | Related Docs | PLN-AI-005 | Reflect README entries | Docs | Done |
+| T-AI-008 | Create PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook docs | doc | Related Docs | PLN-AI-006 | Synchronize links/indexes | Docs | Done |
+| T-AI-009 | Define Ollama model promotion procedures (experiment -> production) | doc | Catalog-aligned Expansion | PLN-AI-007 | Reflect operations/tasks updates | AI Owner | Done |
+| T-AI-010 | Define Open WebUI model access separation criteria | doc | Catalog-aligned Expansion | PLN-AI-007 | Reflect operations/tasks updates | AI Owner | Done |
+| T-AI-011 | Define Open WebUI conversation log retention/masking policy | doc | Catalog-aligned Expansion | PLN-AI-007 | Reflect operations/tasks updates | Security/AI Owner | Done |
+| T-AI-012 | Run static validation and record results | test | Verification | PLN-AI-001~007 | Check compose/script/baseline/traceability | DevOps | Done |
+| T-AI-013 | Collect runtime startup rehearsal and performance tuning evidence | test | Verification | PLN-AI-001~007 | Live health/latency/GPU metrics require an approved runtime rehearsal | DevOps | Deferred |
 
 ## Suggested Types
 
@@ -74,7 +74,7 @@ status: completed
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
+- **Logs / Evidence Location**: Local validation logs + CI `infrastructure-hardening` job
 - **Deferred Runtime Evidence**: T-AI-013 remains a live rehearsal item, not an unimplemented static hardening task.
 
 ## Related Documents

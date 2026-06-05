@@ -6,33 +6,34 @@ status: completed
 
 # Task: Governance Optimization (I1+I2)
 
-> 거버넌스 고도화 라운드(I1+I2)의 구현·검증 작업 기록이다.
+> Implementation and verification work record for the governance optimization round (I1+I2).
 
 ## Overview
 
-이 문서는 거버넌스 고도화 라운드의 작업 목록과 검증 증거를 추적한다. Parent Plan에서
-파생된 I1·I2 작업의 변경 파일과 실행한 계약 검사 결과를 기록한다.
+This document tracks the task list and verification evidence for the governance
+optimization round. It records the changed files for I1 and I2 work derived from
+the Parent Plan and the contract-check results that were executed.
 
 ## Inputs
 
 - **Parent Plan**: [Execution plan](../plans/2026-06-02-governance-optimization.md)
-- **Parent Spec**: N/A — 거버넌스/문서 최적화로 별도 `docs/03.specs/` 스펙 체인이 없다.
+- **Parent Spec**: N/A -- governance/documentation optimization has no separate `docs/03.specs/` spec chain.
 
 ## Working Rules
 
-- 모든 변경은 계약 검사 `failures=0`을 유지해야 한다.
-- 문서 전용 작업도 검증 증거(명령·결과)를 남긴다.
-- task-owned 경로만 stage한다. 무관한 변경은 건드리지 않는다.
+- Every change must keep contract checks at `failures=0`.
+- Documentation-only work also leaves verification evidence (commands and results).
+- Stage only task-owned paths. Do not touch unrelated changes.
 
 ## Task Table
 
 | Task ID | Description                              | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence                       | Owner               | Status |
 | ------- | ---------------------------------------- | ---- | --------------------- | ------------------- | ------------------------------------------- | ------------------- | ------ |
-| T-001   | 보안 하드닝 내장 서비스 시드 작성        | impl | N/A                   | PLN-001             | `yaml.safe_load` OK, 계약 검사 `failures=0` | workflow-supervisor | Done   |
-| T-002   | service scaffold 템플릿 + 4파일 등록     | doc  | N/A                   | PLN-002             | `check-repo-contracts.sh` `failures=0`      | workflow-supervisor | Done   |
-| T-003   | 신규 서비스 온보딩 가이드 작성           | doc  | N/A                   | PLN-003             | guide 정규화 통과, `failures=0`             | workflow-supervisor | Done   |
-| T-004   | 코드리뷰 요청/수용 루프 명문화           | doc  | N/A                   | PLN-004             | `check-repo-contracts.sh` `failures=0`      | workflow-supervisor | Done   |
-| T-005   | 생성물 freshness 계약을 QA 스코프에 주입 | doc  | N/A                   | PLN-005             | `check-repo-contracts.sh` `failures=0`      | workflow-supervisor | Done   |
+| T-001   | Create the security-hardening built-in service seed | impl | N/A                   | PLN-001             | `yaml.safe_load` OK, contract check `failures=0` | workflow-supervisor | Done   |
+| T-002   | Register service scaffold template plus 4 files | doc  | N/A                   | PLN-002             | `check-repo-contracts.sh` `failures=0`      | workflow-supervisor | Done   |
+| T-003   | Write the new service onboarding guide | doc  | N/A                   | PLN-003             | guide normalization passed, `failures=0`    | workflow-supervisor | Done   |
+| T-004   | Codify the code-review request/acceptance loop | doc  | N/A                   | PLN-004             | `check-repo-contracts.sh` `failures=0`      | workflow-supervisor | Done   |
+| T-005   | Inject the generated-artifact freshness contract into the QA scope | doc  | N/A                   | PLN-005             | `check-repo-contracts.sh` `failures=0`      | workflow-supervisor | Done   |
 
 ## Suggested Types
 
@@ -44,19 +45,19 @@ status: completed
 
 ### Phase 1
 
-- [x] T-001 서비스 시드 작성
-- [x] T-002 템플릿 + 등록
+- [x] T-001 Create service seed
+- [x] T-002 Template + registration
 
 ### Phase 2
 
-- [x] T-003 온보딩 가이드
-- [x] T-004 코드리뷰 루프
+- [x] T-003 Onboarding guide
+- [x] T-004 Code-review loop
 
 ## Verification Summary
 
 - **Test Commands**: `bash scripts/validation/check-repo-contracts.sh`, `bash scripts/validation/check-doc-traceability.sh`
-- **Eval Commands**: N/A — 모델/에이전트 평가 대상 아님.
-- **Logs / Evidence Location**: 두 검사 모두 `failures=0`. 시드 compose는 `yaml.safe_load` 통과.
+- **Eval Commands**: N/A -- not a model/agent evaluation target.
+- **Logs / Evidence Location**: Both checks reported `failures=0`. The seed compose passed `yaml.safe_load`.
 
 ## Related Documents
 

@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `11-laboratory` 최적화/하드닝 실행 태스크를 추적한다. ingress 경계 강화, direct 노출 제거, 최소권한 개선, CI 정책 게이트, 카탈로그 확장 로드맵을 작업 단위로 관리한다.
+This document tracks the `11-laboratory` optimization and hardening execution tasks. It manages ingress boundary strengthening, direct exposure removal, least-privilege improvements, CI policy gates, and catalog expansion roadmap work as task units.
 
 ## Inputs
 
@@ -16,30 +16,30 @@ status: completed
 
 ## Working Rules
 
-- Laboratory compose 변경은 정적 검증 + hardening check 결과를 남긴다.
-- 인증/allowlist 완화 변경은 승인자 검토를 필수로 한다.
-- 문서 변경은 PRD~Runbook 링크와 README 인덱스를 동시 갱신한다.
+- Laboratory compose changes leave static validation plus hardening check results.
+- Authentication/allowlist relaxation changes require approver review.
+- Documentation changes update PRD-to-Runbook links and README indexes together.
 
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-LAB-001 | 모든 Laboratory 라우터 middleware를 gateway+allowlist+SSO 체인으로 정렬 | impl | Contracts / Config | PLN-LAB-001 | compose label 확인 | DevOps | Done |
-| T-LAB-002 | root `infra_net` service network block 정렬 | impl | Network Boundary | PLN-LAB-002 | network contract 확인 | DevOps | Done |
-| T-LAB-003 | dashboard direct host `ports` 제거 및 `expose` 전환 | impl | Least Privilege | PLN-LAB-003 | ports 제거 확인 | DevOps | Done |
-| T-LAB-004 | dozzle docker socket read-only 적용 | impl | Least Privilege | PLN-LAB-004 | `docker.sock:ro` 확인 | DevOps | Done |
-| T-LAB-005 | service mount 기반 healthcheck 추가 | impl | Runtime Stability | PLN-LAB-001~004 | healthcheck block 확인 | DevOps | Done |
-| T-LAB-006 | laboratory hardening script 추가 | ops | Governance Contract | PLN-LAB-005 | `bash scripts/hardening/check-all-hardening.sh 11-laboratory` | DevOps | Done |
-| T-LAB-007 | CI `infrastructure-hardening` job 추가 | ops | Governance Contract | PLN-LAB-005 | workflow job 확인 | DevOps | Done |
-| T-LAB-008 | scripts inventory/usage README 갱신 | doc | Related Docs | PLN-LAB-005 | README 항목 반영 | Docs | Done |
-| T-LAB-009 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 생성 | doc | Related Docs | PLN-LAB-006 | 링크/인덱스 동기화 | Docs | Done |
-| T-LAB-010 | dashboard 만료 정책 로드맵 정의 | doc | Catalog Expansion Targets | PLN-LAB-007 | operations/tasks 반영 | Platform Owner | Done |
-| T-LAB-011 | dozzle 로그 접근 제한 로드맵 정의 | doc | Catalog Expansion Targets | PLN-LAB-007 | operations/tasks 반영 | Platform Owner | Done |
-| T-LAB-012 | portainer 세션/승인 정책 로드맵 정의 | doc | Catalog Expansion Targets | PLN-LAB-007 | operations/tasks 반영 | Security/DevOps | Done |
-| T-LAB-013 | redisinsight 최소권한/감사 정책 로드맵 정의 | doc | Catalog Expansion Targets | PLN-LAB-007 | operations/tasks 반영 | Security/DevOps | Done |
-| T-LAB-014 | 정적 검증 실행 및 결과 기록 | test | Verification | PLN-LAB-001~007 | compose/script/baseline/traceability 체크 | DevOps | Done |
-| T-LAB-015 | runtime 리허설 및 운영 증적 수집 | test | Verification | PLN-LAB-001~007 | Live health/access evidence requires an approved runtime rehearsal | DevOps | Deferred |
-| T-LAB-016 | Open Notebook route/secret/readiness hardening current-truth 보정 | impl | Contracts / Config | PLN-LAB-008 | open-notebook middleware, secret file, healthcheck 확인 | DevOps | Done |
+| T-LAB-001 | Align all Laboratory router middleware with the gateway+allowlist+SSO chain | impl | Contracts / Config | PLN-LAB-001 | Confirm compose labels | DevOps | Done |
+| T-LAB-002 | Align the root `infra_net` service network block | impl | Network Boundary | PLN-LAB-002 | Confirm network contract | DevOps | Done |
+| T-LAB-003 | Remove dashboard direct host `ports` and switch to `expose` | impl | Least Privilege | PLN-LAB-003 | Confirm ports removal | DevOps | Done |
+| T-LAB-004 | Apply read-only docker socket access for dozzle | impl | Least Privilege | PLN-LAB-004 | Confirm `docker.sock:ro` | DevOps | Done |
+| T-LAB-005 | Add service-mount-based healthcheck | impl | Runtime Stability | PLN-LAB-001~004 | Confirm healthcheck block | DevOps | Done |
+| T-LAB-006 | Add the laboratory hardening script | ops | Governance Contract | PLN-LAB-005 | `bash scripts/hardening/check-all-hardening.sh 11-laboratory` | DevOps | Done |
+| T-LAB-007 | Add the CI `infrastructure-hardening` job | ops | Governance Contract | PLN-LAB-005 | Confirm workflow job | DevOps | Done |
+| T-LAB-008 | Refresh scripts inventory/usage README | doc | Related Docs | PLN-LAB-005 | Reflect README entries | Docs | Done |
+| T-LAB-009 | Create PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook docs | doc | Related Docs | PLN-LAB-006 | Synchronize links/indexes | Docs | Done |
+| T-LAB-010 | Define the dashboard expiration policy roadmap | doc | Catalog Expansion Targets | PLN-LAB-007 | Reflect operations/tasks updates | Platform Owner | Done |
+| T-LAB-011 | Define the dozzle log access restriction roadmap | doc | Catalog Expansion Targets | PLN-LAB-007 | Reflect operations/tasks updates | Platform Owner | Done |
+| T-LAB-012 | Define the portainer session/approval policy roadmap | doc | Catalog Expansion Targets | PLN-LAB-007 | Reflect operations/tasks updates | Security/DevOps | Done |
+| T-LAB-013 | Define the redisinsight least-privilege/audit policy roadmap | doc | Catalog Expansion Targets | PLN-LAB-007 | Reflect operations/tasks updates | Security/DevOps | Done |
+| T-LAB-014 | Run static validation and record results | test | Verification | PLN-LAB-001~007 | Check compose/script/baseline/traceability | DevOps | Done |
+| T-LAB-015 | Collect runtime rehearsal and operations evidence | test | Verification | PLN-LAB-001~007 | Live health/access evidence requires an approved runtime rehearsal | DevOps | Deferred |
+| T-LAB-016 | Correct Open Notebook route/secret/readiness hardening current truth | impl | Contracts / Config | PLN-LAB-008 | Confirm open-notebook middleware, secret file, healthcheck | DevOps | Done |
 
 ## Suggested Types
 
@@ -80,7 +80,7 @@ status: completed
   - `bash scripts/validation/check-template-security-baseline.sh`
   - `bash scripts/validation/check-doc-traceability.sh`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
+- **Logs / Evidence Location**: Local validation logs + CI `infrastructure-hardening` job
 - **Deferred Runtime Evidence**: T-LAB-015 remains a live rehearsal item, not an unimplemented static hardening task.
 
 ## Related Documents

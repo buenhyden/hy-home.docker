@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 `09-tooling` 최적화/하드닝 실행 태스크를 추적한다. compose hardening, CI 정책 게이트, 문서 추적성, 카탈로그 확장 항목을 작업 단위로 관리한다.
+This document tracks the `09-tooling` optimization and hardening execution tasks. It manages compose hardening, CI policy gates, documentation traceability, and catalog expansion items as task units.
 
 ## Inputs
 
@@ -16,28 +16,28 @@ status: completed
 
 ## Working Rules
 
-- tooling 구성 변경은 hardening script 결과와 optional root-context compose 경계를 남긴다.
-- gateway/auth 영향 변경은 접근 경계 영향도를 기록한다.
-- 문서 변경은 PRD~Runbook 링크와 README 인덱스를 동시 갱신한다.
+- Tooling configuration changes leave hardening script results and the optional root-context compose boundary.
+- Changes that affect gateway/auth record the access-boundary impact.
+- Documentation changes update PRD-to-Runbook links and README indexes together.
 
 ## Task Table
 
 | Task ID | Description | Type | Parent Spec / Section | Parent Plan / Phase | Validation / Evidence | Owner | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| T-TLG-001 | SonarQube/Terrakube/Syncthing middleware를 gateway+SSO 체인으로 정렬 | impl | Contracts / Config | PLN-TLG-001 | compose label 확인 | DevOps | Done |
-| T-TLG-002 | tooling compose `infra_net` external 선언 정렬 | impl | Contracts / Config | PLN-TLG-002 | network contract 확인 | DevOps | Done |
-| T-TLG-003 | locust-worker healthcheck 추가 | impl | Runtime Stability | PLN-TLG-003 | compose healthcheck 확인 | DevOps | Done |
-| T-TLG-004 | k6 volume 참조 drift 정렬 | impl | Runtime Stability | PLN-TLG-003 | `k6-data` mount 확인 | DevOps | Done |
-| T-TLG-005 | tooling hardening script 추가 | ops | Governance Contract | PLN-TLG-004 | `bash scripts/hardening/check-all-hardening.sh 09-tooling` | DevOps | Done |
-| T-TLG-006 | CI `infrastructure-hardening` job 추가 | ops | Governance Contract | PLN-TLG-004 | workflow job 확인 | DevOps | Done |
-| T-TLG-007 | scripts inventory/usage README 갱신 | doc | Related Docs | PLN-TLG-004 | README 항목 반영 | Docs | Done |
-| T-TLG-008 | PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook 문서 생성 | doc | Related Docs | PLN-TLG-005 | 링크/인덱스 동기화 | Docs | Done |
-| T-TLG-009 | terraform 승인 게이트/state 백업/drift 자동 탐지 roadmap 정의 | doc | Catalog Expansion Targets | PLN-TLG-006 | operations/tasks 반영 | Platform Owner | Done |
-| T-TLG-010 | terrakube workspace 분리/권한/감사로그 roadmap 정의 | doc | Catalog Expansion Targets | PLN-TLG-006 | operations/tasks 반영 | Platform Owner | Done |
-| T-TLG-011 | registry 서명/검증/취약점 차단 roadmap 정의 | doc | Catalog Expansion Targets | PLN-TLG-006 | operations/tasks 반영 | Security/DevOps | Done |
-| T-TLG-012 | sonarqube/k6/locust/syncthing 확장 정책 로드맵 정의 | doc | Catalog Expansion Targets | PLN-TLG-006 | operations/tasks 반영 | Platform Owner | Done |
-| T-TLG-013 | 정적 검증 실행 및 결과 기록 | test | Verification | PLN-TLG-001~006 | compose/script/baseline/traceability 체크 | DevOps | Done |
-| T-TLG-014 | runtime 리허설 및 운영 증적 수집 | test | Verification | PLN-TLG-001~006 | Live health/latency/log evidence requires an approved runtime rehearsal | DevOps | Deferred |
+| T-TLG-001 | Align SonarQube/Terrakube/Syncthing middleware with the gateway+SSO chain | impl | Contracts / Config | PLN-TLG-001 | Confirm compose labels | DevOps | Done |
+| T-TLG-002 | Align the tooling compose `infra_net` external declaration | impl | Contracts / Config | PLN-TLG-002 | Confirm network contract | DevOps | Done |
+| T-TLG-003 | Add locust-worker healthcheck | impl | Runtime Stability | PLN-TLG-003 | Confirm compose healthcheck | DevOps | Done |
+| T-TLG-004 | Align k6 volume reference drift | impl | Runtime Stability | PLN-TLG-003 | Confirm `k6-data` mount | DevOps | Done |
+| T-TLG-005 | Add the tooling hardening script | ops | Governance Contract | PLN-TLG-004 | `bash scripts/hardening/check-all-hardening.sh 09-tooling` | DevOps | Done |
+| T-TLG-006 | Add the CI `infrastructure-hardening` job | ops | Governance Contract | PLN-TLG-004 | Confirm workflow job | DevOps | Done |
+| T-TLG-007 | Refresh scripts inventory/usage README | doc | Related Docs | PLN-TLG-004 | Reflect README entries | Docs | Done |
+| T-TLG-008 | Create PRD/ARD/ADR/Plan/Task/Guide/Ops/Runbook docs | doc | Related Docs | PLN-TLG-005 | Synchronize links/indexes | Docs | Done |
+| T-TLG-009 | Define terraform approval gate/state backup/drift auto-detection roadmap | doc | Catalog Expansion Targets | PLN-TLG-006 | Reflect operations/tasks updates | Platform Owner | Done |
+| T-TLG-010 | Define terrakube workspace separation/permission/audit-log roadmap | doc | Catalog Expansion Targets | PLN-TLG-006 | Reflect operations/tasks updates | Platform Owner | Done |
+| T-TLG-011 | Define registry signing/verification/vulnerability blocking roadmap | doc | Catalog Expansion Targets | PLN-TLG-006 | Reflect operations/tasks updates | Security/DevOps | Done |
+| T-TLG-012 | Define sonarqube/k6/locust/syncthing expansion policy roadmap | doc | Catalog Expansion Targets | PLN-TLG-006 | Reflect operations/tasks updates | Platform Owner | Done |
+| T-TLG-013 | Run static validation and record results | test | Verification | PLN-TLG-001~006 | Check compose/script/baseline/traceability | DevOps | Done |
+| T-TLG-014 | Collect runtime rehearsal and operations evidence | test | Verification | PLN-TLG-001~006 | Live health/latency/log evidence requires an approved runtime rehearsal | DevOps | Deferred |
 
 ## Suggested Types
 
@@ -76,7 +76,7 @@ status: completed
   - `bash scripts/validation/check-doc-traceability.sh`
   - `bash scripts/validation/check-repo-contracts.sh`
 - **Eval Commands**: N/A
-- **Logs / Evidence Location**: 로컬 검증 로그 + CI `infrastructure-hardening` job
+- **Logs / Evidence Location**: Local validation logs + CI `infrastructure-hardening` job
 - **Deferred Runtime Evidence**: T-TLG-014 remains a live rehearsal item, not an unimplemented static hardening task.
 
 ## Related Documents
