@@ -7,20 +7,20 @@ status: active
 
 ## Overview
 
-이 문서는 `infra/08-ai`(Ollama, Open WebUI) 계층의 최적화/하드닝 기술 명세다. gateway 경계 보안, GPU concurrency 제어, exporter health-gating, stateful 운영 일관성, CI 정책 게이트, 카탈로그 기반 확장 요구를 구현 계약으로 정의한다. 현재 root `docker-compose.yml`에서는 AI compose include가 주석 처리되어 있으므로, 이 명세는 보유 구현과 standalone/root-commented optional 실행 계약을 설명한다.
+This document is the optimization/hardening technical specification for the `infra/08-ai` tier (Ollama, Open WebUI). It defines gateway boundary security, GPU concurrency control, exporter health-gating, stateful operating consistency, CI policy gates, and catalog-based expansion requirements as implementation contracts. Because AI compose includes are currently commented out in the root `docker-compose.yml`, this specification describes the owned implementation and the standalone/root-commented optional execution contract.
 
 ## Strategic Boundaries & Non-goals
 
 - **Owns**:
-  - Ollama/Open WebUI Traefik middleware 계약
-  - Ollama concurrency/queue/resource 보호 계약
-  - Open WebUI stateful template 계약
-  - `ollama-exporter` dependency/healthcheck 계약
-  - `scripts/hardening/check-all-hardening.sh 08-ai` 정책 게이트 계약
+  - Ollama/Open WebUI Traefik middleware contract
+  - Ollama concurrency/queue/resource protection contract
+  - Open WebUI stateful template contract
+  - `ollama-exporter` dependency/healthcheck contract
+  - `scripts/hardening/check-all-hardening.sh 08-ai` policy gate contract
 - **Does Not Own**:
-  - 모델 학습/파인튜닝 파이프라인
-  - Qdrant 내부 운영 정책/스키마
-  - 외부 LLM provider 통합 정책
+  - Model training/fine-tuning pipelines
+  - Qdrant internal operating policy/schema
+  - External LLM provider integration policy
 
 ## Related Inputs
 
@@ -33,35 +33,35 @@ status: active
 ## Contracts
 
 - **Config Contract**:
-  - `infra/08-ai/ollama/docker-compose.yml`과 `infra/08-ai/open-webui/docker-compose.yml`는 현재 root-commented optional includes다.
-  - Ollama/Open WebUI 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용한다.
-  - Ollama는 `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`를 명시한다.
-  - Open WebUI는 `template-stateful-med`를 사용한다.
-  - `ollama-exporter`는 `ollama`의 `service_healthy` dependency와 metrics healthcheck를 가진다.
-  - 두 compose는 `infra_net` external network 선언을 포함한다.
+  - `infra/08-ai/ollama/docker-compose.yml` and `infra/08-ai/open-webui/docker-compose.yml` are currently root-commented optional includes.
+  - Ollama/Open WebUI public routers use `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
+  - Ollama declares `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, and `OLLAMA_MAX_QUEUE`.
+  - Open WebUI uses `template-stateful-med`.
+  - `ollama-exporter` has an `ollama` `service_healthy` dependency and a metrics healthcheck.
+  - Both compose files include an `infra_net` external network declaration.
 - **Data / Interface Contract**:
-  - Open WebUI -> Ollama(`OLLAMA_BASE_URL`) + Qdrant(`VECTOR_DB_URL`) 연결을 유지한다.
-  - Embedding 모델 기본값은 `qwen3-embedding:0.6b`를 유지한다.
+  - Keep the Open WebUI -> Ollama (`OLLAMA_BASE_URL`) + Qdrant (`VECTOR_DB_URL`) connection.
+  - Keep the default embedding model as `qwen3-embedding:0.6b`.
 - **Governance Contract**:
-  - `scripts/hardening/check-all-hardening.sh 08-ai` 통과가 AI tier 하드닝 기준선이다.
-  - CI `infrastructure-hardening` job이 전체 hardening baseline으로 PR 단계에서 회귀를 차단한다.
+  - Passing `scripts/hardening/check-all-hardening.sh 08-ai` is the AI tier hardening baseline.
+  - The CI `infrastructure-hardening` job blocks regressions at PR time through the full hardening baseline.
 
 ## Core Design
 
 - **Gateway Security Plane**:
-  - AI 공개 경로는 TLS 종료 후 gateway 표준 체인 + SSO 체인을 강제한다.
+  - AI public paths enforce the gateway standard chain and SSO chain after TLS termination.
 - **Inference Runtime Plane**:
-  - Ollama는 concurrency/queue 상한으로 GPU 과부하를 억제한다.
+  - Ollama uses concurrency/queue limits to suppress GPU overload.
 - **Stateful Control Plane**:
-  - Open WebUI는 상태 저장 서비스로 stateful 템플릿 정책을 따른다.
+  - Open WebUI follows the stateful template policy as a stateful service.
 - **Observability Plane**:
-  - exporter는 health 기반으로 기동하며 metrics endpoint를 healthcheck로 검증한다.
+  - The exporter starts on a health basis and verifies the metrics endpoint through a healthcheck.
 
 ## Data Modeling & Storage Strategy
 
-- Ollama 모델 데이터는 `${DEFAULT_AI_MODEL_DIR}/ollama` 바인드 볼륨을 사용한다.
-- Open WebUI 상태 데이터는 `${DEFAULT_AI_MODEL_DIR}/open-webui` 바인드 볼륨을 사용한다.
-- 대화/RAG 데이터 보존 정책은 운영 정책 문서(`docs/05.operations/policies/08-ai/optimization-hardening.md`)에서 통제한다.
+- Ollama model data uses the `${DEFAULT_AI_MODEL_DIR}/ollama` bind volume.
+- Open WebUI state data uses the `${DEFAULT_AI_MODEL_DIR}/open-webui` bind volume.
+- Conversation/RAG data retention policy is controlled by the operations policy document (`docs/05.operations/policies/08-ai/optimization-hardening.md`).
 
 ## Interfaces & Data Structures
 
@@ -85,20 +85,20 @@ ai_hardening_controls:
 
 ## Edge Cases & Error Handling
 
-- concurrency 상한이 과도하게 낮으면 응답 지연이 증가할 수 있어 운영 지표 기반 튜닝이 필요하다.
-- middleware 체인 누락 시 인증 우회 경로가 생길 수 있으므로 CI 게이트에서 즉시 차단한다.
-- exporter healthcheck 실패 시 metrics 경로/포트 및 `OLLAMA_EXPORTER_PORT` 값을 점검한다.
+- If concurrency limits are too low, response latency can increase; tune them with operating metrics.
+- Missing middleware chains can create authentication bypass paths, so CI gates block them immediately.
+- If exporter healthchecks fail, inspect the metrics path/port and the `OLLAMA_EXPORTER_PORT` value.
 
 ## Failure Modes & Fallback / Human Escalation
 
-- **Failure Mode**: AI 라우터 접근 정책 회귀
-  - **Fallback**: 최근 정상 compose 라우팅 설정으로 롤백
-  - **Human Escalation**: Gateway/Auth 운영 승인자
-- **Failure Mode**: Ollama GPU 과부하/queue 적체
-  - **Fallback**: concurrency/queue 상한 보수적 값으로 재조정
+- **Failure Mode**: AI router access policy regression
+  - **Fallback**: roll back to the most recent working compose routing settings
+  - **Human Escalation**: Gateway/Auth operations approver
+- **Failure Mode**: Ollama GPU overload/queue backlog
+  - **Fallback**: readjust concurrency/queue limits to conservative values
   - **Human Escalation**: AI Platform Owner
-- **Failure Mode**: exporter metrics 관측 실패
-  - **Fallback**: healthcheck/depends_on 계약 복구 후 재기동
+- **Failure Mode**: exporter metrics observability failure
+  - **Fallback**: restore the healthcheck/depends_on contract, then restart
   - **Human Escalation**: SRE on-call
 
 ## Verification
@@ -112,10 +112,10 @@ bash scripts/validation/check-doc-traceability.sh
 
 ## Success Criteria & Verification Plan
 
-- **VAL-AI-001**: root-active compose validation and optional AI hardening checks 통과
-- **VAL-AI-002**: AI hardening baseline script 실패 0건
-- **VAL-AI-003**: PRD~Runbook optimization-hardening 문서 링크 정합성 유지
-- **VAL-AI-004**: 카탈로그 `08-ai` 확장 항목(모델 승격, 접근 분리, 로그 정책)이 Plan/Tasks/Operations에 반영
+- **VAL-AI-001**: root-active compose validation and optional AI hardening checks pass.
+- **VAL-AI-002**: AI hardening baseline script has zero failures.
+- **VAL-AI-003**: PRD~Runbook optimization-hardening document links remain consistent.
+- **VAL-AI-004**: catalog `08-ai` expansion items (model promotion, access separation, log policy) are reflected in Plan/Tasks/Operations.
 
 ## Agent Role & IO Contract (If Applicable)
 

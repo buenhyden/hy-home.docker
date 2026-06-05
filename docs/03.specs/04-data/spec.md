@@ -7,12 +7,12 @@ status: active
 
 ## Overview
 
-이 문서는 `infra/04-data` 계층의 최적화/하드닝 구현 계약을 정의한다. 즉시 적용 가능한 compose 정합성, healthcheck, 시크릿 경로 계약, 검증 자동화를 우선 반영하고, 카탈로그 기반 확장 항목은 운영 정책/런북과 연결한다.
+This document defines the optimization/hardening implementation contract for the `infra/04-data` tier. It prioritizes immediately applicable compose consistency, healthchecks, secret path contracts, and verification automation, while connecting catalog-based expansion items to operations policy/runbook coverage.
 
 ## Strategic Boundaries & Non-goals
 
-- 본 Spec은 04-data 인프라 구성 하드닝과 검증 계약을 소유한다.
-- 엔진별 대규모 토폴로지 확장(예: 멀티클러스터 전환)은 후속 단계로 이관한다.
+- This specification owns the 04-data infrastructure configuration hardening and verification contract.
+- Large-scale per-engine topology expansion, such as multi-cluster migration, is deferred to a later phase.
 
 ## Related Inputs
 
@@ -25,41 +25,41 @@ status: active
 ## Contracts
 
 - **Config Contract**:
-  - 04-data compose는 `infra/common-optimizations.yml` 템플릿 상속을 유지한다.
-  - `supabase` 핵심 서비스는 healthcheck를 필수로 제공한다.
-  - `ksql` tier 라벨은 `hy-home.tier: data`를 사용한다.
+  - 04-data compose keeps inheriting the `infra/common-optimizations.yml` template.
+  - Core `supabase` services must provide healthchecks.
+  - The `ksql` tier label uses `hy-home.tier: data`.
 - **Data / Interface Contract**:
-  - `valkey-cluster-exporter` 시크릿 파일 경로는 `/run/secrets/service_valkey_password`를 사용한다.
-  - `seaweedfs` expose 정의는 유효한 포트 토큰만 허용한다.
+  - The `valkey-cluster-exporter` secret file path uses `/run/secrets/service_valkey_password`.
+  - The `seaweedfs` expose definition allows only valid port tokens.
 - **Governance Contract**:
-  - `scripts/hardening/check-all-hardening.sh 04-data`를 CI `infrastructure-hardening` job으로 강제한다.
-  - `scripts/validation/check-template-security-baseline.sh`, `scripts/validation/check-doc-traceability.sh`와 함께 운영 게이트를 구성한다.
+  - Enforce `scripts/hardening/check-all-hardening.sh 04-data` through the CI `infrastructure-hardening` job.
+  - Compose the operating gate together with `scripts/validation/check-template-security-baseline.sh` and `scripts/validation/check-doc-traceability.sh`.
 
 ## Core Design
 
 - **Component Boundary**:
-  - 대상 범위: `infra/04-data/{analytics,cache-and-kv,lake-and-object,nosql,operational,relational,specialized}`
-  - 즉시 하드닝 대상:
+  - Target scope: `infra/04-data/{analytics,cache-and-kv,lake-and-object,nosql,operational,relational,specialized}`
+  - Immediate hardening targets:
     - `operational/supabase`
     - `cache-and-kv/valkey-cluster`
     - `lake-and-object/seaweedfs`
     - `analytics/ksql`
 - **Key Dependencies**:
-  - `03-security` 시크릿 운영 정책
-  - `01-gateway` 노출/라우팅 정책
-  - `06-observability` 모니터링 정책
+  - `03-security` secret operating policy
+  - `01-gateway` exposure/routing policy
+  - `06-observability` monitoring policy
 - **Tech Stack**:
   - Docker Compose
-  - 공통 최적화 템플릿(`template-infra-*`, `template-stateful-*`)
+  - common optimization templates (`template-infra-*`, `template-stateful-*`)
 
 ## Data Modeling & Storage Strategy
 
 - **Schema / Entity Strategy**:
-  - `${DEFAULT_DATA_DIR}` 기반 서비스별 데이터 분리
+  - service-specific data separation based on `${DEFAULT_DATA_DIR}`
 - **Migration / Transition Plan**:
-  - Phase 1: compose 정합성 및 healthcheck 계약 고정
-  - Phase 2: 카탈로그 확장 항목(backup/retention/failover/reindex) 정책화
-  - Phase 3: 승인 기반 서비스별 확장 실행
+  - Phase 1: lock compose consistency and healthcheck contracts
+  - Phase 2: formalize catalog expansion items (backup/retention/failover/reindex) as policy
+  - Phase 3: execute approved per-service expansion
 
 ## Interfaces & Data Structures
 
@@ -87,15 +87,15 @@ interface DataHardeningContract {
 
 ## Edge Cases & Error Handling
 
-- `service_healthy` 의존인데 healthcheck 미구성 시 시작 순서 실패 위험
-- 시크릿 파일 경로 불일치 시 exporter 인증 실패
-- compose 토큰 오타(`]`)로 정적 검증 실패 또는 런타임 오류
+- If a service depends on `service_healthy` but has no healthcheck configured, startup order can fail.
+- Secret file path mismatches cause exporter authentication failure.
+- Compose token typos (`]`) can cause static validation failure or runtime errors.
 
 ## Failure Modes & Fallback / Human Escalation
 
-- **Failure Mode**: `supabase` 스택의 의존 서비스 비정상 순환 재시작
-- **Fallback**: healthcheck 계약 복원 후 `docker compose config` 및 runbook 절차로 재기동
-- **Human Escalation**: Data Platform Operator + DevOps on-call 동시 호출
+- **Failure Mode**: abnormal dependency-service restart loop in the `supabase` stack
+- **Fallback**: restore the healthcheck contract, then restart through `docker compose config` and runbook procedure
+- **Human Escalation**: page Data Platform Operator and DevOps on-call together
 
 ## Verification
 
@@ -109,7 +109,7 @@ bash scripts/validation/check-template-security-baseline.sh
 bash scripts/validation/check-doc-traceability.sh
 ```
 
-가능 환경에서 runtime 검증:
+Runtime verification where the environment allows:
 
 ```bash
 docker compose -f infra/04-data/operational/supabase/docker-compose.yml up -d
@@ -120,11 +120,11 @@ docker inspect --format '{{json .State.Health}}' supabase-pooler
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-DATA-001**: `check-all-hardening.sh 04-data` 실패 0건
-- **VAL-SPC-DATA-002**: `supabase` 핵심 서비스 healthcheck 존재
-- **VAL-SPC-DATA-003**: `valkey-cluster-exporter` 시크릿 경로 계약 정합화
-- **VAL-SPC-DATA-004**: `seaweedfs` expose 토큰 오타 제거
-- **VAL-SPC-DATA-005**: 04-data 문서 레이어 추적성 링크 동기화
+- **VAL-SPC-DATA-001**: `check-all-hardening.sh 04-data` has zero failures.
+- **VAL-SPC-DATA-002**: core `supabase` services have healthchecks.
+- **VAL-SPC-DATA-003**: `valkey-cluster-exporter` secret path contract is aligned.
+- **VAL-SPC-DATA-004**: `seaweedfs` expose token typo is removed.
+- **VAL-SPC-DATA-005**: 04-data document-layer traceability links are synchronized.
 
 ## Agent Role & IO Contract (If Applicable)
 

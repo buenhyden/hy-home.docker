@@ -7,25 +7,25 @@ status: completed
 
 ## Overview
 
-이 문서는 `infra/`, `secrets/`, `docs/05.operations/guides/`, `docs/05.operations/policies/`, `docs/05.operations/runbooks/`, `docs/90.references/`의 실제 파일 내용을 기준으로 운영 문서와 README를 최신화하기 위한 명세다. 목표는 Docker Compose 런타임이나 secret 값 파일을 변경하지 않고, 구현 요소와 운영 문서가 `docs/99.templates/`의 계약을 따르도록 보강하는 것이다.
+This document specifies how to refresh operations documents and READMEs based on the actual file contents under `infra/`, `secrets/`, `docs/05.operations/guides/`, `docs/05.operations/policies/`, `docs/05.operations/runbooks/`, and `docs/90.references/`. The goal is to strengthen implementation elements and operations documents so they follow the `docs/99.templates/` contract without changing Docker Compose runtime behavior or secret value files.
 
-현재 기준 구조 검증은 통과 상태다. `infra/`에는 48개 Compose variant 파일과 40개 Compose service directory가 있으며 service README 누락은 0개다. 루트 Compose 활성 include는 17개이므로 보유 Compose와 root-active Compose를 분리해 문서화한다. `secrets/`는 Markdown registry/README 문서를 제외한 secret/cert 파일명 기준 95개, 루트 Compose 선언 70개, 선언된 secret 누락 0개이며 값은 열람하지 않는다. 대상 README audit 범위는 현재 134개 README 파일, stage audit 범위는 현재 217개 non-README Markdown 파일이다.
+Current baseline structural validation is passing. `infra/` contains 48 Compose variant files and 40 Compose service directories, with 0 missing service READMEs. Root Compose has 17 active includes, so owned Compose files and root-active Compose files are documented separately. `secrets/` has 95 secret/cert filenames excluding Markdown registry/README documents, 70 root Compose declarations, and 0 missing declared secrets; values are not read. The target README audit scope is currently 134 README files, and the stage audit scope is currently 217 non-README Markdown files.
 
 ## Strategic Boundaries & Non-goals
 
-이 명세는 문서 구조, README 계약, stage 문서 템플릿 적합성, infra/secrets 인벤토리 분석을 소유한다. Docker Compose 서비스 동작 변경, secret 값 열람, 인증서 재생성, agent runtime catalog 변경, 배포 또는 마이그레이션 실행은 범위 밖이다.
+This specification owns documentation structure, README contracts, stage document template compliance, and infra/secrets inventory analysis. Docker Compose service behavior changes, secret value reads, certificate regeneration, agent runtime catalog changes, deployments, and migration execution are out of scope.
 
 ## Related Inputs
 
-- **PRD**: 명시적 PRD 없음. 이번 작업은 운영 문서 정합성 보강이다.
-- **ARD**: 명시적 ARD 없음. 기존 계층형 `infra/` 구조와 stage docs taxonomy를 따른다.
-- **Related ADRs**: 명시적 신규 ADR 없음. 런타임 구조 변경이 없으므로 결정 기록을 추가하지 않는다.
+- **PRD**: No explicit PRD. This work strengthens operations documentation consistency.
+- **ARD**: No explicit ARD. It follows the existing layered `infra/` structure and stage docs taxonomy.
+- **Related ADRs**: No explicit new ADR. No decision record is added because runtime structure does not change.
 
 ## Contracts
 
-- **Config Contract**: `infra/**/docker-compose*.yml`, config 파일, 루트 `docker-compose.yml`은 분석 대상이며 기본적으로 수정하지 않는다.
-- **Data / Interface Contract**: `secrets/**/*.txt` 값은 열람하지 않는다. 파일명, 디렉터리, README, `.example` 파일만 문서화 입력으로 사용한다.
-- **Governance Contract**: 새 stage 문서는 대응 템플릿을 따른다. README는 `docs/99.templates/readme.template.md`의 base structure를 따른다.
+- **Config Contract**: `infra/**/docker-compose*.yml`, config files, and the root `docker-compose.yml` are analysis targets and are not modified by default.
+- **Data / Interface Contract**: `secrets/**/*.txt` values are not read. Only filenames, directories, READMEs, and `.example` files are used as documentation inputs.
+- **Governance Contract**: new stage documents follow the matching templates. READMEs follow the base structure in `docs/99.templates/readme.template.md`.
 
 ## Current Baseline
 
@@ -41,14 +41,14 @@ status: completed
 
 ## Core Design
 
-- **Component Boundary**: 문서 보강 대상은 `README.md`, `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, `docs/90.references`로 제한한다.
+- **Component Boundary**: documentation strengthening is limited to `README.md`, `docs/03.specs`, `docs/04.execution/plans`, `docs/04.execution/tasks`, `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, and `docs/90.references`.
 - **Key Dependencies**: `docs/99.templates/`, `docs/00.agent-governance/rules/documentation-protocol.md`, `scripts/validation/check-repo-contracts.sh`, `scripts/validation/check-doc-traceability.sh`, `scripts/validation/validate-docker-compose.sh`.
 - **Tech Stack**: Markdown, Docker Compose, Bash validation scripts.
 
 ## Data Modeling & Storage Strategy
 
-- **Schema / Entity Strategy**: 별도 데이터 저장소를 만들지 않는다. 분석 결과는 이 spec, plan, task 문서와 기존 README/stage 문서에 저장한다.
-- **Migration / Transition Plan**: 기존 문서 내용을 삭제하지 않고 누락된 템플릿 섹션을 보강한다. 오래된 문서는 필요한 경우 기존 본문 아래에 template alignment 섹션을 추가한다.
+- **Schema / Entity Strategy**: no separate data store is created. Analysis results are stored in this spec, plan, task documents, and existing README/stage documents.
+- **Migration / Transition Plan**: strengthen missing template sections without deleting existing document content. For older documents, add template alignment sections below the existing body when needed.
 
 ## Interfaces & Data Structures
 
@@ -72,61 +72,61 @@ Stage document template families:
 
 ## API Contract (If Applicable)
 
-적용되지 않는다. 이번 작업은 외부 API를 제공하지 않는다.
+Not applicable. This work does not provide external APIs.
 
-- **API Spec**: 해당 없음
-- **Policy**: API Spec을 새로 만들지 않는다.
-- **Machine-readable Contract**: 해당 없음
+- **API Spec**: N/A
+- **Policy**: do not create a new API Spec.
+- **Machine-readable Contract**: N/A
 
 ## Agent Role & IO Contract (If Applicable)
 
 - **Agent Role**: Documentation Specialist with Infra/Ops analysis.
-- **Inputs**: 템플릿, README, stage docs, infra compose/config 경로, secret 파일명과 example/registry 문서.
-- **Outputs**: 템플릿 정합성이 보강된 문서, 분석 spec/plan/task, 검증 결과.
-- **Success Definition**: repo checks와 문서 heading audit가 통과하고, secret 값 파일을 열람하지 않은 상태로 작업이 완료된다.
+- **Inputs**: templates, READMEs, stage docs, infra compose/config paths, secret filenames, and example/registry documents.
+- **Outputs**: template-aligned documents, analysis spec/plan/task, and verification results.
+- **Success Definition**: repo checks and documentation heading audit pass, and the work completes without reading secret value files.
 
 ## Tools & Tool Contract (If Applicable)
 
-- **Tool List**: `rg`, `find`, `python3` 기반 문서 audit, repository validation scripts.
-- **Permission Boundary**: workspace 내부 문서 파일만 수정한다. secret 값 파일, Docker Compose runtime 파일, agent runtime 파일은 수정하지 않는다.
-- **Failure Handling**: 검증 실패 시 실패 파일과 누락 섹션을 task evidence에 기록하고 최소 문서 보강으로 해결한다.
+- **Tool List**: `rg`, `find`, `python3`-based documentation audit, repository validation scripts.
+- **Permission Boundary**: modify only documentation files inside the workspace. Do not modify secret value files, Docker Compose runtime files, or agent runtime files.
+- **Failure Handling**: when validation fails, record failing files and missing sections in task evidence and resolve them with minimal documentation strengthening.
 
 ## Prompt / Policy Contract (If Applicable)
 
-- **System / Instruction Contract**: 사용자 지시가 stage 문서 수정 권한을 부여했으므로 `docs/01`~`docs/10`, `docs/90`, `docs/99`의 기본 read-only 정책 예외로 처리한다.
-- **Policy Constraints**: 새 active stage 문서는 허용 taxonomy 아래에만 둔다. 비밀값은 응답, 문서, 로그에 노출하지 않는다.
-- **Versioning Rule**: 날짜 기반 문서는 `2026-05-09-*` 형식을 따른다.
+- **System / Instruction Contract**: user instructions granted permission to modify stage documents, so this is treated as an exception to the default read-only policy for `docs/01`~`docs/10`, `docs/90`, and `docs/99`.
+- **Policy Constraints**: new active stage documents live only under the allowed taxonomy. Secret values are not exposed in responses, documents, or logs.
+- **Versioning Rule**: date-based documents follow the `2026-05-09-*` format.
 
 ## Memory & Context Strategy (If Applicable)
 
-- **Short-term Context**: 이번 실행에서 조사한 파일 수, README gap, stage template gap을 task evidence에 보존한다.
-- **Long-term Memory**: 별도 memory 파일을 갱신하지 않는다.
-- **Retrieval Boundary**: repo-local 파일과 제공된 사용자 계획을 우선한다.
+- **Short-term Context**: preserve investigated file counts, README gaps, and stage template gaps from this run in task evidence.
+- **Long-term Memory**: do not update a separate memory file.
+- **Retrieval Boundary**: prioritize repo-local files and the provided user plan.
 
 ## Guardrails (If Applicable)
 
-- **Input Guardrails**: `secrets/**/*.txt` 값을 읽지 않는다.
-- **Output Guardrails**: secret 값, token, private key, 인증서 원문을 문서에 쓰지 않는다.
-- **Blocked Conditions**: secret 값 확인, 외부 네트워크 조회, Docker runtime 변경이 필요하면 중단하고 별도 승인을 요청한다.
-- **Escalation Rule**: 문서 수정 범위를 넘어 compose/runtime 변경이 필요해지면 plan 업데이트 후 사용자 승인으로 분리한다.
+- **Input Guardrails**: do not read `secrets/**/*.txt` values.
+- **Output Guardrails**: do not write secret values, tokens, private keys, or raw certificate contents into documents.
+- **Blocked Conditions**: stop and request separate approval if secret value checks, external network lookup, or Docker runtime changes are needed.
+- **Escalation Rule**: if compose/runtime changes become necessary beyond the documentation scope, update the plan and split them behind user approval.
 
 ## Evaluation (If Applicable)
 
 - **Eval Types**: structural heading audit, repository contract checks, traceability checks, compose config validation.
 - **Metrics**: README missing heading count 0, stage missing heading count 0, repository checks pass, semantic QA findings resolved without runtime or secret value changes.
 - **Datasets / Fixtures**: live repository files under target paths.
-- **How to Run**: 아래 Verification 명령과 문서 audit를 실행한다.
+- **How to Run**: run the Verification commands below and the documentation audit.
 
 ## Edge Cases & Error Handling
 
-- **README가 기존 커스텀 구조를 가진 경우**: 기존 내용을 유지하고 누락된 base heading만 추가한다.
-- **문서명과 infra 디렉터리명이 다른 경우**: rename 없이 README에 alias를 기록한다. `ksql` infra와 `ksqldb` 문서는 이 규칙을 따른다.
+- **When a README has an existing custom structure**: preserve existing content and add only the missing base headings.
+- **When document names and infra directory names differ**: record aliases in the README without renaming. `ksql` infra and `ksqldb` documents follow this rule.
 
 ## Failure Modes & Fallback / Human Escalation
 
-- **Failure Mode**: 템플릿 보강이 기존 문서 의미를 바꾸는 경우.
-- **Fallback**: 기존 본문을 그대로 둔 채 별도 보강 섹션만 추가한다.
-- **Human Escalation**: compose 파일 수정, secret 값 재생성, 문서 taxonomy 변경이 필요하면 별도 승인을 요청한다.
+- **Failure Mode**: template strengthening changes the meaning of existing documents.
+- **Fallback**: keep the existing body unchanged and add only a separate strengthening section.
+- **Human Escalation**: request separate approval if compose file changes, secret value regeneration, or documentation taxonomy changes are needed.
 
 ## Verification
 
@@ -142,13 +142,13 @@ git diff --check
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-001**: 새 stage 문서가 대응 템플릿의 필수 섹션을 포함한다.
-- **VAL-SPC-002**: 대상 README가 base heading을 포함한다.
-- **VAL-SPC-003**: `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, `docs/90.references`의 non-README Markdown이 대응 템플릿 heading을 포함한다.
-- **VAL-SPC-004**: secret 값 파일을 열람하거나 수정하지 않는다.
-- **VAL-SPC-005**: repository validation scripts가 통과한다.
-- **VAL-SPC-006**: root-active, optional, standalone, variant Compose 상태를 문서에서 혼동하지 않는다.
-- **VAL-SPC-007**: secret 값 확인을 유도하거나 shell history에 민감값을 남길 수 있는 예시를 제거하거나 안전하게 재표현한다.
+- **VAL-SPC-001**: new stage documents include the required sections from the matching templates.
+- **VAL-SPC-002**: target READMEs include base headings.
+- **VAL-SPC-003**: non-README Markdown under `docs/05.operations/guides`, `docs/05.operations/policies`, `docs/05.operations/runbooks`, and `docs/90.references` includes the matching template headings.
+- **VAL-SPC-004**: secret value files are not read or modified.
+- **VAL-SPC-005**: repository validation scripts pass.
+- **VAL-SPC-006**: documents do not confuse root-active, optional, standalone, and variant Compose states.
+- **VAL-SPC-007**: examples that encourage secret value checks or can leave sensitive values in shell history are removed or safely rephrased.
 
 ## Related Documents
 

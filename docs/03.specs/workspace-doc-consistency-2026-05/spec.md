@@ -8,75 +8,75 @@ status: completed
 
 ## Overview
 
-이 문서는 2026년 5월 워크스페이스 문서 일관성·통일성 개선 작업의 기술 명세다. `workspace-audit-2026-05` 감사 결과에서 식별된 docs/01~05 계층, scripts/, .github/workflows/ 전반의 구조적 불일치를 체계적으로 수정하고, 거버넌스 파일을 현행화한다. 이 명세의 구현 결과로 AI Agent가 작업할 때 참조하는 모든 문서가 템플릿 기준과 일치하게 된다.
+This document is the technical specification for the May 2026 workspace documentation consistency and standardization improvement work. It systematically fixes structural inconsistencies across docs/01~05, scripts/, and .github/workflows/ identified by the `workspace-audit-2026-05` audit, and updates governance files. As a result of this specification, all documents referenced by AI Agents during work align with the template baseline.
 
 ## Strategic Boundaries & Non-goals
 
 **Scope:**
 
-- docs/02.architecture: ADR/ARD 제목 형식 표준화
-- docs/01.requirements: 누락 섹션(Overview KR, AI Agent Requirements) 보완
-- docs/03.specs: 15개 spec 파일에 Agent Role & IO Contract 섹션 추가 (N/A 처리)
-- docs/04.execution: task 파일 제목 접두사 통일, active plan 제목 접미사 보완
-- docs/05.operations/policies: `## Applies To` → `## Policy Scope` 헤딩 통일 (~50개)
-- docs/05.operations/guides, runbooks: frontmatter `status:` 필드 보완
-- docs/05.operations/incidents: README 템플릿 링크 보완
-- docs/99.templates: 기준 확인 (변경 없음)
-- scripts/: 실행 권한, shebang 수정 (2개 파일)
-- .github/workflows/: GitHub Actions SHA 최신화 (5개 파일)
-- docs/00.agent-governance/rules/: Policy Scope 기준, ADR/ARD 제목 형식 규칙 명시
+- docs/02.architecture: standardize ADR/ARD title format
+- docs/01.requirements: add missing sections (Overview, AI Agent Requirements)
+- docs/03.specs: add Agent Role & IO Contract sections to 15 spec files, marked N/A where applicable
+- docs/04.execution: standardize task file title prefixes and add suffixes to active plan titles
+- docs/05.operations/policies: standardize `## Applies To` -> `## Policy Scope` headings across about 50 files
+- docs/05.operations/guides, runbooks: add frontmatter `status:` fields
+- docs/05.operations/incidents: add README template links
+- docs/99.templates: confirm baseline, with no changes
+- scripts/: fix executable permissions and shebangs for 2 files
+- .github/workflows/: refresh GitHub Actions SHAs for 5 files
+- docs/00.agent-governance/rules/: specify Policy Scope baseline and ADR/ARD title format rules
 
 **Non-goals:**
 
-- 문서 내용(본문) 개정 — 구조·형식 수정만 수행
-- 새로운 요구사항 반영 — 기존 템플릿 기준 준수만
-- Docker Compose, 서비스 설정 변경
-- secret 값 또는 .env 변경
-- docs/99.templates 실질적 내용 변경
+- Document body/content revision; only structural/formatting fixes are performed.
+- New requirements; only existing template baseline compliance is applied.
+- Docker Compose or service configuration changes.
+- Secret value or .env changes.
+- Substantive changes to docs/99.templates.
 
 ## Related Inputs
 
-- **PRD**: 해당 PRD 없음 — 반복적 워크스페이스 거버넌스 개선 세션
-- **ARD**: 해당 ARD 없음
-- **Related ADRs**: 해당 ADR 없음
+- **PRD**: No matching PRD; this is an iterative workspace governance improvement session.
+- **ARD**: No matching ARD.
+- **Related ADRs**: No matching ADR.
 - **Upstream Audit**: [../../03.specs/workspace-audit-2026-05/spec.md](../../03.specs/workspace-audit-2026-05/spec.md)
 
 ## Contracts
 
-- **Config Contract**: 모든 수정은 `docs/99.templates/*.template.md` 기준을 따른다.
+- **Config Contract**: all changes follow the `docs/99.templates/*.template.md` baseline.
 - **Data / Interface Contract**:
-  - ADR 제목 형식: `# ADR-NNNN: English Title`
-  - ARD 제목 형식: `# Domain Architecture Reference Document (ARD)`
-  - Policy 헤딩: `## Policy Scope` (not `## Applies To`)
-  - Agent Role 섹션: `## Agent Role & IO Contract (If Applicable)` — 해당 없는 경우 N/A
-  - Task 제목 형식: `# Task: [Task Name]`
-  - frontmatter: 모든 operations 문서(guides/policies/runbooks)에 `status:` 필드 필수
-- **Governance Contract**: 모든 변경은 `task-checklists.md` 완료 기준을 충족해야 한다. 구조·형식 수정만 허용하며 본문 의미 변경은 금지한다.
+  - ADR title format: `# ADR-NNNN: English Title`
+  - ARD title format: `# Domain Architecture Reference Document (ARD)`
+  - Policy heading: `## Policy Scope` (not `## Applies To`)
+  - Agent Role section: `## Agent Role & IO Contract (If Applicable)`; use N/A when not applicable
+  - Task title format: `# Task: [Task Name]`
+  - frontmatter: every operations document (guides/policies/runbooks) requires a `status:` field
+- **Governance Contract**: all changes must satisfy the completion criteria in `task-checklists.md`. Only structural/formatting fixes are allowed; body meaning changes are forbidden.
 
 ## Core Design
 
 - **Component Boundary**: docs/01~05, scripts/, .github/workflows/, docs/00.agent-governance/rules/
-- **Key Dependencies**: docs/99.templates (기준 문서), scripts/validation/ (검증 스크립트)
+- **Key Dependencies**: docs/99.templates (baseline documents), scripts/validation/ (validation scripts)
 - **Tech Stack**: bash, sed, git (Conventional Commits)
-- **Execution Strategy**: Foundation-first — 템플릿 기준 확인 → 제목·구조 수정 → 대량 반복 수정 → 기술적 수정 → 거버넌스 동기화
+- **Execution Strategy**: Foundation-first: confirm template baseline -> fix titles/structure -> perform bulk repeated fixes -> apply technical fixes -> synchronize governance.
 
 ## Data Modeling & Storage Strategy
 
-- **Schema / Entity Strategy**: 파일 구조 변경 없음. 기존 파일의 frontmatter 및 섹션 헤딩만 수정.
-- **Migration / Transition Plan**: 각 Phase를 독립 커밋으로 분리하여 롤백 가능성 유지.
+- **Schema / Entity Strategy**: no file structure changes. Only frontmatter and section headings in existing files are modified.
+- **Migration / Transition Plan**: separate each phase into an independent commit to preserve rollbackability.
 
 ## Interfaces & Data Structures
 
-### 적용 규칙 요약
+### Applied Rules Summary
 
-| 문서 타입  | 필드/헤딩   | 기존 패턴                           | 목표 패턴                                          |
+| Document Type | Field/Heading | Existing Pattern                    | Target Pattern                                    |
 | ---------- | ----------- | ----------------------------------- | -------------------------------------------------- |
-| ADR        | H1 제목     | `# ADR:`, `# ADR-YYYYMMDD:`, 한국어 | `# ADR-NNNN: English`                              |
-| ARD        | H1 제목     | `# ARD:`, 접미사 없음               | `# Domain ARD (ARD)`                               |
-| Spec       | 섹션        | Agent Role 누락                     | `## Agent Role & IO Contract (If Applicable)` 추가 |
-| Policy     | 헤딩        | `## Applies To`                     | `## Policy Scope`                                  |
-| Operations | frontmatter | status 누락                         | `status: active`                                   |
-| Task       | H1 제목     | `# Task Tracking...` 등             | `# Task: ...`                                      |
+| ADR        | H1 title    | `# ADR:`, `# ADR-YYYYMMDD:`, non-English | `# ADR-NNNN: English`                         |
+| ARD        | H1 title    | `# ARD:`, no suffix                 | `# Domain ARD (ARD)`                               |
+| Spec       | Section     | Agent Role missing                  | Add `## Agent Role & IO Contract (If Applicable)`  |
+| Policy     | Heading     | `## Applies To`                     | `## Policy Scope`                                  |
+| Operations | frontmatter | status missing                      | `status: active`                                   |
+| Task       | H1 title    | `# Task Tracking...`, etc.          | `# Task: ...`                                      |
 
 ## API Contract (If Applicable)
 
@@ -84,16 +84,16 @@ status: completed
 
 ## Agent Role & IO Contract (If Applicable)
 
-- **Agent Role**: AI Agent가 이 명세를 참조하여 일관성 수정 작업을 수행한다. bash/sed 명령, git 커밋 수행.
-- **Inputs**: docs/99.templates/_.template.md (기준), docs/01~05/\*\*/_.md (수정 대상), scripts/ (수정 대상), .github/workflows/ (수정 대상)
-- **Outputs**: 수정된 마크다운 파일들, git 커밋 이력
-- **Success Definition**: 전체 검증 스크립트 통과, 타입별 헤딩 불일치 0건
+- **Agent Role**: AI Agent uses this specification to perform consistency fixes, bash/sed commands, and git commits.
+- **Inputs**: docs/99.templates/_.template.md (baseline), docs/01~05/\*\*/_.md (edit target), scripts/ (edit target), .github/workflows/ (edit target)
+- **Outputs**: updated Markdown files and git commit history
+- **Success Definition**: all validation scripts pass and heading mismatches by type are 0.
 
 ## Tools & Tool Contract (If Applicable)
 
 - **Tool List**: bash, grep, sed, find, chmod, git
-- **Permission Boundary**: docs/01~05, scripts/, .github/workflows/, docs/00.agent-governance/rules/ 내 파일 수정만 허용. docs/99.templates 실질적 수정 금지.
-- **Failure Handling**: sed 패턴 불일치 시 파일 변경 없음 — 수동 확인 후 재시도.
+- **Permission Boundary**: only files under docs/01~05, scripts/, .github/workflows/, and docs/00.agent-governance/rules/ may be modified. Substantive docs/99.templates changes are forbidden.
+- **Failure Handling**: when a sed pattern does not match, make no file change; inspect manually and retry.
 
 ## Prompt / Policy Contract (If Applicable)
 
@@ -109,28 +109,28 @@ status: completed
 
 ## Guardrails (If Applicable)
 
-- **Input Guardrails**: sed 명령 실행 전 반드시 grep으로 현재 패턴 확인
-- **Output Guardrails**: 각 Phase 완료 후 검증 명령으로 잔여 불일치 0건 확인
-- **Blocked Conditions**: docs/99.templates 파일의 기준 패턴과 다른 패턴이 발견되면 즉시 중단하고 확인
-- **Escalation Rule**: 검증 스크립트 실패 시 커밋 금지
+- **Input Guardrails**: always confirm the current pattern with grep before running sed commands.
+- **Output Guardrails**: after each phase, use validation commands to confirm zero remaining mismatches.
+- **Blocked Conditions**: if a docs/99.templates file has a pattern different from the baseline, stop immediately and inspect.
+- **Escalation Rule**: do not commit when validation scripts fail.
 
 ## Evaluation (If Applicable)
 
-- **Eval Types**: 구조적 검증 (grep/find 기반)
-- **Metrics**: 타입별 불일치 건수 (0이어야 함)
-- **Datasets / Fixtures**: docs/01~05/\*_/_.md 전체
-- **How to Run**: 아래 Verification 섹션 참조
+- **Eval Types**: structural validation (grep/find-based)
+- **Metrics**: mismatch count by type, which must be 0
+- **Datasets / Fixtures**: all docs/01~05/\*_/_.md files
+- **How to Run**: see the Verification section below
 
 ## Edge Cases & Error Handling
 
-- **Error 1**: sed 패턴이 여러 라인에 걸친 경우 — 단일 라인 치환만 수행, 복잡한 경우 수동 편집
-- **Error 2**: frontmatter가 없는 파일에 status 추가 — frontmatter 블록 생성 후 추가
+- **Error 1**: sed pattern spans multiple lines; perform only single-line replacements, and edit manually when complex.
+- **Error 2**: add status to a file with no frontmatter; create a frontmatter block first, then add status.
 
 ## Failure Modes & Fallback / Human Escalation
 
-- **Failure Mode**: sed가 예상치 못한 패턴 변경
-- **Fallback**: `git diff` 검토 후 `git checkout -- <file>` 로 롤백
-- **Human Escalation**: 10개 이상 파일에서 패턴 불일치 발생 시 사람에게 보고
+- **Failure Mode**: sed changes an unexpected pattern.
+- **Fallback**: review `git diff`, then roll back with `git checkout -- <file>`.
+- **Human Escalation**: report to a human when pattern mismatches occur in 10 or more files.
 
 ## Verification
 
@@ -138,22 +138,22 @@ status: completed
 BASE=/home/hy/project-infra/hy-home.docker
 cd "$BASE"
 
-# ADR 제목 형식
+# ADR title format
 grep "^# " docs/02.architecture/decisions/*.md | grep -v "ADR-[0-9]\{4\}:"
 
-# ARD (ARD) 접미사
+# ARD (ARD) suffix
 grep "^# " docs/02.architecture/requirements/*.md | grep -v "(ARD)"
 
-# Spec Agent Role 섹션
+# Spec Agent Role section
 grep -rL "## Agent Role" docs/03.specs/*/spec.md
 
-# Policies Policy Scope 헤딩
+# Policies Policy Scope heading
 grep -rl "^## Applies To" docs/05.operations/policies/
 
 # Operations status frontmatter
 find docs/05.operations -name "*.md" ! -name "README.md" | xargs grep -rL "^status:" | wc -l
 
-# scripts 실행 권한
+# scripts executable permission
 ls -la scripts/lib/hardening-lib.sh | grep "^-rwxr-xr-x"
 
 # repo contracts
@@ -165,14 +165,14 @@ bash scripts/validation/check-doc-traceability.sh
 
 ## Success Criteria & Verification Plan
 
-- **VAL-SPC-001**: `grep "^# " docs/02.architecture/decisions/*.md | grep -v "ADR-[0-9]\{4\}:"` 결과 빈 줄 (README 제외) — ADR 제목 형식 100% 준수
-- **VAL-SPC-002**: `grep "^# " docs/02.architecture/requirements/*.md | grep -v "(ARD)"` 결과 빈 줄 (README 제외) — ARD 제목 형식 100% 준수
-- **VAL-SPC-003**: `grep -rL "## Agent Role" docs/03.specs/*/spec.md` 결과 빈 줄 — 전체 spec Agent Role 섹션 100% 보유
-- **VAL-SPC-004**: `grep -rl "^## Applies To" docs/05.operations/policies/` 결과 빈 줄 — Policy Scope 헤딩 100% 통일
-- **VAL-SPC-005**: operations docs status frontmatter 누락 0건
-- **VAL-SPC-006**: `scripts/lib/hardening-lib.sh` 실행 권한 755
-- **VAL-SPC-007**: `bash scripts/validation/check-repo-contracts.sh` 통과
-- **VAL-SPC-008**: `bash scripts/validation/check-doc-traceability.sh` 통과
+- **VAL-SPC-001**: `grep "^# " docs/02.architecture/decisions/*.md | grep -v "ADR-[0-9]\{4\}:"` returns an empty result, excluding README; ADR title format is 100% compliant.
+- **VAL-SPC-002**: `grep "^# " docs/02.architecture/requirements/*.md | grep -v "(ARD)"` returns an empty result, excluding README; ARD title format is 100% compliant.
+- **VAL-SPC-003**: `grep -rL "## Agent Role" docs/03.specs/*/spec.md` returns an empty result; all specs have the Agent Role section.
+- **VAL-SPC-004**: `grep -rl "^## Applies To" docs/05.operations/policies/` returns an empty result; Policy Scope headings are 100% unified.
+- **VAL-SPC-005**: operations docs have 0 missing status frontmatter fields.
+- **VAL-SPC-006**: `scripts/lib/hardening-lib.sh` has executable permission 755.
+- **VAL-SPC-007**: `bash scripts/validation/check-repo-contracts.sh` passes.
+- **VAL-SPC-008**: `bash scripts/validation/check-doc-traceability.sh` passes.
 
 ## Related Documents
 

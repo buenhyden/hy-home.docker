@@ -7,19 +7,19 @@ status: active
 
 ## Overview
 
-이 문서는 `infra/09-tooling` 계층(terraform, terrakube, registry, sonarqube, k6, locust, syncthing)의 최적화/하드닝 기술 명세다. 공개 경계 보안, 네트워크 격리, 테스트 런타임 안정성, CI 정책 게이트, 카탈로그 기반 확장 항목을 구현 계약으로 정의한다. 현재 root `docker-compose.yml`에서 tooling compose includes는 주석 처리되어 있으므로, 이 명세는 보유 구현과 standalone/root-commented optional 실행 계약을 설명한다.
+This document is the optimization/hardening technical specification for the `infra/09-tooling` tier (terraform, terrakube, registry, sonarqube, k6, locust, syncthing). It defines public-boundary security, network isolation, test runtime stability, CI policy gates, and catalog-based expansion items as implementation contracts. Because tooling compose includes are currently commented out in the root `docker-compose.yml`, this specification describes the owned implementation and standalone/root-commented optional execution contract.
 
 ## Strategic Boundaries & Non-goals
 
 - **Owns**:
-  - tooling 공개 라우터 middleware 계약
-  - tooling compose 네트워크 경계 계약
-  - locust/k6 runtime 계약(health/volume)
-  - `scripts/hardening/check-all-hardening.sh 09-tooling` 정책 게이트 계약
+  - tooling public router middleware contract
+  - tooling compose network boundary contract
+  - locust/k6 runtime contract (health/volume)
+  - `scripts/hardening/check-all-hardening.sh 09-tooling` policy gate contract
 - **Does Not Own**:
-  - 각 도구의 도메인 기능 구현 세부
-  - 카탈로그 확장 항목의 즉시 전면 구현
-  - 신규 도구 도입/교체
+  - Domain feature implementation details for each tool
+  - Immediate full implementation of catalog expansion items
+  - New tool adoption/replacement
 
 ## Related Inputs
 
@@ -33,33 +33,33 @@ status: active
 
 - **Config Contract**:
   - `infra/09-tooling/*/docker-compose.yml` files are currently root-commented optional includes.
-  - SonarQube/Terrakube/Syncthing 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용한다.
-  - registry/sonarqube/terrakube/syncthing/locust/k6/terraform compose는 `infra_net` external 경계를 명시한다.
-  - locust-worker는 worker 프로세스 healthcheck를 가진다.
-  - k6는 `k6-data` 볼륨을 기준 경로(`/mnt/locust`)에 마운트한다.
+  - SonarQube/Terrakube/Syncthing routers use `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
+  - registry/sonarqube/terrakube/syncthing/locust/k6/terraform compose files declare the `infra_net` external boundary.
+  - locust-worker has a worker process healthcheck.
+  - k6 mounts the `k6-data` volume at the baseline path (`/mnt/locust`).
 - **Data / Interface Contract**:
-  - tooling 서비스는 필요한 경우 기존 PostgreSQL/Valkey/MinIO/InfluxDB 연계를 유지한다.
-  - root `docker-compose.yml`에서 09-tooling includes는 optional/commented 상태이므로 service-local compose files require root network/secret/dependency context for runtime rendering.
+  - tooling services keep existing PostgreSQL/Valkey/MinIO/InfluxDB integrations where needed.
+  - Because 09-tooling includes are optional/commented in the root `docker-compose.yml`, service-local compose files require root network/secret/dependency context for runtime rendering.
 - **Governance Contract**:
-  - `scripts/hardening/check-all-hardening.sh 09-tooling` 통과가 tooling tier 하드닝 기준선이다.
-  - CI `infrastructure-hardening` job이 전체 hardening baseline으로 PR 단계에서 회귀를 차단한다.
+  - Passing `scripts/hardening/check-all-hardening.sh 09-tooling` is the tooling tier hardening baseline.
+  - The CI `infrastructure-hardening` job blocks regressions at PR time through the full hardening baseline.
 
 ## Core Design
 
 - **Gateway Security Plane**:
-  - 공개 tooling UI는 TLS 종료 후 gateway 표준 체인 + SSO 체인을 강제한다.
+  - Public tooling UIs enforce the gateway standard chain and SSO chain after TLS termination.
 - **Network Isolation Plane**:
-  - tooling compose는 공통 `infra_net` external 경계를 명시적으로 선언한다.
+  - tooling compose files explicitly declare the shared `infra_net` external boundary.
 - **Runtime Stability Plane**:
-  - locust worker healthcheck와 k6 volume 계약을 최소 안정성 기준으로 적용한다.
+  - Apply the locust worker healthcheck and k6 volume contract as the minimum stability baseline.
 - **Policy Gate Plane**:
-  - tooling hardening checker + CI job으로 변경 회귀를 조기 차단한다.
+  - Block change regressions early with the tooling hardening checker and CI job.
 
 ## Data Modeling & Storage Strategy
 
-- registry/sonarqube/syncthing/k6/locust는 기존 bind volume 전략을 유지한다.
-- terrakube/terraform은 기존 state/artifact 데이터 경계를 유지한다.
-- drift/승격 정책은 operations/tasks에서 단계적으로 강화한다.
+- registry/sonarqube/syncthing/k6/locust keep the existing bind volume strategy.
+- terrakube/terraform keep the existing state/artifact data boundary.
+- drift/promotion policy is strengthened incrementally through operations/tasks.
 
 ## Interfaces & Data Structures
 
@@ -82,20 +82,20 @@ tooling_hardening_controls:
 
 ## Edge Cases & Error Handling
 
-- SSO 체인 강화로 기존 자동화 접근 경로가 차단될 수 있으므로 운영 예외 절차를 적용한다.
-- locust-worker healthcheck 오탐 시 worker 프로세스 기준으로 재조정한다.
-- k6 시나리오 미존재로 실행 실패 시 baseline 시나리오 준비 태스크를 별도 추적한다.
+- SSO chain hardening can block existing automation access paths, so apply the operational exception procedure.
+- If the locust-worker healthcheck reports false positives, readjust it around the worker process.
+- If execution fails because no k6 scenario exists, track baseline scenario preparation separately.
 
 ## Failure Modes & Fallback / Human Escalation
 
-- **Failure Mode**: tooling UI 접근 정책 회귀
-  - **Fallback**: 최근 정상 middleware 설정으로 롤백
-  - **Human Escalation**: Gateway/Auth 운영 승인자
-- **Failure Mode**: locust worker 재시작 루프
-  - **Fallback**: healthcheck/worker command 계약 재적용
+- **Failure Mode**: tooling UI access policy regression
+  - **Fallback**: roll back to the most recent working middleware settings
+  - **Human Escalation**: Gateway/Auth operations approver
+- **Failure Mode**: locust worker restart loop
+  - **Fallback**: reapply the healthcheck/worker command contract
   - **Human Escalation**: Performance tooling owner
-- **Failure Mode**: k6 실행 데이터 경로 불일치
-  - **Fallback**: `k6-data` volume 계약 복원
+- **Failure Mode**: k6 execution data path mismatch
+  - **Fallback**: restore the `k6-data` volume contract
   - **Human Escalation**: DevOps on-call
 
 ## Verification
@@ -109,10 +109,10 @@ bash scripts/validation/check-repo-contracts.sh
 
 ## Success Criteria & Verification Plan
 
-- **VAL-TLG-001**: tooling hardening check and documented optional root-context validation boundary 통과
-- **VAL-TLG-002**: tooling hardening baseline script 실패 0건
-- **VAL-TLG-003**: PRD~Runbook optimization-hardening 문서 링크 정합성 유지
-- **VAL-TLG-004**: 카탈로그 `09-tooling` 확장 항목이 Plan/Tasks/Operations에 반영
+- **VAL-TLG-001**: tooling hardening check and documented optional root-context validation boundary pass.
+- **VAL-TLG-002**: tooling hardening baseline script has zero failures.
+- **VAL-TLG-003**: PRD~Runbook optimization-hardening document links remain consistent.
+- **VAL-TLG-004**: catalog `09-tooling` expansion items are reflected in Plan/Tasks/Operations.
 
 ## Agent Role & IO Contract (If Applicable)
 

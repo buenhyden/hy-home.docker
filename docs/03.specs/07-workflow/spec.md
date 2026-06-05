@@ -7,19 +7,19 @@ status: active
 
 ## Overview
 
-이 문서는 `infra/07-workflow`(Airflow, n8n) 계층의 최적화/하드닝 기술 명세다. 게이트웨이 경계 보안, health 기반 기동 안정성, n8n 컨테이너 하드닝, CI 정책 게이트, 카탈로그 기반 확장 요구를 구현 계약으로 정의한다.
+This document is the optimization/hardening technical specification for the `infra/07-workflow` tier (Airflow, n8n). It defines gateway boundary security, health-based startup stability, n8n container hardening, CI policy gates, and catalog-based expansion requirements as implementation contracts.
 
 ## Strategic Boundaries & Non-goals
 
 - **Owns**:
-  - Airflow/n8n Traefik middleware 계약
-  - Airflow/n8n dependency/healthcheck 계약
-  - n8n custom image runtime hardening 계약
-  - `check-all-hardening.sh 07-workflow` 정책 게이트 계약
+  - Airflow/n8n Traefik middleware contract
+  - Airflow/n8n dependency/healthcheck contract
+  - n8n custom image runtime hardening contract
+  - `check-all-hardening.sh 07-workflow` policy gate contract
 - **Does Not Own**:
-  - 개별 Airflow DAG 비즈니스 로직
-  - n8n 워크플로 내부 비즈니스 로직
-  - 신규 workflow service 프로덕션 배포
+  - Individual Airflow DAG business logic
+  - Internal n8n workflow business logic
+  - Production deployment of new workflow services
 
 ## Related Inputs
 
@@ -32,35 +32,35 @@ status: active
 ## Contracts
 
 - **Config Contract**:
-  - Airflow UI/Flower 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용한다.
-  - n8n UI 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용한다.
-  - service-local Airflow 핵심 서비스(`apiserver`, `scheduler`, `dag-processor`, `worker`, `triggerer`, `flower`)는 `airflow-valkey` health 기반 의존성을 가진다.
-  - root-included dev Airflow compose는 shared `mng-valkey` broker 경계를 문서화한다.
-  - n8n `worker`, `task-runner`는 healthcheck를 제공하며 service-local `task-runner`는 `n8n`/`n8n-valkey` health 기반 의존성을 가진다.
-  - root-included dev n8n compose는 shared `mng-valkey` broker 경계를 문서화한다.
+  - Airflow UI/Flower routers use `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
+  - The n8n UI router uses `gateway-standard-chain@file,sso-errors@file,sso-auth@file`.
+  - service-local Airflow core services (`apiserver`, `scheduler`, `dag-processor`, `worker`, `triggerer`, `flower`) have `airflow-valkey` health-based dependencies.
+  - root-included dev Airflow compose documents the shared `mng-valkey` broker boundary.
+  - n8n `worker` and `task-runner` provide healthchecks, and the service-local `task-runner` has `n8n`/`n8n-valkey` health-based dependencies.
+  - root-included dev n8n compose documents the shared `mng-valkey` broker boundary.
 - **Data / Interface Contract**:
   - Airflow: CeleryExecutor + Valkey broker + PostgreSQL result backend
   - n8n: Queue mode + external runner + PostgreSQL metadata backend
 - **Governance Contract**:
-  - `scripts/hardening/check-all-hardening.sh 07-workflow` 통과가 workflow tier 하드닝 기본선이다.
-  - CI `infrastructure-hardening` job이 PR 단계에서 회귀를 차단한다.
+  - Passing `scripts/hardening/check-all-hardening.sh 07-workflow` is the workflow tier hardening baseline.
+  - The CI `infrastructure-hardening` job blocks regressions at PR time.
 
 ## Core Design
 
 - **Gateway Security Plane**:
-  - 외부 노출 관리 경로는 TLS 종료 후 표준 체인 + SSO 체인을 강제한다.
+  - Externally exposed management paths enforce the standard chain and SSO chain after TLS termination.
 - **Orchestration Runtime Plane**:
-  - Airflow는 service-local compose에서 Valkey health를 선행 조건으로 의존성을 정렬한다.
-  - n8n은 main/worker/task-runner를 분리해 queue mode로 운영한다.
+  - Airflow orders dependencies in service-local compose with Valkey health as a prerequisite.
+  - n8n separates main/worker/task-runner and operates in queue mode.
 - **Image Hardening Plane**:
-  - n8n은 multi-stage Dockerfile과 `USER node` 기반 비루트 실행을 유지한다.
-  - n8n entrypoint는 필수 secret 파일 부재 시 즉시 fail-close 한다.
+  - n8n keeps non-root execution through a multi-stage Dockerfile and `USER node`.
+  - The n8n entrypoint fails closed immediately when required secret files are missing.
 
 ## Data Modeling & Storage Strategy
 
-- Airflow DAG/log/config/plugins는 `${DEFAULT_WORKFLOW_DIR}/airflow/*` 바인드 볼륨을 사용한다.
-- n8n state/custom/task-runner data는 `${DEFAULT_WORKFLOW_DIR}/n8n*` 바인드 볼륨을 사용한다.
-- 워크플로 메타데이터는 management PostgreSQL(`infra/04-data`)을 사용한다.
+- Airflow DAG/log/config/plugins use `${DEFAULT_WORKFLOW_DIR}/airflow/*` bind volumes.
+- n8n state/custom/task-runner data uses `${DEFAULT_WORKFLOW_DIR}/n8n*` bind volumes.
+- Workflow metadata uses management PostgreSQL (`infra/04-data`).
 
 ## Interfaces & Data Structures
 
@@ -83,17 +83,17 @@ workflow_hardening_controls:
 
 ## Edge Cases & Error Handling
 
-- SSO 체인 강화 이후 자동화 경로 접근 실패 시 운영 승인 기반 예외 절차를 적용한다.
-- Airflow Valkey health 미통과 시 orchestrator startup은 fail-fast 한다.
-- n8n 필수 secret 누락 시 entrypoint에서 즉시 종료하고 장애를 명시적으로 노출한다.
+- If automation paths fail after SSO chain hardening, apply the operations-approved exception procedure.
+- If Airflow Valkey health does not pass, orchestrator startup fails fast.
+- If required n8n secrets are missing, the entrypoint exits immediately and exposes the failure explicitly.
 
 ## Failure Modes & Fallback / Human Escalation
 
-- **Failure Mode**: middleware 오구성으로 UI 접근 실패
-  - **Fallback**: 최근 정상 compose 버전으로 롤백
-  - **Human Escalation**: Gateway/Auth 운영 승인자
-- **Failure Mode**: worker/task-runner 기동 실패
-  - **Fallback**: healthcheck/depends_on 계약 재적용 후 재기동
+- **Failure Mode**: UI access failure due to middleware misconfiguration
+  - **Fallback**: roll back to the most recent working compose version
+  - **Human Escalation**: Gateway/Auth operations approver
+- **Failure Mode**: worker/task-runner startup failure
+  - **Fallback**: reapply the healthcheck/depends_on contract, then restart
   - **Human Escalation**: Workflow on-call
 
 ## Verification
@@ -108,10 +108,10 @@ bash scripts/validation/check-doc-traceability.sh
 
 ## Success Criteria & Verification Plan
 
-- **VAL-WRK-001**: Airflow/n8n compose static validation 통과
-- **VAL-WRK-002**: workflow hardening baseline script 실패 0건
-- **VAL-WRK-003**: PRD~Runbook optimization-hardening 문서 링크 정합성 유지
-- **VAL-WRK-004**: 카탈로그 `07-workflow` 확장 항목(Airflow DAG quality gate, n8n backup/Vault)이 문서/태스크에 반영
+- **VAL-WRK-001**: Airflow/n8n compose static validation passes.
+- **VAL-WRK-002**: workflow hardening baseline script has zero failures.
+- **VAL-WRK-003**: PRD~Runbook optimization-hardening document links remain consistent.
+- **VAL-WRK-004**: catalog `07-workflow` expansion items (Airflow DAG quality gate, n8n backup/Vault) are reflected in documents/tasks.
 
 ## Agent Role & IO Contract (If Applicable)
 
