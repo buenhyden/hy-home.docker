@@ -1,9 +1,13 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 import storybook from "eslint-plugin-storybook";
 
+import { createRequire } from "node:module";
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
+
+const require = createRequire(import.meta.url);
+const packageJson = require("./package.json");
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -18,7 +22,14 @@ const eslintConfig = defineConfig([
     "storybook-static/**",
     "next-env.d.ts",
   ]),
-  ...storybook.configs["flat/recommended"]
+  ...storybook.configs["flat/recommended"],
+  {
+    settings: {
+      react: {
+        version: packageJson.dependencies.react,
+      },
+    },
+  },
 ]);
 
 export default eslintConfig;
