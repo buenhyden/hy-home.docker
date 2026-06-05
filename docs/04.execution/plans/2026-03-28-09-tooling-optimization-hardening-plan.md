@@ -7,72 +7,72 @@ status: completed
 
 ## Overview
 
-이 문서는 `infra/09-tooling` 최적화/하드닝 실행 계획서다. gateway+SSO 경계 정렬, 네트워크 격리 명시, 테스트 도구 런타임 안정화, CI 정책 게이트 도입, 카탈로그 확장 로드맵을 단계적으로 수행한다.
+This document is the optimization/hardening implementation plan for `infra/09-tooling`. It stages gateway+SSO boundary alignment, explicit network isolation, test-tool runtime stabilization, CI policy gate introduction, and catalog expansion roadmap work.
 
 ## Context
 
-- 기준 카탈로그: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
-- 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 대상 구성: `infra/09-tooling/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
+- Baseline catalog: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
+- Parent priority plan: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
+- Target configuration: `infra/09-tooling/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - SonarQube/Terrakube/Syncthing 공개 경로를 gateway 표준+SSO 정책으로 정렬한다.
-  - tooling compose의 `infra_net` external 경계 선언을 표준화한다.
-  - locust-worker healthcheck와 k6 volume 계약을 정렬한다.
-  - tooling tier 하드닝 검증을 `scripts/hardening/check-all-hardening.sh 09-tooling` 및 통합 `infrastructure-hardening` CI 게이트로 정렬한다.
-  - 카탈로그 확장 항목을 문서/태스크 기반으로 실행 가능하게 만든다.
+  - Align SonarQube/Terrakube/Syncthing public paths with gateway standard and SSO policy.
+  - Standardize the `infra_net` external boundary declaration in tooling compose files.
+  - Align the locust-worker healthcheck and k6 volume contract.
+  - Align tooling tier hardening verification with `scripts/hardening/check-all-hardening.sh 09-tooling` and the integrated `infrastructure-hardening` CI gate.
+  - Make catalog expansion items executable through documents and tasks.
 - **In Scope**:
   - `infra/09-tooling/*/docker-compose.yml`
   - `scripts/hardening/check-all-hardening.sh 09-tooling`
   - `scripts/README.md`
   - `.github/workflows/ci-quality.yml`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` tooling optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` tooling optimization-hardening documents/READMEs
 
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - 즉시 카탈로그 확장 항목의 전면 런타임 적용
-  - tooling 서비스 major upgrade
+  - Immediate full runtime application of catalog expansion items
+  - Tooling service major upgrades
 - **Out of Scope**:
-  - 신규 도구 도입
-  - data tier 아키텍처 변경
+  - Introducing new tools
+  - Data tier architecture changes
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-TLG-001 | SonarQube/Terrakube/Syncthing middleware를 gateway+SSO 체인으로 정렬 | `infra/09-tooling/{sonarqube,terrakube,syncthing}/docker-compose.yml` | REQ-PRD-TLG-FUN-01 | compose label 확인 |
-| PLN-TLG-002 | tooling compose `infra_net` external 선언 표준화 | `infra/09-tooling/*/docker-compose.yml` | REQ-PRD-TLG-FUN-02 | network contract 확인 |
-| PLN-TLG-003 | locust worker healthcheck + k6 volume 참조 정렬 | `infra/09-tooling/{locust,k6}/docker-compose.yml` | REQ-PRD-TLG-FUN-03 | health/volume 계약 확인 |
-| PLN-TLG-004 | tooling hardening script + CI 게이트 추가 | `scripts/hardening/check-all-hardening.sh 09-tooling`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-TLG-FUN-04 | script/CI job 확인 |
-| PLN-TLG-005 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-TLG-FUN-05 | 링크 정합성 확인 |
-| PLN-TLG-006 | 카탈로그 확장 항목 작업 분해(도구별) | Plan/Task/Ops/Guide docs | REQ-PRD-TLG-FUN-06 | 태스크/정책 반영 확인 |
+| PLN-TLG-001 | Align SonarQube/Terrakube/Syncthing middleware with the gateway+SSO chain | `infra/09-tooling/{sonarqube,terrakube,syncthing}/docker-compose.yml` | REQ-PRD-TLG-FUN-01 | Compose labels confirmed |
+| PLN-TLG-002 | Standardize tooling compose `infra_net` external declarations | `infra/09-tooling/*/docker-compose.yml` | REQ-PRD-TLG-FUN-02 | Network contract confirmed |
+| PLN-TLG-003 | Align locust worker healthcheck and k6 volume references | `infra/09-tooling/{locust,k6}/docker-compose.yml` | REQ-PRD-TLG-FUN-03 | Health/volume contract confirmed |
+| PLN-TLG-004 | Add tooling hardening script and CI gate | `scripts/hardening/check-all-hardening.sh 09-tooling`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-TLG-FUN-04 | Script/CI job confirmed |
+| PLN-TLG-005 | Create PRD-to-Runbook document system and cross-links | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-TLG-FUN-05 | Link consistency confirmed |
+| PLN-TLG-006 | Break down catalog expansion items by tool | Plan/Task/Ops/Guide docs | REQ-PRD-TLG-FUN-06 | Task/policy reflection confirmed |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-TLG-001 | Structural | tooling optional compose boundary 검증 | `bash scripts/hardening/check-all-hardening.sh 09-tooling`; approved runtime rehearsal uses root network/secret/dependency context | 실패 0건 및 service-local 단독 config를 성공 기준으로 삼지 않음 |
-| VAL-TLG-002 | Compliance | tooling 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 09-tooling` | 실패 0건 |
-| VAL-TLG-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-TLG-004 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
+| VAL-TLG-001 | Structural | Verify tooling optional compose boundary | `bash scripts/hardening/check-all-hardening.sh 09-tooling`; approved runtime rehearsal uses root network/secret/dependency context | 0 failures; service-local standalone config is not treated as the success criterion |
+| VAL-TLG-002 | Compliance | Verify tooling hardening baseline | `bash scripts/hardening/check-all-hardening.sh 09-tooling` | 0 failures |
+| VAL-TLG-003 | Baseline | Template/security baseline | `bash scripts/validation/check-template-security-baseline.sh` | 0 failures |
+| VAL-TLG-004 | Traceability | Verify document traceability | `bash scripts/validation/check-doc-traceability.sh` | 0 failures |
 
 ## Risks & Mitigations
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| SSO 강화로 기존 테스트 접근 경로 영향 | Medium | runbook에 예외/복구 절차 반영 |
-| locust/k6 런타임 계약 변경으로 테스트 스크립트 영향 | Medium | 단계적 검증 및 기본 시나리오 점검 |
-| 카탈로그 확장 항목 미완료로 정책 공백 | Medium | tasks에 단계/우선순위/승인 게이트 명시 |
+| SSO hardening affects existing test access paths | Medium | Reflect exceptions and recovery procedures in the runbook |
+| locust/k6 runtime contract changes affect test scripts | Medium | Use staged verification and basic scenario checks |
+| Incomplete catalog expansion items leave policy gaps | Medium | Specify phases, priorities, and approval gates in tasks |
 
 ## Completion Criteria
 
-- [x] tooling compose/script/ci 하드닝 반영
-- [x] tooling optimization-hardening 문서 세트 생성
-- [x] Stage 01-05 README 인덱스 반영
-- [ ] runtime 리허설/성능 증적 확보 (환경 허용 시)
+- [x] Tooling compose/script/CI hardening reflected
+- [x] Tooling optimization-hardening document set created
+- [x] Stage 01-05 README indexes reflected
+- [ ] Runtime rehearsal/performance evidence secured when the environment allows
 
 ## Related Documents
 

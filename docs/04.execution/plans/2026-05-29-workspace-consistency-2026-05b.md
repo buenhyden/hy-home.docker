@@ -8,78 +8,78 @@ status: completed
 
 ## Overview
 
-이 문서는 워크스페이스 거버넌스 일관성 후속 작업(2026-05b)의 실행 계획서다. PR #89 이후 식별된 거버넌스 규칙 형식화, 검증 스크립트 확장, 템플릿 정규화, 소규모 문서 수정을 단계별로 수행하고 완료 기준을 정의한다.
+This document is the implementation plan for the workspace governance consistency follow-up work (2026-05b). It stages governance rule formalization, validation script expansion, template normalization, and small documentation fixes identified after PR #89, and defines completion criteria.
 
 ## Context
 
-PR #89(`workspace-doc-consistency-2026-05`)에서 대규모 구조적 일관성 작업을 완료했다. 이 작업은 그 후속으로, 다음 항목을 대상으로 한다:
+PR #89 (`workspace-doc-consistency-2026-05`) completed large-scale structural consistency work. This follow-up targets the following items:
 
-- `documentation-protocol.md`에 실제 적용 중인 R4(Operations Profile Compliance), R5(Frontmatter Status) 규칙이 명문화되지 않은 상태
-- `github-governance.md`에 CI/CD job taxonomy 섹션 부재
-- `check-repo-contracts.sh` 가이드 프로파일 검사가 `## Usage`만 확인하고 `## Common Checks`, `## Runbook Handoff`는 미검증
-- `docs/99.templates/README.md` 템플릿 목록에 guide.template.md, runbook.template.md 누락
-- `agent-design.template.md` 예시에 가상 파일명 사용
-- `docs/05.operations/policies/01-gateway/nginx.md`에 중복 `## Policy Scope` 헤딩 존재
+- R4 (Operations Profile Compliance) and R5 (Frontmatter Status), which are already applied in practice, are not codified in `documentation-protocol.md`.
+- `github-governance.md` lacks a CI/CD job taxonomy section.
+- The `check-repo-contracts.sh` guide profile check verifies only `## Usage` and does not verify `## Common Checks` or `## Runbook Handoff`.
+- guide.template.md and runbook.template.md are missing from the template list in `docs/99.templates/README.md`.
+- `agent-design.template.md` examples use imaginary filenames.
+- `docs/05.operations/policies/01-gateway/nginx.md` contains a duplicate `## Policy Scope` heading.
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - `documentation-protocol.md`에 R4, R5 규칙 추가
-  - `github-governance.md`에 CI/CD job taxonomy 섹션(Section 8) 추가
-  - `check-repo-contracts.sh` 가이드 프로파일 검사 강화
-  - `docs/99.templates/README.md` 템플릿 목록 최신화
-  - `agent-design.template.md` 예시 파일명 교체
-  - `nginx.md` 중복 헤딩 제거
+  - Add R4 and R5 rules to `documentation-protocol.md`.
+  - Add CI/CD job taxonomy section (Section 8) to `github-governance.md`.
+  - Strengthen guide profile checks in `check-repo-contracts.sh`.
+  - Update the template list in `docs/99.templates/README.md`.
+  - Replace example filenames in `agent-design.template.md`.
+  - Remove the duplicate heading in `nginx.md`.
 - **In Scope**: `docs/00.agent-governance/rules/`, `scripts/validation/`, `docs/99.templates/`, `docs/05.operations/policies/01-gateway/`
 
 ## Non-Goals & Out-of-Scope
 
-- **Non-goals**: 문서 본문 내용 개정, 새로운 요구사항 반영
-- **Out of Scope**: docs/01~04 구조 변경, Docker Compose 변경, secret/env 변경
+- **Non-goals**: Revising documentation body content or reflecting new requirements.
+- **Out of Scope**: docs/01~04 structural changes, Docker Compose changes, or secret/env changes.
 
 ## Work Breakdown
 
 | Task ID | Description                                          | Files / Docs Affected                                      | Target REQ  | Validation Criteria                                |
 | ------- | ---------------------------------------------------- | ---------------------------------------------------------- | ----------- | -------------------------------------------------- |
-| PLN-001 | documentation-protocol.md에 R4+R5 규칙 추가          | `docs/00.agent-governance/rules/documentation-protocol.md` | VAL-SPC-001 | R4, R5 섹션 존재 확인                              |
-| PLN-002 | github-governance.md에 Section 8 CI/CD taxonomy 추가 | `docs/00.agent-governance/rules/github-governance.md`      | VAL-SPC-002 | Section 8 존재 확인                                |
-| PLN-003 | check-repo-contracts.sh 가이드 프로파일 검사 강화    | `scripts/validation/check-repo-contracts.sh`               | VAL-SPC-003 | `## Common Checks`, `## Runbook Handoff` 검사 포함 |
-| PLN-004 | docs/99.templates/README.md 템플릿 목록 추가         | `docs/99.templates/README.md`                              | VAL-SPC-004 | guide.template.md, runbook.template.md 목록 포함   |
-| PLN-005 | agent-design.template.md 예시 파일명 교체            | `docs/99.templates/agent-design.template.md`               | VAL-SPC-004 | 가상 파일명 없음, 디렉터리 링크 사용               |
-| PLN-006 | nginx.md 중복 Policy Scope 헤딩 제거                 | `docs/05.operations/policies/01-gateway/nginx.md`          | VAL-SPC-005 | 중복 헤딩 0건                                      |
+| PLN-001 | Add R4+R5 rules to documentation-protocol.md | `docs/00.agent-governance/rules/documentation-protocol.md` | VAL-SPC-001 | R4 and R5 sections exist |
+| PLN-002 | Add Section 8 CI/CD taxonomy to github-governance.md | `docs/00.agent-governance/rules/github-governance.md` | VAL-SPC-002 | Section 8 exists |
+| PLN-003 | Strengthen check-repo-contracts.sh guide profile checks | `scripts/validation/check-repo-contracts.sh` | VAL-SPC-003 | `## Common Checks` and `## Runbook Handoff` checks are included |
+| PLN-004 | Add docs/99.templates/README.md template list entries | `docs/99.templates/README.md` | VAL-SPC-004 | guide.template.md and runbook.template.md are listed |
+| PLN-005 | Replace agent-design.template.md example filenames | `docs/99.templates/agent-design.template.md` | VAL-SPC-004 | No imaginary filenames; directory links are used |
+| PLN-006 | Remove duplicate Policy Scope heading in nginx.md | `docs/05.operations/policies/01-gateway/nginx.md` | VAL-SPC-005 | 0 duplicate headings |
 
 ## Verification Plan
 
 | ID          | Level       | Description               | Command / How to Run                                                        | Pass Criteria      |
 | ----------- | ----------- | ------------------------- | --------------------------------------------------------------------------- | ------------------ |
-| VAL-PLN-001 | Structural  | R4/R5 규칙 존재           | `grep -c "R4\|R5" docs/00.agent-governance/rules/documentation-protocol.md` | ≥2                 |
-| VAL-PLN-002 | Structural  | CI/CD taxonomy 섹션 존재  | `grep "CI/CD" docs/00.agent-governance/rules/github-governance.md`          | 결과 있음          |
-| VAL-PLN-003 | Structural  | 가이드 프로파일 검사 강화 | `grep "Common Checks" scripts/validation/check-repo-contracts.sh`           | 결과 있음          |
-| VAL-PLN-004 | Integration | repo contracts 검증       | `bash scripts/validation/check-repo-contracts.sh`                           | exit 0, failures=0 |
-| VAL-PLN-005 | Integration | doc traceability 검증     | `bash scripts/validation/check-doc-traceability.sh`                         | exit 0, failures=0 |
+| VAL-PLN-001 | Structural  | R4/R5 rules exist | `grep -c "R4\|R5" docs/00.agent-governance/rules/documentation-protocol.md` | >=2 |
+| VAL-PLN-002 | Structural  | CI/CD taxonomy section exists | `grep "CI/CD" docs/00.agent-governance/rules/github-governance.md` | Results exist |
+| VAL-PLN-003 | Structural  | Guide profile checks are strengthened | `grep "Common Checks" scripts/validation/check-repo-contracts.sh` | Results exist |
+| VAL-PLN-004 | Integration | Verify repo contracts | `bash scripts/validation/check-repo-contracts.sh` | exit 0, failures=0 |
+| VAL-PLN-005 | Integration | Verify doc traceability | `bash scripts/validation/check-doc-traceability.sh` | exit 0, failures=0 |
 
 ## Risks & Mitigations
 
 | Risk                           | Impact | Mitigation                                              |
 | ------------------------------ | ------ | ------------------------------------------------------- |
-| 스크립트 강화로 기존 파일 실패 | Medium | 강화 전 영향 파일 사전 점검, 필요시 해당 파일 함께 수정 |
-| 규칙 추가 후 번호 충돌         | Low    | 기존 규칙 번호 체계 확인 후 연번 배정                   |
+| Script strengthening breaks existing files | Medium | Check affected files before strengthening and edit those files together if needed |
+| Rule numbering conflicts after additions | Low | Check the existing rule numbering system and assign the next number |
 
 ## Agent Rollout & Evaluation Gates (If Applicable)
 
 - **Offline Eval Gate**: N/A
 - **Sandbox / Canary Rollout**: N/A
-- **Human Approval Gate**: 각 Phase 커밋 후 git diff 검토
-- **Rollback Trigger**: `git revert <commit>` 또는 `git reset --hard HEAD~N`
+- **Human Approval Gate**: Review git diff after each phase commit.
+- **Rollback Trigger**: `git revert <commit>` or `git reset --hard HEAD~N`
 - **Prompt / Model Promotion Criteria**: N/A
 
 ## Completion Criteria
 
-- [x] PLN-001 ~ PLN-006 모든 태스크 완료
-- [x] VAL-PLN-001 ~ VAL-PLN-005 전체 통과
+- [x] All tasks PLN-001 through PLN-006 completed
+- [x] All checks VAL-PLN-001 through VAL-PLN-005 passed
 - [x] `bash scripts/validation/check-repo-contracts.sh` exit 0
 - [x] `bash scripts/validation/check-doc-traceability.sh` exit 0
-- [x] Conventional Commits 형식으로 각 변경 커밋 완료
+- [x] Each change committed in Conventional Commits format
 
 ## Related Documents
 

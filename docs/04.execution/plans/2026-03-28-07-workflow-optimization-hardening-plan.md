@@ -7,76 +7,76 @@ status: completed
 
 ## Overview
 
-이 문서는 `infra/07-workflow` 최적화/하드닝 실행 계획서다. gateway 경계 보안 정렬, health 기반 기동 안정화, n8n custom image 하드닝, CI 정책 게이트, 카탈로그 확장 로드맵을 단계적으로 수행한다.
+This document is the optimization/hardening implementation plan for `infra/07-workflow`. It stages gateway boundary security alignment, health-based startup stabilization, n8n custom image hardening, CI policy gates, and catalog expansion roadmap work.
 
 ## Context
 
-- 기준 카탈로그: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
-- 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 대상 구성: `infra/07-workflow/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
+- Baseline catalog: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
+- Parent priority plan: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
+- Target configuration: `infra/07-workflow/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - Airflow/n8n 경로를 gateway 표준+SSO 정책으로 정렬한다.
-  - orchestrator/runtime startup을 health 기반으로 안정화한다.
-  - n8n custom image의 non-root/secret guard 계약을 compose 기본값으로 반영한다.
-  - workflow tier 하드닝 검증 명령 및 CI 게이트를 도입한다.
-  - 카탈로그 확장 항목을 문서/태스크로 실행 가능하게 만든다.
+  - Align Airflow/n8n paths with gateway standard and SSO policy.
+  - Stabilize orchestrator/runtime startup based on health.
+  - Reflect the n8n custom image non-root/secret guard contract as Compose defaults.
+  - Introduce workflow tier hardening verification commands and CI gates.
+  - Make catalog expansion items executable through documents and tasks.
 - **In Scope**:
   - `infra/07-workflow/airflow/docker-compose.yml`
   - `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,docker-entrypoint.sh}`
   - `scripts/hardening/check-all-hardening.sh 07-workflow`
   - `scripts/README.md`
   - `.github/workflows/ci-quality.yml`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` workflow optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` workflow optimization-hardening documents/READMEs
 
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - 신규 workflow service 즉시 배포
-  - 개별 DAG/workflow 로직 리팩터링
+  - Immediate deployment of new workflow services
+  - Refactoring individual DAG/workflow logic
 - **Out of Scope**:
-  - workflow tier 외 인프라 직접 변경
-  - 장기 HA 토폴로지(멀티클러스터) 구현
+  - Direct infrastructure changes outside the workflow tier
+  - Implementing long-term HA topology such as multi-cluster topology
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-WRK-001 | Airflow/n8n gateway+SSO middleware 정렬 | `infra/07-workflow/*/docker-compose.yml` | REQ-PRD-WRK-FUN-01 | compose labels 확인 |
-| PLN-WRK-002 | Airflow health-gated dependency 강화 | `infra/07-workflow/airflow/docker-compose.yml` | REQ-PRD-WRK-FUN-02 | `service_healthy` 계약 확인 |
-| PLN-WRK-003 | n8n worker/task-runner health/dependency 보강 | `infra/07-workflow/n8n/docker-compose.yml` | REQ-PRD-WRK-FUN-03 | healthcheck/depends_on 확인 |
-| PLN-WRK-004 | n8n custom image 및 entrypoint hardening 반영 | `infra/07-workflow/n8n/{Dockerfile,docker-entrypoint.sh,docker-compose.yml}` | REQ-PRD-WRK-FUN-04 | non-root/secret guard 확인 |
-| PLN-WRK-005 | workflow hardening command + CI 게이트 정렬 | `scripts/hardening/check-all-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-WRK-FUN-05 | script/CI job 확인 |
-| PLN-WRK-006 | PRD~Runbook 문서 체계 생성 및 상호 링크 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-WRK-FUN-06 | 링크 정합성 확인 |
-| PLN-WRK-007 | 카탈로그 확장 항목 작업 분해(Airflow/n8n) | Plan/Task/Ops/Guide docs | REQ-PRD-WRK-FUN-07 | 태스크/정책 반영 확인 |
+| PLN-WRK-001 | Align Airflow/n8n gateway+SSO middleware | `infra/07-workflow/*/docker-compose.yml` | REQ-PRD-WRK-FUN-01 | Compose labels confirmed |
+| PLN-WRK-002 | Strengthen Airflow health-gated dependency | `infra/07-workflow/airflow/docker-compose.yml` | REQ-PRD-WRK-FUN-02 | `service_healthy` contract confirmed |
+| PLN-WRK-003 | Strengthen n8n worker/task-runner health/dependency | `infra/07-workflow/n8n/docker-compose.yml` | REQ-PRD-WRK-FUN-03 | healthcheck/depends_on confirmed |
+| PLN-WRK-004 | Reflect n8n custom image and entrypoint hardening | `infra/07-workflow/n8n/{Dockerfile,docker-entrypoint.sh,docker-compose.yml}` | REQ-PRD-WRK-FUN-04 | non-root/secret guard confirmed |
+| PLN-WRK-005 | Align workflow hardening command and CI gate | `scripts/hardening/check-all-hardening.sh`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-WRK-FUN-05 | Script/CI job confirmed |
+| PLN-WRK-006 | Create PRD-to-Runbook document system and cross-links | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-WRK-FUN-06 | Link consistency confirmed |
+| PLN-WRK-007 | Break down catalog expansion items for Airflow/n8n | Plan/Task/Ops/Guide docs | REQ-PRD-WRK-FUN-07 | Task/policy reflection confirmed |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-WRK-001 | Structural | workflow root compose 정적 검증 | `HYHOME_COMPOSE_PROFILES=workflow bash scripts/validation/validate-docker-compose.sh` | 오류 없음 |
-| VAL-WRK-002 | Structural | workflow root dev compose 정적 검증 | `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh` | 오류 없음 |
-| VAL-WRK-003 | Compliance | workflow 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 07-workflow` | 실패 0건 |
-| VAL-WRK-004 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-WRK-005 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
+| VAL-WRK-001 | Structural | Static workflow root compose validation | `HYHOME_COMPOSE_PROFILES=workflow bash scripts/validation/validate-docker-compose.sh` | No errors |
+| VAL-WRK-002 | Structural | Static workflow root dev compose validation | `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh` | No errors |
+| VAL-WRK-003 | Compliance | Verify workflow hardening baseline | `bash scripts/hardening/check-all-hardening.sh 07-workflow` | 0 failures |
+| VAL-WRK-004 | Baseline | Template/security baseline | `bash scripts/validation/check-template-security-baseline.sh` | 0 failures |
+| VAL-WRK-005 | Traceability | Verify document traceability | `bash scripts/validation/check-doc-traceability.sh` | 0 failures |
 
 ## Risks & Mitigations
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| SSO 강화로 기존 운영 접근 경로 영향 | Medium | runbook에 예외/복구 절차 반영 |
-| custom image 빌드 실패로 배포 지연 | Medium | image pin 유지 + compose static 검증 선행 |
-| healthcheck 오탐으로 재시작 루프 | Medium | 프로세스 기반 최소 계약으로 시작, 운영 지표 기반 튜닝 |
-| 미구현 workflow service 문서가 active chain에 남을 위험 | Medium | 미구현 service active 문서와 task row를 제거하고 archive tombstone ledger로만 추적 |
+| SSO hardening affects existing operations access paths | Medium | Reflect exceptions and recovery procedures in the runbook |
+| Custom image build failure delays deployment | Medium | Keep image pinning and run Compose static validation first |
+| Healthcheck false positives create restart loops | Medium | Start with the minimum process-based contract and tune based on operations metrics |
+| Unimplemented workflow service docs remain in the active chain | Medium | Remove unimplemented service active docs and task rows, and track them only in the archive tombstone ledger |
 
 ## Completion Criteria
 
-- [x] workflow compose/image/script/ci 하드닝 반영
-- [x] workflow optimization-hardening 문서 세트 생성
-- [x] Stage 01-05 README 인덱스 반영
-- [ ] runtime 기동/리허설 증적 확보 (환경 허용 시)
+- [x] Workflow compose/image/script/CI hardening reflected
+- [x] Workflow optimization-hardening document set created
+- [x] Stage 01-05 README indexes reflected
+- [ ] Runtime startup/rehearsal evidence secured when the environment allows
 
 ## Related Documents
 

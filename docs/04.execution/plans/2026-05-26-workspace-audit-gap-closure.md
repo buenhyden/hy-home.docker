@@ -8,41 +8,41 @@ status: completed
 
 ## Overview
 
-이 문서는 2026-05-26 워크스페이스 감사(2차 세션)의 실행 계획서다. 이전 감사 세션(`2026-05-26-workspace-audit.md`)에서 식별된 신규 갭(GAP-NEW-03~10)을 클로저하기 위한 저위험 변경 목록, 검증 기준, 지연 항목을 정의한다.
+This document is the implementation plan for the 2026-05-26 workspace audit second session. It defines low-risk changes, verification criteria, and deferred items for closing newly identified gaps (GAP-NEW-03 through GAP-NEW-10) from the previous audit session (`2026-05-26-workspace-audit.md`).
 
 ## Context
 
-첫 번째 감사 세션에서 18개 스킬, env/secrets 비교, stage README 보강을 완료한 후, 두 번째 세션에서 추가 갭을 발견했다:
+After the first audit session completed 18 skills, env/secrets comparison, and stage README reinforcement, the second session found additional gaps:
 
-- `.codex/hooks.json`의 `UserPromptSubmit` 이벤트 누락 (hook parity contract 위반)
-- `.claude/CLAUDE.md`의 스킬 수 불일치 (11 vs 실제 18)
-- `stage-authoring-matrix.md`에 7개 신규 스킬의 stage 매핑 누락
-- `AGENTS.md` 섹션 3에 스킬 카운트 미명시
-- `docs/90.references/README.md`의 Stage Handoff 섹션 누락
-- `infra/tech-stack.versions.json` 드리프트 (16개 컴포넌트, Dependabot PR 미반영)
-- `docs/90.references/llm-wiki/index.md` 미갱신
+- Missing `UserPromptSubmit` event in `.codex/hooks.json` (hook parity contract violation)
+- Skill count mismatch in `.claude/CLAUDE.md` (11 vs actual 18)
+- Missing stage mappings for 7 new skills in `stage-authoring-matrix.md`
+- Missing skill count statement in AGENTS.md section 3
+- Missing Stage Handoff section in `docs/90.references/README.md`
+- Drift in `infra/tech-stack.versions.json` (16 components, Dependabot PR not reflected)
+- Stale `docs/90.references/llm-wiki/index.md`
 
 ## Goals & In-Scope
 
-- **Goals**: GAP-NEW-05~07, 09의 저위험 갭 즉시 클로저; GAP-NEW-03 차단 기록
-- **In Scope**: `.codex/hooks.json`, `AGENTS.md`, `stage-authoring-matrix.md`, `docs/90.references/README.md`, `infra/tech-stack.versions.json`, LLM Wiki 재생성
+- **Goals**: Immediately close low-risk gaps GAP-NEW-05 through GAP-NEW-07 and GAP-NEW-09; record the GAP-NEW-03 block.
+- **In Scope**: `.codex/hooks.json`, `AGENTS.md`, `stage-authoring-matrix.md`, `docs/90.references/README.md`, `infra/tech-stack.versions.json`, and LLM Wiki regeneration.
 
 ## Non-Goals & Out-of-Scope
 
-- **Non-goals**: Docker 런타임 동작 변경, 시크릿 값 변경, `.env` 값 변경
-- **Out of Scope**: GAP-NEW-08(ops 고아 파일 분류), GAP-NEW-10(pre-commit 통합) — 중간/고위험으로 deferred
+- **Non-goals**: Docker runtime behavior changes, secret value changes, or `.env` value changes.
+- **Out of Scope**: GAP-NEW-08 (ops orphan file classification), GAP-NEW-10 (pre-commit integration), deferred as medium/high risk.
 
 ## Work Breakdown
 
 | Task              | Description                           | Files / Docs Affected                  | Validation Criteria                  |
 | ----------------- | ------------------------------------- | -------------------------------------- | ------------------------------------ |
-| PLN-001           | `UserPromptSubmit` hook parity 추가   | `.codex/hooks.json`                    | 7개 이벤트 모두 존재, JSON 유효      |
-| PLN-002           | 스킬 카운트 명시                      | `AGENTS.md`                            | "18 skills" 문자열 존재              |
-| PLN-003           | Stage Authoring Matrix 스킬 섹션 추가 | `stage-authoring-matrix.md`            | Section 4 존재, 7개 스킬 매핑        |
-| PLN-004           | 90.references Stage Handoff 섹션 추가 | `docs/90.references/README.md`         | "Stage Handoff" 섹션 존재            |
-| PLN-005           | tech-stack 드리프트 정정              | `infra/tech-stack.versions.json`       | `check-repo-contracts.sh` failures=0 |
-| PLN-006           | LLM Wiki 인덱스 재생성                | `docs/90.references/llm-wiki/index.md` | `check-repo-contracts.sh` failures=0 |
-| PLN-007 (BLOCKED) | `.claude/CLAUDE.md` 스킬 수 수정      | `.claude/CLAUDE.md`                    | 차단됨 — 사용자 수동 수정 필요       |
+| PLN-001           | Add `UserPromptSubmit` hook parity | `.codex/hooks.json`                    | All 7 events exist; JSON is valid |
+| PLN-002           | State skill count | `AGENTS.md`                            | "18 skills" string exists |
+| PLN-003           | Add Stage Authoring Matrix skills section | `stage-authoring-matrix.md`            | Section 4 exists with 7 skill mappings |
+| PLN-004           | Add 90.references Stage Handoff section | `docs/90.references/README.md`         | "Stage Handoff" section exists |
+| PLN-005           | Correct tech-stack drift | `infra/tech-stack.versions.json`       | `check-repo-contracts.sh` failures=0 |
+| PLN-006           | Regenerate LLM Wiki index | `docs/90.references/llm-wiki/index.md` | `check-repo-contracts.sh` failures=0 |
+| PLN-007 (BLOCKED) | Correct `.claude/CLAUDE.md` skill count | `.claude/CLAUDE.md`                    | Blocked; user manual edit required |
 
 ## Verification Plan
 
@@ -51,25 +51,25 @@ status: completed
 | VAL-001 | Structural | repo contracts                  | `bash scripts/validation/check-repo-contracts.sh`    | failures=0               |
 | VAL-002 | Structural | doc traceability                | `bash scripts/validation/check-doc-traceability.sh`  | failures=0               |
 | VAL-003 | Structural | Compose validation              | `bash scripts/validation/validate-docker-compose.sh` | No errors                |
-| VAL-004 | Structural | UserPromptSubmit in Codex hooks | `jq '.hooks                                          | keys' .codex/hooks.json` | 7개 키 확인 |
+| VAL-004 | Structural | UserPromptSubmit in Codex hooks | `jq '.hooks                                          | keys' .codex/hooks.json` | 7 keys confirmed |
 
 ## Risks & Mitigations
 
 | Risk                                   | Impact | Mitigation                                                   |
 | -------------------------------------- | ------ | ------------------------------------------------------------ |
-| `.claude/CLAUDE.md` 자기-수정 차단     | Low    | GAP-NEW-03 블록 기록, 사용자에게 수동 수정 안내              |
-| tech-stack.versions.json 드리프트 재발 | Medium | Dependabot PR merge 시 JSON 수동 갱신 필요 — future ADR 권장 |
+| `.claude/CLAUDE.md` self-modification is blocked | Low    | Record GAP-NEW-03 block and tell the user manual correction is required |
+| tech-stack.versions.json drift recurs | Medium | Manual JSON update is needed when Dependabot PRs merge; future ADR recommended |
 
 ## Completion Criteria
 
-- [x] GAP-NEW-05: stage-authoring-matrix.md Section 4 추가
-- [x] GAP-NEW-06: AGENTS.md 스킬 카운트 명시
-- [x] GAP-NEW-07: 90.references Stage Handoff 섹션 추가
-- [x] GAP-NEW-09: `.codex/hooks.json` UserPromptSubmit 추가
-- [x] tech-stack 드리프트 클로저 (PLN-005, PLN-006)
-- [ ] GAP-NEW-03: `.claude/CLAUDE.md` 수동 수정 (사용자 pending)
-- [ ] GAP-NEW-08 (deferred): ops 고아 파일 tier 분류 문서화
-- [ ] GAP-NEW-10 (deferred): pre-commit 검증 스크립트 통합
+- [x] GAP-NEW-05: stage-authoring-matrix.md Section 4 added
+- [x] GAP-NEW-06: AGENTS.md skill count stated
+- [x] GAP-NEW-07: 90.references Stage Handoff section added
+- [x] GAP-NEW-09: `.codex/hooks.json` UserPromptSubmit added
+- [x] tech-stack drift closure (PLN-005, PLN-006)
+- [ ] GAP-NEW-03: `.claude/CLAUDE.md` manual correction (user pending)
+- [ ] GAP-NEW-08 (deferred): document ops orphan file tier classification
+- [ ] GAP-NEW-10 (deferred): integrate pre-commit validation script
 
 ## Related Documents
 

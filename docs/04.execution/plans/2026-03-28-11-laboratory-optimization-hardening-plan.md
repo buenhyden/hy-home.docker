@@ -7,76 +7,76 @@ status: completed
 
 ## Overview
 
-이 문서는 `infra/11-laboratory` 최적화/하드닝 실행 계획서다. ingress 보안 경계 강화, direct 노출 제거, 최소권한 개선, CI 정책 게이트 도입, 카탈로그 확장 항목의 단계적 운영 적용을 수행한다.
+This document is the optimization/hardening implementation plan for `infra/11-laboratory`. It strengthens ingress security boundaries, removes direct exposure, improves least privilege, introduces CI policy gates, and applies catalog expansion items to operations in stages.
 
 ## Context
 
-- 기준 카탈로그: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
-- 상위 우선순위 계획: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
-- 대상 구성: `infra/11-laboratory/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
+- Baseline catalog: [../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md](../../05.operations/policies/00-workspace/infra-service-optimization-catalog.md)
+- Parent priority plan: [2026-03-27-infra-service-optimization-priority-plan.md](./2026-03-27-infra-service-optimization-priority-plan.md)
+- Target configuration: `infra/11-laboratory/**/*`, `scripts/`, `.github/workflows/`, `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}`
 
 ## Goals & In-Scope
 
 - **Goals**:
-  - Laboratory UI 라우터를 gateway+allowlist+SSO 경계로 정렬한다.
-  - dashboard direct host 노출을 제거한다.
-  - root `infra_net` context에 합류하는 service network block을 표준화한다.
-  - dozzle socket 최소권한(read-only)을 적용한다.
-  - laboratory hardening baseline을 `scripts/hardening/check-all-hardening.sh 11-laboratory` 및 통합 `infrastructure-hardening` CI gate로 정렬한다.
-  - 카탈로그 확장 항목을 정책/작업 로드맵으로 반영한다.
+  - Align Laboratory UI routers with gateway+allowlist+SSO boundaries.
+  - Remove dashboard direct host exposure.
+  - Standardize service network blocks that join the root `infra_net` context.
+  - Apply least privilege (read-only) to the dozzle socket.
+  - Align the laboratory hardening baseline with `scripts/hardening/check-all-hardening.sh 11-laboratory` and the integrated `infrastructure-hardening` CI gate.
+  - Reflect catalog expansion items in policy/task roadmaps.
 - **In Scope**:
   - `infra/11-laboratory/*/docker-compose.yml`
   - `.env.example`
   - `scripts/hardening/check-all-hardening.sh 11-laboratory`
   - `.github/workflows/ci-quality.yml`
-  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening 문서/README
+  - `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}` optimization-hardening documents/READMEs
   - root-active Open Notebook/SurrealDB hardening boundary
 
 ## Non-Goals & Out-of-Scope
 
 - **Non-goals**:
-  - Laboratory 서비스군 신규 도입/대체
-  - Keycloak/Traefik 코어 정책 재설계
+  - Introducing or replacing Laboratory service groups
+  - Redesigning Keycloak/Traefik core policies
 - **Out of Scope**:
-  - 비-Laboratory tier 런타임 변경
-  - 도구 major version migration
+  - Runtime changes outside the Laboratory tier
+  - Tool major version migration
 
 ## Work Breakdown
 
 | Task | Description | Files / Docs Affected | Target REQ | Validation Criteria |
 | --- | --- | --- | --- | --- |
-| PLN-LAB-001 | 라우터 middleware를 gateway+allowlist+SSO 체인으로 정렬 | `infra/11-laboratory/*/docker-compose.yml` | REQ-PRD-LAB-FUN-01/02 | compose label 확인 |
-| PLN-LAB-002 | root `infra_net` service network block 표준화 | `infra/11-laboratory/*/docker-compose.yml` | REQ-PRD-LAB-FUN-04 | network contract 확인 |
-| PLN-LAB-003 | dashboard direct host 노출 제거 | `infra/11-laboratory/dashboard/docker-compose.yml` | REQ-PRD-LAB-FUN-03 | `ports:` 제거/`expose` 확인 |
-| PLN-LAB-004 | dozzle socket 최소권한 적용 | `infra/11-laboratory/dozzle/docker-compose.yml` | REQ-PRD-LAB-FUN-05 | `docker.sock:ro` 확인 |
-| PLN-LAB-005 | lab hardening script + CI gate 추가 | `scripts/hardening/check-all-hardening.sh 11-laboratory`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-LAB-FUN-06 | script/CI job 확인 |
-| PLN-LAB-006 | PRD~Runbook 문서 세트/README 인덱스 동기화 | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-LAB-FUN-07 | 링크 정합성 확인 |
-| PLN-LAB-007 | 카탈로그 확장 항목 roadmap 문서화 | Plan/Task/Ops/Guide docs | REQ-PRD-LAB-FUN-08 | 정책/태스크 반영 확인 |
-| PLN-LAB-008 | Open Notebook route/secret/readiness hardening 반영 | `infra/11-laboratory/open-notebook/docker-compose.yml` | REQ-PRD-LAB-FUN-09 | SSO/allowlist/secret/healthcheck 확인 |
+| PLN-LAB-001 | Align router middleware with the gateway+allowlist+SSO chain | `infra/11-laboratory/*/docker-compose.yml` | REQ-PRD-LAB-FUN-01/02 | Compose labels confirmed |
+| PLN-LAB-002 | Standardize root `infra_net` service network blocks | `infra/11-laboratory/*/docker-compose.yml` | REQ-PRD-LAB-FUN-04 | Network contract confirmed |
+| PLN-LAB-003 | Remove dashboard direct host exposure | `infra/11-laboratory/dashboard/docker-compose.yml` | REQ-PRD-LAB-FUN-03 | `ports:` removed and `expose` confirmed |
+| PLN-LAB-004 | Apply least privilege to the dozzle socket | `infra/11-laboratory/dozzle/docker-compose.yml` | REQ-PRD-LAB-FUN-05 | `docker.sock:ro` confirmed |
+| PLN-LAB-005 | Add lab hardening script and CI gate | `scripts/hardening/check-all-hardening.sh 11-laboratory`, `.github/workflows/ci-quality.yml`, `scripts/README.md` | REQ-PRD-LAB-FUN-06 | Script/CI job confirmed |
+| PLN-LAB-006 | Sync PRD-to-Runbook document set and README indexes | `docs/{01.requirements,02.architecture,03.specs,04.execution,05.operations}/**` | REQ-PRD-LAB-FUN-07 | Link consistency confirmed |
+| PLN-LAB-007 | Document catalog expansion item roadmap | Plan/Task/Ops/Guide docs | REQ-PRD-LAB-FUN-08 | Policy/task reflection confirmed |
+| PLN-LAB-008 | Reflect Open Notebook route/secret/readiness hardening | `infra/11-laboratory/open-notebook/docker-compose.yml` | REQ-PRD-LAB-FUN-09 | SSO/allowlist/secret/healthcheck confirmed |
 
 ## Verification Plan
 
 | ID | Level | Description | Command / How to Run | Pass Criteria |
 | --- | --- | --- | --- | --- |
-| VAL-LAB-001 | Structural | root-active laboratory compose 정적 검증 | `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh` | 오류 없음 |
-| VAL-LAB-002 | Compliance | laboratory 하드닝 기준선 검증 | `bash scripts/hardening/check-all-hardening.sh 11-laboratory` | 실패 0건 |
-| VAL-LAB-003 | Baseline | 템플릿/보안 기준선 | `bash scripts/validation/check-template-security-baseline.sh` | 실패 0건 |
-| VAL-LAB-004 | Traceability | 문서 추적성 검증 | `bash scripts/validation/check-doc-traceability.sh` | 실패 0건 |
+| VAL-LAB-001 | Structural | Static root-active laboratory compose validation | `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh` | No errors |
+| VAL-LAB-002 | Compliance | Verify laboratory hardening baseline | `bash scripts/hardening/check-all-hardening.sh 11-laboratory` | 0 failures |
+| VAL-LAB-003 | Baseline | Template/security baseline | `bash scripts/validation/check-template-security-baseline.sh` | 0 failures |
+| VAL-LAB-004 | Traceability | Verify document traceability | `bash scripts/validation/check-doc-traceability.sh` | 0 failures |
 
 ## Risks & Mitigations
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| allowlist 정책으로 운영자 접근 차단 | Medium | `LAB_ALLOWED_CIDRS` 환경값 표준 운영 절차 제공 |
-| dashboard direct 경로 제거로 기존 접근 혼선 | Low | 가이드/런북에서 새 접근 경로 고지 |
-| 실험성 서비스 정책 확장 미완료 | Medium | tasks에 단계/승인/증적 기준 명시 |
+| Allowlist policy blocks operator access | Medium | Provide standard operating procedures for the `LAB_ALLOWED_CIDRS` environment value |
+| Removing dashboard direct paths causes existing access confusion | Low | Announce new access paths in guides/runbooks |
+| Experimental service policy expansion remains incomplete | Medium | Specify phase, approval, and evidence criteria in tasks |
 
 ## Completion Criteria
 
-- [x] compose/script/ci hardening 반영
-- [x] optimization-hardening 문서 세트 생성
-- [x] docs `01~05` README 인덱스 반영
-- [ ] runtime 리허설/운영 증적 확보 (환경 허용 시)
+- [x] Compose/script/CI hardening reflected
+- [x] Optimization-hardening document set created
+- [x] docs `01~05` README indexes reflected
+- [ ] Runtime rehearsal/operations evidence secured when the environment allows
 
 ## Related Documents
 
