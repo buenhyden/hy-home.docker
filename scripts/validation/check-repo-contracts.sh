@@ -1566,7 +1566,7 @@ heading_contracts = [
         pathlib.Path("docs/04.execution/plans"),
         "Plan",
         [
-            ("Overview", ("## Overview (KR)",)),
+            ("Overview", ("## Overview", "## Overview (KR)")),
             ("Context", ("## Context",)),
             ("Goals", ("## Goals & In-Scope",)),
             ("Non-goals", ("## Non-Goals & Out-of-Scope",)),
@@ -1580,7 +1580,7 @@ heading_contracts = [
         pathlib.Path("docs/04.execution/tasks"),
         "Task",
         [
-            ("Overview", ("## Overview (KR)",)),
+            ("Overview", ("## Overview", "## Overview (KR)")),
             ("Inputs", ("## Inputs",)),
             ("Working Rules", ("## Working Rules",)),
             ("Task Table", ("## Task Table",)),
@@ -1862,7 +1862,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "Spec": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Boundaries", ("## Strategic Boundaries & Non-goals",)),
         ("Related Inputs", ("## Related Inputs",)),
         ("Contracts", ("## Contracts",)),
@@ -1872,7 +1872,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "API Spec": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Parent Spec", ("## Parent Spec",)),
         ("Scope", ("## Scope & Non-goals",)),
         ("API Style", ("## API Style",)),
@@ -1881,7 +1881,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "Agent Design": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Parent Documents", ("## Parent Documents",)),
         ("Agent Role", ("## Agent Role",)),
         ("Inputs / Outputs", ("## Inputs / Outputs",)),
@@ -1890,7 +1890,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "Data Model": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Parent Documents", ("## Parent Documents",)),
         ("Entities", ("## Entities / Aggregates",)),
         ("Relationships", ("## Relationships",)),
@@ -1898,7 +1898,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "Tests": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Parent Documents", ("## Parent Documents",)),
         ("Verification Goals", ("## Verification Goals",)),
         ("Test Matrix", ("## Test Matrix",)),
@@ -1906,7 +1906,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "Plan": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Context", ("## Context",)),
         ("Goals", ("## Goals & In-Scope",)),
         ("Work Breakdown", ("## Work Breakdown", "## Work Breakdown (WBS)")),
@@ -1915,7 +1915,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "Task": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Inputs", ("## Inputs",)),
         ("Working Rules", ("## Working Rules",)),
         ("Task Table", ("## Task Table",)),
@@ -2227,7 +2227,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "Spec": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Boundaries", ("## Strategic Boundaries & Non-goals",)),
         ("Related Inputs", ("## Related Inputs",)),
         ("Contracts", ("## Contracts",)),
@@ -2237,7 +2237,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "API Spec": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Parent Spec", ("## Parent Spec",)),
         ("Scope", ("## Scope & Non-goals",)),
         ("API Style", ("## API Style",)),
@@ -2246,7 +2246,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "Agent Design": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Parent Documents", ("## Parent Documents",)),
         ("Agent Role", ("## Agent Role",)),
         ("Inputs / Outputs", ("## Inputs / Outputs",)),
@@ -2255,7 +2255,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "Data Model": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Parent Documents", ("## Parent Documents",)),
         ("Entities", ("## Entities / Aggregates",)),
         ("Relationships", ("## Relationships",)),
@@ -2263,7 +2263,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "Tests": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Parent Documents", ("## Parent Documents",)),
         ("Verification Goals", ("## Verification Goals",)),
         ("Test Matrix", ("## Test Matrix",)),
@@ -2271,7 +2271,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "Plan": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Context", ("## Context",)),
         ("Goals", ("## Goals & In-Scope",)),
         ("Work Breakdown", ("## Work Breakdown", "## Work Breakdown (WBS)")),
@@ -2280,7 +2280,7 @@ heading_requirements: dict[str, list[tuple[str, tuple[str, ...]]]] = {
         ("Related Documents", ("## Related Documents",)),
     ],
     "Task": [
-        ("Overview", ("## Overview (KR)",)),
+        ("Overview", ("## Overview", "## Overview (KR)")),
         ("Inputs", ("## Inputs",)),
         ("Working Rules", ("## Working Rules",)),
         ("Task Table", ("## Task Table",)),
