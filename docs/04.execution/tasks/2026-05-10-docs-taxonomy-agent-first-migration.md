@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 새 docs taxonomy와 AI Agent-first 계약 정렬 작업의 구현 및 검증 evidence를 추적한다.
+This document tracks implementation and verification evidence for aligning the new docs taxonomy with the AI Agent-first contract.
 
 ## Inputs
 
@@ -16,10 +16,10 @@ status: completed
 
 ## Working Rules
 
-- 구 경로 redirect 파일은 만들지 않는다.
-- secret 값, token, credential, private key 원문은 읽지 않는다.
-- Graphify는 advisory evidence로만 사용한다.
-- `.claude` runtime mirror와 governance catalog parity는 유지한다.
+- Do not create redirect files for old paths.
+- Do not read raw secret values, tokens, credentials, or private keys.
+- Use Graphify only as advisory evidence.
+- Maintain `.claude` runtime mirror and governance catalog parity.
 
 ## Task Table
 
@@ -53,4 +53,4 @@ status: completed
 
 ## Related Documents
 
-- (참조 문서 없음)
+- (No reference document)

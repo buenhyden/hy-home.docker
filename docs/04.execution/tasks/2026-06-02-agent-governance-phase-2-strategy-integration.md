@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 Agent Governance Phase 2 strategy integration의 실제 수행 결과와 검증 evidence를 기록한다. 작업 범위는 Phase 1 backlog disposition, Stage 04 plan/task 작성, Stage 04 index 반영, progress log 갱신, generated documentation index freshness, Graphify advisory corroboration, repository policy gate 검증으로 제한했다.
+This document records actual execution results and verification evidence for Agent Governance Phase 2 strategy integration. Scope was limited to Phase 1 backlog disposition, Stage 04 plan/task writing, Stage 04 index reflection, progress log updates, generated documentation index freshness, Graphify advisory corroboration, and repository policy gate validation.
 
 ## Inputs
 

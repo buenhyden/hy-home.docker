@@ -9,7 +9,7 @@ status: completed
 
 ## Overview
 
-이 문서는 2026-05-25 `hy-home.docker` workspace audit/update workflow의 구현 및 검증 evidence를 기록한다. 변경은 문서, 생성 인덱스, audit discoverability에 한정하고 runtime, secret value, actual `.env`, remote GitHub, deployment, Docker start/stop, permission, port, deletion work는 수행하지 않는다.
+This document records implementation and verification evidence for the 2026-05-25 `hy-home.docker` workspace audit/update workflow. Changes are limited to documents, generated indexes, and audit discoverability; this work does not perform runtime, secret value, actual `.env`, remote GitHub, deployment, Docker start/stop, permission, port, or deletion work.
 
 ## Inputs
 

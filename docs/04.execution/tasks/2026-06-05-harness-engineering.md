@@ -8,13 +8,14 @@ status: completed
 
 ## Overview
 
-이 문서는 `hy-home.docker` 워크스페이스의 하네스 엔지니어링 구현과
-검증 evidence를 기록한다. 기존 Stage 00, Compose, secrets, scripts, CI,
-PR, operations 표면을 기준으로 반복 가능한 하네스 검증 흐름을 보강한다.
+This document records harness engineering implementation and verification
+evidence for the `hy-home.docker` workspace. It strengthens repeatable harness
+validation flow against the existing Stage 00, Compose, secrets, scripts, CI,
+PR, and operations surfaces.
 
 ## Inputs
 
-- **User Request**: 붙여넣은 문서의 harness engineering workflow.
+- **User Request**: Harness engineering workflow from the pasted document.
 - **Governance Entry**: [AGENTS.md](../../../AGENTS.md)
 - **Harness Map**: [Harness implementation map](../../00.agent-governance/harness-implementation-map.md)
 - **Approval Boundaries**: [Approval boundaries](../../00.agent-governance/rules/approval-boundaries.md)

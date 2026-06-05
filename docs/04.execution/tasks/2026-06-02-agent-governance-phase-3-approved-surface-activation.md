@@ -7,7 +7,7 @@ status: completed
 
 ## Overview
 
-이 문서는 Phase 2 strategy integration 이후 사용자가 승인한 policy, runtime, CI, templates, secrets, remote GitHub, model policy, and provider adapter 표면을 Phase 3 repository contract로 반영한 실제 작업 evidence를 기록한다.
+This document records actual work evidence for reflecting user-approved policy, runtime, CI, templates, secrets, remote GitHub, model policy, and provider adapter surfaces after Phase 2 strategy integration into the Phase 3 repository contract.
 
 ## Inputs
 

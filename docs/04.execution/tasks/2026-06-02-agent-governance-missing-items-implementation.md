@@ -7,9 +7,9 @@ status: completed
 
 ## Overview
 
-이 문서는 `2026-06-02-agent-governance-decision-items-plan.md`에 대한 첨부 문서 대비 누락 항목 보강과 단계적 구현 evidence를 기록한다.
+This document records missing-item strengthening against attachments for `2026-06-02-agent-governance-decision-items-plan.md` and phased implementation evidence.
 
-현재 구현과 상충하는 과거 Phase 실행 artifacts는 active chain에서 제거하고 `docs/98.archive/` tombstone으로 이동한다. 현재 기준 보정은 Stage 00, Codex harness, Template Contract, QA/CI/CD, Stage 04 evidence surface에 continuation 형태로 반영한다.
+Past Phase execution artifacts that conflict with the current implementation are removed from the active chain and moved to `docs/98.archive/` tombstones. Current-baseline corrections are reflected as continuation work across Stage 00, Codex harness, Template Contract, QA/CI/CD, and the Stage 04 evidence surface.
 
 ## Inputs
 
