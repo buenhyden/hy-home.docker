@@ -80,6 +80,7 @@ docs/04.execution/tasks/
 ├── 2026-06-05-language-policy-normalization-batch-2.md # Active language policy spec normalization evidence
 ├── 2026-06-05-language-policy-normalization-batch-3.md # Active language policy remaining spec normalization evidence
 ├── 2026-06-05-language-policy-plan-normalization-batch-1.md # Active language policy plan normalization evidence
+├── 2026-06-05-language-policy-plan-normalization-batch-2.md # Active language policy plan normalization evidence
 └── README.md                                # This file
 ```
 
@@ -165,3 +166,4 @@ Task 문서는 audit trail입니다. plan의 의도를 반복하기보다 수행
 - **Language Policy Normalization Batch 2 Task**: [2026-06-05-language-policy-normalization-batch-2.md](./2026-06-05-language-policy-normalization-batch-2.md) — active spec language normalization evidence
 - **Language Policy Normalization Batch 3 Task**: [2026-06-05-language-policy-normalization-batch-3.md](./2026-06-05-language-policy-normalization-batch-3.md) — active remaining spec language normalization evidence
 - **Language Policy Plan Normalization Batch 1 Task**: [2026-06-05-language-policy-plan-normalization-batch-1.md](./2026-06-05-language-policy-plan-normalization-batch-1.md) — active plan language normalization evidence
+- **Language Policy Plan Normalization Batch 2 Task**: [2026-06-05-language-policy-plan-normalization-batch-2.md](./2026-06-05-language-policy-plan-normalization-batch-2.md) — active plan language normalization evidence
