@@ -8,59 +8,72 @@ status: active
 
 ## Overview
 
-이 문서는 `docs/01.requirements`~`docs/05.operations`의 **작성된 내용**을
-tracked `infra/**` 구현과 의미 단위로 대조한 감사 리포트다. 판정 기준은 링크/거버넌스/체인
-검증 통과가 아니라 "문서 내용 vs 현재 구현" 일치 여부다. 본 리포트는 Phase B(아카이브/수정)
-실행 및 검증 evidence이며, cross-cutting 거버넌스 작업으로 parent Spec 대신 거버넌스 문서를
-참조한다(`documentation-protocol.md` §8.5).
+This document is an audit report that compares the **authored content** in
+`docs/01.requirements` through `docs/05.operations` against tracked `infra/**`
+implementation at a semantic unit level. The decision criterion is whether
+"document content vs current implementation" matches, not whether link,
+governance, or chain validation passes. This report is Phase B
+(archive/correction) execution and verification evidence, and it references
+governance documents instead of a parent Spec because this is cross-cutting
+governance work (`documentation-protocol.md` §8.5).
 
 ## Inputs
 
-- **Plan**: 승인된 plan-mode 계획 (docs/01-05 content-vs-implementation reconciliation)
+- **Plan**: Approved plan-mode plan (docs/01-05 content-vs-implementation reconciliation)
 - **Implementation SoT**: tracked `infra/**` (compose, configs, scripts, `infra/tech-stack.versions.json`)
 - **Existing signals**: `scripts/validation/check-doc-implementation-alignment.sh`, `docs/98.archive/README.md` ledger
 
 ## Working Rules
 
-- 기준은 콘텐츠 vs 구현. 자동 체크 통과는 필요조건일 뿐 성공 기준이 아니다.
-- 정확히-완료된 문서를 인위적으로 아카이브 후보로 부풀리지 않는다(정직 보고).
-- 파괴적 조치(아카이브/삭제)는 현재 구현과 상충하는 whole-document evidence가 확인될 때만 실행한다.
+- The criterion is content vs implementation. Passing automated checks is a
+  necessary condition, not the success criterion.
+- Do not artificially inflate accurately completed documents into archive
+  candidates (honest reporting).
+- Destructive actions (archive/delete) run only when whole-document evidence
+  confirms a conflict with the current implementation.
 
 ## Methodology & Coverage
 
-- **Structural mapping (100%)**: Stage 01-05 문서를 stage/tier/service로 인벤토리하고 40개
-  compose-bearing implementation root, tier-level compose 서비스 문서, 거버넌스 표면에 매핑했다.
+- **Structural mapping (100%)**: Inventoried Stage 01-05 documents by
+  stage/tier/service and mapped them to 40 compose-bearing implementation roots,
+  tier-level compose service documents, and governance surfaces.
 - **Implementation reconciliation**: candidate status/lifecycle groups, Stage 05 structure, and every implemented
   service/tier current-truth pass from `01-gateway` through `11-laboratory` were compared against tracked
   `infra/**`, scripts, compose profile validators, hardening checks, and service READMEs.
-- **Signal scans**: frontmatter status 분포, legacy/deprecated 용어, operations↔infra 커버리지,
+- **Signal scans**: frontmatter status distribution, legacy/deprecated terms,
+  operations-infra coverage,
   runtime version literals, service-local compose proof drift, archive links, stage taxonomy shorthand, and
   stale command/control literals.
-- **Coverage closure**: unresolved active-doc current-truth blockers are 0건. Runtime-only live rehearsals that
+- **Coverage closure**: unresolved active-doc current-truth blockers are 0. Runtime-only live rehearsals that
   need a running local environment remain explicitly scoped as future evidence, not active documentation drift.
 
 ## Key Finding
 
-2026-06-02 reconciliation이 **구현과 총체적으로 충돌하는 문서를 이미 아카이브**했다(Airbyte
-미구현, Codex Markdown/HADS 상충 등). 이 continuation에서는 추가로 `05-messaging`의 misplaced ksqlDB
-guide, `07-workflow`의 duplicate Airflow DAG guide, `08-ai`의 duplicate Ollama setup/inference guides,
-`09-tooling`의 duplicate IaC automation guide, `03-security`의 duplicate Vault setup guide를
-archive tombstone으로 이동했다. `01-gateway`, `10-communication`, `11-laboratory`에서는 문서 기준과
-구현 간 mismatch가 실제 compose/hardening gap까지 드러나 tracked implementation을 함께 보정했다.
+The 2026-06-02 reconciliation already archived documents that conflicted
+globally with implementation (unimplemented Airbyte, conflicting Codex
+Markdown/HADS chains, and similar cases). In this continuation, the misplaced
+ksqlDB guide in `05-messaging`, duplicate Airflow DAG guide in `07-workflow`,
+duplicate Ollama setup/inference guides in `08-ai`, duplicate IaC automation
+guide in `09-tooling`, and duplicate Vault setup guide in `03-security` were
+moved to archive tombstones. In `01-gateway`, `10-communication`, and
+`11-laboratory`, mismatches between documentation criteria and implementation
+also exposed real compose/hardening gaps, so the tracked implementation was
+corrected as well.
 `02-auth`, `03-security`, `04-data`, `05-messaging`, `06-observability`, `07-workflow`, `08-ai`, and
-`09-tooling`은 구현된 서비스 문서의 current-truth mismatch, service-local validation boundary,
-runtime version/control literal drift, and active taxonomy shorthand drift를 in-place correction과
-repo-contract guard로 닫았다.
+`09-tooling` closed current-truth mismatches in implemented service documents,
+service-local validation boundaries, runtime version/control literal drift, and
+active taxonomy shorthand drift with in-place corrections and repo-contract
+guards.
 
 ## Verdict Summary (by stage)
 
 | Stage           | Docs | KEEP (matches impl)                    | FIX (status/content)                       | ARCHIVE candidate   | Notes                                                                         |
 | --------------- | ---- | -------------------------------------- | ------------------------------------------ | ------------------- | ----------------------------------------------------------------------------- |
-| 01.requirements | 25   | 25 active                              | 23 (status: draft→active)                  | 0                   | tier PRD 23건은 tracked 구현 surface가 있어 active requirements로 유지        |
-| 02.architecture | 51   | 51                                     | 0                                          | 0                   | ADR/ARD 전부 현 infra 매핑(traefik/keycloak/vault/kafka/patroni/lgtm 등 실재) |
-| 03.specs        | 43   | 15 active / 9 completed / 19 README-like missing status | 7 프로세스 스펙(status active→completed) | 0                   | tier specs 매핑 OK; 프로세스 스펙은 완료된 일회성 작업                        |
-| 04.execution    | 125  | 120 completed / 3 active / 2 README-like missing status | stale `active` Open WebUI plan/task → completed; hardening runtime rows deferred | 0 | infra-opt-priority-plan은 ongoing roadmap이라 active 유지                      |
-| 05.operations   | 267  | 197 active / 70 README-like missing status | open-notebook draft→active; policy/guide profile 중복 정리; bucket-root leaf 문서를 목적 폴더로 정리; `05-messaging`/`07-workflow`/`08-ai`/`09-tooling`/`10-communication`/`11-laboratory` current-truth 정정 | 9 archived | Airbyte guide/policy/runbook, misplaced ksqlDB guide, duplicate Airflow DAG guide, duplicate AI setup/inference guides, duplicate tooling IaC guide, duplicate Vault setup guide는 `docs/98.archive`; 나머지 orphan 없음(`failures=0`) |
+| 01.requirements | 25   | 25 active                              | 23 (status: draft->active)                 | 0                   | 23 tier PRDs have tracked implementation surfaces and remain active requirements |
+| 02.architecture | 51   | 51                                     | 0                                          | 0                   | All ADR/ARD docs map to current infra (real traefik/keycloak/vault/kafka/patroni/lgtm, etc.) |
+| 03.specs        | 43   | 15 active / 9 completed / 19 README-like missing status | 7 process specs (status active->completed) | 0                   | tier spec mapping OK; process specs are completed one-time work |
+| 04.execution    | 125  | 120 completed / 3 active / 2 README-like missing status | stale `active` Open WebUI plan/task -> completed; hardening runtime rows deferred | 0 | infra-opt-priority-plan remains active as an ongoing roadmap |
+| 05.operations   | 267  | 197 active / 70 README-like missing status | open-notebook draft->active; duplicate policy/guide profiles cleaned; bucket-root leaf documents moved into purpose folders; `05-messaging`/`07-workflow`/`08-ai`/`09-tooling`/`10-communication`/`11-laboratory` current truth corrected | 9 archived | Airbyte guide/policy/runbook, misplaced ksqlDB guide, duplicate Airflow DAG guide, duplicate AI setup/inference guides, duplicate tooling IaC guide, and duplicate Vault setup guide are in `docs/98.archive`; no remaining orphans (`failures=0`) |
 
 ## Task Table
 
@@ -68,22 +81,22 @@ repo-contract guard로 닫았다.
 
 | ID   | Doc(s)                                                                                                                                                                                                                                     | Evidence                                                                                     | Disposition |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- | ----------- |
-| F-01 | `docs/05.operations/{guides,policies}/11-laboratory/open-notebook.md`                                                                                                                                                                      | `infra/11-laboratory/open-notebook` 구현 존재, 내용 일치                                     | status `draft`→`active` 적용 |
-| F-02 | `docs/04.execution/plans/2026-03-27-08-ai-open-webui-plan.md`, `.../tasks/2026-03-27-08-ai-open-webui-tasks.md`                                                                                                                            | Open WebUI 구현 surface 존재(`infra/08-ai/open-webui`); live RAG indexing은 런타임 evidence 필요 | plan/task status `active`→`completed` 적용; task 내부 live RAG row는 `Deferred`로 보정 |
-| F-03 | `docs/03.specs/{workspace-consistency-2026-05b,workspace-doc-consistency-2026-05,docs-taxonomy-agent-first-migration,harness-agent-first-engineering,llm-wiki-agent-first-completion,home-docker-revalidation-deferred-follow-up}/spec.md` | 기술된 작업이 현재 구현에 반영됨(R4/R5 규칙·CI taxonomy·LLM Wiki generator·docs taxonomy 등) | status `active`→`completed` 적용; 현재 구현과 상충하지 않아 archive 미적용 |
-| F-04 | `docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md`                                                                                                                                                           | Quick Wins는 구현됐지만 2026 Q2/Q3 quarterly roadmap과 운영 기준 코드화 항목은 계획으로 남아 있음 | `active` 유지 |
-| F-05 | `docs/01.requirements/2026-03-26-*` 및 관련 tier PRD                                                                                                                                                                                       | tracked tier implementation exists under `infra/**`; requirements remain current inputs rather than completed task evidence | status `draft`→`active` 적용 |
-| F-06 | 변경 폴더의 README 및 governance 문서                                                                                                                                                                                                      | folder-level content/status changes require README/governance alignment                       | `docs/01.requirements/README.md`, QA/GitHub/script governance, progress log updated |
-| F-07 | `docs/05.operations/policies/**/*.md`                                                                                                                                                                                                       | 여러 policy leaf에 현재 `policy.template.md`와 다른 중복 `## Policy Scope` heading이 남아 있었음 | 두 번째 이후 `## Policy Scope` heading 제거, bullets 보존; `check-repo-contracts.sh`에 exactly-one gate 추가; `policies/README.md` 계약 업데이트 |
-| F-08 | `docs/05.operations/guides/{05-messaging/kafka,06-observability/{alertmanager,grafana,prometheus},09-tooling/{sonarqube,terraform,terrakube}}.md`, `docs/05.operations/runbooks/09-tooling/terraform.md` | guide leaf 7개에 중복 `### Usage Type` profile block이 남아 있었고 Terraform runbook에 `<your-profile>` placeholder가 있었음 | guide 중복 profile 제거, service content 보존, repo contract에 duplicate Usage Type gate 추가; Terraform runbook은 env-var based credential refresh로 정리 |
-| F-09 | `docs/05.operations/{guides,policies}/09-tooling/{sonarqube,syncthing}.md`                                                                                                                                                                  | 문서는 `09-tooling` 경로/구현에 속하지만 ID 주석이 과거 `07-tooling` 또는 `08-tooling` tier를 가리킴 | ID 주석을 `09-tooling:<service>`로 정정; `check-repo-contracts.sh`에 operations ID tier/path 일치 gate 추가; 09-tooling guide/policy README에 규칙 반영 |
-| F-10 | `docs/02.architecture/requirements/0013-open-webui-architecture.md`, `docs/03.specs/{01-gateway,02-auth,03-security,05-messaging,08-ai}`, selected `docs/04.execution/tasks`, selected `docs/05.operations/{guides,policies,runbooks}` | compose 및 `infra/tech-stack.versions.json`의 현재 이미지 태그와 문서 본문에 남은 runtime version literal이 어긋남 | Traefik, Keycloak, OAuth2 Proxy, Vault, Kafka, RabbitMQ, Kafbat UI, Open WebUI, Grafana, Airflow, Pushgateway, Pyroscope, Qdrant, Neo4j 문서 버전을 현재 구현에 맞게 정정; `check-repo-contracts.sh`에 stale runtime version gate 추가 |
-| F-11 | `docs/03.specs/standardize-infra-net/spec.md`, `docs/05.operations/{guides,runbooks}/12-infra-net/standardize-infra-net.md` | active docs의 wildcard IPv4 예시가 authoritative mapping table과 달리 복사 가능한 placeholder처럼 남아 있었음 | registry의 실제 구현 IP(`172.19.0.7`) 기반 예시로 정정하고 대상 서비스에는 authoritative table 값을 사용하도록 단계 보강; `check-repo-contracts.sh`에 stage docs IP placeholder gate 추가 |
-| F-12 | `docs/03.specs/workspace-audit-2026-05/{spec.md,README.md}`, `docs/03.specs/README.md` | 완료된 2026-05 감사 spec의 gap table이 당시 baseline인지 현재 구현 상태인지 불명확하게 읽힐 수 있었음 | section을 historical snapshot으로 명시하고 README/03.specs index에서 completed historical spec으로 설명 보강 |
-| F-13 | `docs/05.operations/guides/00-workspace/{env-key-comparison,sensitive-env-vars-comparison}.md` | metadata-only 비교 문서의 숫자가 현재 `.env.example`, `.env`, `secrets/SENSITIVE_ENV_VARS.md*` 상태와 어긋남 | `.env.example`/`.env` 키 수를 325/325로, sensitive registry line count를 184/184로 정정하고 값 비교 금지 문구를 metadata-only로 정리; `check-repo-contracts.sh`에 조건부 metadata comparison guide drift gate 추가 |
-| F-14 | `docs/02.architecture/{decisions/0015-analytics-engine-selection.md,requirements/0012-data-analytics-architecture.md}`, `docs/03.specs/04-data-analytics/{spec.md,README.md}` | analytics 엔진 선택/계약 문서가 현재 `infra/04-data/analytics` compose의 version family와 다르게 InfluxDB primary, OpenSearch, StarRocks 계열을 오래된 기준으로 설명함 | InfluxDB 3.x Core primary + InfluxDB 2.x legacy compose, Confluent ksqlDB 8.x, OpenSearch 3.x, StarRocks 4.x로 정정; InfluxDB primary health check를 `8181`로 정정; stale analytics version-family gate 추가 |
-| F-15 | `docs/05.operations/{guides/06-observability/prometheus.md,runbooks/11-laboratory/dozzle.md,runbooks/11-laboratory/README.md}`, `infra/11-laboratory/dozzle/README.md` | Prometheus guide와 Dozzle runbook/infra README가 현재 PostgreSQL image family 및 Dozzle compose tag와 맞지 않는 구현값을 담고 있었음 | Prometheus scrape 대상 설명을 PostgreSQL 17/18 family로 정정; Dozzle 기준 tag를 `amir20/dozzle:v10.6.4`로 맞추고 rollback은 직전 검증 tag evidence를 기록하도록 수정; stale Dozzle/PostgreSQL literal gate 추가 |
-| F-16 | `docs/05.operations/{guides,policies,runbooks}/README.md` 및 `00-workspace`, `12-infra-net`, `90-knowledge` 목적 폴더 | bucket root에 leaf 문서와 folder index가 섞여 있어 Stage 05 운영 문서 구조가 목적별 탐색 계약과 맞지 않았음 | root에는 bucket `README.md`만 남기고 workspace, infra_net, knowledge 문서를 목적 폴더로 이동; parent/child README와 cross-link를 갱신; `check-repo-contracts.sh`에 operations bucket-root leaf 금지와 target-path 일치 gate 추가 |
+| F-01 | `docs/05.operations/{guides,policies}/11-laboratory/open-notebook.md` | `infra/11-laboratory/open-notebook` implementation exists and content matches | Applied status `draft`->`active` |
+| F-02 | `docs/04.execution/plans/2026-03-27-08-ai-open-webui-plan.md`, `.../tasks/2026-03-27-08-ai-open-webui-tasks.md` | Open WebUI implementation surface exists (`infra/08-ai/open-webui`); live RAG indexing requires runtime evidence | Applied plan/task status `active`->`completed`; corrected the task-internal live RAG row to `Deferred` |
+| F-03 | `docs/03.specs/{workspace-consistency-2026-05b,workspace-doc-consistency-2026-05,docs-taxonomy-agent-first-migration,harness-agent-first-engineering,llm-wiki-agent-first-completion,home-docker-revalidation-deferred-follow-up}/spec.md` | Described work is reflected in current implementation (R4/R5 rules, CI taxonomy, LLM Wiki generator, docs taxonomy, etc.) | Applied status `active`->`completed`; not archived because it does not conflict with current implementation |
+| F-04 | `docs/04.execution/plans/2026-03-27-infra-service-optimization-priority-plan.md` | Quick Wins were implemented, but the 2026 Q2/Q3 quarterly roadmap and operations-standard codification items remain planned work | Kept `active` |
+| F-05 | `docs/01.requirements/2026-03-26-*` and related tier PRDs | tracked tier implementation exists under `infra/**`; requirements remain current inputs rather than completed task evidence | Applied status `draft`->`active` |
+| F-06 | README and governance documents in changed folders | folder-level content/status changes require README/governance alignment | Updated `docs/01.requirements/README.md`, QA/GitHub/script governance, and progress log |
+| F-07 | `docs/05.operations/policies/**/*.md` | Several policy leaves retained duplicate `## Policy Scope` headings that differed from current `policy.template.md` | Removed `## Policy Scope` headings after the first one, preserved bullets, added an exactly-one gate to `check-repo-contracts.sh`, and updated the `policies/README.md` contract |
+| F-08 | `docs/05.operations/guides/{05-messaging/kafka,06-observability/{alertmanager,grafana,prometheus},09-tooling/{sonarqube,terraform,terrakube}}.md`, `docs/05.operations/runbooks/09-tooling/terraform.md` | 7 guide leaves retained duplicate `### Usage Type` profile blocks, and the Terraform runbook retained a `<your-profile>` placeholder | Removed duplicate guide profiles, preserved service content, added a duplicate Usage Type gate to the repo contract, and cleaned the Terraform runbook to env-var based credential refresh |
+| F-09 | `docs/05.operations/{guides,policies}/09-tooling/{sonarqube,syncthing}.md` | Documents belong to the `09-tooling` path/implementation, but ID comments pointed to old `07-tooling` or `08-tooling` tiers | Corrected ID comments to `09-tooling:<service>`, added an operations ID tier/path match gate to `check-repo-contracts.sh`, and reflected the rule in 09-tooling guide/policy README files |
+| F-10 | `docs/02.architecture/requirements/0013-open-webui-architecture.md`, `docs/03.specs/{01-gateway,02-auth,03-security,05-messaging,08-ai}`, selected `docs/04.execution/tasks`, selected `docs/05.operations/{guides,policies,runbooks}` | Current image tags in compose and `infra/tech-stack.versions.json` diverged from runtime version literals retained in document bodies | Corrected Traefik, Keycloak, OAuth2 Proxy, Vault, Kafka, RabbitMQ, Kafbat UI, Open WebUI, Grafana, Airflow, Pushgateway, Pyroscope, Qdrant, and Neo4j document versions to match current implementation; added stale runtime version gate to `check-repo-contracts.sh` |
+| F-11 | `docs/03.specs/standardize-infra-net/spec.md`, `docs/05.operations/{guides,runbooks}/12-infra-net/standardize-infra-net.md` | Active docs retained wildcard IPv4 examples that looked copyable despite differing from the authoritative mapping table | Corrected examples to use the registry's actual implementation IP (`172.19.0.7`) and strengthened steps to use authoritative table values for target services; added a stage docs IP placeholder gate to `check-repo-contracts.sh` |
+| F-12 | `docs/03.specs/workspace-audit-2026-05/{spec.md,README.md}`, `docs/03.specs/README.md` | The completed 2026-05 audit spec gap table could read ambiguously as either the historical baseline or current implementation state | Marked the section as a historical snapshot and strengthened README/03.specs index wording for the completed historical spec |
+| F-13 | `docs/05.operations/guides/00-workspace/{env-key-comparison,sensitive-env-vars-comparison}.md` | Metadata-only comparison document counts diverged from current `.env.example`, `.env`, and `secrets/SENSITIVE_ENV_VARS.md*` state | Corrected `.env.example`/`.env` key counts to 325/325 and sensitive registry line count to 184/184, clarified the no-value-comparison wording as metadata-only, and added a conditional metadata comparison guide drift gate to `check-repo-contracts.sh` |
+| F-14 | `docs/02.architecture/{decisions/0015-analytics-engine-selection.md,requirements/0012-data-analytics-architecture.md}`, `docs/03.specs/04-data-analytics/{spec.md,README.md}` | Analytics engine selection/contract docs described InfluxDB primary, OpenSearch, and StarRocks families using old baselines that differed from the current `infra/04-data/analytics` compose version family | Corrected to InfluxDB 3.x Core primary + InfluxDB 2.x legacy compose, Confluent ksqlDB 8.x, OpenSearch 3.x, and StarRocks 4.x; corrected InfluxDB primary health check to `8181`; added stale analytics version-family gate |
+| F-15 | `docs/05.operations/{guides/06-observability/prometheus.md,runbooks/11-laboratory/dozzle.md,runbooks/11-laboratory/README.md}`, `infra/11-laboratory/dozzle/README.md` | Prometheus guide and Dozzle runbook/infra README contained implementation values that did not match the current PostgreSQL image family and Dozzle compose tag | Corrected Prometheus scrape target description to PostgreSQL 17/18 family; aligned Dozzle baseline tag to `amir20/dozzle:v10.6.4` and changed rollback wording to record the previous verified tag evidence; added stale Dozzle/PostgreSQL literal gate |
+| F-16 | `docs/05.operations/{guides,policies,runbooks}/README.md` and `00-workspace`, `12-infra-net`, `90-knowledge` purpose folders | Bucket roots mixed leaf documents and folder indexes, so Stage 05 operations structure did not match the purpose-based navigation contract | Kept only bucket `README.md` files at root, moved workspace, infra_net, and knowledge documents into purpose folders, refreshed parent/child README files and cross-links, and added operations bucket-root leaf prohibition plus target-path match gates to `check-repo-contracts.sh` |
 | F-17 | `infra/04-data/operational/README.md`, `infra/04-data/operational/{mng-db,supabase}/README.md`, `docs/05.operations/{guides,policies,runbooks}/04-data/operational/{mng-db,supabase}.md` | `mng-db` docs retained obsolete network/old Compose CLI guidance and template remnants; Supabase docs assumed direct Studio host-port access and contained incomplete policy/runbook template residue; infra README listed a relational cluster under the operational folder and linked the guide index to policies | Corrected in place to current compose truth: `mng-db` services/profiles/networks/init DBs, Supabase data-profile services/Kong ports/runtime mounts, PostgreSQL image family, and operations guide/policy/runbook links; no archive because documents map to implemented services |
 | F-18 | `infra/04-data/cache-and-kv/README.md`, `infra/04-data/cache-and-kv/valkey-cluster/README.md`, `docs/05.operations/{guides,policies,runbooks}/04-data/cache-and-kv/valkey-cluster.md` | Valkey docs referenced stale init/container names, direct password variables, stale image tag, unsupported `maxmemory-policy` control, and destructive restore guidance not proven by current runbook evidence | Corrected in place to current compose truth: six `valkey-node-*` services, `valkey-cluster-init`, `valkey-cluster-exporter`, `service_valkey_password`, `valkey/valkey:9.1.0-alpine`, current port/profile/network model, and non-destructive escalation boundary |
 | F-19 | `infra/04-data/lake-and-object/{minio,seaweedfs}/README.md`, `docs/05.operations/{guides,policies,runbooks}/04-data/lake-and-object/{minio,seaweedfs}.md` | MinIO docs mixed root-active single-node compose with optional 4-node cluster recovery; SeaweedFS README contained duplicated old/new structures, an obsolete SeaweedFS version literal, unmounted `security.toml` claims, single-container log command, and unverified destructive restore/reshard procedures | Corrected in place to current compose truth: MinIO root-active `minio` + `minio-create-buckets` with optional cluster variant explicitly scoped; SeaweedFS `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`, image `chrislusf/seaweedfs:4.31`, route/health/mount boundaries, and non-destructive escalation boundary |
@@ -104,101 +117,148 @@ repo-contract guard로 닫았다.
 
 ## Archive Decision
 
-완료된 일회성 **프로세스 스펙/플랜**(F-03/F-04: workspace-audit, docs-taxonomy-migration,
-harness-agent-first, llm-wiki-completion 등)은 현재 구현과 **상충하지 않고 정확히 일치**한다.
-따라서 archive 기준은 "historical" 여부가 아니라 **현재 구현과 상충하는지**로 적용한다.
-구현과 충돌한 whole-document residue는 Airbyte, misplaced ksqlDB, duplicate Airflow/AI/tooling/Vault guides,
-그리고 구 Codex/HADS 상충 chain처럼 `docs/98.archive/README.md` ledger로 tombstone 처리한다.
-Stage 05 bucket-root 구조 drift(F-16)는 문서 내용 자체가 현재 구현과 상충하지 않고 위치/탐색
-계약만 낡은 경우라 archive가 아니라 in-place 이동 및 reference 갱신으로 처리했다.
-`04-data/operational` drift(F-17)는 구현된 `mng-db`와 `supabase` 서비스 문서의 current-truth
-불일치였으므로 archive가 아니라 template-compliant in-place rewrite와 README reference 갱신으로
-처리했다.
-`04-data/cache-and-kv` drift(F-18)도 구현된 Valkey cluster 문서의 service-name/command/control
-불일치였으므로 archive가 아니라 template-compliant in-place rewrite와 README reference 갱신으로
-처리했다.
-`04-data/lake-and-object` drift(F-19)는 구현된 MinIO와 SeaweedFS 문서의 active-vs-optional compose
-혼동과 stale runtime/control guidance였으므로 archive가 아니라 template-compliant in-place rewrite와
-README reference 갱신으로 처리했다.
-`04-data/nosql` drift(F-20)는 구현된 Cassandra, CouchDB, MongoDB 문서의 service-name/image/control
-불일치와 검증되지 않은 destructive recovery guidance였으므로 archive가 아니라 template-compliant
-in-place rewrite와 README reference 갱신으로 처리했다.
-`04-data/specialized` drift(F-21)는 구현된 Neo4j와 Qdrant 문서의 active compose truth, route,
-secret/no-secret control, stale link, 검증되지 않은 destructive recovery guidance 불일치였으므로 archive가
-아니라 template-compliant in-place rewrite와 README reference 갱신으로 처리했다.
-`04-data/relational` drift(F-22)는 구현된 PostgreSQL HA cluster 문서의 optional compose truth, stale
-links, secret-aware entrypoint filename, 검증되지 않은 backup/DR/destructive recovery guidance 불일치였으므로
-archive가 아니라 template-compliant in-place rewrite와 README reference 갱신으로 처리했다.
-`06-observability` drift(F-23)는 구현된 observability compose와 문서의 route/service/version/storage
-불일치였고, 일부 compose label/service declaration도 명백한 current-truth 결함이었으므로 archive가 아니라
-in-place compose correction, template-aligned documentation correction, README reference 갱신으로 처리했다.
-`05-messaging` drift(F-24)는 구현된 Kafka/RabbitMQ 문서의 current-truth mismatch와 misplaced ksqlDB guide가
-혼재되어 있었다. Kafka/RabbitMQ 문서는 구현된 서비스에 매핑되므로 in-place correction으로 처리했고,
-`docs/05.operations/guides/05-messaging/ksql-streaming.md`는 현재 `infra/05-messaging` 구현에 대응하지 않고
-`04-data/analytics/ksql` 문서와 충돌하므로 `docs/98.archive` tombstone으로 이동했다.
-`07-workflow` drift(F-25)는 구현된 Airflow/n8n 문서의 current-truth mismatch와 duplicate Airflow DAG guide가
-혼재되어 있었다. Airflow/n8n 문서는 구현된 서비스에 매핑되므로 in-place correction으로 처리했고,
-`docs/05.operations/guides/07-workflow/01.airflow-dag-dev.md`는 현재 `${DEFAULT_WORKFLOW_DIR}/airflow/dags`
-bind-mount 기준과 충돌하고 `airflow-dag-basics.md`와 중복되므로 `docs/98.archive` tombstone으로 이동했다.
-`08-ai` drift(F-26)는 구현된 Ollama/Open WebUI 문서의 current-truth mismatch와 duplicate Ollama
-setup/inference guides가 혼재되어 있었다. Ollama/Open WebUI/RAG/hardening 문서는 구현된 서비스에 매핑되므로
-in-place correction으로 처리했고, duplicate setup/inference guides는 active `ollama.md`와 중복되며 runbook
-handoff가 불완전해 `docs/98.archive` tombstone으로 이동했다.
-`09-tooling` drift(F-27)는 구현된 tooling 서비스 문서의 current-truth mismatch와 duplicate IaC automation
-guide가 혼재되어 있었다. Terraform/Terrakube/Registry/SonarQube/Syncthing/Locust/k6 문서는 구현된 서비스에
-매핑되므로 in-place correction으로 처리했고, duplicate tooling IaC guide는 active `terraform.md`/`terrakube.md`와
-중복되며 runbook handoff가 불완전해 `docs/98.archive` tombstone으로 이동했다.
-`10-communication` drift(F-28)는 구현된 mail service 문서의 current-truth mismatch와 compose hardening gap이
-혼재되어 있었다. Stalwart/MailHog 문서는 구현된 서비스에 매핑되므로 archive가 아니라 in-place correction으로
-처리했고, invalid IPv4 static allocation과 Stalwart UI SSO middleware gap은 tracked compose와 hardening script를
-수정해 현재 구현 자체를 문서 기준에 맞게 보정했다.
-`11-laboratory` drift(F-29)는 구현된 laboratory service 문서의 current-truth mismatch와 root-active service
-hardening gap이 혼재되어 있었다. Dashboard/Dozzle/Open Notebook/Portainer/RedisInsight 문서는 구현된 서비스에
-매핑되므로 archive가 아니라 in-place correction으로 처리했고, Open Notebook route 및 RedisInsight static route
-middleware gap은 tracked compose와 hardening script를 수정해 현재 구현 자체를 문서 기준에 맞게 보정했다.
-`01-gateway` drift(F-30)는 구현된 Traefik/Nginx gateway 문서의 current-truth mismatch와 rate-limit
-hardening gap이 혼재되어 있었다. Traefik/Nginx 문서는 구현된 서비스에 매핑되므로 archive가 아니라 in-place
-correction으로 처리했고, gateway rate-limit mismatch는 tracked dynamic config와 hardening script를 수정해 현재
-구현 자체를 정책 기준에 맞게 보정했다.
-`02-auth` drift(F-31)는 구현된 Keycloak/OAuth2 Proxy 문서의 current-truth mismatch와 root-active/local-full
-검증 경계 gap이 혼재되어 있었다. Keycloak/OAuth2 Proxy 문서는 구현된 서비스에 매핑되므로 archive가 아니라
-in-place correction으로 처리했고, OAuth2 Proxy root-active dev leaf와 local/full leaf 모두를 hardening 및
-repo-contract guard에 포함해 현재 구현 자체를 QA 기준에 맞게 보정했다.
-`03-security` drift(F-32)는 구현된 Vault/Vault Agent 문서의 current-truth mismatch와 duplicate setup guide가
-혼재되어 있었다. Vault/Vault Agent 문서는 구현된 서비스에 매핑되므로 in-place correction으로 처리했고,
-`docs/05.operations/guides/03-security/01.setup.md`는 active `vault.md`와 중복되며 root compose 검증 경계와
-충돌하므로 `docs/98.archive` tombstone으로 이동했다.
-Stage taxonomy drift(F-33)는 문서 내용 전체가 구현과 충돌한 것이 아니라 active chain 표현만 구 taxonomy에
-머문 경우였으므로 archive 없이 in-place correction과 repo-contract guard 보강으로 처리했다.
+Completed one-time **process specs/plans** (F-03/F-04: workspace-audit,
+docs-taxonomy-migration, harness-agent-first, llm-wiki-completion, and similar
+items) match the current implementation exactly and do **not** conflict with it.
+Therefore the archive criterion is not whether a document is "historical", but
+whether it **conflicts with the current implementation**.
+
+Whole-document residue that conflicted with implementation is tombstoned in the
+`docs/98.archive/README.md` ledger, including Airbyte, misplaced ksqlDB,
+duplicate Airflow/AI/tooling/Vault guides, and the old conflicting Codex/HADS
+chain. Stage 05 bucket-root structure drift (F-16) did not conflict with current
+implementation content; only the location/navigation contract was stale, so it
+was handled by in-place moves and reference refresh rather than archive.
+
+`04-data/operational` drift (F-17) was a current-truth mismatch in implemented
+`mng-db` and `supabase` service documents, so it was handled by
+template-compliant in-place rewrites and README reference refresh rather than
+archive. `04-data/cache-and-kv` drift (F-18) was also a service-name,
+command, and control mismatch in implemented Valkey cluster documents, so it was
+handled the same way.
+
+`04-data/lake-and-object` drift (F-19) was active-vs-optional compose confusion
+and stale runtime/control guidance in implemented MinIO and SeaweedFS documents,
+so it was handled by template-compliant in-place rewrites and README reference
+refresh rather than archive. `04-data/nosql` drift (F-20) was service-name,
+image, and control mismatch plus unverified destructive recovery guidance in
+implemented Cassandra, CouchDB, and MongoDB documents, so it was handled by
+template-compliant in-place rewrites and README reference refresh.
+
+`04-data/specialized` drift (F-21) was mismatch in active compose truth, route,
+secret/no-secret control, stale links, and unverified destructive recovery
+guidance in implemented Neo4j and Qdrant documents, so it was handled by
+template-compliant in-place rewrites and README reference refresh rather than
+archive. `04-data/relational` drift (F-22) was mismatch in optional compose
+truth, stale links, secret-aware entrypoint filename, and unverified
+backup/DR/destructive recovery guidance in implemented PostgreSQL HA cluster
+documents, so it was handled by template-compliant in-place rewrites and README
+reference refresh.
+
+`06-observability` drift (F-23) was route/service/version/storage mismatch
+between implemented observability compose and documentation, and some compose
+label/service declarations were clear current-truth defects. It was handled by
+in-place compose correction, template-aligned documentation correction, and
+README reference refresh instead of archive.
+
+`05-messaging` drift (F-24) mixed current-truth mismatch in implemented
+Kafka/RabbitMQ documents with a misplaced ksqlDB guide. Kafka/RabbitMQ documents
+map to implemented services, so they were handled by in-place correction.
+`docs/05.operations/guides/05-messaging/ksql-streaming.md` does not correspond
+to current `infra/05-messaging` implementation and conflicts with the
+`04-data/analytics/ksql` document, so it moved to a `docs/98.archive` tombstone.
+
+`07-workflow` drift (F-25) mixed current-truth mismatch in implemented
+Airflow/n8n documents with a duplicate Airflow DAG guide. Airflow/n8n documents
+map to implemented services, so they were handled by in-place correction.
+`docs/05.operations/guides/07-workflow/01.airflow-dag-dev.md` conflicts with the
+current `${DEFAULT_WORKFLOW_DIR}/airflow/dags` bind-mount baseline and
+duplicates `airflow-dag-basics.md`, so it moved to a `docs/98.archive`
+tombstone.
+
+`08-ai` drift (F-26) mixed current-truth mismatch in implemented Ollama/Open
+WebUI documents with duplicate Ollama setup/inference guides. Ollama/Open
+WebUI/RAG/hardening documents map to implemented services, so they were handled
+by in-place correction. The duplicate setup/inference guides duplicate active
+`ollama.md` and have incomplete runbook handoff, so they moved to
+`docs/98.archive` tombstones.
+
+`09-tooling` drift (F-27) mixed current-truth mismatch in implemented tooling
+service documents with a duplicate IaC automation guide. Terraform/Terrakube/
+Registry/SonarQube/Syncthing/Locust/k6 documents map to implemented services,
+so they were handled by in-place correction. The duplicate tooling IaC guide
+duplicates active `terraform.md`/`terrakube.md` and has incomplete runbook
+handoff, so it moved to a `docs/98.archive` tombstone.
+
+`10-communication` drift (F-28) mixed current-truth mismatch in implemented mail
+service documents with compose hardening gaps. Stalwart/MailHog documents map to
+implemented services, so they were handled by in-place correction rather than
+archive. The invalid IPv4 static allocation and Stalwart UI SSO middleware gap
+were corrected in tracked compose and hardening scripts so current
+implementation matches the documentation criteria.
+
+`11-laboratory` drift (F-29) mixed current-truth mismatch in implemented
+laboratory service documents with root-active service hardening gaps.
+Dashboard/Dozzle/Open Notebook/Portainer/RedisInsight documents map to
+implemented services, so they were handled by in-place correction rather than
+archive. The Open Notebook route and RedisInsight static route middleware gaps
+were corrected in tracked compose and hardening scripts so current
+implementation matches the documentation criteria.
+
+`01-gateway` drift (F-30) mixed current-truth mismatch in implemented
+Traefik/Nginx gateway documents with a rate-limit hardening gap. Traefik/Nginx
+documents map to implemented services, so they were handled by in-place
+correction rather than archive. The gateway rate-limit mismatch was corrected in
+tracked dynamic config and hardening scripts so current implementation matches
+the policy criteria.
+
+`02-auth` drift (F-31) mixed current-truth mismatch in implemented
+Keycloak/OAuth2 Proxy documents with root-active/local-full validation-boundary
+gaps. Keycloak/OAuth2 Proxy documents map to implemented services, so they were
+handled by in-place correction rather than archive. Both the OAuth2 Proxy
+root-active dev leaf and local/full leaf were included in hardening and
+repo-contract guards so current implementation matches the QA criteria.
+
+`03-security` drift (F-32) mixed current-truth mismatch in implemented
+Vault/Vault Agent documents with a duplicate setup guide. Vault/Vault Agent
+documents map to implemented services, so they were handled by in-place
+correction. `docs/05.operations/guides/03-security/01.setup.md` duplicates
+active `vault.md` and conflicts with the root compose validation boundary, so it
+moved to a `docs/98.archive` tombstone.
+
+Stage taxonomy drift (F-33) did not mean whole document content conflicted with
+implementation; only active-chain wording remained on the old taxonomy. It was
+handled by in-place correction and repo-contract guard strengthening without
+archive.
 
 ## Verification Summary
 
 - Stage 01-05 inventory: `docs/01.requirements=25`, `docs/02.architecture=51`, `docs/03.specs=43`, `docs/04.execution=125`, `docs/05.operations=267`, total `511`.
-- operations 서비스 커버리지: `check-doc-implementation-alignment.sh` → `operations_service_docs_checked=143`, `failures=0`.
-- operations bucket-root scan: `docs/05.operations/{guides,policies,runbooks}` root에는 각 bucket `README.md`만 남음.
-- stale operations root-path scan: 이전 bucket-root leaf 형태(`guides/<leaf>.md`, `runbooks/<leaf>.md`, `policies/<leaf>.md`) 0건.
-- legacy/orphan 스캔: 신규 미구현-service 문서 없음; Patroni/Spilo/HADS는 현행 구현 또는 historical evidence로 분류.
-- policy profile scan: `docs/05.operations/policies/**/*.md` leaf에서 `## Policy Scope` 중복 0건; repo contract가 policy leaf당 exactly one heading을 강제.
-- guide profile scan: 중복 `### Usage Type` 0건; 남은 TODO/TBD/placeholder-like hits는 historical evidence 또는 scan command literal로 분류.
-- operations ID tier scan: `docs/05.operations/{guides,policies,runbooks}` ID 주석과 path tier 불일치 0건; repo contract가 불일치를 차단.
-- runtime version drift scan: stale runtime version literal 0건; repo contract가 현재 compose/tech-stack registry와 어긋나는 문서 버전 재유입을 차단.
-- IP placeholder scan: wildcard infra/k3d IPv4 placeholder 0건; repo contract가 concrete-network placeholder 재유입을 차단.
-- Stage taxonomy shorthand scan: old nine-stage shorthand 0건 in active Stage 01-05 docs; repo contract가 bare shorthand와 path-style shorthand 재유입을 차단.
-- metadata comparison scan: `.env.example`/`.env` key count 325/325, sensitive registry line count 184/184, secret ID count 107; repo contract가 로컬 파일 존재 시 metadata-only 숫자 drift를 차단.
-- analytics/laboratory version-family scan: analytics primary/decision stale phrases, Dozzle old tag, and PostgreSQL old scrape family phrase 0건; repo contract가 exact stale literal 재유입을 차단.
-- 04-data operational scan: `mng-db`/`supabase` guide, policy, runbook 문서에서 old Compose CLI command spelling, direct Studio host-port literal, template copyright residue, and obsolete shared-network literal 0건.
+- operations service coverage: `check-doc-implementation-alignment.sh` -> `operations_service_docs_checked=143`, `failures=0`.
+- operations bucket-root scan: only each bucket `README.md` remains at the root of `docs/05.operations/{guides,policies,runbooks}`.
+- stale operations root-path scan: 0 old bucket-root leaf forms (`guides/<leaf>.md`, `runbooks/<leaf>.md`, `policies/<leaf>.md`).
+- legacy/orphan scan: no new unimplemented-service documents; Patroni/Spilo/HADS are classified as current implementation or historical evidence.
+- policy profile scan: 0 duplicate `## Policy Scope` headings in `docs/05.operations/policies/**/*.md` leaves; repo contract enforces exactly one heading per policy leaf.
+- guide profile scan: 0 duplicate `### Usage Type` blocks; remaining TODO/TBD/placeholder-like hits are classified as historical evidence or scan command literals.
+- operations ID tier scan: 0 mismatches between ID comments and path tiers under `docs/05.operations/{guides,policies,runbooks}`; repo contract blocks mismatches.
+- runtime version drift scan: 0 stale runtime version literals; repo contract blocks reintroduction of document versions that diverge from current compose/tech-stack registry.
+- IP placeholder scan: 0 wildcard infra/k3d IPv4 placeholders; repo contract blocks concrete-network placeholder reintroduction.
+- Stage taxonomy shorthand scan: 0 old nine-stage shorthand hits in active Stage 01-05 docs; repo contract blocks bare shorthand and path-style shorthand reintroduction.
+- metadata comparison scan: `.env.example`/`.env` key count 325/325, sensitive registry line count 184/184, secret ID count 107; repo contract blocks metadata-only number drift when local files exist.
+- analytics/laboratory version-family scan: analytics primary/decision stale phrases, Dozzle old tag, and PostgreSQL old scrape family phrase 0 hits; repo contract blocks exact stale literal reintroduction.
+- 04-data operational scan: 0 old Compose CLI command spelling, direct Studio host-port literal, template copyright residue, and obsolete shared-network literal hits in `mng-db`/`supabase` guide, policy, and runbook documents.
 - 04-data operational implementation mapping: `mng-db` docs now match compose services `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter`; Supabase docs now match data-profile services `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor`.
-- 04-data cache-and-kv scan: Valkey guide, policy, runbook, and infra README stale init/container names, stale image tag, direct password variable command, unsupported maxmemory policy, and single-container command assumptions 0건.
+- 04-data cache-and-kv scan: 0 stale init/container names, stale image tag, direct password variable command, unsupported maxmemory policy, and single-container command assumptions in Valkey guide, policy, runbook, and infra README.
 - 04-data cache-and-kv implementation mapping: Valkey docs now match compose services `valkey-node-0` through `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter`, profiles `data`/`service`, network `infra_net`, and secret `service_valkey_password`.
-- 04-data lake-and-object scan: MinIO/SeaweedFS guide, policy, runbook, and infra README stale SeaweedFS version, single-container SeaweedFS log target, unverified reshard command, direct MinIO root credential env references, and root-active/optional cluster confusion 0건 outside the explicitly optional MinIO cluster compose file.
+- 04-data lake-and-object scan: 0 stale SeaweedFS version, single-container SeaweedFS log target, unverified reshard command, direct MinIO root credential env references, and root-active/optional cluster confusion in MinIO/SeaweedFS guide, policy, runbook, and infra README outside the explicitly optional MinIO cluster compose file.
 - 04-data lake-and-object implementation mapping: MinIO docs now match root-active `minio` + `minio-create-buckets` and optional `docker-compose.cluster.yaml`; SeaweedFS docs now match services `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-mount`, image `chrislusf/seaweedfs:4.31`, network `infra_net`, and mount privilege boundary.
-- 04-data nosql scan: Cassandra/CouchDB/MongoDB guide, policy, runbook, and infra README stale image tags, old service names, old secret-control names, unsupported replica-set variable guidance, direct password examples, and destructive restore/resync commands 0건.
+- 04-data nosql scan: 0 stale image tags, old service names, old secret-control names, unsupported replica-set variable guidance, direct password examples, and destructive restore/resync commands in Cassandra/CouchDB/MongoDB guide, policy, runbook, and infra README.
 - 04-data nosql implementation mapping: Cassandra docs now match optional `cassandra-node1` + `cassandra-exporter`, image `cassandra:5.0.8`, profiles `data`/`obs`, secret `cassandra_password`; CouchDB docs now match `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`, image `couchdb:3.5.2`, secrets `couchdb_password`/`couchdb_cookie`; MongoDB docs now match `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`, image `mongo:8.2.9-noble`, replica set `MyReplicaSet`, and non-destructive escalation boundary.
-- 04-data specialized scan: Neo4j/Qdrant guide, policy, runbook, and infra README stale image tags, removed guide link, unsupported external Bolt/API-key claims, mutation guide examples, backup/restore schedules, and destructive recovery commands 0건.
+- 04-data specialized scan: 0 stale image tags, removed guide link, unsupported external Bolt/API-key claims, mutation guide examples, backup/restore schedules, and destructive recovery commands in Neo4j/Qdrant guide, policy, runbook, and infra README.
 - 04-data specialized implementation mapping: Neo4j docs now match root-active `neo4j`, image `neo4j:5.26.26-community`, profiles `data`/`graph`, secret `neo4j_password`, secret-aware entrypoint, healthcheck, and HTTP Browser route; Qdrant docs now match root-active `qdrant`, image `qdrant/qdrant:v1.18.1-unprivileged`, profiles `ai`/`data`/`dev`, no-secret state, REST/gRPC Traefik routes, `/readyz` healthcheck, and non-destructive escalation boundary.
-- 04-data relational scan: PostgreSQL cluster guide, policy, runbook, and infra README removed old relational index links, stale entrypoint filename, unproven backup/archive controls, manual leadership-mutation instructions, destructive DCS reset command, and old template residue 0건.
+- 04-data relational scan: 0 removed old relational index links, stale entrypoint filename, unproven backup/archive controls, manual leadership-mutation instructions, destructive DCS reset command, and old template residue in PostgreSQL cluster guide, policy, runbook, and infra README.
 - 04-data relational implementation mapping: PostgreSQL cluster docs now match optional/commented root include services `etcd-1..3`, `pg-router`, `pg-cluster-init`, `pg-0..2`, `pg-0-exporter..pg-2-exporter`, image families/tags etcd `3.6.12`, HAProxy `3.3.10`, Spilo `spilo-17:4.0-p3`, init job `postgres:18-alpine`, postgres exporter `v0.19.1`, Docker Secret boundaries, `pg-router` write/read endpoints, and non-destructive escalation boundary.
-- 06-observability stale scan: old Prometheus/Grafana/Alloy/Pyroscope/Alertmanager/Pushgateway version literals, old Mimir wording, `pushgateway.local`, stale Pyroscope `/health`, and generated `plus N more` README evidence 0건 in active observability scope.
+- 06-observability stale scan: 0 old Prometheus/Grafana/Alloy/Pyroscope/Alertmanager/Pushgateway version literals, old Mimir wording, `pushgateway.local`, stale Pyroscope `/health`, and generated `plus N more` README evidence hits in active observability scope.
 - 06-observability implementation mapping: root-included `docker-compose.dev.yml` and local `docker-compose.yml` now both render `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, and `pushgateway`; cAdvisor uses `cadvisor` Traefik labels and `${CADVISOR_PORT:-8080}`, Pyroscope uses `pyroscope` Traefik labels and `${PYROSCOPE_PORT:-4040}`.
 - 06-observability validation boundary: root profile validation passes with `HYHOME_COMPOSE_PROFILES=obs`; service-local compose validation requires root network/secret context or an explicit temporary validation overlay.
 - 05-messaging implementation mapping: root messaging profile renders `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`, and `rabbitmq`; `HYHOME_COMPOSE_PROFILES=messaging` validation passes with `services_total=8`, while `HYHOME_COMPOSE_PROFILES='messaging dev'` validation passes with `services_total=46`.
@@ -222,8 +282,8 @@ Stage taxonomy drift(F-33)는 문서 내용 전체가 구현과 충돌한 것이
 - 03-security implementation mapping: root `security` profile renders `vault` and `vault-agent`; root `core` profile renders the security pair plus core dependencies; Vault uses single-node Raft, `vault-agent` uses AppRole files and renders configured templates to `/vault/out`.
 - 03-security validation boundary: `bash scripts/hardening/check-all-hardening.sh 03-security`, `HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh`, and `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` pass; leaf-local Vault compose validation requires root network context and is no longer active documentation proof.
 - 03-security stale scan: active 01-05/infra security docs no longer retain old Vault version guidance, duplicate setup guide references, service-local compose proof, direct container log/exec checks, or current-HA wording. Repo contract now blocks exact stale security literals across Stage 01-05 security/Vault docs and `infra/03-security`.
-- reference.template.md archive 언급: 0건(제약 이미 충족).
-- Local QA gate: `bash scripts/validation/run-local-qa-gates.sh` → PASS, repo contracts `failures=0`, generated LLM Wiki fresh.
+- reference.template.md archive mention: 0 hits (constraint already satisfied).
+- Local QA gate: `bash scripts/validation/run-local-qa-gates.sh` -> PASS, repo contracts `failures=0`, generated LLM Wiki fresh.
 
 ## Related Documents
 
